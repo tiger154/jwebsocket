@@ -1,0 +1,103 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>jWebSocket-Parent</artifactId>
+		<groupId>org.jwebsocket</groupId>
+		<version>1.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.jwebsocket</groupId>
+	<artifactId>jWebSocketAppSrvDemo</artifactId>
+	<name>jWebSocketAppSrvDemo</name>
+	<description>jWebSocket Demo Application Server project including WebClient</description>
+	<version>1.0</version>
+	<packaging>war</packaging>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+	</properties>
+
+	<scm>
+		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk</developerConnection>
+	</scm>
+
+	<build>
+		<plugins>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1.1</version>
+				<configuration>
+					<outputDirectory>${project.build.directory}/../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
+					<webResources>
+						<resource>
+              				<!-- this is relative to the pom.xml directory -->
+							<directory>../jWebSocketClient/web</directory>
+							<!-- disable filtering! otherwise flash swf files get destroyed! -->
+							<filtering>false</filtering>
+							<excludes>
+								<!-- don't include documentation in the .war -->
+								<exclude>**/javadocs/**</exclude>
+								<exclude>**/quickguide/**</exclude>
+								<exclude>**/devguide/**</exclude>
+							</excludes>
+						</resource>
+					</webResources>
+
+					<!-- if you want to create a self-sufficient war comment out the following directive -->
+					<packagingExcludes>
+						**/*.jar
+					</packagingExcludes>
+
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<reportOutputDirectory>${project.build.directory}/../../javadocs/${project.name}</reportOutputDirectory> -->
+					<stylesheetfile>${project.build.directory}/../../javadocs/stylesheet.css</stylesheetfile>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!--  define all the dependencies here -->
+	<dependencies>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketServer</artifactId>
+			<version>${project.version}</version>
+			
+			<!-- forcing to explicitely use latest Spring version -->
+			<exclusions>
+				<exclusion>
+					<artifactId>spring</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+			</exclusions>
+			
+		</dependency>
+	</dependencies>
+
+	<!--  define repositories -->
+	<repositories>
+	</repositories>
+
+</project>

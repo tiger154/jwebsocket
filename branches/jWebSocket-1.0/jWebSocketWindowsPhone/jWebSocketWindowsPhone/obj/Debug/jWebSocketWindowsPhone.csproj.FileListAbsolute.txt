@@ -1,0 +1,5 @@
+E:\jWebSocket\WindowsPhone\jWebSocketWindowsPhone\Bin\Debug\jWebSocketWindowsPhone.dll
+E:\jWebSocket\WindowsPhone\jWebSocketWindowsPhone\Bin\Debug\jWebSocketWindowsPhone.pdb
+E:\jWebSocket\WindowsPhone\jWebSocketWindowsPhone\obj\Debug\ResolveAssemblyReference.cache
+E:\jWebSocket\WindowsPhone\jWebSocketWindowsPhone\obj\Debug\jWebSocketWindowsPhone.dll
+E:\jWebSocket\WindowsPhone\jWebSocketWindowsPhone\obj\Debug\jWebSocketWindowsPhone.pdb
