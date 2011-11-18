@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+ 
+	<!--  Filters-->
+	<bean abstract="true" id="AbstractFilter" scope="singleton"
+	init-method="initialize" destroy-method="shutdown">
+		<property name="em" ref="EventModel" />
+	</bean>
+	<bean id="RouterFilter" class="org.jwebsocket.eventmodel.filter.router.RouterFilter" parent="AbstractFilter">
+		<property name="id" value="router" />
+	</bean>
+	<bean id="SecurityFilter" class="org.jwebsocket.eventmodel.filter.security.SecurityFilter" parent="AbstractFilter">
+		<property name="id" value="security" />
+	</bean>
+	<bean id="ValidatorFilter" class="org.jwebsocket.eventmodel.filter.validator.ValidatorFilter" parent="AbstractFilter">
+		<property name="id" value="validator" />
+	</bean>
+	<bean id="CacheFilter" class="org.jwebsocket.eventmodel.filter.cache.CacheFilter" parent="AbstractFilter">
+		<property name="id" value="cache" />
+		<property name="cacheManager" ref="CacheManager" />
+		<property name="cacheNamespace" value="cache.filter.ns.1234657890" />
+		<property name="events">
+			<set>
+				<value>org.jwebsocket.eventmodel.event.filter.ResponseFromCache</value>
+			</set>
+		</property>
+		<property name="emEvents">
+			<set>
+				<value>org.jwebsocket.eventmodel.event.filter.BeforeRouteResponseToken</value>
+			</set>
+		</property>
+	</bean>
+</beans>

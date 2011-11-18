@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!--  Event Definitions-->
+	<import resource="event_definitions.xml" />
+	<import resource="filters.xml" />
+	<import resource="plugins.xml" />
+	<import resource="security.xml" />
+
+	<!-- Database (JDBC) definitions -->
+	<!-- <import resource="jdbc.xml" /> -->
+
+	<!-- Core -->
+	<bean id="EventModel" class="org.jwebsocket.eventmodel.core.EventModel"
+	init-method="initialize" destroy-method="shutdown" scope="singleton">
+		<property name="eventFactory" ref="EventFactory" />
+		<property name="exceptionHandler">
+			<bean class="org.jwebsocket.eventmodel.exception.ExceptionHandler"
+				scope="singleton" init-method="initialize" destroy-method="shutdown" />
+		</property>
+		<property name="filterChain">
+			<set>
+				<ref bean="RouterFilter" />
+				<ref bean="SecurityFilter" />
+				<ref bean="CacheFilter" />
+				<ref bean="ValidatorFilter" />
+			</set>
+		</property>
+		<property name="plugIns">
+			<set>
+				<ref bean="AuthPlugIn" />
+				<ref bean="SystemPlugIn" />
+			</set>
+		</property>
+		<property name="events">
+			<set>
+				<value>org.jwebsocket.eventmodel.event.em.BeforeProcessEvent</value>
+				<value>org.jwebsocket.eventmodel.event.em.AfterProcessEvent</value>
+				<value>org.jwebsocket.eventmodel.event.em.ConnectorStarted</value>
+				<value>org.jwebsocket.eventmodel.event.em.ConnectorStopped</value>
+				<value>org.jwebsocket.eventmodel.event.em.EngineStarted</value>
+				<value>org.jwebsocket.eventmodel.event.em.EngineStopped</value>
+				<value>org.jwebsocket.eventmodel.event.filter.BeforeRouteResponseToken</value>
+			</set>
+		</property>
+		<property name="maxExecutionTime" value="60" />
+	</bean>
+	
+	<!-- WebSocket events factory-->
+	<bean id="EventFactory" class="org.jwebsocket.eventmodel.factory.EventFactory" scope="singleton">
+		<property name="eventDefinitions" ref="EventDefinitionManager" />
+		<property name="em" ref="EventModel" />
+	</bean>
+
+	<!-- Cache Manager (Ehcache) -->
+	<bean id="CacheManager" class="net.sf.ehcache.CacheManager" scope="singleton" >
+		<constructor-arg value="conf/ehcache.xml" />
+	</bean>
+
+</beans>
