@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<!-- saved from url=(0089)file:///home/kyberneees/Work/java/EventServer/jWebSocketClient-0.11/demos/events/auth.htm -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<!-- If Google's chrome frame installed, use it! -->
+		<!-- Comment needs to be BELOW this meta tag! -->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket EventsPlugIn Demo (uses jWebSocket Client and Server)
+		//	(C) 2010 jWebSocket.org, Innotrade GmbH, Herzogenrath
+		//	****************************************************************************
+		//	This program is free software; you can redistribute it and/or modify it
+		//	under the terms of the GNU Lesser General Public License as published by the
+		//	Free Software Foundation; either version 3 of the License, or (at your
+		//	option) any later version.
+		//	This program is distributed in the hope that it will be useful, but WITHOUT
+		//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+		//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+		//	more details.
+		//	You should have received a copy of the GNU Lesser General Public License along
+		//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+		//	****************************************************************************
+		-->
+		<meta http-equiv="Content-Language" content="en">
+
+		<title>Events Auth PlugIn Demo</title>
+		<!-- load the jWebSocket JavaScript client library -->
+<!--
+		<script type="text/javascript" src="./Events Auth PlugIn Demo_files/extCore311.js"></script>
+		<script type="text/javascript" src="./Events Auth PlugIn Demo_files/jwsEventsPlugIn.js"></script>
+		<script type="text/javascript" src="./Events Auth PlugIn Demo_files/jwsCache.js"></script>
+		<script type="text/javascript" src="./Events Auth PlugIn Demo_files/md5.js"></script>
+-->		
+		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
+
+		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsEventsPlugIn.js" type="text/javascript"></script>
+		
+		<script type="text/javascript" language="JavaScript">
+
+			var eLog = null;
+
+			function log( aString ) {
+				eLog.innerHTML += aString + "<br>";
+				if( eLog.scrollHeight > eLog.clientHeight ) {
+					eLog.scrollTop = eLog.scrollHeight - eLog.clientHeight;
+				}
+			}
+
+			function clearLog() {
+				eLog.innerHTML = "";
+				eLog.scrollTop = 0;
+			}
+
+			function initPage() {
+				eLog = jws.$( "sdivLog" );
+
+				if(jws.browserSupportsWebSockets()){
+					jws.myConn = new jws.jWebSocketJSONClient();
+					jws.myConn.open(jws.JWS_SERVER_URL, {
+						OnOpen: function (){
+							log(">>> Connected successfully! <br/>")
+
+							//Creating the filter chain
+							securityFilter = new jws.SecurityFilter();
+							securityFilter.user = {username: "", roles: []};
+							securityFilter.OnNotAuthorized = function(aToken){
+								log("<b><font color='red'>Failure: </font></b><br/>&nbsp;NOT AUTHORIZED to notify an event with id '" + aToken.type + "'!");
+							}
+			
+							cacheFilter = new jws.CacheFilter();
+							cacheFilter.cache = new jws.cache.Cache();
+
+							validatorFiler = new jws.ValidatorFilter();
+			
+							//Creating a event notifier
+							notifier = new jws.EventsNotifier();
+							notifier.jwsClient = jws.myConn;
+							notifier.filterChain = [securityFilter, cacheFilter, validatorFiler];
+							notifier.initialize();
+			  
+							//Creating a plugin generator
+							generator = new jws.EventsPlugInGenerator();
+
+							//Generating the auth & test plug-ins.
+							auth = generator.generate("auth", notifier, function(){});
+							test = generator.generate("test", notifier, function(){
+								test.setVisitorCounter = function(aToken){
+									alert("Visitor's counter: " + aToken. counter);
+								}
+								test.plusXY = function(aToken){
+									return aToken.x + aToken.y;
+								}
+							});
+						}
+					});
+				} else {
+					var lMsg = jws.MSG_WS_NOT_SUPPORTED;
+					alert( lMsg );
+					log( lMsg );
+				}
+
+			}
+
+			function logon(){
+				auth.logon({
+					args: {
+						username: jws.$( "stxfUsername" ).value,
+						password: jws.$( "spwfPassword" ).value
+					},
+					OnFailure: function(aResponseToken){
+						log("<b><font color='red'>Failure: </font></b><br/>&nbsp;" + aResponseToken.msg);
+					},
+					OnSuccess: function(aResponseToken){
+						log("<b>Logon response: </b><br/>&nbsp;Message: " + aResponseToken.msg + "<br/>&nbsp;Roles: " + aResponseToken.roles.toString());
+
+						//Populating the user instance
+						securityFilter.user.username = aResponseToken.username;
+						securityFilter.user.roles = aResponseToken.roles;
+					}
+				});
+			}
+  
+			function logoff() {
+				auth.logoff({
+					OnSuccess: function(aResponseToken){
+						securityFilter.user = {username: "", roles: []};
+						log("<b>Logoff response: </b><br/>&nbsp;Message: " + aResponseToken.msg);
+					}
+				});
+			}
+
+			function getAPI(){
+				notifier.notify("plugin.getapi", {
+					args: {
+						plugin_id: jws.$( "stxfPlugInId" ).value
+					},
+					OnSuccess: function(aResponseToken){
+						log("<b>GetAPI response: </b><br/>" + Ext.encode(aResponseToken.api));
+					},
+					OnFailure: function(aResponseToken){
+						log("<b><font color='red'>Failure: </font></b><br/>&nbsp;" + aResponseToken.msg);
+					}
+				})
+			}
+
+			function getHash(){
+				test.getHashCode({
+					args: {
+						text: jws.$( "stxfText" ).value
+					},
+					OnSuccess: function(aResponseToken){
+						log("<b>Get Hash response: </b><br/>&nbsp;" + aResponseToken.hash_code);
+					},
+					OnFailure: function(aResponseToken){
+						log("<b><font color='red'>Failure: </font></b><br/>&nbsp;" + aResponseToken.msg);
+					}
+				})
+			}
+
+			function executeSE(){
+				test.secureEvent();
+			}
+
+			function getInfo(){
+				test.getEventsInfo({
+					OnSuccess: function(aResponseToken){
+						log("<b>Events Info response: </b><br/>&nbsp;Name: " + aResponseToken.table.name + "<br/>&nbsp;Version: " + aResponseToken.table.version);
+					}
+				})
+			}
+
+			function s2c(){
+				test.s2cNotification();
+			}
+
+			function exitPage(){}
+
+		</script>
+	</head>
+
+	<body onload="initPage();" onunload="exitPage();">
+
+		<h1>EventsPlugIn Demo</h1>
+		<p>Simple demo to test the EventsPlugIn features.</p>
+		<!-- <iframe id="sifrtwitterLogin" style="width:100%; height:200px"></iframe> -->
+
+		<div class="sdivContainer">
+            <table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" width="100%">
+				<tbody><tr class="strDlg">
+						<td class="stdDlg" width="5">&nbsp;Username:</td>
+						<td class="stdDlg" width="5"><input class="stxfDlg" id="stxfUsername" type="text" value="kyberneees" style="width:150px"></td>
+						<td class="stdDlg" width="5"><input class="sbtnDlg" id="sbtnLogon" type="button" value="Logon" onclick="logon();"></td>
+					</tr>
+					<tr class="strDlg">
+						<td class="stdDlg" width="5">&nbsp;Password:</td>
+						<td class="stdDlg" width="5"><input class="spwfDlg" id="spwfPassword" type="password" value="123" style="width:150px"></td>
+						<td class="stdDlg" width="5"><input title="The 'USER' role is required. Security enabled in server & client" class="sbtnDlg" id="sbtnLogoff" type="button" value="Logoff" onclick="logoff();"></td>
+					</tr>
+					<tr class="strDlg">
+						<td class="stdDlg" width="5">&nbsp;Plug-in ID:</td>
+						<td class="stdDlg" width="5"><input class="stxfDlg" id="stxfPlugInId" type="text" value="test" style="width:150px"></td>
+						<td class="stdDlg" width="5"><input title="Cache aspect enabled in server" class="sbtnDlg" id="sbtnGetAPI" type="button" value="Get API" onclick="getAPI();"></td>
+					</tr>
+					<tr class="strDlg">
+						<td class="stdDlg" width="5">&nbsp;Input text to get the hash code:</td>
+						<td class="stdDlg" width="5"><input class="stxfDlg" id="stxfText" type="text" value="Hi World!" style="width:150px"></td>
+						<td class="stdDlg" width="5"><input class="sbtnDlg" id="sbtnGetHash" type="button" value="Get Hash" onclick="getHash();"></td>
+					</tr>
+					<tr class="strDlg">
+						<td class="stdDlg" width="5">
+							<input class="sbtnDlg" title="Notify to all the connectors" id="sbtnClear" type="button" value="S2C Event" onclick="s2c();">
+							<input title="Cache aspect enabled in server & client" class="sbtnDlg" id="sbtnClear" type="button" value="Events Info" onclick="getInfo();">
+							<input title="The 'USER' role is required. Security enabled in server & client" class="sbtnDlg" id="sbtnClear" type="button" value="Secured Event" onclick="executeSE();">
+							<input class="sbtnDlg" id="sbtnClear" type="button" value="Clear Log" onclick="clearLog();">
+						</td>
+					</tr>
+					<tr class="strDlg">
+					</tr>
+				</tbody></table>
+		</div>
+		<div id="sdivLog" class="sdivContainer" style="position:relative; height:300px; overflow:auto;">
+		</div>
+
+
+
+	</body></html>

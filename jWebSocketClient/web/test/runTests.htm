@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>jWebSocket - Test and Benchmark</title>
+		
+		<!-- jasmine test framework related files -->
+		<link rel="stylesheet" type="text/css" href="../lib/jasmine-1.0.2/jasmine.css">
+		<script type="text/javascript" src="../lib/jasmine-1.0.2/jasmine.js"></script>
+		<script type="text/javascript" src="../lib/jasmine-1.0.2/jasmine-html.js"></script>
+		
+		<!-- jWebSocket style sheet -->
+		<link rel="stylesheet" type="text/css" href="../res/css/jwebsocket.css">
+		
+		<!-- use bundle to check if all plug-ins are embedded in the bundle -->
+		<!--  <script type="text/javascript" src="../res/js/jWebSocket_Bundle.js"></script> -->
+		
+		<!-- also use minified version to check/validate obfuscator -->
+		<!-- <script type="text/javascript" src="../res/js/jWebSocket_Bundle_min.js"></script> -->
+
+		<!-- use separate files if you are updating individual files -->
+		<script type="text/javascript" src="../res/js/jWebSocket.js"></script>
+		<script type="text/javascript" src="../res/js/jwsCache.js"></script>
+		<script type="text/javascript" src="../res/js/jwsAPIPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsChannelPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsCanvasPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsChatPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsClientGamingPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsEventsPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsFilesystemPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsJDBCPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsJMSPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsLoggingPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsMailPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsRPCPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsSamplesPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsSharedObjectsPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsStreamingPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsTestPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsTwitterPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsXMPPPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsWorker.js"></script>
+		
+		<!-- shared test specs for opening and closing connections -->
+		<script type="text/javascript" src="js/jwsSharedTests.js"></script>
+		<!-- test specs for the system plug-in, system plug-in is integrated in jWebSocket.js -->
+		<script type="text/javascript" src="js/jwsSystemTests.js"></script>
+		
+		<!-- tests for the filesystem plug-in -->
+		<script type="text/javascript" src="js/jwsFilesystemTests.js"></script>
+		
+		<!-- tests for the logging plug-in -->
+		<script type="text/javascript" src="js/jwsLoggingTests.js"></script>
+
+		<!-- tests for the RPC plug-in -->
+		<script type="text/javascript" src="js/jwsRPCTests.js"></script>
+		
+		<!-- tests for the JDBC plug-in -->
+		<script type="text/javascript" src="js/jwsJDBCTests.js"></script>
+
+		<!-- tests for the JMS plug-in -->
+		<script type="text/javascript" src="js/jwsJMSTests.js"></script>
+		
+		<!-- tests for the Channel plug-in -->
+		<script type="text/javascript" src="js/jwsChannelTests.js"></script>
+		
+		<!-- tests for the Streaming plug-in -->
+		<script type="text/javascript" src="js/jwsStreamingTests.js"></script>
+		
+		<!-- tests for the Load tests -->
+		<script type="text/javascript" src="js/jwsLoadTests.js"></script>
+		
+		<script type="text/javascript" src="js/jwsAutomatedAPITests.js"></script>
+		
+		<!-- the central test suite code contains the various test suites -->
+		<script type="text/javascript" src="js/jwsTestSuites.js"></script>
+
+		<!-- include spec files here... -->
+		<script type="text/javascript" src="spec/Matchers.js"></script>
+
+	</head>
+	<body>
+		<table class="tblHeader" width="100%" cellspacing="0" cellpadding="0">
+			<tr>
+				<td class="tdHeader" width="">jWebSocket Automated Test and Benchmark Suite</td>
+			</tr>
+		</table>
+
+		<p>
+		<input class="sbtnDlg" id="sbtnManualTest" type="button" value="Programmatic" onclick="run('runFullTestSuite()');"
+				   title="Runs the manual (programmatic) test suite.">
+		<input class="sbtnDlg" id="sbtnBenchmarkTest" type="button" value="Benchmark" onclick="run('runBenchmarkSuite()');"
+				   title="Runs the benchmark suite.">
+		</p>
+
+		<script type="text/javascript">
+
+			function getURL() {
+				var lHref = location.href;
+				var lIdx = lHref.indexOf( "?" );
+				if( lIdx > 0 ) {
+					lHref = lHref.substring( 0, lIdx );
+				}
+				return lHref;
+			}
+
+			function run( aCall ) {
+				location.href = getURL() + "?" + aCall;
+			}
+
+			var lSuite = location.search;
+			if( lSuite ) {
+				lSuite = lSuite.substr( 1 );
+				// console.log("running " + lSuite + "...");
+				eval( lSuite );
+				
+				// jws.console.setActive( true );
+				// jws.console.setLevel( jws.console.ALL );
+				jws.TestPlugIn.execTests();
+			}
+
+			if( jws.browserSupportsWebSockets() ) {
+
+			} else {
+				var lMsg = jws.MSG_WS_NOT_SUPPORTED;
+				alert( lMsg );
+			}
+
+		</script>
+	</body>
+</html>

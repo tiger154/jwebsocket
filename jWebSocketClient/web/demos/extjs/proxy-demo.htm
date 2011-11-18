@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title>ExtJs-jWebSocket Plug-in example</title>
+
+    <style type="text/css">
+        .beforeload {
+            color: blue;
+        }
+        
+        .afterload {
+            color: green;
+        }
+        .buttons{
+            display: inline;
+            margin-top: .5em;
+            width: 9em;
+        }
+        
+        div.console{
+           margin-top: 4.5em;
+           margin-left: 1.5em;
+           background-color: #F0F0F0;;
+           padding: 1em 1.5em;
+           border: dotted 1px black;
+           width: 90%;
+           font: 14px bold sans-serif ;
+        }
+        
+        
+        div.wrappers{
+            float: left;
+            border: dotted 1px black;
+            background-color: #F0F0F0;
+            padding-top: 0em;
+            padding: 1.5em;
+        }
+        
+        div.Littlewrappers{
+            float: left;
+            border: dotted 1px black;
+            background-color: #F0F0F0;
+            padding: .5em;
+            width: 250px;
+            margin-left: 1.5em;
+        }
+        
+        div.header{
+            padding: 1.5em;
+            border: dotted 1px black;
+            background-color: #F0F0F0;
+            margin-bottom: 2em;
+            margin-left: 1.5em;
+            width: 90%;
+        }
+        
+        div.links{
+            float: right;
+        }
+        
+        div.links a{
+            margin-top: .3em;
+            padding-top: 0em;
+            margin-left: .5em;
+            display:inline;
+        }
+        
+        #addCustomers{
+            float: left;
+        }
+        
+        
+    </style>
+	
+    <script type="text/javascript" src="../../lib/ExtJS/ext-all.js"></script>
+    <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+    <script type="text/javascript" src="../../lib/ExtJS/jwsExtJSPlugin.js"></script>
+    
+    <script type="text/javascript" src="proxy-demo.js"></script>
+	
+</head>
+
+<body>
+    <div class="header">
+        <div class="links">
+            <a href="#">client code</a>
+            <a href="#">server code</a>
+        </div>
+        
+        <div id="addCustomers">
+	  name<input type="text" id="textName" />
+	  email <input type="text" id="textEmail" />
+         <button value="algo" id="btnSend">Add customer</button>
+        </div>
+        <p style="clear: both"> 
+    </div>
+          
+            
+     
+         
+        <div id="div-items" class="wrappers" style="margin-left: 1.5em;">
+              <h5>customer list</h5>
+              <select id="listUsers" size = 10 style="width: 270px; display: block" >
+
+              </select>
+              <button class="buttons" id="btnShow">Customers</button> 
+              <button class="buttons" id="btnDel">Delete</button>  
+         </div>
+            
+         
+         <div  class="wrappers" id="div-search" style=" margin-left: 1.5em;">
+          <h5>Enter the customer id</h5>
+          <input type="text" id="textIdSearch" size="10"/>
+          <button id="btnSearch">search</button> 
+          <button id="btnUpdate">update</button>
+          <br />
+          <br/>
+          dbClick to modify
+          <br/>
+          <br/>
+          <select id="listUser" size = 7 style="width: 270px;" >
+              
+          </select>
+          
+          </div>  
+          
+         <div id="div-items" class="Littlewrappers">
+              <p>
+                This is a little CRUD demo<br/>
+                of jWebSocket-Extjs-Plugin<br/>
+                <br/>
+                But just covers the ExtJs4 and Sencha
+                Models with jws throuch the new
+                Ext.jws.proxy which is part of the 
+                jWebSocket-ExtJs-PlugIn.
+                <br/><br/>
+                For a better comprension view
+                is only HTML code.
+                
+                
+              </p>
+         </div>
+    
+    
+         <p style="clear: both"> 
+     
+ 
+         
+         <div class="console" id="console">
+             
+         </div>
+    
+</body>
+</html>
