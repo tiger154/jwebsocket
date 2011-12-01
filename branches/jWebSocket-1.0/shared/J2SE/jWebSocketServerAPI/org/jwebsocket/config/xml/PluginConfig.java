@@ -39,6 +39,7 @@ public final class PluginConfig implements Config, PluginConfiguration {
 	private final String mNamespace;
 	private final List<String> mServers;
 	private final Map<String, Object> mSettings;
+	private final boolean mEnabled;
 
 	/**
 	 * default constructor
@@ -57,14 +58,15 @@ public final class PluginConfig implements Config, PluginConfiguration {
 	 *          FastMap of settings key and value
 	 */
 	public PluginConfig(String aId, String aName, String aPackage, String aJar,
-			String aNamespace, List<String> aServers, Map<String, Object> aSettings) {
-		this.mId = aId;
-		this.mName = aName;
-		this.mPackageName = aPackage;
-		this.mJar = aJar;
-		this.mNamespace = aNamespace;
-		this.mServers = aServers;
-		this.mSettings = aSettings;
+			String aNamespace, List<String> aServers, Map<String, Object> aSettings, boolean aEnabled) {
+		mId = aId;
+		mName = aName;
+		mPackageName = aPackage;
+		mJar = aJar;
+		mNamespace = aNamespace;
+		mServers = aServers;
+		mSettings = aSettings;
+		mEnabled = aEnabled;
 		validate();
 	}
 
@@ -191,4 +193,10 @@ public final class PluginConfig implements Config, PluginConfiguration {
 	public JSONObject getJSON(String aKey) {
 		return (aKey != null ? getJSON(aKey, null) : null);
 	}
+
+	@Override
+	public boolean getEnabled() {
+		return mEnabled;
+	}
+
 }

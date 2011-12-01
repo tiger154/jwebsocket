@@ -23,15 +23,20 @@ import org.jwebsocket.api.IStorageProvider;
  */
 public class MongoDBStorageProvider extends MongoDBStorageBuilder implements IStorageProvider {
 
-	public MongoDBStorageProvider() {
-		super();
-	}
+    public MongoDBStorageProvider() {
+        super();
+    }
 
-	/**
-	 * {@inheritDoc 
-	 */
-	@Override
-	public IBasicStorage<String, Object> getStorage(String aName) throws Exception {
-		return this.getStorage(MongoDBStorageBuilder.V2, aName);
-	}
+    /**
+     * {@inheritDoc 
+     */
+    @Override
+    public IBasicStorage<String, Object> getStorage(String aName) throws Exception {
+        return this.getStorage(MongoDBStorageBuilder.V2, aName);
+    }
+
+    @Override
+    public void removeStorage(String aName) throws Exception {
+        this.removeStorage(aName);
+    }
 }

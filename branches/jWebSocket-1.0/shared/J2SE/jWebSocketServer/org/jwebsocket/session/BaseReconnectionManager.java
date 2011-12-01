@@ -14,95 +14,125 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.session;
 
+import java.util.Timer;
 import org.jwebsocket.api.IBasicCacheStorage;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.ISessionReconnectionManager;
+import org.jwebsocket.api.IStorageProvider;
 
 /**
  *
  * @author kyberneees, aschulze
  */
 public abstract class BaseReconnectionManager implements ISessionReconnectionManager, IInitializable {
-	private IBasicCacheStorage<String, Object> mReconnectionIndex;
-	private String mCacheStorageName;
-	private Integer mSessionExpirationTime = 60; //One minute by default
-	private IBasicStorage<String, Object> mSessionIdsTrash;
-	private String mTrashStorageName;
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getCacheStorageName() {
-		return mCacheStorageName;
-	}
+    private IBasicCacheStorage<String, Object> mReconnectionIndex;
+    private String mCacheStorageName;
+    private Integer mSessionExpirationTime = 60; //One minute by default
+    private IBasicStorage<String, Object> mSessionIdsTrash;
+    private String mTrashStorageName;
+    private IStorageProvider mStorageProvider;
+    private Timer mTimer;
 
-	/**
-	 * 
-	 * @param aCacheStorageName
-	 */
-	public void setCacheStorageName(String aCacheStorageName) {
-		this.mCacheStorageName = aCacheStorageName;
-	}
+    /**
+     * 
+     * @return
+     */
+    public String getCacheStorageName() {
+        return mCacheStorageName;
+    }
 
-	@Override
-	public IBasicCacheStorage<String, Object> getReconnectionIndex() {
-		return mReconnectionIndex;
-	}
+    /**
+     * 
+     * @param aCacheStorageName
+     */
+    public void setCacheStorageName(String aCacheStorageName) {
+        this.mCacheStorageName = aCacheStorageName;
+    }
 
-	/**
-	 * 
-	 * @param aReconnectionIndex
-	 */
-	public void setReconnectionIndex(IBasicCacheStorage<String, Object> aReconnectionIndex) {
-		this.mReconnectionIndex = aReconnectionIndex;
-	}
+    @Override
+    public IBasicCacheStorage<String, Object> getReconnectionIndex() {
+        return mReconnectionIndex;
+    }
 
-	@Override
-	public Integer getSessionExpirationTime() {
-		return mSessionExpirationTime;
-	}
+    /**
+     * 
+     * @param aReconnectionIndex
+     */
+    public void setReconnectionIndex(IBasicCacheStorage<String, Object> aReconnectionIndex) {
+        this.mReconnectionIndex = aReconnectionIndex;
+    }
 
-	@Override
-	public void setSessionExpirationTime(Integer aSessionExpirationTime) {
-		this.mSessionExpirationTime = aSessionExpirationTime;
-	}
+    @Override
+    public Integer getSessionExpirationTime() {
+        return mSessionExpirationTime;
+    }
 
-	@Override
-	public IBasicStorage<String, Object> getSessionIdsTrash() {
-		return mSessionIdsTrash;
-	}
+    @Override
+    public void setSessionExpirationTime(Integer aSessionExpirationTime) {
+        this.mSessionExpirationTime = aSessionExpirationTime;
+    }
 
-	/**
-	 * 
-	 * @param aSessionIdsTrash
-	 */
-	public void setSessionIdsTrash(IBasicStorage<String, Object> aSessionIdsTrash) {
-		this.mSessionIdsTrash = aSessionIdsTrash;
-	}
+    @Override
+    public IBasicStorage<String, Object> getSessionIdsTrash() {
+        return mSessionIdsTrash;
+    }
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getTrashStorageName() {
-		return mTrashStorageName;
-	}
+    /**
+     * 
+     * @param aSessionIdsTrash
+     */
+    public void setSessionIdsTrash(IBasicStorage<String, Object> aSessionIdsTrash) {
+        this.mSessionIdsTrash = aSessionIdsTrash;
+    }
 
-	/**
-	 * 
-	 * @param aTrashStorageName
-	 */
-	public void setTrashStorageName(String aTrashStorageName) {
-		this.mTrashStorageName = aTrashStorageName;
-	}
-	
-	@Override
-	public void putInReconnectionMode(String aSessionId) {
-		getReconnectionIndex().put(aSessionId, true, getSessionExpirationTime());
-		
-		//Used by a deamon to release expired sessions database space
-		getSessionIdsTrash().put(aSessionId, System.currentTimeMillis() + (getSessionExpirationTime() * 1000));
-	}
+    /**
+     * 
+     * @return
+     */
+    public String getTrashStorageName() {
+        return mTrashStorageName;
+    }
+
+    /**
+     * 
+     * @param aTrashStorageName
+     */
+    public void setTrashStorageName(String aTrashStorageName) {
+        this.mTrashStorageName = aTrashStorageName;
+    }
+
+    @Override
+    public void putInReconnectionMode(String aSessionId) {
+        getReconnectionIndex().put(aSessionId, true, getSessionExpirationTime());
+
+        //Used by a deamon to release expired sessions database space
+        getSessionIdsTrash().put(aSessionId, System.currentTimeMillis() + (getSessionExpirationTime() * 1000));
+    }
+
+    /**
+     * @return the mStorageProvider
+     */
+    public IStorageProvider getStorageProvider() {
+        return mStorageProvider;
+    }
+
+    /**
+     * @param mStorageProvider the mStorageProvider to set
+     */
+    public void setStorageProvider(IStorageProvider mStorageProvider) {
+        this.mStorageProvider = mStorageProvider;
+    }
+
+    public void initialize() throws Exception {
+        mTimer = new Timer("jWebSocket BaseReconnection Timer");
+        mTimer.scheduleAtFixedRate(
+                new CleanExpiredSessionsTask(
+                getSessionIdsTrash(), getStorageProvider()), 0, 600000);
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+    }
 }

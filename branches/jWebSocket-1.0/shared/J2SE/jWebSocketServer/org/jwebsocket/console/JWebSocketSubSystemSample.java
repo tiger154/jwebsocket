@@ -111,7 +111,8 @@ public class JWebSocketSubSystemSample {
 					"jWebSocketServer-1.0.jar", // jar
 					"org.jwebsocket.plugins.system", // namespace
 					lDomains, // list of accepted domains
-					null // settings
+					null, // settings
+					true // enabled
 					);
 			lPlugInChain.addPlugIn(new SystemPlugIn(lPlugInConfig));
 			// the FlashBrigde plug-in is strongly recommended to also support

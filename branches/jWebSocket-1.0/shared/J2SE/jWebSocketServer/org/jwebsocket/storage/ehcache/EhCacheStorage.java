@@ -31,197 +31,201 @@ import org.jwebsocket.api.IBasicStorage;
  */
 public class EhCacheStorage implements IBasicStorage {
 
-	private String mName = null;
-	private static CacheManager mCacheManager = null;
-	private Cache mCache = null;
+    private String mName = null;
+    private static CacheManager mCacheManager = null;
+    private Cache mCache = null;
 
-	/**
-	 * 
-	 * @param aName
-	 */
-	public EhCacheStorage(String aName) {
-		mName = aName;
-		initialize();
-	}
+    /**
+     * 
+     * @param aName
+     */
+    public EhCacheStorage(String aName) {
+        mName = aName;
+        initialize();
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	@Override
-	public String getName() {
-		return mName;
-	}
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String getName() {
+        return mName;
+    }
 
-	/**
-	 *
-	 * @param aName
-	 * @throws Exception
-	 */
-	@Override
-	public void setName(String aName) throws Exception {
-		mName = aName;
-	}
+    /**
+     *
+     * @param aName
+     * @throws Exception
+     */
+    @Override
+    public void setName(String aName) throws Exception {
+        mName = aName;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @return
-	 */
-	@Override
-	public Set keySet() {
-		Set lKeys = new FastSet();
-		lKeys.addAll(mCache.getKeys());
-		return lKeys;
-	}
+    /**
+     * {@inheritDoc}
+     *
+     * @return
+     */
+    @Override
+    public Set keySet() {
+        Set lKeys = new FastSet();
+        lKeys.addAll(mCache.getKeys());
+        return lKeys;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @return
-	 */
-	@Override
-	public int size() {
-		return mCache.getSize();
-	}
+    /**
+     * {@inheritDoc}
+     *
+     * @return
+     */
+    @Override
+    public int size() {
+        return mCache.getSize();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @param aKey
-	 * @return
-	 */
-	@Override
-	public Object get(Object aKey) {
-		Element lElement = mCache.get(aKey);
-		return (lElement != null ? lElement.getObjectValue() : null);
-	}
+    /**
+     * {@inheritDoc}
+     *
+     * @param aKey
+     * @return
+     */
+    @Override
+    public Object get(Object aKey) {
+        Element lElement = mCache.get(aKey);
+        return (lElement != null ? lElement.getObjectValue() : null);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @param aKey
-	 * @return
-	 */
-	@Override
-	public Object remove(Object aKey) {
-		// TODO: The interface specs that a previous object is supposed to be returned
-		// this may not be desired and reduce performance, provide second message
-		Object lRes = mCache.get(aKey);
-		mCache.remove(aKey);
-		return lRes;
-	}
+    /**
+     * {@inheritDoc}
+     *
+     * @param aKey
+     * @return
+     */
+    @Override
+    public Object remove(Object aKey) {
+        // TODO: The interface specs that a previous object is supposed to be returned
+        // this may not be desired and reduce performance, provide second message
+        Object lRes = mCache.get(aKey);
+        mCache.remove(aKey);
+        return lRes;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void clear() {
-		mCache.removeAll();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clear() {
+        mCache.removeAll();
+    }
 
-	/**
-	 * Save a key/value pair to the Store.
-	 *
-	 * @param aKey 
-	 * @param aData
-	 * @return
-	 */
-	@Override
-	public Object put(Object aKey, Object aData) {
-		Element lElement = new Element(aKey, aData);
-		mCache.put(lElement);
-		return null;
-	}
+    /**
+     * Save a key/value pair to the Store.
+     *
+     * @param aKey 
+     * @param aData
+     * @return
+     */
+    @Override
+    public Object put(Object aKey, Object aData) {
+        Element lElement = new Element(aKey, aData);
+        mCache.put(lElement);
+        return null;
+    }
 
-	/**
-	 *
-	 * @param keys
-	 * @return
-	 */
-	@Override
-	public Map getAll(Collection keys) {
-		// TODO: to be implemented
-		return null;
-	}
+    /**
+     *
+     * @param keys
+     * @return
+     */
+    @Override
+    public Map getAll(Collection keys) {
+        // TODO: to be implemented
+        return null;
+    }
 
-	/**
-	 *
-	 * @param aAll
-	 */
-	@Override
-	public void putAll(Map aAll) {
-		// TODO: to be implemented
-	}
+    /**
+     *
+     * @param aAll
+     */
+    @Override
+    public void putAll(Map aAll) {
+        // TODO: to be implemented
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	@Override
-	public Set entrySet() {
-		// TODO: to be implemented
-		return null;
-	}
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Set entrySet() {
+        // TODO: to be implemented
+        return null;
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	@Override
-	public Collection values() {
-		// TODO: to be implemented
-		return null;
-	}
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Collection values() {
+        // TODO: to be implemented
+        return null;
+    }
 
-	/**
-	 *
-	 * @param aValue
-	 * @return
-	 */
-	@Override
-	public boolean containsValue(Object aValue) {
-		// TODO: to be implemented
-		return false;
-	}
+    /**
+     *
+     * @param aValue
+     * @return
+     */
+    @Override
+    public boolean containsValue(Object aValue) {
+        // TODO: to be implemented
+        return false;
+    }
 
-	/**
-	 *
-	 * @param aKey
-	 * @return
-	 */
-	@Override
-	public boolean containsKey(Object aKey) {
-		return mCache.get(aKey) != null;
-	}
+    /**
+     *
+     * @param aKey
+     * @return
+     */
+    @Override
+    public boolean containsKey(Object aKey) {
+        return mCache.get(aKey) != null;
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	@Override
-	public boolean isEmpty() {
-		return size() <= 0;
-	}
+    /**
+     *
+     * @return
+     */
+    @Override
+    public boolean isEmpty() {
+        return size() <= 0;
+    }
 
-	/**
-	 *
-	 */
-	@Override
-	public void initialize() {
-		mCacheManager = EhCacheManager.getInstance();
-		if (mCacheManager != null) {
-			mCache = mCacheManager.getCache(mName);
-		}
-	}
+    /**
+     *
+     */
+    @Override
+    public void initialize() {
+        mCacheManager = EhCacheManager.getInstance();
+        if (mCacheManager != null) {
+            // TODO: think about how to configure or pass settings to this cache.
+            if (!mCacheManager.cacheExists(mName)) {
+                mCacheManager.addCache(mName);
+            }
+            mCache = mCacheManager.getCache(mName);
+        }
+    }
 
-	/**
-	 *
-	 */
-	@Override
-	public void shutdown() {
-		if (mCacheManager != null) {
-			mCacheManager.shutdown();
-		}
-	}
+    /**
+     *
+     */
+    @Override
+    public void shutdown() {
+        if (mCacheManager != null) {
+            mCacheManager.shutdown();
+        }
+    }
 }

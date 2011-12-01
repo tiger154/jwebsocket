@@ -52,12 +52,12 @@ public class BaseEngine implements WebSocketEngine {
 	public FastList<WebSocketConnector> lostConnectors = new FastList<WebSocketConnector>();
 	
 	public BaseEngine(EngineConfiguration aConfiguration) {
-		this.mConfiguration = aConfiguration;
+		mConfiguration = aConfiguration;
 	}
 
 	@Override
 	public void setEngineConfiguration(EngineConfiguration aConfiguration) {
-		this.mConfiguration = aConfiguration;
+		mConfiguration = aConfiguration;
 	}
 
 	@Override

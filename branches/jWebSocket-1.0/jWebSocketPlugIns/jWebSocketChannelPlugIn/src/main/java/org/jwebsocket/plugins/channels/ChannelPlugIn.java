@@ -34,6 +34,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.channels.Channel.ChannelState;
 import org.jwebsocket.security.SecurityFactory;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
@@ -149,8 +150,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 	private static final String OWNER = "owner";
 	private static final String CHANNEL = "channel";
 	private static final String CONNECTED = "connected";
-	private static ServerXmlBeanFactory mBeanFactory;
-
+	
 	/**
 	 * Constructor with plug-in config
 	 *
@@ -176,9 +176,12 @@ public class ChannelPlugIn extends TokenPlugIn {
 			}
 			FileSystemResource lFSRes = new FileSystemResource(lPath);
 
-			mBeanFactory = new ServerXmlBeanFactory(lFSRes, getClass().getClassLoader());
+            JWebSocketBeanFactory.load(lPath, getClass().getClassLoader());
+
+			// mBeanFactory = new ServerXmlBeanFactory(lFSRes, getClass().getClassLoader());
+            
 			Object lObj;
-			lObj = mBeanFactory.getBean("channelManager");
+			lObj = JWebSocketBeanFactory.getInstance().getBean("channelManager");
 			mChannelManager = (ChannelManager) lObj;
 
 			// give a success message to the administrator

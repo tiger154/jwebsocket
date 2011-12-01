@@ -30,4 +30,10 @@ public class MemoryStorageProvider implements IStorageProvider {
 		lStorage.initialize();
 		return lStorage;
 	}
+
+    @Override
+    public void removeStorage(String aName) throws Exception {
+        MemoryStorage.getContainer().remove(aName);
+    }
+    
 }

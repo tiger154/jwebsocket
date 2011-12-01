@@ -38,6 +38,7 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	private WebSocketPlugInChain mPlugInChain = null;
 	private Map<String, Object> mSettings = new FastMap<String, Object>();
 	private PluginConfiguration mConfiguration;
+	private boolean mEnabled = true;
 
 	/**
 	 * Constructor
@@ -98,6 +99,12 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	 */
 	@Override
 	public abstract void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason);
+
+	@Override
+	public void processEnabled(boolean aEnabled) {
+		// this is supposed to be overwritten by 
+		// the plug-in implementations if required
+	}
 
 	/**
 	 *
@@ -337,5 +344,20 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	@Override
 	public String getName() {
 		return mConfiguration.getName();
+	}
+
+	@Override
+	public boolean getEnabled() {
+		return mEnabled;
+	}
+
+	@Override
+	public void setEnabled(boolean aEnabled) {
+		Boolean lOldEnabled = mEnabled;
+		mEnabled = aEnabled;
+		// notify plug-in for change of enabled status
+		if (aEnabled != lOldEnabled) {
+			processEnabled(aEnabled);
+		}
 	}
 }

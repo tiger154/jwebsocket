@@ -27,7 +27,7 @@ import org.jwebsocket.storage.memory.MemoryStorage;
 public class MemoryReconnectionManager extends BaseReconnectionManager {
 
 	private static Logger mLog = Logging.getLogger(MemoryReconnectionManager.class);
-	private Timer timer;
+	private Timer mTimer;
 
 	public MemoryReconnectionManager() {
 		super();
@@ -54,12 +54,14 @@ public class MemoryReconnectionManager extends BaseReconnectionManager {
 		setSessionIdsTrash(new MemoryStorage<String, Object>(getTrashStorageName()));
 		getSessionIdsTrash().initialize();
 		
-		timer = new Timer();
-		timer.scheduleAtFixedRate(new CleanExpiredMemorySessionsTask(getSessionIdsTrash()), 0, 600000);
+		mTimer = new Timer("jWebSocket Memory Reconnection Timer");
+		mTimer.scheduleAtFixedRate(new CleanExpiredMemorySessionsTask(getSessionIdsTrash()), 0, 600000);
 	}
 
 	@Override
 	public void shutdown() throws Exception {
+//		mTimer.cancel();
+//		mTimer.purge();
 	}
 
 }

@@ -324,17 +324,17 @@
 		>
 		<div> <!-- style="border:1px solid red" -->
 			<p>
-				<input class="sbtnDlg" id="sbtnClear" type="button" value="Clear" onclick="doClear();"
+				<input style="width:80px" class="sbtnDlg" id="sbtnClear" type="button" value="Clear" onclick="doClear();"
 					   title="Clears the current canvas locally and on all connected clients.">&nbsp;
-				<input class="sbtnDlg" id="sbtnSend" type="button" value="Snapshot" onclick="snapshot();"
-					   title="Creates a snapshot, save it on the server and broadcasts a 'filesave' event.">&nbsp;
-				<input class="sbtnDlg" id="sbtnPaint" type="button" value="Paint" onclick="paint();"
+				<input style="width:80px" class="sbtnDlg" id="sbtnPaint" type="button" value="Paint" onclick="paint();"
 					   title="Paints some images on the canvas.">&nbsp;
+				<input style="width:80px" class="sbtnDlg" id="sbtnSend" type="button" value="Snapshot" onclick="snapshot();"
+					   title="Creates a snapshot, save it on the server and broadcasts a 'filesave' event.">&nbsp;
 				<img id="simgStatus" alt="status"  src="../../images/disconnected.png"/>
 			</p>
 			<p id="spnAvg" style="display:none">0ms</p>
-			<canvas id="cnvDemo" width="325" height="230"
-					style="width:325px; height:230px; overflow:hidden; border:1px solid gray; cursor:crosshair; float:left" >
+			<canvas id="cnvDemo" width="265" height="230"
+					style="width:265px; height:230px; overflow:hidden; border:1px solid gray; cursor:crosshair; float:left" >
 			</canvas>
 			<div id="spanSettings" style="border:1px solid gray; position:relative;
 				 top: 0px; left: 5px; width:20px; height:142px; margin-bottom:80px; overflow:hidden">

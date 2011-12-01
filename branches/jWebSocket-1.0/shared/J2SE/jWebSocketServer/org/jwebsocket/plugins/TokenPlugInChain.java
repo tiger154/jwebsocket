@@ -51,21 +51,22 @@ public class TokenPlugInChain extends BasePlugInChain {
 		// tokens without namespace are not accepted anymore since jWebSocket 1.0a11
 		if (lNS != null) {
 			for (WebSocketPlugIn lPlugIn : getPlugIns()) {
-				try {
-					TokenPlugIn lTokenPlugIn = ((TokenPlugIn) lPlugIn);
-					if (lNS.equals(lTokenPlugIn.getNamespace())) {
-						lTokenPlugIn.processToken(lPlugInResponse, aConnector, aToken);
+				if (lPlugIn.getEnabled()) {
+					try {
+						TokenPlugIn lTokenPlugIn = ((TokenPlugIn) lPlugIn);
+						if (lNS.equals(lTokenPlugIn.getNamespace())) {
+							lTokenPlugIn.processToken(lPlugInResponse, aConnector, aToken);
+						}
+					} catch (Exception lEx) {
+						mLog.error("(plug-in '"
+								+ ((TokenPlugIn) lPlugIn).getNamespace() + "') "
+								+ lEx.getClass().getSimpleName() + ": "
+								+ lEx.getMessage()
+								+ ", token: " + aToken.toString());
 					}
-				} catch (Exception lEx) {
-					mLog.error("(plug-in '"
-							+ ((TokenPlugIn) lPlugIn).getNamespace() + "') "
-							+ lEx.getClass().getSimpleName() + ": "
-							+ lEx.getMessage()
-							+ ", token: " + aToken.toString()
-					);
-				}
-				if (lPlugInResponse.isChainAborted()) {
-					break;
+					if (lPlugInResponse.isChainAborted()) {
+						break;
+					}
 				}
 			}
 		}

@@ -16,7 +16,6 @@
 package org.jwebsocket.kit;
 
 import java.util.Map;
-import javolution.util.FastMap;
 
 /**
  *
@@ -26,7 +25,7 @@ import javolution.util.FastMap;
 public class WebSocketSession {
 
 	private String mSessionId = null;
-	private Map<String, Object> mStorage = new FastMap<String, Object>();
+	private Map<String, Object> mStorage;
 
 	public WebSocketSession() {
 	}

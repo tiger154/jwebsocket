@@ -21,7 +21,7 @@ import org.json.JSONObject;
 /**
  * The Base interface for plugin configuration
  * @author puran
- * @version $Id: PluginConfiguration.java 1798 2011-09-05 16:21:06Z fivefeetfurther $
+ * @version $Id: PluginConfiguration.java 1840 2011-11-28 13:41:15Z fivefeetfurther $
  */
 public interface PluginConfiguration extends Configuration {
 
@@ -57,4 +57,10 @@ public interface PluginConfiguration extends Configuration {
 	JSONObject getJSON(String aKey, JSONObject aDefault);
 
 	JSONObject getJSON(String aKey);
+	
+	/**
+	 * returns the enabled status of the plug-in.
+	 * @return
+	 */
+	boolean getEnabled();
 }

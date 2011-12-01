@@ -39,6 +39,7 @@ public class PluginConfigHandler implements ConfigHandler {
 	private static final String PACKAGE = "package";
 	private static final String JAR = "jar";
 	private static final String NAMESPACE = "ns";
+	private static final String ENABLED = "enabled";
 	private static final String SERVERS = "server-assignments";
 	private static final String SERVER = "server-assignment";
 	private static final String SETTINGS = "settings";
@@ -51,6 +52,7 @@ public class PluginConfigHandler implements ConfigHandler {
 	public Config processConfig(XMLStreamReader aStreamReader)
 			throws XMLStreamException {
 		String lId = "", lName = "", lPackage = "", lJar = "", lNamespace = "";
+		boolean lEnabled = true;
 		List<String> lServers = new FastList<String>();
 		Map<String, Object> lSettings = null;
 		while (aStreamReader.hasNext()) {
@@ -76,6 +78,13 @@ public class PluginConfigHandler implements ConfigHandler {
 					lSettings = getSettings(aStreamReader);
 				} else if (lElementName.equals(SERVERS)) {
 					lServers = getServers(aStreamReader);
+				} else if (lElementName.equals(ENABLED)) {
+					aStreamReader.next();
+					try {
+						lEnabled = Boolean.parseBoolean(aStreamReader.getText());
+					} catch (Exception ex) {
+						// ignore, per default true
+					}
 				} else {
 					// ignore
 				}
@@ -88,7 +97,7 @@ public class PluginConfigHandler implements ConfigHandler {
 			}
 		}
 		return new PluginConfig(lId, lName, lPackage, lJar,
-				lNamespace, lServers, lSettings);
+				lNamespace, lServers, lSettings, lEnabled);
 	}
 
 	/**
@@ -145,10 +154,10 @@ public class PluginConfigHandler implements ConfigHandler {
 
 					if (lKey != null && lValue != null) {
 						if ("json".equalsIgnoreCase(lType)) {
- 							JSONObject lJSON = null;
-							try{
+							JSONObject lJSON = null;
+							try {
 								lJSON = new JSONObject(lValue);
-							} catch(Exception lEx) {
+							} catch (Exception lEx) {
 								// TODO: handle invalid JSON code in settings properly!
 							}
 							lSettings.put(lKey, lJSON);
