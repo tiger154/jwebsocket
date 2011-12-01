@@ -219,16 +219,14 @@
 	<bean id="cacheProviderEhCache" class="org.jwebsocket.storage.ehcache.EhCacheStorageProvider">
 	</bean>
 	
-	<!--  Memory Storage provider -->
+	<!--  Memory Storage provider (here for the sessions) -->
 	<bean id="cacheProviderMemory" class="org.jwebsocket.storage.memory.MemoryStorageProvider">
 	</bean>
 
 	<!-- Setting up the SessionManager (required) -->
 	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
 			init-method="initialize" destroy-method="shutdown">
-		<property name="storageProvider" ref="cacheProviderEhCache"/>
-		
-		<!--
+		<property name="storageProvider" ref="cacheProviderMemory"/>
 		<property name="reconnectionManager">
 			<bean class="org.jwebsocket.session.MemoryReconnectionManager" 
 			init-method="initialize" destroy-method="shutdown">
@@ -237,7 +235,6 @@
 				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
 			</bean>
 		</property>
-		-->
 	</bean>
 
 </beans>

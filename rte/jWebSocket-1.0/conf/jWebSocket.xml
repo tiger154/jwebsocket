@@ -94,9 +94,16 @@
 
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<domains>
-				<domain>jwebsocket.org</domain>
-				<domain>jwebsocket.com</domain>
-				<domain>localhost</domain>
+				<domain>http://jwebsocket.org</domain>
+				<domain>http://jwebsocket.com</domain>
+				<domain>http://www.jwebsocket.org</domain>
+				<domain>http://www.jwebsocket.com</domain>
+				<domain>http://localhost</domain>
+				<domain>https://jwebsocket.org</domain>
+				<domain>https://jwebsocket.com</domain>
+				<domain>https://www.jwebsocket.org</domain>
+				<domain>https://www.jwebsocket.com</domain>
+				<domain>https://localhost</domain>
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>

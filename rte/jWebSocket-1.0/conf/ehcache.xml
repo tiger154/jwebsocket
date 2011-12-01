@@ -79,14 +79,14 @@
        memoryStoreEvictionPolicy="LRU"/>
 	   
 	<cache name="sessionCache"
-       maxElementsInMemory="5000" 
-       eternal="false"
-       timeToIdleSeconds="300" 
-       timeToLiveSeconds="300" 
-       overflowToDisk="true"
-       maxElementsOnDisk="100000" 
-       diskPersistent="false"
-       diskExpiryThreadIntervalSeconds="300" 
-       memoryStoreEvictionPolicy="LRU"/>
+		maxElementsInMemory="1"
+		eternal="true"
+		timeToIdleSeconds="0"
+		timeToLiveSeconds="0"
+		overflowToDisk="true"
+		maxElementsOnDisk="10000000"
+		diskPersistent="false"
+		diskExpiryThreadIntervalSeconds="120"
+		memoryStoreEvictionPolicy="LRU"/>
 	   
 </ehcache>
