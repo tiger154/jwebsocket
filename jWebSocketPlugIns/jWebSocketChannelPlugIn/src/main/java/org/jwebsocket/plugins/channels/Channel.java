@@ -492,6 +492,7 @@ public final class Channel implements ChannelLifeCycle {
 
 					@Override
 					public void run() {
+						
 						lListener.channelStarted(lChannel, aUser);
 					}
 				});

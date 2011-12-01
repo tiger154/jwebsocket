@@ -27,7 +27,7 @@ import org.jwebsocket.plugins.TokenPlugIn;
 public class JQueryPlugIn extends TokenPlugIn {
 	// a timer to execute a task each some time
 
-	private Timer t = new Timer();
+	private Timer mTimer = new Timer("jWebSocket jQuery Plugin Timer");
 
 	public JQueryPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -38,6 +38,6 @@ public class JQueryPlugIn extends TokenPlugIn {
 	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
 		super.engineStarted(aEngine);
-		t.schedule(new UpdateTimeTask(getServer(), getNamespace()), 1000);
+		mTimer.schedule(new UpdateTimeTask(getServer(), getNamespace()), 1000);
 	}
 }

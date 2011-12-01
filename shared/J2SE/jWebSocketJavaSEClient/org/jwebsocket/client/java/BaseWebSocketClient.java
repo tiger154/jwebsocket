@@ -345,7 +345,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 			if (isHixie()) {
 				if (WebSocketEncoding.BINARY.equals(mNegotiatedSubProtocol.getEncoding())) {
 					mOut.write(0x80);
-					// TODO: what if frame is longer than 255 characters (8bit?) Refer to IETF spec!
+					// what if frame is longer than 255 characters (8bit?) Refer to IETF spec!
+                    // won't fix since hixie is far outdated!
 					mOut.write(aData.length);
 					mOut.write(aData);
 				} else {

@@ -21,6 +21,7 @@ import org.jwebsocket.kit.RequestHeader;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 
@@ -34,28 +35,36 @@ public class EngineUtils {
 	/**
 	 * Validates draft header and constructs RequestHeader object.
 	 */
-	public static RequestHeader validateC2SRequest(Map lRespMap, Logger logger) throws UnsupportedEncodingException {
+	public static RequestHeader validateC2SRequest(List<String> aDomains,
+			Map aRespMap, Logger aLogger) throws UnsupportedEncodingException {
+
+		if (aDomains != null && (aRespMap.get("origin") == null
+				|| !aDomains.contains(aRespMap.get("origin")))) {
+			aLogger.error("Client origin '" + aRespMap.get("origin") + "' does not match allowed domains.");
+			return null;
+		}
+
 		// Check for WebSocket protocol version.
 		// If it is present and if it's something unrecognizable, force disconnect (return null).
-		String lDraft = (String) lRespMap.get(RequestHeader.WS_DRAFT);
-		Integer lVersion = (Integer) lRespMap.get(RequestHeader.WS_VERSION);
+		String lDraft = (String) aRespMap.get(RequestHeader.WS_DRAFT);
+		Integer lVersion = (Integer) aRespMap.get(RequestHeader.WS_VERSION);
 
 		// run validation
 		if (!WebSocketProtocolAbstraction.isValidDraft(lDraft)) {
-			logger.error("Error in Handshake: Draft #'" + lDraft + "' not supported.");
+			aLogger.error("Error in Handshake: Draft #'" + lDraft + "' not supported.");
 			return null;
 		}
 		if (!WebSocketProtocolAbstraction.isValidVersion(lVersion)) {
-			logger.error("Error in Handshake: Version #'" + lVersion + "' not supported.");
+			aLogger.error("Error in Handshake: Version #'" + lVersion + "' not supported.");
 			return null;
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("Client uses websocket protocol version #" + lVersion + "/draft #" + lDraft + " for communication.");
+		if (aLogger.isDebugEnabled()) {
+			aLogger.debug("Client uses websocket protocol version #" + lVersion + "/draft #" + lDraft + " for communication.");
 		}
 
 		RequestHeader lHeader = new RequestHeader();
 		Map<String, String> lArgs = new HashMap<String, String>();
-		String lPath = (String) lRespMap.get("path");
+		String lPath = (String) aRespMap.get("path");
 
 		// isolate search string
 		String lSearchString = "";
@@ -71,8 +80,8 @@ public class EngineUtils {
 								lArgsArray[lIdx].split(JWebSocketCommonConstants.KEYVAL_SEPARATOR, 2);
 						if (lKeyValuePair.length == 2) {
 							lArgs.put(lKeyValuePair[0], lKeyValuePair[1]);
-							if (logger.isDebugEnabled()) {
-								logger.debug("arg" + lIdx + ": "
+							if (aLogger.isDebugEnabled()) {
+								aLogger.debug("arg" + lIdx + ": "
 										+ lKeyValuePair[0] + "="
 										+ lKeyValuePair[1]);
 							}
@@ -83,7 +92,7 @@ public class EngineUtils {
 		}
 
 		// if no sub protocol given in request header , try
-		String lSubProt = (String) lRespMap.get(RequestHeader.WS_PROTOCOL);
+		String lSubProt = (String) aRespMap.get(RequestHeader.WS_PROTOCOL);
 		if (lSubProt == null) {
 			lSubProt = lArgs.get(RequestHeader.WS_PROTOCOL);
 		}
@@ -99,14 +108,14 @@ public class EngineUtils {
 		// TODO: implement subprotocol choice handling by deferring the decision to plugins/listeners
 		if (lSubProt.indexOf(' ') != -1) {
 			lSubProt = lSubProt.split(" ")[0];
-			lRespMap.put(RequestHeader.WS_PROTOCOL, lSubProt);
+			aRespMap.put(RequestHeader.WS_PROTOCOL, lSubProt);
 		}
 
-		lHeader.put(RequestHeader.WS_HOST, lRespMap.get(RequestHeader.WS_HOST));
-		lHeader.put(RequestHeader.WS_ORIGIN, lRespMap.get(RequestHeader.WS_ORIGIN));
-		lHeader.put(RequestHeader.WS_LOCATION, lRespMap.get(RequestHeader.WS_LOCATION));
+		lHeader.put(RequestHeader.WS_HOST, aRespMap.get(RequestHeader.WS_HOST));
+		lHeader.put(RequestHeader.WS_ORIGIN, aRespMap.get(RequestHeader.WS_ORIGIN));
+		lHeader.put(RequestHeader.WS_LOCATION, aRespMap.get(RequestHeader.WS_LOCATION));
 		lHeader.put(RequestHeader.WS_PROTOCOL, lSubProt);
-		lHeader.put(RequestHeader.WS_PATH, lRespMap.get(RequestHeader.WS_PATH));
+		lHeader.put(RequestHeader.WS_PATH, aRespMap.get(RequestHeader.WS_PATH));
 		lHeader.put(RequestHeader.WS_SEARCHSTRING, lSearchString);
 		lHeader.put(RequestHeader.URL_ARGS, lArgs);
 		lHeader.put(RequestHeader.WS_DRAFT,

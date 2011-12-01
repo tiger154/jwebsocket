@@ -29,4 +29,9 @@ public interface IStorageProvider {
 	 * @throws Exception  
 	 */
 	IBasicStorage<String, Object> getStorage(String aName) throws Exception;
+
+    void removeStorage(String aName) throws Exception;
+    
+    
+
 }

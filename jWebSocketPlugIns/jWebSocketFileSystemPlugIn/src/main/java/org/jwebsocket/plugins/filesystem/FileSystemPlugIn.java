@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.codec.binary.Base64;
@@ -532,7 +533,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		public void onStart(FileAlterationObserver aObserver) {
 			/*
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Monitor has been started.");
+			mLog.debug("Monitor has been started.");
 			}
 			 */
 		}
@@ -542,9 +543,20 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		public void onStop(FileAlterationObserver aObserver) {
 			/*
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Monitor has been stopped.");
+			mLog.debug("Monitor has been stopped.");
 			}
 			 */
+		}
+	}
+
+	// inner helper class to just to give the 
+	// monitor thread a name for maintainability
+	class MonitorThreadFactory implements ThreadFactory {
+
+		@Override
+		public Thread newThread(Runnable aRunnable) {
+			Thread lThread = new Thread(aRunnable, "jWebSocket FileSystemPlugIn Monitor");
+			return lThread;
 		}
 	}
 
@@ -555,6 +567,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	public void startPublicMonitor(int aInterval) {
 		if (null == mPublicMonitor) {
 			mPublicMonitor = new FileAlterationMonitor(aInterval);
+			mPublicMonitor.setThreadFactory(new MonitorThreadFactory());
 			String lBaseDir = Tools.expandEnvVars(getString(PUBLIC_DIR_KEY, PUBLIC_DIR_DEF));
 			String lMask = "*";
 			IOFileFilter lFileFilter = new WildcardFileFilter(lMask);

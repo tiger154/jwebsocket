@@ -120,16 +120,18 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 		}
 		try {
 			for (WebSocketPlugIn lPlugIn : getPlugIns()) {
-				try {
-					// log.debug("Notifying plug-in " + plugIn + " that connector started...");
-					lPlugIn.connectorStarted(aConnector);
-				} catch (Exception lEx) {
-					mLog.error("Connector '"
-							+ aConnector.getId()
-							+ "' started at plug-in '"
-							+ lPlugIn.getId() + "': "
-							+ lEx.getClass().getSimpleName() + ": "
-							+ lEx.getMessage());
+				if (lPlugIn.getEnabled()) {
+					try {
+						// log.debug("Notifying plug-in " + plugIn + " that connector started...");
+						lPlugIn.connectorStarted(aConnector);
+					} catch (Exception lEx) {
+						mLog.error("Connector '"
+								+ aConnector.getId()
+								+ "' started at plug-in '"
+								+ lPlugIn.getId() + "': "
+								+ lEx.getClass().getSimpleName() + ": "
+								+ lEx.getMessage());
+					}
 				}
 			}
 		} catch (Exception lEx) {
@@ -152,18 +154,20 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 		}
 		PlugInResponse lPluginResponse = new PlugInResponse();
 		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
-			try {
-				lPlugIn.processPacket(lPluginResponse, aConnector, aDataPacket);
-			} catch (Exception lEx) {
-				mLog.error("Processing packet at connector '"
-						+ aConnector.getId()
-						+ "', plug-in '"
-						+ lPlugIn.getId() + "': "
-						+ lEx.getClass().getSimpleName() + ": "
-						+ lEx.getMessage());
-			}
-			if (lPluginResponse.isChainAborted()) {
-				break;
+			if (lPlugIn.getEnabled()) {
+				try {
+					lPlugIn.processPacket(lPluginResponse, aConnector, aDataPacket);
+				} catch (Exception lEx) {
+					mLog.error("Processing packet at connector '"
+							+ aConnector.getId()
+							+ "', plug-in '"
+							+ lPlugIn.getId() + "': "
+							+ lEx.getClass().getSimpleName() + ": "
+							+ lEx.getMessage());
+				}
+				if (lPluginResponse.isChainAborted()) {
+					break;
+				}
 			}
 		}
 		return lPluginResponse;
@@ -180,15 +184,17 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 			mLog.debug("Notifying plug-ins that connector '" + aConnector.getId() + "' stopped (" + aCloseReason.name() + ")...");
 		}
 		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
-			try {
-				lPlugIn.connectorStopped(aConnector, aCloseReason);
-			} catch (Exception lEx) {
-				mLog.error("Connector '"
-						+ aConnector.getId()
-						+ "' stopped at plug-in '"
-						+ lPlugIn.getId() + "': "
-						+ lEx.getClass().getSimpleName() + ": "
-						+ lEx.getMessage());
+			if (lPlugIn.getEnabled()) {
+				try {
+					lPlugIn.connectorStopped(aConnector, aCloseReason);
+				} catch (Exception lEx) {
+					mLog.error("Connector '"
+							+ aConnector.getId()
+							+ "' stopped at plug-in '"
+							+ lPlugIn.getId() + "': "
+							+ lEx.getClass().getSimpleName() + ": "
+							+ lEx.getMessage());
+				}
 			}
 		}
 	}

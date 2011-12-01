@@ -312,7 +312,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 		getEm().on(S2CResponse.class, this);
 		getEm().on(S2CEventNotSupportedOnClient.class, this);
 
-		timeoutHandler = new Timer();
+		timeoutHandler = new Timer("jWebSocket S2C Event Timer");
 		//Purge cancelled on timeout callbacks every 5 minutes
 		timeoutHandler.scheduleAtFixedRate(new PurgeCancelledTimeoutsTask(timeoutHandler), 0, 300000);
 	}

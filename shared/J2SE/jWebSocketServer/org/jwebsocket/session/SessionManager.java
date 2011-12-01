@@ -35,7 +35,7 @@ public class SessionManager implements ISessionManager, IInitializable /*, WebSo
 	private IStorageProvider mStorageProvider;
 	private ISessionReconnectionManager mReconnectionManager;
 	private static Logger mLog = Logging.getLogger(SessionManager.class);
-	private Map<String, IBasicStorage<String, Object>> mSessions;
+	private Map<String, IBasicStorage<String, Object>> mSessionsReferences;
 
 	/**
 	 * 
@@ -92,9 +92,9 @@ public class SessionManager implements ISessionManager, IInitializable /*, WebSo
 			mLog.debug("Getting session for: " + aSessionId + "...");
 		}
 
-		if (mSessions.containsKey(aSessionId)) {
+		if (mSessionsReferences.containsKey(aSessionId)) {
 			// Getting the local cached storage instance if exists
-			return mSessions.get(aSessionId);
+			return mSessionsReferences.get(aSessionId);
 		}
 
 		if (mReconnectionManager.isExpired(aSessionId)) {
@@ -103,17 +103,18 @@ public class SessionManager implements ISessionManager, IInitializable /*, WebSo
 			}
 			IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(aSessionId);
 			lStorage.clear();
-			mSessions.put(aSessionId, lStorage);
+			mSessionsReferences.put(aSessionId, lStorage);
 
 			return lStorage;
 		} else {
+            
 			// Avoid security holes 
 			mReconnectionManager.getReconnectionIndex().remove(aSessionId);
 			// Recovered session, require to be removed from the trash
 			mReconnectionManager.getSessionIdsTrash().remove(aSessionId);
 
 			IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(aSessionId);
-			mSessions.put(aSessionId, lStorage);
+			mSessionsReferences.put(aSessionId, lStorage);
 
 			return lStorage;
 		}
@@ -121,62 +122,20 @@ public class SessionManager implements ISessionManager, IInitializable /*, WebSo
 
 	@Override
 	public void initialize() throws Exception {
-		mSessions = new FastMap<String, IBasicStorage<String, Object>>();
+		mSessionsReferences = new FastMap<String, IBasicStorage<String, Object>>();
 	}
 
 	@Override
 	public void shutdown() throws Exception {
-		mSessions.clear();
+		mSessionsReferences.clear();
 	}
 
-/*
-	@Override
-	public void processClosed(WebSocketServerEvent aEvent) {
-		//Allowing all connectors for a reconnection
-		String lSessionId = aEvent.getConnector().getSession().getSessionId();
+    /**
+     * @return the mSessionsReferences
+     */
+    public Map<String, IBasicStorage<String, Object>> getSessionsReferences() {
+        return mSessionsReferences;
+    }
 
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Putting the session: " + lSessionId + ", in reconnection mode...");
-		}
-
-		synchronized (this) {
-			//Removing the local cached storage instance. Free space if 
-			//the client never gets reconnected
-			mSessions.remove(lSessionId);
-			mReconnectionManager.putInReconnectionMode(lSessionId);
-		}
-	}
-	
-	@Override
-	public void processOpened(WebSocketServerEvent aEvent) {
-		try {
-			// set session id first, so that it can be processed in the connectorStarted
-			// method
-			Random lRand = new Random(System.nanoTime());
-
-			// @TODO: if unique node id is passed check if already assigned in the
-			// network and reject connect if so!
-
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Setting the session identifier: " + aEvent.getConnector().getId());
-			}
-			aEvent.getSession().setSessionId(
-					Tools.getMD5(aEvent.getConnector().generateUID()
-					+ "." + lRand.nextInt()));
-
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Creating the WebSocketSession persistent storage "
-						+ "for connector: " + aEvent.getConnector().getId());
-			}
-			aEvent.getSession().setStorage((Map<String, Object>) (getSession(aEvent.getSessionId())));
-		} catch (Exception ex) {
-			 // TODO: try this with the ExceptionHandler
-		}
-	}
-
-	@Override
-	public void processPacket(WebSocketServerEvent aEvent, WebSocketPacket aPacket) {
-	}
-*/
 
 }

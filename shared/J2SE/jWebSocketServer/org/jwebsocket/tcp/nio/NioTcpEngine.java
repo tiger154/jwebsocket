@@ -400,10 +400,11 @@ public class NioTcpEngine extends BaseEngine {
 				// todo: consider ssl connections
 				Map lHeaders = WebSocketHandshake.parseC2SRequest(aBean.data, false);
 				byte[] lResponse = WebSocketHandshake.generateS2CResponse(lHeaders);
-				RequestHeader lReqHeader = EngineUtils.validateC2SRequest(lHeaders, mLog);
+				RequestHeader lReqHeader = EngineUtils.validateC2SRequest(
+						getConfiguration().getDomains(), lHeaders, mLog);
 				if (lResponse == null || lReqHeader == null) {
 					if (mLog.isDebugEnabled()) {
-						mLog.warn("TCPEngine detected illegal handshake.");
+						mLog.warn("TCP-Engine detected illegal handshake.");
 					}
 					// disconnect the client
 					clientDisconnect(aConnector);
@@ -528,7 +529,7 @@ public class NioTcpEngine extends BaseEngine {
 						mLog.debug(
 								"aBuffer.length: " + aBuffer.length
 								+ ", lPayloadStartIndex: " + lPayloadStartIndex);
-						aConnector.extendPacketBuffer(aBuffer, lPayloadStartIndex, (int)lPayloadLen /* aBuffer.length - lPayloadStartIndex */);
+						aConnector.extendPacketBuffer(aBuffer, lPayloadStartIndex, (int) lPayloadLen /* aBuffer.length - lPayloadStartIndex */);
 					}
 				}
 

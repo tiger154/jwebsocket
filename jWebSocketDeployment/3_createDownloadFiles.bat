@@ -196,10 +196,11 @@ rem jWebSocket config and keystore files (from v1.0)
 xcopy %conf%jWebSocket.xml %tempdir%conf\ /s /i /y
 xcopy %conf%jWebSocket.ks %tempdir%conf\ /s /i /y
 rem Flash Cross-Domain configuration
-xcopy %conf%crossdomain.xml %tempdir%conf\ /s /i /y
+xcopy %conf%FlashPlugIn\crossdomain.xml %tempdir%conf\FlashPlugIn\ /s /i /y
 rem spring config files (from v1.0)
 xcopy %conf%core.xml %tempdir%conf\ /s /i /y
 xcopy %conf%ehcache.xml %tempdir%conf\ /s /i /y
+xcopy %conf%Resources\Bootstrap.xml %tempdir%conf\Resources\ /s /i /y
 xcopy %conf%SystemPlugIn\system.xml %tempdir%conf\SystemPlugIn\ /s /i /y
 xcopy %conf%JDBCPlugIn\jdbc.xml %tempdir%conf\JDBCPlugIn\ /s /i /y
 xcopy %conf%ChannelPlugIn\channel.xml %tempdir%conf\ChannelPlugIn\ /s /i /y

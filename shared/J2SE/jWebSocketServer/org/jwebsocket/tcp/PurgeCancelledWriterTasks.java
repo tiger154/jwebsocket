@@ -1,5 +1,6 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2011 jwebsocket.org
+//	jWebSocket - PurgeCancelledWriterTimeouts
+//	Copyright (c) 2011 Alexander Schulze, Innotrade GmbH
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -12,46 +13,34 @@
 //	You should have received a copy of the GNU Lesser General Public License along
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.session;
+package org.jwebsocket.tcp;
 
 import java.util.Timer;
-import org.jwebsocket.api.IStorageProvider;
-import org.jwebsocket.cachestorage.memory.MemoryCacheStorage;
-import org.jwebsocket.storage.memory.MemoryStorage;
+import java.util.TimerTask;
+import org.apache.log4j.Logger;
+import org.jwebsocket.logging.Logging;
 
 /**
  *
- * @author kyberneees, acshulze
+ * @author kyberneees, aschulze
  */
-public class MemoryReconnectionManager extends BaseReconnectionManager {
+public class PurgeCancelledWriterTasks extends TimerTask {
 
-	public MemoryReconnectionManager() {
-		super();
+	private Timer mTimer;
+	private static Logger mLog = Logging.getLogger(PurgeCancelledWriterTasks.class);
+
+	public PurgeCancelledWriterTasks(Timer aTimer) {
+		mTimer = aTimer;
 	}
-	
+
 	@Override
-	public boolean isExpired(String aSessionId) {
-		if (getReconnectionIndex().containsKey(aSessionId)) {
-			return false;
+	public void run() {
+		mTimer.purge(); // Keep the timer cleaned up
+		/*
+		int lCount = mTimer.purge(); // Keep the timer cleaned up
+		if (lCount > 0 && mLog.isDebugEnabled()) {
+			mLog.debug("Purged " + lCount + " cancelled TCP writer tasks.");
 		}
-
-		return true;
+		 */
 	}
-	
-	@Override
-	public void initialize() throws Exception {
-		setReconnectionIndex(new MemoryCacheStorage<String, Object>(getCacheStorageName()));
-		getReconnectionIndex().initialize();
-
-		setSessionIdsTrash(new MemoryStorage<String, Object>(getTrashStorageName()));
-		getSessionIdsTrash().initialize();
-		
-		super.initialize();
-	}
-
-	@Override
-	public void shutdown() throws Exception {
-	}
-    
-
 }

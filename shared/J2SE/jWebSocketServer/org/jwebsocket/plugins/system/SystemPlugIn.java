@@ -40,12 +40,11 @@ import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.security.User;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.session.SessionManager;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -102,12 +101,11 @@ public class SystemPlugIn extends TokenPlugIn {
 	private AuthenticationProvider mAuthProv;
 	private ProviderManager mAuthProvMgr;
 	private UserDetailsService mUserDetails;
-	private SessionManager mSessionManager; 
+	private SessionManager mSessionManager;
 	public static final String USERNAME = "$username";
 	public static final String AUTHORITIES = "$authorities";
 	public static final String UUID = "$uuid";
 	public static final String IS_AUTHENTICATED = "$is_authenticated";
-	private static ServerXmlBeanFactory mBeanFactory;
 
 	/**
 	 * Constructor with configuration object
@@ -130,18 +128,19 @@ public class SystemPlugIn extends TokenPlugIn {
 			} else {
 				lPath = lSpringConfig;
 			}
+			/*
 			FileSystemResource lFSRes = new FileSystemResource(lPath);
-
 			mBeanFactory = new ServerXmlBeanFactory(lFSRes, getClass().getClassLoader());
-
-			Object lObj = mBeanFactory.getBean("authManager");
+			 */
+			JWebSocketBeanFactory.load(lPath, getClass().getClassLoader());
+			Object lObj = JWebSocketBeanFactory.getInstance().getBean("authManager");
 			mAuthProvMgr = (ProviderManager) lObj;
 			List<AuthenticationProvider> lProviders = mAuthProvMgr.getProviders();
 			mAuthProv = lProviders.get(0);
 
-			lObj = mBeanFactory.getBean("sessionManager");
-			mSessionManager = (SessionManager)lObj;
-			
+			lObj = JWebSocketBeanFactory.getInstance().getBean("sessionManager");
+			mSessionManager = (SessionManager) lObj;
+
 			// give a success message to the administrator
 			if (mLog.isInfoEnabled()) {
 				mLog.info("System plug-in successfully loaded.");
@@ -216,16 +215,33 @@ public class SystemPlugIn extends TokenPlugIn {
 
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
-		// set session id first, so that it can be processed in the connectorStarted
-		// method
-		Random lRand = new Random(System.nanoTime());
+		try {
+			// set session id first, so that it can be processed in the connectorStarted
+			// method
+			Random lRand = new Random(System.nanoTime());
 
-		// TODO: if unique node id is passed check if already assigned in the
-		// network and reject connect if so!
+			// @TODO: if unique node id is passed check if already assigned in the
+			// network and reject connect if so!
+			// Session management is not yet stable!
 
-		aConnector.getSession().setSessionId(
-				Tools.getMD5(aConnector.generateUID()
-				+ "." + lRand.nextInt()));
+			/*
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Setting the session identifier: " + aConnector.getId());
+			}
+			 */
+			aConnector.getSession().setSessionId(
+					Tools.getMD5(aConnector.generateUID()
+					+ "." + lRand.nextInt()));
+			/*
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Creating the WebSocketSession persistent storage "
+						+ "for connector: " + aConnector.getId());
+			}
+			aConnector.getSession().setStorage((Map<String, Object>) (mSessionManager.getSession(aConnector.getSession().getSessionId())));
+			 */
+		} catch (Exception ex) {
+			// TODO: try this with the ExceptionHandler
+		}
 
 		if (ALLOW_ANONYMOUS_LOGIN) {
 			setUsername(aConnector, ANONYMOUS_USER);
@@ -239,6 +255,25 @@ public class SystemPlugIn extends TokenPlugIn {
 
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+		// Allowing all connectors for a reconnection
+		// TODO: Why can a session ever be null? Check with stress test!
+		// Session management is not yet stable!
+		/*
+		WebSocketSession lSession = aConnector.getSession();
+		if (lSession != null && mSessionManager != null) {
+			String lSessionId = lSession.getSessionId();
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Putting the session: " + lSessionId + ", in reconnection mode...");
+			}
+			synchronized (this) {
+				// Removing the local cached storage instance. Free space if 
+				// the client never gets reconnected
+				mSessionManager.getSessionsReferences().remove(lSessionId);
+				mSessionManager.getReconnectionManager().putInReconnectionMode(lSessionId);
+			}
+		}
+		*/
+		
 		// notify other clients that client disconnected
 		broadcastDisconnectEvent(aConnector);
 	}

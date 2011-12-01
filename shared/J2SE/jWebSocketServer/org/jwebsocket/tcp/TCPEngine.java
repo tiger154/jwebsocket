@@ -24,6 +24,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyStore;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -31,6 +32,7 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
 import javax.net.ssl.SSLSocket;
+import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -65,7 +67,7 @@ public class TCPEngine extends BaseEngine {
 	private boolean mEventsFired = false;
 	private Thread mTCPEngineThread = null;
 	private Thread mSSLEngineThread = null;
-	
+
 	public TCPEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
 		mTCPListenerPort = aConfiguration.getPort();
@@ -326,10 +328,10 @@ public class TCPEngine extends BaseEngine {
 		byte[] lBuff = new byte[8192];
 		int lRead = lIn.read(lBuff);
 		if (lRead <= 0) {
-			mLog.warn("Connection " 
-					+ aClientSocket.getInetAddress() + ":" 
-					+ aClientSocket.getPort() 
-					+  " did not detect initial handshake (" + lRead + ").");
+			mLog.warn("Connection "
+					+ aClientSocket.getInetAddress() + ":"
+					+ aClientSocket.getPort()
+					+ " did not detect initial handshake (" + lRead + ").");
 			return null;
 		}
 		byte[] lReq = new byte[lRead];
@@ -341,9 +343,9 @@ public class TCPEngine extends BaseEngine {
 			// mLog.debug("Parsing initial WebSocket handshake...");
 		}
 		Map lRespMap = WebSocketHandshake.parseC2SRequest(
-				lReq,
-				aClientSocket instanceof SSLSocket);
-		RequestHeader lHeader = EngineUtils.validateC2SRequest(lRespMap, mLog);
+				lReq, aClientSocket instanceof SSLSocket);
+		RequestHeader lHeader = EngineUtils.validateC2SRequest(
+				getConfiguration().getDomains(), lRespMap, mLog);
 		if (lHeader == null) {
 			return null;
 		}
@@ -375,7 +377,7 @@ public class TCPEngine extends BaseEngine {
 					+ "'), check for FlashBridge plug-in.");
 		}
 
-		
+
 		// if we detected a flash policy-file-request return "null"
 		// (no websocket header detected)
 		if (lFlashBridgeReq != null) {
@@ -444,12 +446,12 @@ public class TCPEngine extends BaseEngine {
 						mLog.debug("Client trying to connect on port #"
 								+ lClientSocket.getPort() + "...");
 					}
-					
+
 					// boolean lTCPNoDelay = lClientSocket.getTcpNoDelay();
 					// ensure that all packets are sent immediately w/o delay
 					// to achieve better latency, no waiting and packaging.
 					lClientSocket.setTcpNoDelay(true);
-					
+
 					try {
 						// process handshake to parse header data
 						RequestHeader lHeader = processHandshake(lClientSocket);
@@ -499,9 +501,7 @@ public class TCPEngine extends BaseEngine {
 					} catch (Exception lEx) {
 						mLog.error(
 								(mServer instanceof SSLServerSocket
-								? "SSL"
-								: "TCP")
-								+ " engine: "
+								? "SSL" : "TCP") + " engine: "
 								+ lEx.getClass().getSimpleName()
 								+ ": " + lEx.getMessage());
 					}

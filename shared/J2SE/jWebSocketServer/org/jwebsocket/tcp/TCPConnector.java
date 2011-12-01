@@ -480,28 +480,5 @@ public class TCPConnector extends BaseConnector {
 		}
 		return lRes + ")";
 	}
-	/*
-	@Override
-	public int hashCode() {
-	if( mHash <= 0) {
-	mHash = mHashCounter++;
-	}
-	return mHash;
-	}
 	
-	@Override
-	public boolean equals(Object obj) {
-	if (obj == null) {
-	return false;
-	}
-	if (getClass() != obj.getClass()) {
-	return false;
-	}
-	final TCPConnector other = (TCPConnector) obj;
-	if (this.mHash != other.mHash) {
-	return false;
-	}
-	return true;
-	}
-	 */
 }
