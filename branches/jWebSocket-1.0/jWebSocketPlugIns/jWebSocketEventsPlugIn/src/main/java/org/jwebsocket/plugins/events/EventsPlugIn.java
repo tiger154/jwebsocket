@@ -71,7 +71,7 @@ public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 
 	/**
 	 *
-	 * @param configuration  
+	 * @param configuration 
 	 * @throws Exception
 	 */
 	public EventsPlugIn(PluginConfiguration configuration) throws Exception {
