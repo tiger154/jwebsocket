@@ -233,6 +233,7 @@
 				<property name="cacheStorageName" value="__reconnection_manager_ns__" />
 				<property name="sessionExpirationTime" value="60" />
 				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
+				<property name="storageProvider" ref="cacheProviderMemory"/>
 			</bean>
 		</property>
 	</bean>

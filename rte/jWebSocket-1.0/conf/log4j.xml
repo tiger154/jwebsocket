@@ -92,18 +92,19 @@
 		< ! - -  select one of the above declared appenders - - >
 		<appender-ref ref="developmentLog"/>
 	</logger>
+-->
 
 	<logger name="org.jwebsocket" additivity="false">
-		< ! - - TRACE, DEBUG, INFO, WARN, ERROR or FATAL - - > 
-		<level value="info"/>
-		< ! - -  select one of the above declared appenders - - >
+		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
+		<level value="DEBUG"/>
+		<!--  select one of the above declared appenders -->
 		<appender-ref ref="developmentLog"/>
 	</logger>
--->
+
 
 	<root>
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
-		<priority value="debug" />
+		<priority value="DEBUG" />
 		<!-- select one of the above declared appenders -->
 		<!-- for automated tests: -->
 		<!-- <appender-ref ref="testLog" /> -->

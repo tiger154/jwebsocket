@@ -832,6 +832,8 @@
 				<!-- if set to true it will still depend on the right
 				     org.jwebsocket.plugins.admin.shutdown -->
 				<setting key="allowShutdown">true</setting>
+				<!--Number of days. Show the logs that are in the range of n last days.-->
+				<setting key="numberOfDays">30</setting>
 			</settings>
 		</plugin>
 
@@ -937,11 +939,11 @@
 			</settings>
 		</plugin>
 
-		<!-- the events model plug-in -->
+		<!-- the events model plug-in 
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
 			<ns>org.jwebsocket.plugins.events</ns>
-			<id>jws.events</id>
+			<id>test</id>
 			<jar>jWebSocketEventsPlugIn.jar</jar>
 			<settings>
 				<setting key="config" type="json">{xml_config:"${JWEBSOCKET_HOME}/conf/EventsPlugIn.xml"}</setting>
@@ -950,7 +952,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-
+		-->
 		<!-- plug-in to track statistic data about the server usage -->
 		<plugin>
 			<!-- ensure that this plug-in is loaded after the streaming plug-in! -->
@@ -1002,7 +1004,6 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<!-- spring config file location -->
 				<setting key="spring_config">${JWEBSOCKET_HOME}/conf/JMSPlugIn/jms.xml</setting>
 				<setting key="connectionFactory:1" type="json">{name:"connectionFactory"}</setting>
 				<setting key="destination:1" type="json">{name:"testQueue",pubSubDomain:false,cfName:"connectionFactory",deliveryPersistent:false}</setting>
@@ -1010,7 +1011,8 @@
 				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 			</settings>
 		</plugin>
-
+		
+		
 		<!-- plug-in to support server side logging for clients -->
 		<!-- THIS PLUG-IN REQUIRES THE JDBC PLUG-IN! -->
 		<!-- LOAD JDBC PLUG-IN BEFORE THE LOGGING-PLUG-IN! -->
@@ -1260,6 +1262,16 @@
 		</plugin>
 		-->
 
+		<plugin>
+			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
+			<ns>test</ns>
+			<id>jws.events.test</id>
+			<jar>jWebSocketEventsPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		
 	</plugins>
 
 	<!-- filters to be instantiated for jWebSocket -->
