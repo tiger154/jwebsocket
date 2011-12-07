@@ -16,26 +16,33 @@
 package org.jwebsocket.eventmodel.plugin.test;
 
 import java.text.DecimalFormat;
+import javax.smartcardio.CommandAPDU;
+import javax.smartcardio.ResponseAPDU;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.test.GetEventsInfo;
 import org.jwebsocket.eventmodel.event.test.GetHashCode;
 import org.jwebsocket.eventmodel.event.test.S2CNotification;
 import org.jwebsocket.eventmodel.event.test.S2CPlusXYEvent;
-import org.jwebsocket.eventmodel.event.test.SecureEvent;
+import org.jwebsocket.eventmodel.event.test.JcTest;
 import org.jwebsocket.eventmodel.event.test.UpdateSiteCounterEvent;
 import org.jwebsocket.eventmodel.exception.MissingTokenSender;
 import org.jwebsocket.eventmodel.plugin.jc.JcPlugIn;
+import org.jwebsocket.eventmodel.plugin.jc.JcResponseCallback;
 import org.jwebsocket.eventmodel.s2c.FailureReason;
 import org.jwebsocket.eventmodel.s2c.OnResponse;
 import org.jwebsocket.eventmodel.s2c.TransactionContext;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.logging.Logging;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author kyberneees
  */
 public class TestPlugIn extends JcPlugIn {
+
+	private static Logger mLog = Logging.getLogger(TestPlugIn.class);
 
 	/**
 	 * Return the hash-code for a custom text
@@ -107,8 +114,36 @@ public class TestPlugIn extends JcPlugIn {
 	 * @param aEvent
 	 * @param aResponseEvent
 	 */
-	public void processEvent(SecureEvent aEvent, C2SResponseEvent aResponseEvent) throws Exception {
-		//See the SecureEvent definition in the 'event_definitions.xml' file
-	}
+	public void processEvent(JcTest aEvent, C2SResponseEvent aResponseEvent) throws Exception {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug(">> Processing JcTest event notification...");
+		}
 
+		//Sending the "select app" command to test the JavaCard support 
+		byte[] lApdu = {(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x08,
+			(byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+
+		String lClient = aEvent.getConnector().getId();
+
+		for (String lTerminal : getTerminals(lClient)) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Sending '" + lApdu.toString() + "' APDU to '" + lTerminal + "' terminal on '" + lClient + "' client ...");
+			}
+			transmit(lClient, lTerminal, new CommandAPDU(lApdu), new JcResponseCallback(null) {
+
+				@Override
+				public void success(ResponseAPDU response, String from) {
+					DecimalFormat f = new DecimalFormat("0");
+					
+					System.out.println(">> success " + from + " " + response.getBytes());
+					System.out.println(">> elapsed time " + f.format(getElapsedTime()));
+				}
+
+				@Override
+				public void failure(FailureReason reason, String from) {
+					System.out.println(">> failure " + from + " " + reason.name());
+				}
+			});
+		}
+	}
 }
