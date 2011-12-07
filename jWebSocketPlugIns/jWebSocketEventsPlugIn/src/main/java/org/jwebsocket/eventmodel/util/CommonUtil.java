@@ -164,12 +164,10 @@ public class CommonUtil {
 	 * <p>
 	 * If the check fail, an exception is Thrown
 	 *
-	 * @param secureObject The secure object to check
-	 * @param aConnector The client connector
 	 * @throws Exception
 	 */
 	public static void checkSecurityRestrictions(ISecureComponent secureObject,
-			WebSocketConnector aConnector, boolean isAuthenticated, String username, List<String> roles) throws Exception {
+			WebSocketConnector aConnector, boolean isAuthenticated, String username, List<String> authorities) throws Exception {
 		//Leaving if the security checks are not enabled
 		if (!secureObject.isSecurityEnabled()) {
 			return;
@@ -181,7 +179,7 @@ public class CommonUtil {
 		//Temporal variables
 		Iterator<String> iterator;
 		String value;
-		boolean role_authorized = false, ip_authorized = false,
+		boolean authority_authorized = false, ip_authorized = false,
 				user_authorized = false, user_match = false, stop = false;
 
 		//Processing ip addresses restrictions
@@ -244,27 +242,27 @@ public class CommonUtil {
 		//Processing roles restrictions
 		if (secureObject.getRoles().size() > 0) {
 			if (isAuthenticated) {
-				Iterator<String> user_roles = roles.iterator();
-				String role;
-				while (user_roles.hasNext()) {
+				Iterator<String> user_authorities = authorities.iterator();
+				String authority;
+				while (user_authorities.hasNext()) {
 					//Required ROLES iteration
 					iterator = secureObject.getRoles().iterator();
 					while (iterator.hasNext() && !stop) {
-						role = user_roles.next();	//User ROLE
+						authority = user_authorities.next();	//User ROLE
 						value = iterator.next();	//Required ROLE
 
 						if (!value.equals("all")) {
 							exclusion = (value.startsWith("!")) ? true : false;
 							value = (exclusion) ? value.substring(1) : value;
 
-							if (value.equals(role)) {
+							if (value.equals(authority)) {
 								if (!exclusion) {
-									role_authorized = true; //Authorized!
+									authority_authorized = true; //Authorized!
 								}
 								stop = true;
 							}
 						} else {
-							role_authorized = true;
+							authority_authorized = true;
 							stop = true;
 						}
 					}
@@ -274,7 +272,7 @@ public class CommonUtil {
 				}
 			}
 			//Not authorized!
-			if (!role_authorized) {
+			if (!authority_authorized) {
 				throw new NotAuthorizedException("Invalid credentials to execute the operation!");
 			}
 		}

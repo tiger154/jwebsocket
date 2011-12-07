@@ -15,6 +15,7 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.filter;
 
+import java.util.Map;
 import java.util.Set;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.IInitializable;
@@ -125,11 +126,11 @@ public abstract class EventModelFilter extends ObservableObject implements IEven
 		return getId();
 	}
 	
-	public IBasicStorage<String, Object> getSession(WebSocketConnector aConnector) throws Exception {
-		return getEm().getSessionFactory().getSession(aConnector.getSession().getSessionId());
+	public Map<String, Object> getSession(WebSocketConnector aConnector) throws Exception {
+		return aConnector.getSession().getStorage();
 	}
 	
-	public IBasicStorage<String, Object> getSession(String aSessionId) throws Exception {
+	public Map<String, Object> getSession(String aSessionId) throws Exception {
 		return getEm().getSessionFactory().getSession(aSessionId);
 	}
 }

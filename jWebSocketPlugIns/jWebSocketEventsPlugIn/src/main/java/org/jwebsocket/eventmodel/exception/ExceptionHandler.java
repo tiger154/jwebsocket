@@ -83,6 +83,7 @@ public class ExceptionHandler implements IExceptionHandler {
 	/**
 	 * {@inheritDoc }
 	 */
+	@Override
 	public void shutdown() throws Exception {
 	}
 

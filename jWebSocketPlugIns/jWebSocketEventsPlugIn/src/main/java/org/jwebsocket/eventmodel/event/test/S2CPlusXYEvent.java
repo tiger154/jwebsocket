@@ -12,7 +12,7 @@
 //  more details.
 //  You should have received a copy of the GNU Lesser General Public License along
 //  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//  ---------------------------------------------------------------------------F
+//  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.event.test;
 
 import org.jwebsocket.eventmodel.event.S2CEvent;
@@ -39,8 +39,8 @@ public class S2CPlusXYEvent extends S2CEvent {
 		setResponseType("integer");
 		setTimeout(1000);
 
-		setX(x);
-		setY(y);
+		this.x = x;
+		this.y = y;
 	}
 
 	/**
