@@ -25,7 +25,6 @@ import static org.jwebsocket.config.JWebSocketServerConstants.JWEBSOCKET_XML;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.List;
 
@@ -70,20 +69,20 @@ public final class JWebSocketConfig implements Config {
 	private final List<RoleConfig> mGlobalRoles;
 	// private final List<ChannelConfig> mChannels;
 	private static JWebSocketConfig mConfig = null;
-	private static URLClassLoader mClassLoader = null;
+	private static ClassLoader mClassLoader = null;
 	private static String mConfigOverrideRoot = null;
 
 	/**
 	 * @return the mClassLoader
 	 */
-	public static URLClassLoader getClassLoader() {
+	public static ClassLoader getClassLoader() {
 		return mClassLoader;
 	}
 
 	/**
 	 * @param amClassLoader the mClassLoader to set
 	 */
-	public static void setClassLoader(URLClassLoader aClassLoader) {
+	public static void setClassLoader(ClassLoader aClassLoader) {
 		mClassLoader = aClassLoader;
 	}
 

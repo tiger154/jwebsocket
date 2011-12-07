@@ -29,6 +29,7 @@ import org.jwebsocket.api.WebSocketPacket;
 public class BaseFilter implements WebSocketFilter {
 	// every filter has a backward reference to its filter chain
 
+	//TODO: Incluir el atributo ENABLE
 	private WebSocketFilterChain mFilterChain = null;
 	private FilterConfiguration mConfiguration = null;
 
@@ -36,6 +37,14 @@ public class BaseFilter implements WebSocketFilter {
 		this.mConfiguration = aConfiguration;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public FilterConfiguration getFilterConfiguration() {
+		return mConfiguration;
+	}
+	
 	@Override
 	public String toString() {
 		return mConfiguration.getId();

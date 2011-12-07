@@ -29,8 +29,10 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.kit.RawPacket;
+import org.jwebsocket.token.ITokenizable;
 import org.jwebsocket.token.MapToken;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 
 /**
  * converts JSON formatted data packets into tokens and vice versa.
@@ -228,6 +230,10 @@ public class JSONProcessor {
 			throws JSONException {
 		if (aObject instanceof List) {
 			return listToJsonArray((List) aObject);
+		} else if (aObject instanceof ITokenizable) {
+			Token lToken = TokenFactory.createToken();
+			((ITokenizable) aObject).writeToToken(lToken);
+			return tokenToJSON(lToken);
 		} else if (aObject instanceof Token) {
 			return tokenToJSON((Token) aObject);
 		} else if (aObject instanceof Object[]) {

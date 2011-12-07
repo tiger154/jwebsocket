@@ -35,6 +35,7 @@ import org.jwebsocket.kit.CloseReason;
  */
 public abstract class BasePlugIn implements WebSocketPlugIn {
 
+	//TODO: Incluir el atributo ENABLE
 	private WebSocketPlugInChain mPlugInChain = null;
 	private Map<String, Object> mSettings = new FastMap<String, Object>();
 	private PluginConfiguration mConfiguration;

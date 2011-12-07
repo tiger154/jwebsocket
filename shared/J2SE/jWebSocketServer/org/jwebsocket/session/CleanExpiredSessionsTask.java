@@ -31,9 +31,8 @@ public class CleanExpiredSessionsTask extends TimerTask {
 	private IStorageProvider mStorageProvider;
 	private static Logger mLog = Logging.getLogger(CleanExpiredSessionsTask.class);
 
-	public CleanExpiredSessionsTask(IBasicStorage<String, Object> aSessionIdsTrash,
-			IStorageProvider aStorageProvider) {
-		this.mSessionIdsTrash = aSessionIdsTrash;
+	public CleanExpiredSessionsTask(IBasicStorage<String, Object> sessionIdsTrash, IStorageProvider aStorageProvider) {
+		this.mSessionIdsTrash = sessionIdsTrash;
 		this.mStorageProvider = aStorageProvider;
 	}
 
@@ -47,10 +46,10 @@ public class CleanExpiredSessionsTask extends TimerTask {
 			String lKey = lKeys.next();
 			if (((Long) (mSessionIdsTrash.get(lKey)) < System.currentTimeMillis())) {
 				try {
-					mStorageProvider.removeStorage(lKey);
 					mSessionIdsTrash.remove(lKey);
-				} catch (Exception lEx) {
-					mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
+					mStorageProvider.removeStorage(lKey);
+				} catch (Exception ex) {
+					mLog.error(ex.toString() + " in session: " + lKey);
 				}
 			}
 		}

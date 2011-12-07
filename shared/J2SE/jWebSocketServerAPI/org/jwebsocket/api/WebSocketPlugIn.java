@@ -26,6 +26,7 @@ import org.jwebsocket.kit.PlugInResponse;
  */
 public interface WebSocketPlugIn {
 
+	//TODO: Incluir los get y set del atributo enable
 	/**
 	 * returns the id of the plug-in.
 	 * @return
