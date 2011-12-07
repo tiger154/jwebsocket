@@ -93,6 +93,7 @@ public class TokenFilterChain extends BaseFilterChain {
 		FilterResponse lFilterResponse = new FilterResponse();
 		for (WebSocketFilter lFilter : getFilters()) {
 			try {
+				// TODO: Verificar que el filtro este enable
 				((TokenFilter) lFilter).processTokenIn(lFilterResponse, aConnector, aToken);
 			} catch (Exception lEx) {
 				log.error(lEx.getClass().getSimpleName()

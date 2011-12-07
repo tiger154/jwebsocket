@@ -14,9 +14,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.api;
 
-import org.jwebsocket.api.IBasicCacheStorage;
-import org.jwebsocket.api.IBasicStorage;
-
 /**
  *
  * @author kyberneees
@@ -63,6 +60,16 @@ public interface ISessionReconnectionManager {
 	 * @return The session identifiers trash. Contains obsolete sessions identifiers
 	 */
 	IBasicStorage<String, Object> getSessionIdsTrash();
+	
+	/**
+     * @return the mStorageProvider
+     */
+    public IStorageProvider getStorageProvider();
+
+    /**
+     * @param mStorageProvider the mStorageProvider to set
+     */
+    public void setStorageProvider(IStorageProvider mStorageProvider);
 
 	
 }

@@ -31,7 +31,7 @@ import org.jwebsocket.token.Token;
  * @author aschulze
  */
 public class TokenPlugIn extends BasePlugIn {
-
+	
 	private String mNamespace = null;
 	/*
 	public TokenPlugIn() {

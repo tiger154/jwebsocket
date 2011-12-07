@@ -17,23 +17,24 @@ package org.jwebsocket.factory;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
+import org.xeustechnologies.jcl.JarClassLoader;
 
 /**
  * ClassLoader that loads the classes from the jars. Engine, Servers, Plugins
  * all configured via jWebSocket.xml file is loaded using this class.
  * 
  * @author puran
+ * @author kyberneees
  * @version $Id: JWebSocketJarClassLoader.java 388 2010-04-29 19:15:54Z mailtopuran $
  */
-public class JWebSocketJarClassLoader extends URLClassLoader {
+public class JWebSocketJarClassLoader extends JarClassLoader {
 
 	/**
-	 * constructor
+	 * 
 	 */
 	public JWebSocketJarClassLoader() {
 		// init with empty list of URLs
-		super(new URL[]{}, Thread.currentThread().getContextClassLoader());
+		super();
 	}
 
 	/**
@@ -45,6 +46,6 @@ public class JWebSocketJarClassLoader extends URLClassLoader {
 	public void addFile(String aPath) throws MalformedURLException {
 		File lFile = new File(aPath);
 		URL lURL = lFile.toURI().toURL();
-		addURL(lURL);
+		add(lURL);
 	}
 }

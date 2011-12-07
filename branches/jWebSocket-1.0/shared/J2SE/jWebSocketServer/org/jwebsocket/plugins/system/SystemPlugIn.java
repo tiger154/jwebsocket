@@ -35,6 +35,7 @@ import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.security.User;
@@ -224,21 +225,20 @@ public class SystemPlugIn extends TokenPlugIn {
 			// network and reject connect if so!
 			// Session management is not yet stable!
 
-			/*
+
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Setting the session identifier: " + aConnector.getId());
 			}
-			 */
 			aConnector.getSession().setSessionId(
 					Tools.getMD5(aConnector.generateUID()
 					+ "." + lRand.nextInt()));
-			/*
+
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Creating the WebSocketSession persistent storage "
 						+ "for connector: " + aConnector.getId());
 			}
-			aConnector.getSession().setStorage((Map<String, Object>) (mSessionManager.getSession(aConnector.getSession().getSessionId())));
-			 */
+			aConnector.getSession().setStorage((Map<String, Object>) (mSessionManager.getSession(aConnector.getSession().getSessionId() + aConnector.getHeader().get(RequestHeader.WS_PATH))));
+
 		} catch (Exception ex) {
 			// TODO: try this with the ExceptionHandler
 		}
@@ -261,19 +261,19 @@ public class SystemPlugIn extends TokenPlugIn {
 		/*
 		WebSocketSession lSession = aConnector.getSession();
 		if (lSession != null && mSessionManager != null) {
-			String lSessionId = lSession.getSessionId();
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Putting the session: " + lSessionId + ", in reconnection mode...");
-			}
-			synchronized (this) {
-				// Removing the local cached storage instance. Free space if 
-				// the client never gets reconnected
-				mSessionManager.getSessionsReferences().remove(lSessionId);
-				mSessionManager.getReconnectionManager().putInReconnectionMode(lSessionId);
-			}
+		String lSessionId = lSession.getSessionId();
+		if (mLog.isDebugEnabled()) {
+		mLog.debug("Putting the session: " + lSessionId + ", in reconnection mode...");
 		}
-		*/
-		
+		synchronized (this) {
+		// Removing the local cached storage instance. Free space if 
+		// the client never gets reconnected
+		mSessionManager.getSessionsReferences().remove(lSessionId);
+		mSessionManager.getReconnectionManager().putInReconnectionMode(lSessionId);
+		}
+		}
+		 */
+
 		// notify other clients that client disconnected
 		broadcastDisconnectEvent(aConnector);
 	}

@@ -139,58 +139,62 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		 */
 		@Override
 		public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+			
+			Token lToken = packetToToken(aPacket);
+
+			String lType = lToken.getType();
+			String lReqType = lToken.getString("reqType");
+
+			if (lType != null) {
+				if (WELCOME.equals(lType)) {
+					fClientId = lToken.getString("sourceId");
+					fSessionId = lToken.getString("usid");
+				} else if (GOODBYE.equals(lType)) {
+					fUsername = null;
+				}
+			}
+			if (lReqType != null) {
+				if (LOGIN.equals(lReqType)) {
+					fUsername = lToken.getString("username");
+					mStatus = WebSocketStatus.AUTHENTICATED;
+				} else if (LOGOUT.equals(lReqType)) {
+					mStatus = WebSocketStatus.OPEN;
+					fUsername = null;
+				}
+			}
+			
+			//Notifying pending OnResponse callbacks if exists
+			synchronized (mPendingResponseQueue) {
+				// check if the response token is part of the pending responses queue
+				Integer lUTID = lToken.getInteger("utid");
+				Integer lCode = lToken.getInteger("code");
+				// is there unique token id available in the response
+				// and is there a matching pending response at all?
+				PendingResponseQueueItem lPRQI =
+						(lUTID != null ? mPendingResponseQueue.get(lUTID) : null);
+				if (lPRQI != null) {
+					// if so start analyzing
+					WebSocketResponseTokenListener lWSRTL = lPRQI.getListener();
+					if (lWSRTL != null) {
+						// fire on response
+						lWSRTL.OnResponse(lToken);
+						// usable response code available?
+						if (lCode != null) {
+							if (lCode == 0) {
+								lWSRTL.OnSuccess(lToken);
+							} else {
+								lWSRTL.OnFailure(lToken);
+							}
+						}
+					}
+					// and drop the pending queue item
+					mPendingResponseQueue.remove(lUTID);
+				}
+			}
+
+			//Notifying listeners
 			for (WebSocketClientListener lListener : getListeners()) {
 				if (lListener instanceof WebSocketClientTokenListener) {
-					Token lToken = packetToToken(aPacket);
-
-					String lType = lToken.getType();
-					String lReqType = lToken.getString("reqType");
-
-					if (lType != null) {
-						if (WELCOME.equals(lType)) {
-							fClientId = lToken.getString("sourceId");
-							fSessionId = lToken.getString("usid");
-						} else if (GOODBYE.equals(lType)) {
-							fUsername = null;
-						}
-					}
-					if (lReqType != null) {
-						if (LOGIN.equals(lReqType)) {
-							fUsername = lToken.getString("username");
-							mStatus = WebSocketStatus.AUTHENTICATED;
-						} else if (LOGOUT.equals(lReqType)) {
-							mStatus = WebSocketStatus.OPEN;
-							fUsername = null;
-						}
-					}
-
-					synchronized (mPendingResponseQueue) {
-						// check if the response token is part of the pending responses queue
-						Integer lUTID = lToken.getInteger("utid");
-						Integer lCode = lToken.getInteger("code");
-						// is there unique token id available in the response
-						// and is there a matching pending response at all?
-						PendingResponseQueueItem lPRQI =
-								(lUTID != null ? mPendingResponseQueue.get(lUTID) : null);
-						if (lPRQI != null) {
-							// if so start analyzing
-							WebSocketResponseTokenListener lWSRTL = lPRQI.getListener();
-							if (lWSRTL != null) {
-								// fire on response
-								lWSRTL.OnResponse(lToken);
-								// usable response code available?
-								if (lCode != null) {
-									if (lCode == 0) {
-										lWSRTL.OnSuccess(lToken);
-									} else {
-										lWSRTL.OnFailure(lToken);
-									}
-								}
-							}
-							// and drop the pending queue item
-							mPendingResponseQueue.remove(lUTID);
-						}
-					}
 
 					((WebSocketClientTokenListener) lListener).processToken(aEvent, lToken);
 				}

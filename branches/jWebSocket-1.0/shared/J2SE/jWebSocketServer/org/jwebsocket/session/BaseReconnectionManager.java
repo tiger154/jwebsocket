@@ -114,6 +114,7 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
     /**
      * @return the mStorageProvider
      */
+	@Override
     public IStorageProvider getStorageProvider() {
         return mStorageProvider;
     }
@@ -121,10 +122,12 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
     /**
      * @param mStorageProvider the mStorageProvider to set
      */
+	@Override
     public void setStorageProvider(IStorageProvider mStorageProvider) {
         this.mStorageProvider = mStorageProvider;
     }
 
+	@Override
     public void initialize() throws Exception {
         mTimer = new Timer("jWebSocket BaseReconnection Timer");
         mTimer.scheduleAtFixedRate(

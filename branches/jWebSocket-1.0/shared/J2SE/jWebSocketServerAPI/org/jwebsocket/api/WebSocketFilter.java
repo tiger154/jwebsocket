@@ -50,7 +50,15 @@ public interface WebSocketFilter {
 	 * @return the filterChain
 	 */
 	public WebSocketFilterChain getFilterChain();
-
+	
+	/**
+	 * Returns the filter configuration object based on the configuration file
+	 * values
+	 *
+	 * @return the filter configuration object
+	 */
+	public FilterConfiguration getFilterConfiguration();
+	
 	/**
 	 * @return the Id of the filter
 	 */
@@ -60,4 +68,6 @@ public interface WebSocketFilter {
 	 * @return the name space of the filter
 	 */
 	public String getNS();
+	
+	//TODO: Incluir el get y set del atributo enable
 }
