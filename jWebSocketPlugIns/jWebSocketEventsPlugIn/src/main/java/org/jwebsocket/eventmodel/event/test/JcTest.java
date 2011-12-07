@@ -22,5 +22,5 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  * 
  * @author kyberneees
  */
-public class SecureEvent extends C2SEvent {
+public class JcTest extends C2SEvent {
 }
