@@ -19,14 +19,13 @@ import java.util.Set;
 import javolution.util.FastSet;
 import org.jwebsocket.logging.Logging;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.eventmodel.api.ISecureComponent;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.eventmodel.core.EventModel;
@@ -35,9 +34,9 @@ import org.jwebsocket.eventmodel.event.em.ConnectorStopped;
 import org.jwebsocket.eventmodel.event.em.EngineStarted;
 import org.jwebsocket.eventmodel.event.em.EngineStopped;
 import org.jwebsocket.eventmodel.event.C2SEvent;
+import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.FileSystemResource;
 
 /**
  *
@@ -45,9 +44,8 @@ import org.springframework.core.io.FileSystemResource;
  */
 public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 
-	private String xmlConfigFile;
+	private String configFile;
 	private EventModel em;
-	private static BeanFactory beanFactory;
 	private static Logger mLog = Logging.getLogger(EventsPlugIn.class);
 	//IWebSocketSecureObject fields
 	private boolean securityEnabled = false;
@@ -58,15 +56,8 @@ public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 	/**
 	 * @return The Spring IOC bean factory singleton instance
 	 */
-	public static BeanFactory getBeanFactory() {
-		return beanFactory;
-	}
-
-	/**
-	 * @param aBeanFactory The Spring IOC bean factory singleton instance to set
-	 */
-	public static void setBeanFactory(BeanFactory aBeanFactory) {
-		beanFactory = aBeanFactory;
+	public BeanFactory getBeanFactory() {
+		return JWebSocketBeanFactory.getInstance(getNamespace());
 	}
 
 	/**
@@ -76,36 +67,11 @@ public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 	 */
 	public EventsPlugIn(PluginConfiguration configuration) throws Exception {
 		super(configuration);
-		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Creating the events plug-in instance...");
-		}
+
 		this.setNamespace(configuration.getNamespace());
 
-		//Loading configuration
-		JSONObject config = getJSON("config", new JSONObject());
-
-		//Setting fields values
-		xmlConfigFile = config.getString("xml_config");
-		if (config.has("security_enabled")) {
-			securityEnabled = config.getBoolean("security_enabled");
-		}
-		if (config.has("ip_addresses")) {
-			JSONArray ips = config.getJSONArray("ip_addresses");
-			for (int i = 0; i < ips.length(); i++) {
-				ipAddresses.add(ips.get(i).toString());
-			}
-		}
-		if (config.has("roles")) {
-			JSONArray r = config.getJSONArray("roles");
-			for (int i = 0; i < r.length(); i++) {
-				roles.add(r.get(i).toString());
-			}
-		}
-		if (config.has("users")) {
-			JSONArray u = config.getJSONArray("users");
-			for (int i = 0; i < u.length(); i++) {
-				users.add(u.get(i).toString());
-			}
+		if (mLog.isDebugEnabled()) {
+			mLog.debug(">> Creating EventsPlugIn instance for application '" + getNamespace() + "'...");
 		}
 
 		//Calling the init method
@@ -117,16 +83,31 @@ public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 	 */
 	public void initialize() {
 		try {
-			//Creating the Spring Bean Factory
-			//String lPath = JWebSocketConfig.getConfigFolder(getXmlConfigFile());
-			beanFactory = new XmlBeanFactory(new FileSystemResource(getXmlConfigFile()));
+			//Load application jars
+			if (getSettings().containsKey("jars")) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug(">> Loading jars for '" + getNamespace() + "' application...");
+				}
+
+				String[] lJars = getString("jars").split(",");
+				for (int i = 0; i < lJars.length; i++) {
+					JWebSocketFactory.getClassLoader().add(JWebSocketConfig.getLibsFolder(lJars[i]));
+					if (mLog.isDebugEnabled()) {
+						mLog.debug(">> Loading jar '" + lJars[i] + "'...");
+					}
+				}
+			}
+
+			//Loading plug-in beans
+			String lPath = JWebSocketConfig.getConfigFolder("EventsPlugIn/" + getNamespace() + "-application/bootstrap.xml");
+			JWebSocketBeanFactory.load(getNamespace(), lPath, JWebSocketFactory.getClassLoader());
 
 			//Getting the EventModel service instance
-			setEm((EventModel) beanFactory.getBean("EventModel"));
+			em = (EventModel) getBeanFactory().getBean("EventModel");
 
 			//Initializing the event model
-			getEm().setParent(this);
-			getEm().initialize();
+			em.setParent(this);
+			em.initialize();
 		} catch (Exception ex) {
 			mLog.error(ex.toString(), ex);
 		}
@@ -146,7 +127,7 @@ public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 			EngineStarted e = (EngineStarted) getEm().getEventFactory().stringToEvent("engine.started");
 			e.setEngine(aEngine);
 			e.initialize();
-			getEm().notify(e, null, true);
+			em.notify(e, null, true);
 		} catch (Exception ex) {
 			mLog.error(ex.toString(), ex);
 		}
@@ -166,7 +147,7 @@ public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 			EngineStopped e = (EngineStopped) getEm().getEventFactory().stringToEvent("engine.stopped");
 			e.setEngine(aEngine);
 			e.initialize();
-			getEm().notify(e, null, true);
+			em.notify(e, null, true);
 		} catch (Exception ex) {
 			mLog.error(ex.toString(), ex);
 		}
@@ -186,7 +167,7 @@ public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 			ConnectorStarted e = (ConnectorStarted) getEm().getEventFactory().stringToEvent("connector.started");
 			e.setConnector(aConnector);
 			e.initialize();
-			getEm().notify(e, null, true);
+			em.notify(e, null, true);
 		} catch (Exception ex) {
 			mLog.error(ex.toString(), ex);
 		}
@@ -223,7 +204,7 @@ public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 	 * @param aEvent The event from the client
 	 */
 	public void processEvent(WebSocketConnector aConnector, C2SEvent aEvent) {
-		getEm().processEvent(aEvent, null);
+		em.processEvent(aEvent, null);
 	}
 
 	/**
@@ -241,7 +222,7 @@ public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 			e.setConnector(aConnector);
 			e.setCloseReason(aCloseReason);
 			e.initialize();
-			getEm().notify(e, null, true);
+			em.notify(e, null, true);
 		} catch (Exception ex) {
 			mLog.error(ex.toString(), ex);
 		}
@@ -336,14 +317,7 @@ public class EventsPlugIn extends TokenPlugIn implements ISecureComponent {
 	/**
 	 * @return The path to the XML root file
 	 */
-	public String getXmlConfigFile() {
-		return xmlConfigFile;
-	}
-
-	/**
-	 * @param xmlConfigFile The path to the XML root file to set
-	 */
-	public void setXmlConfigFile(String xmlConfigFile) {
-		this.xmlConfigFile = xmlConfigFile;
+	public String getConfigFile() {
+		return configFile;
 	}
 }

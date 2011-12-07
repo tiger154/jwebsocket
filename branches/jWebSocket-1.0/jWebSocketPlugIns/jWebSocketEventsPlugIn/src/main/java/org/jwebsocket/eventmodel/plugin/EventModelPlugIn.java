@@ -24,12 +24,12 @@ import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import java.util.Map;
 import java.util.Set;
-import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.event.C2SEventDefinitionManager;
 import org.jwebsocket.eventmodel.event.S2CEvent;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
-import org.jwebsocket.plugins.events.EventsPlugIn;
+import org.jwebsocket.eventmodel.s2c.S2CEventNotificationHandler;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 
 /**
  *
@@ -56,8 +56,8 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
      * @param defs The plug-in events definitions
      */
     public void setEventsDefinitions(Set<C2SEventDefinition> defs) {
-        ((C2SEventDefinitionManager) (EventsPlugIn.getBeanFactory().
-                getBean("EventDefinitionManager"))).getSet().addAll(defs);
+        ((C2SEventDefinitionManager) (JWebSocketBeanFactory.getInstance(getEm().getNamespace()).
+			 getBean("EventDefinitionManager"))).getSet().addAll(defs);
     }
 
     /**
@@ -85,8 +85,10 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
      * {@inheritDoc}
      */
     @Override
-    public S2CEventNotification notifyEventToClient(S2CEvent aEvent) {
-        return new S2CEventNotification(this.getId(), aEvent);
+    public S2CEventNotification notifyS2CEvent(S2CEvent aEvent) {
+        return new S2CEventNotification(this.getId(), aEvent, 
+				((S2CEventNotificationHandler) JWebSocketBeanFactory.getInstance(getEm().getNamespace()).
+				getBean("S2CEventNotificationHandler")));
     }
 
     /**
@@ -168,11 +170,11 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
         return getId();
     }
 	
-	public IBasicStorage<String, Object> getSession(WebSocketConnector aConnector) throws Exception {
-		return getEm().getSessionFactory().getSession(aConnector.getSession().getSessionId());
+	public Map<String, Object> getSession(WebSocketConnector aConnector) throws Exception {
+		return aConnector.getSession().getStorage();
 	}
 	
-	public IBasicStorage<String, Object> getSession(String aSessionId) throws Exception {
+	public Map<String, Object> getSession(String aSessionId) throws Exception {
 		return getEm().getSessionFactory().getSession(aSessionId);
 	}
 }

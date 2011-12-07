@@ -16,14 +16,15 @@
 package org.jwebsocket.eventmodel.filter.security;
 
 import java.util.List;
+import java.util.Map;
 import org.jwebsocket.eventmodel.filter.EventModelFilter;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.api.ISecureComponent;
 import org.jwebsocket.eventmodel.util.CommonUtil;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.plugins.system.SystemPlugIn;
 
 /**
  *
@@ -32,10 +33,6 @@ import org.jwebsocket.logging.Logging;
 public class SecurityFilter extends EventModelFilter {
 
 	private static Logger mLog = Logging.getLogger(SecurityFilter.class);
-	public final static String USERNAME = "__USERNAME__";
-	public final static String ROLES = "__ROLES__";
-	public final static String IS_AUTHENTICATED = "__IS_AUTH__";
-	public final static String UUID = "__UUID__";
 
 	/**
 	 *{@inheritDoc }
@@ -48,21 +45,21 @@ public class SecurityFilter extends EventModelFilter {
 		}
 
 		//Getting the user session
-		IBasicStorage<String, Object> session = getSession(aConnector);
+		Map<String, Object> session = aConnector.getSession().getStorage();
 
 		//Getting the security validation data
-		boolean isAuth = (session.containsKey(IS_AUTHENTICATED))
-				? (Boolean) session.get(IS_AUTHENTICATED)
+		boolean isAuth = (session.containsKey(SystemPlugIn.IS_AUTHENTICATED))
+				? (Boolean) session.get(SystemPlugIn.IS_AUTHENTICATED)
 				: false;
-		String username = (session.containsKey(USERNAME))
-				? (String) session.get(USERNAME)
+		String username = (session.containsKey(SystemPlugIn.USERNAME))
+				? (String) session.get(SystemPlugIn.USERNAME)
 				: null;
-		List<String> roles = (session.containsKey(ROLES))
-				? CommonUtil.parseStringArrayToList(session.get(ROLES).toString().split(" "))
+		List<String> authorities = (session.containsKey(SystemPlugIn.AUTHORITIES))
+				? CommonUtil.parseStringArrayToList(session.get(SystemPlugIn.AUTHORITIES).toString().split(" "))
 				: null;
 
 		CommonUtil.checkSecurityRestrictions((ISecureComponent) getEm().getParent(),
-				aConnector, isAuth, username, roles);
+				aConnector, isAuth, username, authorities);
 
 		//Processing the C2SEvent restrictions
 		if (mLog.isDebugEnabled()) {
@@ -70,6 +67,6 @@ public class SecurityFilter extends EventModelFilter {
 		}
 		CommonUtil.checkSecurityRestrictions((ISecureComponent) getEm().getEventFactory().
 				getEventDefinitions().getDefinition(aEvent.getId()),
-				aConnector, isAuth, username, roles);
+				aConnector, isAuth, username, authorities);
 	}
 }

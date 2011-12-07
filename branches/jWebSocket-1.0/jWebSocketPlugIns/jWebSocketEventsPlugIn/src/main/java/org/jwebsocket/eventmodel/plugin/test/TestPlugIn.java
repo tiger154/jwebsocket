@@ -16,7 +16,6 @@
 package org.jwebsocket.eventmodel.plugin.test;
 
 import java.text.DecimalFormat;
-import org.jwebsocket.eventmodel.plugin.EventModelPlugIn;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.test.GetEventsInfo;
 import org.jwebsocket.eventmodel.event.test.GetHashCode;
@@ -25,6 +24,7 @@ import org.jwebsocket.eventmodel.event.test.S2CPlusXYEvent;
 import org.jwebsocket.eventmodel.event.test.SecureEvent;
 import org.jwebsocket.eventmodel.event.test.UpdateSiteCounterEvent;
 import org.jwebsocket.eventmodel.exception.MissingTokenSender;
+import org.jwebsocket.eventmodel.plugin.jc.JcPlugIn;
 import org.jwebsocket.eventmodel.s2c.FailureReason;
 import org.jwebsocket.eventmodel.s2c.OnResponse;
 import org.jwebsocket.eventmodel.s2c.TransactionContext;
@@ -35,7 +35,7 @@ import org.jwebsocket.token.TokenFactory;
  *
  * @author kyberneees
  */
-public class TestPlugIn extends EventModelPlugIn {
+public class TestPlugIn extends JcPlugIn {
 
 	/**
 	 * Return the hash-code for a custom text
@@ -68,7 +68,7 @@ public class TestPlugIn extends EventModelPlugIn {
 	 */
 	public void processEvent(S2CNotification aEvent, C2SResponseEvent aResponseEvent) throws MissingTokenSender {
 		//Notification with callbacks
-		this.notifyEventToClient(new S2CPlusXYEvent(5, 5)).to(aEvent.getConnector(),
+		this.notifyS2CEvent(new S2CPlusXYEvent(5, 5)).to(aEvent.getConnector(),
 				new OnResponse(new TransactionContext(getEm(), aEvent, null)) {
 
 					@Override
@@ -98,7 +98,7 @@ public class TestPlugIn extends EventModelPlugIn {
 		UpdateSiteCounterEvent e = new UpdateSiteCounterEvent();
 		e.setCounter(Integer.MAX_VALUE);
 		//Sending to all connectors
-		this.notifyEventToClient(e).to(aEvent.getConnector(), null);
+		this.notifyS2CEvent(e).to(aEvent.getConnector(), null);
 	}
 
 	/**
@@ -109,9 +109,6 @@ public class TestPlugIn extends EventModelPlugIn {
 	 */
 	public void processEvent(SecureEvent aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		//See the SecureEvent definition in the 'event_definitions.xml' file
-		Token t = TokenFactory.createToken("test");
-		t.setString("mensaje", "Para todos");
-		getEm().getParent().getServer().broadcastToken(t);
-
 	}
+
 }

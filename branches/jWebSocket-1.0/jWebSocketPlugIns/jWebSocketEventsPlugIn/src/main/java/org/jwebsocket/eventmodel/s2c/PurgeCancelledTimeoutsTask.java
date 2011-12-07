@@ -38,6 +38,6 @@ public class PurgeCancelledTimeoutsTask extends TimerTask {
 		if (mLog.isDebugEnabled()){
 			mLog.debug(">> Purging the timeout callbacks queue...");
 		}
-		t.purge();
+		t.purge(); //Keep the timer cleaned up
 	}
 }

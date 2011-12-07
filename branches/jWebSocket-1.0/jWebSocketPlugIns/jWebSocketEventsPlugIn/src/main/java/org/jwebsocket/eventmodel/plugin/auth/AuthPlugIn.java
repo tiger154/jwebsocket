@@ -15,13 +15,12 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.plugin.auth;
 
-import org.jwebsocket.api.IBasicStorage;
+import java.util.Map;
 import org.jwebsocket.eventmodel.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.eventmodel.plugin.EventModelPlugIn;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.auth.Logon;
 import org.jwebsocket.eventmodel.event.auth.Logoff;
-import org.jwebsocket.eventmodel.filter.security.SecurityFilter;
 import org.jwebsocket.eventmodel.util.CommonUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.jwebsocket.logging.Logging;
 import org.apache.log4j.Logger;
+import org.jwebsocket.plugins.system.SystemPlugIn;
 
 /**
  * 
@@ -60,13 +60,13 @@ public class AuthPlugIn extends EventModelPlugIn {
 			mLog.debug(">> Updating the user session...");
 		}
 		//Getting the user session
-		IBasicStorage<String, Object> session = getSession(aEvent.getConnector());
+		Map<String, Object> session = aEvent.getConnector().getSession().getStorage();
 
 		//Setting the is_authenticated flag
-		session.put(SecurityFilter.IS_AUTHENTICATED, loggon.isAuthenticated());
+		session.put(SystemPlugIn.IS_AUTHENTICATED, loggon.isAuthenticated());
 		
 		//Setting the username
-		session.put(SecurityFilter.USERNAME, username);
+		session.put(SystemPlugIn.USERNAME, username);
 
 		//Setting the uuid
 		String uuid = null;
@@ -76,14 +76,14 @@ public class AuthPlugIn extends EventModelPlugIn {
 		} else {
 			uuid = username;
 		}
-		session.put(SecurityFilter.UUID, uuid);
+		session.put(SystemPlugIn.UUID, uuid);
 
 		//Setting the roles
 		String roles = "";
 		for (GrantedAuthority ga : loggon.getAuthorities()) {
 			roles = roles.concat(ga.getAuthority() + " ");
 		}
-		session.put(SecurityFilter.ROLES, roles);
+		session.put(SystemPlugIn.AUTHORITIES, roles);
 
 		//Creating the response
 		aResponseEvent.getArgs().setString("uuid", uuid);

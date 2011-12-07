@@ -33,7 +33,6 @@ import org.jwebsocket.logging.Logging;
 import java.util.Set;
 import javolution.util.FastSet;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.eventmodel.session.SessionFactory;
 import org.jwebsocket.eventmodel.api.IExceptionHandler;
 import org.jwebsocket.eventmodel.cluster.api.IWebSocketClusterNode;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
@@ -47,6 +46,7 @@ import org.jwebsocket.eventmodel.event.em.S2CResponse;
 import org.jwebsocket.eventmodel.exception.CachedResponseException;
 import org.jwebsocket.eventmodel.exception.ExceptionHandler;
 import org.jwebsocket.plugins.events.EventsPlugIn;
+import org.jwebsocket.session.SessionManager;
 
 /**
  *
@@ -63,11 +63,20 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	private EventFactory eventFactory;
 	private static Logger mLog = Logging.getLogger(EventModel.class);
 	private IExceptionHandler exceptionHandler;
-	private SessionFactory sessionFactory;
 	private IWebSocketClusterNode clusterNode;
+	private String namespace;
 
-	public EventModel() {
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(String aNamespace) {
+		this.namespace = aNamespace;
+	}
+
+	public EventModel(String aNamespace) {
 		super();
+		this.namespace = aNamespace;
 
 		//Core Events Registration
 		addEvents(ConnectorStarted.class);
@@ -155,7 +164,8 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 			//Creating error response for connector notification
 			Token aToken = getParent().getServer().createResponse(aEvent.getArgs());
 			aToken.setInteger("code", C2SResponseEvent.NOT_OK);
-			aToken.setString("msg", ex.toString());
+			aToken.setString("msg", ex.getMessage());
+			aToken.setString("exception", ex.getClass().getSimpleName());
 
 			//Sending the error token...
 			getParent().getServer().sendToken(aEvent.getConnector(), aToken);
@@ -320,16 +330,8 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 * 
 	 * @return The user session factory
 	 */
-	public SessionFactory getSessionFactory() {
-		return sessionFactory;
-	}
-
-	/**
-	 * 
-	 * @param The user session factory to set
-	 */
-	public void setSessionFactory(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
+	public SessionManager getSessionFactory() {
+		return (SessionManager) getParent().getBeanFactory().getBean(SessionManager.class);
 	}
 
 	/**
