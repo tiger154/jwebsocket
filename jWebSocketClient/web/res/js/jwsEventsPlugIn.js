@@ -82,7 +82,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 	,
 	jwsClient: {}
 	,
-	NS: jws.NS_BASE + ".plugins.events"
+	NS: ""
 	,
 	filterChain: []
 	,
@@ -505,7 +505,7 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 			cache: this.cache,
 			cleanEntries: function(event){
 				for (var i = 0, end = event.entries.length; i < end; i++){
-					this.cache._removeItem(jws.user.principal.toString() + event.suffix + event.entries[i]);
+					this.cache.removeItem_(jws.user.principal.toString() + event.suffix + event.entries[i]);
 				}
 			}
 		}
@@ -566,7 +566,7 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 			this.cache.setItem(key, aResponseEvent, {
 				expirationAbsolute: null,
 				expirationSliding: aRequest.eventDefinition.cacheTime,
-				priority: jws.cache.Priority.High
+				priority: CachePriority.High
 			});
 		}
 	}
@@ -601,12 +601,7 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 				throw "stop_filter_chain";
 			}else if (aToken.hasOwnProperty(arguments[index].name)){
 				var requiredType = arguments[index].type;
-				if (requiredType != typeof(aToken[arguments[index].name])){
-					//Supporting 'array' as types too
-					if ("array" == requiredType && aToken[arguments[index].name] instanceof Array){
-						return;
-					}
-
+				if (requiredType != jws.tools.getType(aToken[arguments[index].name])){
 					if (aRequest.OnResponse){
 						aRequest.OnResponse({
 							code: -1,
