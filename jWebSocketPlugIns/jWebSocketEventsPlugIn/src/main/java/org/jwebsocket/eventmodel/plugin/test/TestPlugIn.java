@@ -109,7 +109,7 @@ public class TestPlugIn extends JcPlugIn {
 	}
 
 	/**
-	 * Test the notification with a secure event
+	 * Test the JavaCard support on the client by sending an arbitrary APDU command
 	 * 
 	 * @param aEvent
 	 * @param aResponseEvent
@@ -119,7 +119,6 @@ public class TestPlugIn extends JcPlugIn {
 			mLog.debug(">> Processing JcTest event notification...");
 		}
 
-		//Sending the "select app" command to test the JavaCard support 
 		byte[] lApdu = {(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x08,
 			(byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
