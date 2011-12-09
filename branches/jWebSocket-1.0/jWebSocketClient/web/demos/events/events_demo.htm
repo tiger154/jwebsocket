@@ -1,7 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<!-- If Google's chrome frame installed, use it! -->
 		<!-- Comment needs to be BELOW this meta tag! -->
@@ -30,6 +28,7 @@
 		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
 		<script type="text/javascript" src="../../res/js/jwsEventsPlugIn.js"></script>
 		<script type="text/javascript" src="../../res/js/jwsCache.js"></script>
+		<script type="text/javascript" src="../../res/js/JcManager.js"></script>
 		<script type="text/javascript" language="JavaScript">
 
 			var eLog = null;
@@ -51,6 +50,7 @@
 
 				if(jws.browserSupportsWebSockets()){
 					jws.myConn = new jws.jWebSocketJSONClient();
+					//jws.myConn.open(jws.JWS_SERVER_URL, {
 					jws.myConn.open(jws.JWS_SERVER_URL, {
 						OnOpen: function (){
 							log(">>> Connected successfully! <br/>")
@@ -62,12 +62,13 @@
 							}
 			
 							cacheFilter = new jws.CacheFilter();
-							cacheFilter.cache = new jws.cache.Cache(new jws.cache.MemoryStorage());
+							cacheFilter.cache = new Cache();
 							validatorFiler = new jws.ValidatorFilter();
 			
 							//Creating a event notifier
 							notifier = new jws.EventsNotifier();
 							notifier.ID = "notifier0";
+							notifier.NS = "test";
 							notifier.jwsClient = jws.myConn;
 							jws.user = new jws.AppUser();
 							notifier.filterChain = [securityFilter, cacheFilter, validatorFiler];
@@ -85,6 +86,26 @@
 								test.plusXY = function(e){
 									return e.x + e.y;
 								}
+								test.transmit = function(e){
+									log(">> Executing APDU command to terminal: " + e.terminal + ", " + e.apdu);
+									var responseAPDU = JcManager.transmit(e.terminal, e.apdu);
+									log("<< Response APDU: " + responseAPDU);
+									
+									return responseAPDU;
+								}
+								
+								JcManager.addListener({
+									OnTerminalReady: function(aTerminal){
+										test.terminalReady({
+											args: {terminal: aTerminal}
+										});
+									},
+									OnTerminalNotReady: function(aTerminal){
+										test.terminalNotReady({
+											args: {terminal: aTerminal}
+										});
+									}
+								});
 							});
 						}
 					});
@@ -114,19 +135,6 @@
 						jws.user.roles = aResponseEvent.roles;
 					}
 				});
-			}
-			
-			function open(n){
-				connections = [];
-				cont = 0;
-				for (var i = 0; i < n; i++){
-					connections[i]  = new jws.jWebSocketJSONClient();
-					connections[i].open(jws.JWS_SERVER_URL, {
-						OnOpen: function(){
-							console.log(cont++);
-						}
-					});
-				}
 			}
 			
 			function logoff() {
@@ -167,8 +175,8 @@
 				})
 			}
 
-			function executeSE(){
-				test.secureEvent();
+			function jcTest(){
+				test.jcTest();
 			}
 
 			function getInfo(){
@@ -190,9 +198,9 @@
 	</head>
 
 	<body onload="initPage();" onunload="exitPage();">
-
+		<APPLET id="JcControllerApplet" codebase="./" code="cu/uci/hab/cardplatform/CardPlugIn.class" archive="../../res/java/JcManager.jar" width=0 height=0></APPLET>
 		<h1>EventsPlugIn Demo</h1>
-		<p>Simple demo to test the EventsPlugIn features.</p>
+		<p>Simple demo to test the EventsPlugIn extension features.</p>
 		<!-- <iframe id="sifrtwitterLogin" style="width:100%; height:200px"></iframe> -->
 
 		<div class="sdivContainer">
@@ -221,7 +229,7 @@
 						<td class="stdDlg" width="5">
 							<input class="sbtnDlg" title="S2C event notification to all the connectors" id="sbtnClear" type="button" value="Fire a S2C event notification" onclick="s2c();">
 							<input title="Cache aspect enabled in server & client" class="sbtnDlg" id="sbtnClear" type="button" value="Get Events version info" onclick="getInfo();">
-							<input title="The 'USER' role is required. Security enabled in server & client" class="sbtnDlg" id="sbtnClear" type="button" value="Execute a secure C2S event notification" onclick="executeSE();">
+							<input title="Test the JavaCard support by sending an arbitrary APDU command to all the client ready terminals" class="sbtnDlg" id="sbtnJcTest" type="button" value="Test JavaCard" onclick="jcTest();">
 							<input class="sbtnDlg" id="sbtnClear" type="button" value="Clear Log" onclick="clearLog();">
 						</td>
 					</tr>
@@ -231,5 +239,7 @@
 		</div>
 		<div id="sdivLog" class="sdivContainer" style="position:relative; height:300px; overflow:auto;">
 		</div>
-	</body>
-</html>
+
+
+
+	</body></html>
