@@ -22,12 +22,13 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.event.S2CEvent;
 import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.eventmodel.s2c.S2CEventNotification;
+import org.jwebsocket.token.ITokenizable;
 
 /**
  *
  * @author kyberneees
  */
-public interface IEventModelPlugIn extends IListener, IInitializable {
+public interface IEventModelPlugIn extends IListener, IInitializable, ITokenizable {
 
 	/**
 	 *

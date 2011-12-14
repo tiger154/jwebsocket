@@ -30,6 +30,10 @@ import org.jwebsocket.eventmodel.event.S2CEvent;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
 import org.jwebsocket.eventmodel.s2c.S2CEventNotificationHandler;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.logging.Logging;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -37,144 +41,185 @@ import org.jwebsocket.spring.JWebSocketBeanFactory;
  */
 public abstract class EventModelPlugIn extends ObservableObject implements IEventModelPlugIn {
 
-    private String id;
-    private EventModel em;
-    private Map<String, Class<? extends Event>> clientAPI;
+	private String id;
+	private EventModel em;
+	private Map<String, Class<? extends Event>> clientAPI;
+	private static Logger mLog = Logging.getLogger(EventModelPlugIn.class);
 
-    /**
-     * {@inheritDoc }
-     * 
-     * @throws Exception 
-     */
-    @Override
-    public void initialize() throws Exception {
-    }
+	/**
+	 * {@inheritDoc }
+	 * 
+	 * @throws Exception 
+	 */
+	@Override
+	public void initialize() throws Exception {
+	}
 
-    /**
-     * Short-cut to set the plug-in events definitions
-     * 
-     * @param defs The plug-in events definitions
-     */
-    public void setEventsDefinitions(Set<C2SEventDefinition> defs) {
-        ((C2SEventDefinitionManager) (JWebSocketBeanFactory.getInstance(getEm().getNamespace()).
-			 getBean("EventDefinitionManager"))).getSet().addAll(defs);
-    }
+	/**
+	 * Short-cut to set the plug-in events definitions
+	 * 
+	 * @param defs The plug-in events definitions
+	 */
+	public void setEventsDefinitions(Set<C2SEventDefinition> defs) {
+		((C2SEventDefinitionManager) (JWebSocketBeanFactory.getInstance(getEm().getNamespace()).
+				getBean("EventDefinitionManager"))).getSet().addAll(defs);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void processEvent(Event aEvent, ResponseEvent aResponseEvent) {
-        System.out.println(">> Response from '" + this.getClass().getName() + "', please override this method!");
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void processEvent(Event aEvent, ResponseEvent aResponseEvent) {
+		System.out.println(">> Response from '" + this.getClass().getName() + "', please override this method!");
+	}
 
 	@Override
 	public Map<String, WebSocketConnector> getServerAllConnectors() {
 		return this.getEm().getParent().getServer().getAllConnectors();
 	}
-	
-    /**
-     * 
-     * @throws Exception
-     */
-    @Override
-    public void shutdown() throws Exception {
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public S2CEventNotification notifyS2CEvent(S2CEvent aEvent) {
-        return new S2CEventNotification(this.getId(), aEvent, 
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void shutdown() throws Exception {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public S2CEventNotification notifyS2CEvent(S2CEvent aEvent) {
+		return new S2CEventNotification(this.getId(), aEvent,
 				((S2CEventNotificationHandler) JWebSocketBeanFactory.getInstance(getEm().getNamespace()).
 				getBean("S2CEventNotificationHandler")));
-    }
+	}
 
-    /**
-     * Register the events in the EventModel subject and the plug-in as a listener for them
-     *
-     * @param emEvents The events to register
-     * @throws Exception
-     */
-    public void setEmEvents(Collection<Class<? extends Event>> emEvents) throws Exception {
-        getEm().addEvents(emEvents);
-        getEm().on(emEvents, this);
-    }
+	/**
+	 * Register the events in the EventModel subject and the plug-in as a listener for them
+	 *
+	 * @param emEvents The events to register
+	 * @throws Exception
+	 */
+	public void setEmEvents(Collection<Class<? extends Event>> emEvents) throws Exception {
+		getEm().addEvents(emEvents);
+		getEm().on(emEvents, this);
+	}
 
-    /**
-     * Event Model events registration and client API definition
-     *
-     * @param emEvents
-     * @throws Exception
-     */
-    public void setEmEventsAndClientAPI(Map<String, Class<? extends Event>> emEvents) throws Exception {
-        setClientAPI(emEvents);
-        getEm().addEvents(emEvents.values());
-        getEm().on(emEvents.values(), this);
-    }
+	/**
+	 * Event Model events registration and client API definition
+	 *
+	 * @param emEvents
+	 * @throws Exception
+	 */
+	public void setEmEventsAndClientAPI(Map<String, Class<? extends Event>> emEvents) throws Exception {
+		setClientAPI(emEvents);
+		getEm().addEvents(emEvents.values());
+		getEm().on(emEvents.values(), this);
+	}
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public String getId() {
-        return id;
-    }
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public EventModel getEm() {
-        return em;
-    }
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public EventModel getEm() {
+		return em;
+	}
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public void setEm(EventModel em) {
-        this.em = em;
-    }
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public void setEm(EventModel em) {
+		this.em = em;
+	}
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public Map<String, Class<? extends Event>> getClientAPI() {
-        return clientAPI;
-    }
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public Map<String, Class<? extends Event>> getClientAPI() {
+		return clientAPI;
+	}
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public void setClientAPI(Map<String, Class<? extends Event>> clientAPI) {
-        this.clientAPI = clientAPI;
-    }
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public void setClientAPI(Map<String, Class<? extends Event>> clientAPI) {
+		this.clientAPI = clientAPI;
+	}
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public String toString() {
-        return getId();
-    }
-	
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public String toString() {
+		return getId();
+	}
+
 	public Map<String, Object> getSession(WebSocketConnector aConnector) throws Exception {
 		return aConnector.getSession().getStorage();
 	}
-	
+
 	public Map<String, Object> getSession(String aSessionId) throws Exception {
 		return getEm().getSessionFactory().getSession(aSessionId);
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc } 
+	 */
+	@Override
+	public void readFromToken(Token aToken) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc } 
+	 */
+	@Override
+	public void writeToToken(Token aToken) {
+		Token lApi = TokenFactory.createToken();
+		Token lTokenEventDef;
+		C2SEventDefinition lEventDef = null;
+
+		for (String key : getClientAPI().keySet()) {
+
+			try {
+				String aEventId = getEm().getEventFactory().
+						eventToString(getClientAPI().get(key));
+
+				lEventDef = getEm().getEventFactory().getEventDefinitions().getDefinition(aEventId);
+
+				lTokenEventDef = TokenFactory.createToken();
+				lEventDef.writeToToken(lTokenEventDef);
+
+				lApi.setToken(key, lTokenEventDef);
+			} catch (Exception ex) {
+				mLog.debug(ex.getMessage(), ex);
+			}
+		}
+
+		aToken.setString("id", getId());
+		aToken.setToken("api", lApi);
 	}
 }

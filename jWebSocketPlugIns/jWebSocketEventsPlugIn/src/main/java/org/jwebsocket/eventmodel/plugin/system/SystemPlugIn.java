@@ -22,14 +22,10 @@ import org.jwebsocket.eventmodel.api.IEventModelPlugIn;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.logging.Logging;
 import org.apache.log4j.Logger;
-import org.jwebsocket.eventmodel.event.C2SEventDefinition;
 import org.jwebsocket.eventmodel.event.system.ClientCacheAspectStatus;
 import org.jwebsocket.eventmodel.event.system.GetPlugInList;
 import org.jwebsocket.eventmodel.event.system.HasPlugIn;
 import org.jwebsocket.eventmodel.filter.cache.CacheFilter;
-import org.jwebsocket.eventmodel.filter.validator.Argument;
-import org.jwebsocket.token.Token;
-import org.jwebsocket.token.TokenFactory;
 
 /**
  *
@@ -113,77 +109,7 @@ public class SystemPlugIn extends EventModelPlugIn {
 			mLog.debug(">> Exporting API for '" + aPlugInId + "' plugIn...");
 		}
 
-		IEventModelPlugIn plugIn = getEm().getPlugIn(aPlugInId);
-		Token api = TokenFactory.createToken();
-		Token method, arg;
-		C2SEventDefinition def = null;
-		FastList<String> roles, users, ipAddresses;
-		FastList<Token> incomingArgs, outgoingArgs;
-
-		try {
-			for (String key : plugIn.getClientAPI().keySet()) {
-				String aEventId = getEm().getEventFactory().
-						eventToString(plugIn.getClientAPI().get(key));
-
-				/**
-				 * Getting events plug-in API definition
-				 */
-				def = getEm().getEventFactory().getEventDefinitions().getDefinition(aEventId);
-
-				method = TokenFactory.createToken();
-				method.setString("type", aEventId);
-				method.setBoolean("isCacheEnabled", def.isCacheEnabled());
-				method.setBoolean("isCachePrivate", def.isCachePrivate());
-				method.setBoolean("isSecurityEnabled", def.isSecurityEnabled());
-				method.setInteger("cacheTime", def.getCacheTime());
-				method.setInteger("timeout", def.getTimeout());
-				roles = new FastList<String>();
-				for (String r : def.getRoles()) {
-					roles.add(r);
-				}
-				method.setList("roles", roles);
-				users = new FastList<String>();
-				for (String u : def.getUsers()) {
-					users.add(u);
-				}
-				method.setList("users", users);
-				ipAddresses = new FastList<String>();
-				for (String ip : def.getIpAddresses()) {
-					ipAddresses.add(ip);
-				}
-				method.setList("ip_addresses", ipAddresses);
-
-				incomingArgs = new FastList<Token>();
-				for (Argument a : def.getIncomingArgsValidation()) {
-					arg = TokenFactory.createToken();
-					arg.setString("name", a.getName());
-					arg.setString("type", a.getType());
-					arg.setBoolean("optional", a.isOptional());
-
-					incomingArgs.add(arg);
-				}
-				method.setList("incomingArgsValidation", incomingArgs);
-
-				outgoingArgs = new FastList<Token>();
-				for (Argument a : def.getOutgoingArgsValidation()) {
-					arg = TokenFactory.createToken();
-					arg.setString("name", a.getName());
-					arg.setString("type", a.getType());
-					arg.setBoolean("optional", a.isOptional());
-
-					outgoingArgs.add(arg);
-				}
-				method.setList("outgoingArgsValidation", outgoingArgs);
-				api.setToken(key, method);
-			}
-
-			//PlugIn id
-			aResponseEvent.getArgs().setString("id", plugIn.getId());
-			//PlugIn API
-			aResponseEvent.getArgs().setToken("api", api);
-
-		} catch (Exception ex) {
-			mLog.error(ex.toString(), ex);
-		}
+		IEventModelPlugIn lPlugIn = getEm().getPlugIn(aPlugInId);
+		lPlugIn.writeToToken(aResponseEvent.getArgs());
 	}
 }
