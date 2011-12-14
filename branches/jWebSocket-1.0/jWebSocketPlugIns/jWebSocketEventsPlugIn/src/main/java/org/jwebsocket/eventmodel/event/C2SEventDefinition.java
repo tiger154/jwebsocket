@@ -18,16 +18,20 @@ package org.jwebsocket.eventmodel.event;
 import org.jwebsocket.eventmodel.filter.validator.Argument;
 import javolution.util.FastSet;
 import java.util.Set;
+import javolution.util.FastList;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.eventmodel.api.ISecureComponent;
 import org.jwebsocket.eventmodel.observable.Event;
+import org.jwebsocket.token.ITokenizable;
+import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 import org.springframework.validation.Validator;
 
 /**
  *
  * @author kyberneees
  */
-public class C2SEventDefinition implements IInitializable, ISecureComponent {
+public class C2SEventDefinition implements IInitializable, ISecureComponent, ITokenizable {
 
 	private String id;
 	private String ns;
@@ -445,5 +449,65 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent {
 	 */
 	public void setTimeout(Integer timeout) {
 		this.timeout = timeout;
+	}
+
+	@Override
+	public void readFromToken(Token aToken) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc } 
+	 */
+	@Override
+	public void writeToToken(Token aToken) {
+		aToken.setString("type", getId());
+		aToken.setBoolean("isCacheEnabled", isCacheEnabled());
+		aToken.setBoolean("isCachePrivate", isCachePrivate());
+		aToken.setBoolean("isSecurityEnabled", isSecurityEnabled());
+		aToken.setInteger("cacheTime", getCacheTime());
+		aToken.setInteger("timeout", getTimeout());
+
+		FastList<String> lRoles = new FastList();
+		for (String r : getRoles()) {
+			lRoles.add(r);
+		}
+		aToken.setList("roles", lRoles);
+
+		FastList<String> lUsers = new FastList();
+		for (String u : getUsers()) {
+			lUsers.add(u);
+		}
+		aToken.setList("users", lUsers);
+
+		FastList<String> lIpAddresses = new FastList();
+		for (String ip : getIpAddresses()) {
+			lIpAddresses.add(ip);
+		}
+		aToken.setList("ip_addresses", lIpAddresses);
+
+		FastList<Token> lIncomingArgs = new FastList();
+		Token lArg;
+		for (Argument lArgument : getIncomingArgsValidation()) {
+			lArg = TokenFactory.createToken();
+			lArg.setString("name", lArgument.getName());
+			lArg.setString("type", lArgument.getType());
+			lArg.setBoolean("optional", lArgument.isOptional());
+
+			lIncomingArgs.add(lArg);
+		}
+		aToken.setList("incomingArgsValidation", lIncomingArgs);
+
+		FastList<Token> lOutgoingArgs = new FastList();
+		for (Argument a : getOutgoingArgsValidation()) {
+			lArg = TokenFactory.createToken();
+			lArg.setString("name", a.getName());
+			lArg.setString("type", a.getType());
+			lArg.setBoolean("optional", a.isOptional());
+
+			lOutgoingArgs.add(lArg);
+		}
+		aToken.setList("outgoingArgsValidation", lOutgoingArgs);
 	}
 }
