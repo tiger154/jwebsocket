@@ -116,35 +116,6 @@
 				</configuration>
 			</plugin>
 
-			<!-- to compile groovy code in this project 
-			Refer to: http://docs.codehaus.org/display/GMAVEN/Executing+Groovy+Code
-			-->
-			<!--
-			<plugin>
-				<groupId>org.codehaus.groovy.maven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-				<version>1.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generateStubs</goal>
-							<goal>compile</goal>
-							<goal>generateTestStubs</goal>
-							<goal>testCompile</goal>
-						</goals>
-						<configuration>
-                            <tasks>
-
-							</tasks>
-							<scriptpath>
-								<element>C:/svn/jWebsocket/trunk/shared/J2SE/jWebSocketServer/org/jwebsocket</element>
-							</scriptpath>
-							<source>C:/svn/jWebsocket/trunk/shared/J2SE/jWebSocketServer/org/jwebsocket/eventmodel/api/IEventModelFilter.groovy</source>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			-->
 		</plugins>
 	</build>
 
@@ -205,7 +176,11 @@
 			<systemPath>${project.basedir}/../libs/ext/jlibs.jar</systemPath>
 		</dependency>
 		-->
-		
+		<dependency>
+			<groupId>org.xeustechnologies</groupId>
+			<artifactId>jcl-core</artifactId>
+			<version>2.2.2</version>
+		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>

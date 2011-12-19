@@ -16,12 +16,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-
+<!--
 	<scm>
 		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJavaSEClient</connection>
 		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJavaSEClient</developerConnection>
 	</scm>
-    
+-->
 	<build>
 		<sourceDirectory>../shared/J2SE/jWebSocketJavaSEClient</sourceDirectory>
 <!--
