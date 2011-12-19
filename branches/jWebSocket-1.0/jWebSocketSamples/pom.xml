@@ -16,12 +16,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-
+<!--
 	<scm>
 		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketSamples</connection>
 		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketSamples</developerConnection>
 	</scm>
-
+-->
 	<build>
 		<plugins>
 			<plugin>
@@ -33,7 +33,6 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<!--<classpathPrefix>/svn/jWebSocket/rte/jWebSocket-1.0/libs/</classpathPrefix>-->
 						</manifest>
 					</archive>
 				</configuration>

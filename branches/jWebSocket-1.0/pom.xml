@@ -5,7 +5,7 @@
 	<groupId>org.jwebsocket</groupId>
 	<artifactId>jWebSocket-Parent</artifactId>
 	<packaging>pom</packaging>
-	<name>jWebSocket-Parent</name>
+	<name>jWebSocket-Parent (dev)</name>
 	<version>1.0</version>
 	<description>Parent Project for jWebSocket</description>
 	<url>http://jwebsocket.org</url>
@@ -46,7 +46,8 @@
 		<module>jWebSocketProxy</module>
 		<!-- <module>jWebSocketGlassFish</module> -->
 		<!-- <module>jWebSocketGlassFishDemo</module> -->
-  </modules>
+	</modules>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -84,6 +85,7 @@
 	</build>
 
 	<!-- these settings will be used for maven deployment to google code -->
+	<!--
 	<distributionManagement>
 		<repository>
 			<uniqueVersion>false</uniqueVersion>
@@ -91,7 +93,8 @@
 			<url>svn:https://jwebsocket.googlecode.com/svn/repo</url>
 		</repository>
 	</distributionManagement>
-
+	-->
+	
 	<!--
 		define common dependencies used across all the modules of jWebSocket
 	    server
