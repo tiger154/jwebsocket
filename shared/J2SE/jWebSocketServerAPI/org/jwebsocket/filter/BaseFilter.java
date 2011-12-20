@@ -21,6 +21,7 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketFilter;
 import org.jwebsocket.api.WebSocketFilterChain;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.config.xml.FilterConfig;
 
 /**
  * 
@@ -29,7 +30,6 @@ import org.jwebsocket.api.WebSocketPacket;
 public class BaseFilter implements WebSocketFilter {
 	// every filter has a backward reference to its filter chain
 
-	//TODO: Incluir el atributo ENABLE
 	private WebSocketFilterChain mFilterChain = null;
 	private FilterConfiguration mConfiguration = null;
 
@@ -80,7 +80,7 @@ public class BaseFilter implements WebSocketFilter {
 	 */
 	@Override
 	public String getId() {
-		return mConfiguration.getNamespace();
+		return mConfiguration.getId();
 	}
 
 	/**
@@ -88,6 +88,29 @@ public class BaseFilter implements WebSocketFilter {
 	 */
 	@Override
 	public String getNS() {
-		return mConfiguration.getId();
+		return mConfiguration.getNamespace();
+	}
+	
+	@Override
+	public boolean getEnabled() {
+		return mConfiguration.getEnabled();
+	}
+
+	@Override
+	public void setEnabled(boolean aEnabled) {
+		Boolean lOldEnabled = mConfiguration.getEnabled();
+		mConfiguration = new FilterConfig(mConfiguration.getId(), 
+				mConfiguration.getName(), mConfiguration.getPackageName(), 
+				mConfiguration.getJar(), mConfiguration.getNamespace(), 
+				mConfiguration.getServers(), mConfiguration.getSettings(), aEnabled);
+		// notify filter for change of enabled status
+		if (aEnabled != lOldEnabled) {
+			processEnabled(aEnabled);
+		}
+	}
+
+	@Override
+	public void processEnabled(boolean aEnabled) {
+		//throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

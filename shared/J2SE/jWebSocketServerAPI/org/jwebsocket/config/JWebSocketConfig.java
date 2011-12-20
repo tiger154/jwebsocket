@@ -359,9 +359,9 @@ public final class JWebSocketConfig implements Config {
 		 * @return
 		 */
 		public synchronized JWebSocketConfig buildConfig() {
-			if (mConfig == null) {
+//			if (mConfig == null) {
 				mConfig = new JWebSocketConfig(this);
-			}
+//			}
 			return mConfig;
 		}
 

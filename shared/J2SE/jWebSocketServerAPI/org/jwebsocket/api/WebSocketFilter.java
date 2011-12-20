@@ -69,5 +69,15 @@ public interface WebSocketFilter {
 	 */
 	public String getNS();
 	
-	//TODO: Incluir el get y set del atributo enable
+	boolean getEnabled();
+
+	/**
+	 * sets the enabled status of the plug-in.
+	 */
+	void setEnabled(boolean aEnabled);
+
+	/**
+	 * notifies the plug-in about a change in enabled status.
+	 */
+	void processEnabled(boolean aEnabled);
 }

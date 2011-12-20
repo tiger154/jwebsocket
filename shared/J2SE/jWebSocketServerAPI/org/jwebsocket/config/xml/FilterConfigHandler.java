@@ -42,6 +42,7 @@ public class FilterConfigHandler implements ConfigHandler {
 	private static final String SERVER = "server-assignment";
 	private static final String SETTINGS = "settings";
 	private static final String SETTING = "setting";
+	private static final String ENABLED = "enabled";
 
 	/**
 	 * {@inheritDoc}
@@ -50,6 +51,7 @@ public class FilterConfigHandler implements ConfigHandler {
 	public Config processConfig(XMLStreamReader aStreamReader)
 			throws XMLStreamException {
 		String lId = "", lName = "", lPackageName = "", lJar = "", lNamespace = "";
+		boolean lEnabled = true;
 		List<String> lServers = new FastList<String>();
 		Map<String, String> lSettings = null;
 		while (aStreamReader.hasNext()) {
@@ -72,7 +74,14 @@ public class FilterConfigHandler implements ConfigHandler {
 					lSettings = getSettings(aStreamReader);
 				} else if (elementName.equals(SERVERS)) {
 					lServers = getServers(aStreamReader);
-				} else {
+				} else if (elementName.equals(ENABLED)) {
+					aStreamReader.next();
+					try {
+						lEnabled = Boolean.parseBoolean(aStreamReader.getText());
+					} catch (Exception ex) {
+						// ignore, per default true
+					}
+				}else {
 					// ignore
 				}
 			}
@@ -84,7 +93,7 @@ public class FilterConfigHandler implements ConfigHandler {
 			}
 		}
 
-		return new FilterConfig(lId, lName, lPackageName, lJar, lNamespace, lServers, lSettings);
+		return new FilterConfig(lId, lName, lPackageName, lJar, lNamespace, lServers, lSettings, lEnabled);
 	}
 
 	/**

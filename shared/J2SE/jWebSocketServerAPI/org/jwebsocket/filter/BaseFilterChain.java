@@ -16,10 +16,9 @@
 package org.jwebsocket.filter;
 
 import java.util.List;
-import java.util.Map;
 import javolution.util.FastList;
-import javolution.util.FastMap;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketFilter;
@@ -35,7 +34,8 @@ import org.jwebsocket.logging.Logging;
 public class BaseFilterChain implements WebSocketFilterChain {
 
 	private static Logger log = Logging.getLogger(BaseFilterChain.class);
-	private Map<String, WebSocketFilter> mFilters = new FastMap<String, WebSocketFilter>();
+	//private Map<String, WebSocketFilter> mFilters = new FastMap<String, WebSocketFilter>();
+	private List<WebSocketFilter> mFilters = new FastList<WebSocketFilter>();
 	private WebSocketServer mServer = null;
 
 	/**
@@ -57,13 +57,13 @@ public class BaseFilterChain implements WebSocketFilterChain {
 
 	@Override
 	public void addFilter(WebSocketFilter aFilter) {
-		mFilters.put(aFilter.getId(), aFilter);
+		mFilters.add(aFilter);
 		aFilter.setFilterChain(this);
 	}
 
 	@Override
 	public void removeFilter(WebSocketFilter aFilter) {
-		mFilters.remove(aFilter.getId());
+		mFilters.remove(aFilter);
 		aFilter.setFilterChain(null);
 	}
 
@@ -73,18 +73,26 @@ public class BaseFilterChain implements WebSocketFilterChain {
 	 */
 	@Override
 	public List<WebSocketFilter> getFilters() {
-		return new FastList<WebSocketFilter>(mFilters.values());
+		return mFilters;
 	}
 
 	@Override
 	public WebSocketFilter getFilterById(String aId) {
-		return mFilters.get(aId);
+		if (aId != null) {
+			for (WebSocketFilter lFilter : mFilters) {
+				FilterConfiguration lConfig = lFilter.getFilterConfiguration();
+				if (lConfig != null && aId.equals(lConfig.getId())) {
+					return lFilter;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public FilterResponse processPacketIn(WebSocketConnector aConnector, WebSocketPacket aPacket) {
 		FilterResponse lResponse = new FilterResponse();
-		for (WebSocketFilter lFilter : mFilters.values()) {
+		for (WebSocketFilter lFilter : mFilters) {
 			lFilter.processPacketIn(lResponse, aConnector, aPacket);
 			if (lResponse.isRejected()) {
 				break;
@@ -96,7 +104,7 @@ public class BaseFilterChain implements WebSocketFilterChain {
 	@Override
 	public FilterResponse processPacketOut(WebSocketConnector aSource, WebSocketConnector aTarget, WebSocketPacket aPacket) {
 		FilterResponse lResponse = new FilterResponse();
-		for (WebSocketFilter lFilter : mFilters.values()) {
+		for (WebSocketFilter lFilter : mFilters) {
 			lFilter.processPacketOut(lResponse, aSource, aTarget, aPacket);
 			if (lResponse.isRejected()) {
 				break;
