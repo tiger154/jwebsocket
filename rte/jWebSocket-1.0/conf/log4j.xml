@@ -84,6 +84,18 @@
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p - %C{1}: %m%n" />
 		</layout>
 	</appender>	
+	
+	<appender name="adminLog" class="org.apache.log4j.RollingFileAppender">
+		<!-- Attention, currently only ${JWEBSOCKET_HOME} is supported as env var -->
+		<param name="file" value="${JWEBSOCKET_HOME}/logs/adminLog.log" />
+		<param name="MaxFileSize" value="1MB" />
+		<param name="datePattern" value="'.'yyyy-MM-dd"/>
+		<param name="threshold" value="info"/>
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd | HH:mm:ss} %m%n" />
+		</layout>
+	</appender>
 
 <!--
 	<logger name="org.springframework" additivity="false">
@@ -100,16 +112,23 @@
 		<!--  select one of the above declared appenders -->
 		<appender-ref ref="developmentLog"/>
 	</logger>
-
+	
+	<logger name="org.jwebsocket.plugins.admin" additivity="false">
+		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
+		<level value="info"/>
+		<!--  select one of the above declared appenders -->
+		<appender-ref ref="adminLog"/>
+	</logger>
 
 	<root>
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
-		<priority value="DEBUG" />
+		<priority value="debug" />
 		<!-- select one of the above declared appenders -->
 		<!-- for automated tests: -->
 		<!-- <appender-ref ref="testLog" /> -->
 		<!-- during the development -->
-		<appender-ref ref="developmentLog" />
+		<appender-ref ref="developmentLog"/>
+		<appender-ref ref="adminLog" />
 	</root>
 
 </log4j:configuration>
