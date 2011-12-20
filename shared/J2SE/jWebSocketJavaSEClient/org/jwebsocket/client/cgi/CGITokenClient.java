@@ -15,12 +15,12 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.cgi;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.jwebsocket.client.java.ReliabilityOptions;
 import org.jwebsocket.client.token.BaseTokenClient;
-import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.kit.WebSocketException;
 
 /**
@@ -78,36 +78,32 @@ public class CGITokenClient extends BaseTokenClient {
 		@Override
 		public void run() {
 			mIsRunning = true;
-			byte[] lBuff = new byte[JWebSocketCommonConstants.DEFAULT_MAX_FRAME_SIZE];
-			int lIdx = -1;
-			int lStart = -1;
+
+			ByteArrayOutputStream lBuff = new ByteArrayOutputStream();
+			boolean lIsFrame = false;
 
 			while (mIsRunning) {
 				try {
 					int lByte = mIn.read();
 					// start of frame
 					if (lByte == START_FRAME) {
-						lIdx = 0;
-						lStart = 0;
+						lIsFrame = true;
+						lBuff.reset();
 						// end of frame
 					} else if (lByte == END_FRAME) {
-						if (lStart >= 0) {
-							byte[] lBA = new byte[lIdx];
-							System.arraycopy(lBuff, 0, lBA, 0, lIdx);
-							// Arrays class is not supported in Android
-							// byte[] lBA = Arrays.copyOf(lBuff, pos);
-							send(lBA);
+						if (lIsFrame) {
+							send(lBuff.toByteArray());
 						}
-						lStart = -1;
+						lIsFrame = false;
+						lBuff.reset();
 						// end of stream
 					} else if (lByte < 0) {
 						mIsRunning = false;
 						// any other byte within or outside a frame
 					} else {
-						if (lStart >= 0) {
-							lBuff[lIdx] = (byte) lByte;
+						if (lIsFrame) {
+							lBuff.write(lByte);
 						}
-						lIdx++;
 					}
 				} catch (Exception lEx) {
 					mIsRunning = false;
@@ -115,7 +111,6 @@ public class CGITokenClient extends BaseTokenClient {
 					// System.out.println(ex.getClass().getSimpleName() + ": " + ex.getMessage());
 				}
 			}
-
 		}
 	}
 }
