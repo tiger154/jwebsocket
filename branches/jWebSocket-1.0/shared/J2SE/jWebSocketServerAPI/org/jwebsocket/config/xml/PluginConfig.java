@@ -115,7 +115,7 @@ public final class PluginConfig implements Config, PluginConfiguration {
 	 */
 	@Override
 	public List<String> getServers() {
-		return Collections.unmodifiableList(mServers);
+		return (null == mServers) ? null : Collections.unmodifiableList(mServers);
 	}
 
 	/**

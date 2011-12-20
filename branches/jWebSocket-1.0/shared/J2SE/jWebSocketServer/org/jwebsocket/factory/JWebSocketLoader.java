@@ -82,7 +82,7 @@ public final class JWebSocketLoader {
 	 * @return the web socket config object with all the configuration
 	 * @throws WebSocketException if there's any while loading configuration
 	 */
-	private JWebSocketConfig loadConfiguration(final String aConfigFilePath) throws WebSocketException {
+	public JWebSocketConfig loadConfiguration(final String aConfigFilePath) throws WebSocketException {
 		JWebSocketConfig lConfig = null;
 		File lFile = new File(aConfigFilePath);
 		String lMsg;

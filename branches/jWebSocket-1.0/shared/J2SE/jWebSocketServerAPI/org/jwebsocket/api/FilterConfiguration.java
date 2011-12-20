@@ -33,4 +33,10 @@ public interface FilterConfiguration extends Configuration {
   List<String> getServers();
 
   Map<String, String> getSettings();
+  
+  /**
+	 * returns the enabled status of the plug-in.
+	 * @return
+	 */
+	boolean getEnabled();
 }

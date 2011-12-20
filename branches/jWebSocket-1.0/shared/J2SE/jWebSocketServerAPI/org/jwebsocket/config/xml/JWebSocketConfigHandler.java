@@ -14,18 +14,24 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
-import java.util.List;
 import java.util.Map;
-
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javolution.util.FastList;
-
 import javolution.util.FastMap;
-
 import org.jwebsocket.config.ConfigHandler;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.kit.WebSocketRuntimeException;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Handler class that handles the <tt>jWebSocket.xml</tt> configuration. This
@@ -166,7 +172,6 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		return lConfigBuilder.buildConfig();
 	}
 
-	
 	/**
 	 * private method to handle the user config.
 	 *
@@ -446,4 +451,83 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		return lEngines;
 	}
 
+	private Document getDocument() throws Exception {
+		SAXBuilder lBuilder = new SAXBuilder();
+		File lFile = new File(JWebSocketConfig.getConfigurationPath());
+		return (Document) lBuilder.build(lFile);
+	}
+
+	private void saveChange(Document aDoc) throws IOException {
+		XMLOutputter lXmlOutput = new XMLOutputter();
+		lXmlOutput.setFormat(Format.getPrettyFormat());
+		lXmlOutput.output(aDoc, new FileWriter(JWebSocketConfig.getConfigurationPath()));
+	}
+
+	public void setEnabledPlugIn(String aId, Boolean aEnabled) throws Exception {
+		Document lDoc = getDocument();
+		Element lRootNode = lDoc.getRootElement();
+		Element lPlugins = lRootNode.getChild(ELEMENT_PLUGINS);
+		List<Element> lPluginsList = lPlugins.getChildren(ELEMENT_PLUGIN);
+
+		for (Element lElement : lPluginsList) {
+			if (aId.equals(lElement.getChildText("id"))) {
+				if (lElement.getChildText("enabled") == null) {
+					lElement.addContent(3, new Element("enabled").setText(aEnabled.toString()));
+				} else {
+					lElement.getChild("enabled").setText(aEnabled.toString());
+				}
+			}
+		}
+
+		saveChange(lDoc);
+	}
+
+	public void setEnabledFilter(String aId, Boolean aEnabled) throws Exception {
+		Document lDoc = getDocument();
+		Element lRootNode = lDoc.getRootElement();
+		Element lFilters = lRootNode.getChild(ELEMENT_FILTERS);
+		List<Element> lFiltersList = lFilters.getChildren(ELEMENT_FILTER);
+
+		for (Element lElement : lFiltersList) {
+			if (aId.equals(lElement.getChildText("id"))) {
+				if (lElement.getChildText("enabled") == null) {
+					lElement.addContent(3, new Element("enabled").setText(aEnabled.toString()));
+				} else {
+					lElement.getChild("enabled").setText(aEnabled.toString());
+				}
+			}
+		}
+
+		saveChange(lDoc);
+	}
+
+	public void removePlugInConfig(String aId) throws Exception {
+		Document lDoc = getDocument();
+		Element lRootNode = lDoc.getRootElement();
+		Element lPlugins = lRootNode.getChild(ELEMENT_PLUGINS);
+		List<Element> lPluginsList = lPlugins.getChildren(ELEMENT_PLUGIN);
+
+		for (int i = 0; i < lPluginsList.size(); i++) {
+			if (aId.equals(lPluginsList.get(i).getChildText("id"))) {
+				lPluginsList.remove(i);
+			}
+		}
+
+		saveChange(lDoc);
+	}
+	
+	public void removeFilterConfig(String aId) throws Exception {
+		Document lDoc = getDocument();
+		Element lRootNode = lDoc.getRootElement();
+		Element lFilters = lRootNode.getChild(ELEMENT_FILTERS);
+		List<Element> lFiltersList = lFilters.getChildren(ELEMENT_FILTER);
+
+		for (int i = 0; i < lFiltersList.size(); i++) {
+			if (aId.equals(lFiltersList.get(i).getChildText("id"))) {
+				lFiltersList.remove(i);
+			}
+		}
+
+		saveChange(lDoc);
+	}
 }
