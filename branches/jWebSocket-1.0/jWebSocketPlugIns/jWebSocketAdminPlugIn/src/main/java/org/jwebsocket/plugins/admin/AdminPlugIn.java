@@ -210,6 +210,7 @@ public class AdminPlugIn extends TokenPlugIn {
 			Collection<WebSocketConnector> lConnectors = lConnectorMap.values();
 			for (WebSocketConnector lConnector : lConnectors) {
 				Map lResultItem = new FastMap<String, Object>();
+				lResultItem.put("host", lConnector.getRemoteHost());
 				lResultItem.put("port", lConnector.getRemotePort());
 				// Caution! This method may only be granted to administrators!
 				lResultItem.put("usid", lConnector.getSession().getSessionId());
