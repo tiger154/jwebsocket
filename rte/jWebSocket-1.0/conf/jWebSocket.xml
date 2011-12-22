@@ -85,7 +85,7 @@
 			<!-- keystore file with in %JWEBSOCKET_HOME%/conf -->
 			<keystore>jWebSocket.ks</keystore>
 			<!-- password to access keystore file -->
-			<password>jWebSocket</password>
+			<password>jwebsocket</password>
 			<!-- CAUTION! -->
 			<!-- not all browsers automatically accept self-signed certificates -->
 			<!-- please follow instructions on the jWebSocket.org website, how
@@ -940,20 +940,6 @@
 			</settings>
 		</plugin>
 
-		<!-- the events model plug-in 
-		<plugin>
-			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
-			<ns>org.jwebsocket.plugins.events</ns>
-			<id>test</id>
-			<jar>jWebSocketEventsPlugIn.jar</jar>
-			<settings>
-				<setting key="config" type="json">{xml_config:"${JWEBSOCKET_HOME}/conf/EventsPlugIn.xml"}</setting>
-			</settings>
-			<server-assignments>
-				<server-assignment>ts0</server-assignment>
-			</server-assignments>
-		</plugin>
-		-->
 		<!-- plug-in to track statistic data about the server usage -->
 		<plugin>
 			<!-- ensure that this plug-in is loaded after the streaming plug-in! -->
@@ -1265,9 +1251,22 @@
 
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
+			<!-- TODO: NAMESPACE ?? -->
 			<ns>test</ns>
+			<!--
+			<ns>org.jwebsocket.plugins.events</ns>
+			-->
+			<id>jws.events</id>
+			<!-- TODO: ID?? -->
+			<!-- 
 			<id>jws.events.test</id>
+			-->
 			<jar>jWebSocketEventsPlugIn-1.0.jar</jar>
+			<!--
+			<settings>
+				<setting key="config" type="json">{xml_config:"${JWEBSOCKET_HOME}/conf/EventsPlugIn.xml"}</setting>
+			</settings>
+			-->
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>

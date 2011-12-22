@@ -1,7 +1,7 @@
 //  <JasobNoObfs>
 //	---------------------------------------------------------------------------
 //	jWebSocket Client (uses jWebSocket Server)
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH, Herzogenrath
+//	Copyright (c) 2010, 2011 Alexander Schulze, Innotrade GmbH, Herzogenrath
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -22,7 +22,7 @@
 
 // Firefox temporarily used MozWebSocket (why??), anyway, consider this here.
 // Since the browserSupportNativeWebSocket method evaluates the existance of
-// the window.WebSocket class, this abstraction need to be done on the very top.
+// the window.WebSocket class, this abstraction needs to be done on the very top.
 // please do not move this lines down.
 if( window.MozWebSocket ) {
 	window.WebSocket = window.MozWebSocket;
@@ -35,9 +35,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0b4 (nightly build 11125)
+	//:const:*:VERSION:String:1.0b5 (nightly build 11222)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0b4 (nightly build 11201)",
+	VERSION: "1.0b5 (nightly build 11222)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -105,7 +105,8 @@ var jws = {
 	//:d:en:This is jWebSocket specific and not part of the W3C API.
 	OPEN_TIMED_OUT: 1001,
 
-	// Default connection reliability options
+	// Reliability options
+	// Reliability Manager off (Default connection)
 	RO_OFF: {
 		autoReconnect : false,
 		reconnectDelay: -1,
@@ -114,6 +115,7 @@ var jws = {
 		queueSizeLimit: -1
 	},
 
+	// Reliability Manager on
 	RO_ON: {
 		autoReconnect: true,
 		reconnectDelay: 500,
@@ -1027,11 +1029,11 @@ if( !jws.browserSupportsNativeWebSockets ) {
 	//	<JasobNoObfs>
 	// --- swfobject.js ---
 	// SWFObject v2.2 <http://code.google.com/p/swfobject/> 
-	// is released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
+	// released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 	var swfobject=function(){var D="undefined",r="object",S="Shockwave Flash",W="ShockwaveFlash.ShockwaveFlash",q="application/x-shockwave-flash",R="SWFObjectExprInst",x="onreadystatechange",O=window,j=document,t=navigator,T=false,U=[h],o=[],N=[],I=[],l,Q,E,B,J=false,a=false,n,G,m=true,M=function(){var aa=typeof j.getElementById!=D&&typeof j.getElementsByTagName!=D&&typeof j.createElement!=D,ah=t.userAgent.toLowerCase(),Y=t.platform.toLowerCase(),ae=Y?/win/.test(Y):/win/.test(ah),ac=Y?/mac/.test(Y):/mac/.test(ah),af=/webkit/.test(ah)?parseFloat(ah.replace(/^.*webkit\/(\d+(\.\d+)?).*$/,"$1")):false,X=!+"\v1",ag=[0,0,0],ab=null;if(typeof t.plugins!=D&&typeof t.plugins[S]==r){ab=t.plugins[S].description;if(ab&&!(typeof t.mimeTypes!=D&&t.mimeTypes[q]&&!t.mimeTypes[q].enabledPlugin)){T=true;X=false;ab=ab.replace(/^.*\s+(\S+\s+\S+$)/,"$1");ag[0]=parseInt(ab.replace(/^(.*)\..*$/,"$1"),10);ag[1]=parseInt(ab.replace(/^.*\.(.*)\s.*$/,"$1"),10);ag[2]=/[a-zA-Z]/.test(ab)?parseInt(ab.replace(/^.*[a-zA-Z]+(.*)$/,"$1"),10):0}}else{if(typeof O.ActiveXObject!=D){try{var ad=new ActiveXObject(W);if(ad){ab=ad.GetVariable("$version");if(ab){X=true;ab=ab.split(" ")[1].split(",");ag=[parseInt(ab[0],10),parseInt(ab[1],10),parseInt(ab[2],10)]}}}catch(Z){}}}return{w3:aa,pv:ag,wk:af,ie:X,win:ae,mac:ac}}(),k=function(){if(!M.w3){return}if((typeof j.readyState!=D&&j.readyState=="complete")||(typeof j.readyState==D&&(j.getElementsByTagName("body")[0]||j.body))){f()}if(!J){if(typeof j.addEventListener!=D){j.addEventListener("DOMContentLoaded",f,false)}if(M.ie&&M.win){j.attachEvent(x,function(){if(j.readyState=="complete"){j.detachEvent(x,arguments.callee);f()}});if(O==top){(function(){if(J){return}try{j.documentElement.doScroll("left")}catch(X){setTimeout(arguments.callee,0);return}f()})()}}if(M.wk){(function(){if(J){return}if(!/loaded|complete/.test(j.readyState)){setTimeout(arguments.callee,0);return}f()})()}s(f)}}();function f(){if(J){return}try{var Z=j.getElementsByTagName("body")[0].appendChild(C("span"));Z.parentNode.removeChild(Z)}catch(aa){return}J=true;var X=U.length;for(var Y=0;Y<X;Y++){U[Y]()}}function K(X){if(J){X()}else{U[U.length]=X}}function s(Y){if(typeof O.addEventListener!=D){O.addEventListener("load",Y,false)}else{if(typeof j.addEventListener!=D){j.addEventListener("load",Y,false)}else{if(typeof O.attachEvent!=D){i(O,"onload",Y)}else{if(typeof O.onload=="function"){var X=O.onload;O.onload=function(){X();Y()}}else{O.onload=Y}}}}}function h(){if(T){V()}else{H()}}function V(){var X=j.getElementsByTagName("body")[0];var aa=C(r);aa.setAttribute("type",q);var Z=X.appendChild(aa);if(Z){var Y=0;(function(){if(typeof Z.GetVariable!=D){var ab=Z.GetVariable("$version");if(ab){ab=ab.split(" ")[1].split(",");M.pv=[parseInt(ab[0],10),parseInt(ab[1],10),parseInt(ab[2],10)]}}else{if(Y<10){Y++;setTimeout(arguments.callee,10);return}}X.removeChild(aa);Z=null;H()})()}else{H()}}function H(){var ag=o.length;if(ag>0){for(var af=0;af<ag;af++){var Y=o[af].id;var ab=o[af].callbackFn;var aa={success:false,id:Y};if(M.pv[0]>0){var ae=c(Y);if(ae){if(F(o[af].swfVersion)&&!(M.wk&&M.wk<312)){w(Y,true);if(ab){aa.success=true;aa.ref=z(Y);ab(aa)}}else{if(o[af].expressInstall&&A()){var ai={};ai.data=o[af].expressInstall;ai.width=ae.getAttribute("width")||"0";ai.height=ae.getAttribute("height")||"0";if(ae.getAttribute("class")){ai.styleclass=ae.getAttribute("class")}if(ae.getAttribute("align")){ai.align=ae.getAttribute("align")}var ah={};var X=ae.getElementsByTagName("param");var ac=X.length;for(var ad=0;ad<ac;ad++){if(X[ad].getAttribute("name").toLowerCase()!="movie"){ah[X[ad].getAttribute("name")]=X[ad].getAttribute("value")}}P(ai,ah,Y,ab)}else{p(ae);if(ab){ab(aa)}}}}}else{w(Y,true);if(ab){var Z=z(Y);if(Z&&typeof Z.SetVariable!=D){aa.success=true;aa.ref=Z}ab(aa)}}}}}function z(aa){var X=null;var Y=c(aa);if(Y&&Y.nodeName=="OBJECT"){if(typeof Y.SetVariable!=D){X=Y}else{var Z=Y.getElementsByTagName(r)[0];if(Z){X=Z}}}return X}function A(){return !a&&F("6.0.65")&&(M.win||M.mac)&&!(M.wk&&M.wk<312)}function P(aa,ab,X,Z){a=true;E=Z||null;B={success:false,id:X};var ae=c(X);if(ae){if(ae.nodeName=="OBJECT"){l=g(ae);Q=null}else{l=ae;Q=X}aa.id=R;if(typeof aa.width==D||(!/%$/.test(aa.width)&&parseInt(aa.width,10)<310)){aa.width="310"}if(typeof aa.height==D||(!/%$/.test(aa.height)&&parseInt(aa.height,10)<137)){aa.height="137"}j.title=j.title.slice(0,47)+" - Flash Player Installation";var ad=M.ie&&M.win?"ActiveX":"PlugIn",ac="MMredirectURL="+O.location.toString().replace(/&/g,"%26")+"&MMplayerType="+ad+"&MMdoctitle="+j.title;if(typeof ab.flashvars!=D){ab.flashvars+="&"+ac}else{ab.flashvars=ac}if(M.ie&&M.win&&ae.readyState!=4){var Y=C("div");X+="SWFObjectNew";Y.setAttribute("id",X);ae.parentNode.insertBefore(Y,ae);ae.style.display="none";(function(){if(ae.readyState==4){ae.parentNode.removeChild(ae)}else{setTimeout(arguments.callee,10)}})()}u(aa,ab,X)}}function p(Y){if(M.ie&&M.win&&Y.readyState!=4){var X=C("div");Y.parentNode.insertBefore(X,Y);X.parentNode.replaceChild(g(Y),X);Y.style.display="none";(function(){if(Y.readyState==4){Y.parentNode.removeChild(Y)}else{setTimeout(arguments.callee,10)}})()}else{Y.parentNode.replaceChild(g(Y),Y)}}function g(ab){var aa=C("div");if(M.win&&M.ie){aa.innerHTML=ab.innerHTML}else{var Y=ab.getElementsByTagName(r)[0];if(Y){var ad=Y.childNodes;if(ad){var X=ad.length;for(var Z=0;Z<X;Z++){if(!(ad[Z].nodeType==1&&ad[Z].nodeName=="PARAM")&&!(ad[Z].nodeType==8)){aa.appendChild(ad[Z].cloneNode(true))}}}}}return aa}function u(ai,ag,Y){var X,aa=c(Y);if(M.wk&&M.wk<312){return X}if(aa){if(typeof ai.id==D){ai.id=Y}if(M.ie&&M.win){var ah="";for(var ae in ai){if(ai[ae]!=Object.prototype[ae]){if(ae.toLowerCase()=="data"){ag.movie=ai[ae]}else{if(ae.toLowerCase()=="styleclass"){ah+=' class="'+ai[ae]+'"'}else{if(ae.toLowerCase()!="classid"){ah+=" "+ae+'="'+ai[ae]+'"'}}}}}var af="";for(var ad in ag){if(ag[ad]!=Object.prototype[ad]){af+='<param name="'+ad+'" value="'+ag[ad]+'" />'}}aa.outerHTML='<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"'+ah+">"+af+"</object>";N[N.length]=ai.id;X=c(ai.id)}else{var Z=C(r);Z.setAttribute("type",q);for(var ac in ai){if(ai[ac]!=Object.prototype[ac]){if(ac.toLowerCase()=="styleclass"){Z.setAttribute("class",ai[ac])}else{if(ac.toLowerCase()!="classid"){Z.setAttribute(ac,ai[ac])}}}}for(var ab in ag){if(ag[ab]!=Object.prototype[ab]&&ab.toLowerCase()!="movie"){e(Z,ab,ag[ab])}}aa.parentNode.replaceChild(Z,aa);X=Z}}return X}function e(Z,X,Y){var aa=C("param");aa.setAttribute("name",X);aa.setAttribute("value",Y);Z.appendChild(aa)}function y(Y){var X=c(Y);if(X&&X.nodeName=="OBJECT"){if(M.ie&&M.win){X.style.display="none";(function(){if(X.readyState==4){b(Y)}else{setTimeout(arguments.callee,10)}})()}else{X.parentNode.removeChild(X)}}}function b(Z){var Y=c(Z);if(Y){for(var X in Y){if(typeof Y[X]=="function"){Y[X]=null}}Y.parentNode.removeChild(Y)}}function c(Z){var X=null;try{X=j.getElementById(Z)}catch(Y){}return X}function C(X){return j.createElement(X)}function i(Z,X,Y){Z.attachEvent(X,Y);I[I.length]=[Z,X,Y]}function F(Z){var Y=M.pv,X=Z.split(".");X[0]=parseInt(X[0],10);X[1]=parseInt(X[1],10)||0;X[2]=parseInt(X[2],10)||0;return(Y[0]>X[0]||(Y[0]==X[0]&&Y[1]>X[1])||(Y[0]==X[0]&&Y[1]==X[1]&&Y[2]>=X[2]))?true:false}function v(ac,Y,ad,ab){if(M.ie&&M.mac){return}var aa=j.getElementsByTagName("head")[0];if(!aa){return}var X=(ad&&typeof ad=="string")?ad:"screen";if(ab){n=null;G=null}if(!n||G!=X){var Z=C("style");Z.setAttribute("type","text/css");Z.setAttribute("media",X);n=aa.appendChild(Z);if(M.ie&&M.win&&typeof j.styleSheets!=D&&j.styleSheets.length>0){n=j.styleSheets[j.styleSheets.length-1]}G=X}if(M.ie&&M.win){if(n&&typeof n.addRule==r){n.addRule(ac,Y)}}else{if(n&&typeof j.createTextNode!=D){n.appendChild(j.createTextNode(ac+" {"+Y+"}"))}}}function w(Z,X){if(!m){return}var Y=X?"visible":"hidden";if(J&&c(Z)){c(Z).style.visibility=Y}else{v("#"+Z,"visibility:"+Y)}}function L(Y){var Z=/[\\\"<>\.;]/;var X=Z.exec(Y)!=null;return X&&typeof encodeURIComponent!=D?encodeURIComponent(Y):Y}var d=function(){if(M.ie&&M.win){window.attachEvent("onunload",function(){var ac=I.length;for(var ab=0;ab<ac;ab++){I[ab][0].detachEvent(I[ab][1],I[ab][2])}var Z=N.length;for(var aa=0;aa<Z;aa++){y(N[aa])}for(var Y in M){M[Y]=null}M=null;for(var X in swfobject){swfobject[X]=null}swfobject=null})}}();return{registerObject:function(ab,X,aa,Z){if(M.w3&&ab&&X){var Y={};Y.id=ab;Y.swfVersion=X;Y.expressInstall=aa;Y.callbackFn=Z;o[o.length]=Y;w(ab,false)}else{if(Z){Z({success:false,id:ab})}}},getObjectById:function(X){if(M.w3){return z(X)}},embedSWF:function(ab,ah,ae,ag,Y,aa,Z,ad,af,ac){var X={success:false,id:ah};if(M.w3&&!(M.wk&&M.wk<312)&&ab&&ah&&ae&&ag&&Y){w(ah,false);K(function(){ae+="";ag+="";var aj={};if(af&&typeof af===r){for(var al in af){aj[al]=af[al]}}aj.data=ab;aj.width=ae;aj.height=ag;var am={};if(ad&&typeof ad===r){for(var ak in ad){am[ak]=ad[ak]}}if(Z&&typeof Z===r){for(var ai in Z){if(typeof am.flashvars!=D){am.flashvars+="&"+ai+"="+Z[ai]}else{am.flashvars=ai+"="+Z[ai]}}}if(F(Y)){var an=u(aj,am,ah);if(aj.id==ah){w(ah,true)}X.success=true;X.ref=an}else{if(aa&&A()){aj.data=aa;P(aj,am,ah,ac);return}else{w(ah,true)}}if(ac){ac(X)}})}else{if(ac){ac(X)}}},switchOffAutoHideShow:function(){m=false},ua:M,getFlashPlayerVersion:function(){return{major:M.pv[0],minor:M.pv[1],release:M.pv[2]}},hasFlashPlayerVersion:F,createSWF:function(Z,Y,X){if(M.w3){return u(Z,Y,X)}else{return undefined}},showExpressInstall:function(Z,aa,X,Y){if(M.w3&&A()){P(Z,aa,X,Y)}},removeSWF:function(X){if(M.w3){y(X)}},createCSS:function(aa,Z,Y,X){if(M.w3){v(aa,Z,Y,X)}},addDomLoadEvent:K,addLoadEvent:s,getQueryParamValue:function(aa){var Z=j.location.search||j.location.hash;if(Z){if(/\?/.test(Z)){Z=Z.split("?")[1]}if(aa==null){return L(Z)}var Y=Z.split("&");for(var X=0;X<Y.length;X++){if(Y[X].substring(0,Y[X].indexOf("="))==aa){return L(Y[X].substring((Y[X].indexOf("=")+1)))}}}return""},expressInstallCallback:function(){if(a){var X=c(R);if(X&&l){X.parentNode.replaceChild(l,X);if(Q){w(Q,true);if(M.ie&&M.win){l.style.display="block"}}if(E){E(B)}}a=false}}}}();
 	//	</JasobNoObfs>
-	//	
-	// check if appropriate flash version is installed
+	
+	// check if appropriate flash player version is installed
 	if( swfobject.hasFlashPlayerVersion( "10.0.0" ) ) {
 	
 	    WEB_SOCKET_DEBUG = true;
@@ -1069,12 +1071,12 @@ if( !jws.browserSupportsNativeWebSockets ) {
 		if( window.WEB_SOCKET_SWF_LOCATION ) {
 			//	<JasobNoObfs>
 			// --- web_socket.js (minified) ---
-			// Copyright: Hiroshi Ichikawa <http://gimite.net/en/>
+			// Copyright: Hiroshi Ichikawa, http://gimite.net/en/, https://github.com/gimite/web-socket-js
 			// License: New BSD License
 			// Reference: http://dev.w3.org/html5/websockets/
-			// Reference: http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol
-			// Full Sources codes provided in web_socket.js
-	 		(function(){if(window.WebSocket)return;var console=window.console;if(!console|| !console.log|| !console.error){console={log:function(){},error:function(){}};}if(!swfobject.hasFlashPlayerVersion("10.0.0")){console.error("Flash Player >= 10.0.0 is required.");return;}if(location.protocol=="file:"){console.error("WARNING: web-socket-js doesn't work in file:///... URL "+"unless you set Flash Security Settings properly. "+"Open the page via Web server i.e. http://...");}WebSocket=function(url,protocol,proxyHost,proxyPort,headers){var self=this;self.__id=WebSocket.__nextId++;WebSocket.__instances[self.__id]=self;self.readyState=WebSocket.CONNECTING;self.bufferedAmount=0;self.__events={};setTimeout(function(){WebSocket.__addTask(function(){WebSocket.__flash.create(self.__id,url,protocol,proxyHost||null,proxyPort||0,headers||null);});},0);};WebSocket.prototype.send=function(data){if(this.readyState==WebSocket.CONNECTING){throw "INVALID_STATE_ERR: Web Socket connection has not been established";}var result=WebSocket.__flash.send(this.__id,encodeURIComponent(data));if(result<0){return true;}else{this.bufferedAmount+=result;return false;}};WebSocket.prototype.close=function(){if(this.readyState==WebSocket.CLOSED||this.readyState==WebSocket.CLOSING){return;}this.readyState=WebSocket.CLOSING;WebSocket.__flash.close(this.__id);};WebSocket.prototype.addEventListener=function(type,listener,useCapture){if(!(type in this.__events)){this.__events[type]=[];}this.__events[type].push(listener);};WebSocket.prototype.removeEventListener=function(type,listener,useCapture){if(!(type in this.__events))return;var events=this.__events[type];for(var i=events.length-1;i>=0;--i){if(events[i]===listener){events.splice(i,1);break;}}};WebSocket.prototype.dispatchEvent=function(event){var events=this.__events[event.type]||[];for(var i=0;i<events.length;++i){events[i](event);}var handler=this["on"+event.type];if(handler)handler(event);};WebSocket.prototype.__handleEvent=function(flashEvent){if("readyState"in flashEvent){this.readyState=flashEvent.readyState;}var jsEvent;if(flashEvent.type=="open"||flashEvent.type=="error"){jsEvent=this.__createSimpleEvent(flashEvent.type);}else if(flashEvent.type=="close"){jsEvent=this.__createSimpleEvent("close");}else if(flashEvent.type=="message"){var data=decodeURIComponent(flashEvent.message);jsEvent=this.__createMessageEvent("message",data);}else{throw "unknown event type: "+flashEvent.type;}this.dispatchEvent(jsEvent);};WebSocket.prototype.__createSimpleEvent=function(type){if(document.createEvent&&window.Event){var event=document.createEvent("Event");event.initEvent(type,false,false);return event;}else{return{type:type,bubbles:false,cancelable:false};}};WebSocket.prototype.__createMessageEvent=function(type,data){if(document.createEvent&&window.MessageEvent&& !window.opera){var event=document.createEvent("MessageEvent");event.initMessageEvent("message",false,false,data,null,null,window,null);return event;}else{return{type:type,data:data,bubbles:false,cancelable:false};}};WebSocket.CONNECTING=0;WebSocket.OPEN=1;WebSocket.CLOSING=2;WebSocket.CLOSED=3;WebSocket.__flash=null;WebSocket.__instances={};WebSocket.__tasks=[];WebSocket.__nextId=0;WebSocket.loadFlashPolicyFile=function(url){WebSocket.__addTask(function(){WebSocket.__flash.loadManualPolicyFile(url);});};WebSocket.__initialize=function(){if(WebSocket.__flash)return;if(WebSocket.__swfLocation){window.WEB_SOCKET_SWF_LOCATION=WebSocket.__swfLocation;}if(!window.WEB_SOCKET_SWF_LOCATION){console.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf");return;}var container=document.createElement("div");container.id="webSocketContainer";container.style.position="absolute";if(WebSocket.__isFlashLite()){container.style.left="0px";container.style.top="0px";}else{container.style.left="-100px";container.style.top="-100px";}var holder=document.createElement("div");holder.id="webSocketFlash";container.appendChild(holder);document.body.appendChild(container);swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION,"webSocketFlash","1","1","10.0.0",null,null,{hasPriority:true,swliveconnect:true,allowScriptAccess:"always"},null,function(e){if(!e.success){console.error("[WebSocket] swfobject.embedSWF failed");}});};WebSocket.__onFlashInitialized=function(){setTimeout(function(){WebSocket.__flash=document.getElementById("webSocketFlash");WebSocket.__flash.setCallerUrl(location.href);WebSocket.__flash.setDebug(! !window.WEB_SOCKET_DEBUG);for(var i=0;i<WebSocket.__tasks.length;++i){WebSocket.__tasks[i]();}WebSocket.__tasks=[];},0);};WebSocket.__onFlashEvent=function(){setTimeout(function(){try{var events=WebSocket.__flash.receiveEvents();for(var i=0;i<events.length;++i){WebSocket.__instances[events[i].webSocketId].__handleEvent(events[i]);}}catch(e){console.error(e);}},0);return true;};WebSocket.__log=function(message){console.log(decodeURIComponent(message));};WebSocket.__error=function(message){console.error(decodeURIComponent(message));};WebSocket.__addTask=function(task){if(WebSocket.__flash){task();}else{WebSocket.__tasks.push(task);}};WebSocket.__isFlashLite=function(){if(!window.navigator|| !window.navigator.mimeTypes){return false;}var mimeType=window.navigator.mimeTypes["application/x-shockwave-flash"];if(!mimeType|| !mimeType.enabledPlugin|| !mimeType.enabledPlugin.filename){return false;}return mimeType.enabledPlugin.filename.match(/flashlite/i)?true:false;};if(!window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION){if(window.addEventListener){window.addEventListener("load",function(){WebSocket.__initialize();},false);}else{window.attachEvent("onload",function(){WebSocket.__initialize();});}}})();
+			// Reference: http://tools.ietf.org/html/rfc6455
+			// Full sources codes provided in web_socket.js
+			(function(){if(window.WEB_SOCKET_FORCE_FLASH){}else if(window.WebSocket){return;}else if(window.MozWebSocket){window.WebSocket=MozWebSocket;return;}var logger;if(window.WEB_SOCKET_LOGGER){logger=WEB_SOCKET_LOGGER;}else if(window.console&&window.console.log&&window.console.error){logger=window.console;}else{logger={log:function(){},error:function(){}};}if(swfobject.getFlashPlayerVersion().major<10){logger.error("Flash Player >= 10.0.0 is required.");return;}if(location.protocol=="file:"){logger.error("WARNING: web-socket-js doesn't work in file:///... URL "+"unless you set Flash Security Settings properly. "+"Open the page via Web server i.e. http://...");}window.WebSocket=function(url,protocols,proxyHost,proxyPort,headers){var self=this;self.__id=WebSocket.__nextId++;WebSocket.__instances[self.__id]=self;self.readyState=WebSocket.CONNECTING;self.bufferedAmount=0;self.__events={};if(!protocols){protocols=[];}else if(typeof protocols=="string"){protocols=[protocols];}self.__createTask=setTimeout(function(){WebSocket.__addTask(function(){self.__createTask=null;WebSocket.__flash.create(self.__id,url,protocols,proxyHost||null,proxyPort||0,headers||null);});},0);};WebSocket.prototype.send=function(data){if(this.readyState==WebSocket.CONNECTING){throw "INVALID_STATE_ERR: Web Socket connection has not been established";}var result=WebSocket.__flash.send(this.__id,encodeURIComponent(data));if(result<0){return true;}else{this.bufferedAmount+=result;return false;}};WebSocket.prototype.close=function(){if(this.__createTask){clearTimeout(this.__createTask);this.__createTask=null;this.readyState=WebSocket.CLOSED;return;}if(this.readyState==WebSocket.CLOSED||this.readyState==WebSocket.CLOSING){return;}this.readyState=WebSocket.CLOSING;WebSocket.__flash.close(this.__id);};WebSocket.prototype.addEventListener=function(type,listener,useCapture){if(!(type in this.__events)){this.__events[type]=[];}this.__events[type].push(listener);};WebSocket.prototype.removeEventListener=function(type,listener,useCapture){if(!(type in this.__events))return;var events=this.__events[type];for(var i=events.length-1;i>=0;--i){if(events[i]===listener){events.splice(i,1);break;}}};WebSocket.prototype.dispatchEvent=function(event){var events=this.__events[event.type]||[];for(var i=0;i<events.length;++i){events[i](event);}var handler=this["on"+event.type];if(handler)handler.apply(this,[event]);};WebSocket.prototype.__handleEvent=function(flashEvent){if("readyState"in flashEvent){this.readyState=flashEvent.readyState;}if("protocol"in flashEvent){this.protocol=flashEvent.protocol;}var jsEvent;if(flashEvent.type=="open"||flashEvent.type=="error"){jsEvent=this.__createSimpleEvent(flashEvent.type);}else if(flashEvent.type=="close"){jsEvent=this.__createSimpleEvent("close");jsEvent.wasClean=flashEvent.wasClean?true:false;jsEvent.code=flashEvent.code;jsEvent.reason=flashEvent.reason;}else if(flashEvent.type=="message"){var data=decodeURIComponent(flashEvent.message);jsEvent=this.__createMessageEvent("message",data);}else{throw "unknown event type: "+flashEvent.type;}this.dispatchEvent(jsEvent);};WebSocket.prototype.__createSimpleEvent=function(type){if(document.createEvent&&window.Event){var event=document.createEvent("Event");event.initEvent(type,false,false);return event;}else{return{type:type,bubbles:false,cancelable:false};}};WebSocket.prototype.__createMessageEvent=function(type,data){if(document.createEvent&&window.MessageEvent&& !window.opera){var event=document.createEvent("MessageEvent");event.initMessageEvent("message",false,false,data,null,null,window,null);return event;}else{return{type:type,data:data,bubbles:false,cancelable:false};}};WebSocket.CONNECTING=0;WebSocket.OPEN=1;WebSocket.CLOSING=2;WebSocket.CLOSED=3;WebSocket.__initialized=false;WebSocket.__flash=null;WebSocket.__instances={};WebSocket.__tasks=[];WebSocket.__nextId=0;WebSocket.loadFlashPolicyFile=function(url){WebSocket.__addTask(function(){WebSocket.__flash.loadManualPolicyFile(url);});};WebSocket.__initialize=function(){if(WebSocket.__initialized)return;WebSocket.__initialized=true;if(WebSocket.__swfLocation){window.WEB_SOCKET_SWF_LOCATION=WebSocket.__swfLocation;}if(!window.WEB_SOCKET_SWF_LOCATION){logger.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf");return;}if(!window.WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR&& !WEB_SOCKET_SWF_LOCATION.match(/(^|\/)WebSocketMainInsecure\.swf(\?.*)?$/)&&WEB_SOCKET_SWF_LOCATION.match(/^\w+:\/\/([^\/]+)/)){var swfHost=RegExp.$1;if(location.host!=swfHost){logger.error("[WebSocket] You must host HTML and WebSocketMain.swf in the same host "+"('"+location.host+"' != '"+swfHost+"'). "+"See also 'How to host HTML file and SWF file in different domains' section "+"in README.md. If you use WebSocketMainInsecure.swf, you can suppress this message "+"by WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;");}}var container=document.createElement("div");container.id="webSocketContainer";container.style.position="absolute";if(WebSocket.__isFlashLite()){container.style.left="0px";container.style.top="0px";}else{container.style.left="-100px";container.style.top="-100px";}var holder=document.createElement("div");holder.id="webSocketFlash";container.appendChild(holder);document.body.appendChild(container);swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION,"webSocketFlash","1","1","10.0.0",null,null,{hasPriority:true,swliveconnect:true,allowScriptAccess:"always"},null,function(e){if(!e.success){logger.error("[WebSocket] swfobject.embedSWF failed");}});};WebSocket.__onFlashInitialized=function(){setTimeout(function(){WebSocket.__flash=document.getElementById("webSocketFlash");WebSocket.__flash.setCallerUrl(location.href);WebSocket.__flash.setDebug(! !window.WEB_SOCKET_DEBUG);for(var i=0;i<WebSocket.__tasks.length;++i){WebSocket.__tasks[i]();}WebSocket.__tasks=[];},0);};WebSocket.__onFlashEvent=function(){setTimeout(function(){try{var events=WebSocket.__flash.receiveEvents();for(var i=0;i<events.length;++i){WebSocket.__instances[events[i].webSocketId].__handleEvent(events[i]);}}catch(e){logger.error(e);}},0);return true;};WebSocket.__log=function(message){logger.log(decodeURIComponent(message));};WebSocket.__error=function(message){logger.error(decodeURIComponent(message));};WebSocket.__addTask=function(task){if(WebSocket.__flash){task();}else{WebSocket.__tasks.push(task);}};WebSocket.__isFlashLite=function(){if(!window.navigator|| !window.navigator.mimeTypes){return false;}var mimeType=window.navigator.mimeTypes["application/x-shockwave-flash"];if(!mimeType|| !mimeType.enabledPlugin|| !mimeType.enabledPlugin.filename){return false;}return mimeType.enabledPlugin.filename.match(/flashlite/i)?true:false;};if(!window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION){swfobject.addDomLoadEvent(function(){WebSocket.__initialize();});}})(); 
 			//	</JasobNoObfs>
 		}
 		
@@ -3596,7 +3598,7 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 })();
 *//*
 MIT LICENSE
-Copyright (c) 2007 Monsur Hossain (http://www.monsur.com)
+Copyright (c) 2007 Monsur Hossain (http://monsur.hossai.in)
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -3620,278 +3622,370 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-// ****************************************************************************
-// CachePriority ENUM
-// An easier way to refer to the priority of a cache item
-
-jws.cache = {};
-
-jws.cache.Priority = {
-	Low: 1,
-	Normal: 2,
-	High: 4
+/**
+* An easier way to refer to the priority of a cache item
+* @enum {number}
+*/
+var CachePriority = {
+  'LOW': 1,
+  'NORMAL': 2,
+  'HIGH': 4
 };
 
-// ****************************************************************************
-// MemoryStorage constructor
-// Creates a new storage object
-jws.cache.MemoryStorage = function MemoryStorage(){
-	this.length = 0;
-	this.keys = Array();
-	this.items = {};
+/**
+* Creates a new Cache object.
+* @param {number} maxSize The maximum size of the cache (or -1 for no max).
+* @param {boolean} debug Whether to log events to the console.log.
+* @constructor
+*/
+function Cache(maxSize, debug, storage) {
+    this.maxSize_ = maxSize || -1;
+    this.debug_ = debug || false;
+    this.items_ = storage || new Cache.BasicCacheStorage();
+    this.count_ = 0;
+
+    this.fillFactor_ = .75;
+
+    this.stats_ = {};
+    this.stats_['hits'] = 0;
+    this.stats_['misses'] = 0;
+    this.log_('Initialized cache with size ' + maxSize);
 }
 
-jws.cache.MemoryStorage.prototype.key = function(index){
-	return (this.keys[index]) ? this.keys[index] : null;
+/**
+* Basic in memory cache storage backend.
+* @constructor
+*/
+Cache.BasicCacheStorage = function() {
+  this.items_ = {};
+}
+Cache.BasicCacheStorage.prototype.get = function(key) {
+  return this.items_[key];
+}
+Cache.BasicCacheStorage.prototype.set = function(key, value) {
+  this.items_[key] = value;
+}
+Cache.BasicCacheStorage.prototype.remove = function(key) {
+  var item = this.get(key);
+  delete this.items_[key];
+  return item;
+}
+Cache.BasicCacheStorage.prototype.keys = function() {
+  var ret = [], p;
+  for (p in this.items_) ret.push(p);
+  return ret;
 }
 
-jws.cache.MemoryStorage.prototype.getItem = function(key){
-	return (undefined != this.items[key]) ? this.items[key] : null;
+/**
+* Local Storage based persistant cache storage backend.
+* If a size of -1 is used, it will purge itself when localStorage
+* is filled. This is 5MB on Chrome/Safari.
+* WARNING: The amortized cost of this cache is very low, however,
+* when a the cache fills up all of localStorage, and a purge is required, it can
+* take a few seconds to fetch all the keys and values in storage.
+* Since localStorage doesn't have namespacing, this means that even if this
+* individual cache is small, it can take this time if there are lots of other
+* other keys in localStorage.
+*
+* @param {string} namespace A string to namespace the items in localStorage. Defaults to 'default'.
+* @constructor
+*/
+Cache.LocalStorageCacheStorage = function(namespace) {
+  this.prefix_ = 'cache-storage.' + (namespace || 'default') + '.';
+  // Regexp String Escaping from http://simonwillison.net/2006/Jan/20/escape/#p-6
+  var escapedPrefix = this.prefix_.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+  this.regexp_ = new RegExp('^' + escapedPrefix)
+}
+Cache.LocalStorageCacheStorage.prototype.get = function(key) {
+  var item = localStorage[this.prefix_ + key];
+  if (item) return JSON.parse(item);
+  return null;
+}
+Cache.LocalStorageCacheStorage.prototype.set = function(key, value) {
+  localStorage[this.prefix_ + key] = JSON.stringify(value);
+}
+Cache.LocalStorageCacheStorage.prototype.remove = function(key) {
+  var item = this.get(key);
+  delete localStorage[this.prefix_ + key];
+  return item;
+}
+Cache.LocalStorageCacheStorage.prototype.keys = function() {
+  var ret = [], p;
+  for (p in localStorage) {
+    if (p.match(this.regexp_)) ret.push(p.replace(this.prefix_, ''));
+  };
+  return ret;
 }
 
-jws.cache.MemoryStorage.prototype.setItem = function(key, value){
-	this.items[key] = value;
-	this.keys.push(key);
-	this.length++;
+/**
+* Retrieves an item from the cache.
+* @param {string} key The key to retrieve.
+* @return {Object} The item, or null if it doesn't exist.
+*/
+Cache.prototype.getItem = function(key) {
+
+  // retrieve the item from the cache
+  var item = this.items_.get(key);
+
+  if (item != null) {
+    if (!this.isExpired_(item)) {
+      // if the item is not expired
+      // update its last accessed date
+      item.lastAccessed = new Date().getTime();
+    } else {
+      // if the item is expired, remove it from the cache
+      this.removeItem_(key);
+      item = null;
+    }
+  }
+
+  // return the item value (if it exists), or null
+  var returnVal = item ? item.value : null;
+  if (returnVal) {
+    this.stats_['hits']++;
+    this.log_('Cache HIT for key ' + key)
+  } else {
+    this.stats_['misses']++;
+    this.log_('Cache MISS for key ' + key)
+  }
+  return returnVal;
+};
+
+
+Cache._CacheItem = function(k, v, o) {
+    if (!k) {
+      throw new Error("key cannot be null or empty");
+    }
+    this.key = k;
+    this.value = v;
+    o = o || {};
+    if (o.expirationAbsolute) {
+      o.expirationAbsolute = o.expirationAbsolute.getTime();
+    }
+    if (!o.priority) {
+      o.priority = CachePriority.NORMAL;
+    }
+    this.options = o;
+    this.lastAccessed = new Date().getTime();
+};
+
+
+/**
+* Sets an item in the cache.
+* @param {string} key The key to refer to the item.
+* @param {Object} value The item to cache.
+* @param {Object} options an optional object which controls various caching
+* options:
+* expirationAbsolute: the datetime when the item should expire
+* expirationSliding: an integer representing the seconds since
+* the last cache access after which the item
+* should expire
+* priority: How important it is to leave this item in the cache.
+* You can use the values CachePriority.LOW, .NORMAL, or
+* .HIGH, or you can just use an integer. Note that
+* placing a priority on an item does not guarantee
+* it will remain in cache. It can still be purged if
+* an expiration is hit, or if the cache is full.
+* callback: A function that gets called when the item is purged
+* from cache. The key and value of the removed item
+* are passed as parameters to the callback function.
+*/
+Cache.prototype.setItem = function(key, value, options) {
+
+  // add a new cache item to the cache
+  if (this.items_.get(key) != null) {
+    this.removeItem_(key);
+  }
+  this.addItem_(new Cache._CacheItem(key, value, options));
+  this.log_("Setting key " + key);
+
+  // if the cache is full, purge it
+  if ((this.maxSize_ > 0) && (this.count_ > this.maxSize_)) {
+    var that = this;
+    setTimeout(function() {
+      that.purge_.call(that);
+    }, 0);
+  }
+};
+
+
+/**
+* Removes all items from the cache.
+*/
+Cache.prototype.clear = function() {
+  // loop through each item in the cache and remove it
+  var keys = this.items_.keys()
+  for (var i = 0; i < keys.length; i++) {
+    this.removeItem_(keys[i]);
+  }
+  this.log_('Cache cleared');
+};
+
+
+/**
+* @return {Object} The hits and misses on the cache.
+*/
+Cache.prototype.getStats = function() {
+  return this.stats_;
+};
+
+
+/**
+* @return {string} Returns an HTML string representation of the cache.
+*/
+Cache.prototype.toHtmlString = function() {
+  var returnStr = this.count_ + " item(s) in cache<br /><ul>";
+  var keys = this.items_.keys()
+  for (var i = 0; i < keys.length; i++) {
+    var item = this.items_.get(keys[i]);
+    returnStr = returnStr + "<li>" + item.key.toString() + " = " +
+        item.value.toString() + "</li>";
+  }
+  returnStr = returnStr + "</ul>";
+  return returnStr;
+};
+
+
+/**
+* Allows it to resize the Cache capacity if needed.
+* @param {integer} newMaxSize the new max amount of stored entries within the Cache
+*/
+Cache.prototype.resize = function(newMaxSize) {
+  this.log_('Resizing Cache from ' + this.maxSize_ + ' to ' + newMaxSize);
+  // Set new size before purging so we know how many items to purge
+  var oldMaxSize = this.maxSize_
+  this.maxSize_ = newMaxSize;
+
+  if (newMaxSize > 0 && (oldMaxSize < 0 || newMaxSize < oldMaxSize)) {
+    if (this.count_ > newMaxSize) {
+      // Cache needs to be purged as it does contain too much entries for the new size
+      this.purge_();
+    } // else if cache isn't filled up to the new limit nothing is to do
+  }
+  // else if newMaxSize >= maxSize nothing to do
+  this.log_('Resizing done');
 }
 
-jws.cache.MemoryStorage.prototype.removeItem = function(key){
-	if (undefined == this.items[key]) return;
-   
-	var newKeys = Array();
-	for (var i = 0; i < this.keys.length; i++){
-		if (key != this.keys[i]){
-			newKeys.push(this.keys[i]);
-		}
-	}
-	this.keys = newKeys;
-	this.length--;
-	delete this.items[key];
+/**
+* Removes expired items from the cache.
+*/
+Cache.prototype.purge_ = function() {
+  var tmparray = new Array();
+  var purgeSize = Math.round(this.maxSize_ * this.fillFactor_);
+  if (this.maxSize_ < 0)
+    purgeSize = this.count_ * this.fillFactor_;
+  // loop through the cache, expire items that should be expired
+  // otherwise, add the item to an array
+  var keys = this.items_.keys();
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    var item = this.items_.get(key);
+    if (this.isExpired_(item)) {
+      this.removeItem_(key);
+    } else {
+      tmparray.push(item);
+    }
+  }
+
+  if (tmparray.length > purgeSize) {
+    // sort this array based on cache priority and the last accessed date
+    tmparray = tmparray.sort(function(a, b) {
+      if (a.options.priority != b.options.priority) {
+        return b.options.priority - a.options.priority;
+      } else {
+        return b.lastAccessed - a.lastAccessed;
+      }
+    });
+    // remove items from the end of the array
+    while (tmparray.length > purgeSize) {
+      var ritem = tmparray.pop();
+      this.removeItem_(ritem.key);
+    }
+  }
+  this.log_('Purged cached');
+};
+
+
+/**
+* Add an item to the cache.
+* @param {Object} item The cache item to add.
+* @private
+*/
+Cache.prototype.addItem_ = function(item, attemptedAlready) {
+  var cache = this;
+  try {
+    this.items_.set(item.key, item);
+    this.count_++;
+  } catch(err) {
+    if (attemptedAlready) {
+      this.log_('Failed setting again, giving up: ' + err.toString());
+      throw(err);
+    }
+    this.log_('Error adding item, purging and trying again: ' + err.toString());
+    this.purge_();
+    this.addItem_(item, true);
+  }
+};
+
+
+/**
+* Remove an item from the cache, call the callback function (if it exists).
+* @param {String} key The key of the item to remove
+* @private
+*/
+Cache.prototype.removeItem_ = function(key) {
+  var item = this.items_.remove(key);
+  this.count_--;
+  this.log_("removed key " + key);
+
+  // if there is a callback function, call it at the end of execution
+  if (item.options.callback != null) {
+    setTimeout(function() {
+      item.options.callback.call(null, item.key, item.value);
+    }, 0);
+  }
+};
+
+
+/**
+* @param {Object} item A cache item.
+* @return {boolean} True if the item is expired
+* @private
+*/
+Cache.prototype.isExpired_ = function(item) {
+  var now = new Date().getTime();
+  var expired = false;
+  if (item.options.expirationAbsolute &&
+      (item.options.expirationAbsolute < now)) {
+      // if the absolute expiration has passed, expire the item
+      expired = true;
+  }
+  if (!expired && item.options.expirationSliding) {
+    // if the sliding expiration has passed, expire the item
+    var lastAccess =
+        item.lastAccessed + (item.options.expirationSliding * 1000);
+    if (lastAccess < now) {
+      expired = true;
+    }
+  }
+  return expired;
+};
+
+
+/**
+* Logs a message to the console.log if debug is set to true.
+* @param {string} msg The message to log.
+* @private
+*/
+Cache.prototype.log_ = function(msg) {
+  if (this.debug_) {
+    console.log(msg);
+  }
+};
+
+if (typeof module !== "undefined") {
+  module.exports = Cache;
 }
-
-jws.cache.MemoryStorage.prototype.clear = function(){
-	this.length = 0;
-	this.items = {};
-	this.keys = Array();
-}
-
-
-// ****************************************************************************
-// Cache constructor
-// Creates a new cache object
-// INPUT: storage - a referencce to the HTML5 Storage to use
-// INPUT: maxSize (optional) - indicates how many items the cache can hold.
-//                             default is -1, which means no limit on the 
-//                             number of items.
-jws.cache.Cache = function Cache(storage, maxSize) {
-	if (!storage){
-		throw new Error("'storage' cannot be null or empty");
-	}
-	this.items = storage;
-	this.count = 0;
-	if (maxSize == null)
-		maxSize = -1;
-	this.maxSize = maxSize;
-	this.fillFactor = .75;
-	this.purgeSize = Math.round(this.maxSize * this.fillFactor);
-    
-	this.stats = {};
-	this.stats.hits = 0;
-	this.stats.misses = 0;
-}
-
-// ****************************************************************************
-// Cache.getItem
-// retrieves an item from the cache, returns null if the item doesn't exist
-// or it is expired.
-// INPUT: key - the key to load from the cache
-jws.cache.Cache.prototype.getItem = function(key) {
-
-	// retrieve the item from the cache
-	var item = this.items.getItem(key);
-    
-	if (item != null) {
-		item = JSON.parse(item);
-		if (!this._isExpired(item)) {
-			// if the item is not expired
-			// update its last accessed date
-			item.lastAccessed = new Date().getTime();
-		} else {
-			// if the item is expired, remove it from the cache
-			this._removeItem(key);
-			item = null;
-		}
-	}
-    
-	// return the item value (if it exists), or null
-	var returnVal = null;
-	if (item != null) {
-		returnVal = item.value;
-		this.stats.hits++;
-	} else {
-		this.stats.misses++;
-	}
-	return returnVal;
-};
-
-// ****************************************************************************
-// Cache.setItem
-// sets an item in the cache
-// parameters: key - the key to refer to the object
-//             value - the object to cache
-//             options - an optional parameter described below
-// the last parameter accepts an object which controls various caching options:
-//      expirationAbsolute: the datetime when the item should expire
-//      expirationSliding: an integer representing the seconds since
-//                         the last cache access after which the item
-//                         should expire
-//      priority: How important it is to leave this item in the cache.
-//                You can use the values CachePriority.Low, .Normal, or 
-//                .High, or you can just use an integer.  Note that 
-//                placing a priority on an item does not guarantee 
-//                it will remain in cache.  It can still be purged if 
-//                an expiration is hit, or if the cache is full.
-//      callback: A function that gets called when the item is purged
-//                from cache.  The key and value of the removed item
-//                are passed as parameters to the callback function.
-jws.cache.Cache.prototype.setItem = function(key, value, options) {
-
-	function CacheItem(k, v, o) {
-		if ((k == null) || (k == ''))
-			throw new Error("key cannot be null or empty");
-		this.key = k;
-		this.value = v;
-		if (o == null)
-			o = {};
-		if (o.expirationAbsolute != null)
-			o.expirationAbsolute = o.expirationAbsolute.getTime();
-		if (o.priority == null)
-			o.priority = jws.cache.Priority.Normal;
-		this.options = o;
-		this.lastAccessed = new Date().getTime();
-	}
-
-	// add a new cache item to the cache
-	if (this.items.getItem(key) != null)
-		this._removeItem(key);
-	this._addItem(new CacheItem(key, value, options));
-    
-	// if the cache is full, purge it
-	if ((this.maxSize > 0) && (this.count > this.maxSize)) {
-		this._purge();
-	}
-};
-
-// ****************************************************************************
-// Cache.clear
-// Remove all items from the cache
-jws.cache.Cache.prototype.clear = function() {
-
-	if (this.items.length > 0){
-		var end = this.items.length;
-		for (var i = 0;  i < end; i++){
-			this._removeItem(this.items.key(i));
-		}
-	}
-};
-
-// ****************************************************************************
-// Cache._purge (PRIVATE FUNCTION)
-// remove old elements from the cache
-jws.cache.Cache.prototype._purge = function() {
-    
-	var tmparray = new Array();
-    
-	// loop through the cache, expire items that should be expired
-	// otherwise, add the item to an array
-	if (this.items.length > 0){
-		var end = this.items.length;
-		for (var i = 0;  i < end; i++){
-			var item = JSON.parse(this.items.getItem(this.items.key(i)));
-			if (this._isExpired(item)) {
-				this._removeItem(key);
-			} else {
-				tmparray.push(item);
-			}
-		}
-	}
-    
-	if (tmparray.length > this.purgeSize) {
-
-		// sort this array based on cache priority and the last accessed date
-		tmparray = tmparray.sort(function(a, b) { 
-			if (a.options.priority != b.options.priority) {
-				return b.options.priority - a.options.priority;
-			} else {
-				return b.lastAccessed - a.lastAccessed;
-			}
-		});
-        
-		// remove items from the end of the array
-		while (tmparray.length > this.purgeSize) {
-			var ritem = tmparray.pop();
-			this._removeItem(ritem.key);
-		}
-	}
-};
-
-// ****************************************************************************
-// Cache._addItem (PRIVATE FUNCTION)
-// add an item to the cache
-jws.cache.Cache.prototype._addItem = function(item) {
-	this.items.setItem(item.key, JSON.stringify(item));
-	this.count++;
-};
-
-// ****************************************************************************
-// Cache._removeItem (PRIVATE FUNCTION)
-// Remove an item from the cache, call the callback function (if necessary)
-jws.cache.Cache.prototype._removeItem = function(key) {
-	var item = JSON.parse(this.items.getItem(key));
-	this.items.removeItem(key);
-	this.count--;
-    
-	// if there is a callback function, call it at the end of execution
-	if (item.options.callback != null) {
-		var callback = function() {
-			item.options.callback(item.key, item.value);
-		};
-		setTimeout(callback, 0);
-	}
-};
-
-// ****************************************************************************
-// Cache._isExpired (PRIVATE FUNCTION)
-// Returns true if the item should be expired based on its expiration options
-jws.cache.Cache.prototype._isExpired = function(item) {
-	var now = new Date().getTime();
-	var expired = false;
-	if ((item.options.expirationAbsolute) && (item.options.expirationAbsolute < now)) {
-		// if the absolute expiration has passed, expire the item
-		expired = true;
-	} 
-	if (!expired && (item.options.expirationSliding)) {
-		// if the sliding expiration has passed, expire the item
-		var lastAccess = item.lastAccessed + (item.options.expirationSliding * 1000);
-		if (lastAccess < now) {
-			expired = true;
-		}
-	}
-	return expired;
-};
-
-jws.cache.Cache.prototype.toHtmlString = function() {
-	var returnStr = this.count + " item(s) in cache<br /><ul>";
-	if (this.items.length > 0){
-		var end = this.items.length;
-		for (var i = 0;  i < end; i++){
-			var item = JSON.parse(this.items.getItem(this.items.key(i)));
-			returnStr = returnStr + "<li>" + item.key.toString() + " = " + item.value.toString() + "</li>";
-		}
-		returnStr = returnStr + "</ul>";
-		return returnStr;
-	}
-};
 //	---------------------------------------------------------------------------
 //	jWebSocket API PlugIn (uses jWebSocket Client and Server)
 //	(C) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
@@ -5088,7 +5182,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 	,
 	jwsClient: {}
 	,
-	NS: jws.NS_BASE + ".plugins.events"
+	NS: ""
 	,
 	filterChain: []
 	,
@@ -5511,7 +5605,7 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 			cache: this.cache,
 			cleanEntries: function(event){
 				for (var i = 0, end = event.entries.length; i < end; i++){
-					this.cache._removeItem(jws.user.principal.toString() + event.suffix + event.entries[i]);
+					this.cache.removeItem_(jws.user.principal.toString() + event.suffix + event.entries[i]);
 				}
 			}
 		}
@@ -5572,7 +5666,7 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 			this.cache.setItem(key, aResponseEvent, {
 				expirationAbsolute: null,
 				expirationSliding: aRequest.eventDefinition.cacheTime,
-				priority: jws.cache.Priority.High
+				priority: CachePriority.High
 			});
 		}
 	}
@@ -5607,12 +5701,7 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 				throw "stop_filter_chain";
 			}else if (aToken.hasOwnProperty(arguments[index].name)){
 				var requiredType = arguments[index].type;
-				if (requiredType != typeof(aToken[arguments[index].name])){
-					//Supporting 'array' as types too
-					if ("array" == requiredType && aToken[arguments[index].name] instanceof Array){
-						return;
-					}
-
+				if (requiredType != jws.tools.getType(aToken[arguments[index].name])){
 					if (aRequest.OnResponse){
 						aRequest.OnResponse({
 							code: -1,
