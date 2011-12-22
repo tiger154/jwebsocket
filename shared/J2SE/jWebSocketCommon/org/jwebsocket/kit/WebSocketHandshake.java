@@ -179,18 +179,33 @@ public final class WebSocketHandshake {
 		// now parse header for correct handshake....
 		// get host....
 		int lPos = lRequest.indexOf("Host:");
+		if (lPos < 0) {
+			return null;
+		}
 		lPos += 6;
 		lHost = lRequest.substring(lPos);
 		lPos = lHost.indexOf("\r\n");
+		if (lPos < 0) {
+			return null;
+		}
 		lHost = lHost.substring(0, lPos);
 		// get origin....
 		lPos = lRequest.indexOf("Origin:");
+		if (lPos < 0) {
+			return null;
+		}
 		lPos += 8;
 		lOrigin = lRequest.substring(lPos);
 		lPos = lOrigin.indexOf("\r\n");
+		if (lPos < 0) {
+			return null;
+		}
 		lOrigin = lOrigin.substring(0, lPos);
 		// get path....
 		lPos = lRequest.indexOf("GET");
+		if (lPos < 0) {
+			return null;
+		}
 		lPos += 4;
 		lPath = lRequest.substring(lPos);
 		lPos = lPath.indexOf("HTTP");

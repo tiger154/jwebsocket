@@ -344,6 +344,9 @@ public class TCPEngine extends BaseEngine {
 		}
 		Map lRespMap = WebSocketHandshake.parseC2SRequest(
 				lReq, aClientSocket instanceof SSLSocket);
+		if (lRespMap == null) {
+			return null;
+		}
 		RequestHeader lHeader = EngineUtils.validateC2SRequest(
 				getConfiguration().getDomains(), lRespMap, mLog);
 		if (lHeader == null) {
@@ -497,6 +500,9 @@ public class TCPEngine extends BaseEngine {
 							// if header could not be parsed properly
 							// immediately disconnect the client.
 							lClientSocket.close();
+							mLog.error("Client not accepted on port "
+									+ lClientSocket.getPort()
+									+ " due to handshake issues");
 						}
 					} catch (Exception lEx) {
 						mLog.error(
