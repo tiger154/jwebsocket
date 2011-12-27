@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
@@ -128,6 +129,9 @@ public class BaseWebSocketClient implements WebSocketClient {
 	private final Map<String, Object> mParams = new FastMap<String, Object>();
 	private final Object mWriteLock = new Object();
 	private String mCloseReason = null;
+	private ScheduledFuture mReconnectorTask = null;
+	private Boolean mIsReconnecting = false;
+	private final Object mReconnectLock = new Object();
 
 	/**
 	 * Base constructor
@@ -225,6 +229,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 */
 	public void open(int aVersion, String aURI, String aSubProtocols) {
 		try {
+			mAbortReconnect();
+
 			// set default close reason in case 
 			// connection could not be established.
 			mCloseReason = "Connection could not be established.";
@@ -239,24 +245,37 @@ public class BaseWebSocketClient implements WebSocketClient {
 				mSocket.close();
 			}
 			mSocket = createSocket();
-			// don't gather packages, reduce latency
+			// don't gather packages here, reduce latency
 			mSocket.setTcpNoDelay(true);
 			mIn = mSocket.getInputStream();
 			mOut = mSocket.getOutputStream();
 
-			mOut.write(lHandshake.generateC2SRequest());
+			byte[] lBA = lHandshake.generateC2SRequest();
+			mOut.write(lBA);
 
 			mStatus = WebSocketStatus.CONNECTING;
 
 			Headers lHeaders = new Headers();
-			lHeaders.readFromStream(aVersion, mIn);
+			try {
+				lHeaders.readFromStream(aVersion, mIn);
+			} catch (Exception lEx) {
+				// ignore exception here, will be processed afterwards
+			}
+
+			if (!lHeaders.isValid()) {
+				WebSocketClientEvent lEvent =
+						new WebSocketBaseClientEvent(this, EVENT_CLOSE, "Handshake rejected.");
+				notifyClosed(lEvent);
+				mCheckReconnect(lEvent);
+				return;
+			}
 
 			// parse negotiated sub protocol
 			String lProtocol = lHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
 			if (lProtocol != null) {
 				mNegotiatedSubProtocol = new WebSocketSubProtocol(lProtocol, mEncoding);
 			} else {
-				// just default to 'jwebsocket.org/json' and 'text'
+				// just default to 'jwebsocket.org.json' and 'text'
 				mNegotiatedSubProtocol = new WebSocketSubProtocol(
 						JWebSocketCommonConstants.WS_SUBPROT_DEFAULT,
 						JWebSocketCommonConstants.WS_ENCODING_DEFAULT);
@@ -346,7 +365,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 				if (WebSocketEncoding.BINARY.equals(mNegotiatedSubProtocol.getEncoding())) {
 					mOut.write(0x80);
 					// what if frame is longer than 255 characters (8bit?) Refer to IETF spec!
-                    // won't fix since hixie is far outdated!
+					// won't fix since hixie is far outdated!
 					mOut.write(aData.length);
 					mOut.write(aData);
 				} else {
@@ -372,6 +391,10 @@ public class BaseWebSocketClient implements WebSocketClient {
 
 	@Override
 	public synchronized void close() {
+		// on an explicit close operation ...
+		// cancel all potential re-connection tasks.
+		mAbortReconnect();
+
 		if (!mStatus.isWritable()) {
 			return;
 		}
@@ -607,6 +630,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 
 		@Override
 		public void run() {
+			mIsReconnecting = false;
 			notifyReconnecting(mEvent);
 			try {
 				open(mURI.toString());
@@ -630,16 +654,37 @@ public class BaseWebSocketClient implements WebSocketClient {
 		}
 	}
 
-	private void mCheckReconnect(WebSocketClientEvent aEvent) {
-		// did we configure reliability options?
-		if (mReliabilityOptions != null
-				&& mReliabilityOptions.getReconnectDelay() > 0) {
-			// schedule a re-connect action after the re-connect delay
-			mExecutor.schedule(
-					new ReOpener(aEvent),
-					mReliabilityOptions.getReconnectDelay(),
-					TimeUnit.MILLISECONDS);
+	private void mAbortReconnect() {
+		synchronized (mReconnectLock) {
+			// cancel running re-connect task
+			if( null != mReconnectorTask ) {
+				mReconnectorTask.cancel(true);
+			}	
+			// reset internal re-connection flag
+			mIsReconnecting = false;
+			mReconnectorTask = null;
+			// clean up all potentially old references to inactive tasks
+			mExecutor.purge();
 		}
+	}
+
+	private void mCheckReconnect(WebSocketClientEvent aEvent) {
+		synchronized (mReconnectLock) {
+			// first, purge all potentially old references to other tasks
+			mExecutor.purge();
+			// did we configure reliability options?
+			// and is there now re-connection task already active?
+			if (mReliabilityOptions != null
+					&& mReliabilityOptions.getReconnectDelay() > 0
+					&& !mIsReconnecting) {
+				// schedule a re-connect action after the re-connect delay
+				mIsReconnecting = true;
+				mReconnectorTask = mExecutor.schedule(
+						new ReOpener(aEvent),
+						mReliabilityOptions.getReconnectDelay(),
+						TimeUnit.MILLISECONDS);
+			}
+		}	
 	}
 
 	/**

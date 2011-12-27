@@ -96,6 +96,7 @@
 			<domains>
 				<domain>http://jwebsocket.org</domain>
 				<domain>http://10.208.7.110</domain>
+				<!-- <domain>http://10.21.68.56</domain> -->
 				<domain>http://jwebsocket.com</domain>
 				<domain>http://www.jwebsocket.org</domain>
 				<domain>http://www.jwebsocket.com</domain>
@@ -1248,30 +1249,30 @@
 			</server-assignments>
 		</plugin>
 		-->
-
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
-			<!-- TODO: NAMESPACE ?? -->
+			< ! - - TODO: NAMESPACE ?? - - >
 			<ns>test</ns>
-			<!--
+			< ! - -
 			<ns>org.jwebsocket.plugins.events</ns>
-			-->
+			- - >
 			<id>jws.events</id>
-			<!-- TODO: ID?? -->
-			<!-- 
+			< ! - - TODO: ID?? - - >
+			< ! - - 
 			<id>jws.events.test</id>
-			-->
+			- - >
 			<jar>jWebSocketEventsPlugIn-1.0.jar</jar>
-			<!--
+			< ! - -
 			<settings>
 				<setting key="config" type="json">{xml_config:"${JWEBSOCKET_HOME}/conf/EventsPlugIn.xml"}</setting>
 			</settings>
-			-->
+			- - >
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		
+		-->
 	</plugins>
 
 	<!-- filters to be instantiated for jWebSocket -->
