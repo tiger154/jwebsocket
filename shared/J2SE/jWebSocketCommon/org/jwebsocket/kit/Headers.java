@@ -1,7 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket - Copyright (c) 2010 Innotrade GmbH
+//	---------------------------------------------------------------------------
+//	This program is free software; you can redistribute it and/or modify it
+//	under the terms of the GNU Lesser General Public License as published by the
+//	Free Software Foundation; either version 3 of the License, or (at your
+//	option) any later version.
+//	This program is distributed in the hope that it will be useful, but WITHOUT
+//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//	more details.
+//	You should have received a copy of the GNU Lesser General Public License along
+//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.kit;
 
 import java.io.ByteArrayOutputStream;
@@ -20,14 +30,11 @@ public class Headers {
 	public static final String HOST = "Host";
 	public static final String UPGRADE = "Upgrade";
 	public static final String CONNECTION = "Connection";
-	
 	public static final String SEC_WEBSOCKET_KEY = "Sec-WebSocket-Key";
 	public static final String SEC_WEBSOCKET_ORIGIN = "Sec-WebSocket-Origin";
 	public static final String SEC_WEBSOCKET_PROTOCOL = "Sec-WebSocket-Protocol";
 	public static final String SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
-	
 	public static final String SEC_WEBSOCKET_ACCEPT = "Sec-WebSocket-Accept";
-	
 	private Map<String, String> mFields = new FastMap<String, String>();
 	private String mFirstLine = null;
 	private byte[] mTrailingBytes = null;
@@ -48,8 +55,6 @@ public class Headers {
 		ByteArrayOutputStream lBuffer = new ByteArrayOutputStream(512);
 		ByteArrayOutputStream lTrailing = new ByteArrayOutputStream(16);
 
-		byte[] lServerResponse = new byte[16];
-
 		int lA, lB = -1;
 		while (!lHeaderComplete) {
 			lA = lB;
@@ -57,6 +62,9 @@ public class Headers {
 				lB = aIS.read();
 			} catch (IOException ex) {
 				throw new WebSocketException("Error on reading stream: " + ex.getMessage());
+			}
+			if (lB < 0) {
+				return;
 			}
 			lBuffer.write(lB);
 			if (!lInHeader) {
@@ -73,7 +81,9 @@ public class Headers {
 				}
 				// if the line is empty, the header is complete
 				if (lLine.trim().equals("")) {
+					// the header is finished
 					lInHeader = false;
+					// if not hixie the header is complete now
 					lHeaderComplete = !WebSocketProtocolAbstraction.isHixieVersion(aVersion);
 				} else {
 					if (0 == lLineNo) {
@@ -85,8 +95,8 @@ public class Headers {
 						}
 					}
 					lLineNo++;
-
 				}
+				// if end of line reset the line buffer
 				lBuffer.reset();
 			}
 		}
@@ -119,9 +129,16 @@ public class Headers {
 	}
 
 	/**
-	 * @return the mTrailingBytes
+	 * Returns the trailing bytes of the hixie header. Kept for backward 
+	 * compatibility with older browsers, flash-bridge and other clients.
+	 * @return the trailing bytes (16) of the header.
 	 */
 	public byte[] getTrailingBytes() {
 		return mTrailingBytes;
+	}
+
+	public boolean isValid() {
+		// TODO: improve header validation based on protocol version and header content!
+		return (mFirstLine != null && mFields.size() > 0);
 	}
 }

@@ -151,32 +151,32 @@ var jws = {
 	//:d:en:public scope, everybody can read and write items from this scope
 	SCOPE_PUBLIC: "public",
 
-	//:const:*:DEF_RESP_TIMEOUT:integer:30000
+	//:const:*:DEF_RESP_TIMEOUT:Integer:30000
 	//:d:en:Default timeout in milliseconds for waiting on asynchronous responses.
 	//:d:en:An individual timeout can be passed per request.
 	DEF_RESP_TIMEOUT: 30000,
 
 
 	//:i:en:Browsertype Constants
-	//:const:*:BT_UNKNOWN
+	//:const:*:BT_UNKNOWN:Integer:0
 	//:d:en:Browsertype is unknown.
 	BT_UNKNOWN		:  0,
-	//:const:*:BT_FIREFOX
+	//:const:*:BT_FIREFOX:Integer::
 	//:d:en:Browser is "Firefox".
 	BT_FIREFOX		:  1,
-	//:const:*:BT_NETSCAPE
+	//:const:*:BT_NETSCAPE:Integer:2
 	//:d:en:Browser is "Netscape".
 	BT_NETSCAPE		:  2,
-	//:const:*:BT_OPERA
+	//:const:*:BT_OPERA:Integer:3
 	//:d:en:Browser is "Opera".
 	BT_OPERA		:  3,
-	//:const:*:BT_IEXPLORER
+	//:const:*:BT_IEXPLORER:Integer:4
 	//:d:en:Browser is "Internet Explorer".
 	BT_IEXPLORER	:  4,
-	//:const:*:BT_SAFARI
+	//:const:*:BT_SAFARI:Integer:5
 	//:d:en:Browser is "Safari".
 	BT_SAFARI		:  5,
-	//:const:*:BT_CHROME
+	//:const:*:BT_CHROME:Integer:6
 	//:d:en:Browser is "Chrome".
 	BT_CHROME		: 6,
 
@@ -221,8 +221,8 @@ var jws = {
 	//:m:*:getServerURL
 	//:d:en:Returns the URL to the jWebSocket based on schema, host, port, _
 	//:d:en:context and servlet.
-	//:a:en::voide::
-	//:r:*:::void:jWebSocket server URL consisting of schema://host:port/context/servlet
+	//:a:en::::none
+	//:r:*:::String:jWebSocket server URL consisting of schema://host:port/context/servlet
 	getServerURL: function( aSchema, aHost, aPort, aContext, aServlet ) {
 		var lURL =
 			aSchema + "://"
@@ -241,7 +241,7 @@ var jws = {
 	//:d:en:Returns the default URL to the un-secured jWebSocket Server. This is a convenience _
 	//:d:en:method used in all jWebSocket demo dialogs. In case of changes to the _
 	//:d:en:server URL you only need to change to above JWS_SERVER_xxx constants.
-	//:a:en::voide::
+	//:a:en::::none
 	//:r:*:::void:Default jWebSocket server URL consisting of schema://host:port/context/servlet
 	getDefaultServerURL: function() {
 		return( this.getServerURL(
@@ -257,7 +257,7 @@ var jws = {
 	//:d:en:Returns the default URL to the secured jWebSocket Server. This is a convenience _
 	//:d:en:method used in all jWebSocket demo dialogs. In case of changes to the _
 	//:d:en:server URL you only need to change to above JWS_SERVER_xxx constants.
-	//:a:en::voide::
+	//:a:en::::none
 	//:r:*:::void:Default jWebSocket server URL consisting of schema://host:port/context/servlet
 	getDefaultSSLServerURL: function() {
 		return( this.getServerURL(
@@ -273,7 +273,7 @@ var jws = {
 	//:d:en:checks if the browser or one of its plug-ins like flash or chrome _
 	//:d:en:do support web sockets to be used by an application.
 	//:a:en::::none
-	//:r:*:::boolean:true if the browser or one of its plug-ins support websockets, otherwise false.
+	//:r:*:::boolean:[tt]true[/tt] if the browser or one of its plug-ins support websockets, otherwise [tt]false[/tt].
 	browserSupportsWebSockets: function() {
 		return( 
 			window.WebSocket !== null && window.WebSocket !== undefined
@@ -284,7 +284,7 @@ var jws = {
 	//:d:en:checks if the browser natively supports web sockets, no plug-ins
 	//:d:en:are considered. Caution! This is a public field not a function!
 	//:a:en::::none
-	//:r:*:::boolean:true if the browser natively support websockets, otherwise false.
+	//:r:*:::boolean:[tt]true[/tt] if the browser natively support websockets, otherwise [tt]false[/tt].
 	browserSupportsNativeWebSockets: (function() {
 		return(
 			window.WebSocket !== null && window.WebSocket !== undefined
@@ -294,7 +294,7 @@ var jws = {
 	//:m:*:browserSupportsJSON
 	//:d:en:checks if the browser natively or by JSON lib does support JSON.
 	//:a:en::::none
-	//:r:*:::boolean:true if the browser or one of its plug-ins support JSON, otherwise false.
+	//:r:*:::boolean:[tt]true[/tt] if the browser or one of its plug-ins support JSON, otherwise [tt]false[/tt].
 	browserSupportsJSON: function() {
 		return(
 			window.JSON !== null && window.JSON !== undefined
@@ -305,7 +305,7 @@ var jws = {
 	//:d:en:checks if the browser natively supports JSON, no plug-ins
 	//:d:en:are considered. Caution! This is a public field not a function!
 	//:a:en::::none
-	//:r:*:::boolean:true if the browser natively support websockets, otherwise false.
+	//:r:*:::boolean:[tt]true[/tt] if the browser natively support websockets, otherwise [tt]false[/tt].
 	browserSupportsNativeJSON: (function() {
 		return(
 			window.JSON !== null && window.JSON !== undefined
@@ -315,7 +315,7 @@ var jws = {
 	//:m:*:browserSupportsWebWorkers
 	//:d:en:checks if the browser natively supports HTML5 WebWorkers
 	//:a:en::::none
-	//:r:*:::boolean:true if the browser natively support WebWorkers, otherwise false.
+	//:r:*:::boolean:[tt]true[/tt] if the browser natively support WebWorkers, otherwise [tt]false[/tt].
 	browserSupportsWebWorkers: (function() {
 		return(
 			window.Worker !== null && window.Worker !== undefined
@@ -325,7 +325,7 @@ var jws = {
 	//:m:*:runAsThread
 	//:d:en:checks if the browser natively supports HTML5 WebWorkers
 	//:a:en::::none
-	//:r:*:::boolean:true if the browser natively support WebWorkers, otherwise false.
+	//:r:*:::boolean:[tt]true[/tt] if the browser natively support WebWorkers, otherwise [tt]false[/tt].
 	runAsThread: function( aOptions ) {
 		// if browser does not support WebWorkers nothing can be done here
 		if ( !this.browserSupportsWebWorkers ) {
@@ -426,7 +426,7 @@ var jws = {
 	//:d:en:checks if the browser is Internet Explorer. _
 	//:d:en:This is needed to switch to IE specific event model.
 	//:a:en::::none
-	//:r:*:::boolean:true if the browser is IE, otherwise false.
+	//:r:*:::boolean:[tt]true[/tt] if the browser is IE, otherwise [tt]false[/tt].
 	isIE: (function() {
 		var lUserAgent = navigator.userAgent;
 		var lIsIE = lUserAgent.indexOf( "MSIE" );
@@ -436,140 +436,167 @@ var jws = {
 	//:i:de:Bei Erweiterung der Browsertypen auch BROWSER_NAMES entsprechend anpassen!
 
 	//:m:*:getBrowserName
-	//:d:de:Liefert den Namen des aktuell verwendeten Browser zur&uuml;ck.
 	//:d:en:Returns the name of the browser.
-	//:a:*::-
-	//:r:de::browserName:String:Name des verwendeten Broswers.
+	//:a:en::::none
 	//:r:en::browserName:String:Name of the used browser.
 	getBrowserName: function() {
 		return this.fBrowserName;
 	},
 
 	//:m:*:getBrowserVersion
-	//:d:de:Liefert die Browserversion als Flie&szlig;kommazahl zur&uuml;ck.
 	//:d:en:Returns the browser version als float value.
-	//:a:*::-
-	//:r:de::browserVersion:Float:Die Versions Nummer des Browsers.
+	//:a:en::::none
 	//:r:en::browserVersion:Float:Version number of the browser.
 	getBrowserVersion: function() {
 		return this.fBrowserVerNo;
 	},
 
 	//:m:*:getBrowserVersionString
-	//:d:de:Liefert die Browserversion als String zur&uuml;ck.
 	//:d:en:Returns the browser version as string value.
-	//:a:*::-
-	//:r:de:::String:Die Versions Nummer des Browsers als String.
+	//:a:en::::none
 	//:r:en:::String:Version string of the browser.
 	getBrowserVersionString: function() {
 		return this.fBrowserVerStr;
 	},
 
 	//:m:*:isFirefox
-	//:d:de:Ermittelt, ob der verwendete Browser von Typ "Firefox" ist.
 	//:d:en:Determines, if the used browser is a "Firefox".
-	//:a:*::-
-	//:r:de::isFirefox:Boolean:true, wenn der Browser Firefox ist, andernfalls false.
-	//:r:en::isFirefox:Boolean:true, if Browser is Firefox, otherwise false.
+	//:a:en::::none
+	//:r:en::isFirefox:Boolean:[tt]true[/tt], if Browser is Firefox, otherwise [tt]false[/tt].
 	isFirefox: function() {
 		return this.fIsFirefox;
 	},
 
 	//:m:*:isOpera
-	//:d:de:Ermittelt, ob der verwendete Browser von Typ "Opera" ist.
 	//:d:en:Determines, if the used browser is a "Opera".
-	//:a:*::-
-	//:r:de::isOpera:Boolean:true, wenn der Browser Opera ist, andernfalls false.
-	//:r:en::isOpera:Boolean:true, if Browser is Opera, otherwise false.
+	//:a:en::::none
+	//:r:en::isOpera:Boolean:[tt]true[/tt], if Browser is Opera, otherwise [tt]false[/tt].
 	isOpera: function() {
 		return this.fIsOpera;
 	},
 
 	//:m:*:isChrome
-	//:d:de:Ermittelt, ob der verwendete Browser von Typ "Chrome" ist.
 	//:d:en:Determines, if the used browser is a "Chrome".
-	//:a:*::-
-	//:r:de::isOpera:Boolean:true, wenn der Browser Chrome ist, andernfalls false.
-	//:r:en::isOpera:Boolean:true, if Browser is Chrome, otherwise false.
+	//:a:en::::none
+	//:r:en::isOpera:Boolean:[tt]true[/tt], if Browser is Chrome, otherwise [tt]false[/tt].
 	isChrome: function() {
 		return this.fIsChrome;
 	},
 
 	//:m:*:isIExplorer
-	//:d:de:Ermittelt, ob der verwendete Browser von Typ "Internet Explorer" ist.
 	//:d:en:Determines, if the used browser is a "Internet Explorer".
-	//:a:*::-
-	//:r:de::isIExplorer:Boolean:true, wenn der Browser Internet Explorer ist, andernfalls false.
-	//:r:en::isIExplorer:Boolean:true, if Browser is Internet Explorer, otherwise false.
+	//:a:en::::none
+	//:r:en::isIExplorer:Boolean:[tt]true[/tt], if Browser is Internet Explorer, otherwise [tt]false[/tt].
 	isIExplorer: function() {
 		return this.fIsIExplorer;
 	},
 
+	//:m:*:isIExplorer
+	//:d:en:Determines, if the used browser is a "Internet Explorer" and the version number is less than or equal to 6.x.
+	//:a:en::::none
+	//:r:en::isIExplorer:Boolean:[tt]true[/tt], if Browser is Internet Explorer less then or equal to 6.x, otherwise [tt]false[/tt].
 	isIE_LE6: function() {
 		return( this.isIExplorer() && this.getBrowserVersion() < 7 );
 	},
 
+	//:m:*:isIExplorer
+	//:d:en:Determines, if the used browser is a "Internet Explorer" and the version number is less than or equal to 7.x. _
+	//:d:en:This is required for cross-browser-abstraction.
+	//:a:en::::none
+	//:r:en::isIExplorer:Boolean:[tt]true[/tt], if Browser is Internet Explorer less then or equal to 7.x, otherwise [tt]false[/tt].
 	isIE_LE7: function() {
 		return( this.isIExplorer() && this.getBrowserVersion() < 8 );
 	},
 
+	//:m:*:isIExplorer
+	//:d:en:Determines, if the used browser is a "Internet Explorer" and the version number is greater than or equal to 8.x. _
+	//:d:en:This is required for cross-browser-abstraction.
+	//:a:en::::none
+	//:r:en::isIExplorer:Boolean:[tt]true[/tt], if Browser is Internet Explorer greater then or equal to 8.x, otherwise [tt]false[/tt].
 	isIE_GE8: function() {
 		return( this.isIExplorer() && this.getBrowserVersion() >= 8 );
 	},
 
 	//:m:*:isSafari
-	//:d:de:Ermittelt, ob der verwendete Browser von Typ "Safari" ist.
 	//:d:en:Determines, if the used browser is a "Safari".
-	//:a:*::-
-	//:r:de::isSafari:Boolean:true, wenn der Browser Safari ist, andernfalls false.
-	//:r:en::isSafari:Boolean:true, if Browser is Safari, otherwise false.
+	//:a:en::::none
+	//:r:en::isSafari:Boolean:[tt]true[/tt], if Browser is Safari, otherwise [tt]false[/tt].
 	isSafari: function() {
 		return this.fIsSafari;
 	},
 
 	//:m:*:isNetscape
-	//:d:de:Ermittelt, ob der verwendete Browser von Typ "Netscape" ist.
 	//:d:en:Determines, if the used browser is a "Netscape".
-	//:a:*::-
-	//:r:de:::Boolean:true, wenn der Browser Netscape ist, andernfalls false.
-	//:r:en:::Boolean:true, if Browser is Netscape, otherwise false.
+	//:a:en::::none
+	//:r:en:::Boolean:[tt]true[/tt], if Browser is Netscape, otherwise [tt]false[/tt].
 	isNetscape: function() {
 		return this.fIsNetscape;
 	},
 
-	//:m:de:isPocketIE
-	//:d:de:...
-	//:d:en:...
-	//:a:*::-
-	//:r:de::isPocketIE:Boolean:true, wenn der Browser Pocket Internet Explorer ist, andernfalls false.
-	//:r:en::isPocketIE:Boolean:true, if Browser is Pocket Internet Explorer, otherwise false.
+	//:m:*:isPocketIE
+	//:d:en:Determines, if the used browser is a "Pocket Internet Explorer".
+	//:a:en::::none
+	//:r:en::isPocketIE:Boolean:[tt]true[/tt], if browser is Pocket Internet Explorer, otherwise [tt]false[/tt].
 	isPocketIE: function() {
 		return this.fIsPocketIE;
 	},
 
+	//:package:*:jws.console
+	//:class:*:console
+	//:ancestor:*:-
+	//:d:en:Implements an abstraction wrapper around the log console of various browsers.
 	console: {
 		// per deploy default set isActive to false and level = 2 (info)
 		isActive: false,
 		level: 2, 
-			// don't use below constants her for the level! 
+			// don't use below constants here for the level but use the number!
 			// They are not yet defined at this point in time!
+			 
+		//:const:*:ALL:integer:0
+		//:d:en:Show all log output.
 		ALL: 0,
+		//:const:*:DEBUG:integer:1
+		//:d:en:Log debug, info, warn, error and fatal output.
 		DEBUG: 1,
+		//:const:*:INFO:integer:2
+		//:d:en:Log info, warn, error and fatal output.
 		INFO: 2,
+		//:const:*:WARN:integer:3
+		//:d:en:Log warn, error and fatal output.
 		WARN: 3,
+		//:const:*:ERROR:integer:4
+		//:d:en:Log error and fatal output.
 		ERROR: 4,
+		//:const:*:FATAL:integer:5
+		//:d:en:Log fatal output only.
 		FATAL: 5,
 	
+		//:m:*:isDebugEnabled
+		//:d:en:Determines, if the debug log output is currently enabled. _
+		//:d:en:A call to this method can improve performance, _
+		//:d:en:since complex log output string do not need to be generated.
+		//:a:en::::none
+		//:r:en:::Boolean:[tt]true[/tt], if debug logs are enabled, otherwise [tt]false[/tt].
 		isDebugEnabled: function() {
 			return( window.console && jws.console.isActive
 				&& jws.console.level <= jws.console.DEBUG );
 		},
 	
+		//:m:*:isInfoEnabled
+		//:d:en:Determines, if the info log output is currently enabled. _
+		//:d:en:A call to this method can improve performance, _
+		//:d:en:since complex log output string do not need to be generated.
+		//:a:en::::none
+		//:r:en:::Boolean:[tt]true[/tt], if info logs are enabled, otherwise [tt]false[/tt].
 		isInfoEnabled: function() {
 			return( window.console && jws.console.isActive
 				&& jws.console.level <= jws.console.INFO );
 		},
 	
+		//:m:*:log
+		//:d:en:Logs the given message as non-classified message to the console.
+		//:a:*::aMsg:String:Message to be logged as non-classified output.
+		//:r:en:::void
 		log: function( aMsg ) {
 			if( window.console 
 				&& jws.console.isActive
@@ -578,48 +605,98 @@ var jws = {
 			}
 		},
 		
+		//:m:*:debug
+		//:d:en:Logs the given message as debug message to the console. _
+		//:d:en:If the log is not active or the log level is set higher than _
+		//:d:en:[tt]DEBUG[/tt] the message is suppressed.
+		//:a:*::aMsg:String:Message to be logged as debug output.
+		//:r:en:::void
 		debug: function( aMsg ) {
 			if( window.console
 				&& jws.console.isActive 
 				&& jws.console.level <= jws.console.DEBUG
 			) {
-				console.debug( aMsg );
+				if( console.debug ) {
+					console.debug( aMsg );
+				} else {
+					console.log( "[debug]: " + aMsg );
+				}	
 			}
 		},
 		
+		//:m:*:info
+		//:d:en:Logs the given message as an info message to the console. _
+		//:d:en:If the log is not active or the log level is set higher than _
+		//:d:en:[tt]INFO[/tt] the message is suppressed.
+		//:a:*::aMsg:String:Message to be logged as an info output.
+		//:r:en:::void
 		info: function( aMsg ) {
 			if( window.console 
 				&& jws.console.isActive 
 				&& jws.console.level <= jws.console.INFO
 			) {
-				console.info( aMsg );
+				if( console.info ) {
+					console.info( aMsg );
+				} else {
+					console.log( "[info]: " + aMsg );
+				}	
 			}
 		},
 		
+		//:m:*:warn
+		//:d:en:Logs the given message as a warning message to the console. _
+		//:d:en:If the log is not active or the log level is set higher than _
+		//:d:en:[tt]WARN[/tt] the message is suppressed.
+		//:a:*::aMsg:String:Message to be logged as a warning output.
+		//:r:en:::void
 		warn: function( aMsg ) {
 			if( window.console
 				&& jws.console.isActive
 				&& jws.console.level <= jws.console.WARN
 			) {
-				console.warn( aMsg );
+				if( console.warn ) {
+					console.warn( aMsg );
+				} else {
+					console.log( "[warn]: " + aMsg );
+				}	
 			}
 		},
 		
+		//:m:*:error
+		//:d:en:Logs the given message as an error message to the console. _
+		//:d:en:If the log is not active or the log level is set higher than _
+		//:d:en:[tt]ERROR[/tt] the message is suppressed.
+		//:a:*::aMsg:String:Message to be logged as an error output.
+		//:r:en:::void
 		error: function( aMsg ) {
 			if( window.console
 				&& jws.console.isActive
 				&& jws.console.level <= jws.console.ERROR
 			) {
-				console.error( aMsg );
+				if( console.error ) {
+					console.error( aMsg );
+				} else {
+					console.log( "[error]: " + aMsg );
+				}	
 			}
 		},
 		
+		//:m:*:fatal
+		//:d:en:Logs the given message as a fatal message to the console. _
+		//:d:en:If the log is not active or the log level is set higher than _
+		//:d:en:[tt]FATAL[/tt] the message is suppressed.
+		//:a:*::aMsg:String:Message to be logged as a fatal output.
+		//:r:en:::void
 		fatal: function( aMsg ) {
 			if( window.console
 				&& jws.console.isActive
 				&& jws.console.level <= jws.console.FATAL
 			) {
-				console.fatal( aMsg );
+				if( console.fatal ) {
+					console.fatal( aMsg );
+				} else {
+					console.log( "[fatal]: " + aMsg );
+				}	
 			}
 		}
 	}	
@@ -819,7 +896,10 @@ var jws = {
 //:package:*:jws.events
 //:class:*:jws.events
 //:ancestor:*:-
-//:d:en:Implements event abstraction for Internet Explorer.
+//:d:en:Provides an event abstraction for old Internet Explorer versions. _
+//:d:en:This is provided for convenience for simple applications that don't make _
+//:d:en:use of high level UI/JS frameworks. If a UI or JavaScript framework is _
+//:d:en:used we recommended to use the event abstraction of this framework.
 jws.events = {
 
 	//:m:*:addEventListener
@@ -839,10 +919,21 @@ jws.events = {
 			}
 	),
 
-	// :d:en:Removes a listener (callback) from an event in a cross-browser compatible way.
-	// :a:en::aElement:Node:Source element that fires events.
-	// :a:en::aEvent:String:Name of the event as a string.
-	// :a:en::aListener:Function:The listener function which is called in case of the event.
+	//:m:*:removeEventListener
+	//:d:en:Removes a listener (callback) from an event in a cross-browser compatible way.
+	//:a:en::aElement:Node:Source element that fires events.
+	//:a:en::aEvent:String:Name of the event as a string.
+	//:a:en::aListener:Function:The listener function which is called in case of the event.
+	removeEventListener : (
+		jws.isIE ?
+			function( aElement, aEvent, aListener ) {
+				aElement.detachEvent( "on" + aEvent, aListener);
+			}
+		:
+			function( aElement, aEvent, aListener ) {
+				aElement.removeEventListener( aEvent, aListener, false );
+			}
+	),
 
 	//:m:*:getTarget
 	//:d:en:Returns the element which originally fired the event in a cross-browser compatible way.
@@ -875,8 +966,7 @@ jws.events = {
 };
 
 //  <JasobNoObfs>
-/*
- * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
+/* A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
  * Version 2.2 Copyright (C) Paul Johnston 1999 - 2009
  * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
@@ -912,20 +1002,29 @@ jws.tools = {
         return lRes;
     },
 	
+	//:m:*:calcMD5
+	//:d:en:Generates an MD5 hash for the given UTF-8 input String
+	//:a:en::aUTF8:String:UTF-8 String to generate the MD5 hash for.
+	//:r:*:::String:String (32 digits) containing the MD5 hash for the given String.
 	calcMD5: function( aUTF8 ) {
 		return( hex_md5( aUTF8 ) );
 	},
 	
-	escapeSQL: function( aValue ) {
-		return aValue;
-		/*
-		if( aValue && typeof aValue == "string" ) {
+	//:m:*:escapeSQL
+	//:d:en:Escapes SQL queries for special SQL databases. _
+	//:d:en:Since this is usally done by the database abstraction on the server _
+	//:d:en:the use of this function on the client is supposed to be used in _
+	//:d:en:exceptional cases only to provide abstraction which not yet _
+	//:d:en:supported by the server.
+	//:a:en::aSQL:String:SQL String to be escaped for SQL queries.
+	//:r:*:::String:Escaped SQL String for use SQL queries.
+	escapeSQL: function( aSQL ) {
+		if( aSQL && typeof aValue == "string" ) {
 			// escape single quotes in strings by double single quotes
-			return aValue.replace( /[']/g, "''" );
-		} else {
-			return aValue;
-		}
-		*/
+			// aSQL = aSQL.replace( /[']/g, "''" );
+			// here can be done further escapes as required for the particular database...
+		}	
+		return aSQL;
 	},
 
 	date2ISO: function( aDate ) {
@@ -1005,22 +1104,25 @@ jws.tools = {
 		return hex_md5("{" + chars.toString() + "}");
 	},
 
-	getType: function(aObject){
-		var value = aObject;
-		var t = typeof value;
+	getType: function( aObject ) {
+		var lValue = aObject;
+		var lRes = typeof lValue;
 
-		if ("number" == t){
-			if((parseFloat(value) == parseInt(value))){
-				t = "integer";
+		// differentation between integer and float types
+		if ( "number" == lRes ) {
+			if( ( parseFloat( lValue ) == parseInt( lValue ) ) ){
+				lRes = "integer";
 			} else {
-				t = "double";
+				lRes = "double";
 			}
-		} else if (Object.prototype.toString.call(value) === "[object Array]") {
-			t = "array";
-		} else if (value === null) {
-			t = "null";
+		// identification of array type
+		} else if ( Object.prototype.toString.call( lValue ) === "[object Array]" ) {
+			lRes = "array";
+		// identification of null value for any type
+		} else if ( lValue === null ) {
+			lRes = "null";
 		}
-		return t;
+		return lRes;
 	}
 
 };
@@ -1340,10 +1442,23 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 //	---------------------------------------------------------------------------
 //  jWebSocket - some convenience JavaScript OOP tools
 //	---------------------------------------------------------------------------
+//	
+//:package:*:jws
+//:class:*:jws.oop
+//:ancestor:*:-
+//:d:en:Implements simple class declaration to support multi-level inheritance _
+//:d:en:and easy 'inherited' calls (super-calls) in JavaScript
 jws.oop = {};
 
-// implement simple class declaration to support multi-level inheritance
-// and easy 'inherited' calls (super-calls) in JavaScript
+//:m:*:declareClass
+//:d:en:Declares a new JavaScript class which supports easy inheritance and _
+//:d:en:super calls. This is required in the jWebSocket framework to e.g. _
+//:d:en:extend the basic communication classes to the token based communication.
+//:a:en::aNamespace:String:Namespace (package) of the class as a string.
+//:a:en::aClassname:String:Name of the class as a string.
+//:a:en::aAncestor:Class:Ancestor class (class-variables and methods are inherited)
+//:a:en::aFields:Array:Array of class fields (class-variables and public methods)
+//:r:*:::void:none
 jws.oop.declareClass = function( aNamespace, aClassname, aAncestor, aFields ) {
 	
 	var lNS = self[ aNamespace ];
@@ -2479,7 +2594,13 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:d:en:Sends a token to the jWebSocket server.
 	//:a:en::aToken:Object:Token to be send to the jWebSocket server.
 	//:a:en::aOptions:Object:Optional arguments as listed below...
-	//:a:en:aOptions:OnResponse:Function:Reference to callback function, which is called when the response is received.
+	//:a:en:aOptions:timeout:Integer:Timeout to wait for a response to be received from the server (default is [tt]jws.DEF_RESP_TIMEOUT[/tt]), if timeout is exceeded a OnTimeout callback can be fired.
+	//:a:en:aOptions:spawnThread:Boolean:Specifies whether to run the request in a separate thread ([tt]true[/tt]), or within the (pooled) thread of the connection ([tt]false[/tt]).
+	//:a:en:aOptions:args:Object:Optional arguments to be passed the optional response, success, failure and timeout callbacks to be easily processed.
+	//:a:en:aOptions:OnResponse:Function:Reference to a response callback function, which is called when [b]any[/b] response is received.
+	//:a:en:aOptions:OnSuccess:Function:Reference to a success function, which is called when a successful response is received ([tt]code=0[/tt]).
+	//:a:en:aOptions:OnFailure:Function:Reference to a failure function, which is called when an failure or error was received ([tt]code!=0[/tt]).
+	//:a:en:aOptions:OnTimeout:Function:Reference to a timeout function, which is called when the given response timeout is exceeded.
 	//:r:*:::void:none
 	sendToken: function( aToken, aOptions ) {
 		var lRes = this.checkWriteable();
@@ -6141,20 +6262,30 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.FileSystemPlugIn );
 
 
 //	---------------------------------------------------------------------------
-//  jWebSocket Sample Client Plug-In
+//  jWebSocket JDBC Plug-In
 //	---------------------------------------------------------------------------
 
 //:package:*:jws
 //:class:*:jws.JDBCPlugIn
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.JDBCPlugIn[/tt] class.
+//:d:en:This client-side plug-in provides the API to access the features of the _
+//:d:en:JDBC plug-in on the jWebSocket server.
 jws.JDBCPlugIn = {
 
 	//:const:*:NS:String:org.jwebsocket.plugins.jdbc (jws.NS_BASE + ".plugins.jdbc")
 	//:d:en:Namespace for the [tt]JDBCPlugIn[/tt] class.
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.jdbc",
-
+	
+	//:m:*:processToken
+	//:d:en:Processes an incoming token from the server side JDBC plug-in and _
+	//:d:en:checks if certains events have to be fired. _
+	//:d:en:If e.g. the request type was [tt]selectSQL[/tt] and data is _
+	//:d:en:returned the [tt]OnJDBCRowSet[/tt] event is fired. Normally this _
+	//:d:en:method is not called by the application directly.
+	//:a:en::aToken:Object:Token to be processed by the plug-in in the plug-in chain.
+	//:r:*:::void:none
 	processToken: function( aToken ) {
 		// check if namespace matches
 		if( aToken.ns == jws.JDBCPlugIn.NS ) {
@@ -6168,6 +6299,12 @@ jws.JDBCPlugIn = {
 		}
 	},
 
+	//:m:*:jdbcQuerySQL
+	//:d:en:Runs a single native SQL query on the server utilizing the JDBC plug-in. 
+	//:d:en:For security reasons it is recommended to use the abstract SQL commands.
+	//:a:en::aQuery:String:Single SQL query string to be executed by the server side JDBC plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
 	jdbcQuerySQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -6181,6 +6318,13 @@ jws.JDBCPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:jdbcQueryScript
+	//:d:en:Runs a native SQL query script on the server utilizing the JDBC plug-in. 
+	//:d:en:Attention! You may not mix query and update commands in a script!
+	//:d:en:For security reasons it is recommended to use the abstract SQL commands.
+	//:a:en::aScript:Array:Array of SQL query strings to be executed by the server side JDBC plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
 	jdbcQueryScript: function( aScript, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -6194,6 +6338,14 @@ jws.JDBCPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:jdbcUpdateSQL
+	//:d:en:Runs a single native SQL update command on the server utilizing the JDBC plug-in. 
+	//:d:en:This method returns an array of numbers how many rows have _
+	//:d:en:been updated. No SQL result data is returned.
+	//:d:en:For security reasons it is recommended to use the abstract SQL commands.
+	//:a:en::aQuery:String:Single SQL update command string to be executed by the server side JDBC plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
 	jdbcUpdateSQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -6207,6 +6359,15 @@ jws.JDBCPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:jdbcUpdateScript
+	//:d:en:Runs a native SQL update script on the server utilizing the JDBC plug-in. _
+	//:d:en:This method returns an array of numbers how many rows have _
+	//:d:en:been updated. No SQL result data is returned.
+	//:d:en:Attention! You may not mix query and update commands in a script!
+	//:d:en:For security reasons it is recommended to use the abstract SQL commands.
+	//:a:en::aScript:Array:Array of SQL update strings to be executed by the server side JDBC plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
 	jdbcUpdateScript: function( aScript, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -6632,7 +6793,9 @@ jws.LoggingPlugIn = {
 			var lValues = [];
 			for( var lField in aData ) {
 				lFields.push( lField );
-				lValues.push( jws.tools.escapeSQL( aData[ lField ] ));
+				// do not use "jws.tools.escapeSQL()" here, 
+				// the SQL string will be escaped by the server!
+				lValues.push( aData[ lField ] );
 			}
 			var lToken = {
 				ns: jws.LoggingPlugIn.NS,

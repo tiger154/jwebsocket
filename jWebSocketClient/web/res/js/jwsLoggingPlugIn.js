@@ -81,7 +81,9 @@ jws.LoggingPlugIn = {
 			var lValues = [];
 			for( var lField in aData ) {
 				lFields.push( lField );
-				lValues.push( jws.tools.escapeSQL( aData[ lField ] ));
+				// do not use "jws.tools.escapeSQL()" here, 
+				// the SQL string will be escaped by the server!
+				lValues.push( aData[ lField ] );
 			}
 			var lToken = {
 				ns: jws.LoggingPlugIn.NS,

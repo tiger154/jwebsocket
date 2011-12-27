@@ -16,20 +16,30 @@
 
 
 //	---------------------------------------------------------------------------
-//  jWebSocket Sample Client Plug-In
+//  jWebSocket JDBC Plug-In
 //	---------------------------------------------------------------------------
 
 //:package:*:jws
 //:class:*:jws.JDBCPlugIn
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.JDBCPlugIn[/tt] class.
+//:d:en:This client-side plug-in provides the API to access the features of the _
+//:d:en:JDBC plug-in on the jWebSocket server.
 jws.JDBCPlugIn = {
 
 	//:const:*:NS:String:org.jwebsocket.plugins.jdbc (jws.NS_BASE + ".plugins.jdbc")
 	//:d:en:Namespace for the [tt]JDBCPlugIn[/tt] class.
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.jdbc",
-
+	
+	//:m:*:processToken
+	//:d:en:Processes an incoming token from the server side JDBC plug-in and _
+	//:d:en:checks if certains events have to be fired. _
+	//:d:en:If e.g. the request type was [tt]selectSQL[/tt] and data is _
+	//:d:en:returned the [tt]OnJDBCRowSet[/tt] event is fired. Normally this _
+	//:d:en:method is not called by the application directly.
+	//:a:en::aToken:Object:Token to be processed by the plug-in in the plug-in chain.
+	//:r:*:::void:none
 	processToken: function( aToken ) {
 		// check if namespace matches
 		if( aToken.ns == jws.JDBCPlugIn.NS ) {
@@ -43,6 +53,12 @@ jws.JDBCPlugIn = {
 		}
 	},
 
+	//:m:*:jdbcQuerySQL
+	//:d:en:Runs a single native SQL query on the server utilizing the JDBC plug-in. 
+	//:d:en:For security reasons it is recommended to use the abstract SQL commands.
+	//:a:en::aQuery:String:Single SQL query string to be executed by the server side JDBC plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
 	jdbcQuerySQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -56,6 +72,13 @@ jws.JDBCPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:jdbcQueryScript
+	//:d:en:Runs a native SQL query script on the server utilizing the JDBC plug-in. 
+	//:d:en:Attention! You may not mix query and update commands in a script!
+	//:d:en:For security reasons it is recommended to use the abstract SQL commands.
+	//:a:en::aScript:Array:Array of SQL query strings to be executed by the server side JDBC plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
 	jdbcQueryScript: function( aScript, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -69,6 +92,14 @@ jws.JDBCPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:jdbcUpdateSQL
+	//:d:en:Runs a single native SQL update command on the server utilizing the JDBC plug-in. 
+	//:d:en:This method returns an array of numbers how many rows have _
+	//:d:en:been updated. No SQL result data is returned.
+	//:d:en:For security reasons it is recommended to use the abstract SQL commands.
+	//:a:en::aQuery:String:Single SQL update command string to be executed by the server side JDBC plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
 	jdbcUpdateSQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -82,6 +113,15 @@ jws.JDBCPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:jdbcUpdateScript
+	//:d:en:Runs a native SQL update script on the server utilizing the JDBC plug-in. _
+	//:d:en:This method returns an array of numbers how many rows have _
+	//:d:en:been updated. No SQL result data is returned.
+	//:d:en:Attention! You may not mix query and update commands in a script!
+	//:d:en:For security reasons it is recommended to use the abstract SQL commands.
+	//:a:en::aScript:Array:Array of SQL update strings to be executed by the server side JDBC plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
 	jdbcUpdateScript: function( aScript, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
