@@ -135,6 +135,13 @@ jws.JDBCPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:jdbcExecSQL
+	//:d:en:Runs a single native SQL DDL command on the server utilizing the _
+	//:d:en:JDBC plug-in. This method should be used to run DDL commands only, _
+	//:d:en:e.g. to create or drop tables or stored procedures.
+	//:a:en::aQuery:String:Single SQL DDL string to be executed by the server side JDBC plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
 	jdbcExecSQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -148,6 +155,12 @@ jws.JDBCPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:jdbcSelect
+	//:d:en:Runs a single abstract SQL query on the server utilizing the JDBC plug-in. 
+	//:a:en::aQuery:String:Single SQL query object to be executed by the server side JDBC plug-in.
+	//:a:en:aQuery:tables:Array:Array of Strings with the names of the tables to generate the SQL command.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
 	jdbcSelect: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {

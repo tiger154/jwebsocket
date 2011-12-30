@@ -23,7 +23,7 @@ import org.jwebsocket.logging.Logging;
 
 /**
  *
- * @author kyberneees,aschulze
+ * @author kyberneees, aschulze
  */
 public class CleanExpiredSessionsTask extends TimerTask {
 
@@ -38,11 +38,14 @@ public class CleanExpiredSessionsTask extends TimerTask {
 
 	@Override
 	public void run() {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Cleaning expired sessions...");
-		}
+		// show debug log only, if there really are expired sessions
+		boolean lIsLogged = false;
 		Iterator<String> lKeys = mSessionIdsTrash.keySet().iterator();
 		while (lKeys.hasNext()) {
+			if (!lIsLogged && mLog.isDebugEnabled()) {
+				lIsLogged = true;
+				mLog.debug("Cleaning expired sessions...");
+			}
 			String lKey = lKeys.next();
 			if (((Long) (mSessionIdsTrash.get(lKey)) < System.currentTimeMillis())) {
 				try {
@@ -55,4 +58,6 @@ public class CleanExpiredSessionsTask extends TimerTask {
 		}
 	}
 	// TODO: create something similar to clean-up session index (reconnection manager)
+	// TODO: clean up this tasks when shutting down the server
+	// TODO: check if this task has a name fo rdebug purposes
 }
