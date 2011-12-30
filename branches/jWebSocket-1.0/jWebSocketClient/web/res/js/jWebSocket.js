@@ -118,7 +118,7 @@ var jws = {
 	// Reliability Manager on
 	RO_ON: {
 		autoReconnect: true,
-		reconnectDelay: 500,
+		reconnectDelay: 2000,
 		reconnectTimeout: 30000,
 		queueItemLimit: 1000,
 		queueSizeLimit: 1024 * 1024 * 10 // 10 MByte
@@ -596,7 +596,7 @@ var jws = {
 		//:m:*:log
 		//:d:en:Logs the given message as non-classified message to the console.
 		//:a:*::aMsg:String:Message to be logged as non-classified output.
-		//:r:en:::void
+		//:r:en:::void:none
 		log: function( aMsg ) {
 			if( window.console 
 				&& jws.console.isActive
@@ -610,7 +610,7 @@ var jws = {
 		//:d:en:If the log is not active or the log level is set higher than _
 		//:d:en:[tt]DEBUG[/tt] the message is suppressed.
 		//:a:*::aMsg:String:Message to be logged as debug output.
-		//:r:en:::void
+		//:r:en:::void:none
 		debug: function( aMsg ) {
 			if( window.console
 				&& jws.console.isActive 
@@ -629,7 +629,7 @@ var jws = {
 		//:d:en:If the log is not active or the log level is set higher than _
 		//:d:en:[tt]INFO[/tt] the message is suppressed.
 		//:a:*::aMsg:String:Message to be logged as an info output.
-		//:r:en:::void
+		//:r:en:::void:none
 		info: function( aMsg ) {
 			if( window.console 
 				&& jws.console.isActive 
@@ -648,7 +648,7 @@ var jws = {
 		//:d:en:If the log is not active or the log level is set higher than _
 		//:d:en:[tt]WARN[/tt] the message is suppressed.
 		//:a:*::aMsg:String:Message to be logged as a warning output.
-		//:r:en:::void
+		//:r:en:::void:none
 		warn: function( aMsg ) {
 			if( window.console
 				&& jws.console.isActive
@@ -667,7 +667,7 @@ var jws = {
 		//:d:en:If the log is not active or the log level is set higher than _
 		//:d:en:[tt]ERROR[/tt] the message is suppressed.
 		//:a:*::aMsg:String:Message to be logged as an error output.
-		//:r:en:::void
+		//:r:en:::void:none
 		error: function( aMsg ) {
 			if( window.console
 				&& jws.console.isActive
@@ -686,7 +686,7 @@ var jws = {
 		//:d:en:If the log is not active or the log level is set higher than _
 		//:d:en:[tt]FATAL[/tt] the message is suppressed.
 		//:a:*::aMsg:String:Message to be logged as a fatal output.
-		//:r:en:::void
+		//:r:en:::void:none
 		fatal: function( aMsg ) {
 			if( window.console
 				&& jws.console.isActive
