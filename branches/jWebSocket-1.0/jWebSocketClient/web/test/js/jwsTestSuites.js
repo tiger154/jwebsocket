@@ -90,14 +90,14 @@ function runFullTestSuite() {
 		// run test suites for the various plug-ins
 		jws.tests.System.runSuite();
 		jws.tests.FileSystem.runSuite();
-		jws.tests.Logging.runSuite();
+		// jws.tests.Logging.runSuite();
 		jws.tests.AutomatedAPI.runSuite();
 		
 		// run RPC tests
 		jws.tests.RPC.runSuite();
 
 		// run JMS tests
-		jws.tests.JMS.runSuite();
+		// jws.tests.JMS.runSuite();
    
 		// run Channel tests
 		jws.tests.Channels.runSuite();
@@ -106,7 +106,7 @@ function runFullTestSuite() {
 		jws.tests.Streaming.runSuite();
 		
 		// run JDBC tests
-		jws.tests.JDBC.runSuite();
+		// jws.tests.JDBC.runSuite();
 		
 		// close connections for admin and guest
 		jws.Tests.testCloseSharedAdminConn();

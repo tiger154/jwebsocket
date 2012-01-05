@@ -536,6 +536,5 @@
 			<url>http://jasperreports.sourceforge.net/maven2</url>
 		</repository>
 		
-		
 	</repositories>
 </project>

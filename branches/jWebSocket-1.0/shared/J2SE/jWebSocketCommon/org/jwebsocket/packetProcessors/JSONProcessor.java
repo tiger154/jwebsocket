@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,7 +61,7 @@ public class JSONProcessor {
 	}
 
 	/**
-	 * Quentin: Recursivly convert a JSONArray to a List of List, Map or Object.
+	 * Quentin: Recursively convert a JSONArray to a List of List, Map or Object.
 	 * (also convert all the JSONObject to Map) Example: jsonArrayToList(
 	 * JSONArray [[1,2,3],{"value": "a"}]) will retour a List{{1,2,3},{"value" =>
 	 * "b"}}
@@ -84,7 +85,7 @@ public class JSONProcessor {
 	}
 
 	/**
-	 * Quentin: Recursivly convert a JSONObject to a Map of List, Map or Object.
+	 * Quentin: Recursively convert a JSONObject to a Map of List, Map or Object.
 	 * (also convert all the JSONArray to List)
 	 * 
 	 * @param aJsonArray
@@ -147,8 +148,13 @@ public class JSONProcessor {
 	public static Token packetToToken(WebSocketPacket aDataPacket) {
 		Token lToken = new MapToken();
 		try {
+			ObjectMapper lMapper = new ObjectMapper();
+			Map<String, Object> lTree = lMapper.readValue(aDataPacket.getString("UTF-8"), Map.class);
+			lToken.setMap(lTree);
+			/*
 			String lStr = aDataPacket.getString("UTF-8");
 			return jsonStringToToken(lStr);
+			 */
 		} catch (Exception ex) {
 			// // TODO: process exception
 			// log.error(ex.getClass().getSimpleName() + ": " +
@@ -157,19 +163,25 @@ public class JSONProcessor {
 		return lToken;
 	}
 
-	public static WebSocketPacket tokenToPacket(Token token) {
-		WebSocketPacket packet = null;
+	public static WebSocketPacket tokenToPacket(Token aToken) {
+		WebSocketPacket lPacket = null;
 		try {
-			JSONObject lJO = tokenToJSON(token);
-			String data = lJO.toString();
-			packet = new RawPacket(data, "UTF-8");
+			// use Jackson for JSON conversion here, since 1.0 beta 5
+			// is quicker and less memory consuming
+			// can reuse, share globally
+			ObjectMapper lMapper = new ObjectMapper();
+			String lData = lMapper.writeValueAsString(aToken.getMap());
+			/*			
+			JSONObject lJO = tokenToJSON(aToken);
+			lData = lJO.toString();
+			 */
+			lPacket = new RawPacket(lData, "UTF-8");
 		} catch (Exception ex) {
 			// TODO: process exception
 			// log.error(ex.getClass().getSimpleName() + ": " +
 			// ex.getMessage());
 		}
-
-		return packet;
+		return lPacket;
 	}
 
 	/** 

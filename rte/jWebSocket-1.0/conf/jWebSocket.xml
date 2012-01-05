@@ -1112,8 +1112,8 @@
 				<setting key="webroot">http://jwebsocket.org/</setting>
 				-->
 				<!-- examples for windows based websocket servers -->
-				<setting key="alias:privateDir">c:/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/users/{username}/</setting>
-				<setting key="alias:publicDir">c:/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/public/</setting>
+				<setting key="alias:privateDir">c:/svn/jWebSocketDev/branches/jWebSocket-1.0/jWebSocketClient/web/users/{username}/</setting>
+				<setting key="alias:publicDir">c:/svn/jWebSocketDev/branches/jWebSocket-1.0/jWebSocketClient/web/public/</setting>
 				<setting key="alias:webRoot">http://localhost/jwc10/public/</setting>
 				<setting key="alias:reportRoot">${JWEBSOCKET_HOME}/reports</setting>
 				<!-- examples for Jetty based websocket servers -->

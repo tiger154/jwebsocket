@@ -14,6 +14,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.token;
 
+import org.apache.commons.codec.binary.Base64;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,6 @@ import org.jwebsocket.packetProcessors.CSVProcessor;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.packetProcessors.XMLProcessor;
 import org.jwebsocket.token.Token;
-import org.apache.commons.codec.binary.Base64;
 import org.jwebsocket.api.WebSocketStatus;
 import org.jwebsocket.client.java.ReliabilityOptions;
 import org.jwebsocket.kit.WebSocketEncoding;
@@ -38,6 +38,7 @@ import org.jwebsocket.kit.WebSocketSubProtocol;
 import org.jwebsocket.token.PendingResponseQueueItem;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.token.WebSocketResponseTokenListener;
+import org.jwebsocket.util.Tools;
 
 /**
  * Token based implementation of {@code JWebSocketClient}
@@ -264,7 +265,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	/**
 	 * @return the fSessionId
 	 */
-	public String getfSessionId() {
+	public String getSessionId() {
 		return fSessionId;
 	}
 
@@ -421,7 +422,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		lToken.setString("scope", aScope);
 		lToken.setBoolean("notify", aNotify);
 
-		lToken.setString("data", new String(Base64.encodeBase64(aData)));
+		// lToken.setString("data", Base64.encodeBase64String(aData));
+		lToken.setString("data", Tools.base64Encode(aData));
 		sendToken(lToken);
 	}
 

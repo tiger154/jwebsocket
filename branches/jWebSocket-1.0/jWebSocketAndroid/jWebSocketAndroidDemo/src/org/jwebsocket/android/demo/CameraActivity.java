@@ -76,10 +76,19 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 		}
 		mPictureCallback = new Camera.PictureCallback() {
 
-			public void onPictureTaken(byte[] imageData, Camera aCamera) {
+			public void onPictureTaken(byte[] aImageData, Camera aCamera) {
 				try {
+					/* test code:
+					byte [] lBA = new byte[1000000];
+					JWC.saveFile(lBA,
+							"ba_" + Tools.intToString(mImgId, 4) + ".null",
+							JWebSocketCommonConstants.SCOPE_PUBLIC, true);
+					 */
+					
 					// save file in public area and send notification
-					JWC.saveFile(imageData, "img_" + Tools.intToString(mImgId, 4) + ".jpg", JWebSocketCommonConstants.SCOPE_PUBLIC, true);
+					JWC.saveFile(aImageData,
+							"img_" + Tools.intToString(mImgId, 4) + ".jpg",
+							JWebSocketCommonConstants.SCOPE_PUBLIC, true);
 					mImgId++;
 				} catch (WebSocketException ex) {
 					// TODO: handle exception
