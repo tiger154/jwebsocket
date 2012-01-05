@@ -66,6 +66,11 @@
 	<!--  define all the dependencies here -->
 	<dependencies>
 		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketCommon</artifactId>
 			<version>${project.version}</version>

@@ -20,7 +20,7 @@ pause
 
 set ver=%JWEBSOCKET_VER%
 set testroot=c:\jWebSocket-%ver%-test\
-set dlroot=c:\svn\jWebsocket\downloads\
+set dlroot=c:\svn\jWebSocketDev\downloads\
 set logroot=%testroot%logs\
 rem set dlroot=%testroot%downloads\
 set logfile=%logroot%install_tests.log
@@ -43,7 +43,7 @@ if "%OPERA_APP%"=="" set OPERA_APP="C:\Program Files (x86)\Opera 11.00 beta\oper
 if "%SAFARI_APP%"=="" set SAFARI_APP="C:\Program Files (x86)\Safari\safari.exe"
 if "%IEXPLORER_APP%"=="" set IEXPLORER_APP="C:\Program Files\Internet Explorer\iexplore.exe"
 
-set TEST_URL=http://localhost/jwc10/test/runTests.htm
+set TEST_URL=http://localhost/jwcDev/test/runTests.htm
 
 rem -------------------------------------------------
 rem UNPACK SERVER FILES

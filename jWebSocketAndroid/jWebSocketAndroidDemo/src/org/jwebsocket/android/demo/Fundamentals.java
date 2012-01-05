@@ -93,6 +93,7 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 			JWC.addListener(this);
 			JWC.open();
 		} catch (WebSocketException ex) {
+			log("* exception: " + ex.getMessage());
 		}
 	}
 
@@ -103,6 +104,7 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 			JWC.close();
 			JWC.removeListener(this);
 		} catch (WebSocketException ex) {
+			log("* exception: " + ex.getMessage());
 		}
 		super.onPause();
 	}
@@ -142,8 +144,10 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 	}
 
 	public void processOpening(WebSocketClientEvent aEvent) {
+		log("* opening... ");
 	}
 
 	public void processReconnecting(WebSocketClientEvent aEvent) {
+		log("* reconnecting... ");
 	}
 }

@@ -44,11 +44,11 @@ copy "%conf%/jWebSocket.ks" "%src%jWebSocketJetty/conf"
 rem --- jWebSocket full sources
 
 set base=..\..\..\..\
-set sc=jWebSocket\branches\jWebSocket-%ver%\
-set rt=jWebSocket\rte\jWebSocket-%ver%\
+set sc=jWebSocketDev\branches\jWebSocket-%ver%\
+set rt=jWebSocketDev\rte\jWebSocket-%ver%\
 pushd %base%
 
-set dest=jWebSocket\downloads\jWebSocket-%ver%\jWebSocketFullSources-%ver%.zip
+set dest=jWebSocketDev\downloads\jWebSocket-%ver%\jWebSocketFullSources-%ver%.zip
 if exist %dest% del %dest%
 
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketClient" -xr!target -xr!devguide -xr!quickguide -xr!javadocs -xr!.svn -xr!dist -xr!build
@@ -142,6 +142,10 @@ xcopy %libs%jetty-server-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-util-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-websocket-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
 rem xcopy %libs%servlet-api-2.5-6.1.14.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jackson-core-asl-1.9.3.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jackson-mapper-asl-1.9.3.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jcl-core-2.2.2.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jdom-1.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%json-2-RELEASE65.jar %tempdir%libs\ /s /i /y
 xcopy %libs%slf4j-api-1.5.11.jar %tempdir%libs\ /s /i /y
 xcopy %libs%slf4j-log4j12-1.5.11.jar %tempdir%libs\ /s /i /y
