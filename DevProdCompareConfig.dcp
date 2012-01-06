@@ -7,7 +7,7 @@ Target=C:\svn\jWebSocketProd/*.svn;*bin;*target;C:\svn\jWebsocketProd\downloads;
 Filter=*.xml;*.java;*.css*;*.htm*;*.js;*.swf;*.png;*.gif;*.jpg;*.jpeg;*.ico;*.bat;*.exe4j;*.txt;*.jsbp;*.properties;*.ks;*.keystore;*.mf;*.cfg;*.jar;*.exe/*.class;*.apk;*.war;*.svn;.svn;*.svn-base;all-wcprops;entries;dir-prop-base;prop-base;props;text-base
 IncSubDir=1
 IncSource=1
-IncTarget=1
+IncTarget=0
 IncEqual=0
 [Config]
 DifSizeNew=0
