@@ -14,8 +14,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.session;
 
-import java.util.Timer;
-import org.jwebsocket.api.IStorageProvider;
 import org.jwebsocket.cachestorage.memory.MemoryCacheStorage;
 import org.jwebsocket.storage.memory.MemoryStorage;
 

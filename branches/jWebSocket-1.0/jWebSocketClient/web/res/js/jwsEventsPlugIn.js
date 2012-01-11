@@ -30,11 +30,11 @@ jws.oop.declareClass( "jws", "EventsCallbacksHandler", null, {
 		aArgs.meta.elapsedTime = (new Date().getTime()) - aArgs.sentTime;
 
 		if (undefined != aArgs.meta.eventDefinition){
-			var index = aArgs.filterChain.length - 1;
-			while (index > -1){
+			var lIndex = aArgs.filterChain.length - 1;
+			while (lIndex > -1){
 				try
 				{
-					aArgs.filterChain[index].afterCall(aArgs.meta, aResponseEvent);
+					aArgs.filterChain[lIndex].afterCall(aArgs.meta, aResponseEvent);
 				}
 				catch(err)
 				{
@@ -48,7 +48,7 @@ jws.oop.declareClass( "jws", "EventsCallbacksHandler", null, {
 							break;
 					}
 				}
-				index--;
+				lIndex--;
 			}
 		}
 		
@@ -121,15 +121,15 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 			
 			aOptions.UTID = jws.tools.generateSharedUTID(lToken);
 			
-			var request;
+			var lRequest;
 			if (!aOptions['OnResponse'] && !aOptions['OnSuccess'] && !aOptions['OnFailure'] && !aOptions['OnTimeout']){
-				request = {};
+				lRequest = {};
 			}
 			else{
-				request = new jws.EventsCallbacksHandler();	
+				lRequest = new jws.EventsCallbacksHandler();	
 			}
 			
-			request.args = {
+			lRequest.args = {
 				meta: aOptions,
 				filterChain: this.filterChain,
 				sentTime: new Date().getTime()
@@ -139,7 +139,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 			if (undefined != aOptions.eventDefinition){
 				for (var i = 0; i < this.filterChain.length; i++){
 					try {
-						this.filterChain[i].beforeCall(lToken, request);
+						this.filterChain[i].beforeCall(lToken, lRequest);
 					}
 					catch(err) {
 						switch (err) {
@@ -154,7 +154,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 				}
 			}
 			
-			this.jwsClient.sendToken(lToken, request);
+			this.jwsClient.sendToken(lToken, lRequest);
 		}
 		else
 			throw "client:not_connected";
@@ -167,34 +167,35 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 	//:a:en::aToken:Object:Token to be processed
 	//:r:*:::void:none
 	processToken: function (aToken) {
-		if (this.NS == aToken.ns && "s2c.event_notification" == aToken.type){
-			var event_name = aToken.event_name;
-			var plugin_id = aToken.plugin_id;
+		if (this.NS == aToken.ns && "s2c.en" == aToken.type){
+			var lMethod = aToken._e;
+			var lPlugIn = aToken._p;
 
-			if (undefined != this.plugIns[plugin_id] && undefined != this.plugIns[plugin_id][event_name]){
-				var startTime = new Date().getTime();
-				var result = this.plugIns[plugin_id][event_name](aToken);
-				var processingTime = (new Date().getTime()) - startTime;
+			if (undefined != this.plugIns[lPlugIn] && undefined != this.plugIns[lPlugIn][lMethod]){
+				var lStartTime = new Date().getTime();
+				var lRes = this.plugIns[lPlugIn][lMethod](aToken);
+				var lProcessingTime = (new Date().getTime()) - lStartTime;
 
-				//Sending response back to the server
-				if (aToken.has_callback){
-					this.notify("s2c.onresponse", {
+				//Sending response back to the server if the event notification
+				//has a callback
+				if (aToken.hc){
+					this.notify("s2c.r", {
 						args: {
-							req_id: aToken.uid,
-							response: result,
-							processingTime: processingTime
+							_rid: aToken.uid,
+							_r: lRes,
+							_pt: lProcessingTime
 						}
 					});
 				}
 			}
 			else {
 				//Sending the "not supported" event notification
-				this.notify("s2c.event_not_supported", {
+				this.notify("s2c.ens", {
 					args: {
-						req_id: aToken.uid
+						_rid: aToken.uid
 					}
 				});
-				throw "s2c_event_support_not_found:" + event_name;
+				throw "s2c_event_support_not_found for: " + lMethod;
 			}
 		}
 	}
@@ -215,15 +216,15 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 	//:a:en::OnReady:Function:This callback is called when the plug-in has been generated.
 	//:r:*:::void:none
 	generate: function(aPlugInId, aNotifier, OnReady){
-		var plugIn = new jws.EventsPlugIn();
-		plugIn.notifier = aNotifier;
+		var lPlugIn = new jws.EventsPlugIn();
+		lPlugIn.notifier = aNotifier;
 
 		aNotifier.notify("plugin.getapi", {
 			args: {
 				plugin_id: aPlugInId
 			}
 			,
-			plugIn: plugIn
+			plugIn: lPlugIn
 			,
 			OnReady: OnReady
 			,
@@ -248,7 +249,7 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 			}	
 		});
 
-		return plugIn;
+		return lPlugIn;
 	}
 });
 
@@ -301,9 +302,9 @@ jws.oop.declareClass( "jws", "AppUser", null, {
 	//:a:en::r:String:A role
 	//:r:*:::boolean:none
 	hasRole: function(r){
-		var end = this.roles.length;
+		var lEnd = this.roles.length;
 		
-		for (var i = 0; i < end; i++){
+		for (var i = 0; i < lEnd; i++){
 			if (r == this.roles[i])
 				return true
 		}
@@ -366,23 +367,23 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 	//:r:*:::void:none
 	beforeCall: function(aToken, aRequest){
 		if (aRequest.args.meta.eventDefinition.isSecurityEnabled){
-			var r, u;
-			var roles, users = null;
-			var exclusion = false;
-			var role_authorized = false;
-			var user_authorized = false;
-			var stop = false;
+			var lR, lU;
+			var lRoles, lUsers = null;
+			var lExclusion = false;
+			var lRoleAuthorized = false;
+			var lUserAuthorized = false;
+			var lStop = false;
 			
 			//@TODO: Support IP addresses restrictions checks on the JS client
 
 			//Getting users restrictions
-			users = aRequest.args.meta.eventDefinition.users;
+			lUsers = aRequest.args.meta.eventDefinition.users;
 
 			//Getting roles restrictions
-			roles = aRequest.args.meta.eventDefinition.roles;
+			lRoles = aRequest.args.meta.eventDefinition.roles;
 			
 			//Avoid unnecessary checks if the user is not authenticated
-			if (users && roles && !jws.user.isAuthenticated()){
+			if (lUsers && lRoles && !jws.user.isAuthenticated()){
 				if (aRequest.OnResponse){
 					aRequest.OnResponse({
 						code: -1,
@@ -394,34 +395,34 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 			}
 
 			//Checking if the user have the allowed roles
-			if (users.length > 0){
-				var user_match = false;
-				for (var k = 0; k < users.length; k++){
-					u = users[k];
+			if (lUsers.length > 0){
+				var lUserMatch = false;
+				for (var k = 0; k < lUsers.length; k++){
+					lU = lUsers[k];
 					
-					if ("all" != u){
-						exclusion = (u.substring(0,1) == "!") ? true : false;
-						u = (exclusion) ? u.substring(1) : u;
+					if ("all" != lU){
+						lExclusion = (lU.substring(0,1) == "!") ? true : false;
+						lU = (lExclusion) ? lU.substring(1) : lU;
 
-						if (u == jws.user.principal){
-							user_match = true;
-							if (!exclusion){
-								user_authorized = true;
+						if (lU == jws.user.principal){
+							lUserMatch = true;
+							if (!lExclusion){
+								lUserAuthorized = true;
 							}
 							break;
 						}
 					} else {
-						user_match = true;
-						user_authorized = true;
+						lUserMatch = true;
+						lUserAuthorized = true;
 						break;
 					}
 				}
 
 				//Not Authorized USER
-				if (!user_authorized && user_match || 0 == roles.length){
+				if (!lUserAuthorized && lUserMatch || 0 == lRoles.length){
 					aRequest.OnResponse({
 						code: -1,
-						msg: "Not autorized to notify this event. USER restrictions: " + users.toString()
+						msg: "Not autorized to notify this event. USER restrictions: " + lUsers.toString()
 					}, aRequest.args);
 					
 					this.OnNotAuthorized(aToken);
@@ -430,39 +431,39 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 			}
 
 			//Checking if the user have the allowed roles
-			if (roles.length > 0){
-				for (var i = 0; i < roles.length; i++){
+			if (lRoles.length > 0){
+				for (var i = 0; i < lRoles.length; i++){
 					for (var j = 0; j < jws.user.roles.length; j++){
-						r = roles[i];
+						lR = lRoles[i];
 					
-						if ("all" != r){
-							exclusion = (r.substring(0,1) == "!") ? true : false;
-							r = (exclusion) ? r.substring(1) : r;
+						if ("all" != lR){
+							lExclusion = (lR.substring(0,1) == "!") ? true : false;
+							lR = (lExclusion) ? lR.substring(1) : lR;
 
-							if (r == jws.user.roles[j]){
-								if (!exclusion){
-									role_authorized = true;
+							if (lR == jws.user.roles[j]){
+								if (!lExclusion){
+									lRoleAuthorized = true;
 								}
-								stop = true;
+								lStop = true;
 								break;
 							}
 						} else {
-							role_authorized = true;
-							stop = true;
+							lRoleAuthorized = true;
+							lStop = true;
 							break;
 						}	
 					}
-					if (stop){
+					if (lStop){
 						break;
 					}
 				}
 
 				//Not Authorized ROLE
-				if (!role_authorized){
+				if (!lRoleAuthorized){
 					if (aRequest.OnResponse){
 						aRequest.OnResponse({
 							code: -1,
-							msg: "Not autorized to notify this event. ROLE restrictions: " + roles.toString()
+							msg: "Not autorized to notify this event. ROLE restrictions: " + lRoles.toString()
 						}, aRequest.args);
 					}
 					this.OnNotAuthorized(aToken);
@@ -520,25 +521,25 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 	//:r:*:::void:none
 	beforeCall: function(aToken, aRequest){
 		if (aRequest.args.meta.eventDefinition.isCacheEnabled){
-			var key = aRequest.args.meta.eventDefinition.type + aRequest.args.meta.UTID;
+			var lKey = aRequest.args.meta.eventDefinition.type + aRequest.args.meta.UTID;
 			
 			//Storing in the user private cache storage if required
 			if (aRequest.args.meta.eventDefinition.isCachePrivate && jws.user.isAuthenticated()){
-				key = jws.user.uuid + key;
+				lKey = jws.user.uuid + lKey;
 			}
 			
-			var cachedResponseEvent = this.cache.getItem(key);
+			var lCachedResponseEvent = this.cache.getItem(lKey);
 
-			if (null != cachedResponseEvent){
+			if (null != lCachedResponseEvent){
 				//Setting the processing time of the cached response to 0
-				cachedResponseEvent.processingTime = 0;
+				lCachedResponseEvent.processingTime = 0;
 				
 				//Updating the elapsed time
 				aRequest.args.meta.elapsedTime = (new Date().getTime()) - aRequest.sentTime;
 				
 				//Calling the OnResponse callback
 				if (aRequest.OnResponse){
-					aRequest.OnResponse(cachedResponseEvent, aRequest.args);
+					aRequest.OnResponse(lCachedResponseEvent, aRequest.args);
 				}
 				
 				throw "stop_filter_chain";
@@ -555,15 +556,15 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 	//:r:*:::void:none
 	afterCall: function(aRequest, aResponseEvent){
 		if (aRequest.eventDefinition.isCacheEnabled){
-			var key = aRequest.eventDefinition.type 
+			var lKey = aRequest.eventDefinition.type 
 			+ aRequest.UTID;
 
 			//Storing in the user private cache storage if required
 			if (aRequest.eventDefinition.isCachePrivate){
-				key = jws.user.uuid + key;
+				lKey = jws.user.uuid + lKey;
 			}
 			
-			this.cache.setItem(key, aResponseEvent, {
+			this.cache.setItem(lKey, aResponseEvent, {
 				expirationAbsolute: null,
 				expirationSliding: aRequest.eventDefinition.cacheTime,
 				priority: CachePriority.High
@@ -588,24 +589,24 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 	//:a:en::aRequest:jws.OnResponseObject:The OnResponse callback to be called.
 	//:r:*:::void:none
 	beforeCall: function(aToken, aRequest){
-		var arguments = aRequest.args.meta.eventDefinition.incomingArgsValidation;
+		var lArguments = aRequest.args.meta.eventDefinition.incomingArgsValidation;
 		
-		for (var index = 0; index < arguments.length; index++){
-			if (undefined === aToken[arguments[index].name] && !arguments[index].optional){
+		for (var i = 0; i < lArguments.length; i++){
+			if (undefined === aToken[lArguments[i].name] && !lArguments[i].optional){
 				if (aRequest.OnResponse){
 					aRequest.OnResponse({
 						code: -1,
-						msg: "Argument '"+arguments[index].name+"' is required!"
+						msg: "Argument '"+lArguments[i].name+"' is required!"
 					}, aRequest.args);
 				}
 				throw "stop_filter_chain";
-			}else if (aToken.hasOwnProperty(arguments[index].name)){
-				var requiredType = arguments[index].type;
-				if (requiredType != jws.tools.getType(aToken[arguments[index].name])){
+			}else if (aToken.hasOwnProperty(lArguments[i].name)){
+				var lRequiredType = lArguments[i].type;
+				if (lRequiredType != jws.tools.getType(aToken[lArguments[i].name])){
 					if (aRequest.OnResponse){
 						aRequest.OnResponse({
 							code: -1,
-							msg: "Argument '"+arguments[index].name+"' has invalid type. Required: '"+requiredType+"'"
+							msg: "Argument '"+lArguments[i].name+"' has invalid type. Required: '"+lRequiredType+"'"
 						}, aRequest.args);
 					}
 					throw "stop_filter_chain";
@@ -614,5 +615,3 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 		}
 	}
 });
-
-

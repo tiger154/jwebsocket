@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
  * @author markos
  */
 public class DateHandler {
+	
 	/**
 	 * Current date with "yyyy-MM-dd" format
 	 *

@@ -33,9 +33,9 @@ public abstract class S2CEvent implements ITokenizable {
 	 * Write the parent class fields values to the token
 	 */
 	public void writeParentToToken(Token token) {
-		token.setString("event_name", getId());
-		token.setString("plugin_id", getPlugInId());
-		token.setString("response_type", getResponseType());
+		token.setString("_e", getId());
+		token.setString("_p", getPlugInId());
+		token.setString("_rt", getResponseType());
 	}
 
 	/**

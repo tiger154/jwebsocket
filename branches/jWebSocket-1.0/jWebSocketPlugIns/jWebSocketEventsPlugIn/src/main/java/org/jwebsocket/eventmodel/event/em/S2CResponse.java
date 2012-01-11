@@ -52,7 +52,7 @@ public class S2CResponse extends C2SEvent {
 	/**
 	 * @param reqId The request identifier
 	 */
-	@ImportFromToken(key = "req_id")
+	@ImportFromToken(key = "_rid")
 	public void setReqId(String reqId) {
 		this.reqId = reqId;
 	}
@@ -61,6 +61,6 @@ public class S2CResponse extends C2SEvent {
 	 * @return Time required by the client to process the event
 	 */
 	public double getProcessingTime() {
-		return getArgs().getDouble("processingTime");
+		return getArgs().getDouble("_pt");
 	}
 }

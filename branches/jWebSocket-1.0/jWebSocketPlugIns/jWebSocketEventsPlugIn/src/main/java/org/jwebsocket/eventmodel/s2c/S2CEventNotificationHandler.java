@@ -35,6 +35,7 @@ import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -47,7 +48,6 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	private EventModel em;
 	private TypesMap typesMap;
 	private FastMap<String, FastMap<String, OnResponse>> callsMap = new FastMap<String, FastMap<String, OnResponse>>();
-	private Timer timeoutHandler;
 
 	/**
 	 * Send an event to the client
@@ -66,7 +66,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 		}
 
 		//Creating the token
-		Token token = TokenFactory.createToken(getEm().getParent().getNamespace(), "s2c.event_notification");
+		Token token = TokenFactory.createToken(getEm().getParent().getNamespace(), "s2c.en");
 		aEvent.writeToToken(token);
 		aEvent.writeParentToToken(token);
 		token.setString("uid", getNextUID());
@@ -83,15 +83,15 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 			aOnResponse.setSentTime(System.nanoTime());
 
 			//2CEvent have a callback
-			token.setBoolean("has_callback", true);
+			token.setBoolean("hc", true);
 
 			//Registering timeout callbacks
 			if (aEvent.getTimeout() > 0) {
-				timeoutHandler.schedule(new TimeoutCallbackTask(to, token.getString("uid"), this), aEvent.getTimeout());
+				Tools.getTimer().schedule(new TimeoutCallbackTask(to, token.getString("uid"), this), aEvent.getTimeout());
 			}
 		} else {
 			//S2CEvent don't have a callback
-			token.setBoolean("has_callback", false);
+			token.setBoolean("hc", false);
 		}
 
 		//Sending the token
@@ -141,8 +141,8 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 		}
 
 		//Getting the response
-		if (aEvent.getArgs().getMap().containsKey("response")) {
-			aEvent.setResponse(aEvent.getArgs().getObject("response"));
+		if (aEvent.getArgs().getMap().containsKey("_r")) {
+			aEvent.setResponse(aEvent.getArgs().getObject("_r"));
 		}
 
 		//If a callback is pending for this response
@@ -241,7 +241,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	}
 
 	/**
-	 * @return The stored callbacks 
+	 * @return The stored callbacks map
 	 */
 	public FastMap<String, FastMap<String, OnResponse>> getCallsMap() {
 		return callsMap;
@@ -312,9 +312,8 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 		getEm().on(S2CResponse.class, this);
 		getEm().on(S2CEventNotSupportedOnClient.class, this);
 
-		timeoutHandler = new Timer("jWebSocket S2C Event Timer");
 		//Purge cancelled on timeout callbacks every 5 minutes
-		timeoutHandler.scheduleAtFixedRate(new PurgeCancelledTimeoutsTask(timeoutHandler), 0, 300000);
+		Tools.getTimer().scheduleAtFixedRate(new PurgeCancelledTimeoutsTask(Tools.getTimer()), 0, 300000);
 	}
 
 	/**
