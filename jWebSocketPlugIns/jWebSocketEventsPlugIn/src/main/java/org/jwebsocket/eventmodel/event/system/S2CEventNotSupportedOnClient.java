@@ -37,7 +37,7 @@ public class S2CEventNotSupportedOnClient extends C2SEvent {
 	/**
 	 * @param reqId the reqId to set
 	 */
-	@ImportFromToken(key = "req_id")
+	@ImportFromToken(key = "_rid")
 	public void setReqId(String reqId) {
 		this.reqId = reqId;
 	}

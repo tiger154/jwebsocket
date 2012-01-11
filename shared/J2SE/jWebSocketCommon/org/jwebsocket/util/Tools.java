@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javolution.util.FastList;
@@ -37,6 +38,7 @@ public class Tools {
 
 	private static final Map<String, String> JAVA_2_GENERIC_MAP = new FastMap<String, String>();
 	private static final Map<String, String> GENERIC_2_JAVA_MAP = new FastMap<String, String>();
+	private static Timer timer = new Timer("jWebSocket utility timer");
 
 	static {
 		JAVA_2_GENERIC_MAP.put("java.lang.String", "string");
@@ -240,6 +242,16 @@ public class Tools {
 		// so don't add a Z to the format string here! 'Z' means character Z = UTC
 		SimpleDateFormat lSDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		return lSDF.format(aDate);
+	}
+
+	/**
+	 * Tries to convert a generic type to the correspondant java type
+	 * 
+	 * @param aGenericType
+	 * @return 
+	 */
+	public static String getJavaClassnameFromGenericType(String aGenericType) {
+		return GENERIC_2_JAVA_MAP.get(aGenericType);
 	}
 
 	/**
@@ -544,7 +556,7 @@ public class Tools {
 		}
 		return new String(out);
 	}
-	
+
 	/**
 	 * 
 	 * @param aArray
@@ -559,4 +571,11 @@ public class Tools {
 		return lRes;
 	}
 
+	/**
+	 * 
+	 * @return A jWebSocket shared utility timer
+	 */
+	public static Timer getTimer() {
+		return timer;
+	}
 }

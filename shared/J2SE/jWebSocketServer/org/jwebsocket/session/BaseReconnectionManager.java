@@ -14,12 +14,12 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.session;
 
-import java.util.Timer;
 import org.jwebsocket.api.IBasicCacheStorage;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.ISessionReconnectionManager;
 import org.jwebsocket.api.IStorageProvider;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -33,7 +33,6 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
     private IBasicStorage<String, Object> mSessionIdsTrash;
     private String mTrashStorageName;
     private IStorageProvider mStorageProvider;
-    private Timer mTimer;
 
     /**
      * 
@@ -129,8 +128,7 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 
 	@Override
     public void initialize() throws Exception {
-        mTimer = new Timer("jWebSocket BaseReconnection Timer");
-        mTimer.scheduleAtFixedRate(
+        Tools.getTimer().scheduleAtFixedRate(
                 new CleanExpiredSessionsTask(
                 getSessionIdsTrash(), getStorageProvider()), 0, 600000);
     }

@@ -338,7 +338,6 @@ public class TCPEngine extends BaseEngine {
 		/* please keep comment for debugging purposes! */
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Parsing handshake request: " + new String(lReq).replace("\r\n", "\\n"));
-			// mLog.debug("Parsing initial WebSocket handshake...");
 		}
 		Map lRespMap = WebSocketHandshake.parseC2SRequest(
 				lReq, aClientSocket instanceof SSLSocket);
