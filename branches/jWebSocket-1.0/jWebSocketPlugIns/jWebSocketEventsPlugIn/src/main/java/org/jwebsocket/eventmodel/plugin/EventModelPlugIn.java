@@ -24,6 +24,7 @@ import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import java.util.Map;
 import java.util.Set;
+import javolution.util.FastMap;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.event.C2SEventDefinitionManager;
 import org.jwebsocket.eventmodel.event.S2CEvent;
@@ -198,7 +199,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	 */
 	@Override
 	public void writeToToken(Token aToken) {
-		Token lApi = TokenFactory.createToken();
+		Map lApi = new FastMap();
 		Token lTokenEventDef;
 		C2SEventDefinition lEventDef = null;
 
@@ -206,15 +207,17 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 			try {
 				String aEventId = getEm().getEventFactory().eventToString(getClientAPI().get(lKey));
 				lEventDef = getEm().getEventFactory().getEventDefinitions().getDefinition(aEventId);
+				
 				lTokenEventDef = TokenFactory.createToken();
 				lEventDef.writeToToken(lTokenEventDef);
-				lApi.setToken(lKey, lTokenEventDef);
+				
+				lApi.put(lKey, lTokenEventDef.getMap());
 			} catch (Exception ex) {
 				mLog.debug(ex.getMessage(), ex);
 			}
 		}
 
 		aToken.setString("id", getId());
-		aToken.setToken("api", lApi);
+		aToken.setMap("api", lApi);
 	}
 }

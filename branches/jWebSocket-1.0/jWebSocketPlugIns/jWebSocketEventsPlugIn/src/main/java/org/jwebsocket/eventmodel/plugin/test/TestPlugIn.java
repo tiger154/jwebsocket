@@ -16,8 +16,10 @@
 package org.jwebsocket.eventmodel.plugin.test;
 
 import java.text.DecimalFormat;
+import java.util.Map;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
+import javolution.util.FastMap;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.test.GetEventsInfo;
 import org.jwebsocket.eventmodel.event.test.GetHashCode;
@@ -31,8 +33,6 @@ import org.jwebsocket.eventmodel.plugin.jc.JcResponseCallback;
 import org.jwebsocket.eventmodel.s2c.FailureReason;
 import org.jwebsocket.eventmodel.s2c.OnResponse;
 import org.jwebsocket.eventmodel.s2c.TransactionContext;
-import org.jwebsocket.token.Token;
-import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.logging.Logging;
 import org.apache.log4j.Logger;
 
@@ -60,11 +60,11 @@ public class TestPlugIn extends JcPlugIn {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(GetEventsInfo aEvent, C2SResponseEvent aResponseEvent) {
-		Token table = TokenFactory.createToken();
-		table.setString("name", "EventsPlugIn");
-		table.setString("version", "1.0");
+		Map lInfo = new FastMap();
+		lInfo.put("name", "EventsPlugIn");
+		lInfo.put("version", "1.0");
 
-		aResponseEvent.getArgs().setToken("table", table);
+		aResponseEvent.getArgs().setMap("table", lInfo);
 	}
 
 	/**
@@ -133,7 +133,7 @@ public class TestPlugIn extends JcPlugIn {
 				@Override
 				public void success(ResponseAPDU response, String from) {
 					DecimalFormat f = new DecimalFormat("0");
-					
+
 					System.out.println(">> success " + from + " " + response.getBytes());
 					System.out.println(">> elapsed time " + f.format(getElapsedTime()));
 				}

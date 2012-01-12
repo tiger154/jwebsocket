@@ -15,16 +15,17 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.event;
 
+import java.util.Map;
 import org.jwebsocket.eventmodel.filter.validator.Argument;
 import javolution.util.FastSet;
 import java.util.Set;
 import javolution.util.FastList;
+import javolution.util.FastMap;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.eventmodel.api.ISecureComponent;
 import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.token.ITokenizable;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.token.TokenFactory;
 import org.springframework.validation.Validator;
 
 /**
@@ -487,24 +488,24 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 		}
 		aToken.setList("ip_addresses", lIpAddresses);
 
-		FastList<Token> lIncomingArgs = new FastList();
-		Token lArg;
+		FastList<Map> lIncomingArgs = new FastList();
+		Map lArg;
 		for (Argument lArgument : getIncomingArgsValidation()) {
-			lArg = TokenFactory.createToken();
-			lArg.setString("name", lArgument.getName());
-			lArg.setString("type", lArgument.getType());
-			lArg.setBoolean("optional", lArgument.isOptional());
+			lArg = new FastMap();
+			lArg.put("name", lArgument.getName());
+			lArg.put("type", lArgument.getType());
+			lArg.put("optional", lArgument.isOptional());
 
 			lIncomingArgs.add(lArg);
 		}
 		aToken.setList("incomingArgsValidation", lIncomingArgs);
 
-		FastList<Token> lOutgoingArgs = new FastList();
+		FastList<Map> lOutgoingArgs = new FastList();
 		for (Argument a : getOutgoingArgsValidation()) {
-			lArg = TokenFactory.createToken();
-			lArg.setString("name", a.getName());
-			lArg.setString("type", a.getType());
-			lArg.setBoolean("optional", a.isOptional());
+			lArg = new FastMap();
+			lArg.put("name", a.getName());
+			lArg.put("type", a.getType());
+			lArg.put("optional", a.isOptional());
 
 			lOutgoingArgs.add(lArg);
 		}
