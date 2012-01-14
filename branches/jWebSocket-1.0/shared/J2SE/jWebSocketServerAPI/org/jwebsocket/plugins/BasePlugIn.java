@@ -56,15 +56,6 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	/**
 	 * {@inheritDoc}
 	 */
-	/*
-	@Override
-	public void setPluginConfiguration(PluginConfiguration aConfiguration) {
-	this.mConfiguration = aConfiguration;
-	}
-	 */
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public PluginConfiguration getPluginConfiguration() {
 		return mConfiguration;
@@ -362,5 +353,5 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 		if (aEnabled != lOldEnabled) {
 			processEnabled(aEnabled);
 		}
-	}
+	}	
 }

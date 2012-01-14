@@ -64,7 +64,7 @@ public class StatisticsFilter extends TokenFilter {
 					+ ": " + aToken.toString() + "...");
 		}
 
-		TokenServer lServer = getServer();
+		TokenServer lServer = (TokenServer) getServer();
 		String lUsername = lServer.getUsername(aConnector);
 
 		// TODO: very first security test, replace by user's locked state!

@@ -26,6 +26,7 @@ import java.util.List;
  * until the first plug-in aborts or breaks the chain by returning the
  * corresponding PlugInResponse.
  * @author aschulze
+ * @author markos0886
  */
 public interface WebSocketPlugInChain {
 
@@ -98,6 +99,8 @@ public interface WebSocketPlugInChain {
 	 * @param aPlugIn Plug-in to be removed from the plug-in chain.
 	 */
 	void removePlugIn(WebSocketPlugIn aPlugIn);
+	
+	Boolean reloadPlugIn(WebSocketPlugIn aPlugIn);
 
 	/**
 	 * returns the plug-in from the plug-in chain that matches the given

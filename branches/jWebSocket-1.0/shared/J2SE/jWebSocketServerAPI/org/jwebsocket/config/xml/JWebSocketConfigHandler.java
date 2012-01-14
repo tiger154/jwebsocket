@@ -39,9 +39,11 @@ import org.jdom.output.XMLOutputter;
  * handler, to read the whole config file.
  * 
  * @author puran
+ * @author markos0886
  * @version $Id: JWebSocketConfigHandler.java 596 2010-06-22 17:09:54Z
  *          fivefeetfurther $
  */
+@SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class JWebSocketConfigHandler implements ConfigHandler {
 
 	// We cannot use the logging subsystem here because its config needs to be

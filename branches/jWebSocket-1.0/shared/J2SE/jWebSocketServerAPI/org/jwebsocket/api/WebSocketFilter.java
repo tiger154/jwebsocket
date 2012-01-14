@@ -80,4 +80,6 @@ public interface WebSocketFilter {
 	 * notifies the plug-in about a change in enabled status.
 	 */
 	void processEnabled(boolean aEnabled);
+	
+	WebSocketServer getServer();
 }
