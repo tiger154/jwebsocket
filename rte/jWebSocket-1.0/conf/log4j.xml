@@ -88,7 +88,7 @@
 	<appender name="adminLog" class="org.apache.log4j.RollingFileAppender">
 		<!-- Attention, currently only ${JWEBSOCKET_HOME} is supported as env var -->
 		<param name="file" value="${JWEBSOCKET_HOME}/logs/adminLog.log" />
-		<param name="MaxFileSize" value="1MB" />
+		<param name="MaxFileSize" value="60KB"/>
 		<param name="datePattern" value="'.'yyyy-MM-dd"/>
 		<param name="threshold" value="info"/>
 		<param name="append" value="true" />
