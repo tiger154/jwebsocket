@@ -46,6 +46,7 @@ import org.jwebsocket.logging.Logging;
  * not be overridden.
  * 
  * @author puran
+ * @author markos0886
  * @version $Id: JWebSocketConfig.java 345 2010-04-10 20:03:48Z fivefeetfurther$
  */
 public final class JWebSocketConfig implements Config {
@@ -360,7 +361,7 @@ public final class JWebSocketConfig implements Config {
 		 */
 		public synchronized JWebSocketConfig buildConfig() {
 //			if (mConfig == null) {
-				mConfig = new JWebSocketConfig(this);
+			mConfig = new JWebSocketConfig(this);
 //			}
 			return mConfig;
 		}
@@ -423,12 +424,34 @@ public final class JWebSocketConfig implements Config {
 		return null;
 	}
 
+	public PluginConfig getPlugin(String aIdPlugIn) {
+		if (mPlugins != null) {
+			for (int i = 0; i < mPlugins.size(); i++) {
+				if (mPlugins.get(i).getId().equals(aIdPlugIn)) {
+					return mPlugins.get(i);
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * @return the filters
 	 */
 	public List<FilterConfig> getFilters() {
 		if (mFilters != null) {
 			return Collections.unmodifiableList(mFilters);
+		}
+		return null;
+	}
+	
+	public FilterConfig getFilter(String aIdFilter) {
+		if (mFilters != null) {
+			for (int i = 0; i < mFilters.size(); i++) {
+				if (mFilters.get(i).getId().equals(aIdFilter)) {
+					return mFilters.get(i);
+				}
+			}
 		}
 		return null;
 	}

@@ -34,6 +34,7 @@ import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketFilter;
 import org.jwebsocket.api.WebSocketPlugIn;
+import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.config.xml.FilterConfig;
@@ -42,7 +43,9 @@ import org.jwebsocket.config.xml.PluginConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.factory.JWebSocketJarClassLoader;
 import org.jwebsocket.factory.JWebSocketLoader;
+import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.instance.JWebSocketInstance;
+import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
@@ -55,6 +58,7 @@ import org.jwebsocket.token.Token;
 
 /**
  * @author aschulze
+ * @author markos0886
  */
 public class AdminPlugIn extends TokenPlugIn {
 
@@ -111,18 +115,22 @@ public class AdminPlugIn extends TokenPlugIn {
 				getUserRights(aConnector, aToken);
 			} else if (lType.equals("getUserRoles")) {
 				getUserRoles(aConnector, aToken);
-			} else if (lType.equals("readAdminLogs")) {
+			} else if (lType.equals("getAdminLogs")) {
 				getAdminLogs(aConnector, aToken);
-			} else if (lType.equals("readPlugIns")) {
+			} else if (lType.equals("getPlugInsConfig")) {
 				getPlugInsConfig(aConnector, aToken);
-			} else if (lType.equals("readFilters")) {
+			} else if (lType.equals("getFiltersConfig")) {
 				getFiltersConfig(aConnector, aToken);
-			} else if (lType.equals("readJars")) {
+			} else if (lType.equals("getJars")) {
 				getJars(aConnector, aToken);
-			} else if (lType.equals("readPlugInsByJar")) {
+			} else if (lType.equals("getPlugInsByJar")) {
 				getPlugInsByJar(aConnector, aToken);
-			} else if (lType.equals("readFiltersByJar")) {
+			} else if (lType.equals("getFilterByJar")) {
 				getFilterByJar(aConnector, aToken);
+			} else if (lType.equals("getPlugInConfigById")) {
+				getPlugInConfigById(aConnector, aToken);
+			} else if (lType.equals("getFilterConfigById")) {
+				getFilterConfigById(aConnector, aToken);
 			} else if (lType.equals("changeOrderOfPlugInChain")) {
 				changeOrderOfPlugInChain(aConnector, aToken);
 			} else if (lType.equals("changeOrderOfFilterChain")) {
@@ -145,6 +153,8 @@ public class AdminPlugIn extends TokenPlugIn {
 				addFilter(aConnector, aToken);
 			} else if (lType.equals("reloadPlugIn")) {
 				reloadPlugIn(aConnector, aToken);
+			} else if (lType.equals("reloadFilter")) {
+				reloadFilter(aConnector, aToken);
 			}
 
 			aResponse.abortChain();
@@ -376,14 +386,17 @@ public class AdminPlugIn extends TokenPlugIn {
 			}
 			lResponse.setList("logs", lTokenLogs);
 			lResponse.setInteger("totalCount", lTokenLogs.size());
+			lResponse.setString("msg", "Was obtained the logs of the last " + mNumberOfDays + " days.");
 			lBufferedReader.close();
 			traceLog(aConnector, "Read Logs", "Successful", "Was obtained the logs of the last " + mNumberOfDays + " days.");
 
 		} catch (FileNotFoundException ex) {
 			lResponse.setList("logs", lTokenLogs);
+			lResponse.setString("msg", "Has been created a new log file for AdminPlugIn.");
 			traceLog(aConnector, "Read Logs", "Successful", "Has been created a new log file for AdminPlugIn.");
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Read Logs", "Error", this.getClass().getSimpleName() + " on getAdminLogs: " + ex.getMessage());
 		}
 
@@ -397,6 +410,8 @@ public class AdminPlugIn extends TokenPlugIn {
 
 			if (null != lConfig) {
 				mJWebSocketConfig = lConfig;
+			} else {
+				traceLog(aConnector, "Refresh the configuration", "Error", "The settings don't refresh.");
 			}
 		} catch (Exception ex) {
 			traceLog(aConnector, "Refresh the configuration", "Error", ex.getClass().getSimpleName() + " on refreshJWebSocketConfig: " + ex.getMessage());
@@ -428,10 +443,12 @@ public class AdminPlugIn extends TokenPlugIn {
 			}
 			lResponse.setList("plugins", lTokenPlugIn);
 			lResponse.setInteger("totalCount", lTokenPlugIn.size());
+			lResponse.setString("msg", "Was obtained the plugins configuration");
 			traceLog(aConnector, "Read PlugIns", "Successful", "Was obtained the plugins configuration");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Read PlugIns", "Error", this.getClass().getSimpleName() + " on getPlugInsConfig: " + ex.getMessage());
 		}
 
@@ -463,10 +480,12 @@ public class AdminPlugIn extends TokenPlugIn {
 			}
 			lResponse.setList("filters", lTokenFilter);
 			lResponse.setInteger("totalCount", lTokenFilter.size());
+			lResponse.setString("msg", "Was obtained the filters configuration");
 			traceLog(aConnector, "Read Filters", "Successful", "Was obtained the filters configuration");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Read Filters", "Error", this.getClass().getSimpleName() + " on getFiltersConfig: " + ex.getMessage());
 		}
 
@@ -497,10 +516,12 @@ public class AdminPlugIn extends TokenPlugIn {
 			}
 			lResponse.setList("jars", lJars);
 			lResponse.setInteger("totalCount", lJars.size());
+			lResponse.setString("msg", "Was obtained the java libraries.");
 			traceLog(aConnector, "Read Jar", "Successful", "Was obtained the java libraries.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Read Jar", "Error", this.getClass().getSimpleName() + " on getJars: " + ex.getMessage());
 		}
 
@@ -533,10 +554,12 @@ public class AdminPlugIn extends TokenPlugIn {
 			}
 			lResponse.setList("plugInsByJar", lIdPlugIn);
 			lResponse.setInteger("totalCount", lIdPlugIn.size());
+			lResponse.setString("msg", "Was obtained the plugins belonging to the library " + lJar);
 			traceLog(aConnector, "Read PlugIns By Jar", "Successful", "Was obtained the plugins belonging to the library " + lJar);
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Read PlugIns By Jar", "Error", this.getClass().getSimpleName() + " on getPlugInsByJar: " + ex.getMessage());
 		}
 
@@ -569,11 +592,75 @@ public class AdminPlugIn extends TokenPlugIn {
 			}
 			lResponse.setList("filtersByJar", lIdFilter);
 			lResponse.setInteger("totalCount", lIdFilter.size());
+			lResponse.setString("msg", "Was obtained the filters belonging to the library " + lJar);
 			traceLog(aConnector, "Read Filters By Jar", "Successful", "Was obtained the filters belonging to the library " + lJar);
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Read Filters By Jar", "Error", this.getClass().getSimpleName() + " on getFilterByJar: " + ex.getMessage());
+		}
+
+		lServer.sendToken(aConnector, lResponse);
+	}
+
+	private void getPlugInConfigById(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = lServer.createResponse(aToken);
+		String lId = aToken.getString("id");
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'getPluginConfigById'...");
+		}
+
+		try {
+			refreshJWebSocketConfig(aConnector);
+			PluginConfig lPlugInConfig = mJWebSocketConfig.getPlugin(lId);
+
+			if (lPlugInConfig == null) {
+				throw new Exception("Has caused an error because the input parameter are wrong.");
+			}
+
+			lResponse.setString("name", lPlugInConfig.getName());
+			lResponse.setString("namespace", lPlugInConfig.getNamespace());
+			lResponse.setList("servers", lPlugInConfig.getServers());
+
+			traceLog(aConnector, "Get PlugIn by Id", "Successful", "Get plugin config by id '" + lId + "'.");
+		} catch (Exception ex) {
+			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
+			traceLog(aConnector, "Get PlugIn by Id", "Error", this.getClass().getSimpleName() + " on getPluginConfigById: " + ex.getMessage());
+		}
+
+		lServer.sendToken(aConnector, lResponse);
+	}
+
+	private void getFilterConfigById(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = lServer.createResponse(aToken);
+		String lId = aToken.getString("id");
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'getFilterConfigById'...");
+		}
+
+		try {
+			refreshJWebSocketConfig(aConnector);
+			FilterConfig lFilterConfig = mJWebSocketConfig.getFilter(lId);
+
+			if (lFilterConfig == null) {
+				throw new Exception("Has caused an error because the input parameter are wrong.");
+			}
+
+			lResponse.setString("id", lFilterConfig.getId());
+			lResponse.setString("name", lFilterConfig.getName());
+			lResponse.setString("namespace", lFilterConfig.getNamespace());
+			lResponse.setList("servers", lFilterConfig.getServers());
+
+		} catch (Exception ex) {
+			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
+			traceLog(aConnector, "Get filter by Id", "Error", this.getClass().getSimpleName() + " on getFilterConfigById: " + ex.getMessage());
 		}
 
 		lServer.sendToken(aConnector, lResponse);
@@ -617,10 +704,13 @@ public class AdminPlugIn extends TokenPlugIn {
 				lPlugIns.set(lPosition, lPlugIns.get(lPosition + lStepsMove));
 				lPlugIns.set(lPosition + lStepsMove, aPlugIn);
 			}
+			
+			lResponse.setString("msg", "Changed order of the Plugin chain.");
 			traceLog(aConnector, "Change Order of PlugIns", "Successful", "Changed order of the Plugin chain.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Change Order of PlugIns", "Error", this.getClass().getSimpleName() + " on changeOrderOfPlugInChain: " + ex.getMessage());
 		}
 
@@ -665,11 +755,12 @@ public class AdminPlugIn extends TokenPlugIn {
 				lFilters.set(lPosition, lFilters.get(lPosition + lStepsMove));
 				lFilters.set(lPosition + lStepsMove, lFilter);
 			}
-
+			lResponse.setString("msg", "Changed order of the Filter chain.");
 			traceLog(aConnector, "Change Order of Filters", "Successful", "Changed order of the Filter chain.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Change Order of PlugIns", "Error", this.getClass().getSimpleName() + " on changeOrderOfFilterChain: " + ex.getMessage());
 		}
 
@@ -680,6 +771,8 @@ public class AdminPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		Token lResponse = lServer.createResponse(aToken);
 		String lId = aToken.getString("id");
+		String lVersion = aToken.getString("version");
+		String lReason = aToken.getString("reason");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'enablePlugIn'...");
@@ -690,15 +783,11 @@ public class AdminPlugIn extends TokenPlugIn {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			List<WebSocketPlugIn> lPlugIns = lServer.getPlugInChain().getPlugIns();
-			WebSocketPlugIn lPlugIn = null;
-
-			for (int i = 0; i < lPlugIns.size(); i++) {
-				if (lPlugIns.get(i).getId().equals(lId)) {
-					lPlugIn = lPlugIns.get(i);
-					i = lPlugIns.size();
-				}
+			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
 			}
+
+			WebSocketPlugIn lPlugIn = lServer.getPlugInChain().getPlugIn(lId);
 
 			if (null == lPlugIn) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
@@ -709,11 +798,19 @@ public class AdminPlugIn extends TokenPlugIn {
 			if (!lPlugIn.getEnabled()) {
 				lPlugIn.setEnabled(true);
 				lJWSConfig.setEnabledPlugIn(lId, true);
+
+				//Send reason of change for the jWebSocket Client 
+				Token lReasonOfChange = new MapToken();
+				((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.ENABLED, lVersion, lReason);
+				lServer.broadcastToken(lReasonOfChange);
 			}
+
+			lResponse.setString("msg", "The PlugIn is already working.");
 			traceLog(aConnector, "Enable PlugIn", "Successful", "The PlugIn is already working.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Enable PlugIn", "Error", this.getClass().getSimpleName() + " on enablePlugIn: " + ex.getMessage());
 		}
 
@@ -724,6 +821,8 @@ public class AdminPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		Token lResponse = lServer.createResponse(aToken);
 		String lId = aToken.getString("id");
+		String lVersion = aToken.getString("version");
+		String lReason = aToken.getString("reason");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'enableFilter'...");
@@ -734,15 +833,11 @@ public class AdminPlugIn extends TokenPlugIn {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			List<WebSocketFilter> lFilters = lServer.getFilterChain().getFilters();
-			WebSocketFilter lFilter = null;
-
-			for (int i = 0; i < lFilters.size(); i++) {
-				if (lFilters.get(i).getId().equals(lId)) {
-					lFilter = lFilters.get(i);
-					i = lFilters.size();
-				}
+			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
 			}
+
+			WebSocketFilter lFilter = lServer.getFilterChain().getFilterById(lId);
 
 			if (null == lFilter) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
@@ -753,11 +848,20 @@ public class AdminPlugIn extends TokenPlugIn {
 			if (false == lFilter.getEnabled()) {
 				lFilter.setEnabled(true);
 				lJWSConfig.setEnabledFilter(lId, true);
+
+				//Send reason of change for the jWebSocket Client 
+				Token lReasonOfChange = new MapToken();
+				((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.ENABLED, lVersion, lReason);
+				lServer.broadcastToken(lReasonOfChange);
 			}
+
+
+			lResponse.setString("msg", "The Filter is already working.");
 			traceLog(aConnector, "Enable Filter", "Successful", "The Filter is already working.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Enable Filter", "Error", this.getClass().getSimpleName() + " on enableFilter: " + ex.getMessage());
 		}
 
@@ -768,6 +872,8 @@ public class AdminPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		Token lResponse = lServer.createResponse(aToken);
 		String lId = aToken.getString("id");
+		String lVersion = aToken.getString("version");
+		String lReason = aToken.getString("reason");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'disablePlugIn'...");
@@ -778,15 +884,11 @@ public class AdminPlugIn extends TokenPlugIn {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			List<WebSocketPlugIn> lPlugIns = lServer.getPlugInChain().getPlugIns();
-			WebSocketPlugIn lPlugIn = null;
-
-			for (int i = 0; i < lPlugIns.size(); i++) {
-				if (lPlugIns.get(i).getId().equals(lId)) {
-					lPlugIn = lPlugIns.get(i);
-					i = lPlugIns.size();
-				}
+			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
 			}
+
+			WebSocketPlugIn lPlugIn = lServer.getPlugInChain().getPlugIn(lId);
 
 			if (null == lPlugIn) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
@@ -797,11 +899,20 @@ public class AdminPlugIn extends TokenPlugIn {
 			if (true == lPlugIn.getEnabled()) {
 				lPlugIn.setEnabled(false);
 				lJWSConfig.setEnabledPlugIn(lId, false);
+
+				//Send reason of change for the jWebSocket Client 
+				Token lReasonOfChange = new MapToken();
+				((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.DISABLED, lVersion, lReason);
+				lServer.broadcastToken(lReasonOfChange);
 			}
+
+
+			lResponse.setString("msg", "The plugin has been stopped.");
 			traceLog(aConnector, "Disable PlugIn", "Successful", "The plugin has been stopped.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Disable PlugIn", "Error", this.getClass().getSimpleName() + " on disablePlugIn: " + ex.getMessage());
 		}
 
@@ -812,6 +923,8 @@ public class AdminPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		Token lResponse = lServer.createResponse(aToken);
 		String lId = aToken.getString("id");
+		String lVersion = aToken.getString("version");
+		String lReason = aToken.getString("reason");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'disableFilter'...");
@@ -822,15 +935,12 @@ public class AdminPlugIn extends TokenPlugIn {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			List<WebSocketFilter> lFilters = lServer.getFilterChain().getFilters();
-			WebSocketFilter lFilter = null;
-
-			for (int i = 0; i < lFilters.size(); i++) {
-				if (lFilters.get(i).getId().equals(lId)) {
-					lFilter = lFilters.get(i);
-					i = lFilters.size();
-				}
+			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
 			}
+
+			WebSocketFilter lFilter = lServer.getFilterChain().getFilterById(lId);
+
 			if (null == lFilter) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
@@ -840,11 +950,19 @@ public class AdminPlugIn extends TokenPlugIn {
 			if (true == lFilter.getEnabled()) {
 				lFilter.setEnabled(false);
 				lJWSConfig.setEnabledFilter(lId, false);
+				
+				//Send reason of change for the jWebSocket Client 
+				Token lReasonOfChange = new MapToken();
+				((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.DISABLED, lVersion, lReason);
+				lServer.broadcastToken(lReasonOfChange);
 			}
+
+			lResponse.setString("msg", "The Filter has been stopped.");
 			traceLog(aConnector, "Disable Filter", "Successful", "The Filter has been stopped.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Disable Filter", "Error", this.getClass().getSimpleName() + " on disableFilter: " + ex.getMessage());
 		}
 
@@ -855,6 +973,8 @@ public class AdminPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		Token lResponse = lServer.createResponse(aToken);
 		String lId = aToken.getString("id");
+		String lVersion = aToken.getString("version");
+		String lReason = aToken.getString("reason");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'addPlugIn'...");
@@ -865,81 +985,79 @@ public class AdminPlugIn extends TokenPlugIn {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			List<PluginConfig> lPlugInsConfig = mJWebSocketConfig.getPlugins();
-			PluginConfig lPlugInConfig = null;
-
-			for (int i = 0; i < lPlugInsConfig.size(); i++) {
-				if (lPlugInsConfig.get(i).getId().equals(lId)) {
-					lPlugInConfig = lPlugInsConfig.get(i);
-					i = lPlugInsConfig.size();
-				}
+			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
 			}
+
+			PluginConfig lPlugInConfig = mJWebSocketConfig.getPlugin(lId);
 
 			if (null == lPlugInConfig) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
 
-			Class<WebSocketPlugIn> lPluginClass = null;
-			try {
-				lPluginClass = (Class<WebSocketPlugIn>) Class.forName(lPlugInConfig.getName());
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Plug-in '" + lPlugInConfig.getName() + "' loaded from classpath.");
-				}
-			} catch (ClassNotFoundException ex) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Plug-in '" + lPlugInConfig.getName() + "' not yet in classpath.");
-				}
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Plug-in '" + lPlugInConfig.getName() + "' trying to load from file...");
 			}
 
-			// if not in classpath..try to load plug-in from given .jar file
-			if (lPluginClass == null) {
+			JWebSocketJarClassLoader lClassLoader = new JWebSocketJarClassLoader();
+			String lJarFilePath = JWebSocketConfig.getLibsFolder(lPlugInConfig.getJar());
+			Class<WebSocketPlugIn> lPlugInClass = null;
+
+			//lJarFilePath may be null if .jar is included in server bundle
+			if (lJarFilePath != null) {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug("Plug-in '" + lPlugInConfig.getName() + "' trying to load from file...");
+					mLog.debug("Loading plug-in '" + lPlugInConfig.getName() + "' from '" + lJarFilePath + "'...");
 				}
+				lClassLoader.addFile(lJarFilePath);
+				lPlugInClass = (Class<WebSocketPlugIn>) lClassLoader.reloadClass(lPlugInConfig.getName());
+			}
 
-				JWebSocketJarClassLoader lClassLoader = new JWebSocketJarClassLoader();
-				String lJarFilePath = JWebSocketConfig.getLibsFolder(lPlugInConfig.getJar());
+			// if class found try to create an instance
+			if (lPlugInClass != null) {
+				WebSocketPlugIn lPlugIn = null;
 
-				// jarFilePath may be null if .jar is included in server bundle
-				if (lJarFilePath != null) {
-					if (mLog.isDebugEnabled()) {
-						mLog.debug("Loading plug-in '" + lPlugInConfig.getName() + "' from '" + lJarFilePath + "'...");
-					}
-					lClassLoader.addFile(lJarFilePath);
-					lPluginClass = (Class<WebSocketPlugIn>) lClassLoader.loadClass(lPlugInConfig.getName());
-				}
+				Constructor<WebSocketPlugIn> lPlugInConstructor = null;
+				lPlugInConstructor = lPlugInClass.getConstructor(PluginConfiguration.class);
 
-				// if class found try to create an instance
-				if (lPluginClass != null) {
-					WebSocketPlugIn lPlugIn = null;
-					Constructor<WebSocketPlugIn> lPlugInConstructor = null;
-					lPlugInConstructor = lPluginClass.getConstructor(PluginConfiguration.class);
+				if (lPlugInConstructor != null) {
+					lPlugInConstructor.setAccessible(true);
+					lPlugIn = lPlugInConstructor.newInstance(lPlugInConfig);
 
-					if (lPlugInConstructor != null) {
-						lPlugInConstructor.setAccessible(true);
-						lPlugIn = lPlugInConstructor.newInstance(lPlugInConfig);
+					if (lPlugIn != null) {
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Plug-in '" + lPlugInConfig.getId() + "' successfully instantiated.");
 						}
+
+						//Create reason of change for the jWebSocket Client 
+						Token lReasonOfChange = new MapToken();
+						((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.ADD, lVersion, lReason);
+
 						// now add the plugin to plugin chain on server ids
 						for (String lServerId : lPlugInConfig.getServers()) {
-							List<WebSocketPlugIn> lPlugIns = JWebSocketFactory.getServer(lServerId).getPlugInChain().getPlugIns();
-							if (lPlugIns != null) {
-								lPlugIns.add((WebSocketPlugIn) lPlugIn);
+							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
+							if (null != lServerTemp) {
+								lServerTemp.getPlugInChain().addPlugIn(lPlugIn);
+
+								//Send reason of change for the jWebSocket Client 
+								((TokenServer) lServerTemp).broadcastToken(lReasonOfChange);
 							}
 						}
 					} else {
-						throw new Exception("Plug-in '" + lPlugInConfig.getId() + "' could not be instantiated due to invalid constructor.");
+						throw new Exception("Couldn't instantiate the plug-in.");
 					}
 				} else {
-					throw new Exception("Couldn't instantiate the plug-in.");
+					throw new Exception("Plug-in '" + lPlugInConfig.getId() + "' could not be instantiated due to invalid constructor.");
 				}
+			} else {
+				throw new ClassNotFoundException("Couldn't loading plug-in '" + lPlugInConfig.getName() + "' from '" + lJarFilePath);
 			}
 
+			lResponse.setString("msg", "The plugin has been instantiated.");
 			traceLog(aConnector, "Add PlugIn", "Successful", "The plugin has been instantiated.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Add PlugIn", "Error", this.getClass().getSimpleName() + " on addPlugIn: " + ex.getMessage());
 		}
 
@@ -950,6 +1068,8 @@ public class AdminPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		Token lResponse = lServer.createResponse(aToken);
 		String lId = aToken.getString("id");
+		String lVersion = aToken.getString("version");
+		String lReason = aToken.getString("reason");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'addFilter'...");
@@ -960,81 +1080,79 @@ public class AdminPlugIn extends TokenPlugIn {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			List<FilterConfig> lFiltersConfig = mJWebSocketConfig.getFilters();
-			FilterConfig lFilterConfig = null;
-
-			for (int i = 0; i < lFiltersConfig.size(); i++) {
-				if (lFiltersConfig.get(i).getId().equals(lId)) {
-					lFilterConfig = lFiltersConfig.get(i);
-					i = lFiltersConfig.size();
-				}
+			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
 			}
+
+			FilterConfig lFilterConfig = mJWebSocketConfig.getFilter(lId);
 
 			if (null == lFilterConfig) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
 
-			Class<WebSocketFilter> lFilterClass = null;
-			try {
-				lFilterClass = (Class<WebSocketFilter>) Class.forName(lFilterConfig.getName());
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Plug-in '" + lFilterConfig.getName() + "' loaded from classpath.");
-				}
-			} catch (ClassNotFoundException ex) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Plug-in '" + lFilterConfig.getName() + "' not yet in classpath.");
-				}
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Filter '" + lFilterConfig.getName() + "' trying to load from file...");
 			}
 
-			// if not in classpath..try to load Filter from given .jar file
-			if (lFilterClass == null) {
+			JWebSocketJarClassLoader lClassLoader = new JWebSocketJarClassLoader();
+			String lJarFilePath = JWebSocketConfig.getLibsFolder(lFilterConfig.getJar());
+			Class<WebSocketFilter> lFilterClass = null;
+
+			//lJarFilePath may be null if .jar is included in server bundle
+			if (lJarFilePath != null) {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug("Filter  '" + lFilterConfig.getName() + "' trying to load from file...");
+					mLog.debug("Loading filter '" + lFilterConfig.getName() + "' from '" + lJarFilePath + "'...");
 				}
+				lClassLoader.addFile(lJarFilePath);
+				lFilterClass = (Class<WebSocketFilter>) lClassLoader.reloadClass(lFilterConfig.getName());
+			}
 
-				JWebSocketJarClassLoader lClassLoader = new JWebSocketJarClassLoader();
-				String lJarFilePath = JWebSocketConfig.getLibsFolder(lFilterConfig.getJar());
+			// if class found try to create an instance
+			if (lFilterClass != null) {
+				WebSocketFilter lFilter = null;
 
-				// jarFilePath may be null if .jar is included in server bundle
-				if (lJarFilePath != null) {
-					if (mLog.isDebugEnabled()) {
-						mLog.debug("Loading filter '" + lFilterConfig.getName() + "' from '" + lJarFilePath + "'...");
-					}
-					lClassLoader.addFile(lJarFilePath);
-					lFilterClass = (Class<WebSocketFilter>) lClassLoader.loadClass(lFilterConfig.getName());
-				}
+				Constructor<WebSocketFilter> lFilterConstructor = null;
+				lFilterConstructor = lFilterClass.getConstructor(FilterConfiguration.class);
 
-				// if class found try to create an instance
-				if (lFilterClass != null) {
-					WebSocketFilter lFilter = null;
-					Constructor<WebSocketFilter> lFilterConstructor = null;
-					lFilterConstructor = lFilterClass.getConstructor(FilterConfiguration.class);
+				if (lFilterConstructor != null) {
+					lFilterConstructor.setAccessible(true);
+					lFilter = lFilterConstructor.newInstance(lFilterConfig);
 
-					if (lFilterConstructor != null) {
-						lFilterConstructor.setAccessible(true);
-						lFilter = lFilterConstructor.newInstance(lFilterConfig);
+					if (lFilter != null) {
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Filter '" + lFilterConfig.getId() + "' successfully instantiated.");
 						}
+
+						//Create reason of change for the jWebSocket Client 
+						Token lReasonOfChange = new MapToken();
+						((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.ADD, lVersion, lReason);
+
 						// now add the plugin to plugin chain on server ids
 						for (String lServerId : lFilterConfig.getServers()) {
-							List<WebSocketFilter> lFilters = JWebSocketFactory.getServer(lServerId).getFilterChain().getFilters();
-							if (lFilters != null) {
-								lFilters.add((WebSocketFilter) lFilter);
+							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
+							if (null != lServerTemp) {
+								lServerTemp.getFilterChain().addFilter(lFilter);
+
+								//Send reason of change for the jWebSocket Client 
+								((TokenServer) lServerTemp).broadcastToken(lReasonOfChange);
 							}
 						}
 					} else {
-						throw new Exception("Filter '" + lFilterConfig.getId() + "' could not be instantiated due to invalid constructor.");
+						throw new Exception("Couldn't instantiate the filter.");
 					}
 				} else {
-					throw new Exception("Couldn't instantiate the filter.");
+					throw new Exception("Filter '" + lFilterConfig.getId() + "' could not be instantiated due to invalid constructor.");
 				}
+			} else {
+				throw new ClassNotFoundException("Couldn't loading filter '" + lFilterConfig.getName() + "' from '" + lJarFilePath);
 			}
 
+			lResponse.setString("msg", "The filter has been instantiated.");
 			traceLog(aConnector, "Add Filter", "Successful", "The filter has been instantiated.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Add Filter", "Error", this.getClass().getSimpleName() + " on addFilter: " + ex.getMessage());
 		}
 
@@ -1045,6 +1163,8 @@ public class AdminPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		Token lResponse = lServer.createResponse(aToken);
 		String lId = aToken.getString("id");
+		String lVersion = aToken.getString("version");
+		String lReason = aToken.getString("reason");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'removePlugIn'...");
@@ -1055,30 +1175,41 @@ public class AdminPlugIn extends TokenPlugIn {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			List<WebSocketPlugIn> lPlugIns = lServer.getPlugInChain().getPlugIns();
-			WebSocketPlugIn lPlugIn = null;
-
-			for (int i = 0; i < lPlugIns.size(); i++) {
-				if (lPlugIns.get(i).getId().equals(lId)) {
-					lPlugIn = lPlugIns.get(i);
-					i = lPlugIns.size();
-				}
+			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
 			}
+
+			WebSocketPlugIn lPlugIn = lServer.getPlugInChain().getPlugIn(lId);
 
 			if (null == lPlugIn) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
 
 			JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
-
 			lPlugIn.setEnabled(false);
 			lJWSConfig.removePlugInConfig(lId);
-			lServer.removePlugIn(lPlugIn);
 
+			//Create reason of change for the jWebSocket Client 
+			Token lReasonOfChange = new MapToken();
+			((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.REMOVE, lVersion, lReason);
+
+			// now add the plugin to plugin chain on server ids
+			for (String lServerId : lPlugIn.getPluginConfiguration().getServers()) {
+				WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
+				if (null != lServerTemp) {
+					((TokenServer) lServerTemp).removePlugIn(lPlugIn);
+
+					//Send reason of change for the jWebSocket Client 
+					((TokenServer) lServerTemp).broadcastToken(lReasonOfChange);
+				}
+			}
+
+			lResponse.setString("msg", "The plugin has been removed.");
 			traceLog(aConnector, "Remove PlugIn", "Successful", "The plugin has been removed.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Remove PlugIn", "Error", this.getClass().getSimpleName() + " on removePlugIn: " + ex.getMessage());
 		}
 
@@ -1089,6 +1220,8 @@ public class AdminPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		Token lResponse = lServer.createResponse(aToken);
 		String lId = aToken.getString("id");
+		String lVersion = aToken.getString("version");
+		String lReason = aToken.getString("reason");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'removeFilter'...");
@@ -1099,29 +1232,41 @@ public class AdminPlugIn extends TokenPlugIn {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			List<WebSocketFilter> lFilters = lServer.getFilterChain().getFilters();
-			WebSocketFilter lFilter = null;
-
-			for (int i = 0; i < lFilters.size(); i++) {
-				if (lFilters.get(i).getId().equals(lId)) {
-					lFilter = lFilters.get(i);
-					i = lFilters.size();
-				}
+			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
 			}
+
+			WebSocketFilter lFilter = lServer.getFilterChain().getFilterById(lId);
+
 			if (null == lFilter) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
 
 			JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
-
 			lFilter.setEnabled(false);
 			lJWSConfig.removeFilterConfig(lId);
-			lServer.getFilterChain().removeFilter(lFilter);
 
+			//Create reason of change for the jWebSocket Client 
+			Token lReasonOfChange = new MapToken();
+			((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.REMOVE, lVersion, lReason);
+
+			// now add the filter to filter chain on server ids
+			for (String lServerId : lFilter.getFilterConfiguration().getServers()) {
+				WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
+				if (null != lServerTemp) {
+					((TokenServer) lServerTemp).getFilterChain().removeFilter(lFilter);
+
+					//Send reason of change for the jWebSocket Client 
+					((TokenServer) lServerTemp).broadcastToken(lReasonOfChange);
+				}
+			}
+
+			lResponse.setString("msg", "The Filter has been removed.");
 			traceLog(aConnector, "Remove Filter", "Successful", "The Filter has been removed.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
 			traceLog(aConnector, "Remove Filter", "Error", this.getClass().getSimpleName() + " on removeFilter: " + ex.getMessage());
 		}
 
@@ -1129,10 +1274,201 @@ public class AdminPlugIn extends TokenPlugIn {
 	}
 
 	private void reloadPlugIn(WebSocketConnector aConnector, Token aToken) {
-		//TODO: By implement
+		TokenServer lServer = getServer();
+		Token lResponse = lServer.createResponse(aToken);
+		String lId = aToken.getString("id");
+		String lVersion = aToken.getString("version");
+		String lReason = aToken.getString("reason");
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'reloadPlugIn'...");
+		}
+
+		try {
+			if (lId == null || lId.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter is null or empty.");
+			}
+
+			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			}
+
+			refreshJWebSocketConfig(aConnector);
+
+			PluginConfig lPlugInConfig = mJWebSocketConfig.getPlugin(lId);
+
+			if (null == lPlugInConfig) {
+				throw new Exception("Has caused an error because the input parameter are wrong.");
+			}
+
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Plug-in '" + lPlugInConfig.getName() + "' trying to load from file...");
+			}
+
+			JWebSocketJarClassLoader lClassLoader = new JWebSocketJarClassLoader();
+			String lJarFilePath = JWebSocketConfig.getLibsFolder(lPlugInConfig.getJar());
+			Class<WebSocketPlugIn> lPlugInClass = null;
+
+			//lJarFilePath may be null if .jar is included in server bundle
+			if (lJarFilePath != null) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Loading plug-in '" + lPlugInConfig.getName() + "' from '" + lJarFilePath + "'...");
+				}
+				lClassLoader.addFile(lJarFilePath);
+				lPlugInClass = (Class<WebSocketPlugIn>) lClassLoader.reloadClass(lPlugInConfig.getName());
+			}
+
+			// if class found try to create an instance
+			if (lPlugInClass != null) {
+				WebSocketPlugIn lPlugIn = null;
+
+				Constructor<WebSocketPlugIn> lPlugInConstructor = null;
+				lPlugInConstructor = lPlugInClass.getConstructor(PluginConfiguration.class);
+
+				if (lPlugInConstructor != null) {
+					lPlugInConstructor.setAccessible(true);
+					lPlugIn = lPlugInConstructor.newInstance(lPlugInConfig);
+
+					if (lPlugIn != null) {
+						if (mLog.isDebugEnabled()) {
+							mLog.debug("Plug-in '" + lPlugInConfig.getId() + "' successfully instantiated.");
+						}
+
+						//Create reason of change for the jWebSocket Client
+						Token lReasonOfChange = new MapToken();
+						((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.UPDATE, lVersion, lReason);
+
+						//now add the plugin to plugin chain on server ids
+						for (String lServerId : lPlugInConfig.getServers()) {
+							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
+							if (null != lServerTemp) {
+								if (lServerTemp.getPlugInChain().reloadPlugIn(lPlugIn)) {
+									//Send reason of change for the jWebSocket Client 
+									((TokenServer) lServerTemp).broadcastToken(lReasonOfChange);
+								} else {
+									throw new Exception("Couldn't reload the plug-in on the server " + lServerId);
+								}
+							}
+						}
+					} else {
+						throw new Exception("Couldn't reload the plug-in.");
+					}
+				} else {
+					throw new Exception("Plug-in '" + lPlugInConfig.getId() + "' could not be instantiated due to invalid constructor.");
+				}
+			} else {
+				throw new ClassNotFoundException("Couldn't loading plug-in '" + lPlugInConfig.getName() + "' from '" + lJarFilePath);
+			}
+
+
+			lResponse.setString("msg", "The plugin has been reload.");
+			traceLog(aConnector, "Reload PlugIn", "Successful", "The plugin has been reload.");
+
+		} catch (Exception ex) {
+			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
+			traceLog(aConnector, "Reload PlugIn", "Error", this.getClass().getSimpleName() + " on reloadPlugIn: " + ex.getMessage());
+		}
+
+		lServer.sendToken(aConnector, lResponse);
 	}
 
 	private void reloadFilter(WebSocketConnector aConnector, Token aToken) {
-		//TODO: By implement
+		TokenServer lServer = getServer();
+		Token lResponse = lServer.createResponse(aToken);
+		String lId = aToken.getString("id");
+		String lVersion = aToken.getString("version");
+		String lReason = aToken.getString("reason");
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'reloadFilter'...");
+		}
+
+		try {
+			if (lId == null || lId.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter is null or empty.");
+			}
+
+			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			}
+
+			refreshJWebSocketConfig(aConnector);
+
+			FilterConfig lFilterConfig = mJWebSocketConfig.getFilter(lId);
+
+			if (null == lFilterConfig) {
+				throw new Exception("Has caused an error because the input parameter are wrong.");
+			}
+
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Filter '" + lFilterConfig.getName() + "' trying to load from file...");
+			}
+
+			JWebSocketJarClassLoader lClassLoader = new JWebSocketJarClassLoader();
+			String lJarFilePath = JWebSocketConfig.getLibsFolder(lFilterConfig.getJar());
+			Class<WebSocketFilter> lFilterClass = null;
+
+			//lJarFilePath may be null if .jar is included in server bundle
+			if (lJarFilePath != null) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Loading filter '" + lFilterConfig.getName() + "' from '" + lJarFilePath + "'...");
+				}
+				lClassLoader.addFile(lJarFilePath);
+				lFilterClass = (Class<WebSocketFilter>) lClassLoader.reloadClass(lFilterConfig.getName());
+			}
+
+			// if class found try to create an instance
+			if (lFilterClass != null) {
+				WebSocketFilter lFilter = null;
+
+				Constructor<WebSocketFilter> lFilterConstructor = null;
+				lFilterConstructor = lFilterClass.getConstructor(FilterConfiguration.class);
+
+				if (lFilterConstructor != null) {
+					lFilterConstructor.setAccessible(true);
+					lFilter = lFilterConstructor.newInstance(lFilterConfig);
+
+					if (lFilter != null) {
+						if (mLog.isDebugEnabled()) {
+							mLog.debug("Filter '" + lFilterConfig.getId() + "' successfully instantiated.");
+						}
+
+						//Create reason of change for the jWebSocket Client 
+						Token lReasonOfChange = new MapToken();
+						((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.ADD, lVersion, lReason);
+
+						// now add the filter to filter chain on server ids
+						for (String lServerId : lFilterConfig.getServers()) {
+							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
+							if (null != lServerTemp) {
+								if (lServerTemp.getFilterChain().reloadFilter(lFilter)) {
+									//Send reason of change for the jWebSocket Client 
+									((TokenServer) lServerTemp).broadcastToken(lReasonOfChange);
+								} else {
+									throw new Exception("Couldn't reload the filter on the server " + lServerId);
+								}
+							}
+						}
+					} else {
+						throw new Exception("Couldn't instantiate the filter.");
+					}
+				} else {
+					throw new Exception("Filter '" + lFilterConfig.getId() + "' could not be instantiated due to invalid constructor.");
+				}
+			} else {
+				throw new ClassNotFoundException("Couldn't loading filter '" + lFilterConfig.getName() + "' from '" + lJarFilePath);
+			}
+
+			lResponse.setString("msg", "The filter has been reload.");
+			traceLog(aConnector, "Reload Filter", "Successful", "The filter has been reload.");
+
+		} catch (Exception ex) {
+			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", ex.getMessage());
+			traceLog(aConnector, "Reload Filter", "Error", this.getClass().getSimpleName() + " on reloadFilter: " + ex.getMessage());
+		}
+
+		lServer.sendToken(aConnector, lResponse);
 	}
 }

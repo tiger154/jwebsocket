@@ -25,13 +25,11 @@ import org.xeustechnologies.jcl.JarClassLoader;
  * 
  * @author puran
  * @author kyberneees
+ * @author markos0886
  * @version $Id: JWebSocketJarClassLoader.java 388 2010-04-29 19:15:54Z mailtopuran $
  */
 public class JWebSocketJarClassLoader extends JarClassLoader {
-
-	/**
-	 * 
-	 */
+	
 	public JWebSocketJarClassLoader() {
 		// init with empty list of URLs
 		super();
@@ -47,5 +45,9 @@ public class JWebSocketJarClassLoader extends JarClassLoader {
 		File lFile = new File(aPath);
 		URL lURL = lFile.toURI().toURL();
 		add(lURL);
+	}
+	
+	public Class reloadClass(String className) {
+		return getLocalLoader().loadClass(className, true);
 	}
 }

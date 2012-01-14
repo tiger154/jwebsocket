@@ -21,6 +21,7 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketFilter;
 import org.jwebsocket.api.WebSocketFilterChain;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.xml.FilterConfig;
 
 /**
@@ -73,6 +74,19 @@ public class BaseFilter implements WebSocketFilter {
 	@Override
 	public WebSocketFilterChain getFilterChain() {
 		return mFilterChain;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	@Override
+	public WebSocketServer getServer() {
+		WebSocketServer lServer = null;
+		if (mFilterChain != null) {
+			lServer = mFilterChain.getServer();
+		}
+		return lServer;
 	}
 
 	/**

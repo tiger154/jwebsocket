@@ -49,12 +49,12 @@ public class SystemFilter extends TokenFilter {
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		if (mLog.isDebugEnabled()) {
 			String lOut = aToken.toString();
-			mLog.debug("Checking incoming token from " 
-					+ (aConnector != null ? aConnector.getId() : "[not given]") 
+			mLog.debug("Checking incoming token from "
+					+ (aConnector != null ? aConnector.getId() : "[not given]")
 					+ " (" + lOut.length() + "b): " + lOut + "...");
 		}
 
-		TokenServer lServer = getServer();
+		TokenServer lServer = (TokenServer) getServer();
 		String lUsername = lServer.getUsername(aConnector);
 
 		// TODO: very first security test, replace by user's locked state!
@@ -77,9 +77,9 @@ public class SystemFilter extends TokenFilter {
 	public void processTokenOut(FilterResponse aResponse, WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
 		if (mLog.isDebugEnabled()) {
 			String lOut = aToken.toString();
-			mLog.debug("Checking outgoing token from " 
-					+ (aSource != null ? aSource.getId() : "[not given]") 
-					+ " to " + (aTarget != null ? aTarget.getId() : "[not given]") 
+			mLog.debug("Checking outgoing token from "
+					+ (aSource != null ? aSource.getId() : "[not given]")
+					+ " to " + (aTarget != null ? aTarget.getId() : "[not given]")
 					+ " (" + lOut.length() + "b): " + lOut + "...");
 		}
 	}

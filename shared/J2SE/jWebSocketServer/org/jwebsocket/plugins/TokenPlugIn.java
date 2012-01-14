@@ -15,6 +15,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins;
 
+import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketPacket;
@@ -29,14 +30,11 @@ import org.jwebsocket.token.Token;
 /**
  * 
  * @author aschulze
+ * @author markos0886
  */
 public class TokenPlugIn extends BasePlugIn {
 	
 	private String mNamespace = null;
-	/*
-	public TokenPlugIn() {
-	}
-	 */
 
 	/**
 	 *
@@ -72,8 +70,9 @@ public class TokenPlugIn extends BasePlugIn {
 	}
 
 	/**
-	 * 
+	 * @param aConnector
 	 * @param aToken
+	 * 
 	 * @return
 	 */
 	public Token invoke(WebSocketConnector aConnector, Token aToken) {
@@ -220,5 +219,14 @@ public class TokenPlugIn extends BasePlugIn {
 		if (lServer != null) {
 			lServer.sendErrorToken(aConnector, aInToken, aErrCode, aMessage);
 		}
+	}
+
+	public void createReasonOfChange(Token aResponse, ChangeType aType, String aVersion, String aReason) {
+		aResponse.setNS(getNamespace());
+		aResponse.setType("processChangeOfPlugIn");
+		aResponse.setString("changeType", aType.toString());
+		aResponse.setString("version", aVersion);
+		aResponse.setString("reason", aReason);
+		aResponse.setString("id", getId());
 	}
 }
