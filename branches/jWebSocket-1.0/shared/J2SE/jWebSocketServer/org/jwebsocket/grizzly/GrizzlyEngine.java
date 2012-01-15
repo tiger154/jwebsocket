@@ -1,0 +1,233 @@
+//	---------------------------------------------------------------------------
+//	jWebSocket - Grizzly Engine
+//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	---------------------------------------------------------------------------
+//	This program is free software; you can redistribute it and/or modify it
+//	under the terms of the GNU Lesser General Public License as published by the
+//	Free Software Foundation; either version 3 of the License, or (at your
+//	option) any later version.
+//	This program is distributed in the hope that it will be useful, but WITHOUT
+//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//	more details.
+//	You should have received a copy of the GNU Lesser General Public License along
+//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	---------------------------------------------------------------------------
+package org.jwebsocket.grizzly;
+
+import java.util.Date;
+import org.apache.log4j.Logger;
+
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.websockets.WebSocketAddOn;
+import org.glassfish.grizzly.websockets.WebSocketApplication;
+import org.jwebsocket.api.EngineConfiguration;
+import org.jwebsocket.api.WebSocketConnector;
+import org.glassfish.grizzly.websockets.WebSocketEngine;
+import org.jwebsocket.engines.BaseEngine;
+import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.logging.Logging;
+
+/**
+ *
+ * @author vbarzana, aschulze
+ */
+public class GrizzlyEngine extends BaseEngine {
+
+    private static Logger mLog = Logging.getLogger(GrizzlyEngine.class);
+    private boolean mIsRunning = false;
+    private HttpServer mServer = null;
+
+    public GrizzlyEngine(EngineConfiguration aConfiguration) {
+
+        super(aConfiguration);
+
+        // load the ports
+        Integer lPort = aConfiguration.getPort();
+        Integer lSSLPort = aConfiguration.getSSLPort();
+
+        if (lSSLPort == 0) {
+            lSSLPort = 443;
+        }
+        if (lPort == 0) {
+            lPort = 8080;
+        }
+
+        String lContext = aConfiguration.getContext();
+        if (lContext == null) {
+            lContext = "/";
+        }
+        String lServlet = aConfiguration.getContext();
+        if (lServlet == null) {
+            lServlet = "/*";
+        }
+
+        try {
+
+            if (mLog.isDebugEnabled()) {
+                mLog.debug("Instantiating Grizzly server '"
+                        + "port " + lPort
+                        + ", ssl-port " + lSSLPort
+                        + ", context: '" + lContext
+                        + "', servlet: '" + lServlet + "'...");
+            }
+
+            // Creating Grizzly server
+            mServer = HttpServer.createSimpleServer(lServlet, lPort);
+
+            // Register the WebSockets add on with the HttpServer
+            WebSocketAddOn ws = new WebSocketAddOn();
+            mServer.getListener("grizzly").registerAddOn(ws);
+
+            //TODO: IMPLEMENT GRIZZLY WSS LISTENER
+       /*// -------------- SSL SECTION ----------------------      
+            SSLContextConfigurator lSSLContext = new SSLContextConfigurator();
+            String lWebSocketHome = System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
+            String lKeyStore = lWebSocketHome + "/conf/jWebSocket.ks";
+            lSSLContext.createSSLContext();
+            lSSLContext.setKeyStoreFile(lKeyStore);
+            lSSLContext.setKeyPass("jWebSocket");
+            lSSLContext.setKeyStorePass("jWebSocket");
+            lSSLContext.setKeyManagerFactoryAlgorithm("SunX509");
+            SSLEngineConfigurator lSSLConfigurator = new SSLEngineConfigurator(lSSLContext);
+            NetworkListener lNListener = new NetworkListener("grizzly-ssl", mServer.getListener("grizzly").getHost(), lSSLPort);
+            lNListener.setSSLEngineConfig(lSSLConfigurator);
+            lNListener.setSecure(true);
+            lNListener.registerAddOn(new WebSocketAddOn());
+            
+            mServer.addListener(lNListener);
+            
+            if (mLog.isDebugEnabled()) {
+                mLog.debug("Loading SSL cert from keystore '" + lKeyStore + "'...");
+            }
+            //------------------------- SSL SECTION END ---------------------*/
+
+            // The WebSocketApplication will control the incoming and outgoing flow, connection, listeners, etc...
+            final WebSocketApplication lApp = new GrizzlyWebSocketApplication(this);
+
+            // Registering grizzly jWebSocket Wrapper Application into grizzly WebSocketEngine
+            WebSocketEngine.getEngine().register(lApp);
+            
+            mServer.start();
+
+        } catch (Exception lEx) {
+            mLog.error(lEx.getClass().getSimpleName()
+                    + "Instantiating Embedded Grizzly Server: "
+                    + lEx.getMessage());
+        }
+        if (mLog.isDebugEnabled()) {
+            mLog.debug("Grizzly Server '"
+                    + "' sucessfully instantiated at port "
+                    + lPort + ", SSL port " + lSSLPort + "...");
+        }
+    }
+    
+
+    @Override
+    public void startEngine()
+            throws WebSocketException {
+        if (mLog.isDebugEnabled()) {
+            mLog.debug("Starting Grizzly engine '" + getId() + "...");
+        }
+
+        super.startEngine();
+
+        mIsRunning = true;
+
+        if (mLog.isInfoEnabled()) {
+            mLog.info("Grizzly engine '" + getId() + "' started.");
+        }
+
+        // fire the engine start event
+        engineStarted();
+    }
+
+    @Override
+    public void stopEngine(CloseReason aCloseReason)
+            throws WebSocketException {
+        if (mLog.isDebugEnabled()) {
+            mLog.debug("Stopping Grizzly ' engine '"
+                    + getId() + "...");
+        }
+
+        // resetting "isRunning" causes engine listener to terminate
+        mIsRunning = false;
+        // inherited method stops all connectors
+
+        long lStarted = new Date().getTime();
+        int lNumConns = getConnectors().size();
+        super.stopEngine(aCloseReason);
+
+        try {
+            if (mServer != null) {
+                mServer.stop();
+                if (mLog.isDebugEnabled()) {
+                    mLog.debug("Grizzly successfully stopped.");
+                }
+            } else {
+                if (mLog.isDebugEnabled()) {
+                    mLog.debug("Grizzly not yet started, properly terminated.");
+                }
+                return;
+            }
+        } catch (Exception lEx) {
+            mLog.error(lEx.getClass().getSimpleName()
+                    + " stopping Grizzly Server: "
+                    + lEx.getMessage());
+        }
+
+        // now wait until all connectors have been closed properly
+        // or timeout exceeds...
+        try {
+            while (getConnectors().size() > 0 && new Date().getTime() - lStarted < 10000) {
+                Thread.sleep(250);
+            }
+        } catch (Exception lEx) {
+            mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
+        }
+        if (mLog.isDebugEnabled()) {
+            long lDuration = new Date().getTime() - lStarted;
+            int lRemConns = getConnectors().size();
+            if (lRemConns > 0) {
+                mLog.warn(lRemConns + " of " + lNumConns
+                        + " Grizzly connectors '" + getId()
+                        + "' did not stop after " + lDuration + "ms.");
+            } else {
+                mLog.debug(lNumConns
+                        + " Grizzly connectors '" + getId()
+                        + "' stopped after " + lDuration + "ms.");
+            }
+        }
+        // fire the engine stopped event
+        engineStopped();
+    }
+
+    @Override
+    public void connectorStarted(WebSocketConnector aConnector) {
+        if (mLog.isDebugEnabled()) {
+            mLog.debug("Detected new connector at port "
+                    + aConnector.getRemotePort() + ".");
+        }
+        super.connectorStarted(aConnector);
+    }
+
+    @Override
+    public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+        if (mLog.isDebugEnabled()) {
+            mLog.debug("Detected stopped connector at port "
+                    + aConnector.getRemotePort() + ".");
+        }
+        super.connectorStopped(aConnector, aCloseReason);
+    }
+
+    /*
+     * Returns {@code true} if Grizzly engine is running or {@code false}
+     * otherwise. The alive status represents the state of the Grizzly engine
+     * listener thread.
+     */
+    @Override
+    public boolean isAlive() {
+        return mIsRunning;
+    }
+}
