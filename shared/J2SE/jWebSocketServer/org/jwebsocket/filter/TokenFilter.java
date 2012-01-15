@@ -20,6 +20,7 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.FilterResponse;
+import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 
 /**
@@ -54,5 +55,10 @@ public class TokenFilter extends BaseFilter {
 		aResponse.setString("version", aVersion);
 		aResponse.setString("reason", aReason);
 		aResponse.setString("id", getId());
+	}
+	
+	@Override
+	public TokenServer getServer(){
+		return (TokenServer) super.getServer();
 	}
 }
