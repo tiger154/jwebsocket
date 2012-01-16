@@ -121,7 +121,54 @@
 			-->
 			<maxframesize>1048840</maxframesize>
 		</engine>
-
+		
+		<!-- Glassfish Engine Configuration -->
+        <engine>
+            <name>org.jwebsocket.grizzly.GrizzlyEngine</name>
+            <id>grizzly0</id>
+            <jar>jWebSocketServer-1.0.jar</jar>
+            <!-- use 80/443 for default http/ws or https/wss connections
+                     when running a jWebSocket Server and use Grizzly as an engine.
+                     These settings are recommended only when running jWebSocket
+                     on a separate server beside a WebServer and the firewall
+                     does not allow access to ports 8787 and 9797.
+            -->
+            <!--
+            <port>8080</port>
+            <sslport>443</sslport>
+            -->
+            <!-- use 8787/9797 for default http/ws or https/wss connections
+                     These settings are recommended only when running jWebSocket
+                     on the same server beside a WebServer and the firewall
+                     grants access to ports 8787 and 9797.
+            -->
+			
+            <port>8787</port>
+            <sslport>9797</sslport>
+            
+	     <!-- These domains are accepted by the engine listening on the above mentioned port -->
+            <domains>
+                <domain>jwebsocket.org</domain>
+                <domain>jwebsocket.com</domain>
+                <domain>localhost</domain>
+            </domains>
+		<!-- default jWebSocket session timeout 1h, max timeout is currently 1 hour
+            Grizzly defines it's own timeout in the WebSocketEngine class, 
+            there is no way it can be changed, by default the timeout is 30 secs
+            public static final int DEFAULT_TIMEOUT = Utils.isDebugVM() ? 900 : 30;
+        -->
+            <timeout>0</timeout>
+            <!-- Grizzly provides a WebSocket Servlet, set the context path here -->
+            <context>/jWebSocket</context>
+            <!-- Grizzly provides a WebSocket Servlet, set the servlet path here -->
+            <servlet>/jWebSocket</servlet>
+            <!--
+            maximum size of the data packet that the engine will read,
+            if the frame size is larger than this the connection will be closed.
+            -->
+            <maxframesize>1048840</maxframesize>
+        </engine>
+        
 		<!-- NIO Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.tcp.nio.NioTcpEngine</name>
