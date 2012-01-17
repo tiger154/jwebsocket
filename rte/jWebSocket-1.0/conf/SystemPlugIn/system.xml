@@ -22,6 +22,7 @@
 					guest=084e0343a0486ff05530df6c705c8bb4, ROLE_ADMIN_ROOT, enabled
 					user=ee11cbb19052e40b07aac0ca060c23ee, ROLE_EXTERNAL, ROLE_ADMIN_ROOT, enabled
 					root=63a9f0ea7bb98050796b649e85481845, ROLE_ADMIN_ROOT, enabled
+					admin=21232f297a57a5a743894a0e4a801fc3, ROLE_ADMIN_MAINTENANCE, enabled
 			</value>
 		</property>	
 	</bean>
