@@ -341,19 +341,19 @@ public class AdminPlugIn extends TokenPlugIn {
 
 		Token lResponse = new MapToken(NS_ADMIN, "traceLog");
 
-		Token lTokenLog = new MapToken();
-		lTokenLog.setString("date", DateHandler.getCurrentDate());
-		lTokenLog.setString("time", DateHandler.getCurrentTime());
-		lTokenLog.setString("action", aAction);
-		lTokenLog.setString("result", aResult);
-		lTokenLog.setString("desc", aMessage);
+		FastMap lMap = new FastMap();
+		lMap.put("date", DateHandler.getCurrentDate());
+		lMap.put("time", DateHandler.getCurrentTime());
+		lMap.put("action", aAction);
+		lMap.put("result", aResult);
+		lMap.put("desc", aMessage);
 
-		lResponse.setToken("log", lTokenLog);
+		lResponse.setMap("log", lMap);
 		getServer().sendToken(aConnector, lResponse);
 	}
 
 	private void getAdminLogs(WebSocketConnector aConnector, Token aToken) {
-		List<Token> lTokenLogs = new FastList();
+		List<Map> lTokenLogs = new FastList();
 		Token lResponse = getServer().createResponse(aToken);
 
 		if (mLog.isDebugEnabled()) {
@@ -373,14 +373,14 @@ public class AdminPlugIn extends TokenPlugIn {
 					Date lDateTemp = (Date) lFormatter.parse(lLogSplit[0].trim() + lLogSplit[1].trim());
 
 					if (lDeadline <= lDateTemp.getTime()) {
-						Token lTokenLog = new MapToken();
-						lTokenLog.setString("date", lLogSplit[0].trim());
-						lTokenLog.setString("time", lLogSplit[1].trim());
-						lTokenLog.setString("action", lLogSplit[2].trim());
-						lTokenLog.setString("result", lLogSplit[3].trim());
-						lTokenLog.setString("desc", lLogSplit[4].trim());
+						FastMap lMap = new FastMap();
+						lMap.put("date", lLogSplit[0].trim());
+						lMap.put("time", lLogSplit[1].trim());
+						lMap.put("action", lLogSplit[2].trim());
+						lMap.put("result", lLogSplit[3].trim());
+						lMap.put("desc", lLogSplit[4].trim());
 
-						lTokenLogs.add(lTokenLog);
+						lTokenLogs.add(lMap);
 					}
 				}
 			}
@@ -420,7 +420,7 @@ public class AdminPlugIn extends TokenPlugIn {
 
 	private void getPlugInsConfig(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
-		List<Token> lTokenPlugIn = new FastList();
+		List<Map> lTokenPlugIn = new FastList();
 		Token lResponse = lServer.createResponse(aToken);
 
 		if (mLog.isDebugEnabled()) {
@@ -431,15 +431,15 @@ public class AdminPlugIn extends TokenPlugIn {
 			for (WebSocketPlugIn lPlugIn : lServer.getPlugInChain().getPlugIns()) {
 				PluginConfig lConfig = (PluginConfig) lPlugIn.getPluginConfiguration();
 
-				Token lTokenConfig = new MapToken();
-				lTokenConfig.setString("id", lConfig.getId());
-				lTokenConfig.setString("name", lConfig.getName());
-				lTokenConfig.setString("namespace", lConfig.getNamespace());
-				lTokenConfig.setString("jar", lConfig.getJar());
-				lTokenConfig.setList("servers", lConfig.getServers());
-				lTokenConfig.setBoolean("enabled", lConfig.getEnabled());
+				FastMap lMap = new FastMap();
+				lMap.put("id", lConfig.getId());
+				lMap.put("name", lConfig.getName());
+				lMap.put("namespace", lConfig.getNamespace());
+				lMap.put("jar", lConfig.getJar());
+				lMap.put("servers", lConfig.getServers());
+				lMap.put("enabled", lConfig.getEnabled());
 
-				lTokenPlugIn.add(lTokenConfig);
+				lTokenPlugIn.add(lMap);
 			}
 			lResponse.setList("plugins", lTokenPlugIn);
 			lResponse.setInteger("totalCount", lTokenPlugIn.size());
@@ -457,7 +457,7 @@ public class AdminPlugIn extends TokenPlugIn {
 
 	private void getFiltersConfig(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
-		List<Token> lTokenFilter = new FastList();
+		List<Map> lTokenFilter = new FastList();
 		Token lResponse = lServer.createResponse(aToken);
 
 		if (mLog.isDebugEnabled()) {
@@ -468,15 +468,15 @@ public class AdminPlugIn extends TokenPlugIn {
 			for (WebSocketFilter lFilter : lServer.getFilterChain().getFilters()) {
 				FilterConfig lConfig = (FilterConfig) lFilter.getFilterConfiguration();
 
-				Token lTokenConfig = new MapToken();
-				lTokenConfig.setString("id", lConfig.getId());
-				lTokenConfig.setString("name", lConfig.getName());
-				lTokenConfig.setString("namespace", lConfig.getNamespace());
-				lTokenConfig.setString("jar", lConfig.getJar());
-				lTokenConfig.setList("servers", lConfig.getServers());
-				lTokenConfig.setBoolean("enabled", lConfig.getEnabled());
+				FastMap lMap = new FastMap();
+				lMap.put("id", lConfig.getId());
+				lMap.put("name", lConfig.getName());
+				lMap.put("namespace", lConfig.getNamespace());
+				lMap.put("jar", lConfig.getJar());
+				lMap.put("servers", lConfig.getServers());
+				lMap.put("enabled", lConfig.getEnabled());
 
-				lTokenFilter.add(lTokenConfig);
+				lTokenFilter.add(lMap);
 			}
 			lResponse.setList("filters", lTokenFilter);
 			lResponse.setInteger("totalCount", lTokenFilter.size());
@@ -494,7 +494,7 @@ public class AdminPlugIn extends TokenPlugIn {
 
 	private void getJars(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
-		List<Token> lJars = new FastList();
+		List<Map> lJars = new FastList();
 		Token lResponse = lServer.createResponse(aToken);
 
 		if (mLog.isDebugEnabled()) {
@@ -509,9 +509,9 @@ public class AdminPlugIn extends TokenPlugIn {
 
 			for (String lfileName : pathOfLibs.list()) {
 				if (lfileName.toLowerCase().endsWith(".jar")) {
-					Token lToken = new MapToken();
-					lToken.setString("jar", lfileName);
-					lJars.add(lToken);
+					FastMap lMap = new FastMap();
+					lMap.put("jar", lfileName);
+					lJars.add(lMap);
 				}
 			}
 			lResponse.setList("jars", lJars);
@@ -530,7 +530,7 @@ public class AdminPlugIn extends TokenPlugIn {
 
 	private void getPlugInsByJar(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
-		List<Token> lIdPlugIn = new FastList();
+		List<Map> lIdPlugIn = new FastList();
 		Token lResponse = lServer.createResponse(aToken);
 		String lJar = aToken.getString("jar");
 
@@ -547,9 +547,9 @@ public class AdminPlugIn extends TokenPlugIn {
 
 			for (PluginConfig lConfig : mJWebSocketConfig.getPlugins()) {
 				if (lConfig.getJar().equals(lJar)) {
-					Token lToken = new MapToken();
-					lToken.setString("idPlugIn", lConfig.getId());
-					lIdPlugIn.add(lToken);
+					FastMap lMap = new FastMap();
+					lMap.put("idPlugIn", lConfig.getId());
+					lIdPlugIn.add(lMap);
 				}
 			}
 			lResponse.setList("plugInsByJar", lIdPlugIn);
@@ -568,7 +568,7 @@ public class AdminPlugIn extends TokenPlugIn {
 
 	private void getFilterByJar(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
-		List<Token> lIdFilter = new FastList();
+		List<Map> lIdFilter = new FastList();
 		Token lResponse = lServer.createResponse(aToken);
 		String lJar = aToken.getString("jar");
 
@@ -585,9 +585,9 @@ public class AdminPlugIn extends TokenPlugIn {
 
 			for (FilterConfig lConfig : mJWebSocketConfig.getFilters()) {
 				if (lConfig.getJar().equals(lJar)) {
-					Token lToken = new MapToken();
-					lToken.setString("idFilter", lConfig.getId());
-					lIdFilter.add(lToken);
+					FastMap lMap = new FastMap();
+					lMap.put("idFilter", lConfig.getId());
+					lIdFilter.add(lMap);
 				}
 			}
 			lResponse.setList("filtersByJar", lIdFilter);
