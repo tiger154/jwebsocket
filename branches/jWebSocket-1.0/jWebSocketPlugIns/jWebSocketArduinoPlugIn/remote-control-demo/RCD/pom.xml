@@ -32,11 +32,7 @@
             <version>2.1.7</version>
         </dependency>
         
-         <dependency>
-            <groupId>arduino</groupId>
-            <artifactId>arduino</artifactId>
-            <version>0023</version>
-        </dependency>
+       
     
     </dependencies>
     <properties>
