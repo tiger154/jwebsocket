@@ -1,0 +1,90 @@
+body{
+    width: 100%;
+}
+#title{
+    font-family: monospace ;
+    text-align: center;
+    color:darkgreen;
+    border: #006600;    
+}
+
+.container{
+    margin-left: 32%;
+}
+
+.container div{
+    width: 48px;
+    height: 48px;
+}
+
+#ledblue.off{     
+    background-image: url('../img/blue_off.png');
+    float: left;
+    margin-left: 30px;
+}
+
+#ledblue.on{     
+    background-image: url('../img/blue.png');
+    float: left;
+    margin-left: 30px;
+}
+
+#ledred.off{     
+    background-image: url('../img/red_off.png');
+    float: left;
+    margin-left: 33px;
+}
+#ledred.on{     
+    background-image: url('../img/red.png');
+    float: left;
+    margin-left: 33px;
+}
+#ledgreen.off{     
+    background-image: url('../img/green_off.png');
+    float: left;
+    margin-left: 36px;
+}
+#ledgreen.on{     
+    background-image: url('../img/green.png');
+    float: left;
+    margin-left: 36px;
+}
+#ledyellow.off{     
+    background-image: url('../img/yellow_off.png');
+        float: left;
+    margin-left: 39px;
+}
+#ledyellow.on{     
+    background-image: url('../img/yellow.png');
+        float: left;
+    margin-left: 39px;
+}
+
+.btn#btnclear{
+    margin-left: 24.8%;
+}
+
+.text{    
+    color:#006600 ;  
+}
+
+.text#textlogger {    
+    margin-left: 24.8%;  
+}
+
+.div{     
+    border-bottom:2px solid #006600;
+    border-left: 2px solid #006600;
+    border-right:2px solid #006600;
+    border-top:2px solid #006600;
+    width: 50%;
+    text-align: center;
+    margin: auto;
+    color:#006600 ;
+}
+
+.div#elog {  
+    height: 100px;
+    overflow: auto;
+    font-size: 13px; 
+}
