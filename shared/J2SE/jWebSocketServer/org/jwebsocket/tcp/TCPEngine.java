@@ -107,7 +107,7 @@ public class TCPEngine extends BaseEngine {
 					+ getId() + "' started' at port "
 					+ mTCPListenerPort + " with default timeout "
 					+ (mSessionTimeout > 0 ? mSessionTimeout + "ms" : "infinite")
-					+ ".");
+					+ "...");
 		}
 
 		// create encrypted (SSL) server socket for wss:// protocol
@@ -117,7 +117,7 @@ public class TCPEngine extends BaseEngine {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Starting SSL engine '"
 							+ getId()
-							+ "' at port " + mSSLListenerPort
+							+ "' at port " + mSSLListenerPort + ","
 							+ " with default timeout "
 							+ (mSessionTimeout > 0 ? mSessionTimeout + "ms" : "infinite")
 							+ "...");
@@ -435,13 +435,27 @@ public class TCPEngine extends BaseEngine {
 
 			mIsRunning = true;
 			while (mIsRunning) {
+
 				try {
 					// accept is blocking so here is no need
 					// to put any sleeps into this loop
 					// if (log.isDebugEnabled()) {
 					//	log.debug("Waiting for client...");
 					// }
-					Socket lClientSocket = mServer.accept();
+					Socket lClientSocket = null;
+					
+					//Accept new connections only if the maximun number of connections
+					//has not been reached
+					if (mEngine.getMaxConnections() > mEngine.getConnectors().size()) {
+						lClientSocket = mServer.accept();
+					} else {
+						//If the maximun number of connections is reached,
+						//wait for 1 second and try again
+						Thread.sleep(1000);
+						continue;
+					}
+					
+					
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Client trying to connect on port #"
 								+ lClientSocket.getPort() + "...");

@@ -82,7 +82,8 @@ public class JWebSocketSubSystemSample {
 				JWebSocketCommonConstants.JWEBSOCKET_DEF_SERVLET, // servlet if such
 				JWebSocketCommonConstants.DEFAULT_TIMEOUT, // default session timeout
 				JWebSocketCommonConstants.DEFAULT_MAX_FRAME_SIZE, // max framesize
-				lDomains // list of accepted domains
+				lDomains, // list of accepted domains
+				JWebSocketCommonConstants.DEFAULT_MAX_CONNECTIONS //max connections
 				);
 		mEngine = new TCPEngine(lEngineConfig);
 

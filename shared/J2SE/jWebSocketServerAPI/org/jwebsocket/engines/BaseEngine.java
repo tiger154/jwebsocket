@@ -16,7 +16,6 @@
 package org.jwebsocket.engines;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 
@@ -213,4 +212,14 @@ public class BaseEngine implements WebSocketEngine {
 	public EngineConfiguration getConfiguration() {
 		return mConfiguration;
 	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public Integer getMaxConnections() {
+		return mConfiguration.getMaxConnections();
+	}
+	
+	
 }
