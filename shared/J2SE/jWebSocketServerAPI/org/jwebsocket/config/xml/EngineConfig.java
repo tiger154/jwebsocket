@@ -40,7 +40,8 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	private final int mTimeout;
 	private final int mMaxframesize;
 	private final List<String> mDomains;
-	private Integer mMaxConnections;
+	private final Integer mMaxConnections;
+	private final String mOnMaxConnectionsStrategy;
 
 	/**
 	 * Constructor for engine
@@ -57,7 +58,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	public EngineConfig(String aId, String aName, String aJar, Integer aPort,
 			Integer aSSLPort, String aKeyStore, String aKeyStorePassword,
 			String aContext, String aServlet, int aTimeout,
-			int aMaxFrameSize, List<String> aDomains, Integer aMaxConnections) {
+			int aMaxFrameSize, List<String> aDomains, Integer aMaxConnections, String aOnMaxConnectionsStrategy) {
 		this.mId = aId;
 		this.mName = aName;
 		this.mJar = aJar;
@@ -71,6 +72,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 		this.mMaxframesize = aMaxFrameSize;
 		this.mDomains = aDomains;
 		this.mMaxConnections = aMaxConnections;
+		this.mOnMaxConnectionsStrategy = aOnMaxConnectionsStrategy;
 		
 		validate();
 	}
@@ -176,7 +178,8 @@ public final class EngineConfig implements Config, EngineConfiguration {
 				&& mKeyStore != null && mKeyStore.length() > 0
 				&& mKeyStorePassword != null && mKeyStorePassword.length() > 0))
 				&& mTimeout >= 0 
-				&& mMaxConnections > 0) {
+				&& mMaxConnections > 0
+				&& null != mOnMaxConnectionsStrategy && mOnMaxConnectionsStrategy.length() > 0) {
 			return;
 		}
 		throw new WebSocketRuntimeException(
@@ -207,6 +210,16 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	public Integer getMaxConnections() {
 		return mMaxConnections;
 	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public String getOnMaxConnectionStrategy() {
+		return mOnMaxConnectionsStrategy;
+	}
+	
+	
 	
 	
 }

@@ -75,4 +75,9 @@ public final class JWebSocketServerConstants {
 	 */
 	public static final int DEFAULT_MAX_CONNECTIONS = 10000;
 	
+	/**
+	 * the default "on max connections reached" strategy {wait, close, reject, redirect}
+	 */
+	public static final String DEFAULT_ON_MAX_CONNECTIONS_STRATEGY = "reject";
+	
 }

@@ -92,7 +92,15 @@ public interface EngineConfiguration extends Configuration {
 	
 	/**
 	 * 
-	 * @return The maximun number of connections allowed by this engine
+	 * @return The maximum number of connections allowed by this engine
 	 */
 	Integer getMaxConnections();
+	
+	/**
+	 * The on max connections strategy indicates the procedure to execute
+	 * when the maximum number of concurrent connections has been reached.
+	 * 
+	 * @return The "on max connections" strategy
+	 */
+	String getOnMaxConnectionStrategy();
 }

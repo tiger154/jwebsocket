@@ -165,7 +165,11 @@ public class TCPConnector extends BaseConnector {
 			if (!isHixie()) {
 				// Hybi specs demand that client must be notified
 				// with CLOSE control message before disconnect
-				WebSocketPacket lClose = new RawPacket(WebSocketFrameType.CLOSE, "BYE");
+				
+				// @TODO the close reason has to be notified to the client
+				// following the WebSocket protocol specification for this
+				// @see http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-17#page-45
+				WebSocketPacket lClose = new RawPacket(WebSocketFrameType.CLOSE, aCloseReason.name());
 				try {
 					sendPacketInTransaction(lClose);
 				} catch (WebSocketException ex) {
@@ -174,7 +178,7 @@ public class TCPConnector extends BaseConnector {
 			}
 			stopReader();
 		}
-		// the connector is removed in th read thread once terminated
+		// the connector is removed in the read thread once terminated
 	}
 
 	public void stopReader() {
