@@ -26,7 +26,7 @@ public final class JWebSocketServerConstants {
 	/**
 	 * Current version string of the jWebSocket package.
 	 */
-	public static final String VERSION_STR = "1.0b5 (nightly build 20105)";
+	public static final String VERSION_STR = "1.0b6 (nightly build 20119)";
 	/**
 	 * Name space base for tokens and plug-ins.
 	 */
@@ -69,4 +69,10 @@ public final class JWebSocketServerConstants {
 	 * Empty means do not use node-id for single stand-alone systems
 	 */
 	public static String DEFAULT_NODE_ID = "";
+	
+	/**
+	 * the default maximum number of connections allowed by an engine
+	 */
+	public static final int DEFAULT_MAX_CONNECTIONS = 10000;
+	
 }

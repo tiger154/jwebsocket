@@ -13,7 +13,6 @@
 //	You should have received a copy of the GNU Lesser General Public License along
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
-
 package org.jwebsocket.grizzly;
 
 import java.io.IOException;
@@ -25,81 +24,80 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.jwebsocket.factory.JWebSocketFactory;
 
-
 /**
  *
  * @author vbarzana
  */
-@WebServlet(name = "GrizzlyServlet", urlPatterns = {"/GrizzlyjWebSocketServlet"}, loadOnStartup=1)
+@WebServlet(name = "GrizzlyServlet", urlPatterns = {"/jWebSocket"}, loadOnStartup = 1)
 public class GrizzlyServlet extends HttpServlet {
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        JWebSocketFactory.start();
-        org.glassfish.grizzly.websockets.WebSocketEngine.getEngine().register(new GrizzlyWebSocketApplication(JWebSocketFactory.getEngine()));
-    }
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		JWebSocketFactory.start();
+		org.glassfish.grizzly.websockets.WebSocketEngine.getEngine().register(new GrizzlyWebSocketApplication(JWebSocketFactory.getEngine()));
+	}
 
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
-            /* TODO output your page here
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet GrizzlyServlet</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet GrizzlyServlet at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-             */
-        } finally {            
-            out.close();
-        }
-    }
+	/** 
+	 * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+	 * @param request servlet request
+	 * @param aResponse servlet response
+	 * @throws ServletException if a servlet-specific error occurs
+	 * @throws IOException if an I/O error occurs
+	 */
+	protected void processRequest(HttpServletRequest aRequest, HttpServletResponse aResponse)
+			throws ServletException, IOException {
+		aResponse.setContentType("text/html;charset=UTF-8");
+		PrintWriter out = aResponse.getWriter();
+		try {
+			/* TODO output your page here
+			out.println("<html>");
+			out.println("<head>");
+			out.println("<title>Servlet GrizzlyServlet</title>");  
+			out.println("</head>");
+			out.println("<body>");
+			out.println("<h1>Servlet GrizzlyServlet at " + request.getContextPath () + "</h1>");
+			out.println("</body>");
+			out.println("</html>");
+			 */
+		} finally {
+			out.close();
+		}
+	}
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
+	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+	/** 
+	 * Handles the HTTP <code>GET</code> method.
+	 * @param request servlet request
+	 * @param response servlet response
+	 * @throws ServletException if a servlet-specific error occurs
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		processRequest(request, response);
+	}
 
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
+	/** 
+	 * Handles the HTTP <code>POST</code> method.
+	 * @param request servlet request
+	 * @param response servlet response
+	 * @throws ServletException if a servlet-specific error occurs
+	 * @throws IOException if an I/O error occurs
+	 */
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		processRequest(request, response);
+	}
 
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Grizzly-WebSockets Servlet";
-    }// </editor-fold>
+	/** 
+	 * Returns a short description of the servlet.
+	 * @return a String containing servlet description
+	 */
+	@Override
+	public String getServletInfo() {
+		return "Grizzly-WebSockets Servlet";
+	}// </editor-fold>
 }

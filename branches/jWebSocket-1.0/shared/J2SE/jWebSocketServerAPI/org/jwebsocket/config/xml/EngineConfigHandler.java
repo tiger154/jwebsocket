@@ -21,6 +21,7 @@ import javax.xml.stream.XMLStreamReader;
 import java.util.List;
 import javolution.util.FastList;
 import org.jwebsocket.config.ConfigHandler;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.util.Tools;
 
@@ -58,7 +59,7 @@ public class EngineConfigHandler implements ConfigHandler {
 				lKeyStore = JWebSocketServerConstants.JWEBSOCKET_KEYSTORE,
 				lKeyStorePassword = JWebSocketServerConstants.JWEBSOCKET_KS_DEF_PWD;
 		int lPort = 0, lSSLPort = 0, lTimeout = 0, lFramesize = 0;
-		Integer lMaxConnections = 0;
+		Integer lMaxConnections = JWebSocketServerConstants.DEFAULT_MAX_CONNECTIONS;
 		
 		List<String> lDomains = null;
 		while (aStreamReader.hasNext()) {

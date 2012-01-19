@@ -704,7 +704,7 @@ public class AdminPlugIn extends TokenPlugIn {
 				lPlugIns.set(lPosition, lPlugIns.get(lPosition + lStepsMove));
 				lPlugIns.set(lPosition + lStepsMove, aPlugIn);
 			}
-			
+
 			lResponse.setString("msg", "Changed order of the Plugin chain.");
 			traceLog(aConnector, "Change Order of PlugIns", "Successful", "Changed order of the Plugin chain.");
 
@@ -950,7 +950,7 @@ public class AdminPlugIn extends TokenPlugIn {
 			if (true == lFilter.getEnabled()) {
 				lFilter.setEnabled(false);
 				lJWSConfig.setEnabledFilter(lId, false);
-				
+
 				//Send reason of change for the jWebSocket Client 
 				Token lReasonOfChange = new MapToken();
 				((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.DISABLED, lVersion, lReason);

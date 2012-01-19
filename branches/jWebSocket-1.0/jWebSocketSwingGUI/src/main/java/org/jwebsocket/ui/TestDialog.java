@@ -1018,7 +1018,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	}//GEN-LAST:event_btnUploadActionPerformed
 
 	private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnConnectActionPerformed
-		mClient.open(76, txfURL.getText());
+		mClient.open(8, txfURL.getText());
 	}// GEN-LAST:event_btnConnectActionPerformed
 
 	private void btnDisconnectActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnDisconnectActionPerformed

@@ -192,11 +192,6 @@ public class JWebSocketCommonConstants {
 	 * the default maximum frame size if not configured
 	 */
 	public static final int DEFAULT_MAX_FRAME_SIZE = 16384;
-	
-	/**
-	 * the default maximun number of connections allowed by an engine
-	 */
-	public static final int DEFAULT_MAX_CONNECTIONS = 10000;
 	/**
 	 * Default socket port for jWebSocket clients.
 	 */
