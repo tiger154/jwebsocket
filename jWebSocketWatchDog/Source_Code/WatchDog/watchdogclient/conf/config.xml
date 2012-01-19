@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="Mailer" class="org.jwebsocket.watchdog.notifier.MailNotifier">
+    <!-- collaborators and configuration for this bean go here -->
+        <property name="hostName" 		value="10.208.0.44"/>
+        <property name="port" 			value="465"/>
+        <property name="subject" 		value="Warning!!!"/>
+        <property name="id" 			value="1"/>
+        <property name="description" 		value="Testingggg"/>
+        <property name="from" 			value="admin@gmail.com"/>
+        <property name="usersList">
+            <list>
+                <value>lzaila@hab.uci.cu</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="Conn1" class="com.mongodb.Mongo">
+    </bean>
+    
+    <bean id="TestService" class="org.jwebsocket.watchdog.test.WatchDogTestService" init-method="initialize">
+        <property name="connection" ref="Conn1"/>
+        <property name="databaseName" value="mongotest"/>
+        <property name="collectionName" value="mongotestcollection"/>
+    </bean>
+    
+    <bean id="TaskService" class="org.jwebsocket.watchdog.test.WatchDogTaskService" init-method="initialize">
+        <property name="id" value="TaskService"/>
+        <property name="connection" ref="Conn1"/>
+        <property name="databaseName" value="mongotest"/>
+        <property name="collectionName" value="mongotaskcollection"/>
+        <property name="testService" ref="TestService"/>
+    </bean>
+
+    <bean id="TestManager" class="org.jwebsocket.watchdog.test.TestManager" init-method="initialize" destroy-method="shutdown">
+        <property name="serverUrl" value="ws://10.208.7.111:8787"/>
+        <property name="listeners">
+            <list>
+                    <bean id="SystemListener" class="org.jwebsocket.watchdog.listener.WatchDogTestListener">
+                    </bean>
+            </list>
+        </property>
+    </bean>
+    
+  
+    
+    
+
+</beans>
