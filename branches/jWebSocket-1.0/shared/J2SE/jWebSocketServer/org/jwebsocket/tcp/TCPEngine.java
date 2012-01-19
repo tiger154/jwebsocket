@@ -41,8 +41,10 @@ import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.kit.WebSocketHandshake;
 
 /**
@@ -443,19 +445,44 @@ public class TCPEngine extends BaseEngine {
 					//	log.debug("Waiting for client...");
 					// }
 					Socket lClientSocket = null;
-					
+					boolean lReject = false;
+					boolean lRedirect = false;
+
 					//Accept new connections only if the maximun number of connections
 					//has not been reached
-					if (mEngine.getMaxConnections() > mEngine.getConnectors().size()) {
+					if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("wait")) {
+						if (mEngine.getMaxConnections() > mEngine.getConnectors().size()) {
+							lClientSocket = mServer.accept();
+						} else {
+							Thread.sleep(1000);
+
+							continue;
+						}
+					} else if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("close")) {
 						lClientSocket = mServer.accept();
-					} else {
-						// If the maximun number of connections is reached,
-						// wait for 1 second and try again
-						Thread.sleep(1000);
-						continue;
+						if (mEngine.getMaxConnections() == mEngine.getConnectors().size()) {
+							if (mLog.isDebugEnabled()) {
+								mLog.debug("Closing incoming socket client on  port '" + lClientSocket.getPort() + "' "
+										+ "because the maximum number of connections "
+										+ "has been reached...");
+							}
+
+							lClientSocket.close();
+							continue;
+						}
+					} else if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("reject")) {
+						lClientSocket = mServer.accept();
+						if (mEngine.getMaxConnections() == mEngine.getConnectors().size()) {
+							lReject = true;
+						}
+					} else if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("redirect")) {
+						lClientSocket = mServer.accept();
+						if (mEngine.getMaxConnections() == mEngine.getConnectors().size()) {
+							lRedirect = true;
+						}
 					}
-					
-					
+
+
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Client trying to connect on port #"
 								+ lClientSocket.getPort() + "...");
@@ -507,7 +534,33 @@ public class TCPEngine extends BaseEngine {
 							if (mLog.isDebugEnabled()) {
 								mLog.debug("Starting " + lLogInfo + " connector...");
 							}
-							lConnector.startConnector();
+
+							//Check for maximum connections reached strategies
+							if (lReject) {
+								if (mLog.isDebugEnabled()) {
+									mLog.debug("Rejecting incoming connector '" + lConnector.getId() + "' "
+											+ "because the maximum number of connections "
+											+ "has been reached...");
+								}
+								lConnector.stopConnector(CloseReason.SERVER_REJECT_CONNECTION);
+
+								continue;
+							} else if (lRedirect) {
+								//Pending for implementation to discover the redirection
+								//server URL
+								
+								if (mLog.isDebugEnabled()) {
+									mLog.debug("Redirecting incoming connector '" + lConnector.getId() + "' "
+											+ "because the maximum number of connections "
+											+ "has been reached...");
+								}
+								lConnector.stopConnector(CloseReason.SERVER_REDIRECT_CONNECTION);
+
+								continue;
+							} else {
+								//Starting new connection
+								lConnector.startConnector();
+							}
 						} else {
 							// if header could not be parsed properly
 							// immediately disconnect the client.

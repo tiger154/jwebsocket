@@ -40,6 +40,13 @@ public enum CloseReason {
 	/**
 	 * The server was shut down.
 	 */
-	SHUTDOWN
-
+	SHUTDOWN,
+	/**
+	 * The server rejects the connection
+	 */
+	SERVER_REJECT_CONNECTION,
+	/**
+	 * The server redirect new connections
+	 */
+	SERVER_REDIRECT_CONNECTION
 }
