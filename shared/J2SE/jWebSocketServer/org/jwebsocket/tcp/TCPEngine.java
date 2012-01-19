@@ -449,8 +449,8 @@ public class TCPEngine extends BaseEngine {
 					if (mEngine.getMaxConnections() > mEngine.getConnectors().size()) {
 						lClientSocket = mServer.accept();
 					} else {
-						//If the maximun number of connections is reached,
-						//wait for 1 second and try again
+						// If the maximun number of connections is reached,
+						// wait for 1 second and try again
 						Thread.sleep(1000);
 						continue;
 					}
