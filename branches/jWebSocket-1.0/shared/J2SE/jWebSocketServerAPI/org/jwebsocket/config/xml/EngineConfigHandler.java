@@ -21,7 +21,6 @@ import javax.xml.stream.XMLStreamReader;
 import java.util.List;
 import javolution.util.FastList;
 import org.jwebsocket.config.ConfigHandler;
-import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.util.Tools;
 
