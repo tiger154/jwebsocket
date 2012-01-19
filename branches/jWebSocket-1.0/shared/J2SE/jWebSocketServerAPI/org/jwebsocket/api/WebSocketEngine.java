@@ -17,7 +17,6 @@ package org.jwebsocket.api;
 
 import java.util.Map;
 
-import javolution.util.FastMap;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 
@@ -242,4 +241,10 @@ public interface WebSocketEngine {
 	 * @return the engine configuration object
 	 */
 	EngineConfiguration getConfiguration();
+	
+	/**
+	 * 
+	 * @return The maximun number of connections allowed by this engine
+	 */
+	Integer getMaxConnections();
 }

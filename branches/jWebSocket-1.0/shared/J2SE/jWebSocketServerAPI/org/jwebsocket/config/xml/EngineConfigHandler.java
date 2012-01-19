@@ -46,6 +46,7 @@ public class EngineConfigHandler implements ConfigHandler {
 	private static final String MAXFRAMESIZE = "maxframesize";
 	private static final String DOMAINS = "domains";
 	private static final String DOMAIN = "domain";
+	private static final String MAX_CONNECTIONS = "maxconnections";
 
 	/**
 	 * {@inheritDoc}
@@ -57,6 +58,8 @@ public class EngineConfigHandler implements ConfigHandler {
 				lKeyStore = JWebSocketServerConstants.JWEBSOCKET_KEYSTORE,
 				lKeyStorePassword = JWebSocketServerConstants.JWEBSOCKET_KS_DEF_PWD;
 		int lPort = 0, lSSLPort = 0, lTimeout = 0, lFramesize = 0;
+		Integer lMaxConnections = 0;
+		
 		List<String> lDomains = null;
 		while (aStreamReader.hasNext()) {
 			aStreamReader.next();
@@ -97,6 +100,9 @@ public class EngineConfigHandler implements ConfigHandler {
 				} else if (lElementName.equals(MAXFRAMESIZE)) {
 					aStreamReader.next();
 					lFramesize = Integer.parseInt(aStreamReader.getText());
+				} else if (lElementName.equals(MAX_CONNECTIONS)) {
+					aStreamReader.next();
+					lMaxConnections = Integer.parseInt(aStreamReader.getText());
 				} else {
 					//ignore
 				}
@@ -111,7 +117,7 @@ public class EngineConfigHandler implements ConfigHandler {
 		return new EngineConfig(lId, lName, lJar, 
 				lPort, lSSLPort, lKeyStore, lKeyStorePassword,
 				lContext, lServlet,
-				lTimeout, lFramesize, lDomains);
+				lTimeout, lFramesize, lDomains, lMaxConnections);
 	}
 
 	/**

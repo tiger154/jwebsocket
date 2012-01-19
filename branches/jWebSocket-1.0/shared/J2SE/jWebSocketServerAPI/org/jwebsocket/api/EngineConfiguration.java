@@ -89,4 +89,10 @@ public interface EngineConfiguration extends Configuration {
 	 * @return the list of allowed domains
 	 */
 	List<String> getDomains();
+	
+	/**
+	 * 
+	 * @return The maximun number of connections allowed by this engine
+	 */
+	Integer getMaxConnections();
 }
