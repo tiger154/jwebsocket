@@ -65,7 +65,7 @@
 						subProtocol: jws.WS_SUBPROT_JSON,
 
 						// connection timeout in ms
-						openTimeout: 5,
+						openTimeout: 3000,
 						
 						// OnConnectionTimeout callback
 						OnOpenTimeout: function( aEvent ) {
@@ -112,7 +112,7 @@
 						
 						// OnClose callback
 						OnClose: function( aEvent ) {
-							log( "jWebSocket connection closed." );
+							log( "jWebSocket connection closed, reason: '" + aEvent.reason + "'" );
 
 							jws.$("simgStatus").src = "../../images/disconnected.png";
 							jws.$("slblClientId").innerHTML = "&nbsp;Client&#x2011;Id:&nbsp;-";
