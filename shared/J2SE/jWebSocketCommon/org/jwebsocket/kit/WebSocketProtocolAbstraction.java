@@ -108,6 +108,20 @@ public class WebSocketProtocolAbstraction {
 		return isHixieDraft(aDraft) || isHybiDraft(aDraft);
 	}
 
+	public static byte[] calcClosePayload(int aReasonCode, byte[] aReason) {
+		int lNewLength = aReason.length + 2;
+		byte[] lRes = new byte[lNewLength];
+		System.arraycopy(aReason, 0, lRes, 2, aReason.length);
+		aReasonCode &= 0xFFFF;
+		lRes[0] = (byte)(aReasonCode >> 8);
+		lRes[1] = (byte)(aReasonCode & 0xFF);
+		return lRes;
+	}
+
+	public static byte[] calcCloseData(int aReasonCode, String aReasonString) {
+		return calcClosePayload(aReasonCode, aReasonString.getBytes());
+	}
+
 	/**
 	 * converts an abstract data packet into a protocol specific frame
 	 * according to the correct version.
@@ -176,8 +190,11 @@ public class WebSocketProtocolAbstraction {
 			lBuff[lSize + 7] = (byte) lLen;
 		}
 
+		// size contains the length of the header now
 		int lSize = lBuff.length;
+		// create a new byte array to contain header and payload
 		lBuff = copyOf(lBuff, lSize + aDataPacket.getByteArray().length);
+		// finally copy the payload into the transmissin packet
 		System.arraycopy(aDataPacket.getByteArray(), 0, lBuff, lSize, aDataPacket.getByteArray().length);
 		return lBuff;
 	}
@@ -189,7 +206,7 @@ public class WebSocketProtocolAbstraction {
 		}
 		return lByte;
 	}
-	
+
 	/**
 	 * 
 	 * @param aVersion
@@ -205,7 +222,7 @@ public class WebSocketProtocolAbstraction {
 		}
 
 		// TODO: handle if stream gets closed within this method!
-		
+
 		ByteArrayOutputStream aBuff = new ByteArrayOutputStream();
 
 		// determine fragmentation
@@ -231,7 +248,7 @@ public class WebSocketProtocolAbstraction {
 		} else {
 			// Ignore first bit. Payload length is next seven bits, unless its value is greater than 125.
 			long lPayloadLen = read(aIS);
-		
+
 			// TODO: officially unmasked frames may not be accepted anymore, since hybi draft #10
 			lMasked = (lPayloadLen & 0x80) == 0x80;
 			lPayloadLen &= 0x7F;

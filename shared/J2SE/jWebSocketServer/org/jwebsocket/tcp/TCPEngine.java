@@ -41,10 +41,8 @@ import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.kit.WebSocketException;
-import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.kit.WebSocketHandshake;
 
 /**
@@ -447,20 +445,20 @@ public class TCPEngine extends BaseEngine {
 					Socket lClientSocket = null;
 					boolean lReject = false;
 					boolean lRedirect = false;
+					String lOnMaxConnectionStrategy = mEngine.getConfiguration().getOnMaxConnectionStrategy();
 
 					//Accept new connections only if the maximun number of connections
 					//has not been reached
-					if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("wait")) {
-						if (mEngine.getMaxConnections() > mEngine.getConnectors().size()) {
-							lClientSocket = mServer.accept();
-						} else {
+					if ("wait".equals(lOnMaxConnectionStrategy)) {
+						if (mEngine.getConnectors().size() >= mEngine.getMaxConnections()) {
 							Thread.sleep(1000);
-
 							continue;
+						} else {
+							lClientSocket = mServer.accept();
 						}
-					} else if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("close")) {
+					} else if ("close".equals(lOnMaxConnectionStrategy)) {
 						lClientSocket = mServer.accept();
-						if (mEngine.getMaxConnections() == mEngine.getConnectors().size()) {
+						if (mEngine.getConnectors().size() >= mEngine.getMaxConnections()) {
 							if (mLog.isDebugEnabled()) {
 								mLog.debug("Closing incoming socket client on  port '" + lClientSocket.getPort() + "' "
 										+ "because the maximum number of connections "
@@ -470,18 +468,17 @@ public class TCPEngine extends BaseEngine {
 							lClientSocket.close();
 							continue;
 						}
-					} else if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("reject")) {
+					} else if ("reject".equals(lOnMaxConnectionStrategy)) {
 						lClientSocket = mServer.accept();
-						if (mEngine.getMaxConnections() == mEngine.getConnectors().size()) {
+						if (mEngine.getConnectors().size() >= mEngine.getMaxConnections()) {
 							lReject = true;
 						}
-					} else if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("redirect")) {
+					} else if ("redirect".equals(lOnMaxConnectionStrategy)) {
 						lClientSocket = mServer.accept();
-						if (mEngine.getMaxConnections() == mEngine.getConnectors().size()) {
+						if (mEngine.getConnectors().size() >= mEngine.getMaxConnections()) {
 							lRedirect = true;
 						}
 					}
-
 
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Client trying to connect on port #"
@@ -529,8 +526,6 @@ public class TCPEngine extends BaseEngine {
 
 							// log.debug("Setting header to engine...");
 							lConnector.setHeader(lHeader);
-							// log.debug("Adding connector to engine...");
-							getConnectors().put(lConnector.getId(), lConnector);
 							if (mLog.isDebugEnabled()) {
 								mLog.debug("Starting " + lLogInfo + " connector...");
 							}
@@ -540,24 +535,26 @@ public class TCPEngine extends BaseEngine {
 								if (mLog.isDebugEnabled()) {
 									mLog.debug("Rejecting incoming connector '" + lConnector.getId() + "' "
 											+ "because the maximum number of connections "
-											+ "has been reached...");
+											+ "has been reached.");
 								}
 								lConnector.stopConnector(CloseReason.SERVER_REJECT_CONNECTION);
 
 								continue;
 							} else if (lRedirect) {
-								//Pending for implementation to discover the redirection
-								//server URL
-								
+								// TODO: Pending for implementation to discover the redirection
+								// server URL
+
 								if (mLog.isDebugEnabled()) {
 									mLog.debug("Redirecting incoming connector '" + lConnector.getId() + "' "
 											+ "because the maximum number of connections "
-											+ "has been reached...");
+											+ "has been reached.");
 								}
 								lConnector.stopConnector(CloseReason.SERVER_REDIRECT_CONNECTION);
 
 								continue;
 							} else {
+								// log.debug("Adding connector to engine...");
+								getConnectors().put(lConnector.getId(), lConnector);
 								//Starting new connection
 								lConnector.startConnector();
 							}

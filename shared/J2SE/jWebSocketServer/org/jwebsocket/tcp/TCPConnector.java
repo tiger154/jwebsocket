@@ -19,6 +19,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.logging.Level;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.log4j.Logger;
@@ -169,11 +170,17 @@ public class TCPConnector extends BaseConnector {
 				// @TODO the close reason has to be notified to the client
 				// following the WebSocket protocol specification for this
 				// @see http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-17#page-45
-				WebSocketPacket lClose = new RawPacket(WebSocketFrameType.CLOSE, aCloseReason.name());
+				WebSocketPacket lClose;
+				lClose = new RawPacket(WebSocketFrameType.CLOSE, WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name()));
+				WebSocketConnectorStatus lStatus = getStatus();
 				try {
+					// to ensure that the close packet can be sent at all!
+					setStatus(WebSocketConnectorStatus.UP);
 					sendPacketInTransaction(lClose);
 				} catch (WebSocketException ex) {
 					// TODO: check if we need to handle that here!
+				} finally {
+					setStatus(lStatus);
 				}
 			}
 			stopReader();
