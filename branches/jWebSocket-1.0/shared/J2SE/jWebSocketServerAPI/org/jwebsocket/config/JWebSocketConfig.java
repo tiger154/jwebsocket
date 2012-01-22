@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-// import org.jwebsocket.config.xml.ChannelConfig;
 import org.jwebsocket.config.xml.EngineConfig;
 import org.jwebsocket.config.xml.FilterConfig;
 import org.jwebsocket.config.xml.LibraryConfig;
@@ -46,7 +45,7 @@ import org.jwebsocket.logging.Logging;
  * not be overridden.
  * 
  * @author puran
- * @author markos0886
+ * @author Marcos Antonio González Huerta (markos0886, UCI)
  * @version $Id: JWebSocketConfig.java 345 2010-04-10 20:03:48Z fivefeetfurther$
  */
 public final class JWebSocketConfig implements Config {

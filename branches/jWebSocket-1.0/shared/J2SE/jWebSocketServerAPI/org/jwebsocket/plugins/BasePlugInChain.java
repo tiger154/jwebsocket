@@ -35,7 +35,7 @@ import org.jwebsocket.logging.Logging;
  * when data packets are received. Each data packet is pushed through the chain
  * and can be processed by the plug-ins.
  * @author aschulze
- * @author markos0886
+ * @author Marcos Antonio González Huerta (markos0886, UCI)
  */
 public class BasePlugInChain implements WebSocketPlugInChain {
 

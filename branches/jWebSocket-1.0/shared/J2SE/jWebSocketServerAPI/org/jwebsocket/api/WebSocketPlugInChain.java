@@ -26,7 +26,7 @@ import java.util.List;
  * until the first plug-in aborts or breaks the chain by returning the
  * corresponding PlugInResponse.
  * @author aschulze
- * @author markos0886
+ * @author Marcos Antonio González Huerta (markos0886, UCI)
  */
 public interface WebSocketPlugInChain {
 

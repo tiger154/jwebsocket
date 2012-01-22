@@ -25,7 +25,7 @@ import org.xeustechnologies.jcl.JarClassLoader;
  * 
  * @author puran
  * @author kyberneees
- * @author markos0886
+ * @author Marcos Antonio González Huerta (markos0886, UCI)
  * @version $Id: JWebSocketJarClassLoader.java 388 2010-04-29 19:15:54Z mailtopuran $
  */
 public class JWebSocketJarClassLoader extends JarClassLoader {
