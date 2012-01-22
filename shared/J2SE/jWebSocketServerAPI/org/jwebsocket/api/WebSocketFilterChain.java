@@ -21,7 +21,7 @@ import org.jwebsocket.kit.FilterResponse;
 /**
  *
  * @author aschulze
- * @author markos0886
+ * @author Marcos Antonio González Huerta (markos0886, UCI)
  */
 public interface WebSocketFilterChain {
 

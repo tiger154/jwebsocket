@@ -1,12 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package org.jwebsocket.kit;
 
 /**
  *
- * @author markos0886
+ * @author Marcos Antonio González Huerta (markos0886, UCI)
  */
 public enum ChangeType {
 	

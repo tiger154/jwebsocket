@@ -39,7 +39,7 @@ import org.jdom.output.XMLOutputter;
  * handler, to read the whole config file.
  * 
  * @author puran
- * @author markos0886
+ * @author Marcos Antonio González Huerta (markos0886, UCI)
  * @version $Id: JWebSocketConfigHandler.java 596 2010-06-22 17:09:54Z
  *          fivefeetfurther $
  */
