@@ -72,6 +72,39 @@
 	
 	<!-- jWebSocket engine configuration -->
 	<engines>
+		<!-- NIO Engine Configuration -->
+		<engine>
+			<name>org.jwebsocket.tcp.nio.NioTcpEngine</name>
+			<id>nio0</id>
+			<jar>jWebSocketNIOEngine-1.0.jar</jar>
+			<port>8787</port>
+			<sslport>9797</sslport>
+			<!-- keystore file with in %JWEBSOCKET_HOME%/conf -->
+			<!-- CAUTION! -->
+			<!-- not all browsers automatically accept self-signed certificates -->
+			<!-- please follow instructions on the jWebSocket.org website, how
+				 to trust self-signed certificates for the various browsers or
+				 how to import signed private key/certificate bundles into the keystore -->
+			<keystore>jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
+			<!-- these domains are accepted by the engine listening on the above mentioned port -->
+			<domains>
+				<domain>jwebsocket.org</domain>
+				<domain>jwebsocket.com</domain>
+				<domain>localhost</domain>
+			</domains>
+			<!-- default session timeout 1h, max timeout currently 1 hour -->
+			<timeout>0</timeout>
+			<maxconnections>1000</maxconnections>
+			<onmaxconnections>reject</onmaxconnections>
+			<!--
+				maximum size of the data packet that the engine will read,
+				if the frame size is larger than this the connection will be closed.
+			-->
+			<maxframesize>1048840</maxframesize>
+		</engine>
+		
 		<!-- TCP Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.tcp.TCPEngine</name>
@@ -160,9 +193,8 @@
 				public static final int DEFAULT_TIMEOUT = Utils.isDebugVM() ? 900 : 30;
 			-->
 			<timeout>0</timeout>
-			<!--
-			-->
 			<maxconnections>1000</maxconnections>
+			<onmaxconnections>reject</onmaxconnections>
 			<!-- Grizzly provides a WebSocket Servlet, set the context path here -->
 			<context>/jWebSocket</context>
 			<!-- Grizzly provides a WebSocket Servlet, set the servlet path here -->
@@ -198,9 +230,8 @@
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
-			<!--
-			-->
 			<maxconnections>1000</maxconnections>
+			<onmaxconnections>reject</onmaxconnections>
 			<!--
 				maximum size of the data packet that the engine will read,
 				if the frame size is larger than this the connection will be closed.
