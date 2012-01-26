@@ -114,17 +114,4 @@ public class BaseFilterChain implements WebSocketFilterChain {
 		}
 		return lResponse;
 	}
-
-	@Override
-	public Boolean reloadFilter(WebSocketFilter aFilter) {
-		for (int i = 0; i < mFilters.size(); i++) {
-			if (mFilters.get(i).getId().equals(aFilter.getId())) {
-				aFilter.setFilterChain(this);
-				mFilters.get(i).setEnabled(false);
-				mFilters.set(i, aFilter);
-				return true;
-			}
-		}
-		return false;
-	}
 }

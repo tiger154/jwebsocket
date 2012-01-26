@@ -250,17 +250,4 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 	public WebSocketServer getServer() {
 		return mServer;
 	}
-
-	@Override
-	public Boolean reloadPlugIn(WebSocketPlugIn aPlugIn) {
-		for (int i = 0; i < mPlugins.size(); i++) {
-			if (mPlugins.get(i).getId().equals(aPlugIn.getId())) {
-				aPlugIn.setPlugInChain(this);
-				mPlugins.get(i).setEnabled(false);
-				mPlugins.set(i, aPlugIn);
-				return true;
-			}
-		}
-		return false;
-	}
 }

@@ -7,9 +7,9 @@ package org.jwebsocket.kit;
  */
 public enum ChangeType {
 	
-	ADD(1),
-	UPDATE(2),
-	REMOVE(3),
+	ADDED(1),
+	UPDATED(2),
+	REMOVED(3),
 	ENABLED(4),
 	DISABLED(5);
 	
