@@ -15,11 +15,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins;
 
+import java.util.List;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.api.WebSocketPlugIn;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketServer;
+import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
 
@@ -71,5 +73,20 @@ public class TokenPlugInChain extends BasePlugInChain {
 			}
 		}
 		return lPlugInResponse;
+	}
+	
+	public Boolean reloadPlugIn(WebSocketPlugIn aPlugIn, Token aReasonOfChange,String aVersion, String aReason) {
+		List<WebSocketPlugIn> lPlugins = getPlugIns();
+		
+		for (int i = 0; i < lPlugins.size(); i++) {
+			if (lPlugins.get(i).getId().equals(aPlugIn.getId())) {
+				aPlugIn.setPlugInChain(this);
+				lPlugins.get(i).setEnabled(false);
+				((TokenPlugIn) lPlugins.get(i)).createReasonOfChange(aReasonOfChange, ChangeType.UPDATED, aVersion, aReason);
+				lPlugins.set(i, aPlugIn);
+				return true;
+			}
+		}
+		return false;
 	}
 }

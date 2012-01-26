@@ -15,12 +15,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.filter;
 
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketFilter;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketServer;
+import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
@@ -125,5 +127,20 @@ public class TokenFilterChain extends BaseFilterChain {
 			}
 		}
 		return lFilterResponse;
+	}
+	
+	public Boolean reloadFilter(WebSocketFilter aFilter, Token aReasonOfChange,String aVersion, String aReason) {
+		List<WebSocketFilter> lFilters = getFilters(); 
+		
+		for (int i = 0; i < lFilters.size(); i++) {
+			if (lFilters.get(i).getId().equals(aFilter.getId())) {
+				aFilter.setFilterChain(this);
+				lFilters.get(i).setEnabled(false);
+				((TokenFilter) lFilters.get(i)).createReasonOfChange(aReasonOfChange, ChangeType.UPDATED, aVersion, aReason);
+				lFilters.set(i, aFilter);
+				return true;
+			}
+		}
+		return false;
 	}
 }

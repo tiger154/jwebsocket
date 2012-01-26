@@ -18,6 +18,7 @@ package org.jwebsocket.api;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import java.util.List;
+import org.jwebsocket.token.Token;
 
 /**
  * A plug-in chain maintains a map of plug-ins. A server in the jWebSocket model
@@ -99,8 +100,6 @@ public interface WebSocketPlugInChain {
 	 * @param aPlugIn Plug-in to be removed from the plug-in chain.
 	 */
 	void removePlugIn(WebSocketPlugIn aPlugIn);
-	
-	Boolean reloadPlugIn(WebSocketPlugIn aPlugIn);
 
 	/**
 	 * returns the plug-in from the plug-in chain that matches the given

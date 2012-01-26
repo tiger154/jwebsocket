@@ -29,8 +29,6 @@ public interface WebSocketFilterChain {
 	
 	void removeFilter(WebSocketFilter aFilter);
 	
-	Boolean reloadFilter(WebSocketFilter aFilter);
-	
 	List<WebSocketFilter> getFilters();
 	
 	WebSocketFilter getFilterById(String aId);

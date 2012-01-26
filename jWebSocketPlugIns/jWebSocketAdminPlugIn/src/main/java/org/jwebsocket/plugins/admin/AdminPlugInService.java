@@ -28,9 +28,11 @@ import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.factory.JWebSocketJarClassLoader;
 import org.jwebsocket.factory.JWebSocketLoader;
 import org.jwebsocket.filter.TokenFilter;
+import org.jwebsocket.filter.TokenFilterChain;
 import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.plugins.TokenPlugInChain;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.MapToken;
 import org.jwebsocket.token.Token;
@@ -685,7 +687,7 @@ public class AdminPlugInService {
 
 						//Create reason of change for the jWebSocket Client 
 						Token lReasonOfChange = new MapToken();
-						((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.ADD, lVersion, lReason);
+						((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.ADDED, lVersion, lReason);
 
 						// now add the plugin to plugin chain on server ids
 						for (String lServerId : lPlugInConfig.getServers()) {
@@ -775,7 +777,7 @@ public class AdminPlugInService {
 
 						//Create reason of change for the jWebSocket Client 
 						Token lReasonOfChange = new MapToken();
-						((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.ADD, lVersion, lReason);
+						((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.ADDED, lVersion, lReason);
 
 						// now add the plugin to plugin chain on server ids
 						for (String lServerId : lFilterConfig.getServers()) {
@@ -836,7 +838,7 @@ public class AdminPlugInService {
 
 			//Create reason of change for the jWebSocket Client 
 			Token lReasonOfChange = new MapToken();
-			((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.REMOVE, lVersion, lReason);
+			((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.REMOVED, lVersion, lReason);
 
 			// now add the plugin to plugin chain on server ids
 			for (String lServerId : lPlugIn.getPluginConfiguration().getServers()) {
@@ -888,7 +890,7 @@ public class AdminPlugInService {
 
 			//Create reason of change for the jWebSocket Client 
 			Token lReasonOfChange = new MapToken();
-			((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.REMOVE, lVersion, lReason);
+			((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.REMOVED, lVersion, lReason);
 
 			// now add the filter to filter chain on server ids
 			for (String lServerId : lFilter.getFilterConfiguration().getServers()) {
@@ -969,15 +971,14 @@ public class AdminPlugInService {
 							mLog.debug("Plug-in '" + lPlugInConfig.getId() + "' successfully instantiated.");
 						}
 
-						//Create reason of change for the jWebSocket Client
-						Token lReasonOfChange = new MapToken();
-						((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.UPDATE, lVersion, lReason);
-
 						//now add the plugin to plugin chain on server ids
 						for (String lServerId : lPlugInConfig.getServers()) {
 							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
-								if (lServerTemp.getPlugInChain().reloadPlugIn(lPlugIn)) {
+								TokenPlugInChain lPlugInChain = (TokenPlugInChain)lServerTemp.getPlugInChain();
+								//Create reason of change for the jWebSocket Client
+								Token lReasonOfChange = new MapToken();
+								if (lPlugInChain.reloadPlugIn(lPlugIn, lReasonOfChange, lVersion, lReason)) {
 									//Send reason of change for the jWebSocket Client 
 									((TokenServer) lServerTemp).broadcastToken(lReasonOfChange);
 								} else {
@@ -1064,15 +1065,14 @@ public class AdminPlugInService {
 							mLog.debug("Filter '" + lFilterConfig.getId() + "' successfully instantiated.");
 						}
 
-						//Create reason of change for the jWebSocket Client 
-						Token lReasonOfChange = new MapToken();
-						((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.ADD, lVersion, lReason);
-
 						// now add the filter to filter chain on server ids
 						for (String lServerId : lFilterConfig.getServers()) {
 							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
-								if (lServerTemp.getFilterChain().reloadFilter(lFilter)) {
+								TokenFilterChain lFilterChain = (TokenFilterChain)lServerTemp.getFilterChain();
+								//Create reason of change for the jWebSocket Client 
+								Token lReasonOfChange = new MapToken();
+								if (lFilterChain.reloadFilter(lFilter, lReasonOfChange, lVersion, lReason)) {
 									//Send reason of change for the jWebSocket Client 
 									((TokenServer) lServerTemp).broadcastToken(lReasonOfChange);
 								} else {
