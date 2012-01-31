@@ -69,15 +69,29 @@ public interface WebSocketFilter {
 	 */
 	public String getNS();
 	
+	/**
+	 * return the version of the plug-in.
+	 * @return
+	 */
+	String getVersion();
+	
+	/**
+	 * set the version of the filter.
+	 */
+	void setVersion(String aVersion);
+	
+	/**
+	 * return the enabled status of the filter.
+	 */
 	boolean getEnabled();
 
 	/**
-	 * sets the enabled status of the plug-in.
+	 * set the enabled status of the filter.
 	 */
 	void setEnabled(boolean aEnabled);
 
 	/**
-	 * notifies the plug-in about a change in enabled status.
+	 * notifies the filter about a change in enabled status.
 	 */
 	void processEnabled(boolean aEnabled);
 	

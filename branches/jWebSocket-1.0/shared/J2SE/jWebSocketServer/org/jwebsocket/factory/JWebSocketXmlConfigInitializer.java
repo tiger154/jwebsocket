@@ -18,10 +18,8 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
-
 import javolution.util.FastList;
 import javolution.util.FastMap;
-
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.PluginConfiguration;

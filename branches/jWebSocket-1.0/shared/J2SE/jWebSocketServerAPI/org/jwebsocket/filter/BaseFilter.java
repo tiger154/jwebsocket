@@ -30,7 +30,7 @@ import org.jwebsocket.config.xml.FilterConfig;
  */
 public class BaseFilter implements WebSocketFilter {
 	// every filter has a backward reference to its filter chain
-
+	private String mVersion = null;
 	private WebSocketFilterChain mFilterChain = null;
 	private FilterConfiguration mConfiguration = null;
 
@@ -126,5 +126,15 @@ public class BaseFilter implements WebSocketFilter {
 	@Override
 	public void processEnabled(boolean aEnabled) {
 		//throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public String getVersion() {
+		return mVersion;
+	}
+
+	@Override
+	public void setVersion(String aVersion) {
+		mVersion = aVersion;
 	}
 }
