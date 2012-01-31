@@ -37,9 +37,9 @@ public class AnnotationFilter extends EventModelFilter {
 	@Override
 	public void beforeCall(WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
 		//Getting all fields
-		for (Method m : aEvent.getClass().getMethods()) {
-			if (m.getName().startsWith("set")){
-				processAnnotations(m, aConnector, aEvent);
+		for (Method lMethod : aEvent.getClass().getMethods()) {
+			if (lMethod.getName().startsWith("set")){
+				processAnnotations(lMethod, aConnector, aEvent);
 			}
 		}
 	}
@@ -52,16 +52,16 @@ public class AnnotationFilter extends EventModelFilter {
 	 * @param aEvent The incoming C2SEvent from the client
 	 * @throws Exception 
 	 */
-	void processAnnotations(Method m, WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
+	void processAnnotations(Method aMethod, WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
 		//Processing ImportFromToken annotations
-		if (m.isAnnotationPresent(ImportFromToken.class)) {
+		if (aMethod.isAnnotationPresent(ImportFromToken.class)) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug(">> Processing annotation '" +
 						ImportFromToken.class.toString() + "' in method '"
-						+ m.getName() + "'...");
+						+ aMethod.getName() + "'...");
 			}
 			//Processing the annotation...
-			processImportFromToken(m, aConnector, aEvent);
+			processImportFromToken(aMethod, aConnector, aEvent);
 		}
 	}
 
@@ -73,25 +73,25 @@ public class AnnotationFilter extends EventModelFilter {
 	 * @param aEvent
 	 * @throws Exception
 	 */
-	public void processImportFromToken(Method m, WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
+	public void processImportFromToken(Method aMethod, WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
 		//Getting fields with the "ImportFromToken" annotation
-		ImportFromToken annotation = m.getAnnotation(ImportFromToken.class);
-		Object value;
-		String methodName = m.getName().subSequence(3,4).toString().toLowerCase() + m.getName().substring(4);
-		String key = (annotation.key().isEmpty()) ? methodName : annotation.key();
+		ImportFromToken lAnnotation = aMethod.getAnnotation(ImportFromToken.class);
+		Object lValue;
+		String lMethodName = aMethod.getName().subSequence(3,4).toString().toLowerCase() + aMethod.getName().substring(4);
+		String lKey = (lAnnotation.key().isEmpty()) ? lMethodName : lAnnotation.key();
 
 		//Importing parameter if exists
-		if (aEvent.getArgs().getMap().containsKey(key)) {
+		if (aEvent.getArgs().getMap().containsKey(lKey)) {
 			//Getting the value
-			value = aEvent.getArgs().getObject(key);
+			lValue = aEvent.getArgs().getObject(lKey);
 
 			//Processing the importing strategy
-			if (annotation.strategy().equals("move")) {
-				aEvent.getArgs().remove(key);
+			if (lAnnotation.strategy().equals("move")) {
+				aEvent.getArgs().remove(lKey);
 			}
 
 			//Invoking the setter method for the annotated field
-			m.invoke(aEvent, value.getClass().cast(value));
+			aMethod.invoke(aEvent, lValue.getClass().cast(lValue));
 		} 
 	}
 }

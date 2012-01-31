@@ -24,9 +24,9 @@ public class NotAuthorizedException extends Exception {
 
 	/**
 	 *
-	 * @param message
+	 * @param aMessage
 	 */
-	public NotAuthorizedException(String message) {
-		super(message);
+	public NotAuthorizedException(String aMessage) {
+		super(aMessage);
 	}
 }

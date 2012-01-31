@@ -20,5 +20,10 @@ package org.jwebsocket.eventmodel.api;
  * @author kyberneees
  */
 public interface IUserUniqueIdentifierContainer {
+
+	/**
+	 * 
+	 * @return The unique user identifier
+	 */
 	String getUUID();
 }

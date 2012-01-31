@@ -24,33 +24,33 @@ import org.jwebsocket.eventmodel.exception.InvalidTypeException;
  */
 public class TypesMap {
 
-	private Map<String, Class<?>> table;
+	private Map<String, Class<?>> mTypes;
 
 	/**
 	 * @return The Abstract and Java corresponding types
 	 */
-	public Map<String, Class<?>> getTable() {
-		return table;
+	public Map<String, Class<?>> getTypes() {
+		return mTypes;
 	}
 
 	/**
-	 * @param table The abstract and java corresponding types to set
+	 * @param aTypes The abstract and java corresponding types to set
 	 */
-	public void setTable(Map<String, Class<?>> table) {
-		this.table = table;
+	public void setTypes(Map<String, Class<?>> aTypes) {
+		this.mTypes = aTypes;
 	}
 
 	/**
-	 * @param abstractType The abstract type
+	 * @param aType The abstract type
 	 * @return The corresponding java type for the abstract type
 	 * @throws InvalidTypeException
 	 */
-	public Class<?> swapType(String abstractType) throws InvalidTypeException {
-		if (!table.containsKey(abstractType)) {
-			throw new InvalidTypeException("The abstract type'" + abstractType
+	public Class<?> swapType(String aType) throws InvalidTypeException {
+		if (!mTypes.containsKey(aType)) {
+			throw new InvalidTypeException("The abstract type'" + aType
 					+ "' has not a similar class type in the server side!");
 		}
 
-		return table.get(abstractType);
+		return mTypes.get(aType);
 	}
 }

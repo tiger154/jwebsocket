@@ -21,48 +21,48 @@ package org.jwebsocket.eventmodel.s2c;
  */
 public class OnResponse {
 
-	private Object context;
-	private String requiredType;
-	private double sentTime;
-	private double processingTime;
-	private double elapsedTime;
+	private Object mContext;
+	private String mRequiredType;
+	private double mSentTime;
+	private double mProcessingTime;
+	private double mElapsedTime;
 
 	/**
 	 *
 	 * @param aContext The context to use by the callbacks
 	 */
 	public OnResponse(Object aContext) {
-		context = aContext;
+		mContext = aContext;
 	}
 
 	/**
 	 * Callback used to handle the success response from the client
 	 * 
-	 * @param response The response returned by the client-side 
-	 * @param from The target client connector
+	 * @param aResponse The response returned by the client-side 
+	 * @param aFrom The target client connector
 	 */
-	public void success(Object response, String from) {
+	public void success(Object aResponse, String aFrom) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	/**
 	 * Callback used to handle the failure response from the client
 	 *
-	 * @param reason The reason of why the s2c call has failed 
-	 * @param from The target client connector
+	 * @param aReason The reason of why the s2c call has failed 
+	 * @param aFrom The target client connector
 	 */
-	public void failure(FailureReason reason, String from) {
+	public void failure(FailureReason aReason, String aFrom) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	/**
 	 * Execute custom validations in client responses 
 	 * 
-	 * @param response The response to validate
-	 * @param from The target client connector
+	 * @param aResponse The response to validate
+	 * @param aFrom The target client connector
 	 * @return
 	 */
-	public boolean isValid(Object response, String from) {
+	public boolean isValid(Object aResponse, String aFrom) {
 		return true;
 	}
 
@@ -70,42 +70,42 @@ public class OnResponse {
 	 * @return The context to use by the callbacks 
 	 */
 	public Object getContext() {
-		return context;
+		return mContext;
 	}
 
 	/**
-	 * @param context The context to use by the callbacks 
+	 * @param aContext The context to use by the callbacks 
 	 */
-	public void setContext(Object context) {
-		this.context = context;
+	public void setContext(Object aContext) {
+		this.mContext = aContext;
 	}
 
 	/**
 	 * @return The required response type
 	 */
 	public String getRequiredType() {
-		return requiredType;
+		return mRequiredType;
 	}
 
 	/**
-	 * @param requiredType The required response type to set
+	 * @param aRequiredType The required response type to set
 	 */
-	public void setRequiredType(String requiredType) {
-		this.requiredType = requiredType;
+	public void setRequiredType(String aRequiredType) {
+		this.mRequiredType = aRequiredType;
 	}
 
 	/**
 	 * @return The time in nanoseconds from the sent point
 	 */
 	public double getSentTime() {
-		return sentTime;
+		return mSentTime;
 	}
 
 	/**
-	 * @param sentTime The time in nanoseconds from the sent point
+	 * @param aSentTime The time in nanoseconds from the sent point
 	 */
-	public void setSentTime(double sentTime) {
-		this.sentTime = sentTime;
+	public void setSentTime(double aSentTime) {
+		this.mSentTime = aSentTime;
 	}
 
 	/**
@@ -114,18 +114,18 @@ public class OnResponse {
 	 * Time unit in nanoseconds or milliseconds depending of the client
 	 */
 	public double getProcessingTime() {
-		return processingTime;
+		return mProcessingTime;
 	}
 
 	/**
-	 * @param processingTime Time required by the client to process the event
+	 * @param aProcessingTime Time required by the client to process the event
 	 */
-	public void setProcessingTime(double processingTime) {
-		this.processingTime = processingTime;
+	public void setProcessingTime(double aProcessingTime) {
+		mProcessingTime = aProcessingTime;
 
 		//TransactionContext support
-		if (null != context && context instanceof TransactionContext) {
-			((TransactionContext) context).setProcessingTime(processingTime);
+		if (null != mContext && mContext instanceof TransactionContext) {
+			((TransactionContext) mContext).setProcessingTime(aProcessingTime);
 		}
 	}
 
@@ -134,19 +134,19 @@ public class OnResponse {
 	 * the "response received" time mark
 	 */
 	public double getElapsedTime() {
-		return elapsedTime;
+		return mElapsedTime;
 	}
 
 	/**
-	 * @param elapsedTime The complete time in nanoseconds passed from the "sent" 
+	 * @param aElapsedTime The complete time in nanoseconds passed from the "sent" 
 	 * time mark to the "response received" time mark
 	 */
-	public void setElapsedTime(double elapsedTime) {
-		this.elapsedTime = elapsedTime;
+	public void setElapsedTime(double aElapsedTime) {
+		this.mElapsedTime = aElapsedTime;
 
 		//TransactionContext support
-		if (null != context && context instanceof TransactionContext) {
-			((TransactionContext) context).setElapsedTime(elapsedTime);
+		if (null != mContext && mContext instanceof TransactionContext) {
+			((TransactionContext) mContext).setElapsedTime(aElapsedTime);
 		}
 	}
 }

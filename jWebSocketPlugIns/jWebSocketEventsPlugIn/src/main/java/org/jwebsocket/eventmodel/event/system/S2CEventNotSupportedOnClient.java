@@ -15,7 +15,6 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.event.system;
 
-import org.jwebsocket.eventmodel.annotation.ImportFromToken;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 
 /**
@@ -24,21 +23,10 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class S2CEventNotSupportedOnClient extends C2SEvent {
 
-	
-	private String reqId;
-
 	/**
 	 * @return the reqId
 	 */
 	public String getReqId() {
-		return reqId;
-	}
-
-	/**
-	 * @param reqId the reqId to set
-	 */
-	@ImportFromToken(key = "_rid")
-	public void setReqId(String reqId) {
-		this.reqId = reqId;
+		return getArgs().getString("_rid");
 	}
 }

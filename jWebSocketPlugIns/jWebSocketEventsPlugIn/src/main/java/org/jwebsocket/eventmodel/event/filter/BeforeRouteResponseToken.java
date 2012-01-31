@@ -26,45 +26,45 @@ import org.jwebsocket.eventmodel.observable.Event;
  */
 public class BeforeRouteResponseToken extends Event {
 
-	private C2SEventDefinition eventDefinition;
-	private String requestId;
-	private WebSocketConnector connector;
+	private C2SEventDefinition mEventDefinition;
+	private String mRequestId;
+	private WebSocketConnector mConnector;
 
 	/**
 	 *
-	 * @param requestId The client event arguments hash code
+	 * @param aRequestId The client event arguments hash code
 	 */
-	public BeforeRouteResponseToken(String requestId) {
+	public BeforeRouteResponseToken(String aRequestId) {
 		super();
-		this.requestId = requestId;
+		this.mRequestId = aRequestId;
 	}
 
 	public WebSocketConnector getConnector() {
-		return connector;
+		return mConnector;
 	}
 
-	public void setConnector(WebSocketConnector connector) {
-		this.connector = connector;
+	public void setConnector(WebSocketConnector aConnector) {
+		this.mConnector = aConnector;
 	}
 	
 	/**
 	 * @return The event definition
 	 */
 	public C2SEventDefinition getEventDefinition() {
-		return eventDefinition;
+		return mEventDefinition;
 	}
 
 	/**
-	 * @param eventDefinition The event definition to set
+	 * @param aEventDefinition The event definition to set
 	 */
-	public void setEventDefinition(C2SEventDefinition eventDefinition) {
-		this.eventDefinition = eventDefinition;
+	public void setEventDefinition(C2SEventDefinition aEventDefinition) {
+		this.mEventDefinition = aEventDefinition;
 	}
 
 	/**
 	 * @return The client event arguments MD5
 	 */
 	public String getRequestId() {
-		return requestId;
+		return mRequestId;
 	}
 }

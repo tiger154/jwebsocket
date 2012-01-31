@@ -26,13 +26,13 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 public class GetHashCode extends C2SEvent {
 
 	
-	private String text;
+	private String mText;
 
 	/**
 	 * @return The text to get the hash code
 	 */
 	public String getText() {
-		return text;
+		return mText;
 	}
 
 	/**
@@ -40,6 +40,6 @@ public class GetHashCode extends C2SEvent {
 	 */
 	@ImportFromToken
 	public void setText(String text) {
-		this.text = text;
+		this.mText = text;
 	}
 }

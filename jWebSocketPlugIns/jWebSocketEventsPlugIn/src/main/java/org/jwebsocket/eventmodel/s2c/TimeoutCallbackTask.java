@@ -25,36 +25,36 @@ import org.apache.log4j.Logger;
  */
 public class TimeoutCallbackTask extends TimerTask {
 
-	private String connectorId;
-	private String notificationId;
-	private S2CEventNotificationHandler nh;
+	private String mConnectorId;
+	private String mNotificationId;
+	private S2CEventNotificationHandler mNotificationHandler;
 	private static Logger mLog = Logging.getLogger(TimeoutCallbackTask.class);
 
-	public TimeoutCallbackTask(String connectorId, String notificationId, S2CEventNotificationHandler nh) {
-		this.connectorId = connectorId;
-		this.notificationId = notificationId;
-		this.nh = nh;
+	public TimeoutCallbackTask(String aConnectorId, String aNotificationId, S2CEventNotificationHandler aNotificationHandler) {
+		this.mConnectorId = aConnectorId;
+		this.mNotificationId = aNotificationId;
+		this.mNotificationHandler = aNotificationHandler;
 	}
 
 	@Override
 	public void run() {
 		//Execute only if the OnResponse callback was not called before
-		if (nh.getCallsMap().containsKey(connectorId)
-				&& nh.getCallsMap().get(connectorId).containsKey(notificationId)) {
+		if (mNotificationHandler.getCallbacks().containsKey(mConnectorId)
+				&& mNotificationHandler.getCallbacks().get(mConnectorId).containsKey(mNotificationId)) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug(">> Calling the failure method because of a timeout reason."
-						+ " Notification: " + connectorId + ":" + notificationId);
+						+ " Notification: " + mConnectorId + ":" + mNotificationId);
 			}
 
 			//Getting the OnResponse callback
-			OnResponse aOnResponse = nh.getCallsMap().get(connectorId).remove(notificationId);
+			OnResponse lCallback = mNotificationHandler.getCallbacks().get(mConnectorId).remove(mNotificationId);
 
 			//Cleaning if empty
-			if (nh.getCallsMap().get(connectorId).isEmpty()) {
-				nh.getCallsMap().remove(connectorId);
+			if (mNotificationHandler.getCallbacks().get(mConnectorId).isEmpty()) {
+				mNotificationHandler.getCallbacks().remove(mConnectorId);
 			}
 
-			aOnResponse.failure(FailureReason.TIMEOUT, connectorId);
+			lCallback.failure(FailureReason.TIMEOUT, mConnectorId);
 		}
 	}
 }

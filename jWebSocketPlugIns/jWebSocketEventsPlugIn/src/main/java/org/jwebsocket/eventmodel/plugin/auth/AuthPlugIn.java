@@ -28,6 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.jwebsocket.logging.Logging;
 import org.apache.log4j.Logger;
+import org.jwebsocket.eventmodel.event.auth.UserLogoff;
 import org.jwebsocket.plugins.system.SystemPlugIn;
 
 /**
@@ -36,9 +37,14 @@ import org.jwebsocket.plugins.system.SystemPlugIn;
  */
 public class AuthPlugIn extends EventModelPlugIn {
 
-	private AuthenticationManager am;
+	private AuthenticationManager mAm;
 	private static Logger mLog = Logging.getLogger(AuthPlugIn.class);
-	
+
+	public AuthPlugIn() {
+		//Registering internal events
+		addEvents(UserLogoff.class);
+	}
+
 	/**
 	 * The login process
 	 *
@@ -46,52 +52,55 @@ public class AuthPlugIn extends EventModelPlugIn {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(Logon aEvent, C2SResponseEvent aResponseEvent) throws Exception {
-		String username = aEvent.getUsername();
-		String password = aEvent.getPassword();
+		String lUsername = aEvent.getUsername();
+		String lPassword = aEvent.getPassword();
 
-		if (mLog.isDebugEnabled()){
-			mLog.debug(">> Authenticating with the '" + am.getClass().getName() + "' authentication manager ...");
+		if (mLog.isDebugEnabled()) {
+			mLog.debug(">> Authenticating with the '" + mAm.getClass().getName() + "' authentication manager ...");
 		}
 		//Login process
-		Authentication request = new UsernamePasswordAuthenticationToken(username, password);
-		Authentication loggon = getAm().authenticate(request);
+		Authentication lRequest = new UsernamePasswordAuthenticationToken(lUsername, lPassword);
+		Authentication lLoggon = getAm().authenticate(lRequest);
 
-		if (mLog.isDebugEnabled()){
+		if (mLog.isDebugEnabled()) {
 			mLog.debug(">> Updating the user session...");
 		}
 		//Getting the user session
-		Map<String, Object> session = aEvent.getConnector().getSession().getStorage();
+		Map<String, Object> lSession = aEvent.getConnector().getSession().getStorage();
 
 		//Setting the is_authenticated flag
-		session.put(SystemPlugIn.IS_AUTHENTICATED, loggon.isAuthenticated());
-		
+		lSession.put(SystemPlugIn.IS_AUTHENTICATED, lLoggon.isAuthenticated());
+
 		//Setting the username
-		session.put(SystemPlugIn.USERNAME, username);
+		lSession.put(SystemPlugIn.USERNAME, lUsername);
 
 		//Setting the uuid
-		String uuid = null;
-		Object details = loggon.getDetails();
-		if (null != details && details instanceof IUserUniqueIdentifierContainer){
-			uuid = ((IUserUniqueIdentifierContainer)details).getUUID();
+		String lUUID = null;
+		Object lDetails = lLoggon.getDetails();
+		if (null != lDetails && lDetails instanceof IUserUniqueIdentifierContainer) {
+			lUUID = ((IUserUniqueIdentifierContainer) lDetails).getUUID();
 		} else {
-			uuid = username;
+			lUUID = lUsername;
 		}
-		session.put(SystemPlugIn.UUID, uuid);
+		lSession.put(SystemPlugIn.UUID, lUUID);
 
 		//Setting the roles
-		String roles = "";
-		for (GrantedAuthority ga : loggon.getAuthorities()) {
-			roles = roles.concat(ga.getAuthority() + " ");
+		String lRoles = "";
+		for (GrantedAuthority lGrantedAuthority : lLoggon.getAuthorities()) {
+			lRoles = lRoles.concat(lGrantedAuthority.getAuthority() + " ");
 		}
-		session.put(SystemPlugIn.AUTHORITIES, roles);
+		lSession.put(SystemPlugIn.AUTHORITIES, lRoles);
+
+		//Setting the username in the connector instance...
+		aEvent.getConnector().setUsername(lUsername);
 
 		//Creating the response
-		aResponseEvent.getArgs().setString("uuid", uuid);
+		aResponseEvent.getArgs().setString("uuid", lUUID);
 		aResponseEvent.getArgs().setString("username", aEvent.getUsername());
-		aResponseEvent.getArgs().setList("roles", CommonUtil.parseStringArrayToList(roles.split(" ")));
+		aResponseEvent.getArgs().setList("roles", CommonUtil.parseStringArrayToList(lRoles.split(" ")));
 		aResponseEvent.setMessage(">> Login process has finished successfully!");
-		
-		if (mLog.isDebugEnabled()){
+
+		if (mLog.isDebugEnabled()) {
 			mLog.debug(">> Logon successfully!");
 		}
 	}
@@ -103,30 +112,34 @@ public class AuthPlugIn extends EventModelPlugIn {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(Logoff aEvent, C2SResponseEvent aResponseEvent) throws Exception {
-		if (mLog.isDebugEnabled()){
-			mLog.debug(">> Destroying the user session...");
+		if (mLog.isDebugEnabled()) {
+			mLog.debug(">> Loging off the user '" + aEvent.getConnector().getUsername() + "...");
 		}
+
 		//Cleaning the session
 		getSession(aEvent.getConnector()).clear();
 
 		aResponseEvent.setMessage("<< Logout process has finished successfully!");
-		
-		if (mLog.isDebugEnabled()){
+
+		if (mLog.isDebugEnabled()) {
 			mLog.debug(">> Logoff successfully!");
 		}
+
+		//Notify internal listeners about the UserLogoff event...
+		notify(new UserLogoff(aEvent.getConnector().getUsername()), null, true);
 	}
 
 	/**
 	 * @return the am
 	 */
 	public AuthenticationManager getAm() {
-		return am;
+		return mAm;
 	}
 
 	/**
-	 * @param am the am to set
+	 * @param aAm the am to set
 	 */
-	public void setAm(AuthenticationManager am) {
-		this.am = am;
+	public void setAm(AuthenticationManager aAm) {
+		this.mAm = aAm;
 	}
 }

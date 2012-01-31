@@ -26,21 +26,10 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class HasPlugIn extends C2SEvent {
 
-	
-	private String pluginId;
-
 	/**
 	 * @return The plug-in identifier
 	 */
 	public String getPluginId() {
-		return pluginId;
-	}
-
-	/**
-	 * @param pluginId The plug-in identifier to set
-	 */
-	@ImportFromToken(key = "plugin_id")
-	public void setPluginId(String pluginId) {
-		this.pluginId = pluginId;
+		return getArgs().getString("plugin_id");
 	}
 }

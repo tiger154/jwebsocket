@@ -23,86 +23,79 @@ import org.springframework.validation.Validator;
  */
 public class Argument {
 
-	private String name;
-	private String type;
-	private boolean optional;
-	private Object value;
-	private Validator validator;
-
-	/**
-	 *
-	 */
-	public Argument(){
-		
-	}
+	private String mName;
+	private String mType;
+	private boolean mOptional;
+	private Object mValue;
+	private Validator mValidator;
 
 	/**
 	 * @return The argument name
 	 */
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	/**
-	 * @param name The argument name to set
+	 * @param aName The argument name to set
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String aName) {
+		this.mName = aName;
 	}
 
 	/**
 	 * @return The argument type
 	 */
 	public String getType() {
-		return type;
+		return mType;
 	}
 
 	/**
-	 * @param type The argument type to set
+	 * @param aType The argument type to set
 	 */
-	public void setType(String type) {
-		this.type = type;
+	public void setType(String aType) {
+		this.mType = aType;
 	}
 
 	/**
 	 * @return <tt>TRUE</tt> if the argument is optional, <tt>FALSE</tt> otherwise
 	 */
 	public boolean isOptional() {
-		return optional;
+		return mOptional;
 	}
 
 	/**
-	 * @param optional Indicate if the argument is optional
+	 * @param aOptional Indicate if the argument is optional
 	 */
-	public void setOptional(boolean optional) {
-		this.optional = optional;
+	public void setOptional(boolean aOptional) {
+		this.mOptional = aOptional;
 	}
 
 	/**
 	 * @return The argument value
 	 */
 	public Object getValue() {
-		return value;
+		return mValue;
 	}
 
 	/**
-	 * @param value The argument value to set
+	 * @param aValue The argument value to set
 	 */
-	public void setValue(Object value) {
-		this.value = value;
+	public void setValue(Object aValue) {
+		this.mValue = aValue;
 	}
 
 	/**
 	 * @return The Spring validator for the argument
 	 */
 	public Validator getValidator() {
-		return validator;
+		return mValidator;
 	}
 
 	/**
-	 * @param validator The Spring validator to set
+	 * @param aValidator The Spring validator to set
 	 */
-	public void setValidator(Validator validator) {
-		this.validator = validator;
+	public void setValidator(Validator aValidator) {
+		this.mValidator = aValidator;
 	}
 }

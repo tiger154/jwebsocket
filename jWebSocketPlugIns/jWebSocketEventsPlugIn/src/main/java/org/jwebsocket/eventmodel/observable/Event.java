@@ -24,10 +24,10 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class Event {
 
-	private String id;
-	private Token args = TokenFactory.createToken();
-	private Object subject;
-	private boolean processed = false;
+	private String mId;
+	private Token mArgs = TokenFactory.createToken();
+	private Object mSubject;
+	private boolean mProcessed = false;
 
 	/**
 	 *
@@ -40,7 +40,7 @@ public class Event {
 	 * @param The Event identifier
 	 */
 	public Event(String aId) {
-		id = aId;
+		mId = aId;
 	}
 
 	/**
@@ -58,10 +58,10 @@ public class Event {
 	 */
 	@Override
 	public int hashCode() {
-		return (null == id) ? 0 : id.hashCode()
-				+ ((processed) ? 1 : 0)
-				+ args.hashCode()
-				+ ((null == subject) ? 0 : subject.hashCode());
+		return (null == mId) ? 0 : mId.hashCode()
+				+ ((mProcessed) ? 1 : 0)
+				+ mArgs.hashCode()
+				+ ((null == mSubject) ? 0 : mSubject.hashCode());
 	}
 
 	/**
@@ -69,24 +69,24 @@ public class Event {
 	 * {@inheritDoc }
 	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
+	public boolean equals(Object aObj) {
+		if (aObj == null) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != aObj.getClass()) {
 			return false;
 		}
-		final Event other = (Event) obj;
-		if ((this.id == null) ? (other.getId() != null) : !this.id.equals(other.getId())) {
+		final Event other = (Event) aObj;
+		if ((this.mId == null) ? (other.getId() != null) : !this.mId.equals(other.getId())) {
 			return false;
 		}
-		if (this.args != other.getArgs() && (this.getArgs() == null || !this.getArgs().equals(other.getArgs()))) {
+		if (this.mArgs != other.getArgs() && (this.getArgs() == null || !this.getArgs().equals(other.getArgs()))) {
 			return false;
 		}
-		if (this.subject != other.getSubject() && (this.subject == null || !this.subject.equals(other.getSubject()))) {
+		if (this.mSubject != other.getSubject() && (this.mSubject == null || !this.mSubject.equals(other.getSubject()))) {
 			return false;
 		}
-		if (this.processed != other.isProcessed()) {
+		if (this.mProcessed != other.isProcessed()) {
 			return false;
 		}
 		return true;
@@ -96,42 +96,42 @@ public class Event {
 	 * @return The Event identifier
 	 */
 	public String getId() {
-		return id;
+		return mId;
 	}
 
 	/**
-	 * @param id The Event identifier
+	 * @param aId The Event identifier
 	 */
-	public void setId(String id) {
-		this.id = id;
+	public void setId(String aId) {
+		this.mId = aId;
 	}
 
 	/**
 	 * @return The Event arguments
 	 */
 	public Token getArgs() {
-		return args;
+		return mArgs;
 	}
 
 	/**
-	 * @param args The Event arguments to set
+	 * @param aArgs The Event arguments to set
 	 */
-	public void setArgs(Token args) {
-		this.args = args;
+	public void setArgs(Token aArgs) {
+		this.mArgs = aArgs;
 	}
 
 	/**
 	 * @return The subject that fired the Event
 	 */
 	public Object getSubject() {
-		return subject;
+		return mSubject;
 	}
 
 	/**
-	 * @param subject The subject that fired the Event
+	 * @param aSubject The subject that fired the Event
 	 */
-	public void setSubject(Object subject) {
-		this.subject = subject;
+	public void setSubject(Object aSubject) {
+		this.mSubject = aSubject;
 	}
 
 	/**
@@ -140,13 +140,13 @@ public class Event {
 	 * @return the processed
 	 */
 	public boolean isProcessed() {
-		return processed;
+		return mProcessed;
 	}
 
 	/**
-	 * @param processed Indicate if the Event was processed by a listener
+	 * @param aProcessed Indicate if the Event was processed by a listener
 	 */
-	public void setProcessed(boolean processed) {
-		this.processed = processed;
+	public void setProcessed(boolean aProcessed) {
+		this.mProcessed = aProcessed;
 	}
 }

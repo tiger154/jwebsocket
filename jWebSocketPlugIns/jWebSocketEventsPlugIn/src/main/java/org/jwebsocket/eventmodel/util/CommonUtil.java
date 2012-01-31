@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import javolution.util.FastList;
 import org.json.JSONObject;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.eventmodel.api.ISecureComponent;
+import org.jwebsocket.eventmodel.api.IServerSecureComponent;
 import org.jwebsocket.eventmodel.exception.InvalidExecutionTime;
 import org.jwebsocket.eventmodel.exception.NotAuthorizedException;
 import org.jwebsocket.packetProcessors.JSONProcessor;
@@ -47,65 +47,65 @@ public class CommonUtil {
 	 * @return The string unique token identifier
 	 */
 	public static String generateSharedUTID(Token aToken) throws Exception {
-		JSONObject json = JSONProcessor.tokenToJSON(aToken);
-		json.remove("utid");
-		json.remove("usid");
+		JSONObject lJSON = JSONProcessor.tokenToJSON(aToken);
+		lJSON.remove("utid");
+		lJSON.remove("usid");
 
-		char[] characters = json.toString().toCharArray();
-		FastList<Character> chars = new FastList<Character>();
-		for (char c : characters) {
-			chars.add((Character) c);
+		char[] lChars = lJSON.toString().toCharArray();
+		FastList<Character> lCharsList = new FastList<Character>();
+		for (char lChar : lChars) {
+			lCharsList.add((Character) lChar);
 		}
-		Collections.sort(chars);
+		Collections.sort(lCharsList);
 
-		return Tools.getMD5(chars.toString().replace(", ", ","));
+		return Tools.getMD5(lCharsList.toString().replace(", ", ","));
 	}
 
 	/**
 	 * Takes a specific IP address and a range using the IP/Netmask (e.g. 192.168.1.0/24 or 202.24.0.0/14).
 	 *
-	 * @param ipAddress the address to check
-	 * @param ipAddressRange the range of addresses that most contain the IP address
+	 * @param aIpAddress the address to check
+	 * @param aIpAddressRange the range of addresses that most contain the IP address
 	 * @return true if the IP address is in the range of addresses.
 	 */
-	public static boolean isIpAddressInRange(String ipAddress, String ipAddressRange) {
-		int nMaskBits = 0;
+	public static boolean isIpAddressInRange(String aIpAddress, String aIpAddressRange) {
+		int lNMaskBits = 0;
 
-		if (ipAddress.indexOf('/') > 0) {
-			String[] addressAndMask = StringUtils.split(ipAddress, "/");
-			ipAddress = addressAndMask[0];
-			nMaskBits = Integer.parseInt(addressAndMask[1]);
+		if (aIpAddress.indexOf('/') > 0) {
+			String[] lAddressAndMask = StringUtils.split(aIpAddress, "/");
+			aIpAddress = lAddressAndMask[0];
+			lNMaskBits = Integer.parseInt(lAddressAndMask[1]);
 		}
 
-		InetAddress requiredAddress = parseAddress(ipAddressRange);
-		InetAddress remoteAddress = parseAddress(ipAddress);
+		InetAddress lRequiredAddress = parseAddress(aIpAddressRange);
+		InetAddress lRemoteAddress = parseAddress(aIpAddress);
 
-		if (!requiredAddress.getClass().equals(remoteAddress.getClass())) {
+		if (!lRequiredAddress.getClass().equals(lRemoteAddress.getClass())) {
 			throw new IllegalArgumentException("IP Address in expression must be the same type as "
 					+ "version returned by request!");
 		}
 
-		if (nMaskBits == 0) {
-			return remoteAddress.equals(requiredAddress);
+		if (lNMaskBits == 0) {
+			return lRemoteAddress.equals(lRequiredAddress);
 		}
 
-		byte[] remAddr = remoteAddress.getAddress();
-		byte[] reqAddr = requiredAddress.getAddress();
+		byte[] lRemAddr = lRemoteAddress.getAddress();
+		byte[] lReqAddr = lRequiredAddress.getAddress();
 
-		int oddBits = nMaskBits % 8;
-		int nMaskBytes = nMaskBits / 8 + (oddBits == 0 ? 0 : 1);
-		byte[] mask = new byte[nMaskBytes];
+		int lOddBits = lNMaskBits % 8;
+		int lNMaskBytes = lNMaskBits / 8 + (lOddBits == 0 ? 0 : 1);
+		byte[] lMask = new byte[lNMaskBytes];
 
-		Arrays.fill(mask, 0, oddBits == 0 ? mask.length : mask.length - 1, (byte) 0xFF);
+		Arrays.fill(lMask, 0, lOddBits == 0 ? lMask.length : lMask.length - 1, (byte) 0xFF);
 
-		if (oddBits != 0) {
-			int finalByte = (1 << oddBits) - 1;
-			finalByte <<= 8 - oddBits;
-			mask[mask.length - 1] = (byte) finalByte;
+		if (lOddBits != 0) {
+			int lFinalByte = (1 << lOddBits) - 1;
+			lFinalByte <<= 8 - lOddBits;
+			lMask[lMask.length - 1] = (byte) lFinalByte;
 		}
 
-		for (int i = 0; i < mask.length; i++) {
-			if ((remAddr[i] & mask[i]) != (reqAddr[i] & mask[i])) {
+		for (int lIndex = 0; lIndex < lMask.length; lIndex++) {
+			if ((lRemAddr[lIndex] & lMask[lIndex]) != (lReqAddr[lIndex] & lMask[lIndex])) {
 				return false;
 			}
 		}
@@ -113,46 +113,46 @@ public class CommonUtil {
 		return true;
 	}
 
-	private static InetAddress parseAddress(String address) {
+	private static InetAddress parseAddress(String aAddress) {
 		try {
-			return InetAddress.getByName(address);
+			return InetAddress.getByName(aAddress);
 		} catch (UnknownHostException e) {
-			throw new IllegalArgumentException("Failed to parse the address '" + address + "'!", e);
+			throw new IllegalArgumentException("Failed to parse the address '" + aAddress + "'!", e);
 		}
 	}
 
-	public static List<String> parseStringArrayToList(String[] array) {
-		FastList<String> r = new FastList<String>();
-		int end = array.length;
-		for (int i = 0; i < end; i++) {
-			r.add(array[i]);
+	public static List<String> parseStringArrayToList(String[] aArray) {
+		FastList<String> lList = new FastList<String>();
+		int lEnd = aArray.length;
+		for (int lIndex = 0; lIndex < lEnd; lIndex++) {
+			lList.add(aArray[lIndex]);
 		}
-		
-		return r;
+
+		return lList;
 	}
 
 	/**
 	 * Shutdown a ThreadPool and await for termination
 	 *
-	 * @param pool the ThreadPool
-	 * @param allowedTime the time to await for termination
+	 * @param aExecutor the ThreadPool
+	 * @param aAllowedTime the time to await for termination
 	 * @throws Exception
 	 */
-	public static void shutdownThreadPoolAndAwaitTermination(ExecutorService pool, int allowedTime) throws Exception {
-		pool.shutdown(); // Disable new tasks from being submitted
+	public static void shutdownThreadPoolAndAwaitTermination(ExecutorService aExecutor, int aAllowedTime) throws Exception {
+		aExecutor.shutdown(); // Disable new tasks from being submitted
 		try {
 			// Wait a while for existing tasks to terminate
-			if (!pool.awaitTermination(allowedTime, TimeUnit.SECONDS)) {
-				pool.shutdownNow(); // Cancel currently executing tasks
+			if (!aExecutor.awaitTermination(aAllowedTime, TimeUnit.SECONDS)) {
+				aExecutor.shutdownNow(); // Cancel currently executing tasks
 				// Wait a while for tasks to respond to being cancelled
-				if (!pool.awaitTermination(allowedTime, TimeUnit.SECONDS)) {
+				if (!aExecutor.awaitTermination(aAllowedTime, TimeUnit.SECONDS)) {
 					throw new Exception("Pool did not terminate!");
 				}
 				throw new InvalidExecutionTime("Threads uses more time than allowed for execution!");
 			}
 		} catch (InterruptedException ie) {
 			// (Re-)Cancel if current thread also interrupted
-			pool.shutdownNow();
+			aExecutor.shutdownNow();
 			// Preserve interrupt status
 			Thread.currentThread().interrupt();
 			throw ie;
@@ -166,42 +166,42 @@ public class CommonUtil {
 	 *
 	 * @throws Exception
 	 */
-	public static void checkSecurityRestrictions(ISecureComponent secureObject,
-			WebSocketConnector aConnector, boolean isAuthenticated, String username, List<String> authorities) throws Exception {
+	public static void checkSecurityRestrictions(IServerSecureComponent aSecureObject,
+			WebSocketConnector aConnector, boolean aIsAuthenticated, String aUsername, List<String> aAuthorities) throws Exception {
 		//Leaving if the security checks are not enabled
-		if (!secureObject.isSecurityEnabled()) {
+		if (!aSecureObject.isSecurityEnabled()) {
 			return;
 		}
 
 		//NOT '!' operator flag
-		boolean exclusion = false;
+		boolean lExclusion = false;
 
 		//Temporal variables
-		Iterator<String> iterator;
-		String value;
-		boolean authority_authorized = false, ip_authorized = false,
-				user_authorized = false, user_match = false, stop = false;
+		Iterator<String> lIterator;
+		String lValue;
+		boolean lAuthorityAuthorized = false, lIpAuthorized = false,
+				lUserAuthorized = false, lUserMatch = false, lStop = false;
 
 		//Processing ip addresses restrictions
-		if (secureObject.getIpAddresses().size() > 0) {
-			iterator = secureObject.getIpAddresses().iterator();
-			while (iterator.hasNext()) {
-				value = iterator.next();
+		if (aSecureObject.getIpAddresses().size() > 0) {
+			lIterator = aSecureObject.getIpAddresses().iterator();
+			while (lIterator.hasNext()) {
+				lValue = lIterator.next();
 
-				if (!value.equals("all")) {
-					exclusion = (value.startsWith("!")) ? true : false;
-					value = (exclusion) ? value.substring(1) : value;
+				if (!lValue.equals("all")) {
+					lExclusion = (lValue.startsWith("!")) ? true : false;
+					lValue = (lExclusion) ? lValue.substring(1) : lValue;
 
-					if (CommonUtil.isIpAddressInRange(aConnector.getRemoteHost().getHostAddress(), value)) {
-						ip_authorized = (exclusion) ? false : true;
+					if (CommonUtil.isIpAddressInRange(aConnector.getRemoteHost().getHostAddress(), lValue)) {
+						lIpAuthorized = (lExclusion) ? false : true;
 						break;
 					}
 				} else {
-					ip_authorized = true;
+					lIpAuthorized = true;
 					break;
 				}
 			}
-			if (!ip_authorized) {
+			if (!lIpAuthorized) {
 				throw new NotAuthorizedException("Your IP address '"
 						+ aConnector.getRemoteHost().getHostAddress()
 						+ "' is not authorized to execute the operation!");
@@ -209,70 +209,70 @@ public class CommonUtil {
 		}
 
 		//Processing users
-		if (secureObject.getUsers().size() > 0) {
-			if (isAuthenticated) {
-				iterator = secureObject.getUsers().iterator();
-				while (iterator.hasNext()) {
-					value = iterator.next();	//Required USER
+		if (aSecureObject.getUsers().size() > 0) {
+			if (aIsAuthenticated) {
+				lIterator = aSecureObject.getUsers().iterator();
+				while (lIterator.hasNext()) {
+					lValue = lIterator.next();	//Required USER
 
-					if (!value.equals("all")) {
-						exclusion = (value.startsWith("!")) ? true : false;
-						value = (exclusion) ? value.substring(1) : value;
+					if (!lValue.equals("all")) {
+						lExclusion = (lValue.startsWith("!")) ? true : false;
+						lValue = (lExclusion) ? lValue.substring(1) : lValue;
 
-						if (value.equals(username)) {
-							user_match = true;
-							if (!exclusion) {
-								user_authorized = true;
+						if (lValue.equals(aUsername)) {
+							lUserMatch = true;
+							if (!lExclusion) {
+								lUserAuthorized = true;
 								break;
 							}
 						}
 					} else {
-						user_match = true;
-						user_authorized = true;
+						lUserMatch = true;
+						lUserAuthorized = true;
 						break;
 					}
 				}
 			}
 			//Not authorized!
-			if (!user_authorized && user_match || secureObject.getRoles().isEmpty()) {
+			if (!lUserAuthorized && lUserMatch || aSecureObject.getRoles().isEmpty()) {
 				throw new NotAuthorizedException("Invalid credentials to execute the operation!");
 			}
 		}
 
 		//Processing roles restrictions
-		if (secureObject.getRoles().size() > 0) {
-			if (isAuthenticated) {
-				Iterator<String> user_authorities = authorities.iterator();
-				String authority;
-				while (user_authorities.hasNext()) {
+		if (aSecureObject.getRoles().size() > 0) {
+			if (aIsAuthenticated) {
+				Iterator<String> lUserAuthorities = aAuthorities.iterator();
+				String lAuthority;
+				while (lUserAuthorities.hasNext()) {
 					//Required ROLES iteration
-					iterator = secureObject.getRoles().iterator();
-					while (iterator.hasNext() && !stop) {
-						authority = user_authorities.next();	//User ROLE
-						value = iterator.next();	//Required ROLE
+					lIterator = aSecureObject.getRoles().iterator();
+					while (lIterator.hasNext() && !lStop) {
+						lAuthority = lUserAuthorities.next();	//User ROLE
+						lValue = lIterator.next();	//Required ROLE
 
-						if (!value.equals("all")) {
-							exclusion = (value.startsWith("!")) ? true : false;
-							value = (exclusion) ? value.substring(1) : value;
+						if (!lValue.equals("all")) {
+							lExclusion = (lValue.startsWith("!")) ? true : false;
+							lValue = (lExclusion) ? lValue.substring(1) : lValue;
 
-							if (value.equals(authority)) {
-								if (!exclusion) {
-									authority_authorized = true; //Authorized!
+							if (lValue.equals(lAuthority)) {
+								if (!lExclusion) {
+									lAuthorityAuthorized = true; //Authorized!
 								}
-								stop = true;
+								lStop = true;
 							}
 						} else {
-							authority_authorized = true;
-							stop = true;
+							lAuthorityAuthorized = true;
+							lStop = true;
 						}
 					}
-					if (stop) {
+					if (lStop) {
 						break;
 					}
 				}
 			}
 			//Not authorized!
-			if (!authority_authorized) {
+			if (!lAuthorityAuthorized) {
 				throw new NotAuthorizedException("Invalid credentials to execute the operation!");
 			}
 		}

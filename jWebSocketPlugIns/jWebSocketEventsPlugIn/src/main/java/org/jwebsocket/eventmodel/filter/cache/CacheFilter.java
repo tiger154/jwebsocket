@@ -15,6 +15,7 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.filter.cache;
 
+import java.util.Map;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageBuilder;
 import org.jwebsocket.eventmodel.api.IListener;
@@ -29,6 +30,7 @@ import org.jwebsocket.eventmodel.event.filter.ResponseFromCache;
 import org.jwebsocket.eventmodel.exception.CachedResponseException;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
+import org.jwebsocket.plugins.system.SystemPlugIn;
 
 /**
  *
@@ -38,14 +40,14 @@ public class CacheFilter extends EventModelFilter implements IListener {
 
 	public final static String CLIENT_CACHE_ASPECT_STATUS = "client_cache_aspect_status";
 	private static Logger mLog = Logging.getLogger(CacheFilter.class);
-	private MongoDBCacheStorageBuilder cacheBuilder;
+	private MongoDBCacheStorageBuilder mCacheBuilder;
 
 	public MongoDBCacheStorageBuilder getCacheBuilder() {
-		return cacheBuilder;
+		return mCacheBuilder;
 	}
 
-	public void setCacheBuilder(MongoDBCacheStorageBuilder cacheBuilder) {
-		this.cacheBuilder = cacheBuilder;
+	public void setCacheBuilder(MongoDBCacheStorageBuilder aCacheBuilder) {
+		this.mCacheBuilder = aCacheBuilder;
 	}
 
 	/**
@@ -53,52 +55,51 @@ public class CacheFilter extends EventModelFilter implements IListener {
 	 */
 	@Override
 	public void beforeCall(WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
-		C2SEventDefinition def = getEm().getEventFactory().getEventDefinitions().getDefinition(aEvent.getId());
-		if (!def.isCacheEnabled()) {
+		C2SEventDefinition lDef = getEm().getEventFactory().getEventDefinitions().getDefinition(aEvent.getId());
+		if (!lDef.isCacheEnabled()) {
 			return;
 		}
 
-		if (def.getCacheTime() > 0) {
-			Token response = null;
+		if (lDef.getCacheTime() > 0) {
+			Token lResponse = null;
 
-			String oIn = null;
-			if (def.isCachePrivate()) {
+			String lCachedResponse = null;
+			if (lDef.isCachePrivate()) {
 
 				String uuid = aConnector.getString("uuid");
 				uuid = (uuid != null) ? uuid : "";
 
-				oIn = (String) getCacheBuilder().
+				lCachedResponse = (String) getCacheBuilder().
 						getCacheStorage(MongoDBCacheStorageBuilder.V2, aEvent.getId() + uuid).get(aEvent.getRequestId());
 			} else {
-				oIn = (String) getCacheBuilder().
+				lCachedResponse = (String) getCacheBuilder().
 						getCacheStorage(MongoDBCacheStorageBuilder.V2, aEvent.getId()).get(aEvent.getRequestId());
 			}
 
-			if (oIn != null) {
+			if (lCachedResponse != null) {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug("Element recovered from cache: " + oIn);
+					mLog.debug("Element recovered from cache: " + lCachedResponse);
 				}
 
 				//Converting the stored stringyfied token to object
-				response = JSONProcessor.jsonStringToToken(oIn);
+				lResponse = JSONProcessor.jsonStringToToken(lCachedResponse);
 
 				//ResponseFromCache event notification
-				ResponseFromCache event = new ResponseFromCache();
-				event.setId("response.from.cache");
-				event.setCachedResponse(response);
-				event.setEvent(aEvent);
-				notify(event, null, true);
+				ResponseFromCache lEvent = new ResponseFromCache();
+				lEvent.setId("response.from.cache");
+				lEvent.setCachedResponse(lResponse);
+				lEvent.setEvent(aEvent);
+				notify(lEvent, null, true);
 
-				Token protToken = getEm().getParent().createResponse(aEvent.getArgs());
-				response.setInteger("utid", protToken.getInteger("utid"));
+				lResponse.setInteger("utid", aEvent.getArgs().getInteger("utid"));
 				//From cache the processing time is cero
-				response.setDouble("processingTime", 0.0);
+				lResponse.setDouble("processingTime", 0.0);
 
 				//Sending the cached response clients the c
-				if (def.isResponseAsync()) {
-					getEm().getParent().getServer().sendTokenAsync(aConnector, response);
+				if (lDef.isResponseAsync()) {
+					getEm().getParent().getServer().sendTokenAsync(aConnector, lResponse);
 				} else {
-					getEm().getParent().getServer().sendToken(aConnector, response);
+					getEm().getParent().getServer().sendToken(aConnector, lResponse);
 				}
 
 				//Stopping the filter chain
@@ -114,33 +115,34 @@ public class CacheFilter extends EventModelFilter implements IListener {
 	 * @param aResponseEvent 
 	 */
 	public void processEvent(BeforeRouteResponseToken aEvent, ResponseEvent aResponseEvent) throws Exception {
-		C2SEventDefinition def = aEvent.getEventDefinition();
-		if (def.isCacheEnabled() && def.getCacheTime() > 0) {
+		C2SEventDefinition lDef = aEvent.getEventDefinition();
+		if (lDef.isCacheEnabled() && lDef.getCacheTime() > 0) {
 			//Caching local value
-			String id = def.getId();
+			String lId = lDef.getId();
 
 			//Saving in cache
-			if (def.isCachePrivate()) {
-				String uuid = aEvent.getConnector().getString("uuid");
-				uuid = (uuid != null) ? uuid : "";
+			Map<String, Object> lConnectorSession = aEvent.getConnector().getSession().getStorage();
+			if (lDef.isCachePrivate() && lConnectorSession.containsKey(SystemPlugIn.UUID)) {
+				String lUUID = lConnectorSession.get(SystemPlugIn.UUID).toString();
+				lUUID = (lUUID != null) ? lUUID : "";
 
 				//Putting the response token in cache using the event cache time
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Caching element with id("
-							+ id + uuid + "): " + aEvent.getRequestId());
+							+ lId + lUUID + "): " + aEvent.getRequestId());
 				}
 
-				getCacheBuilder().getCacheStorage(MongoDBCacheStorageBuilder.V2, id + uuid).
+				getCacheBuilder().getCacheStorage(MongoDBCacheStorageBuilder.V2, lId + lUUID).
 						put(aEvent.getRequestId(),
-						JSONProcessor.tokenToJSON(aEvent.getArgs()).toString(), def.getCacheTime());
+						JSONProcessor.tokenToJSON(aEvent.getArgs()).toString(), lDef.getCacheTime());
 			} else {
 				//Putting the response token in cache using the event cache time
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Caching element with id("
-							+ id + "): " + aEvent.getRequestId());
+							+ lId + "): " + aEvent.getRequestId());
 				}
-				getCacheBuilder().getCacheStorage(MongoDBCacheStorageBuilder.V2, id).put(aEvent.getRequestId(),
-						JSONProcessor.tokenToJSON(aEvent.getArgs()).toString(), def.getCacheTime());
+				getCacheBuilder().getCacheStorage(MongoDBCacheStorageBuilder.V2, lId).put(aEvent.getRequestId(),
+						JSONProcessor.tokenToJSON(aEvent.getArgs()).toString(), lDef.getCacheTime());
 			}
 		}
 	}

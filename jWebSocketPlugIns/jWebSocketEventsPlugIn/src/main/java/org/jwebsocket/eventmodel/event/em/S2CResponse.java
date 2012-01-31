@@ -15,7 +15,6 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.event.em;
 
-import org.jwebsocket.eventmodel.annotation.ImportFromToken;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 
 /**
@@ -25,36 +24,18 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class S2CResponse extends C2SEvent {
 	
-	private String reqId;
-	private Object response;
-
 	/**
 	 * @return The client response
 	 */
 	public Object getResponse() {
-		return response;
-	}
-
-	/**
-	 * @param response The client response
-	 */
-	public void setResponse(Object response) {
-		this.response = response;
+		return getArgs().getObject("_r");
 	}
 
 	/**
 	 * @return The request identifier
 	 */
 	public String getReqId() {
-		return reqId;
-	}
-
-	/**
-	 * @param reqId The request identifier
-	 */
-	@ImportFromToken(key = "_rid")
-	public void setReqId(String reqId) {
-		this.reqId = reqId;
+		return getArgs().getString("_rid");
 	}
 
 	/**

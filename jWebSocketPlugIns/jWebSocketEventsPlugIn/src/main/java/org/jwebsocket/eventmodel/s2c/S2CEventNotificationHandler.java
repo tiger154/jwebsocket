@@ -16,7 +16,6 @@
 package org.jwebsocket.eventmodel.s2c;
 
 import java.util.Map;
-import java.util.Timer;
 import org.apache.log4j.Logger;
 import javolution.util.FastMap;
 import org.jwebsocket.api.IInitializable;
@@ -44,32 +43,32 @@ import org.jwebsocket.util.Tools;
 public class S2CEventNotificationHandler implements IInitializable, IListener {
 
 	private static Logger mLog = Logging.getLogger(S2CEventNotificationHandler.class);
-	private Integer uid = 0;
-	private EventModel em;
-	private TypesMap typesMap;
-	private FastMap<String, FastMap<String, OnResponse>> callsMap = new FastMap<String, FastMap<String, OnResponse>>();
+	private Integer mUID = 0;
+	private EventModel mEm;
+	private TypesMap mTypesMap;
+	private FastMap<String, FastMap<String, OnResponse>> mCallbacks = new FastMap<String, FastMap<String, OnResponse>>().shared();
 
 	/**
 	 * Send an event to the client
 	 *
 	 * @param aEvent The S2CEvent to send
-	 * @param to The destiny client connector
+	 * @param aTo The destiny client connector
 	 * @param aOnResponse The server on-response callbacks
 	 */
-	public void send(S2CEvent aEvent, String to, OnResponse aOnResponse) throws MissingTokenSender {
+	public void send(S2CEvent aEvent, String aTo, OnResponse aOnResponse) throws MissingTokenSender {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(">> Preparing S2C event notification...");
 		}
 
-		if (!getCallsMap().containsKey(to)) {
-			getCallsMap().put(to, new FastMap<String, OnResponse>());
+		if (!mCallbacks.containsKey(aTo)) {
+			mCallbacks.put(aTo, new FastMap<String, OnResponse>());
 		}
 
 		//Creating the token
-		Token token = TokenFactory.createToken(getEm().getParent().getNamespace(), "s2c.en");
-		aEvent.writeToToken(token);
-		aEvent.writeParentToToken(token);
-		token.setString("uid", getNextUID());
+		Token lToken = TokenFactory.createToken(getEm().getParent().getNamespace(), "s2c.en");
+		aEvent.writeToToken(lToken);
+		aEvent.writeParentToToken(lToken);
+		lToken.setString("uid", getNextUID());
 
 		//Saving the callback
 		if (null != aOnResponse) {
@@ -78,39 +77,39 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 			}
 			//Saving the callback
 			aOnResponse.setRequiredType(aEvent.getResponseType());
-			getCallsMap().get(to).put(token.getString("uid"), aOnResponse);
+			mCallbacks.get(aTo).put(lToken.getString("uid"), aOnResponse);
 			//Setting the send time
 			aOnResponse.setSentTime(System.nanoTime());
 
 			//2CEvent have a callback
-			token.setBoolean("hc", true);
+			lToken.setBoolean("hc", true);
 
 			//Registering timeout callbacks
 			if (aEvent.getTimeout() > 0) {
-				Tools.getTimer().schedule(new TimeoutCallbackTask(to, token.getString("uid"), this), aEvent.getTimeout());
+				Tools.getTimer().schedule(new TimeoutCallbackTask(aTo, lToken.getString("uid"), this), aEvent.getTimeout());
 			}
 		} else {
 			//S2CEvent don't have a callback
-			token.setBoolean("hc", false);
+			lToken.setBoolean("hc", false);
 		}
 
 		//Sending the token
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Sending S2C event notification to '" + to + "' connector...");
+			mLog.debug(">> Sending S2C event notification to '" + aTo + "' connector...");
 		}
 
 		//Getting the local WebSocketConnector instance if exists
-		WebSocketConnector c = getEm().getParent().getServer().getConnector(to);
+		WebSocketConnector lConnector = getEm().getParent().getServer().getConnector(aTo);
 
-		if (null != c) {
+		if (null != lConnector) {
 			//Sending locally on the server
-			getEm().getParent().getServer().sendToken(c, token);
+			getEm().getParent().getServer().sendToken(lConnector, lToken);
 		} else if (getEm().isClusterNode()) {
 			//Sending the token to the cluster network
-			getEm().getClusterNode().sendToken(to, token);
+			getEm().getClusterNode().sendToken(aTo, lToken);
 		} else {
 			throw new MissingTokenSender("Not engine or cluster detected to send "
-					+ "the token to the giving connector: '" + to + "'!");
+					+ "the token to the giving connector: '" + aTo + "'!");
 		}
 	}
 
@@ -118,11 +117,11 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 * Send an event to the client
 	 *
 	 * @param aEvent The S2CEvent to send
-	 * @param to The destiny client connector
+	 * @param aTo The destiny client connector
 	 * @param aOnResponse The server on-response callbacks
 	 */
-	public void send(S2CEvent aEvent, WebSocketConnector to, OnResponse aOnResponse) throws MissingTokenSender {
-		send(aEvent, to.getId(), aOnResponse);
+	public void send(S2CEvent aEvent, WebSocketConnector aTo, OnResponse aOnResponse) throws MissingTokenSender {
+		send(aEvent, aTo.getId(), aOnResponse);
 	}
 
 	/**
@@ -134,44 +133,39 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 */
 	public void processEvent(S2CResponse aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 
-		String connector_id = aEvent.getConnector().getId();
+		String lConnectorId = aEvent.getConnector().getId();
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(">> Processing S2CResponse(" + aEvent.getReqId()
-					+ ") from '" + connector_id + "' connector...");
-		}
-
-		//Getting the response
-		if (aEvent.getArgs().getMap().containsKey("_r")) {
-			aEvent.setResponse(aEvent.getArgs().getObject("_r"));
+					+ ") from '" + lConnectorId + "' connector...");
 		}
 
 		//If a callback is pending for this response
-		if (getCallsMap().containsKey(connector_id) && getCallsMap().get(connector_id).containsKey(aEvent.getReqId())) {
+		if (mCallbacks.containsKey(lConnectorId) && mCallbacks.get(lConnectorId).containsKey(aEvent.getReqId())) {
 			//Getting the OnResponse callback
-			OnResponse aOnResponse = getCallsMap().get(connector_id).remove(aEvent.getReqId());
+			OnResponse lCallback = mCallbacks.get(lConnectorId).remove(aEvent.getReqId());
 
 			//Setting the processing time
-			aOnResponse.setProcessingTime(aEvent.getProcessingTime());
+			lCallback.setProcessingTime(aEvent.getProcessingTime());
 
 			//Cleaning if empty
-			if (getCallsMap().get(connector_id).isEmpty()) {
-				getCallsMap().remove(connector_id);
+			if (mCallbacks.get(lConnectorId).isEmpty()) {
+				mCallbacks.remove(lConnectorId);
 			}
 
 			//Executing the validation process...
-			if (!aOnResponse.getRequiredType().equals("void")) {
+			if (!lCallback.getRequiredType().equals("void")) {
 				//Validating the response
-				if (getTypesMap().swapType(aOnResponse.getRequiredType()).isInstance(aEvent.getResponse())
-						&& aOnResponse.isValid(aEvent.getResponse(), connector_id)) {
-					aOnResponse.setElapsedTime(System.nanoTime() - aOnResponse.getSentTime());
-					aOnResponse.success(aEvent.getResponse(), connector_id);
+				if (getTypesMap().swapType(lCallback.getRequiredType()).isInstance(aEvent.getResponse())
+						&& lCallback.isValid(aEvent.getResponse(), lConnectorId)) {
+					lCallback.setElapsedTime(System.nanoTime() - lCallback.getSentTime());
+					lCallback.success(aEvent.getResponse(), lConnectorId);
 				} else {
-					aOnResponse.setElapsedTime(System.nanoTime() - aOnResponse.getSentTime());
-					aOnResponse.failure(FailureReason.INVALID_RESPONSE, connector_id);
+					lCallback.setElapsedTime(System.nanoTime() - lCallback.getSentTime());
+					lCallback.failure(FailureReason.INVALID_RESPONSE, lConnectorId);
 				}
 			} else {
-				aOnResponse.setElapsedTime(System.nanoTime() - aOnResponse.getSentTime());
-				aOnResponse.success(null, connector_id);
+				lCallback.setElapsedTime(System.nanoTime() - lCallback.getSentTime());
+				lCallback.success(null, lConnectorId);
 			}
 		} else {
 			if (mLog.isDebugEnabled()) {
@@ -188,22 +182,22 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(ConnectorStopped aEvent, ResponseEvent aResponseEvent) {
-		String connector_id = aEvent.getConnector().getId();
-		if (getCallsMap().containsKey(aEvent.getConnector().getId())) {
+		String lConnectorId = aEvent.getConnector().getId();
+		if (mCallbacks.containsKey(aEvent.getConnector().getId())) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Removing pending callbacks for '" + connector_id + "' connector...");
+				mLog.debug(">> Removing pending callbacks for '" + lConnectorId + "' connector...");
 			}
 
 			//Getting pending callbacks and removing
-			FastMap<String, OnResponse> pending_calls = getCallsMap().remove(connector_id);
+			FastMap<String, OnResponse> lPendingCallbacks = mCallbacks.remove(lConnectorId);
 
-			double currentTime = System.nanoTime();
+			double lCurrentTime = System.nanoTime();
 
-			for (Map.Entry<String, OnResponse> e : pending_calls.entrySet()) {
+			for (Map.Entry<String, OnResponse> lCalls : lPendingCallbacks.entrySet()) {
 				//Updating the  elapsed time
-				e.getValue().setElapsedTime(currentTime - e.getValue().getSentTime());
+				lCalls.getValue().setElapsedTime(lCurrentTime - lCalls.getValue().getSentTime());
 				//Calling the failure method
-				e.getValue().failure(FailureReason.CONNECTOR_STOPPED, connector_id);
+				lCalls.getValue().failure(FailureReason.CONNECTOR_STOPPED, lConnectorId);
 			}
 		}
 	}
@@ -220,66 +214,56 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 		}
 
 		//Caching the connector connector_id for performance
-		String connector_id = aEvent.getConnector().getId();
+		String lConnectorId = aEvent.getConnector().getId();
 
 		//Removing only if a callback is pending
-		if (getCallsMap().containsKey(connector_id)
-				&& getCallsMap().get(connector_id).containsKey(aEvent.getReqId())) {
+		if (mCallbacks.containsKey(lConnectorId)
+				&& mCallbacks.get(lConnectorId).containsKey(aEvent.getReqId())) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug(">> Removing pending callback for '" + aEvent.getId() + "' event. Client does not support it!...");
 			}
 
 			//Getting the callback and removing
-			OnResponse aOnResponse = getCallsMap().get(connector_id).remove(aEvent.getReqId());
+			OnResponse lCallback = mCallbacks.get(lConnectorId).remove(aEvent.getReqId());
 
 			//Updating the elapsed time
-			aOnResponse.setElapsedTime(System.nanoTime() - aOnResponse.getSentTime());
+			lCallback.setElapsedTime(System.nanoTime() - lCallback.getSentTime());
 
 			//Calling the failure method
-			aOnResponse.failure(FailureReason.EVENT_NOT_SUPPORTED_BY_CLIENT, connector_id);
+			lCallback.failure(FailureReason.EVENT_NOT_SUPPORTED_BY_CLIENT, lConnectorId);
 		}
 	}
 
-	/**
-	 * @return The stored callbacks map
-	 */
-	public FastMap<String, FastMap<String, OnResponse>> getCallsMap() {
-		return callsMap;
-	}
-
-	/**
-	 * @param callsMap The stored callbacks  to set
-	 */
-	public void setCallsMap(FastMap<String, FastMap<String, OnResponse>> callsMap) {
-		this.callsMap = callsMap;
+	public FastMap<String, FastMap<String, OnResponse>> getCallbacks() {
+		return mCallbacks;
 	}
 
 	/**
 	 * @return The EventModel instance
 	 */
 	public EventModel getEm() {
-		return em;
+		return mEm;
 	}
 
 	/**
 	 * @param em The EventModel instance to set
 	 */
-	public void setEm(EventModel em) {
-		this.em = em;
+	public void setEm(EventModel aEm) {
+		this.mEm = aEm;
 	}
 
 	/**
 	 * @return The cross types map
 	 */
 	public TypesMap getTypesMap() {
-		return typesMap;
+		return mTypesMap;
 	}
 
 	/**
-	 * @param typesMap The cross types map to set
+	 * @param aTypesMap The cross types map to set
 	 */
-	public void setTypesMap(TypesMap typesMap) {
-		this.typesMap = typesMap;
+	public void setTypesMap(TypesMap aTypesMap) {
+		this.mTypesMap = aTypesMap;
 	}
 
 	/**
@@ -287,19 +271,19 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 * @return The unique identifier to identify the token
 	 */
 	synchronized public String getNextUID() {
-		if (uid.equals(Integer.MAX_VALUE)) {
-			uid = 0;
+		if (mUID.equals(Integer.MAX_VALUE)) {
+			mUID = 0;
 			return "0";
 		}
-		uid += 1;
+		mUID += 1;
 
 		//Adding the node identifier if in a cluster
-		String clusterNodeId = "";
+		String lClusterNodeId = "";
 		if (getEm().isClusterNode()) {
-			clusterNodeId = getEm().getClusterNode().getId();
+			lClusterNodeId = getEm().getClusterNode().getId();
 		}
 
-		return clusterNodeId + Integer.toString(uid);
+		return lClusterNodeId + Integer.toString(mUID);
 	}
 
 	/**

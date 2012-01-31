@@ -24,19 +24,19 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class BeforeProcessEvent extends C2SEvent {
 
-	private C2SEvent event;
+	private C2SEvent mEvent;
 
 	/**
 	 * @return The event from the client to process
 	 */
 	public C2SEvent getEvent() {
-		return event;
+		return mEvent;
 	}
 
 	/**
-	 * @param event The event from the client to process
+	 * @param aEvent The event from the client to process
 	 */
-	public void setEvent(C2SEvent event) {
-		this.event = event;
+	public void setEvent(C2SEvent aEvent) {
+		this.mEvent = aEvent;
 	}
 }

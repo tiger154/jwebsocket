@@ -26,34 +26,34 @@ import org.jwebsocket.eventmodel.observable.Event;
  */
 public class ResponseFromCache extends Event {
 
-	private Token cachedResponse;
-	private C2SEvent event;
+	private Token mCachedResponse;
+	private C2SEvent mEvent;
 
 	/**
 	 * @return The client event
 	 */
 	public C2SEvent getEvent() {
-		return event;
+		return mEvent;
 	}
 
 	/**
-	 * @param event The client event to set
+	 * @param aEvent The client event to set
 	 */
-	public void setEvent(C2SEvent event) {
-		this.event = event;
+	public void setEvent(C2SEvent aEvent) {
+		this.mEvent = aEvent;
 	}
 
 	/**
 	 * @return The cached response token
 	 */
 	public Token getCachedResponse() {
-		return cachedResponse;
+		return mCachedResponse;
 	}
 
 	/**
-	 * @param cachedResponse The cached response token to set
+	 * @param aCachedResponse The cached response token to set
 	 */
-	public void setCachedResponse(Token cachedResponse) {
-		this.cachedResponse = cachedResponse;
+	public void setCachedResponse(Token aCachedResponse) {
+		this.mCachedResponse = aCachedResponse;
 	}
 }
