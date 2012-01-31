@@ -25,37 +25,33 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class Logon extends C2SEvent {
 
-	private String username;
-
-	private String password;
-
 	/**
 	 * @return the username
 	 */
 	public String getUsername() {
-		return username;
+		return getArgs().getString("username");
 	}
 
 	/**
-	 * @param username the username to set
+	 * @param aUsername the username to set
 	 */
 	@ImportFromToken
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUsername(String aUsername) {
+		getArgs().setString("username", aUsername);
 	}
 
 	/**
 	 * @return the password
 	 */
 	public String getPassword() {
-		return password;
+		return getArgs().getString("password");
 	}
 
 	/**
-	 * @param password the password to set
+	 * @param aPassword the password to set
 	 */
 	@ImportFromToken
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPassword(String aPassword) {
+		getArgs().setString("password", aPassword);
 	}
 }

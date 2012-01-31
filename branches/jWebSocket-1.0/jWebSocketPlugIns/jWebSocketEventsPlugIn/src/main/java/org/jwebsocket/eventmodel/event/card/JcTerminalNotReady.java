@@ -9,14 +9,12 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class JcTerminalNotReady extends C2SEvent {
 
-	private String terminal;
-
 	public String getTerminal() {
-		return terminal;
+		return getArgs().getString("terminal");
 	}
 
 	@ImportFromToken
-	public void setTerminal(String terminal) {
-		this.terminal = terminal;
+	public void setTerminal(String aTerminal) {
+		getArgs().setString("terminal", aTerminal);
 	}
 }

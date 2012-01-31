@@ -24,9 +24,9 @@ public class ListenerNotFoundException extends Exception {
 
 	/**
 	 *
-	 * @param message
+	 * @param aMessage
 	 */
-	public ListenerNotFoundException(String message) {
-		super(message);
+	public ListenerNotFoundException(String aMessage) {
+		super(aMessage);
 	}
 }

@@ -24,9 +24,9 @@ public class InvalidExecutionTime extends Exception {
 
 	/**
 	 *
-	 * @param message
+	 * @param aMessage
 	 */
-	public InvalidExecutionTime(String message) {
-		super(message);
+	public InvalidExecutionTime(String aMessage) {
+		super(aMessage);
 	}
 }

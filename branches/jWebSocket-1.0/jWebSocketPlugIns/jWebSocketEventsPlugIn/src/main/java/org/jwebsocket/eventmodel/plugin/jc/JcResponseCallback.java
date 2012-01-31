@@ -18,6 +18,7 @@ package org.jwebsocket.eventmodel.plugin.jc;
 import javax.smartcardio.ResponseAPDU;
 import org.apache.commons.codec.binary.Base64;
 import org.jwebsocket.eventmodel.s2c.OnResponse;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -32,44 +33,48 @@ public abstract class JcResponseCallback extends OnResponse {
 	/**
 	 * Execute custom validations in client responses 
 	 * 
-	 * @param response The response to validate
-	 * @param from The target client connector
+	 * @param aResponse The response to validate
+	 * @param aFrom The target client connector
 	 * @return
 	 */
 	@Override
-	public boolean isValid(Object response, String from) {
-		return isValid(new ResponseAPDU(Base64.decodeBase64(response.toString())), from);
+	public boolean isValid(Object aResponse, String aFrom) {
+		return isValid(new ResponseAPDU(Tools.hexStringToByteArray(aResponse.toString())), aFrom);
 	}
 
 	/**
 	 * Execute custom validations for client card calls responses 
 	 * 
-	 * @param response The response to validate
-	 * @param from The target client connector
+	 * @param aResponse The response to validate
+	 * @param aFrom The target client connector
 	 * @return
 	 */
-	public boolean isValid(ResponseAPDU response, String from) {
-		return true;
+	public boolean isValid(ResponseAPDU aResponse, String aFrom) {
+		if (aResponse.getSW() == 0x9000) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
 	 * Callback used to handle the success response from the client
 	 * 
-	 * @param response The response returned by the client-side 
-	 * @param from The target client connector
+	 * @param aResponse The response returned by the client-side 
+	 * @param aFrom The target client connector
 	 */
 	@Override
-	public void success(Object response, String from) {
-		success(new ResponseAPDU(Base64.decodeBase64(response.toString())), from);
+	public void success(Object aResponse, String aFrom) {
+		success(new ResponseAPDU(Base64.decodeBase64(aResponse.toString())), aFrom);
 	}
 
 	/**
 	 * Callback used to handle the success response from the client card
 	 * 
-	 * @param response The response returned by the client-side 
-	 * @param from The target client connector
+	 * @param aResponse The response returned by the client-side 
+	 * @param aFrom The target client connector
 	 */
-	public void success(ResponseAPDU response, String from) {
+	public void success(ResponseAPDU aResponse, String aFrom) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

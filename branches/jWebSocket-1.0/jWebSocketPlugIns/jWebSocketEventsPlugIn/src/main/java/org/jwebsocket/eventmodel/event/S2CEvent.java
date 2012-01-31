@@ -21,28 +21,29 @@ import org.jwebsocket.token.Token;
 /**
  *
  * @author kyberneees
+ * 
  */
 public abstract class S2CEvent implements ITokenizable {
 
-	private String id;
-	private String responseType = "void"; //void by default
-	private String plugInId;
-	private Integer timeout = 1000; //One second by default
+	private String mId;
+	private String mResponseType = "void"; //void by default
+	private String mPlugInId;
+	private Integer mTimeout = 1000; //One second by default
 
 	/**
 	 * Write the parent class fields values to the token
 	 */
-	public void writeParentToToken(Token token) {
-		token.setString("_e", getId());
-		token.setString("_p", getPlugInId());
-		token.setString("_rt", getResponseType());
+	public void writeParentToToken(Token aToken) {
+		aToken.setString("_e", getId());
+		aToken.setString("_p", getPlugInId());
+		aToken.setString("_rt", getResponseType());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void readFromToken(Token token) {
+	public void readFromToken(Token aToken) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
@@ -50,42 +51,42 @@ public abstract class S2CEvent implements ITokenizable {
 	 * @return The S2CEvent identifier
 	 */
 	public String getId() {
-		return id;
+		return mId;
 	}
 
 	/**
 	 * @param id The S2CEvent identifier to set
 	 */
 	public void setId(String id) {
-		this.id = id;
+		this.mId = id;
 	}
 
 	/**
 	 * @return The S2CEvent response type
 	 */
 	public String getResponseType() {
-		return responseType;
+		return mResponseType;
 	}
 
 	/**
-	 * @param responseType The S2CEvent response type to set
+	 * @param aResponseType The S2CEvent response type to set
 	 */
-	public void setResponseType(String responseType) {
-		this.responseType = responseType;
+	public void setResponseType(String aResponseType) {
+		this.mResponseType = aResponseType;
 	}
 
 	/**
 	 * @return The client target plug-in identifier
 	 */
 	public String getPlugInId() {
-		return plugInId;
+		return mPlugInId;
 	}
 
 	/**
-	 * @param plugInId The client target plug-in identifier to set
+	 * @param aPlugInId The client target plug-in identifier to set
 	 */
-	public void setPlugInId(String plugInId) {
-		this.plugInId = plugInId;
+	public void setPlugInId(String aPlugInId) {
+		this.mPlugInId = aPlugInId;
 	}
 
 	/**
@@ -93,14 +94,14 @@ public abstract class S2CEvent implements ITokenizable {
 	 * @return The timeout limitation for this s2c event notification, 0 means unlimited
 	 */
 	public Integer getTimeout() {
-		return timeout;
+		return mTimeout;
 	}
 
 	/**
 	 * 
-	 * @param timeout The timeout limitation for this s2c event notification, 0 means unlimited
+	 * @param aTimeout The timeout limitation for this s2c event notification, 0 means unlimited
 	 */
-	public void setTimeout(Integer timeout) {
-		this.timeout = timeout;
+	public void setTimeout(Integer aTimeout) {
+		this.mTimeout = aTimeout;
 	}
 }

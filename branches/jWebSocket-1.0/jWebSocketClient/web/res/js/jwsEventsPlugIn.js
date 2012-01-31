@@ -20,14 +20,16 @@
 //:d:en:Implementation of the [tt]jws.EventsCallbacksHandler[/tt] class. _
 //:d:en:This class handle request callbacks on the events plug-in
 jws.oop.declareClass( "jws", "EventsCallbacksHandler", null, {
-	OnTimeout: function(rawRequest, aArgs){
+	OnTimeout: function(aRawRequest, aArgs){
 		if (undefined != aArgs.meta.OnTimeout){
-			aArgs.meta.OnTimeout(rawRequest);
+			aArgs.meta.OnTimeout(aRawRequest);
 		}
 	}
 	,
 	OnResponse: function(aResponseEvent, aArgs){
-		aArgs.meta.elapsedTime = (new Date().getTime()) - aArgs.sentTime;
+		aResponseEvent.elapsedTime = (new Date().getTime()) - aArgs.sentTime;
+		aResponseEvent.processingTime = aResponseEvent._pt;
+		delete(aResponseEvent._pt);
 
 		if (undefined != aArgs.meta.eventDefinition){
 			var lIndex = aArgs.filterChain.length - 1;
@@ -97,9 +99,9 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 		this.jwsClient.addPlugIn(this);
 		
 		//Initializing each filters
-		for (var i = 0, end = this.filterChain.length; i < end; i++){
-			if (this.filterChain[i]["initialize"]){
-				this.filterChain[i].initialize(this);
+		for (var lIndex = 0, lEnd = this.filterChain.length; lIndex < lEnd; lIndex++){
+			if (this.filterChain[lIndex]["initialize"]){
+				this.filterChain[lIndex].initialize(this);
 			}
 		}
 	}
@@ -301,11 +303,11 @@ jws.oop.declareClass( "jws", "AppUser", null, {
 	//:d:en:TRUE if the user have the given role, FALSE otherwise
 	//:a:en::r:String:A role
 	//:r:*:::boolean:none
-	hasRole: function(r){
+	hasRole: function(aRole){
 		var lEnd = this.roles.length;
 		
-		for (var i = 0; i < lEnd; i++){
-			if (r == this.roles[i])
+		for (var lIndex = 0; lIndex < lEnd; lIndex++){
+			if (aRole == this.roles[lIndex])
 				return true
 		}
 	
@@ -602,7 +604,16 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 				throw "stop_filter_chain";
 			}else if (aToken.hasOwnProperty(lArguments[i].name)){
 				var lRequiredType = lArguments[i].type;
-				if (lRequiredType != jws.tools.getType(aToken[lArguments[i].name])){
+				var lArgumentType = jws.tools.getType(aToken[lArguments[i].name]);
+				
+				//Supporting the numberic types domain
+				if ("number" == lRequiredType && ("integer" == lArgumentType || "double" == lArgumentType)){
+					return;
+				}
+				if ("double" == lRequiredType && ("integer" == lArgumentType)){
+					return;
+				}
+				if (lRequiredType != lArgumentType){
 					if (aRequest.OnResponse){
 						aRequest.OnResponse({
 							code: -1,

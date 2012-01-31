@@ -79,33 +79,33 @@ public class TestPlugIn extends JcPlugIn {
 				new OnResponse(new TransactionContext(getEm(), aEvent, null)) {
 
 					@Override
-					public boolean isValid(Object response, String from) {
-						return response.equals(10);
+					public boolean isValid(Object aResponse, String aFrom) {
+						return aResponse.equals(10);
 					}
 
 					@Override
-					public void success(Object response, String from) {
-						System.out.println(">> S2CPlusXYEvent success callback. Response: " + (Integer) response);
+					public void success(Object aResponse, String aFrom) {
+						System.out.println(">> S2CPlusXYEvent success callback. Response: " + (Integer) aResponse);
 
-						DecimalFormat f = new DecimalFormat("0");
-						System.out.println(">> S2CPlusXYEvent processing time: " + f.format(getProcessingTime()));
-						System.out.println(">> S2CPlusXYEvent elapsed time: " + f.format(getElapsedTime()));
-						System.out.println(">> S2CPlusXYEvent response from: " + from);
+						DecimalFormat lFormat = new DecimalFormat("0");
+						System.out.println(">> S2CPlusXYEvent processing time: " + lFormat.format(getProcessingTime()));
+						System.out.println(">> S2CPlusXYEvent elapsed time: " + lFormat.format(getElapsedTime()));
+						System.out.println(">> S2CPlusXYEvent response from: " + aFrom);
 
-						((TransactionContext) getContext()).success(response);
+						((TransactionContext) getContext()).success(aResponse);
 					}
 
 					@Override
-					public void failure(FailureReason reason, String from) {
-						System.out.println(">> S2CPlusXYEvent failure callback. Reason: " + reason.name());
+					public void failure(FailureReason aReason, String aFrom) {
+						System.out.println(">> S2CPlusXYEvent failure callback. Reason: " + aReason.name());
 					}
 				});
 
 		//Notification w/o callbacks
-		UpdateSiteCounterEvent e = new UpdateSiteCounterEvent();
-		e.setCounter(Integer.MAX_VALUE);
+		UpdateSiteCounterEvent lEvent = new UpdateSiteCounterEvent();
+		lEvent.setCounter(Integer.MAX_VALUE);
 		//Sending to all connectors
-		this.notifyS2CEvent(e).to(aEvent.getConnector(), null);
+		notifyS2CEvent(lEvent).to(aEvent.getConnector(), null);
 	}
 
 	/**
@@ -119,8 +119,7 @@ public class TestPlugIn extends JcPlugIn {
 			mLog.debug(">> Processing JcTest event notification...");
 		}
 
-		byte[] lApdu = {(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x08,
-			(byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+		byte[] lApdu = {(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x18, (byte) 0x43, (byte) 0x4d};
 
 		String lClient = aEvent.getConnector().getId();
 
@@ -128,19 +127,20 @@ public class TestPlugIn extends JcPlugIn {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Sending '" + lApdu.toString() + "' APDU to '" + lTerminal + "' terminal on '" + lClient + "' client ...");
 			}
+			
 			transmit(lClient, lTerminal, new CommandAPDU(lApdu), new JcResponseCallback(null) {
 
 				@Override
-				public void success(ResponseAPDU response, String from) {
-					DecimalFormat f = new DecimalFormat("0");
+				public void success(ResponseAPDU aResponse, String aFrom) {
+					DecimalFormat lFormat = new DecimalFormat("0");
 
-					System.out.println(">> success " + from + " " + response.getBytes());
-					System.out.println(">> elapsed time " + f.format(getElapsedTime()));
+					System.out.println(">> success " + aFrom + " " + new String(aResponse.getBytes()));
+					System.out.println(">> elapsed time " + lFormat.format(getElapsedTime()));
 				}
 
 				@Override
-				public void failure(FailureReason reason, String from) {
-					System.out.println(">> failure " + from + " " + reason.name());
+				public void failure(FailureReason aReason, String aFrom) {
+					System.out.println(">> failure " + aFrom + " " + aReason.name());
 				}
 			});
 		}

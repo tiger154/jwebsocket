@@ -54,29 +54,29 @@ import org.jwebsocket.session.SessionManager;
  */
 public class EventModel extends ObservableObject implements IInitializable, IListener {
 
-	private String env = EventModel.DEV_ENV;
+	private String mEnv = EventModel.DEV_ENV;
 	public final static String DEV_ENV = "dev";
 	public final static String PROD_ENV = "prod";
-	private Set<IEventModelFilter> filterChain = new FastSet<IEventModelFilter>();
-	private Set<IEventModelPlugIn> plugIns = new FastSet<IEventModelPlugIn>();
-	private EventsPlugIn parent;
-	private EventFactory eventFactory;
+	private Set<IEventModelFilter> mFilterChain = new FastSet<IEventModelFilter>();
+	private Set<IEventModelPlugIn> mPlugIns = new FastSet<IEventModelPlugIn>();
+	private EventsPlugIn mParent;
+	private EventFactory mEventFactory;
 	private static Logger mLog = Logging.getLogger(EventModel.class);
-	private IExceptionHandler exceptionHandler;
-	private IWebSocketClusterNode clusterNode;
-	private String namespace;
+	private IExceptionHandler mExceptionHandler;
+	private IWebSocketClusterNode mClusterNode;
+	private String mNamespace;
 
 	public String getNamespace() {
-		return namespace;
+		return mNamespace;
 	}
 
 	public void setNamespace(String aNamespace) {
-		this.namespace = aNamespace;
+		this.mNamespace = aNamespace;
 	}
 
 	public EventModel(String aNamespace) {
 		super();
-		this.namespace = aNamespace;
+		this.mNamespace = aNamespace;
 
 		//Core Events Registration
 		addEvents(ConnectorStarted.class);
@@ -102,7 +102,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 * @return TRUE if the server is a cluster node, FALSE otherwise
 	 */
 	public boolean isClusterNode() {
-		return (null != clusterNode);
+		return (null != mClusterNode);
 	}
 
 	/**
@@ -126,16 +126,16 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 			if (mLog.isDebugEnabled()) {
 				mLog.debug(">> 'before.process.event' notification...");
 			}
-			BeforeProcessEvent e = (BeforeProcessEvent) getEventFactory().stringToEvent("before.process.event");
-			e.setEvent(aEvent);
-			notify(e, null, true);
+			BeforeProcessEvent lEvent = (BeforeProcessEvent) getEventFactory().stringToEvent("before.process.event");
+			lEvent.setEvent(aEvent);
+			notify(lEvent, null, true);
 
 			//++++++++++++++ Listeners notification
 			if (mLog.isDebugEnabled()) {
 				mLog.debug(">> Executing EM listeners notifications...");
 			}
-			C2SEventDefinition def = getEventFactory().getEventDefinitions().getDefinition(aEvent.getId());
-			if (def.isNotificationConcurrent()) {
+			C2SEventDefinition lDef = getEventFactory().getEventDefinitions().getDefinition(aEvent.getId());
+			if (lDef.isNotificationConcurrent()) {
 				notify(aEvent, aResponseEvent, true);
 			} else {
 				notify(aEvent, aResponseEvent, false);
@@ -145,9 +145,9 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 			if (mLog.isDebugEnabled()) {
 				mLog.debug(">> 'after.process.event' notification...");
 			}
-			AfterProcessEvent e2 = (AfterProcessEvent) getEventFactory().stringToEvent("after.process.event");
-			e2.setEvent(aEvent);
-			notify(e2, aResponseEvent, true);
+			AfterProcessEvent lEvent2 = (AfterProcessEvent) getEventFactory().stringToEvent("after.process.event");
+			lEvent2.setEvent(aEvent);
+			notify(lEvent2, aResponseEvent, true);
 
 			executeFiltersAfterCall(aEvent.getConnector(), aResponseEvent);
 
@@ -162,13 +162,13 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 		} catch (Exception ex) {
 
 			//Creating error response for connector notification
-			Token aToken = getParent().getServer().createResponse(aEvent.getArgs());
-			aToken.setInteger("code", C2SResponseEvent.NOT_OK);
-			aToken.setString("msg", ex.getMessage());
-			aToken.setString("exception", ex.getClass().getSimpleName());
+			Token lToken = getParent().getServer().createResponse(aEvent.getArgs());
+			lToken.setInteger("code", C2SResponseEvent.NOT_OK);
+			lToken.setString("msg", ex.getMessage());
+			lToken.setString("exception", ex.getClass().getSimpleName());
 
 			//Sending the error token...
-			getParent().getServer().sendToken(aEvent.getConnector(), aToken);
+			getParent().getServer().sendToken(aEvent.getConnector(), lToken);
 
 			if (mLog.isInfoEnabled()) {
 				mLog.info(">> The 'event' workflow has finished with errors: " + ex.toString());
@@ -195,8 +195,8 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 * @throws Exception
 	 */
 	public void executeFiltersBeforeCall(WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
-		for (IEventModelFilter f : getFilterChain()) {
-			f.beforeCall(aConnector, aEvent);
+		for (IEventModelFilter lFilter : getFilterChain()) {
+			lFilter.beforeCall(aConnector, aEvent);
 		}
 	}
 
@@ -208,11 +208,11 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 * @throws Exception
 	 */
 	public void executeFiltersAfterCall(WebSocketConnector aConnector, C2SResponseEvent aResponseEvent) throws Exception {
-		int index = getFilterChain().size() - 1;
-		while (index >= 0) {
+		int lIndex = getFilterChain().size() - 1;
+		while (lIndex >= 0) {
 			((IEventModelFilter) getFilterChain().
-					toArray()[index]).afterCall(aConnector, aResponseEvent);
-			index--;
+					toArray()[lIndex]).afterCall(aConnector, aResponseEvent);
+			lIndex--;
 		}
 	}
 
@@ -224,9 +224,9 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 * @throws IndexOutOfBoundsException
 	 */
 	public IEventModelPlugIn getPlugIn(String aPlugInId) throws IndexOutOfBoundsException {
-		for (IEventModelPlugIn plugIn : getPlugIns()) {
-			if (plugIn.getId().equals(aPlugInId)) {
-				return plugIn;
+		for (IEventModelPlugIn lPlugIn : getPlugIns()) {
+			if (lPlugIn.getId().equals(aPlugInId)) {
+				return lPlugIn;
 			}
 		}
 		throw new IndexOutOfBoundsException("The plugIn with id: '" + aPlugInId + "', does not exists!");
@@ -240,9 +240,9 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 * @throws IndexOutOfBoundsException
 	 */
 	public IEventModelFilter getFilter(String aFilterId) throws IndexOutOfBoundsException {
-		for (IEventModelFilter filter : getFilterChain()) {
-			if (filter.getId().equals(aFilterId)) {
-				return filter;
+		for (IEventModelFilter lFilter : getFilterChain()) {
+			if (lFilter.getId().equals(aFilterId)) {
+				return lFilter;
 			}
 		}
 		throw new IndexOutOfBoundsException("The filter with id: " + aFilterId + ", does not exists!");
@@ -252,56 +252,56 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 * @return The EventModelFilter chain
 	 */
 	public Set<IEventModelFilter> getFilterChain() {
-		return filterChain;
+		return mFilterChain;
 	}
 
 	/**
 	 * @param filterChain The EventModelFilter chain to set
 	 */
-	public void setFilterChain(Set<IEventModelFilter> filterChain) {
-		this.filterChain.addAll(filterChain);
+	public void setFilterChain(Set<IEventModelFilter> aFilterChain) {
+		this.mFilterChain.addAll(aFilterChain);
 	}
 
 	/**
 	 * @return The EventModelPlugIn collection
 	 */
 	public Set<IEventModelPlugIn> getPlugIns() {
-		return plugIns;
+		return mPlugIns;
 	}
 
 	/**
-	 * @param plugIns The EventModelPlugIn collection to set
+	 * @param aPlugIns The EventModelPlugIn collection to set
 	 */
-	public void setPlugIns(Set<IEventModelPlugIn> plugIns) {
-		this.plugIns.addAll(plugIns);
+	public void setPlugIns(Set<IEventModelPlugIn> aPlugIns) {
+		this.mPlugIns.addAll(aPlugIns);
 	}
 
 	/**
 	 * @return The EventsPlugIn (TokenPlugIn) 
 	 */
 	public EventsPlugIn getParent() {
-		return parent;
+		return mParent;
 	}
 
 	/**
-	 * @param parent The EventsPlugIn to set
+	 * @param aParent The EventsPlugIn to set
 	 */
-	public void setParent(EventsPlugIn parent) {
-		this.parent = parent;
+	public void setParent(EventsPlugIn aParent) {
+		this.mParent = aParent;
 	}
 
 	/**
 	 * @return The EventFactory
 	 */
 	public EventFactory getEventFactory() {
-		return eventFactory;
+		return mEventFactory;
 	}
 
 	/**
-	 * @param eventFactory The EventFactory to set
+	 * @param aEventFactory The EventFactory to set
 	 */
-	public void setEventFactory(EventFactory eventFactory) {
-		this.eventFactory = eventFactory;
+	public void setEventFactory(EventFactory aEventFactory) {
+		this.mEventFactory = aEventFactory;
 	}
 
 	/**
@@ -316,14 +316,14 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 * @return The IExceptionHandler
 	 */
 	public IExceptionHandler getExceptionHandler() {
-		return exceptionHandler;
+		return mExceptionHandler;
 	}
 
 	/**
-	 * @param exceptionHandler The IExceptionHandler to set
+	 * @param aExceptionHandler The IExceptionHandler to set
 	 */
-	public void setExceptionHandler(IExceptionHandler exceptionHandler) {
-		this.exceptionHandler = exceptionHandler;
+	public void setExceptionHandler(IExceptionHandler aExceptionHandler) {
+		this.mExceptionHandler = aExceptionHandler;
 	}
 
 	/**
@@ -339,18 +339,18 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 * @return The event model runtime environment "dev" or "prod". Default value is "dev"
 	 */
 	public String getEnv() {
-		return env;
+		return mEnv;
 	}
 
-	public void setEnv(String env) {
-		this.env = env;
+	public void setEnv(String aEnv) {
+		this.mEnv = aEnv;
 	}
 
 	public IWebSocketClusterNode getClusterNode() {
-		return clusterNode;
+		return mClusterNode;
 	}
 
-	public void setClusterNode(IWebSocketClusterNode clusterNode) {
-		this.clusterNode = clusterNode;
+	public void setClusterNode(IWebSocketClusterNode aClusterNode) {
+		this.mClusterNode = aClusterNode;
 	}
 }

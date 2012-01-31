@@ -26,11 +26,11 @@ import org.jwebsocket.logging.Logging;
  */
 public class PurgeCancelledTimeoutsTask extends TimerTask {
 
-	private Timer t;
+	private Timer mTimer;
 	private static Logger mLog = Logging.getLogger(PurgeCancelledTimeoutsTask.class);
 
-	public PurgeCancelledTimeoutsTask(Timer t) {
-		this.t = t;
+	public PurgeCancelledTimeoutsTask(Timer aTimer) {
+		this.mTimer = aTimer;
 	}
 
 	@Override
@@ -38,6 +38,6 @@ public class PurgeCancelledTimeoutsTask extends TimerTask {
 		if (mLog.isDebugEnabled()){
 			mLog.debug(">> Purging the timeout callbacks queue...");
 		}
-		t.purge(); //Keep the timer cleaned up
+		mTimer.purge(); //Keep the timer cleaned up
 	}
 }

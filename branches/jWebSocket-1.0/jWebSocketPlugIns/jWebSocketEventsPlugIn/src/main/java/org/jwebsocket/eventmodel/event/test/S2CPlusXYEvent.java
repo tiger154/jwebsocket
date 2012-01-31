@@ -25,58 +25,58 @@ import org.jwebsocket.token.Token;
  */
 public class S2CPlusXYEvent extends S2CEvent {
 
-	private int x;
-	private int y;
+	private int mX;
+	private int mY;
 
 	/**
 	 *
-	 * @param x The 1 variable
-	 * @param y The 2 variable
+	 * @param aX The 1 variable
+	 * @param aY The 2 variable
 	 */
-	public S2CPlusXYEvent(int x, int y) {
+	public S2CPlusXYEvent(int aX, int aY) {
 		super();
 		setId("plusXY");
 		setResponseType("integer");
 		setTimeout(1000);
 
-		this.x = x;
-		this.y = y;
+		this.mX = aX;
+		this.mY = aY;
 	}
 
 	/**
 	 * @return the x
 	 */
 	public int getX() {
-		return x;
+		return mX;
 	}
 
 	/**
-	 * @param x the x to set
+	 * @param aX the x to set
 	 */
-	public void setX(int x) {
-		this.x = x;
+	public void setX(int aX) {
+		this.mX = aX;
 	}
 
 	/**
 	 * @return the y
 	 */
 	public int getY() {
-		return y;
+		return mY;
 	}
 
 	/**
-	 * @param y the y to set
+	 * @param aY the y to set
 	 */
-	public void setY(int y) {
-		this.y = y;
+	public void setY(int aY) {
+		this.mY = aY;
 	}
 
 	/**
 	 * {@inheritDoc }
 	 */
 	@Override
-	public void writeToToken(Token token){
-		token.setInteger("x", getX());
-		token.setInteger("y", getY());	
+	public void writeToToken(Token aToken){
+		aToken.setInteger("x", getX());
+		aToken.setInteger("y", getY());	
 	}
 }

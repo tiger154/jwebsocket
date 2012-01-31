@@ -22,7 +22,7 @@ import java.util.Set;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.jwebsocket.api.IInitializable;
-import org.jwebsocket.eventmodel.api.ISecureComponent;
+import org.jwebsocket.eventmodel.api.IServerSecureComponent;
 import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.token.ITokenizable;
 import org.jwebsocket.token.Token;
@@ -32,25 +32,25 @@ import org.springframework.validation.Validator;
  *
  * @author kyberneees
  */
-public class C2SEventDefinition implements IInitializable, ISecureComponent, ITokenizable {
+public class C2SEventDefinition implements IInitializable, IServerSecureComponent, ITokenizable {
 
-	private String id;
-	private String ns;
-	private Set<Argument> incomingArgsValidation = new FastSet<Argument>();
-	private Set<Argument> outgoingArgsValidation = new FastSet<Argument>();
-	private boolean responseRequired = false;
-	private boolean responseToOwnerConnector = false;
-	private boolean responseAsync = true;
-	private boolean cacheEnabled = false;
-	private boolean cachePrivate = false;
-	private boolean notificationConcurrent = false;
-	private int cacheTime = 0;
-	private boolean securityEnabled = false;
-	private Set<String> roles = new FastSet<String>();
-	private Set<String> users = new FastSet<String>();
-	private Set<String> ipAddresses = new FastSet<String>();
-	private Validator validator;
-	private Integer timeout = 100;
+	private String mId;
+	private String mNs;
+	private Set<Argument> mIncomingArgsValidation = new FastSet();
+	private Set<Argument> mOutgoingArgsValidation = new FastSet();
+	private boolean mResponseRequired = false;
+	private boolean mResponseToOwnerConnector = true;
+	private boolean mResponseAsync = true;
+	private boolean mCacheEnabled = false;
+	private boolean mCachePrivate = true;
+	private boolean mNotificationConcurrent = false;
+	private int mCacheTime = 0;
+	private boolean mSecurityEnabled = false;
+	private Set<String> mRoles = new FastSet();
+	private Set<String> mUsers = new FastSet();
+	private Set<String> mIpAddresses = new FastSet();
+	private Validator mValidator;
+	private Integer mTimeout = 100;
 
 	/**
 	 * {@inheritDoc }
@@ -71,86 +71,86 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 */
 	@Override
 	public int hashCode() {
-		return ((null != id) ? id.hashCode() : 0)
-				+ incomingArgsValidation.hashCode()
-				+ outgoingArgsValidation.hashCode()
-				+ ((responseRequired) ? 1 : 0)
-				+ ((responseToOwnerConnector) ? 1 : 0)
-				+ ((responseAsync) ? 1 : 0)
-				+ ((cacheEnabled) ? 1 : 0)
-				+ ((cachePrivate) ? 1 : 0)
-				+ ((notificationConcurrent) ? 1 : 0)
-				+ cacheTime
-				+ ((null != validator) ? validator.hashCode() : 0)
-				+ ((securityEnabled) ? 1 : 0)
-				+ roles.hashCode()
-				+ users.hashCode()
-				+ ((null != ns) ? ns.hashCode() : 0)
-				+ ((null != ipAddresses) ? ipAddresses.hashCode() : 0)
-				+ timeout;
+		return ((null != mId) ? mId.hashCode() : 0)
+				+ mIncomingArgsValidation.hashCode()
+				+ mOutgoingArgsValidation.hashCode()
+				+ ((mResponseRequired) ? 1 : 0)
+				+ ((mResponseToOwnerConnector) ? 1 : 0)
+				+ ((mResponseAsync) ? 1 : 0)
+				+ ((mCacheEnabled) ? 1 : 0)
+				+ ((mCachePrivate) ? 1 : 0)
+				+ ((mNotificationConcurrent) ? 1 : 0)
+				+ mCacheTime
+				+ ((null != mValidator) ? mValidator.hashCode() : 0)
+				+ ((mSecurityEnabled) ? 1 : 0)
+				+ mRoles.hashCode()
+				+ mUsers.hashCode()
+				+ ((null != mNs) ? mNs.hashCode() : 0)
+				+ ((null != mIpAddresses) ? mIpAddresses.hashCode() : 0)
+				+ mTimeout;
 	}
 
 	/**
 	 * {@inheritDoc }
 	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
+	public boolean equals(Object aObj) {
+		if (aObj == null) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != aObj.getClass()) {
 			return false;
 		}
-		final C2SEventDefinition other = (C2SEventDefinition) obj;
-		if ((this.id == null) ? (other.getId() != null) : !this.id.equals(other.getId())) {
+		final C2SEventDefinition other = (C2SEventDefinition) aObj;
+		if ((this.mId == null) ? (other.getId() != null) : !this.mId.equals(other.getId())) {
 			return false;
 		}
-		if (this.incomingArgsValidation != other.getIncomingArgsValidation() && (this.incomingArgsValidation == null || !this.incomingArgsValidation.equals(other.getIncomingArgsValidation()))) {
+		if (this.mIncomingArgsValidation != other.getIncomingArgsValidation() && (this.mIncomingArgsValidation == null || !this.mIncomingArgsValidation.equals(other.getIncomingArgsValidation()))) {
 			return false;
 		}
-		if (this.outgoingArgsValidation != other.getOutgoingArgsValidation() && (this.outgoingArgsValidation == null || !this.outgoingArgsValidation.equals(other.getOutgoingArgsValidation()))) {
+		if (this.mOutgoingArgsValidation != other.getOutgoingArgsValidation() && (this.mOutgoingArgsValidation == null || !this.mOutgoingArgsValidation.equals(other.getOutgoingArgsValidation()))) {
 			return false;
 		}
-		if (this.responseRequired != other.isResponseRequired()) {
+		if (this.mResponseRequired != other.isResponseRequired()) {
 			return false;
 		}
-		if (this.responseAsync != other.isResponseAsync()) {
+		if (this.mResponseAsync != other.isResponseAsync()) {
 			return false;
 		}
-		if (this.responseToOwnerConnector != other.isResponseToOwnerConnector()) {
+		if (this.mResponseToOwnerConnector != other.isResponseToOwnerConnector()) {
 			return false;
 		}
-		if (this.cacheEnabled != other.isCacheEnabled()) {
+		if (this.mCacheEnabled != other.isCacheEnabled()) {
 			return false;
 		}
-		if (this.cachePrivate != other.isCachePrivate()) {
+		if (this.mCachePrivate != other.isCachePrivate()) {
 			return false;
 		}
-		if (this.notificationConcurrent != other.isNotificationConcurrent()) {
+		if (this.mNotificationConcurrent != other.isNotificationConcurrent()) {
 			return false;
 		}
-		if (this.cacheTime != other.getCacheTime()) {
+		if (this.mCacheTime != other.getCacheTime()) {
 			return false;
 		}
-		if (this.timeout != other.getTimeout()) {
+		if (this.mTimeout != other.getTimeout()) {
 			return false;
 		}
-		if (this.validator != other.getValidator()) {
+		if (this.mValidator != other.getValidator()) {
 			return false;
 		}
-		if (this.securityEnabled != other.isSecurityEnabled()) {
+		if (this.mSecurityEnabled != other.isSecurityEnabled()) {
 			return false;
 		}
-		if (this.roles != other.getRoles() && (this.roles == null || !this.roles.equals(other.getRoles()))) {
+		if (this.mRoles != other.getRoles() && (this.mRoles == null || !this.mRoles.equals(other.getRoles()))) {
 			return false;
 		}
-		if (this.users != other.getRoles() && (this.users == null || !this.users.equals(other.getUsers()))) {
+		if (this.mUsers != other.getRoles() && (this.mUsers == null || !this.mUsers.equals(other.getUsers()))) {
 			return false;
 		}
-		if ((this.ns == null) ? (other.getNs() != null) : !this.ns.equals(other.getNs())) {
+		if ((this.mNs == null) ? (other.getNs() != null) : !this.mNs.equals(other.getNs())) {
 			return false;
 		}
-		if ((this.ipAddresses == null) ? (other.getIpAddresses() != null) : !this.ipAddresses.equals(other.getIpAddresses())) {
+		if ((this.mIpAddresses == null) ? (other.getIpAddresses() != null) : !this.mIpAddresses.equals(other.getIpAddresses())) {
 			return false;
 		}
 		return true;
@@ -160,15 +160,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * @return The C2SEventDefinition identifier
 	 */
 	public String getId() {
-		return id;
+		return mId;
 	}
 
 	/**
-	 * @param id The C2SEventDefinition identifier to set
+	 * @param aId The C2SEventDefinition identifier to set
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
-	public C2SEventDefinition setId(String id) {
-		this.id = id;
+	public C2SEventDefinition setId(String aId) {
+		this.mId = aId;
 
 		return this;
 	}
@@ -177,15 +177,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * @return The C2SEventDefinition validation rules for incoming arguments
 	 */
 	public Set<Argument> getIncomingArgsValidation() {
-		return incomingArgsValidation;
+		return mIncomingArgsValidation;
 	}
 
 	/**
 	 * @param incomingArgsValidation The C2SEventDefinition validation rules for incoming arguments to set
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
-	public C2SEventDefinition setIncomingArgsValidation(Set<Argument> incomingArgsValidation) {
-		this.incomingArgsValidation.addAll(incomingArgsValidation);
+	public C2SEventDefinition setIncomingArgsValidation(Set<Argument> aIncomingArgsValidation) {
+		this.mIncomingArgsValidation.addAll(aIncomingArgsValidation);
 
 		return this;
 	}
@@ -194,15 +194,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * @return The C2SEventDefinition validation rules for outgoing arguments
 	 */
 	public Set<Argument> getOutgoingArgsValidation() {
-		return outgoingArgsValidation;
+		return mOutgoingArgsValidation;
 	}
 
 	/**
-	 * @param outgoingArgsValidation The C2SEventDefinition validation rules for outgoing arguments to set
+	 * @param aOutgoingArgsValidation The C2SEventDefinition validation rules for outgoing arguments to set
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
-	public C2SEventDefinition setOutgoingArgsValidation(Set<Argument> outgoingArgsValidation) {
-		this.outgoingArgsValidation.addAll(outgoingArgsValidation);
+	public C2SEventDefinition setOutgoingArgsValidation(Set<Argument> aOutgoingArgsValidation) {
+		this.mOutgoingArgsValidation.addAll(aOutgoingArgsValidation);
 
 		return this;
 	}
@@ -213,15 +213,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * @return the responseRequired
 	 */
 	public boolean isResponseRequired() {
-		return responseRequired;
+		return mResponseRequired;
 	}
 
 	/**
-	 * @param responseRequired Indicate if a response is required for the target event
+	 * @param aResponseRequired Indicate if a response is required for the target event
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
-	public C2SEventDefinition setResponseRequired(boolean responseRequired) {
-		this.responseRequired = responseRequired;
+	public C2SEventDefinition setResponseRequired(boolean aResponseRequired) {
+		this.mResponseRequired = aResponseRequired;
 
 		return this;
 	}
@@ -230,7 +230,7 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * @return Indicate if the cache is enabled for this event
 	 */
 	public boolean isCacheEnabled() {
-		return cacheEnabled;
+		return mCacheEnabled;
 	}
 
 	/**
@@ -238,23 +238,23 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * @return TRUE is the cache is private by user, FALSE otherwise
 	 */
 	public boolean isCachePrivate() {
-		return cachePrivate;
+		return mCachePrivate;
 	}
 
 	/**
 	 * 
-	 * @param cachePrivate TRUE is the cache is private by user, FALSE otherwise
+	 * @param aCachePrivate TRUE is the cache is private by user, FALSE otherwise
 	 */
-	public void setCachePrivate(boolean cachePrivate) {
-		this.cachePrivate = cachePrivate;
+	public void setCachePrivate(boolean aCachePrivate) {
+		this.mCachePrivate = aCachePrivate;
 	}
 
 	/**
-	 * @param cacheEnabled Indicate if the cache is enabled for this event
+	 * @param aCacheEnabled Indicate if the cache is enabled for this event
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
-	public C2SEventDefinition setCacheEnabled(boolean cacheEnabled) {
-		this.cacheEnabled = cacheEnabled;
+	public C2SEventDefinition setCacheEnabled(boolean aCacheEnabled) {
+		this.mCacheEnabled = aCacheEnabled;
 
 		return this;
 	}
@@ -263,15 +263,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * @return The time in seconds to store in cache the response of this event
 	 */
 	public int getCacheTime() {
-		return cacheTime;
+		return mCacheTime;
 	}
 
 	/**
-	 * @param cacheTime The time in seconds to store in cache the response of this event
+	 * @param aCacheTime The time in seconds to store in cache the response of this event
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
-	public C2SEventDefinition setCacheTime(int cacheTime) {
-		this.cacheTime = cacheTime;
+	public C2SEventDefinition setCacheTime(int aCacheTime) {
+		this.mCacheTime = aCacheTime;
 
 		return this;
 	}
@@ -281,15 +281,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 */
 	@Override
 	public boolean isSecurityEnabled() {
-		return securityEnabled;
+		return mSecurityEnabled;
 	}
 
 	/**
 	 * {@inheritDoc }
 	 */
 	@Override
-	public void setSecurityEnabled(boolean securityEnabled) {
-		this.securityEnabled = securityEnabled;
+	public void setSecurityEnabled(boolean aSecurityEnabled) {
+		this.mSecurityEnabled = aSecurityEnabled;
 	}
 
 	/**
@@ -297,15 +297,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 */
 	@Override
 	public Set<String> getRoles() {
-		return roles;
+		return mRoles;
 	}
 
 	/**
 	 * {@inheritDoc }
 	 */
 	@Override
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
+	public void setRoles(Set<String> aRoles) {
+		this.mRoles = aRoles;
 	}
 
 	/**
@@ -321,15 +321,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * @return The class name associated to the event
 	 */
 	public String getNs() {
-		return ns;
+		return mNs;
 	}
 
 	/**
-	 * @param ns The class name associated to the event
+	 * @param aNs The class name associated to the event
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
-	public C2SEventDefinition setNs(String ns) {
-		this.ns = ns;
+	public C2SEventDefinition setNs(String aNs) {
+		this.mNs = aNs;
 
 		return this;
 	}
@@ -342,16 +342,16 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * owner WebSocketConnector, <tt>FALSE</tt> otherwise
 	 */
 	public boolean isResponseToOwnerConnector() {
-		return responseToOwnerConnector;
+		return mResponseToOwnerConnector;
 	}
 
 	/**
-	 * @param responseToOwnerConnector Indicate if the response for the event need to be send to 
+	 * @param aResponseToOwnerConnector Indicate if the response for the event need to be send to 
 	 * the owner WebSocketConnector
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
-	public C2SEventDefinition setResponseToOwnerConnector(boolean responseToOwnerConnector) {
-		this.responseToOwnerConnector = responseToOwnerConnector;
+	public C2SEventDefinition setResponseToOwnerConnector(boolean aResponseToOwnerConnector) {
+		this.mResponseToOwnerConnector = aResponseToOwnerConnector;
 
 		return this;
 	}
@@ -361,15 +361,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * in threads, <tt>FALSE</tt> otherwise
 	 */
 	public boolean isNotificationConcurrent() {
-		return notificationConcurrent;
+		return mNotificationConcurrent;
 	}
 
 	/**
-	 * @param notificationConcurrent Indicate if the listeners notification can be do it in threads
+	 * @param aNotificationConcurrent Indicate if the listeners notification can be do it in threads
 	 * @return C2SEventDefinition provide a fluent interface 
 	 */
-	public C2SEventDefinition setNotificationConcurrent(boolean notificationConcurrent) {
-		this.notificationConcurrent = notificationConcurrent;
+	public C2SEventDefinition setNotificationConcurrent(boolean aNotificationConcurrent) {
+		this.mNotificationConcurrent = aNotificationConcurrent;
 
 		return this;
 	}
@@ -379,15 +379,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 */
 	@Override
 	public Set<String> getIpAddresses() {
-		return ipAddresses;
+		return mIpAddresses;
 	}
 
 	/**
 	 * {@inheritDoc }
 	 */
 	@Override
-	public void setIpAddresses(Set<String> ipAddresses) {
-		this.ipAddresses.addAll(ipAddresses);
+	public void setIpAddresses(Set<String> aIpAddresses) {
+		this.mIpAddresses.addAll(aIpAddresses);
 	}
 
 	/**
@@ -395,15 +395,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 */
 	@Override
 	public Set<String> getUsers() {
-		return users;
+		return mUsers;
 	}
 
 	/**
 	 * {@inheritDoc }
 	 */
 	@Override
-	public void setUsers(Set<String> users) {
-		this.users.addAll(users);
+	public void setUsers(Set<String> aUsers) {
+		this.mUsers.addAll(aUsers);
 	}
 
 	/**
@@ -411,15 +411,15 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * asynchronous, <tt>FALSE</tt> otherwise 
 	 */
 	public boolean isResponseAsync() {
-		return responseAsync;
+		return mResponseAsync;
 	}
 
 	/**
-	 * @param responseAsync Indicate if the response delivery to the client need to be asynchronous
+	 * @param aResponseAsync Indicate if the response delivery to the client need to be asynchronous
 	 * @return C2SEventDefinition provide a fluent interface 
 	 */
-	public C2SEventDefinition setResponseAsync(boolean responseAsync) {
-		this.responseAsync = responseAsync;
+	public C2SEventDefinition setResponseAsync(boolean aResponseAsync) {
+		this.mResponseAsync = aResponseAsync;
 
 		return this;
 	}
@@ -428,28 +428,28 @@ public class C2SEventDefinition implements IInitializable, ISecureComponent, ITo
 	 * @return The event validator
 	 */
 	public Validator getValidator() {
-		return validator;
+		return mValidator;
 	}
 
 	/**
-	 * @param validator The event validator to set
+	 * @param aValidator The event validator to set
 	 */
-	public void setValidator(Validator validator) {
-		this.validator = validator;
+	public void setValidator(Validator aValidator) {
+		this.mValidator = aValidator;
 	}
 
 	/**
 	 * @return The timeout for client requests (milliseconds)
 	 */
 	public Integer getTimeout() {
-		return timeout;
+		return mTimeout;
 	}
 
 	/**
-	 * @param timeout The timeout for client requests (milliseconds)
+	 * @param aTimeout The timeout for client requests (milliseconds)
 	 */
-	public void setTimeout(Integer timeout) {
-		this.timeout = timeout;
+	public void setTimeout(Integer aTimeout) {
+		this.mTimeout = aTimeout;
 	}
 
 	@Override

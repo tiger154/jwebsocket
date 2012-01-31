@@ -25,19 +25,19 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class EngineStopped extends C2SEvent {
 
-	private WebSocketEngine engine;
+	private WebSocketEngine mEngine;
 
 	/**
 	 * @return the engine
 	 */
 	public WebSocketEngine getEngine() {
-		return engine;
+		return mEngine;
 	}
 
 	/**
-	 * @param engine the engine to set
+	 * @param aEngine the engine to set
 	 */
-	public void setEngine(WebSocketEngine engine) {
-		this.engine = engine;
+	public void setEngine(WebSocketEngine aEngine) {
+		this.mEngine = aEngine;
 	}
 }

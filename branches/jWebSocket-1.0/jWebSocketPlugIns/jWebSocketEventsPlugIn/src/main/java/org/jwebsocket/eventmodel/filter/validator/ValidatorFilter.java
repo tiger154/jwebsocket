@@ -36,41 +36,41 @@ import org.springframework.validation.FieldError;
 public class ValidatorFilter extends EventModelFilter {
 
 	private static Logger mLog = Logging.getLogger(ValidatorFilter.class);
-	private TypesMap types;
-	private boolean validateResponse = true;
+	private TypesMap mTypes;
+	private boolean mValidateResponse = true;
 
 	/**
 	 *{@inheritDoc }
 	 */
 	@Override
 	public void beforeCall(WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
-		C2SEventDefinition def = getEm().getEventFactory().getEventDefinitions().
+		C2SEventDefinition lDef = getEm().getEventFactory().getEventDefinitions().
 				getDefinition(aEvent.getId());
 
-		Set<Argument> args = def.getIncomingArgsValidation();
-		if (args.size() > 0) {
+		Set<Argument> lInArgs = lDef.getIncomingArgsValidation();
+		if (lInArgs.size() > 0) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug(">> Validating incoming arguments for '" + aEvent.getId() + "' event ...");
 			}
 
 			//Incoming event args validation
-			MapBindingResult errors = new MapBindingResult(aEvent.getArgs().getMap(), "request.errors");
+			MapBindingResult lErrors = new MapBindingResult(aEvent.getArgs().getMap(), "request.errors");
 
 			//Calling the global validator
-			if (def.getValidator() != null && def.getValidator().supports(aEvent.getClass())) {
-				def.getValidator().validate(aEvent, errors);
+			if (lDef.getValidator() != null && lDef.getValidator().supports(aEvent.getClass())) {
+				lDef.getValidator().validate(aEvent, lErrors);
 			}
 
 			//Validating by arguments
-			for (Argument aArg : args) {
-				validateArg(aArg, aEvent, errors);
+			for (Argument lArg : lInArgs) {
+				validateArg(lArg, aEvent, lErrors);
 			}
-			if (errors.hasErrors()) {
-				String fields = "";
-				for (FieldError e : errors.getFieldErrors()){
-					fields += e.getField() + ",";
+			if (lErrors.hasErrors()) {
+				String lFields = "";
+				for (FieldError lField : lErrors.getFieldErrors()){
+					lFields += lField.getField() + ",";
 				}
-				throw new Exception("Invalid incoming arguments: " + fields);
+				throw new Exception("Invalid incoming arguments: " + lFields);
 			}
 		}
 	}
@@ -80,12 +80,12 @@ public class ValidatorFilter extends EventModelFilter {
 	 */
 	@Override
 	public void afterCall(WebSocketConnector aConnector, C2SResponseEvent aResponseEvent) throws Exception {
-		C2SEventDefinition def = getEm().getEventFactory().getEventDefinitions().
+		C2SEventDefinition lDef = getEm().getEventFactory().getEventDefinitions().
 				getDefinition(aResponseEvent.getId());
 
-		if (def.isResponseRequired()) {
+		if (lDef.isResponseRequired()) {
 			//Adding owner connector in the response if checked
-			if (def.isResponseToOwnerConnector()) {
+			if (lDef.isResponseToOwnerConnector()) {
 				aResponseEvent.getTo().add(aConnector.getId());
 			}
 
@@ -113,23 +113,23 @@ public class ValidatorFilter extends EventModelFilter {
 			}
 
 			//Response event args validation
-			MapBindingResult errors = new MapBindingResult(aResponseEvent.getArgs().getMap(), "response.errors");
+			MapBindingResult lErrors = new MapBindingResult(aResponseEvent.getArgs().getMap(), "response.errors");
 
 			//Calling the global validator
-			if (def.getValidator() != null && def.getValidator().supports(aResponseEvent.getClass())) {
-				def.getValidator().validate(aResponseEvent, errors);
+			if (lDef.getValidator() != null && lDef.getValidator().supports(aResponseEvent.getClass())) {
+				lDef.getValidator().validate(aResponseEvent, lErrors);
 			}
 
 			//Validating by arguments
-			for (Argument aArg : def.getOutgoingArgsValidation()) {
-				validateArg(aArg, aResponseEvent, errors);
+			for (Argument lArg : lDef.getOutgoingArgsValidation()) {
+				validateArg(lArg, aResponseEvent, lErrors);
 			}
-			if (errors.hasErrors()) {
-				String fields = "";
-				for (FieldError e : errors.getFieldErrors()){
-					fields += e.getField() + ",";
+			if (lErrors.hasErrors()) {
+				String lFields = "";
+				for (FieldError lField : lErrors.getFieldErrors()){
+					lFields += lField.getField() + ",";
 				}
-				throw new Exception("Invalid outgoing arguments: " + fields);
+				throw new Exception("Invalid outgoing arguments: " + lFields);
 			}
 		}
 	}
@@ -142,14 +142,14 @@ public class ValidatorFilter extends EventModelFilter {
 	 * @param errors The errors messages container
 	 * @throws Exception
 	 */
-	public void validateArg(Argument aArg, Event aEvent, Errors errors) throws Exception {
+	public void validateArg(Argument aArg, Event aEvent, Errors aErrors) throws Exception {
 		//Argument validation
 		if (!aEvent.getArgs().getMap().containsKey(aArg.getName())) {
 			if (!aArg.isOptional()) {
 				throw new Exception("The argument: '" + aArg.getName() + "' is required!");
 			} else {
 				try {
-					types.swapType(aArg.getType()).cast(aEvent.getArgs().getObject(aArg.getName()));
+					mTypes.swapType(aArg.getType()).cast(aEvent.getArgs().getObject(aArg.getName()));
 				} catch (Exception ex) {
 					throw new Exception("The argument: '" + aArg.getName() + "', needs to be type of " + aArg.getType().toString());
 				}
@@ -161,8 +161,8 @@ public class ValidatorFilter extends EventModelFilter {
 
 		//Spring validation mechanism compatibility
 		if (null != aArg.getValidator()) {
-			if (aArg.getValidator().supports(types.swapType(aArg.getType()))) {
-				aArg.getValidator().validate(aArg, errors);
+			if (aArg.getValidator().supports(mTypes.swapType(aArg.getType()))) {
+				aArg.getValidator().validate(aArg, aErrors);
 			}
 		}
 	}
@@ -171,14 +171,14 @@ public class ValidatorFilter extends EventModelFilter {
 	 * @return The abstract and java types table
 	 */
 	public TypesMap getTypes() {
-		return types;
+		return mTypes;
 	}
 
 	/**
-	 * @param types The abstract and java types table to set
+	 * @param aTypes The abstract and java types table to set
 	 */
-	public void setTypes(TypesMap types) {
-		this.types = types;
+	public void setTypes(TypesMap aTypes) {
+		this.mTypes = aTypes;
 	}
 
 	/**
@@ -186,14 +186,14 @@ public class ValidatorFilter extends EventModelFilter {
 	 * <tt>FALSE</tt> otherwise
 	 */
 	public boolean isValidateResponse() {
-		return validateResponse;
+		return mValidateResponse;
 	}
 
 	/**
-	 * @param validateResponse <tt>TRUE</tt> if the filter will validate the response too, 
+	 * @param aValidateResponse <tt>TRUE</tt> if the filter will validate the response too, 
 	 * <tt>FALSE</tt> otherwise
 	 */
-	public void setValidateResponse(boolean validateResponse) {
-		this.validateResponse = validateResponse;
+	public void setValidateResponse(boolean aValidateResponse) {
+		this.mValidateResponse = aValidateResponse;
 	}
 }

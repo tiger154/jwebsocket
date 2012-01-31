@@ -48,6 +48,10 @@ public interface IEventModelPlugIn extends IListener, IInitializable, ITokenizab
 	 */
 	public EventModel getEm();
 
+	/**
+	 * 
+	 * @return The server connectors list
+	 */
 	public Map<String, WebSocketConnector> getServerAllConnectors();
 	
 	/**

@@ -13,47 +13,61 @@
 //  You should have received a copy of the GNU Lesser General Public License along
 //  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //  ---------------------------------------------------------------------------
-package org.jwebsocket.eventmodel.event.system;
+package org.jwebsocket.eventmodel.api;
 
-import org.jwebsocket.eventmodel.annotation.ImportFromToken;
-import org.jwebsocket.eventmodel.event.C2SEvent;
+import java.util.Set;
 
 /**
  *
  * @author kyberneees
  */
-public class S2CResponse extends C2SEvent {
-
-	
-	private String reqId;
-	private Object response;
+public interface IServerSecureComponent {
 
 	/**
-	 * @return the response
+	 * Indicates if the security checks are enabled for this component
+	 * 
+	 * @return the securityEnabled
 	 */
-	public Object getResponse() {
-		return response;
-	}
+	public boolean isSecurityEnabled();
 
 	/**
-	 * @param response the response to set
+	 * @param aSecurityEnabled the securityEnabled to set
 	 */
-	public void setResponse(Object response) {
-		this.response = response;
-	}
+	public void setSecurityEnabled(boolean aSecurityEnabled);
 
 	/**
-	 * @return the reqId
+	 * The roles restrictions
+	 * 
+	 * @return the roles
 	 */
-	public String getReqId() {
-		return reqId;
-	}
+	public Set<String> getRoles();
 
 	/**
-	 * @param reqId the reqId to set
+	 * @param aRoles the roles to set
 	 */
-	@ImportFromToken(key = "_rid")
-	public void setReqId(String reqId) {
-		this.reqId = reqId;
-	}
+	public void setRoles(Set<String> aRoles);
+
+	/**
+	 * The users restrictions
+	 * 
+	 * @return the users
+	 */
+	public Set<String> getUsers();
+
+	/**
+	 * @param aUsers the users to set
+	 */
+	public void setUsers(Set<String> aUsers);
+
+	/**
+	 * The IP addresses restrictions
+	 * 
+	 * @return the ipAddresses
+	 */
+	public Set<String> getIpAddresses();
+
+	/**
+	 * @param aIpAddresses the ipAddresses to set
+	 */
+	public void setIpAddresses(Set<String> aIpAddresses);
 }

@@ -47,9 +47,12 @@
 
 			function initPage() {
 				eLog = jws.$( "sdivLog" );
-
 				if(jws.browserSupportsWebSockets()){
 					jws.myConn = new jws.jWebSocketJSONClient();
+					
+					//jws.console.isActive = true;
+					//jws.console.level = 0;
+					
 					//jws.myConn.open(jws.JWS_SERVER_URL, {
 					jws.myConn.open(jws.JWS_SERVER_URL, {
 						OnOpen: function (){

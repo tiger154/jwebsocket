@@ -20,7 +20,7 @@ import java.util.Map;
 import org.jwebsocket.eventmodel.filter.EventModelFilter;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.eventmodel.api.ISecureComponent;
+import org.jwebsocket.eventmodel.api.IServerSecureComponent;
 import org.jwebsocket.eventmodel.util.CommonUtil;
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
@@ -45,28 +45,28 @@ public class SecurityFilter extends EventModelFilter {
 		}
 
 		//Getting the user session
-		Map<String, Object> session = aConnector.getSession().getStorage();
+		Map<String, Object> lSession = aConnector.getSession().getStorage();
 
 		//Getting the security validation data
-		boolean isAuth = (session.containsKey(SystemPlugIn.IS_AUTHENTICATED))
-				? (Boolean) session.get(SystemPlugIn.IS_AUTHENTICATED)
+		boolean lIsAuth = (lSession.containsKey(SystemPlugIn.IS_AUTHENTICATED))
+				? (Boolean) lSession.get(SystemPlugIn.IS_AUTHENTICATED)
 				: false;
-		String username = (session.containsKey(SystemPlugIn.USERNAME))
-				? (String) session.get(SystemPlugIn.USERNAME)
+		String lUsername = (lSession.containsKey(SystemPlugIn.USERNAME))
+				? (String) lSession.get(SystemPlugIn.USERNAME)
 				: null;
-		List<String> authorities = (session.containsKey(SystemPlugIn.AUTHORITIES))
-				? CommonUtil.parseStringArrayToList(session.get(SystemPlugIn.AUTHORITIES).toString().split(" "))
+		List<String> lAuthorities = (lSession.containsKey(SystemPlugIn.AUTHORITIES))
+				? CommonUtil.parseStringArrayToList(lSession.get(SystemPlugIn.AUTHORITIES).toString().split(" "))
 				: null;
 
-		CommonUtil.checkSecurityRestrictions((ISecureComponent) getEm().getParent(),
-				aConnector, isAuth, username, authorities);
+		CommonUtil.checkSecurityRestrictions((IServerSecureComponent) getEm().getParent(),
+				aConnector, lIsAuth, lUsername, lAuthorities);
 
 		//Processing the C2SEvent restrictions
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(">> Processing security restrictions in the 'WebSocketEventDefinition' level...");
 		}
-		CommonUtil.checkSecurityRestrictions((ISecureComponent) getEm().getEventFactory().
+		CommonUtil.checkSecurityRestrictions((IServerSecureComponent) getEm().getEventFactory().
 				getEventDefinitions().getDefinition(aEvent.getId()),
-				aConnector, isAuth, username, authorities);
+				aConnector, lIsAuth, lUsername, lAuthorities);
 	}
 }

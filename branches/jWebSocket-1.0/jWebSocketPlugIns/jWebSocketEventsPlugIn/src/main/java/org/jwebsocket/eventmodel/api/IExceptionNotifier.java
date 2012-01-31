@@ -15,59 +15,20 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.api;
 
-import java.util.Set;
-
 /**
- *
+ * An ExceptionNotifierProvider is a component to notify exceptions.
+ * <p>
+ * Useful to offer clean exceptions treatments or notify system's administrators 
+ * about runtime exceptions using various sources like mail, chat, phone, etc...
+ * 
  * @author kyberneees
  */
-public interface ISecureComponent {
+public interface IExceptionNotifier {
 
 	/**
-	 * Indicates if the security checks are enabled for this component
+	 * Notify a custom exception
 	 * 
-	 * @return the securityEnabled
+	 * @param ex
 	 */
-	public boolean isSecurityEnabled();
-
-	/**
-	 * @param securityEnabled the securityEnabled to set
-	 */
-	public void setSecurityEnabled(boolean securityEnabled);
-
-	/**
-	 * The roles restrictions
-	 * 
-	 * @return the roles
-	 */
-	public Set<String> getRoles();
-
-	/**
-	 * @param roles the roles to set
-	 */
-	public void setRoles(Set<String> roles);
-
-	/**
-	 * The users restrictions
-	 * 
-	 * @return the users
-	 */
-	public Set<String> getUsers();
-
-	/**
-	 * @param users the users to set
-	 */
-	public void setUsers(Set<String> users);
-
-	/**
-	 * The IP addresses restrictions
-	 * 
-	 * @return the ipAddresses
-	 */
-	public Set<String> getIpAddresses();
-
-	/**
-	 * @param ipAddresses the ipAddresses to set
-	 */
-	public void setIpAddresses(Set<String> ipAddresses);
+	public void notify(Exception ex);
 }

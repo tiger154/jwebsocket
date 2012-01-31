@@ -26,7 +26,7 @@ import org.jwebsocket.eventmodel.observable.Event;
  */
 public class C2SEventDefinitionManager implements IC2SEventDefinitionManager {
 
-	private Set<C2SEventDefinition> set = new FastSet<C2SEventDefinition>();
+	private Set<C2SEventDefinition> mDefinitions = new FastSet();
 
 	/**
 	 * {@inheritDoc}
@@ -45,15 +45,15 @@ public class C2SEventDefinitionManager implements IC2SEventDefinitionManager {
 	/**
 	 * @return The C2SEventDefinition collection 
 	 */
-	public Set<C2SEventDefinition> getSet() {
-		return set;
+	public Set<C2SEventDefinition> getDefinitions() {
+		return mDefinitions;
 	}
 
 	/**
-	 * @param set The C2SEventDefinition collection to set
+	 * @param aSet The C2SEventDefinition collection to set
 	 */
-	public void setSet(Set<C2SEventDefinition> set) {
-		this.set.addAll(set);
+	public void setDefinitions(Set<C2SEventDefinition> aSet) {
+		this.mDefinitions.addAll(aSet);
 	}
 
 	/**
@@ -61,8 +61,8 @@ public class C2SEventDefinitionManager implements IC2SEventDefinitionManager {
 	 */
 	@Override
 	public boolean hasDefinition(String aEventId) {
-		for (C2SEventDefinition def : set) {
-			if (def.getId().equals(aEventId)) {
+		for (C2SEventDefinition lDef : mDefinitions) {
+			if (lDef.getId().equals(aEventId)) {
 				return true;
 			}
 		}
@@ -75,9 +75,9 @@ public class C2SEventDefinitionManager implements IC2SEventDefinitionManager {
 	 */
 	@Override
 	public C2SEventDefinition getDefinition(String aEventId) throws Exception {
-		for (C2SEventDefinition def : set) {
-			if (def.getId().equals(aEventId)) {
-				return def;
+		for (C2SEventDefinition lDef : mDefinitions) {
+			if (lDef.getId().equals(aEventId)) {
+				return lDef;
 			}
 		}
 
@@ -89,12 +89,12 @@ public class C2SEventDefinitionManager implements IC2SEventDefinitionManager {
 	 */
 	@Override
 	public String getIdByClass(Class<? extends Event> aEventClass) throws Exception {
-		for (C2SEventDefinition def : set) {
-			if (def.getEventClass().equals(aEventClass)) {
-				return def.getId();
+		for (C2SEventDefinition lDef : mDefinitions) {
+			if (lDef.getEventClass().equals(aEventClass)) {
+				return lDef.getId();
 			}
 		}
 
-		throw new IndexOutOfBoundsException("The event definition with class '" + aEventClass.toString() + "' does not exists!");
+		throw new IndexOutOfBoundsException("The event definition for class '" + aEventClass.getCanonicalName() + "' does not exists!");
 	}
 }

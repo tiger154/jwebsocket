@@ -62,17 +62,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
-			<artifactId>jWebSocketCommon</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jwebsocket</groupId>
-			<artifactId>jWebSocketServerAPI</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jwebsocket</groupId>
-			<artifactId>jWebSocketServer</artifactId>
+			<artifactId>jWebSocketEventsPlugIn</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

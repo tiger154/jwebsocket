@@ -15,38 +15,20 @@
 //  ---------------------------------------------------------------------------F
 package org.jwebsocket.eventmodel.event.auth;
 
-import org.jwebsocket.eventmodel.event.S2CEvent;
-import org.jwebsocket.token.Token;
+import org.jwebsocket.eventmodel.observable.Event;
 
 /**
- * S2C event to plus two variables in the client side (x,y)
+ * S2C event to notify a user logoff event
  * 
  * @author kyberneees
  */
-public class UserLogoff extends S2CEvent {
+public class UserLogoff extends Event {
 
-	private String username;
-
-	public UserLogoff(String username) {
-		super();
-		setId("userLogoff");
-
-		this.username = username;
+	public UserLogoff(String aUsername) {
+		getArgs().setString("username", aUsername);
 	}
 
 	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	/**
-	 * {@inheritDoc }
-	 */
-	@Override
-	public void writeToToken(Token token){
-		token.setString("username", getUsername());
+		return getArgs().getString("username");
 	}
 }

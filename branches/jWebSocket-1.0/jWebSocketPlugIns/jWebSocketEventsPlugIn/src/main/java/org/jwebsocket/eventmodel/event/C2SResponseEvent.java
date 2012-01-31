@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class C2SResponseEvent extends ResponseEvent {
 
-	private int code = 0;
+	private int mCode = 0;
 	/**
 	 * Response is OK
 	 */
@@ -34,15 +34,15 @@ public class C2SResponseEvent extends ResponseEvent {
 	 * Response with problems, not OK
 	 */
 	public final static int NOT_OK = -1;
-	private Set<String> to = new FastSet<String>();
-	private String message;
-	private String requestId;
+	private Set<String> mTo = new FastSet();
+	private String mMessage;
+	private String mRequestId;
 
 	/**
-	 * @param requestId The WebSocketEvent arguments MD5
+	 * @param aRequestId The WebSocketEvent arguments MD5
 	 */
-	public C2SResponseEvent(String requestId) {
-		this.requestId = requestId;
+	public C2SResponseEvent(String aRequestId) {
+		this.mRequestId = aRequestId;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class C2SResponseEvent extends ResponseEvent {
 	 * @return The response status code
 	 */
 	public int getCode() {
-		return code;
+		return mCode;
 	}
 
 	/**
@@ -72,43 +72,43 @@ public class C2SResponseEvent extends ResponseEvent {
 	 * <br>
 	 * C2SResponseEvent.NOT_OK
 	 */
-	public void setCode(int code) {
-		this.code = code;
+	public void setCode(int aCode) {
+		this.mCode = aCode;
 	}
 
 	/**
 	 * @return The response message
 	 */
 	public String getMessage() {
-		return message;
+		return mMessage;
 	}
 
 	/**
-	 * @param message The response message
+	 * @param aMessage The response message
 	 */
-	public void setMessage(String message) {
-		this.message = message;
+	public void setMessage(String aMessage) {
+		this.mMessage = aMessage;
 	}
 
 	/**
 	 * @return The collection of client connectors to send the response
 	 */
 	public Set<String> getTo() {
-		return to;
+		return mTo;
 	}
 
 	/**
-	 * @param to The collection of client connectors to send the response
+	 * @param aTo The collection of client connectors to send the response
 	 */
-	public void setTo(Set<String> to) {
-		this.to = to;
+	public void setTo(Set<String> aTo) {
+		this.mTo = aTo;
 	}
 
 	/**
 	 * @return The WebSocketEvent arguments MD5
 	 */
 	public String getRequestId() {
-		return requestId;
+		return mRequestId;
 	}
 
 }

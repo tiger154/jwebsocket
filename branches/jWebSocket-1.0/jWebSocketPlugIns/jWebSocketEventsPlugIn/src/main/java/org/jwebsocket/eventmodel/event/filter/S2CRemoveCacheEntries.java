@@ -27,55 +27,55 @@ import org.jwebsocket.token.Token;
  */
 public class S2CRemoveCacheEntries extends S2CEvent {
 
-	private List<String> entries;
-	private String eventId;
+	private List<String> mEntries;
+	private String mEventId;
 
 	/**
-	 * @param eventId The event identifier
-	 * @param entries The cache entries to remove
+	 * @param aEventId The event identifier
+	 * @param aEntries The cache entries to remove
 	 */
-	public S2CRemoveCacheEntries(String eventId, List<String> entries) {
+	public S2CRemoveCacheEntries(String aEventId, List<String> aEntries) {
 		super();
 		setId("cleanEntries");
 
-		this.entries = entries;
-		this.eventId = eventId;
+		this.mEntries = aEntries;
+		this.mEventId = aEventId;
 	}
 
 	/**
 	 * {@inheritDoc }
 	 */
 	@Override
-	public void writeToToken(Token token) {
-		token.setString("suffix", getEventId());
-		token.setList("entries", getEntries());
+	public void writeToToken(Token aToken) {
+		aToken.setString("suffix", mEventId);
+		aToken.setList("entries", getEntries());
 	}
 
 	/**
 	 * @return The cache entries to remove
 	 */
 	public List<String> getEntries() {
-		return Collections.unmodifiableList(entries);
+		return Collections.unmodifiableList(mEntries);
 	}
 
 	/**
-	 * @param entries The cache entries to remove
+	 * @param aEntries The cache entries to remove
 	 */
-	public void setEntries(List<String> entries) {
-		this.entries = entries;
+	public void setEntries(List<String> aEntries) {
+		this.mEntries = aEntries;
 	}
 
 	/**
 	 * @return The event identifier
 	 */
 	public String getEventId() {
-		return eventId;
+		return mEventId;
 	}
 
 	/**
-	 * @param eventId The event identifier
+	 * @param aEventId The event identifier
 	 */
-	public void setEventId(String eventId) {
-		this.eventId = eventId;
+	public void setEventId(String aEventId) {
+		this.mEventId = aEventId;
 	}
 }

@@ -21,19 +21,19 @@ package org.jwebsocket.eventmodel.observable;
  */
 public class ResponseEvent extends Event {
 
-	private double processingTime;
+	private double mProcessingTime;
 
 	/**
 	 * @return The time in nanoseconds needed by the listeners to process the event
 	 */
 	public double getProcessingTime() {
-		return processingTime;
+		return mProcessingTime;
 	}
 
 	/**
-	 * @param processingTime The time in nanoseconds needed by the listeners to process the event
+	 * @param aProcessingTime The time in nanoseconds needed by the listeners to process the event
 	 */
-	public void setProcessingTime(double processingTime) {
-		this.processingTime = processingTime;
+	public void setProcessingTime(double aProcessingTime) {
+		this.mProcessingTime = aProcessingTime;
 	}
 }

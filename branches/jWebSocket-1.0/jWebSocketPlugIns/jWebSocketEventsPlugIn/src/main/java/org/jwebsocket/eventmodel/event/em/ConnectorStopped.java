@@ -25,19 +25,19 @@ import org.jwebsocket.kit.CloseReason;
  */
 public class ConnectorStopped extends C2SEvent {
 
-	private CloseReason closeReason;
+	private CloseReason mCloseReason;
 
 	/**
 	 * @return the closeReason
 	 */
 	public CloseReason getCloseReason() {
-		return closeReason;
+		return mCloseReason;
 	}
 
 	/**
-	 * @param closeReason the closeReason to set
+	 * @param aCloseReason the closeReason to set
 	 */
-	public void setCloseReason(CloseReason closeReason) {
-		this.closeReason = closeReason;
+	public void setCloseReason(CloseReason aCloseReason) {
+		this.mCloseReason = aCloseReason;
 	}
 }

@@ -24,9 +24,9 @@ public class InvalidTypeException extends Exception {
 
 	/**
 	 *
-	 * @param message
+	 * @param aMessage
 	 */
-	public InvalidTypeException(String message) {
-		super(message);
+	public InvalidTypeException(String aMessage) {
+		super(aMessage);
 	}
 }

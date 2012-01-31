@@ -25,8 +25,8 @@ public interface IStorageProvider {
 	/**
 	 * Get a storage instance giving a name
 	 * 
-	 * @param name
+	 * @param aName
 	 * @return The storage instance
 	 */
-	IBasicStorage<String, Object> getStorage(String name) throws Exception;
+	IBasicStorage<String, Object> getStorage(String aName) throws Exception;
 }

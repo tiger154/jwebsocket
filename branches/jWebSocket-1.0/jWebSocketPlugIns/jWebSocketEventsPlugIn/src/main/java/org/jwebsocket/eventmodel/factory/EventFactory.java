@@ -30,8 +30,8 @@ import org.jwebsocket.eventmodel.observable.Event;
  */
 public class EventFactory {
 
-	private EventModel em;
-	private C2SEventDefinitionManager eventDefinitions;
+	private EventModel mEm;
+	private C2SEventDefinitionManager mEventDefinitions;
 	private static Logger mLog = Logging.getLogger(EventFactory.class);
 
 	/**
@@ -54,11 +54,11 @@ public class EventFactory {
 	 * @throws Exception
 	 */
 	public C2SEvent tokenToEvent(Token aToken) throws Exception {
-		String aType = aToken.getType();
-		C2SEvent event = stringToEvent(aType);
-		event.setArgs(aToken);
+		String lType = aToken.getType();
+		C2SEvent lEvent = stringToEvent(lType);
+		lEvent.setArgs(aToken);
 
-		return event;
+		return lEvent;
 	}
 
 	/**
@@ -73,10 +73,10 @@ public class EventFactory {
 			mLog.debug(">> Creating instance for event: '" + aEventId + "'...");
 		}
 		//Use the BeansFactory to load the instances
-		C2SEvent e = (C2SEvent) getEventDefinitions().getDefinition(aEventId).getEventClass().newInstance();
-		e.setId(aEventId);
+		C2SEvent lEvent = (C2SEvent) getEventDefinitions().getDefinition(aEventId).getEventClass().newInstance();
+		lEvent.setId(aEventId);
 
-		return e;
+		return lEvent;
 	}
 
 	/**
@@ -106,11 +106,11 @@ public class EventFactory {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(">> Creating instance for response event: '" + aEvent.getId() + "'...");
 		}
-		C2SResponseEvent aResponse = new C2SResponseEvent(aEvent.getRequestId());
-		aResponse.setId(aEvent.getId());
-		aResponse.setArgs(getEm().getParent().getServer().createResponse(aEvent.getArgs()));
+		C2SResponseEvent lResponse = new C2SResponseEvent(aEvent.getRequestId());
+		lResponse.setId(aEvent.getId());
+		lResponse.setArgs(getEm().getParent().getServer().createResponse(aEvent.getArgs()));
 
-		return aResponse;
+		return lResponse;
 	}
 
 	/**
@@ -127,27 +127,27 @@ public class EventFactory {
 	 * @return The EventModel instance
 	 */
 	public EventModel getEm() {
-		return em;
+		return mEm;
 	}
 
 	/**
-	 * @param em The EventModel instance to set
+	 * @param aEm The EventModel instance to set
 	 */
-	public void setEm(EventModel em) {
-		this.em = em;
+	public void setEm(EventModel aEm) {
+		this.mEm = aEm;
 	}
 
 	/**
 	 * @return The C2SEventDefinitionManager instance 
 	 */
 	public C2SEventDefinitionManager getEventDefinitions() {
-		return eventDefinitions;
+		return mEventDefinitions;
 	}
 
 	/**
-	 * @param eventDefinitions The C2SEventDefinitionManager to set
+	 * @param aEventDefinitions The C2SEventDefinitionManager to set
 	 */
-	public void setEventDefinitions(C2SEventDefinitionManager eventDefinitions) {
-		this.eventDefinitions = eventDefinitions;
+	public void setEventDefinitions(C2SEventDefinitionManager aEventDefinitions) {
+		this.mEventDefinitions = aEventDefinitions;
 	}
 }

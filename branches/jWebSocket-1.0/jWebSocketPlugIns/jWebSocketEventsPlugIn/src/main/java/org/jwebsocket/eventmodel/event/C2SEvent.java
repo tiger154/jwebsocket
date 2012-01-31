@@ -26,15 +26,15 @@ import org.jwebsocket.eventmodel.util.CommonUtil;
  */
 public abstract class C2SEvent extends Event implements IInitializable {
 
-	private WebSocketConnector connector;
-	private String requestId;
+	private WebSocketConnector mConnector;
+	private String mRequestId;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void initialize() throws Exception {
-		requestId = CommonUtil.generateSharedUTID(this.getArgs());
+		mRequestId = CommonUtil.generateSharedUTID(this.getArgs());
 	}
 
 	/**
@@ -48,20 +48,20 @@ public abstract class C2SEvent extends Event implements IInitializable {
 	 * @return The client WebSocketConnector 
 	 */
 	public WebSocketConnector getConnector() {
-		return connector;
+		return mConnector;
 	}
 
 	/**
-	 * @param connector The client WebSocketConnector to set
+	 * @param aConnector The client WebSocketConnector to set
 	 */
-	public void setConnector(WebSocketConnector connector) {
-		this.connector = connector;
+	public void setConnector(WebSocketConnector aConnector) {
+		this.mConnector = aConnector;
 	}
 
 	/**
 	 * @return The event arguments MD5
 	 */
 	public String getRequestId() {
-		return requestId;
+		return mRequestId;
 	}
 }

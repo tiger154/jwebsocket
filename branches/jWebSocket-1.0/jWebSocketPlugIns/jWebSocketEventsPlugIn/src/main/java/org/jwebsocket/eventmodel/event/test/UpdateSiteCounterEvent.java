@@ -25,7 +25,7 @@ import org.jwebsocket.token.Token;
  */
 public class UpdateSiteCounterEvent extends S2CEvent {
 
-	private Integer counter;
+	private Integer mCounter;
 
 	/**
 	 *
@@ -38,14 +38,14 @@ public class UpdateSiteCounterEvent extends S2CEvent {
 	 * @return The counter value
 	 */
 	public Integer getCounter() {
-		return counter;
+		return mCounter;
 	}
 
 	/**
-	 * @param counter The counter value to set
+	 * @param aCounter The counter value to set
 	 */
-	public void setCounter(Integer counter) {
-		this.counter = counter;
+	public void setCounter(Integer aCounter) {
+		this.mCounter = aCounter;
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class UpdateSiteCounterEvent extends S2CEvent {
 	 * {@inheritDoc }
 	 */
 	@Override
-	public void writeToToken(Token token) {
-		token.setString("counter", getCounter().toString());
+	public void writeToToken(Token aToken) {
+		aToken.setString("counter", getCounter().toString());
 	}
 }

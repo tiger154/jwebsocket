@@ -29,11 +29,11 @@ import org.jwebsocket.token.Token;
  */
 public class TransactionContext {
 
-	private EventModel em;
-	private C2SEvent event;
-	private Map<String, Object> objects;
-	private double processingTime;
-	private double elapsedTime;
+	private EventModel mEm;
+	private C2SEvent mEvent;
+	private Map<String, Object> mObjects;
+	private double mProcessingTime;
+	private double mElapsedTime;
 
 	/**
 	 * Create a Transaction context
@@ -41,77 +41,76 @@ public class TransactionContext {
 	 * The Transaction context is a collection of resources used to success
 	 * back to the target client the response on a S2C call.
 	 *
-	 * @param em The EventModel instance
-	 * @param event The event from the client
-	 * @param objects Other objects references
+	 * @param aEm The EventModel instance
+	 * @param aEvent The event from the client
+	 * @param aObjects Other objects references
 	 */
-	public TransactionContext(EventModel em, C2SEvent event, Map<String, Object> objects) {
-		this.em = em;
-		this.event = event;
-		this.objects = objects;
+	public TransactionContext(EventModel aEm, C2SEvent aEvent, Map<String, Object> aObjects) {
+		this.mEm = aEm;
+		this.mEvent = aEvent;
+		this.mObjects = aObjects;
 	}
 
 	/**
 	 * @return The EventModel instance
 	 */
 	public EventModel getEm() {
-		return em;
+		return mEm;
 	}
 
 	/**
-	 * @param em The EventModel instance to set
+	 * @param aEm The EventModel instance to set
 	 */
-	public void setEm(EventModel em) {
-		this.em = em;
+	public void setEm(EventModel aEm) {
+		this.mEm = aEm;
 	}
 
 	/**
 	 * @return Objects collection to use by the callbacks
 	 */
 	public Map<String, Object> getObjects() {
-		return objects;
+		return mObjects;
 	}
 
 	/**
-	 * @param objects Useful objects collection to use by the callbacks
+	 * @param aObjects Useful objects collection to use by the callbacks
 	 */
-	public void setObjects(Map<String, Object> objects) {
-		this.objects = objects;
+	public void setObjects(Map<String, Object> aObjects) {
+		this.mObjects = aObjects;
 	}
 
 	/**
 	 * @return The event from the client
 	 */
 	public C2SEvent getEvent() {
-		return event;
+		return mEvent;
 	}
 
 	/**
-	 * @param event The event from the client to set
+	 * @param aEvent The event from the client to set
 	 */
-	public void setEvent(C2SEvent event) {
-		this.event = event;
+	public void setEvent(C2SEvent aEvent) {
+		this.mEvent = aEvent;
 	}
 
 	/**
 	 * Notify the sender client about the success transaction
 	 * 
-	 * @param response The response from the target client
+	 * @param aResponse The response from the target client
 	 */
 	@SuppressWarnings("unchecked")
-	public void success(Object response) {
-		C2SResponseEvent r = getEm().getEventFactory().createResponseEvent(event);
+	public void success(Object aResponse) {
+		C2SResponseEvent lResponseEvent = getEm().getEventFactory().createResponseEvent(mEvent);
 
 		//Send the token to the client(s)
-		Token aToken = r.getArgs();
-		aToken.setInteger("code", C2SResponseEvent.OK);
-		if (null != response){
-			aToken.getMap().put("response", response);
+		Token lToken = lResponseEvent.getArgs();
+		lToken.setInteger("code", C2SResponseEvent.OK);
+		if (null != aResponse){
+			lToken.getMap().put("response", aResponse);
 		}
-		aToken.setDouble("processingTime", getProcessingTime());
-		aToken.setDouble("elapsedTime", getElapsedTime());
+		lToken.setDouble("_pt", getProcessingTime());
 
-		getEm().getParent().getServer().sendToken(event.getConnector(), aToken);
+		getEm().getParent().getServer().sendToken(mEvent.getConnector(), lToken);
 	}
 	
 	/**
@@ -128,16 +127,15 @@ public class TransactionContext {
 	 * @param message Custom failure message
 	 */
 	public void failure(FailureReason reason, String message){
-		C2SResponseEvent r = getEm().getEventFactory().createResponseEvent(event);
+		C2SResponseEvent lResponseEvent = getEm().getEventFactory().createResponseEvent(mEvent);
 
 		//Send the token to the client(s)
-		Token aToken = r.getArgs();
-		aToken.setInteger("code", C2SResponseEvent.NOT_OK);
-		aToken.setString("msg", message);
-		aToken.setString("reason", reason.name());
-		aToken.setDouble("elapsedTime", getElapsedTime());
+		Token lToken = lResponseEvent.getArgs();
+		lToken.setInteger("code", C2SResponseEvent.NOT_OK);
+		lToken.setString("msg", message);
+		lToken.setString("reason", reason.name());
 
-		getEm().getParent().getServer().sendToken(event.getConnector(), aToken);
+		getEm().getParent().getServer().sendToken(mEvent.getConnector(), lToken);
 	}
 
 	/**
@@ -146,14 +144,14 @@ public class TransactionContext {
 	 * Time unit in nanoseconds or milliseconds depending of the client
 	 */
 	public double getProcessingTime() {
-		return processingTime;
+		return mProcessingTime;
 	}
 
 	/**
-	 * @param processingTime Time required by the client to process the event
+	 * @param aProcessingTime Time required by the client to process the event
 	 */
-	public void setProcessingTime(double processingTime) {
-		this.processingTime = processingTime;
+	public void setProcessingTime(double aProcessingTime) {
+		this.mProcessingTime = aProcessingTime;
 	}
 
 	/**
@@ -161,14 +159,14 @@ public class TransactionContext {
 	 * the "response received" time mark
 	 */
 	public double getElapsedTime() {
-		return elapsedTime;
+		return mElapsedTime;
 	}
 
 	/**
-	 * @param elapsedTime The complete time in nanoseconds passed from the "sent" 
+	 * @param aElapsedTime The complete time in nanoseconds passed from the "sent" 
 	 * time mark to the "response received" time mark
 	 */
-	public void setElapsedTime(double elapsedTime) {
-		this.elapsedTime = elapsedTime;
+	public void setElapsedTime(double aElapsedTime) {
+		this.mElapsedTime = aElapsedTime;
 	}
 }

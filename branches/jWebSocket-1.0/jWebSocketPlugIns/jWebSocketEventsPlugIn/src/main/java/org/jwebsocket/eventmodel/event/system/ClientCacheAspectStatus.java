@@ -15,7 +15,6 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.event.system;
 
-import org.jwebsocket.eventmodel.annotation.ImportFromToken;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 
 /**
@@ -35,14 +34,6 @@ public class ClientCacheAspectStatus extends C2SEvent {
 	 * @return <tt>TRUE</tt> if the client cache aspect is enabled, <tt>FALSE</tt> otherwise
 	 */
 	public boolean isEnabled() {
-		return enabled;
-	}
-
-	/**
-	 * @param enabled Indicate if the client cache aspect is enabled
-	 */
-	@ImportFromToken(key = "enabled")
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
+		return getArgs().getBoolean("enabled");
 	}
 }

@@ -25,20 +25,18 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class S2CEventNotSupportedOnClient extends C2SEvent {
 
-	private String reqId;
-
 	/**
 	 * @return The request identifier
 	 */
 	public String getReqId() {
-		return reqId;
+		return getArgs().getString("req_id");
 	}
 
 	/**
-	 * @param reqId The request identifier
+	 * @param aReqId The request identifier
 	 */
 	@ImportFromToken(key = "req_id")
-	public void setReqId(String reqId) {
-		this.reqId = reqId;
+	public void setReqId(String aReqId) {
+		getArgs().setString("req_id", aReqId);
 	}
 }

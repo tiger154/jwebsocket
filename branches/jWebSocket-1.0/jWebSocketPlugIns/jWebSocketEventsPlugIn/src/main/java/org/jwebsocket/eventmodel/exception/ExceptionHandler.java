@@ -20,7 +20,7 @@ import java.util.Set;
 import org.jwebsocket.eventmodel.api.IExceptionHandler;
 import org.jwebsocket.logging.Logging;
 import org.apache.log4j.Logger;
-import org.jwebsocket.eventmodel.api.IExceptionNotifierProvider;
+import org.jwebsocket.eventmodel.api.IExceptionNotifier;
 
 /**
  * An Exception handler is a component used to handle (uncaught) exceptions in a 
@@ -31,7 +31,7 @@ import org.jwebsocket.eventmodel.api.IExceptionNotifierProvider;
 public class ExceptionHandler implements IExceptionHandler {
 
 	private static Logger mLog = Logging.getLogger(ExceptionHandler.class);
-	private Set<IExceptionNotifierProvider> notifierProviders;
+	private Set<IExceptionNotifier> mNotifiers;
 
 	/**
 	 * {@inheritDoc }
@@ -52,9 +52,9 @@ public class ExceptionHandler implements IExceptionHandler {
 		}
 
 		//Executing notifications
-		if (null != notifierProviders) {
-			for (IExceptionNotifierProvider p : notifierProviders) {
-				p.notify(ex);
+		if (null != mNotifiers) {
+			for (IExceptionNotifier lNotifier : mNotifiers) {
+				lNotifier.notify(ex);
 			}
 		}
 	}
@@ -90,14 +90,14 @@ public class ExceptionHandler implements IExceptionHandler {
 	/**
 	 * @return The collection of exception notifier providers
 	 */
-	public Set<IExceptionNotifierProvider> getNotifierProviders() {
-		return notifierProviders;
+	public Set<IExceptionNotifier> getNotifiers() {
+		return mNotifiers;
 	}
 
 	/**
-	 * @param notifierProvidersThe collection of exception notifier providers to set
+	 * @param aNotifiers The collection of exception notifiers to set
 	 */
-	public void setNotifierProviders(Set<IExceptionNotifierProvider> notifierProviders) {
-		this.notifierProviders = notifierProviders;
+	public void setNotifiers(Set<IExceptionNotifier> aNotifiers) {
+		this.mNotifiers = aNotifiers;
 	}
 }

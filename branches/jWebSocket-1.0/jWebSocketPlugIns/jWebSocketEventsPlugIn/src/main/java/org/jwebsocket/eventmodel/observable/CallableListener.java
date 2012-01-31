@@ -24,9 +24,9 @@ import org.jwebsocket.eventmodel.api.IListener;
  */
 public class CallableListener implements Callable<Object> {
 
-	private IListener aListener;
-	private Event aEvent;
-	private ResponseEvent aResponseEvent;
+	private IListener mListener;
+	private Event mEvent;
+	private ResponseEvent mResponseEvent;
 
 	/**
 	 *
@@ -35,9 +35,9 @@ public class CallableListener implements Callable<Object> {
 	 * @param aResponseEvent
 	 */
 	public CallableListener(IListener aListener, Event aEvent, ResponseEvent aResponseEvent) {
-		this.aListener = aListener;
-		this.aEvent = aEvent;
-		this.aResponseEvent = aResponseEvent;
+		this.mListener = aListener;
+		this.mEvent = aEvent;
+		this.mResponseEvent = aResponseEvent;
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class CallableListener implements Callable<Object> {
 	 */
 	@Override
 	public Object call() throws Exception {
-		ObservableObject.callProcessEvent(aListener, aEvent, aResponseEvent);
+		ObservableObject.callProcessEvent(mListener, mEvent, mResponseEvent);
 
 		return null;
 	}
