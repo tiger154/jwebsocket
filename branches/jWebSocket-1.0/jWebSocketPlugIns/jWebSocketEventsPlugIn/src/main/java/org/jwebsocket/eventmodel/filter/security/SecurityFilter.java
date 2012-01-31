@@ -21,7 +21,7 @@ import org.jwebsocket.eventmodel.filter.EventModelFilter;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.api.IServerSecureComponent;
-import org.jwebsocket.eventmodel.util.CommonUtil;
+import org.jwebsocket.eventmodel.util.Util;
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.system.SystemPlugIn;
@@ -55,17 +55,17 @@ public class SecurityFilter extends EventModelFilter {
 				? (String) lSession.get(SystemPlugIn.USERNAME)
 				: null;
 		List<String> lAuthorities = (lSession.containsKey(SystemPlugIn.AUTHORITIES))
-				? CommonUtil.parseStringArrayToList(lSession.get(SystemPlugIn.AUTHORITIES).toString().split(" "))
+				? Util.parseStringArrayToList(lSession.get(SystemPlugIn.AUTHORITIES).toString().split(" "))
 				: null;
 
-		CommonUtil.checkSecurityRestrictions((IServerSecureComponent) getEm().getParent(),
+		Util.checkSecurityRestrictions((IServerSecureComponent) getEm().getParent(),
 				aConnector, lIsAuth, lUsername, lAuthorities);
 
 		//Processing the C2SEvent restrictions
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(">> Processing security restrictions in the 'WebSocketEventDefinition' level...");
 		}
-		CommonUtil.checkSecurityRestrictions((IServerSecureComponent) getEm().getEventFactory().
+		Util.checkSecurityRestrictions((IServerSecureComponent) getEm().getEventFactory().
 				getEventDefinitions().getDefinition(aEvent.getId()),
 				aConnector, lIsAuth, lUsername, lAuthorities);
 	}

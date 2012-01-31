@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  *
  * @author kyberneees
  */
-public class CommonUtil {
+public class Util {
 
 	/**
 	 * Generate a string unique token identifier (UTID)
@@ -192,7 +192,7 @@ public class CommonUtil {
 					lExclusion = (lValue.startsWith("!")) ? true : false;
 					lValue = (lExclusion) ? lValue.substring(1) : lValue;
 
-					if (CommonUtil.isIpAddressInRange(aConnector.getRemoteHost().getHostAddress(), lValue)) {
+					if (Util.isIpAddressInRange(aConnector.getRemoteHost().getHostAddress(), lValue)) {
 						lIpAuthorized = (lExclusion) ? false : true;
 						break;
 					}

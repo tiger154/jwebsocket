@@ -26,7 +26,7 @@ import javolution.util.FastMap;
 import java.util.Set;
 import javolution.util.FastSet;
 import java.lang.reflect.Method;
-import org.jwebsocket.eventmodel.util.CommonUtil;
+import org.jwebsocket.eventmodel.util.Util;
 
 /**
  *
@@ -158,7 +158,7 @@ public abstract class ObservableObject implements IObservable {
 						lExecutor.submit(new CallableListener(lListener, aEvent, aResponseEvent));
 					}
 					//Wait for ThreadPool termination
-					CommonUtil.shutdownThreadPoolAndAwaitTermination(lExecutor, getMaxExecutionTime());
+					Util.shutdownThreadPoolAndAwaitTermination(lExecutor, getMaxExecutionTime());
 				} else {
 					//Iterative execution
 					for (IListener lListener : lCalls) {

@@ -18,7 +18,7 @@ package org.jwebsocket.eventmodel.event;
 import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.eventmodel.util.CommonUtil;
+import org.jwebsocket.eventmodel.util.Util;
 
 /**
  *
@@ -34,7 +34,7 @@ public abstract class C2SEvent extends Event implements IInitializable {
 	 */
 	@Override
 	public void initialize() throws Exception {
-		mRequestId = CommonUtil.generateSharedUTID(this.getArgs());
+		mRequestId = Util.generateSharedUTID(this.getArgs());
 	}
 
 	/**

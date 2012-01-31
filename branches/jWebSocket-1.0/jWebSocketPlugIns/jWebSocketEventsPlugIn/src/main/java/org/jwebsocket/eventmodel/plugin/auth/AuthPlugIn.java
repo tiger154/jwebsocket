@@ -21,7 +21,7 @@ import org.jwebsocket.eventmodel.plugin.EventModelPlugIn;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.auth.Logon;
 import org.jwebsocket.eventmodel.event.auth.Logoff;
-import org.jwebsocket.eventmodel.util.CommonUtil;
+import org.jwebsocket.eventmodel.util.Util;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -97,7 +97,7 @@ public class AuthPlugIn extends EventModelPlugIn {
 		//Creating the response
 		aResponseEvent.getArgs().setString("uuid", lUUID);
 		aResponseEvent.getArgs().setString("username", aEvent.getUsername());
-		aResponseEvent.getArgs().setList("roles", CommonUtil.parseStringArrayToList(lRoles.split(" ")));
+		aResponseEvent.getArgs().setList("roles", Util.parseStringArrayToList(lRoles.split(" ")));
 		aResponseEvent.setMessage(">> Login process has finished successfully!");
 
 		if (mLog.isDebugEnabled()) {
