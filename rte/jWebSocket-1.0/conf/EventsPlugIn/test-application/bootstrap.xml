@@ -19,6 +19,7 @@
 		<constructor-arg value="test"/>
 
 		<property name="env" value="dev" />
+		<property name="maxExecutionTime" value="3" />
 		<property name="eventFactory" ref="EventFactory" />
 		<property name="exceptionHandler">
 			<bean class="org.jwebsocket.eventmodel.exception.ExceptionHandler"
@@ -55,7 +56,7 @@
 
 	<!-- Generic types support-->
 	<bean id="TypesMap" class="org.jwebsocket.eventmodel.filter.validator.TypesMap">
-		<property name="table">
+		<property name="types">
 			<map>
 				<entry key="string" value="java.lang.String" />
 				<entry key="boolean" value="java.lang.Boolean" />

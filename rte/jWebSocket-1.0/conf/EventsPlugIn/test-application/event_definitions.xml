@@ -11,7 +11,7 @@
 	</bean>
 	<bean id="EventDefinitionManager" class="org.jwebsocket.eventmodel.event.C2SEventDefinitionManager"
 	init-method="initialize" scope="singleton">
-		<property name="set">
+		<property name="definitions">
 			<set>
 				<bean parent="AbstractEventDefinition">
 					<property name="id" value="connector.started" />
@@ -37,32 +37,17 @@
 					<property name="id" value="after.process.event" />
 					<property name="ns" value="org.jwebsocket.eventmodel.event.em.AfterProcessEvent" />
 				</bean>
+				
+				<!--S2CEventNotificationHandler Events Definition-->
 				<bean parent="AbstractEventDefinition">
-					<property name="id" value="s2c.onresponse" />
+					<property name="id" value="s2c.r" />
 					<property name="ns" value="org.jwebsocket.eventmodel.event.em.S2CResponse" />
-					<property name="incomingArgsValidation">
-						<set>
-							<bean class="org.jwebsocket.eventmodel.filter.validator.Argument" >
-								<property name="name" value="req_id" />
-								<property name="type" value="string" />
-								<property name="optional" value="false" />
-							</bean>
-						</set>
-					</property>
 				</bean>
 				<bean parent="AbstractEventDefinition">
-					<property name="id" value="s2c.event_not_supported" />
+					<property name="id" value="s2c.ens" />
 					<property name="ns" value="org.jwebsocket.eventmodel.event.em.S2CEventNotSupportedOnClient" />
-					<property name="incomingArgsValidation">
-						<set>
-							<bean class="org.jwebsocket.eventmodel.filter.validator.Argument" >
-								<property name="name" value="req_id" />
-								<property name="type" value="string" />
-								<property name="optional" value="false" />
-							</bean>
-						</set>
-					</property>
 				</bean>
+				
 				<!--AuthPlugIn Events Definition-->
 				<bean parent="AbstractEventDefinition">
 					<property name="id" value="auth.logon" />

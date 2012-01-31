@@ -97,14 +97,14 @@
 		</layout>
 	</appender>
 
-<!--
+
 	<logger name="org.springframework" additivity="false">
-		< ! - - TRACE, DEBUG, INFO, WARN, ERROR or FATAL - - > 
-		<level value="warn"/>
-		< ! - -  select one of the above declared appenders - - >
+		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
+		<level value="WARN"/>
+		<!-- Select one of the above declared appenders -->
 		<appender-ref ref="developmentLog"/>
 	</logger>
--->
+
 
 	<logger name="org.jwebsocket" additivity="false">
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
