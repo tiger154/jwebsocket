@@ -1,4 +1,3 @@
-
 package org.jwebsocket.plugins.admin;
 
 import java.io.BufferedReader;
@@ -357,7 +356,7 @@ public class AdminPlugInService {
 
 		return lResponse;
 	}
-	
+
 	public Token changeOrderOfPlugInChain(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
@@ -386,10 +385,13 @@ public class AdminPlugInService {
 				throw new Exception("This action can not be made, is invalid.");
 			}
 
+			JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
+
 			synchronized (mServer.getPlugInChain()) {
 				WebSocketPlugIn aPlugIn = lPlugIns.get(lPosition);
 				lPlugIns.set(lPosition, lPlugIns.get(lPosition + lStepsMove));
 				lPlugIns.set(lPosition + lStepsMove, aPlugIn);
+				lJWSConfig.changeOrderOfPlugInConfig(lId, lStepsMove);
 			}
 
 			lResponse.setString("msg", "Changed order of the Plugin chain.");
@@ -452,7 +454,6 @@ public class AdminPlugInService {
 	public Token enablePlugIn(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
-		String lVersion = aToken.getString("version");
 		String lReason = aToken.getString("reason");
 
 		try {
@@ -460,8 +461,8 @@ public class AdminPlugInService {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
-				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			if (lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter the reason of change are null or empty.");
 			}
 
 			WebSocketPlugIn lPlugIn = mServer.getPlugInChain().getPlugIn(lId);
@@ -469,6 +470,8 @@ public class AdminPlugInService {
 			if (null == lPlugIn) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
+
+			String lVersion = lPlugIn.getVersion();
 
 			JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
 
@@ -497,7 +500,6 @@ public class AdminPlugInService {
 	public Token enableFilter(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
-		String lVersion = aToken.getString("version");
 		String lReason = aToken.getString("reason");
 
 		try {
@@ -505,8 +507,8 @@ public class AdminPlugInService {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
-				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			if (lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter the reason of change are null or empty.");
 			}
 
 			WebSocketFilter lFilter = mServer.getFilterChain().getFilterById(lId);
@@ -514,6 +516,8 @@ public class AdminPlugInService {
 			if (null == lFilter) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
+
+			String lVersion = lFilter.getVersion();
 
 			JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
 
@@ -543,7 +547,6 @@ public class AdminPlugInService {
 	public Token disablePlugIn(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
-		String lVersion = aToken.getString("version");
 		String lReason = aToken.getString("reason");
 
 		try {
@@ -551,8 +554,8 @@ public class AdminPlugInService {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
-				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			if (lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter the reason of change are null or empty.");
 			}
 
 			WebSocketPlugIn lPlugIn = mServer.getPlugInChain().getPlugIn(lId);
@@ -560,6 +563,8 @@ public class AdminPlugInService {
 			if (null == lPlugIn) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
+
+			String lVersion = lPlugIn.getVersion();
 
 			JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
 
@@ -589,7 +594,6 @@ public class AdminPlugInService {
 	public Token disableFilter(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
-		String lVersion = aToken.getString("version");
 		String lReason = aToken.getString("reason");
 
 		try {
@@ -597,8 +601,8 @@ public class AdminPlugInService {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
-				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			if (lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter the reason of change are null or empty.");
 			}
 
 			WebSocketFilter lFilter = mServer.getFilterChain().getFilterById(lId);
@@ -606,6 +610,8 @@ public class AdminPlugInService {
 			if (null == lFilter) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
+
+			String lVersion = lFilter.getVersion();
 
 			JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
 
@@ -634,7 +640,6 @@ public class AdminPlugInService {
 	public Token addPlugIn(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
-		String lVersion = aToken.getString("version");
 		String lReason = aToken.getString("reason");
 
 		try {
@@ -642,8 +647,8 @@ public class AdminPlugInService {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
-				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			if (lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter the reason of change are null or empty.");
 			}
 
 			PluginConfig lPlugInConfig = mJWebSocketConfig.getPlugin(lId);
@@ -685,13 +690,15 @@ public class AdminPlugInService {
 							mLog.debug("Plug-in '" + lPlugInConfig.getId() + "' successfully instantiated.");
 						}
 
+						String lVersion = lPlugIn.getVersion();
+
 						//Create reason of change for the jWebSocket Client 
 						Token lReasonOfChange = new MapToken();
 						((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.ADDED, lVersion, lReason);
 
 						// now add the plugin to plugin chain on server ids
 						for (String lServerId : lPlugInConfig.getServers()) {
-							 WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
+							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
 								lServerTemp.getPlugInChain().addPlugIn(lPlugIn);
 
@@ -724,7 +731,6 @@ public class AdminPlugInService {
 	public Token addFilter(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
-		String lVersion = aToken.getString("version");
 		String lReason = aToken.getString("reason");
 
 		try {
@@ -732,8 +738,8 @@ public class AdminPlugInService {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
-				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			if (lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter the reason of change are null or empty.");
 			}
 
 			FilterConfig lFilterConfig = mJWebSocketConfig.getFilter(lId);
@@ -774,6 +780,8 @@ public class AdminPlugInService {
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Filter '" + lFilterConfig.getId() + "' successfully instantiated.");
 						}
+
+						String lVersion = lFilter.getVersion();
 
 						//Create reason of change for the jWebSocket Client 
 						Token lReasonOfChange = new MapToken();
@@ -814,7 +822,6 @@ public class AdminPlugInService {
 	public Token removePlugIn(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
-		String lVersion = aToken.getString("version");
 		String lReason = aToken.getString("reason");
 
 		try {
@@ -822,8 +829,8 @@ public class AdminPlugInService {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
-				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			if (lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter the reason of change are null or empty.");
 			}
 
 			WebSocketPlugIn lPlugIn = mServer.getPlugInChain().getPlugIn(lId);
@@ -831,6 +838,8 @@ public class AdminPlugInService {
 			if (null == lPlugIn) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
+
+			String lVersion = lPlugIn.getVersion();
 
 			JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
 			lPlugIn.setEnabled(false);
@@ -866,7 +875,6 @@ public class AdminPlugInService {
 	public Token removeFilter(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
-		String lVersion = aToken.getString("version");
 		String lReason = aToken.getString("reason");
 
 		try {
@@ -874,8 +882,8 @@ public class AdminPlugInService {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
-				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			if (lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter the reason of change are null or empty.");
 			}
 
 			WebSocketFilter lFilter = mServer.getFilterChain().getFilterById(lId);
@@ -883,6 +891,8 @@ public class AdminPlugInService {
 			if (null == lFilter) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
 			}
+
+			String lVersion = lFilter.getVersion();
 
 			JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
 			lFilter.setEnabled(false);
@@ -918,7 +928,6 @@ public class AdminPlugInService {
 	public Token reloadPlugIn(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
-		String lVersion = aToken.getString("version");
 		String lReason = aToken.getString("reason");
 
 		try {
@@ -926,8 +935,8 @@ public class AdminPlugInService {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
-				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			if (lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter the reason of change are null or empty.");
 			}
 
 			refreshJWebSocketConfig(aConnector);
@@ -955,7 +964,7 @@ public class AdminPlugInService {
 				lPlugInClass = (Class<WebSocketPlugIn>) lClassLoader.reloadClass(lPlugInConfig.getName());
 			}
 
-			// if class found try to create an instance
+			//if class found try to create an instance
 			if (lPlugInClass != null) {
 				WebSocketPlugIn lPlugIn = null;
 
@@ -971,11 +980,13 @@ public class AdminPlugInService {
 							mLog.debug("Plug-in '" + lPlugInConfig.getId() + "' successfully instantiated.");
 						}
 
+						String lVersion = lPlugIn.getVersion();
+
 						//now add the plugin to plugin chain on server ids
 						for (String lServerId : lPlugInConfig.getServers()) {
 							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
-								TokenPlugInChain lPlugInChain = (TokenPlugInChain)lServerTemp.getPlugInChain();
+								TokenPlugInChain lPlugInChain = (TokenPlugInChain) lServerTemp.getPlugInChain();
 								//Create reason of change for the jWebSocket Client
 								Token lReasonOfChange = new MapToken();
 								if (lPlugInChain.reloadPlugIn(lPlugIn, lReasonOfChange, lVersion, lReason)) {
@@ -1012,7 +1023,6 @@ public class AdminPlugInService {
 	public Token reloadFilter(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
 		String lId = aToken.getString("id");
-		String lVersion = aToken.getString("version");
 		String lReason = aToken.getString("reason");
 
 		try {
@@ -1020,8 +1030,8 @@ public class AdminPlugInService {
 				throw new Exception("Has caused an error because the input parameter is null or empty.");
 			}
 
-			if (lVersion == null || lVersion.isEmpty() || lReason == null || lReason.isEmpty()) {
-				throw new Exception("Has caused an error because the input parameters the reason of change are null or empty.");
+			if (lReason == null || lReason.isEmpty()) {
+				throw new Exception("Has caused an error because the input parameter the reason of change are null or empty.");
 			}
 
 			refreshJWebSocketConfig(aConnector);
@@ -1065,11 +1075,13 @@ public class AdminPlugInService {
 							mLog.debug("Filter '" + lFilterConfig.getId() + "' successfully instantiated.");
 						}
 
+						String lVersion = lFilter.getVersion();
+
 						// now add the filter to filter chain on server ids
 						for (String lServerId : lFilterConfig.getServers()) {
 							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
-								TokenFilterChain lFilterChain = (TokenFilterChain)lServerTemp.getFilterChain();
+								TokenFilterChain lFilterChain = (TokenFilterChain) lServerTemp.getFilterChain();
 								//Create reason of change for the jWebSocket Client 
 								Token lReasonOfChange = new MapToken();
 								if (lFilterChain.reloadFilter(lFilter, lReasonOfChange, lVersion, lReason)) {

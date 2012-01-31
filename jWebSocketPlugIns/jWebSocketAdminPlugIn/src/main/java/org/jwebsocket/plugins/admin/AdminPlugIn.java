@@ -42,6 +42,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	private static Logger mLog = Logging.getLogger(AdminPlugIn.class);
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_ADMIN = JWebSocketServerConstants.NS_BASE + ".plugins.admin";
+	private static final String mVersion = "1.0";
 	private static boolean mExternalShutDownAllowed = false;
 	private static Integer mNumberOfDays = null;
 	private static AdminPlugInService mService = null;
@@ -56,6 +57,7 @@ public class AdminPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_ADMIN);
+		this.setVersion(mVersion);
 
 		mExternalShutDownAllowed = "true".equalsIgnoreCase(aConfiguration.getString("allowShutdown"));
 

@@ -517,7 +517,7 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 
 		saveChange(lDoc);
 	}
-	
+
 	public void removeFilterConfig(String aId) throws Exception {
 		Document lDoc = getDocument();
 		Element lRootNode = lDoc.getRootElement();
@@ -527,6 +527,32 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		for (int i = 0; i < lFiltersList.size(); i++) {
 			if (aId.equals(lFiltersList.get(i).getChildText("id"))) {
 				lFiltersList.remove(i);
+			}
+		}
+
+		saveChange(lDoc);
+	}
+
+	public void changeOrderOfPlugInConfig(String aId, Integer aSteps) throws Exception {
+		Document lDoc = getDocument();
+		Element lRootNode = lDoc.getRootElement();
+		Element lPlugins = lRootNode.getChild(ELEMENT_PLUGINS);
+		List<Element> lPluginsList = lPlugins.getChildren(ELEMENT_PLUGIN);
+		List<Element> lNewPlugins = new FastList<Element>();
+		for (int i = 0; i < lPluginsList.size(); i++) {
+			if (aId.equals(lPluginsList.get(i).getChildText("id"))) {
+//				if(aSteps < 0){
+//					lNewPlugins.addAll(lPluginsList.subList(0, i + aSteps));
+//					lNewPlugins.add(lPluginsList.get(i));
+//					lNewPlugins.addAll(lPluginsList.subList(i + aSteps, ));
+//				}
+				lNewPlugins.addAll(lPluginsList);
+				Element aPlugIn = lNewPlugins.get(i);
+				lNewPlugins.set(i, lNewPlugins.get(i + aSteps));
+				lNewPlugins.set(i + aSteps, aPlugIn);
+				lPlugins.removeContent();
+				lPlugins.addContent(lNewPlugins);
+				break;
 			}
 		}
 

@@ -36,6 +36,7 @@ import org.jwebsocket.kit.CloseReason;
  */
 public abstract class BasePlugIn implements WebSocketPlugIn {
 
+	private String mVersion = null;
 	private WebSocketPlugInChain mPlugInChain = null;
 	private Map<String, Object> mSettings = new FastMap<String, Object>();
 	private PluginConfiguration mConfiguration;
@@ -353,5 +354,17 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 		if (aEnabled != lOldEnabled) {
 			processEnabled(aEnabled);
 		}
-	}	
+	}
+
+	@Override
+	public String getVersion() {
+		return mVersion;
+	}
+
+	@Override
+	public void setVersion(String aVersion) {
+		this.mVersion = aVersion;
+	}
+	
+	
 }
