@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DB937FE7-12E8-464B-8CBE-2F9E8747634B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ClientLibrary</RootNamespace>
+    <AssemblyName>ClientLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="org\jwebsocket\client\csharp\WebSocketBaseTokenClient.cs" />
+    <Compile Include="org\jwebsocket\client\api\WebSocketClient.cs" />
+    <Compile Include="org\jwebsocket\client\api\WebSocketClientListener.cs" />
+    <Compile Include="org\jwebsocket\client\api\WebSocketPacket.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketError.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketStateOfStatus.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketHeaders.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketStatus.cs" />
+    <Compile Include="org\jwebsocket\client\config\WebSocketConstants.cs" />
+    <Compile Include="org\jwebsocket\client\csharp\WebSocketBaseClient.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketReliabilityOptions.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketCloseReason.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketConvert.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketRawPacket.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketTimeout.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketTypeEncoding.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketEncoding.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketException.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketExceptionType.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketFrameType.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketHandshake.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketProtocolAbstraction.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketRuntimeException.cs" />
+    <Compile Include="org\jwebsocket\client\kit\WebSocketSubProtocol.cs" />
+    <Compile Include="org\jwebsocket\client\packetProcessor\CSVTokenProcessor.cs" />
+    <Compile Include="org\jwebsocket\client\packetProcessor\JSONTokenProcessor.cs" />
+    <Compile Include="org\jwebsocket\client\packetProcessor\TokenProcessor.cs" />
+    <Compile Include="org\jwebsocket\client\packetProcessor\XMLTokenProcessor.cs" />
+    <Compile Include="org\jwebsocket\client\token\DictionaryToken.cs" />
+    <Compile Include="org\jwebsocket\client\token\PendingResponseQueueItem.cs" />
+    <Compile Include="org\jwebsocket\client\token\Token.cs" />
+    <Compile Include="org\jwebsocket\client\token\TokenFactory.cs" />
+    <Compile Include="org\jwebsocket\client\token\WebSocketClientTokenListener.cs" />
+    <Compile Include="org\jwebsocket\client\token\WebSocketResponseTokenListener.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
