@@ -27,6 +27,8 @@ public interface WebSocketFilterChain {
 
 	void addFilter(WebSocketFilter aFilter);
 	
+	void addFilter(Integer aPosition, WebSocketFilter aFilter);
+	
 	void removeFilter(WebSocketFilter aFilter);
 	
 	List<WebSocketFilter> getFilters();
