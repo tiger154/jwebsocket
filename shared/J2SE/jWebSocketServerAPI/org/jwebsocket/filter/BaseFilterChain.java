@@ -114,4 +114,10 @@ public class BaseFilterChain implements WebSocketFilterChain {
 		}
 		return lResponse;
 	}
+
+	@Override
+	public void addFilter(Integer aPosition, WebSocketFilter aFilter) {
+		mFilters.add(aPosition, aFilter);
+		aFilter.setFilterChain(this);
+	}
 }

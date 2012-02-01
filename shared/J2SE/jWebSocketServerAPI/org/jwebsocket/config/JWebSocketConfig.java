@@ -48,7 +48,7 @@ import org.jwebsocket.logging.Logging;
  * @author Marcos Antonio González Huerta (markos0886, UCI)
  * @version $Id: JWebSocketConfig.java 345 2010-04-10 20:03:48Z fivefeetfurther$
  */
-public final class JWebSocketConfig implements Config {
+public class JWebSocketConfig implements Config {
 
 	// DON'T SET LOGGER HERE! NEEDS TO BE INITIALIZED FIRST!
 	private static Logger mLog = null;

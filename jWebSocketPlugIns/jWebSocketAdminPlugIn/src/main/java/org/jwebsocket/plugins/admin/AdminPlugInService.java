@@ -2,6 +2,7 @@ package org.jwebsocket.plugins.admin;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Constructor;
@@ -10,6 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
@@ -19,7 +22,9 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketFilter;
 import org.jwebsocket.api.WebSocketPlugIn;
 import org.jwebsocket.api.WebSocketServer;
+import org.jwebsocket.config.AdminConfig;
 import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.config.xml.AdminConfigHandler;
 import org.jwebsocket.config.xml.FilterConfig;
 import org.jwebsocket.config.xml.JWebSocketConfigHandler;
 import org.jwebsocket.config.xml.PluginConfig;
@@ -49,7 +54,9 @@ public class AdminPlugInService {
 	private static String mPathLog = null;
 	private static String mPathLibs = null;
 	private static JWebSocketConfig mJWebSocketConfig = null;
+	private static AdminConfig mAdminConfig = null;
 	private static TokenServer mServer;
+	private static String JWS_MGMT_DESK_PATH = "AdminPlugIn" + System.getProperty("file.separator") + "jwsMgmtDesk.xml";
 
 	public AdminPlugInService(String aNamespace, Integer aNumberOfDays, TokenServer aServer, Logger aLog) {
 
@@ -59,6 +66,7 @@ public class AdminPlugInService {
 		mPathLog = JWebSocketConfig.getLogsFolder("adminLog.log");
 		mPathLibs = JWebSocketConfig.getLibsFolder("");
 		mJWebSocketConfig = JWebSocketConfig.getConfig();
+		mAdminConfig = new AdminConfig();
 		mLog = aLog;
 	}
 
@@ -94,6 +102,23 @@ public class AdminPlugInService {
 			}
 		} catch (Exception ex) {
 			traceLog(aConnector, "Refresh the configuration", "Error", ex.getClass().getSimpleName() + " on refreshJWebSocketConfig: " + ex.getMessage());
+		}
+	}
+
+	private void loadMgmtDeskConfig() {
+		AdminConfig lConfig = null;
+		String lConfigFilePath = JWebSocketConfig.getConfigFolder(JWS_MGMT_DESK_PATH);
+		AdminConfigHandler lConfigHandler = new AdminConfigHandler();
+		try {
+			File lFile = new File(lConfigFilePath);
+			FileInputStream lFIS = new FileInputStream(lFile);
+			XMLInputFactory lFactory = XMLInputFactory.newInstance();
+			XMLStreamReader lStreamReader = null;
+			lStreamReader = lFactory.createXMLStreamReader(lFIS);
+			lConfig = lConfigHandler.processConfig(lStreamReader);
+			mAdminConfig = lConfig;
+		} catch (Exception ex) {
+			mLog.error(ex.getClass().getSimpleName() + " occurred while creating XML stream (" + lConfigFilePath + ").");
 		}
 	}
 
@@ -253,11 +278,29 @@ public class AdminPlugInService {
 
 			for (PluginConfig lConfig : mJWebSocketConfig.getPlugins()) {
 				if (lConfig.getJar().equals(lJar)) {
-					FastMap lMap = new FastMap();
-					lMap.put("idPlugIn", lConfig.getId());
-					lIdPlugIn.add(lMap);
+					if (null == mServer.getPlugInById(lConfig.getId())) {
+						FastMap lMap = new FastMap();
+						lMap.put("idPlugIn", lConfig.getId());
+						lIdPlugIn.add(lMap);
+					}
 				}
 			}
+			//Load the plugins config that has been removed
+			loadMgmtDeskConfig();
+			for (PluginConfig lConfig : mAdminConfig.getPlugins()) {
+				if (lConfig.getJar().equals(lJar)) {
+					if (null == mServer.getPlugInById(lConfig.getId())) {
+						FastMap lMap = new FastMap();
+						lMap.put("idPlugIn", lConfig.getId());
+						lIdPlugIn.add(lMap);
+					}
+				}
+			}
+
+			if (lIdPlugIn.isEmpty()) {
+				throw new Exception("Can't found any plugin in the jar '" + lJar + "'.");
+			}
+
 			lResponse.setList("plugInsByJar", lIdPlugIn);
 			lResponse.setInteger("totalCount", lIdPlugIn.size());
 			lResponse.setString("msg", "Was obtained the plugins belonging to the library " + lJar);
@@ -286,11 +329,30 @@ public class AdminPlugInService {
 
 			for (FilterConfig lConfig : mJWebSocketConfig.getFilters()) {
 				if (lConfig.getJar().equals(lJar)) {
-					FastMap lMap = new FastMap();
-					lMap.put("idFilter", lConfig.getId());
-					lIdFilter.add(lMap);
+					if (null == mServer.getFilterById(lConfig.getId())) {
+						FastMap lMap = new FastMap();
+						lMap.put("idFilter", lConfig.getId());
+						lIdFilter.add(lMap);
+					}
 				}
 			}
+
+			//Load the plugins config that has been removed
+			loadMgmtDeskConfig();
+			for (FilterConfig lConfig : mAdminConfig.getFilters()) {
+				if (lConfig.getJar().equals(lJar)) {
+					if (null == mServer.getFilterById(lConfig.getId())) {
+						FastMap lMap = new FastMap();
+						lMap.put("idFilter", lConfig.getId());
+						lIdFilter.add(lMap);
+					}
+				}
+			}
+
+			if (lIdFilter.isEmpty()) {
+				throw new Exception("Can't found any filter in the jar '" + lJar + "'.");
+			}
+
 			lResponse.setList("filtersByJar", lIdFilter);
 			lResponse.setInteger("totalCount", lIdFilter.size());
 			lResponse.setString("msg", "Was obtained the filters belonging to the library " + lJar);
@@ -312,6 +374,10 @@ public class AdminPlugInService {
 		try {
 			refreshJWebSocketConfig(aConnector);
 			PluginConfig lPlugInConfig = mJWebSocketConfig.getPlugin(lId);
+
+			if (null == lPlugInConfig) {
+				lPlugInConfig = mAdminConfig.getPlugin(lId);
+			}
 
 			if (lPlugInConfig == null) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
@@ -338,6 +404,10 @@ public class AdminPlugInService {
 		try {
 			refreshJWebSocketConfig(aConnector);
 			FilterConfig lFilterConfig = mJWebSocketConfig.getFilter(lId);
+
+			if (null == lFilterConfig) {
+				lFilterConfig = mAdminConfig.getFilter(lId);
+			}
 
 			if (lFilterConfig == null) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
@@ -434,10 +504,13 @@ public class AdminPlugInService {
 				throw new Exception("This action can not be made, is invalid.");
 			}
 
+			JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
+
 			synchronized (mServer.getFilterChain()) {
 				WebSocketFilter lFilter = lFilters.get(lPosition);
 				lFilters.set(lPosition, lFilters.get(lPosition + lStepsMove));
 				lFilters.set(lPosition + lStepsMove, lFilter);
+				lJWSConfig.changeOrderOfFilterConfig(lId, lStepsMove);
 			}
 			lResponse.setString("msg", "Changed order of the Filter chain.");
 			traceLog(aConnector, "Change Order of Filters", "Successful", "Changed order of the Filter chain.");
@@ -639,6 +712,7 @@ public class AdminPlugInService {
 
 	public Token addPlugIn(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
+		Boolean lLoadOfTemp = false;
 		String lId = aToken.getString("id");
 		String lReason = aToken.getString("reason");
 
@@ -652,6 +726,11 @@ public class AdminPlugInService {
 			}
 
 			PluginConfig lPlugInConfig = mJWebSocketConfig.getPlugin(lId);
+
+			if (null == lPlugInConfig) {
+				lPlugInConfig = mAdminConfig.getPlugin(lId);
+				lLoadOfTemp = true;
+			}
 
 			if (null == lPlugInConfig) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
@@ -692,6 +771,12 @@ public class AdminPlugInService {
 
 						String lVersion = lPlugIn.getVersion();
 
+						//Try add the settings if they were loaded with the temp
+						if (lLoadOfTemp) {
+							JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
+							lJWSConfig.addPlugInConfig(lId);
+						}
+
 						//Create reason of change for the jWebSocket Client 
 						Token lReasonOfChange = new MapToken();
 						((TokenPlugIn) lPlugIn).createReasonOfChange(lReasonOfChange, ChangeType.ADDED, lVersion, lReason);
@@ -700,8 +785,13 @@ public class AdminPlugInService {
 						for (String lServerId : lPlugInConfig.getServers()) {
 							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
-								lServerTemp.getPlugInChain().addPlugIn(lPlugIn);
 
+								if (false == lLoadOfTemp) {
+									Integer lPosition = mJWebSocketConfig.getPlugins().indexOf(lPlugInConfig);
+									lServerTemp.getPlugInChain().addPlugIn(lPosition, lPlugIn);
+								} else {
+									lServerTemp.getPlugInChain().addPlugIn(lPlugIn);
+								}
 								//Send reason of change for the jWebSocket Client 
 								((TokenServer) lServerTemp).broadcastToken(lReasonOfChange);
 							}
@@ -730,6 +820,7 @@ public class AdminPlugInService {
 
 	public Token addFilter(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = mServer.createResponse(aToken);
+		Boolean lLoadOfTemp = false;
 		String lId = aToken.getString("id");
 		String lReason = aToken.getString("reason");
 
@@ -743,6 +834,11 @@ public class AdminPlugInService {
 			}
 
 			FilterConfig lFilterConfig = mJWebSocketConfig.getFilter(lId);
+
+			if (null == lFilterConfig) {
+				lFilterConfig = mAdminConfig.getFilter(lId);
+				lLoadOfTemp = true;
+			}
 
 			if (null == lFilterConfig) {
 				throw new Exception("Has caused an error because the input parameter are wrong.");
@@ -783,6 +879,12 @@ public class AdminPlugInService {
 
 						String lVersion = lFilter.getVersion();
 
+						//Try add the settings if they were loaded with the temp
+						if (lLoadOfTemp) {
+							JWebSocketConfigHandler lJWSConfig = new JWebSocketConfigHandler();
+							lJWSConfig.addFilterConfig(lId);
+						}
+
 						//Create reason of change for the jWebSocket Client 
 						Token lReasonOfChange = new MapToken();
 						((TokenFilter) lFilter).createReasonOfChange(lReasonOfChange, ChangeType.ADDED, lVersion, lReason);
@@ -791,8 +893,13 @@ public class AdminPlugInService {
 						for (String lServerId : lFilterConfig.getServers()) {
 							WebSocketServer lServerTemp = JWebSocketFactory.getServer(lServerId);
 							if (null != lServerTemp) {
-								lServerTemp.getFilterChain().addFilter(lFilter);
-
+								
+								if (false == lLoadOfTemp) {
+									Integer lPosition = mJWebSocketConfig.getFilters().indexOf(lFilterConfig);
+									lServerTemp.getFilterChain().addFilter(lPosition, lFilter);
+								} else {
+									lServerTemp.getFilterChain().addFilter(lFilter);
+								}
 								//Send reason of change for the jWebSocket Client 
 								((TokenServer) lServerTemp).broadcastToken(lReasonOfChange);
 							}

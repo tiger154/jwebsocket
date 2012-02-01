@@ -250,4 +250,10 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 	public WebSocketServer getServer() {
 		return mServer;
 	}
+
+	@Override
+	public void addPlugIn(Integer aPosition, WebSocketPlugIn aPlugIn) {
+		mPlugins.add(aPosition, aPlugIn);
+		aPlugIn.setPlugInChain(this);
+	}
 }

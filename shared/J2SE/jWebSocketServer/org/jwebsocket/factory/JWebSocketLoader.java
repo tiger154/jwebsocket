@@ -91,7 +91,7 @@ public final class JWebSocketLoader {
 			XMLInputFactory lFactory = XMLInputFactory.newInstance();
 			XMLStreamReader lStreamReader = null;
 			lStreamReader = lFactory.createXMLStreamReader(lFIS);
-			lConfig = mConfigHandler.processConfig(lStreamReader);
+			lConfig = (JWebSocketConfig) mConfigHandler.processConfig(lStreamReader);
 		} catch (XMLStreamException ex) {
 			lMsg = ex.getClass().getSimpleName() + " occurred while creating XML stream (" + aConfigFilePath + ").";
 			throw new WebSocketException(lMsg);
