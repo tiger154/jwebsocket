@@ -1,0 +1,10 @@
+C:\Users\soad\documents\visual studio 2010\Projects\Client\Client\bin\Debug\Client.exe.config
+C:\Users\soad\documents\visual studio 2010\Projects\Client\Client\bin\Debug\Client.exe
+C:\Users\soad\documents\visual studio 2010\Projects\Client\Client\bin\Debug\Client.pdb
+C:\Users\soad\documents\visual studio 2010\Projects\Client\Client\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\soad\documents\visual studio 2010\Projects\Client\Client\obj\x86\Debug\Client.Form1.resources
+C:\Users\soad\documents\visual studio 2010\Projects\Client\Client\obj\x86\Debug\Client.Properties.Resources.resources
+C:\Users\soad\documents\visual studio 2010\Projects\Client\Client\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\soad\documents\visual studio 2010\Projects\Client\Client\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\soad\documents\visual studio 2010\Projects\Client\Client\obj\x86\Debug\Client.exe
+C:\Users\soad\documents\visual studio 2010\Projects\Client\Client\obj\x86\Debug\Client.pdb
