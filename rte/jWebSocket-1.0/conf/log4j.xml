@@ -115,7 +115,7 @@
 	
 	<logger name="org.jwebsocket.plugins.admin" additivity="false">
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
-		<level value="info"/>
+		<level value="INFO"/>
 		<!--  select one of the above declared appenders -->
 		<appender-ref ref="adminLog"/>
 	</logger>
