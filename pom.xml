@@ -37,6 +37,7 @@
 		<module>jWebSocketPlugIns/jWebSocketAPIPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketProxyPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketAdminPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketArduinoPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketTestPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketClusterPlugIn</module>
 		<module>jWebSocketSwingGUI</module>

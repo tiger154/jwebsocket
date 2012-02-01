@@ -37,7 +37,7 @@ public class S2CPlusXYEvent extends S2CEvent {
 		super();
 		setId("plusXY");
 		setResponseType("integer");
-		setTimeout(1000);
+		setTimeout(5000);
 
 		this.mX = aX;
 		this.mY = aY;
