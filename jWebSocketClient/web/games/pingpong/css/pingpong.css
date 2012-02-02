@@ -1,0 +1,502 @@
+/* 
+    Document   : pingpong
+    Created on : Sep 21, 2011, 1:26:20 AM
+    Author     : jWebSocket Team
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+*{
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;    
+}
+body{
+    background: #EDEBEC;
+}
+#container { 
+    width: 100%;
+}
+
+#demo_box{
+    height: 546px;
+    width: 765px;
+    background: #EAF4DC;
+    border: 1px solid #C8C8C8;
+}
+#demo_box_header{
+    -moz-border-radius-topleft: 6px;
+    -moz-border-radius-topright: 6px;
+    -moz-border-radius-bottomright: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-radius: 6px 6px 0px 0px;
+    border-radius: 6px 6px 0px 0px;
+    background: #2584C1 url(images/header.png) repeat-x;
+    height: 46px;
+}
+#demo_box_header h1{
+    font-family: "Verdana" !important;
+    color: #FFFFFF;
+    font-size: 21pt;
+    margin: 0;
+    width: 245px;
+    float: left;
+    padding: 5px 0 5px 15px;
+    font-weight: normal;
+}
+
+#demo_box_header_login{
+    float:right;
+    width: 400px;
+    height: 36px;
+    color:white;
+    padding-top: 10px;
+}
+#user_info{
+    width: 200px;
+    float:right;
+    background: transparent url(images/user.gif) no-repeat 2px 5px;
+    padding-left: 20px;
+    margin-top:2px;
+}
+#user_info div{
+    display: inline;
+}
+
+#user_info div.logout{
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 5px;
+    background: url(images/logout_normal.png) no-repeat;
+    width: 68px !important;
+    height: 25px !important;
+    float:left;
+}
+
+#user_info .name{
+    float:left;
+    padding-top: 2px;
+}
+
+#demo_box_header_login div.register_login{
+    font-weight: bold;
+    cursor: pointer;
+    margin-left:1px;
+    float: left;
+    background: url(images/register_normal.png) no-repeat;
+    width: 68px;
+    height: 25px;
+}
+
+#login_form{
+    float:left;
+    width: 230px;
+}
+
+#login_form_create{
+    float:left;
+    width: 330px;
+}
+
+#login_button{
+    float:left;
+    width: 68px;
+    height: 25px;
+    background: url(images/login_normal.png) no-repeat;
+    cursor: pointer;
+    margin-right: 1px;
+}
+
+input[type=text], input[type=password]{
+    width: 100px;
+    margin-left: 5px;
+
+}
+
+#demo_box_description{
+    font-family: "Verdana" !important;
+    padding-left: 12px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 11px;
+}
+#demo_box_scenario{
+    background: #E4E4E4;
+    width: 734px;
+    height: 370px;
+    border: 1px solid #C8C8C8;
+    margin:12px; 
+    padding: 6px;
+
+}
+#scenario_header{
+    height: 35px;
+    font-size: 15pt;
+    font-weight: bold;
+    font-family: "Verdana" !important;
+    color: #B2B2B2;
+    padding: 10px 15px 0 15px;
+}
+#scenario_header_left{
+    float: left;
+    padding-left: 10px;
+}
+
+#scenario_header_right{
+    float: right;
+    padding-right: 30px;
+}
+
+#scenario_body{
+    height: 290px;
+}
+
+#scenario_menu{
+    padding-top: 5px;
+    height: 45px;
+    text-align: center;
+}
+#scenario_menu a{
+    text-decoration: none;
+    color:#5d5d5d;
+    font-size: 14px;
+    padding-left: 5px;
+    cursor: pointer;
+}
+
+#scenario_menu a:hover{
+    color:black;
+}
+#scenario_menu input{
+    width: 200px;
+}
+
+#ranking{
+    float:left;
+    height: 280px;
+    width: 110px;
+    background: #FFFFFF;
+    padding: 5px;
+    font-size: 13px;
+    overflow: auto;
+    position: relative;
+}
+#ranking div{
+    margin:0px;
+    display: block;
+    font-size: 11px;
+}
+
+#ranking div div.name{
+    float:left;
+    width: 53px;
+}
+
+#ranking div div.points{
+    float:left;
+    width: 40px;
+    padding-left: 2px;
+}
+
+#board{
+    position: relative;
+    float:left;
+    background: transparent url(images/scenario.png) no-repeat;
+    height: 290px;
+    width: 494px;
+   }
+
+#counter{
+    font-size: 150px;
+    color:white;
+    font-weight: bold;
+    left:200px;
+    top:60px;
+    position: absolute;
+    z-index: 999;
+}
+#game_over{
+    font-size: 80px;
+    color:white;
+    font-weight: bold;
+    left:50px;
+    top:90px;
+    position: absolute;
+    z-index: 999;
+}
+#send_pause{
+    font-size: 60px;
+    color:white;
+    font-weight: bold;
+    left:168px;
+    top:20px;
+    position: absolute;
+    z-index: 999;
+}
+#chat_text{
+    position: absolute;
+    margin-top: 90px;
+    margin-left: 125px;
+    border:  1px solid gray;
+    resize: both;
+    width: 240px;
+    background: transparent url(images/chat_box.png);
+}
+#chat_text #messages_area{
+    padding: 15px;
+    overflow:hidden;
+    height: 100px;
+    padding-bottom: 10px !important;
+    max-height: 180px;
+    }
+
+#minimized{
+    position: absolute;
+    width: 100px;
+    height: 20px; 
+    left: 195px;
+    top: 5px;
+    cursor: pointer;
+    background: transparent url(images/chat_box.png);
+    padding-left: 10px;
+    color: white;
+}
+
+#minimize_chat_text{
+    position: absolute;
+    right: 0;
+    top:0;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    width: 5px;
+    height: 5px;
+    margin-right: 5px;
+}
+
+#chat_text #messages_area p{
+    color:  #e8e8e8;
+    padding: 0px;
+    margin: 0px;
+}
+#chat_text #messages_area div{
+    display: block;
+    margin-top: 5px;
+}
+
+#user_name_a{
+    color:gold;
+    padding: 0px;
+    margin: 0px;
+    font-weight: bold;
+}
+#user_name_b{
+    color:chartreuse;
+    padding: 0px;
+    margin: 0px;
+    font-weight: bold;
+}
+
+#online{
+    float:left;
+    height: 230px;
+    width: 110px;
+    background: #FFFFFF;
+    overflow: auto;
+    font-size: 11pt;
+    padding:5px;
+    position: relative;
+}
+
+#obj_area{
+    position: absolute;
+    width: 100%;
+}
+
+#online ul{
+    margin: 5px 5px 5px -10px;
+    list-style: none;
+}
+
+#online ul li.available{
+    list-style-image: url(images/online.png);
+    cursor: pointer;
+    color:black;
+}
+
+#online ul li.playing{
+    list-style-image: url(images/offline.png);
+    color:gray;
+}
+#legend{
+    float:left;
+    margin-left: 5px;
+    margin-top: 5px;
+    font-size: 11pt;
+    font-family: "Verdana" !important;
+    text-transform: uppercase;
+}
+#legend div{
+    padding-left: 20px;
+    font-weight: bold;
+}
+#legend div.available{
+    background: url(images/online.png) no-repeat;
+}
+
+#legend div.playing{
+    background: url(images/offline.png) no-repeat;
+}
+
+#ball{
+    background: url(images/ball2.png) no-repeat;
+    z-index: 999;
+    position: relative;
+}
+/* ----------------------- PLAYER A ----------------------- */
+#playerA{
+    width: 100px;
+    float: left;
+    height: 100px;
+    padding-left: 100px;
+    z-index: -1;
+}
+
+#playerA_name{
+    font-size: 20px;
+    color: white;
+    font-weight: bold;
+
+}
+
+#playerA_points{
+    font-size: 72px;
+    color:#afc9e2;
+    font-weight: bold;
+    padding-left: 15px;
+}
+
+#playerA_racket{
+    background: url(images/bar.png) no-repeat;
+    position: absolute;
+    z-index: 999;
+    /*width: 19px;
+    top: 118px;
+    height: 58px;
+    left: 2px;*/
+    -moz-border-radius-topleft: 25px;
+    -moz-border-radius-topright: 0px;
+    -moz-border-radius-bottomright: 0px;
+    -moz-border-radius-bottomleft: 25px;
+    -webkit-border-radius: 25px 0px 0px 25px;
+    border-radius: 25px 0px 0px 25px;
+}
+/* ----------------------- PLAYER A ----------------------- */
+
+/* ----------------------- PLAYER B ----------------------- */
+#playerB{
+    width: 100px;
+    float: right;
+    height: 100px;
+    padding-right: 55px;
+    z-index: -1;
+}
+
+#playerB_points{
+    font-size: 72px;
+    color:#afc9e2;
+    font-weight: bold;
+
+}
+#playerB_name{
+    font-size: 20px;
+    color: white;
+    font-weight: bold;
+
+}
+#playerB_racket{
+    /*    width: 21px;
+        height: 87px;*/
+    background: url(images/bar.png) no-repeat;
+    position: absolute;
+    z-index: 999;    
+    /* width: 19px;
+     top: 118px;
+     height: 58px;
+     left: 469px;*/
+    -moz-border-radius-topleft: 0px;
+    -moz-border-radius-topright: 25px;
+    -moz-border-radius-bottomright: 25px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-radius: 0px 25px 25px 0px;
+    border-radius: 0px 25px 25px 0px;
+}
+/* ----------------------- PLAYER B ----------------------- */
+
+
+
+/* ----------------------- POPUP WINDOW ----------------------- */
+#popup_container {
+    font-family: "Verdana" !important;
+    font-size: 12px;
+    min-width: 300px; /* Dialog will be no smaller than this */
+    max-width: 600px; /* Dialog will wrap after this width */
+    background: #FFF;
+    border: solid 5px #999;
+    color: #000;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+#popup_title {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.75em;
+    color: #666;
+    background:#2584C1 url(images/header.png) repeat-x;
+    border: solid 1px #FFF;
+    border-bottom: solid 1px #999;
+    cursor: default;
+    padding: 0em;
+    margin: 0em;
+}
+
+#popup_content {
+    background: 16px 16px no-repeat url(images/info.gif);
+    padding: 1em 1.75em;
+    margin: 0em;
+}
+
+#popup_content.alert {
+    background-image: url(images/info.gif);
+}
+
+#popup_content.confirm {
+    background-image: url(images/important.gif);
+}
+
+#popup_content.prompt {
+    background-image: url(images/help.gif);
+}
+
+#popup_message {
+    padding-left: 48px;
+}
+
+#popup_panel {
+    text-align: center;
+    margin: 1em 0em 0em 1em;
+}
+
+#popup_prompt {
+    margin: .5em 0em;
+}
+
+/* ----------------------- POPUP WINDOW ----------------------- */
