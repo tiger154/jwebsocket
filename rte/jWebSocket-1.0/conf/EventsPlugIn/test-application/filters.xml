@@ -32,7 +32,10 @@
 		</property>
 		<property name="events">
 			<set>
-				<value>org.jwebsocket.eventmodel.event.filter.ResponseFromCache</value>
+                <bean class="java.lang.Class" factory-method="forName">
+                    <constructor-arg value="org.jwebsocket.eventmodel.event.filter.ResponseFromCache"/>
+                </bean>
+<!--				<value>org.jwebsocket.eventmodel.event.filter.ResponseFromCache</value>-->
 			</set>
 		</property>
 		<property name="emEvents">

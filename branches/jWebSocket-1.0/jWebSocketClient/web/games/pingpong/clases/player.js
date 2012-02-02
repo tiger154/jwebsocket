@@ -89,7 +89,7 @@ $.widget("jws.player",{
                     e.preventDefault();
                 }
             },
-            'scroll mousedown DOMMouseScroll mousewheel keyup': function(e) {
+            'scroll mousedown DOMMouseScroll mousewheel': function(e) {
                 if(e.wheelDelta>20){                
                     ePlayer.broadcastPlayer(38,"m"); 
                 }else{
