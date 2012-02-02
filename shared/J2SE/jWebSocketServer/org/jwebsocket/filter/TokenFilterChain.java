@@ -99,7 +99,7 @@ public class TokenFilterChain extends BaseFilterChain {
 					((TokenFilter) lFilter).processTokenIn(lFilterResponse, aConnector, aToken);
 				} catch (Exception lEx) {
 					log.error(lEx.getClass().getSimpleName()
-							+ " in filter: " + lFilter.getId()
+							+ " in incoming filter: " + lFilter.getId()
 							+ ": " + lEx.getMessage());
 				}
 				if (lFilterResponse.isRejected()) {
@@ -118,7 +118,7 @@ public class TokenFilterChain extends BaseFilterChain {
 					((TokenFilter) lFilter).processTokenOut(lFilterResponse, aSource, aTarget, aToken);
 				} catch (Exception lEx) {
 					log.error(lEx.getClass().getSimpleName()
-							+ " in filter: " + lFilter.getId()
+							+ " in outgoing filter: " + lFilter.getId()
 							+ ": " + lEx.getMessage());
 				}
 				if (lFilterResponse.isRejected()) {
