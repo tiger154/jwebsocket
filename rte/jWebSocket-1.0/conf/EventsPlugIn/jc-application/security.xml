@@ -27,7 +27,8 @@ http://www.springframework.org/schema/security/spring-security-3.0.3.xsd">
 	<authentication-manager>
 		<authentication-provider>
 			<user-service>
-				<user name="admin" password="2012" authorities="USER, ADMIN" />
+				<user name="alex" password="jwebsocket2012" authorities="USER, ADMIN" />
+				<user name="marta" password="jws+nfc" authorities="USER, ADMIN" />
 			</user-service>
 		</authentication-provider>
 	</authentication-manager>

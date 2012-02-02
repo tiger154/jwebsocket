@@ -9,6 +9,7 @@
 		<property name="emEventsAndClientAPI">
 			<map>
 				<entry key="login" value="org.jwebsocket.plugins.jc.event.DoLogin"/>
+				<entry key="getUserInfo" value="org.jwebsocket.plugins.jc.event.GetUserInfo"/>
 				<entry key="terminalReady" value="org.jwebsocket.eventmodel.event.card.JcTerminalReady"/>
 				<entry key="terminalNotReady" value="org.jwebsocket.eventmodel.event.card.JcTerminalNotReady"/>
 			</map>
@@ -18,6 +19,17 @@
 				<bean parent="AbstractEventDefinition">
 					<property name="id" value="jc.login" />
 					<property name="ns" value="org.jwebsocket.plugins.jc.event.DoLogin" />
+				</bean>
+				<bean parent="AbstractEventDefinition">
+					<property name="id" value="jc.getuserinfo" />
+					<property name="ns" value="org.jwebsocket.plugins.jc.event.GetUserInfo" />
+					<property name="responseRequired" value="true" />
+					<property name="securityEnabled" value="true" />
+					<property name="roles">
+						<set>
+							<value>USER</value>
+						</set>
+					</property>
 				</bean>
 				<bean parent="AbstractEventDefinition">
 					<property name="id" value="jc.terminal.ready" />
