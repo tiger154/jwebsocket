@@ -29,6 +29,7 @@ import org.jwebsocket.eventmodel.s2c.TransactionContext;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.jc.commands.Select;
 import org.jwebsocket.plugins.jc.event.DoLogin;
+import org.jwebsocket.plugins.jc.event.GetUserInfo;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -41,6 +42,19 @@ public class AuthPlugIn extends JcPlugIn {
 	private byte[] mAppName = new byte[]{(byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x18};
 	private byte[] mMartaUser = Tools.hexStringToByteArray("E84D34"); //aResponse.getBytes()
 	private byte[] mAlexUser = Tools.hexStringToByteArray("EB7D34");  //aResponse.getBytes()
+
+	public void processEvent(GetUserInfo aEvent, C2SResponseEvent aResponseEvent) throws Exception {
+		String lUsername = aEvent.getConnector().getUsername();
+		if (lUsername.equals("alex")) {
+			aResponseEvent.getArgs().setString("firstname", "Alexander");
+			aResponseEvent.getArgs().setString("secondname", "Schulze");
+			aResponseEvent.getArgs().setString("address", "Reinhard-Neumann-Strabe 12 48149 Munster");
+		} else if (lUsername.equals("marta")) {
+			aResponseEvent.getArgs().setString("firstname", "Marta");
+			aResponseEvent.getArgs().setString("secondname", "Rodriguez Freire");
+			aResponseEvent.getArgs().setString("address", "26 Street, 2565, C. Habana Cuba");
+		}
+	}
 
 	public void processEvent(DoLogin aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		String lClient = aEvent.getConnector().getId();
