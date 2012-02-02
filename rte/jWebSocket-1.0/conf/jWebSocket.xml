@@ -1300,6 +1300,33 @@
 			</server-assignments>
 		</plugin>
 		
+		<plugin>
+			<name>org.jwebsocket.plugins.jmx.JMXPlugIn</name>
+			<ns>org.jwebsocket.plugins.jmx</ns>
+			<id>jws.jmx</id>
+			<jar>JMXPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="config_file">JMXPlugIn/jmxPluginConfig.xml</setting>
+				<setting key="beans_config">JMXPlugIn/PluginsConfigFiles/</setting>
+			</settings>
+		</plugin>
+    
+		<plugin>
+			<name>cu.uci.testjmx.plugins.TestJmxPlugIn</name>
+			<ns>cu.uci.testjmx.plugins.testjmxplugin</ns>
+			<id>jws.testjmxplugin</id>
+			<jar>jTestJMX-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="config_file">/home/lisdey/NetBeansProjects/testPlugins/jTestJMX/conf/beanConfig.xml</setting>
+			</settings>
+		</plugin>
+    
 	</plugins>
 
 	<!-- filters to be instantiated for jWebSocket -->

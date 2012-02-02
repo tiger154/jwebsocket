@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+      "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="TestJmxPlugIn" class="org.jwebsocket.plugins.jmx.configDefinition.JMXPluginDefinition">
+       <property name="pluginId" value="jws.testjmxplugin"/>
+       <property name="serverId" value="ts0"/>
+       <property name="description" value="Probando la carga del xml"/>
+       <property name="className" value="cu.uci.testjmx.plugins.TestJmxPlugIn"/>
+       <property name="jarName" value="jTestJMX-1.0.jar"/>
+       <property name="attributes">
+           <set>
+               <bean id="messageAttribute" class="org.jwebsocket.plugins.jmx.configDefinition.AttributeDefinition">
+                   <property name="name" value="message"/>
+                   <property name="type" value="java.lang.String"/>
+                   <property name="readable" value="true"/>
+                   <property name="writable" value="true"/>
+                   <property name="description" value="Un atributo de prueba"/>
+                   <property name="isBoolean" value="false"/>
+               </bean>
+           </set>
+       </property>
+       <property name="operations">
+           <set>
+               <bean id="allConnectors" class="org.jwebsocket.plugins.jmx.configDefinition.OperationDefinition">
+                   <property name="name" value="allConnectors"/>
+                   <property name="impact" value="INFO"/>
+                   <property name="returnValueType" value="java.lang.Integer"/>
+                   <property name="description" value="Una operacion de prueba"/>
+               </bean>
+               <!--<bean id="setMessage" class="org.jwebsocket.plugins.jmx.configDefinition.OperationDefinition">
+                   <property name="name" value="setMessage"/>
+                   <property name="impact" value="ACTION"/>
+                   <property name="returnValueType" value="void"/>
+                   <property name="description" value="set message"/>
+                   <property name="parameters">
+					<set>
+						<bean id="setParameters" class="org.jwebsocket.plugins.jmx.configDefinition.ParameterDefinition">
+							<property name ="name" value="message"/>
+							<property name ="description" value="un mensaje"/>
+							<property name ="type" value="java.lang.String"/>
+						</bean>
+					</set>
+                   </property>
+               </bean>-->
+           </set>
+       </property>
+       <property name="constructors">
+			<set>
+               <bean id="testConstructor" class="org.jwebsocket.plugins.jmx.configDefinition.ConstructorDefinition">
+					<property name="name" value="TestJmxPlugIn"/>
+					<property name="description" value="Constructor de la clase"/> 
+               </bean>
+           </set>
+       </property>
+       <!--<property name="notifications">
+			<set>
+               <bean id="setNotification" class="org.jwebsocket.plugins.jmx.configDefinition.NotificationDefinition">
+                   <property name="types">
+                       <set>
+                           <value>testJmx.set.message</value>
+                       </set>    
+                   </property>
+                   <property name="name" value="MessageSet"/>
+                   <property name="description" value="Notification when the getMessage method is invoke"/>
+               </bean>
+           </set>
+       </property>-->
+    </bean>    
+</beans>

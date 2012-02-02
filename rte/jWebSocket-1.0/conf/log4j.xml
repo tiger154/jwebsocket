@@ -96,7 +96,17 @@
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd | HH:mm:ss} %m%n" />
 		</layout>
 	</appender>
-
+	<appender name="jmxLog" class="org.apache.log4j.RollingFileAppender">
+		<!-- Attention, currently only ${JWEBSOCKET_HOME} is supported as env var -->
+		<param name="file" value="${JWEBSOCKET_HOME}/logs/jmxLog.log" />
+		<param name="MaxFileSize" value="60KB"/>
+		<param name="datePattern" value="'.'yyyy-MM-dd"/>
+		<param name="threshold" value="DEBUG"/>
+		<param name="append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p - %C{1}: %m%n" />
+		</layout>
+	</appender>
 
 	<logger name="org.springframework" additivity="false">
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
@@ -119,16 +129,25 @@
 		<!--  select one of the above declared appenders -->
 		<appender-ref ref="adminLog"/>
 	</logger>
+	
+	<logger name="org.jwebsocket.plugins.jmx" additivity="false">
+		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
+		<level value="DEBUG"/>
+		<!--  select one of the above declared appenders -->
+		<appender-ref ref="jmxLog"/>
+		<appender-ref ref="developmentLog"/>
+	</logger>
 
 	<root>
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
-		<priority value="debug" />
+		<priority value="DEBUG" />
 		<!-- select one of the above declared appenders -->
 		<!-- for automated tests: -->
 		<!-- <appender-ref ref="testLog" /> -->
 		<!-- during the development -->
 		<appender-ref ref="developmentLog"/>
 		<appender-ref ref="adminLog" />
+		<appender-ref ref="jmxLog"/>
 	</root>
 
 </log4j:configuration>

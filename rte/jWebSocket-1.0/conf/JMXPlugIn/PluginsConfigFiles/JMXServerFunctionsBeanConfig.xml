@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+      "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="JMXServerFunctions" class="org.jwebsocket.plugins.jmx.configDefinition.JMXDefinition">
+       <property name="description" value="This MBean allow to execute some important functionalities of the jWebSocket server."/>
+       <property name="className" value="org.jwebsocket.plugins.jmx.JMXServerFunctions"/>
+       <property name="jarName" value="JMXPlugIn-1.0.jar"/>
+       <property name="operations">
+           <set>
+               <bean id="allConnectors" class="org.jwebsocket.plugins.jmx.configDefinition.OperationDefinition">
+                   <property name="name" value="allConnectors"/>
+                   <property name="impact" value="INFO"/>
+                   <property name="returnValueType" value="javax.management.openmbean.CompositeData"/>
+                   <property name="description" value="This operation shows the main data of all connectors from a jWebSocket server."/>
+                   <property name="parameters">
+					<set>
+						<bean id="serverIdParameter" class="org.jwebsocket.plugins.jmx.configDefinition.ParameterDefinition">
+							<property name ="name" value="serverId"/>
+							<property name ="description" value="The Id of the server to show all connections."/>
+							<property name ="type" value="java.lang.String"/>
+						</bean>
+					</set>
+                   </property>
+               </bean>
+           </set>
+       </property>
+       <property name="constructors">
+			<set>
+               <bean id="JmxServerConstructor" class="org.jwebsocket.plugins.jmx.configDefinition.ConstructorDefinition">
+					<property name="name" value="JMXServerFunctions"/>
+					<property name="description" value="The default constructor of the JMXServerFunctions class."/>
+               </bean>
+           </set>
+       </property>
+    </bean>    
+</beans>
+	<!--<property name="parameters">
+					<set>
+						<bean id="messageParameters" class="org.jwebsocket.plugins.jmx.configDefinition.ConstuctorParameterDefinition"/>
+					</set>
+                   </property>-->
