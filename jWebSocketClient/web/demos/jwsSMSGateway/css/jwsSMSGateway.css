@@ -1,0 +1,158 @@
+/*-------------- DEMO_DESCRIPTION ------------*/
+#demo_box_description{
+    margin-top: 10px;
+    padding: 5px 15px 5px 15px;
+    font-size: 10pt;
+}
+/*-------------- DEMO_DESCRIPTION ------------*/
+
+
+/*---------------- DEMO_SCENARIO -------------*/
+#demo_box_scenario{
+    float: left;
+    margin: 10px; 
+    padding: 5px;
+}
+
+#generalDiv {
+    background: #EDF6E2;
+    width: 754px;
+    height: 700px;
+    -moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+}
+h1#header{
+	font-family: Arial, Helvetica, sans-serif,21pts;
+	background-color: #367CBB;
+	color: #ffffff;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border: 1px solid #c8c8c8;
+	padding: 10px 10px 10px 10px;
+    width: 733px;
+}
+.contentDiv {
+    background-color: #E8E8E8;
+    -moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border: 1px solid #c8c8c8;
+    padding: 10px 10px 10px 10px;
+}
+#jCaptchaDiv {
+    width: 255px;
+    height: 130px;
+    float: left;
+}
+#messageDiv {
+    width: 400px;
+    height: 240px;
+    float: left;
+    margin: 0 6px 0 10px;
+}
+p.pText {
+	font-family: Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    float: left;    
+    margin: 10px 0 0 10px;
+}
+
+.texts{
+    -webkit-box-shadow:none !important;
+}
+
+.update {
+    background: transparent url(images/Renew_icon.png) no-repeat;
+    width: 28px;
+    height: 25px;
+    cursor: pointer;
+    float: left;
+    margin: 30px 0 10px 0;
+}
+
+#imgCaptcha {
+    width: 200px;
+    background-color: #ffffff;
+    height: 52px;
+    -moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+    float: left;
+    margin: 0 0 10px 0;
+    border: 1px solid #c8c8c8;
+}
+
+#img {
+    width: 180px;
+    height: 45px;
+    -moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+    float: left;
+    border: none;
+}
+
+#wordType{
+    float: left;
+    padding: 0px !important;
+    margin: 0px !important;
+    width: 100%;
+}
+#img {
+    background-color: #ffffff;
+    float: left;
+    -moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+    border: 1px solid #c8c8c8;
+    height: 60px;
+    width: 200px;
+}
+#captchaText {
+    float: left;
+}
+
+
+#description {
+    width: 750px;
+    height: 20px; 
+    margin: 20px 0 20px 12px;
+}
+.inputText {
+    -moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+    border: 1px solid #c8c8c8;
+    height: 25px;
+}
+#phoneNumberInput {
+    float: right;
+    width: 295px
+}
+#phone {
+    float: left;
+    margin: 5px 0 0 0;
+}
+#from {
+    margin-top: 35px;
+}
+#message {
+    margin-top: 6px;
+}
+#fromInput {
+    float: right;
+    width: 295px;
+    margin: -30px 0 0 0;
+}
+#smsInput {
+    float: right;
+    width: 295px;
+}
+#smsType {
+    float: left;
+    margin: 20px 5px 0 0;
+}
+.radio {
+    float: left;
+}
+#radioDiv {
+    float: right;
+}
+#basic,#gold, #direct {
+    margin-top: 22px;  
+}

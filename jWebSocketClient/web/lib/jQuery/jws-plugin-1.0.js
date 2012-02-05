@@ -13,23 +13,25 @@
 		if(jws.browserSupportsWebSockets()){
 			var url = jwsServerURL || jws.getDefaultServerURL();
             
-			if(aTokenClient)
+			if(aTokenClient){
 				$.jws.aTokenClient = aTokenClient;
-			else
+			}
+			else{
 				$.jws.aTokenClient = new jws.jWebSocketJSONClient();
-            
-			$.jws.aTokenClient.open(url, {
-				OnOpen: function(aToken){
-					$.jws.trigger('open', aToken);
-					$.jws.aTokenClient.addPlugIn($.jws);
-				},
-				OnClose: function(){
-					$.jws.trigger('close');
-				},
-				OnTimeout: function(){
-					$.jws.trigger('timeout');
-				}
-			});
+				$.jws.aTokenClient.open(url, {
+					OnOpen: function(aToken){
+						$.jws.trigger('open', aToken);
+						$.jws.aTokenClient.addPlugIn($.jws);
+					},
+					OnClose: function(){
+						$.jws.trigger('close');
+					},
+					OnTimeout: function(){
+						$.jws.trigger('timeout');
+					}
+				});
+			}
+			
 			if(timeout)
 				this.setDefaultTimeOut(timeout);
 		}
@@ -54,24 +56,17 @@
 			if(options.timeout)
 				lTimeout = options.timeout;
                         
-		this.aTokenClient.sendToken( lToken, {
+		this.aTokenClient.sendToken(lToken, {
 			timeout: lTimeout,
 			callbacks: callbacks,
-			OnResponse: function( aToken ) {
-				if( callbacks != undefined ) { 
-					if (aToken .code == -1
-						&& callbacks.failure)
-						return callbacks.failure(aToken );
-					else if (aToken .code == 0
-						&& callbacks.success )
-						return callbacks.success(aToken );
-				}	
+			OnResponse: function(token){
+				if (token.code == -1)
+					return callbacks.failure(token);
+				else if (token.code == 0)
+					return callbacks.success(token);
 			},
 			OnTimeOut: function(){
-				if( callbacks != undefined
-					&& callbacks.timeout) { 
-					return callbacks.timeout();
-				}
+				return callbacks.timeout();
 			}
 		});
 	};
