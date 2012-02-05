@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket Native SQL Access for JDBC Plug-In
+//	jWebSocket - jWebSocket Spring Bean Factory
 //  Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
@@ -75,7 +75,7 @@ public class JWebSocketBeanFactory {
 		} else {
 			lXmlReader = new XmlBeanDefinitionReader(getInstance());
 		}
-		
+
 		lXmlReader.setBeanClassLoader(aBeanClassLoader);
 		lXmlReader.loadBeanDefinitions(new FileSystemResource(aPath));
 	}
