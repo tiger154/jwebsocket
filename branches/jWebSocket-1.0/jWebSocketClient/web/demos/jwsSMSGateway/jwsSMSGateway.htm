@@ -52,20 +52,20 @@
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
-        
+
         <!--  MY WIDGETS   -->
         <script type="text/javascript" src='js/jwsSMSGateway.js'></script>
-        
+
         <!--  MAIN JAVASCRIPT FILE   -->
         <script type="text/javascript" src='js/init.js'></script>
-        
-        
+
+
     </head>
     <body>
         <div id="demo_box">
             <!--       DEMO_HEADER       -->
             <div id="demo_box_header">
-                <h1>Hello World</h1>
+                <h1>SMS Gateway</h1>
                 <div id="demo_box_header_login">
                     <div id="logoff_area">
                         <div id="user_info">
@@ -130,7 +130,7 @@
                         <p id="wordType">Type the words:</p>
                         <input type="text" id="captchaText" class="texts"/>
                         <!--<input type="button" id="send" value="send"/>-->
-                       
+
                         <div id="submit" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
                              onmousedown="this.className='button onmousedown'" 
                              onmouseup="this.className='button onmouseup'" 
@@ -140,25 +140,25 @@
                             <div class="c">Submit</div>
                             <div class="r"></div>
                         </div>
-                        
+
                     </div>
                     <div id="messageDiv" class="contentDiv box">
 
                         <p id="phone"> Phone number </p>
-                        <input type="text" id="phoneNumberInput" class="texts"/>
+                        <input type="text" id="phoneNumberInput" class="texts" value="+49 160 90915843"/>
                         <p id="from"> From </p>
-                        <input type="text" id="fromInput" class="texts"/>
+                        <input type="text" id="fromInput" class="texts" value="jWebSocket"/>
                         <p id="message"> Text message </p>
-                        <textarea id="smsInput" NAME="sms" ROWS="5" COLS="30" class="texts"></textarea>
+                        <textarea id="smsInput" NAME="sms" ROWS="5" COLS="30" class="texts">This is the default message, please overwrite...</textarea>
 
                         <div id="radioDiv">
-                            <p id="smsType">Choose SMS type:</p>
+                            <p id="smsType">Select SMS type:</p>
                             <input type="radio" value="gold" name="messageRadio" class="radio" id="gold"/><p class="radio">Gold</p>
                             <input type="radio"  value="direct" name="messageRadio" class="radio" id="direct"/><p class="radio">Direct</p>
-                            <input type="radio" value="basic" name="messageRadio" class="radio" id="basic"/><p class="radio">Basic</p>
-                       
+                            <input type="radio" value="basic" name="messageRadio" checked="checked" class="radio" id="basic"/><p class="radio">Basic</p>
+
                         </div>
-                          <div id="send_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+						<div id="send_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
                              onmousedown="this.className='button onmousedown'" 
                              onmouseup="this.className='button onmouseup'" 
                              onmouseout="this.className='button onmouseout'" 
@@ -169,7 +169,7 @@
                         </div>
 
                     </div>
-                      <!--       LOG BOX           -->
+					<!--       LOG BOX           -->
                     <div id="log_box" class="box">
                         <div id="log_box_header">
                             <div id="show_hide_log" class="hide">Hide Log</div>
