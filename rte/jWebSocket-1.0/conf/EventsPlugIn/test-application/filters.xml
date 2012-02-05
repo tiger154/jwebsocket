@@ -4,23 +4,26 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
- 
 	<!--  Filters-->
 	<bean abstract="true" id="AbstractFilter" scope="singleton"
-	init-method="initialize" destroy-method="shutdown">
+		init-method="initialize" destroy-method="shutdown">
 		<property name="em" ref="EventModel" />
 	</bean>
+	
 	<bean id="RouterFilter" class="org.jwebsocket.eventmodel.filter.router.RouterFilter" parent="AbstractFilter">
 		<property name="id" value="router" />
 	</bean>
+	
 	<bean id="SecurityFilter" class="org.jwebsocket.eventmodel.filter.security.SecurityFilter" parent="AbstractFilter">
 		<property name="id" value="security" />
 	</bean>
+	
 	<bean id="ValidatorFilter" class="org.jwebsocket.eventmodel.filter.validator.ValidatorFilter" parent="AbstractFilter">
 		<property name="id" value="validator" />
 		<property name="types" ref="TypesMap" />
 		<property name="validateResponse" value="false" />
 	</bean>
+	
 	<bean id="CacheFilter" class="org.jwebsocket.eventmodel.filter.cache.CacheFilter" parent="AbstractFilter">
 		<property name="id" value="cache" />
 		<property name="cacheBuilder">
@@ -30,25 +33,38 @@
 				<property name="collectionName" value="cache_filter_entries" />
 			</bean>
 		</property>
-		<property name="events">
+		
+		<property name="eventClasses">
 			<set>
+				<!-- type here the names of the classes as string -->
+				<value>org.jwebsocket.eventmodel.event.filter.ResponseFromCache</value>
+<!--
+				<bean class="org.jwebsocket.eventmodel.event.filter.ResponseFromCache" >
+				</bean>
                 <bean class="java.lang.Class" factory-method="forName">
-                    <constructor-arg value="org.jwebsocket.eventmodel.event.filter.ResponseFromCache"/>
+                   <constructor-arg value="org.jwebsocket.eventmodel.event.filter.ResponseFromCache"/>
                 </bean>
-<!--				<value>org.jwebsocket.eventmodel.event.filter.ResponseFromCache</value>-->
+-->				
 			</set>
 		</property>
-		<property name="emEvents">
+
+		<property name="emEventClasses">
 			<set>
 				<value>org.jwebsocket.eventmodel.event.filter.BeforeRouteResponseToken</value>
+			</set>			
+<!--
+				<bean class="org.jwebsocket.eventmodel.event.filter.BeforeRouteResponseToken" >
+					<constructor-arg value="requestId"/>
+				</bean>			
 			</set>
+-->				
 		</property>
+	
 	</bean>
+	
 	<bean id="AnnotationFilter" class="org.jwebsocket.eventmodel.filter.annotation.AnnotationFilter" parent="AbstractFilter">
 		<property name="id" value="annotation" />
 	</bean>
-	
-	
 	
 	<import resource="app-filters/importer.xml" />
 </beans>

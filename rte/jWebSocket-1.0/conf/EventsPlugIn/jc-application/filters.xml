@@ -30,12 +30,12 @@
 				<property name="collectionName" value="cache_filter_entries" />
 			</bean>
 		</property>
-		<property name="events">
+		<property name="eventClasses">
 			<set>
 				<value>org.jwebsocket.eventmodel.event.filter.ResponseFromCache</value>
 			</set>
 		</property>
-		<property name="emEvents">
+		<property name="emEventClasses">
 			<set>
 				<value>org.jwebsocket.eventmodel.event.filter.BeforeRouteResponseToken</value>
 			</set>

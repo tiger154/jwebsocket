@@ -146,7 +146,6 @@
 		<!-- <appender-ref ref="testLog" /> -->
 		<!-- during the development -->
 		<appender-ref ref="developmentLog"/>
-		<appender-ref ref="adminLog" />
 		<appender-ref ref="jmxLog"/>
 	</root>
 

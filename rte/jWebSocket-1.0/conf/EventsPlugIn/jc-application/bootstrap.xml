@@ -4,16 +4,16 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-  <!--  Event Definitions-->
+	<!--  Event Definitions-->
 	<import resource="event_definitions.xml" />
 	<import resource="filters.xml" />
 	<import resource="plugins.xml" />
 	<import resource="security.xml" />
 
-  <!-- Core -->
+	<!-- Core -->
 	<bean id="EventModel" class="org.jwebsocket.eventmodel.core.EventModel"
-	init-method="initialize" destroy-method="shutdown" scope="singleton"
-	depends-on="S2CEventNotificationHandler">
+		init-method="initialize" destroy-method="shutdown" scope="singleton"
+		depends-on="S2CEventNotificationHandler">
 	
 		<!--  Application namespace (required) -->
 		<constructor-arg value="jc"/>

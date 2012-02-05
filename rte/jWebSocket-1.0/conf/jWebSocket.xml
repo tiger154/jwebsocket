@@ -49,6 +49,11 @@
 			<description>Oracle JDBC Driver 10.2.0.4 ro access Oracle SQL Databases from jWebSocket</description>
 		</library>
 		-->
+		<library>
+			<id>RXTX Serial IO</id>
+			<url>${JWEBSOCKET_HOME}/libs/rxtx-2.1.7.jar</url>
+			<description>Serial IO library for Arduino</description>
+		</library>
 	</libraries>
 
 	<!-- jWebSocket logging configuration -->
@@ -1069,6 +1074,24 @@
 			</settings>
 		</plugin>
 
+		<!-- plug-in to send mails via WebSockets -->
+		<plugin>
+			<name>org.jwebsocket.plugins.sms.SMSPlugIn</name>
+			<id>jws.sms</id>
+			<ns>org.jwebsocket.plugins.sms</ns>
+			<jar>jWebSocketSMSPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<!-- CAUTION! SECURITY ADVISE!
+					 please take care that the following settings do not get
+					 disclosed to anybody. Publishing this data will allow
+					 others to use your send and receive mails on behalf of you!
+				-->
+			</settings>
+		</plugin>
+
 		<!-- plug-in to access the streaming twitter API -->
 		<plugin>
 			<name>org.jwebsocket.plugins.twitter.TwitterPlugIn</name>
@@ -1279,7 +1302,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		
+
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
 			<ns>jc</ns>
@@ -1299,7 +1322,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		
+
 		<plugin>
 			<name>org.jwebsocket.plugins.jmx.JMXPlugIn</name>
 			<ns>org.jwebsocket.plugins.jmx</ns>

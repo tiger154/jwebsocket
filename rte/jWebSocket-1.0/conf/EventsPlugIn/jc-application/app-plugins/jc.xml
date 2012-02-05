@@ -6,7 +6,7 @@
 
 	<bean id="JcAuthPlugIn" class="org.jwebsocket.plugins.jc.AuthPlugIn" parent="AbstractPlugIn">
 		<property name="id" value="jc.auth" />
-		<property name="emEventsAndClientAPI">
+		<property name="emEventClassesAndClientAPI">
 			<map>
 				<entry key="login" value="org.jwebsocket.plugins.jc.event.DoLogin"/>
 				<entry key="getUserInfo" value="org.jwebsocket.plugins.jc.event.GetUserInfo"/>

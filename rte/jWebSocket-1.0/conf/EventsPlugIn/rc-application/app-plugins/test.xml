@@ -6,7 +6,7 @@
 
 	<bean id="TestPlugIn" class="org.jwebsocket.eventmodel.plugin.test.TestPlugIn" parent="AbstractPlugIn">
 		<property name="id" value="test" />
-		<property name="emEventsAndClientAPI">
+		<property name="emEventClassesAndClientAPI">
 			<map>
 				<entry key="getHashCode" value="org.jwebsocket.eventmodel.event.test.GetHashCode"/>
 				<entry key="getEventsInfo" value="org.jwebsocket.eventmodel.event.test.GetEventsInfo"/>
