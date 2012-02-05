@@ -117,8 +117,6 @@
     background: #E4E4E4;
 }
 
-
-
 .functional_box_content_text{
     overflow: auto;
     height: 60px;
@@ -132,13 +130,14 @@
     height: 30px;
     margin-top: 5px;
     padding: 5px 5px 5px 20px;
+	text-align: center;
 }
 
-.functional_box_content_buttons div{
+.functional_box_content_buttons > div{
     display: inline;
     height: 25px;
     float:left;
-    
+    margin-left: 5px;
     cursor: pointer;
 }
 

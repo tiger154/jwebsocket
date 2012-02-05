@@ -6,19 +6,33 @@ $.widget("jws.actions",{
         w.actions.eFunctionsArea = w.actions.element.find("#function_area");
         w.actions.eTokensArea = w.actions.element.find("#token_area");
         w.actions.eFilesArea = w.actions.element.find("#file_area");
-        
-        //getting the buttons
+		
+        //--------------- BUTTONS --------------------------------
+        //Buttons
         w.actions.eBtnBroadcast = w.actions.element.find("#message_box_broadcast_btn");
+		
+		
+		
+		//Tokens buttons
         w.actions.eBtnComplexObject = w.actions.element.find("#complex_object_btn");
         w.actions.eBtnGetTime = w.actions.element.find("#get_time_btn");
         w.actions.eBtnTokenizable = w.actions.element.find("#tokenizable_btn");
+		
+		//Functions buttons 
+        w.actions.eBtnListener	= w.actions.element.find("#listener_btn");
+        w.actions.eBtnRPC		= w.actions.element.find("#rpc_btn");
+        w.actions.eBtnSelect	= w.actions.element.find("#select_btn");
+		
+		//File buttons
         w.actions.eBtnSaveFile = w.actions.element.find("#save_file_btn");
         w.actions.eBtnFileList = w.actions.element.find("#file_list_btn");
         w.actions.eBtnLoadFile = w.actions.element.find("#load_file_btn");
+		
         w.actions.eBtnTokens = w.actions.element.find("#tokens");
         w.actions.eBtnFunctions = w.actions.element.find("#functions");
         w.actions.eBtnFiles = w.actions.element.find("#files");
-        
+        //--------------- BUTTONS --------------------------------
+		
         w.actions.eFunctionsArea.hide();
         w.actions.eFilesArea.hide();
         w.actions.registerEvents();
@@ -27,9 +41,18 @@ $.widget("jws.actions",{
     registerEvents: function(){
         //registering events
         w.actions.eBtnBroadcast.click(w.actions.broadcast);
+		
+		//Tokens
         w.actions.eBtnComplexObject.click(w.actions.exchangeComplexObjects);
         w.actions.eBtnGetTime.click(w.actions.sampleGetTime);
         w.actions.eBtnTokenizable.click(w.actions.sampleTokenizable);
+		
+        //Functions
+		w.actions.eBtnListener.click(w.actions.sampleListener);
+        w.actions.eBtnRPC.click(w.actions.sampleRPC);
+        w.actions.eBtnSelect.click(w.actions.sampleSelect);
+		
+		//Files
         w.actions.eBtnSaveFile.click(w.actions.saveFile);
         w.actions.eBtnFileList.click(w.actions.getFilelist);
         w.actions.eBtnLoadFile.click(w.actions.loadFile);

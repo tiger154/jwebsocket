@@ -30,9 +30,9 @@
         <!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsHelloWorld.css"/>
+		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
 
         <!-- JQUERY DEPENDENCIES -->
-        <link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
         <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
 
@@ -55,9 +55,11 @@
 
         <!--  PRIVATE WIDGETS  -->
         <script type="text/javascript" src='js/wActions.js'></script>
-
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+		
         <!--  MAIN JAVASCRIPT FILE   -->
         <script type="text/javascript" src='js/init.js'></script>
+
     </head>
     <body>
         <div id="demo_box">
@@ -114,14 +116,13 @@
                     <p>This little "Hello World" demonstrates how to easily logon to the jWebSocket Server, broadcast a message and logoff again. Please use the browser's show frame source function to see the entire source code of this page.</p>
                 </div>
 
-
                 <!--       SCENARIO          -->
                 <div id="scenario_container" class="box">
                     <!--    MESSAGE_BOX      -->
                     <div id="message_box" class="box">
                         <div id="message_box_header">Message</div>
                         <textarea id="message_box_text">Type your message...</textarea>
-                        <div id="message_box_broadcast_btn" class="message_box_broadcast_btn">
+                        <div id="message_box_broadcast_btn" class="message_box_broadcast_btn" title="This is a simple Broadcast button, here you can find blah blah blah">
                             <div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
                                  onmousedown="this.className='button onmousedown'" 
                                  onmouseup="this.className='button onmouseup'" 
@@ -132,9 +133,7 @@
                                 <div class="r"></div>
                             </div>
                         </div>
-
                     </div>
-
 
                     <!--    FUNCTIONAL_BOX   -->
                     <div id="functional_box" class="box">
@@ -151,13 +150,14 @@
                                     and native.<br/>
                                     Place your mouse on the buttons below to get more details.
                                 </div>
-                                <div class="functional_box_content_buttons">
+                                <div class="functional_box_content_buttons" style="padding-left: 30px;">
                                     <div class="complex_object_btn">
                                         <div id="complex_object_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
                                              onmousedown="this.className='button onmousedown'" 
                                              onmouseup="this.className='button onmouseup'" 
                                              onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'">
+                                             onclick="this.className='button onmouseover'"
+											 title="Shows how to pass an arbitrary complex and hierarchical data object to the client.">
                                             <div class="l"></div>
                                             <div class="c">Complex Object</div>
                                             <div class="r"></div>
@@ -168,7 +168,8 @@
                                              onmousedown="this.className='button onmousedown'" 
                                              onmouseup="this.className='button onmouseup'" 
                                              onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'">
+                                             onclick="this.className='button onmouseover'"
+											 title="Shows how to simply pass the current server date and time token to the client.">
                                             <div class="l"></div>
                                             <div class="c">Get time</div>
                                             <div class="r"></div>
@@ -179,7 +180,8 @@
                                              onmousedown="this.className='button onmousedown'" 
                                              onmouseup="this.className='button onmouseup'" 
                                              onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'">
+                                             onclick="this.className='button onmouseover'"
+											 title="Shows how to serialize any Java object into a token and pass it to the client.">
                                             <div class="l"></div>
                                             <div class="c">Tokenizable</div>
                                             <div class="r"></div>
@@ -189,22 +191,82 @@
                             </div> 
                             <div id="function_area">
                                 <div class="functional_box_content_text">
-                                    Functions description
+                                    jWebSocket supports data exchange as well as server side listeners and event 
+									handlers, bidirectional remote procedure calls and a secure access to SQL and 
+									NoSQL databases.<br/>
+                                    Place your mouse on the buttons below to get more details.
                                 </div>
-                                <div class="functional_box_content_buttons">
-                                    <div id="complex_object_btn1"></div>
-                                    <div id="get_time_btn1"></div>
-                                    <div id="tokenizable_btn1"></div>
+                                <div class="functional_box_content_buttons" style="padding-left: 80px;">
+									<div id="listener_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+										 onmousedown="this.className='button onmousedown'" 
+										 onmouseup="this.className='button onmouseup'" 
+										 onmouseout="this.className='button onmouseout'" 
+										 onclick="this.className='button onmouseover'"
+										 title="Shows how to pass an arbitrary complex and hierarchical data object to the client.">
+										<div class="l"></div>
+										<div class="c">Listener</div>
+										<div class="r"></div>
+									</div>
+                                    <div id="rpc_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+										 onmousedown="this.className='button onmousedown'" 
+										 onmouseup="this.className='button onmouseup'" 
+										 onmouseout="this.className='button onmouseout'" 
+										 onclick="this.className='button onmouseover'"
+										 title="Shows how to simply pass the current server date and time token to the client.">
+										<div class="l"></div>
+										<div class="c">RPC</div>
+										<div class="r"></div>
+									</div>
+                                    <div id="select_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+										 onmousedown="this.className='button onmousedown'" 
+										 onmouseup="this.className='button onmouseup'" 
+										 onmouseout="this.className='button onmouseout'" 
+										 onclick="this.className='button onmouseover'"
+										 title="Shows how to serialize any Java object into a token and pass it to the client.">
+										<div class="l"></div>
+										<div class="c">Select</div>
+										<div class="r"></div>
+									</div>
                                 </div>
                             </div> 
                             <div id="file_area">
                                 <div class="functional_box_content_text">
-                                    Here you should put the files description
+									jWebSocket  supports file access and file sharing. You can easily save and load
+									files to and from the server and load public or protected private directory content.
+									<br/>
+                                    Place your mouse on the buttons below to get more details.
                                 </div>
-                                <div class="functional_box_content_buttons">
-                                    <div id="save_file_btn"></div>
-                                    <div id="file_list_btn"></div>
-                                    <div id="load_file_btn"></div>
+                                <div class="functional_box_content_buttons" style="padding-left: 70px;">
+									<div id="save_file_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+										 onmousedown="this.className='button onmousedown'" 
+										 onmouseup="this.className='button onmouseup'" 
+										 onmouseout="this.className='button onmouseout'" 
+										 onclick="this.className='button onmouseover'"
+										 title="Shows how to save a file in the public storage of the WebSocket server.">
+										<div class="l"></div>
+										<div class="c">Save File</div>
+										<div class="r"></div>
+									</div>
+									<div id="file_list_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+										 onmousedown="this.className='button onmousedown'" 
+										 onmouseup="this.className='button onmouseup'" 
+										 onmouseout="this.className='button onmouseout'" 
+										 onclick="this.className='button onmouseover'"
+										 title="Shows how to load a file from the public storage of the WebSocket server.">
+										<div class="l"></div>
+										<div class="c">Load File</div>
+										<div class="r"></div>
+									</div>
+									<div id="load_file_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+										 onmousedown="this.className='button onmousedown'" 
+										 onmouseup="this.className='button onmouseup'" 
+										 onmouseout="this.className='button onmouseout'" 
+										 onclick="this.className='button onmouseover'"
+										 title="Shows how to list all available files in the public storage of the WebSocket server.">
+										<div class="l"></div>
+										<div class="c">Load File</div>
+										<div class="r"></div>
+									</div>
                                 </div>
                             </div> 
                         </div>
@@ -229,7 +291,7 @@
                          onmouseout="this.className='button onmouseout'" 
                          onclick="this.className='button onmouseover'">
                         <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
+                        <div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
                         <div class="r_download"></div>
                     </div>
                 </div>
