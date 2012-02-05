@@ -34,6 +34,7 @@ import org.jwebsocket.config.xml.FilterConfig;
 import org.jwebsocket.config.xml.LibraryConfig;
 import org.jwebsocket.config.xml.PluginConfig;
 import org.jwebsocket.config.xml.ServerConfig;
+import org.jwebsocket.util.Tools;
 
 /**
  * Intialize the engine, servers and plugins based on jWebSocket.xml
@@ -43,7 +44,7 @@ import org.jwebsocket.config.xml.ServerConfig;
  */
 public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitializer {
 
-	private final JWebSocketJarClassLoader mClassLoader = new JWebSocketJarClassLoader();
+	private final static JWebSocketJarClassLoader mClassLoader = new JWebSocketJarClassLoader();
 
 	/**
 	 * private constructor
@@ -53,6 +54,10 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 
 		//Saving the initializer class loader reference
 		JWebSocketFactory.setClassLoader(mClassLoader);
+	}
+
+	public static ClassLoader getClassLoader() {
+		return mClassLoader;
 	}
 
 	/**
@@ -75,7 +80,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 						mLog.debug("Adding external library '" + lLibConf.getId()
 								+ "' from '" + lLibConf.getURL() + "'...");
 					}
-					mClassLoader.addFile(lLibConf.getURL());
+					mClassLoader.addFile(Tools.expandEnvVars(lLibConf.getURL()));
 					ClassPathUpdater.add(new File(lLibConf.getURL()));
 				}
 			} catch (Exception ex) {

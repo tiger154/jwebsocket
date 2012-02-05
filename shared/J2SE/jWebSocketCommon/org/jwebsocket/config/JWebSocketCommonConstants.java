@@ -29,7 +29,7 @@ public class JWebSocketCommonConstants {
 	 * jWebSocket copyright string - MAY NOT BE CHANGED due to GNU LGPL v3.0 license!
 	 * Please ask for conditions of a commercial license on demand.
 	 */
-	public static final String COPYRIGHT = "(c) 2010, 2011 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath";
+	public static final String COPYRIGHT = "(c) 2010-2012 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath";
 	/**
 	 * jWebSocket license string - MAY NOT BE CHANGED due to GNU LGPL v3.0 license!
 	 * Please ask for conditions of a commercial license on demand.
