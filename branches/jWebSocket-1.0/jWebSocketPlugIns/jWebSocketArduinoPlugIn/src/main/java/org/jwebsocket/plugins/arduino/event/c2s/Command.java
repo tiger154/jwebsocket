@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.arduino.event.c2s;
 
 import org.jwebsocket.eventmodel.event.C2SEvent;
@@ -22,9 +21,9 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  *
  * @author Dariel Noa (dnoa@hab.uci.cu, UCI, Artemisa)
  */
-public class Command extends C2SEvent {   
-    
-    public Integer getCmd() {
-        return getArgs().getInteger("cmd");
-    }
+public class Command extends C2SEvent {
+
+	public Integer getCmd() {
+		return getArgs().getInteger("cmd");
+	}
 }

@@ -24,36 +24,36 @@ import org.jwebsocket.token.Token;
  */
 public class S2CJoystickPosition extends S2CEvent {
 
-    private Integer mX;
-    private Integer mY;
+	private Integer mX;
+	private Integer mY;
 
-    public S2CJoystickPosition(Integer aX, Integer aY) {
-        super();
-        this.setId("joystickPosition");
-        this.mX = aX;
-        this.mY = aY;
-    }
+	public S2CJoystickPosition(Integer aX, Integer aY) {
+		super();
+		this.setId("joystickPosition");
+		this.mX = aX;
+		this.mY = aY;
+	}
 
-    public Integer getmX() {
-        return mX;
-    }
+	public Integer getmX() {
+		return mX;
+	}
 
-    public void setmX(Integer mX) {
-        this.mX = mX;
-    }
+	public void setmX(Integer mX) {
+		this.mX = mX;
+	}
 
-    public Integer getmY() {
-        return mY;
-    }
+	public Integer getmY() {
+		return mY;
+	}
 
-    public void setmY(Integer mY) {
-        this.mY = mY;
-    }
+	public void setmY(Integer mY) {
+		this.mY = mY;
+	}
 
-    @Override
-    public void writeToToken(Token token) {
-        token.setInteger("x", mX);
-        token.setInteger("y", mY);
+	@Override
+	public void writeToToken(Token token) {
+		token.setInteger("x", mX);
+		token.setInteger("y", mY);
 
-    }
+	}
 }
