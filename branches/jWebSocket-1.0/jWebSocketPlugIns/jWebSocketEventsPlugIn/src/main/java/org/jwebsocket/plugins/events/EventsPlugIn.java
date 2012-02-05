@@ -35,11 +35,9 @@ import org.jwebsocket.eventmodel.event.em.EngineStarted;
 import org.jwebsocket.eventmodel.event.em.EngineStopped;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.factory.JWebSocketXmlConfigInitializer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.FileSystemResource;
 
 /**
  *
@@ -102,16 +100,12 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 
 			//Loading plug-in beans
 			String lPath = JWebSocketConfig.getConfigFolder("EventsPlugIn/" + getNamespace() + "-application/bootstrap.xml");
-			JWebSocketBeanFactory.load(getNamespace(), lPath, Class.forName("org.jwebsocket.eventmodel.event.filter.ResponseFromCache").getClassLoader());
-//            ClassLoader lClassLoader = Class.forName("org.jwebsocket.eventmodel.event.filter.ResponseFromCache").getClassLoader();
-//            FileSystemResource lFSRes = new FileSystemResource(lPath);
-//            XmlBeanFactory lBF = new ServerXmlBeanFactory(lFSRes, lClassLoader);
 
-			//Getting the EventModel service instance
-			mEm = (EventModel) getBeanFactory().getBean("EventModel");
-//            mEm = (EventModel) lBF.getBean("EventModel");
+			ClassLoader lClassLoader = JWebSocketXmlConfigInitializer.getClassLoader();
+			JWebSocketBeanFactory.load(getNamespace(), lPath, lClassLoader);
+			mEm = (EventModel) JWebSocketBeanFactory.getInstance(getNamespace()).getBean("EventModel");
 
-			//Initializing the event model
+			// Initializing the event model
 			mEm.setParent(this);
 			mEm.initialize();
 		} catch (Exception ex) {
@@ -193,7 +187,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 				}
 				lEvent = getEm().getEventFactory().tokenToEvent(aToken);
 				lEvent.setConnector(aConnector);
-				
+
 				//Initializing the event...
 				lEvent.initialize();
 			} catch (Exception ex) {

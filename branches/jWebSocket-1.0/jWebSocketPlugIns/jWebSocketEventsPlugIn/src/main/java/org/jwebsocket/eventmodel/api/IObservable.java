@@ -56,6 +56,8 @@ public interface IObservable {
 	 * @param aEventClass The event to be added
 	 */
 	public void addEvents(Class<? extends Event> aEventClass);
+	
+	// public void addEvents(Event aEventClass);
 
 	/**
 	 * Add a events collection as subject events. Events are supposed to be fired in the 

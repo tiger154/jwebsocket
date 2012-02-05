@@ -122,6 +122,19 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 		getEm().on(aEmEvents.values(), this);
 	}
 
+	public void setEmEventClassesAndClientAPI(Map<String, String> aEmEvents) throws Exception {
+		Map lClasses = new FastMap<String, Class>();
+		for (String lClass : aEmEvents.keySet()) {
+			try {
+				lClasses.put(lClass, Class.forName(aEmEvents.get(lClass)));
+			} catch (ClassNotFoundException ex) {
+			}
+		}
+		setClientAPI(lClasses);
+		getEm().addEvents(lClasses.values());
+		getEm().on(lClasses.values(), this);
+	}
+
 	/**
 	 * {@inheritDoc }
 	 */
