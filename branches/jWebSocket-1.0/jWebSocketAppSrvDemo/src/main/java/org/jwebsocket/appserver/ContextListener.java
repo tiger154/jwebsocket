@@ -35,8 +35,8 @@ public class ContextListener implements ServletContextListener {
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent aSCE) {
-		// start the jWebSocket server sub system
-		JWebSocketFactory.start("", "");
+		// start the jWebSocket server sub system with default config and bootstrap
+		JWebSocketFactory.start();
 
 		// get the token server
 		// and and a listener to it (for demo purposes)
