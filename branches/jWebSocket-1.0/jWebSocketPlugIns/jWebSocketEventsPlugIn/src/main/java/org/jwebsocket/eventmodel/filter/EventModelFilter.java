@@ -70,7 +70,7 @@ public abstract class EventModelFilter extends ObservableObject implements IEven
 	 */
 	@Override
 	public void processEvent(Event aEvent, ResponseEvent aResponseEvent) {
-		System.out.println(">> Response from '" + this.getClass().getName() + "', please override this method!");
+		System.out.println("Response from '" + this.getClass().getName() + "', please override this method!");
 	}
 
 	/**

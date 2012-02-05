@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - ValidatorFilter
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -50,7 +50,7 @@ public class ValidatorFilter extends EventModelFilter {
 		Set<Argument> lInArgs = lDef.getIncomingArgsValidation();
 		if (lInArgs.size() > 0) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Validating incoming arguments for '" + aEvent.getId() + "' event ...");
+				mLog.debug("Validating incoming arguments for '" + aEvent.getId() + "' event ...");
 			}
 
 			//Incoming event args validation
@@ -67,7 +67,7 @@ public class ValidatorFilter extends EventModelFilter {
 			}
 			if (lErrors.hasErrors()) {
 				String lFields = "";
-				for (FieldError lField : lErrors.getFieldErrors()){
+				for (FieldError lField : lErrors.getFieldErrors()) {
 					lFields += lField.getField() + ",";
 				}
 				throw new Exception("Invalid incoming arguments: " + lFields);
@@ -96,18 +96,18 @@ public class ValidatorFilter extends EventModelFilter {
 
 			if (!isValidateResponse()) {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug(">> Omitting validation for '" + aResponseEvent.getId() + "' outgoing arguments ...");
+					mLog.debug("Omitting validation for '" + aResponseEvent.getId() + "' outgoing arguments ...");
 				}
 				return;
 			}
 
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Validating outgoing arguments for '" + aResponseEvent.getId() + "' event ...");
+				mLog.debug("Validating outgoing arguments for '" + aResponseEvent.getId() + "' event ...");
 			}
 
 			if (aResponseEvent.getCode() != 0) {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug(">> Validation aborted. The response state is NOT OK!");
+					mLog.debug("Validation aborted. The response state is NOT OK!");
 				}
 				return;
 			}
@@ -126,7 +126,7 @@ public class ValidatorFilter extends EventModelFilter {
 			}
 			if (lErrors.hasErrors()) {
 				String lFields = "";
-				for (FieldError lField : lErrors.getFieldErrors()){
+				for (FieldError lField : lErrors.getFieldErrors()) {
 					lFields += lField.getField() + ",";
 				}
 				throw new Exception("Invalid outgoing arguments: " + lFields);

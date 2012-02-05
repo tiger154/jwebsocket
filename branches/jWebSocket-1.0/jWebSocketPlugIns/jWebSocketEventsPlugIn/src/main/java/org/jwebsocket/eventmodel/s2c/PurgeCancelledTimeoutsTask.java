@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - PurgeCancelledTimeoutsTask
 //  Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -35,9 +35,9 @@ public class PurgeCancelledTimeoutsTask extends TimerTask {
 
 	@Override
 	public void run() {
-		if (mLog.isDebugEnabled()){
-			mLog.debug(">> Purging the timeout callbacks queue...");
+		int lPurged = mTimer.purge(); // Keep the timer cleaned up
+		if (lPurged > 0 && mLog.isDebugEnabled()) {
+			mLog.debug("Purged " + lPurged + " items from timeout callbacks queue.");
 		}
-		mTimer.purge(); //Keep the timer cleaned up
 	}
 }

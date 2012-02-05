@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - SecurityFilter
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ public class SecurityFilter extends EventModelFilter {
 	public void beforeCall(WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
 		//Processing plug-in restrictions
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Processing security restrictions in the 'EventsPlugIn' level...");
+			mLog.debug("Processing security restrictions in the 'EventsPlugIn' level...");
 		}
 
 		//Getting the user session
@@ -63,7 +63,7 @@ public class SecurityFilter extends EventModelFilter {
 
 		//Processing the C2SEvent restrictions
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Processing security restrictions in the 'WebSocketEventDefinition' level...");
+			mLog.debug("Processing security restrictions in the 'WebSocketEventDefinition' level...");
 		}
 		Util.checkSecurityRestrictions((IServerSecureComponent) getEm().getEventFactory().
 				getEventDefinitions().getDefinition(aEvent.getId()),

@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - TimeoutCallbackTask
 //  Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ public class TimeoutCallbackTask extends TimerTask {
 		if (mNotificationHandler.getCallbacks().containsKey(mConnectorId)
 				&& mNotificationHandler.getCallbacks().get(mConnectorId).containsKey(mNotificationId)) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Calling the failure method because of a timeout reason."
+				mLog.debug("Calling the failure method because of a timeout reason."
 						+ " Notification: " + mConnectorId + ":" + mNotificationId);
 			}
 

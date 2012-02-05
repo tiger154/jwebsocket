@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - JcPlugIn
 //  Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -44,12 +44,12 @@ import org.jwebsocket.util.Tools;
 //
 //			@Override
 //			public void success(ResponseAPDU response, String from) {
-//				System.out.println(">> success " + from + " " + response.getBytes());
+//				System.out.println("success " + from + " " + response.getBytes());
 //			}
 //
 //			@Override
 //			public void failure(FailureReason reason, String from) {
-//				System.out.println(">> failure " + from + " " + reason.name());
+//				System.out.println("failure " + from + " " + reason.name());
 //			}
 //		});
  */

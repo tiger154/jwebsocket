@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - AuthPlugIn
 //  Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -56,14 +56,14 @@ public class AuthPlugIn extends EventModelPlugIn {
 		String lPassword = aEvent.getPassword();
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Authenticating with the '" + mAm.getClass().getName() + "' authentication manager ...");
+			mLog.debug("Authenticating with the '" + mAm.getClass().getName() + "' authentication manager...");
 		}
 		//Login process
 		Authentication lRequest = new UsernamePasswordAuthenticationToken(lUsername, lPassword);
 		Authentication lLoggon = getAm().authenticate(lRequest);
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Updating the user session...");
+			mLog.debug("Updating the user session...");
 		}
 		//Getting the user session
 		Map<String, Object> lSession = aEvent.getConnector().getSession().getStorage();
@@ -98,10 +98,10 @@ public class AuthPlugIn extends EventModelPlugIn {
 		aResponseEvent.getArgs().setString("uuid", lUUID);
 		aResponseEvent.getArgs().setString("username", aEvent.getUsername());
 		aResponseEvent.getArgs().setList("roles", Util.parseStringArrayToList(lRoles.split(" ")));
-		aResponseEvent.setMessage(">> Login process has finished successfully!");
+		aResponseEvent.setMessage("Login process has finished successfully!");
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Logon successfully!");
+			mLog.debug("Logon successfully!");
 		}
 	}
 
@@ -113,7 +113,7 @@ public class AuthPlugIn extends EventModelPlugIn {
 	 */
 	public void processEvent(Logoff aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Loging off the user '" + aEvent.getConnector().getUsername() + "...");
+			mLog.debug("Loging off the user '" + aEvent.getConnector().getUsername() + "...");
 		}
 
 		//Cleaning the session
@@ -122,7 +122,7 @@ public class AuthPlugIn extends EventModelPlugIn {
 		aResponseEvent.setMessage("<< Logout process has finished successfully!");
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Logoff successfully!");
+			mLog.debug("Logoff successfully!");
 		}
 
 		//Notify internal listeners about the UserLogoff event...

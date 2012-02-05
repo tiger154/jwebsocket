@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - S2CEventNotificationHandler
 //  Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -57,7 +57,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 */
 	public void send(S2CEvent aEvent, String aTo, OnResponse aOnResponse) throws MissingTokenSender {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Preparing S2C event notification...");
+			mLog.debug("Preparing S2C event notification...");
 		}
 
 		if (!mCallbacks.containsKey(aTo)) {
@@ -73,7 +73,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 		//Saving the callback
 		if (null != aOnResponse) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Saving the OnResponse callback for the event '" + aEvent.getId() + "'...");
+				mLog.debug("Saving the OnResponse callback for the event '" + aEvent.getId() + "'...");
 			}
 			//Saving the callback
 			aOnResponse.setRequiredType(aEvent.getResponseType());
@@ -95,7 +95,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 
 		//Sending the token
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Sending S2C event notification to '" + aTo + "' connector...");
+			mLog.debug("Sending S2C event notification to '" + aTo + "' connector...");
 		}
 
 		//Getting the local WebSocketConnector instance if exists
@@ -135,7 +135,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 
 		String lConnectorId = aEvent.getConnector().getId();
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Processing S2CResponse(" + aEvent.getReqId()
+			mLog.debug("Processing S2CResponse(" + aEvent.getReqId()
 					+ ") from '" + lConnectorId + "' connector...");
 		}
 
@@ -169,7 +169,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 			}
 		} else {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> The S2CResponse(" + aEvent.getReqId()
+				mLog.debug("The S2CResponse(" + aEvent.getReqId()
 						+ ") from '" + aEvent.getConnector().getId() + "' has not pending callbacks!");
 			}
 		}
@@ -185,7 +185,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 		String lConnectorId = aEvent.getConnector().getId();
 		if (mCallbacks.containsKey(aEvent.getConnector().getId())) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Removing pending callbacks for '" + lConnectorId + "' connector...");
+				mLog.debug("Removing pending callbacks for '" + lConnectorId + "' connector...");
 			}
 
 			//Getting pending callbacks and removing
@@ -210,7 +210,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 */
 	public void processEvent(S2CEventNotSupportedOnClient aEvent, C2SResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Processing the 'S2CEventNotSupportedOnClient' event...");
+			mLog.debug("Processing the 'S2CEventNotSupportedOnClient' event...");
 		}
 
 		//Caching the connector connector_id for performance
@@ -220,7 +220,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 		if (mCallbacks.containsKey(lConnectorId)
 				&& mCallbacks.get(lConnectorId).containsKey(aEvent.getReqId())) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Removing pending callback for '" + aEvent.getId() + "' event. Client does not support it!...");
+				mLog.debug("Removing pending callback for '" + aEvent.getId() + "' event. Client does not support it!...");
 			}
 
 			//Getting the callback and removing

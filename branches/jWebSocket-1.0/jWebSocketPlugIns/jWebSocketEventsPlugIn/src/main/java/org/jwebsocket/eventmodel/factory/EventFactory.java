@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - EventFactory
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -70,7 +70,7 @@ public class EventFactory {
 	 */
 	public C2SEvent stringToEvent(String aEventId) throws Exception {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Creating instance for event: '" + aEventId + "'...");
+			mLog.debug("Creating instance for event: '" + aEventId + "'...");
 		}
 		//Use the BeansFactory to load the instances
 		C2SEvent lEvent = (C2SEvent) getEventDefinitions().getDefinition(aEventId).getEventClass().newInstance();
@@ -104,7 +104,7 @@ public class EventFactory {
 	 */
 	public C2SResponseEvent createResponseEvent(C2SEvent aEvent) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Creating instance for response event: '" + aEvent.getId() + "'...");
+			mLog.debug("Creating instance for response event: '" + aEvent.getId() + "'...");
 		}
 		C2SResponseEvent lResponse = new C2SResponseEvent(aEvent.getRequestId());
 		lResponse.setId(aEvent.getId());

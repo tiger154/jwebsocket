@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - EventModelPlugIn
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -72,7 +72,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	@Override
 	public void processEvent(Event aEvent, ResponseEvent aResponseEvent) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Response from '" + this.getClass().getName() + "', please override this method!");
+			mLog.debug("Response from '" + this.getClass().getName() + "', please override this method!");
 		}
 	}
 
