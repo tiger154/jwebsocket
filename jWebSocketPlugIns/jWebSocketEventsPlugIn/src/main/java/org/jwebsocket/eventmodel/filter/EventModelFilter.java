@@ -16,6 +16,7 @@
 package org.jwebsocket.eventmodel.filter;
 
 import java.util.Set;
+import javolution.util.FastSet;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.eventmodel.observable.ObservableObject;
 import org.jwebsocket.eventmodel.api.IEventModelFilter;
@@ -81,7 +82,15 @@ public abstract class EventModelFilter extends ObservableObject implements IEven
 	public void setEmEvents(Set<Class<? extends Event>> aEmEvents) throws Exception {
 		getEm().addEvents(aEmEvents);
 		getEm().on(aEmEvents, this);
+	}
 
+	public void setEmEventClasses(Set<String> aEmEvents) throws Exception {
+		Set lClasses = new FastSet();
+		for (String lClass : aEmEvents) {
+			lClasses.add(Class.forName(lClass));
+		}
+		getEm().addEvents(lClasses);
+		getEm().on(lClasses, this);
 	}
 
 	/**
