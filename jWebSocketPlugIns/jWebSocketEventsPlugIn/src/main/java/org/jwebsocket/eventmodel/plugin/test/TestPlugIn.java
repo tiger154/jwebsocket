@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - TestPlugIn
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -85,19 +85,19 @@ public class TestPlugIn extends JcPlugIn {
 
 					@Override
 					public void success(Object aResponse, String aFrom) {
-						System.out.println(">> S2CPlusXYEvent success callback. Response: " + (Integer) aResponse);
+						System.out.println("S2CPlusXYEvent success callback. Response: " + (Integer) aResponse);
 
 						DecimalFormat lFormat = new DecimalFormat("0");
-						System.out.println(">> S2CPlusXYEvent processing time: " + lFormat.format(getProcessingTime()));
-						System.out.println(">> S2CPlusXYEvent elapsed time: " + lFormat.format(getElapsedTime()));
-						System.out.println(">> S2CPlusXYEvent response from: " + aFrom);
+						System.out.println("S2CPlusXYEvent processing time: " + lFormat.format(getProcessingTime()));
+						System.out.println("S2CPlusXYEvent elapsed time: " + lFormat.format(getElapsedTime()));
+						System.out.println("S2CPlusXYEvent response from: " + aFrom);
 
 						((TransactionContext) getContext()).success(aResponse);
 					}
 
 					@Override
 					public void failure(FailureReason aReason, String aFrom) {
-						System.out.println(">> S2CPlusXYEvent failure callback. Reason: " + aReason.name());
+						System.out.println("S2CPlusXYEvent failure callback. Reason: " + aReason.name());
 					}
 				});
 
@@ -116,7 +116,7 @@ public class TestPlugIn extends JcPlugIn {
 	 */
 	public void processEvent(JcTest aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Processing JcTest event notification...");
+			mLog.debug("Processing JcTest event notification...");
 		}
 
 		byte[] lApdu = {(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x07, (byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x18, (byte) 0x43, (byte) 0x4d};
@@ -127,20 +127,20 @@ public class TestPlugIn extends JcPlugIn {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Sending '" + lApdu.toString() + "' APDU to '" + lTerminal + "' terminal on '" + lClient + "' client ...");
 			}
-			
+
 			transmit(lClient, lTerminal, new CommandAPDU(lApdu), new JcResponseCallback(null) {
 
 				@Override
 				public void success(ResponseAPDU aResponse, String aFrom) {
 					DecimalFormat lFormat = new DecimalFormat("0");
 
-					System.out.println(">> success " + aFrom + " " + new String(aResponse.getBytes()));
-					System.out.println(">> elapsed time " + lFormat.format(getElapsedTime()));
+					System.out.println("success " + aFrom + " " + new String(aResponse.getBytes()));
+					System.out.println("elapsed time " + lFormat.format(getElapsedTime()));
 				}
 
 				@Override
 				public void failure(FailureReason aReason, String aFrom) {
-					System.out.println(">> failure " + aFrom + " " + aReason.name());
+					System.out.println("failure " + aFrom + " " + aReason.name());
 				}
 			});
 		}

@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - AnnotationFilter
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -56,7 +56,7 @@ public class AnnotationFilter extends EventModelFilter {
 		//Processing ImportFromToken annotations
 		if (aMethod.isAnnotationPresent(ImportFromToken.class)) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Processing annotation '" +
+				mLog.debug("Processing annotation '" +
 						ImportFromToken.class.toString() + "' in method '"
 						+ aMethod.getName() + "'...");
 			}

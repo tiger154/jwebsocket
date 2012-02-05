@@ -71,7 +71,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 		setNamespace(aConfiguration.getNamespace());
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Creating EventsPlugIn instance for application '" + getNamespace() + "'...");
+			mLog.debug("Creating EventsPlugIn instance for application '" + getNamespace() + "'...");
 		}
 
 		//Calling the init method
@@ -86,14 +86,14 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			//Load application jars
 			if (getSettings().containsKey("jars")) {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug(">> Loading jars for '" + getNamespace() + "' application...");
+					mLog.debug("Loading jars for '" + getNamespace() + "' application...");
 				}
 
 				String[] lJars = getString("jars").split(",");
 				for (int lIndex = 0; lIndex < lJars.length; lIndex++) {
 					JWebSocketFactory.getClassLoader().add(JWebSocketConfig.getLibsFolder(lJars[lIndex]));
 					if (mLog.isDebugEnabled()) {
-						mLog.debug(">> Loading jar '" + lJars[lIndex] + "'...");
+						mLog.debug("Loading jar '" + lJars[lIndex] + "'...");
 					}
 				}
 			}
@@ -122,7 +122,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 		//Engine started event notification
 		try {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Engine.started(" + aEngine.toString() + ") event notification...");
+				mLog.debug("Engine.started(" + aEngine.toString() + ") event notification...");
 			}
 			EngineStarted lEvent = (EngineStarted) getEm().getEventFactory().stringToEvent("engine.started");
 			lEvent.setEngine(aEngine);
@@ -142,7 +142,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 		//Engine started event notification
 		try {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Engine.stopped(" + aEngine.toString() + ") event notification...");
+				mLog.debug("Engine.stopped(" + aEngine.toString() + ") event notification...");
 			}
 			EngineStopped lEvent = (EngineStopped) getEm().getEventFactory().stringToEvent("engine.stopped");
 			lEvent.setEngine(aEngine);
@@ -162,7 +162,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 		//Connector started event notification
 		try {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Connector.started(" + aConnector.toString() + ") event notification...");
+				mLog.debug("Connector.started(" + aConnector.toString() + ") event notification...");
 			}
 			ConnectorStarted lEvent = (ConnectorStarted) getEm().getEventFactory().stringToEvent("connector.started");
 			lEvent.setConnector(aConnector);
@@ -183,7 +183,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			C2SEvent lEvent = null;
 			try {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug(">> Processing token as event: '" + aToken.getType() + "'...");
+					mLog.debug("Processing token as event: '" + aToken.getType() + "'...");
 				}
 				lEvent = getEm().getEventFactory().tokenToEvent(aToken);
 				lEvent.setConnector(aConnector);
@@ -218,7 +218,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 		//Connector stopped event notification
 		try {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Connector.stopped(" + aConnector.toString() + ") event notification...");
+				mLog.debug("Connector.stopped(" + aConnector.toString() + ") event notification...");
 			}
 			ConnectorStopped lEvent = (ConnectorStopped) getEm().getEventFactory().stringToEvent("connector.stopped");
 			lEvent.setConnector(aConnector);

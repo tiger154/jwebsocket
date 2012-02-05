@@ -117,14 +117,14 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 				aResponseEvent = getEventFactory().createResponseEvent(aEvent);
 			}
 			if (mLog.isInfoEnabled()) {
-				mLog.info(">> Starting the 'event' workflow...");
+				mLog.info("Starting the 'event' workflow...");
 			}
 
 			executeFiltersBeforeCall(aEvent.getConnector(), aEvent);
 
 			//"before.process.event" notification
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> 'before.process.event' notification...");
+				mLog.debug("'before.process.event' notification...");
 			}
 			BeforeProcessEvent lEvent = (BeforeProcessEvent) getEventFactory().stringToEvent("before.process.event");
 			lEvent.setEvent(aEvent);
@@ -132,7 +132,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 
 			//++++++++++++++ Listeners notification
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> Executing EM listeners notifications...");
+				mLog.debug("Executing EM listeners notifications...");
 			}
 			C2SEventDefinition lDef = getEventFactory().getEventDefinitions().getDefinition(aEvent.getId());
 			if (lDef.isNotificationConcurrent()) {
@@ -143,7 +143,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 
 			//"after.process.event" notification
 			if (mLog.isDebugEnabled()) {
-				mLog.debug(">> 'after.process.event' notification...");
+				mLog.debug("'after.process.event' notification...");
 			}
 			AfterProcessEvent lEvent2 = (AfterProcessEvent) getEventFactory().stringToEvent("after.process.event");
 			lEvent2.setEvent(aEvent);
@@ -152,12 +152,12 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 			executeFiltersAfterCall(aEvent.getConnector(), aResponseEvent);
 
 			if (mLog.isInfoEnabled()) {
-				mLog.info(">> The 'event' workflow has finished successfully!");
+				mLog.info("The 'event' workflow has finished successfully!");
 			}
 		} catch (CachedResponseException ex) {
 			if (mLog.isInfoEnabled()) {
-				mLog.info(">> The response was recovery from cache!");
-				mLog.info(">> The 'event' workflow has finished successfully!");
+				mLog.info("The response was recovery from cache!");
+				mLog.info("The 'event' workflow has finished successfully!");
 			}
 		} catch (Exception ex) {
 
@@ -171,7 +171,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 			getParent().getServer().sendToken(aEvent.getConnector(), lToken);
 
 			if (mLog.isInfoEnabled()) {
-				mLog.info(">> The 'event' workflow has finished with errors: " + ex.toString());
+				mLog.info("The 'event' workflow has finished with errors: " + ex.toString());
 			}
 
 			//Calling the exception handler 'process' method

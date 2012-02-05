@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - SystemPlugIn
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -51,7 +51,7 @@ public class SystemPlugIn extends EventModelPlugIn {
 	 */
 	public void processEvent(GetPlugInList aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Exporting the plugIns identifiers list...");
+			mLog.debug("Exporting the plugIns identifiers list...");
 		}
 
 		FastList<String> lPlugInIds = new FastList<String>();
@@ -71,7 +71,7 @@ public class SystemPlugIn extends EventModelPlugIn {
 	 */
 	public void processEvent(ClientCacheAspectStatus aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Setting the client cache aspect status ...");
+			mLog.debug("Setting the client cache aspect status ...");
 		}
 
 		aEvent.getConnector().setVar(CacheFilter.CLIENT_CACHE_ASPECT_STATUS, aEvent.isEnabled());
@@ -106,7 +106,7 @@ public class SystemPlugIn extends EventModelPlugIn {
 	public void processEvent(GetPlugInAPI aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		String lPlugInId = aEvent.getPlugInId();
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Exporting API for '" + lPlugInId + "' plugIn...");
+			mLog.debug("Exporting API for '" + lPlugInId + "' plugIn...");
 		}
 
 		IEventModelPlugIn lPlugIn = getEm().getPlugIn(lPlugInId);

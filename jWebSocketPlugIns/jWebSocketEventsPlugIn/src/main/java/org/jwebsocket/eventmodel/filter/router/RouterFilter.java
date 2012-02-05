@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - RouterFilter
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -44,13 +44,13 @@ public class RouterFilter extends EventModelFilter {
 	@Override
 	public void beforeCall(WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
 		if (mLog.isInfoEnabled()) {
-			mLog.info(">> Checking if the event: '" + aEvent.getId() + "' has listener(s) in the server side...");
+			mLog.info("Checking if the event: '" + aEvent.getId() + "' has listener(s) in the server side...");
 		}
 
 		//Stopping the connector if in "prod" environment
 		if (getEm().getEnv().equals(EventModel.PROD_ENV)) {
 			if (mLog.isInfoEnabled()) {
-				mLog.info(">> Stopping the connector '" + aConnector.getId() + "'...");
+				mLog.info("Stopping the connector '" + aConnector.getId() + "'...");
 			}
 			//In production is not allowed invalid requests from the client
 			aConnector.stopConnector(CloseReason.SERVER);
@@ -88,7 +88,7 @@ public class RouterFilter extends EventModelFilter {
 
 		//Sending the response
 		if (mLog.isInfoEnabled()) {
-			mLog.info(">> Sending the response for '" + aEvent.toString() + "' event to connectors...");
+			mLog.info("Sending the response for '" + aEvent.toString() + "' event to connectors...");
 		}
 
 		//Sending the sender connector
