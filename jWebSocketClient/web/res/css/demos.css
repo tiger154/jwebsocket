@@ -375,10 +375,12 @@ textarea{
     height: 2px;
     padding:0px 5px 0 5px !important;
     background: white;
+	overflow: hidden !important;
 }
 
 .log_box_visible{
     height: 200px;
+	overflow: auto !important;
 }
 /*----------------- DEMO_LOG_BOX -------------*/
 
@@ -397,41 +399,17 @@ textarea{
     float:right;
     margin: 5px 0 5px 0;
 }
+
+#jws_download_button a{
+    text-decoration: none;
+	background: none;
+	color: white;
+}
+
 /*----------------- DEMO_FOOTER --------------*/
 
 
 /*----------------- BUTTONS --------------*/
-
-.button a{
-    background: #b3cd60; /* Old browsers */
-    /* IE9 SVG, needs conditional override of 'filter' to 'none' */
-    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2IzY2Q2MCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzllYzEzMiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUxJSIgc3RvcC1jb2xvcj0iIzgzYWEwYyIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNhMmMwNDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
-    background: -moz-linear-gradient(top,  #b3cd60 0%, #9ec132 50%, #83aa0c 51%, #a2c040 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#b3cd60), color-stop(50%,#9ec132), color-stop(51%,#83aa0c), color-stop(100%,#a2c040)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  #b3cd60 0%,#9ec132 50%,#83aa0c 51%,#a2c040 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  #b3cd60 0%,#9ec132 50%,#83aa0c 51%,#a2c040 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  #b3cd60 0%,#9ec132 50%,#83aa0c 51%,#a2c040 100%); /* IE10+ */
-    background: linear-gradient(top,  #b3cd60 0%,#9ec132 50%,#83aa0c 51%,#a2c040 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b3cd60', endColorstr='#a2c040',GradientType=0 ); /* IE6-8 */
-
-    border-style: solid;
-    border-width: 1px;
-    border-color: #97B92E;
-
-    -moz-border-radius: 4px 4px 4px 4px;
-    -webkit-border-radius: 4px 4px 4px 4px;
-    border-radius: 7px 7px 7px 7px; 
-
-    height: 20px;    
-    margin-top: -0.7px;    
-    float: left;
-
-    padding-left: 10px;
-    padding-right: 10px; 
-
-    display: block;   
-}
-
 .button{
     float: left;
     height: 25px;
@@ -538,4 +516,32 @@ p{
 
 .box{
     float: left;
+}
+
+.tooltip{
+	z-index: 999;
+	display: none;
+	position: absolute;
+	width: 188px;
+}
+
+.tooltip .top{
+	background: url(../../res/img/tooltip_top.png) no-repeat;
+	width: 188px;
+	height: 21px;
+}
+
+.tooltip .middle{
+	background: url(../../res/img/tooltip_center.png) repeat-y;
+	width: 150px;
+	font-size: 11px;
+	font-family: "Verdana";
+	color: #FFFFFF;
+	padding: 0 25px 0 14px;
+}
+
+.tooltip .bottom{
+	background: url(../../res/img/tooltip_bottom.png) no-repeat;
+	width: 188px;
+	height: 13px;
 }

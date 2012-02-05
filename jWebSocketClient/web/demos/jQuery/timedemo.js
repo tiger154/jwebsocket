@@ -58,7 +58,4 @@ $(document).bind("mobileinit", function(){
 			);
 		});
 	});
-	
-	
-﻿
 });
