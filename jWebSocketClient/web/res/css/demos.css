@@ -394,10 +394,10 @@ textarea{
 
 #jws_download_button{
     cursor: pointer;
-    width: 188px;
+    width: 200px;
     height: 25px;
     float:right;
-    margin: 5px 0 5px 0;
+    margin: 5px 5px 5px 0;
 }
 
 #jws_download_button a{

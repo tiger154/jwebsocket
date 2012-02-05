@@ -26,8 +26,12 @@ $.widget("jws.log",{
         else{
             w.log.element.find("#show_hide_log").removeClass("show").addClass("hide").text("Hide Log");
             w.log.element.find("#log_box_content").fadeOut(100, function(){
-                $(this).removeClass("log_box_hidden").addClass("log_box_visible").slideDown(500);
+                $(this).removeClass("log_box_hidden").addClass("log_box_visible").slideDown(500, function(){
+					w.log.eLog.scrollTop(w.log.eLog.get(0).scrollHeight - w.log.eLog.get(0).clientHeight);
+				});
+				
             });
+			
             w.log.logVisible = true;
         }
     },
