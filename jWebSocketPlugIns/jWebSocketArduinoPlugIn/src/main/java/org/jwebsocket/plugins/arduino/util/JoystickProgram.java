@@ -25,22 +25,22 @@ package org.jwebsocket.plugins.arduino.util;
  */
 public class JoystickProgram {
 
-    public static Integer[] refineValue(Integer aX, Integer aY) {
-        //refine x value and y value in interval: 30-42
-        if (aX >= 30 && aX <= 43 && aY >= 30 && aY <= 42) {
-            if (aX == 43) {
-                aX = 42;
-            }
-            return new Integer[]{aX - 36, aY - 36};
-        }
-        return null;
-    }
-     
-    public static Integer[] treatValues(String aData) {
-        Integer lX = Integer.valueOf(aData.split(",")[0]);
-        String lTempY = aData.split(",")[1];
-        Integer lY = Integer.valueOf(lTempY.substring(0, lTempY.length() - 1));
+	public static Integer[] refineValue(Integer aX, Integer aY) {
+		//refine x value and y value in interval: 30-42
+		if (aX >= 30 && aX <= 43 && aY >= 30 && aY <= 42) {
+			if (aX == 43) {
+				aX = 42;
+			}
+			return new Integer[]{aX - 36, aY - 36};
+		}
+		return null;
+	}
 
-        return refineValue(lX, lY);
-    }
+	public static Integer[] treatValues(String aData) {
+		Integer lX = Integer.valueOf(aData.split(",")[0]);
+		String lTempY = aData.split(",")[1];
+		Integer lY = Integer.valueOf(lTempY.substring(0, lTempY.length() - 1));
+
+		return refineValue(lX, lY);
+	}
 }

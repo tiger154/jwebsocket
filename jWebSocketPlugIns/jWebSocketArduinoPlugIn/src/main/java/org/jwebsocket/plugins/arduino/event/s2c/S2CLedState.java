@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.arduino.event.s2c;
 
 import org.jwebsocket.eventmodel.event.S2CEvent;
@@ -25,41 +24,41 @@ import org.jwebsocket.token.Token;
  */
 public class S2CLedState extends S2CEvent {
 
-    private Boolean mBlue;
-    private Boolean mRed;
-    private Boolean mGreen;
-    private Boolean mYellow;
+	private Boolean mBlue;
+	private Boolean mRed;
+	private Boolean mGreen;
+	private Boolean mYellow;
 
-    public S2CLedState(Boolean aBlue, Boolean aRed, Boolean aGreen, Boolean aYellow) {
-        super();
-        this.setId("ledState");
-        this.mBlue = aBlue;
-        this.mRed = aRed;
-        this.mGreen = aGreen;
-        this.mYellow = aYellow;
-    }
+	public S2CLedState(Boolean aBlue, Boolean aRed, Boolean aGreen, Boolean aYellow) {
+		super();
+		this.setId("ledState");
+		this.mBlue = aBlue;
+		this.mRed = aRed;
+		this.mGreen = aGreen;
+		this.mYellow = aYellow;
+	}
 
-    public Boolean getBlue() {
-        return mBlue;
-    }
+	public Boolean getBlue() {
+		return mBlue;
+	}
 
-    public Boolean getRed() {
-        return mRed;
-    }
+	public Boolean getRed() {
+		return mRed;
+	}
 
-    public Boolean getGreen() {
-        return mGreen;
-    }
+	public Boolean getGreen() {
+		return mGreen;
+	}
 
-    public Boolean getYellow() {
-        return mYellow;
-    }
+	public Boolean getYellow() {
+		return mYellow;
+	}
 
-    @Override
-    public void writeToToken(Token token) {
-        token.setBoolean("blue", getBlue());
-        token.setBoolean("red", getRed());
-        token.setBoolean("green", getGreen());
-        token.setBoolean("yellow", getYellow());
-    }
+	@Override
+	public void writeToToken(Token token) {
+		token.setBoolean("blue", getBlue());
+		token.setBoolean("red", getRed());
+		token.setBoolean("green", getGreen());
+		token.setBoolean("yellow", getYellow());
+	}
 }

@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.arduino.connection.event;
 
 import org.jwebsocket.eventmodel.observable.Event;
@@ -24,11 +23,11 @@ import org.jwebsocket.eventmodel.observable.Event;
  */
 public class DataIn extends Event {
 
-    public DataIn(String aData) {
-        getArgs().setString("data", aData);
-    }
+	public DataIn(String aData) {
+		getArgs().setString("data", aData);
+	}
 
-    public String getData() {
-        return getArgs().getString("data");
-    }
+	public String getData() {
+		return getArgs().getString("data");
+	}
 }

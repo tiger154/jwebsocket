@@ -36,108 +36,107 @@ import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import org.jwebsocket.eventmodel.plugin.EventModelPlugIn;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.eventmodel.event.em.ConnectorStopped;
 import org.jwebsocket.plugins.arduino.util.JoystickProgram;
 import org.jwebsocket.plugins.arduino.util.LedsProgram;
 
 public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 
-    static org.apache.log4j.Logger mLog = Logger.getLogger(ArduinoRemoteControlPlugIn.class);
-    private ArduinoConnection mArduinoConnection;
+	static org.apache.log4j.Logger mLog = Logger.getLogger(ArduinoRemoteControlPlugIn.class);
+	private ArduinoConnection mArduinoConnection;
 
-    public ArduinoRemoteControlPlugIn() {
-        this.mArduinoConnection = new ArduinoConnection();
+	public ArduinoRemoteControlPlugIn() {
+		this.mArduinoConnection = new ArduinoConnection();
 
-    }
+	}
 
-    public ArduinoConnection getArduinoConnection() {
-        return mArduinoConnection;
-    }
+	public ArduinoConnection getArduinoConnection() {
+		return mArduinoConnection;
+	}
 
-    public void setArduinoConnection(ArduinoConnection aArduinoConnection) {
-        this.mArduinoConnection = aArduinoConnection;
+	public void setArduinoConnection(ArduinoConnection aArduinoConnection) {
+		this.mArduinoConnection = aArduinoConnection;
 
-    }
+	}
 
-    @Override
-    public void initialize() throws Exception {
-        if (mLog.isInfoEnabled()) {
-            mLog.info(">> Initializing the parameters for communication with Arduino. . .. . . ");
-        }
-        try {
+	@Override
+	public void initialize() throws Exception {
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Initializing the parameters for communication with Arduino...");
+		}
+		try {
 
-            this.mArduinoConnection.init();
-            this.mArduinoConnection.on(DataIn.class, this);
-        } catch (Exception ex) {
-            mLog.debug("It was not pisible start arduino");
-        }
+			this.mArduinoConnection.init();
+			this.mArduinoConnection.on(DataIn.class, this);
+		} catch (Exception ex) {
+			mLog.error("It was not possible start Arduino: " + ex.getMessage());
+		}
 
-    }
+	}
 
-    public void processEvent(DataIn aEvent, ResponseEvent aResponseEvent) throws MissingTokenSender {
+	public void processEvent(DataIn aEvent, ResponseEvent aResponseEvent) throws MissingTokenSender {
 
-        char lId = aEvent.getData().charAt(0);
-        String ldata = aEvent.getData().split("-")[1];
+		char lId = aEvent.getData().charAt(0);
+		String ldata = aEvent.getData().split("-")[1];
 
-        switch (lId) {
-            case 'L':
-                Boolean[] lLedsState = LedsProgram.parseLedState(Integer.valueOf(ldata.substring(0, ldata.length() - 1)));
-                sendLedState(lLedsState[0], lLedsState[1], lLedsState[2], lLedsState[3]);
-                break;
+		switch (lId) {
+			case 'L':
+				Boolean[] lLedsState = LedsProgram.parseLedState(Integer.valueOf(ldata.substring(0, ldata.length() - 1)));
+				sendLedState(lLedsState[0], lLedsState[1], lLedsState[2], lLedsState[3]);
+				break;
 
-            case 'J':
-                Integer[] lTrunkValues = JoystickProgram.treatValues(ldata);
-                sendJoystickPosition(lTrunkValues[0], lTrunkValues[1]);
-                break;
+			case 'J':
+				Integer[] lTrunkValues = JoystickProgram.treatValues(ldata);
+				sendJoystickPosition(lTrunkValues[0], lTrunkValues[1]);
+				break;
 
-        }
+		}
 
-    }
+	}
 
-    public void processEvent(Command aEvent, C2SResponseEvent aResponseEvent) throws IOException, MissingTokenSender {
-        if (mLog.isInfoEnabled()) {
-            mLog.info(">> Processing command event. . . ");
-        }
-        try {
+	public void processEvent(Command aEvent, C2SResponseEvent aResponseEvent) throws IOException, MissingTokenSender {
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Processing command event...");
+		}
+		try {
 
-            //Sends a command to Arduino
-            mArduinoConnection.sendCommand(aEvent.getCmd());
-        } catch (IOException ex) {
-            aResponseEvent.getArgs().setString("message", "The command could not be sent to Arduino");
-        }
-    }
+			//Sends a command to Arduino
+			mArduinoConnection.sendCommand(aEvent.getCmd());
+		} catch (IOException ex) {
+			aResponseEvent.getArgs().setString("message", "The command could not be sent to Arduino.");
+		}
+	}
 
-    public void processEvent(StartArduinoRemoteControl aEvent, C2SResponseEvent aResponseEvent) {
-        if (mLog.isInfoEnabled()) {
-            mLog.info(">> Processing start-rc event. . . ");
-        }
+	public void processEvent(StartArduinoRemoteControl aEvent, C2SResponseEvent aResponseEvent) {
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Processing start-rc event...");
+		}
 
-        try {
-            //Requests the status of the LEDs
-            mArduinoConnection.sendCommand(53);
+		try {
+			//Requests the status of the LEDs
+			mArduinoConnection.sendCommand(53);
 
 
-        } catch (IOException ex) {
-            aResponseEvent.getArgs().setString("message", "Unable to communicate with Arduino");
-        } catch (NullPointerException ex) {
-            aResponseEvent.getArgs().setString("message", "Unable to communicate with Arduino");
-        }
-    }
+		} catch (IOException ex) {
+			aResponseEvent.getArgs().setString("message", "Unable to communicate with Arduino: " + ex.getMessage());
+		} catch (NullPointerException ex) {
+			aResponseEvent.getArgs().setString("message", "Unable to communicate with Arduino: " + ex.getMessage());
+		}
+	}
 
-    private void sendLedState(Boolean aBlue, Boolean aRed, Boolean aGreen, Boolean aYellow) throws MissingTokenSender {
-        //Notified with an event status LEDs
-        for (WebSocketConnector lClient : this.getServerAllConnectors().values()) {
-            this.notifyS2CEvent(new S2CLedState(aBlue,
-                    aRed,
-                    aGreen,
-                    aYellow)).to(lClient, null);
-        }
-    }
+	private void sendLedState(Boolean aBlue, Boolean aRed, Boolean aGreen, Boolean aYellow) throws MissingTokenSender {
+		//Notified with an event status LEDs
+		for (WebSocketConnector lClient : this.getServerAllConnectors().values()) {
+			this.notifyS2CEvent(new S2CLedState(aBlue,
+					aRed,
+					aGreen,
+					aYellow)).to(lClient, null);
+		}
+	}
 
-    private void sendJoystickPosition(Integer aX, Integer aY) throws MissingTokenSender {
-        //Notified with an event the Position,(x,y) of the joystick
-        for (WebSocketConnector lClient : this.getServerAllConnectors().values()) {
-            this.notifyS2CEvent(new S2CJoystickPosition(aX, aY)).to(lClient, null);
-        }
-    }
+	private void sendJoystickPosition(Integer aX, Integer aY) throws MissingTokenSender {
+		//Notified with an event the Position,(x,y) of the joystick
+		for (WebSocketConnector lClient : this.getServerAllConnectors().values()) {
+			this.notifyS2CEvent(new S2CJoystickPosition(aX, aY)).to(lClient, null);
+		}
+	}
 }
