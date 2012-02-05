@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+		<!-- If Google's chrome frame installed, use it! -->
+		<!-- Comment needs to be BELOW this meta tag! -->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket Simple Chat (uses jWebSocket Client and Server)
+		//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH, Herzogenrath
+		//	****************************************************************************
+		//	This program is free software; you can redistribute it and/or modify it
+		//	under the terms of the GNU Lesser General Public License as published by the
+		//	Free Software Foundation; either version 3 of the License, or (at your
+		//	option) any later version.
+		//	This program is distributed in the hope that it will be useful, but WITHOUT
+		//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+		//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+		//	more details.
+		//	You should have received a copy of the GNU Lesser General Public License along
+		//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+		//	****************************************************************************
+		-->
+
+		<title>jWebSocket Chat Demo</title>
+
+		<meta http-equiv="Content-Language" content="en"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252"/>
+
+		<link rel="stylesheet" type="text/css" href="css/jwsIframe.css"/>
+		<link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+
+		<!-- JQUERY DEPENDENCIES -->
+		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+
+		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
+		<script type="text/javascript" src="../../res/js/jWebSocket_Bundle_min.js"></script>
+		<script src="../../res/js/jwsCanvasPlugIn.js" type="text/javascript"></script>
+
+		<!--  PUBLIC WIDGETS   -->
+		<script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
+
+		<!--  MAIN JAVASCRIPT FILE   -->
+		<script type="text/javascript" src='js/init.js'></script>
+		<script type="text/javascript" src='js/wImage.js'></script>
+	</head>
+	<body>
+		<div id="clients">
+			<div class="header">
+				<div id="tabs_shared_color">
+					<div id="tab_paint" class="enabled"></div>
+					<div id="tab_insert_img" class="disabled"></div>
+				</div>
+			</div>
+			<div id="board">
+				<div class="desc_text">Choose a color to paint on the canvas.</div>
+				<div id="color_fields">
+					<div id="color_blue"     class="color_blue">        </div>
+					<div id="color_green"    class="color_green">       </div>
+					<div id="color_red"      class="color_red">         </div>
+					<div id="color_yellow"   class="color_yellow">      </div>
+					<div id="color_orange"   class="color_orange">      </div>
+					<div id="color_darkblue" class="color_darkblue">    </div>
+					<div id="color_purple"   class="color_purple">      </div>
+					<div id="color_grey"     class="color_grey">        </div>
+					<div id="color_black"    class="color_black">       </div>
+				</div>
+				<div id="demo_box_statusbar">
+					<div id="client_status" class='offline'>disconnected</div><div class="line"></div>
+				</div>
+				<canvas id="can"></canvas>
+				<div id="clear_board" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+					 onmousedown="this.className='button onmousedown'" 
+					 onmouseup="this.className='button onmouseup'" 
+					 onmouseout="this.className='button onmouseout'" 
+					 onclick="this.className='button onmouseover'">
+					<div class="l"></div>
+					<div class="c">Clear</div>
+					<div class="r"></div>
+				</div>
+			</div>
+			<div id="image">
+				<div class="desc_text">Chose an image to place it on the canvas.</div>
+				<div id="palete_img">
+					<div id="image01_small" class="image01_small">      </div>
+					<div id="image02_small" class="image02_small">      </div>
+					<div id="image03_small" class="image03_small">      </div>
+					<div id="image04_small" class="image04_small">      </div>
+					<div id="image05_small" class="image05_small">      </div>
+					<div id="image06_small" class="image06_small">      </div>
+					<div id="image07_small" class="image07_small">      </div>
+					<div id="image08_small" class="image08_small">      </div>
+					<div id="image09_small" class="image09_small">      </div>
+				</div>
+				<canvas id="can_img"></canvas>
+				<div id="clear_image" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+					 onmousedown="this.className='button onmousedown'" 
+					 onmouseup="this.className='button onmouseup'" 
+					 onmouseout="this.className='button onmouseout'" 
+					 onclick="this.className='button onmouseover'">
+					<div class="l"></div>
+					<div class="c">Clear</div>
+					<div class="r"></div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

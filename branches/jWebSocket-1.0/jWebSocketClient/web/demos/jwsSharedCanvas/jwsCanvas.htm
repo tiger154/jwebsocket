@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <!-- If Google's chrome frame installed, use it! -->
+        <!-- Comment needs to be BELOW this meta tag! -->
+        <!--
+        //	****************************************************************************
+        //	jWebSocket Hello World (uses jWebSocket Client and Server)
+        //	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+        //	****************************************************************************
+        //	This program is free software; you can redistribute it and/or modify it
+        //	under the terms of the GNU Lesser General Public License as published by the
+        //	Free Software Foundation; either version 3 of the License, or (at your
+        //	option) any later version.
+        //	This program is distributed in the hope that it will be useful, but WITHOUT
+        //	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+        //	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+        //	more details.
+        //	You should have received a copy of the GNU Lesser General Public License along
+        //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+        //	****************************************************************************
+        -->
+        <meta http-equiv="Content-Language" content="en"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252"/>
+
+
+        <title>jWebSocket Shared Canvas</title>
+
+        <!-- DEMO STYLES  -->
+        <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+        <link rel="stylesheet" type="text/css" href="css/jwsCanvas.css"/>
+
+        <!-- JQUERY DEPENDENCIES -->
+        <link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+        <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+    </head>
+    <body>
+        <div id="demo_box">
+            <!--       DEMO_HEADER       -->
+            <div id="demo_box_header">
+                <h1>Shared Canvas</h1>
+            </div>
+            <div id="container">
+
+                <!--       DESCRIPTION       -->
+                <div class="box" id="demo_box_description">
+					<p>
+                        This demo shows how to commonly exchange with others on a 
+                        shared canvas. Updates applied to a certain canvas are automatically 
+                        distributed to all other clients connected to the jWebSocket network. 
+                        Simply select a color and paint or insert an image of your choice.
+                    </p>
+                    <p>
+                        Please consider that not all browsers support the HTML5 canvas  
+                        element yet. jWebSocket checks the features of your current browser 
+                        and lets the Shared Canvas demo appear inactively in case of no canvas support.    
+                        If you are not sure wether your favorite browser supports WebSockets in general 
+                        please refer to our jWebSocket Cross-Browser Compatibility page.
+                    </p>
+                </div>
+
+                <!--       SCENARIO          -->
+                <div id="scenario_container" class="box">
+					<div id="main_content">
+						<!-- ************************ CANVAS AREA ****************************** -->
+						<div id="iframe">
+							<iframe id="target1" src="iframe.htm" scrolling="no"></iframe>
+							<iframe id="target2" src="iframe.htm" scrolling="no"></iframe>
+						</div>
+						<!-- ************************ CANVAS AREA ****************************** -->
+					</div>
+                </div>
+
+                <!--       DOWNLOAD_BUTTON   -->
+                <div id="demo_box_footer">
+                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                         onmousedown="this.className='button onmousedown'" 
+                         onmouseup="this.className='button onmouseup'" 
+                         onmouseout="this.className='button onmouseout'" 
+                         onclick="this.className='button onmouseover'">
+                        <div class="l"></div>
+                        <div class="c">Download jWebSocket</div>
+                        <div class="r_download"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <!-- If Google's chrome frame installed, use it! -->
+        <!-- Comment needs to be BELOW this meta tag! -->
+        <!--
+        //	****************************************************************************
+        //	jWebSocket Hello World (uses jWebSocket Client and Server)
+        //	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+        //	****************************************************************************
+        //	This program is free software; you can redistribute it and/or modify it
+        //	under the terms of the GNU Lesser General Public License as published by the
+        //	Free Software Foundation; either version 3 of the License, or (at your
+        //	option) any later version.
+        //	This program is distributed in the hope that it will be useful, but WITHOUT
+        //	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+        //	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+        //	more details.
+        //	You should have received a copy of the GNU Lesser General Public License along
+        //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+        //	****************************************************************************
+        -->
+        <meta http-equiv="Content-Language" content="en"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+
+        <title>jWebSocket Hello World</title>
+
+        <!-- DEMO STYLES  -->
+        <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+        <link rel="stylesheet" type="text/css" href="css/jwsHelloWorld.css"/>
+
+        <!-- JQUERY DEPENDENCIES -->
+        <link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+        <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+
+        <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
+        <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+        <!-- this one imports the client side sample plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsSamplesPlugIn.js"></script>
+        <!-- this one imports the client side JDBC plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsJDBCPlugIn.js"></script>
+        <!-- this one imports the client side file system plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
+        <!-- this one imports the client side reporting plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
+        <!-- this one imports the client side rpc plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsRPCPlugIn.js"></script>
+
+        <!--  PUBLIC WIDGETS   -->
+        <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
+        <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
+
+        <!--  PRIVATE WIDGETS  -->
+        <script type="text/javascript" src='js/wActions.js'></script>
+
+        <!--  MAIN JAVASCRIPT FILE   -->
+        <script type="text/javascript" src='js/init.js'></script>
+    </head>
+    <body>
+        <div id="demo_box">
+            <!--       DEMO_HEADER       -->
+            <div id="demo_box_header">
+                <h1>Hello World</h1>
+                <div id="demo_box_header_login">
+                    <div id="logoff_area">
+                        <div id="user_info">
+                            <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
+                            <div id="logoff_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                                 onmousedown="this.className='button onmousedown'" 
+                                 onmouseup="this.className='button onmouseup'" 
+                                 onmouseout="this.className='button onmouseout'" 
+                                 onclick="this.className='button onmouseover'">
+                                <div class="l"></div>
+                                <div class="c">Logout</div>
+                                <div class="r"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="login_area">
+                        <div id="login_form">
+                            <label class="first">Username</label>
+                            <label class="second">Password</label>
+                            <input type="text" id="user_text" value="root"/>
+                            <input type="password" id="user_password" value="root"/>
+                        </div>
+                        <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                             onmousedown="this.className='button onmousedown'" 
+                             onmouseup="this.className='button onmouseup'" 
+                             onmouseout="this.className='button onmouseout'" 
+                             onclick="this.className='button onmouseover'">
+                            <div class="l"></div>
+                            <div class="c">Login</div>
+                            <div class="r"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            <div id="container">
+                <!--       STATUSBAR         -->
+                <div id="demo_box_statusbar">
+                    <div id='status'>Status: </div>
+                    <div id="client_status" class='offline'>disconnected</div><div class="line"></div>
+                    <div id='client_id'>Client-ID: - </div><div class="line"></div>
+                    <div id='websocket_type'>WebSocket: - </div>
+                </div>
+
+                <!--       DESCRIPTION       -->
+                <div class="box">
+                    <p>This little "Hello World" demonstrates how to easily logon to the jWebSocket Server, broadcast a message and logoff again. Please use the browser's show frame source function to see the entire source code of this page.</p>
+                </div>
+
+
+                <!--       SCENARIO          -->
+                <div id="scenario_container" class="box">
+                    <!--    MESSAGE_BOX      -->
+                    <div id="message_box" class="box">
+                        <div id="message_box_header">Message</div>
+                        <textarea id="message_box_text">Type your message...</textarea>
+                        <div id="message_box_broadcast_btn" class="message_box_broadcast_btn">
+                            <div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                                 onmousedown="this.className='button onmousedown'" 
+                                 onmouseup="this.className='button onmouseup'" 
+                                 onmouseout="this.className='button onmouseout'" 
+                                 onclick="this.className='button onmouseover'">
+                                <div class="l"></div>
+                                <div class="c">Broadcast</div>
+                                <div class="r"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <!--    FUNCTIONAL_BOX   -->
+                    <div id="functional_box" class="box">
+                        <div id="functional_box_header">
+                            <a id="tokens" class="pressed"><span>Tokens</span></a>
+                            <a id="functions"><span>Functions</span></a>
+                            <a id="files"><span>Files</span></a>
+                        </div>
+                        <div id="functional_box_content">
+                            <div id="token_area">
+                                <div class="functional_box_content_text">
+                                    jWebSocket supports tokens, cross-plattform compatible data objects, which can be 
+                                    exchanged between the jWebSocket server and all kinds of clients, stationary, mobile, web based
+                                    and native.<br/>
+                                    Place your mouse on the buttons below to get more details.
+                                </div>
+                                <div class="functional_box_content_buttons">
+                                    <div class="complex_object_btn">
+                                        <div id="complex_object_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                                             onmousedown="this.className='button onmousedown'" 
+                                             onmouseup="this.className='button onmouseup'" 
+                                             onmouseout="this.className='button onmouseout'" 
+                                             onclick="this.className='button onmouseover'">
+                                            <div class="l"></div>
+                                            <div class="c">Complex Object</div>
+                                            <div class="r"></div>
+                                        </div>
+                                    </div>
+                                    <div class="get_time_btn">
+                                        <div id="get_time_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                                             onmousedown="this.className='button onmousedown'" 
+                                             onmouseup="this.className='button onmouseup'" 
+                                             onmouseout="this.className='button onmouseout'" 
+                                             onclick="this.className='button onmouseover'">
+                                            <div class="l"></div>
+                                            <div class="c">Get time</div>
+                                            <div class="r"></div>
+                                        </div>
+                                    </div>
+                                    <div class="tokenizable_btn">
+                                        <div id="tokenizable_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                                             onmousedown="this.className='button onmousedown'" 
+                                             onmouseup="this.className='button onmouseup'" 
+                                             onmouseout="this.className='button onmouseout'" 
+                                             onclick="this.className='button onmouseover'">
+                                            <div class="l"></div>
+                                            <div class="c">Tokenizable</div>
+                                            <div class="r"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            <div id="function_area">
+                                <div class="functional_box_content_text">
+                                    Functions description
+                                </div>
+                                <div class="functional_box_content_buttons">
+                                    <div id="complex_object_btn1"></div>
+                                    <div id="get_time_btn1"></div>
+                                    <div id="tokenizable_btn1"></div>
+                                </div>
+                            </div> 
+                            <div id="file_area">
+                                <div class="functional_box_content_text">
+                                    Here you should put the files description
+                                </div>
+                                <div class="functional_box_content_buttons">
+                                    <div id="save_file_btn"></div>
+                                    <div id="file_list_btn"></div>
+                                    <div id="load_file_btn"></div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+
+                    <!--       LOG BOX           -->
+                    <div id="log_box" class="box">
+                        <div id="log_box_header">
+                            <div id="show_hide_log" class="hide">Hide Log</div>
+                            <div id="clear_log">Clear Log</div>
+                        </div>
+                        <div id="log_box_content" class="log_box_visible"></div>
+                    </div>
+
+                </div>
+
+                <!--       DOWNLOAD_BUTTON   -->
+                <div id="demo_box_footer">
+                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                         onmousedown="this.className='button onmousedown'" 
+                         onmouseup="this.className='button onmouseup'" 
+                         onmouseout="this.className='button onmouseout'" 
+                         onclick="this.className='button onmouseover'">
+                        <div class="l"></div>
+                        <div class="c">Download jWebSocket</div>
+                        <div class="r_download"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
