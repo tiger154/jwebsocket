@@ -46,6 +46,7 @@ public class ConfigActivity extends Activity {
 
         lBtnCancel.setOnClickListener(new OnClickListener() {
 
+			@Override
             public void onClick(View v) {
 
                 Toast.makeText(getApplicationContext(), "DISCARDING...",
@@ -56,6 +57,7 @@ public class ConfigActivity extends Activity {
 
         lBtnSave.setOnClickListener(new OnClickListener() {
 
+			@Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "SAVING...",
                         Toast.LENGTH_SHORT).show();

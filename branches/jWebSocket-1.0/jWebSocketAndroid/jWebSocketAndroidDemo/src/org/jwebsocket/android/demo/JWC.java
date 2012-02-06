@@ -187,12 +187,14 @@ public class JWC {
 
 	static class Listener implements WebSocketClientTokenListener {
 
+		@Override
 		public void processOpened(WebSocketClientEvent aEvent) {
 			Message lMsg = new Message();
 			lMsg.what = MT_OPENED;
 			messageHandler.sendMessage(lMsg);
 		}
 
+		@Override
 		public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 			Message lMsg = new Message();
 			lMsg.what = MT_PACKET;
@@ -200,6 +202,7 @@ public class JWC {
 			messageHandler.sendMessage(lMsg);
 		}
 
+		@Override
 		public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 			Message lMsg = new Message();
 			lMsg.what = MT_TOKEN;
@@ -207,15 +210,18 @@ public class JWC {
 			messageHandler.sendMessage(lMsg);
 		}
 
+		@Override
 		public void processClosed(WebSocketClientEvent aEvent) {
 			Message lMsg = new Message();
 			lMsg.what = MT_CLOSED;
 			messageHandler.sendMessage(lMsg);
 		}
 
+		@Override
 		public void processOpening(WebSocketClientEvent aEvent) {
 		}
 
+		@Override
 		public void processReconnecting(WebSocketClientEvent aEvent) {
 		}
 	}

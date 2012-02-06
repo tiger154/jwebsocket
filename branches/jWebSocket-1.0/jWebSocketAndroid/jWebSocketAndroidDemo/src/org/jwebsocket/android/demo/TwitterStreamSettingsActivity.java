@@ -16,7 +16,6 @@ package org.jwebsocket.android.demo;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -32,32 +31,31 @@ public class TwitterStreamSettingsActivity extends Dialog {
 	private TwitterSettingsListener mListener;
 	private EditText mKeywordsText;
 	private Button mSetBtn;
-        private String defaultKeywords;
+	private String defaultKeywords;
 
 	public TwitterStreamSettingsActivity(Context context, TwitterSettingsListener listener, String defaultKeywords) {
 		super(context);
 		this.mListener = listener;
-                this.defaultKeywords = defaultKeywords;
+		this.defaultKeywords = defaultKeywords;
 	}
-
-
 
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-                this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.twitter_stream_settings);		
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.twitter_stream_settings);
 		mKeywordsText = (EditText) findViewById(R.id.keywordsTxt);
-                mKeywordsText.setText(defaultKeywords);
+		mKeywordsText.setText(defaultKeywords);
 		mSetBtn = (Button) findViewById(R.id.setButton);
 		mSetBtn.setOnClickListener(new View.OnClickListener() {
 
+			@Override
 			public void onClick(View view) {
 				mListener.setSettings(mKeywordsText.getText().toString());
 				TwitterStreamSettingsActivity.this.dismiss();
 			}
 		});
-                
+
 	}
 
 	public interface TwitterSettingsListener {

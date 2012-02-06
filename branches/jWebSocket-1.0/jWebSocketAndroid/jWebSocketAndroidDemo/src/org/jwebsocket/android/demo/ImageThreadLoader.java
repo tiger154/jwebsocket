@@ -79,6 +79,7 @@ public class ImageThreadLoader {
 	 */
 	private class QueueRunner implements Runnable {
 
+		@Override
 		public void run() {
 			synchronized (this) {
 				while (mQueue.size() > 0) {
@@ -90,6 +91,7 @@ public class ImageThreadLoader {
 						// Use a handler to get back onto the UI thread for the update
 						mHandler.post(new Runnable() {
 
+							@Override
 							public void run() {
 								if (lItem.listener != null) {
 									// NB: There's a potential race condition here where the cache item could get

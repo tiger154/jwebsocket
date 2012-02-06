@@ -82,12 +82,10 @@ public class TwitterStreamActivity extends ListActivity implements
 							new TwitterStreamSettingsActivity(this,
 							new TwitterStreamSettingsActivity.TwitterSettingsListener() {
 
+								@Override
 								public void setSettings(String keywords) {
-
-
 									savePreference(keywords);
 									setKeywords(keywords);
-
 								}
 							}, lKeywords);
 				}
@@ -148,6 +146,7 @@ public class TwitterStreamActivity extends ListActivity implements
 		}
 	}
 
+	@Override
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 		if (aToken.getNS().equals("org.jwebsocket.plugins.twitter")
 				&& aToken.getType().equals("event")
@@ -164,20 +163,24 @@ public class TwitterStreamActivity extends ListActivity implements
 		//throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
 		//throw new UnsupportedOperationException("Not supported yet.");
 		int test = 1;
 	}
 
+	@Override
 	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 		//throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
 	public void processClosed(WebSocketClientEvent aEvent) {
 		//throw new UnsupportedOperationException("Not supported yet.");
 		int test = 1;
 	}
 
+	@Override
 	public void processOpening(WebSocketClientEvent aEvent) {
 	}
 

@@ -67,6 +67,7 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 
 		lBtnBroadcast.setOnClickListener(new OnClickListener() {
 
+			@Override
 			public void onClick(View aView) {
 				try {
 					JWC.broadcastText(lMessage.getText().toString());
@@ -128,14 +129,17 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 		}
 	}
 
+	@Override
 	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 		log("> " + aPacket.getUTF8() + "\n");
 	}
 
+	@Override
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 		// log("> " + aToken.toString() + "\n");
 	}
 
+	@Override
 	public void processClosed(WebSocketClientEvent aEvent) {
 		log("closed\n");
 		ImageView lImgView = (ImageView) findViewById(R.id.fundImgStatus);
@@ -144,10 +148,12 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 		}
 	}
 
+	@Override
 	public void processOpening(WebSocketClientEvent aEvent) {
 		log("* opening... ");
 	}
 
+	@Override
 	public void processReconnecting(WebSocketClientEvent aEvent) {
 		log("* reconnecting... ");
 	}
