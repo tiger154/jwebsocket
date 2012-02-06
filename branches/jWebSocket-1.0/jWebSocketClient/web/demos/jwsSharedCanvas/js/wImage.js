@@ -27,60 +27,59 @@ $.widget("jws.image",{
 		w.image.eBtnImg		= w.image.element.find("#tab_insert_img");
 		w.image.eBtnPaint	= w.image.element.find("#tab_paint");
 		
-		
 		w.image.eImage.hide();
 		w.image.eBoard.show();
 		
-		
 		w.image.registerEvents();
 		
-		var lJWSID = "jWebSocket Canvas";
-		lWSC = null;
+		w.image.lJWSID = "jWebSocket Canvas";
 		w.image.eCanvas = null;
-		eStatus = null;
-		lIsConnected = false;
-		lColor = "#000000";
+		w.image.eStatus = null;
+		w.image.mIsConnected = false;
+		w.image.mColor = "#000000";
 		CANVAS_ID = "c1";
 
-		var IN = 0;
-		var OUT = 1;
-		var EVT = 2;
-		var SYS = "SYS";
-		var USR = null;
+		IN = 0;
+		OUT = 1;
+		EVT = 2;
+		SYS = "SYS";
+		USR = null;
 		
-		var ctx;
-		var lPainting = false;
-		var lX1 = -1;
-		var lY1 = -1;
+		w.image.ctx = null;
+		mPainting = false;
+		mX1 = -1;
+		mY1 = -1;
 		
-		var eAvg = null;
-		var loops = 0;
-		var total = 0;
+		w.image.eAvg = null;
+		w.image.loops = 0;
+		w.image.total = 0;
 		
-		var lImgIdx = 0;
-		var lImages = new Array();
+		w.image.mImgIdx = 0;
+		w.image.mImages = new Array();
 		
-		lImages[ 0 ] = new Image();
-		lImages[ 1 ] = new Image();
-		lImages[ 2 ] = new Image();
-		lImages[ 3 ] = new Image();
-		lImages[ 4 ] = new Image();
-		lImages[ 5 ] = new Image();
-		lImages[ 6 ] = new Image();
-		lImages[ 7 ] = new Image();
-		lImages[ 8 ] = new Image();
-
-		lImages[ 0 ].src = "../../res/img/image1.jpg";
-		lImages[ 1 ].src = "../../res/img/image2.jpg";
-		lImages[ 2 ].src = "../../res/img/image3.jpg";
-		lImages[ 3 ].src = "../../res/img/image4.jpg";
-		lImages[ 4 ].src = "../../res/img/image5.jpg";
-		lImages[ 5 ].src = "../../res/img/image6.jpg";
-		lImages[ 6 ].src = "../../res/img/image7.jpg";
-		lImages[ 7 ].src = "../../res/img/image8.jpg";
-		lImages[ 8 ].src = "../../res/img/image9.jpg";
+		w.image.mImages[ 0 ] = new Image();
+		w.image.mImages[ 1 ] = new Image();
+		w.image.mImages[ 2 ] = new Image();
+		w.image.mImages[ 3 ] = new Image();
+		w.image.mImages[ 4 ] = new Image();
+		w.image.mImages[ 5 ] = new Image();
+		w.image.mImages[ 6 ] = new Image();
+		w.image.mImages[ 7 ] = new Image();
+		w.image.mImages[ 8 ] = new Image();
 		
-		var lRollingId = 1, lMaxRollingIDs = 9;
+		w.image.mImages[ 0 ].src = "../../res/img/image1.jpg";
+		w.image.mImages[ 1 ].src = "../../res/img/image2.jpg";
+		w.image.mImages[ 2 ].src = "../../res/img/image3.jpg";
+		w.image.mImages[ 3 ].src = "../../res/img/image4.jpg";
+		w.image.mImages[ 4 ].src = "../../res/img/image5.jpg";
+		w.image.mImages[ 5 ].src = "../../res/img/image6.jpg";
+		w.image.mImages[ 6 ].src = "../../res/img/image7.jpg";
+		w.image.mImages[ 7 ].src = "../../res/img/image8.jpg";
+		w.image.mImages[ 8 ].src = "../../res/img/image9.jpg";
+		
+		lRollingId = 1, lMaxRollingIDs = 9;
+		
+		w.image.initPage();
 	},
 	
 	
@@ -88,91 +87,49 @@ $.widget("jws.image",{
 		w.image.eBtnImg.click(w.image.showImageArea);
 		w.image.eBtnPaint.click(w.image.showPaintArea);
 	},
-
-	doOpen: function() {
-		// adjust this URL to your jWebSocket server
-		var lURL = jws.getDefaultServerURL()
-		+ ( frameElement.id ? ";unid=" + frameElement.id : "");
-
-		// try to establish connection to jWebSocket server
-		lWSC.logon( lURL, "Guest", "guest", {
-
-			// OnOpen callback
-			OnOpen: function( aEvent ) {
-				// start keep alive if user selected that option
-				lWSC.startKeepAlive({
-					interval: 30000
-				});
-				eStatus.src = "../../images/authenticated.png";
-				lIsConnected = true;
-			},
-
-			// OnMessage callback
-			OnMessage: function( aEvent, aToken ) {
-			},
-
-			// OnClose callback
-			OnClose: function( aEvent ) {
-				eStatus.src = "../../images/disconnected.png";
-				lIsConnected = false;
-				lWSC.stopKeepAlive();
-			}
-					
-		});
-	}, 
-	doClose: function() {
-		// disconnect automatically logs out!
-		lWSC.stopKeepAlive();
-		var lRes = lWSC.close({
-			// wait a maximum of 3 seconds for server good bye message
-			timeout: 3000
-		});
-	},
-
+	
 	mouseDownLsnr: function( aEvent ) {
 		// aEvent.preventDefault();
 		jws.events.preventDefault( aEvent );
-		if( lIsConnected ) {
-			lPainting = true;
-			lX1 = aEvent.clientX - w.image.eCanvas.offsetLeft;
-			lY1 = aEvent.clientY - w.image.eCanvas.offsetTop;
+		if( w.image.mIsConnected ) {
+			mPainting = true;
+			mX1 = aEvent.clientX - w.image.eCanvas.offsetLeft;
+			mY1 = aEvent.clientY - w.image.eCanvas.offsetTop;
 		}
 	},
-
 	
-
 	mouseMoveLsnr: function ( aEvent ) {
 		// aEvent.preventDefault();
 		jws.events.preventDefault( aEvent );
-		if( lIsConnected && lPainting ) {
+		if( w.image.mIsConnected && mPainting ) {
 			var lX2 = aEvent.clientX - w.image.eCanvas.offsetLeft;
 			var lY2 = aEvent.clientY - w.image.eCanvas.offsetTop;
 
-			loops++;
+			w.image.loops++;
 			start = new Date().getTime();
 
-			lWSC.canvasLine( CANVAS_ID, lX1, lY1, lX2, lY2, {
-				color: lColor
+			mWSC.canvasLine( CANVAS_ID, mX1, mY1, lX2, lY2, {
+				color: w.image.mColor
 			});
 
-			lX1 = lX2;
-			lY1 = lY2;
+			mX1 = lX2;
+			mY1 = lY2;
 
-			total += ( new Date().getTime() - start );
-			eAvg.innerHTML = ( total / loops + "ms" );
+			w.image.total += ( new Date().getTime() - start );
+			w.image.eAvg.innerHTML = ( w.image.total / w.image.loops + "ms" );
 		}
 	}, 
 	
 	mouseUpLsnr: function ( aEvent ) {
 		// aEvent.preventDefault();
 		jws.events.preventDefault( aEvent );
-		if( lIsConnected && lPainting ) {
+		if( w.image.mIsConnected && mPainting ) {
 			lX2 = aEvent.clientX - w.image.eCanvas.offsetLeft;
 			lY2 = aEvent.clientY - w.image.eCanvas.offsetTop;
-			lWSC.canvasLine( CANVAS_ID, lX1, lY1, lX2, lY2, {
-				color: lColor
+			mWSC.canvasLine( CANVAS_ID, mX1, mY1, lX2, lY2, {
+				color: w.image.mColor
 			});
-			lPainting = false;
+			mPainting = false;
 		}
 	},
 
@@ -181,13 +138,13 @@ $.widget("jws.image",{
 	},
 
 	selectColor: function (aColor ) {
-		lColor = aColor;
-		jws.$( "spanSettings" ).style.borderColor = lColor;
+		w.image.mColor = aColor;
+		jws.$( "spanSettings" ).style.borderColor = w.image.mColor;
 	},
 
 	doClear: function() {
-		if( lIsConnected ) {
-			lWSC.canvasClear( CANVAS_ID );
+		if( w.image.mIsConnected ) {
+			mWSC.canvasClear( CANVAS_ID );
 		}
 	},
 
@@ -198,19 +155,19 @@ $.widget("jws.image",{
 		lCanvas.clear = true;
 		var lContext = lCanvas.getContext( "2d" );
 		/*
-					for( var lIdx = 0; lIdx < lImages.length; lIdx++ ){
-						lImg.src = lImages[ lIdx ];
+					for( var lIdx = 0; lIdx < w.image.mImages.length; lIdx++ ){
+						lImg.src = w.image.mImages[ lIdx ];
 						lContext.drawImage( lImg, 0, 0 );
 					}
 		 */
-		lContext.drawImage( lImages[ lImgIdx ], 0, 0 );
-		if ( lImgIdx >= 8 ) {
-			lImgIdx = 0;
+		lContext.drawImage( w.image.mImages[ w.image.mImgIdx ], 0, 0 );
+		if ( w.image.mImgIdx >= 8 ) {
+			w.image.mImgIdx = 0;
 		} else {
-			lImgIdx++;
+			w.image.mImgIdx++;
 		}
 	/*
-					lRes = lWSC.fileSend(
+					lRes = mWSC.fileSend(
 						// target was passed as optional argument
 						// and thus can be used here
 						"target2", // Token.args.target,
@@ -247,15 +204,15 @@ $.widget("jws.image",{
 	},
 
 	snapshot: function() {
-		if( lIsConnected ) {
+		if( w.image.mIsConnected ) {
 			// png should be supported by all HTML5 compliant browser
 			// jpeg may not be supported yet (as of 2011-03-01)
 			// by Safari and Opera. Thus, take png as default for now.
-			var lRes = lWSC.canvasGetBase64( CANVAS_ID, "image/png" );
+			var lRes = mWSC.canvasGetBase64( CANVAS_ID, "image/png" );
 			if( lRes.code == 0 ) {
 				// the image could be loaded successfully
 				// from the canvase element
-				var lRes = lWSC.fileSave(
+				var lRes = mWSC.fileSave(
 					// use hardcoded file name for now in this
 					// demo to keep it as simple as possible
 					"canvas_demo_" + lRollingId + ".png",
@@ -277,34 +234,74 @@ $.widget("jws.image",{
 			}
 		}
 	},
+	
+	doOpen: function() {
+		// adjust this URL to your jWebSocket server
+		var lURL = jws.getDefaultServerURL()
+		+ ( frameElement.id ? ";unid=" + frameElement.id : "");
+
+		// try to establish connection to jWebSocket server
+		mWSC.logon( lURL, "Guest", "guest", {
+
+			// OnOpen callback
+			OnOpen: function( aEvent ) {
+				// start keep alive if user selected that option
+				mWSC.startKeepAlive({
+					interval: 30000
+				});
+				eStatus.src = "../../images/authenticated.png";
+				lIsConnected = true;
+			},
+
+			// OnMessage callback
+			OnMessage: function( aEvent, aToken ) {
+			},
+
+			// OnClose callback
+			OnClose: function( aEvent ) {
+				eStatus.src = "../../images/disconnected.png";
+				lIsConnected = false;
+				mWSC.stopKeepAlive();
+			}
+					
+		});
+	},
+
+	doClose: function() {
+		// disconnect automatically logs out!
+		mWSC.stopKeepAlive();
+		var lRes = mWSC.close({
+			// wait a maximum of 3 seconds for server good bye message
+			timeout: 3000
+		});
+	},
 
 	initPage: function() {
 		// get some required HTML elements
-		eAvg = jws.$("spnAvg");
-		w.image.eCanvas = jws.$( "can" );
-		eStatus = jws.$( "simgStatus" );
-		ctx = w.image.eCanvas.getContext( "2d" );
-
-		jws.events.addEventListener( w.image.eCanvas, "mousedown", mouseDownLsnr );
-		jws.events.addEventListener( w.image.eCanvas, "mousemove", mouseMoveLsnr );
-		jws.events.addEventListener( w.image.eCanvas, "mouseup", mouseUpLsnr );
-		jws.events.addEventListener( w.image.eCanvas, "mouseout", mouseOutLsnr );
+		w.image.eAvg = jws.$("spnAvg");
+		w.image.eCanvas = document.getElementById( "can" );
+		
+		w.image.eStatus = jws.$( "simgStatus" );
+		w.image.ctx = w.image.eCanvas.getContext( "2d" );
+		
+		$(w.image.eCanvas).mousedown(w.image.mouseDownLsnr);
+		$(w.image.eCanvas).mousemove(w.image.mouseMoveLsnr);
+		$(w.image.eCanvas).mouseup(w.image.mouseUpLsnr);
+		$(w.image.eCanvas).mouseout(w.image.mouseOutLsnr);
 		
 		// check if WebSockets are supported by the browser
 		if( jws.browserSupportsWebSockets() ) {
 			// instaniate new TokenClient, either JSON, CSV or XML
-			lWSC = new jws.jWebSocketJSONClient({
+			mWSC = new jws.jWebSocketJSONClient({
 				});
-			lWSC.setFileSystemCallbacks({
-				OnFileSaved: onFileSavedObs,
-				OnFileSent: onFileSentObs
+//			mWSC.setFileSystemCallbacks({
+//				OnFileSaved: onFileSavedObs,
+//				OnFileSent: onFileSentObs
 			// OnLocalFileRead: onLocalFileLoadedObs,
 			// OnLocalFileError: onLocalFileErrorObs
-			});
-
-
-			lWSC.canvasOpen( CANVAS_ID, "cnvDemo" );
-			doOpen();
+//			});
+			
+			mWSC.canvasOpen( CANVAS_ID, "cnvDemo" );
 
 		} else {
 			// jws.$( "sbtnClearLog" ).setAttribute( "disabled", "disabled" );
@@ -317,13 +314,13 @@ $.widget("jws.image",{
 	exitPage: function() {
 		// this allows the server to release the current session
 		// immediately w/o waiting on the timeout.
-		if( lWSC ) {
-			lWSC.close({
+		if( mWSC ) {
+			mWSC.close({
 				// force immediate client side disconnect
 				timeout: 0
 			});
 		}
-		lWSC.canvasClose( CANVAS_ID );
+		mWSC.canvasClose( CANVAS_ID );
 	},
 	
 	showImageArea: function(){
