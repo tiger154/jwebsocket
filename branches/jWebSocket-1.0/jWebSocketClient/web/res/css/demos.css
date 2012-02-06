@@ -369,6 +369,7 @@ textarea{
     overflow: auto;
     padding: 5px;
     font-size: 12px;
+	line-height: 20px;
 }
 
 .log_box_hidden{

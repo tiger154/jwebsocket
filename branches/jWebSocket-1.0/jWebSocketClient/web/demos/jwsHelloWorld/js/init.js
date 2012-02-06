@@ -10,40 +10,24 @@ function init(){
 	//Each demo will configure its own callbacks to be passed to the login widget
 	var lCallbacks = {
 		OnOpen: function(aEvent){
-			if(mLog.isDebugEnabled){
-				log("Opening jWebSocket");
-				log(aEvent);
-			}
 		},
 		OnClose: function(aEvent){
-			if(mLog.isDebugEnabled){
-				log("Closing jWebSocket");
-				log(aEvent);
-			}
 		},
 		OnMessage: function(aEvent){
-			if(mLog.isDebugEnabled){
-				log("Incoming message from jWebSocket");
-				log(aEvent);
-			}
 		},
 		OnWelcome: function(aEvent){
-			if(mLog.isDebugEnabled){
-				log("Welcome to jWebSocket");
-				log(aEvent);
-			}
 		},
 		OnGoodBye: function(aEvent){
-			if(mLog.isDebugEnabled){
-				log("good bye jWebSocket");
-				log(aEvent);
-			}
 		}
 	};
     
-	//executing widgets
-	$("#log_box").log();
-	$("#demo_box").auth();
+	// Options
+	// @maxLogLines: maximum number of lines that will be logged
+	// @linesToDelete: quantity of lines that will be deleted from 
+	// the log window each time the log exceeds the maxLogLines
+	$("#log_box").log({maxLogLines: 200, linesToDelete: 20});
+	
+	$("#demo_box").auth(lCallbacks);
 	$("#demo_box").actions();
 	
 	//configuring tooltip as we wish
