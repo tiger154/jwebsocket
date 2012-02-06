@@ -17,7 +17,6 @@ package org.jwebsocket.android.demo;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-// import android.os.Debug;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -34,7 +33,6 @@ public class MainActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-
 		
 		// start tracing to "[/sdcard/]jWebSocketAndroidDemo.trace"
 		// Debug.startMethodTracing("/sdcard/jws");
@@ -42,7 +40,7 @@ public class MainActivity extends ListActivity {
 		JWC.init();
 		JWC.loadSettings(this);
 
-		String[] lItems = {"Fundamentals", "Canvas Demo", "Camera Demo", "Video Demo", "RPC Demo", "Twitter Stream", "Setup"};
+		String[] lItems = {"Fundamentals", "Canvas Demo", "Camera Demo", "Video Demo", "RPC Demo", "Twitter Stream", "Arduino", "Setup"};
 
 		setListAdapter(new ArrayAdapter<String>(this, R.layout.list_item, lItems));
 
@@ -74,6 +72,9 @@ public class MainActivity extends ListActivity {
 						startActivity(new Intent(MainActivity.this, TwitterStreamActivity.class));
 						break;
 					case 6:
+						startActivity(new Intent(MainActivity.this, ArduinoActivity.class));
+						break;
+					case 7:
 						startActivity(new Intent(MainActivity.this, ConfigActivity.class));
 						break;
 				}
