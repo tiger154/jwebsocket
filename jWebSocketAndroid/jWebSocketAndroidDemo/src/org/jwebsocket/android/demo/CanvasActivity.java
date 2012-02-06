@@ -147,6 +147,7 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		mTimer = new Timer();
 		mTimer.schedule(new TimerTask() { // AtFixedRate
 
+			@Override
 			public void run() {
 				if (mIsDirty) {
 					mIsDirty = false;
@@ -365,6 +366,7 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
 		// lImgStatus = (ImageView) findViewById(R.id.cameraImgStatus);
 		if (lImgStatus != null) {
@@ -373,9 +375,11 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	@Override
 	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 	}
 
+	@Override
 	public void processClosed(WebSocketClientEvent aEvent) {
 		// lImgStatus = (ImageView) findViewById(R.id.cameraImgStatus);
 		if (lImgStatus != null) {
@@ -383,9 +387,11 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	@Override
 	public void processOpening(WebSocketClientEvent aEvent) {
 	}
 
+	@Override
 	public void processReconnecting(WebSocketClientEvent aEvent) {
 	}
 }

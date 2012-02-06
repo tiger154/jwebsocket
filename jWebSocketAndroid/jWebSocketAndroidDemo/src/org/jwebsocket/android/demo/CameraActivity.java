@@ -76,15 +76,16 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 		}
 		mPictureCallback = new Camera.PictureCallback() {
 
+			@Override
 			public void onPictureTaken(byte[] aImageData, Camera aCamera) {
 				try {
 					/* test code:
 					byte [] lBA = new byte[1000000];
 					JWC.saveFile(lBA,
-							"ba_" + Tools.intToString(mImgId, 4) + ".null",
-							JWebSocketCommonConstants.SCOPE_PUBLIC, true);
+					"ba_" + Tools.intToString(mImgId, 4) + ".null",
+					JWebSocketCommonConstants.SCOPE_PUBLIC, true);
 					 */
-					
+
 					// save file in public area and send notification
 					JWC.saveFile(aImageData,
 							"img_" + Tools.intToString(mImgId, 4) + ".jpg",
@@ -100,9 +101,11 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 
 		mSurfaceView.setOnClickListener(new OnClickListener() {
 
+			@Override
 			public void onClick(View aView) {
 				mCamera.autoFocus(new Camera.AutoFocusCallback() {
 
+					@Override
 					public void onAutoFocus(boolean arg0, Camera arg1) {
 						mCamera.takePicture(null, null, mPictureCallback);
 						try {
@@ -139,10 +142,12 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 		super.onPause();
 	}
 
+	@Override
 	public void surfaceCreated(SurfaceHolder aSurfaceHolder) {
 		mCamera = Camera.open();
 	}
 
+	@Override
 	public void surfaceChanged(SurfaceHolder aSurfaceHolder, int aFormat, int aWidth, int aHeight) {
 		if (mPreviewRunning) {
 			mCamera.stopPreview();
@@ -159,6 +164,7 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 		mPreviewRunning = true;
 	}
 
+	@Override
 	public void surfaceDestroyed(SurfaceHolder aSurfaceHolder) {
 		mCamera.stopPreview();
 		mPreviewRunning = false;
@@ -166,9 +172,11 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 
 	}
 
+	@Override
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 	}
 
+	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
 		ImageView lImgStatus = (ImageView) findViewById(R.id.cameraImgStatus);
 		if (lImgStatus != null) {
@@ -177,9 +185,11 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	@Override
 	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 	}
 
+	@Override
 	public void processClosed(WebSocketClientEvent aEvent) {
 		ImageView lImgStatus = (ImageView) findViewById(R.id.cameraImgStatus);
 		if (lImgStatus != null) {
@@ -187,9 +197,11 @@ public class CameraActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	@Override
 	public void processOpening(WebSocketClientEvent aEvent) {
 	}
 
+	@Override
 	public void processReconnecting(WebSocketClientEvent aEvent) {
 	}
 }

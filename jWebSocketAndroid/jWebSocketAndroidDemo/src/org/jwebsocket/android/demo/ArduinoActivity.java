@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - Copyright (c) 2010 Innotrade GmbH
+// jWebSocket - Copyright (c) 2012 Innotrade GmbH
 // ---------------------------------------------------------------------------
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as published by the
@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import org.jwebsocket.api.WebSocketClientEvent;
@@ -49,36 +48,40 @@ public class ArduinoActivity extends Activity implements WebSocketClientTokenLis
 		super.onCreate(icicle);
 
 		setContentView(R.layout.arduino_hvga_p);
-		
+
 		lBlue = (ImageView) findViewById(R.id.imgBlue);
 		lRed = (ImageView) findViewById(R.id.imgRed);
 		lGreen = (ImageView) findViewById(R.id.imgGreen);
 		lYellow = (ImageView) findViewById(R.id.imgYellow);
-		
+
 		lBlue.setOnClickListener(new OnClickListener() {
 
-			 public void onClick(View v) {
+			@Override
+			public void onClick(View v) {
 				Toast.makeText(getApplicationContext(), "Blue!",
 						Toast.LENGTH_SHORT).show();
 			}
 		});
 		lRed.setOnClickListener(new OnClickListener() {
 
-			 public void onClick(View v) {
+			@Override
+			public void onClick(View v) {
 				Toast.makeText(getApplicationContext(), "Red!",
 						Toast.LENGTH_SHORT).show();
 			}
 		});
 		lGreen.setOnClickListener(new OnClickListener() {
 
-			 public void onClick(View v) {
+			@Override
+			public void onClick(View v) {
 				Toast.makeText(getApplicationContext(), "Green!",
 						Toast.LENGTH_SHORT).show();
 			}
 		});
 		lYellow.setOnClickListener(new OnClickListener() {
 
-			 public void onClick(View v) {
+			@Override
+			public void onClick(View v) {
 				Toast.makeText(getApplicationContext(), "Yellow!",
 						Toast.LENGTH_SHORT).show();
 			}
