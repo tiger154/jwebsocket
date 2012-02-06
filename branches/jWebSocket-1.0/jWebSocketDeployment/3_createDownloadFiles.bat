@@ -136,6 +136,8 @@ xcopy %libs%mongo-java-driver-2.6.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%kahadb-5.5.0.jar %tempdir%libs\ /s /i /y
 rem Arduino support
 xcopy %libs%rxtx-2.1.7.jar %tempdir%libs\ /s /i /y
+rem Monitoring support
+xcopy %libs%sigar-1.6.4.jar %tempdir%libs\ /s /i /y
 rem Jetty support
 xcopy %libs%jetty-continuation-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-http-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
@@ -176,6 +178,8 @@ xcopy %libs%jWebSocketSenchaPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJDBCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketRPCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJMSPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketArduinoPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketMonitoringPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketMailPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketReportingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketFileSystemPlugIn-%ver%.jar %tempdir%libs\ /s /i /y

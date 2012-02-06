@@ -41,7 +41,7 @@ function init(){
         }
     };
     
-    //executing widgets
+    // executing widgets
     $("#log_box").log();
     $("#demo_box").auth();
     $("#demo_box").actions();

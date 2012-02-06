@@ -22,6 +22,7 @@
 		<module>jWebSocketPlugIns/jWebSocketJDBCPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketRPCPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketJMSPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketSMSPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketMailPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketReportingPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketFileSystemPlugIn</module>
@@ -38,6 +39,7 @@
 		<module>jWebSocketPlugIns/jWebSocketProxyPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketAdminPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketArduinoPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketMonitoringPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketTestPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketClusterPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketPingPongGame</module>
