@@ -48,7 +48,6 @@ function log( aString ) {
 	w.log.eLog.get(0).style.height = lScrollHeight;
 	var numberOfLines = Math.floor(lScrollHeight/lLineHeight);
 	if(numberOfLines >= w.log.options.maxLogLines) {
-		console.log("exceded");
 		var lSplitted = w.log.eLog.html().split("<br>");
 		
 		var lHtml = "";

@@ -21,6 +21,10 @@ $.widget("jws.auth",{
     
 	_init:function(){
 		w.auth   = this;
+		
+		// WEBSOCKET CLIENT
+		mWSC = null;
+		
 		w.auth.eLogoffArea		= w.auth.element.find("#logoff_area");
 		w.auth.eLogonArea		= w.auth.element.find("#login_area");
 		w.auth.eUsername		= w.auth.element.find("#user_text");
@@ -63,7 +67,8 @@ $.widget("jws.auth",{
 		w.auth.eDisConnectButton.click(w.auth.disconnect);
 	},
 	logon: function(){
-		var lURL = jws.getDefaultServerURL();
+		
+		var lURL = (w.auth.options.lURL)?w.auth.options.lURL:jws.getDefaultServerURL();
         
 		var lUsername = w.auth.eUsername.val();
 		var lPassword = w.auth.ePassword.val();
@@ -172,9 +177,7 @@ $.widget("jws.auth",{
 				log( "Logging off " + ( w.auth.mUsername != null ? "'" + w.auth.mUsername + "'" : "" ) + " and disconnecting..." );
 			// the timeout below  is optional,
 			// if you use it you'll get a good-bye message.
-			var lRes = mWSC.logout({
-				
-				});
+			var lRes = mWSC.logout({});
 			
 			if(mLog.isDebugEnabled)
 				log( mWSC.resultToString( lRes ) );
