@@ -3,76 +3,32 @@
  */
 
 function init(){
-    w                   = {};
-    mLog                = {};
-    mLog.isDebugEnabled = true;
-    
-    //Each demo will configure its own callbacks to be passed to the login widget
-    var lCallbacks = { 
-        OnOpen: function(aEvent){
-            if(mLog.isDebugEnabled){
-                log("Opening jWebSocket");
-                log(aEvent);
-            }
-        },
-        OnClose: function(aEvent){
-            if(mLog.isDebugEnabled){
-                log("Closing jWebSocket");
-                log(aEvent);
-            }
-        },
-        OnMessage: function(aEvent){
-            if(mLog.isDebugEnabled){
-                log("Incoming message from jWebSocket");
-                log(aEvent);
-            }
-        },
-        OnWelcome: function(aEvent){
-            if(mLog.isDebugEnabled){
-                log("Welcome to jWebSocket");
-                log(aEvent);
-            }
-        },
-        OnGoodBye: function(aEvent){
-            if(mLog.isDebugEnabled){
-                log("good bye jWebSocket");
-                log(aEvent);
-            }
-        }
-    };
-    
-    // executing widgets
-    $("#log_box").log();
-    $("#demo_box").auth();
-    $("#demo_box").actions();
-    
-    checkWebSocketSupport();
-}
-
-function checkWebSocketSupport(){
-    if( jws.browserSupportsWebSockets() ) {
-        lWSC = new jws.jWebSocketJSONClient({
-            OnWelcome: ""
-        });
-        
-        
-        lWSC.setSamplesCallbacks({
-            OnSamplesServerTime: getServerTimeCallback
-        });
-        lWSC.setFileSystemCallbacks({
-            OnFileLoaded: onFileLoadedObs,
-            OnFileSaved: onFileSavedObs,
-            OnFileError: onFileErrorObs
-        });
-    } else {
-        //disable all buttons
-//        $( "#login_button" ).attr( "disabled", "disabled" );
-        var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-        alert( lMsg );
-        log( lMsg );
-    }
+	w                   = {};
+	mLog                = {};
+	mLog.isDebugEnabled = true;
+	
+	//Each demo will configure its own callbacks to be passed to the login widget
+	var lCallbacks = {
+		OnOpen: function(){
+			//CONFIGURING JWEBSOCKET CLIENT mWSC defined in widget Auth
+			$.jws.setTokenClient(mWSC);
+			$.jws.submit("monitoringPlugin.pcinfo", "register");
+			updateGauge();
+		},
+		OnClose: function(){
+			if(!mWSC.isConnected()) {
+//				resetGauges();
+			}
+		}
+	};
+	
+	$("#log_box").log({
+		maxLogLines: 200, 
+		linesToDelete: 20
+	});
+	$("#demo_box").auth(lCallbacks);
 }
 
 $(document).ready(function(){
-    init();
+	init();
 });

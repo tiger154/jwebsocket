@@ -11,14 +11,14 @@
     
 	$.jws.open = function( jwsServerURL, aTokenClient, timeout){
 		if(jws.browserSupportsWebSockets()){
-			var url = jwsServerURL || jws.getDefaultServerURL();
+			var lURL = jwsServerURL || jws.getDefaultServerURL();
             
 			if(aTokenClient){
 				$.jws.aTokenClient = aTokenClient;
 			}
 			else{
 				$.jws.aTokenClient = new jws.jWebSocketJSONClient();
-				$.jws.aTokenClient.open(url, {
+				$.jws.aTokenClient.open(lURL, {
 					OnOpen: function(aToken){
 						$.jws.trigger('open', aToken);
 						$.jws.aTokenClient.addPlugIn($.jws);
@@ -40,7 +40,6 @@
 			alert(lMsg);
 		}
 	};
-        
 	
 	$.jws.submit = function(ns, type, args, callbacks, options){
 		var lToken = {};
@@ -59,11 +58,13 @@
 		this.aTokenClient.sendToken(lToken, {
 			timeout: lTimeout,
 			callbacks: callbacks,
-			OnResponse: function(token){
-				if (token.code == -1)
-					return callbacks.failure(token);
-				else if (token.code == 0)
-					return callbacks.success(token);
+			OnResponse: function(aToken){
+				if (aToken.code == -1) {
+					return callbacks.failure(aToken);
+				}
+				else if (aToken.code == 0) {
+					return callbacks.success(aToken);
+				}
 			},
 			OnTimeOut: function(){
 				return callbacks.timeout();
@@ -95,4 +96,10 @@
 	$.jws.close = function(){
 		this.aTokenClient.close();
 	};
+	
+	$.jws.setTokenClient = function(aTokenClient){
+		$.jws.aTokenClient = aTokenClient;
+		$.jws.aTokenClient.addPlugIn($.jws);
+	};
+	
 })(jQuery);

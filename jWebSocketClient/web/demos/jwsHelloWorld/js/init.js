@@ -32,7 +32,7 @@ function init(){
 	
 	//configuring tooltip as we wish
 	$("[title]").tooltip({
-		position: "bottom center", 
+		position: "top center", 
 		onShow: function() {
 			var lTip = this.getTip();
 			var lTop = ("<div class='top'></div>");
