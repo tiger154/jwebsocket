@@ -19,9 +19,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
@@ -33,55 +31,56 @@ import org.jwebsocket.token.Token;
  *
  * @author aschulze
  */
-public class Fundamentals extends Activity implements WebSocketClientTokenListener {
+public class ArduinoActivity extends Activity implements WebSocketClientTokenListener {
 
-	private Button lBtnSend;
-	private Button lBtnBroadcast;
-	private Button lBtnClearLog;
-	private EditText lMessage;
-	private EditText lTarget;
-	private TextView lLog;
+	private ImageView lBlue = null;
+	private ImageView lRed = null;
+	private ImageView lGreen = null;
+	private ImageView lYellow = null;
+	
+	private boolean lBlueOn = true;
+	private boolean lRedOn = true;
+	private boolean lGreenOn = true;
+	private boolean lYellowOn = true;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		setContentView(R.layout.fundamentals_hvga_p);
-		lBtnSend = (Button) findViewById(R.id.btnFundSend);
-		lBtnBroadcast = (Button) findViewById(R.id.btnFundBroadcast);
-		lBtnClearLog = (Button) findViewById(R.id.btnFundClearLog);
-		lMessage = (EditText) findViewById(R.id.txfFundMessage);
-		lTarget = (EditText) findViewById(R.id.txfFundTarget);
-		lLog = (EditText) findViewById(R.id.lblFundLog);
 
-		lBtnSend.setOnClickListener(new OnClickListener() {
+		setContentView(R.layout.arduino_hvga_p);
+		
+		lBlue = (ImageView) findViewById(R.id.imgBlue);
+		lRed = (ImageView) findViewById(R.id.imgRed);
+		lGreen = (ImageView) findViewById(R.id.imgGreen);
+		lYellow = (ImageView) findViewById(R.id.imgYellow);
+		
+		lBlue.setOnClickListener(new OnClickListener() {
 
-			public void onClick(View aView) {
-				try {
-					JWC.sendText(lTarget.getText().toString(), lMessage.getText().toString());
-				} catch (WebSocketException ex) {
-					// TODO: handle exception
-				}
+			 public void onClick(View v) {
+				Toast.makeText(getApplicationContext(), "Blue!",
+						Toast.LENGTH_SHORT).show();
 			}
 		});
+		lRed.setOnClickListener(new OnClickListener() {
 
-		lBtnBroadcast.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View aView) {
-				try {
-					JWC.broadcastText(lMessage.getText().toString());
-				} catch (WebSocketException ex) {
-					// TODO: handle exception
-				}
-
+			 public void onClick(View v) {
+				Toast.makeText(getApplicationContext(), "Red!",
+						Toast.LENGTH_SHORT).show();
 			}
 		});
+		lGreen.setOnClickListener(new OnClickListener() {
 
-		lBtnClearLog.setOnClickListener(new OnClickListener() {
+			 public void onClick(View v) {
+				Toast.makeText(getApplicationContext(), "Green!",
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+		lYellow.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View aView) {
-				lLog.setText("");
+			 public void onClick(View v) {
+				Toast.makeText(getApplicationContext(), "Yellow!",
+						Toast.LENGTH_SHORT).show();
 			}
 		});
 	}
@@ -89,66 +88,53 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 	@Override
 	protected void onResume() {
 		super.onResume();
-		log("* opening... ");
 		try {
 			JWC.addListener(this);
 			JWC.open();
 		} catch (WebSocketException ex) {
-			log("* exception: " + ex.getMessage());
 		}
 	}
 
 	@Override
 	protected void onPause() {
-		log("* closing... ");
 		try {
 			JWC.close();
 			JWC.removeListener(this);
 		} catch (WebSocketException ex) {
-			log("* exception: " + ex.getMessage());
 		}
 		super.onPause();
 	}
 
-	private void log(CharSequence aString) {
-		try {
-			lLog.append(aString);
-		} catch (Exception ex) {
-			Toast.makeText(getApplicationContext(), ex.getClass().getSimpleName(),
-					Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	public void processOpened(WebSocketClientEvent aEvent) {
-		log("opened\n");
-		ImageView lImgView = (ImageView) findViewById(R.id.fundImgStatus);
-		if (lImgView != null) {
-			// TODO: in fact it is only connected, not yet authenticated!
-			lImgView.setImageResource(R.drawable.authenticated);
-		}
-	}
-
-	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
-		log("> " + aPacket.getUTF8() + "\n");
-	}
-
+	@Override
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
-		// log("> " + aToken.toString() + "\n");
 	}
 
-	public void processClosed(WebSocketClientEvent aEvent) {
-		log("closed\n");
-		ImageView lImgView = (ImageView) findViewById(R.id.fundImgStatus);
-		if (lImgView != null) {
-			lImgView.setImageResource(R.drawable.disconnected);
+	@Override
+	public void processOpened(WebSocketClientEvent aEvent) {
+		ImageView lImgStatus = (ImageView) findViewById(R.id.arduinoImgStatus);
+		if (lImgStatus != null) {
+			// TODO: in fact it is only connected, not yet authenticated!
+			lImgStatus.setImageResource(R.drawable.authenticated);
 		}
 	}
 
-	public void processOpening(WebSocketClientEvent aEvent) {
-		log("* opening... ");
+	@Override
+	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 	}
 
+	@Override
+	public void processClosed(WebSocketClientEvent aEvent) {
+		ImageView lImgStatus = (ImageView) findViewById(R.id.arduinoImgStatus);
+		if (lImgStatus != null) {
+			lImgStatus.setImageResource(R.drawable.disconnected);
+		}
+	}
+
+	@Override
+	public void processOpening(WebSocketClientEvent aEvent) {
+	}
+
+	@Override
 	public void processReconnecting(WebSocketClientEvent aEvent) {
-		log("* reconnecting... ");
 	}
 }
