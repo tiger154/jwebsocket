@@ -1,0 +1,34 @@
+#scenario_container{
+	width: 95%;
+	float: left;
+	height: 500px;
+}
+
+#main_content{
+	height: 300px;
+	float: left;
+	width: 100%;
+}
+
+#combo{
+	float:right;
+	width: 290px;
+	height:130px;
+	margin-top: 5px;
+}
+
+#content{
+	width: 100%;
+	height: 370px;
+	float: left;
+}
+
+#demo_description p{
+	font-family: "Verdana";
+	font-size: 11px;
+	width: 380px !important;
+	height: 100px !important;
+	padding: 0 10px 10px 10px;
+	float: left;
+	margin-top: 20px;
+}
