@@ -405,7 +405,6 @@ textarea{
 	background: none;
 	color: white;
 }
-
 /*----------------- DEMO_FOOTER --------------*/
 
 
@@ -416,6 +415,10 @@ textarea{
     cursor: pointer;
     font-weight: bold;
     font-family: Verdana, sans-serif;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
 } 
 
 .button .l,
