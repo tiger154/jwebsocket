@@ -106,6 +106,7 @@
 			<domains>
 				<domain>http://jwebsocket.org</domain>
 				<domain>http://10.208.7.111</domain>
+				<domain>http://10.21.68.56</domain>
 				<domain>http://jwebsocket.com</domain>
 				<domain>http://www.jwebsocket.org</domain>
 				<domain>http://www.jwebsocket.com</domain>
