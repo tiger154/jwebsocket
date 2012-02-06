@@ -43,7 +43,9 @@
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
-
+        
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+		
         <!--  MAIN JAVASCRIPT FILE   -->
         <script type="text/javascript" src='js/init.js'></script>
     </head>
@@ -104,7 +106,7 @@
                             <div class="r"></div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
             <div id="container">
@@ -125,11 +127,30 @@
                 <!--       SCENARIO          -->
                 <div id="scenario_container" class="box">
 					<div id="main_content">
-		<!--		AQUI VA EL CONTENIDO DE LOS DEMOS DE CADA CUAL				-->
+						<!--		\\HERE GOES THE CONTENT OF EACH SPECIFIC DEMO\\				-->
+						<div style="float: left; padding-left: 200px;padding-top: 90px;">
+							<div id="button_sample" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+								 onmousedown="this.className='button onmousedown'" 
+								 onmouseup="this.className='button onmouseup'" 
+								 onmouseout="this.className='button onmouseout'" 
+								 onclick="this.className='button onmouseover'">
+								<div class="l"></div>
+								<div class="c">Button sample1</div>
+								<div class="r"></div>
+							</div>
 
-
-
-		<!--		AQUI VA EL CONTENIDO DE LOS DEMOS DE CADA CUAL				-->
+							<div id="button_sample1" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+								 onmousedown="this.className='button onmousedown'" 
+								 onmouseup="this.className='button onmouseup'" 
+								 onmouseout="this.className='button onmouseout'" 
+								 onclick="this.className='button onmouseover'"
+								 title="This is a very simple function that you can enable by adding the property title&quot;something&quot; to any element in the dom">
+								<div class="l"></div>
+								<div class="c">Button sample with tooltip</div>
+								<div class="r"></div>
+							</div>
+						</div>
+						<!--	END	\\HERE GOES THE CONTENT OF EACH SPECIFIC DEMO\\			-->
 					</div>
                     <!--       LOG BOX           -->
                     <div id="log_box" class="box">
