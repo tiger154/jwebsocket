@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
@@ -8,20 +9,14 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jwebsocket</groupId>
-	<artifactId>jWebSocketSMSPlugIn</artifactId>
-	<name>jWebSocketSMSPlugIn</name>
-	<description>jWebSocket SMS Plug-in</description>
+	<artifactId>jWebSocketJCaptchaPlugIn</artifactId>
+	<name>jWebSocketJCaptchaPlugIn</name>
+	<description>jWebSocket jCaptcha Plug-in</description>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-<!--
-	<scm>
-		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketSMSPlugIn</connection>
-		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketSMSPlugIn</developerConnection>
-	</scm>
--->
 	<build>
 		<plugins>
 			<plugin>
@@ -66,7 +61,12 @@
 			<artifactId>jWebSocketServer</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+		
+		<dependency>
+			<groupId>com.octo.captcha</groupId>
+			<artifactId>jcaptcha-all</artifactId>
+			<version>1.0-RC-2.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<!--  define repositories -->
