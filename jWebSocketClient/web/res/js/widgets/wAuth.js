@@ -185,8 +185,10 @@ $.widget("jws.auth",{
         
 	}, 
 	connect: function() {
-		var lURL = jws.getDefaultServerURL();
-		//		log( "Connecting to " + lURL + " ..." );
+		var lURL = (w.auth.options.lURL)?w.auth.options.lURL:jws.getDefaultServerURL();
+		
+		log( "Connecting to " + lURL + " ..." );
+		
 		if( mWSC.isConnected()) {
 			log( "Already connected." );
 			return;
