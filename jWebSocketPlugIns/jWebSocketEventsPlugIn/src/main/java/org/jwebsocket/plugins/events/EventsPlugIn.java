@@ -108,8 +108,8 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			// Initializing the event model
 			mEm.setParent(this);
 			mEm.initialize();
-		} catch (Exception ex) {
-			mLog.error(ex.toString(), ex);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing " + getNamespace() + "-application"));
 		}
 	}
 
@@ -119,17 +119,24 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 	 */
 	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
-		//Engine started event notification
+		// Engine started event notification
 		try {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Engine.started(" + aEngine.toString() + ") event notification...");
 			}
-			EngineStarted lEvent = (EngineStarted) getEm().getEventFactory().stringToEvent("engine.started");
-			lEvent.setEngine(aEngine);
-			lEvent.initialize();
-			mEm.notify(lEvent, null, true);
-		} catch (Exception ex) {
-			mLog.error(ex.toString(), ex);
+			EventModel lEM = getEm();
+			if (null != lEM) {
+				EngineStarted lEvent = (EngineStarted) lEM.getEventFactory().stringToEvent("engine.started");
+				lEvent.setEngine(aEngine);
+				lEvent.initialize();
+				mEm.notify(lEvent, null, true);
+			} else {
+				mLog.error("EventModel instance not available on engine start "
+						+ "for " + getNamespace()
+						+ "-application, probably wrong Spring configuration.");
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "engine started"));
 		}
 	}
 
@@ -144,12 +151,19 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Engine.stopped(" + aEngine.toString() + ") event notification...");
 			}
-			EngineStopped lEvent = (EngineStopped) getEm().getEventFactory().stringToEvent("engine.stopped");
-			lEvent.setEngine(aEngine);
-			lEvent.initialize();
-			mEm.notify(lEvent, null, true);
-		} catch (Exception ex) {
-			mLog.error(ex.toString(), ex);
+			EventModel lEM = getEm();
+			if (null != lEM) {
+				EngineStopped lEvent = (EngineStopped) lEM.getEventFactory().stringToEvent("engine.stopped");
+				lEvent.setEngine(aEngine);
+				lEvent.initialize();
+				mEm.notify(lEvent, null, true);
+			} else {
+				mLog.error("EventModel instance not available on engine stop "
+						+ "for " + getNamespace()
+						+ "-application, probably wrong Spring configuration.");
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "engine stopped"));
 		}
 	}
 
@@ -168,8 +182,8 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			lEvent.setConnector(aConnector);
 			lEvent.initialize();
 			mEm.notify(lEvent, null, true);
-		} catch (Exception ex) {
-			mLog.error(ex.toString(), ex);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "connector started"));
 		}
 	}
 
@@ -190,8 +204,8 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 
 				//Initializing the event...
 				lEvent.initialize();
-			} catch (Exception ex) {
-				mLog.error(ex.toString(), ex);
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "process token"));
 			}
 
 			processEvent(aConnector, lEvent);
@@ -225,8 +239,8 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			lEvent.setCloseReason(aCloseReason);
 			lEvent.initialize();
 			mEm.notify(lEvent, null, true);
-		} catch (Exception ex) {
-			mLog.error(ex.toString(), ex);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "connector stopped"));
 		}
 	}
 

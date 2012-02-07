@@ -154,8 +154,7 @@ public class TCPEngine extends BaseEngine {
 								+ "KeyStore '" + mKeyStore + "' not found.");
 					}
 				} catch (Exception lEx) {
-					mLog.error("SSL engine could not be instantiated: "
-							+ lEx.getMessage());
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SSL engine"));
 				}
 			} else {
 				mLog.error("SSL engine could not be instantiated due to missing configuration,"

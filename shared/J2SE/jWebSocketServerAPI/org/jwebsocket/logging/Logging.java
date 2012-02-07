@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.config.xml.LoggingConfig;
 import org.jwebsocket.util.Tools;
@@ -32,13 +31,14 @@ import org.jwebsocket.util.Tools;
 /**
  * Provides the common used jWebSocket logging support based on
  * Apache's log4j.
- * @author aschulze
+ * @author Alexander Schulze (aschulze, Innotrade GmbH, jWebSocket.org)
  */
 public class Logging {
 
 	private static PatternLayout mLayout = null;
 	private static Appender mAppender = null;
 	private static Level mLogLevel = Level.DEBUG;
+	private static boolean mIsStackTraceEnabled = false;
 	/**
 	 * Log output is send to the console (stdout).
 	 */
@@ -226,6 +226,34 @@ public class Logging {
 
 	public static boolean isInitialized() {
 		return (mAppender != null);
+	}
+
+	public static boolean isStackTraceEnabled() {
+		return mIsStackTraceEnabled;
+	}
+
+	public static void setStackTraceEnabled(boolean aEnabled) {
+		mIsStackTraceEnabled = aEnabled;
+	}
+
+	public static String getStackTraceAsString(Throwable aThrowable) {
+		final StringBuilder result = new StringBuilder("");
+		for (StackTraceElement lElement : aThrowable.getStackTrace()) {
+			result.append(lElement);
+			result.append("\n");
+		}
+		return result.toString();
+	}
+
+	public static String getExceptionMessage(Exception aException) {
+		return aException.getMessage()
+				+ (mIsStackTraceEnabled ? "\n" + getStackTraceAsString(aException) : "");
+	}
+
+	public static String getSimpleExceptionMessage(Exception aException, String aHint) {
+		return aException.getClass().getSimpleName()
+				+ " on " + aHint + ": "
+				+ getExceptionMessage(aException);
 	}
 
 	/**
