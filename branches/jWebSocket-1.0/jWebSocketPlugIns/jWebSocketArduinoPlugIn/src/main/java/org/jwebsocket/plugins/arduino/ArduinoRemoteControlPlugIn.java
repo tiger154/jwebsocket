@@ -46,7 +46,6 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 
 	public ArduinoRemoteControlPlugIn() {
 		this.mArduinoConnection = new ArduinoConnection();
-
 	}
 
 	public ArduinoConnection getArduinoConnection() {
@@ -64,13 +63,11 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 			mLog.info("Initializing the parameters for communication with Arduino...");
 		}
 		try {
-
 			this.mArduinoConnection.init();
 			this.mArduinoConnection.on(DataIn.class, this);
 		} catch (Exception ex) {
-			mLog.error("It was not possible start Arduino: " + ex.getMessage());
+			mLog.error(ex.getClass().getSimpleName() + " on starting Arduino: " + ex.getMessage());
 		}
-
 	}
 
 	public void processEvent(DataIn aEvent, ResponseEvent aResponseEvent) throws MissingTokenSender {
@@ -88,9 +85,7 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 				Integer[] lTrunkValues = JoystickProgram.treatValues(ldata);
 				sendJoystickPosition(lTrunkValues[0], lTrunkValues[1]);
 				break;
-
 		}
-
 	}
 
 	public void processEvent(Command aEvent, C2SResponseEvent aResponseEvent) throws IOException, MissingTokenSender {
@@ -98,8 +93,7 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 			mLog.info("Processing command event...");
 		}
 		try {
-
-			//Sends a command to Arduino
+			// Sends a command to Arduino
 			mArduinoConnection.sendCommand(aEvent.getCmd());
 		} catch (IOException ex) {
 			aResponseEvent.getArgs().setString("message", "The command could not be sent to Arduino.");
@@ -110,12 +104,9 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Processing start-rc event...");
 		}
-
 		try {
-			//Requests the status of the LEDs
+			// Requests the status of the LEDs
 			mArduinoConnection.sendCommand(53);
-
-
 		} catch (IOException ex) {
 			aResponseEvent.getArgs().setString("message", "Unable to communicate with Arduino: " + ex.getMessage());
 		} catch (NullPointerException ex) {
@@ -124,7 +115,7 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 	}
 
 	private void sendLedState(Boolean aBlue, Boolean aRed, Boolean aGreen, Boolean aYellow) throws MissingTokenSender {
-		//Notified with an event status LEDs
+		// Notified with an event status LEDs
 		for (WebSocketConnector lClient : this.getServerAllConnectors().values()) {
 			this.notifyS2CEvent(new S2CLedState(aBlue,
 					aRed,
