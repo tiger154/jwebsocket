@@ -15,9 +15,9 @@
 
     <!-- Labels -->
     <Gauge2Label id="label1" text="Memory" font="arial 46 bold" foreColor="#367CBB" y="450" x="415"/>
-    <Gauge2Label id="label2" text="0" font="40 bold" foreColor="#FBFBFB" y="455" x="590"/>
+    <Gauge2Label id="label2" text="0" font="40 bold" foreColor="#FBFBFB" y="455" x="590" anchorHorizontal="center" anchorVertical="center"/>
     <Gauge2Label id="label3" text="Swap" font="arial 46 bold" foreColor="#70BF7B" y="643" x="435"/>
-    <Gauge2Label id="label4" text="0" font="40 bold" foreColor="#FBFBFB" y="650" x="590"/>
+    <Gauge2Label id="label4" text="0" font="40 bold" foreColor="#FBFBFB" y="650" x="590" anchorHorizontal="center" anchorVertical="center"/>
 
     <!-- Range -->
     <Gauge2RadialRange centerX="500" centerY="500" width="1000" height="1000" startAngle="-90" endAngle="90">
@@ -34,7 +34,8 @@
         <Gauge2RadialScale font="46 bold" foreColor="#000000" radius="430" startValue="0" endValue="100" labelCount="6">
             
             <!-- Scale Selection -->
-            <Gauge2RadialScaleSection sectionWidth="30" color="#367CBB" stroke="#FBFBFB" strokeWidth="10" radius="380" /><!--startValue="0" endValue="100"-->
+            <Gauge2RadialScaleSection sectionWidth="40" color="#367CBB" stroke="#FBFBFB" strokeWidth="2" radius="360" startValue="1" endValue="59"/>
+           
 
             <!--Needle-->
             <Gauge2RadialNeedle id="needle1" value="0" stroke="#FBFBFB" strokeWidth="10"
@@ -67,7 +68,7 @@
         <Gauge2RadialScale radius="430" startValue="0" endValue="100">
             
             <!-- Scale Selection -->
-            <Gauge2RadialScaleSection  sectionWidth="30" color="#70BF7B" stroke="#FBFBFB" strokeWidth="10" radius="380" /><!--startValue="0" endValue="100"-->
+            <Gauge2RadialScaleSection sectionWidth="40" color="#70BF7B" stroke="#FBFBFB" strokeWidth="2" radius="360" startValue="59" endValue="99"/>
         </Gauge2RadialScale>
 
         <!-- Ticks -->
