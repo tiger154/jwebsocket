@@ -17,7 +17,7 @@ function init(){
 	};
 	
 	var lOptions = {
-		lURL: "ws://10.208.7.26:8787/jWebSocket/jWebSocket",
+		lURL: jws.getDefaultServerURL(),
 		OnOpen: function( aEvent ) {
 			if( !gRcPlugin ) {
 				securityFilter = new jws.SecurityFilter();
