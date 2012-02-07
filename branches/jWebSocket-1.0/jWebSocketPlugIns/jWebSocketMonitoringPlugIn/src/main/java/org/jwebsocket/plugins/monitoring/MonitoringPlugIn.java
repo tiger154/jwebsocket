@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket MonitoringPlugIn Plug-In
+//	jWebSocket - jWebSocket Monitoring Plug-in
 //  Copyright (c) 2012 Innotrade GmbH, jWebSocket.org
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
@@ -16,6 +16,7 @@
 package org.jwebsocket.plugins.monitoring;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -75,10 +76,24 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		// Getting server exchanges
 		mFormat = new SimpleDateFormat("MM/dd/yyyy");
 
+		mDBColl = null;
 		try {
-			mDBColl = new Mongo().getDB("db_charting").getCollection("exchanges_server");
-		} catch (Exception ex) {
-			mLog.error(ex.getMessage());
+			Mongo lMongo = new Mongo();
+			if (null != lMongo) {
+				DB lDB = lMongo.getDB("db_charting");
+				if (null != lDB) {
+					mDBColl = lDB.getCollection("exchanges_server");
+				} else {
+					mLog.error("Mongo db_charting collection could not be obtained.");
+				}
+			} else {
+				mLog.error("Mongo DB instance could not be created.");
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing MongoDB connection"));
+		}
+		if (null == mDBColl) {
+			mLog.error("MongoDB collection exchanges_server could not be obtained.");
 		}
 	}
 
@@ -171,8 +186,8 @@ public class MonitoringPlugIn extends TokenPlugIn {
 					}
 				}
 				mClients.add(aConnector);
-			}
-			if (aToken.getType().equals("unregister")) {
+				
+			} else if (aToken.getType().equals("unregister")) {
 				mClients.remove(aConnector);
 			}
 		}
@@ -185,7 +200,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			mSigar = new Sigar();
 			while (mInformationRunning) {
 				for (WebSocketConnector lConnector : mClients) {
-					String lInterest = lConnector.getVar("interest").toString();
+					String lInterest = lConnector.getString("interest");
 					if ("computerInfo".equals(lInterest)) {
 						gatherComputerInfo();
 						broadcastComputerInfo(lConnector);
@@ -205,7 +220,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException ex) {
-					ex.printStackTrace();
 				}
 			}
 		}
@@ -236,7 +250,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException ex) {
-					ex.printStackTrace();
 				}
 			}
 		}

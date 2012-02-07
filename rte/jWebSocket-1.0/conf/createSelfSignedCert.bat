@@ -1,9 +1,13 @@
 @echo off
-set name=jWebSocket2
+set name=jWebSocket
 
 echo This script generates a new self signed certificate and a keystore for jWebSocket.
-echo The name of the keystore is specified as %name%.
-echo Are you sure to overwrite potentially existing files?
+echo The name of the keystore is specified as '%name%', please change in this script according to your needs.
+echo.
+echo This script will overwrite potentially existing files - are you sure you want to do that?
+echo If you update the keystore password within this dialog don't miss to update the pass in the jWebSocket.xml accordingly!
+echo.
+echo Press Ctrl+C to abort or . . .
 pause
 
 set keyFile=%name%.key
