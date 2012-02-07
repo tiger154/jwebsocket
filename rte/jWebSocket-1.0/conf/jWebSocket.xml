@@ -21,7 +21,7 @@
 	<installation>prod</installation>
 
 	<!--
-		define the protocol, default protocol if not specified is 'json'
+		define the protocol, default protocol monif not specified is 'json'
 		possible values are [json|xml|csv]
 	-->
 	<protocol>json</protocol>
@@ -50,14 +50,14 @@
 		</library>
 		-->
 		<library>
-			<id>RXTX Serial IO</id>
+			<id>RXTXSerialIO</id>
 			<url>${JWEBSOCKET_HOME}/libs/rxtx-2.1.7.jar</url>
-			<description>Serial IO library for Arduino</description>
+			<description>RXTX Serial IO library</description>
 		</library>
 		<library>
-			<id>Sigar Hardware Monitoring</id>
+			<id>SigarHardwareMonitor</id>
 			<url>${JWEBSOCKET_HOME}/libs/sigar-1.6.4.jar</url>
-			<description>Hardware Monitoring (Sigar Library)</description>
+			<description>Sigar Hardware Monitoring Library</description>
 		</library>
 	</libraries>
 
@@ -1390,6 +1390,11 @@
 		</plugin>
 		
 		<!-- Arduino Remote Control Plug-in -->
+		<!-- 
+			This plug-in requires Arduino hardware to be connected and configured.
+			This plug-in requires the rxtx lib to be loaded in the libraries section!.
+		-->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
 			<ns>rc</ns>
@@ -1399,6 +1404,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
+		-->
 
 		<!-- JMX Plug-in -->
 		<plugin>
