@@ -89,18 +89,17 @@
 		<!-- Attention, currently only ${JWEBSOCKET_HOME} is supported as env var -->
 		<param name="file" value="${JWEBSOCKET_HOME}/logs/adminLog.log" />
 		<param name="MaxFileSize" value="60KB"/>
-		<param name="datePattern" value="'.'yyyy-MM-dd"/>
 		<param name="threshold" value="info"/>
 		<param name="append" value="true" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd | HH:mm:ss} %m%n" />
 		</layout>
 	</appender>
+	
 	<appender name="jmxLog" class="org.apache.log4j.RollingFileAppender">
 		<!-- Attention, currently only ${JWEBSOCKET_HOME} is supported as env var -->
 		<param name="file" value="${JWEBSOCKET_HOME}/logs/jmxLog.log" />
 		<param name="MaxFileSize" value="60KB"/>
-		<param name="datePattern" value="'.'yyyy-MM-dd"/>
 		<param name="threshold" value="DEBUG"/>
 		<param name="append" value="true" />
 		<layout class="org.apache.log4j.PatternLayout">
