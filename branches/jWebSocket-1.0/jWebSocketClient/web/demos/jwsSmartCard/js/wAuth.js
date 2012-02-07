@@ -45,7 +45,7 @@ $.widget("jws.auth",{
 		w.auth.eUsername.val("");
 		w.auth.ePassword.val("");
 		
-		$("#content_right").hide();
+		resetDetails();
 	},
 	
 	logon: function(){
@@ -75,12 +75,11 @@ $.widget("jws.auth",{
 				
 				jc.getUserInfo({
 					OnSuccess: function(aResponse){
-						$("#text").find("p").html("Welcome: "+ aResponse.firstname + "<br/>You are authenticated via SmartCard");
+						$("#text").find("p").html("Welcome: "+ aResponse.firstname + "<br/>You are authenticated!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 						$("#img").attr("style", "background: url(css/images/" + lWSC.fUsername + ".png)");
 						$(".firstname").attr("value", aResponse.firstname);
 						$(".secondname").attr("value", aResponse.secondname);
 						$(".address").text(aResponse.address);
-						$("#content_right").show();
 					}
 				});
 				

@@ -14,7 +14,7 @@ function init(){
 	w.auth.eUsername.val("");
 	w.auth.ePassword.val("");
 	
-	$("#content_right").hide();
+	
 	checkWebSocketSupport();	
 }
 
@@ -68,7 +68,7 @@ function checkWebSocketSupport(){
 									terminal: aTerminal
 								},
 								OnSuccess: function(aToken){
-									if (!lWSC.isLoggedIn())
+									if (!lWSC.isLoggedIn()){
 										jc.login({
 											OnSuccess: function(aToken){
 												w.auth.eUsername.val(aToken.response.user);
@@ -80,6 +80,7 @@ function checkWebSocketSupport(){
 												log(JSON.stringify(aToken));
 											}
 										});
+									}
 								}
 							});
 						},
@@ -110,8 +111,24 @@ function checkWebSocketSupport(){
 					log( "<font style='color:red'>jWebSocket GoodBye received.</font>" );
 				}
 			},
+
+			OnToken: function( aToken ) {
+				if( aToken.ns == "org.jwebsocket.auth" ) {
+					console.log( "TYPE: " + JSON.stringify(aToken) );
+					if( aToken.type == "logon" ) {
+					console.log( "LOGIN" );
+						w.auth.eUsername.val(aToken.user);
+						w.auth.ePassword.val(aToken.password);
+						w.auth.logon();
+					} else if( aToken.type == "logoff" ) {
+						console.log( "LOGOFF" );
+						if (lWSC.isLoggedIn())
+							w.auth.logoff();
+					}
+				}
+			},
+			
 			OnMessage: function( aEvent, aToken ) {
-               
 				var lDate = "";
 				if( aToken.date_val ) {
 					lDate = jws.tools.ISO2Date( aToken.date_val );
@@ -132,6 +149,7 @@ function checkWebSocketSupport(){
 				}
 				w.auth.eWebSocketType.text("WebSocket: " + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)" ));
 			},
+			
 			OnClose: function( aEvent ) {
 				if(mLog.isDebugEnabled){
 					log( "<font style='color:#888'>jWebSocket connection closed.</font>" );
@@ -151,6 +169,14 @@ function checkWebSocketSupport(){
 	}
 }
 
+function resetDetails(){
+	$("#text").find("p").html("Welcome: Anonymous<br/>You are not authenticated!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+	$("#img").attr("style", "background: url(css/images/.png)");
+	$(".firstname").attr("value", "");
+	$(".secondname").attr("value", "");
+	$(".address").text("");
+
+}
 
 
 function dialog(title, message){
