@@ -40,9 +40,9 @@ public class PingPongPlugIn extends TokenPlugIn {
     public PingPongPlugIn(PluginConfiguration aConfiguration) {
         super(aConfiguration);
         setNamespace(aConfiguration.getNamespace());
-        // System.out.println(">> Loading the plug-in...");
+        // System.out.println("Loading the plug-in...");
         if (mLog.isDebugEnabled()) {
-            mLog.debug("PlugIn instantiated successfully!");
+            mLog.debug("Plug-in instantiated successfully!");
         }
 
         try {
