@@ -21,7 +21,10 @@ function init(){
 	// @maxLogLines: maximum number of lines that will be logged
 	// @linesToDelete: quantity of lines that will be deleted from 
 	// the log window each time the log exceeds the maxLogLines
-	$("#log_box").log({maxLogLines: 200, linesToDelete: 20});
+	$("#log_box").log({
+		maxLogLines: 200, 
+		linesToDelete: 20
+	});
 	
 	$("#demo_box").auth(lCallbacks);
 	
