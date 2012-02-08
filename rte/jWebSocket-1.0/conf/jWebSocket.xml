@@ -1372,10 +1372,11 @@
 		
 		<!-- Sencha Demo plugin -->
 		<plugin>
-			<name>org.jwebsocket.plugins.extjs.ExtJSDemoPlugin</name>
+			<name>org.jwebsocket.plugins.extjs.ExtJSGridFormDemoPlugin</name>
 			<id>jws.extjsdemo</id>
-			<ns>jws.ext.demo</ns>
-			<!-- <ns>org.jwebsocket.plugins.extjs</ns> -->
+			<ns>jws.ext.gridformdemo</ns>
+			<!-- <name>org.jwebsocket.plugins.extjs.ExtJSDemoPlugin</name> -->
+			<!-- <ns>jws.ext.demo</ns> -->
 			<jar>jWebSocketSenchaPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>

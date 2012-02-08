@@ -16,7 +16,6 @@
 package org.jwebsocket.plugins.extjs;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import javolution.util.FastList;
 import org.jwebsocket.api.PluginConfiguration;
@@ -33,239 +32,242 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 
-    private static Customers cutomersList = new Customers();
+	private static Customers cutomersList = new Customers();
 
-    public ExtJSGridFormDemoPlugin(PluginConfiguration aConfiguration) {
-        super(aConfiguration);
-        setNamespace(aConfiguration.getNamespace());
-    }
+	public ExtJSGridFormDemoPlugin(PluginConfiguration aConfiguration) {
+		super(aConfiguration);
+		setNamespace(aConfiguration.getNamespace());
+	}
 
-    @Override
-    public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+	@Override
+	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
-        if (aToken.getNS().equals(getNamespace())) {
+		if (aToken.getNS().equals(getNamespace())) {
 
-            if (aToken.getType().equals("create")) {
-                proccessCreate(aResponse, aConnector, aToken);
-            } else if (aToken.getType().equals("read")) {
-                proccessRead(aResponse, aConnector, aToken);
-            } else if (aToken.getType().equals("destroy")) {
-                proccessDestroy(aResponse, aConnector, aToken);
-            } else if (aToken.getType().equals("update")) {
-                proccessUpdate(aResponse, aConnector, aToken);
-            }
+			if (aToken.getType().equals("create")) {
+				proccessCreate(aResponse, aConnector, aToken);
+			} else if (aToken.getType().equals("read")) {
+				proccessRead(aResponse, aConnector, aToken);
+			} else if (aToken.getType().equals("destroy")) {
+				proccessDestroy(aResponse, aConnector, aToken);
+			} else if (aToken.getType().equals("update")) {
+				proccessUpdate(aResponse, aConnector, aToken);
+			}
 
-        }
-    }
+		}
+	}
 
-    private void proccessCreate(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+	private void proccessCreate(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
-        String name  = aToken.getString("name").trim();
-        String email = aToken.getString("email").trim();
-        Integer age  = 0;
+		String name = aToken.getString("name").trim();
+		String email = aToken.getString("email").trim();
+		Integer age = 0;
 
-        age = aToken.getInteger("age");
+		age = aToken.getInteger("age");
 
-        if(age == null)
-          age = Integer.parseInt(aToken.getString("age"));
+		if (age == null) {
+			age = Integer.parseInt(aToken.getString("age"));
+		}
 
-        Token result = createResponse(aToken);
+		Token result = createResponse(aToken);
 
-        if ((name != null) && (email != null) && (age != null)) {
- 
-                try {
+		if ((name != null) && (email != null) && (age != null)) {
 
-                    cutomersList.add(new CustomerDef(cutomersList.getCount(), name, email, age));
-                    //{"success":true,"message":"User Create","data":   {"id":5,"name":"osvaldo","email":"oaguilar@rubble.com"}}
-                    //DATA FOR EXTJS
-                    result.setInteger("code", 0);
-                    result.setBoolean("success", true);
-                    result.setString("message", "User with mail: "+email+" was created correctly");
+			try {
 
-                } catch (Exception ex) {
+				cutomersList.add(new CustomerDef(cutomersList.getCount(), name, email, age));
+				//{"success":true,"message":"User Create","data":   {"id":5,"name":"osvaldo","email":"oaguilar@rubble.com"}}
+				//DATA FOR EXTJS
+				result.setInteger("code", 0);
+				result.setBoolean("success", true);
+				result.setString("message", "User with mail: " + email + " was created correctly");
 
-                    result.setString("message", ex.getMessage());
-                    result.setInteger("code", -1);
-                    result.setBoolean("failure", true);
-                }
-                //REACHING DATA FOR SHOWING TO THE USER
-                FastList<Token> data = new FastList<Token>();
-                Token ta = TokenFactory.createToken();
-                ta.setString("name", name);
-                ta.setString("email", email);
-                ta.setInteger("age", age);
-                ta.setInteger("id", cutomersList.getCount() - 1);
-                data.add(ta);
+			} catch (Exception ex) {
 
-                //SETTING THE DATA LIST TO THE OUTGOING TOKEN
-                result.setList("data", data);
+				result.setString("message", ex.getMessage());
+				result.setInteger("code", -1);
+				result.setBoolean("failure", true);
+			}
+			//REACHING DATA FOR SHOWING TO THE USER
+			FastList<Token> data = new FastList<Token>();
+			Token ta = TokenFactory.createToken();
+			ta.setString("name", name);
+			ta.setString("email", email);
+			ta.setInteger("age", age);
+			ta.setInteger("id", cutomersList.getCount() - 1);
+			data.add(ta);
 
-                //SENDING THE TOKEN
-                getServer().sendToken(aConnector, result);
+			//SETTING THE DATA LIST TO THE OUTGOING TOKEN
+			result.setList("data", data);
 
-                String msg = "User with mail: "+email+" was created correctly";
-                notifyAllConectors("notifyCreate",msg);
-            
-        } else {
-            getServer().sendErrorToken(aConnector, aToken, -1, "one of them name, email, age are undefined ");
-        }
+			//SENDING THE TOKEN
+			getServer().sendToken(aConnector, result);
 
-    }
+			String msg = "User with mail: " + email + " was created correctly";
+			notifyAllConectors("notifyCreate", msg);
 
-    private void proccessRead(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+		} else {
+			getServer().sendErrorToken(aConnector, aToken, -1, "one of them name, email, age are undefined ");
+		}
 
-        Token result = createResponse(aToken);
-        FastList<Token> data = new FastList<Token>();
-        Integer id = null;
+	}
 
-        try {
-            id = Integer.parseInt(aToken.getString("id"));
-        } catch (Exception exp) {
-        }
+	private void proccessRead(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
-        if (id != null) {
-            CustomerDef customer = cutomersList.getCustomer(id);
+		Token result = createResponse(aToken);
+		FastList<Token> data = new FastList<Token>();
+		Integer id = null;
 
-            result.setInteger("code", 0);
-            result.setString("message", "User found with id: " + id);
+		try {
+			id = Integer.parseInt(aToken.getString("id"));
+		} catch (Exception exp) {
+		}
 
-            Token ta = TokenFactory.createToken();
-            ta.setString("name", customer.getName());
-            ta.setString("email", customer.getEmail());
-            ta.setInteger("age", customer.getAge());
-            ta.setInteger("id", customer.getId());
-            data.add(ta);
+		if (id != null) {
+			CustomerDef customer = cutomersList.getCustomer(id);
 
-        } else {
+			result.setInteger("code", 0);
+			result.setString("message", "User found with id: " + id);
 
-            Integer start = aToken.getInteger("start");
-            Integer limit = aToken.getInteger("limit");
+			Token ta = TokenFactory.createToken();
+			ta.setString("name", customer.getName());
+			ta.setString("email", customer.getEmail());
+			ta.setInteger("age", customer.getAge());
+			ta.setInteger("id", customer.getId());
+			data.add(ta);
 
-            List<CustomerDef> customers = cutomersList.getSubList(start, start + limit);
+		} else {
 
+			Integer start = aToken.getInteger("start");
+			Integer limit = aToken.getInteger("limit");
 
-            for (CustomerDef customer : customers) {
-
-                Token ta = TokenFactory.createToken();
-                ta.setString("name", customer.getName());
-                ta.setString("email", customer.getEmail());
-                ta.setInteger("age", customer.getAge());
-                ta.setInteger("id", customer.getId());
-                data.add(ta);
-            }
-            result.setInteger("code", 0);
-
-            result.setInteger("totalCount", cutomersList.getSize());
-        }
+			List<CustomerDef> customers = cutomersList.getSubList(start, start + limit);
 
 
+			for (CustomerDef customer : customers) {
 
-        result.setList("data", data);
+				Token ta = TokenFactory.createToken();
+				ta.setString("name", customer.getName());
+				ta.setString("email", customer.getEmail());
+				ta.setInteger("age", customer.getAge());
+				ta.setInteger("id", customer.getId());
+				data.add(ta);
+			}
+			result.setInteger("code", 0);
 
-        getServer().sendToken(aConnector, result);
-
-    }
-
-    private void notifyAllConectors(String typeNotify, String message){
-
-        Token Notify = TokenFactory.createToken("jws.ext.gridformdemo", typeNotify);
-        Collection<WebSocketConnector> clients = getServer().getAllConnectors().values();
-
-        Notify.setString("message", message);
-        
-        for (WebSocketConnector c : clients)
-            getServer().sendToken(c, Notify);
-        
-    }
-
-       private void notifyAllConectorsWithoutMe(WebSocketConnector aConnector, String typeNotify, String message){
-
-        Token Notify = TokenFactory.createToken("jws.ext.gridformdemo", typeNotify);
-        Collection<WebSocketConnector> clients = getServer().getAllConnectors().values();
-        clients.remove(aConnector);
-        
-        Notify.setString("message", message);
-
-        for (WebSocketConnector c : clients){
-            getServer().sendToken(c, Notify);
-        }
-
-    }
+			result.setInteger("totalCount", cutomersList.getSize());
+		}
 
 
-    private void proccessUpdate(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
-        Token result = createResponse(aToken);
-        String msg = "";
+		result.setList("data", data);
 
-        String name  = aToken.getString("name");
-        String email = aToken.getString("email");
-        Integer id   = 0;
-        Integer age  = 0;
+		getServer().sendToken(aConnector, result);
 
-        id   = aToken.getInteger("id");
-        age  = aToken.getInteger("age");
+	}
 
-        if(id == null)
-          id = Integer.parseInt(aToken.getString("id"));
-        if(age == null)
-          age = Integer.parseInt(aToken.getString("age"));
+	private void notifyAllConectors(String typeNotify, String message) {
 
-        CustomerDef customer = cutomersList.getCustomer(id);
+		Token Notify = TokenFactory.createToken("jws.ext.gridformdemo", typeNotify);
+		Collection<WebSocketConnector> clients = getServer().getAllConnectors().values();
 
-        if (customer == null) {
-            result.setInteger("code", -1);
-            msg = "there is no customer with id "+id+" and name "+ name;
-        }
-        else{
-            customer.setEmail(email);
-            customer.setName(name);
-            customer.setAge(age);
+		Notify.setString("message", message);
 
-            msg = "User with id: "+id+" updated correctly";
+		for (WebSocketConnector c : clients) {
+			getServer().sendToken(c, Notify);
+		}
 
-            FastList<Token> data = new FastList<Token>();
-            Token ta = TokenFactory.createToken();
-            ta.setString("name", customer.getName());
-            ta.setString("email", customer.getEmail());
-            ta.setInteger("id", customer.getId());
-            ta.setInteger("age", customer.getAge());
-            data.add(ta);
+	}
 
-            //SETTING THE DATA LIST TO THE OUTGOING TOKEN
-            result.setList("data", data);
+	private void notifyAllConectorsWithoutMe(WebSocketConnector aConnector, String typeNotify, String message) {
+
+		Token Notify = TokenFactory.createToken("jws.ext.gridformdemo", typeNotify);
+		Collection<WebSocketConnector> clients = getServer().getAllConnectors().values();
+		clients.remove(aConnector);
+
+		Notify.setString("message", message);
+
+		for (WebSocketConnector c : clients) {
+			getServer().sendToken(c, Notify);
+		}
+
+	}
+
+	private void proccessUpdate(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+
+		Token result = createResponse(aToken);
+		String msg = "";
+
+		String name = aToken.getString("name");
+		String email = aToken.getString("email");
+		Integer id = 0;
+		Integer age = 0;
+
+		id = aToken.getInteger("id");
+		age = aToken.getInteger("age");
+
+		if (id == null) {
+			id = Integer.parseInt(aToken.getString("id"));
+		}
+		if (age == null) {
+			age = Integer.parseInt(aToken.getString("age"));
+		}
+
+		CustomerDef customer = cutomersList.getCustomer(id);
+
+		if (customer == null) {
+			result.setInteger("code", -1);
+			msg = "there is no customer with id " + id + " and name " + name;
+		} else {
+			customer.setEmail(email);
+			customer.setName(name);
+			customer.setAge(age);
+
+			msg = "User with id: " + id + " updated correctly";
+
+			FastList<Token> data = new FastList<Token>();
+			Token ta = TokenFactory.createToken();
+			ta.setString("name", customer.getName());
+			ta.setString("email", customer.getEmail());
+			ta.setInteger("id", customer.getId());
+			ta.setInteger("age", customer.getAge());
+			data.add(ta);
+
+			//SETTING THE DATA LIST TO THE OUTGOING TOKEN
+			result.setList("data", data);
 
 
-        }
+		}
 
-        result.setString("message", msg);
-        getServer().sendToken(aConnector, result);
+		result.setString("message", msg);
+		getServer().sendToken(aConnector, result);
 
-        if(customer != null)
-          notifyAllConectors("notifyUpdate",msg);
-    }
+		if (customer != null) {
+			notifyAllConectors("notifyUpdate", msg);
+		}
+	}
 
-    private void proccessDestroy(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+	private void proccessDestroy(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
-        Integer id = aToken.getInteger("id");
-        Token result = createResponse(aToken);
-        FastList<Token> data = new FastList<Token>();
+		Integer id = aToken.getInteger("id");
+		Token result = createResponse(aToken);
+		FastList<Token> data = new FastList<Token>();
 
-        if (cutomersList.deleteCustomer(id)) {
-            result.setInteger("code", 0);
-            result.setBoolean("success", true);
-            result.setString("message", "delete success customer with id: " + id);
-            result.setList("data", data);
-        } else {
-            result.setInteger("code", -1);
-            result.setBoolean("failure", true);
-            result.setString("message", "An error has occurred.  could not delete the user with id: " + id);
-        }
+		if (cutomersList.deleteCustomer(id)) {
+			result.setInteger("code", 0);
+			result.setBoolean("success", true);
+			result.setString("message", "delete success customer with id: " + id);
+			result.setList("data", data);
+		} else {
+			result.setInteger("code", -1);
+			result.setBoolean("failure", true);
+			result.setString("message", "An error has occurred.  could not delete the user with id: " + id);
+		}
 
-        result.setInteger("totalCount", cutomersList.getSize());
-        getServer().sendToken(aConnector, result);
+		result.setInteger("totalCount", cutomersList.getSize());
+		getServer().sendToken(aConnector, result);
 
-        String msg = "delete success customer with id: " + id;
-        notifyAllConectors("notifyDestroy",msg);
-    }
+		String msg = "delete success customer with id: " + id;
+		notifyAllConectors("notifyDestroy", msg);
+	}
 }
