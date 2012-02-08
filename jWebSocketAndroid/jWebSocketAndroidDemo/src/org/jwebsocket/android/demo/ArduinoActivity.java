@@ -20,11 +20,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.Toast;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 
 /**
  *
@@ -41,6 +44,28 @@ public class ArduinoActivity extends Activity implements WebSocketClientTokenLis
 	private boolean lRedOn = true;
 	private boolean lGreenOn = true;
 	private boolean lYellowOn = true;
+	
+	private void updateLEDs() {
+		Token lToken = TokenFactory.createToken("rc","s2c.en");
+
+		// pass namespace and type
+		// for client's canvas "command"
+		lToken.setBoolean("blue", lBlueOn);
+		lToken.setBoolean("red", lRedOn);
+		lToken.setBoolean("green", lGreenOn);
+		lToken.setBoolean("yellow", lYellowOn);
+
+		lToken.setString("_e", "ledState");
+		lToken.setString("_p", "rc");
+		lToken.setString("_rt", "void");
+		lToken.setBoolean("hc", false);
+		try {
+			JWC.sendToken(lToken);
+		} catch (WebSocketException ex) {
+			// handle exception
+		}
+	}
+	// {ns=rc, type=s2c.en, blue=false, red=false, green=false, yellow=false, _e=ledState, _p=rc, _rt=void, uid=72, hc=false}
 
 	/** Called when the activity is first created. */
 	@Override
@@ -58,32 +83,32 @@ public class ArduinoActivity extends Activity implements WebSocketClientTokenLis
 
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getApplicationContext(), "Blue!",
-						Toast.LENGTH_SHORT).show();
+				lBlueOn = !lBlueOn;
+				updateLEDs();
 			}
 		});
 		lRed.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getApplicationContext(), "Red!",
-						Toast.LENGTH_SHORT).show();
+				lRedOn = !lRedOn;
+				updateLEDs();
 			}
 		});
 		lGreen.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getApplicationContext(), "Green!",
-						Toast.LENGTH_SHORT).show();
+				lGreenOn = !lGreenOn;
+				updateLEDs();
 			}
 		});
 		lYellow.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getApplicationContext(), "Yellow!",
-						Toast.LENGTH_SHORT).show();
+				lYellowOn = !lYellowOn;
+				updateLEDs();
 			}
 		});
 	}
