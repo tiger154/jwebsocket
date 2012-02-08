@@ -12,7 +12,7 @@ function init(){
 		OnOpen: function(){
 			//CONFIGURING JWEBSOCKET CLIENT mWSC defined in widget Auth
 			$.jws.setTokenClient(mWSC);
-			$.jws.submit("monitoringPlugin.pcinfo", "register");
+			$.jws.submit("monitoringPlugin.pcinfo", "register", { interest: "computerInfo" });
 			updateGauge();
 		},
 		OnClose: function(){

@@ -10,7 +10,7 @@ hddGauge = bindows.loadGaugeIntoDiv("gauges/g_hdd.xml","hddDiv");
 
 // Dynamically update the gauge at runtime
 function updateGauge() {
-	$.jws.bind("monitoringPlugin.pcinfo:information", function(evt, aToken){
+	$.jws.bind("monitoringPlugin.pcinfo:computerInfo", function(evt, aToken){
 		//cpu
 		var IValue = parseInt(aToken.consumeCPU);
 		cpuGauge.needle.setValue(IValue);
