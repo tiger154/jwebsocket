@@ -9,9 +9,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jwebsocket</groupId>
-	<artifactId>jWebSocketJCaptchaPlugIn</artifactId>
-	<name>jWebSocketJCaptchaPlugIn</name>
-	<description>jWebSocket jCaptcha Plug-in</description>
+	<artifactId>jWebSocketSMSPlugIn</artifactId>
+	<name>jWebSocketSMSPlugIn</name>
+	<description>jWebSocket SMS Plug-in</description>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -62,11 +62,6 @@
 			<version>${project.version}</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>com.octo.captcha</groupId>
-			<artifactId>jcaptcha-all</artifactId>
-			<version>1.0-RC-2.0.1</version>
-		</dependency>
 		
 	</dependencies>
 
