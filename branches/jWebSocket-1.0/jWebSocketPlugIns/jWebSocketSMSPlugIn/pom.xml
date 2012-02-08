@@ -67,6 +67,7 @@
 			<artifactId>jcaptcha-all</artifactId>
 			<version>1.0-RC-2.0.1</version>
 		</dependency>
+		
 	</dependencies>
 
 	<!--  define repositories -->
