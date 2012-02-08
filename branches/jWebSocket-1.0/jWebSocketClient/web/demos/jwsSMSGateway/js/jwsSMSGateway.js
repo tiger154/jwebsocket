@@ -1,4 +1,3 @@
-                    
 //	****************************************************************************
 //	jWebSocket Hello World (uses jWebSocket Client and Server)
 //	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
@@ -16,7 +15,7 @@
 //	****************************************************************************
 
 /*
- * @author mayra
+ * @author mayra, vbarzana, aschulze
  */
 $.widget("jws.SMSGateway",{
     
@@ -40,7 +39,7 @@ $.widget("jws.SMSGateway",{
     
 	registerEvents: function(){
 		var lToken = {
-			ns: "org.jwebsocket.plugins.sms",
+			ns: "org.jwebsocket.plugins.jcaptcha",
 			type: "getcaptcha",
 			args: {
 				imagetype: "jpg"
@@ -50,7 +49,7 @@ $.widget("jws.SMSGateway",{
                     
 		w.SMSGateway.eBtnUpdate.click( function() {
 			lToken = {
-				ns:   "org.jwebsocket.plugins.sms",
+				ns:   "org.jwebsocket.plugins.jcaptcha",
 				type: "getcaptcha",
 				args: {
 					imagetype: "jpg"
@@ -73,8 +72,9 @@ $.widget("jws.SMSGateway",{
         
 		w.SMSGateway.eBtnSubmit.click( function() {
 			var lToken = {
-				ns:   "org.jwebsocket.plugins.sms",
-				type: "validate"
+				ns:   "org.jwebsocket.plugins.jcaptcha",
+				type: "validate",
+				inputChars: w.SMSGateway.eTextCaptcha.val()
 			};
             
 			var lOptions = {
@@ -84,25 +84,25 @@ $.widget("jws.SMSGateway",{
 				},
 				
 				OnSuccess: function( aToken ) {
-					alert("success");
-					w.SMSGateway.eJCaptcha.fadeOut(1000, function(){
-						$(this).html("<h1>Es correcto</h1>").fadeIn(500)
+					alert( "success" );
+					w.SMSGateway.eJCaptcha.fadeOut( 1000, function() {
+						$(this).html("<h1>Correct</h1>").fadeIn( 500 )
 					});
 					//aqui es el problema
-					w.SMSGateway.eRSMS.fadeOut(1000, function(){
-						$(this).html("<h1>Es correcto</h1>").fadeIn(500)
+					w.SMSGateway.eRSMS.fadeOut( 1000, function() {
+						$(this).html("<h1>Correct</h1>").fadeIn( 500 )
 					});
-					w.SMSGateway.eBSMS.fadeOut(1000, function(){
-						$(this).html("<h1>NO es correcto</h1>").fadeIn(500)
+					w.SMSGateway.eBSMS.fadeOut( 1000, function() {
+						$(this).html("<h1>Wrong</h1>").fadeIn( 500 )
 					});
 				},
 				
 				OnFailure: function( aToken ) {
-					alert("failure");
+					alert( "failure" );
 					//incorrect validation ask for a new captcha
 					w.SMSGateway.eJCaptcha.fadeOut(300).fadeIn(100).fadeOut(100).fadeIn(50).fadeOut(100).fadeIn(50).fadeOut(100).fadeIn(50);
 					var lGetCaptchaToken = {
-						ns:   "org.jwebsocket.plugins.sms",
+						ns:   "org.jwebsocket.plugins.jcaptcha",
 						type: "getcaptcha",
 						args: {
 							imagetype: "jpg"
@@ -116,14 +116,14 @@ $.widget("jws.SMSGateway",{
 			
 			mWSC.sendToken(lToken, lOptions);
 		});
-        
-        
 	},
     
-	processToken: function(aToken){
-		if( aToken.ns == "org.jwebsocket.plugins.sms" ){
+	// process incoming token with captcha image to be display in UI
+	processToken: function( aToken ){
+		if( aToken.ns == "org.jwebsocket.plugins.jcaptcha" ){
 			if( aToken.type == "getcaptcha" ){
-				w.SMSGateway.eImg.attr('src', "data:image/jpg;base64," + aToken.image);
+				w.SMSGateway.eImg.attr(
+					"src", "data:image/jpg;base64," + aToken.image );
 			}
             
 		}

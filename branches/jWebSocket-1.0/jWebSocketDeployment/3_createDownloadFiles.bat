@@ -134,9 +134,11 @@ xcopy %libs%ehcache-core-2.4.4.jar %tempdir%libs\ /s /i /y
 xcopy %libs%memcached-2.5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%mongo-java-driver-2.6.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%kahadb-5.5.0.jar %tempdir%libs\ /s /i /y
-rem Arduino support
+rem Arduino support for hardware control
 xcopy %libs%rxtx-2.1.7.jar %tempdir%libs\ /s /i /y
-rem Monitoring support
+rem jCaptcha support for spam protection
+xcopy %libs%jcaptcha-all-1.0-RC-2.0.1.jar %tempdir%libs\ /s /i /y
+rem Hardware Monitoring support
 xcopy %libs%sigar-1.6.4.jar %tempdir%libs\ /s /i /y
 rem Jetty support
 xcopy %libs%jetty-continuation-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
@@ -202,7 +204,7 @@ xcopy %libs%jWebSocketSwingGUI-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketProxy-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSamples-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketAMQStockTicker-%ver%.jar %tempdir%libs\ /s /i /y
-rem jWebSocket config and keystore files (from v1.0)
+rem jWebSocket config and keystore files (from v1.0) for SSL
 xcopy %conf%jWebSocket.xml %tempdir%conf\ /s /i /y
 xcopy %conf%jWebSocket.ks %tempdir%conf\ /s /i /y
 rem Flash Cross-Domain configuration

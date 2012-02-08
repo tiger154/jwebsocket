@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket SMS Plug-In
+//	jWebSocket - jWebSocket JWebSocketCaptchaService
 //  Copyright (c) 2012 Innotrade GmbH, jWebSocket.org
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
@@ -15,15 +15,18 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jcaptcha;
 
+/**
+ * 
+ * @author mayra, vbarzana, aschulze
+ */
 import com.octo.captcha.service.image.ImageCaptchaService;
 import com.octo.captcha.service.image.DefaultManageableImageCaptchaService;
 
+public class JWebSocketCaptchaService {
 
-public class MyCaptchaService {
+	private static ImageCaptchaService mInstance = new DefaultManageableImageCaptchaService();
 
-    private static ImageCaptchaService instance = new DefaultManageableImageCaptchaService();
-
-    public static ImageCaptchaService getInstance() {
-        return instance;
-    }
+	public static ImageCaptchaService getInstance() {
+		return mInstance;
+	}
 }

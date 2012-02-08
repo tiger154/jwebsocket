@@ -49,16 +49,28 @@
 			<description>Oracle JDBC Driver 10.2.0.4 ro access Oracle SQL Databases from jWebSocket</description>
 		</library>
 		-->
+		
+		<!-- required for Arduino support -->
 		<library>
 			<id>RXTXSerialIO</id>
 			<url>${JWEBSOCKET_HOME}/libs/rxtx-2.1.7.jar</url>
 			<description>RXTX Serial IO library</description>
 		</library>
+		
+		<!-- Captcha support required for Realtime monitoring demo -->
 		<library>
 			<id>SigarHardwareMonitor</id>
 			<url>${JWEBSOCKET_HOME}/libs/sigar-1.6.4.jar</url>
 			<description>Sigar Hardware Monitoring Library</description>
 		</library>
+		
+		<!-- Captcha support required for SMS demo -->
+		<library>
+			<id>jCaptcha</id>
+			<url>${JWEBSOCKET_HOME}/libs/jcaptcha-all-1.0-RC-2.0.1.jar</url>
+			<description>jCaptcha Humanity and Anti Spam Library</description>
+		</library>
+		
 	</libraries>
 
 	<!-- jWebSocket logging configuration -->
@@ -110,6 +122,8 @@
 				<domain>http://www.jwebsocket.org</domain>
 				<domain>http://www.jwebsocket.com</domain>
 				<domain>http://localhost</domain>
+				<domain>http://localhost:8080</domain>
+				<domain>http://localhost:8084</domain>
 				
 				<domain>https://jwebsocket.org</domain>
 				<domain>https://jwebsocket.com</domain>
@@ -1135,6 +1149,19 @@
 				<setting key="pop3_port">110</setting>
 				<setting key="pop3_user">#your pop3 server's username#</setting>
 				<setting key="pop3_password">#your pop3 server's password#</setting>
+			</settings>
+		</plugin>
+
+		<!-- plug-in to generate and validate Captchas -->
+		<plugin>
+			<name>org.jwebsocket.plugins.jcaptcha.JCaptchaPlugIn</name>
+			<id>jws.sms</id>
+			<ns>org.jwebsocket.plugins.jcaptcha</ns>
+			<jar>jWebSocketJCaptchaPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
 			</settings>
 		</plugin>
 
