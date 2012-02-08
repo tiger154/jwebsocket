@@ -1,7 +1,7 @@
 Ext.require(['Ext.data.*','Ext.chart.*']);
 
 Ext.onReady(function(){
-    Ext.jws.open("ws://10.208.7.105:8787/jwebsocket/jwebsocket");
+    Ext.jws.open(jws.getDefaultServerURL());
 
     Ext.jws.on('open',function(){
         var lToken = {
