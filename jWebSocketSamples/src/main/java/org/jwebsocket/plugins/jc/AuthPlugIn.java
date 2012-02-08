@@ -22,6 +22,8 @@ import javax.smartcardio.ResponseAPDU;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
+import org.jwebsocket.eventmodel.event.card.JcTerminalNotReady;
+import org.jwebsocket.eventmodel.event.card.JcTerminalReady;
 import org.jwebsocket.eventmodel.plugin.jc.JcPlugIn;
 import org.jwebsocket.eventmodel.plugin.jc.JcResponseCallback;
 import org.jwebsocket.eventmodel.s2c.FailureReason;
@@ -30,6 +32,8 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.jc.commands.Select;
 import org.jwebsocket.plugins.jc.event.DoLogin;
 import org.jwebsocket.plugins.jc.event.GetUserInfo;
+import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -100,5 +104,31 @@ public class AuthPlugIn extends JcPlugIn {
 				((TransactionContext) getContext()).failure(aReason, "Command execution failed!");
 			}
 		});
+	}
+
+
+	@Override
+	public void processEvent(JcTerminalNotReady aEvent, C2SResponseEvent aResponseEvent) throws Exception {
+		super.processEvent(aEvent, aResponseEvent);
+
+		Token lResponse = TokenFactory.createToken("org.jwebsocket.auth","logoff");
+		getEm().getParent().getServer().sendToken(aEvent.getConnector(), lResponse);		
+	}
+
+	@Override
+	public void processEvent(JcTerminalReady aEvent, C2SResponseEvent aResponseEvent) throws Exception {
+		super.processEvent(aEvent, aResponseEvent);
+
+		String lTerminal = aEvent.getTerminal();
+		Token lResponse = TokenFactory.createToken("org.jwebsocket.auth","logon");
+		if( lTerminal != null && lTerminal.indexOf("00 01") >= 0) {
+			lResponse.setString("user", "marta");
+			lResponse.setString("password", "jws+nfc");
+		} else {
+			lResponse.setString("user", "alex");
+			lResponse.setString("password", "jwebsocket2012");
+		}
+
+		getEm().getParent().getServer().sendToken(aEvent.getConnector(), lResponse);		
 	}
 }
