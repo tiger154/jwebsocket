@@ -16,7 +16,6 @@
 package org.jwebsocket.plugins.extjs;
 
 import java.util.Collection;
-import java.util.List;
 import javolution.util.FastList;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -43,7 +42,6 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
 		if (aToken.getNS().equals(getNamespace())) {
-
 			if (aToken.getType().equals("create")) {
 				proccessCreate(aResponse, aConnector, aToken);
 			} else if (aToken.getType().equals("read")) {
@@ -70,12 +68,13 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 		}
 
 		Token result = createResponse(aToken);
+		CustomerDef lCustomer = null;
 
 		if ((name != null) && (email != null) && (age != null)) {
 
 			try {
-
-				cutomersList.add(new CustomerDef(cutomersList.getCount(), name, email, age));
+				lCustomer = new CustomerDef(cutomersList.getCount(), name, email, age);
+				cutomersList.add(lCustomer);
 				//{"success":true,"message":"User Create","data":   {"id":5,"name":"osvaldo","email":"oaguilar@rubble.com"}}
 				//DATA FOR EXTJS
 				result.setInteger("code", 0);
@@ -89,13 +88,8 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 				result.setBoolean("failure", true);
 			}
 			//REACHING DATA FOR SHOWING TO THE USER
-			FastList<Token> data = new FastList<Token>();
-			Token ta = TokenFactory.createToken();
-			ta.setString("name", name);
-			ta.setString("email", email);
-			ta.setInteger("age", age);
-			ta.setInteger("id", cutomersList.getCount() - 1);
-			data.add(ta);
+			FastList<CustomerDef> data = new FastList<CustomerDef>();
+			data.add(lCustomer);
 
 			//SETTING THE DATA LIST TO THE OUTGOING TOKEN
 			result.setList("data", data);
@@ -115,7 +109,7 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 	private void proccessRead(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
 		Token result = createResponse(aToken);
-		FastList<Token> data = new FastList<Token>();
+		FastList<CustomerDef> data = new FastList<CustomerDef>();
 		Integer id = null;
 
 		try {
@@ -125,43 +119,17 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 
 		if (id != null) {
 			CustomerDef customer = cutomersList.getCustomer(id);
-
-			result.setInteger("code", 0);
-			result.setString("message", "User found with id: " + id);
-
-			Token ta = TokenFactory.createToken();
-			ta.setString("name", customer.getName());
-			ta.setString("email", customer.getEmail());
-			ta.setInteger("age", customer.getAge());
-			ta.setInteger("id", customer.getId());
-			data.add(ta);
+			data.add(customer);
 
 		} else {
 
 			Integer start = aToken.getInteger("start");
 			Integer limit = aToken.getInteger("limit");
+			result.setList("data", cutomersList.getSubList(start, start + limit));
 
-			List<CustomerDef> customers = cutomersList.getSubList(start, start + limit);
-
-
-			for (CustomerDef customer : customers) {
-
-				Token ta = TokenFactory.createToken();
-				ta.setString("name", customer.getName());
-				ta.setString("email", customer.getEmail());
-				ta.setInteger("age", customer.getAge());
-				ta.setInteger("id", customer.getId());
-				data.add(ta);
-			}
 			result.setInteger("code", 0);
-
 			result.setInteger("totalCount", cutomersList.getSize());
 		}
-
-
-
-		result.setList("data", data);
-
 		getServer().sendToken(aConnector, result);
 
 	}
@@ -225,15 +193,8 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 
 			msg = "User with id: " + id + " updated correctly";
 
-			FastList<Token> data = new FastList<Token>();
-			Token ta = TokenFactory.createToken();
-			ta.setString("name", customer.getName());
-			ta.setString("email", customer.getEmail());
-			ta.setInteger("id", customer.getId());
-			ta.setInteger("age", customer.getAge());
-			data.add(ta);
-
-			//SETTING THE DATA LIST TO THE OUTGOING TOKEN
+			FastList<CustomerDef> data = new FastList<CustomerDef>();
+			data.add(customer);
 			result.setList("data", data);
 
 
