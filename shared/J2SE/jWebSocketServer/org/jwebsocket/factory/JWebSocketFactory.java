@@ -52,7 +52,7 @@ public class JWebSocketFactory {
 
 	/**
 	 * 
-	 * @return The class loader used to load the system resources like libraries, engines, plugins, ...
+	 * @return The class loader used to load the system resources like libraries, engines, plug-ins, ...
 	 */
 	public static JWebSocketJarClassLoader getClassLoader() {
 		return mClassLoader;
