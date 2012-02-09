@@ -15,327 +15,361 @@
 //	****************************************************************************
 
 /*
- * @author vbarzana
+ * @author daimi
  */
 $.widget("jws.image",{
     
 	_init:function(){
-		w.image   = this;
-		w.image.eBoard		= w.image.element.find("#board");
-		w.image.eImage		= w.image.element.find("#image");
-		
-		w.image.eBtnImg		= w.image.element.find("#tab_insert_img");
-		w.image.eBtnPaint	= w.image.element.find("#tab_paint");
-		
-		w.image.eImage.hide();
-		w.image.eBoard.show();
-		
-		w.image.registerEvents();
-		
-		w.image.lJWSID = "jWebSocket Canvas";
-		w.image.eCanvas = null;
-		w.image.eStatus = null;
-		w.image.mIsConnected = false;
-		w.image.mColor = "#000000";
-		CANVAS_ID = "c1";
+		wImage    = this;
+		//Images
+		wImage.image01 = wImage.element.find("#image01_small");
+		wImage.image02 = wImage.element.find("#image02_small");
+		wImage.image03 = wImage.element.find("#image03_small");
+		wImage.image04 = wImage.element.find("#image04_small");
+		wImage.image05 = wImage.element.find("#image05_small");
+		wImage.image06 = wImage.element.find("#image06_small");
+		wImage.image07 = wImage.element.find("#image07_small");
+		wImage.image08 = wImage.element.find("#image08_small");
+		wImage.image09 = wImage.element.find("#image09_small");
+		wImage.eBtnClear= wImage.element.find("#clear_image");
+		wImage.undo = wImage.element.find("#undo");
+		wImage.redo = wImage.element.find("#redo");
+            
+		wImage.eCanvas = document.getElementById( "image_canvas" );
+		wImage.ctx = wImage.eCanvas.getContext( "2d" );
 
-		IN = 0;
-		OUT = 1;
-		EVT = 2;
-		SYS = "SYS";
-		USR = null;
+		canvas_w= wImage.eCanvas.width;
+		canvas_h= wImage.eCanvas.height;
 		
-		w.image.ctx = null;
+		bg = new Image;	
+		picture = new Image;
+		
+		image01= false;
+		image02= false;
+		image03= false;
+		image04= false;
+		image05= false;
+		image06= false;
+		image07= false;
+		image08= false;
+		image09= false;
+        
+		mHistory = [];
+		mSteps = 0;	
+        
 		mPainting = false;
-		mX1 = -1;
-		mY1 = -1;
+		x1 = -1;
+		y1 = -1;
+		x2 = "";
+		y2 = "";
+		w = '';
+		h = '';
 		
-		w.image.eAvg = null;
-		w.image.loops = 0;
-		w.image.total = 0;
-		
-		w.image.mImgIdx = 0;
-		w.image.mImages = new Array();
-		
-		w.image.mImages[ 0 ] = new Image();
-		w.image.mImages[ 1 ] = new Image();
-		w.image.mImages[ 2 ] = new Image();
-		w.image.mImages[ 3 ] = new Image();
-		w.image.mImages[ 4 ] = new Image();
-		w.image.mImages[ 5 ] = new Image();
-		w.image.mImages[ 6 ] = new Image();
-		w.image.mImages[ 7 ] = new Image();
-		w.image.mImages[ 8 ] = new Image();
-		
-		w.image.mImages[ 0 ].src = "../../res/img/image1.jpg";
-		w.image.mImages[ 1 ].src = "../../res/img/image2.jpg";
-		w.image.mImages[ 2 ].src = "../../res/img/image3.jpg";
-		w.image.mImages[ 3 ].src = "../../res/img/image4.jpg";
-		w.image.mImages[ 4 ].src = "../../res/img/image5.jpg";
-		w.image.mImages[ 5 ].src = "../../res/img/image6.jpg";
-		w.image.mImages[ 6 ].src = "../../res/img/image7.jpg";
-		w.image.mImages[ 7 ].src = "../../res/img/image8.jpg";
-		w.image.mImages[ 8 ].src = "../../res/img/image9.jpg";
-		
-		lRollingId = 1, lMaxRollingIDs = 9;
-		
-		w.image.initPage();
+		wImage.registerEvents();
+		wImage.listener();
 	},
 	
-	
 	registerEvents: function(){
-		w.image.eBtnImg.click(w.image.showImageArea);
-		w.image.eBtnPaint.click(w.image.showPaintArea);
+		$(wImage.eCanvas).mousedown(wImage.mouseDownLsnr);
+		$(wImage.eCanvas).mousemove(wImage.mouseMoveLsnr);
+		$(wImage.eCanvas).mouseup(wImage.mouseUpLsnr);
+		$(wImage.eCanvas).mouseout(wImage.mouseOutLsnr);
+		
+		wImage.image01.click(wImage.setActive01);
+		wImage.image02.click(wImage.setActive02);
+		wImage.image03.click(wImage.setActive03);
+		wImage.image04.click(wImage.setActive04);
+		wImage.image05.click(wImage.setActive05);
+		wImage.image06.click(wImage.setActive06);
+		wImage.image07.click(wImage.setActive07);
+		wImage.image08.click(wImage.setActive08);
+		wImage.image09.click(wImage.setActive09);
+        
+		wImage.eBtnClear.click(wImage.doClear);
+	//        wImage.undo.click(wImage.undo);
+	//        wImage.undo.click(wImage.redo);
 	},
 	
 	mouseDownLsnr: function( aEvent ) {
-		// aEvent.preventDefault();
 		jws.events.preventDefault( aEvent );
-		if( w.image.mIsConnected ) {
+		if( mIsConnected ) {
+			console.log("mpainting true");
 			mPainting = true;
-			mX1 = aEvent.clientX - w.image.eCanvas.offsetLeft;
-			mY1 = aEvent.clientY - w.image.eCanvas.offsetTop;
+			x1 = aEvent.clientX - wImage.eCanvas.offsetLeft;
+			y1 = aEvent.clientY - wImage.eCanvas.offsetTop;
+			w=0;
+			h=0;
+            
+			var img = document.createElement("img");
+            
+			if(image01){
+				img.setAttribute("src", "../../res/img/Canvas_image01_big.png");
+			}
+
+			if(image02){
+				img.setAttribute("src", "../../res/img/Canvas_image02_big.png");
+			}
+            
+			if(image03){
+				img.setAttribute("src", "../../res/img/Canvas_image03_big.png");
+			}
+            
+			if(image04){
+				img.setAttribute("src", "../../res/img/Canvas_image04_big.png");
+			}
+            
+			if(image05){
+				img.setAttribute("src", "../../res/img/Canvas_image05_big.png");
+			}
+            
+			if(image06){
+				img.setAttribute("src", "../../res/img/Canvas_image06_big.png");
+			}
+            
+			if(image07){
+				img.setAttribute("src", "../../res/img/Canvas_image07_big.png");
+			}
+            
+			if(image08){
+				img.setAttribute("src", "../../res/img/Canvas_image08_big.png");
+			}
+            
+			if(image09){
+				img.setAttribute("src", "../../res/img/Canvas_image09_big.png");
+			}
+            
+			var args = {
+				x: x1,
+				y: y1,
+				w: w,
+				h: h,
+				src: img.src
+			};
+            
+			wImage.broadcast(args, "first");
 		}
 	},
-	
+    
 	mouseMoveLsnr: function ( aEvent ) {
 		// aEvent.preventDefault();
 		jws.events.preventDefault( aEvent );
-		if( w.image.mIsConnected && mPainting ) {
-			var lX2 = aEvent.clientX - w.image.eCanvas.offsetLeft;
-			var lY2 = aEvent.clientY - w.image.eCanvas.offsetTop;
-
-			w.image.loops++;
-			start = new Date().getTime();
-
-			mWSC.canvasLine( CANVAS_ID, mX1, mY1, lX2, lY2, {
-				color: w.image.mColor
-			});
-
-			mX1 = lX2;
-			mY1 = lY2;
-
-			w.image.total += ( new Date().getTime() - start );
-			w.image.eAvg.innerHTML = ( w.image.total / w.image.loops + "ms" );
+		if( mIsConnected && mPainting ) {
+            
+			if(mPainting){
+				x2 = aEvent.clientX - wImage.eCanvas.offsetLeft;
+				y2 = aEvent.clientY - wImage.eCanvas.offsetTop;
+                
+				if((x2>x1) && (y1>y2)){
+					w=x2-x1;
+					h=y1-y2;
+				}
+        
+				if((x1>x2) && (y1>y2)){
+					w=x1-x2;
+					h=y1-y2;
+				}
+                
+				if((x2>x1) && (y2>y1)){
+					w=x2-x1;
+					h=y2-y1;
+				}
+                
+				if((x1>x2) && (y2>y1)){
+					w=x1-x2;
+					h=y2-y1;
+				}
+               
+				var args = {
+					w: w,
+					h: h
+				};
+                
+				wImage.broadcast(args, "moveto");
+			}
 		}
 	}, 
 	
 	mouseUpLsnr: function ( aEvent ) {
-		// aEvent.preventDefault();
 		jws.events.preventDefault( aEvent );
-		if( w.image.mIsConnected && mPainting ) {
-			lX2 = aEvent.clientX - w.image.eCanvas.offsetLeft;
-			lY2 = aEvent.clientY - w.image.eCanvas.offsetTop;
-			mWSC.canvasLine( CANVAS_ID, mX1, mY1, lX2, lY2, {
-				color: w.image.mColor
-			});
+		if( mIsConnected && mPainting ) {
 			mPainting = false;
 		}
 	},
+    
+	broadcast:function(aArgs, aType){
+		$.jws.submit(NS, aType, aArgs);
+	},
+    
+	listener:function(){
+		$.jws.bind(NS + ':clearall', function(aEvt, aToken){
+			wImage.ctx.fillStyle = 'white';
+			wImage.ctx.fillRect(0, 0, canvas_w, canvas_h);
+		});
+            
+		$.jws.bind(NS + ":first", function(aEvt, aToken){
+			picture = document.createElement("img");
+			picture.setAttribute("src", aToken.src);
+			x1 = aToken.x;
+			y1 = aToken.y;
+			w = aToken.w;
+			h = aToken.h;    
+			bg.src = wImage.ctx.canvas.toDataURL("image/png");
+			mHistory[mSteps] = bg.src;
+			mSteps ++;
+		});
+            
+		$.jws.bind(NS + ":moveto", function(aEvt, aToken){
+			w = aToken.w;
+			h = aToken.h;
+
+			wImage.ctx.clearRect(0, 0, canvas_w, canvas_h);
+			wImage.ctx.drawImage(bg, 0, 0, canvas_w, canvas_h);
+			wImage.ctx.drawImage(picture, x1, y1, w, h);
+                
+		});
+        
+		$.jws.bind(NS + ":undo", function(aEvt, aToken){
+			wImage.ctx.clearRect(0, 0, canvas_w, canvas_h);
+			lUndo = new Image;
+			lUndo.src = mHistory[--mSteps];
+                 
+			wImage.ctx.drawImage(lUndo, 0, 0, canvas_w, canvas_h);
+		});
+		$.jws.bind(NS + ":redo", function(aEvt, aToken){
+			wImage.ctx.clearRect(0, 0, canvas_w, canvas_h);
+			lUndo = new Image;
+			lUndo.src = mHistory[++mSteps];
+                 
+			wImage.ctx.drawImage(lUndo, 0, 0, canvas_w, canvas_h);
+		});
+        
+	},
+        
+	setActive01: function(){
+		image01 = true;
+		image02= false;
+		image03= false;
+		image04= false;
+		image05= false;
+		image06= false;
+		image07= false;
+		image08= false;
+		image09= false;
+	},
+        
+	setActive02: function(){
+		image02 = true;
+		image01= false;
+		image03= false;
+		image04= false;
+		image05= false;
+		image06= false;
+		image07= false;
+		image08= false;
+		image09= false;
+	},
+        
+	setActive03: function(){
+		image03 = true;
+		image01= false;
+		image02= false;
+		image04= false;
+		image05= false;
+		image06= false;
+		image07= false;
+		image08= false;
+		image09= false;
+	},
+        
+	setActive04: function(){
+		image04 = true;
+		image01= false;
+		image02= false;
+		image03= false;
+		image05= false;
+		image06= false;
+		image07= false;
+		image08= false;
+		image09= false;
+	},
+        
+	setActive05: function(){
+		image05 = true;
+		image01= false;
+		image02= false;
+		image03= false;
+		image04= false;
+		image06= false;
+		image07= false;
+		image08= false;
+		image09= false;
+	},
+        
+	setActive06: function(){
+		image06 = true;
+		image01= false;
+		image02= false;
+		image03= false;
+		image04= false;
+		image05= false;
+		image07= false;
+		image08= false;
+		image09= false;
+	},
+        
+	setActive07: function(){
+		image07 = true;
+		image01= false;
+		image02= false;
+		image03= false;
+		image04= false;
+		image05= false;
+		image06= false;
+		image08= false;
+		image09= false;
+	},
+        
+	setActive08: function(){
+		image08 = true;
+		image01= false;
+		image02= false;
+		image03= false;
+		image04= false;
+		image05= false;
+		image06= false;
+		image07= false;
+		image09= false;
+	},
+        
+	setActive09: function(){
+		image09 = true;
+		image01= false;
+		image02= false;
+		image03= false;
+		image04= false;
+		image05= false;
+		image06= false;
+		image07= false;
+		image08= false;
+	},
+    
+	undo: function (){
+		$.jws.submit(NS, "undo");
+	},
+    
+	redo: function (){
+		$.jws.submit(NS, "redo");
+	},
 
 	mouseOutLsnr: function ( aEvent ) {
-		mouseUpLsnr( aEvent );
+		wImage.mouseUpLsnr( aEvent );
 	},
 
-	selectColor: function (aColor ) {
-		w.image.mColor = aColor;
-		jws.$( "spanSettings" ).style.borderColor = w.image.mColor;
-	},
 
 	doClear: function() {
-		if( w.image.mIsConnected ) {
-			mWSC.canvasClear( CANVAS_ID );
+		if( mIsConnected ) {
+			$.jws.submit(NS, "clearall");
+			wImage.ctx.clearRect(0, 0, canvas_w, canvas_h);
 		}
-	},
-
-	
-
-	paint: function() {
-		var lCanvas = document.getElementById( "cnvDemo" );
-		lCanvas.clear = true;
-		var lContext = lCanvas.getContext( "2d" );
-		/*
-					for( var lIdx = 0; lIdx < w.image.mImages.length; lIdx++ ){
-						lImg.src = w.image.mImages[ lIdx ];
-						lContext.drawImage( lImg, 0, 0 );
-					}
-		 */
-		lContext.drawImage( w.image.mImages[ w.image.mImgIdx ], 0, 0 );
-		if ( w.image.mImgIdx >= 8 ) {
-			w.image.mImgIdx = 0;
-		} else {
-			w.image.mImgIdx++;
-		}
-	/*
-					lRes = mWSC.fileSend(
-						// target was passed as optional argument
-						// and thus can be used here
-						"target2", // Token.args.target,
-						"painting", // Token.fileName,
-						// lCanvas.toDataURL( "image/jpeg" ),
-						lCanvas.toDataURL( "image/png" ),
-						{	encoding: "base64",
-							isNode: true
-						}
-					);
-		 */
-	},
-
-	onFileSentObs: function( aToken ) {
-		// console.log( new Date() + ": " + aToken.data.length +  " " + aToken.data.substr(0, 40));
-		var lImg = new Image();
-		// document.body.appendChild(lImg);
-		lImg.src = aToken.data;
-		lImg.onload = function() {
-			var lCanvas = document.getElementById( "cnvDemo" );
-			var lContext = lCanvas.getContext( "2d" );
-			lContext.drawImage( lImg, 0, 0 );
-		}
-	},
-
-	onFileSavedObs: function( aToken ) {
-		var lImg = new Image();
-		lImg.src = aToken.url;
-		lImg.onload = function() {
-			var lCanvas = document.getElementById( "cnvDemo" );
-			var lContext = lCanvas.getContext( "2d" );
-			lContext.drawImage( lImg, 0, 0 );
-		}
-	},
-
-	snapshot: function() {
-		if( w.image.mIsConnected ) {
-			// png should be supported by all HTML5 compliant browser
-			// jpeg may not be supported yet (as of 2011-03-01)
-			// by Safari and Opera. Thus, take png as default for now.
-			var lRes = mWSC.canvasGetBase64( CANVAS_ID, "image/png" );
-			if( lRes.code == 0 ) {
-				// the image could be loaded successfully
-				// from the canvase element
-				var lRes = mWSC.fileSave(
-					// use hardcoded file name for now in this
-					// demo to keep it as simple as possible
-					"canvas_demo_" + lRollingId + ".png",
-					// the data is already base64 encoded!
-					lRes.data,
-					{
-						scope: jws.SCOPE_PUBLIC,
-						encoding: "base64",
-						suppressEncoder: true // data already base64 encoded!
-					}
-					);
-				lRollingId++;
-				if( lRollingId > lMaxRollingIDs ) {
-					lRollingId = 1;
-				}
-			} else {
-				// an error occured
-				alert( lRes.msg );
-			}
-		}
-	},
-	
-	doOpen: function() {
-		// adjust this URL to your jWebSocket server
-		var lURL = jws.getDefaultServerURL()
-		+ ( frameElement.id ? ";unid=" + frameElement.id : "");
-
-		// try to establish connection to jWebSocket server
-		mWSC.logon( lURL, "Guest", "guest", {
-
-			// OnOpen callback
-			OnOpen: function( aEvent ) {
-				// start keep alive if user selected that option
-				mWSC.startKeepAlive({
-					interval: 30000
-				});
-				eStatus.src = "../../images/authenticated.png";
-				lIsConnected = true;
-			},
-
-			// OnMessage callback
-			OnMessage: function( aEvent, aToken ) {
-			},
-
-			// OnClose callback
-			OnClose: function( aEvent ) {
-				eStatus.src = "../../images/disconnected.png";
-				lIsConnected = false;
-				mWSC.stopKeepAlive();
-			}
-					
-		});
-	},
-
-	doClose: function() {
-		// disconnect automatically logs out!
-		mWSC.stopKeepAlive();
-		var lRes = mWSC.close({
-			// wait a maximum of 3 seconds for server good bye message
-			timeout: 3000
-		});
-	},
-
-	initPage: function() {
-		// get some required HTML elements
-		w.image.eAvg = jws.$("spnAvg");
-		w.image.eCanvas = document.getElementById( "can" );
-		
-		w.image.eStatus = jws.$( "simgStatus" );
-		w.image.ctx = w.image.eCanvas.getContext( "2d" );
-		
-		$(w.image.eCanvas).mousedown(w.image.mouseDownLsnr);
-		$(w.image.eCanvas).mousemove(w.image.mouseMoveLsnr);
-		$(w.image.eCanvas).mouseup(w.image.mouseUpLsnr);
-		$(w.image.eCanvas).mouseout(w.image.mouseOutLsnr);
-		
-		// check if WebSockets are supported by the browser
-		if( jws.browserSupportsWebSockets() ) {
-			// instaniate new TokenClient, either JSON, CSV or XML
-			mWSC = new jws.jWebSocketJSONClient({
-				});
-//			mWSC.setFileSystemCallbacks({
-//				OnFileSaved: onFileSavedObs,
-//				OnFileSent: onFileSentObs
-			// OnLocalFileRead: onLocalFileLoadedObs,
-			// OnLocalFileError: onLocalFileErrorObs
-//			});
-			
-			mWSC.canvasOpen( CANVAS_ID, "cnvDemo" );
-
-		} else {
-			// jws.$( "sbtnClearLog" ).setAttribute( "disabled", "disabled" );
-					
-			var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-			alert( lMsg );
-		}
-	},
-
-	exitPage: function() {
-		// this allows the server to release the current session
-		// immediately w/o waiting on the timeout.
-		if( mWSC ) {
-			mWSC.close({
-				// force immediate client side disconnect
-				timeout: 0
-			});
-		}
-		mWSC.canvasClose( CANVAS_ID );
-	},
-	
-	showImageArea: function(){
-		console.log("image");
-		w.image.eBtnImg.removeClass("enabled").addClass("enabled");
-		w.image.eBtnPaint.removeClass("enabled");
-		w.image.eBoard.hide();
-		w.image.eImage.show();
-	},
-	
-	showPaintArea: function(){
-		console.log("paint");
-		w.image.eBtnImg.removeClass("enabled");
-		w.image.eBtnPaint.removeClass("enabled").addClass("enabled");
-		w.image.eImage.hide();
-		w.image.eBoard.show();
 	}
 });

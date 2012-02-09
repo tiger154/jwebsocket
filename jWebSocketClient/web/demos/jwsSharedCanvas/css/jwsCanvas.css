@@ -24,17 +24,10 @@
 
 iframe{
 	border: none;
-	width: 350px;
+	width: 370px;
 	height: 300px;
 	float: left;
-	margin-left: 10px;
-}
-
-#iframes{
-	float: left;
-	width: 100%;
-	padding:0px !important;
-	margin:0px !important;
+	margin-right: 0px;
 }
 
 #iframes.target{

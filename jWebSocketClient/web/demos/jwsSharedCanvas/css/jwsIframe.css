@@ -1,8 +1,48 @@
+#clients{
+    float: left;
+    margin: 12px;
+	width: 350px;
+	height: 270px;
+}
+
+.buttons_container{
+	float: left;
+	padding: 5px 0 0 145px;
+}
+
+/* STATUSBAR */
+#demo_box_statusbar{
+	float: right !important;
+    width: 97px !important;
+    position: absolute;
+	margin-top: 76px;
+	margin-left: 230px !important;
+    border: 1px solid #C8C8C8;
+    border-top: none;
+}
+#demo_box_statusbar .line{
+	border: none !important;
+}
+
+#demo_box_statusbar div{
+    float: left;
+    display: inline;
+    padding-right: 5px;
+    padding-left:5px;
+    height: 16px;
+    margin-top: 3px;
+}
+
+#client_status{
+    padding-left: 18px !important;
+}
+/*--------------- DEMO_STATUSBAR -------------*/
+
 /*---------------- BOARD -------------*/
-#board, #image{
+#paint_area, #image_area{
 	background: #e4e4e4;
     width: 350px;
-    height:250px;
+    height:270px;
 	float: left;
 	-webkit-border-radius: 6px;
     -moz-border-radius: 6px;
@@ -10,16 +50,20 @@
 	border: 1px solid #c8c8c8;
 }
 
-#can {
+#paint_canvas, #image_canvas {
     background: #ffffff;
-    cursor: url(images/pencil.png), crosshair;
-    margin-bottom: 38px;
     margin-top: 5px;
     margin-left: 3px;
     margin-right: 3px;
-    width: 100%;
-    height: 150px;
     float: left;
+}
+
+#paint_canvas{
+	cursor: url(images/pencil.png), crosshair;
+}
+
+#image_canvas{
+	cursor: crosshair;
 }
 
 #tab_paint{
@@ -60,8 +104,8 @@
     text-align: left;
 	float: left;
 	width: 90%;
-	height: 30px;
-	padding: 8px 5px 0 10px;
+	height: 23px;
+	padding: 8px 5px 0 12px;
 }
 
 #color_fields{
@@ -108,7 +152,7 @@
     background: #6864a1;
 }
 
-#color_grey{
+#color_gray{
 	background: #b4b4b4;
 }
 
@@ -120,29 +164,7 @@
     border: 1px solid #c9cb4c;
 }
 
-#clear_board{
-    margin-top: -40px;
-}
-
 /*------------------------------------------------------------*/
-
-#image{
-	width: 100%;
-    height:250px;
-	float: left;
-
-}
-
-#can_img {
-    background: #ffffff;
-    cursor: crosshair;
-    margin-bottom: 38px;
-    margin-top: 5px;
-    margin-left: 1px;
-    width: 356px;
-    height: 203px;
-    float: left;
-}
 
 #palete_img{
     margin-left: 8px; 
@@ -195,47 +217,13 @@
 #image09_small{
     background-position:-304px 0px;
 }
+.small_img{
+	width: 28px !important;
+	height: 26px !important;
+}
 
 #palete_img div:hover{
     border: 1px solid #c9cb4c;
 }
-
-#clear_image{
-    margin-top: -30px;
-}
-
 /*------------------------------------------------------------*/
 
-#clients{
-    float: left;
-    margin: 12px;
-	width: 350px;
-}
-
-/* STATUSBAR */
-#demo_box_statusbar{
-	float: right !important;
-    width: 97px !important;
-    position: absolute;
-	margin-top: 68px;
-	margin-left: 235px !important;
-    border: 1px solid #C8C8C8;
-    border-top: none;
-}
-#demo_box_statusbar .line{
-	border: none !important;
-}
-
-#demo_box_statusbar div{
-    float: left;
-    display: inline;
-    padding-right: 5px;
-    padding-left:5px;
-    height: 16px;
-    margin-top: 3px;
-}
-
-#client_status{
-    padding-left: 18px !important;
-}
-/*--------------- DEMO_STATUSBAR -------------*/
