@@ -67,7 +67,6 @@ public class JWebSocketConfig implements Config {
 	private final LoggingConfig mLoggingConfig;
 	private final List<RightConfig> mGlobalRights;
 	private final List<RoleConfig> mGlobalRoles;
-	// private final List<ChannelConfig> mChannels;
 	private static JWebSocketConfig mConfig = null;
 	private static ClassLoader mClassLoader = null;
 	private static String mConfigOverrideRoot = null;
@@ -173,7 +172,6 @@ public class JWebSocketConfig implements Config {
 		mLoggingConfig = aBuilder.mLoggingConfig;
 		mGlobalRights = aBuilder.mGlobalRights;
 		mGlobalRoles = aBuilder.mGlobalRoles;
-		// mChannels = aBuilder.mChannels;
 		// validate the config
 		validate();
 	}
@@ -202,7 +200,6 @@ public class JWebSocketConfig implements Config {
 		private LoggingConfig mLoggingConfig;
 		private List<RightConfig> mGlobalRights;
 		private List<RoleConfig> mGlobalRoles;
-		// private List<ChannelConfig> mChannels;
 
 		/**
 		 *

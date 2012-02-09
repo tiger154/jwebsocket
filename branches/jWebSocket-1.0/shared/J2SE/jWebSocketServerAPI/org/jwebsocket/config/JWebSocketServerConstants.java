@@ -19,7 +19,6 @@ package org.jwebsocket.config;
  * Provides a global shared container for the jWebSocket configuration settings.
  *
  * @author aschulze
- * @version $Id: JWebSocketServerConstants.java 624 2010-07-06 12:28:44Z fivefeetfurther $
  */
 public final class JWebSocketServerConstants {
 
@@ -52,7 +51,7 @@ public final class JWebSocketServerConstants {
 	 */
 	public static final String JWEBSOCKET_KEYSTORE = "jWebSocket.ks";
 	/**
-	 * Default password for demo keystore
+	 * Default password for demo key store
 	 */
 	public static final String JWEBSOCKET_KS_DEF_PWD = "jWebSocket";
 	/**
