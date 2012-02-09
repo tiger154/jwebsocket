@@ -103,39 +103,39 @@ $.widget("jws.image",{
 			var img = document.createElement("img");
             
 			if(image01){
-				img.setAttribute("src", "../../res/img/Canvas_image01_big.png");
+				img.setAttribute("src", "../../res/img/image1.jpg");
 			}
 
 			if(image02){
-				img.setAttribute("src", "../../res/img/Canvas_image02_big.png");
+				img.setAttribute("src", "../../res/img/image2.jpg");
 			}
             
 			if(image03){
-				img.setAttribute("src", "../../res/img/Canvas_image03_big.png");
+				img.setAttribute("src", "../../res/img/image3.jpg");
 			}
             
 			if(image04){
-				img.setAttribute("src", "../../res/img/Canvas_image04_big.png");
+				img.setAttribute("src", "../../res/img/image4.jpg");
 			}
             
 			if(image05){
-				img.setAttribute("src", "../../res/img/Canvas_image05_big.png");
+				img.setAttribute("src", "../../res/img/image5.jpg");
 			}
             
 			if(image06){
-				img.setAttribute("src", "../../res/img/Canvas_image06_big.png");
+				img.setAttribute("src", "../../res/img/image6.jpg");
 			}
             
 			if(image07){
-				img.setAttribute("src", "../../res/img/Canvas_image07_big.png");
+				img.setAttribute("src", "../../res/img/image7.jpg");
 			}
             
 			if(image08){
-				img.setAttribute("src", "../../res/img/Canvas_image08_big.png");
+				img.setAttribute("src", "../../res/img/image8.jpg");
 			}
             
 			if(image09){
-				img.setAttribute("src", "../../res/img/Canvas_image09_big.png");
+				img.setAttribute("src", "../../res/img/image9.jpg");
 			}
             
 			var args = {
