@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <!-- If Google's chrome frame installed, use it! -->
+        <!-- Comment needs to be BELOW this meta tag! -->
+        <!--
+        //	****************************************************************************
+        //	jWebSocket Hello World (uses jWebSocket Client and Server)
+        //	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+        //	****************************************************************************
+        //	This program is free software; you can redistribute it and/or modify it
+        //	under the terms of the GNU Lesser General Public License as published by the
+        //	Free Software Foundation; either version 3 of the License, or (at your
+        //	option) any later version.
+        //	This program is distributed in the hope that it will be useful, but WITHOUT
+        //	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+        //	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+        //	more details.
+        //	You should have received a copy of the GNU Lesser General Public License along
+        //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+        //	****************************************************************************
+        -->
+        <meta http-equiv="Content-Language" content="en"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+        <title>jWebSocket Sencha PlugIn Demo</title>
+
+        <!-- DEMO STYLES  -->
+        <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+		<link rel="stylesheet" type="text/css" href="css/grid-form-demo.css" />
+
+		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
+        <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+
+		<!--	EXTJS LIBRARIES	-->
+		<link rel="stylesheet" type="text/css" href="../../lib/ExtJS/css/ext-all.css"/>
+		<script type="text/javascript" src="../../lib/ExtJS/ext-all.js"></script>
+		<script type="text/javascript" src="../../lib/ExtJS/jwsExtJSPlugin.js"></script>
+		<script type="text/javascript" src="js/grid-form-demo.js"></script>
+
+    </head>
+    <body>
+        <div id="demo_box">
+            <!--       DEMO_HEADER       -->
+            <div id="demo_box_header">
+                <h1>jWebSocket Sencha PlugIn</h1>
+				<div id="demo_box_header_login">
+					<div id="connect_area">
+						<div id="connect_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+							 onmousedown="this.className='button onmousedown'" 
+							 onmouseup="this.className='button onmouseup'" 
+							 onmouseout="this.className='button onmouseout'" 
+							 onclick="this.className='button onmouseover'">
+							<div class="l"></div>
+							<div class="c">Connect</div>
+							<div class="r"></div>
+						</div>
+						
+						<div id="disconnect_button" style="margin-left: -90px; display: none;" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+							 onmousedown="this.className='button onmousedown'" 
+							 onmouseup="this.className='button onmouseup'" 
+							 onmouseout="this.className='button onmouseout'" 
+							 onclick="this.className='button onmouseover'">
+							<div class="l"></div>
+							<div class="c">Disconnect</div>
+							<div class="r"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+            <div id="container">
+
+                <!--       STATUSBAR         -->
+                <div id="demo_box_statusbar">
+                    <div id='status'>Status: </div>
+                    <div id="client_status" class='offline'>disconnected</div><div class="line"></div>
+                    <div id='client_id'>Client-ID: - </div><div class="line"></div>
+                    <div id='websocket_type'>WebSocket: - </div>
+                </div>
+
+                <!--       SCENARIO          -->
+                <div id="scenario_container">
+                    <div id="main_content">
+						<div id="not_connected">You are not connected, please press connect button!</div>
+                        <div  style="display: none;">
+							<div id="contact">
+								<b id="header">jWebSocket Plug-in for Sencha</b>
+								<div id="line"></div>
+								<div id="image"></div>
+								<p class="text">
+									This demo shows the jWebSocket potencial 
+									to make real time app and the integration 
+									with ExtJS-Sencha framework.
+								</p>
+								<p class="feeds">Send your feedbacks</p>
+								<p>Osvaldo Aguilar => oaguilar@hab.uci.cu</p>
+								<p>Alexander Rojas => arojash@hab.uci.cu</p>
+							</div>
+						</div>
+                    </div>
+                </div>
+                <!--       DOWNLOAD_BUTTON   -->
+                <div id="demo_box_footer">
+                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                         onmousedown="this.className='button onmousedown'" 
+                         onmouseup="this.className='button onmouseup'" 
+                         onmouseout="this.className='button onmouseout'" 
+                         onclick="this.className='button onmouseover'">
+                        <div class="l"></div>
+                        <div class="c">Download jWebSocket</div>
+                        <div class="r_download"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
