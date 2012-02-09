@@ -44,12 +44,12 @@ import org.jwebsocket.logging.Logging;
 import org.apache.log4j.Logger;
 
 /**
- * @author Merly
+ * @author Merly, Orlando
  */
 public class MonitoringPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger(MonitoringPlugIn.class);
-	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>().shared();
+	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>();
 	private static Thread mInformationThread;
 	private static Thread mServerExchangeInfoThread;
 	private static boolean mInformationRunning = true;
@@ -128,7 +128,9 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
 		mConnectedUsers--;
-		mClients.remove(aConnector);
+		if (mClients.contains(aConnector)) {
+			mClients.remove(aConnector);
+		}
 	}
 
 	@Override
@@ -139,6 +141,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				String lInterest = aToken.getString("interest");
 				if (null != lInterest && !lInterest.isEmpty()) {
 					aConnector.setVar("interest", aToken.getString("interest"));
+
 					if ("serverXchgInfo".equals(lInterest)) {
 						String lDay = aToken.getString("day");
 						String lMonth = aToken.getString("month");
@@ -184,9 +187,9 @@ public class MonitoringPlugIn extends TokenPlugIn {
 							broadcastServerXchgInfoXDay(aConnector, lYear);
 						}
 					}
+					mClients.add(aConnector);
 				}
-				mClients.add(aConnector);
-				
+
 			} else if (aToken.getType().equals("unregister")) {
 				mClients.remove(aConnector);
 			}
@@ -199,26 +202,25 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		public void run() {
 			mSigar = new Sigar();
 			while (mInformationRunning) {
+				gatherComputerInfo();
+				Token lPCInfoToken = computerInfoToToken();
+
 				for (WebSocketConnector lConnector : mClients) {
+
 					String lInterest = lConnector.getString("interest");
+
 					if ("computerInfo".equals(lInterest)) {
-						gatherComputerInfo();
-						broadcastComputerInfo(lConnector);
-						break;
+						getServer().sendToken(lConnector, lPCInfoToken);
 					} else if ("userInfo".equals(lInterest)) {
 						broadcastUserInfo(lConnector);
-						break;
 					} else if ("browserInfo".equals(lInterest)) {
 						//TODO: Get the browsers info
 //                            gatherBrowsersInfo();
 						broadcastBrowsersInfo(lConnector);
-						break;
-					} else {
-						break;
 					}
 				}
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(200);
 				} catch (InterruptedException ex) {
 				}
 			}
@@ -255,7 +257,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		}
 	}
 
-	public void broadcastComputerInfo(WebSocketConnector aConnector) {
+	public Token computerInfoToToken() {
 		Token lToken = TokenFactory.createToken(getNamespace(), "computerInfo");
 		//Memory Information
 		lToken.setInteger("totalMem", mMemory[0]);
@@ -268,8 +270,16 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		lToken.setInteger("netSent", mNetwork.getAllOutboundTotal());
 		lToken.setDouble("swapPercent", (double) (mMemory[3] * 100 / mMemory[2]));
 
+		FastList<String> lList = new FastList<String>();
+
+		for (int i = 0; i < mCPUPercent.length; i++) {
+			lList.add(String.valueOf(CpuPerc.format(mCPUPercent[i].getUser())));
+		}
 		//CPU Information
-		lToken.setString("consumeCPU", String.valueOf(CpuPerc.format(mCPUPercent[0].getUser())));
+		lToken.setList("consumeCPUCharts", lList);
+
+		lToken.setString("consumeCPU", CpuPerc.format(mCPUPercent[0].getUser()));
+		lToken.setString("consumeTotal", CpuPerc.format(mCpu));
 
 		//HDD Information
 		for (File lRoot : mRoots) {
@@ -278,7 +288,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			lToken.setString("usedHddSpace", inMeasure(lRoot.getTotalSpace() - lRoot.getFreeSpace()));
 		}
 
-		getServer().sendToken(aConnector, lToken);
+		return lToken;
 	}
 
 	public void broadcastUserInfo(WebSocketConnector aConnector) {
@@ -410,10 +420,11 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		try {
 			mMemory = gatherMemInfo();
 			mCPUPercent = mSigar.getCpuPercList();
+			mCpu = (float) mSigar.getCpuPerc().getUser();
 			mNetwork = mSigar.getNetStat();
 			mRoots = File.listRoots();
 
-			Thread.sleep(500);
+			Thread.sleep(1000);
 		} catch (SigarException ex) {
 		} catch (InterruptedException ex) {
 		}
