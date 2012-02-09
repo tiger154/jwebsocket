@@ -981,6 +981,17 @@
 			</server-assignments>
 		</plugin>
 
+		<!-- Shared Canvas PlugIn Configuration -->
+		<plugin>
+			<name>org.jwebsocket.sharedcanvas.SharedCanvasPlugIn</name>
+			<ns>org.jwebsocket.plugins.sharedcanvas</ns>
+			<id>SharedCanvasPlugIn</id>
+			<jar>jWebSocketSharedCanvasPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		
 		<!-- plug-in to support various independant streams on the server -->
 		<plugin>
 			<name>org.jwebsocket.plugins.streaming.StreamingPlugIn</name>
