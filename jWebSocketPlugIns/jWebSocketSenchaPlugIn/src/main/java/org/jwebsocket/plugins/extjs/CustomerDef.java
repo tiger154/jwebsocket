@@ -13,6 +13,7 @@
 //	You should have received a copy of the GNU Lesser General Public License along
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
+
 package org.jwebsocket.plugins.extjs;
 
 /**
@@ -21,71 +22,75 @@ package org.jwebsocket.plugins.extjs;
  */
 public class CustomerDef {
 
-	private Integer id;
-	private String name;
+        private Integer id;
+        private String name;
 	private String email;
-	private Integer age;
+        private Integer age;
 
-	public CustomerDef(Integer id, String name, String email, Integer age) {
-		this.name = name;
-		this.id = id;
-		this.email = email;
-		this.age = age;
-	}
 
-	/**
-	 * @return the id
-	 */
-	public Integer getId() {
-		return id;
-	}
+    public CustomerDef(Integer id, String name, String email,Integer age) {
+	this.name   = name;
+	this.id     = id;
+	this.email  = email;
+        this.age    = age;
+    }
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Integer id) {
-		this.id = id;
-	}
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return the id
+     */
+    public Integer getId() {
+        return id;
+    }
 
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @param id the id to set
+     */
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	/**
-	 * @return the email
-	 */
-	public String getEmail() {
-		return email;
-	}
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @param email the email to set
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * @return the age
-	 */
-	public Integer getAge() {
-		return age;
-	}
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
 
-	/**
-	 * @param age the age to set
-	 */
-	public void setAge(Integer age) {
-		this.age = age;
-	}
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the age
+     */
+    public Integer getAge() {
+        return age;
+    }
+
+    /**
+     * @param age the age to set
+     */
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+
 }
