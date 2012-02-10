@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx;
 
 import java.util.List;
@@ -36,6 +35,7 @@ import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.JSONToken;
 import org.jwebsocket.token.Token;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
@@ -73,7 +73,8 @@ public class JMXPlugIn extends TokenPlugIn {
 		JMXServerFunctions.setLog(mLog);
 		String lPath = JWebSocketConfig.getConfigFolder("") + getString("config_file");
 		Resource lResource = new FileSystemResource(lPath);
-		XmlBeanFactory lFactory = new XmlBeanFactory(lResource);
+		XmlBeanFactory lFactory = new ServerXmlBeanFactory(lResource, getClass().getClassLoader());
+		// new XmlBeanFactory(lResource);
 		lFactory.getBean("exporter");
 		lFactory.getBean("rmiConnector");
 		HttpAdaptor httpAdaptor = (HttpAdaptor) lFactory.getBean("HttpAdaptor");
