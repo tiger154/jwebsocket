@@ -89,10 +89,10 @@ $.widget("jws.SMSGateway",{
 					var lCallbacks = {
 						OnSuccess: function(aToken){
 							//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
-							dialog("SMS sent correctly", "Congratulations!, you have sent a free SMS using jWebSocket Framework", false);
+							dialog("SMS sent correctly", "Congratulations!, you have sent a free SMS using jWebSocket Framework");
 						},
 						OnFailure: function(aToken){
-							dialog("Error sending the SMS", "The following error has been encoutered: " + aToken.msg);
+							dialog("Error sending the SMS", "The following error has been encoutered: " + aToken.msg, true);
 						}
 					};
 					mWSC.sendToken(lSMSToken, lCallbacks);
