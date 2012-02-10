@@ -33,13 +33,40 @@ public class Customers {
         count = 0;
         customers = new LinkedList<CustomerDef>();
         try{
-            
-            add(new CustomerDef(count, "Alexander", "arojash@uci.cu", 25));
-            add(new CustomerDef(count, "Osvaldo", "oaguilar@hab.uci.cu", 25));
-            add(new CustomerDef(count, "Victor", "vbarzana@hab.uci.cu", 24));
-            add(new CustomerDef(count, "Rolando", "rzantamaria@hab.uci.cu", 26));
-            add(new CustomerDef(count, "Carlos", "ckcespedez@hab.uci.cu", 25));
+			add(new CustomerDef(count, "Alexander", "arojash@uci.cu", 24));
+			add(new CustomerDef(count, "Alexander", "a.schulze@jwebsocket.org", 40));
+			add(new CustomerDef(count, "Anuradha", "galianuradha@gmail.com", 25));
+			add(new CustomerDef(count, "Armando", "alsimon@uci.cu", 26));
+			add(new CustomerDef(count, "Carlos", "carlosfeyt@hab.uci.cu", 25));
+			add(new CustomerDef(count, "Carlos", "ckcespedes@uci.cu", 25));
+			add(new CustomerDef(count, "Claudia", "c.gillrath@innotrade.de", 30));
+			add(new CustomerDef(count, "Daimi", "dmederos@hab.uci.cu", 24));
+			add(new CustomerDef(count, "Dariel", "dnoa@uci.cu", 25));
+			add(new CustomerDef(count, "Eduardo", "ebourzach@uci.cu", 26));
 
+			add(new CustomerDef(count, "Johannes", "johannes.schoenborn@gmail.com", 25));
+			add(new CustomerDef(count, "Johannes", "j.smutny@gmail.com", 25));
+			add(new CustomerDef(count, "Lester", "lzaila@hab.uci.cu", 25));
+			add(new CustomerDef(count, "Lisdey", "lperez@hab.uci.cu", 23));
+			add(new CustomerDef(count, "Merly", "mlopez@hab.uci.cu", 24));
+			add(new CustomerDef(count, "Marcos ", "magonzalez@hab.uci.cu", 25));
+			add(new CustomerDef(count, "Marta ", "mrodriguez@hab.uci.cu", 25));
+			add(new CustomerDef(count, "Mayra", "memaranon@hab.uci.cu", 25));
+			add(new CustomerDef(count, "Orlando", "omiranda@uci.cu", 25));
+			add(new CustomerDef(count, "Osvaldo", "oaguilar@uci.cu", 25));
+
+			add(new CustomerDef(count, "Prashant", "prashantkhanal@gmail.com", 25));
+			add(new CustomerDef(count, "Puran", "mailtopuran@gmail.com", 25));
+			add(new CustomerDef(count, "Quentin", "quentin.ambard@gmail.com", 25));
+			add(new CustomerDef(count, "Rebecca", "r.schulze@jwebsocket.org", 23));
+			add(new CustomerDef(count, "Rolando", "rbetancourt@hab.uci.cu", 24));
+			add(new CustomerDef(count, "Rolando", "rsantamaria@hab.uci.cu", 26));
+			add(new CustomerDef(count, "Roylandi", "rgpujol@hab.uci.cu", 25));
+			add(new CustomerDef(count, "Unni", "unnivm@gmail.com", 25));
+			add(new CustomerDef(count, "Victor", "vbarzana@uci.cu", 25));
+			add(new CustomerDef(count, "Yamila", "yvigil@hab.uci.cu", 27));
+
+			add(new CustomerDef(count, "Yasmany", "ynbosh@hab.uci.cu", 24));			
         }catch(Exception ex){
         
         }
