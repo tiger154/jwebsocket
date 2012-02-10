@@ -140,6 +140,8 @@ rem jCaptcha support for spam protection
 xcopy %libs%jcaptcha-all-1.0-RC-2.0.1.jar %tempdir%libs\ /s /i /y
 rem Hardware Monitoring support
 xcopy %libs%sigar-1.6.4.jar %tempdir%libs\ /s /i /y
+rem For JMX support
+xcopy %libs%mx4j-tools-2.1.1.jar %tempdir%libs\ /s /i /y
 rem Jetty support
 xcopy %libs%jetty-continuation-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-http-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
@@ -180,6 +182,7 @@ xcopy %libs%jWebSocketSenchaPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJDBCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketRPCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJMSPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketJMXPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketArduinoPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketMonitoringPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketMailPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
@@ -191,6 +194,7 @@ xcopy %libs%jWebSocketStreamingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketTwitterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketXMPPPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSharedObjectsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketSharedCanvasPlugIn-1.0.jar-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketStatisticsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketBenchmarkPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketClusterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y

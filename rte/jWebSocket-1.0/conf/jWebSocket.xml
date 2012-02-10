@@ -71,6 +71,12 @@
 			<description>jCaptcha Humanity and Anti Spam Library</description>
 		</library>
 		
+		<!-- MX4J Tools required for JMX demo -->
+		<library>
+			<id>MX4J Tools</id>
+			<url>${JWEBSOCKET_HOME}/libs/mx4j-tools-2.1.1.jar</url>
+			<description>MX Tools for MBeans processing</description>
+		</library>
 	</libraries>
 
 	<!-- jWebSocket logging configuration -->
@@ -1450,7 +1456,7 @@
 			<name>org.jwebsocket.plugins.jmx.JMXPlugIn</name>
 			<ns>org.jwebsocket.plugins.jmx</ns>
 			<id>jws.jmx</id>
-			<jar>JMXPlugIn-1.0.jar</jar>
+			<jar>jWebSocketJMXPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
@@ -1459,7 +1465,8 @@
 				<setting key="beans_config">JMXPlugIn/PluginsConfigFiles/</setting>
 			</settings>
 		</plugin>
-    
+		
+	    <!--
 		<plugin>
 			<name>cu.uci.testjmx.plugins.TestJmxPlugIn</name>
 			<ns>cu.uci.testjmx.plugins.testjmxplugin</ns>
@@ -1472,6 +1479,7 @@
 				<setting key="config_file">/home/lisdey/NetBeansProjects/testPlugins/jTestJMX/conf/beanConfig.xml</setting>
 			</settings>
 		</plugin>
+		-->
     
 	</plugins>
 

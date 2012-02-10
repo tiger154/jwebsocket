@@ -21,26 +21,29 @@
     </bean>
     
     <bean id="rmiConnector" class="org.springframework.jmx.support.ConnectorServerFactoryBean" depends-on="rmiRegistry">
-        <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://10.208.7.149:1099/jmxPlugin"/>
+        <!-- <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://10.208.7.149:1099/jmxPlugin"/> -->
+        <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://localhost:1099/jmxPlugin"/>
         <property name="server" ref="jWebSocketServer"/>
         <property name="threaded" value="true"/>
         <property name="daemon" value="true"/>
         <property name="environment">
             <map>
-                <entry key="jmx.remote.x.password.file" value="/home/svn/ijwssvn/rte/jWebSocket-1.0/conf/JMXPlugIn/jmxremote.password"/>
-                <entry key="jmx.remote.x.access.file" value="/home/svn/ijwssvn/rte/jWebSocket-1.0/conf/JMXPlugIn/jmxremote.access"/>
+                <entry key="jmx.remote.x.password.file" value="c:/svn/jWebSocketDev/rte/jWebSocket-1.0/conf/JMXPlugIn/jmxremote.password"/>
+                <entry key="jmx.remote.x.access.file" value="c:/svn/jWebSocketDev/rte/jWebSocket-1.0/conf/JMXPlugIn/jmxremote.access"/>
             </map>
         </property>
     </bean>
     <bean id="clientConnector" class="org.springframework.jmx.support.MBeanServerConnectionFactoryBean" depends-on="serverConnector">
-        <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://10.208.7.149:1099/jmxPlugin"/>
+        <!-- <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://10.208.7.149:1099/jmxPlugin"/> -->
+        <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://localhost:1099/jmxPlugin"/>
     </bean>
     
    <bean id="XSLTProcessor" class="mx4j.tools.adaptor.http.XSLTProcessor" />
    <bean id="HttpAdaptor" class="mx4j.tools.adaptor.http.HttpAdaptor">
         <property name="processor" ref="XSLTProcessor"/>
         <property name="port" value="8020"/>
-        <property name="host" value="10.208.7.149"/>
+        <!-- <property name="host" value="10.208.7.149"/> -->
+        <property name="host" value="localhost"/>
         <property name="authenticationMethod" value="basic"/>
    </bean>
 </beans>
