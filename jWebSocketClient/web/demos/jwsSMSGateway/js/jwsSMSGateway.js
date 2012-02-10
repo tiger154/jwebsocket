@@ -20,6 +20,7 @@
 $.widget("jws.SMSGateway",{
     
 	_init: function(){
+		
 		w.SMSGateway = this;
 		w.SMSGateway.ePhoneNumber   = w.SMSGateway.element.find("#phoneNumberInput");
 		w.SMSGateway.eInputFrom     = w.SMSGateway.element.find("#fromInput");
@@ -30,14 +31,17 @@ $.widget("jws.SMSGateway",{
 		w.SMSGateway.eBtnSend       = w.SMSGateway.element.find("#send_button");
 		w.SMSGateway.eRSMS          = w.SMSGateway.element.find("#rsms");
 		w.SMSGateway.eBSMS          = w.SMSGateway.element.find("#bsms");
-		w.SMSGateway.eBtnSubmit     = w.SMSGateway.element.find('#submit');
 		w.SMSGateway.eImg           = w.SMSGateway.element.find('#img');
-        
+		w.SMSGateway.eLoginArea     = w.SMSGateway.element.find('#login_area');
+		
 		mWSC.addPlugIn( w.SMSGateway );
+		
+		//Obtaining the captcha to show it by first time
+		w.SMSGateway.getCaptcha();
 		w.SMSGateway.registerEvents();
 	},
-    
-	registerEvents: function(){
+	
+	getCaptcha: function(){
 		var lToken = {
 			ns: "org.jwebsocket.plugins.jcaptcha",
 			type: "getcaptcha",
@@ -45,87 +49,66 @@ $.widget("jws.SMSGateway",{
 				imagetype: "jpg"
 			}
 		};
-		mWSC.sendToken(lToken);
-                    
+		
+		var lCallbacks = {
+			OnSuccess: function(aToken) {
+				log("<b style='color:green;'>Getting a new captcha</b>");
+				w.SMSGateway.eImg.attr("src", "data:image/jpg;base64," + aToken.image );
+			}
+		};
+		mWSC.sendToken(lToken, lCallbacks);
+	},
+    
+	registerEvents: function(){
+		
 		w.SMSGateway.eBtnUpdate.click( function() {
-			lToken = {
-				ns:   "org.jwebsocket.plugins.jcaptcha",
-				type: "getcaptcha",
-				args: {
-					imagetype: "jpg"
-				}
-			};
-			mWSC.sendToken(lToken);
+			w.SMSGateway.getCaptcha();
 		});
        
 		w.SMSGateway.eBtnSend.click(function(){
-			var lSMSToken = {
-				ns: "org.jwebsocket.plugins.sms",
-				type: "sms",
-				to: w.SMSGateway.ePhoneNumber.val(),
-				from: w.SMSGateway.eInputFrom.val(),
-				message: w.SMSGateway.eInputSMS.val(),
-				state: $('input[name=messageRadio]:checked').val()
-			};
-			mWSC.sendToken(lSMSToken);
-		});
-        
-		w.SMSGateway.eBtnSubmit.click( function() {
 			var lToken = {
 				ns:   "org.jwebsocket.plugins.jcaptcha",
 				type: "validate",
 				inputChars: w.SMSGateway.eTextCaptcha.val()
 			};
-            
+           
+			
 			var lOptions = {
-				
 				args: {
 					inputChars: w.SMSGateway.eTextCaptcha.val()
 				},
 				
 				OnSuccess: function( aToken ) {
-					alert( "success" );
-					w.SMSGateway.eJCaptcha.fadeOut( 1000, function() {
-						$(this).html("<h1>Correct</h1>").fadeIn( 500 )
-					});
-					//aqui es el problema
-					w.SMSGateway.eRSMS.fadeOut( 1000, function() {
-						$(this).html("<h1>Correct</h1>").fadeIn( 500 )
-					});
-					w.SMSGateway.eBSMS.fadeOut( 1000, function() {
-						$(this).html("<h1>Wrong</h1>").fadeIn( 500 )
-					});
+					log("Success in the captcha validation...");
+					var lSMSToken = {
+						ns: "org.jwebsocket.plugins.sms",
+						type: "sms",
+						to: w.SMSGateway.ePhoneNumber.val(),
+						from: w.SMSGateway.eInputFrom.val(),
+						message: w.SMSGateway.eInputSMS.val(),
+						state: $('input[name=messageRadio]:checked').val()
+					};
+					log("Sending SMS...");
+					mWSC.sendToken(lSMSToken);
 				},
 				
 				OnFailure: function( aToken ) {
-					alert( "failure" );
-					//incorrect validation ask for a new captcha
-					w.SMSGateway.eJCaptcha.fadeOut(300).fadeIn(100).fadeOut(100).fadeIn(50).fadeOut(100).fadeIn(50).fadeOut(100).fadeIn(50);
-					var lGetCaptchaToken = {
-						ns:   "org.jwebsocket.plugins.jcaptcha",
-						type: "getcaptcha",
-						args: {
-							imagetype: "jpg"
-						}
-					};
-					mWSC.sendToken(lGetCaptchaToken);
+					$("#jCaptchaDiv").effect("shake", {
+						times:3
+					}, 100);
+					
+					log("<b style='color:red;'>Wrong captcha validation, try another captcha</b>");
+					w.SMSGateway.getCaptcha();
 					w.SMSGateway.eTextCaptcha.val("").focus();
 				}
-                
 			};
-			
 			mWSC.sendToken(lToken, lOptions);
 		});
+       
 	},
     
-	// process incoming token with captcha image to be display in UI
+	// process all incoming tokens
 	processToken: function( aToken ){
-		if( aToken.ns == "org.jwebsocket.plugins.jcaptcha" ){
-			if( aToken.type == "getcaptcha" ){
-				w.SMSGateway.eImg.attr(
-					"src", "data:image/jpg;base64," + aToken.image );
-			}
-            
-		}
+		
 	}
 });

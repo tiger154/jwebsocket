@@ -94,6 +94,8 @@ $.widget("jws.auth",{
 					log( "<font style='color:#888'>jWebSocket connection established.</font>" );
             
 				//update statusbar client status
+				w.auth.eLogonArea.hide();
+				w.auth.eLogoffArea.fadeIn(200);
 				w.auth.eClientStatus.hide().removeClass("offline").addClass("online").text("connected").show();
 			},
 					
@@ -101,14 +103,12 @@ $.widget("jws.auth",{
 				if(w.auth.options.OnWelcome){
 					w.auth.options.OnWelcome(aEvent);
 				}
-				w.auth.eLogonArea.hide();
-				w.auth.eLogoffArea.fadeIn(200);
+				
 				if(mLog.isDebugEnabled) {
 					log( "<font style='color:red'>jWebSocket Welcome received.</font>" );
 				}
-                
 			},
-					
+
 			OnGoodBye: function( aEvent ) {
 				if (w.auth.options.OnGoodBye) {
 					w.auth.options.OnGoodBye(aEvent);
@@ -116,15 +116,11 @@ $.widget("jws.auth",{
 				if (mLog.isDebugEnabled) {
 					log("<font style='color:red'>jWebSocket GoodBye received.</font>");
 				}
-               
 			},
 
 			// OnMessage callback
 			OnMessage: function( aEvent, aToken ) {
-				if(w.auth.options.OnMessage) {
-					w.auth.options.OnMessage(aEvent);
-				}
-               
+				console.log("Logging on");
 				var lDate = "";
 				if( aToken.date_val ) {
 					lDate = jws.tools.ISO2Date( aToken.date_val );
@@ -139,21 +135,19 @@ $.widget("jws.auth",{
 					w.auth.eClientId.text("Client-ID: " + ( mWSC.getId()));
 					w.auth.eClientStatus.hide().removeClass("offline").removeClass("online").addClass("authenticated").text("authenticated").show();
 				} else {
-					w.auth.eLogoffArea.hide();
-					w.auth.eLogonArea.fadeIn(300);
-					
 					w.auth.eUserInfoName.text("-");
 					w.auth.eClientId.text("Client-ID: -");
 					w.auth.eClientStatus.hide().removeClass("authenticated").removeClass("online").addClass("offline").text("disconnected").show();
 				}
 				
 				w.auth.eWebSocketType.text("WebSocket: " + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)" ));
+				
+				if(w.auth.options.OnMessage) {
+					w.auth.options.OnMessage(aEvent, aToken);
+				}
 			},
 			// OnClose callback
 			OnClose: function( aEvent ) {
-				if(w.auth.options.OnClose){
-					w.auth.options.OnClose(aEvent);
-				}
 				if(mLog.isDebugEnabled)
 					log( "<font style='color:#888'>jWebSocket connection closed.</font>" );
 				
@@ -166,6 +160,10 @@ $.widget("jws.auth",{
 				w.auth.eWebSocketType.text( "WebSocket: - " );
 				w.auth.eClientStatus.removeClass("online").removeClass("online").addClass("offline").text("disconnected");
 				w.auth.eUsername.focus();
+				
+				if(w.auth.options.OnClose){
+					w.auth.options.OnClose(aEvent);
+				}
 			}
 		});
 		if(mLog.isDebugEnabled)
@@ -177,7 +175,7 @@ $.widget("jws.auth",{
 				log( "Logging off " + ( w.auth.mUsername != null ? "'" + w.auth.mUsername + "'" : "" ) + " and disconnecting..." );
 			// the timeout below  is optional,
 			// if you use it you'll get a good-bye message.
-			var lRes = mWSC.logout({});
+			var lRes = mWSC.logout({timeout: 3000});
 			
 			if(mLog.isDebugEnabled)
 				log( mWSC.resultToString( lRes ) );
@@ -212,12 +210,18 @@ $.widget("jws.auth",{
 				},
 
 				OnWelcome: function( aEvent )  {
-					if(w.auth.options.OnWelcome){
-						w.auth.options.OnWelcome(aEvent);
+					if( mWSC.isLoggedIn() ) {
+						w.auth.eUserInfoName.text(aToken.username);
+						w.auth.mUsername = aToken.username;
+						w.auth.eClientStatus.hide().removeClass("offline").removeClass("online").addClass("authenticated").text("authenticated").show();
 					}
 					log( "<font style=\"color:red\">jWebSocket Welcome received.</font>" );
 					w.auth.eClientId.text("Client-ID: " + ( mWSC.getId()));
 					w.auth.eWebSocketType.text("WebSocket: " + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)" ));
+					
+					if(w.auth.options.OnWelcome){
+						w.auth.options.OnWelcome(aEvent);
+					}
 				},
 
 				OnGoodBye: function( aEvent )  {
@@ -228,21 +232,10 @@ $.widget("jws.auth",{
 				},
 
 				OnMessage: function( aEvent, aToken ) {
+					log( "jWebSocket message received: '" + aEvent.data + "'" );
+					
 					if(w.auth.options.OnMessage){
 						w.auth.options.OnMessage(aEvent);
-					}
-					log( "jWebSocket message received: '" + aEvent.data + "'" );
-
-					if( mWSC.isLoggedIn() ) {
-						w.auth.eUserInfoName.text(aToken.username);
-						w.auth.mUsername = aToken.username;
-						w.auth.eClientStatus.hide().removeClass("offline").removeClass("online").addClass("authenticated").text("authenticated").show();
-						w.auth.eLogonArea.hide();
-						w.auth.eLogoffArea.fadeIn(300);
-					} else {
-						w.auth.eLogoffArea.hide();
-						w.auth.eLogonArea.fadeIn(300);
-						w.auth.eClientStatus.hide().removeClass("offline").removeClass("authenticated").addClass("online").text("online").show();
 					}
 				},
 
@@ -254,9 +247,6 @@ $.widget("jws.auth",{
 					w.auth.eConnectButton.show();
 					
 					log( "jWebSocket connection closed." );
-					
-					w.auth.eLogoffArea.hide();
-					w.auth.eLogonArea.fadeIn(200);
 					
 					w.auth.eUserInfoName.text("");
 					w.auth.mUsername = null;

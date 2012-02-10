@@ -130,18 +130,6 @@
 
                         <p id="wordType">Type the words:</p>
                         <input type="text" id="captchaText" class="texts"/>
-                        <!--<input type="button" id="send" value="send"/>-->
-
-                        <div id="submit" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Submit</div>
-                            <div class="r"></div>
-                        </div>
-
                     </div>
                     <div id="messageDiv" class="contentDiv box">
 
@@ -153,9 +141,9 @@
                         <textarea id="smsInput" NAME="sms" ROWS="6" COLS="30" class="texts">Hello from the jWebSocket real-time SMS service. Security with user-verification and monitoring.</textarea>
                         <div id="radioDiv">
                             <p id="smsType">Select SMS type:</p>
-                            <input type="radio" value="gold" name="messageRadio" class="radio" id="gold"/><p class="radio">Gold</p>
-                            <input type="radio"  value="direct" name="messageRadio" class="radio" id="direct"/><p class="radio">Direct</p>
-                            <input type="radio" value="basic" name="messageRadio" checked="checked" class="radio" id="basic"/><p class="radio">Basic</p>
+                            <input type="radio" value="gold" name="messageRadio" class="radio" id="gold"/><label>Gold</label>
+                            <input type="radio"  value="direct" name="messageRadio" class="radio" id="direct"/><label>Direct</label>
+                            <input type="radio" value="basic" name="messageRadio" checked="checked" class="radio" id="basic"/><label>Basic</label>
 
                         </div>
 						<div id="send_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 

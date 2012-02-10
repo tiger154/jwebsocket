@@ -70,9 +70,9 @@ p.pText {
 }
 
 #imgCaptcha {
-    width: 200px;
+    width: 220px;
     background-color: #ffffff;
-    height: 52px;
+    height: 65px;
     -moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
     float: left;
@@ -81,20 +81,21 @@ p.pText {
 }
 
 #img {
-    width: 180px;
+    width: 215px !important;
     height: 45px;
-    -moz-border-radius: 6px;
-	-webkit-border-radius: 6px;
+	margin-left: 3px;
+	margin-top: 3px;
     float: left;
-    border: none;
+    border: none !important;
 }
 
 #wordType{
     float: left;
-    padding: 0px !important;
-    margin: 0px !important;
+    padding: 3px !important;
+    margin: 3px !important;
     width: 100%;
 }
+
 #img {
     background-color: #ffffff;
     float: left;
@@ -106,6 +107,7 @@ p.pText {
 }
 #captchaText {
     float: left;
+	width: 95%;
 }
 
 
@@ -126,7 +128,8 @@ p.pText {
 }
 #phone {
     float: left;
-    margin: 5px 0 0 0;
+    margin: 5px 0 0 5px;
+	padding-left: 7px;
 }
 #from {
     margin-top: 35px;
@@ -142,17 +145,37 @@ p.pText {
 #smsInput {
     float: right;
     width: 295px;
+	height: 50px;
 }
 #smsType {
     float: left;
-    margin: 20px 5px 0 0;
+    margin: 22px 5px 0 0;
+	
 }
 .radio {
     float: left;
+	
 }
+
+label{
+	float: left;
+	font-size: 12px;
+	padding-top: 21px;
+	font-family: "Verdana";
+}
+
 #radioDiv {
-    float: right;
+    float: left;
+	width: 98%;
+	padding-left: 94px;
+	margin-bottom: 20px;
 }
+
 #basic,#gold, #direct {
     margin-top: 22px;  
+}
+
+#send_button{
+	float: right;
+	
 }
