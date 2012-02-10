@@ -31,7 +31,6 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
 
 public class JCaptchaPlugIn extends TokenPlugIn {
@@ -46,6 +45,11 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+		System.out.println("------------------------------------------------------------------------------");
+		System.out.println("         Processing Token..       ");
+		System.out.println(aToken);
+		System.out.println("------------------------------------------------------------------------------");
+		
 		if (aToken.getNS().equals(getNamespace())) {
 			if ("getcaptcha".equals(aToken.getType())) {
 
@@ -62,6 +66,7 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 				}
 
 				generateCaptcha(aToken, aConnector);
+
 			} else if ("validate".equals(aToken.getType())) {
 				Token lResponse = createResponse(aToken);
 				if (validateCaptcha(aConnector.getSession().getSessionId(), aToken.getString("inputChars"))) {
@@ -78,7 +83,7 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 	public void generateCaptcha(Token aToken, WebSocketConnector aConnector) {
 		ByteArrayOutputStream lImgOutputStream = new ByteArrayOutputStream();
 		byte[] lCaptchaBytes = null;
-		Token lResponse = TokenFactory.createToken(getNamespace(), "getcaptcha");
+		Token lResponse = createResponse(aToken);
 		try {
 			// Session ID is used to identify the particular captcha.
 			String lCaptchaId = aConnector.getSession().getSessionId();
@@ -92,24 +97,18 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 
 			ImageIO.write(lChallengeImage, mImgType, lImgOutputStream);
 
+
 			lCaptchaBytes = lImgOutputStream.toByteArray();
-
-		} catch (CaptchaServiceException lCSE) {
-			mLog.error(Logging.getSimpleExceptionMessage(lCSE, "generating captcha"));
-			lResponse.setString("msg", "Problem generating captcha image.");
+			// Write the image to the client.
+			lResponse.setString("image", Tools.base64Encode(lCaptchaBytes));
 			getServer().sendToken(aConnector, lResponse);
-			return;
+			System.out.println("----------------------------------");
+			System.out.println(" enviando ");
+			System.out.println("----------------------------------");
 
-		} catch (IOException lIOEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lIOEx, "generating captcha"));
-			lResponse.setString("msg", "Problem generating captcha image.");
-			getServer().sendToken(aConnector, lResponse);
-			return;
+		} catch (IOException lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "Error generating captcha!"));
 		}
-
-		// Write the image to the client.
-		lResponse.setString("image", Tools.base64Encode(lCaptchaBytes));
-		getServer().sendToken(aConnector, lResponse);
 	}
 
 	private boolean validateCaptcha(String captchaId, String inputChars) {
