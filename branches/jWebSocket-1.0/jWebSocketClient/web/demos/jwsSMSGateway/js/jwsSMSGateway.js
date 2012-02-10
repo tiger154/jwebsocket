@@ -35,7 +35,6 @@ $.widget("jws.SMSGateway",{
 		w.SMSGateway.eLoginArea     = w.SMSGateway.element.find('#login_area');
 		
 		mWSC.addPlugIn( w.SMSGateway );
-		
 		//Obtaining the captcha to show it by first time
 		w.SMSGateway.getCaptcha();
 		w.SMSGateway.registerEvents();
@@ -60,7 +59,6 @@ $.widget("jws.SMSGateway",{
 	},
     
 	registerEvents: function(){
-		
 		w.SMSGateway.eBtnUpdate.click( function() {
 			w.SMSGateway.getCaptcha();
 		});
@@ -72,7 +70,6 @@ $.widget("jws.SMSGateway",{
 				inputChars: w.SMSGateway.eTextCaptcha.val()
 			};
            
-			
 			var lOptions = {
 				args: {
 					inputChars: w.SMSGateway.eTextCaptcha.val()
@@ -89,7 +86,16 @@ $.widget("jws.SMSGateway",{
 						state: $('input[name=messageRadio]:checked').val()
 					};
 					log("Sending SMS...");
-					mWSC.sendToken(lSMSToken);
+					var lCallbacks = {
+						OnSuccess: function(aToken){
+							//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
+							dialog("SMS sent correctly", "Congratulations!, you have sent a free SMS using jWebSocket Framework", false);
+						},
+						OnFailure: function(aToken){
+							dialog("Error sending the SMS", "The following error has been encoutered: " + aToken.msg);
+						}
+					};
+					mWSC.sendToken(lSMSToken, lCallbacks);
 				},
 				
 				OnFailure: function( aToken ) {
@@ -98,8 +104,12 @@ $.widget("jws.SMSGateway",{
 					}, 100);
 					
 					log("<b style='color:red;'>Wrong captcha validation, try another captcha</b>");
-					w.SMSGateway.getCaptcha();
-					w.SMSGateway.eTextCaptcha.val("").focus();
+					var lGetNewCaptcha = function(){
+						w.SMSGateway.getCaptcha();
+						w.SMSGateway.eTextCaptcha.val("").focus();
+					};
+					//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
+					dialog("Captcha error", "Error found in the Captcha, the server will send you other captcha, please try again!", true, lGetNewCaptcha);
 				}
 			};
 			mWSC.sendToken(lToken, lOptions);
