@@ -45,10 +45,6 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-		System.out.println("------------------------------------------------------------------------------");
-		System.out.println("         Processing Token..       ");
-		System.out.println(aToken);
-		System.out.println("------------------------------------------------------------------------------");
 		
 		if (aToken.getNS().equals(getNamespace())) {
 			if ("getcaptcha".equals(aToken.getType())) {
@@ -102,9 +98,6 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 			// Write the image to the client.
 			lResponse.setString("image", Tools.base64Encode(lCaptchaBytes));
 			getServer().sendToken(aConnector, lResponse);
-			System.out.println("----------------------------------");
-			System.out.println(" enviando ");
-			System.out.println("----------------------------------");
 
 		} catch (IOException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "Error generating captcha!"));
