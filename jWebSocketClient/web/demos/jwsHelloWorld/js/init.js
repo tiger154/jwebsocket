@@ -13,7 +13,12 @@ function init(){
 		},
 		OnClose: function(aEvent){
 		},
-		OnMessage: function(aEvent){
+		OnMessage: function(aEvent, aToken){
+			var lDate = "";
+			if( aToken.date_val ) {
+				lDate = jws.tools.ISO2Date( aToken.date_val );
+			}
+			log( "<font style='color:#888'>jWebSocket '" + aToken.type + "' token received, full message: '" + aEvent.data + "' " + lDate + "</font>" );
 		},
 		OnWelcome: function(aEvent){
 		},
@@ -25,14 +30,17 @@ function init(){
 	// @maxLogLines: maximum number of lines that will be logged
 	// @linesToDelete: quantity of lines that will be deleted from 
 	// the log window each time the log exceeds the maxLogLines
-	$("#log_box").log({maxLogLines: 200, linesToDelete: 20});
+	$("#log_box").log({
+		maxLogLines: 200, 
+		linesToDelete: 20
+	});
 	
 	$("#demo_box").auth(lCallbacks);
 	$("#demo_box").actions();
 	
 	//configuring tooltip as we wish
 	$("[title]").tooltip({
-		position: "top center", 
+		position: "bottom center", 
 		onShow: function() {
 			var lTip = this.getTip();
 			var lTop = ("<div class='top'></div>");
@@ -42,7 +50,7 @@ function init(){
 		}
 	});
 	
-checkWebSocketSupport();
+	checkWebSocketSupport();
 }
 
 function checkWebSocketSupport(){

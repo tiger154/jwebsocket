@@ -67,7 +67,6 @@ $.widget("jws.auth",{
 		w.auth.eDisConnectButton.click(w.auth.disconnect);
 	},
 	logon: function(){
-		
 		var lURL = (w.auth.options.lURL)?w.auth.options.lURL:jws.getDefaultServerURL();
         
 		var lUsername = w.auth.eUsername.val();
@@ -175,7 +174,9 @@ $.widget("jws.auth",{
 				log( "Logging off " + ( w.auth.mUsername != null ? "'" + w.auth.mUsername + "'" : "" ) + " and disconnecting..." );
 			// the timeout below  is optional,
 			// if you use it you'll get a good-bye message.
-			var lRes = mWSC.logout({timeout: 3000});
+			var lRes = mWSC.logout({
+				timeout: 3000
+			});
 			
 			if(mLog.isDebugEnabled)
 				log( mWSC.resultToString( lRes ) );
@@ -268,6 +269,7 @@ $.widget("jws.auth",{
 				var lRes = mWSC.close({
 					timeout: 3000
 				});
+				
 				if( lRes.code == 0 ) {
 				} else {
 					log( lRes.msg );
@@ -278,24 +280,3 @@ $.widget("jws.auth",{
 		}
 	}
 });
-
-function dialog(title, message){
-	// Dialog			
-	var ldialog = $('<div id="dialog"></div>');
-	var content = $("<p>"+message + "</p>");
-	ldialog.append(content);
-    
-	ldialog.prependTo("body");
-    
-	ldialog.dialog({
-		autoOpen: true,
-		width: 600,
-		buttons: {
-			"Ok": function() { 
-				$(this).dialog("close"); 
-				ldialog.remove();
-			}
-		}, 
-		title: title
-	});
-}
