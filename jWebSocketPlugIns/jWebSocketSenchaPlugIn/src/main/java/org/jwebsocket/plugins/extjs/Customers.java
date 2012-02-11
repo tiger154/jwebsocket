@@ -39,7 +39,6 @@ public class Customers {
 			add(new CustomerDef(count, "Armando", "alsimon@uci.cu", 26));
 			add(new CustomerDef(count, "Carlos", "carlosfeyt@hab.uci.cu", 25));
 			add(new CustomerDef(count, "Carlos", "ckcespedes@uci.cu", 25));
-			add(new CustomerDef(count, "Claudia", "c.gillrath@innotrade.de", 30));
 			add(new CustomerDef(count, "Daimi", "dmederos@hab.uci.cu", 24));
 			add(new CustomerDef(count, "Dariel", "dnoa@uci.cu", 25));
 			add(new CustomerDef(count, "Eduardo", "ebourzach@uci.cu", 26));
