@@ -17,15 +17,7 @@ function init(){
 		linesToDelete: 20
 	});
 	
-	// Each demo will configure its own callbacks to be passed to the login widget
-	// Default callbacks { OnOpen | OnClose | OnMessage | OnWelcome | OnGoodBye}
-	var lCallbacks = {
-		OnOpen: function(aEvent){
-			$("#container").SMSGateway();
-		}
-	};
-	
-	$("#demo_box").auth(lCallbacks);
+	$("#container").SMSGateway();
 	
 	//configuring tooltip as we wish
 	$("[title]").tooltip({

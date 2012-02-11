@@ -33,10 +33,18 @@ $.widget("jws.SMSGateway",{
 		w.SMSGateway.eBSMS          = w.SMSGateway.element.find("#bsms");
 		w.SMSGateway.eImg           = w.SMSGateway.element.find('#img');
 		w.SMSGateway.eLoginArea     = w.SMSGateway.element.find('#login_area');
-		
-		mWSC.addPlugIn( w.SMSGateway );
-		//Obtaining the captcha to show it by first time
-		w.SMSGateway.getCaptcha();
+				
+		// Each demo will configure its own callbacks to be passed to the login widget
+		// Default callbacks { OnOpen | OnClose | OnMessage | OnWelcome | OnGoodBye}
+		var lCallbacks = {
+			OnOpen: function(aEvent){
+				w.SMSGateway.getCaptcha();
+				mWSC.addPlugIn( w.SMSGateway );
+			}
+		};
+	
+		$("#demo_box").auth(lCallbacks);
+				
 		w.SMSGateway.registerEvents();
 	},
 	
