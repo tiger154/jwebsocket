@@ -119,7 +119,6 @@ $.widget("jws.auth",{
 
 			// OnMessage callback
 			OnMessage: function( aEvent, aToken ) {
-				console.log("Logging on");
 				var lDate = "";
 				if( aToken.date_val ) {
 					lDate = jws.tools.ISO2Date( aToken.date_val );
