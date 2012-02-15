@@ -41,6 +41,8 @@ import org.jwebsocket.token.Token;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.memory.InMemoryDaoImpl;
 
 /**
  *
@@ -71,15 +73,21 @@ public class JMXPlugIn extends TokenPlugIn {
 	public void engineStarted(WebSocketEngine aEngine) {
 		JMXHandler.setLog(mLog);
 		JMXServerFunctions.setLog(mLog);
+		
 		String lPath = JWebSocketConfig.getConfigFolder("") + getString("config_file");
 		Resource lResource = new FileSystemResource(lPath);
 		XmlBeanFactory lFactory = new ServerXmlBeanFactory(lResource, getClass().getClassLoader());
-		// new XmlBeanFactory(lResource);
+		
+		InMemoryDaoImpl lAuthentication = (InMemoryDaoImpl) lFactory.getBean("staticAuthUserDetailsService");
+		UserDetails lUser = lAuthentication.loadUserByUsername("admin");
+		JMXPlugInAuthenticator.setDefinedUser(lUser.getUsername());
+		JMXPlugInAuthenticator.setDefinedPassword(lUser.getPassword());
+		
 		lFactory.getBean("exporter");
 		lFactory.getBean("rmiConnector");
 		HttpAdaptor httpAdaptor = (HttpAdaptor) lFactory.getBean("HttpAdaptor");
 		try {
-			httpAdaptor.addAuthorization("user", "pass1");
+			httpAdaptor.addAuthorization(lUser.getUsername(), "httpadmin");
 			httpAdaptor.start();
 
 			MBeanServer lMBServer = (MBeanServer) lFactory.getBean("jWebSocketServer");
@@ -89,7 +97,7 @@ public class JMXPlugIn extends TokenPlugIn {
 			JMXPlugInsExporter lPluginsExporter = new JMXPlugInsExporter(lBeanPath, lMBServer, mLog);
 			lPluginsExporter.createMBeansToExport();
 		} catch (Exception ex) {
-			mLog.error("JMXPlugIn on actionPerformed: " + ex.getMessage());
+			mLog.error("JMXPlugIn on engineStarted: " + ex.getMessage());
 		}
 	}
 
@@ -130,7 +138,7 @@ public class JMXPlugIn extends TokenPlugIn {
 				}
 			}
 		} catch (Exception ex) {
-			mLog.error("JMXPlugIn on actionPerformed: " + ex.getMessage());
+			mLog.error("JMXPlugIn on invokePluginOperation: " + ex.getMessage());
 			throw new Exception(ex.getMessage());
 		}
 
@@ -164,7 +172,7 @@ public class JMXPlugIn extends TokenPlugIn {
 
 			result = JMXHandler.convertMapToCompositeData(lServers);
 		} catch (Exception ex) {
-			mLog.error("JMXPlugIn on actionPerformed: " + ex.getMessage());
+			mLog.error("JMXPlugIn on getInformationOfRunningServers: " + ex.getMessage());
 			throw new Exception(ex.getMessage());
 		}
 		return result;

@@ -69,7 +69,7 @@ public class JMXServerFunctions {
 				throw new Exception("This server doesn't have any connectors");
 			}
 		} catch (Exception ex) {
-			mLog.error("JMXServerFunctions on actionPerformed: " + ex.getMessage());
+			mLog.error("JMXServerFunctions on allConnectors: " + ex.getMessage());
 			throw new Exception(ex.getMessage());
 		}
 		return lCompData;

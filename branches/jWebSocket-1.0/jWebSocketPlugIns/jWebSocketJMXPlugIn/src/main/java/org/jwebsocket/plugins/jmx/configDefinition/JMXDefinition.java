@@ -59,10 +59,14 @@ public class JMXDefinition {
         }
 
         if (!aJarName.equals("")) {
-            this.mJarName = aJarName;
-        } else {
-            throw new IllegalArgumentException("The jar name must not be empty.");
-        }
+			if (!aJarName.toLowerCase().endsWith(".jar")) {
+				this.mJarName = aJarName + ".jar";
+			} else {
+				this.mJarName = aJarName;
+			}
+		} else {
+			throw new IllegalArgumentException("The jar name must not be empty.");
+		}
     }
 
     public AttributeDefinition[] getAttributes() {
@@ -131,10 +135,14 @@ public class JMXDefinition {
 
     public void setJarName(String aJarName) {
         if (!aJarName.equals("")) {
-            this.mJarName = aJarName;
-        } else {
-            throw new IllegalArgumentException("The jar name must not be empty.");
-        }
+			if (!aJarName.toLowerCase().endsWith(".jar")) {
+				this.mJarName = aJarName + ".jar";
+			} else {
+				this.mJarName = aJarName;
+			}
+		} else {
+			throw new IllegalArgumentException("The jar name must not be empty.");
+		}
     }
 
     public ModelMBeanInfo createMBeanInfo() {
