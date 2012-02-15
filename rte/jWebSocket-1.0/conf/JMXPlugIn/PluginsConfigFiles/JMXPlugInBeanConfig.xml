@@ -7,7 +7,7 @@
        <property name="serverId" value="ts0"/>
        <property name="description" value="This MBean show information about jWebSocket server and allows invoke plugins functionalities."/>
        <property name="className" value="org.jwebsocket.plugins.jmx.JMXPlugIn"/>
-       <property name="jarName" value="JMXPlugIn-1.0.jar"/>
+       <property name="jarName" value="jWebSocketJMXPlugIn-1.0.jar"/>
        <property name="attributes">
            <set>
                <bean id="plugInAttribute" class="org.jwebsocket.plugins.jmx.configDefinition.AttributeDefinition">

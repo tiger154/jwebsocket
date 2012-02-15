@@ -28,8 +28,7 @@
         <property name="daemon" value="true"/>
         <property name="environment">
             <map>
-                <entry key="jmx.remote.x.password.file" value="c:/svn/jWebSocketDev/rte/jWebSocket-1.0/conf/JMXPlugIn/jmxremote.password"/>
-                <entry key="jmx.remote.x.access.file" value="c:/svn/jWebSocketDev/rte/jWebSocket-1.0/conf/JMXPlugIn/jmxremote.access"/>
+                <entry key="jmx.remote.authenticator" value-ref="jmxPluginAuthenticator"/>
             </map>
         </property>
     </bean>
@@ -46,4 +45,15 @@
         <property name="host" value="localhost"/>
         <property name="authenticationMethod" value="basic"/>
    </bean>
+   
+   <bean id="jmxPluginAuthenticator" class="org.jwebsocket.plugins.jmx.JMXPlugInAuthenticator"/>
+   
+   <bean id="staticAuthUserDetailsService" class="org.springframework.security.core.userdetails.memory.InMemoryDaoImpl">
+		<property name="userMap">
+			<!-- format: username=password,grantedAuthority[,grantedAuthority][,enabled|disabled] -->
+			<value>
+					admin=0226c390bea2f19ee4c4f3fc5866004f, ROLE_ADMIN_JMX, enabled
+			</value>
+		</property>	
+	</bean>
 </beans>

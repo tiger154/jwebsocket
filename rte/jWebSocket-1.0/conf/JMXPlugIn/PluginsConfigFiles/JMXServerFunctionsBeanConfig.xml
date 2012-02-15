@@ -5,7 +5,7 @@
     <bean id="JMXServerFunctions" class="org.jwebsocket.plugins.jmx.configDefinition.JMXDefinition">
        <property name="description" value="This MBean allow to execute some important functionalities of the jWebSocket server."/>
        <property name="className" value="org.jwebsocket.plugins.jmx.JMXServerFunctions"/>
-       <property name="jarName" value="JMXPlugIn-1.0.jar"/>
+       <property name="jarName" value="jWebSocketJMXPlugIn-1.0.jar"/>
        <property name="operations">
            <set>
                <bean id="allConnectors" class="org.jwebsocket.plugins.jmx.configDefinition.OperationDefinition">
