@@ -33,6 +33,7 @@ import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.factory.JWebSocketJarClassLoader;
 import org.jwebsocket.plugins.jmx.configDefinition.ConstuctorParameterDefinition;
 import org.jwebsocket.plugins.jmx.configDefinition.JMXDefinition;
+import org.jwebsocket.plugins.jmx.configDefinition.JMXDefinitionException;
 import org.jwebsocket.plugins.jmx.configDefinition.JMXPluginDefinition;
 import org.jwebsocket.plugins.jmx.mbeanSpring.MBeanEnabledExporter;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
@@ -68,7 +69,7 @@ public class JMXPlugInsExporter {
 				}
 			}
 		} catch (Exception ex) {
-			mLog.error("JMXPlugInExporter on actionPerformed: " + ex.getMessage());
+			mLog.error("JMXPlugInExporter on listConfigFilesNames: " + ex.getMessage());
 		}
 		return lAllConfigFiles;
 	}
@@ -92,7 +93,7 @@ public class JMXPlugInsExporter {
 				lExporter.afterPropertiesSet();
 			}
 		} catch (Exception ex) {
-			mLog.error("JMXPlugInExporter on actionPerformed: " + ex.getMessage());
+			mLog.error("JMXPlugInExporter on createMBeansToExport: " + ex.getMessage());
 		}
 	}
 
@@ -136,9 +137,8 @@ public class JMXPlugInsExporter {
 	}
 
 	private void registerMBean(MBeanEnabledExporter aExporter, XmlBeanFactory aBeanFactory, String aBeanName, Map aBeanMap) throws Exception {
-		JMXDefinition lDefinition = null;
 		try {
-			lDefinition = (JMXDefinition) aBeanFactory.getBean(aBeanName);
+			JMXDefinition lDefinition = (JMXDefinition) aBeanFactory.getBean(aBeanName);
 
 			if (lDefinition instanceof JMXPluginDefinition) {
 				JMXPluginDefinition lPluginDefinition = (JMXPluginDefinition) lDefinition;
@@ -166,7 +166,7 @@ public class JMXPlugInsExporter {
 				if (lClass != null) {
 					aBeanMap.put("jWebSocketServer:name=" + aBeanName, lClass);
 				} else {
-					throw new Exception("The class" + aBeanName + "can't be instanciated");
+					throw new Exception("The class " + aBeanName + " can't be instanciated");
 				}
 			}
 
@@ -174,7 +174,15 @@ public class JMXPlugInsExporter {
 				aExporter.setDefinition("jWebSocketServer:name=" + aBeanName, lDefinition);
 			}
 		} catch (Exception e) {
-			mLog.error("JMXPlugInExporter on actionPerformed: " + e.getMessage());
+			mLog.error("JMXPlugInExporter on registerMBean: " + e.getMessage());
+
+			JMXDefinitionException lDefinitionException = new JMXDefinitionException("Unable to register the class: "+ e.getMessage());
+			if (!aBeanName.equals("")) {
+				aBeanMap.put("jWebSocketServer:name=" + aBeanName + "Exception", lDefinitionException);
+			} else {
+				aBeanMap.put("jWebSocketServer:name=MBeanException", lDefinitionException);
+			}
+			aExporter.setDefinition("jWebSocketServer:name=" + aBeanName + "Exception", lDefinitionException);
 		}
 	}
 }
