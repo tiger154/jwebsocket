@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.filter.TokenFilter;
-import org.jwebsocket.filters.system.SystemFilter;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.server.TokenServer;
@@ -34,7 +33,7 @@ import org.jwebsocket.token.Token;
  */
 public class StatisticsFilter extends TokenFilter {
 
-	private static Logger mLog = Logging.getLogger(SystemFilter.class);
+	private static Logger mLog = Logging.getLogger(StatisticsFilter.class);
 
 	/**
 	 *
@@ -44,6 +43,11 @@ public class StatisticsFilter extends TokenFilter {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating statistics filter...");
+		}
+		
+		// :
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Statistics filter instantiated.");
 		}
 	}
 
