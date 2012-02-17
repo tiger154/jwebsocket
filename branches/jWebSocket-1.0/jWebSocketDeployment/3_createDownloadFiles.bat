@@ -143,12 +143,15 @@ xcopy %libs%sigar-1.6.4.jar %tempdir%libs\ /s /i /y
 rem For JMX support
 xcopy %libs%mx4j-tools-2.1.1.jar %tempdir%libs\ /s /i /y
 rem Jetty support
-xcopy %libs%jetty-continuation-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-http-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-io-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-server-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-util-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-websocket-8.0.0.RC0.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jetty-client-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jetty-http-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jetty-io-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jetty-security-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jetty-server-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jetty-servlet-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jetty-servlets-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jetty-util-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jetty-websocket-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 rem xcopy %libs%servlet-api-2.5-6.1.14.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jackson-core-asl-1.9.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jackson-mapper-asl-1.9.3.jar %tempdir%libs\ /s /i /y

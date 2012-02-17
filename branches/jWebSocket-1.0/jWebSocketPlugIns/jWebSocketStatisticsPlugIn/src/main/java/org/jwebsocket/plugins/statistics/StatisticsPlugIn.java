@@ -19,19 +19,18 @@
 package org.jwebsocket.plugins.statistics;
 
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.api.WebSocketPlugIn;
-import org.jwebsocket.api.WebSocketPlugInChain;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.config.xml.FilterConfig;
+import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
-import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.token.TokenFactory;
 
 /**
  *
@@ -54,9 +53,19 @@ public class StatisticsPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating statistics plug-in...");
 		}
+/*
+		FilterConfiguration lConfig = new FilterConfig(
+				"");
+		TokenFilter lFilter = new StatisticsFilter(aConfiguration);
+		getServer().getFilterChain().addFilter(lFilter);
+*/
 		// specify default name space for admin plugin
 		this.setNamespace(NS_STATISTICS);
 		//	mGetSettings();
+
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Statistics plug-in successfully instantiated.");
+		}
 	}
 
 	private void mGetSettings() {
@@ -67,7 +76,7 @@ public class StatisticsPlugIn extends TokenPlugIn {
 		WebSocketPlugInChain lPluginChain = getPlugInChain();
 		mStreamingPlugin = lPluginChain.getPlugIn("jws.streaming");
 		if (mStreamingPlugin != null) {
-			mStream = (BaseStream) ((StreamingPlugIn) mStreamingPlugin).getStream("statisticStream");
+		mStream = (BaseStream) ((StreamingPlugIn) mStreamingPlugin).getStream("statisticStream");
 		}
 		 */
 	}
@@ -77,12 +86,12 @@ public class StatisticsPlugIn extends TokenPlugIn {
 		mGetSettings();
 		/*
 		if (null != mStream) {
-			Token lToken = TokenFactory.createToken(NS_STATISTICS, BaseToken.TT_EVENT);
-			lToken.setString("msg", "client connected");
-			lToken.setString("connId", aConnector.getId());
-			mStream.put(lToken);
+		Token lToken = TokenFactory.createToken(NS_STATISTICS, BaseToken.TT_EVENT);
+		lToken.setString("msg", "client connected");
+		lToken.setString("connId", aConnector.getId());
+		mStream.put(lToken);
 		} else {
-			mLog.warn("'statisticStream' not yet initialized or running!");
+		mLog.warn("'statisticStream' not yet initialized or running!");
 		}
 		 */
 	}
@@ -91,12 +100,12 @@ public class StatisticsPlugIn extends TokenPlugIn {
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseRease) {
 		/*
 		if (null != mStream) {
-			Token lToken = TokenFactory.createToken(NS_STATISTICS, BaseToken.TT_EVENT);
-			lToken.setString("msg", "client disconnected");
-			lToken.setString("connId", aConnector.getId());
-			mStream.put(lToken);
+		Token lToken = TokenFactory.createToken(NS_STATISTICS, BaseToken.TT_EVENT);
+		lToken.setString("msg", "client disconnected");
+		lToken.setString("connId", aConnector.getId());
+		mStream.put(lToken);
 		} else {
-			mLog.warn("'statisticStream' not yet initialized or running!");
+		mLog.warn("'statisticStream' not yet initialized or running!");
 		}
 		 */
 	}

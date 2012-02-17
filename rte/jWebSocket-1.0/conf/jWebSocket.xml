@@ -1062,6 +1062,7 @@
 		</plugin>
 
 		<!-- plug-in to track statistic data about the server usage -->
+		<!-- Attention! This plug-in requires the statistics filter setting -->
 		<plugin>
 			<!-- ensure that this plug-in is loaded after the streaming plug-in! -->
 			<name>org.jwebsocket.plugins.statistics.StatisticsPlugIn</name>
@@ -1490,17 +1491,28 @@
 			<name>org.jwebsocket.filters.system.SystemFilter</name>
 			<id>jws.sampleFilter</id>
 			<ns>org.jwebsocket.filters.system</ns>
-			<jar>jWebSocketPlugins-1.0.jar</jar>
+			<jar>jWebSocketServer-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</filter>
-        
+
+		<!-- Attention! This filter requires the Statistics Plug-in to be installed -->
+		<filter>
+			<name>org.jwebsocket.plugins.statistics.StatisticsFilter</name>
+			<id>jws.statisticsFilter</id>
+			<ns>org.jwebsocket.plugins.statistics</ns>
+			<jar>jWebSocketStatisticsPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</filter>
+		
 		<filter>
 			<name>org.jwebsocket.filters.custom.CustomTokenFilter</name>
 			<id>jws.userFilter</id>
 			<ns>org.jwebsocket.filters.custom</ns>
-			<jar>jWebSocketPlugins-1.0.jar</jar>
+			<jar>jWebSocketServer-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
