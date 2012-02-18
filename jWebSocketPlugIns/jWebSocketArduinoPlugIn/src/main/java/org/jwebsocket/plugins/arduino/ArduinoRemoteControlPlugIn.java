@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - < Description/Name of the Module >
+// jWebSocket - ArduinoRemoteControlPlugIn
 // Copyright(c) 2010-2012 Innotrade GmbH, Herzogenrath, Germany, jWebSocket.org
 // ---------------------------------------------------------------------------
 // THIS CODE IS FOR RESEARCH, EVALUATION AND TEST PURPOSES ONLY!
@@ -44,8 +44,14 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 	static org.apache.log4j.Logger mLog = Logger.getLogger(ArduinoRemoteControlPlugIn.class);
 	private ArduinoConnection mArduinoConnection;
 
-	public ArduinoRemoteControlPlugIn() {
-		this.mArduinoConnection = new ArduinoConnection();
+	public ArduinoRemoteControlPlugIn(String aPortName) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Instantiating Arduino plug-in (port: " + aPortName + ")...");
+		}
+		this.mArduinoConnection = new ArduinoConnection(aPortName);
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Arduino plug-in successfully instantiated (port: " + aPortName + ").");
+		}
 	}
 
 	public ArduinoConnection getArduinoConnection() {
@@ -90,7 +96,7 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 
 	public void processEvent(Command aEvent, C2SResponseEvent aResponseEvent) throws IOException, MissingTokenSender {
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Processing command event...");
+			mLog.info("Processing command event (cmd: " + aEvent.getCmd() + ")...");
 		}
 		try {
 			// Sends a command to Arduino
