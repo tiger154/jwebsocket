@@ -47,12 +47,12 @@ public class ArduinoConnection extends ObservableObject implements SerialPortEve
 	private int mParity;
 	private byte[] mBuffer;
 
-	public ArduinoConnection() {
+	public ArduinoConnection(String aPortName) {
 		addEvents(DataIn.class);
 		//COM0,...,COM4 for windows
 		//in Mac would probably be something like /dev/tty.usbserial-1B1
 		//in Linux, it should be /dev/ttyUSB0, /dev/ttyUSB1 or similar.
-		this.mPortName = "/dev/tty.usbmodemfa131";
+		this.mPortName = aPortName;
 		//default debug rate: 9600 bps
 		this.mDebugRate = 9600;
 		this.mDataBits = SerialPort.DATABITS_8;

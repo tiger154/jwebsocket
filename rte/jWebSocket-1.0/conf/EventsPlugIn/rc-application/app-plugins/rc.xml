@@ -5,6 +5,12 @@
   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<bean id="ArduinoRemoteControlPlugIn" class="org.jwebsocket.plugins.arduino.ArduinoRemoteControlPlugIn" parent="AbstractPlugIn">
+		<!-- configure the port of the Arduino Device here -->
+		<!-- COM0...COM4 for Windows -->
+		<!-- On Mac OSX something like /dev/tty.usbmodemfd141 -->
+		<!-- On Linux something like /dev/ttyUSB0, /dev/ttyUSB1 or similar -->
+		<constructor-arg><value>/dev/tty.usbmodemfd141</value></constructor-arg>
+
 		<property name="id" value="rc" />
 		<property name="emEventClassesAndClientAPI">
 			<map>
