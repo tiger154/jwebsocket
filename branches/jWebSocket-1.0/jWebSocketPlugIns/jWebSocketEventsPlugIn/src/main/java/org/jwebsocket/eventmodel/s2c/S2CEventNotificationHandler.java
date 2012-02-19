@@ -27,7 +27,7 @@ import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.em.ConnectorStopped;
 import org.jwebsocket.eventmodel.event.em.S2CEventNotSupportedOnClient;
 import org.jwebsocket.eventmodel.event.em.S2CResponse;
-import org.jwebsocket.eventmodel.exception.MissingTokenSender;
+import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
 import org.jwebsocket.eventmodel.filter.validator.TypesMap;
 import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.eventmodel.observable.ResponseEvent;
@@ -55,7 +55,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 * @param aTo The destiny client connector
 	 * @param aOnResponse The server on-response callbacks
 	 */
-	public void send(S2CEvent aEvent, String aTo, OnResponse aOnResponse) throws MissingTokenSender {
+	public void send(S2CEvent aEvent, String aTo, OnResponse aOnResponse) throws MissingTokenSenderException {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Preparing S2C event notification...");
 		}
@@ -108,7 +108,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 			//Sending the token to the cluster network
 			getEm().getClusterNode().sendToken(aTo, lToken);
 		} else {
-			throw new MissingTokenSender("Not engine or cluster detected to send "
+			throw new MissingTokenSenderException("Not engine or cluster detected to send "
 					+ "the token to the giving connector: '" + aTo + "'!");
 		}
 	}
@@ -120,7 +120,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 * @param aTo The destiny client connector
 	 * @param aOnResponse The server on-response callbacks
 	 */
-	public void send(S2CEvent aEvent, WebSocketConnector aTo, OnResponse aOnResponse) throws MissingTokenSender {
+	public void send(S2CEvent aEvent, WebSocketConnector aTo, OnResponse aOnResponse) throws MissingTokenSenderException {
 		send(aEvent, aTo.getId(), aOnResponse);
 	}
 

@@ -17,7 +17,7 @@ package org.jwebsocket.eventmodel.s2c;
 
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.event.S2CEvent;
-import org.jwebsocket.eventmodel.exception.MissingTokenSender;
+import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
 
 /**
  *
@@ -45,7 +45,7 @@ public class S2CEventNotification {
 	 * @param aConnector The client connector
 	 * @param aOnResponse The server on-response callbacks 
 	 */
-	public void to(WebSocketConnector aConnector, OnResponse aOnResponse) throws MissingTokenSender {
+	public void to(WebSocketConnector aConnector, OnResponse aOnResponse) throws MissingTokenSenderException {
 		//Sending the event
 		mS2CNotificationHandler.send(mEvent, aConnector, aOnResponse);
 	}
@@ -56,7 +56,7 @@ public class S2CEventNotification {
 	 * @param aConnector The client connector
 	 * @param aOnResponse The server on-response callbacks 
 	 */
-	public void to(WebSocketConnector aConnector) throws MissingTokenSender {
+	public void to(WebSocketConnector aConnector) throws MissingTokenSenderException {
 		//Sending the event
 		mS2CNotificationHandler.send(mEvent, aConnector, null);
 	}
@@ -67,7 +67,7 @@ public class S2CEventNotification {
 	 * @param aConnector The client connector
 	 * @param aOnResponse The server on-response callbacks 
 	 */
-	public void to(String aConnectorId, OnResponse aOnResponse) throws MissingTokenSender {
+	public void to(String aConnectorId, OnResponse aOnResponse) throws MissingTokenSenderException {
 		//Sending the event
 		mS2CNotificationHandler.send(mEvent, aConnectorId, aOnResponse);
 	}
@@ -77,7 +77,7 @@ public class S2CEventNotification {
 	 * 
 	 * @param aConnector The client connector
 	 */
-	public void to(String aConnectorId) throws MissingTokenSender {
+	public void to(String aConnectorId) throws MissingTokenSenderException {
 		//Sending the event
 		mS2CNotificationHandler.send(mEvent, aConnectorId, null);
 	}

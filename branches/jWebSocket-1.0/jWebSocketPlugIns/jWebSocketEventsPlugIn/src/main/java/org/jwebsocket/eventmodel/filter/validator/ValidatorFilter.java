@@ -24,6 +24,7 @@ import org.jwebsocket.api.WebSocketConnector;
 
 import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
+import org.jwebsocket.eventmodel.exception.ValidatorException;
 import org.jwebsocket.logging.Logging;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.Errors;
@@ -70,7 +71,7 @@ public class ValidatorFilter extends EventModelFilter {
 				for (FieldError lField : lErrors.getFieldErrors()) {
 					lFields += lField.getField() + ",";
 				}
-				throw new Exception("Invalid incoming arguments: " + lFields);
+				throw new ValidatorException("Invalid incoming arguments: " + lFields);
 			}
 		}
 	}
@@ -91,7 +92,7 @@ public class ValidatorFilter extends EventModelFilter {
 
 			//At least 1 connector is needed for delivery
 			if (aResponseEvent.getTo().isEmpty()) {
-				throw new NullPointerException("A 'WebSocketConnector' set with > 0 size is required for delivery the response!");
+				throw new ValidatorException("A 'WebSocketConnector' set with > 0 size is required for delivery the response!");
 			}
 
 			if (!isValidateResponse()) {
@@ -129,7 +130,7 @@ public class ValidatorFilter extends EventModelFilter {
 				for (FieldError lField : lErrors.getFieldErrors()) {
 					lFields += lField.getField() + ",";
 				}
-				throw new Exception("Invalid outgoing arguments: " + lFields);
+				throw new ValidatorException("Invalid outgoing arguments: " + lFields);
 			}
 		}
 	}
@@ -146,12 +147,12 @@ public class ValidatorFilter extends EventModelFilter {
 		//Argument validation
 		if (!aEvent.getArgs().getMap().containsKey(aArg.getName())) {
 			if (!aArg.isOptional()) {
-				throw new Exception("The argument: '" + aArg.getName() + "' is required!");
+				throw new ValidatorException("The argument: '" + aArg.getName() + "' is required!");
 			} else {
 				try {
 					mTypes.swapType(aArg.getType()).cast(aEvent.getArgs().getObject(aArg.getName()));
 				} catch (Exception ex) {
-					throw new Exception("The argument: '" + aArg.getName() + "', needs to be type of " + aArg.getType().toString());
+					throw new ValidatorException("The argument: '" + aArg.getName() + "', needs to be type of " + aArg.getType().toString());
 				}
 			}
 		}

@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.core.EventModel;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
 import org.jwebsocket.eventmodel.event.filter.BeforeRouteResponseToken;
-import org.jwebsocket.eventmodel.exception.MissingTokenSender;
+import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.TokenFactory;
@@ -77,6 +77,7 @@ public class RouterFilter extends EventModelFilter {
 		lToken.setInteger("code", aEvent.getCode());
 		lToken.setDouble("_pt", aEvent.getProcessingTime());
 		lToken.setString("msg", aEvent.getMessage());
+		lToken.setNS(getEm().getParent().getNamespace());
 
 		//BeforeSendResponseToken event notification
 		BeforeRouteResponseToken lEvent = new BeforeRouteResponseToken(aEvent.getRequestId());
@@ -105,6 +106,7 @@ public class RouterFilter extends EventModelFilter {
 		//Sending to the rest of connectors
 		if (!aEvent.getTo().isEmpty()) {
 			Token lResponseNotification = TokenFactory.createToken("external.response");
+			lResponseNotification.setNS(getEm().getParent().getNamespace());
 			lResponseNotification.setToken("response", lToken);
 			lResponseNotification.setString("owner", aConnector.getId());
 
@@ -119,7 +121,7 @@ public class RouterFilter extends EventModelFilter {
 						//Sending the token to the cluster network
 						getEm().getClusterNode().sendToken(lId, lResponseNotification);
 					} else {
-						throw new MissingTokenSender("Not engine or cluster detected to send "
+						throw new MissingTokenSenderException("Not engine or cluster detected to send "
 								+ "the token to the giving connector: '" + lId + "'!");
 					}
 				}

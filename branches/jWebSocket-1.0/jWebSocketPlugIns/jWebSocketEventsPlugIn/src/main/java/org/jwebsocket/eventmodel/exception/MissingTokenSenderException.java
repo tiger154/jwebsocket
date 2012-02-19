@@ -19,9 +19,9 @@ package org.jwebsocket.eventmodel.exception;
  *
  * @author kyberneees
  */
-public class MissingTokenSender extends Exception {
+public class MissingTokenSenderException extends Exception {
 
-	public MissingTokenSender(String aMessage) {
+	public MissingTokenSenderException(String aMessage) {
 		super(aMessage);
 	}
 }

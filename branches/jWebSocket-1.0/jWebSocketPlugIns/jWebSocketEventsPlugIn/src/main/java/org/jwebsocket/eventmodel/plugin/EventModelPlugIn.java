@@ -46,6 +46,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	private EventModel mEm;
 	private Map<String, Class<? extends Event>> mClientAPI;
 	private static Logger mLog = Logging.getLogger(EventModelPlugIn.class);
+	private S2CEventNotificationHandler mS2CEventNotificationHandler = null;
 
 	/**
 	 * {@inheritDoc }
@@ -94,9 +95,12 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	 */
 	@Override
 	public S2CEventNotification notifyS2CEvent(S2CEvent aEvent) {
-		return new S2CEventNotification(this.getId(), aEvent,
-				((S2CEventNotificationHandler) JWebSocketBeanFactory.getInstance(getEm().getNamespace()).
-				getBean("S2CEventNotificationHandler")));
+		if (null == mS2CEventNotificationHandler) {
+			mS2CEventNotificationHandler = (S2CEventNotificationHandler) JWebSocketBeanFactory.getInstance(getEm().getNamespace()).
+					getBean("S2CEventNotificationHandler");
+		}
+
+		return new S2CEventNotification(this.getId(), aEvent, mS2CEventNotificationHandler);
 	}
 
 	/**
