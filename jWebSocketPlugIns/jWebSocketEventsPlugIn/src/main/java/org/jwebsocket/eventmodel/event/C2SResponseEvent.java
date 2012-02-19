@@ -31,9 +31,22 @@ public class C2SResponseEvent extends ResponseEvent {
 	 */
 	public final static int OK = 0;
 	/**
-	 * Response with problems, not OK
+	 * Response with errors
 	 */
-	public final static int NOT_OK = -1;
+	public final static int UNDEFINED_SERVER_ERROR = -1;
+	/**
+	 * Not authorized to notify the event
+	 */
+	public final static int NOT_AUTHORIZED = -2;
+	/**
+	 * The event has not listeners in the server
+	 */
+	public final static int C2SEVENT_WITHOUT_LISTENERS = -3;
+	/**
+	 * The validation process has failed
+	 */
+	public final static int VALIDATION_FAILED = -4;
+	
 	private Set<String> mTo = new FastSet();
 	private String mMessage;
 	private String mRequestId;
@@ -49,9 +62,8 @@ public class C2SResponseEvent extends ResponseEvent {
 	 * 
 	 */
 	public C2SResponseEvent() {
-		
 	}
-	
+
 	/**
 	 * The response code indicates the response status. 
 	 * <p>
@@ -110,5 +122,4 @@ public class C2SResponseEvent extends ResponseEvent {
 	public String getRequestId() {
 		return mRequestId;
 	}
-
 }

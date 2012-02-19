@@ -45,6 +45,9 @@ import org.jwebsocket.eventmodel.event.em.S2CEventNotSupportedOnClient;
 import org.jwebsocket.eventmodel.event.em.S2CResponse;
 import org.jwebsocket.eventmodel.exception.CachedResponseException;
 import org.jwebsocket.eventmodel.exception.ExceptionHandler;
+import org.jwebsocket.eventmodel.exception.ListenerNotFoundException;
+import org.jwebsocket.eventmodel.exception.NotAuthorizedException;
+import org.jwebsocket.eventmodel.exception.ValidatorException;
 import org.jwebsocket.plugins.events.EventsPlugIn;
 import org.jwebsocket.session.SessionManager;
 
@@ -163,7 +166,19 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 
 			//Creating error response for connector notification
 			Token lToken = getParent().getServer().createResponse(aEvent.getArgs());
-			lToken.setInteger("code", C2SResponseEvent.NOT_OK);
+
+			//Parsing server the response code
+			if (ex instanceof NotAuthorizedException) {
+				lToken.setInteger("code", C2SResponseEvent.NOT_AUTHORIZED);
+			} else if (ex instanceof ValidatorException) {
+				lToken.setInteger("code", C2SResponseEvent.VALIDATION_FAILED);
+			} else if (ex instanceof ListenerNotFoundException) {
+				lToken.setInteger("code", C2SResponseEvent.C2SEVENT_WITHOUT_LISTENERS);
+			} else {
+				lToken.setInteger("code", C2SResponseEvent.UNDEFINED_SERVER_ERROR);
+			}
+
+			lToken.setNS(getParent().getNamespace());
 			lToken.setString("msg", ex.getMessage());
 			lToken.setString("exception", ex.getClass().getSimpleName());
 
@@ -176,7 +191,6 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 
 			//Calling the exception handler 'process' method
 			ExceptionHandler.callProcessException(getExceptionHandler(), ex);
-
 		}
 	}
 

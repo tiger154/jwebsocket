@@ -93,7 +93,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 				for (int lIndex = 0; lIndex < lJars.length; lIndex++) {
 					JWebSocketFactory.getClassLoader().add(JWebSocketConfig.getLibsFolder(lJars[lIndex]));
 					if (mLog.isDebugEnabled()) {
-						mLog.debug("Loading jar '" + lJars[lIndex] + "'...");
+						mLog.debug("Loading jar: '" + lJars[lIndex] + "'...");
 					}
 				}
 			}

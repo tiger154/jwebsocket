@@ -27,7 +27,7 @@ import org.jwebsocket.eventmodel.event.test.S2CNotification;
 import org.jwebsocket.eventmodel.event.test.S2CPlusXYEvent;
 import org.jwebsocket.eventmodel.event.test.JcTest;
 import org.jwebsocket.eventmodel.event.test.UpdateSiteCounterEvent;
-import org.jwebsocket.eventmodel.exception.MissingTokenSender;
+import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
 import org.jwebsocket.eventmodel.plugin.jc.JcPlugIn;
 import org.jwebsocket.eventmodel.plugin.jc.JcResponseCallback;
 import org.jwebsocket.eventmodel.s2c.FailureReason;
@@ -73,7 +73,7 @@ public class TestPlugIn extends JcPlugIn {
 	 * @param aEvent
 	 * @param aResponseEvent
 	 */
-	public void processEvent(S2CNotification aEvent, C2SResponseEvent aResponseEvent) throws MissingTokenSender {
+	public void processEvent(S2CNotification aEvent, C2SResponseEvent aResponseEvent) throws MissingTokenSenderException {
 		//Notification with callbacks
 		this.notifyS2CEvent(new S2CPlusXYEvent(5, 5)).to(aEvent.getConnector(),
 				new OnResponse(new TransactionContext(getEm(), aEvent, null)) {

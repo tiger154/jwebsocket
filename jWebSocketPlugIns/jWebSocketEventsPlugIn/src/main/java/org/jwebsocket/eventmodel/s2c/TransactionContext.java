@@ -131,7 +131,7 @@ public class TransactionContext {
 
 		//Send the token to the client(s)
 		Token lToken = lResponseEvent.getArgs();
-		lToken.setInteger("code", C2SResponseEvent.NOT_OK);
+		lToken.setInteger("code", C2SResponseEvent.UNDEFINED_SERVER_ERROR);
 		lToken.setString("msg", message);
 		lToken.setString("reason", reason.name());
 
