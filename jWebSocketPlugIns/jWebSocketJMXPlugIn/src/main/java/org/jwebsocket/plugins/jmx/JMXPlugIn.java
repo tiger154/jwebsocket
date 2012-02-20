@@ -19,10 +19,12 @@
 // ---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmx;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import javax.management.MBeanServer;
 import javax.management.openmbean.CompositeData;
+import javax.management.remote.rmi.RMIConnectorServer;
 import javolution.util.FastMap;
 import mx4j.tools.adaptor.http.HttpAdaptor;
 import org.apache.log4j.Logger;
@@ -33,11 +35,14 @@ import org.jwebsocket.api.WebSocketPlugIn;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.factory.JWebSocketXmlConfigInitializer;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.JSONToken;
 import org.jwebsocket.token.Token;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -70,7 +75,7 @@ public class JMXPlugIn extends TokenPlugIn {
 	}
 
 	@Override
-	public void engineStarted(WebSocketEngine aEngine) {
+	public void engineStarted(WebSocketEngine aEngine){
 		JMXHandler.setLog(mLog);
 		JMXServerFunctions.setLog(mLog);
 		
@@ -78,16 +83,18 @@ public class JMXPlugIn extends TokenPlugIn {
 		Resource lResource = new FileSystemResource(lPath);
 		XmlBeanFactory lFactory = new ServerXmlBeanFactory(lResource, getClass().getClassLoader());
 		
-		InMemoryDaoImpl lAuthentication = (InMemoryDaoImpl) lFactory.getBean("staticAuthUserDetailsService");
-		UserDetails lUser = lAuthentication.loadUserByUsername("admin");
-		JMXPlugInAuthenticator.setDefinedUser(lUser.getUsername());
-		JMXPlugInAuthenticator.setDefinedPassword(lUser.getPassword());
+//		ClassLoader lClassLoader = JWebSocketXmlConfigInitializer.getClassLoader();
+//		JWebSocketBeanFactory.load(getNamespace(), lPath, lClassLoader);
+//		BeanFactory lFactory = JWebSocketBeanFactory.getInstance(getNamespace());
+			
+		JMXPlugInAuthenticator.setConfigPath(lPath);
 		
 		lFactory.getBean("exporter");
-		lFactory.getBean("rmiConnector");
+		RMIConnectorServer a = (RMIConnectorServer) lFactory.getBean("rmiConnector");
+		
 		HttpAdaptor httpAdaptor = (HttpAdaptor) lFactory.getBean("HttpAdaptor");
 		try {
-			httpAdaptor.addAuthorization(lUser.getUsername(), "httpadmin");
+			httpAdaptor.addAuthorization("admin", "httpadmin");
 			httpAdaptor.start();
 
 			MBeanServer lMBServer = (MBeanServer) lFactory.getBean("jWebSocketServer");
@@ -161,13 +168,13 @@ public class JMXPlugIn extends TokenPlugIn {
 						lPlugins.put("name", lValue.getName());
 						lPlugins.put("namespace", lValue.getNamespace());
 
-						lServerPlugins.put("plugin_" + j, lPlugins);
+						lServerPlugins.put("plugin_" + lValue.getId(), lPlugins);
 					}
 				} else {
-					lServerPlugins.put("plugin", "This server doesn't have any plugins running");
+					lServerPlugins.put("plugin", "This server doesn't have any plugins loaded");
 				}
 
-				lServers.put("serverId" + "_" + lAllServers.get(i).getId(), lServerPlugins);
+				lServers.put("serverId_" + lAllServers.get(i).getId(), lServerPlugins);
 			}
 
 			result = JMXHandler.convertMapToCompositeData(lServers);
