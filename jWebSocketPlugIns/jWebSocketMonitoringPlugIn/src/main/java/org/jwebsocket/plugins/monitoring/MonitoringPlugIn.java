@@ -1,19 +1,18 @@
-// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//    ---------------------------------------------------------------------------
-//    jWebSocket - jWebSocket Monitoring Plug-in
-//  Copyright (c) 2012 Innotrade GmbH, jWebSocket.org
-//    ---------------------------------------------------------------------------
-//    This program is free software; you can redistribute it and/or modify it
-//    under the terms of the GNU Lesser General Public License as published by the
-//    Free Software Foundation; either version 3 of the License, or (at your
-//    option) any later version.
-//    This program is distributed in the hope that it will be useful, but WITHOUT
-//    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//    FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//    more details.
-//    You should have received a copy of the GNU Lesser General Public License along
-//    with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//    ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// jWebSocket - jWebSocket Monitoring Plug-in
+// Copyright(c) 2010-2012 Innotrade GmbH, Herzogenrath, Germany, jWebSocket.org
+// ---------------------------------------------------------------------------
+// This program is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as published by the
+// Free Software Foundation; either version 3 of the License, or (at your
+// option) any later version.
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+// more details.
+// You should have received a copy of the GNU Lesser General Public License along
+// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+// ---------------------------------------------------------------------------
 package org.jwebsocket.plugins.monitoring;
 
 import com.mongodb.BasicDBObject;
@@ -67,11 +66,15 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	private DBCollection mDBColl;
 	private static int mConnectedUsers = 0;
 
+	static {
+		Logging.addLogger(ServerRequestListener.class);
+	}
+
 	public MonitoringPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		this.setNamespace(aConfiguration.getNamespace());
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Monitoring plug-in instantiated correctly.");
+			mLog.debug("Instantiating Monitoring plug-in...");
 		}
 
 		// Getting server exchanges
@@ -95,6 +98,8 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		}
 		if (null == mDBColl) {
 			mLog.error("MongoDB collection exchanges_server could not be obtained.");
+		} else if (mLog.isInfoEnabled()) {
+			mLog.info("Monitoring Plug-in successfully instantiated.");
 		}
 	}
 
@@ -121,8 +126,12 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	public void connectorStarted(WebSocketConnector aConnector) {
 		mConnectedUsers++;
 		if (!mIsActive) {
-			getServer().getListeners().add(new ServerRequestListener());
-			mIsActive = true;
+			try {
+				getServer().getListeners().add(new ServerRequestListener());
+				mIsActive = true;
+			} catch (Exception lEx) {
+				System.out.println(lEx.getMessage());
+			}
 		}
 	}
 
@@ -302,43 +311,40 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	}
 
 	public void broadcastServerXchgInfo(WebSocketConnector aConnector) {
-		Token token = TokenFactory.createToken(getNamespace(), "serverXchgInfo");
+		Token lToken = TokenFactory.createToken(getNamespace(), "serverXchgInfo");
 
-		//Getting server exchanges
+		// Getting server exchanges
 		try {
 			String lToday = mFormat.format(new Date());
 			DBObject lRecord = mDBColl.findOne(new BasicDBObject().append("date", lToday));
-			token.setMap("exchanges", lRecord.toMap());
+			lToken.setMap("exchanges", lRecord.toMap());
 
-		} catch (Exception ex) {
-			mLog.error(ex.getMessage());
+			getServer().sendToken(aConnector, lToken);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "broadcasting server exchange info"));
 		}
 
-		getServer().sendToken(aConnector, token);
 	}
 
 	public void broadcastServerXchgInfoPreviousDate(WebSocketConnector aConnector, String aDay, String aMonth, String aYear) {
-		Token token = TokenFactory.createToken(getNamespace(), "serverXchgInfo");
-		//Getting server exchanges
+		Token lToken = TokenFactory.createToken(getNamespace(), "serverXchgInfo");
+		// Getting server exchanges
 		try {
 			String lToday = aMonth + "/" + aDay + "/" + aYear;
 
 			DBObject lRecord = mDBColl.findOne(new BasicDBObject().append("date", lToday));
 
-			token.setMap("exchanges", lRecord.toMap());
+			lToken.setMap("exchanges", lRecord.toMap());
 
-
-		} catch (Exception ex) {
-			mLog.error(ex.getMessage());
+			getServer().sendToken(aConnector, lToken);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "broadcasting server exchange info previous date"));
 		}
-
-		getServer().sendToken(aConnector, token);
-
 	}
 
 	public void broadcastServerXchgInfoXDay(WebSocketConnector aConnector, String aMonth) {
-		Token token = TokenFactory.createToken(getNamespace(), "serverXchgInfoXDays");
-		//Getting server exchanges
+		Token lToken = TokenFactory.createToken(getNamespace(), "serverXchgInfoXDays");
+		// Getting server exchanges
 		try {
 
 			String lMonth = aMonth;
@@ -360,22 +366,20 @@ public class MonitoringPlugIn extends TokenPlugIn {
 					}
 
 					//System.out.println(lCursor);
-					token.setInteger(lDay, lTotal);
+					lToken.setInteger(lDay, lTotal);
 					lTotal = 0;
 				}
 			}
 
-		} catch (Exception ex) {
-			mLog.error(ex.getMessage());
+			getServer().sendToken(aConnector, lToken);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "broadcasting server exchange info x day"));
 		}
-
-		getServer().sendToken(aConnector, token);
-
 	}
 
 	public void broadcastServerXchgInfoXMonth(WebSocketConnector aConnector, String aYear) {
-		Token token = TokenFactory.createToken(getNamespace(), "serverXchgInfoXMonth");
-		//Getting server exchanges
+		Token lToken = TokenFactory.createToken(getNamespace(), "serverXchgInfoXMonth");
+		// Getting server exchanges
 		try {
 
 			String lYear = aYear;
@@ -401,7 +405,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 							}
 						}
 
-						token.setInteger(lRecordMonth, token.getInteger(lRecordMonth, 0) + lTotal);
+						lToken.setInteger(lRecordMonth, lToken.getInteger(lRecordMonth, 0) + lTotal);
 						lTotal = 0;
 					}
 					//System.out.println(lCursor);
@@ -409,12 +413,10 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				}
 			}
 
-		} catch (Exception ex) {
-			mLog.error(ex.getMessage());
+			getServer().sendToken(aConnector, lToken);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "broadcasting server exchange info x month"));
 		}
-
-		getServer().sendToken(aConnector, token);
-
 	}
 
 	private void gatherComputerInfo() {
@@ -434,7 +436,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	public void broadcastBrowsersInfo(WebSocketConnector aConnector) {
 		Token lToken = TokenFactory.createToken(getNamespace(), "browserInfo");
 
-		//HDD Information
+		// HDD Information
 		lToken.setInteger("chromium", 50);
 		lToken.setInteger("ie", 10);
 		lToken.setInteger("firefox", 20);
@@ -443,7 +445,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		lToken.setInteger("safari", 5);
 		lToken.setInteger("nativeClients", 5);
 
-		//to send the token
+		// to send the token
 		getServer().sendToken(aConnector, lToken);
 	}
 
@@ -466,12 +468,12 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		return lMem;
 	}
 
-	//converting the memory in megabytes
+	// converting the memory in megabytes
 	private long inMBytes(long value) {
 		return ((value / 1024) / 1024);
 	}
-	//for convert the hdd space
 
+	// for convert the hdd space
 	private String inMeasure(long value) {
 		if (value / 1000 < 1) {
 			return String.valueOf(value) + " KB";

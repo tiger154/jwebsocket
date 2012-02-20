@@ -16,6 +16,7 @@
 package org.jwebsocket.logging;
 
 import java.io.IOException;
+import javolution.util.FastMap;
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
@@ -39,6 +40,7 @@ public class Logging {
 	private static Appender mAppender = null;
 	private static Level mLogLevel = Level.DEBUG;
 	private static boolean mIsStackTraceEnabled = false;
+	private static FastMap<Class, Logger> mLoggers = new FastMap<Class, Logger>();
 	/**
 	 * Log output is send to the console (stdout).
 	 */
@@ -277,18 +279,28 @@ public class Logging {
 	 */
 	public static Logger getLogger(Class aClass) {
 		checkLogAppender();
-		Logger logger = Logger.getLogger(aClass);
+
+		// if a logger for a certain class is already created use it
+		Logger lLogger = (null != mLoggers ? mLoggers.get(aClass) : null);
+		// if there is no cached one, create a new one
+		if (null == lLogger) {
+			lLogger = Logger.getLogger(aClass);
+		}
 
 		if (mUseDeprecated) {
-			logger.addAppender(mAppender);
+			lLogger.addAppender(mAppender);
 			// don't inherit global log4j settings, we intend to configure that
 			// in our own jWebSocket.xml config file.
-			logger.setAdditivity(false);
-			logger.setLevel(mLogLevel);
+			lLogger.setAdditivity(false);
+			lLogger.setLevel(mLogLevel);
 		}
 		// otherwise the logger should be initialized properly already
 		// by the configuration file
 
-		return logger;
+		return lLogger;
+	}
+
+	public static void addLogger(Class aClass) {
+		mLoggers.put(aClass, getLogger(aClass));
 	}
 }

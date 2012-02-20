@@ -62,6 +62,7 @@ public class LoggingPlugIn extends TokenPlugIn {
 		mLogger = new Log4JLogger();
 	}
 
+	// check if the JDBC Plug-in was laoded properly
 	private boolean getJDBCPlugIn() {
 		TokenServer lServer = getServer();
 		mJDBCPlugIn = (TokenPlugIn) lServer.getPlugInById("jws.jdbc");
@@ -97,6 +98,7 @@ public class LoggingPlugIn extends TokenPlugIn {
 			if (mJDBCPlugIn == null || JDBCTools == null) {
 				getJDBCPlugIn();
 			}
+			// if JDBC plug-in was not loaded return an error token
 			if (mJDBCPlugIn == null || JDBCTools == null) {
 				// send response to requester
 				Token lResponse = lServer.createErrorToken(aToken, -1, "JDBC plug-in not loaded.");
@@ -112,9 +114,9 @@ public class LoggingPlugIn extends TokenPlugIn {
 			} else if (lType.equals("getEvents")) {
 				getEvents(aConnector, aToken);
 			} else if (lType.equals("subscribe")) {
-				// logEvent(aConnector, aToken);
+				subscribe(aConnector, aToken);
 			} else if (lType.equals("unsubscribe")) {
-				// logEvent(aConnector, aToken);
+				unsubscribe(aConnector, aToken);
 			}
 
 		}
@@ -150,9 +152,19 @@ public class LoggingPlugIn extends TokenPlugIn {
 	}
 
 	private void subscribe(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = lServer.createResponse(aToken);
+		lResponse.setInteger("code", -1);
+		lResponse.setString("msg", "not yet implemented");
+		lServer.sendToken(aConnector, lResponse);
 	}
 
 	private void unsubscribe(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = lServer.createResponse(aToken);
+		lResponse.setInteger("code", -1);
+		lResponse.setString("msg", "not yet implemented");
+		lServer.sendToken(aConnector, lResponse);
 	}
 
 	private void logEvent(WebSocketConnector aConnector, Token aToken) {
