@@ -19,7 +19,6 @@
 // ---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmx;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import javax.management.MBeanServer;
@@ -35,19 +34,14 @@ import org.jwebsocket.api.WebSocketPlugIn;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
-import org.jwebsocket.factory.JWebSocketXmlConfigInitializer;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.JSONToken;
 import org.jwebsocket.token.Token;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.memory.InMemoryDaoImpl;
 
 /**
  *
