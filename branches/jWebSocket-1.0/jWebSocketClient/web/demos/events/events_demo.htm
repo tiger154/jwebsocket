@@ -154,7 +154,7 @@
 						plugin_id: jws.$( "stxfPlugInId" ).value
 					},
 					OnSuccess: function(aResponseEvent){
-						log("Elapsed time: " + this.elapsedTime);
+						log("Elapsed time: " + aResponseEvent.elapsedTime);
 						log(">> <b>Get plug-in API response: </b><br/>" + JSON.stringify(aResponseEvent.api));
 					},
 					OnFailure: function(aResponseEvent){

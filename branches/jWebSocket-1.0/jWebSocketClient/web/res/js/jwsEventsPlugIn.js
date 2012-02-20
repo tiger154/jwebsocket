@@ -54,17 +54,15 @@ jws.oop.declareClass( "jws", "EventsCallbacksHandler", null, {
 			}
 		}
 		
-		if (aResponseEvent.code == 0){
-			if (undefined != aArgs.meta.OnResponse)
-				aArgs.meta.OnResponse(aResponseEvent);
-
+		if (undefined != aArgs.meta.OnResponse){
+			aArgs.meta.OnResponse(aResponseEvent);
+		}
+		
+		if (aResponseEvent.code === 0){
 			if (undefined != aArgs.meta.OnSuccess)
 				aArgs.meta.OnSuccess(aResponseEvent);
 		}
 		else {
-			if (undefined != aArgs.meta.OnResponse)
-				aArgs.meta.OnResponse(aResponseEvent);
-
 			if (undefined != aArgs.meta.OnFailure)
 				aArgs.meta.OnFailure(aResponseEvent);
 		}
@@ -388,8 +386,8 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 			if (lUsers && lRoles && !jws.user.isAuthenticated()){
 				if (aRequest.OnResponse){
 					aRequest.OnResponse({
-						code: -1,
-						msg: "User is not authenticated yet!"
+						code: -2,
+						msg: "User is not authenticated yet. Login first!"
 					}, aRequest.args);
 				}
 				this.OnNotAuthorized(aToken);
@@ -423,7 +421,7 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 				//Not Authorized USER
 				if (!lUserAuthorized && lUserMatch || 0 == lRoles.length){
 					aRequest.OnResponse({
-						code: -1,
+						code: -2,
 						msg: "Not autorized to notify this event. USER restrictions: " + lUsers.toString()
 					}, aRequest.args);
 					
@@ -464,7 +462,7 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 				if (!lRoleAuthorized){
 					if (aRequest.OnResponse){
 						aRequest.OnResponse({
-							code: -1,
+							code: -2,
 							msg: "Not autorized to notify this event. ROLE restrictions: " + lRoles.toString()
 						}, aRequest.args);
 					}
@@ -597,7 +595,7 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 			if (undefined === aToken[lArguments[i].name] && !lArguments[i].optional){
 				if (aRequest.OnResponse){
 					aRequest.OnResponse({
-						code: -1,
+						code: -4,
 						msg: "Argument '"+lArguments[i].name+"' is required!"
 					}, aRequest.args);
 				}
@@ -616,7 +614,7 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 				if (lRequiredType != lArgumentType){
 					if (aRequest.OnResponse){
 						aRequest.OnResponse({
-							code: -1,
+							code: -4,
 							msg: "Argument '"+lArguments[i].name+"' has invalid type. Required: '"+lRequiredType+"'"
 						}, aRequest.args);
 					}
