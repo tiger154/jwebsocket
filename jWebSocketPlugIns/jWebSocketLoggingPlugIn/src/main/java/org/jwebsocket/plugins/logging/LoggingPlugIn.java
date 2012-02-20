@@ -92,6 +92,7 @@ public class LoggingPlugIn extends TokenPlugIn {
 
 		if (lType != null && getNamespace().equals(lNS)) {
 
+			// check JDBC plug-in, required for loggin to SQL databases
 			TokenServer lServer = getServer();
 			if (mJDBCPlugIn == null || JDBCTools == null) {
 				getJDBCPlugIn();
