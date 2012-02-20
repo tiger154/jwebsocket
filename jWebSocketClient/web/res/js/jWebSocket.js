@@ -45,9 +45,9 @@ var jws = {
 	NS_SYSTEM: "org.jwebsocket.plugins.system",
 	
 	MSG_WS_NOT_SUPPORTED:
-		"Unfortunately your browser does neither natively support WebSockets\n" +
-		"nor you have the Adobe Flash-PlugIn 10+ installed.\n" +
-		"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer.",
+	"Unfortunately your browser does neither natively support WebSockets\n" +
+	"nor you have the Adobe Flash-PlugIn 10+ installed.\n" +
+	"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer.",
 
 	// some namespace global constants
 	
@@ -81,7 +81,7 @@ var jws = {
 	//:d:en:Current token id, incremented per token exchange to assign results.
 	//:@deprecated:en:Use [tt]getDefaultServerURL()[/tt] instead.
 	JWS_SERVER_URL:
-		"ws://" + ( self.location.hostname ? self.location.hostname : "127.0.0.1" ) + ":8787/jWebSocket/jWebSocket",
+	"ws://" + ( self.location.hostname ? self.location.hostname : "127.0.0.1" ) + ":8787/jWebSocket/jWebSocket",
 
 	//:const:*:CONNECTING:Integer:0
 	//:d:en:The connection has not yet been established.
@@ -183,13 +183,13 @@ var jws = {
 	//:const:*:BROWSER_NAMES
 	//:d:en:Array of browser names. Each BT_xxx constant can be used as an index to this array.
 	BROWSER_NAMES : [
-		"Unknown",
-		"Firefox",
-		"Netscape",
-		"Opera",
-		"Internet Explorer",
-		"Safari",
-		"Chrome"
+	"Unknown",
+	"Firefox",
+	"Netscape",
+	"Opera",
+	"Internet Explorer",
+	"Safari",
+	"Chrome"
 	],
 	
 	//:const:*:GUEST_USER_LOGINNAME:String:guest
@@ -225,9 +225,9 @@ var jws = {
 	//:r:*:::String:jWebSocket server URL consisting of schema://host:port/context/servlet
 	getServerURL: function( aSchema, aHost, aPort, aContext, aServlet ) {
 		var lURL =
-			aSchema + "://"
-			+ aHost 
-			+ ( aPort ? ":" + aPort : "" );
+		aSchema + "://"
+		+ aHost 
+		+ ( aPort ? ":" + aPort : "" );
 		if( aContext && aContext.length > 0 ) {
 			lURL += aContext;
 			if( aServlet && aServlet.length > 0 ) {
@@ -250,7 +250,7 @@ var jws = {
 			jws.JWS_SERVER_PORT,
 			jws.JWS_SERVER_CONTEXT,
 			jws.JWS_SERVER_SERVLET
-		));
+			));
 	},
 
 	//:m:*:getDefaultSSLServerURL
@@ -266,7 +266,7 @@ var jws = {
 			jws.JWS_SERVER_SSL_PORT,
 			jws.JWS_SERVER_CONTEXT,
 			jws.JWS_SERVER_SERVLET
-		));
+			));
 	},
 
 	//:m:*:browserSupportsWebSockets
@@ -277,7 +277,7 @@ var jws = {
 	browserSupportsWebSockets: function() {
 		return( 
 			window.WebSocket !== null && window.WebSocket !== undefined
-		);
+			);
 	},
 
 	//:m:*:browserSupportsNativeWebSockets
@@ -288,7 +288,7 @@ var jws = {
 	browserSupportsNativeWebSockets: (function() {
 		return(
 			window.WebSocket !== null && window.WebSocket !== undefined
-		);
+			);
 	})(),
 
 	//:m:*:browserSupportsJSON
@@ -298,7 +298,7 @@ var jws = {
 	browserSupportsJSON: function() {
 		return(
 			window.JSON !== null && window.JSON !== undefined
-		);
+			);
 	},
 
 	//:m:*:browserSupportsNativeJSON
@@ -309,7 +309,7 @@ var jws = {
 	browserSupportsNativeJSON: (function() {
 		return(
 			window.JSON !== null && window.JSON !== undefined
-		);
+			);
 	})(),
 
 	//:m:*:browserSupportsWebWorkers
@@ -319,7 +319,7 @@ var jws = {
 	browserSupportsWebWorkers: (function() {
 		return(
 			window.Worker !== null && window.Worker !== undefined
-		);
+			);
 	})(),
 
 	//:m:*:runAsThread
@@ -376,7 +376,7 @@ var jws = {
 						data: aEvent.data
 					});
 				}
-				// console.log( "Worker message: " + JSON.stringify( aEvent.data ) );
+			// console.log( "Worker message: " + JSON.stringify( aEvent.data ) );
 			};
 
 			// This listener is called when an error
@@ -387,7 +387,7 @@ var jws = {
 						message: aEvent.message
 					});
 				}
-				// console.log( "Worker error: " + aEvent.message );
+			// console.log( "Worker error: " + aEvent.message );
 			};
 		}
 
@@ -549,8 +549,8 @@ var jws = {
 		// per deploy default set isActive to false and level = 2 (info)
 		isActive: false,
 		level: 2, 
-			// don't use below constants here for the level but use the number!
-			// They are not yet defined at this point in time!
+		// don't use below constants here for the level but use the number!
+		// They are not yet defined at this point in time!
 			 
 		//:const:*:ALL:integer:0
 		//:d:en:Show all log output.
@@ -600,7 +600,7 @@ var jws = {
 		log: function( aMsg ) {
 			if( window.console 
 				&& jws.console.isActive
-			) {
+				) {
 				console.log( aMsg );
 			}
 		},
@@ -615,7 +615,7 @@ var jws = {
 			if( window.console
 				&& jws.console.isActive 
 				&& jws.console.level <= jws.console.DEBUG
-			) {
+				) {
 				if( console.debug ) {
 					console.debug( aMsg );
 				} else {
@@ -634,7 +634,7 @@ var jws = {
 			if( window.console 
 				&& jws.console.isActive 
 				&& jws.console.level <= jws.console.INFO
-			) {
+				) {
 				if( console.info ) {
 					console.info( aMsg );
 				} else {
@@ -653,7 +653,7 @@ var jws = {
 			if( window.console
 				&& jws.console.isActive
 				&& jws.console.level <= jws.console.WARN
-			) {
+				) {
 				if( console.warn ) {
 					console.warn( aMsg );
 				} else {
@@ -672,7 +672,7 @@ var jws = {
 			if( window.console
 				&& jws.console.isActive
 				&& jws.console.level <= jws.console.ERROR
-			) {
+				) {
 				if( console.error ) {
 					console.error( aMsg );
 				} else {
@@ -691,7 +691,7 @@ var jws = {
 			if( window.console
 				&& jws.console.isActive
 				&& jws.console.level <= jws.console.FATAL
-			) {
+				) {
 				if( console.fatal ) {
 					console.fatal( aMsg );
 				} else {
@@ -910,14 +910,14 @@ jws.events = {
 	//:r:*:::void:none
 	addEventListener : (
 		jws.isIE ?
-			function( aElement, aEvent, aListener ) {
-				aElement.attachEvent( "on" + aEvent, aListener);
-			}
+		function( aElement, aEvent, aListener ) {
+			aElement.attachEvent( "on" + aEvent, aListener);
+		}
 		:
-			function( aElement, aEvent, aListener ) {
-				aElement.addEventListener( aEvent, aListener, false );
-			}
-	),
+		function( aElement, aEvent, aListener ) {
+			aElement.addEventListener( aEvent, aListener, false );
+		}
+		),
 
 	//:m:*:removeEventListener
 	//:d:en:Removes a listener (callback) from an event in a cross-browser compatible way.
@@ -926,42 +926,42 @@ jws.events = {
 	//:a:en::aListener:Function:The listener function which is called in case of the event.
 	removeEventListener : (
 		jws.isIE ?
-			function( aElement, aEvent, aListener ) {
-				aElement.detachEvent( "on" + aEvent, aListener);
-			}
+		function( aElement, aEvent, aListener ) {
+			aElement.detachEvent( "on" + aEvent, aListener);
+		}
 		:
-			function( aElement, aEvent, aListener ) {
-				aElement.removeEventListener( aEvent, aListener, false );
-			}
-	),
+		function( aElement, aEvent, aListener ) {
+			aElement.removeEventListener( aEvent, aListener, false );
+		}
+		),
 
 	//:m:*:getTarget
 	//:d:en:Returns the element which originally fired the event in a cross-browser compatible way.
 	//:r:*:::Node:Element that originally fired the event.
 	getTarget : (
 		jws.isIE ?
-			function( aEvent ) {
-				return aEvent.srcElement;
-			}
+		function( aEvent ) {
+			return aEvent.srcElement;
+		}
 		:
-			function( aEvent ) {
-				return aEvent.target;
-			}
-	),
+		function( aEvent ) {
+			return aEvent.target;
+		}
+		),
 	
 	preventDefault : (
 		jws.isIE ?
-			function( aEvent ) {
-				aEvent = window.event;
-				if( aEvent ) {
-					aEvent.returnValue = false;
-				}
+		function( aEvent ) {
+			aEvent = window.event;
+			if( aEvent ) {
+				aEvent.returnValue = false;
 			}
+		}
 		:
-			function( aEvent ) {
-				return aEvent.preventDefault();
-			}
-	)
+		function( aEvent ) {
+			return aEvent.preventDefault();
+		}
+		)
 
 };
 
@@ -974,7 +974,269 @@ jws.events = {
  * See http://pajhome.org.uk/crypt/md5 for more info.
  * For full source please refer to: md5.js
  */
-var hexcase=0;var b64pad="";function hex_md5(s){return rstr2hex(rstr_md5(str2rstr_utf8(s)));};function b64_md5(s){return rstr2b64(rstr_md5(str2rstr_utf8(s)));};function any_md5(s,e){return rstr2any(rstr_md5(str2rstr_utf8(s)),e);};function hex_hmac_md5(k,d){return rstr2hex(rstr_hmac_md5(str2rstr_utf8(k),str2rstr_utf8(d)));};function b64_hmac_md5(k,d){return rstr2b64(rstr_hmac_md5(str2rstr_utf8(k),str2rstr_utf8(d)));};function any_hmac_md5(k,d,e){return rstr2any(rstr_hmac_md5(str2rstr_utf8(k),str2rstr_utf8(d)),e);};function md5_vm_test(){return hex_md5("abc").toLowerCase()=="900150983cd24fb0d6963f7d28e17f72";};function rstr_md5(s){return binl2rstr(binl_md5(rstr2binl(s),s.length*8));};function rstr_hmac_md5(key,data){var bkey=rstr2binl(key);if(bkey.length>16)bkey=binl_md5(bkey,key.length*8);var ipad=Array(16),opad=Array(16);for(var i=0;i<16;i++){ipad[i]=bkey[i]^0x36363636;opad[i]=bkey[i]^0x5C5C5C5C;}var hash=binl_md5(ipad.concat(rstr2binl(data)),512+data.length*8);return binl2rstr(binl_md5(opad.concat(hash),512+128));};function rstr2hex(input){try{hexcase}catch(e){hexcase=0;}var hex_tab=hexcase?"0123456789ABCDEF":"0123456789abcdef";var output="";var x;for(var i=0;i<input.length;i++){x=input.charCodeAt(i);output+=hex_tab.charAt((x>>>4)&0x0F)+hex_tab.charAt(x&0x0F);}return output;};function rstr2b64(input){try{b64pad}catch(e){b64pad='';}var tab="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";var output="";var len=input.length;for(var i=0;i<len;i+=3){var triplet=(input.charCodeAt(i)<<16)|(i+1<len?input.charCodeAt(i+1)<<8:0)|(i+2<len?input.charCodeAt(i+2):0);for(var j=0;j<4;j++){if(i*8+j*6>input.length*8)output+=b64pad;else output+=tab.charAt((triplet>>>6*(3-j))&0x3F);}}return output;};function rstr2any(input,encoding){var divisor=encoding.length;var i,j,q,x,quotient;var dividend=Array(Math.ceil(input.length/2));for(i=0;i<dividend.length;i++){dividend[i]=(input.charCodeAt(i*2)<<8)|input.charCodeAt(i*2+1);}var full_length=Math.ceil(input.length*8/(Math.log(encoding.length)/Math.log(2)));var remainders=Array(full_length);for(j=0;j<full_length;j++){quotient=Array();x=0;for(i=0;i<dividend.length;i++){x=(x<<16)+dividend[i];q=Math.floor(x/divisor);x-=q*divisor;if(quotient.length>0||q>0)quotient[quotient.length]=q;}remainders[j]=x;dividend=quotient;}var output="";for(i=remainders.length-1;i>=0;i--)output+=encoding.charAt(remainders[i]);return output;};function str2rstr_utf8(input){var output="";var i= -1;var x,y;while(++i<input.length){x=input.charCodeAt(i);y=i+1<input.length?input.charCodeAt(i+1):0;if(0xD800<=x&&x<=0xDBFF&&0xDC00<=y&&y<=0xDFFF){x=0x10000+((x&0x03FF)<<10)+(y&0x03FF);i++;}if(x<=0x7F)output+=String.fromCharCode(x);else if(x<=0x7FF)output+=String.fromCharCode(0xC0|((x>>>6)&0x1F),0x80|(x&0x3F));else if(x<=0xFFFF)output+=String.fromCharCode(0xE0|((x>>>12)&0x0F),0x80|((x>>>6)&0x3F),0x80|(x&0x3F));else if(x<=0x1FFFFF)output+=String.fromCharCode(0xF0|((x>>>18)&0x07),0x80|((x>>>12)&0x3F),0x80|((x>>>6)&0x3F),0x80|(x&0x3F));}return output;};function str2rstr_utf16le(input){var output="";for(var i=0;i<input.length;i++)output+=String.fromCharCode(input.charCodeAt(i)&0xFF,(input.charCodeAt(i)>>>8)&0xFF);return output;};function str2rstr_utf16be(input){var output="";for(var i=0;i<input.length;i++)output+=String.fromCharCode((input.charCodeAt(i)>>>8)&0xFF,input.charCodeAt(i)&0xFF);return output;};function rstr2binl(input){var output=Array(input.length>>2);for(var i=0;i<output.length;i++)output[i]=0;for(var i=0;i<input.length*8;i+=8)output[i>>5]|=(input.charCodeAt(i/8)&0xFF)<<(i%32);return output;};function binl2rstr(input){var output="";for(var i=0;i<input.length*32;i+=8)output+=String.fromCharCode((input[i>>5]>>>(i%32))&0xFF);return output;};function binl_md5(x,len){x[len>>5]|=0x80<<((len)%32);x[(((len+64)>>>9)<<4)+14]=len;var a=1732584193;var b= -271733879;var c= -1732584194;var d=271733878;for(var i=0;i<x.length;i+=16){var olda=a;var oldb=b;var oldc=c;var oldd=d;a=md5_ff(a,b,c,d,x[i+0],7,-680876936);d=md5_ff(d,a,b,c,x[i+1],12,-389564586);c=md5_ff(c,d,a,b,x[i+2],17,606105819);b=md5_ff(b,c,d,a,x[i+3],22,-1044525330);a=md5_ff(a,b,c,d,x[i+4],7,-176418897);d=md5_ff(d,a,b,c,x[i+5],12,1200080426);c=md5_ff(c,d,a,b,x[i+6],17,-1473231341);b=md5_ff(b,c,d,a,x[i+7],22,-45705983);a=md5_ff(a,b,c,d,x[i+8],7,1770035416);d=md5_ff(d,a,b,c,x[i+9],12,-1958414417);c=md5_ff(c,d,a,b,x[i+10],17,-42063);b=md5_ff(b,c,d,a,x[i+11],22,-1990404162);a=md5_ff(a,b,c,d,x[i+12],7,1804603682);d=md5_ff(d,a,b,c,x[i+13],12,-40341101);c=md5_ff(c,d,a,b,x[i+14],17,-1502002290);b=md5_ff(b,c,d,a,x[i+15],22,1236535329);a=md5_gg(a,b,c,d,x[i+1],5,-165796510);d=md5_gg(d,a,b,c,x[i+6],9,-1069501632);c=md5_gg(c,d,a,b,x[i+11],14,643717713);b=md5_gg(b,c,d,a,x[i+0],20,-373897302);a=md5_gg(a,b,c,d,x[i+5],5,-701558691);d=md5_gg(d,a,b,c,x[i+10],9,38016083);c=md5_gg(c,d,a,b,x[i+15],14,-660478335);b=md5_gg(b,c,d,a,x[i+4],20,-405537848);a=md5_gg(a,b,c,d,x[i+9],5,568446438);d=md5_gg(d,a,b,c,x[i+14],9,-1019803690);c=md5_gg(c,d,a,b,x[i+3],14,-187363961);b=md5_gg(b,c,d,a,x[i+8],20,1163531501);a=md5_gg(a,b,c,d,x[i+13],5,-1444681467);d=md5_gg(d,a,b,c,x[i+2],9,-51403784);c=md5_gg(c,d,a,b,x[i+7],14,1735328473);b=md5_gg(b,c,d,a,x[i+12],20,-1926607734);a=md5_hh(a,b,c,d,x[i+5],4,-378558);d=md5_hh(d,a,b,c,x[i+8],11,-2022574463);c=md5_hh(c,d,a,b,x[i+11],16,1839030562);b=md5_hh(b,c,d,a,x[i+14],23,-35309556);a=md5_hh(a,b,c,d,x[i+1],4,-1530992060);d=md5_hh(d,a,b,c,x[i+4],11,1272893353);c=md5_hh(c,d,a,b,x[i+7],16,-155497632);b=md5_hh(b,c,d,a,x[i+10],23,-1094730640);a=md5_hh(a,b,c,d,x[i+13],4,681279174);d=md5_hh(d,a,b,c,x[i+0],11,-358537222);c=md5_hh(c,d,a,b,x[i+3],16,-722521979);b=md5_hh(b,c,d,a,x[i+6],23,76029189);a=md5_hh(a,b,c,d,x[i+9],4,-640364487);d=md5_hh(d,a,b,c,x[i+12],11,-421815835);c=md5_hh(c,d,a,b,x[i+15],16,530742520);b=md5_hh(b,c,d,a,x[i+2],23,-995338651);a=md5_ii(a,b,c,d,x[i+0],6,-198630844);d=md5_ii(d,a,b,c,x[i+7],10,1126891415);c=md5_ii(c,d,a,b,x[i+14],15,-1416354905);b=md5_ii(b,c,d,a,x[i+5],21,-57434055);a=md5_ii(a,b,c,d,x[i+12],6,1700485571);d=md5_ii(d,a,b,c,x[i+3],10,-1894986606);c=md5_ii(c,d,a,b,x[i+10],15,-1051523);b=md5_ii(b,c,d,a,x[i+1],21,-2054922799);a=md5_ii(a,b,c,d,x[i+8],6,1873313359);d=md5_ii(d,a,b,c,x[i+15],10,-30611744);c=md5_ii(c,d,a,b,x[i+6],15,-1560198380);b=md5_ii(b,c,d,a,x[i+13],21,1309151649);a=md5_ii(a,b,c,d,x[i+4],6,-145523070);d=md5_ii(d,a,b,c,x[i+11],10,-1120210379);c=md5_ii(c,d,a,b,x[i+2],15,718787259);b=md5_ii(b,c,d,a,x[i+9],21,-343485551);a=safe_add(a,olda);b=safe_add(b,oldb);c=safe_add(c,oldc);d=safe_add(d,oldd);}return Array(a,b,c,d);};function md5_cmn(q,a,b,x,s,t){return safe_add(bit_rol(safe_add(safe_add(a,q),safe_add(x,t)),s),b);};function md5_ff(a,b,c,d,x,s,t){return md5_cmn((b&c)|((~b)&d),a,b,x,s,t);};function md5_gg(a,b,c,d,x,s,t){return md5_cmn((b&d)|(c&(~d)),a,b,x,s,t);};function md5_hh(a,b,c,d,x,s,t){return md5_cmn(b^c^d,a,b,x,s,t);};function md5_ii(a,b,c,d,x,s,t){return md5_cmn(c^(b|(~d)),a,b,x,s,t);};function safe_add(x,y){var lsw=(x&0xFFFF)+(y&0xFFFF);var msw=(x>>16)+(y>>16)+(lsw>>16);return(msw<<16)|(lsw&0xFFFF);};function bit_rol(num,cnt){return(num<<cnt)|(num>>>(32-cnt));}
+var hexcase=0;
+var b64pad="";
+function hex_md5(s){
+	return rstr2hex(rstr_md5(str2rstr_utf8(s)));
+};
+
+function b64_md5(s){
+	return rstr2b64(rstr_md5(str2rstr_utf8(s)));
+};
+
+function any_md5(s,e){
+	return rstr2any(rstr_md5(str2rstr_utf8(s)),e);
+};
+
+function hex_hmac_md5(k,d){
+	return rstr2hex(rstr_hmac_md5(str2rstr_utf8(k),str2rstr_utf8(d)));
+};
+
+function b64_hmac_md5(k,d){
+	return rstr2b64(rstr_hmac_md5(str2rstr_utf8(k),str2rstr_utf8(d)));
+};
+
+function any_hmac_md5(k,d,e){
+	return rstr2any(rstr_hmac_md5(str2rstr_utf8(k),str2rstr_utf8(d)),e);
+};
+
+function md5_vm_test(){
+	return hex_md5("abc").toLowerCase()=="900150983cd24fb0d6963f7d28e17f72";
+};
+
+function rstr_md5(s){
+	return binl2rstr(binl_md5(rstr2binl(s),s.length*8));
+};
+
+function rstr_hmac_md5(key,data){
+	var bkey=rstr2binl(key);
+	if(bkey.length>16)bkey=binl_md5(bkey,key.length*8);
+	var ipad=Array(16),opad=Array(16);
+	for(var i=0;i<16;i++){
+		ipad[i]=bkey[i]^0x36363636;
+		opad[i]=bkey[i]^0x5C5C5C5C;
+	}
+	var hash=binl_md5(ipad.concat(rstr2binl(data)),512+data.length*8);
+	return binl2rstr(binl_md5(opad.concat(hash),512+128));
+};
+
+function rstr2hex(input){
+	try{
+		hexcase
+		}catch(e){
+		hexcase=0;
+	}
+	var hex_tab=hexcase?"0123456789ABCDEF":"0123456789abcdef";
+	var output="";
+	var x;
+	for(var i=0;i<input.length;i++){
+		x=input.charCodeAt(i);
+		output+=hex_tab.charAt((x>>>4)&0x0F)+hex_tab.charAt(x&0x0F);
+	}
+	return output;
+};
+
+function rstr2b64(input){
+	try{
+		b64pad
+		}catch(e){
+		b64pad='';
+	}
+	var tab="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	var output="";
+	var len=input.length;
+	for(var i=0;i<len;i+=3){
+		var triplet=(input.charCodeAt(i)<<16)|(i+1<len?input.charCodeAt(i+1)<<8:0)|(i+2<len?input.charCodeAt(i+2):0);
+		for(var j=0;j<4;j++){
+			if(i*8+j*6>input.length*8)output+=b64pad;else output+=tab.charAt((triplet>>>6*(3-j))&0x3F);
+		}
+		}
+		return output;
+};
+
+function rstr2any(input,encoding){
+	var divisor=encoding.length;
+	var i,j,q,x,quotient;
+	var dividend=Array(Math.ceil(input.length/2));
+	for(i=0;i<dividend.length;i++){
+		dividend[i]=(input.charCodeAt(i*2)<<8)|input.charCodeAt(i*2+1);
+	}
+	var full_length=Math.ceil(input.length*8/(Math.log(encoding.length)/Math.log(2)));
+	var remainders=Array(full_length);
+	for(j=0;j<full_length;j++){
+		quotient=Array();
+		x=0;
+		for(i=0;i<dividend.length;i++){
+			x=(x<<16)+dividend[i];
+			q=Math.floor(x/divisor);
+			x-=q*divisor;
+			if(quotient.length>0||q>0)quotient[quotient.length]=q;
+		}
+		remainders[j]=x;
+		dividend=quotient;
+	}
+	var output="";
+	for(i=remainders.length-1;i>=0;i--)output+=encoding.charAt(remainders[i]);
+	return output;
+};
+
+function str2rstr_utf8(input){
+	var output="";
+	var i= -1;
+	var x,y;
+	while(++i<input.length){
+		x=input.charCodeAt(i);
+		y=i+1<input.length?input.charCodeAt(i+1):0;
+		if(0xD800<=x&&x<=0xDBFF&&0xDC00<=y&&y<=0xDFFF){
+			x=0x10000+((x&0x03FF)<<10)+(y&0x03FF);
+			i++;
+		}
+		if(x<=0x7F)output+=String.fromCharCode(x);
+		else if(x<=0x7FF)output+=String.fromCharCode(0xC0|((x>>>6)&0x1F),0x80|(x&0x3F));
+		else if(x<=0xFFFF)output+=String.fromCharCode(0xE0|((x>>>12)&0x0F),0x80|((x>>>6)&0x3F),0x80|(x&0x3F));
+		else if(x<=0x1FFFFF)output+=String.fromCharCode(0xF0|((x>>>18)&0x07),0x80|((x>>>12)&0x3F),0x80|((x>>>6)&0x3F),0x80|(x&0x3F));
+	}
+	return output;
+};
+
+function str2rstr_utf16le(input){
+	var output="";
+	for(var i=0;i<input.length;i++)output+=String.fromCharCode(input.charCodeAt(i)&0xFF,(input.charCodeAt(i)>>>8)&0xFF);
+	return output;
+};
+
+function str2rstr_utf16be(input){
+	var output="";
+	for(var i=0;i<input.length;i++)output+=String.fromCharCode((input.charCodeAt(i)>>>8)&0xFF,input.charCodeAt(i)&0xFF);
+	return output;
+};
+
+function rstr2binl(input){
+	var output=Array(input.length>>2);
+	for(var i=0;i<output.length;i++)output[i]=0;
+	for(var i=0;i<input.length*8;i+=8)output[i>>5]|=(input.charCodeAt(i/8)&0xFF)<<(i%32);
+	return output;
+};
+
+function binl2rstr(input){
+	var output="";
+	for(var i=0;i<input.length*32;i+=8)output+=String.fromCharCode((input[i>>5]>>>(i%32))&0xFF);
+	return output;
+};
+
+function binl_md5(x,len){
+	x[len>>5]|=0x80<<((len)%32);
+	x[(((len+64)>>>9)<<4)+14]=len;
+	var a=1732584193;
+	var b= -271733879;
+	var c= -1732584194;
+	var d=271733878;
+	for(var i=0;i<x.length;i+=16){
+		var olda=a;
+		var oldb=b;
+		var oldc=c;
+		var oldd=d;
+		a=md5_ff(a,b,c,d,x[i+0],7,-680876936);
+		d=md5_ff(d,a,b,c,x[i+1],12,-389564586);
+		c=md5_ff(c,d,a,b,x[i+2],17,606105819);
+		b=md5_ff(b,c,d,a,x[i+3],22,-1044525330);
+		a=md5_ff(a,b,c,d,x[i+4],7,-176418897);
+		d=md5_ff(d,a,b,c,x[i+5],12,1200080426);
+		c=md5_ff(c,d,a,b,x[i+6],17,-1473231341);
+		b=md5_ff(b,c,d,a,x[i+7],22,-45705983);
+		a=md5_ff(a,b,c,d,x[i+8],7,1770035416);
+		d=md5_ff(d,a,b,c,x[i+9],12,-1958414417);
+		c=md5_ff(c,d,a,b,x[i+10],17,-42063);
+		b=md5_ff(b,c,d,a,x[i+11],22,-1990404162);
+		a=md5_ff(a,b,c,d,x[i+12],7,1804603682);
+		d=md5_ff(d,a,b,c,x[i+13],12,-40341101);
+		c=md5_ff(c,d,a,b,x[i+14],17,-1502002290);
+		b=md5_ff(b,c,d,a,x[i+15],22,1236535329);
+		a=md5_gg(a,b,c,d,x[i+1],5,-165796510);
+		d=md5_gg(d,a,b,c,x[i+6],9,-1069501632);
+		c=md5_gg(c,d,a,b,x[i+11],14,643717713);
+		b=md5_gg(b,c,d,a,x[i+0],20,-373897302);
+		a=md5_gg(a,b,c,d,x[i+5],5,-701558691);
+		d=md5_gg(d,a,b,c,x[i+10],9,38016083);
+		c=md5_gg(c,d,a,b,x[i+15],14,-660478335);
+		b=md5_gg(b,c,d,a,x[i+4],20,-405537848);
+		a=md5_gg(a,b,c,d,x[i+9],5,568446438);
+		d=md5_gg(d,a,b,c,x[i+14],9,-1019803690);
+		c=md5_gg(c,d,a,b,x[i+3],14,-187363961);
+		b=md5_gg(b,c,d,a,x[i+8],20,1163531501);
+		a=md5_gg(a,b,c,d,x[i+13],5,-1444681467);
+		d=md5_gg(d,a,b,c,x[i+2],9,-51403784);
+		c=md5_gg(c,d,a,b,x[i+7],14,1735328473);
+		b=md5_gg(b,c,d,a,x[i+12],20,-1926607734);
+		a=md5_hh(a,b,c,d,x[i+5],4,-378558);
+		d=md5_hh(d,a,b,c,x[i+8],11,-2022574463);
+		c=md5_hh(c,d,a,b,x[i+11],16,1839030562);
+		b=md5_hh(b,c,d,a,x[i+14],23,-35309556);
+		a=md5_hh(a,b,c,d,x[i+1],4,-1530992060);
+		d=md5_hh(d,a,b,c,x[i+4],11,1272893353);
+		c=md5_hh(c,d,a,b,x[i+7],16,-155497632);
+		b=md5_hh(b,c,d,a,x[i+10],23,-1094730640);
+		a=md5_hh(a,b,c,d,x[i+13],4,681279174);
+		d=md5_hh(d,a,b,c,x[i+0],11,-358537222);
+		c=md5_hh(c,d,a,b,x[i+3],16,-722521979);
+		b=md5_hh(b,c,d,a,x[i+6],23,76029189);
+		a=md5_hh(a,b,c,d,x[i+9],4,-640364487);
+		d=md5_hh(d,a,b,c,x[i+12],11,-421815835);
+		c=md5_hh(c,d,a,b,x[i+15],16,530742520);
+		b=md5_hh(b,c,d,a,x[i+2],23,-995338651);
+		a=md5_ii(a,b,c,d,x[i+0],6,-198630844);
+		d=md5_ii(d,a,b,c,x[i+7],10,1126891415);
+		c=md5_ii(c,d,a,b,x[i+14],15,-1416354905);
+		b=md5_ii(b,c,d,a,x[i+5],21,-57434055);
+		a=md5_ii(a,b,c,d,x[i+12],6,1700485571);
+		d=md5_ii(d,a,b,c,x[i+3],10,-1894986606);
+		c=md5_ii(c,d,a,b,x[i+10],15,-1051523);
+		b=md5_ii(b,c,d,a,x[i+1],21,-2054922799);
+		a=md5_ii(a,b,c,d,x[i+8],6,1873313359);
+		d=md5_ii(d,a,b,c,x[i+15],10,-30611744);
+		c=md5_ii(c,d,a,b,x[i+6],15,-1560198380);
+		b=md5_ii(b,c,d,a,x[i+13],21,1309151649);
+		a=md5_ii(a,b,c,d,x[i+4],6,-145523070);
+		d=md5_ii(d,a,b,c,x[i+11],10,-1120210379);
+		c=md5_ii(c,d,a,b,x[i+2],15,718787259);
+		b=md5_ii(b,c,d,a,x[i+9],21,-343485551);
+		a=safe_add(a,olda);
+		b=safe_add(b,oldb);
+		c=safe_add(c,oldc);
+		d=safe_add(d,oldd);
+	}
+	return Array(a,b,c,d);
+};
+
+function md5_cmn(q,a,b,x,s,t){
+	return safe_add(bit_rol(safe_add(safe_add(a,q),safe_add(x,t)),s),b);
+};
+
+function md5_ff(a,b,c,d,x,s,t){
+	return md5_cmn((b&c)|((~b)&d),a,b,x,s,t);
+};
+
+function md5_gg(a,b,c,d,x,s,t){
+	return md5_cmn((b&d)|(c&(~d)),a,b,x,s,t);
+};
+
+function md5_hh(a,b,c,d,x,s,t){
+	return md5_cmn(b^c^d,a,b,x,s,t);
+};
+
+function md5_ii(a,b,c,d,x,s,t){
+	return md5_cmn(c^(b|(~d)),a,b,x,s,t);
+};
+
+function safe_add(x,y){
+	var lsw=(x&0xFFFF)+(y&0xFFFF);
+	var msw=(x>>16)+(y>>16)+(lsw>>16);
+	return(msw<<16)|(lsw&0xFFFF);
+};
+
+function bit_rol(num,cnt){
+	return(num<<cnt)|(num>>>(32-cnt));
+}
 //  </JasobNoObfs>
 
 
@@ -999,8 +1261,8 @@ jws.tools = {
 				lRes = "0" + lRes;
 			}
 		}
-        return lRes;
-    },
+		return lRes;
+	},
 	
 	//:m:*:calcMD5
 	//:d:en:Generates an MD5 hash for the given UTF-8 input String
@@ -1020,9 +1282,9 @@ jws.tools = {
 	//:r:*:::String:Escaped SQL String for use SQL queries.
 	escapeSQL: function( aSQL ) {
 		if( aSQL && typeof aValue == "string" ) {
-			// escape single quotes in strings by double single quotes
-			// aSQL = aSQL.replace( /[']/g, "''" );
-			// here can be done further escapes as required for the particular database...
+		// escape single quotes in strings by double single quotes
+		// aSQL = aSQL.replace( /[']/g, "''" );
+		// here can be done further escapes as required for the particular database...
 		}	
 		return aSQL;
 	},
@@ -1032,27 +1294,27 @@ jws.tools = {
 		var lTZO = -aDate.getTimezoneOffset();
 		var lAbsTZO = Math.abs( lTZO );
 		var lRes =
-			aDate.getUTCFullYear() 
-			+ "-"
-			+ this.zerofill( aDate.getUTCMonth() + 1, 2 )
-			+ "-"
-			+ this.zerofill( aDate.getUTCDate(), 2 )
-			// use time separator
-			+ "T"
-			+ this.zerofill( aDate.getUTCHours(), 2 )
-			+ ":"
-			+ this.zerofill( aDate.getUTCMinutes(), 2 )
-			+ ":"
-			+ this.zerofill( aDate.getUTCSeconds(), 2 )
-			+ "."
-			+ this.zerofill( aDate.getUTCMilliseconds(), 3 )
-			/*
+		aDate.getUTCFullYear() 
+		+ "-"
+		+ this.zerofill( aDate.getUTCMonth() + 1, 2 )
+		+ "-"
+		+ this.zerofill( aDate.getUTCDate(), 2 )
+		// use time separator
+		+ "T"
+		+ this.zerofill( aDate.getUTCHours(), 2 )
+		+ ":"
+		+ this.zerofill( aDate.getUTCMinutes(), 2 )
+		+ ":"
+		+ this.zerofill( aDate.getUTCSeconds(), 2 )
+		+ "."
+		+ this.zerofill( aDate.getUTCMilliseconds(), 3 )
+		/*
 			+ ( lTZO >= 0 ? "+" : "-" )
 			+ this.zerofill( lAbsTZO / 60, 2 )
 			+ this.zerofill( lAbsTZO % 60, 2 )
-			*/
-			// trailing Z means it's UTC
-			+ "Z";
+		 */
+		// trailing Z means it's UTC
+		+ "Z";
 		return lRes;
 	},
 
@@ -1073,13 +1335,13 @@ jws.tools = {
 
 	date2String: function( aDate ) {
 		var lRes =
-			aDate.getUTCFullYear() 
-			+ this.zerofill( aDate.getUTCMonth() + 1, 2 )
-			+ this.zerofill( aDate.getUTCDate(), 2 )
-			+ this.zerofill( aDate.getUTCHours(), 2 )
-			+ this.zerofill( aDate.getUTCMinutes(), 2 )
-			+ this.zerofill( aDate.getUTCSeconds(), 2 )
-			+ this.zerofill( aDate.getUTCMilliseconds(), 2 )
+		aDate.getUTCFullYear() 
+		+ this.zerofill( aDate.getUTCMonth() + 1, 2 )
+		+ this.zerofill( aDate.getUTCDate(), 2 )
+		+ this.zerofill( aDate.getUTCHours(), 2 )
+		+ this.zerofill( aDate.getUTCMinutes(), 2 )
+		+ this.zerofill( aDate.getUTCSeconds(), 2 )
+		+ this.zerofill( aDate.getUTCMilliseconds(), 2 )
 		return lRes;
 	},
 
@@ -1123,8 +1385,48 @@ jws.tools = {
 			lRes = "null";
 		}
 		return lRes;
-	}
+	},
+	
+	clone: function(aObject){
+		if(null == aObject || "object" != typeof(aObj)){
+			return aObject;
+		}
+		
+		//Supporting "clone" method
+		if ("function" == typeof(aObject["clone"])){
+			return aObject.clone();
+		}
+		
+		//Supporting clonation in Date objects
+		if (aObject instanceof Date){
+			return new Date(aObject.getTime());
+		}
+		
+		//Special clone for Array objects
+		var cloneArray = function(aArray){
+			var lLength = aArray.length;
+			var lCopy = [];
+			if (lLength > 0){
+				for (var lIndex = 0; lIndex < lLength; lIndex++){
+					lCopy[lIndex] = jws.tools.clone(aArray[lIndex]);
+				}
+			}
+			
+			return lCopy;
+		};
 
+		var lConstructor = new aObject.constructor();
+		for (var lProperty in aObject)
+		{
+			var lValue = aObject[lProperty];
+			if (lValue instanceof Array)
+				lConstructor[lProperty] = cloneArray(lValue);
+			else {
+				lConstructor[lProperty] = jws.tools.clone(lValue);
+			}
+		}
+		return lConstructor;
+	}
 };
 
 if( !jws.browserSupportsNativeWebSockets ) {
@@ -1132,60 +1434,1013 @@ if( !jws.browserSupportsNativeWebSockets ) {
 	// --- swfobject.js ---
 	// SWFObject v2.2 <http://code.google.com/p/swfobject/> 
 	// released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
-	var swfobject=function(){var D="undefined",r="object",S="Shockwave Flash",W="ShockwaveFlash.ShockwaveFlash",q="application/x-shockwave-flash",R="SWFObjectExprInst",x="onreadystatechange",O=window,j=document,t=navigator,T=false,U=[h],o=[],N=[],I=[],l,Q,E,B,J=false,a=false,n,G,m=true,M=function(){var aa=typeof j.getElementById!=D&&typeof j.getElementsByTagName!=D&&typeof j.createElement!=D,ah=t.userAgent.toLowerCase(),Y=t.platform.toLowerCase(),ae=Y?/win/.test(Y):/win/.test(ah),ac=Y?/mac/.test(Y):/mac/.test(ah),af=/webkit/.test(ah)?parseFloat(ah.replace(/^.*webkit\/(\d+(\.\d+)?).*$/,"$1")):false,X=!+"\v1",ag=[0,0,0],ab=null;if(typeof t.plugins!=D&&typeof t.plugins[S]==r){ab=t.plugins[S].description;if(ab&&!(typeof t.mimeTypes!=D&&t.mimeTypes[q]&&!t.mimeTypes[q].enabledPlugin)){T=true;X=false;ab=ab.replace(/^.*\s+(\S+\s+\S+$)/,"$1");ag[0]=parseInt(ab.replace(/^(.*)\..*$/,"$1"),10);ag[1]=parseInt(ab.replace(/^.*\.(.*)\s.*$/,"$1"),10);ag[2]=/[a-zA-Z]/.test(ab)?parseInt(ab.replace(/^.*[a-zA-Z]+(.*)$/,"$1"),10):0}}else{if(typeof O.ActiveXObject!=D){try{var ad=new ActiveXObject(W);if(ad){ab=ad.GetVariable("$version");if(ab){X=true;ab=ab.split(" ")[1].split(",");ag=[parseInt(ab[0],10),parseInt(ab[1],10),parseInt(ab[2],10)]}}}catch(Z){}}}return{w3:aa,pv:ag,wk:af,ie:X,win:ae,mac:ac}}(),k=function(){if(!M.w3){return}if((typeof j.readyState!=D&&j.readyState=="complete")||(typeof j.readyState==D&&(j.getElementsByTagName("body")[0]||j.body))){f()}if(!J){if(typeof j.addEventListener!=D){j.addEventListener("DOMContentLoaded",f,false)}if(M.ie&&M.win){j.attachEvent(x,function(){if(j.readyState=="complete"){j.detachEvent(x,arguments.callee);f()}});if(O==top){(function(){if(J){return}try{j.documentElement.doScroll("left")}catch(X){setTimeout(arguments.callee,0);return}f()})()}}if(M.wk){(function(){if(J){return}if(!/loaded|complete/.test(j.readyState)){setTimeout(arguments.callee,0);return}f()})()}s(f)}}();function f(){if(J){return}try{var Z=j.getElementsByTagName("body")[0].appendChild(C("span"));Z.parentNode.removeChild(Z)}catch(aa){return}J=true;var X=U.length;for(var Y=0;Y<X;Y++){U[Y]()}}function K(X){if(J){X()}else{U[U.length]=X}}function s(Y){if(typeof O.addEventListener!=D){O.addEventListener("load",Y,false)}else{if(typeof j.addEventListener!=D){j.addEventListener("load",Y,false)}else{if(typeof O.attachEvent!=D){i(O,"onload",Y)}else{if(typeof O.onload=="function"){var X=O.onload;O.onload=function(){X();Y()}}else{O.onload=Y}}}}}function h(){if(T){V()}else{H()}}function V(){var X=j.getElementsByTagName("body")[0];var aa=C(r);aa.setAttribute("type",q);var Z=X.appendChild(aa);if(Z){var Y=0;(function(){if(typeof Z.GetVariable!=D){var ab=Z.GetVariable("$version");if(ab){ab=ab.split(" ")[1].split(",");M.pv=[parseInt(ab[0],10),parseInt(ab[1],10),parseInt(ab[2],10)]}}else{if(Y<10){Y++;setTimeout(arguments.callee,10);return}}X.removeChild(aa);Z=null;H()})()}else{H()}}function H(){var ag=o.length;if(ag>0){for(var af=0;af<ag;af++){var Y=o[af].id;var ab=o[af].callbackFn;var aa={success:false,id:Y};if(M.pv[0]>0){var ae=c(Y);if(ae){if(F(o[af].swfVersion)&&!(M.wk&&M.wk<312)){w(Y,true);if(ab){aa.success=true;aa.ref=z(Y);ab(aa)}}else{if(o[af].expressInstall&&A()){var ai={};ai.data=o[af].expressInstall;ai.width=ae.getAttribute("width")||"0";ai.height=ae.getAttribute("height")||"0";if(ae.getAttribute("class")){ai.styleclass=ae.getAttribute("class")}if(ae.getAttribute("align")){ai.align=ae.getAttribute("align")}var ah={};var X=ae.getElementsByTagName("param");var ac=X.length;for(var ad=0;ad<ac;ad++){if(X[ad].getAttribute("name").toLowerCase()!="movie"){ah[X[ad].getAttribute("name")]=X[ad].getAttribute("value")}}P(ai,ah,Y,ab)}else{p(ae);if(ab){ab(aa)}}}}}else{w(Y,true);if(ab){var Z=z(Y);if(Z&&typeof Z.SetVariable!=D){aa.success=true;aa.ref=Z}ab(aa)}}}}}function z(aa){var X=null;var Y=c(aa);if(Y&&Y.nodeName=="OBJECT"){if(typeof Y.SetVariable!=D){X=Y}else{var Z=Y.getElementsByTagName(r)[0];if(Z){X=Z}}}return X}function A(){return !a&&F("6.0.65")&&(M.win||M.mac)&&!(M.wk&&M.wk<312)}function P(aa,ab,X,Z){a=true;E=Z||null;B={success:false,id:X};var ae=c(X);if(ae){if(ae.nodeName=="OBJECT"){l=g(ae);Q=null}else{l=ae;Q=X}aa.id=R;if(typeof aa.width==D||(!/%$/.test(aa.width)&&parseInt(aa.width,10)<310)){aa.width="310"}if(typeof aa.height==D||(!/%$/.test(aa.height)&&parseInt(aa.height,10)<137)){aa.height="137"}j.title=j.title.slice(0,47)+" - Flash Player Installation";var ad=M.ie&&M.win?"ActiveX":"PlugIn",ac="MMredirectURL="+O.location.toString().replace(/&/g,"%26")+"&MMplayerType="+ad+"&MMdoctitle="+j.title;if(typeof ab.flashvars!=D){ab.flashvars+="&"+ac}else{ab.flashvars=ac}if(M.ie&&M.win&&ae.readyState!=4){var Y=C("div");X+="SWFObjectNew";Y.setAttribute("id",X);ae.parentNode.insertBefore(Y,ae);ae.style.display="none";(function(){if(ae.readyState==4){ae.parentNode.removeChild(ae)}else{setTimeout(arguments.callee,10)}})()}u(aa,ab,X)}}function p(Y){if(M.ie&&M.win&&Y.readyState!=4){var X=C("div");Y.parentNode.insertBefore(X,Y);X.parentNode.replaceChild(g(Y),X);Y.style.display="none";(function(){if(Y.readyState==4){Y.parentNode.removeChild(Y)}else{setTimeout(arguments.callee,10)}})()}else{Y.parentNode.replaceChild(g(Y),Y)}}function g(ab){var aa=C("div");if(M.win&&M.ie){aa.innerHTML=ab.innerHTML}else{var Y=ab.getElementsByTagName(r)[0];if(Y){var ad=Y.childNodes;if(ad){var X=ad.length;for(var Z=0;Z<X;Z++){if(!(ad[Z].nodeType==1&&ad[Z].nodeName=="PARAM")&&!(ad[Z].nodeType==8)){aa.appendChild(ad[Z].cloneNode(true))}}}}}return aa}function u(ai,ag,Y){var X,aa=c(Y);if(M.wk&&M.wk<312){return X}if(aa){if(typeof ai.id==D){ai.id=Y}if(M.ie&&M.win){var ah="";for(var ae in ai){if(ai[ae]!=Object.prototype[ae]){if(ae.toLowerCase()=="data"){ag.movie=ai[ae]}else{if(ae.toLowerCase()=="styleclass"){ah+=' class="'+ai[ae]+'"'}else{if(ae.toLowerCase()!="classid"){ah+=" "+ae+'="'+ai[ae]+'"'}}}}}var af="";for(var ad in ag){if(ag[ad]!=Object.prototype[ad]){af+='<param name="'+ad+'" value="'+ag[ad]+'" />'}}aa.outerHTML='<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"'+ah+">"+af+"</object>";N[N.length]=ai.id;X=c(ai.id)}else{var Z=C(r);Z.setAttribute("type",q);for(var ac in ai){if(ai[ac]!=Object.prototype[ac]){if(ac.toLowerCase()=="styleclass"){Z.setAttribute("class",ai[ac])}else{if(ac.toLowerCase()!="classid"){Z.setAttribute(ac,ai[ac])}}}}for(var ab in ag){if(ag[ab]!=Object.prototype[ab]&&ab.toLowerCase()!="movie"){e(Z,ab,ag[ab])}}aa.parentNode.replaceChild(Z,aa);X=Z}}return X}function e(Z,X,Y){var aa=C("param");aa.setAttribute("name",X);aa.setAttribute("value",Y);Z.appendChild(aa)}function y(Y){var X=c(Y);if(X&&X.nodeName=="OBJECT"){if(M.ie&&M.win){X.style.display="none";(function(){if(X.readyState==4){b(Y)}else{setTimeout(arguments.callee,10)}})()}else{X.parentNode.removeChild(X)}}}function b(Z){var Y=c(Z);if(Y){for(var X in Y){if(typeof Y[X]=="function"){Y[X]=null}}Y.parentNode.removeChild(Y)}}function c(Z){var X=null;try{X=j.getElementById(Z)}catch(Y){}return X}function C(X){return j.createElement(X)}function i(Z,X,Y){Z.attachEvent(X,Y);I[I.length]=[Z,X,Y]}function F(Z){var Y=M.pv,X=Z.split(".");X[0]=parseInt(X[0],10);X[1]=parseInt(X[1],10)||0;X[2]=parseInt(X[2],10)||0;return(Y[0]>X[0]||(Y[0]==X[0]&&Y[1]>X[1])||(Y[0]==X[0]&&Y[1]==X[1]&&Y[2]>=X[2]))?true:false}function v(ac,Y,ad,ab){if(M.ie&&M.mac){return}var aa=j.getElementsByTagName("head")[0];if(!aa){return}var X=(ad&&typeof ad=="string")?ad:"screen";if(ab){n=null;G=null}if(!n||G!=X){var Z=C("style");Z.setAttribute("type","text/css");Z.setAttribute("media",X);n=aa.appendChild(Z);if(M.ie&&M.win&&typeof j.styleSheets!=D&&j.styleSheets.length>0){n=j.styleSheets[j.styleSheets.length-1]}G=X}if(M.ie&&M.win){if(n&&typeof n.addRule==r){n.addRule(ac,Y)}}else{if(n&&typeof j.createTextNode!=D){n.appendChild(j.createTextNode(ac+" {"+Y+"}"))}}}function w(Z,X){if(!m){return}var Y=X?"visible":"hidden";if(J&&c(Z)){c(Z).style.visibility=Y}else{v("#"+Z,"visibility:"+Y)}}function L(Y){var Z=/[\\\"<>\.;]/;var X=Z.exec(Y)!=null;return X&&typeof encodeURIComponent!=D?encodeURIComponent(Y):Y}var d=function(){if(M.ie&&M.win){window.attachEvent("onunload",function(){var ac=I.length;for(var ab=0;ab<ac;ab++){I[ab][0].detachEvent(I[ab][1],I[ab][2])}var Z=N.length;for(var aa=0;aa<Z;aa++){y(N[aa])}for(var Y in M){M[Y]=null}M=null;for(var X in swfobject){swfobject[X]=null}swfobject=null})}}();return{registerObject:function(ab,X,aa,Z){if(M.w3&&ab&&X){var Y={};Y.id=ab;Y.swfVersion=X;Y.expressInstall=aa;Y.callbackFn=Z;o[o.length]=Y;w(ab,false)}else{if(Z){Z({success:false,id:ab})}}},getObjectById:function(X){if(M.w3){return z(X)}},embedSWF:function(ab,ah,ae,ag,Y,aa,Z,ad,af,ac){var X={success:false,id:ah};if(M.w3&&!(M.wk&&M.wk<312)&&ab&&ah&&ae&&ag&&Y){w(ah,false);K(function(){ae+="";ag+="";var aj={};if(af&&typeof af===r){for(var al in af){aj[al]=af[al]}}aj.data=ab;aj.width=ae;aj.height=ag;var am={};if(ad&&typeof ad===r){for(var ak in ad){am[ak]=ad[ak]}}if(Z&&typeof Z===r){for(var ai in Z){if(typeof am.flashvars!=D){am.flashvars+="&"+ai+"="+Z[ai]}else{am.flashvars=ai+"="+Z[ai]}}}if(F(Y)){var an=u(aj,am,ah);if(aj.id==ah){w(ah,true)}X.success=true;X.ref=an}else{if(aa&&A()){aj.data=aa;P(aj,am,ah,ac);return}else{w(ah,true)}}if(ac){ac(X)}})}else{if(ac){ac(X)}}},switchOffAutoHideShow:function(){m=false},ua:M,getFlashPlayerVersion:function(){return{major:M.pv[0],minor:M.pv[1],release:M.pv[2]}},hasFlashPlayerVersion:F,createSWF:function(Z,Y,X){if(M.w3){return u(Z,Y,X)}else{return undefined}},showExpressInstall:function(Z,aa,X,Y){if(M.w3&&A()){P(Z,aa,X,Y)}},removeSWF:function(X){if(M.w3){y(X)}},createCSS:function(aa,Z,Y,X){if(M.w3){v(aa,Z,Y,X)}},addDomLoadEvent:K,addLoadEvent:s,getQueryParamValue:function(aa){var Z=j.location.search||j.location.hash;if(Z){if(/\?/.test(Z)){Z=Z.split("?")[1]}if(aa==null){return L(Z)}var Y=Z.split("&");for(var X=0;X<Y.length;X++){if(Y[X].substring(0,Y[X].indexOf("="))==aa){return L(Y[X].substring((Y[X].indexOf("=")+1)))}}}return""},expressInstallCallback:function(){if(a){var X=c(R);if(X&&l){X.parentNode.replaceChild(l,X);if(Q){w(Q,true);if(M.ie&&M.win){l.style.display="block"}}if(E){E(B)}}a=false}}}}();
-	//	</JasobNoObfs>
-	
-	// check if appropriate flash player version is installed
-	if( swfobject.hasFlashPlayerVersion( "10.0.0" ) ) {
-	
-	    WEB_SOCKET_DEBUG = true;
-		
-		// init flash bridge
-		// use function to not polute the namespace with identifiers
-		// get all scripts on the page to find jWebSocket.js path
-		(function() {
-			var lScripts = document.getElementsByTagName( "script" );
-			for( var lIdx = 0, lCnt = lScripts.length; lIdx < lCnt; lIdx++ ) {
-				var lScript = lScripts[ lIdx ];
-				var lPath = lScript.src;
-				if( !lPath ) {
-					lPath = lScript.getAttribute( "src" );
+	var swfobject=function(){
+		var D="undefined",r="object",S="Shockwave Flash",W="ShockwaveFlash.ShockwaveFlash",q="application/x-shockwave-flash",R="SWFObjectExprInst",x="onreadystatechange",O=window,j=document,t=navigator,T=false,U=[h],o=[],N=[],I=[],l,Q,E,B,J=false,a=false,n,G,m=true,M=function(){
+			var aa=typeof j.getElementById!=D&&typeof j.getElementsByTagName!=D&&typeof j.createElement!=D,ah=t.userAgent.toLowerCase(),Y=t.platform.toLowerCase(),ae=Y?/win/.test(Y):/win/.test(ah),ac=Y?/mac/.test(Y):/mac/.test(ah),af=/webkit/.test(ah)?parseFloat(ah.replace(/^.*webkit\/(\d+(\.\d+)?).*$/,"$1")):false,X=!+"\v1",ag=[0,0,0],ab=null;
+			if(typeof t.plugins!=D&&typeof t.plugins[S]==r){
+				ab=t.plugins[S].description;
+				if(ab&&!(typeof t.mimeTypes!=D&&t.mimeTypes[q]&&!t.mimeTypes[q].enabledPlugin)){
+					T=true;
+					X=false;
+					ab=ab.replace(/^.*\s+(\S+\s+\S+$)/,"$1");
+					ag[0]=parseInt(ab.replace(/^(.*)\..*$/,"$1"),10);
+					ag[1]=parseInt(ab.replace(/^.*\.(.*)\s.*$/,"$1"),10);
+					ag[2]=/[a-zA-Z]/.test(ab)?parseInt(ab.replace(/^.*[a-zA-Z]+(.*)$/,"$1"),10):0
+					}
+				}else{
+			if(typeof O.ActiveXObject!=D){
+				try{
+					var ad=new ActiveXObject(W);
+					if(ad){
+						ab=ad.GetVariable("$version");
+						if(ab){
+							X=true;
+							ab=ab.split(" ")[1].split(",");
+							ag=[parseInt(ab[0],10),parseInt(ab[1],10),parseInt(ab[2],10)]
+							}
+						}
+				}catch(Z){}
+	}
+}
+return{
+	w3:aa,
+	pv:ag,
+	wk:af,
+	ie:X,
+	win:ae,
+	mac:ac
+}
+}(),k=function(){
+	if(!M.w3){
+		return
+	}
+	if((typeof j.readyState!=D&&j.readyState=="complete")||(typeof j.readyState==D&&(j.getElementsByTagName("body")[0]||j.body))){
+		f()
+		}
+		if(!J){
+		if(typeof j.addEventListener!=D){
+			j.addEventListener("DOMContentLoaded",f,false)
+			}
+			if(M.ie&&M.win){
+			j.attachEvent(x,function(){
+				if(j.readyState=="complete"){
+					j.detachEvent(x,arguments.callee);
+					f()
+					}
+				});
+		if(O==top){
+			(function(){
+				if(J){
+					return
 				}
-				if( lPath ) {
-					// check for all three versions of jWebSocket.js 
-					var lPos = lPath.lastIndexOf( "jWebSocket_Bundle_min.js" );
-					if( lPos < 0 ) {
-						lPos = lPath.lastIndexOf( "jWebSocket_Bundle.js" );
+				try{
+					j.documentElement.doScroll("left")
+					}catch(X){
+					setTimeout(arguments.callee,0);
+					return
+				}
+				f()
+				})()
+			}
+		}
+	if(M.wk){
+	(function(){
+		if(J){
+			return
+		}
+		if(!/loaded|complete/.test(j.readyState)){
+			setTimeout(arguments.callee,0);
+			return
+		}
+		f()
+		})()
+	}
+	s(f)
+}
+}();
+function f(){
+	if(J){
+		return
+	}
+	try{
+		var Z=j.getElementsByTagName("body")[0].appendChild(C("span"));
+		Z.parentNode.removeChild(Z)
+		}catch(aa){
+		return
+	}
+	J=true;
+	var X=U.length;
+	for(var Y=0;Y<X;Y++){
+		U[Y]()
+		}
+	}
+	function K(X){
+	if(J){
+		X()
+		}else{
+		U[U.length]=X
+		}
+	}
+function s(Y){
+	if(typeof O.addEventListener!=D){
+		O.addEventListener("load",Y,false)
+		}else{
+		if(typeof j.addEventListener!=D){
+			j.addEventListener("load",Y,false)
+			}else{
+			if(typeof O.attachEvent!=D){
+				i(O,"onload",Y)
+				}else{
+				if(typeof O.onload=="function"){
+					var X=O.onload;
+					O.onload=function(){
+						X();
+						Y()
+						}
+					}else{
+				O.onload=Y
+				}
+			}
+	}
+}
+}
+function h(){
+	if(T){
+		V()
+		}else{
+		H()
+		}
+	}
+function V(){
+	var X=j.getElementsByTagName("body")[0];
+	var aa=C(r);
+	aa.setAttribute("type",q);
+	var Z=X.appendChild(aa);
+	if(Z){
+		var Y=0;
+		(function(){
+			if(typeof Z.GetVariable!=D){
+				var ab=Z.GetVariable("$version");
+				if(ab){
+					ab=ab.split(" ")[1].split(",");
+					M.pv=[parseInt(ab[0],10),parseInt(ab[1],10),parseInt(ab[2],10)]
 					}
-					if( lPos < 0 ) {
-						lPos = lPath.lastIndexOf( "jWebSocket.js" );
+				}else{
+			if(Y<10){
+				Y++;
+				setTimeout(arguments.callee,10);
+				return
+			}
+		}
+		X.removeChild(aa);
+		Z=null;
+		H()
+		})()
+}else{
+	H()
+	}
+}
+function H(){
+	var ag=o.length;
+	if(ag>0){
+		for(var af=0;af<ag;af++){
+			var Y=o[af].id;
+			var ab=o[af].callbackFn;
+			var aa={
+				success:false,
+				id:Y
+			};
+			
+			if(M.pv[0]>0){
+				var ae=c(Y);
+				if(ae){
+					if(F(o[af].swfVersion)&&!(M.wk&&M.wk<312)){
+						w(Y,true);
+						if(ab){
+							aa.success=true;
+							aa.ref=z(Y);
+							ab(aa)
+							}
+						}else{
+					if(o[af].expressInstall&&A()){
+						var ai={};
+						
+						ai.data=o[af].expressInstall;
+						ai.width=ae.getAttribute("width")||"0";
+						ai.height=ae.getAttribute("height")||"0";
+						if(ae.getAttribute("class")){
+							ai.styleclass=ae.getAttribute("class")
+							}
+							if(ae.getAttribute("align")){
+							ai.align=ae.getAttribute("align")
+							}
+							var ah={};
+						
+						var X=ae.getElementsByTagName("param");
+						var ac=X.length;
+						for(var ad=0;ad<ac;ad++){
+							if(X[ad].getAttribute("name").toLowerCase()!="movie"){
+								ah[X[ad].getAttribute("name")]=X[ad].getAttribute("value")
+								}
+							}
+						P(ai,ah,Y,ab)
+					}else{
+					p(ae);
+					if(ab){
+						ab(aa)
+						}
 					}
-					if( lPos > 0 ) {
-						window.WEB_SOCKET_SWF_LOCATION = 
-							lPath.substr( 0, lPos ) + "flash-bridge/WebSocketMain.swf";
-						jws.JWS_FLASHBRIDGE = window.WEB_SOCKET_SWF_LOCATION;
-						break;
+			}
+		}
+}else{
+	w(Y,true);
+	if(ab){
+		var Z=z(Y);
+		if(Z&&typeof Z.SetVariable!=D){
+			aa.success=true;
+			aa.ref=Z
+			}
+			ab(aa)
+		}
+	}
+}
+}
+}
+function z(aa){
+	var X=null;
+	var Y=c(aa);
+	if(Y&&Y.nodeName=="OBJECT"){
+		if(typeof Y.SetVariable!=D){
+			X=Y
+			}else{
+			var Z=Y.getElementsByTagName(r)[0];
+			if(Z){
+				X=Z
+				}
+			}
+	}
+return X
+}
+function A(){
+	return !a&&F("6.0.65")&&(M.win||M.mac)&&!(M.wk&&M.wk<312)
+	}
+	function P(aa,ab,X,Z){
+	a=true;
+	E=Z||null;
+	B={
+		success:false,
+		id:X
+	};
+	
+	var ae=c(X);
+	if(ae){
+		if(ae.nodeName=="OBJECT"){
+			l=g(ae);
+			Q=null
+			}else{
+			l=ae;
+			Q=X
+			}
+			aa.id=R;
+		if(typeof aa.width==D||(!/%$/.test(aa.width)&&parseInt(aa.width,10)<310)){
+			aa.width="310"
+			}
+			if(typeof aa.height==D||(!/%$/.test(aa.height)&&parseInt(aa.height,10)<137)){
+			aa.height="137"
+			}
+			j.title=j.title.slice(0,47)+" - Flash Player Installation";
+		var ad=M.ie&&M.win?"ActiveX":"PlugIn",ac="MMredirectURL="+O.location.toString().replace(/&/g,"%26")+"&MMplayerType="+ad+"&MMdoctitle="+j.title;
+		if(typeof ab.flashvars!=D){
+			ab.flashvars+="&"+ac
+			}else{
+			ab.flashvars=ac
+			}
+			if(M.ie&&M.win&&ae.readyState!=4){
+			var Y=C("div");
+			X+="SWFObjectNew";
+			Y.setAttribute("id",X);
+			ae.parentNode.insertBefore(Y,ae);
+			ae.style.display="none";
+			(function(){
+				if(ae.readyState==4){
+					ae.parentNode.removeChild(ae)
+					}else{
+					setTimeout(arguments.callee,10)
+					}
+				})()
+		}
+		u(aa,ab,X)
+	}
+}
+function p(Y){
+	if(M.ie&&M.win&&Y.readyState!=4){
+		var X=C("div");
+		Y.parentNode.insertBefore(X,Y);
+		X.parentNode.replaceChild(g(Y),X);
+		Y.style.display="none";
+		(function(){
+			if(Y.readyState==4){
+				Y.parentNode.removeChild(Y)
+				}else{
+				setTimeout(arguments.callee,10)
+				}
+			})()
+	}else{
+	Y.parentNode.replaceChild(g(Y),Y)
+	}
+}
+function g(ab){
+	var aa=C("div");
+	if(M.win&&M.ie){
+		aa.innerHTML=ab.innerHTML
+		}else{
+		var Y=ab.getElementsByTagName(r)[0];
+		if(Y){
+			var ad=Y.childNodes;
+			if(ad){
+				var X=ad.length;
+				for(var Z=0;Z<X;Z++){
+					if(!(ad[Z].nodeType==1&&ad[Z].nodeName=="PARAM")&&!(ad[Z].nodeType==8)){
+						aa.appendChild(ad[Z].cloneNode(true))
+						}
+					}
+				}
+		}
+}
+return aa
+}
+function u(ai,ag,Y){
+	var X,aa=c(Y);
+	if(M.wk&&M.wk<312){
+		return X
+		}
+		if(aa){
+		if(typeof ai.id==D){
+			ai.id=Y
+			}
+			if(M.ie&&M.win){
+			var ah="";
+			for(var ae in ai){
+				if(ai[ae]!=Object.prototype[ae]){
+					if(ae.toLowerCase()=="data"){
+						ag.movie=ai[ae]
+						}else{
+						if(ae.toLowerCase()=="styleclass"){
+							ah+=' class="'+ai[ae]+'"'
+							}else{
+							if(ae.toLowerCase()!="classid"){
+								ah+=" "+ae+'="'+ai[ae]+'"'
+								}
+							}
+					}
+			}
+			}
+		var af="";
+for(var ad in ag){
+	if(ag[ad]!=Object.prototype[ad]){
+		af+='<param name="'+ad+'" value="'+ag[ad]+'" />'
+		}
+	}
+aa.outerHTML='<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"'+ah+">"+af+"</object>";
+N[N.length]=ai.id;
+X=c(ai.id)
+}else{
+	var Z=C(r);
+	Z.setAttribute("type",q);
+	for(var ac in ai){
+		if(ai[ac]!=Object.prototype[ac]){
+			if(ac.toLowerCase()=="styleclass"){
+				Z.setAttribute("class",ai[ac])
+				}else{
+				if(ac.toLowerCase()!="classid"){
+					Z.setAttribute(ac,ai[ac])
+					}
+				}
+		}
+	}
+	for(var ab in ag){
+	if(ag[ab]!=Object.prototype[ab]&&ab.toLowerCase()!="movie"){
+		e(Z,ab,ag[ab])
+		}
+	}
+aa.parentNode.replaceChild(Z,aa);
+X=Z
+}
+}
+return X
+}
+function e(Z,X,Y){
+	var aa=C("param");
+	aa.setAttribute("name",X);
+	aa.setAttribute("value",Y);
+	Z.appendChild(aa)
+	}
+	function y(Y){
+	var X=c(Y);
+	if(X&&X.nodeName=="OBJECT"){
+		if(M.ie&&M.win){
+			X.style.display="none";
+			(function(){
+				if(X.readyState==4){
+					b(Y)
+					}else{
+					setTimeout(arguments.callee,10)
+					}
+				})()
+		}else{
+		X.parentNode.removeChild(X)
+		}
+	}
+}
+function b(Z){
+	var Y=c(Z);
+	if(Y){
+		for(var X in Y){
+			if(typeof Y[X]=="function"){
+				Y[X]=null
+				}
+			}
+		Y.parentNode.removeChild(Y)
+	}
+}
+function c(Z){
+	var X=null;
+	try{
+		X=j.getElementById(Z)
+		}catch(Y){}
+	return X
+	}
+	function C(X){
+	return j.createElement(X)
+	}
+	function i(Z,X,Y){
+	Z.attachEvent(X,Y);
+	I[I.length]=[Z,X,Y]
+	}
+	function F(Z){
+	var Y=M.pv,X=Z.split(".");
+	X[0]=parseInt(X[0],10);
+	X[1]=parseInt(X[1],10)||0;
+	X[2]=parseInt(X[2],10)||0;
+	return(Y[0]>X[0]||(Y[0]==X[0]&&Y[1]>X[1])||(Y[0]==X[0]&&Y[1]==X[1]&&Y[2]>=X[2]))?true:false
+	}
+	function v(ac,Y,ad,ab){
+	if(M.ie&&M.mac){
+		return
+	}
+	var aa=j.getElementsByTagName("head")[0];
+	if(!aa){
+		return
+	}
+	var X=(ad&&typeof ad=="string")?ad:"screen";
+	if(ab){
+		n=null;
+		G=null
+		}
+		if(!n||G!=X){
+		var Z=C("style");
+		Z.setAttribute("type","text/css");
+		Z.setAttribute("media",X);
+		n=aa.appendChild(Z);
+		if(M.ie&&M.win&&typeof j.styleSheets!=D&&j.styleSheets.length>0){
+			n=j.styleSheets[j.styleSheets.length-1]
+			}
+			G=X
+		}
+		if(M.ie&&M.win){
+		if(n&&typeof n.addRule==r){
+			n.addRule(ac,Y)
+			}
+		}else{
+	if(n&&typeof j.createTextNode!=D){
+		n.appendChild(j.createTextNode(ac+" {"+Y+"}"))
+		}
+	}
+}
+function w(Z,X){
+	if(!m){
+		return
+	}
+	var Y=X?"visible":"hidden";
+	if(J&&c(Z)){
+		c(Z).style.visibility=Y
+		}else{
+		v("#"+Z,"visibility:"+Y)
+		}
+	}
+function L(Y){
+	var Z=/[\\\"<>\.;]/;
+	var X=Z.exec(Y)!=null;
+	return X&&typeof encodeURIComponent!=D?encodeURIComponent(Y):Y
+	}
+	var d=function(){
+	if(M.ie&&M.win){
+		window.attachEvent("onunload",function(){
+			var ac=I.length;
+			for(var ab=0;ab<ac;ab++){
+				I[ab][0].detachEvent(I[ab][1],I[ab][2])
+				}
+				var Z=N.length;
+			for(var aa=0;aa<Z;aa++){
+				y(N[aa])
+				}
+				for(var Y in M){
+				M[Y]=null
+				}
+				M=null;
+			for(var X in swfobject){
+				swfobject[X]=null
+				}
+				swfobject=null
+			})
+		}
+	}();
+return{
+	registerObject:function(ab,X,aa,Z){
+		if(M.w3&&ab&&X){
+			var Y={};
+			
+			Y.id=ab;
+			Y.swfVersion=X;
+			Y.expressInstall=aa;
+			Y.callbackFn=Z;
+			o[o.length]=Y;
+			w(ab,false)
+			}else{
+			if(Z){
+				Z({
+					success:false,
+					id:ab
+				})
+				}
+			}
+	},
+getObjectById:function(X){
+	if(M.w3){
+		return z(X)
+		}
+	},
+embedSWF:function(ab,ah,ae,ag,Y,aa,Z,ad,af,ac){
+	var X={
+		success:false,
+		id:ah
+	};
+	
+	if(M.w3&&!(M.wk&&M.wk<312)&&ab&&ah&&ae&&ag&&Y){
+		w(ah,false);
+		K(function(){
+			ae+="";
+			ag+="";
+			var aj={};
+			
+			if(af&&typeof af===r){
+				for(var al in af){
+					aj[al]=af[al]
+					}
+				}
+				aj.data=ab;
+		aj.width=ae;
+		aj.height=ag;
+		var am={};
+		
+		if(ad&&typeof ad===r){
+			for(var ak in ad){
+				am[ak]=ad[ak]
+				}
+			}
+			if(Z&&typeof Z===r){
+			for(var ai in Z){
+				if(typeof am.flashvars!=D){
+					am.flashvars+="&"+ai+"="+Z[ai]
+					}else{
+					am.flashvars=ai+"="+Z[ai]
 					}
 				}
 			}
-		})();
-		
-		if( window.WEB_SOCKET_SWF_LOCATION ) {
-			//	<JasobNoObfs>
-			// --- web_socket.js (minified) ---
-			// Copyright: Hiroshi Ichikawa, http://gimite.net/en/, https://github.com/gimite/web-socket-js
-			// License: New BSD License
-			// Reference: http://dev.w3.org/html5/websockets/
-			// Reference: http://tools.ietf.org/html/rfc6455
-			// Full sources codes provided in web_socket.js
-			(function(){if(window.WEB_SOCKET_FORCE_FLASH){}else if(window.WebSocket){return;}else if(window.MozWebSocket){window.WebSocket=MozWebSocket;return;}var logger;if(window.WEB_SOCKET_LOGGER){logger=WEB_SOCKET_LOGGER;}else if(window.console&&window.console.log&&window.console.error){logger=window.console;}else{logger={log:function(){},error:function(){}};}if(swfobject.getFlashPlayerVersion().major<10){logger.error("Flash Player >= 10.0.0 is required.");return;}if(location.protocol=="file:"){logger.error("WARNING: web-socket-js doesn't work in file:///... URL "+"unless you set Flash Security Settings properly. "+"Open the page via Web server i.e. http://...");}window.WebSocket=function(url,protocols,proxyHost,proxyPort,headers){var self=this;self.__id=WebSocket.__nextId++;WebSocket.__instances[self.__id]=self;self.readyState=WebSocket.CONNECTING;self.bufferedAmount=0;self.__events={};if(!protocols){protocols=[];}else if(typeof protocols=="string"){protocols=[protocols];}self.__createTask=setTimeout(function(){WebSocket.__addTask(function(){self.__createTask=null;WebSocket.__flash.create(self.__id,url,protocols,proxyHost||null,proxyPort||0,headers||null);});},0);};WebSocket.prototype.send=function(data){if(this.readyState==WebSocket.CONNECTING){throw "INVALID_STATE_ERR: Web Socket connection has not been established";}var result=WebSocket.__flash.send(this.__id,encodeURIComponent(data));if(result<0){return true;}else{this.bufferedAmount+=result;return false;}};WebSocket.prototype.close=function(){if(this.__createTask){clearTimeout(this.__createTask);this.__createTask=null;this.readyState=WebSocket.CLOSED;return;}if(this.readyState==WebSocket.CLOSED||this.readyState==WebSocket.CLOSING){return;}this.readyState=WebSocket.CLOSING;WebSocket.__flash.close(this.__id);};WebSocket.prototype.addEventListener=function(type,listener,useCapture){if(!(type in this.__events)){this.__events[type]=[];}this.__events[type].push(listener);};WebSocket.prototype.removeEventListener=function(type,listener,useCapture){if(!(type in this.__events))return;var events=this.__events[type];for(var i=events.length-1;i>=0;--i){if(events[i]===listener){events.splice(i,1);break;}}};WebSocket.prototype.dispatchEvent=function(event){var events=this.__events[event.type]||[];for(var i=0;i<events.length;++i){events[i](event);}var handler=this["on"+event.type];if(handler)handler.apply(this,[event]);};WebSocket.prototype.__handleEvent=function(flashEvent){if("readyState"in flashEvent){this.readyState=flashEvent.readyState;}if("protocol"in flashEvent){this.protocol=flashEvent.protocol;}var jsEvent;if(flashEvent.type=="open"||flashEvent.type=="error"){jsEvent=this.__createSimpleEvent(flashEvent.type);}else if(flashEvent.type=="close"){jsEvent=this.__createSimpleEvent("close");jsEvent.wasClean=flashEvent.wasClean?true:false;jsEvent.code=flashEvent.code;jsEvent.reason=flashEvent.reason;}else if(flashEvent.type=="message"){var data=decodeURIComponent(flashEvent.message);jsEvent=this.__createMessageEvent("message",data);}else{throw "unknown event type: "+flashEvent.type;}this.dispatchEvent(jsEvent);};WebSocket.prototype.__createSimpleEvent=function(type){if(document.createEvent&&window.Event){var event=document.createEvent("Event");event.initEvent(type,false,false);return event;}else{return{type:type,bubbles:false,cancelable:false};}};WebSocket.prototype.__createMessageEvent=function(type,data){if(document.createEvent&&window.MessageEvent&& !window.opera){var event=document.createEvent("MessageEvent");event.initMessageEvent("message",false,false,data,null,null,window,null);return event;}else{return{type:type,data:data,bubbles:false,cancelable:false};}};WebSocket.CONNECTING=0;WebSocket.OPEN=1;WebSocket.CLOSING=2;WebSocket.CLOSED=3;WebSocket.__initialized=false;WebSocket.__flash=null;WebSocket.__instances={};WebSocket.__tasks=[];WebSocket.__nextId=0;WebSocket.loadFlashPolicyFile=function(url){WebSocket.__addTask(function(){WebSocket.__flash.loadManualPolicyFile(url);});};WebSocket.__initialize=function(){if(WebSocket.__initialized)return;WebSocket.__initialized=true;if(WebSocket.__swfLocation){window.WEB_SOCKET_SWF_LOCATION=WebSocket.__swfLocation;}if(!window.WEB_SOCKET_SWF_LOCATION){logger.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf");return;}if(!window.WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR&& !WEB_SOCKET_SWF_LOCATION.match(/(^|\/)WebSocketMainInsecure\.swf(\?.*)?$/)&&WEB_SOCKET_SWF_LOCATION.match(/^\w+:\/\/([^\/]+)/)){var swfHost=RegExp.$1;if(location.host!=swfHost){logger.error("[WebSocket] You must host HTML and WebSocketMain.swf in the same host "+"('"+location.host+"' != '"+swfHost+"'). "+"See also 'How to host HTML file and SWF file in different domains' section "+"in README.md. If you use WebSocketMainInsecure.swf, you can suppress this message "+"by WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;");}}var container=document.createElement("div");container.id="webSocketContainer";container.style.position="absolute";if(WebSocket.__isFlashLite()){container.style.left="0px";container.style.top="0px";}else{container.style.left="-100px";container.style.top="-100px";}var holder=document.createElement("div");holder.id="webSocketFlash";container.appendChild(holder);document.body.appendChild(container);swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION,"webSocketFlash","1","1","10.0.0",null,null,{hasPriority:true,swliveconnect:true,allowScriptAccess:"always"},null,function(e){if(!e.success){logger.error("[WebSocket] swfobject.embedSWF failed");}});};WebSocket.__onFlashInitialized=function(){setTimeout(function(){WebSocket.__flash=document.getElementById("webSocketFlash");WebSocket.__flash.setCallerUrl(location.href);WebSocket.__flash.setDebug(! !window.WEB_SOCKET_DEBUG);for(var i=0;i<WebSocket.__tasks.length;++i){WebSocket.__tasks[i]();}WebSocket.__tasks=[];},0);};WebSocket.__onFlashEvent=function(){setTimeout(function(){try{var events=WebSocket.__flash.receiveEvents();for(var i=0;i<events.length;++i){WebSocket.__instances[events[i].webSocketId].__handleEvent(events[i]);}}catch(e){logger.error(e);}},0);return true;};WebSocket.__log=function(message){logger.log(decodeURIComponent(message));};WebSocket.__error=function(message){logger.error(decodeURIComponent(message));};WebSocket.__addTask=function(task){if(WebSocket.__flash){task();}else{WebSocket.__tasks.push(task);}};WebSocket.__isFlashLite=function(){if(!window.navigator|| !window.navigator.mimeTypes){return false;}var mimeType=window.navigator.mimeTypes["application/x-shockwave-flash"];if(!mimeType|| !mimeType.enabledPlugin|| !mimeType.enabledPlugin.filename){return false;}return mimeType.enabledPlugin.filename.match(/flashlite/i)?true:false;};if(!window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION){swfobject.addDomLoadEvent(function(){WebSocket.__initialize();});}})(); 
-			//	</JasobNoObfs>
+			if(F(Y)){
+	var an=u(aj,am,ah);
+	if(aj.id==ah){
+		w(ah,true)
 		}
-		
-	} else {
-		// no Flash Player installed
-		WebSocket = null;
+		X.success=true;
+	X.ref=an
+	}else{
+	if(aa&&A()){
+		aj.data=aa;
+		P(aj,am,ah,ac);
+		return
+	}else{
+		w(ah,true)
+		}
 	}
+if(ac){
+	ac(X)
+	}
+})
+}else{
+	if(ac){
+		ac(X)
+		}
+	}
+},
+switchOffAutoHideShow:function(){
+	m=false
+	},
+ua:M,
+getFlashPlayerVersion:function(){
+	return{
+		major:M.pv[0],
+		minor:M.pv[1],
+		release:M.pv[2]
+		}
+	},
+hasFlashPlayerVersion:F,
+createSWF:function(Z,Y,X){
+	if(M.w3){
+		return u(Z,Y,X)
+		}else{
+		return undefined
+		}
+	},
+showExpressInstall:function(Z,aa,X,Y){
+	if(M.w3&&A()){
+		P(Z,aa,X,Y)
+		}
+	},
+removeSWF:function(X){
+	if(M.w3){
+		y(X)
+		}
+	},
+createCSS:function(aa,Z,Y,X){
+	if(M.w3){
+		v(aa,Z,Y,X)
+		}
+	},
+addDomLoadEvent:K,
+addLoadEvent:s,
+getQueryParamValue:function(aa){
+	var Z=j.location.search||j.location.hash;
+	if(Z){
+		if(/\?/.test(Z)){
+			Z=Z.split("?")[1]
+			}
+			if(aa==null){
+			return L(Z)
+			}
+			var Y=Z.split("&");
+		for(var X=0;X<Y.length;X++){
+			if(Y[X].substring(0,Y[X].indexOf("="))==aa){
+				return L(Y[X].substring((Y[X].indexOf("=")+1)))
+				}
+			}
+		}
+	return""
+},
+expressInstallCallback:function(){
+	if(a){
+		var X=c(R);
+		if(X&&l){
+			X.parentNode.replaceChild(l,X);
+			if(Q){
+				w(Q,true);
+				if(M.ie&&M.win){
+					l.style.display="block"
+					}
+				}
+			if(E){
+			E(B)
+			}
+		}
+	a=false
+}
+}
+}
+}();
+//	</JasobNoObfs>
+	
+// check if appropriate flash player version is installed
+if( swfobject.hasFlashPlayerVersion( "10.0.0" ) ) {
+	
+	WEB_SOCKET_DEBUG = true;
+		
+	// init flash bridge
+	// use function to not polute the namespace with identifiers
+	// get all scripts on the page to find jWebSocket.js path
+	(function() {
+		var lScripts = document.getElementsByTagName( "script" );
+		for( var lIdx = 0, lCnt = lScripts.length; lIdx < lCnt; lIdx++ ) {
+			var lScript = lScripts[ lIdx ];
+			var lPath = lScript.src;
+			if( !lPath ) {
+				lPath = lScript.getAttribute( "src" );
+			}
+			if( lPath ) {
+				// check for all three versions of jWebSocket.js 
+				var lPos = lPath.lastIndexOf( "jWebSocket_Bundle_min.js" );
+				if( lPos < 0 ) {
+					lPos = lPath.lastIndexOf( "jWebSocket_Bundle.js" );
+				}
+				if( lPos < 0 ) {
+					lPos = lPath.lastIndexOf( "jWebSocket.js" );
+				}
+				if( lPos > 0 ) {
+					window.WEB_SOCKET_SWF_LOCATION = 
+					lPath.substr( 0, lPos ) + "flash-bridge/WebSocketMain.swf";
+					jws.JWS_FLASHBRIDGE = window.WEB_SOCKET_SWF_LOCATION;
+					break;
+				}
+			}
+		}
+	})();
+		
+	if( window.WEB_SOCKET_SWF_LOCATION ) {
+		//	<JasobNoObfs>
+		// --- web_socket.js (minified) ---
+		// Copyright: Hiroshi Ichikawa, http://gimite.net/en/, https://github.com/gimite/web-socket-js
+		// License: New BSD License
+		// Reference: http://dev.w3.org/html5/websockets/
+		// Reference: http://tools.ietf.org/html/rfc6455
+		// Full sources codes provided in web_socket.js
+		(function(){
+			if(window.WEB_SOCKET_FORCE_FLASH){}else if(window.WebSocket){
+				return;
+			}else if(window.MozWebSocket){
+				window.WebSocket=MozWebSocket;
+				return;
+			}
+			var logger;
+			if(window.WEB_SOCKET_LOGGER){
+				logger=WEB_SOCKET_LOGGER;
+			}else if(window.console&&window.console.log&&window.console.error){
+				logger=window.console;
+			}else{
+				logger={
+					log:function(){},
+					error:function(){}
+				};
+			
+		}
+		if(swfobject.getFlashPlayerVersion().major<10){
+			logger.error("Flash Player >= 10.0.0 is required.");
+			return;
+		}
+		if(location.protocol=="file:"){
+			logger.error("WARNING: web-socket-js doesn't work in file:///... URL "+"unless you set Flash Security Settings properly. "+"Open the page via Web server i.e. http://...");
+		}
+		window.WebSocket=function(url,protocols,proxyHost,proxyPort,headers){
+			var self=this;
+			self.__id=WebSocket.__nextId++;
+			WebSocket.__instances[self.__id]=self;
+			self.readyState=WebSocket.CONNECTING;
+			self.bufferedAmount=0;
+			self.__events={};
+			
+			if(!protocols){
+				protocols=[];
+			}else if(typeof protocols=="string"){
+				protocols=[protocols];
+			}
+			self.__createTask=setTimeout(function(){
+				WebSocket.__addTask(function(){
+					self.__createTask=null;
+					WebSocket.__flash.create(self.__id,url,protocols,proxyHost||null,proxyPort||0,headers||null);
+				});
+			},0);
+		};
+		
+		WebSocket.prototype.send=function(data){
+			if(this.readyState==WebSocket.CONNECTING){
+				throw "INVALID_STATE_ERR: Web Socket connection has not been established";
+			}
+			var result=WebSocket.__flash.send(this.__id,encodeURIComponent(data));
+			if(result<0){
+				return true;
+			}else{
+				this.bufferedAmount+=result;
+				return false;
+			}
+		};
+		
+		WebSocket.prototype.close=function(){
+			if(this.__createTask){
+				clearTimeout(this.__createTask);
+				this.__createTask=null;
+				this.readyState=WebSocket.CLOSED;
+				return;
+			}
+			if(this.readyState==WebSocket.CLOSED||this.readyState==WebSocket.CLOSING){
+				return;
+			}
+			this.readyState=WebSocket.CLOSING;
+			WebSocket.__flash.close(this.__id);
+		};
+		
+		WebSocket.prototype.addEventListener=function(type,listener,useCapture){
+			if(!(type in this.__events)){
+				this.__events[type]=[];
+			}
+			this.__events[type].push(listener);
+		};
+		
+		WebSocket.prototype.removeEventListener=function(type,listener,useCapture){
+			if(!(type in this.__events))return;
+			var events=this.__events[type];
+			for(var i=events.length-1;i>=0;--i){
+				if(events[i]===listener){
+					events.splice(i,1);
+					break;
+				}
+			}
+			};
+		
+WebSocket.prototype.dispatchEvent=function(event){
+	var events=this.__events[event.type]||[];
+	for(var i=0;i<events.length;++i){
+		events[i](event);
+	}
+	var handler=this["on"+event.type];
+	if(handler)handler.apply(this,[event]);
+};
+
+WebSocket.prototype.__handleEvent=function(flashEvent){
+	if("readyState"in flashEvent){
+		this.readyState=flashEvent.readyState;
+	}
+	if("protocol"in flashEvent){
+		this.protocol=flashEvent.protocol;
+	}
+	var jsEvent;
+	if(flashEvent.type=="open"||flashEvent.type=="error"){
+		jsEvent=this.__createSimpleEvent(flashEvent.type);
+	}else if(flashEvent.type=="close"){
+		jsEvent=this.__createSimpleEvent("close");
+		jsEvent.wasClean=flashEvent.wasClean?true:false;
+		jsEvent.code=flashEvent.code;
+		jsEvent.reason=flashEvent.reason;
+	}else if(flashEvent.type=="message"){
+		var data=decodeURIComponent(flashEvent.message);
+		jsEvent=this.__createMessageEvent("message",data);
+	}else{
+		throw "unknown event type: "+flashEvent.type;
+	}
+	this.dispatchEvent(jsEvent);
+};
+
+WebSocket.prototype.__createSimpleEvent=function(type){
+	if(document.createEvent&&window.Event){
+		var event=document.createEvent("Event");
+		event.initEvent(type,false,false);
+		return event;
+	}else{
+		return{
+			type:type,
+			bubbles:false,
+			cancelable:false
+		};
+	
+}
+};
+
+WebSocket.prototype.__createMessageEvent=function(type,data){
+	if(document.createEvent&&window.MessageEvent&& !window.opera){
+		var event=document.createEvent("MessageEvent");
+		event.initMessageEvent("message",false,false,data,null,null,window,null);
+		return event;
+	}else{
+		return{
+			type:type,
+			data:data,
+			bubbles:false,
+			cancelable:false
+		};
+	
+}
+};
+
+WebSocket.CONNECTING=0;
+WebSocket.OPEN=1;
+WebSocket.CLOSING=2;
+WebSocket.CLOSED=3;
+WebSocket.__initialized=false;
+WebSocket.__flash=null;
+WebSocket.__instances={};
+
+WebSocket.__tasks=[];
+WebSocket.__nextId=0;
+WebSocket.loadFlashPolicyFile=function(url){
+	WebSocket.__addTask(function(){
+		WebSocket.__flash.loadManualPolicyFile(url);
+	});
+};
+
+WebSocket.__initialize=function(){
+	if(WebSocket.__initialized)return;
+	WebSocket.__initialized=true;
+	if(WebSocket.__swfLocation){
+		window.WEB_SOCKET_SWF_LOCATION=WebSocket.__swfLocation;
+	}
+	if(!window.WEB_SOCKET_SWF_LOCATION){
+		logger.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf");
+		return;
+	}
+	if(!window.WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR&& !WEB_SOCKET_SWF_LOCATION.match(/(^|\/)WebSocketMainInsecure\.swf(\?.*)?$/)&&WEB_SOCKET_SWF_LOCATION.match(/^\w+:\/\/([^\/]+)/)){
+		var swfHost=RegExp.$1;
+		if(location.host!=swfHost){
+			logger.error("[WebSocket] You must host HTML and WebSocketMain.swf in the same host "+"('"+location.host+"' != '"+swfHost+"'). "+"See also 'How to host HTML file and SWF file in different domains' section "+"in README.md. If you use WebSocketMainInsecure.swf, you can suppress this message "+"by WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;");
+		}
+	}
+	var container=document.createElement("div");
+container.id="webSocketContainer";
+container.style.position="absolute";
+if(WebSocket.__isFlashLite()){
+	container.style.left="0px";
+	container.style.top="0px";
+}else{
+	container.style.left="-100px";
+	container.style.top="-100px";
+}
+var holder=document.createElement("div");
+holder.id="webSocketFlash";
+container.appendChild(holder);
+document.body.appendChild(container);
+swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION,"webSocketFlash","1","1","10.0.0",null,null,{
+	hasPriority:true,
+	swliveconnect:true,
+	allowScriptAccess:"always"
+},null,function(e){
+	if(!e.success){
+		logger.error("[WebSocket] swfobject.embedSWF failed");
+	}
+});
+};
+
+WebSocket.__onFlashInitialized=function(){
+	setTimeout(function(){
+		WebSocket.__flash=document.getElementById("webSocketFlash");
+		WebSocket.__flash.setCallerUrl(location.href);
+		WebSocket.__flash.setDebug(! !window.WEB_SOCKET_DEBUG);
+		for(var i=0;i<WebSocket.__tasks.length;++i){
+			WebSocket.__tasks[i]();
+		}
+		WebSocket.__tasks=[];
+	},0);
+};
+
+WebSocket.__onFlashEvent=function(){
+	setTimeout(function(){
+		try{
+			var events=WebSocket.__flash.receiveEvents();
+			for(var i=0;i<events.length;++i){
+				WebSocket.__instances[events[i].webSocketId].__handleEvent(events[i]);
+			}
+			}catch(e){
+		logger.error(e);
+	}
+	},0);
+return true;
+};
+
+WebSocket.__log=function(message){
+	logger.log(decodeURIComponent(message));
+};
+
+WebSocket.__error=function(message){
+	logger.error(decodeURIComponent(message));
+};
+
+WebSocket.__addTask=function(task){
+	if(WebSocket.__flash){
+		task();
+	}else{
+		WebSocket.__tasks.push(task);
+	}
+};
+
+WebSocket.__isFlashLite=function(){
+	if(!window.navigator|| !window.navigator.mimeTypes){
+		return false;
+	}
+	var mimeType=window.navigator.mimeTypes["application/x-shockwave-flash"];
+	if(!mimeType|| !mimeType.enabledPlugin|| !mimeType.enabledPlugin.filename){
+		return false;
+	}
+	return mimeType.enabledPlugin.filename.match(/flashlite/i)?true:false;
+};
+
+if(!window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION){
+	swfobject.addDomLoadEvent(function(){
+		WebSocket.__initialize();
+	});
+}
+})(); 
+//	</JasobNoObfs>
+}
+		
+} else {
+	// no Flash Player installed
+	WebSocket = null;
+}
 }
 
 
@@ -1229,7 +2484,7 @@ jws.XHR = {
           if (!success) {
               throw new Error('Unable to create XMLHttpRequest.');
           }
-*/
+			 */
 			try {
 				lXHR = new ActiveXObject( "Msxml2.XMLHTTP" );
 			} catch( e1 ) {
@@ -1315,8 +2570,8 @@ jws.XHR = {
 		}
 	},
 
-//	this.mXHRRespLsnr.options = aOptions;
-//	this.mXHRRespLsnr.self = this;
+	//	this.mXHRRespLsnr.options = aOptions;
+	//	this.mXHRRespLsnr.self = this;
 
 
 	//:m:*:request
@@ -1428,14 +2683,250 @@ jws.XHR = {
 if( !jws.browserSupportsNativeJSON ) {
 	// <JasobNoObfs>
 	// Please refer to http://json.org/js
-	if(!this.JSON){this.JSON={};}(function(){function f(n){return n<10?'0'+n:n;}if(typeof Date.prototype.toJSON!=='function'){Date.prototype.toJSON=function(key){return isFinite(this.valueOf())?this.getUTCFullYear()+'-'+f(this.getUTCMonth()+1)+'-'+f(this.getUTCDate())+'T'+f(this.getUTCHours())+':'+f(this.getUTCMinutes())+':'+f(this.getUTCSeconds())+'Z':null;};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(key){return this.valueOf();};}var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'},rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?'"'+string.replace(escapable,function(a){var c=meta[a];return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);})+'"':'"'+string+'"';}function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&&typeof value==='object'&&typeof value.toJSON==='function'){value=value.toJSON(key);}if(typeof rep==='function'){value=rep.call(holder,key,value);}switch(typeof value){case'string':return quote(value);case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value){return'null';}gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==='[object Array]'){length=value.length;for(i=0;i<length;i+=1){partial[i]=str(i,value)||'null';}v=partial.length===0?'[]':gap?'[\n'+gap+partial.join(',\n'+gap)+'\n'+mind+']':'['+partial.join(',')+']';gap=mind;return v;}if(rep&&typeof rep==='object'){length=rep.length;for(i=0;i<length;i+=1){k=rep[i];if(typeof k==='string'){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}else{for(k in value){if(Object.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+mind+'}':'{'+partial.join(',')+'}';gap=mind;return v;}}if(typeof JSON.stringify!=='function'){JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){for(i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}rep=replacer;if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){throw new Error('JSON.stringify');}return str('',{'':value});};}if(typeof JSON.parse!=='function'){JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==='object'){for(k in value){if(Object.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}return reviver.call(holder,key,value);}text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);});}if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof reviver==='function'?walk({'':j},''):j;}throw new SyntaxError('JSON.parse');};}}());
-	// </JasobNoObfs>
+	if(!this.JSON){
+		this.JSON={};
+		
+}(function(){
+	function f(n){
+		return n<10?'0'+n:n;
+	}
+	if(typeof Date.prototype.toJSON!=='function'){
+		Date.prototype.toJSON=function(key){
+			return isFinite(this.valueOf())?this.getUTCFullYear()+'-'+f(this.getUTCMonth()+1)+'-'+f(this.getUTCDate())+'T'+f(this.getUTCHours())+':'+f(this.getUTCMinutes())+':'+f(this.getUTCSeconds())+'Z':null;
+		};
+		
+		String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(key){
+			return this.valueOf();
+		};
+	
+}
+var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={
+	'\b':'\\b',
+	'\t':'\\t',
+	'\n':'\\n',
+	'\f':'\\f',
+	'\r':'\\r',
+	'"':'\\"',
+	'\\':'\\\\'
+},rep;
+function quote(string){
+	escapable.lastIndex=0;
+	return escapable.test(string)?'"'+string.replace(escapable,function(a){
+		var c=meta[a];
+		return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);
+	})+'"':'"'+string+'"';
+}
+function str(key,holder){
+	var i,k,v,length,mind=gap,partial,value=holder[key];
+	if(value&&typeof value==='object'&&typeof value.toJSON==='function'){
+		value=value.toJSON(key);
+	}
+	if(typeof rep==='function'){
+		value=rep.call(holder,key,value);
+	}
+	switch(typeof value){
+		case'string':
+			return quote(value);
+		case'number':
+			return isFinite(value)?String(value):'null';
+		case'boolean':case'null':
+			return String(value);
+		case'object':
+			if(!value){
+			return'null';
+		}
+		gap+=indent;
+		partial=[];
+		if(Object.prototype.toString.apply(value)==='[object Array]'){
+			length=value.length;
+			for(i=0;i<length;i+=1){
+				partial[i]=str(i,value)||'null';
+			}
+			v=partial.length===0?'[]':gap?'[\n'+gap+partial.join(',\n'+gap)+'\n'+mind+']':'['+partial.join(',')+']';
+			gap=mind;
+			return v;
+		}
+		if(rep&&typeof rep==='object'){
+			length=rep.length;
+			for(i=0;i<length;i+=1){
+				k=rep[i];
+				if(typeof k==='string'){
+					v=str(k,value);
+					if(v){
+						partial.push(quote(k)+(gap?': ':':')+v);
+					}
+				}
+			}
+		}else{
+	for(k in value){
+		if(Object.hasOwnProperty.call(value,k)){
+			v=str(k,value);
+			if(v){
+				partial.push(quote(k)+(gap?': ':':')+v);
+			}
+		}
+	}
+	}
+v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+mind+'}':'{'+partial.join(',')+'}';
+gap=mind;
+return v;
+}
+}
+if(typeof JSON.stringify!=='function'){
+	JSON.stringify=function(value,replacer,space){
+		var i;
+		gap='';
+		indent='';
+		if(typeof space==='number'){
+			for(i=0;i<space;i+=1){
+				indent+=' ';
+			}
+			}else if(typeof space==='string'){
+		indent=space;
+	}
+	rep=replacer;
+	if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){
+		throw new Error('JSON.stringify');
+	}
+	return str('',{
+		'':value
+	});
+};
+
+}
+if(typeof JSON.parse!=='function'){
+	JSON.parse=function(text,reviver){
+		var j;
+		function walk(holder,key){
+			var k,v,value=holder[key];
+			if(value&&typeof value==='object'){
+				for(k in value){
+					if(Object.hasOwnProperty.call(value,k)){
+						v=walk(value,k);
+						if(v!==undefined){
+							value[k]=v;
+						}else{
+							delete value[k];
+						}
+					}
+				}
+				}
+			return reviver.call(holder,key,value);
+}
+text=String(text);
+cx.lastIndex=0;
+if(cx.test(text)){
+	text=text.replace(cx,function(a){
+		return'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);
+	});
+}
+if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){
+	j=eval('('+text+')');
+	return typeof reviver==='function'?walk({
+		'':j
+	},''):j;
+}
+throw new SyntaxError('JSON.parse');
+};
+
+}
+}());
+// </JasobNoObfs>
 }
 
 //	<JasobNoObfs>
 //	Base64 encode / decode
 //  http://www.webtoolkit.info/
-var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(input){var output="";var chr1,chr2,chr3,enc1,enc2,enc3,enc4;var i=0;input=Base64._utf8_encode(input);while(i<input.length){chr1=input.charCodeAt(i++);chr2=input.charCodeAt(i++);chr3=input.charCodeAt(i++);enc1=chr1>>2;enc2=((chr1&3)<<4)|(chr2>>4);enc3=((chr2&15)<<2)|(chr3>>6);enc4=chr3&63;if(isNaN(chr2)){enc3=enc4=64;}else if(isNaN(chr3)){enc4=64;}output=output+this._keyStr.charAt(enc1)+this._keyStr.charAt(enc2)+this._keyStr.charAt(enc3)+this._keyStr.charAt(enc4);}return output;},decode:function(input){var output="";var chr1,chr2,chr3;var enc1,enc2,enc3,enc4;var i=0;input=input.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(i<input.length){enc1=this._keyStr.indexOf(input.charAt(i++));enc2=this._keyStr.indexOf(input.charAt(i++));enc3=this._keyStr.indexOf(input.charAt(i++));enc4=this._keyStr.indexOf(input.charAt(i++));chr1=(enc1<<2)|(enc2>>4);chr2=((enc2&15)<<4)|(enc3>>2);chr3=((enc3&3)<<6)|enc4;output=output+String.fromCharCode(chr1);if(enc3!=64){output=output+String.fromCharCode(chr2);}if(enc4!=64){output=output+String.fromCharCode(chr3);}}output=Base64._utf8_decode(output);return output;},_utf8_encode:function(string){string=string.replace(/\r\n/g,"\n");var utftext="";for(var n=0;n<string.length;n++){var c=string.charCodeAt(n);if(c<128){utftext+=String.fromCharCode(c);}else if((c>127)&&(c<2048)){utftext+=String.fromCharCode((c>>6)|192);utftext+=String.fromCharCode((c&63)|128);}else{utftext+=String.fromCharCode((c>>12)|224);utftext+=String.fromCharCode(((c>>6)&63)|128);utftext+=String.fromCharCode((c&63)|128);}}return utftext;},_utf8_decode:function(utftext){var string="";var i=0;var c=c1=c2=0;while(i<utftext.length){c=utftext.charCodeAt(i);if(c<128){string+=String.fromCharCode(c);i++;}else if((c>191)&&(c<224)){c2=utftext.charCodeAt(i+1);string+=String.fromCharCode(((c&31)<<6)|(c2&63));i+=2;}else{c2=utftext.charCodeAt(i+1);c3=utftext.charCodeAt(i+2);string+=String.fromCharCode(((c&15)<<12)|((c2&63)<<6)|(c3&63));i+=3;}}return string;}}
+var Base64={
+	_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+	encode:function(input){
+		var output="";
+		var chr1,chr2,chr3,enc1,enc2,enc3,enc4;
+		var i=0;
+		input=Base64._utf8_encode(input);
+		while(i<input.length){
+			chr1=input.charCodeAt(i++);
+			chr2=input.charCodeAt(i++);
+			chr3=input.charCodeAt(i++);
+			enc1=chr1>>2;
+			enc2=((chr1&3)<<4)|(chr2>>4);
+			enc3=((chr2&15)<<2)|(chr3>>6);
+			enc4=chr3&63;
+			if(isNaN(chr2)){
+				enc3=enc4=64;
+			}else if(isNaN(chr3)){
+				enc4=64;
+			}
+			output=output+this._keyStr.charAt(enc1)+this._keyStr.charAt(enc2)+this._keyStr.charAt(enc3)+this._keyStr.charAt(enc4);
+		}
+		return output;
+	},
+	decode:function(input){
+		var output="";
+		var chr1,chr2,chr3;
+		var enc1,enc2,enc3,enc4;
+		var i=0;
+		input=input.replace(/[^A-Za-z0-9\+\/\=]/g,"");
+		while(i<input.length){
+			enc1=this._keyStr.indexOf(input.charAt(i++));
+			enc2=this._keyStr.indexOf(input.charAt(i++));
+			enc3=this._keyStr.indexOf(input.charAt(i++));
+			enc4=this._keyStr.indexOf(input.charAt(i++));
+			chr1=(enc1<<2)|(enc2>>4);
+			chr2=((enc2&15)<<4)|(enc3>>2);
+			chr3=((enc3&3)<<6)|enc4;
+			output=output+String.fromCharCode(chr1);
+			if(enc3!=64){
+				output=output+String.fromCharCode(chr2);
+			}
+			if(enc4!=64){
+				output=output+String.fromCharCode(chr3);
+			}
+		}
+		output=Base64._utf8_decode(output);
+	return output;
+},
+_utf8_encode:function(string){
+	string=string.replace(/\r\n/g,"\n");
+	var utftext="";
+	for(var n=0;n<string.length;n++){
+		var c=string.charCodeAt(n);
+		if(c<128){
+			utftext+=String.fromCharCode(c);
+		}else if((c>127)&&(c<2048)){
+			utftext+=String.fromCharCode((c>>6)|192);
+			utftext+=String.fromCharCode((c&63)|128);
+		}else{
+			utftext+=String.fromCharCode((c>>12)|224);
+			utftext+=String.fromCharCode(((c>>6)&63)|128);
+			utftext+=String.fromCharCode((c&63)|128);
+		}
+	}
+	return utftext;
+},
+_utf8_decode:function(utftext){
+	var string="";
+	var i=0;
+	var c=c1=c2=0;
+	while(i<utftext.length){
+		c=utftext.charCodeAt(i);
+		if(c<128){
+			string+=String.fromCharCode(c);
+			i++;
+		}else if((c>191)&&(c<224)){
+			c2=utftext.charCodeAt(i+1);
+			string+=String.fromCharCode(((c&31)<<6)|(c2&63));
+			i+=2;
+		}else{
+			c2=utftext.charCodeAt(i+1);
+			c3=utftext.charCodeAt(i+2);
+			string+=String.fromCharCode(((c&15)<<12)|((c2&63)<<6)|(c3&63));
+			i+=3;
+		}
+	}
+	return string;
+}
+}
 //	</JasobNoObfs>
 
 
@@ -1518,7 +3009,7 @@ jws.oop.addPlugIn = function( aClass, aPlugIn ) {
 		// ensure that native jWebSocket methods don't get overwritten!
 		if( !aClass.prototype[ lField ] ) {
 			aClass.prototype[ lField ] = aPlugIn[ lField ];
-			// var lObj = aClass.prototype[ lField ];
+		// var lObj = aClass.prototype[ lField ];
 		}
 	}
 	// if the class already has descendants recursively
@@ -1560,7 +3051,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aEvent:Object:Pending...
 	//:r:*:::void:none
 	processOpened: function( aEvent ) {
-		// method to be overwritten in descendant classes
+	// method to be overwritten in descendant classes
 	},
 
 	//:m:*:processPacket
@@ -1570,7 +3061,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aEvent:Object:Pending...
 	//:r:*:::void:none
 	processPacket: function( aEvent ) {
-		// method to be overwritten in descendant classes
+	// method to be overwritten in descendant classes
 	},
 
 	//:m:*:processClosed
@@ -1580,7 +3071,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aEvent:Object:Pending...
 	//:r:*:::void:none
 	processClosed: function( aEvent ) {
-		// method to be overwritten in descendant classes
+	// method to be overwritten in descendant classes
 	},
 
 	//:m:*:open
@@ -1709,7 +3200,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 								lThis.open( lThis.fURL, aOptions );
 							},
 							lThis.fReliabilityOptions.reconnectDelay
-						);
+							);
 					}
 				};
 
@@ -1748,7 +3239,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				}
 			}
 		}
-		// if no queue exists nothing needs to be done here.
+	// if no queue exists nothing needs to be done here.
 	},
 
 	//:m:*:queuePacket
@@ -1862,8 +3353,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		// if no auto-reconnect is desired, abort a pending re-connect, if such.
 		if( this.fReliabilityOptions ) {
 			if( this.fReliabilityOptions.autoReconnect ) {
-				//:todo:en:here we could think about establishing the connection
-				// but this would required to pass all args for open!
+			//:todo:en:here we could think about establishing the connection
+			// but this would required to pass all args for open!
 			} else {
 				abortReconnect();
 			}	
@@ -1904,7 +3395,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			this.fConn != undefined
 			&& this.fConn != null
 			&& this.fConn.readyState == jws.OPEN
-		);
+			);
 	},
 
 	//:m:*:getURL
@@ -1913,7 +3404,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:r:*:::String:the URL if the WebSocket connection opened up, otherwise [tt]null[/tt].
 	getURL: function() {
 		return this.fURL;
-		/*
+	/*
 		return(
 			this.fConn != undefined
 			&& this.fConn != null
@@ -1921,7 +3412,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			? this.fURL
 			: null
 		);
-		*/
+			 */
 	},
 
 	//:m:*:getSubProt
@@ -1971,7 +3462,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			this.fConn.onmessage = null;
 			this.fConn.onclose = null;
 			if( this.fConn.readyState == jws.OPEN
-					|| this.fConn.readyState == jws.CONNECTING ) {
+				|| this.fConn.readyState == jws.CONNECTING ) {
 				this.fConn.close();
 			}
 			// TODO: should be called only if client was really opened before
@@ -2009,7 +3500,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 						lThis.forceClose( aOptions );
 					},
 					lTimeout
-				);
+					);
 			}
 		// throw exception if not connected
 		} else {
@@ -2056,16 +3547,16 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		}
 		// add the plug-in to the class
 		this.fPlugIns.push( aPlugIn );
-/*
+		/*
  		 var lField;
- */
+			 */
 		if( !aId ) {
 			aId = aPlugIn.ID;
 		}
 		//:todo:en:check if plug-in with given id already exists!
 		if( aId ) {
 			aPlugIn.conn = this;
-/*
+		/*
 			// blend all methods of the plug-in to the connection instance
 			this[ aId ] = {
 				conn: this
@@ -2075,7 +3566,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					this[ aId ][ lField ] = aPlugIn[ lField ];
 				}
 			}
-*/
+				 */
 		}
 	},
 
@@ -2262,7 +3753,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	isWriteable: function() {
 		return(
 			this.isOpened() || this.fStatus == jws.RECONNECTING
-		);
+			);
 	},
 
 	//:m:*:checkWriteable
@@ -2314,7 +3805,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			( aResToken && typeof aResToken == "object" && aResToken.msg ? 
 				aResToken.msg : "invalid response token" )
 			// + " (code: " + aRes.code + ", tid: " + aRes.tid + ")"
-		);
+			);
 	},
 
 	//:m:*:tokenToStream
@@ -2457,11 +3948,11 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 					jwsType: "javascript",
 					jwsVersion: jws.VERSION,
 					jwsInfo: 
-						jws.browserSupportsNativeWebSockets 
-							? "native"
-							: "flash " + lFlashBridgeVer
-					}, {
-					}
+					jws.browserSupportsNativeWebSockets 
+					? "native"
+					: "flash " + lFlashBridgeVer
+				}, {
+				}
 				);
 			} else if( aToken.type == "goodBye" ) {
 				// fire OnGoodBye Event if assigned
@@ -2702,7 +4193,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 					lStream = lStream.substr( lL2FragmSize );
 					lFragment = this.tokenToStream( lToken );
 					this.sendStream( lFragment );
-					// console.log( "sending fragment " + lFragment + "..." );
+				// console.log( "sending fragment " + lFragment + "..." );
 				}
 			} else {
 				if( jws.console.isDebugEnabled() ) {
@@ -3095,7 +4586,7 @@ jws.SystemClientPlugIn = {
 			this.open(
 				aURL,
 				aOptions
-			);
+				);
 		}
 		return lRes;
 	},
@@ -3291,8 +4782,8 @@ jws.SystemClientPlugIn = {
 				ns: jws.SystemClientPlugIn.NS,
 				type: "ping",
 				echo: lEcho
-				},
-				aOptions
+			},
+			aOptions
 			);
 		} else {
 			lRes.code = -1;
@@ -3325,8 +4816,8 @@ jws.SystemClientPlugIn = {
 				type: "wait",
 				duration: aDuration,
 				responseRequested: lResponseRequested
-				},
-				aOptions
+			},
+			aOptions
 			);
 		}
 		return lRes;
@@ -3386,7 +4877,7 @@ jws.SystemClientPlugIn = {
 				}
 			},
 			lInterval
-		);
+			);
 	},
 
 	//:m:*:stopKeepAlive
@@ -3445,7 +4936,7 @@ jws.oop.declareClass( "jws", "jWebSocketJSONClient", jws.jWebSocketTokenClient, 
 	tokenToStream: function( aToken ) {
 		aToken.utid = jws.CUR_TOKEN_ID;
 		var lJSON = JSON.stringify( aToken );
- 		return( lJSON );
+		return( lJSON );
 	},
 
 	//:m:*:streamToToken
@@ -3609,7 +5100,7 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 			lDoc.async = "false";
 			lDoc.loadXML( aStream );
 		} else {
-*/
+			 */
 		// For all other Browsers
 		try{
 			var lParser = new DOMParser();
@@ -3619,7 +5110,7 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 		}
 		/*
 		}
-*/
+			 */
 
 		function node2obj( aNode, aObj ) {
 			var lNode = aNode.firstChild;
@@ -3675,7 +5166,7 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 
 });
 
-/*
+	/*
 (function() {
 	var lObj = {
 		aNumber: 1,
@@ -3717,4 +5208,4 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 	var lToken = lXMLClient.streamToToken( lStream );
 	console.log( lStream );
 })();
-*/
+	 */

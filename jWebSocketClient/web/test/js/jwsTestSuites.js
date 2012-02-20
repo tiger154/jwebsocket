@@ -73,7 +73,7 @@ function runFullTestSuite() {
 	jasmine.DEFAULT_UPDATE_INTERVAL = 5;
    
 	describe( "jWebSocket Test Suite", function () {
-
+		
 		var lTestSSL = false;
 		
 		// open connections for admin and guest
@@ -115,6 +115,9 @@ function runFullTestSuite() {
 			jws.Tests.testCloseSharedAdminConnSSL();
 			jws.Tests.testCloseSharedGuestConnSSL();
 		}
+		
+		//run IOC tests
+		jws.tests.IOC.runSuite();
 	});
 
 	jasmine.DEFAULT_UPDATE_INTERVAL = lIntv;
