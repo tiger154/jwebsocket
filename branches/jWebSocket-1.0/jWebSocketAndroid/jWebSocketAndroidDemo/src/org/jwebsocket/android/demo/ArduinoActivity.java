@@ -19,9 +19,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
-import android.widget.Toast;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
@@ -39,26 +36,35 @@ public class ArduinoActivity extends Activity implements WebSocketClientTokenLis
 	private ImageView lRed = null;
 	private ImageView lGreen = null;
 	private ImageView lYellow = null;
-	
+	private ImageView lBlueOff = null;
+	private ImageView lRedOff = null;
+	private ImageView lGreenOff = null;
+	private ImageView lYellowOff = null;
 	private boolean lBlueOn = true;
 	private boolean lRedOn = true;
 	private boolean lGreenOn = true;
 	private boolean lYellowOn = true;
-	
-	private void updateLEDs() {
-		Token lToken = TokenFactory.createToken("rc","s2c.en");
 
+	private void updateLEDs(int aCmd) {
+
+		Token lToken = TokenFactory.createToken("rc", "rc.command");
+		lToken.setInteger("cmd", aCmd);
+
+		/*
+		Token lToken = TokenFactory.createToken("rc","s2c.en");
+		
 		// pass namespace and type
 		// for client's canvas "command"
 		lToken.setBoolean("blue", lBlueOn);
 		lToken.setBoolean("red", lRedOn);
 		lToken.setBoolean("green", lGreenOn);
 		lToken.setBoolean("yellow", lYellowOn);
-
+		
 		lToken.setString("_e", "ledState");
 		lToken.setString("_p", "rc");
 		lToken.setString("_rt", "void");
 		lToken.setBoolean("hc", false);
+		 */
 		try {
 			JWC.sendToken(lToken);
 		} catch (WebSocketException ex) {
@@ -75,42 +81,61 @@ public class ArduinoActivity extends Activity implements WebSocketClientTokenLis
 		setContentView(R.layout.arduino_hvga_p);
 
 		lBlue = (ImageView) findViewById(R.id.imgBlue);
+		lBlueOff = (ImageView) findViewById(R.id.imgBlue_off);
 		lRed = (ImageView) findViewById(R.id.imgRed);
+		lRedOff = (ImageView) findViewById(R.id.imgRed_off);
 		lGreen = (ImageView) findViewById(R.id.imgGreen);
+		lGreenOff = (ImageView) findViewById(R.id.imgGreen_off);
 		lYellow = (ImageView) findViewById(R.id.imgYellow);
+		lYellowOff = (ImageView) findViewById(R.id.imgYellow_off);
 
-		lBlue.setOnClickListener(new OnClickListener() {
+		OnClickListener lBlueListener = new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				lBlueOn = !lBlueOn;
-				updateLEDs();
+				updateLEDs(49);
 			}
-		});
-		lRed.setOnClickListener(new OnClickListener() {
+		};
+
+		lBlue.setOnClickListener(lBlueListener);
+		lBlueOff.setOnClickListener(lBlueListener);
+
+		OnClickListener lRedListener = new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				lRedOn = !lRedOn;
-				updateLEDs();
+				updateLEDs(50);
 			}
-		});
-		lGreen.setOnClickListener(new OnClickListener() {
+		};
+
+		lRed.setOnClickListener(lRedListener);
+		lRedOff.setOnClickListener(lRedListener);
+
+		OnClickListener lGreenListener = new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				lGreenOn = !lGreenOn;
-				updateLEDs();
+				updateLEDs(51);
 			}
-		});
-		lYellow.setOnClickListener(new OnClickListener() {
+		};
+
+		lGreen.setOnClickListener(lGreenListener);
+		lGreenOff.setOnClickListener(lGreenListener);
+
+		OnClickListener lYellowListener = new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				lYellowOn = !lYellowOn;
-				updateLEDs();
+				updateLEDs(52);
 			}
-		});
+		};
+
+		lYellow.setOnClickListener(lYellowListener);
+		lYellowOff.setOnClickListener(lYellowListener);
 	}
 
 	@Override
@@ -135,6 +160,37 @@ public class ArduinoActivity extends Activity implements WebSocketClientTokenLis
 
 	@Override
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
+		if ("rc".equals(aToken.getNS())
+				&& "s2c.en".equals(aToken.getType())) {
+			if (aToken.getBoolean("blue", false)) {
+				lBlue.setVisibility(View.VISIBLE);
+				lBlueOff.setVisibility(View.INVISIBLE);
+			} else {
+				lBlue.setVisibility(View.INVISIBLE);
+				lBlueOff.setVisibility(View.VISIBLE);
+			}
+			if (aToken.getBoolean("red", false)) {
+				lRed.setVisibility(View.VISIBLE);
+				lRedOff.setVisibility(View.INVISIBLE);
+			} else {
+				lRed.setVisibility(View.INVISIBLE);
+				lRedOff.setVisibility(View.VISIBLE);
+			}
+			if (aToken.getBoolean("green", false)) {
+				lGreen.setVisibility(View.VISIBLE);
+				lGreenOff.setVisibility(View.INVISIBLE);
+			} else {
+				lGreen.setVisibility(View.INVISIBLE);
+				lGreenOff.setVisibility(View.VISIBLE);
+			}
+			if (aToken.getBoolean("yellow", false)) {
+				lYellow.setVisibility(View.VISIBLE);
+				lYellowOff.setVisibility(View.INVISIBLE);
+			} else {
+				lYellow.setVisibility(View.INVISIBLE);
+				lYellowOff.setVisibility(View.VISIBLE);
+			}
+		}
 	}
 
 	@Override
