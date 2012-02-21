@@ -26,6 +26,7 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
@@ -41,11 +42,11 @@ public class LoggingPlugIn extends TokenPlugIn {
 	private static final String NS_LOGGING =
 			JWebSocketServerConstants.NS_BASE + ".plugins.logging";
 	private ILogger mLogger = null;
-	private static final String DEF_IMPL = "log4j";
-	private String mImplementation = DEF_IMPL;
 	private Map<String, String> mListeners = new FastMap<String, String>();
 	private Class JDBCTools = null;
 	private TokenPlugIn mJDBCPlugIn = null;
+	private static ServerXmlBeanFactory mBeanFactory;
+	private static Settings mSettings;
 
 	public LoggingPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -54,12 +55,14 @@ public class LoggingPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_LOGGING);
-		mGetSettings();
-	}
+		
+		mBeanFactory = getConfigBeanFactory();
+		mSettings = (Settings) mBeanFactory.getBean("settings");
+		mLogger = mSettings.getTarget();
 
-	private void mGetSettings() {
-		mImplementation = getString("implementation", DEF_IMPL);
-		mLogger = new Log4JLogger();
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Reporting plug-in successfully instantiated.");
+		}
 	}
 
 	// check if the JDBC Plug-in was laoded properly
@@ -70,8 +73,8 @@ public class LoggingPlugIn extends TokenPlugIn {
 			JDBCTools = (Class) Tools.invoke(mJDBCPlugIn, "getJDBCTools");
 			// JDBCTools.getClassLoader().loadClass(JDBCTools.getName());
 			return true;
-		} catch (Exception ex) {
-			mLog.error("Logging plug-in requires JDBC-Plug-in.");
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "loading tools from JDBC plug-in"));
 		}
 		return false;
 	}
@@ -93,7 +96,7 @@ public class LoggingPlugIn extends TokenPlugIn {
 
 		if (lType != null && getNamespace().equals(lNS)) {
 
-			// check JDBC plug-in, required for loggin to SQL databases
+			// check JDBC plug-in, required for logging to SQL databases
 			TokenServer lServer = getServer();
 			if (mJDBCPlugIn == null || JDBCTools == null) {
 				getJDBCPlugIn();

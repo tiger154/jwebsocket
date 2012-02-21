@@ -77,6 +77,20 @@
 			<url>${JWEBSOCKET_HOME}/libs/mx4j-tools-2.1.1.jar</url>
 			<description>MX Tools for MBeans processing</description>
 		</library>
+		
+		<!-- Jasper Reports required for Reporting plug-in -->
+		<!--
+		<library>
+			<id>Jasper Reports</id>
+			<url>${JWEBSOCKET_HOME}/libs/jasperreports-4.5.0.jar</url>
+			<description>Jasper Reports for reporting tools</description>
+		</library>
+		<library>
+			<id>Jasper Reports Fonts</id>
+			<url>${JWEBSOCKET_HOME}/libs/jasperreports-fonts-4.0.0.jar</url>
+			<description>Jasper Reports Fonts for reporting tools</description>
+		</library>
+		-->
 	</libraries>
 
 	<!-- jWebSocket logging configuration -->
@@ -1134,6 +1148,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}/conf/LoggingPlugIn/logging.xml</setting>
 				<setting key="implementation">Log4J</setting>
 				<setting key="table:name">log</setting>
 				<setting key="field:level">level</setting>
@@ -1317,16 +1332,14 @@
 			<name>org.jwebsocket.plugins.reporting.ReportingPlugIn</name>
 			<id>jws.test</id>
 			<ns>org.jwebsocket.plugins.reporting</ns>
+			<!-- use the bundle here, this includes the jasper libraries -->
 			<jar>jWebSocketReportingPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
 				<!-- folder where the report specs are located -->
-				<setting key="reportFolder">${JWEBSOCKET_HOME}/reports</setting>
-				<setting key="outputFolder">c:/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/public/reports/</setting>
-				<setting key="outputURL">http://localhost/jwc10/public/reports/</setting>
-				<setting key="reportNamePattern">${reportname}_${timestamp}</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}/conf/ReportingPlugIn/reporting.xml</setting>
 			</settings>
 		</plugin>
 		

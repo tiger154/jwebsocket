@@ -122,7 +122,7 @@ xcopy %libs%xbean-spring-v2c-2.8.jar %tempdir%libs\ /s /i /y
 xcopy %libs%geronimo-j2ee-management_1.1_spec-1.0.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%geronimo-jms_1.1_spec-1.1.1.jar %tempdir%libs\ /s /i /y
 rem Jasper reports
-xcopy %libs%jasperreports-4.0.1.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jasperreports-4.5.0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jasperreports-fonts-4.0.0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%poi-3.7.jar %tempdir%libs\ /s /i /y
 xcopy %libs%log4j-1.2.16.jar %tempdir%libs\ /s /i /y

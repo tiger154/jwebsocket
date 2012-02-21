@@ -207,7 +207,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				lBA = lData.getBytes("UTF-8");
 			}
 		} catch (Exception lEx) {
-			mLog.error(lEx.getClass().getSimpleName() + " on save: " + lEx.getMessage());
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "saving file"));
 		}
 
 		// complete the response token
@@ -582,7 +582,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		try {
 			mPublicMonitor.start();
 		} catch (Exception lEx) {
-			mLog.error(lEx.getClass().getSimpleName() + " on starting monitor: " + lEx.getMessage());
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "starting monitor"));
 		}
 	}
 
@@ -597,7 +597,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				}
 				mPublicMonitor.stop();
 			} catch (Exception lEx) {
-				mLog.error(lEx.getClass().getSimpleName() + " on stopping monitor: " + lEx.getMessage());
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping monitor"));
 			}
 		}
 	}

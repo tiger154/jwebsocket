@@ -26,8 +26,10 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketServer;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.xml.PluginConfig;
 import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.util.Tools;
 
 /**
  * Abstract implementation of WebSocketPlugin
@@ -346,9 +348,9 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	@Override
 	public void setEnabled(boolean aEnabled) {
 		Boolean lOldEnabled = mConfiguration.getEnabled();
-		mConfiguration = new PluginConfig(mConfiguration.getId(), 
-				mConfiguration.getName(), mConfiguration.getPackage(), 
-				mConfiguration.getJar(), mConfiguration.getNamespace(), 
+		mConfiguration = new PluginConfig(mConfiguration.getId(),
+				mConfiguration.getName(), mConfiguration.getPackage(),
+				mConfiguration.getJar(), mConfiguration.getNamespace(),
 				mConfiguration.getServers(), mSettings, aEnabled);
 		// notify plug-in for change of enabled status
 		if (aEnabled != lOldEnabled) {
@@ -365,6 +367,5 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	public void setVersion(String aVersion) {
 		this.mVersion = aVersion;
 	}
-	
-	
+
 }

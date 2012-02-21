@@ -35,7 +35,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -45,6 +44,7 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
@@ -59,10 +59,8 @@ public class ReportingPlugIn extends TokenPlugIn {
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_REPORTING = JWebSocketServerConstants.NS_BASE + ".plugins.reporting";
 	private static final String VAR_FILES_TO_DELETE = NS_REPORTING + ".filesToDelete";
-	private String mReportFolder = null;
-	private String mOutputFolder = null;
-	private String mOutputURL = null;
-	private String mReportNamePattern = null;
+	private static ServerXmlBeanFactory mBeanFactory;
+	private static Settings mSettings;
 
 	/**
 	 *
@@ -70,31 +68,20 @@ public class ReportingPlugIn extends TokenPlugIn {
 	 */
 	public ReportingPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating reporting plug-in...");
 		}
+
 		// specify default name space for admin plugin
 		this.setNamespace(NS_REPORTING);
-		mGetSettings();
-	}
 
-	private void mGetSettings() {
-		mReportFolder = getString("reportFolder", "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/reports");
-		mReportFolder = FilenameUtils.separatorsToUnix(Tools.expandEnvVars(mReportFolder));
-		if (!mReportFolder.endsWith("/")) {
-			mReportFolder += "/";
+		mBeanFactory = getConfigBeanFactory();
+		mSettings = (Settings) mBeanFactory.getBean("settings");
+
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Reporting plug-in successfully instantiated.");
 		}
-		mOutputFolder = getString("outputFolder", "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/reports");
-		mOutputFolder = FilenameUtils.separatorsToUnix(Tools.expandEnvVars(mOutputFolder));
-		if (!mOutputFolder.endsWith("/")) {
-			mOutputFolder += "/";
-		}
-		mOutputURL = getString("outputURL", "http://localhost/");
-		mOutputURL = FilenameUtils.separatorsToUnix(Tools.expandEnvVars(mOutputURL));
-		if (!mOutputURL.endsWith("/")) {
-			mOutputURL += "/";
-		}
-		mReportNamePattern = getString("reportNamePattern", "${reportname}_${username}_${timestamp}");
 	}
 
 	@Override
@@ -130,7 +117,7 @@ public class ReportingPlugIn extends TokenPlugIn {
 	}
 
 	private String getReportPath(String aReportId) {
-		return mReportFolder + aReportId + ".jrxml";
+		return mSettings.getReportFolder() + aReportId + ".jrxml";
 	}
 
 	private String generateReportName(WebSocketConnector aConnector, String aReportName) {
@@ -138,7 +125,7 @@ public class ReportingPlugIn extends TokenPlugIn {
 		lVars.put("reportname", aReportName);
 		lVars.put("username", aConnector.getUsername());
 		lVars.put("timestamp", new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss-SSS").format(new Date()));
-		aReportName = Tools.expandVars(mReportNamePattern, lVars,
+		aReportName = Tools.expandVars(mSettings.getReportNamePattern(), lVars,
 				Tools.EXPAND_CASE_INSENSITIVE);
 		return aReportName;
 	}
@@ -173,7 +160,7 @@ public class ReportingPlugIn extends TokenPlugIn {
 			return;
 		}
 		try {
-			FileUtils.forceMkdir(new File(mOutputFolder));
+			FileUtils.forceMkdir(new File(mSettings.getOutputFolder()));
 		} catch (Exception ex) {
 			lResponse = lServer.createErrorToken(aToken, -1, ex.getClass().getSimpleName() + ": " + ex.getMessage());
 			lServer.sendToken(aConnector, lResponse);
@@ -197,16 +184,38 @@ public class ReportingPlugIn extends TokenPlugIn {
 				}
 			}
 		}
-		lParams.put("IMAGE_PATH", mReportFolder);
+		lParams.put("IMAGE_PATH", mSettings.getReportFolder());
 
+		/*
+		ClassLoader lCL = ClassLoader.getSystemClassLoader();
+		try {
+			URL lURL;
+			lURL = new URL("file:///C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
+			ClassPathUpdater.add(lURL);
+			lURL = new URL("file:///C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
+			ClassPathUpdater.add(lURL);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding Jasper libs to class path"));
+		}
+		// lParams.put("REPORT_CLASS_LOADER", JWebSocketXmlConfigInitializer.getClassLoader());
+		lParams.put("REPORT_CLASS_LOADER", lCL);
+		 */ 
+		
 		// instantiate response token
 		lResponse = lServer.createResponse(aToken);
 
 		DataSource lDataSource = null;
 		Connection lConnection = null;
 		try {
-			lDataSource = (DataSource) Tools.invoke(
+			Object lObject = Tools.invoke(
 					lJDBCPlugIn, "getNativeDataSource");
+			lDataSource = (DataSource) lObject;
+			// Caution! 
+			// setLoginTimeout are setLoginTimeout is not supported by org.apache.commons.dbcp.BasicDataSource!
+			// int lTMO = lDataSource.getLoginTimeout();
+			// if (mLog.isDebugEnabled()) {
+			//	mLog.debug("Database login timeout is " + lTMO + "s.");
+			// }
 			lConnection = lDataSource.getConnection();
 			JasperReport lReport = JasperCompileManager.compileReport(
 					getReportPath(lReportId));
@@ -215,15 +224,15 @@ public class ReportingPlugIn extends TokenPlugIn {
 			String lReportName = generateReportName(aConnector, lReportId);
 			String lExportFilePath;
 			if ("pdf".equals(lOutputType)) {
-				lExportFilePath = mOutputFolder + lReportName + ".pdf";
+				lExportFilePath = mSettings.getOutputFolder() + lReportName + ".pdf";
 				JasperExportManager.exportReportToPdfFile(lPrint,
 						lExportFilePath);
-				lResponse.setString("url", mOutputURL + lReportName + ".pdf");
+				lResponse.setString("url", mSettings.getOutputURL() + lReportName + ".pdf");
 			} else {
-				lExportFilePath = mOutputFolder + lReportName + ".html";
+				lExportFilePath = mSettings.getOutputFolder() + lReportName + ".html";
 				JasperExportManager.exportReportToHtmlFile(lPrint,
 						lExportFilePath);
-				lResponse.setString("url", mOutputURL + lReportName + ".html");
+				lResponse.setString("url", mSettings.getOutputURL() + lReportName + ".html");
 			}
 			List<String> lFiles = (List<String>) aConnector.getVar(VAR_FILES_TO_DELETE);
 			if (lFiles == null) {

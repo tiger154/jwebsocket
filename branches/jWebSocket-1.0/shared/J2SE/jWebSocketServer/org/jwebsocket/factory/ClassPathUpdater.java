@@ -42,28 +42,28 @@ public class ClassPathUpdater {
 	 * to add to the classpath. If the given string represents a directory,
 	 * then the directory it represents is added.
 	 *
-	 * @param f The directory (or enclosing directory if a file) to add to the
+	 * @param aFile The directory (or enclosing directory if a file) to add to the
 	 * classpath.
 	 */
-	public static void add(File f)
+	public static void add(File aFile)
 			throws IOException, NoSuchMethodException, IllegalAccessException,
 			InvocationTargetException {
-		f = f.isDirectory() ? f : f.getParentFile();
-		add(f.toURI().toURL());
+		aFile = aFile.isDirectory() ? aFile : aFile.getParentFile();
+		add(aFile.toURI().toURL());
 	}
 
 	/**
 	 * Adds a new path to the classloader. The class must point to a directory,
 	 * not a file.
 	 *
-	 * @param url The path to include when searching the classpath.
+	 * @param aURL The path to include when searching the classpath.
 	 */
-	public static void add(URL url)
+	public static void add(URL aURL)
 			throws IOException, NoSuchMethodException, IllegalAccessException,
 			InvocationTargetException {
 		Method method = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
 		method.setAccessible(true);
-		method.invoke(getClassLoader(), new Object[]{url});
+		method.invoke(getClassLoader(), new Object[]{aURL});
 	}
 
 	private static URLClassLoader getClassLoader() {
