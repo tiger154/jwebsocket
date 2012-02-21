@@ -15,6 +15,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.api.PluginConfiguration;
@@ -22,10 +23,14 @@ import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.async.IOFuture;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.Tools;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * 
@@ -228,5 +233,20 @@ public class TokenPlugIn extends BasePlugIn {
 		aResponse.setString("version", aVersion);
 		aResponse.setString("reason", aReason);
 		aResponse.setString("id", getId());
+	}
+	
+	public ServerXmlBeanFactory getConfigBeanFactory() {
+		String lSpringConfig = getString("spring_config");
+		lSpringConfig = Tools.expandEnvVars(lSpringConfig);
+		String lPath = FilenameUtils.getPath(lSpringConfig);
+		if (lPath == null || lPath.length() <= 0) {
+			lPath = JWebSocketConfig.getConfigFolder(lSpringConfig);
+		} else {
+			lPath = lSpringConfig;
+		}
+		FileSystemResource lFSRes = new FileSystemResource(lPath);
+
+		ServerXmlBeanFactory lBeanFactory = new ServerXmlBeanFactory(lFSRes, getClass().getClassLoader());
+		return lBeanFactory;
 	}
 }

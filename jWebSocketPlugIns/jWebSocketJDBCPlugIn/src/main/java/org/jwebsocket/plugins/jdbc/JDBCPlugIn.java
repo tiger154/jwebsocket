@@ -29,12 +29,10 @@ import java.util.Map;
 import javax.sql.DataSource;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -46,7 +44,6 @@ import org.jwebsocket.storage.ehcache.EhCacheStorage;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
-import org.springframework.core.io.FileSystemResource;
 
 /**
  * 
@@ -82,17 +79,8 @@ public class JDBCPlugIn extends TokenPlugIn {
 		String lVal = getString("conn_val_timeout");
 
 		try {
-			String lSpringConfig = getString("spring_config");
-			lSpringConfig = Tools.expandEnvVars(lSpringConfig);
-			String lPath = FilenameUtils.getPath(lSpringConfig);
-			if (lPath == null || lPath.length() <= 0) {
-				lPath = JWebSocketConfig.getConfigFolder(lSpringConfig);
-			} else {
-				lPath = lSpringConfig;
-			}
-			FileSystemResource lFSRes = new FileSystemResource(lPath);
-
-			mBeanFactory = new ServerXmlBeanFactory(lFSRes, getClass().getClassLoader());
+			mBeanFactory = getConfigBeanFactory();
+			
 			mNativeAccess = (NativeAccess) mBeanFactory.getBean("nativeAccess");
 			if (null != mNativeAccess) {
 				mSelectSequenceSQL = mNativeAccess.getSelectSequenceSQL();

@@ -110,8 +110,54 @@ jws.ReportingPlugIn = {
 		if( aListeners.OnReportParams !== undefined ) {
 			this.OnReportParams = aListeners.OnReportParams;
 		}
+	},
+	
+	displayPDF: function( aElem, aURL, width, height ) {
+		if( jws.isIExplorer() ) {
+			var lContent =
+				'<object ' +
+					'classid="clsid:CA8A9780-280D-11CF-A24D-444553540000" ' +
+					'width="' + width + '" ' +
+					'height="' + height + '" >' +
+					'<param name="src" value="' + encodeURI( aURL ) + '">' +
+					'<embed src="' + encodeURI( aURL ) + '" ' +
+						'width="' + width + '" ' +
+						'height="' + height + '" >' +
+						'<noembed> Your browser does not support embedded PDF files. </noembed>' +
+					'</embed>' +
+				'</object>';
+			// is there already a pdf for the selected element?
+			if( aElem.pdf ) {
+				aElem.removeChild( aElem.pdf );
+			}
+			// reset pdf to collect garbage
+			aElem.pdf = null;
+			// set the pdf to the element
+			aElem.innerHTML = lContent;
+			// and save the reference to allow overwriting
+			aElem.pdf = aElem.firstChild;
+		} else {
+			var lNeedToCreateNewInstance = (
+				( aElem.pdf === null ) || ( aElem.pdf === undefined ) ||
+				( jws.isFirefox() && jws.getBrowserVersion() < 3 )
+			);
+			var lEmbed = ( lNeedToCreateNewInstance ? document.createElement( "embed" ) : aElem.pdf );
+			lEmbed.setAttribute( "id", aElem.id + ".embPdf" );
+			lEmbed.setAttribute( "style", "position:relative;padding:0px;margin:0px;border:0px;left:0px;top:0px;width:"+width+"px;height:"+height+"px" );
+			lEmbed.setAttribute( "type", "application/pdf" );
+			lEmbed.setAttribute( "width", "\"" + width + "\"" );
+			lEmbed.setAttribute( "height", "\"" + height + "\"" );
+			lEmbed.setAttribute( "src", aURL );
+			if( lNeedToCreateNewInstance ) {
+				if( aElem.pdf ) {
+					aElem.removeChild( aElem.pdf );
+				}
+			}
+			aElem.pdf = lEmbed;
+			aElem.appendChild( aElem.pdf );
+		}
 	}
-
+	
 }
 
 // add the JWebSocket Shared Objects PlugIn into the TokenClient class

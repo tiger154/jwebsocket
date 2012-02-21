@@ -63,9 +63,10 @@
 			}
 
 			function createReport() {
-				var lReportId = ""; // eReportSel.value;
+				var lReportId = eReportSel.value;
 				log( "Creating Report..." );
-				if( jWSC.isConnected() ) {
+				
+				if( lWSC.isConnected() ) {
 					var lParams = [];
 					/*
 					for(var lIdx = 0, lCnt = gReportParams.length; lIdx < lCnt; lIdx++ ) {
@@ -79,10 +80,15 @@
 					*/
 					lParams.push({ name: "aFrom", type: "datetime", value: "2011-05-20T13:04:00Z" });
 					lParams.push({ name: "aTo", type: "datetime", value: "2011-05-25T00:00:00Z" });
-					jWSC.reportingCreateReport(lReportId, lParams, {
+					lWSC.reportingCreateReport(lReportId, lParams, {
 						OnResponse: function( aToken ) {
+							var lW = jws.$("sdivPdf").scrollWidth;
+							if( isNaN( lW ) || lW <= 10 ) {
+								lW = 400;
+							}
 							if( aToken.code == 0) {
-								window.open( aToken.url, "jWebSocket Report", "" );
+								jws.ReportingPlugIn.displayPDF( jws.$("sdivPdf"), aToken.url, lW, 300);
+								// window.open( aToken.url, "jWebSocket Report", "" );
 							} else {
 								log("Report creation error: " + aToken.msg );
 							}	
@@ -106,15 +112,22 @@
 				}
 				// add all reports from incoming token
 				for( var lIdx = 0, lCnt = aToken.reports.length; lIdx < lCnt; lIdx++ ) {
+					/*
 					var lOption = document.createElement("option");
 					lOption.value = aToken.reports[ lIdx ].reportname;
 					lOption.text = aToken.reports[ lIdx ].reportname;
-					eReportSel.appendChild(lOption);
+					*/
+					var lOption = new Option(
+						aToken.reports[ lIdx ].reportname,
+						aToken.reports[ lIdx ].reportname
+					);
+					eReportSel.options[ lIdx ] = lOption; // appendChild(lOption);
 				}
 			}
 			
 			function handleReportParams( aToken ) {
 				// remove all existing reports in drop down box
+				
 				eFilterDiv.innerHTML = "";
 				gReportParams = [];
 				// analyze report params from incoming token
@@ -202,6 +215,10 @@
 		</div>
 		
 		<div class="sdivContainer" id="sdivFilter">
+			
+		</div>
+		
+		<div class="sdivContainer" id="sdivPdf">
 			
 		</div>
 		
