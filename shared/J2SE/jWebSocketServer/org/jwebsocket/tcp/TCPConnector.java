@@ -331,7 +331,6 @@ public class TCPConnector extends BaseConnector {
 		@Override
 		public void run() {
 			WebSocketEngine lEngine = getEngine();
-			ByteArrayOutputStream lBuff = new ByteArrayOutputStream();
 			Thread.currentThread().setName("jWebSocket " + mLogInfo + "-Connector " + getId());
 
 			// start client listener loop
@@ -346,11 +345,22 @@ public class TCPConnector extends BaseConnector {
 			// readHixie and readHybi process potential exceptions already!
 			try {
 				if (isHixie()) {
-					processHixie(lBuff, lEngine);
+					processHixie(lEngine);
 				} else {
-					processHybi(getVersion(), lBuff, lEngine);
+					processHybi(getVersion(), lEngine);
 				}
 			} finally {
+				/* TODO: remove - for debugging only:
+				if( null == lEngine) {
+					mLog.error("Engine Is NULL!");
+				} else if( null == ((BaseEngine) lEngine).lostConnectors ) {
+					mLog.error("lostConnectors Is NULL!");
+				} else if( null == mConnector ) {
+					mLog.error("mConnector Is NULL!");
+				} else if( !((BaseEngine) lEngine).lostConnectors.contains(mConnector) ) {
+					mLog.error("does not contain mConnector!");
+				}
+				 */
 				((BaseEngine) lEngine).lostConnectors.remove(mConnector);
 				terminateConnector(mCloseReason);
 			}
@@ -366,17 +376,18 @@ public class TCPConnector extends BaseConnector {
 			}
 		}
 
-		private void processHixie(ByteArrayOutputStream aBuff,
+		private void processHixie(
 				WebSocketEngine aEngine) {
+			ByteArrayOutputStream lBuff = new ByteArrayOutputStream();
 			while (WebSocketConnectorStatus.UP == getStatus()) {
 				try {
 					int lIn = WebSocketProtocolAbstraction.read(mIn);
 					// start of frame
 					if (lIn == 0x00) {
-						aBuff.reset();
+						lBuff.reset();
 						// end of frame
 					} else if (lIn == 0xFF) {
-						RawPacket lPacket = new RawPacket(aBuff.toByteArray());
+						RawPacket lPacket = new RawPacket(lBuff.toByteArray());
 						try {
 							aEngine.processPacket(mConnector, lPacket);
 						} catch (Exception lEx) {
@@ -385,13 +396,13 @@ public class TCPConnector extends BaseConnector {
 									+ mConnector.getClass().getSimpleName()
 									+ ": " + lEx.getMessage());
 						}
-						aBuff.reset();
+						lBuff.reset();
 					} else if (lIn < 0) {
 						mCloseReason = CloseReason.CLIENT;
 						setStatus(WebSocketConnectorStatus.DOWN);
 						// any other byte within or outside a frame
 					} else {
-						aBuff.write(lIn);
+						lBuff.write(lIn);
 					}
 				} catch (SocketTimeoutException lEx) {
 					mLog.error(lEx.getClass().getSimpleName()
@@ -407,13 +418,12 @@ public class TCPConnector extends BaseConnector {
 			}
 		}
 
-		private void processHybi(int aVersion, ByteArrayOutputStream aBuff,
-				WebSocketEngine aEngine) {
+		private void processHybi(int aVersion, WebSocketEngine aEngine) {
 
 			String lFrom = getRemoteHost() + ":" + getRemotePort() + " (" + getId() + ")";
 			while (WebSocketConnectorStatus.UP == getStatus()) {
 				try {
-					WebSocketPacket lPacket = WebSocketProtocolAbstraction.protocolToRawPacket(getVersion(), mIn);
+					WebSocketPacket lPacket = WebSocketProtocolAbstraction.protocolToRawPacket(aVersion, mIn);
 					if (lPacket == null) {
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Processing client 'disconnect' from " + lFrom + "...");

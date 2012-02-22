@@ -82,7 +82,7 @@ public class ServerRequestListener implements WebSocketServerListener {
 		try {
 			// TODO: check this error handling!
 			if (null == mColl) {
-				mLog.error("Mongo DB collection not accessible.");
+				// mLog.error("Mongo DB collection not accessible.");
 				return;
 			}
 			DBObject lRecord = mColl.findOne(new BasicDBObject().append("date", lToday));
