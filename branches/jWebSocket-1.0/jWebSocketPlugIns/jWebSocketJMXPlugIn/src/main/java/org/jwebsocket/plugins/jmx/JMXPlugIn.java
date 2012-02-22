@@ -72,11 +72,13 @@ public class JMXPlugIn extends TokenPlugIn {
 	public void engineStarted(WebSocketEngine aEngine){
 		JMXHandler.setLog(mLog);
 		JMXServerFunctions.setLog(mLog);
+
+		// ServerXmlBeanFactory lFactory = getConfigBeanFactory();
 		
 		String lPath = JWebSocketConfig.getConfigFolder("") + getString("config_file");
 		Resource lResource = new FileSystemResource(lPath);
 		XmlBeanFactory lFactory = new ServerXmlBeanFactory(lResource, getClass().getClassLoader());
-		
+	
 //		ClassLoader lClassLoader = JWebSocketXmlConfigInitializer.getClassLoader();
 //		JWebSocketBeanFactory.load(getNamespace(), lPath, lClassLoader);
 //		BeanFactory lFactory = JWebSocketBeanFactory.getInstance(getNamespace());

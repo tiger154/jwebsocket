@@ -115,7 +115,7 @@ function runFullTestSuite() {
 			jws.Tests.testCloseSharedAdminConnSSL();
 			jws.Tests.testCloseSharedGuestConnSSL();
 		}
-		
+
 		//run IOC tests
 		jws.tests.IOC.runSuite();
 	});

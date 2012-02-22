@@ -15,7 +15,7 @@
 //  ---------------------------------------------------------------------------
 
 /**
- * Author: Rolando SantamarÃ­a MasÃ³ <kyberneees@gmail.com>
+ * Author: Rolando Santamaría Masó <kyberneees@gmail.com>
  * 
  * This library depends of cujojs-aop (http://cujojs.com/)
  **/
@@ -413,8 +413,9 @@ jws.ioc.ServiceContainerBuilder = function ServiceContainerBuilder(aConfig){
 		this._definitions = aConfig.definitions;
 	}
 	
-	//Logging the service container operations using AOP
-	aop.around(this, /[]*/, function(aArgs){
+	// Logging the service container operations using AOP
+	var lRegExp = new RegExp("/.*/"); //  old expression: /[]*/
+	aop.around(this, lRegExp, function(aArgs){
 		jws.console.debug(">> " + this._id + ": Calling method '" + aArgs.method + "' with arguments '" + JSON.stringify(aArgs.args) + "'...");
 		var lResponse = aArgs.proceed();
 		var lClassName = lResponse.constructor.toString().split(" ", 2)[1].split("(", 1);
@@ -704,7 +705,7 @@ jws.ioc.ServiceContainerBuilder.prototype.extendDefinition = function(aChild, aP
 	return lExtendedDef;
 }
 
-//Creating the service container default instance
+// Create the service container default instance
 jws.sc = new jws.ioc.ServiceContainerBuilder({
 	id: "jws.sc",
 	container: new jws.ioc.ServiceContainer()

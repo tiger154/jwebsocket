@@ -36,6 +36,7 @@ import org.jwebsocket.plugins.jmx.configDefinition.JMXDefinition;
 import org.jwebsocket.plugins.jmx.configDefinition.JMXDefinitionException;
 import org.jwebsocket.plugins.jmx.configDefinition.JMXPluginDefinition;
 import org.jwebsocket.plugins.jmx.mbeanSpring.MBeanEnabledExporter;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -81,7 +82,8 @@ public class JMXPlugInsExporter {
 		Map lBean = new FastMap();
 		for (String lConfigFile : lConfigFiles) {
 			Resource lBeanResource = new FileSystemResource(mConfigFilePath + lConfigFile);
-			XmlBeanFactory lBeanFactory = new XmlBeanFactory(lBeanResource);
+			XmlBeanFactory lBeanFactory = new ServerXmlBeanFactory(
+					lBeanResource, this.getClass().getClassLoader());
 			if (lConfigFile.toLowerCase().endsWith("beanconfig.xml")) {
 				String lBeanName = lConfigFile.substring(0, lConfigFile.length() - 14);
 				registerMBean(lExporter, lBeanFactory, lBeanName, lBean);
@@ -176,7 +178,7 @@ public class JMXPlugInsExporter {
 		} catch (Exception e) {
 			mLog.error("JMXPlugInExporter on registerMBean: " + e.getMessage());
 
-			JMXDefinitionException lDefinitionException = new JMXDefinitionException("Unable to register the class: "+ e.getMessage());
+			JMXDefinitionException lDefinitionException = new JMXDefinitionException("Unable to register the class: " + e.getMessage());
 			if (!aBeanName.equals("")) {
 				aBeanMap.put("jWebSocketServer:name=" + aBeanName + "Exception", lDefinitionException);
 			} else {

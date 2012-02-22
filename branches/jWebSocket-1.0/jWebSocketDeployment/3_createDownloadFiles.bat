@@ -51,27 +51,39 @@ pushd %base%
 set dest=jWebSocketDev\downloads\jWebSocket-%ver%\jWebSocketFullSources-%ver%.zip
 if exist %dest% del %dest%
 
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketClient" -xr!target -xr!devguide -xr!quickguide -xr!javadocs -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketCommon" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketServerAPI" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketServer" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketPlugIns" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAppServer" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAppSrvDemo" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketSamples" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketClientAPI" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJavaSEClient" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJetty" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketProxy" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketSwingGUI" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketActiveMQStockTicker" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%shared" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%libs" -xr!target -xr!.svn -xr!dist -xr!build
-7z u -mx9 -tzip "%dest%" "%sc%pom.xml
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAndroid" -xr!target -xr!.svn -xr!build -xr!bin
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketDeployment" -xr!.svn -xr!*.tmp*
+rem Source Code Modules
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketActiveMQStockTicker" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAndroid" -xr!target -xr!.svn -xr!build -xr!bin -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAppServer" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAppSrvDemo" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketBlackBerry" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketClient" -xr!target -xr!devguide -xr!quickguide -xr!javadocs -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketClientAPI" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketCommon" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketCSClient" -xr!.svn -xr!Client.exe -xr!ClientLibrary.dll -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketDeployment" -xr!.svn -xr!*.tmp* -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJavaME" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJavaMEClient" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJavaSEClient" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJetty" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketPlugIns" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketProxy" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketSamples" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketServer" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketServerAPI" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketSwingGUI" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 
-7z u -mx9 -tzip "%dest%" "%rt%" -xr!.svn -xr!*.tmp* -xr!*.war -xr!jWebSocketServer-Bundle.jar
+rem Shared, Demo, Data and Vendor Modules
+7z u -mx9 -tzip "%dest%" "%sc%arduino" -xr!.svn -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%databases" -xr!.svn -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%libs" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%shared" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+
+rem Maven Control files
+7z u -mx9 -tzip "%dest%" "%sc%pom.xml
+
+rem Run Time Modules
+7z u -mx9 -tzip "%dest%" "%rt%" -xr!.svn -xr!*.tmp* -xr!*.jasper* -xr!*.war -xr!cache -xr!logs -xr!mails -xr!temp -xr!jWebSocketServer-Bundle.jar -xr!jWebSocketReportingPlugIn-Bundle.jar
 popd
 
 rem goto end
@@ -197,7 +209,7 @@ xcopy %libs%jWebSocketStreamingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketTwitterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketXMPPPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSharedObjectsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketSharedCanvasPlugIn-1.0.jar-%ver%.jar %tempdir%libs\ /s /i /y
+ xcopy %libs%jWebSocketSharedCanvasPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketStatisticsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketBenchmarkPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketClusterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
@@ -211,27 +223,39 @@ xcopy %libs%jWebSocketSwingGUI-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketProxy-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSamples-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketAMQStockTicker-%ver%.jar %tempdir%libs\ /s /i /y
+
 rem jWebSocket config and keystore files (from v1.0) for SSL
 xcopy %conf%jWebSocket.xml %tempdir%conf\ /s /i /y
 xcopy %conf%jWebSocket.ks %tempdir%conf\ /s /i /y
+xcopy %conf%jWebSocket.key %tempdir%conf\ /s /i /y
+xcopy %conf%jWebSocket.csr %tempdir%conf\ /s /i /y
+xcopy %conf%jWebSocket.crt %tempdir%conf\ /s /i /y
+xcopy %conf%jWebSocket.pkcs12 %tempdir%conf\ /s /i /y
+xcopy %conf%openssl.cnf %tempdir%conf\ /s /i /y
+xcopy %conf%createSelfSignedCert.bat %tempdir%conf\ /s /i /y
 rem Flash Cross-Domain configuration
 xcopy %conf%FlashPlugIn\crossdomain.xml %tempdir%conf\FlashPlugIn\ /s /i /y
 rem spring config files (from v1.0)
-xcopy %conf%core.xml %tempdir%conf\ /s /i /y
 xcopy %conf%ehcache.xml %tempdir%conf\ /s /i /y
-xcopy %conf%Resources\Bootstrap.xml %tempdir%conf\Resources\ /s /i /y
-xcopy %conf%SystemPlugIn\system.xml %tempdir%conf\SystemPlugIn\ /s /i /y
-xcopy %conf%JDBCPlugIn\jdbc.xml %tempdir%conf\JDBCPlugIn\ /s /i /y
-xcopy %conf%ChannelPlugIn\channel.xml %tempdir%conf\ChannelPlugIn\ /s /i /y
-xcopy %conf%JMSPlugIn\jms.xml %tempdir%conf\JMSPlugIn\ /s /i /y
-xcopy %conf%event_definitions.xml %tempdir%conf\ /s /i /y
-xcopy %conf%filters.xml %tempdir%conf\ /s /i /y
-xcopy %conf%plugins.xml %tempdir%conf\ /s /i /y
-xcopy %conf%security.xml %tempdir%conf\ /s /i /y
-xcopy %conf%api\api.xml %tempdir%conf\api\ /s /i /y
-xcopy %conf%api\APIPlugIn.xml %tempdir%conf\api\ /s /i /y
-xcopy %conf%api\BenchmarkPlugIn.xml %tempdir%conf\api\ /s /i /y
-xcopy %conf%api\TestPlugIn.xml %tempdir%conf\api\ /s /i /y
+xcopy %conf%api\*.xml %tempdir%conf\api\ /s /i /y
+xcopy %conf%Resources\bootstrap.xml %tempdir%conf\Resources\ /s /i /y
+xcopy %conf%AdminPlugIn\jwsMgmtDesk.xml %tempdir%conf\AdminPlugIn\ /s /i /y
+xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
+xcopy %conf%EventsPlugIn\*.xml %tempdir%conf\EventsPlugIn\ /s /i /y
+xcopy %conf%JDBCPlugIn\*.xml %tempdir%conf\JDBCPlugIn\ /s /i /y
+xcopy %conf%ChannelPlugIn\*.xml %tempdir%conf\ChannelPlugIn\ /s /i /y
+xcopy %conf%JMSPlugIn\*.xml %tempdir%conf\JMSPlugIn\ /s /i /y
+xcopy %conf%JMXPlugIn\*.xml %tempdir%conf\JMXPlugIn\ /s /i /y
+xcopy %conf%LoggingPlugIn\*.xml %tempdir%conf\LoggingPlugIn\ /s /i /y
+xcopy %conf%ReportingPlugIn\*.xml %tempdir%conf\ReportingPlugIn\ /s /i /y
+
+rem obsolete
+rem xcopy %conf%core.xml %tempdir%conf\ /s /i /y
+rem xcopy %conf%event_definitions.xml %tempdir%conf\ /s /i /y
+rem xcopy %conf%filters.xml %tempdir%conf\ /s /i /y
+rem xcopy %conf%plugins.xml %tempdir%conf\ /s /i /y
+rem xcopy %conf%security.xml %tempdir%conf\ /s /i /y
+
 rem log4j config files (from v1.0)
 rem xcopy %conf%log4j.properties %tempdir%conf\ /s /i /y
 xcopy %conf%log4j.xml %tempdir%conf\ /s /i /y
@@ -252,18 +276,23 @@ set dest=%down%jWebSocketServer-Bundle-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketServer-Bundle-%ver%.jar"
 7z u -mx9 -r -tzip "%dest%" "%depl%ReadMe_ServerBundle.txt"
+rem jWebSocket config file
 7z u -mx9 -r -tzip "%dest%" "%conf%jWebSocket.xml"
 rem SSL keystore
 7z u -mx9 -r -tzip "%dest%" "%conf%jWebSocket.ks"
 rem spring config files (from v1.0)
-7z u -mx9 -r -tzip "%dest%" "%conf%core.xml"
+
 7z u -mx9 -r -tzip "%dest%" "%conf%ehcache.xml"
-7z u -mx9 -r -tzip "%dest%" "%conf%event_definitions.xml"
-7z u -mx9 -r -tzip "%dest%" "%conf%filters.xml"
-7z u -mx9 -r -tzip "%dest%" "%conf%plugins.xml"
-7z u -mx9 -r -tzip "%dest%" "%conf%security.xml"
-rem log4j config files (from v1.0)
-7z u -mx9 -r -tzip "%dest%" "%conf%log4j.properties"
+7z u -mx9 -r -tzip "%dest%" "%conf%log4j.xml"
+
+rem obsolete
+rem 7z u -mx9 -r -tzip "%dest%" "%conf%core.xml"
+rem 7z u -mx9 -r -tzip "%dest%" "%conf%event_definitions.xml"
+rem 7z u -mx9 -r -tzip "%dest%" "%conf%filters.xml"
+rem 7z u -mx9 -r -tzip "%dest%" "%conf%plugins.xml"
+rem 7z u -mx9 -r -tzip "%dest%" "%conf%security.xml"
+rem rem log4j config files (from v1.0)
+
 
 rem goto end
 

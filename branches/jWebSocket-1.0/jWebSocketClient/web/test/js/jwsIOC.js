@@ -15,10 +15,12 @@
 //	---------------------------------------------------------------------------
 
 /**
- * Author: Rolando SantamarÃ­a MasÃ³ <kyberneees@gmail.com>
+ * Author: Rolando Santamaría Masó <kyberneees@gmail.com>
  */
 jws.tests.IOC = {
-	
+
+	NS: "jws.tests.ioc", 
+
 	testSetAndGetParameter: function() {	
 		var lKey = "name";
 		
@@ -257,24 +259,34 @@ jws.tests.IOC = {
 
 
 	runSpecs: function() {
-		jws.console.isActive = true;
-		jws.console.level = jws.console.DEBUG;
 		
-		this.testSetAndGetParameter();
-		this.testHasAndRemoveParameter();
-		this.testSetAndGetService();
-		this.testHasAndRemoveService();
-		this.testRegisterAndGetServiceDefinition();
-		this.testCreateGetAndRemoveService();
-		this.testFactoryMethod();
-		this.testAnonymousServices();
+		// save current console options
+		var lIsActive = jws.console.isActive();
+		var lLevel = jws.console.getLevel();
+		// set new temporary console options
+		jws.console.setActive( true );
+		jws.console.setLevel( jws.console.DEBUG );
+		try {
+			this.testSetAndGetParameter();
+			this.testHasAndRemoveParameter();
+			this.testSetAndGetService();
+			this.testHasAndRemoveService();
+			this.testRegisterAndGetServiceDefinition();
+			this.testCreateGetAndRemoveService();
+			this.testFactoryMethod();
+			this.testAnonymousServices();
+		} finally {
+			// restore previous console options
+			jws.console.setActive( lIsActive );
+			jws.console.setLevel( lLevel );
+		}	
 	},
 
 	runSuite: function() {
 		
 		// run alls tests as a separate test suite
 		var lThis = this;
-		describe( "Performing test suite: IOC...", function () {
+		describe( "Performing test suite: " + this.NS + "...", function () {
 			lThis.runSpecs();
 		});
 	}	
