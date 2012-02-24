@@ -40,7 +40,13 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 
 	public JCaptchaPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Instantiating Captcha plug-in...");
+		}
 		setNamespace(aConfiguration.getNamespace());
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Captcha plug-in successfully instantiated.");
+		}
 	}
 
 	@Override

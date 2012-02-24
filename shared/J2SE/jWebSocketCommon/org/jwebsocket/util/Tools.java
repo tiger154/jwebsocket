@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javolution.util.FastList;
 import javolution.util.FastMap;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 
 /**
  * Provides some convenience methods to support the web socket

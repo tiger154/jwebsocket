@@ -35,7 +35,7 @@ public class JWebSocketServer {
 		String lOverrideConfigPath = JWebSocketFactory.getConfigOverridePath(aArgs);
 		try {
 			JWebSocketFactory.start(lOverrideConfigPath,
-                    JWebSocketFactory.getBootstrapOverridePath(aArgs));
+                    JWebSocketFactory.getBootstrapOverridePath());
 
 			// run server until shut down request
 			JWebSocketFactory.run();

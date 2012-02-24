@@ -32,8 +32,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class JmsDataSource implements Runnable {
 
-	private JmsTemplate jmsTemplate;
+	private JmsTemplate mJMSTemplate;
 
+	static final private Object[] _STOCKS_ORIG = {"3m Co", "MMM", 71.72F, "AT&T Inc.", "T", 31.61F, "Boeing Co.",
+		"BA", 75.43F, "Citigroup, Inc.", "C", 49.37F, "Hewlett-Packard Co.", "HPQ", 36.53F, "Intel Corporation",
+		"INTC", 19.88F, "International Business Machines", "IBM", 81.41F, "McDonald\"s Corporation", "MCD", 36.76F,
+		"Microsoft Corporation", "MSFT", 25.84F, "Verizon Communications", "VZ", 35.57F, "Wal-Mart Stores, Inc.",
+		"WMT", 45.45F,};
+	static private Object[] _STOCKS = new Object[_STOCKS_ORIG.length];
+	private static final int STOCK_COLUMN_COUNT = 3;
+	private static final int STOCK_ROW_COUNT = _STOCKS.length / STOCK_COLUMN_COUNT;
+	private static final int TICKER_COLUMN_INDEX = 1;
+	private static final int PRICE_COLUMN_INDEX = 2;
+	private static final float FLUCTUATION_PERCENT = 0.02F;
+	private static final int MIN_VALUE_PENNIES = 10;
+	private static final int MAX_VALUE_PENNIES = 20000;
+	
+	static private Random _random;
+	// formatter used to send prices as decimal currency (Locale.ENGLISH allows
+	// us to always use period as separator)
+	static private DecimalFormat _displayFormat = new DecimalFormat("####.00", new DecimalFormatSymbols(Locale.ENGLISH));
+	
 	public static void main(String[] args) {
 		// ClassPathXmlApplicationContext ctx = new
 		// ClassPathXmlApplicationContext("classpath*:JmsDataSource.xml");
@@ -41,16 +60,17 @@ public class JmsDataSource implements Runnable {
 	}
 
 	public JmsDataSource() {
-		this.jmsTemplate = new JmsTemplate();
-		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
+		this.mJMSTemplate = new JmsTemplate();
+		ActiveMQConnectionFactory lConnectionFactory = new ActiveMQConnectionFactory(
 				"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false");
-		this.jmsTemplate.setConnectionFactory(connectionFactory);
-		this.jmsTemplate.setDefaultDestinationName("stock.topic");
-		this.jmsTemplate.setDeliveryPersistent(false);
-		this.jmsTemplate.setPubSubDomain(true);
-		this.jmsTemplate.setSessionTransacted(false);
+		this.mJMSTemplate.setConnectionFactory(lConnectionFactory);
+		this.mJMSTemplate.setDefaultDestinationName("stock.topic");
+		this.mJMSTemplate.setDeliveryPersistent(false);
+		this.mJMSTemplate.setPubSubDomain(true);
+		this.mJMSTemplate.setSessionTransacted(false);
 	}
 
+	@Override
 	public void run() {
 		System.out.println("JmsDataSource started");
 
@@ -85,20 +105,22 @@ public class JmsDataSource implements Runnable {
 		long delta = Math.round(actualFluctuate);
 
 		// minimum delta change should never go below zero
-		if (delta < 1)
+		if (delta < 1) {
 			delta = 1;
+		}
 
 		// randomly switch positive / negative delta
-		if (_random.nextFloat() < 0.5)
+		if (_random.nextFloat() < 0.5) {
 			delta = -delta;
+		}
 
 		delta += (long) (oldVal * 100);
 
 		// if a stock ever falls too low, reset it to original value
-		if ((delta < MIN_VALUE_PENNIES) || (delta > MAX_VALUE_PENNIES))
+		if ((delta < MIN_VALUE_PENNIES) || (delta > MAX_VALUE_PENNIES)) {
 			_STOCKS[(stockIndex * STOCK_COLUMN_COUNT) + PRICE_COLUMN_INDEX] = _STOCKS_ORIG[(stockIndex * STOCK_COLUMN_COUNT)
 					+ PRICE_COLUMN_INDEX];
-		else {
+		} else {
 			float newVal = (float) delta / 100;
 
 			_STOCKS[(stockIndex * STOCK_COLUMN_COUNT) + PRICE_COLUMN_INDEX] = newVal;
@@ -119,30 +141,9 @@ public class JmsDataSource implements Runnable {
 		// + TICKER_COLUMN_INDEX]);
 		// _messageProducer.send(message, DeliveryMode.NON_PERSISTENT,
 		// Message.DEFAULT_PRIORITY, 0L);
-		jmsTemplate.convertAndSend(body);
+		mJMSTemplate.convertAndSend(body);
 		// } catch (JMSException e) {
 		// _logger.error("Failure to send message: " + body);
 		// }
 	}
-
-	static final private Object[] _STOCKS_ORIG = { "3m Co", "MMM", 71.72F, "AT&T Inc.", "T", 31.61F, "Boeing Co.",
-			"BA", 75.43F, "Citigroup, Inc.", "C", 49.37F, "Hewlett-Packard Co.", "HPQ", 36.53F, "Intel Corporation",
-			"INTC", 19.88F, "International Business Machines", "IBM", 81.41F, "McDonald\"s Corporation", "MCD", 36.76F,
-			"Microsoft Corporation", "MSFT", 25.84F, "Verizon Communications", "VZ", 35.57F, "Wal-Mart Stores, Inc.",
-			"WMT", 45.45F, };
-	static private Object[] _STOCKS = new Object[_STOCKS_ORIG.length];
-
-	private static final int STOCK_COLUMN_COUNT = 3;
-	private static final int STOCK_ROW_COUNT = _STOCKS.length / STOCK_COLUMN_COUNT;
-	private static final int TICKER_COLUMN_INDEX = 1;
-	private static final int PRICE_COLUMN_INDEX = 2;
-	private static final float FLUCTUATION_PERCENT = 0.02F;
-	private static final int MIN_VALUE_PENNIES = 10;
-	private static final int MAX_VALUE_PENNIES = 20000;
-
-	static private Random _random;
-	// formatter used to send prices as decimal currency (Locale.ENGLISH allows
-	// us to always use period as separator)
-	static private DecimalFormat _displayFormat = new DecimalFormat("####.00", new DecimalFormatSymbols(Locale.ENGLISH));
-
 }

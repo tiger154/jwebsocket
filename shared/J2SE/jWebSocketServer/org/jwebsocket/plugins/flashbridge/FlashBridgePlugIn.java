@@ -21,14 +21,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.util.Date;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.util.Tools;
 
 /**
  * This plug-in processes the policy-file-request from the browser side flash
@@ -81,11 +82,18 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Trying to load " + lPathToCrossDomainXML + "...");
 				}
-				lPathToCrossDomainXML = Tools.expandEnvVars(lPathToCrossDomainXML);
+				// String testPath = "conf/FlashPlugIn/crossdomain.xml";
+				// lPathToCrossDomainXML = testPath;
+				
+				lPathToCrossDomainXML = JWebSocketConfig.expandEnvAndJWebSocketVars(lPathToCrossDomainXML);
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Trying to load expanded " + lPathToCrossDomainXML + "...");
 				}
-				File lFile = new File(lPathToCrossDomainXML);
+				URL lURL = JWebSocketConfig.getURLFromPath(lPathToCrossDomainXML);
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Trying to load from URL " + lURL + "...");
+				}
+				File lFile = new File(lURL.getPath());
 				mCrossDomainXML = FileUtils.readFileToString(lFile, "UTF-8");
 				if (mLog.isInfoEnabled()) {
 					mLog.info("crossdomain config successfully loaded from " + lPathToCrossDomainXML + ".");

@@ -150,6 +150,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 	private static final String OWNER = "owner";
 	private static final String CHANNEL = "channel";
 	private static final String CONNECTED = "connected";
+	private static ServerXmlBeanFactory mBeanFactory;
 	
 	/**
 	 * Constructor with plug-in config
@@ -166,23 +167,8 @@ public class ChannelPlugIn extends TokenPlugIn {
 		this.setNamespace(NS_CHANNELS);
 
 		try {
-			String lSpringConfig = getString("spring_config");
-			lSpringConfig = Tools.expandEnvVars(lSpringConfig);
-			String lPath = FilenameUtils.getPath(lSpringConfig);
-			if (lPath == null || lPath.length() <= 0) {
-				lPath = JWebSocketConfig.getConfigFolder(lSpringConfig);
-			} else {
-				lPath = lSpringConfig;
-			}
-			FileSystemResource lFSRes = new FileSystemResource(lPath);
-
-            JWebSocketBeanFactory.load(lPath, getClass().getClassLoader());
-
-			// mBeanFactory = new ServerXmlBeanFactory(lFSRes, getClass().getClassLoader());
-            
-			Object lObj;
-			lObj = JWebSocketBeanFactory.getInstance().getBean("channelManager");
-			mChannelManager = (ChannelManager) lObj;
+			mBeanFactory = getConfigBeanFactory();
+			mChannelManager = (ChannelManager) mBeanFactory.getBean("channelManager");
 
 			// give a success message to the administrator
 			if (mLog.isInfoEnabled()) {

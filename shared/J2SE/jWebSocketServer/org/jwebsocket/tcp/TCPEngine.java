@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.security.KeyStore;
 import java.util.Date;
 import java.util.Map;
@@ -127,10 +128,13 @@ public class TCPEngine extends BaseEngine {
 					KeyManagerFactory lKMF = KeyManagerFactory.getInstance("SunX509");
 					KeyStore lKeyStore = KeyStore.getInstance("JKS");
 
-					String lKeyStorePath = JWebSocketConfig.getConfigFolder(mKeyStore);
+					// String lKeyStorePath = JWebSocketConfig.getConfigFolder(mKeyStore);
+					String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
+
 					if (lKeyStorePath != null) {
 						char[] lPassword = mKeyStorePassword.toCharArray();
-						lKeyStore.load(new FileInputStream(lKeyStorePath), lPassword);
+						URL lURL = JWebSocketConfig.getURLFromPath(lKeyStorePath);
+						lKeyStore.load(new FileInputStream(lURL.getPath()), lPassword);
 						lKMF.init(lKeyStore, lPassword);
 
 						lSSLContext.init(lKMF.getKeyManagers(), null, null);

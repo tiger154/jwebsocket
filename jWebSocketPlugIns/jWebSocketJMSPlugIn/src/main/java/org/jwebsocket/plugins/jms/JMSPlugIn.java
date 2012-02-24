@@ -19,12 +19,10 @@ package org.jwebsocket.plugins.jms;
  * 
  * @author Johannes Smutny
  */
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
-import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
@@ -35,8 +33,8 @@ import org.jwebsocket.plugins.jms.util.FieldJms;
 import org.jwebsocket.plugins.jms.util.RightJms;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.util.Tools;
 
 public class JMSPlugIn extends TokenPlugIn {
 
@@ -52,17 +50,9 @@ public class JMSPlugIn extends TokenPlugIn {
 
 		this.setNamespace(NS_JMS);
 		try {
-			String lSpringConfig = getString("spring_config");
-			lSpringConfig = Tools.expandEnvVars(lSpringConfig);
-			String lPath = FilenameUtils.getPath(lSpringConfig);
-			if (lPath == null || lPath.length() <= 0) {
-				lPath = JWebSocketConfig.getConfigFolder(lSpringConfig);
-			} else {
-				lPath = lSpringConfig;
-			}
-			JWebSocketBeanFactory.load(lPath, getClass().getClassLoader());
+			ServerXmlBeanFactory lBeanFactory = getConfigBeanFactory();
 			mJmsManager = JmsManager.getInstance(aConfiguration.getSettings(),
-					JWebSocketBeanFactory.getInstance());
+					lBeanFactory);
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " instantiation: " + lEx.getMessage());
 		}

@@ -16,7 +16,7 @@
 package org.jwebsocket.plugins.reporting;
 
 import org.apache.commons.io.FilenameUtils;
-import org.jwebsocket.util.Tools;
+import org.jwebsocket.config.JWebSocketConfig;
 
 /**
  *
@@ -41,7 +41,7 @@ public class Settings {
 	 */
 	public void setReportFolder(String aReportFolder) {
 		mReportFolder = aReportFolder;
-		mReportFolder = FilenameUtils.separatorsToUnix(Tools.expandEnvVars(mReportFolder));
+		mReportFolder = FilenameUtils.separatorsToUnix(JWebSocketConfig.expandEnvAndJWebSocketVars(mReportFolder));
 		if (!mReportFolder.endsWith("/")) {
 			mReportFolder += "/";
 		}
@@ -59,7 +59,7 @@ public class Settings {
 	 */
 	public void setOutputFolder(String aOutputFolder) {
 		mOutputFolder = aOutputFolder;
-		mOutputFolder = FilenameUtils.separatorsToUnix(Tools.expandEnvVars(mOutputFolder));
+		mOutputFolder = FilenameUtils.separatorsToUnix(JWebSocketConfig.expandEnvAndJWebSocketVars(mOutputFolder));
 		if (!mOutputFolder.endsWith("/")) {
 			mOutputFolder += "/";
 		}

@@ -79,17 +79,12 @@ public class JWebSocketFactory {
 	 */
 	public static void setProperties() {
 		System.setProperty(JWebSocketServerConstants.JWEBSOCKET_HOME,
-				System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME));
+				JWebSocketConfig.getJWebSocketHome());
 	}
 
-	public static String getBootstrapOverridePath(String[] aArgs) {
-		String lBootstrapPath =
-				System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
-		if (null == lBootstrapPath) {
-			System.out.println("jWebSocket can not be started without JWEBSOCKET_HOME being set.");
-			return null;
-		}
-		lBootstrapPath += "/conf/Resources/bootstrap.xml";
+	public static String getBootstrapOverridePath() {
+		String lBootstrapPath = JWebSocketConfig.getJWebSocketHome() 
+				+ "conf/Resources/bootstrap.xml";
 		return lBootstrapPath;
 	}
 
@@ -97,7 +92,7 @@ public class JWebSocketFactory {
 	 *
 	 */
 	public static void start() {
-		start(null, getBootstrapOverridePath(null));
+		start(null, getBootstrapOverridePath());
 	}
 
 	/**
@@ -108,15 +103,39 @@ public class JWebSocketFactory {
 	public static String getConfigOverridePath(String[] aArgs) {
 		// TODO: Evalualation of parameters must become more flexible!
 		String lConfigOverridePath = null;
+		String lJWebSocketHome = null;
+
 		if (aArgs != null && aArgs.length > 0) {
-			if (aArgs.length < 2) {
-				System.out.println("use [-config <path_to_config_file>] as command line arguments to override default jWebSocket.xml");
-			} else if (aArgs.length == 2) {
-				if ("-config".equals(aArgs[0])) {
-					lConfigOverridePath = aArgs[1];
+			for (int lIdx = 0; lIdx < aArgs.length; lIdx++) {
+				// is there one more argument beyond the current one?
+				if (lIdx < aArgs.length - 1) {
+					if ("-config".equals(aArgs[lIdx])) {
+						lConfigOverridePath = aArgs[lIdx + 1];
+					} else if ("-home".equals(aArgs[lIdx])) {
+						lJWebSocketHome = aArgs[lIdx + 1];
+					}
 				}
 			}
 		}
+		if (null == lConfigOverridePath) {
+			System.out.println("Use [-config <path_to_config_file>] as command line arguments to override default jWebSocket.xml");
+		}
+		if (null == lJWebSocketHome) {
+			System.out.println("Use [-home <path_to_jwebsocket_home>] as command line arguments to specify the jWebSocket home folder");
+		} else {
+			JWebSocketConfig.setJWebSocketHome(lJWebSocketHome);
+		}
+		/*
+		if (aArgs != null && aArgs.length > 0) {
+		if (aArgs.length < 2) {
+		System.out.println("use [-config <path_to_config_file>] as command line arguments to override default jWebSocket.xml");
+		} else if (aArgs.length == 2) {
+		if ("-config".equals(aArgs[0])) {
+		lConfigOverridePath = aArgs[1];
+		}
+		}
+		}
+		 */
 		return lConfigOverridePath;
 	}
 

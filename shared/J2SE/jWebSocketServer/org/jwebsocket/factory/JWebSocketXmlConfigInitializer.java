@@ -34,7 +34,6 @@ import org.jwebsocket.config.xml.FilterConfig;
 import org.jwebsocket.config.xml.LibraryConfig;
 import org.jwebsocket.config.xml.PluginConfig;
 import org.jwebsocket.config.xml.ServerConfig;
-import org.jwebsocket.util.Tools;
 
 /**
  * Intialize the engine, servers and plugins based on jWebSocket.xml
@@ -80,7 +79,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 						mLog.debug("Adding external library '" + lLibConf.getId()
 								+ "' from '" + lLibConf.getURL() + "'...");
 					}
-					mClassLoader.addFile(Tools.expandEnvVars(lLibConf.getURL()));
+					mClassLoader.addFile(JWebSocketConfig.expandEnvAndJWebSocketVars(lLibConf.getURL()));
 					ClassPathUpdater.add(new File(lLibConf.getURL()));
 				}
 			} catch (Exception ex) {
