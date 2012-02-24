@@ -36,6 +36,8 @@ import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.plugins.jmx.util.JMXHandler;
+import org.jwebsocket.plugins.jmx.util.JMXPlugInAuthenticator;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.JSONToken;
 import org.jwebsocket.token.Token;
@@ -53,7 +55,7 @@ public class JMXPlugIn extends TokenPlugIn {
 	private static String mNamespace = "org.jwebsocket.plugins.jmx";
 	private static JMXPlugIn mJmxPlugin = null;
 	private static CompositeData mInformationOfRunningServers;
-
+	
 	public JMXPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 
@@ -72,16 +74,10 @@ public class JMXPlugIn extends TokenPlugIn {
 	public void engineStarted(WebSocketEngine aEngine){
 		JMXHandler.setLog(mLog);
 		JMXServerFunctions.setLog(mLog);
-
-		// ServerXmlBeanFactory lFactory = getConfigBeanFactory();
 		
 		String lPath = JWebSocketConfig.getConfigFolder("") + getString("config_file");
 		Resource lResource = new FileSystemResource(lPath);
 		XmlBeanFactory lFactory = new ServerXmlBeanFactory(lResource, getClass().getClassLoader());
-	
-//		ClassLoader lClassLoader = JWebSocketXmlConfigInitializer.getClassLoader();
-//		JWebSocketBeanFactory.load(getNamespace(), lPath, lClassLoader);
-//		BeanFactory lFactory = JWebSocketBeanFactory.getInstance(getNamespace());
 			
 		JMXPlugInAuthenticator.setConfigPath(lPath);
 		
@@ -90,7 +86,7 @@ public class JMXPlugIn extends TokenPlugIn {
 		
 		HttpAdaptor httpAdaptor = (HttpAdaptor) lFactory.getBean("HttpAdaptor");
 		try {
-			httpAdaptor.addAuthorization("admin", "httpadmin");
+			httpAdaptor.addAuthorization("admin", "jmxadmin");
 			httpAdaptor.start();
 
 			MBeanServer lMBServer = (MBeanServer) lFactory.getBean("jWebSocketServer");
