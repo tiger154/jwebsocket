@@ -34,6 +34,15 @@
 	<node_id>01</node_id>
 
 	<!-- Auto load required external libraries -->
+	<!--
+		Important!
+		If you use folder references by the environment variable 
+		${JWEBSOCKET_HOME} please consider that the value of this variable
+		contains a trailing [back]slash. So DO NOT add a slash AFTER this 
+		variable!
+		INVALID example: <url>${JWEBSOCKET_HOME}/libs/<your_jar>.jar</url>
+		CORRECT example: <url>${JWEBSOCKET_HOME}libs/<your_jar>.jar</url>
+	-->
 	<libraries>
 		<!--
 		<library>
@@ -53,28 +62,28 @@
 		<!-- required for Arduino support -->
 		<library>
 			<id>RXTXSerialIO</id>
-			<url>${JWEBSOCKET_HOME}/libs/rxtx-2.1.7.jar</url>
+			<url>${JWEBSOCKET_HOME}libs/rxtx-2.1.7.jar</url>
 			<description>RXTX Serial IO library</description>
 		</library>
 		
 		<!-- Captcha support required for Realtime monitoring demo -->
 		<library>
 			<id>SigarHardwareMonitor</id>
-			<url>${JWEBSOCKET_HOME}/libs/sigar-1.6.4.jar</url>
+			<url>${JWEBSOCKET_HOME}libs/sigar-1.6.4.jar</url>
 			<description>Sigar Hardware Monitoring Library</description>
 		</library>
 		
 		<!-- Captcha support required for SMS demo -->
 		<library>
 			<id>jCaptcha</id>
-			<url>${JWEBSOCKET_HOME}/libs/jcaptcha-all-1.0-RC-2.0.1.jar</url>
+			<url>${JWEBSOCKET_HOME}libs/jcaptcha-all-1.0-RC-2.0.1.jar</url>
 			<description>jCaptcha Humanity and Anti Spam Library</description>
 		</library>
 		
 		<!-- MX4J Tools required for JMX demo -->
 		<library>
 			<id>MX4J Tools</id>
-			<url>${JWEBSOCKET_HOME}/libs/mx4j-tools-2.1.1.jar</url>
+			<url>${JWEBSOCKET_HOME}libs/mx4j-tools-2.1.1.jar</url>
 			<description>MX Tools for MBeans processing</description>
 		</library>
 		
@@ -82,12 +91,12 @@
 		<!--
 		<library>
 			<id>Jasper Reports</id>
-			<url>${JWEBSOCKET_HOME}/libs/jasperreports-4.5.0.jar</url>
+			<url>${JWEBSOCKET_HOME}libs/jasperreports-4.5.0.jar</url>
 			<description>Jasper Reports for reporting tools</description>
 		</library>
 		<library>
 			<id>Jasper Reports Fonts</id>
-			<url>${JWEBSOCKET_HOME}/libs/jasperreports-fonts-4.0.0.jar</url>
+			<url>${JWEBSOCKET_HOME}libs/jasperreports-fonts-4.0.0.jar</url>
 			<description>Jasper Reports Fonts for reporting tools</description>
 		</library>
 		-->
@@ -97,7 +106,7 @@
 	<logging>
 		<log4j>
 			<!-- new config file option in 1.0b, override settings below -->
-			<config>${JWEBSOCKET_HOME}/conf/log4j.xml</config>
+			<config>${JWEBSOCKET_HOME}conf/log4j.xml</config>
 			<!-- automatic reload of log config options in ms (0 for none, minimum 5000ms) -->
 			<autoreload>20000</autoreload>
 		</log4j>
@@ -124,8 +133,8 @@
 			<jar>jWebSocketTCPEngine-1.0.jar</jar>
 			<port>8787</port>
 			<sslport>9797</sslport>
-			<!-- keystore file with in %JWEBSOCKET_HOME%/conf -->
-			<keystore>jWebSocket.ks</keystore>
+			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
 			<!-- password to access keystore file -->
 			<password>jWebSocket</password>
 			<!-- CAUTION! -->
@@ -914,7 +923,7 @@
 			<jar>jWebSocketServer-1.0.jar</jar>
 			<!-- plug-in specific settings -->
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}/conf/SystemPlugIn/system.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/SystemPlugIn/system.xml</setting>
 				
 				<!-- specify whether open, close, login, logout events should 
 					 be broadcasted per default. To suppress these broadcasts
@@ -974,7 +983,7 @@
 			<settings>
 				<!-- if you remove this setting the plug-in uses an internal
 				     "allow all ports and domains" default crossdomain.xml -->
-				<setting key="crossdomain_xml">${JWEBSOCKET_HOME}/conf/FlashPlugIn/crossdomain.xml</setting>
+				<setting key="crossdomain_xml">${JWEBSOCKET_HOME}conf/FlashPlugIn/crossdomain.xml</setting>
 			</settings>
 		</plugin>
 
@@ -1033,7 +1042,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}/conf/ChannelPlugIn/channel.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ChannelPlugIn/channel.xml</setting>
 				<!-- config has been moved to channel.xml spring config -->
 			</settings>
 		</plugin>
@@ -1098,7 +1107,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}/conf/JDBCPlugIn/jdbc.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JDBCPlugIn/jdbc.xml</setting>
 
 				<!-- specify database settings -->
 				<setting key="db_driver">com.mysql.jdbc.Driver</setting>
@@ -1127,7 +1136,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}/conf/JMSPlugIn/jms.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JMSPlugIn/jms.xml</setting>
 				<setting key="connectionFactory:1" type="json">{name:"connectionFactory"}</setting>
 				<setting key="destination:1" type="json">{name:"testQueue",pubSubDomain:false,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 				<setting key="destination:2" type="json">{name:"testTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
@@ -1148,7 +1157,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}/conf/LoggingPlugIn/logging.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/LoggingPlugIn/logging.xml</setting>
 				<setting key="implementation">Log4J</setting>
 				<setting key="table:name">log</setting>
 				<setting key="field:level">level</setting>
@@ -1339,7 +1348,7 @@
 			</server-assignments>
 			<settings>
 				<!-- folder where the report specs are located -->
-				<setting key="spring_config">${JWEBSOCKET_HOME}/conf/ReportingPlugIn/reporting.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ReportingPlugIn/reporting.xml</setting>
 			</settings>
 		</plugin>
 		

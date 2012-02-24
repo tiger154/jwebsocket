@@ -21,13 +21,11 @@ import java.util.Random;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
-import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.engines.BaseEngine;
@@ -41,7 +39,7 @@ import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.security.User;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.session.SessionManager;
-import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -108,6 +106,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	public static final String AUTHORITIES = "$authorities";
 	public static final String UUID = "$uuid";
 	public static final String IS_AUTHENTICATED = "$is_authenticated";
+	private static ServerXmlBeanFactory mBeanFactory;
 
 	/**
 	 * Constructor with configuration object
@@ -122,26 +121,11 @@ public class SystemPlugIn extends TokenPlugIn {
 		mGetSettings();
 
 		try {
-			String lSpringConfig = getString("spring_config");
-			lSpringConfig = Tools.expandEnvVars(lSpringConfig);
-			String lPath = FilenameUtils.getPath(lSpringConfig);
-			if (lPath == null || lPath.length() <= 0) {
-				lPath = JWebSocketConfig.getConfigFolder(lSpringConfig);
-			} else {
-				lPath = lSpringConfig;
-			}
-			/*
-			FileSystemResource lFSRes = new FileSystemResource(lPath);
-			mBeanFactory = new ServerXmlBeanFactory(lFSRes, getClass().getClassLoader());
-			 */
-			JWebSocketBeanFactory.load(lPath, getClass().getClassLoader());
-			Object lObj = JWebSocketBeanFactory.getInstance().getBean("authManager");
-			mAuthProvMgr = (ProviderManager) lObj;
+			mBeanFactory = getConfigBeanFactory();
+			mAuthProvMgr = (ProviderManager) mBeanFactory.getBean("authManager");
 			List<AuthenticationProvider> lProviders = mAuthProvMgr.getProviders();
 			mAuthProv = lProviders.get(0);
-
-			lObj = JWebSocketBeanFactory.getInstance().getBean("sessionManager");
-			mSessionManager = (SessionManager) lObj;
+			mSessionManager = (SessionManager) mBeanFactory.getBean("sessionManager");
 
 			// give a success message to the administrator
 			if (mLog.isInfoEnabled()) {

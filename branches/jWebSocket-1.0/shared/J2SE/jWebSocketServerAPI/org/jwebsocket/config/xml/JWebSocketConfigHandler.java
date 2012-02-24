@@ -53,7 +53,6 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	private static final String ELEMENT_PROTOCOL = "protocol";
 	private static final String ELEMENT_NODE_ID = "node_id";
 	private static final String ELEMENT_INITIALIZER_CLASS = "initializerClass";
-	private static final String ELEMENT_JWEBSOCKET_HOME = "jWebSocketHome";
 	private static final String ELEMENT_LIBRARY_FOLDER = "libraryFolder";
 	private static final String ELEMENT_LIBRARIES = "libraries";
 	private static final String ELEMENT_LIBRARY = "library";
@@ -116,9 +115,6 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 					} else if (lElementName.equals(ELEMENT_NODE_ID)) {
 						aStreamReader.next();
 						lConfigBuilder.setNodeId(aStreamReader.getText());
-					} else if (lElementName.equals(ELEMENT_JWEBSOCKET_HOME)) {
-						aStreamReader.next();
-						lConfigBuilder.setJWebSocketHome(aStreamReader.getText());
 					} else if (lElementName.equals(ELEMENT_LIBRARY_FOLDER)) {
 						aStreamReader.next();
 						lConfigBuilder.setLibraryFolder(aStreamReader.getText());

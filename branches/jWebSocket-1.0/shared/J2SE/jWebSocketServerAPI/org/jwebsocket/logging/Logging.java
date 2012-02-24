@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.config.xml.LoggingConfig;
 import org.jwebsocket.util.Tools;
@@ -76,10 +77,11 @@ public class Logging {
 	private static String getLogsFolderPath(String aFileName) {
 
 		// try to obtain JWEBSOCKET_HOME environment variable
+		String lFileSep = System.getProperty("file.separator");
+		/*
 		String lWebSocketHome = System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
 		String lFileSep = System.getProperty("file.separator");
 		String lWebSocketLogs = null;
-
 		if (lWebSocketHome != null) {
 			// append trailing slash if needed
 			if (!lWebSocketHome.endsWith(lFileSep)) {
@@ -88,10 +90,15 @@ public class Logging {
 			// logs are located in %JWEBSOCKET_HOME%/logs
 			lWebSocketLogs = lWebSocketHome + "logs" + lFileSep + aFileName;
 		}
+		*/
+		
+		String lWebSocketLogs = JWebSocketConfig.getJWebSocketHome()
+				+ "logs" + lFileSep + aFileName;
 
+		/*
 		if (lWebSocketLogs == null) {
 			// try to obtain CATALINA_HOME environment variable
-			lWebSocketHome = System.getenv("CATALINA_HOME");
+			String lWebSocketHome = System.getenv("CATALINA_HOME");
 			if (lWebSocketHome != null) {
 				// append trailing slash if needed
 				if (!lWebSocketHome.endsWith(lFileSep)) {
@@ -101,7 +108,7 @@ public class Logging {
 				lWebSocketLogs = lWebSocketHome + "logs" + lFileSep + aFileName;
 			}
 		}
-
+		*/
 		return lWebSocketLogs;
 	}
 
@@ -159,7 +166,7 @@ public class Logging {
 			}
 		} else {
 			if (!mSettingsLoaded) {
-				String lLog4JConfigFile = Tools.expandEnvVars(mConfigFile);
+				String lLog4JConfigFile = JWebSocketConfig.expandEnvAndJWebSocketVars(mConfigFile);
 				if (mReloadDelay >= MIN_RELOAD_DELAY) {
 					DOMConfigurator.configureAndWatch(lLog4JConfigFile, mReloadDelay);
 				} else {

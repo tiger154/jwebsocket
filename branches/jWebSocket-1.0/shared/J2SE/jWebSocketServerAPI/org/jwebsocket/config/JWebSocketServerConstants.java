@@ -25,7 +25,7 @@ public final class JWebSocketServerConstants {
 	/**
 	 * Current version string of the jWebSocket package.
 	 */
-	public static final String VERSION_STR = "1.0b6 (nightly build 20208)";
+	public static final String VERSION_STR = "1.0b6 (nightly build 20223)";
 	/**
 	 * Name space base for tokens and plug-ins.
 	 */
@@ -41,7 +41,7 @@ public final class JWebSocketServerConstants {
 	/**
 	 * Constant for CATALINA_HOME
 	 */
-	public static final String CATALINA_HOME = "CATALINA_HOME";
+	// public static final String CATALINA_HOME = "CATALINA_HOME";
 	/**
 	 * Constant for jWebSocket.xml configuration file
 	 */

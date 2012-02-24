@@ -29,8 +29,9 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.util.Tools;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 /**
  * 
@@ -237,16 +238,18 @@ public class TokenPlugIn extends BasePlugIn {
 	
 	public ServerXmlBeanFactory getConfigBeanFactory() {
 		String lSpringConfig = getString("spring_config");
-		lSpringConfig = Tools.expandEnvVars(lSpringConfig);
+		lSpringConfig = JWebSocketConfig.expandEnvAndJWebSocketVars(lSpringConfig);
 		String lPath = FilenameUtils.getPath(lSpringConfig);
 		if (lPath == null || lPath.length() <= 0) {
 			lPath = JWebSocketConfig.getConfigFolder(lSpringConfig);
 		} else {
 			lPath = lSpringConfig;
 		}
-		FileSystemResource lFSRes = new FileSystemResource(lPath);
-
-		ServerXmlBeanFactory lBeanFactory = new ServerXmlBeanFactory(lFSRes, getClass().getClassLoader());
+		Resource lRes = 
+				JWebSocketConfig.getJWebSocketHome().isEmpty()
+				? new ClassPathResource(lPath)
+				: new FileSystemResource(lPath)	;
+		ServerXmlBeanFactory lBeanFactory = new ServerXmlBeanFactory(lRes, getClass().getClassLoader());
 		return lBeanFactory;
 	}
 }

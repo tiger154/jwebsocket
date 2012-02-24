@@ -39,6 +39,7 @@ import org.apache.commons.mail.MultiPartEmail;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -47,7 +48,6 @@ import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -623,7 +623,7 @@ public class MailPlugIn extends TokenPlugIn {
 		lBaseDir = MAIL_DIR_DEF;
 		if (lUsername != null) {
 			lBaseDir = FilenameUtils.getFullPath(
-					Tools.expandEnvVars(lBaseDir).replace("{username}", lUsername));
+					JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir).replace("{username}", lUsername));
 		}
 
 		// complete the response token

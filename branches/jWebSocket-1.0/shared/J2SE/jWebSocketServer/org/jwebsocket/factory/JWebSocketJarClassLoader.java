@@ -28,7 +28,10 @@ import org.xeustechnologies.jcl.JarClassLoader;
  * @author Marcos Antonio González Huerta (markos0886, UCI)
  */
 public class JWebSocketJarClassLoader extends JarClassLoader {
-	
+
+	/**
+	 * 
+	 */
 	public JWebSocketJarClassLoader() {
 		// init with empty list of URLs
 		super();
@@ -37,7 +40,7 @@ public class JWebSocketJarClassLoader extends JarClassLoader {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @param path
+	 * @param aPath 
 	 * @throws MalformedURLException
 	 */
 	public void addFile(String aPath) throws MalformedURLException {
@@ -45,7 +48,22 @@ public class JWebSocketJarClassLoader extends JarClassLoader {
 		URL lURL = lFile.toURI().toURL();
 		add(lURL);
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param aURL 
+	 * @throws MalformedURLException
+	 */
+	public void addURL(URL aURL) throws MalformedURLException {
+		add(aURL);
+	}
+
+	/**
+	 * 
+	 * @param className
+	 * @return
+	 */
 	public Class reloadClass(String className) {
 		return getLocalLoader().loadClass(className, true);
 	}
