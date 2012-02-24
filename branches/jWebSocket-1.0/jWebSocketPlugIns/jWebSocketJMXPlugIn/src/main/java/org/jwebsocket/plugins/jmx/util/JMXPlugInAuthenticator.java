@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-package org.jwebsocket.plugins.jmx;
+package org.jwebsocket.plugins.jmx.util;
 
 import java.util.Collection;
 import java.util.Collections;

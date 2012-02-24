@@ -30,6 +30,7 @@ import org.jwebsocket.api.WebSocketPlugIn;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.plugins.jmx.util.JMXHandler;
 
 /**
  *
