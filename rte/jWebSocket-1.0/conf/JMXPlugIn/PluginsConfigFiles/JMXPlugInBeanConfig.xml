@@ -2,7 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
       "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-    <bean id="JMXPlugIn" class="org.jwebsocket.plugins.jmx.configDefinition.JMXPluginDefinition">
+    <bean id="JMXPlugIn" class="org.jwebsocket.plugins.jmx.configdefinition.JMXPluginDefinition">
        <property name="pluginId" value="jws.jmx"/>
        <property name="serverId" value="ts0"/>
        <property name="description" value="This MBean show information about jWebSocket server and allows invoke plugins functionalities."/>
@@ -10,7 +10,7 @@
        <property name="jarName" value="jWebSocketJMXPlugIn-1.0.jar"/>
        <property name="attributes">
            <set>
-               <bean id="plugInAttribute" class="org.jwebsocket.plugins.jmx.configDefinition.AttributeDefinition">
+               <bean id="plugInAttribute" class="org.jwebsocket.plugins.jmx.configdefinition.AttributeDefinition">
                    <property name="name" value="informationOfRunningServers"/>
                    <property name="type" value="javax.management.openmbean.CompositeData"/>
                    <property name="readable" value="true"/>
@@ -22,29 +22,29 @@
        </property>
        <property name="operations">
            <set>
-               <bean id="invokePluginOperation" class="org.jwebsocket.plugins.jmx.configDefinition.OperationDefinition">
+               <bean id="invokePluginOperation" class="org.jwebsocket.plugins.jmx.configdefinition.OperationDefinition">
                    <property name="name" value="invokePluginOperation"/>
                    <property name="impact" value="ACTION_INFO"/>
                    <property name="returnValueType" value="javax.management.openmbean.CompositeData"/>
                    <property name="description" value="This operation allow invoke diferent plugins functionalities."/>
                    <property name="parameters">
 					<set>
-						<bean id="serverIdParameter" class="org.jwebsocket.plugins.jmx.configDefinition.ParameterDefinition">
+						<bean id="serverIdParameter" class="org.jwebsocket.plugins.jmx.configdefinition.ParameterDefinition">
 							<property name ="name" value="serverId"/>
 							<property name ="description" value="The Id of the server where is the plugin function to invoke."/>
 							<property name ="type" value="java.lang.String"/>
 						</bean>
-						<bean id="pluginIdParameter" class="org.jwebsocket.plugins.jmx.configDefinition.ParameterDefinition">
+						<bean id="pluginIdParameter" class="org.jwebsocket.plugins.jmx.configdefinition.ParameterDefinition">
 							<property name ="name" value="pluginId"/>
 							<property name ="description" value="The Id of the plugin where is the function to invoke."/>
 							<property name ="type" value="java.lang.String"/>
 						</bean>
-						<bean id="methodNameParameter" class="org.jwebsocket.plugins.jmx.configDefinition.ParameterDefinition">
+						<bean id="methodNameParameter" class="org.jwebsocket.plugins.jmx.configdefinition.ParameterDefinition">
 							<property name ="name" value="methodName"/>
 							<property name ="description" value="The name of the function to invoke."/>
 							<property name ="type" value="java.lang.String"/>
 						</bean>
-						<bean id="methodParameters" class="org.jwebsocket.plugins.jmx.configDefinition.ParameterDefinition">
+						<bean id="methodParameters" class="org.jwebsocket.plugins.jmx.configdefinition.ParameterDefinition">
 							<property name ="name" value="methodParameters"/>
 							<property name ="description" value="The parameters of the function to invoke specified in json format."/>
 							<property name ="type" value="java.lang.String"/>

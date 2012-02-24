@@ -40,19 +40,19 @@
    <bean id="XSLTProcessor" class="mx4j.tools.adaptor.http.XSLTProcessor" />
    <bean id="HttpAdaptor" class="mx4j.tools.adaptor.http.HttpAdaptor">
         <property name="processor" ref="XSLTProcessor"/>
-        <property name="port" value="8020"/>
+        <property name="port" value="8080"/>
         <!-- <property name="host" value="10.208.7.149"/> -->
         <property name="host" value="localhost"/>
         <property name="authenticationMethod" value="basic"/>
    </bean>
    
-   <bean id="jmxPluginAuthenticator" class="org.jwebsocket.plugins.jmx.JMXPlugInAuthenticator"/>
+   <bean id="jmxPluginAuthenticator" class="org.jwebsocket.plugins.jmx.util.JMXPlugInAuthenticator"/>
    
    <bean id="staticAuthUserDetailsService" class="org.springframework.security.core.userdetails.memory.InMemoryDaoImpl">
 		<property name="userMap">
 			<!-- format: username=password,grantedAuthority[,grantedAuthority][,enabled|disabled] -->
 			<value>
-					admin=0226c390bea2f19ee4c4f3fc5866004f, ROLE_ADMIN_JMX, enabled
+					admin=1d4022319b1ba976f1c8cfbab0e9603f, ROLE_ADMIN_JMX, enabled
 			</value>
 		</property>	
 	</bean>
