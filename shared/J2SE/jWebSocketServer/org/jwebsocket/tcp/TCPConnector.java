@@ -19,7 +19,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.logging.Level;
 import javax.net.ssl.SSLSocket;
 
 import org.apache.log4j.Logger;

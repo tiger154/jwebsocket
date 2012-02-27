@@ -64,6 +64,15 @@ public class JettyServlet extends WebSocketServlet {
 		return new JettyWrapper(aRequest, aProtocol);
 	}
 
+	@Override
+	public boolean checkOrigin(HttpServletRequest aRequest, String aOrigin) {
+		boolean lOk = super.checkOrigin(aRequest, aOrigin);
+		lOk = true;
+		return lOk;
+	}
+
+	
+	
 	/**
 	 * Returns a short description of the servlet.
 	 * @return a String containing servlet description
