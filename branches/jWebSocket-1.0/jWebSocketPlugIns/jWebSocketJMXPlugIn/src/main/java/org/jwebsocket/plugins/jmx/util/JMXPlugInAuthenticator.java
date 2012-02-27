@@ -24,11 +24,9 @@ import java.util.Collections;
 import javax.management.remote.JMXAuthenticator;
 import javax.management.remote.JMXPrincipal;
 import javax.security.auth.Subject;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.util.Tools;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.memory.InMemoryDaoImpl;
@@ -62,9 +60,12 @@ public class JMXPlugInAuthenticator implements JMXAuthenticator {
 		String lUserName = (String) lCredentials[0];
 		String lPassword = (String) lCredentials[1];
 
-		//Load config file to perform authentication
+		// Load config file to perform authentication
+		ServerXmlBeanFactory lFactory = JWebSocketConfig.getConfigBeanFactory(getClass(), mConfigPath);
+		/*		
 		Resource lResource = new FileSystemResource(mConfigPath);
 		XmlBeanFactory lFactory = new ServerXmlBeanFactory(lResource, getClass().getClassLoader());
+		 */
 		InMemoryDaoImpl lAuthentication = (InMemoryDaoImpl) lFactory.getBean("staticAuthUserDetailsService");
 		UserDetails lUser = lAuthentication.loadUserByUsername(lUserName);
 
@@ -93,11 +94,12 @@ public class JMXPlugInAuthenticator implements JMXAuthenticator {
 	public static void setConfigPath(String aConfigPath) {
 		JMXPlugInAuthenticator.mConfigPath = aConfigPath;
 	}
-	
-	private Boolean credentialAllowed(Collection<GrantedAuthority> aCredentials){
+
+	private Boolean credentialAllowed(Collection<GrantedAuthority> aCredentials) {
 		for (GrantedAuthority lCredential : aCredentials) {
-			if(lCredential.getAuthority().equals("ROLE_ADMIN_JMX"))
+			if (lCredential.getAuthority().equals("ROLE_ADMIN_JMX")) {
 				return true;
+			}
 		}
 		return false;
 	}

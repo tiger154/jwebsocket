@@ -26,6 +26,7 @@ import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.engines.BaseEngine;
@@ -126,7 +127,6 @@ public class SystemPlugIn extends TokenPlugIn {
 			List<AuthenticationProvider> lProviders = mAuthProvMgr.getProviders();
 			mAuthProv = lProviders.get(0);
 			mSessionManager = (SessionManager) mBeanFactory.getBean("sessionManager");
-
 			// give a success message to the administrator
 			if (mLog.isInfoEnabled()) {
 				mLog.info("System plug-in successfully loaded.");

@@ -15,6 +15,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- shared version number properties -->
+		<org.springframework.version>3.0.5.RELEASE</org.springframework.version>
 	</properties>
 <!--
 	<scm>
@@ -77,6 +79,89 @@
 			<artifactId>jdom</artifactId>
 			<version>1.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.1</version>
+		</dependency>
+		
+		<!-- Spring framework
+		    Core utilities used by other modules.
+		    Define this if you use Spring Utility APIs
+			(org.springframework.core.*/org.springframework.util.*)
+		-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<!--
+		    Application Context (depends on spring-core, spring-expression, spring-aop, spring-beans)
+		    This is the central artifact for Spring's Dependency Injection Container and is generally always defined
+		-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<!-- for LDAP authentication -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-ldap</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+
+		<!-- Spring JDBC database abastraction -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		
+		<dependency> 
+			<groupId>org.apache.activemq</groupId> 
+			<artifactId>activemq-core</artifactId> 
+			<version>5.5.0</version> 
+		</dependency>
+		
+		<!-- Spring JMS abstraction -->
+		<dependency> 
+			<groupId>org.springframework</groupId> 
+			<artifactId>spring-jms</artifactId> 
+			<version>${org.springframework.version}</version> 
+		</dependency>		
+		<dependency> 
+			<groupId>org.apache.xbean</groupId> 
+			<artifactId>xbean-spring-v2c</artifactId> 
+			<version>2.8</version> 
+		</dependency>		
+
+		<!-- Spring LDAP directory service abastraction -->
+		<!-- http://static.springsource.org/spring-security/site/docs/3.0.x/reference/ldap.html -->
+		<!--
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-ldap</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		-->
+	
 	</dependencies>
 
 	<!--  define repositories -->

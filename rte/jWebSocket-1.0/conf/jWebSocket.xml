@@ -126,6 +126,51 @@
 	-->
 	<!-- jWebSocket engine configuration -->
 	<engines>
+		<!-- TCP Engine Configuration -->
+		<engine>
+			<name>org.jwebsocket.tcp.TCPEngine</name>
+			<id>tcp0</id>
+			<jar>jWebSocketTCPEngine-1.0.jar</jar>
+			<port>8787</port>
+			<sslport>9797</sslport>
+			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
+			<!-- CAUTION! -->
+			<!-- not all browsers automatically accept self-signed certificates -->
+			<!-- please follow instructions on the jWebSocket.org website, how
+			     to trust self-signed certificates for the various browsers or
+				 how to import signed private key/certificate bundles into the keystore -->
+
+			<!-- these domains are accepted by the engine listening on the above mentioned port -->
+			<!-- you optionally can add asterisks as wild cards -->
+			<domains>
+				<domain>http*://jwebsocket.org</domain>
+				<domain>http*://jwebsocket.com</domain>
+				<domain>http*://10.10.*</domain>
+				<domain>http*://10.21.*</domain>
+				<domain>http*://192.168.*</domain>
+				<domain>http*://www.jwebsocket.org</domain>
+				<domain>http*://www.jwebsocket.com</domain>
+				<domain>http*://localhost*</domain>
+			</domains>
+			<!-- default session timeout 1h, max timeout currently 1 hour -->
+			<timeout>0</timeout>
+			<!--
+				maximum size of the data packet that the engine will read,
+				if the frame size is larger than this the connection will be closed.
+			-->
+			<maxframesize>1048840</maxframesize>
+			
+			<!-- maximun number of connections allowed by this engine -->
+			<maxconnections>10000</maxconnections>
+			
+			<!-- on max connections reached strategy -->
+			<!-- wait, close, reject, redirect --> 
+			<onmaxconnections>reject</onmaxconnections>
+		</engine>
+
 		<!-- Jetty Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.jetty.JettyEngine</name>
@@ -187,51 +232,6 @@
 			<maxframesize>1048840</maxframesize>
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
-		</engine>
-
-		<!-- TCP Engine Configuration -->
-		<engine>
-			<name>org.jwebsocket.tcp.TCPEngine</name>
-			<id>tcp0</id>
-			<jar>jWebSocketTCPEngine-1.0.jar</jar>
-			<port>8787</port>
-			<sslport>9797</sslport>
-			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
-			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
-			<!-- password to access keystore file -->
-			<password>jWebSocket</password>
-			<!-- CAUTION! -->
-			<!-- not all browsers automatically accept self-signed certificates -->
-			<!-- please follow instructions on the jWebSocket.org website, how
-			     to trust self-signed certificates for the various browsers or
-				 how to import signed private key/certificate bundles into the keystore -->
-
-			<!-- these domains are accepted by the engine listening on the above mentioned port -->
-			<!-- you optionally can add asterisks as wild cards -->
-			<domains>
-				<domain>http*://jwebsocket.org</domain>
-				<domain>http*://jwebsocket.com</domain>
-				<domain>http*://10.10.*</domain>
-				<domain>http*://10.21.*</domain>
-				<domain>http*://192.168.*</domain>
-				<domain>http*://www.jwebsocket.org</domain>
-				<domain>http*://www.jwebsocket.com</domain>
-				<domain>http*://localhost*</domain>
-			</domains>
-			<!-- default session timeout 1h, max timeout currently 1 hour -->
-			<timeout>0</timeout>
-			<!--
-				maximum size of the data packet that the engine will read,
-				if the frame size is larger than this the connection will be closed.
-			-->
-			<maxframesize>1048840</maxframesize>
-			
-			<!-- maximun number of connections allowed by this engine -->
-			<maxconnections>10000</maxconnections>
-			
-			<!-- on max connections reached strategy -->
-			<!-- wait, close, reject, redirect --> 
-			<onmaxconnections>reject</onmaxconnections>
 		</engine>
 
 		<!-- NIO Engine Configuration -->
@@ -1514,7 +1514,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<setting key="config_file">JMXPlugIn/jmxPluginConfig.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JMXPlugIn/jmxPluginConfig.xml</setting>
 				<setting key="beans_config">JMXPlugIn/PluginsConfigFiles/</setting>
 			</settings>
 		</plugin>

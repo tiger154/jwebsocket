@@ -238,18 +238,6 @@ public class TokenPlugIn extends BasePlugIn {
 	
 	public ServerXmlBeanFactory getConfigBeanFactory() {
 		String lSpringConfig = getString("spring_config");
-		lSpringConfig = JWebSocketConfig.expandEnvAndJWebSocketVars(lSpringConfig);
-		String lPath = FilenameUtils.getPath(lSpringConfig);
-		if (lPath == null || lPath.length() <= 0) {
-			lPath = JWebSocketConfig.getConfigFolder(lSpringConfig);
-		} else {
-			lPath = lSpringConfig;
-		}
-		Resource lRes = 
-				JWebSocketConfig.getJWebSocketHome().isEmpty()
-				? new ClassPathResource(lPath)
-				: new FileSystemResource(lPath)	;
-		ServerXmlBeanFactory lBeanFactory = new ServerXmlBeanFactory(lRes, getClass().getClassLoader());
-		return lBeanFactory;
+		return JWebSocketConfig.getConfigBeanFactory(getClass(), lSpringConfig);
 	}
 }
