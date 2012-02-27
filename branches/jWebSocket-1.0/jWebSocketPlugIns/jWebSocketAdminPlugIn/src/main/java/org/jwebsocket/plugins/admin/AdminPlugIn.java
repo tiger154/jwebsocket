@@ -44,6 +44,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	private static final String NS_ADMIN = JWebSocketServerConstants.NS_BASE + ".plugins.admin";
 	private static final String mVersion = "1.0";
 	private static boolean mExternalShutDownAllowed = false;
+	private static final int DEF_NUMBER_OF_DAYS = 30;
 	private static Integer mNumberOfDays = null;
 	private static AdminPlugInService mService = null;
 
@@ -61,7 +62,13 @@ public class AdminPlugIn extends TokenPlugIn {
 
 		mExternalShutDownAllowed = "true".equalsIgnoreCase(aConfiguration.getString("allowShutdown"));
 
-		mNumberOfDays = Integer.parseInt(aConfiguration.getString("numberOfDays"));
+		String lNumberOfDays = aConfiguration.getString("numberOfDays");
+		try {
+			mNumberOfDays = Integer.parseInt(lNumberOfDays);
+		} catch (Exception lEx) {
+			mLog.warn("Number of day value invalid or not defined in config file, defaulted to " + DEF_NUMBER_OF_DAYS + ".");
+			mNumberOfDays = DEF_NUMBER_OF_DAYS;
+		}
 
 		// give a success message to the administrator
 		if (mLog.isDebugEnabled()) {
@@ -73,7 +80,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
 		String lNS = aToken.getNS();
-		
+
 		if (lType != null && getNamespace().equals(lNS)) {
 			// remote shut down server
 			if (lType.equals("shutdown")) {
@@ -357,7 +364,7 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getAdminLogs'...");
 		}
@@ -369,11 +376,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getPlugInsConfig'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.getPlugInsConfig(aConnector, aToken));
 	}
 
@@ -381,11 +388,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getFiltersConfig'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.getFiltersConfig(aConnector, aToken));
 	}
 
@@ -393,11 +400,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getJars'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.getJars(aConnector, aToken));
 	}
 
@@ -405,11 +412,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getPlugInsByJar'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.getPlugInsByJar(aConnector, aToken));
 	}
 
@@ -417,11 +424,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getFilterByJar'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.getFilterByJar(aConnector, aToken));
 	}
 
@@ -429,11 +436,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getPlugInConfigById'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.getPlugInConfigById(aConnector, aToken));
 	}
 
@@ -441,11 +448,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getFilterConfigById'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.getFilterConfigById(aConnector, aToken));
 	}
 
@@ -453,11 +460,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'changeOrderOfPlugInChain'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.changeOrderOfPlugInChain(aConnector, aToken));
 	}
 
@@ -465,11 +472,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'changeOrderOfFilterChain'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.changeOrderOfFilterChain(aConnector, aToken));
 	}
 
@@ -477,11 +484,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'enablePlugIn'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.enablePlugIn(aConnector, aToken));
 	}
 
@@ -489,11 +496,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'enableFilter'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.enableFilter(aConnector, aToken));
 	}
 
@@ -501,11 +508,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'disablePlugIn'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.disablePlugIn(aConnector, aToken));
 	}
 
@@ -513,11 +520,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'disableFilter'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.disableFilter(aConnector, aToken));
 	}
 
@@ -525,11 +532,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'addPlugIn'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.addPlugIn(aConnector, aToken));
 	}
 
@@ -537,11 +544,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'addFilter'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.addFilter(aConnector, aToken));
 	}
 
@@ -549,11 +556,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'removePlugIn'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.removePlugIn(aConnector, aToken));
 	}
 
@@ -561,11 +568,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'removeFilter'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.removeFilter(aConnector, aToken));
 	}
 
@@ -573,11 +580,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'reloadPlugIn'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.reloadPlugIn(aConnector, aToken));
 	}
 
@@ -585,11 +592,11 @@ public class AdminPlugIn extends TokenPlugIn {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
 		}
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'reloadFilter'...");
 		}
-		
+
 		getServer().sendToken(aConnector, mService.reloadFilter(aConnector, aToken));
 	}
 }
