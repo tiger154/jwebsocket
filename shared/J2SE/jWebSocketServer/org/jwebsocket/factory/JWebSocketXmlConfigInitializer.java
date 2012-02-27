@@ -290,10 +290,9 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 		// now initialize the filter
 		for (FilterConfig lFilterConfig : jWebSocketConfig.getFilters()) {
 			try {
+				// try to load filter from classpath first, could be located in server bundle
 				Class<WebSocketFilter> lFilterClass =
 						loadFilterFromClasspath(lFilterConfig.getName());
-				// try to load filter from classpath first, could be located in server bundle
-				lFilterClass = loadFilterFromClasspath(lFilterConfig.getName());
 				if (lFilterClass == null) {
 					String lJarFilePath =
 							JWebSocketConfig.getLibsFolder(lFilterConfig.getJar());
