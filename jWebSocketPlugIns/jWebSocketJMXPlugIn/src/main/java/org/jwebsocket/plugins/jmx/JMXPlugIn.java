@@ -41,9 +41,6 @@ import org.jwebsocket.plugins.jmx.util.JMXPlugInAuthenticator;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.JSONToken;
 import org.jwebsocket.token.Token;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 /**
  *
@@ -55,7 +52,7 @@ public class JMXPlugIn extends TokenPlugIn {
 	private static String mNamespace = "org.jwebsocket.plugins.jmx";
 	private static JMXPlugIn mJmxPlugin = null;
 	private static CompositeData mInformationOfRunningServers;
-	
+
 	public JMXPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 
@@ -71,19 +68,16 @@ public class JMXPlugIn extends TokenPlugIn {
 	}
 
 	@Override
-	public void engineStarted(WebSocketEngine aEngine){
+	public void engineStarted(WebSocketEngine aEngine) {
 		JMXHandler.setLog(mLog);
 		JMXServerFunctions.setLog(mLog);
-		
-		String lPath = JWebSocketConfig.getConfigFolder("") + getString("config_file");
-		Resource lResource = new FileSystemResource(lPath);
-		XmlBeanFactory lFactory = new ServerXmlBeanFactory(lResource, getClass().getClassLoader());
-			
-		JMXPlugInAuthenticator.setConfigPath(lPath);
-		
+
+		ServerXmlBeanFactory lFactory = getConfigBeanFactory();
+		JMXPlugInAuthenticator.setConfigPath(getString("spring_config"));
+
 		lFactory.getBean("exporter");
 		RMIConnectorServer a = (RMIConnectorServer) lFactory.getBean("rmiConnector");
-		
+
 		HttpAdaptor httpAdaptor = (HttpAdaptor) lFactory.getBean("HttpAdaptor");
 		try {
 			httpAdaptor.addAuthorization("admin", "jmxadmin");

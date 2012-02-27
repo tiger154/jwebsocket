@@ -28,6 +28,7 @@ import java.util.List;
 
 import java.util.Map;
 import javolution.util.FastMap;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.config.xml.EngineConfig;
 import org.jwebsocket.config.xml.FilterConfig;
@@ -39,7 +40,11 @@ import org.jwebsocket.config.xml.ServerConfig;
 import org.jwebsocket.config.xml.UserConfig;
 import org.jwebsocket.kit.WebSocketRuntimeException;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 /**
  * Represents the jWebSocket configuration. This class is immutable and should
@@ -718,5 +723,22 @@ public class JWebSocketConfig implements Config {
 			System.out.println(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 		}
 		return lURL;
+	}
+	
+	public static ServerXmlBeanFactory getConfigBeanFactory(Class aForClass, String aPath) {
+		String lSpringConfig = aPath;
+		lSpringConfig = JWebSocketConfig.expandEnvAndJWebSocketVars(lSpringConfig);
+		String lPath = FilenameUtils.getPath(lSpringConfig);
+		if (lPath == null || lPath.length() <= 0) {
+			lPath = JWebSocketConfig.getConfigFolder(lSpringConfig);
+		} else {
+			lPath = lSpringConfig;
+		}
+		Resource lRes = 
+				JWebSocketConfig.getJWebSocketHome().isEmpty()
+				? new ClassPathResource(lPath)
+				: new FileSystemResource(lPath)	;
+		ServerXmlBeanFactory lBeanFactory = new ServerXmlBeanFactory(lRes, aForClass.getClassLoader());
+		return lBeanFactory;
 	}
 }
