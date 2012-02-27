@@ -126,56 +126,6 @@
 	-->
 	<!-- jWebSocket engine configuration -->
 	<engines>
-		<!-- TCP Engine Configuration -->
-		<engine>
-			<name>org.jwebsocket.tcp.TCPEngine</name>
-			<id>tcp0</id>
-			<jar>jWebSocketTCPEngine-1.0.jar</jar>
-			<port>8787</port>
-			<sslport>9797</sslport>
-			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
-			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
-			<!-- password to access keystore file -->
-			<password>jWebSocket</password>
-			<!-- CAUTION! -->
-			<!-- not all browsers automatically accept self-signed certificates -->
-			<!-- please follow instructions on the jWebSocket.org website, how
-			     to trust self-signed certificates for the various browsers or
-				 how to import signed private key/certificate bundles into the keystore -->
-
-			<!-- these domains are accepted by the engine listening on the above mentioned port -->
-			<domains>
-				<domain>http://jwebsocket.org</domain>
-				<domain>http://10.21.68.56</domain>
-				<domain>http://jwebsocket.com</domain>
-				<domain>http://www.jwebsocket.org</domain>
-				<domain>http://www.jwebsocket.com</domain>
-				<domain>http://localhost</domain>
-				<domain>http://localhost:8080</domain>
-				<domain>http://localhost:8084</domain>
-				
-				<domain>https://jwebsocket.org</domain>
-				<domain>https://jwebsocket.com</domain>
-				<domain>https://www.jwebsocket.org</domain>
-				<domain>https://www.jwebsocket.com</domain>
-				<domain>https://localhost</domain>
-			</domains>
-			<!-- default session timeout 1h, max timeout currently 1 hour -->
-			<timeout>0</timeout>
-			<!--
-				maximum size of the data packet that the engine will read,
-				if the frame size is larger than this the connection will be closed.
-			-->
-			<maxframesize>1048840</maxframesize>
-			
-			<!-- maximun number of connections allowed by this engine -->
-			<maxconnections>10000</maxconnections>
-			
-			<!-- on max connections reached strategy -->
-			<!-- wait, close, reject, redirect --> 
-			<onmaxconnections>reject</onmaxconnections>
-		</engine>
-
 		<!-- Jetty Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.jetty.JettyEngine</name>
@@ -215,9 +165,14 @@
 			-->
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<domains>
-				<domain>jwebsocket.org</domain>
-				<domain>jwebsocket.com</domain>
-				<domain>localhost</domain>
+				<domain>http*://jwebsocket.org</domain>
+				<domain>http*://jwebsocket.com</domain>
+				<domain>http*://10.10.*</domain>
+				<domain>http*://10.21.*</domain>
+				<domain>http*://192.168.*</domain>
+				<domain>http*://www.jwebsocket.org</domain>
+				<domain>http*://www.jwebsocket.com</domain>
+				<domain>http*://localhost*</domain>
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
@@ -232,6 +187,51 @@
 			<maxframesize>1048840</maxframesize>
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
+		</engine>
+
+		<!-- TCP Engine Configuration -->
+		<engine>
+			<name>org.jwebsocket.tcp.TCPEngine</name>
+			<id>tcp0</id>
+			<jar>jWebSocketTCPEngine-1.0.jar</jar>
+			<port>8787</port>
+			<sslport>9797</sslport>
+			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
+			<!-- CAUTION! -->
+			<!-- not all browsers automatically accept self-signed certificates -->
+			<!-- please follow instructions on the jWebSocket.org website, how
+			     to trust self-signed certificates for the various browsers or
+				 how to import signed private key/certificate bundles into the keystore -->
+
+			<!-- these domains are accepted by the engine listening on the above mentioned port -->
+			<!-- you optionally can add asterisks as wild cards -->
+			<domains>
+				<domain>http*://jwebsocket.org</domain>
+				<domain>http*://jwebsocket.com</domain>
+				<domain>http*://10.10.*</domain>
+				<domain>http*://10.21.*</domain>
+				<domain>http*://192.168.*</domain>
+				<domain>http*://www.jwebsocket.org</domain>
+				<domain>http*://www.jwebsocket.com</domain>
+				<domain>http*://localhost*</domain>
+			</domains>
+			<!-- default session timeout 1h, max timeout currently 1 hour -->
+			<timeout>0</timeout>
+			<!--
+				maximum size of the data packet that the engine will read,
+				if the frame size is larger than this the connection will be closed.
+			-->
+			<maxframesize>1048840</maxframesize>
+			
+			<!-- maximun number of connections allowed by this engine -->
+			<maxconnections>10000</maxconnections>
+			
+			<!-- on max connections reached strategy -->
+			<!-- wait, close, reject, redirect --> 
+			<onmaxconnections>reject</onmaxconnections>
 		</engine>
 
 		<!-- NIO Engine Configuration -->
@@ -1197,7 +1197,7 @@
 		<!-- plug-in to generate and validate Captchas -->
 		<plugin>
 			<name>org.jwebsocket.plugins.jcaptcha.JCaptchaPlugIn</name>
-			<id>jws.sms</id>
+			<id>jws.jcaptcha</id>
 			<ns>org.jwebsocket.plugins.jcaptcha</ns>
 			<jar>jWebSocketJCaptchaPlugIn-1.0.jar</jar>
 			<server-assignments>
@@ -1411,18 +1411,31 @@
 		</plugin>
 		
 		<!-- Sencha Demo plugin -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.extjs.ExtJSGridFormDemoPlugin</name>
 			<id>jws.extjsdemo</id>
 			<ns>jws.ext.gridformdemo</ns>
-			<!-- <name>org.jwebsocket.plugins.extjs.ExtJSDemoPlugin</name> -->
-			<!-- <ns>jws.ext.demo</ns> -->
 			<jar>jWebSocketSenchaPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-
+		-->
+		
+		<!-- Sencha Demo plugin -->
+		<plugin>
+			<name>org.jwebsocket.plugins.extjs.ExtJSGridFormDemoPlugin</name>
+			<id>ExtJSGridFormDemoPlugin</id>
+			<ns>jws.ext.gridformdemo</ns>
+			<!-- <name>org.jwebsocket.plugins.extjs.ExtJSDemoPlugin</name> -->
+			<!-- <ns>jws.ext.demo</ns> -->
+			
+			<jar>jWebSocketSenchaPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
 		<!-- JQuery Demo plugin -->
 		<!--
 		<plugin>
@@ -1435,7 +1448,26 @@
 			</server-assignments>
 		</plugin>		
 		-->
-        
+
+		<plugin>
+			<name>cu.uci.hab.pingpong.plugin.PingPongPlugIn</name>
+			<id>jws.user</id>
+			<ns>pingpong</ns>
+			<jar>jWebSocketPingPongGame-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="sHeight">290</setting>
+				<setting key="sWidth">478</setting>
+				<setting key="dbHost">localhost</setting>
+				<setting key="dbPort">27017</setting>
+				<setting key="dbDay">30</setting>
+				<setting key="dbTime">1</setting>
+			</settings>
+		</plugin>
+		
+		
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
 			<ns>test</ns>
@@ -1462,7 +1494,6 @@
 			This plug-in requires Arduino hardware to be connected and configured.
 			This plug-in requires the rxtx lib to be loaded in the libraries section!.
 		-->
-		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
 			<ns>rc</ns>
@@ -1472,7 +1503,6 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		-->
 
 		<!-- JMX Plug-in -->
 		<plugin>

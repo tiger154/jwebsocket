@@ -28,14 +28,15 @@ import org.jwebsocket.factory.JWebSocketFactory;
  *
  * @author vbarzana
  */
-@WebServlet(name = "GrizzlyServlet", urlPatterns = {"/jWebSocket"}, loadOnStartup = 1)
+@WebServlet(name = "GrizzlyServlet", urlPatterns = {"/jWebSocketGrizzly"}, loadOnStartup = 1)
 public class GrizzlyServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		JWebSocketFactory.start();
-		org.glassfish.grizzly.websockets.WebSocketEngine.getEngine().register(new GrizzlyWebSocketApplication(JWebSocketFactory.getEngine()));
+		// TODO: Problems with Jetty, need to separate!
+		// JWebSocketFactory.start();
+		// org.glassfish.grizzly.websockets.WebSocketEngine.getEngine().register(new GrizzlyWebSocketApplication(JWebSocketFactory.getEngine()));
 	}
 
 	/** 

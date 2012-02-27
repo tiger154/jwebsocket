@@ -38,11 +38,26 @@ public class EngineUtils {
 	public static RequestHeader validateC2SRequest(List<String> aDomains,
 			Map aRespMap, Logger aLogger) throws UnsupportedEncodingException {
 
-		if (aDomains != null && (aRespMap.get("origin") == null
-				|| !aDomains.contains(aRespMap.get("origin")))) {
-			aLogger.error("Client origin '" + aRespMap.get("origin") + "' does not match allowed domains.");
-			return null;
+		// domain check, asterisks as wildcards are supported!
+		if (null != aDomains && !aDomains.isEmpty()) {
+			boolean lOk = false;
+			String lOrigin = (String) aRespMap.get("origin");
+			if (null != lOrigin) {
+				for (String lDomain : aDomains) {
+					// make a correct regular expression
+					lDomain = lDomain.replace("*", ".*");
+					if (lOrigin.matches(lDomain)) {
+						lOk = true;
+						break;
+					}
+				}
+			}
+			if (!lOk) {
+				aLogger.error("Client origin '" + aRespMap.get("origin") + "' does not match allowed domains.");
+				return null;
+			}
 		}
+
 
 		// Check for WebSocket protocol version.
 		// If it is present and if it's something unrecognizable, force disconnect (return null).

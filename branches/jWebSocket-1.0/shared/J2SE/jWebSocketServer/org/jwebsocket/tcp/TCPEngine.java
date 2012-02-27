@@ -130,10 +130,11 @@ public class TCPEngine extends BaseEngine {
 
 					// String lKeyStorePath = JWebSocketConfig.getConfigFolder(mKeyStore);
 					String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
-
+System.out.println("lKeyStorePath: " + lKeyStorePath);
 					if (lKeyStorePath != null) {
 						char[] lPassword = mKeyStorePassword.toCharArray();
 						URL lURL = JWebSocketConfig.getURLFromPath(lKeyStorePath);
+System.out.println("lURL: " + lURL);
 						lKeyStore.load(new FileInputStream(lURL.getPath()), lPassword);
 						lKMF.init(lKeyStore, lPassword);
 
