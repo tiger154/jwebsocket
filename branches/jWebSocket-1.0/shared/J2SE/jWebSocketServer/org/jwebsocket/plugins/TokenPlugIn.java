@@ -39,7 +39,7 @@ import org.springframework.core.io.Resource;
  * @author Marcos Antonio González Huerta (markos0886, UCI)
  */
 public class TokenPlugIn extends BasePlugIn {
-	
+
 	private String mNamespace = null;
 
 	/**
@@ -227,6 +227,13 @@ public class TokenPlugIn extends BasePlugIn {
 		}
 	}
 
+	/**
+	 * 
+	 * @param aResponse
+	 * @param aType
+	 * @param aVersion
+	 * @param aReason
+	 */
 	public void createReasonOfChange(Token aResponse, ChangeType aType, String aVersion, String aReason) {
 		aResponse.setNS(getNamespace());
 		aResponse.setType("processChangeOfPlugIn");
@@ -235,9 +242,16 @@ public class TokenPlugIn extends BasePlugIn {
 		aResponse.setString("reason", aReason);
 		aResponse.setString("id", getId());
 	}
-	
+
+	/**
+	 * 
+	 * @return
+	 */
 	public ServerXmlBeanFactory getConfigBeanFactory() {
 		String lSpringConfig = getString("spring_config");
+		if (null == lSpringConfig || lSpringConfig.isEmpty()) {
+			return null;
+		}
 		return JWebSocketConfig.getConfigBeanFactory(getClass(), lSpringConfig);
 	}
 }

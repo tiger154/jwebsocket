@@ -966,7 +966,7 @@
 				<!-- if set to true it will still depend on the right
 				     org.jwebsocket.plugins.admin.shutdown -->
 				<setting key="allowShutdown">true</setting>
-				<!--Number of days. Show the logs that are in the range of n last days.-->
+				<!-- Number of days. Show the logs that are in the range of n last days. -->
 				<setting key="numberOfDays">30</setting>
 			</settings>
 		</plugin>

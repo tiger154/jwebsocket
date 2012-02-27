@@ -55,13 +55,21 @@ public class LoggingPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_LOGGING);
-		
-		mBeanFactory = getConfigBeanFactory();
-		mSettings = (Settings) mBeanFactory.getBean("settings");
-		mLogger = mSettings.getTarget();
 
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Reporting plug-in successfully instantiated.");
+		try {
+			mBeanFactory = getConfigBeanFactory();
+			if (null == mBeanFactory) {
+				mLog.error("No or invalid spring configuration for logging plug-in, some features may not be available.");
+			} else {
+				mBeanFactory = getConfigBeanFactory();
+				mSettings = (Settings) mBeanFactory.getBean("settings");
+				mLogger = mSettings.getTarget();
+				if (mLog.isInfoEnabled()) {
+					mLog.info("Logging plug-in successfully instantiated.");
+				}
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating logging Plug-in"));
 		}
 	}
 
@@ -196,22 +204,22 @@ public class LoggingPlugIn extends TokenPlugIn {
 				lServer.sendToken(aConnector, lResponse);
 				return;
 			}
-			lKey = (Integer)lKeys.get(0);
+			lKey = (Integer) lKeys.get(0);
 			lFields.add(lPrimaryKey);
 			lValues.add(lKey);
 		}
 
- 		String lFieldsStr = null;
+		String lFieldsStr = null;
 		String lValuesStr = null;
 		/*
 		try {
-			List lTest = new ArrayList();
-			lTest.add("test1");
-			lTest.add("test2");
-			String lInt = (String) Tools.invokeUnique(JDBCTools, "test", lTest);
-			System.out.println("test: "+ lInt);
+		List lTest = new ArrayList();
+		lTest.add("test1");
+		lTest.add("test2");
+		String lInt = (String) Tools.invokeUnique(JDBCTools, "test", lTest);
+		System.out.println("test: "+ lInt);
 		} catch (Exception ex) {
-			mLog.error(ex.getClass().getSimpleName() + ": Method 'test' could not be invoked: " + ex.getMessage());
+		mLog.error(ex.getClass().getSimpleName() + ": Method 'test' could not be invoked: " + ex.getMessage());
 		}
 		 */
 		try {

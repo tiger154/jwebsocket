@@ -68,19 +68,25 @@ public class ReportingPlugIn extends TokenPlugIn {
 	 */
 	public ReportingPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
-
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating reporting plug-in...");
 		}
-
 		// specify default name space for admin plugin
 		this.setNamespace(NS_REPORTING);
 
-		mBeanFactory = getConfigBeanFactory();
-		mSettings = (Settings) mBeanFactory.getBean("settings");
-
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Reporting plug-in successfully instantiated.");
+		try {
+			mBeanFactory = getConfigBeanFactory();
+			if (null == mBeanFactory) {
+				mLog.error("No or invalid spring configuration for reporting plug-in, some features may not be available.");
+			} else {
+				mBeanFactory = getConfigBeanFactory();
+				mSettings = (Settings) mBeanFactory.getBean("settings");
+				if (mLog.isInfoEnabled()) {
+					mLog.info("Reporting plug-in successfully instantiated.");
+				}
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating reporting plug-in"));
 		}
 	}
 
@@ -189,18 +195,18 @@ public class ReportingPlugIn extends TokenPlugIn {
 		/*
 		ClassLoader lCL = ClassLoader.getSystemClassLoader();
 		try {
-			URL lURL;
-			lURL = new URL("file:///C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
-			ClassPathUpdater.add(lURL);
-			lURL = new URL("file:///C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
-			ClassPathUpdater.add(lURL);
+		URL lURL;
+		lURL = new URL("file:///C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
+		ClassPathUpdater.add(lURL);
+		lURL = new URL("file:///C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
+		ClassPathUpdater.add(lURL);
 		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding Jasper libs to class path"));
+		mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding Jasper libs to class path"));
 		}
 		// lParams.put("REPORT_CLASS_LOADER", JWebSocketXmlConfigInitializer.getClassLoader());
 		lParams.put("REPORT_CLASS_LOADER", lCL);
-		 */ 
-		
+		 */
+
 		// instantiate response token
 		lResponse = lServer.createResponse(aToken);
 

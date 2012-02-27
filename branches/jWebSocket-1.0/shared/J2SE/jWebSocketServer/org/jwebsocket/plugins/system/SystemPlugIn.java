@@ -26,7 +26,6 @@ import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
-import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.engines.BaseEngine;
@@ -123,16 +122,20 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		try {
 			mBeanFactory = getConfigBeanFactory();
-			mAuthProvMgr = (ProviderManager) mBeanFactory.getBean("authManager");
-			List<AuthenticationProvider> lProviders = mAuthProvMgr.getProviders();
-			mAuthProv = lProviders.get(0);
-			mSessionManager = (SessionManager) mBeanFactory.getBean("sessionManager");
-			// give a success message to the administrator
-			if (mLog.isInfoEnabled()) {
-				mLog.info("System plug-in successfully loaded.");
+			if (null == mBeanFactory) {
+				mLog.error("No or invalid spring configuration for system plug-in, some features may not be available.");
+			} else {
+				mAuthProvMgr = (ProviderManager) mBeanFactory.getBean("authManager");
+				List<AuthenticationProvider> lProviders = mAuthProvMgr.getProviders();
+				mAuthProv = lProviders.get(0);
+				mSessionManager = (SessionManager) mBeanFactory.getBean("sessionManager");
+				// give a success message to the administrator
+				if (mLog.isInfoEnabled()) {
+					mLog.info("System plug-in successfully instantiated.");
+				}
 			}
 		} catch (Exception lEx) {
-			mLog.error(lEx.getClass().getSimpleName() + " at System plug-in instantiation: " + lEx.getMessage());
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating system plug-in"));
 		}
 	}
 
