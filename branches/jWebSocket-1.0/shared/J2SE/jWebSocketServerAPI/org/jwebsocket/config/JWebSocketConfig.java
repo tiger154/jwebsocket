@@ -161,7 +161,6 @@ public class JWebSocketConfig implements Config {
 	 * Specify the jWebSocketHome (environment variable or command line option)
 	 * 
 	 * @param aJWebSocketHome 
-	 * @return 
 	 */
 	public static void setJWebSocketHome(String aJWebSocketHome) {
 		if (null != aJWebSocketHome) {
@@ -174,6 +173,11 @@ public class JWebSocketConfig implements Config {
 		}
 	}
 
+	/**
+	 * 
+	 * @param aString
+	 * @return
+	 */
 	public static String expandEnvAndJWebSocketVars(String aString) {
 		Map lVars = new FastMap<String, String>();
 		lVars.putAll(System.getenv());
@@ -617,36 +621,38 @@ public class JWebSocketConfig implements Config {
 	 * @param aText 
 	 * @param aSubFolder 
 	 * @param aFilename
-	 * @param aSubFolderTomcat 
+	 * @param aClassLoader 
 	 * @return the path to jWebSocket.xml
 	 */
-	public static String getSubFolder(String aText, String aSubFolder, String aFilename) {
+	public static String getSubFolder(String aText, String aSubFolder,
+			String aFilename, ClassLoader aClassLoader) {
 
 		String lPath = null;
 		String lJWebSocketHome = null;
-		String lFileSep = null;
 		File lFile = null;
 
 		checkLogs();
 
 		// try to load resource from %JWEBSOCKET_HOME%sub folder
 		lJWebSocketHome = JWebSocketConfig.getJWebSocketHome();
-		// lFileSep = System.getProperty("file.separator");
 		if (lJWebSocketHome != null) {
-			// jar can to be located in %JWEBSOCKET_HOME%libs
-			lPath = lJWebSocketHome + aSubFolder + "/" // + lFileSep
+
+			// if JWEBSOCKET_HOME not set and not given try to eval from resource
+			// System.out.println("Loading from folder...");
+			if (lJWebSocketHome.isEmpty() && null != aClassLoader) {
+				URL lURL = aClassLoader.getResource("/");
+				if (null != lURL) {
+					lJWebSocketHome = lURL.getPath();
+					// System.out.println("URL found: " + lJWebSocketHome);
+				} else {
+					// System.out.println("URL not found!");
+				}	
+			}
+
+			// file can to be located in %JWEBSOCKET_HOME%<folder>/
+			lPath = lJWebSocketHome + aSubFolder + "/"
 					+ (null != aFilename ? aFilename : "");
 			lFile = new File(lPath);
-			/*/
-			mLog.error("lPath: " + lPath);
-			URL lURL = getURLFromPath(lPath, ClassLoader.getSystemClassLoader());
-			mLog.error("URL: " + lURL);
-			// lFile = new File(lURL.getPath());
-			lFile = new File(lPath);
-			mLog.error("File Abs: " + lFile.getAbsolutePath());
-			// mLog.error("File Can: " + lFile.getCanonicalPath());
-			mLog.error("File Path: " + lFile.getPath());
-			 */
 			if (lFile.exists()) {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Found " + aText + " at " + lPath + "...");
@@ -665,7 +671,7 @@ public class JWebSocketConfig implements Config {
 	 * @return
 	 */
 	public static String getLogsFolder(String aFilename) {
-		return getSubFolder("log file", "logs", aFilename);
+		return getSubFolder("log file", "logs", aFilename, null);
 	}
 
 	/**
@@ -674,7 +680,7 @@ public class JWebSocketConfig implements Config {
 	 * @return
 	 */
 	public static String getTempFolder(String aFilename) {
-		return getSubFolder("temporary file", "temp", aFilename);
+		return getSubFolder("temporary file", "temp", aFilename, null);
 	}
 
 	/**
@@ -683,7 +689,7 @@ public class JWebSocketConfig implements Config {
 	 * @return
 	 */
 	public static String getBinFolder(String aFilename) {
-		return getSubFolder("binary file", "bin", aFilename);
+		return getSubFolder("binary file", "bin", aFilename, null);
 	}
 
 	/**
@@ -692,7 +698,27 @@ public class JWebSocketConfig implements Config {
 	 * @return
 	 */
 	public static String getConfigFolder(String aFilename) {
-		return getSubFolder("config file", "conf", aFilename);
+		return getSubFolder("config file", "conf", aFilename, null);
+	}
+
+	/**
+	 * 
+	 * @param aFilename
+	 * @param aClassLoader
+	 * @return
+	 */
+	public static String getConfigFolder(String aFilename, ClassLoader aClassLoader) {
+		return getSubFolder("config file", "conf", aFilename, aClassLoader);
+	}
+
+	/**
+	 *
+	 * @param aFilename
+	 * @param aClassLoader 
+	 * @return
+	 */
+	public static String getLibsFolder(String aFilename, ClassLoader aClassLoader) {
+		return getSubFolder("library", "libs", aFilename, aClassLoader);
 	}
 
 	/**
@@ -701,15 +727,26 @@ public class JWebSocketConfig implements Config {
 	 * @return
 	 */
 	public static String getLibsFolder(String aFilename) {
-		return getSubFolder("library", "libs", aFilename);
+		return getSubFolder("library", "libs", aFilename, null);
 	}
 
+	/**
+	 * 
+	 * @param aPath
+	 * @return
+	 */
 	public static URL getURLFromPath(String aPath) {
 		// lURL = ClassLoader.getSystemClassLoader().getResource(aPath);
 		URL lURL = getURLFromPath(aPath, Thread.currentThread().getContextClassLoader());
 		return lURL;
 	}
-	
+
+	/**
+	 * 
+	 * @param aPath
+	 * @param aClassLoader
+	 * @return
+	 */
 	public static URL getURLFromPath(String aPath, ClassLoader aClassLoader) {
 		String lWebSocketHome = JWebSocketConfig.getJWebSocketHome();
 		URL lURL = null;
@@ -724,7 +761,13 @@ public class JWebSocketConfig implements Config {
 		}
 		return lURL;
 	}
-	
+
+	/**
+	 * 
+	 * @param aForClass
+	 * @param aPath
+	 * @return
+	 */
 	public static ServerXmlBeanFactory getConfigBeanFactory(Class aForClass, String aPath) {
 		String lSpringConfig = aPath;
 		lSpringConfig = JWebSocketConfig.expandEnvAndJWebSocketVars(lSpringConfig);
@@ -734,10 +777,10 @@ public class JWebSocketConfig implements Config {
 		} else {
 			lPath = lSpringConfig;
 		}
-		Resource lRes = 
+		Resource lRes =
 				JWebSocketConfig.getJWebSocketHome().isEmpty()
 				? new ClassPathResource(lPath)
-				: new FileSystemResource(lPath)	;
+				: new FileSystemResource(lPath);
 		ServerXmlBeanFactory lBeanFactory = new ServerXmlBeanFactory(lRes, aForClass.getClassLoader());
 		return lBeanFactory;
 	}

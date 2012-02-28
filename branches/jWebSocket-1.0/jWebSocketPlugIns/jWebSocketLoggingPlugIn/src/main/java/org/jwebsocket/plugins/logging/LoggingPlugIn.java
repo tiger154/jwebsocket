@@ -48,6 +48,10 @@ public class LoggingPlugIn extends TokenPlugIn {
 	private static ServerXmlBeanFactory mBeanFactory;
 	private static Settings mSettings;
 
+	/**
+	 * 
+	 * @param aConfiguration
+	 */
 	public LoggingPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
@@ -211,31 +215,20 @@ public class LoggingPlugIn extends TokenPlugIn {
 
 		String lFieldsStr = null;
 		String lValuesStr = null;
-		/*
 		try {
-		List lTest = new ArrayList();
-		lTest.add("test1");
-		lTest.add("test2");
-		String lInt = (String) Tools.invokeUnique(JDBCTools, "test", lTest);
-		System.out.println("test: "+ lInt);
-		} catch (Exception ex) {
-		mLog.error(ex.getClass().getSimpleName() + ": Method 'test' could not be invoked: " + ex.getMessage());
-		}
-		 */
-		try {
-			lFieldsStr = (String) Tools.invokeUnique(JDBCTools, "fieldListToString", lFields);
-		} catch (Exception ex) {
+			lFieldsStr = (String) Tools.invoke(JDBCTools, "fieldListToString", lFields);
+		} catch (Exception lEx) {
 			// TODO: return error here
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Method 'fieldListToString' could not be invoked: " + ex.getMessage());
+				mLog.debug("Method 'fieldListToString' could not be invoked: " + lEx.getMessage());
 			}
 		}
 		try {
-			lValuesStr = (String) Tools.invokeUnique(JDBCTools, "valueListToString", lValues);
-		} catch (Exception ex) {
+			lValuesStr = (String) Tools.invoke(JDBCTools, "valueListToString", lValues);
+		} catch (Exception lEx) {
 			// TODO: return error here
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Method 'valueListToString' could not be invoked: " + ex.getMessage());
+				mLog.debug("Method 'valueListToString' could not be invoked: " + lEx.getMessage());
 			}
 		}
 		// JDBCTools.

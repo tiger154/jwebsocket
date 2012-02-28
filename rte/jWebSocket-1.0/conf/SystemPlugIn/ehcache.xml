@@ -3,7 +3,7 @@
 	updateCheck="false"
 	monitoring="autodetect"
 	dynamicConfig="true">
-	<diskStore path="${JWEBSOCKET_HOME}/cache"/>
+	<diskStore path="${JWEBSOCKET_HOME}cache"/>
 
 	<!-- this ehcache.xml should only be used in case the spring security uses
 		 EhCache and jWebSocket leverages a different cache engine. Then in the

@@ -48,6 +48,7 @@
 								<exclude>**/devguide/**</exclude>
 							</excludes>
 						</resource>
+						<!--
 						<resource>
 							<targetPath>WEB-INF/classes/conf</targetPath>							
 							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
@@ -56,6 +57,7 @@
 							<targetPath>WEB-INF/classes</targetPath>							
 							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
 						</resource>
+						-->
 					</webResources>
 
 					<!-- if you want to create a self-sufficient war comment out the following directive -->

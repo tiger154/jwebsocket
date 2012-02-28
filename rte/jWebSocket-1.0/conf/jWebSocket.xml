@@ -1274,6 +1274,7 @@
 			<jar>jWebSocketFileSystemPlugIn-1.0.jar</jar>
 			<!-- plug-in specific settings -->
 			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/FileSystemPlugIn/filesystem.xml</setting>
 				<!-- specify folder locations -->
 				<!-- examples for pure websocket server w/o an attached web server -->
 				<!--

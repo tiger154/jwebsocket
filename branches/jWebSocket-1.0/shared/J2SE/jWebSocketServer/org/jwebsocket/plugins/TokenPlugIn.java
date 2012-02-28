@@ -15,7 +15,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins;
 
-import org.apache.commons.io.FilenameUtils;
 import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.api.PluginConfiguration;
@@ -29,9 +28,6 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 /**
  * 

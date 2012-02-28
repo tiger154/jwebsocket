@@ -38,7 +38,8 @@ public class EhCacheManager {
 	 */
 	public static CacheManager getInstance() {
 		if (mInstance == null) {
-			mInstance = new CacheManager(JWebSocketConfig.getConfigFolder("ehcache.xml"));
+			ClassLoader lClassLoader = Thread.currentThread().getContextClassLoader();
+			mInstance = new CacheManager(JWebSocketConfig.getConfigFolder("ehcache.xml", lClassLoader));
 		}
 		return mInstance;
 	}

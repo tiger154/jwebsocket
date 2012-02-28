@@ -16,9 +16,9 @@
 package org.jwebsocket.plugins.jdbc;
 
 import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.sql.rowset.serial.SerialClob;
 import javax.sql.rowset.serial.SerialException;
 import javolution.util.FastList;
 import javolution.util.FastMap;
@@ -225,6 +225,8 @@ public class JDBCTools {
 	 * 
 	 * @param aRowSet
 	 * @return
+	 * @throws InvalidResultSetAccessException 
+	 * @throws SerialException  
 	 */
 	public static Token resultSetToToken(SqlRowSet aRowSet)
 			throws InvalidResultSetAccessException, SerialException {
@@ -280,7 +282,7 @@ public class JDBCTools {
 	 * @param aFieldList
 	 * @return
 	 */
-	public static String fieldListToString(FastList aFieldList) {
+	public static String fieldListToString(List aFieldList) {
 		StringBuilder lRes = new StringBuilder();
 		int lIdx = 0;
 		int lCnt = aFieldList.size();
@@ -299,18 +301,17 @@ public class JDBCTools {
 	 * @param aFieldList
 	 * @return
 	 */
-	public static String fieldListToString(List aFieldList) {
-		StringBuilder lRes = new StringBuilder();
-		int lIdx = 0;
-		int lCnt = aFieldList.size();
-		for (Object lField : aFieldList) {
-			lRes.append(lField);
-			lIdx++;
-			if (lIdx < lCnt) {
-				lRes.append(",");
-			}
-		}
-		return lRes.toString();
+	public static String fieldListToString(FastList aFieldList) {
+		return fieldListToString((List) aFieldList);
+	}
+
+	/**
+	 * 
+	 * @param aFieldList
+	 * @return
+	 */
+	public static String fieldListToString(ArrayList aFieldList) {
+		return fieldListToString((List) aFieldList);
 	}
 
 	/**
@@ -331,30 +332,38 @@ public class JDBCTools {
 
 	/**
 	 * 
-	 * @param aFieldList
+	 * @param aValueList
 	 * @return
 	 */
-	public static String valueListToString(List aFieldList) {
+	public static String valueListToString(List aValueList) {
 		StringBuilder lRes = new StringBuilder();
 		int lIdx = 0;
-		int lCnt = aFieldList.size();
-		for (Object lField : aFieldList) {
+		int lCnt = aValueList.size();
+		for (Object lField : aValueList) {
 			lRes.append(valueToString(lField));
-			/*
-			if (lField instanceof String
-			&& !((String) lField).startsWith("TO_DATE")) {
-			lRes.append("'");
-			lRes.append(lField);
-			lRes.append("'");
-			} else {
-			lRes.append(lField);
-			}
-			 */
 			lIdx++;
 			if (lIdx < lCnt) {
 				lRes.append(",");
 			}
 		}
 		return lRes.toString();
+	}
+
+	/**
+	 * 
+	 * @param aValueList
+	 * @return
+	 */
+	public static String valueListToString(FastList aValueList) {
+		return valueListToString((List) aValueList);
+	}
+
+	/**
+	 * 
+	 * @param aValueList
+	 * @return
+	 */
+	public static String valueListToString(ArrayList aValueList) {
+		return valueListToString((List) aValueList);
 	}
 }

@@ -48,6 +48,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -70,6 +71,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	private static String PUBLIC_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/public/";
 	private static String WEB_ROOT_DEF = "http://jwebsocket.org/";
 	private static FileAlterationMonitor mPublicMonitor = null;
+	
+	private static ServerXmlBeanFactory mBeanFactory;
+	private static Settings mSettings;
 
 	/**
 	 * 
@@ -82,6 +86,21 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_FILESYSTEM);
+
+		try {
+			mBeanFactory = getConfigBeanFactory();
+			if (null == mBeanFactory) {
+				mLog.error("No or invalid spring configuration for filesystem plug-in, some features may not be available.");
+			} else {
+				mBeanFactory = getConfigBeanFactory();
+				mSettings = (Settings) mBeanFactory.getBean("settings");
+				if (mLog.isInfoEnabled()) {
+					mLog.info("Filesystem plug-in successfully instantiated.");
+				}
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating filesystem plug-in"));
+		}
 		// give a success message to the administrator
 		if (mLog.isInfoEnabled()) {
 			mLog.info("FileSystem plug-in successfully loaded.");
@@ -405,9 +424,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lFolder = null;
 		Token lToken = TokenFactory.createToken();
 
-		Map<String, Object> lSettings = getSettings();
-		if (lSettings != null) {
-			lObject = lSettings.get("alias:" + lAlias);
+		if (mSettings != null) {
+			lObject = mSettings.getAlias(lAlias);
 			if (lObject != null) {
 				lFolder = (String) lObject;
 				File lDir = new File(JWebSocketConfig.expandEnvAndJWebSocketVars(lFolder));

@@ -192,18 +192,16 @@
 	</bean>
 
 	<bean id="authCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-		<property name="configLocation" value="file:///${JWEBSOCKET_HOME}/conf/SystemPlugIn/ehcache.xml"/>
+		<property name="configLocation" value="file:///${JWEBSOCKET_HOME}conf/SystemPlugIn/ehcache.xml"/>
 		<!-- property name="configLocation" value="classpath:/ehcache-failsafe.xml"/-->
 	</bean>
-
 	
 	<!-- ####### optional password hashing with MD5 hashs ####### -->
-
+	
 	<bean id="authPasswordEncoderMD5" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
 
-
 	<!-- ####### initialization of authentication and authorization provider ####### -->
-
+	
 	<bean id="authManager" class="org.springframework.security.authentication.ProviderManager">
 		<property name="providers">
 			<list>
