@@ -228,7 +228,9 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 						mLog.debug("Plug-in '" + lPlugInConfig.getName()
 								+ "' trying to load from file...");
 					}
-					String lJarFilePath = JWebSocketConfig.getLibsFolder(lPlugInConfig.getJar());
+					String lJarFilePath = JWebSocketConfig.getLibsFolder(
+							lPlugInConfig.getJar(), 
+							Thread.currentThread().getContextClassLoader());
 					// jarFilePath may be null if .jar is included in server bundle
 					if (lJarFilePath != null) {
 						mClassLoader.addFile(lJarFilePath);

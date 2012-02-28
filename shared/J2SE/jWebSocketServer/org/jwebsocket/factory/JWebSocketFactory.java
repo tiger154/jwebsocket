@@ -148,12 +148,12 @@ public class JWebSocketFactory {
 		JWebSocketInstance.setStatus(JWebSocketInstance.STARTING);
 		setProperties();
 
-		JWebSocketLoader loader = new JWebSocketLoader();
+		JWebSocketLoader lLoader = new JWebSocketLoader();
 		try {
-			JWebSocketBeanFactory.load(aBoostrapConfigPath, null);
+			JWebSocketBeanFactory.load(aBoostrapConfigPath, Thread.currentThread().getContextClassLoader());
 
 			WebSocketInitializer lInitializer =
-					loader.initialize(aConfigOverridePath);
+					lLoader.initialize(aConfigOverridePath);
 			if (lInitializer == null) {
 				JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
 				return;

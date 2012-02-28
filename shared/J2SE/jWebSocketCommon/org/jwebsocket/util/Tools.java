@@ -420,11 +420,9 @@ public class Tools {
 			}
 		}
 		Method lMthd = aClass.getMethod(aMethodName, lArgClasses);
-		/*
 		if (lMthd == null) {
-		throw new Exception("Method '" + aMethodName + "' not found.");
+			throw new Exception("Method '" + aMethodName + "' not found.");
 		}
-		 */
 		lRes = lMthd.invoke(null, aArgs);
 
 		return lRes;
@@ -453,6 +451,52 @@ public class Tools {
 			lArgClasses = new Class[aArgs.length];
 			for (int lIdx = 0; lIdx < lArgClasses.length; lIdx++) {
 				Class lClass = aArgs[lIdx].getClass();
+				lArgClasses[lIdx] = lClass;
+			}
+		}
+
+		Method lMthd = null;
+		Method[] lMethods = aClass.getMethods();
+		for (int lIdx = 0; lIdx < lMethods.length; lIdx++) {
+			if (aMethodName.equals(lMethods[lIdx].getName())) {
+				lMthd = lMethods[lIdx];
+				break;
+			}
+		}
+		if (lMthd == null) {
+			throw new Exception("Method '" + aMethodName + "' not found.");
+		}
+		lRes = lMthd.invoke(null, aArgs);
+
+		return lRes;
+	}
+
+	/**
+	 * 
+	 * @param aClass
+	 * @param aMethodName
+	 * @param aArgs
+	 * @return
+	 * @throws Exception
+	 */
+	public static Object invokeUnique(Class aClass, String aMethodName,
+			Object[] aArgs, Class[] aClasses) throws Exception {
+		if (aClass == null) {
+			throw new Exception("No class passed for call.");
+		}
+		if (aArgs != null && aClasses != null && aArgs.length != aClasses.length) {
+			throw new Exception("Number of aclasses must match the number of arguments.");
+		}
+		if (aMethodName == null) {
+			throw new Exception("No method name passed for call.");
+		}
+		Object lRes = null;
+
+		Class[] lArgClasses = null;
+		if (aArgs != null) {
+			lArgClasses = new Class[aArgs.length];
+			for (int lIdx = 0; lIdx < lArgClasses.length; lIdx++) {
+				Class lClass = aClasses[lIdx].getClass();
 				lArgClasses[lIdx] = lClass;
 			}
 		}

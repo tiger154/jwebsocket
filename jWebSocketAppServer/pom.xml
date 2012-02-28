@@ -37,9 +37,24 @@
 					<outputDirectory>${project.build.directory}/../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
 
 					<!-- if you want to create a self-sufficient war comment out the following directive -->
+					<!--
 					<packagingExcludes>
 						**/*.jar
 					</packagingExcludes>
+					-->
+					<webResources>
+						<resource>
+							<targetPath>WEB-INF/classes/conf</targetPath>						
+							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
+						</resource>
+						<resource>
+							<targetPath>WEB-INF/classes/libs</targetPath>						
+							<directory>../../../rte/jWebSocket-${project.version}/libs</directory>
+							<includes>
+								<include>**/jWebSocket*.jar</include>
+							</includes>							
+						</resource>
+					</webResources>
 				</configuration>
 			</plugin>
 
