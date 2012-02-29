@@ -244,9 +244,9 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 				}
 				// if class found try to create an instance
 				if (lPlugInClass != null) {
-					WebSocketPlugIn lPlugIn = null;
+					WebSocketPlugIn lPlugIn;
 
-					Constructor<WebSocketPlugIn> lPlugInConstructor = null;
+					Constructor<WebSocketPlugIn> lPlugInConstructor;
 					lPlugInConstructor =
 							lPlugInClass.getConstructor(PluginConfiguration.class);
 					if (lPlugInConstructor != null) {

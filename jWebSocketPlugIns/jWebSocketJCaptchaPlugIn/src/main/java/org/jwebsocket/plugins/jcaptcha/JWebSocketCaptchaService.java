@@ -16,17 +16,20 @@
 package org.jwebsocket.plugins.jcaptcha;
 
 /**
- * 
+ *
  * @author mayra, vbarzana, aschulze
  */
-import com.octo.captcha.service.image.ImageCaptchaService;
 import com.octo.captcha.service.image.DefaultManageableImageCaptchaService;
+import com.octo.captcha.service.image.ImageCaptchaService;
 
 public class JWebSocketCaptchaService {
 
-	private static ImageCaptchaService mInstance = new DefaultManageableImageCaptchaService();
+	private static ImageCaptchaService mInstance = null;
 
 	public static ImageCaptchaService getInstance() {
+		if (null == mInstance) {
+			mInstance = new DefaultManageableImageCaptchaService();
+		}
 		return mInstance;
 	}
 }

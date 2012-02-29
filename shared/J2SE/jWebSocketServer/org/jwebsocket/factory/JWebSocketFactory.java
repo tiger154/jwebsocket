@@ -125,17 +125,7 @@ public class JWebSocketFactory {
 		} else {
 			JWebSocketConfig.setJWebSocketHome(lJWebSocketHome);
 		}
-		/*
-		if (aArgs != null && aArgs.length > 0) {
-		if (aArgs.length < 2) {
-		System.out.println("use [-config <path_to_config_file>] as command line arguments to override default jWebSocket.xml");
-		} else if (aArgs.length == 2) {
-		if ("-config".equals(aArgs[0])) {
-		lConfigOverridePath = aArgs[1];
-		}
-		}
-		}
-		 */
+		
 		return lConfigOverridePath;
 	}
 

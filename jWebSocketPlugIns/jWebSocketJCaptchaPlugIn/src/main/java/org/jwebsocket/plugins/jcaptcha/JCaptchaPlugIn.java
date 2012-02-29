@@ -44,6 +44,7 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 			mLog.debug("Instantiating Captcha plug-in...");
 		}
 		setNamespace(aConfiguration.getNamespace());
+		
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Captcha plug-in successfully instantiated.");
 		}
@@ -84,7 +85,7 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 
 	public void generateCaptcha(Token aToken, WebSocketConnector aConnector) {
 		ByteArrayOutputStream lImgOutputStream = new ByteArrayOutputStream();
-		byte[] lCaptchaBytes = null;
+		byte[] lCaptchaBytes;
 		Token lResponse = createResponse(aToken);
 		try {
 			// Session ID is used to identify the particular captcha.

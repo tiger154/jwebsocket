@@ -148,12 +148,6 @@ xcopy %libs%mongo-java-driver-2.7.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%kahadb-5.5.0.jar %tempdir%libs\ /s /i /y
 rem Arduino support for hardware control
 xcopy %libs%rxtx-2.1.7.jar %tempdir%libs\ /s /i /y
-rem jCaptcha support for spam protection
-xcopy %libs%jcaptcha-all-1.0-RC-2.0.1.jar %tempdir%libs\ /s /i /y
-rem Hardware Monitoring support
-xcopy %libs%sigar-1.6.4.jar %tempdir%libs\ /s /i /y
-rem For JMX support
-xcopy %libs%mx4j-tools-2.1.1.jar %tempdir%libs\ /s /i /y
 rem Jetty support
 xcopy %libs%jetty-client-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-http-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
