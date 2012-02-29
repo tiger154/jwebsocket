@@ -1,6 +1,6 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>jWebSocket-Parent</artifactId>
 		<groupId>org.jwebsocket</groupId>
@@ -17,7 +17,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	 <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+		<netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
 	</properties>
 <!--	
 	<scm>
@@ -35,7 +35,18 @@
 				<configuration>
 					<warName>jWebSocketAppServer-${project.version}</warName>
 					<outputDirectory>${project.build.directory}/../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
-
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<customClasspathLayout>WEB-INF/lib/*.jar</customClasspathLayout>
+						</manifest>
+					</archive>
+					<!--
+					<packagingIncludes>
+						**/*.jar
+					</packagingIncludes>
+					-->
 					<!-- if you want to create a self-sufficient war comment out the following directive -->
 					<!--
 					<packagingExcludes>
@@ -47,6 +58,7 @@
 							<targetPath>WEB-INF/classes/conf</targetPath>						
 							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
 						</resource>
+						<!-- put all jWebSocket jars into the lib folder too, to be in the classpath -->
 						<resource>
 							<targetPath>WEB-INF/lib</targetPath>						
 							<directory>../../../rte/jWebSocket-${project.version}/libs</directory>
@@ -95,7 +107,22 @@
 					<groupId>org.springframework</groupId>
 				</exclusion>
 			</exclusions>
-			
+		</dependency>
+
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketArduinoPlugIn</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketJCaptchaPlugIn</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketMonitoringPlugIn</artifactId>
+			<version>${pom.version}</version>
 		</dependency>
 		
 	</dependencies>
