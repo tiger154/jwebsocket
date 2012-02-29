@@ -16,7 +16,6 @@
 package org.jwebsocket.spring;
 
 import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 /**
@@ -25,10 +24,8 @@ import org.springframework.core.io.Resource;
  */
 public class ServerXmlBeanFactory extends XmlBeanFactory {
 
-    
-    
 	/**
-	 * 
+	 *
 	 * @param aRes
 	 */
 	public ServerXmlBeanFactory(Resource aRes) {
@@ -36,7 +33,7 @@ public class ServerXmlBeanFactory extends XmlBeanFactory {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aRes
 	 * @param aBeanClassLoader
 	 */
@@ -46,7 +43,7 @@ public class ServerXmlBeanFactory extends XmlBeanFactory {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aBeanClassLoader
 	 */
 	@Override

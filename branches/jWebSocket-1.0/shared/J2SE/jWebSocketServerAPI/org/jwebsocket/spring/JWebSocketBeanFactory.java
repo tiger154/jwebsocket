@@ -25,10 +25,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 
 /**
- * This is required to load the bootstrap.xml config file.
- * It provides a shared beanFactory for all plug-ins and this 
- * allows inter-dependencies between the plug-ins and core components.
- * 
+ * This is required to load the bootstrap.xml config file. It provides a shared
+ * beanFactory for all plug-ins and this allows inter-dependencies between the
+ * plug-ins and core components.
+ *
  * @author alexanderschulze
  * @author kyberneees
  */
@@ -41,7 +41,6 @@ public class JWebSocketBeanFactory {
 		if (null == mGlobalContext) {
 			mGlobalContext = new GenericApplicationContext(new DefaultListableBeanFactory());
 		}
-
 		return mGlobalContext;
 	}
 
@@ -49,15 +48,14 @@ public class JWebSocketBeanFactory {
 		if (!mContextMap.containsKey(aNamespace)) {
 			mContextMap.put(aNamespace, new GenericApplicationContext(new DefaultListableBeanFactory()));
 		}
-
 		return mContextMap.get(aNamespace);
 	}
 
 	/**
 	 * Load beans from a configuration file into the global bean factory
-	 * 
+	 *
 	 * @param aPath
-	 * @param aBeanClassLoader 
+	 * @param aBeanClassLoader
 	 */
 	public static void load(String aPath, ClassLoader aBeanClassLoader) {
 		load(null, aPath, aBeanClassLoader);
@@ -65,28 +63,28 @@ public class JWebSocketBeanFactory {
 
 	/**
 	 * Load beans from a configuration file into a specific bean factory
-	 * 
+	 *
 	 * @param aNamespace
 	 * @param aPath
-	 * @param aBeanClassLoader 
+	 * @param aClassLoader
 	 */
-	public static void load(String aNamespace, String aPath, ClassLoader aBeanClassLoader) {
+	public static void load(String aNamespace, String aPath, ClassLoader aClassLoader) {
 		XmlBeanDefinitionReader lXmlReader;
 		if (null != aNamespace) {
 			lXmlReader = new XmlBeanDefinitionReader(getInstance(aNamespace));
 		} else {
 			lXmlReader = new XmlBeanDefinitionReader(getInstance());
 		}
-		lXmlReader.setBeanClassLoader(aBeanClassLoader);
+		lXmlReader.setBeanClassLoader(aClassLoader);
 
 		// if no JWEBSOCKET_HOME environment variable set 
 		// then use the classpath resource, otherwise the file system resource
-		// System.out.println("getJWebSocketHome: '" + JWebSocketConfig.getJWebSocketHome() + "'...");
+		System.out.println("getJWebSocketHome: '" + JWebSocketConfig.getJWebSocketHome() + "'...");
 		if (JWebSocketConfig.getJWebSocketHome().isEmpty()) {
-			// System.out.println("Loading resource from classpath: " + aPath + "...");
+			System.out.println("Loading resource from classpath: " + aPath + "...");
 			lXmlReader.loadBeanDefinitions(new ClassPathResource(aPath));
 		} else {
-			// System.out.println("Loading resource from filesystem: " + aPath + "...");
+			System.out.println("Loading resource from filesystem: " + aPath + "...");
 			lXmlReader.loadBeanDefinitions(new FileSystemResource(aPath));
 		}
 	}

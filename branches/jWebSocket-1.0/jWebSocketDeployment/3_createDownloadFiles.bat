@@ -146,8 +146,6 @@ xcopy %libs%ehcache-core-2.4.4.jar %tempdir%libs\ /s /i /y
 xcopy %libs%memcached-2.5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%mongo-java-driver-2.7.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%kahadb-5.5.0.jar %tempdir%libs\ /s /i /y
-rem Arduino support for hardware control
-xcopy %libs%rxtx-2.1.7.jar %tempdir%libs\ /s /i /y
 rem Jetty support
 xcopy %libs%jetty-client-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-http-8.1.0.RC5.jar %tempdir%libs\ /s /i /y

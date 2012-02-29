@@ -35,8 +35,8 @@ import org.jwebsocket.eventmodel.event.em.EngineStarted;
 import org.jwebsocket.eventmodel.event.em.EngineStopped;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.factory.JWebSocketFactory;
-import org.jwebsocket.factory.JWebSocketXmlConfigInitializer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
@@ -63,7 +63,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 
 	/**
 	 *
-	 * @param aConfiguration 
+	 * @param aConfiguration
 	 * @throws Exception
 	 */
 	public EventsPlugIn(PluginConfiguration aConfiguration) throws Exception {
@@ -83,7 +83,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 	 */
 	public void initialize() {
 		try {
-			//Load application jars
+			// Load application jars
 			if (getSettings().containsKey("jars")) {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Loading jars for '" + getNamespace() + "' application...");
@@ -98,13 +98,28 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 				}
 			}
 
-			//Loading plug-in beans
-			String lPath = JWebSocketConfig.getConfigFolder("EventsPlugIn/" + getNamespace() + "-application/bootstrap.xml");
-
-			ClassLoader lClassLoader = JWebSocketXmlConfigInitializer.getClassLoader();
+			// Loading plug-in beans
+			ClassLoader lClassLoader = getClass().getClassLoader();
+			// JWebSocketXmlConfigInitializer.getClassLoader();
+			// Thread.currentThread().getContextClassLoader();
+					// lClassLoader);
+					// JWebSocketConfig.getConfigFolder(
+			String lPath = 
+					"${JWEBSOCKET_HOME}conf/EventsPlugIn/" 
+					+ getNamespace() + "-application/bootstrap.xml";
+			lPath = JWebSocketConfig.expandEnvAndJWebSocketVars(lPath);
+			/*
+			System.out.println("================================");
+			System.out.println("a: " + lPath);
+			System.out.println("================================");
+			* 
 			JWebSocketBeanFactory.load(getNamespace(), lPath, lClassLoader);
 			mEm = (EventModel) JWebSocketBeanFactory.getInstance(getNamespace()).getBean("EventModel");
-
+			/* 
+			System.out.println("================================");
+			System.out.println("b!");
+			System.out.println("================================");
+			*/
 			// Initializing the event model
 			mEm.setParent(this);
 			mEm.initialize();
@@ -215,7 +230,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 
 	/**
 	 * Process incoming events from the client
-	 * 
+	 *
 	 * @param aConnector The client connector
 	 * @param aEvent The event from the client
 	 */

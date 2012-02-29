@@ -15,26 +15,26 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.plugin;
 
-import org.jwebsocket.eventmodel.s2c.S2CEventNotification;
 import java.util.Collection;
-import org.jwebsocket.eventmodel.observable.ObservableObject;
-import org.jwebsocket.eventmodel.api.IEventModelPlugIn;
-import org.jwebsocket.eventmodel.core.EventModel;
-import org.jwebsocket.eventmodel.observable.Event;
-import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import java.util.Map;
 import java.util.Set;
 import javolution.util.FastMap;
+import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.eventmodel.api.IEventModelPlugIn;
+import org.jwebsocket.eventmodel.core.EventModel;
+import org.jwebsocket.eventmodel.event.C2SEventDefinition;
 import org.jwebsocket.eventmodel.event.C2SEventDefinitionManager;
 import org.jwebsocket.eventmodel.event.S2CEvent;
-import org.jwebsocket.eventmodel.event.C2SEventDefinition;
+import org.jwebsocket.eventmodel.observable.Event;
+import org.jwebsocket.eventmodel.observable.ObservableObject;
+import org.jwebsocket.eventmodel.observable.ResponseEvent;
+import org.jwebsocket.eventmodel.s2c.S2CEventNotification;
 import org.jwebsocket.eventmodel.s2c.S2CEventNotificationHandler;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.logging.Logging;
-import org.apache.log4j.Logger;
 
 /**
  *

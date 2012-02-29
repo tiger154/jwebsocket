@@ -59,13 +59,6 @@
 		</library>
 		-->
 		
-		<!-- required for Arduino support -->
-		<library>
-			<id>RXTXSerialIO</id>
-			<url>${JWEBSOCKET_HOME}libs/rxtx-2.1.7.jar</url>
-			<description>RXTX Serial IO library</description>
-		</library>
-		
 		<!-- Jasper Reports required for Reporting plug-in -->
 		<!--
 		<library>
