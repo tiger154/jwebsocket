@@ -17,18 +17,17 @@ package org.jwebsocket.plugins.api;
 
 import java.util.List;
 import javolution.util.FastList;
+import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPlugIn;
-import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.core.io.FileSystemResource;
 
 /**
  * Plug-in to export the server API
@@ -38,6 +37,7 @@ import org.springframework.core.io.FileSystemResource;
  */
 public class APIPlugIn extends TokenPlugIn {
 
+	private static Logger mLog = Logging.getLogger(APIPlugIn.class);
 	private String GET_SERVER_API = "getServerAPI";
 	private String GET_PLUGIN_API = "getPlugInAPI";
 	private String GET_PLUGIN_IDS = "getPlugInIds";
@@ -49,14 +49,24 @@ public class APIPlugIn extends TokenPlugIn {
 
 	public APIPlugIn(PluginConfiguration configuration) throws Exception {
 		super(configuration);
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Instantiating API plug-in...");
+		}
 
-		//Creating the Spring Bean Factory
-		String lPath = JWebSocketConfig.getConfigFolder(getString("config_file"));
-		mBeanFactory = new ServerXmlBeanFactory(new FileSystemResource(lPath),
-				getClass().getClassLoader());
-
-		//Specify default name space for interface plugin
+		// specify default name space for interface plugin
 		this.setNamespace(NS_INTERFACE);
+
+		try {
+			// Creating the Spring Bean Factory
+			mBeanFactory = getConfigBeanFactory();
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating API plug-in"));
+		}
+
+		// give a success message to the administrator
+		if (mLog.isInfoEnabled()) {
+			mLog.info("API plug-in successfully loaded.");
+		}
 	}
 
 	/**
@@ -83,9 +93,9 @@ public class APIPlugIn extends TokenPlugIn {
 
 	/**
 	 * Export the server API
-	 * 
+	 *
 	 * @param aConnector
-	 * @param aToken 
+	 * @param aToken
 	 */
 	public void getServerAPI(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = createResponse(aToken);
@@ -108,9 +118,9 @@ public class APIPlugIn extends TokenPlugIn {
 
 	/**
 	 * Export the API for a plug-in giving a custom plug-in identifier
-	 * 
+	 *
 	 * @param aConnector
-	 * @param aToken 
+	 * @param aToken
 	 */
 	public void getPlugInAPI(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = createResponse(aToken);
@@ -139,9 +149,9 @@ public class APIPlugIn extends TokenPlugIn {
 
 	/**
 	 * Export the plug-ins identifiers
-	 * 
+	 *
 	 * @param aConnector
-	 * @param aToken 
+	 * @param aToken
 	 */
 	public void getPlugInIds(WebSocketConnector aConnector, Token aToken) {
 		List<String> lIdentifiers = new FastList<String>();
@@ -159,11 +169,11 @@ public class APIPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Giving a custom token type return <tt>TRUE</tt> if it is supported, 
+	 * Giving a custom token type return <tt>TRUE</tt> if it is supported,
 	 * <tt>FALSE</tt> otherwise
-	 * 
+	 *
 	 * @param aConnector
-	 * @param aToken 
+	 * @param aToken
 	 */
 	public void supportsToken(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = createResponse(aToken);
@@ -191,11 +201,11 @@ public class APIPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Giving a custom plug-in identifier return <tt>TRUE</tt> if it exists, 
+	 * Giving a custom plug-in identifier return <tt>TRUE</tt> if it exists,
 	 * <tt>FALSE</tt> otherwise
-	 * 
+	 *
 	 * @param aConnector
-	 * @param aToken 
+	 * @param aToken
 	 */
 	public void hasPlugIn(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = createResponse(aToken);
@@ -217,17 +227,4 @@ public class APIPlugIn extends TokenPlugIn {
 		sendToken(aConnector, aConnector, lResponse);
 	}
 
-	/**
-	 * @return the beanFactory
-	 */
-	public BeanFactory getBeanFactory() {
-		return mBeanFactory;
-	}
-
-	/**
-	 * @param aBeanFactory the beanFactory to set
-	 */
-	public void setBeanFactory(BeanFactory aBeanFactory) {
-		this.mBeanFactory = aBeanFactory;
-	}
 }

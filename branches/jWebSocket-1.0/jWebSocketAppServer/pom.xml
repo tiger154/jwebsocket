@@ -17,7 +17,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+	 <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
 	</properties>
 <!--	
 	<scm>
@@ -48,7 +48,7 @@
 							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
 						</resource>
 						<resource>
-							<targetPath>WEB-INF/classes/libs</targetPath>						
+							<targetPath>WEB-INF/lib</targetPath>						
 							<directory>../../../rte/jWebSocket-${project.version}/libs</directory>
 							<includes>
 								<include>**/jWebSocket*.jar</include>
