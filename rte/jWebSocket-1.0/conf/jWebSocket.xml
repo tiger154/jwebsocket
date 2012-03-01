@@ -1004,7 +1004,7 @@
 			</server-assignments>
 		</plugin>
 
-		<!-- plug-in to communicate via channels -->
+		<!-- jWebSocket Channel plug-in to communicate via channels -->
 		<plugin>
 			<name>org.jwebsocket.plugins.channels.ChannelPlugIn</name>
 			<id>jws.channels</id>
@@ -1409,6 +1409,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
+		
 		<!-- JQuery Demo plugin -->
 		<!--
 		<plugin>
@@ -1421,7 +1422,8 @@
 			</server-assignments>
 		</plugin>		
 		-->
-
+		
+		<!-- jWeSocket Ping-Pong Game Plug-in -->
 		<plugin>
 			<name>cu.uci.hab.pingpong.plugin.PingPongPlugIn</name>
 			<id>jws.user</id>
@@ -1440,7 +1442,6 @@
 			</settings>
 		</plugin>
 		
-		
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
 			<ns>test</ns>
@@ -1450,7 +1451,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-
+		
 		<!-- Sample for Java Card -->
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
@@ -1461,7 +1462,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		
+
 		<!-- Arduino Remote Control Plug-in -->
 		<!-- 
 			This plug-in requires Arduino hardware to be connected and configured.

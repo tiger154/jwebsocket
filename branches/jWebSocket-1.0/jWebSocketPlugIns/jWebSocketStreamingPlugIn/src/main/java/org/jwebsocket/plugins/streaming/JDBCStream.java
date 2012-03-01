@@ -17,7 +17,6 @@ package org.jwebsocket.plugins.streaming;
 
 import java.sql.Connection;
 import java.util.Date;
-
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.server.TokenServer;
@@ -63,7 +62,7 @@ public class JDBCStream extends TokenStream {
 
 		/*
 		dbPollingProcess = new DBPollingProcess();
-		dbPollingThread = new Thread(dbPollingProcess);
+		dbPollingThread = new Thread(dbPollingProcess, , "jWebSocket Streaming Plug-in, DB Polling Process");
 		dbPollingThread.start();
 		 */
 		/*

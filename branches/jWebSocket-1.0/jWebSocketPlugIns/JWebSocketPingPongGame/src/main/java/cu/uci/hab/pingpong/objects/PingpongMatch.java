@@ -4,18 +4,8 @@
  */
 package cu.uci.hab.pingpong.objects;
 
+import cu.uci.hab.pingpong.events.*;
 import cu.uci.hab.pingpong.listeners.BallListener;
-import cu.uci.hab.pingpong.events.Counter;
-import cu.uci.hab.pingpong.events.GameOver;
-import cu.uci.hab.pingpong.events.Left;
-import cu.uci.hab.pingpong.events.MoveBall;
-import cu.uci.hab.pingpong.events.PlayerLeft;
-import cu.uci.hab.pingpong.events.PlayerRight;
-import cu.uci.hab.pingpong.events.Right;
-import cu.uci.hab.pingpong.events.Edge;
-import cu.uci.hab.pingpong.events.MovePlayer;
-import cu.uci.hab.pingpong.events.Score;
-import cu.uci.hab.pingpong.events.Sound;
 import cu.uci.hab.pingpong.plugin.PingPongPlugIn;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -45,7 +35,7 @@ public class PingpongMatch extends Match implements Runnable {
 		this.mPingpongPlayerList = new ArrayList<PingpongPlayer>(2);
 		this.mBall = new PingpongBall(aPingpongStage);
 		this.mBall = new PingpongBall(aPingpongStage);
-		this.mThread = new Thread(this);
+		this.mThread = new Thread(this, "jWebSocket Ping-Pong Game");
 		this.mGameOver = false;
 		this.mStop = true;
 		this.mSpeed = 50;

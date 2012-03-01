@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 import javax.management.MBeanParameterInfo;
@@ -26,30 +25,52 @@ import javax.management.MBeanParameterInfo;
  *
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
-public class ConstuctorParameterDefinition extends FeatureDefinition{
-    private Object mValue;
+public class ConstuctorParameterDefinition extends FeatureDefinition {
 
-    public ConstuctorParameterDefinition() {
-    }
+	private Object mValue;
 
-    public ConstuctorParameterDefinition(Object aValue, String aName, String aDescription) {
-        super(aName, aDescription);
-        this.mValue = aValue;
-    }
-       
-    public Object getValue() {
-        if (this.mValue != null) {
-            return this.mValue;
-        } else {
-            throw new IllegalArgumentException("The parameter value must not be null");
-        }
-    }
+	/**
+	 *
+	 */
+	public ConstuctorParameterDefinition() {
+	}
 
-    public void setValue(Object aValue) {
-        this.mValue = aValue;
-    }
-    
-    public MBeanParameterInfo createMBeanParameterInfo(){
-        return new MBeanParameterInfo(super.getName(), mValue.getClass().getName(), super.getDescription());
-    }
+	/**
+	 *
+	 * @param aValue
+	 * @param aName
+	 * @param aDescription
+	 */
+	public ConstuctorParameterDefinition(Object aValue, String aName, String aDescription) {
+		super(aName, aDescription);
+		this.mValue = aValue;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public Object getValue() {
+		if (this.mValue != null) {
+			return this.mValue;
+		} else {
+			throw new IllegalArgumentException("The parameter value must not be null");
+		}
+	}
+
+	/**
+	 *
+	 * @param aValue
+	 */
+	public void setValue(Object aValue) {
+		this.mValue = aValue;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public MBeanParameterInfo createMBeanParameterInfo() {
+		return new MBeanParameterInfo(super.getName(), mValue.getClass().getName(), super.getDescription());
+	}
 }

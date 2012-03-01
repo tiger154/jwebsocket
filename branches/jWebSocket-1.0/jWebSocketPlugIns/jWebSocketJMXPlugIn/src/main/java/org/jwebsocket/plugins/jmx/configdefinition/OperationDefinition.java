@@ -33,9 +33,19 @@ public class OperationDefinition extends FeatureDefinition {
 	private String mImpact;
 	private ParameterDefinition[] mParameters = new ParameterDefinition[0];
 
+	/**
+	 *
+	 */
 	public OperationDefinition() {
 	}
 
+	/**
+	 *
+	 * @param aReturnValueType
+	 * @param aImpact
+	 * @param aName
+	 * @param aDescription
+	 */
 	public OperationDefinition(Class aReturnValueType, String aImpact, String aName, String aDescription) {
 		super(aName, aDescription);
 		if (aReturnValueType != null) {
@@ -51,26 +61,50 @@ public class OperationDefinition extends FeatureDefinition {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Class getReturnValueType() {
 		return (mReturnValueType != null) ? mReturnValueType : java.lang.Void.class;
 	}
 
+	/**
+	 *
+	 * @param aReturnValueType
+	 */
 	public void setReturnValueType(Class aReturnValueType) {
 		this.mReturnValueType = aReturnValueType;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getImpact() {
 		return (mImpact != null) || (!mImpact.equals("")) ? mImpact : "UNKNOWN";
 	}
 
+	/**
+	 *
+	 * @param aImpact
+	 */
 	public void setImpact(String aImpact) {
 		this.mImpact = aImpact;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public ParameterDefinition[] getParameters() {
 		return mParameters;
 	}
 
+	/**
+	 *
+	 * @param mParameters
+	 */
 	public void setParameters(ParameterDefinition[] mParameters) {
 		this.mParameters = mParameters;
 	}
@@ -86,6 +120,10 @@ public class OperationDefinition extends FeatureDefinition {
 		return lInfoArray;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public ModelMBeanOperationInfo createMBeanOperationInfo() {
 		MBeanParameterInfo[] lParametersInfo = createMBeanParameterInfoArray();
 		return new ModelMBeanOperationInfo(super.getName(), super.getDescription(), lParametersInfo, getReturnValueType().getName(), getImpactInt());

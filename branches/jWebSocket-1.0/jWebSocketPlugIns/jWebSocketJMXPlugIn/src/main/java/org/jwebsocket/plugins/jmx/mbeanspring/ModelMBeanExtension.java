@@ -21,16 +21,7 @@ package org.jwebsocket.plugins.jmx.mbeanspring;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import javax.management.Attribute;
-import javax.management.AttributeChangeNotification;
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanException;
-import javax.management.MBeanNotificationInfo;
-import javax.management.Notification;
-import javax.management.ReflectionException;
-import javax.management.RuntimeOperationsException;
+import javax.management.*;
 import javax.management.modelmbean.InvalidTargetObjectTypeException;
 import javax.management.modelmbean.ModelMBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
@@ -42,35 +33,62 @@ import javax.management.modelmbean.RequiredModelMBean;
  */
 public class ModelMBeanExtension extends RequiredModelMBean {
 
+	/**
+	 *
+	 */
 	protected NotificationInfoMap mNotificationInfoMap;
+	/**
+	 *
+	 */
 	protected ModelMBeanInfo mModelMBeanInfo;
+	/**
+	 *
+	 */
 	protected Object mManagedMBean;
 
+	/**
+	 *
+	 * @throws MBeanException
+	 */
 	public ModelMBeanExtension() throws MBeanException {
 	}
 
+	/**
+	 *
+	 * @param aModelMBeanInfo
+	 * @throws MBeanException
+	 */
 	public ModelMBeanExtension(ModelMBeanInfo aModelMBeanInfo) throws MBeanException {
 		super(aModelMBeanInfo);
 		this.mModelMBeanInfo = aModelMBeanInfo;
 		mNotificationInfoMap = new NotificationInfoMap(aModelMBeanInfo);
 	}
 
+	@Override
 	public void setModelMBeanInfo(ModelMBeanInfo aModelMBeanInfo) throws MBeanException {
 		this.mModelMBeanInfo = aModelMBeanInfo;
 		mNotificationInfoMap = new NotificationInfoMap(aModelMBeanInfo);
 		super.setModelMBeanInfo(aModelMBeanInfo);
 	}
 
+	@Override
 	public MBeanNotificationInfo[] getNotificationInfo() {
 		return mModelMBeanInfo.getNotifications();
 	}
 
+	@Override
 	public void setManagedResource(Object aManagedBean, String aType) throws MBeanException,
 			RuntimeOperationsException, InstanceNotFoundException, InvalidTargetObjectTypeException {
 		super.setManagedResource(aManagedBean, aType);
 		this.mManagedMBean = aManagedBean;
 	}
 
+	/**
+	 *
+	 * @param aType
+	 * @param aName
+	 * @throws MBeanException
+	 */
 	protected void maybeSendMethodNotification(String aType, String aName)
 			throws MBeanException {
 		MBeanNotificationInfo lInfo = mNotificationInfoMap.findNotificationInfo(aType, aName);
@@ -83,6 +101,14 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 		}
 	}
 
+	/**
+	 *
+	 * @param aAttribute
+	 * @throws MBeanException
+	 * @throws AttributeNotFoundException
+	 * @throws InvalidAttributeValueException
+	 * @throws ReflectionException
+	 */
 	protected void maybeSendAttributeNotification(Attribute aAttribute)
 			throws MBeanException, AttributeNotFoundException,
 			InvalidAttributeValueException, ReflectionException {
@@ -100,6 +126,7 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 		}
 	}
 
+	@Override
 	public Object invoke(String aName, Object[] aArgs, String[] aSignature)
 			throws MBeanException, ReflectionException {
 		maybeSendMethodNotification("before", aName);
@@ -108,6 +135,7 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 		return lReturnValue;
 	}
 
+	@Override
 	public Object getAttribute(String aName) throws MBeanException,
 			AttributeNotFoundException, ReflectionException {
 		try {
@@ -125,6 +153,7 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 		}
 	}
 
+	@Override
 	public void setAttribute(Attribute aAttribute) throws MBeanException,
 			AttributeNotFoundException, InvalidAttributeValueException, ReflectionException {
 		try {

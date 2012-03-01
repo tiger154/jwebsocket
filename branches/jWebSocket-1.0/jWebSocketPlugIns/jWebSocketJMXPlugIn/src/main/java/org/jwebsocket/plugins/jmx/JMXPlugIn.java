@@ -52,7 +52,12 @@ public class JMXPlugIn extends TokenPlugIn {
 	private static String mNamespace = "org.jwebsocket.plugins.jmx";
 	private static JMXPlugIn mJmxPlugin = null;
 	private static CompositeData mInformationOfRunningServers;
+	private HttpAdaptor mHttpAdaptor = null;
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public JMXPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 
@@ -63,6 +68,10 @@ public class JMXPlugIn extends TokenPlugIn {
 		this.mJmxPlugin = this;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static JMXPlugIn getInstance() {
 		return mJmxPlugin;
 	}
@@ -76,12 +85,12 @@ public class JMXPlugIn extends TokenPlugIn {
 		JMXPlugInAuthenticator.setConfigPath(getString("spring_config"));
 
 		lFactory.getBean("exporter");
-		RMIConnectorServer a = (RMIConnectorServer) lFactory.getBean("rmiConnector");
+		// RMIConnectorServer a = (RMIConnectorServer) lFactory.getBean("rmiConnector");
 
-		HttpAdaptor httpAdaptor = (HttpAdaptor) lFactory.getBean("HttpAdaptor");
+		mHttpAdaptor = (HttpAdaptor) lFactory.getBean("HttpAdaptor");
 		try {
-			httpAdaptor.addAuthorization("admin", "jmxadmin");
-			httpAdaptor.start();
+			mHttpAdaptor.addAuthorization("admin", "jmxadmin");
+			mHttpAdaptor.start();
 
 			MBeanServer lMBServer = (MBeanServer) lFactory.getBean("jWebSocketServer");
 
@@ -90,10 +99,28 @@ public class JMXPlugIn extends TokenPlugIn {
 			JMXPlugInsExporter lPluginsExporter = new JMXPlugInsExporter(lBeanPath, lMBServer, mLog);
 			lPluginsExporter.createMBeansToExport();
 		} catch (Exception ex) {
-			mLog.error("JMXPlugIn on engineStarted: " + ex.getMessage());
+			mLog.error("JMX plug-in on engineStarted: " + ex.getMessage());
 		}
 	}
 
+	@Override
+	public void engineStopped(WebSocketEngine aEngine) {
+		try {
+			mHttpAdaptor.stop();
+		} catch (Exception ex) {
+			mLog.error("JMX plug-in on engineStopped: " + ex.getMessage());
+		}
+	}
+
+	/**
+	 *
+	 * @param aServer
+	 * @param aPluginId
+	 * @param aMethodName
+	 * @param aMethodParameters
+	 * @return
+	 * @throws Exception
+	 */
 	public CompositeData invokePluginOperation(String aServer, String aPluginId, String aMethodName, String aMethodParameters) throws Exception {
 		try {
 			if (aServer.equals("") || aPluginId.equals("") || aMethodName.equals("") || aMethodParameters.equals("")) {
@@ -113,7 +140,10 @@ public class JMXPlugIn extends TokenPlugIn {
 						//invoke the plugin method
 						Token lResponse = lPlugin.invoke(null, lObjToken);
 						if (lResponse != null) {
-							/*creating a CompositeData to expose the TokenResponse of the plugins*/
+							/*
+							 * creating a CompositeData to expose the
+							 * TokenResponse of the plugins
+							 */
 							CompositeData lResult = JMXHandler.convertMapToCompositeData(lResponse.getMap());
 							if (lResult != null) {
 								return lResult;
@@ -137,6 +167,10 @@ public class JMXPlugIn extends TokenPlugIn {
 
 	}
 
+	/**
+	 *
+	 * @return @throws Exception
+	 */
 	public CompositeData getInformationOfRunningServers() throws Exception {
 		CompositeData result = null;
 		try {

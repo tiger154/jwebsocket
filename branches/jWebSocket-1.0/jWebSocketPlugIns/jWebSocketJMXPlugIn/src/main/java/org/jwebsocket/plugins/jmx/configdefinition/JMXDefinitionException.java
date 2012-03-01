@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 import javax.management.modelmbean.ModelMBeanInfo;
@@ -34,7 +33,7 @@ public class JMXDefinitionException extends JMXDefinition {
 	public JMXDefinitionException(String aExceptionMessage) {
 		this.mExceptionMessage = aExceptionMessage;
 	}
-	
+
 	@Override
 	public ModelMBeanInfo createMBeanInfo() {
 		return new ModelMBeanInfoSupport("JMXDefinitionException", mExceptionMessage,
@@ -42,6 +41,6 @@ public class JMXDefinitionException extends JMXDefinition {
 				super.createMBeanConstructorInfoArray(),
 				super.createMBeanOperationInfoArray(),
 				super.createMBeanNotificationInfoArray());
-	
+
 	}
 }

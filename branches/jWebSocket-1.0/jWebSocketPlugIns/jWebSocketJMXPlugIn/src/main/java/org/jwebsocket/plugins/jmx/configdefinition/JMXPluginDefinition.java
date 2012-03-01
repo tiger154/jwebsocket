@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 /**
@@ -26,58 +25,58 @@ package org.jwebsocket.plugins.jmx.configdefinition;
  */
 public class JMXPluginDefinition extends JMXDefinition {
 
-    private String mPluginId;
-    private String mServerId;
+	private String mPluginId;
+	private String mServerId;
 
-    public JMXPluginDefinition() {
-    }
+	public JMXPluginDefinition() {
+	}
 
-    public JMXPluginDefinition(String aPluginId, String aServerId, String aClassName, String aJarName, AttributeDefinition[] aAttributes, 
-            OperationDefinition[] aOperations, ConstructorDefinition[] aConstructors, NotificationDefinition[] aNotifications) {
-        super(aClassName, aJarName, aAttributes, aOperations, aConstructors, aNotifications);
-        
-        if (!aPluginId.equals("")) {
-            this.mPluginId = aPluginId;
-        } else {
-            throw new IllegalArgumentException("The plugin id must not be empty");
-        }
+	public JMXPluginDefinition(String aPluginId, String aServerId, String aClassName, String aJarName, AttributeDefinition[] aAttributes,
+			OperationDefinition[] aOperations, ConstructorDefinition[] aConstructors, NotificationDefinition[] aNotifications) {
+		super(aClassName, aJarName, aAttributes, aOperations, aConstructors, aNotifications);
 
-        if (!aServerId.equals("")) {
-            this.mServerId = aServerId;
-        } else {
-            throw new IllegalArgumentException("The server id must not be empty.");
-        }
-    }
-    
-    public String getPluginId() {
-        if (this.mPluginId != null) {
-            return mPluginId;
-        } else {
-            throw new IllegalArgumentException("The plugin id must not be null.");
-        }
-    }
+		if (!aPluginId.equals("")) {
+			this.mPluginId = aPluginId;
+		} else {
+			throw new IllegalArgumentException("The plugin id must not be empty");
+		}
 
-    public void setPluginId(String aPluginId) {
-        if (!aPluginId.equals("")) {
-            this.mPluginId = aPluginId;
-        } else {
-            throw new IllegalArgumentException("The plugin id must not be empty.");
-        }
-    }
+		if (!aServerId.equals("")) {
+			this.mServerId = aServerId;
+		} else {
+			throw new IllegalArgumentException("The server id must not be empty.");
+		}
+	}
 
-    public String getServerId() {
-        if (this.mServerId != null) {
-            return mServerId;
-        } else {
-            throw new IllegalArgumentException("The server id must not be null.");
-        }
-    }
+	public String getPluginId() {
+		if (this.mPluginId != null) {
+			return mPluginId;
+		} else {
+			throw new IllegalArgumentException("The plugin id must not be null.");
+		}
+	}
 
-    public void setServerId(String aServerId) {
-        if (!aServerId.equals("")) {
-            this.mServerId = aServerId;
-        } else {
-            throw new IllegalArgumentException("The server id must not be empty.");
-        }
-    }
+	public void setPluginId(String aPluginId) {
+		if (!aPluginId.equals("")) {
+			this.mPluginId = aPluginId;
+		} else {
+			throw new IllegalArgumentException("The plugin id must not be empty.");
+		}
+	}
+
+	public String getServerId() {
+		if (this.mServerId != null) {
+			return mServerId;
+		} else {
+			throw new IllegalArgumentException("The server id must not be null.");
+		}
+	}
+
+	public void setServerId(String aServerId) {
+		if (!aServerId.equals("")) {
+			this.mServerId = aServerId;
+		} else {
+			throw new IllegalArgumentException("The server id must not be empty.");
+		}
+	}
 }

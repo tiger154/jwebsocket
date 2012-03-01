@@ -95,10 +95,10 @@ public class MonitoringPlugIn extends TokenPlugIn {
 
 	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
-		mInformationThread = new Thread(new getInfo());
+		mInformationThread = new Thread(new getInfo(), "jWebSocket Monitoring Plug-in Information");
 		mInformationThread.start();
 
-		mServerExchangeInfoThread = new Thread(new getServerExchangeInfo());
+		mServerExchangeInfoThread = new Thread(new getServerExchangeInfo(), "jWebSocket Monitoring Plug-in Server Exchange");
 		mServerExchangeInfoThread.start();
 	}
 
@@ -108,6 +108,11 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		try {
 			mInformationThread.join(2000);
 			mInformationThread.stop();
+		} catch (InterruptedException ex) {
+		}
+		try {
+			mServerExchangeInfoThread.join(2000);
+			mServerExchangeInfoThread.stop();
 		} catch (InterruptedException ex) {
 		}
 	}

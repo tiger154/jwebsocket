@@ -28,8 +28,9 @@ import org.jwebsocket.token.TokenFactory;
 /**
  * implements the TimeStream, primarily for demonstration purposes but it can
  * also be used for client/server time synchronization. It implements an
- * internal thread which broadcasts the current system time of the server to
- * the registered clients once per second.
+ * internal thread which broadcasts the current system time of the server to the
+ * registered clients once per second.
+ *
  * @author aschulze
  */
 public class TimeStream extends TokenStream {
@@ -62,7 +63,7 @@ public class TimeStream extends TokenStream {
 		super.startStream(aTimeout);
 
 		mTimeProcess = new TimerProcess();
-		mTimeThread = new Thread(mTimeProcess);
+		mTimeThread = new Thread(mTimeProcess, "jWebSocket Streaming Plug-in, Time Process");
 		mTimeThread.start();
 	}
 
@@ -121,11 +122,11 @@ public class TimeStream extends TokenStream {
 
 					// keep this her for demo purposes
 					/*
-					FastMap<String, Object> lRecord = new FastMap<String, Object>();
-					lRecord.put("string_field", "value");
-					lRecord.put("int_field", 4711);
-
-					lToken.setMap("record", lRecord);
+					 * FastMap<String, Object> lRecord = new FastMap<String,
+					 * Object>(); lRecord.put("string_field", "value");
+					 * lRecord.put("int_field", 4711);
+					 *
+					 * lToken.setMap("record", lRecord);
 					 */
 
 					// log.debug("Time streamer queues '" + lData + "'...");

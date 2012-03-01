@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 import javax.management.MBeanParameterInfo;
@@ -29,32 +28,47 @@ import javax.management.modelmbean.ModelMBeanConstructorInfo;
  */
 public class ConstructorDefinition extends FeatureDefinition {
 
-    private ConstuctorParameterDefinition[] mParameters = new ConstuctorParameterDefinition[0];
+	private ConstuctorParameterDefinition[] mParameters = new ConstuctorParameterDefinition[0];
 
-    public ConstructorDefinition() {
-    }
+	/**
+	 *
+	 */
+	public ConstructorDefinition() {
+	}
 
-    public ConstuctorParameterDefinition[] getParameters() {
-        return mParameters;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public ConstuctorParameterDefinition[] getParameters() {
+		return mParameters;
+	}
 
-    public void setParameters(ConstuctorParameterDefinition[] aParameters) {
-        this.mParameters = aParameters;
-    }
+	/**
+	 *
+	 * @param aParameters
+	 */
+	public void setParameters(ConstuctorParameterDefinition[] aParameters) {
+		this.mParameters = aParameters;
+	}
 
-    public ModelMBeanConstructorInfo createMBeanConstructorInfo() {
-        MBeanParameterInfo[] lParametersInfo = createMBeanParameterInfoArray();
-        return new ModelMBeanConstructorInfo(super.getName(), super.getDescription(), lParametersInfo);
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public ModelMBeanConstructorInfo createMBeanConstructorInfo() {
+		MBeanParameterInfo[] lParametersInfo = createMBeanParameterInfoArray();
+		return new ModelMBeanConstructorInfo(super.getName(), super.getDescription(), lParametersInfo);
+	}
 
-    private  MBeanParameterInfo[] createMBeanParameterInfoArray() {
-        MBeanParameterInfo[] lInfoArray = new MBeanParameterInfo[0];
-        if (mParameters != null) {
-            lInfoArray = new MBeanParameterInfo[mParameters.length];
-            for (int i = 0; i < mParameters.length; i++) {
-                lInfoArray[i] = mParameters[i].createMBeanParameterInfo();
-            }
-        }
-        return lInfoArray;
-    }
+	private MBeanParameterInfo[] createMBeanParameterInfoArray() {
+		MBeanParameterInfo[] lInfoArray = new MBeanParameterInfo[0];
+		if (mParameters != null) {
+			lInfoArray = new MBeanParameterInfo[mParameters.length];
+			for (int i = 0; i < mParameters.length; i++) {
+				lInfoArray[i] = mParameters[i].createMBeanParameterInfo();
+			}
+		}
+		return lInfoArray;
+	}
 }

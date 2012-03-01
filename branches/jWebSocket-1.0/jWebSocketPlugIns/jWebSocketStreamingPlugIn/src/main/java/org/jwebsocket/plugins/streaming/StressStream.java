@@ -16,7 +16,6 @@
 package org.jwebsocket.plugins.streaming;
 
 import java.util.Date;
-
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.server.TokenServer;
@@ -60,7 +59,7 @@ public class StressStream extends TokenStream {
 		super.startStream(aTimeout);
 
 		mStressProcess = new StressProcess();
-		mStressThread = new Thread(mStressProcess);
+		mStressThread = new Thread(mStressProcess, "jWebSocket Streaming Plug-in, Stress Process");
 		mStressThread.start();
 	}
 

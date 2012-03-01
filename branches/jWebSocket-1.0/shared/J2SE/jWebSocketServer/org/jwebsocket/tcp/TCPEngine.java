@@ -15,23 +15,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.Date;
 import java.util.Map;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-
-import javax.net.ssl.SSLSocket;
+import javax.net.ssl.*;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -40,11 +31,11 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.engines.BaseEngine;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.kit.WebSocketHandshake;
+import org.jwebsocket.logging.Logging;
 
 /**
  * Implementation of the jWebSocket TCP engine. The TCP engine provide a Java
@@ -79,6 +70,10 @@ public class TCPEngine extends BaseEngine {
 	@Override
 	public void startEngine()
 			throws WebSocketException {
+		
+		// start timeout surveillance timer
+		TimeoutOutputStreamNIOWriter.startTimer();
+		
 		setSessionTimeout(mSessionTimeout);
 
 		// create unencrypted server socket for ws:// protocol
@@ -300,6 +295,9 @@ public class TCPEngine extends BaseEngine {
 				}
 			}
 		}
+		
+		// stop timeout surveillance timer
+		TimeoutOutputStreamNIOWriter.stopTimer();
 	}
 
 	@Override

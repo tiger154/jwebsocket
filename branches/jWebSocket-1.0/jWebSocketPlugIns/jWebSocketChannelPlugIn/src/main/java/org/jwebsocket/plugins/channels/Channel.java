@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
-
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.Logging;

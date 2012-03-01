@@ -17,15 +17,9 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.configdefinition;
 
-import javax.management.modelmbean.ModelMBeanAttributeInfo;
-import javax.management.modelmbean.ModelMBeanConstructorInfo;
-import javax.management.modelmbean.ModelMBeanInfo;
-import javax.management.modelmbean.ModelMBeanInfoSupport;
-import javax.management.modelmbean.ModelMBeanNotificationInfo;
-import javax.management.modelmbean.ModelMBeanOperationInfo;
+import javax.management.modelmbean.*;
 
 /**
  *
@@ -33,32 +27,32 @@ import javax.management.modelmbean.ModelMBeanOperationInfo;
  */
 public class JMXDefinition {
 
-    private AttributeDefinition[] mAttributes = new AttributeDefinition[0];
-    private OperationDefinition[] mOperations = new OperationDefinition[0];
-    private ConstructorDefinition[] mConstructors = new ConstructorDefinition[0];
-    private NotificationDefinition[] mNotifications = new NotificationDefinition[0];
-    private String mDescription = "";
-    private String mClassName;
-    private String mJarName;
+	private AttributeDefinition[] mAttributes = new AttributeDefinition[0];
+	private OperationDefinition[] mOperations = new OperationDefinition[0];
+	private ConstructorDefinition[] mConstructors = new ConstructorDefinition[0];
+	private NotificationDefinition[] mNotifications = new NotificationDefinition[0];
+	private String mDescription = "";
+	private String mClassName;
+	private String mJarName;
 
-    public JMXDefinition() {
-    }
+	public JMXDefinition() {
+	}
 
-    public JMXDefinition(String aClassName, String aJarName, AttributeDefinition[] aAttributes,
-            OperationDefinition[] aOperations, ConstructorDefinition[] aConstructors, NotificationDefinition[] aNotifications) {
+	public JMXDefinition(String aClassName, String aJarName, AttributeDefinition[] aAttributes,
+			OperationDefinition[] aOperations, ConstructorDefinition[] aConstructors, NotificationDefinition[] aNotifications) {
 
-        this.mAttributes = aAttributes;
-        this.mOperations = aOperations;
-        this.mConstructors = aConstructors;
-        this.mNotifications = aNotifications;
+		this.mAttributes = aAttributes;
+		this.mOperations = aOperations;
+		this.mConstructors = aConstructors;
+		this.mNotifications = aNotifications;
 
-        if (!aClassName.equals("")) {
-            this.mClassName = aClassName;
-        } else {
-            throw new IllegalArgumentException("The class name must not be empty.");
-        }
+		if (!aClassName.equals("")) {
+			this.mClassName = aClassName;
+		} else {
+			throw new IllegalArgumentException("The class name must not be empty.");
+		}
 
-        if (!aJarName.equals("")) {
+		if (!aJarName.equals("")) {
 			if (!aJarName.toLowerCase().endsWith(".jar")) {
 				this.mJarName = aJarName + ".jar";
 			} else {
@@ -67,74 +61,74 @@ public class JMXDefinition {
 		} else {
 			throw new IllegalArgumentException("The jar name must not be empty.");
 		}
-    }
+	}
 
-    public AttributeDefinition[] getAttributes() {
-        return mAttributes;
-    }
+	public AttributeDefinition[] getAttributes() {
+		return mAttributes;
+	}
 
-    public void setAttributes(AttributeDefinition[] aAttributes) {
-        this.mAttributes = aAttributes;
-    }
+	public void setAttributes(AttributeDefinition[] aAttributes) {
+		this.mAttributes = aAttributes;
+	}
 
-    public String getDescription() {
-        return mDescription;
-    }
+	public String getDescription() {
+		return mDescription;
+	}
 
-    public void setDescription(String aDescription) {
-        this.mDescription = aDescription;
-    }
+	public void setDescription(String aDescription) {
+		this.mDescription = aDescription;
+	}
 
-    public OperationDefinition[] getOperations() {
-        return mOperations;
-    }
+	public OperationDefinition[] getOperations() {
+		return mOperations;
+	}
 
-    public void setOperations(OperationDefinition[] aOperations) {
-        this.mOperations = aOperations;
-    }
+	public void setOperations(OperationDefinition[] aOperations) {
+		this.mOperations = aOperations;
+	}
 
-    public ConstructorDefinition[] getConstructors() {
-        return mConstructors;
-    }
+	public ConstructorDefinition[] getConstructors() {
+		return mConstructors;
+	}
 
-    public void setConstructors(ConstructorDefinition[] aConstructors) {
-        this.mConstructors = aConstructors;
-    }
+	public void setConstructors(ConstructorDefinition[] aConstructors) {
+		this.mConstructors = aConstructors;
+	}
 
-    public String getClassName() {
-        if (this.mClassName != null) {
-            return mClassName;
-        } else {
-            throw new IllegalArgumentException("The class name must not be null.");
-        }
-    }
+	public String getClassName() {
+		if (this.mClassName != null) {
+			return mClassName;
+		} else {
+			throw new IllegalArgumentException("The class name must not be null.");
+		}
+	}
 
-    public void setClassName(String aClassName) {
-        if (!aClassName.equals("")) {
-            this.mClassName = aClassName;
-        } else {
-            throw new IllegalArgumentException("The class name must not be empty.");
-        }
-    }
+	public void setClassName(String aClassName) {
+		if (!aClassName.equals("")) {
+			this.mClassName = aClassName;
+		} else {
+			throw new IllegalArgumentException("The class name must not be empty.");
+		}
+	}
 
-    public NotificationDefinition[] getNotifications() {
-        return mNotifications;
-    }
+	public NotificationDefinition[] getNotifications() {
+		return mNotifications;
+	}
 
-    public void setNotifications(NotificationDefinition[] aNotifications) {
-        this.mNotifications = aNotifications;
-    }
+	public void setNotifications(NotificationDefinition[] aNotifications) {
+		this.mNotifications = aNotifications;
+	}
 
-    public String getJarName() {
-        if (this.mJarName != null) {
-            return mJarName;
-        } else {
-            throw new IllegalArgumentException("The jar name must not be null.");
-        }
-    }
+	public String getJarName() {
+		if (this.mJarName != null) {
+			return mJarName;
+		} else {
+			throw new IllegalArgumentException("The jar name must not be null.");
+		}
+	}
 
-    public void setJarName(String aJarName) {
-        if (!aJarName.equals("")) {
+	public void setJarName(String aJarName) {
+		if (!aJarName.equals("")) {
 			if (!aJarName.toLowerCase().endsWith(".jar")) {
 				this.mJarName = aJarName + ".jar";
 			} else {
@@ -143,50 +137,50 @@ public class JMXDefinition {
 		} else {
 			throw new IllegalArgumentException("The jar name must not be empty.");
 		}
-    }
+	}
 
-    public ModelMBeanInfo createMBeanInfo() {
-        if (this.mClassName != null) {
-            return new ModelMBeanInfoSupport(mClassName, mDescription,
-                    createMBeanAttributeInfoArray(),
-                    createMBeanConstructorInfoArray(),
-                    createMBeanOperationInfoArray(),
-                    createMBeanNotificationInfoArray());
-        } else {
-            throw new IllegalArgumentException("The class name must not be null.");
-        }
-    }
+	public ModelMBeanInfo createMBeanInfo() {
+		if (this.mClassName != null) {
+			return new ModelMBeanInfoSupport(mClassName, mDescription,
+					createMBeanAttributeInfoArray(),
+					createMBeanConstructorInfoArray(),
+					createMBeanOperationInfoArray(),
+					createMBeanNotificationInfoArray());
+		} else {
+			throw new IllegalArgumentException("The class name must not be null.");
+		}
+	}
 
-    protected ModelMBeanAttributeInfo[] createMBeanAttributeInfoArray() {
-        ModelMBeanAttributeInfo[] lInfoArray = new ModelMBeanAttributeInfo[mAttributes.length];
-        for (int i = 0; i < mAttributes.length; i++) {
-            lInfoArray[i] = mAttributes[i].createMBeanAttributeInfo();
-        }
-        return lInfoArray;
-    }
+	protected ModelMBeanAttributeInfo[] createMBeanAttributeInfoArray() {
+		ModelMBeanAttributeInfo[] lInfoArray = new ModelMBeanAttributeInfo[mAttributes.length];
+		for (int i = 0; i < mAttributes.length; i++) {
+			lInfoArray[i] = mAttributes[i].createMBeanAttributeInfo();
+		}
+		return lInfoArray;
+	}
 
-    protected ModelMBeanConstructorInfo[] createMBeanConstructorInfoArray() {
-        int lCount = mConstructors.length;
-        ModelMBeanConstructorInfo[] lInfoArray = new ModelMBeanConstructorInfo[lCount];
-        for (int i = 0; i < lCount; i++) {
-            lInfoArray[i] = mConstructors[i].createMBeanConstructorInfo();
-        }
-        return lInfoArray;
-    }
+	protected ModelMBeanConstructorInfo[] createMBeanConstructorInfoArray() {
+		int lCount = mConstructors.length;
+		ModelMBeanConstructorInfo[] lInfoArray = new ModelMBeanConstructorInfo[lCount];
+		for (int i = 0; i < lCount; i++) {
+			lInfoArray[i] = mConstructors[i].createMBeanConstructorInfo();
+		}
+		return lInfoArray;
+	}
 
-    protected ModelMBeanOperationInfo[] createMBeanOperationInfoArray() {
-        ModelMBeanOperationInfo[] lInfoArray = new ModelMBeanOperationInfo[mOperations.length];
-        for (int i = 0; i < mOperations.length; i++) {
-            lInfoArray[i] = mOperations[i].createMBeanOperationInfo();
-        }
-        return lInfoArray;
-    }
+	protected ModelMBeanOperationInfo[] createMBeanOperationInfoArray() {
+		ModelMBeanOperationInfo[] lInfoArray = new ModelMBeanOperationInfo[mOperations.length];
+		for (int i = 0; i < mOperations.length; i++) {
+			lInfoArray[i] = mOperations[i].createMBeanOperationInfo();
+		}
+		return lInfoArray;
+	}
 
-    protected ModelMBeanNotificationInfo[] createMBeanNotificationInfoArray() {
-        ModelMBeanNotificationInfo[] lInfoArray = new ModelMBeanNotificationInfo[mNotifications.length];
-        for (int i = 0; i < mNotifications.length; i++) {
-            lInfoArray[i] = mNotifications[i].createMBeanNotificationInfo();
-        }
-        return lInfoArray;
-    }
+	protected ModelMBeanNotificationInfo[] createMBeanNotificationInfoArray() {
+		ModelMBeanNotificationInfo[] lInfoArray = new ModelMBeanNotificationInfo[mNotifications.length];
+		for (int i = 0; i < mNotifications.length; i++) {
+			lInfoArray[i] = mNotifications[i].createMBeanNotificationInfo();
+		}
+		return lInfoArray;
+	}
 }

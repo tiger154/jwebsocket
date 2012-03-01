@@ -32,12 +32,24 @@ import javax.management.modelmbean.ModelMBeanInfo;
  */
 public class ModelMBeanUtil {
 
+	/**
+	 *
+	 * @param aPrefix
+	 * @param aName
+	 * @return
+	 */
 	protected static String toMethodName(String aPrefix, String aName) {
 		char lHead = Character.toUpperCase(aName.charAt(0));
 		String lTail = aName.substring(1);
 		return aPrefix + lHead + lTail;
 	}
 
+	/**
+	 *
+	 * @param aInfo
+	 * @param aMatch
+	 * @return
+	 */
 	protected static String matchType(MBeanNotificationInfo aInfo, String aMatch) {
 		String[] lTypes = aInfo.getNotifTypes();
 		for (String lType : lTypes) {
@@ -48,6 +60,14 @@ public class ModelMBeanUtil {
 		return lTypes[0];
 	}
 
+	/**
+	 *
+	 * @param aModelMBeanInfo
+	 * @param aManagedBean
+	 * @param aAttribute
+	 * @return
+	 * @throws MBeanException
+	 */
 	public static Method findGetMethod(ModelMBeanInfo aModelMBeanInfo, Object aManagedBean, String aAttribute)
 			throws MBeanException {
 		try {
@@ -63,6 +83,14 @@ public class ModelMBeanUtil {
 		}
 	}
 
+	/**
+	 *
+	 * @param aModelMBeanInfo
+	 * @param aManagedBean
+	 * @param aAttribute
+	 * @return
+	 * @throws MBeanException
+	 */
 	public static Method findSetMethod(ModelMBeanInfo aModelMBeanInfo, Object aManagedBean, String aAttribute)
 			throws MBeanException {
 		try {
