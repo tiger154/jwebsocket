@@ -35,9 +35,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0b6 (nightly build 20123)
+	//:const:*:VERSION:String:1.0b6 (nightly build 20223)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0b6 (nightly build 20123)",
+	VERSION: "1.0b6 (nightly build 20223)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -547,8 +547,8 @@ var jws = {
 	//:d:en:Implements an abstraction wrapper around the log console of various browsers.
 	console: {
 		// per deploy default set isActive to false and level = 2 (info)
-		isActive: false,
-		level: 2, 
+		mIsActive: false,
+		mLevel: 2, 
 		// don't use below constants here for the level but use the number!
 		// They are not yet defined at this point in time!
 			 
@@ -578,8 +578,8 @@ var jws = {
 		//:a:en::::none
 		//:r:en:::Boolean:[tt]true[/tt], if debug logs are enabled, otherwise [tt]false[/tt].
 		isDebugEnabled: function() {
-			return( window.console && jws.console.isActive
-				&& jws.console.level <= jws.console.DEBUG );
+			return( window.console && jws.console.mIsActive
+				&& jws.console.mLevel <= jws.console.DEBUG );
 		},
 	
 		//:m:*:isInfoEnabled
@@ -589,8 +589,8 @@ var jws = {
 		//:a:en::::none
 		//:r:en:::Boolean:[tt]true[/tt], if info logs are enabled, otherwise [tt]false[/tt].
 		isInfoEnabled: function() {
-			return( window.console && jws.console.isActive
-				&& jws.console.level <= jws.console.INFO );
+			return( window.console && jws.console.mIsActive
+				&& jws.console.mLevel <= jws.console.INFO );
 		},
 	
 		//:m:*:log
@@ -599,7 +599,7 @@ var jws = {
 		//:r:en:::void:none
 		log: function( aMsg ) {
 			if( window.console 
-				&& jws.console.isActive
+				&& jws.console.mIsActive
 				) {
 				console.log( aMsg );
 			}
@@ -607,14 +607,14 @@ var jws = {
 		
 		//:m:*:debug
 		//:d:en:Logs the given message as debug message to the console. _
-		//:d:en:If the log is not active or the log level is set higher than _
+		//:d:en:If the log is not active or the log mLevel is set higher than _
 		//:d:en:[tt]DEBUG[/tt] the message is suppressed.
 		//:a:*::aMsg:String:Message to be logged as debug output.
 		//:r:en:::void:none
 		debug: function( aMsg ) {
 			if( window.console
-				&& jws.console.isActive 
-				&& jws.console.level <= jws.console.DEBUG
+				&& jws.console.mIsActive 
+				&& jws.console.mLevel <= jws.console.DEBUG
 				) {
 				if( console.debug ) {
 					console.debug( aMsg );
@@ -626,14 +626,14 @@ var jws = {
 		
 		//:m:*:info
 		//:d:en:Logs the given message as an info message to the console. _
-		//:d:en:If the log is not active or the log level is set higher than _
+		//:d:en:If the log is not active or the log mLevel is set higher than _
 		//:d:en:[tt]INFO[/tt] the message is suppressed.
 		//:a:*::aMsg:String:Message to be logged as an info output.
 		//:r:en:::void:none
 		info: function( aMsg ) {
 			if( window.console 
-				&& jws.console.isActive 
-				&& jws.console.level <= jws.console.INFO
+				&& jws.console.mIsActive 
+				&& jws.console.mLevel <= jws.console.INFO
 				) {
 				if( console.info ) {
 					console.info( aMsg );
@@ -645,14 +645,14 @@ var jws = {
 		
 		//:m:*:warn
 		//:d:en:Logs the given message as a warning message to the console. _
-		//:d:en:If the log is not active or the log level is set higher than _
+		//:d:en:If the log is not active or the log mLevel is set higher than _
 		//:d:en:[tt]WARN[/tt] the message is suppressed.
 		//:a:*::aMsg:String:Message to be logged as a warning output.
 		//:r:en:::void:none
 		warn: function( aMsg ) {
 			if( window.console
-				&& jws.console.isActive
-				&& jws.console.level <= jws.console.WARN
+				&& jws.console.mIsActive
+				&& jws.console.mLevel <= jws.console.WARN
 				) {
 				if( console.warn ) {
 					console.warn( aMsg );
@@ -664,14 +664,14 @@ var jws = {
 		
 		//:m:*:error
 		//:d:en:Logs the given message as an error message to the console. _
-		//:d:en:If the log is not active or the log level is set higher than _
+		//:d:en:If the log is not active or the log mLevel is set higher than _
 		//:d:en:[tt]ERROR[/tt] the message is suppressed.
 		//:a:*::aMsg:String:Message to be logged as an error output.
 		//:r:en:::void:none
 		error: function( aMsg ) {
 			if( window.console
-				&& jws.console.isActive
-				&& jws.console.level <= jws.console.ERROR
+				&& jws.console.mIsActive
+				&& jws.console.mLevel <= jws.console.ERROR
 				) {
 				if( console.error ) {
 					console.error( aMsg );
@@ -683,14 +683,14 @@ var jws = {
 		
 		//:m:*:fatal
 		//:d:en:Logs the given message as a fatal message to the console. _
-		//:d:en:If the log is not active or the log level is set higher than _
+		//:d:en:If the log is not active or the log mLevel is set higher than _
 		//:d:en:[tt]FATAL[/tt] the message is suppressed.
 		//:a:*::aMsg:String:Message to be logged as a fatal output.
 		//:r:en:::void:none
 		fatal: function( aMsg ) {
 			if( window.console
-				&& jws.console.isActive
-				&& jws.console.level <= jws.console.FATAL
+				&& jws.console.mIsActive
+				&& jws.console.mLevel <= jws.console.FATAL
 				) {
 				if( console.fatal ) {
 					console.fatal( aMsg );
@@ -700,20 +700,36 @@ var jws = {
 			}
 		},
 		
-		getlevel: function() {
-			return jws.console.level; 
+		//:m:*:getLevel
+		//:d:en:Returns the current log level, which should be one of the jws.console constants.
+		//:a:en::::none
+		//:r:en:::Integer:One of the jws.console constants ([tt]ALL[/tt], [tt]DEBUG[/tt], [tt]INFO[/tt], [tt]WARN[/tt], [tt]ERROR[/tt], [tt]FATAL[/tt]).
+		getLevel: function() {
+			return jws.console.mLevel; 
 		},
 		
-		setlevel: function( aLevel ) {
-			jws.console.level = aLevel;
+		//:m:*:setLevel
+		//:d:en:Specifies the log level, which should be one of the jws.console constants.
+		//:a:en::aLevel:Integer:One of the jws.console constants ([tt]ALL[/tt], [tt]DEBUG[/tt], [tt]INFO[/tt], [tt]WARN[/tt], [tt]ERROR[/tt], [tt]FATAL[/tt]).
+		//:r:en:::void:none
+		setLevel: function( aLevel ) {
+			jws.console.mLevel = aLevel;
 		},
 		
+		//:m:*:isActive
+		//:d:en:Returns if the logs are activated (turned on) or de-activated (turned off).
+		//:a:en::::none
+		//:r:en:::Boolean:[tt]true[/tt], if the logs are enabled, otherwise [tt]false[/tt].
 		isActive: function() {
-			return jws.console.isActive;
+			return jws.console.mIsActive;
 		},
 		
+		//:m:*:setActive
+		//:d:en:Specifies if the logs are to be activated (turned on) or de-activated (turned off).
+		//:a:en::aActive:Boolean:[tt]true[/tt], to enable the logs, otherwise [tt]false[/tt].
+		//:r:en:::void:none
 		setActive: function( aActive ) {
-			jws.console.isActive = aActive;
+			jws.console.mIsActive = aActive;
 		}
 		
 	}	

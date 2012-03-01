@@ -15,11 +15,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.monitoring;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +40,7 @@ public class ServerRequestListener implements WebSocketServerListener {
 		String lVersion = "<unknown>";
 		
 		try {
-			// suppress stack traces from mongo db toconsole
+			// suppress stack traces from mongo db to console
 			java.util.logging.Logger.getLogger("com.mongodb").setLevel(
 					java.util.logging.Level.OFF);
 			

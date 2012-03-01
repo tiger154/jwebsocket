@@ -119,7 +119,7 @@ xcopy %libs%commons-dbcp-1.4.jar %tempdir%libs\ /s /i /y
 xcopy %libs%commons-digester-2.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%commons-email-1.2.jar %tempdir%libs\ /s /i /y
 xcopy %libs%commons-lang-2.5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-io-2.0.1.jar %tempdir%libs\ /s /i /y
+xcopy %libs%commons-io-2.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%commons-logging-1.1.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%commons-pool-1.5.6.jar %tempdir%libs\ /s /i /y
 rem Others
@@ -201,10 +201,11 @@ xcopy %libs%jWebSocketStreamingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketTwitterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketXMPPPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSharedObjectsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
- xcopy %libs%jWebSocketSharedCanvasPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketSharedCanvasPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketStatisticsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketBenchmarkPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketClusterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketEventsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketAPIPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketAdminPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketProxyPlugIn-%ver%.jar %tempdir%libs\ /s /i /y

@@ -475,13 +475,8 @@
 			<version>2.1.7</version>
 		</dependency>
 		
+<!--
 		<dependency>
-			<groupId>org.xeustechnologies</groupId>
-			<artifactId>jcl-core</artifactId>
-			<version>2.2.2</version>
-		</dependency>
-		
-<!--		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty</artifactId>
 			<version>X.Y.Z.Q</version>

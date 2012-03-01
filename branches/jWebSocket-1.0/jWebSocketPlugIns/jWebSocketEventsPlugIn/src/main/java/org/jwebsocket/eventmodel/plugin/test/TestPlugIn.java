@@ -20,13 +20,9 @@ import java.util.Map;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 import javolution.util.FastMap;
+import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
-import org.jwebsocket.eventmodel.event.test.GetEventsInfo;
-import org.jwebsocket.eventmodel.event.test.GetHashCode;
-import org.jwebsocket.eventmodel.event.test.S2CNotification;
-import org.jwebsocket.eventmodel.event.test.S2CPlusXYEvent;
-import org.jwebsocket.eventmodel.event.test.JcTest;
-import org.jwebsocket.eventmodel.event.test.UpdateSiteCounterEvent;
+import org.jwebsocket.eventmodel.event.test.*;
 import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
 import org.jwebsocket.eventmodel.plugin.jc.JcPlugIn;
 import org.jwebsocket.eventmodel.plugin.jc.JcResponseCallback;
@@ -34,7 +30,6 @@ import org.jwebsocket.eventmodel.s2c.FailureReason;
 import org.jwebsocket.eventmodel.s2c.OnResponse;
 import org.jwebsocket.eventmodel.s2c.TransactionContext;
 import org.jwebsocket.logging.Logging;
-import org.apache.log4j.Logger;
 
 /**
  *

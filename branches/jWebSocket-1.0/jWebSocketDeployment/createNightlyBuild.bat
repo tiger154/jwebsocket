@@ -12,7 +12,7 @@ exit
 echo This will create the entire jWebSocket v%JWEBSOCKET_VER% Nightly Build. 
 echo This java version is used:
 java -version 
-echo .
+echo.
 echo PLEASE ENSURE....
 echo - that all build numbers are properly set (server, js client, java client)
 echo - custom specific settings reset in server options?
@@ -21,7 +21,7 @@ echo - that NetBeans is NOT running
 echo - that no folder of jWebSocket is currently in use (e.g. by Windows Explorer)
 echo - that all browsers which might have jWebSocket clients running are closed
 echo - that the Apache Web Server is stopped to not lock anything
-echo .
+echo.
 echo Are you sure?
 pause
 
