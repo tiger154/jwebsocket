@@ -18,7 +18,6 @@ package org.jwebsocket.appserver;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.jwebsocket.console.JWebSocketTokenListenerSample;
-
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.server.TokenServer;
 

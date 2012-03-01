@@ -112,7 +112,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			System.out.println("================================");
 			System.out.println("a: " + lPath);
 			System.out.println("================================");
-			* 
+			*/
 			JWebSocketBeanFactory.load(getNamespace(), lPath, lClassLoader);
 			mEm = (EventModel) JWebSocketBeanFactory.getInstance(getNamespace()).getBean("EventModel");
 			/* 

@@ -62,7 +62,7 @@ set JWEBSOCKET_HOME=%testroot%jWebSocket-%ver%
 
 echo ----------------------------------------------------------------------------
 echo Please check if all Server files have been extracted properly to
-echo %testroot%
+echo JWEBSOCKET_HOME: %JWEBSOCKET_HOME% 
 echo and also check %logfile%
 echo ----------------------------------------------------------------------------
 pause
@@ -80,8 +80,8 @@ rem -------------------------------------------------
 rem RUN SERVER.JAR TEST
 rem -------------------------------------------------
 echo Starting jWebSocket Server via .jar...
-cd /d "%testroot%jWebSocket-%ver%\libs"
-start "Running jWebSocket Server via java -jar ..." java -jar jWebSocketServer-%ver%.jar
+cd /d "%testroot%jWebSocket-%ver%"
+start "Running jWebSocket Server via java -jar ..." java -jar libs/jWebSocketServer-%ver%.jar
 cmd.exe /c %scriptroot%C_runSuite.bat Chrome %CHROME_APP% %TEST_URL%
 cmd.exe /c %scriptroot%C_runSuite.bat Firefox %FIREFOX_APP% %TEST_URL%
 cmd.exe /c %scriptroot%C_runSuite.bat Safari %SAFARI_APP% %TEST_URL%
