@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 /**
@@ -26,42 +25,66 @@ package org.jwebsocket.plugins.jmx.configdefinition;
  */
 public abstract class FeatureDefinition {
 
-    private String mName;
-    private String mDescription;
+	private String mName;
+	private String mDescription;
 
-    public FeatureDefinition() {
-    }
+	/**
+	 *
+	 */
+	public FeatureDefinition() {
+	}
 
-    public FeatureDefinition(String aName, String aDescription) {
-        this.mDescription = aDescription;
-        if (!aName.equals("")) {
-            this.mName = aName;
-        } else {
-            throw new IllegalArgumentException("Name must not be empty");
-        }
-    }
+	/**
+	 *
+	 * @param aName
+	 * @param aDescription
+	 */
+	public FeatureDefinition(String aName, String aDescription) {
+		this.mDescription = aDescription;
+		if (!aName.equals("")) {
+			this.mName = aName;
+		} else {
+			throw new IllegalArgumentException("Name must not be empty");
+		}
+	}
 
-    public String getName() {
-        if (this.mName != null) {
-            return this.mName;
-        } else {
-            throw new IllegalArgumentException("Name must not be null");
-        }
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public String getName() {
+		if (this.mName != null) {
+			return this.mName;
+		} else {
+			throw new IllegalArgumentException("Name must not be null");
+		}
+	}
 
-    public void setName(String aName) {
-        if (!aName.equals("")) {
-            this.mName = aName;
-        } else {
-            throw new IllegalArgumentException("Name must not be empty");
-        }
-    }
+	/**
+	 *
+	 * @param aName
+	 */
+	public void setName(String aName) {
+		if (!aName.equals("")) {
+			this.mName = aName;
+		} else {
+			throw new IllegalArgumentException("Name must not be empty");
+		}
+	}
 
-    public String getDescription() {
-        return mDescription == null ? "" : mDescription;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public String getDescription() {
+		return mDescription == null ? "" : mDescription;
+	}
 
-    public void setDescription(String aDescription) {
-        this.mDescription = aDescription;
-    }
+	/**
+	 *
+	 * @param aDescription
+	 */
+	public void setDescription(String aDescription) {
+		this.mDescription = aDescription;
+	}
 }

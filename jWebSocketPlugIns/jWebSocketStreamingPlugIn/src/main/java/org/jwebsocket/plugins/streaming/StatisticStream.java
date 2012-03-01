@@ -15,16 +15,16 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.streaming;
 
-
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.server.TokenServer;
 
 /**
- * implements the StatisticStream, primarily for demonstration purposes but it can
- * also be used for client/server time synchronization. It implements an
- * internal thread which broadcasts the current system time of the server to
- * the registered clients once per second.
+ * implements the StatisticStream, primarily for demonstration purposes but it
+ * can also be used for client/server time synchronization. It implements an
+ * internal thread which broadcasts the current system time of the server to the
+ * registered clients once per second.
+ *
  * @author aschulze
  */
 public class StatisticStream extends TokenStream {
@@ -63,5 +63,4 @@ public class StatisticStream extends TokenStream {
 		}
 		super.stopStream(aTimeout);
 	}
-
 }

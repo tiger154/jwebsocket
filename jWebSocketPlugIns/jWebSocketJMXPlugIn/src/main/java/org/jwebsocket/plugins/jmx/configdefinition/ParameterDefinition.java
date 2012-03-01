@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 import javax.management.MBeanParameterInfo;
@@ -28,37 +27,58 @@ import javax.management.MBeanParameterInfo;
  */
 public class ParameterDefinition extends FeatureDefinition {
 
-    private Class mType;
+	private Class mType;
 
-    public ParameterDefinition() {
-    }
+	/**
+	 *
+	 */
+	public ParameterDefinition() {
+	}
 
-    public ParameterDefinition(Class aType, String aName, String aDescription) {
-        super(aName, aDescription);
-        this.mType = aType;
-    }
+	/**
+	 *
+	 * @param aType
+	 * @param aName
+	 * @param aDescription
+	 */
+	public ParameterDefinition(Class aType, String aName, String aDescription) {
+		super(aName, aDescription);
+		this.mType = aType;
+	}
 
-    public Class getType() {
-        if (this.mType != null) {
-            return this.mType;
-        } else {
-            throw new IllegalArgumentException("The parameter type must not be null");
-        }
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Class getType() {
+		if (this.mType != null) {
+			return this.mType;
+		} else {
+			throw new IllegalArgumentException("The parameter type must not be null");
+		}
+	}
 
-    public void setType(Class aType) {
-        if (aType != null) {
-            this.mType = aType;
-        } else {
-            throw new IllegalArgumentException("The parameter type must not be null");
-        }
-    }
+	/**
+	 *
+	 * @param aType
+	 */
+	public void setType(Class aType) {
+		if (aType != null) {
+			this.mType = aType;
+		} else {
+			throw new IllegalArgumentException("The parameter type must not be null");
+		}
+	}
 
-    public MBeanParameterInfo createMBeanParameterInfo() {
-        if (this.mType != null) {
-            return new MBeanParameterInfo(super.getName(), mType.getName(), super.getDescription());
-        } else {
-            throw new IllegalArgumentException("The parameter type must not be null");
-        } 
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public MBeanParameterInfo createMBeanParameterInfo() {
+		if (this.mType != null) {
+			return new MBeanParameterInfo(super.getName(), mType.getName(), super.getDescription());
+		} else {
+			throw new IllegalArgumentException("The parameter type must not be null");
+		}
+	}
 }

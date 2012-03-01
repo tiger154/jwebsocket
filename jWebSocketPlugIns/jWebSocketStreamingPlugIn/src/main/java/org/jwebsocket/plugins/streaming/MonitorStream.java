@@ -60,7 +60,7 @@ public class MonitorStream extends TokenStream {
 		super.startStream(aTimeout);
 
 		mMonitorProcess = new MonitorProcess();
-		mMonitorThread = new Thread(mMonitorProcess);
+		mMonitorThread = new Thread(mMonitorProcess, "jWebSocket Streaming Plug-in, Monitor Process");
 		mMonitorThread.start();
 	}
 

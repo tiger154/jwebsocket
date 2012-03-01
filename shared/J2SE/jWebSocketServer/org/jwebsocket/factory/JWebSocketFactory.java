@@ -32,6 +32,7 @@ import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.util.Tools;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
@@ -137,6 +138,9 @@ public class JWebSocketFactory {
 
 		JWebSocketInstance.setStatus(JWebSocketInstance.STARTING);
 		setProperties();
+		
+		// start the shared utility timer
+		Tools.startUtilityTimer();
 
 		JWebSocketLoader lLoader = new JWebSocketLoader();
 		try {
@@ -343,6 +347,9 @@ public class JWebSocketFactory {
 		}
 		Logging.exitLogs();
 
+		// stop the shared utility timer
+		Tools.stopUtilityTimer();
+		
 		// set instance status
 		JWebSocketInstance.setStatus(JWebSocketInstance.STOPPED);
 	}

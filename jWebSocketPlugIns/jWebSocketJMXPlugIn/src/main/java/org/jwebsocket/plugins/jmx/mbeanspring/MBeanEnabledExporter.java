@@ -33,19 +33,40 @@ import org.springframework.jmx.export.MBeanExporter;
  */
 public class MBeanEnabledExporter extends MBeanExporter {
 
+	/**
+	 *
+	 */
 	protected Map<String, JMXDefinition> mDefinitions = new FastMap();
 
+	/**
+	 *
+	 */
 	public MBeanEnabledExporter() {
 	}
 
+	/**
+	 *
+	 * @return @throws MBeanException
+	 */
 	public ModelMBean createModelMBean() throws MBeanException {
 		return new ModelMBeanExtension();
 	}
 
+	/**
+	 *
+	 * @param aKey
+	 * @param aDefinition
+	 */
 	public void setDefinition(String aKey, JMXDefinition aDefinition) {
 		this.mDefinitions.put(aKey, aDefinition);
 	}
 
+	/**
+	 *
+	 * @param managedResource
+	 * @param beanKey
+	 * @return
+	 */
 	@Override
 	protected ModelMBean createAndConfigureMBean(Object managedResource, String beanKey) {
 		try {

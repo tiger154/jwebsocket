@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 import javax.management.modelmbean.ModelMBeanAttributeInfo;
@@ -28,67 +27,115 @@ import javax.management.modelmbean.ModelMBeanAttributeInfo;
  */
 public class AttributeDefinition extends FeatureDefinition {
 
-    private Class mType;
-    private Boolean mIsReadable = false;
-    private Boolean mIsWritable = false;
-    private Boolean mIsBoolean = false;
+	private Class mType;
+	private Boolean mIsReadable = false;
+	private Boolean mIsWritable = false;
+	private Boolean mIsBoolean = false;
 
-    public AttributeDefinition() {
-    }
+	/**
+	 *
+	 */
+	public AttributeDefinition() {
+	}
 
-    public AttributeDefinition(Class aType, String aName, String aDescription, Boolean aIsReadable, Boolean aIsWritable, Boolean aIsBoolean) {
-        super(aName, aDescription);
-        this.mType = aType;
-        this.mIsReadable = aIsReadable;
-        this.mIsWritable = aIsWritable;
-        this.mIsBoolean = aIsBoolean;
-    }
+	/**
+	 *
+	 * @param aType
+	 * @param aName
+	 * @param aDescription
+	 * @param aIsReadable
+	 * @param aIsWritable
+	 * @param aIsBoolean
+	 */
+	public AttributeDefinition(Class aType, String aName, String aDescription, Boolean aIsReadable, Boolean aIsWritable, Boolean aIsBoolean) {
+		super(aName, aDescription);
+		this.mType = aType;
+		this.mIsReadable = aIsReadable;
+		this.mIsWritable = aIsWritable;
+		this.mIsBoolean = aIsBoolean;
+	}
 
-    public Class getType() {
-        if (this.mType != null) {
-            return this.mType;
-        } else {
-            throw new IllegalArgumentException("The attribute type must not be null.");
-        }
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Class getType() {
+		if (this.mType != null) {
+			return this.mType;
+		} else {
+			throw new IllegalArgumentException("The attribute type must not be null.");
+		}
+	}
 
-    public void setType(Class aType) {
-        if (aType != null) {
-            this.mType = aType;
-        } else {
-            throw new IllegalArgumentException("The attribute type must not be null.");
-        }
-    }
+	/**
+	 *
+	 * @param aType
+	 */
+	public void setType(Class aType) {
+		if (aType != null) {
+			this.mType = aType;
+		} else {
+			throw new IllegalArgumentException("The attribute type must not be null.");
+		}
+	}
 
-    public Boolean isReadable() {
-        return mIsReadable;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Boolean isReadable() {
+		return mIsReadable;
+	}
 
-    public void setReadable(Boolean aReadable) {
-        this.mIsReadable = aReadable;
-    }
+	/**
+	 *
+	 * @param aReadable
+	 */
+	public void setReadable(Boolean aReadable) {
+		this.mIsReadable = aReadable;
+	}
 
-    public Boolean isWritable() {
-        return mIsWritable;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Boolean isWritable() {
+		return mIsWritable;
+	}
 
-    public void setWritable(Boolean aWritable) {
-        this.mIsWritable = aWritable;
-    }
+	/**
+	 *
+	 * @param aWritable
+	 */
+	public void setWritable(Boolean aWritable) {
+		this.mIsWritable = aWritable;
+	}
 
-    public Boolean isBoolean() {
-        return mIsBoolean;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Boolean isBoolean() {
+		return mIsBoolean;
+	}
 
-    public void setIsBoolean(Boolean aIsBoolean) {
-        this.mIsBoolean = aIsBoolean;
-    }
+	/**
+	 *
+	 * @param aIsBoolean
+	 */
+	public void setIsBoolean(Boolean aIsBoolean) {
+		this.mIsBoolean = aIsBoolean;
+	}
 
-    public ModelMBeanAttributeInfo createMBeanAttributeInfo() {
-        if (this.mType != null) {
-            return new ModelMBeanAttributeInfo(super.getName(), mType.getName(), super.getDescription(), mIsReadable, mIsWritable, mIsBoolean);
-        } else {
-            throw new IllegalArgumentException("The attribute type must not be null.");
-        }
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public ModelMBeanAttributeInfo createMBeanAttributeInfo() {
+		if (this.mType != null) {
+			return new ModelMBeanAttributeInfo(super.getName(), mType.getName(), super.getDescription(), mIsReadable, mIsWritable, mIsBoolean);
+		} else {
+			throw new IllegalArgumentException("The attribute type must not be null.");
+		}
+	}
 }

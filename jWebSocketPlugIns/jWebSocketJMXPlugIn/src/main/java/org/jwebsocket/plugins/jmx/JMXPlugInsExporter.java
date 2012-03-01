@@ -51,6 +51,12 @@ public class JMXPlugInsExporter {
 	private String mConfigFilePath;
 	private MBeanServer mServer;
 
+	/**
+	 * 
+	 * @param aPath
+	 * @param aMBeanServer
+	 * @param aLog
+	 */
 	public JMXPlugInsExporter(String aPath, MBeanServer aMBeanServer, Logger aLog) {
 		this.mConfigFilePath = aPath;
 		this.mServer = aMBeanServer;
@@ -60,11 +66,11 @@ public class JMXPlugInsExporter {
 	private List listConfigFilesNames() {
 		List lAllConfigFiles = new FastList();
 		try {
-			File lpathOfConfig = new File(mConfigFilePath);
-			if (false == lpathOfConfig.exists() || false == lpathOfConfig.isDirectory()) {
+			File lPathOfConfig = new File(mConfigFilePath);
+			if (false == lPathOfConfig.exists() || false == lPathOfConfig.isDirectory()) {
 				throw new IllegalArgumentException("The config file path is incorrect.");
 			}
-			for (String lfileName : lpathOfConfig.list()) {
+			for (String lfileName : lPathOfConfig.list()) {
 				if (lfileName.toLowerCase().endsWith("beanconfig.xml")) {
 					lAllConfigFiles.add(lfileName);
 				}
@@ -75,6 +81,10 @@ public class JMXPlugInsExporter {
 		return lAllConfigFiles;
 	}
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	public void createMBeansToExport() throws Exception {
 		List<String> lConfigFiles = listConfigFilesNames();
 		MBeanEnabledExporter lExporter = new MBeanEnabledExporter();

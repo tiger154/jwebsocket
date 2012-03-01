@@ -39,6 +39,9 @@ public class JMXPlugInAuthenticator implements JMXAuthenticator {
 
 	private static String mConfigPath;
 
+	/**
+	 *
+	 */
 	public JMXPlugInAuthenticator() {
 	}
 
@@ -62,9 +65,10 @@ public class JMXPlugInAuthenticator implements JMXAuthenticator {
 
 		// Load config file to perform authentication
 		ServerXmlBeanFactory lFactory = JWebSocketConfig.getConfigBeanFactory(getClass(), mConfigPath);
-		/*		
-		Resource lResource = new FileSystemResource(mConfigPath);
-		XmlBeanFactory lFactory = new ServerXmlBeanFactory(lResource, getClass().getClassLoader());
+		/*
+		 * Resource lResource = new FileSystemResource(mConfigPath);
+		 * XmlBeanFactory lFactory = new ServerXmlBeanFactory(lResource,
+		 * getClass().getClassLoader());
 		 */
 		InMemoryDaoImpl lAuthentication = (InMemoryDaoImpl) lFactory.getBean("staticAuthUserDetailsService");
 		UserDetails lUser = lAuthentication.loadUserByUsername(lUserName);
@@ -91,6 +95,10 @@ public class JMXPlugInAuthenticator implements JMXAuthenticator {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConfigPath
+	 */
 	public static void setConfigPath(String aConfigPath) {
 		JMXPlugInAuthenticator.mConfigPath = aConfigPath;
 	}

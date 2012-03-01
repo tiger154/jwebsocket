@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.util;
 
 import java.util.List;
@@ -35,10 +34,19 @@ public class JMXHandler {
 
 	private static Logger mLog;
 
+	/**
+	 *
+	 * @param aLog
+	 */
 	public static void setLog(Logger aLog) {
 		JMXHandler.mLog = aLog;
 	}
 
+	/**
+	 *
+	 * @param aMap
+	 * @return
+	 */
 	public static Boolean isSimpleType(Map aMap) {
 		for (int i = 0; i < aMap.size(); i++) {
 			Object lValue = aMap.values().toArray()[i];
@@ -49,6 +57,12 @@ public class JMXHandler {
 		return true;
 	}
 
+	/**
+	 *
+	 * @param aMap
+	 * @param aKey
+	 * @return
+	 */
 	public static CompositeType createDynamicCompositeType(Map aMap, String aKey) {
 		CompositeType lMapType = null;
 		try {
@@ -92,6 +106,12 @@ public class JMXHandler {
 		return lMapType;
 	}
 
+	/**
+	 *
+	 * @param aMap
+	 * @param aMapType
+	 * @return
+	 */
 	public static CompositeData createDynamicCompositeData(Map aMap, CompositeType aMapType) {
 		CompositeData lMapData = null;
 		try {
@@ -113,6 +133,12 @@ public class JMXHandler {
 		return lMapData;
 	}
 
+	/**
+	 *
+	 * @param aMap
+	 * @param aKey
+	 * @return
+	 */
 	public static CompositeData convertMapToCompositeData(Map aMap, String aKey) {
 		if (isSimpleType(aMap)) {
 			CompositeType lMapType = createDynamicCompositeType(aMap, aKey);
@@ -163,10 +189,21 @@ public class JMXHandler {
 		return createDynamicCompositeData(aMap, lMapType);
 	}
 
+	/**
+	 *
+	 * @param aMap
+	 * @return
+	 */
 	public static CompositeData convertMapToCompositeData(Map aMap) {
 		return convertMapToCompositeData(aMap, "Main");
 	}
 
+	/**
+	 *
+	 * @param aList
+	 * @param aKey
+	 * @return
+	 */
 	public static Map convertListToMap(List aList, String aKey) {
 		Map lMap = new FastMap();
 		for (int i = 1; i <= aList.size(); i++) {
@@ -175,6 +212,12 @@ public class JMXHandler {
 		return lMap;
 	}
 
+	/**
+	 *
+	 * @param aMap
+	 * @param aCompositeTypeName
+	 * @return
+	 */
 	public static TabularData createTabularData(Map aMap, String aCompositeTypeName) {
 		TabularData lMapTabData = null;
 		try {

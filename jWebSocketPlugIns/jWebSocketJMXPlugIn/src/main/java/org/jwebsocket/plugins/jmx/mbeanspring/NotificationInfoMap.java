@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.mbeanspring;
 
 import java.util.HashMap;
@@ -30,28 +29,38 @@ import javax.management.modelmbean.ModelMBeanInfo;
  */
 public class NotificationInfoMap extends HashMap<String, MBeanNotificationInfo> {
 
-    public NotificationInfoMap(ModelMBeanInfo aModelMBeanInfo) {
-        initializeMap(aModelMBeanInfo);
-    }
+	/**
+	 *
+	 * @param aModelMBeanInfo
+	 */
+	public NotificationInfoMap(ModelMBeanInfo aModelMBeanInfo) {
+		initializeMap(aModelMBeanInfo);
+	}
 
-    private void initializeMap(ModelMBeanInfo aModelMBeanInfo) {
-        MBeanNotificationInfo[] lNotifications = aModelMBeanInfo.getNotifications();
-        String[] lMatchTypes = {".set.", ".before.", ".after."};
-        for (MBeanNotificationInfo lInfo : lNotifications) {
-            String[] lNotificationTypes = lInfo.getNotifTypes();
-            for (String lNotificationType : lNotificationTypes) {
-                for (String lMatchType : lMatchTypes) {
-                    int lIndex = lNotificationType.indexOf(lMatchType);
-                    if (lIndex > -1) {
-                        String lKey = lNotificationType.substring(lIndex + 1);
-                        put(lKey, lInfo);
-                    }
-                }
-            }
-        }
-    }
+	private void initializeMap(ModelMBeanInfo aModelMBeanInfo) {
+		MBeanNotificationInfo[] lNotifications = aModelMBeanInfo.getNotifications();
+		String[] lMatchTypes = {".set.", ".before.", ".after."};
+		for (MBeanNotificationInfo lInfo : lNotifications) {
+			String[] lNotificationTypes = lInfo.getNotifTypes();
+			for (String lNotificationType : lNotificationTypes) {
+				for (String lMatchType : lMatchTypes) {
+					int lIndex = lNotificationType.indexOf(lMatchType);
+					if (lIndex > -1) {
+						String lKey = lNotificationType.substring(lIndex + 1);
+						put(lKey, lInfo);
+					}
+				}
+			}
+		}
+	}
 
-    public MBeanNotificationInfo findNotificationInfo(String aPrefix, String aName) {
-        return get(aPrefix + "." + aName);
-    }
+	/**
+	 *
+	 * @param aPrefix
+	 * @param aName
+	 * @return
+	 */
+	public MBeanNotificationInfo findNotificationInfo(String aPrefix, String aName) {
+		return get(aPrefix + "." + aName);
+	}
 }

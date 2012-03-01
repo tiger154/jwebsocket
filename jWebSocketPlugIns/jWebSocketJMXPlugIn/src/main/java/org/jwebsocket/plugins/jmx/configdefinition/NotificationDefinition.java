@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Lesser General Public License along
 // with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 // ---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 import javax.management.modelmbean.ModelMBeanNotificationInfo;
@@ -28,49 +27,70 @@ import javax.management.modelmbean.ModelMBeanNotificationInfo;
  */
 public class NotificationDefinition extends FeatureDefinition {
 
-    private String[] mTypes;
+	private String[] mTypes;
 
-    public NotificationDefinition() {
-    }
+	/**
+	 * 
+	 */
+	public NotificationDefinition() {
+	}
 
-    public NotificationDefinition(String[] aTypes, String aName, String aDescription) {
-        super(aName, aDescription);
-        if (aTypes.length > 0) {
-            if (!aTypes[0].equals("")) {
-                this.mTypes = aTypes;
-            } else {
-                throw new IllegalArgumentException("The notification types must have at least one value.");
-            }
-        } else {
-            throw new IllegalArgumentException("The notification types must have at least one value.");
-        }
-    }
+	/**
+	 * 
+	 * @param aTypes
+	 * @param aName
+	 * @param aDescription
+	 */
+	public NotificationDefinition(String[] aTypes, String aName, String aDescription) {
+		super(aName, aDescription);
+		if (aTypes.length > 0) {
+			if (!aTypes[0].equals("")) {
+				this.mTypes = aTypes;
+			} else {
+				throw new IllegalArgumentException("The notification types must have at least one value.");
+			}
+		} else {
+			throw new IllegalArgumentException("The notification types must have at least one value.");
+		}
+	}
 
-    public String[] getTypes() {
-        if (mTypes != null) {
-            return mTypes;
-        } else {
-            throw new IllegalArgumentException("The notification types must have at least one value.");
-        }
-    }
+	/**
+	 * 
+	 * @return
+	 */
+	public String[] getTypes() {
+		if (mTypes != null) {
+			return mTypes;
+		} else {
+			throw new IllegalArgumentException("The notification types must have at least one value.");
+		}
+	}
 
-    public void setTypes(String[] aTypes) {
-        if (aTypes.length > 0) {
-            if (!aTypes[0].equals("")) {
-                this.mTypes = aTypes;
-            } else {
-                throw new IllegalArgumentException("The notification types must have at least one value.");
-            }
-        } else {
-            throw new IllegalArgumentException("The notification types must have at least one value.");
-        }
-    }
+	/**
+	 * 
+	 * @param aTypes
+	 */
+	public void setTypes(String[] aTypes) {
+		if (aTypes.length > 0) {
+			if (!aTypes[0].equals("")) {
+				this.mTypes = aTypes;
+			} else {
+				throw new IllegalArgumentException("The notification types must have at least one value.");
+			}
+		} else {
+			throw new IllegalArgumentException("The notification types must have at least one value.");
+		}
+	}
 
-    public ModelMBeanNotificationInfo createMBeanNotificationInfo() {
-        if (mTypes != null) {
-            return new ModelMBeanNotificationInfo(mTypes, super.getName(), super.getDescription());
-        } else {
-            throw new IllegalArgumentException("The notification types must have at least one value.");
-        }
-    }
+	/**
+	 * 
+	 * @return
+	 */
+	public ModelMBeanNotificationInfo createMBeanNotificationInfo() {
+		if (mTypes != null) {
+			return new ModelMBeanNotificationInfo(mTypes, super.getName(), super.getDescription());
+		} else {
+			throw new IllegalArgumentException("The notification types must have at least one value.");
+		}
+	}
 }

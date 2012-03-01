@@ -40,13 +40,26 @@ public class JMXServerFunctions {
 
 	private static Logger mLog;
 
+	/**
+	 *
+	 */
 	public JMXServerFunctions() {
 	}
 
+	/**
+	 *
+	 * @param aLog
+	 */
 	public static void setLog(Logger aLog) {
 		JMXServerFunctions.mLog = aLog;
 	}
 
+	/**
+	 *
+	 * @param aServer
+	 * @return
+	 * @throws Exception
+	 */
 	public CompositeData allConnectors(String aServer) throws Exception {
 		CompositeData lCompData = null;
 		try {
@@ -80,6 +93,10 @@ public class JMXServerFunctions {
 		return lCompData;
 	}
 
+	/**
+	 *
+	 * @return @throws Exception
+	 */
 	public CompositeData getServers() throws Exception {
 		CompositeData result = null;
 		try {
@@ -106,6 +123,10 @@ public class JMXServerFunctions {
 		return result;
 	}
 
+	/**
+	 *
+	 * @return @throws Exception
+	 */
 	public CompositeData getPlugIns() throws Exception {
 		CompositeData result = null;
 		try {
@@ -147,6 +168,10 @@ public class JMXServerFunctions {
 		return result;
 	}
 
+	/**
+	 *
+	 * @return @throws Exception
+	 */
 	public CompositeData getFilters() throws Exception {
 		CompositeData result = null;
 		try {

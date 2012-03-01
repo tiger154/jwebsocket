@@ -18,7 +18,6 @@ package org.jwebsocket.plugins.streaming;
 import java.util.Date;
 import java.util.List;
 import javolution.util.FastList;
-
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketStream;
@@ -59,7 +58,7 @@ public class BaseStream implements WebSocketStream {
 			mLog.debug("Starting Base stream...");
 		}
 		QueueProcessor lQueueProcessor = new QueueProcessor();
-		mQueueThread = new Thread(lQueueProcessor);
+		mQueueThread = new Thread(lQueueProcessor, "jWebSocket Streaming Plug-in, Base QueueProcessor");
 		mQueueThread.start();
 	}
 
