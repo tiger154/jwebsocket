@@ -88,7 +88,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 				mExecStoredProcSQL = mNativeAccess.getExecStoredProcSQL();
 				// give a success message to the administrator
 				if (mLog.isInfoEnabled()) {
-					mLog.info("JDBC plug-in successfully loaded.");
+					mLog.info("JDBC plug-in successfully instantiated.");
 				}
 			} else {
 				mLog.error("Database bean could not be loaded properly.");

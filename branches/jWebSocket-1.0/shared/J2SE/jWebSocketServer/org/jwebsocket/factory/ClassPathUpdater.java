@@ -22,38 +22,50 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * Allows programs to modify the classpath during runtime.              
+ * Allows programs to modify the classpath during runtime.
  */
 public class ClassPathUpdater {
 
-	/** Used to find the method signature. */
+	/**
+	 * Used to find the method signature.
+	 */
 	private static final Class[] PARAMETERS = new Class[]{URL.class};
-	/** Class containing the private addURL method. */
+	/**
+	 * Class containing the private addURL method.
+	 */
 	private static final Class<?> CLASS_LOADER = URLClassLoader.class;
 
 	/**
 	 * Adds a new path to the classloader. If the given string points to a file,
-	 * then that file's parent file (i.e. directory) is used as the
-	 * directory to add to the classpath. If the given string represents a
-	 * directory, then the directory is directly added to the classpath.
+	 * then that file's parent file (i.e. directory) is used as the directory to
+	 * add to the classpath. If the given string represents a directory, then
+	 * the directory is directly added to the classpath.
 	 *
-	 * @param s The directory to add to the classpath (or a file, which
-	 * will relegate to its directory).
+	 * @param aDir The directory to add to the classpath (or a file, which will
+	 * relegate to its directory).
+	 * @throws IOException 
+	 * @throws NoSuchMethodException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException  
 	 */
-	public static void add(String s)
+	public static void add(String aDir)
 			throws IOException, NoSuchMethodException, IllegalAccessException,
 			InvocationTargetException {
-		add(new File(s));
+		add(new File(aDir));
 	}
 
 	/**
-	 * Adds a new path to the classloader. If the given file object is
-	 * a file, then its parent file (i.e., directory) is used as the directory
-	 * to add to the classpath. If the given string represents a directory,
-	 * then the directory it represents is added.
+	 * Adds a new path to the classloader. If the given file object is a file,
+	 * then its parent file (i.e., directory) is used as the directory to add to
+	 * the classpath. If the given string represents a directory, then the
+	 * directory it represents is added.
 	 *
-	 * @param aFile The directory (or enclosing directory if a file) to add to the
-	 * classpath.
+	 * @param aFile The directory (or enclosing directory if a file) to add to
+	 * the classpath.
+	 * @throws IOException 
+	 * @throws NoSuchMethodException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException  
 	 */
 	public static void add(File aFile)
 			throws IOException, NoSuchMethodException, IllegalAccessException,
@@ -67,6 +79,10 @@ public class ClassPathUpdater {
 	 * not a file.
 	 *
 	 * @param aURL The path to include when searching the classpath.
+	 * @throws IOException 
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException 
+	 * @throws IllegalAccessException  
 	 */
 	public static void add(URL aURL)
 			throws IOException, NoSuchMethodException, IllegalAccessException,
@@ -75,7 +91,24 @@ public class ClassPathUpdater {
 		method.setAccessible(true);
 		method.invoke(getClassLoader(), new Object[]{aURL});
 	}
-
+	
+	/**
+	 * 
+	 * @param aURL
+	 * @param aClassLoader
+	 * @throws IOException
+	 * @throws NoSuchMethodException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
+	public static void add(URL aURL, ClassLoader aClassLoader)
+			throws IOException, NoSuchMethodException, IllegalAccessException,
+			InvocationTargetException {
+		Method lMethod = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
+		lMethod.setAccessible(true);
+		lMethod.invoke(aClassLoader, new Object[]{aURL});
+	}
+	
 	private static URLClassLoader getClassLoader() {
 		return (URLClassLoader) ClassLoader.getSystemClassLoader();
 	}

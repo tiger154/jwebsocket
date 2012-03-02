@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -91,7 +90,7 @@ public class MailPlugIn extends TokenPlugIn {
 		mGetSettings();
 		// give a success message to the administrator
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Mail plug-in successfully loaded.");
+			mLog.info("Mail plug-in successfully instantiated.");
 		}
 	}
 

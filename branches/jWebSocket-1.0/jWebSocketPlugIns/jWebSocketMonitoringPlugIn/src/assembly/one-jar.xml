@@ -11,10 +11,10 @@
 	<dependencySets>
 		
 		<dependencySet>
-			<outputDirectory/>
+			<!-- <outputDirectory/> -->
 			<includes>
-				<include>${groupId}:${artifactId}</include>
-				<include>org.fusesource:sigar</include>
+				<!-- <include>${groupId}:${artifactId}</include> -->
+				<include>net.sf.jasperreports:jasperreports</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>		

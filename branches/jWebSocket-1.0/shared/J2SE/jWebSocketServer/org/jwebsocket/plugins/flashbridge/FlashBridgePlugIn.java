@@ -67,7 +67,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 			mBridgeThread = new Thread(mBridgeProcess);
 			mBridgeThread.start();
 			if (mLog.isInfoEnabled()) {
-				mLog.info("FlashBridge plug-in successfully loaded.");
+				mLog.info("FlashBridge plug-in successfully instantiated.");
 			}
 		} catch (IOException ex) {
 			mLog.error("FlashBridge could not be started: " + ex.getMessage());
@@ -116,7 +116,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 		 * @param aPlugIn
 		 */
 		public BridgeProcess(FlashBridgePlugIn aPlugIn) {
-			this.mPlugIn = aPlugIn;
+			mPlugIn = aPlugIn;
 		}
 
 		@Override
