@@ -101,10 +101,6 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating filesystem plug-in"));
 		}
-		// give a success message to the administrator
-		if (mLog.isInfoEnabled()) {
-			mLog.info("FileSystem plug-in successfully loaded.");
-		}
 	}
 
 	@Override

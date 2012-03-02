@@ -92,7 +92,7 @@
                         <id>Bundle</id>
                         <configuration>
                             <classifier>Bundle</classifier>
-                            <finalName>jWebSocketServer-Bundle</finalName>
+                            <finalName>jWebSocketServer</finalName>
                             <outputDirectory>../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
                             <archive>
                                 <manifest>
@@ -111,7 +111,6 @@
                 </executions>
             </plugin>
 			-->
-			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -289,7 +288,13 @@
 			<artifactId>jWebSocketProxy</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+<!--		
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketReportingPlugIn</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+-->
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.servlet</artifactId>
@@ -427,6 +432,7 @@
 		</dependency>		
 		
 		<!-- jasper reporting dependencies -->
+		<!--
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
@@ -437,6 +443,7 @@
 			<artifactId>jasperreports-fonts</artifactId>
 			<version>4.0.0</version>
 		</dependency>		
+		-->
 		
 		<!-- Apache Commons Libraries -->
 		<dependency>

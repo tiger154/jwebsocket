@@ -34,12 +34,15 @@ import org.jwebsocket.config.xml.FilterConfig;
 import org.jwebsocket.config.xml.LibraryConfig;
 import org.jwebsocket.config.xml.PluginConfig;
 import org.jwebsocket.config.xml.ServerConfig;
+import org.jwebsocket.logging.Logging;
 
 /**
  * Intialize the engine, servers and plugins based on jWebSocket.xml
  * configuration
+ *
  * @author puran
- * @version $Id: JWebSocketXmlConfigInitializer.java 424 2010-05-01 19:11:04Z mailtopuran $
+ * @version $Id: JWebSocketXmlConfigInitializer.java 424 2010-05-01 19:11:04Z
+ * mailtopuran $
  */
 public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitializer {
 
@@ -79,11 +82,17 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 						mLog.debug("Adding external library '" + lLibConf.getId()
 								+ "' from '" + lLibConf.getURL() + "'...");
 					}
-					mClassLoader.addFile(JWebSocketConfig.expandEnvAndJWebSocketVars(lLibConf.getURL()));
-					ClassPathUpdater.add(new File(lLibConf.getURL()));
+					String lPath = JWebSocketConfig.expandEnvAndJWebSocketVars(lLibConf.getURL());
+					mClassLoader.addFile(lPath);
+					ClassPathUpdater.add(new File(lPath));
+					if (mLog.isInfoEnabled()) {
+						mLog.info("External library '" + lLibConf.getId()
+								+ "' from '" + lPath
+								+ "' successfully added.");
+					}
 				}
-			} catch (Exception ex) {
-				System.out.println(ex.toString());
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding external libraries"));
 			}
 		} else {
 			if (mLog.isDebugEnabled()) {
@@ -229,11 +238,12 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 								+ "' trying to load from file...");
 					}
 					String lJarFilePath = JWebSocketConfig.getLibsFolder(
-							lPlugInConfig.getJar(), 
+							lPlugInConfig.getJar(),
 							Thread.currentThread().getContextClassLoader());
 					// jarFilePath may be null if .jar is included in server bundle
 					if (lJarFilePath != null) {
 						mClassLoader.addFile(lJarFilePath);
+						ClassPathUpdater.add(new File(lJarFilePath));
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Loading plug-in '"
 									+ lPlugInConfig.getName()
