@@ -15,7 +15,7 @@
 //  ---------------------------------------------------------------------------
 
 /**
- * Author: Rolando Santamaría Masó <kyberneees@gmail.com>
+ * Author: Rolando Santamaria Maso <kyberneees@gmail.com>
  * 
  * This library depends of cujojs-aop (http://cujojs.com/)
  **/
@@ -188,6 +188,7 @@ jws.ioc.ServiceDefinition = function ServiceDefinition(aConfig){
 	this._shared = true;
 	this._initArguments = null;
 	this._methodCalls = new Array();
+	this._factoryService = null;
 	this._factoryMethod = null;
 	this._initMethod = null;
 	this._destroyMethod = null;
@@ -208,6 +209,10 @@ jws.ioc.ServiceDefinition = function ServiceDefinition(aConfig){
 
 	if (undefined != aConfig.shared){
 		this._shared = aConfig.shared;
+	}
+	
+	if (undefined != aConfig.factoryService){
+		this._factoryService = aConfig.factoryService;
 	}
 	
 	if (undefined != aConfig.factoryMethod){
@@ -283,6 +288,16 @@ jws.ioc.ServiceDefinition.prototype.getFactoryMethod = function (){
 
 jws.ioc.ServiceDefinition.prototype.setFactoryMethod = function (aFactoryMethod){
 	this._factoryMethod = aFactoryMethod;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getFactoryService = function (){
+	return this._factoryService;
+}
+
+jws.ioc.ServiceDefinition.prototype.setFactoryService = function (aFactoryService){
+	this._factoryService = aFactoryService;
 
 	return this;
 }
@@ -414,7 +429,7 @@ jws.ioc.ServiceContainerBuilder = function ServiceContainerBuilder(aConfig){
 	}
 	
 	// Logging the service container operations using AOP
-	var lRegExp = new RegExp("/.*/"); //  old expression: /[]*/
+	var lRegExp = new RegExp("/.*/"); 
 	aop.around(this, lRegExp, function(aArgs){
 		jws.console.debug(">> " + this._id + ": Calling method '" + aArgs.method + "' with arguments '" + JSON.stringify(aArgs.args) + "'...");
 		var lResponse = aArgs.proceed();
@@ -570,6 +585,10 @@ jws.ioc.ServiceContainerBuilder.prototype.hasServiceDefinition = function (aName
 }
 
 jws.ioc.ServiceContainerBuilder.prototype._parseArguments = function(aArguments){
+	if (typeof(aArguments) != "object"){
+		return aArguments;
+	}
+	
 	var lArgs = {}
 	
 	//Guarantee that the service definitions are added first,
@@ -633,32 +652,45 @@ jws.ioc.ServiceContainerBuilder.prototype.createService =  function (aServiceDef
 	
 	//Supporting factory-method
 	if (null != lDef.getFactoryMethod()){
-		lService = eval(lDef.getClassName() + "['" + lDef.getFactoryMethod() + "']();");
+		var lFactoryMethod = lDef.getFactoryMethod();
+		var lFactoryMethodArgs = null;
 		
+		if (typeof(lFactoryMethod) == "object"){
+			lFactoryMethodArgs = this._parseArguments(lFactoryMethod.arguments);
+			lFactoryMethod = lFactoryMethod.method;
+		}
+		
+		if (null == lDef.getFactoryService()){
+			lService = eval(lDef.getClassName() + "[lFactoryMethod](lFactoryMethodArgs);");
+		} else {
+			//Supporting factory services
+			lService = this.getService(lDef.getFactoryService())[lFactoryMethod](lFactoryMethodArgs);
+		}
+	
 		//Adding the service name in the service instance
 		lService["__SERVICE_NAME__"] = lDef.getName();
+		
+		//Applying aspects
+		this._applyAspects(lDef.getAspects(), lService);
 	} else {
 		lService = eval("new " + lDef.getClassName() + "();");
 		
 		//Adding the service name in the service instance
 		lService["__SERVICE_NAME__"] = lDef.getName();
 	
-		//Adding aspects before initialize the service
-		var lEnd = lDef.getAspects().length;
-		var lAspect = null;
-		for (lIndex = 0; lIndex < lEnd; lIndex++) {
-			lAspect = lDef.getAspects()[lIndex];
-			aop.add(lService, lAspect.pointcut, lAspect.advices);
-		}
+		//Applying aspects before initialize the service
+		this._applyAspects(lDef.getAspects(), lService);
 		
 		//Supporting init-method
-		if (null != lDef.getInitMethod()){
-			if (null != lDef.getInitArguments()){
-				lDef.getInitArguments()
-				lService[lDef.getInitMethod()](this._parseArguments(lDef.getInitArguments()));
-			} else {
-				lService[lDef.getInitMethod()]();
+		var lInitMethod = lDef.getInitMethod();
+		if (null != lDef.getInitArguments()){
+			if (null == lInitMethod){
+				//Setting default init-method for more productivity
+				lInitMethod = "initialize";
 			}
+			lService[lInitMethod](this._parseArguments(lDef.getInitArguments()));
+		} else {
+			lService[lInitMethod]();
 		}
 	}
 
@@ -683,6 +715,19 @@ jws.ioc.ServiceContainerBuilder.prototype.createService =  function (aServiceDef
 	}
 
 	return lService;
+}
+
+jws.ioc.ServiceContainerBuilder.prototype._applyAspects = function(aAspects, aService){
+	//Adding aspects before initialize the service
+	var lEnd = aAspects.length;
+	var lAspect = null;
+	
+	if (lEnd > 0){
+		for (var lIndex = 0; lIndex < lEnd; lIndex++) {
+			lAspect = aAspects[lIndex];
+			aop.add(aService, lAspect.pointcut, lAspect.advices);
+		}
+	}
 }
 
 jws.ioc.ServiceContainerBuilder.prototype.extendDefinition = function(aChild, aParent){
