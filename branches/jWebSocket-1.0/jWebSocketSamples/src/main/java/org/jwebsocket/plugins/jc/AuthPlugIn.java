@@ -15,25 +15,25 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jc;
 
-import java.util.Arrays;
 import java.util.Map;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
-import org.jwebsocket.eventmodel.event.card.JcTerminalNotReady;
-import org.jwebsocket.eventmodel.event.card.JcTerminalReady;
+import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
 import org.jwebsocket.eventmodel.plugin.jc.JcPlugIn;
 import org.jwebsocket.eventmodel.plugin.jc.JcResponseCallback;
 import org.jwebsocket.eventmodel.s2c.FailureReason;
 import org.jwebsocket.eventmodel.s2c.TransactionContext;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.plugins.jc.commands.GetPassword;
+import org.jwebsocket.plugins.jc.commands.GetUser;
+import org.jwebsocket.plugins.jc.commands.SearchSite;
 import org.jwebsocket.plugins.jc.commands.Select;
+import org.jwebsocket.plugins.jc.commands.VerifyPIN;
 import org.jwebsocket.plugins.jc.event.DoLogin;
 import org.jwebsocket.plugins.jc.event.GetUserInfo;
-import org.jwebsocket.token.Token;
-import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -43,9 +43,11 @@ import org.jwebsocket.util.Tools;
 public class AuthPlugIn extends JcPlugIn {
 
 	private static Logger mLog = Logging.getLogger(AuthPlugIn.class);
-	private byte[] mAppName = new byte[]{(byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x18};
-	private byte[] mMartaUser = Tools.hexStringToByteArray("E84D34"); //aResponse.getBytes()
-	private byte[] mAlexUser = Tools.hexStringToByteArray("EB7D34");  //aResponse.getBytes()
+	private byte[] mAppName = new byte[]{(byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x18,
+		(byte) 0x50, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x52, (byte) 0x41, (byte) 0x44, (byte) 0x42};
+	private byte[] mPIN = Tools.hexStringToByteArray("0000");
+	private byte[] mSiteName = "jwebsocket.com".getBytes();
+	private StateMachine mState;
 
 	public void processEvent(GetUserInfo aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		String lUsername = aEvent.getConnector().getUsername();
@@ -61,74 +63,52 @@ public class AuthPlugIn extends JcPlugIn {
 	}
 
 	public void processEvent(DoLogin aEvent, C2SResponseEvent aResponseEvent) throws Exception {
+		mState = StateMachine.READY;
 		String lClient = aEvent.getConnector().getId();
-		String lTerminal = getTerminals(lClient).toArray()[0].toString();
+		transmit(lClient, getTerminals(lClient).toArray()[0].toString(), new CommandAPDU(new Select(mAppName).getBytes()), new JcResponseCallback(new TransactionContext(getEm(), aEvent, null)) {
 
-		TransactionContext lContext = new TransactionContext(getEm(), aEvent, null);
-		transmit(lClient, lTerminal, new CommandAPDU(new Select(mAppName).getBytes()), new JcResponseCallback(lContext) {
-
-			@Override
-			public boolean isValid(ResponseAPDU aResponse, String aFrom) {
-				return true;
-			}
+			private String mUsername = null;
+			private String mPassword = null;
 
 			@Override
 			public void success(ResponseAPDU aResponse, String aFrom) {
-				String lResult = Tools.hexByteArrayToString(aResponse.getBytes());
+				try {
+					if (mState.equals(StateMachine.READY)) {
+						mState = StateMachine.APP_SELECTED;
 
-				if (Arrays.equals(aResponse.getBytes(), mAlexUser)) {
-					if (mLog.isDebugEnabled()) {
-						mLog.debug("Authenticating as 'alex' user...");
+						transmit(aFrom, getTerminals(aFrom).toArray()[0].toString(), new CommandAPDU(new VerifyPIN(mPIN).getBytes()), this);
+					} else if (mState.equals(StateMachine.APP_SELECTED)) {
+						mState = StateMachine.AUTHENTICATED;
+
+						transmit(aFrom, getTerminals(aFrom).toArray()[0].toString(), new CommandAPDU(new SearchSite(mSiteName).getBytes()), this);
+					} else if (mState.equals(StateMachine.AUTHENTICATED)) {
+						mState = StateMachine.SITE_SELECTED;
+
+						transmit(aFrom, getTerminals(aFrom).toArray()[0].toString(), new CommandAPDU(new GetUser().getBytes()), this);
+					} else if (mState.equals(StateMachine.SITE_SELECTED)) {
+						mState = StateMachine.GET_USER;
+						mUsername = new String(aResponse.getData());
+
+						transmit(aFrom, getTerminals(aFrom).toArray()[0].toString(), new CommandAPDU(new GetPassword().getBytes()), this);
+					} else if (mState.equals(StateMachine.GET_USER)) {
+						mState = StateMachine.GET_PASSWORD;
+						mPassword = new String(aResponse.getData());
+
+						Map<String, String> lResponse = new FastMap<String, String>();
+						lResponse.put("username", mUsername);
+						lResponse.put("password", mPassword);
+						
+						((TransactionContext)getContext()).success(lResponse);
 					}
-
-					Map<String, String> lResponse = new FastMap();
-					lResponse.put("user", "alex");
-					lResponse.put("password", "jwebsocket2012");
-
-					((TransactionContext) getContext()).success(lResponse);
-				} else if (Arrays.equals(aResponse.getBytes(), mMartaUser)) {
-					if (mLog.isDebugEnabled()) {
-						mLog.debug("Authenticating as 'marta' user...");
-					}
-
-					Map<String, String> lResponse = new FastMap();
-					lResponse.put("user", "marta");
-					lResponse.put("password", "jws+nfc");
-
-					((TransactionContext) getContext()).success(lResponse);
+				} catch (MissingTokenSenderException ex) {
+					mLog.error(ex.getMessage(), ex);
 				}
 			}
 
 			@Override
 			public void failure(FailureReason aReason, String aFrom) {
-				((TransactionContext) getContext()).failure(aReason, "Command execution failed!");
+				mLog.error(">> Failure in state " + mState.name());
 			}
 		});
-	}
-
-
-	@Override
-	public void processEvent(JcTerminalNotReady aEvent, C2SResponseEvent aResponseEvent) throws Exception {
-		super.processEvent(aEvent, aResponseEvent);
-
-		Token lResponse = TokenFactory.createToken("org.jwebsocket.auth","logoff");
-		getEm().getParent().getServer().sendToken(aEvent.getConnector(), lResponse);		
-	}
-
-	@Override
-	public void processEvent(JcTerminalReady aEvent, C2SResponseEvent aResponseEvent) throws Exception {
-		super.processEvent(aEvent, aResponseEvent);
-
-		String lTerminal = aEvent.getTerminal();
-		Token lResponse = TokenFactory.createToken("org.jwebsocket.auth","logon");
-		if( lTerminal != null && lTerminal.indexOf("00 01") >= 0) {
-			lResponse.setString("user", "marta");
-			lResponse.setString("password", "jws+nfc");
-		} else {
-			lResponse.setString("user", "alex");
-			lResponse.setString("password", "jwebsocket2012");
-		}
-
-		getEm().getParent().getServer().sendToken(aEvent.getConnector(), lResponse);		
 	}
 }
