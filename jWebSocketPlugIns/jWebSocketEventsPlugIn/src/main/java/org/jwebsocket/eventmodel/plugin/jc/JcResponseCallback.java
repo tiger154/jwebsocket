@@ -53,7 +53,7 @@ public abstract class JcResponseCallback extends OnResponse {
 		if (aResponse.getSW() == 0x9000) {
 			return true;
 		}
-
+		
 		return false;
 	}
 
@@ -65,7 +65,7 @@ public abstract class JcResponseCallback extends OnResponse {
 	 */
 	@Override
 	public void success(Object aResponse, String aFrom) {
-		success(new ResponseAPDU(Base64.decodeBase64(aResponse.toString())), aFrom);
+		success(new ResponseAPDU(Tools.hexStringToByteArray(aResponse.toString())), aFrom);
 	}
 
 	/**

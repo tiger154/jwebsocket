@@ -36,7 +36,6 @@ import org.jwebsocket.eventmodel.event.em.EngineStopped;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
