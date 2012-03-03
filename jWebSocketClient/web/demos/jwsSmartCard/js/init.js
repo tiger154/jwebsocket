@@ -71,7 +71,7 @@ function checkWebSocketSupport(){
 									if (!lWSC.isLoggedIn()){
 										jc.login({
 											OnSuccess: function(aToken){
-												w.auth.eUsername.val(aToken.response.user);
+												w.auth.eUsername.val(aToken.response.username);
 												w.auth.ePassword.val(aToken.response.password);
 											
 												w.auth.logon();

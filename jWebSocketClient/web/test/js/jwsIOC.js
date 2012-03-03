@@ -15,9 +15,9 @@
 //	---------------------------------------------------------------------------
 
 /**
- * Author: Rolando Santamaría Masó <kyberneees@gmail.com>
+ * Author: Rolando Santamaria Maso <kyberneees@gmail.com>
  */
-jws.tests.IOC = {
+jws.tests.ioc = {
 
 	NS: "jws.tests.ioc", 
 
@@ -28,7 +28,7 @@ jws.tests.IOC = {
 			var lValue = "Rolando S M";
 			jws.sc.setParameter(lKey, lValue);
 			
-			lReturnValue = jws.sc.getParameter(lKey);
+			var lReturnValue = jws.sc.getParameter(lKey);
 			
 			expect(lValue).toEqual(lReturnValue);
 		});
@@ -37,7 +37,7 @@ jws.tests.IOC = {
 			var lValue1 = "Rolando Santamaria Maso";
 			jws.sc.setParameter(lKey, lValue1);
 			
-			lReturnValue = jws.sc.getParameter(lKey);
+			var lReturnValue = jws.sc.getParameter(lKey);
 			expect(lValue1).toEqual(lReturnValue);
 		});
 	},
@@ -53,7 +53,7 @@ jws.tests.IOC = {
 			};
 			jws.sc.setService(lKey, lValue);
 			
-			lReturnValue = jws.sc.getService(lKey);
+			var lReturnValue = jws.sc.getService(lKey);
 			
 			expect(lValue).toEqual(lReturnValue);
 		});
@@ -100,7 +100,7 @@ jws.tests.IOC = {
 	},
 	
 	testRegisterAndGetServiceDefinition: function(){
-		jws.tests.IOC.MyClass = function MyClass(){
+		jws.tests.ioc.MyClass = function MyClass(){
 			this._name = null;
 			this._service = null;
 			this._pi = null;
@@ -136,7 +136,7 @@ jws.tests.IOC = {
 		
 		it("RegisterAndGetServiceDefinition", function() {
 			var lServiceName = "myclass";
-			var lClassName = "jws.tests.IOC.MyClass";
+			var lClassName = "jws.tests.ioc.MyClass";
 			
 			var lDef = jws.sc.register(lServiceName, lClassName);
 			expect(lDef).toEqual(jws.sc.getServiceDefinition(lServiceName));
@@ -155,14 +155,14 @@ jws.tests.IOC = {
 			}
 		};
 		
-		jws.tests.IOC.MyClass2 = function MyClass2(){
+		jws.tests.ioc.MyClass2 = function MyClass2(){
 		}
 		
 		var lInitialized = false;
 		it("CreateService: Using the service definition class", function() {
 			var lInitMethod = "init";
 			lDef = new jws.ioc.ServiceDefinition({
-				className: "jws.tests.IOC.MyClass",
+				className: "jws.tests.ioc.MyClass",
 				name: lServiceName,
 				aspects: [{
 					pointcut: lInitMethod,
@@ -182,7 +182,7 @@ jws.tests.IOC = {
 				pi: new jws.ioc.MethodExecutionReference(lPiSource,	"getPi"),
 				//Testing inner services
 				service2: new jws.ioc.ServiceDefinition({
-					className: "jws.tests.IOC.MyClass2"
+					className: "jws.tests.ioc.MyClass2"
 				})
 			})
 			.setOnCreate(function(aService){
@@ -216,7 +216,7 @@ jws.tests.IOC = {
 	},
 	
 	testFactoryMethod: function(){
-		jws.tests.IOC.MyStaticClass = {
+		jws.tests.ioc.MyStaticClass = {
 			getInstance: function(){
 				return {
 					method1: function(){
@@ -231,7 +231,7 @@ jws.tests.IOC = {
 			
 			jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
 				name: lKey, 
-				className: "jws.tests.IOC.MyStaticClass",
+				className: "jws.tests.ioc.MyStaticClass",
 				factoryMethod: "getInstance"
 			}));
 			
@@ -242,17 +242,17 @@ jws.tests.IOC = {
 	testAnonymousServices: function(){
 		it("AnonymousServices: Creating services without names", function() {
 			jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
-				className: "jws.tests.IOC.MyStaticClass",
+				className: "jws.tests.ioc.MyStaticClass",
 				factoryMethod: "getInstance"
 			}));
 			jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
-				className: "jws.tests.IOC.MyStaticClass",
+				className: "jws.tests.ioc.MyStaticClass",
 				factoryMethod: "getInstance"
 			}));
 		});
 		
 		jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
-			className: "jws.tests.IOC.MyStaticClass",
+			className: "jws.tests.ioc.MyStaticClass",
 			factoryMethod: "getInstance"
 		}));
 	},
@@ -289,6 +289,37 @@ jws.tests.IOC = {
 		describe( "Performing test suite: " + this.NS + "...", function () {
 			lThis.runSpecs();
 		});
-	}	
+		
+		
+		jws.tests.ioc.Circle = function Circle(){
+			this._radio = 0;
+		}
+		jws.tests.ioc.Circle.prototype.getRadio = function(){
+			return this._radio;
+		}
+		jws.tests.ioc.Circle.prototype.init = function(aArguments){
+			this._radio = aArguments.radio;
+		}
+		
+		classes.CircleFactory = {
+			getInstance: function (aArguments){
+				var lCircle = new classes.Circle();
+				lCircle.init(aArguments);
+				
+				return lCircle;
+			}
+		}
+		
+		jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
+			className: "classes.CircleFactory",
+			name: "circle",
+			factoryMethod: {
+				method: "getInstance", 
+				arguments: {
+					radio: 5
+				}
+			}
+		}));
+}	
 
 };
