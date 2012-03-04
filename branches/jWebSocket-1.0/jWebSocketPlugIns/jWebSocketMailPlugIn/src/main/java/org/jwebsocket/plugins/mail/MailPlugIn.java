@@ -44,6 +44,7 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -55,30 +56,12 @@ import org.jwebsocket.token.TokenFactory;
 public class MailPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger(MailPlugIn.class);
-	private static String SMTP_HOST = null;
-	private static final String SMTP_HOST_KEY = "smtp_host";
-	private static Integer SMTP_PORT = -1;
-	private static final String SMTP_PORT_KEY = "smtp_port";
-	private static Boolean SMTP_AUTH = false;
-	private static final String SMTP_AUTH_KEY = "smtp_auth";
-	private static String SMTP_USER = null;
-	private static final String SMTP_USER_KEY = "smtp_user";
-	private static String SMTP_PASSWORD = null;
-	private static final String SMTP_PASSWORD_KEY = "smtp_password";
-	private static Boolean SMTP_POP3BEFORE = false;
-	private static final String SMTP_POP3BEFORE_KEY = "smtp_pop3before";
-	private static String POP3_HOST = null;
-	private static final String POP3_HOST_KEY = "pop3_host";
-	private static Integer POP3_PORT = -1;
-	private static final String POP3_PORT_KEY = "pop3_port";
-	private static String POP3_USER = null;
-	private static String POP3_USER_KEY = "pop3_user";
-	private static String POP3_PASSWORD = null;
-	private static String POP3_PASSWORD_KEY = "pop3_password";
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_MAIL = JWebSocketServerConstants.NS_BASE + ".plugins.mail";
 	private static MailStore mMailStore = new MailStore();
-	private static String MAIL_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/mails/{username}/";
+
+	private static ServerXmlBeanFactory mBeanFactory;
+	private static Settings mSettings;
 
 	public MailPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -87,25 +70,23 @@ public class MailPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_MAIL);
-		mGetSettings();
-		// give a success message to the administrator
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Mail plug-in successfully instantiated.");
+		
+		try {
+			mBeanFactory = getConfigBeanFactory();
+			if (null == mBeanFactory) {
+				mLog.error("No or invalid spring configuration for mail plug-in, some features may not be available.");
+			} else {
+				mBeanFactory = getConfigBeanFactory();
+				mSettings = (Settings) mBeanFactory.getBean("settings");
+				if (mLog.isInfoEnabled()) {
+					mLog.info("Mail plug-in successfully instantiated.");
+				}
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating mail plug-in"));
 		}
 	}
 
-	private void mGetSettings() {
-		SMTP_HOST = getString(SMTP_HOST_KEY, null);
-		SMTP_PORT = Integer.parseInt(getString(SMTP_PORT_KEY, "25"));
-		SMTP_AUTH = getString(SMTP_AUTH_KEY, "false").equals("true");
-		SMTP_USER = getString(SMTP_USER_KEY, null);
-		SMTP_PASSWORD = getString(SMTP_PASSWORD_KEY, null);
-		SMTP_POP3BEFORE = getString(SMTP_POP3BEFORE_KEY, "false").equals("true");
-		POP3_HOST = getString(POP3_HOST_KEY, null);
-		POP3_PORT = Integer.parseInt(getString(POP3_PORT_KEY, "110"));
-		POP3_USER = getString(POP3_USER_KEY, null);
-		POP3_PASSWORD = getString(POP3_PASSWORD_KEY, null);
-	}
 
 	@Override
 	public void processToken(PlugInResponse aResponse,
@@ -192,19 +173,19 @@ public class MailPlugIn extends TokenPlugIn {
 				lEmail = new MultiPartEmail();
 			}
 
-			lEmail.setHostName(SMTP_HOST);
-			lEmail.setSmtpPort(SMTP_PORT);
-			if (SMTP_AUTH) {
+			lEmail.setHostName(mSettings.getSmtpHost());
+			lEmail.setSmtpPort(mSettings.getSmtpPort());
+			if (mSettings.getSmtpAuth()) {
 				lEmail.setAuthentication(
-						SMTP_USER,
-						SMTP_PASSWORD);
+						mSettings.getSmtpUser(),
+						mSettings.getSmtpPassword());
 			}
-			if (SMTP_POP3BEFORE) {
+			if (mSettings.getSmtpPop3Before()) {
 				lEmail.setPopBeforeSmtp(
 						true,
-						POP3_HOST,
-						POP3_USER,
-						POP3_PASSWORD);
+						mSettings.getPop3Host(),
+						mSettings.getPop3User(),
+						mSettings.getPop3Password());
 			}
 			if (lFrom != null && lFrom.length() > 0) {
 				lEmail.setFrom(lFrom);
@@ -619,7 +600,7 @@ public class MailPlugIn extends TokenPlugIn {
 
 		String lBaseDir;
 		String lUsername = getUsername(aConnector);
-		lBaseDir = MAIL_DIR_DEF;
+		lBaseDir = mSettings.getMailRoot();
 		if (lUsername != null) {
 			lBaseDir = FilenameUtils.getFullPath(
 					JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir).replace("{username}", lUsername));
