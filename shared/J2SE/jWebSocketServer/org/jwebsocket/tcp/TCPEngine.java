@@ -20,6 +20,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.security.KeyStore;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Map;
 import javax.net.ssl.*;
@@ -40,6 +41,7 @@ import org.jwebsocket.logging.Logging;
 /**
  * Implementation of the jWebSocket TCP engine. The TCP engine provide a Java
  * Socket implementation of the WebSocket protocol. It contains the handshake
+ *
  * @author aschulze
  * @author jang
  */
@@ -57,6 +59,7 @@ public class TCPEngine extends BaseEngine {
 	private boolean mEventsFired = false;
 	private Thread mTCPEngineThread = null;
 	private Thread mSSLEngineThread = null;
+	private static final int CONNECT_TIMEOUT = 2000;
 
 	public TCPEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -70,10 +73,10 @@ public class TCPEngine extends BaseEngine {
 	@Override
 	public void startEngine()
 			throws WebSocketException {
-		
+
 		// start timeout surveillance timer
 		TimeoutOutputStreamNIOWriter.startTimer();
-		
+
 		setSessionTimeout(mSessionTimeout);
 
 		// create unencrypted server socket for ws:// protocol
@@ -131,10 +134,14 @@ public class TCPEngine extends BaseEngine {
 						lKeyStore.load(new FileInputStream(lURL.getPath()), lPassword);
 						lKMF.init(lKeyStore, lPassword);
 
-						lSSLContext.init(lKMF.getKeyManagers(), null, null);
+						lSSLContext.init(lKMF.getKeyManagers(), null, new java.security.SecureRandom());
 						SSLServerSocketFactory lSSLFactory = lSSLContext.getServerSocketFactory();
 						mSSLServerSocket = (SSLServerSocket) lSSLFactory.createServerSocket(
 								mSSLListenerPort);
+						// enable all protocols
+						mSSLServerSocket.setEnabledProtocols(mSSLServerSocket.getEnabledProtocols());
+						// enable all cipher suites
+						mSSLServerSocket.setEnabledCipherSuites(mSSLServerSocket.getSupportedCipherSuites());
 						EngineListener lSSLListener = new EngineListener(this, mSSLServerSocket);
 						mSSLEngineThread = new Thread(lSSLListener);
 						mSSLEngineThread.start();
@@ -295,7 +302,7 @@ public class TCPEngine extends BaseEngine {
 				}
 			}
 		}
-		
+
 		// stop timeout surveillance timer
 		TimeoutOutputStreamNIOWriter.stopTimer();
 	}
@@ -322,20 +329,39 @@ public class TCPEngine extends BaseEngine {
 		InputStream lIn = aClientSocket.getInputStream();
 		OutputStream lOut = aClientSocket.getOutputStream();
 
-		// TODO: Replace this structure by more dynamic ByteArrayOutputStream?
-		byte[] lBuff = new byte[8192];
-		int lRead = lIn.read(lBuff);
-		if (lRead <= 0) {
+		ByteArrayOutputStream lBAOS = new ByteArrayOutputStream(4096);
+		byte[] lBuff = new byte[4096];
+		int lRead = 0, lTotal = 0;
+		long lStart = System.currentTimeMillis();
+		do {
+			lRead = lIn.read(lBuff, 0, lBuff.length);
+			if (lRead != -1) {
+				lTotal += lRead;
+				lBAOS.write(lBuff, 0, lRead);
+				String lAsStr = lBAOS.toString();
+				if (null != lAsStr
+						&& lAsStr.indexOf("\r\n\r\n") > 0) {
+					break;
+				}
+			} else {
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException ex) {
+				}
+			}
+		} while (System.currentTimeMillis() - lStart < CONNECT_TIMEOUT);
+		if (lTotal <= 0) {
 			mLog.warn("Connection "
 					+ aClientSocket.getInetAddress() + ":"
 					+ aClientSocket.getPort()
-					+ " did not detect initial handshake (" + lRead + ").");
+					+ " did not detect initial handshake (total bytes read: " + lTotal + ").");
 			return null;
 		}
-		byte[] lReq = new byte[lRead];
-		System.arraycopy(lBuff, 0, lReq, 0, lRead);
+		byte[] lReq = lBAOS.toByteArray();
 
-		/* please keep comment for debugging purposes! */
+		/*
+		 * please keep comment for debugging purposes!
+		 */
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Parsing handshake request: " + new String(lReq).replace("\r\n", "\\n"));
 		}
@@ -360,7 +386,9 @@ public class TCPEngine extends BaseEngine {
 			return null;
 		}
 
-		/* please keep comment for debugging purposes!*/
+		/*
+		 * please keep comment for debugging purposes!
+		 */
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Flushing handshake response: " + new String(lBA).replace("\r\n", "\\n"));
 			// mLog.debug("Flushing initial WebSocket handshake...");
@@ -410,8 +438,9 @@ public class TCPEngine extends BaseEngine {
 		private ServerSocket mServer = null;
 
 		/**
-		 * Creates the server socket listener for new
-		 * incoming socket connections.
+		 * Creates the server socket listener for new incoming socket
+		 * connections.
+		 *
 		 * @param aEngine
 		 */
 		public EngineListener(WebSocketEngine aEngine, ServerSocket aServerSocket) {
@@ -498,12 +527,16 @@ public class TCPEngine extends BaseEngine {
 							// use tcp engine's timeout as default and
 							// check system's min and max timeout ranges
 							int lSessionTimeout = lHeader.getTimeout(getSessionTimeout());
-							/* min and max range removed since 0.9.0.0602, see config documentation
-							if (lSessionTimeout > JWebSocketServerConstants.MAX_TIMEOUT) {
-							lSessionTimeout = JWebSocketServerConstants.MAX_TIMEOUT;
-							} else if (lSessionTimeout < JWebSocketServerConstants.MIN_TIMEOUT) {
-							lSessionTimeout = JWebSocketServerConstants.MIN_TIMEOUT;
-							}
+							/*
+							 * min and max range removed since 0.9.0.0602, see
+							 * config documentation if (lSessionTimeout >
+							 * JWebSocketServerConstants.MAX_TIMEOUT) {
+							 * lSessionTimeout =
+							 * JWebSocketServerConstants.MAX_TIMEOUT; } else if
+							 * (lSessionTimeout <
+							 * JWebSocketServerConstants.MIN_TIMEOUT) {
+							 * lSessionTimeout =
+							 * JWebSocketServerConstants.MIN_TIMEOUT; }
 							 */
 							if (lSessionTimeout > 0) {
 								lClientSocket.setSoTimeout(lSessionTimeout);
@@ -533,7 +566,8 @@ public class TCPEngine extends BaseEngine {
 							//Check for maximum connections reached strategies
 							if (lReject) {
 								if (mLog.isDebugEnabled()) {
-									mLog.debug("Rejecting incoming connector '" + lConnector.getId() + "' "
+									mLog.debug("Rejecting incoming connector '"
+											+ lConnector.getId() + "' "
 											+ "because the maximum number of connections "
 											+ "has been reached.");
 								}
