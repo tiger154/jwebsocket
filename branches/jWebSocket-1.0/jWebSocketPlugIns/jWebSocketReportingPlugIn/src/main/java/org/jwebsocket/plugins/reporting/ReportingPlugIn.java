@@ -19,7 +19,6 @@
 package org.jwebsocket.plugins.reporting;
 
 import java.io.File;
-import java.net.URL;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,7 +33,6 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketServerConstants;
-import org.jwebsocket.factory.ClassPathUpdater;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -57,20 +55,27 @@ public class ReportingPlugIn extends TokenPlugIn {
 	private static final String VAR_FILES_TO_DELETE = NS_REPORTING + ".filesToDelete";
 	private static ServerXmlBeanFactory mBeanFactory;
 	private static Settings mSettings;
-
+	
+/*
 	static {
 		try {
 			URL lURL;
-			// lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
+			ClassLoader lCL = getClass().getClassLoader();
+			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
+			ClassPathUpdater.add(lURL, lCL);
+			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
+			ClassPathUpdater.add(lURL, lCL);
 			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jWebSocketReportingPlugIn-1.0.jar");
-			ClassPathUpdater.add(lURL);
+			ClassPathUpdater.add(lURL, lCL);
+		
 			// ClassPathUpdater.add("jWebSocketReportingPlugIn-1.0.jar");
-			ClassPathUpdater.add("C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs");
+			// ClassPathUpdater.add("c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs");
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding Jasper libs to class path"));
 		}
 	}
-
+*/
+	
 	/**
 	 *
 	 * @param aConfiguration
@@ -82,7 +87,25 @@ public class ReportingPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_REPORTING);
-
+		
+/*
+		try {
+			URL lURL;
+			ClassLoader lCL = getClass().getClassLoader();
+			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
+			ClassPathUpdater.add(lURL, lCL);
+			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
+			ClassPathUpdater.add(lURL);
+			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jWebSocketReportingPlugIn-1.0.jar");
+			ClassPathUpdater.add(lURL, lCL);
+		
+			// ClassPathUpdater.add("jWebSocketReportingPlugIn-1.0.jar");
+			// ClassPathUpdater.add("c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs");
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding Jasper libs to class path"));
+		}
+*/
+		
 		try {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
@@ -244,7 +267,7 @@ public class ReportingPlugIn extends TokenPlugIn {
 			 */
 
 			String lJRXMLPath = getJRXMLPath(lReportId);
-			Class lClass = Class.forName("net.sf.jasperreports.engine.xml.JRReportSaxParserFactory");
+			// Class lClass = Class.forName("net.sf.jasperreports.engine.xml.JRReportSaxParserFactory");
 			/*
 			 * JRProperties.setProperty("net.sf.jasperreports.compiler.xml.parser.factory",
 			 * "javax.xml.parsers.SAXParserFactory");
@@ -256,7 +279,7 @@ public class ReportingPlugIn extends TokenPlugIn {
 			String lExportFilePath;
 			if ("pdf".equals(lOutputType)) {
 				lExportFilePath = mSettings.getOutputFolder() + lReportName + ".pdf";
-				JasperExportManager.exportReportToPdfFile(lPrint,
+				JasperExportManager.exportReportToPdfFile(lPrint, 
 						lExportFilePath);
 				lResponse.setString("url", mSettings.getOutputURL() + lReportName + ".pdf");
 			} else {

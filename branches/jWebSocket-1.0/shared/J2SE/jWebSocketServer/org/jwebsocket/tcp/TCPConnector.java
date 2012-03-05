@@ -15,12 +15,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import javax.net.ssl.SSLSocket;
-
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketConnectorStatus;
@@ -29,11 +31,7 @@ import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.engines.BaseEngine;
-import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.kit.RawPacket;
-import org.jwebsocket.kit.WebSocketException;
-import org.jwebsocket.kit.WebSocketFrameType;
-import org.jwebsocket.kit.WebSocketProtocolAbstraction;
+import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 
 /**

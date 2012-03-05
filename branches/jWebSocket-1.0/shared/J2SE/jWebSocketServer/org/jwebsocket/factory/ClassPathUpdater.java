@@ -104,7 +104,7 @@ public class ClassPathUpdater {
 	public static void add(URL aURL, ClassLoader aClassLoader)
 			throws IOException, NoSuchMethodException, IllegalAccessException,
 			InvocationTargetException {
-		Method lMethod = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
+		Method lMethod = aClassLoader.getClass().getDeclaredMethod("addURL", PARAMETERS);
 		lMethod.setAccessible(true);
 		lMethod.invoke(aClassLoader, new Object[]{aURL});
 	}

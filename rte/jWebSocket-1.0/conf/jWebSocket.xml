@@ -106,9 +106,10 @@
 			<port>8787</port>
 			<sslport>9797</sslport>
 			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
-			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<keystore>${JWEBSOCKET_HOME}conf/jws.ks</keystore>
 			<!-- password to access keystore file -->
-			<password>jWebSocket</password>
+			<!-- <password>jWebSocket</password> -->
+			<password>jwebsocket</password>
 			<!-- CAUTION! -->
 			<!-- not all browsers automatically accept self-signed certificates -->
 			<!-- please follow instructions on the jWebSocket.org website, how
