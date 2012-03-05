@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.mail.AuthenticationFailedException;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.codec.binary.Base64;
@@ -59,7 +60,6 @@ public class MailPlugIn extends TokenPlugIn {
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_MAIL = JWebSocketServerConstants.NS_BASE + ".plugins.mail";
 	private static MailStore mMailStore = new MailStore();
-
 	private static ServerXmlBeanFactory mBeanFactory;
 	private static Settings mSettings;
 
@@ -70,7 +70,7 @@ public class MailPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_MAIL);
-		
+
 		try {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
@@ -79,14 +79,16 @@ public class MailPlugIn extends TokenPlugIn {
 				mBeanFactory = getConfigBeanFactory();
 				mSettings = (Settings) mBeanFactory.getBean("settings");
 				if (mLog.isInfoEnabled()) {
-					mLog.info("Mail plug-in successfully instantiated.");
+					mLog.info("Mail plug-in successfully instantiated"
+							+ ", SMTP: " + mSettings.getSmtpHost() + ":" + mSettings.getSmtpPort()
+							+ ", POP3: " + mSettings.getPop3Host() + ":" + mSettings.getPop3Port()
+							+ ".");
 				}
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating mail plug-in"));
 		}
 	}
-
 
 	@Override
 	public void processToken(PlugInResponse aResponse,
@@ -121,7 +123,7 @@ public class MailPlugIn extends TokenPlugIn {
 		String lBody = aToken.getString("body");
 		Boolean lIsHTML = aToken.getBoolean("html", false);
 		List<String> lAttachedFiles = aToken.getList("attachments");
-		String lMsg;
+		String lMsg = null;
 
 		// instantiate response token
 		Token lResponse = TokenFactory.createToken();
@@ -130,7 +132,7 @@ public class MailPlugIn extends TokenPlugIn {
 
 		if (lFrom != null && lFrom.length() > 0) {
 			lMap.put("from", lFrom);
-		}
+ 		}
 		if (lTo != null && lTo.length() > 0) {
 			lMap.put("to", lTo);
 		}
@@ -201,57 +203,57 @@ public class MailPlugIn extends TokenPlugIn {
 				if (lIsHTML) {
 					HtmlEmail lHTML = ((HtmlEmail) lEmail);
 					/*
-					URL lURL = new URL("http://five-feet-further.com/aschulze/images/portrait_web_kleiner.jpg");
-					String lCID = ((HtmlEmail )lEmail).embed(lURL, "five feet further logo");
-					
-					//url = new URL( "http://five-feet-further.com/resources/css/IJX4FWDocu.css" );
-					// String css = ((HtmlEmail)lEmail).embed( url, "name of css" );
-					
-					((HtmlEmail )lEmail).setHtmlMsg(
-					"<html><body>" +
-					"<style type=\"text/css\">" +
-					"h1 { " +
-					" font-family:arial, helvetica, sans-serif;" +
-					" font-weight:bold;" +
-					" font-size:18pt;" +
-					"}" +
-					"</style>" +
-					// "<link href=\"cid:" + css + "\" type=\"text/css\" rel=\"stylesheet\">" +
-					"<p><img src=\"cid:" + lCID + "\"></p>" +
-					"<p><img src=\"http://five-feet-further.com/aschulze/images/portrait_web_kleiner.jpg\"></p>" +
-					lItem +
-					"</body></html>");
+					 * URL lURL = new
+					 * URL("http://five-feet-further.com/aschulze/images/portrait_web_kleiner.jpg");
+					 * String lCID = ((HtmlEmail )lEmail).embed(lURL, "five feet
+					 * further logo");
+					 *
+					 * //url = new URL(
+					 * "http://five-feet-further.com/resources/css/IJX4FWDocu.css"
+					 * ); // String css = ((HtmlEmail)lEmail).embed( url, "name
+					 * of css" );
+					 *
+					 * ((HtmlEmail )lEmail).setHtmlMsg( "<html><body>" + "<style
+					 * type=\"text/css\">" + "h1 { " + " font-family:arial,
+					 * helvetica, sans-serif;" + " font-weight:bold;" + "
+					 * font-size:18pt;" + "}" + "</style>" + // "<link
+					 * href=\"cid:" + css + "\" type=\"text/css\"
+					 * rel=\"stylesheet\">" + "<p><img src=\"cid:" + lCID +
+					 * "\"></p>" + "<p><img
+					 * src=\"http://five-feet-further.com/aschulze/images/portrait_web_kleiner.jpg\"></p>"
+					 * + lItem + "</body></html>");
 					 */
 
 					/*
-					// Now the message body.
-					Multipart mp = new MimeMultipart();
-					
-					BodyPart textPart = new MimeBodyPart();
-					// sets type to "text/plain"
-					textPart.setText("Kann Ihr Browser keine HTML-Mails darstellen?");
-					
-					BodyPart pixPart = new MimeBodyPart();
-					pixPart.setContent(lMsg, "text/html");
-					
-					// Collect the Parts into the MultiPart
-					mp.addBodyPart(textPart);
-					mp.addBodyPart(pixPart);
-					
-					// Put the MultiPart into the Message
-					((HtmlEmail) lEmail).setContent((MimeMultipart)mp);
-					((HtmlEmail) lEmail).buildMimeMessage();
-					
-					/*
-					// ((HtmlEmail) lEmail).setContent(lMsg, Email.TEXT_HTML);
-					
-					// lHeaders.put("Innotrade-Id", "4711-0815");
-					// lHTML.setHeaders(lHeaders);
-					// ((HtmlEmail) lEmail).setCharset("UTF-8");
-					// ((HtmlEmail) lEmail).setMsg(lMsg);
-					lMM.setHeader("Innotrade-Id", "4711-0815");
-					
-					// ((HtmlEmail) lEmail).setContent(lTxtMsg, Email.TEXT_PLAIN);
+					 * // Now the message body. Multipart mp = new
+					 * MimeMultipart();
+					 *
+					 * BodyPart textPart = new MimeBodyPart(); // sets type to
+					 * "text/plain" textPart.setText("Kann Ihr Browser keine
+					 * HTML-Mails darstellen?");
+					 *
+					 * BodyPart pixPart = new MimeBodyPart();
+					 * pixPart.setContent(lMsg, "text/html");
+					 *
+					 * // Collect the Parts into the MultiPart
+					 * mp.addBodyPart(textPart); mp.addBodyPart(pixPart);
+					 *
+					 * // Put the MultiPart into the Message ((HtmlEmail)
+					 * lEmail).setContent((MimeMultipart)mp); ((HtmlEmail)
+					 * lEmail).buildMimeMessage();
+					 *
+					 * /*
+					 * // ((HtmlEmail) lEmail).setContent(lMsg,
+					 * Email.TEXT_HTML);
+					 *
+					 * // lHeaders.put("Innotrade-Id", "4711-0815"); //
+					 * lHTML.setHeaders(lHeaders); // ((HtmlEmail)
+					 * lEmail).setCharset("UTF-8"); // ((HtmlEmail)
+					 * lEmail).setMsg(lMsg); lMM.setHeader("Innotrade-Id",
+					 * "4711-0815");
+					 *
+					 * // ((HtmlEmail) lEmail).setContent(lTxtMsg,
+					 * Email.TEXT_PLAIN);
 					 */
 					// String lTxtMsg = "Your Email-Client does not support HTML messages.";
 					lHTML.setHtmlMsg(lBody);
@@ -282,12 +284,11 @@ public class MailPlugIn extends TokenPlugIn {
 			lResponse.setString("msg", "ok");
 			lResponse.setString("msgId", lMsgId);
 		} catch (Exception lEx) {
-			lMsg = lEx.getClass().getSimpleName() + ": " + lEx.getMessage();
+			lMsg = lEx.getClass().getSimpleName() + " (" + lEx.getCause().getClass().getSimpleName() + "): " + lEx.getMessage();
 			mLog.error(lMsg);
 			lResponse.setInteger("code", -1);
 			lResponse.setString("msg", lMsg);
 		}
-
 		return lResponse;
 	}
 
@@ -325,11 +326,10 @@ public class MailPlugIn extends TokenPlugIn {
 
 				ProcessBuilder lProcessBuilder = new ProcessBuilder(lCmdLine);
 				/*
-				Map<String, String> lEnvVars = lProcessBuilder.environment();
-				lProcessBuilder.directory(new File(System.getenv("temp")));
-				if (mLog.isDebugEnabled()) {
-				mLog.debug("Directory : " + System.getenv("temp"));
-				}
+				 * Map<String, String> lEnvVars = lProcessBuilder.environment();
+				 * lProcessBuilder.directory(new File(System.getenv("temp")));
+				 * if (mLog.isDebugEnabled()) { mLog.debug("Directory : " +
+				 * System.getenv("temp")); }
 				 */
 				final Process lProcess = lProcessBuilder.start();
 				InputStream is = lProcess.getInputStream();
@@ -385,65 +385,55 @@ public class MailPlugIn extends TokenPlugIn {
 
 				// zip process
 				/*
-				String lArchiveAbsolutePath = aTargetFolder + lArchiveName;
-				
-				// Reference to the file we will be adding to the zipfile
-				BufferedInputStream lSource = null;
-				
-				// Reference to our zip file
-				FileOutputStream lDest = new FileOutputStream(lArchiveAbsolutePath);
-				
-				// Wrap our destination zipfile with a ZipOutputStream
-				ZipOutputStream lZipOut = new ZipOutputStream(new BufferedOutputStream(lDest));
-				
-				// Create a byte[] buffer that we will read data from the source
-				// files into and then transfer it to the zip file
-				byte[] lBuff = new byte[BUFFER_SIZE];
-				
-				// Iterate over all of the files in our list
-				for (String lAttachment : lAttachments) {
-				String lFilenameInArchive = FilenameUtils.getName(lAttachment);
-				// Get a BufferedInputStream that we can use to read the source file
-				if (mLog.isDebugEnabled()) {
-				mLog.debug("Adding " + lAttachment + " to " + lFilenameInArchive + "...");
-				}
-				System.out.println();
-				FileInputStream lFileIn = new FileInputStream(lAttachment);
-				lSource = new BufferedInputStream(lFileIn, BUFFER_SIZE);
-				
-				// Setup the entry in the zip file
-				// here you can specify the name and folder in the archive
-				ZipEntry lEntry = new ZipEntry(lFilenameInArchive);
-				lZipOut.putNextEntry(lEntry);
-				
-				// Read data from the source file and write it out to the zip file
-				int lRead;
-				while ((lRead = lSource.read(lBuff, 0, BUFFER_SIZE)) != -1) {
-				lZipOut.write(lBuff, 0, lRead);
-				}
-				
-				// Close the source file
-				lSource.close();
-				}
-				
-				// Close the zip file
-				lZipOut.close();
+				 * String lArchiveAbsolutePath = aTargetFolder + lArchiveName;
+				 *
+				 * // Reference to the file we will be adding to the zipfile
+				 * BufferedInputStream lSource = null;
+				 *
+				 * // Reference to our zip file FileOutputStream lDest = new
+				 * FileOutputStream(lArchiveAbsolutePath);
+				 *
+				 * // Wrap our destination zipfile with a ZipOutputStream
+				 * ZipOutputStream lZipOut = new ZipOutputStream(new
+				 * BufferedOutputStream(lDest));
+				 *
+				 * // Create a byte[] buffer that we will read data from the
+				 * source // files into and then transfer it to the zip file
+				 * byte[] lBuff = new byte[BUFFER_SIZE];
+				 *
+				 * // Iterate over all of the files in our list for (String
+				 * lAttachment : lAttachments) { String lFilenameInArchive =
+				 * FilenameUtils.getName(lAttachment); // Get a
+				 * BufferedInputStream that we can use to read the source file
+				 * if (mLog.isDebugEnabled()) { mLog.debug("Adding " +
+				 * lAttachment + " to " + lFilenameInArchive + "..."); }
+				 * System.out.println(); FileInputStream lFileIn = new
+				 * FileInputStream(lAttachment); lSource = new
+				 * BufferedInputStream(lFileIn, BUFFER_SIZE);
+				 *
+				 * // Setup the entry in the zip file // here you can specify
+				 * the name and folder in the archive ZipEntry lEntry = new
+				 * ZipEntry(lFilenameInArchive); lZipOut.putNextEntry(lEntry);
+				 *
+				 * // Read data from the source file and write it out to the
+				 * zip file int lRead; while ((lRead = lSource.read(lBuff, 0,
+				 * BUFFER_SIZE)) != -1) { lZipOut.write(lBuff, 0, lRead); }
+				 *
+				 * // Close the source file lSource.close(); }
+				 *
+				 * // Close the zip file lZipOut.close();
 				 */
 
 
-				/*				
-				FileInputStream lFIS = new FileInputStream(lArchiveAbsolutePath);
-				// Read data from the source file and write it out to the zip file
-				int lRead;
-				int lPart = 0;
-				lBuff = new byte[lVolumeSize];
-				while ((lRead = lFIS.read(lBuff, 0, lVolumeSize)) != -1) {
-				lPart++;
-				FileOutputStream lFOS = new FileOutputStream(lArchiveAbsolutePath + ".part" + lPart);
-				lFOS.write(lBuff, 0, lRead);
-				lFOS.close();
-				}
-				lFIS.close();
+				/*
+				 * FileInputStream lFIS = new
+				 * FileInputStream(lArchiveAbsolutePath); // Read data from the
+				 * source file and write it out to the zip file int lRead; int
+				 * lPart = 0; lBuff = new byte[lVolumeSize]; while ((lRead =
+				 * lFIS.read(lBuff, 0, lVolumeSize)) != -1) { lPart++;
+				 * FileOutputStream lFOS = new
+				 * FileOutputStream(lArchiveAbsolutePath + ".part" + lPart);
+				 * lFOS.write(lBuff, 0, lRead); lFOS.close(); } lFIS.close();
 				 */
 				lRes.setInteger("code", 0);
 			} catch (Exception lEx) {
@@ -457,7 +447,7 @@ public class MailPlugIn extends TokenPlugIn {
 	private void sendMail(WebSocketConnector aConnector, Token aToken) {
 		String lId = aToken.getString("id");
 
-		String lMsg = null;
+		String lMsg;
 
 		TokenServer lServer = getServer();
 		Token lResponse = createResponse(aToken);

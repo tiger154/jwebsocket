@@ -752,7 +752,7 @@ public class JWebSocketConfig implements Config {
 		URL lURL = null;
 		try {
 			if (lWebSocketHome != null && !lWebSocketHome.isEmpty()) {
-				lURL = new URL("file:/" + aPath);
+				lURL = new URL("file://" + aPath);
 			} else {
 				lURL = aClassLoader.getResource(aPath);
 			}
