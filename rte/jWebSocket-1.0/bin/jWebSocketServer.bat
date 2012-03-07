@@ -18,6 +18,6 @@ cd ..
 rem set CLASSPATH=%CLASSPATH%;C:\svn\jWebSocketDev\rte\jWebSocket-1.0\libs\jWebSocketReportingPlugIn-1.0.jar
 rem set CLASSPATH=%CLASSPATH%;C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar
 echo %classpath%
-java -jar libs\jWebSocketServer-1.0.jar -config C:\svn\Transfer\nvidia\jwsConf\jWebSocket.xml %1 %2 %3 %4 %5 %6 %7 %8 %9
+java -jar libs\jWebSocketServer-1.0.jar %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 pause

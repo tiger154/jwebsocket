@@ -20,7 +20,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.security.KeyStore;
-import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Map;
 import javax.net.ssl.*;
@@ -109,11 +108,18 @@ public class TCPEngine extends BaseEngine {
 					+ "...");
 		}
 
+		// tutorial see: http://javaboutique.internet.com/tutorials/jkey/index.html
+		
 		// create encrypted (SSL) server socket for wss:// protocol
 		if (mSSLListenerPort > 0) {
+			// create unencrypted server socket for ws:// protocol
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Trying to initiate SSL on port " + mSSLListenerPort + "...");
+			}
 			if (mKeyStore != null && !mKeyStore.isEmpty()
 					&& mKeyStorePassword != null && !mKeyStorePassword.isEmpty()) {
 				if (mLog.isDebugEnabled()) {
+					mLog.debug("Using keystore " + mKeyStore + "...");
 					mLog.debug("Starting SSL engine '"
 							+ getId()
 							+ "' at port " + mSSLListenerPort + ","
@@ -122,11 +128,10 @@ public class TCPEngine extends BaseEngine {
 							+ "...");
 				}
 				try {
-					SSLContext lSSLContext = SSLContext.getInstance("SSL");
+					SSLContext lSSLContext = SSLContext.getInstance("TLS");
 					KeyManagerFactory lKMF = KeyManagerFactory.getInstance("SunX509");
 					KeyStore lKeyStore = KeyStore.getInstance("JKS");
 
-					// String lKeyStorePath = JWebSocketConfig.getConfigFolder(mKeyStore);
 					String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
 					if (lKeyStorePath != null) {
 						char[] lPassword = mKeyStorePassword.toCharArray();

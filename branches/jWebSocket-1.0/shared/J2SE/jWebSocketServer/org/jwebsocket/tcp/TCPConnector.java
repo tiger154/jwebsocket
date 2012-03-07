@@ -190,18 +190,18 @@ public class TCPConnector extends BaseConnector {
 			// force input stream to close to terminate reader thread
 			if (!mClientSocket.isInputShutdown()
 					&& !mClientSocket.isClosed()) {
-				mClientSocket.shutdownInput();
+				if( !(mClientSocket instanceof SSLSocket)) {
+					mClientSocket.shutdownInput();
+				}	
 			}
 		} catch (Exception lEx) {
-			mLog.error(lEx.getClass().getSimpleName()
-					+ " shutting down reader stream (" + getId() + "): " + lEx.getMessage());
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "shutting down reader stream (" + getId() + ")"));
 		}
 		try {
 			// force input stream to close to terminate reader thread
 			mIn.close();
 		} catch (Exception lEx) {
-			mLog.error(lEx.getClass().getSimpleName()
-					+ " closing reader stream (" + getId() + "): " + lEx.getMessage());
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "closing reader stream (" + getId() + ")"));
 		}
 	}
 

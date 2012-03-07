@@ -1,5 +1,5 @@
 @echo off
-set name=jWebSocket
+set name=aschulze-dt
 
 echo This script generates a new self signed certificate and a keystore for jWebSocket.
 echo The name of the keystore is specified as '%name%', please change in this script according to your needs.

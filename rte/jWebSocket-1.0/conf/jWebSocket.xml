@@ -106,10 +106,9 @@
 			<port>8787</port>
 			<sslport>9797</sslport>
 			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
-			<keystore>${JWEBSOCKET_HOME}conf/jws.ks</keystore>
+			<keystore>${JWEBSOCKET_HOME}conf/enapso.org.ks</keystore>
 			<!-- password to access keystore file -->
-			<!-- <password>jWebSocket</password> -->
-			<password>jwebsocket</password>
+			<password>enapso</password>
 			<!-- CAUTION! -->
 			<!-- not all browsers automatically accept self-signed certificates -->
 			<!-- please follow instructions on the jWebSocket.org website, how
@@ -121,11 +120,11 @@
 			<domains>
 				<domain>http*://jwebsocket.org</domain>
 				<domain>http*://jwebsocket.com</domain>
+				<domain>http*://*.jwebsocket.org</domain>
+				<domain>http*://*.jwebsocket.com</domain>
 				<domain>http*://10.10.*</domain>
 				<domain>http*://10.21.*</domain>
 				<domain>http*://192.168.*</domain>
-				<domain>http*://www.jwebsocket.org</domain>
-				<domain>http*://www.jwebsocket.com</domain>
 				<domain>http*://localhost*</domain>
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
