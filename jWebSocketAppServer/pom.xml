@@ -39,7 +39,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<customClasspathLayout>WEB-INF/lib/*.jar</customClasspathLayout>
+							<!-- <customClasspathLayout>WEB-INF/lib/*.jar</customClasspathLayout> -->
 						</manifest>
 					</archive>
 					<!--

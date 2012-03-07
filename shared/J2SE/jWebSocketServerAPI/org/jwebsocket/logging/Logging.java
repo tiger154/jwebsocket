@@ -17,18 +17,11 @@ package org.jwebsocket.logging;
 
 import java.io.IOException;
 import javolution.util.FastMap;
-import org.apache.log4j.Appender;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+import org.apache.log4j.*;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.config.xml.LoggingConfig;
-import org.jwebsocket.util.Tools;
 
 /**
  * Provides the common used jWebSocket logging support based on
