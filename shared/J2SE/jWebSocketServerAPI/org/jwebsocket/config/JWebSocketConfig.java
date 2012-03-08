@@ -14,30 +14,18 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config;
 
-import org.jwebsocket.config.xml.LoggingConfig;
-import static org.jwebsocket.config.JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
-import static org.jwebsocket.config.JWebSocketServerConstants.DEFAULT_INSTALLATION;
-import static org.jwebsocket.config.JWebSocketServerConstants.DEFAULT_NODE_ID;
-import static org.jwebsocket.config.JWebSocketServerConstants.JWEBSOCKET_XML;
-
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-
 import java.util.Map;
 import javolution.util.FastMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.jwebsocket.config.xml.EngineConfig;
-import org.jwebsocket.config.xml.FilterConfig;
-import org.jwebsocket.config.xml.LibraryConfig;
-import org.jwebsocket.config.xml.PluginConfig;
-import org.jwebsocket.config.xml.RightConfig;
-import org.jwebsocket.config.xml.RoleConfig;
-import org.jwebsocket.config.xml.ServerConfig;
-import org.jwebsocket.config.xml.UserConfig;
+import static org.jwebsocket.config.JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
+import static org.jwebsocket.config.JWebSocketServerConstants.*;
+import org.jwebsocket.config.xml.*;
 import org.jwebsocket.kit.WebSocketRuntimeException;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
@@ -126,27 +114,22 @@ public class JWebSocketConfig implements Config {
 	 * @return the jWebSocketHome (environment variable or command line option)
 	 */
 	public static String getJWebSocketHome() {
+		// check if instance mJWebSocketHome is still null (not yet set)
 		if (null == mJWebSocketHome) {
 			mJWebSocketHome = System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
 			if (null != mJWebSocketHome) {
 				System.out.println("Using environment variable "
 						+ JWebSocketServerConstants.JWEBSOCKET_HOME + ": "
 						+ mJWebSocketHome);
-			}
+			}	
 		}
-		/*
-		if (null == mJWebSocketHome) {
-		mJWebSocketHome = System.getProperty("user.dir");
-		if (null != mJWebSocketHome) {
-		System.out.println("Using application folder: " + mJWebSocketHome);
-		}
-		}
-		 */
+		
 		if (null == mJWebSocketHome) {
 			mJWebSocketHome = "";
 		}
+		
 		if (!mJWebSocketHome.isEmpty()) {
-			// replace potential backslahes by normal slashes to be accept in URLs
+			// replace potential backslahes by normal slashes to be accepted in URLs
 			mJWebSocketHome = mJWebSocketHome.replace('\\', '/');
 			// add a trailing path separator
 			String lFileSep = "/"; // System.getProperty("file.separator");
@@ -627,9 +610,9 @@ public class JWebSocketConfig implements Config {
 	public static String getSubFolder(String aText, String aSubFolder,
 			String aFilename, ClassLoader aClassLoader) {
 
-		String lPath = null;
-		String lJWebSocketHome = null;
-		File lFile = null;
+		String lPath;
+		String lJWebSocketHome;
+		File lFile;
 
 		checkLogs();
 

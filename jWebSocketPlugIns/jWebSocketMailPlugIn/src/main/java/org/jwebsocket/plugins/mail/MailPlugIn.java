@@ -25,7 +25,6 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import javax.mail.AuthenticationFailedException;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.codec.binary.Base64;

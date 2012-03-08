@@ -79,12 +79,12 @@ public class JWebSocketBeanFactory {
 
 		// if no JWEBSOCKET_HOME environment variable set 
 		// then use the classpath resource, otherwise the file system resource
-		System.out.println("getJWebSocketHome: '" + JWebSocketConfig.getJWebSocketHome() + "'...");
+		// System.out.println("getJWebSocketHome: '" + JWebSocketConfig.getJWebSocketHome() + "'...");
 		if (JWebSocketConfig.getJWebSocketHome().isEmpty()) {
-			System.out.println("Loading resource from classpath: " + aPath + "...");
+			// System.out.println("Loading resource from classpath: " + aPath + "...");
 			lXmlReader.loadBeanDefinitions(new ClassPathResource(aPath));
 		} else {
-			System.out.println("Loading resource from filesystem: " + aPath + "...");
+			// System.out.println("Loading resource from filesystem: " + aPath + "...");
 			lXmlReader.loadBeanDefinitions(new FileSystemResource(aPath));
 		}
 	}
