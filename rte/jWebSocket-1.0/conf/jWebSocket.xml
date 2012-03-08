@@ -78,7 +78,9 @@
 	<logging>
 		<log4j>
 			<!-- new config file option in 1.0b, override settings below -->
-			<config>${JWEBSOCKET_HOME}conf/log4j.xml</config>
+			<!-- <config>${JWEBSOCKET_HOME}conf/log4j.xml</config> -->
+			<!-- for web applications use the -->
+			<config>C:/svn/jWebSocketDev/rte/jWebSocket-1.0/conf/log4j.xml</config>
 			<!-- automatic reload of log config options in ms (0 for none, minimum 5000ms) -->
 			<autoreload>20000</autoreload>
 		</log4j>
@@ -1153,16 +1155,7 @@
 					 disclosed to anybody. Publishing this data will allow
 					 others to use your send and receive mails on behalf of you!
 				-->
-				<setting key="smtp_host">#your smtp host (ip or hostname)#</setting>
-				<setting key="smtp_port">25</setting>
-				<setting key="smtp_auth">false</setting>
-				<setting key="smtp_user">#your smtp server's username#</setting>
-				<setting key="smtp_password">#your smtp server's password#</setting>
-				<setting key="smtp_pop3before">false</setting>
-				<setting key="pop3_host">#your pop3 host (ip or hostname)#</setting>
-				<setting key="pop3_port">110</setting>
-				<setting key="pop3_user">#your pop3 server's username#</setting>
-				<setting key="pop3_password">#your pop3 server's password#</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/MailPlugIn/mail.xml</setting>
 			</settings>
 		</plugin>
 
