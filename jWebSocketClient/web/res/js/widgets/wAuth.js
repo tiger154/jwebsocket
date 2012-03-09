@@ -85,25 +85,23 @@ $.widget("jws.auth",{
 		var lRes = mWSC.logon( lURL, lUsername, lPassword, {
 
 			// OnOpen callback
-			OnOpen: function( aEvent ) {
+			OnOpen: function( aEvent, aToken ) {
 				if(w.auth.options.OnOpen){
 					w.auth.options.OnOpen(aEvent);
 				}
 				if(mLog.isDebugEnabled)
 					log( "<font style='color:#888'>jWebSocket connection established.</font>" );
-            
 				//update statusbar client status
 				w.auth.eLogonArea.hide();
 				w.auth.eLogoffArea.fadeIn(200);
 				w.auth.eClientStatus.hide().removeClass("offline").addClass("online").text("connected").show();
 			},
 					
-			OnWelcome: function( aEvent )  {
-				if(w.auth.options.OnWelcome){
-					w.auth.options.OnWelcome(aEvent);
+			OnWelcome: function( aToken )  {
+				if( w.auth.options.OnWelcome ) {
+					w.auth.options.OnWelcome( aToken );
 				}
-				
-				if(mLog.isDebugEnabled) {
+				if( mLog.isDebugEnabled ) {
 					log( "<font style='color:red'>jWebSocket Welcome received.</font>" );
 				}
 			},
@@ -123,23 +121,19 @@ $.widget("jws.auth",{
 				if( aToken.date_val ) {
 					lDate = jws.tools.ISO2Date( aToken.date_val );
 				}
+				
 				log( "<font style='color:#888'>jWebSocket '" + aToken.type + "' token received, full message: '" + aEvent.data + "' " + lDate + "</font>" );
-				if( mWSC.isLoggedIn() ) {
+				
+				if("login" == aToken.reqType){
 					w.auth.eLogonArea.hide();
 					w.auth.eLogoffArea.fadeIn(300);
-					
+									
 					w.auth.eUserInfoName.text(aToken.username);
 					w.auth.mUsername = aToken.username;
-					w.auth.eClientId.text("Client-ID: " + ( mWSC.getId()));
+					w.auth.eClientId.text("Client-ID: " + aToken.sourceId);
 					w.auth.eClientStatus.hide().removeClass("offline").removeClass("online").addClass("authenticated").text("authenticated").show();
-				} else {
-					w.auth.eUserInfoName.text("-");
-					w.auth.eClientId.text("Client-ID: -");
-					w.auth.eClientStatus.hide().removeClass("authenticated").removeClass("online").addClass("offline").text("disconnected").show();
+					w.auth.eWebSocketType.text("WebSocket: " + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)" ));
 				}
-				
-				w.auth.eWebSocketType.text("WebSocket: " + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)" ));
-				
 				if(w.auth.options.OnMessage) {
 					w.auth.options.OnMessage(aEvent, aToken);
 				}
