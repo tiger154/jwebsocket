@@ -17,7 +17,7 @@ function init(){
 		},
 		OnClose: function(){
 			if(!mWSC.isConnected()) {
-//				resetGauges();
+				resetGauges();
 			}
 		},
 		OnMessage: function(aEvent, aToken){

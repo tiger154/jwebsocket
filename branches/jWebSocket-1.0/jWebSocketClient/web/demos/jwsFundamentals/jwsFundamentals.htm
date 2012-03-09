@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <!-- If Google's chrome frame installed, use it! -->
+        <!-- Comment needs to be BELOW this meta tag! -->
+        <!--
+        //	****************************************************************************
+        //	jWebSocket Hello World (uses jWebSocket Client and Server)
+        //	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+        //	****************************************************************************
+        //	This program is free software; you can redistribute it and/or modify it
+        //	under the terms of the GNU Lesser General Public License as published by the
+        //	Free Software Foundation; either version 3 of the License, or (at your
+        //	option) any later version.
+        //	This program is distributed in the hope that it will be useful, but WITHOUT
+        //	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+        //	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+        //	more details.
+        //	You should have received a copy of the GNU Lesser General Public License along
+        //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+        //	****************************************************************************
+        -->
+        <meta http-equiv="Content-Language" content="en"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+
+        <title>jWebSocket Fundamentals</title>
+
+        <!-- DEMO STYLES  -->
+        <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+        <link rel="stylesheet" type="text/css" href="css/jwsFundamentals.css"/>
+
+        <!-- JQUERY DEPENDENCIES -->
+        <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+
+        <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
+        <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+        <!-- this one imports the client side sample plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsSamplesPlugIn.js"></script>
+        <!-- this one imports the client side JDBC plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsJDBCPlugIn.js"></script>
+        <!-- this one imports the client side file system plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
+        <!-- this one imports the client side reporting plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
+        <!-- this one imports the client side rpc plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsRPCPlugIn.js"></script>
+
+        <!--  PUBLIC WIDGETS   -->
+        <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
+        <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
+
+        <!--  PRIVATE WIDGETS  -->
+        <script type="text/javascript" src='js/wActions.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+		
+        <!--  MAIN JAVASCRIPT FILE   -->
+        <script type="text/javascript" src='js/init.js'></script>
+
+    </head>
+    <body>
+        <div id="demo_box">
+            <!--       DEMO_HEADER       -->
+            <div id="demo_box_header">
+                <h1>Fundamentals</h1>
+                <div id="demo_box_header_login">
+                    <div id="logoff_area">
+                        <div id="user_info">
+                            <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
+                            <div id="logoff_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                                 onmousedown="this.className='button onmousedown'" 
+                                 onmouseup="this.className='button onmouseup'" 
+                                 onmouseout="this.className='button onmouseout'" 
+                                 onclick="this.className='button onmouseover'">
+                                <div class="l"></div>
+                                <div class="c">Logout</div>
+                                <div class="r"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="login_area">
+                        <div id="login_form">
+                            <label class="first">Username</label>
+                            <label class="second">Password</label>
+                            <input type="text" id="user_text" value="root"/>
+                            <input type="password" id="user_password" value="root"/>
+                        </div>
+                        <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                             onmousedown="this.className='button onmousedown'" 
+                             onmouseup="this.className='button onmouseup'" 
+                             onmouseout="this.className='button onmouseout'" 
+                             onclick="this.className='button onmouseover'">
+                            <div class="l"></div>
+                            <div class="c">Login</div>
+                            <div class="r"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            <div id="container">
+                <!--       STATUSBAR         -->
+                <div id="demo_box_statusbar">
+                    <div id='status'>Status: </div>
+                    <div id="client_status" class='offline'>disconnected</div><div class="line"></div>
+                    <div id='client_id'>Client-ID: - </div><div class="line"></div>
+                    <div id='websocket_type'>WebSocket: - </div>
+                </div>
+
+                 <!--       SCENARIO          -->
+                <div id="scenario_container" class="box">
+                
+                <!--       DESCRIPTION       -->
+                <div class="description_box">
+                    <p>This demo shows how to easily set up a minimum JSON 
+                        communications via WebSockets between a jWebSocket client 
+                        and a jWebSocket server.<br/>
+                        If you are not sure wether your favorite browser supports 
+                        WebSockets please refer to our jWebSocket <a href="">Cross-Browser 
+                            Compatibility</a> page.</p>
+                </div>
+
+                    <!--    MESSAGE_BOX      -->
+                    <div id="message_box" class="box">
+                        <div id="message_box_header">Message</div> 
+                        <div id="message_box_description">
+                            This dialog demonstrates the basic login and logout 
+                            functions as well as the features for connection control,
+                            for processing client tasks in the background and a simple
+                            WebSocket echo function. Place your mouse on the buttons 
+                            below to get more details.
+                        </div> 
+                        <textarea id="message_box_text">Type your message...</textarea>
+                        
+                        <div id="form_check">
+                            <form method="post">
+                                <label>Auto-Reconnect</label>
+                                <input type="checkbox" value="Auto-Reconnect" id="auto_reconnect" class="checkbox"></input>
+                            </form>
+                        </div>
+                            <div class="functional_box_content_buttons" style="padding-left: 30px;">
+                                    <div class="connectivity_btn">
+                                        <div id="connectivity_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                                             onmousedown="this.className='button onmousedown'" 
+                                             onmouseup="this.className='button onmouseup'" 
+                                             onmouseout="this.className='button onmouseout'" 
+                                             onclick="this.className='button onmouseover'"
+					     title="Shows how to pass an arbitrary complex and hierarchical data object to the client.">
+                                            <div class="l"></div>
+                                            <div class="c">Connectivity</div>
+                                            <div class="r"></div>
+                                        </div>
+                                    </div>
+                                    <div class="echo_btn">
+                                        <div id="echo_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                                             onmousedown="this.className='button onmousedown'" 
+                                             onmouseup="this.className='button onmouseup'" 
+                                             onmouseout="this.className='button onmouseout'" 
+                                             onclick="this.className='button onmouseover'"
+											 title="Shows how to simply pass the current server date and time token to the client.">
+                                            <div class="l"></div>
+                                            <div class="c">Echo</div>
+                                            <div class="r"></div>
+                                        </div>
+                                    </div>
+                                    <div class="thread_btn">
+                                        <div id="thread_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                                             onmousedown="this.className='button onmousedown'" 
+                                             onmouseup="this.className='button onmouseup'" 
+                                             onmouseout="this.className='button onmouseout'" 
+                                             onclick="this.className='button onmouseover'"
+											 title="Shows how to serialize any Java object into a token and pass it to the client.">
+                                            <div class="l"></div>
+                                            <div class="c">Thread</div>
+                                            <div class="r"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+
+
+                    <!--       LOG BOX           -->
+                    <div id="fun_log_box" class="box">
+                        <div id="log_box_header">
+                            <div id="show_hide_log" class="hide">Hide Log</div>
+                            <div id="clear_log">Clear Log</div>
+                        </div>
+                        <div id="log_box_content" class="log_box_visible"></div>
+                    </div>
+
+                </div>
+
+                <!--       DOWNLOAD_BUTTON   -->
+                <div id="demo_box_footer">
+                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                         onmousedown="this.className='button onmousedown'" 
+                         onmouseup="this.className='button onmouseup'" 
+                         onmouseout="this.className='button onmouseout'" 
+                         onclick="this.className='button onmouseover'">
+                        <div class="l"></div>
+                        <div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
+                        <div class="r_download"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

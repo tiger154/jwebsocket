@@ -99,23 +99,51 @@
     width: 100%;
 }
 
-#users_box_body_header{
+.user_box_body_header{
 	margin-top: 30px;
 	height: 10px;
 	background: #fff;
     width: 100%;
+	float: left;
 }
 
-#users_box_body{
-	margin-top: -7px;
+.user_box_body{
+	margin-top: 5px;
+	float: left;
 	background: #fff;
     color: #797878;
-    height: 260px;
+    height: 265px;
     font-size: 12px;
     width: 100%;
 	-webkit-border-radius: 6px;
     -moz-border-radius: 6px;
     border-radius: 6px;
+	padding-top: 5px;
+}
+
+.user_box_body div{
+	margin-top: 2px;
+	cursor: pointer;
+	padding-left: 20px;
+}
+
+.user_box_body div:hover{
+	margin-top: 2px;
+	cursor: pointer;
+	color: #408DC4;
+}
+
+.user_box_body div.online{
+	background: url(images/private_online_user.png) no-repeat 7px 3px;
+	
+}
+
+.user_box_body div.offline{
+	background: url(images/private_offline_user.png) no-repeat  7px 3px;
+}
+
+.user_box_body div.public_online{
+	background: url(images/public_online_user.png) no-repeat  7px 3px;
 }
 
 #message_box textarea{
@@ -129,18 +157,36 @@
 	border: 1px solid #C8C8C8;
 }
 
+#message_box textarea.opaque{
+	color: #797878;
+}
+
+#message_box textarea.dark{
+	color: #181313;
+}
+
 .message_box_btn{
     float:right;
     margin-right: 10px;
     padding-top: 5px;
 }
 
-#user_box a{
+#user_box #chat_switcher_button_area{
 	font-size: 11px;
 	font-family: "Verdana";
 	color: #408DC4;
 	float: left;
 	margin-left: 5px;
+	cursor: pointer;
+}
+
+#user_box #btn_private_chat:hover, #btn_public_chat:hover{
+	color: #1346f1;
+}
+
+#user_box #chat_switcher_button_area div{
+	float: left;
+	margin-left: 3px;
 }
 
 #new_box p{
