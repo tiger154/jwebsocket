@@ -14,11 +14,7 @@ function init(){
 		OnClose: function(aEvent){
 		},
 		OnMessage: function(aEvent, aToken){
-			var lDate = "";
-			if( aToken.date_val ) {
-				lDate = jws.tools.ISO2Date( aToken.date_val );
-			}
-			log( "<font style='color:#888'>jWebSocket '" + aToken.type + "' token received, full message: '" + aEvent.data + "' " + lDate + "</font>" );
+			
 		},
 		OnWelcome: function(aEvent){
 		},
