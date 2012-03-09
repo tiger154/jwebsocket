@@ -31,6 +31,7 @@ $.widget("jws.image",{
 		wImage.image07 = wImage.element.find("#image07_small");
 		wImage.image08 = wImage.element.find("#image08_small");
 		wImage.image09 = wImage.element.find("#image09_small");
+		
 		wImage.eBtnClear= wImage.element.find("#clear_image");
 		wImage.undo = wImage.element.find("#undo");
 		wImage.redo = wImage.element.find("#redo");
@@ -93,7 +94,6 @@ $.widget("jws.image",{
 	mouseDownLsnr: function( aEvent ) {
 		jws.events.preventDefault( aEvent );
 		if( mIsConnected ) {
-			console.log("mpainting true");
 			mPainting = true;
 			x1 = aEvent.clientX - wImage.eCanvas.offsetLeft;
 			y1 = aEvent.clientY - wImage.eCanvas.offsetTop;

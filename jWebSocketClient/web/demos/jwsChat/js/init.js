@@ -10,14 +10,17 @@ function init(){
 		OnOpen: function( aEvent ) {
 		},
 		OnWelcome: function( aEvent )  {
+//			console.log(aEvent);
 		},
 		OnGoodBye: function( aEvent )  {
 		},
 		OnMessage: function( aEvent, aToken ) {
+			console.log(aEvent);
 		},
 		OnClose: function( aEvent ) {
 		}
 	};
+	
 	// Options
 	// @maxLogLines: maximum number of lines that will be logged
 	// @linesToDelete: quantity of lines that will be deleted from 
@@ -37,6 +40,9 @@ function init(){
 			lTip.html("").append(lTop).append(lMiddle).append(lBottom);
 		}
 	});
+	
+	//applying our widgets
+	$("#main_content").chat();
 }
 
 

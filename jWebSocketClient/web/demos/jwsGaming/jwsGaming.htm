@@ -5,7 +5,7 @@
         <!-- Comment needs to be BELOW this meta tag! -->
         <!--
         //	****************************************************************************
-        //	jWebSocket Chat (uses jWebSocket Client and Server)
+        //	jWebSocket Hello World (uses jWebSocket Client and Server)
         //	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
         //	****************************************************************************
         //	This program is free software; you can redistribute it and/or modify it
@@ -25,39 +25,49 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
 
-        <title>jWebSocket Chat</title>
+        <title>jWebSocket Gaming</title>
 
         <!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
-        <link rel="stylesheet" type="text/css" href="css/jwsChat.css"/>
+        <link rel="stylesheet" type="text/css" href="css/jwsGaming.css"/>
+		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
 
         <!-- JQUERY DEPENDENCIES -->
-		<link rel="stylesheet" type="text/css" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" />
         <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
-		<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
 
         <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
-        <script type="text/javascript" src="../../res/js/jWebSocket_Bundle_min.js"></script>
+        <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+        <!-- this one imports the client side sample plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsSamplesPlugIn.js"></script>
+        <!-- this one imports the client side JDBC plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsJDBCPlugIn.js"></script>
+        <!-- this one imports the client side file system plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
+        <!-- this one imports the client side reporting plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
+        <!-- this one imports the client side rpc plug-in -->
+        <script type="text/javascript" src="../../res/js/jwsRPCPlugIn.js"></script>
 
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
-		
-        <script type="text/javascript" src='js/wChat.js'></script>
 
+        <!--  PRIVATE WIDGETS  -->
+        <script type="text/javascript" src='js/wActions.js'></script>
 		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
-
+		
         <!--  MAIN JAVASCRIPT FILE   -->
         <script type="text/javascript" src='js/init.js'></script>
+
     </head>
     <body>
         <div id="demo_box">
             <!--       DEMO_HEADER       -->
             <div id="demo_box_header">
-                <h1>Chat</h1>
+                <h1>Gaming</h1>
                 <div id="demo_box_header_login">
-					<div id="logoff_area">
+                    <div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
                             <div id="logoff_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
@@ -75,11 +85,11 @@
                         <div id="login_form">
                             <label class="first">Username</label>
                             <label class="second">Password</label>
-                            <input type="text" id="user_text" value="guest"/>
-                            <input type="password" id="user_password" value="guest"/>
+                            <input type="text" id="user_text" value="root"/>
+                            <input type="password" id="user_password" value="root"/>
                         </div>
                         <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'"
+                             onmousedown="this.className='button onmousedown'" 
                              onmouseup="this.className='button onmouseup'" 
                              onmouseout="this.className='button onmouseout'" 
                              onclick="this.className='button onmouseover'">
@@ -87,6 +97,7 @@
                             <div class="c">Login</div>
                             <div class="r"></div>
                         </div>
+
                     </div>
 
                 </div>
@@ -100,72 +111,41 @@
                     <div id='websocket_type'>WebSocket: - </div>
                 </div>
 
+                <!--       DESCRIPTION       -->
+                <div class="description_box">
+                    <p>This demo shows how to implement a pure client based game 
+                        without any server side plug-in. Events like key strokes 
+                        or mouse clicks on a client are distributed to all other 
+                        clients, for example to synchronize the location of a 
+                        certain player on a common playground.
+                        This demo uses the standard broadcast and event mechanism 
+                        only, which is already provided by jWebSocket's 
+                        SystemPlugIn.
+                        If you are not sure wether your favorite browser supports 
+                        WebSockets please refer to our jWebSocket Cross-Browser 
+                        Compatibility page. </p>
+                </div>
+
                 <!--       SCENARIO          -->
                 <div id="scenario_container" class="box">
-					<div id="main_content">
-						<!--		\\HERE GOES THE CONTENT OF EACH SPECIFIC DEMO\\				-->
-						<div id="message_box" class="box">
-							<div id="chat_box_header" class="box_header">User ?</div>
-							<div id="chat_box_history"></div>
-							<textarea id="message_box_text">Type your message...</textarea>
-							<div id="message_box_broadcast_btn" class="message_box_btn" title="Send your message...">
-								<div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">Send</div>
-									<div class="r"></div>
-								</div>
-							</div>
-						</div>
-						
-						<div id="user_box" class="box">
-							<div id="users_box_header" class="box_header">Currently in the chat</div>
-							<div id="chat_switcher_button_area"><div id="btn_private_chat">Private chat </div><div>|</div><div id="btn_public_chat"> Public chat</div></div>
-							<div id="users_box_body_header"></div>
-							<div id="users_box_body" class="user_box_body">
-								<div class="online">user 1</div>
-								<div class="offline">user 2</div>
-								<div class="online">user 3</div>
-								<div class="offline">user 4</div>
-							</div>
-							<div id="public_users_box_body" class="user_box_body">
-								<div class="public_offline">Viti</div>
-								<div class="public_offline">Alex</div>
-								<div class="public_offline">Marcus</div>
-								<div class="public_offline">Lazara</div>
-							</div>
-						</div>
+                    <!--    MESSAGE_BOX      -->
+                    <div id="message_box" class="box">
+                        <div id="message_box_header">Playground</div>
+                        <div id="message_box_description">
+                            <p>Login to start as a green player. If other players are 
+                                online they are shown in red. Use the arrow keys to move 
+                                your player and automatically broadcast your move to 
+                                other users.
+                            </p>  
+                        </div>
+                        <div id="players_area">
+                            <div id="green_player"></div>
+                            <div id="red_player"></div>
+                        </div>
+                    </div>
 
-						<!--       DESCRIPTION       -->
-						<div id="description_box" class="box" style="float: left;">
-							<p>
-								This demo shows how to easily set up a simple jWebSocket based chat system.<br></br> 
-								If you are not sure wether your favorite browser supports WebSockets please 
-								refer to our jWebSocket <a target="_top" href="http://jwebsocket.org/jws_for_all.htm">
-								Cross-Browser Compatibility</a> page.
-							</p>
-						</div>
-						
-						<div id="new_box" class="box">
-							<p>To run chat on a single system, you can simulate other 
-								guests by opening one or more new chat windows.</p>
-							<div id="new_box_chat_btn" title="New Chat Window...">
-								<div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">New Chat Window</div>
-									<div class="r"></div>
-								</div>
-							</div>
-						</div>
-						<!--	END	\\HERE GOES THE CONTENT OF EACH SPECIFIC DEMO\\			-->
-					</div>
+                </div>
+
                     <!--       LOG BOX           -->
                     <div id="log_box" class="box">
                         <div id="log_box_header">
@@ -175,7 +155,6 @@
                         <div id="log_box_content" class="log_box_visible"></div>
                     </div>
 
-                </div>
 
                 <!--       DOWNLOAD_BUTTON   -->
                 <div id="demo_box_footer">
@@ -185,7 +164,7 @@
                          onmouseout="this.className='button onmouseout'" 
                          onclick="this.className='button onmouseover'">
                         <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
+                        <div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
                         <div class="r_download"></div>
                     </div>
                 </div>
