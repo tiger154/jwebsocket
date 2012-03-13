@@ -122,7 +122,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 		// Engine started event notification
 		try {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Engine.started(" + aEngine.toString() + ") event notification...");
+				mLog.debug("Engine.started (id '" + aEngine.getId() + "') event notification...");
 			}
 			EventModel lEM = getEm();
 			if (null != lEM) {
