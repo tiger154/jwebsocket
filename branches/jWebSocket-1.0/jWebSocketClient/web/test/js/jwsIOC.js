@@ -17,6 +17,7 @@
 /**
  * Author: Rolando Santamaria Maso <kyberneees@gmail.com>
  */
+var classes = {};
 jws.tests.ioc = {
 
 	NS: "jws.tests.ioc", 
@@ -226,7 +227,7 @@ jws.tests.ioc = {
 			}
 		};
 		
-		it("FactoryMethod", function() {
+		it("FactoryMethod(1)", function() {
 			var lKey = "mystaticclass";
 			
 			jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
@@ -236,6 +237,40 @@ jws.tests.ioc = {
 			}));
 			
 			expect(jws.sc.getService(lKey).method1()).toEqual("method1");
+		});
+		
+		jws.tests.ioc.Circle = function Circle(){
+			this._radio = 0;
+		}
+		jws.tests.ioc.Circle.prototype.getRadio = function(){
+			return this._radio;
+		}
+		jws.tests.ioc.Circle.prototype.init = function(aArguments){
+			this._radio = aArguments.radio;
+		}
+		
+		jws.tests.ioc.CircleFactory = {
+			getInstance: function (aArguments){
+				var lCircle = new jws.tests.ioc.Circle();
+				lCircle.init(aArguments);
+				
+				return lCircle;
+			}
+		}
+	
+		it("FactoryMethod(2)", function() {
+			jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
+				className: "jws.tests.ioc.CircleFactory",
+				name: "circle",
+				factoryMethod: {
+					method: "getInstance", 
+					arguments: {
+						radio: 5
+					}
+				}
+			}));
+			
+			expect(jws.sc.getService("circle").getRadio()).toEqual(5);
 		});
 	},
 	
@@ -256,70 +291,25 @@ jws.tests.ioc = {
 			factoryMethod: "getInstance"
 		}));
 	},
-
-
+	
 	runSpecs: function() {
-		
-		// save current console options
-		var lIsActive = jws.console.isActive();
-		var lLevel = jws.console.getLevel();
-		// set new temporary console options
-		jws.console.setActive( true );
-		jws.console.setLevel( jws.console.DEBUG );
-		try {
-			this.testSetAndGetParameter();
-			this.testHasAndRemoveParameter();
-			this.testSetAndGetService();
-			this.testHasAndRemoveService();
-			this.testRegisterAndGetServiceDefinition();
-			this.testCreateGetAndRemoveService();
-			this.testFactoryMethod();
-			this.testAnonymousServices();
-		} finally {
-			// restore previous console options
-			jws.console.setActive( lIsActive );
-			jws.console.setLevel( lLevel );
-		}	
+		this.testSetAndGetParameter();
+		this.testHasAndRemoveParameter();
+		this.testSetAndGetService();
+		this.testHasAndRemoveService();
+		this.testRegisterAndGetServiceDefinition();
+		this.testCreateGetAndRemoveService();
+		this.testFactoryMethod();
+		this.testAnonymousServices();
 	},
 
 	runSuite: function() {
 		
 		// run alls tests as a separate test suite
 		var lThis = this;
+		
 		describe( "Performing test suite: " + this.NS + "...", function () {
 			lThis.runSpecs();
 		});
-		
-		
-		jws.tests.ioc.Circle = function Circle(){
-			this._radio = 0;
-		}
-		jws.tests.ioc.Circle.prototype.getRadio = function(){
-			return this._radio;
-		}
-		jws.tests.ioc.Circle.prototype.init = function(aArguments){
-			this._radio = aArguments.radio;
-		}
-		
-		classes.CircleFactory = {
-			getInstance: function (aArguments){
-				var lCircle = new classes.Circle();
-				lCircle.init(aArguments);
-				
-				return lCircle;
-			}
-		}
-		
-		jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
-			className: "classes.CircleFactory",
-			name: "circle",
-			factoryMethod: {
-				method: "getInstance", 
-				arguments: {
-					radio: 5
-				}
-			}
-		}));
-}	
-
+	}
 };

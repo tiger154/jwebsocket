@@ -46,12 +46,12 @@ jws.ioc.ParameterReference.prototype.getName = function(){
 /**
  * This class is used to reference DOM elements in dependencies
  **/
-jws.ioc.DOMReference = function DOMReference(aName){
-	this._name = aName;
+jws.ioc.DOMReference = function DOMReference(aId){
+	this._id = aId;
 }
 
-jws.ioc.DOMReference.prototype.getName = function(){
-	return this._name;
+jws.ioc.DOMReference.prototype.getId = function(){
+	return this._id;
 }
 
 /**
@@ -199,9 +199,7 @@ jws.ioc.ServiceDefinition = function ServiceDefinition(aConfig){
 
 	if (undefined != aConfig.className){
 		this._className = aConfig.className;
-	} else {
-		throw new Error("RequiredParameter:{config.className}");
-	}
+	} 
 	
 	if (undefined != aConfig.name){
 		this._name = aConfig.name;
@@ -429,12 +427,11 @@ jws.ioc.ServiceContainerBuilder = function ServiceContainerBuilder(aConfig){
 	}
 	
 	// Logging the service container operations using AOP
-	var lRegExp = new RegExp("/.*/"); 
+	var lRegExp = new RegExp(/.*/); 
 	aop.around(this, lRegExp, function(aArgs){
 		jws.console.debug(">> " + this._id + ": Calling method '" + aArgs.method + "' with arguments '" + JSON.stringify(aArgs.args) + "'...");
 		var lResponse = aArgs.proceed();
-		var lClassName = lResponse.constructor.toString().split(" ", 2)[1].split("(", 1);
-		jws.console.debug("<< " + this._id + ": Response for '" + aArgs.method + "' method call: (" + lClassName +")" + JSON.stringify(lResponse));
+		jws.console.debug("<< " + this._id + ": Response for '" + aArgs.method + "' method call: "+ JSON.stringify(lResponse));
 		 
 		return lResponse;
 	});
@@ -497,32 +494,41 @@ jws.ioc.ServiceContainerBuilder.prototype.removeParameter = function (aName){
 }
 
 jws.ioc.ServiceContainerBuilder.prototype.removeService = function (aName){
-	var lResult = null;
+	var lService = null;
 	
 	try{
-		lResult = this._container.removeService(aName);
+		lService = this._container.removeService(aName);
 	} catch(err){
 	//Service instance not created already
 	}
 	
-	var lServiceDef = this._definitions[aName];
-	if (lServiceDef){
+	var lDef = this._definitions[aName];
+	if (lDef){
 		delete this._definitions[aName];
 		
-		//Supporting destroy method
-		if (null != lServiceDef.getDestroyMethod()){
-			//Executing the destroy-method
-			lServiceDef[lServiceDef.getDestroyMethod()]();
-		}
-		
 		//Removing service definition
-		if (null != lServiceDef.getOnRemove()){
+		if (null != lDef.getOnRemove()){
 			//Executing the callback
-			lServiceDef.getOnRemove()(lResult);
+			lDef.getOnRemove()(lService);
 		}
 	}
 	
-	return lResult;
+	return lService;
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.destroy = function(){
+	var lDef = null;
+	var lService = null;
+	
+	for (var lName in this._definitions){
+		lDef = this._definitions[lName];
+		
+		lService = this.removeService(lName);
+		//Supporting destroy method
+		if (null != lService && null != lDef.getDestroyMethod()){
+			lService[lDef.getDestroyMethod()]();
+		}
+	}
 }
 
 jws.ioc.ServiceContainerBuilder.prototype.addServiceDefinition = function (aServiceDefinition){
@@ -534,7 +540,9 @@ jws.ioc.ServiceContainerBuilder.prototype.addServiceDefinition = function (aServ
 		var lPostfix = "";
 			
 		//Using the classname as name if missing
-		lName = aServiceDefinition.getClassName().toString().toLowerCase();
+		if (null != aServiceDefinition.getClassName()){
+			lName = aServiceDefinition.getClassName().toString().toLowerCase();
+		}
 		
 		//Adding a postfix to avoid duplicate indexes
 		while(this.hasServiceDefinition(lName + lPostfix)) {
@@ -589,46 +597,47 @@ jws.ioc.ServiceContainerBuilder.prototype._parseArguments = function(aArguments)
 		return aArguments;
 	}
 	
-	var lArgs = {}
-	
-	//Guarantee that the service definitions are added first,
-	//solve object properties ordering issue in JavaScript
-	for (var lKey in aArguments){
-		if (aArguments[lKey] instanceof jws.ioc.ServiceDefinition){
-			this.addServiceDefinition(aArguments[lKey]);
+	if (aArguments instanceof jws.ioc.ServiceReference){
+		return this.getService(aArguments.getName());
+	} else if (aArguments instanceof jws.ioc.ServiceDefinition){
+		this.addServiceDefinition(aArguments);
+		return this.getService(aArguments.getName());
+	} else if (aArguments instanceof jws.ioc.ParameterReference){
+		return this.getParameter(aArguments.getName());
+	} else if (aArguments instanceof jws.ioc.ServiceDefinition){
+		return this.getService(aArguments.getName());
+	} else if (aArguments instanceof jws.ioc.DOMReference){
+		return document.getElementById(aArguments.getId());
+	} else if (aArguments instanceof jws.ioc.MethodExecutionReference){
+		var lMethod = aArguments.getMethodName();
+		var lSource = aArguments.getSource();
+		var lMethodArgs = aArguments.getArguments();
+			
+		if (lSource instanceof jws.ioc.ServiceReference ||
+			lSource instanceof jws.ioc.ParameterReference ||
+			lSource instanceof jws.ioc.DOMReference ||
+			lSource instanceof jws.ioc.MethodExecutionReference){
+			
+			lSource = this._parseArguments(lSource);
 		}
+		lMethodArgs = this._parseArguments(lMethodArgs);
+			
+		return lSource[lMethod](lMethodArgs);
 	}
 	
-	for (lKey in aArguments){
-		if (aArguments[lKey] instanceof jws.ioc.ServiceReference){
-			lArgs[lKey] = this.getService(aArguments[lKey].getName());
-		} else if (aArguments[lKey] instanceof jws.ioc.ParameterReference){
-			lArgs[lKey] = this.getParameter(aArguments[lKey].getName());
-		} else if (aArguments[lKey] instanceof jws.ioc.ServiceDefinition){
-			lArgs[lKey] =  this.getService(aArguments[lKey].getName());
-		} else if (aArguments[lKey] instanceof jws.ioc.DOMReference){
-			lArgs[lKey] =  document.getElementById(aArguments[lKey].getName());
-		} else if (aArguments[lKey] instanceof jws.ioc.MethodExecutionReference){
-			//Special treatment for dependencies of type MethodExecutionReference
-			var lMER = aArguments[lKey];
-			
-			//Excluding reference conflicts
-			var lSource = lMER.getSource();
-			var lMERArgs = lMER.getArguments();
-			
-			if (lSource instanceof jws.ioc.ServiceReference){
-				lSource = this.getService(lSource.getName());
-			} else if (lSource instanceof jws.ioc.ParameterReference){
-				lSource = this.getParameter(lSource.getName());
-			}
-			if ("object" == typeof(lMERArgs)){
-				lMERArgs = this._parseArguments(lMERArgs);
-			}
-			
-			//Calling the method
-			lArgs[lKey] = lSource[lMER.getMethodName()](lMERArgs);
-		} else {
-			lArgs[lKey] = aArguments[lKey];
+	var lArgs;
+	if (aArguments instanceof Array){
+		lArgs = new Array();
+		
+		var lEnd = aArguments.length;
+		for (var lIndex = 0; lIndex < lEnd; lIndex++) {
+			lArgs[lIndex] = this._parseArguments(aArguments[lIndex]);
+		}
+	} else {
+		lArgs = {}
+	
+		for (lKey in aArguments){
+			lArgs[lKey] = this._parseArguments(aArguments[lKey]);
 		}
 	}
 
@@ -689,7 +698,7 @@ jws.ioc.ServiceContainerBuilder.prototype.createService =  function (aServiceDef
 				lInitMethod = "initialize";
 			}
 			lService[lInitMethod](this._parseArguments(lDef.getInitArguments()));
-		} else {
+		} else if (null != lInitMethod) {
 			lService[lInitMethod]();
 		}
 	}
