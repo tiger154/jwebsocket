@@ -78,9 +78,9 @@
 	<logging>
 		<log4j>
 			<!-- new config file option in 1.0b, override settings below -->
-			<!-- <config>${JWEBSOCKET_HOME}conf/log4j.xml</config> -->
+			<config>${JWEBSOCKET_HOME}conf/log4j.xml</config>
 			<!-- for web applications use the -->
-			<config>C:/svn/jWebSocketDev/rte/jWebSocket-1.0/conf/log4j.xml</config>
+			<!-- <config>C:/svn/jWebSocketDev/rte/jWebSocket-1.0/conf/log4j.xml</config> -->
 			<!-- automatic reload of log config options in ms (0 for none, minimum 5000ms) -->
 			<autoreload>20000</autoreload>
 		</log4j>
@@ -108,9 +108,9 @@
 			<port>8787</port>
 			<sslport>9797</sslport>
 			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
-			<keystore>${JWEBSOCKET_HOME}conf/enapso.org.ks</keystore>
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
 			<!-- password to access keystore file -->
-			<password>enapso</password>
+			<password>jWebSocket</password>
 			<!-- CAUTION! -->
 			<!-- not all browsers automatically accept self-signed certificates -->
 			<!-- please follow instructions on the jWebSocket.org website, how

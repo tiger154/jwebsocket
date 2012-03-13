@@ -35,9 +35,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0b6 (nightly build 20312)
+	//:const:*:VERSION:String:1.0b6 (nightly build 20314)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0b6 (nightly build 20312)",
+	VERSION: "1.0b6 (nightly build 20314)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -45,9 +45,9 @@ var jws = {
 	NS_SYSTEM: "org.jwebsocket.plugins.system",
 	
 	MSG_WS_NOT_SUPPORTED:
-	"Unfortunately your browser does neither natively support WebSockets\n" +
-	"nor you have the Adobe Flash-PlugIn 10+ installed.\n" +
-	"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer.",
+		"Unfortunately your browser does neither natively support WebSockets\n" +
+		"nor you have the Adobe Flash-PlugIn 10+ installed.\n" +
+		"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer.",
 
 	// some namespace global constants
 	

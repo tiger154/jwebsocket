@@ -168,17 +168,18 @@ rem Smack XMPP API
 xcopy %libs%smack-3.1.0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%smackx-3.1.0.jar %tempdir%libs\ /s /i /y
 rem Spring support
-xcopy %libs%spring-aop-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-asm-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-beans-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-context-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-core-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-expression-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-jdbc-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-jms-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-security-config-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-security-core-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-tx-3.0.5.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-aop-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-asm-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-beans-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-context-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-core-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-expression-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-jdbc-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-jms-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-security-config-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-security-core-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-security-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-tx-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%twitter4j-core-2.1.12.jar %tempdir%libs\ /s /i /y
 rem jWebSocket .jars
 xcopy %libs%jWebSocketCommon-%ver%.jar %tempdir%libs\ /s /i /y
