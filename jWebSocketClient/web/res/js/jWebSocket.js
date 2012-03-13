@@ -1420,6 +1420,22 @@ jws.tools = {
 		return lRes;
 	},
 	
+	setProperties: function(aObject, aProperties, aSubfix){
+		var lSubfix = aSubfix || "";
+		var lSetter = null;
+		var lProp = null;
+		for (lProp in aProperties){
+			lSetter = "set" + lProp.substr(0, 1).toUpperCase() + lProp.substr(1);
+			if (typeof(aObject[lSetter]) == "function"){
+				aObject[lSetter](aProperties[lProp]);
+			} else {
+				aObject[lSubfix + lProp] = aProperties[lProp];
+			}
+		}
+		
+		return aObject;
+	},
+	
 	clone: function(aObject){
 		if(null == aObject || "object" != typeof(aObj)){
 			return aObject;

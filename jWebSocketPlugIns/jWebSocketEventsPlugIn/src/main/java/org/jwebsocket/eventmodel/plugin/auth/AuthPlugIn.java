@@ -73,6 +73,9 @@ public class AuthPlugIn extends EventModelPlugIn {
 
 		//Setting the username
 		lSession.put(SystemPlugIn.USERNAME, lUsername);
+		
+		//Setting the username in the connector instance...
+		aEvent.getConnector().setUsername(lUsername);
 
 		//Setting the uuid
 		String lUUID = null;
@@ -83,6 +86,9 @@ public class AuthPlugIn extends EventModelPlugIn {
 			lUUID = lUsername;
 		}
 		lSession.put(SystemPlugIn.UUID, lUUID);
+		
+		//Setting the uuid in the connectot instance...
+		aEvent.getConnector().setString(SystemPlugIn.UUID, lUUID);
 
 		//Setting the roles
 		String lRoles = "";
@@ -90,9 +96,6 @@ public class AuthPlugIn extends EventModelPlugIn {
 			lRoles = lRoles.concat(lGrantedAuthority.getAuthority() + " ");
 		}
 		lSession.put(SystemPlugIn.AUTHORITIES, lRoles);
-
-		//Setting the username in the connector instance...
-		aEvent.getConnector().setUsername(lUsername);
 
 		//Creating the response
 		aResponseEvent.getArgs().setString("uuid", lUUID);

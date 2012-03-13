@@ -65,7 +65,7 @@ function runDefaultAPISuite() {
 
 function runFullTestSuite() {
 
-	/*
+/*
 	debugger;
 	jasmine.VERBOSE = true;
 	*/
@@ -86,7 +86,7 @@ function runFullTestSuite() {
 		
 		// run load tests
 		jws.tests.Load.runSuite();
-
+		
 		// run test suites for the various plug-ins
 		jws.tests.System.runSuite();
 		jws.tests.FileSystem.runSuite();
@@ -115,9 +115,10 @@ function runFullTestSuite() {
 			jws.Tests.testCloseSharedAdminConnSSL();
 			jws.Tests.testCloseSharedGuestConnSSL();
 		}
-
+		
 		//run IOC tests
-		jws.tests.IOC.runSuite();
+		jws.tests.ioc.runSuite();
+		
 	});
 
 	jasmine.DEFAULT_UPDATE_INTERVAL = lIntv;
