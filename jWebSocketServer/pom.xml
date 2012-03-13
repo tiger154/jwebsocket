@@ -1,5 +1,6 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>jWebSocket-Parent</artifactId>
 		<groupId>org.jwebsocket</groupId>
@@ -292,7 +293,7 @@
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.servlet</artifactId>
 			<version>3.1.1</version>
-			<scope>provided</scope>
+			<!-- <scope>provided</scope> -->
 		</dependency>
 		
 		<!-- to import MS SQL Server JDBC Driver w/o maven support
@@ -342,6 +343,11 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 		<dependency>
