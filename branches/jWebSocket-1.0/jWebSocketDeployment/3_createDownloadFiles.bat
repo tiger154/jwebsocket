@@ -178,6 +178,7 @@ xcopy %libs%spring-jdbc-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-jms-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-config-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-core-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-tx-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%twitter4j-core-2.1.12.jar %tempdir%libs\ /s /i /y

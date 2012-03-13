@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Random;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
@@ -28,12 +27,11 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.connectors.BaseConnector;
-import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.kit.RequestHeader;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.security.User;
@@ -197,8 +195,6 @@ public class SystemPlugIn extends TokenPlugIn {
 				allocChannel(aConnector, aToken);
 			} else if (lType.equals(TT_DEALLOC_CHANNEL)) {
 				deallocChannel(aConnector, aToken);
-			} else if (lType.equals("getLostConnectors")) {
-				getLostConnectors(aConnector, aToken);
 			}
 			aResponse.abortChain();
 		}
@@ -897,17 +893,6 @@ public class SystemPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'deallocChannel' from '"
 					+ aConnector + "'...");
 		}
-	}
-
-	public void getLostConnectors(WebSocketConnector aConnector, Token aToken) {
-		Token lResponse = createResponse(aToken);
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing 'getLostConnectors' from '"
-					+ aConnector + "'...");
-		}
-		BaseEngine lEngine = (BaseEngine) aConnector.getEngine();
-		lResponse.setList("connectors", lEngine.lostConnectors);
-		sendToken(aConnector, aConnector, lResponse);
 	}
 
 	// new spring based authentication

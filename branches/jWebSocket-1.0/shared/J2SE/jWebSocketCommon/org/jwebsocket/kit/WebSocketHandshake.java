@@ -563,13 +563,15 @@ public final class WebSocketHandshake {
 		} else {
 			lHandshake +=
 					"Sec-WebSocket-Key: " + mHybiKey + "\r\n";
-			// TODO: This needs to be fixed!	
+			// TODO: This needs to be fixed! mVersion never may be null!
 			if (mVersion != null) {
 				lHandshake += "Sec-WebSocket-Version: " + mVersion + "\r\n";
 			}
+			// don't forget this as to ensure end-of-header detection!
+			lHandshake += "\r\n";
 			try {
 				lHandshakeBytes = lHandshake.getBytes("UTF-8");
-			} catch (UnsupportedEncodingException ex) {
+			} catch (UnsupportedEncodingException lEx) {
 				lHandshakeBytes = lHandshake.getBytes();
 			}
 		}

@@ -47,12 +47,12 @@
 		<module>jWebSocketPlugIns/jWebSocketClusterPlugIn</module>
 		<module>jWebSocketPlugIns/JWebSocketPingPongGame</module>
 		<module>jWebSocketSwingGUI</module>
-		<!--
+		<module>jWebSocketProxy</module>
+		
 		<module>jWebSocketAppServer</module>
 		<module>jWebSocketAppSrvDemo</module>
 		<module>jWebSocketJetty</module>
-		-->
-		<module>jWebSocketProxy</module>
+		
 		<!-- <module>jWebSocketGlassFish</module> -->
 		<!-- <module>jWebSocketGlassFishDemo</module> -->
 	</modules>

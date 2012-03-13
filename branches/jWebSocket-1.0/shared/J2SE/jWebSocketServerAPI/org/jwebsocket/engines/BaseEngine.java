@@ -18,12 +18,7 @@ package org.jwebsocket.engines;
 import java.util.Map;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-
-import org.jwebsocket.api.EngineConfiguration;
-import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.api.WebSocketEngine;
-import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.api.WebSocketServer;
+import org.jwebsocket.api.*;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
@@ -41,15 +36,9 @@ public class BaseEngine implements WebSocketEngine {
 			new FastMap<String, WebSocketServer>().shared();
 	private final FastMap<String, WebSocketConnector> mConnectors =
 			new FastMap<String, WebSocketConnector>().shared();
-/*	
-	private final ConcurrentHashMap<String, WebSocketConnector> mConnectors =
-			new ConcurrentHashMap<String, WebSocketConnector>();
- */
 	private int mSessionTimeout = JWebSocketCommonConstants.DEFAULT_TIMEOUT;
 	private EngineConfiguration mConfiguration;
 
-	public FastList<WebSocketConnector> lostConnectors = new FastList<WebSocketConnector>();
-	
 	public BaseEngine(EngineConfiguration aConfiguration) {
 		mConfiguration = aConfiguration;
 	}
