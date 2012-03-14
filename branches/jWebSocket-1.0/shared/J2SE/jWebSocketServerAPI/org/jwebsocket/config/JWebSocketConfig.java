@@ -116,6 +116,14 @@ public class JWebSocketConfig implements Config {
 	public static String getJWebSocketHome() {
 		// check if instance mJWebSocketHome is still null (not yet set)
 		if (null == mJWebSocketHome) {
+			mJWebSocketHome = System.getProperty(JWebSocketServerConstants.JWEBSOCKET_HOME);
+			if (null != mJWebSocketHome) {
+				System.out.println("Using property "
+						+ JWebSocketServerConstants.JWEBSOCKET_HOME + ": "
+						+ mJWebSocketHome);
+			}	
+		}
+		if (null == mJWebSocketHome) {
 			mJWebSocketHome = System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
 			if (null != mJWebSocketHome) {
 				System.out.println("Using environment variable "
