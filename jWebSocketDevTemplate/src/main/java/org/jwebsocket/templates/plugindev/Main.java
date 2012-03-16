@@ -16,6 +16,8 @@
 package org.jwebsocket.templates.plugindev;
 
 import java.io.File;
+import java.util.List;
+import javolution.util.FastList;
 import org.apache.commons.io.FilenameUtils;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.config.JWebSocketConfig;
@@ -57,6 +59,9 @@ public class Main {
 			// get the token server
 			TokenServer lServer = JWebSocketFactory.getTokenServer();
 			if (lServer != null) {
+				// create list of server to bind the plug-in to.
+				List<String> lServers = new FastList<String>();
+				lServers.add(lServer.getId());
 				// and add the sample listener to the server's listener chain
 				PluginConfiguration lPlugInConfig = new PluginConfig(
 						// id, needs to be unique
@@ -70,7 +75,7 @@ public class Main {
 						// namespace
 						"org.jwebsocket.plugins.myplugin",
 						// list of servers to be bound to
-						null,
+						lServers,
 						// settings, if interpreted by plug-in
 						null,
 						// enabled?

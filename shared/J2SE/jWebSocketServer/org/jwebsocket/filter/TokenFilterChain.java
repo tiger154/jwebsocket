@@ -33,7 +33,7 @@ import org.jwebsocket.token.Token;
  */
 public class TokenFilterChain extends BaseFilterChain {
 
-	private static Logger log = Logging.getLogger(TokenFilterChain.class);
+	private static Logger mLog = Logging.getLogger(TokenFilterChain.class);
 
 	/**
 	 *
@@ -51,26 +51,40 @@ public class TokenFilterChain extends BaseFilterChain {
 		return (TokenServer) super.getServer();
 	}
 
+	/**
+	 * 
+	 * @param aFilter
+	 */
 	@Override
 	public void addFilter(WebSocketFilter aFilter) {
 		if (aFilter != null) {
-			if (log.isDebugEnabled()) {
-				log.debug("Adding token filter " + aFilter + "...");
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Adding token filter " + aFilter + "...");
 			}
 			super.addFilter(aFilter);
 		}
 	}
 
+	/**
+	 * 
+	 * @param aFilter
+	 */
 	@Override
 	public void removeFilter(WebSocketFilter aFilter) {
 		if (aFilter != null) {
-			if (log.isDebugEnabled()) {
-				log.debug("Removing token filter " + aFilter + "...");
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Removing token filter " + aFilter + "...");
 			}
 			super.removeFilter(aFilter);
 		}
 	}
 
+	/**
+	 * 
+	 * @param aConnector
+	 * @param aDataPacket
+	 * @return
+	 */
 	@Override
 	public FilterResponse processPacketIn(WebSocketConnector aConnector, WebSocketPacket aDataPacket) {
 		// FilterResponse lFilterResponse = new FilterResponse();
@@ -78,6 +92,13 @@ public class TokenFilterChain extends BaseFilterChain {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param aSource
+	 * @param aTarget
+	 * @param aDataPacket
+	 * @return
+	 */
 	@Override
 	public FilterResponse processPacketOut(WebSocketConnector aSource, WebSocketConnector aTarget, WebSocketPacket aDataPacket) {
 		// FilterResponse lFilterResponse = new FilterResponse();
@@ -98,7 +119,7 @@ public class TokenFilterChain extends BaseFilterChain {
 				try {
 					((TokenFilter) lFilter).processTokenIn(lFilterResponse, aConnector, aToken);
 				} catch (Exception lEx) {
-					log.error(lEx.getClass().getSimpleName()
+					mLog.error(lEx.getClass().getSimpleName()
 							+ " in incoming filter: " + lFilter.getId()
 							+ ": " + lEx.getMessage());
 				}
@@ -110,6 +131,13 @@ public class TokenFilterChain extends BaseFilterChain {
 		return lFilterResponse;
 	}
 
+	/**
+	 * 
+	 * @param aSource
+	 * @param aTarget
+	 * @param aToken
+	 * @return
+	 */
 	public FilterResponse processTokenOut(WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
 		FilterResponse lFilterResponse = new FilterResponse();
 		for (WebSocketFilter lFilter : getFilters()) {
@@ -117,7 +145,7 @@ public class TokenFilterChain extends BaseFilterChain {
 				try {
 					((TokenFilter) lFilter).processTokenOut(lFilterResponse, aSource, aTarget, aToken);
 				} catch (Exception lEx) {
-					log.error(lEx.getClass().getSimpleName()
+					mLog.error(lEx.getClass().getSimpleName()
 							+ " in outgoing filter: " + lFilter.getId()
 							+ ": " + lEx.getMessage());
 				}
@@ -128,10 +156,18 @@ public class TokenFilterChain extends BaseFilterChain {
 		}
 		return lFilterResponse;
 	}
-	
-	public Boolean reloadFilter(WebSocketFilter aFilter, Token aReasonOfChange,String aVersion, String aReason) {
-		List<WebSocketFilter> lFilters = getFilters(); 
-		
+
+	/**
+	 * 
+	 * @param aFilter
+	 * @param aReasonOfChange
+	 * @param aVersion
+	 * @param aReason
+	 * @return
+	 */
+	public Boolean reloadFilter(WebSocketFilter aFilter, Token aReasonOfChange, String aVersion, String aReason) {
+		List<WebSocketFilter> lFilters = getFilters();
+
 		for (int i = 0; i < lFilters.size(); i++) {
 			if (lFilters.get(i).getId().equals(aFilter.getId())) {
 				aFilter.setFilterChain(this);
