@@ -1,0 +1,286 @@
+//	****************************************************************************
+//	jWebSocket Hello World (uses jWebSocket Client and Server)
+//	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+//	****************************************************************************
+//	This program is free software; you can redistribute it and/or modify it
+//	under the terms of the GNU Lesser General Public License as published by the
+//	Free Software Foundation; either version 3 of the License, or (at your
+//	option) any later version.
+//	This program is distributed in the hope that it will be useful, but WITHOUT
+//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//	more details.
+//	You should have received a copy of the GNU Lesser General Public License along
+//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	****************************************************************************
+
+/* 
+ * @author armando
+ */
+$.widget("jws.authentication",{
+    
+	_init:function(){
+		w.auth					= this;
+		
+		w.auth.eLogoffArea		= w.auth.element.find("#logoff_area");
+		w.auth.eLogonArea		= w.auth.element.find("#login_area");
+		w.auth.eRegisterArea	= w.auth.element.find("#register_area");
+		
+		w.auth.eUsername		= w.auth.element.find("#user_text");
+		w.auth.ePassword		= w.auth.element.find("#user_password");
+		w.auth.eRegUsername		= w.auth.element.find("#register_user_text");
+		w.auth.eRegPassword		= w.auth.element.find("#register_user_password");
+		w.auth.eRegPasswordRep	= w.auth.element.find("#register_user_password_repeat");
+
+		w.auth.eClientStatus	= w.auth.element.find("#client_status");
+		w.auth.eUserInfoName	= w.auth.element.find("#user_info_name");
+		w.auth.eWebSocketType	= w.auth.element.find("#websocket_type");
+		w.auth.eClientId		= w.auth.element.find("#client_id");
+		
+		w.auth.eLoginButton		= w.auth.element.find('#login_button');
+		w.auth.eRegisterButton	= w.auth.element.find('#register_button');
+		w.auth.eLogoffButton	= w.auth.element.find('#logoff_button');
+		w.auth.eShowRegArButton	= w.auth.element.find('#show_register_area_button');
+		w.auth.eRegLoginButton	= w.auth.element.find('#register_login_button');
+		
+		w.auth.eLogoffArea.hide();
+		//w.auth.eLogonArea.hide();
+		w.auth.eRegisterArea.hide();
+		
+		w.auth.checkWebSocketSupport();
+		
+		w.auth.registerEvents();
+		w.auth.onMessage();
+	},
+	checkWebSocketSupport: function(){
+		if( jws.browserSupportsWebSockets() ) {
+			mWSC = new jws.jWebSocketJSONClient();
+			$.jws.setTokenClient(mWSC);
+			w.auth.open();
+		} else {
+			var lMsg = jws.MSG_WS_NOT_SUPPORTED;
+			alert( lMsg );
+			log( lMsg );
+		}
+	}, 
+	onMessage: function(){
+		$.jws.bind('pingpong:loggedinfo', function(ev, aToken){
+			w.auth.showLoggedWindow(aToken.username);            
+		});
+    
+		$.jws.bind('pingpong:logoff', function(ev, aToken){
+			w.auth.logoff();
+		});
+		$.jws.bind('pingpong:userincorrect', function(ev, aToken){
+			dialog('Ping Pong Game', aToken.message, true);
+			w.auth.messageOnBlur();
+		});
+	},
+	registerEvents: function(){
+		//adding click functions
+		w.auth.eLoginButton.click(w.auth.logon);
+		w.auth.eLogoffButton.click(w.auth.disconnect);
+		w.auth.eRegisterButton.click(w.auth.showRegisterWindow);
+		w.auth.eRegLoginButton.click(w.auth.showLoginWindow);
+		w.auth.eShowRegArButton.click(w.auth.registerAccount);
+		
+		w.auth.eUsername.bind({
+			focus: function(){
+				w.auth.messageOnClick(0);
+			},
+			keypress: function(aEvt){
+				if(aEvt.charCode == 13 || aEvt.keyCode == 13){
+					w.auth.ePassword.focus();
+					w.auth.ePassword.trigger("focus");
+				}
+			},
+			blur: function(){
+				w.auth.messageOnBlur();
+			}
+		});
+		
+		w.auth.ePassword.bind({
+			focus: function(){
+				w.auth.messageOnClick(1);
+			},
+			keypress: function(aEvt){
+				if(aEvt.charCode == 13 || aEvt.keyCode == 13){
+					w.auth.eLoginButton.click();
+				}
+			},
+			blur: function(){
+				w.auth.messageOnBlur();
+			}
+		});
+		
+		w.auth.eRegUsername.bind({
+			focus:function(){
+				w.auth.messageOnClick(0);
+			},
+			blur:function(){
+				w.auth.messageOnBlur();
+			},
+			keypress: function(aEvt){
+				if(aEvt.charCode == 13 || aEvt.keyCode == 13){
+					w.auth.eRegPassword.focus();
+					w.auth.eRegPassword.trigger("focus");
+				}
+			}
+		});
+	
+		w.auth.eRegPassword.bind({
+			focus:function(){
+				w.auth.messageOnClick(1);
+			},
+			blur:function(){
+				w.auth.messageOnBlur();
+			},
+			keypress: function(aEvt){
+				if(aEvt.charCode == 13 || aEvt.keyCode == 13){
+					w.auth.eRegPasswordRep.focus();
+					w.auth.eRegPasswordRep.trigger("focus");
+				}
+			}
+		});
+		
+		w.auth.eRegPasswordRep.bind({
+			focus:function(){
+				w.auth.messageOnClick(2);
+			},
+			blur:function(){
+				w.auth.messageOnBlur();
+			},
+			keypress: function(aEvt){
+				if(aEvt.charCode == 13 || aEvt.keyCode == 13){
+					w.auth.eShowRegArButton.click();
+				}
+			}
+		});
+	},
+	logon: function(){
+		var user= w.auth.eUsername.val();
+		var pass=w.auth.ePassword.val();
+		w.auth.eUsername.val("");
+		w.auth.ePassword.val("");
+    
+		var args={
+			pwsname:pass,
+			username:user
+		};
+		if(user=="User" || pass=="Password"){
+			dialog('Ping Pong Game', 'User or password incorrect, please try \n\
+				login again or register if you don\'t have an account yet.', true);
+			w.auth.messageOnBlur();
+           
+		}
+		else{ 
+			$.jws.submit('pingpong','usser',args);
+           
+		}	
+	}, 
+	messageOnBlur:function(){		
+		if(w.auth.eUsername.val() == ""){
+			w.auth.eUsername.val("User").attr("class", "disabled");
+		}
+		if(w.auth.ePassword.val() == ""){
+			w.auth.ePassword.val("Password").attr("class", "disabled");
+			document.getElementById("user_password").setAttribute("type","text");
+		}
+		if(w.auth.eRegUsername.val() == ""){
+			w.auth.eRegUsername.val("User").attr("class", "disabled");
+		}
+		if(w.auth.eRegPassword.val() == ""){
+			w.auth.eRegPassword.val("Password").attr("class", "disabled");
+			document.getElementById("register_user_password").setAttribute("type","text");
+		}
+		if(w.auth.eRegPasswordRep.val() == ""){
+			w.auth.eRegPasswordRep.val("Password").attr("class", "disabled");
+			document.getElementById("register_user_password_repeat").setAttribute("type","text");
+		}
+	},
+	messageOnClick: function(aElement){
+       
+		if( w.auth.eUsername.val() == "User" && aElement==0){
+			w.auth.eUsername.val("").attr("class", "enabled");
+		} 
+		if(w.auth.ePassword.val() == "Password" && aElement==1){
+			w.auth.ePassword.val("").attr("class", "enabled");
+			document.getElementById("user_password").setAttribute("type","password");
+		}
+		if( w.auth.eRegUsername.val() == "User" && aElement==0){
+			w.auth.eRegUsername.val("").attr("class", "enabled");
+		} 
+		if(w.auth.eRegPassword.val() == "Password" && aElement==1){
+			w.auth.eRegPassword.val("").attr("class", "enabled");
+			document.getElementById("register_user_password").setAttribute("type","password");
+		}		
+		if(w.auth.eRegPasswordRep.val() == "Password" && aElement==2){
+			w.auth.eRegPasswordRep.val("").attr("class", "enabled");
+			document.getElementById("register_user_password_repeat").setAttribute("type","password");
+		}
+	} ,
+	logoff: function(){
+		w.conn.element.find("#no_users").remove();
+		w.auth.eLogoffArea.hide();
+		w.auth.eLogonArea.show();
+		w.auth.messageOnBlur();
+	}, 
+	open: function() {
+		$.jws.open();
+	}, 
+	disconnect: function() {
+		$.jws.submit('pingpong','logoff');
+	},
+	showLoggedWindow:function(username){
+		w.auth.eLogonArea.hide();		
+		w.auth.eUserInfoName.html(username);
+		w.auth.eLogoffArea.show();		
+	},
+	showRegisterWindow:function(){
+		w.auth.eLogoffArea.hide();
+		w.auth.eLogonArea.hide();
+		w.auth.eRegisterArea.show();	
+		w.auth.eUsername.val("");
+		w.auth.ePassword.val("");
+		w.auth.eRegUsername.val("");
+		w.auth.eRegPassword.val("");
+		w.auth.eRegPasswordRep.val("");
+		w.auth.messageOnBlur();
+	},
+	showLoginWindow:function(){
+		w.auth.eRegisterArea.hide();
+		w.auth.eLogoffArea.hide();
+		w.auth.eLogonArea.show();
+		w.auth.eUsername.val("");
+		w.auth.ePassword.val("");
+		w.auth.eRegUsername.val("");
+		w.auth.eRegPassword.val("");
+		w.auth.eRegPasswordRep.val("");
+		w.auth.messageOnBlur();
+	},
+	registerAccount:function(){
+		var usser = w.auth.eRegUsername.val();
+		var pass  = w.auth.eRegPassword.val();
+		var rpass = w.auth.eRegPasswordRep.val();
+		w.auth.eRegUsername.val("");
+		w.auth.eRegPassword.val("");
+		w.auth.eRegPasswordRep.val("");
+		var args={
+			pwsname:pass,
+			username:usser,
+			rpwsname:rpass
+		};
+		if(usser.length>9){
+			dialog('Ping Pong Game', 'The user must be less than 12 characters', true);
+			w.auth.messageOnBlur();
+		}else
+		if(usser=="User" || pass=="Password" || rpass=="Rep Password" || rpass!= pass){
+			dialog('Ping Pong Game', 'Data incorrect',true);
+			w.auth.messageOnBlur();
+           
+		}else{
+			$.jws.submit('pingpong','createaccount',args);
+		}        
+              
+	}	
+});
