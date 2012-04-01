@@ -6,11 +6,12 @@ function init(){
 	w                   = {};
 	mLog                = {};
 	mLog.isDebugEnabled = true;
+	
 	var lCallbacks = {
 		OnOpen: function( aEvent ) {
 		},
 		OnWelcome: function( aEvent )  {
-//			console.log(aEvent);
+		//			console.log(aEvent);
 		},
 		OnGoodBye: function( aEvent )  {
 		},
@@ -20,12 +21,14 @@ function init(){
 		OnClose: function( aEvent ) {
 		}
 	};
-	
 	// Options
 	// @maxLogLines: maximum number of lines that will be logged
 	// @linesToDelete: quantity of lines that will be deleted from 
 	// the log window each time the log exceeds the maxLogLines
-	$("#log_box").log({maxLogLines: 200, linesToDelete: 20});
+	$("#log_box").log({
+		maxLogLines: 200, 
+		linesToDelete: 20
+	});
 	
 	$("#demo_box").auth(lCallbacks);
 	

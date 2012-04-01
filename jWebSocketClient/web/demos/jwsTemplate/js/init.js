@@ -22,7 +22,10 @@ function init(){
 	// @maxLogLines: maximum number of lines that will be logged
 	// @linesToDelete: quantity of lines that will be deleted from 
 	// the log window each time the log exceeds the maxLogLines
-	$("#log_box").log({maxLogLines: 200, linesToDelete: 20});
+	$("#log_box").log({
+		maxLogLines: 200, 
+		linesToDelete: 20
+	});
 	
 	$("#demo_box").auth(lCallbacks);
 	
@@ -37,6 +40,30 @@ function init(){
 			lTip.html("").append(lTop).append(lMiddle).append(lBottom);
 		}
 	});
+	
+	
+	//This is the way anyone can use a jwsDialog
+	var lButtons = [{
+		id: "buttonYes",	
+		text: "Yes",
+		aFunction: function(){
+			//alert("you clicked YES button");
+		}
+	},{
+		id: "buttonNo",
+		text: "No",
+		aFunction: function(){
+			//alert("you clicked button NO");
+		}
+	}];
+
+//	dialog(aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType);
+	dialog("Would you like to work with us in jWebSocket?", "Accept?", false, null, lButtons);
+	dialog("This is a simple ALERT message", "ALERT from jWebSocket", false, null, lButtons, "alert");
+	dialog("This is a simple IMPORTANT message", "IMPORTANT from jWebSocket", false, null, lButtons, "important");
+	dialog("This is a simple WARNING message", "WARNING from jWebSocket", false, null, null, "warning");
+	dialog("This is a simple INFORMATION message", "INFORMATION from jWebSocket", false, null, lButtons, "information");
+	dialog("This is a simple ERROR message, also this message is MODAL", "ERROR from jWebSocket", true, null, null, "error");
 }
 
 
