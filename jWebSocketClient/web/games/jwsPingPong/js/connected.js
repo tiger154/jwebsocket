@@ -31,10 +31,13 @@ $.widget( "jws.connected", {
 	},
 	onMessage: function(  ) {
 		//crear la lista de los que estan conectados
-		$.jws.bind( 'pingpong:usser', function( ev, aToken ) {
+		$.jws.bind( 'pingpong:usser', function( aEvt, aToken ) {
+			w.auth.eClientStatus.hide(  ).attr( "class", "" )
+			.addClass( "authenticated" ).text( "authenticated" ).show( );
+			
 			w.conn.ePlayerslist.html( "" );
 			for ( i = 0; i < aToken.available.length; i++ ) {
-				w.conn.initConnected( aToken.available[i],aToken.state );
+				w.conn.initConnected( aToken.available[i], aToken.state );
 			}
             
 			for ( i = 0; i < aToken.playing.length; i++ ) {

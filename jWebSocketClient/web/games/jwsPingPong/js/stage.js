@@ -40,13 +40,13 @@ $.widget( "jws.stage", {
 	onMessage: function(  ) {
 		//Creating the scenario
 		$.jws.bind( 'pingpong:stage', function( aEvt, aToken ) {
-			eStage.initStage( aToken.width,aToken.height,aToken.gameBorder );           
+			eStage.initStage( aToken.width, aToken.height, aToken.gameBorder );
 		} );
 		$.jws.bind( 'pingpong:gameover', function( aEvt, aToken ) { 
 			eStage.gameOver( aToken.gameover, aToken.message );           
 		} );
 		//Enable or disable the main area with all objects inside
-		$.jws.bind( 'pingpong:objarea', function( aEvt, aToken ) {  
+		$.jws.bind( 'pingpong:objarea', function( aEvt, aToken ) {
 			eStage.objArea( aToken.objarea );   
 		} ); 
 		//Enable or disable the counter

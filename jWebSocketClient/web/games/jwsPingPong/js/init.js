@@ -25,8 +25,6 @@ function init(  ) {
 	
 	$( "#demo_box" ).authentication(  );	
 	$.jws.bind( 'open', function( aEvt, aToken ) {
-		$( "#client_status" ).hide(  ).attr( "class", "" ).addClass( "online" ).text( "online" ).show(  );
-		
 		$( '#board' ).ball(  );
 		$( '#scenario_body' ).stage(  ); 
 		$( '#board' ).player(  );
@@ -35,8 +33,20 @@ function init(  ) {
 		$( '#main_content' ).chat(  );
 		$( '#scenario_body' ).ranking(  );
 	} );
+	
+	$.jws.bind("org.jwebsocket.plugins.system:welcome", function(aEvt, aToken){
+		//Change status offline by online
+		$( "#client_status" ).hide(  ).attr( "class", "" ).addClass( "online" ).text( "online" ).show(  );
+		$( "#client_id" ).text("Client-ID: " + aToken.sourceId);
+	});
+	
 	$.jws.bind( 'close', function( aEvt, aToken ) {
+		//Change the status online by offline
+		$( "#client_status" ).hide(  ).attr( "class", "" ).addClass( "offline" ).text( "disconnected" ).show(  );
+		$( "#client_id" ).text("Client-ID: - ");
+		
 		dialog( 'Ping Pong Game', 'There is no connection with the server', true );
+		
 		//modifying the dialog style
 		$( ".ui-widget-overlay" ).css( {
 			'background': '#eeeeee !important',
@@ -55,6 +65,8 @@ function init(  ) {
 		} );
 	} );
 	
+	//Set WebSocket type
+	$('#websocket_type').text("WebSocket: " + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)" ));
 	$( '#scenario_menu' ).hide(  );
 	$( '#obj_area' ).hide(  );
 	$( '#scenario_chat' ).hide(  );
