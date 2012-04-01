@@ -556,6 +556,8 @@ p{
 }
 .ui-dialog-buttonpane{
 	padding: 5px 5px 0 0 !important;
+	float: left !important;
+	width: 100% !important;
 }
 .ui-dialog-content{
 	min-height: 70px !important;
