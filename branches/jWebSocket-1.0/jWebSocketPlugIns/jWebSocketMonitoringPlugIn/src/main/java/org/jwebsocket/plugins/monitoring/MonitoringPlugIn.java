@@ -1,37 +1,49 @@
-// ---------------------------------------------------------------------------
-// jWebSocket - jWebSocket Monitoring Plug-in
-// Copyright(c) 2010-2012 Innotrade GmbH, Herzogenrath, Germany, jWebSocket.org
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+//	---------------------------------------------------------------------------
+//	jWebSocket - jWebSocket Monitoring Plug-in
+//  Copyright (c) 2012 Innotrade GmbH, jWebSocket.org
+//	---------------------------------------------------------------------------
+//	This program is free software; you can redistribute it and/or modify it
+//	under the terms of the GNU Lesser General Public License as published by the
+//	Free Software Foundation; either version 3 of the License, or (at your
+//	option) any later version.
+//	This program is distributed in the hope that it will be useful, but WITHOUT
+//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//	more details.
+//	You should have received a copy of the GNU Lesser General Public License along
+//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.monitoring;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import javolution.util.FastList;
-import org.apache.log4j.Logger;
-import org.hyperic.sigar.*;
+import javolution.util.FastMap;
+import org.hyperic.sigar.CpuPerc;
+import org.hyperic.sigar.Mem;
+import org.hyperic.sigar.NetStat;
+import org.hyperic.sigar.Sigar;
+import org.hyperic.sigar.SigarException;
+import org.hyperic.sigar.Swap;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.logging.Logging;
+import org.apache.log4j.Logger;
 
 /**
  * @author Merly, Orlando
@@ -39,9 +51,11 @@ import org.jwebsocket.token.TokenFactory;
 public class MonitoringPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger(MonitoringPlugIn.class);
-	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>();
+	private static Collection<WebSocketConnector> mClients =
+			new FastList<WebSocketConnector>();
 	private static Thread mInformationThread;
 	private static Thread mServerExchangeInfoThread;
+	private static Thread mUserInfoThread;
 	private static boolean mInformationRunning = true;
 	private static int mMemory[];
 	private static float mCpu;
@@ -52,19 +66,20 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	private File[] mRoots;
 	private NetStat mNetwork;
 	private boolean mIsActive = false;
+	private boolean mUserInfoRunning = false;
 	private SimpleDateFormat mFormat;
 	private DBCollection mDBColl;
+	private DBCollection mUsePlugInsColl;
 	private static int mConnectedUsers = 0;
-
-	static {
-		Logging.addLogger(ServerRequestListener.class);
-	}
+	private static int mTimeCounter = 0;
+	private static FastList<Integer> mConnectedUsersList =
+			new FastList<Integer>(60);
 
 	public MonitoringPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		this.setNamespace(aConfiguration.getNamespace());
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Instantiating Monitoring plug-in...");
+			mLog.debug("Monitoring plug-in instantiated correctly.");
 		}
 
 		// Getting server exchanges
@@ -77,29 +92,38 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				DB lDB = lMongo.getDB("db_charting");
 				if (null != lDB) {
 					mDBColl = lDB.getCollection("exchanges_server");
+					mUsePlugInsColl = lDB.getCollection("use_plugins");
 				} else {
-					mLog.error("Mongo db_charting collection could not be obtained.");
+					mLog.error("Mongo db_charting collection could "
+							+ "not be obtained.");
 				}
 			} else {
 				mLog.error("Mongo DB instance could not be created.");
 			}
 		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing MongoDB connection"));
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing "
+					+ "MongoDB connection"));
 		}
 		if (null == mDBColl) {
-			mLog.error("MongoDB collection exchanges_server could not be obtained.");
-		} else if (mLog.isInfoEnabled()) {
-			mLog.info("Monitoring Plug-in successfully instantiated.");
+			mLog.error("MongoDB collection exchanges_server could "
+					+ "not be obtained.");
 		}
 	}
 
 	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
-		mInformationThread = new Thread(new getInfo(), "jWebSocket Monitoring Plug-in Information");
+		//Initializing thread
+		mInformationRunning = true;
+		mInformationThread = new Thread(new getInfo());
 		mInformationThread.start();
 
-		mServerExchangeInfoThread = new Thread(new getServerExchangeInfo(), "jWebSocket Monitoring Plug-in Server Exchange");
+		mServerExchangeInfoThread = new Thread(new getServerExchangeInfo());
 		mServerExchangeInfoThread.start();
+
+		mServerExchangeInfoThread = new Thread(new getServerExchangeInfo());
+		mServerExchangeInfoThread.start();
+
+		mUserInfoThread = new Thread(new getUserInfo());
 	}
 
 	@Override
@@ -110,28 +134,24 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			mInformationThread.stop();
 		} catch (InterruptedException ex) {
 		}
-		try {
-			mServerExchangeInfoThread.join(2000);
-			mServerExchangeInfoThread.stop();
-		} catch (InterruptedException ex) {
-		}
 	}
 
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
 		mConnectedUsers++;
+		if (!mUserInfoRunning) {
+			mUserInfoRunning = true;
+			mUserInfoThread.start();
+		}
 		if (!mIsActive) {
-			try {
-				getServer().getListeners().add(new ServerRequestListener());
-				mIsActive = true;
-			} catch (Exception lEx) {
-				System.out.println(lEx.getMessage());
-			}
+			getServer().getListeners().add(new ServerRequestListener());
+			mIsActive = true;
 		}
 	}
 
 	@Override
-	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+	public void connectorStopped(WebSocketConnector aConnector,
+			CloseReason aCloseReason) {
 		mConnectedUsers--;
 		if (mClients.contains(aConnector)) {
 			mClients.remove(aConnector);
@@ -139,7 +159,8 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	}
 
 	@Override
-	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+	public void processToken(PlugInResponse aResponse,
+			WebSocketConnector aConnector, Token aToken) {
 		if (aToken.getNS().equals(getNamespace())) {
 
 			if (aToken.getType().equals("register")) {
@@ -157,14 +178,19 @@ public class MonitoringPlugIn extends TokenPlugIn {
 							lCurrentYear = Integer.parseInt(lYear) + 2000;
 						}
 
-						String lCurrentDate = lMonth + "/" + lDay + "/" + lCurrentYear;
+						String lCurrentDate = lMonth + "/" + lDay + "/"
+								+ lCurrentYear;
 						String lToday = mFormat.format(new Date());
 
-						if (((lDay == null) || (lYear == null) || (lMonth == null)) || (lCurrentDate.equals(lToday))) {
+						if (((lDay == null)
+								|| (lYear == null)
+								|| (lMonth == null))
+								|| (lCurrentDate.equals(lToday))) {
 							aConnector.setVar("currentDate", true);
 						} else {
 							aConnector.setVar("currentDate", false);
-							broadcastServerXchgInfoPreviousDate(aConnector, lDay, lMonth, lCurrentYear.toString());
+							broadcastServerXchgInfoPreviousDate(aConnector,
+									lDay, lMonth, lCurrentYear.toString());
 						}
 					} else if ("serverXchgInfoXDays".equals(lInterest)) {
 						//obtienes el mes y el anno del cliente                        
@@ -181,7 +207,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 					} else if ("serverXchgInfoXMonth".equals(lInterest)) {
 						//obtienes anno del cliente                        
 						String lYear = aToken.getString("year");
-						System.out.println(lYear);
+						//System.out.println(lYear);
 
 						// si el anno es el actual {
 						aConnector.setVar("year", lYear);
@@ -215,17 +241,55 @@ public class MonitoringPlugIn extends TokenPlugIn {
 					String lInterest = lConnector.getString("interest");
 
 					if ("computerInfo".equals(lInterest)) {
+
 						getServer().sendToken(lConnector, lPCInfoToken);
-					} else if ("userInfo".equals(lInterest)) {
-						broadcastUserInfo(lConnector);
-					} else if ("browserInfo".equals(lInterest)) {
-						//TODO: Get the browsers info
+
+					} else if ("pluginsInfo".equals(lInterest)) {
+						//TODO: Get the plugins info
 //                            gatherBrowsersInfo();
-						broadcastBrowsersInfo(lConnector);
+						broadcastPluginsInfo(lConnector);
 					}
 				}
 				try {
 					Thread.sleep(200);
+				} catch (InterruptedException ex) {
+				}
+			}
+		}
+	}
+
+	class getUserInfo implements Runnable {
+
+		@Override
+		public void run() {
+
+			while (mUserInfoRunning) {
+
+				mConnectedUsersList.add(mTimeCounter, mConnectedUsers);
+
+				Token lToken = TokenFactory.createToken(getNamespace(),
+						"userInfo");
+				lToken.setList("connectedUsers", mConnectedUsersList);
+
+				String lInterest = "";
+				for (WebSocketConnector lConnector : mClients) {
+
+					lInterest = lConnector.getString("interest");
+
+					if ("userInfo".equals(lInterest)) {
+						getServer().sendToken(lConnector, lToken);
+					}
+				}
+				try {
+					Thread.sleep(1000);
+					if (mTimeCounter < 60) {
+						mTimeCounter++;
+					} else {
+						for (int i = 0; i < mTimeCounter; i++) {
+							mConnectedUsersList.set(i,
+									mConnectedUsersList.get(i + 1));
+						}
+					}
 				} catch (InterruptedException ex) {
 				}
 			}
@@ -238,19 +302,24 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		public void run() {
 			while (mInformationRunning) {
 				for (WebSocketConnector lConnector : mClients) {
-					if ("serverXchgInfo".equals(lConnector.getString("interest"))) {
+					if ("serverXchgInfo".equals(
+							lConnector.getString("interest"))) {
 						if (lConnector.getBoolean("currentDate") == true) {
 							broadcastServerXchgInfo(lConnector);
 						}
 					}
-					if ("serverXchgInfoXDays".equals(lConnector.getString("interest"))) {
+					if ("serverXchgInfoXDays".equals(
+							lConnector.getString("interest"))) {
 						if (lConnector.getBoolean("currentMonth") == true) {
-							broadcastServerXchgInfoXDay(lConnector, lConnector.getVar("month").toString());
+							broadcastServerXchgInfoXDay(lConnector,
+									lConnector.getVar("month").toString());
 						}
 					}
-					if ("serverXchgInfoXMonth".equals(lConnector.getString("interest"))) {
+					if ("serverXchgInfoXMonth".equals(
+							lConnector.getString("interest"))) {
 						if (lConnector.getBoolean("currentYear") == true) {
-							broadcastServerXchgInfoXMonth(lConnector, lConnector.getVar("year").toString());
+							broadcastServerXchgInfoXMonth(lConnector,
+									lConnector.getVar("year").toString());
 						}
 					}
 				}
@@ -273,7 +342,8 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		lToken.setInteger("usedSwap", mMemory[3]);
 		lToken.setInteger("netReceived", mNetwork.getAllInboundTotal());
 		lToken.setInteger("netSent", mNetwork.getAllOutboundTotal());
-		lToken.setDouble("swapPercent", (double) (mMemory[3] * 100 / mMemory[2]));
+		lToken.setDouble("swapPercent", (double) (mMemory[3] * 100
+				/ mMemory[2]));
 
 		FastList<String> lList = new FastList<String>();
 
@@ -290,62 +360,63 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		for (File lRoot : mRoots) {
 			lToken.setString("totalHddSpace", inMeasure(lRoot.getTotalSpace()));
 			lToken.setString("freeHddSpace", inMeasure(lRoot.getFreeSpace()));
-			lToken.setString("usedHddSpace", inMeasure(lRoot.getTotalSpace() - lRoot.getFreeSpace()));
+			lToken.setString("usedHddSpace", inMeasure(lRoot.getTotalSpace()
+					- lRoot.getFreeSpace()));
 		}
 
 		return lToken;
 	}
 
-	public void broadcastUserInfo(WebSocketConnector aConnector) {
-		Token lToken = TokenFactory.createToken(getNamespace(), "userInfo");
-		// user information
-		lToken.setInteger("connectedUsers", mConnectedUsers);
+	public void broadcastServerXchgInfo(WebSocketConnector aConnector) {
+		Token lToken = TokenFactory.createToken(getNamespace(),
+				"serverXchgInfo");
 
-		//to send the token
+		//Getting server exchanges
+		try {
+			String lToday = mFormat.format(new Date());
+			DBObject lRecord = mDBColl.findOne(
+					new BasicDBObject().append("date", lToday));
+			lToken.setMap("exchanges", lRecord.toMap());
+
+		} catch (Exception ex) {
+			mLog.error(ex.getMessage());
+		}
+
 		getServer().sendToken(aConnector, lToken);
 	}
 
-	public void broadcastServerXchgInfo(WebSocketConnector aConnector) {
-		Token lToken = TokenFactory.createToken(getNamespace(), "serverXchgInfo");
-
-		// Getting server exchanges
-		try {
-			String lToday = mFormat.format(new Date());
-			DBObject lRecord = mDBColl.findOne(new BasicDBObject().append("date", lToday));
-			lToken.setMap("exchanges", lRecord.toMap());
-
-			getServer().sendToken(aConnector, lToken);
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "broadcasting server exchange info"));
-		}
-
-	}
-
 	public void broadcastServerXchgInfoPreviousDate(WebSocketConnector aConnector, String aDay, String aMonth, String aYear) {
-		Token lToken = TokenFactory.createToken(getNamespace(), "serverXchgInfo");
-		// Getting server exchanges
+		Token token = TokenFactory.createToken(getNamespace(),
+				"serverXchgInfo");
+		//Getting server exchanges
 		try {
 			String lToday = aMonth + "/" + aDay + "/" + aYear;
 
-			DBObject lRecord = mDBColl.findOne(new BasicDBObject().append("date", lToday));
+			DBObject lRecord = mDBColl.findOne(
+					new BasicDBObject().append("date", lToday));
 
-			lToken.setMap("exchanges", lRecord.toMap());
+			token.setMap("exchanges", lRecord.toMap());
 
-			getServer().sendToken(aConnector, lToken);
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "broadcasting server exchange info previous date"));
+
+		} catch (Exception ex) {
+			mLog.error(ex.getMessage());
 		}
+
+		getServer().sendToken(aConnector, token);
+
 	}
 
-	public void broadcastServerXchgInfoXDay(WebSocketConnector aConnector, String aMonth) {
-		Token lToken = TokenFactory.createToken(getNamespace(), "serverXchgInfoXDays");
-		// Getting server exchanges
+	public void broadcastServerXchgInfoXDay(WebSocketConnector aConnector,
+			String aMonth) {
+		Token token = TokenFactory.createToken(getNamespace(), "serverXchgInfoXDays");
+		//Getting server exchanges
 		try {
-
 			String lMonth = aMonth;
-			//DBCursor lCursor = mDBColl.find(new BasicDBObject().append("date", "/^" + lMonth + "/"));
+			//DBCursor lCursor = mDBColl.find(
+			//new BasicDBObject().append("date", "/^" + lMonth + "/"));
 			DBCursor lCursor = mDBColl.find();
 
+			boolean m = false;
 			String lDate = null;
 			Integer lTotal = 0;
 			while (lCursor.hasNext()) {
@@ -359,28 +430,40 @@ public class MonitoringPlugIn extends TokenPlugIn {
 							lTotal += (Integer) lDocument.get("h" + i);
 						}
 					}
-
 					//System.out.println(lCursor);
-					lToken.setInteger(lDay, lTotal);
+					token.setInteger(lDay, lTotal);
 					lTotal = 0;
+					m = true;
 				}
 			}
+			if (m == false) {
+				token.setInteger("code", -1);
+				//token.setString("msg", ex.getMessage());
+				//throw new Exception("Error");
+			}
 
-			getServer().sendToken(aConnector, lToken);
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "broadcasting server exchange info x day"));
+		} catch (Exception ex) {
+			mLog.error(ex.getMessage());
+//			token.setInteger("code", -1);
+//			token.setString("msg", ex.getMessage());
 		}
+
+		getServer().sendToken(aConnector, token);
+
 	}
 
-	public void broadcastServerXchgInfoXMonth(WebSocketConnector aConnector, String aYear) {
-		Token lToken = TokenFactory.createToken(getNamespace(), "serverXchgInfoXMonth");
-		// Getting server exchanges
+	public void broadcastServerXchgInfoXMonth(WebSocketConnector aConnector, 
+			String aYear) {
+		Token token = TokenFactory.createToken(getNamespace(), 
+				"serverXchgInfoXMonth");
+		//Getting server exchanges
 		try {
-
 			String lYear = aYear;
-			//DBCursor lCursor = mDBColl.find(new BasicDBObject().append("date", "/^" + lMonth + "/"));
+			//DBCursor lCursor = mDBColl.find(
+			//new BasicDBObject().append("date", "/^" + lMonth + "/"));
 			DBCursor lCursor = mDBColl.find();
 
+			boolean m = false;
 			String lDate = null;
 			Integer lTotal = 0;
 			while (lCursor.hasNext()) {
@@ -389,7 +472,9 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				if (lDate.endsWith(lYear)) {
 					for (int lMonth = 1; lMonth < 13; lMonth++) {
 
-						String lComparableMonth = (lMonth < 10) ? "0" + String.valueOf(lMonth) : String.valueOf(lMonth);
+						String lComparableMonth = (lMonth < 10) 
+								? "0" + String.valueOf(lMonth) 
+								: String.valueOf(lMonth);
 						String lRecordMonth = lDate.substring(0, 2);
 
 						if (lRecordMonth.equals(lComparableMonth)) {
@@ -399,19 +484,26 @@ public class MonitoringPlugIn extends TokenPlugIn {
 								}
 							}
 						}
-
-						lToken.setInteger(lRecordMonth, lToken.getInteger(lRecordMonth, 0) + lTotal);
+						token.setInteger(lRecordMonth, token.getInteger(
+								lRecordMonth, 0) + lTotal);
 						lTotal = 0;
+						m = true;
 					}
 					//System.out.println(lCursor);
-
 				}
 			}
+			if (m == false) {
+				token.setInteger("code", -1);
+				//token.setString("msg", ex.getMessage());
+				//throw new Exception("Error");
+			}
 
-			getServer().sendToken(aConnector, lToken);
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "broadcasting server exchange info x month"));
+		} catch (Exception ex) {
+			mLog.error(ex.getMessage());
 		}
+
+		getServer().sendToken(aConnector, token);
+
 	}
 
 	private void gatherComputerInfo() {
@@ -428,19 +520,28 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		}
 	}
 
-	public void broadcastBrowsersInfo(WebSocketConnector aConnector) {
-		Token lToken = TokenFactory.createToken(getNamespace(), "browserInfo");
+	public void broadcastPluginsInfo(WebSocketConnector aConnector) {
+		Token lToken = TokenFactory.createToken(getNamespace(), "pluginsInfo");
+		String lNamespace = lToken.getNS();
+		FastList<Map> lList = new FastList<Map>();
 
-		// HDD Information
-		lToken.setInteger("chromium", 50);
-		lToken.setInteger("ie", 10);
-		lToken.setInteger("firefox", 20);
-		lToken.setInteger("netscape", 20);
-		lToken.setInteger("opera", 5);
-		lToken.setInteger("safari", 5);
-		lToken.setInteger("nativeClients", 5);
+		try {		
+			DBCursor lCursor = mUsePlugInsColl.find();
+			DBObject lDocument;
+			FastMap<String, Object> lMap;
+			while (lCursor.hasNext()) {
+				lDocument = lCursor.next();
+				lMap = new FastMap<String, Object>();
+				lMap.put("id", lDocument.get("id"));
+				lMap.put("requests", lDocument.get("requests"));
 
-		// to send the token
+				lList.add(lMap);
+			}
+			lToken.setList("usePlugins", lList);
+		} catch (Exception ex) {
+			mLog.error(ex.getMessage());
+		}
+
 		getServer().sendToken(aConnector, lToken);
 	}
 
@@ -463,12 +564,12 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		return lMem;
 	}
 
-	// converting the memory in megabytes
+	//converting the memory in megabytes
 	private long inMBytes(long value) {
 		return ((value / 1024) / 1024);
 	}
+	//for convert the hdd space
 
-	// for convert the hdd space
 	private String inMeasure(long value) {
 		if (value / 1000 < 1) {
 			return String.valueOf(value) + " KB";
