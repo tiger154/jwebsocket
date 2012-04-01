@@ -15,10 +15,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.monitoring;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPacket;
@@ -31,84 +34,110 @@ import org.jwebsocket.logging.Logging;
  * @author merlyta
  */
 public class ServerRequestListener implements WebSocketServerListener {
+
+	Mongo mConnection;
+	DBCollection mChartingCollection;
+	Logger mLog = Logging.getLogger(ServerRequestListener.class);
 	
-	private Mongo mConnection;
-	private DBCollection mColl;
-	private static Logger mLog = Logging.getLogger(ServerRequestListener.class);
-	
+//	DBCollection mConnUsersCollection;
+//	private static boolean mIsRunning = false;
+//	private static int mConnectedUsers = 0;
+//	private static int mTimeCounter = 0;
+//	private static boolean mCountConnectedUsersRunning = false;
+//	private static Thread mThreadConnectedUsers;
+
 	public ServerRequestListener() {
-		String lVersion = "<unknown>";
-		
+
 		try {
-			// suppress stack traces from mongo db to console
-			java.util.logging.Logger.getLogger("com.mongodb").setLevel(
-					java.util.logging.Level.OFF);
-			
 			mConnection = new Mongo();
-			DB lDB = mConnection.getDB("db_charting");
-			List<String> lDBNames = mConnection.getDatabaseNames();
-			if (mLog.isInfoEnabled()) {
-				mLog.info("Found databases: " + lDBNames.toString() + ".");
-			}
-			lVersion = mConnection.getVersion();
-			mColl = lDB.getCollection("exchanges_server");
-			
-			if (mLog.isInfoEnabled()) {
-				mLog.info("Instantiated server request listener for MongoDB " + lVersion + ".");
-			}
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating ServerRequestListener"));
+			mChartingCollection = mConnection.getDB("db_charting").getCollection("exchanges_server");
+//			mConnUsersCollection = mConnection.getDB("db_users").getCollection("connected_users");
+
+			//initializing the thread to count each 1 second the online users and save it into mongoDB
+//			mThreadConnectedUsers = new Thread(new CountConnectedUsersTask());
+
+		} catch (UnknownHostException ex) {
+			mLog.error(ex.getMessage());
+
 		}
 	}
-	
+/*
+	class CountConnectedUsersTask implements Runnable {
+
+		@Override
+		public void run() {
+			while (mCountConnectedUsersRunning) {
+				//mongoDB logic
+				/*
+				DBObject lRecord = mConnUsersCollection.findOne(
+				new BasicDBObject().append("seconds", 0));
+				
+				if (null == lRecord) {
+				mConnUsersCollection.insert(new BasicDBObject().append("seconds", 0));
+				}
+				mConnUsersCollection.update(lRecord, new BasicDBObject()
+				.append("$set", new BasicDBObject().append("s" + mTimeCounter, mConnectedUsers)));
+				
+				/* a mechanism should be implemented in order to insert into mongoDB
+				For example: 
+				Seconds [{0:5, 1:7, 2:5, 3:9, 4:150, 5:90, 6:95 ... 59:11}];
+				Minutes 0 1 2 3 4 5 6 ... 59
+				Hours   0 1 2 3 4 5 6 ... 23
+				Days    1 2 3 4 5 6 7 ... 31
+				Months  
+				* 
+			}
+			try {
+				Thread.sleep(1000);
+				mTimeCounter++;
+				if (mTimeCounter >= 60) {
+					mTimeCounter = 0;
+				}
+			} catch (InterruptedException ex) {
+			}
+		}
+	}
+*/
+
 	@Override
 	public void processClosed(WebSocketServerEvent wsse) {
+//		mConnectedUsers--;
 	}
-	
+
 	@Override
 	public void processOpened(WebSocketServerEvent wsse) {
-		gatherBrowsersInfo(wsse.getConnector());
+//		mConnectedUsers++;
+//		if (!mIsRunning) {
+//			mThreadConnectedUsers.start();
+//			mIsRunning = true;
+//		}
+//		
 	}
-	
+
 	@Override
 	public void processPacket(WebSocketServerEvent wsse, WebSocketPacket wsp) {
-		SimpleDateFormat lFormat = new SimpleDateFormat("MM/dd/yyyy");
-		String lToday = lFormat.format(new Date());
-		
-		try {
-			// TODO: check this error handling!
-			if (null == mColl) {
-				// mLog.error("Mongo DB collection not accessible.");
-				return;
-			}
-			DBObject lRecord = mColl.findOne(new BasicDBObject().append("date", lToday));
-			if (null == lRecord) {
-				mColl.insert(new BasicDBObject().append("date", lToday));
-				lRecord = mColl.findOne(new BasicDBObject().append("date", lToday));
-			}
-			mColl.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("h" + String.valueOf(new Date().getHours()), 1)));
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "Instantiating ServerRequestListener"));
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		String lToday = format.format(new Date());
+
+		DBObject lRecord = mChartingCollection.findOne(new BasicDBObject().append("date", lToday));
+
+		if (null == lRecord) {
+			mChartingCollection.insert(new BasicDBObject().append("date", lToday));
+			lRecord = mChartingCollection.findOne(new BasicDBObject().append("date", lToday));
 		}
+		mChartingCollection.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("h" + String.valueOf(new Date().getHours()), 1)));
+
+
 	}
-	
-	private void gatherBrowsersInfo(WebSocketConnector aConnector) {
-		//not implemented yet, here we should handle how to get browsers info
-		//connect to mongo and save the following data
-     /*   String clientType = aConnector.getVar("clientType").toString();
-		String clientName = aConnector.getVar("clientName").toString();
-		String clientVersion = aConnector.getVar("clientVersion").toString();
-		String clientInfo = aConnector.getVar("clientInfo").toString();
-		String jwsType = aConnector.getVar("jwsType").toString();
-		String jwsVersion = aConnector.getVar("jwsVersion").toString();
-		String jwsInfo = aConnector.getVar("jwsInfo").toString();
-		mLog.debug("clientType: "+clientType);
-		mLog.debug("clientName: "+clientName);
-		mLog.debug("clientVersion: "+clientVersion);
-		mLog.debug("clientInfo: "+clientInfo);
-		mLog.debug("jwsType: "+jwsType);
-		mLog.debug("jwsVersion: "+jwsVersion);
-		mLog.debug("jwsInfo: "+jwsInfo);
-		 */
+	/*
+	public void destroy() {
+	try {
+	mCountConnectedUsersRunning = false;
+	mThreadConnectedUsers.join(1000);
+	mThreadConnectedUsers.stop();
+	} catch (Exception e) {
+	mLog.error(e.getMessage());
 	}
+	}
+	 */
 }
