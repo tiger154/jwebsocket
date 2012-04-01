@@ -46,8 +46,8 @@ function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType
 	var lDialog = $(  "<div id='dialog'></div>"  );
 //	closeDialog(  );
 	
-	var lContent = $(  "<p>" + aMessage + "</p>"  ).css(  {
-		width: "90%!important", 
+	var lContent = $(  "<div><p>" + aMessage + "</p></div>"  ).css( {
+		"width": "80% !important",
 		"float": "left"
 	}  );
 	
@@ -88,8 +88,8 @@ function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType
 		if(  aIconType == "error" || aIconType == "information" || aIconType == "warning" || aIconType == "alert" || aIconType == "important"  ) {
 			var lIcon = $( "<div id='icon'></div>" ).css( {
 				"float": "left",
-				"width": "50px",
-				"height": "50px",
+				"width": "45px",
+				"height": "45px",
 				"background": "url( ../../res/img/" + aIconType + ".png ) no-repeat"
 			} );
 			lDialog.append( lIcon );

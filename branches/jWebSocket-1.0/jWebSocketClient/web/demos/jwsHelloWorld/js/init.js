@@ -6,7 +6,7 @@ function init(){
 	w                   = {};
 	mLog                = {};
 	mLog.isDebugEnabled = true;
-    
+	
 	//Each demo will configure its own callbacks to be passed to the login widget
 	var lCallbacks = {
 		OnOpen: function(aEvent){

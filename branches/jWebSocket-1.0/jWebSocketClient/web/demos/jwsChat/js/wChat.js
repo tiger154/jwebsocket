@@ -3,16 +3,19 @@ $.widget( "jws.chat", {
 		w.chat = this;
 		w.chat.NS = jws.NS_BASE;
 		
+		w.chat.mIsPublicActive = false;
+		
 		//Elements
-		w.chat.eMessageBox = w.chat.element.find( "#message_box_text" );
-		w.chat.ePublicUsersBox = w.chat.element.find( "#public_users_box_body" );
+		w.chat.eMessageBox		= w.chat.element.find( "#message_box_text" );
+		w.chat.ePublicUsersBox	= w.chat.element.find( "#public_users_box_body" );
 		w.chat.ePrivateUsersBox = w.chat.element.find( "#users_box_body" );
 		
 		//Buttons
-		w.chat.eBtnPrivateChat = w.chat.element.find( "#btn_private_chat" );
-		w.chat.eBtnPublicChat = w.chat.element.find( "#btn_public_chat" );
-		w.chat.eBtnBroadcast = w.chat.element.find( "#message_box_broadcast_btn" );
-
+		w.chat.eBtnPrivateChat	= w.chat.element.find( "#btn_private_chat" );
+		w.chat.eBtnPublicChat	= w.chat.element.find( "#btn_public_chat" );
+		w.chat.eBtnBroadcast	= w.chat.element.find( "#message_box_broadcast_btn" );
+		
+		
 
 		w.chat.ePublicUsersBox.hide( );
 		
@@ -32,7 +35,8 @@ $.widget( "jws.chat", {
 		
 	},
 	
-	sendMessage: function( ) {
+	sendMessage: function( aMessage ) {
+		mLog( aMessage );
 		
 	},
 	
@@ -63,9 +67,13 @@ $.widget( "jws.chat", {
 	switchPrivate: function( ) {
 		w.chat.ePublicUsersBox.hide();
 		w.chat.ePrivateUsersBox.show();
+		w.chat.eBtnPublicChat.attr("class", "");
+		w.chat.eBtnPrivateChat.attr("class", "active");
 	},
 	
 	switchPublic: function( ) {
+		w.chat.eBtnPublicChat.attr("class", "active");
+		w.chat.eBtnPrivateChat.attr("class", "");
 		w.chat.ePrivateUsersBox.hide();
 		w.chat.ePublicUsersBox.show();
 	},
@@ -84,20 +92,22 @@ $.widget( "jws.chat", {
 	
 	messageBoxKeyPressed: function( aEvt ) {
 		if( aEvt.keyCode == 13 && ( !aEvt.shiftKey ) ) {
+			aEvt.preventDefault( );
+			w.chat.sendMessage( $( this ).val( ) );
 			$( this ).val( "" );
-			aEvt.preventDefault();
 		}
+	},
+	
+	logPrivateMessage: function( aSender, aMessage, aPlace ) {
+		console.log(aSender);
+		console.log(aMessage);
+		console.log(aPlace);
+	},
+	
+	logPublicMessage: function( aSender, aMessage, aPlace ) {
+		console.log(aSender);
+		console.log(aMessage);
+		console.log(aPlace);
 	}
+
 });
-
-function logPrivateMessage( aSender, aMessage, aPlace ) {
-	console.log(aSender);
-	console.log(aMessage);
-	console.log(aPlace);
-}
-
-function logPublicMessage( aSender, aMessage, aPlace ) {
-	console.log(aSender);
-	console.log(aMessage);
-	console.log(aPlace);
-}
