@@ -7,6 +7,15 @@ function init(){
 	mLog                = {};
 	mLog.isDebugEnabled = true;
     
+	var lMessage = "This demo is being modified, it's not ready to use yet, we are \n\
+		creating a new set of demos for the jWebSocket 1.0 version, we apologize\n\
+		for the problems it can cause to you, please, refer to the old demos area\n\
+		in the navigation menu.\n\
+		<img src='../../res/img/under_construction.png'></img>";
+	
+	// dialog(aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType, aWidth)
+	dialog(lMessage, "Demo under construction", true, null, null, "", 400);
+	
 	//Each demo will configure its own callbacks to be passed to the login widget
 	var lCallbacks = {
 		OnOpen: function(aEvent){
@@ -25,10 +34,12 @@ function init(){
 	// @maxLogLines: maximum number of lines that will be logged
 	// @linesToDelete: quantity of lines that will be deleted from 
 	// the log window each time the log exceeds the maxLogLines
-	$("#log_box").log({maxLogLines: 200, linesToDelete: 20});
+	$("#log_box").log({
+		maxLogLines: 200, 
+		linesToDelete: 20
+	});
 	
 	$("#demo_box").auth(lCallbacks);
-	$("#demo_box").actions();
 	
 	//configuring tooltip as we wish
 	$("[title]").tooltip({
@@ -41,33 +52,6 @@ function init(){
 			lTip.html("").append(lTop).append(lMiddle).append(lBottom);
 		}
 	});
-	
-checkWebSocketSupport();
-}
-
-function checkWebSocketSupport(){
-	if( jws.browserSupportsWebSockets() ) {
-		lWSC = new jws.jWebSocketJSONClient({
-			OnWelcome: ""
-		});
-        
-        
-		lWSC.setSamplesCallbacks({
-			OnSamplesServerTime: getServerTimeCallback
-		});
-		lWSC.setFileSystemCallbacks({
-			OnFileLoaded: onFileLoadedObs,
-			OnFileSaved: onFileSavedObs,
-			OnFileError: onFileErrorObs
-		});
-	} else {
-		//disable all buttons
-		//        $( "#login_button" ).attr( "disabled", "disabled" );
-		var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-		alert( lMsg );
-		if(mLog.isDebugEnabled)
-			log( lMsg );
-	}
 }
 
 $(document).ready(function(){

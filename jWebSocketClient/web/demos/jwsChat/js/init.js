@@ -7,6 +7,15 @@ function init(){
 	mLog                = {};
 	mLog.isDebugEnabled = true;
 	
+	var lMessage = "This demo is being modified, it's not ready to use yet, we are \n\
+		creating a new set of demos for the jWebSocket 1.0 version, we apologize\n\
+		for the problems it can cause to you, please, refer to the old demos area\n\
+		in the navigation menu.\n\
+		<img src='../../res/img/under_construction.png'></img>";
+	
+	// dialog(aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType, aWidth)
+	dialog(lMessage, "Demo under construction", true, null, null, "", 500);
+	
 	var lCallbacks = {
 		OnOpen: function( aEvent ) {
 		},

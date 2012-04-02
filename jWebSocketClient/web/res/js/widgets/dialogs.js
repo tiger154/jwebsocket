@@ -41,13 +41,13 @@
 * 
 	dialog( "Are you sure?", "title", true, function(  ) {alert( "closing" )}, lButtons, "error" );
  */
-function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType ) {
+function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType, aWidth ) {
 	// Dialog
 	var lDialog = $(  "<div id='dialog'></div>"  );
 //	closeDialog(  );
 	
 	var lContent = $(  "<div><p>" + aMessage + "</p></div>"  ).css( {
-		"width": "80% !important",
+		"width": (aIconType)?"80% !important":"100% !important",
 		"float": "left"
 	}  );
 	
@@ -70,7 +70,7 @@ function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType
 				lNewButton.attr( "id", aElement.id );
 			}
 
-			lNewButton.append( $( '<div class="l"></div>' ) ).append( $( '<div class="c">'+lText+'</div>' ) ).append( $( '<div class="r"></div>' ) );
+			lNewButton.append( $( '<div class="l"></div>' ) ).append( $( '<div class="c">' + lText + '</div>' ) ).append( $( '<div class="r"></div>' ) );
 			lButtonsArea.prepend( lNewButton );
 		} );
 	}else{
@@ -101,12 +101,13 @@ function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType
 	lDialog.append( lContent );
 	
 	lDialog.prependTo( "body" );
-    
+	
+	
 	lDialog.dialog( {
 		autoOpen: true,
 		resizable: false,
 		modal: aIsModal || false,
-		width: 300,
+		width: aWidth || 300,
 		title: aTitle
 	} );
 	lDialog.append( lButtonsArea );
