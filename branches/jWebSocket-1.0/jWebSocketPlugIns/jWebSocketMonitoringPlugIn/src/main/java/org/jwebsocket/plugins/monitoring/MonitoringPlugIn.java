@@ -132,6 +132,13 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		try {
 			mInformationThread.join(2000);
 			mInformationThread.stop();
+			
+			mServerExchangeInfoThread.join(2000);
+			mServerExchangeInfoThread.stop();
+			
+			mUserInfoThread.join(2000);
+			mUserInfoThread.stop();
+			
 		} catch (InterruptedException ex) {
 		}
 	}
