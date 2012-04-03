@@ -16,12 +16,14 @@
 package org.jwebsocket.plugins.monitoring;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketServerListener;
@@ -34,43 +36,64 @@ import org.jwebsocket.logging.Logging;
  */
 public class ServerRequestListener implements WebSocketServerListener {
 
-	Mongo mConnection;
-	DBCollection mChartingCollection;
-	Logger mLog = Logging.getLogger(ServerRequestListener.class);
-
+	private Mongo mConnection;
+	private DBCollection mColl;
+	private static Logger mLog = Logging.getLogger(ServerRequestListener.class);
 
 	public ServerRequestListener() {
+		String lVersion = "<unknown>";
 
 		try {
+			// suppress stack traces from mongo db to console
+			java.util.logging.Logger.getLogger("com.mongodb").setLevel(
+					java.util.logging.Level.OFF);
 			mConnection = new Mongo();
-			mChartingCollection = mConnection.getDB("db_charting").getCollection("exchanges_server");
+			DB lDB = mConnection.getDB("db_charting");
+			List<String> lDBNames = mConnection.getDatabaseNames();
+			if (mLog.isInfoEnabled()) {
+				mLog.info("Found databases: " + lDBNames.toString() + ".");
+			}
+			lVersion = mConnection.getVersion();
+			mColl = lDB.getCollection("exchanges_server");
+
+			if (mLog.isInfoEnabled()) {
+				mLog.info("Instantiated server request listener for MongoDB " + lVersion + ".");
+			}
+
 		} catch (UnknownHostException ex) {
 			mLog.error(ex.getMessage());
 
 		}
 	}
-	
+
 	@Override
 	public void processPacket(WebSocketServerEvent wsse, WebSocketPacket wsp) {
-		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-		String lToday = format.format(new Date());
+		SimpleDateFormat lFormat = new SimpleDateFormat("MM/dd/yyyy");
+		String lToday = lFormat.format(new Date());
 
-		DBObject lRecord = mChartingCollection.findOne(new BasicDBObject().append("date", lToday));
+		try {
+			// TODO: check this error handling!
+			if (null == mColl) {
+				// mLog.error("Mongo DB collection not accessible.");
+				return;
+			}
 
-		if (null == lRecord) {
-			mChartingCollection.insert(new BasicDBObject().append("date", lToday));
-			lRecord = mChartingCollection.findOne(new BasicDBObject().append("date", lToday));
+			DBObject lRecord = mColl.findOne(new BasicDBObject().append("date", lToday));
+			if (null == lRecord) {
+				mColl.insert(new BasicDBObject().append("date", lToday));
+				lRecord = mColl.findOne(new BasicDBObject().append("date", lToday));
+			}
+			mColl.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("h" + String.valueOf(new Date().getHours()), 1)));
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "Instantiating ServerRequestListener"));
 		}
-		mChartingCollection.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("h" + String.valueOf(new Date().getHours()), 1)));
 	}
 
 	@Override
 	public void processOpened(WebSocketServerEvent aEvent) {
-		
 	}
 
 	@Override
 	public void processClosed(WebSocketServerEvent aEvent) {
-		
 	}
 }

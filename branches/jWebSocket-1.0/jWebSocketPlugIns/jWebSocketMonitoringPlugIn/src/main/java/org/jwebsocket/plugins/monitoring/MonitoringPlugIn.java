@@ -51,8 +51,7 @@ import org.apache.log4j.Logger;
 public class MonitoringPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger(MonitoringPlugIn.class);
-	private static Collection<WebSocketConnector> mClients =
-			new FastList<WebSocketConnector>();
+	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>();
 	private static Thread mInformationThread;
 	private static Thread mServerExchangeInfoThread;
 	private static Thread mUserInfoThread;
@@ -72,14 +71,17 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	private DBCollection mUsePlugInsColl;
 	private static int mConnectedUsers = 0;
 	private static int mTimeCounter = 0;
-	private static FastList<Integer> mConnectedUsersList =
-			new FastList<Integer>(60);
-
+	private static FastList<Integer> mConnectedUsersList = new FastList<Integer>(60);
+	
+	static {
+		Logging.addLogger(ServerRequestListener.class);
+	}
+	
 	public MonitoringPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		this.setNamespace(aConfiguration.getNamespace());
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Monitoring plug-in instantiated correctly.");
+			mLog.debug("Instantiating Monitoring plug-in...");
 		}
 
 		// Getting server exchanges
@@ -94,19 +96,18 @@ public class MonitoringPlugIn extends TokenPlugIn {
 					mDBColl = lDB.getCollection("exchanges_server");
 					mUsePlugInsColl = lDB.getCollection("use_plugins");
 				} else {
-					mLog.error("Mongo db_charting collection could "
-							+ "not be obtained.");
+					mLog.error("Mongo db_charting collection could not be obtained.");
 				}
 			} else {
 				mLog.error("Mongo DB instance could not be created.");
 			}
 		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing "
-					+ "MongoDB connection"));
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing MongoDB connection"));
 		}
 		if (null == mDBColl) {
-			mLog.error("MongoDB collection exchanges_server could "
-					+ "not be obtained.");
+			mLog.error("MongoDB collection exchanges_server could not be obtained.");
+		} else if (mLog.isInfoEnabled()) {
+			mLog.info("Monitoring Plug-in successfully instantiated.");
 		}
 	}
 
@@ -114,33 +115,37 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	public void engineStarted(WebSocketEngine aEngine) {
 		//Initializing thread
 		mInformationRunning = true;
-		mInformationThread = new Thread(new getInfo());
+		mInformationThread = new Thread(new getInfo(), "jWebSocket Monitoring Plug-in Information");
 		mInformationThread.start();
 
-		mServerExchangeInfoThread = new Thread(new getServerExchangeInfo());
+		mServerExchangeInfoThread = new Thread(new getServerExchangeInfo(), "jWebSocket Monitoring Plug-in Server Exchange");
 		mServerExchangeInfoThread.start();
 
-		mServerExchangeInfoThread = new Thread(new getServerExchangeInfo());
-		mServerExchangeInfoThread.start();
-
-		mUserInfoThread = new Thread(new getUserInfo());
+		mUserInfoThread = new Thread(new getUserInfo(), "jWebSocket Monitoring Plug-in UserInformation");
 	}
 
 	@Override
 	public void engineStopped(WebSocketEngine aEngine) {
 		mInformationRunning = false;
+		
 		try {
 			mInformationThread.join(2000);
 			mInformationThread.stop();
-			
+			} catch (InterruptedException ex) {
+		}
+		
+		try {
 			mServerExchangeInfoThread.join(2000);
 			mServerExchangeInfoThread.stop();
-			
-			mUserInfoThread.join(2000);
-			mUserInfoThread.stop();
-			
 		} catch (InterruptedException ex) {
 		}
+			
+		try {	
+			mUserInfoThread.join(2000);
+			mUserInfoThread.stop();
+			} catch (InterruptedException ex) {
+		}
+		
 	}
 
 	@Override
@@ -151,8 +156,12 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			mUserInfoThread.start();
 		}
 		if (!mIsActive) {
-			getServer().getListeners().add(new ServerRequestListener());
-			mIsActive = true;
+			try {
+				getServer().getListeners().add(new ServerRequestListener());
+				mIsActive = true;
+			} catch (Exception lEx) {
+				System.out.println(lEx.getMessage());
+			}
 		}
 	}
 
