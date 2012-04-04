@@ -30,16 +30,16 @@ import org.jwebsocket.api.IBasicStorage;
  */
 public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 
-	private static FastMap<String, FastMap> container = new FastMap<String, FastMap>();
-	private String name;
-	private FastMap myMap;
+	private static FastMap<String, FastMap> mContainer = new FastMap<String, FastMap>();
+	private String mName;
+	private FastMap mMap;
 
 	/**
 	 * Create a new MemoryStorage instance
-	 * @param name The name of the storage container
+	 * @param aName The name of the storage container
 	 * */
-	public MemoryStorage(String name) {
-		this.name = name;
+	public MemoryStorage(String aName) {
+		this.mName = aName;
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 * @return
 	 */
 	public static FastMap<String, FastMap> getContainer() {
-		return container;
+		return mContainer;
 	}
 
 	/**
@@ -56,43 +56,43 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	/**
 	 * {@inheritDoc
 	 * 
-	 * @param newName 
+	 * @param aNewName 
 	 * @throws Exception 
 	 */
 	@Override
-	public synchronized void setName(String newName) throws Exception {
-		if (getContainer().containsKey(name)) {
-			FastMap value = getContainer().remove(name);
-			if (myMap != null) {
-				getContainer().put(newName, myMap);
+	public synchronized void setName(String aNewName) throws Exception {
+		if (getContainer().containsKey(mName)) {
+			FastMap lValue = getContainer().remove(mName);
+			if (mMap != null) {
+				getContainer().put(aNewName, mMap);
 			} else {
-				getContainer().put(newName, value);
+				getContainer().put(aNewName, lValue);
 			}
 		}
 
-		this.name = newName;
+		this.mName = aNewName;
 	}
 
 	/**
 	 * {@inheritDoc
 	 * 
-	 * @param keys
+	 * @param aKeys
 	 * @return  
 	 */
 	@Override
-	public Map<K, V> getAll(Collection<K> keys) {
-		FastMap<K, V> map = new FastMap<K, V>();
-		for (K key : keys) {
-			map.put((K) key, get((K) key));
+	public Map<K, V> getAll(Collection<K> aKeys) {
+		FastMap<K, V> lMap = new FastMap<K, V>();
+		for (K lKey : aKeys) {
+			lMap.put((K) lKey, get((K) lKey));
 		}
 
-		return map;
+		return lMap;
 	}
 
 	/**
@@ -102,11 +102,11 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public void initialize() throws Exception {
-		if (!getContainer().containsKey(name)) {
-			getContainer().put(name, new FastMap<K, V>());
+		if (!getContainer().containsKey(mName)) {
+			getContainer().put(mName, new FastMap<K, V>());
 		}
 
-		myMap = getContainer().get(name);
+		mMap = getContainer().get(mName);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public int size() {
-		return myMap.size();
+		return mMap.size();
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public boolean isEmpty() {
-		if (myMap.isEmpty()) {
+		if (mMap.isEmpty()) {
 			return true;
 		}
 		return false;
@@ -148,8 +148,8 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 * @return 
 	 */
 	@Override
-	public boolean containsKey(Object key) {
-		if (myMap.containsKey((String) key)) {
+	public boolean containsKey(Object aKey) {
+		if (mMap.containsKey((String) aKey)) {
 			return true;
 		}
 		return false;
@@ -158,12 +158,12 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	/**
 	 * {@inheritDoc
 	 * 
-	 * @param value 
+	 * @param aValue 
 	 * @return 
 	 */
 	@Override
-	public boolean containsValue(Object value) {
-		if (myMap.containsValue(value)) {
+	public boolean containsValue(Object aValue) {
+		if (mMap.containsValue(aValue)) {
 			return true;
 		}
 		return false;
@@ -172,45 +172,45 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	/**
 	 * {@inheritDoc
 	 * 
-	 * @param key 
+	 * @param lKey 
 	 * @return 
 	 */
 	@Override
-	public V get(Object key) {
-		return (V) myMap.get(key);
+	public V get(Object lKey) {
+		return (V) mMap.get(lKey);
 	}
 
 	/**
 	 * {@inheritDoc
 	 * 
-	 * @param key 
-	 * @param value 
+	 * @param lKey 
+	 * @param lValue 
 	 * @return 
 	 */
 	@Override
-	public V put(K key, V value) {
-		return (V) myMap.put(key, value);
+	public V put(K lKey, V lValue) {
+		return (V) mMap.put(lKey, lValue);
 	}
 
 	/**
 	 * {@inheritDoc
 	 * 
-	 * @param key 
+	 * @param aKey 
 	 * @return 
 	 */
 	@Override
-	public V remove(Object key) {
-		return (V) myMap.remove(key);
+	public V remove(Object aKey) {
+		return (V) mMap.remove(aKey);
 	}
 
 	/**
 	 * {@inheritDoc
 	 * 
-	 * @param m 
+	 * @param aMap 
 	 */
 	@Override
-	public void putAll(Map<? extends K, ? extends V> m) {
-		myMap.putAll(m);
+	public void putAll(Map<? extends K, ? extends V> aMap) {
+		mMap.putAll(aMap);
 	}
 
 	/**
@@ -218,7 +218,7 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public void clear() {
-		myMap.clear();
+		mMap.clear();
 	}
 
 	/**
@@ -228,7 +228,7 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public Set<K> keySet() {
-		return myMap.keySet();
+		return mMap.keySet();
 	}
 
 	/**
@@ -238,7 +238,7 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public Collection<V> values() {
-		return myMap.values();
+		return mMap.values();
 	}
 
 	/**
@@ -248,6 +248,6 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public Set<Entry<K, V>> entrySet() {
-		return myMap.entrySet();
+		return mMap.entrySet();
 	}
 }

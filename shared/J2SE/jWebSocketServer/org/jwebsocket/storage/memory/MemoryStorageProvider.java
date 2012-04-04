@@ -28,6 +28,7 @@ public class MemoryStorageProvider implements IStorageProvider {
 	public IBasicStorage<String, Object> getStorage(String aName) throws Exception {
 		MemoryStorage<String, Object> lStorage = new MemoryStorage<String, Object>(aName);
 		lStorage.initialize();
+		
 		return lStorage;
 	}
 

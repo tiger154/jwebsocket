@@ -32,8 +32,8 @@ public class MongoDBStorageProvider extends MongoDBStorageBuilder implements ISt
 	 * {@inheritDoc 
 	 */
 	@Override
-	public IBasicStorage<String, Object> getStorage(String name) throws Exception {
-		return this.getStorage(MongoDBStorageBuilder.V2, name);
+	public IBasicStorage<String, Object> getStorage(String aName) throws Exception {
+		return this.getStorage(MongoDBStorageBuilder.V2, aName);
 	}
 
 	@Override

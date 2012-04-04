@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - MongoDBStorageBuilder
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -27,80 +27,80 @@ import org.jwebsocket.api.IBasicStorage;
  */
 public class MongoDBStorageBuilder {
 
-	private Mongo con;
-	private String databaseName;
-	private String collectionName;
+	private Mongo mCon;
+	private String mDatabaseName;
+	private String mCollectionName;
 	public static final String V1 = "v1";
 	public static final String V2 = "v2";
 	
-	private DBCollection col = null;
-	private DB db = null;
+	private DBCollection mCollection = null;
+	private DB mDatabase = null;
 
 	/**
 	 * 
 	 * @return The Mongo database connection
 	 */
 	public Mongo getCon() {
-		return con;
+		return mCon;
 	}
 
 	/**
 	 * 
-	 * @param con The Mongo database connection to set
+	 * @param aCon The Mongo database connection to set
 	 */
-	public void setCon(Mongo con) {
-		this.con = con;
+	public void setCon(Mongo aCon) {
+		this.mCon = aCon;
 	}
 
 	/**
 	 * 
-	 * @param name The storage name 
+	 * @param aName The storage name 
 	 * @return The MongoDB storage ready to use.
 	 */
-	public IBasicStorage<String, Object> getStorage(String version, String name) throws Exception {
-		IBasicStorage<String, Object> storage = null;
-		if (version.equals(V1)) {
-			storage = new MongoDBStorageV1<String, Object>(name, db);
-			storage.initialize();
-		} else if (version.equals(V2)) {
-			storage = new MongoDBStorageV2<String, Object>(name, col);
-			storage.initialize();
+	public IBasicStorage<String, Object> getStorage(String aVersion, String aName) throws Exception {
+		IBasicStorage<String, Object> lStorage = null;
+		if (aVersion.equals(V1)) {
+			lStorage = new MongoDBStorageV1<String, Object>(aName, mDatabase);
+			lStorage.initialize();
+		} else if (aVersion.equals(V2)) {
+			lStorage = new MongoDBStorageV2<String, Object>(aName, mCollection);
+			lStorage.initialize();
 		}
 
-		return storage;
+		return lStorage;
 	}
 
 	/**
 	 * @return the databaseName
 	 */
 	public String getDatabaseName() {
-		return databaseName;
+		return mDatabaseName;
 	}
 
 	/**
-	 * @param databaseName the databaseName to set
+	 * @param aDatabaseName the databaseName to set
 	 */
-	public void setDatabaseName(String databaseName) {
-		this.databaseName = databaseName;
+	public void setDatabaseName(String aDatabaseName) {
+		this.mDatabaseName = aDatabaseName;
 		
 		//Getting the temporal database instance to improve performance
-		db = con.getDB(databaseName);
+		mDatabase = mCon.getDB(aDatabaseName);
 	}
 
 	/**
 	 * @return The database collection name for storages of version 2
 	 */
 	public String getCollectionName() {
-		return collectionName;
+		return mCollectionName;
 	}
 
 	/**
-	 * @param collectionName The database collection name for storages of version 2
+	 * @param aCollectionName The database collection name for storages of version 2
 	 */
-	public void setCollectionName(String collectionName) {
-		this.collectionName = collectionName;
+	public void setCollectionName(String aCollectionName) {
+		this.mCollectionName = aCollectionName;
 		
 		//Getting the temporal collection instance to improve performance
-		col = con.getDB(databaseName).getCollection(collectionName);
+		mCollection = mCon.getDB(mDatabaseName).getCollection(aCollectionName);
 	}
 }
