@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - MongoDBCacheStorageBuilder
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -27,83 +27,79 @@ import org.jwebsocket.api.IBasicCacheStorage;
  */
 public class MongoDBCacheStorageBuilder {
 
-	private Mongo con;
-	private String databaseName;
-	private String collectionName;
+	private Mongo mCon;
+	private String mDatabaseName;
+	private String mCollectionName;
 	public static final String V1 = "v1";
 	public static final String V2 = "v2";
+	private DBCollection mCollection = null;
+	private DB mDatabase = null;
 
-	private DBCollection col = null;
-	private DB db = null;
-	
 	/**
 	 * 
 	 * @return The Mongo database connection
 	 */
 	public Mongo getCon() {
-		return con;
+		return mCon;
 	}
 
 	/**
 	 * 
-	 * @param con The Mongo database connection to set
+	 * @param aCon The Mongo database connection to set
 	 */
-	public void setCon(Mongo con) {
-		this.con = con;
+	public void setCon(Mongo aCon) {
+		this.mCon = aCon;
 	}
 
 	/**
 	 * 
-	 * @param name The cache storage name to build
+	 * @param aName The cache storage name to build
 	 * @return The cache storage ready to use.
 	 */
-	public IBasicCacheStorage<String, Object> getCacheStorage(String version, String name) throws Exception {
-		IBasicCacheStorage<String, Object> cache = null;
-		if (version.equals(V1)) {
-			cache = new MongoDBCacheStorageV1<String, Object>(name,
-					con.getDB(getDatabaseName()));
-			cache.initialize();
-		} else if (version.equals(V2)) {
-			cache = new MongoDBCacheStorageV2<String, Object>(name,
-					con.getDB(getDatabaseName()).getCollection(collectionName));
-			cache.initialize();
+	public IBasicCacheStorage<String, Object> getCacheStorage(String aVersion, String aName) throws Exception {
+		IBasicCacheStorage<String, Object> lCache = null;
+		if (aVersion.equals(V1)) {
+			lCache = new MongoDBCacheStorageV1<String, Object>(aName, mDatabase);
+			lCache.initialize();
+		} else if (aVersion.equals(V2)) {
+			lCache = new MongoDBCacheStorageV2<String, Object>(aName, mCollection);
+			lCache.initialize();
 		}
 
-
-		return cache;
+		return lCache;
 	}
 
 	/**
 	 * @return the databaseName
 	 */
 	public String getDatabaseName() {
-		return databaseName;
+		return mDatabaseName;
 	}
 
 	/**
 	 * @param databaseName the databaseName to set
 	 */
-	public void setDatabaseName(String databaseName) {
-		this.databaseName = databaseName;
-		
+	public void setDatabaseName(String aDatabaseName) {
+		this.mDatabaseName = aDatabaseName;
+
 		//Getting the temporal database instance to improve performance
-		db = con.getDB(databaseName);
+		mDatabase = mCon.getDB(aDatabaseName);
 	}
 
 	/**
 	 * @return The database collection name for cache storages of version 2
 	 */
 	public String getCollectionName() {
-		return collectionName;
+		return mCollectionName;
 	}
 
 	/**
-	 * @param collectionName The database collection name for cache storages of version 2
+	 * @param aCollectionName The database collection name for cache storages of version 2
 	 */
-	public void setCollectionName(String collectionName) {
-		this.collectionName = collectionName;
-		
+	public void setCollectionName(String aCollectionName) {
+		this.mCollectionName = aCollectionName;
+
 		//Getting the temporal collection instance to improve performance
-		col = con.getDB(databaseName).getCollection(collectionName);
+		mCollection = mCon.getDB(mDatabaseName).getCollection(aCollectionName);
 	}
 }
