@@ -40,6 +40,7 @@ import org.jwebsocket.tcp.TCPEngine;
 
 /**
  * Example of a pure programmatic embedded jWebSocket server.
+ *
  * @author aschulze
  */
 public class JWebSocketSubSystemSample {
@@ -56,11 +57,6 @@ public class JWebSocketSubSystemSample {
 
 		// initialize the logging system
 		LoggingConfig lLoggingConfig = new LoggingConfig(
-				"console", // target
-				"%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p - %C{1}: %m%n", // pattern
-				"debug", // level
-				"jWebSocket.log", // file name, if logging to file only
-				4096, // bufferSize, if logging to file only
 				"log4j.xml", // config file, overrides above settings!
 				20000 // reload delay
 				);
@@ -160,6 +156,7 @@ public class JWebSocketSubSystemSample {
 
 	/**
 	 * adds a new listener to the server of the jWebSocket subsystem.
+	 *
 	 * @param aListener
 	 */
 	public void addListener(WebSocketServerListener aListener) {
@@ -171,6 +168,7 @@ public class JWebSocketSubSystemSample {
 
 	/**
 	 * removes a listener from the server of the jWebSocket subsystem.
+	 *
 	 * @param aListener
 	 */
 	public void removeListener(WebSocketServerListener aListener) {

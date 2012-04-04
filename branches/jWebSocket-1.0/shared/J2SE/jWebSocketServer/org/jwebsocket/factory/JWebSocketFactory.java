@@ -33,7 +33,7 @@ import org.springframework.beans.factory.BeanFactory;
 
 /**
  * Factory to initialize and start the jWebSocket components
- * 
+ *
  * @author aschulze
  * @version $Id:$
  */
@@ -47,14 +47,23 @@ public class JWebSocketFactory {
 	private static BeanFactory mBeanFactory;
 	private static JWebSocketJarClassLoader mClassLoader;
 
+	static {
+		Logging.addLogger(JWebSocketFactory.class);
+	}
+
 	/**
-	 * 
-	 * @return The class loader used to load the system resources like libraries, engines, plug-ins, ...
+	 *
+	 * @return The class loader used to load the system resources like
+	 * libraries, engines, plug-ins, ...
 	 */
 	public static JWebSocketJarClassLoader getClassLoader() {
 		return mClassLoader;
 	}
 
+	/**
+	 *
+	 * @param classLoader
+	 */
 	public static void setClassLoader(JWebSocketJarClassLoader classLoader) {
 		JWebSocketFactory.mClassLoader = classLoader;
 	}
@@ -72,82 +81,58 @@ public class JWebSocketFactory {
 	}
 
 	/**
-	 * 
-	 */
-	public static void setProperties() {
-		System.setProperty(JWebSocketServerConstants.JWEBSOCKET_HOME,
-				JWebSocketConfig.getJWebSocketHome());
-	}
-
-	public static String getBootstrapOverridePath() {
-		String lBootstrapPath = JWebSocketConfig.getJWebSocketHome() 
-				+ "conf/Resources/bootstrap.xml";
-		return lBootstrapPath;
-	}
-
-	/**
 	 *
 	 */
 	public static void start() {
-		start(null, getBootstrapOverridePath());
+		start(null, null);
 	}
 
 	/**
 	 *
-	 * @param aArgs
-	 * @return
+	 * @param aConfigPath
+	 * @param aBootstrapPath
 	 */
-	public static String getConfigOverridePath(String[] aArgs) {
-		// TODO: Evalualation of parameters must become more flexible!
-		String lConfigOverridePath = null;
-		String lJWebSocketHome = null;
+	public static void start(String aConfigPath, String aBootstrapPath) {
 
-		if (aArgs != null && aArgs.length > 0) {
-			for (int lIdx = 0; lIdx < aArgs.length; lIdx++) {
-				// is there one more argument beyond the current one?
-				if (lIdx < aArgs.length - 1) {
-					if ("-config".equals(aArgs[lIdx])) {
-						lConfigOverridePath = aArgs[lIdx + 1];
-					} else if ("-home".equals(aArgs[lIdx])) {
-						lJWebSocketHome = aArgs[lIdx + 1];
-					}
-				}
-			}
+		if (null == aConfigPath) {
+			aConfigPath = JWebSocketConfig.getConfigPath();
 		}
-		if (null == lConfigOverridePath) {
-			System.out.println("Use [-config <path_to_config_file>] as command line arguments to override default jWebSocket.xml");
+		if (null == aBootstrapPath) {
+			aBootstrapPath = JWebSocketConfig.getBootstrapPath();
 		}
-		if (null == lJWebSocketHome) {
-			System.out.println("Use [-home <path_to_jwebsocket_home>] as command line arguments to specify the jWebSocket home folder");
-		} else {
-			JWebSocketConfig.setJWebSocketHome(lJWebSocketHome);
-		}
-		
-		return lConfigOverridePath;
-	}
-
-	/**
-	 *
-	 * @param aConfigOverridePath
-	 */
-	public static void start(String aConfigOverridePath, String aBoostrapConfigPath) {
 
 		JWebSocketInstance.setStatus(JWebSocketInstance.STARTING);
-		setProperties();
-		
+
 		// start the shared utility timer
 		Tools.startUtilityTimer();
 
 		JWebSocketLoader lLoader = new JWebSocketLoader();
-		try {
-			JWebSocketBeanFactory.load(aBoostrapConfigPath, Thread.currentThread().getContextClassLoader());
 
+		// try to load bean from bootstrap
+		try {
+			System.out.println("Loading bootstrap '" + aBootstrapPath + "'...");
+			JWebSocketBeanFactory.load(aBootstrapPath, Thread.currentThread().getContextClassLoader());
+			System.out.println("Bootstrap '" + aBootstrapPath + "' successfully loaded.");
+		} catch (Exception lEx) {
+			if (mLog != null) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug(Logging.getSimpleExceptionMessage(lEx, "loading bootstrap."));
+				}
+			} else {
+				System.out.println(Logging.getSimpleExceptionMessage(lEx, "loading bootstrap."));
+			}
+		}
+
+		// try to load configuration from .xml file
+		try {
 			WebSocketInitializer lInitializer =
-					lLoader.initialize(aConfigOverridePath);
+					lLoader.initialize(aConfigPath);
+			
 			if (lInitializer == null) {
 				JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
 				return;
 			}
+			
 			lInitializer.initializeLogging();
 
 			mLog = Logging.getLogger(JWebSocketFactory.class);
@@ -177,7 +162,6 @@ public class JWebSocketFactory {
 			mServers = lInitializer.initializeServers();
 			Map<String, List<WebSocketPlugIn>> lPluginMap =
 					lInitializer.initializePlugins();
-
 
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Initializing plugins...");
@@ -222,9 +206,7 @@ public class JWebSocketFactory {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Starting engine '" + mEngine.getId() + "'...");
 			}
-
-
-
+			
 			try {
 				mEngine.startEngine();
 				lEngineStarted = true;
@@ -276,7 +258,7 @@ public class JWebSocketFactory {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public static void run() {
 		// remain here until shut down request
@@ -345,13 +327,13 @@ public class JWebSocketFactory {
 
 		// stop the shared utility timer
 		Tools.stopUtilityTimer();
-		
+
 		// set instance status
 		JWebSocketInstance.setStatus(JWebSocketInstance.STOPPED);
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public static BeanFactory getBeans() {
@@ -359,7 +341,7 @@ public class JWebSocketFactory {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aCoreBeans
 	 */
 	public static void setBeans(BeanFactory aCoreBeans) {
@@ -383,11 +365,10 @@ public class JWebSocketFactory {
 	}
 
 	/**
-	 * Returns the server identified by it's id or <tt>null</tt> if no server with
-	 * that id could be found in the factory.
+	 * Returns the server identified by it's id or <tt>null</tt> if no server
+	 * with that id could be found in the factory.
 	 *
-	 * @param aId
-	 *          id of the server to be returned.
+	 * @param aId id of the server to be returned.
 	 * @return WebSocketServer with the given id or <tt>null</tt> if not found.
 	 */
 	public static WebSocketServer getServer(String aId) {

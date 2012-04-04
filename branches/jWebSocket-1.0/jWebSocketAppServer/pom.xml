@@ -122,17 +122,17 @@
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketArduinoPlugIn</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketJCaptchaPlugIn</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketMonitoringPlugIn</artifactId>
-			<version>${pom.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 	</dependencies>

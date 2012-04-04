@@ -17,25 +17,25 @@ package org.jwebsocket.plugins.events;
 
 import java.util.Set;
 import javolution.util.FastSet;
-import org.jwebsocket.logging.Logging;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.kit.PlugInResponse;
-import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.token.Token;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.eventmodel.api.IServerSecureComponent;
-import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.eventmodel.core.EventModel;
+import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.eventmodel.event.em.ConnectorStarted;
 import org.jwebsocket.eventmodel.event.em.ConnectorStopped;
 import org.jwebsocket.eventmodel.event.em.EngineStarted;
 import org.jwebsocket.eventmodel.event.em.EngineStopped;
-import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.logging.Logging;
+import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.token.Token;
 import org.springframework.beans.factory.BeanFactory;
 
 /**
@@ -47,7 +47,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 	private String mConfigFile;
 	private EventModel mEm;
 	private static Logger mLog = Logging.getLogger(EventsPlugIn.class);
-	//IWebSocketSecureObject fields
+	// IWebSocketSecureObject fields
 	private boolean mSecurityEnabled = false;
 	private Set<String> mRoles = new FastSet<String>();
 	private Set<String> mUsers = new FastSet<String>();
@@ -103,7 +103,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 					+ getNamespace() + "-application/bootstrap.xml";
 			lPath = JWebSocketConfig.expandEnvAndJWebSocketVars(lPath);
 			JWebSocketBeanFactory.load(getNamespace(), lPath, lClassLoader);
-			
+
 			mEm = (EventModel) JWebSocketBeanFactory.getInstance(getNamespace()).getBean("EventModel");
 			// Initializing the event model
 			mEm.setParent(this);
@@ -176,12 +176,16 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 		//Connector started event notification
 		try {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Connector.started(" + aConnector.toString() + ") event notification...");
+				mLog.debug("Connector.started (" + aConnector.toString() + ") event notification...");
 			}
-			ConnectorStarted lEvent = (ConnectorStarted) getEm().getEventFactory().stringToEvent("connector.started");
-			lEvent.setConnector(aConnector);
-			lEvent.initialize();
-			mEm.notify(lEvent, null, true);
+			EventModel lEM = getEm();
+			if (null != lEM) {
+				ConnectorStarted lEvent =
+						(ConnectorStarted) lEM.getEventFactory().stringToEvent("connector.started");
+				lEvent.setConnector(aConnector);
+				lEvent.initialize();
+				mEm.notify(lEvent, null, true);
+			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "connector started"));
 		}
@@ -232,13 +236,17 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 		//Connector stopped event notification
 		try {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Connector.stopped(" + aConnector.toString() + ") event notification...");
+				mLog.debug("Connector.stopped (" + aConnector.toString() + ") event notification...");
 			}
-			ConnectorStopped lEvent = (ConnectorStopped) getEm().getEventFactory().stringToEvent("connector.stopped");
-			lEvent.setConnector(aConnector);
-			lEvent.setCloseReason(aCloseReason);
-			lEvent.initialize();
-			mEm.notify(lEvent, null, true);
+			EventModel lEM = getEm();
+			if (null != lEM) {
+				ConnectorStopped lEvent =
+						(ConnectorStopped) lEM.getEventFactory().stringToEvent("connector.stopped");
+				lEvent.setConnector(aConnector);
+				lEvent.setCloseReason(aCloseReason);
+				lEvent.initialize();
+				mEm.notify(lEvent, null, true);
+			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "connector stopped"));
 		}

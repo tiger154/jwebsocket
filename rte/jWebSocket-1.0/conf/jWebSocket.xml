@@ -1319,6 +1319,7 @@
 		</plugin>
 		
 		<!-- Monitoring plugin -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
 			<ns>monitoringPlugin.pcinfo</ns>
@@ -1328,7 +1329,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		
+		-->
 		<!-- API disclosure plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.api.APIPlugIn</name>
@@ -1463,6 +1464,7 @@
 			This plug-in requires Arduino hardware to be connected and configured.
 			This plug-in requires the rxtx lib to be loaded in the libraries section!.
 		-->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
 			<ns>rc</ns>
@@ -1472,8 +1474,10 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-
+		-->
+		
 		<!-- JMX Plug-in -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.jmx.JMXPlugIn</name>
 			<ns>org.jwebsocket.plugins.jmx</ns>
@@ -1487,6 +1491,7 @@
 				<setting key="beans_config">JMXPlugIn/PluginsConfigFiles/</setting>
 			</settings>
 		</plugin>
+		-->
 		
 	    <!--
 		<plugin>

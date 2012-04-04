@@ -15,12 +15,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.monitoring;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -28,22 +23,17 @@ import java.util.Date;
 import java.util.Map;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-import org.hyperic.sigar.CpuPerc;
-import org.hyperic.sigar.Mem;
-import org.hyperic.sigar.NetStat;
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
-import org.hyperic.sigar.Swap;
+import org.apache.log4j.Logger;
+import org.hyperic.sigar.*;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.logging.Logging;
-import org.apache.log4j.Logger;
 
 /**
  * @author Merly, Orlando

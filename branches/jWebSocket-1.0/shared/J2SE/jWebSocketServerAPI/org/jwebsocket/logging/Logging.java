@@ -15,14 +15,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.logging;
 
-import java.io.File;
-import java.io.IOException;
 import javolution.util.FastMap;
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.*;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.jwebsocket.config.JWebSocketConfig;
-import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.config.xml.LoggingConfig;
 
 /**
@@ -32,11 +31,8 @@ import org.jwebsocket.config.xml.LoggingConfig;
  */
 public class Logging {
 
-	private static PatternLayout mLayout = null;
-	private static Appender mAppender = null;
-	private static Level mLogLevel = Level.DEBUG;
 	private static boolean mIsStackTraceEnabled = false;
-	private static FastMap<Class, Logger> mLoggers = new FastMap<Class, Logger>();
+	private static FastMap<Object, Logger> mLoggers = new FastMap<Object, Logger>();
 	/**
 	 * Log output is send to the console (stdout).
 	 */
@@ -66,7 +62,6 @@ public class Logging {
 	private static String mConfigFile = null;
 	private static int mReloadDelay = 20000;
 	private final static int MIN_RELOAD_DELAY = 5000;
-	private static boolean mUseDeprecated = false;
 	private static boolean mSettingsLoaded = false;
 
 	private static String getLogsFolderPath(String aFileName) {
@@ -109,75 +104,32 @@ public class Logging {
 	 */
 	private static void checkLogAppender() {
 
-		if (mUseDeprecated) {
-			if (mLayout == null) {
-				mLayout = new PatternLayout();
-				mLayout.setConversionPattern(mPattern);
+		if (!mSettingsLoaded
+				&& !JWebSocketConfig.isLoadConfigFromResource()) {
+			/*
+			 * mConfigFile =
+			 * "C:/svn/jWebSocketDev/branches/jWebSocket-1.0/jWebSocketAppServer/target/jWebSocketAppServer-1.0/WEB-INF/classes/conf/log4j.xml";
+			 */
+
+			String lLog4JConfigFile = JWebSocketConfig.expandEnvAndJWebSocketVars(mConfigFile);
+
+			/*
+			 * String lConfigXml = null; try { lConfigXml =
+			 * FileUtils.readFileToString(new File(lLog4JConfigFile)); } catch
+			 * (IOException ex) { System.out.println("Logs: " + lLog4JConfigFile
+			 * + "\nEXCEPTION!"); }
+			 * System.out.println("=============================");
+			 * System.out.println("Logs: " + lLog4JConfigFile + "\n" +
+			 * lLog4JConfigFile);
+			 * System.out.println("=============================");
+			 */
+			if (mReloadDelay >= MIN_RELOAD_DELAY) {
+				DOMConfigurator.configureAndWatch(lLog4JConfigFile, mReloadDelay);
+			} else {
+				DOMConfigurator.configure(lLog4JConfigFile);
 			}
-			if (mAppender == null) {
-				String logsPath = getLogsFolderPath(mFilename);
-				if (ROLLING_FILE == mLogTarget && logsPath != null) {
-					try {
-						RollingFileAppender lRFA = new RollingFileAppender(mLayout,
-								logsPath, true /*
-								 * append, don't truncate
-								 */);
-						lRFA.setBufferedIO(mBuffersize > 0);
-						lRFA.setImmediateFlush(true);
-						if (mBuffersize > 0) {
-							lRFA.setBufferSize(mBuffersize);
-						}
-						lRFA.setEncoding("UTF-8");
-						mAppender = lRFA;
-					} catch (IOException ex) {
-						mAppender = new ConsoleAppender(mLayout);
-					}
-				} else if (SINGLE_FILE == mLogTarget && logsPath != null) {
-					try {
-						FileAppender lFA = new FileAppender(mLayout, logsPath,
-								true /*
-								 * append, don't truncate
-								 */);
-						lFA.setBufferedIO(mBuffersize > 0);
-						lFA.setImmediateFlush(true);
-						if (mBuffersize > 0) {
-							lFA.setBufferSize(mBuffersize);
-						}
-						lFA.setEncoding("UTF-8");
-						mAppender = lFA;
-					} catch (IOException ex) {
-						mAppender = new ConsoleAppender(mLayout);
-					}
-				} else {
-					mAppender = new ConsoleAppender(mLayout);
-					if (CONSOLE != mLogTarget) {
-						System.out.println(JWebSocketServerConstants.JWEBSOCKET_HOME
-								+ " variable not set or invalid configuration,"
-								+ " using console output for log file.");
-					}
-				}
-			}
-		} else {
-			if (!mSettingsLoaded) {
-				String lLog4JConfigFile = JWebSocketConfig.expandEnvAndJWebSocketVars(mConfigFile);
-				/*
-				String lConfigXml = null;
-				try {
-					lConfigXml = FileUtils.readFileToString(new File(lLog4JConfigFile));
-				} catch (IOException ex) {
-					System.out.println("Logs: " + lLog4JConfigFile + "\nEXCEPTION!");
-				}
-				System.out.println("=============================");
-				System.out.println("Logs: " + lLog4JConfigFile + "\n" + lConfigXml);
-				System.out.println("=============================");
-				*/
-				if (mReloadDelay >= MIN_RELOAD_DELAY) {
-					DOMConfigurator.configureAndWatch(lLog4JConfigFile, mReloadDelay);
-				} else {
-					DOMConfigurator.configure(lLog4JConfigFile);
-				}
-				mSettingsLoaded = true;
-			}
+			// }	
+			mSettingsLoaded = true;
 		}
 	}
 
@@ -187,58 +139,22 @@ public class Logging {
 	 *
 	 * @param aLogLevel
 	 */
-	public static void initLogs(String aLogLevel, String aLogTarget,
-			String aFilename, String aPattern, Integer aBuffersize,
-			String aConfigFile, Integer aReloadDelay) {
-		if (aLogLevel != null) {
-			mLogLevel = Level.toLevel(aLogLevel);
-		}
-		if (aLogTarget != null) {
-			if ("console".equals(aLogTarget)) {
-				mLogTarget = Logging.CONSOLE;
-			} else if ("singlefile".equals(aLogTarget)) {
-				mLogTarget = Logging.SINGLE_FILE;
-			} else if ("rollingfile".equals(aLogTarget)) {
-				mLogTarget = Logging.ROLLING_FILE;
-			}
-		}
-		if (aFilename != null) {
-			mFilename = aFilename;
-		}
-		if (aPattern != null) {
-			mPattern = aPattern;
-		}
-		if (aBuffersize != null) {
-			mBuffersize = aBuffersize;
-		}
+	public static void initLogs(String aConfigFile, Integer aReloadDelay) {
 		if (aConfigFile != null) {
 			mConfigFile = aConfigFile;
 		}
 		if (aReloadDelay != null) {
 			mReloadDelay = aReloadDelay;
 		}
-
-		// if no config file goven in jWebSocket.xml use deprecate mechanism!
-		mUseDeprecated = mConfigFile == null;
-
 		checkLogAppender();
 	}
 
 	public static void initLogs(LoggingConfig aLoggingConfig) {
 		if (aLoggingConfig != null) {
 			initLogs(
-					aLoggingConfig.getLevel(),
-					aLoggingConfig.getAppender(),
-					aLoggingConfig.getFilename(),
-					aLoggingConfig.getPattern(),
-					aLoggingConfig.getBufferSize(),
 					aLoggingConfig.getConfigFile(),
 					aLoggingConfig.getReloadDelay());
 		}
-	}
-
-	public static boolean isInitialized() {
-		return (mAppender != null);
 	}
 
 	public static boolean isStackTraceEnabled() {
@@ -274,12 +190,6 @@ public class Logging {
 	 * logs after it has been closed!
 	 */
 	public static void exitLogs() {
-		if (mAppender != null) {
-			// System.out.println("Closing logs...");
-			// properly close log files if such
-			mAppender.close();
-			// System.out.println("Logs closed.");
-		}
 	}
 
 	/**
@@ -299,20 +209,14 @@ public class Logging {
 			lLogger = Logger.getLogger(aClass);
 		}
 
-		if (mUseDeprecated) {
-			lLogger.addAppender(mAppender);
-			// don't inherit global log4j settings, we intend to configure that
-			// in our own jWebSocket.xml config file.
-			lLogger.setAdditivity(false);
-			lLogger.setLevel(mLogLevel);
-		}
 		// otherwise the logger should be initialized properly already
 		// by the configuration file
-
 		return lLogger;
 	}
 
-	public static void addLogger(Class aClass) {
-		mLoggers.put(aClass, getLogger(aClass));
+	public static Logger addLogger(Class aClass) {
+		Logger lLogger = getLogger(aClass);
+		mLoggers.put(aClass, lLogger);
+		return lLogger;
 	}
 }

@@ -17,11 +17,10 @@ package org.jwebsocket.factory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
+import java.io.InputStream;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
 import org.jwebsocket.api.WebSocketInitializer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
@@ -30,9 +29,9 @@ import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.security.SecurityFactory;
 
 /**
- * An object that does the process of loading configuration, intialization of
+ * An object that does the process of loading configuration, initialization of
  * the jWebSocket server system.
- * 
+ *
  * @author puran
  * @version $Id: JWebSocketLoader.java 345 2010-04-10 20:03:48Z fivefeetfurther$
  */
@@ -44,18 +43,19 @@ public final class JWebSocketLoader {
 
 	/**
 	 * Initialize the jWebSocket Server system
-	 * @param aOverrideConfigPath the overridden path to xml config file
+	 *
+	 * @param aConfigPath the overridden path to xml config file
 	 * @return the initializer object
 	 * @throws WebSocketException if there's an exception while initialization
 	 */
-	public final WebSocketInitializer initialize(String aOverrideConfigPath)
+	public final WebSocketInitializer initialize(String aConfigPath)
 			throws WebSocketException {
 		String lConfigPath;
-		if (aOverrideConfigPath != null && !"".equals(aOverrideConfigPath)) {
-			lConfigPath = aOverrideConfigPath;
-			System.out.println("Using config file " + aOverrideConfigPath + "...");
+		if (aConfigPath != null && !"".equals(aConfigPath)) {
+			lConfigPath = aConfigPath;
+			System.out.println("Initializing: Using config file '" + aConfigPath + "'...");
 		} else {
-			lConfigPath = JWebSocketConfig.getConfigurationPath();
+			lConfigPath = JWebSocketConfig.getConfigPath();
 		}
 		if (lConfigPath == null) {
 			throw new WebSocketException("Either "
@@ -78,25 +78,33 @@ public final class JWebSocketLoader {
 	 * Load all the configurations based on jWebSocket.xml file at the given
 	 * <tt>configFilePath</tt> location.
 	 *
-	 * @param aConfigFilePath the path to jWebSocket.xml file
+	 * @param aConfigPath the path to jWebSocket.xml file
 	 * @return the web socket config object with all the configuration
 	 * @throws WebSocketException if there's any while loading configuration
 	 */
-	public JWebSocketConfig loadConfiguration(final String aConfigFilePath) throws WebSocketException {
+	public JWebSocketConfig loadConfiguration(final String aConfigPath) throws WebSocketException {
 		JWebSocketConfig lConfig = null;
-		File lFile = new File(aConfigFilePath);
 		String lMsg;
 		try {
-			FileInputStream lFIS = new FileInputStream(lFile);
+			InputStream lIS;
+			if (JWebSocketConfig.isLoadConfigFromResource()) {
+				System.out.println("Loading configuration from resource '" + aConfigPath + "...");
+				lIS = this.getClass().getResourceAsStream("/" + aConfigPath);
+			} else {
+				System.out.println("Loading configuration from file '" + aConfigPath + "...");
+				File lFile = new File(aConfigPath);
+				lIS = new FileInputStream(lFile);
+			}
 			XMLInputFactory lFactory = XMLInputFactory.newInstance();
 			XMLStreamReader lStreamReader = null;
-			lStreamReader = lFactory.createXMLStreamReader(lFIS);
+			lStreamReader = lFactory.createXMLStreamReader(lIS);
 			lConfig = (JWebSocketConfig) mConfigHandler.processConfig(lStreamReader);
-		} catch (XMLStreamException ex) {
-			lMsg = ex.getClass().getSimpleName() + " occurred while creating XML stream (" + aConfigFilePath + ").";
+			System.out.println("Configuration successfully loaded.");
+		} catch (XMLStreamException lEx) {
+			lMsg = lEx.getClass().getSimpleName() + " occurred while creating XML stream (" + aConfigPath + "): " + lEx.getMessage() + ".";
 			throw new WebSocketException(lMsg);
-		} catch (FileNotFoundException ex) {
-			lMsg = "jWebSocket config file not found while creating XML stream (" + aConfigFilePath + ").";
+		} catch (FileNotFoundException lEx) {
+			lMsg = "jWebSocket config file not found while creating XML stream (" + aConfigPath + "): " + lEx.getMessage() + ".";
 			throw new WebSocketException(lMsg);
 		}
 		return lConfig;

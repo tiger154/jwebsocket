@@ -145,7 +145,7 @@
 		<!-- <appender-ref ref="testLog" /> -->
 		<!-- during the development -->
 		<appender-ref ref="developmentLog"/>
-		<appender-ref ref="jmxLog"/>
+		<!-- <appender-ref ref="jmxLog"/> -->
 	</root>
 
 </log4j:configuration>

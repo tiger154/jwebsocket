@@ -15,10 +15,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.templates.plugindev;
 
-import java.io.File;
 import java.util.List;
 import javolution.util.FastList;
-import org.apache.commons.io.FilenameUtils;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.xml.PluginConfig;
@@ -38,23 +36,10 @@ public class Main {
 	public static void main(String[] aArgs) {
 		// the following line may not be removed due to GNU LGPL 3.0 license!
 		JWebSocketFactory.printCopyrightToConsole();
+		JWebSocketConfig.initForConsoleApp(aArgs);
 
 		try {
-			File lFile;
-			String lJWebSocketHome = JWebSocketConfig.getJWebSocketHome();
-			if (null == lJWebSocketHome || lJWebSocketHome.isEmpty()) {
-				lFile = new File("../../../rte/jWebSocket-1.0");
-				lJWebSocketHome = FilenameUtils.normalize(lFile.getAbsolutePath());
-				JWebSocketConfig.setJWebSocketHome(lJWebSocketHome);
-			}
-
-			String lConfigOverridePath = JWebSocketFactory.getConfigOverridePath(aArgs);
-			String lBootstrapOverridePath = JWebSocketFactory.getBootstrapOverridePath();
-			if (null == lConfigOverridePath) {
-				lFile = new File("../../../rte/jWebSocket-1.0/conf/jWebSocketDevTemplate.xml");
-				lConfigOverridePath = FilenameUtils.normalize(lFile.getAbsolutePath());
-			}
-			JWebSocketFactory.start(lConfigOverridePath, lBootstrapOverridePath);
+			JWebSocketFactory.start();
 
 			// get the token server
 			TokenServer lServer = JWebSocketFactory.getTokenServer();

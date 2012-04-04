@@ -27,14 +27,9 @@ import org.jwebsocket.config.ConfigHandler;
  */
 public class LoggingConfigHandler implements ConfigHandler {
 
-	private static final String APPENDER = "appender";
-	private static final String PATTERN = "pattern";
-	private static final String LEVEL = "level";
-	private static final String FILENAME = "filename";
-	private static final String BUFFERSIZE = "buffersize";
 	private static final String ELEMENT_LOG4J = "log4j";
 	private static final String CONFIG_FILE = "config";
-	private static final String RELOAD_DELAY = "reload";
+	private static final String RELOAD_DELAY = "autoreload";
 
 	/**
 	 * {@inheritDoc}
@@ -44,30 +39,15 @@ public class LoggingConfigHandler implements ConfigHandler {
 	@Override
 	public Config processConfig(XMLStreamReader aStreamReader)
 			throws XMLStreamException {
-		String lAppender = "", lPattern = "", lLevel = "", lFilename = "", lConfigFile = null;
-		Integer lBufferSize = 2048, lReloadDelay = 20000;
+		String lConfigFile = null;
+		Integer lReloadDelay = null;
 		while (aStreamReader.hasNext()) {
 			aStreamReader.next();
 			if (aStreamReader.isStartElement()) {
 				String elementName = aStreamReader.getLocalName();
-				if (elementName.equals(APPENDER)) {
-					aStreamReader.next();
-					lAppender = aStreamReader.getText();
-				} else if (elementName.equals(PATTERN)) {
-					aStreamReader.next();
-					lPattern = aStreamReader.getText();
-				} else if (elementName.equals(LEVEL)) {
-					aStreamReader.next();
-					lLevel = aStreamReader.getText();
-				} else if (elementName.equals(FILENAME)) {
-					aStreamReader.next();
-					lFilename = aStreamReader.getText();
-				} else if (elementName.equals(CONFIG_FILE)) {
+				if (elementName.equals(CONFIG_FILE)) {
 					aStreamReader.next();
 					lConfigFile = aStreamReader.getText();
-				} else if (elementName.equals(BUFFERSIZE)) {
-					aStreamReader.next();
-					lBufferSize = Integer.parseInt(aStreamReader.getText());
 				} else if (elementName.equals(RELOAD_DELAY)) {
 					aStreamReader.next();
 					lReloadDelay = Integer.parseInt(aStreamReader.getText());
@@ -82,7 +62,6 @@ public class LoggingConfigHandler implements ConfigHandler {
 				}
 			}
 		}
-		return new LoggingConfig(lAppender, lPattern, lLevel, lFilename,
-				lBufferSize, lConfigFile, lReloadDelay);
+		return new LoggingConfig(lConfigFile, lReloadDelay);
 	}
 }

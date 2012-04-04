@@ -15,11 +15,12 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.console;
 
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
 
 /**
  * Main entry point for stand alone jWebSocket server system
- * 
+ *
  * @author puran
  * @version $Id: JWebSocketServer.java 443 2010-05-06 12:03:08Z fivefeetfurther$
  */
@@ -31,11 +32,13 @@ public class JWebSocketServer {
 	public static void main(String[] aArgs) {
 		// the following line must not be removed due to GNU LGPL 3.0 license!
 		JWebSocketFactory.printCopyrightToConsole();
+		
+		// check if home, config or bootstrap path are passed by command line
+		JWebSocketConfig.initForConsoleApp(aArgs);
 
-		String lOverrideConfigPath = JWebSocketFactory.getConfigOverridePath(aArgs);
 		try {
-			JWebSocketFactory.start(lOverrideConfigPath,
-                    JWebSocketFactory.getBootstrapOverridePath());
+			// start the jWebSocket Server
+			JWebSocketFactory.start();
 
 			// run server until shut down request
 			JWebSocketFactory.run();
