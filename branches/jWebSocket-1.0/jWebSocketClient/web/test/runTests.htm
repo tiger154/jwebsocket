@@ -83,6 +83,9 @@
 		<!-- include spec files here... -->
 		<script type="text/javascript" src="spec/Matchers.js"></script>
 
+		<!-- tests for events plugin -->
+		<script type="text/javascript" src="js/jwsEventsTests.js"></script>
+
 	</head>
 	<body>
 		<table class="tblHeader" width="100%" cellspacing="0" cellpadding="0">
@@ -96,6 +99,8 @@
 				   title="Runs the manual (programmatic) test suite.">
 		<input class="sbtnDlg" id="sbtnBenchmarkTest" type="button" value="Benchmark" onclick="run('runBenchmarkSuite()');"
 				   title="Runs the benchmark suite.">
+		<input class="sbtnDlg" id="sbtnEventsTest" type="button" value="Events" onclick="run('runEventsSuite()');"
+				   title="Runs the Events suite.">
 		</p>
 
 		<script type="text/javascript">
