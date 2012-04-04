@@ -63,12 +63,53 @@ function runDefaultAPISuite() {
 
 }
 
+function runEventsSuite() {
+	//run Events tests
+	jws.myConn = new jws.jWebSocketJSONClient();
+	jws.myConn.open(jws.JWS_SERVER_URL, {
+		OnOpen: function (){
+			//Initializing events in the client... 
+			//Creating the filter chain
+			var securityFilter = new jws.SecurityFilter();
+			securityFilter.OnNotAuthorized = function(aEvent){
+			//Not Authorized!
+			}
+			
+			var cacheFilter = new jws.CacheFilter();
+			cacheFilter.cache = new Cache();
+			var validatorFiler = new jws.ValidatorFilter();
+			
+			//Creating a event notifier
+			var notifier = new jws.EventsNotifier();
+			notifier.ID = "notifier0";
+			notifier.NS = "test";
+			notifier.jwsClient = jws.myConn;
+			notifier.filterChain = [securityFilter, cacheFilter, validatorFiler];
+			notifier.initialize();
+			  
+			//Creating a plugin generator
+			var generator = new jws.EventsPlugInGenerator();
+
+			//Generating the auth & test plug-ins.
+			auth = generator.generate("auth", notifier, function(){
+				/*
+				 * Run the events test suite when generate the last plugin
+				 */
+				jws.tests.Events.runSuite();
+			});
+		},
+		OnClose: function(){
+			alert("Not connected to the server!")
+		}
+	});
+}
+
 function runFullTestSuite() {
 
-/*
+	/*
 	debugger;
 	jasmine.VERBOSE = true;
-	*/
+	 */
 	var lIntv = jasmine.DEFAULT_UPDATE_INTERVAL;
 	jasmine.DEFAULT_UPDATE_INTERVAL = 5;
    
@@ -118,9 +159,7 @@ function runFullTestSuite() {
 		
 		//run IOC tests
 		jws.tests.ioc.runSuite();
-		
+
+		jasmine.DEFAULT_UPDATE_INTERVAL = lIntv;	
 	});
-
-	jasmine.DEFAULT_UPDATE_INTERVAL = lIntv;
 }
-
