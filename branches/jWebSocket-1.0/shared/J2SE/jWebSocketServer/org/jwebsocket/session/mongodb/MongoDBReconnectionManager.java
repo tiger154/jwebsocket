@@ -26,16 +26,16 @@ import org.jwebsocket.storage.mongodb.MongoDBStorageBuilder;
  */
 public class MongoDBReconnectionManager extends BaseReconnectionManager {
 
-	private MongoDBCacheStorageBuilder cacheStorageBuilder;
-	private MongoDBStorageBuilder storageBuilder;
+	private MongoDBCacheStorageBuilder mCacheStorageBuilder;
+	private MongoDBStorageBuilder mStorageBuilder;
 	private static Logger mLog = Logging.getLogger(MongoDBReconnectionManager.class);
 
 	public MongoDBCacheStorageBuilder getCacheStorageBuilder() {
-		return cacheStorageBuilder;
+		return mCacheStorageBuilder;
 	}
 
 	public void setCacheStorageBuilder(MongoDBCacheStorageBuilder cacheStorageBuilder) {
-		this.cacheStorageBuilder = cacheStorageBuilder;
+		this.mCacheStorageBuilder = cacheStorageBuilder;
 	}
 
 	@Override
@@ -44,10 +44,10 @@ public class MongoDBReconnectionManager extends BaseReconnectionManager {
 			mLog.debug(">> Initializing...");
 		}
 
-		setReconnectionIndex(cacheStorageBuilder.getCacheStorage(MongoDBCacheStorageBuilder.V1, getCacheStorageName()));
+		setReconnectionIndex(mCacheStorageBuilder.getCacheStorage(MongoDBCacheStorageBuilder.V1, getCacheStorageName()));
 		getReconnectionIndex().initialize();
 		
-		setSessionIdsTrash(storageBuilder.getStorage(MongoDBStorageBuilder.V1, getTrashStorageName()));
+		setSessionIdsTrash(mStorageBuilder.getStorage(MongoDBStorageBuilder.V1, getTrashStorageName()));
 		getSessionIdsTrash().initialize();
 	}
 

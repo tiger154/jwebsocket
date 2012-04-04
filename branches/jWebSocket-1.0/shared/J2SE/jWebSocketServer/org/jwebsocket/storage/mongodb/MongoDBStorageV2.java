@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - JDBCStorage
+//  jWebSocket - MongoDBStorage
 //  Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -34,22 +34,22 @@ import javolution.util.FastSet;
  * <br>
  * All the cache storages entries are located in the same database collection. 
  * 
- * @author rsantamaria
+ * @author kyberneees
  */
 public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	
-	private String name;
-	private DBCollection myCollection;
+	private String mName;
+	private DBCollection mCollection;
 
 	/**
 	 * Create a new MongoDBStorage instance
 	 *
-	 * @param name The name of the storage container
-	 * @param collection The MongoDB database collection instance
+	 * @param aName The name of the storage container
+	 * @param aCollection The MongoDB database collection instance
 	 */
-	public MongoDBStorageV2(String name, DBCollection collection) {
-		this.name = name;
-		myCollection = collection;
+	public MongoDBStorageV2(String aName, DBCollection aCollection) {
+		this.mName = aName;
+		mCollection = aCollection;
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public void initialize() throws Exception {
-		myCollection.ensureIndex(new BasicDBObject().append("ns", 1).append("k", 1),
+		mCollection.ensureIndex(new BasicDBObject().append("ns", 1).append("k", 1),
 				new BasicDBObject().append("unique", true));
 	}
 
@@ -73,30 +73,30 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public void setName(String newName) throws Exception {
-		myCollection.update(new BasicDBObject().append("ns", name),
-				new BasicDBObject().append("$set", new BasicDBObject().append("ns", newName)));
+	public void setName(String aNewName) throws Exception {
+		mCollection.update(new BasicDBObject().append("ns", mName),
+				new BasicDBObject().append("$set", new BasicDBObject().append("ns", aNewName)));
 
-		name = newName;
+		mName = aNewName;
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public Map<K, V> getAll(Collection<K> keys) {
-		FastMap<K, V> map = new FastMap<K, V>();
-		for (K key : keys) {
-			map.put((K) key, get(key));
+	public Map<K, V> getAll(Collection<K> aKeys) {
+		FastMap<K, V> lMap = new FastMap<K, V>();
+		for (K lKey : aKeys) {
+			lMap.put((K) lKey, get(lKey));
 		}
-		return map;
+		return lMap;
 	}
 
 	/**
@@ -119,9 +119,9 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public boolean containsKey(Object key) {
-		DBObject obj = myCollection.findOne(new BasicDBObject().append("ns", name).append("k", (String) key));
-		if (obj != null) {
+	public boolean containsKey(Object aKey) {
+		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).append("k", (String) aKey));
+		if (lRecord != null) {
 			return true;
 		}
 		return false;
@@ -131,9 +131,9 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public boolean containsValue(Object value) {
-		DBObject obj = myCollection.findOne(new BasicDBObject().append("ns", name).append("v", value));
-		if (obj != null) {
+	public boolean containsValue(Object aValue) {
+		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).append("v", aValue));
+		if (lRecord != null) {
 			return true;
 		}
 		return false;
@@ -143,37 +143,37 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public V get(Object key) {
-		return (V) myCollection.findOne(new BasicDBObject().append("ns", name).append("k", key)).get("v");
+	public V get(Object aKey) {
+		return (V) mCollection.findOne(new BasicDBObject().append("ns", mName).append("k", aKey)).get("v");
 	}
 
 	@Override
-	public V put(K key, V value) {
-		BasicDBObject obj = new BasicDBObject();
-		obj.append("ns", name);
-		obj.append("k", key);
+	public V put(K aKey, V aValue) {
+		BasicDBObject lRecord = new BasicDBObject();
+		lRecord.append("ns", mName);
+		lRecord.append("k", aKey);
 		
-		DBCursor cur = myCollection.find(obj);
-		if (!cur.hasNext()) {
-			obj.append("v", value);
-			myCollection.insert(obj);
+		DBCursor lCursor = mCollection.find(lRecord);
+		if (!lCursor.hasNext()) {
+			lRecord.append("v", aValue);
+			mCollection.insert(lRecord);
 		} else {
-			DBObject upd = cur.next();
-			upd.put("v", value);
-			myCollection.save(upd);
+			DBObject lExistingRecord = lCursor.next();
+			lExistingRecord.put("v", aValue);
+			mCollection.save(lExistingRecord);
 		}
-		return value;
+		return aValue;
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public V remove(Object key) {
-		if (containsKey(key)) {
-			V val = get(key);
-			myCollection.remove(new BasicDBObject().append("ns", name).append("k", key));
-			return val;
+	public V remove(Object aKey) {
+		if (containsKey(aKey)) {
+			V lValue = get(aKey);
+			mCollection.remove(new BasicDBObject().append("ns", mName).append("k", aKey));
+			return lValue;
 		} else {
 			throw new IndexOutOfBoundsException();
 		}
@@ -183,9 +183,9 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public void putAll(Map<? extends K, ? extends V> m) {
-		for (K key : m.keySet()) {
-			put(key, m.get(key));
+	public void putAll(Map<? extends K, ? extends V> aMap) {
+		for (K lKey : aMap.keySet()) {
+			put(lKey, aMap.get(lKey));
 		}
 	}
 
@@ -194,7 +194,7 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public void clear() {
-		myCollection.remove(new BasicDBObject().append("ns", name));
+		mCollection.remove(new BasicDBObject().append("ns", mName));
 	}
 
 	/**
@@ -202,12 +202,12 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public Set<K> keySet() {
-		Set<K> s = new FastSet<K>();
-		DBCursor cur = myCollection.find(new BasicDBObject().append("ns", name));
-		while (cur.hasNext()) {
-			s.add((K) cur.next().get("k"));
+		Set<K> lKeySet = new FastSet<K>();
+		DBCursor lCursor = mCollection.find(new BasicDBObject().append("ns", mName));
+		while (lCursor.hasNext()) {
+			lKeySet.add((K) lCursor.next().get("k"));
 		}
-		return s;
+		return lKeySet;
 	}
 
 	/**
@@ -215,12 +215,12 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public Collection<V> values() {
-		List<V> l = new ArrayList<V>();
-		DBCursor cur = myCollection.find(new BasicDBObject().append("ns", name));
-		while (cur.hasNext()) {
-			l.add((V) cur.next().get("v"));
+		List<V> lValues = new ArrayList<V>();
+		DBCursor lCursor = mCollection.find(new BasicDBObject().append("ns", mName));
+		while (lCursor.hasNext()) {
+			lValues.add((V) lCursor.next().get("v"));
 		}
-		return l;
+		return lValues;
 	}
 
 	/**

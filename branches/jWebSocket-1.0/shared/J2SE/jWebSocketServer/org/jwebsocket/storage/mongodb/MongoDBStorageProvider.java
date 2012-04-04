@@ -37,6 +37,6 @@ public class MongoDBStorageProvider extends MongoDBStorageBuilder implements ISt
 
     @Override
     public void removeStorage(String aName) throws Exception {
-        this.removeStorage(aName);
+        this.getStorage(aName).clear();
     }
 }
