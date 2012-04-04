@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2010 jwebsocket.org
+//	jWebSocket - Copyright (c) 2012 jwebsocket.org
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -19,22 +19,22 @@ package org.jwebsocket.api;
  * storage with a given name.
  * @author kyberneees, aschulze
  */
-public interface IStorageProvider {
+public interface ICacheStorageProvider {
 
 	/**
-	 * Get a storage instance for a giving a name
+	 * Get a cache storage instance for a giving a name
 	 * 
 	 * @param aName 
 	 * @return The storage instance
 	 * @throws Exception  
 	 */
-	IBasicStorage<String, Object> getStorage(String aName) throws Exception;
+	IBasicCacheStorage<String, Object> getCacheStorage(String aName) throws Exception;
 
 	/**
-	 * Remove a storage from a given name
+	 * Remove a cache storage from a given name
 	 * 
 	 * @param aName
 	 * @throws Exception 
 	 */
-	void removeStorage(String aName) throws Exception;
+	void removeCacheStorage(String aName) throws Exception;
 }
