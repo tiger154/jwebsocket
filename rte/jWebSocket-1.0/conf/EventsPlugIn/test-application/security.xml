@@ -31,6 +31,7 @@
 				<user name="quentin" password="123" authorities="USER" />
 				<user name="jan" password="123" authorities="USER" />
 				<user name="kyberneees" password="123" authorities="USER, ADMIN" />
+				<user name="guelmis" password="123" authorities="USER" />
 			</user-service>
 		</authentication-provider>
 	</authentication-manager>

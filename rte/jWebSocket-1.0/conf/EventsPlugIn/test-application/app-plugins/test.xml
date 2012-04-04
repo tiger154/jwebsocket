@@ -14,7 +14,6 @@
 				<entry key="jcTest" value="org.jwebsocket.eventmodel.event.test.JcTest"/>
 				<entry key="terminalReady" value="org.jwebsocket.eventmodel.event.card.JcTerminalReady"/>
 				<entry key="terminalNotReady" value="org.jwebsocket.eventmodel.event.card.JcTerminalNotReady"/>
-
 			</map>
 		</property>
 		<property name="eventsDefinitions">
@@ -24,6 +23,12 @@
 					<property name="ns" value="org.jwebsocket.eventmodel.event.test.GetHashCode" />
 					<property name="responseRequired" value="true" />
 					<property name="responseToOwnerConnector" value="true" />
+					<property name="securityEnabled" value="true" />
+					<property name="roles">
+						<set>
+							<value>USER</value>
+						</set>
+					</property>
 					<property name="incomingArgsValidation">
 						<set>
 							<bean class="org.jwebsocket.eventmodel.filter.validator.Argument" >

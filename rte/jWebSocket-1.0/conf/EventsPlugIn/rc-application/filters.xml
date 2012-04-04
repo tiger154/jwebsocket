@@ -3,13 +3,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
- 
+
 	<!--  Filters-->
 	<bean abstract="true" id="AbstractFilter" scope="singleton"
 		init-method="initialize" destroy-method="shutdown">
 		<property name="em" ref="EventModel" />
 	</bean>
-
+	
 	<bean id="RouterFilter" class="org.jwebsocket.eventmodel.filter.router.RouterFilter" parent="AbstractFilter">
 		<property name="id" value="router" />
 	</bean>
@@ -26,23 +26,30 @@
 	
 	<bean id="CacheFilter" class="org.jwebsocket.eventmodel.filter.cache.CacheFilter" parent="AbstractFilter">
 		<property name="id" value="cache" />
-		<property name="cacheBuilder">
-			<bean class="org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageBuilder">
+		<property name="cacheStorageProvider">
+			<!--
+			<bean class="org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageProvider">
 				<property name="con" ref="MongoDBConnection0" />
 				<property name="databaseName" value="cache" />
 				<property name="collectionName" value="cache_filter_entries" />
 			</bean>
+			-->
+			<bean class="org.jwebsocket.cachestorage.memory.MemoryCacheStorageProvider">
+			</bean>
 		</property>
+		
 		<property name="eventClasses">
 			<set>
 				<value>org.jwebsocket.eventmodel.event.filter.ResponseFromCache</value>
 			</set>
 		</property>
+
 		<property name="emEventClasses">
 			<set>
 				<value>org.jwebsocket.eventmodel.event.filter.BeforeRouteResponseToken</value>
-			</set>
+			</set>					
 		</property>
+	
 	</bean>
 	
 	<bean id="AnnotationFilter" class="org.jwebsocket.eventmodel.filter.annotation.AnnotationFilter" parent="AbstractFilter">
