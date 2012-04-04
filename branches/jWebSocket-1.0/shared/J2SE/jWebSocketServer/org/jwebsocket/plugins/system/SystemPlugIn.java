@@ -258,7 +258,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		mSessionManager.getReconnectionManager().putInReconnectionMode(lSessionId);
 		}
 		}
-		 */
+		*/
 
 		// notify other clients that client disconnected
 		broadcastDisconnectEvent(aConnector);
@@ -342,7 +342,8 @@ public class SystemPlugIn extends TokenPlugIn {
 		lWelcome.setString("vendor", JWebSocketCommonConstants.VENDOR);
 		lWelcome.setString("version", JWebSocketServerConstants.VERSION_STR);
 		// here the session id is MANDATORY! to pass to the client!
-		lWelcome.setString("usid", aConnector.getSession().getSessionId());
+		lWelcome.setString("usid", aConnector.getSession().getSessionId().
+				replace(aConnector.getHeader().get(RequestHeader.WS_PATH).toString(), ""));
 		lWelcome.setString("sourceId", aConnector.getId());
 		// if a unique node id is specified for the client include that
 		String lNodeId = aConnector.getNodeId();
