@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - MongoDBCacheStorageV2
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -37,42 +37,42 @@ import org.jwebsocket.api.IBasicCacheStorage;
  */
 public class MongoDBCacheStorageV2<K, V> implements IBasicCacheStorage<K, V> {
 
-	private String name;
-	private DBCollection myCollection;
+	private String mName;
+	private DBCollection mCollection;
 
-	public MongoDBCacheStorageV2(String name, DBCollection collection) {
-		this.name = name;
-		myCollection = collection;
+	public MongoDBCacheStorageV2(String aName, DBCollection aCollection) {
+		this.mName = aName;
+		mCollection = aCollection;
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public V put(K key, V value, int expTime) {
-		myCollection.insert(new BasicDBObject().append("ns", name).
-				append("k", key).append("v", value).
+	public V put(K lKey, V lValue, int aExpTime) {
+		mCollection.insert(new BasicDBObject().append("ns", mName).
+				append("k", lKey).append("v", lValue).
 				append("it", (Long) (System.currentTimeMillis() / 1000)).
-				append("et", expTime));
+				append("et", aExpTime));
 
-		return value;
+		return lValue;
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public V put(K k, V v) {
-		return put(k, v, 0);
+	public V put(K lKey, V lValue) {
+		return put(lKey, lValue, 0);
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public void putAll(Map<? extends K, ? extends V> m) {
-		for (K key : m.keySet()) {
-			put(key, m.get(key));
+	public void putAll(Map<? extends K, ? extends V> aMap) {
+		for (K lKey : aMap.keySet()) {
+			put(lKey, aMap.get(lKey));
 		}
 	}
 
@@ -80,13 +80,13 @@ public class MongoDBCacheStorageV2<K, V> implements IBasicCacheStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public Map<K, V> getAll(Collection<K> keys) {
-		FastMap<K, V> map = new FastMap<K, V>();
-		for (K key : keys) {
-			map.put((K) key, get(key));
+	public Map<K, V> getAll(Collection<K> lKeys) {
+		FastMap<K, V> lMap = new FastMap<K, V>();
+		for (K lKey : lKeys) {
+			lMap.put((K) lKey, get(lKey));
 		}
 
-		return map;
+		return lMap;
 	}
 
 	/**
@@ -94,18 +94,18 @@ public class MongoDBCacheStorageV2<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public void setName(String newName) throws Exception {
-		myCollection.update(new BasicDBObject().append("ns", name),
-				new BasicDBObject().append("$set", new BasicDBObject().append("ns", newName)));
+	public void setName(String aNewName) throws Exception {
+		mCollection.update(new BasicDBObject().append("ns", mName),
+				new BasicDBObject().append("$set", new BasicDBObject().append("ns", aNewName)));
 
-		name = newName;
+		mName = aNewName;
 	}
 
 	/**
@@ -113,18 +113,18 @@ public class MongoDBCacheStorageV2<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public void clear() {
-		myCollection.remove(new BasicDBObject().append("ns", name));
+		mCollection.remove(new BasicDBObject().append("ns", mName));
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public boolean containsKey(Object o) {
-		DBObject r = myCollection.findOne(new BasicDBObject().append("ns", name).
-				append("k", o));
+	public boolean containsKey(Object aKey) {
+		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
+				append("k", aKey));
 
-		if (r != null && isValid(r)) {
+		if (lRecord != null && isValid(lRecord)) {
 			return true;
 		}
 
@@ -133,20 +133,20 @@ public class MongoDBCacheStorageV2<K, V> implements IBasicCacheStorage<K, V> {
 
 	/**
 	 * 
-	 * @param r The DBObject record
+	 * @param aRecord The DBObject record
 	 * @return TRUE if the record is not expired, FALSE otherwise
 	 */
-	private boolean isValid(DBObject r) {
-		Integer expTime = (Integer) r.get("et");
-		if (expTime < 1) {
+	private boolean isValid(DBObject aRecord) {
+		Integer lExpTime = (Integer) aRecord.get("et");
+		if (lExpTime < 1) {
 			return true;
 		}
 
-		if (((Long) r.get("it")) + expTime >= System.currentTimeMillis() / 1000) {
+		if (((Long) aRecord.get("it")) + lExpTime >= System.currentTimeMillis() / 1000) {
 			return true;
 		}
 		//Useful to keep the collection up to date with only non-expired values
-		myCollection.remove(r);
+		mCollection.remove(aRecord);
 
 		return false;
 	}
@@ -155,11 +155,11 @@ public class MongoDBCacheStorageV2<K, V> implements IBasicCacheStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public boolean containsValue(Object o) {
-		DBObject r = myCollection.findOne(new BasicDBObject().append("ns", name).
-				append("v", o));
+	public boolean containsValue(Object aValue) {
+		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
+				append("v", aValue));
 
-		if (r != null && isValid(r)) {
+		if (lRecord != null && isValid(lRecord)) {
 			return true;
 		}
 
@@ -178,13 +178,13 @@ public class MongoDBCacheStorageV2<K, V> implements IBasicCacheStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public V get(Object o) {
-		DBObject r = myCollection.findOne(new BasicDBObject().append("ns", name).
-				append("k", o));
+	public V get(Object aValue) {
+		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
+				append("k", aValue));
 
-		if (r != null) {
-			if (isValid(r)) {
-				return (V) r.get("v");
+		if (lRecord != null) {
+			if (isValid(lRecord)) {
+				return (V) lRecord.get("v");
 			}
 		}
 
@@ -204,31 +204,31 @@ public class MongoDBCacheStorageV2<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public Set<K> keySet() {
-		Set<K> s = new FastSet<K>();
-		DBCursor cur = myCollection.find(new BasicDBObject().append("ns", name));
+		Set<K> lKeySet = new FastSet<K>();
+		DBCursor lCursor = mCollection.find(new BasicDBObject().append("ns", mName));
 
-		while (cur.hasNext()) {
-			DBObject r = cur.next();
-			if (isValid(r)) {
-				s.add((K) r.get("k"));
+		while (lCursor.hasNext()) {
+			DBObject lRecord = lCursor.next();
+			if (isValid(lRecord)) {
+				lKeySet.add((K) lRecord.get("k"));
 			}
 		}
 
-		return s;
+		return lKeySet;
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public V remove(Object o) {
-		DBObject r = myCollection.findOne(new BasicDBObject().append("ns", name).
-				append("k", o));
+	public V remove(Object aKey) {
+		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
+				append("k", aKey));
 
-		myCollection.remove(r);
+		mCollection.remove(lRecord);
 
-		if (r != null && isValid(r)) {
-			return (V) r.get("v");
+		if (lRecord != null && isValid(lRecord)) {
+			return (V) lRecord.get("v");
 		}
 
 		return null;
@@ -247,17 +247,17 @@ public class MongoDBCacheStorageV2<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public Collection<V> values() {
-		Set<K> keys = keySet();
-		FastList<V> values = new FastList<V>();
-		DBObject r;
+		Set<K> lKeys = keySet();
+		FastList<V> lValues = new FastList<V>();
+		DBObject lRecord = null;
 
-		for (K key : keys) {
-			r = myCollection.findOne(new BasicDBObject().append("ns", name).
-					append("k", key));
-			values.add((V) r.get("v"));
+		for (K lKey : lKeys) {
+			lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).
+					append("k", lKey));
+			lValues.add((V) lRecord.get("v"));
 		}
 
-		return values;
+		return lValues;
 	}
 
 	/**
@@ -265,7 +265,7 @@ public class MongoDBCacheStorageV2<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public void initialize() throws Exception {
-		myCollection.ensureIndex(new BasicDBObject().append("ns", 1).append("k", 1),
+		mCollection.ensureIndex(new BasicDBObject().append("ns", 1).append("k", 1),
 				new BasicDBObject().append("unique", true));
 	}
 
