@@ -5,22 +5,15 @@
 	<formats>
 		<format>jar</format>
 	</formats>
+	
 	<includeBaseDirectory>false</includeBaseDirectory>
+	
 	<dependencySets>
-<!--		
+		
 		<dependencySet>
 			<outputDirectory/>
 			<unpack>true</unpack>
 		</dependencySet>
--->		
-		<dependencySet>
-			<outputDirectory/>
-			<includes>
-				<include>${groupId}:${artifactId}</include>
-				<include></include>
-			</includes>
-			<unpack>true</unpack>
-		</dependencySet>		
 		
 	</dependencySets>
 	

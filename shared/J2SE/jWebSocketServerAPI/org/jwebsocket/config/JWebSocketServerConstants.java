@@ -25,7 +25,7 @@ public final class JWebSocketServerConstants {
 	/**
 	 * Current version string of the jWebSocket package.
 	 */
-	public static final String VERSION_STR = "1.0b6 (nightly build 20314)";
+	public static final String VERSION_STR = "1.0b6 (nightly build 20404)";
 	/**
 	 * Name space base for tokens and plug-ins.
 	 */
@@ -39,13 +39,17 @@ public final class JWebSocketServerConstants {
 	 */
 	public static final String JWEBSOCKET_HOME = "JWEBSOCKET_HOME";
 	/**
-	 * Constant for CATALINA_HOME
+	 * Constant for bootstrap.xml configuration file
 	 */
-	// public static final String CATALINA_HOME = "CATALINA_HOME";
+	public static final String BOOTSTRAP_XML = "bootstrap.xml";
 	/**
 	 * Constant for jWebSocket.xml configuration file
 	 */
 	public static final String JWEBSOCKET_XML = "jWebSocket.xml";
+	/**
+	 * Constant for jWebSocketDevTemplate.xml configuration file
+	 */
+	public static final String JWEBSOCKET_DEV_TEMPLATE_XML = "jWebSocketDevTemplate.xml";
 	/**
 	 * Constant for jWebSocket.ks key store file
 	 */
@@ -54,10 +58,6 @@ public final class JWebSocketServerConstants {
 	 * Default password for demo key store
 	 */
 	public static final String JWEBSOCKET_KS_DEF_PWD = "jWebSocket";
-	/**
-	 * Constant for jWebSocket.xml configuration file
-	 */
-	public static final String JWEBSOCKET_OVERRIDE_XML = "jWebSocket-override.xml";
 
 	/**
 	 * Default engine for jWebSocket server.

@@ -34,12 +34,12 @@ import org.jwebsocket.plugins.TokenPlugIn;
 /**
  * This plug-in processes the policy-file-request from the browser side flash
  * plug-in. This makes jWebSocket cross-browser-compatible.
- * 
+ *
  * @author aschulze
  */
 public class FlashBridgePlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(FlashBridgePlugIn.class);
+	private static Logger mLog;// Logging.getLogger(FlashBridgePlugIn.class);
 	private ServerSocket mServerSocket = null;
 	private int mListenerPort = 843;
 	private boolean mIsRunning = false;
@@ -52,6 +52,14 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 			+ "<allow-access-from domain=\"*\" to-ports=\"*\" />"
 			+ "</cross-domain-policy>";
 
+	static {
+		mLog = Logging.addLogger(FlashBridgePlugIn.class);
+	}
+
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public FlashBridgePlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
@@ -82,9 +90,6 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Trying to load " + lPathToCrossDomainXML + "...");
 				}
-				// String testPath = "conf/FlashPlugIn/crossdomain.xml";
-				// lPathToCrossDomainXML = testPath;
-				
 				lPathToCrossDomainXML = JWebSocketConfig.expandEnvAndJWebSocketVars(lPathToCrossDomainXML);
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Trying to load expanded " + lPathToCrossDomainXML + "...");

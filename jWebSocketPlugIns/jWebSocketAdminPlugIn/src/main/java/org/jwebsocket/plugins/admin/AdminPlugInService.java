@@ -93,7 +93,7 @@ public class AdminPlugInService {
 	private void refreshJWebSocketConfig(WebSocketConnector aConnector) {
 		try {
 			JWebSocketLoader lLoader = new JWebSocketLoader();
-			JWebSocketConfig lConfig = lLoader.loadConfiguration(JWebSocketConfig.getConfigurationPath());
+			JWebSocketConfig lConfig = lLoader.loadConfiguration(JWebSocketConfig.getConfigPath());
 
 			if (null != lConfig) {
 				mJWebSocketConfig = lConfig;

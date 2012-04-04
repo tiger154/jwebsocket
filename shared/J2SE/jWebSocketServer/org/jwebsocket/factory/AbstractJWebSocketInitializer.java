@@ -26,16 +26,22 @@ import org.jwebsocket.logging.Logging;
 
 /**
  * Abstract initializer class that performs the initialization
- * 
+ *
  * @author puran
- * @version $Id: AbstractJWebSocketInitializer.java 437 2010-05-03 22:10:20Z mailtopuran $
+ * @version $Id: AbstractJWebSocketInitializer.java 437 2010-05-03 22:10:20Z
+ * mailtopuran $
  */
 public abstract class AbstractJWebSocketInitializer implements WebSocketInitializer {
-	// don't initialize logger here! Will be initialized with loaded settings!
 
-	protected static Logger mLog = null;
-	/** the configuration object */
+	private static Logger mLog = null;
+	/**
+	 * the configuration object
+	 */
 	protected JWebSocketConfig jWebSocketConfig = null;
+
+	static {
+		mLog = Logging.addLogger(AbstractJWebSocketInitializer.class);
+	}
 
 	/**
 	 * @param aConfig the jwebsocket config object
@@ -52,20 +58,13 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 		LoggingConfig lLoggingConfig = jWebSocketConfig.getLoggingConfig();
 		// initialize log4j logging engine
 		// BEFORE instantiating any jWebSocket classes
-		Logging.initLogs(lLoggingConfig.getLevel(), lLoggingConfig.getAppender(),
-				lLoggingConfig.getFilename(), lLoggingConfig.getPattern(),
-				lLoggingConfig.getBufferSize(), lLoggingConfig.getConfigFile(),
+		Logging.initLogs(lLoggingConfig.getConfigFile(),
 				lLoggingConfig.getReloadDelay());
-		mLog = Logging.getLogger(JWebSocketXmlConfigInitializer.class);
+		mLog = Logging.getLogger(getClass());
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logging settings"
 					+ ": config: " + lLoggingConfig.getConfigFile()
-					+ ", reload: " + lLoggingConfig.getReloadDelay()
-					+ ", appender: " + lLoggingConfig.getAppender()
-					+ ", filename: " + lLoggingConfig.getFilename()
-					+ ", level: " + lLoggingConfig.getLevel()
-					+ ", buffersize: " + lLoggingConfig.getBufferSize()
-					+ ", pattern: " + lLoggingConfig.getPattern());
+					+ ", reload: " + lLoggingConfig.getReloadDelay());
 		}
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Starting jWebSocket Server Sub System...");
@@ -74,6 +73,7 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 
 	/**
 	 * Load the engine from the classpath
+	 *
 	 * @param engineName the name of the engine to load
 	 * @return
 	 */

@@ -18,87 +18,26 @@ import org.jwebsocket.config.Config;
 import org.jwebsocket.kit.WebSocketRuntimeException;
 
 /**
- * Configuration for logging
- * User: puran, aschulze
- *
- * @version $Id: LoggingConfig.java 616 2010-07-01 08:04:51Z fivefeetfurther $
+ * Configuration for logging User: aschulze
  */
 public class LoggingConfig implements Config {
 
-	private final String mAppender;
-	private final String mPattern;
-	private final String mLevel;
-	private final String mFilename;
-	private final Integer mBufferSize;
-	
 	private final String mLog4JConfigFile;
 	private final Integer mReloadDelay;
 
 	/**
 	 * Constructor
 	 *
-	 * @param aAppender the logging appender
-	 * @param aPattern  logging pattern
-	 * @param aLevel    the level of logging
-	 * @param aFilename the log file name
-	 * @param aBufferSize 
-	 * @param aLog4JConfigFile  
+	 * @param aLog4JConfigFile
 	 * @param aReloadDelay
 	 */
-	public LoggingConfig(String aAppender, String aPattern, String aLevel,
-			String aFilename, Integer aBufferSize, String aLog4JConfigFile, 
-			Integer aReloadDelay) {
-		this.mAppender = aAppender;
-		this.mPattern = aPattern;
-		this.mLevel = aLevel;
-		this.mFilename = aFilename;
-		this.mBufferSize = aBufferSize;
-		this.mLog4JConfigFile = aLog4JConfigFile;
-		this.mReloadDelay = aReloadDelay;
+	public LoggingConfig(String aLog4JConfigFile, Integer aReloadDelay) {
+		mLog4JConfigFile = aLog4JConfigFile;
+		mReloadDelay = aReloadDelay;
 	}
 
 	/**
-	 * 
-	 * @return
-	 */
-	public String getAppender() {
-		return mAppender;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public String getPattern() {
-		return mPattern;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public String getLevel() {
-		return mLevel;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public String getFilename() {
-		return mFilename;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public Integer getBufferSize() {
-		return mBufferSize;
-	}
-
-	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String getConfigFile() {
@@ -106,7 +45,7 @@ public class LoggingConfig implements Config {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public Integer getReloadDelay() {
@@ -118,11 +57,7 @@ public class LoggingConfig implements Config {
 	 */
 	@Override
 	public void validate() {
-		if ((mAppender != null && mAppender.length() > 0)
-				&& (mPattern != null && mPattern.length() > 0)
-				&& (mLevel != null && mLevel.length() > 0)
-				&& (mFilename != null && mFilename.length() > 0)
-				&& (mBufferSize != null && mBufferSize >= 0)) {
+		if (mLog4JConfigFile != null) {
 			return;
 		}
 		throw new WebSocketRuntimeException(
