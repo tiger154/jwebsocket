@@ -17,7 +17,6 @@ package org.jwebsocket.eventmodel.filter.cache;
 
 import java.util.Map;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageBuilder;
 import org.jwebsocket.eventmodel.api.IListener;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
@@ -26,6 +25,7 @@ import org.jwebsocket.eventmodel.filter.EventModelFilter;
 import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import org.jwebsocket.token.Token;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.ICacheStorageProvider;
 import org.jwebsocket.eventmodel.event.filter.ResponseFromCache;
 import org.jwebsocket.eventmodel.exception.CachedResponseException;
 import org.jwebsocket.logging.Logging;
@@ -40,14 +40,14 @@ public class CacheFilter extends EventModelFilter implements IListener {
 
 	public final static String CLIENT_CACHE_ASPECT_STATUS = "client_cache_aspect_status";
 	private static Logger mLog = Logging.getLogger(CacheFilter.class);
-	private MongoDBCacheStorageBuilder mCacheBuilder;
+	private ICacheStorageProvider mCacheStorageProvider;
 
-	public MongoDBCacheStorageBuilder getCacheBuilder() {
-		return mCacheBuilder;
+	public ICacheStorageProvider getCacheStorageProvider() {
+		return mCacheStorageProvider;
 	}
 
-	public void setCacheBuilder(MongoDBCacheStorageBuilder aCacheBuilder) {
-		this.mCacheBuilder = aCacheBuilder;
+	public void setCacheStorageProvider(ICacheStorageProvider aCacheStorageProvider) {
+		mCacheStorageProvider = aCacheStorageProvider;
 	}
 
 	/**
@@ -55,7 +55,8 @@ public class CacheFilter extends EventModelFilter implements IListener {
 	 */
 	@Override
 	public void beforeCall(WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
-		C2SEventDefinition lDef = getEm().getEventFactory().getEventDefinitions().getDefinition(aEvent.getId());
+		C2SEventDefinition lDef = getEm().getEventFactory().
+				getEventDefinitions().getDefinition(aEvent.getId());
 		if (!lDef.isCacheEnabled()) {
 			return;
 		}
@@ -69,11 +70,11 @@ public class CacheFilter extends EventModelFilter implements IListener {
 				String uuid = aConnector.getString("uuid");
 				uuid = (uuid != null) ? uuid : "";
 
-				lCachedResponse = (String) getCacheBuilder().
-						getCacheStorage(MongoDBCacheStorageBuilder.V2, aEvent.getId() + uuid).get(aEvent.getRequestId());
+				lCachedResponse = (String) getCacheStorageProvider().
+						getCacheStorage(aEvent.getId() + uuid).get(aEvent.getRequestId());
 			} else {
-				lCachedResponse = (String) getCacheBuilder().
-						getCacheStorage(MongoDBCacheStorageBuilder.V2, aEvent.getId()).get(aEvent.getRequestId());
+				lCachedResponse = (String) getCacheStorageProvider().
+						getCacheStorage(aEvent.getId()).get(aEvent.getRequestId());
 			}
 
 			if (lCachedResponse != null) {
@@ -132,7 +133,7 @@ public class CacheFilter extends EventModelFilter implements IListener {
 							+ lId + lUUID + "): " + aEvent.getRequestId());
 				}
 
-				getCacheBuilder().getCacheStorage(MongoDBCacheStorageBuilder.V2, lId + lUUID).
+				getCacheStorageProvider().getCacheStorage(lId + lUUID).
 						put(aEvent.getRequestId(),
 						JSONProcessor.tokenToJSON(aEvent.getArgs()).toString(), lDef.getCacheTime());
 			} else {
@@ -141,7 +142,7 @@ public class CacheFilter extends EventModelFilter implements IListener {
 					mLog.debug("Caching element with id("
 							+ lId + "): " + aEvent.getRequestId());
 				}
-				getCacheBuilder().getCacheStorage(MongoDBCacheStorageBuilder.V2, lId).put(aEvent.getRequestId(),
+				getCacheStorageProvider().getCacheStorage(lId).put(aEvent.getRequestId(),
 						JSONProcessor.tokenToJSON(aEvent.getArgs()).toString(), lDef.getCacheTime());
 			}
 		}
