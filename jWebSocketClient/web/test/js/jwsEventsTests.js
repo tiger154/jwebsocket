@@ -17,7 +17,7 @@ jws.tests.Events = {
 
 	NS: "jws.tests.events", 
 
-	// this spec tests the login plugin of the test application
+	// this spec tests the login operation of the test application
 	testLogon: function() {
 		
 		var lSpec = this.NS + ": logon";
@@ -34,7 +34,7 @@ jws.tests.Events = {
 				OnResponse: function(aResponse){
 					lResponse = aResponse;
 				}
-			})
+			});
 
 			waitsFor(
 				function() {
@@ -49,14 +49,111 @@ jws.tests.Events = {
 				expect( lResponse.username ).toEqual( lUsername );
 				expect( lResponse.uuid ).toEqual( lUsername );
 				expect( lResponse.roles instanceof Array ).toEqual( true );
+				jws.user.principal = lResponse.username;
+				jws.user.uuid = lResponse.uuid;
+				jws.user.roles = lResponse.roles;
+			});
+		});
+	},
+	
+	// this spec tests the logoff operation of the test application
+	testLogoff: function() {
+		
+		var lSpec = this.NS + ": logoff";
+		
+		it( lSpec, function () {
+			var lResponse = null;
+			
+			waitsFor(function(){
+				return jws.user.isAuthenticated();
+			});
+			
+			auth.logoff({
+				OnResponse: function(aResponse){
+					lResponse = aResponse;
+				}
 			});
 
+			waitsFor(
+				function() {
+					return( lResponse != null );
+				}, lSpec, 3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( 0 );
+				jws.user.clear();
+			});
+		});
+	},
+	
+	// this spec tests the getEventsInfo operation of the test application
+	testGetEventsInfo: function() {
+		
+		var lSpec = this.NS + ": getEventsInfo";
+		
+		it( lSpec, function () {
+			var lResponse = null;
+			
+			test.getEventsInfo({
+				OnResponse: function(aResponse){
+					lResponse = aResponse;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( lResponse != null );
+				}, lSpec, 3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( 0 );
+				expect( lResponse.table ).toBeTypeOf("object");
+				expect( lResponse.table.name ).toBeTypeOf("string");
+				expect( lResponse.table.version ).toBeTypeOf("string");
+			});
+		});
+	},
+	
+	// this spec tests the S2C event notification operation of the test application
+	testS2CEventNotification: function() {
+		
+		var lSpec = this.NS + ": S2CEventNotification";
+		
+		it( lSpec, function () {
+			var lX = 0;
+			var lY = 0;
+			var lCalled = false;
+			
+			test.plusXY = function(e){
+				lX = e.x;
+				lY = e.y;
+				lCalled = true;
+				
+				return e.x + e.y;
+			}
+			
+			test.s2cNotification();
+
+			waitsFor(
+				function() {
+					return lCalled;
+				}, lSpec, 3000
+				);
+
+			runs( function() {
+				expect( lX + lY ).toEqual( 10 );
+			});
 		});
 	},
 
 	
 	runSpecs: function() {
 		jws.tests.Events.testLogon();
+		jws.tests.Events.testLogoff();
+		jws.tests.Events.testGetEventsInfo();
+		jws.tests.Events.testS2CEventNotification();
 	},
 
 	runSuite: function() {

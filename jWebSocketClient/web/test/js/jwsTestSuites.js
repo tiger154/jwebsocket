@@ -92,10 +92,12 @@ function runEventsSuite() {
 
 			//Generating the auth & test plug-ins.
 			auth = generator.generate("auth", notifier, function(){
-				/*
+				test = generator.generate("test", notifier, function(){
+					/*
 				 * Run the events test suite when generate the last plugin
 				 */
-				jws.tests.Events.runSuite();
+					jws.tests.Events.runSuite();
+				});
 			});
 		},
 		OnClose: function(){
