@@ -308,6 +308,10 @@ public class BaseConnector implements WebSocketConnector {
 		return mSession;
 	}
 
+	public Map<String, Object> getVars() {
+		return mCustomVars;
+	}
+
 	// some convenience methods to easier process username (login-status)
 	// and configured unique node id for clusters (independent from tcp port)
 	@Override
