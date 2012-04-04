@@ -101,7 +101,6 @@ public class AuthPlugIn extends EventModelPlugIn {
 		aResponseEvent.getArgs().setString("uuid", lUUID);
 		aResponseEvent.getArgs().setString("username", aEvent.getUsername());
 		aResponseEvent.getArgs().setList("roles", Util.parseStringArrayToList(lRoles.split(" ")));
-		aResponseEvent.setMessage("Login process has finished successfully!");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logon successfully!");
@@ -121,8 +120,6 @@ public class AuthPlugIn extends EventModelPlugIn {
 
 		//Cleaning the session
 		getSession(aEvent.getConnector()).clear();
-
-		aResponseEvent.setMessage("<< Logout process has finished successfully!");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logoff successfully!");
