@@ -28,7 +28,6 @@ import org.jwebsocket.config.ConfigHandler;
 public class LoggingConfigHandler implements ConfigHandler {
 
 	private static final String ELEMENT_LOG4J = "log4j";
-	private static final String CONFIG_FILE = "config";
 	private static final String RELOAD_DELAY = "autoreload";
 
 	/**
@@ -39,16 +38,12 @@ public class LoggingConfigHandler implements ConfigHandler {
 	@Override
 	public Config processConfig(XMLStreamReader aStreamReader)
 			throws XMLStreamException {
-		String lConfigFile = null;
 		Integer lReloadDelay = null;
 		while (aStreamReader.hasNext()) {
 			aStreamReader.next();
 			if (aStreamReader.isStartElement()) {
 				String elementName = aStreamReader.getLocalName();
-				if (elementName.equals(CONFIG_FILE)) {
-					aStreamReader.next();
-					lConfigFile = aStreamReader.getText();
-				} else if (elementName.equals(RELOAD_DELAY)) {
+				if (elementName.equals(RELOAD_DELAY)) {
 					aStreamReader.next();
 					lReloadDelay = Integer.parseInt(aStreamReader.getText());
 				} else {
@@ -62,6 +57,6 @@ public class LoggingConfigHandler implements ConfigHandler {
 				}
 			}
 		}
-		return new LoggingConfig(lConfigFile, lReloadDelay);
+		return new LoggingConfig(lReloadDelay);
 	}
 }

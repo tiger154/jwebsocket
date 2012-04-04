@@ -57,7 +57,6 @@ public class JWebSocketSubSystemSample {
 
 		// initialize the logging system
 		LoggingConfig lLoggingConfig = new LoggingConfig(
-				"log4j.xml", // config file, overrides above settings!
 				20000 // reload delay
 				);
 		Logging.initLogs(lLoggingConfig);

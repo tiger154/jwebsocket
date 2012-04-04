@@ -21,6 +21,7 @@ import java.util.Random;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
+import org.xeustechnologies.jcl.logging.JclRepositorySelector;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -57,7 +58,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  */
 public class SystemPlugIn extends TokenPlugIn {
 
-	private static Logger mLog; //  = Logging.getLogger(SystemPlugIn.class);
+	private static Logger mLog = Logger.getLogger(SystemPlugIn.class);
 	// specify name space for system plug-in
 	private static final String NS_SYSTEM = JWebSocketServerConstants.NS_BASE + ".plugins.system";
 	// specify token types processed by system plug-in
@@ -117,11 +118,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	 */
 	public static final String IS_AUTHENTICATED = "$is_authenticated";
 	private static ServerXmlBeanFactory mBeanFactory;
-/*
-	static {
-		mLog = Logging.addLogger(SystemPlugIn.class);
-	}
-*/
+
 	/**
 	 * Constructor with configuration object
 	 * 
@@ -129,13 +126,12 @@ public class SystemPlugIn extends TokenPlugIn {
 	 */
 	public SystemPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
-		mLog = Logging.getLogger(SystemPlugIn.class);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating system plug-in...");
 		}
 		// specify default name space for system plugin
 		this.setNamespace(NS_SYSTEM);
-		mGetSettings();
+ 		mGetSettings();
 
 		try {
 			mBeanFactory = getConfigBeanFactory();
