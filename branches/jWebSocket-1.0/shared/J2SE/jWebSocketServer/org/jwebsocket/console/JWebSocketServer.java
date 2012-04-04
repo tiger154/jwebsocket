@@ -38,7 +38,7 @@ public class JWebSocketServer {
 
 		try {
 			// start the jWebSocket Server
-			JWebSocketFactory.start();
+ 			JWebSocketFactory.start();
 
 			// run server until shut down request
 			JWebSocketFactory.run();

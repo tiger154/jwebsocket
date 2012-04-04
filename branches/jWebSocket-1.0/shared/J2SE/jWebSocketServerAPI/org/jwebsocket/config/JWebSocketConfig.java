@@ -27,9 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import static org.jwebsocket.config.JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
 import static org.jwebsocket.config.JWebSocketServerConstants.DEFAULT_INSTALLATION;
@@ -52,8 +50,7 @@ import org.springframework.core.io.Resource;
  */
 public class JWebSocketConfig implements Config {
 
-	// DON'T SET LOGGER HERE! NEEDS TO BE INITIALIZED FIRST!
-	private static Logger mLog = null;
+	private static Logger mLog = Logging.addLogger(JWebSocketConfig.class);;
 	private final String mInstallation;
 	private final String mNodeId;
 	private final String mProtocol;
@@ -74,10 +71,6 @@ public class JWebSocketConfig implements Config {
 	private static String mBootstrapPath = null;
 	private static String mJWebSocketHome = null;
 	private static boolean mIsWebApp = false;
-
-	static {
-		Logging.addLogger(JWebSocketConfig.class);
-	}
 
 	/**
 	 * @return the mClassLoader
@@ -205,6 +198,14 @@ public class JWebSocketConfig implements Config {
 			mJWebSocketHome = "";
 		}
 
+		adjustJWebSocketHome();
+		System.setProperty(
+				JWebSocketServerConstants.JWEBSOCKET_HOME, mJWebSocketHome);
+
+		return mJWebSocketHome;
+	}
+
+	public static String adjustJWebSocketHome() {
 		if (!mJWebSocketHome.isEmpty()) {
 			// replace potential backslashes by normal slashes to be accepted in URLs
 			mJWebSocketHome = mJWebSocketHome.replace('\\', '/');
@@ -214,13 +215,10 @@ public class JWebSocketConfig implements Config {
 				mJWebSocketHome += lFileSep;
 			}
 		}
-
-		System.setProperty(
-				JWebSocketServerConstants.JWEBSOCKET_HOME, mJWebSocketHome);
-
 		return mJWebSocketHome;
 	}
-
+	
+	
 	/**
 	 *
 	 * @return
@@ -316,8 +314,10 @@ public class JWebSocketConfig implements Config {
 						mBootstrapPath = aArgs[lIdx + 1];
 					} else if ("-home".equals(aArgs[lIdx])) {
 						mJWebSocketHome = aArgs[lIdx + 1];
-						System.out.println(JWebSocketServerConstants.JWEBSOCKET_HOME
-								+ ": Using command-line argument "
+						// check trailing backslash
+						adjustJWebSocketHome();
+						System.out.println(
+								"Using command-line argument -home "
 								+ mJWebSocketHome);
 					}
 				}
@@ -335,6 +335,19 @@ public class JWebSocketConfig implements Config {
 		if (null == mBootstrapPath) {
 			mBootstrapPath = findBootstrapPath();
 		}
+
+		try {
+			String lLog4JPath = mJWebSocketHome + "conf/log4j.xml";
+			DOMConfigurator.configure(lLog4JPath);
+			System.setProperty("log4j.ignoreTCL", "true");
+			System.setProperty("log4j.configuration", lLog4JPath);
+			mLog = Logger.getLogger(JWebSocketConfig.class);
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Console-Mode: Logs successfully configured by '" + lLog4JPath + "'.");
+			}
+		} catch (Exception lEx) {
+			System.out.println(lEx.getClass().getSimpleName() + " configuring logs: " + lEx.getMessage());
+		}
 	}
 
 	/**
@@ -342,19 +355,16 @@ public class JWebSocketConfig implements Config {
 	 */
 	public static void initForWebApp(ServletContext aContext) {
 		mIsWebApp = true;
-		mLog = Logging.getLogger(JWebSocketConfig.class);
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Initializing WebApp-Mode...");
-		}
 		try {
-			String lWebAppPath = aContext.getRealPath("/");
-			lWebAppPath += "WEB-INF/classes/conf/log4j.xml";
+			String lLog4JPath = aContext.getRealPath("/");
+			lLog4JPath += "WEB-INF/classes/conf/log4j.xml";
 			// System.setProperty("log4j.configuration", "/conf/log4j.xml");
 			// PropertyConfigurator.configure(lWebAppPath);
-			// DOMConfigurator.configure(lWebAppPath);
+			DOMConfigurator.configure(lLog4JPath);
 			// Logger.getRootLogger().setLevel(Level.INFO);
+			mLog = Logger.getLogger(JWebSocketConfig.class);
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Logs successfully configured by '" + lWebAppPath + "'.");
+				mLog.debug("WebApp-Mode: Logs successfully configured by '" + lLog4JPath + "'.");
 			}
 		} catch (Exception lEx) {
 			System.out.println(lEx.getClass().getSimpleName() + " configuring logs: " + lEx.getMessage());

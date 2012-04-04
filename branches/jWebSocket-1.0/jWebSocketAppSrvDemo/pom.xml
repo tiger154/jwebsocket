@@ -49,20 +49,11 @@
 							</excludes>
 						</resource>
 						<resource>
-							<targetPath>WEB-INF/classes</targetPath>						
+							<targetPath>WEB-INF/classes/conf</targetPath>						
 							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
 							<includes>
 								<include>**/log4j.xml</include>
 							</includes>							
-						</resource>
-						<resource>
-							<targetPath>WEB-INF/classes/conf</targetPath>						
-							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
-							<!--
-							<excludes>
-								<exclude>**/log4j.xml</exclude>
-							</excludes>							
-							-->
 						</resource>
 						<!-- put all jWebSocket jars into the lib folder too, to be in the classpath -->
 						<resource>
@@ -76,9 +67,11 @@
 					</webResources>
 
 					<!-- if you want to create a self-sufficient war comment out the following directive -->
+					<!--
 					<packagingExcludes>
 						**/*.jar
 					</packagingExcludes>
+					-->
 
 				</configuration>
 			</plugin>

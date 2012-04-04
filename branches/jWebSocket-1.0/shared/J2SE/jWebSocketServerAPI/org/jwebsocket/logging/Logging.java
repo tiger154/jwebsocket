@@ -16,11 +16,7 @@
 package org.jwebsocket.logging;
 
 import javolution.util.FastMap;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.xml.LoggingConfig;
 
@@ -53,84 +49,14 @@ public class Logging {
 	 * Pattern for jWebSocket log file.
 	 */
 	private static String mPattern = "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p - %C{1}: %m%n";
-	/**
-	 * buffer size if write cache for logs is activated (recommended) buffer
-	 * size = 0 means no write cache.
-	 */
-	private static int mBuffersize = 8096; // 8K is log4j default
-	private static int mLogTarget = CONSOLE; // ROLLING_FILE;
-	private static String mConfigFile = null;
 	private static int mReloadDelay = 20000;
-	private final static int MIN_RELOAD_DELAY = 5000;
-	private static boolean mSettingsLoaded = false;
 
 	private static String getLogsFolderPath(String aFileName) {
-
 		// try to obtain JWEBSOCKET_HOME environment variable
 		String lFileSep = System.getProperty("file.separator");
-		/*
-		 * String lWebSocketHome =
-		 * System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME); String
-		 * lFileSep = System.getProperty("file.separator"); String
-		 * lWebSocketLogs = null; if (lWebSocketHome != null) { // append
-		 * trailing slash if needed if (!lWebSocketHome.endsWith(lFileSep)) {
-		 * lWebSocketHome += lFileSep; } // logs are located in
-		 * %JWEBSOCKET_HOME%/logs lWebSocketLogs = lWebSocketHome + "logs" +
-		 * lFileSep + aFileName; }
-		 */
-
 		String lWebSocketLogs = JWebSocketConfig.getJWebSocketHome()
 				+ "logs" + lFileSep + aFileName;
-
-		/*
-		 * if (lWebSocketLogs == null) { // try to obtain CATALINA_HOME
-		 * environment variable String lWebSocketHome =
-		 * System.getenv("CATALINA_HOME"); if (lWebSocketHome != null) { //
-		 * append trailing slash if needed if
-		 * (!lWebSocketHome.endsWith(lFileSep)) { lWebSocketHome += lFileSep; }
-		 * // logs are located in %CATALINA_HOME%/logs lWebSocketLogs =
-		 * lWebSocketHome + "logs" + lFileSep + aFileName; } }
-		 */
 		return lWebSocketLogs;
-	}
-
-	/**
-	 * Initializes the Apache log4j system to produce the desired logging
-	 * output.
-	 *
-	 * @param aLogLevel one of the values TRACE, DEBUG, INFO, WARN, ERROR or
-	 * FATAL.
-	 *
-	 */
-	private static void checkLogAppender() {
-
-		if (!mSettingsLoaded
-				&& !JWebSocketConfig.isLoadConfigFromResource()) {
-			/*
-			 * mConfigFile =
-			 * "C:/svn/jWebSocketDev/branches/jWebSocket-1.0/jWebSocketAppServer/target/jWebSocketAppServer-1.0/WEB-INF/classes/conf/log4j.xml";
-			 */
-
-			String lLog4JConfigFile = JWebSocketConfig.expandEnvAndJWebSocketVars(mConfigFile);
-
-			/*
-			 * String lConfigXml = null; try { lConfigXml =
-			 * FileUtils.readFileToString(new File(lLog4JConfigFile)); } catch
-			 * (IOException ex) { System.out.println("Logs: " + lLog4JConfigFile
-			 * + "\nEXCEPTION!"); }
-			 * System.out.println("=============================");
-			 * System.out.println("Logs: " + lLog4JConfigFile + "\n" +
-			 * lLog4JConfigFile);
-			 * System.out.println("=============================");
-			 */
-			if (mReloadDelay >= MIN_RELOAD_DELAY) {
-				DOMConfigurator.configureAndWatch(lLog4JConfigFile, mReloadDelay);
-			} else {
-				DOMConfigurator.configure(lLog4JConfigFile);
-			}
-			// }	
-			mSettingsLoaded = true;
-		}
 	}
 
 	/**
@@ -139,21 +65,15 @@ public class Logging {
 	 *
 	 * @param aLogLevel
 	 */
-	public static void initLogs(String aConfigFile, Integer aReloadDelay) {
-		if (aConfigFile != null) {
-			mConfigFile = aConfigFile;
-		}
+	public static void initLogs(Integer aReloadDelay) {
 		if (aReloadDelay != null) {
 			mReloadDelay = aReloadDelay;
 		}
-		checkLogAppender();
 	}
 
 	public static void initLogs(LoggingConfig aLoggingConfig) {
 		if (aLoggingConfig != null) {
-			initLogs(
-					aLoggingConfig.getConfigFile(),
-					aLoggingConfig.getReloadDelay());
+			initLogs(aLoggingConfig.getReloadDelay());
 		}
 	}
 
@@ -200,18 +120,32 @@ public class Logging {
 	 * @return Logger the new logger for the given class.
 	 */
 	public static Logger getLogger(Class aClass) {
-		checkLogAppender();
-
 		// if a logger for a certain class is already created use it
 		Logger lLogger = (null != mLoggers ? mLoggers.get(aClass) : null);
 		// if there is no cached one, create a new one
 		if (null == lLogger) {
 			lLogger = Logger.getLogger(aClass);
 		}
+		// otherwise the logger should be initialized properly already
+		// by the configuration file
+		return lLogger;
+	}
+
+	public static Logger getLogger(String aClassName) {
+		// if a logger for a certain class is already created use it
+		Logger lLogger = (null != mLoggers ? mLoggers.get(aClassName) : null);
+		// if there is no cached one, create a new one
+		if (null == lLogger) {
+			lLogger = Logger.getLogger(aClassName);
+		}
 
 		// otherwise the logger should be initialized properly already
 		// by the configuration file
 		return lLogger;
+	}
+
+	public static Logger getRootLogger() {
+		return Logger.getRootLogger();
 	}
 
 	public static Logger addLogger(Class aClass) {

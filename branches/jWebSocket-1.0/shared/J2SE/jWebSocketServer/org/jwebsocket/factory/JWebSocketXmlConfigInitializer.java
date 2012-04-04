@@ -36,12 +36,9 @@ import org.jwebsocket.logging.Logging;
  */
 public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitializer {
 
-	private static Logger mLog = null;
+	private static Logger mLog = Logging.getLogger(JWebSocketXmlConfigInitializer.class);
 	private final static JWebSocketJarClassLoader mClassLoader = new JWebSocketJarClassLoader();
 
-	static {
-		mLog = Logging.addLogger(JWebSocketXmlConfigInitializer.class);
-	}
 
 	/**
 	 * private constructor
@@ -245,6 +242,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 									+ lPlugInConfig.getName()
 									+ "' from '" + lJarFilePath + "'...");
 						}
+						// lPlugInClass = (Class<WebSocketPlugIn>) mClassLoader.loadClass(lPlugInConfig.getName());
 						lPlugInClass = (Class<WebSocketPlugIn>) mClassLoader.loadClass(lPlugInConfig.getName());
 					}
 				}
@@ -256,22 +254,25 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 					lPlugInConstructor =
 							lPlugInClass.getConstructor(PluginConfiguration.class);
 					if (lPlugInConstructor != null) {
+
+						// Logging.addLogger(lPlugInClass);
+						lPlugInConstructor.setAccessible(true);
+						lPlugIn = lPlugInConstructor.newInstance(lPlugInConfig);
 						/*
 						ClassLoader tccl = Thread.currentThread().getContextClassLoader();
 						try {
 							Thread.currentThread().setContextClassLoader(null);
-							Logging.addLogger(lPlugInClass);
+							lPlugInConstructor.setAccessible(true);
+							lPlugIn = lPlugInConstructor.newInstance(lPlugInConfig);
 						} finally {
 							Thread.currentThread().setContextClassLoader(tccl);
 						}
 						*/
-						lPlugInConstructor.setAccessible(true);
-						lPlugIn = lPlugInConstructor.newInstance(lPlugInConfig);
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Plug-in '" + lPlugInConfig.getId()
 									+ "' successfully instantiated.");
 						}
-						
+
 						// now add the plugin to plugin map based on server ids
 						for (String lServerId : lPlugInConfig.getServers()) {
 							List<WebSocketPlugIn> lPlugIns = lPlugInMap.get(lServerId);

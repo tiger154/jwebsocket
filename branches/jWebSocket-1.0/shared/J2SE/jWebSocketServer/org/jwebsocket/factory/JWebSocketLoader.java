@@ -21,11 +21,13 @@ import java.io.InputStream;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketInitializer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.config.xml.JWebSocketConfigHandler;
 import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.security.SecurityFactory;
 
 /**
@@ -37,8 +39,8 @@ import org.jwebsocket.security.SecurityFactory;
  */
 public final class JWebSocketLoader {
 
-	// We cannot use the logging subsystem here because its config needs to be
-	// loaded first!
+	private static Logger mLog = Logging.getLogger(JWebSocketLoader.class);
+	;
 	private JWebSocketConfigHandler mConfigHandler = new JWebSocketConfigHandler();
 
 	/**
@@ -53,7 +55,9 @@ public final class JWebSocketLoader {
 		String lConfigPath;
 		if (aConfigPath != null && !"".equals(aConfigPath)) {
 			lConfigPath = aConfigPath;
-			System.out.println("Initializing: Using config file '" + aConfigPath + "'...");
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Initializing: Using config file '" + aConfigPath + "'...");
+			}
 		} else {
 			lConfigPath = JWebSocketConfig.getConfigPath();
 		}
@@ -88,10 +92,14 @@ public final class JWebSocketLoader {
 		try {
 			InputStream lIS;
 			if (JWebSocketConfig.isLoadConfigFromResource()) {
-				System.out.println("Loading configuration from resource '" + aConfigPath + "...");
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Loading configuration from resource '" + aConfigPath + "...");
+				}
 				lIS = this.getClass().getResourceAsStream("/" + aConfigPath);
 			} else {
-				System.out.println("Loading configuration from file '" + aConfigPath + "...");
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Loading configuration from file '" + aConfigPath + "...");
+				}
 				File lFile = new File(aConfigPath);
 				lIS = new FileInputStream(lFile);
 			}
@@ -99,7 +107,9 @@ public final class JWebSocketLoader {
 			XMLStreamReader lStreamReader = null;
 			lStreamReader = lFactory.createXMLStreamReader(lIS);
 			lConfig = (JWebSocketConfig) mConfigHandler.processConfig(lStreamReader);
-			System.out.println("Configuration successfully loaded.");
+			if (mLog.isInfoEnabled()) {
+				mLog.info("Configuration successfully loaded from '" + aConfigPath + "'.");
+			}
 		} catch (XMLStreamException lEx) {
 			lMsg = lEx.getClass().getSimpleName() + " occurred while creating XML stream (" + aConfigPath + "): " + lEx.getMessage() + ".";
 			throw new WebSocketException(lMsg);

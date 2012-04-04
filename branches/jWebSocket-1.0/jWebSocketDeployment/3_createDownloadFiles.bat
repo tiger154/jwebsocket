@@ -162,8 +162,8 @@ xcopy %libs%jackson-mapper-asl-1.9.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jcl-core-2.2.2.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jdom-1.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%json-2-RELEASE65.jar %tempdir%libs\ /s /i /y
-xcopy %libs%slf4j-api-1.5.11.jar %tempdir%libs\ /s /i /y
-xcopy %libs%slf4j-log4j12-1.5.11.jar %tempdir%libs\ /s /i /y
+rem xcopy %libs%slf4j-api-1.5.11.jar %tempdir%libs\ /s /i /y
+rem xcopy %libs%slf4j-log4j12-1.5.11.jar %tempdir%libs\ /s /i /y
 rem Smack XMPP API
 xcopy %libs%smack-3.1.0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%smackx-3.1.0.jar %tempdir%libs\ /s /i /y

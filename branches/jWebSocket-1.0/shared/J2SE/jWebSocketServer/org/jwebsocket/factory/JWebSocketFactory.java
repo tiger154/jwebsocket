@@ -40,16 +40,12 @@ import org.springframework.beans.factory.BeanFactory;
 public class JWebSocketFactory {
 
 	// don't instantiate logger here! first read args!
-	private static Logger mLog = null;
+	private static Logger mLog = Logging.addLogger(JWebSocketFactory.class);;
 	private static WebSocketEngine mEngine = null;
 	private static List<WebSocketServer> mServers = null;
 	private static TokenServer mTokenServer = null;
 	private static BeanFactory mBeanFactory;
 	private static JWebSocketJarClassLoader mClassLoader;
-
-	static {
-		Logging.addLogger(JWebSocketFactory.class);
-	}
 
 	/**
 	 *
@@ -94,6 +90,8 @@ public class JWebSocketFactory {
 	 */
 	public static void start(String aConfigPath, String aBootstrapPath) {
 
+		mLog = Logging.getLogger(JWebSocketFactory.class);
+
 		if (null == aConfigPath) {
 			aConfigPath = JWebSocketConfig.getConfigPath();
 		}
@@ -110,16 +108,16 @@ public class JWebSocketFactory {
 
 		// try to load bean from bootstrap
 		try {
-			System.out.println("Loading bootstrap '" + aBootstrapPath + "'...");
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Loading bootstrap '" + aBootstrapPath + "'...");
+			}
 			JWebSocketBeanFactory.load(aBootstrapPath, Thread.currentThread().getContextClassLoader());
-			System.out.println("Bootstrap '" + aBootstrapPath + "' successfully loaded.");
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Bootstrap '" + aBootstrapPath + "' successfully loaded.");
+			}
 		} catch (Exception lEx) {
-			if (mLog != null) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug(Logging.getSimpleExceptionMessage(lEx, "loading bootstrap."));
-				}
-			} else {
-				System.out.println(Logging.getSimpleExceptionMessage(lEx, "loading bootstrap."));
+			if (mLog.isDebugEnabled()) {
+				mLog.debug(Logging.getSimpleExceptionMessage(lEx, "loading bootstrap."));
 			}
 		}
 
@@ -135,7 +133,6 @@ public class JWebSocketFactory {
 			
 			lInitializer.initializeLogging();
 
-			mLog = Logging.getLogger(JWebSocketFactory.class);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Starting jWebSocket Server Sub System...");
 			}
@@ -243,12 +240,8 @@ public class JWebSocketFactory {
 				JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
 			}
 		} catch (WebSocketException lEx) {
-			if (mLog != null) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Exception during startup", lEx);
-				}
-			} else {
-				System.out.println(lEx.getClass().getSimpleName() + " during jWebSocket Server startup: " + lEx.getMessage());
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Exception during startup", lEx);
 			}
 			if (mLog != null && mLog.isInfoEnabled()) {
 				mLog.info("jWebSocketServer failed to start.");
