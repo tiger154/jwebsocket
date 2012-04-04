@@ -1,5 +1,6 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2010 jwebsocket.org
+//	jWebSocket - MemoryCacheStorage
+//  Copyright (c) 2010 jwebsocket.org
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -31,90 +32,90 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	class Element<V> {
 
-		private int expTime;
-		private Long insertionTime;
-		private V value;
+		private int mExpTime;
+		private Long mInsertionTime;
+		private V mValue;
 
 		public Element(V value, Long insertionTime, int expTime) {
-			this.expTime = expTime;
-			this.value = value;
-			this.insertionTime = insertionTime;
+			this.mExpTime = expTime;
+			this.mValue = value;
+			this.mInsertionTime = insertionTime;
 		}
 
 		public int getExpTime() {
-			return expTime;
+			return mExpTime;
 		}
 
 		public void setExpTime(int expTime) {
-			this.expTime = expTime;
+			this.mExpTime = expTime;
 		}
 
 		public V getValue() {
-			return value;
+			return mValue;
 		}
 
 		public void setValue(V value) {
-			this.value = value;
+			this.mValue = value;
 		}
 
 		public Long getInsertionTime() {
-			return insertionTime;
+			return mInsertionTime;
 		}
 
 		public void setInsertionTime(Long insertionTime) {
-			this.insertionTime = insertionTime;
+			this.mInsertionTime = insertionTime;
 		}
 	}
-	private static FastMap<String, FastMap> container = new FastMap<String, FastMap>();
-	private String name;
-	private FastMap<K, Element<V>> myMap;
+	private static FastMap<String, FastMap> mContainer = new FastMap<String, FastMap>();
+	private String mName;
+	private FastMap<K, Element<V>> mMap;
 
 	/**
 	 * Create a new MemoryStorage instance
-	 * @param name The name of the storage container
+	 * @param aName The name of the storage container
 	 * */
-	public MemoryCacheStorage(String name) {
-		this.name = name;
+	public MemoryCacheStorage(String aName) {
+		this.mName = aName;
 
 	}
 
 	public static FastMap<String, FastMap> getContainer() {
-		return container;
+		return mContainer;
 	}
 
 	@Override
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public synchronized void setName(String newName) throws Exception {
-		if (getContainer().containsKey(name)) {
-			FastMap value = getContainer().remove(name);
-			if (myMap != null) {
-				getContainer().put(newName, myMap);
+	public synchronized void setName(String aNewName) throws Exception {
+		if (getContainer().containsKey(mName)) {
+			FastMap value = getContainer().remove(mName);
+			if (mMap != null) {
+				getContainer().put(aNewName, mMap);
 			} else {
-				getContainer().put(newName, value);
+				getContainer().put(aNewName, value);
 			}
 		}
 
-		this.name = newName;
+		this.mName = aNewName;
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public Map<K, V> getAll(Collection<K> keys) {
-		FastMap<K, V> map = new FastMap<K, V>();
-		for (K key : keys) {
-			map.put((K) key, get((K) key));
+	public Map<K, V> getAll(Collection<K> aKeys) {
+		FastMap<K, V> lMap = new FastMap<K, V>();
+		for (K lKey : aKeys) {
+			lMap.put((K) lKey, get((K) lKey));
 		}
 
-		return map;
+		return lMap;
 	}
 
 	/**
@@ -122,11 +123,11 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public void initialize() throws Exception {
-		if (!getContainer().containsKey(name)) {
-			getContainer().put(name, new FastMap<K, Element<V>>());
+		if (!getContainer().containsKey(mName)) {
+			getContainer().put(mName, new FastMap<K, Element<V>>());
 		}
 
-		myMap = getContainer().get(name);
+		mMap = getContainer().get(mName);
 	}
 
 	/**
@@ -141,7 +142,7 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public int size() {
-		return myMap.size();
+		return mMap.size();
 	}
 
 	/**
@@ -149,7 +150,7 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public boolean isEmpty() {
-		if (myMap.isEmpty()) {
+		if (mMap.isEmpty()) {
 			return true;
 		}
 		return false;
@@ -159,9 +160,9 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public boolean containsKey(Object key) {
-		if (myMap.containsKey((String) key)) {
-			if (isValid((K)key, myMap.get(key))){
+	public boolean containsKey(Object aKey) {
+		if (mMap.containsKey((String) aKey)) {
+			if (isValid((K)aKey, mMap.get(aKey))){
 				return true;
 			}
 		}
@@ -173,17 +174,17 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 * @param r The Element object
 	 * @return TRUE if the element is not expired, FALSE otherwise
 	 */
-	private boolean isValid(K key, Element<V> e) {
-		Integer expTime = e.getExpTime();
-		if (expTime < 1) {
+	private boolean isValid(K aKey, Element<V> aElement) {
+		Integer lExpTime = aElement.getExpTime();
+		if (lExpTime < 1) {
 			return true;
 		}
 
-		if (e.getInsertionTime() + expTime >= System.currentTimeMillis() / 1000) {
+		if (aElement.getInsertionTime() + lExpTime >= System.currentTimeMillis() / 1000) {
 			return true;
 		}
 		//Useful to keep the collection up to date with only non-expired values
-		myMap.remove(key);
+		mMap.remove(aKey);
 
 		return false;
 	}
@@ -192,12 +193,12 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public boolean containsValue(Object value) {
-		Iterator<K> keys = myMap.keySet().iterator();
-		while (keys.hasNext()){
-			K key = keys.next();
-			Element<V> e = myMap.get(key);
-			if (e.getValue().equals(value) && isValid((K)key, e)){
+	public boolean containsValue(Object aValue) {
+		Iterator<K> lKeys = mMap.keySet().iterator();
+		while (lKeys.hasNext()){
+			K lKey = lKeys.next();
+			Element<V> lElement = mMap.get(lKey);
+			if (lElement.getValue().equals(aValue) && isValid((K)lKey, lElement)){
 				return true;
 			}
 		}
@@ -208,10 +209,10 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public V get(Object key) {
-		Element<V> e = myMap.get(key);
-		if (e != null && isValid((K)key, e)){
-			return e.getValue();
+	public V get(Object aKey) {
+		Element<V> lElement = mMap.get(aKey);
+		if (lElement != null && isValid((K)aKey, lElement)){
+			return lElement.getValue();
 		}
 		
 		return null;
@@ -221,19 +222,19 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public V put(K key, V value) {
-		return put(key, value, 0);
+	public V put(K aKey, V aValue) {
+		return put(aKey, aValue, 0);
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public V put(K key, V value, int expTime) {
-		Element<V> e = new Element<V>(value, (Long) (System.currentTimeMillis() / 1000), expTime);
-		myMap.put(key, e);
+	public V put(K aKey, V aValue, int aExpTime) {
+		Element<V> lElement = new Element<V>(aValue, (Long) (System.currentTimeMillis() / 1000), aExpTime);
+		mMap.put(aKey, lElement);
 		
-		return e.getValue();
+		return lElement.getValue();
 	}
 
 	/**
@@ -243,19 +244,19 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 * @return  
 	 */
 	@Override
-	public V remove(Object key) {
-		return (V) myMap.remove(key).getValue();
+	public V remove(Object aKey) {
+		return (V) mMap.remove(aKey).getValue();
 	}
 
 	/**
 	 * {@inheritDoc
 	 */
 	@Override
-	public void putAll(Map<? extends K, ? extends V> m) {
-		Iterator keys = m.keySet().iterator();
+	public void putAll(Map<? extends K, ? extends V> aMap) {
+		Iterator keys = aMap.keySet().iterator();
 		while (keys.hasNext()){
 			K key = (K)keys.next();
-			put(key, m.get(key));
+			put(key, aMap.get(key));
 		}
 	}
 
@@ -264,7 +265,7 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public void clear() {
-		myMap.clear();
+		mMap.clear();
 	}
 
 	/**
@@ -272,17 +273,17 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public Set<K> keySet() {
-		Set<K> result = new FastSet<K>();
-		Iterator<K> keys = myMap.keySet().iterator();
-		while (keys.hasNext()){
-			K key = keys.next();
-			Element<V> e = myMap.get(key);
-			if (isValid(key, e)){
-				result.add(key);
+		Set<K> lKeyset = new FastSet<K>();
+		Iterator<K> lKeys = mMap.keySet().iterator();
+		while (lKeys.hasNext()){
+			K lKey = lKeys.next();
+			Element<V> lElement = mMap.get(lKey);
+			if (isValid(lKey, lElement)){
+				lKeyset.add(lKey);
 			}
 		}
 		
-		return result;
+		return lKeyset;
 	}
 
 	/**
@@ -290,15 +291,15 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	@Override
 	public Collection<V> values() {
-		Set<V> result = new FastSet<V>();
-		Set<K> keys = keySet();
+		Set<V> lValues = new FastSet<V>();
+		Set<K> lKeys = keySet();
 		
-		if (!keys.isEmpty())
-		for (K k: keys){
-			result.add(myMap.get(k).getValue());
+		if (!lKeys.isEmpty())
+		for (K k: lKeys){
+			lValues.add(mMap.get(k).getValue());
 		}
 		
-		return result;
+		return lValues;
 	}
 
 	/**
