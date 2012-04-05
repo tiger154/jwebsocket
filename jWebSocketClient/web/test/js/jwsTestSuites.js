@@ -72,7 +72,7 @@ function runEventsSuite() {
 			//Creating the filter chain
 			var securityFilter = new jws.SecurityFilter();
 			securityFilter.OnNotAuthorized = function(aEvent){
-			//Not Authorized!
+			//Not Authorized global callback!
 			}
 			
 			var cacheFilter = new jws.CacheFilter();
@@ -106,7 +106,7 @@ function runEventsSuite() {
 	});
 }
 
-function runFullTestSuite() {
+function runFullTestSuite(aArgs) {
 
 	/*
 	debugger;
@@ -117,51 +117,71 @@ function runFullTestSuite() {
    
 	describe( "jWebSocket Test Suite", function () {
 		
-		var lTestSSL = false;
-		
-		// open connections for admin and guest
-		jws.Tests.testOpenSharedAdminConn();
-		jws.Tests.testOpenSharedGuestConn();
-		if( lTestSSL ) {
-			jws.Tests.testOpenSharedAdminConnSSL();
-			jws.Tests.testOpenSharedGuestConnSSL();
+		if (aArgs.openConns){
+			var lTestSSL = false;
+			// open connections for admin and guest
+			jws.Tests.testOpenSharedAdminConn();
+			jws.Tests.testOpenSharedGuestConn();
+			if( lTestSSL ) {
+				jws.Tests.testOpenSharedAdminConnSSL();
+				jws.Tests.testOpenSharedGuestConnSSL();
+			}
 		}
 		
-		// run load tests
-		jws.tests.Load.runSuite();
+		if (aArgs.load){
+			// run load tests
+			jws.tests.Load.runSuite();
+		}
 		
 		// run test suites for the various plug-ins
-		jws.tests.System.runSuite();
-		jws.tests.FileSystem.runSuite();
+		if (aArgs.systemPlugIn){
+			jws.tests.System.runSuite();
+		}
+		if (aArgs.filesystemPlugIn){
+			jws.tests.FileSystem.runSuite();
+		}
 		// jws.tests.Logging.runSuite();
-		jws.tests.AutomatedAPI.runSuite();
-		
-		// run RPC tests
-		jws.tests.RPC.runSuite();
-
+		if (aArgs.automatedAPIPlugIn){
+			jws.tests.AutomatedAPI.runSuite();
+		}
+		if (aArgs.rpcPlugIn){
+			// run RPC tests
+			jws.tests.RPC.runSuite();
+		}
 		// run JMS tests
 		// jws.tests.JMS.runSuite();
    
-		// run Channel tests
-		jws.tests.Channels.runSuite();
-	
-		// run Streaming tests
-		jws.tests.Streaming.runSuite();
+		if (aArgs.channelsPlugIn){
+			// run Channel tests
+			jws.tests.Channels.runSuite();
+		}
 		
+		if (aArgs.streamingPlugIn){
+			// run Streaming tests
+			jws.tests.Streaming.runSuite();
+		}
 		// run JDBC tests
 		// jws.tests.JDBC.runSuite();
 		
-		// close connections for admin and guest
-		jws.Tests.testCloseSharedAdminConn();
-		jws.Tests.testCloseSharedGuestConn();
-		if( lTestSSL ) {
-			jws.Tests.testCloseSharedAdminConnSSL();
-			jws.Tests.testCloseSharedGuestConnSSL();
+		if (aArgs.closeConns){
+			// close connections for admin and guest
+			jws.Tests.testCloseSharedAdminConn();
+			jws.Tests.testCloseSharedGuestConn();
+			if( lTestSSL ) {
+				jws.Tests.testCloseSharedAdminConnSSL();
+				jws.Tests.testCloseSharedGuestConnSSL();
+			}
 		}
 		
-		//run IOC tests
-		jws.tests.ioc.runSuite();
-
+		if (aArgs.ioc){
+			//run IOC tests
+			jws.tests.ioc.runSuite();
+		}
+		
+		if (aArgs.events){
+			runEventsSuite();
+		}
+		
 		jasmine.DEFAULT_UPDATE_INTERVAL = lIntv;	
 	});
 }

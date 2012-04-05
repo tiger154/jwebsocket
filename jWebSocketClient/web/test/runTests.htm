@@ -3,18 +3,18 @@
 <html>
 	<head>
 		<title>jWebSocket - Test and Benchmark</title>
-		
+
 		<!-- jasmine test framework related files -->
 		<link rel="stylesheet" type="text/css" href="../lib/jasmine-1.0.2/jasmine.css">
 		<script type="text/javascript" src="../lib/jasmine-1.0.2/jasmine.js"></script>
 		<script type="text/javascript" src="../lib/jasmine-1.0.2/jasmine-html.js"></script>
-		
+
 		<!-- jWebSocket style sheet -->
 		<link rel="stylesheet" type="text/css" href="../res/css/jwebsocket.css">
-		
+
 		<!-- use bundle to check if all plug-ins are embedded in the bundle -->
 		<!--  <script type="text/javascript" src="../res/js/jWebSocket_Bundle.js"></script> -->
-		
+
 		<!-- also use minified version to check/validate obfuscator -->
 		<!-- <script type="text/javascript" src="../res/js/jWebSocket_Bundle_min.js"></script> -->
 
@@ -42,41 +42,41 @@
 		<script type="text/javascript" src="../res/js/jwsTwitterPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsXMPPPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsWorker.js"></script>
-		
+
 		<!-- shared test specs for opening and closing connections -->
 		<script type="text/javascript" src="js/jwsSharedTests.js"></script>
 		<!-- test specs for the system plug-in, system plug-in is integrated in jWebSocket.js -->
 		<script type="text/javascript" src="js/jwsSystemTests.js"></script>
-		
+
 		<!-- tests for the filesystem plug-in -->
 		<script type="text/javascript" src="js/jwsFilesystemTests.js"></script>
-		
+
 		<!-- tests for the logging plug-in -->
 		<script type="text/javascript" src="js/jwsLoggingTests.js"></script>
 
 		<!-- tests for the RPC plug-in -->
 		<script type="text/javascript" src="js/jwsRPCTests.js"></script>
-		
+
 		<!-- tests for the JDBC plug-in -->
 		<script type="text/javascript" src="js/jwsJDBCTests.js"></script>
 
 		<!-- tests for the JMS plug-in -->
 		<script type="text/javascript" src="js/jwsJMSTests.js"></script>
-		
+
 		<!-- tests for the Channel plug-in -->
 		<script type="text/javascript" src="js/jwsChannelTests.js"></script>
-		
+
 		<!-- tests for the Streaming plug-in -->
 		<script type="text/javascript" src="js/jwsStreamingTests.js"></script>
-		
+
 		<!-- tests for the Load tests -->
 		<script type="text/javascript" src="js/jwsLoadTests.js"></script>
-		
+
 		<script type="text/javascript" src="js/jwsAutomatedAPITests.js"></script>
-		
+
 		<!-- tests for the Dependency Injection Container -->
 		<script type="text/javascript" src="js/jwsIOC.js"></script>
-		
+
 		<!-- the central test suite code contains the various test suites -->
 		<script type="text/javascript" src="js/jwsTestSuites.js"></script>
 
@@ -95,45 +95,120 @@
 		</table>
 
 		<p>
-		<input class="sbtnDlg" id="sbtnManualTest" type="button" value="Programmatic" onclick="run('runFullTestSuite()');"
-				   title="Runs the manual (programmatic) test suite.">
-		<input class="sbtnDlg" id="sbtnBenchmarkTest" type="button" value="Benchmark" onclick="run('runBenchmarkSuite()');"
-				   title="Runs the benchmark suite.">
-		<input class="sbtnDlg" id="sbtnEventsTest" type="button" value="Events" onclick="run('runEventsSuite()');"
-				   title="Runs the Events Sample Application test suite.">
-		</p>
+		<table>
+			<tr>
+				<td>
+					<h3>Select test modules to be executed</h3>
+					<p>
+						<label><input id="openConns" type="checkbox" checked="checked"> Open connections for admin and guest</label>
+						<br>
+						<label><input id="streamingPlugIn" type="checkbox" checked="checked"> Streaming PlugIn</label>
+						<br>
+						<label><input id="channelsPlugIn" type="checkbox" checked="checked"> Channels PlugIn</label>
+						<br>
+						<label><input id="rpcPlugIn" type="checkbox" checked="checked"> RPC PlugIn</label>
+						<br>
+						<label><input id="automatedAPIPlugIn" type="checkbox" checked="checked"> Automated API PlugIn</label>
+						<br>
+						<label><input id="filesystemPlugIn" type="checkbox" checked="checked"> File System PlugIn</label>
+						<br>
+						<label><input id="systemPlugIn" type="checkbox" checked="checked"> System PlugIn</label>
+						<br>
+						<label><input id="load" type="checkbox" checked="checked"> Load</label>
+						<br>
+						<label><input id="closeConns" type="checkbox" checked="checked"> Close connections for admin and guest</label>
+						<br>
+						<label><input id="ioc" type="checkbox" checked="checked"> IOC Container</label>
+						<br>
+						<label><input id="events" type="checkbox" checked="checked"> Events Sample Application</label>
+					</p>
+				</td>
+				<td><input class="sbtnDlg" id="sbtnBenchmarkTest" type="button" value="Benchmark" onclick="run({action:'runBenchmarkSuite'});"
+						   title="Runs the benchmark suite."></td>
+			</tr>
+			<tr>
+				<td>
+					<input class="sbtnDlg" id="sbtnManualTest" type="button" value="Programmatic" onclick="run({action:'runFullTestSuite'});"
+						   title="Runs the manual (programmatic) test suite.">
+				</td>
+			</tr>
+		</table>
+	</p>
 
-		<script type="text/javascript">
-			function getURL() {
-				var lHref = location.href;
-				var lIdx = lHref.indexOf( "?" );
-				if( lIdx > 0 ) {
-					lHref = lHref.substring( 0, lIdx );
-				}
-				return lHref;
+	<script type="text/javascript">
+		function getURL() {
+			var lHref = location.href;
+			var lIdx = lHref.indexOf( "?" );
+			if( lIdx > 0 ) {
+				lHref = lHref.substring( 0, lIdx );
 			}
+			return lHref;
+		}
 
-			function run( aCall ) {
-				location.href = getURL() + "?" + aCall;
+		function run( aCall ) {
+			if ( "runFullTestSuite" == aCall.action ){
+				aCall.args = {
+					openConns: (jws.$("openConns").checked)? true : false,
+					streamingPlugIn: (jws.$("streamingPlugIn").checked)? true : false,
+					channelsPlugIn: (jws.$("channelsPlugIn").checked)? true : false,
+					rpcPlugIn: (jws.$("rpcPlugIn").checked)? true : false,
+					automatedAPIPlugIn: (jws.$("automatedAPIPlugIn").checked)? true : false,
+					filesystemPlugIn: (jws.$("filesystemPlugIn").checked)? true : false,
+					systemPlugIn: (jws.$("systemPlugIn").checked)? true : false,
+					load: (jws.$("load").checked)? true : false,
+					closeConns: (jws.$("closeConns").checked)? true : false,
+					ioc: (jws.$("ioc").checked)? true : false,
+					events: (jws.$("events").checked)? true : false
+				};
+				console.log(aCall);
 			}
+			location.href = getURL() + "?" + JSON.stringify(aCall);
+		}
 
-			var lSuite = location.search;
-			if( lSuite ) {
-				lSuite = lSuite.substr( 1 );
-				// console.log("running " + lSuite + "...");
-				eval( lSuite );
+		var path = location.search.substr(1);
+		var request = null;
+		if (path){
+			request = JSON.parse(path.split("%22").join("\""));
+		}
+		if( request && request["action"] ) {
+			if ("runFullTestSuite" == request["action"] && !request["args"]){
+				request["args"] = {
+					openConns: true,
+					streamingPlugIn: true,
+					channelsPlugIn: true,
+					rpcPlugIn: true,
+					automatedAPIPlugIn: true,
+					filesystemPlugIn: true,
+					systemPlugIn: true,
+					load: true,
+					closeConns: true,
+					ioc: true,
+					events: true
+				};
+			}
+			
+			//Getting the function
+			request["action"] = eval(request["action"]);
+			
+			//Calling the tests
+			request["action"](request["args"]);
 				
-				// jws.console.setActive( true );
-				// jws.console.setLevel( jws.console.ALL );
-				jws.TestPlugIn.execTests();
+			// jws.console.setActive( true );
+			// jws.console.setLevel( jws.console.ALL );
+			jws.TestPlugIn.execTests();
+			
+			//Setting up checkboxes state
+			for (var lCheckbox in request["args"]){
+				jws.$(lCheckbox).checked = request["args"][lCheckbox];
 			}
+		}
 
-			if( jws.browserSupportsWebSockets() ) {
+		if( jws.browserSupportsWebSockets() ) {
 
-			} else {
-				var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-				alert( lMsg );
-			}
-		</script>
-	</body>
+		} else {
+			var lMsg = jws.MSG_WS_NOT_SUPPORTED;
+			alert( lMsg );
+		}
+	</script>
+</body>
 </html>
