@@ -35,7 +35,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class JettyEngine extends BaseEngine {
 
-	private static Logger mLog = Logging.getLogger(JettyEngine.class);
+	private static Logger mLog = Logging.getLogger();
 	private boolean mIsRunning = false;
 	private Server mJettyServer = null;
 

@@ -50,7 +50,7 @@ import org.springframework.core.io.Resource;
  */
 public class JWebSocketConfig implements Config {
 
-	private static Logger mLog = Logging.addLogger(JWebSocketConfig.class);;
+	private static Logger mLog = null;
 	private final String mInstallation;
 	private final String mNodeId;
 	private final String mProtocol;
@@ -72,6 +72,10 @@ public class JWebSocketConfig implements Config {
 	private static String mJWebSocketHome = null;
 	private static boolean mIsWebApp = false;
 
+	public static Logger getLogger() {
+		return mLog;
+	}
+	
 	/**
 	 * @return the mClassLoader
 	 */
@@ -339,8 +343,6 @@ public class JWebSocketConfig implements Config {
 		try {
 			String lLog4JPath = mJWebSocketHome + "conf/log4j.xml";
 			DOMConfigurator.configure(lLog4JPath);
-			System.setProperty("log4j.ignoreTCL", "true");
-			System.setProperty("log4j.configuration", lLog4JPath);
 			mLog = Logger.getLogger(JWebSocketConfig.class);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Console-Mode: Logs successfully configured by '" + lLog4JPath + "'.");
@@ -356,12 +358,17 @@ public class JWebSocketConfig implements Config {
 	public static void initForWebApp(ServletContext aContext) {
 		mIsWebApp = true;
 		try {
+			// get base folder of unpacked war file
 			String lLog4JPath = aContext.getRealPath("/");
+			// add a trailing slash if required
+			String lFileSep = "/";
+			if (!lLog4JPath.endsWith(lFileSep)) {
+				lLog4JPath += lFileSep;
+			}
+			// this path must match the pom.xml
 			lLog4JPath += "WEB-INF/classes/conf/log4j.xml";
-			// System.setProperty("log4j.configuration", "/conf/log4j.xml");
-			// PropertyConfigurator.configure(lWebAppPath);
+			// load the log4j xml config file
 			DOMConfigurator.configure(lLog4JPath);
-			// Logger.getRootLogger().setLevel(Level.INFO);
 			mLog = Logger.getLogger(JWebSocketConfig.class);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("WebApp-Mode: Logs successfully configured by '" + lLog4JPath + "'.");

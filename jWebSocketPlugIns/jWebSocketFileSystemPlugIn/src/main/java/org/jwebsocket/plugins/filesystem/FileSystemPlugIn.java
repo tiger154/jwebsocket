@@ -60,7 +60,7 @@ import org.jwebsocket.util.Tools;
  */
 public class FileSystemPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(FileSystemPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_FILESYSTEM = JWebSocketServerConstants.NS_BASE + ".plugins.filesystem";
 	// TODO: make these settings configurable

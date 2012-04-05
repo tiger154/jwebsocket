@@ -27,7 +27,7 @@ import org.jwebsocket.logging.Logging;
 public class PurgeCancelledWriterTasks extends TimerTask {
 
 	private Timer mTimer;
-	private static Logger mLog = Logging.getLogger(PurgeCancelledWriterTasks.class);
+	private static Logger mLog = Logging.getLogger();
 
 	public PurgeCancelledWriterTasks(Timer aTimer) {
 		mTimer = aTimer;

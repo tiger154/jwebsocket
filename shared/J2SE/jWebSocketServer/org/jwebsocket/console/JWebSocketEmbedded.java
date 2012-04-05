@@ -24,9 +24,9 @@ import org.jwebsocket.server.TokenServer;
  */
 public class JWebSocketEmbedded {
 
-	public static void main(String[] args) {
+	public static void main(String[] aArgs) {
 		// instantiate an embedded jWebSocket Server
-		JWebSocketSubSystemSample jWebSocketSubsystem = new JWebSocketSubSystemSample();
+		JWebSocketSubSystemSample jWebSocketSubsystem = new JWebSocketSubSystemSample(aArgs);
 		// instantiate an embedded listener class and add it to the subsystem
 		jWebSocketSubsystem.addListener(new JWebSocketTokenListenerSample());
 

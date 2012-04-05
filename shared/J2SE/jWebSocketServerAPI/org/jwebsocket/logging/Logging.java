@@ -15,7 +15,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.logging;
 
-import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.xml.LoggingConfig;
@@ -28,7 +27,6 @@ import org.jwebsocket.config.xml.LoggingConfig;
 public class Logging {
 
 	private static boolean mIsStackTraceEnabled = false;
-	private static FastMap<Object, Logger> mLoggers = new FastMap<Object, Logger>();
 	/**
 	 * Log output is send to the console (stdout).
 	 */
@@ -41,29 +39,13 @@ public class Logging {
 	 * Log output is send to a single file.
 	 */
 	public final static int SINGLE_FILE = 2;
-	/**
-	 * Name of jWebSocket log file.
-	 */
-	private static String mFilename = "jWebSocket.log";
-	/**
-	 * Pattern for jWebSocket log file.
-	 */
-	private static String mPattern = "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p - %C{1}: %m%n";
 	private static int mReloadDelay = 20000;
-
-	private static String getLogsFolderPath(String aFileName) {
-		// try to obtain JWEBSOCKET_HOME environment variable
-		String lFileSep = System.getProperty("file.separator");
-		String lWebSocketLogs = JWebSocketConfig.getJWebSocketHome()
-				+ "logs" + lFileSep + aFileName;
-		return lWebSocketLogs;
-	}
 
 	/**
 	 * Initializes the jWebSocket logging system with the given log level. All
 	 * subsequently instantiated class specific loggers will use this setting.
 	 *
-	 * @param aLogLevel
+	 * @param aReloadDelay
 	 */
 	public static void initLogs(Integer aReloadDelay) {
 		if (aReloadDelay != null) {
@@ -71,20 +53,37 @@ public class Logging {
 		}
 	}
 
+	/**
+	 *
+	 * @param aLoggingConfig
+	 */
 	public static void initLogs(LoggingConfig aLoggingConfig) {
 		if (aLoggingConfig != null) {
 			initLogs(aLoggingConfig.getReloadDelay());
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static boolean isStackTraceEnabled() {
 		return mIsStackTraceEnabled;
 	}
 
+	/**
+	 *
+	 * @param aEnabled
+	 */
 	public static void setStackTraceEnabled(boolean aEnabled) {
 		mIsStackTraceEnabled = aEnabled;
 	}
 
+	/**
+	 *
+	 * @param aThrowable
+	 * @return
+	 */
 	public static String getStackTraceAsString(Throwable aThrowable) {
 		final StringBuilder result = new StringBuilder("");
 		for (StackTraceElement lElement : aThrowable.getStackTrace()) {
@@ -94,11 +93,22 @@ public class Logging {
 		return result.toString();
 	}
 
+	/**
+	 *
+	 * @param aException
+	 * @return
+	 */
 	public static String getExceptionMessage(Exception aException) {
 		return aException.getMessage()
 				+ (mIsStackTraceEnabled ? "\n" + getStackTraceAsString(aException) : "");
 	}
 
+	/**
+	 *
+	 * @param aException
+	 * @param aHint
+	 * @return
+	 */
 	public static String getSimpleExceptionMessage(Exception aException, String aHint) {
 		return aException.getClass().getSimpleName()
 				+ " on " + aHint + ": "
@@ -120,37 +130,14 @@ public class Logging {
 	 * @return Logger the new logger for the given class.
 	 */
 	public static Logger getLogger(Class aClass) {
-		// if a logger for a certain class is already created use it
-		Logger lLogger = (null != mLoggers ? mLoggers.get(aClass) : null);
-		// if there is no cached one, create a new one
-		if (null == lLogger) {
-			lLogger = Logger.getLogger(aClass);
-		}
-		// otherwise the logger should be initialized properly already
-		// by the configuration file
-		return lLogger;
+		return JWebSocketConfig.getLogger();
 	}
 
-	public static Logger getLogger(String aClassName) {
-		// if a logger for a certain class is already created use it
-		Logger lLogger = (null != mLoggers ? mLoggers.get(aClassName) : null);
-		// if there is no cached one, create a new one
-		if (null == lLogger) {
-			lLogger = Logger.getLogger(aClassName);
-		}
-
-		// otherwise the logger should be initialized properly already
-		// by the configuration file
-		return lLogger;
-	}
-
-	public static Logger getRootLogger() {
-		return Logger.getRootLogger();
-	}
-
-	public static Logger addLogger(Class aClass) {
-		Logger lLogger = getLogger(aClass);
-		mLoggers.put(aClass, lLogger);
-		return lLogger;
+	/**
+	 *
+	 * @return
+	 */
+	public static Logger getLogger() {
+		return JWebSocketConfig.getLogger();
 	}
 }

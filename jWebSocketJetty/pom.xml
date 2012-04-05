@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" 
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>jWebSocket-Parent</artifactId>
@@ -38,7 +38,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.7</version>
 				<configuration>
-					<reportOutputDirectory>${project.build.directory}/../../javadocs/${project.name}</reportOutputDirectory> -->
+					<reportOutputDirectory>${project.build.directory}/../../javadocs/${project.name}</reportOutputDirectory>
 					<stylesheetfile>${project.build.directory}/../../javadocs/stylesheet.css</stylesheetfile>
 				</configuration>
 			</plugin>
@@ -49,15 +49,37 @@
 				<configuration>
 					<!-- a web.xml is mandatory here -->
 					<failOnMissingWebXml>true</failOnMissingWebXml>
+					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+					
 					<!-- use this particular file name for the .war -->
 					<warName>${project.name}-${project.version}</warName>
 					<!-- and put it to the desired output folder -->
 					<outputDirectory>${project.build.directory}/../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
 
-					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-
 					<!-- this puts the client web into the war -->
-					<warSourceDirectory>../jWebSocketClient/web</warSourceDirectory>
+					<!-- <warSourceDirectory>../jWebSocketClient/web</warSourceDirectory> -->
+
+					<webResources>
+						<!-- include the /conf folder into the war -->
+						<resource>
+							<targetPath>WEB-INF/classes/conf</targetPath>						
+							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
+						</resource>
+						<!-- include the web client into the war -->
+						<resource>
+              				<!-- this is relative to the pom.xml directory -->
+							<directory>../jWebSocketClient/web</directory>
+							<!-- disable filtering! otherwise flash swf files get destroyed! -->
+							<filtering>false</filtering>
+							<excludes>
+								<!-- don't include documentation in the .war -->
+								<exclude>**/javadocs/**</exclude>
+								<exclude>**/quickguide/**</exclude>
+								<exclude>**/devguide/**</exclude>
+							</excludes>
+						</resource>
+						
+					</webResources>
 
 				</configuration>
 			</plugin>
@@ -74,8 +96,8 @@
 					<stopKey>jetty-stop</stopKey>
 					<scanIntervalSeconds>5</scanIntervalSeconds>
 
-					<!-- this puts the client web into the war -->
-					<webAppSourceDirectory>../jWebSocketClient/web</webAppSourceDirectory>
+					<webAppSourceDirectory>target/${project.name}</webAppSourceDirectory>
+					<classesDirectory>target/${project.name}/WEB-INF/classes</classesDirectory>
 
 					<jettyConfig>src/main/resources/jetty.xml</jettyConfig>
 					<webAppConfig>
@@ -169,23 +191,6 @@
 			<artifactId>jetty-servlet</artifactId>
 			<version>8.1.0.RC5</version>
 		</dependency>
-		<!--
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-http</artifactId>
-			<version>8.0.0.M2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-			<version>8.0.0.M2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-security</artifactId>
-			<version>8.0.0.M2</version>
-		</dependency>
-		-->
 		<!-- requires jWebSocket Server Module -->
 		<dependency>
 			<groupId>org.jwebsocket</groupId>

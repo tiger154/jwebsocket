@@ -25,8 +25,8 @@ import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketStream;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
@@ -41,7 +41,7 @@ import org.jwebsocket.token.Token;
  */
 public class StreamingPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(StreamingPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	private final static String NS_STREAMING_DEFAULT = JWebSocketServerConstants.NS_BASE + ".plugins.streaming";
 	private Map<String, BaseStream> mStreams = new FastMap<String, BaseStream>();
 	private boolean mStreamsInitialized = false;

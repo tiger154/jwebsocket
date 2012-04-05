@@ -26,7 +26,7 @@ import org.jwebsocket.plugins.TokenPlugIn;
  */
 public class ChatPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(ChatPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 
 	public ChatPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);

@@ -37,7 +37,7 @@ import org.jwebsocket.util.Tools;
  */
 public class LoggingPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(LoggingPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_LOGGING =
 			JWebSocketServerConstants.NS_BASE + ".plugins.logging";

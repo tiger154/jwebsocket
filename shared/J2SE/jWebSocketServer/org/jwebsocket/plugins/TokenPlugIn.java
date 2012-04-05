@@ -15,16 +15,16 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins;
 
-import org.jwebsocket.kit.ChangeType;
-import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.api.PluginConfiguration;
-import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.kit.BroadcastOptions;
+import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;

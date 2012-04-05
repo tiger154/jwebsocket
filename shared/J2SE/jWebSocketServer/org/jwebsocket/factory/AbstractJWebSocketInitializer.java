@@ -33,15 +33,11 @@ import org.jwebsocket.logging.Logging;
  */
 public abstract class AbstractJWebSocketInitializer implements WebSocketInitializer {
 
-	private static Logger mLog = null;
+	private static Logger mLog = Logging.getLogger();
 	/**
 	 * the configuration object
 	 */
 	protected JWebSocketConfig jWebSocketConfig = null;
-
-	static {
-		mLog = Logging.addLogger(AbstractJWebSocketInitializer.class);
-	}
 
 	/**
 	 * @param aConfig the jwebsocket config object
@@ -59,7 +55,7 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 		// initialize log4j logging engine
 		// BEFORE instantiating any jWebSocket classes
 		Logging.initLogs(lLoggingConfig.getReloadDelay());
-		mLog = Logging.getLogger(getClass());
+		mLog = Logging.getLogger(AbstractJWebSocketInitializer.class);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logging settings: "
 					+ "reload: " + lLoggingConfig.getReloadDelay());

@@ -45,13 +45,14 @@
 						**/*.jar
 					</packagingIncludes>
 					-->
-					<!-- if you want to create a self-sufficient war comment out the following directive -->
 					
+					<!-- if you want to create a self-sufficient war comment out the following directive -->
 					<packagingExcludes>
 						**/*.jar
 					</packagingExcludes>
 					
 					<webResources>
+						<!--
 						<resource>
 							<targetPath>WEB-INF/classes</targetPath>						
 							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
@@ -59,6 +60,7 @@
 								<include>**/log4j.xml</include>
 							</includes>							
 						</resource>
+						-->
 						<resource>
 							<targetPath>WEB-INF/classes/conf</targetPath>						
 							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
@@ -118,7 +120,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+<!--
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketArduinoPlugIn</artifactId>
@@ -134,7 +136,7 @@
 			<artifactId>jWebSocketMonitoringPlugIn</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+-->		
 	</dependencies>
 	
 	<!--  define repositories -->

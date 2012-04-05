@@ -39,7 +39,7 @@ import org.jwebsocket.security.SecurityFactory;
  */
 public final class JWebSocketLoader {
 
-	private static Logger mLog = Logging.getLogger(JWebSocketLoader.class);
+	private static Logger mLog = Logging.getLogger();
 	;
 	private JWebSocketConfigHandler mConfigHandler = new JWebSocketConfigHandler();
 

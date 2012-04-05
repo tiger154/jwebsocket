@@ -49,7 +49,7 @@ import org.jwebsocket.util.Tools;
  */
 public class ReportingPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(ReportingPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_REPORTING = JWebSocketServerConstants.NS_BASE + ".plugins.reporting";
 	private static final String VAR_FILES_TO_DELETE = NS_REPORTING + ".filesToDelete";

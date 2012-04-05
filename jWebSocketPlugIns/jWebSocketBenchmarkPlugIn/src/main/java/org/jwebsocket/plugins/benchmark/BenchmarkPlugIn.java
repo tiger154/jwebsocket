@@ -15,12 +15,12 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.plugins.benchmark;
 
+import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
-import org.apache.log4j.Logger;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
@@ -35,7 +35,7 @@ public class BenchmarkPlugIn extends TokenPlugIn {
 	private String S2C_PERFORMANCE = "s2c_performance";
 	private static final String NS_BENCHMARK =
 			JWebSocketServerConstants.NS_BASE + ".plugins.benchmark";
-	private static Logger mLog = Logging.getLogger(BenchmarkPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 
 	public BenchmarkPlugIn(PluginConfiguration aConfiguration) throws Exception {
 		super(aConfiguration);

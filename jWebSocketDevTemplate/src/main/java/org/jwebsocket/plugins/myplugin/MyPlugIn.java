@@ -32,7 +32,7 @@ import org.jwebsocket.token.Token;
  */
 public class MyPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(MyPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	private final static String NS_SAMPLE = "tld.domain.plugins.myplugin";
 	private final static String SAMPLE_VAR = NS_SAMPLE + ".started";
 

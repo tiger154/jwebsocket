@@ -30,7 +30,7 @@ import org.jwebsocket.token.Token;
  */
 public class JWebSocketTokenListenerSample implements WebSocketServerTokenListener {
 
-	private static Logger mLog = Logging.getLogger(JWebSocketTokenListenerSample.class);
+	private static Logger mLog = Logging.getLogger();
 
 	/**
 	 *

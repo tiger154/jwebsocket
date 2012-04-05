@@ -17,12 +17,12 @@ package org.jwebsocket.filter;
 
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketFilter;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.kit.ChangeType;
+import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
@@ -33,7 +33,7 @@ import org.jwebsocket.token.Token;
  */
 public class TokenFilterChain extends BaseFilterChain {
 
-	private static Logger mLog = Logging.getLogger(TokenFilterChain.class);
+	private static Logger mLog = Logging.getLogger();
 
 	/**
 	 *

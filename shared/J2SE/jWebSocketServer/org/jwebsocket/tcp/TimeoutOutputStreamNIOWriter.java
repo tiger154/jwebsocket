@@ -40,7 +40,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class TimeoutOutputStreamNIOWriter {
 
-	private static Logger mLog = Logging.getLogger(TimeoutOutputStreamNIOWriter.class);
+	private static Logger mLog = Logging.getLogger();
 	private final static int TIME_OUT_TERMINATION_THREAD = 5;
 	/**
 	 * Singleton Timer instance to control all timeout tasks

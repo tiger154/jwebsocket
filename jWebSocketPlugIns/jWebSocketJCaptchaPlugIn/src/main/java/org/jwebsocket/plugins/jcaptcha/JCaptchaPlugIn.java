@@ -35,7 +35,7 @@ import org.jwebsocket.util.Tools;
 
 public class JCaptchaPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(JCaptchaPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	private String mImgType = null;
 
 	public JCaptchaPlugIn(PluginConfiguration aConfiguration) {

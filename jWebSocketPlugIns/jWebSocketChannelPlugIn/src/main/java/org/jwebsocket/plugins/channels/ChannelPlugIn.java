@@ -117,7 +117,7 @@ import org.jwebsocket.token.TokenFactory;
 public class ChannelPlugIn extends TokenPlugIn {
 
 	/** logger */
-	private static Logger mLog = Logging.getLogger(ChannelPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	/** channel manager */
 	private ChannelManager mChannelManager = null;
 	/** name space for channels */
@@ -166,7 +166,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 
 			// give a success message to the administrator
 			if (mLog.isInfoEnabled()) {
-				mLog.info("Channel plug-in successfully loaded.");
+				mLog.info("Channel plug-in successfully instantiated.");
 			}
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " at Channel plug-in instantiation: " + lEx.getMessage());

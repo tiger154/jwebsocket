@@ -30,7 +30,7 @@ import org.jwebsocket.kit.WebSocketFrameType;
 
 public class NioTcpConnector extends BaseConnector {
 
-	private static Logger mLog = Logging.getLogger(NioTcpConnector.class);
+	private static Logger mLog = Logging.getLogger();
 	private InetAddress mRemoteAddress;
 	private int mRemotePort;
 	private boolean mIsAfterHandshake;

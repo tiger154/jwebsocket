@@ -15,15 +15,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp.nio;
 
-import org.apache.log4j.Logger;
-import org.jwebsocket.api.EngineConfiguration;
-import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.engines.BaseEngine;
-import org.jwebsocket.kit.*;
-import org.jwebsocket.logging.Logging;
-import org.jwebsocket.tcp.EngineUtils;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -34,6 +25,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.*;
+import org.apache.log4j.Logger;
+import org.jwebsocket.api.EngineConfiguration;
+import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.engines.BaseEngine;
+import org.jwebsocket.kit.*;
+import org.jwebsocket.logging.Logging;
+import org.jwebsocket.tcp.EngineUtils;
 
 /**
  * <p>
@@ -56,7 +55,7 @@ import java.util.concurrent.*;
  */
 public class NioTcpEngine extends BaseEngine {
 
-	private static Logger mLog = Logging.getLogger(NioTcpEngine.class);
+	private static Logger mLog = Logging.getLogger();
 	// TODO: move following constants to settings
 	private static final int READ_BUFFER_SIZE = 2048;
 	private static final int NUM_WORKERS = 3;
