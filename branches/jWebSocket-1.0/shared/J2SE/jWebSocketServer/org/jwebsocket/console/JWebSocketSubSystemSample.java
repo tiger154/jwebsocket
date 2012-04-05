@@ -23,9 +23,10 @@ import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.ServerConfiguration;
 import org.jwebsocket.api.WebSocketServerListener;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
-import org.jwebsocket.config.xml.LoggingConfig;
 import org.jwebsocket.config.xml.EngineConfig;
+import org.jwebsocket.config.xml.LoggingConfig;
 import org.jwebsocket.config.xml.PluginConfig;
 import org.jwebsocket.config.xml.ServerConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
@@ -51,9 +52,11 @@ public class JWebSocketSubSystemSample {
 
 	/**
 	 */
-	public JWebSocketSubSystemSample() {
+	public JWebSocketSubSystemSample(String[] aArgs) {
 		// the following line may not be removed due to GNU LGPL 3.0 license!
 		JWebSocketFactory.printCopyrightToConsole();
+		// check if home, config or bootstrap path are passed by command line
+		JWebSocketConfig.initForConsoleApp(aArgs);
 
 		// initialize the logging system
 		LoggingConfig lLoggingConfig = new LoggingConfig(

@@ -51,7 +51,7 @@ import org.jwebsocket.util.Tools;
  */
 public class JDBCPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(JDBCPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// if namespace changed updateSQL client plug-in accordingly!
 	private static final String NS_JDBC = JWebSocketServerConstants.NS_BASE + ".plugins.jdbc";
 	private IBasicStorage mCache = null;

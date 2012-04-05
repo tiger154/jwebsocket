@@ -19,12 +19,9 @@
 package org.jwebsocket.plugins.statistics;
 
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketServerConstants;
-import org.jwebsocket.config.xml.FilterConfig;
-import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -38,7 +35,7 @@ import org.jwebsocket.token.Token;
  */
 public class StatisticsPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(StatisticsPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	/*
 	private static String SMTP_HOST = null;
 	private static final String SMTP_HOST_KEY = "smtp_host";

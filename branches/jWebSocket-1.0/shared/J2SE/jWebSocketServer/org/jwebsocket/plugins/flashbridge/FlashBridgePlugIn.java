@@ -39,7 +39,7 @@ import org.jwebsocket.plugins.TokenPlugIn;
  */
 public class FlashBridgePlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(FlashBridgePlugIn.class.getName());
+	private static Logger mLog = Logging.getLogger();
 	private ServerSocket mServerSocket = null;
 	private int mListenerPort = 843;
 	private boolean mIsRunning = false;
@@ -51,11 +51,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 			"<cross-domain-policy>"
 			+ "<allow-access-from domain=\"*\" to-ports=\"*\" />"
 			+ "</cross-domain-policy>";
-/*
-	static {
-		mLog = Logging.addLogger(FlashBridgePlugIn.class);
-	}
-*/
+	
 	/**
 	 *
 	 * @param aConfiguration

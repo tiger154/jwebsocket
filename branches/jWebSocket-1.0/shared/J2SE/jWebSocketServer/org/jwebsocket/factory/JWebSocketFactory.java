@@ -40,7 +40,7 @@ import org.springframework.beans.factory.BeanFactory;
 public class JWebSocketFactory {
 
 	// don't instantiate logger here! first read args!
-	private static Logger mLog = Logging.addLogger(JWebSocketFactory.class);;
+	private static Logger mLog = null;
 	private static WebSocketEngine mEngine = null;
 	private static List<WebSocketServer> mServers = null;
 	private static TokenServer mTokenServer = null;
@@ -90,7 +90,7 @@ public class JWebSocketFactory {
 	 */
 	public static void start(String aConfigPath, String aBootstrapPath) {
 
-		mLog = Logging.getLogger(JWebSocketFactory.class);
+		mLog = Logging.getLogger();
 
 		if (null == aConfigPath) {
 			aConfigPath = JWebSocketConfig.getConfigPath();

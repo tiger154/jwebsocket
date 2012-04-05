@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import javax.management.MBeanServer;
 import javax.management.openmbean.CompositeData;
-import javax.management.remote.rmi.RMIConnectorServer;
 import javolution.util.FastMap;
 import mx4j.tools.adaptor.http.HttpAdaptor;
 import org.apache.log4j.Logger;
@@ -48,7 +47,7 @@ import org.jwebsocket.token.Token;
  */
 public class JMXPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(JMXPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	private static String mNamespace = "org.jwebsocket.plugins.jmx";
 	private static JMXPlugIn mJmxPlugin = null;
 	private static CompositeData mInformationOfRunningServers;

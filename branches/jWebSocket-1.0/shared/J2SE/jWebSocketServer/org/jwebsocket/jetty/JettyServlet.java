@@ -30,7 +30,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class JettyServlet extends WebSocketServlet {
 
-	private static Logger mLog = Logging.getLogger(JettyServlet.class);
+	private static Logger mLog = Logging.getLogger();
 
 	@Override
 	protected void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse)

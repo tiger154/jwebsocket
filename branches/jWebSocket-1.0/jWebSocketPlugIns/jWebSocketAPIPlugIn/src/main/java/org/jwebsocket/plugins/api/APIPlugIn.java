@@ -37,7 +37,7 @@ import org.springframework.beans.factory.BeanFactory;
  */
 public class APIPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(APIPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	private String GET_SERVER_API = "getServerAPI";
 	private String GET_PLUGIN_API = "getPlugInAPI";
 	private String GET_PLUGIN_IDS = "getPlugInIds";

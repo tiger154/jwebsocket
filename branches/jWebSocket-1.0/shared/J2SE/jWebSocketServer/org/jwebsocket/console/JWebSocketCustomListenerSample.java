@@ -27,7 +27,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class JWebSocketCustomListenerSample implements WebSocketServerListener {
 
-	private static Logger log = Logging.getLogger(JWebSocketCustomListenerSample.class);
+	private static Logger log = Logging.getLogger();
 
 	/**
 	 *

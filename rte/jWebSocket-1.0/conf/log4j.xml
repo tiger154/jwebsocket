@@ -114,7 +114,6 @@
 		<appender-ref ref="developmentLog"/>
 	</logger>
 
-
 	<logger name="org.jwebsocket" additivity="false">
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
 		<level value="DEBUG"/>

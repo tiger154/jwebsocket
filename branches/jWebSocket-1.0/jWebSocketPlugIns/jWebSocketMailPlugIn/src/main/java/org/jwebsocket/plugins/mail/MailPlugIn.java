@@ -55,7 +55,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class MailPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(MailPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_MAIL = JWebSocketServerConstants.NS_BASE + ".plugins.mail";
 	private static MailStore mMailStore = new MailStore();

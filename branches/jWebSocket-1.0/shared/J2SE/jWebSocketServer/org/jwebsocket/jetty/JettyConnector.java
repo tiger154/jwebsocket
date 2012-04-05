@@ -38,12 +38,11 @@ import org.jwebsocket.logging.Logging;
  */
 public class JettyConnector extends BaseConnector {
 
-	private static Logger mLog = Logging.getLogger(JettyConnector.class);
+	private static Logger mLog = Logging.getLogger();
 	private boolean mIsRunning = false;
 	private CloseReason mCloseReason = CloseReason.TIMEOUT;
 	private Connection mConnection;
 	private HttpServletRequest mRequest = null;
-	private String mProtocol = null;
 
 	/**
 	 * creates a new TCP connector for the passed engine using the passed client
@@ -58,7 +57,6 @@ public class JettyConnector extends BaseConnector {
 		super(aEngine);
 		mConnection = aConnection;
 		mRequest = aRequest;
-		mProtocol = aProtocol;
 
 		RequestHeader lHeader = new RequestHeader();
 
@@ -78,7 +76,7 @@ public class JettyConnector extends BaseConnector {
 			aProtocol = JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
 		}
 		lHeader.put(RequestHeader.WS_PROTOCOL, aProtocol);
-		lHeader.put(RequestHeader.WS_PATH, aRequest.getPathInfo());
+		lHeader.put(RequestHeader.WS_PATH, aRequest.getRequestURI());
 
 		// iterate throught header params
 		Enumeration<String> lHeaderNames = aRequest.getHeaderNames();

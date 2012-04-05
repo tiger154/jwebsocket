@@ -30,7 +30,7 @@ import org.jwebsocket.token.Token;
  */
 public class SystemFilter extends TokenFilter {
 
-	private static Logger mLog = Logging.getLogger(SystemFilter.class);
+	private static Logger mLog = Logging.getLogger();
 
 	public SystemFilter(FilterConfiguration aConfig) {
 		super(aConfig);

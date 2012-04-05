@@ -40,7 +40,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class MonitoringPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(MonitoringPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>();
 	private static Thread mInformationThread;
 	private static Thread mServerExchangeInfoThread;
@@ -62,11 +62,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	private static int mConnectedUsers = 0;
 	private static int mTimeCounter = 0;
 	private static FastList<Integer> mConnectedUsersList = new FastList<Integer>(60);
-	
-	static {
-		Logging.addLogger(ServerRequestListener.class);
-	}
-	
+
 	public MonitoringPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		this.setNamespace(aConfiguration.getNamespace());
@@ -117,25 +113,25 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	@Override
 	public void engineStopped(WebSocketEngine aEngine) {
 		mInformationRunning = false;
-		
+
 		try {
 			mInformationThread.join(2000);
 			mInformationThread.stop();
-			} catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 		}
-		
+
 		try {
 			mServerExchangeInfoThread.join(2000);
 			mServerExchangeInfoThread.stop();
 		} catch (InterruptedException ex) {
 		}
-			
-		try {	
+
+		try {
 			mUserInfoThread.join(2000);
 			mUserInfoThread.stop();
-			} catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 		}
-		
+
 	}
 
 	@Override
@@ -458,9 +454,9 @@ public class MonitoringPlugIn extends TokenPlugIn {
 
 	}
 
-	public void broadcastServerXchgInfoXMonth(WebSocketConnector aConnector, 
+	public void broadcastServerXchgInfoXMonth(WebSocketConnector aConnector,
 			String aYear) {
-		Token token = TokenFactory.createToken(getNamespace(), 
+		Token token = TokenFactory.createToken(getNamespace(),
 				"serverXchgInfoXMonth");
 		//Getting server exchanges
 		try {
@@ -478,8 +474,8 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				if (lDate.endsWith(lYear)) {
 					for (int lMonth = 1; lMonth < 13; lMonth++) {
 
-						String lComparableMonth = (lMonth < 10) 
-								? "0" + String.valueOf(lMonth) 
+						String lComparableMonth = (lMonth < 10)
+								? "0" + String.valueOf(lMonth)
 								: String.valueOf(lMonth);
 						String lRecordMonth = lDate.substring(0, 2);
 
@@ -531,7 +527,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		String lNamespace = lToken.getNS();
 		FastList<Map> lList = new FastList<Map>();
 
-		try {		
+		try {
 			DBCursor lCursor = mUsePlugInsColl.find();
 			DBObject lDocument;
 			FastMap<String, Object> lMap;

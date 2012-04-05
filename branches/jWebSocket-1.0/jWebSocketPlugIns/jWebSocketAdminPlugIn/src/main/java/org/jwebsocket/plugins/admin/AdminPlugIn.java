@@ -39,7 +39,7 @@ import org.jwebsocket.token.Token;
  */
 public class AdminPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(AdminPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_ADMIN = JWebSocketServerConstants.NS_BASE + ".plugins.admin";
 	private static final String mVersion = "1.0";

@@ -16,12 +16,12 @@
 package org.jwebsocket.plugins;
 
 import java.util.List;
-import org.jwebsocket.kit.PlugInResponse;
-import org.jwebsocket.api.WebSocketPlugIn;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.api.WebSocketPlugIn;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.kit.ChangeType;
+import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
 
@@ -31,7 +31,7 @@ import org.jwebsocket.token.Token;
  */
 public class TokenPlugInChain extends BasePlugInChain {
 
-	private static Logger mLog = Logging.getLogger(TokenPlugInChain.class);
+	private static Logger mLog = Logging.getLogger();
 
 	/**
 	 *

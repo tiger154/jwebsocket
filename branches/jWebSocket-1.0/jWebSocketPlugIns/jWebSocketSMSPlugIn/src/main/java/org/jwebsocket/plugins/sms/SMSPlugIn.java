@@ -15,18 +15,18 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.sms;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import org.jwebsocket.config.JWebSocketServerConstants;
 
 /**
  *
@@ -34,7 +34,7 @@ import org.jwebsocket.config.JWebSocketServerConstants;
  */
 public class SMSPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(SMSPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	private static final String NS_SMS = JWebSocketServerConstants.NS_BASE + ".plugins.sms";
 	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>().shared();
 

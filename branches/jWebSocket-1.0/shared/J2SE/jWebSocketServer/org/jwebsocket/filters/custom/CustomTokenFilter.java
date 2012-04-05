@@ -29,12 +29,12 @@ import org.jwebsocket.token.Token;
  */
 public class CustomTokenFilter extends TokenFilter {
 
-  private static Logger log = Logging.getLogger(CustomTokenFilter.class);
+  private static Logger mLog = Logging.getLogger();
 
   public CustomTokenFilter(FilterConfiguration configuration) {
     super(configuration);
-    if (log.isDebugEnabled()) {
-      log.debug("Instantiating custom token filter...");
+    if (mLog.isDebugEnabled()) {
+      mLog.debug("Instantiating custom token filter...");
     }
   }
 

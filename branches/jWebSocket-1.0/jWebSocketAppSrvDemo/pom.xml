@@ -1,4 +1,3 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
@@ -10,7 +9,7 @@
 	<groupId>org.jwebsocket</groupId>
 	<artifactId>jWebSocketAppSrvDemo</artifactId>
 	<name>jWebSocketAppSrvDemo</name>
-	<description>jWebSocket Demo Application Server project including WebClient</description>
+	<description>jWebSocket Web Application Project including WebClient</description>
 	<version>1.0</version>
 	<packaging>war</packaging>
 	
@@ -19,7 +18,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
 	</properties>
-<!--
+<!--	
 	<scm>
 		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk</connection>
 		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk</developerConnection>
@@ -27,15 +26,54 @@
 -->
 	<build>
 		<plugins>
-			
+			<!-- create jWebSocket Web Application .war -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
+					<warName>jWebSocketAppSrvDemo-${project.version}</warName>
 					<outputDirectory>${project.build.directory}/../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
-					<!-- <packagingIncludes>log4j.xml</packagingIncludes> -->
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+					</archive>
+					<!--
+					<packagingIncludes>
+						**/*.jar
+					</packagingIncludes>
+					-->
+					<!-- if you want to create a self-sufficient war comment out the following directive -->
+					
+					<packagingExcludes>
+						**/*.jar
+					</packagingExcludes>
+					
 					<webResources>
+						<!--
+						<resource>
+							<targetPath>WEB-INF/classes</targetPath>						
+							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
+							<includes>
+								<include>**/log4j.xml</include>
+							</includes>							
+						</resource>
+						-->
+						<resource>
+							<targetPath>WEB-INF/classes/conf</targetPath>						
+							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
+						</resource>
+						<!-- put all jWebSocket jars into the lib folder too, to be in the classpath -->
+						<resource>
+							<targetPath>WEB-INF/lib</targetPath>						
+							<directory>../../../rte/jWebSocket-${project.version}/libs</directory>
+							<includes>
+								<include>**/jWebSocket*.jar</include>
+							</includes>							
+						</resource>
+						
 						<resource>
               				<!-- this is relative to the pom.xml directory -->
 							<directory>../jWebSocketClient/web</directory>
@@ -48,34 +86,11 @@
 								<exclude>**/devguide/**</exclude>
 							</excludes>
 						</resource>
-						<resource>
-							<targetPath>WEB-INF/classes/conf</targetPath>						
-							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
-							<includes>
-								<include>**/log4j.xml</include>
-							</includes>							
-						</resource>
-						<!-- put all jWebSocket jars into the lib folder too, to be in the classpath -->
-						<resource>
-							<targetPath>WEB-INF/lib</targetPath>						
-							<directory>../../../rte/jWebSocket-${project.version}/libs</directory>
-							<includes>
-								<include>**/jWebSocket*.jar</include>
-							</includes>							
-						</resource>
-
+						
 					</webResources>
-
-					<!-- if you want to create a self-sufficient war comment out the following directive -->
-					<!--
-					<packagingExcludes>
-						**/*.jar
-					</packagingExcludes>
-					-->
-
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
@@ -98,6 +113,7 @@
 		</plugins>
 	</build>
 
+
 	<!--  define all the dependencies here -->
 	<dependencies>
 		<dependency>
@@ -112,10 +128,26 @@
 					<groupId>org.springframework</groupId>
 				</exclusion>
 			</exclusions>
-			
 		</dependency>
+<!--
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketArduinoPlugIn</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketJCaptchaPlugIn</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketMonitoringPlugIn</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+-->		
 	</dependencies>
-
+	
 	<!--  define repositories -->
 	<repositories>
 	</repositories>

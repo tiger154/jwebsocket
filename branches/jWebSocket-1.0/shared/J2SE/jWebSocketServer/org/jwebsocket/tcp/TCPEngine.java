@@ -47,7 +47,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class TCPEngine extends BaseEngine {
 
-	private static Logger mLog = Logging.getLogger(TCPEngine.class);
+	private static Logger mLog = Logging.getLogger();
 	private ServerSocket mTCPServerSocket = null;
 	private SSLServerSocket mSSLServerSocket = null;
 	private int mTCPListenerPort = JWebSocketCommonConstants.DEFAULT_PORT;

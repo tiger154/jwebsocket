@@ -28,7 +28,6 @@ import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.connectors.BaseConnector;
-import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 
@@ -40,7 +39,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class TCPConnector extends BaseConnector {
 
-	private static Logger mLog = Logging.getLogger(TCPConnector.class);
+	private static Logger mLog = Logging.getLogger();
 	private InputStream mIn = null;
 	private OutputStream mOut = null;
 	private Socket mClientSocket = null;

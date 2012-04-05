@@ -34,7 +34,7 @@ import org.jwebsocket.token.Token;
  */
 public class ClusterPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(ClusterPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_TEST = JWebSocketServerConstants.NS_BASE + ".plugins.cluster";
 
