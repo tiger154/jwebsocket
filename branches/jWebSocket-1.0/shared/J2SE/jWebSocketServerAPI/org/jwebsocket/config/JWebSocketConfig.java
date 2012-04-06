@@ -35,11 +35,7 @@ import static org.jwebsocket.config.JWebSocketServerConstants.DEFAULT_NODE_ID;
 import org.jwebsocket.config.xml.*;
 import org.jwebsocket.kit.WebSocketRuntimeException;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.util.Tools;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 /**
  * Represents the jWebSocket configuration. This class is immutable and should
