@@ -17,6 +17,7 @@
     margin-top: 20px;
 }
 
+
 #message_box_header{
     margin: -1px -1px 0 -1px;
     -moz-border-radius-topleft: 6px;
@@ -65,6 +66,14 @@
     height: 50px;
     font-size: 12px;
     width: 160px;
+}
+
+#message_box textarea.opaque{
+	color: #797878;
+}
+
+#message_box textarea.dark{
+	color: #181313;
 }
 
 #message_box_btn{
@@ -126,11 +135,6 @@
     padding-top: 4px;
     padding-left: 18px;
     padding-right: 19px;
-}
-
-#fun_log_box{
-    float: left;
-    width: 708px;
 }
 
 #form_check{

@@ -24,8 +24,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
-
-        <title>jWebSocket Fundamentals</title>
+        <title>jWebSocket Fundamentals Demo</title>
 
         <!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
@@ -39,34 +38,47 @@
 
         <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
-        <!-- this one imports the client side sample plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsSamplesPlugIn.js"></script>
-        <!-- this one imports the client side JDBC plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsJDBCPlugIn.js"></script>
-        <!-- this one imports the client side file system plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
-        <!-- this one imports the client side reporting plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
-        <!-- this one imports the client side rpc plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsRPCPlugIn.js"></script>
-
+		
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
 
-        <!--  PRIVATE WIDGETS  -->
+		<!--  jQuery Tooltip -->
 		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
-		
+
+        <!--  ALL DEMO LOGIC IS INCLUDED IN THIS FILE  -->
+		<script type="text/javascript" src='js/wFundamentals.js'></script>
+
         <!--  MAIN JAVASCRIPT FILE   -->
         <script type="text/javascript" src='js/init.js'></script>
-
+		
     </head>
     <body>
         <div id="demo_box">
             <!--       DEMO_HEADER       -->
             <div id="demo_box_header">
-                <h1>Fundamentals</h1>
+                <h1>jWebSocket Fundamentals Demo</h1>
                 <div id="demo_box_header_login">
+					<div id="connect_area">
+						<div id="connect_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+							 onmousedown="this.className='button onmousedown'" 
+							 onmouseup="this.className='button onmouseup'" 
+							 onmouseout="this.className='button onmouseout'" 
+							 onclick="this.className='button onmouseover'">
+							<div class="l"></div>
+							<div class="c">Connect</div>
+							<div class="r"></div>
+						</div>
+						<div id="disconnect_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+							 onmousedown="this.className='button onmousedown'" 
+							 onmouseup="this.className='button onmouseup'" 
+							 onmouseout="this.className='button onmouseout'" 
+							 onclick="this.className='button onmouseover'">
+							<div class="l"></div>
+							<div class="c">Disconnect</div>
+							<div class="r"></div>
+						</div>
+					</div>
                     <div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
@@ -85,8 +97,8 @@
                         <div id="login_form">
                             <label class="first">Username</label>
                             <label class="second">Password</label>
-                            <input type="text" id="user_text" value="root"/>
-                            <input type="password" id="user_password" value="root"/>
+                            <input type="text" id="user_text" value="guest"/>
+                            <input type="password" id="user_password" value="guest"/>
                         </div>
                         <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
                              onmousedown="this.className='button onmousedown'" 
@@ -111,18 +123,18 @@
                     <div id='websocket_type'>WebSocket: - </div>
                 </div>
 
-                 <!--       SCENARIO          -->
+				<!--       SCENARIO          -->
                 <div id="scenario_container" class="box">
-                
-                <!--       DESCRIPTION       -->
-                <div class="description_box">
-                    <p>This demo shows how to easily set up a minimum JSON 
-                        communications via WebSockets between a jWebSocket client 
-                        and a jWebSocket server.<br/>
-                        If you are not sure wether your favorite browser supports 
-                        WebSockets please refer to our jWebSocket <a href="">Cross-Browser 
-                            Compatibility</a> page.</p>
-                </div>
+
+					<!--       DESCRIPTION       -->
+					<div class="description_box">
+						<p>This demo shows how to easily set up a minimum JSON 
+							communications via WebSockets between a jWebSocket client 
+							and a jWebSocket server.<br/>
+							If you are not sure wether your favorite browser supports 
+							WebSockets please refer to our jWebSocket <a href="">Cross-Browser 
+								Compatibility</a> page.</p>
+					</div>
 
                     <!--    MESSAGE_BOX      -->
                     <div id="message_box" class="box">
@@ -135,56 +147,56 @@
                             below to get more details.
                         </div> 
                         <textarea id="message_box_text">Type your message...</textarea>
-                        
+
                         <div id="form_check">
                             <form method="post">
                                 <label>Auto-Reconnect</label>
-                                <input type="checkbox" value="Auto-Reconnect" id="auto_reconnect" class="checkbox"></input>
+                                <input type="checkbox" value="off" id="auto_reconnect" class="checkbox" title="Check to automatically re-connect in case of a connection-loss."></input>
                             </form>
                         </div>
-                            <div class="functional_box_content_buttons" style="padding-left: 30px;">
-                                    <div class="connectivity_btn">
-                                        <div id="connectivity_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                             onmousedown="this.className='button onmousedown'" 
-                                             onmouseup="this.className='button onmouseup'" 
-                                             onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'"
-					     title="Shows how to pass an arbitrary complex and hierarchical data object to the client.">
-                                            <div class="l"></div>
-                                            <div class="c">Connectivity</div>
-                                            <div class="r"></div>
-                                        </div>
-                                    </div>
-                                    <div class="echo_btn">
-                                        <div id="echo_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                             onmousedown="this.className='button onmousedown'" 
-                                             onmouseup="this.className='button onmouseup'" 
-                                             onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'"
-											 title="Shows how to simply pass the current server date and time token to the client.">
-                                            <div class="l"></div>
-                                            <div class="c">Echo</div>
-                                            <div class="r"></div>
-                                        </div>
-                                    </div>
-                                    <div class="thread_btn">
-                                        <div id="thread_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                             onmousedown="this.className='button onmousedown'" 
-                                             onmouseup="this.className='button onmouseup'" 
-                                             onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'"
-											 title="Shows how to serialize any Java object into a token and pass it to the client.">
-                                            <div class="l"></div>
-                                            <div class="c">Thread</div>
-                                            <div class="r"></div>
-                                        </div>
-                                    </div>
-                                </div>
+						<div class="functional_box_content_buttons" style="padding-left: 30px;">
+							<div class="connectivity_btn">
+								<div id="connectivity_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+									 onmousedown="this.className='button onmousedown'" 
+									 onmouseup="this.className='button onmouseup'" 
+									 onmouseout="this.className='button onmouseout'" 
+									 onclick="this.className='button onmouseover'"
+									 title="Logs the currently selected connectivity options, like auto-reconnect and delays to the console.">
+									<div class="l"></div>
+									<div class="c">Connectivity</div>
+									<div class="r"></div>
+								</div>
+							</div>
+							<div class="echo_btn">
+								<div id="echo_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+									 onmousedown="this.className='button onmousedown'" 
+									 onmouseup="this.className='button onmouseup'" 
+									 onmouseout="this.className='button onmouseout'" 
+									 onclick="this.className='button onmouseover'"
+									 title="Sends your message to the server and simply returns it as a response.">
+									<div class="l"></div>
+									<div class="c">Echo</div>
+									<div class="r"></div>
+								</div>
+							</div>
+							<div class="thread_btn">
+								<div id="thread_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+									 onmousedown="this.className='button onmousedown'" 
+									 onmouseup="this.className='button onmouseup'" 
+									 onmouseout="this.className='button onmouseout'" 
+									 onclick="this.className='button onmouseover'"
+									 title="Demonstrates how you process tasks in background threads, here simply your message is returned.">
+									<div class="l"></div>
+									<div class="c">Thread</div>
+									<div class="r"></div>
+								</div>
+							</div>
+						</div>
                     </div>
 
 
                     <!--       LOG BOX           -->
-                    <div id="fun_log_box" class="box">
+                    <div id="log_box" class="box">
                         <div id="log_box_header">
                             <div id="show_hide_log" class="hide">Hide Log</div>
                             <div id="clear_log">Clear Log</div>
