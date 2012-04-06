@@ -44,6 +44,7 @@ import org.jwebsocket.storage.ehcache.EhCacheStorage;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.context.ApplicationContext;
 
 /**
  * 
@@ -56,7 +57,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 	private static final String NS_JDBC = JWebSocketServerConstants.NS_BASE + ".plugins.jdbc";
 	private IBasicStorage mCache = null;
 	private int mConnValTimeout = 300;
-	private static ServerXmlBeanFactory mBeanFactory;
+	private static ApplicationContext mBeanFactory;
 	private static NativeAccess mNativeAccess;
 	private static String mSelectSequenceSQL = null;
 	private static String mExecFunctionSQL = null;

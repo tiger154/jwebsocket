@@ -31,10 +31,10 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.channels.Channel.ChannelState;
 import org.jwebsocket.security.SecurityFactory;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Token based implementation of the channel plugin. It's based on a
@@ -144,7 +144,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 	private static final String OWNER = "owner";
 	private static final String CHANNEL = "channel";
 	private static final String CONNECTED = "connected";
-	private static ServerXmlBeanFactory mBeanFactory;
+	private static ApplicationContext mBeanFactory;
 	
 	/**
 	 * Constructor with plug-in config

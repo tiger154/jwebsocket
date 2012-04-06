@@ -37,9 +37,9 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.jmx.util.JMXHandler;
 import org.jwebsocket.plugins.jmx.util.JMXPlugInAuthenticator;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.JSONToken;
 import org.jwebsocket.token.Token;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -80,7 +80,7 @@ public class JMXPlugIn extends TokenPlugIn {
 		JMXHandler.setLog(mLog);
 		JMXServerFunctions.setLog(mLog);
 
-		ServerXmlBeanFactory lFactory = getConfigBeanFactory();
+		ApplicationContext lFactory = getConfigBeanFactory();
 		JMXPlugInAuthenticator.setConfigPath(getString("spring_config"));
 
 		lFactory.getBean("exporter");

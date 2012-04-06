@@ -18,6 +18,7 @@ package org.jwebsocket.spring;
 import java.util.Map;
 import javolution.util.FastMap;
 import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.util.Tools;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
@@ -69,6 +70,8 @@ public class JWebSocketBeanFactory {
 	 * @param aClassLoader
 	 */
 	public static void load(String aNamespace, String aPath, ClassLoader aClassLoader) {
+		String lPath = Tools.expandEnvVars(aPath);
+		
 		XmlBeanDefinitionReader lXmlReader;
 		if (null != aNamespace) {
 			lXmlReader = new XmlBeanDefinitionReader(getInstance(aNamespace));
@@ -82,10 +85,10 @@ public class JWebSocketBeanFactory {
 		// System.out.println("getJWebSocketHome: '" + JWebSocketConfig.getJWebSocketHome() + "'...");
 		if (JWebSocketConfig.getJWebSocketHome().isEmpty()) {
 			// System.out.println("Loading resource from classpath: " + aPath + "...");
-			lXmlReader.loadBeanDefinitions(new ClassPathResource(aPath));
+			lXmlReader.loadBeanDefinitions(new ClassPathResource(lPath));
 		} else {
 			// System.out.println("Loading resource from filesystem: " + aPath + "...");
-			lXmlReader.loadBeanDefinitions(new FileSystemResource(aPath));
+			lXmlReader.loadBeanDefinitions(new FileSystemResource(lPath));
 		}
 	}
 }

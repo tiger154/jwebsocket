@@ -941,27 +941,4 @@ public class JWebSocketConfig implements Config {
 		}
 		return lURL;
 	}
-
-	/**
-	 *
-	 * @param aForClass
-	 * @param aPath
-	 * @return
-	 */
-	public static ServerXmlBeanFactory getConfigBeanFactory(Class aForClass, String aPath) {
-		String lSpringConfig = aPath;
-		lSpringConfig = JWebSocketConfig.expandEnvAndJWebSocketVars(lSpringConfig);
-		String lPath = FilenameUtils.getPath(lSpringConfig);
-		if (lPath == null || lPath.length() <= 0) {
-			lPath = JWebSocketConfig.getConfigFolder(lSpringConfig);
-		} else {
-			lPath = lSpringConfig;
-		}
-		Resource lRes =
-				getJWebSocketHome().isEmpty()
-				? new ClassPathResource(lPath)
-				: new FileSystemResource(lPath);
-		ServerXmlBeanFactory lBeanFactory = new ServerXmlBeanFactory(lRes, aForClass.getClassLoader());
-		return lBeanFactory;
-	}
 }

@@ -33,8 +33,8 @@ import org.jwebsocket.plugins.jms.util.FieldJms;
 import org.jwebsocket.plugins.jms.util.RightJms;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
+import org.springframework.context.ApplicationContext;
 
 public class JMSPlugIn extends TokenPlugIn {
 
@@ -50,7 +50,7 @@ public class JMSPlugIn extends TokenPlugIn {
 
 		this.setNamespace(NS_JMS);
 		try {
-			ServerXmlBeanFactory lBeanFactory = getConfigBeanFactory();
+			ApplicationContext lBeanFactory = getConfigBeanFactory();
 			mJmsManager = JmsManager.getInstance(aConfiguration.getSettings(),
 					lBeanFactory);
 		} catch (Exception lEx) {

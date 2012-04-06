@@ -48,11 +48,11 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.server.TokenServer;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -72,7 +72,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	private static String WEB_ROOT_DEF = "http://jwebsocket.org/";
 	private static FileAlterationMonitor mPublicMonitor = null;
 	
-	private static ServerXmlBeanFactory mBeanFactory;
+	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 
 	/**
