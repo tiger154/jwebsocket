@@ -254,7 +254,6 @@ $.widget("jws.auth",{
 				w.auth.mUsername = null;
 				w.auth.eUserInfoName.text( "" );
 				w.auth.eClientId.text( "Client-ID: -" );
-				w.auth.eWebSocketType.text( "WebSocket: - " );
 				w.auth.eClientStatus.attr( "class", "offline" ).text( "disconnected" );
 				w.auth.eUsername.focus( );
 				

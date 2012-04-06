@@ -38,7 +38,7 @@
 
         <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
-		
+
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
@@ -51,7 +51,7 @@
 
         <!--  MAIN JAVASCRIPT FILE   -->
         <script type="text/javascript" src='js/init.js'></script>
-		
+
     </head>
     <body>
         <div id="demo_box">
@@ -148,46 +148,72 @@
                         </div> 
                         <textarea id="message_box_text">Type your message...</textarea>
 
-                        <div id="form_check">
-                            <form method="post">
-                                <label>Auto-Reconnect</label>
-                                <input type="checkbox" value="off" id="auto_reconnect" class="checkbox" title="Check to automatically re-connect in case of a connection-loss."></input>
-                            </form>
-                        </div>
-						<div class="functional_box_content_buttons" style="padding-left: 30px;">
-							<div class="connectivity_btn">
-								<div id="connectivity_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+						<div class="functional_box_content_buttons">
+							<div id="form_check">
+								<form method="post">
+									<label>Auto-Reconnect</label>
+									<input type="checkbox" value="off" id="auto_reconnect" class="checkbox" title="Check to automatically re-connect in case of a connection-loss."></input>
+								</form>
+							</div>
+							<div id="connectivity_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+								 onmousedown="this.className='button onmousedown'" 
+								 onmouseup="this.className='button onmouseup'" 
+								 onmouseout="this.className='button onmouseout'" 
+								 onclick="this.className='button onmouseover'"
+								 title="Logs the currently selected connectivity options, like auto-reconnect and delays to the console.">
+								<div class="l"></div>
+								<div class="c">Connectivity</div>
+								<div class="r"></div>
+							</div>
+							<div id="echo_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+								 onmousedown="this.className='button onmousedown'" 
+								 onmouseup="this.className='button onmouseup'" 
+								 onmouseout="this.className='button onmouseout'" 
+								 onclick="this.className='button onmouseover'"
+								 title="Sends your message to the server and simply returns it as a response.">
+								<div class="l"></div>
+								<div class="c">Echo</div>
+								<div class="r"></div>
+							</div>
+							<div id="thread_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+								 onmousedown="this.className='button onmousedown'" 
+								 onmouseup="this.className='button onmouseup'" 
+								 onmouseout="this.className='button onmouseout'" 
+								 onclick="this.className='button onmouseover'"
+								 title="Demonstrates how you process tasks in background threads, here simply your message is returned.">
+								<div class="l"></div>
+								<div class="c">Thread</div>
+								<div class="r"></div>
+							</div>
+							<div class="auth_deauth_area">
+								<div id="auth_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
 									 onmousedown="this.className='button onmousedown'" 
 									 onmouseup="this.className='button onmouseup'" 
 									 onmouseout="this.className='button onmouseout'" 
 									 onclick="this.className='button onmouseover'"
-									 title="Logs the currently selected connectivity options, like auto-reconnect and delays to the console.">
+									 title="Authenticates you against the jWebSocket Server.">
 									<div class="l"></div>
-									<div class="c">Connectivity</div>
+									<div class="c">Auth</div>
 									<div class="r"></div>
 								</div>
-							</div>
-							<div class="echo_btn">
-								<div id="echo_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+								<div id="deauth_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
 									 onmousedown="this.className='button onmousedown'" 
 									 onmouseup="this.className='button onmouseup'" 
 									 onmouseout="this.className='button onmouseout'" 
 									 onclick="this.className='button onmouseover'"
-									 title="Sends your message to the server and simply returns it as a response.">
+									 title="Logs you out and disconnects from the jWebSocket server.">
 									<div class="l"></div>
-									<div class="c">Echo</div>
+									<div class="c">De-Auth</div>
 									<div class="r"></div>
 								</div>
-							</div>
-							<div class="thread_btn">
-								<div id="thread_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+								<div id="get_auth_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
 									 onmousedown="this.className='button onmousedown'" 
 									 onmouseup="this.className='button onmouseup'" 
 									 onmouseout="this.className='button onmouseout'" 
 									 onclick="this.className='button onmouseover'"
-									 title="Demonstrates how you process tasks in background threads, here simply your message is returned.">
+									 title="Retreives the authorities for the user.">
 									<div class="l"></div>
-									<div class="c">Thread</div>
+									<div class="c">Get Auth</div>
 									<div class="r"></div>
 								</div>
 							</div>
