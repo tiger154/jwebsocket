@@ -1,0 +1,39 @@
+/*
+//	****************************************************************************
+//	jWebSocket Hello World (uses jWebSocket Client and Server)
+//	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+//	****************************************************************************
+//	This program is free software; you can redistribute it and/or modify it
+//	under the terms of the GNU Lesser General Public License as published by the
+//	Free Software Foundation; either version 3 of the License, or (at your
+//	option) any later version.
+//	This program is distributed in the hope that it will be useful, but WITHOUT
+//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//	more details.
+//	You should have received a copy of the GNU Lesser General Public License along
+//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	****************************************************************************
+*/
+/* 
+    Document   : tests
+    Created on : Apr 6, 2012, 4:04:19 PM
+    Author     : vbarzana
+    Description: Tests Specific demo Stylesheet
+*/
+#demo_box_header h1{
+    width: 500px !important;
+}
+
+.jasmine_reporter{
+	float: left !important;
+	width: 744px !important;
+}
+
+.runner.running{
+	font-size: 10px;
+}
+
+.suite{
+	font-size: 10pt;
+}

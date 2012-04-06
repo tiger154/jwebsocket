@@ -31,15 +31,15 @@ function runOpenCloseSuite () {
 function runBenchmarkSuite() {
 
 	describe( "Benchmark Test Suite", function () {
-
+		
 		// open all connections
-		testOpenConnections();
+		jws.tests.Benchmarks.testOpenConnections();
 
 		// run the benchmark
-		testBenchmark();
+		jws.tests.Benchmarks.testBenchmark();
 
 		// close all connections
-		testCloseConnections();
+		jws.tests.Benchmarks.testCloseConnections();
 	});
 
 }
@@ -101,7 +101,11 @@ function runEventsSuite() {
 			});
 		},
 		OnClose: function(){
-			alert("Not connected to the server!")
+			if ( undefined != dialog ) {
+				dialog( "You are not connected to the server!", "jWebSocket Message", true, null, null, "alert");
+			} else {
+				alert( "You are not connected to the server!" );
+			}
 		}
 	});
 }
