@@ -1,21 +1,25 @@
 /*
-	GENERAL DEMOS CSS
-
 //	****************************************************************************
-        //	jWebSocket Hello World (uses jWebSocket Client and Server)
-        //	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
-        //	****************************************************************************
-        //	This program is free software; you can redistribute it and/or modify it
-        //	under the terms of the GNU Lesser General Public License as published by the
-        //	Free Software Foundation; either version 3 of the License, or (at your
-        //	option) any later version.
-        //	This program is distributed in the hope that it will be useful, but WITHOUT
-        //	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-        //	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-        //	more details.
-        //	You should have received a copy of the GNU Lesser General Public License along
-        //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-        //	****************************************************************************
+//	jWebSocket Hello World (uses jWebSocket Client and Server)
+//	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+//	****************************************************************************
+//	This program is free software; you can redistribute it and/or modify it
+//	under the terms of the GNU Lesser General Public License as published by the
+//	Free Software Foundation; either version 3 of the License, or (at your
+//	option) any later version.
+//	This program is distributed in the hope that it will be useful, but WITHOUT
+//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//	more details.
+//	You should have received a copy of the GNU Lesser General Public License along
+//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	****************************************************************************
+*/
+/* 
+    Document   : tests
+    Created on : Apr 6, 2012, 4:04:19 PM
+    Author     : vbarzana
+    Description: This is the main Stylesheet for all jWebSocket Demos
 */
 #demo_box, #functional_box_content, 
 #message_box, textarea{
@@ -90,7 +94,6 @@ div#container{
     margin-top: 14px;
     width: 300px;
     float: left;
-
     font-weight: normal;
 }
 
@@ -550,6 +553,64 @@ p{
 	height: 13px;
 }
 
+/* ----------------------- CHECKBOXES PERSONALIZATION -------------------------- */
+input[type="checkbox"]{
+	font-style: "Verdana";
+    font-size: 8px !important;
+    color: #333333 !important;
+}
+
+.checkbox {
+	width: 18px !important;
+	height: 20px !important;
+	padding: 0 0 0 0px;
+	background: url(img/cb_n.png) no-repeat !important;
+	/*display: block;*/
+	float: left !important;
+	margin: 0px 0px 0 0px;
+}
+
+.checkbox:hover {
+	background: url(img/cb_h.png) no-repeat !important;
+}
+
+.checkbox:checked {
+	width: 18px !important;
+	height: 20px !important;
+	background: url(img/cb_p.png) no-repeat !important;
+}
+/* ----------------------- CHECKBOXES PERSONALIZATION -------------------------- */
+
+
+/* ----------------------------- ICONS --------------------------------------*/
+#icon{
+	float: left;
+	width: 45px;
+	height: 45px;
+}
+
+#icon.icon_error{
+	background: url( ../img/error.png ) no-repeat;
+}
+
+#icon.icon_information{
+	background: url( ../img/information.png ) no-repeat;
+}
+
+#icon.icon_warning{
+	background: url( ../img/warning.png ) no-repeat;
+}
+
+#icon.icon_alert{
+	background: url( ../img/alert.png ) no-repeat;
+}
+
+#icon.icon_important{
+	background: url( ../img/important.png ) no-repeat;
+}
+/* ----------------------------- ICONS --------------------------------------*/
+
+
 /* ----------------------- JQUERY UI DIALOG PERSONALIZATION -------------------------- */
 .ui-widget{
 	font-size: 12px !important;
@@ -563,7 +624,7 @@ p{
 	min-height: 70px !important;
 }
 .ui-widget-header{
-	 background: rgb(134,173,216); /* Old browsers */
+	background: rgb(134,173,216); /* Old browsers */
     /* IE9 SVG, needs conditional override of 'filter' to 'none' */
     background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzg2YWRkOCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMyNTg1YzEiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+) !important;
     background: -moz-linear-gradient(top,  rgba(134,173,216,1) 0%, rgba(37,133,193,1) 100%) !important; /* FF3.6+ */
