@@ -15,30 +15,55 @@
 //	---------------------------------------------------------------------------
 
 
-jws.tests.AutomatedAPITests = {
 
-	NS: "jws.tests.automated", 
+jws.tests.Benchmarks = {
+
+	
+	/*  TODO: Finish this TestCase
+	 *	this.NS: jws.NS_BASE  + ".plugins.benchmark",
+	 *
+	 *
+		var this.MAX_CONNECTIONS = 50;
+		var this.MAX_BROADCASTS = 100;
+		var this.OPEN_CONNECTIONS_TIMEOUT = 30000;w
+		var BROADCAST_TIMEOUT = 30000;
+		var this.CLOSE_CONNECTIONS_TIMEOUT = 30000;
+		var this.BROADCAST_MESSAGE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghihjklmnopqrstuvwxyz 0123456789";
+
+		var this.ROOT_USER = "root";
+
+		var this.lConnectionsOpened = 0;
+		var this.lConnections = [];
+		var this.lPacketsReceived = 0;
+	 */
+
+	NS: jws.NS_BASE  + ".plugins.benchmark",
+	
+	MAX_CONNECTIONS: 50,
+	
+	MAX_BROADCASTS: 100,
+	
+	BROADCAST_TIMEOUT: 3000,
+	
+	OPEN_CONNECTIONS_TIMEOUT: 30000,
+	
+	CLOSE_CONNECTIONS_TIMEOUT: 30000,
+	
+	BROADCAST_MESSAGE: "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghihjklmnopqrstuvwxyz 0123456789",
+	
+	ROOT_USER: "root",
+	
+	lConnectionsOpened: 0,
+	
+	lConnections: [],
+	
+	lPacketsReceived: 0,
+	
 	lSpecs: [],
-
-	var NS_BENCHMARK = jws.NS_BASE  + ".plugins.benchmark";
-
-	var MAX_CONNECTIONS = 50;
-	var MAX_BROADCASTS = 100;
-	var OPEN_CONNECTIONS_TIMEOUT = 30000;
-	var BROADCAST_TIMEOUT = 30000;
-	var CLOSE_CONNECTIONS_TIMEOUT = 30000;
-	var BROADCAST_MESSAGE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghihjklmnopqrstuvwxyz 0123456789";
-
-	var ROOT_USER = "root";
-
-	var lConnectionsOpened = 0;
-	var lConnections = [];
-	var lPacketsReceived = 0;
-
-
+	
 	// this spec opens all connections
 	testOpenConnections: function() {
-		var lSpec = "Opening " + MAX_CONNECTIONS + " connections";
+		var lSpec = "Opening " + this.MAX_CONNECTIONS + " connections";
 		it( lSpec, function () {
 
 			// reset all watches
@@ -47,23 +72,23 @@ jws.tests.AutomatedAPITests = {
 			// start stop watch for this spec
 			jws.StopWatchPlugIn.startWatch( "openConn", lSpec );
 
-			for( var lIdx = 0; lIdx < MAX_CONNECTIONS; lIdx++ ) {
+			for( var lIdx = 0; lIdx < this.MAX_CONNECTIONS; lIdx++ ) {
 
-				lConnections[ lIdx ] = new jws.jWebSocketJSONClient();
-				lConnections[ lIdx ].open( jws.getDefaultServerURL(), {
+				this.lConnections[ lIdx ] = new jws.jWebSocketJSONClient();
+				this.lConnections[ lIdx ].open( jws.getDefaultServerURL(), {
 
 					OnOpen: function () {
-						lConnectionsOpened++;
+						this.lConnectionsOpened++;
 					},
 
 					OnClose: function () {
-						lConnectionsOpened--;
+						this.lConnectionsOpened--;
 					},
 
 					OnToken: function( aToken ) {
 						if ( "s2c_performance" == aToken.type
-								&& NS_BENCHMARK == aToken.ns ) {
-							lPacketsReceived++;
+							&& this.NS == aToken.ns ) {
+							this.lPacketsReceived++;
 						}
 					}
 
@@ -73,34 +98,33 @@ jws.tests.AutomatedAPITests = {
 			// wait for expected connections being opened
 			waitsFor(
 				function() {
-					return lConnectionsOpened == MAX_CONNECTIONS;
+					return this.lConnectionsOpened == this.MAX_CONNECTIONS;
 				},
 				"opening connection...",
-				OPEN_CONNECTIONS_TIMEOUT
-			);
+				this.OPEN_CONNECTIONS_TIMEOUT
+				);
 
 			runs(
 				function () {
-					expect( lConnectionsOpened ).toEqual( MAX_CONNECTIONS );
+					expect( this.lConnectionsOpened ).toEqual( this.MAX_CONNECTIONS );
 					// stop watch for this spec
 					jws.StopWatchPlugIn.stopWatch( "openConn" );
 				}
-			);
-
+				);
 		});
 	},
 
 
 	// this spec closes all connections
 	testCloseConnections: function() {
-		var lSpec = "Closing " + MAX_CONNECTIONS + " connections";
+		var lSpec = "Closing " + this.MAX_CONNECTIONS + " connections";
 		it( lSpec, function () {
 
 			// start stop watch for this spec
 			jws.StopWatchPlugIn.startWatch( "closeConn", lSpec );
 
-			for( var lIdx = 0; lIdx < MAX_CONNECTIONS; lIdx++ ) {
-				lConnections[ lIdx ].close({
+			for( var lIdx = 0; lIdx < this.MAX_CONNECTIONS; lIdx++ ) {
+				this.lConnections[ lIdx ].close({
 					timeout: 3000,
 					// fireClose: true,
 					// noGoodBye: true,
@@ -112,15 +136,15 @@ jws.tests.AutomatedAPITests = {
 			// wait for expected connections being opened
 			waitsFor(
 				function() {
-					return lConnectionsOpened == 0;
+					return this.lConnectionsOpened == 0;
 				},
 				"closing connections...",
-				CLOSE_CONNECTIONS_TIMEOUT
-			);
+				this.CLOSE_CONNECTIONS_TIMEOUT
+				);
 
 			runs(
 				function () {
-					expect( lConnectionsOpened ).toEqual( 0 );
+					expect( this.lConnectionsOpened ).toEqual( 0 );
 
 					// stop watch for this spec
 					jws.StopWatchPlugIn.stopWatch( "closeConn" );
@@ -131,12 +155,12 @@ jws.tests.AutomatedAPITests = {
 					// reset all watches
 					jws.StopWatchPlugIn.resetWatches();
 				}
-			);
+				);
 		});
 	},
 
 	testBenchmark: function() {
-		var lSpec = "Broadcasting " + MAX_BROADCASTS + " packets to " + MAX_CONNECTIONS + " connections";
+		var lSpec = "Broadcasting " + this.MAX_BROADCASTS + " packets to " + this.MAX_CONNECTIONS + " connections";
 		it( lSpec, function () {
 
 			// start stop watch for this spec
@@ -149,12 +173,12 @@ jws.tests.AutomatedAPITests = {
 			lConn.open(jws.getDefaultServerURL(), {
 
 				OnOpen: function () {
-					lPacketsReceived = 0;
+					this.lPacketsReceived = 0;
 					var lToken = {
-						ns: NS_BENCHMARK,
+						ns: this.NS,
 						type: "s2c_performance",
-						count: MAX_BROADCASTS,
-						message: BROADCAST_MESSAGE
+						count: this.MAX_BROADCASTS,
+						message: this.BROADCAST_MESSAGE
 					};
 					lConn.sendToken( lToken );
 				}
@@ -162,14 +186,14 @@ jws.tests.AutomatedAPITests = {
 
 			waitsFor(
 				function() {
-					return lPacketsReceived == MAX_CONNECTIONS * MAX_BROADCASTS;
+					return this.lPacketsReceived == this.MAX_CONNECTIONS * this.MAX_BROADCASTS;
 				},
 				"broadcasting test packages...",
-				BROADCAST_TIMEOUT
-			);
+				this.BROADCAST_TIMEOUT
+				);
 
 			runs( function() {
-				expect( lPacketsReceived ).toEqual( MAX_CONNECTIONS * MAX_BROADCASTS );
+				expect( this.lPacketsReceived ).toEqual( this.MAX_CONNECTIONS * this.MAX_BROADCASTS );
 
 				// stop watch for this spec
 				jws.StopWatchPlugIn.stopWatch( "broadcast" );
