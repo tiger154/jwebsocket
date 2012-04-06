@@ -38,10 +38,10 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -53,7 +53,7 @@ public class ReportingPlugIn extends TokenPlugIn {
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_REPORTING = JWebSocketServerConstants.NS_BASE + ".plugins.reporting";
 	private static final String VAR_FILES_TO_DELETE = NS_REPORTING + ".filesToDelete";
-	private static ServerXmlBeanFactory mBeanFactory;
+	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 	
 /*

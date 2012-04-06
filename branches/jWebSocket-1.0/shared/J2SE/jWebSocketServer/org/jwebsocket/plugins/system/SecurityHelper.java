@@ -16,8 +16,8 @@ package org.jwebsocket.plugins.system;
 
 import java.util.Map;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.session.SessionManager;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 
 /**
  *
@@ -25,11 +25,11 @@ import org.jwebsocket.session.SessionManager;
  */
 public class SecurityHelper {
 
-	private static SessionManager mSessionManager;
+	private static SessionManager mSessionManager = null;
 
 	private static SessionManager getSessionManager() {
-		if (null != mSessionManager) {
-			mSessionManager = (SessionManager) JWebSocketFactory.getBeans().getBean("SessionManager");
+		if (null == mSessionManager) {
+			mSessionManager = (SessionManager) JWebSocketBeanFactory.getInstance().getBean("sessionManager");
 		}
 		return mSessionManager;
 	}

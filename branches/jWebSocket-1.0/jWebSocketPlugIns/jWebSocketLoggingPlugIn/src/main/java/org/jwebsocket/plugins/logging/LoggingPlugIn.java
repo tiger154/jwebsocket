@@ -26,10 +26,10 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -45,7 +45,7 @@ public class LoggingPlugIn extends TokenPlugIn {
 	private Map<String, String> mListeners = new FastMap<String, String>();
 	private Class JDBCTools = null;
 	private TokenPlugIn mJDBCPlugIn = null;
-	private static ServerXmlBeanFactory mBeanFactory;
+	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 
 	/**

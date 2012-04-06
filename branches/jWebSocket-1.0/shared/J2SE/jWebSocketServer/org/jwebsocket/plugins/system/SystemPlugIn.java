@@ -42,6 +42,7 @@ import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -116,12 +117,13 @@ public class SystemPlugIn extends TokenPlugIn {
 	 * 
 	 */
 	public static final String IS_AUTHENTICATED = "$is_authenticated";
-	private static ServerXmlBeanFactory mBeanFactory;
-/*
+	private static ApplicationContext mBeanFactory;
+	/*
 	static {
-		Logging.addLogger(SystemPlugIn.class);
+	Logging.addLogger(SystemPlugIn.class);
 	}
-*/	
+	 */
+
 	/**
 	 * Constructor with configuration object
 	 * 
@@ -134,7 +136,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for system plugin
 		this.setNamespace(NS_SYSTEM);
- 		mGetSettings();
+		mGetSettings();
 
 		try {
 			mBeanFactory = getConfigBeanFactory();
@@ -243,13 +245,14 @@ public class SystemPlugIn extends TokenPlugIn {
 			}
 			aConnector.getSession().setSessionId(
 					Tools.getMD5(aConnector.generateUID()
-					+ "." + lRand.nextInt()));
+					+ "." + lRand.nextInt()) + aConnector.getHeader().get(RequestHeader.WS_PATH));
 
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Creating the WebSocketSession persistent storage "
 						+ "for connector '" + aConnector.getId() + "'...");
 			}
-			aConnector.getSession().setStorage((Map<String, Object>) (mSessionManager.getSession(aConnector.getSession().getSessionId() + aConnector.getHeader().get(RequestHeader.WS_PATH))));
+			aConnector.getSession().setStorage((Map<String, Object>) (mSessionManager.
+					getSession(aConnector.getSession().getSessionId())));
 
 		} catch (Exception ex) {
 			// TODO: try this with the ExceptionHandler
@@ -921,7 +924,13 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 	}
 
-	// new spring based authentication
+	/**
+	 * Logon a user given the username and password by using 
+	 * the Spring Security module
+	 * 
+	 * @param aConnector 
+	 * @param aToken The token with the username and password
+	 */
 	void logon(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 		if (SecurityHelper.isUserAuthenticated(aConnector)) {

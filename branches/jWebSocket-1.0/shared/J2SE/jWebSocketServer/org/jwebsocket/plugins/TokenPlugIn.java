@@ -26,8 +26,11 @@ import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.Tools;
+import org.springframework.context.ApplicationContext;
 
 /**
  * 
@@ -37,6 +40,7 @@ import org.jwebsocket.token.Token;
 public class TokenPlugIn extends BasePlugIn {
 
 	private String mNamespace = null;
+	private static boolean mBeanFactoryLoaded = false;
 
 	/**
 	 *
@@ -243,11 +247,13 @@ public class TokenPlugIn extends BasePlugIn {
 	 * 
 	 * @return
 	 */
-	public ServerXmlBeanFactory getConfigBeanFactory() {
+	public ApplicationContext getConfigBeanFactory() {
 		String lSpringConfig = getString("spring_config");
 		if (null == lSpringConfig || lSpringConfig.isEmpty()) {
 			return null;
 		}
-		return JWebSocketConfig.getConfigBeanFactory(getClass(), lSpringConfig);
+		JWebSocketBeanFactory.load(lSpringConfig, getClass().getClassLoader());
+
+		return JWebSocketBeanFactory.getInstance();
 	}
 }

@@ -24,9 +24,9 @@ import java.util.Collections;
 import javax.management.remote.JMXAuthenticator;
 import javax.management.remote.JMXPrincipal;
 import javax.security.auth.Subject;
-import org.jwebsocket.config.JWebSocketConfig;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.memory.InMemoryDaoImpl;
@@ -64,7 +64,8 @@ public class JMXPlugInAuthenticator implements JMXAuthenticator {
 		String lPassword = (String) lCredentials[1];
 
 		// Load config file to perform authentication
-		ServerXmlBeanFactory lFactory = JWebSocketConfig.getConfigBeanFactory(getClass(), mConfigPath);
+		JWebSocketBeanFactory.load(mConfigPath, getClass().getClassLoader());
+		ApplicationContext lFactory = JWebSocketBeanFactory.getInstance();
 		/*
 		 * Resource lResource = new FileSystemResource(mConfigPath);
 		 * XmlBeanFactory lFactory = new ServerXmlBeanFactory(lResource,
