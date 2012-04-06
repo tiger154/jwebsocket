@@ -26,30 +26,33 @@
  *   var lButtons = [{
 		id: "buttonYes",
 		text: "Yes",
-		aFunction: function(  ) {
+		aFunction: function() {
 			alert( "you clicked YES button" );
 		}
 	},{
 		id: "buttonNo",
 		text: "No",
-		aFunction: function(  ) {
+		aFunction: function() {
 			alert( "you clicked button NO" );
 		}
 	}];
 * @param aIconType
 *    { error|information|alert|important|warning }
 * 
-	dialog( "Are you sure?", "title", true, function(  ) {alert( "closing" )}, lButtons, "error" );
+	dialog( "Are you sure?", "title", true, function() {alert( "closing" )}, lButtons, "error" );
  */
 function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType, aWidth ) {
 	// Dialog
 	var lDialog = $(  "<div id='dialog'></div>"  );
-//	closeDialog(  );
 	
+	var lContentWidth = "100%";
+	if( aIconType ) {
+		lContentWidth = "80%";
+	}
 	var lContent = $(  "<div><p>" + aMessage + "</p></div>"  ).css( {
-		"width": (aIconType)?"80% !important":"100% !important",
+		"width": lContentWidth,
 		"float": "left"
-	}  );
+	});
 	
 	var lButtonsArea = $( "<div class='ui-dialog-buttonpane ui-widget-content ui-helper-clearfix'></div>" );
 	
@@ -61,10 +64,10 @@ function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType
 			var lFunction = aElement.aFunction;
 			var lNewButton = $( '<div style="float: right;" class="button onmouseup" onmouseover="this.className=\'button onmouseover\'" onmousedown="this.className=\'button onmousedown\'" onmouseup="this.className=\'button onmouseup\'" onmouseout="this.className=\'button onmouseout\'" onclick="this.className=\'button onmouseover\'">' )
 			
-			.click( function(  ) {
-				lFunction(  );
+			.click( function() {
+				lFunction();
 				lDialog.dialog( "close" );
-				$( this ).parent(  ).parent(  ).remove(  );
+				$( this ).parent().parent().remove();
 			} );
 			if (  aElement.id  ) {
 				lNewButton.attr( "id", aElement.id );
@@ -75,23 +78,18 @@ function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType
 		} );
 	}else{
 		lButton.append( $( '<div class="l"></div>' ) ).append( $( '<div class="c">Ok</div>' ) ).append( $( '<div class="r"></div>' ) );
-		lButton.click( function(  ) {
+		lButton.click( function() {
 			if( aCloseFunction ) {
-				aCloseFunction(  );
+				aCloseFunction();
 			}
 			lDialog.dialog( "close" );
-			$( this ).parent(  ).parent(  ).remove(  );
+			$( this ).parent().parent().remove();
 		} );
 		lButtonsArea.append( lButton );
 	}
 	if(  aIconType  ) {
 		if(  aIconType == "error" || aIconType == "information" || aIconType == "warning" || aIconType == "alert" || aIconType == "important"  ) {
-			var lIcon = $( "<div id='icon'></div>" ).css( {
-				"float": "left",
-				"width": "45px",
-				"height": "45px",
-				"background": "url( ../../res/img/" + aIconType + ".png ) no-repeat"
-			} );
+			var lIcon = $( "<div id='icon' class='"+ "icon_" + aIconType + "'></div>" );
 			lDialog.append( lIcon );
 		}
 		else {
@@ -101,7 +99,6 @@ function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType
 	lDialog.append( lContent );
 	
 	lDialog.prependTo( "body" );
-	
 	
 	lDialog.dialog( {
 		autoOpen: true,
@@ -113,8 +110,8 @@ function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType
 	lDialog.append( lButtonsArea );
 }
 
-function closeDialog(  ) {
+function closeDialog() {
 	var	lDialog = $( '<div id="dialog"></div>' );
 	lDialog.dialog( "close" ); 
-	$( ".ui-dialog" ).remove(  );
+	$( ".ui-dialog" ).remove();
 }
