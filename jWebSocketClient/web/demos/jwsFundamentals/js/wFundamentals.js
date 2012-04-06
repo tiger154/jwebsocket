@@ -26,7 +26,11 @@ $.widget( "jws.fundamentals", {
 		w.fundamentals.eBtnEcho			= w.fundamentals.element.find( "#echo_btn" );
 		w.fundamentals.eBtnThread		= w.fundamentals.element.find( "#thread_btn" );
 		w.fundamentals.eBtnConectivity	= w.fundamentals.element.find( "#connectivity_btn" );
+		w.fundamentals.eBtnAuth			= w.fundamentals.element.find( "#auth_btn" );
+		w.fundamentals.eBtnDeauth		= w.fundamentals.element.find( "#deauth_btn" );
+		w.fundamentals.eBtnGetAuth		= w.fundamentals.element.find( "#get_auth_btn" );
 		w.fundamentals.eCbAutoReconn	= w.fundamentals.element.find( "#auto_reconnect" );
+		
 		
 		w.fundamentals.doWebSocketConnection( );
 		w.fundamentals.registerEvents( );
@@ -47,7 +51,7 @@ $.widget( "jws.fundamentals", {
 			OnGoodBye: function( aEvent ) {
 			}
 		};
-	
+		// this widget will be accessible from the global variable w.auth
 		$( "#demo_box" ).auth( lCallbacks );
 	},
 	
@@ -62,19 +66,10 @@ $.widget( "jws.fundamentals", {
 		w.fundamentals.eBtnThread.click( w.fundamentals.thread );
 		w.fundamentals.eBtnEcho.click( w.fundamentals.echo );
 		w.fundamentals.eBtnConectivity.click( w.fundamentals.showReliabilityOptions );
+		w.fundamentals.eBtnAuth.click( w.auth.auth );
+		w.fundamentals.eBtnDeauth.click( w.auth.deauth );
+		w.fundamentals.eBtnGetAuth.click( w.auth.getAuth );
 		
-	},
-	
-	auth: function() {
-		w.auth.auth();
-	},
-
-	deauth: function() {
-		w.auth.deauth();
-	},
-
-	getAuth: function() {
-		w.auth.getAuth();
 	},
 
 	toggleReconnect: function() {
