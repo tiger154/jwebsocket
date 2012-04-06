@@ -36,8 +36,10 @@ import org.jwebsocket.plugins.jmx.configdefinition.JMXDefinition;
 import org.jwebsocket.plugins.jmx.configdefinition.JMXDefinitionException;
 import org.jwebsocket.plugins.jmx.configdefinition.JMXPluginDefinition;
 import org.jwebsocket.plugins.jmx.mbeanspring.MBeanEnabledExporter;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -91,9 +93,9 @@ public class JMXPlugInsExporter {
 		lExporter.setServer(mServer);
 		Map lBean = new FastMap();
 		for (String lConfigFile : lConfigFiles) {
-			Resource lBeanResource = new FileSystemResource(mConfigFilePath + lConfigFile);
-			XmlBeanFactory lBeanFactory = new ServerXmlBeanFactory(
-					lBeanResource, this.getClass().getClassLoader());
+			JWebSocketBeanFactory.load(mConfigFilePath + lConfigFile, getClass().getClassLoader());
+			ApplicationContext lBeanFactory = JWebSocketBeanFactory.getInstance();
+			
 			if (lConfigFile.toLowerCase().endsWith("beanconfig.xml")) {
 				String lBeanName = lConfigFile.substring(0, lConfigFile.length() - 14);
 				registerMBean(lExporter, lBeanFactory, lBeanName, lBean);
@@ -148,7 +150,7 @@ public class JMXPlugInsExporter {
 		return lObj;
 	}
 
-	private void registerMBean(MBeanEnabledExporter aExporter, XmlBeanFactory aBeanFactory, String aBeanName, Map aBeanMap) throws Exception {
+	private void registerMBean(MBeanEnabledExporter aExporter, ApplicationContext aBeanFactory, String aBeanName, Map aBeanMap) throws Exception {
 		try {
 			JMXDefinition lDefinition = (JMXDefinition) aBeanFactory.getBean(aBeanName);
 
