@@ -23,6 +23,8 @@
 					user=ee11cbb19052e40b07aac0ca060c23ee, ROLE_EXTERNAL, ROLE_ADMIN_ROOT, enabled
 					root=63a9f0ea7bb98050796b649e85481845, ROLE_ADMIN_ROOT, enabled
 					admin=21232f297a57a5a743894a0e4a801fc3, ROLE_ADMIN_MAINTENANCE, enabled
+					alex=b7f490d7a94fd0a6f2e29f8fd1841a54, ROLE_ADMIN_ROOT, ROLE_ADMIN_MAINTENANCE, enabled
+					marta=bc15ab9a9d02322acb686e8c5b057993, ROLE_ADMIN_ROOT, ROLE_ADMIN_MAINTENANCE, enabled
 			</value>
 		</property>	
 	</bean>
@@ -200,7 +202,7 @@
 	
 	<bean id="authPasswordEncoderMD5" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder"/>
 
-	<!-- ####### initialization of authentication and authorization provider ####### -->
+	<!-- ####### initialization of authentication provider ####### -->
 	
 	<bean id="authManager" class="org.springframework.security.authentication.ProviderManager">
 		<property name="providers">
