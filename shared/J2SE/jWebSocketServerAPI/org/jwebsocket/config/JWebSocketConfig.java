@@ -316,6 +316,8 @@ public class JWebSocketConfig implements Config {
 						mJWebSocketHome = aArgs[lIdx + 1];
 						// check trailing backslash
 						adjustJWebSocketHome();
+						System.setProperty(
+							JWebSocketServerConstants.JWEBSOCKET_HOME, mJWebSocketHome);
 						System.out.println(
 								"Using command-line argument -home "
 								+ mJWebSocketHome);
@@ -338,7 +340,7 @@ public class JWebSocketConfig implements Config {
 
 		try {
 			String lLog4JPath = mJWebSocketHome + "conf/log4j.xml";
-			DOMConfigurator.configure(lLog4JPath);
+ 			DOMConfigurator.configure(lLog4JPath);
 			mLog = Logger.getLogger(JWebSocketConfig.class);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Console-Mode: Logs successfully configured by '" + lLog4JPath + "'.");
@@ -875,7 +877,11 @@ public class JWebSocketConfig implements Config {
 	 * @return
 	 */
 	public static String getConfigFolder(String aFilename) {
-		return getSubFolder("config file", "conf", aFilename, null);
+		return getSubFolder(
+				"config file",
+				(isWebApp() ? "conf" : "conf"),
+				aFilename,
+				null);
 	}
 
 	/**
@@ -885,7 +891,11 @@ public class JWebSocketConfig implements Config {
 	 * @return
 	 */
 	public static String getConfigFolder(String aFilename, ClassLoader aClassLoader) {
-		return getSubFolder("config file", "conf", aFilename, aClassLoader);
+		return getSubFolder(
+				"config file",
+				(isWebApp() ? "conf" : "conf"),
+				aFilename,
+				aClassLoader);
 	}
 
 	/**
@@ -895,7 +905,11 @@ public class JWebSocketConfig implements Config {
 	 * @return
 	 */
 	public static String getLibsFolder(String aFilename, ClassLoader aClassLoader) {
-		return getSubFolder("library", "libs", aFilename, aClassLoader);
+		return getSubFolder(
+				"library",
+				(isWebApp() ? "lib": "libs"),
+				aFilename,
+				aClassLoader);
 	}
 
 	/**
@@ -904,7 +918,11 @@ public class JWebSocketConfig implements Config {
 	 * @return
 	 */
 	public static String getLibsFolder(String aFilename) {
-		return getSubFolder("library", "libs", aFilename, null);
+		return getSubFolder(
+				"library", 
+				(isWebApp() ? "lib": "libs"),
+				aFilename, 
+				null);
 	}
 
 	/**

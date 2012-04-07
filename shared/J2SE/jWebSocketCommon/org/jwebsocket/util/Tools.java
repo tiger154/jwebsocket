@@ -20,6 +20,7 @@ import java.security.MessageDigest;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javolution.util.FastList;
@@ -358,14 +359,57 @@ public class Tools {
 	}
 
 	/**
-	 *
+	 * Replaces all pattern ${name} in a string by the values of the 
+	 * corresponding environment variable.
 	 * @param aString
 	 * @return
 	 */
 	public static String expandEnvVars(String aString) {
-		Map<String, String> lEnvVars = System.getenv();
-		return expandVars(aString, lEnvVars, EXPAND_CASE_INSENSITIVE);
+		Map<String, String> lVarsMap = System.getenv();
+		return expandVars(aString, lVarsMap, EXPAND_CASE_INSENSITIVE);
 	}
+
+	/**
+	 * Replaces all pattern ${name} in a string by the values of the 
+	 * corresponding system property.
+	 * @param aString
+	 * @return
+	 */
+	public static String expandProps(String aString) {
+		Map<String, String> lVarsMap = new FastMap<String, String>();
+		Properties lProps = System.getProperties();
+		for (Entry lEntry : lProps.entrySet()) {
+			Object lKey = lEntry.getKey();
+			Object lValue = lEntry.getValue();
+			if (lKey instanceof String && lValue instanceof String) {
+				lVarsMap.put((String) lKey, (String) lValue);
+			}
+		}
+		return expandVars(aString, lVarsMap, EXPAND_CASE_INSENSITIVE);
+	}
+	
+	/**
+	 * Replaces all pattern ${name} in a string by the values of the 
+	 * corresponding environment variable or system property. The setting
+	 * of a system property overrides the setting of the environment variable.
+	 * @param aString
+	 * @return
+	 */
+	public static String expandEnvVarsAndProps(String aString) {
+		Map<String, String> lVarsMap = new FastMap<String, String>(System.getenv());
+		Properties lProps = System.getProperties();
+		for (Entry lEntry : lProps.entrySet()) {
+			Object lKey = lEntry.getKey();
+			Object lValue = lEntry.getValue();
+			if (null != lKey && null != lValue 
+					&& lKey instanceof String
+					&& lValue instanceof String) {
+				lVarsMap.put((String) lKey, (String) lValue);
+			}
+		}
+		return expandVars(aString, lVarsMap, EXPAND_CASE_INSENSITIVE);
+	}
+	
 
 	/**
 	 *
@@ -481,7 +525,7 @@ public class Tools {
 	 * @param aClass
 	 * @param aMethodName
 	 * @param aArgs
-	 * @param aClasses 
+	 * @param aClasses
 	 * @return
 	 * @throws Exception
 	 */
@@ -622,7 +666,7 @@ public class Tools {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public static void startUtilityTimer() {
 		if (null == mTimer) {
@@ -631,7 +675,7 @@ public class Tools {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public static void stopUtilityTimer() {
 		if (null != mTimer) {
@@ -656,7 +700,7 @@ public class Tools {
 	 * http://stackoverflow.com/questions/140131/convert-a-string-representation-of-a-hex-dump-to-a-byte-array-using-java
 	 *
 	 *
-	 * @param aString 
+	 * @param aString
 	 * @return
 	 */
 	public static byte[] hexStringToByteArray(String aString) {

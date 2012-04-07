@@ -37,11 +37,7 @@ import org.jwebsocket.plugins.jmx.configdefinition.JMXDefinitionException;
 import org.jwebsocket.plugins.jmx.configdefinition.JMXPluginDefinition;
 import org.jwebsocket.plugins.jmx.mbeanspring.MBeanEnabledExporter;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 
 /**
  *
