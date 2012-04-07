@@ -162,8 +162,8 @@ xcopy %libs%jackson-mapper-asl-1.9.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jcl-core-2.2.2.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jdom-1.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%json-2-RELEASE65.jar %tempdir%libs\ /s /i /y
-rem xcopy %libs%slf4j-api-1.5.11.jar %tempdir%libs\ /s /i /y
-rem xcopy %libs%slf4j-log4j12-1.5.11.jar %tempdir%libs\ /s /i /y
+xcopy %libs%slf4j-api-1.5.11.jar %tempdir%libs\ /s /i /y
+xcopy %libs%slf4j-log4j12-1.5.11.jar %tempdir%libs\ /s /i /y
 rem Smack XMPP API
 xcopy %libs%smack-3.1.0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%smackx-3.1.0.jar %tempdir%libs\ /s /i /y
@@ -176,8 +176,10 @@ xcopy %libs%spring-core-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-expression-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-jdbc-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-jms-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-ldap-core-1.3.1.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-config-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-core-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-security-crypto-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-ldap-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-tx-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
@@ -231,9 +233,10 @@ xcopy %conf%openssl.cnf %tempdir%conf\ /s /i /y
 xcopy %conf%createSelfSignedCert.bat %tempdir%conf\ /s /i /y
 rem Flash Cross-Domain configuration
 rem spring config files (from v1.0)
+@echo on
 xcopy %conf%ehcache.xml %tempdir%conf\ /s /i /y
-xcopy %conf%api\*.xml %tempdir%conf\api\ /s /i /y
 xcopy %conf%AdminPlugIn\*.xml %tempdir%conf\AdminPlugIn\ /s /i /y
+xcopy %conf%api\*.xml %tempdir%conf\api\ /s /i /y
 xcopy %conf%APIPlugIn\*.xml %tempdir%conf\APIPlugIn\ /s /i /y
 xcopy %conf%ChannelPlugIn\*.xml %tempdir%conf\ChannelPlugIn\ /s /i /y
 xcopy %conf%EventsPlugIn\*.xml %tempdir%conf\EventsPlugIn\ /s /i /y
@@ -245,18 +248,11 @@ xcopy %conf%JMXPlugIn\*.xml %tempdir%conf\JMXPlugIn\ /s /i /y
 xcopy %conf%LoggingPlugIn\*.xml %tempdir%conf\LoggingPlugIn\ /s /i /y
 xcopy %conf%Mail\*.xml %tempdir%conf\Mail\ /s /i /y
 xcopy %conf%ReportingPlugIn\*.xml %tempdir%conf\ReportingPlugIn\ /s /i /y
-xcopy %conf%Resources\bootstrap.xml %tempdir%conf\Resources\ /s /i /y
+xcopy %conf%Resources\*.xml %tempdir%conf\Resources\ /s /i /y
 xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
-
-rem obsolete
-rem xcopy %conf%core.xml %tempdir%conf\ /s /i /y
-rem xcopy %conf%event_definitions.xml %tempdir%conf\ /s /i /y
-rem xcopy %conf%filters.xml %tempdir%conf\ /s /i /y
-rem xcopy %conf%plugins.xml %tempdir%conf\ /s /i /y
-rem xcopy %conf%security.xml %tempdir%conf\ /s /i /y
+@echo off
 
 rem log4j config files (from v1.0)
-rem xcopy %conf%log4j.properties %tempdir%conf\ /s /i /y
 xcopy %conf%log4j.xml %tempdir%conf\ /s /i /y
 
 rem cache readme (from v1.0, will create cache folder at target)

@@ -66,7 +66,7 @@
 	</build>
 	
 	<properties>
-		<org.springframework.version>3.0.5.RELEASE</org.springframework.version>
+		<org.springframework.version>3.1.0.RELEASE</org.springframework.version>
 	</properties>
 
 	<dependencies>
