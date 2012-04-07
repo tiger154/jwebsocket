@@ -39,7 +39,6 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.server.TokenServer;
-import org.jwebsocket.spring.ServerXmlBeanFactory;
 import org.jwebsocket.storage.ehcache.EhCacheStorage;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
