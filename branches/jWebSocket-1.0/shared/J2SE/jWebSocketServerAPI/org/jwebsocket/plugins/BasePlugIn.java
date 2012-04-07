@@ -18,18 +18,10 @@ package org.jwebsocket.plugins;
 import java.util.Map;
 import javolution.util.FastMap;
 import org.json.JSONObject;
-import org.jwebsocket.kit.PlugInResponse;
-import org.jwebsocket.api.PluginConfiguration;
-import org.jwebsocket.api.WebSocketPlugIn;
-import org.jwebsocket.api.WebSocketPlugInChain;
-import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.api.WebSocketEngine;
-import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.api.WebSocketServer;
-import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.api.*;
 import org.jwebsocket.config.xml.PluginConfig;
 import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.util.Tools;
+import org.jwebsocket.kit.PlugInResponse;
 
 /**
  * Abstract implementation of WebSocketPlugin

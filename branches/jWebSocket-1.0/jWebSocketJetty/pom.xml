@@ -42,7 +42,9 @@
 					<stylesheetfile>${project.build.directory}/../../javadocs/stylesheet.css</stylesheetfile>
 				</configuration>
 			</plugin>
+			
 			<plugin>
+				<!-- this one generates the war -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1.1</version>
@@ -55,16 +57,33 @@
 					<warName>${project.name}-${project.version}</warName>
 					<!-- and put it to the desired output folder -->
 					<outputDirectory>${project.build.directory}/../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
-
+					
+					<!-- prevent double use of SLF4J within the war file -->
+					<packagingExcludes>**/slf4j*.jar</packagingExcludes>
+					
 					<!-- this puts the client web into the war -->
 					<!-- <warSourceDirectory>../jWebSocketClient/web</warSourceDirectory> -->
 
 					<webResources>
+						<!-- put all jWebSocket jars into the lib folder too, to be in the classpath -->
+						<resource>
+							<targetPath>WEB-INF/lib</targetPath>						
+							<directory>../../../rte/jWebSocket-${project.version}/libs</directory>
+							<includes>
+								<include>**/jWebSocket*.jar</include>
+							</includes>							
+							<excludes>
+								<exclude>**/*Bundle*.jar</exclude>
+								<exclude>**/slf4j*.jar</exclude>
+							</excludes>							
+						</resource>
+
 						<!-- include the /conf folder into the war -->
 						<resource>
 							<targetPath>WEB-INF/classes/conf</targetPath>						
 							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
 						</resource>
+						
 						<!-- include the web client into the war -->
 						<resource>
               				<!-- this is relative to the pom.xml directory -->
@@ -78,7 +97,7 @@
 								<exclude>**/devguide/**</exclude>
 							</excludes>
 						</resource>
-						
+
 					</webResources>
 
 				</configuration>
@@ -87,10 +106,10 @@
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
+				<version>8.1.0.RC5</version>
 				<!-- find details on this plugin at:
 					http://wiki.eclipse.org/Jetty/Feature/Jetty_Maven_Plugin
 				-->
-				<version>8.1.0.RC5</version>
 				<configuration>
 					<stopPort>9966</stopPort>
 					<stopKey>jetty-stop</stopKey>
@@ -114,9 +133,22 @@
 						<overrideDescriptor>src/main/resources/override-web.xml</overrideDescriptor>
 -->
 					</webAppConfig>
+					<!--
+					<filesets>
+						<fileset>
+							<directory>target/${project.name}/WEB-INF/lib</directory>
+							<includes>
+							</includes>
+							<excludes>
+								<exclude>**/slf4j*.jar</exclude>
+							</excludes>
+						</fileset>
+					</filesets>
+					-->
 				</configuration>
 			</plugin>
 		</plugins>
+
 	</build>
 
 	<profiles>

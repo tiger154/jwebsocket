@@ -70,7 +70,7 @@ public class JWebSocketBeanFactory {
 	 * @param aClassLoader
 	 */
 	public static void load(String aNamespace, String aPath, ClassLoader aClassLoader) {
-		String lPath = Tools.expandEnvVars(aPath);
+		String lPath = Tools.expandEnvVarsAndProps(aPath);
 		
 		XmlBeanDefinitionReader lXmlReader;
 		if (null != aNamespace) {
