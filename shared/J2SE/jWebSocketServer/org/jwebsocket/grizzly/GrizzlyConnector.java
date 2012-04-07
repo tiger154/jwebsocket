@@ -15,21 +15,25 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.grizzly;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.util.Map;
-import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.websockets.WebSocket;
+import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
+import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.kit.WebSocketFrameType;
+import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 import org.jwebsocket.logging.Logging;
 
 /**
@@ -39,14 +43,13 @@ import org.jwebsocket.logging.Logging;
 public class GrizzlyConnector extends BaseConnector {
 
 	private static Logger mLog = Logging.getLogger(GrizzlyConnector.class);
-	private boolean mIsRunning = false;
-	private CloseReason mCloseReason = CloseReason.TIMEOUT;
+	private boolean mRunning = false;
 	private WebSocket mConnection;
 	private HttpRequestPacket mRequest = null;
 	private String mProtocol = null;
 
 	/**
-	 * creates a new Grizzly connector for the passed engine using the passed client
+	 * Creates a new Grizzly connector for the passed engine using the passed client
 	 * socket. Usually connectors are instantiated by their engine only, not by
 	 * the application.
 	 *
@@ -64,20 +67,19 @@ public class GrizzlyConnector extends BaseConnector {
 
 		RequestHeader lHeader = new RequestHeader();
 
-		// Iterating through URL args
-		Map<String, String> lArgs = new FastMap<String, String>();
-		// TODO: ITERATE THROUGH URL ARGS
-//        Set<String> lAtNames = aRequest.getAttributeNames();
+		// TODO: check with Alex which are the url args, these? (?param1=data&param2=other&...)
+		if (null != aRequest.getQueryString()) {
+			try {
+				// Parsing URL arguments
+				Map<String, String> lArguments = jWebSocketGrizzlyTools.getUrlParameters(aRequest.getQueryString());
 
-//        for (String lArgName : lAtNames) {
-		// TODO: Pass arbitrary attributes to see if works
-//            String[] lArgVals = (String[])aRequest.getAttribute(lArgName);
-//            if (lArgVals != null && lArgVals.length > 0) {
-//                lArgs.put(lArgName, lArgVals[0]);
-//            }
-//        }
+				// Setting the URL args to the connector header
+				lHeader.put(RequestHeader.URL_ARGS, lArguments);
 
-		lHeader.put(RequestHeader.URL_ARGS, lArgs);
+			} catch (UnsupportedEncodingException ex) {
+				mLog.error(ex.getMessage());
+			}
+		}
 
 		// set default sub protocol if none passed
 		if (aProtocol == null) {
@@ -94,9 +96,13 @@ public class GrizzlyConnector extends BaseConnector {
 				lHeader.put(lHeaderName, aRequest.getHeader(lHeaderName));
 			}
 		}
-
+		// TODO: check with Alex what is exactly search string
 		lHeader.put(RequestHeader.WS_SEARCHSTRING, aRequest.getQueryString());
 		setHeader(lHeader);
+	}
+
+	public boolean isRunning() {
+		return mRunning;
 	}
 
 	@Override
@@ -106,17 +112,10 @@ public class GrizzlyConnector extends BaseConnector {
 
 	@Override
 	public void startConnector() {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("-------------------------------------------------------------");
-			mLog.debug("Starting Grizzly connector at port " + getRemotePort() + "...");
-			mLog.debug("-------------------------------------------------------------");
-		}
-		mIsRunning = true;
-
+		mRunning = true;
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Started Grizzly connector at port " + getRemotePort());
 		}
-
 		// call connectorStarted method of engine
 		WebSocketEngine lEngine = getEngine();
 		if (lEngine != null) {
@@ -126,22 +125,40 @@ public class GrizzlyConnector extends BaseConnector {
 
 	@Override
 	public void stopConnector(CloseReason aCloseReason) {
-		if (mIsRunning) {
+		if (mConnection.isConnected()) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Stopping Grizzly connector ("
 						+ aCloseReason.name() + ") at port "
 						+ getRemotePort() + "...");
 			}
-			// call client stopped method of engine
-			// (e.g. to release client from streams)
-			WebSocketEngine lEngine = getEngine();
-			if (lEngine != null) {
-				lEngine.connectorStopped(this, aCloseReason);
+
+			if (CloseReason.CLIENT != aCloseReason) {
+				WebSocketPacket lClose;
+				lClose = new RawPacket(WebSocketFrameType.CLOSE,
+						WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name()));
+				WebSocketConnectorStatus lStatus = getStatus();
+				try {
+					// to ensure that the close packet can be sent at all!
+					setStatus(WebSocketConnectorStatus.UP);
+					sendPacketInTransaction(lClose);
+				} catch (WebSocketException ex) {
+					mLog.error("Could not send close notification packet "
+							+ ex.getMessage());
+				} finally {
+					setStatus(lStatus);
+				}
 			}
-			//TODO: add proper reason
+
 			mConnection.close();
-			mCloseReason = aCloseReason;
-			mIsRunning = false;
+			mRunning = false;
+
+			//if the server shuts down the server we have to notify again 
+			// call connectorStarted method of engine
+//			WebSocketEngine lEngine = getEngine();
+//			if (lEngine != null) {
+//				lEngine.connectorStopped(this, aCloseReason);
+//			}
+
 			if (mLog.isInfoEnabled()) {
 				mLog.info("Stopped Grizzly connector ("
 						+ aCloseReason.name() + ") at port "
@@ -159,24 +176,45 @@ public class GrizzlyConnector extends BaseConnector {
 
 	@Override
 	public synchronized void sendPacket(WebSocketPacket aDataPacket) {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Sending packet '" + aDataPacket.getUTF8() + "'...");
-		}
+//		if (mLog.isDebugEnabled()) {
+//			mLog.debug("Sending packet '" + aDataPacket.getUTF8() + "'...");
+//		}
 
 		try {
-			if (aDataPacket.getFrameType() == WebSocketFrameType.BINARY) {
-				mConnection.send(aDataPacket.getByteArray());
-				// mOutbound.sendMessage((byte) 0, );
-//                byte[] lBA = aDataPacket.getByteArray();
-//                mConnection.send(lBA);
-			} else {
-				mConnection.send(aDataPacket.getUTF8());
+			if (mConnection.isConnected()) {
+				if (aDataPacket.getFrameType() == WebSocketFrameType.BINARY
+						|| aDataPacket.getFrameType() == WebSocketFrameType.PING) {
+					mConnection.send(aDataPacket.getByteArray());
+				} else if (aDataPacket.getFrameType() == WebSocketFrameType.TEXT) {
+					mConnection.send(aDataPacket.getUTF8());
+				} else {
+					mConnection.send(aDataPacket.getByteArray());
+				}
 			}
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " sending data packet: " + lEx.getMessage());
 		}
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Packet '" + aDataPacket.getUTF8() + "' sent.");
+//		if (mLog.isDebugEnabled()) {
+//			mLog.debug("Packet '" + aDataPacket.getUTF8() + "' sent.");
+//		}
+	}
+
+	@Override
+	public void sendPacketInTransaction(WebSocketPacket aDataPacket) throws WebSocketException {
+		if (WebSocketConnectorStatus.UP == getStatus()) {
+			boolean lSendSuccess = false;
+			String lExMsg = null;
+			try {
+				if (mConnection.isConnected()) {
+					mConnection.send(aDataPacket.getUTF8());
+					lSendSuccess = true;
+				} else {
+					mLog.error("Trying to send transaction to closed connection: "
+							+ getId() + ", " + aDataPacket.getUTF8());
+				}
+			} catch (Exception lEx) {
+				lExMsg = lEx.getMessage();
+			}
 		}
 	}
 
@@ -206,6 +244,14 @@ public class GrizzlyConnector extends BaseConnector {
 			lAddr = null;
 		}
 		return lAddr;
+	}
+
+	public HttpRequestPacket getmRequest() {
+		return mRequest;
+	}
+
+	public WebSocket getConnection() {
+		return mConnection;
 	}
 
 	@Override

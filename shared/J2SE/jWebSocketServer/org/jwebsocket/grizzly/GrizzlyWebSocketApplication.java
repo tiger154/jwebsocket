@@ -15,13 +15,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.grizzly;
 
+import java.util.Map;
+import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.websockets.DataFrame;
 import org.glassfish.grizzly.websockets.WebSocket;
 import org.glassfish.grizzly.websockets.WebSocketApplication;
-import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
@@ -33,107 +33,130 @@ import org.jwebsocket.logging.Logging;
 public class GrizzlyWebSocketApplication extends WebSocketApplication {
 
 	private static Logger mLog = Logging.getLogger(GrizzlyWebSocketApplication.class);
-	private WebSocketConnector mConnector = null;
-	private WebSocketEngine mEngine = null;
+	private static Map<WebSocket, GrizzlyConnector> mConnectors;
+	private GrizzlyEngine mEngine = null;
 	private HttpRequestPacket mRequest = null;
 	private String mProtocol = null;
 
-	public GrizzlyWebSocketApplication(WebSocketEngine aEngine) {
+	/**
+	 * The application listener for grizzly WebSocket
+	 * @param aEngine
+	 */
+	public GrizzlyWebSocketApplication(GrizzlyEngine aEngine) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating Grizzly Wrapper with subprotocol '" + mProtocol + "'...");
 		}
 		mEngine = aEngine;
+		mConnectors = new FastMap<WebSocket, GrizzlyConnector>().shared();
 	}
 
+	/**
+	 * This method analyzes if the incoming connection is for this application, 
+	 * otherwise it rejects the connection.
+	 * @param aRequest
+	 * @return aIsApplicationRequest
+	 */
 	@Override
 	public boolean isApplicationRequest(HttpRequestPacket aRequest) {
 		mRequest = aRequest;
-
+		// The jWebSocket context from the engine configuration
 		String context = mEngine.getConfiguration().getContext();
+		// The jWebSocket servlet from the engine configuration
 		String servlet = mEngine.getConfiguration().getServlet();
 
 		return (context + servlet).equals(aRequest.getRequestURI());
 	}
 
 	@Override
-	public void onConnect(WebSocket aSocket) {
+	public void onConnect(WebSocket aWebSocket) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Connecting Grizzly Client...");
 		}
 
-		mConnector = new GrizzlyConnector(mEngine, mRequest, mProtocol, aSocket);
-		mEngine.addConnector(mConnector);
+		GrizzlyConnector lConnector = new GrizzlyConnector(mEngine, mRequest, mProtocol, aWebSocket);
+		mConnectors.put(aWebSocket, lConnector);
+
 		// inherited BaseConnector.startConnector
 		// calls mEngine connector started
+		lConnector.startConnector();
 
-		mConnector.startConnector();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onClose(WebSocket aSocket, DataFrame aFrame) {
+	public void onClose(WebSocket aWebSocket, DataFrame aFrame) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Disconnecting Grizzly Client...");
 		}
-		if (mConnector != null) {
-			// inherited BaseConnector.stopConnector
-			// calls mEngine connector stopped
-			mConnector.stopConnector(CloseReason.CLIENT);
-			mEngine.removeConnector(mConnector);
+		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
+
+		if (lConnector != null) {
+			lConnector.stopConnector(CloseReason.CLIENT);
+				mEngine.connectorStopped(lConnector, CloseReason.CLIENT);
+		}
+
+		mConnectors.remove(aWebSocket);
+	}
+
+	@Override
+	public void onFragment(WebSocket aWebSocket, String aFragment, boolean aLast) {
+		super.onFragment(aWebSocket, aFragment, aLast);
+
+		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
+		if (lConnector != null) {
+			mEngine.processPacket(lConnector, new RawPacket(aFragment));
 		}
 	}
 
 	@Override
-	public void onFragment(WebSocket aSocket, String aFragment, boolean aLast) {
-		super.onFragment(aSocket, aFragment, aLast);
-		if (mConnector != null) {
-			mEngine.processPacket(mConnector, new RawPacket(aFragment));
+	public void onFragment(WebSocket aWebSocket, byte[] aFragment, boolean aLast) {
+		super.onFragment(aWebSocket, aFragment, aLast);
+
+		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
+		if (lConnector != null) {
+			mEngine.processPacket(lConnector, new RawPacket(aFragment));
 		}
 	}
 
 	@Override
-	public void onFragment(WebSocket aSocket, byte[] aFragment, boolean aLast) {
-		super.onFragment(aSocket, aFragment, aLast);
-		if (mConnector != null) {
-			mEngine.processPacket(mConnector, new RawPacket(aFragment));
-		}
-	}
-
-	@Override
-	public void onMessage(WebSocket aWebsocket, String aData) {
+	public void onMessage(WebSocket aWebSocket, String aData) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Message (text) from Grizzly client...");
 		}
-		if (mConnector != null) {
-			mEngine.processPacket(mConnector, new RawPacket(aData));
+		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
+		if (lConnector != null) {
+			mEngine.processPacket(lConnector, new RawPacket(aData));
 		}
 	}
 
 	@Override
-	public void onMessage(WebSocket aSocket, byte[] aBytes) {
+	public void onMessage(WebSocket aWebSocket, byte[] aBytes) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Message (binary) from Grizzly client...");
 		}
-		if (mConnector != null) {
-			mEngine.processPacket(mConnector, new RawPacket(aBytes));
+		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
+		if (lConnector != null) {
+			mEngine.processPacket(lConnector, new RawPacket(aBytes));
 		}
 	}
 
 	@Override
-	public void onPing(WebSocket aSocket, byte[] aBytes) {
-		super.onPing(aSocket, aBytes);
-		if (mConnector != null) {
-			mConnector.processPing(new RawPacket(aBytes));
+	public void onPing(WebSocket aWebSocket, byte[] aBytes) {
+		super.onPing(aWebSocket, aBytes);
+		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
+		if (lConnector != null) {
+			lConnector.processPing(new RawPacket(aBytes));
 		}
 	}
 
 	@Override
-	public void onPong(WebSocket aSocket, byte[] aBytes) {
-		super.onPong(aSocket, aBytes);
-		if (mConnector != null) {
-			mConnector.processPong(new RawPacket(aBytes));
+	public void onPong(WebSocket aWebSocket, byte[] aBytes) {
+		super.onPong(aWebSocket, aBytes);
+		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
+		if (lConnector != null) {
+			lConnector.processPong(new RawPacket(aBytes));
 		}
 	}
 }
