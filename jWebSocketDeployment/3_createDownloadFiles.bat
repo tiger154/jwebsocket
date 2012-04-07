@@ -178,9 +178,10 @@ xcopy %libs%spring-jdbc-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-jms-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-config-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-core-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-security-ldap-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-tx-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+xcopy %libs%spring-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%twitter4j-core-2.1.12.jar %tempdir%libs\ /s /i /y
 rem jWebSocket .jars
 xcopy %libs%jWebSocketCommon-%ver%.jar %tempdir%libs\ /s /i /y
@@ -229,20 +230,23 @@ xcopy %conf%jWebSocket.pkcs12 %tempdir%conf\ /s /i /y
 xcopy %conf%openssl.cnf %tempdir%conf\ /s /i /y
 xcopy %conf%createSelfSignedCert.bat %tempdir%conf\ /s /i /y
 rem Flash Cross-Domain configuration
-xcopy %conf%FlashPlugIn\crossdomain.xml %tempdir%conf\FlashPlugIn\ /s /i /y
 rem spring config files (from v1.0)
 xcopy %conf%ehcache.xml %tempdir%conf\ /s /i /y
 xcopy %conf%api\*.xml %tempdir%conf\api\ /s /i /y
-xcopy %conf%Resources\bootstrap.xml %tempdir%conf\Resources\ /s /i /y
-xcopy %conf%AdminPlugIn\jwsMgmtDesk.xml %tempdir%conf\AdminPlugIn\ /s /i /y
-xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
-xcopy %conf%EventsPlugIn\*.xml %tempdir%conf\EventsPlugIn\ /s /i /y
-xcopy %conf%JDBCPlugIn\*.xml %tempdir%conf\JDBCPlugIn\ /s /i /y
+xcopy %conf%AdminPlugIn\*.xml %tempdir%conf\AdminPlugIn\ /s /i /y
+xcopy %conf%APIPlugIn\*.xml %tempdir%conf\APIPlugIn\ /s /i /y
 xcopy %conf%ChannelPlugIn\*.xml %tempdir%conf\ChannelPlugIn\ /s /i /y
+xcopy %conf%EventsPlugIn\*.xml %tempdir%conf\EventsPlugIn\ /s /i /y
+xcopy %conf%FileSsystemPlugIn\*.xml %tempdir%conf\FileSsystemPlugIn\ /s /i /y
+xcopy %conf%FlashPlugIn\*.xml %tempdir%conf\FlashPlugIn\ /s /i /y
+xcopy %conf%JDBCPlugIn\*.xml %tempdir%conf\JDBCPlugIn\ /s /i /y
 xcopy %conf%JMSPlugIn\*.xml %tempdir%conf\JMSPlugIn\ /s /i /y
 xcopy %conf%JMXPlugIn\*.xml %tempdir%conf\JMXPlugIn\ /s /i /y
 xcopy %conf%LoggingPlugIn\*.xml %tempdir%conf\LoggingPlugIn\ /s /i /y
+xcopy %conf%Mail\*.xml %tempdir%conf\Mail\ /s /i /y
 xcopy %conf%ReportingPlugIn\*.xml %tempdir%conf\ReportingPlugIn\ /s /i /y
+xcopy %conf%Resources\bootstrap.xml %tempdir%conf\Resources\ /s /i /y
+xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
 
 rem obsolete
 rem xcopy %conf%core.xml %tempdir%conf\ /s /i /y
