@@ -225,6 +225,7 @@
 	</bean>
 
 	<!-- Setting up the SessionManager (required) -->
+	<!-- InMemory session -->
 	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
 			init-method="initialize" destroy-method="shutdown">
 		<property name="storageProvider" ref="cacheProviderMemory"/>
@@ -238,5 +239,41 @@
 			</bean>
 		</property>
 	</bean>
-
+	
+	
+	<!-- MongoDB Database connection-->
+	<bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
+	</bean>
+	
+	<!--  MongoDB Storage provider (here for the sessions) -->
+	<bean id="storageProviderMongoDB" class="org.jwebsocket.storage.mongodb.MongoDBStorageProvider">
+		<property name="con" ref="mongodbConnection0" />
+		<property name="databaseName" value="storages" />
+		<property name="collectionName" value="__storages_collection__" />
+	</bean>
+	
+	<!--  MongoDB Cache Storage builder (here for the sessions) -->
+	<bean id="cacheStorageProviderMongoDB" class="org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageProvider">
+		<property name="con" ref="mongodbConnection0" />
+		<property name="databaseName" value="cache_storages" />
+		<property name="collectionName" value="__cache_storages_collection__" />
+	</bean>
+	
+	<!-- MongoDB session -->
+	<!--
+	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
+			init-method="initialize" destroy-method="shutdown">
+		<property name="storageProvider" ref="storageProviderMongoDB"/>
+		<property name="reconnectionManager">
+			<bean class="org.jwebsocket.session.mongodb.MongoDBReconnectionManager" 
+			init-method="initialize" destroy-method="shutdown">
+				<property name="storageProvider" ref="storageProviderMongoDB" />
+				<property name="cacheStorageProvider" ref="cacheStorageProviderMongoDB" />
+				<property name="cacheStorageName" value="__reconnection_manager_ns__" />
+				<property name="sessionExpirationTime" value="60" />
+				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
+			</bean>
+		</property>
+	</bean>
+	-->
 </beans>
