@@ -14,11 +14,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.session.mongodb;
 
-import org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageBuilder;
 import org.apache.log4j.Logger;
+import org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageBuilder;
+import org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageProvider;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.session.BaseReconnectionManager;
-import org.jwebsocket.storage.mongodb.MongoDBStorageBuilder;
 
 /**
  *
@@ -26,16 +26,15 @@ import org.jwebsocket.storage.mongodb.MongoDBStorageBuilder;
  */
 public class MongoDBReconnectionManager extends BaseReconnectionManager {
 
-	private MongoDBCacheStorageBuilder mCacheStorageBuilder;
-	private MongoDBStorageBuilder mStorageBuilder;
+	private MongoDBCacheStorageProvider mCacheStorageProvider;
 	private static Logger mLog = Logging.getLogger(MongoDBReconnectionManager.class);
 
-	public MongoDBCacheStorageBuilder getCacheStorageBuilder() {
-		return mCacheStorageBuilder;
+	public MongoDBCacheStorageProvider getCacheStorageProvider() {
+		return mCacheStorageProvider;
 	}
 
-	public void setCacheStorageBuilder(MongoDBCacheStorageBuilder cacheStorageBuilder) {
-		this.mCacheStorageBuilder = cacheStorageBuilder;
+	public void setCacheStorageProvider(MongoDBCacheStorageProvider aCacheStorageProvider) {
+		this.mCacheStorageProvider = aCacheStorageProvider;
 	}
 
 	@Override
@@ -44,10 +43,10 @@ public class MongoDBReconnectionManager extends BaseReconnectionManager {
 			mLog.debug(">> Initializing...");
 		}
 
-		setReconnectionIndex(mCacheStorageBuilder.getCacheStorage(MongoDBCacheStorageBuilder.V1, getCacheStorageName()));
+		setReconnectionIndex(mCacheStorageProvider.getCacheStorage(getCacheStorageName()));
 		getReconnectionIndex().initialize();
-		
-		setSessionIdsTrash(mStorageBuilder.getStorage(MongoDBStorageBuilder.V1, getTrashStorageName()));
+
+		setSessionIdsTrash(getStorageProvider().getStorage(getTrashStorageName()));
 		getSessionIdsTrash().initialize();
 	}
 
