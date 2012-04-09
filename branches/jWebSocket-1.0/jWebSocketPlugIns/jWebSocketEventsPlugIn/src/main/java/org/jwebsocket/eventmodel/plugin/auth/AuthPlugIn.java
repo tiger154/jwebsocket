@@ -16,28 +16,30 @@
 package org.jwebsocket.eventmodel.plugin.auth;
 
 import java.util.Map;
+import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.api.IUserUniqueIdentifierContainer;
-import org.jwebsocket.eventmodel.plugin.EventModelPlugIn;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
-import org.jwebsocket.eventmodel.event.auth.Logon;
 import org.jwebsocket.eventmodel.event.auth.Logoff;
+import org.jwebsocket.eventmodel.event.auth.Logon;
+import org.jwebsocket.eventmodel.event.auth.UserLogoff;
+import org.jwebsocket.eventmodel.plugin.EventModelPlugIn;
 import org.jwebsocket.eventmodel.util.Util;
+import org.jwebsocket.logging.Logging;
+import org.jwebsocket.plugins.system.SystemPlugIn;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.jwebsocket.logging.Logging;
-import org.apache.log4j.Logger;
-import org.jwebsocket.eventmodel.event.auth.UserLogoff;
-import org.jwebsocket.plugins.system.SystemPlugIn;
 
 /**
- * 
+ *
  * @author kyberneees
  */
 public class AuthPlugIn extends EventModelPlugIn {
 
-	private AuthenticationManager mAm;
+	private AuthenticationManager mAuthenticationManager;
+	private AuthenticationProvider mAuthenticationProvider;
 	private static Logger mLog = Logging.getLogger(AuthPlugIn.class);
 
 	public AuthPlugIn() {
@@ -55,12 +57,23 @@ public class AuthPlugIn extends EventModelPlugIn {
 		String lUsername = aEvent.getUsername();
 		String lPassword = aEvent.getPassword();
 
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Authenticating with the '" + mAm.getClass().getName() + "' authentication manager...");
-		}
 		//Login process
 		Authentication lRequest = new UsernamePasswordAuthenticationToken(lUsername, lPassword);
-		Authentication lLoggon = getAm().authenticate(lRequest);
+		Authentication lAuthentication;
+
+		if (null != mAuthenticationProvider) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Authenticating with the '" + mAuthenticationProvider.getClass().
+						getName() + "' authentication provider...");
+			}
+			lAuthentication = mAuthenticationProvider.authenticate(lRequest);
+		} else {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Authenticating with the '" + mAuthenticationManager.getClass().
+						getName() + "' authentication manager...");
+			}
+			lAuthentication = mAuthenticationManager.authenticate(lRequest);
+		}
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Updating the user session...");
@@ -69,30 +82,30 @@ public class AuthPlugIn extends EventModelPlugIn {
 		Map<String, Object> lSession = aEvent.getConnector().getSession().getStorage();
 
 		//Setting the is_authenticated flag
-		lSession.put(SystemPlugIn.IS_AUTHENTICATED, lLoggon.isAuthenticated());
+		lSession.put(SystemPlugIn.IS_AUTHENTICATED, lAuthentication.isAuthenticated());
 
 		//Setting the username
 		lSession.put(SystemPlugIn.USERNAME, lUsername);
-		
+
 		//Setting the username in the connector instance...
 		aEvent.getConnector().setUsername(lUsername);
 
 		//Setting the uuid
-		String lUUID = null;
-		Object lDetails = lLoggon.getDetails();
+		String lUUID;
+		Object lDetails = lAuthentication.getDetails();
 		if (null != lDetails && lDetails instanceof IUserUniqueIdentifierContainer) {
 			lUUID = ((IUserUniqueIdentifierContainer) lDetails).getUUID();
 		} else {
 			lUUID = lUsername;
 		}
 		lSession.put(SystemPlugIn.UUID, lUUID);
-		
+
 		//Setting the uuid in the connectot instance...
 		aEvent.getConnector().setString(SystemPlugIn.UUID, lUUID);
 
 		//Setting the roles
 		String lRoles = "";
-		for (GrantedAuthority lGrantedAuthority : lLoggon.getAuthorities()) {
+		for (GrantedAuthority lGrantedAuthority : lAuthentication.getAuthorities()) {
 			lRoles = lRoles.concat(lGrantedAuthority.getAuthority() + " ");
 		}
 		lSession.put(SystemPlugIn.AUTHORITIES, lRoles);
@@ -109,7 +122,7 @@ public class AuthPlugIn extends EventModelPlugIn {
 
 	/**
 	 * The logout process
-	 * 
+	 *
 	 * @param aEvent
 	 * @param aResponseEvent
 	 */
@@ -130,16 +143,32 @@ public class AuthPlugIn extends EventModelPlugIn {
 	}
 
 	/**
-	 * @return the am
+	 * @return The AuthenticationManager
 	 */
-	public AuthenticationManager getAm() {
-		return mAm;
+	public AuthenticationManager getAuthenticationManager() {
+		return mAuthenticationManager;
 	}
 
 	/**
-	 * @param aAm the am to set
+	 * @param The AuthenticationManaher to set
 	 */
-	public void setAm(AuthenticationManager aAm) {
-		this.mAm = aAm;
+	public void setAuthenticationManager(AuthenticationManager aAuthenticationManager) {
+		this.mAuthenticationManager = aAuthenticationManager;
+	}
+
+	/**
+	 *
+	 * @return The AuthenticationProvider
+	 */
+	public AuthenticationProvider getAuthenticationProvider() {
+		return mAuthenticationProvider;
+	}
+
+	/**
+	 *
+	 * @param The AuthenticationProvider to set
+	 */
+	public void setAuthenticationProvider(AuthenticationProvider aAuthenticationProvider) {
+		this.mAuthenticationProvider = aAuthenticationProvider;
 	}
 }
