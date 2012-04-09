@@ -15,7 +15,6 @@
 package org.jwebsocket.session.mongodb;
 
 import org.apache.log4j.Logger;
-import org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageBuilder;
 import org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageProvider;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.session.BaseReconnectionManager;

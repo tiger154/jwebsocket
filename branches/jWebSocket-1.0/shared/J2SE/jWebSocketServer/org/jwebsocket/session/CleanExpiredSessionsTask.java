@@ -40,6 +40,7 @@ public class CleanExpiredSessionsTask extends TimerTask {
 	public void run() {
 		// show debug log only, if there really are expired sessions
 		boolean lIsLogged = false;
+		
 		Iterator<String> lKeys = mSessionIdsTrash.keySet().iterator();
 		while (lKeys.hasNext()) {
 			if (!lIsLogged && mLog.isDebugEnabled()) {
