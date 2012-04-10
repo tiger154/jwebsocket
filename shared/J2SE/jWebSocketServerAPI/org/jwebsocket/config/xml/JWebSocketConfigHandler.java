@@ -557,12 +557,21 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 
 		Element lRootNodeAdmin = lDocAdmin.getRootElement();
 		Element lPluginsAdmin = lRootNodeAdmin.getChild(ELEMENT_PLUGINS);
-//		List<Element> lPluginsListAdmin = lPluginsAdmin.getChildren(ELEMENT_PLUGIN);
-//		List<Element> lNewPlugins = new FastList<Element>(lPluginsListAdmin);
+		List<Element> lPluginsAdminList = lPluginsAdmin.getChildren(ELEMENT_PLUGIN);
+		
+		Boolean lExist = false;
+		for (int i = 0; i < lPluginsAdminList.size(); i++) {
+			if (aId.equals(lPluginsAdminList.get(i).getChildText("id"))) {
+				lExist = true;
+				break;
+			}
+		}
 
 		for (int i = 0; i < lPluginsList.size(); i++) {
 			if (aId.equals(lPluginsList.get(i).getChildText("id"))) {
-				lPluginsAdmin.addContent((Element)lPluginsList.get(i).clone());
+				if(false == lExist) {
+					lPluginsAdmin.addContent((Element)lPluginsList.get(i).clone());
+				}
 				lPluginsList.remove(i);
 				break;
 			}

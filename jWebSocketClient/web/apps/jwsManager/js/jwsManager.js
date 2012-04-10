@@ -1,3 +1,25 @@
+//	****************************************************************************
+//	jWebSocket Management Desk (uses jWebSocket Client and Server)
+//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH, Herzogenrath
+//	****************************************************************************
+//	This program is free software; you can redistribute it and/or modify it
+//	under the terms of the GNU Lesser General Public License as published by the
+//	Free Software Foundation; either version 3 of the License, or (at your
+//	option) any later version.
+//	This program is distributed in the hope that it will be useful, but WITHOUT
+//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//	more details.
+//	You should have received a copy of the GNU Lesser General Public License along
+//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	****************************************************************************
+
+/**
+ * 
+ * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @version 1.0
+ * 
+ */
 Ext.BLANK_IMAGE_URL = 'images/s.gif';
 Ext.Loader.setConfig({
 	enabled: true
@@ -61,7 +83,8 @@ function newGridPanel(Title, Store){
 			width:55
 		}]
 	});
-}	
+}
+
 function newWindowAdd(type, storeJar, storeId, store){
 	Ext.create('Ext.window.Window',{
 		renderTo:Ext.getBody(),
@@ -227,6 +250,7 @@ function newWindowAdd(type, storeJar, storeId, store){
 		});
 	});
 }
+
 function newWindowReason(aId, aFunction, aStore){
 	Ext.create('Ext.window.Window',{
 		renderTo:Ext.getBody(),
@@ -328,6 +352,7 @@ function initToolTip(Title){
 		}
 	});
 }
+
 function newMessageBox(Id, Title, Text, Function){
 	return Ext.create('Ext.window.Window',{
 		id:Id,
@@ -372,6 +397,7 @@ function newMessageBox(Id, Title, Text, Function){
 		}]
 	}).show().center();
 }
+
 function msg(type, message, delay, align){
 	var msgCt;
 	var title;
@@ -408,6 +434,7 @@ function msg(type, message, delay, align){
 	});
 }
 
+//Login Panel
 admin.loginPanel = {
 	init: function(){		
 		Ext.create('Ext.window.Window',{
@@ -512,6 +539,7 @@ admin.loginPanel = {
 	}
 }
 
+//Plugins and Filters Panel
 admin.mainPanel = {
 	init: function(){
 		Ext.define('Comp', {
@@ -857,6 +885,7 @@ admin.mainPanel = {
 	}
 }
 
+//Logs Panel
 admin.logsPanel = {
 	init: function(){		
 		Ext.define('Log', {
@@ -971,6 +1000,7 @@ admin.logsPanel = {
 	}
 }
 
+//About Panel
 admin.aboutPanel = {
 	init: function(){		
 		Ext.create('Ext.window.Window',{

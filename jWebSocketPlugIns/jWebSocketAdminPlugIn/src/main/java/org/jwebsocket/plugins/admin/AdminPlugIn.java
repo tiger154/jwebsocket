@@ -360,6 +360,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		lServer.sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 * return the last logs registered. 
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void getAdminLogs(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -372,6 +378,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.getAdminLogs(aConnector, aToken));
 	}
 
+	/**
+	 * return all plugins config of the PluginChain
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void getPlugInsConfig(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -384,6 +396,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.getPlugInsConfig(aConnector, aToken));
 	}
 
+	/**
+	 * return all filters config of the FilterChain
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void getFiltersConfig(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -396,6 +414,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.getFiltersConfig(aConnector, aToken));
 	}
 
+	/**
+	 * return all name of jars located in the libs folder
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void getJars(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -408,6 +432,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.getJars(aConnector, aToken));
 	}
 
+	/**
+	 * return all ids of plugins container in the jar
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void getPlugInsByJar(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -420,6 +450,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.getPlugInsByJar(aConnector, aToken));
 	}
 
+	/**
+	 * return all ids of filters container in the jar 
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void getFilterByJar(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -432,6 +468,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.getFilterByJar(aConnector, aToken));
 	}
 
+	/**
+	 * return the plugin config by id
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void getPlugInConfigById(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -444,6 +486,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.getPlugInConfigById(aConnector, aToken));
 	}
 
+	/**
+	 * return the filter config by id
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void getFilterConfigById(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -456,6 +504,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.getFilterConfigById(aConnector, aToken));
 	}
 
+	/**
+	 * Change the order of plugin in the PluginChain. (Up or Down <N> step)
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void changeOrderOfPlugInChain(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -468,6 +522,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.changeOrderOfPlugInChain(aConnector, aToken));
 	}
 
+	/**
+	 * Change the order of filter in the FilterChain. (Up or Down <N> step)
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void changeOrderOfFilterChain(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -480,6 +540,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.changeOrderOfFilterChain(aConnector, aToken));
 	}
 
+	/**
+	 * Enable a plugin in the PluginChain by id
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void enablePlugIn(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -492,6 +558,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.enablePlugIn(aConnector, aToken));
 	}
 
+	/**
+	 * Enable a filter in the FilterChain by id
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void enableFilter(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -504,6 +576,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.enableFilter(aConnector, aToken));
 	}
 
+	/**
+	 * Disable a plugin in the PluginChain by id
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void disablePlugIn(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -516,6 +594,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.disablePlugIn(aConnector, aToken));
 	}
 
+	/**
+	 * Disable a filter in the FilterChain by id
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void disableFilter(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -528,6 +612,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.disableFilter(aConnector, aToken));
 	}
 
+	/**
+	 * Add a new plugin in the PluginChain
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void addPlugIn(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -540,6 +630,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.addPlugIn(aConnector, aToken));
 	}
 
+	/**
+	 * Add a new filter in the FilterChain
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void addFilter(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -552,6 +648,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.addFilter(aConnector, aToken));
 	}
 
+	/**
+	 * Remove a plugin by id
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void removePlugIn(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -564,6 +666,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.removePlugIn(aConnector, aToken));
 	}
 
+	/**
+	 * Remove a filter by id
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void removeFilter(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -576,6 +684,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.removeFilter(aConnector, aToken));
 	}
 
+	/**
+	 * Reload a plugin by id
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void reloadPlugIn(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
@@ -588,6 +702,12 @@ public class AdminPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, mService.reloadPlugIn(aConnector, aToken));
 	}
 
+	/**
+	 * Reload a filter by id
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void reloadFilter(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
 			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
