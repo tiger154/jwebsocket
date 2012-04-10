@@ -104,7 +104,7 @@ public class JMXPlugInAuthenticator implements JMXAuthenticator {
 		JMXPlugInAuthenticator.mConfigPath = aConfigPath;
 	}
 
-	private Boolean credentialAllowed(Collection<GrantedAuthority> aCredentials) {
+	private Boolean credentialAllowed(Collection<? extends GrantedAuthority> aCredentials) {
 		for (GrantedAuthority lCredential : aCredentials) {
 			if (lCredential.getAuthority().equals("ROLE_ADMIN_JMX")) {
 				return true;

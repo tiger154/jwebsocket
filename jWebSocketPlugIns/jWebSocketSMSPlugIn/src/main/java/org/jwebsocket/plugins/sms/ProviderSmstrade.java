@@ -32,22 +32,43 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 
-	private static Logger mLog = Logging.getLogger(ProviderSmstrade.class);
-	private String debug;
-	private String cost;
+	private static Logger mLog = Logging.getLogger();
+	private String mDebug;
+	private String mCost;
 	private String mMessageId;
-	private String count;
-	private String dlr;
-	private String ref;
-	private String concat_sms;
-	private String route;
-	private String senddate;
-	private String messagetype;
+	private String mCount;
+	private String mDlr;
+	private String mRef;
+	private String mConcatSms;
+	private String mRoute;
+	private String mSendDate;
+	private String mMessageType;
+	private String mKey = "";
 
 	public ProviderSmstrade(String aMessageId, String aCount, String dlr) {
-		this.mMessageId = aMessageId;
-		this.count = aCount;
-		this.dlr = dlr;
+		mMessageId = aMessageId;
+		mCount = aCount;
+		mDlr = dlr;
+	}
+
+	public ProviderSmstrade() {
+		mMessageId = "1";
+		mCount = "1";
+		mDlr = "1";
+	}
+
+	/**
+	 * @return the Key
+	 */
+	public String getKey() {
+		return mKey;
+	}
+
+	/**
+	 * @param mKey the Key to set
+	 */
+	public void setKey(String aKey) {
+		mKey = aKey;
 	}
 
 	private String getErrorMessage(String aCode) {
@@ -86,7 +107,6 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 		lRes.setString("msg", "undefined");
 
 		// building data
-		String lKey = "MP7Y2PJca367bd5apTqR7Fe";
 		String lFrom = aToken.getString("from");
 		String lTo = aToken.getString("to");
 		String lMessage = aToken.getString("message");
@@ -111,7 +131,7 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 			mLog.error(lEx.getClass().getSimpleName() + " at parsing arguments: " + lEx.getMessage());
 		}
 
-		String lURLString = "http://gateway.smstrade.de/?key=" + lKey
+		String lURLString = "http://gateway.smstrade.de/?key=" + getKey()
 				+ "&from=" + lFromEnc
 				+ "&to=" + lToEnc
 				+ "&message=" + lMessageEnc
@@ -189,21 +209,21 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	 * @return the debug
 	 */
 	public String getDebug() {
-		return debug;
+		return mDebug;
 	}
 
 	/**
 	 * @param debug the debug to set
 	 */
 	public void setDebug(String debug) {
-		this.debug = debug;
+		this.mDebug = debug;
 	}
 
 	/**
 	 * @return the cost
 	 */
 	public String getCost() {
-		return cost;
+		return mCost;
 	}
 
 	/**
@@ -217,56 +237,56 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	 * @return the count
 	 */
 	public String getCount() {
-		return count;
+		return mCount;
 	}
 
 	/**
 	 * @return the dlr
 	 */
 	public String getDlr() {
-		return dlr;
+		return mDlr;
 	}
 
 	/**
 	 * @return the ref
 	 */
 	public String getRef() {
-		return ref;
+		return mRef;
 	}
 
 	/**
 	 * @return the concat_sms
 	 */
 	public String getConcat_sms() {
-		return concat_sms;
+		return mConcatSms;
 	}
 
 	/**
 	 * @return the route
 	 */
 	public String getRoute() {
-		return route;
+		return mRoute;
 	}
 
 	/**
 	 * @return the senddate
 	 */
 	public String getSenddate() {
-		return senddate;
+		return mSendDate;
 	}
 
 	/**
 	 * @return the messagetype
 	 */
 	public String getMessagetype() {
-		return messagetype;
+		return mMessageType;
 	}
 
 	/**
 	 * @param cost the cost to set
 	 */
 	public void setCost(String cost) {
-		this.cost = cost;
+		this.mCost = cost;
 	}
 
 	/**
@@ -280,48 +300,48 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	 * @param count the count to set
 	 */
 	public void setCount(String count) {
-		this.count = count;
+		this.mCount = count;
 	}
 
 	/**
 	 * @param dlr the dlr to set
 	 */
 	public void setDlr(String dlr) {
-		this.dlr = dlr;
+		this.mDlr = dlr;
 	}
 
 	/**
 	 * @param ref the ref to set
 	 */
 	public void setRef(String ref) {
-		this.ref = ref;
+		this.mRef = ref;
 	}
 
 	/**
 	 * @param concat_sms the concat_sms to set
 	 */
 	public void setConcat_sms(String concat_sms) {
-		this.concat_sms = concat_sms;
+		this.mConcatSms = concat_sms;
 	}
 
 	/**
 	 * @param route the route to set
 	 */
 	public void setRoute(String route) {
-		this.route = route;
+		this.mRoute = route;
 	}
 
 	/**
 	 * @param senddate the senddate to set
 	 */
 	public void setSenddate(String senddate) {
-		this.senddate = senddate;
+		this.mSendDate = senddate;
 	}
 
 	/**
 	 * @param messagetype the messagetype to set
 	 */
 	public void setMessagetype(String messagetype) {
-		this.messagetype = messagetype;
+		this.mMessageType = messagetype;
 	}
 }
