@@ -27,6 +27,7 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -37,17 +38,35 @@ public class SMSPlugIn extends TokenPlugIn {
 	private static Logger mLog = Logging.getLogger();
 	private static final String NS_SMS = JWebSocketServerConstants.NS_BASE + ".plugins.sms";
 	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>().shared();
+	private static ApplicationContext mBeanFactory;
+	private static Settings mSettings;
+	private ISMSProvider mProvider;
 
 	public SMSPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating SMS plug-in...");
 		}
-
 		this.setNamespace(aConfiguration.getNamespace());
 
-		if (mLog.isInfoEnabled()) {
-			mLog.info("SMS plug-in successfully loaded.");
+		try {
+			mBeanFactory = getConfigBeanFactory();
+			if (null == mBeanFactory) {
+				mLog.error("No or invalid spring configuration for SMS plug-in, some features may not be available.");
+			} else {
+				mBeanFactory = getConfigBeanFactory();
+				mSettings = (Settings) mBeanFactory.getBean("settings");
+				if (mLog.isInfoEnabled()) {
+					mLog.info("SMS plug-in successfully instantiated.");
+				}
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SMS plug-in"));
+		}
+
+		if (null != mSettings) {
+			// just for developers convenience
+			mProvider = mSettings.getProvider();
 		}
 	}
 
@@ -68,8 +87,7 @@ public class SMSPlugIn extends TokenPlugIn {
 	}
 
 	public void sendSms(WebSocketConnector aConnector, Token aToken) throws MalformedURLException, IOException {
-		ProviderSmstrade lProvider = new ProviderSmstrade("1", "1", "1");
-		Token lRes = lProvider.sendSms(aToken);
+		Token lRes = mProvider.sendSms(aToken);
 
 		mLog.info("Provider returned: " + lRes.toString());
 

@@ -1146,11 +1146,6 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<!-- CAUTION! SECURITY ADVISE!
-					 please take care that the following settings do not get
-					 disclosed to anybody. Publishing this data will allow
-					 others to use your send and receive mails on behalf of you!
-				-->
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/MailPlugIn/mail.xml</setting>
 			</settings>
 		</plugin>
@@ -1178,11 +1173,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<!-- CAUTION! SECURITY ADVISE!
-					 please take care that the following settings do not get
-					 disclosed to anybody. Publishing this data will allow
-					 others to use your send and receive mails on behalf of you!
-				-->
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/SMSPlugIn/sms.xml</setting>
 			</settings>
 		</plugin>
 
