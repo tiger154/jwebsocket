@@ -171,7 +171,7 @@ public class JSONProcessor {
 			// can reuse, share globally
 			ObjectMapper lMapper = new ObjectMapper();
 			String lData = lMapper.writeValueAsString(aToken.getMap());
-			/*			
+			/* keep this commect for backward compatibility
 			JSONObject lJO = tokenToJSON(aToken);
 			lData = lJO.toString();
 			 */

@@ -33,6 +33,7 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.security.User;
