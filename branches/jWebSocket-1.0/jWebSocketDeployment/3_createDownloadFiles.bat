@@ -249,6 +249,7 @@ xcopy %conf%LoggingPlugIn\*.xml %tempdir%conf\LoggingPlugIn\ /s /i /y
 xcopy %conf%Mail\*.xml %tempdir%conf\Mail\ /s /i /y
 xcopy %conf%ReportingPlugIn\*.xml %tempdir%conf\ReportingPlugIn\ /s /i /y
 xcopy %conf%Resources\*.xml %tempdir%conf\Resources\ /s /i /y
+xcopy %conf%SMSPlugIn\*.xml %tempdir%conf\SMSPlugIn\ /s /i /y
 xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
 @echo off
 

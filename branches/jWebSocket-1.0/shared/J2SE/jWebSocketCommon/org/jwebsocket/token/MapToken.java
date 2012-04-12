@@ -385,7 +385,7 @@ public class MapToken extends BaseToken implements Token {
 	@Override
 	public void setToken(String aKey, Token aToken) {
 		try {
-			mData.put(aKey, aToken);
+			mData.put(aKey, aToken.getMap());
 		} catch (Exception lEx) {
 			// TODO: handle exception
 		}
