@@ -22,7 +22,6 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.Properties;
 import javolution.util.FastList;
-
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;

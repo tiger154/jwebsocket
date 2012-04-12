@@ -15,15 +15,11 @@
 package org.jwebsocket.android.demo;
 
 import android.app.Activity;
-import android.hardware.Camera;
 import android.graphics.PixelFormat;
+import android.hardware.Camera;
 import android.os.Bundle;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.*;
 import android.widget.ImageView;
 import java.io.IOException;
 import org.jwebsocket.api.WebSocketClientEvent;
