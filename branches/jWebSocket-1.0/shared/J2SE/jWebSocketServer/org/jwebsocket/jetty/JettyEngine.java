@@ -66,7 +66,7 @@ public class JettyEngine extends BaseEngine {
 		if (lContext == null) {
 			lContext = "/";
 		}
-		String lServlet = aConfiguration.getContext();
+		String lServlet = aConfiguration.getServlet();
 		if (lServlet == null) {
 			lServlet = "/*";
 		}

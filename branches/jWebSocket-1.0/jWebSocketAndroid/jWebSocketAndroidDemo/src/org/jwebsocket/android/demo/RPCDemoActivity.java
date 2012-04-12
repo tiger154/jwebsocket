@@ -4,18 +4,6 @@
  */
 package org.jwebsocket.android.demo;
 
-import java.util.List;
-
-import org.jwebsocket.api.WebSocketClientEvent;
-import org.jwebsocket.api.WebSocketClientTokenListener;
-import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.client.plugins.rpc.RPCCallable;
-import org.jwebsocket.client.plugins.rpc.Rpc;
-import org.jwebsocket.client.plugins.rpc.Rrpc;
-import org.jwebsocket.kit.WebSocketException;
-import org.jwebsocket.plugins.rpc.CommonRpcPlugin;
-import org.jwebsocket.token.Token;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -26,12 +14,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import java.util.List;
+import org.jwebsocket.api.WebSocketClientEvent;
+import org.jwebsocket.api.WebSocketClientTokenListener;
+import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.client.plugins.rpc.RPCCallable;
+import org.jwebsocket.client.plugins.rpc.Rpc;
+import org.jwebsocket.client.plugins.rpc.Rrpc;
+import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.plugins.rpc.CommonRpcPlugin;
+import org.jwebsocket.token.Token;
 
 /**
  * 
