@@ -18,18 +18,14 @@ package org.jwebsocket.connectors;
 import java.net.InetAddress;
 import java.util.Map;
 import javolution.util.FastMap;
-import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
-import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.kit.RequestHeader;
-import org.jwebsocket.kit.WebSocketException;
-import org.jwebsocket.kit.WebSocketProtocolAbstraction;
-import org.jwebsocket.kit.WebSocketSession;
+import org.jwebsocket.kit.*;
 
 /**
  * Provides the basic implementation of the jWebSocket connectors. The

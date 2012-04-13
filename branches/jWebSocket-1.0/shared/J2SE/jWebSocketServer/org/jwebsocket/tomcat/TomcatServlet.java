@@ -16,23 +16,12 @@
 package org.jwebsocket.tomcat;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
-import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.api.WebSocketEngine;
-import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.factory.JWebSocketFactory;
-import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
 
 /**
@@ -43,7 +32,7 @@ public class TomcatServlet extends WebSocketServlet {
 
 	private static Logger mLog = Logging.getLogger();
 	private HttpServletRequest mRequest;
-	
+
 	@Override
 	protected void doPost(HttpServletRequest aRequest, HttpServletResponse aResponse)
 			throws ServletException, IOException {
@@ -54,6 +43,7 @@ public class TomcatServlet extends WebSocketServlet {
 
 	@Override
 	protected void service(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
+		// save the request, since this is not available anymore in the createWebSocketInbound method
 		mRequest = aRequest;
 		super.service(aRequest, aResponse);
 	}
@@ -70,79 +60,6 @@ public class TomcatServlet extends WebSocketServlet {
 
 	@Override
 	protected StreamInbound createWebSocketInbound(String aSubProtocol) {
-		return new WrapperMessageInbound(mRequest, aSubProtocol);
-	}
-
-	private final class WrapperMessageInbound extends MessageInbound {
-
-		private WebSocketConnector mConnector = null;
-		private WebSocketEngine mEngine = null;
-		private HttpServletRequest mRequest = null;
-		private String mProtocol = null;
-
-		public WrapperMessageInbound(HttpServletRequest aRequest, String aSubProtocol) {
-			super();
-			mRequest = aRequest;
-			mProtocol = aSubProtocol;
-		}
-
-		@Override
-		protected void onOpen(WsOutbound aOutbound) {
-			// super.onOpen(aOutbound);
-
-			mEngine = JWebSocketFactory.getEngine();
-
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Connecting Tomcat Client...");
-			}
-			mConnector = new TomcatConnector(mEngine, mRequest, mProtocol, aOutbound);
-			mEngine.addConnector(mConnector);
-
-			mConnector.startConnector();
-		}
-
-		@Override
-		public void onUpgradeComplete() {
-			super.onUpgradeComplete();
-
-		}
-
-		@Override
-		protected void onClose(int aStatus) {
-			// super.onClose(status);
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Disconnecting Tomcat Client...");
-			}
-			if (mConnector != null) {
-				// inherited BaseConnector.stopConnector
-				// calls mEngine connector stopped
-				mConnector.stopConnector(CloseReason.CLIENT);
-				mEngine.removeConnector(mConnector);
-			}
-		}
-
-		@Override
-		protected void onBinaryMessage(ByteBuffer aMessage) throws IOException {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Message (binary) from Tomcat client...");
-			}
-			if (mConnector != null) {
-				// TODO implement binary Tomcat messages!
-				WebSocketPacket lDataPacket = new RawPacket(aMessage.array());
-				mEngine.processPacket(mConnector, lDataPacket);
-			}
-		}
-
-		@Override
-		protected void onTextMessage(CharBuffer aMessage) throws IOException {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Message (text) from Tomcat client...");
-			}
-			if (mConnector != null) {
-				// TODO implement binary Tomcat messages!
-				WebSocketPacket lDataPacket = new RawPacket(aMessage.toString());
-				mEngine.processPacket(mConnector, lDataPacket);
-			}
-		}
+		return new TomcatWrapper(mRequest, aSubProtocol);
 	}
 }

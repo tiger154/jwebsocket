@@ -37,29 +37,6 @@ import org.jwebsocket.logging.Logging;
 // SSL Tutorial: http://docs.codehaus.org/display/JETTY/How+to+configure+SSL
 // " http://www.opennms.org/wiki/Standalone_HTTPS_with_Jetty
 
-/*
-aschulze-dt1:~ alexanderschulze$ keytool -keystore keystore -alias jWebSocket -genkey -keyalg RSA
-Enter keystore password:
-Re-enter new password:
-What is your first and last name?
-[Unknown]:  Alexander Schulze
-What is the name of your organizational unit?
-[Unknown]:  jWebSocket
-What is the name of your organization?
-[Unknown]:  Innotrade GmbH
-What is the name of your City or Locality?
-[Unknown]:  Herzogenrath
-What is the name of your State or Province?
-[Unknown]:  NRW
-What is the two-letter country code for this unit?
-[Unknown]:  DE
-Is CN=Alexander Schulze, OU=jWebSocket, O=Innotrade GmbH, L=Herzogenrath, ST=NRW, C=DE correct?
-[no]:  yes
-
-Enter key password for <jWebSocket>
-(RETURN if same as keystore password):
-aschulze-dt1:~ alexanderschulze$
- */
 /**
  *
  * @author alexanderschulze

@@ -17,7 +17,6 @@ package org.jwebsocket.tomcat;
 
 import java.util.Date;
 import org.apache.catalina.Context;
-import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
