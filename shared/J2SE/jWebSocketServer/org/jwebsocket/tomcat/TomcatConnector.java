@@ -19,19 +19,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.util.Enumeration;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javolution.util.FastMap;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
-import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.logging.Logging;
 
@@ -45,7 +39,8 @@ public class TomcatConnector extends BaseConnector {
 	private boolean mIsRunning = false;
 	private CloseReason mCloseReason = CloseReason.TIMEOUT;
 	private WsOutbound mOutbound;
-	private HttpServletRequest mRequest = null;
+	private InetAddress mRemoteHost;
+	private int mRemotePort;
 
 	/**
 	 * creates a new TCP connector for the passed engine using the passed client
@@ -55,44 +50,10 @@ public class TomcatConnector extends BaseConnector {
 	 * @param aEngine
 	 * @param aClientSocket
 	 */
-	public TomcatConnector(WebSocketEngine aEngine, HttpServletRequest aRequest,
-			String aProtocol, WsOutbound aOutbound) {
+	public TomcatConnector(WebSocketEngine aEngine, WsOutbound aOutbound) {
 		super(aEngine);
+		// save the outbound object to send data to the client of this connection
 		mOutbound = aOutbound;
-		mRequest = aRequest;
-
-		RequestHeader lHeader = new RequestHeader();
-
-		// iterate throught URL args
-		Map<String, String> lArgs = new FastMap<String, String>();
-		Map<String, String[]> lReqArgs = aRequest.getParameterMap();
-		for (String lArgName : lReqArgs.keySet()) {
-			String[] lArgVals = lReqArgs.get(lArgName);
-			if (lArgVals != null && lArgVals.length > 0) {
-				lArgs.put(lArgName, lArgVals[0]);
-			}
-		}
-		lHeader.put(RequestHeader.URL_ARGS, lArgs);
-
-		// set default sub protocol if none passed
-		if (aProtocol == null) {
-			aProtocol = JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
-		}
-		lHeader.put(RequestHeader.WS_PROTOCOL, aProtocol);
-		lHeader.put(RequestHeader.WS_PATH, aRequest.getRequestURI());
-
-		// iterate throught header params
-		Enumeration<String> lHeaderNames = aRequest.getHeaderNames();
-		while (lHeaderNames.hasMoreElements()) {
-			String lHeaderName = lHeaderNames.nextElement();
-			if (lHeaderName != null) {
-				lHeaderName = lHeaderName.toLowerCase();
-				lHeader.put(lHeaderName, aRequest.getHeader(lHeaderName));
-			}
-		}
-
-		lHeader.put(RequestHeader.WS_SEARCHSTRING, aRequest.getQueryString());
-		setHeader(lHeader);
 	}
 
 	@Override
@@ -183,24 +144,16 @@ public class TomcatConnector extends BaseConnector {
 
 	@Override
 	public int getRemotePort() {
-		return mRequest.getRemotePort();
+		return mRemotePort;
 	}
 
 	@Override
 	public InetAddress getRemoteHost() {
-		InetAddress lAddr;
-		try {
-			lAddr = InetAddress.getByName(mRequest.getRemoteAddr());
-		} catch (Exception lEx) {
-			lAddr = null;
-		}
-		return lAddr;
+		return mRemoteHost;
 	}
 
 	@Override
 	public String toString() {
-		// TODO: weird results like... '0:0:0:0:0:0:0:1:61130'... on JDK 1.6u19
-		// Windows 7 64bit
 		String lRes = getRemoteHost().getHostAddress() + ":" + getRemotePort();
 		// TODO: don't hard code. At least use JWebSocketConstants field here.
 		String lUsername = getString("org.jwebsocket.plugins.system.username");
@@ -208,5 +161,19 @@ public class TomcatConnector extends BaseConnector {
 			lRes += " (" + lUsername + ")";
 		}
 		return lRes;
+	}
+
+	/**
+	 * @param mRemoteHost the mRemoteHost to set
+	 */
+	public void setRemoteHost(InetAddress mRemoteHost) {
+		this.mRemoteHost = mRemoteHost;
+	}
+
+	/**
+	 * @param mRemotePort the mRemotePort to set
+	 */
+	public void setRemotePort(int mRemotePort) {
+		this.mRemotePort = mRemotePort;
 	}
 }
