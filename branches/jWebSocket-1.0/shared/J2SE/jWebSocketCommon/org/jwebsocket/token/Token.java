@@ -111,6 +111,27 @@ public interface Token {
 	 * @param aDefault
 	 * @return
 	 */
+	Long getLong(String aKey, Long aDefault);
+
+	/**
+	 *
+	 * @param aKey
+	 * @return
+	 */
+	Long getLong(String aKey);
+
+	/**
+	 *
+	 * @param aKey
+	 * @param aValue
+	 */
+	void setLong(String aKey, Long aValue);
+	/**
+	 *
+	 * @param aKey
+	 * @param aDefault
+	 * @return
+	 */
 	Double getDouble(String aKey, Double aDefault);
 
 	/**

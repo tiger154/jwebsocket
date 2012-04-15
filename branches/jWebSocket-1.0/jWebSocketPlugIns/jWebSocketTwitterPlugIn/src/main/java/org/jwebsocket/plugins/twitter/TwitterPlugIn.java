@@ -25,7 +25,6 @@ import java.util.Set;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import javolution.util.FastSet;
-
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -38,49 +37,28 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import twitter4j.FilterQuery;
-import twitter4j.Query;
-import twitter4j.QueryResult;
-import twitter4j.ResponseList;
-import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
-import twitter4j.StatusListener;
-import twitter4j.Trend;
-import twitter4j.Trends;
-import twitter4j.Tweet;
-import twitter4j.Twitter;
-import twitter4j.TwitterFactory;
-import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.User;
-import twitter4j.http.AccessToken;
-import twitter4j.http.RequestToken;
+import org.jwebsocket.util.Tools;
+import org.springframework.context.ApplicationContext;
+import twitter4j.*;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
 
 /**
  *
- * @author aschulze
- * logout see: http://stackoverflow.com/questions/1960957/twitter-api-logout
+ * @author aschulze logout see:
+ * http://stackoverflow.com/questions/1960957/twitter-api-logout
  * http://groups.google.com/group/twitter4j/browse_thread/thread/5957722d596e269c/c2956d43a46b31b5?lnk=gst&q=stateless
  */
 public class TwitterPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(TwitterPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	private static final String TWITTER_VAR = "$twitter";
 	private static final String OAUTH_REQUEST_TOKEN = "$twUsrReqTok";
 	private static final String OAUTH_VERIFIER = "$twUsrVerifier";
 	private static final String TWITTER_STREAM = "$twStream";
-	private static String CONSUMER_KEY = null;
-	private static final String CONSUMER_KEY_KEY = "consumer_key";
-	private static String CONSUMER_SECRET = null;
-	private static final String CONSUMER_SECRET_KEY = "consumer_secret";
-	private static Integer APP_KEY = null;
-	private static final String APP_KEY_KEY = "app_key";
-	private static String ACCESSTOKEN_KEY = null;
-	private static final String ACCESS_KEY_KEY = "access_key";
-	private static String ACCESS_SECRET = null;
-	private static final String ACCESS_SECRET_KEY = "access_secret";
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_TWITTER = JWebSocketServerConstants.NS_BASE + ".plugins.twitter";
+	// the global Twitter object is used for general, non user specific information
 	private Twitter mTwitter = null;
 	private final static int MAX_STREAM_KEYWORDS_PER_CONNECTION = 5;
 	private final static int MAX_STREAM_KEYWORDS_TOTAL = 50;
@@ -94,6 +72,10 @@ public class TwitterPlugIn extends TokenPlugIn {
 	// if connectors are 0 the keyword gets deleted
 	private Map<String, Integer> mKeywords = new FastMap<String, Integer>();
 	private TokenServer mServer = null;
+	private static ApplicationContext mBeanFactory;
+	private static Settings mSettings;
+	// the twitter facttory can be shared to generate multiple twitter object, one per user for streams and tweeting
+	private static TwitterFactory mTwitterFactory;
 
 	/**
 	 *
@@ -104,21 +86,25 @@ public class TwitterPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating Twitter plug-in...");
 		}
+
 		// specify default name space for admin plugin
 		this.setNamespace(NS_TWITTER);
-		mGetSettings();
-	}
 
-	private void mGetSettings() {
-		CONSUMER_KEY = getString(CONSUMER_KEY_KEY, null);
-		CONSUMER_SECRET = getString(CONSUMER_SECRET_KEY, null);
 		try {
-			APP_KEY = Integer.parseInt(getString(APP_KEY_KEY, "0"));
+			mBeanFactory = getConfigBeanFactory();
+			if (null == mBeanFactory) {
+				mLog.error("No or invalid spring configuration for Twitter plug-in, some features may not be available.");
+			} else {
+				mBeanFactory = getConfigBeanFactory();
+				mSettings = (Settings) mBeanFactory.getBean("settings");
+				if (mLog.isInfoEnabled()) {
+					mLog.info("Twitter plug-in successfully instantiated.");
+				}
+			}
 		} catch (Exception lEx) {
-			APP_KEY = 0;
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating Twitter plug-in"));
 		}
-		ACCESSTOKEN_KEY = getString(ACCESS_KEY_KEY, null);
-		ACCESS_SECRET = getString(ACCESS_SECRET_KEY, null);
+
 	}
 
 	@Override
@@ -178,16 +164,26 @@ public class TwitterPlugIn extends TokenPlugIn {
 	private boolean mCheckAuth(Token aToken) {
 		String lMsg;
 		try {
-			if (mTwitter == null) {
+			if (mTwitterFactory == null) {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Authenticating against Twitter...");
 				}
 				// The factory instance is re-useable and thread safe.
-				TwitterFactory lTwitterFactory = new TwitterFactory();
-				mTwitter = lTwitterFactory.getInstance();
-				mTwitter.setOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
-				AccessToken lAccessToken = new AccessToken(ACCESSTOKEN_KEY, ACCESS_SECRET);
-				mTwitter.setOAuthAccessToken(lAccessToken);
+				/*
+				ConfigurationBuilder lCB = new ConfigurationBuilder();
+				lCB.setDebugEnabled(true);
+				lCB.setOAuthConsumerKey(mSettings.getConsumerKey());
+				lCB.setOAuthConsumerSecret(mSettings.getConsumerSecret());
+				lCB.setOAuthAccessToken(mSettings.getAccessKey());
+				lCB.setOAuthAccessTokenSecret(mSettings.getAccessSecret());
+				mTwitterFactory = new TwitterFactory(lCB.build());
+				*/
+				mTwitterFactory = new TwitterFactory();
+				mTwitter = mTwitterFactory.getInstance();
+				// mTwitter.setOAuthConsumer(mSettings.getConsumerKey(), mSettings.getConsumerSecret());
+
+				// AccessToken lAccessToken = new AccessToken(mSettings.getAccessKey(), mSettings.getAccessSecret());
+				// mTwitter.setOAuthAccessToken(lAccessToken);
 				lMsg = "Successfully authenticated against Twitter.";
 			} else {
 				lMsg = "Already authenticated against Twitter.";
@@ -216,13 +212,14 @@ public class TwitterPlugIn extends TokenPlugIn {
 			if (!mCheckAuth(lResponse)) {
 				mLog.error(lResponse.getString("msg"));
 			} else {
+				// get a new Twitter object for the user
 				TwitterFactory lTwitterFactory = new TwitterFactory();
 				Twitter lTwitter = lTwitterFactory.getInstance();
-				lTwitter.setOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
+				lTwitter.setOAuthConsumer(mSettings.getConsumerKey(), mSettings.getConsumerSecret());
 
 				// pass callback URL to Twitter API if given
-				RequestToken lReqToken;
-				lReqToken = (lCallbackURL != null
+				RequestToken lReqToken =
+						(lCallbackURL != null
 						? lTwitter.getOAuthRequestToken(lCallbackURL)
 						: lTwitter.getOAuthRequestToken());
 
@@ -253,10 +250,10 @@ public class TwitterPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * is called by the jWebSocket OAuth confirmation window to pass the
-	 * OAuth AccessToken Verifier from the Browser to the Server so that
-	 * the server is able to run Twitter API commands w/o knowing the user's
-	 * credentials.
+	 * is called by the jWebSocket OAuth confirmation window to pass the OAuth
+	 * AccessToken Verifier from the Browser to the Server so that the server is
+	 * able to run Twitter API commands w/o knowing the user's credentials.
+	 *
 	 * @param aConnector
 	 * @param aToken
 	 */
@@ -279,28 +276,27 @@ public class TwitterPlugIn extends TokenPlugIn {
 				mLog.error(lResponse.getString("msg"));
 			} else {
 				/*
-				TwitterFactory lTwitterFactory = new TwitterFactory();
-				Twitter lTwitter = lTwitterFactory.getInstance();
-				lTwitter.setOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
-				// pass callback URL to Twitter API
-				RequestToken lReqToken = lTwitter.getOAuthRequestToken("http://localhost/demos/twitter/twauth.htm?isAuth=true");
-
-				String lAuthenticationURL = lReqToken.getAuthenticationURL();
-				String lAuthorizationURL = lReqToken.getAuthorizationURL();
-
-				lResponse.setString("authenticationURL", lAuthenticationURL);
-				lResponse.setString("authorizationURL", lAuthorizationURL);
-				lMsg = "authenticationURL: " + lAuthenticationURL + ", authorizationURL: " + lAuthorizationURL;
-				lResponse.setString("msg", lMsg);
-				if (mLog.isInfoEnabled()) {
-				mLog.info(lMsg);
-				}
-
-				// every connector maintains it's own twitter connection
-				aConnector.setVar(TWITTER_VAR, lTwitter);
-				// persist the request token, it's required
-				// to get access token from verifier
-				aConnector.setVar(OAUTH_REQUEST_TOKEN, lReqToken);
+				 * TwitterFactory lTwitterFactory = new TwitterFactory();
+				 * Twitter lTwitter = lTwitterFactory.getInstance();
+				 * lTwitter.setOAuthConsumer(mSettings.getConsumerKey(),
+				 * mSettings.getConsumerSecret()); // pass callback URL to
+				 * Twitter API RequestToken lReqToken =
+				 * lTwitter.getOAuthRequestToken("http://localhost/demos/twitter/twauth.htm?isAuth=true");
+				 *
+				 * String lAuthenticationURL = lReqToken.getAuthenticationURL();
+				 * String lAuthorizationURL = lReqToken.getAuthorizationURL();
+				 *
+				 * lResponse.setString("authenticationURL", lAuthenticationURL);
+				 * lResponse.setString("authorizationURL", lAuthorizationURL);
+				 * lMsg = "authenticationURL: " + lAuthenticationURL + ",
+				 * authorizationURL: " + lAuthorizationURL;
+				 * lResponse.setString("msg", lMsg); if (mLog.isInfoEnabled()) {
+				 * mLog.info(lMsg); }
+				 *
+				 * // every connector maintains it's own twitter connection
+				 * aConnector.setVar(TWITTER_VAR, lTwitter); // persist the
+				 * request token, it's required // to get access token from
+				 * verifier aConnector.setVar(OAUTH_REQUEST_TOKEN, lReqToken);
 				 */
 			}
 		} catch (Exception lEx) {
@@ -347,15 +343,15 @@ public class TwitterPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Gets the Twitter timeline for a given user. If no user is given
-	 * the user registered for the app is used as default.
+	 * Gets the Twitter timeline for a given user. If no user is given the user
+	 * registered for the app is used as default.
 	 */
 	private void getTimeline(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
-		String lMsg = "";
+		String lMsg;
 		String lUsername = aToken.getString("username");
 
 		try {
@@ -379,11 +375,11 @@ public class TwitterPlugIn extends TokenPlugIn {
 				for (Status lStatus : lStatuses) {
 					lMessages.add(lStatus.getUser().getName() + ": " + lStatus.getText());
 					/*
-					// If each status is supposed to be sent separately...
-					Token lItem = TokenFactory.createToken(NS_TWITTER, BaseToken.TT_EVENT);
-					lItem.setString("username", lStatus.getUser().getName());
-					lItem.setString("message", lStatus.getText());
-					lServer.sendToken(aConnector, lItem);
+					 * // If each status is supposed to be sent separately...
+					 * Token lItem = TokenFactory.createToken(NS_TWITTER,
+					 * BaseToken.TT_EVENT); lItem.setString("username",
+					 * lStatus.getUser().getName()); lItem.setString("message",
+					 * lStatus.getText()); lServer.sendToken(aConnector, lItem);
 					 */
 				}
 				lResponse.setList("messages", lMessages);
@@ -412,7 +408,7 @@ public class TwitterPlugIn extends TokenPlugIn {
 		String lUsername = aToken.getString("username");
 		Integer lUserId = aToken.getInteger("userid");
 		try {
-			User lUser = null;
+			User lUser;
 			// if user id is given use this to get user data
 			if (lUserId != null && lUserId != 0) {
 				lUser = mTwitter.showUser(lUserId);
@@ -425,7 +421,7 @@ public class TwitterPlugIn extends TokenPlugIn {
 			}
 			if (lUser != null) {
 				lResponse.setString("screenname", lUser.getScreenName());
-				lResponse.setInteger("id", lUser.getId());
+				lResponse.setLong("id", lUser.getId());
 				lResponse.setString("description", lUser.getDescription());
 				lResponse.setString("location", lUser.getLocation());
 				lResponse.setString("lang", lUser.getLang());
@@ -446,8 +442,9 @@ public class TwitterPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * posts a Twitter message on behalf of a OAtuh authenticated
-	 * user by using the retrieved AccessToken and its verifier.
+	 * posts a Twitter message on behalf of a OAtuh authenticated user by using
+	 * the retrieved AccessToken and its verifier.
+	 *
 	 * @param aConnector
 	 * @param aToken
 	 */
@@ -502,7 +499,7 @@ public class TwitterPlugIn extends TokenPlugIn {
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
-		String lMsg = "";
+		String lMsg;
 		String lQuery = aToken.getString("query");
 
 		try {
@@ -556,7 +553,7 @@ public class TwitterPlugIn extends TokenPlugIn {
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
-		String lMsg = "";
+		String lMsg;
 
 		try {
 			if (mLog.isDebugEnabled()) {
@@ -566,15 +563,19 @@ public class TwitterPlugIn extends TokenPlugIn {
 				mLog.error(lResponse.getString("msg"));
 			} else {
 				// return the list of messages as an array of strings...
-				List<String> lMessages = new FastList<String>();
-
-				Trends lTrends = mTwitter.getCurrentTrends();
-				Trend[] lTrendArray = lTrends.getTrends();
-
-				for (Trend lTrend : lTrendArray) {
-					lMessages.add(lTrend.getName() + ": " + lTrend.getQuery() + ", URL: " + lTrend.getUrl());
+				Map<String, List<String>> lAsOf = new FastMap<String, List<String>>();
+				List<String> lMessages;
+				ResponseList<Trends> lTrendList = mTwitter.getDailyTrends();
+				for (int lIdx = 0; lIdx < lTrendList.size(); lIdx++) {
+					lMessages = new FastList<String>();
+					Trends lTrends = (Trends) lTrendList.get(lIdx);
+					Trend[] lTrendArray = lTrends.getTrends();
+					for (Trend lTrend : lTrendArray) {
+						lMessages.add(lTrend.getName() + ": " + lTrend.getQuery() + ", URL: " + lTrend.getUrl());
+					}
+					lAsOf.put(Tools.DateToISO8601(lTrends.getTrendAt()), lMessages);
 				}
-				lResponse.setList("messages", lMessages);
+				lResponse.setMap("messages", lAsOf);
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Trends successfully received");
 				}
@@ -595,7 +596,6 @@ public class TwitterPlugIn extends TokenPlugIn {
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
-		String lMsg = "";
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Retreiving statistics...");
@@ -616,7 +616,7 @@ public class TwitterPlugIn extends TokenPlugIn {
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
-		String lMsg = "";
+		String lMsg;
 
 		try {
 			if (mLog.isDebugEnabled()) {
@@ -648,7 +648,6 @@ public class TwitterPlugIn extends TokenPlugIn {
 		// send response to requester
 		lServer.sendToken(aConnector, lResponse);
 	}
-
 	StatusListener mTwitterStreamListener = new StatusListener() {
 
 		@Override
@@ -660,7 +659,7 @@ public class TwitterPlugIn extends TokenPlugIn {
 			User lUser = aStatus.getUser();
 			if (lUser != null) {
 				lToken.setString("userName", lUser.getName());
-				lToken.setInteger("userId", lUser.getId());
+				lToken.setLong("userId", lUser.getId());
 				URL lURL = lUser.getURL();
 				if (lURL != null) {
 					lToken.setString("userURL", lURL.toString());
@@ -707,7 +706,7 @@ public class TwitterPlugIn extends TokenPlugIn {
 		public void onDeletionNotice(StatusDeletionNotice aStatusDeletionNotice) {
 			Token lToken = TokenFactory.createToken(NS_TWITTER, "event");
 			lToken.setString("name", "deletion");
-			lToken.setInteger("userId", aStatusDeletionNotice.getUserId());
+			lToken.setLong("userId", aStatusDeletionNotice.getUserId());
 			lToken.setInteger("statusId", (int) aStatusDeletionNotice.getStatusId());
 			for (WebSocketConnector lConnector : mConnectors.keySet()) {
 				mServer.sendToken(lConnector, lToken);
@@ -736,7 +735,7 @@ public class TwitterPlugIn extends TokenPlugIn {
 		}
 
 		@Override
-		public void onScrubGeo(int aInt, long aLong) {
+		public void onScrubGeo(long aArg0, long aArg1) {
 			// not required for now
 		}
 	};
@@ -797,13 +796,14 @@ public class TwitterPlugIn extends TokenPlugIn {
 
 			FilterQuery lFilter = new FilterQuery(
 					0,
-					new int[]{},
+					new long[]{},
 					lKeywordArray);
 			// if no TwitterStream object created up to now, create one...
 			if (mTwitterStream == null) {
-				mTwitterStream = new TwitterStreamFactory(mTwitterStreamListener).getInstance();
-				mTwitterStream.setOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
-				AccessToken lAccessToken = new AccessToken(ACCESSTOKEN_KEY, ACCESS_SECRET);
+				mTwitterStream = new TwitterStreamFactory().getInstance();
+				mTwitterStream.addListener(mTwitterStreamListener);
+				mTwitterStream.setOAuthConsumer(mSettings.getConsumerKey(), mSettings.getConsumerSecret());
+				AccessToken lAccessToken = new AccessToken(mSettings.getAccessKey(), mSettings.getAccessSecret());
 				mTwitterStream.setOAuthAccessToken(lAccessToken);
 			}
 			// apply the filter to the stream object
@@ -838,7 +838,7 @@ public class TwitterPlugIn extends TokenPlugIn {
 
 		// instantiate response token
 		Token lResponse = mServer.createResponse(aToken);
-		String lMsg = "";
+		String lMsg;
 
 		String lKeyWordString = aToken.getString("keywords");
 		String[] lKeyWordArray;
