@@ -156,7 +156,7 @@ xcopy %libs%jetty-client-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-http-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-io-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-security-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-server-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jetty-server-8.1.0.RC5.jar %tempdir%libs\ /s /i /yf
 xcopy %libs%jetty-servlet-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-servlets-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-util-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
@@ -189,37 +189,51 @@ xcopy %libs%spring-security-ldap-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-tx-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%twitter4j-core-2.1.12.jar %tempdir%libs\ /s /i /y
+
+rem twitter support
+xcopy %libs%httpclient-4.1.3.jar %tempdir%libs\ /s /i /y
+xcopy %libs%httpcore-4.1.3.jar %tempdir%libs\ /s /i /y
+xcopy %libs%httpmime-4.1.3.jar %tempdir%libs\ /s /i /y
+
+xcopy %libs%twitter4j-async-2.2.5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%twitter4j-core-2.2.5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%twitter4j-httpclient-support-2.2.5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%twitter4j-stream-2.2.5.jar %tempdir%libs\ /s /i /y
+
 rem jWebSocket .jars
 xcopy %libs%jWebSocketCommon-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketServerAPI-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketServer-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketChatPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketSenchaPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketJDBCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketRPCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketJMSPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketJMXPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketAdminPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketAPIPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketArduinoPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketMonitoringPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketMailPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketReportingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketFileSystemPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketChannelPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketLoggingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketStreamingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketTwitterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketXMPPPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketSharedObjectsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketSharedCanvasPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketStatisticsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketBenchmarkPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketChannelPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketChatPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketClusterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketEventsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketAPIPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketAdminPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketFileSystemPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketJCaptchaPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketJDBCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketJMSPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketJMXPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketJQueryPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketLoggingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketMailPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketMonitoringPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketPingPongGame-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketProxyPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketReportingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketRPCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketSenchaPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketSharedCanvasPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketSharedObjectsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketSMSPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketStatisticsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketStreamingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketTestPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketTwitterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketXMPPPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketClientAPI-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJavaSEClient-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSwingGUI-%ver%.jar %tempdir%libs\ /s /i /y
@@ -238,25 +252,24 @@ xcopy %conf%openssl.cnf %tempdir%conf\ /s /i /y
 xcopy %conf%createSelfSignedCert.bat %tempdir%conf\ /s /i /y
 rem Flash Cross-Domain configuration
 rem spring config files (from v1.0)
-@echo on
+
 xcopy %conf%ehcache.xml %tempdir%conf\ /s /i /y
 xcopy %conf%AdminPlugIn\*.xml %tempdir%conf\AdminPlugIn\ /s /i /y
-xcopy %conf%api\*.xml %tempdir%conf\api\ /s /i /y
 xcopy %conf%APIPlugIn\*.xml %tempdir%conf\APIPlugIn\ /s /i /y
 xcopy %conf%ChannelPlugIn\*.xml %tempdir%conf\ChannelPlugIn\ /s /i /y
 xcopy %conf%EventsPlugIn\*.xml %tempdir%conf\EventsPlugIn\ /s /i /y
-xcopy %conf%FileSsystemPlugIn\*.xml %tempdir%conf\FileSsystemPlugIn\ /s /i /y
+xcopy %conf%FileSystemPlugIn\*.xml %tempdir%conf\FileSystemPlugIn\ /s /i /y
 xcopy %conf%FlashPlugIn\*.xml %tempdir%conf\FlashPlugIn\ /s /i /y
 xcopy %conf%JDBCPlugIn\*.xml %tempdir%conf\JDBCPlugIn\ /s /i /y
 xcopy %conf%JMSPlugIn\*.xml %tempdir%conf\JMSPlugIn\ /s /i /y
 xcopy %conf%JMXPlugIn\*.xml %tempdir%conf\JMXPlugIn\ /s /i /y
 xcopy %conf%LoggingPlugIn\*.xml %tempdir%conf\LoggingPlugIn\ /s /i /y
-xcopy %conf%Mail\*.xml %tempdir%conf\Mail\ /s /i /y
+xcopy %conf%MailPlugIn\*.xml %tempdir%conf\MailPlugIn\ /s /i /y
 xcopy %conf%ReportingPlugIn\*.xml %tempdir%conf\ReportingPlugIn\ /s /i /y
 xcopy %conf%Resources\*.xml %tempdir%conf\Resources\ /s /i /y
 xcopy %conf%SMSPlugIn\*.xml %tempdir%conf\SMSPlugIn\ /s /i /y
 xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
-@echo off
+xcopy %conf%TwitterPlugIn\*.xml %tempdir%conf\TwitterPlugIn\ /s /i /y
 
 rem log4j config files (from v1.0)
 xcopy %conf%log4j.xml %tempdir%conf\ /s /i /y

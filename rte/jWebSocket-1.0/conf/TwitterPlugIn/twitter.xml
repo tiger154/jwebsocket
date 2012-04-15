@@ -11,8 +11,10 @@
 	<bean id="settings" class="org.jwebsocket.plugins.twitter.Settings">
 		<property name="consumerKey" value="#your consumer key you obtain from Twitter for you app#"/>
 		<property name="consumerSecret" value="#your consumer secret you obtain from Twitter for you app#"/>
-		<property name="appKey" value="#the app id you obatin when first requesting your access token#"/>
-		<property name="accessKey" value="#the access key you obtain from the jWebSocket Twitter tool#"/>
+		<!-- the app id you obatin when first requesting your access token -->
+		<property name="appKey" value="123456789"/>
+		<!-- the access key you obtain from the jWebSocket Twitter tool -->
+		<property name="accessKey" value="123456789-#your access key#"/>
 		<property name="accessSecret" value="#the access secret you obtain from the jWebSocket Twitter tool#"/>
 	</bean>
 
