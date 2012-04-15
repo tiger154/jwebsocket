@@ -1243,16 +1243,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<!-- CAUTION! SECURITY ADVISE!
-					 please take care that the following settings do not get
-					 disclosed to anybody. Publishing this data will allow
-					 others to use your account to use Twitter on behalf of you!
-				-->
-				<setting key="consumer_key">#your consumer key you obtain from Twitter for you app#</setting>
-				<setting key="consumer_secret">#your consumer secret you obtain from Twitter for you app#</setting>
-				<setting key="app_key">#the app id you obatin when first requesting your access token#</setting>
-				<setting key="access_key">#the access key you obtain from the jWebSocket Twitter tool#</setting>
-				<setting key="access_secret">#the access secret you obtain from the jWebSocket Twitter tool#</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/TwitterPlugIn/twitter.xml</setting>
 			</settings>
 		</plugin>
 
