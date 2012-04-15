@@ -55,6 +55,7 @@
 		
 		<!-- <module>jWebSocketGlassFish</module> -->
 		<!-- <module>jWebSocketGlassFishDemo</module> -->
+		<!-- <module>jWebSocketTomcatDemo</module> -->
 	</modules>
 	
 	<properties>
