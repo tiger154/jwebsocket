@@ -239,6 +239,45 @@ public class MapToken extends BaseToken implements Token {
 	 * @return
 	 */
 	@Override
+	public Long getLong(String aKey, Long aDefault) {
+		Long lResult;
+		try {
+			lResult = (Long) mData.get(aKey);
+			if (lResult == null) {
+				lResult = aDefault;
+			}
+		} catch (Exception lEx) {
+			lResult = aDefault;
+		}
+		return lResult;
+	}
+
+	/**
+	 *
+	 * @param aKey
+	 * @return
+	 */
+	@Override
+	public Long getLong(String aKey) {
+		return getLong(aKey, null);
+	}
+
+	@Override
+	public void setLong(String aKey, Long aValue) {
+		try {
+			mData.put(aKey, aValue);
+		} catch (Exception lEx) {
+			// TODO: handle exception
+		}
+	}
+
+	/**
+	 *
+	 * @param aKey
+	 * @param aDefault
+	 * @return
+	 */
+	@Override
 	public Double getDouble(String aKey, Double aDefault) {
 		Double lResult;
 		try {

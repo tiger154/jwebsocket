@@ -92,7 +92,7 @@ public class JSONToken extends BaseToken implements Token {
 	/**
 	 *
 	 *
-	 * @return
+	 * @param aMap 
 	 */
 	@Override
 	public void setMap(Map aMap) {
@@ -175,7 +175,6 @@ public class JSONToken extends BaseToken implements Token {
 	/**
 	 *
 	 * @param aKey
-	 * @return
 	 */
 	@Override
 	public void remove(String aKey) {
@@ -251,6 +250,42 @@ public class JSONToken extends BaseToken implements Token {
 
 	@Override
 	public void setInteger(String aKey, Integer aValue) {
+		try {
+			mData.put(aKey, aValue);
+		} catch (JSONException lEx) {
+			// TODO: handle exception
+		}
+	}
+
+	/**
+	 *
+	 * @param aKey
+	 * @param aDefault
+	 * @return
+	 */
+	@Override
+	public Long getLong(String aKey, Long aDefault) {
+		Long lResult;
+		try {
+			lResult = mData.getLong(aKey);
+		} catch (JSONException lEx) {
+			lResult = aDefault;
+		}
+		return lResult;
+	}
+
+	/**
+	 *
+	 * @param aKey
+	 * @return
+	 */
+	@Override
+	public Long getLong(String aKey) {
+		return getLong(aKey, null);
+	}
+
+	@Override
+	public void setLong(String aKey, Long aValue) {
 		try {
 			mData.put(aKey, aValue);
 		} catch (JSONException lEx) {
@@ -446,7 +481,6 @@ public class JSONToken extends BaseToken implements Token {
 	/**
 	 *
 	 * @param aKey
-	 * @param aList
 	 */
 	@Override
 	public void setMap(String aKey, Map aMap) {
