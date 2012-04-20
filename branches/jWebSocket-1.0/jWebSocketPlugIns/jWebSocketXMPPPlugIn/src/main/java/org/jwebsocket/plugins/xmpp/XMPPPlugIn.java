@@ -25,13 +25,7 @@ import java.util.Map;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ChatManager;
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.MessageListener;
-import org.jivesoftware.smack.Roster;
-import org.jivesoftware.smack.RosterEntry;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.RosterPacket.ItemStatus;
@@ -54,22 +48,19 @@ import org.jwebsocket.token.TokenFactory;
  * This Plug-In make heavy use of Smack API 3.1.0
  * http://www.igniterealtime.org/projects/smack/
  *
- * Nice tips at: http://www.adarshr.com/papers/xmpp and http://www.adarshr.com/papers/xmpp2
- * Smack Java Docs: http://www.igniterealtime.org/builds/smack/docs/latest/javadoc/
- * 
+ * Nice tips at: http://www.adarshr.com/papers/xmpp and
+ * http://www.adarshr.com/papers/xmpp2 Smack Java Docs:
+ * http://www.igniterealtime.org/builds/smack/docs/latest/javadoc/
+ *
  */
 public class XMPPPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(XMPPPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	private static final String XMPP_CONN_VAR = "$xmpp_connection";
 	private static final String XMPP_CHAT_VAR = "$xmpp_chat";
 	private static final String XMPP_CRED_VAR = "$xmpp_credentials";
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_XMPP = JWebSocketServerConstants.NS_BASE + ".plugins.xmpp";
-
-	public XMPPPlugIn() {
-		super(null);
-	}
 
 	public XMPPPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -270,7 +261,7 @@ public class XMPPPlugIn extends TokenPlugIn {
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
-		String lMsg = "";
+		String lMsg;
 
 		Credentials lCredentials = new Credentials(
 				aToken.getString("host"),
@@ -360,7 +351,7 @@ public class XMPPPlugIn extends TokenPlugIn {
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
-		String lMsg = "";
+		String lMsg;
 
 		String lUsername = aToken.getString("username");
 		String lPassword = aToken.getString("password");
@@ -650,7 +641,6 @@ public class XMPPPlugIn extends TokenPlugIn {
 		try {
 			Chat lChat = (Chat) aConnector.getVar(XMPP_CHAT_VAR);
 			if (lChat != null) {
-				// lChat.
 				lMsg = "Chat with '" + lUserId + "' closed.";
 			} else {
 				lResponse.setInteger("code", -1);

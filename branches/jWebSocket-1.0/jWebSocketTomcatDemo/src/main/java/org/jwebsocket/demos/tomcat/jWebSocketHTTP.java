@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author alexanderschulze
  */
-public class jWebSocket extends HttpServlet {
+public class jWebSocketHTTP extends HttpServlet {
 
 	/**
 	 * Processes requests for both HTTP
@@ -37,13 +37,13 @@ public class jWebSocket extends HttpServlet {
 			 */
 			out.println("<html>");
 			out.println("<head>");
-			out.println("<title>Servlet jWebSocket</title>");			
+			out.println("<title>Servlet jWebSocket</title>");
 			out.println("</head>");
 			out.println("<body>");
-			out.println("<h1>Servlet jWebSocket at " + request.getContextPath() + "</h1>");
+			out.println("<h1>Servlet jWebSocketHTTP at " + request.getContextPath() + "</h1>");
 			out.println("</body>");
 			out.println("</html>");
-		} finally {			
+		} finally {
 			out.close();
 		}
 	}

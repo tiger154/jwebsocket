@@ -15,6 +15,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.mail;
 
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 
 /**
@@ -23,17 +24,18 @@ import org.jwebsocket.config.JWebSocketServerConstants;
  */
 public class Settings {
 
-	private String mSmtpHost;
-	private Integer mSmtpPort;
-	private Boolean mSmtpAuth;
-	private String mSmtpUser;
-	private String mSmtpPassword;
-	private Boolean mSmtpPop3Before;
-	private String mPop3Host;
-	private Integer mPop3Port;
-	private String mPop3User;
-	private String mPop3Password;
-	private String mMailRoot;
+	private String mSmtpHost = null;
+	private Integer mSmtpPort = null;
+	private Boolean mSmtpAuth = null;
+	private String mSmtpUser = null;
+	private String mSmtpPassword = null;
+	private Boolean mSmtpPop3Before = null;
+	private String mPop3Host = null;
+	private Integer mPop3Port = null;
+	private String mPop3User = null;
+	private String mPop3Password = null;
+	private String mMailRoot = null;
+	private String mRarPath = null;
 
 	/**
 	 * @return the smtpHost
@@ -67,7 +69,7 @@ public class Settings {
 	 * @return the smtpAuth
 	 */
 	public Boolean getSmtpAuth() {
-		return mSmtpAuth;
+		return (null == mSmtpAuth ? true : mSmtpAuth);
 	}
 
 	/**
@@ -188,6 +190,20 @@ public class Settings {
 	 * @param aMailRoot the mailRoot to set
 	 */
 	public void setMailRoot(String aMailRoot) {
-		this.mMailRoot = aMailRoot;
+		mMailRoot = JWebSocketConfig.expandEnvAndJWebSocketVars(aMailRoot);
+	}
+
+	/**
+	 * @return the RarPath
+	 */
+	public String getRarPath() {
+		return mRarPath;
+	}
+
+	/**
+	 * @param mRarPath the RarPath to set
+	 */
+	public void setRarPath(String aRarPath) {
+		mRarPath = aRarPath;
 	}
 }

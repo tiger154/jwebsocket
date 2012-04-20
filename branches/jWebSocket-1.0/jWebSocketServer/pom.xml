@@ -588,7 +588,8 @@
 			<url>https://repository.jboss.org/nexus/content/repositories/spy-releases</url>
 		</repository>		
 		-->
-		<!-- Repositories for the netty engine (JBoss) -->
+		
+		<!-- Repositories for the Netty engine (JBoss) -->
 		<repository>
 			<id>repository.jboss.org</id>
 			<url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
@@ -613,7 +614,7 @@
 			<url>http://download.java.net/maven/2</url>
 		</repository>		
 		
-		<!-- jasper repository -->
+		<!-- Jasper Reports repository -->
 		<repository>
 			<id>Jasper-repo</id>
 			<name>Jasper Repository</name>

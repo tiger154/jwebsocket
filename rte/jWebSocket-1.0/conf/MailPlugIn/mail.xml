@@ -10,20 +10,24 @@
 			 disclosed to anybody. Publishing this data will allow
 			 others to use your send and receive mails on behalf of you!
 		-->
-		<property name="smtpHost" value="#your smtp host (ip or hostname)#"></property>
-		<property name="smtpPort" value="25"></property>
-		<property name="smtpAuth" value="false"></property>
-		<property name="smtpUser" value="#your smtp server's username#"></property>
-		<property name="smtpPassword" value="#your smtp server's password#"></property>
-		<property name="smtpPop3Before" value="false"></property>
-		<property name="pop3Host" value="#your pop3 host (ip or hostname)#"></property>
-		<property name="pop3Port" value="110"></property>
-		<property name="pop3User" value="#your pop3 server's username#"></property>
+		<property name="smtpHost" value="#your smtp host (ip or hostname)#"/>
+		<property name="smtpPort" value="25"/>
+		<property name="smtpAuth" value="false"/>
+		<property name="smtpUser" value="#your smtp server's username#"/>
+		<property name="smtpPassword" value="#your smtp server's password#"/>
+		<property name="smtpPop3Before" value="false"/>
+		<property name="pop3Host" value="#your pop3 host (ip or hostname)#"/>
+		<property name="pop3Port" value="110"/>
+		<property name="pop3User" value="#your pop3 server's username#"/>
 		
 		<!-- root folder for temporary mail storage (e.g.for attachments -->
 		<!-- use the {username} variable to distinguish between user folders -->
 		<!-- the folders are automatically created on demand -->
-		<property name="mailRoot" value="${JWEBSOCKET_HOME}mails/{username}/"></property>
+		<property name="mailRoot" value="${JWEBSOCKET_HOME}mails/{username}/"/>
+		<!-- configure the path to the rar executables 
+			 in case you want to autocreate mails for multivolume attachments 
+			 of the same size  -->
+		<property name="rarPath" value="/Applications/rar/rar"/>
 	</bean>
 
 </beans>

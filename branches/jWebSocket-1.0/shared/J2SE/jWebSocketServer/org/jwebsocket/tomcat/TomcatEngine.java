@@ -53,7 +53,7 @@ public class TomcatEngine extends BaseEngine {
 			engineStarted();
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Using Tomcat"
-						+ " configured by Tomcat.xml...");
+						+ " configured by Tomcat's server.xml...");
 			}
 			return;
 		}

@@ -25,6 +25,8 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.codec.binary.Base64;
@@ -122,7 +124,7 @@ public class MailPlugIn extends TokenPlugIn {
 		String lBody = aToken.getString("body");
 		Boolean lIsHTML = aToken.getBoolean("html", false);
 		List<String> lAttachedFiles = aToken.getList("attachments");
-		String lMsg = null;
+		String lMsg;
 
 		// instantiate response token
 		Token lResponse = TokenFactory.createToken();
@@ -131,7 +133,7 @@ public class MailPlugIn extends TokenPlugIn {
 
 		if (lFrom != null && lFrom.length() > 0) {
 			lMap.put("from", lFrom);
- 		}
+		}
 		if (lTo != null && lTo.length() > 0) {
 			lMap.put("to", lTo);
 		}
@@ -309,7 +311,7 @@ public class MailPlugIn extends TokenPlugIn {
 				List<String> lCmdLine = new FastList<String>();
 				// lCmdLine.add(System.getenv("windir") +"\\system32\\"+"tree.com");
 				// lCmdLine.add("/A");
-				lCmdLine.add("/Applications/rar/rar"); // path to rar
+				lCmdLine.add(mSettings.getRarPath()); // path to rar
 				lCmdLine.add("-y"); // Assume Yes on all queries.
 				lCmdLine.add("-m5"); // compression level 0-5.
 				lCmdLine.add("-ep1"); // disable path names in archive.
@@ -497,6 +499,21 @@ public class MailPlugIn extends TokenPlugIn {
 		lServer.sendToken(aConnector, lResponse);
 	}
 
+	public static String convertEmbeddedImagesToAttachments(String aString) {
+		// <img src="data:image/jpeg;base64,
+		String lPattern = "<img.*src=\"\\{([A-Za-z0-9_]+)\\}\".*>";
+		int lFlags = Pattern.CASE_INSENSITIVE;
+		Pattern lRegExpr = Pattern.compile(lPattern, lFlags);
+		Matcher lMatcher = lRegExpr.matcher(aString);
+		while (lMatcher.find()) {
+			String lFoundVal = lMatcher.group(1);
+			String lEnvVal = "REPLACED";
+			Pattern lSubExpr = Pattern.compile(Pattern.quote(lMatcher.group(0)));
+			aString = lSubExpr.matcher(aString).replaceAll(lEnvVal);
+		}
+		return aString;
+	}
+	
 	private void createMail(WebSocketConnector aConnector, Token aToken) {
 		Token lMailToken = TokenFactory.createToken();
 
@@ -507,6 +524,11 @@ public class MailPlugIn extends TokenPlugIn {
 		String lSubject = aToken.getString("subject");
 		String lBody = aToken.getString("body");
 		Boolean lIsHTML = aToken.getBoolean("html", false);
+		Boolean lConvEmbImgToAtt = aToken.getBoolean("convEmbImgToAtt", false);
+
+		if (lConvEmbImgToAtt) {
+			lBody = convertEmbeddedImagesToAttachments(lBody);
+		}
 
 		// only take over valid fields of the token
 		String lId = UUID.randomUUID().toString();
@@ -519,7 +541,6 @@ public class MailPlugIn extends TokenPlugIn {
 		lMailToken.setString("subject", lSubject);
 		lMailToken.setString("body", lBody);
 		lMailToken.setBoolean("html", lIsHTML);
-
 
 		TokenServer lServer = getServer();
 		Token lResponse = createResponse(aToken);
