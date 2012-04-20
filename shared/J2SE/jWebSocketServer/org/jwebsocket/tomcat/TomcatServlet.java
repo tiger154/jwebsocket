@@ -34,14 +34,6 @@ public class TomcatServlet extends WebSocketServlet {
 	private HttpServletRequest mRequest;
 
 	@Override
-	protected void doPost(HttpServletRequest aRequest, HttpServletResponse aResponse)
-			throws ServletException, IOException {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Ignoring incoming POST request...");
-		}
-	}
-
-	@Override
 	protected void service(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
 		// save the request, since this is not available anymore in the createWebSocketInbound method
 		mRequest = aRequest;

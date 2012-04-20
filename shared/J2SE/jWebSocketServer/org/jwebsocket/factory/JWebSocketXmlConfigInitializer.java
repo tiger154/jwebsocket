@@ -102,7 +102,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 	public WebSocketEngine initializeEngine() {
 		WebSocketEngine lNewEngine = null;
 		EngineConfig lEngineConfig = jWebSocketConfig.getEngines().get(0);
-		String lJarFilePath = "-";
+		String lJarFilePath;
 		try {
 			// try to load engine from classpath first,could be located in server bundle
 			Class<WebSocketEngine> lEngineClass = loadEngineFromClassPath(lEngineConfig.getName());
@@ -158,8 +158,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 		List<WebSocketServer> lServers = new FastList<WebSocketServer>();
 		List<ServerConfig> lServerConfigs = jWebSocketConfig.getServers();
 		for (ServerConfig lServerConfig : lServerConfigs) {
-			WebSocketServer lServer = null;
-			String lJarFilePath = "-";
+			WebSocketServer lServer;
+			String lJarFilePath;
 			try {
 				Class<WebSocketServer> lServerClass = loadServerFromClasspath(lServerConfig.getName());
 				// if not in classpath...try to load server from given .jar file
@@ -240,6 +240,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 							mLog.debug("Loading plug-in '"
 									+ lPlugInConfig.getName()
 									+ "' from '" + lJarFilePath + "'...");
+							
 						}
 						lPlugInClass = (Class<WebSocketPlugIn>) mClassLoader.loadClass(lPlugInConfig.getName());
 					}

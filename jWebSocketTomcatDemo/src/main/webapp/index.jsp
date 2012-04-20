@@ -9,5 +9,6 @@
     </head>
     <body>
         <h1>Hello World!</h1>
+		<p>This is the jWebSocketTomcatDemo project</p>
     </body>
 </html>

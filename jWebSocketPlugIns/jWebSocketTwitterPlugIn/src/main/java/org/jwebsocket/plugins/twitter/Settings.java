@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket Settings for Filesystem Plug-in
+//	jWebSocket - jWebSocket Settings for Twitter Plug-in
 //  Copyright (c) 2012 Innotrade GmbH, jWebSocket.org
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it

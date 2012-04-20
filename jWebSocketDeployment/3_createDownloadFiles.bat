@@ -83,7 +83,7 @@ rem Maven Control files
 7z u -mx9 -tzip "%dest%" "%sc%pom.xml
 
 rem Run Time Modules
-7z u -mx9 -tzip "%dest%" "%rt%" -xr!.svn -xr!*.tmp* -xr!*.jasper* -xr!*.war -xr!cache -xr!logs -xr!mails -xr!temp -xr!jWebSocketServer-Bundle.jar -xr!jWebSocketReportingPlugIn-Bundle.jar
+7z u -mx9 -tzip "%dest%" "%rt%" -xr!.svn -xr!*.tmp* -xr!*.jasper* -xr!*.war -xr!cache -xr!logs -xr!mails -xr!temp -xr!jWebSocketServer-Bundle-%ver%.jar -xr!jWebSocketReportingPlugIn-Bundle.jar
 popd
 
 rem goto end
@@ -243,22 +243,26 @@ xcopy %libs%jWebSocketAMQStockTicker-%ver%.jar %tempdir%libs\ /s /i /y
 
 rem jWebSocket config and keystore files (from v1.0) for SSL
 xcopy %conf%jWebSocket.xml %tempdir%conf\ /s /i /y
+rem jWebSocket development config file
+xcopy %conf%jWebSocketDevTemplate.xml %tempdir%conf\ /s /i /y
+rem jWebSocket SSL keystore
 xcopy %conf%jWebSocket.ks %tempdir%conf\ /s /i /y
 xcopy %conf%jWebSocket.key %tempdir%conf\ /s /i /y
 xcopy %conf%jWebSocket.csr %tempdir%conf\ /s /i /y
 xcopy %conf%jWebSocket.crt %tempdir%conf\ /s /i /y
 xcopy %conf%jWebSocket.pkcs12 %tempdir%conf\ /s /i /y
 xcopy %conf%openssl.cnf %tempdir%conf\ /s /i /y
+xcopy %conf%createKeyStore.bat %tempdir%conf\ /s /i /y
 xcopy %conf%createSelfSignedCert.bat %tempdir%conf\ /s /i /y
-rem Flash Cross-Domain configuration
-rem spring config files (from v1.0)
 
+rem spring config files (from v1.0)
 xcopy %conf%ehcache.xml %tempdir%conf\ /s /i /y
 xcopy %conf%AdminPlugIn\*.xml %tempdir%conf\AdminPlugIn\ /s /i /y
 xcopy %conf%APIPlugIn\*.xml %tempdir%conf\APIPlugIn\ /s /i /y
 xcopy %conf%ChannelPlugIn\*.xml %tempdir%conf\ChannelPlugIn\ /s /i /y
 xcopy %conf%EventsPlugIn\*.xml %tempdir%conf\EventsPlugIn\ /s /i /y
 xcopy %conf%FileSystemPlugIn\*.xml %tempdir%conf\FileSystemPlugIn\ /s /i /y
+rem Flash Cross-Domain configuration
 xcopy %conf%FlashPlugIn\*.xml %tempdir%conf\FlashPlugIn\ /s /i /y
 xcopy %conf%JDBCPlugIn\*.xml %tempdir%conf\JDBCPlugIn\ /s /i /y
 xcopy %conf%JMSPlugIn\*.xml %tempdir%conf\JMSPlugIn\ /s /i /y
@@ -270,6 +274,7 @@ xcopy %conf%Resources\*.xml %tempdir%conf\Resources\ /s /i /y
 xcopy %conf%SMSPlugIn\*.xml %tempdir%conf\SMSPlugIn\ /s /i /y
 xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
 xcopy %conf%TwitterPlugIn\*.xml %tempdir%conf\TwitterPlugIn\ /s /i /y
+xcopy %conf%XMPPPlugIn\*.xml %tempdir%conf\XMPPPlugIn\ /s /i /y
 
 rem log4j config files (from v1.0)
 xcopy %conf%log4j.xml %tempdir%conf\ /s /i /y
@@ -445,7 +450,7 @@ rem 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketFullSources-%JWEBSOCKET_VER%.zi
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketServer-%JWEBSOCKET_VER%.zip"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketServer32-%JWEBSOCKET_VER%.zip"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketServer64-%JWEBSOCKET_VER%.zip"
-7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketServer-Bundle-%JWEBSOCKET_VER%.zip"
+rem 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketServer-Bundle-%JWEBSOCKET_VER%.zip"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketService32-%JWEBSOCKET_VER%.zip"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketService64-%JWEBSOCKET_VER%.zip"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketAMQStockTickerService32-%JWEBSOCKET_VER%.zip"

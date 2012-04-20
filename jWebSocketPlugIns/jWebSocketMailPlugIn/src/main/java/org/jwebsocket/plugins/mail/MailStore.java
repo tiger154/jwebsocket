@@ -30,7 +30,7 @@ import org.jwebsocket.token.TokenFactory;
 public class MailStore extends EhCacheStorage {
 
 	/** logger object */
-	private static Logger mLog = Logging.getLogger(MailStore.class);
+	private static Logger mLog = Logging.getLogger();
 
 	/**
 	 * default constructor

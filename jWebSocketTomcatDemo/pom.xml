@@ -17,16 +17,8 @@
 	<properties>
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	 <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
 	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-web-api</artifactId>
-			<version>6.0</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
@@ -48,6 +40,11 @@
 				<version>2.1.1</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<!--
+					<packagingExcludes>
+						**/tomcat*.jar
+					</packagingExcludes>
+					-->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -77,5 +74,118 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-web-api</artifactId>
+			<version>6.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!--
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-catalina</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-api</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-catalina</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-coyote</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jasper</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-util</artifactId>
+			<version>7.0.27</version>
+			
+		</dependency>
+		-->
+		
+		<!--
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.servlet</artifactId>
+			<version>3.1.1</version>
+			<scope>provided</scope> 		
+		</dependency>
+		-->
+		
+		<!-- Tomcat dependencies -->
+		<!--
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-annotations-api</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-api</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-catalina</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-juli</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-servlet-api</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-util</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-coyote</artifactId>
+			<version>7.0.27</version>
+		</dependency>
+		-->
+
+		<!-- jWebSocket dependencies -->
+		<dependency>
+			<groupId>org.eclipse.jdt</groupId>
+			<artifactId>core</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketCommon</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketServerAPI</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketServer</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
 
 </project>
