@@ -15,13 +15,19 @@
 package org.jwebsocket.api;
 
 /**
- * provides methods to retrieve sessions from the global session storage.
+ * Provides methods to retrieve sessions from the global session storage.
+ * 
  * The session storage is a persistence engine.
  * @author kyberneees, aschulze
  */
-public interface ISessionManager {
+public interface ISessionManager extends IInitializable {
 
 	IBasicStorage<String, Object> getSession(WebSocketConnector aConnector) throws Exception;
 
 	IBasicStorage<String, Object> getSession(String aSessionId) throws Exception;
+	
+	ISessionReconnectionManager getReconnectionManager();
+	
+	IStorageProvider getStorageProvider();
+		
 }

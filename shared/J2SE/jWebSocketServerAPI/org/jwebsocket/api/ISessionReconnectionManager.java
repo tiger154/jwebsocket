@@ -28,12 +28,6 @@ public interface ISessionReconnectionManager {
 
 	/**
 	 * 
-	 * @param expTime The session expiration time to set
-	 */
-	void setSessionExpirationTime(Integer expTime);
-
-	/**
-	 * 
 	 * @return Contains the sessions identifiers to be expired
 	 */
 	IBasicCacheStorage<String, Object> getReconnectionIndex();
@@ -64,12 +58,6 @@ public interface ISessionReconnectionManager {
 	/**
      * @return the mStorageProvider
      */
-    public IStorageProvider getStorageProvider();
-
-    /**
-     * @param mStorageProvider the mStorageProvider to set
-     */
-    public void setStorageProvider(IStorageProvider mStorageProvider);
-
+    IStorageProvider getStorageProvider();
 	
 }
