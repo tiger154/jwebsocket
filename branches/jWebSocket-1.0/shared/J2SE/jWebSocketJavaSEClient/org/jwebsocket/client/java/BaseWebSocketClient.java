@@ -23,7 +23,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -32,27 +31,12 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
 import javolution.util.FastList;
 import javolution.util.FastMap;
-import org.jwebsocket.api.WebSocketBaseClientEvent;
-import org.jwebsocket.api.WebSocketClient;
-import org.jwebsocket.api.WebSocketClientEvent;
-import org.jwebsocket.api.WebSocketClientListener;
-import org.jwebsocket.api.WebSocketPacket;
-
-import org.jwebsocket.api.WebSocketStatus;
+import org.jwebsocket.api.*;
 import org.jwebsocket.client.token.WebSocketTokenClientEvent;
 import org.jwebsocket.config.JWebSocketCommonConstants;
-import org.jwebsocket.kit.Headers;
-import org.jwebsocket.kit.RawPacket;
-import org.jwebsocket.kit.WebSocketEncoding;
-import org.jwebsocket.kit.WebSocketException;
-import org.jwebsocket.kit.WebSocketExceptionType;
-import org.jwebsocket.kit.WebSocketFrameType;
-import org.jwebsocket.kit.WebSocketHandshake;
-import org.jwebsocket.kit.WebSocketProtocolAbstraction;
-import org.jwebsocket.kit.WebSocketSubProtocol;
+import org.jwebsocket.kit.*;
 
 /**
  * Base {@code WebSocket} implementation based on
