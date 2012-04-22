@@ -30,33 +30,49 @@ public class WebSocketSession {
 	public WebSocketSession() {
 	}
 
+	/**
+	 *
+	 * @param aSessionId a session identifier
+	 */
 	public WebSocketSession(String aSessionId) {
 		mSessionId = aSessionId;
 	}
 
 	/**
-	 * @return the sessionId
+	 * @return the session identifier
 	 */
 	public String getSessionId() {
 		return mSessionId;
 	}
 
 	/**
-	 * @param sessionId the sessionId to set
+	 * @param aSessionId the session identifier to set
 	 */
-	public void setSessionId(String sessionId) {
-		this.mSessionId = sessionId;
+	public void setSessionId(String aSessionId) {
+		if (null == mSessionId) {
+			this.mSessionId = aSessionId;
+		} else {
+			throw new UnsupportedOperationException("The session identifier property is in read-only state!");
+		}
 	}
 
+	/**
+	 *
+	 * @return the session persistent storage instance
+	 */
 	public Map<String, Object> getStorage() {
 		return mStorage;
 	}
 
+	/**
+	 *
+	 * @param aStorage the session persistent storage instance to set
+	 */
 	public void setStorage(Map<String, Object> aStorage) {
 		if (null == mStorage) {
 			mStorage = aStorage;
 		} else {
-			throw new UnsupportedOperationException("This operation is dedicated to the system level only!");
+			throw new UnsupportedOperationException("The storage property is in read-only state!!");
 		}
 	}
 }
