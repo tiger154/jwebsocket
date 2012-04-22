@@ -32,6 +32,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  * Utility class for all the handshaking related request/response.
+ *
  * @author aschulze
  * @version $Id:$
  */
@@ -57,7 +58,7 @@ public final class WebSocketHandshake {
 	 * @param aURI
 	 * @param aProtocol
 	 * @param aVersion
-	 * @throws WebSocketException  
+	 * @throws WebSocketException
 	 */
 	public WebSocketHandshake(int aVersion, URI aURI, String aProtocol) throws WebSocketException {
 		this.mURI = aURI;
@@ -123,7 +124,7 @@ public final class WebSocketHandshake {
 	 * connection.
 	 *
 	 * @param aReq
-	 * @param aIsSSL 
+	 * @param aIsSSL
 	 * @return
 	 */
 	public static Map parseC2SRequest(byte[] aReq, boolean aIsSSL) {
@@ -150,6 +151,7 @@ public final class WebSocketHandshake {
 		String lAcceptLanguage = null;
 		String lAcceptEncoding = null;
 		String lCacheControl = null;
+		String lCookies = null;
 
 		Map lRes = new HashMap();
 
@@ -358,6 +360,26 @@ public final class WebSocketHandshake {
 			}
 		}
 
+		/**
+		 * Getting client cookies
+		 *
+		 * @See http://tools.ietf.org/rfc/rfc6265.txt
+		 */
+		lPos = lRequest.indexOf("Cookie: ");
+		if (lPos > 0) {
+			lPos += 8;
+			lCookies = lRequest.substring(lPos);
+			lPos = lCookies.indexOf("\r\n");
+			lCookies = lCookies.substring(0, lPos);
+		}
+
+
+		/**
+		 * Setting the headers map
+		 */
+		if (null != lCookies) {
+			lRes.put(RequestHeader.WS_COOKIES, lCookies);
+		}
 		lRes.put(RequestHeader.WS_PATH, lPath);
 		lRes.put(RequestHeader.WS_HOST, lHost);
 		lRes.put(RequestHeader.WS_ORIGIN, lOrigin);
@@ -446,11 +468,10 @@ public final class WebSocketHandshake {
 				+ (lSecKeyAccept != null ? "Sec-WebSocket-Accept: " + lSecKeyAccept + "\r\n" : "")
 				+ (lSubProt != null ? (lIsSecure ? "Sec-" : "") + "WebSocket-Protocol: " + lSubProt + "\r\n" : "")
 				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Origin: " + lOrigin + "\r\n"
-				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Location: " + lLocation + "\r\n";
+				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Location: " + lLocation + "\r\n"
+				+ "Set-Cookie: SID=" + ((Map) aRequest.get(RequestHeader.WS_COOKIES)).get("SID") + "; HttpOnly\r\n";
 		lRes += "\r\n";
-		/*
-		System.out.println(lRes);
-		 */
+
 		byte[] lBA;
 		try {
 			lBA = lRes.getBytes("US-ASCII");
@@ -529,8 +550,9 @@ public final class WebSocketHandshake {
 	}
 
 	/**
-	 * Generates the initial Handshake from a Java Client to the WebSocket 
+	 * Generates the initial Handshake from a Java Client to the WebSocket
 	 * Server.
+	 *
 	 * @return
 	 */
 	public byte[] generateC2SRequest() {
@@ -551,6 +573,9 @@ public final class WebSocketHandshake {
 		if (mProtocol != null) {
 			lHandshake += "Sec-WebSocket-Protocol: " + mProtocol + "\r\n";
 		}
+		
+		//Set client cookies
+		
 
 		if (WebSocketProtocolAbstraction.isHixieVersion(mVersion)) {
 			lHandshake +=
