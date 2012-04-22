@@ -16,19 +16,18 @@
 package org.jwebsocket.eventmodel.filter.validator;
 
 import java.util.Set;
-import org.jwebsocket.eventmodel.filter.EventModelFilter;
-import org.jwebsocket.eventmodel.event.C2SEvent;
-import org.jwebsocket.eventmodel.event.C2SResponseEvent;
-import org.jwebsocket.eventmodel.observable.Event;
-import org.jwebsocket.api.WebSocketConnector;
-
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
+import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.exception.ValidatorException;
+import org.jwebsocket.eventmodel.filter.EventModelFilter;
+import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.logging.Logging;
-import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.MapBindingResult;
 
 /**
  *
@@ -41,7 +40,7 @@ public class ValidatorFilter extends EventModelFilter {
 	private boolean mValidateResponse = true;
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void beforeCall(WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
@@ -137,9 +136,9 @@ public class ValidatorFilter extends EventModelFilter {
 
 	/**
 	 * Validate an argument
-	 * 
+	 *
 	 * @param aArg The argument to validate
-	 * @param aEvent The event that contain the argument 
+	 * @param aEvent The event that contain the argument
 	 * @param errors The errors messages container
 	 * @throws Exception
 	 */
@@ -148,19 +147,25 @@ public class ValidatorFilter extends EventModelFilter {
 		if (!aEvent.getArgs().getMap().containsKey(aArg.getName())) {
 			if (!aArg.isOptional()) {
 				throw new ValidatorException("The argument: '" + aArg.getName() + "' is required!");
-			} else {
-				try {
-					mTypes.swapType(aArg.getType()).cast(aEvent.getArgs().getObject(aArg.getName()));
-				} catch (Exception ex) {
-					throw new ValidatorException("The argument: '" + aArg.getName() + "', needs to be type of " + aArg.getType().toString());
+			}
+		} else {
+			try {
+				//Supporting JavaScript parseFloat function issue 
+				//when parsing values like 1.0, 2.0 ...
+				if (aArg.getType().equals("double") && aEvent.getArgs().getObject(aArg.getName()) instanceof Integer) {
+					aEvent.getArgs().getMap().put(aArg.getName(),
+							Double.parseDouble(aEvent.getArgs().getObject(aArg.getName()).toString()));
 				}
+				mTypes.swapType(aArg.getType()).cast(aEvent.getArgs().getObject(aArg.getName()));
+			} catch (Exception ex) {
+				throw new ValidatorException("Argument: '" + aArg.getName() + "' has invalid type. Required type is: '" + aArg.getType().toString() + "'!");
 			}
 		}
 
 		//Hydrating the argument with the value
 		aArg.setValue(aEvent.getArgs().getObject(aArg.getName()));
 
-		//Spring validation mechanism compatibility
+		//Spring validation mechanism support
 		if (null != aArg.getValidator()) {
 			if (aArg.getValidator().supports(mTypes.swapType(aArg.getType()))) {
 				aArg.getValidator().validate(aArg, aErrors);
@@ -183,7 +188,7 @@ public class ValidatorFilter extends EventModelFilter {
 	}
 
 	/**
-	 * @return <tt>TRUE</tt> if the filter is set to validate the response too, 
+	 * @return <tt>TRUE</tt> if the filter is set to validate the response too,
 	 * <tt>FALSE</tt> otherwise
 	 */
 	public boolean isValidateResponse() {
@@ -191,8 +196,8 @@ public class ValidatorFilter extends EventModelFilter {
 	}
 
 	/**
-	 * @param aValidateResponse <tt>TRUE</tt> if the filter will validate the response too, 
-	 * <tt>FALSE</tt> otherwise
+	 * @param aValidateResponse <tt>TRUE</tt> if the filter will validate the
+	 * response too, <tt>FALSE</tt> otherwise
 	 */
 	public void setValidateResponse(boolean aValidateResponse) {
 		this.mValidateResponse = aValidateResponse;
