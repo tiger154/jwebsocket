@@ -15,14 +15,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp;
 
-import org.apache.log4j.Logger;
-import org.jwebsocket.config.JWebSocketCommonConstants;
-import org.jwebsocket.kit.RequestHeader;
-
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javolution.util.FastMap;
+import org.apache.log4j.Logger;
+import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 
 /**
@@ -36,12 +36,12 @@ public class EngineUtils {
 	 * Validates draft header and constructs RequestHeader object.
 	 */
 	public static RequestHeader validateC2SRequest(List<String> aDomains,
-			Map aRespMap, Logger aLogger) throws UnsupportedEncodingException {
+			Map aReqMap, Logger aLogger) throws UnsupportedEncodingException {
 
 		// domain check, asterisks as wildcards are supported!
 		if (null != aDomains && !aDomains.isEmpty()) {
 			boolean lOk = false;
-			String lOrigin = (String) aRespMap.get("origin");
+			String lOrigin = (String) aReqMap.get("origin");
 			if (null != lOrigin) {
 				for (String lDomain : aDomains) {
 					// make a correct regular expression
@@ -53,7 +53,7 @@ public class EngineUtils {
 				}
 			}
 			if (!lOk) {
-				aLogger.error("Client origin '" + aRespMap.get("origin") + "' does not match allowed domains.");
+				aLogger.error("Client origin '" + aReqMap.get("origin") + "' does not match allowed domains.");
 				return null;
 			}
 		}
@@ -61,8 +61,8 @@ public class EngineUtils {
 
 		// Check for WebSocket protocol version.
 		// If it is present and if it's something unrecognizable, force disconnect (return null).
-		String lDraft = (String) aRespMap.get(RequestHeader.WS_DRAFT);
-		Integer lVersion = (Integer) aRespMap.get(RequestHeader.WS_VERSION);
+		String lDraft = (String) aReqMap.get(RequestHeader.WS_DRAFT);
+		Integer lVersion = (Integer) aReqMap.get(RequestHeader.WS_VERSION);
 
 		// run validation
 		if (!WebSocketProtocolAbstraction.isValidDraft(lDraft)) {
@@ -79,7 +79,7 @@ public class EngineUtils {
 
 		RequestHeader lHeader = new RequestHeader();
 		Map<String, String> lArgs = new HashMap<String, String>();
-		String lPath = (String) aRespMap.get("path");
+		String lPath = (String) aReqMap.get("path");
 
 		// isolate search string
 		String lSearchString = "";
@@ -107,7 +107,7 @@ public class EngineUtils {
 		}
 
 		// if no sub protocol given in request header , try
-		String lSubProt = (String) aRespMap.get(RequestHeader.WS_PROTOCOL);
+		String lSubProt = (String) aReqMap.get(RequestHeader.WS_PROTOCOL);
 		if (lSubProt == null) {
 			lSubProt = lArgs.get(RequestHeader.WS_PROTOCOL);
 		}
@@ -123,14 +123,14 @@ public class EngineUtils {
 		// TODO: implement subprotocol choice handling by deferring the decision to plugins/listeners
 		if (lSubProt.indexOf(' ') != -1) {
 			lSubProt = lSubProt.split(" ")[0];
-			aRespMap.put(RequestHeader.WS_PROTOCOL, lSubProt);
+			aReqMap.put(RequestHeader.WS_PROTOCOL, lSubProt);
 		}
 
-		lHeader.put(RequestHeader.WS_HOST, aRespMap.get(RequestHeader.WS_HOST));
-		lHeader.put(RequestHeader.WS_ORIGIN, aRespMap.get(RequestHeader.WS_ORIGIN));
-		lHeader.put(RequestHeader.WS_LOCATION, aRespMap.get(RequestHeader.WS_LOCATION));
+		lHeader.put(RequestHeader.WS_HOST, aReqMap.get(RequestHeader.WS_HOST));
+		lHeader.put(RequestHeader.WS_ORIGIN, aReqMap.get(RequestHeader.WS_ORIGIN));
+		lHeader.put(RequestHeader.WS_LOCATION, aReqMap.get(RequestHeader.WS_LOCATION));
 		lHeader.put(RequestHeader.WS_PROTOCOL, lSubProt);
-		lHeader.put(RequestHeader.WS_PATH, aRespMap.get(RequestHeader.WS_PATH));
+		lHeader.put(RequestHeader.WS_PATH, aReqMap.get(RequestHeader.WS_PATH));
 		lHeader.put(RequestHeader.WS_SEARCHSTRING, lSearchString);
 		lHeader.put(RequestHeader.URL_ARGS, lArgs);
 		lHeader.put(RequestHeader.WS_DRAFT,
@@ -142,6 +142,30 @@ public class EngineUtils {
 				? JWebSocketCommonConstants.WS_VERSION_DEFAULT
 				: lVersion);
 
+		//Setting cookies in the headers
+		lHeader.put(RequestHeader.WS_COOKIES, aReqMap.get(RequestHeader.WS_COOKIES));
+
 		return lHeader;
+	}
+
+	/**
+	 * Parse cookies into a map
+	 *
+	 * @param aReqMap
+	 * @return
+	 */
+	public static void parseCookies(Map aReqMap) {
+		String lTempEntry[];
+		Map<String, String> lCookiesMap = new FastMap().shared();
+		
+		if (aReqMap.containsKey(RequestHeader.WS_COOKIES)) {
+			String[] lCookies = aReqMap.get(RequestHeader.WS_COOKIES).toString().split("; ");
+			for (int i = 0; i < lCookies.length; i++) {
+				lTempEntry = lCookies[i].split("=");
+				lCookiesMap.put(lTempEntry[0], lTempEntry[1]);
+			}
+		}
+
+		aReqMap.put(RequestHeader.WS_COOKIES, lCookiesMap);
 	}
 }
