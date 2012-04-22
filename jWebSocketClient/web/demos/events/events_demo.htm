@@ -66,14 +66,14 @@
 			
 							cacheFilter = new jws.CacheFilter();
 							cacheFilter.cache = new Cache();
-							validatorFiler = new jws.ValidatorFilter();
+							validatorFilter = new jws.ValidatorFilter();
 			
 							//Creating a event notifier
 							notifier = new jws.EventsNotifier();
 							notifier.ID = "notifier0";
 							notifier.NS = "test";
 							notifier.jwsClient = jws.myConn;
-							notifier.filterChain = [securityFilter, cacheFilter, validatorFiler];
+							notifier.filterChain = [securityFilter, cacheFilter, validatorFilter];
 							notifier.initialize();
 			  
 							//Creating a plugin generator

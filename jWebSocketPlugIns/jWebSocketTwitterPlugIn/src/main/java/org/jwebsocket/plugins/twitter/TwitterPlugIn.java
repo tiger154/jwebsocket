@@ -565,7 +565,7 @@ public class TwitterPlugIn extends TokenPlugIn {
 				// return the list of messages as an array of strings...
 				Map<String, List<String>> lAsOf = new FastMap<String, List<String>>();
 				List<String> lMessages;
-				ResponseList<Trends> lTrendList = mTwitter.getDailyTrends();
+				ResponseList lTrendList = mTwitter.getDailyTrends();
 				for (int lIdx = 0; lIdx < lTrendList.size(); lIdx++) {
 					lMessages = new FastList<String>();
 					Trends lTrends = (Trends) lTrendList.get(lIdx);
