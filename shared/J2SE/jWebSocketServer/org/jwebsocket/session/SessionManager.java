@@ -25,17 +25,18 @@ import org.jwebsocket.logging.Logging;
  * which can be configured by Spring.
  * @author kyberneees, aschulze
  */
-public class SessionManager implements ISessionManager, IInitializable /*, WebSocketServerListener */ {
+public class SessionManager implements ISessionManager {
 
 	private IStorageProvider mStorageProvider;
 	private ISessionReconnectionManager mReconnectionManager;
-	private static Logger mLog = Logging.getLogger(SessionManager.class);
+	private static Logger mLog = Logging.getLogger();
 	private Map<String, IBasicStorage<String, Object>> mSessionsReferences;
 
 	/**
 	 * 
-	 * @return
+	 * {@inheritDoc }
 	 */
+	@Override
 	public ISessionReconnectionManager getReconnectionManager() {
 		return mReconnectionManager;
 	}
@@ -50,8 +51,9 @@ public class SessionManager implements ISessionManager, IInitializable /*, WebSo
 
 	/**
 	 * 
-	 * @return
+	 * {@inheritDoc }
 	 */
+	@Override
 	public IStorageProvider getStorageProvider() {
 		return mStorageProvider;
 	}
@@ -66,9 +68,7 @@ public class SessionManager implements ISessionManager, IInitializable /*, WebSo
 
 	/**
 	 * 
-	 * @param aConnector
-	 * @return
-	 * @throws Exception
+	 * {@inheritDoc }
 	 */
 	@Override
 	public IBasicStorage<String, Object> getSession(WebSocketConnector aConnector) throws Exception {
@@ -77,9 +77,7 @@ public class SessionManager implements ISessionManager, IInitializable /*, WebSo
 
 	/**
 	 * 
-	 * @param aSessionId
-	 * @return
-	 * @throws Exception
+	 * {@inheritDoc }
 	 */
 	@Override
 	public IBasicStorage<String, Object> getSession(String aSessionId) throws Exception {
@@ -115,11 +113,19 @@ public class SessionManager implements ISessionManager, IInitializable /*, WebSo
 		}
 	}
 
+	/**
+	 * 
+	 * {@inheritDoc }
+	 */
 	@Override
 	public void initialize() throws Exception {
 		mSessionsReferences = new FastMap<String, IBasicStorage<String, Object>>();
 	}
 
+	/**
+	 * 
+	 * {@inheritDoc }
+	 */
 	@Override
 	public void shutdown() throws Exception {
 		mSessionsReferences.clear();
@@ -131,6 +137,4 @@ public class SessionManager implements ISessionManager, IInitializable /*, WebSo
     public Map<String, IBasicStorage<String, Object>> getSessionsReferences() {
         return mSessionsReferences;
     }
-
-
 }

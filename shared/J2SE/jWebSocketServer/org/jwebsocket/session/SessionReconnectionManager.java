@@ -14,27 +14,29 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.session;
 
-import org.jwebsocket.cachestorage.memory.MemoryCacheStorage;
-import org.jwebsocket.storage.memory.MemoryStorage;
+import org.apache.log4j.Logger;
+import org.jwebsocket.logging.Logging;
 
 /**
  *
- * @author kyberneees, acshulze
+ * @author kyberneees
  */
-public class MemoryReconnectionManager extends BaseReconnectionManager {
+public class SessionReconnectionManager extends BaseReconnectionManager {
 
-	public MemoryReconnectionManager() {
-		super();
-	}
+	private static Logger mLog = Logging.getLogger();
 
 	@Override
 	public void initialize() throws Exception {
-		setReconnectionIndex(new MemoryCacheStorage<String, Object>(getCacheStorageName()));
+		if (mLog.isDebugEnabled()) {
+			mLog.debug(">> Initializing session reconnection manager...");
+		}
+
+		setReconnectionIndex(getCacheStorageProvider().getCacheStorage(getCacheStorageName()));
 		getReconnectionIndex().initialize();
 
-		setSessionIdsTrash(new MemoryStorage<String, Object>(getTrashStorageName()));
+		setSessionIdsTrash(getStorageProvider().getStorage(getTrashStorageName()));
 		getSessionIdsTrash().initialize();
-
+		
 		super.initialize();
 	}
 
