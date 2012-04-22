@@ -16,33 +16,21 @@
 package org.jwebsocket.storage.jdbc;
 
 import java.beans.PropertyChangeSupport;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
+import java.io.*;
+import java.sql.*;
 import java.util.Properties;
 import java.util.Set;
 import javolution.util.FastSet;
-import org.jwebsocket.api.IBasicStorage;
+import org.jwebsocket.storage.BaseStorage;
 
 /**
- * Implementation of the <code>Store</code> interface that stores jWebSocket
+ * Implementation of the <code>IBasicStorage</code> interface that stores jWebSocket
  * component data in the database.
  * 
  * @author puran
  * @version $Id: JDBCStorage.java 1277 2011-01-02 15:09:35Z fivefeetfurther $
  */
-public class JDBCStorage implements IBasicStorage<Object, Object> {
+public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	private String mName = null;
 	/** default connection url for the channels data store */
@@ -50,7 +38,7 @@ public class JDBCStorage implements IBasicStorage<Object, Object> {
 	/** default connection user name for channels data store */
 	private static final String CONNECTION_NAME = "jwebsocket";
 	/** default connection password for the channels data store */
-	private static final String CONNECTION_PASSWORD = "himalayanyoddha";
+	private static final String CONNECTION_PASSWORD = "";
 	/** default mysql driver name for channel store */
 	private static final String DRIVER_NAME = "com.mysql.jdbc.Driver";
 	/**
@@ -763,44 +751,11 @@ public class JDBCStorage implements IBasicStorage<Object, Object> {
 	}
 
 	@Override
-	public Map getAll(Collection keys) {
-		return null;
-	}
-
-	@Override
-	public void putAll(Map aAll) {
-	}
-
-	@Override
-	public Set entrySet() {
-		return null;
-	}
-
-	@Override
-	public Collection values() {
-		return null;
-	}
-
-	@Override
-	public boolean containsValue(Object aValue) {
-		return false;
-	}
-
-	@Override
-	public boolean containsKey(Object aKey) {
-		return false;
-	}
-
-	@Override
 	public boolean isEmpty() {
 		return size() <= 0;
 	}
 
 	@Override
 	public void initialize() {
-	}
-
-	@Override
-	public void shutdown() {
 	}
 }

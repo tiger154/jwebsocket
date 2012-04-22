@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EhCacheStorage (an IBasicStorage Implementation)
+//  jWebSocket - EhCacheStorage 
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -15,26 +15,32 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.storage.ehcache;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 import javolution.util.FastSet;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import org.jwebsocket.api.IBasicStorage;
+import org.jwebsocket.storage.BaseStorage;
 
 /**
  * a named storage (a map of key/value pairs) in EhCache. Please consider 
  * that each storage is maintained in its own file on the hard disk.
  * @author aschulze
  */
-public class EhCacheStorage implements IBasicStorage {
+public class EhCacheStorage<K, V> extends BaseStorage<K, V> {
 
     private String mName = null;
     private static CacheManager mCacheManager = null;
     private Cache mCache = null;
 
+	public Cache getCache() {
+		return mCache;
+	}
+
+	public void setCache(Cache aCache) {
+		this.mCache = aCache;
+	}
+	
     /**
      * 
      * @param aName
@@ -45,8 +51,8 @@ public class EhCacheStorage implements IBasicStorage {
     }
 
     /**
+     * {@inheritDoc}
      *
-     * @return
      */
     @Override
     public String getName() {
@@ -54,9 +60,8 @@ public class EhCacheStorage implements IBasicStorage {
     }
 
     /**
+     * {@inheritDoc}
      *
-     * @param aName
-     * @throws Exception
      */
     @Override
     public void setName(String aName) throws Exception {
@@ -66,7 +71,6 @@ public class EhCacheStorage implements IBasicStorage {
     /**
      * {@inheritDoc}
      *
-     * @return
      */
     @Override
     public Set keySet() {
@@ -78,7 +82,6 @@ public class EhCacheStorage implements IBasicStorage {
     /**
      * {@inheritDoc}
      *
-     * @return
      */
     @Override
     public int size() {
@@ -88,26 +91,22 @@ public class EhCacheStorage implements IBasicStorage {
     /**
      * {@inheritDoc}
      *
-     * @param aKey
-     * @return
      */
     @Override
-    public Object get(Object aKey) {
+    public V get(Object aKey) {
         Element lElement = mCache.get(aKey);
-        return (lElement != null ? lElement.getObjectValue() : null);
+        return (lElement != null ? (V)lElement.getObjectValue() : null);
     }
 
     /**
      * {@inheritDoc}
      *
-     * @param aKey
-     * @return
      */
     @Override
-    public Object remove(Object aKey) {
+    public V remove(Object aKey) {
         // TODO: The interface specs that a previous object is supposed to be returned
         // this may not be desired and reduce performance, provide second message
-        Object lRes = mCache.get(aKey);
+        V lRes = (V)mCache.get(aKey);
         mCache.remove(aKey);
         return lRes;
     }
@@ -121,90 +120,28 @@ public class EhCacheStorage implements IBasicStorage {
     }
 
     /**
-     * Save a key/value pair to the Store.
+     * {@inheritDoc}
      *
-     * @param aKey 
-     * @param aData
-     * @return
      */
     @Override
     public Object put(Object aKey, Object aData) {
         Element lElement = new Element(aKey, aData);
         mCache.put(lElement);
-        return null;
+		
+        return aData;
     }
 
     /**
-     *
-     * @param keys
-     * @return
-     */
-    @Override
-    public Map getAll(Collection keys) {
-        // TODO: to be implemented
-        return null;
-    }
-
-    /**
-     *
-     * @param aAll
-     */
-    @Override
-    public void putAll(Map aAll) {
-        // TODO: to be implemented
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public Set entrySet() {
-        // TODO: to be implemented
-        return null;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public Collection values() {
-        // TODO: to be implemented
-        return null;
-    }
-
-    /**
-     *
-     * @param aValue
-     * @return
-     */
-    @Override
-    public boolean containsValue(Object aValue) {
-        // TODO: to be implemented
-        return false;
-    }
-
-    /**
-     *
-     * @param aKey
-     * @return
-     */
+	 *
+	 * {@inheritDoc }
+	 */
     @Override
     public boolean containsKey(Object aKey) {
         return mCache.get(aKey) != null;
     }
 
     /**
-     *
-     * @return
-     */
-    @Override
-    public boolean isEmpty() {
-        return size() <= 0;
-    }
-
-    /**
+     * {@inheritDoc}
      *
      */
     @Override
@@ -216,16 +153,6 @@ public class EhCacheStorage implements IBasicStorage {
                 mCacheManager.addCache(mName);
             }
             mCache = mCacheManager.getCache(mName);
-        }
-    }
-
-    /**
-     *
-     */
-    @Override
-    public void shutdown() {
-        if (mCacheManager != null) {
-            mCacheManager.shutdown();
         }
     }
 }
