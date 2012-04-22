@@ -15,7 +15,6 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.storage.mongodb;
 
-import org.jwebsocket.api.IBasicStorage;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -23,11 +22,9 @@ import com.mongodb.DBObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import javolution.util.FastMap;
 import javolution.util.FastSet;
+import org.jwebsocket.storage.BaseStorage;
 
 /**
  * This class uses MongoDB servers to persist the information. 
@@ -36,7 +33,7 @@ import javolution.util.FastSet;
  * 
  * @author kyberneees
  */
-public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
+public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 	
 	private String mName;
 	private DBCollection mCollection;
@@ -65,13 +62,6 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public void shutdown() throws Exception {
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
 	public String getName() {
 		return mName;
 	}
@@ -85,34 +75,6 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 				new BasicDBObject().append("$set", new BasicDBObject().append("ns", aNewName)));
 
 		mName = aNewName;
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public Map<K, V> getAll(Collection<K> aKeys) {
-		FastMap<K, V> lMap = new FastMap<K, V>();
-		for (K lKey : aKeys) {
-			lMap.put((K) lKey, get(lKey));
-		}
-		return lMap;
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public int size() {
-		return keySet().size();
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public boolean isEmpty() {
-		return keySet().isEmpty();
 	}
 
 	/**
@@ -183,16 +145,6 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public void putAll(Map<? extends K, ? extends V> aMap) {
-		for (K lKey : aMap.keySet()) {
-			put(lKey, aMap.get(lKey));
-		}
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
 	public void clear() {
 		mCollection.remove(new BasicDBObject().append("ns", mName));
 	}
@@ -208,26 +160,5 @@ public class MongoDBStorageV2<K, V> implements IBasicStorage<K, V> {
 			lKeySet.add((K) lCursor.next().get("k"));
 		}
 		return lKeySet;
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public Collection<V> values() {
-		List<V> lValues = new ArrayList<V>();
-		DBCursor lCursor = mCollection.find(new BasicDBObject().append("ns", mName));
-		while (lCursor.hasNext()) {
-			lValues.add((V) lCursor.next().get("v"));
-		}
-		return lValues;
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public Set<Entry<K, V>> entrySet() {
-		return getAll(keySet()).entrySet();
 	}
 }

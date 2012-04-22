@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - MemcachedStorage
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -16,15 +16,12 @@
 package org.jwebsocket.storage.memcached;
 
 import java.security.InvalidParameterException;
-import java.util.Map.Entry;
-import org.jwebsocket.api.IBasicStorage;
-import java.util.Collection;
-import java.util.Set;
-import java.util.Map;
-import javolution.util.FastMap;
-import net.spy.memcached.MemcachedClient;
-import javolution.util.FastSet;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import javolution.util.FastSet;
+import net.spy.memcached.MemcachedClient;
+import org.jwebsocket.storage.BaseStorage;
 
 /**
  * 
@@ -32,7 +29,7 @@ import java.util.Arrays;
  * @param <V> 
  * @author kyberneees
  */
-public class MemcachedStorage<K extends Object, V extends Object> implements IBasicStorage<K, V> {
+public class MemcachedStorage<K, V> extends BaseStorage<K, V> {
 
 	private MemcachedClient mMemcachedClient;
 	private String mName;
@@ -52,7 +49,7 @@ public class MemcachedStorage<K extends Object, V extends Object> implements IBa
 
 	/**
 	 * 
-	 * @throws Exception
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void initialize() throws Exception {
@@ -64,20 +61,20 @@ public class MemcachedStorage<K extends Object, V extends Object> implements IBa
 
 	/**
 	 * 
+	 * {@inheritDoc }
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void clear() {
-		for (Object key : keySet()) {
-			remove((K) key);
-		}
+		super.clear();
+		
 		//Removing the index
 		mMemcachedClient.set(mName + KEYS_LOCATION, NOT_EXPIRE, "");
 	}
 
 	/**
 	 * 
-	 * @return
+	 * {@inheritDoc }
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -96,59 +93,12 @@ public class MemcachedStorage<K extends Object, V extends Object> implements IBa
 
 	/**
 	 * 
-	 * @return
-	 */
-	@Override
-	public Collection<V> values() {
-		return getAll(keySet()).values();
-	}
-
-	/**
-	 * 
-	 * @param aKey
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public boolean containsKey(Object aKey) {
-		return keySet().contains((K) aKey);
-	}
-
-	/**
-	 * 
-	 * @param aValue
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public boolean containsValue(Object aValue) {
-		return values().contains((V) aValue);
-	}
-
-	/**
-	 * 
-	 * @param aKeys
-	 * @return
-	 */
-	@Override
-	public Map<K, V> getAll(Collection<K> aKeys) {
-		FastMap<K, V> lMap = new FastMap<K, V>();
-		for (K lKey : aKeys) {
-			lMap.put(lKey, get(lKey));
-		}
-
-		return lMap;
-	}
-
-	/**
-	 * 
-	 * @param key
-	 * @return
+	 * {@inheritDoc }
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public V get(Object lKey) {
-		V lValue = null;
+		V lValue;
 		lValue = (V) mMemcachedClient.get(lKey.toString());
 
 		return lValue;
@@ -156,8 +106,7 @@ public class MemcachedStorage<K extends Object, V extends Object> implements IBa
 
 	/**
 	 * 
-	 * @param key
-	 * @return
+	 * {@inheritDoc }
 	 */
 	@Override
 	public V remove(Object lKey) {
@@ -174,9 +123,7 @@ public class MemcachedStorage<K extends Object, V extends Object> implements IBa
 
 	/**
 	 * 
-	 * @param key
-	 * @param aValue
-	 * @return
+	 * {@inheritDoc }
 	 */
 	@Override
 	public V put(K aKey, V aValue) {
@@ -190,26 +137,6 @@ public class MemcachedStorage<K extends Object, V extends Object> implements IBa
 		}
 
 		return aValue;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isEmpty() {
-		return keySet().isEmpty();
-	}
-
-	/**
-	 * 
-	 * @param aMap
-	 */
-	@Override
-	public void putAll(Map<? extends K, ? extends V> aMap) {
-		for (K lKey : aMap.keySet()) {
-			put(lKey, aMap.get(lKey));
-		}
 	}
 
 	/**
@@ -230,7 +157,7 @@ public class MemcachedStorage<K extends Object, V extends Object> implements IBa
 
 	/**
 	 * 
-	 * @return
+	 * {@inheritDoc }
 	 */
 	@Override
 	public String getName() {
@@ -239,8 +166,7 @@ public class MemcachedStorage<K extends Object, V extends Object> implements IBa
 
 	/**
 	 * 
-	 * @param aName
-	 * @throws Exception
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void setName(String aName) throws Exception {
@@ -255,30 +181,5 @@ public class MemcachedStorage<K extends Object, V extends Object> implements IBa
 		for (K key : lMap.keySet()) {
 			put(key, lMap.get(key));
 		}
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	@Override
-	public int size() {
-		return keySet().size();
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	@Override
-	public Set<Entry<K, V>> entrySet() {
-		return getAll(keySet()).entrySet();
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public void shutdown() {
 	}
 }

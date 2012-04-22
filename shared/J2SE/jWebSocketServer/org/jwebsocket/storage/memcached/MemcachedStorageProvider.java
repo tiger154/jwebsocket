@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EhCacheStorageProvider
+//  jWebSocket - MemoryStorageProvider
 //  Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -13,20 +13,31 @@
 //  You should have received a copy of the GNU Lesser General Public License along
 //  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //  ---------------------------------------------------------------------------
-package org.jwebsocket.storage.ehcache;
+package org.jwebsocket.storage.memcached;
 
+import net.spy.memcached.MemcachedClient;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.IStorageProvider;
 
 /**
- * Provides a getStorage method to return an EhCache storage with a given name.
+ *
  * @author kyberneees, aschulze
  */
-public class EhCacheStorageProvider implements IStorageProvider {
+public class MemcachedStorageProvider implements IStorageProvider {
+
+	private MemcachedClient mMemcachedClient;
+
+	public MemcachedClient getMemcachedClient() {
+		return mMemcachedClient;
+	}
+
+	public void setMemcachedClient(MemcachedClient aMemcachedClient) {
+		this.mMemcachedClient = aMemcachedClient;
+	}
 
 	@Override
 	public IBasicStorage<String, Object> getStorage(String aName) throws Exception {
-		EhCacheStorage lStorage = new EhCacheStorage(aName);
+		IBasicStorage<String, Object> lStorage = new MemcachedStorage<String, Object>(aName, mMemcachedClient);
 		lStorage.initialize();
 
 		return lStorage;
@@ -34,6 +45,6 @@ public class EhCacheStorageProvider implements IStorageProvider {
 
 	@Override
 	public void removeStorage(String aName) throws Exception {
-		EhCacheManager.getInstance().removeCache(aName);
+		new MemcachedStorage<String, Object>(aName, mMemcachedClient).clear();
 	}
 }
