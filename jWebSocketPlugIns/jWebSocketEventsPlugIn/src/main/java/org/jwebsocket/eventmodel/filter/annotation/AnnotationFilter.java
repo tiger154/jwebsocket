@@ -17,11 +17,11 @@ package org.jwebsocket.eventmodel.filter.annotation;
 
 import java.lang.reflect.Method;
 import org.apache.log4j.Logger;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.annotation.ImportFromToken;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.eventmodel.filter.EventModelFilter;
+import org.jwebsocket.logging.Logging;
 
 /**
  *
@@ -89,7 +89,7 @@ public class AnnotationFilter extends EventModelFilter {
 			if (lAnnotation.strategy().equals("move")) {
 				aEvent.getArgs().remove(lKey);
 			}
-
+			
 			//Invoking the setter method for the annotated field
 			aMethod.invoke(aEvent, lValue.getClass().cast(lValue));
 		} 
