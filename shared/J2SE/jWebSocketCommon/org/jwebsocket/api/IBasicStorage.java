@@ -15,13 +15,13 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.api;
 
-import java.util.Map;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * A storage is a named key/value list. This is the basic interface for all 
- * higher level implementations and persistence engines, like MemoryCache, 
- * EhCache or MongoDBCache.
+ * higher level implementations and persistence engines, like EhCache or MongoDB
+ * 
  * @param <K> 
  * @param <V> 
  * @author kyberneees, aschulze
@@ -30,13 +30,13 @@ public interface IBasicStorage<K, V> extends Map<K, V>, IInitializable {
 
 	/**
 	 * 
-	 * @return
+	 * @return the IBasicStorage name
 	 */
 	String getName();
 
 	/**
 	 * 
-	 * @param aName
+	 * @param aName the IBasicStorage name to set
 	 * @throws Exception
 	 */
 	void setName(String aName) throws Exception;
@@ -44,7 +44,7 @@ public interface IBasicStorage<K, V> extends Map<K, V>, IInitializable {
 	/**
 	 * 
 	 * @param aKeys
-	 * @return
+	 * @return 
 	 */
 	Map<K, V> getAll(Collection<K> aKeys);
 }
