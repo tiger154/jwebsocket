@@ -16,7 +16,7 @@ package org.jwebsocket.cachestorage.mongodb;
 
 import org.jwebsocket.api.IBasicCacheStorage;
 import org.jwebsocket.api.ICacheStorageProvider;
-import org.jwebsocket.storage.mongodb.*;
+import org.jwebsocket.storage.mongodb.MongoDBStorageBuilder;
 
 /**
  *
