@@ -18,6 +18,7 @@ package org.jwebsocket.jetty;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Map;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
@@ -89,6 +90,15 @@ public class JettyConnector extends BaseConnector {
 		}
 
 		lHeader.put(RequestHeader.WS_SEARCHSTRING, aRequest.getQueryString());
+
+		//Setting client cookies
+		Cookie[] lCookies = aRequest.getCookies();
+		Map lCookiesMap = new FastMap().shared();
+		for (int i = 0; i < lCookies.length; i++) {
+			lCookiesMap.put(lCookies[i].getName(), lCookies[i].getValue());
+		}
+		lHeader.put(RequestHeader.WS_COOKIES, lCookiesMap);
+
 		setHeader(lHeader);
 	}
 

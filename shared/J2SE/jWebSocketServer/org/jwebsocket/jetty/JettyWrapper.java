@@ -30,6 +30,7 @@ import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 
 // LOOK AT THIS: http://www.maths.tcd.ie/~dacurran/4ict12/assignment3/
 // Jetty Home: http://www.eclipse.org/jetty/
@@ -81,6 +82,9 @@ public class JettyWrapper implements WebSocket,
 			mLog.debug("Connecting Jetty Client...");
 		}
 		mConnector = new JettyConnector(mEngine, mRequest, mProtocol, aConnection);
+		mConnector.getSession().setSessionId(mRequest.getSession().getId());
+		mConnector.getSession().setStorage(new HttpSessionStorage(mRequest.getSession()));
+		
 		mEngine.addConnector(mConnector);
 		// inherited BaseConnector.startConnector
 		// calls mEngine connector started
