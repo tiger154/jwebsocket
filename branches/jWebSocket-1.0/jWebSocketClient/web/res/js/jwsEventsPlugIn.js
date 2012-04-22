@@ -21,7 +21,7 @@
 //:d:en:This class handle request callbacks on the events plug-in
 jws.oop.declareClass( "jws", "EventsCallbacksHandler", null, {
 	OnTimeout: function(aRawRequest, aArgs){
-		if (undefined != aArgs.meta.OnTimeout){
+		if ("function" == typeof(aArgs.meta["OnTimeout"])){
 			aArgs.meta.OnTimeout(aRawRequest);
 		}
 	}
@@ -615,7 +615,7 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 					if (aRequest.OnResponse){
 						aRequest.OnResponse({
 							code: -4,
-							msg: "Argument '"+lArguments[i].name+"' has invalid type. Required: '"+lRequiredType+"'"
+							msg: "Argument '"+lArguments[i].name+"' has invalid type. Required type is: '"+lRequiredType+"'!"
 						}, aRequest.args);
 					}
 					throw "stop_filter_chain";
