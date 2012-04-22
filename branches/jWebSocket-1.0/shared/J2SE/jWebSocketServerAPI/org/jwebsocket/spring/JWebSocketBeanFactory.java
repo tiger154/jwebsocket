@@ -48,6 +48,8 @@ public class JWebSocketBeanFactory {
 	public static GenericApplicationContext getInstance(String aNamespace) {
 		if (!mContextMap.containsKey(aNamespace)) {
 			mContextMap.put(aNamespace, new GenericApplicationContext(new DefaultListableBeanFactory()));
+			//Setting the default (core) application context as parent
+			mContextMap.get(aNamespace).setParent(mGlobalContext);
 		}
 		return mContextMap.get(aNamespace);
 	}
@@ -71,7 +73,7 @@ public class JWebSocketBeanFactory {
 	 */
 	public static void load(String aNamespace, String aPath, ClassLoader aClassLoader) {
 		String lPath = Tools.expandEnvVarsAndProps(aPath);
-		
+
 		XmlBeanDefinitionReader lXmlReader;
 		if (null != aNamespace) {
 			lXmlReader = new XmlBeanDefinitionReader(getInstance(aNamespace));
