@@ -29,19 +29,20 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 	private IBasicStorage<String, Object> mSessionIdsTrash;
 	private String mTrashStorageName;
 	private IStorageProvider mStorageProvider;
+	private ICacheStorageProvider mCacheStorageProvider;
 
-	/**
-	 * 
-	 * @return
-	 */
+	public ICacheStorageProvider getCacheStorageProvider() {
+		return mCacheStorageProvider;
+	}
+
+	public void setCacheStorageProvider(ICacheStorageProvider aCacheStorageProvider) {
+		this.mCacheStorageProvider = aCacheStorageProvider;
+	}
+
 	public String getCacheStorageName() {
 		return mCacheStorageName;
 	}
 
-	/**
-	 * 
-	 * @param aCacheStorageName
-	 */
 	public void setCacheStorageName(String aCacheStorageName) {
 		this.mCacheStorageName = aCacheStorageName;
 	}
@@ -51,10 +52,6 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 		return mReconnectionIndex;
 	}
 
-	/**
-	 * 
-	 * @param aReconnectionIndex
-	 */
 	public void setReconnectionIndex(IBasicCacheStorage<String, Object> aReconnectionIndex) {
 		this.mReconnectionIndex = aReconnectionIndex;
 	}
@@ -64,7 +61,6 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 		return mSessionExpirationTime;
 	}
 
-	@Override
 	public void setSessionExpirationTime(Integer aSessionExpirationTime) {
 		this.mSessionExpirationTime = aSessionExpirationTime;
 	}
@@ -74,26 +70,14 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 		return mSessionIdsTrash;
 	}
 
-	/**
-	 * 
-	 * @param aSessionIdsTrash
-	 */
 	public void setSessionIdsTrash(IBasicStorage<String, Object> aSessionIdsTrash) {
 		this.mSessionIdsTrash = aSessionIdsTrash;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public String getTrashStorageName() {
 		return mTrashStorageName;
 	}
 
-	/**
-	 * 
-	 * @param aTrashStorageName
-	 */
 	public void setTrashStorageName(String aTrashStorageName) {
 		this.mTrashStorageName = aTrashStorageName;
 	}
@@ -102,22 +86,15 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 	public void putInReconnectionMode(String aSessionId) {
 		getReconnectionIndex().put(aSessionId, true, getSessionExpirationTime());
 
-		//Used by a deamon to release expired sessions database space
+		//Used by a deamon to release expired sessions resources
 		getSessionIdsTrash().put(aSessionId, System.currentTimeMillis() + (getSessionExpirationTime() * 1000));
 	}
 
-	/**
-	 * @return the mStorageProvider
-	 */
 	@Override
 	public IStorageProvider getStorageProvider() {
 		return mStorageProvider;
 	}
 
-	/**
-	 * @param mStorageProvider the mStorageProvider to set
-	 */
-	@Override
 	public void setStorageProvider(IStorageProvider mStorageProvider) {
 		this.mStorageProvider = mStorageProvider;
 	}
@@ -126,7 +103,7 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 	public void initialize() throws Exception {
 		Tools.getTimer().scheduleAtFixedRate(
 				new CleanExpiredSessionsTask(
-				getSessionIdsTrash(), getStorageProvider()), 0, 600000);
+				getSessionIdsTrash(), getStorageProvider()), 0, 300000); //each 5 minutes
 	}
 
 	@Override
