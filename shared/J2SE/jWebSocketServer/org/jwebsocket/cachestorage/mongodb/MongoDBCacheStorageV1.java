@@ -15,19 +15,11 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.cachestorage.mongodb;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
+import com.mongodb.*;
 import java.util.Set;
-import javolution.util.FastList;
-import javolution.util.FastMap;
 import javolution.util.FastSet;
 import org.jwebsocket.api.IBasicCacheStorage;
+import org.jwebsocket.storage.BaseStorage;
 
 /**
  * This class uses MongoDB servers to persist the information. 
@@ -37,7 +29,7 @@ import org.jwebsocket.api.IBasicCacheStorage;
  *
  * @author kyberneees
  */
-public class MongoDBCacheStorageV1<K, V> implements IBasicCacheStorage<K, V> {
+public class MongoDBCacheStorageV1<K, V> extends BaseStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	private DB mDatabase;
 	private String mName;
@@ -69,29 +61,6 @@ public class MongoDBCacheStorageV1<K, V> implements IBasicCacheStorage<K, V> {
 	@Override
 	public V put(K aKey, V aValue) {
 		return put(aKey, aValue, 0);
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public void putAll(Map<? extends K, ? extends V> aMap) {
-		for (K lKey : aMap.keySet()) {
-			put(lKey, aMap.get(lKey));
-		}
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public Map<K, V> getAll(Collection<K> aKeys) {
-		FastMap<K, V> lMap = new FastMap<K, V>();
-		for (K lKey : aKeys) {
-			lMap.put((K) lKey, get(lKey));
-		}
-		
-		return lMap;
 	}
 
 	/**
@@ -180,14 +149,6 @@ public class MongoDBCacheStorageV1<K, V> implements IBasicCacheStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public Set<Entry<K, V>> entrySet() {
-		return getAll(keySet()).entrySet();
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
 	public V get(Object aKey) {
 		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("k", aKey));
 
@@ -198,14 +159,6 @@ public class MongoDBCacheStorageV1<K, V> implements IBasicCacheStorage<K, V> {
 		}
 		
 		return null;
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public boolean isEmpty() {
-		return keySet().isEmpty();
 	}
 
 	/**
@@ -246,40 +199,8 @@ public class MongoDBCacheStorageV1<K, V> implements IBasicCacheStorage<K, V> {
 	 * {@inheritDoc
 	 */
 	@Override
-	public int size() {
-		return keySet().size();
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public Collection<V> values() {
-		Set<K> lKeySet = keySet();
-		FastList<V> lValues = new FastList <V>();
-		DBObject lRecord = null;
-		
-		for (K lKey : lKeySet){
-			lRecord = mCollection.findOne(new BasicDBObject().append("k", lKey));
-			lValues.add((V)lRecord.get("v"));
-		}
-		
-		return lValues;
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
 	public void initialize() throws Exception {
 		mCollection.ensureIndex(new BasicDBObject().append("k", 1),
 				new BasicDBObject().append("unique", true));
-	}
-
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public void shutdown() throws Exception {
 	}
 }
