@@ -30,6 +30,7 @@ import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.util.Tools;
 
 /**
  * Implementation of the jWebSocket TCP socket connector.
@@ -354,20 +355,27 @@ public class TCPConnector extends BaseConnector {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Parsing handshake request: " + new String(lReq).replace("\r\n", "\\n"));
 		}
-		Map lRespMap = WebSocketHandshake.parseC2SRequest(
+		Map lReqMap = WebSocketHandshake.parseC2SRequest(
 				lReq, aClientSocket instanceof SSLSocket);
-		if (lRespMap == null) {
+		if (lReqMap == null) {
 			return null;
 		}
+
+		EngineUtils.parseCookies(lReqMap);
+		//Setting the SID cookie if not present previously
+		if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey("SID")) {
+			((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put("SID", Tools.getMD5(generateUID()));
+		}
+
 		RequestHeader lHeader = EngineUtils.validateC2SRequest(
-				getEngine().getConfiguration().getDomains(), lRespMap, mLog);
+				getEngine().getConfiguration().getDomains(), lReqMap, mLog);
 		if (lHeader == null) {
 			return null;
 		}
 
 		// generate the websocket handshake
 		// if policy-file-request is found answer it
-		byte[] lBA = WebSocketHandshake.generateS2CResponse(lRespMap);
+		byte[] lBA = WebSocketHandshake.generateS2CResponse(lReqMap);
 		if (lBA == null) {
 			if (mLog.isDebugEnabled()) {
 				mLog.warn("TCPEngine detected illegal handshake.");
@@ -387,7 +395,7 @@ public class TCPConnector extends BaseConnector {
 		lOut.flush();
 
 		// maybe the request is a flash policy-file-request
-		String lFlashBridgeReq = (String) lRespMap.get("policy-file-request");
+		String lFlashBridgeReq = (String) lReqMap.get("policy-file-request");
 		if (lFlashBridgeReq != null) {
 			mLog.warn("TCPEngine returned policy file request ('"
 					+ lFlashBridgeReq
@@ -483,7 +491,11 @@ public class TCPConnector extends BaseConnector {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Starting " + lLogInfo + " connector...");
 			}
-			
+
+			//Setting the SID in the connector's WebSocketSession instance
+			mConnector.getSession().setSessionId(mConnector.getHeader().
+					getCookies().get("SID").toString());
+
 			// call connectorStarted method of engine
 			lEngine.connectorStarted(mConnector);
 
