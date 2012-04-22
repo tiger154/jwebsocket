@@ -84,16 +84,4 @@
 	<bean id="MongoDBConnection0" class="com.mongodb.Mongo" destroy-method="close">
 	</bean>
 	
-	<bean id="MongoDBStorageBuilder0" class="org.jwebsocket.storage.mongodb.MongoDBStorageBuilder">
-		<property name="con" ref="MongoDBConnection0" />
-		<property name="databaseName" value="storages" />
-		<property name="collectionName" value="__v1_storages_collection__" />
-	</bean>
-	
-	<bean id="MongoDBCacheStorageBuilder0" class="org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageBuilder">
-		<property name="con" ref="MongoDBConnection0" />
-		<property name="databaseName" value="cache_storages" />
-		<property name="collectionName" value="__v1_cache_storages_collection__" />
-	</bean>
-
 </beans>
