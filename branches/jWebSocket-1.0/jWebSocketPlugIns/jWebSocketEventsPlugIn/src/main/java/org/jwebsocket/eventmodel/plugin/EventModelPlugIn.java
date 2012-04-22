@@ -50,8 +50,8 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 
 	/**
 	 * {@inheritDoc }
-	 * 
-	 * @throws Exception 
+	 *
+	 * @throws Exception
 	 */
 	@Override
 	public void initialize() throws Exception {
@@ -59,7 +59,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 
 	/**
 	 * Short-cut to set the plug-in events definitions
-	 * 
+	 *
 	 * @param aDefs The plug-in events definitions
 	 */
 	public void setEventsDefinitions(Set<C2SEventDefinition> aDefs) {
@@ -83,7 +83,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Override
@@ -104,7 +104,8 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	}
 
 	/**
-	 * Register the events in the EventModel subject and the plug-in as a listener for them
+	 * Register the events in the EventModel subject and the plug-in as a
+	 * listener for them
 	 *
 	 * @param aEmEvents The events to register
 	 * @throws Exception
@@ -128,10 +129,13 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 
 	public void setEmEventClassesAndClientAPI(Map<String, String> aEmEvents) throws Exception {
 		Map lClasses = new FastMap<String, Class>();
-		for (String lClass : aEmEvents.keySet()) {
+		for (String lKey : aEmEvents.keySet()) {
 			try {
-				lClasses.put(lClass, Class.forName(aEmEvents.get(lClass)));
+				lClasses.put(lKey, Class.forName(aEmEvents.get(lKey)));
 			} catch (ClassNotFoundException ex) {
+				mLog.error("Exception setting the client API for plug-in '"
+						+ getId() + "'. Class not found: '" + aEmEvents.get(lKey) + "'!");
+				throw ex;
 			}
 		}
 		setClientAPI(lClasses);
@@ -204,8 +208,8 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	}
 
 	/**
-	 * 
-	 * {@inheritDoc } 
+	 *
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void readFromToken(Token aToken) {
@@ -213,15 +217,14 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	}
 
 	/**
-	 * 
-	 * {@inheritDoc } 
+	 *
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void writeToToken(Token aToken) {
 		Map lApi = new FastMap();
 		Token lTokenEventDef;
-		C2SEventDefinition lEventDef = null;
-
+		C2SEventDefinition lEventDef;
 		for (String lKey : getClientAPI().keySet()) {
 			try {
 				String aEventId = getEm().getEventFactory().eventToString(getClientAPI().get(lKey));
