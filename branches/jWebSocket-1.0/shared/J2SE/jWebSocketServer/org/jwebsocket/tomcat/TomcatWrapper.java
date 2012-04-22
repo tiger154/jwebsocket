@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Enumeration;
 import java.util.Map;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javolution.util.FastMap;
 import org.apache.catalina.websocket.MessageInbound;
@@ -34,6 +35,7 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 
 /**
  *
@@ -95,6 +97,16 @@ public class TomcatWrapper extends MessageInbound {
 		}
 
 		lHeader.put(RequestHeader.WS_SEARCHSTRING, aRequest.getQueryString());
+
+		//Setting client cookies
+		Cookie[] lCookies = aRequest.getCookies();
+		Map lCookiesMap = new FastMap().shared();
+		for (int i = 0; i < lCookies.length; i++) {
+			lCookiesMap.put(lCookies[i].getName(), lCookies[i].getValue());
+		}
+		lHeader.put(RequestHeader.WS_COOKIES, lCookiesMap);
+
+
 		mHeader = lHeader;
 	}
 
@@ -108,6 +120,9 @@ public class TomcatWrapper extends MessageInbound {
 			mLog.debug("Connecting Tomcat Client...");
 		}
 		mConnector = new TomcatConnector(mEngine, aOutbound);
+		mConnector.getSession().setSessionId(mRequest.getSession().getId());
+		mConnector.getSession().setStorage(new HttpSessionStorage(mRequest.getSession()));
+		
 
 		mConnector.setHeader(mHeader);
 		mConnector.setRemotePort(mRemotePort);
