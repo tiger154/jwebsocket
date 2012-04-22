@@ -20,9 +20,10 @@ import javolution.util.FastMap;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 
 /**
- * Holds the header of the initial WebSocket request from the client
- * to the server. The RequestHeader internally maintains a FastMap to store
- * key/values pairs.
+ * Holds the header of the initial WebSocket request from the client to the
+ * server. The RequestHeader internally maintains a FastMap to store key/values
+ * pairs.
+ *
  * @author aschulze
  * @author jang
  * @version $Id: RequestHeader.java 596 2010-06-22 17:09:54Z fivefeetfurther $
@@ -41,12 +42,14 @@ public final class RequestHeader {
 	public static final String WS_SECKEY = "secKey";
 	public static final String WS_SECKEY1 = "secKey1";
 	public static final String WS_SECKEY2 = "secKey2";
+	public static final String WS_COOKIES = "cookie";
 	public static final String URL_ARGS = "args";
 	public static final String TIMEOUT = "timeout";
 	public static final String USER_AGENT = "User-Agent";
 
 	/**
 	 * Puts a new object value to the request header.
+	 *
 	 * @param aKey
 	 * @param aValue
 	 */
@@ -55,8 +58,9 @@ public final class RequestHeader {
 	}
 
 	/**
-	 * Returns the object value for the given key or {@code null} if the
-	 * key does not exist in the header.
+	 * Returns the object value for the given key or {@code null} if the key
+	 * does not exist in the header.
+	 *
 	 * @param aKey
 	 * @return object value for the given key or {@code null}.
 	 */
@@ -65,8 +69,9 @@ public final class RequestHeader {
 	}
 
 	/**
-	 * Returns the string value for the given key or {@code null} if the
-	 * key does not exist in the header.
+	 * Returns the string value for the given key or {@code null} if the key
+	 * does not exist in the header.
+	 *
 	 * @param aKey
 	 * @return String value for the given key or {@code null}.
 	 */
@@ -76,6 +81,7 @@ public final class RequestHeader {
 
 	/**
 	 * Returns a Map of the optional URL arguments passed by the client.
+	 *
 	 * @return Map of the optional URL arguments.
 	 */
 	public Map getArgs() {
@@ -83,9 +89,10 @@ public final class RequestHeader {
 	}
 
 	/**
-	 * Returns the sub protocol passed by the client or a default value
-	 * if no sub protocol has been passed either in the header or in the
-	 * URL arguments.
+	 * Returns the sub protocol passed by the client or a default value if no
+	 * sub protocol has been passed either in the header or in the URL
+	 * arguments.
+	 *
 	 * @return Sub protocol passed by the client or default value.
 	 */
 	public String getSubProtocol() {
@@ -93,7 +100,9 @@ public final class RequestHeader {
 	}
 
 	/**
-	 * Returns the subprotocol format in which messages are exchanged between client and server.
+	 * Returns the subprotocol format in which messages are exchanged between
+	 * client and server.
+	 *
 	 * @return subprotocol format passed by the client or default value
 	 */
 	public String getFormat() {
@@ -101,9 +110,10 @@ public final class RequestHeader {
 	}
 
 	/**
-	 * Tries to resolve correct subprotocol & format regardless of
-	 * client version (old, new, hixie, hybi, browser, java).
-	 * TODO: deprecate this method once majority of clients switch to new 'subprotocol/format' scheme
+	 * Tries to resolve correct subprotocol & format regardless of client
+	 * version (old, new, hixie, hybi, browser, java). TODO: deprecate this
+	 * method once majority of clients switch to new 'subprotocol/format' scheme
+	 *
 	 * @return array with two members: protocol and format
 	 */
 	private String[] resolveSubprotocol() {
@@ -133,9 +143,10 @@ public final class RequestHeader {
 	}
 
 	/**
-	 * Returns the session timeout passed by the client or a default value
-	 * if no session timeout has been passed either in the header or in the
-	 * URL arguments.
+	 * Returns the session timeout passed by the client or a default value if no
+	 * session timeout has been passed either in the header or in the URL
+	 * arguments.
+	 *
 	 * @param aDefault
 	 * @return Session timeout passed by the client or default value.
 	 */
@@ -153,5 +164,9 @@ public final class RequestHeader {
 
 	public int getVersion() {
 		return (Integer) mFields.get(WS_VERSION);
+	}
+
+	public Map getCookies() {
+		return (Map) get(WS_COOKIES);
 	}
 }
