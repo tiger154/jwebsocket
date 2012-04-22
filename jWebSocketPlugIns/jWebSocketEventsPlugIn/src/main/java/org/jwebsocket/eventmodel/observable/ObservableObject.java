@@ -33,11 +33,11 @@ import org.jwebsocket.eventmodel.util.Util;
  * @author kyberneees
  */
 public abstract class ObservableObject implements IObservable {
-	
+
 	private Integer mMaxExecutionTime = 1; //SECONDS
 	private Set<Class<? extends Event>> mEvents = new FastSet();
 	private Map<Class<? extends Event>, Set<IListener>> mListeners = new FastMap<Class<? extends Event>, Set<IListener>>().shared();
-	
+
 	private void checkEvent(Class<? extends Event> aEventClass) throws Exception {
 		if (!mEvents.contains(aEventClass)) {
 			throw new IndexOutOfBoundsException("The event '" + aEventClass + "' is not registered. Add it first!");
@@ -45,7 +45,7 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void on(Class<? extends Event> aEventClass, IListener aListener) throws Exception {
@@ -59,7 +59,7 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void on(Collection<Class<? extends Event>> aEventClassCollection, IListener aListener) throws Exception {
@@ -69,7 +69,7 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void addEvents(Class<? extends Event> aEventClass) {
@@ -80,7 +80,7 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void addEvents(Collection<Class<? extends Event>> aEventClassCollection) {
@@ -90,21 +90,21 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void removeEvents(Class<? extends Event> aEventClass) {
 		if (getEvents().contains(aEventClass)) {
 			getEvents().remove(aEventClass);
 		}
-		
+
 		if (getListeners().containsKey(aEventClass)) {
 			getListeners().remove(aEventClass);
 		}
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void removeEvents(Collection<Class<? extends Event>> aEventClassCollection) {
@@ -114,7 +114,7 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void un(Class<? extends Event> aEventClass, IListener aListener) {
@@ -124,7 +124,7 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void un(Collection<Class<? extends Event>> aEventClassCollection, IListener aListener) {
@@ -134,21 +134,21 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public ResponseEvent notify(Event aEvent, ResponseEvent aResponseEvent, boolean aUseThreads) throws Exception {
 		checkEvent((Class<? extends Event>) aEvent.getClass());
-		
+
 		aEvent.setSubject(this);
-		
+
 		if (null == aResponseEvent) {
 			aResponseEvent = new ResponseEvent();
 			aResponseEvent.setId(aEvent.getId());
 		}
-		
+
 		long lInitTime = System.nanoTime();
-		
+
 		if (getListeners().containsKey(aEvent.getClass()) && null != getListeners().get(aEvent.getClass())) {
 			if (getListeners().get(aEvent.getClass()).size() > 0) {
 				Set<IListener> lCalls = getListeners().get(aEvent.getClass());
@@ -168,14 +168,15 @@ public abstract class ObservableObject implements IObservable {
 				}
 			}
 		}
-		
+
 		aResponseEvent.setProcessingTime((System.nanoTime() - lInitTime));
 		return aResponseEvent;
 	}
 
 	/**
-	 * Execute the <tt>processEvent</tt> method on listeners according to the custom event class
-	 * 
+	 * Execute the <tt>processEvent</tt> method on listeners according to the
+	 * custom event class
+	 *
 	 * @param aListener The listener that will process the event
 	 * @param aEvent The event to process
 	 * @param aResponseEvent The response to populate
@@ -185,7 +186,7 @@ public abstract class ObservableObject implements IObservable {
 		Class<? extends Event> lEventClass = aEvent.getClass();
 		Class<? extends IListener> lListenerClass = aListener.getClass();
 		Class<? extends ResponseEvent> lResponseClass = aResponseEvent.getClass();
-		
+
 		try {
 			Method lMethod = lListenerClass.getMethod("processEvent", lEventClass, lResponseClass);
 			lMethod.invoke(aListener, lEventClass.cast(aEvent), lResponseClass.cast(aResponseEvent));
@@ -198,41 +199,41 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public ResponseEvent notifyUntil(Event aEvent, ResponseEvent aResponseEvent) throws Exception {
 		checkEvent(aEvent.getClass());
-		
+
 		aEvent.setSubject(this);
-		
+
 		if (null == aResponseEvent) {
 			aResponseEvent = new ResponseEvent();
 			aResponseEvent.setId(aEvent.getId());
 		}
-		
+
 		long lInitTime = System.nanoTime();
-		
+
 		if (getListeners().containsKey(aEvent.getClass()) && null != getListeners().get(aEvent.getClass())) {
 			if (getListeners().get(aEvent.getClass()).size() > 0) {
 				Set<IListener> lCalls = getListeners().get(aEvent.getClass());
-				
+
 				for (IListener lListener : lCalls) {
 					ObservableObject.callProcessEvent(lListener, aEvent, aResponseEvent);
-					
+
 					if (aEvent.isProcessed()) {
 						break;
 					}
 				}
 			}
 		}
-		
+
 		aResponseEvent.setProcessingTime(System.nanoTime() - lInitTime);
 		return aResponseEvent;
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public boolean hasListeners(Class<? extends Event> aEventClass) throws Exception {
@@ -240,12 +241,12 @@ public abstract class ObservableObject implements IObservable {
 		if (getListeners().containsKey(aEventClass) && getListeners().get(aEventClass).size() > 0) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public boolean hasListener(Class<? extends Event> aEventClass, IListener aListener) throws Exception {
@@ -253,12 +254,12 @@ public abstract class ObservableObject implements IObservable {
 		if (getListeners().containsKey(aEventClass) && getListeners().get(aEventClass).contains(aListener)) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void purgeListeners() {
@@ -266,7 +267,7 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void purgeEvents() {
@@ -275,7 +276,7 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public boolean hasEvent(Class<? extends Event> aEventClass) {
@@ -283,15 +284,17 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 * 
-	 * @return The allowed time to wait for the listeners when execute it in threads
+	 *
+	 * @return The allowed time to wait for the listeners when execute it in
+	 * threads
 	 */
 	public Integer getMaxExecutionTime() {
 		return mMaxExecutionTime;
 	}
 
 	/**
-	 * @param aMaxExecutionTime The allowed time to wait for the listeners when execute it in threads
+	 * @param aMaxExecutionTime The allowed time to wait for the listeners when
+	 * execute it in threads
 	 */
 	public void setMaxExecutionTime(Integer aMaxExecutionTime) {
 		this.mMaxExecutionTime = aMaxExecutionTime;
@@ -312,7 +315,7 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 * @param aEvents The events collection to set. Don't work as a setter, 
+	 * @param aEvents The events collection to set. Don't work as a setter,
 	 * internally the events are added to the subject events
 	 */
 	public void setEvents(Set<Class<? extends Event>> aEvents) {
@@ -320,18 +323,15 @@ public abstract class ObservableObject implements IObservable {
 	}
 
 	/**
-	 * @param aEvents The events collection to set. Don't work as a setter, 
+	 * @param aEvents The events collection to set. Don't work as a setter,
 	 * internally the events are added to the subject events
 	 */
-	public void setEventClasses(Set<String> aEvents) {
+	public void setEventClasses(Set<String> aEvents) throws ClassNotFoundException {
 		Set lClasses = new FastSet();
-		for (String lClass : aEvents) {
-			try {
-				lClasses.add(Class.forName(lClass));
-			} catch (ClassNotFoundException ex) {
-				
-			}
+		for (String lEventClass : aEvents) {
+			lClasses.add(Class.forName(lEventClass));
 		}
+		
 		addEvents(lClasses);
 	}
 }
