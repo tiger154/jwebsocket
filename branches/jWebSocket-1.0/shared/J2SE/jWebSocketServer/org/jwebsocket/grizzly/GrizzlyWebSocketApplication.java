@@ -25,6 +25,7 @@ import org.glassfish.grizzly.websockets.WebSocketApplication;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 
 /**
  * 
@@ -74,6 +75,11 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		}
 
 		GrizzlyConnector lConnector = new GrizzlyConnector(mEngine, mRequest, mProtocol, aWebSocket);
+		
+		/* How to ?? */
+//		lConnector.getSession().setSessionId(mRequest.getSession().getId());
+//		lConnector.getSession().setStorage(new HttpSessionStorage(mRequest.getSession()));
+		
 		mConnectors.put(aWebSocket, lConnector);
 
 		// inherited BaseConnector.startConnector
