@@ -56,7 +56,7 @@ public class MailStore extends EhCacheStorage {
 	public Token storeMail(Token aMail) {
 		Token lRes = TokenFactory.createToken();
 		try {
-			String lStr = JSONProcessor.tokenToJSON(aMail).toString();
+			String lStr = JSONProcessor.tokenToPacket(aMail).getUTF8();
 			super.put(aMail.getString("id"), lStr);
 			lRes.setInteger("code", 0);
 			lRes.setString("msg", "ok");

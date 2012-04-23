@@ -37,6 +37,7 @@ public class GrizzlyEngine extends BaseEngine {
 	private static Integer mSSLPort = 443;
 	private boolean mIsRunning = false;
 	private WebSocketServer mServer = null;
+	// private HttpServer mServer = null;
 	private static final String mDemoRootDirectory = "/var/www/jWebSocketClient";
 	private static final String mDemoContext = "/jWebSocketGrizzlyDemos";
 	private static final String mDemoServlet = "/jWebSocketGrizzlyServlet";
@@ -76,10 +77,30 @@ public class GrizzlyEngine extends BaseEngine {
 			}
 
 			// Creating Grizzly server
-			InetSocketAddress lISA = new InetSocketAddress(mPort);
+			// InetSocketAddress lISA = new InetSocketAddress(mPort);
 			mServer = WebSocketServer.createServer(mPort);
 			// Registering grizzly jWebSocket Wrapper Application into grizzly WebSocketEngine
 			mServer.register("jWebSocketEngine", new GrizzlyWebSocketApplication(this));
+
+			/*
+			 * mServer = HttpServer.createSimpleServer(lEngineApp, mPort);
+			 * HttpHandler lHttpHandler = new
+			 * StaticHttpHandler(mDemoRootDirectory);
+			 * mServer.getServerConfiguration().addHttpHandler(lHttpHandler,
+			 * mDemoServlet);
+			 *
+			 * mServer.getListener("grizzly").registerAddOn(new
+			 * WebSocketAddOn()); // lHttpServer.addListener(lListener);
+			 *
+			 * // The WebSocketApplication will control the incoming and
+			 * outgoing flow, connection, listeners, etc... final
+			 * WebSocketApplication lApp = new
+			 * GrizzlyWebSocketApplication(this);
+			 *
+			 * // Registering grizzly jWebSocket Wrapper Application into
+			 * grizzly WebSocketEngine
+			 * WebSocketEngine.getEngine().register(lApp);
+			 */
 
 			//TODO: IMPLEMENT GRIZZLY WSS LISTENER
 		   /*
@@ -123,7 +144,7 @@ public class GrizzlyEngine extends BaseEngine {
 		try {
 			mServer.start();
 		} catch (Exception lEx) {
-			mLog.error(lEx.getClass().getSimpleName() + "Instantiating Embedded Grizzly Server: " + lEx.getMessage());
+			mLog.error(lEx.getClass().getSimpleName() + " instantiating Embedded Grizzly Server: " + lEx.getMessage());
 		}
 
 		if (mLog.isDebugEnabled()) {

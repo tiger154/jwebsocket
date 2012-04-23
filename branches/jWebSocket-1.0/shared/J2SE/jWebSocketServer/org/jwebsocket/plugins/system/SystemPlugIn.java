@@ -249,7 +249,7 @@ public class SystemPlugIn extends TokenPlugIn {
 					aConnector.setUsername(lSessionParams.get(USERNAME).toString());
 				}
 			} catch (Exception lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "Initializing connector session"));
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing connector session"));
 			}
 		}
 
@@ -762,6 +762,27 @@ public class SystemPlugIn extends TokenPlugIn {
 			lResponse.setInteger("code", -1);
 			lResponse.setString("msg", "missing 'data' argument for 'echo' command");
 		}
+		
+		/*
+		String lString = "{\"data\":{\"presetIdentifier\":\"DefaultPreset\", \"context\":\"tuner\", \"presetEntries\":[{\"entryIdentifier\":\"100.3 MHz\", \"imageIdentifier\":\"100.3 MHz\", \"entryName\":\"FFN\"}, null]}}";
+		Token lTestToken = JSONProcessor.jsonStringToToken(lString);
+		sendToken(aConnector, aConnector, lTestToken);
+		
+		
+		List lTestList = new FastList();
+		Map lTestMap = new FastMap();
+		lTestMap.put("field1", "test1");
+		lTestMap.put("field2", "null");
+		lTestList.add(lTestMap);
+		lTestList.add(null);
+		lResponse.setMap("data", lTestMap);
+		lResponse.setList("list", lTestList);
+
+		Token lToken = TokenFactory.createToken();
+		lToken.setMap("data", lTestMap);
+		lToken.setList("list", lTestList);
+		sendToken(aConnector, aConnector, lToken);
+		*/
 
 		sendToken(aConnector, aConnector, lResponse);
 	}
