@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
-import org.apache.log4j.Logger;
-import org.jwebsocket.logging.Logging;
 
 /**
  *
@@ -30,7 +28,6 @@ import org.jwebsocket.logging.Logging;
  */
 public class TomcatServlet extends WebSocketServlet {
 
-	private static Logger mLog = Logging.getLogger();
 	private HttpServletRequest mRequest;
 
 	@Override
