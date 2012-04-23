@@ -59,7 +59,6 @@ public class JettyWrapper implements WebSocket,
 		mEngine = JWebSocketFactory.getEngine();
 		mRequest = aRequest;
 		mProtocol = aProtocol;
-
 	}
 
 	@Override
