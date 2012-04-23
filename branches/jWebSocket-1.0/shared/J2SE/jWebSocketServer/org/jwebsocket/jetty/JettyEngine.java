@@ -82,9 +82,13 @@ public class JettyEngine extends BaseEngine {
 			}
 
 			mJettyServer = new Server(lPort);
-
+			/*
+			 * SessionIdManager mSessionIdManager = new HashSessionIdManager();
+			 * ((HashSessionIdManager)mSessionIdManager).start();
+			 * mJettyServer.setSessionIdManager(mSessionIdManager);
+			 */
 			SslSelectChannelConnector lSSLConnector = new SslSelectChannelConnector();
-			String lWebSocketHome = JWebSocketConfig.getJWebSocketHome(); 
+			String lWebSocketHome = JWebSocketConfig.getJWebSocketHome();
 			// System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
 			String lKeyStore = lWebSocketHome + "conf/jWebSocket.ks";
 			if (mLog.isDebugEnabled()) {
@@ -106,8 +110,12 @@ public class JettyEngine extends BaseEngine {
 				mLog.debug("Setting the context w/o sessions...");
 			}
 			ServletContextHandler lServletContext =
-					new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
-
+					new ServletContextHandler(ServletContextHandler.SESSIONS);
+			/*
+			SessionHandler lSessionHandler = new SessionHandler();
+			lServletContext.setSessionHandler(lSessionHandler);
+			*/
+			
 			lServletContext.setContextPath(lContext);
 			mJettyServer.setHandler(lServletContext);
 
@@ -202,28 +210,17 @@ public class JettyEngine extends BaseEngine {
 		}
 
 		/*
-		// now wait until all connectors have been closed properly
-		// or timeout exceeds...
-		try {
-		while (getConnectors().size() > 0 && new Date().getTime() - lStarted < 10000) {
-		Thread.sleep(250);
-		}
-		} catch (Exception lEx) {
-		mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
-		}
-		if (mLog.isDebugEnabled()) {
-		long lDuration = new Date().getTime() - lStarted;
-		int lRemConns = getConnectors().size();
-		if (lRemConns > 0) {
-		mLog.warn(lRemConns + " of " + lNumConns
-		+ " Jetty connectors '" + getId()
-		+ "' did not stop after " + lDuration + "ms.");
-		} else {
-		mLog.debug(lNumConns
-		+ " Jetty connectors '" + getId()
-		+ "' stopped after " + lDuration + "ms.");
-		}
-		}
+		 * // now wait until all connectors have been closed properly // or
+		 * timeout exceeds... try { while (getConnectors().size() > 0 && new
+		 * Date().getTime() - lStarted < 10000) { Thread.sleep(250); } } catch
+		 * (Exception lEx) { mLog.error(lEx.getClass().getSimpleName() + ": " +
+		 * lEx.getMessage()); } if (mLog.isDebugEnabled()) { long lDuration =
+		 * new Date().getTime() - lStarted; int lRemConns =
+		 * getConnectors().size(); if (lRemConns > 0) { mLog.warn(lRemConns + "
+		 * of " + lNumConns + " Jetty connectors '" + getId() + "' did not stop
+		 * after " + lDuration + "ms."); } else { mLog.debug(lNumConns + " Jetty
+		 * connectors '" + getId() + "' stopped after " + lDuration + "ms."); }
+		 * }
 		 */
 
 		// fire the engine stopped event
