@@ -40,7 +40,7 @@ import org.jwebsocket.tcp.EngineUtils;
  */
 public class GrizzlyConnector extends BaseConnector {
 
-	private static Logger mLog = Logging.getLogger(GrizzlyConnector.class);
+	private static Logger mLog = Logging.getLogger();
 	private boolean mRunning = false;
 	private WebSocket mConnection;
 	private HttpRequestPacket mRequest = null;

@@ -96,15 +96,15 @@
 	-->
 	<!-- jWebSocket engine configuration -->
 	<engines>
-		<!-- Jetty Engine Configuration -->
+		<!-- Grizzly Engine Configuration -->
 		<engine>
-			<name>org.jwebsocket.jetty.JettyEngine</name>
-			<id>jetty0</id>
-			<jar>jWebSocketJettyEngine-1.0.jar</jar>
-			<!-- Attention! The jWebSocket JettyEngine listens on same port like
-				 Jetty's http. The http protocol is upgraded to use WebSockets.
-				 The http/websocket port can be configured via the Jetty
-				 configuration in the jetty.xml configuration file.
+			<name>org.jwebsocket.grizzly.GrizzlyEngine</name>
+			<id>grizzly0</id>
+			<jar>jWebSocketGrizzlyEngine-1.0.jar</jar>
+			<!-- Attention! The jWebSocket Grizzly Engine listens on same port like
+				 Grizzly's http. The http protocol is upgraded to use WebSockets.
+				 The http/websocket port can be configured via the Grizzly
+				 configuration file.
 			-->
 			<!-- set both port settings to "0" (null) if running Jetty
 				 Servlet Container for Web Apps and embed jWebSocket library.
@@ -135,14 +135,7 @@
 			<sslport>9797</sslport>
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<domains>
-				<domain>http*://jwebsocket.org</domain>
-				<domain>http*://jwebsocket.com</domain>
-				<domain>http*://10.10.*</domain>
-				<domain>http*://10.21.*</domain>
-				<domain>http*://192.168.*</domain>
-				<domain>http*://www.jwebsocket.org</domain>
-				<domain>http*://www.jwebsocket.com</domain>
-				<domain>http*://localhost*</domain>
+				<domain>*</domain>
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
@@ -158,7 +151,7 @@
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
 		</engine>
-
+		
 		<!-- TCP Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.tcp.TCPEngine</name>
@@ -260,6 +253,69 @@
 			<maxconnections>10000</maxconnections>
 		</engine>
 		
+		<!-- Jetty Engine Configuration -->
+		<engine>
+			<name>org.jwebsocket.jetty.JettyEngine</name>
+			<id>jetty0</id>
+			<jar>jWebSocketJettyEngine-1.0.jar</jar>
+			<!-- Attention! The jWebSocket JettyEngine listens on same port like
+				 Jetty's http. The http protocol is upgraded to use WebSockets.
+				 The http/websocket port can be configured via the Jetty
+				 configuration in the jetty.xml configuration file.
+			-->
+			<!-- set both port settings to "0" (null) if running Jetty
+				 Servlet Container for Web Apps and embed jWebSocket library.
+				 This uses the settings from jetty.xml, wraps the existing
+				 Jetty WebSocket servlet and does not instantiate a separate
+				 engine at run time within jWebSocket.
+			-->
+			<!--
+			<port>0</port>
+			<sslport>0</sslport>
+			-->
+			<!-- use 80/443 for default http/ws or https/wss connections
+				 when running a jWebSocket Server and use Jetty as an engine.
+				 These settings are recommended only when running jWebSocket
+				 on a separate server beside a WebServer and the firewall
+				 does not allow access to ports 8787 and 9797.
+			-->
+			<!--
+			<port>80</port>
+			<sslport>443</sslport>
+			-->
+			<!-- use 8787/9797 for default http/ws or https/wss connections
+				 These settings are recommended only when running jWebSocket
+				 on the same server beside a WebServer and the firewall
+				 grants access to ports 8787 and 9797.
+			-->
+			<port>8787</port>
+			<sslport>9797</sslport>
+			<!-- these domains are accepted by the engine listening on the above mentioned port -->
+			<domains>
+				<domain>http*://jwebsocket.org</domain>
+				<domain>http*://jwebsocket.com</domain>
+				<domain>http*://10.10.*</domain>
+				<domain>http*://10.21.*</domain>
+				<domain>http*://192.168.*</domain>
+				<domain>http*://www.jwebsocket.org</domain>
+				<domain>http*://www.jwebsocket.com</domain>
+				<domain>http*://localhost*</domain>
+			</domains>
+			<!-- default session timeout 1h, max timeout currently 1 hour -->
+			<timeout>0</timeout>
+			<!-- Jetty provides a WebSocket Servlet, set the context path here -->
+			<context>/jWebSocket</context>
+			<!-- Jetty provides a WebSocket Servlet, set the servlet path here -->
+			<servlet>/jWebSocket</servlet>
+			<!--
+				maximum size of the data packet that the engine will read,
+				if the frame size is larger than this the connection will be closed.
+			-->
+			<maxframesize>1048840</maxframesize>
+			<!-- maximun number of connections allowed by this engine -->
+			<maxconnections>10000</maxconnections>
+		</engine>
+
 		<!-- NIO Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.tcp.nio.NioTcpEngine</name>
@@ -293,63 +349,6 @@
 			<maxconnections>10000</maxconnections>
 		</engine>
 
-		<!-- Jetty Engine Configuration -->
-		<engine>
-			<name>org.jwebsocket.jetty.JettyEngine</name>
-			<id>jetty0</id>
-			<jar>jWebSocketJettyEngine-1.0.jar</jar>
-			<!-- Attention! The jWebSocket JettyEngine listens on same port like
-				 Jetty's http. The http protocol is upgraded to use WebSockets.
-				 The http/websocket port can be configured via the Jetty
-				 configuration in the jetty.xml configuration file.
-			-->
-			<!-- set both port settings to "0" (null) if running Jetty
-				 Servlet Container for Web Apps and embed jWebSocket library.
-				 This uses the settings from jetty.xml, wraps the existing
-				 Jetty WebSocket servlet and does not instantiate a separate
-				 engine at run time within jWebSocket.
-			-->
-			<port>0</port>
-			<sslport>0</sslport>
-			<!-- use 80/443 for default http/ws or https/wss connections
-				 when running a jWebSocket Server and use Jetty as an engine.
-				 These settings are recommended only when running jWebSocket
-				 on a separate server beside a WebServer and the firewall
-				 does not allow access to ports 8787 and 9797.
-			-->
-			<!--
-			<port>80</port>
-			<sslport>443</sslport>
-			-->
-			<!-- use 8787/9797 for default http/ws or https/wss connections
-				 These settings are recommended only when running jWebSocket
-				 on the same server beside a WebServer and the firewall
-				 grants access to ports 8787 and 9797.
-			-->
-			<!--
-			<port>8787</port>
-			<sslport>9797</sslport>
-			-->
-			<!-- these domains are accepted by the engine listening on the above mentioned port -->
-			<domains>
-				<domain>jwebsocket.org</domain>
-				<domain>jwebsocket.com</domain>
-				<domain>localhost</domain>
-			</domains>
-			<!-- default session timeout 1h, max timeout currently 1 hour -->
-			<timeout>0</timeout>
-			<!-- Jetty provides a WebSocket Servlet, set the context path here -->
-			<context>/jWebSocket</context>
-			<!-- Jetty provides a WebSocket Servlet, set the servlet path here -->
-			<servlet>/jWebSocket</servlet>
-			<!--
-				maximum size of the data packet that the engine will read,
-				if the frame size is larger than this the connection will be closed.
-			-->
-			<maxframesize>1048840</maxframesize>
-			<!-- maximun number of connections allowed by this engine -->
-			<maxconnections>10000</maxconnections>
-		</engine>
 
 		<!-- the netty engine -->
 		<engine>
