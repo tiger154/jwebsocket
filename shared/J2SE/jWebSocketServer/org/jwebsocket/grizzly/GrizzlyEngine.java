@@ -15,18 +15,12 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.grizzly;
 
-import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Date;
 import org.apache.log4j.Logger;
-import org.glassfish.grizzly.filterchain.FilterChainBuilder;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.NetworkListener;
-import org.glassfish.grizzly.http.server.StaticHttpHandler;
-import org.glassfish.grizzly.websockets.WebSocketAddOn;
-import org.glassfish.grizzly.websockets.WebSocketApplication;
+import org.glassfish.grizzly.websockets.WebSocketServer;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
-import org.glassfish.grizzly.websockets.WebSocketEngine;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
@@ -38,11 +32,11 @@ import org.jwebsocket.logging.Logging;
  */
 public class GrizzlyEngine extends BaseEngine {
 
-	private static Logger mLog = Logging.getLogger(GrizzlyEngine.class);
+	private static Logger mLog = Logging.getLogger();
 	private static Integer mPort = 80;
 	private static Integer mSSLPort = 443;
 	private boolean mIsRunning = false;
-	private HttpServer mServer = null;
+	private WebSocketServer mServer = null;
 	private static final String mDemoRootDirectory = "/var/www/jWebSocketClient";
 	private static final String mDemoContext = "/jWebSocketGrizzlyDemos";
 	private static final String mDemoServlet = "/jWebSocketGrizzlyServlet";
@@ -50,81 +44,72 @@ public class GrizzlyEngine extends BaseEngine {
 	public GrizzlyEngine(EngineConfiguration aConfiguration) {
 
 		super(aConfiguration);
+		try {
+			// load the ports from the configuration
+			mPort = aConfiguration.getPort();
+			mSSLPort = aConfiguration.getSSLPort();
 
-		// load the ports from the configuration
-		mPort = aConfiguration.getPort();
-		mSSLPort = aConfiguration.getSSLPort();
+			String lEngineContext = aConfiguration.getContext();
+			String lEngineApp = aConfiguration.getServlet();
 
-		String lEngineContext = aConfiguration.getContext();
-		String lEngineApp = aConfiguration.getServlet();
+			if (mSSLPort == 0) {
+				mSSLPort = 443;
+			}
+			if (mPort == 0) {
+				mPort = 8080;
+			}
 
-		if (mSSLPort == 0) {
-			mSSLPort = 443;
+			if (lEngineContext == null) {
+				lEngineContext = "/";
+			}
+
+			if (lEngineApp == null) {
+				lEngineApp = "/*";
+			}
+
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Instantiating Grizzly server '"
+						+ "port " + mPort
+						+ ", ssl-port " + mSSLPort
+						+ ", context: '" + lEngineContext
+						+ "', servlet: '" + lEngineApp + "'...");
+			}
+
+			// Creating Grizzly server
+			InetSocketAddress lISA = new InetSocketAddress(mPort);
+			mServer = WebSocketServer.createServer(mPort);
+			// Registering grizzly jWebSocket Wrapper Application into grizzly WebSocketEngine
+			mServer.register("jWebSocketEngine", new GrizzlyWebSocketApplication(this));
+
+			//TODO: IMPLEMENT GRIZZLY WSS LISTENER
+		   /*
+			 * // -------------- SSL SECTION ----------------------
+			 * SSLContextConfigurator lSSLContext = new
+			 * SSLContextConfigurator(); String lWebSocketHome =
+			 * System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME); String
+			 * lKeyStore = lWebSocketHome + "/conf/jWebSocket.ks";
+			 * lSSLContext.createSSLContext();
+			 * lSSLContext.setKeyStoreFile(lKeyStore);
+			 * lSSLContext.setKeyPass("jWebSocket");
+			 * lSSLContext.setKeyStorePass("jWebSocket");
+			 * lSSLContext.setKeyManagerFactoryAlgorithm("SunX509");
+			 * SSLEngineConfigurator lSSLConfigurator = new
+			 * SSLEngineConfigurator(lSSLContext); NetworkListener lNListener =
+			 * new NetworkListener("grizzly-ssl",
+			 * mServer.getListener("grizzly").getHost(), mSSLPort);
+			 * lNListener.setSSLEngineConfig(lSSLConfigurator);
+			 * lNListener.setSecure(true); lNListener.registerAddOn(new
+			 * WebSocketAddOn());
+			 *
+			 * mServer.addListener(lNListener);
+			 *
+			 * if (mLog.isDebugEnabled()) { mLog.debug("Loading SSL cert from
+			 * keystore '" + lKeyStore + "'..."); } //-------------------------
+			 * SSL SECTION END ---------------------
+			 */
+		} catch (Exception lEx) {
+			mLog.error(lEx.getMessage());
 		}
-		if (mPort == 0) {
-			mPort = 8080;
-		}
-
-		if (lEngineContext == null) {
-			lEngineContext = "/";
-		}
-
-		if (lEngineApp == null) {
-			lEngineApp = "/*";
-		}
-
-
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Instantiating Grizzly server '"
-					+ "port " + mPort
-					+ ", ssl-port " + mSSLPort
-					+ ", context: '" + lEngineContext
-					+ "', servlet: '" + lEngineApp + "'...");
-		}
-
-		// Creating Grizzly server
-		mServer = HttpServer.createSimpleServer(lEngineApp, mPort);
-
-		//Deploying jWebSocket Demos under a staticHttpHandler
-		StaticHttpHandler lStaticHttpHandler = new StaticHttpHandler(mDemoRootDirectory);
-		mServer.getServerConfiguration().addHttpHandler(lStaticHttpHandler, mDemoContext);
-
-		//TODO: see how to handle Servlets since this ServletHandler is not more in Grizzly
-		// A simple servlet deployed with grizzly engine
-//		HttpHandler lHTTPHandler = new ServletHandler(new jWebSocketGrizzlyServlet());
-//		mServer.getServerConfiguration().addHttpHandler(lHTTPHandler, mDemoServlet);
-
-		// Register the WebSockets add on with the HttpServer
-		mServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
-		
-		//TODO: IMPLEMENT GRIZZLY WSS LISTENER
-       /*// -------------- SSL SECTION ----------------------      
-		SSLContextConfigurator lSSLContext = new SSLContextConfigurator();
-		String lWebSocketHome = System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
-		String lKeyStore = lWebSocketHome + "/conf/jWebSocket.ks";
-		lSSLContext.createSSLContext();
-		lSSLContext.setKeyStoreFile(lKeyStore);
-		lSSLContext.setKeyPass("jWebSocket");
-		lSSLContext.setKeyStorePass("jWebSocket");
-		lSSLContext.setKeyManagerFactoryAlgorithm("SunX509");
-		SSLEngineConfigurator lSSLConfigurator = new SSLEngineConfigurator(lSSLContext);
-		NetworkListener lNListener = new NetworkListener("grizzly-ssl", mServer.getListener("grizzly").getHost(), mSSLPort);
-		lNListener.setSSLEngineConfig(lSSLConfigurator);
-		lNListener.setSecure(true);
-		lNListener.registerAddOn(new WebSocketAddOn());
-		
-		mServer.addListener(lNListener);
-		
-		if (mLog.isDebugEnabled()) {
-		mLog.debug("Loading SSL cert from keystore '" + lKeyStore + "'...");
-		}
-		//------------------------- SSL SECTION END ---------------------*/
-
-		// The WebSocketApplication will control the incoming and outgoing flow, connection, listeners, etc...
-		final WebSocketApplication lApp = new GrizzlyWebSocketApplication(this);
-
-		// Registering grizzly jWebSocket Wrapper Application into grizzly WebSocketEngine
-		WebSocketEngine.getEngine().register(lApp);
 	}
 
 	@Override
@@ -137,11 +122,10 @@ public class GrizzlyEngine extends BaseEngine {
 		super.startEngine();
 		try {
 			mServer.start();
-		} catch (IOException lEx) {
-			mLog.error(lEx.getClass().getSimpleName()
-					+ "Instantiating Embedded Grizzly Server: "
-					+ lEx.getMessage());
+		} catch (Exception lEx) {
+			mLog.error(lEx.getClass().getSimpleName() + "Instantiating Embedded Grizzly Server: " + lEx.getMessage());
 		}
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Grizzly Server '"
 					+ "' sucessfully instantiated at port "

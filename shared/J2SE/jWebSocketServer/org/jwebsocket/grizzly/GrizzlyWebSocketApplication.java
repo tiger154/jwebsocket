@@ -19,13 +19,10 @@ import java.util.Map;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.HttpRequestPacket;
-import org.glassfish.grizzly.websockets.DataFrame;
-import org.glassfish.grizzly.websockets.WebSocket;
-import org.glassfish.grizzly.websockets.WebSocketApplication;
+import org.glassfish.grizzly.websockets.*;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 
 /**
  * 
@@ -33,7 +30,7 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
  */
 public class GrizzlyWebSocketApplication extends WebSocketApplication {
 
-	private static Logger mLog = Logging.getLogger(GrizzlyWebSocketApplication.class);
+	private static Logger mLog = Logging.getLogger();
 	private static Map<WebSocket, GrizzlyConnector> mConnectors;
 	private GrizzlyEngine mEngine = null;
 	private HttpRequestPacket mRequest = null;
@@ -51,6 +48,7 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		mConnectors = new FastMap<WebSocket, GrizzlyConnector>().shared();
 	}
 
+	
 	/**
 	 * This method analyzes if the incoming connection is for this application, 
 	 * otherwise it rejects the connection.
@@ -60,6 +58,7 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	@Override
 	public boolean isApplicationRequest(HttpRequestPacket aRequest) {
 		mRequest = aRequest;
+		
 		// The jWebSocket context from the engine configuration
 		String context = mEngine.getConfiguration().getContext();
 		// The jWebSocket servlet from the engine configuration
