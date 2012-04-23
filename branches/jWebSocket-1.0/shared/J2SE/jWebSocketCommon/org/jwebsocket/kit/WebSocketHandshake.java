@@ -128,10 +128,10 @@ public final class WebSocketHandshake {
 	 * @return
 	 */
 	public static Map parseC2SRequest(byte[] aReq, boolean aIsSSL) {
-		String lHost = null;
-		String lOrigin = null;
-		String lLocation = null;
-		String lPath = null;
+		String lHost;
+		String lOrigin;
+		String lLocation;
+		String lPath;
 		String lSubProt = null;
 		String lDraft = null;
 		Integer lVersion = null;
@@ -139,7 +139,7 @@ public final class WebSocketHandshake {
 		String lSecKey1 = null;
 		String lSecKey2 = null;
 		byte[] lSecKey3 = new byte[8];
-		Boolean lIsSecure = false;
+		Boolean lIsSecure;
 		String lSecKeyAccept = null;
 		Long lSecNum1 = null;
 		Long lSecNum2 = null;
@@ -373,7 +373,6 @@ public final class WebSocketHandshake {
 			lCookies = lCookies.substring(0, lPos);
 		}
 
-
 		/**
 		 * Setting the headers map
 		 */
@@ -573,9 +572,9 @@ public final class WebSocketHandshake {
 		if (mProtocol != null) {
 			lHandshake += "Sec-WebSocket-Protocol: " + mProtocol + "\r\n";
 		}
-		
+
 		//Set client cookies
-		
+
 
 		if (WebSocketProtocolAbstraction.isHixieVersion(mVersion)) {
 			lHandshake +=

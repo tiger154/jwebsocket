@@ -157,15 +157,22 @@ public class EngineUtils {
 	public static void parseCookies(Map aReqMap) {
 		String lTempEntry[];
 		Map<String, String> lCookiesMap = new FastMap().shared();
-		
+
 		if (aReqMap.containsKey(RequestHeader.WS_COOKIES)) {
-			String[] lCookies = aReqMap.get(RequestHeader.WS_COOKIES).toString().split("; ");
-			for (int i = 0; i < lCookies.length; i++) {
-				lTempEntry = lCookies[i].split("=");
-				lCookiesMap.put(lTempEntry[0], lTempEntry[1]);
+			Object lCookieObj = aReqMap.get(RequestHeader.WS_COOKIES);
+			if (null != lCookieObj) {
+				String lCookieStr = lCookieObj.toString();
+				if (lCookieStr.length() > 0) {
+					String[] lCookies = lCookieStr.split("; ");
+					for (int lIdx = 0; lIdx < lCookies.length; lIdx++) {
+						lTempEntry = lCookies[lIdx].split("=");
+						if (lTempEntry.length >= 2) {
+							lCookiesMap.put(lTempEntry[0], lTempEntry[1]);
+						}
+					}
+				}
 			}
 		}
-
 		aReqMap.put(RequestHeader.WS_COOKIES, lCookiesMap);
 	}
 }
