@@ -19,15 +19,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javolution.util.FastList;
-import javolution.util.FastMap;
-
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.token.ITokenizable;
@@ -37,102 +32,35 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  * converts JSON formatted data packets into tokens and vice versa.
- * 
+ *
  * @author Alexander Schulze, Roderick Baier (improvements regarding JSON
- *         array), Quentin Ambard (add support for Map and List for
- *         PacketToToken and tokeToPacket).
+ * array), Quentin Ambard (add support for Map and List for PacketToToken and
+ * tokeToPacket).
  */
 @SuppressWarnings("rawtypes")
 public class JSONProcessor {
 
 	/**
-	 * @param aObject
-	 * @return an object which is the JSON representation of aObject
-	 */
-	@SuppressWarnings("unchecked")
-	private static Object convertJsonToJavaObject(Object aObject) {
-		if (aObject instanceof JSONArray) {
-			return jsonArrayToList((JSONArray) aObject);
-		} else if (aObject instanceof JSONObject) {
-			return jsonObjectToMap((JSONObject) aObject);
-		} else {
-			return aObject;
-		}
-	}
-
-	/**
-	 * Quentin: Recursively convert a JSONArray to a List of List, Map or Object.
-	 * (also convert all the JSONObject to Map) Example: jsonArrayToList(
-	 * JSONArray [[1,2,3],{"value": "a"}]) will retour a List{{1,2,3},{"value" =>
-	 * "b"}}
-	 * 
-	 * @param aJsonArray
-	 * @return the list
-	 */
-	@SuppressWarnings("unchecked")
-	public static List jsonArrayToList(JSONArray aJsonArray) {
-		List lList = new FastList();
-		for (int i = 0; i < aJsonArray.length(); i++) {
-			try {
-				Object lSubObject = aJsonArray.get(i);
-				lList.add(convertJsonToJavaObject(lSubObject));
-			} catch (JSONException e) {
-				// Sould never happen: aJsonArray.get(i)
-				// will always exists
-			}
-		}
-		return lList;
-	}
-
-	/**
-	 * Quentin: Recursively convert a JSONObject to a Map of List, Map or Object.
-	 * (also convert all the JSONArray to List)
-	 * 
-	 * @param aJsonArray
-	 * @return the list
-	 */
-	@SuppressWarnings("unchecked")
-	public static Map jsonObjectToMap(JSONObject aJsonObject) {
-		FastMap lFastMap = new FastMap();
-		Iterator iterator = aJsonObject.keys();
-		while (iterator.hasNext()) {
-			try {
-				Object aKey = iterator.next();
-				Object aValue = convertJsonToJavaObject(aJsonObject.get(String.valueOf(aKey)));
-				lFastMap.put(aKey, aValue);
-			} catch (JSONException e) {
-				// Sould never happen:
-				// aJsonObject.get(String.valueOf(aKey))
-				// will always exists
-			}
-		}
-		return lFastMap;
-	}
-
-	/**
-	 * Convert a json string to a token. If the json string isn't a valid one, 
-	 * return an empty token.
-	 * Note that if you need a more generic conversion (other sub protocol than 
-	 * json), you may also use the following:
-	 * Token lToken = TokenServer.packetToToken(aConnector, new RawPacket(aJsonString))
-	 * Depending of the SubProtocol of aConnector, the token will be automatically created 
-	 * (if the SubProtocol is WS_SUBPROT_JSON, the conversion will be done internally using this method)
+	 * Convert a json string to a token. If the json string isn't a valid one,
+	 * return an empty token. Note that if you need a more generic conversion
+	 * (other sub protocol than json), you may also use the following: Token
+	 * lToken = TokenServer.packetToToken(aConnector, new
+	 * RawPacket(aJsonString)) Depending of the SubProtocol of aConnector, the
+	 * token will be automatically created (if the SubProtocol is
+	 * WS_SUBPROT_JSON, the conversion will be done internally using this
+	 * method)
+	 *
 	 * @param aJsonString a json string
 	 * @return the token corresponding to the json string, or an empty token
 	 */
 	public static Token jsonStringToToken(String aJsonString) {
 		Token lToken = new MapToken();
 		try {
-			String lStr = aJsonString;
-			JSONTokener lJT = new JSONTokener(lStr);
-			JSONObject lJO = new JSONObject(lJT);
-			for (Iterator lIterator = lJO.keys(); lIterator.hasNext();) {
-				String lKey = (String) lIterator.next();
-				Object lValue = lJO.get(lKey);
-				lToken.setValidated(lKey, convertJsonToJavaObject(lValue));
-			}
-		} catch (Exception ex) {
-			// TODO: process exception
+			ObjectMapper lMapper = new ObjectMapper();
+			Map<String, Object> lTree = lMapper.readValue(aJsonString, Map.class);
+			lToken.setMap(lTree);
+		} catch (Exception lEx) {
+			// // TODO: process exception
 			// log.error(ex.getClass().getSimpleName() + ": " +
 			// ex.getMessage());
 		}
@@ -141,21 +69,15 @@ public class JSONProcessor {
 
 	/**
 	 * converts a JSON formatted data packet into a token.
-	 * 
+	 *
 	 * @param aDataPacket
 	 * @return
 	 */
 	public static Token packetToToken(WebSocketPacket aDataPacket) {
-		Token lToken = new MapToken();
+		Token lToken = null;
 		try {
-			ObjectMapper lMapper = new ObjectMapper();
-			Map<String, Object> lTree = lMapper.readValue(aDataPacket.getString("UTF-8"), Map.class);
-			lToken.setMap(lTree);
-			/*
-			String lStr = aDataPacket.getString("UTF-8");
-			return jsonStringToToken(lStr);
-			 */
-		} catch (Exception ex) {
+			lToken = jsonStringToToken(aDataPacket.getString("UTF-8"));
+		} catch (Exception lEx) {
 			// // TODO: process exception
 			// log.error(ex.getClass().getSimpleName() + ": " +
 			// ex.getMessage());
@@ -171,12 +93,9 @@ public class JSONProcessor {
 			// can reuse, share globally
 			ObjectMapper lMapper = new ObjectMapper();
 			String lData = lMapper.writeValueAsString(aToken.getMap());
-			/* keep this commect for backward compatibility
-			JSONObject lJO = tokenToJSON(aToken);
-			lData = lJO.toString();
-			 */
 			lPacket = new RawPacket(lData, "UTF-8");
-		} catch (Exception ex) {
+		} catch (Exception lEx) {
+			// System.out.println(lEx.getMessage());
 			// TODO: process exception
 			// log.error(ex.getClass().getSimpleName() + ": " +
 			// ex.getMessage());
@@ -184,8 +103,9 @@ public class JSONProcessor {
 		return lPacket;
 	}
 
-	/** 
+	/**
 	 * transform a list to a JSONArray
+	 *
 	 * @param aList
 	 * @return a JSONArray which represents aList
 	 * @throws JSONException
@@ -200,6 +120,7 @@ public class JSONProcessor {
 
 	/**
 	 * transform a list of objects to a JSONArray
+	 *
 	 * @param aObjectList
 	 * @return a JSONArray which represents aObjectList
 	 * @throws JSONException
@@ -216,9 +137,10 @@ public class JSONProcessor {
 
 	/**
 	 * transform a map to a JSONObject
+	 *
 	 * @param aMap
-	 * @return a JSONObject which represents aMap. All the keys values are passed
-	 *         as String using the toString method of the key.
+	 * @return a JSONObject which represents aMap. All the keys values are
+	 * passed as String using the toString method of the key.
 	 * @throws JSONException
 	 */
 	public static JSONObject mapToJsonObject(Map<?, ?> aMap)
@@ -234,8 +156,10 @@ public class JSONProcessor {
 
 	/**
 	 * transform an object to another JSON object (match all possibilities)
+	 *
 	 * @param aObject
-	 * @return an Object which represents aObject (looks for List, Token and Maps)
+	 * @return an Object which represents aObject (looks for List, Token and
+	 * Maps)
 	 * @throws JSONException
 	 */
 	public static Object convertObjectToJson(Object aObject)
@@ -259,9 +183,10 @@ public class JSONProcessor {
 
 	/**
 	 * transform a token to a json object
+	 *
 	 * @param aToken
 	 * @return a JSONObject which represents aToken (looks for List, Token and
-	 *         Maps)
+	 * Maps)
 	 * @throws JSONException
 	 */
 	public static JSONObject tokenToJSON(Token aToken) throws JSONException {

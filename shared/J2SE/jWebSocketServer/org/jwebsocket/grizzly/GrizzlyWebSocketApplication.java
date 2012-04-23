@@ -15,7 +15,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.grizzly;
 
+import java.util.List;
 import java.util.Map;
+import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.HttpRequestPacket;
@@ -25,7 +27,7 @@ import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
 
 /**
- * 
+ *
  * @author vbarzana
  */
 public class GrizzlyWebSocketApplication extends WebSocketApplication {
@@ -38,6 +40,7 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 
 	/**
 	 * The application listener for grizzly WebSocket
+	 *
 	 * @param aEngine
 	 */
 	public GrizzlyWebSocketApplication(GrizzlyEngine aEngine) {
@@ -48,23 +51,42 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		mConnectors = new FastMap<WebSocket, GrizzlyConnector>().shared();
 	}
 
+	@Override
+	protected void handshake(HandShake aHandshake) throws HandshakeException {
+		super.handshake(aHandshake);
+	}
+
+	@Override
+	public List<String> getSupportedExtensions() {
+		List<String> lExts = super.getSupportedExtensions();
+		return lExts;
+	}
 	
+	@Override
+	public List<String> getSupportedProtocols(List<String> aSubProtocol) {
+		// List<String> lProts = super.getSupportedProtocols(aSubProtocol);
+		List<String> lProts = new FastList<String>();
+		lProts.add(aSubProtocol.get(0));
+		return lProts;
+	}
+
 	/**
-	 * This method analyzes if the incoming connection is for this application, 
+	 * This method analyzes if the incoming connection is for this application,
 	 * otherwise it rejects the connection.
+	 *
 	 * @param aRequest
 	 * @return aIsApplicationRequest
 	 */
 	@Override
 	public boolean isApplicationRequest(HttpRequestPacket aRequest) {
 		mRequest = aRequest;
-		
-		// The jWebSocket context from the engine configuration
-		String context = mEngine.getConfiguration().getContext();
-		// The jWebSocket servlet from the engine configuration
-		String servlet = mEngine.getConfiguration().getServlet();
 
-		return (context + servlet).equals(aRequest.getRequestURI());
+		// The jWebSocket context from the engine configuration
+		String lContext = mEngine.getConfiguration().getContext();
+		// The jWebSocket servlet from the engine configuration
+		String lServlet = mEngine.getConfiguration().getServlet();
+
+		return (lContext + lServlet).equals(aRequest.getRequestURI());
 	}
 
 	@Override
@@ -74,11 +96,17 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		}
 
 		GrizzlyConnector lConnector = new GrizzlyConnector(mEngine, mRequest, mProtocol, aWebSocket);
-		
-		/* How to ?? */
-//		lConnector.getSession().setSessionId(mRequest.getSession().getId());
-//		lConnector.getSession().setStorage(new HttpSessionStorage(mRequest.getSession()));
-		
+
+		/*
+		 * How to ??
+		 */
+		String lCookies = mRequest.getHeader("cookies");
+		if (null == lCookies) {
+			lCookies = "dummy";
+		}
+		lConnector.getSession().setSessionId(lCookies);
+		// lConnector.getSession().setStorage(new MemoryStorage());
+
 		mConnectors.put(aWebSocket, lConnector);
 
 		// inherited BaseConnector.startConnector
@@ -99,7 +127,7 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 
 		if (lConnector != null) {
 			lConnector.stopConnector(CloseReason.CLIENT);
-				mEngine.connectorStopped(lConnector, CloseReason.CLIENT);
+			mEngine.connectorStopped(lConnector, CloseReason.CLIENT);
 		}
 
 		mConnectors.remove(aWebSocket);
