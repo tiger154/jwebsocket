@@ -116,7 +116,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	private ScheduledFuture mReconnectorTask = null;
 	private Boolean mIsReconnecting = false;
 	private final Object mReconnectLock = new Object();
-
+	private Headers mHeaders = null;
 	/**
 	 * Base constructor
 	 */
@@ -239,14 +239,14 @@ public class BaseWebSocketClient implements WebSocketClient {
 
 			mStatus = WebSocketStatus.CONNECTING;
 
-			Headers lHeaders = new Headers();
+			mHeaders = new Headers();
 			try {
-				lHeaders.readFromStream(aVersion, mIn);
+				mHeaders.readFromStream(aVersion, mIn);
 			} catch (Exception lEx) {
 				// ignore exception here, will be processed afterwards
 			}
 
-			if (!lHeaders.isValid()) {
+			if (!mHeaders.isValid()) {
 				WebSocketClientEvent lEvent =
 						new WebSocketBaseClientEvent(this, EVENT_CLOSE, "Handshake rejected.");
 				notifyClosed(lEvent);
@@ -255,7 +255,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			}
 
 			// parse negotiated sub protocol
-			String lProtocol = lHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
+			String lProtocol = mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
 			if (lProtocol != null) {
 				mNegotiatedSubProtocol = new WebSocketSubProtocol(lProtocol, mEncoding);
 			} else {
@@ -603,6 +603,13 @@ public class BaseWebSocketClient implements WebSocketClient {
 	}
 	}
 	 */
+
+	/**
+	 * @return the mHeaders
+	 */
+	public Headers getHeaders() {
+		return mHeaders;
+	}
 
 	class ReOpener implements Runnable {
 
