@@ -22,7 +22,9 @@ package org.jwebsocket.plugins.jmx.configdefinition;
 import javax.management.modelmbean.ModelMBeanAttributeInfo;
 
 /**
- *
+ * Class that allows to define the attributes of the plugins or classes to 
+ * export and their metadata.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class AttributeDefinition extends FeatureDefinition {
@@ -33,7 +35,7 @@ public class AttributeDefinition extends FeatureDefinition {
 	private Boolean mIsBoolean = false;
 
 	/**
-	 *
+	 * The class default constructor
 	 */
 	public AttributeDefinition() {
 	}
@@ -47,7 +49,8 @@ public class AttributeDefinition extends FeatureDefinition {
 	 * @param aIsWritable
 	 * @param aIsBoolean
 	 */
-	public AttributeDefinition(Class aType, String aName, String aDescription, Boolean aIsReadable, Boolean aIsWritable, Boolean aIsBoolean) {
+	public AttributeDefinition(Class aType, String aName, String aDescription, 
+			Boolean aIsReadable, Boolean aIsWritable, Boolean aIsBoolean) {
 		super(aName, aDescription);
 		this.mType = aType;
 		this.mIsReadable = aIsReadable;
@@ -57,13 +60,14 @@ public class AttributeDefinition extends FeatureDefinition {
 
 	/**
 	 *
-	 * @return
+	 * @return Class
 	 */
 	public Class getType() {
 		if (this.mType != null) {
 			return this.mType;
 		} else {
-			throw new IllegalArgumentException("The attribute type must not be null.");
+			throw new IllegalArgumentException("The attribute type must not be "
+					+ "null.");
 		}
 	}
 
@@ -75,13 +79,14 @@ public class AttributeDefinition extends FeatureDefinition {
 		if (aType != null) {
 			this.mType = aType;
 		} else {
-			throw new IllegalArgumentException("The attribute type must not be null.");
+			throw new IllegalArgumentException("The attribute type must not be "
+					+ "null.");
 		}
 	}
 
 	/**
 	 *
-	 * @return
+	 * @return Boolean
 	 */
 	public Boolean isReadable() {
 		return mIsReadable;
@@ -97,7 +102,7 @@ public class AttributeDefinition extends FeatureDefinition {
 
 	/**
 	 *
-	 * @return
+	 * @return Boolean
 	 */
 	public Boolean isWritable() {
 		return mIsWritable;
@@ -113,7 +118,7 @@ public class AttributeDefinition extends FeatureDefinition {
 
 	/**
 	 *
-	 * @return
+	 * @return Boolean
 	 */
 	public Boolean isBoolean() {
 		return mIsBoolean;
@@ -128,12 +133,14 @@ public class AttributeDefinition extends FeatureDefinition {
 	}
 
 	/**
-	 *
-	 * @return
+	 * Create the metadata of the attribute definition.
+	 * 
+	 * @return ModelMBeanAttributeInfo
 	 */
 	public ModelMBeanAttributeInfo createMBeanAttributeInfo() {
 		if (this.mType != null) {
-			return new ModelMBeanAttributeInfo(super.getName(), mType.getName(), super.getDescription(), mIsReadable, mIsWritable, mIsBoolean);
+			return new ModelMBeanAttributeInfo(super.getName(), mType.getName(),
+					super.getDescription(), mIsReadable, mIsWritable, mIsBoolean);
 		} else {
 			throw new IllegalArgumentException("The attribute type must not be null.");
 		}

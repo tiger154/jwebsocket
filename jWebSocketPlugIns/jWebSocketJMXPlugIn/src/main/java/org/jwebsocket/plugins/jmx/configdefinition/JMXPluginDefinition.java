@@ -20,7 +20,9 @@
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 /**
- *
+ * Class that contains the specific elements to create the plugin object to 
+ * export.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class JMXPluginDefinition extends JMXDefinition {
@@ -31,9 +33,12 @@ public class JMXPluginDefinition extends JMXDefinition {
 	public JMXPluginDefinition() {
 	}
 
-	public JMXPluginDefinition(String aPluginId, String aServerId, String aClassName, String aJarName, AttributeDefinition[] aAttributes,
-			OperationDefinition[] aOperations, ConstructorDefinition[] aConstructors, NotificationDefinition[] aNotifications) {
-		super(aClassName, aJarName, aAttributes, aOperations, aConstructors, aNotifications);
+	public JMXPluginDefinition(String aPluginId, String aServerId, 
+			String aClassName, String aJarName, AttributeDefinition[] aAttributes,
+			OperationDefinition[] aOperations, ConstructorDefinition[] aConstructors, 
+			NotificationDefinition[] aNotifications) {
+		super(aClassName, aJarName, aAttributes, aOperations, aConstructors, 
+				aNotifications);
 
 		if (!aPluginId.equals("")) {
 			this.mPluginId = aPluginId;

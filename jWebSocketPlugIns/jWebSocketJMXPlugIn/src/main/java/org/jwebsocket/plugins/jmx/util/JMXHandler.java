@@ -24,33 +24,31 @@ import java.util.Map;
 import javax.management.openmbean.*;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
 
 /**
- *
+ * Class that dynamically converts the Map data type to the CompositeData data 
+ * type.  
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class JMXHandler {
 
-	private static Logger mLog;
+	private static Logger mLog = Logging.getLogger();
 
 	/**
-	 *
-	 * @param aLog
-	 */
-	public static void setLog(Logger aLog) {
-		JMXHandler.mLog = aLog;
-	}
-
-	/**
-	 *
+	 * Determine if the data type of the values contained within the map is 
+	 * simple or not.
+	 * 
 	 * @param aMap
-	 * @return
+	 * @return Boolean
 	 */
 	public static Boolean isSimpleType(Map aMap) {
 		for (int i = 0; i < aMap.size(); i++) {
 			Object lValue = aMap.values().toArray()[i];
-			if ((lValue instanceof Map) || (lValue instanceof Token) || (lValue instanceof List)) {
+			if ((lValue instanceof Map) || (lValue instanceof Token) 
+					|| (lValue instanceof List)) {
 				return false;
 			}
 		}
@@ -58,10 +56,11 @@ public class JMXHandler {
 	}
 
 	/**
-	 *
+	 * It allows to dynamically set the values of CompositeType data type.
+	 * 
 	 * @param aMap
 	 * @param aKey
-	 * @return
+	 * @return CompositeType
 	 */
 	public static CompositeType createDynamicCompositeType(Map aMap, String aKey) {
 		CompositeType lMapType = null;
@@ -107,12 +106,14 @@ public class JMXHandler {
 	}
 
 	/**
-	 *
+	 * It allows to dynamically set the values of CompositeData data type.
+	 * 
 	 * @param aMap
 	 * @param aMapType
-	 * @return
+	 * @return CompositeData
 	 */
-	public static CompositeData createDynamicCompositeData(Map aMap, CompositeType aMapType) {
+	public static CompositeData createDynamicCompositeData(Map aMap, 
+			CompositeType aMapType) {
 		CompositeData lMapData = null;
 		try {
 			String[] lItemNames = new String[aMap.size()];
@@ -126,7 +127,8 @@ public class JMXHandler {
 					lItemValues[i] = aMap.values().toArray()[i];
 				}
 			}
-			lMapData = new CompositeDataSupport(aMapType, lItemNames, lItemValues);
+			lMapData = new CompositeDataSupport(aMapType, lItemNames, 
+					lItemValues);
 		} catch (Exception e) {
 			mLog.error("JMXHandler on actionPerformed: " + e.getMessage());
 		}
@@ -134,10 +136,12 @@ public class JMXHandler {
 	}
 
 	/**
-	 *
+	 * Recursive method to convert the Map data type to the CompositeData data 
+	 * type.
+	 * 
 	 * @param aMap
 	 * @param aKey
-	 * @return
+	 * @return CompositeData
 	 */
 	public static CompositeData convertMapToCompositeData(Map aMap, String aKey) {
 		if (isSimpleType(aMap)) {
@@ -151,7 +155,8 @@ public class JMXHandler {
 
 		for (int i = 0; i < aMap.size(); i++) {
 			Object lValue = aMap.values().toArray()[i];
-			if ((lValue instanceof Map) || (lValue instanceof Token) || (lValue instanceof List)) {
+			if ((lValue instanceof Map) || (lValue instanceof Token) 
+					|| (lValue instanceof List)) {
 				Map lMap = null;
 				if (lValue instanceof Token) {
 					Token lToken = (Token) lValue;
@@ -165,7 +170,8 @@ public class JMXHandler {
 					lMap = (Map) lValue;
 				}
 
-				CompositeData lCompositeData = convertMapToCompositeData(lMap, aMap.keySet().toArray()[i].toString());
+				CompositeData lCompositeData = convertMapToCompositeData(lMap, 
+						aMap.keySet().toArray()[i].toString());
 				aMap.put(aMap.keySet().toArray()[i].toString(), lCompositeData);
 				lItemValues[i] = lCompositeData;
 				lItemTypes[i] = lCompositeData.getCompositeType();
@@ -190,19 +196,22 @@ public class JMXHandler {
 	}
 
 	/**
-	 *
+	 * Main method of the class which calls the recursive method that allows the
+	 * conversion.
+	 * 
 	 * @param aMap
-	 * @return
+	 * @return CompositeData
 	 */
 	public static CompositeData convertMapToCompositeData(Map aMap) {
 		return convertMapToCompositeData(aMap, "Main");
 	}
 
 	/**
-	 *
+	 * Converts a list on a map.
+	 * 
 	 * @param aList
 	 * @param aKey
-	 * @return
+	 * @return Map
 	 */
 	public static Map convertListToMap(List aList, String aKey) {
 		Map lMap = new FastMap();
@@ -210,28 +219,5 @@ public class JMXHandler {
 			lMap.put(aKey + "_" + i, aList.get(i - 1));
 		}
 		return lMap;
-	}
-
-	/**
-	 *
-	 * @param aMap
-	 * @param aCompositeTypeName
-	 * @return
-	 */
-	public static TabularData createTabularData(Map aMap, String aCompositeTypeName) {
-		TabularData lMapTabData = null;
-		try {
-			CompositeType lCompositeType = createDynamicCompositeType(aMap, aCompositeTypeName);
-			String indexName = lCompositeType.keySet().toArray()[0].toString();
-			TabularType lMapTabularType = new TabularType("MapTabularType",
-					"Tabular view of mapCompositeTypes",
-					lCompositeType,
-					new String[]{indexName});
-			lMapTabData = new TabularDataSupport(lMapTabularType);
-		} catch (Exception e) {
-			mLog.error("JMXHandler on actionPerformed: " + e.getMessage());
-		}
-
-		return lMapTabData;
 	}
 }

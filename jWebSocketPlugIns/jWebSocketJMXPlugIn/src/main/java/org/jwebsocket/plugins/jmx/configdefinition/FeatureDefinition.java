@@ -20,7 +20,9 @@
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 /**
- *
+ * Generic class that allows to define the name and description of all elements 
+ * of the plugins or classes to export.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public abstract class FeatureDefinition {
@@ -29,7 +31,7 @@ public abstract class FeatureDefinition {
 	private String mDescription;
 
 	/**
-	 *
+	 * The class default constructor.
 	 */
 	public FeatureDefinition() {
 	}
@@ -50,7 +52,7 @@ public abstract class FeatureDefinition {
 
 	/**
 	 *
-	 * @return
+	 * @return String
 	 */
 	public String getName() {
 		if (this.mName != null) {
@@ -74,7 +76,7 @@ public abstract class FeatureDefinition {
 
 	/**
 	 *
-	 * @return
+	 * @return String
 	 */
 	public String getDescription() {
 		return mDescription == null ? "" : mDescription;

@@ -22,7 +22,9 @@ package org.jwebsocket.plugins.jmx.configdefinition;
 import javax.management.modelmbean.*;
 
 /**
- *
+ * The main class that contains all the elements necessary to conform the class 
+ * or plugin object to export and its metadata.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class JMXDefinition {
@@ -34,12 +36,13 @@ public class JMXDefinition {
 	private String mDescription = "";
 	private String mClassName;
 	private String mJarName;
-
+	
 	public JMXDefinition() {
 	}
 
 	public JMXDefinition(String aClassName, String aJarName, AttributeDefinition[] aAttributes,
-			OperationDefinition[] aOperations, ConstructorDefinition[] aConstructors, NotificationDefinition[] aNotifications) {
+			OperationDefinition[] aOperations, ConstructorDefinition[] aConstructors, 
+			NotificationDefinition[] aNotifications) {
 
 		this.mAttributes = aAttributes;
 		this.mOperations = aOperations;
@@ -138,7 +141,7 @@ public class JMXDefinition {
 			throw new IllegalArgumentException("The jar name must not be empty.");
 		}
 	}
-
+	
 	public ModelMBeanInfo createMBeanInfo() {
 		if (this.mClassName != null) {
 			return new ModelMBeanInfoSupport(mClassName, mDescription,
@@ -152,7 +155,8 @@ public class JMXDefinition {
 	}
 
 	protected ModelMBeanAttributeInfo[] createMBeanAttributeInfoArray() {
-		ModelMBeanAttributeInfo[] lInfoArray = new ModelMBeanAttributeInfo[mAttributes.length];
+		ModelMBeanAttributeInfo[] lInfoArray = 
+				new ModelMBeanAttributeInfo[mAttributes.length];
 		for (int i = 0; i < mAttributes.length; i++) {
 			lInfoArray[i] = mAttributes[i].createMBeanAttributeInfo();
 		}
@@ -161,7 +165,8 @@ public class JMXDefinition {
 
 	protected ModelMBeanConstructorInfo[] createMBeanConstructorInfoArray() {
 		int lCount = mConstructors.length;
-		ModelMBeanConstructorInfo[] lInfoArray = new ModelMBeanConstructorInfo[lCount];
+		ModelMBeanConstructorInfo[] lInfoArray = 
+				new ModelMBeanConstructorInfo[lCount];
 		for (int i = 0; i < lCount; i++) {
 			lInfoArray[i] = mConstructors[i].createMBeanConstructorInfo();
 		}
@@ -169,7 +174,8 @@ public class JMXDefinition {
 	}
 
 	protected ModelMBeanOperationInfo[] createMBeanOperationInfoArray() {
-		ModelMBeanOperationInfo[] lInfoArray = new ModelMBeanOperationInfo[mOperations.length];
+		ModelMBeanOperationInfo[] lInfoArray = 
+				new ModelMBeanOperationInfo[mOperations.length];
 		for (int i = 0; i < mOperations.length; i++) {
 			lInfoArray[i] = mOperations[i].createMBeanOperationInfo();
 		}
@@ -177,7 +183,8 @@ public class JMXDefinition {
 	}
 
 	protected ModelMBeanNotificationInfo[] createMBeanNotificationInfoArray() {
-		ModelMBeanNotificationInfo[] lInfoArray = new ModelMBeanNotificationInfo[mNotifications.length];
+		ModelMBeanNotificationInfo[] lInfoArray = 
+				new ModelMBeanNotificationInfo[mNotifications.length];
 		for (int i = 0; i < mNotifications.length; i++) {
 			lInfoArray[i] = mNotifications[i].createMBeanNotificationInfo();
 		}

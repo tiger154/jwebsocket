@@ -24,7 +24,9 @@ import javax.management.MBeanNotificationInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
 
 /**
- *
+ * Class that defines a map of events notifications to be created for a specific
+ * ModelMBean.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class NotificationInfoMap extends HashMap<String, MBeanNotificationInfo> {
@@ -55,10 +57,12 @@ public class NotificationInfoMap extends HashMap<String, MBeanNotificationInfo> 
 	}
 
 	/**
-	 *
+	 * Search a notification on the map given the prefix assigned to it and the 
+	 * name of the attribute or operation as appropriate.
+	 * 
 	 * @param aPrefix
 	 * @param aName
-	 * @return
+	 * @return MBeanNotificationInfo
 	 */
 	public MBeanNotificationInfo findNotificationInfo(String aPrefix, String aName) {
 		return get(aPrefix + "." + aName);
