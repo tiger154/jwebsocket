@@ -187,7 +187,10 @@
 			function publish() {
 				var lChannel = eChannelSel.value;
 				log( "Publishing to channel '" + lChannel + "'..." );
-				var lRes = lWSC.channelPublish( lChannel, eMessage.value );
+				var lRes = lWSC.channelPublish( lChannel, eMessage.value, {
+					field1: "data",
+					field2: [ "item1", "item2" ] 
+				});
 				log( lWSC.resultToString( lRes ) );
 			}
 
