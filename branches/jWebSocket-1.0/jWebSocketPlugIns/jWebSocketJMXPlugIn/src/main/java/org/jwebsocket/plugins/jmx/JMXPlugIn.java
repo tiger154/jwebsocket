@@ -19,30 +19,22 @@
 // ---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmx;
 
-import java.util.List;
-import java.util.Map;
 import javax.management.MBeanServer;
-import javax.management.openmbean.CompositeData;
-import javolution.util.FastMap;
+import javax.management.remote.rmi.RMIConnectorServer;
 import mx4j.tools.adaptor.http.HttpAdaptor;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketEngine;
-import org.jwebsocket.api.WebSocketPlugIn;
-import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketConfig;
-import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.plugins.jmx.util.JMXHandler;
 import org.jwebsocket.plugins.jmx.util.JMXPlugInAuthenticator;
-import org.jwebsocket.token.JSONToken;
-import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
 
 /**
- *
+ * Main class of the module which takes care of creating the JMX infrastructure 
+ * to use. Initializes all other components within the module.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class JMXPlugIn extends TokenPlugIn {
@@ -50,11 +42,14 @@ public class JMXPlugIn extends TokenPlugIn {
 	private static Logger mLog = Logging.getLogger();
 	private static String mNamespace = "org.jwebsocket.plugins.jmx";
 	private static JMXPlugIn mJmxPlugin = null;
-	private static CompositeData mInformationOfRunningServers;
 	private HttpAdaptor mHttpAdaptor = null;
+	private HttpAdaptor mHttpSSLAdaptor = null;
+	private RMIConnectorServer mRmiConnector = null;
+	private RMIConnectorServer mRmiSSLConnector = null;
 
 	/**
-	 *
+	 * The class constructor.
+	 * 
 	 * @param aConfiguration
 	 */
 	public JMXPlugIn(PluginConfiguration aConfiguration) {
@@ -68,139 +63,66 @@ public class JMXPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 *
-	 * @return
+	 * Static method that returns an instance of this class, which is used in 
+	 * the module configuration file.
+	 * 
+	 * @return JMXPlugIn
 	 */
 	public static JMXPlugIn getInstance() {
 		return mJmxPlugin;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
-		JMXHandler.setLog(mLog);
-		JMXServerFunctions.setLog(mLog);
 
 		ApplicationContext lFactory = getConfigBeanFactory();
 		JMXPlugInAuthenticator.setConfigPath(getString("spring_config"));
 
 		lFactory.getBean("exporter");
-		// RMIConnectorServer a = (RMIConnectorServer) lFactory.getBean("rmiConnector");
-
+		
+		mRmiConnector = (RMIConnectorServer) lFactory.getBean("rmiConnector");
+		mRmiSSLConnector = (RMIConnectorServer) lFactory.getBean("rmiSSLConnector");
 		mHttpAdaptor = (HttpAdaptor) lFactory.getBean("HttpAdaptor");
+		mHttpSSLAdaptor = (HttpAdaptor) lFactory.getBean("HttpSSLAdaptor");
 		try {
+			mRmiConnector.start();
+			mRmiSSLConnector.start();
+			
 			mHttpAdaptor.addAuthorization("admin", "jmxadmin");
+			mHttpSSLAdaptor.addAuthorization("admin", "jmxadmin");
+			
 			mHttpAdaptor.start();
+			mHttpSSLAdaptor.start();
 
 			MBeanServer lMBServer = (MBeanServer) lFactory.getBean("jWebSocketServer");
 
-			String lBeanPath = JWebSocketConfig.getConfigFolder("") + getString("beans_config");
+			String lBeanPath = JWebSocketConfig.getConfigFolder("") 
+					+ getString("beans_config");
 
-			JMXPlugInsExporter lPluginsExporter = new JMXPlugInsExporter(lBeanPath, lMBServer, mLog);
+			JMXPlugInsExporter lPluginsExporter = 
+					new JMXPlugInsExporter(lBeanPath, lMBServer, mLog);
+			
 			lPluginsExporter.createMBeansToExport();
 		} catch (Exception ex) {
 			mLog.error("JMX plug-in on engineStarted: " + ex.getMessage());
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void engineStopped(WebSocketEngine aEngine) {
 		try {
 			mHttpAdaptor.stop();
+			mHttpSSLAdaptor.stop();
+			mRmiConnector.stop();
+			mRmiSSLConnector.stop();
 		} catch (Exception ex) {
 			mLog.error("JMX plug-in on engineStopped: " + ex.getMessage());
 		}
-	}
-
-	/**
-	 *
-	 * @param aServer
-	 * @param aPluginId
-	 * @param aMethodName
-	 * @param aMethodParameters
-	 * @return
-	 * @throws Exception
-	 */
-	public CompositeData invokePluginOperation(String aServer, String aPluginId, String aMethodName, String aMethodParameters) throws Exception {
-		try {
-			if (aServer.equals("") || aPluginId.equals("") || aMethodName.equals("") || aMethodParameters.equals("")) {
-				throw new IllegalArgumentException("The parameters must not be empty.");
-			} else {
-				//get the object of the server
-				WebSocketServer lServer = JWebSocketFactory.getServer(aServer);
-				if (lServer != null) {
-					//get the plugin
-					TokenPlugIn lPlugin = (TokenPlugIn) lServer.getPlugInById(aPluginId);
-					if (lPlugin != null) {
-						//create the token with json methodParameters
-						JSONObject lParameters = new JSONObject(aMethodParameters);
-						JSONToken lObjToken = new JSONToken(lParameters);
-						lObjToken.setNS(lPlugin.getNamespace());
-						lObjToken.setType(aMethodName);
-						//invoke the plugin method
-						Token lResponse = lPlugin.invoke(null, lObjToken);
-						if (lResponse != null) {
-							/*
-							 * creating a CompositeData to expose the
-							 * TokenResponse of the plugins
-							 */
-							CompositeData lResult = JMXHandler.convertMapToCompositeData(lResponse.getMap());
-							if (lResult != null) {
-								return lResult;
-							} else {
-								throw new NullPointerException("Failed to convert the resulting Token to a CompositeData.");
-							}
-						} else {
-							throw new NullPointerException("The method specified is not available to invoke.");
-						}
-					} else {
-						throw new NullPointerException("The plugin Id do not belong to any loaded jWebSocket PlugIn.");
-					}
-				} else {
-					throw new NullPointerException("The server Id do not belong to any running jWebSocket Server.");
-				}
-			}
-		} catch (Exception ex) {
-			mLog.error("JMXPlugIn on invokePluginOperation: " + ex.getMessage());
-			throw new Exception(ex.getMessage());
-		}
-
-	}
-
-	/**
-	 *
-	 * @return @throws Exception
-	 */
-	public CompositeData getInformationOfRunningServers() throws Exception {
-		CompositeData result = null;
-		try {
-			List<WebSocketServer> lAllServers = JWebSocketFactory.getServers();
-			Map lServers = new FastMap();
-
-			for (int i = 0; i < lAllServers.size(); i++) {
-				List<WebSocketPlugIn> lAllPlugins = lAllServers.get(i).getPlugInChain().getPlugIns();
-				Map lServerPlugins = new FastMap();
-				if (!lAllPlugins.isEmpty()) {
-					for (int j = 1; j <= lAllPlugins.size(); j++) {
-						Map lPlugins = new FastMap();
-						TokenPlugIn lValue = (TokenPlugIn) lAllPlugins.get(j - 1);
-						lPlugins.put("id", lValue.getId());
-						lPlugins.put("name", lValue.getName());
-						lPlugins.put("namespace", lValue.getNamespace());
-
-						lServerPlugins.put("plugin_" + lValue.getId(), lPlugins);
-					}
-				} else {
-					lServerPlugins.put("plugin", "This server doesn't have any plugins loaded");
-				}
-
-				lServers.put("serverId_" + lAllServers.get(i).getId(), lServerPlugins);
-			}
-
-			result = JMXHandler.convertMapToCompositeData(lServers);
-		} catch (Exception ex) {
-			mLog.error("JMXPlugIn on getInformationOfRunningServers: " + ex.getMessage());
-			throw new Exception(ex.getMessage());
-		}
-		return result;
 	}
 }

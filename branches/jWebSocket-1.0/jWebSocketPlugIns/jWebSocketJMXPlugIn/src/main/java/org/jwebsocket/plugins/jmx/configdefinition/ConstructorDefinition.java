@@ -23,22 +23,25 @@ import javax.management.MBeanParameterInfo;
 import javax.management.modelmbean.ModelMBeanConstructorInfo;
 
 /**
- *
+ * Class that allows to define the constructor of the classes to export and 
+ * their metadata.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class ConstructorDefinition extends FeatureDefinition {
 
-	private ConstuctorParameterDefinition[] mParameters = new ConstuctorParameterDefinition[0];
+	private ConstuctorParameterDefinition[] mParameters = 
+			new ConstuctorParameterDefinition[0];
 
 	/**
-	 *
+	 * The class default constructor
 	 */
 	public ConstructorDefinition() {
 	}
 
 	/**
 	 *
-	 * @return
+	 * @return ConstuctorParameterDefinition[]
 	 */
 	public ConstuctorParameterDefinition[] getParameters() {
 		return mParameters;
@@ -53,12 +56,14 @@ public class ConstructorDefinition extends FeatureDefinition {
 	}
 
 	/**
-	 *
-	 * @return
+	 * Create the metadata of the constructor definition.
+	 * 
+	 * @return ModelMBeanConstructorInfo
 	 */
 	public ModelMBeanConstructorInfo createMBeanConstructorInfo() {
 		MBeanParameterInfo[] lParametersInfo = createMBeanParameterInfoArray();
-		return new ModelMBeanConstructorInfo(super.getName(), super.getDescription(), lParametersInfo);
+		return new ModelMBeanConstructorInfo(super.getName(), 
+				super.getDescription(), lParametersInfo);
 	}
 
 	private MBeanParameterInfo[] createMBeanParameterInfoArray() {

@@ -27,13 +27,15 @@ import javax.management.modelmbean.ModelMBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
 
 /**
- *
+ * Class containing helper methods for creating the ModelMBean.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class ModelMBeanUtil {
 
 	/**
-	 *
+	 * Method used to construct the name of a method given a prefix.
+	 * 
 	 * @param aPrefix
 	 * @param aName
 	 * @return
@@ -45,10 +47,11 @@ public class ModelMBeanUtil {
 	}
 
 	/**
-	 *
+	 * Method used to determine the type of notification to be released.
+	 * 
 	 * @param aInfo
 	 * @param aMatch
-	 * @return
+	 * @return String
 	 */
 	protected static String matchType(MBeanNotificationInfo aInfo, String aMatch) {
 		String[] lTypes = aInfo.getNotifTypes();
@@ -61,17 +64,20 @@ public class ModelMBeanUtil {
 	}
 
 	/**
-	 *
+	 * Method for determining the get method belonging to a particular attribute.
+	 * 
 	 * @param aModelMBeanInfo
 	 * @param aManagedBean
 	 * @param aAttribute
-	 * @return
+	 * @return Method
 	 * @throws MBeanException
 	 */
-	public static Method findGetMethod(ModelMBeanInfo aModelMBeanInfo, Object aManagedBean, String aAttribute)
+	public static Method findGetMethod(ModelMBeanInfo aModelMBeanInfo, 
+			Object aManagedBean, String aAttribute)
 			throws MBeanException {
 		try {
-			ModelMBeanAttributeInfo lInfo = aModelMBeanInfo.getAttribute(aAttribute);
+			ModelMBeanAttributeInfo lInfo = 
+					aModelMBeanInfo.getAttribute(aAttribute);
 			Descriptor lDescriptor = lInfo.getDescriptor();
 			String lMethodName = (String) (lDescriptor.getFieldValue("getMethod"));
 			if (lMethodName == null) {
@@ -84,14 +90,16 @@ public class ModelMBeanUtil {
 	}
 
 	/**
-	 *
+	 * Method for determining the set method belonging to a particular attribute.
+	 * 
 	 * @param aModelMBeanInfo
 	 * @param aManagedBean
 	 * @param aAttribute
-	 * @return
+	 * @return Method
 	 * @throws MBeanException
 	 */
-	public static Method findSetMethod(ModelMBeanInfo aModelMBeanInfo, Object aManagedBean, String aAttribute)
+	public static Method findSetMethod(ModelMBeanInfo aModelMBeanInfo, 
+			Object aManagedBean, String aAttribute)
 			throws MBeanException {
 		try {
 			ModelMBeanAttributeInfo lInfo = aModelMBeanInfo.getAttribute(aAttribute);

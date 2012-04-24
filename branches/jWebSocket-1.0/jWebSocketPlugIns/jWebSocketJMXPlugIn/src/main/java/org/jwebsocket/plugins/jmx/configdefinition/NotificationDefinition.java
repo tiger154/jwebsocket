@@ -22,7 +22,9 @@ package org.jwebsocket.plugins.jmx.configdefinition;
 import javax.management.modelmbean.ModelMBeanNotificationInfo;
 
 /**
- *
+ * Class that allows to define an event notifications for the plugins and 
+ * classes to export and their metadata.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class NotificationDefinition extends FeatureDefinition {
@@ -30,7 +32,7 @@ public class NotificationDefinition extends FeatureDefinition {
 	private String[] mTypes;
 
 	/**
-	 * 
+	 * The class default constructor.
 	 */
 	public NotificationDefinition() {
 	}
@@ -47,22 +49,25 @@ public class NotificationDefinition extends FeatureDefinition {
 			if (!aTypes[0].equals("")) {
 				this.mTypes = aTypes;
 			} else {
-				throw new IllegalArgumentException("The notification types must have at least one value.");
+				throw new IllegalArgumentException("The notification types must "
+						+ "have at least one value.");
 			}
 		} else {
-			throw new IllegalArgumentException("The notification types must have at least one value.");
+			throw new IllegalArgumentException("The notification types must have"
+					+ " at least one value.");
 		}
 	}
 
 	/**
 	 * 
-	 * @return
+	 * @return String[]
 	 */
 	public String[] getTypes() {
 		if (mTypes != null) {
 			return mTypes;
 		} else {
-			throw new IllegalArgumentException("The notification types must have at least one value.");
+			throw new IllegalArgumentException("The notification types must have"
+					+ " at least one value.");
 		}
 	}
 
@@ -75,22 +80,27 @@ public class NotificationDefinition extends FeatureDefinition {
 			if (!aTypes[0].equals("")) {
 				this.mTypes = aTypes;
 			} else {
-				throw new IllegalArgumentException("The notification types must have at least one value.");
+				throw new IllegalArgumentException("The notification types must "
+						+ "have at least one value.");
 			}
 		} else {
-			throw new IllegalArgumentException("The notification types must have at least one value.");
+			throw new IllegalArgumentException("The notification types must have"
+					+ " at least one value.");
 		}
 	}
 
 	/**
+	 * Create the metadata of the notification definition.
 	 * 
-	 * @return
+	 * @return ModelMBeanNotificationInfo
 	 */
 	public ModelMBeanNotificationInfo createMBeanNotificationInfo() {
 		if (mTypes != null) {
-			return new ModelMBeanNotificationInfo(mTypes, super.getName(), super.getDescription());
+			return new ModelMBeanNotificationInfo(mTypes, super.getName(), 
+					super.getDescription());
 		} else {
-			throw new IllegalArgumentException("The notification types must have at least one value.");
+			throw new IllegalArgumentException("The notification types must have"
+					+ " at least one value.");
 		}
 	}
 }

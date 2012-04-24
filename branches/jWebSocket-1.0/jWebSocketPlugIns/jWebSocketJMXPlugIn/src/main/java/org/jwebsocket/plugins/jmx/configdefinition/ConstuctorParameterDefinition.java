@@ -22,7 +22,9 @@ package org.jwebsocket.plugins.jmx.configdefinition;
 import javax.management.MBeanParameterInfo;
 
 /**
- *
+ * Class that allows to define the constructor parameters of the classes to 
+ * export and their metadata.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class ConstuctorParameterDefinition extends FeatureDefinition {
@@ -30,7 +32,7 @@ public class ConstuctorParameterDefinition extends FeatureDefinition {
 	private Object mValue;
 
 	/**
-	 *
+	 * The class default constructor
 	 */
 	public ConstuctorParameterDefinition() {
 	}
@@ -41,20 +43,22 @@ public class ConstuctorParameterDefinition extends FeatureDefinition {
 	 * @param aName
 	 * @param aDescription
 	 */
-	public ConstuctorParameterDefinition(Object aValue, String aName, String aDescription) {
+	public ConstuctorParameterDefinition(Object aValue, String aName, 
+			String aDescription) {
 		super(aName, aDescription);
 		this.mValue = aValue;
 	}
 
 	/**
 	 *
-	 * @return
+	 * @return Object
 	 */
 	public Object getValue() {
 		if (this.mValue != null) {
 			return this.mValue;
 		} else {
-			throw new IllegalArgumentException("The parameter value must not be null");
+			throw new IllegalArgumentException("The parameter value must not be "
+					+ "null");
 		}
 	}
 
@@ -67,10 +71,12 @@ public class ConstuctorParameterDefinition extends FeatureDefinition {
 	}
 
 	/**
-	 *
-	 * @return
+	 * Create the metadata of the constructor parameter definition.
+	 * 
+	 * @return MBeanParameterInfo
 	 */
 	public MBeanParameterInfo createMBeanParameterInfo() {
-		return new MBeanParameterInfo(super.getName(), mValue.getClass().getName(), super.getDescription());
+		return new MBeanParameterInfo(super.getName(), 
+				mValue.getClass().getName(), super.getDescription());
 	}
 }

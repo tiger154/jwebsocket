@@ -24,7 +24,9 @@ import javax.management.MBeanParameterInfo;
 import javax.management.modelmbean.ModelMBeanOperationInfo;
 
 /**
- *
+ * Class that allows to define the operations of the plugins or classes to 
+ * export and their metadata.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class OperationDefinition extends FeatureDefinition {
@@ -34,7 +36,7 @@ public class OperationDefinition extends FeatureDefinition {
 	private ParameterDefinition[] mParameters = new ParameterDefinition[0];
 
 	/**
-	 *
+	 * The class default constructor.
 	 */
 	public OperationDefinition() {
 	}
@@ -46,7 +48,8 @@ public class OperationDefinition extends FeatureDefinition {
 	 * @param aName
 	 * @param aDescription
 	 */
-	public OperationDefinition(Class aReturnValueType, String aImpact, String aName, String aDescription) {
+	public OperationDefinition(Class aReturnValueType, String aImpact, 
+			String aName, String aDescription) {
 		super(aName, aDescription);
 		if (aReturnValueType != null) {
 			this.mReturnValueType = aReturnValueType;
@@ -63,7 +66,7 @@ public class OperationDefinition extends FeatureDefinition {
 
 	/**
 	 *
-	 * @return
+	 * @return Class
 	 */
 	public Class getReturnValueType() {
 		return (mReturnValueType != null) ? mReturnValueType : java.lang.Void.class;
@@ -79,7 +82,7 @@ public class OperationDefinition extends FeatureDefinition {
 
 	/**
 	 *
-	 * @return
+	 * @return String
 	 */
 	public String getImpact() {
 		return (mImpact != null) || (!mImpact.equals("")) ? mImpact : "UNKNOWN";
@@ -95,7 +98,7 @@ public class OperationDefinition extends FeatureDefinition {
 
 	/**
 	 *
-	 * @return
+	 * @return ParameterDefinition[]
 	 */
 	public ParameterDefinition[] getParameters() {
 		return mParameters;
@@ -121,12 +124,15 @@ public class OperationDefinition extends FeatureDefinition {
 	}
 
 	/**
-	 *
-	 * @return
+	 * Create the metadata of the operation definition.
+	 * 
+	 * @return ModelMBeanOperationInfo
 	 */
 	public ModelMBeanOperationInfo createMBeanOperationInfo() {
 		MBeanParameterInfo[] lParametersInfo = createMBeanParameterInfoArray();
-		return new ModelMBeanOperationInfo(super.getName(), super.getDescription(), lParametersInfo, getReturnValueType().getName(), getImpactInt());
+		return new ModelMBeanOperationInfo(super.getName(), 
+				super.getDescription(), lParametersInfo, 
+				getReturnValueType().getName(), getImpactInt());
 	}
 
 	private int getImpactInt() {

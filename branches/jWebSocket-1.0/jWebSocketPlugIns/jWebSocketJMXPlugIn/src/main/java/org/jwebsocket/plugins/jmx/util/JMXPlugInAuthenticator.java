@@ -32,7 +32,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.memory.InMemoryDaoImpl;
 
 /**
- *
+ * Class that implements the security mechanism for the remote access to the 
+ * module via the RMI protocol.
+ * 
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class JMXPlugInAuthenticator implements JMXAuthenticator {
@@ -40,11 +42,13 @@ public class JMXPlugInAuthenticator implements JMXAuthenticator {
 	private static String mConfigPath;
 
 	/**
-	 *
+	 * The class default constructor.
 	 */
 	public JMXPlugInAuthenticator() {
 	}
-
+	/*
+	 * {@inheritDoc} 
+	 */
 	@Override
 	public Subject authenticate(Object aCredentials) {
 		if (!(aCredentials instanceof String[])) {
@@ -77,7 +81,7 @@ public class JMXPlugInAuthenticator implements JMXAuthenticator {
 		if (lUser != null) {
 			if (lUser.isEnabled()) {
 				if (lUser.getPassword().equals(Tools.getMD5(lPassword))) {
-					if (credentialAllowed(lUser.getAuthorities())) {
+					if (credentialAllowed((Collection<GrantedAuthority>)lUser.getAuthorities())) {
 						return new Subject(true,
 								Collections.singleton(new JMXPrincipal(lUserName)),
 								Collections.EMPTY_SET,
