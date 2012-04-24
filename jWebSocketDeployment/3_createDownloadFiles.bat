@@ -161,7 +161,13 @@ xcopy %libs%jetty-servlet-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-servlets-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-util-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jetty-websocket-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
+rem Grizzly support
+xcopy %libs%grizzly-core-2.2.5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%grizzly-framework-2.2.5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%grizzly-websockets-2.2.5.jar %tempdir%libs\ /s /i /y
+xcopy %libs%grizzly-websockets-server-2.2.5.jar %tempdir%libs\ /s /i /y
 rem xcopy %libs%servlet-api-2.5-6.1.14.jar %tempdir%libs\ /s /i /y
+rem Jackson JSON support
 xcopy %libs%jackson-core-asl-1.9.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jackson-mapper-asl-1.9.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jcl-core-2.2.2.jar %tempdir%libs\ /s /i /y
@@ -189,7 +195,6 @@ xcopy %libs%spring-security-ldap-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-tx-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-
 rem twitter support
 xcopy %libs%httpclient-4.1.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%httpcore-4.1.3.jar %tempdir%libs\ /s /i /y
