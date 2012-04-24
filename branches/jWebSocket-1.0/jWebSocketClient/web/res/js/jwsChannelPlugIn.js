@@ -132,22 +132,67 @@ jws.ChannelPlugIn = {
 	},
 
 	//:m:*:channelPublish
-	//:d:en:Sends a message to the given channel on the server.
+	//:d:en:Sends a string message to the given channel on the server.
 	//:d:en:The client needs to be authenticated against the server and the
 	//:d:en:channel to publish data. All clients that subscribed to the channel
 	//:d:en:will receive the message.
 	//:a:en::aChannel:String:The id of the server side data channel.
-	//:a:en::aData:String:Data to be sent to the server side data channel.
+	//:a:en::aData:String:String (text) to be sent to the server side data channel.
 	//:r:*:::void:none
 	// TODO: introduce OnResponse here too to get noticed on error or success.
-	channelPublish: function( aChannel, aData, aOptions ) {
+	channelPublishString: function( aChannel, aString, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.PUBLISH,
 				channel: aChannel,
-				data: aData
+				data: aString
+			}, aOptions );
+		}
+		return lRes;
+	},
+
+	//:m:*:channelPublish
+	//:d:en:Sends a combined string (id) and map message to the given channel _
+	//:d:en:on the server. The id can be used to identify the map type/content.
+	//:d:en:The client needs to be authenticated against the server and the
+	//:d:en:channel to publish data. All clients that subscribed to the channel
+	//:d:en:will receive the message.
+	//:a:en::aChannel:String:The id of the server side data channel.
+	//:a:en::aData:String:String (text) to be sent to the server side data channel.
+	//:r:*:::void:none
+	channelPublish: function( aChannel, aData, aMap, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			this.sendToken({
+				ns: jws.ChannelPlugIn.NS,
+				type: jws.ChannelPlugIn.PUBLISH,
+				channel: aChannel,
+				data: aData,
+				map: aMap
+			}, aOptions );
+		}
+		return lRes;
+	},
+
+	//:m:*:channelPublishMap
+	//:d:en:Sends a map message to the given channel on the server.
+	//:d:en:The client needs to be authenticated against the server and the
+	//:d:en:channel to publish data. All clients that subscribed to the channel
+	//:d:en:will receive the message.
+	//:a:en::aChannel:String:The id of the server side data channel.
+	//:a:en::aMap:Map:Data object to be sent to the server side data channel.
+	//:r:*:::void:none
+	// TODO: introduce OnResponse here too to get noticed on error or success.
+	channelPublishMap: function( aChannel, aMap, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			this.sendToken({
+				ns: jws.ChannelPlugIn.NS,
+				type: jws.ChannelPlugIn.PUBLISH,
+				channel: aChannel,
+				map: aMap
 			}, aOptions );
 		}
 		return lRes;
