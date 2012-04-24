@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.HttpCookie;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -554,7 +555,7 @@ public final class WebSocketHandshake {
 	 *
 	 * @return
 	 */
-	public byte[] generateC2SRequest() {
+	public byte[] generateC2SRequest(HttpCookie aSessionCookie) {
 		String lPath = mURI.getPath();
 		String lHost = mURI.getHost();
 		mOrigin = "http://" + lHost;
@@ -573,8 +574,10 @@ public final class WebSocketHandshake {
 			lHandshake += "Sec-WebSocket-Protocol: " + mProtocol + "\r\n";
 		}
 
-		//Set client cookies
-
+		// Set client cookies
+		if (null != aSessionCookie) {
+			lHandshake += "Cookie: " + aSessionCookie.toString() + "\r\n";
+		}
 
 		if (WebSocketProtocolAbstraction.isHixieVersion(mVersion)) {
 			lHandshake +=
@@ -601,6 +604,10 @@ public final class WebSocketHandshake {
 		}
 
 		return lHandshakeBytes;
+	}
+
+	public byte[] generateC2SRequest() {
+		return generateC2SRequest(null);
 	}
 
 	/**

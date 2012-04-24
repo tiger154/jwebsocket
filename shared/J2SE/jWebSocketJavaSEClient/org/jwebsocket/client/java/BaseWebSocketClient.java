@@ -15,6 +15,7 @@
 package org.jwebsocket.client.java;
 
 import java.io.*;
+import java.net.HttpCookie;
 import java.net.Socket;
 import java.net.URI;
 import java.net.UnknownHostException;
@@ -82,27 +83,27 @@ public class BaseWebSocketClient implements WebSocketClient {
 	private List<WebSocketSubProtocol> mSubprotocols;
 	private WebSocketSubProtocol mNegotiatedSubProtocol;
 	/**
-	 * 
+	 *
 	 */
 	public static String EVENT_OPEN = "open";
 	/**
-	 * 
+	 *
 	 */
 	public static String EVENT_CLOSE = "close";
 	/**
-	 * 
+	 *
 	 */
 	public static String DATA_CLOSE_ERROR = "error";
 	/**
-	 * 
+	 *
 	 */
 	public static String DATA_CLOSE_CLIENT = "client";
 	/**
-	 * 
+	 *
 	 */
 	public static String DATA_CLOSE_SERVER = "server";
 	/**
-	 * 
+	 *
 	 */
 	public static String DATA_CLOSE_SHUTDOWN = "shutdown";
 	private static final String CR_CLIENT = "Client closed connection";
@@ -117,6 +118,10 @@ public class BaseWebSocketClient implements WebSocketClient {
 	private Boolean mIsReconnecting = false;
 	private final Object mReconnectLock = new Object();
 	private Headers mHeaders = null;
+	private String mSessionId = null;
+	
+	private final static String SESSIONCOOKIE_NAME = "SID";
+
 	/**
 	 * Base constructor
 	 */
@@ -131,7 +136,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aKey
 	 * @param aDefault
 	 * @return
@@ -145,7 +150,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aKey
 	 * @return
 	 */
@@ -154,7 +159,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aKey
 	 * @param aValue
 	 */
@@ -164,8 +169,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @param aURI 
+	 *
+	 * @param aURI
 	 */
 	@Override
 	public void open(String aURI) throws WebSocketException {
@@ -173,8 +178,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 	}
 
 	/**
-	 * Make a sub protocol string for Sec-WebSocket-Protocol header.
-	 * The result is something like this:
+	 * Make a sub protocol string for Sec-WebSocket-Protocol header. The result
+	 * is something like this:
 	 * <pre>
 	 * org.jwebsocket.json org.websocket.text org.jwebsocket.binary
 	 * </pre>
@@ -194,7 +199,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aVersion
 	 * @param aURI
 	 * @throws WebSocketException
@@ -205,10 +210,10 @@ public class BaseWebSocketClient implements WebSocketClient {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aVersion
 	 * @param aURI
-	 * @param aSubProtocols 
+	 * @param aSubProtocols
 	 * @throws WebSocketException
 	 */
 	public void open(int aVersion, String aURI, String aSubProtocols) {
@@ -234,7 +239,16 @@ public class BaseWebSocketClient implements WebSocketClient {
 			mIn = mSocket.getInputStream();
 			mOut = mSocket.getOutputStream();
 
-			byte[] lBA = lHandshake.generateC2SRequest();
+			// pass session cookie, if already was set for this client instance
+
+			byte[] lBA;
+			if (null != mSessionId) {
+				// TODO: Update to JWSSESSIONID once the server is updated.
+				HttpCookie lCookie = new HttpCookie(SESSIONCOOKIE_NAME, mSessionId);
+				lBA = lHandshake.generateC2SRequest(lCookie);
+			} else {
+				lBA = lHandshake.generateC2SRequest();
+			}
 			mOut.write(lBA);
 
 			mStatus = WebSocketStatus.CONNECTING;
@@ -244,6 +258,18 @@ public class BaseWebSocketClient implements WebSocketClient {
 				mHeaders.readFromStream(aVersion, mIn);
 			} catch (Exception lEx) {
 				// ignore exception here, will be processed afterwards
+			}
+
+			// did the server return a session-id?
+			String lSetCookie = mHeaders.getField("Set-Cookie");
+			if (null != lSetCookie) {
+				List<HttpCookie> lCookies = HttpCookie.parse(lSetCookie);
+				for (HttpCookie lCookie : lCookies) {
+					if (SESSIONCOOKIE_NAME.equals(lCookie.getName())) {
+						mSessionId = lCookie.getValue();
+						break;
+					}
+				}
 			}
 
 			if (!mHeaders.isValid()) {
@@ -326,8 +352,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @param aDataPacket 
+	 *
+	 * @param aDataPacket
 	 */
 	@Override
 	public void send(WebSocketPacket aDataPacket) throws WebSocketException {
@@ -502,8 +528,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 
 	/**
 	 * {@inheritDoc }
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public WebSocketStatus getConnectionStatus() {
 		return mStatus;
@@ -584,24 +610,15 @@ public class BaseWebSocketClient implements WebSocketClient {
 		this.mReliabilityOptions = mReliabilityOptions;
 	}
 	/*
-	class ReOpener implements Runnable {
-	
-	private WebSocketClientEvent mEvent;
-	
-	public ReOpener(WebSocketClientEvent aEvent) {
-	mEvent = aEvent;
-	}
-	
-	@Override
-	public void run() {
-	notifyReconnecting(mEvent);
-	try {
-	open(mURI.toString());
-	} catch (WebSocketException ex) {
-	// TODO: process potential exception here!
-	}
-	}
-	}
+	 * class ReOpener implements Runnable {
+	 *
+	 * private WebSocketClientEvent mEvent;
+	 *
+	 * public ReOpener(WebSocketClientEvent aEvent) { mEvent = aEvent; }
+	 *
+	 * @Override public void run() { notifyReconnecting(mEvent); try {
+	 * open(mURI.toString()); } catch (WebSocketException ex) { // TODO: process
+	 * potential exception here! } } }
 	 */
 
 	/**
@@ -627,13 +644,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 				open(mURI.toString());
 				// did we configure reliability options?
 				/*
-				if (mReliabilityOptions != null
-				&& mReliabilityOptions.getReconnectDelay() > 0) {
-				mExecutor.schedule(
-				new ReOpener(aEvent),
-				mReliabilityOptions.getReconnectDelay(),
-				TimeUnit.MILLISECONDS);
-				}
+				 * if (mReliabilityOptions != null &&
+				 * mReliabilityOptions.getReconnectDelay() > 0) {
+				 * mExecutor.schedule( new ReOpener(aEvent),
+				 * mReliabilityOptions.getReconnectDelay(),
+				 * TimeUnit.MILLISECONDS); }
 				 */
 			} catch (Exception lEx) {
 				WebSocketClientEvent lEvent =
@@ -648,9 +663,9 @@ public class BaseWebSocketClient implements WebSocketClient {
 	private void mAbortReconnect() {
 		synchronized (mReconnectLock) {
 			// cancel running re-connect task
-			if( null != mReconnectorTask ) {
+			if (null != mReconnectorTask) {
 				mReconnectorTask.cancel(true);
-			}	
+			}
 			// reset internal re-connection flag
 			mIsReconnecting = false;
 			mReconnectorTask = null;
@@ -675,7 +690,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 						mReliabilityOptions.getReconnectDelay(),
 						TimeUnit.MILLISECONDS);
 			}
-		}	
+		}
 	}
 
 	/**
