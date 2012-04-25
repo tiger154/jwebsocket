@@ -196,7 +196,6 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 			//Notifying listeners
 			for (WebSocketClientListener lListener : getListeners()) {
 				if (lListener instanceof WebSocketClientTokenListener) {
-
 					((WebSocketClientTokenListener) lListener).processToken(aEvent, lToken);
 				}
 			}

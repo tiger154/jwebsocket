@@ -469,7 +469,7 @@ public final class WebSocketHandshake {
 				+ (lSubProt != null ? (lIsSecure ? "Sec-" : "") + "WebSocket-Protocol: " + lSubProt + "\r\n" : "")
 				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Origin: " + lOrigin + "\r\n"
 				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Location: " + lLocation + "\r\n"
-				+ "Set-Cookie: SID=" + ((Map) aRequest.get(RequestHeader.WS_COOKIES)).get("SID") + "; HttpOnly\r\n";
+				+ "Set-Cookie: " + JWebSocketCommonConstants.SESSIONID_COOKIE_NAME + "=" + ((Map) aRequest.get(RequestHeader.WS_COOKIES)).get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME) + "; HttpOnly\r\n";
 		lRes += "\r\n";
 
 		byte[] lBA;
