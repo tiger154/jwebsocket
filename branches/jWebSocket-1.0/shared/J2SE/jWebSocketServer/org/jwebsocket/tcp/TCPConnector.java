@@ -27,6 +27,7 @@ import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
@@ -362,9 +363,9 @@ public class TCPConnector extends BaseConnector {
 		}
 
 		EngineUtils.parseCookies(lReqMap);
-		//Setting the SID cookie if not present previously
-		if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey("SID")) {
-			((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put("SID", Tools.getMD5(generateUID()));
+		//Setting the JWSSESSIONID cookie if not present previously
+		if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey("JWSSESSIONID")) {
+			((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put("JWSSESSIONID", Tools.getMD5(generateUID()));
 		}
 
 		RequestHeader lHeader = EngineUtils.validateC2SRequest(
@@ -492,9 +493,9 @@ public class TCPConnector extends BaseConnector {
 				mLog.debug("Starting " + lLogInfo + " connector...");
 			}
 
-			//Setting the SID in the connector's WebSocketSession instance
+			//Setting the session identifier in the connector's WebSocketSession instance
 			mConnector.getSession().setSessionId(mConnector.getHeader().
-					getCookies().get("SID").toString());
+					getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
 
 			// call connectorStarted method of engine
 			lEngine.connectorStarted(mConnector);

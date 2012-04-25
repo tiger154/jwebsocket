@@ -220,6 +220,12 @@ public class JWebSocketCommonConstants {
 	 * public scope, everybody can read and write items from this scope
 	 */
 	public static final String SCOPE_PUBLIC = "public";
+	
+	/**
+	 * jWebSocket cookie name for the session identifier used when running 
+	 * in standalone mode.
+	 */
+	public static final String SESSIONID_COOKIE_NAME = "JWSSESSIONID";
 
 	static {
 		// hixie support (versions)
