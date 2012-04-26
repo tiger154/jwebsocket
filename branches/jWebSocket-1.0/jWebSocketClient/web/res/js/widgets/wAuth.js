@@ -181,6 +181,16 @@ $.widget("jws.auth",{
 				if( mLog.isDebugEnabled ) {
 					log( "<font style='color:red'>jWebSocket Welcome received.</font>" );
 				}
+				
+				if ("anonymous" != aToken.username){
+					w.auth.eLogonArea.hide();
+					w.auth.eLogoffArea.fadeIn(300);
+
+					w.auth.eUserInfoName.text(aToken.username);
+					w.auth.mUsername = aToken.username;
+					w.auth.eClientId.text("Client-ID: " + aToken.sourceId);
+					w.auth.eClientStatus.attr( "class", "authenticated").text("authenticated");
+				}
 			},
 
 			OnGoodBye: function( aEvent ) {
@@ -205,7 +215,7 @@ $.widget("jws.auth",{
 						+ lDate + "</font>" );
 				}
 				
-				if( "login" == aToken.reqType ) {
+				if( "login" == aToken.reqType || "logon" ==  aToken.reqType) {
 					if( aToken.code != -1 ) {
 						if( mLog.isDebugEnabled ) {
 							log( "<font style='color:green'>Successfully authenticated as: " 
@@ -224,7 +234,7 @@ $.widget("jws.auth",{
 								invalid credentials, please, check your user or password</font>");
 						}
 					}
-				} else if( "logout" == aToken.reqType ) {
+				} else if( "logout" == aToken.reqType || "logoff" == aToken.reqType) {
 					w.auth.eLogoffArea.hide( );
 					w.auth.eLogonArea.fadeIn( 200 );
 					

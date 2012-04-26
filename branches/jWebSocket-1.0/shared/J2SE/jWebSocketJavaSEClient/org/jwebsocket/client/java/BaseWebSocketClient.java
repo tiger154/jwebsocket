@@ -38,6 +38,7 @@ import org.jwebsocket.api.*;
 import org.jwebsocket.client.token.WebSocketTokenClientEvent;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.kit.*;
+import org.jwebsocket.util.Tools;
 
 /**
  * Base {@code WebSocket} implementation based on
@@ -51,6 +52,7 @@ import org.jwebsocket.kit.*;
  * @author puran
  * @author jang
  * @author aschulze
+ * @author kyberneees
  * @version $Id:$
  */
 public class BaseWebSocketClient implements WebSocketClient {
@@ -118,14 +120,20 @@ public class BaseWebSocketClient implements WebSocketClient {
 	private Boolean mIsReconnecting = false;
 	private final Object mReconnectLock = new Object();
 	private Headers mHeaders = null;
-	private String mSessionId = null;
-	
-	private final static String SESSIONCOOKIE_NAME = "SID";
+	private List<HttpCookie> mCookies = new ArrayList<HttpCookie>();
 
 	/**
 	 * Base constructor
 	 */
 	public BaseWebSocketClient() {
+	}
+
+	public void setStatus(WebSocketStatus aStatus) throws Exception {
+		if (aStatus.equals(WebSocketStatus.AUTHENTICATED)) {
+			this.mStatus = aStatus;
+		} else {
+			throw new Exception("The value '" + aStatus.name() + "' cannot be assigned. Restricted to internal usage only!");
+		}
 	}
 
 	/**
@@ -242,13 +250,19 @@ public class BaseWebSocketClient implements WebSocketClient {
 			// pass session cookie, if already was set for this client instance
 
 			byte[] lBA;
-			if (null != mSessionId) {
-				// TODO: Update to JWSSESSIONID once the server is updated.
-				HttpCookie lCookie = new HttpCookie(SESSIONCOOKIE_NAME, mSessionId);
-				lBA = lHandshake.generateC2SRequest(lCookie);
-			} else {
-				lBA = lHandshake.generateC2SRequest();
+			List<HttpCookie> lTempCookies = new ArrayList();
+			if (null != mCookies) {
+				HttpCookie lCookie;
+				for (int lIndex = 0; lIndex < mCookies.size(); lIndex++) {
+					lCookie = mCookies.get(lIndex);
+					boolean lValid = Tools.isCookieValid(mURI, lCookie);
+					if (lValid) {
+						//Cookie is valid
+						lTempCookies.add(lCookie);
+					}
+				}
 			}
+			lBA = lHandshake.generateC2SRequest(lTempCookies);
 			mOut.write(lBA);
 
 			mStatus = WebSocketStatus.CONNECTING;
@@ -260,14 +274,26 @@ public class BaseWebSocketClient implements WebSocketClient {
 				// ignore exception here, will be processed afterwards
 			}
 
-			// did the server return a session-id?
+			// registering new cookies from the server response
 			String lSetCookie = mHeaders.getField("Set-Cookie");
 			if (null != lSetCookie) {
 				List<HttpCookie> lCookies = HttpCookie.parse(lSetCookie);
-				for (HttpCookie lCookie : lCookies) {
-					if (SESSIONCOOKIE_NAME.equals(lCookie.getName())) {
-						mSessionId = lCookie.getValue();
-						break;
+				if (mCookies.isEmpty()) {
+					mCookies.addAll(lCookies);
+				} else {
+					for (HttpCookie lCookie : lCookies) {
+						for (int lIndex = 0; lIndex < mCookies.size(); lIndex++) {
+							if (null == mCookies.get(lIndex).getDomain()
+									|| HttpCookie.domainMatches(mCookies.get(lIndex).getDomain(), mURI.getHost())
+									&& (null == lCookie.getPath()
+									|| (null != mURI.getPath()
+									&& mURI.getPath().startsWith(lCookie.getPath())))) {
+								mCookies.set(lIndex, lCookie);
+							}
+						}
+						if (!mCookies.contains(lCookie)) {
+							mCookies.add(lCookie);
+						}
 					}
 				}
 			}

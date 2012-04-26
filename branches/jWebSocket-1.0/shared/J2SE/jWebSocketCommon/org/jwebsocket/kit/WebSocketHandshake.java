@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.jwebsocket.config.JWebSocketCommonConstants;
@@ -555,7 +556,7 @@ public final class WebSocketHandshake {
 	 *
 	 * @return
 	 */
-	public byte[] generateC2SRequest(HttpCookie aSessionCookie) {
+	public byte[] generateC2SRequest(List<HttpCookie> aCookies) {
 		String lPath = mURI.getPath();
 		String lHost = mURI.getHost();
 		mOrigin = "http://" + lHost;
@@ -575,8 +576,16 @@ public final class WebSocketHandshake {
 		}
 
 		// Set client cookies
-		if (null != aSessionCookie) {
-			lHandshake += "Cookie: " + aSessionCookie.toString() + "\r\n";
+		if (null != aCookies && !aCookies.isEmpty()) {
+			//Generating Cookie header
+			String lCookies = "";
+			for (HttpCookie lCookie : aCookies){
+				if (!lCookies.equals("")){
+					lCookies += "; ";
+				}
+				lCookies += lCookie.getName() + "=" + lCookie.getValue();
+			}
+			lHandshake += "Cookie: " + lCookies + "\r\n";
 		}
 
 		if (WebSocketProtocolAbstraction.isHixieVersion(mVersion)) {
