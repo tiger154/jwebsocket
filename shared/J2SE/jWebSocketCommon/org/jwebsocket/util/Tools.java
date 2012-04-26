@@ -16,6 +16,8 @@
 package org.jwebsocket.util;
 
 import java.lang.reflect.Method;
+import java.net.HttpCookie;
+import java.net.URI;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -359,8 +361,9 @@ public class Tools {
 	}
 
 	/**
-	 * Replaces all pattern ${name} in a string by the values of the 
+	 * Replaces all pattern ${name} in a string by the values of the
 	 * corresponding environment variable.
+	 *
 	 * @param aString
 	 * @return
 	 */
@@ -370,8 +373,9 @@ public class Tools {
 	}
 
 	/**
-	 * Replaces all pattern ${name} in a string by the values of the 
+	 * Replaces all pattern ${name} in a string by the values of the
 	 * corresponding system property.
+	 *
 	 * @param aString
 	 * @return
 	 */
@@ -387,11 +391,12 @@ public class Tools {
 		}
 		return expandVars(aString, lVarsMap, EXPAND_CASE_INSENSITIVE);
 	}
-	
+
 	/**
-	 * Replaces all pattern ${name} in a string by the values of the 
-	 * corresponding environment variable or system property. The setting
-	 * of a system property overrides the setting of the environment variable.
+	 * Replaces all pattern ${name} in a string by the values of the
+	 * corresponding environment variable or system property. The setting of a
+	 * system property overrides the setting of the environment variable.
+	 *
 	 * @param aString
 	 * @return
 	 */
@@ -401,7 +406,7 @@ public class Tools {
 		for (Entry lEntry : lProps.entrySet()) {
 			Object lKey = lEntry.getKey();
 			Object lValue = lEntry.getValue();
-			if (null != lKey && null != lValue 
+			if (null != lKey && null != lValue
 					&& lKey instanceof String
 					&& lValue instanceof String) {
 				lVarsMap.put((String) lKey, (String) lValue);
@@ -409,7 +414,6 @@ public class Tools {
 		}
 		return expandVars(aString, lVarsMap, EXPAND_CASE_INSENSITIVE);
 	}
-	
 
 	/**
 	 *
@@ -729,5 +733,23 @@ public class Tools {
 			lHexBuilder.append(HEXES.charAt((lByte & 0xF0) >> 4)).append(HEXES.charAt((lByte & 0x0F)));
 		}
 		return lHexBuilder.toString();
+	}
+
+	/**
+	 * Indicates if a cookie is valid for a given URI
+	 *
+	 * @param aURI
+	 * @param aCookie
+	 * @return TRUE if the cookie is valid, FALSE otherwise
+	 */
+	public static boolean isCookieValid(URI aURI, HttpCookie aCookie) {
+		if (!aCookie.hasExpired()
+				&& (null == aCookie.getDomain() || HttpCookie.domainMatches(aCookie.getDomain(), aURI.getHost()))
+				&& (null == aCookie.getPath() || (null != aURI.getPath() && aURI.getPath().startsWith(aCookie.getPath())))
+				&& (aCookie.getSecure() == (aURI.getScheme().equals("wss")))) {
+			return true;
+		}
+
+		return false;
 	}
 }

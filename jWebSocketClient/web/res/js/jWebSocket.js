@@ -3993,6 +3993,8 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			// check welcome and goodBye tokens to manage the session
 			if ( aToken.type == "welcome") {
 				this.fClientId = aToken.sourceId;
+				this.fUsername = aToken.username;
+				
 				this.notifyPlugInsOpened();
 				// fire OnWelcome Event if assigned
 				if( this.fOnWelcome ) {
@@ -4017,10 +4019,9 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			// check if we got a response from a previous request
 			} else if( aToken.type == "response" ) {
 				// check login and logout manage the username
-				if( aToken.reqType == "login" ) {
+				if( aToken.reqType == "login" || aToken.reqType == "logon") {
 					this.fUsername = aToken.username;
-				}
-				if( aToken.reqType == "logout" ) {
+				} else if( aToken.reqType == "logout" || aToken.reqType == "logoff") {
 					this.fUsername = null;
 				}
 				// check if some requests need to be answered

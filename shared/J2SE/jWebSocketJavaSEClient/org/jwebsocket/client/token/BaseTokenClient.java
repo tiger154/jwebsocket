@@ -14,34 +14,30 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.token;
 
-import org.apache.commons.codec.binary.Base64;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javolution.util.FastMap;
-import org.jwebsocket.api.WebSocketTokenClient;
-import org.jwebsocket.api.WebSocketClientEvent;
-import org.jwebsocket.api.WebSocketClientListener;
-import org.jwebsocket.api.WebSocketClientTokenListener;
-import org.jwebsocket.api.WebSocketPacket;
+import org.apache.commons.codec.binary.Base64;
+import org.jwebsocket.api.*;
 import org.jwebsocket.client.java.BaseWebSocketClient;
+import org.jwebsocket.client.java.ReliabilityOptions;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.kit.WebSocketEncoding;
 import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.kit.WebSocketSubProtocol;
 import org.jwebsocket.packetProcessors.CSVProcessor;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.packetProcessors.XMLProcessor;
-import org.jwebsocket.token.Token;
-import org.jwebsocket.api.WebSocketStatus;
-import org.jwebsocket.client.java.ReliabilityOptions;
-import org.jwebsocket.kit.WebSocketEncoding;
-import org.jwebsocket.kit.WebSocketSubProtocol;
 import org.jwebsocket.token.PendingResponseQueueItem;
+import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.token.WebSocketResponseTokenListener;
 import org.jwebsocket.util.Tools;
 
 /**
  * Token based implementation of {@code JWebSocketClient}
+ *
  * @author aschulze
  * @author puran
  * @author jang
@@ -49,22 +45,31 @@ import org.jwebsocket.util.Tools;
  */
 public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTokenClient {
 
-	/** base name space for jWebSocket */
+	/**
+	 * base name space for jWebSocket
+	 */
 	private final static String NS_BASE = "org.jwebsocket";
-	/** token client protocols */
+	/**
+	 * token client protocols
+	 */
 	private final static String WELCOME = "welcome";
 	private final static String LOGIN = "login";
+	private final static String SPRING_LOGON = "logon";
+	private final static String SPRING_LOGOFF = "logoff";
 	private final static String GOODBYE = "goodBye";
 	private final static String LOGOUT = "logout";
-	/** token id */
+	/**
+	 * token id
+	 */
 	private int CUR_TOKEN_ID = 0;
-	/** sub protocol value */
+	/**
+	 * sub protocol value
+	 */
 	private WebSocketSubProtocol mSubProt = null;
 	// private String mSubProt;
 	// private WebSocketEncoding mEncoding;
-	private String fUsername = null;
+	private String mUsername = null;
 	private String fClientId = null;
-	private String fSessionId = null;
 	private final Map<Integer, PendingResponseQueueItem> mPendingResponseQueue =
 			new FastMap<Integer, PendingResponseQueueItem>().shared();
 	private final ScheduledThreadPoolExecutor mResponseQueueExecutor =
@@ -78,7 +83,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aReliabilityOptions
 	 */
 	public BaseTokenClient(ReliabilityOptions aReliabilityOptions) {
@@ -87,7 +92,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aSubProt
 	 * @param aEncoding
 	 */
@@ -98,7 +103,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aSubProt
 	 */
 	public BaseTokenClient(WebSocketSubProtocol aSubProt) {
@@ -127,9 +132,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		 */
 		@Override
 		public void processOpened(WebSocketClientEvent aEvent) {
-			fUsername = null;
+			mUsername = null;
 			fClientId = null;
-			fSessionId = null;
 		}
 
 		/**
@@ -140,7 +144,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		 */
 		@Override
 		public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
-			
+
 			Token lToken = packetToToken(aPacket);
 
 			String lType = lToken.getType();
@@ -149,21 +153,25 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 			if (lType != null) {
 				if (WELCOME.equals(lType)) {
 					fClientId = lToken.getString("sourceId");
-					fSessionId = lToken.getString("usid");
+					String lUsername = lToken.getString("username");
+					if (null != lUsername && !lUsername.equals("anonymous")) {
+						mUsername = lUsername;
+						mStatus = WebSocketStatus.AUTHENTICATED;
+					}
 				} else if (GOODBYE.equals(lType)) {
-					fUsername = null;
+					mUsername = null;
 				}
 			}
 			if (lReqType != null) {
-				if (LOGIN.equals(lReqType)) {
-					fUsername = lToken.getString("username");
+				if (LOGIN.equals(lReqType) || SPRING_LOGON.equals(lReqType)) {
+					mUsername = lToken.getString("username");
 					mStatus = WebSocketStatus.AUTHENTICATED;
-				} else if (LOGOUT.equals(lReqType)) {
+				} else if (LOGOUT.equals(lReqType) || SPRING_LOGOFF.equals(lReqType)) {
 					mStatus = WebSocketStatus.OPEN;
-					fUsername = null;
+					mUsername = null;
 				}
 			}
-			
+
 			//Notifying pending OnResponse callbacks if exists
 			synchronized (mPendingResponseQueue) {
 				// check if the response token is part of the pending responses queue
@@ -207,9 +215,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		@Override
 		public void processClosed(WebSocketClientEvent aEvent) {
 			// clean up resources
-			fUsername = null;
+			mUsername = null;
 			fClientId = null;
-			fSessionId = null;
 		}
 
 		/**
@@ -236,9 +243,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	@Override
 	public void close() {
 		super.close();
-		fUsername = null;
+		mUsername = null;
 		fClientId = null;
-		fSessionId = null;
 	}
 
 	/**
@@ -246,12 +252,16 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	 */
 	@Override
 	public String getUsername() {
-		return fUsername;
+		return mUsername;
+	}
+
+	public void setUsername(String aUsername) {
+		this.mUsername = aUsername;
 	}
 
 	@Override
 	public boolean isAuthenticated() {
-		return (fUsername != null);
+		return (mUsername != null);
 	}
 
 	/**
@@ -259,13 +269,6 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	 */
 	public String getClientId() {
 		return fClientId;
-	}
-
-	/**
-	 * @return the fSessionId
-	 */
-	public String getSessionId() {
-		return fSessionId;
 	}
 
 	/**
@@ -306,7 +309,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aToken
 	 * @throws WebSocketException
 	 */
@@ -344,7 +347,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aToken
 	 * @param aResponseListener
 	 * @throws WebSocketException
@@ -404,7 +407,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 
 	// @Override
 	/**
-	 * 
+	 *
 	 * @param aData
 	 * @param aFilename
 	 * @param aScope
@@ -427,7 +430,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aHeader
 	 * @param aData
 	 * @param aFilename
@@ -447,7 +450,9 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		sendToken(lToken);
 	}
 
-	/* functions of the Admin Plug-in */
+	/*
+	 * functions of the Admin Plug-in
+	 */
 	private final static String NS_ADMIN_PLUGIN = NS_BASE + ".plugins.admin";
 
 	@Override
@@ -455,7 +460,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws WebSocketException
 	 */
 	public void shutdown() throws WebSocketException {
@@ -470,7 +475,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aUsername
 	 * @throws WebSocketException
 	 */
@@ -481,7 +486,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aUsername
 	 * @throws WebSocketException
 	 */

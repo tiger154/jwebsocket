@@ -949,6 +949,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Starting authentication ...");
 		}
+		
 		Authentication lAuthRequest = new UsernamePasswordAuthenticationToken(lUsername, lPassword);
 		Authentication lAuthResult;
 		try {
@@ -964,26 +965,8 @@ public class SystemPlugIn extends TokenPlugIn {
 			return; // Stop the execution flow
 		}
 
-		if (null != lAuthResult) {
-			// Creating the response
-			Token lResponse = createResponse(aToken);
-			Object lObj;
-			lObj = lAuthResult.getPrincipal();
-			lResponse.setString("principal", (lObj == null ? "null" : lObj.toString()));
-			lObj = lAuthResult.getDetails();
-			lResponse.setString("details", (lObj == null ? "null" : lObj.toString()));
-			lObj = lAuthResult.getName();
-			lResponse.setString("name", (lObj == null ? "null" : lObj.toString()));
-			lObj = lAuthResult.getCredentials();
-			lResponse.setString("credentials", (lObj == null ? "null" : lObj.toString()));
-			lObj = lAuthResult.getAuthorities();
-			lResponse.setString("authorities", (lObj == null ? "null" : lObj.toString()));
-			// Sending the response
-			sendToken(aConnector, aConnector, lResponse);
-		}
-
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Updating the user session...");
+			mLog.debug("Authentication Successfully. Updating the user session...");
 		}
 		// Getting the session
 		Map<String, Object> lSessionParms = aConnector.getSession().getStorage();
