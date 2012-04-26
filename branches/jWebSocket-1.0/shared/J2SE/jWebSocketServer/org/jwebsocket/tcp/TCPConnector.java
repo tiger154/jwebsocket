@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Map;
+import java.util.UUID;
 import javax.net.ssl.SSLSocket;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
@@ -365,7 +366,7 @@ public class TCPConnector extends BaseConnector {
 		EngineUtils.parseCookies(lReqMap);
 		//Setting the JWSSESSIONID cookie if not present previously
 		if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey("JWSSESSIONID")) {
-			((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put("JWSSESSIONID", Tools.getMD5(generateUID()));
+			((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put("JWSSESSIONID", Tools.getMD5(UUID.randomUUID().toString()));
 		}
 
 		RequestHeader lHeader = EngineUtils.validateC2SRequest(
