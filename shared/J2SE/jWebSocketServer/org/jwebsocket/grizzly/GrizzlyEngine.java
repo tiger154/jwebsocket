@@ -15,9 +15,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.grizzly;
 
-import java.net.InetSocketAddress;
 import java.util.Date;
 import org.apache.log4j.Logger;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
+import org.glassfish.grizzly.websockets.WebSocketAddOn;
+import org.glassfish.grizzly.websockets.WebSocketApplication;
+import org.glassfish.grizzly.websockets.WebSocketEngine;
 import org.glassfish.grizzly.websockets.WebSocketServer;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -36,9 +41,9 @@ public class GrizzlyEngine extends BaseEngine {
 	private static Integer mPort = 80;
 	private static Integer mSSLPort = 443;
 	private boolean mIsRunning = false;
-	private WebSocketServer mServer = null;
+	private HttpServer mServer = null;
 	// private HttpServer mServer = null;
-	private static final String mDemoRootDirectory = "/var/www/jWebSocketClient";
+	private static final String mDemoRootDirectory = "/var/www/web";
 	private static final String mDemoContext = "/jWebSocketGrizzlyDemos";
 	private static final String mDemoServlet = "/jWebSocketGrizzlyServlet";
 
@@ -78,29 +83,27 @@ public class GrizzlyEngine extends BaseEngine {
 
 			// Creating Grizzly server
 			// InetSocketAddress lISA = new InetSocketAddress(mPort);
-			mServer = WebSocketServer.createServer(mPort);
+			//mServer = WebSocketServer.createServer(mPort);
 			// Registering grizzly jWebSocket Wrapper Application into grizzly WebSocketEngine
-			mServer.register("jWebSocketEngine", new GrizzlyWebSocketApplication(this));
+			//mServer.register("jWebSocketEngine", new GrizzlyWebSocketApplication(this));m
 
-			/*
-			 * mServer = HttpServer.createSimpleServer(lEngineApp, mPort);
-			 * HttpHandler lHttpHandler = new
-			 * StaticHttpHandler(mDemoRootDirectory);
-			 * mServer.getServerConfiguration().addHttpHandler(lHttpHandler,
-			 * mDemoServlet);
-			 *
-			 * mServer.getListener("grizzly").registerAddOn(new
-			 * WebSocketAddOn()); // lHttpServer.addListener(lListener);
-			 *
-			 * // The WebSocketApplication will control the incoming and
-			 * outgoing flow, connection, listeners, etc... final
-			 * WebSocketApplication lApp = new
-			 * GrizzlyWebSocketApplication(this);
-			 *
-			 * // Registering grizzly jWebSocket Wrapper Application into
-			 * grizzly WebSocketEngine
-			 * WebSocketEngine.getEngine().register(lApp);
-			 */
+			
+			mServer = HttpServer.createSimpleServer(lEngineApp, mPort);
+			HttpHandler lHttpHandler = new	StaticHttpHandler(mDemoRootDirectory);
+			mServer.getServerConfiguration().addHttpHandler(lHttpHandler, mDemoContext);
+			
+			mServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
+			// lHttpServer.addListener(lListener);
+			
+			// The WebSocketApplication will control the incoming and
+			//outgoing flow, connection, listeners, etc... final
+			WebSocketApplication lApp = new
+			GrizzlyWebSocketApplication(this);
+			
+			// Registering grizzly jWebSocket Wrapper Application into
+			// grizzly WebSocketEngine
+			 WebSocketEngine.getEngine().register(lApp);
+			 
 
 			//TODO: IMPLEMENT GRIZZLY WSS LISTENER
 		   /*

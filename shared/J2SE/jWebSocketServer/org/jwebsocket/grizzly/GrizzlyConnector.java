@@ -96,15 +96,7 @@ public class GrizzlyConnector extends BaseConnector {
 		}
 		// TODO: check with Alex what is exactly search string
 		lHeader.put(RequestHeader.WS_SEARCHSTRING, aRequest.getQueryString());
-
-		//Getting client cookies
-		if (aRequest.containsHeader(Header.Cookie)) {
-			HashMap lCookies = new HashMap();
-			lCookies.put(RequestHeader.WS_COOKIES, aRequest.getHeader(Header.Cookie));
-			EngineUtils.parseCookies(lCookies);
-			lHeader.put(RequestHeader.WS_COOKIES, lCookies.get(RequestHeader.WS_COOKIES));
-		}
-
+		
 		setHeader(lHeader);
 	}
 
