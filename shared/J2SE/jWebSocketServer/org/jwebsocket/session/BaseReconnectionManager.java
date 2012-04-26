@@ -30,6 +30,7 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 	private String mTrashStorageName;
 	private IStorageProvider mStorageProvider;
 	private ICacheStorageProvider mCacheStorageProvider;
+	private Integer mGCProcessTime = 300000; //Five minutes by default
 
 	public ICacheStorageProvider getCacheStorageProvider() {
 		return mCacheStorageProvider;
@@ -103,7 +104,7 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 	public void initialize() throws Exception {
 		Tools.getTimer().scheduleAtFixedRate(
 				new CleanExpiredSessionsTask(
-				getSessionIdsTrash(), getStorageProvider()), 0, 300000); //each 5 minutes
+				getSessionIdsTrash(), getStorageProvider()), 0, getGCProcessTime());
 	}
 
 	@Override
@@ -117,5 +118,14 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 		}
 
 		return true;
+	}
+
+	@Override
+	public Integer getGCProcessTime() {
+		return mGCProcessTime;
+	}
+
+	public void setGCProcessTime(Integer aGCProcessTime) {
+		this.mGCProcessTime = aGCProcessTime;
 	}
 }
