@@ -35,6 +35,7 @@ public class TomcatEngine extends BaseEngine {
 	private static Logger mLog = Logging.getLogger();
 	private boolean mIsRunning = false;
 	private Tomcat mTomcat = null;
+	private String mTomcatVersion = "7+";
 
 	public TomcatEngine(EngineConfiguration aConfiguration) {
 
@@ -76,6 +77,7 @@ public class TomcatEngine extends BaseEngine {
 			}
 			
 			mTomcat = new Tomcat();
+			mTomcatVersion = mTomcat.getServer().getInfo();
 			mTomcat.setPort(lPort);
 			mTomcat.setBaseDir(".");
 
@@ -85,11 +87,10 @@ public class TomcatEngine extends BaseEngine {
 
 			mTomcat.start();
 
-
 			// mTomcatServer.setStopAtShutdown(true);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Starting embedded Tomcat Server '"
-						+ mTomcat.getServer().getInfo() + "'...");
+						+ mTomcatVersion + "'...");
 			}
 
 			mTomcat.start();
@@ -100,11 +101,11 @@ public class TomcatEngine extends BaseEngine {
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ "Instantiating Embedded Tomcat Server '"
-					+ mTomcat.getServer().getInfo() + "': "
+					+ mTomcatVersion + "': "
 					+ lEx.getMessage());
 		}
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Tomcat Server '" + mTomcat.getServer().getInfo()
+			mLog.debug("Tomcat Server '" + mTomcatVersion
 					+ "' sucessfully instantiated at port "
 					+ lPort + ", SSL port " + lSSLPort + "...");
 		}
@@ -114,7 +115,7 @@ public class TomcatEngine extends BaseEngine {
 	public void startEngine()
 			throws WebSocketException {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Starting Tomcat '" + mTomcat.getServer().getInfo() + "' engine '"
+			mLog.debug("Starting Tomcat '" + mTomcatVersion + "' engine '"
 					+ getId()
 					+ "...");
 		}
@@ -123,7 +124,7 @@ public class TomcatEngine extends BaseEngine {
 
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Tomcat '"
-					+ mTomcat.getServer().getInfo()
+					+ mTomcatVersion
 					+ "' engine '"
 					+ getId()
 					+ "' started.");
@@ -138,7 +139,7 @@ public class TomcatEngine extends BaseEngine {
 			throws WebSocketException {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Stopping Tomcat '"
-					+ mTomcat.getServer().getInfo()
+					+ mTomcatVersion
 					+ "' engine '"
 					+ getId() + "...");
 		}
@@ -156,20 +157,20 @@ public class TomcatEngine extends BaseEngine {
 				mTomcat.stop();
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Tomcat '"
-							+ mTomcat.getServer().getInfo()
+							+ mTomcatVersion
 							+ " successfully stopped.");
 				}
 			} else {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Tomcat '"
-							+ mTomcat.getServer().getInfo()
+							+ mTomcatVersion
 							+ " not yet started, properly terminated.");
 				}
 			}
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " stopping Tomcat Server '"
-					+ mTomcat.getServer().getInfo() + "': "
+					+ mTomcatVersion + "': "
 					+ lEx.getMessage());
 		}
 

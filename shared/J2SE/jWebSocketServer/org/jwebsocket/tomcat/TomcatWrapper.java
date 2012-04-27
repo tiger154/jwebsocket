@@ -102,11 +102,12 @@ public class TomcatWrapper extends MessageInbound {
 		// Setting client cookies
 		Cookie[] lCookies = aRequest.getCookies();
 		Map lCookiesMap = new FastMap().shared();
-		for (int i = 0; i < lCookies.length; i++) {
-			lCookiesMap.put(lCookies[i].getName(), lCookies[i].getValue());
+		if (null != lCookies) {
+			for (int lIdx = 0; lIdx < lCookies.length; lIdx++) {
+				lCookiesMap.put(lCookies[lIdx].getName(), lCookies[lIdx].getValue());
+			}
 		}
 		lHeader.put(RequestHeader.WS_COOKIES, lCookiesMap);
-
 
 		mHeader = lHeader;
 	}

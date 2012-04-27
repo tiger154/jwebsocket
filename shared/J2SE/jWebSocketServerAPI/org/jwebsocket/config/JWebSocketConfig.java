@@ -922,7 +922,7 @@ public class JWebSocketConfig implements Config {
 	public static String getLibsFolder(String aFilename, ClassLoader aClassLoader) {
 		return getSubFolder(
 				"library",
-				(isWebApp() ? "lib" : "libs"),
+				(isWebApp() && isLoadConfigFromResource() ? "lib" : "libs"),
 				aFilename,
 				aClassLoader);
 	}
