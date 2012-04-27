@@ -24,9 +24,7 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.ImageIcon;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -811,9 +809,9 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     }// </editor-fold>//GEN-END:initComponents
 
 	public void checkDisconnect() {
-		if (mClient.isConnected()) {
-			mClient.close();
-		}
+		// closes the connection, clears garbage and 
+		// terminates potential re-connection tasks.
+		mClient.close();
 	}
 
 	private void doCloseForm() {

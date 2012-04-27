@@ -16,7 +16,6 @@ package org.jwebsocket.api;
 
 import java.util.List;
 import org.jwebsocket.kit.WebSocketEncoding;
-
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.kit.WebSocketSubProtocol;
 
@@ -64,7 +63,8 @@ public interface WebSocketClient {
 
 	/**
 	 * Close the jWebSocket connection. This method should perform all the cleanup
-	 * operation to release the jWebSocket resources 
+	 * operation to release the jWebSocket resources. Closing and connection which 
+	 * is already closed should not lead to any error.
 	 * @throws WebSocketException if exception while close operation
 	 */
 	void close() throws WebSocketException;

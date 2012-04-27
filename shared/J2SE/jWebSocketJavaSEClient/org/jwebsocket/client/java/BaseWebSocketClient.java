@@ -53,10 +53,10 @@ import org.jwebsocket.util.Tools;
  * @author jang
  * @author aschulze
  * @author kyberneees
- * @version $Id:$
  */
 public class BaseWebSocketClient implements WebSocketClient {
 
+	private static final int RECEIVER_SHUTDOWN_TIMEOUT = 3000;
 	/**
 	 * WebSocket connection URI
 	 */
@@ -132,7 +132,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 		if (aStatus.equals(WebSocketStatus.AUTHENTICATED)) {
 			this.mStatus = aStatus;
 		} else {
-			throw new Exception("The value '" + aStatus.name() + "' cannot be assigned. Restricted to internal usage only!");
+			throw new Exception("The value '" + aStatus.name()
+					+ "' cannot be assigned. Restricted to internal usage only!");
 		}
 	}
 
@@ -248,7 +249,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 			mOut = mSocket.getOutputStream();
 
 			// pass session cookie, if already was set for this client instance
-
 			byte[] lBA;
 			List<HttpCookie> lTempCookies = new ArrayList();
 			if (null != mCookies) {
@@ -257,7 +257,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 					lCookie = mCookies.get(lIndex);
 					boolean lValid = Tools.isCookieValid(mURI, lCookie);
 					if (lValid) {
-						//Cookie is valid
+						// Cookie is valid
 						lTempCookies.add(lCookie);
 					}
 				}
@@ -325,6 +325,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			// and finally notify listeners for OnOpen event
 			WebSocketClientEvent lEvent =
 					new WebSocketBaseClientEvent(this, EVENT_OPEN, "");
+			// notify listeners that client has opened.
 			notifyOpened(lEvent);
 
 			// reset close reason to be specified by next reason
@@ -414,9 +415,21 @@ public class BaseWebSocketClient implements WebSocketClient {
 			}
 			mOut.flush();
 		} catch (IOException lEx) {
-			mReceiver.stopIt();
+			terminateReceiverThread();
 			throw new WebSocketException("Error while sending socket data: ", lEx);
 		}
+	}
+
+	private void terminateReceiverThread() throws WebSocketException {
+		mReceiver.quit();
+		try {
+			mReceiver.join(RECEIVER_SHUTDOWN_TIMEOUT);
+		} catch (InterruptedException lEx) {
+			throw new WebSocketException(
+					"Receiver thread did not stop within "
+					+ RECEIVER_SHUTDOWN_TIMEOUT + " ms", lEx);
+		}
+		mReceiver = null;
 	}
 
 	private void setCloseReason(String aCloseReason) {
@@ -430,6 +443,9 @@ public class BaseWebSocketClient implements WebSocketClient {
 		// on an explicit close operation ...
 		// cancel all potential re-connection tasks.
 		mAbortReconnect();
+		if (null != mReceiver) {
+			mReceiver.quit();
+		}
 
 		if (!mStatus.isWritable()) {
 			return;
@@ -440,8 +456,12 @@ public class BaseWebSocketClient implements WebSocketClient {
 		} catch (Exception lEx) {
 			// ignore that, connection is about to be terminated
 		}
-		// stopping the receiver thread stops the entire client
-		mReceiver.stopIt();
+		try {
+			// stopping the receiver thread stops the entire client
+			terminateReceiverThread();
+		} catch (Exception lEx) {
+			// ignore that, connection is about to be terminated
+		}
 	}
 
 	private void sendCloseHandshake() throws WebSocketException {
@@ -493,6 +513,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 					// TODO: Make acceptance of unsigned certificates optional!
 					// This methodology is used to accept unsigned certficates
 					// on the SSL server. Be careful with this in production environments!
+
 					// Create a trust manager to accept unsigned certificates
 					TrustManager[] lTrustManager = new TrustManager[]{
 						new X509TrustManager() {
@@ -818,7 +839,10 @@ public class BaseWebSocketClient implements WebSocketClient {
 
 			WebSocketClientEvent lEvent =
 					new WebSocketBaseClientEvent(mClient, EVENT_CLOSE, mCloseReason);
+			// notify listeners that client has closed
 			notifyClosed(lEvent);
+
+			quit();
 
 			if (!CR_CLIENT.equals(mCloseReason)) {
 				mCheckReconnect(lEvent);
@@ -864,8 +888,12 @@ public class BaseWebSocketClient implements WebSocketClient {
 					WebSocketPacket lPacket = WebSocketProtocolAbstraction.protocolToRawPacket(mVersion, mIS);
 					lFrameType = (lPacket != null ? lPacket.getFrameType() : WebSocketFrameType.INVALID);
 					if (null == lFrameType) {
+						if (mIsRunning) {
+							setCloseReason("Connection broken");
+						} else {
+							setCloseReason("Client terminated");
+						}
 						mIsRunning = false;
-						setCloseReason("Connection broken");
 					} else if (WebSocketFrameType.INVALID == lFrameType) {
 						mIsRunning = false;
 						setCloseReason("Invalid hybi frame type detected");
@@ -889,11 +917,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 			}
 		}
 
-		public void stopIt() {
+		public void quit() {
 			// ensure that reader loops are not continued
 			mIsRunning = false;
 			try {
-				mIn.close();
+				mIS.close();
 			} catch (IOException ex) {
 				// just to force client reader to stop
 			}
