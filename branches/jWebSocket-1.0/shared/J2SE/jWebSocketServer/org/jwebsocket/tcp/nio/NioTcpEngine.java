@@ -20,36 +20,33 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.*;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.tcp.EngineUtils;
+import org.jwebsocket.util.Tools;
 
 /**
- * <p>
- * Tcp engine that uses java non-blocking io api to bind to listening port and handle incoming/outgoing packets.
- * There's one 'selector' thread that is responsible only for handling socket operations. Therefore, every packet that
- * should be sent will be firstly queued into concurrent queue, which is continuously processed by selector thread.
- * Since the queue is concurrent, there's no blocking and a call to send method will return immediately.
- * </p>
- * <p>
- * All packets that are received from remote clients are processed in separate worker threads. This way it's possible to
- * handle many clients simultaneously with just a few threads. Add more worker threads to handle more clients.
- * </p>
- * <p>
- * Before making any changes to this source, note this: it is highly advisable to read from (or write to) a socket
- * only in selector thread. Ignoring this advice may result in strange consequences (threads locking or
- * spinning, depending on actual scenario).
- * </p>
+ * <p> Tcp engine that uses java non-blocking io api to bind to listening port
+ * and handle incoming/outgoing packets. There's one 'selector' thread that is
+ * responsible only for handling socket operations. Therefore, every packet that
+ * should be sent will be firstly queued into concurrent queue, which is
+ * continuously processed by selector thread. Since the queue is concurrent,
+ * there's no blocking and a call to send method will return immediately. </p>
+ * <p> All packets that are received from remote clients are processed in
+ * separate worker threads. This way it's possible to handle many clients
+ * simultaneously with just a few threads. Add more worker threads to handle
+ * more clients. </p> <p> Before making any changes to this source, note this:
+ * it is highly advisable to read from (or write to) a socket only in selector
+ * thread. Ignoring this advice may result in strange consequences (threads
+ * locking or spinning, depending on actual scenario). </p>
  *
  * @author jang
  */
@@ -58,7 +55,7 @@ public class NioTcpEngine extends BaseEngine {
 	private static Logger mLog = Logging.getLogger();
 	// TODO: move following constants to settings
 	private static final int READ_BUFFER_SIZE = 2048;
-	private static final int NUM_WORKERS = 3;
+	private static final int NUM_WORKERS = 10;
 	private static final int READ_QUEUE_MAX_SIZE = Integer.MAX_VALUE;
 	private Selector mSelector;
 	private ServerSocketChannel mServerSocketChannel;
@@ -159,8 +156,8 @@ public class NioTcpEngine extends BaseEngine {
 	}
 
 	/**
-	 * Socket operations are permitted only via this thread. Strange behaviour will occur if anything is done to the
-	 * socket outside of this thread.
+	 * Socket operations are permitted only via this thread. Strange behaviour
+	 * will occur if anything is done to the socket outside of this thread.
 	 */
 	private class SelectorThread implements Runnable {
 
@@ -397,10 +394,17 @@ public class NioTcpEngine extends BaseEngine {
 				}
 			} else {
 				// todo: consider ssl connections
-				Map lHeaders = WebSocketHandshake.parseC2SRequest(aBean.data, false);
-				byte[] lResponse = WebSocketHandshake.generateS2CResponse(lHeaders);
+				Map lReqMap = WebSocketHandshake.parseC2SRequest(aBean.data, false);
+
+				EngineUtils.parseCookies(lReqMap);
+				//Setting the session identifier cookie if not present previously
+				if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)) {
+					((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, Tools.getMD5(UUID.randomUUID().toString()));
+				}
+
+				byte[] lResponse = WebSocketHandshake.generateS2CResponse(lReqMap);
 				RequestHeader lReqHeader = EngineUtils.validateC2SRequest(
-						getConfiguration().getDomains(), lHeaders, mLog);
+						getConfiguration().getDomains(), lReqMap, mLog);
 				if (lResponse == null || lReqHeader == null) {
 					if (mLog.isDebugEnabled()) {
 						mLog.warn("TCP-Engine detected illegal handshake.");
@@ -408,6 +412,9 @@ public class NioTcpEngine extends BaseEngine {
 					// disconnect the client
 					clientDisconnect(aConnector);
 				}
+				
+				//Setting the session identifier
+				aConnector.getSession().setSessionId(lReqHeader.getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
 
 				send(aConnector.getId(), new DataFuture(aConnector, ByteBuffer.wrap(lResponse)));
 				int lTimeout = lReqHeader.getTimeout(getSessionTimeout());
@@ -423,16 +430,16 @@ public class NioTcpEngine extends BaseEngine {
 	}
 
 	/**
-	 *  One message may consist of one or more (fragmented message) protocol packets.
-	 *  The spec is currently unclear whether control packets (ping, pong, close) may
-	 *  be intermingled with fragmented packets of another message. For now I've
-	 *  decided to not implement such packets 'swapping', and therefore reading fails
-	 *  miserably if a client sends control packets during fragmented message read.
-	 *  TODO: follow next spec drafts and add support for control packets inside fragmented message if needed.
-	 *  <p>
-	 *  Structure of packets conforms to the following scheme (copied from spec):
-	 *  </p>
-	 *  <pre>
+	 * One message may consist of one or more (fragmented message) protocol
+	 * packets. The spec is currently unclear whether control packets (ping,
+	 * pong, close) may be intermingled with fragmented packets of another
+	 * message. For now I've decided to not implement such packets 'swapping',
+	 * and therefore reading fails miserably if a client sends control packets
+	 * during fragmented message read. TODO: follow next spec drafts and add
+	 * support for control packets inside fragmented message if needed. <p>
+	 * Structure of packets conforms to the following scheme (copied from spec):
+	 * </p>
+	 * <pre>
 	 *  0                   1                   2                   3
 	 *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 	 * +-+-+-+-+-------+-+-------------+-------------------------------+
@@ -449,13 +456,10 @@ public class NioTcpEngine extends BaseEngine {
 	 * +---------------------------------------------------------------+
 	 * :                       Application data                        :
 	 * +---------------------------------------------------------------+
-	 * </pre>
-	 * RSVx bits are ignored (reserved for future use).
-	 * TODO: add support for extension data, when extensions will be defined in the specs.
+	 * </pre> RSVx bits are ignored (reserved for future use). TODO: add support
+	 * for extension data, when extensions will be defined in the specs.
 	 *
-	 * <p>
-	 * Read section 4.2 of the spec for detailed explanation.
-	 * </p>
+	 * <p> Read section 4.2 of the spec for detailed explanation. </p>
 	 */
 	private void readHybi(int aVersion, byte[] aBuffer, NioTcpConnector aConnector) throws IOException {
 		try {
@@ -528,7 +532,9 @@ public class NioTcpEngine extends BaseEngine {
 						mLog.debug(
 								"aBuffer.length: " + aBuffer.length
 								+ ", lPayloadStartIndex: " + lPayloadStartIndex);
-						aConnector.extendPacketBuffer(aBuffer, lPayloadStartIndex, (int) lPayloadLen /* aBuffer.length - lPayloadStartIndex */);
+						aConnector.extendPacketBuffer(aBuffer, lPayloadStartIndex, (int) lPayloadLen /*
+								 * aBuffer.length - lPayloadStartIndex
+								 */);
 					}
 				}
 

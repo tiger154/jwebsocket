@@ -15,18 +15,17 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp.nio;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.RawPacket;
+import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 import org.jwebsocket.logging.Logging;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.nio.ByteBuffer;
-import org.jwebsocket.kit.WebSocketFrameType;
 
 public class NioTcpConnector extends BaseConnector {
 
@@ -120,9 +119,17 @@ public class NioTcpConnector extends BaseConnector {
 				mPacketBuffer = newBuffer;
 			}
 		} else {
-			// packet buffer was already created with the correct length
-			System.arraycopy(aNewData, aStart, mPacketBuffer, mBufferPosition, aCount);
-			mBufferPosition += aCount;
+			if ((aCount - mBufferPosition) > (mPacketBuffer.length - mBufferPosition)) {
+				byte[] newBuffer = new byte[mPacketBuffer.length + aCount];
+				System.arraycopy(mPacketBuffer, 0, newBuffer, 0, mPacketBuffer.length);
+				System.arraycopy(aNewData, aStart, newBuffer, mPacketBuffer.length, aCount);
+				mPacketBuffer = newBuffer;
+				mBufferPosition += aCount;
+			} else {
+				// packet buffer was already created with the correct length
+				System.arraycopy(aNewData, aStart, mPacketBuffer, mBufferPosition, aCount);
+				mBufferPosition += aCount;
+			}
 		}
 		notifyWorker();
 	}
