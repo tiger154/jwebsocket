@@ -76,7 +76,12 @@ public class JMXPlugInFunctions {
 						lPlugins.put("id", lValue.getId());
 						lPlugins.put("name", lValue.getName());
 						lPlugins.put("namespace", lValue.getNamespace());
-
+						List<String> methodsList = lValue.invokeMethodList();
+						if(methodsList != null)
+							lPlugins.put("methodsName", methodsList);
+						else 
+							lPlugins.put("methodsName", "No supported yet.");
+						
 						lServerPlugins.put("plugin_" + lValue.getId(), lPlugins);
 					}
 				} else {

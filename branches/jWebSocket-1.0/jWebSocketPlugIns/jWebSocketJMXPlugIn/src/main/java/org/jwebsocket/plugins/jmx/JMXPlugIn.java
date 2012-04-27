@@ -103,7 +103,7 @@ public class JMXPlugIn extends TokenPlugIn {
 					+ getString("beans_config");
 
 			JMXPlugInsExporter lPluginsExporter = 
-					new JMXPlugInsExporter(lBeanPath, lMBServer, mLog);
+					new JMXPlugInsExporter(lBeanPath, lMBServer);
 			
 			lPluginsExporter.createMBeansToExport();
 		} catch (Exception ex) {
