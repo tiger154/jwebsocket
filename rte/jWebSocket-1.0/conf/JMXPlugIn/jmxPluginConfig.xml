@@ -6,11 +6,12 @@
         <property name="locateExistingServerIfPossible" value="true"/>
     </bean>
     
-    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
                 <entry key="MX4J:name=HttpAdaptor" value-ref="HttpAdaptor"/>
                 <entry key="MX4J:name=XSLTProcessor" value-ref="XSLTProcessor"/>
+                <entry key="MX4J:name=HttpSSLAdaptor" value-ref="HttpSSLAdaptor"/>
             </map>
         </property>
         <property name="server" ref="jWebSocketServer"/>
@@ -21,7 +22,6 @@
     </bean>
     
     <bean id="rmiConnector" class="org.springframework.jmx.support.ConnectorServerFactoryBean" depends-on="rmiRegistry">
-        <!-- <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://10.208.7.149:1099/jmxPlugin"/> -->
         <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://localhost:1099/jmxPlugin"/>
         <property name="server" ref="jWebSocketServer"/>
         <property name="threaded" value="true"/>
@@ -32,19 +32,54 @@
             </map>
         </property>
     </bean>
-    <bean id="clientConnector" class="org.springframework.jmx.support.MBeanServerConnectionFactoryBean" depends-on="serverConnector">
-        <!-- <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://10.208.7.149:1099/jmxPlugin"/> -->
+    
+    <bean id="clientConnector" class="org.springframework.jmx.support.MBeanServerConnectionFactoryBean" depends-on="rmiSSLConnector">
         <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://localhost:1099/jmxPlugin"/>
+    </bean> 
+    
+    <bean id="rmiSSLConnector" class="org.springframework.jmx.support.ConnectorServerFactoryBean" depends-on="rmiRegistry">
+        <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://localhost:1099/jmxPluginSSL"/>
+        <property name="server" ref="jWebSocketServer"/>
+        <property name="threaded" value="true"/>
+        <property name="daemon" value="true"/>
+        <property name="environment">
+            <map>
+                <entry key="jmx.remote.authenticator" value-ref="jmxPluginAuthenticator"/>
+                <entry key="jmx.remote.rmi.client.socket.factory">
+                    <bean class="javax.rmi.ssl.SslRMIClientSocketFactory"/>
+                </entry>
+                <entry key="jmx.remote.rmi.server.socket.factory">
+                    <bean class="javax.rmi.ssl.SslRMIServerSocketFactory"/>
+                </entry>
+            </map>
+        </property>
     </bean>
+   
+   <bean id="clientSSLConnector" class="org.springframework.jmx.support.MBeanServerConnectionFactoryBean" depends-on="rmiSSLConnector">
+        <property name="serviceUrl" value="service:jmx:rmi:///jndi/rmi://localhost:1099/jmxPluginSSL"/>
+    </bean> 
     
    <bean id="XSLTProcessor" class="mx4j.tools.adaptor.http.XSLTProcessor" />
+   
    <bean id="HttpAdaptor" class="mx4j.tools.adaptor.http.HttpAdaptor">
         <property name="processor" ref="XSLTProcessor"/>
         <property name="port" value="8080"/>
-        <!-- <property name="host" value="10.208.7.149"/> -->
-        <property name="host" value="localhost"/>
+        <property name="host" value="0.0.0.0"/>
         <property name="authenticationMethod" value="basic"/>
    </bean>
+   
+   <bean id="HttpSSLAdaptor" class="mx4j.tools.adaptor.http.HttpAdaptor">
+        <property name="processor" ref="XSLTProcessor"/>
+        <property name="socketFactory" ref="SSLHttpAdaptor"/>
+        <property name="port" value="8020"/>
+        <property name="host" value="0.0.0.0"/>
+        <property name="authenticationMethod" value="basic"/>
+   </bean>
+   
+   <bean id="SSLHttpAdaptor" class="mx4j.tools.adaptor.ssl.SSLAdaptorServerSocketFactory">
+        <property name="keyStoreName" value="/home/svn/ijwssvn/rte/jWebSocket-1.0/conf/jWebSocket.ks"/>
+        <property name="keyStorePassword" value="jWebSocket"/>
+  </bean>
    
    <bean id="jmxPluginAuthenticator" class="org.jwebsocket.plugins.jmx.util.JMXPlugInAuthenticator"/>
    

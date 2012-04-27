@@ -41,6 +41,18 @@
                    <property name="returnValueType" value="javax.management.openmbean.CompositeData"/>
                    <property name="description" value="This operation shows the main data of all filters from each jWebSocket server."/>
                </bean>
+               <bean id="getEngine" class="org.jwebsocket.plugins.jmx.configdefinition.OperationDefinition">
+                   <property name="name" value="getEngine"/>
+                   <property name="impact" value="INFO"/>
+                   <property name="returnValueType" value="javax.management.openmbean.CompositeData"/>
+                   <property name="description" value="This operation shows the main data of the engine running in jWebSocket server."/>
+               </bean>
+               <bean id="getInstanceInfo" class="org.jwebsocket.plugins.jmx.configdefinition.OperationDefinition">
+                   <property name="name" value="getInstanceInfo"/>
+                   <property name="impact" value="INFO"/>
+                   <property name="returnValueType" value="javax.management.openmbean.CompositeData"/>
+                   <property name="description" value="This operation shows the main data of the current node."/>
+               </bean>
            </set>
        </property>
        <property name="constructors">

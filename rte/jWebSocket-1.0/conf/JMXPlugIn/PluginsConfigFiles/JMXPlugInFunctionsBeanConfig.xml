@@ -2,12 +2,10 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
       "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-    <bean id="JMXPlugIn" class="org.jwebsocket.plugins.jmx.configdefinition.JMXPluginDefinition">
-       <property name="pluginId" value="jws.jmx"/>
-       <property name="serverId" value="ts0"/>
-       <property name="description" value="This MBean show information about jWebSocket server and allows invoke plugins functionalities."/>
-       <property name="className" value="org.jwebsocket.plugins.jmx.JMXPlugIn"/>
+    <bean id="JMXPlugInFunctions" class="org.jwebsocket.plugins.jmx.configdefinition.JMXDefinition">
+       <property name="className" value="org.jwebsocket.plugins.jmx.JMXPlugInFunctions"/>
        <property name="jarName" value="jWebSocketJMXPlugIn-1.0.jar"/>
+       <property name="description" value="This MBean show information about jWebSocket server and allows invoke plugins functionalities."/>
        <property name="attributes">
            <set>
                <bean id="plugInAttribute" class="org.jwebsocket.plugins.jmx.configdefinition.AttributeDefinition">
@@ -51,6 +49,14 @@
 						</bean>
 					</set>
                    </property>
+               </bean>
+           </set>
+       </property>
+       <property name="constructors">
+			<set>
+               <bean id="JmxPlugInConstructor" class="org.jwebsocket.plugins.jmx.configdefinition.ConstructorDefinition">
+					<property name="name" value="JMXPlugInFunctions"/>
+					<property name="description" value="The default constructor of the JMXPlugInFunctions class."/>
                </bean>
            </set>
        </property>
