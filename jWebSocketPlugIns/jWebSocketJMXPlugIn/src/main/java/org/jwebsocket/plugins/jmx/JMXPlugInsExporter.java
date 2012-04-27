@@ -31,6 +31,7 @@ import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.factory.JWebSocketJarClassLoader;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.jmx.configdefinition.ConstuctorParameterDefinition;
 import org.jwebsocket.plugins.jmx.configdefinition.JMXDefinition;
 import org.jwebsocket.plugins.jmx.configdefinition.JMXDefinitionException;
@@ -47,7 +48,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class JMXPlugInsExporter {
 
-	private Logger mLog;
+	private Logger mLog = Logging.getLogger();
 	private String mConfigFilePath;
 	private MBeanServer mServer;
 
@@ -58,10 +59,9 @@ public class JMXPlugInsExporter {
 	 * @param aMBeanServer
 	 * @param aLog
 	 */
-	public JMXPlugInsExporter(String aPath, MBeanServer aMBeanServer, Logger aLog) {
+	public JMXPlugInsExporter(String aPath, MBeanServer aMBeanServer) {
 		this.mConfigFilePath = aPath;
 		this.mServer = aMBeanServer;
-		this.mLog = aLog;
 	}
 
 	/**
