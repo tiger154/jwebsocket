@@ -15,6 +15,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins;
 
+import java.util.List;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
@@ -79,9 +80,17 @@ public class TokenPlugIn extends BasePlugIn {
 	 * @return
 	 */
 	public Token invoke(WebSocketConnector aConnector, Token aToken) {
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	public List<String> invokeMethodList() {
+		return null;
+	}
+	
 	@Override
 	public void processPacket(PlugInResponse aResponse, WebSocketConnector aConnector, WebSocketPacket aDataPacket) {
 		//
