@@ -17,8 +17,8 @@ package org.jwebsocket.kit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import org.jwebsocket.api.WebSocketPacket;
 import java.util.List;
+import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 
 /**
@@ -230,7 +230,7 @@ public class WebSocketProtocolAbstraction {
 		boolean lFragmented = (aVersion >= 4
 				? (lFlags & 0x80) == 0x00
 				: (lFlags & 0x80) == 0x80);
-		boolean lMasked = true;
+		boolean lMasked;
 		int[] lMask = new int[4];
 
 		// ignore upper 4 bits for now
