@@ -364,9 +364,9 @@ public class TCPConnector extends BaseConnector {
 		}
 
 		EngineUtils.parseCookies(lReqMap);
-		//Setting the JWSSESSIONID cookie if not present previously
-		if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey("JWSSESSIONID")) {
-			((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put("JWSSESSIONID", Tools.getMD5(UUID.randomUUID().toString()));
+		//Setting the session identifier cookie if not present previously
+		if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)) {
+			((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, Tools.getMD5(UUID.randomUUID().toString()));
 		}
 
 		RequestHeader lHeader = EngineUtils.validateC2SRequest(
