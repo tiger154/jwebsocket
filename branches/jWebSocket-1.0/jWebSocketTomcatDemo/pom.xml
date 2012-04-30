@@ -36,6 +36,10 @@
 				<version>2.1.1</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
+					 <!-- <packagingExcludes />, this avoids the following warning:
+						[WARNING] Warning: selected war files include a WEB-INF/web.xml which will be ignored
+						(webxml attribute is missing from war task, or ignoreWebxml attribute is specified as 'true') -->
+					<packagingExcludes>WEB-INF/web.xml</packagingExcludes>
 					<webResources>
 						<resource>
 							<targetPath>WEB-INF/classes/conf</targetPath>						
