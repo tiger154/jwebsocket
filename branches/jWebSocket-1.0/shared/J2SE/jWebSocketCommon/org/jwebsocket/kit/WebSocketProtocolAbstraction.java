@@ -22,13 +22,11 @@ import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 
 /**
- * Utility class for packetizing WebSocketPacket into web socket protocol packet or packets (with fragmentation) and
- * vice versa.
+ * Utility class for packetizing WebSocketPacket into web socket protocol packet
+ * or packets (with fragmentation) and vice versa.
  * <p/>
- * <p>
- * Web socket protocol packet specification
- * (see: http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-03):
- * </p>
+ * <p> Web socket protocol packet specification (see:
+ * http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-03): </p>
  * <pre>
  *  0                   1                   2                   3
  *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -55,7 +53,7 @@ public class WebSocketProtocolAbstraction {
 	// web socket protocol packet types
 
 	/**
-	 * 
+	 *
 	 * @param aVersion
 	 * @return
 	 */
@@ -64,7 +62,7 @@ public class WebSocketProtocolAbstraction {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aVersion
 	 * @return
 	 */
@@ -73,7 +71,7 @@ public class WebSocketProtocolAbstraction {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aVersion
 	 * @return
 	 */
@@ -82,7 +80,7 @@ public class WebSocketProtocolAbstraction {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aDraft
 	 * @return
 	 */
@@ -91,7 +89,7 @@ public class WebSocketProtocolAbstraction {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aDraft
 	 * @return
 	 */
@@ -100,7 +98,7 @@ public class WebSocketProtocolAbstraction {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aDraft
 	 * @return
 	 */
@@ -113,8 +111,8 @@ public class WebSocketProtocolAbstraction {
 		byte[] lRes = new byte[lNewLength];
 		System.arraycopy(aReason, 0, lRes, 2, aReason.length);
 		aReasonCode &= 0xFFFF;
-		lRes[0] = (byte)(aReasonCode >> 8);
-		lRes[1] = (byte)(aReasonCode & 0xFF);
+		lRes[0] = (byte) (aReasonCode >> 8);
+		lRes[1] = (byte) (aReasonCode & 0xFF);
 		return lRes;
 	}
 
@@ -123,14 +121,15 @@ public class WebSocketProtocolAbstraction {
 	}
 
 	/**
-	 * converts an abstract data packet into a protocol specific frame
-	 * according to the correct version.
-	 * @param aVersion 
+	 * converts an abstract data packet into a protocol specific frame according
+	 * to the correct version.
+	 *
+	 * @param aVersion
 	 * @param aDataPacket
 	 * @return
 	 */
 	public static byte[] rawToProtocolPacket(int aVersion, WebSocketPacket aDataPacket) {
-
+		
 		byte[] lBuff = new byte[2]; // resulting packet will have at least 2 bytes
 		WebSocketFrameType lFrameType = aDataPacket.getFrameType();
 		int lTargetType = frameTypeToOpcode(aVersion, lFrameType);
@@ -208,7 +207,7 @@ public class WebSocketProtocolAbstraction {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aVersion
 	 * @param aIS
 	 * @return
@@ -241,9 +240,8 @@ public class WebSocketProtocolAbstraction {
 			// Could not determine packet type, ignore the packet.
 			// Maybe we need a setting to decide, if such packets should abort the connection?
 			/*
-			if (mLog.isDebugEnabled()) {
-			mLog.debug("Dropping packet with unknown type: " + lOpcode);
-			}
+			 * if (mLog.isDebugEnabled()) { mLog.debug("Dropping packet with
+			 * unknown type: " + lOpcode); }
 			 */
 		} else {
 			// Ignore first bit. Payload length is next seven bits, unless its value is greater than 125.
@@ -299,7 +297,9 @@ public class WebSocketProtocolAbstraction {
 		return lRes;
 	}
 
-	/* TODO: implement fragmentation */
+	/*
+	 * TODO: implement fragmentation
+	 */
 	/**
 	 *
 	 * @param aSrc
@@ -312,8 +312,9 @@ public class WebSocketProtocolAbstraction {
 
 	/**
 	 * converts a WebSocket protocol opcode to an abstract jWebSocket frame type
-	 * @param aVersion 
-	 * @param aOpcode 
+	 *
+	 * @param aVersion
+	 * @param aOpcode
 	 * @return
 	 */
 	public static WebSocketFrameType opcodeToFrameType(int aVersion, int aOpcode) {
@@ -343,16 +344,15 @@ public class WebSocketProtocolAbstraction {
 	 * @return
 	 */
 	/*
-	public static int toRawPacketType(String aJWebSocketFormatConstant) {
-	return JWebSocketCommonConstants.WSWS_FORMAT_BINARY.equals(aJWebSocketFormatConstant)
-	? RawPacket.FRAMETYPE_BINARY
-	// treat everything else as utf8 packet type
-	: RawPacket.FRAMETYPE_UTF8;
-	}
+	 * public static int toRawPacketType(String aJWebSocketFormatConstant) {
+	 * return
+	 * JWebSocketCommonConstants.WSWS_FORMAT_BINARY.equals(aJWebSocketFormatConstant)
+	 * ? RawPacket.FRAMETYPE_BINARY // treat everything else as utf8 packet type
+	 * : RawPacket.FRAMETYPE_UTF8; }
 	 */
 	/**
 	 *
-	 * @param aVersion 
+	 * @param aVersion
 	 * @param aFrameType
 	 * @return
 	 */
@@ -379,7 +379,7 @@ public class WebSocketProtocolAbstraction {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aEncoding
 	 * @return
 	 */

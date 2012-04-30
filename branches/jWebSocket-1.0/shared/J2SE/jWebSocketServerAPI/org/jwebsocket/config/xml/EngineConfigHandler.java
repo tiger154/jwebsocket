@@ -14,12 +14,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
-import org.jwebsocket.config.Config;
-
+import java.util.List;
+import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.util.List;
 import javolution.util.FastList;
+import javolution.util.FastMap;
+import org.jwebsocket.config.Config;
 import org.jwebsocket.config.ConfigHandler;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.util.Tools;
@@ -28,7 +29,8 @@ import org.jwebsocket.util.Tools;
  * Handles the engine configuration
  *
  * @author puran
- * @version $Id: EngineConfigHandler.java 624 2010-07-06 12:28:44Z fivefeetfurther $
+ * @version $Id: EngineConfigHandler.java 624 2010-07-06 12:28:44Z
+ * fivefeetfurther $
  */
 public class EngineConfigHandler implements ConfigHandler {
 
@@ -55,13 +57,14 @@ public class EngineConfigHandler implements ConfigHandler {
 	@Override
 	public Config processConfig(XMLStreamReader aStreamReader)
 			throws XMLStreamException {
-		String lId = "", lName = "", lJar = "", lContext = "", lServlet = "", 
+		String lId = "", lName = "", lJar = "", lContext = "", lServlet = "",
 				lKeyStore = JWebSocketServerConstants.JWEBSOCKET_KEYSTORE,
 				lKeyStorePassword = JWebSocketServerConstants.JWEBSOCKET_KS_DEF_PWD,
 				lOnMaxConnectionsStrategy = JWebSocketServerConstants.DEFAULT_ON_MAX_CONNECTIONS_STRATEGY;
 		int lPort = 0, lSSLPort = 0, lTimeout = 0, lFramesize = 0;
 		Integer lMaxConnections = JWebSocketServerConstants.DEFAULT_MAX_CONNECTIONS;
-		
+		Map<String, Object> lSettings = new FastMap();
+
 		List<String> lDomains = null;
 		while (aStreamReader.hasNext()) {
 			aStreamReader.next();
@@ -108,6 +111,8 @@ public class EngineConfigHandler implements ConfigHandler {
 				} else if (lElementName.equals(ON_MAX_CONNECTIONS)) {
 					aStreamReader.next();
 					lOnMaxConnectionsStrategy = aStreamReader.getText();
+				} else if (lElementName.equals(JWebSocketConfigHandler.SETTINGS)) {
+					lSettings = JWebSocketConfigHandler.getSettings(aStreamReader);
 				} else {
 					//ignore
 				}
@@ -119,11 +124,12 @@ public class EngineConfigHandler implements ConfigHandler {
 				}
 			}
 		}
-		return new EngineConfig(lId, lName, lJar, 
+		return new EngineConfig(lId, lName, lJar,
 				lPort, lSSLPort, lKeyStore, lKeyStorePassword,
 				lContext, lServlet,
-				lTimeout, lFramesize, lDomains, lMaxConnections, 
-				lOnMaxConnectionsStrategy);
+				lTimeout, lFramesize, lDomains, lMaxConnections,
+				lOnMaxConnectionsStrategy,
+				lSettings);
 	}
 
 	/**

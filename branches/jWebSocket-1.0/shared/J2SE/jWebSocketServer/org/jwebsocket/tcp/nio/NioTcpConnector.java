@@ -22,23 +22,21 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.connectors.BaseConnector;
-import org.jwebsocket.kit.RawPacket;
-import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 import org.jwebsocket.logging.Logging;
 
+/**
+ *
+ * @author jang
+ * @author kyberneees
+ */
 public class NioTcpConnector extends BaseConnector {
 
 	private static Logger mLog = Logging.getLogger();
 	private InetAddress mRemoteAddress;
 	private int mRemotePort;
 	private boolean mIsAfterHandshake;
-	private byte[] mPacketBuffer;
-	private int mPayloadLength = -1;
-	private int mBufferPosition = -1;
-	private WebSocketFrameType mFrameType = WebSocketFrameType.INVALID;
-	private int mWorkerId;
-	private DelayedPacketNotifier mDelayedPacketNotifier;
+	private int mWorkerId = -1;
 
 	public NioTcpConnector(NioTcpEngine aEngine, InetAddress aRemoteAddress,
 			int aRemotePort) {
@@ -100,81 +98,16 @@ public class NioTcpConnector extends BaseConnector {
 		return mIsAfterHandshake;
 	}
 
-	public boolean isPacketBufferEmpty() {
-		return mPacketBuffer == null;
-	}
-
-	public void extendPacketBuffer(byte[] aNewData, int aStart, int aCount) throws IOException {
-		if (mPayloadLength == -1) {
-			// packet buffer grows with new data
-			if (mPacketBuffer == null) {
-				mPacketBuffer = new byte[aCount];
-				if (aCount > 0) {
-					System.arraycopy(aNewData, aStart, mPacketBuffer, 0, aCount);
-				}
-			} else {
-				byte[] newBuffer = new byte[mPacketBuffer.length + aCount];
-				System.arraycopy(mPacketBuffer, 0, newBuffer, 0, mPacketBuffer.length);
-				System.arraycopy(aNewData, aStart, newBuffer, mPacketBuffer.length, aCount);
-				mPacketBuffer = newBuffer;
-			}
-		} else {
-			if ((aCount - mBufferPosition) > (mPacketBuffer.length - mBufferPosition)) {
-				byte[] newBuffer = new byte[mPacketBuffer.length + aCount];
-				System.arraycopy(mPacketBuffer, 0, newBuffer, 0, mPacketBuffer.length);
-				System.arraycopy(aNewData, aStart, newBuffer, mPacketBuffer.length, aCount);
-				mPacketBuffer = newBuffer;
-				mBufferPosition += aCount;
-			} else {
-				// packet buffer was already created with the correct length
-				System.arraycopy(aNewData, aStart, mPacketBuffer, mBufferPosition, aCount);
-				mBufferPosition += aCount;
-			}
-		}
-		notifyWorker();
-	}
-
-	public byte[] getPacketBuffer() {
-		return mPacketBuffer;
-	}
-
-	public void flushPacketBuffer() {
-		// TODO: why does this need to be copied here?
-		// why can't we use mPacketBuffer directly?
-		byte[] lCopy = new byte[mPacketBuffer.length];
-		System.arraycopy(mPacketBuffer, 0, lCopy, 0, mPacketBuffer.length);
-
-		RawPacket lPacket = new RawPacket(lCopy);
-		if (mFrameType != WebSocketFrameType.INVALID) {
-			lPacket.setFrameType(mFrameType);
-		}
+	public void flushPacket(WebSocketPacket aPacket) {
 		try {
-			getEngine().processPacket(this, lPacket);
-			// empty buffer for next packet
-			mPacketBuffer = null;
-			mPayloadLength = -1;
-			mFrameType = WebSocketFrameType.INVALID;
-			mWorkerId = -1;
-			notifyWorker();
+			getEngine().processPacket(this, aPacket);
+
+			releaseWorker();
 		} catch (Exception e) {
 			mLog.error(e.getClass().getSimpleName()
 					+ " in processPacket of connector "
 					+ getClass().getSimpleName(), e);
 		}
-	}
-
-	public void setPayloadLength(int aLength) {
-		mPayloadLength = aLength;
-		mPacketBuffer = new byte[aLength];
-		mBufferPosition = 0;
-	}
-
-	public boolean isPacketBufferFull() {
-		return mBufferPosition >= mPayloadLength;
-	}
-
-	public void setPacketType(WebSocketFrameType aPacketType) {
-		this.mFrameType = aPacketType;
 	}
 
 	public int getWorkerId() {
@@ -185,18 +118,7 @@ public class NioTcpConnector extends BaseConnector {
 		this.mWorkerId = aWorkerId;
 	}
 
-	public DelayedPacketNotifier getDelayedPacketNotifier() {
-		return mDelayedPacketNotifier;
-	}
-
-	public void setDelayedPacketNotifier(DelayedPacketNotifier delayedPacketNotifier) {
-		this.mDelayedPacketNotifier = delayedPacketNotifier;
-	}
-
-	private void notifyWorker() throws IOException {
-		if (mDelayedPacketNotifier != null) {
-			mDelayedPacketNotifier.handleDelayedPacket();
-			mDelayedPacketNotifier = null;
-		}
+	public void releaseWorker() throws IOException {
+		mWorkerId = -1;
 	}
 }

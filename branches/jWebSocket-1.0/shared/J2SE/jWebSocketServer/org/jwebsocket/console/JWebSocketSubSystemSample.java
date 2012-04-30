@@ -17,6 +17,7 @@ package org.jwebsocket.console;
 
 import java.util.List;
 import javolution.util.FastList;
+import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.PluginConfiguration;
@@ -82,8 +83,8 @@ public class JWebSocketSubSystemSample {
 				JWebSocketCommonConstants.DEFAULT_MAX_FRAME_SIZE, // max framesize
 				lDomains, // list of accepted domains
 				JWebSocketServerConstants.DEFAULT_MAX_CONNECTIONS, // max connections
-				JWebSocketServerConstants.DEFAULT_ON_MAX_CONNECTIONS_STRATEGY // on max connections reached strategy
-				);
+				JWebSocketServerConstants.DEFAULT_ON_MAX_CONNECTIONS_STRATEGY, // on max connections reached strategy
+				new FastMap());
 		mEngine = new TCPEngine(lEngineConfig);
 
 		// if engine could be instantiated properly...
@@ -92,8 +93,8 @@ public class JWebSocketSubSystemSample {
 			ServerConfiguration lServerConfig = new ServerConfig(
 					"ts0", // id
 					"org.jwebsocket.server.TokenServer", // name
-					"-" // jar, needs to be in classpath, i.e. embedded in .jar'/manifest
-					);
+					"-", // jar, needs to be in classpath, i.e. embedded in .jar'/manifest
+					new FastMap());
 			mServer = new TokenServer(lServerConfig);
 
 			// link server and engine

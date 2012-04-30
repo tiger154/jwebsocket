@@ -14,21 +14,28 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.api;
 
+import java.util.Map;
 import org.jwebsocket.config.xml.ThreadPoolConfig;
 
 /**
  * Server Configuration
+ *
  * @author aschulze
  */
 public interface ServerConfiguration extends Configuration {
 
-    /**
-     * @return the jar file name
-     */
-    String getJar();
-    /**
-     * @return the thread pool configuration
-     */
-    ThreadPoolConfig getThreadPoolConfig();
-    
+	/**
+	 * @return the jar file name
+	 */
+	String getJar();
+
+	/**
+	 * @return the thread pool configuration
+	 */
+	ThreadPoolConfig getThreadPoolConfig();
+
+	/**
+	 * @return the settings
+	 */
+	Map<String, Object> getSettings();
 }

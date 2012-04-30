@@ -14,15 +14,19 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
+import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javolution.util.FastMap;
 import org.jwebsocket.config.Config;
 import org.jwebsocket.config.ConfigHandler;
 
 /**
  * Handler class that reads the server configuration
+ *
  * @author puran
- * @version $Id: ServerConfigHandler.java 596 2010-06-22 17:09:54Z fivefeetfurther $
+ * @version $Id: ServerConfigHandler.java 596 2010-06-22 17:09:54Z
+ * fivefeetfurther $
  *
  */
 public class ServerConfigHandler implements ConfigHandler {
@@ -32,14 +36,16 @@ public class ServerConfigHandler implements ConfigHandler {
 	private static final String JAR = "jar";
 	private static final String ELEMENT_THREAD_POOL = "threadPool";
 	private static final String ELEMENT_SERVER = "server";
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Config processConfig(XMLStreamReader aStreamReader) throws XMLStreamException {
 		String lId = "", lName = "", lJar = "";
-		ThreadPoolConfig lThreadPoolConfig = null ;
+		Map<String, Object> lSettings = new FastMap();
+
+		ThreadPoolConfig lThreadPoolConfig = null;
 		while (aStreamReader.hasNext()) {
 			aStreamReader.next();
 			if (aStreamReader.isStartElement()) {
@@ -53,11 +59,12 @@ public class ServerConfigHandler implements ConfigHandler {
 				} else if (elementName.equals(JAR)) {
 					aStreamReader.next();
 					lJar = aStreamReader.getText();
+				} else if (elementName.equals(JWebSocketConfigHandler.SETTINGS)) {
+					lSettings = JWebSocketConfigHandler.getSettings(aStreamReader);
 				} else if (elementName.equals(ELEMENT_THREAD_POOL)) {
 					aStreamReader.next();
 					lThreadPoolConfig = (ThreadPoolConfig) new ThreadPoolConfigHandler().processConfig(aStreamReader);
-				}
-				else {
+				} else {
 					//ignore
 				}
 			}
@@ -68,7 +75,6 @@ public class ServerConfigHandler implements ConfigHandler {
 				}
 			}
 		}
-		return new ServerConfig(lId, lName, lJar, lThreadPoolConfig);
+		return new ServerConfig(lId, lName, lJar, lThreadPoolConfig, lSettings);
 	}
-
 }

@@ -27,27 +27,27 @@ import org.jwebsocket.logging.Logging;
 public class DataFuture implements IOFuture {
 
 	private static Logger mLog = Logging.getLogger();
-	private List<IOFutureListener> listeners;
-	private boolean done;
-	private boolean success;
-	private Throwable cause;
-	private WebSocketConnector connector;
-	private ByteBuffer data;
+	private List<IOFutureListener> mListeners;
+	private boolean mDone;
+	private boolean mSuccess;
+	private Throwable mCause;
+	private WebSocketConnector mConnector;
+	private ByteBuffer mData;
 
-	public DataFuture(WebSocketConnector connector, ByteBuffer data) {
-		this.connector = connector;
-		this.data = data;
-		listeners = new ArrayList<IOFutureListener>();
+	public DataFuture(WebSocketConnector aConnector, ByteBuffer aData) {
+		this.mConnector = aConnector;
+		this.mData = aData;
+		mListeners = new ArrayList<IOFutureListener>();
 	}
 
 	@Override
 	public WebSocketConnector getConnector() {
-		return connector;
+		return mConnector;
 	}
 
 	@Override
 	public boolean isDone() {
-		return done;
+		return mDone;
 	}
 
 	@Override
@@ -57,12 +57,12 @@ public class DataFuture implements IOFuture {
 
 	@Override
 	public boolean isSuccess() {
-		return success;
+		return mSuccess;
 	}
 
 	@Override
 	public Throwable getCause() {
-		return cause;
+		return mCause;
 	}
 
 	@Override
@@ -72,18 +72,18 @@ public class DataFuture implements IOFuture {
 
 	@Override
 	public boolean setSuccess() {
-		success = true;
-		done = true;
+		mSuccess = true;
+		mDone = true;
 		notifyListeners();
-		return success;
+		return mSuccess;
 	}
 
 	@Override
 	public boolean setFailure(Throwable cause) {
-		if (!success && !done) {
-			this.cause = cause;
-			success = false;
-			done = true;
+		if (!mSuccess && !mDone) {
+			this.mCause = cause;
+			mSuccess = false;
+			mDone = true;
 			notifyListeners();
 			return true;
 		} else {
@@ -98,21 +98,21 @@ public class DataFuture implements IOFuture {
 
 	@Override
 	public void addListener(IOFutureListener listener) {
-		listeners.add(listener);
+		mListeners.add(listener);
 	}
 
 	@Override
 	public void removeListener(IOFutureListener listener) {
-		listeners.remove(listener);
+		mListeners.remove(listener);
 	}
 
 	public ByteBuffer getData() {
-		return data;
+		return mData;
 	}
 
 	private void notifyListeners() {
 		try {
-			for (IOFutureListener listener : listeners) {
+			for (IOFutureListener listener : mListeners) {
 				listener.operationComplete(this);
 			}
 		} catch (Exception e) {

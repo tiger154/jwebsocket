@@ -14,11 +14,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
-import org.jwebsocket.api.EngineConfiguration;
-import org.jwebsocket.kit.WebSocketRuntimeException;
-
 import java.util.List;
+import java.util.Map;
+import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.config.Config;
+import org.jwebsocket.kit.WebSocketRuntimeException;
 
 /**
  * Class that represents the engine config
@@ -42,6 +42,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	private final List<String> mDomains;
 	private final Integer mMaxConnections;
 	private final String mOnMaxConnectionsStrategy;
+	private Map<String, Object> mSettings;
 
 	/**
 	 * Constructor for engine
@@ -58,7 +59,8 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	public EngineConfig(String aId, String aName, String aJar, Integer aPort,
 			Integer aSSLPort, String aKeyStore, String aKeyStorePassword,
 			String aContext, String aServlet, int aTimeout,
-			int aMaxFrameSize, List<String> aDomains, Integer aMaxConnections, String aOnMaxConnectionsStrategy) {
+			int aMaxFrameSize, List<String> aDomains, Integer aMaxConnections, 
+			String aOnMaxConnectionsStrategy, Map<String, Object> aSettigns) {
 		this.mId = aId;
 		this.mName = aName;
 		this.mJar = aJar;
@@ -73,6 +75,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 		this.mDomains = aDomains;
 		this.mMaxConnections = aMaxConnections;
 		this.mOnMaxConnectionsStrategy = aOnMaxConnectionsStrategy;
+		this.mSettings = aSettigns;
 		
 		validate();
 	}
@@ -218,8 +221,9 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	public String getOnMaxConnectionStrategy() {
 		return mOnMaxConnectionsStrategy;
 	}
-	
-	
-	
-	
+
+	@Override
+	public Map<String, Object> getSettings() {
+		return mSettings;
+	}
 }

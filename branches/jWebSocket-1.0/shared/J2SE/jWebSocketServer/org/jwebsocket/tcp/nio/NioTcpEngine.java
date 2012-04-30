@@ -15,6 +15,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp.nio;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -49,13 +51,14 @@ import org.jwebsocket.util.Tools;
  * locking or spinning, depending on actual scenario). </p>
  *
  * @author jang
+ * @author kyberneees (bug fixes, session identifier cookie support
+ * and performance inprovements)
  */
 public class NioTcpEngine extends BaseEngine {
 
 	private static Logger mLog = Logging.getLogger();
-	// TODO: move following constants to settings
-	private static final int READ_BUFFER_SIZE = 2048;
-	private static final int NUM_WORKERS = 10;
+	private static final String NUM_WORKERS = "workers";
+	private static final int DEFAULT_NUM_WORKERS = 100;
 	private static final int READ_QUEUE_MAX_SIZE = Integer.MAX_VALUE;
 	private Selector mSelector;
 	private ServerSocketChannel mServerSocketChannel;
@@ -68,6 +71,8 @@ public class NioTcpEngine extends BaseEngine {
 	private Map<String, SocketChannel> mConnectorToChannelMap; // <connector id, socket channel>
 	private Map<SocketChannel, String> mChannelToConnectorMap; // <socket channel, connector id>
 	private ByteBuffer mReadBuffer;
+	private Thread mSelectorThread;
+	private DelayedPacketsQueue mDelayedPacketsQueue;
 
 	public NioTcpEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -76,11 +81,12 @@ public class NioTcpEngine extends BaseEngine {
 	@Override
 	public void startEngine() throws WebSocketException {
 		try {
-			mPendingWrites = new ConcurrentHashMap<String, Queue<DataFuture>>();
-			mPendingReads = new LinkedBlockingQueue<ReadBean>(READ_QUEUE_MAX_SIZE);
-			mConnectorToChannelMap = new ConcurrentHashMap<String, SocketChannel>();
-			mChannelToConnectorMap = new ConcurrentHashMap<SocketChannel, String>();
-			mReadBuffer = ByteBuffer.allocate(READ_BUFFER_SIZE);
+			mDelayedPacketsQueue = new DelayedPacketsQueue();
+			mPendingWrites = new ConcurrentHashMap<>();
+			mPendingReads = new LinkedBlockingQueue<>(READ_QUEUE_MAX_SIZE);
+			mConnectorToChannelMap = new ConcurrentHashMap<>();
+			mChannelToConnectorMap = new ConcurrentHashMap<>();
+			mReadBuffer = ByteBuffer.allocate(getConfiguration().getMaxFramesize());
 			mSelector = Selector.open();
 			mServerSocketChannel = ServerSocketChannel.open();
 			mServerSocketChannel.configureBlocking(false);
@@ -90,14 +96,22 @@ public class NioTcpEngine extends BaseEngine {
 			mIsRunning = true;
 
 			// start worker threads
-			mExecutorService = Executors.newFixedThreadPool(NUM_WORKERS);
-			for (int lIdx = 0; lIdx < NUM_WORKERS; lIdx++) {
+			Integer lNumWorkers = DEFAULT_NUM_WORKERS;
+			if (getConfiguration().getSettings().containsKey(NUM_WORKERS)) {
+				lNumWorkers = Integer.parseInt(getConfiguration().
+						getSettings().
+						get(NUM_WORKERS).
+						toString());
+			}
+			mExecutorService = Executors.newFixedThreadPool(lNumWorkers);
+			for (int lIdx = 0; lIdx < lNumWorkers; lIdx++) {
 				// give an index to each worker thread
 				mExecutorService.submit(new ReadWorker(lIdx));
 			}
 
 			// start selector thread
-			new Thread(new SelectorThread()).start();
+			mSelectorThread = new Thread(new SelectorThread());
+			mSelectorThread.start();
 		} catch (IOException e) {
 			throw new WebSocketException(e.getMessage(), e);
 		}
@@ -109,16 +123,17 @@ public class NioTcpEngine extends BaseEngine {
 		if (mSelector != null) {
 			try {
 				mIsRunning = false;
+				mSelectorThread.join();
 				mSelector.wakeup();
 				mServerSocketChannel.close();
 				mSelector.close();
 				mPendingWrites.clear();
-				// mPendingReads.notifyAll();
 				mPendingReads.clear();
+				mDelayedPacketsQueue.clear();
 				mExecutorService.shutdown();
 				mLog.info("NIO engine stopped.");
-			} catch (IOException lIOEx) {
-				throw new WebSocketException(lIOEx.getMessage(), lIOEx);
+			} catch (InterruptedException | IOException lEx) {
+				throw new WebSocketException(lEx.getMessage(), lEx);
 			}
 		}
 	}
@@ -152,7 +167,9 @@ public class NioTcpEngine extends BaseEngine {
 			mChannelToConnectorMap.remove(lChannel);
 		}
 
-		super.connectorStopped(aConn, aCloseReason);
+		if (((NioTcpConnector) aConn).isAfterHandshake()) {
+			super.connectorStopped(aConn, aCloseReason);
+		}
 	}
 
 	/**
@@ -168,10 +185,15 @@ public class NioTcpEngine extends BaseEngine {
 			engineStarted();
 
 			while (mIsRunning && mSelector.isOpen()) {
-				// check if there's anything to write to any of the clients
-				for (String id : mPendingWrites.keySet()) {
-					if (!mPendingWrites.get(id).isEmpty()) {
-						mConnectorToChannelMap.get(id).keyFor(mSelector).interestOps(SelectionKey.OP_WRITE);
+				for (Iterator<String> it = mPendingWrites.keySet().iterator(); it.hasNext();) {
+					String id = it.next();
+					try {
+						if (!mPendingWrites.get(id).isEmpty()) {
+							mConnectorToChannelMap.get(id).keyFor(mSelector).interestOps(SelectionKey.OP_WRITE);
+						}
+					} catch (Exception ex) {
+						//TODO: Should we to debug this?
+						//mLog.error(ex.getMessage(), ex);
 					}
 				}
 
@@ -232,7 +254,10 @@ public class NioTcpEngine extends BaseEngine {
 				}
 			} catch (IOException lIOEx) {
 				future.setFailure(lIOEx);
-				throw lIOEx;
+				// don't throw exception here
+				// pending close packets are maybe in reading queue
+				// some connectors could be not stopped yet
+				//throw lIOEx;
 			}
 
 			future.setSuccess();
@@ -248,20 +273,27 @@ public class NioTcpEngine extends BaseEngine {
 	// this must be called only from selector thread
 	private void accept(SelectionKey aKey) throws IOException {
 		try {
-			SocketChannel lSocketChannel = ((ServerSocketChannel) aKey.channel()).accept();
-			lSocketChannel.configureBlocking(false);
-			lSocketChannel.register(mSelector, SelectionKey.OP_READ);
-
-			WebSocketConnector lConnector = new NioTcpConnector(
-					this, lSocketChannel.socket().getInetAddress(),
-					lSocketChannel.socket().getPort());
-			getConnectors().put(lConnector.getId(), lConnector);
-			mPendingWrites.put(lConnector.getId(), new ConcurrentLinkedQueue<DataFuture>());
-			mConnectorToChannelMap.put(lConnector.getId(), lSocketChannel);
-			mChannelToConnectorMap.put(lSocketChannel, lConnector.getId());
-			mLog.info("NIO Client accepted - remote ip: " + lConnector.getRemoteHost());
+			if (getConnectors().size() == getConfiguration().getMaxConnections()
+					&& getConfiguration().getOnMaxConnectionStrategy().equals("close")) {
+				aKey.channel().close();
+				aKey.cancel();
+				mLog.info("NIO client (" + ((ServerSocketChannel) aKey.channel()).socket().getInetAddress()
+						+ ") not accepted due to max connections reached. Connection closed!");
+			} else {
+				SocketChannel lSocketChannel = ((ServerSocketChannel) aKey.channel()).accept();
+				lSocketChannel.configureBlocking(false);
+				lSocketChannel.register(mSelector, SelectionKey.OP_READ);
+				WebSocketConnector lConnector = new NioTcpConnector(
+						this, lSocketChannel.socket().getInetAddress(),
+						lSocketChannel.socket().getPort());
+				getConnectors().put(lConnector.getId(), lConnector);
+				mPendingWrites.put(lConnector.getId(), new ConcurrentLinkedQueue<DataFuture>());
+				mConnectorToChannelMap.put(lConnector.getId(), lSocketChannel);
+				mChannelToConnectorMap.put(lSocketChannel, lConnector.getId());
+				mLog.info("NIO client started - remote ip: " + lConnector.getRemoteHost());
+			}
 		} catch (IOException e) {
-			mLog.warn("Could not accept new client connection");
+			mLog.warn("Could not start new client connection");
 			throw e;
 		}
 	}
@@ -288,9 +320,7 @@ public class NioTcpEngine extends BaseEngine {
 
 		if (lNumRead > 0 && mChannelToConnectorMap.containsKey(lSocketChannel)) {
 			String lConnectorId = mChannelToConnectorMap.get(lSocketChannel);
-			ReadBean lBean = new ReadBean();
-			lBean.connectorId = lConnectorId;
-			lBean.data = Arrays.copyOf(mReadBuffer.array(), lNumRead);
+			ReadBean lBean = new ReadBean(lConnectorId, Arrays.copyOf(mReadBuffer.array(), lNumRead));
 			boolean lAccepted = mPendingReads.offer(lBean);
 			if (!lAccepted) {
 				// Read queue is full, discard the packet.
@@ -313,6 +343,7 @@ public class NioTcpEngine extends BaseEngine {
 			String lId = mChannelToConnectorMap.remove(lChannel);
 			if (lId != null) {
 				mConnectorToChannelMap.remove(lId);
+
 				connectorStopped(getConnectors().get(lId), aReason);
 			}
 		}
@@ -329,12 +360,6 @@ public class NioTcpEngine extends BaseEngine {
 		}
 	}
 
-	private class ReadBean {
-
-		String connectorId;
-		byte[] data;
-	}
-
 	private class ReadWorker implements Runnable {
 
 		int mId = -1;
@@ -347,20 +372,37 @@ public class NioTcpEngine extends BaseEngine {
 		@Override
 		public void run() {
 			Thread.currentThread().setName("jWebSocket NIO-Engine ReadWorker " + this.mId);
-
 			while (mIsRunning) {
 				try {
+					IDelayedPacketNotifier mDelayedPacket = mDelayedPacketsQueue.pop();
+					if (null != mDelayedPacket) {
+						mDelayedPacket.handleDelayedPacket();
+						continue;
+					}
+
 					final ReadBean lBean = mPendingReads.poll(200, TimeUnit.MILLISECONDS);
 					if (lBean != null) {
-						if (getConnectors().containsKey(lBean.connectorId)) {
-							final NioTcpConnector lConnector = (NioTcpConnector) getConnectors().get(lBean.connectorId);
-							if (lConnector.getWorkerId() > -1 && lConnector.getWorkerId() != hashCode()) {
+						if (getConnectors().containsKey(lBean.getConnectorId())) {
+
+							final NioTcpConnector lConnector = (NioTcpConnector) getConnectors().get(lBean.getConnectorId());
+							if (lConnector.getWorkerId() > -1) {
 								// another worker is right in the middle of packet processing for this connector
-								lConnector.setDelayedPacketNotifier(new DelayedPacketNotifier() {
+								// putting packets in a queue for high concurrency scenarios
+								mDelayedPacketsQueue.addDelayedPacket(new IDelayedPacketNotifier() {
 
 									@Override
 									public void handleDelayedPacket() throws IOException {
-										doRead(lConnector, lBean);
+										doRead(getConnector(), getBean());
+									}
+
+									@Override
+									public NioTcpConnector getConnector() {
+										return lConnector;
+									}
+
+									@Override
+									public ReadBean getBean() {
+										return lBean;
 									}
 								});
 							} else {
@@ -383,182 +425,98 @@ public class NioTcpEngine extends BaseEngine {
 		}
 
 		private void doRead(NioTcpConnector aConnector, ReadBean aBean) throws IOException {
+			// settign the worker identifier
 			aConnector.setWorkerId(hashCode());
+
 			if (aConnector.isAfterHandshake()) {
 				boolean lIsHixie = aConnector.isHixie();
 				if (lIsHixie) {
-					readHixie(aBean.data, aConnector);
+					readHixie(aBean.getData(), aConnector);
 				} else {
 					// assume that #02 and #03 are the same regarding packet processing
-					readHybi(aConnector.getVersion(), aBean.data, aConnector);
+					readHybi(aConnector.getVersion(), aBean.getData(), aConnector);
 				}
 			} else {
-				// todo: consider ssl connections
-				Map lReqMap = WebSocketHandshake.parseC2SRequest(aBean.data, false);
-
-				EngineUtils.parseCookies(lReqMap);
-				//Setting the session identifier cookie if not present previously
-				if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)) {
-					((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, Tools.getMD5(UUID.randomUUID().toString()));
-				}
-
-				byte[] lResponse = WebSocketHandshake.generateS2CResponse(lReqMap);
-				RequestHeader lReqHeader = EngineUtils.validateC2SRequest(
-						getConfiguration().getDomains(), lReqMap, mLog);
-				if (lResponse == null || lReqHeader == null) {
-					if (mLog.isDebugEnabled()) {
-						mLog.warn("TCP-Engine detected illegal handshake.");
+				// checking if "max connnections" value has been reached
+				if (getConnectors().size() > getConfiguration().getMaxConnections()) {
+					if (getConfiguration().getOnMaxConnectionStrategy().equals("reject")) {
+						if (mLog.isDebugEnabled()) {
+							mLog.debug("NIO client not accepted due to max connections reached."
+									+ " Connection rejected!");
+						}
+						clientDisconnect(aConnector, CloseReason.SERVER_REJECT_CONNECTION);
+					} else {
+						if (mLog.isDebugEnabled()) {
+							mLog.debug("NIO client not accepted due to max connections reached."
+									+ " Connection redirected!");
+						}
+						clientDisconnect(aConnector, CloseReason.SERVER_REDIRECT_CONNECTION);
 					}
-					// disconnect the client
-					clientDisconnect(aConnector);
-				}
-				
-				//Setting the session identifier
-				aConnector.getSession().setSessionId(lReqHeader.getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
+				} else {
 
-				send(aConnector.getId(), new DataFuture(aConnector, ByteBuffer.wrap(lResponse)));
-				int lTimeout = lReqHeader.getTimeout(getSessionTimeout());
-				if (lTimeout > 0) {
-					mConnectorToChannelMap.get(aBean.connectorId).socket().setSoTimeout(lTimeout);
+					// todo: consider ssl connections
+					Map lReqMap = WebSocketHandshake.parseC2SRequest(aBean.getData(), false);
+
+					EngineUtils.parseCookies(lReqMap);
+					//Setting the session identifier cookie if not present previously
+					if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)) {
+						((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, Tools.getMD5(UUID.randomUUID().toString()));
+					}
+
+					byte[] lResponse = WebSocketHandshake.generateS2CResponse(lReqMap);
+					RequestHeader lReqHeader = EngineUtils.validateC2SRequest(
+							getConfiguration().getDomains(), lReqMap, mLog);
+					if (lResponse == null || lReqHeader == null) {
+						if (mLog.isDebugEnabled()) {
+							mLog.warn("TCP-Engine detected illegal handshake.");
+						}
+						// disconnect the client
+						clientDisconnect(aConnector);
+					}
+
+					//Setting the session identifier
+					aConnector.getSession().setSessionId(lReqHeader.getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
+
+					send(aConnector.getId(), new DataFuture(aConnector, ByteBuffer.wrap(lResponse)));
+					int lTimeout = lReqHeader.getTimeout(getSessionTimeout());
+					if (lTimeout > 0) {
+						mConnectorToChannelMap.get(aBean.getConnectorId()).socket().setSoTimeout(lTimeout);
+					}
+					aConnector.handshakeValidated();
+					aConnector.setHeader(lReqHeader);
+					aConnector.startConnector();
+					aConnector.releaseWorker();
 				}
-				aConnector.handshakeValidated();
-				aConnector.setHeader(lReqHeader);
-				aConnector.startConnector();
 			}
-			aConnector.setWorkerId(-1);
 		}
 	}
 
-	/**
-	 * One message may consist of one or more (fragmented message) protocol
-	 * packets. The spec is currently unclear whether control packets (ping,
-	 * pong, close) may be intermingled with fragmented packets of another
-	 * message. For now I've decided to not implement such packets 'swapping',
-	 * and therefore reading fails miserably if a client sends control packets
-	 * during fragmented message read. TODO: follow next spec drafts and add
-	 * support for control packets inside fragmented message if needed. <p>
-	 * Structure of packets conforms to the following scheme (copied from spec):
-	 * </p>
-	 * <pre>
-	 *  0                   1                   2                   3
-	 *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-	 * +-+-+-+-+-------+-+-------------+-------------------------------+
-	 * |M|R|R|R| opcode|R| Payload len |    Extended payload length    |
-	 * |O|S|S|S|  (4)  |S|     (7)     |             (16/63)           |
-	 * |R|V|V|V|       |V|             |   (if payload len==126/127)   |
-	 * |E|1|2|3|       |4|             |                               |
-	 * +-+-+-+-+-------+-+-------------+ - - - - - - - - - - - - - - - +
-	 * |     Extended payload length continued, if payload len == 127  |
-	 * + - - - - - - - - - - - - - - - +-------------------------------+
-	 * |                               |         Extension data        |
-	 * +-------------------------------+ - - - - - - - - - - - - - - - +
-	 * :                                                               :
-	 * +---------------------------------------------------------------+
-	 * :                       Application data                        :
-	 * +---------------------------------------------------------------+
-	 * </pre> RSVx bits are ignored (reserved for future use). TODO: add support
-	 * for extension data, when extensions will be defined in the specs.
-	 *
-	 * <p> Read section 4.2 of the spec for detailed explanation. </p>
-	 */
 	private void readHybi(int aVersion, byte[] aBuffer, NioTcpConnector aConnector) throws IOException {
 		try {
-			if (aConnector.isPacketBufferEmpty()) {
-				// begin normal packet read
-				int lFlags = aBuffer[0];
-
-				// determine fragmentation
-				boolean lFragmented = (aVersion >= 4
-						? (lFlags & 0x80) == 0x00
-						: (lFlags & 0x80) == 0x80);
-				boolean lMasked = true;
-				int[] lMask = new int[4];
-
-				// ignore upper 4 bits for now
-				int lOpcode = lFlags & 0x0F;
-				WebSocketFrameType lFrameType = WebSocketProtocolAbstraction.opcodeToFrameType(aVersion, lOpcode);
-
-				// assume we start here
-				int lPayloadStartIndex = 2;
-
-				long lPayloadLen = aBuffer[1];
-				lMasked = (lPayloadLen & 0x80) == 0x80;
-				lPayloadLen &= 0x7F;
-
-				if (lFrameType == WebSocketFrameType.INVALID) {
-					// Could not determine packet type, ignore the packet.
-					// Maybe we need a setting to decide, if such packets should abort the connection?
-					mLog.trace("Dropping packet with unknown type: " + lOpcode);
-				} else {
-					aConnector.setPacketType(lFrameType);
-					if (lPayloadLen == 126) {
-						// following two bytes are actual payload length (16-bit unsigned integer)
-						lPayloadLen = aBuffer[2] & 0xFF;
-						lPayloadLen = (lPayloadLen << 8) | (aBuffer[3] & 0xFF);
-						lPayloadStartIndex += 2;
-					} else if (lPayloadLen == 127) {
-						// following eight bytes are actual payload length (64-bit unsigned integer)
-						lPayloadLen = aBuffer[2] & 0xFF;
-						lPayloadLen = (lPayloadLen << 8) | (aBuffer[3] & 0xFF);
-						lPayloadLen = (lPayloadLen << 8) | (aBuffer[4] & 0xFF);
-						lPayloadLen = (lPayloadLen << 8) | (aBuffer[5] & 0xFF);
-						lPayloadLen = (lPayloadLen << 8) | (aBuffer[6] & 0xFF);
-						lPayloadLen = (lPayloadLen << 8) | (aBuffer[7] & 0xFF);
-						lPayloadLen = (lPayloadLen << 8) | (aBuffer[8] & 0xFF);
-						lPayloadLen = (lPayloadLen << 8) | (aBuffer[9] & 0xFF);
-						lPayloadStartIndex += 8;
-					}
-					if (lMasked) {
-						lMask[0] = aBuffer[lPayloadStartIndex + 0] & 0xFF;
-						lMask[1] = aBuffer[lPayloadStartIndex + 1] & 0xFF;
-						lMask[2] = aBuffer[lPayloadStartIndex + 2] & 0xFF;
-						lMask[3] = aBuffer[lPayloadStartIndex + 3] & 0xFF;
-						lPayloadStartIndex += 4;
-					}
-
-					if (lPayloadLen > 0) {
-						if (lMasked) {
-							int lMaskIdx = 0;
-							int lBuffIdx = lPayloadStartIndex;
-							long lCounter = lPayloadLen;
-							while (lCounter-- > 0) {
-								aBuffer[lBuffIdx] = (byte) (aBuffer[lBuffIdx] ^ lMask[lMaskIdx]);
-								lBuffIdx++;
-								lMaskIdx++;
-								lMaskIdx &= 3;
-							}
-						}
-						aConnector.setPayloadLength((int) lPayloadLen);
-						mLog.debug(
-								"aBuffer.length: " + aBuffer.length
-								+ ", lPayloadStartIndex: " + lPayloadStartIndex);
-						aConnector.extendPacketBuffer(aBuffer, lPayloadStartIndex, (int) lPayloadLen /*
-								 * aBuffer.length - lPayloadStartIndex
-								 */);
-					}
-				}
-
-				if (lFrameType == WebSocketFrameType.PING) {
-					// As per spec, server must respond to PING with PONG (maybe
-					// this should be handled higher up in the hierarchy?)
-					WebSocketPacket lPong = new RawPacket(aConnector.getPacketBuffer());
-					lPong.setFrameType(WebSocketFrameType.PONG);
-					aConnector.sendPacket(lPong);
-				} else if (lFrameType == WebSocketFrameType.CLOSE) {
-					// As per spec, server must respond to CLOSE with acknowledgment CLOSE (maybe
-					// this should be handled higher up in the hierarchy?)
-					WebSocketPacket lClose = new RawPacket(aConnector.getPacketBuffer());
-					lClose.setFrameType(WebSocketFrameType.CLOSE);
-					aConnector.sendPacket(lClose);
-					clientDisconnect(aConnector, CloseReason.CLIENT);
-				}
-			} else {
-				aConnector.extendPacketBuffer(aBuffer, 0, aBuffer.length);
-			}
-
-			if (aConnector.isPacketBufferFull()) {
-				// Packet was read, pass it forward.
-				aConnector.flushPacketBuffer();
+			WebSocketPacket lRawPacket;
+			//if (aConnector.isPacketBufferEmpty()) {
+			lRawPacket = WebSocketProtocolAbstraction.protocolToRawPacket(aVersion, new ByteArrayInputStream(aBuffer));
+			if (lRawPacket.getFrameType() == WebSocketFrameType.PING) {
+				// As per spec, server must respond to PING with PONG (maybe
+				// this should be handled higher up in the hierarchy?)
+				WebSocketPacket lPong = new RawPacket(lRawPacket.getByteArray());
+				lPong.setFrameType(WebSocketFrameType.PONG);
+				aConnector.sendPacket(lPong);
+			} else if (lRawPacket.getFrameType() == WebSocketFrameType.CLOSE) {
+				// As per spec, server must respond to CLOSE with acknowledgment CLOSE (maybe
+				// this should be handled higher up in the hierarchy?)
+				WebSocketPacket lClose = new RawPacket(lRawPacket.getByteArray());
+				lClose.setFrameType(WebSocketFrameType.CLOSE);
+				aConnector.sendPacket(lClose);
+				clientDisconnect(aConnector, CloseReason.CLIENT);
+			} else if (lRawPacket.getFrameType() == WebSocketFrameType.TEXT) {
+				aConnector.flushPacket(lRawPacket);
+			} else if (lRawPacket.getFrameType() == WebSocketFrameType.INVALID) {
+				mLog.debug(getClass().getSimpleName() + ": Discarding invalid incoming packet... ");
+			} else if (lRawPacket.getFrameType() == WebSocketFrameType.FRAGMENT
+					|| lRawPacket.getFrameType() == WebSocketFrameType.BINARY) {
+				mLog.debug(getClass().getSimpleName() + ": Discarding unsupported ('"
+						+ lRawPacket.getFrameType().toString() + "')incoming packet... ");
 			}
 		} catch (Exception e) {
 			mLog.error("(other) " + e.getClass().getSimpleName() + ": " + e.getMessage(), e);
@@ -566,41 +524,36 @@ public class NioTcpEngine extends BaseEngine {
 		}
 	}
 
-	private void readHixie(byte[] buffer, NioTcpConnector connector) throws IOException {
-		try {
-			int start = 0;
-			if (connector.isPacketBufferEmpty() && buffer[0] == 0x00) {
-				// start of packet
-				start = 1;
-			}
+	private void readHixie(byte[] aBuffer, NioTcpConnector lConnector) throws IOException {
+		ByteArrayInputStream lIn = new ByteArrayInputStream(aBuffer);
+		ByteArrayOutputStream lBuff = new ByteArrayOutputStream();
 
-			boolean stop = false;
-			int count = buffer.length;
-			for (int i = start; i < buffer.length; i++) {
-				if (buffer[i] == (byte) 0xFF) {
-					// end of packet
-					count = i - start;
-					stop = true;
+		while (true) {
+			try {
+				int lByte = WebSocketProtocolAbstraction.read(lIn);
+				// start of frame
+				if (lByte == 0x00) {
+					lBuff.reset();
+					// end of frame
+				} else if (lByte == 0xFF) {
+					RawPacket lPacket = new RawPacket(lBuff.toByteArray());
+					try {
+						lConnector.flushPacket(lPacket);
+					} catch (Exception lEx) {
+						mLog.error(lEx.getClass().getSimpleName()
+								+ " in processPacket of connector "
+								+ lConnector.getClass().getSimpleName()
+								+ ": " + lEx.getMessage());
+					}
 					break;
-				}
-			}
-
-			if (start + count > buffer.length) {
-				// ignore -> broken packet (perhaps client disconnected in middle of sending
-			} else {
-				if (connector.isPacketBufferEmpty() && buffer.length == 1) {
-					connector.extendPacketBuffer(buffer, 0, 0);
 				} else {
-					connector.extendPacketBuffer(buffer, start, count);
+					lBuff.write(lByte);
 				}
+			} catch (Exception lEx) {
+				mLog.error("Error while processing incoming packet", lEx);
+				clientDisconnect(lConnector, CloseReason.SERVER);
+				break;
 			}
-
-			if (stop) {
-				connector.flushPacketBuffer();
-			}
-		} catch (Exception e) {
-			mLog.error("Error while processing incoming packet", e);
-			clientDisconnect(connector, CloseReason.SERVER);
 		}
 	}
 }

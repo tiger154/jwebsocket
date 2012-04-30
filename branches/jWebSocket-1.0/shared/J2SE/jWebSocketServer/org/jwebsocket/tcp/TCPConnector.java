@@ -523,8 +523,7 @@ public class TCPConnector extends BaseConnector {
 			}
 		}
 
-		private void processHixie(
-				WebSocketEngine aEngine) {
+		private void processHixie(WebSocketEngine aEngine) {
 			ByteArrayOutputStream lBuff = new ByteArrayOutputStream();
 			while (WebSocketConnectorStatus.UP == getStatus()) {
 				try {

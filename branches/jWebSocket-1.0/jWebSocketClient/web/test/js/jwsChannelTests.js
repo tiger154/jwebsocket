@@ -46,7 +46,6 @@ jws.tests.Channels = {
 			runs( function() {
 				expect( lResponse.code ).toEqual( 0 );
 			});
-
 		});
 	},
 

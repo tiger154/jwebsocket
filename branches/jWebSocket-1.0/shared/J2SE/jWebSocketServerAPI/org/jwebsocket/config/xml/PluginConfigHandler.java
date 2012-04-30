@@ -19,9 +19,6 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javolution.util.FastList;
-import javolution.util.FastMap;
-import org.json.JSONObject;
-
 import org.jwebsocket.config.Config;
 import org.jwebsocket.config.ConfigHandler;
 
@@ -42,8 +39,6 @@ public class PluginConfigHandler implements ConfigHandler {
 	private static final String ENABLED = "enabled";
 	private static final String SERVERS = "server-assignments";
 	private static final String SERVER = "server-assignment";
-	private static final String SETTINGS = "settings";
-	private static final String SETTING = "setting";
 
 	/**
 	 * {@inheritDoc}
@@ -74,8 +69,8 @@ public class PluginConfigHandler implements ConfigHandler {
 				} else if (lElementName.equals(NAMESPACE)) {
 					aStreamReader.next();
 					lNamespace = aStreamReader.getText();
-				} else if (lElementName.equals(SETTINGS)) {
-					lSettings = getSettings(aStreamReader);
+				} else if (lElementName.equals(JWebSocketConfigHandler.SETTINGS)) {
+					lSettings = JWebSocketConfigHandler.getSettings(aStreamReader);
 				} else if (lElementName.equals(SERVERS)) {
 					lServers = getServers(aStreamReader);
 				} else if (lElementName.equals(ENABLED)) {
@@ -129,52 +124,5 @@ public class PluginConfigHandler implements ConfigHandler {
 		return lServers;
 	}
 
-	/**
-	 * Read the map of plug-in specific settings
-	 * @param aStreamReader
-	 *            the stream reader object
-	 * @return the list of domains for the engine
-	 * @throws XMLStreamException
-	 *             in case of stream exception
-	 */
-	private Map<String, Object> getSettings(XMLStreamReader aStreamReader)
-			throws XMLStreamException {
-
-		Map<String, Object> lSettings = new FastMap<String, Object>();
-		while (aStreamReader.hasNext()) {
-			aStreamReader.next();
-			if (aStreamReader.isStartElement()) {
-				String lElementName = aStreamReader.getLocalName();
-				if (lElementName.equals(SETTING)) {
-					String lKey = aStreamReader.getAttributeValue(null, "key");
-					String lType = aStreamReader.getAttributeValue(null, "type");
-
-					aStreamReader.next();
-					String lValue = aStreamReader.getText();
-
-					if (lKey != null && lValue != null) {
-						if ("json".equalsIgnoreCase(lType)) {
-							JSONObject lJSON = null;
-							try {
-								lJSON = new JSONObject(lValue);
-							} catch (Exception lEx) {
-								// TODO: handle invalid JSON code in settings properly!
-							}
-							lSettings.put(lKey, lJSON);
-						} else {
-							lSettings.put(lKey, lValue);
-						}
-					}
-				}
-			}
-
-			if (aStreamReader.isEndElement()) {
-				String lElementName = aStreamReader.getLocalName();
-				if (lElementName.equals(SETTINGS)) {
-					break;
-				}
-			}
-		}
-		return lSettings;
-	}
+	
 }

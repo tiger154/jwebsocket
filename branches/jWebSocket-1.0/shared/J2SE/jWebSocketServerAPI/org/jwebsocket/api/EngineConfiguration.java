@@ -15,6 +15,7 @@
 package org.jwebsocket.api;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base interface that provides the read-only access to all the engine configuration 
@@ -103,4 +104,9 @@ public interface EngineConfiguration extends Configuration {
 	 * @return The "on max connections" strategy
 	 */
 	String getOnMaxConnectionStrategy();
+	
+	/**
+	 * @return the settings
+	 */
+	Map<String, Object> getSettings();
 }
