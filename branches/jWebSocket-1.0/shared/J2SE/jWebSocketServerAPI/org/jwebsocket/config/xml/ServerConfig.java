@@ -14,6 +14,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
+import java.util.Collections;
 import java.util.Map;
 import org.jwebsocket.api.ServerConfiguration;
 import org.jwebsocket.config.Config;
@@ -102,7 +103,7 @@ public final class ServerConfig implements Config, ServerConfiguration {
 
 	@Override
 	public Map<String, Object> getSettings() {
-		return mSettings;
+		return Collections.unmodifiableMap(mSettings); 
 	}
 	
 	

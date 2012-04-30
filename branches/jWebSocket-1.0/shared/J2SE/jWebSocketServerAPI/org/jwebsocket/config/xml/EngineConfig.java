@@ -14,6 +14,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.jwebsocket.api.EngineConfiguration;
@@ -224,6 +225,6 @@ public final class EngineConfig implements Config, EngineConfiguration {
 
 	@Override
 	public Map<String, Object> getSettings() {
-		return mSettings;
+		return Collections.unmodifiableMap(mSettings); 
 	}
 }
