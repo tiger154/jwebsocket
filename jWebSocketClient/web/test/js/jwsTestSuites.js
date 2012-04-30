@@ -67,7 +67,7 @@ function runEventsSuite() {
 	//run Events tests
 	jws.myConn = new jws.jWebSocketJSONClient();
 	jws.myConn.open(jws.JWS_SERVER_URL, {
-		OnOpen: function (){
+		OnWelcome: function (){
 			//Initializing events in the client... 
 			//Creating the filter chain
 			var securityFilter = new jws.SecurityFilter();

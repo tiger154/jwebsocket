@@ -32,6 +32,7 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.json.JSONObject;
 import org.jwebsocket.config.Config;
 
 /**
@@ -638,5 +639,58 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		}
 
 		saveChange(lDoc, JWebSocketConfig.getConfigPath());
+	}
+	
+	
+	public static final String SETTINGS = "settings";
+	public static final String SETTING = "setting";
+	/**
+	 * Read the map of plug-in specific settings
+	 * @param aStreamReader
+	 *            the stream reader object
+	 * @return the list of domains for the engine
+	 * @throws XMLStreamException
+	 *             in case of stream exception
+	 */
+	public static Map<String, Object> getSettings(XMLStreamReader aStreamReader)
+			throws XMLStreamException {
+
+		Map<String, Object> lSettings = new FastMap<String, Object>();
+		while (aStreamReader.hasNext()) {
+			aStreamReader.next();
+			if (aStreamReader.isStartElement()) {
+				String lElementName = aStreamReader.getLocalName();
+				if (lElementName.equals(SETTING)) {
+					String lKey = aStreamReader.getAttributeValue(null, "key");
+					String lType = aStreamReader.getAttributeValue(null, "type");
+
+					aStreamReader.next();
+					String lValue = aStreamReader.getText();
+
+					if (lKey != null && lValue != null) {
+						if ("json".equalsIgnoreCase(lType)) {
+							JSONObject lJSON = null;
+							try {
+								lJSON = new JSONObject(lValue);
+							} catch (Exception lEx) {
+								// TODO: handle invalid JSON code in settings properly!
+							}
+							lSettings.put(lKey, lJSON);
+						} else {
+							lSettings.put(lKey, lValue);
+						}
+					}
+				}
+			}
+
+			if (aStreamReader.isEndElement()) {
+				String lElementName = aStreamReader.getLocalName();
+				if (lElementName.equals(SETTINGS)) {
+					break;
+				}
+			}
+		}
+		
+		return lSettings;
 	}
 }

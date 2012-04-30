@@ -14,6 +14,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
+import java.util.Map;
 import org.jwebsocket.api.ServerConfiguration;
 import org.jwebsocket.config.Config;
 import org.jwebsocket.kit.WebSocketRuntimeException;
@@ -26,25 +27,28 @@ import org.jwebsocket.kit.WebSocketRuntimeException;
  */
 public final class ServerConfig implements Config, ServerConfiguration {
 
-	private final String id;
-	private final String name;
-	private final String jar;
-	private final ThreadPoolConfig threadPoolConfig ;
+	private final String mId;
+	private final String mName;
+	private final String mJar;
+	private final ThreadPoolConfig mThreadPoolConfig ;
+	private Map<String, Object> mSettings;
 
-	public ServerConfig(String id, String name, String jar) {
-		this(id, name, jar, new ThreadPoolConfig());
+	public ServerConfig(String aId, String aName, String aJar, Map aSettings) {
+		this(aId, aName, aJar, new ThreadPoolConfig(), aSettings);
 	}
 
-	public ServerConfig(String id, String name, String jar, ThreadPoolConfig threadPoolConfig) {
-		this.id = id;
-		this.name = name;
-		this.jar = jar;
+	public ServerConfig(String aId, String aName, String aJar, ThreadPoolConfig aThreadPoolConfig,
+			Map aSettings) {
+		this.mId = aId;
+		this.mName = aName;
+		this.mJar = aJar;
 		//If the threadpoolconfig is not set, we just create a default-one.
-		if (threadPoolConfig == null) {
-			this.threadPoolConfig = new ThreadPoolConfig();
+		if (aThreadPoolConfig == null) {
+			this.mThreadPoolConfig = new ThreadPoolConfig();
 		} else {
-			this.threadPoolConfig = threadPoolConfig ;
+			this.mThreadPoolConfig = aThreadPoolConfig ;
 		}
+		this.mSettings = aSettings;
 		//validate the server configuration
 		validate();
 	}
@@ -54,7 +58,7 @@ public final class ServerConfig implements Config, ServerConfiguration {
 	 */
 	@Override
 	public String getId() {
-		return id;
+		return mId;
 	}
 
 	/**
@@ -62,7 +66,7 @@ public final class ServerConfig implements Config, ServerConfiguration {
 	 */
 	@Override
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	/**
@@ -70,14 +74,15 @@ public final class ServerConfig implements Config, ServerConfiguration {
 	 */
 	@Override
 	public String getJar() {
-		return jar;
+		return mJar;
 	}
 	
 	/**
 	 * @return the server thread pool configuration
 	 */
+	@Override
 	public ThreadPoolConfig getThreadPoolConfig () {
-		return threadPoolConfig ;
+		return mThreadPoolConfig ;
 	}
 
 	/**
@@ -85,13 +90,20 @@ public final class ServerConfig implements Config, ServerConfiguration {
 	 */
 	@Override
 	public void validate() {
-		if ((id != null && id.length() > 0)
-				&& (name != null && name.length() > 0)
-				&& (jar != null && jar.length() > 0)) {
-			threadPoolConfig.validate();
+		if ((mId != null && mId.length() > 0)
+				&& (mName != null && mName.length() > 0)
+				&& (mJar != null && mJar.length() > 0)) {
+			mThreadPoolConfig.validate();
 			return;
 		}
 		throw new WebSocketRuntimeException(
 				"Missing one of the server configuration, please check your configuration file");
 	}
+
+	@Override
+	public Map<String, Object> getSettings() {
+		return mSettings;
+	}
+	
+	
 }

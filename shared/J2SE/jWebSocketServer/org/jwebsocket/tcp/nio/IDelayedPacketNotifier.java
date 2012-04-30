@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - WebSocket NIO Engine, DelayedPacketNotifier
+//	jWebSocket - WebSocket NIO Engine, IDelayedPacketNotifier
 //	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org, Author: Jan Gnezda
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
@@ -20,7 +20,11 @@ import java.io.IOException;
 /**
  * @author jang
  */
-interface DelayedPacketNotifier {
+interface IDelayedPacketNotifier {
+
+	ReadBean getBean();
+
+	NioTcpConnector getConnector();
 
 	void handleDelayedPacket() throws IOException;
 }
