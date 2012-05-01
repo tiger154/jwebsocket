@@ -51,8 +51,8 @@ import org.jwebsocket.util.Tools;
  * locking or spinning, depending on actual scenario). </p>
  *
  * @author jang
- * @author kyberneees (bug fixes, session identifier cookie support
- * and performance inprovements)
+ * @author kyberneees (bug fixes, session identifier cookie support and
+ * performance inprovements)
  */
 public class NioTcpEngine extends BaseEngine {
 
@@ -169,6 +169,10 @@ public class NioTcpEngine extends BaseEngine {
 
 		if (((NioTcpConnector) aConn).isAfterHandshake()) {
 			super.connectorStopped(aConn, aCloseReason);
+
+
+
+
 		}
 	}
 
@@ -185,23 +189,24 @@ public class NioTcpEngine extends BaseEngine {
 			engineStarted();
 
 			while (mIsRunning && mSelector.isOpen()) {
-				for (Iterator<String> it = mPendingWrites.keySet().iterator(); it.hasNext();) {
-					String id = it.next();
+				for (Iterator<String> lIterator = mPendingWrites.keySet().iterator(); lIterator.hasNext();) {
+					String lConnectorId = lIterator.next();
 					try {
-						if (!mPendingWrites.get(id).isEmpty()) {
-							mConnectorToChannelMap.get(id).keyFor(mSelector).interestOps(SelectionKey.OP_WRITE);
+						SelectionKey lKey = mConnectorToChannelMap.get(lConnectorId).keyFor(mSelector);
+						if (!mPendingWrites.get(lConnectorId).isEmpty() && lKey.isValid()) {
+							lKey.interestOps(SelectionKey.OP_WRITE);
 						}
 					} catch (Exception ex) {
-						//TODO: Should we to debug this?
-						//mLog.error(ex.getMessage(), ex);
+						// ignore, key was cancelled an instant after isValid() returned true,
+						// most probably the client disconnected just at the wrong moment
 					}
 				}
 
 				try {
-					// Waits for 500ms for any data from connected clients or for new client connections.
+					// Waits for 100ms for any data from connected clients or for new client connections.
 					// We could have indefinite wait (selector.wait()), but it is good to check for 'running' variable
 					// fairly often.
-					if (mSelector.select(500) > 0 && mIsRunning) {
+					if (mSelector.select(100) > 0 && mIsRunning) {
 						Iterator<SelectionKey> lKeys = mSelector.selectedKeys().iterator();
 						while (lKeys.hasNext()) {
 							SelectionKey lKey = lKeys.next();
@@ -242,7 +247,8 @@ public class NioTcpEngine extends BaseEngine {
 	private void write(SelectionKey aKey) throws IOException {
 		SocketChannel lSocketChannel = (SocketChannel) aKey.channel();
 		Queue<DataFuture> lQueue = mPendingWrites.get(mChannelToConnectorMap.get(lSocketChannel));
-		while (null != lQueue && !lQueue.isEmpty()) {
+
+		while (!lQueue.isEmpty()) {
 			DataFuture future = lQueue.peek();
 			try {
 				ByteBuffer lData = future.getData();
@@ -265,9 +271,7 @@ public class NioTcpEngine extends BaseEngine {
 			lQueue.poll();
 		}
 
-		if (lQueue.isEmpty()) {
-			aKey.interestOps(SelectionKey.OP_READ);
-		}
+		aKey.interestOps(SelectionKey.OP_READ);
 	}
 
 	// this must be called only from selector thread
