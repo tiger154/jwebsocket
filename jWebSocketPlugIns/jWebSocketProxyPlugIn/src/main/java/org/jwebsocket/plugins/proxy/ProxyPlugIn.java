@@ -15,14 +15,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.proxy;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import jlibs.core.nio.ClientChannel;
 import jlibs.core.nio.NIOSelector;
 import jlibs.core.nio.ServerChannel;
 import jlibs.core.nio.handlers.NIOThread;
 import jlibs.core.nio.handlers.ServerHandler;
 import org.apache.log4j.Logger;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketServerConstants;
@@ -35,7 +35,7 @@ import org.jwebsocket.util.Tools;
  */
 public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 
-	private static Logger mLog = Logging.getLogger(ProxyPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// specify name space for system plug-in
 	private static final String NS_PROXY = JWebSocketServerConstants.NS_BASE + ".plugins.system";
 	// specify token types processed by system plug-in

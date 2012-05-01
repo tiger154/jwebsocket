@@ -1,4 +1,3 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -14,10 +13,12 @@
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.apache.tomcat.version>7.0.27</org.apache.tomcat.version>
+		<netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
 	</properties>
 
 	<build>
 		<plugins>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -30,16 +31,22 @@
 					</compilerArguments>
 				</configuration>
 			</plugin>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1.1</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
-					 <!-- <packagingExcludes />, this avoids the following warning:
+					<!-- we use Spring 3 in jWebSocket, so exclude version 2 here -->
+					<!-- then theses files are not included into the war file -->
+					<warSourceExcludes>WEB-INF/lib/spring-2.0.jar,**/spring-2.0.jar</warSourceExcludes>
+					<!-- <packagingExcludes />, this avoids the following warning:
 						[WARNING] Warning: selected war files include a WEB-INF/web.xml which will be ignored
 						(webxml attribute is missing from war task, or ignoreWebxml attribute is specified as 'true') -->
-					<packagingExcludes>WEB-INF/web.xml</packagingExcludes>
+					<packagingExcludes>WEB-INF/lib/spring-2.0.jar,WEB-INF/web.xml,
+						WEB-INF/lib/jWebSocketServer-Bundle-${project.version}.jar
+					</packagingExcludes>
 					<webResources>
 						<resource>
 							<targetPath>WEB-INF/classes/conf</targetPath>						
@@ -48,9 +55,31 @@
 								<include>**/log4j.xml</include>
 							</includes>							
 						</resource>
+
+						<!-- you need this ONLY when you DO NOT use the JWEBSOCKET_HOME variable! -->
+						<resource>
+							<targetPath>WEB-INF/classes/conf</targetPath>						
+							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
+							<excludes>
+								<exclude>**/log4j.xml</exclude>
+							</excludes>							
+						</resource>
+						<resource>
+							<targetPath>WEB-INF/lib</targetPath>						
+							<directory>../../../rte/jWebSocket-${project.version}/libs</directory>
+							<includes>
+								<include>**/jWebSocket*.jar</include>
+							</includes>
+							<!-- the bundle is not required, since we already have the individual .jars -->
+							<excludes>
+								<exclude>**/jWebSocketServer-Bundle-${project.version}.jar</exclude>
+							</excludes>							
+						</resource>
+						
 					</webResources>
 				</configuration>
 			</plugin>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -82,10 +111,12 @@
 					</execution>
 				</executions>
 			</plugin>
+			
 		</plugins>
 	</build>
 
 	<dependencies>
+		
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
@@ -160,6 +191,12 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>		
 		<dependency>
 			<groupId>org.eclipse.jdt.core.compiler</groupId>
 			<artifactId>ecj</artifactId>

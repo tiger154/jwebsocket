@@ -122,7 +122,7 @@ public final class PluginConfig implements Config, PluginConfiguration {
 	 */
 	@Override
 	public Map<String, Object> getSettings() {
-		return Collections.unmodifiableMap(mSettings); 
+		return (null == mSettings) ? null : Collections.unmodifiableMap(mSettings);
 	}
 
 	/**

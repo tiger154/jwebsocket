@@ -50,12 +50,34 @@ public interface PluginConfiguration extends Configuration {
 	 */
 	Map<String, Object> getSettings();
 
+	/**
+	 * 
+	 * @param aKey
+	 * @param aDefault
+	 * @return
+	 */
 	String getString(String aKey, String aDefault);
 
+	/**
+	 * 
+	 * @param aKey
+	 * @return
+	 */
 	String getString(String aKey);
 
+	/**
+	 * 
+	 * @param aKey
+	 * @param aDefault
+	 * @return
+	 */
 	JSONObject getJSON(String aKey, JSONObject aDefault);
 
+	/**
+	 * 
+	 * @param aKey
+	 * @return
+	 */
 	JSONObject getJSON(String aKey);
 	
 	/**

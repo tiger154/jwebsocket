@@ -25,6 +25,7 @@ import org.jwebsocket.kit.PlugInResponse;
 
 /**
  * Abstract implementation of WebSocketPlugin
+ *
  * @author aschulze
  * @version $Id:$
  */
@@ -38,13 +39,13 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	/**
 	 * Constructor
 	 *
-	 * @param aConfiguration
-	 *          the plugin configuration
+	 * @param aConfiguration the plugin configuration
 	 */
 	public BasePlugIn(PluginConfiguration aConfiguration) {
-		this.mConfiguration = aConfiguration;
+		mConfiguration = aConfiguration;
 		if (null != aConfiguration) {
-			addAllSettings(aConfiguration.getSettings());
+			Map<String, Object> lSettings = aConfiguration.getSettings();
+			addAllSettings(lSettings);
 		}
 	}
 
@@ -197,8 +198,8 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	}
 
 	/**
-	 * Convenience method, just a wrapper for token server method <tt>getNode</tt>
-	 * to simplify token plug-in code.
+	 * Convenience method, just a wrapper for token server method
+	 * <tt>getNode</tt> to simplify token plug-in code.
 	 *
 	 * @param aNodeId
 	 * @return
@@ -225,7 +226,7 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	 */
 	@Override
 	public void addString(String aKey, String aValue) {
-		if (aKey != null) {
+		if (null != aKey) {
 			mSettings.put(aKey, aValue);
 		}
 	}
@@ -235,7 +236,7 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	 */
 	// @Override
 	private void addAllSettings(Map<String, Object> aSettings) {
-		if (aSettings != null) {
+		if (null != aSettings) {
 			mSettings.putAll(aSettings);
 		}
 	}
@@ -246,7 +247,7 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	 */
 	@Override
 	public void removeSetting(String aKey) {
-		if (aKey != null) {
+		if (null != aKey) {
 			mSettings.remove(aKey);
 		}
 	}
@@ -359,5 +360,4 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	public void setVersion(String aVersion) {
 		this.mVersion = aVersion;
 	}
-
 }

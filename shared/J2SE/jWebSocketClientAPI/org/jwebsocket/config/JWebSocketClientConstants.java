@@ -27,8 +27,8 @@ public final class JWebSocketClientConstants {
 	/**
 	 * Current version string of the jWebSocket package.
 	 */
-	// (nightly build 20425)
-	public static final String VERSION_STR = "1.0b7 (nightly build 20425)";
+	// (nightly build 20430)
+	public static final String VERSION_STR = "1.0b7 (nightly build 20430)";
 	/**
 	 * Name space base for tokens and plug-ins.
 	 */

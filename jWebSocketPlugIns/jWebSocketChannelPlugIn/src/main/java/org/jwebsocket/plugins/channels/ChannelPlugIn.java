@@ -552,7 +552,6 @@ public class ChannelPlugIn extends TokenPlugIn {
 			sendErrorToken(aConnector, aToken, -1,
 					"'" + aConnector.getId()
 					+ "' Authorization failed, access/secret key pair value is not correct");
-			return;
 		} else {
 			Channel lChannel = mChannelManager.getChannel(lChannelId);
 			if (lChannel == null) {

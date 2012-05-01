@@ -32,9 +32,13 @@ import org.jwebsocket.token.Token;
  */
 public class SharedCanvasPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(SharedCanvasPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	private Collection<WebSocketConnector> mClients;
 
+	/**
+	 * 
+	 * @param aConfiguration
+	 */
 	public SharedCanvasPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
@@ -71,6 +75,10 @@ public class SharedCanvasPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 * 
+	 * @param aToken
+	 */
 	public void broadcast(Token aToken) {
 		for (WebSocketConnector lConnector : mClients) {
 			getServer().sendToken(lConnector, aToken);

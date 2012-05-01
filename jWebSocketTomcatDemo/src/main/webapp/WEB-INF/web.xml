@@ -10,7 +10,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>jWebSocketWS</servlet-name>
-        <url-pattern>/jWebSocketWS</url-pattern>
+        <url-pattern>/jWebSocket</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>jWebSocketHttp</servlet-name>
