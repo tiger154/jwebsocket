@@ -82,10 +82,10 @@ public class NioTcpEngine extends BaseEngine {
 	public void startEngine() throws WebSocketException {
 		try {
 			mDelayedPacketsQueue = new DelayedPacketsQueue();
-			mPendingWrites = new ConcurrentHashMap<>();
-			mPendingReads = new LinkedBlockingQueue<>(READ_QUEUE_MAX_SIZE);
-			mConnectorToChannelMap = new ConcurrentHashMap<>();
-			mChannelToConnectorMap = new ConcurrentHashMap<>();
+			mPendingWrites = new ConcurrentHashMap<String, Queue<DataFuture>>();
+			mPendingReads = new LinkedBlockingQueue<ReadBean>(READ_QUEUE_MAX_SIZE);
+			mConnectorToChannelMap = new ConcurrentHashMap<String, SocketChannel>();
+			mChannelToConnectorMap = new ConcurrentHashMap<SocketChannel, String>();
 			mReadBuffer = ByteBuffer.allocate(getConfiguration().getMaxFramesize());
 			mSelector = Selector.open();
 			mServerSocketChannel = ServerSocketChannel.open();
@@ -132,7 +132,9 @@ public class NioTcpEngine extends BaseEngine {
 				mDelayedPacketsQueue.clear();
 				mExecutorService.shutdown();
 				mLog.info("NIO engine stopped.");
-			} catch (InterruptedException | IOException lEx) {
+			} catch (InterruptedException lEx) {
+				throw new WebSocketException(lEx.getMessage(), lEx);
+			} catch (IOException lEx) {
 				throw new WebSocketException(lEx.getMessage(), lEx);
 			}
 		}

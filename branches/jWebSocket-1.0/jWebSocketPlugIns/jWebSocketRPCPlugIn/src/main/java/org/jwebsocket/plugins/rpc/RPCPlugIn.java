@@ -24,12 +24,10 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
-
+import java.util.Set;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -65,7 +63,7 @@ public class RPCPlugIn extends TokenPlugIn {
 
 	// keys to buil the rrpc call
 	private static RPCPlugIn sRPCPlugIn = null;
-	private static Logger mLog = Logging.getLogger(RPCPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// Store the parameters type allowed for rpc method.
 	private Map<String, RPCCallableClassLoader> mRpcCallableClassLoader = new FastMap<String, RPCCallableClassLoader>();
 

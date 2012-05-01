@@ -16,6 +16,7 @@
 package org.jwebsocket.tomcat;
 
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,6 +36,16 @@ public class TomcatServlet extends WebSocketServlet {
 		// save the request, since this is not available anymore in the createWebSocketInbound method
 		mRequest = aRequest;
 		super.service(aRequest, aResponse);
+	}
+
+	@Override
+	protected String selectSubProtocol(List<String> aSubProtocols) {
+		return super.selectSubProtocol(aSubProtocols);
+	}
+
+	@Override
+	protected boolean verifyOrigin(String aOrigin) {
+		return super.verifyOrigin(aOrigin);
 	}
 
 	/**

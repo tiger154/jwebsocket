@@ -26,32 +26,34 @@ import org.json.JSONStringer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketServerConstants;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
 /**
  * Pending...
- * 
+ *
  * @author aschulze
  */
 public class SharedObjectsPlugIn extends TokenPlugIn {
 
-	private static Logger log = Logging.getLogger(SharedObjectsPlugIn.class);
+	private static Logger log = Logging.getLogger();
 	// if namespace is changed update client plug-in accordingly!
 	private String NS_SHARED_OBJECTS = JWebSocketServerConstants.NS_BASE + ".plugins.sharedObjs";
 	private SharedObjects sharedObjects = new SharedObjects();
 	// if data types are changed update client plug-in accordingly!
-	private List<String> DATA_TYPES = new FastList<String>(Arrays.asList(new String[]{"number", "string", "boolean", "object", "set", "list", "map", "table"}));
+	private List<String> DATA_TYPES = new FastList<String>(Arrays.asList(
+			new String[]{"number", "string", "boolean", "object",
+				"set", "list", "map", "table"}));
 
 	public SharedObjectsPlugIn() {
 		this(null);
 	}
 
-	public SharedObjectsPlugIn(PluginConfiguration configuration) {
-		super(configuration);
+	public SharedObjectsPlugIn(PluginConfiguration aConfiguration) {
+		super(aConfiguration);
 		// specify default name space
 		this.setNamespace(NS_SHARED_OBJECTS);
 	}
