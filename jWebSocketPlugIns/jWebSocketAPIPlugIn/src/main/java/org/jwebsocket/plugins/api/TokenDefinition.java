@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 import javolution.util.FastList;
 import javolution.util.FastSet;
-import org.jwebsocket.token.ITokenizable;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
