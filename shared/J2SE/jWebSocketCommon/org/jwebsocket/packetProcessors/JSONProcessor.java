@@ -25,7 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.kit.RawPacket;
-import org.jwebsocket.token.ITokenizable;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.token.MapToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;

@@ -17,7 +17,7 @@ package org.jwebsocket.rrpc;
 
 import java.util.Map;
 import javolution.util.FastMap;
-import org.jwebsocket.token.ITokenizable;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.token.Token;
 
 /**

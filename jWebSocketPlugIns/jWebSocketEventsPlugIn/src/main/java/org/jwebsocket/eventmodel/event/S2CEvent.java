@@ -15,7 +15,7 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.event;
 
-import org.jwebsocket.token.ITokenizable;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.token.Token;
 
 /**

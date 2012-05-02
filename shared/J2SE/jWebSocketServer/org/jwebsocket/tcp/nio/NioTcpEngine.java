@@ -146,8 +146,7 @@ public class NioTcpEngine extends BaseEngine {
 			// Wake up waiting selector.
 			mSelector.wakeup();
 		} else {
-			mLog.debug("Discarding packet for unattached socket channel, remote client is: "
-					+ getConnectors().get(aConnectorId).getRemoteHost());
+			aFuture.setFailure(new Exception("Discarding packet for unattached socket channel..."));
 		}
 	}
 

@@ -15,14 +15,14 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.api;
 
-import org.jwebsocket.api.IInitializable;
-import org.jwebsocket.eventmodel.core.EventModel;
 import java.util.Map;
+import org.jwebsocket.api.IInitializable;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.eventmodel.core.EventModel;
 import org.jwebsocket.eventmodel.event.S2CEvent;
 import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.eventmodel.s2c.S2CEventNotification;
-import org.jwebsocket.token.ITokenizable;
 
 /**
  *

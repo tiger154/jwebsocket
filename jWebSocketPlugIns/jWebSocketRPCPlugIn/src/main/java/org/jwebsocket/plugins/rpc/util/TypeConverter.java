@@ -17,14 +17,12 @@ package org.jwebsocket.plugins.rpc.util;
 
 import java.util.List;
 import java.util.Map;
-
 import javolution.util.FastList;
 import javolution.util.FastMap;
-
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.rpc.RPCPlugIn;
-import org.jwebsocket.token.ITokenizable;
 import org.jwebsocket.token.Token;
 
 /**
