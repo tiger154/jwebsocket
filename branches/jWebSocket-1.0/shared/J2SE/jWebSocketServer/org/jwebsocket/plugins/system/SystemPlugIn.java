@@ -249,7 +249,7 @@ public class SystemPlugIn extends TokenPlugIn {
 					aConnector.setUsername(lSessionParams.get(USERNAME).toString());
 				}
 			} catch (Exception lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing connector session"));
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing connector session"), lEx);
 			}
 		}
 

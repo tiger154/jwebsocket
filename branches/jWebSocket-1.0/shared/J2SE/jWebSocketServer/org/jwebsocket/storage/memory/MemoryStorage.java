@@ -102,7 +102,7 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public void initialize() throws Exception {
-		if (!getContainer().containsKey(mName)) {
+		if (!getContainer().containsKey(mName) || null == getContainer().get(mName)) {
 			getContainer().put(mName, new FastMap<K, V>());
 		}
 
