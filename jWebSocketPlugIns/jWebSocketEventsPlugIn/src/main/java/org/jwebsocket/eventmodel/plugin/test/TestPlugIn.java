@@ -15,7 +15,6 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.plugin.test;
 
-import java.text.DecimalFormat;
 import java.util.Map;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
@@ -41,7 +40,7 @@ public class TestPlugIn extends JcPlugIn {
 
 	/**
 	 * Return the hash-code for a custom text
-	 * 
+	 *
 	 * @param aEvent
 	 * @param aResponseEvent
 	 */
@@ -51,6 +50,7 @@ public class TestPlugIn extends JcPlugIn {
 
 	/**
 	 * Return the EventsPlugIn name and version
+	 *
 	 * @param aEvent
 	 * @param aResponseEvent
 	 */
@@ -80,19 +80,12 @@ public class TestPlugIn extends JcPlugIn {
 
 					@Override
 					public void success(Object aResponse, String aFrom) {
-						System.out.println("S2CPlusXYEvent success callback. Response: " + (Integer) aResponse);
-
-						DecimalFormat lFormat = new DecimalFormat("0");
-						System.out.println("S2CPlusXYEvent processing time: " + lFormat.format(getProcessingTime()));
-						System.out.println("S2CPlusXYEvent elapsed time: " + lFormat.format(getElapsedTime()));
-						System.out.println("S2CPlusXYEvent response from: " + aFrom);
-
 						((TransactionContext) getContext()).success(aResponse);
 					}
 
 					@Override
 					public void failure(FailureReason aReason, String aFrom) {
-						System.out.println("S2CPlusXYEvent failure callback. Reason: " + aReason.name());
+						mLog.error("The S2C event notification failed. Reason: " + aReason.name());
 					}
 				});
 
@@ -104,8 +97,9 @@ public class TestPlugIn extends JcPlugIn {
 	}
 
 	/**
-	 * Test the JavaCard support on the client by sending an arbitrary APDU command
-	 * 
+	 * Test the JavaCard support on the client by sending an arbitrary APDU
+	 * command
+	 *
 	 * @param aEvent
 	 * @param aResponseEvent
 	 */
@@ -127,15 +121,11 @@ public class TestPlugIn extends JcPlugIn {
 
 				@Override
 				public void success(ResponseAPDU aResponse, String aFrom) {
-					DecimalFormat lFormat = new DecimalFormat("0");
-
-					System.out.println("success " + aFrom + " " + new String(aResponse.getBytes()));
-					System.out.println("elapsed time " + lFormat.format(getElapsedTime()));
 				}
 
 				@Override
 				public void failure(FailureReason aReason, String aFrom) {
-					System.out.println("failure " + aFrom + " " + aReason.name());
+					mLog.error("The S2C event notification failed. Reason: " + aReason.name());
 				}
 			});
 		}
