@@ -16,15 +16,15 @@
 package org.jwebsocket.eventmodel.event;
 
 import java.util.Map;
-import org.jwebsocket.eventmodel.filter.validator.Argument;
-import javolution.util.FastSet;
 import java.util.Set;
 import javolution.util.FastList;
 import javolution.util.FastMap;
+import javolution.util.FastSet;
 import org.jwebsocket.api.IInitializable;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.eventmodel.api.IServerSecureComponent;
+import org.jwebsocket.eventmodel.filter.validator.Argument;
 import org.jwebsocket.eventmodel.observable.Event;
-import org.jwebsocket.token.ITokenizable;
 import org.jwebsocket.token.Token;
 import org.springframework.validation.Validator;
 

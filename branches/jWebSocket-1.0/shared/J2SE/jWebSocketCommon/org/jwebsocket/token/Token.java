@@ -18,6 +18,7 @@ package org.jwebsocket.token;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.jwebsocket.api.ITokenizable;
 
 /**
  *
@@ -34,6 +35,7 @@ public interface Token {
 	 * copies all fields of the given ITokenizable to the token. Existing fields
 	 * do not get deleted but overwritten in case of naming conflicts. Use the
 	 * <tt>clear</tt> method to explicitely reset the token if desired.
+	 *
 	 * @param aTokenizable
 	 */
 	void set(ITokenizable aTokenizable);
@@ -46,9 +48,9 @@ public interface Token {
 	Map getMap();
 
 	/**
-	 * copies all fields from a Map into the Token. A check has to be made
-	 * by the corresponding implementations that only such data types are
-	 * passed that are supported by the Token abstraction.
+	 * copies all fields from a Map into the Token. A check has to be made by
+	 * the corresponding implementations that only such data types are passed
+	 * that are supported by the Token abstraction.
 	 *
 	 * @return
 	 */
@@ -126,6 +128,7 @@ public interface Token {
 	 * @param aValue
 	 */
 	void setLong(String aKey, Long aValue);
+
 	/**
 	 *
 	 * @param aKey
@@ -285,6 +288,7 @@ public interface Token {
 
 	/**
 	 * validates the passed objects and uses the appropriate assignment method
+	 *
 	 * @param aKey
 	 * @param aObj
 	 * @return true if value could be set otherwise false

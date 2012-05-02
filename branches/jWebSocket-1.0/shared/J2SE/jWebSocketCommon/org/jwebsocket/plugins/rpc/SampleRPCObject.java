@@ -16,7 +16,7 @@
 package org.jwebsocket.plugins.rpc;
 
 import org.jwebsocket.token.BaseTokenizable;
-import org.jwebsocket.token.ITokenizable;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.token.Token;
 
 /**
