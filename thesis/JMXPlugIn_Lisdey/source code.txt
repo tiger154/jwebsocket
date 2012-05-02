@@ -1,0 +1,2 @@
+The JMXPlugIn source code is located here:
+https://jwsdev.org:9443/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketPlugIns/jWebSocketJMXPlugIn
