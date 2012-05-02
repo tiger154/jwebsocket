@@ -152,10 +152,7 @@ public class NioTcpEngine extends BaseEngine {
 
 	@Override
 	public void connectorStopped(WebSocketConnector aConn, CloseReason aCloseReason) {
-		Queue<DataFuture> lQueue = mPendingWrites.remove(aConn.getId());
-		if (lQueue != null) {
-			lQueue.clear();
-		}
+		mPendingWrites.remove(aConn.getId());
 
 		if (mConnectorToChannelMap.containsKey(aConn.getId())) {
 			SocketChannel lChannel = mConnectorToChannelMap.remove(aConn.getId());
@@ -170,10 +167,6 @@ public class NioTcpEngine extends BaseEngine {
 
 		if (((NioTcpConnector) aConn).isAfterHandshake()) {
 			super.connectorStopped(aConn, aCloseReason);
-
-
-
-
 		}
 	}
 
