@@ -381,7 +381,9 @@ public class AdminPlugInService {
 					if (null == mServer.getPlugInById(lConfig.getId())) {
 						FastMap lMap = new FastMap();
 						lMap.put("idPlugIn", lConfig.getId());
-						lIdPlugIn.add(lMap);
+						if(!lIdPlugIn.contains(lMap)) {
+							lIdPlugIn.add(lMap);
+						}
 					}
 				}
 			}
@@ -392,7 +394,9 @@ public class AdminPlugInService {
 					if (null == mServer.getPlugInById(lConfig.getId())) {
 						FastMap lMap = new FastMap();
 						lMap.put("idPlugIn", lConfig.getId());
-						lIdPlugIn.add(lMap);
+						if(!lIdPlugIn.contains(lMap)) {
+							lIdPlugIn.add(lMap);
+						}
 					}
 				}
 			}

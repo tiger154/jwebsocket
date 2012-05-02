@@ -509,21 +509,20 @@ admin.loginPanel = {
 					if(("" != Ext.getCmp('textUser').getValue()) && ("" != Ext.getCmp('textPass').getValue())) {	
 						Ext.jws.send("org.jwebsocket.plugins.system", "logon",{
 							username:	Ext.getCmp('textUser').getValue(),
-							password: Ext.getCmp('textPass').getValue()
-						}, {
-							success: function(aToken){
-								if(aToken.authorities.search("ROLE_ADMIN_MAINTENANCE")) {
-									admin.mainPanel.init();
-									admin.logsPanel.init();
-									admin.loginPanel.close();
-								} else {
-									msg("Error","You don't have the credentials for access.");
+							password: Ext.getCmp('textPass').getValue()}, {
+								success: function(aToken){
+									if(0 == aToken.authorities.indexOf("ROLE_ADMIN_MAINTENANCE")) {
+										admin.mainPanel.init();
+										admin.logsPanel.init();
+										admin.loginPanel.close();
+									} else {
+										msg("Error","You don't have the credentials for access.");
+									}
+								},
+								failure: function(aToken){
+									msg("Error",aToken.msg);
 								}
-							},
-							failure: function(aToken){
-								msg("Error",aToken.msg);
-							}
-						} );
+						});
 					} else {
 						msg("Error","The fields are required.");
 					}
@@ -844,10 +843,10 @@ admin.mainPanel = {
 								admin.mainPanel.close();
 								admin.logsPanel.close();
 								admin.loginPanel.init();
-								msg("Successful",aToken.msg);
+								msg("Successful", "The session was successfully closed.");
 							},
 							failure: function(aToken){
-								msg("Error",aToken.msg);
+								msg("Error", aToken.msg);
 							}
 						});
 					}
@@ -870,7 +869,7 @@ admin.mainPanel = {
 		var plugin = {}
 		plugin.processToken = function(aToken){
 			if (aToken.ns == 'org.jwebsocket.plugins.admin' && (aToken.type == 'processChangeOfPlugIn'|| aToken.type == 'processChangeOfFilter')){
-				var text = aToken.reason + "Version " + aToken.version + " supported the change.";
+				var text = aToken.reason + "\n Version " + aToken.version + " supported the change.";
 				if(aToken.changeType != "UPDATE")
 					Ext.getCmp('buttonLogout').handler();
 				msg("Warning", text, 15);
@@ -1055,7 +1054,22 @@ Ext.onReady(function(){
 
 	Ext.jws.on('open',function(){
 		Ext.QuickTips.init();
-		admin.loginPanel.init();
+		Ext.jws.send("org.jwebsocket.plugins.system", "getAuthorities",{}, {
+			success: function(aToken){
+				if(0 == aToken.authorities.indexOf("ROLE_ADMIN_MAINTENANCE")) {
+					admin.mainPanel.init();
+					admin.logsPanel.init();
+					admin.loginPanel.close();
+				} else {
+					admin.loginPanel.init();
+					msg("Error","You don't have the credentials for access.");
+				}
+			},
+			failure: function(aToken){
+				admin.loginPanel.init();
+//				msg("Error",aToken.msg);
+			}
+		});
 	});
 
 	Ext.jws.on('close',function(){
