@@ -187,6 +187,30 @@ public class AdminPlugIn extends TokenPlugIn {
 		return null;
 	}
 
+	@Override
+	public List<String> invokeMethodList() {
+		FastList<String> lMethodList = new FastList<String>();
+		lMethodList.add("getAdminLogs");
+		lMethodList.add("getPlugInsConfig");
+		lMethodList.add("getFiltersConfig");
+		lMethodList.add("getPlugInConfigById");
+		lMethodList.add("getFilterConfigById");
+		lMethodList.add("changeOrderOfPlugInChain");
+		lMethodList.add("changeOrderOfFilterChain");
+		lMethodList.add("enablePlugIn");
+		lMethodList.add("enableFilter");
+		lMethodList.add("disablePlugIn");
+		lMethodList.add("disableFilter");
+		lMethodList.add("removePlugIn");
+		lMethodList.add("removeFilter");
+		lMethodList.add("addPlugIn");
+		lMethodList.add("addFilter");
+		lMethodList.add("reloadPlugIn");
+		lMethodList.add("reloadFilter");
+				
+		return lMethodList;
+	}
+
 	/**
 	 * shutdown server
 	 *
