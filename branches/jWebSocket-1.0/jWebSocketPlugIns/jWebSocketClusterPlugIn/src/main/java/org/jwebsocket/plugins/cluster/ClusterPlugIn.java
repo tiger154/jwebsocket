@@ -36,7 +36,7 @@ public class ClusterPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
-	private static final String NS_TEST = JWebSocketServerConstants.NS_BASE + ".plugins.cluster";
+	private static final String NS_CLUSTER = JWebSocketServerConstants.NS_BASE + ".plugins.cluster";
 
 	/**
 	 *
@@ -48,7 +48,7 @@ public class ClusterPlugIn extends TokenPlugIn {
 			mLog.debug("Instantiating cluster plug-in...");
 		}
 		// specify default name space for admin plugin
-		this.setNamespace(NS_TEST);
+		this.setNamespace(NS_CLUSTER);
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Cluster plug-in successfully loaded.");
 		}

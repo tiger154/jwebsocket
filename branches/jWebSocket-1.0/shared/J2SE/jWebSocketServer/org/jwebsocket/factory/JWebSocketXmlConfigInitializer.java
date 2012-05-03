@@ -27,7 +27,7 @@ import org.jwebsocket.config.xml.*;
 import org.jwebsocket.logging.Logging;
 
 /**
- * Intialize the engine, servers and plug-ins based on jWebSocket.xml
+ * Initialize the engine, servers and plug-ins based on jWebSocket.xml
  * configuration
  *
  * @author puran
@@ -58,11 +58,13 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 	 *
 	 * @param aConfig the jWebSocket config
 	 * @return the initializer object
-	 */
+	*/
+	
 	public static JWebSocketXmlConfigInitializer getInitializer(JWebSocketConfig aConfig) {
 		JWebSocketXmlConfigInitializer lInitializer = new JWebSocketXmlConfigInitializer(aConfig);
 		return lInitializer;
 	}
+	
 
 	@Override
 	public ClassLoader initializeLibraries() {
@@ -99,54 +101,58 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public WebSocketEngine initializeEngine() {
-		WebSocketEngine lNewEngine = null;
-		EngineConfig lEngineConfig = jWebSocketConfig.getEngines().get(0);
-		String lJarFilePath;
-		try {
-			// try to load engine from classpath first,could be located in server bundle
-			Class<WebSocketEngine> lEngineClass = loadEngineFromClassPath(lEngineConfig.getName());
-			// in case of a class not found exception we DO NOT want to show the
-			// exception but subsequently load the class from the jar file
-			if (lEngineClass == null) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Loading from the jar file '" + lEngineConfig.getName() + "'  ");
-				}
-				lJarFilePath = JWebSocketConfig.getLibsFolder(lEngineConfig.getJar());
-				// jarFilePath may be null if .jar is included in server bundle
-				if (lJarFilePath != null) {
+	public Map<String, WebSocketEngine> initializeEngines() {
+		Map<String, WebSocketEngine> lEngines = new FastMap<String, WebSocketEngine>();
+		for (EngineConfig lEngineConfig : jWebSocketConfig.getEngines()) {
+			// EngineConfig lEngineConfig = jWebSocketConfig.getEngines().get(0);
+			String lJarFilePath;
+			try {
+				// try to load engine from classpath first,could be located in server bundle
+				Class<WebSocketEngine> lEngineClass = loadEngineFromClassPath(lEngineConfig.getName());
+				// in case of a class not found exception we DO NOT want to show the
+				// exception but subsequently load the class from the jar file
+				if (lEngineClass == null) {
 					if (mLog.isDebugEnabled()) {
-						mLog.debug("Loading engine '" + lEngineConfig.getName() + "' from '" + lJarFilePath + "'...");
+						mLog.debug("Loading from the jar file '" + lEngineConfig.getName() + "'  ");
 					}
-					mClassLoader.addFile(lJarFilePath);
-					lEngineClass = (Class<WebSocketEngine>) mClassLoader.loadClass(lEngineConfig.getName());
+					lJarFilePath = JWebSocketConfig.getLibsFolder(lEngineConfig.getJar());
+					// jarFilePath may be null if .jar is included in server bundle
+					if (lJarFilePath != null) {
+						if (mLog.isDebugEnabled()) {
+							mLog.debug("Loading engine '" + lEngineConfig.getName() + "' from '" + lJarFilePath + "'...");
+						}
+						mClassLoader.addFile(lJarFilePath);
+						lEngineClass = (Class<WebSocketEngine>) mClassLoader.loadClass(lEngineConfig.getName());
+					}
 				}
-			}
-			// if class found try to create an instance
-			if (lEngineClass != null) {
-				Constructor<WebSocketEngine> lConstructor =
-						lEngineClass.getDeclaredConstructor(EngineConfiguration.class);
-				if (lConstructor != null) {
-					lConstructor.setAccessible(true);
-					lNewEngine = lConstructor.newInstance(new Object[]{lEngineConfig});
+				// if class found try to create an instance
+				if (lEngineClass != null) {
+					Constructor<WebSocketEngine> lConstructor =
+							lEngineClass.getDeclaredConstructor(EngineConfiguration.class);
+					WebSocketEngine lEngine;
+					if (lConstructor != null) {
+						lConstructor.setAccessible(true);
+						lEngine = lConstructor.newInstance(new Object[]{lEngineConfig});
+					} else {
+						lEngine = lEngineClass.newInstance();
+						lEngine.setEngineConfiguration(lEngineConfig);
+					}
+					lEngines.put(lEngine.getId(), lEngine);
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Engine '" + lEngineConfig.getId()
+								+ "' successfully instantiated.");
+					}
 				} else {
-					lNewEngine = lEngineClass.newInstance();
-					lNewEngine.setEngineConfiguration(lEngineConfig);
+					mLog.error("jWebSocket engine class "
+							+ lEngineConfig.getName() + " could not be loaded.");
 				}
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Engine '" + lEngineConfig.getId()
-							+ "' successfully instantiated.");
-				}
-			} else {
-				mLog.error("jWebSocket engine class "
-						+ lEngineConfig.getName() + " could not be loaded.");
+			} catch (Exception lEx) {
+				mLog.error("Error initializing engine based on given configuration. "
+						+ "Make sure that you are using correct jar file or "
+						+ "engine class is in the classpath", lEx);
 			}
-		} catch (Exception lEx) {
-			mLog.error("Error initializing engine based on given configuration. "
-					+ "Make sure that you are using correct jar file or "
-					+ "engine class is in the classpath", lEx);
 		}
-		return lNewEngine;
+		return lEngines;
 	}
 
 	/**
@@ -240,7 +246,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 							mLog.debug("Loading plug-in '"
 									+ lPlugInConfig.getName()
 									+ "' from '" + lJarFilePath + "'...");
-							
+
 						}
 						lPlugInClass = (Class<WebSocketPlugIn>) mClassLoader.loadClass(lPlugInConfig.getName());
 					}

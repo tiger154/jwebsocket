@@ -40,12 +40,14 @@ public class TomcatServlet extends WebSocketServlet {
 
 	@Override
 	protected String selectSubProtocol(List<String> aSubProtocols) {
-		return super.selectSubProtocol(aSubProtocols);
+		// super.selectSubProtocol(aSubProtocols);
+		return TomcatWrapper.selectSubProtocol(aSubProtocols);
 	}
 
 	@Override
 	protected boolean verifyOrigin(String aOrigin) {
-		return super.verifyOrigin(aOrigin);
+		// super.verifyOrigin(aOrigin);
+		return TomcatWrapper.verifyOrigin(aOrigin);
 	}
 
 	/**

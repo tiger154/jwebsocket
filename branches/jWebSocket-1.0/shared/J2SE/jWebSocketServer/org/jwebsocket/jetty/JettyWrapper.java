@@ -56,7 +56,8 @@ public class JettyWrapper implements WebSocket,
 			mLog.debug("Instantiating Jetty Wrapper with subprotocol '"
 					+ aProtocol + "'...");
 		}
-		mEngine = JWebSocketFactory.getEngine();
+		// TODO: we need to fix this hardcoded solution
+		mEngine = JWebSocketFactory.getEngine("jetty0");
 		mRequest = aRequest;
 		mProtocol = aProtocol;
 	}

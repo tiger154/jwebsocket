@@ -28,7 +28,7 @@ public class SessionReconnectionManager extends BaseReconnectionManager {
 	@Override
 	public void initialize() throws Exception {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(">> Initializing session reconnection manager...");
+			mLog.debug("Initializing session reconnection manager...");
 		}
 
 		setReconnectionIndex(getCacheStorageProvider().getCacheStorage(getCacheStorageName()));
@@ -36,7 +36,7 @@ public class SessionReconnectionManager extends BaseReconnectionManager {
 
 		setSessionIdsTrash(getStorageProvider().getStorage(getTrashStorageName()));
 		getSessionIdsTrash().initialize();
-		
+
 		super.initialize();
 	}
 
