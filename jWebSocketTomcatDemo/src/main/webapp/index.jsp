@@ -8,6 +8,6 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>jWebSocket Tomcat Demo!</h1>
+        <h1>jWebSocket Tomcat Web App Demo!</h1>
     </body>
 </html>

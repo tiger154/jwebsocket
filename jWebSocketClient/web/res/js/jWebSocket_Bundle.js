@@ -35,9 +35,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0b6 (nightly build 20416)
+	//:const:*:VERSION:String:1.0b8 (nightly build 20503)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0b6 (nightly build 20416)",
+	VERSION: "1.0b8 (nightly build 20503)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -81,9 +81,9 @@ var jws = {
 	//:d:en:Current token id, incremented per token exchange to assign results.
 	//:@deprecated:en:Use [tt]getDefaultServerURL()[/tt] instead.
 	JWS_SERVER_URL:
-	"ws://" 
-	+ ( self.location.hostname ? self.location.hostname : "127.0.0.1" )
-	+ ":8787/jWebSocket/jWebSocket",
+		"ws://" 
+		+ ( self.location.hostname ? self.location.hostname : "127.0.0.1" )
+		+ ":8787/jWebSocket/jWebSocket",
 
 	//:const:*:CONNECTING:Integer:0
 	//:d:en:The connection has not yet been established.

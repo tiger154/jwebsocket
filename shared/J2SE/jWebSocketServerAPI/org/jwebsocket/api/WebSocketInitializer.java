@@ -20,21 +20,25 @@ import java.util.Map;
 import org.jwebsocket.config.JWebSocketConfig;
 
 /**
- * Base interface that defines the methods to initialize jWebSocket engine, servers
- * and plugins. The implementation of this class can initialize in different way. 
- * 
+ * Base interface that defines the methods to initialize jWebSocket engine,
+ * servers and plugins. The implementation of this class can initialize in
+ * different way.
+ *
  * {@code JWebSocketXmlConfigInitializer} performs the initialization using
- * 'jWebSocket.xml' configuration file. 
- * 
- * {@code JWebSocketInitializer} performs the initialization directly using the source
- * classes and packages. This class enables user to write initialization code at compile 
- * time thus helping debugging their engine, servers and plugin logic.
- * 
+ * 'jWebSocket.xml' configuration file.
+ *
+ * {@code JWebSocketInitializer} performs the initialization directly using the
+ * source classes and packages. This class enables user to write initialization
+ * code at compile time thus helping debugging their engine, servers and plugin
+ * logic.
+ *
  * @author puran
- * @version $Id: WebSocketInitializer.java 596 2010-06-22 17:09:54Z fivefeetfurther $
+ * @version $Id: WebSocketInitializer.java 596 2010-06-22 17:09:54Z
+ * fivefeetfurther $
  *
  */
 public interface WebSocketInitializer {
+
 	/**
 	 * Initializes the loggins sub system
 	 */
@@ -44,33 +48,41 @@ public interface WebSocketInitializer {
 	 * Initialize the libraries
 	 */
 	ClassLoader initializeLibraries();
+
 	/**
-	 * Initialize the engine 
+	 * Initialize the engine
+	 *
 	 * @return the initialized engine, which is ready to start
 	 */
-	WebSocketEngine initializeEngine();
+	Map<String, WebSocketEngine> initializeEngines();
+
 	/**
-	 * Initialize the servers, these initialized servers will not 
-	 * have plugins initialized in plugin chain.
+	 * Initialize the servers, these initialized servers will not have plugins
+	 * initialized in plugin chain.
+	 *
 	 * @return the list of initialized servers ready to start
 	 */
 	List<WebSocketServer> initializeServers();
+
 	/**
 	 * Initialize the plugins specific to server ids.
-	 * @return the FastMap of server id to the list of plugins
-	 * associated with it.
+	 *
+	 * @return the FastMap of server id to the list of plugins associated with
+	 * it.
 	 */
 	Map<String, List<WebSocketPlugIn>> initializePlugins();
-	
+
 	/**
 	 * Initialize the filters specific to the server ids
-	 * @return the FastMap of server id to the list of filters associated
-	 * with it.
+	 *
+	 * @return the FastMap of server id to the list of filters associated with
+	 * it.
 	 */
 	Map<String, List<WebSocketFilter>> initializeFilters();
-	
+
 	/**
-	 * Returns the config object 
+	 * Returns the config object
+	 *
 	 * @return the jwebsocket config object
 	 */
 	JWebSocketConfig getConfig();

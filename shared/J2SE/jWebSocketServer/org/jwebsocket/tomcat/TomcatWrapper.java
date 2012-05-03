@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ import javolution.util.FastMap;
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketCommonConstants;
@@ -46,17 +48,45 @@ public class TomcatWrapper extends MessageInbound {
 
 	private static Logger mLog = Logging.getLogger();
 	private TomcatConnector mConnector = null;
-	private WebSocketEngine mEngine = null;
+	private static WebSocketEngine mEngine = null;
 	private HttpServletRequest mRequest = null;
 	private HttpSession mSession = null;
 	private RequestHeader mHeader;
 	private InetAddress mRemoteHost;
 	private int mRemotePort;
 
+	public static String selectSubProtocol(List<String> aSubProtocols) {
+		// TODO: implement correct algorithm here!
+		String lSubProt;
+		if (null == aSubProtocols || aSubProtocols.size() <= 0) {
+			lSubProt = JWebSocketCommonConstants.WS_SUBPROT_JSON;
+		} else {
+			lSubProt = aSubProtocols.get(0);
+		}
+		return lSubProt;
+	}
+
+	public static boolean verifyOrigin(String aOrigin) {
+		// TODO: implement correct origin check here!
+		boolean lVerified = true;
+		return lVerified;
+	}
+
 	public TomcatWrapper(HttpServletRequest aRequest, String aSubProtocol) {
 		super();
+		// TODO: we need to fix this hardcoded solution
+		mEngine = JWebSocketFactory.getEngine("tomcat0");
 		mRequest = aRequest;
 		mSession = aRequest.getSession();
+		if (null != mEngine) {
+			EngineConfiguration lConfig = mEngine.getConfiguration();
+			if (null != lConfig) {
+				int lTimeout = mEngine.getConfiguration().getTimeout();
+				if (lTimeout >= 1000) {
+					mSession.setMaxInactiveInterval(lTimeout);
+				}
+			}
+		}
 
 		mRemotePort = mRequest.getRemotePort();
 		InetAddress lAddr;
@@ -115,9 +145,6 @@ public class TomcatWrapper extends MessageInbound {
 	@Override
 	protected void onOpen(WsOutbound aOutbound) {
 		// super.onOpen(aOutbound);
-
-		mEngine = JWebSocketFactory.getEngine();
-
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Connecting Tomcat Client...");
 		}
@@ -126,6 +153,7 @@ public class TomcatWrapper extends MessageInbound {
 		mConnector.getSession().setStorage(new HttpSessionStorage(mSession));
 
 		mConnector.setHeader(mHeader);
+		mConnector.setSubprot(mHeader.getSubProtocol());
 		mConnector.setRemotePort(mRemotePort);
 		mConnector.setRemoteHost(mRemoteHost);
 		mEngine.addConnector(mConnector);
@@ -159,7 +187,7 @@ public class TomcatWrapper extends MessageInbound {
 			mLog.debug("Message (binary) from Tomcat client...");
 		}
 		if (mConnector != null) {
-			// TODO implement binary Tomcat messages!
+			// TODO: implement binary Tomcat messages!
 			WebSocketPacket lDataPacket = new RawPacket(aMessage.array());
 			mEngine.processPacket(mConnector, lDataPacket);
 		}
@@ -171,7 +199,6 @@ public class TomcatWrapper extends MessageInbound {
 			mLog.debug("Message (text) from Tomcat client...");
 		}
 		if (mConnector != null) {
-			// TODO implement binary Tomcat messages!
 			WebSocketPacket lDataPacket = new RawPacket(aMessage.toString());
 			mEngine.processPacket(mConnector, lDataPacket);
 		}

@@ -14,19 +14,15 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-import org.jwebsocket.config.ConfigHandler;
-import org.jwebsocket.config.JWebSocketConfig;
-import org.jwebsocket.kit.WebSocketRuntimeException;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -34,6 +30,9 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.json.JSONObject;
 import org.jwebsocket.config.Config;
+import org.jwebsocket.config.ConfigHandler;
+import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.kit.WebSocketRuntimeException;
 
 /**
  * Handler class that handles the <tt>jWebSocket.xml</tt> configuration. This
@@ -50,10 +49,10 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 
 	// We cannot use the logging subsystem here because its config needs to be
 	// loaded first!
-	private static final String ELEMENT_INSTALLATION = "installation";
+	// private static final String ELEMENT_INSTALLATION = "installation";
 	private static final String ELEMENT_PROTOCOL = "protocol";
 	private static final String ELEMENT_NODE_ID = "node_id";
-	private static final String ELEMENT_INITIALIZER_CLASS = "initializerClass";
+	// private static final String ELEMENT_INITIALIZER_CLASS = "initializerClass";
 	private static final String ELEMENT_LIBRARY_FOLDER = "libraryFolder";
 	private static final String ELEMENT_LIBRARIES = "libraries";
 	private static final String ELEMENT_LIBRARY = "library";
@@ -104,13 +103,7 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 				aStreamReader.next();
 				if (aStreamReader.isStartElement()) {
 					String lElementName = aStreamReader.getLocalName();
-					if (lElementName.equals(ELEMENT_INSTALLATION)) {
-						aStreamReader.next();
-						lConfigBuilder.setInstallation(aStreamReader.getText());
-					} else if (lElementName.equals(ELEMENT_INITIALIZER_CLASS)) {
-						aStreamReader.next();
-						lConfigBuilder.setInitializer(aStreamReader.getText());
-					} else if (lElementName.equals(ELEMENT_PROTOCOL)) {
+					if (lElementName.equals(ELEMENT_PROTOCOL)) {
 						aStreamReader.next();
 						lConfigBuilder.setProtocol(aStreamReader.getText());
 					} else if (lElementName.equals(ELEMENT_NODE_ID)) {

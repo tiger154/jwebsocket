@@ -305,21 +305,20 @@ rem jWebSocket config file
 rem SSL keystore
 7z u -mx9 -r -tzip "%dest%" "%conf%jWebSocket.ks"
 rem spring config files (from v1.0)
-
 7z u -mx9 -r -tzip "%dest%" "%conf%ehcache.xml"
 7z u -mx9 -r -tzip "%dest%" "%conf%log4j.xml"
 
-rem obsolete
-rem 7z u -mx9 -r -tzip "%dest%" "%conf%core.xml"
-rem 7z u -mx9 -r -tzip "%dest%" "%conf%event_definitions.xml"
-rem 7z u -mx9 -r -tzip "%dest%" "%conf%filters.xml"
-rem 7z u -mx9 -r -tzip "%dest%" "%conf%plugins.xml"
-rem 7z u -mx9 -r -tzip "%dest%" "%conf%security.xml"
-rem rem log4j config files (from v1.0)
-
-
 rem goto end
 
+:tomcatbundle
+
+set tcver=7.0.27
+set dest=%down%tomcat-jwebsocket-bundle-%tcver%.zip
+if exist "%dest%" del "%dest%"
+7z u -mx9 -r -tzip "%dest%" "%libs%tomcat-jwebsocket-bundle-%tcver%.jar"
+7z u -mx9 -r -tzip "%dest%" "%depl%ReadMe_TomcatBundle.txt"
+
+rem goto end
 
 :winexe
 

@@ -74,7 +74,7 @@ public final class JWebSocketLoader {
 
 		// initialize security by using config settings
 		SecurityFactory.initFromConfig(lConfig);
-		WebSocketInitializer lInitializer = JWebSocketXmlConfigInitializer.getInitializer(lConfig);
+		WebSocketInitializer lInitializer = new JWebSocketXmlConfigInitializer(lConfig);
 		return lInitializer;
 	}
 

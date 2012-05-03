@@ -162,6 +162,7 @@ jws.tests.Channels = {
 			jws.Tests.getAdminConn().channelPublish( 
 				aChannelId, 
 				aData,
+				null,
 				{
 					OnResponse: function( aToken ) {
 						lResponse = aToken;
@@ -338,7 +339,7 @@ jws.tests.Channels = {
 										lPub = lPubs[ lPubIdx ].client;
 										lChId = "ch_" + ( lPubIdx + 1 );
 										jws.console.log( "Publishing at channel " + lChId + "..." );
-										lPub.channelPublish( lChId, "Test", {
+										lPub.channelPublish( lChId, "Test", null, {
 											OnResponse: function ( aToken ) {
 												jws.console.log( "Publish Response: " + JSON.stringify( aToken ) );
 											}
