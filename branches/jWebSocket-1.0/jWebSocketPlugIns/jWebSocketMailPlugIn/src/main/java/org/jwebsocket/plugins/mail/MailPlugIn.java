@@ -40,12 +40,14 @@ import org.apache.commons.mail.MultiPartEmail;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.cachestorage.ehcache.EhCacheCacheStorage;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.storage.BaseStorage;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -60,7 +62,7 @@ public class MailPlugIn extends TokenPlugIn {
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_MAIL = JWebSocketServerConstants.NS_BASE + ".plugins.mail";
-	private static MailStore mMailStore = new MailStore();
+	private static MailStore mMailStore = null;
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 
@@ -85,6 +87,12 @@ public class MailPlugIn extends TokenPlugIn {
 							+ ", POP3: " + mSettings.getPop3Host() + ":" + mSettings.getPop3Port()
 							+ ".");
 				}
+				BaseStorage lStorage = mSettings.getStorage();
+				// use EhCache "mailStore" if nothing given by administrator
+				if (null == lStorage) {
+					lStorage = new EhCacheCacheStorage("mailStore");
+				}
+				mMailStore = new MailStore(lStorage);
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating mail plug-in"));
@@ -513,7 +521,7 @@ public class MailPlugIn extends TokenPlugIn {
 		}
 		return aString;
 	}
-	
+
 	private void createMail(WebSocketConnector aConnector, Token aToken) {
 		Token lMailToken = TokenFactory.createToken();
 
@@ -532,7 +540,6 @@ public class MailPlugIn extends TokenPlugIn {
 
 		// only take over valid fields of the token
 		String lId = UUID.randomUUID().toString();
-		lId = "myMail";
 		lMailToken.setString("id", lId);
 		lMailToken.setString("from", lFrom);
 		lMailToken.setString("to", lTo);
@@ -556,15 +563,18 @@ public class MailPlugIn extends TokenPlugIn {
 	}
 
 	private void dropMail(WebSocketConnector aConnector, Token aToken) {
-		String lId = aToken.getString("id");
-
 		TokenServer lServer = getServer();
 		Token lResponse = createResponse(aToken);
 
-		Token lMailStoreToken = mMailStore.removeMail(lId);
-		lResponse.setInteger("code", lMailStoreToken.getInteger("code", -1));
-		lResponse.setString("msg", lMailStoreToken.getString("msg", "-"));
-
+		String lId = aToken.getString("id");
+		if (null == lId) {
+			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", "No mail ID passed.");
+		} else {
+			Token lMailStoreToken = mMailStore.removeMail(lId);
+			lResponse.setInteger("code", lMailStoreToken.getInteger("code", -1));
+			lResponse.setString("msg", lMailStoreToken.getString("msg", "-"));
+		}
 
 		// send response to requester
 		lServer.sendToken(aConnector, lResponse);

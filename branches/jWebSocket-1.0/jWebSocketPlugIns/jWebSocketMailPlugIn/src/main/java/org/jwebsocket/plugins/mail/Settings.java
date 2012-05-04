@@ -17,6 +17,7 @@ package org.jwebsocket.plugins.mail;
 
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.storage.BaseStorage;
 
 /**
  *
@@ -24,6 +25,7 @@ import org.jwebsocket.config.JWebSocketServerConstants;
  */
 public class Settings {
 
+	private BaseStorage mBaseStorage = null;
 	private String mSmtpHost = null;
 	private Integer mSmtpPort = null;
 	private Boolean mSmtpAuth = null;
@@ -201,9 +203,24 @@ public class Settings {
 	}
 
 	/**
-	 * @param mRarPath the RarPath to set
+	 * @param aRarPath 
 	 */
 	public void setRarPath(String aRarPath) {
 		mRarPath = aRarPath;
+	}
+
+	/**
+	 * @return the mBaseStorage
+	 */
+	public BaseStorage getStorage() {
+		return mBaseStorage;
+	}
+
+	/**
+	 * 
+	 * @param aBaseStorage 
+	 */
+	public void setStorage(BaseStorage aBaseStorage) {
+		mBaseStorage = aBaseStorage;
 	}
 }

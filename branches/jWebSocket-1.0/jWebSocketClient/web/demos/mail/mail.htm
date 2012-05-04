@@ -4,23 +4,23 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<!-- If Google's chrome frame installed, use it! -->
 		<!-- Comment needs to be BELOW this meta tag! -->
-<!--
-//	****************************************************************************
-//	jWebSocket Mail Demo (uses jWebSocket Client and Server)
-//	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
-//	****************************************************************************
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//	****************************************************************************
--->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket Mail Demo (uses jWebSocket Client and Server)
+		//	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+		//	****************************************************************************
+		//	This program is free software; you can redistribute it and/or modify it
+		//	under the terms of the GNU Lesser General Public License as published by the
+		//	Free Software Foundation; either version 3 of the License, or (at your
+		//	option) any later version.
+		//	This program is distributed in the hope that it will be useful, but WITHOUT
+		//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+		//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+		//	more details.
+		//	You should have received a copy of the GNU Lesser General Public License along
+		//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+		//	****************************************************************************
+		-->
 		<meta http-equiv="Content-Language" content="en">
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 		<title>jWebSocket Mail Demo</title>
@@ -49,6 +49,7 @@
 
 			var lWSC = null;
 			var gUsername = null;
+			var mCurrentMailID = null;
 
 			function logon() {
 				// URL is ws[s]://[hostname|localhost]:8787[/context][/servlet/][;args...]
@@ -100,9 +101,7 @@
 			}
 
 			function sendMail() {
-				lWSC.sendMail(
-					"myMail", {}
-				);
+				lWSC.sendMail( mCurrentMailID, {} );
 			}
 
 			function createMail() {
@@ -115,42 +114,50 @@
 					eBody.value, // body
 					jws.MailPlugIn.TEXT_MAIL, // format (is html?)
 					{
-						
 					}
 				);
 			}
 
 			function dropMail() {
 				lWSC.dropMail(
+					mCurrentMailID,
 					{
 						
 					}
 				);
 			}
 
-
 			function addAttachment() {
 				log( "uploading local file to the jWebSocket server..." );
 				// OnLocalFileLoaded refers to onLocalFileLoadedObs
 				var lRes =
 					lWSC.fileLoadLocal( jws.$( "sinpUpload" ), {
-						OnSuccess: function( aToken ) {
-							lWSC.addAttachment("myMail", aToken.fileName, aToken.data, {
-								// file is already base64 encoded
-								suppressEncoder: true,
+					OnSuccess: function( aToken ) {
+						lWSC.addAttachment(
+							mCurrentMailID, 
+							aToken.fileName, 
+							aToken.data,
+							{	// file is already base64 encoded
+								suppressEncoder: true /*,
 								volumeSize: 950000,
-								archiveName: "mailAttachments.zip"
-							});
-						},
-						OnFailure: function( aToken ) {
-							alert( "Failure on loading file" );
-						}
-					});
+								archiveName: "mailAttachments.zip" */
+							}
+						);
+					},
+					OnFailure: function( aToken ) {
+						alert( "Failure on loading file" );
+					}
+				});
 				log( lWSC.resultToString( lRes ) );
 			}
 
 			function onMailSentObs( aToken ) {
 				log( "Mail sent: " + aToken.msg );
+			}
+			
+			function onMailCreatedObs( aToken ) {
+				mCurrentMailID = aToken.id;
+				log( "Mail created with ID: " + aToken.id );
 			}
 
 			function initPage() {
@@ -172,6 +179,7 @@
 				if( jws.browserSupportsWebSockets() ) {
 					lWSC = new jws.jWebSocketJSONClient();
 					lWSC.setMailCallbacks({
+						OnMailCreated: onMailCreatedObs,
 						OnMailSent: onMailSentObs
 					});
 					eUsername.focus();
@@ -204,15 +212,15 @@
 		onload="initPage();"
 		onunload="exitPage();"
 		>
-<!--	remarked temporarily due to chrome 5 browser bug
-		<script type="text/javascript">
-			var lFrameElem = this.frameElement;
-			if( !lFrameElem ) {
-				location.replace( "../../index.htm?page=demos/hello_world/hello_world.htm" );
-				// location.href = "../../index.htm?page=demos/hello_world/hello_world.htm" ;
-			}
-		</script>
--->		
+		<!--	remarked temporarily due to chrome 5 browser bug
+				<script type="text/javascript">
+					var lFrameElem = this.frameElement;
+					if( !lFrameElem ) {
+						location.replace( "../../index.htm?page=demos/hello_world/hello_world.htm" );
+						// location.href = "../../index.htm?page=demos/hello_world/hello_world.htm" ;
+					}
+				</script>
+		-->		
 		<table class="tblHeader" width="100%" cellspacing="0" cellpadding="0">
 			<tr>
 				<td class="tdHeader" width="">jWebSocket Mail Demo</td>
@@ -222,7 +230,7 @@
 		</table>
 		<p>This demo shows how to easily send mails via the jWebSocket Mail Service.
 			An appropriate mail server configuration on your jWebSocket server in the jWebSocket.xml file is required.
-		Please refer to the documentation at <a target="_blank" href="http://jwebsocket.org">http://jwebsocket.org</a>.</p>
+			Please refer to the documentation at <a target="_blank" href="http://jwebsocket.org">http://jwebsocket.org</a>.</p>
 		<div id="sdivChat" class="sdivContainer"
 			 style="position:relative; height:300px; overflow:auto;">
 		</div>

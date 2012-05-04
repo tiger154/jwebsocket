@@ -18,31 +18,34 @@ package org.jwebsocket.plugins.mail;
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
-import org.jwebsocket.storage.ehcache.EhCacheStorage;
+import org.jwebsocket.storage.BaseStorage;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
 /**
  * Mail store based extension of EhCacheStorage.
- * 
+ *
  * @author aschulze
  */
-public class MailStore extends EhCacheStorage {
+public class MailStore {
 
-	/** logger object */
+	/**
+	 * logger object
+	 */
 	private static Logger mLog = Logging.getLogger();
+	private static BaseStorage mStorage = null;
 
 	/**
 	 * default constructor
 	 */
-	public MailStore() {
-		super("mailStore");
+	public MailStore(BaseStorage aStorage) {
+		mStorage = aStorage;
 	}
 
 	public Token getMail(String aId) {
 		Token lRes = null;
 		try {
-			String lStr = (String) super.get(aId);
+			String lStr = (String) mStorage.get(aId);
 			lRes = JSONProcessor.jsonStringToToken(lStr);
 		} catch (Exception lEx) {
 			String lMsg = lEx.getClass().getSimpleName()
@@ -57,7 +60,7 @@ public class MailStore extends EhCacheStorage {
 		Token lRes = TokenFactory.createToken();
 		try {
 			String lStr = JSONProcessor.tokenToPacket(aMail).getUTF8();
-			super.put(aMail.getString("id"), lStr);
+			mStorage.put(aMail.getString("id"), lStr);
 			lRes.setInteger("code", 0);
 			lRes.setString("msg", "ok");
 		} catch (Exception lEx) {
@@ -73,17 +76,23 @@ public class MailStore extends EhCacheStorage {
 
 	public Token removeMail(String aId) {
 		Token lRes = TokenFactory.createToken();
-		super.remove(aId);
-		lRes.setInteger("code", 0);
-		lRes.setString("msg", "ok");
+		if (mStorage.containsKey(aId)) {
+			mStorage.remove(aId);
+			lRes.setInteger("code", 0);
+			lRes.setString("msg", "ok");
+		} else {
+			lRes.setInteger("code", -1);
+			lRes.setString("msg", "No mail with ID '"
+					+ aId + "' found in mail store .");
+		}
 		return lRes;
 	}
 
 	public void clearMails() {
-		super.clear();
+		mStorage.clear();
 	}
 
 	public int getMailStoreSize() {
-		return super.size();
+		return mStorage.size();
 	}
 }

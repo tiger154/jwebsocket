@@ -51,6 +51,10 @@ jws.MailPlugIn = {
 				if( this.OnMailSent ) {
 					this.OnMailSent( aToken );
 				}
+			} else if( "createMail" == aToken.reqType ) {
+				if( this.OnMailCreated ) {
+					this.OnMailCreated( aToken );
+				}
 			}
 		}
 	},
@@ -208,6 +212,9 @@ jws.MailPlugIn = {
 		}
 		if( aListeners.OnMailSent !== undefined ) {
 			this.OnMailSent = aListeners.OnMailSent;
+		}
+		if( aListeners.OnMailCreated !== undefined ) {
+			this.OnMailCreated = aListeners.OnMailCreated;
 		}
 	}
 

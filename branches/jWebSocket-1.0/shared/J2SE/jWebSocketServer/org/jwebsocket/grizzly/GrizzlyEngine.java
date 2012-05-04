@@ -17,15 +17,13 @@ package org.jwebsocket.grizzly;
 
 import java.util.Date;
 import org.apache.log4j.Logger;
-import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.websockets.WebSocketAddOn;
 import org.glassfish.grizzly.websockets.WebSocketApplication;
 import org.glassfish.grizzly.websockets.WebSocketEngine;
-import org.glassfish.grizzly.websockets.WebSocketServer;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
@@ -43,9 +41,9 @@ public class GrizzlyEngine extends BaseEngine {
 	private boolean mIsRunning = false;
 	private HttpServer mServer = null;
 	// private HttpServer mServer = null;
-	private static final String mDemoRootDirectory = "/var/www/web";
-	private static final String mDemoContext = "/jWebSocketGrizzlyDemos";
-	private static final String mDemoServlet = "/jWebSocketGrizzlyServlet";
+	// private static final String mDemoRootDirectory = "/var/www/web";
+	// private static final String mDemoContext = "/jWebSocketGrizzlyDemos";
+	// private static final String mDemoServlet = "/jWebSocketGrizzlyServlet";
 
 	public GrizzlyEngine(EngineConfiguration aConfiguration) {
 
@@ -59,10 +57,10 @@ public class GrizzlyEngine extends BaseEngine {
 			String lEngineApp = aConfiguration.getServlet();
 
 			if (mSSLPort == 0) {
-				mSSLPort = 443;
+				mSSLPort = JWebSocketCommonConstants.DEFAULT_SSLPORT;
 			}
 			if (mPort == 0) {
-				mPort = 8080;
+				mPort = JWebSocketCommonConstants.DEFAULT_PORT;;
 			}
 
 			if (lEngineContext == null) {
@@ -89,8 +87,8 @@ public class GrizzlyEngine extends BaseEngine {
 
 			
 			mServer = HttpServer.createSimpleServer(lEngineApp, mPort);
-			HttpHandler lHttpHandler = new	StaticHttpHandler(mDemoRootDirectory);
-			mServer.getServerConfiguration().addHttpHandler(lHttpHandler, mDemoContext);
+			// HttpHandler lHttpHandler = new	StaticHttpHandler(mDemoRootDirectory);
+			// mServer.getServerConfiguration().addHttpHandler(lHttpHandler, mDemoContext);
 			
 			mServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
 			// lHttpServer.addListener(lListener);
@@ -104,7 +102,6 @@ public class GrizzlyEngine extends BaseEngine {
 			// grizzly WebSocketEngine
 			 WebSocketEngine.getEngine().register(lApp);
 			 
-
 			//TODO: IMPLEMENT GRIZZLY WSS LISTENER
 		   /*
 			 * // -------------- SSL SECTION ----------------------

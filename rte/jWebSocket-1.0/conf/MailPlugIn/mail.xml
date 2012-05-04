@@ -3,8 +3,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
+	<!-- use EhCache data store to store the mails, name is "mailstore" -->
+	<bean id="mailEhCacheStorage" class="org.jwebsocket.storage.ehcache.EhCacheStorage">
+		<constructor-arg value="mailstore"/>
+	</bean>
+
 	<!-- settings  for the mail plug-in -->
 	<bean id="settings" class="org.jwebsocket.plugins.mail.Settings">
+		
+		<!-- use this storage engine to store the mails -->
+		<property name="storage" ref="mailEhCacheStorage"/>
+		
 		<!-- CAUTION! SECURITY ADVISE!
 			 please take care that the following propertys do not get
 			 disclosed to anybody. Publishing this data will allow
