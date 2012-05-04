@@ -301,8 +301,8 @@ jws.FileSystemPlugIn = {
 					if( lThis.OnLocalFileRead || aOptions.OnSuccess) {
 						var lToken = {
 							encoding: aOptions.encoding,
-							fileName : aFile.fileName,
-							fileSize: aFile.fileSize,
+							fileName: ( aFile.fileName ? aFile.fileName : aFile.name ),
+							fileSize: ( aFile.fileSize ? aFile.fileSize : aFile.size ),
 							type: aFile.type,
 							lastModified: aFile.lastModifiedDate,
 							data: aEvent.target.result

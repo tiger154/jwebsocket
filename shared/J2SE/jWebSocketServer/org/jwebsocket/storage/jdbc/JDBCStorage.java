@@ -24,22 +24,31 @@ import javolution.util.FastSet;
 import org.jwebsocket.storage.BaseStorage;
 
 /**
- * Implementation of the <code>IBasicStorage</code> interface that stores jWebSocket
- * component data in the database.
- * 
+ * Implementation of the
+ * <code>IBasicStorage</code> interface that stores jWebSocket component data in
+ * the database.
+ *
  * @author puran
  * @version $Id: JDBCStorage.java 1277 2011-01-02 15:09:35Z fivefeetfurther $
  */
 public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	private String mName = null;
-	/** default connection url for the channels data store */
+	/**
+	 * default connection url for the channels data store
+	 */
 	private static final String CONNECTION_URL = "jdbc:mysql://127.0.0.1:3306/jwebsocketdb";
-	/** default connection user name for channels data store */
+	/**
+	 * default connection user name for channels data store
+	 */
 	private static final String CONNECTION_NAME = "jwebsocket";
-	/** default connection password for the channels data store */
+	/**
+	 * default connection password for the channels data store
+	 */
 	private static final String CONNECTION_PASSWORD = "";
-	/** default mysql driver name for channel store */
+	/**
+	 * default mysql driver name for channel store
+	 */
 	private static final String DRIVER_NAME = "com.mysql.jdbc.Driver";
 	/**
 	 * The descriptive information about this implementation.
@@ -95,27 +104,33 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	protected String appColumnName = "store_app_key";
 	// ------------------------------------------------------------- SQL Variables
 	/**
-	 * Variable to hold the <code>getSize()</code> prepared statement.
+	 * Variable to hold the
+	 * <code>getSize()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedSizeSql = null;
 	/**
-	 * Variable to hold the <code>keys()</code> prepared statement.
+	 * Variable to hold the
+	 * <code>keys()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedKeysSql = null;
 	/**
-	 * Variable to hold the <code>save()</code> prepared statement.
+	 * Variable to hold the
+	 * <code>save()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedSaveSql = null;
 	/**
-	 * Variable to hold the <code>clear()</code> prepared statement.
+	 * Variable to hold the
+	 * <code>clear()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedClearSql = null;
 	/**
-	 * Variable to hold the <code>remove()</code> prepared statement.
+	 * Variable to hold the
+	 * <code>remove()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedRemoveSql = null;
 	/**
-	 * Variable to hold the <code>load()</code> prepared statement.
+	 * Variable to hold the
+	 * <code>load()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedLoadSql = null;
 	/**
@@ -136,8 +151,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	/**
 	 * Set the driver for this Store.
 	 *
-	 * @param driverName
-	 *          The new driver
+	 * @param driverName The new driver
 	 */
 	public void setDriverName(String driverName) {
 		String oldDriverName = this.driverName;
@@ -148,6 +162,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	/**
 	 * Return the driver for this Store.
+	 *
+	 * @return
 	 */
 	public String getDriverName() {
 		return (this.driverName);
@@ -156,6 +172,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	/**
 	 * Return the username to use to connect to the database.
 	 *
+	 *
+	 * @return
 	 */
 	public String getConnectionName() {
 		return connectionName;
@@ -164,8 +182,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	/**
 	 * Set the username to use to connect to the database.
 	 *
-	 * @param connectionName
-	 *          Username
+	 * @param connectionName Username
 	 */
 	public void setConnectionName(String connectionName) {
 		this.connectionName = connectionName;
@@ -174,6 +191,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	/**
 	 * Return the password to use to connect to the database.
 	 *
+	 *
+	 * @return
 	 */
 	public String getConnectionPassword() {
 		return connectionPassword;
@@ -182,8 +201,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	/**
 	 * Set the password to use to connect to the database.
 	 *
-	 * @param connectionPassword
-	 *          User password
+	 * @param connectionPassword User password
 	 */
 	public void setConnectionPassword(String connectionPassword) {
 		this.connectionPassword = connectionPassword;
@@ -192,8 +210,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	/**
 	 * Set the Connection URL for this Store.
 	 *
-	 * @param connectionURL
-	 *          The new Connection URL
+	 * @param connectionURL The new Connection URL
 	 */
 	public void setConnectionURL(String connectionURL) {
 		String oldConnString = this.connectionURL;
@@ -203,6 +220,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	/**
 	 * Return the Connection URL for this Store.
+	 *
+	 * @return
 	 */
 	public String getConnectionURL() {
 		return (this.connectionURL);
@@ -211,8 +230,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	/**
 	 * Set the table for this Store.
 	 *
-	 * @param table
-	 *          The new table
+	 * @param table The new table
 	 */
 	public void setTableName(String table) {
 		this.tableName = table;
@@ -220,6 +238,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	/**
 	 * Return the table for this Store.
+	 *
+	 * @return
 	 */
 	public String getTableName() {
 		return this.tableName;
@@ -234,8 +254,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	}
 
 	/**
-	 * @param keyColumnName
-	 *          the keyColumnName to set
+	 * @param keyColumnName the keyColumnName to set
 	 */
 	public void setKeyColumnName(String keyColumnName) {
 		this.keyColumnName = keyColumnName;
@@ -249,8 +268,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	}
 
 	/**
-	 * @param appColumnName
-	 *          the appColumnName to set
+	 * @param appColumnName the appColumnName to set
 	 */
 	public void setAppColumnName(String appColumnName) {
 		this.appColumnName = appColumnName;
@@ -264,8 +282,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	}
 
 	/**
-	 * @param valueColumnName
-	 *          the valueColumnName to set
+	 * @param valueColumnName the valueColumnName to set
 	 */
 	public void setValueColumnName(String valueColumnName) {
 		this.valueColumnName = valueColumnName;
@@ -394,7 +411,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 				}
 				try {
 					if (preparedLoadSql == null) {
-						String loadSql = 
+						String loadSql =
 								"SELECT " + valueColumnName
 								+ " FROM " + tableName
 								+ " WHERE " + keyColumnName + " = ?"
@@ -521,15 +538,14 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	/**
 	 * Save a session to the Store.
 	 *
-	 * @param session
-	 *          the session to be stored
-	 * @exception IOException
-	 *              if an input/output error occurs
+	 *
+	 * @param aKey
+	 * @param aData
 	 */
 	@Override
 	public Object put(Object aKey, Object aData) {
 		ObjectOutputStream oos = null;
-		ByteArrayOutputStream bos = null;
+		ByteArrayOutputStream bos;
 		ByteArrayInputStream bis = null;
 		InputStream in = null;
 		boolean result = false;
@@ -575,7 +591,9 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 					if (dbConnection != null) {
 						close(dbConnection);
 					}
-				} catch (/*IO*/Exception e) {
+				} catch (/*
+						 * IO
+						 */Exception e) {
 					// Ignore
 					// System.out.println(e.getMessage());
 				} finally {
@@ -603,11 +621,12 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	// --------------------------------------------------------- Protected Methods
 	/**
-	 * Check the connection associated with this store, if it's <code>null</code>
-	 * or closed try to reopen it. Returns <code>null</code> if the connection
-	 * could not be established.
+	 * Check the connection associated with this store, if it's
+	 * <code>null</code> or closed try to reopen it. Returns
+	 * <code>null</code> if the connection could not be established.
 	 *
-	 * @return <code>Connection</code> if the connection succeeded
+	 * @return
+	 * <code>Connection</code> if the connection succeeded
 	 */
 	protected Connection getConnection() {
 		try {
@@ -626,10 +645,11 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	}
 
 	/**
-	 * Open (if necessary) and return a database connection for use by this Realm.
+	 * Open (if necessary) and return a database connection for use by this
+	 * Realm.
 	 *
-	 * @exception SQLException
-	 *              if a database error occurs
+	 * @return
+	 * @exception SQLException if a database error occurs
 	 */
 	protected Connection open() throws SQLException {
 		// Do nothing if there is a database connection already open
@@ -664,6 +684,10 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	}
 
+	/**
+	 *
+	 * @param t
+	 */
 	public void handleThrowable(Throwable t) {
 		if (t instanceof ThreadDeath) {
 			throw (ThreadDeath) t;
@@ -677,8 +701,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	/**
 	 * Close the specified database connection.
 	 *
-	 * @param dbConnection
-	 *          The connection to be closed
+	 * @param dbConnection The connection to be closed
 	 */
 	protected void close(Connection dbConnection) {
 		// Do nothing if the database connection is already closed
@@ -743,8 +766,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	 * Release the connection, not needed here since the connection is not
 	 * associated with a connection pool.
 	 *
-	 * @param conn
-	 *          The connection to be released
+	 * @param conn The connection to be released
 	 */
 	protected void release(Connection conn) {
 		// NOOP
