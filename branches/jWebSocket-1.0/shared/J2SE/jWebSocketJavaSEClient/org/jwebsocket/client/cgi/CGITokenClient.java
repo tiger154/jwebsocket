@@ -18,7 +18,6 @@ package org.jwebsocket.client.cgi;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.jwebsocket.client.java.ReliabilityOptions;
 import org.jwebsocket.client.token.BaseTokenClient;
 import org.jwebsocket.kit.WebSocketException;

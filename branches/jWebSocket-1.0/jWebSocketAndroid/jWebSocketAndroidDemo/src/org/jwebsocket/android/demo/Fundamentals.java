@@ -22,6 +22,7 @@ import android.widget.*;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.client.plugins.sample.SamplePlugIn;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
 
@@ -37,8 +38,12 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 	private EditText lMessage;
 	private EditText lTarget;
 	private TextView lLog;
+	
+	// private SamplePlugIn lSamplePlugIn = null;
 
-	/** Called when the activity is first created. */
+	/**
+	 * Called when the activity is first created.
+	 */
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -50,10 +55,13 @@ public class Fundamentals extends Activity implements WebSocketClientTokenListen
 		lTarget = (EditText) findViewById(R.id.txfFundTarget);
 		lLog = (EditText) findViewById(R.id.lblFundLog);
 
+		// lSamplePlugIn = new SamplePlugIn(JWC.getClient());
+		
 		lBtnSend.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View aView) {
 				try {
+					// lSamplePlugIn.getRandom();
 					JWC.sendText(lTarget.getText().toString(), lMessage.getText().toString());
 				} catch (WebSocketException ex) {
 					// TODO: handle exception

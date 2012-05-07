@@ -8,6 +8,10 @@
         <servlet-name>jWebSocketHttp</servlet-name>
         <servlet-class>org.jwebsocket.tomcat.demo.jWebSocketHttp</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>jWebSocketEcho</servlet-name>
+        <servlet-class>org.jwebsocket.tomcat.demo.jWebSockeEcho</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>jWebSocketWS</servlet-name>
         <url-pattern>/jWebSocket</url-pattern>
@@ -16,9 +20,11 @@
         <servlet-name>jWebSocketHttp</servlet-name>
         <url-pattern>/jWebSocketHttp</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>jWebSocketEcho</servlet-name>
+        <url-pattern>/jWebSocketEcho</url-pattern>
+    </servlet-mapping>
     <session-config>
-        <session-timeout>
-            30
-        </session-timeout>
+        <session-timeout>30</session-timeout>
     </session-config>
 </web-app>

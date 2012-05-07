@@ -17,10 +17,13 @@ package org.jwebsocket.api;
 import org.jwebsocket.kit.WebSocketException;
 
 /**
- * Base interface that represents the <tt>Token</tt> based jWebSocket client. This interface
- * defines all the methods that handles the basic jWebSocket specific protocol.
+ * Base interface that represents the <tt>Token</tt> based jWebSocket client.
+ * This interface defines all the methods that handles the basic jWebSocket
+ * specific protocol.
+ *
  * @author puran
- * @version $Id: WebSocketTokenClient.java 697 2010-07-17 21:43:50Z mailtopuran@gmail.com $
+ * @version $Id: WebSocketTokenClient.java 697 2010-07-17 21:43:50Z
+ * mailtopuran@gmail.com $
  */
 public interface WebSocketTokenClient extends WebSocketClient {
 
@@ -30,7 +33,9 @@ public interface WebSocketTokenClient extends WebSocketClient {
 	String getUsername();
 
 	/**
-	 * Login the client based on given username and password to the jWebSocket server
+	 * Login the client based on given username and password to the jWebSocket
+	 * server
+	 *
 	 * @param username the user name
 	 * @param password the password string
 	 * @throws WebSocketException if there's any exception while login
@@ -39,6 +44,7 @@ public interface WebSocketTokenClient extends WebSocketClient {
 
 	/**
 	 * Logout the user
+	 *
 	 * @throws WebSocketException if exception while logging out
 	 */
 	void logout() throws WebSocketException;
@@ -50,6 +56,7 @@ public interface WebSocketTokenClient extends WebSocketClient {
 
 	/**
 	 * Broadcast the text to all the connected clients to jWebSocket server
+	 *
 	 * @param text the text value to broadcast
 	 * @throws WebSocketException if exception while broadcasting
 	 */
@@ -57,6 +64,7 @@ public interface WebSocketTokenClient extends WebSocketClient {
 
 	/**
 	 * Ping the jWebSocket server
+	 *
 	 * @param echo flag to enable/disable echo
 	 * @throws WebSocketException if exception while doing a ping
 	 */
@@ -64,6 +72,7 @@ public interface WebSocketTokenClient extends WebSocketClient {
 
 	/**
 	 * Send the text data
+	 *
 	 * @param target the target
 	 * @param message the actual message to send
 	 * @throws WebSocketException if exception while sending text
@@ -72,12 +81,14 @@ public interface WebSocketTokenClient extends WebSocketClient {
 
 	/**
 	 * Disconnect from the jWebSocket server
+	 *
 	 * @throws WebSocketException if error while disconnecting
 	 */
 	void disconnect() throws WebSocketException;
 
 	/**
 	 * Send the token to get the number of connected clients
+	 *
 	 * @throws WebSocketException
 	 */
 	void getConnections() throws WebSocketException;
@@ -85,12 +96,14 @@ public interface WebSocketTokenClient extends WebSocketClient {
 	/**
 	 * Add the token client listener which are interested in receiving only
 	 * token based data.
+	 *
 	 * @param tokenListener the token listener object
 	 */
 	void addTokenClientListener(WebSocketClientTokenListener aTokenListener);
 
 	/**
 	 * Remove the token client listener
+	 *
 	 * @param tokenListener the token client listener
 	 */
 	void removeTokenClientListener(WebSocketClientTokenListener aTokenListener);

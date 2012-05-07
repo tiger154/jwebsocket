@@ -35,9 +35,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0b8 (nightly build 20503)
+	//:const:*:VERSION:String:1.0b8 (nightly build 20507)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0b8 (nightly build 20503)",
+	VERSION: "1.0b8 (nightly build 20507)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -6543,8 +6543,8 @@ jws.FileSystemPlugIn = {
 					if( lThis.OnLocalFileRead || aOptions.OnSuccess) {
 						var lToken = {
 							encoding: aOptions.encoding,
-							fileName : aFile.fileName,
-							fileSize: aFile.fileSize,
+							fileName: ( aFile.fileName ? aFile.fileName : aFile.name ),
+							fileSize: ( aFile.fileSize ? aFile.fileSize : aFile.size ),
 							type: aFile.type,
 							lastModified: aFile.lastModifiedDate,
 							data: aEvent.target.result
@@ -7333,6 +7333,10 @@ jws.MailPlugIn = {
 				if( this.OnMailSent ) {
 					this.OnMailSent( aToken );
 				}
+			} else if( "createMail" == aToken.reqType ) {
+				if( this.OnMailCreated ) {
+					this.OnMailCreated( aToken );
+				}
 			}
 		}
 	},
@@ -7490,6 +7494,9 @@ jws.MailPlugIn = {
 		}
 		if( aListeners.OnMailSent !== undefined ) {
 			this.OnMailSent = aListeners.OnMailSent;
+		}
+		if( aListeners.OnMailCreated !== undefined ) {
+			this.OnMailCreated = aListeners.OnMailCreated;
 		}
 	}
 

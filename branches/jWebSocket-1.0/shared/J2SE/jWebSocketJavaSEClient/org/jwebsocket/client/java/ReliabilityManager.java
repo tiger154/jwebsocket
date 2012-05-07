@@ -34,18 +34,12 @@ public class ReliabilityManager {
 		}
 		return mExecutor;
 	}
-	
 	/*
-	private ReliabilityManager() {
-	// "jWebSocket Connection Reliability Manager"
-	mExecutor = new ScheduledThreadPoolExecutor(2);
-	}
-	
-	public static ReliabilityManager getInstance() {
-	if (mReliabilityManager == null) {
-	mReliabilityManager = new ReliabilityManager();
-	}
-	return mReliabilityManager;
-	}
+	 * private ReliabilityManager() { // "jWebSocket Connection Reliability
+	 * Manager" mExecutor = new ScheduledThreadPoolExecutor(2); }
+	 *
+	 * public static ReliabilityManager getInstance() { if (mReliabilityManager
+	 * == null) { mReliabilityManager = new ReliabilityManager(); } return
+	 * mReliabilityManager; }
 	 */
 }

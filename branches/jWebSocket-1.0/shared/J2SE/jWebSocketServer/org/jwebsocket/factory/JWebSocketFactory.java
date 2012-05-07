@@ -89,21 +89,21 @@ public class JWebSocketFactory {
 	 * @param aBootstrapPath
 	 */
 	public static void start(String aConfigPath, String aBootstrapPath) {
-		
+
 		mLog = Logging.getLogger();
-		
+
 		if (null == aConfigPath) {
 			aConfigPath = JWebSocketConfig.getConfigPath();
 		}
 		if (null == aBootstrapPath) {
 			aBootstrapPath = JWebSocketConfig.getBootstrapPath();
 		}
-		
+
 		JWebSocketInstance.setStatus(JWebSocketInstance.STARTING);
 
 		// start the shared utility timer
 		Tools.startUtilityTimer();
-		
+
 		JWebSocketLoader lLoader = new JWebSocketLoader();
 
 		// try to load bean from bootstrap
@@ -125,14 +125,14 @@ public class JWebSocketFactory {
 		try {
 			WebSocketInitializer lInitializer =
 					lLoader.initialize(aConfigPath);
-			
+
 			if (lInitializer == null) {
 				JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
 				return;
 			}
-			
+
 			lInitializer.initializeLogging();
-			
+
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Starting jWebSocket Server Sub System...");
 			}
@@ -143,13 +143,13 @@ public class JWebSocketFactory {
 				JWebSocketConfig.setClassLoader(lClassLoader);
 			}
 			mEngines = lInitializer.initializeEngines();
-			
+
 			if (null == mEngines || mEngines.size() <= 0) {
 				// the loader already logs an error!
 				JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
 				return;
 			}
-			
+
 			// initialize and start the server
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Initializing servers...");
@@ -157,11 +157,11 @@ public class JWebSocketFactory {
 			mServers = lInitializer.initializeServers();
 			Map<String, List<WebSocketPlugIn>> lPluginMap =
 					lInitializer.initializePlugins();
-			
+
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Initializing plugins...");
 			}
-			
+
 			for (WebSocketServer lServer : mServers) {
 				for (WebSocketEngine lEngine : mEngines.values()) {
 					lServer.addEngine(lEngine);
@@ -178,12 +178,12 @@ public class JWebSocketFactory {
 			}
 			Map<String, List<WebSocketFilter>> lFilterMap =
 					lInitializer.initializeFilters();
-			
-			
+
+
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Initializing filters...");
 			}
-			
+
 			for (WebSocketServer lServer : mServers) {
 				// lServer.addEngine(mEngine);
 				List<WebSocketFilter> lFilters = lFilterMap.get(lServer.getId());
@@ -199,7 +199,7 @@ public class JWebSocketFactory {
 			boolean lEngineStarted = false;
 			// first start the engine
 
-			
+
 			if (mLog.isDebugEnabled()) {
 				String lEnginesStr = "";
 				for (WebSocketEngine lEngine : mEngines.values()) {
@@ -210,7 +210,7 @@ public class JWebSocketFactory {
 				}
 				mLog.debug("Starting engine(s) '" + lEnginesStr + "'...");
 			}
-			
+
 			for (WebSocketEngine lEngine : mEngines.values()) {
 				try {
 					lEngine.startEngine();
@@ -237,7 +237,7 @@ public class JWebSocketFactory {
 								+ ": " + lEx.getMessage() + ").");
 					}
 				}
-				
+
 				if (mLog.isInfoEnabled()) {
 					mLog.info("jWebSocket server startup complete");
 				}
@@ -271,7 +271,7 @@ public class JWebSocketFactory {
 				// no handling required here
 			}
 		}
-		
+
 	}
 
 	/**
@@ -281,31 +281,33 @@ public class JWebSocketFactory {
 
 		// set instance status to not accept any new incoming connections
 		JWebSocketInstance.setStatus(JWebSocketInstance.STOPPING);
-		
+
 		if (mLog != null && mLog.isDebugEnabled()) {
 			mLog.debug("Stopping jWebSocket Sub System...");
 		}
-		
-		for (WebSocketEngine lEngine : mEngines.values()) {
-			// stop engine if previously started successfully
-			if (lEngine != null) {
-				if (mLog != null && mLog.isDebugEnabled()) {
-					mLog.debug("Stopping engine...");
-				}
-				try {
-					lEngine.stopEngine(CloseReason.SHUTDOWN);
-					if (mLog != null && mLog.isInfoEnabled()) {
-						mLog.info("jWebSocket engine '" + lEngine.getId() + "' stopped.");
+
+		if (null != mEngines) {
+			for (WebSocketEngine lEngine : mEngines.values()) {
+				// stop engine if previously started successfully
+				if (lEngine != null) {
+					if (mLog != null && mLog.isDebugEnabled()) {
+						mLog.debug("Stopping engine...");
 					}
-				} catch (WebSocketException lEx) {
-					if (mLog != null) {
-						mLog.error("Stopping engine '" + lEngine.getId() + "': " + lEx.getMessage());
+					try {
+						lEngine.stopEngine(CloseReason.SHUTDOWN);
+						if (mLog != null && mLog.isInfoEnabled()) {
+							mLog.info("jWebSocket engine '" + lEngine.getId() + "' stopped.");
+						}
+					} catch (WebSocketException lEx) {
+						if (mLog != null) {
+							mLog.error("Stopping engine '" + lEngine.getId() + "': " + lEx.getMessage());
+						}
 					}
 				}
 			}
 		}
-		
-		if (mServers != null) {
+
+		if (null != mServers) {
 			// now stop the servers
 			if (mLog != null && mLog.isDebugEnabled()) {
 				mLog.debug("Stopping servers...");
@@ -323,8 +325,8 @@ public class JWebSocketFactory {
 				}
 			}
 		}
-		
-		if (mLog != null && mLog.isInfoEnabled()) {
+
+		if (null != mLog && mLog.isInfoEnabled()) {
 			mLog.info("jWebSocket Server Sub System stopped.");
 		}
 		Logging.exitLogs();
@@ -375,8 +377,7 @@ public class JWebSocketFactory {
 	public static WebSocketEngine getEngine() {
 		return mEngines.values().iterator().next();
 	}
-	
-	
+
 	/**
 	 *
 	 * @return
