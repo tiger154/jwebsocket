@@ -25,7 +25,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
 
-        <title>jWebSocket Chat</title>
+        <title>jWebSocket Chat Demo</title>
 
         <!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
@@ -43,7 +43,7 @@
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
-		
+
         <script type="text/javascript" src='js/wChat.js'></script>
 
 		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
@@ -55,7 +55,7 @@
         <div id="demo_box">
             <!--       DEMO_HEADER       -->
             <div id="demo_box_header">
-                <h1>Chat</h1>
+                <h1>jWebSocket Chat Demo</h1>
                 <div id="demo_box_header_login">
 					<div id="logoff_area">
                         <div id="user_info">
@@ -106,9 +106,40 @@
 						<!--		\\HERE GOES THE CONTENT OF EACH SPECIFIC DEMO\\				-->
 						<div id="message_box" class="box">
 							<div id="chat_box_header" class="box_header">User ?</div>
-							<div id="chat_box_history"></div>
+							<div id="chat_box_history">
+								<div class="private"></div>
+								<div class="public"></div>
+							</div>
 							<textarea id="message_box_text">Type your message...</textarea>
-							<div id="message_box_broadcast_btn" class="message_box_btn" title="Send your message...">
+							<div id="select_emoticon_window">
+								<div id="select_emoticon_window_title">
+									<div id="close_emoticon_window">x</div>
+									<div>Select your emoticon!</div>
+								</div>
+								<div id="raspberry" class="emoticon_btn"></div>
+								<div id="embarrassed" class="emoticon_btn"></div>
+								<div id="sick" class="emoticon_btn"></div>
+								<div id="wink" class="emoticon_btn"></div>
+								<div id="kiss" class="emoticon_btn"></div>
+								<div id="rose" class="emoticon_btn"></div>
+								<div id="crying" class="emoticon_btn"></div>
+								<div id="confused" class="emoticon_btn"></div>
+								<div id="heart" class="emoticon_btn"></div>
+								<div id="heart-broken" class="emoticon_btn"></div>
+								<div id="smile" class="emoticon_btn"></div>
+								<div id="sad" class="emoticon_btn"></div>
+								<div id="surprise" class="emoticon_btn"></div>
+								<div id="smile-big" class="emoticon_btn"></div>
+								<div id="opinion-agree" class="emoticon_btn"></div>
+								<div id="opinion-disagree" class="emoticon_btn"></div>
+								<div id="jWebSocketLogo" class="emoticon_btn"></div>
+							</div>
+							<div id="select_emoticon_btn">
+								<div class="emoticon" id="selected_emoticon"></div>
+								<div class="click_to_slide" id="show_more_emoticons"></div>
+							</div>
+
+							<div id="message_box_broadcast_btn" class="message_box_btn">
 								<div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
 									 onmousedown="this.className='button onmousedown'" 
 									 onmouseup="this.className='button onmouseup'" 
@@ -119,38 +150,61 @@
 									<div class="r"></div>
 								</div>
 							</div>
+							<div id="message_box_clear_btn" class="message_box_btn">
+								<div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+									 onmousedown="this.className='button onmousedown'" 
+									 onmouseup="this.className='button onmouseup'" 
+									 onmouseout="this.className='button onmouseout'" 
+									 onclick="this.className='button onmouseover'">
+									<div class="l"></div>
+									<div class="c">Clear</div>
+									<div class="r"></div>
+								</div>
+							</div>
 						</div>
-						
+
 						<div id="user_box" class="box">
 							<div id="users_box_header" class="box_header">Currently in the chat</div>
-							<div id="chat_switcher_button_area"><div id="btn_private_chat" class="active">Private chat </div><div>|</div><div id="btn_public_chat"> Public chat</div></div>
-							<div id="users_box_body_header"></div>
-							<div id="users_box_body" class="user_box_body">
-								<div class="online">user 1</div>
-								<div class="offline">user 2</div>
-								<div class="online">user 3</div>
-								<div class="offline">user 4</div>
+							<div id="chat_switcher_button_area">
+								<div>
+									<div id="btn_private_chat" class="active">
+										<div id="new_message_notification" 
+											title="New private messages pending...">0</div>
+										Private chat 
+									</div>
+									<div id="separator">|</div>
+									<div id="btn_public_chat"> Public chat</div>
+								</div>
 							</div>
+							<div id="users_box_body_header"></div>
+							<!--  Private users list  -->
+							<div id="users_box_body" class="user_box_body">
+<!--								<div class="online" id="_01.38134.1"><div class="client_id">guest@01.38134.10ffdfg0</div><div class="remove_private_client">x</div></div>-->
+								<!-- <div class="offline" id="_01.38134.1">guest@01.38134.1</div>-->
+								<div class="no_users_online box">There are not connected users</div>
+							</div>
+
+							<!--  Public users list  -->
 							<div id="public_users_box_body" class="user_box_body">
-								<div class="public_online">Viquillon</div>
-								<div class="public_online">Loca</div>
-								<div class="public_online">Defonda</div>
-								<div class="public_online">Noel</div>
-								<div class="public_online">Lindoro</div>
-								<div class="public_online">Carola</div>
+								<div class="no_users_online">There are not connected users</div>
 							</div>
 						</div>
 
 						<!--       DESCRIPTION       -->
-						<div id="description_box" class="box" style="float: left;">
-							<p>
+						<div id="description_box" class="box">
+							<p class="box">
 								This demo shows how to easily set up a simple jWebSocket based chat system.<br></br> 
 								If you are not sure wether your favorite browser supports WebSockets please 
 								refer to our jWebSocket <a target="_top" href="http://jwebsocket.org/jws_for_all.htm">
-								Cross-Browser Compatibility</a> page.
+									Cross-Browser Compatibility</a> page.
 							</p>
 						</div>
-						
+						<!--						<div id="notification_area" class="box">
+													<div class="box_header">
+														Notification area
+													</div>
+												</div>-->
+
 						<div id="new_box" class="box">
 							<p>To run chat on a single system, you can simulate other 
 								guests by opening one or more new chat windows.</p>
