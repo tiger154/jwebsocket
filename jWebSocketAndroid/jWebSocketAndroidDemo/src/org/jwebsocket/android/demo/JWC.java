@@ -184,6 +184,13 @@ public class JWC {
 		mURL = aURL;
 	}
 
+	/**
+	 * @return the mJWC
+	 */
+	public static BaseTokenClient getClient() {
+		return mJWC;
+	}
+
 	static class Listener implements WebSocketClientTokenListener {
 
 		@Override

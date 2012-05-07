@@ -23,10 +23,10 @@ public class WebSocketBaseClientEvent implements WebSocketClientEvent {
 	private String mName = null;
 	private String mData = null;
 	private WebSocketClient mClient = null;
-/*
-	public WebSocketBaseClientEvent() {
-	}
-*/
+	/*
+	 * public WebSocketBaseClientEvent() { }
+	 */
+
 	public WebSocketBaseClientEvent(WebSocketClient aClient, String aName, String aData) {
 		mClient = aClient;
 		mName = aName;

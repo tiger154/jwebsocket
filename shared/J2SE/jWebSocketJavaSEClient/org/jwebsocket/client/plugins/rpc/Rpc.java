@@ -20,8 +20,9 @@ import org.jwebsocket.plugins.rpc.AbstractRpc;
 import org.jwebsocket.token.Token;
 
 /**
- * Class used to call a Rpc method (C2S)
- * Example: new Rpc.Call("com.org.aClass", "aMethod").send("hello", "it's a rrpc call", 123)
+ * Class used to call a Rpc method (C2S) Example: new Rpc.Call("com.org.aClass",
+ * "aMethod").send("hello", "it's a rrpc call", 123)
+ *
  * @author Quentin Ambard
  */
 public class Rpc extends AbstractRpc {
@@ -47,7 +48,9 @@ public class Rpc extends AbstractRpc {
 
 	/**
 	 * Usefull if you have 2 jwebsocket connexions in the same client.
-	 * @param aBaseTokenClient the baseTokenClient that will be used to make the call.
+	 *
+	 * @param aBaseTokenClient the baseTokenClient that will be used to make the
+	 * call.
 	 */
 	public AbstractRpc using(BaseTokenClient aBaseTokenClient) {
 		mBaseTokenClient = aBaseTokenClient;

@@ -16,26 +16,31 @@ package org.jwebsocket.api;
 
 /**
  * Base interface jWebSocket events
+ *
  * @author puran
  * @author aschulze
- * @version $Id: WebSocketClientEvent.java 702 2010-07-18 17:54:17Z mailtopuran@gmail.com $
+ * @version $Id: WebSocketClientEvent.java 702 2010-07-18 17:54:17Z
+ * mailtopuran@gmail.com $
  */
 public interface WebSocketClientEvent {
 
 	/**
 	 * Returns the name of the event.
+	 *
 	 * @return
 	 */
 	String getName();
 
 	/**
 	 * Returns the data (usually a message) for the event.
+	 *
 	 * @return
 	 */
 	String getData();
 
 	/**
 	 * Returns the WebSocket client which fired the event.
+	 *
 	 * @return
 	 */
 	WebSocketClient getClient();

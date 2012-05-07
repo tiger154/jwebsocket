@@ -33,7 +33,7 @@ import org.jwebsocket.token.Token;
  */
 public class SamplePlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(SamplePlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private final static String NS_SAMPLE = JWebSocketServerConstants.NS_BASE + ".plugins.samples";
 	private final static String SAMPLE_VAR = NS_SAMPLE + ".started";
@@ -97,57 +97,56 @@ public class SamplePlugIn extends TokenPlugIn {
 
 			// get the server time
 			if ("requestServerTime".equals(lType)) {
-				// create the response token
-				// this includes the unique token-id
-				Token lResponse = createResponse(aToken);
-
-				// add the "time" and "started" field
-				lResponse.setString("time", new Date().toString());
-				lResponse.setString("started", (String) aConnector.getVar(SAMPLE_VAR));
-
-/* please keep this code snippet for test purposes for complex objects!
-				// put an array into the token
-				Object[] lObjs = new Object[]{1, 2, 3, 'a', 'b', 'c', "ABC", "XYZ", true, false};
-				lResponse.setList("array", Arrays.asList(lObjs));
-
-				// put a map into the token
-				Map lMap = new FastMap();
-				lMap.put("MapItem1", 1);
-				lMap.put("MapItem2", 2);
-				lResponse.setMap("map", lMap);
-
-				List lList = new FastList();
-				lList.add("ListItem1");
-				lList.add("ListItem2");
-				lResponse.setList("list", lList);
-
-				// put a token into a token
-				Token lToken = TokenFactory.createToken();
-				lToken.setInteger("number", 1);
-				lToken.setString("string", "test");
-				lToken.setDouble("float", 1.23456);
-				lToken.setBoolean("boolean", false);
-				lToken.setList("array", Arrays.asList(new Object[]{4, 5, 6, 'd', 'e', 'f', "DEF", "UVW", false, true}));
-
-				// insert subtoken, another level in object's hierarchy...
-				Token lSubToken = TokenFactory.createToken();
-				lSubToken.setInteger("number", 2);
-				lSubToken.setString("string", "demo");
-				lSubToken.setDouble("float", 2.34567);
-				lSubToken.setBoolean("boolean", true);
-				lSubToken.setList("array", Arrays.asList(new Object[]{7, 8, 9, 'g', 'h', 'i', "GHI", "RST", true, false}));
-				lToken.setMap("subtoken", lSubToken.asMap());
-
-				// put the token incl. its subtoken into the response
-				lResponse.setMap("token", lToken.asMap());
-*/
-				// send the response token back to the client
-				sendToken(aConnector, aConnector, lResponse);
-
+				requestServerTime(aConnector, aToken);
 			} else if (lType.equals("processComplexObject")) {
-				// simply echo the complex object
-				sendToken(aConnector, aConnector, aToken);
+				processComplexObject(aConnector, aToken);
+			} else if (lType.equals("getRandom")) {
+				getRandom(aConnector, aToken);
 			}
 		}
+	}
+
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
+	public void requestServerTime(WebSocketConnector aConnector, Token aToken) {
+		// create the response token
+		// this includes the unique token-id
+		Token lResponse = createResponse(aToken);
+
+		// add the "time" and "started" field
+		lResponse.setString("time", new Date().toString());
+		lResponse.setString("started", (String) aConnector.getVar(SAMPLE_VAR));
+
+		// send the response token back to the client
+		sendToken(aConnector, aConnector, lResponse);
+	}
+
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
+	public void processComplexObject(WebSocketConnector aConnector, Token aToken) {
+		// simply echo the complex object
+		sendToken(aConnector, aConnector, aToken);
+	}
+
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
+	public void getRandom(WebSocketConnector aConnector, Token aToken) {
+		// create the response token
+		Token lResponse = createResponse(aToken);
+
+		// add the random number
+		lResponse.setDouble("random", Math.random());
+
+		// send the response token back to the client
+		sendToken(aConnector, aConnector, lResponse);
 	}
 }
