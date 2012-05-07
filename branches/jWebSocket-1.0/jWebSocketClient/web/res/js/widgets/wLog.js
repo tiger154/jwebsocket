@@ -12,6 +12,9 @@ $.widget("jws.log",{
 		//adding click functions
 		w.log.eBtnHide.click(w.log.showHide);
 		w.log.element.find('#clear_log').click(w.log.clearLog);
+		w.log.eLog.scroll( function( aEvent ){
+//			condition to avoid scrolling
+		});
 	},
     
 	showHide: function(){

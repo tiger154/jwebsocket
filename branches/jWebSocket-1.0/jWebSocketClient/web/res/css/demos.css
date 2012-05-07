@@ -317,7 +317,7 @@ textarea{
     z-index: 1;
     margin-top: 2px;
     background: #e4e4e4;
-    width: 200px;
+    width: 190px;
     height: 25px;
     border: 1px solid #C8C8C8;
     border-bottom: none;
@@ -526,6 +526,7 @@ p{
 }
 
 .tooltip{
+	margin-top: 3px;
 	z-index: 999;
 	display: none;
 	position: absolute;

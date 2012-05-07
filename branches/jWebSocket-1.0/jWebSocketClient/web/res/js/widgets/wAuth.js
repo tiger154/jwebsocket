@@ -204,17 +204,6 @@ $.widget("jws.auth",{
 
 			// OnMessage callback
 			OnMessage: function( aEvent, aToken ) {
-				var lDate = "";
-				if( aToken.date_val ) {
-					lDate = jws.tools.ISO2Date( aToken.date_val );
-				}
-				
-				if( mLog.isDebugEnabled ) {
-					log( "<font style='color:#888'>jWebSocket '" + aToken.type 
-						+ "' token received, full message: '" + aEvent.data + "' " 
-						+ lDate + "</font>" );
-				}
-				
 				if( "login" == aToken.reqType || "logon" ==  aToken.reqType) {
 					if( aToken.code != -1 ) {
 						if( mLog.isDebugEnabled ) {
@@ -246,8 +235,20 @@ $.widget("jws.auth",{
 					w.auth.eClientStatus.attr( "class", "online" ).text( "online" );
 					
 				}
+				// Debug if the user doesn't have an OnMessage method
 				if(w.auth.options.OnMessage) {
 					w.auth.options.OnMessage(aEvent, aToken);
+				} else{
+					var lDate = "";
+					if( aToken.date_val ) {
+						lDate = jws.tools.ISO2Date( aToken.date_val );
+					}
+				
+					if( mLog.isDebugEnabled ) {
+						log( "<font style='color:#888'>jWebSocket '" + aToken.type 
+							+ "' token received, full message: '" + aEvent.data + "' " 
+							+ lDate + "</font>" );
+					}
 				}
 			},
 			// OnClose callback
