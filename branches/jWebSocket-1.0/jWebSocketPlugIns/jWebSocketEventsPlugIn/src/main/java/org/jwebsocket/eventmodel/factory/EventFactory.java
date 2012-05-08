@@ -15,14 +15,14 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.factory;
 
-import org.jwebsocket.eventmodel.event.C2SEvent;
-import org.jwebsocket.eventmodel.event.C2SResponseEvent;
-import org.jwebsocket.token.Token;
-import org.jwebsocket.eventmodel.event.C2SEventDefinitionManager;
-import org.jwebsocket.logging.Logging;
 import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.core.EventModel;
+import org.jwebsocket.eventmodel.event.C2SEvent;
+import org.jwebsocket.eventmodel.event.C2SEventDefinitionManager;
+import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.observable.Event;
+import org.jwebsocket.logging.Logging;
+import org.jwebsocket.token.Token;
 
 /**
  *

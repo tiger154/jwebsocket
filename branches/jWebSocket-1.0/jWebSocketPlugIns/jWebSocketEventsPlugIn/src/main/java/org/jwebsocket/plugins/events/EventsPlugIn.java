@@ -22,6 +22,7 @@ import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.eventmodel.api.IEventModelBuilder;
 import org.jwebsocket.eventmodel.api.IServerSecureComponent;
 import org.jwebsocket.eventmodel.core.EventModel;
 import org.jwebsocket.eventmodel.event.C2SEvent;
@@ -97,17 +98,18 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 				}
 			}
 
-			ClassLoader lClassLoader = getClass().getClassLoader();
-			String lPath =
-					"${JWEBSOCKET_HOME}conf/EventsPlugIn/"
-					+ getNamespace() + "-application/bootstrap.xml";
-			lPath = JWebSocketConfig.expandEnvAndJWebSocketVars(lPath);
-			JWebSocketBeanFactory.load(getNamespace(), lPath, lClassLoader);
-
-			mEm = (EventModel) JWebSocketBeanFactory.getInstance(getNamespace()).getBean("EventModel");
-			// Initializing the event model
-			mEm.setParent(this);
-			mEm.initialize();
+			//Getting the EventModel builder
+			IEventModelBuilder lEventModelBuilder;
+			
+			if (getSettings().containsKey("em_builder")) {
+				String lClass = getString("em_buidler");
+				lEventModelBuilder = (IEventModelBuilder) Class.forName(lClass).newInstance();
+			} else {
+				//Setting the Spring EventModel builder by default
+				lEventModelBuilder = SpringEventModelBuilder.class.newInstance();
+			}
+			//Setting the EventModel instance
+			mEm = lEventModelBuilder.build(this);
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing " + getNamespace() + "-application"));
 		}

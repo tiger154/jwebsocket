@@ -16,20 +16,21 @@
 package org.jwebsocket.eventmodel.s2c;
 
 import java.util.Map;
-import org.apache.log4j.Logger;
 import javolution.util.FastMap;
+import org.apache.log4j.Logger;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.api.IListener;
 import org.jwebsocket.eventmodel.core.EventModel;
-import org.jwebsocket.eventmodel.event.S2CEvent;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
+import org.jwebsocket.eventmodel.event.S2CEvent;
 import org.jwebsocket.eventmodel.event.em.ConnectorStopped;
 import org.jwebsocket.eventmodel.event.em.S2CEventNotSupportedOnClient;
 import org.jwebsocket.eventmodel.event.em.S2CResponse;
 import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
 import org.jwebsocket.eventmodel.filter.validator.TypesMap;
 import org.jwebsocket.eventmodel.observable.Event;
+import org.jwebsocket.eventmodel.observable.ObservableObject;
 import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;

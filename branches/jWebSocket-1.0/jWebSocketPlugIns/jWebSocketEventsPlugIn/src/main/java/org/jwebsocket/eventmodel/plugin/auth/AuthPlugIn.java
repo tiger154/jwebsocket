@@ -17,7 +17,8 @@ package org.jwebsocket.eventmodel.plugin.auth;
 
 import java.util.Map;
 import org.apache.log4j.Logger;
-import org.jwebsocket.eventmodel.api.IUserUniqueIdentifierContainer;
+import org.jwebsocket.api.IUserUniqueIdentifierContainer;
+import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.auth.Logoff;
 import org.jwebsocket.eventmodel.event.auth.Logon;
@@ -57,6 +58,8 @@ public class AuthPlugIn extends EventModelPlugIn {
 		String lUsername = aEvent.getUsername();
 		String lPassword = aEvent.getPassword();
 
+		WebSocketConnector lConnector = aEvent.getConnector();
+
 		//Login process
 		Authentication lRequest = new UsernamePasswordAuthenticationToken(lUsername, lPassword);
 		Authentication lAuthentication;
@@ -79,7 +82,7 @@ public class AuthPlugIn extends EventModelPlugIn {
 			mLog.debug("Updating the user session...");
 		}
 		//Getting the user session
-		Map<String, Object> lSession = aEvent.getConnector().getSession().getStorage();
+		Map<String, Object> lSession = lConnector.getSession().getStorage();
 
 		//Setting the is_authenticated flag
 		lSession.put(SystemPlugIn.IS_AUTHENTICATED, lAuthentication.isAuthenticated());
@@ -88,7 +91,7 @@ public class AuthPlugIn extends EventModelPlugIn {
 		lSession.put(SystemPlugIn.USERNAME, lUsername);
 
 		//Setting the username in the connector instance...
-		aEvent.getConnector().setUsername(lUsername);
+		lConnector.setUsername(lUsername);
 
 		//Setting the uuid
 		String lUUID;
@@ -101,7 +104,7 @@ public class AuthPlugIn extends EventModelPlugIn {
 		lSession.put(SystemPlugIn.UUID, lUUID);
 
 		//Setting the uuid in the connectot instance...
-		aEvent.getConnector().setString(SystemPlugIn.UUID, lUUID);
+		lConnector.setString(SystemPlugIn.UUID, lUUID);
 
 		//Setting the roles
 		String lRoles = "";
@@ -112,7 +115,7 @@ public class AuthPlugIn extends EventModelPlugIn {
 
 		//Creating the response
 		aResponseEvent.getArgs().setString("uuid", lUUID);
-		aResponseEvent.getArgs().setString("username", aEvent.getUsername());
+		aResponseEvent.getArgs().setString("username", lUsername);
 		aResponseEvent.getArgs().setList("roles", Util.parseStringArrayToList(lRoles.split(" ")));
 
 		if (mLog.isDebugEnabled()) {
@@ -127,19 +130,24 @@ public class AuthPlugIn extends EventModelPlugIn {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(Logoff aEvent, C2SResponseEvent aResponseEvent) throws Exception {
+		WebSocketConnector lConnector = aEvent.getConnector();
+		String lUUID = lConnector.getString(SystemPlugIn.UUID);
+
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Loging off the user '" + aEvent.getConnector().getUsername() + "...");
+			mLog.debug("Loging off the user '" + lUUID + "...");
 		}
 
 		//Cleaning the session
-		getSession(aEvent.getConnector()).clear();
+		lConnector.getSession().getStorage().clear();
+		lConnector.setUsername(null);
+		lConnector.setString(SystemPlugIn.UUID, null);
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logoff successfully!");
 		}
 
 		//Notify internal listeners about the UserLogoff event...
-		notify(new UserLogoff(aEvent.getConnector().getUsername()), null, true);
+		notify(new UserLogoff(lUUID), null, true);
 	}
 
 	/**
