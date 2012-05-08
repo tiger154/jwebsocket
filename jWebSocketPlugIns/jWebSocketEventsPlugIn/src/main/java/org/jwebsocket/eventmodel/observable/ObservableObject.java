@@ -16,16 +16,16 @@
 package org.jwebsocket.eventmodel.observable;
 
 import java.lang.reflect.InvocationTargetException;
-import org.jwebsocket.eventmodel.api.IObservable;
-import org.jwebsocket.eventmodel.api.IListener;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
-import javolution.util.FastMap;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javolution.util.FastMap;
 import javolution.util.FastSet;
-import java.lang.reflect.Method;
+import org.jwebsocket.eventmodel.api.IListener;
+import org.jwebsocket.eventmodel.api.IObservable;
 import org.jwebsocket.eventmodel.util.Util;
 
 /**

@@ -19,20 +19,18 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import javolution.util.FastMap;
+import javolution.util.FastSet;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.api.IEventModelPlugIn;
 import org.jwebsocket.eventmodel.core.EventModel;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
-import org.jwebsocket.eventmodel.event.C2SEventDefinitionManager;
 import org.jwebsocket.eventmodel.event.S2CEvent;
 import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.eventmodel.observable.ObservableObject;
 import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import org.jwebsocket.eventmodel.s2c.S2CEventNotification;
-import org.jwebsocket.eventmodel.s2c.S2CEventNotificationHandler;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
@@ -46,7 +44,6 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	private EventModel mEm;
 	private Map<String, Class<? extends Event>> mClientAPI;
 	private static Logger mLog = Logging.getLogger(EventModelPlugIn.class);
-	private S2CEventNotificationHandler mS2CEventNotificationHandler = null;
 
 	/**
 	 * {@inheritDoc }
@@ -63,8 +60,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	 * @param aDefs The plug-in events definitions
 	 */
 	public void setEventsDefinitions(Set<C2SEventDefinition> aDefs) {
-		((C2SEventDefinitionManager) (JWebSocketBeanFactory.getInstance(getEm().getNamespace()).
-				getBean("EventDefinitionManager"))).getDefinitions().addAll(aDefs);
+		getEm().getEventFactory().getEventDefinitions().getDefinitions().addAll(aDefs);
 	}
 
 	/**
@@ -95,12 +91,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	 */
 	@Override
 	public S2CEventNotification notifyS2CEvent(S2CEvent aEvent) {
-		if (null == mS2CEventNotificationHandler) {
-			mS2CEventNotificationHandler = (S2CEventNotificationHandler) JWebSocketBeanFactory.getInstance(getEm().getNamespace()).
-					getBean("S2CEventNotificationHandler");
-		}
-
-		return new S2CEventNotification(this.getId(), aEvent, mS2CEventNotificationHandler);
+		return new S2CEventNotification(this.getId(), aEvent, getEm().getS2CEventNotificationHandler());
 	}
 
 	/**
@@ -113,6 +104,14 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	public void setEmEvents(Collection<Class<? extends Event>> aEmEvents) throws Exception {
 		getEm().addEvents(aEmEvents);
 		getEm().on(aEmEvents, this);
+	}
+
+	public void setEmEventClasses(Set<String> aEmEvents) throws Exception {
+		Set lClasses = new FastSet();
+		for (String lClass : aEmEvents) {
+			lClasses.add(Class.forName(lClass));
+		}
+		setEmEvents(lClasses);
 	}
 
 	/**
@@ -138,9 +137,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 				throw ex;
 			}
 		}
-		setClientAPI(lClasses);
-		getEm().addEvents(lClasses.values());
-		getEm().on(lClasses.values(), this);
+		setEmEventsAndClientAPI(lClasses);
 	}
 
 	/**
@@ -198,15 +195,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	public String toString() {
 		return getId();
 	}
-
-	public Map<String, Object> getSession(WebSocketConnector aConnector) throws Exception {
-		return aConnector.getSession().getStorage();
-	}
-
-	public Map<String, Object> getSession(String aSessionId) throws Exception {
-		return getEm().getSessionFactory().getSession(aSessionId);
-	}
-
+	
 	/**
 	 *
 	 * {@inheritDoc }

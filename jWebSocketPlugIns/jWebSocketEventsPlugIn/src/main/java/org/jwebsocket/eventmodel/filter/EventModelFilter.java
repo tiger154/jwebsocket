@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - EventModelFilter
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -18,14 +18,14 @@ package org.jwebsocket.eventmodel.filter;
 import java.util.Set;
 import javolution.util.FastSet;
 import org.jwebsocket.api.IInitializable;
-import org.jwebsocket.eventmodel.observable.ObservableObject;
-import org.jwebsocket.eventmodel.api.IEventModelFilter;
-import org.jwebsocket.eventmodel.event.C2SEvent;
-import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.eventmodel.api.IEventModelFilter;
 import org.jwebsocket.eventmodel.api.IListener;
 import org.jwebsocket.eventmodel.core.EventModel;
+import org.jwebsocket.eventmodel.event.C2SEvent;
+import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.observable.Event;
+import org.jwebsocket.eventmodel.observable.ObservableObject;
 import org.jwebsocket.eventmodel.observable.ResponseEvent;
 
 /**
@@ -89,8 +89,7 @@ public abstract class EventModelFilter extends ObservableObject implements IEven
 		for (String lClass : aEmEvents) {
 			lClasses.add(Class.forName(lClass));
 		}
-		getEm().addEvents(lClasses);
-		getEm().on(lClasses, this);
+		setEmEvents(lClasses);
 	}
 
 	/**

@@ -24,11 +24,11 @@ import org.jwebsocket.eventmodel.observable.Event;
  */
 public class UserLogoff extends Event {
 
-	public UserLogoff(String aUsername) {
-		getArgs().setString("username", aUsername);
+	public UserLogoff(String aUUID) {
+		getArgs().setString("uuid", aUUID);
 	}
 
-	public String getUsername() {
-		return getArgs().getString("username");
+	public String getUUID() {
+		return getArgs().getString("uuid");
 	}
 }

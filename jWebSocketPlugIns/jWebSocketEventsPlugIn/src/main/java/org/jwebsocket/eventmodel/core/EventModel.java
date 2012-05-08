@@ -15,41 +15,31 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.core;
 
-import org.jwebsocket.eventmodel.api.IEventModelFilter;
-import org.jwebsocket.eventmodel.api.IEventModelPlugIn;
-import org.jwebsocket.api.IInitializable;
-import org.jwebsocket.eventmodel.api.IListener;
-import org.jwebsocket.eventmodel.observable.ObservableObject;
-import org.jwebsocket.eventmodel.observable.ResponseEvent;
-import org.jwebsocket.eventmodel.factory.EventFactory;
-import org.jwebsocket.eventmodel.event.C2SResponseEvent;
-import org.jwebsocket.eventmodel.observable.Event;
-import org.jwebsocket.eventmodel.event.C2SEvent;
-import org.jwebsocket.token.Token;
-import org.jwebsocket.eventmodel.event.em.BeforeProcessEvent;
-import org.jwebsocket.eventmodel.event.em.AfterProcessEvent;
-import org.apache.log4j.Logger;
-import org.jwebsocket.logging.Logging;
 import java.util.Set;
 import javolution.util.FastSet;
+import org.apache.log4j.Logger;
+import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.eventmodel.api.IEventModelFilter;
+import org.jwebsocket.eventmodel.api.IEventModelPlugIn;
 import org.jwebsocket.eventmodel.api.IExceptionHandler;
+import org.jwebsocket.eventmodel.api.IListener;
 import org.jwebsocket.eventmodel.cluster.api.IWebSocketClusterNode;
+import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
-import org.jwebsocket.eventmodel.event.em.ConnectorStarted;
-import org.jwebsocket.eventmodel.event.em.ConnectorStopped;
-import org.jwebsocket.eventmodel.event.em.EngineStarted;
-import org.jwebsocket.eventmodel.event.em.EngineStopped;
+import org.jwebsocket.eventmodel.event.C2SResponseEvent;
+import org.jwebsocket.eventmodel.event.em.*;
 import org.jwebsocket.eventmodel.event.filter.BeforeRouteResponseToken;
-import org.jwebsocket.eventmodel.event.em.S2CEventNotSupportedOnClient;
-import org.jwebsocket.eventmodel.event.em.S2CResponse;
-import org.jwebsocket.eventmodel.exception.CachedResponseException;
-import org.jwebsocket.eventmodel.exception.ExceptionHandler;
-import org.jwebsocket.eventmodel.exception.ListenerNotFoundException;
-import org.jwebsocket.eventmodel.exception.NotAuthorizedException;
-import org.jwebsocket.eventmodel.exception.ValidatorException;
+import org.jwebsocket.eventmodel.exception.*;
+import org.jwebsocket.eventmodel.factory.EventFactory;
+import org.jwebsocket.eventmodel.observable.Event;
+import org.jwebsocket.eventmodel.observable.ObservableObject;
+import org.jwebsocket.eventmodel.observable.ResponseEvent;
+import org.jwebsocket.eventmodel.s2c.S2CEventNotificationHandler;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.events.EventsPlugIn;
 import org.jwebsocket.session.SessionManager;
+import org.jwebsocket.token.Token;
 
 /**
  *
@@ -66,6 +56,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	private EventFactory mEventFactory;
 	private static Logger mLog = Logging.getLogger(EventModel.class);
 	private IExceptionHandler mExceptionHandler;
+	private S2CEventNotificationHandler mS2CEventNotificationHandler;
 	private IWebSocketClusterNode mClusterNode;
 	private String mNamespace;
 
@@ -77,9 +68,17 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 		this.mNamespace = aNamespace;
 	}
 
-	public EventModel(String aNamespace) {
+	public EventModel(String aNamespace, EventFactory aEventFactory,
+			S2CEventNotificationHandler aS2CEventNH, IExceptionHandler aExceptionHandler) {
 		super();
-		this.mNamespace = aNamespace;
+		mNamespace = aNamespace;
+		mEventFactory = aEventFactory;
+		mS2CEventNotificationHandler = aS2CEventNH;
+		mExceptionHandler = aExceptionHandler;
+
+		//Setting the EventModel instance on received dependencies
+		mEventFactory.setEm(this);
+		mS2CEventNotificationHandler.setEm(this);
 
 		//Core Events Registration
 		addEvents(ConnectorStarted.class);
@@ -98,10 +97,11 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 */
 	@Override
 	public void initialize() throws Exception {
+		mS2CEventNotificationHandler.initialize();
 	}
 
 	/**
-	 * 
+	 *
 	 * @return TRUE if the server is a cluster node, FALSE otherwise
 	 */
 	public boolean isClusterNode() {
@@ -109,8 +109,8 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	}
 
 	/**
-	 * Process all the client incoming events 
-	 * 
+	 * Process all the client incoming events
+	 *
 	 * @param aEvent The event to process
 	 * @param aResponseEvent The response event to populate
 	 */
@@ -216,7 +216,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 
 	/**
 	 * Filter chain iteration. Executing after call
-	 * 
+	 *
 	 * @param aConnector The client WebSocketConnector
 	 * @param aResponseEvent The response event to filter
 	 * @throws Exception
@@ -232,9 +232,9 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 
 	/**
 	 * Get a EventModelPlugIn using it identifier
-	 * 
+	 *
 	 * @param aPlugInId The plug-in identifier
-	 * @return The EventModelPlugIn 
+	 * @return The EventModelPlugIn
 	 * @throws IndexOutOfBoundsException
 	 */
 	public IEventModelPlugIn getPlugIn(String aPlugInId) throws IndexOutOfBoundsException {
@@ -291,7 +291,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	}
 
 	/**
-	 * @return The EventsPlugIn (TokenPlugIn) 
+	 * @return The EventsPlugIn (TokenPlugIn)
 	 */
 	public EventsPlugIn getParent() {
 		return mParent;
@@ -315,7 +315,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 * @param aEventFactory The EventFactory to set
 	 */
 	public void setEventFactory(EventFactory aEventFactory) {
-		this.mEventFactory = aEventFactory;
+		mEventFactory = aEventFactory;
 	}
 
 	/**
@@ -341,16 +341,17 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	}
 
 	/**
-	 * 
+	 *
 	 * @return The user session factory
 	 */
 	public SessionManager getSessionFactory() {
-		return (SessionManager) getParent().getBeanFactory().getBean(SessionManager.class);
+		return (SessionManager) getParent().getBeanFactory().getBean("sessionManager");
 	}
 
 	/**
-	 * 
-	 * @return The event model runtime environment "dev" or "prod". Default value is "dev"
+	 *
+	 * @return The event model runtime environment "dev" or "prod". Default
+	 * value is "dev"
 	 */
 	public String getEnv() {
 		return mEnv;
@@ -366,5 +367,13 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 
 	public void setClusterNode(IWebSocketClusterNode aClusterNode) {
 		this.mClusterNode = aClusterNode;
+	}
+
+	public S2CEventNotificationHandler getS2CEventNotificationHandler() {
+		return mS2CEventNotificationHandler;
+	}
+
+	public void setS2CEventNotificationHandler(S2CEventNotificationHandler aS2CEventNotificationHandler) {
+		this.mS2CEventNotificationHandler = aS2CEventNotificationHandler;
 	}
 }

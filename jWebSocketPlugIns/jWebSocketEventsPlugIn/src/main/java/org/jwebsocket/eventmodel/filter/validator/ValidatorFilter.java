@@ -18,6 +18,7 @@ package org.jwebsocket.eventmodel.filter.validator;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.eventmodel.core.EventModel;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
@@ -37,7 +38,6 @@ public class ValidatorFilter extends EventModelFilter {
 
 	private static Logger mLog = Logging.getLogger(ValidatorFilter.class);
 	private TypesMap mTypes;
-	private boolean mValidateResponse = true;
 
 	/**
 	 * {@inheritDoc }
@@ -188,18 +188,10 @@ public class ValidatorFilter extends EventModelFilter {
 	}
 
 	/**
-	 * @return <tt>TRUE</tt> if the filter is set to validate the response too,
+	 * @return <tt>TRUE</tt> if the filter require to validate the response too,
 	 * <tt>FALSE</tt> otherwise
 	 */
 	public boolean isValidateResponse() {
-		return mValidateResponse;
-	}
-
-	/**
-	 * @param aValidateResponse <tt>TRUE</tt> if the filter will validate the
-	 * response too, <tt>FALSE</tt> otherwise
-	 */
-	public void setValidateResponse(boolean aValidateResponse) {
-		this.mValidateResponse = aValidateResponse;
+		return getEm().getEnv().equals(EventModel.DEV_ENV);
 	}
 }
