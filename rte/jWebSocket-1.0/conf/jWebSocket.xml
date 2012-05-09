@@ -1538,7 +1538,6 @@
 		-->
 		
 		<!-- JMX Plug-in -->
-		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.jmx.JMXPlugIn</name>
 			<ns>org.jwebsocket.plugins.jmx</ns>
@@ -1552,7 +1551,6 @@
 				<setting key="beans_config">JMXPlugIn/PluginsConfigFiles/</setting>
 			</settings>
 		</plugin>
-		-->
 		
 	    <!--
 		<plugin>
