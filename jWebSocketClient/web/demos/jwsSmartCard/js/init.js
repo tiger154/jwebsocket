@@ -68,7 +68,7 @@ function checkWebSocketSupport(){
 									terminal: aTerminal
 								},
 								OnSuccess: function(aToken){
-									if (!lWSC.isLoggedIn()){
+									if (!lWSC.isLoggedIn() || lWSC.getUsername() == "anonymous"){
 										jc.login({
 											OnSuccess: function(aToken){
 												w.auth.eUsername.val(aToken.response.username);
@@ -91,7 +91,7 @@ function checkWebSocketSupport(){
 								}
 							});
 							
-							if (lWSC.isLoggedIn())
+							if (lWSC.isLoggedIn() && lWSC.getUsername() != "anonymous")
 								w.auth.logoff();
 						}
 					});
@@ -134,7 +134,7 @@ function checkWebSocketSupport(){
 					lDate = jws.tools.ISO2Date( aToken.date_val );
 				}
 				log( "<font style='color:#888'>jWebSocket '" + aToken.type + "' token received, full message: '" + aEvent.data + "' " + lDate + "</font>" );
-				if( lWSC.isLoggedIn() ) {
+				if( lWSC.isLoggedIn() && lWSC.getUsername() != "anonymous" ) {
 					w.auth.eUserInfoName.text(aToken.username);
 					w.auth.eClientId.text("Client-ID: " + ( lWSC.getId()));
 					w.auth.logonArea.hide();

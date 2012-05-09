@@ -36,6 +36,7 @@ public class TomcatEngine extends BaseEngine {
 	private boolean mIsRunning = false;
 	private Tomcat mTomcat = null;
 	private String mTomcatVersion = "7+";
+	private String mDocumentRoot;
 
 	public TomcatEngine(EngineConfiguration aConfiguration) {
 
@@ -44,6 +45,7 @@ public class TomcatEngine extends BaseEngine {
 		// load the ports
 		Integer lPort = aConfiguration.getPort();
 		Integer lSSLPort = aConfiguration.getSSLPort();
+		mDocumentRoot = aConfiguration.getSettings().get("document_root").toString();
 
 		// If ports are 0 use the WebSocket Servlet capabilities
 		// of the Tomcat Engine and do not instantiate a separate engine here!
@@ -81,7 +83,7 @@ public class TomcatEngine extends BaseEngine {
 			mTomcat.setPort(lPort);
 			mTomcat.setBaseDir(".");
 
-			Context lCtx = mTomcat.addWebapp(lContext, "C:/svn/jWebSocketDev/branches/jWebSocket-1.0/jWebSocketClient/web");
+			Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
 			Tomcat.addServlet(lCtx, "jWebSocketServlet", "org.jwebsocket.tomcat.TomcatServlet");
 			lCtx.addServletMapping(lServlet, "jWebSocketServlet");
 
