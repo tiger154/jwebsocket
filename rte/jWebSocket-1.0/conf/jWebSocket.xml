@@ -132,66 +132,6 @@
 		 the <engines> section.
 	-->
 	<engineDefaults>
-		<!-- Tomcat Engine Configuration -->
-		<engine>
-			<name>org.jwebsocket.tomcat.TomcatEngine</name>
-			<id>tomcat0</id>
-			<jar>jWebSocketTomcatEngine-1.0.jar</jar>
-			<!-- Attention! The jWebSocket TomcatEngine listens on same port like
-				 Tomcats's http. The http protocol is upgraded to use WebSockets.
-				 The http/websocket port can be configured via the Tomcat
-				 configuration in the server.xml configuration file.
-			-->
-			<!-- set both port settings to "0" (null) if running Tomcat
-				 Servlet Container for Web Apps and embed jWebSocket library.
-				 This uses the settings from server.xml, wraps the existing
-				 Tomcat WebSocket servlet and does not instantiate a separate
-				 engine at run time within jWebSocket.
-			-->
-			<!--
-			<port>0</port>
-			<sslport>0</sslport>
-			-->
-			<!-- use 80/443 for default http/ws or https/wss connections
-				 when running a jWebSocket Server and use Tomcat as an embedded 
-				 engine. These settings are recommended only when running 
-				 jWebSocket on a separate server beside a WebServer and the 
-				 firewall does not allow access to ports 8787 and 9797.
-			-->
-			<!--
-			<port>80</port>
-			<sslport>443</sslport>
-			-->
-			<!-- use 8787/9797 for default http/ws or https/wss connections
-				 These settings are recommended only when running jWebSocket
-				 on the same server beside a Tomcat WebServer and the firewall
-				 grants access to ports 8787 and 9797.
-			-->
-			<port>8787</port>
-			<sslport>9797</sslport>
-			<!-- these domains are accepted by the engine listening on the above mentioned port -->
-			<domains>
-				<domain>*</domain>
-			</domains>
-			<!-- default session timeout 1h, max timeout currently 1 hour -->
-			<timeout>0</timeout>
-			<!-- Jetty provides a WebSocket Servlet, set the context path here -->
-			<context>/jWebSocket</context>
-			<!-- Jetty provides a WebSocket Servlet, set the servlet path here -->
-			<servlet>/jWebSocket</servlet>
-			<!--
-				maximum size of the data packet that the engine will read,
-				if the frame size is larger than this the connection will be closed.
-			-->
-			<maxframesize>1048840</maxframesize>
-			<!-- maximun number of connections allowed by this engine -->
-			<maxconnections>10000</maxconnections>
-			<settings>
-				<!-- directory that contains the public web folder path -->
-				<setting key="document_root">/var/www/web/</setting>
-			</settings>
-		</engine>
-		
 		<!-- TCP Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.tcp.TCPEngine</name>
@@ -237,6 +177,74 @@
 			<onmaxconnections>reject</onmaxconnections>
 		</engine>
 
+		<!-- Tomcat Engine Configuration -->
+		<engine>
+			<name>org.jwebsocket.tomcat.TomcatEngine</name>
+			<id>tomcat0</id>
+			<jar>jWebSocketTomcatEngine-1.0.jar</jar>
+			<!-- The jWebSocket TomcatEngine can either work in embedded mode 
+				 or in standard web app mode. In standard wep app mode the 
+				 jWebSocket Tomcat engine listens on same port like
+				 Tomcats's http. The http protocol is upgraded to use WebSockets.
+				 The http/websocket port can be configured via the Tomcat
+				 configuration in the server.xml configuration file.
+			-->
+			<!-- set both port settings to "0" (null) if running Tomcat
+				 Servlet Container for Web Apps and embed jWebSocket library.
+				 This uses the settings from server.xml, wraps the existing
+				 Tomcat WebSocket servlet and does NOT instantiate a separate
+				 embedded engine at run time within jWebSocket.
+			-->
+			<!--
+			<port>0</port>
+			<sslport>0</sslport>
+			-->
+			<!-- use 80/443 for default http/ws or https/wss connections
+				 when running a jWebSocket Server and use Tomcat as an embedded 
+				 engine. These settings are recommended only when running 
+				 jWebSocket on a SEPARATE server beside a WebServer and the 
+				 firewall does not allow access to ports 8787 and 9797.
+			-->
+			<!--
+			<port>80</port>
+			<sslport>443</sslport>
+			-->
+			<!-- use 8787/9797 for default http/ws or https/wss connections
+				 These settings are recommended only when running jWebSocket
+				 on the same server beside a Tomcat WebServer and the firewall
+				 grants access to ports 8787 and 9797.
+			-->
+			<port>8787</port>
+			<sslport>9797</sslport>
+			<!-- these domains are accepted by the engine listening
+				 on the above mentioned port -->
+			<domains>
+				<domain>*</domain>
+			</domains>
+			<!-- default session timeout 1h, max timeout currently 1 hour -->
+			<timeout>60000</timeout>
+
+			<!-- context and servlet settings, these settings are applied only
+				 in embedded mode. In standard web app mode the context is specified 
+				 by the context.xml of the web-app and the servlet is specified 
+				 in the web.xml of the web-app. -->
+			<!-- Tomcat provides a WebSocket Servlet, set the context path here -->
+			<context>/jWebSocket</context>
+			<!-- Tomcat provides a WebSocket Servlet, set the servlet path here -->
+			<servlet>/jWebSocket</servlet>
+			<!--
+				maximum size of the data packet that the engine will read,
+				if the frame size is larger than this the connection will be closed.
+			-->
+			<maxframesize>1048840</maxframesize>
+			<!-- maximun number of connections allowed by this engine -->
+			<maxconnections>10000</maxconnections>
+			<settings>
+				<!-- directory that contains the public web folder path -->
+				<setting key="document_root">/var/www/web/</setting>
+			</settings>
+		</engine>
+		
 		<!-- NIO Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.tcp.nio.NioTcpEngine</name>
@@ -277,7 +285,7 @@
 				<setting key="workers">500</setting>
 			</settings>			
 		</engine>
-		
+
 		<!-- Jetty Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.jetty.JettyEngine</name>
@@ -325,6 +333,62 @@
 				<domain>http*://www.jwebsocket.org</domain>
 				<domain>http*://www.jwebsocket.com</domain>
 				<domain>http*://localhost*</domain>
+			</domains>
+			<!-- default session timeout 1h, max timeout currently 1 hour -->
+			<timeout>0</timeout>
+			<!-- Jetty provides a WebSocket Servlet, set the context path here -->
+			<context>/jWebSocket</context>
+			<!-- Jetty provides a WebSocket Servlet, set the servlet path here -->
+			<servlet>/jWebSocket</servlet>
+			<!--
+				maximum size of the data packet that the engine will read,
+				if the frame size is larger than this the connection will be closed.
+			-->
+			<maxframesize>1048840</maxframesize>
+			<!-- maximun number of connections allowed by this engine -->
+			<maxconnections>10000</maxconnections>
+		</engine>
+
+		<!-- Grizzly Engine Configuration -->
+		<engine>
+			<name>org.jwebsocket.grizzly.GrizzlyEngine</name>
+			<id>grizzly0</id>
+			<jar>jWebSocketGrizzlyEngine-1.0.jar</jar>
+			<!-- Attention! The jWebSocket Grizzly Engine listens on same port like
+				 Grizzly's http. The http protocol is upgraded to use WebSockets.
+				 The http/websocket port can be configured via the Grizzly
+				 configuration file.
+			-->
+			<!-- set both port settings to "0" (null) if running Jetty
+				 Servlet Container for Web Apps and embed jWebSocket library.
+				 This uses the settings from jetty.xml, wraps the existing
+				 Jetty WebSocket servlet and does not instantiate a separate
+				 engine at run time within jWebSocket.
+			-->
+			<!--
+			<port>0</port>
+			<sslport>0</sslport>
+			-->
+			<!-- use 80/443 for default http/ws or https/wss connections
+				 when running a jWebSocket Server and use Jetty as an engine.
+				 These settings are recommended only when running jWebSocket
+				 on a separate server beside a WebServer and the firewall
+				 does not allow access to ports 8787 and 9797.
+			-->
+			<!--
+			<port>80</port>
+			<sslport>443</sslport>
+			-->
+			<!-- use 8787/9797 for default http/ws or https/wss connections
+				 These settings are recommended only when running jWebSocket
+				 on the same server beside a WebServer and the firewall
+				 grants access to ports 8787 and 9797.
+			-->
+			<port>8787</port>
+			<sslport>9797</sslport>
+			<!-- these domains are accepted by the engine listening on the above mentioned port -->
+			<domains>
+				<domain>*</domain>
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
@@ -778,7 +842,6 @@
 				<right>org.jwebsocket.plugins.system.send</right>
 				<right>org.jwebsocket.plugins.chat.broadcast</right>
 				<right>org.jwebsocket.plugins.rpc.rpc</right>
-				
 				<!-- rights for RPC's consists of the name space for the RPC plug-in plus the class name plus the method -->
 				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.Messaging.getMyMessages</right>
 				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest2(array, array)</right>
@@ -979,7 +1042,7 @@
 				<!-- if you remove this setting the plug-in uses an internal
 				     "allow all ports and domains" default crossdomain.xml -->
 				<setting key="crossdomain_xml">${JWEBSOCKET_HOME}conf/FlashPlugIn/crossdomain.xml</setting>
-			</settings>.7.9
+			</settings>
 		</plugin>
 
 		<!-- jWebSocket Chat PlugIn -->
@@ -992,18 +1055,6 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		
-		<!-- jWebSocket Gaming PlugIn -->
-		<plugin>
-			<name>org.jwebsocket.plugins.gaming.GamingPlugIn</name>
-			<id>jws.gaming</id>
-			<ns>org.jwebsocket.plugins.gaming</ns>
-			<jar>jWebSocketGamingPlugIn-1.0.jar</jar>
-			<server-assignments>
-				<server-assignment>ts0</server-assignment>
-			</server-assignments>
-		</plugin>
-		
 
 		<!-- plug-in for shared objects -->
 		<plugin>
@@ -1329,16 +1380,17 @@
 		</plugin>
 		
 		<!-- Monitoring plugin -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
 			<ns>monitoringPlugin.pcinfo</ns>
-			<id>monitoringPlugIn</id>
+			<id>pcInfo</id>
 			<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		
+		-->
 		<!-- API disclosure plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.api.APIPlugIn</name>
@@ -1387,6 +1439,7 @@
 		</plugin>
 		
 		<!-- Sencha Demo plugin -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.extjs.ExtJSGridFormDemoPlugin</name>
 			<id>jws.extjsdemo</id>
@@ -1396,7 +1449,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		
+		-->
 		
 		<!-- Sencha Demo plugin -->
 		<plugin>
@@ -1413,6 +1466,7 @@
 		</plugin>
 		
 		<!-- JQuery Demo plugin -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.jquery.JQueryPlugIn</name>
 			<id>jws.jquery</id>
@@ -1421,27 +1475,29 @@
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
+		</plugin>		
+		-->
+		
+		<!-- jWeSocket Ping-Pong Game Plug-in -->
+		<!--
+		<plugin>
+			<name>cu.uci.hab.pingpong.plugin.PingPongPlugIn</name>
+			<id>jws.user</id>
+			<ns>pingpong</ns>
+			<jar>jWebSocketPingPongGame-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="sHeight">290</setting>
+				<setting key="sWidth">478</setting>
+				<setting key="dbHost">localhost</setting>
+				<setting key="dbPort">27017</setting>
+				<setting key="dbDay">30</setting>
+				<setting key="dbTime">1</setting>
+			</settings>
 		</plugin>
-		
-		
-		<!-- PingPong PlugIn -->
-        <plugin>
-            <name>org.jwebsocket.gaming.pingpong.plugin.PingPongPlugIn</name>
-            <id>jws.user</id>
-            <ns>pingpong</ns>
-            <jar>jWebSocketPingPongGame-1.0.jar</jar>
-            <server-assignments>
-                <server-assignment>ts0</server-assignment>
-            </server-assignments>
-            <settings>
-                <setting key="sHeight">294</setting>
-                <setting key="sWidth">488</setting>
-                <setting key="dbHost">localhost</setting>
-                <setting key="dbPort">27017</setting>
-                <setting key="dbDay">30</setting>
-                <setting key="dbTime">1</setting>
-            </settings>
-        </plugin>
+		-->
 		
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
@@ -1469,6 +1525,7 @@
 			This plug-in requires Arduino hardware to be connected and configured.
 			This plug-in requires the rxtx lib to be loaded in the libraries section!.
 		-->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
 			<ns>rc</ns>
@@ -1478,9 +1535,10 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		
+		-->
 		
 		<!-- JMX Plug-in -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.jmx.JMXPlugIn</name>
 			<ns>org.jwebsocket.plugins.jmx</ns>
@@ -1494,8 +1552,9 @@
 				<setting key="beans_config">JMXPlugIn/PluginsConfigFiles/</setting>
 			</settings>
 		</plugin>
+		-->
 		
-	    <!-- Test JMX Plug-in -->
+	    <!--
 		<plugin>
 			<name>cu.uci.testjmx.plugins.TestJmxPlugIn</name>
 			<ns>cu.uci.testjmx.plugins.testjmxplugin</ns>
@@ -1508,17 +1567,7 @@
 				<setting key="config_file">/home/lisdey/NetBeansProjects/testPlugins/jTestJMX/conf/beanConfig.xml</setting>
 			</settings>
 		</plugin>
-		
-		<!-- Remote Shell PlugIn -->
-		<plugin>
-			<name>org.jwebsocket.plugins.remoteshell.RemoteShellPlugIn</name>
-			<ns>remote.plugin</ns>
-			<id>RemoteShellPlugIn</id>
-			<jar>RemoteShellPlugIn-1.0.jar</jar>
-			<server-assignments>
-				<server-assignment>ts0</server-assignment>
-			</server-assignments>
-		</plugin>
+		-->
     
 	</plugins>
 
@@ -1565,17 +1614,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</filter>
-		
-        <!-- Monitoring filter to process all incoming tokens	-->
-        <filter>
-            <name>org.jwebsocket.filters.monitoring.MonitoringFilter</name>
-            <id>jws.monitoringFilter</id>
-            <ns>org.jwebsocket.filters.monitoring</ns>
-            <jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
-            <server-assignments>
-                <server-assignment>ts0</server-assignment>
-            </server-assignments>
-        </filter>
+        
 	</filters>
 
 </jWebSocket>
