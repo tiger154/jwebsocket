@@ -21,7 +21,6 @@
 	<bean id="ValidatorFilter" class="org.jwebsocket.eventmodel.filter.validator.ValidatorFilter" parent="AbstractFilter">
 		<property name="id" value="validator" />
 		<property name="types" ref="TypesMap" />
-		<property name="validateResponse" value="false" />
 	</bean>
 	
 	<bean id="CacheFilter" class="org.jwebsocket.eventmodel.filter.cache.CacheFilter" parent="AbstractFilter">
