@@ -749,7 +749,21 @@ public class Tools {
 				&& (aCookie.getSecure() == (aURI.getScheme().equals("wss")))) {
 			return true;
 		}
-
 		return false;
+	}
+
+	/**
+	 * Checks if a path has trailing separator, if not it appends the correct
+	 * one according to the operating system.
+	 * @param aPath the path to be checked for the trailing separator.
+	 * @return the path ensuring the trailing separator or null if no path was given.
+	 */
+	public static String appendTrailingSeparator(String aPath) {
+		if (null != aPath) {
+			if (!aPath.endsWith("\\") && !aPath.endsWith("/")) {
+				aPath += System.getProperty("file.separator");
+			}
+		}
+		return aPath;
 	}
 }

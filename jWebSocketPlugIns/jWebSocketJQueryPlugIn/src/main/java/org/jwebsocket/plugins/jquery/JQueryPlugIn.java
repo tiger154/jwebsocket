@@ -14,7 +14,7 @@
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
 /**
- * 
+ *
  * @author Victor and Carlos
  */
 package org.jwebsocket.plugins.jquery;
@@ -31,7 +31,7 @@ public class JQueryPlugIn extends TokenPlugIn {
 
 	public JQueryPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
-		//jquery.clock.demo
+		// jquery.clock.demo
 		this.setNamespace(aConfiguration.getNamespace());
 	}
 
