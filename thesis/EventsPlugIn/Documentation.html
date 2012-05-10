@@ -1,0 +1,534 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" dir="ltr" lang="en"><head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="Content-Style-Type" content="text/css">
+		<meta name="generator" content="MediaWiki 1.15.1">
+		<meta name="keywords" content="PM/Documentation">
+		<link rel="shortcut icon" href="https://jwebsocket.org/favicon.ico">
+		<link rel="search" type="application/opensearchdescription+xml" href="https://jwebsocket.org/wiki/opensearch_desc.php" title="jWebSocketWiki (en)">
+		<link rel="alternate" type="application/rss+xml" title="jWebSocketWiki RSS Feed" href="https://jwebsocket.org/wiki/index.php?title=Special:RecentChanges&amp;feed=rss">
+		<link rel="alternate" type="application/atom+xml" title="jWebSocketWiki Atom Feed" href="https://jwebsocket.org/wiki/index.php?title=Special:RecentChanges&amp;feed=atom">
+		<title>PM/Documentation - jWebSocketWiki</title>
+		<link rel="stylesheet" href="Documentation_files/shared.css" type="text/css" media="screen">
+		<link rel="stylesheet" href="Documentation_files/commonPrint.css" type="text/css" media="print">
+		<link rel="stylesheet" href="Documentation_files/main.css" type="text/css" media="screen">
+		<!--[if lt IE 5.5000]><link rel="stylesheet" href="/wiki/skins//monobook/IE50Fixes.css?207" type="text/css" media="screen" /><![endif]-->
+		<!--[if IE 5.5000]><link rel="stylesheet" href="/wiki/skins//monobook/IE55Fixes.css?207" type="text/css" media="screen" /><![endif]-->
+		<!--[if IE 6]><link rel="stylesheet" href="/wiki/skins//monobook/IE60Fixes.css?207" type="text/css" media="screen" /><![endif]-->
+		<!--[if IE 7]><link rel="stylesheet" href="/wiki/skins//monobook/IE70Fixes.css?207" type="text/css" media="screen" /><![endif]-->
+		<link rel="stylesheet" href="Documentation_files/index_003.css" type="text/css">
+		<link rel="stylesheet" href="Documentation_files/index_004.css" type="text/css" media="print">
+		<link rel="stylesheet" href="Documentation_files/index.css" type="text/css">
+		<link rel="stylesheet" href="Documentation_files/index_002.css" type="text/css">
+		<!--[if lt IE 7]><script type="text/javascript" src="/wiki/skins//common/IEFixes.js?207"></script>
+		<meta http-equiv="imagetoolbar" content="no" /><![endif]-->
+
+		<script type="text/javascript">/*<![CDATA[*/
+		var skin = "monobook";
+		var stylepath = "/wiki/skins/";
+		var wgArticlePath = "/wiki/index.php/$1";
+		var wgScriptPath = "/wiki";
+		var wgScript = "/wiki/index.php";
+		var wgVariantArticlePath = false;
+		var wgActionPaths = {};
+		var wgServer = "https://jwebsocket.org";
+		var wgCanonicalNamespace = "";
+		var wgCanonicalSpecialPageName = false;
+		var wgNamespaceNumber = 0;
+		var wgPageName = "PM/Documentation";
+		var wgTitle = "PM/Documentation";
+		var wgAction = "view";
+		var wgArticleId = "247";
+		var wgIsArticle = true;
+		var wgUserName = null;
+		var wgUserGroups = null;
+		var wgUserLanguage = "en";
+		var wgContentLanguage = "en";
+		var wgBreakFrames = false;
+		var wgCurRevisionId = 3009;
+		var wgVersion = "1.15.1";
+		var wgEnableAPI = true;
+		var wgEnableWriteAPI = true;
+		var wgSeparatorTransformTable = ["", ""];
+		var wgDigitTransformTable = ["", ""];
+		var wgRestrictionEdit = [];
+		var wgRestrictionMove = [];
+		/*]]>*/</script>
+
+		<script type="text/javascript" src="Documentation_files/wikibits.js"><!-- wikibits js --></script>
+		<!-- Head Scripts -->
+		<script type="text/javascript" src="Documentation_files/ajax.js"></script>
+		<script type="text/javascript" src="Documentation_files/index.php"><!-- site js --></script>
+	</head>
+<body class="mediawiki ltr ns-0 ns-subject page-PM_Documentation skin-monobook">
+	<div id="globalWrapper">
+		<div id="column-content">
+	<div id="content">
+		<a name="top" id="top"></a>
+				<h1 id="firstHeading" class="firstHeading">PM/Documentation</h1>
+		<div id="bodyContent">
+			<h3 id="siteSub">From jWebSocketWiki</h3>
+			<div id="contentSub"></div>
+									<div id="jump-to-nav">Jump to: <a href="#column-one">navigation</a>, <a href="#searchInput">search</a></div>			<!-- start content -->
+			<table id="toc" class="toc" summary="Contents"><tbody><tr><td><div id="toctitle"><h2>Contents</h2> <span class="toctoggle">[<a href="javascript:toggleToc()" class="internal" id="togglelink">hide</a>]</span></div>
+<ul>
+<li class="toclevel-1"><a href="#jWebSocket_Documentation_Guide_Lines"><span class="tocnumber">1</span> <span class="toctext">jWebSocket Documentation Guide Lines</span></a>
+<ul>
+<li class="toclevel-2"><a href="#User_Guide"><span class="tocnumber">1.1</span> <span class="toctext">User Guide</span></a></li>
+<li class="toclevel-2"><a href="#Administrator_Guide"><span class="tocnumber">1.2</span> <span class="toctext">Administrator Guide</span></a></li>
+<li class="toclevel-2"><a href="#Developer_Guide"><span class="tocnumber">1.3</span> <span class="toctext">Developer Guide</span></a>
+<ul>
+<li class="toclevel-3"><a href="#Overview"><span class="tocnumber">1.3.1</span> <span class="toctext">Overview</span></a></li>
+<li class="toclevel-3"><a href="#Infrastructure.2C_Model.2C_Approach"><span class="tocnumber">1.3.2</span> <span class="toctext">Infrastructure, Model, Approach</span></a></li>
+<li class="toclevel-3"><a href="#Requirement_and_Prerequisites"><span class="tocnumber">1.3.3</span> <span class="toctext">Requirement and Prerequisites</span></a></li>
+<li class="toclevel-3"><a href="#Modules.2C_Structure"><span class="tocnumber">1.3.4</span> <span class="toctext">Modules, Structure</span></a></li>
+<li class="toclevel-3"><a href="#Source_Code"><span class="tocnumber">1.3.5</span> <span class="toctext">Source Code</span></a></li>
+<li class="toclevel-3"><a href="#Interfaces_.28if_applicable.29"><span class="tocnumber">1.3.6</span> <span class="toctext">Interfaces (if applicable)</span></a></li>
+<li class="toclevel-3"><a href="#Frameworks.2C_Libraries_and_Tools"><span class="tocnumber">1.3.7</span> <span class="toctext">Frameworks, Libraries and Tools</span></a></li>
+<li class="toclevel-3"><a href="#Database_and_Persistence_.28if_applicable.29"><span class="tocnumber">1.3.8</span> <span class="toctext">Database and Persistence (if applicable)</span></a></li>
+<li class="toclevel-3"><a href="#Hardware_.28if_applicable.29"><span class="tocnumber">1.3.9</span> <span class="toctext">Hardware (if applicable)</span></a></li>
+<li class="toclevel-3"><a href="#Security"><span class="tocnumber">1.3.10</span> <span class="toctext">Security</span></a></li>
+<li class="toclevel-3"><a href="#Tests.2C_Quality_Assurance.2C_Continuos_Integration"><span class="tocnumber">1.3.11</span> <span class="toctext">Tests, Quality Assurance, Continuos Integration</span></a></li>
+<li class="toclevel-3"><a href="#Profiling"><span class="tocnumber">1.3.12</span> <span class="toctext">Profiling</span></a></li>
+<li class="toclevel-3"><a href="#Reference"><span class="tocnumber">1.3.13</span> <span class="toctext">Reference</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</td></tr></tbody></table><script type="text/javascript"> if (window.showTocToggle) { var tocShowText = "show"; var tocHideText = "hide"; showTocToggle(); } </script>
+<a name="jWebSocket_Documentation_Guide_Lines" id="jWebSocket_Documentation_Guide_Lines"></a><h1> <span class="mw-headline"> jWebSocket Documentation Guide Lines  </span></h1>
+<p>Basically, we distinguish between 3 different kinds of documentation for our various target groups. 
+</p>
+<ul><li>User Guide 
+</li><li>Administrator Guide (previously called "Installation Guide", but we prefer "Administrator Guide" since this is more personal) 
+</li><li>Developer Guide
+</li></ul>
+<p>All three documents are explained the following sections. 
+</p><p><b>This is an agile working draft! It is not yet complete and 
+probably will be updated due to our experience during the documentation 
+phase.<br> It's a first rough guide line and we strive to provide an example for you soon.</b> 
+</p><p><br> 
+</p>
+<a name="User_Guide" id="User_Guide"></a><h2> <span class="mw-headline"> User Guide  </span></h2>
+<p>The goal of this document is to give the&nbsp;user a short 
+explication about each functionalities of the application and after 
+describes step by step how the user can do these functionalities, 
+including photos for each step where does signals that needs to do the 
+user. 
+</p><p><br> 
+</p>
+<ul><li>Overview 
+</li><li>Features 
+</li><li>Main functionalities 
+</li><li>Main contributions 
+</li><li>Glossary 
+</li><li>Solution Model 
+</li><li>Use requirements 
+</li><li>Main roles 
+</li><li>Operation of the system 
+</li><li>Settings 
+</li><li>Main Rules
+</li></ul>
+<p><br> 
+</p>
+<ul><li>Introduction/abstract, give a brief description what the general goals and the features of your solution are. 
+</li><li>What is the conrete purpose of your solution, what's the idea and the technology (in user words)&nbsp;behind it? 
+</li><li>Why should the user use this product/solution (reasons), what are the benefits compared to other solutions? 
+</li><li>What is the problem of the user and how does your solution solve that problem? 
+</li><li>Give the necessary background information and give 
+comprehensible and practival examples to support assumptions and 
+theoretical explanations. 
+</li><li>If interesting/relevant for the user: What models are used to achieve the solutions. 
+</li><li>What is required to use the application? (e.g. 
+start/command-line options, required other software to run, for the user
+ level only, no install, config or administrative instructions, these 
+are part of the Administrator Guide) 
+</li><li>Is the application structured into function modules? If so give
+ an overview over the modules. What are the goals for each module? 
+</li><li>Show screen shots and explain all functions of the user interface. 
+</li><li>Explain all action controls (like e.g. buttons) and describe the function behind them. 
+</li><li>If a complex workflow is necessary to achieve certain goals 
+describe the steps and give examples (e.g. to create a pdf of all 
+employees goto "data/person", select "employees", order by "name", click
+ the "print" button, select "pdf", type filename, open file in pdf 
+viewer etc.) 
+</li><li>Explain menu items, if such. 
+</li><li>Explain interactive settings/configuration options (user level/UI only, no xml config or similar here) 
+</li><li>Explain potential add, insert, delete, update, select, filter, sort, print, im/export, save, load, reset, restart functions. 
+</li><li>Explain potential interactions and/or conflicts with other applications/plug-ins etc. 
+</li><li>Explain potential error message and how to deal with it 
+</li><li>Explain potential known issues and "don'ts" (e.g. "if you confirm the deletion, no recovery/undo will be possible"). 
+</li><li>Explain special things that need to be considered for your 
+solution (e.g. if you don't get a connection to the server, ask your 
+administrator if the required ports are opened, but how to open ports is
+ written in the Administrator guide).
+</li></ul>
+<p><br> 
+</p><p><i>A user guide is good, when a user who never worked with an 
+application becomes able to use all features the solution without the 
+need to contact the support.<br>Verification: Let another person study 
+your User Guide, let this person explain what (s)he understood in oral 
+word. You passed the test if this person is able to properly use you 
+solution with your personal support/introduction.</i> 
+</p><p><br> 
+</p>
+<a name="Administrator_Guide" id="Administrator_Guide"></a><h2> <span class="mw-headline"> Administrator Guide  </span></h2>
+<p>The goal of this document is to achieve a good process of 
+installation, describes that necessary requirements and all the process 
+of installation and configuration step by step, including photos for 
+each step where does signals that needs to do the administrator. 
+</p><p><br> 
+</p>
+<ul><li>Overview 
+</li><li>Download 
+</li><li>Installation environment 
+</li><li>How install? 
+</li><li>Hardware 
+</li><li>Settings 
+</li><li>How can function? 
+</li><li>Support
+</li></ul>
+<p><br> 
+</p><p><b>Pure Software</b> 
+</p><p>The administrator guide should give answers to the following questions: 
+</p>
+<ul><li>Where can the software be downloaded? (e.g. Web URL, what is 
+patrt of the download package, how big is the download, what format, 
+special account required to downlad, update service?) 
+</li><li>What is required <u>before</u> the installation? (e.g. open ports, install database, set environment variables, web server etc.) 
+</li><li>How is the software do be installed? (e.g. unpacking, 
+installation-wizard, location, modules, integration into other products 
+etc.) 
+</li><li>What is required <u>after</u> the installation (e.g. create a new user, set up some initial data, required configurations etc.) 
+</li><li>What rights may need to be granted to the app? (e.g. root account required, new user accounts) 
+</li><li>Location and scope of the configuration files? (e.g. which config files are needed and where do they have to be located etc.) 
+</li><li>Which configuration options exist for each setting? 
+(e.g&nbsp;which options per setting, min/max values, recommendations, 
+defaults etc.) 
+</li><li>Where are the log files located? (e.g.&nbsp; 
+</li><li>How can the application be restarted? (e.g. what to do in case of a crash or malfunction) 
+</li><li>Any known issues and work-arounds? (e.g. what should not be done, what to take care of?) 
+</li><li>Who can be contacted in case of issues? (e.g. contact persons, phone, fax, email etc.) 
+</li><li>In case of printed documentation, where is the latest online version available (e.g. Web URL, FTP server)
+</li></ul>
+<p><br> <b>Software/Hardware Bundles</b> 
+</p><p>In case the software is provided together with hardware (e.g.our 
+NFC or Smart Card Apps, or the Arduino Apps) the following questions 
+should also be answered. 
+</p>
+<ul><li>How is the hardware to be connected (e.g. cables, network, interface, power supply, connectors, plugs etc.) 
+</li><li>What drivers are required, where can these be obtained and how are these to be installed and configured?<br> 
+</li><li>What settings need to be done on the hardware to cooperate with our solutions? 
+</li><li>What differences between the various operating systems? 
+</li><li>What special settings or preparations before the hardware can be used? 
+</li><li>How can the hardware be tested separately? 
+</li><li>Any test software available to test the hardware stand-alone 
+(i.e. without our software), (e.g. does the vendor provide its own tools
+ to exclude issues in our software in case of malfunctions).
+</li></ul>
+<p><br> 
+</p><p><i>The Administrator Guide is good, when a new person who is not 
+yet involved into the solution is able to download, install, configure 
+and operate your solution without external support.<br>Verification: Let
+ a third person install your solution in their own environment. If this 
+person is able to operate you solution with out your support or 
+introducton you passed the test.</i> 
+</p><p><br> 
+</p>
+<a name="Developer_Guide" id="Developer_Guide"></a><h2> <span class="mw-headline"> Developer Guide  </span></h2>
+<p>The goal of this document is to allow developers add or modify 
+functionalities as well as to improve the application or fix errors. In 
+other words: to a achieve a good process of maintenance. This document 
+describes the structure of the application, packages, classes and 
+methods, and all the functionality of the applications, step by step. It
+ refers to the user and administrator manual and gives a reference to 
+the source code for all provided functionality.<br> 
+</p>
+<a name="Overview" id="Overview"></a><h4> <span class="mw-headline"> Overview  </span></h4>
+<p>This is <u>summary/overview what</u> is is about.&nbsp; 
+</p>
+<ul><li>Project name, author(s) and contributor(s), date, location (where to find), purpose, feature and&nbsp;goals summary<br> 
+</li><li>List of modifications, incl. Authors (version history) 
+</li><li>Technical solution abstract
+</li></ul>
+<a name="Infrastructure.2C_Model.2C_Approach" id="Infrastructure.2C_Model.2C_Approach"></a><h4> <span class="mw-headline"> Infrastructure, Model, Approach  </span></h4>
+<p>This is a <u>summary/overview how</u> it works. 
+</p>
+<ul><li>Summary of approach, model, technology and implementation (no details here, just summaries) 
+</li><li>Infrastructure diagram(s), these diagrams show the <u>modules</u>
+ of the solution (top-down view, higher level part on the top, lower 
+level software on the bottom) and their relation or hierarchy (see. e.g.
+ jwebsocket.org, item "infrastructures") 
+</li><li>Work-flow diagram or data flow-chart where applicable, these 
+diagrams explain more the processes, the order, timing and direction of 
+interactions and interfaces.<br> 
+</li><li>Development model, just summary or overview here, details in source code section 
+</li><li>Used patterns (e.g. publish/subscribe, observer or facade 
+pattern), just summary or overview here, details in source code section 
+</li><li>Definition of events and treatment of aspects, where applicable 
+</li><li>Events vs. Tokens (EventPlugIn or TokenPlugIn),&nbsp;where applicable, especially in plug-development. 
+</li><li>Filters,&nbsp;Plugins, Apps, here it is about model and 
+approach, a summary, neither implementation nor configuration details 
+here 
+</li><li>Client/Server Structure, Javascript, Java, Mobile clients etc.
+</li></ul>
+<a name="Requirement_and_Prerequisites" id="Requirement_and_Prerequisites"></a><h4> <span class="mw-headline"> Requirement and Prerequisites  </span></h4>
+<p>This is a <u>summary/overview of the essential requirements</u> and prerequites for the solution. 
+</p>
+<ul><li>Required resources (e.g. databases, network connections)<br>media
+ (e.g. hardware (arduino), drivers (rxtx), demo-data, 
+examples,&nbsp;images, videos or other files not within the solutions 
+itself), <br>styles (e.g. designs, templates), html pages, databases, configuration files 
+</li><li>Maven settings, NetBeans plug-ins oder configurations, spring 
+usage, other framework requirements (e.g. jQuery, Sencha, Bindows etc.)
+</li></ul>
+<a name="Modules.2C_Structure" id="Modules.2C_Structure"></a><h4> <span class="mw-headline"> Modules, Structure  </span></h4>
+<p>This section describes the <u>organizational structure</u> of your solution in functional modules.
+</p>
+<ul><li>Packages and other modularization criteria, e.g. spitting in multipe modules (.jars)<br> 
+</li><li>Project location, folder locations for source and executable code, package structures and file locations, dependencies 
+</li><li>How is the separation between library (e.g. database access), 
+common high level logic (e.g. db cache sychronization), business/service
+ logic (e.g. algorithms), presentation logic&nbsp;(e.g. application, 
+demo) realized? 
+</li><li>If heterogenous environments: Explain which modules are 
+implemented in which languages, IDE's, how they interact (e.g. 
+JavaScript on the Client exchanges JSON packets with Java Token Plug-in 
+on the server side). 
+</li><li>Explain packages per module and classes per package &nbsp;&nbsp;
+</li><li>How was extensibility in a cluster considered (e.g. shared, 
+centralized/de-centralized components, e.g. database layer vs. 
+logic-layer)?
+</li></ul>
+<a name="Source_Code" id="Source_Code"></a><h4> <span class="mw-headline"> Source Code  </span></h4>
+<p>This section desribes the <u>details of the source code</u> of your solution.
+</p>
+<ul><li>Packet structure, name of the class that the class is extended 
+</li><li>SVN path, project root directory, branches, required merges in case of updates/fixes
+</li><li>Used standards or common coding and naming conventions, if 
+matching refer to pages, if deviating please give reasons/explanations. 
+</li><li>Used inline documentation standards, should be JavaDoc standard or JSDoc like in jWebSocket.js 
+</li><li>How is the inline documentation &nbsp;done in non-Java(Script) codes (e.g. C#, Python etc.)?
+</li><li>Re-Usable code parts (libraries), how can other software 
+access/benefit from the shared parts of your solution(s), what's you 
+API, what API's do you use.<br>
+</li><li>The complete list of files is given in the Reference section.
+</li><li>Error and Exception handling is part of the Test and Quality Assurance section.
+</li><li>Profiling provisions also have their own section.
+</li></ul>
+<a name="Interfaces_.28if_applicable.29" id="Interfaces_.28if_applicable.29"></a><h4> <span class="mw-headline"> Interfaces (if applicable)  </span></h4>
+<p>This section describes the <u>APIs to other modules</u> of the product. 
+</p>
+<ul><li>Explain the communication with the lower level components (e.g. 
+which feature of libraries are used in the lower software stack) 
+</li><li>Explain the communication with the higher level components 
+(e.g. which features does the solution provide to the upper software 
+stack) 
+</li><li>Explain the relation with other components on the same level 
+(e.g. which features of other plug-ins are utilized, e.g. SMS by the 
+WatchDog)<br>"Public" interfaces (especially for plug-ins: which 
+functions and be called via our invoke mechanism from other plug-ins or 
+apps) 
+</li><li>Explain data formats (e.g. JSON, XML etc.), network protocols 
+(e.g. TCP/UDP/HTTP or SMTP/IMAP/POP3), programming techniques (RMI, RPC,
+ methods, callbacks, events etc.), programming models (e.g. (D)COM, Java
+ .jars, JNI etc.), technologies (e.g. ) 
+</li><li>Describe the API in words here, give examples were helpful. 
+Details to classes, methods, arguments can be written in the reference 
+section. 
+</li><li>Used standard APIs (e.g. WebServices (SOAP), REST or similar)<br>
+</li></ul>
+<a name="Frameworks.2C_Libraries_and_Tools" id="Frameworks.2C_Libraries_and_Tools"></a><h4> <span class="mw-headline"> Frameworks, Libraries and Tools  </span></h4>
+<p>This section describes which <u>third party tools</u> are utilized for which purpose(s) and how they are integrated. 
+</p>
+<ul><li>General dependencies (maven and others), required frameworks libaries, our own ones and third party ones if required. 
+</li><li>dependency tree, do the third party tools have also further dependencies. 
+</li><li>Links to all used third party tools to documentation, download and update pages (as far as available) 
+</li><li>Expose the license(s) of all used third party tools! How do licenses affect distribution model of the entire product? 
+</li><li>What about the maintainability and possibility to test the used
+ tools? Quality and potential effects of the tools to the solution (our 
+product) 
+</li><li>List all required third party libs and related files in Reference section (required for release and deployment automation).
+</li></ul>
+<a name="Database_and_Persistence_.28if_applicable.29" id="Database_and_Persistence_.28if_applicable.29"></a><h4> <span class="mw-headline"> Database and Persistence (if applicable)  </span></h4>
+<p>This section describes <u>how data is stored</u>, either in databases or other persistence instances. 
+</p>
+<ul><li>Database info: type of database, list of tables, their 
+purpose/meaning, schema, install scripts, database user rights, DB 
+schema, data model, access and user rights if needed/applicable 
+</li><li>Host info: (server/port/protocol/other service options), field 
+names and meanings, data types, relations (graphical model), 
+constraints, indexes, sequences, triggers, stored procedures, backup and
+ restore procedures and locations 
+</li><li>SQL, NoSQL, XML, ini/properties, text files or other approach? 
+Explain the methods of persisting data and reasons for the selection. 
+</li><li>Graphical model of tables, relations and constraints
+</li></ul>
+<a name="Hardware_.28if_applicable.29" id="Hardware_.28if_applicable.29"></a><h4> <span class="mw-headline"> Hardware (if applicable)  </span></h4>
+<p>This describes the <u>hardware the solution requires</u> or is based on. 
+</p>
+<ul><li>What hardware is required, (e.g. mobile devices, arduino, 
+sensors, peripheral device etc.), here it is about the technical 
+hardware details of the devices.&nbsp;<br>Hardware configuration or drivers which need to be installed or configured are part of the Administrator Guide! 
+</li><li>Connection Technology (e.g. connectors/interfaces like USB, serial, firewire and required cables etc.) 
+</li><li>Hardware on certain operating system related considerations and firmware. 
+</li><li>APIs of the hardware (references to vendor documentation).&nbsp;
+</li></ul>
+<a name="Security" id="Security"></a><h4> <span class="mw-headline"> Security  </span></h4>
+<p>This section describes all <u>security aspects</u> of the solution. 
+Here it is more about the implementation rather than the configuration, 
+which is part of the Administrator Guide. 
+</p>
+<ul><li>How are credentials maintained (e.g. to databases or to other servers like Mail-Server or Twitter). 
+</li><li>What about encyrption/SSL options, how to ensure security for the users. 
+</li><li>How is the user data privacy ensured? 
+</li><li>How is this service protected against spam or other attacks? 
+</li><li>What validation criteria is applied and how? 
+</li><li>Filters, black- and whitelists, firewall considerations (open ports and protocols) 
+</li><li>What other mechanism have been applied in security aspects (or are supposed to be applied in the future)? 
+</li><li>What known security issues do currently exist and are these 
+acceptable for a production release? What protection is possible? Are 
+workarounds available?
+</li></ul>
+<a name="Tests.2C_Quality_Assurance.2C_Continuos_Integration" id="Tests.2C_Quality_Assurance.2C_Continuos_Integration"></a><h4> <span class="mw-headline"> Tests, Quality Assurance, Continuos Integration  </span></h4>
+<p>This section describes the <u>execution of automated and manual tests</u> for quality ensurance. Right now we do not yet have continuos integration, so this is still pending. 
+</p>
+<ul><li>Test cases, functional (JUnit, Jasmine)&nbsp;and UI tests (iMacros, pending).<br>Which
+ automated tests are available, how are they invoked, how are the test 
+cases integrated into our deployment test suite?&nbsp;Where are the 
+reports?<br>Are there known issues (traps, also refer to bug-list), what
+ are the reasons, is this approved and what can be done in case of these
+ issues (work-arounds)? 
+</li><li>What about the error and potential issue handling (e.g. 
+database not available, network connection broken other resources do not
+ exist). 
+</li><li>What about the general error and exception handling? 
+</li><li>If required (because not (yet) covered or not coverable), which manual tests can/have to be run before deployment?
+</li></ul>
+<a name="Profiling" id="Profiling"></a><h4> <span class="mw-headline"> Profiling  </span></h4>
+<p>This section describes the <u>methods and strategies for continous improvements</u>. 
+</p>
+<ul><li>"Improvements" means provisions for higher speed, less memory 
+consumption, simpler maintainability or similar, which do not affect the
+ functionality in general (e.g. "the solutions uses a quicksort instead 
+of a bubblesort", or "in future the solution should use MongoDB instead 
+of MySQL because..."). It <u>does not mean bug-fixing</u>.&nbsp;
+</li></ul>
+<a name="Reference" id="Reference"></a><h4> <span class="mw-headline"> Reference  </span></h4>
+<p>This is a structured lookup document, here it is about a <u>complete reference of details</u>, just with keywords or short sentences rather than much text, 
+</p>
+<ul><li>Complete JavaDocs or JavaScriptDocs (inline documentation) are 
+mandatory for publishing (classes, constants, variables, methods, 
+arguments, result, examples, properties, flags), all classes and methods
+ in all languages should be fully documented for efficient knowledge 
+management and maintainability.<br>The JavaDocs and JavaScript Docs as 
+well as other automatically generated documention which is targetted for
+ online-distribution (on our website), does <u>not need to be printed</u> in the Developer Guide, here a reference to the online area is sufficient. 
+</li><li>A "Token Reference" is mandatory for the Developer Guide (see e.g. the Channel Documentation on our WebSite) 
+</li><li>List of files, as far as not automatically generated by any 
+inline documentation tool, like JavaDocs. (e.g. a certain set of 
+configuration files and their purpose), for configuration files, list of
+ settings and possible options. This is also important for the packaging
+ and deployment of the solution.<br>
+</li></ul>
+<p><br> 
+</p><p><i>A Developer Guide is good, when a third person who is not 
+involved into the development becomes able to understand and maintain 
+the application.<br>Verification:&nbsp;Let another developer read your 
+Developer Guide and either implement/add a new feature or fix a bug. If 
+he achieves that in a reasonable time you passed the test.</i> 
+</p><p><br>
+</p>
+<!-- 
+NewPP limit report
+Preprocessor node count: 18/1000000
+Post-expand include size: 0/2097152 bytes
+Template argument size: 0/2097152 bytes
+Expensive parser function count: 0/100
+-->
+
+<!-- Saved in parser cache with key jwebsocket_wiki:pcache:idhash:247-0!1!0!!en!2!edit=0 and timestamp 20120502180623 -->
+<div class="printfooter">
+Retrieved from "<a href="https://jwebsocket.org/wiki/index.php/PM/Documentation">https://jwebsocket.org/wiki/index.php/PM/Documentation</a>"</div>
+						<!-- end content -->
+						<div class="visualClear"></div>
+		</div>
+	</div>
+		</div>
+		<div id="column-one">
+	<div id="p-cactions" class="portlet">
+		<h5>Views</h5>
+		<div class="pBody">
+			<ul>
+	
+				 <li id="ca-nstab-main" class="selected"><a href="https://jwebsocket.org/wiki/index.php/PM/Documentation" title="View the content page [alt-c]" accesskey="c">Page</a></li>
+				 <li id="ca-talk" class="new"><a href="https://jwebsocket.org/wiki/index.php?title=Talk:PM/Documentation&amp;action=edit&amp;redlink=1" title="Discussion about the content page [alt-t]" accesskey="t">Discussion</a></li>
+				 <li id="ca-viewsource"><a href="https://jwebsocket.org/wiki/index.php?title=PM/Documentation&amp;action=edit" title="This page is protected.
+You can view its source [alt-e]" accesskey="e">View source</a></li>
+				 <li id="ca-history"><a href="https://jwebsocket.org/wiki/index.php?title=PM/Documentation&amp;action=history" title="Past revisions of this page [alt-h]" accesskey="h">History</a></li>			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-personal">
+		<h5>Personal tools</h5>
+		<div class="pBody">
+			<ul>
+				<li id="pt-login"><a href="https://jwebsocket.org/wiki/index.php?title=Special:UserLogin&amp;returnto=PM/Documentation" title="You are encouraged to log in; however, it is not mandatory [alt-o]" accesskey="o">Log in / create account</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="portlet" id="p-logo">
+		<a style="background-image: url(&quot;/wiki/skins//common/images/enapso.png&quot;);" href="https://jwebsocket.org/wiki/index.php/Main_Page" title="Visit the main page [alt-z]" accesskey="z"></a>
+	</div>
+	<script type="text/javascript"> if (window.isMSIE55) fixalpha(); </script>
+	<div class="generated-sidebar portlet" id="p-navigation">
+		<h5>Navigation</h5>
+		<div class="pBody">
+			<ul>
+				<li id="n-mainpage-description"><a href="https://jwebsocket.org/wiki/index.php/Main_Page">Main Page</a></li>
+				<li id="n-portal"><a href="https://jwebsocket.org/wiki/index.php/jWebSocketWiki:Community_Portal" title="About the project, what you can do, where to find things">Community portal</a></li>
+				<li id="n-currentevents"><a href="https://jwebsocket.org/wiki/index.php/jWebSocketWiki:Current_events" title="Find background information on current events">Current events</a></li>
+				<li id="n-recentchanges"><a href="https://jwebsocket.org/wiki/index.php/Special:RecentChanges" title="The list of recent changes in the wiki [alt-r]" accesskey="r">Recent changes</a></li>
+				<li id="n-randompage"><a href="https://jwebsocket.org/wiki/index.php/Special:Random" title="Load a random page [alt-x]" accesskey="x">Random page</a></li>
+				<li id="n-help"><a href="https://jwebsocket.org/wiki/index.php/Help:Contents" title="The place to find out">Help</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="p-search" class="portlet">
+		<h5><label for="searchInput">Search</label></h5>
+		<div id="searchBody" class="pBody">
+			<form action="/wiki/index.php" id="searchform"><div>
+				<input name="title" value="Special:Search" type="hidden">
+				<input id="searchInput" name="search" title="Search jWebSocketWiki [alt-f]" accesskey="f" type="text">
+				<input name="go" class="searchButton" id="searchGoButton" value="Go" title="Go to a page with this exact name if exists" type="submit">&nbsp;
+				<input name="fulltext" class="searchButton" id="mw-searchButton" value="Search" title="Search the pages for this text" type="submit">
+			</div></form>
+		</div>
+	</div>
+	<div class="portlet" id="p-tb">
+		<h5>Toolbox</h5>
+		<div class="pBody">
+			<ul>
+				<li id="t-whatlinkshere"><a href="https://jwebsocket.org/wiki/index.php/Special:WhatLinksHere/PM/Documentation" title="List of all wiki pages that link here [alt-j]" accesskey="j">What links here</a></li>
+				<li id="t-recentchangeslinked"><a href="https://jwebsocket.org/wiki/index.php/Special:RecentChangesLinked/PM/Documentation" title="Recent changes in pages linked from this page [alt-k]" accesskey="k">Related changes</a></li>
+<li id="t-specialpages"><a href="https://jwebsocket.org/wiki/index.php/Special:SpecialPages" title="List of all special pages [alt-q]" accesskey="q">Special pages</a></li>
+				<li id="t-print"><a href="https://jwebsocket.org/wiki/index.php?title=PM/Documentation&amp;printable=yes" rel="alternate" title="Printable version of this page [alt-p]" accesskey="p">Printable version</a></li>				<li id="t-permalink"><a href="https://jwebsocket.org/wiki/index.php?title=PM/Documentation&amp;oldid=3009" title="Permanent link to this revision of the page">Permanent link</a></li>			</ul>
+		</div>
+	</div>
+		</div><!-- end of the left (by default at least) column -->
+			<div class="visualClear"></div>
+			<div id="footer">
+				<div id="f-poweredbyico"><a href="http://www.mediawiki.org/"><img src="Documentation_files/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki"></a></div>
+			<ul id="f-list">
+					<li id="lastmod"> This page was last modified on 11 April 2012, at 14:19.</li>
+					<li id="viewcount">This page has been accessed 45 times.</li>
+					<li id="privacy"><a href="https://jwebsocket.org/wiki/index.php/jWebSocketWiki:Privacy_policy" title="jWebSocketWiki:Privacy policy">Privacy policy</a></li>
+					<li id="about"><a href="https://jwebsocket.org/wiki/index.php/jWebSocketWiki:About" title="jWebSocketWiki:About">About jWebSocketWiki</a></li>
+					<li id="disclaimer"><a href="https://jwebsocket.org/wiki/index.php/jWebSocketWiki:General_disclaimer" title="jWebSocketWiki:General disclaimer">Disclaimers</a></li>
+			</ul>
+		</div>
+</div>
+
+		<script type="text/javascript">if (window.runOnloadHook) runOnloadHook();</script>
+<!-- Served in 0.315 secs. -->
+</body></html>
