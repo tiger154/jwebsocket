@@ -15,51 +15,51 @@
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
 /**
- * 
+ *
  * @author Victor and Carlos
  */
 package org.jwebsocket.plugins.jquery;
 
 import java.util.Collection;
-import org.jwebsocket.token.Token;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimerTask;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
 public class UpdateTimeTask extends TimerTask {
 
-	private TokenServer server;
-	private Token t;
+	private TokenServer mServer;
+	private Token mToken;
 
-	public UpdateTimeTask(TokenServer server, String namespace) {
-		this.server = server;
-		this.t = TokenFactory.createToken(namespace, "datetime");
+	public UpdateTimeTask(TokenServer aServer, String aNamespace) {
+		mServer = aServer;
+		mToken = TokenFactory.createToken(aNamespace, "datetime");
 	}
 
 	@Override
 	public void run() {
 		while (true) {
-			Date d = new Date();
-			t.setInteger("hours", d.getHours());
-			t.setInteger("minutes", d.getMinutes());
-			t.setInteger("seconds", d.getSeconds());
+			Date lDate = new Date();
+			mToken.setInteger("hours", lDate.getHours());
+			mToken.setInteger("minutes", lDate.getMinutes());
+			mToken.setInteger("seconds", lDate.getSeconds());
 
-			if (server.getAllConnectors() != null) {
-				Map col = server.getAllConnectors();
-				if (col != null) {
+			if (mServer.getAllConnectors() != null) {
+				Map lConnectors = mServer.getAllConnectors();
+				if (null != lConnectors) {
 					//sending the time each one second to all connected clients
-					for (WebSocketConnector c : (Collection<WebSocketConnector>) col.values()) {
-						server.sendToken(c, t);
+					for (WebSocketConnector lConnector : (Collection<WebSocketConnector>) lConnectors.values()) {
+						mServer.sendToken(lConnector, mToken);
 					}
 				}
 			}
 			try {
 				Thread.sleep(1000);
-			} catch (Exception ex) {
-				System.out.println("An exception has been detected: " + ex.getMessage());
+			} catch (Exception lEx) {
+				System.out.println("An exception has been detected: " + lEx.getMessage());
 			}
 		}
 	}

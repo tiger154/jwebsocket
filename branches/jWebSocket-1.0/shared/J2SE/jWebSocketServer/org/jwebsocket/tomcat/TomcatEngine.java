@@ -16,6 +16,7 @@
 package org.jwebsocket.tomcat;
 
 import java.util.Date;
+import java.util.Map;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.log4j.Logger;
@@ -25,6 +26,7 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -45,7 +47,13 @@ public class TomcatEngine extends BaseEngine {
 		// load the ports
 		Integer lPort = aConfiguration.getPort();
 		Integer lSSLPort = aConfiguration.getSSLPort();
-		mDocumentRoot = aConfiguration.getSettings().get("document_root").toString();
+		Map<String, Object> lSettings = aConfiguration.getSettings();
+		if (null != lSettings) {
+			Object lDocRoot = lSettings.get("document_root");
+			if (null != lDocRoot) {
+				mDocumentRoot = Tools.expandEnvVarsAndProps(lDocRoot.toString());
+			}
+		}
 
 		// If ports are 0 use the WebSocket Servlet capabilities
 		// of the Tomcat Engine and do not instantiate a separate engine here!
@@ -70,14 +78,14 @@ public class TomcatEngine extends BaseEngine {
 			lServlet = "/*";
 		}
 		try {
- 			if (mLog.isDebugEnabled()) {
+			if (mLog.isDebugEnabled()) {
 				mLog.debug("Instantiating embedded Tomcat server"
 						+ " at port " + lPort
 						+ ", ssl-port " + lSSLPort
 						+ ", context: '" + lContext
 						+ "', servlet: '" + lServlet + "'...");
 			}
-			
+
 			mTomcat = new Tomcat();
 			mTomcatVersion = mTomcat.getServer().getInfo();
 			mTomcat.setPort(lPort);

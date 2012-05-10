@@ -7,16 +7,22 @@
 	<bean id="mysqlDataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
 		<property name="url" value="jdbc:mysql://localhost:3306/jwebsocket"/>
-		<!--
-		<property name="url" value="jdbc:mysql://localhost:3306/ria-db"/>
+		<!-- database user and password for this connection -->
 		<property name="username" value="jwsSys"/>
 		<property name="password" value="sys_password"/>
-		-->
-		<property name="username" value="root"/>
-		<property name="password" value="root"/>
+		<!-- Timeout in seconds before connection validation queries fail. -->
 		<property name="validationQueryTimeout" value="5"/>
-		<property name="maxWait" value="6"/>
-		 
+		<!-- The maximum number of milliseconds that the pool will wait 
+			 (when there are no available connections) for a connection to be 
+			 returned before throwing an exception, or <= 0 to wait indefinitely. -->
+		<property name="maxWait" value="3000"/>
+		<!-- The initial number of connections that are created when the pool is started.
+		-->
+		<property name="initialSize" value="2"/>
+		<!-- The maximum number of active connections that can be allocated 
+			 from this pool at the same time, or negative for no limit. --> 
+		<property name="maxActive" value="2"/>
+		
 	</bean>
 	
     <!-- the Oracle DataSource (parameterized for configuration via a PropertyPlaceHolderConfigurer) -->

@@ -4,9 +4,24 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="settings" class="org.jwebsocket.plugins.reporting.Settings">
-		<property name="reportFolder" value="${JWEBSOCKET_HOME}/reports"/>
+		<!-- The reportFolder specifies the folder of the Jasper Reports .jrxml files 
+			 this folder should not be accessible from the outside.
+		-->
+		<property name="reportFolder" value="${JWEBSOCKET_HOME}conf/ReportingPlugIn/reports"/>
+		<!-- The outputFolder specifies where the resulting reports are located.
+			 This folder needs to be accessible when you intent to release the 
+			 reports (.pdf files) to a browser. In this this folder needs exist 
+			 and to be  accessible by the web or application server.
+		-->
 		<property name="outputFolder" value="c:/svn/jWebSocketDev/branches/jWebSocket-1.0/jWebSocketClient/web/public/reports/"/>
+		<!-- the outputURL is the base URL the jWebSocketReportingPlugIn returns
+			 to the client.
+		-->
 		<property name="outputURL" value="http://localhost/jwcDev/public/reports/"/>
+		<!-- this is the pattern used to generate the resulting .pdfs report 
+			 file name. The filename is returned to the client in the response
+			 token.
+		-->
 		<property name="reportNamePattern" value="${reportname}_${timestamp}"/>
 	</bean>
 

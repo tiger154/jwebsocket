@@ -55,27 +55,22 @@ public class ReportingPlugIn extends TokenPlugIn {
 	private static final String VAR_FILES_TO_DELETE = NS_REPORTING + ".filesToDelete";
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
-	
-/*
-	static {
-		try {
-			URL lURL;
-			ClassLoader lCL = getClass().getClassLoader();
-			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
-			ClassPathUpdater.add(lURL, lCL);
-			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
-			ClassPathUpdater.add(lURL, lCL);
-			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jWebSocketReportingPlugIn-1.0.jar");
-			ClassPathUpdater.add(lURL, lCL);
-		
-			// ClassPathUpdater.add("jWebSocketReportingPlugIn-1.0.jar");
-			// ClassPathUpdater.add("c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs");
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding Jasper libs to class path"));
-		}
-	}
-*/
-	
+
+	/*
+	 * static { try { URL lURL; ClassLoader lCL = getClass().getClassLoader();
+	 * lURL = new
+	 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
+	 * ClassPathUpdater.add(lURL, lCL); lURL = new
+	 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
+	 * ClassPathUpdater.add(lURL, lCL); lURL = new
+	 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jWebSocketReportingPlugIn-1.0.jar");
+	 * ClassPathUpdater.add(lURL, lCL);
+	 *
+	 * // ClassPathUpdater.add("jWebSocketReportingPlugIn-1.0.jar"); //
+	 * ClassPathUpdater.add("c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs"); }
+	 * catch (Exception lEx) { mLog.error(Logging.getSimpleExceptionMessage(lEx,
+	 * "adding Jasper libs to class path")); } }
+	 */
 	/**
 	 *
 	 * @param aConfiguration
@@ -87,25 +82,24 @@ public class ReportingPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_REPORTING);
-		
-/*
-		try {
-			URL lURL;
-			ClassLoader lCL = getClass().getClassLoader();
-			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
-			ClassPathUpdater.add(lURL, lCL);
-			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
-			ClassPathUpdater.add(lURL);
-			lURL = new URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jWebSocketReportingPlugIn-1.0.jar");
-			ClassPathUpdater.add(lURL, lCL);
-		
-			// ClassPathUpdater.add("jWebSocketReportingPlugIn-1.0.jar");
-			// ClassPathUpdater.add("c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs");
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding Jasper libs to class path"));
-		}
-*/
-		
+
+		/*
+		 * try { URL lURL; ClassLoader lCL = getClass().getClassLoader(); lURL =
+		 * new
+		 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
+		 * ClassPathUpdater.add(lURL, lCL); lURL = new
+		 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
+		 * ClassPathUpdater.add(lURL); lURL = new
+		 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jWebSocketReportingPlugIn-1.0.jar");
+		 * ClassPathUpdater.add(lURL, lCL);
+		 *
+		 * // ClassPathUpdater.add("jWebSocketReportingPlugIn-1.0.jar"); //
+		 * ClassPathUpdater.add("c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs");
+		 * } catch (Exception lEx) {
+		 * mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding Jasper libs
+		 * to class path")); }
+		 */
+
 		try {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
@@ -147,7 +141,7 @@ public class ReportingPlugIn extends TokenPlugIn {
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
 		// cleanup reports once connection is terminated
 		List<String> lFiles = (List<String>) aConnector.getVar(VAR_FILES_TO_DELETE);
-		if (lFiles != null) {
+		if (null != lFiles) {
 			for (String lFile : lFiles) {
 				FileUtils.deleteQuietly(new File(lFile));
 			}
@@ -226,6 +220,10 @@ public class ReportingPlugIn extends TokenPlugIn {
 				}
 			}
 		}
+		/*
+		 * lParams.put("IMAGE_PATH", Tools.appendTrailingSeparator(
+		 * Tools.expandEnvVarsAndProps(mSettings.getReportFolder())));
+		 */
 		lParams.put("IMAGE_PATH", mSettings.getReportFolder());
 
 		/*
@@ -279,7 +277,7 @@ public class ReportingPlugIn extends TokenPlugIn {
 			String lExportFilePath;
 			if ("pdf".equals(lOutputType)) {
 				lExportFilePath = mSettings.getOutputFolder() + lReportName + ".pdf";
-				JasperExportManager.exportReportToPdfFile(lPrint, 
+				JasperExportManager.exportReportToPdfFile(lPrint,
 						lExportFilePath);
 				lResponse.setString("url", mSettings.getOutputURL() + lReportName + ".pdf");
 			} else {
@@ -303,11 +301,13 @@ public class ReportingPlugIn extends TokenPlugIn {
 		try {
 			// ensure that connection is committed and closed
 			if (lConnection != null && !lConnection.isClosed()) {
-				lConnection.commit();
+				if (!lConnection.getAutoCommit()) {
+					lConnection.commit();
+				}
 				lConnection.close();
 			}
 		} catch (Exception lEx) {
-			mLog.debug("Instantiating reporting plug-in...");
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "closing database connection for report generation"));
 		}
 		// send response to requester
 		lServer.sendToken(aConnector, lResponse);

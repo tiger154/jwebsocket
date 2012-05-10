@@ -137,10 +137,13 @@ jws.ReportingPlugIn = {
 			// and save the reference to allow overwriting
 			aElem.pdf = aElem.firstChild;
 		} else {
+			var lNeedToCreateNewInstance = true;
+			/*
 			var lNeedToCreateNewInstance = (
 				( aElem.pdf === null ) || ( aElem.pdf === undefined ) ||
 				( jws.isFirefox() && jws.getBrowserVersion() < 3 )
 			);
+			*/
 			var lEmbed = ( lNeedToCreateNewInstance ? document.createElement( "embed" ) : aElem.pdf );
 			lEmbed.setAttribute( "id", aElem.id + ".embPdf" );
 			lEmbed.setAttribute( "style", "position:relative;padding:0px;margin:0px;border:0px;left:0px;top:0px;width:"+width+"px;height:"+height+"px" );
