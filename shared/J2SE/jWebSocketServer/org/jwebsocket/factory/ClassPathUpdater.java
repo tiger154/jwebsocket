@@ -75,6 +75,21 @@ public class ClassPathUpdater {
 	}
 
 	/**
+	 * 
+	 * @param aFile
+	 * @throws IOException
+	 * @throws NoSuchMethodException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
+	public static void addJar(File aFile)
+			throws IOException, NoSuchMethodException, IllegalAccessException,
+			InvocationTargetException {
+		add(aFile.toURI().toURL());
+	}
+	
+	
+	/**
 	 * Adds a new path to the classloader. The class must point to a directory,
 	 * not a file.
 	 *
@@ -87,9 +102,9 @@ public class ClassPathUpdater {
 	public static void add(URL aURL)
 			throws IOException, NoSuchMethodException, IllegalAccessException,
 			InvocationTargetException {
-		Method method = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
-		method.setAccessible(true);
-		method.invoke(getClassLoader(), new Object[]{aURL});
+		Method lMethod = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
+		lMethod.setAccessible(true);
+		lMethod.invoke(getClassLoader(), new Object[]{aURL});
 	}
 	
 	/**
@@ -112,4 +127,17 @@ public class ClassPathUpdater {
 	private static URLClassLoader getClassLoader() {
 		return (URLClassLoader) ClassLoader.getSystemClassLoader();
 	}
+/*	
+	static{
+		try{
+			Method lMethod = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
+			lMethod.setAccessible(true);
+			lMethod.invoke((URLClassLoader) ClassLoader.getSystemClassLoader(), new Object[]{new URL("file:C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs")});
+			lMethod.invoke((URLClassLoader) Thread.currentThread().getContextClassLoader(), new Object[]{new URL("file:C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs")});
+		} catch(Exception lEx) {
+			String lMsg = lEx.getMessage();
+			System.out.println(lMsg);
+		}
+	}
+*/	
 }
