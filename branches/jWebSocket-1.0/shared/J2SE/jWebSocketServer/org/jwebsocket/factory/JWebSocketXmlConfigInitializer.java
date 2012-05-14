@@ -16,6 +16,7 @@ package org.jwebsocket.factory;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;

@@ -19,7 +19,7 @@
 				<!-- folder alias for reports (.jrxml), used by reporting plug-in -->
 				<entry>
 					<key><value>reportRoot</value></key>
-					<value>${JWEBSOCKET_HOME}reports</value>
+					<value>${JWEBSOCKET_HOME}conf/ReportingPlugIn/reports</value>
 				</entry>                
 			</map>
 		</property>
