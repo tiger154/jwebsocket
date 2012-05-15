@@ -15,8 +15,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.midlets;
 
-import javax.microedition.midlet.*;
 import javax.microedition.lcdui.*;
+import javax.microedition.midlet.MIDlet;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.client.me.BaseClientJ2ME;
@@ -33,7 +33,7 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 	private boolean midletPaused = false;
 	private TokenClient mJWC = null;
 	private int prevStatus = TokenClient.DISCONNECTED;
-	//<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
+//<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
 	private Command cmdExit;
 	private Command cmdConnect;
 	private Command cmdDisconnect;
@@ -53,7 +53,7 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 	private Image imgDisconnected;
 	private Image imgConnected;
 	private Image imgAuthenticated;
-	//</editor-fold>//GEN-END:|fields|0|
+//</editor-fold>//GEN-END:|fields|0|
 
 	/**
 	 * The JWebSocketJavaMEDemo constructor.
@@ -99,12 +99,13 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		checkStatusIcon();
 	}
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
-	//</editor-fold>//GEN-END:|methods|0|
-	//<editor-fold defaultstate="collapsed" desc=" Generated Method: initialize ">//GEN-BEGIN:|0-initialize|0|0-preInitialize
+//<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
+//</editor-fold>//GEN-END:|methods|0|
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: initialize ">//GEN-BEGIN:|0-initialize|0|0-preInitialize
 	/**
-	 * Initilizes the application.
-	 * It is called only once when the MIDlet is started. The method is called before the <code>startMIDlet</code> method.
+	 * Initializes the application. It is called only once when the MIDlet is
+	 * started. The method is called before the
+	 * <code>startMIDlet</code> method.
 	 */
 	private void initialize() {//GEN-END:|0-initialize|0|0-preInitialize
 		// write pre-initialize user code here
@@ -113,9 +114,9 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		mJWC = new TokenClient(new BaseClientJ2ME());
 		mJWC.addListener(this);
 	}//GEN-BEGIN:|0-initialize|2|
-	//</editor-fold>//GEN-END:|0-initialize|2|
+//</editor-fold>//GEN-END:|0-initialize|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Method: startMIDlet ">//GEN-BEGIN:|3-startMIDlet|0|3-preAction
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: startMIDlet ">//GEN-BEGIN:|3-startMIDlet|0|3-preAction
 	/**
 	 * Performs an action assigned to the Mobile Device - MIDlet Started point.
 	 */
@@ -124,9 +125,9 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		switchDisplayable(null, getFrmDemo());//GEN-LINE:|3-startMIDlet|1|3-postAction
 		// write post-action user code here
 	}//GEN-BEGIN:|3-startMIDlet|2|
-	//</editor-fold>//GEN-END:|3-startMIDlet|2|
+//</editor-fold>//GEN-END:|3-startMIDlet|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Method: resumeMIDlet ">//GEN-BEGIN:|4-resumeMIDlet|0|4-preAction
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: resumeMIDlet ">//GEN-BEGIN:|4-resumeMIDlet|0|4-preAction
 	/**
 	 * Performs an action assigned to the Mobile Device - MIDlet Resumed point.
 	 */
@@ -135,12 +136,18 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 //GEN-LINE:|4-resumeMIDlet|1|4-postAction
 		// write post-action user code here
 	}//GEN-BEGIN:|4-resumeMIDlet|2|
-	//</editor-fold>//GEN-END:|4-resumeMIDlet|2|
+//</editor-fold>//GEN-END:|4-resumeMIDlet|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Method: switchDisplayable ">//GEN-BEGIN:|5-switchDisplayable|0|5-preSwitch
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: switchDisplayable ">//GEN-BEGIN:|5-switchDisplayable|0|5-preSwitch
 	/**
-	 * Switches a current displayable in a display. The <code>display</code> instance is taken from <code>getDisplay</code> method. This method is used by all actions in the design for switching displayable.
-	 * @param alert the Alert which is temporarily set to the display; if <code>null</code>, then <code>nextDisplayable</code> is set immediately
+	 * Switches a current displayable in a display. The
+	 * <code>display</code> instance is taken from
+	 * <code>getDisplay</code> method. This method is used by all actions in the
+	 * design for switching displayable.
+	 *
+	 * @param alert the Alert which is temporarily set to the display; if
+	 * <code>null</code>, then
+	 * <code>nextDisplayable</code> is set immediately
 	 * @param nextDisplayable the Displayable to be set
 	 */
 	public void switchDisplayable(Alert alert, Displayable nextDisplayable) {//GEN-END:|5-switchDisplayable|0|5-preSwitch
@@ -153,11 +160,13 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-END:|5-switchDisplayable|1|5-postSwitch
 		// write post-switch user code here
 	}//GEN-BEGIN:|5-switchDisplayable|2|
-	//</editor-fold>//GEN-END:|5-switchDisplayable|2|
+//</editor-fold>//GEN-END:|5-switchDisplayable|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Method: commandAction for Displayables ">//GEN-BEGIN:|7-commandAction|0|7-preCommandAction
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: commandAction for Displayables ">//GEN-BEGIN:|7-commandAction|0|7-preCommandAction
 	/**
-	 * Called by a system to indicated that a command has been invoked on a particular displayable.
+	 * Called by a system to indicated that a command has been invoked on a
+	 * particular displayable.
+	 *
 	 * @param command the Command that was invoked
 	 * @param displayable the Displayable where the command was invoked
 	 */
@@ -238,12 +247,13 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-END:|7-commandAction|19|7-postCommandAction
 		// write post-action user code here
 	}//GEN-BEGIN:|7-commandAction|20|
-	//</editor-fold>//GEN-END:|7-commandAction|20|
+//</editor-fold>//GEN-END:|7-commandAction|20|
 
 	//</editor-fold>
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdExit ">//GEN-BEGIN:|18-getter|0|18-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdExit ">//GEN-BEGIN:|18-getter|0|18-preInit
 	/**
-	 * Returns an initiliazed instance of cmdExit component.
+	 * Returns an initialized instance of cmdExit component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Command getCmdExit() {
@@ -254,17 +264,18 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|18-getter|2|
 		return cmdExit;
 	}
-	//</editor-fold>//GEN-END:|18-getter|2|
+//</editor-fold>//GEN-END:|18-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: frmDemo ">//GEN-BEGIN:|14-getter|0|14-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: frmDemo ">//GEN-BEGIN:|14-getter|0|14-preInit
 	/**
-	 * Returns an initiliazed instance of frmDemo component.
+	 * Returns an initialized instance of frmDemo component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Form getFrmDemo() {
 		if (frmDemo == null) {//GEN-END:|14-getter|0|14-preInit
 			// write pre-init user code here
-			frmDemo = new Form("jWebSocket Fundamental Demo", new Item[] { getTxfURL(), getTxfTarget(), getTxfMessage(), getImgStatus(), getStiLog() });//GEN-BEGIN:|14-getter|1|14-postInit
+			frmDemo = new Form("jWebSocket Fundamental Demo", new Item[]{getTxfURL(), getTxfTarget(), getTxfMessage(), getImgStatus(), getStiLog()});//GEN-BEGIN:|14-getter|1|14-postInit
 			frmDemo.addCommand(getCmdExit());
 			frmDemo.addCommand(getCmdConnect());
 			frmDemo.addCommand(getCmdDisconnect());
@@ -279,12 +290,13 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|14-getter|2|
 		return frmDemo;
 	}
-	//</editor-fold>//GEN-END:|14-getter|2|
+//</editor-fold>//GEN-END:|14-getter|2|
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: stiLog ">//GEN-BEGIN:|16-getter|0|16-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: stiLog ">//GEN-BEGIN:|16-getter|0|16-preInit
 	/**
-	 * Returns an initiliazed instance of stiLog component.
+	 * Returns an initialized instance of stiLog component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public StringItem getStiLog() {
@@ -296,11 +308,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|16-getter|2|
 		return stiLog;
 	}
-	//</editor-fold>//GEN-END:|16-getter|2|
+//</editor-fold>//GEN-END:|16-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdConnect ">//GEN-BEGIN:|22-getter|0|22-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdConnect ">//GEN-BEGIN:|22-getter|0|22-preInit
 	/**
-	 * Returns an initiliazed instance of cmdConnect component.
+	 * Returns an initialized instance of cmdConnect component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Command getCmdConnect() {
@@ -311,11 +324,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|22-getter|2|
 		return cmdConnect;
 	}
-	//</editor-fold>//GEN-END:|22-getter|2|
+//</editor-fold>//GEN-END:|22-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdDisconnect ">//GEN-BEGIN:|24-getter|0|24-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdDisconnect ">//GEN-BEGIN:|24-getter|0|24-preInit
 	/**
-	 * Returns an initiliazed instance of cmdDisconnect component.
+	 * Returns an initialized instance of cmdDisconnect component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Command getCmdDisconnect() {
@@ -326,11 +340,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|24-getter|2|
 		return cmdDisconnect;
 	}
-	//</editor-fold>//GEN-END:|24-getter|2|
+//</editor-fold>//GEN-END:|24-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdLogin ">//GEN-BEGIN:|26-getter|0|26-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdLogin ">//GEN-BEGIN:|26-getter|0|26-preInit
 	/**
-	 * Returns an initiliazed instance of cmdLogin component.
+	 * Returns an initialized instance of cmdLogin component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Command getCmdLogin() {
@@ -341,11 +356,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|26-getter|2|
 		return cmdLogin;
 	}
-	//</editor-fold>//GEN-END:|26-getter|2|
+//</editor-fold>//GEN-END:|26-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdLogout ">//GEN-BEGIN:|28-getter|0|28-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdLogout ">//GEN-BEGIN:|28-getter|0|28-preInit
 	/**
-	 * Returns an initiliazed instance of cmdLogout component.
+	 * Returns an initialized instance of cmdLogout component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Command getCmdLogout() {
@@ -356,11 +372,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|28-getter|2|
 		return cmdLogout;
 	}
-	//</editor-fold>//GEN-END:|28-getter|2|
+//</editor-fold>//GEN-END:|28-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdSend ">//GEN-BEGIN:|30-getter|0|30-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdSend ">//GEN-BEGIN:|30-getter|0|30-preInit
 	/**
-	 * Returns an initiliazed instance of cmdSend component.
+	 * Returns an initialized instance of cmdSend component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Command getCmdSend() {
@@ -371,11 +388,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|30-getter|2|
 		return cmdSend;
 	}
-	//</editor-fold>//GEN-END:|30-getter|2|
+//</editor-fold>//GEN-END:|30-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdBroadcast ">//GEN-BEGIN:|32-getter|0|32-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdBroadcast ">//GEN-BEGIN:|32-getter|0|32-preInit
 	/**
-	 * Returns an initiliazed instance of cmdBroadcast component.
+	 * Returns an initialized instance of cmdBroadcast component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Command getCmdBroadcast() {
@@ -386,11 +404,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|32-getter|2|
 		return cmdBroadcast;
 	}
-	//</editor-fold>//GEN-END:|32-getter|2|
+//</editor-fold>//GEN-END:|32-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txfTarget ">//GEN-BEGIN:|35-getter|0|35-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txfTarget ">//GEN-BEGIN:|35-getter|0|35-preInit
 	/**
-	 * Returns an initiliazed instance of txfTarget component.
+	 * Returns an initialized instance of txfTarget component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public TextField getTxfTarget() {
@@ -403,11 +422,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|35-getter|2|
 		return txfTarget;
 	}
-	//</editor-fold>//GEN-END:|35-getter|2|
+//</editor-fold>//GEN-END:|35-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txfMessage ">//GEN-BEGIN:|36-getter|0|36-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txfMessage ">//GEN-BEGIN:|36-getter|0|36-preInit
 	/**
-	 * Returns an initiliazed instance of txfMessage component.
+	 * Returns an initialized instance of txfMessage component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public TextField getTxfMessage() {
@@ -420,11 +440,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|36-getter|2|
 		return txfMessage;
 	}
-	//</editor-fold>//GEN-END:|36-getter|2|
+//</editor-fold>//GEN-END:|36-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdSetup ">//GEN-BEGIN:|37-getter|0|37-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdSetup ">//GEN-BEGIN:|37-getter|0|37-preInit
 	/**
-	 * Returns an initiliazed instance of cmdSetup component.
+	 * Returns an initialized instance of cmdSetup component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Command getCmdSetup() {
@@ -435,11 +456,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|37-getter|2|
 		return cmdSetup;
 	}
-	//</editor-fold>//GEN-END:|37-getter|2|
+//</editor-fold>//GEN-END:|37-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdOk ">//GEN-BEGIN:|43-getter|0|43-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdOk ">//GEN-BEGIN:|43-getter|0|43-preInit
 	/**
-	 * Returns an initiliazed instance of cmdOk component.
+	 * Returns an initialized instance of cmdOk component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Command getCmdOk() {
@@ -450,12 +472,13 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|43-getter|2|
 		return cmdOk;
 	}
-	//</editor-fold>//GEN-END:|43-getter|2|
+//</editor-fold>//GEN-END:|43-getter|2|
 	//</editor-fold>
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txfURL ">//GEN-BEGIN:|47-getter|0|47-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txfURL ">//GEN-BEGIN:|47-getter|0|47-preInit
 	/**
-	 * Returns an initiliazed instance of txfURL component.
+	 * Returns an initialized instance of txfURL component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public TextField getTxfURL() {
@@ -468,11 +491,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|47-getter|2|
 		return txfURL;
 	}
-	//</editor-fold>//GEN-END:|47-getter|2|
+//</editor-fold>//GEN-END:|47-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imgStatus ">//GEN-BEGIN:|48-getter|0|48-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imgStatus ">//GEN-BEGIN:|48-getter|0|48-preInit
 	/**
-	 * Returns an initiliazed instance of imgStatus component.
+	 * Returns an initialized instance of imgStatus component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public ImageItem getImgStatus() {
@@ -483,11 +507,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|48-getter|2|
 		return imgStatus;
 	}
-	//</editor-fold>//GEN-END:|48-getter|2|
+//</editor-fold>//GEN-END:|48-getter|2|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imgAuthenticated ">//GEN-BEGIN:|49-getter|0|49-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imgAuthenticated ">//GEN-BEGIN:|49-getter|0|49-preInit
 	/**
-	 * Returns an initiliazed instance of imgAuthenticated component.
+	 * Returns an initialized instance of imgAuthenticated component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Image getImgAuthenticated() {
@@ -502,11 +527,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|49-getter|3|
 		return imgAuthenticated;
 	}
-	//</editor-fold>//GEN-END:|49-getter|3|
+//</editor-fold>//GEN-END:|49-getter|3|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imgConnected ">//GEN-BEGIN:|50-getter|0|50-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imgConnected ">//GEN-BEGIN:|50-getter|0|50-preInit
 	/**
-	 * Returns an initiliazed instance of imgConnected component.
+	 * Returns an initialized instance of imgConnected component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Image getImgConnected() {
@@ -521,11 +547,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|50-getter|3|
 		return imgConnected;
 	}
-	//</editor-fold>//GEN-END:|50-getter|3|
+//</editor-fold>//GEN-END:|50-getter|3|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imgDisconnected ">//GEN-BEGIN:|51-getter|0|51-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: imgDisconnected ">//GEN-BEGIN:|51-getter|0|51-preInit
 	/**
-	 * Returns an initiliazed instance of imgDisconnected component.
+	 * Returns an initialized instance of imgDisconnected component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Image getImgDisconnected() {
@@ -540,11 +567,12 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|51-getter|3|
 		return imgDisconnected;
 	}
-	//</editor-fold>//GEN-END:|51-getter|3|
+//</editor-fold>//GEN-END:|51-getter|3|
 
-	//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdCamera ">//GEN-BEGIN:|52-getter|0|52-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cmdCamera ">//GEN-BEGIN:|52-getter|0|52-preInit
 	/**
-	 * Returns an initiliazed instance of cmdCamera component.
+	 * Returns an initialized instance of cmdCamera component.
+	 *
 	 * @return the initialized component instance
 	 */
 	public Command getCmdCamera() {
@@ -555,7 +583,7 @@ public class JWebSocketJavaMEDemo extends MIDlet implements CommandListener, Web
 		}//GEN-BEGIN:|52-getter|2|
 		return cmdCamera;
 	}
-	//</editor-fold>//GEN-END:|52-getter|2|
+//</editor-fold>//GEN-END:|52-getter|2|
 
 	/**
 	 * Returns a display instance.

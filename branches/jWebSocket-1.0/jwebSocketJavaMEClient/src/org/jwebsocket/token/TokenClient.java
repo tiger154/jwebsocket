@@ -20,8 +20,8 @@ import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.client.me.BaseClientJ2ME;
 import org.jwebsocket.client.me.Tools;
-import org.jwebsocket.listener.WebSocketClientEvent;
 import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.listener.WebSocketClientEvent;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 
 /**
@@ -86,7 +86,7 @@ public class TokenClient {
 	/**
 	 * @return the fSessionId
 	 */
-	public String getfSessionId() {
+	public String getSessionId() {
 		return mSessionId;
 	}
 
@@ -192,7 +192,9 @@ public class TokenClient {
 	}
 	// TODO: put the following methods into client side plug-ins or separate them in a different way.
 
-	/* functions of the System Plug-in */
+	/*
+	 * functions of the System Plug-in
+	 */
 	private final static String NS_SYSTEM_PLUGIN = NS_BASE + ".plugins.system";
 
 	/**
@@ -268,7 +270,9 @@ public class TokenClient {
 		sendToken(lToken);
 	}
 
-	/* functions of the Admin Plug-in */
+	/*
+	 * functions of the Admin Plug-in
+	 */
 	private final static String NS_ADMIN_PLUGIN = NS_BASE + ".plugins.admin";
 
 	/**

@@ -29,9 +29,10 @@ public class WebSocketHandshake {
 	public static int MAX_HEADER_SIZE = 16834;
 
 	/**
-	 * Generates the initial handshake request from a client to the jWebSocket 
+	 * Generates the initial handshake request from a client to the jWebSocket
 	 * Server. This is send from a Java client to the server when a connection
 	 * is about to be established. The browser's implement that internally.
+	 *
 	 * @param aURI
 	 * @return
 	 */
@@ -80,9 +81,10 @@ public class WebSocketHandshake {
 
 	/**
 	 * Parses the response from the client on an initial client's handshake
-	 * request. This is always performed on the server only when a client
-	 * - irrespective of if it is a Java Client or Browser Client -
-	 * initiates a connection.
+	 * request. This is always performed on the server only when a client -
+	 * irrespective of if it is a Java Client or Browser Client - initiates a
+	 * connection.
+	 *
 	 * @param aResp
 	 * @return
 	 */
@@ -98,7 +100,7 @@ public class WebSocketHandshake {
 		long lSecNum1 = -1;
 		long lSecNum2 = -1;
 		byte[] lSecKeyResp = new byte[8];
-				
+
 		FastMap lRes = new FastMap();
 
 		int lRespLen = aResp.length;
@@ -147,20 +149,20 @@ public class WebSocketHandshake {
 
 		// the following section implements the sec-key process in WebSocket Draft 76
 		/*
-		To prove that the handshake was received, the server has to take
-		three pieces of information and combine them to form a response.  The
-		first two pieces of information come from the |Sec-WebSocket-Key1|
-		and |Sec-WebSocket-Key2| fields in the client handshake.
-
-		Sec-WebSocket-Key1: 18x 6]8vM;54 *(5:  {   U1]8  z [  8
-		Sec-WebSocket-Key2: 1_ tx7X d  <  nw  334J702) 7]o}` 0
-
-		For each of these fields, the server has to take the digits from the
-		value to obtain a number (in this case 1868545188 and 1733470270
-		respectively), then divide that number by the number of spaces
-		characters in the value (in this case 12 and 10) to obtain a 32-bit
-		number (155712099 and 173347027).  These two resulting numbers are
-		then used in the server handshake, as described below.
+		 * To prove that the handshake was received, the server has to take
+		 * three pieces of information and combine them to form a response. The
+		 * first two pieces of information come from the |Sec-WebSocket-Key1|
+		 * and |Sec-WebSocket-Key2| fields in the client handshake.
+		 *
+		 * Sec-WebSocket-Key1: 18x 6]8vM;54 *(5: { U1]8 z [ 8
+		 * Sec-WebSocket-Key2: 1_ tx7X d < nw 334J702) 7]o}` 0
+		 *
+		 * For each of these fields, the server has to take the digits from the
+		 * value to obtain a number (in this case 1868545188 and 1733470270
+		 * respectively), then divide that number by the number of spaces
+		 * characters in the value (in this case 12 and 10) to obtain a 32-bit
+		 * number (155712099 and 173347027). These two resulting numbers are
+		 * then used in the server handshake, as described below.
 		 */
 		lPos = lResp.indexOf("Sec-WebSocket-Key1:");
 		if (lPos > 0) {
@@ -182,15 +184,15 @@ public class WebSocketHandshake {
 		}
 
 		/*
-		The third piece of information is given after the fields, in the last
-		eight bytes of the handshake, expressed here as they would be seen if
-		interpreted as ASCII: Tm[K T2u
-		The concatenation of the number obtained from processing the |Sec-
-		WebSocket-Key1| field, expressed as a big-endian 32 bit number, the
-		number obtained from processing the |Sec-WebSocket-Key2| field, again
-		expressed as a big-endian 32 bit number, and finally the eight bytes
-		at the end of the handshake, form a 128 bit string whose MD5 sum is
-		then used by the server to prove that it read the handshake.
+		 * The third piece of information is given after the fields, in the last
+		 * eight bytes of the handshake, expressed here as they would be seen if
+		 * interpreted as ASCII: Tm[K T2u The concatenation of the number
+		 * obtained from processing the |Sec- WebSocket-Key1| field, expressed
+		 * as a big-endian 32 bit number, the number obtained from processing
+		 * the |Sec-WebSocket-Key2| field, again expressed as a big-endian 32
+		 * bit number, and finally the eight bytes at the end of the handshake,
+		 * form a 128 bit string whose MD5 sum is then used by the server to
+		 * prove that it read the handshake.
 		 */
 
 		if (lSecNum1 != -1 && lSecNum2 != -1) {
@@ -207,12 +209,12 @@ public class WebSocketHandshake {
 			secTmp = lSecNum1;
 			// TODO: replace by arraycopy
 			for (int i = 0; i < 4; i++) {
-				l128Bit[i] = (byte)(secTmp & 0xff);
+				l128Bit[i] = (byte) (secTmp & 0xff);
 				secTmp >>= 8;
 			}
 			secTmp = lSecNum2;
 			for (int i = 0; i < 4; i++) {
-				l128Bit[i+4] = (byte)(secTmp & 0xff);
+				l128Bit[i + 4] = (byte) (secTmp & 0xff);
 			}
 			lTmp = lSecKey3;
 			// TODO: replace by arraycopy
@@ -243,9 +245,10 @@ public class WebSocketHandshake {
 	}
 
 	/**
-	 * Generates the response for the server to answer an initial client 
+	 * Generates the response for the server to answer an initial client
 	 * request. This is performed on the server only as an answer to a client's
 	 * request - irrespective of if it is a Java or Browser Client.
+	 *
 	 * @param aRequest
 	 * @return
 	 */
@@ -298,9 +301,9 @@ public class WebSocketHandshake {
 	}
 
 	/**
-	 * Reads the handshake response from the server into an byte array.
-	 * This is used on clients only. The browser client implement
-	 * that internally.
+	 * Reads the handshake response from the server into an byte array. This is
+	 * used on clients only. The browser client implement that internally.
+	 *
 	 * @param aIS
 	 * @return
 	 */
@@ -334,11 +337,9 @@ public class WebSocketHandshake {
 	}
 
 	/*
-	 * Parses the websocket handshake response from the server.
-	 * This is performed on Java Client only, the browsers implement
-	 * that internally.
-	 * @param aResp
-	 * @return
+	 * Parses the websocket handshake response from the server. This is
+	 * performed on Java Client only, the browsers implement that internally.
+	 * @param aResp @return
 	 */
 	public static FastMap parseS2CResponse(byte[] aResp) {
 		FastMap lRes = new FastMap();

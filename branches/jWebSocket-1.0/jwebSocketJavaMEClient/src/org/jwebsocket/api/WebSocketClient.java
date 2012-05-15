@@ -16,8 +16,8 @@
 package org.jwebsocket.api;
 
 import j2me.util.List;
-import org.jwebsocket.listener.WebSocketClientEvent;
 import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.listener.WebSocketClientEvent;
 
 /**
  *
@@ -81,13 +81,13 @@ public interface WebSocketClient {
 	void addListener(WebSocketClientListener aListener);
 
 	/**
-	 * 
+	 *
 	 * @param aListener
 	 */
 	void removeListener(WebSocketClientListener aListener);
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	List getListeners();

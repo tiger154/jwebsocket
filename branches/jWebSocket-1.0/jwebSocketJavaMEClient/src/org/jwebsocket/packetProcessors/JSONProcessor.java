@@ -29,12 +29,15 @@ import org.jwebsocket.token.Token;
 
 /**
  * converts JSON formatted data packets into tokens and vice versa.
- * @author Alexander Schulze, Roderick Baier (improvements regarding JSON array).
+ *
+ * @author Alexander Schulze, Roderick Baier (improvements regarding JSON
+ * array).
  */
 public class JSONProcessor {
 
 	/**
 	 * converts a JSON formatted data packet into a token.
+	 *
 	 * @param aDataPacket
 	 * @return
 	 */
@@ -78,12 +81,12 @@ public class JSONProcessor {
 
 		Iterator lIterator = token.getKeys();
 		while (lIterator.hasNext()) {
-			String key = (String)lIterator.next();
+			String key = (String) lIterator.next();
 			Object value = token.get(key);
 			if (value instanceof Collection) {
 				JSONArray lArray = new JSONArray();
 				Iterator lItems = ((Collection) value).iterator();
-				while( lItems.hasNext()) {
+				while (lItems.hasNext()) {
 					Object lItem = lItems.next();
 					if (lItem instanceof Token) {
 						JSONObject object = tokenToJSON((Token) lItem);
@@ -111,4 +114,3 @@ public class JSONProcessor {
 		return json;
 	}
 }
-

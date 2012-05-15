@@ -21,6 +21,7 @@ import javolution.util.FastMap;
 
 /**
  * A token is ...
+ *
  * @author aschulze
  */
 public class Token {
@@ -28,15 +29,16 @@ public class Token {
 	private Map mItems = new FastMap();
 
 	/**
-	 * Creates a new empty instance of a token.
-	 * The token does not contain any items.
+	 * Creates a new empty instance of a token. The token does not contain any
+	 * items.
 	 */
 	public Token() {
 	}
 
 	/**
-	 * puts a new key/value pair into the token, in other words it adds a
-	 * new item to the token.
+	 * puts a new key/value pair into the token, in other words it adds a new
+	 * item to the token.
+	 *
 	 * @param aKey key of the the token item.
 	 * @param aValue value of the token item.
 	 */
@@ -145,6 +147,7 @@ public class Token {
 	 * Returns the name space of the token. If you have the same token type
 	 * interpreted by multiple different plug-ins the namespace allows to
 	 * uniquely address a certain plug-in. Each plug-in has its own namespace.
+	 *
 	 * @return the namespace.
 	 */
 	public String getNS() {
@@ -155,6 +158,7 @@ public class Token {
 	 * Sets the name space of the token. If you have the same token type
 	 * interpreted by multiple different plug-ins the namespace allows to
 	 * uniquely address a certain plug-in. Each plug-in has its own namespace.
+	 *
 	 * @param aNS the namespace to be set for the token.
 	 */
 	public void setNS(String aNS) {

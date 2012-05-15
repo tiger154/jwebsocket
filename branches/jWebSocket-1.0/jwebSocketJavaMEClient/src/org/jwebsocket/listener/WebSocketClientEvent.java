@@ -19,6 +19,4 @@ package org.jwebsocket.listener;
  * @author aschulze
  */
 public class WebSocketClientEvent {
-
-
 }
