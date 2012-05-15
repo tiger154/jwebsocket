@@ -18,20 +18,23 @@ import org.jwebsocket.listener.WebSocketClientEvent;
 
 /**
  * Interface for the low level WebSocket listeners.
+ *
  * @author aschulze
  */
 public interface WebSocketClientListener {
 
 	/**
 	 * This method is invoked when a new client connects to the Client.
+	 *
 	 * @param aEvent
 	 */
 	public void processOpened(WebSocketClientEvent aEvent);
 
 	/**
-	 * This method is invoked when a data packet from a client is received.
-	 * The event provides getter for the Client and the connector to send
-	 * responses to back the client.
+	 * This method is invoked when a data packet from a client is received. The
+	 * event provides getter for the Client and the connector to send responses
+	 * to back the client.
+	 *
 	 * @param aEvent
 	 * @param aPacket
 	 */
@@ -39,6 +42,7 @@ public interface WebSocketClientListener {
 
 	/**
 	 * This method is invoked when a client was disconnted from the Client.
+	 *
 	 * @param aEvent
 	 */
 	public void processClosed(WebSocketClientEvent aEvent);

@@ -15,7 +15,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.midlets;
 
-import javax.microedition.lcdui.*;
+import javax.microedition.lcdui.Canvas;
+import javax.microedition.lcdui.Graphics;
 import javax.microedition.media.MediaException;
 import javax.microedition.media.control.VideoControl;
 import javax.microedition.midlet.MIDlet;

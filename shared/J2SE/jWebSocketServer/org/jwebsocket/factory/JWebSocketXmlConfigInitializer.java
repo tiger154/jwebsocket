@@ -15,8 +15,11 @@
 package org.jwebsocket.factory;
 
 import java.io.File;
+import java.lang.ClassLoader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
@@ -26,6 +29,7 @@ import org.jwebsocket.api.*;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.xml.*;
 import org.jwebsocket.logging.Logging;
+import org.xeustechnologies.jcl.ProxyClassLoader;
 
 /**
  * Initialize the engine, servers and plug-ins based on jWebSocket.xml
@@ -36,7 +40,7 @@ import org.jwebsocket.logging.Logging;
  * mailtopuran $
  */
 public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitializer {
-
+	
 	private static Logger mLog = Logging.getLogger();
 	private final static JWebSocketJarClassLoader mClassLoader = new JWebSocketJarClassLoader();
 
@@ -49,7 +53,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 		// Saving the initializer class loader reference
 		JWebSocketFactory.setClassLoader(mClassLoader);
 	}
-
+	
 	public static ClassLoader getClassLoader() {
 		return mClassLoader;
 	}
@@ -59,14 +63,12 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 	 *
 	 * @param aConfig the jWebSocket config
 	 * @return the initializer object
-	*/
-	
+	 */
 	public static JWebSocketXmlConfigInitializer getInitializer(JWebSocketConfig aConfig) {
 		JWebSocketXmlConfigInitializer lInitializer = new JWebSocketXmlConfigInitializer(aConfig);
 		return lInitializer;
 	}
 	
-
 	@Override
 	public ClassLoader initializeLibraries() {
 		List<LibraryConfig> lLibs = jWebSocketConfig.getLibraries();
@@ -80,6 +82,20 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 					String lPath = JWebSocketConfig.expandEnvAndJWebSocketVars(lLibConf.getURL());
 					mClassLoader.addFile(lPath);
 					ClassPathUpdater.add(new File(lPath));
+					
+					try {
+						// URLClassLoader lURLCL = (URLClassLoader) Thread.currentThread().getContextClassLoader();
+						URLClassLoader lURLCL = (URLClassLoader) ClassLoader.getSystemClassLoader();
+						Method lMethod = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
+						lMethod.setAccessible(true);
+						String lURLStr = "file:" + lPath;
+						URL lURL = new URL(lURLStr);
+						lMethod.invoke(lURLCL, new Object[]{lURL});
+					} catch (Exception lEx) {
+						String lMsg = lEx.getMessage();
+						System.out.println(lMsg);
+					}
+					
 					if (mLog.isInfoEnabled()) {
 						mLog.info("External library '" + lLibConf.getId()
 								+ "' from '" + lPath
@@ -247,15 +263,20 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 							mLog.debug("Loading plug-in '"
 									+ lPlugInConfig.getName()
 									+ "' from '" + lJarFilePath + "'...");
-
+							
 						}
-						lPlugInClass = (Class<WebSocketPlugIn>) mClassLoader.loadClass(lPlugInConfig.getName());
+						URLClassLoader lCL = (URLClassLoader) ClassLoader.getSystemClassLoader();
+						Method lMethod = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
+						lMethod.setAccessible(true);
+						lMethod.invoke(lCL, new Object[]{new URL("file:/" + lJarFilePath)});
+						lPlugInClass = (Class<WebSocketPlugIn>) lCL.loadClass(lPlugInConfig.getName());
+						// lPlugInClass = (Class<WebSocketPlugIn>) mClassLoader..loadClass(lPlugInConfig.getName());
 					}
 				}
 				// if class found try to create an instance
 				if (lPlugInClass != null) {
 					WebSocketPlugIn lPlugIn;
-
+					
 					Constructor<WebSocketPlugIn> lPlugInConstructor;
 					lPlugInConstructor =
 							lPlugInClass.getConstructor(PluginConfiguration.class);
@@ -278,7 +299,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 								+ "' could not be instantiated due to invalid constructor.");
 					}
 				}
-
+				
 			} catch (Exception lEx) {
 				mLog.error("Couldn't instantiate the plug-in.", lEx);
 			}
@@ -336,7 +357,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 						}
 					}
 				}
-
+				
 			} catch (Exception lEx) {
 				mLog.error("Error instantiating filters", lEx);
 			}

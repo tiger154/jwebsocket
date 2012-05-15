@@ -6,6 +6,7 @@ package org.jwebsocket.client.me;
 
 /**
  * Code taken from http://forums.sun.com/thread.jspa?forumID=76&threadID=665487
+ *
  * @author aschulze
  */
 public class Tools {
@@ -58,5 +59,4 @@ public class Tools {
 		}
 		return new String(out);
 	}
-
 }

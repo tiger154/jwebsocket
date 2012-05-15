@@ -17,31 +17,31 @@ package org.jwebsocket.kit;
 
 /**
  * Exception class to represent JWebSocketServer related exception
+ *
  * @author Puran Singh
- * @version $Id: WebSocketException.java 596 2010-06-22 17:09:54Z fivefeetfurther $
+ * @version $Id: WebSocketException.java 596 2010-06-22 17:09:54Z
+ * fivefeetfurther $
  *
  */
 public class WebSocketException extends Exception {
 
 	/**
 	 * creates the exception with given message
+	 *
 	 * @param error the error messae
 	 */
 	public WebSocketException(String error) {
 		super(error);
 	}
-	
 	/**
 	 * creates the exception with given message
+	 *
 	 * @param error the error messae
-	 * @param throwable the cause 
+	 * @param throwable the cause
 	 */
 	/*
-	public WebSocketException(String error, Throwable throwable) {
-		super(error, throwable);
-	}
+	 * public WebSocketException(String error, Throwable throwable) {
+	 * super(error, throwable); }
 	 */
-
 	private static final long serialVersionUID = 1L;
-	
 }
