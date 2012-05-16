@@ -59,8 +59,8 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	 *
 	 * @param aDefs The plug-in events definitions
 	 */
-	public void setEventsDefinitions(Set<C2SEventDefinition> aDefs) {
-		getEm().getEventFactory().getEventDefinitions().getDefinitions().addAll(aDefs);
+	public void setEventsDefinitions(Set<C2SEventDefinition> aDefs) throws Exception {
+		getEm().getEventFactory().getEventDefinitions().registerDefinitions(aDefs);
 	}
 
 	/**
@@ -216,7 +216,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 		C2SEventDefinition lEventDef;
 		for (String lKey : getClientAPI().keySet()) {
 			try {
-				String aEventId = getEm().getEventFactory().eventToString(getClientAPI().get(lKey));
+				String aEventId = getEm().getEventFactory().eventClassToEventId(getClientAPI().get(lKey));
 				lEventDef = getEm().getEventFactory().getEventDefinitions().getDefinition(aEventId);
 
 				lTokenEventDef = TokenFactory.createToken();

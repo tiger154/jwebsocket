@@ -15,7 +15,10 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.event;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import javolution.util.FastMap;
 import javolution.util.FastSet;
 import org.jwebsocket.eventmodel.api.IC2SEventDefinitionManager;
 import org.jwebsocket.eventmodel.observable.Event;
@@ -26,7 +29,8 @@ import org.jwebsocket.eventmodel.observable.Event;
  */
 public class C2SEventDefinitionManager implements IC2SEventDefinitionManager {
 
-	private Set<C2SEventDefinition> mDefinitions = new FastSet();
+	private Map<String, C2SEventDefinition> mIdToDef = new FastMap<String, C2SEventDefinition>().shared();
+	private Map<Class, String> mClassToId = new FastMap<Class, String>().shared();
 
 	/**
 	 * {@inheritDoc}
@@ -43,58 +47,87 @@ public class C2SEventDefinitionManager implements IC2SEventDefinitionManager {
 	}
 
 	/**
-	 * @return The C2SEventDefinition collection 
-	 */
-	public Set<C2SEventDefinition> getDefinitions() {
-		return mDefinitions;
-	}
-
-	/**
 	 * @param aSet The C2SEventDefinition collection to set
 	 */
-	public void setDefinitions(Set<C2SEventDefinition> aSet) {
-		this.mDefinitions.addAll(aSet);
+	public void setDefinitions(Set<C2SEventDefinition> aSet) throws Exception {
+		this.registerDefinitions(aSet);
 	}
 
 	/**
-	 * {@inheritDoc } 
+	 * 
+	 * @return A set of the event definitions
+	 */
+	public Set<C2SEventDefinition> getDefinitions() {
+		Set<C2SEventDefinition> lResult = new FastSet<C2SEventDefinition>();
+		for (Iterator<C2SEventDefinition> it = mIdToDef.values().iterator(); it.hasNext();) {
+			C2SEventDefinition lDef = it.next();
+			lResult.add(lDef);
+		}
+
+		return lResult;
+	}
+
+	/**
+	 * {@inheritDoc }
 	 */
 	@Override
 	public boolean hasDefinition(String aEventId) {
-		for (C2SEventDefinition lDef : mDefinitions) {
-			if (lDef.getId().equals(aEventId)) {
-				return true;
-			}
-		}
-
-		return false;
+		return mIdToDef.containsKey(aEventId);
 	}
 
 	/**
-	 * {@inheritDoc } 
+	 * {@inheritDoc }
 	 */
 	@Override
 	public C2SEventDefinition getDefinition(String aEventId) throws Exception {
-		for (C2SEventDefinition lDef : mDefinitions) {
-			if (lDef.getId().equals(aEventId)) {
-				return lDef;
-			}
+		if (mIdToDef.containsKey(aEventId)) {
+			return mIdToDef.get(aEventId);
+		} else {
+			throw new IndexOutOfBoundsException("The event definition with id '" + aEventId + "' does not exists!");
 		}
-
-		throw new IndexOutOfBoundsException("The event definition with id '" + aEventId + "' does not exists!");
 	}
 
 	/**
-	 * {@inheritDoc } 
+	 * {@inheritDoc }
 	 */
 	@Override
 	public String getIdByClass(Class<? extends Event> aEventClass) throws Exception {
-		for (C2SEventDefinition lDef : mDefinitions) {
-			if (lDef.getEventClass().equals(aEventClass)) {
-				return lDef.getId();
-			}
+		if (mClassToId.containsKey(aEventClass)) {
+			return mClassToId.get(aEventClass);
+		} else {
+			throw new IndexOutOfBoundsException("The event definition for class '" + aEventClass.getCanonicalName() + "' does not exists!");
 		}
+	}
 
-		throw new IndexOutOfBoundsException("The event definition for class '" + aEventClass.getCanonicalName() + "' does not exists!");
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public void registerDefinitions(Set<C2SEventDefinition> aDefs) throws Exception {
+		for (Iterator<C2SEventDefinition> it = aDefs.iterator(); it.hasNext();) {
+			C2SEventDefinition lDef = it.next();
+			registerDefinition(lDef);
+		}
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public void registerDefinition(C2SEventDefinition aDef) throws Exception {
+		mIdToDef.put(aDef.getId(), aDef);
+		mClassToId.put(aDef.getEventClass(), aDef.getId());
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public void removeDefinition(C2SEventDefinition aDef) throws Exception {
+		String lId = getIdByClass(aDef.getEventClass());
+
+		//Removing
+		mClassToId.remove(aDef.getEventClass());
+		mIdToDef.remove(lId);
 	}
 }

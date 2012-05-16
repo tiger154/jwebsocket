@@ -52,6 +52,14 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	private Validator mValidator;
 	private Integer mTimeout = 1000;
 
+	public C2SEventDefinition(String mId, String mNs) {
+		this.mId = mId;
+		this.mNs = mNs;
+	}
+
+	public C2SEventDefinition() {
+	}
+
 	/**
 	 * {@inheritDoc }
 	 */
@@ -181,7 +189,8 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	}
 
 	/**
-	 * @param incomingArgsValidation The C2SEventDefinition validation rules for incoming arguments to set
+	 * @param incomingArgsValidation The C2SEventDefinition validation rules for
+	 * incoming arguments to set
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
 	public C2SEventDefinition setIncomingArgsValidation(Set<Argument> aIncomingArgsValidation) {
@@ -198,7 +207,8 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	}
 
 	/**
-	 * @param aOutgoingArgsValidation The C2SEventDefinition validation rules for outgoing arguments to set
+	 * @param aOutgoingArgsValidation The C2SEventDefinition validation rules
+	 * for outgoing arguments to set
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
 	public C2SEventDefinition setOutgoingArgsValidation(Set<Argument> aOutgoingArgsValidation) {
@@ -209,7 +219,7 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 
 	/**
 	 * Indicate if a response is required for the target event
-	 * 
+	 *
 	 * @return the responseRequired
 	 */
 	public boolean isResponseRequired() {
@@ -217,7 +227,8 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	}
 
 	/**
-	 * @param aResponseRequired Indicate if a response is required for the target event
+	 * @param aResponseRequired Indicate if a response is required for the
+	 * target event
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
 	public C2SEventDefinition setResponseRequired(boolean aResponseRequired) {
@@ -234,7 +245,7 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	}
 
 	/**
-	 * 
+	 *
 	 * @return TRUE is the cache is private by user, FALSE otherwise
 	 */
 	public boolean isCachePrivate() {
@@ -242,8 +253,9 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	}
 
 	/**
-	 * 
-	 * @param aCachePrivate TRUE is the cache is private by user, FALSE otherwise
+	 *
+	 * @param aCachePrivate TRUE is the cache is private by user, FALSE
+	 * otherwise
 	 */
 	public void setCachePrivate(boolean aCachePrivate) {
 		this.mCachePrivate = aCachePrivate;
@@ -267,7 +279,8 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	}
 
 	/**
-	 * @param aCacheTime The time in seconds to store in cache the response of this event
+	 * @param aCacheTime The time in seconds to store in cache the response of
+	 * this event
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
 	public C2SEventDefinition setCacheTime(int aCacheTime) {
@@ -335,19 +348,19 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	}
 
 	/**
-	 * Indicate if the response for the event need to be send to 
-	 * the owner WebSocketConnector
-	 * 
-	 * @return <tt>TRUE</tt> if the response need to be send to the 
-	 * owner WebSocketConnector, <tt>FALSE</tt> otherwise
+	 * Indicate if the response for the event need to be send to the owner
+	 * WebSocketConnector
+	 *
+	 * @return <tt>TRUE</tt> if the response need to be send to the owner
+	 * WebSocketConnector, <tt>FALSE</tt> otherwise
 	 */
 	public boolean isResponseToOwnerConnector() {
 		return mResponseToOwnerConnector;
 	}
 
 	/**
-	 * @param aResponseToOwnerConnector Indicate if the response for the event need to be send to 
-	 * the owner WebSocketConnector
+	 * @param aResponseToOwnerConnector Indicate if the response for the event
+	 * need to be send to the owner WebSocketConnector
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
 	public C2SEventDefinition setResponseToOwnerConnector(boolean aResponseToOwnerConnector) {
@@ -357,16 +370,17 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	}
 
 	/**
-	 * @return <tt>TRUE</tt> if the listeners notification can be do it 
-	 * in threads, <tt>FALSE</tt> otherwise
+	 * @return <tt>TRUE</tt> if the listeners notification can be do it in
+	 * threads, <tt>FALSE</tt> otherwise
 	 */
 	public boolean isNotificationConcurrent() {
 		return mNotificationConcurrent;
 	}
 
 	/**
-	 * @param aNotificationConcurrent Indicate if the listeners notification can be do it in threads
-	 * @return C2SEventDefinition provide a fluent interface 
+	 * @param aNotificationConcurrent Indicate if the listeners notification can
+	 * be do it in threads
+	 * @return C2SEventDefinition provide a fluent interface
 	 */
 	public C2SEventDefinition setNotificationConcurrent(boolean aNotificationConcurrent) {
 		this.mNotificationConcurrent = aNotificationConcurrent;
@@ -408,15 +422,16 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 
 	/**
 	 * @return <tt>TRUE</tt> if the response delivery to the client need to be
-	 * asynchronous, <tt>FALSE</tt> otherwise 
+	 * asynchronous, <tt>FALSE</tt> otherwise
 	 */
 	public boolean isResponseAsync() {
 		return mResponseAsync;
 	}
 
 	/**
-	 * @param aResponseAsync Indicate if the response delivery to the client need to be asynchronous
-	 * @return C2SEventDefinition provide a fluent interface 
+	 * @param aResponseAsync Indicate if the response delivery to the client
+	 * need to be asynchronous
+	 * @return C2SEventDefinition provide a fluent interface
 	 */
 	public C2SEventDefinition setResponseAsync(boolean aResponseAsync) {
 		this.mResponseAsync = aResponseAsync;
@@ -458,8 +473,8 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	}
 
 	/**
-	 * 
-	 * {@inheritDoc } 
+	 *
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void writeToToken(Token aToken) {
