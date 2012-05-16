@@ -88,12 +88,6 @@ public class TestPlugIn extends JcPlugIn {
 						mLog.error("The S2C event notification failed. Reason: " + aReason.name());
 					}
 				});
-
-		//Notification w/o callbacks
-		UpdateSiteCounterEvent lEvent = new UpdateSiteCounterEvent();
-		lEvent.setCounter(Integer.MAX_VALUE);
-		//Sending to all connectors
-		notifyS2CEvent(lEvent).to(aEvent.getConnector(), null);
 	}
 
 	/**

@@ -16,9 +16,9 @@
 package org.jwebsocket.eventmodel.factory;
 
 import org.apache.log4j.Logger;
+import org.jwebsocket.eventmodel.api.IC2SEventDefinitionManager;
 import org.jwebsocket.eventmodel.core.EventModel;
 import org.jwebsocket.eventmodel.event.C2SEvent;
-import org.jwebsocket.eventmodel.event.C2SEventDefinitionManager;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.logging.Logging;
@@ -31,14 +31,14 @@ import org.jwebsocket.token.Token;
 public class EventFactory {
 
 	private EventModel mEm;
-	private C2SEventDefinitionManager mEventDefinitions;
+	private IC2SEventDefinitionManager mEventDefinitions;
 	private static Logger mLog = Logging.getLogger(EventFactory.class);
 
 	/**
 	 * Convert a Event into a Token
-	 * 
+	 *
 	 * @param aEvent The Event to convert
-	 * @return The Token
+	 * @return Returns the Token representation of a given Event instance.
 	 */
 	public Token eventToToken(Event aEvent) {
 		aEvent.getArgs().setType(aEvent.getId());
@@ -48,14 +48,13 @@ public class EventFactory {
 
 	/**
 	 * Convert a Token into a Event
-	 * 
+	 *
 	 * @param aToken The Token to convert
-	 * @return The Event
+	 * @return Returns the C2SEvent representation of a given Token instance.
 	 * @throws Exception
 	 */
 	public C2SEvent tokenToEvent(Token aToken) throws Exception {
-		String lType = aToken.getType();
-		C2SEvent lEvent = stringToEvent(lType);
+		C2SEvent lEvent = idToEvent(aToken.getType());
 		lEvent.setArgs(aToken);
 
 		return lEvent;
@@ -63,12 +62,12 @@ public class EventFactory {
 
 	/**
 	 * Get a C2SEvent using it identifier
-	 * 
+	 *
 	 * @param aEventId The C2SEvent identifier
-	 * @return The C2SEvent
+	 * @return Returns a new instance of the C2SEvent that matches the given event identifier.
 	 * @throws Exception
 	 */
-	public C2SEvent stringToEvent(String aEventId) throws Exception {
+	public C2SEvent idToEvent(String aEventId) throws Exception {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Creating instance for event: '" + aEventId + "'...");
 		}
@@ -81,26 +80,26 @@ public class EventFactory {
 
 	/**
 	 * @param aEvent The C2SEvent
-	 * @return The string representation of a C2SEvent
+	 * @return Returns the event identifier of the given C2SEvent instance.
 	 */
-	public String eventToString(C2SEvent aEvent) {
+	public String eventToId(C2SEvent aEvent) {
 		return aEvent.getId();
 	}
 
 	/**
 	 * @param aEventClass A Event class
-	 * @return The Event string representation
+	 * @return Returns the identifier of the event that matches the given event class.
 	 * @throws Exception
 	 */
-	public String eventToString(Class<? extends Event> aEventClass) throws Exception {
+	public String eventClassToEventId(Class<? extends Event> aEventClass) throws Exception {
 		return getEventDefinitions().getIdByClass(aEventClass);
 	}
 
 	/**
 	 * Create a response event for an incoming C2SEvent
-	 * 
+	 *
 	 * @param aEvent The C2SEvent to get the response
-	 * @return
+	 * @return Create a response event for a given C2SEvent instance.
 	 */
 	public C2SResponseEvent createResponseEvent(C2SEvent aEvent) {
 		if (mLog.isDebugEnabled()) {
@@ -117,7 +116,8 @@ public class EventFactory {
 	 * Indicate if exists and event definition using the event identifier
 	 *
 	 * @param aEventId The event identifier
-	 * @return <tt>TRUE</tt> if the event definition exists, <tt>FAlSE</tt> otherwise
+	 * @return Returns TRUE if exists a C2SEventDefinition that matches 
+	 * the given identifier, FALSE otherwise.
 	 */
 	public boolean hasEventDefinition(String aEventId) {
 		return getEventDefinitions().hasDefinition(aEventId);
@@ -138,16 +138,16 @@ public class EventFactory {
 	}
 
 	/**
-	 * @return The C2SEventDefinitionManager instance 
+	 * @return The C2SEventDefinitionManager instance
 	 */
-	public C2SEventDefinitionManager getEventDefinitions() {
+	public IC2SEventDefinitionManager getEventDefinitions() {
 		return mEventDefinitions;
 	}
 
 	/**
 	 * @param aEventDefinitions The C2SEventDefinitionManager to set
 	 */
-	public void setEventDefinitions(C2SEventDefinitionManager aEventDefinitions) {
+	public void setEventDefinitions(IC2SEventDefinitionManager aEventDefinitions) {
 		this.mEventDefinitions = aEventDefinitions;
 	}
 }

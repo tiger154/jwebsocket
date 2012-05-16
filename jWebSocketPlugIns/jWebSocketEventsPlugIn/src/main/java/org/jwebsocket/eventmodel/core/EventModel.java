@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
+//  jWebSocket - EventModel
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
@@ -42,6 +42,7 @@ import org.jwebsocket.session.SessionManager;
 import org.jwebsocket.token.Token;
 
 /**
+ * The EventsPlugIn core component
  *
  * @author kyberneees
  */
@@ -80,7 +81,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 		mEventFactory.setEm(this);
 		mS2CEventNotificationHandler.setEm(this);
 
-		//Core Events Registration
+		//Core events registration
 		addEvents(ConnectorStarted.class);
 		addEvents(ConnectorStopped.class);
 		addEvents(BeforeProcessEvent.class);
@@ -129,7 +130,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("'before.process.event' notification...");
 			}
-			BeforeProcessEvent lEvent = (BeforeProcessEvent) getEventFactory().stringToEvent("before.process.event");
+			BeforeProcessEvent lEvent = (BeforeProcessEvent) getEventFactory().idToEvent("before.process.event");
 			lEvent.setEvent(aEvent);
 			notify(lEvent, null, true);
 
@@ -148,7 +149,7 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("'after.process.event' notification...");
 			}
-			AfterProcessEvent lEvent2 = (AfterProcessEvent) getEventFactory().stringToEvent("after.process.event");
+			AfterProcessEvent lEvent2 = (AfterProcessEvent) getEventFactory().idToEvent("after.process.event");
 			lEvent2.setEvent(aEvent);
 			notify(lEvent2, aResponseEvent, true);
 
@@ -338,14 +339,6 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	 */
 	public void setExceptionHandler(IExceptionHandler aExceptionHandler) {
 		this.mExceptionHandler = aExceptionHandler;
-	}
-
-	/**
-	 *
-	 * @return The user session factory
-	 */
-	public SessionManager getSessionFactory() {
-		return (SessionManager) getParent().getBeanFactory().getBean("sessionManager");
 	}
 
 	/**

@@ -35,9 +35,7 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
-import org.springframework.beans.factory.BeanFactory;
 
 /**
  *
@@ -53,13 +51,6 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 	private Set<String> mRoles = new FastSet<String>();
 	private Set<String> mUsers = new FastSet<String>();
 	private Set<String> mIpAddresses = new FastSet<String>();
-
-	/**
-	 * @return The Spring IOC bean factory singleton instance
-	 */
-	public BeanFactory getBeanFactory() {
-		return JWebSocketBeanFactory.getInstance(getNamespace());
-	}
 
 	/**
 	 *
@@ -100,7 +91,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 
 			//Getting the EventModel builder
 			IEventModelBuilder lEventModelBuilder;
-			
+
 			if (getSettings().containsKey("em_builder")) {
 				String lClass = getString("em_buidler");
 				lEventModelBuilder = (IEventModelBuilder) Class.forName(lClass).newInstance();
@@ -128,7 +119,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			}
 			EventModel lEM = getEm();
 			if (null != lEM) {
-				EngineStarted lEvent = (EngineStarted) lEM.getEventFactory().stringToEvent("engine.started");
+				EngineStarted lEvent = (EngineStarted) lEM.getEventFactory().idToEvent("engine.started");
 				lEvent.setEngine(aEngine);
 				lEvent.initialize();
 				mEm.notify(lEvent, null, true);
@@ -155,7 +146,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			}
 			EventModel lEM = getEm();
 			if (null != lEM) {
-				EngineStopped lEvent = (EngineStopped) lEM.getEventFactory().stringToEvent("engine.stopped");
+				EngineStopped lEvent = (EngineStopped) lEM.getEventFactory().idToEvent("engine.stopped");
 				lEvent.setEngine(aEngine);
 				lEvent.initialize();
 				mEm.notify(lEvent, null, true);
@@ -183,7 +174,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			EventModel lEM = getEm();
 			if (null != lEM) {
 				ConnectorStarted lEvent =
-						(ConnectorStarted) lEM.getEventFactory().stringToEvent("connector.started");
+						(ConnectorStarted) lEM.getEventFactory().idToEvent("connector.started");
 				lEvent.setConnector(aConnector);
 				lEvent.initialize();
 				mEm.notify(lEvent, null, true);
@@ -199,24 +190,22 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 	 */
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-		if (getNamespace().equals(aToken.getNS())) {
-			C2SEvent lEvent = null;
-			try {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Processing token as event: '" + aToken.getType() + "'...");
-				}
-				lEvent = getEm().getEventFactory().tokenToEvent(aToken);
-				lEvent.setConnector(aConnector);
-
-				//Initializing the event...
-				lEvent.initialize();
-			} catch (Exception lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "process token"));
+		C2SEvent lEvent = null;
+		try {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Processing token as event: '" + aToken.getType() + "'...");
 			}
+			lEvent = getEm().getEventFactory().tokenToEvent(aToken);
+			lEvent.setConnector(aConnector);
 
-			processEvent(aConnector, lEvent);
-			aResponse.abortChain();
+			//Initializing the event...
+			lEvent.initialize();
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "process token"));
 		}
+
+		processEvent(aConnector, lEvent);
+		aResponse.abortChain();
 	}
 
 	/**
@@ -243,7 +232,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 			EventModel lEM = getEm();
 			if (null != lEM) {
 				ConnectorStopped lEvent =
-						(ConnectorStopped) lEM.getEventFactory().stringToEvent("connector.stopped");
+						(ConnectorStopped) lEM.getEventFactory().idToEvent("connector.stopped");
 				lEvent.setConnector(aConnector);
 				lEvent.setCloseReason(aCloseReason);
 				lEvent.initialize();

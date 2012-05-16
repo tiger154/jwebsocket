@@ -15,22 +15,24 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.api;
 
+import java.util.Set;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
 import org.jwebsocket.eventmodel.observable.Event;
 
 /**
  * Allows to store c2s event definitions in multiple storage sources
- * 
+ *
  * @author kyberneees
  */
 public interface IC2SEventDefinitionManager extends IInitializable {
 
 	/**
 	 * Indicates if exists a C2SEventDefinition with a custom identifier
-	 * 
+	 *
 	 * @param aEventId The C2SEventDefinition identifier
-	 * @return <tt>TRUE</tt> if the C2SEventDefinition exists, <tt>FALSE</tt> otherwise
+	 * @return <tt>TRUE</tt> if the C2SEventDefinition exists, <tt>FALSE</tt>
+	 * otherwise
 	 */
 	boolean hasDefinition(String aEventId);
 
@@ -38,17 +40,42 @@ public interface IC2SEventDefinitionManager extends IInitializable {
 	 * Get a C2SEventDefinition using it identifier
 	 *
 	 * @param aEventId The C2SEventDefinition identifier
-	 * @return The C2SEventDefinition 
+	 * @return The C2SEventDefinition
 	 * @throws Exception
 	 */
 	C2SEventDefinition getDefinition(String aEventId) throws Exception;
 
 	/**
 	 * Get the C2SEventDefinition identifier using it class
-	 * 
+	 *
 	 * @param aEventClass The C2SEventDefinition class
 	 * @return The C2SEventDefinition identifier
 	 * @throws Exception
 	 */
 	String getIdByClass(Class<? extends Event> aEventClass) throws Exception;
+
+	/**
+	 * Register multiple event definitions.
+	 *
+	 * Replace existing definitions if the type match
+	 *
+	 * @param aDefs The events definitions
+	 */
+	void registerDefinitions(Set<C2SEventDefinition> aDefs) throws Exception;
+
+	/**
+	 * Register a event definition.
+	 *
+	 * Replace existing definition if the type match
+	 *
+	 * @param aDef The event definition
+	 */
+	void registerDefinition(C2SEventDefinition aDef) throws Exception;
+
+	/**
+	 * Remove a event definition.
+	 *
+	 * @param aDef The event definition
+	 */
+	void removeDefinition(C2SEventDefinition aDef) throws Exception;
 }
