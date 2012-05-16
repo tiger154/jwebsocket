@@ -16,12 +16,13 @@
 package org.jwebsocket.eventmodel.exception;
 
 /**
- *
+ * The connector identifier does not exists or has expired.
+ * 
  * @author kyberneees
  */
-public class MissingTokenSenderException extends Exception {
+public class InvalidConnectorIdentifier extends Exception {
 
-	public MissingTokenSenderException(String aMessage) {
+	public InvalidConnectorIdentifier(String aMessage) {
 		super(aMessage);
 	}
 }

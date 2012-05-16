@@ -27,10 +27,9 @@ import org.jwebsocket.eventmodel.event.S2CEvent;
 import org.jwebsocket.eventmodel.event.em.ConnectorStopped;
 import org.jwebsocket.eventmodel.event.em.S2CEventNotSupportedOnClient;
 import org.jwebsocket.eventmodel.event.em.S2CResponse;
-import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
+import org.jwebsocket.eventmodel.exception.InvalidConnectorIdentifier;
 import org.jwebsocket.eventmodel.filter.validator.TypesMap;
 import org.jwebsocket.eventmodel.observable.Event;
-import org.jwebsocket.eventmodel.observable.ObservableObject;
 import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
@@ -53,16 +52,16 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 * Send an event to the client
 	 *
 	 * @param aEvent The S2CEvent to send
-	 * @param aTo The destiny client connector
+	 * @param aConnectorId The destiny client
 	 * @param aOnResponse The server on-response callbacks
 	 */
-	public void send(S2CEvent aEvent, String aTo, OnResponse aOnResponse) throws MissingTokenSenderException {
+	public void send(S2CEvent aEvent, String aConnectorId, OnResponse aOnResponse) throws InvalidConnectorIdentifier {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Preparing S2C event notification...");
 		}
 
-		if (!mCallbacks.containsKey(aTo)) {
-			mCallbacks.put(aTo, new FastMap<String, OnResponse>());
+		if (!mCallbacks.containsKey(aConnectorId)) {
+			mCallbacks.put(aConnectorId, new FastMap<String, OnResponse>());
 		}
 
 		//Creating the token
@@ -78,7 +77,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 			}
 			//Saving the callback
 			aOnResponse.setRequiredType(aEvent.getResponseType());
-			mCallbacks.get(aTo).put(lToken.getString("uid"), aOnResponse);
+			mCallbacks.get(aConnectorId).put(lToken.getString("uid"), aOnResponse);
 			//Setting the send time
 			aOnResponse.setSentTime(System.nanoTime());
 
@@ -87,7 +86,7 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 
 			//Registering timeout callbacks
 			if (aEvent.getTimeout() > 0) {
-				Tools.getTimer().schedule(new TimeoutCallbackTask(aTo, lToken.getString("uid"), this), aEvent.getTimeout());
+				Tools.getTimer().schedule(new TimeoutCallbackTask(aConnectorId, lToken.getString("uid"), this), aEvent.getTimeout());
 			}
 		} else {
 			//S2CEvent don't have a callback
@@ -96,21 +95,22 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 
 		//Sending the token
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Sending S2C event notification to '" + aTo + "' connector...");
+			mLog.debug("Sending S2C event notification to '" + aConnectorId + "' connector...");
 		}
 
 		//Getting the local WebSocketConnector instance if exists
-		WebSocketConnector lConnector = getEm().getParent().getServer().getConnector(aTo);
+		WebSocketConnector lConnector = getEm().getParent().getServer().getConnector(aConnectorId);
 
 		if (null != lConnector) {
 			//Sending locally on the server
 			getEm().getParent().getServer().sendToken(lConnector, lToken);
-		} else if (getEm().isClusterNode()) {
+		} else if (getEm().isClusterNode() && getEm().getClusterNode().
+				getAllConnectors().contains(aConnectorId)) {
 			//Sending the token to the cluster network
-			getEm().getClusterNode().sendToken(aTo, lToken);
+			getEm().getClusterNode().sendToken(aConnectorId, lToken);
 		} else {
-			throw new MissingTokenSenderException("Not engine or cluster detected to send "
-					+ "the token to the giving connector: '" + aTo + "'!");
+			throw new InvalidConnectorIdentifier("The connector identifier: "
+					+ "'" + aConnectorId + "' is not valid!");
 		}
 	}
 
@@ -121,12 +121,13 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 * @param aTo The destiny client connector
 	 * @param aOnResponse The server on-response callbacks
 	 */
-	public void send(S2CEvent aEvent, WebSocketConnector aTo, OnResponse aOnResponse) throws MissingTokenSenderException {
+	public void send(S2CEvent aEvent, WebSocketConnector aTo, OnResponse aOnResponse) throws InvalidConnectorIdentifier {
 		send(aEvent, aTo.getId(), aOnResponse);
 	}
 
 	/**
-	 * Executes the OnResponse callback appropriate method when a Response is gotten from the client
+	 * Executes the OnResponse callback appropriate method when a Response is
+	 * gotten from the client
 	 *
 	 * @param aEvent The response event from the client
 	 * @param aResponseEvent
@@ -204,7 +205,8 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	}
 
 	/**
-	 * Event fired when the client does not support the S2C event from the server
+	 * Event fired when the client does not support the S2C event from the
+	 * server
 	 *
 	 * @param aEvent
 	 * @param aResponseEvent

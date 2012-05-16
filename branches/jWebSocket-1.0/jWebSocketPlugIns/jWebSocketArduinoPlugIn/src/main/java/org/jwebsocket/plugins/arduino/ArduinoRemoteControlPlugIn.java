@@ -35,7 +35,7 @@ import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import org.jwebsocket.eventmodel.plugin.EventModelPlugIn;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
+import org.jwebsocket.eventmodel.exception.InvalidConnectorIdentifier;
 import org.jwebsocket.plugins.arduino.util.JoystickProgram;
 import org.jwebsocket.plugins.arduino.util.LedsProgram;
 
@@ -76,7 +76,7 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 		}
 	}
 
-	public void processEvent(DataIn aEvent, ResponseEvent aResponseEvent) throws MissingTokenSenderException {
+	public void processEvent(DataIn aEvent, ResponseEvent aResponseEvent) throws InvalidConnectorIdentifier {
 
 		char lId = aEvent.getData().charAt(0);
 		String ldata = aEvent.getData().split("-")[1];
@@ -94,7 +94,7 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 		}
 	}
 
-	public void processEvent(Command aEvent, C2SResponseEvent aResponseEvent) throws IOException, MissingTokenSenderException {
+	public void processEvent(Command aEvent, C2SResponseEvent aResponseEvent) throws IOException, InvalidConnectorIdentifier {
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Processing command event (cmd: " + aEvent.getCmd() + ")...");
 		}
@@ -120,7 +120,7 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 		}
 	}
 
-	private void sendLedState(Boolean aBlue, Boolean aRed, Boolean aGreen, Boolean aYellow) throws MissingTokenSenderException {
+	private void sendLedState(Boolean aBlue, Boolean aRed, Boolean aGreen, Boolean aYellow) throws InvalidConnectorIdentifier {
 		// Notified with an event status LEDs
 		for (WebSocketConnector lClient : this.getServerAllConnectors().values()) {
 			this.notifyS2CEvent(new S2CLedState(aBlue,
@@ -130,7 +130,7 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 		}
 	}
 
-	private void sendJoystickPosition(Integer aX, Integer aY) throws MissingTokenSenderException {
+	private void sendJoystickPosition(Integer aX, Integer aY) throws InvalidConnectorIdentifier {
 		//Notified with an event the Position,(x,y) of the joystick
 		for (WebSocketConnector lClient : this.getServerAllConnectors().values()) {
 			this.notifyS2CEvent(new S2CJoystickPosition(aX, aY)).to(lClient, null);

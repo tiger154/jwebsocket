@@ -22,7 +22,7 @@ import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.test.*;
-import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
+import org.jwebsocket.eventmodel.exception.InvalidConnectorIdentifier;
 import org.jwebsocket.eventmodel.plugin.jc.JcPlugIn;
 import org.jwebsocket.eventmodel.plugin.jc.JcResponseCallback;
 import org.jwebsocket.eventmodel.s2c.FailureReason;
@@ -68,7 +68,7 @@ public class TestPlugIn extends JcPlugIn {
 	 * @param aEvent
 	 * @param aResponseEvent
 	 */
-	public void processEvent(S2CNotification aEvent, C2SResponseEvent aResponseEvent) throws MissingTokenSenderException {
+	public void processEvent(S2CNotification aEvent, C2SResponseEvent aResponseEvent) throws InvalidConnectorIdentifier {
 		//Notification with callbacks
 		this.notifyS2CEvent(new S2CPlusXYEvent(5, 5)).to(aEvent.getConnector(),
 				new OnResponse(new TransactionContext(getEm(), aEvent, null)) {
