@@ -51,7 +51,7 @@ $.widget( "jws.chat", {
 			"(r)": "rose",
 			":;(": "crying",
 			":?": "confused",
-			">(-": "jWebSocketLogo"
+			"-)<": "jWebSocketLogo"
 		};
 		w.chat.mEmoticonsPath = "css/images/emoticons/";
 		
@@ -496,6 +496,11 @@ $.widget( "jws.chat", {
 				aClientId == w.chat.mAuthenticatedUser ){
 				
 				w.chat.eLogPrivate.append( lPrivateHistory );
+				
+				// Scroll to the bottom of the conversation
+				w.chat.eLogPrivate.scrollTop( w.chat.eLogPrivate.get( 0 ).scrollHeight -
+				w.chat.eLogPrivate.get( 0 ).clientHeight );
+			
 				// Save conversation in history
 				if( w.chat.mPrivateClients[ w.chat.mPrivateChatWith ] ){
 					w.chat.mPrivateClients[ w.chat.mPrivateChatWith ] += 
@@ -516,6 +521,8 @@ $.widget( "jws.chat", {
 			}
 		} else{
 			w.chat.eLogPublic.append( lHistoryItem );
+			w.chat.eLogPublic.scrollTop( w.chat.eLogPublic.get( 0 ).scrollHeight -
+				w.chat.eLogPublic.get( 0 ).clientHeight );
 		}
 	},
 	
