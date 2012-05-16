@@ -1,105 +1,105 @@
 /* jWebSocket Plugin for jQuery
  * Examples and documentation at: http://jwebsocket.org/wiki/Projects/jQueryPlugin
- * Copyright (c) 2011-2012 M. Alsup
- * Version: 1.0 (June-12-2011)
+ * Copyright ( c ) 2011-2012 M. Alsup
+ * Version: 1.0 ( June-12-2011 )
  * Dual licensed under the MIT and GPL licenses.
  * http://jquery.malsup.com/license.html
  * Requires: jQuery v1.3.2 or later, jWebSocket.js
  */
-(function($){
-	$.jws = $({});
+( function( $ ){
+	$.jws = $( {} );
     
-	$.jws.open = function( jwsServerURL, aTokenClient, timeout){
-		if(jws.browserSupportsWebSockets()){
-			var lURL = jwsServerURL || jws.getDefaultServerURL();
+	$.jws.open = function(  aJwsServerURL, aTokenClient, aTimeout ){
+		if( jws.browserSupportsWebSockets() ){
+			var lURL = aJwsServerURL || jws.getDefaultServerURL();
             
-			if(aTokenClient){
+			if( aTokenClient ){
 				$.jws.aTokenClient = aTokenClient;
 			}
 			else{
 				$.jws.aTokenClient = new jws.jWebSocketJSONClient();
-				$.jws.aTokenClient.open(lURL, {
-					OnOpen: function(aToken){
-						$.jws.trigger('open', aToken);
-						$.jws.aTokenClient.addPlugIn($.jws);
+				$.jws.aTokenClient.open( lURL, {
+					OnOpen: function( aToken ){
+						$.jws.trigger( 'open', aToken );
+						$.jws.aTokenClient.addPlugIn( $.jws );
 					},
 					OnClose: function(){
-						$.jws.trigger('close');
+						$.jws.trigger( 'close' );
 					},
 					OnTimeout: function(){
-						$.jws.trigger('timeout');
+						$.jws.trigger( 'timeout' );
 					}
-				});
+				} );
 			}
 			
-			if(timeout)
-				this.setDefaultTimeOut(timeout);
+			if( aTimeout )
+				this.setDefaultTimeOut( aTimeout );
 		}
 		else{
 			var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-			alert(lMsg);
+			alert( lMsg );
 		}
 	};
 	
-	$.jws.submit = function(ns, type, args, callbacks, options){
+	$.jws.submit = function( aNs, aType, aArgs, aCallbacks, aOptions ){
 		var lToken = {};
-		if (args){
-			lToken = args;
+		if ( aArgs ){
+			lToken = aArgs;
 		}
-		lToken.ns   = ns;
-		lToken.type = type;
+		lToken.ns   = aNs;
+		lToken.type = aType;
                         
 		var lTimeout;
                         
-		if(options)
-			if(options.timeout)
-				lTimeout = options.timeout;
+		if( aOptions )
+			if( aOptions.timeout )
+				lTimeout = aOptions.timeout;
                         
-		this.aTokenClient.sendToken(lToken, {
+		this.aTokenClient.sendToken( lToken, {
 			timeout: lTimeout,
-			callbacks: callbacks,
-			OnResponse: function(aToken){
-				if (aToken.code == -1) {
-					return callbacks.failure(aToken);
+			callbacks: aCallbacks,
+			OnResponse: function( aToken ){
+				if ( aToken.code == -1 ) {
+					return aCallbacks.failure( aToken );
 				}
-				else if (aToken.code == 0) {
-					return callbacks.success(aToken);
+				else if ( aToken.code == 0 ) {
+					return aCallbacks.success( aToken );
 				}
 			},
 			OnTimeOut: function(){
-				return callbacks.timeout();
+				return aCallbacks.timeout();
 			}
-		});
+		} );
 	};
         
-	$.jws.processToken = function(aToken){
-		$.jws.trigger('all:all', aToken);
-		$.jws.trigger('all:' + aToken.type, aToken);
-		$.jws.trigger(aToken.ns + ':all', aToken);
-		$.jws.trigger(aToken.ns + ':' + aToken.type, aToken);
+	$.jws.processToken = function( aToken ){
+		$.jws.trigger( 'all:all', aToken );
+		$.jws.trigger( 'all:' + aToken.type, aToken );
+		$.jws.trigger( aToken.ns + ':all', aToken );
+		$.jws.trigger( aToken.ns + ':' + aToken.type, aToken );
 	};
         
 	$.jws.getDefaultServerURL = function(){
-		if(this.aTokenClient)
+		if( this.aTokenClient )
 			return this.aTokenClient.getDefaultServerURL();
 		else
 			return jws.getDefaultServerURL();
 	};
         
-	$.jws.setDefaultTimeOut = function(timeout){
-		if(this.aTokenClient)
-			this.aTokenClient.DEF_RESP_TIMEOUT = timeout;
+	$.jws.setDefaultTimeOut = function( aTimeout ){
+		if( this.aTokenClient )
+			this.aTokenClient.DEF_RESP_TIMEOUT = aTimeout;
 		else
-			jws.DEF_RESP_TIMEOUT = timeout;
+			jws.DEF_RESP_TIMEOUT = aTimeout;
 	};
         
 	$.jws.close = function(){
 		this.aTokenClient.close();
 	};
 	
-	$.jws.setTokenClient = function(aTokenClient){
+	$.jws.setTokenClient = function( aTokenClient ){
 		$.jws.aTokenClient = aTokenClient;
-		$.jws.aTokenClient.addPlugIn($.jws);
+		$.jws.aTokenClient.addPlugIn( $.jws );
 	};
 	
-})(jQuery);
+} )( jQuery );

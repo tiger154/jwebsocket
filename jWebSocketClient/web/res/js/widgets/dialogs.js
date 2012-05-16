@@ -105,7 +105,7 @@ function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType
 		resizable: false,
 		modal: aIsModal || false,
 		width: aWidth || 300,
-		title: aTitle
+		title: aTitle || "jWebSocket Message"
 	} );
 	lDialog.append( lButtonsArea );
 }
