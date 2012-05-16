@@ -158,7 +158,8 @@ public class EngineUtils {
 		String lTempEntry[];
 		Map<String, String> lCookiesMap = new FastMap().shared();
 
-		if (aReqMap.containsKey(RequestHeader.WS_COOKIES)) {
+		if (aReqMap.containsKey(RequestHeader.WS_COOKIES)
+				&& null != aReqMap.get(RequestHeader.WS_COOKIES)) {
 			Object lCookieObj = aReqMap.get(RequestHeader.WS_COOKIES);
 			if (null != lCookieObj) {
 				String lCookieStr = lCookieObj.toString();
@@ -173,6 +174,7 @@ public class EngineUtils {
 				}
 			}
 		}
+		
 		aReqMap.put(RequestHeader.WS_COOKIES, lCookiesMap);
 	}
 }
