@@ -24,7 +24,7 @@ import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.S2CEvent;
 import org.jwebsocket.eventmodel.event.card.JcTerminalNotReady;
 import org.jwebsocket.eventmodel.event.card.JcTerminalReady;
-import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
+import org.jwebsocket.eventmodel.exception.InvalidConnectorIdentifier;
 import org.jwebsocket.eventmodel.plugin.EventModelPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.Tools;
@@ -121,7 +121,7 @@ public class JcPlugIn extends EventModelPlugIn {
 	 * @param aCallback
 	 * @throws MissingTokenSender 
 	 */
-	public void transmit(String aConnectorId, String aTerminalId, CommandAPDU aCommand, JcResponseCallback aCallback) throws MissingTokenSenderException {
+	public void transmit(String aConnectorId, String aTerminalId, CommandAPDU aCommand, JcResponseCallback aCallback) throws InvalidConnectorIdentifier {
 		this.notifyS2CEvent(new TransmitEvent(aCommand.getBytes(), aTerminalId)).to(aConnectorId, aCallback);
 	}
 

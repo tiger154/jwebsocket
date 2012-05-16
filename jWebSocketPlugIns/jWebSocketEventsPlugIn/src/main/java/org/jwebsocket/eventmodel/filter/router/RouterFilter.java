@@ -23,7 +23,7 @@ import org.jwebsocket.eventmodel.event.C2SEventDefinition;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.filter.BeforeRouteResponseToken;
 import org.jwebsocket.eventmodel.exception.ListenerNotFoundException;
-import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
+import org.jwebsocket.eventmodel.exception.InvalidConnectorIdentifier;
 import org.jwebsocket.eventmodel.filter.EventModelFilter;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.logging.Logging;
@@ -121,7 +121,7 @@ public class RouterFilter extends EventModelFilter {
 						//Sending the token to the cluster network
 						getEm().getClusterNode().sendToken(lId, lResponseNotification);
 					} else {
-						throw new MissingTokenSenderException("Not engine or cluster detected to send "
+						throw new InvalidConnectorIdentifier("Not engine or cluster detected to send "
 								+ "the token to the giving connector: '" + lId + "'!");
 					}
 				}

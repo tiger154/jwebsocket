@@ -38,7 +38,6 @@ import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import org.jwebsocket.eventmodel.s2c.S2CEventNotificationHandler;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.events.EventsPlugIn;
-import org.jwebsocket.session.SessionManager;
 import org.jwebsocket.token.Token;
 
 /**

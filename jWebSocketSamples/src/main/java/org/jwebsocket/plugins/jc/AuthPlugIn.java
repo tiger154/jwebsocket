@@ -21,17 +21,13 @@ import javax.smartcardio.ResponseAPDU;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
-import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
+import org.jwebsocket.eventmodel.exception.InvalidConnectorIdentifier;
 import org.jwebsocket.eventmodel.plugin.jc.JcPlugIn;
 import org.jwebsocket.eventmodel.plugin.jc.JcResponseCallback;
 import org.jwebsocket.eventmodel.s2c.FailureReason;
 import org.jwebsocket.eventmodel.s2c.TransactionContext;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.plugins.jc.commands.GetPassword;
-import org.jwebsocket.plugins.jc.commands.GetUser;
-import org.jwebsocket.plugins.jc.commands.SearchSite;
-import org.jwebsocket.plugins.jc.commands.Select;
-import org.jwebsocket.plugins.jc.commands.VerifyPIN;
+import org.jwebsocket.plugins.jc.commands.*;
 import org.jwebsocket.plugins.jc.event.DoLogin;
 import org.jwebsocket.plugins.jc.event.GetUserInfo;
 import org.jwebsocket.util.Tools;
@@ -100,7 +96,7 @@ public class AuthPlugIn extends JcPlugIn {
 						
 						((TransactionContext)getContext()).success(lResponse);
 					}
-				} catch (MissingTokenSenderException ex) {
+				} catch (InvalidConnectorIdentifier ex) {
 					mLog.error(ex.getMessage(), ex);
 				}
 			}
