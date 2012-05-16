@@ -205,23 +205,21 @@ public class NioTcpEngine extends BaseEngine {
 						while (lKeys.hasNext()) {
 							SelectionKey lKey = lKeys.next();
 							lKeys.remove();
-							if (lKey.isValid()) {
-								try {
-									if (lKey.isAcceptable()) {
-										//accept new client connection
-										accept(lKey);
-									} else {
-										if (lKey.isReadable()) {
-											read(lKey);
-										}
-										if (lKey.isWritable()) {
-											write(lKey);
-										}
+							try {
+								if (lKey.isAcceptable()) {
+									//accept new client connection
+									accept(lKey);
+								} else {
+									if (lKey.isReadable()) {
+										read(lKey);
 									}
-								} catch (CancelledKeyException lCKEx) {
-									// ignore, key was cancelled an instant after isValid() returned true,
-									// most probably the client disconnected just at the wrong moment
+									if (lKey.isValid() && lKey.isWritable()) {
+										write(lKey);
+									}
 								}
+							} catch (CancelledKeyException lCKEx) {
+								// ignore, key was cancelled an instant after isValid() returned true,
+								// most probably the client disconnected just at the wrong moment
 							}
 						}
 					} else {
@@ -243,7 +241,7 @@ public class NioTcpEngine extends BaseEngine {
 		Queue<DataFuture> lQueue = mPendingWrites.get(mChannelToConnectorMap.get(lSocketChannel));
 
 		while (!lQueue.isEmpty()) {
-			DataFuture future = lQueue.peek();
+			DataFuture future = lQueue.poll();
 			try {
 				ByteBuffer lData = future.getData();
 				lSocketChannel.write(lData);
@@ -372,40 +370,36 @@ public class NioTcpEngine extends BaseEngine {
 			Thread.currentThread().setName("jWebSocket NIO-Engine ReadWorker " + this.mId);
 			while (mIsRunning) {
 				try {
-					IDelayedPacketNotifier mDelayedPacket = mDelayedPacketsQueue.pop();
+					IDelayedPacketNotifier mDelayedPacket;
+					mDelayedPacket = mDelayedPacketsQueue.pop();
 					if (null != mDelayedPacket) {
 						mDelayedPacket.handleDelayedPacket();
+						mDelayedPacket.getConnector().releaseWorker();
 						continue;
 					}
 
-					final ReadBean lBean = mPendingReads.poll(200, TimeUnit.MILLISECONDS);
+					final ReadBean lBean = mPendingReads.take();
 					if (lBean != null) {
 						if (getConnectors().containsKey(lBean.getConnectorId())) {
 
 							final NioTcpConnector lConnector = (NioTcpConnector) getConnectors().get(lBean.getConnectorId());
-							if (lConnector.getWorkerId() > -1) {
-								// another worker is right in the middle of packet processing for this connector
-								// putting packets in a queue for high concurrency scenarios
-								mDelayedPacketsQueue.addDelayedPacket(new IDelayedPacketNotifier() {
+							mDelayedPacketsQueue.addDelayedPacket(new IDelayedPacketNotifier() {
 
-									@Override
-									public void handleDelayedPacket() throws IOException {
-										doRead(getConnector(), getBean());
-									}
+								@Override
+								public void handleDelayedPacket() throws IOException {
+									doRead(getConnector(), getBean());
+								}
 
-									@Override
-									public NioTcpConnector getConnector() {
-										return lConnector;
-									}
+								@Override
+								public NioTcpConnector getConnector() {
+									return lConnector;
+								}
 
-									@Override
-									public ReadBean getBean() {
-										return lBean;
-									}
-								});
-							} else {
-								doRead(lConnector, lBean);
-							}
+								@Override
+								public ReadBean getBean() {
+									return lBean;
+								}
+							});
 						} else {
 							// connector was already closed ...
 							mLog.debug("Discarding incoming packet, because there's no connector to process it");
@@ -423,9 +417,6 @@ public class NioTcpEngine extends BaseEngine {
 		}
 
 		private void doRead(NioTcpConnector aConnector, ReadBean aBean) throws IOException {
-			// settign the worker identifier
-			aConnector.setWorkerId(hashCode());
-
 			if (aConnector.isAfterHandshake()) {
 				boolean lIsHixie = aConnector.isHixie();
 				if (lIsHixie) {
@@ -483,7 +474,6 @@ public class NioTcpEngine extends BaseEngine {
 					aConnector.handshakeValidated();
 					aConnector.setHeader(lReqHeader);
 					aConnector.startConnector();
-					aConnector.releaseWorker();
 				}
 			}
 		}

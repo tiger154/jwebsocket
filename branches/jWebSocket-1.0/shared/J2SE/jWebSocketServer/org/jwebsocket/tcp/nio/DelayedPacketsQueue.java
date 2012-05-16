@@ -52,9 +52,12 @@ public class DelayedPacketsQueue {
 			IDelayedPacketNotifier lDelayedPacket = it.next();
 
 			if (lDelayedPacket.getConnector().getWorkerId() == -1) {
+				//Setting the connector worker thread inside this synchronized call
+				lDelayedPacket.getConnector().setWorkerId(Thread.currentThread().hashCode());
 				lResult = lDelayedPacket;
-				mDelayedPackets.remove(lDelayedPacket);
-				break;
+				it.remove();
+
+				return lResult;
 			}
 		}
 
