@@ -1,0 +1,4 @@
+org.jwebsocket.plugins.jmx
+org.jwebsocket.plugins.jmx.configdefinition
+org.jwebsocket.plugins.jmx.mbeanspring
+org.jwebsocket.plugins.jmx.util
