@@ -40,14 +40,14 @@ void loop(){
       digitalWrite(blue,HIGH);
       onBlue = true;
       changeLedState();       
-      Serial.println("L-"+String(ledState));
+      Serial.println("L/"+String(ledState));
 
     }
     else {
       digitalWrite(blue,LOW);        
       onBlue = false;
       changeLedState();       
-      Serial.println("L-"+String(ledState));
+      Serial.println("L/"+String(ledState));
 
     }
     break;
@@ -56,13 +56,13 @@ void loop(){
       digitalWrite(red,HIGH);       
       onRed = true;
       changeLedState();       
-      Serial.println("L-"+String(ledState));
+      Serial.println("L/"+String(ledState));
     }
     else {
       digitalWrite(red,LOW);        
       onRed = false;
       changeLedState();       
-      Serial.println("L-"+String(ledState));
+      Serial.println("L/"+String(ledState));
     }
 
     break;
@@ -72,13 +72,13 @@ void loop(){
       digitalWrite(green,HIGH);       
       onGreen = true;
       changeLedState();       
-      Serial.println("L-"+String(ledState));
+      Serial.println("L/"+String(ledState));
     }
     else  {
       digitalWrite(green,LOW);        
       onGreen = false;
       changeLedState();       
-      Serial.println("L-"+String(ledState));
+      Serial.println("L/"+String(ledState));
     } 
     break;
   case 52:
@@ -86,17 +86,17 @@ void loop(){
       digitalWrite(yellow,HIGH);  
       onYellow = true;
       changeLedState();       
-      Serial.println("L-"+String(ledState));
+      Serial.println("L/"+String(ledState));
     }
     else {
       digitalWrite(yellow,LOW);       
       onYellow = false;
       changeLedState();       
-      Serial.println("L-"+String(ledState));
+      Serial.println("L/"+String(ledState));
     } 
     break; 
   case 53:    
-    Serial.println("L-"+String(ledState));
+    Serial.println("L/"+String(ledState));
     break; 
   } 
 
@@ -105,8 +105,8 @@ void loop(){
   x = treatValue( analogRead(xPin));
   y = treatValue(analogRead(yPin));   
   changePosition(x, y); 
+  data = -1; 
 
-  data = -1;  
 }
 
 //--functions------------------
@@ -151,23 +151,20 @@ int treatValue(int data) {
 }
 
 void changePosition(int x, int y){
+  if (x == 43) {
+    x = 42;
+  }
+  x= x-36;
+  y= y-36;
   if(x!= oldX || y!=oldY){
-    Serial.print("J-");
+    Serial.print("J/");
     Serial.print(x);
-    Serial.print(",");
+    Serial.print("_");
     Serial.print(y);
     Serial.println();
     oldX = x;
     oldY = y;
   }
-
 }
-
-
-
-
-
-
-
 
 
