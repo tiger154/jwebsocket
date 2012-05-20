@@ -17,11 +17,9 @@ package org.jwebsocket.grizzly;
 
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.HttpRequestPacket;
-import org.glassfish.grizzly.http.util.Header;
 import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.websockets.WebSocket;
 import org.jwebsocket.api.WebSocketConnectorStatus;
@@ -32,7 +30,6 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.tcp.EngineUtils;
 
 /**
  *
@@ -45,6 +42,9 @@ public class GrizzlyConnector extends BaseConnector {
 	private WebSocket mConnection;
 	private HttpRequestPacket mRequest = null;
 	private String mProtocol = null;
+	public static final String GRIZZLY_LOG = "Grizzly";
+	public static final String GRIZZLY_SSL_LOG = "Grizzly-SSL";
+	private String mLogInfo = GRIZZLY_LOG;
 
 	/**
 	 * Creates a new Grizzly connector for the passed engine using the passed
@@ -78,12 +78,15 @@ public class GrizzlyConnector extends BaseConnector {
 				mLog.error(ex.getMessage());
 			}
 		}
-
+		
 		// set default sub protocol if none passed
 		if (aProtocol == null) {
 			aProtocol = JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
 		}
 		lHeader.put(RequestHeader.WS_PROTOCOL, aProtocol);
+		
+		setSubprot(aProtocol);
+		
 		lHeader.put(RequestHeader.WS_PATH, aRequest.getRequestURI());
 
 		// iterate throught header params
@@ -94,10 +97,14 @@ public class GrizzlyConnector extends BaseConnector {
 				lHeader.put(lHeaderName, aRequest.getHeader(lHeaderName));
 			}
 		}
+		
 		// TODO: check with Alex what is exactly search string
 		lHeader.put(RequestHeader.WS_SEARCHSTRING, aRequest.getQueryString());
 		
 		setHeader(lHeader);
+		
+		setSSL(aRequest.isSecure());
+		mLogInfo = isSSL() ? GRIZZLY_SSL_LOG : GRIZZLY_LOG;
 	}
 
 	public boolean isRunning() {
@@ -112,9 +119,28 @@ public class GrizzlyConnector extends BaseConnector {
 	@Override
 	public void startConnector() {
 		mRunning = true;
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Started Grizzly connector at port " + getRemotePort());
+		
+		int lPort = -1;
+		int lTimeout = -1;
+		try {
+			lPort = getRemotePort();
+			// TODO: Get Grizzly connection timeout
+			// lTimeout = mRequest.getTimeout();
+		} catch (Exception lEx) {
 		}
+		String lNodeStr = getNodeId();
+		if (lNodeStr != null) {
+			lNodeStr = " (unid: " + lNodeStr + ")";
+		} else {
+			lNodeStr = "";
+		}
+	
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Starting " + mLogInfo + " connector" + lNodeStr + " on port "
+					+ lPort + " with timeout "
+					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
+		}
+		
 		// call connectorStarted method of engine
 		WebSocketEngine lEngine = getEngine();
 		if (lEngine != null) {
@@ -126,9 +152,9 @@ public class GrizzlyConnector extends BaseConnector {
 	public void stopConnector(CloseReason aCloseReason) {
 		if (mConnection.isConnected()) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Stopping Grizzly connector ("
-						+ aCloseReason.name() + ") at port "
-						+ getRemotePort() + "...");
+				mLog.debug("Stopping " + mLogInfo
+					+ " connector (" + aCloseReason.name() 
+						+ ") at port " + getRemotePort() + "...");
 			}
 
 			if (CloseReason.CLIENT != aCloseReason) {
