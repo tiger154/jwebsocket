@@ -96,7 +96,9 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 
 		if (isApp) {
 			mRequest = aRequest;
-
+			
+			// Getting the protocol from the request
+			mProtocol = aRequest.getHeader("sec-websocket-protocol");
 			mCookies = new FastMap();
 			// parsing cookies
 			mCookies.put(RequestHeader.WS_COOKIES, mRequest.getHeader(RequestHeader.WS_COOKIES));
