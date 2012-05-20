@@ -1,3 +1,8 @@
-The ArduinoPlugIn source code is located here:
-
+The ArduinoPlugIn is located here:
 https://jwsdev.org:9443/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketPlugIns/jWebSocketArduinoPlugIn/
+
+The Arduino Program is located here:
+https://jwsdev.org:9443/svn/jWebSocket/branches/jWebSocket-1.0/arduino/rc_demo
+
+The Web Application is located here:
+https://jwsdev.org:9443/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/demos/jwsArduino/
