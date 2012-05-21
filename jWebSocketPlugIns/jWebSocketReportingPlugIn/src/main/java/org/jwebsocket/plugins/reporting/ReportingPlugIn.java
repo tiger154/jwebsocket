@@ -56,21 +56,6 @@ public class ReportingPlugIn extends TokenPlugIn {
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 
-	/*
-	 * static { try { URL lURL; ClassLoader lCL = getClass().getClassLoader();
-	 * lURL = new
-	 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
-	 * ClassPathUpdater.add(lURL, lCL); lURL = new
-	 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
-	 * ClassPathUpdater.add(lURL, lCL); lURL = new
-	 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jWebSocketReportingPlugIn-1.0.jar");
-	 * ClassPathUpdater.add(lURL, lCL);
-	 *
-	 * // ClassPathUpdater.add("jWebSocketReportingPlugIn-1.0.jar"); //
-	 * ClassPathUpdater.add("c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs"); }
-	 * catch (Exception lEx) { mLog.error(Logging.getSimpleExceptionMessage(lEx,
-	 * "adding Jasper libs to class path")); } }
-	 */
 	/**
 	 *
 	 * @param aConfiguration
@@ -248,28 +233,9 @@ public class ReportingPlugIn extends TokenPlugIn {
 		try {
 			Object lObject = Tools.invoke(lJDBCPlugIn, "getNativeDataSource");
 			lDataSource = (DataSource) lObject;
-			// Caution! 
-			// setLoginTimeout are setLoginTimeout is not supported by org.apache.commons.dbcp.BasicDataSource!
-			// int lTMO = lDataSource.getLoginTimeout();
-			// if (mLog.isDebugEnabled()) {
-			//	mLog.debug("Database login timeout is " + lTMO + "s.");
-			// }
 			lConnection = lDataSource.getConnection();
 
-			/*
-			 * JasperReport lReport = (JasperReport)
-			 * JRLoader.loadObjectFromFile(getJasperPath(lReportId));
-			 * JasperDesign lDesign =
-			 * JRXmlLoader.load(getJRXMLPath(getJasperPath)); JasperReport
-			 * lReport = JasperCompileManager.compileReport(lDesign);
-			 */
-
 			String lJRXMLPath = getJRXMLPath(lReportId);
-			// Class lClass = Class.forName("net.sf.jasperreports.engine.xml.JRReportSaxParserFactory");
-			/*
-			 * JRProperties.setProperty("net.sf.jasperreports.compiler.xml.parser.factory",
-			 * "javax.xml.parsers.SAXParserFactory");
-			 */
 			JasperReport lReport = JasperCompileManager.compileReport(lJRXMLPath);
 			JasperPrint lPrint = JasperFillManager.fillReport(lReport,
 					lParams, lConnection);

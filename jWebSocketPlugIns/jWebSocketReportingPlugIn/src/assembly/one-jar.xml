@@ -14,13 +14,10 @@
 			<outputDirectory/>
 			<includes>
 				<include>${groupId}:${artifactId}</include>
-				<!--
 				<include>org.apache.poi:poi</include>
 				<include>com.lowagie:itext</include>
-				<include>commons-digester:commons-digester</include>
 				<include>net.sf.jasperreports:jasperreports</include>
 				<include>net.sf.jasperreports:jasperreports-fonts</include>
-				-->
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>		

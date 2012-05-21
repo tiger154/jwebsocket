@@ -14,6 +14,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.storage.mongodb;
 
+import com.mongodb.Mongo;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.IStorageProvider;
 
@@ -23,20 +24,41 @@ import org.jwebsocket.api.IStorageProvider;
  */
 public class MongoDBStorageProvider extends MongoDBStorageBuilder implements IStorageProvider {
 
-    public MongoDBStorageProvider() {
-        super();
-    }
+	/**
+	 *
+	 */
+	public MongoDBStorageProvider() {
+		super();
+	}
 
-    /**
-     * {@inheritDoc 
-     */
-    @Override
-    public IBasicStorage<String, Object> getStorage(String aName) throws Exception {
-        return this.getStorage(MongoDBStorageBuilder.V2, aName);
-    }
+	/**
+	 * {@inheritDoc
+	 */
+	@Override
+	public IBasicStorage<String, Object> getStorage(String aName) throws Exception {
+		return this.getStorage(MongoDBStorageBuilder.V2, aName);
+	}
+	
+	@Override
+	public void removeStorage(String aName) throws Exception {
+		this.getStorage(aName).clear();
+	}
 
-    @Override
-    public void removeStorage(String aName) throws Exception {
-        this.getStorage(aName).clear();
-    }
+	/**
+	 *
+	 * @param aCon
+	 * @param aDBName
+	 * @param aStorageName
+	 * @param aCollectionName
+	 * @return
+	 * @throws Exception
+	 */
+	public static IBasicStorage getInstance(Mongo aCon, String aDBName,
+			String aCollectionName, String aStorageName) throws Exception {
+		MongoDBStorageBuilder lBuilder = new MongoDBStorageBuilder();
+		lBuilder.setCon(aCon);
+		lBuilder.setDatabaseName(aDBName);
+		lBuilder.setCollectionName(aCollectionName);
+		return lBuilder.getStorage(MongoDBStorageBuilder.V2, aStorageName);
+	}
 }

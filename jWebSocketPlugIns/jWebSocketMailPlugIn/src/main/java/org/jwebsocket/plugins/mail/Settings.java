@@ -183,8 +183,9 @@ public class Settings {
 	 * @return the mailRoot
 	 */
 	public String getMailRoot() {
+		// apply default setting if option is not given in spring config
 		return (null == mMailRoot
-				? "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/mails/{username}/"
+				? "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}conf/MailPlugIn/mails/{username}/"
 				: mMailRoot);
 	}
 
@@ -203,7 +204,7 @@ public class Settings {
 	}
 
 	/**
-	 * @param aRarPath 
+	 * @param aRarPath
 	 */
 	public void setRarPath(String aRarPath) {
 		mRarPath = aRarPath;
@@ -217,8 +218,8 @@ public class Settings {
 	}
 
 	/**
-	 * 
-	 * @param aBaseStorage 
+	 *
+	 * @param aBaseStorage
 	 */
 	public void setStorage(BaseStorage aBaseStorage) {
 		mBaseStorage = aBaseStorage;

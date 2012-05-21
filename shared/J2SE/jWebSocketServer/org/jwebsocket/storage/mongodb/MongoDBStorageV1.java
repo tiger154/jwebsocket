@@ -21,11 +21,12 @@ import javolution.util.FastSet;
 import org.jwebsocket.storage.BaseStorage;
 
 /**
- * This class uses MongoDB servers to persist the information. 
- * <br>
- * Each storage represents a database collection. Please see for 
- * MongoDB collections number limit. 
- * 
+ * This class uses MongoDB servers to persist the information. <br> Each storage
+ * represents a database collection. Please see for MongoDB collections number
+ * limit.
+ *
+ * @param <K>
+ * @param <V>
  * @author rbetancourt
  */
 public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
@@ -65,17 +66,19 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param newName
 	 */
 	@Override
 	public void setName(String newName) throws Exception {
 		mDatabase.createCollection(newName, null);
 		DBCollection lNewCollection = mDatabase.getCollection(newName);
-		
+
 		DBCursor lRecords = mCollection.find();
-		while (lRecords.hasNext()){
+		while (lRecords.hasNext()) {
 			lNewCollection.insert(lRecords.next());
 		}
-		
+
 		mCollection.drop();
 		mCollection = lNewCollection;
 		mName = newName;
@@ -99,6 +102,8 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aKey
 	 */
 	@Override
 	public boolean containsKey(Object aKey) {
@@ -111,6 +116,8 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aValue
 	 */
 	@Override
 	public boolean containsValue(Object aValue) {
@@ -123,6 +130,8 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aKey
 	 */
 	@Override
 	public V get(Object aKey) {
@@ -147,6 +156,8 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aKey
 	 */
 	@Override
 	public V remove(Object aKey) {

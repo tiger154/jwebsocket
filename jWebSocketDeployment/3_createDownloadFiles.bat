@@ -124,7 +124,6 @@ xcopy %libs%commons-logging-1.1.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%commons-pool-1.5.6.jar %tempdir%libs\ /s /i /y
 rem Others
 xcopy %libs%groovy-all-1.8.0.jar %tempdir%libs\ /s /i /y
-xcopy %libs%itext-2.1.7.jar %tempdir%libs\ /s /i /y
 xcopy %libs%javax.servlet-3.1.1.jar %tempdir%libs\ /s /i /y
 rem Apache ActiveMQ, Geronimo und Xbean support
 xcopy %libs%activemq-core-5.5.0.jar %tempdir%libs\ /s /i /y
@@ -134,9 +133,6 @@ xcopy %libs%xbean-spring-v2c-2.8.jar %tempdir%libs\ /s /i /y
 xcopy %libs%geronimo-j2ee-management_1.1_spec-1.0.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%geronimo-jms_1.1_spec-1.1.1.jar %tempdir%libs\ /s /i /y
 rem Jasper reports
-xcopy %libs%jasperreports-4.5.0.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jasperreports-fonts-4.0.0.jar %tempdir%libs\ /s /i /y
-xcopy %libs%poi-3.7.jar %tempdir%libs\ /s /i /y
 xcopy %libs%log4j-1.2.16.jar %tempdir%libs\ /s /i /y
 xcopy %libs%javolution-5.5.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%netty-3.2.4.Final.jar %tempdir%libs\ /s /i /y
@@ -195,15 +191,6 @@ xcopy %libs%spring-security-ldap-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-tx-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-rem twitter support
-xcopy %libs%httpclient-4.1.3.jar %tempdir%libs\ /s /i /y
-xcopy %libs%httpcore-4.1.3.jar %tempdir%libs\ /s /i /y
-xcopy %libs%httpmime-4.1.3.jar %tempdir%libs\ /s /i /y
-
-xcopy %libs%twitter4j-async-2.2.5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%twitter4j-core-2.2.5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%twitter4j-httpclient-support-2.2.5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%twitter4j-stream-2.2.5.jar %tempdir%libs\ /s /i /y
 
 rem jWebSocket .jars
 xcopy %libs%jWebSocketCommon-%ver%.jar %tempdir%libs\ /s /i /y
