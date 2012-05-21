@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- ####### STATIC authentication ####### -->
 	
@@ -19,12 +19,12 @@
 		<property name="userMap">
 			<!-- format: username=password,grantedAuthority[,grantedAuthority][,enabled|disabled] -->
 			<value>
-					guest=084e0343a0486ff05530df6c705c8bb4, ROLE_ADMIN_ROOT, enabled
-					user=ee11cbb19052e40b07aac0ca060c23ee, ROLE_EXTERNAL, ROLE_ADMIN_ROOT, enabled
-					root=63a9f0ea7bb98050796b649e85481845, ROLE_ADMIN_ROOT, enabled
-					admin=21232f297a57a5a743894a0e4a801fc3, ROLE_ADMIN_MAINTENANCE, enabled
-					alex=b7f490d7a94fd0a6f2e29f8fd1841a54, ROLE_ADMIN_ROOT, ROLE_ADMIN_MAINTENANCE, enabled
-					marta=bc15ab9a9d02322acb686e8c5b057993, ROLE_ADMIN_ROOT, ROLE_ADMIN_MAINTENANCE, enabled
+				guest=084e0343a0486ff05530df6c705c8bb4, ROLE_ADMIN_ROOT, enabled
+				user=ee11cbb19052e40b07aac0ca060c23ee, ROLE_EXTERNAL, ROLE_ADMIN_ROOT, enabled
+				root=63a9f0ea7bb98050796b649e85481845, ROLE_ADMIN_ROOT, enabled
+				admin=21232f297a57a5a743894a0e4a801fc3, ROLE_ADMIN_MAINTENANCE, enabled
+				alex=b7f490d7a94fd0a6f2e29f8fd1841a54, ROLE_ADMIN_ROOT, ROLE_ADMIN_MAINTENANCE, enabled
+				marta=bc15ab9a9d02322acb686e8c5b057993, ROLE_ADMIN_ROOT, ROLE_ADMIN_MAINTENANCE, enabled
 			</value>
 		</property>	
 	</bean>
@@ -223,11 +223,11 @@
 
 	<!-- RAM Memory session -->
 	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
-			init-method="initialize" destroy-method="shutdown">
+		  init-method="initialize" destroy-method="shutdown">
 		<property name="storageProvider" ref="storageProviderMemory"/>
 		<property name="reconnectionManager">
 			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
-			init-method="initialize" destroy-method="shutdown">
+				  init-method="initialize" destroy-method="shutdown">
 				<property name="cacheStorageName" value="__reconnection_index_ns__" />
 				<property name="sessionExpirationTime" value="60" />
 				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
@@ -241,14 +241,14 @@
 	<bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
 	</bean>
 	
-	<!--  MongoDB Storage provider (here for the sessions) -->
+	<!-- MongoDB Storage provider (here for the sessions) -->
 	<bean id="storageProviderMongoDB" class="org.jwebsocket.storage.mongodb.MongoDBStorageProvider">
 		<property name="con" ref="mongodbConnection0" />
 		<property name="databaseName" value="storages" />
 		<property name="collectionName" value="__storages_collection__" />
 	</bean>
 	
-	<!--  MongoDB Cache Storage provider (here for the sessions) -->
+	<!-- MongoDB Cache Storage provider (here for the sessions) -->
 	<bean id="cacheStorageProviderMongoDB" class="org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageProvider">
 		<property name="con" ref="mongodbConnection0" />
 		<property name="databaseName" value="cache_storages" />

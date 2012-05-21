@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<!-- use EhCache data store to store the mails, name is "mailstore" -->
 	<bean id="mailEhCacheStorage" class="org.jwebsocket.storage.ehcache.EhCacheStorage">
+		<!-- storage name -->
+		<constructor-arg value="mailstore"/>
+	</bean>
+
+	<!-- you can also use a MongoDB database connection -->
+	<bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
+	</bean>
+	
+	<!-- MongoDB Storage provider (here for the mails) -->
+	<bean id="mailMongoDBStorage" class="org.jwebsocket.storage.mongodb.MongoDBStorageProvider" factory-method="getInstance" >
+		<!-- connection -->
+		<constructor-arg ref="mongodbConnection0" />
+		<!-- database name -->
+		<constructor-arg value="storages" />
+		<!-- collection name -->
+		<constructor-arg value="mailstore"/>
+		<!-- storage name -->
 		<constructor-arg value="mailstore"/>
 	</bean>
 
@@ -13,6 +30,7 @@
 		
 		<!-- use this storage engine to store the mails -->
 		<property name="storage" ref="mailEhCacheStorage"/>
+		<!-- <property name="storage" ref="mailMongoDBStorage"/> -->
 		
 		<!-- CAUTION! SECURITY ADVISE!
 			 please take care that the following propertys do not get
@@ -29,10 +47,10 @@
 		<property name="pop3Port" value="110"/>
 		<property name="pop3User" value="#your pop3 server's username#"/>
 		
-		<!-- root folder for temporary mail storage (e.g.for attachments -->
+		<!-- root folder for temporary mail storage (e.g.for attachments) -->
 		<!-- use the {username} variable to distinguish between user folders -->
 		<!-- the folders are automatically created on demand -->
-		<property name="mailRoot" value="${JWEBSOCKET_HOME}mails/{username}/"/>
+		<property name="mailRoot" value="${JWEBSOCKET_HOME}conf/MailPlugIn/mails/{username}/"/>
 		<!-- configure the path to the rar executables 
 			 in case you want to autocreate mails for multivolume attachments 
 			 of the same size  -->

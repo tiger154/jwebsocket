@@ -66,6 +66,10 @@ public class MailPlugIn extends TokenPlugIn {
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public MailPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
@@ -507,6 +511,11 @@ public class MailPlugIn extends TokenPlugIn {
 		lServer.sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 *
+	 * @param aString
+	 * @return
+	 */
 	public static String convertEmbeddedImagesToAttachments(String aString) {
 		// <img src="data:image/jpeg;base64,
 		String lPattern = "<img.*src=\"\\{([A-Za-z0-9_]+)\\}\".*>";

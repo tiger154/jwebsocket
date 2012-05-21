@@ -45,7 +45,7 @@ public class JWebSocketFactory {
 	private static List<WebSocketServer> mServers = null;
 	private static TokenServer mTokenServer = null;
 	private static BeanFactory mBeanFactory;
-	private static JWebSocketJarClassLoader mClassLoader;
+	private static JWebSocketJarClassLoader mClassLoader = null;
 
 	/**
 	 *
@@ -60,10 +60,12 @@ public class JWebSocketFactory {
 	 *
 	 * @param classLoader
 	 */
-	public static void setClassLoader(JWebSocketJarClassLoader classLoader) {
-		JWebSocketFactory.mClassLoader = classLoader;
+	
+	public static void setClassLoader(JWebSocketJarClassLoader aClassLoader) {
+		JWebSocketFactory.mClassLoader = aClassLoader;
 	}
-
+	
+	
 	/**
 	 *
 	 */

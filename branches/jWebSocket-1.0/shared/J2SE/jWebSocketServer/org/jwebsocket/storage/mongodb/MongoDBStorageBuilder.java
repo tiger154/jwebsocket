@@ -30,14 +30,19 @@ public class MongoDBStorageBuilder {
 	private Mongo mCon;
 	private String mDatabaseName;
 	private String mCollectionName;
+	/**
+	 *
+	 */
 	public static final String V1 = "v1";
+	/**
+	 *
+	 */
 	public static final String V2 = "v2";
-	
 	private DBCollection mCollection = null;
 	private DB mDatabase = null;
 
 	/**
-	 * 
+	 *
 	 * @return The Mongo database connection
 	 */
 	public Mongo getCon() {
@@ -45,7 +50,7 @@ public class MongoDBStorageBuilder {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aCon The Mongo database connection to set
 	 */
 	public void setCon(Mongo aCon) {
@@ -53,9 +58,11 @@ public class MongoDBStorageBuilder {
 	}
 
 	/**
-	 * 
-	 * @param aName The storage name 
+	 *
+	 * @param aVersion
+	 * @param aName The storage name
 	 * @return The MongoDB storage ready to use.
+	 * @throws Exception
 	 */
 	public IBasicStorage<String, Object> getStorage(String aVersion, String aName) throws Exception {
 		IBasicStorage<String, Object> lStorage = null;
@@ -82,7 +89,7 @@ public class MongoDBStorageBuilder {
 	 */
 	public void setDatabaseName(String aDatabaseName) {
 		this.mDatabaseName = aDatabaseName;
-		
+
 		//Getting the temporal database instance to improve performance
 		mDatabase = mCon.getDB(aDatabaseName);
 	}
@@ -95,11 +102,12 @@ public class MongoDBStorageBuilder {
 	}
 
 	/**
-	 * @param aCollectionName The database collection name for storages of version 2
+	 * @param aCollectionName The database collection name for storages of
+	 * version 2
 	 */
 	public void setCollectionName(String aCollectionName) {
 		this.mCollectionName = aCollectionName;
-		
+
 		//Getting the temporal collection instance to improve performance
 		mCollection = mCon.getDB(mDatabaseName).getCollection(aCollectionName);
 	}

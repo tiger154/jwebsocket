@@ -48,20 +48,6 @@
 			<description>Oracle JDBC Driver 10.2.0.4 ro access Oracle SQL Databases from jWebSocket</description>
 		</library>
 		-->
-		
-		<!-- Jasper Reports required for Reporting plug-in -->
-		<!--
-		<library>
-			<id>Jasper Reports</id>
-			<url>${JWEBSOCKET_HOME}libs/jasperreports-4.5.0.jar</url>
-			<description>Jasper Reports for reporting tools</description>
-		</library>
-		<library>
-			<id>Jasper Reports Fonts</id>
-			<url>${JWEBSOCKET_HOME}libs/jasperreports-fonts-4.0.0.jar</url>
-			<description>Jasper Reports Fonts for reporting tools</description>
-		</library>
-		-->
 	</libraries>
 
 	<!-- jWebSocket logging configuration -->

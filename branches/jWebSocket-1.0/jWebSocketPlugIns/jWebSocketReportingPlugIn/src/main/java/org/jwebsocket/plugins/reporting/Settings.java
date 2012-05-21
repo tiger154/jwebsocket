@@ -37,7 +37,8 @@ public class Settings {
 	}
 
 	/**
-	 * @param mReportFolder the mReportFolder to set
+	 *
+	 * @param aReportFolder
 	 */
 	public void setReportFolder(String aReportFolder) {
 		mReportFolder = aReportFolder;
@@ -55,7 +56,8 @@ public class Settings {
 	}
 
 	/**
-	 * @param mOutputFolder the mOutputFolder to set
+	 *
+	 * @param aOutputFolder
 	 */
 	public void setOutputFolder(String aOutputFolder) {
 		mOutputFolder = aOutputFolder;

@@ -19,22 +19,20 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import javolution.util.FastSet;
 import org.jwebsocket.storage.BaseStorage;
 
 /**
- * This class uses MongoDB servers to persist the information. 
- * <br>
- * All the cache storages entries are located in the same database collection. 
- * 
+ * This class uses MongoDB servers to persist the information. <br> All the
+ * cache storages entries are located in the same database collection.
+ *
+ * @param <K>
+ * @param <V>
  * @author kyberneees
  */
 public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
-	
+
 	private String mName;
 	private DBCollection mCollection;
 
@@ -68,6 +66,8 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aNewName
 	 */
 	@Override
 	public void setName(String aNewName) throws Exception {
@@ -79,6 +79,8 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aKey
 	 */
 	@Override
 	public boolean containsKey(Object aKey) {
@@ -91,6 +93,8 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aValue
 	 */
 	@Override
 	public boolean containsValue(Object aValue) {
@@ -103,6 +107,8 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aKey
 	 */
 	@Override
 	public V get(Object aKey) {
@@ -114,7 +120,7 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 		BasicDBObject lRecord = new BasicDBObject();
 		lRecord.append("ns", mName);
 		lRecord.append("k", aKey);
-		
+
 		DBCursor lCursor = mCollection.find(lRecord);
 		if (!lCursor.hasNext()) {
 			lRecord.append("v", aValue);
@@ -129,6 +135,8 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aKey
 	 */
 	@Override
 	public V remove(Object aKey) {
