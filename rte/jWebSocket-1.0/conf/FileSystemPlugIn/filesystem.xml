@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="settings" class="org.jwebsocket.plugins.filesystem.Settings">
+	<bean id="org.jwebsocket.plugins.filesystem.settings" class="org.jwebsocket.plugins.filesystem.Settings">
 		<property name="aliases">
 			<map>
 				<!-- folder alias for private user data -->

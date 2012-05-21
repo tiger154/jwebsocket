@@ -8,7 +8,7 @@
 		 disclosed to anybody. Publishing this data will allow
 		 others to use your account to use Twitter on behalf of you!
 	-->
-	<bean id="settings" class="org.jwebsocket.plugins.twitter.Settings">
+	<bean id="org.jwebsocket.plugins.twitter.settings" class="org.jwebsocket.plugins.twitter.Settings">
 		<property name="consumerKey" value="#your consumer key you obtain from Twitter for you app#"/>
 		<property name="consumerSecret" value="#your consumer secret you obtain from Twitter for you app#"/>
 		<!-- the app id you obatin when first requesting your access token -->

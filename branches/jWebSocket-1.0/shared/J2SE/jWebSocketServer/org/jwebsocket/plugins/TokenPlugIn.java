@@ -259,7 +259,19 @@ public class TokenPlugIn extends BasePlugIn {
 			return null;
 		}
 		JWebSocketBeanFactory.load(lSpringConfig, getClass().getClassLoader());
-
 		return JWebSocketBeanFactory.getInstance();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ApplicationContext getConfigBeanFactory(String aNamespace) {
+		String lSpringConfig = getString("spring_config");
+		if (null == lSpringConfig || lSpringConfig.isEmpty()) {
+			return null;
+		}
+		JWebSocketBeanFactory.load(lSpringConfig, getClass().getClassLoader());
+		return JWebSocketBeanFactory.getInstance(aNamespace);
 	}
 }

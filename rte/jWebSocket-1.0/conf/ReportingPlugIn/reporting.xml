@@ -3,7 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="settings" class="org.jwebsocket.plugins.reporting.Settings">
+	<bean id="org.jwebsocket.plugins.reporting.settings" class="org.jwebsocket.plugins.reporting.Settings">
 		<!-- The reportFolder specifies the folder of the Jasper Reports .jrxml files 
 			 this folder should not be accessible from the outside.
 		-->

@@ -67,31 +67,13 @@ public class ReportingPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_REPORTING);
-
-		/*
-		 * try { URL lURL; ClassLoader lCL = getClass().getClassLoader(); lURL =
-		 * new
-		 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/commons-digester-2.1.jar");
-		 * ClassPathUpdater.add(lURL, lCL); lURL = new
-		 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jasperreports-4.5.0.jar");
-		 * ClassPathUpdater.add(lURL); lURL = new
-		 * URL("file:///c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs/jWebSocketReportingPlugIn-1.0.jar");
-		 * ClassPathUpdater.add(lURL, lCL);
-		 *
-		 * // ClassPathUpdater.add("jWebSocketReportingPlugIn-1.0.jar"); //
-		 * ClassPathUpdater.add("c:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs");
-		 * } catch (Exception lEx) {
-		 * mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding Jasper libs
-		 * to class path")); }
-		 */
-
 		try {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for reporting plug-in, some features may not be available.");
 			} else {
 				mBeanFactory = getConfigBeanFactory();
-				mSettings = (Settings) mBeanFactory.getBean("settings");
+				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.reporting.settings");
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Reporting plug-in successfully instantiated.");
 				}

@@ -93,7 +93,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				mLog.error("No or invalid spring configuration for filesystem plug-in, some features may not be available.");
 			} else {
 				mBeanFactory = getConfigBeanFactory();
-				mSettings = (Settings) mBeanFactory.getBean("settings");
+				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.filesystem.settings");
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Filesystem plug-in successfully instantiated.");
 				}

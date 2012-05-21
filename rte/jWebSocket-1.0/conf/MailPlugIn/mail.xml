@@ -26,7 +26,7 @@
 	</bean>
 
 	<!-- settings  for the mail plug-in -->
-	<bean id="settings" class="org.jwebsocket.plugins.mail.Settings">
+	<bean id="org.jwebsocket.plugins.mail.settings" class="org.jwebsocket.plugins.mail.Settings">
 		
 		<!-- use this storage engine to store the mails -->
 		<property name="storage" ref="mailEhCacheStorage"/>

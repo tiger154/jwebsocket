@@ -16,7 +16,7 @@
 	</bean>
 
 	<!-- here you configure which SMS provider of the above ones to use in the SMS plug-in -->
-	<bean id="settings" class="org.jwebsocket.plugins.sms.Settings">
+	<bean id="org.jwebsocket.plugins.sms.settings" class="org.jwebsocket.plugins.sms.Settings">
 		<property name="provider" ref="providerSmstrade"/>
 	</bean>
 

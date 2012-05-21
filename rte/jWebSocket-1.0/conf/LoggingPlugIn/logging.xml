@@ -12,7 +12,7 @@
 	</bean>
 
 	<!-- here you configure which logger of the above ones to use in the plug-in -->
-	<bean id="settings" class="org.jwebsocket.plugins.logging.Settings">
+	<bean id="org.jwebsocket.plugins.logging.settings" class="org.jwebsocket.plugins.logging.Settings">
 		<property name="target" ref="targetLog4J"/>
 	</bean>
 
