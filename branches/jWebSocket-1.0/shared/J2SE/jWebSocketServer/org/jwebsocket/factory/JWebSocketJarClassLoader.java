@@ -29,7 +29,7 @@ public class JWebSocketJarClassLoader {
 	public void addFile(String aPath) throws Exception {
 		Method lMethod = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
 		lMethod.setAccessible(true);
-		lMethod.invoke(lCL, new Object[]{new URL("file:/" + aPath)});
+		lMethod.invoke(lCL, new Object[]{new URL("file://" + aPath)});
 	}
 
 	public Class<?> loadClass(String aClassName) throws ClassNotFoundException {
