@@ -264,16 +264,6 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 									+ "' from '" + lJarFilePath + "'...");
 
 						}
-						/*
-						 * URLClassLoader lCL = (URLClassLoader)
-						 * ClassLoader.getSystemClassLoader(); Method lMethod =
-						 * URLClassLoader.class.getDeclaredMethod("addURL", new
-						 * Class[]{URL.class}); lMethod.setAccessible(true);
-						 * lMethod.invoke(lCL, new Object[]{new URL("file:/" +
-						 * lJarFilePath)}); lPlugInClass =
-						 * (Class<WebSocketPlugIn>)
-						 * lCL.loadClass(lPlugInConfig.getName());
-						 */
 						lPlugInClass = (Class<WebSocketPlugIn>) mClassLoader.loadClass(lPlugInConfig.getName());
 					}
 				}
