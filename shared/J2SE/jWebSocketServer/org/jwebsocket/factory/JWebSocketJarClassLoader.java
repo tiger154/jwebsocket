@@ -14,6 +14,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.factory;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -29,7 +30,8 @@ public class JWebSocketJarClassLoader {
 	public void addFile(String aPath) throws Exception {
 		Method lMethod = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
 		lMethod.setAccessible(true);
-		lMethod.invoke(lCL, new Object[]{new URL("file://" + aPath)});
+		URL lURL = new File(aPath).toURI().toURL();
+		lMethod.invoke(lCL, new Object[]{lURL});
 	}
 
 	public Class<?> loadClass(String aClassName) throws ClassNotFoundException {
