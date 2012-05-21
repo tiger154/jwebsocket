@@ -55,7 +55,7 @@ public class SMSPlugIn extends TokenPlugIn {
 				mLog.error("No or invalid spring configuration for SMS plug-in, some features may not be available.");
 			} else {
 				mBeanFactory = getConfigBeanFactory();
-				mSettings = (Settings) mBeanFactory.getBean("settings");
+				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.sms.settings");
 				if (mLog.isInfoEnabled()) {
 					mLog.info("SMS plug-in successfully instantiated.");
 				}

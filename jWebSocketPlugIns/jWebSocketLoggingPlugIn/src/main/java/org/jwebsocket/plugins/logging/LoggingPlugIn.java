@@ -66,7 +66,7 @@ public class LoggingPlugIn extends TokenPlugIn {
 				mLog.error("No or invalid spring configuration for logging plug-in, some features may not be available.");
 			} else {
 				mBeanFactory = getConfigBeanFactory();
-				mSettings = (Settings) mBeanFactory.getBean("settings");
+				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.logging.settings");
 				mLogger = mSettings.getTarget();
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Logging plug-in successfully instantiated.");

@@ -84,7 +84,7 @@ public class MailPlugIn extends TokenPlugIn {
 				mLog.error("No or invalid spring configuration for mail plug-in, some features may not be available.");
 			} else {
 				mBeanFactory = getConfigBeanFactory();
-				mSettings = (Settings) mBeanFactory.getBean("settings");
+				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.mail.settings");
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Mail plug-in successfully instantiated"
 							+ ", SMTP: " + mSettings.getSmtpHost() + ":" + mSettings.getSmtpPort()
