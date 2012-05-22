@@ -14,6 +14,7 @@
 			<outputDirectory/>
 			<includes>
 				<include>${groupId}:${artifactId}</include>
+				<include>jivesoftware:smack</include>
 				<include>jivesoftware:smackx</include>
 			</includes>
 			<unpack>true</unpack>

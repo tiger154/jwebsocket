@@ -147,16 +147,6 @@ xcopy %libs%tomcat-embed-core-7.0.27.jar %tempdir%libs\ /s /i /y
 xcopy %libs%tomcat-embed-jasper-7.0.27.jar %tempdir%libs\ /s /i /y
 xcopy %libs%tomcat-embed-logging-juli-7.0.27.jar %tempdir%libs\ /s /i /y
 xcopy %libs%tomcat-embed-logging-log4j-7.0.27.jar %tempdir%libs\ /s /i /y
-rem Jetty support
-xcopy %libs%jetty-client-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-http-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-io-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-security-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-server-8.1.0.RC5.jar %tempdir%libs\ /s /i /yf
-xcopy %libs%jetty-servlet-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-servlets-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-util-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jetty-websocket-8.1.0.RC5.jar %tempdir%libs\ /s /i /y
 rem Grizzly support
 xcopy %libs%grizzly-core-2.2.5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%grizzly-framework-2.2.5.jar %tempdir%libs\ /s /i /y
@@ -169,11 +159,8 @@ xcopy %libs%jackson-mapper-asl-1.9.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jcl-core-2.2.2.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jdom-1.1.jar %tempdir%libs\ /s /i /y
 xcopy %libs%json-2-RELEASE65.jar %tempdir%libs\ /s /i /y
-xcopy %libs%slf4j-api-1.5.11.jar %tempdir%libs\ /s /i /y
-xcopy %libs%slf4j-log4j12-1.5.11.jar %tempdir%libs\ /s /i /y
-rem Smack XMPP API
-xcopy %libs%smack-3.1.0.jar %tempdir%libs\ /s /i /y
-xcopy %libs%smackx-3.1.0.jar %tempdir%libs\ /s /i /y
+xcopy %libs%slf4j-api-1.6.4.jar %tempdir%libs\ /s /i /y
+xcopy %libs%slf4j-log4j12-1.6.4.jar %tempdir%libs\ /s /i /y
 rem Spring support
 xcopy %libs%spring-aop-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-asm-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
@@ -191,6 +178,9 @@ xcopy %libs%spring-security-ldap-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-security-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-tx-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 xcopy %libs%spring-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
+
+rem jWebSocket engines
+xcopy %libs%jWebSocketJettyEngine-%ver%.jar %tempdir%libs\ /s /i /y
 
 rem jWebSocket .jars
 xcopy %libs%jWebSocketCommon-%ver%.jar %tempdir%libs\ /s /i /y
