@@ -214,14 +214,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-websocket</artifactId>
-			<version>8.1.0.RC5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>8.1.0.RC5</version>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketJettyEngine</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<!-- requires jWebSocket Server Module -->
 		<dependency>

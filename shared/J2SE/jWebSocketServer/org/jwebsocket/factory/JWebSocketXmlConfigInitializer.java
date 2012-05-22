@@ -131,13 +131,14 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Loading from the jar file '" + lEngineConfig.getName() + "'  ");
 					}
-					lJarFilePath = JWebSocketConfig.getLibsFolder(lEngineConfig.getJar());
+					lJarFilePath = JWebSocketConfig.getLibsFolder(lEngineConfig.getJar(),
+							Thread.currentThread().getContextClassLoader());
 					// jarFilePath may be null if .jar is included in server bundle
 					if (lJarFilePath != null) {
+						mClassLoader.addFile(lJarFilePath);
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Loading engine '" + lEngineConfig.getName() + "' from '" + lJarFilePath + "'...");
 						}
-						mClassLoader.addFile(lJarFilePath);
 						lEngineClass = (Class<WebSocketEngine>) mClassLoader.loadClass(lEngineConfig.getName());
 					}
 				}
@@ -257,7 +258,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 					// jarFilePath may be null if .jar is included in server bundle
 					if (lJarFilePath != null) {
 						mClassLoader.addFile(lJarFilePath);
-						ClassPathUpdater.add(new File(lJarFilePath));
+						// ClassPathUpdater.add(new File(lJarFilePath));
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Loading plug-in '"
 									+ lPlugInConfig.getName()

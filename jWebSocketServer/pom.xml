@@ -222,23 +222,6 @@
 		</dependency>
 		-->
 		
-        <!-- Jetty -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-websocket</artifactId>
-			<version>8.1.0.RC5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlets</artifactId>
-			<version>8.1.0.RC5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>8.1.0.RC5</version>
-		</dependency>
-
         <!-- Grizzly -->
 		<dependency>
 			<groupId>org.glassfish.grizzly</groupId>
@@ -327,13 +310,6 @@
 			<version>1.2</version>
 		</dependency>
 
-		<!-- required for the jWebSocket XMPP Plugin -->
-		<dependency>
-			<groupId>jivesoftware</groupId>
-			<artifactId>smackx</artifactId>
-			<version>3.1.0</version>
-		</dependency>
-		
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketCommon</artifactId>

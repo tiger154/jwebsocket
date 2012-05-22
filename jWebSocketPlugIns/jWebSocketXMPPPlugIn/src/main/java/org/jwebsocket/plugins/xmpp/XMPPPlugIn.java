@@ -62,6 +62,10 @@ public class XMPPPlugIn extends TokenPlugIn {
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_XMPP = JWebSocketServerConstants.NS_BASE + ".plugins.xmpp";
 
+	/**
+	 * 
+	 * @param aConfiguration
+	 */
 	public XMPPPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {

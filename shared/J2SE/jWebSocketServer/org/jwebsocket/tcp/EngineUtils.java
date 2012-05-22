@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - TCP Connector
+//	jWebSocket - EngineUtils
 //	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it

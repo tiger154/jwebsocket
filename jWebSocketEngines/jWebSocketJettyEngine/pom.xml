@@ -1,4 +1,3 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
@@ -9,18 +8,19 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jwebsocket</groupId>
-	<artifactId>jWebSocketXMPPPlugIn</artifactId>
-	<name>jWebSocketXMPPPlugIn</name>
-	<description>jWebSocket XMPP Plug-in</description>
+	<artifactId>jWebSocketJettyEngine</artifactId>
+	<name>jWebSocketJettyEngine</name>
+	<description>jWebSocket Jetty Engine</description>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<org.eclipse.jetty.version>8.1.0.RC5</org.eclipse.jetty.version>
 	</properties>
 <!--
 	<scm>
-		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketXMPPPlugIn</connection>
-		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketXMPPPlugIn</developerConnection>
+		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJettyEngine</connection>
+		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJettyEngine</developerConnection>
 	</scm>
 -->
 	<build>
@@ -68,7 +68,7 @@
                         <id>Bundle</id>
                         <configuration>
                             <classifier>Bundle</classifier>
-                            <finalName>jWebSocketXMPPPlugIn</finalName>
+                            <finalName>jWebSocketJettyEngine</finalName>
                             <outputDirectory>../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
                             <descriptors>
                                 <descriptor>src/assembly/one-jar.xml</descriptor>
@@ -102,18 +102,57 @@
 			<version>${project.version}</version>
 		</dependency>
 		
-		<!-- SmackX XMPP lib -->
+        <!-- Jetty -->
 		<dependency>
-			<groupId>jivesoftware</groupId>
-			<artifactId>smack</artifactId>
-			<version>3.1.0</version>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-client</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>jivesoftware</groupId>
-			<artifactId>smackx</artifactId>
-			<version>3.1.0</version>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-continuation</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-io</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-http</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-security</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlets</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-websocket</artifactId>
+			<version>${org.eclipse.jetty.version}</version>
+		</dependency>
 	</dependencies>
 
 	<!--  define repositories -->
