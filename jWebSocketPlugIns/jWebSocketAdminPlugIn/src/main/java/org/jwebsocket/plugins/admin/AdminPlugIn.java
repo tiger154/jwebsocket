@@ -145,7 +145,7 @@ public class AdminPlugIn extends TokenPlugIn {
 		String lNS = aToken.getNS();
 
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (lType.equals("getAdminLogs")) {
@@ -392,7 +392,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void getAdminLogs(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -410,7 +410,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void getPlugInsConfig(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -428,7 +428,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void getFiltersConfig(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -446,7 +446,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void getJars(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -464,7 +464,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void getPlugInsByJar(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -482,7 +482,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void getFilterByJar(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -500,7 +500,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void getPlugInConfigById(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -518,7 +518,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void getFilterConfigById(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -536,7 +536,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void changeOrderOfPlugInChain(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -554,7 +554,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void changeOrderOfFilterChain(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -572,7 +572,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void enablePlugIn(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -590,7 +590,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void enableFilter(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -608,7 +608,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void disablePlugIn(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -626,7 +626,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void disableFilter(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -644,7 +644,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void addPlugIn(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -662,7 +662,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void addFilter(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -680,7 +680,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void removePlugIn(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -698,7 +698,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void removeFilter(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -716,7 +716,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void reloadPlugIn(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {
@@ -734,7 +734,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	 */
 	private void reloadFilter(WebSocketConnector aConnector, Token aToken) {
 		if (mService == null) {
-			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer(), mLog);
+			mService = new AdminPlugInService(NS_ADMIN, mNumberOfDays, getServer());
 		}
 
 		if (mLog.isDebugEnabled()) {

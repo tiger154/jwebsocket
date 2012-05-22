@@ -16,10 +16,13 @@
 package org.jwebsocket.plugins.admin;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -63,7 +66,7 @@ import org.jwebsocket.util.DateHandler;
  */
 public class AdminPlugInService {
 
-	private static Logger mLog = Logging.getLogger(AdminPlugInService.class);
+	private static Logger mLog = Logging.getLogger();
 	private static Integer mNumberOfDays = null;
 	private static String mNamespace;
 	private static String mPathLog = null;
@@ -83,7 +86,7 @@ public class AdminPlugInService {
 	 * @param aLog
 	 */
 	public AdminPlugInService(String aNamespace, Integer aNumberOfDays, 
-			TokenServer aServer, Logger aLog) {
+			TokenServer aServer) {
 
 		mNumberOfDays = aNumberOfDays;
 		mServer = aServer;
@@ -92,7 +95,6 @@ public class AdminPlugInService {
 		mPathLibs = JWebSocketConfig.getLibsFolder("");
 		mJWebSocketConfig = JWebSocketConfig.getConfig();
 		mAdminConfig = new AdminConfig();
-		mLog = aLog;
 	}
 
 	/**
@@ -104,9 +106,29 @@ public class AdminPlugInService {
 	 * @param aMessage
 	 */
 	private void traceLog(WebSocketConnector aConnector, String aAction, 
-			String aResult, String aMessage) {
-		if (mLog.isInfoEnabled()) {
-			mLog.info("| " + aAction + " | " + aResult + " | " + aMessage);
+			String aResult, String aMessage){
+		
+		File lFile = new File(mPathLog);
+		BufferedWriter lBuffered;
+		
+		if(mLog.isDebugEnabled()) {
+			mLog.debug(DateHandler.getCurrentDate() + " | " + DateHandler.getCurrentTime() 
+					+ " | " + aAction + " | " + aResult + " | " + aMessage);
+		}
+		
+		try {
+			if (lFile.exists()) {
+				lBuffered = new BufferedWriter(new FileWriter(mPathLog,true));
+			} else {
+				lBuffered = new BufferedWriter(new FileWriter(mPathLog));
+			}
+			lBuffered.write(DateHandler.getCurrentDate() + " | " + DateHandler.getCurrentTime() 
+					+ " | " + aAction + " | " + aResult + " | " + aMessage + "\n");
+
+			lBuffered.close();
+		
+		} catch (IOException ex) {
+			mLog.error(ex.getClass().getSimpleName() + " on traceLog: " + ex.getMessage());
 		}
 
 		if (aConnector != null) {
@@ -212,8 +234,6 @@ public class AdminPlugInService {
 			lResponse.setString("msg", "Was obtained the logs of the last " + 
 					mNumberOfDays + " days.");
 			lBufferedReader.close();
-			traceLog(aConnector, "Read Logs", "Successful", 
-					"Was obtained the logs of the last " + mNumberOfDays + " days.");
 
 		} catch (FileNotFoundException ex) {
 			lResponse.setList("logs", lTokenLogs);
@@ -260,7 +280,7 @@ public class AdminPlugInService {
 			lResponse.setInteger("totalCount", lTokenPlugIn.size());
 			lResponse.setString("msg", "Was obtained the plugins configuration");
 			traceLog(aConnector, "Read PlugIns", "Successful", 
-					"Was obtained the plugins configuration");
+					"Was obtained the plugins configuration.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
@@ -302,7 +322,7 @@ public class AdminPlugInService {
 			lResponse.setInteger("totalCount", lTokenFilter.size());
 			lResponse.setString("msg", "Was obtained the filters configuration");
 			traceLog(aConnector, "Read Filters", "Successful", 
-					"Was obtained the filters configuration");
+					"Was obtained the filters configuration.");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
@@ -412,7 +432,7 @@ public class AdminPlugInService {
 			lResponse.setString("msg", "Was obtained the plugins belonging to the library " + 
 					lJar);
 			traceLog(aConnector, "Read PlugIns By Jar", "Successful", 
-					"Was obtained the plugins belonging to the library " + lJar);
+					"Was obtained the plugins belonging to the library " + lJar + ".");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
@@ -474,9 +494,9 @@ public class AdminPlugInService {
 			lResponse.setList("filtersByJar", lIdFilter);
 			lResponse.setInteger("totalCount", lIdFilter.size());
 			lResponse.setString("msg", "Was obtained the filters belonging to the library " + 
-					lJar);
+					lJar + ".");
 			traceLog(aConnector, "Read Filters By Jar", "Successful", 
-					"Was obtained the filters belonging to the library " + lJar);
+					"Was obtained the filters belonging to the library " + lJar + ".");
 
 		} catch (Exception ex) {
 			lResponse.setInteger("code", -1);
@@ -992,9 +1012,9 @@ public class AdminPlugInService {
 					mLog.debug("Loading plug-in '" + lPlugInConfig.getName() + 
 							"' from '" + lJarFilePath + "'...");
 				}
-				lClassLoader.addFile(lJarFilePath);
+//				lClassLoader.addFile(lJarFilePath);
 				lPlugInClass = (Class<WebSocketPlugIn>) 
-						lClassLoader.reloadClass(lPlugInConfig.getName());
+						lClassLoader.reloadClass(lPlugInConfig.getName(), lJarFilePath);
 			}
 
 			// if class found try to create an instance
@@ -1124,9 +1144,9 @@ public class AdminPlugInService {
 					mLog.debug("Loading filter '" + lFilterConfig.getName() + 
 							"' from '" + lJarFilePath + "'...");
 				}
-				lClassLoader.addFile(lJarFilePath);
+//				lClassLoader.addFile(lJarFilePath);
 				lFilterClass = (Class<WebSocketFilter>) 
-						lClassLoader.reloadClass(lFilterConfig.getName());
+						lClassLoader.reloadClass(lFilterConfig.getName(), lJarFilePath);
 			}
 
 			// if class found try to create an instance
@@ -1386,9 +1406,9 @@ public class AdminPlugInService {
 					mLog.debug("Loading plug-in '" + lPlugInConfig.getName() + 
 							"' from '" + lJarFilePath + "'...");
 				}
-				lClassLoader.addFile(lJarFilePath);
+//				lClassLoader.addFile(lJarFilePath);
 				lPlugInClass = (Class<WebSocketPlugIn>) 
-						lClassLoader.reloadClass(lPlugInConfig.getName());
+						lClassLoader.reloadClass(lPlugInConfig.getName(), lJarFilePath);
 			}
 
 			//if class found try to create an instance
@@ -1505,9 +1525,9 @@ public class AdminPlugInService {
 					mLog.debug("Loading filter '" + lFilterConfig.getName() + 
 							"' from '" + lJarFilePath + "'...");
 				}
-				lClassLoader.addFile(lJarFilePath);
+//				lClassLoader.addFile(lJarFilePath);
 				lFilterClass = (Class<WebSocketFilter>) 
-						lClassLoader.reloadClass(lFilterConfig.getName());
+						lClassLoader.reloadClass(lFilterConfig.getName(), lJarFilePath);
 			}
 
 			// if class found try to create an instance
