@@ -19,6 +19,14 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+/**
+ * ClassLoader that loads the classes from the jars. Engine, Servers, Plugins
+ * all configured via jWebSocket.xml file is loaded using this class.
+ * 
+ * @author puran
+ * @author kyberneees
+ * @author Marcos Antonio González Huerta (markos0886, UCI)
+ */
 public class JWebSocketJarClassLoader {
 
 	private URLClassLoader lCL = (URLClassLoader) ClassLoader.getSystemClassLoader();
@@ -27,6 +35,12 @@ public class JWebSocketJarClassLoader {
 		return lCL;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param aPath 
+	 * @throws MalformedURLException
+	 */
 	public void addFile(String aPath) throws Exception {
 		Method lMethod = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
 		lMethod.setAccessible(true);
@@ -34,39 +48,37 @@ public class JWebSocketJarClassLoader {
 		lMethod.invoke(lCL, new Object[]{lURL});
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param aClassName
+	 * @return Class<?>
+	 * @throws ClassNotFoundException
+	 */
 	public Class<?> loadClass(String aClassName) throws ClassNotFoundException {
 		return lCL.loadClass(aClassName);
 	}
 
-	public Class<?> reloadClass(String aClassName) throws ClassNotFoundException {
-		// TODO: This probably needs to be re-implemented here
-		return lCL.loadClass(aClassName);
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @param aClassName
+	 * @return Class<?>
+	 * @throws ClassNotFoundException
+	 */
+	public Class<?> reloadClass(String aClassName, String aPath) throws ClassNotFoundException {
+		LocalLoader lLocalLoader = new LocalLoader(lCL);
+		lLocalLoader.loadJar(aPath);
+		return lLocalLoader.loadClass(aClassName, true);
 	}
 }
-///**
-// * ClassLoader that loads the classes from the jars. Engine, Servers, Plugins
-// * all configured via jWebSocket.xml file is loaded using this class.
-// * 
-// * @author puran
-// * @author kyberneees
-// * @author Marcos Antonio González Huerta (markos0886, UCI)
-// */
 //public class JWebSocketJarClassLoader extends JarClassLoader {
 //
-//	/**
-//	 * 
-//	 */
 //	public JWebSocketJarClassLoader() {
 //		// init with empty list of URLs
 //		super();
 //	}
 //
-//	/**
-//	 * {@inheritDoc}
-//	 *
-//	 * @param aPath 
-//	 * @throws MalformedURLException
-//	 */
 //	public void addFile(String aPath) throws MalformedURLException {
 //		File lFile = new File(aPath);
 //		URL lURL = lFile.toURI().toURL();
@@ -83,11 +95,6 @@ public class JWebSocketJarClassLoader {
 //		add(aURL);
 //	}
 //
-//	/**
-//	 * 
-//	 * @param className
-//	 * @return
-//	 */
 //	public Class reloadClass(String className) {
 //		return getLocalLoader().loadClass(className, true);
 //	}
