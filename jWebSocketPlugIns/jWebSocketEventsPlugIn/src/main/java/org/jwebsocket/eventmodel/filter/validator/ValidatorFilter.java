@@ -15,6 +15,7 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.filter.validator;
 
+import java.util.Iterator;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
@@ -66,11 +67,18 @@ public class ValidatorFilter extends EventModelFilter {
 				validateArg(lArg, aEvent, lErrors);
 			}
 			if (lErrors.hasErrors()) {
+				if (mLog.isDebugEnabled()) {
+					for (Iterator<FieldError> it = lErrors.getFieldErrors().iterator(); it.hasNext();) {
+						FieldError lError = it.next();
+						mLog.debug("Detected argument error: [" + lError.getField() + ": " + lError.getCode() + "]");
+					}
+				}
 				String lFields = "";
 				for (FieldError lField : lErrors.getFieldErrors()) {
 					lFields += lField.getField() + ",";
 				}
-				throw new ValidatorException("Invalid incoming arguments: " + lFields);
+				throw new ValidatorException("Invalid incoming arguments: "
+						+ lFields.substring(0, lFields.length() - 1));
 			}
 		}
 	}
@@ -125,11 +133,18 @@ public class ValidatorFilter extends EventModelFilter {
 				validateArg(lArg, aResponseEvent, lErrors);
 			}
 			if (lErrors.hasErrors()) {
+				if (mLog.isDebugEnabled()) {
+					for (Iterator<FieldError> it = lErrors.getFieldErrors().iterator(); it.hasNext();) {
+						FieldError lError = it.next();
+						mLog.debug("Detected argument error: [" + lError.getField() + ": " + lError.getCode() + "]");
+					}
+				}
 				String lFields = "";
 				for (FieldError lField : lErrors.getFieldErrors()) {
 					lFields += lField.getField() + ",";
 				}
-				throw new ValidatorException("Invalid outgoing arguments: " + lFields);
+				throw new ValidatorException("Invalid outgoing arguments: "
+						+ lFields.substring(0, lFields.length() - 1));
 			}
 		}
 	}

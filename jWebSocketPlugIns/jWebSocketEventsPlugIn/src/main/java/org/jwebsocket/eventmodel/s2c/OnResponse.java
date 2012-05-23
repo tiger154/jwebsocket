@@ -27,6 +27,10 @@ public class OnResponse {
 	private double mProcessingTime;
 	private double mElapsedTime;
 
+	public OnResponse() {
+		mContext = null;
+	}
+
 	/**
 	 *
 	 * @param aContext The context to use by the callbacks
@@ -37,8 +41,8 @@ public class OnResponse {
 
 	/**
 	 * Callback used to handle the success response from the client
-	 * 
-	 * @param aResponse The response returned by the client-side 
+	 *
+	 * @param aResponse The response returned by the client-side
 	 * @param aFrom The target client connector
 	 */
 	public void success(Object aResponse, String aFrom) {
@@ -48,7 +52,7 @@ public class OnResponse {
 	/**
 	 * Callback used to handle the failure response from the client
 	 *
-	 * @param aReason The reason of why the s2c call has failed 
+	 * @param aReason The reason of why the s2c call has failed
 	 * @param aFrom The target client connector
 	 */
 	public void failure(FailureReason aReason, String aFrom) {
@@ -56,8 +60,8 @@ public class OnResponse {
 	}
 
 	/**
-	 * Execute custom validations in client responses 
-	 * 
+	 * Execute custom validations in client responses
+	 *
 	 * @param aResponse The response to validate
 	 * @param aFrom The target client connector
 	 * @return
@@ -67,14 +71,14 @@ public class OnResponse {
 	}
 
 	/**
-	 * @return The context to use by the callbacks 
+	 * @return The context to use by the callbacks
 	 */
 	public Object getContext() {
 		return mContext;
 	}
 
 	/**
-	 * @param aContext The context to use by the callbacks 
+	 * @param aContext The context to use by the callbacks
 	 */
 	public void setContext(Object aContext) {
 		this.mContext = aContext;
@@ -109,9 +113,8 @@ public class OnResponse {
 	}
 
 	/**
-	 * @return Time required by the client to process the event
-	 * <p>
-	 * Time unit in nanoseconds or milliseconds depending of the client
+	 * @return Time required by the client to process the event <p> Time unit in
+	 * nanoseconds or milliseconds depending of the client
 	 */
 	public double getProcessingTime() {
 		return mProcessingTime;
@@ -130,16 +133,16 @@ public class OnResponse {
 	}
 
 	/**
-	 * @return The complete time in nanoseconds passed from the "sent" time mark to 
-	 * the "response received" time mark
+	 * @return The complete time in nanoseconds passed from the "sent" time mark
+	 * to the "response received" time mark
 	 */
 	public double getElapsedTime() {
 		return mElapsedTime;
 	}
 
 	/**
-	 * @param aElapsedTime The complete time in nanoseconds passed from the "sent" 
-	 * time mark to the "response received" time mark
+	 * @param aElapsedTime The complete time in nanoseconds passed from the
+	 * "sent" time mark to the "response received" time mark
 	 */
 	public void setElapsedTime(double aElapsedTime) {
 		this.mElapsedTime = aElapsedTime;

@@ -167,7 +167,15 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 	//:a:en::aToken:Object:Token to be processed
 	//:r:*:::void:none
 	processToken: function (aToken) {
-		if (this.NS == aToken.ns && "s2c.en" == aToken.type){
+		if ((this.NS == aToken.ns && "auth.logon" == aToken.reqType && 0 == aToken.code)){
+			this.user.principal = aToken.username;
+			this.user.uuid = aToken.uuid;
+			this.user.roles = aToken.roles;
+		}
+		else if ((this.NS == aToken.ns && "auth.logoff" == aToken.reqType && 0 == aToken.code)){
+			this.user.clear();
+		} 
+		else if (this.NS == aToken.ns && "s2c.en" == aToken.type){
 			var lMethod = aToken._e;
 			var lPlugIn = aToken._p;
 
@@ -354,8 +362,11 @@ jws.oop.declareClass( "jws", "EventsBaseFilter", null, {
 jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 	id: "security"
 	,
+	user: null
+	,
 	initialize: function(aNotifier){
-		jws.user = new jws.AppUser();
+		aNotifier.user = new jws.AppUser();
+		this.user = aNotifier.user;
 	},
 	
 	//:m:*:beforeCall
@@ -383,7 +394,7 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 			lRoles = aRequest.args.meta.eventDefinition.roles;
 			
 			//Avoid unnecessary checks if the user is not authenticated
-			if (lUsers && lRoles && !jws.user.isAuthenticated()){
+			if (lUsers && lRoles && !this.user.isAuthenticated()){
 				if (aRequest.OnResponse){
 					aRequest.OnResponse({
 						code: -2,
@@ -404,7 +415,7 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 						lExclusion = (lU.substring(0,1) == "!") ? true : false;
 						lU = (lExclusion) ? lU.substring(1) : lU;
 
-						if (lU == jws.user.principal){
+						if (lU == this.user.principal){
 							lUserMatch = true;
 							if (!lExclusion){
 								lUserAuthorized = true;
@@ -433,14 +444,14 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 			//Checking if the user have the allowed roles
 			if (lRoles.length > 0){
 				for (var i = 0; i < lRoles.length; i++){
-					for (var j = 0; j < jws.user.roles.length; j++){
+					for (var j = 0; j < this.user.roles.length; j++){
 						lR = lRoles[i];
 					
 						if ("all" != lR){
 							lExclusion = (lR.substring(0,1) == "!") ? true : false;
 							lR = (lExclusion) ? lR.substring(1) : lR;
 
-							if (lR == jws.user.roles[j]){
+							if (lR == this.user.roles[j]){
 								if (!lExclusion){
 									lRoleAuthorized = true;
 								}
@@ -495,18 +506,21 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 	,
 	cache:{}
 	,
-	initialize: function(notifier){
-		notifier.notify("clientcacheaspect.setstatus", {
+	user: null
+	,
+	initialize: function(aNotifier){
+		this.user = aNotifier.user;
+		aNotifier.notify("clientcacheaspect.setstatus", {
 			args: {
 				enabled: true
 			}
 		});
 		
-		notifier.plugIns['__cache__'] = {
+		aNotifier.plugIns['__cache__'] = {
 			cache: this.cache,
 			cleanEntries: function(event){
 				for (var i = 0, end = event.entries.length; i < end; i++){
-					this.cache.removeItem_(jws.user.principal.toString() + event.suffix + event.entries[i]);
+					this.cache.removeItem_(this.user.principal.toString() + event.suffix + event.entries[i]);
 				}
 			}
 		}
@@ -524,8 +538,8 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 			var lKey = aRequest.args.meta.eventDefinition.type + aRequest.args.meta.UTID;
 			
 			//Storing in the user private cache storage if required
-			if (aRequest.args.meta.eventDefinition.isCachePrivate && jws.user.isAuthenticated()){
-				lKey = jws.user.uuid + lKey;
+			if (aRequest.args.meta.eventDefinition.isCachePrivate && this.user.isAuthenticated()){
+				lKey = this.user.uuid + lKey;
 			}
 			
 			var lCachedResponseEvent = this.cache.getItem(lKey);
@@ -561,7 +575,7 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 
 			//Storing in the user private cache storage if required
 			if (aRequest.eventDefinition.isCachePrivate){
-				lKey = jws.user.uuid + lKey;
+				lKey = this.user.uuid + lKey;
 			}
 			
 			this.cache.setItem(lKey, aResponseEvent, {

@@ -15,9 +15,9 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.api;
 
-import org.jwebsocket.eventmodel.observable.*;
 import java.util.Collection;
 import org.jwebsocket.eventmodel.observable.Event;
+import org.jwebsocket.eventmodel.observable.ResponseEvent;
 
 /**
  * 
@@ -107,6 +107,15 @@ public interface IObservable {
 	 * @throws Exception
 	 */
 	public ResponseEvent notify(Event aEvent, ResponseEvent aResponseEvent, boolean useThreads) throws Exception;
+	
+	/**
+	 * Fire a custom event and notify the listener(s)
+	 * 
+	 * @param aEvent The event to be fired
+	 * @return
+	 * @throws Exception
+	 */
+	public ResponseEvent notify(Event aEvent) throws Exception;
 
 	/**
 	 * Fire a custom event and notify the listener(s) until one of them 
@@ -121,6 +130,19 @@ public interface IObservable {
 	 * @throws Exception
 	 */
 	public ResponseEvent notifyUntil(Event aEvent, ResponseEvent aResponseEvent) throws Exception;
+	
+	/**
+	 * Fire a custom event and notify the listener(s) until one of them 
+	 * process the event. The listeners are executed using iteration. 
+	 * <p>
+	 * An event is processed when it <tt>processed</tt>
+	 * attribute is set to <tt>TRUE</tt>
+	 *
+	 * @param aEvent The event to be fired
+	 * @return
+	 * @throws Exception
+	 */
+	public ResponseEvent notifyUntil(Event aEvent) throws Exception;
 
 	/**
 	 * Indicates if a subject has listeners registered to a custom event

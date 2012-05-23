@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket TestSpecs for the Channel Plug-in
+//	jWebSocket TestSpecs for the EventsPlugIn test application
 //	(C) 2011 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
