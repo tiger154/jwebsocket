@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="AlarmPlugIn" class="org.jwebsocket.eventsplugin.alarm.controller.AlarmController" parent="AbstractPlugIn">
+		<property name="id" value="alarm" />
+		<property name="service">
+			<bean id="AlarmService" class="org.jwebsocket.eventsplugin.alarm.service.AlarmService">
+			</bean>
+		</property>
+		<property name="emEventClassesAndClientAPI">
+			<map>
+				<entry key="create" value="org.jwebsocket.eventsplugin.alarm.event.CreateNewAlarm"/>
+				<entry key="list" value="org.jwebsocket.eventsplugin.alarm.event.ListAlarms"/>
+			</map>
+		</property>
+		<property name="eventsDefinitions">
+			<set>
+				<bean parent="AbstractEventDefinition" class="org.jwebsocket.eventsplugin.alarm.filter.C2SEventDefinitionExt">
+					<property name="id" value="alarm.create" />
+					<property name="ns" value="org.jwebsocket.eventsplugin.alarm.event.CreateNewAlarm" />
+					<property name="responseRequired" value="true" />
+					<property name="responseToOwnerConnector" value="true" />
+					<!-- Time value is given in minutes -->
+					<property name="minimumNotificationTimeInterval" value="1" />
+					<property name="securityEnabled" value="true" />
+					<property name="roles">
+						<set>
+							<value>USER</value>
+						</set>
+					</property>
+					<property name="incomingArgsValidation">
+						<set>
+							<bean class="org.jwebsocket.eventmodel.filter.validator.Argument" >
+								<property name="name" value="time" />
+								<property name="type" value="string" />
+								<property name="optional" value="false" />
+								<property name="validator" ref="TimeValidator" />
+							</bean>
+							<bean class="org.jwebsocket.eventmodel.filter.validator.Argument" >
+								<property name="name" value="message" />
+								<property name="type" value="string" />
+								<property name="optional" value="false" />
+							</bean>
+						</set>
+					</property>
+				</bean>
+				<bean parent="AbstractEventDefinition">
+					<property name="id" value="alarm.list" />
+					<property name="ns" value="org.jwebsocket.eventsplugin.alarm.event.ListAlarms" />
+					<property name="responseRequired" value="true" />
+					<property name="responseToOwnerConnector" value="true" />
+					<property name="securityEnabled" value="true" />
+					<property name="roles">
+						<set>
+							<value>USER</value>
+						</set>
+					</property>
+					<property name="outgoingArgsValidation">
+						<set>
+							<bean class="org.jwebsocket.eventmodel.filter.validator.Argument" >
+								<property name="name" value="data" />
+								<property name="type" value="array" />
+								<property name="optional" value="false" />
+							</bean>
+						</set>
+					</property>
+				</bean>
+			</set>
+		</property>
+	</bean>
+	
+	
+</beans>
+
+				
