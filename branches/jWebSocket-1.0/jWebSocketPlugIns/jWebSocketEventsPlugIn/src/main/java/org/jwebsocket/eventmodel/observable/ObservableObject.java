@@ -137,6 +137,14 @@ public abstract class ObservableObject implements IObservable {
 	 * {@inheritDoc }
 	 */
 	@Override
+	public ResponseEvent notify(Event aEvent) throws Exception {
+		return notify(aEvent, null, false);
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
 	public ResponseEvent notify(Event aEvent, ResponseEvent aResponseEvent, boolean aUseThreads) throws Exception {
 		checkEvent((Class<? extends Event>) aEvent.getClass());
 
@@ -196,6 +204,14 @@ public abstract class ObservableObject implements IObservable {
 		} catch (InvocationTargetException ex) {
 			throw (Exception) ex.getTargetException();
 		}
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public ResponseEvent notifyUntil(Event aEvent) throws Exception {
+		return notifyUntil(aEvent, null);
 	}
 
 	/**
@@ -331,7 +347,7 @@ public abstract class ObservableObject implements IObservable {
 		for (String lEventClass : aEvents) {
 			lClasses.add(Class.forName(lEventClass));
 		}
-		
+
 		addEvents(lClasses);
 	}
 }

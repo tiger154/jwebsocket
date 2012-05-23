@@ -29,6 +29,7 @@ import org.jwebsocket.config.xml.JWebSocketConfigHandler;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.security.SecurityFactory;
+import org.jwebsocket.util.Tools;
 
 /**
  * An object that does the process of loading configuration, initialization of
@@ -54,7 +55,7 @@ public final class JWebSocketLoader {
 			throws WebSocketException {
 		String lConfigPath;
 		if (aConfigPath != null && !"".equals(aConfigPath)) {
-			lConfigPath = aConfigPath;
+			lConfigPath = Tools.expandEnvVarsAndProps(aConfigPath);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Initializing: Using config file '" + aConfigPath + "'...");
 			}

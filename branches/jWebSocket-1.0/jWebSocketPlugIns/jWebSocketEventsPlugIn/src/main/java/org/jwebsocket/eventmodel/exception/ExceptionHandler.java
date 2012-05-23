@@ -16,22 +16,24 @@
 package org.jwebsocket.eventmodel.exception;
 
 import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.Set;
-import org.jwebsocket.eventmodel.api.IExceptionHandler;
-import org.jwebsocket.logging.Logging;
+import javolution.util.FastSet;
 import org.apache.log4j.Logger;
+import org.jwebsocket.eventmodel.api.IExceptionHandler;
 import org.jwebsocket.eventmodel.api.IExceptionNotifier;
+import org.jwebsocket.logging.Logging;
 
 /**
- * An Exception handler is a component used to handle (uncaught) exceptions in a 
- * work-flow. 
+ * An Exception handler is a component used to handle (uncaught) exceptions
+ * during C2S event notification work-flow.
  *
  * @author kyberneees
  */
 public class ExceptionHandler implements IExceptionHandler {
 
-	private static Logger mLog = Logging.getLogger(ExceptionHandler.class);
-	private Set<IExceptionNotifier> mNotifiers;
+	private static Logger mLog = Logging.getLogger();
+	private Set<IExceptionNotifier> mNotifiers = new FastSet<IExceptionNotifier>();
 
 	/**
 	 * {@inheritDoc }
@@ -41,7 +43,7 @@ public class ExceptionHandler implements IExceptionHandler {
 	}
 
 	/**
-	 * {@inheritDoc } 
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void process(Exception ex) {
@@ -53,16 +55,19 @@ public class ExceptionHandler implements IExceptionHandler {
 
 		//Executing notifications
 		if (null != mNotifiers) {
-			for (IExceptionNotifier lNotifier : mNotifiers) {
+			for (Iterator<IExceptionNotifier> it = mNotifiers.iterator(); it.hasNext();) {
+				IExceptionNotifier lNotifier = it.next();
 				lNotifier.notify(ex);
 			}
 		}
 	}
 
 	/**
-	 * Execute the <tt>processException</tt> method according to the custom exception class
-	 * 
-	 * @param aExceptionHandler The IExceptionHandler that will process the exception 
+	 * Execute the <tt>processException</tt> method according to the custom
+	 * exception class
+	 *
+	 * @param aExceptionHandler The IExceptionHandler that will process the
+	 * exception
 	 * @param aEx The exception to process
 	 */
 	public static void callProcessException(IExceptionHandler aExceptionHandler, Exception aEx) {

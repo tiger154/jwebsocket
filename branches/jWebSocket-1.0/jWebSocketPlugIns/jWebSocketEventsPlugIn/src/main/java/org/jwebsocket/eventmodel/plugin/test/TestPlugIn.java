@@ -70,7 +70,7 @@ public class TestPlugIn extends JcPlugIn {
 	 */
 	public void processEvent(S2CNotification aEvent, C2SResponseEvent aResponseEvent) throws InvalidConnectorIdentifier {
 		//Notification with callbacks
-		this.notifyS2CEvent(new S2CPlusXYEvent(5, 5)).to(aEvent.getConnector(),
+		notifyS2CEvent(new S2CPlusXYEvent(5, 5)).to(aEvent.getConnector(),
 				new OnResponse(new TransactionContext(getEm(), aEvent, null)) {
 
 					@Override

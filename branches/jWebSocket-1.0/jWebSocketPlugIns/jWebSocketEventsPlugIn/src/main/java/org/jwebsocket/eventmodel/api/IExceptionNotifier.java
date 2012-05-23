@@ -16,7 +16,7 @@
 package org.jwebsocket.eventmodel.api;
 
 /**
- * An ExceptionNotifierProvider is a component to notify exceptions.
+ * The IExceptionNotifier is a component used to notify exceptions.
  * <p>
  * Useful to offer clean exceptions treatments or notify system's administrators 
  * about runtime exceptions using various sources like mail, chat, phone, etc...
@@ -30,5 +30,5 @@ public interface IExceptionNotifier {
 	 * 
 	 * @param ex
 	 */
-	public void notify(Exception ex);
+	 void notify(Exception ex);
 }

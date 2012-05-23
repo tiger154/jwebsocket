@@ -62,7 +62,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 		setNamespace(aConfiguration.getNamespace());
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Creating EventsPlugIn instance for application '" + getNamespace() + "'...");
+			mLog.debug("Creating EventsPlugIn instance for '" + getNamespace() + "' application...");
 		}
 
 		//Calling the init method

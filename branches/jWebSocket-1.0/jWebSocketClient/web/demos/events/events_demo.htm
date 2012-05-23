@@ -130,11 +130,6 @@
 					},
 					OnSuccess: function(aResponseEvent){
 						log(">> <b>Logon response: </b><br/>&nbsp;Message: " + aResponseEvent.msg + "<br/>&nbsp;Roles: " + aResponseEvent.roles.toString());
-
-						//Populating the application user instance with the principal, uuid and roles
-						jws.user.principal = aResponseEvent.username;
-						jws.user.uuid = aResponseEvent.uuid;
-						jws.user.roles = aResponseEvent.roles;
 					}
 				});
 			}
@@ -142,7 +137,6 @@
 			function logoff() {
 				auth.logoff({
 					OnSuccess: function(aResponseEvent){
-						jws.user.clear();
 						log(">> <b>Logoff response: </b><br/>&nbsp;Message: " + aResponseEvent.msg);
 					}
 				});

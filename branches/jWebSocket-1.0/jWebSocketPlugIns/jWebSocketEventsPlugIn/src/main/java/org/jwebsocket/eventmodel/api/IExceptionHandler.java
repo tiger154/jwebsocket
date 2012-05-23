@@ -18,8 +18,8 @@ package org.jwebsocket.eventmodel.api;
 import org.jwebsocket.api.IInitializable;
 
 /**
- * An Exception handler is a component used to handle (uncaught) exceptions in a 
- * work-flow. 
+ * An Exception handler is a component used to handle (uncaught) exceptions  
+ * during the C2S event notification work-flow 
  *
  * @author kyberneees
  */
@@ -30,5 +30,5 @@ public interface IExceptionHandler extends IInitializable {
 	 * 
 	 * @param ex
 	 */
-	public void process(Exception ex);
+	void process(Exception ex);
 }

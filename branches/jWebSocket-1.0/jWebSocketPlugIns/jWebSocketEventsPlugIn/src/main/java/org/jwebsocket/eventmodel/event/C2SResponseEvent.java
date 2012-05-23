@@ -15,9 +15,9 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.event;
 
-import org.jwebsocket.eventmodel.observable.ResponseEvent;
-import javolution.util.FastSet;
 import java.util.Set;
+import javolution.util.FastSet;
+import org.jwebsocket.eventmodel.observable.ResponseEvent;
 
 /**
  *

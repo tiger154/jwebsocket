@@ -46,16 +46,21 @@ public class SpringEventModelBuilder implements IEventModelBuilder {
 				+ aPlugIn.getNamespace() + "-application/bootstrap.xml";
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Building EventModel instance from: ' " + Tools.expandEnvVars(lPath) + "'...");
+			mLog.debug("Building EventModel instance from: '" + Tools.expandEnvVars(lPath) + "'...");
 		}
 
 		JWebSocketBeanFactory.load(aPlugIn.getNamespace(), lPath, lClassLoader);
 
 		EventModel lEM = (EventModel) JWebSocketBeanFactory.getInstance(aPlugIn.getNamespace()).getBean("EventModel");
 
-		// Initializing the event model
+		// Initializing the event model  
 		lEM.setParent(aPlugIn);
 		lEM.initialize();
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("EventModel instance for '" + aPlugIn.getNamespace()
+					+ "' application build successful!");
+		}
 
 		return lEM;
 	}

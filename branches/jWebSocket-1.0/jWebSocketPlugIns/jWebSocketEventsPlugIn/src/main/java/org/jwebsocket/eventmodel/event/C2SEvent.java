@@ -15,9 +15,9 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.event;
 
-import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.eventmodel.util.Util;
 
 /**
