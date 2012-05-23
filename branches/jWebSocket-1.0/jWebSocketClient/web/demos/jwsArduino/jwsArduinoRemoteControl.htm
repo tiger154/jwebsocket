@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <!-- If Google's chrome frame installed, use it! -->
+        <!-- Comment needs to be BELOW this meta tag! -->
+        <!--
+        //	****************************************************************************
+        //	jWebSocket Hello World (uses jWebSocket Client and Server)
+        //	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+        //	****************************************************************************
+        //	This program is free software; you can redistribute it and/or modify it
+        //	under the terms of the GNU Lesser General Public License as published by the
+        //	Free Software Foundation; either version 3 of the License, or (at your
+        //	option) any later version.
+        //	This program is distributed in the hope that it will be useful, but WITHOUT
+        //	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+        //	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+        //	more details.
+        //	You should have received a copy of the GNU Lesser General Public License along
+        //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+        //	****************************************************************************
+        -->
+        <meta http-equiv="Content-Language" content="en"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+
+        <title>jWebSocket Remote Control Demo</title>
+
+        <!-- DEMO STYLES  -->
+        <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+        <link rel="stylesheet" type="text/css" href="css/jwsRemoteControl.css"/>
+        <link rel="stylesheet" type="text/css" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css"/>
+
+        <!-- JQUERY DEPENDENCIES -->
+        <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+        
+        <!-- RAPHAEL DEPENDENCIES -->
+        <script type="text/javascript" src='js/lib/raphael.js'></script>
+        
+        <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
+        <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+        <script type="text/javascript" src="../../res/js/jwsEventsPlugIn.js"></script>
+        <script type="text/javascript" src="../../res/js/jwsCache.js"></script>
+
+        <!--  PUBLIC WIDGETS   -->
+        <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>        
+        <script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>        
+
+        <script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+
+        <!--  MAIN JAVASCRIPT FILE   -->
+		<script type="text/javascript" src='js/jwsRemoteControl.js'></script>
+		<script type="text/javascript" src='js/init.js'></script>
+		
+		
+    </head>
+    <body>
+        <div id="demo_box" >
+            <!--       DEMO_HEADER       -->
+            <div id="demo_box_header">
+                <h1>Arduino Remote Control</h1>
+				<!--<div id="demo_box_header_login">
+					<div id="connect_area">
+						<div id="connect_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+							 onmousedown="this.className='button onmousedown'" 
+							 onmouseup="this.className='button onmouseup'" 
+							 onmouseout="this.className='button onmouseout'" 
+							 onclick="this.className='button onmouseover'">
+							<div class="l"></div>
+							<div class="c">Connect</div>
+							<div class="r"></div>
+						</div>
+						<div id="disconnect_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+							 onmousedown="this.className='button onmousedown'" 
+							 onmouseup="this.className='button onmouseup'" 
+							 onmouseout="this.className='button onmouseout'" 
+							 onclick="this.className='button onmouseover'">
+							<div class="l"></div>
+							<div class="c">Disconnect</div>
+							<div class="r"></div>
+						</div> 
+					</div>
+				</div> -->
+            </div>
+            <div id="container">
+                <!--       STATUSBAR         -->
+                <div id="demo_box_statusbar">
+                    <div id='status'>Status: </div>
+                    <div id="client_status" class='offline'>disconnected</div><div class="line"></div>
+                    <div id='client_id'>Client-ID: - </div><div class="line"></div>
+                    <div id='websocket_type'>WebSocket: - </div>
+                </div>
+
+                <!--       DESCRIPTION       -->
+                <div id="descriptionContainer" >
+                    <p>
+                        This demo showcases the capability of jWebSocket in  conjunction with Arduino. Any kind of hardware can be  requested or controlled via internet for a multitude of different  purposes, for example: 
+                    </p>
+                    <ul>
+                        <li>house control (remote control of heating systems,  air-conditions, lighting, electric devices like garage doors),</li>
+                        <li>security (alarm systems, car lockings, cameras),</li>
+                        <li>automated production (robotics, monitoring). </li>                    
+                    </ul>
+                </div>
+                <!--       SCENARIO          -->
+
+                <div id="joystickContainer" class="container"  >
+                    <label id ="joystickTitle" class="title">Remote Monitoring</label>
+                    <label id="joystickMiniDescription" class="miniDescription">Use your joystick to display its movements in the browser. </label>
+                    <div id="joystickPosition"> </div></div> 
+                
+                <div id="ledsContainer" class="container"> 
+                    <label id ="ledsTitle" class="title">Remote Control</label>
+                    <label id="ledsMiniDescription" class="miniDescription">Click on the lights to turn on or off your external LEDs.</label>
+
+                    <div id="allLeds" >
+                        <div id="ledblue"   class="off"></div> 
+                        <div id="ledred"    class="off"></div> 
+                        <div id="ledgreen"  class="off"> </div> 
+                        <div id="ledyellow" class="off"> </div> 
+                    </div>
+
+                </div>
+
+                <div id="scenario_container" class="box">
+
+                    <!--       LOG BOX           -->
+                    <div id="log_box" class="box">
+                        <div id="log_box_header">
+                            <div id="show_hide_log" class="hide">Hide Log</div>
+                            <div id="clear_log">Clear Log</div>
+                        </div>
+                        <div id="log_box_content" class="log_box_visible"></div>
+                    </div>
+
+                </div>
+
+                <!--       DOWNLOAD_BUTTON   -->
+                <div id="demo_box_footer">
+                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                         onmousedown="this.className='button onmousedown'" 
+                         onmouseup="this.className='button onmouseup'" 
+                         onmouseout="this.className='button onmouseout'" 
+                         onclick="this.className='button onmouseover'">
+                        <div class="l"></div>
+                        <div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
+                        <div class="r_download"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
