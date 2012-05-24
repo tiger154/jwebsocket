@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.em.ConnectorStopped;
-import org.jwebsocket.eventmodel.exception.MissingTokenSenderException;
+import org.jwebsocket.eventmodel.exception.InvalidConnectorIdentifier;
 import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import org.jwebsocket.eventmodel.plugin.EventModelPlugIn;
 import org.jwebsocket.plugins.arduino.connection.ArduinoConnection;
@@ -94,9 +94,9 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
     *
     * @param aEvent
     * @param aResponseEvent
-    * @throws MissingTokenSenderException 
+    * @throws InvalidConnectorIdentifier 
     */
-    public void processEvent(DataIn aEvent, ResponseEvent aResponseEvent) throws MissingTokenSenderException {
+    public void processEvent(DataIn aEvent, ResponseEvent aResponseEvent) throws InvalidConnectorIdentifier {
         if(mLog.isDebugEnabled()) {
             mLog.debug("Receiving: " +aEvent.getData() + " from Arduino micro-controller");
         }
@@ -120,9 +120,9 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
   * @param aEvent
   * @param aResponseEvent
   * @throws IOException
-  * @throws MissingTokenSenderException 
+  * @throws InvalidConnectorIdentifier 
   */
-    public void processEvent(Command aEvent, C2SResponseEvent aResponseEvent) throws IOException, MissingTokenSenderException {
+    public void processEvent(Command aEvent, C2SResponseEvent aResponseEvent) throws IOException, InvalidConnectorIdentifier {
         if (mLog.isDebugEnabled()) {
             mLog.debug("Processing command event (cmd: " + aEvent.getCmd() + ")...");
         }
@@ -170,9 +170,9 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
   * @param aRed
   * @param aGreen
   * @param aYellow
-  * @throws MissingTokenSenderException 
+  * @throws InvalidConnectorIdentifier 
   */
-    private void sendLedState(Boolean aBlue, Boolean aRed, Boolean aGreen, Boolean aYellow) throws MissingTokenSenderException {
+    private void sendLedState(Boolean aBlue, Boolean aRed, Boolean aGreen, Boolean aYellow) throws InvalidConnectorIdentifier {
         // Notified with an event status LEDs
         for (WebSocketConnector lClient : this.getServerAllConnectors().values()) {
             this.notifyS2CEvent(new S2CLedState(aBlue,
@@ -185,9 +185,9 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
  * 
  * @param aX
  * @param aY
- * @throws MissingTokenSenderException 
+ * @throws InvalidConnectorIdentifier 
  */
-    private void sendJoystickPosition(Integer aX, Integer aY) throws MissingTokenSenderException {
+    private void sendJoystickPosition(Integer aX, Integer aY) throws InvalidConnectorIdentifier {
         //Notified with an event the Position,(x,y) of the joystick
         for (WebSocketConnector lClient : this.getServerAllConnectors().values()) {
             this.notifyS2CEvent(new S2CJoystickPosition(aX, aY)).to(lClient, null);
