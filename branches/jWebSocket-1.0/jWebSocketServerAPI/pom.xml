@@ -45,7 +45,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.7</version>
 				<configuration>
-					<reportOutputDirectory>${project.build.directory}/../../javadocs/${project.name}</reportOutputDirectory> -->
+					<reportOutputDirectory>${project.build.directory}/../../javadocs/${project.name}</reportOutputDirectory>
 					<stylesheetfile>${project.build.directory}/../../javadocs/stylesheet.css</stylesheetfile>
 				</configuration>
 			</plugin>
@@ -58,26 +58,74 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			
+			<!-- start create assemblies -->
+			<!-- description: http://binkley.blogspot.com/2006/12/making-one-jar-with-maven.html -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>packaged</id>
+						<configuration>
+							<classifier>bundle</classifier>
+							<finalName>jWebSocketServerAPI</finalName>
+							<outputDirectory>../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
+							<descriptors>
+								<descriptor>src/assembly/one-jar.xml</descriptor>
+							</descriptors>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
 	<!--  define all the dependencies here -->
 	<dependencies>
 		<dependency>
-			<groupId>org.netbeans.external</groupId>
-			<artifactId>json-2</artifactId>
-			<version>RELEASE65</version>
-			<type>jar</type>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.4</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jwebsocket</groupId>
-			<artifactId>jWebSocketCommon</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.4</version>
 		</dependency>
 		<dependency>
-			<groupId>jdom</groupId>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
-			<version>1.1</version>
+			<version>2.0.1</version>
 		</dependency>
 
 		<dependency>
@@ -93,7 +141,24 @@
 		-->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
+			<artifactId>spring</artifactId>
+			<version>2.0</version>
+			<!--  Keep this! Required to force use of Spring 3.1!  -->
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-asm</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 		<!--
@@ -107,7 +172,29 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
+			<artifactId>spring-core</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-expression</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<!-- Spring JDBC database abastraction -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<!-- Spring JMS abstraction -->
+		<dependency> 
+			<groupId>org.springframework</groupId> 
+			<artifactId>spring-jms</artifactId> 
+			<version>${org.springframework.version}</version> 
+		</dependency>		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 		<dependency>
@@ -115,7 +202,17 @@
 			<artifactId>spring-security-core</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-crypto</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
 		<!-- for LDAP authentication -->
+		<dependency> 
+			<groupId>org.springframework.ldap</groupId> 
+			<artifactId>spring-ldap-core</artifactId> 
+			<version>1.3.1.RELEASE</version> 
+		</dependency>		
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-ldap</artifactId>
@@ -123,45 +220,41 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
 			<version>${org.springframework.version}</version>
 		</dependency>
 
-		<!-- Spring JDBC database abastraction -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		
 		<dependency> 
-			<groupId>org.apache.activemq</groupId> 
-			<artifactId>activemq-core</artifactId> 
-			<version>5.5.0</version> 
-		</dependency>
-		
-		<!-- Spring JMS abstraction -->
+			<groupId>org.apache.xbean</groupId> 
+			<artifactId>xbean-spring-common</artifactId> 
+			<version>2.8</version> 
+		</dependency>		
 		<dependency> 
-			<groupId>org.springframework</groupId> 
-			<artifactId>spring-jms</artifactId> 
-			<version>${org.springframework.version}</version> 
+			<groupId>org.apache.xbean</groupId> 
+			<artifactId>xbean-spring-v2</artifactId> 
+			<version>2.8</version> 
 		</dependency>		
 		<dependency> 
 			<groupId>org.apache.xbean</groupId> 
 			<artifactId>xbean-spring-v2c</artifactId> 
 			<version>2.8</version> 
 		</dependency>		
-
-		<!-- Spring LDAP directory service abastraction -->
-		<!-- http://static.springsource.org/spring-security/site/docs/3.0.x/reference/ldap.html -->
-		<!--
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-ldap</artifactId>
-			<version>${org.springframework.version}</version>
-		</dependency>
-		-->
 	
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketCommon</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<!--  define repositories -->

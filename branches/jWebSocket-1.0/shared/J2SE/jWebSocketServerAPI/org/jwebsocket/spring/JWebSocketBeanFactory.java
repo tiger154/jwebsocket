@@ -80,7 +80,8 @@ public class JWebSocketBeanFactory {
 		} else {
 			lXmlReader = new XmlBeanDefinitionReader(getInstance());
 		}
-		lXmlReader.setBeanClassLoader(aClassLoader);
+		
+ 		lXmlReader.setBeanClassLoader(aClassLoader);
 
 		// if no JWEBSOCKET_HOME environment variable set 
 		// then use the classpath resource, otherwise the file system resource

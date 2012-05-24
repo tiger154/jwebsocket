@@ -15,19 +15,12 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins;
 
-import org.jwebsocket.kit.PlugInResponse;
-import org.jwebsocket.api.WebSocketPlugIn;
-import org.jwebsocket.api.WebSocketPlugInChain;
 import java.util.List;
-
 import javolution.util.FastList;
-
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.api.WebSocketEngine;
-import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.api.WebSocketServer;
+import org.jwebsocket.api.*;
 import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 
 /**
@@ -39,7 +32,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class BasePlugInChain implements WebSocketPlugInChain {
 
-	private static Logger mLog = Logging.getLogger(BasePlugInChain.class);
+	private static Logger mLog = Logging.getLogger();
 	private List<WebSocketPlugIn> mPlugins = new FastList<WebSocketPlugIn>();
 	private WebSocketServer mServer = null;
 

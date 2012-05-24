@@ -17,15 +17,8 @@ package org.jwebsocket.filter;
 
 import java.util.List;
 import javolution.util.FastList;
-import org.apache.log4j.Logger;
-import org.jwebsocket.api.FilterConfiguration;
+import org.jwebsocket.api.*;
 import org.jwebsocket.kit.FilterResponse;
-import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.api.WebSocketFilter;
-import org.jwebsocket.api.WebSocketFilterChain;
-import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.api.WebSocketServer;
-import org.jwebsocket.logging.Logging;
 
 /**
  *
@@ -34,8 +27,6 @@ import org.jwebsocket.logging.Logging;
  */
 public class BaseFilterChain implements WebSocketFilterChain {
 
-	private static Logger log = Logging.getLogger(BaseFilterChain.class);
-	//private Map<String, WebSocketFilter> mFilters = new FastMap<String, WebSocketFilter>();
 	private List<WebSocketFilter> mFilters = new FastList<WebSocketFilter>();
 	private WebSocketServer mServer = null;
 

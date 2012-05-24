@@ -17,12 +17,12 @@ package org.jwebsocket.eventmodel.filter.security;
 
 import java.util.List;
 import java.util.Map;
-import org.jwebsocket.eventmodel.filter.EventModelFilter;
-import org.jwebsocket.eventmodel.event.C2SEvent;
+import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.api.IServerSecureComponent;
+import org.jwebsocket.eventmodel.event.C2SEvent;
+import org.jwebsocket.eventmodel.filter.EventModelFilter;
 import org.jwebsocket.eventmodel.util.Util;
-import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.system.SystemPlugIn;
 

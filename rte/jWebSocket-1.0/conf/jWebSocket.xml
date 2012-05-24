@@ -44,10 +44,16 @@
 		<!--
 		<library>
 			<id>OracleJDBCDriver</id>
-			<url>C:\Program Files\Oracle\ojdbc14-10.2.0.4.jar</url>
+			<url>${JWEBSOCKET_HOME}libs/ojdbc14-10.2.0.4.jar</url>
 			<description>Oracle JDBC Driver 10.2.0.4 ro access Oracle SQL Databases from jWebSocket</description>
 		</library>
 		-->
+		<library>
+			<id>MySQLJDBCDriver</id>
+			<url>${JWEBSOCKET_HOME}libs/mysql-connector-java-5.1.16.jar</url>
+			<description>MySQL JDBC driver to access MySQL databases from jWebSocket and its plug-ins</description>
+		</library>
+
 	</libraries>
 
 	<!-- jWebSocket logging configuration -->

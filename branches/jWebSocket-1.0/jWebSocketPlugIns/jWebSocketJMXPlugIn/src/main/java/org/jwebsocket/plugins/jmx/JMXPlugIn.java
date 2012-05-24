@@ -83,11 +83,12 @@ public class JMXPlugIn extends TokenPlugIn {
 
 		lFactory.getBean("exporter");
 		
-		mRmiConnector = (RMIConnectorServer) lFactory.getBean("rmiConnector");
-		mRmiSSLConnector = (RMIConnectorServer) lFactory.getBean("rmiSSLConnector");
-		mHttpAdaptor = (HttpAdaptor) lFactory.getBean("HttpAdaptor");
-		mHttpSSLAdaptor = (HttpAdaptor) lFactory.getBean("HttpSSLAdaptor");
 		try {
+			mRmiConnector = (RMIConnectorServer) lFactory.getBean("rmiConnector");
+			mRmiSSLConnector = (RMIConnectorServer) lFactory.getBean("rmiSSLConnector");
+			mHttpAdaptor = (HttpAdaptor) lFactory.getBean("HttpAdaptor");
+			mHttpSSLAdaptor = (HttpAdaptor) lFactory.getBean("HttpSSLAdaptor");
+			
 			mRmiConnector.start();
 			mRmiSSLConnector.start();
 			

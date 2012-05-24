@@ -16,7 +16,14 @@
 		<module>jWebSocketServer</module>
 		<module>jWebSocketJavaSEClient</module>
 		<module>jWebSocketSamples</module>
+		
 		<module>jWebSocketEngines/jWebSocketJettyEngine</module>
+		<module>jWebSocketEngines/jWebSocketTomcatEngine</module>
+		<module>jWebSocketEngines/jWebSocketCometEngine</module>
+		<module>jWebSocketEngines/jWebSocketGrizzlyEngine</module>
+		<!-- Netty is not yet supported -->
+		<!-- <module>jWebSocketEngines/jWebSocketNettyEngine</module> -->
+		
 		<module>jWebSocketPlugIns/jWebSocketChatPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketSenchaPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketJQueryPlugIn</module>
@@ -121,47 +128,13 @@
 			<artifactId>commons-lang</artifactId>
 			<version>2.5</version>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<!-- <version>1.5.11</version> -->
-			<version>1.6.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<!-- <version>1.5.11</version> -->
-			<version>1.6.4</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.mail</groupId>
-					<artifactId>mail</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.jms</groupId>
-					<artifactId>jms</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jdmk</groupId>
-					<artifactId>jmxtools</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jmx</groupId>
-					<artifactId>jmxri</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
 		</dependency>
+<!--		
 		<dependency>
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-easymock</artifactId>
@@ -177,6 +150,7 @@
 			<artifactId>easymock</artifactId>
 			<version>3.0</version>
 		</dependency>
+-->		
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>

@@ -46,7 +46,7 @@ public class SpringEventModelBuilder implements IEventModelBuilder {
 				+ aPlugIn.getNamespace() + "-application/bootstrap.xml";
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Building EventModel instance from: '" + Tools.expandEnvVars(lPath) + "'...");
+			mLog.debug("Building EventModel instance from: '" + Tools.expandEnvVarsAndProps(lPath) + "'...");
 		}
 
 		JWebSocketBeanFactory.load(aPlugIn.getNamespace(), lPath, lClassLoader);
