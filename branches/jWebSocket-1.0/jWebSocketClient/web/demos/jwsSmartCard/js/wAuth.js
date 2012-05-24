@@ -68,20 +68,18 @@ $.widget("jws.auth",{
 				log( "<font style='color:red'>User authenticated successfully.</font>" );
 				lWSC.fUsername = aResponseEvent.username;
 
-				//Populating the application user instance with the principal, uuid and roles
-				jws.user.principal = aResponseEvent.username;
-				jws.user.uuid = aResponseEvent.uuid;
-				jws.user.roles = aResponseEvent.roles;
+				setTimeout(function(){
+					jc.getUserInfo({
+						OnSuccess: function(aResponse){
+							$("#text").find("p").html("Welcome: "+ aResponse.firstname + "<br/>You are authenticated!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+							$("#img").attr("style", "background: url(css/images/" + lWSC.fUsername + ".png)");
+							$(".firstname").attr("value", aResponse.firstname);
+							$(".secondname").attr("value", aResponse.secondname);
+							$(".address").text(aResponse.address);
+						}
+					});
+				}, 50);
 				
-				jc.getUserInfo({
-					OnSuccess: function(aResponse){
-						$("#text").find("p").html("Welcome: "+ aResponse.firstname + "<br/>You are authenticated!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-						$("#img").attr("style", "background: url(css/images/" + lWSC.fUsername + ".png)");
-						$(".firstname").attr("value", aResponse.firstname);
-						$(".secondname").attr("value", aResponse.secondname);
-						$(".address").text(aResponse.address);
-					}
-				});
 				
 			}
 		});
