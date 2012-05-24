@@ -1,0 +1,6 @@
+org.jwebsocket.plugins.arduino
+org.jwebsocket.plugins.arduino.connection
+org.jwebsocket.plugins.arduino.connection.event
+org.jwebsocket.plugins.arduino.event.c2s
+org.jwebsocket.plugins.arduino.event.s2c
+org.jwebsocket.plugins.arduino.util
