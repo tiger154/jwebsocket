@@ -45,7 +45,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 
 	private String mConfigFile;
 	private EventModel mEm;
-	private static Logger mLog = Logging.getLogger(EventsPlugIn.class);
+	private static Logger mLog = Logging.getLogger();
 	// IWebSocketSecureObject fields
 	private boolean mSecurityEnabled = false;
 	private Set<String> mRoles = new FastSet<String>();

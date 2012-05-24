@@ -140,8 +140,8 @@ public class ValidatorFilter extends EventModelFilter {
 					}
 				}
 				String lFields = "";
-				for (FieldError lField : lErrors.getFieldErrors()) {
-					lFields += lField.getField() + ",";
+				for (Object lField : lErrors.getFieldErrors()) {
+					lFields += ((FieldError)lField).getField() + ",";
 				}
 				throw new ValidatorException("Invalid outgoing arguments: "
 						+ lFields.substring(0, lFields.length() - 1));

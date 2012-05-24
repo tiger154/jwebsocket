@@ -278,6 +278,11 @@
 			<artifactId>jWebSocketServer</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketTomcatEngine</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		
 	</dependencies>
 

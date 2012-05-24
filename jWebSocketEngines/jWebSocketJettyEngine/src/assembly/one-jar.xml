@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly>
+	<!-- jWebSocketJettyEngine -->
 	<!-- this id is appended to filename given in pom.xml -->
 	<id>${project.version}</id>
 	<formats>

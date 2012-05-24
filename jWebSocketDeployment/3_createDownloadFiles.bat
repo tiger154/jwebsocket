@@ -154,30 +154,7 @@ xcopy %libs%grizzly-websockets-2.2.5.jar %tempdir%libs\ /s /i /y
 xcopy %libs%grizzly-websockets-server-2.2.5.jar %tempdir%libs\ /s /i /y
 rem xcopy %libs%servlet-api-2.5-6.1.14.jar %tempdir%libs\ /s /i /y
 rem Jackson JSON support
-xcopy %libs%jackson-core-asl-1.9.3.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jackson-mapper-asl-1.9.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jcl-core-2.2.2.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jdom-1.1.jar %tempdir%libs\ /s /i /y
-xcopy %libs%json-2-RELEASE65.jar %tempdir%libs\ /s /i /y
-xcopy %libs%slf4j-api-1.6.4.jar %tempdir%libs\ /s /i /y
-xcopy %libs%slf4j-log4j12-1.6.4.jar %tempdir%libs\ /s /i /y
-rem Spring support
-xcopy %libs%spring-aop-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-asm-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-beans-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-context-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-core-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-expression-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-jdbc-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-jms-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-ldap-core-1.3.1.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-security-config-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-security-core-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-security-crypto-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-security-ldap-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-security-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-tx-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
-xcopy %libs%spring-web-3.1.0.RELEASE.jar %tempdir%libs\ /s /i /y
 
 rem jWebSocket engines
 xcopy %libs%jWebSocketJettyEngine-%ver%.jar %tempdir%libs\ /s /i /y

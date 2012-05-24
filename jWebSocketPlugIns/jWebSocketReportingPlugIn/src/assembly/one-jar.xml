@@ -18,6 +18,7 @@
 				<include>com.lowagie:itext</include>
 				<include>net.sf.jasperreports:jasperreports</include>
 				<include>net.sf.jasperreports:jasperreports-fonts</include>
+				<include>org.codehaus.groovy:groovy-all</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>		

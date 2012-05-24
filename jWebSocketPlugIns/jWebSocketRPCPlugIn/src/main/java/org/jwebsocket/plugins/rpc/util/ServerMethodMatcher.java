@@ -16,7 +16,6 @@
 package org.jwebsocket.plugins.rpc.util;
 
 import java.lang.reflect.Method;
-
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.plugins.rpc.MethodMatcher;
 
