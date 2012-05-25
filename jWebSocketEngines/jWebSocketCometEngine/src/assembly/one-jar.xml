@@ -16,6 +16,9 @@
 			<includes>
 				<include>${groupId}:${artifactId}</include>
 				<include>org.apache.tomcat.embed:tomcat-embed-core</include>
+				<include>org.apache.tomcat.embed:tomcat-embed-logging-juli</include>
+				<include>org.apache.tomcat.embed:tomcat-embed-logging-log4j</include>
+				<include>org.apache.tomcat.embed:tomcat-embed-jasper</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>		

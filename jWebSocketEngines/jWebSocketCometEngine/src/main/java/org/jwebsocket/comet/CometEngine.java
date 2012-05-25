@@ -20,6 +20,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javolution.util.FastMap;
 import org.apache.catalina.Context;
+import org.apache.catalina.Service;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
@@ -41,26 +43,17 @@ public class CometEngine extends BaseEngine {
 	private Tomcat mTomcat = null;
 	private CometServlet mServlet;
 	private static Logger mLog = Logging.getLogger();
-	private Map<String, Queue<WebSocketPacket>> mPacketsQueue = new FastMap();
-	
+	private Map<String, Queue<WebSocketPacket>> mPacketsQueue = new FastMap<String, Queue<WebSocketPacket>>();
 	private String mTomcatVersion = "7+";
 	private String mDocumentRoot;
 
-	public boolean isQueuePacketEmpty(String aIdConnector) {
-		return mPacketsQueue.get(aIdConnector).isEmpty();
-	}
-
-	public CometServlet getServlet() {
-		return mServlet;
-	}
-
-	public void setServlet(CometServlet aServlet) {
-		this.mServlet = aServlet;
-	}
-
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public CometEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
-		
+
 		// load the ports
 		Integer lPort = aConfiguration.getPort();
 		Integer lSSLPort = aConfiguration.getSSLPort();
@@ -81,37 +74,42 @@ public class CometEngine extends BaseEngine {
 			lServlet = "/*";
 		}
 		try {
- 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Instantiating embedded Tomcat server"
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Instantiating Comet Engine (embedded Tomcat)..."
 						+ " at port " + lPort
 						+ ", ssl-port " + lSSLPort
 						+ ", context: '" + lContext
 						+ "', servlet: '" + lServlet + "'...");
 			}
-			
+
 			mTomcat = new Tomcat();
-			mTomcatVersion = mTomcat.getServer().getInfo();
-			mTomcat.setPort(lPort);
+			// TODO: Make this configurable or turn it off!
+			mTomcat.setPort(9999);
+			Connector lConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+			lConnector.setPort(lPort);
+			// lConnector.setScheme("ws"); // "ws" does not seem to work.
+			Service lService = mTomcat.getService();
+			lService.addConnector(lConnector);
+
 			String lBaseDir = JWebSocketConfig.getJWebSocketHome() + "webs";
 			mTomcat.setBaseDir(lBaseDir);
+			mTomcatVersion = mTomcat.getServer().getInfo();
 
 			Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
-			Tomcat.addServlet(lCtx, "jWebSocketServlet", new CometServlet()); // "org.jwebsocket.comet.servlet.CometServlet"
+			mServlet = new CometServlet();
+			Tomcat.addServlet(lCtx, "jWebSocketServlet", mServlet);
 			lCtx.addServletMapping(lServlet, "jWebSocketServlet");
 
-			mTomcat.start();
-
-			// mTomcatServer.setStopAtShutdown(true);
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Starting embedded Tomcat Server '"
-						+ mTomcatVersion + "'...");
+				mLog.debug("Starting embedded Tomcat Server for Comet Engine...");
 			}
-
+			// lConnector.init();
+			// lConnector.start();
 			mTomcat.start();
-			// if (mLog.isDebugEnabled()) {
-			//	mLog.debug("Joining embedded Tomcat server...");
-			// }
-			// mTomcatServer.join();
+			mServlet.init();
+			if (mLog.isInfoEnabled()) {
+				mLog.info("Embedded Tomcat Server for Comet Engine successfully started.");
+			}
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ "Instantiating Embedded Tomcat Server '"
@@ -119,19 +117,53 @@ public class CometEngine extends BaseEngine {
 					+ lEx.getMessage());
 		}
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Tomcat Server '" + mTomcatVersion
+			mLog.debug("Comet Engine (embedded Tomcat) '" + mTomcatVersion
 					+ "' sucessfully instantiated at port "
 					+ lPort + ", SSL port " + lSSLPort + "...");
 		}
-		
+
+
 	}
 
+	/**
+	 *
+	 * @param aIdConnector
+	 * @return
+	 */
+	public boolean isQueuePacketEmpty(String aIdConnector) {
+		return mPacketsQueue.get(aIdConnector).isEmpty();
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public CometServlet getServlet() {
+		return mServlet;
+	}
+
+	/**
+	 *
+	 * @param aServlet
+	 */
+	public void setServlet(CometServlet aServlet) {
+		mServlet = aServlet;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
 	public Map<String, Queue<WebSocketPacket>> getPacketsQueue() {
 		return mPacketsQueue;
 	}
 
+	/**
+	 *
+	 * @param aPacketsQueue
+	 */
 	public void setPacketsQueue(Map<String, Queue<WebSocketPacket>> aPacketsQueue) {
-		this.mPacketsQueue = aPacketsQueue;
+		mPacketsQueue = aPacketsQueue;
 	}
 
 	@Override

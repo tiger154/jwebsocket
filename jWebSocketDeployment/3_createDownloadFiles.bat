@@ -110,28 +110,8 @@ xcopy %bin%jWebSocketAdmin.sh %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAdmin_Ubuntu.sh %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAdmin.command %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAMQStockTicker.bat %tempdir%bin\ /s /i /y
-rem Apache commons
-xcopy %libs%commons-beanutils-1.8.3.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-beanutils-core-1.8.3.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-codec-1.5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-collections-3.2.1.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-dbcp-1.4.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-digester-2.1.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-email-1.2.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-lang-2.5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-io-2.1.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-logging-1.1.1.jar %tempdir%libs\ /s /i /y
-xcopy %libs%commons-pool-1.5.6.jar %tempdir%libs\ /s /i /y
 rem Others
-xcopy %libs%groovy-all-1.8.0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%javax.servlet-3.1.1.jar %tempdir%libs\ /s /i /y
-rem Apache ActiveMQ, Geronimo und Xbean support
-xcopy %libs%activemq-core-5.5.0.jar %tempdir%libs\ /s /i /y
-xcopy %libs%xbean-spring-common-2.8.jar %tempdir%libs\ /s /i /y
-xcopy %libs%xbean-spring-v2-2.8.jar %tempdir%libs\ /s /i /y
-xcopy %libs%xbean-spring-v2c-2.8.jar %tempdir%libs\ /s /i /y
-xcopy %libs%geronimo-j2ee-management_1.1_spec-1.0.1.jar %tempdir%libs\ /s /i /y
-xcopy %libs%geronimo-jms_1.1_spec-1.1.1.jar %tempdir%libs\ /s /i /y
 rem Jasper reports
 xcopy %libs%log4j-1.2.16.jar %tempdir%libs\ /s /i /y
 xcopy %libs%javolution-5.5.1.jar %tempdir%libs\ /s /i /y

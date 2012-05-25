@@ -38,12 +38,13 @@ import org.jwebsocket.packetProcessors.JSONProcessor;
  */
 public class CometConnector extends BaseConnector {
 
-	CometEvent mEvent;
-	int mReadyState = 0;
-	boolean mAbleToSend = false;
+	private CometEvent mEvent;
+	private int mReadyState = 0;
+	private boolean mAbleToSend = false;
+	private static Logger mLog = Logging.getLogger();
 
 	/**
-	 * 
+	 *
 	 * @param aAbleToSend
 	 */
 	public void setAbleToSend(boolean aAbleToSend) {
@@ -51,16 +52,15 @@ public class CometConnector extends BaseConnector {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public synchronized boolean isAbleToSend() {
 		return mAbleToSend;
 	}
-	private static Logger mLog = Logging.getLogger(CometConnector.class);
 
 	/**
-	 * 
+	 *
 	 * @param aEngine
 	 * @param aEvent
 	 */
@@ -71,7 +71,7 @@ public class CometConnector extends BaseConnector {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public int getReadyState() {
@@ -79,7 +79,7 @@ public class CometConnector extends BaseConnector {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param mReadyState
 	 */
 	public void setReadyState(int mReadyState) {
@@ -87,7 +87,7 @@ public class CometConnector extends BaseConnector {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public CometEvent getEvent() {
@@ -95,7 +95,7 @@ public class CometConnector extends BaseConnector {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aEvent
 	 */
 	public void setEvent(CometEvent aEvent) {
@@ -200,7 +200,7 @@ public class CometConnector extends BaseConnector {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aEvent
 	 */
 	public synchronized void checkPaqueQueueByEvent(CometEvent aEvent) {
@@ -223,7 +223,7 @@ public class CometConnector extends BaseConnector {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public synchronized void checkPaqueQueue() {
 
