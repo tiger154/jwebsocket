@@ -28,10 +28,6 @@ import org.jwebsocket.token.Token;
  */
 public class PollingSample extends TokenPlugIn {
 
-	/**
-	 * 
-	 * @param aConfiguration
-	 */
 	public PollingSample(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		setNamespace(aConfiguration.getNamespace());
