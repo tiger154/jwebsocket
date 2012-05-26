@@ -54,6 +54,10 @@ public class GrizzlyEngine extends BaseEngine {
 	private HttpServer mGrizzlyServer = null;
 	private HttpServer mGrizzlySSLServer;
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public GrizzlyEngine(EngineConfiguration aConfiguration) {
 
 		super(aConfiguration);
@@ -140,9 +144,9 @@ public class GrizzlyEngine extends BaseEngine {
 
 							lSSLEngineConfigurator.setEnabledProtocols(new String[]{"TLSv1", "SSLv3"});
 							lSSLEngineConfigurator.setProtocolConfigured(true);
-							
+
 							String[] lEnabledCipherSuites = {"SSL_RSA_WITH_RC4_128_SHA", "TLS_KRB5_WITH_RC4_128_SHA"};
-							
+
 							//cipherSuites 	null means 'use SSLEngine's default.'
 							lSSLEngineConfigurator.setEnabledCipherSuites(lEnabledCipherSuites);
 							lSSLEngineConfigurator.setCipherConfigured(true);
