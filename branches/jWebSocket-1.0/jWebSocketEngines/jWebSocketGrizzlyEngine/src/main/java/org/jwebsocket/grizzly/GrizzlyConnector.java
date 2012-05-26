@@ -42,7 +42,13 @@ public class GrizzlyConnector extends BaseConnector {
 	private WebSocket mConnection;
 	private HttpRequestPacket mRequest = null;
 	private String mProtocol = null;
+	/**
+	 *
+	 */
 	public static final String GRIZZLY_LOG = "Grizzly";
+	/**
+	 *
+	 */
 	public static final String GRIZZLY_SSL_LOG = "Grizzly-SSL";
 	private String mLogInfo = GRIZZLY_LOG;
 
@@ -52,9 +58,9 @@ public class GrizzlyConnector extends BaseConnector {
 	 * not by the application.
 	 *
 	 * @param aEngine
-	 * @param aHttpRequestPacket
+	 * @param aRequest
+	 * @param socket
 	 * @param aProtocol
-	 * @param aClientSocket
 	 */
 	public GrizzlyConnector(WebSocketEngine aEngine, HttpRequestPacket aRequest,
 			String aProtocol, WebSocket socket) {
@@ -78,15 +84,15 @@ public class GrizzlyConnector extends BaseConnector {
 				mLog.error(ex.getMessage());
 			}
 		}
-		
+
 		// set default sub protocol if none passed
 		if (aProtocol == null) {
 			aProtocol = JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
 		}
 		lHeader.put(RequestHeader.WS_PROTOCOL, aProtocol);
-		
+
 		setSubprot(aProtocol);
-		
+
 		lHeader.put(RequestHeader.WS_PATH, aRequest.getRequestURI());
 
 		// iterate throught header params
@@ -97,16 +103,20 @@ public class GrizzlyConnector extends BaseConnector {
 				lHeader.put(lHeaderName, aRequest.getHeader(lHeaderName));
 			}
 		}
-		
+
 		// TODO: check with Alex what is exactly search string
 		lHeader.put(RequestHeader.WS_SEARCHSTRING, aRequest.getQueryString());
-		
+
 		setHeader(lHeader);
-		
+
 		setSSL(aRequest.isSecure());
 		mLogInfo = isSSL() ? GRIZZLY_SSL_LOG : GRIZZLY_LOG;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public boolean isRunning() {
 		return mRunning;
 	}
@@ -119,7 +129,7 @@ public class GrizzlyConnector extends BaseConnector {
 	@Override
 	public void startConnector() {
 		mRunning = true;
-		
+
 		int lPort = -1;
 		int lTimeout = -1;
 		try {
@@ -134,13 +144,13 @@ public class GrizzlyConnector extends BaseConnector {
 		} else {
 			lNodeStr = "";
 		}
-	
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Starting " + mLogInfo + " connector" + lNodeStr + " on port "
 					+ lPort + " with timeout "
 					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
 		}
-		
+
 		// call connectorStarted method of engine
 		WebSocketEngine lEngine = getEngine();
 		if (lEngine != null) {
@@ -153,7 +163,7 @@ public class GrizzlyConnector extends BaseConnector {
 		if (mConnection.isConnected()) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Stopping " + mLogInfo
-					+ " connector (" + aCloseReason.name() 
+						+ " connector (" + aCloseReason.name()
 						+ ") at port " + getRemotePort() + "...");
 			}
 
@@ -271,14 +281,26 @@ public class GrizzlyConnector extends BaseConnector {
 		return lAddr;
 	}
 
-	public HttpRequestPacket getmRequest() {
+	/**
+	 *
+	 * @return
+	 */
+	public HttpRequestPacket getRequest() {
 		return mRequest;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public WebSocket getConnection() {
 		return mConnection;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String toString() {
 		// TODO: weird results like... '0:0:0:0:0:0:0:1:61130'... on JDK 1.6u19

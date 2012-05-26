@@ -58,17 +58,31 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		mConnectors = new FastMap<WebSocket, GrizzlyConnector>().shared();
 	}
 
+	/**
+	 *
+	 * @param aHandshake
+	 * @throws HandshakeException
+	 */
 	@Override
 	protected void handshake(HandShake aHandshake) throws HandshakeException {
 		super.handshake(aHandshake);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public List<String> getSupportedExtensions() {
 		List<String> lExts = super.getSupportedExtensions();
 		return lExts;
 	}
 
+	/**
+	 *
+	 * @param aSubProtocol
+	 * @return
+	 */
 	@Override
 	public List<String> getSupportedProtocols(List<String> aSubProtocol) {
 		// List<String> lProts = super.getSupportedProtocols(aSubProtocol);
@@ -96,7 +110,7 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 
 		if (isApp) {
 			mRequest = aRequest;
-			
+
 			// Getting the protocol from the request
 			mProtocol = aRequest.getHeader("sec-websocket-protocol");
 			mCookies = new FastMap();
@@ -116,6 +130,10 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		return isApp;
 	}
 
+	/**
+	 *
+	 * @param aWebSocket
+	 */
 	@Override
 	public void onConnect(WebSocket aWebSocket) {
 		if (mLog.isDebugEnabled()) {
@@ -140,6 +158,9 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aWebSocket
+	 * @param aFrame
 	 */
 	@Override
 	public void onClose(WebSocket aWebSocket, DataFrame aFrame) {
@@ -156,6 +177,12 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		mConnectors.remove(aWebSocket);
 	}
 
+	/**
+	 *
+	 * @param aWebSocket
+	 * @param aFragment
+	 * @param aLast
+	 */
 	@Override
 	public void onFragment(WebSocket aWebSocket, String aFragment, boolean aLast) {
 		super.onFragment(aWebSocket, aFragment, aLast);
@@ -166,6 +193,12 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		}
 	}
 
+	/**
+	 *
+	 * @param aWebSocket
+	 * @param aFragment
+	 * @param aLast
+	 */
 	@Override
 	public void onFragment(WebSocket aWebSocket, byte[] aFragment, boolean aLast) {
 		super.onFragment(aWebSocket, aFragment, aLast);
@@ -176,6 +209,11 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		}
 	}
 
+	/**
+	 *
+	 * @param aWebSocket
+	 * @param aData
+	 */
 	@Override
 	public void onMessage(WebSocket aWebSocket, String aData) {
 		if (mLog.isDebugEnabled()) {
@@ -187,6 +225,11 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		}
 	}
 
+	/**
+	 *
+	 * @param aWebSocket
+	 * @param aBytes
+	 */
 	@Override
 	public void onMessage(WebSocket aWebSocket, byte[] aBytes) {
 		if (mLog.isDebugEnabled()) {
@@ -198,6 +241,11 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		}
 	}
 
+	/**
+	 *
+	 * @param aWebSocket
+	 * @param aBytes
+	 */
 	@Override
 	public void onPing(WebSocket aWebSocket, byte[] aBytes) {
 		super.onPing(aWebSocket, aBytes);
@@ -207,6 +255,11 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		}
 	}
 
+	/**
+	 *
+	 * @param aWebSocket
+	 * @param aBytes
+	 */
 	@Override
 	public void onPong(WebSocket aWebSocket, byte[] aBytes) {
 		super.onPong(aWebSocket, aBytes);

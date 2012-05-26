@@ -1,9 +1,19 @@
+//	---------------------------------------------------------------------------
+//	jWebSocket - Grizzly Servlet
+//	Copyright (c) 2012 Innotrade GmbH
+//	---------------------------------------------------------------------------
+//	This program is free software; you can redistribute it and/or modify it
+//	under the terms of the GNU Lesser General Public License as published by the
+//	Free Software Foundation; either version 3 of the License, or (at your
+//	option) any later version.
+//	This program is distributed in the hope that it will be useful, but WITHOUT
+//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//	more details.
+//	You should have received a copy of the GNU Lesser General Public License along
+//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.grizzly;
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,11 +27,14 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author updater
  */
-@WebServlet(name = "jWebSocketGrizzlyServlet", urlPatterns = {"/jWebSocketGrizzlyServlet"}, loadOnStartup=1)
+@WebServlet(name = "jWebSocketGrizzlyServlet", urlPatterns = {"/jWebSocketGrizzlyServlet"}, loadOnStartup = 1)
 public class jWebSocketGrizzlyServlet extends HttpServlet {
 
-	/** 
-	 * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+	/**
+	 * Processes requests for both HTTP
+	 * <code>GET</code> and
+	 * <code>POST</code> methods.
+	 *
 	 * @param request servlet request
 	 * @param response servlet response
 	 * @throws ServletException if a servlet-specific error occurs
@@ -34,21 +47,23 @@ public class jWebSocketGrizzlyServlet extends HttpServlet {
 		try {
 			out.println("<html>");
 			out.println("<head>");
-			out.println("<title>Servlet jWebSocketGrizzly Demos</title>");  
+			out.println("<title>Servlet jWebSocketGrizzly Demos</title>");
 			out.println("</head>");
 			out.println("<body>");
 			out.println("<h1>Welcome, this is a simple test of jWebSocket running both HTTP and WebSocket by the same port.</h1>");
-			
+
 			out.println("</body>");
 			out.println("</html>");
-		} finally {			
+		} finally {
 			out.close();
 		}
 	}
 
 	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-	/** 
-	 * Handles the HTTP <code>GET</code> method.
+	/**
+	 * Handles the HTTP
+	 * <code>GET</code> method.
+	 *
 	 * @param request servlet request
 	 * @param response servlet response
 	 * @throws ServletException if a servlet-specific error occurs
@@ -60,8 +75,10 @@ public class jWebSocketGrizzlyServlet extends HttpServlet {
 		processRequest(request, response);
 	}
 
-	/** 
-	 * Handles the HTTP <code>POST</code> method.
+	/**
+	 * Handles the HTTP
+	 * <code>POST</code> method.
+	 *
 	 * @param request servlet request
 	 * @param response servlet response
 	 * @throws ServletException if a servlet-specific error occurs
@@ -73,8 +90,9 @@ public class jWebSocketGrizzlyServlet extends HttpServlet {
 		processRequest(request, response);
 	}
 
-	/** 
+	/**
 	 * Returns a short description of the servlet.
+	 *
 	 * @return a String containing servlet description
 	 */
 	@Override
