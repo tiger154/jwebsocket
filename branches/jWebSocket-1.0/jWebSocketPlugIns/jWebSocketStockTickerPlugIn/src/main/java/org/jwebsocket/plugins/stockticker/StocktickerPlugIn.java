@@ -2,21 +2,20 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cu.uci.hab.stockticker.plugin;
+package org.jwebsocket.plugins.stockticker;
 
-import cu.uci.hab.stockticker.plugin.Implementation.User;
-import cu.uci.hab.stockticker.plugin.event.Buy;
-import cu.uci.hab.stockticker.plugin.event.Chart;
-import cu.uci.hab.stockticker.plugin.event.Combobox;
-import cu.uci.hab.stockticker.plugin.event.CreateUser;
-import cu.uci.hab.stockticker.plugin.event.Login;
-import cu.uci.hab.stockticker.plugin.event.GetTickets;
-import cu.uci.hab.stockticker.plugin.event.Logout;
-import cu.uci.hab.stockticker.plugin.event.ReadBuy;
-import cu.uci.hab.stockticker.plugin.event.Sell;
-import cu.uci.hab.stockticker.plugin.service.StocktickerService;
+import org.jwebsocket.plugins.stockticker.Implementation.User;
+import org.jwebsocket.plugins.stockticker.event.Buy;
+import org.jwebsocket.plugins.stockticker.event.Chart;
+import org.jwebsocket.plugins.stockticker.event.Combobox;
+import org.jwebsocket.plugins.stockticker.event.CreateUser;
+import org.jwebsocket.plugins.stockticker.event.Login;
+import org.jwebsocket.plugins.stockticker.event.GetTickets;
+import org.jwebsocket.plugins.stockticker.event.Logout;
+import org.jwebsocket.plugins.stockticker.event.ReadBuy;
+import org.jwebsocket.plugins.stockticker.event.Sell;
+import org.jwebsocket.plugins.stockticker.service.StocktickerService;
 import java.util.List;
-import java.util.logging.Level;
 import javolution.util.FastList;
 import org.jwebsocket.eventmodel.plugin.EventModelPlugIn;
 import org.jwebsocket.logging.Logging;
@@ -37,6 +36,7 @@ public class StocktickerPlugIn extends EventModelPlugIn {
 	private Thread mStocktickerThread;
 	private boolean mThreadStarted = false;
 	private List<WebSocketConnector> mClients = new FastList<WebSocketConnector>();
+
 
 	public StocktickerPlugIn() {
 		mService = new StocktickerService();

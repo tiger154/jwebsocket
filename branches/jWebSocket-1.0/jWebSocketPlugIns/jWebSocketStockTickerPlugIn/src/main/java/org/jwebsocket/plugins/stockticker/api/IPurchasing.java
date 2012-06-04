@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cu.uci.hab.stockticker.plugin.api;
+package org.jwebsocket.plugins.stockticker.api;
 
 /**
  *
