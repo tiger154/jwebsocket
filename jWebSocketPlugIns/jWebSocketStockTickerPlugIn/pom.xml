@@ -8,7 +8,7 @@
         <version>1.0</version>
         <relativePath>../..</relativePath>
     </parent>
-    <groupId>cu.uci.hab.stockticker</groupId>
+    <groupId>org.jwebsocket</groupId>
     <artifactId>jWebSocketStockTickerPlugIn</artifactId>
     <version>1.0</version>
     <name>jWebSocketStockTickerPlugIn</name>

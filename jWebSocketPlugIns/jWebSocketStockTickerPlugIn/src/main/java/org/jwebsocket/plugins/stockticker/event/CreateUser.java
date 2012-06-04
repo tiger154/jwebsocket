@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cu.uci.hab.stockticker.plugin.event;
+package org.jwebsocket.plugins.stockticker.event;
 
-import cu.uci.hab.stockticker.plugin.api.IUser;
+import org.jwebsocket.plugins.stockticker.api.IUser;
 import org.jwebsocket.eventmodel.annotation.ImportFromToken;
 import org.jwebsocket.eventmodel.event.C2SEvent;
 
