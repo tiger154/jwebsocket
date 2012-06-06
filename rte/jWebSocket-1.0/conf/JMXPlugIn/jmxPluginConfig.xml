@@ -70,18 +70,18 @@
    
 	<bean id="HttpSSLAdaptor" class="mx4j.tools.adaptor.http.HttpAdaptor">
 		<property name="processor" ref="XSLTProcessor"/>
-		<property name="socketFactory" ref="SSLHttpAdaptor"/>
+		<!--<property name="socketFactory" ref="SSLHttpAdaptor"/>-->
 		<property name="port" value="8020"/>
 		<property name="host" value="0.0.0.0"/>
 		<property name="authenticationMethod" value="basic"/>
 	</bean>
    
-	<bean id="SSLHttpAdaptor" class="mx4j.tools.adaptor.ssl.SSLAdaptorServerSocketFactory">
-	<!--<bean id="SSLHttpAdaptor" class="org.jwebsocket.plugins.jmx.util.SSLAdaptorServerSocketFactoryWrapper">-->
-		<!-- <property name="keyStoreName" value="${JWEBSOCKET_HOME}conf/jWebSocket.ks"/> -->
-		<property name="keyStoreName" value="file://c:/svn/jWebSocketDev/rte/jWebSocket-1.0/conf/jWebSocket.ks"/>
+	<!--<bean id="SSLHttpAdaptor" class="mx4j.tools.adaptor.ssl.SSLAdaptorServerSocketFactory">
+		<property name="keyStoreName">
+			<value>${JWEBSOCKET_HOME}conf/jWebSocket.ks</value>
+		</property>
 		<property name="keyStorePassword" value="jWebSocket"/>
-	</bean>
+	</bean>-->
    
 	<bean id="jmxPluginAuthenticator" class="org.jwebsocket.plugins.jmx.util.JMXPlugInAuthenticator"/>
    
