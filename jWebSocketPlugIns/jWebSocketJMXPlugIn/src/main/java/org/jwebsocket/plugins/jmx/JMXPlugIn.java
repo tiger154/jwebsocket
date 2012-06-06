@@ -22,6 +22,7 @@ package org.jwebsocket.plugins.jmx;
 import javax.management.MBeanServer;
 import javax.management.remote.rmi.RMIConnectorServer;
 import mx4j.tools.adaptor.http.HttpAdaptor;
+import mx4j.tools.adaptor.ssl.SSLAdaptorServerSocketFactory;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketEngine;
@@ -83,6 +84,14 @@ public class JMXPlugIn extends TokenPlugIn {
 
 		lFactory.getBean("exporter");
 		
+		
+		SSLAdaptorServerSocketFactory lSSLSocket =  new SSLAdaptorServerSocketFactory();
+		lSSLSocket.setKeyStoreName(JWebSocketConfig.getConfigFolder("jWebSocket.ks"));
+		String lKeyPass = getServer().getEngines().get("tcp0").getConfiguration().getKeyStorePassword();
+		lSSLSocket.setKeyStorePassword(lKeyPass);
+		mHttpSSLAdaptor.setSocketFactory(lSSLSocket);
+		
+
 		try {
 			mRmiConnector = (RMIConnectorServer) lFactory.getBean("rmiConnector");
 			mRmiSSLConnector = (RMIConnectorServer) lFactory.getBean("rmiSSLConnector");
@@ -92,8 +101,8 @@ public class JMXPlugIn extends TokenPlugIn {
 			mRmiConnector.start();
 			mRmiSSLConnector.start();
 			
-			mHttpAdaptor.addAuthorization("admin", "jmxadmin");
-			mHttpSSLAdaptor.addAuthorization("admin", "jmxadmin");
+			mHttpAdaptor.addAuthorization(getString("http_user"), getString("http_password"));
+			mHttpSSLAdaptor.addAuthorization(getString("http_user"), getString("http_password"));
 			
 			mHttpAdaptor.start();
 			mHttpSSLAdaptor.start();
