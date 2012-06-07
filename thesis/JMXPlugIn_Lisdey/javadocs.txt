@@ -1,2 +1,0 @@
-The JMXPlugIn JavaDocs is located here:
-https://jwsdev.org:9443/svn/jWebSocket/branches/jWebSocket-1.0/javadocs/jWebSocketJMXPlugIn/
