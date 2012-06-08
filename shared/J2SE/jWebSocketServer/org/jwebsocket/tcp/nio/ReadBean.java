@@ -36,4 +36,13 @@ public class ReadBean {
 	public byte[] getData() {
 		return mData;
 	}
+
+	/**
+	 * Utility setter for SSL transformation
+	 *
+	 * @param aData
+	 */
+	public void setData(byte[] aData) {
+		mData = aData;
+	}
 }

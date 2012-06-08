@@ -106,6 +106,13 @@ function runEventsSuite() {
 			} else {
 				alert( "You are not connected to the server!" );
 			}
+		},
+		OnTimeout: function(){
+			if ( undefined != dialog ) {
+				dialog( "Timeout openning connection!", "jWebSocket Message", true, null, null, "alert");
+			} else {
+				alert( "Timeout openning connection!" );
+			}
 		}
 	});
 }

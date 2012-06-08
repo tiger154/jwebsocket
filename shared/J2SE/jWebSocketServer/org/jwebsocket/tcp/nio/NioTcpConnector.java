@@ -18,6 +18,7 @@ package org.jwebsocket.tcp.nio;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import javax.net.ssl.SSLEngine;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
@@ -35,8 +36,10 @@ public class NioTcpConnector extends BaseConnector {
 	private static Logger mLog = Logging.getLogger();
 	private InetAddress mRemoteAddress;
 	private int mRemotePort;
-	private boolean mIsAfterHandshake;
+	private boolean mIsAfterWSHandshake;
 	private int mWorkerId = -1;
+	private boolean mIsAfterSSLHandshake;
+	private SSLEngine mSSLEngine;
 
 	public NioTcpConnector(NioTcpEngine aEngine, InetAddress aRemoteAddress,
 			int aRemotePort) {
@@ -44,8 +47,16 @@ public class NioTcpConnector extends BaseConnector {
 
 		this.mRemoteAddress = aRemoteAddress;
 		this.mRemotePort = aRemotePort;
-		mIsAfterHandshake = false;
+		mIsAfterWSHandshake = false;
 		mWorkerId = -1;
+	}
+
+	public SSLEngine getSSLEngine() {
+		return mSSLEngine;
+	}
+
+	public void setSSLEngine(SSLEngine aSSLEngine) {
+		this.mSSLEngine = aSSLEngine;
 	}
 
 	@Override
@@ -90,12 +101,20 @@ public class NioTcpConnector extends BaseConnector {
 		return mRemotePort;
 	}
 
-	public void handshakeValidated() {
-		mIsAfterHandshake = true;
+	public void wsHandshakeValidated() {
+		mIsAfterWSHandshake = true;
 	}
 
-	public boolean isAfterHandshake() {
-		return mIsAfterHandshake;
+	public boolean isAfterWSHandshake() {
+		return mIsAfterWSHandshake;
+	}
+
+	public boolean isAfterSSLHandshake() {
+		return mIsAfterSSLHandshake;
+	}
+
+	public void sslHandshakeValidated() {
+		mIsAfterSSLHandshake = true;
 	}
 
 	public void flushPacket(WebSocketPacket aPacket) {

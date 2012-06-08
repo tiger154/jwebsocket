@@ -110,6 +110,10 @@ public class DataFuture implements IOFuture {
 		return mData;
 	}
 
+	public void setData(ByteBuffer aData) {
+		mData = aData;
+	}
+
 	private void notifyListeners() {
 		try {
 			for (IOFutureListener listener : mListeners) {
