@@ -50,7 +50,7 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	private Set<String> mUsers = new FastSet();
 	private Set<String> mIpAddresses = new FastSet();
 	private Validator mValidator;
-	private Integer mTimeout = 1000;
+	private Integer mTimeout = 3000;
 
 	public C2SEventDefinition(String mId, String mNs) {
 		this.mId = mId;

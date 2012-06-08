@@ -15,8 +15,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp.nio;
 
-import java.io.IOException;
-
 /**
  * @author jang
  */
@@ -25,6 +23,4 @@ interface IDelayedPacketNotifier {
 	ReadBean getBean();
 
 	NioTcpConnector getConnector();
-
-	void handleDelayedPacket() throws IOException;
 }

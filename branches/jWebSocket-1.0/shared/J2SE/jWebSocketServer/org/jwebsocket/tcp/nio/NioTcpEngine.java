@@ -18,12 +18,16 @@ package org.jwebsocket.tcp.nio;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import java.nio.channels.spi.SelectorProvider;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngineResult;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -52,27 +56,27 @@ import org.jwebsocket.util.Tools;
  *
  * @author jang
  * @author kyberneees (bug fixes, session identifier cookie support and
- * performance inprovements)
+ * performance improvements)
  */
 public class NioTcpEngine extends BaseEngine {
 
 	private static Logger mLog = Logging.getLogger();
-	private static final String NUM_WORKERS = "workers";
+	private static final String NUM_WORKERS_CONFIG_KEY = "workers";
 	private static final int DEFAULT_NUM_WORKERS = 100;
-	private static final int READ_QUEUE_MAX_SIZE = Integer.MAX_VALUE;
-	private Selector mSelector;
-	private ServerSocketChannel mServerSocketChannel;
+	private Selector mPlainSelector;
+	private Selector mSSLSelector;
+	private ServerSocketChannel mPlainServer;
+	private ServerSocketChannel mSSLServer;
 	private boolean mIsRunning;
 	private Map<String, Queue<DataFuture>> mPendingWrites; // <connector id, data queue>
-	private BlockingQueue<ReadBean> mPendingReads;
-	//worker threads
 	private ExecutorService mExecutorService;
-	//convenience maps
 	private Map<String, SocketChannel> mConnectorToChannelMap; // <connector id, socket channel>
 	private Map<SocketChannel, String> mChannelToConnectorMap; // <socket channel, connector id>
 	private ByteBuffer mReadBuffer;
-	private Thread mSelectorThread;
-	private DelayedPacketsQueue mDelayedPacketsQueue;
+	private Thread mPlainSelectorThread;
+	private Thread mSSLSelectorThread;
+	private final DelayedPacketsQueue mDelayedPacketsQueue = new DelayedPacketsQueue();
+	private SSLContext mSSLContext;
 
 	public NioTcpEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -81,26 +85,41 @@ public class NioTcpEngine extends BaseEngine {
 	@Override
 	public void startEngine() throws WebSocketException {
 		try {
-			mDelayedPacketsQueue = new DelayedPacketsQueue();
 			mPendingWrites = new ConcurrentHashMap<String, Queue<DataFuture>>();
-			mPendingReads = new LinkedBlockingQueue<ReadBean>(READ_QUEUE_MAX_SIZE);
 			mConnectorToChannelMap = new ConcurrentHashMap<String, SocketChannel>();
 			mChannelToConnectorMap = new ConcurrentHashMap<SocketChannel, String>();
 			mReadBuffer = ByteBuffer.allocate(getConfiguration().getMaxFramesize());
-			mSelector = Selector.open();
-			mServerSocketChannel = ServerSocketChannel.open();
-			mServerSocketChannel.configureBlocking(false);
-			ServerSocket socket = mServerSocketChannel.socket();
-			socket.bind(new InetSocketAddress(getConfiguration().getPort()));
-			mServerSocketChannel.register(mSelector, SelectionKey.OP_ACCEPT);
+			mPlainSelector = SelectorProvider.provider().openSelector();
+//			mSSLSelector = SelectorProvider.provider().openSelector();
+
+			mPlainServer = Util.createServerSocketChannel(getConfiguration().getPort());
+			mPlainServer.register(mPlainSelector, SelectionKey.OP_ACCEPT);
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Non-SSL server running at port: " + getConfiguration().getPort() + "...");
+			}
+
+			// creating the SSL server only if required
+//			if (getConfiguration().getSSLPort() > 0) {
+//				mSSLContext = Util.createSSLContext(getConfiguration().getKeyStore(),
+//						getConfiguration().getKeyStorePassword());
+//				if (mLog.isDebugEnabled()) {
+//					mLog.debug("SSLContext created with key-store: " + getConfiguration().getKeyStore() + "...");
+//				}
+//				mSSLServer = Util.createServerSocketChannel(getConfiguration().getSSLPort());
+//				mSSLServer.register(mSSLSelector, SelectionKey.OP_ACCEPT);
+//				if (mLog.isDebugEnabled()) {
+//					mLog.debug("SSL server running at port: " + getConfiguration().getSSLPort() + "...");
+//				}
+//			}
+
 			mIsRunning = true;
 
 			// start worker threads
 			Integer lNumWorkers = DEFAULT_NUM_WORKERS;
-			if (getConfiguration().getSettings().containsKey(NUM_WORKERS)) {
+			if (getConfiguration().getSettings().containsKey(NUM_WORKERS_CONFIG_KEY)) {
 				lNumWorkers = Integer.parseInt(getConfiguration().
 						getSettings().
-						get(NUM_WORKERS).
+						get(NUM_WORKERS_CONFIG_KEY).
 						toString());
 			}
 			mExecutorService = Executors.newFixedThreadPool(lNumWorkers);
@@ -109,10 +128,20 @@ public class NioTcpEngine extends BaseEngine {
 				mExecutorService.submit(new ReadWorker(lIdx));
 			}
 
-			// start selector thread
-			mSelectorThread = new Thread(new SelectorThread());
-			mSelectorThread.start();
-		} catch (IOException e) {
+			// start plain selector thread
+			mPlainSelectorThread = new Thread(new SelectorThread(mPlainSelector));
+			mPlainSelectorThread.start();
+
+//			if (getConfiguration().getSSLPort() > 0) {
+//				// start SSL selector thread
+//				mSSLSelectorThread = new Thread(new SelectorThread(mSSLSelector));
+//				mSSLSelectorThread.start();
+//			}
+
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("NioTcpEngine started successfully with '" + lNumWorkers + "' workers!");
+			}
+		} catch (Exception e) {
 			throw new WebSocketException(e.getMessage(), e);
 		}
 	}
@@ -120,16 +149,14 @@ public class NioTcpEngine extends BaseEngine {
 	@Override
 	public void stopEngine(CloseReason aCloseReason) throws WebSocketException {
 		super.stopEngine(aCloseReason);
-		if (mSelector != null) {
+		if (mPlainSelector != null) {
 			try {
 				mIsRunning = false;
-				mSelectorThread.join();
-				mSelector.wakeup();
-				mServerSocketChannel.close();
-				mSelector.close();
+				mPlainSelectorThread.join();
+				mPlainSelector.wakeup();
+				mPlainServer.close();
+				mPlainSelector.close();
 				mPendingWrites.clear();
-				mPendingReads.clear();
-				mDelayedPacketsQueue.clear();
 				mExecutorService.shutdown();
 				mLog.info("NIO engine stopped.");
 			} catch (InterruptedException lEx) {
@@ -141,40 +168,60 @@ public class NioTcpEngine extends BaseEngine {
 	}
 
 	public void send(String aConnectorId, DataFuture aFuture) {
-		if (mPendingWrites.containsKey(aConnectorId)) {
-			mPendingWrites.get(aConnectorId).add(aFuture);
-			// Wake up waiting selector.
-			mSelector.wakeup();
-		} else {
-			aFuture.setFailure(new Exception("Discarding packet for unattached socket channel..."));
+		try {
+			if (mPendingWrites.containsKey(aConnectorId)) {
+				NioTcpConnector lConnector = (NioTcpConnector) getConnectors().get(aConnectorId);
+				mPendingWrites.get(aConnectorId).add(aFuture);
+				if (lConnector.isSSL()) {
+					aFuture.setData(Util.wrap(
+							aFuture.getData(),
+							lConnector.getSSLEngine(),
+							getConfiguration().getMaxFramesize()));
+					mSSLSelector.wakeup();
+				} else {
+					mPlainSelector.wakeup();
+				}
+			} else {
+				aFuture.setFailure(new Exception("Discarding packet for unattached socket channel..."));
+			}
+		} catch (Exception lEx) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Data could not be sent!", lEx);
+			}
+			aFuture.setFailure(lEx);
 		}
 	}
 
 	@Override
-	public void connectorStopped(WebSocketConnector aConn, CloseReason aCloseReason) {
-		mPendingWrites.remove(aConn.getId());
-
-		if (mConnectorToChannelMap.containsKey(aConn.getId())) {
-			SocketChannel lChannel = mConnectorToChannelMap.remove(aConn.getId());
+	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+		if (mConnectorToChannelMap.containsKey(aConnector.getId())) {
+			mPendingWrites.remove(aConnector.getId());
+			SocketChannel lChannel = mConnectorToChannelMap.remove(aConnector.getId());
 			try {
-				lChannel.socket().close();
 				lChannel.close();
+				lChannel.socket().close();
 			} catch (Exception lEx) {
-				mLog.error(lEx.getClass().getSimpleName() + " (connectorStopped): " + lEx.getMessage());
+				//Ignore it. Channel has been closed previously!
 			}
 			mChannelToConnectorMap.remove(lChannel);
 		}
 
-		if (((NioTcpConnector) aConn).isAfterHandshake()) {
-			super.connectorStopped(aConn, aCloseReason);
+		if (((NioTcpConnector) aConnector).isAfterWSHandshake()) {
+			super.connectorStopped(aConnector, aCloseReason);
 		}
 	}
 
 	/**
-	 * Socket operations are permitted only via this thread. Strange behaviour
+	 * Socket operations are permitted only via this thread. Strange behavior
 	 * will occur if anything is done to the socket outside of this thread.
 	 */
 	private class SelectorThread implements Runnable {
+
+		Selector mSelector;
+
+		public SelectorThread(Selector aSelector) {
+			this.mSelector = aSelector;
+		}
 
 		@Override
 		public void run() {
@@ -183,91 +230,86 @@ public class NioTcpEngine extends BaseEngine {
 			engineStarted();
 
 			while (mIsRunning && mSelector.isOpen()) {
+				boolean lWrite = false;
 				for (Iterator<String> lIterator = mPendingWrites.keySet().iterator(); lIterator.hasNext();) {
 					String lConnectorId = lIterator.next();
 					try {
 						SelectionKey lKey = mConnectorToChannelMap.get(lConnectorId).keyFor(mSelector);
-						if (!mPendingWrites.get(lConnectorId).isEmpty() && lKey.isValid()) {
+						if (null != lKey && !mPendingWrites.get(lConnectorId).isEmpty()) {
 							lKey.interestOps(SelectionKey.OP_WRITE);
+							lWrite = true;
 						}
-					} catch (Exception ex) {
-						// ignore, key was cancelled an instant after isValid() returned true,
-						// most probably the client disconnected just at the wrong moment
+					} catch (Exception lEx) {
+						// just ignore it. client disconnect too fast
 					}
+				}
+				if (lWrite) {
+					mSelector.wakeup();
 				}
 
 				try {
-					// Waits for 100ms for any data from connected clients or for new client connections.
+					// Waits for 500ms for any data from connected clients or for new client connections.
 					// We could have indefinite wait (selector.wait()), but it is good to check for 'running' variable
 					// fairly often.
-					if (mSelector.select(100) > 0 && mIsRunning) {
+					if (mSelector.select(500) > 0 && mIsRunning) {
 						Iterator<SelectionKey> lKeys = mSelector.selectedKeys().iterator();
 						while (lKeys.hasNext()) {
 							SelectionKey lKey = lKeys.next();
 							lKeys.remove();
 							try {
 								if (lKey.isAcceptable()) {
-									//accept new client connection
-									accept(lKey);
-								} else {
-									if (lKey.isReadable()) {
-										read(lKey);
-									}
-									if (lKey.isValid() && lKey.isWritable()) {
-										write(lKey);
-									}
+									accept(lKey, mSelector);
+								} else if (lKey.isReadable()) {
+									read(lKey);
+								} else if (lKey.isValid() && lKey.isWritable()) {
+									write(lKey, mSelector);
 								}
 							} catch (CancelledKeyException lCKEx) {
 								// ignore, key was cancelled an instant after isValid() returned true,
 								// most probably the client disconnected just at the wrong moment
 							}
 						}
-					} else {
-						// nothing happened, continue looping ...
-						mLog.trace("No data on listen port in 500ms timeout ...");
 					}
 				} catch (Exception lEx) {
 					// something happened during socket operation (select, read or write), just log it
 					mLog.error("Error during socket operation", lEx);
 				}
 			}
+
 			engineStopped();
 		}
 	}
 
-	// this must be called only from selector thread
-	private void write(SelectionKey aKey) throws IOException {
+	private void write(SelectionKey aKey, Selector aSelector) throws IOException {
 		SocketChannel lSocketChannel = (SocketChannel) aKey.channel();
 		Queue<DataFuture> lQueue = mPendingWrites.get(mChannelToConnectorMap.get(lSocketChannel));
-
-		while (!lQueue.isEmpty()) {
-			DataFuture future = lQueue.poll();
+		if (!lQueue.isEmpty()) {
+			DataFuture future = lQueue.element();
 			try {
 				ByteBuffer lData = future.getData();
 				lSocketChannel.write(lData);
 				if (lData.remaining() > 0) {
 					// socket's buffer is full, stop writing for now and leave the remaining
 					// data in queue for another round of writing
-					break;
+					return;
+				} else {
+					lQueue.remove();
+					future.setSuccess();
 				}
 			} catch (IOException lIOEx) {
 				future.setFailure(lIOEx);
 				// don't throw exception here
 				// pending close packets are maybe in reading queue
 				// some connectors could be not stopped yet
-				//throw lIOEx;
 			}
-
-			future.setSuccess();
-			// remove the head element of the queue
-			lQueue.poll();
 		}
-
 		aKey.interestOps(SelectionKey.OP_READ);
+		if (!lQueue.isEmpty()) {
+			aSelector.wakeup();
+		}
 	}
 
-	// this must be called only from selector thread
-	private void accept(SelectionKey aKey) throws IOException {
+	private void accept(SelectionKey aKey, Selector aSelector) throws IOException {
 		try {
 			if (getConnectors().size() == getConfiguration().getMaxConnections()
 					&& getConfiguration().getOnMaxConnectionStrategy().equals("close")) {
@@ -278,23 +320,34 @@ public class NioTcpEngine extends BaseEngine {
 			} else {
 				SocketChannel lSocketChannel = ((ServerSocketChannel) aKey.channel()).accept();
 				lSocketChannel.configureBlocking(false);
-				lSocketChannel.register(mSelector, SelectionKey.OP_READ);
-				WebSocketConnector lConnector = new NioTcpConnector(
+				lSocketChannel.register(aSelector, SelectionKey.OP_READ);
+				int lSocketPort = lSocketChannel.socket().getPort();
+				int lServerPort = lSocketChannel.socket().getLocalPort();
+				NioTcpConnector lConnector = new NioTcpConnector(
 						this, lSocketChannel.socket().getInetAddress(),
-						lSocketChannel.socket().getPort());
+						lSocketPort);
+				// proceed with SSL connector
+				if (lServerPort == getConfiguration().getSSLPort()) {
+					lConnector.setSSL(true);
+					lConnector.setSSLEngine(mSSLContext.createSSLEngine());
+					lConnector.getSSLEngine().setUseClientMode(false);
+					lConnector.getSSLEngine().beginHandshake();
+				}
 				getConnectors().put(lConnector.getId(), lConnector);
 				mPendingWrites.put(lConnector.getId(), new ConcurrentLinkedQueue<DataFuture>());
 				mConnectorToChannelMap.put(lConnector.getId(), lSocketChannel);
 				mChannelToConnectorMap.put(lSocketChannel, lConnector.getId());
-				mLog.info("NIO client started - remote ip: " + lConnector.getRemoteHost());
+
+				mLog.info("NIO " + ((lConnector.isSSL()) ? "(SSL)" : "(plain)")
+						+ "client started. Address: " + lConnector.getRemoteHost()
+						+ "@" + lConnector.getRemotePort());
 			}
 		} catch (IOException e) {
-			mLog.warn("Could not start new client connection");
+			mLog.warn("Could not start new client connection!");
 			throw e;
 		}
 	}
 
-	// this must be called only from selector thread
 	private void read(SelectionKey aKey) throws IOException {
 		SocketChannel lSocketChannel = (SocketChannel) aKey.channel();
 		mReadBuffer.clear();
@@ -307,23 +360,27 @@ public class NioTcpEngine extends BaseEngine {
 			clientDisconnect(aKey);
 			return;
 		}
-
 		if (lNumRead == -1) {
 			// read channel closed, connection has ended
 			clientDisconnect(aKey);
 			return;
 		}
-
 		if (lNumRead > 0 && mChannelToConnectorMap.containsKey(lSocketChannel)) {
 			String lConnectorId = mChannelToConnectorMap.get(lSocketChannel);
-			ReadBean lBean = new ReadBean(lConnectorId, Arrays.copyOf(mReadBuffer.array(), lNumRead));
-			boolean lAccepted = mPendingReads.offer(lBean);
-			if (!lAccepted) {
-				// Read queue is full, discard the packet.
-				// This may happen under continuous heavy load (plugins cannot process packets in time) or
-				// if all worker threads are locked up (perhaps a rogue plugin is blocking packet processing).
-				mLog.warn("Engine read queue is full, discarding incoming packet");
-			}
+			final ReadBean lBean = new ReadBean(lConnectorId, Arrays.copyOf(mReadBuffer.array(), lNumRead));
+			final NioTcpConnector lConnector = (NioTcpConnector) getConnectors().get(lBean.getConnectorId());
+			mDelayedPacketsQueue.addDelayedPacket(new IDelayedPacketNotifier() {
+
+				@Override
+				public NioTcpConnector getConnector() {
+					return lConnector;
+				}
+
+				@Override
+				public ReadBean getBean() {
+					return lBean;
+				}
+			});
 		}
 	}
 
@@ -333,15 +390,24 @@ public class NioTcpEngine extends BaseEngine {
 
 	private void clientDisconnect(SelectionKey aKey, CloseReason aReason) throws IOException {
 		SocketChannel lChannel = (SocketChannel) aKey.channel();
-		aKey.cancel();
-		aKey.channel().close();
 		if (mChannelToConnectorMap.containsKey(lChannel)) {
-			String lId = mChannelToConnectorMap.remove(lChannel);
-			if (lId != null) {
-				mConnectorToChannelMap.remove(lId);
-
-				connectorStopped(getConnectors().get(lId), aReason);
+			try {
+				aKey.cancel();
+				lChannel.socket().close();
+				lChannel.close();
+			} catch (Exception lEx) {
 			}
+
+			String lId = mChannelToConnectorMap.remove(lChannel);
+			mPendingWrites.remove(lId);
+			mConnectorToChannelMap.remove(lId);
+
+			WebSocketConnector lConnector = getConnectors().get(lId);
+			if (mDelayedPacketsQueue.getDelayedPackets().containsKey(lConnector)) {
+				mDelayedPacketsQueue.getDelayedPackets().remove(lConnector);
+			}
+
+			connectorStopped(lConnector, aReason);
 		}
 	}
 
@@ -352,7 +418,7 @@ public class NioTcpEngine extends BaseEngine {
 	private void clientDisconnect(WebSocketConnector aConnector,
 			CloseReason aReason) throws IOException {
 		if (mConnectorToChannelMap.containsKey(aConnector.getId())) {
-			clientDisconnect(mConnectorToChannelMap.get(aConnector.getId()).keyFor(mSelector), aReason);
+			clientDisconnect(mConnectorToChannelMap.get(aConnector.getId()).keyFor(mPlainSelector), aReason);
 		}
 	}
 
@@ -370,44 +436,30 @@ public class NioTcpEngine extends BaseEngine {
 			Thread.currentThread().setName("jWebSocket NIO-Engine ReadWorker " + this.mId);
 			while (mIsRunning) {
 				try {
-					IDelayedPacketNotifier mDelayedPacket;
-					mDelayedPacket = mDelayedPacketsQueue.pop();
-					if (null != mDelayedPacket) {
-						mDelayedPacket.handleDelayedPacket();
-						mDelayedPacket.getConnector().releaseWorker();
-						continue;
-					}
+					IDelayedPacketNotifier lDelayedPacket;
+					lDelayedPacket = mDelayedPacketsQueue.take();
 
-					final ReadBean lBean = mPendingReads.take();
-					if (lBean != null) {
-						if (getConnectors().containsKey(lBean.getConnectorId())) {
+					// processing SSL packets
+//					if (lDelayedPacket.getConnector().isSSL()) {
+//						boolean lContinue = false;
+//						try {
+//							lContinue = lDelayedPacket.getConnector().isAfterSSLHandshake();
+//							processSSLPacket(lDelayedPacket);
+//						} catch (Exception lEx) {
+//							if (mLog.isDebugEnabled()) {
+//								mLog.debug(Logging.getSimpleExceptionMessage(lEx, "processing SSL packet"));
+//							}
+//							clientDisconnect(lDelayedPacket.getConnector(), CloseReason.SERVER);
+//						}
+//
+//						if (!lContinue) {
+//							continue; // ssl handshaking
+//						}
+//					}
+					// executing read operation
+					doRead(lDelayedPacket.getConnector(), lDelayedPacket.getBean());
 
-							final NioTcpConnector lConnector = (NioTcpConnector) getConnectors().get(lBean.getConnectorId());
-							mDelayedPacketsQueue.addDelayedPacket(new IDelayedPacketNotifier() {
-
-								@Override
-								public void handleDelayedPacket() throws IOException {
-									doRead(getConnector(), getBean());
-								}
-
-								@Override
-								public NioTcpConnector getConnector() {
-									return lConnector;
-								}
-
-								@Override
-								public ReadBean getBean() {
-									return lBean;
-								}
-							});
-						} else {
-							// connector was already closed ...
-							mLog.debug("Discarding incoming packet, because there's no connector to process it");
-						}
-					}
-				} catch (InterruptedException e) {
-					// Ignore this exception -- waiting was interrupted, probably during engine stop ...
-					break;
+					lDelayedPacket.getConnector().releaseWorker();
 				} catch (Exception e) {
 					// uncaught exception during packet processing - kill the worker (todo: think about worker restart)
 					mLog.error("Unexpected exception during incoming packet processing", e);
@@ -416,14 +468,65 @@ public class NioTcpEngine extends BaseEngine {
 			}
 		}
 
+//		private void processSSLPacket(IDelayedPacketNotifier aDelayedPacket) throws Exception {
+//			NioTcpConnector lConnector = aDelayedPacket.getConnector();
+//			ByteBuffer lIn = ByteBuffer.wrap(aDelayedPacket.getBean().getData());
+//			ByteBuffer lOut;
+//
+//			switch (lConnector.getSSLEngine().getHandshakeStatus()) {
+//				case NOT_HANDSHAKING:
+//					lOut = Util.unwrap(
+//							lIn,
+//							lConnector.getSSLEngine(),
+//							getConfiguration().getMaxFramesize());
+//					aDelayedPacket.getBean().setData(lOut.array());
+//					break;
+//				case NEED_WRAP:
+//					lOut = Util.wrap(
+//							lIn,
+//							lConnector.getSSLEngine(),
+//							getConfiguration().getMaxFramesize());
+//					aDelayedPacket.getBean().setData(lOut.array());
+//
+//					mPendingWrites.get(lConnector.getId()).offer(new DataFuture(lConnector, lOut));
+//					mSSLSelector.wakeup();
+//
+//					// checking if the SSL handshake is complete
+//					if (lConnector.getSSLEngine().getHandshakeStatus().equals(SSLEngineResult.HandshakeStatus.FINISHED)) {
+//						lConnector.sslHandshakeValidated();
+//					} else {
+//						processSSLPacket(aDelayedPacket);
+//					}
+//
+//					break;
+//				case NEED_UNWRAP:
+//					Util.unwrap(
+//							lIn,
+//							lConnector.getSSLEngine(),
+//							getConfiguration().getMaxFramesize());
+//
+//					//aDelayedPacket.getBean().setData(lOut.array());
+//					processSSLPacket(aDelayedPacket);
+//					break;
+//				case NEED_TASK:
+//					Runnable lTask;
+//					while ((lTask = lConnector.getSSLEngine().getDelegatedTask()) != null) {
+//						lTask.run();
+//					}
+//					processSSLPacket(aDelayedPacket);
+//					break;
+//				case FINISHED:
+//					throw new IllegalStateException("SSL handshake FINISHED on connector: " + lConnector.generateUID());
+//			}
+//		}
+
 		private void doRead(NioTcpConnector aConnector, ReadBean aBean) throws IOException {
-			if (aConnector.isAfterHandshake()) {
+			if (aConnector.isAfterWSHandshake()) {
 				boolean lIsHixie = aConnector.isHixie();
 				if (lIsHixie) {
-					readHixie(aBean.getData(), aConnector);
+					readHixie(new ByteArrayInputStream(aBean.getData()), aConnector);
 				} else {
-					// assume that #02 and #03 are the same regarding packet processing
-					readHybi(aConnector.getVersion(), aBean.getData(), aConnector);
+					readHybi(aConnector.getVersion(), new ByteArrayInputStream(aBean.getData()), aConnector);
 				}
 			} else {
 				// checking if "max connnections" value has been reached
@@ -442,8 +545,6 @@ public class NioTcpEngine extends BaseEngine {
 						clientDisconnect(aConnector, CloseReason.SERVER_REDIRECT_CONNECTION);
 					}
 				} else {
-
-					// todo: consider ssl connections
 					Map lReqMap = WebSocketHandshake.parseC2SRequest(aBean.getData(), false);
 
 					EngineUtils.parseCookies(lReqMap);
@@ -471,7 +572,7 @@ public class NioTcpEngine extends BaseEngine {
 					if (lTimeout > 0) {
 						mConnectorToChannelMap.get(aBean.getConnectorId()).socket().setSoTimeout(lTimeout);
 					}
-					aConnector.handshakeValidated();
+					aConnector.wsHandshakeValidated();
 					aConnector.setHeader(lReqHeader);
 					aConnector.startConnector();
 				}
@@ -479,11 +580,11 @@ public class NioTcpEngine extends BaseEngine {
 		}
 	}
 
-	private void readHybi(int aVersion, byte[] aBuffer, NioTcpConnector aConnector) throws IOException {
+	private void readHybi(int aVersion, ByteArrayInputStream aIS, NioTcpConnector aConnector) throws IOException {
 		try {
 			WebSocketPacket lRawPacket;
-			//if (aConnector.isPacketBufferEmpty()) {
-			lRawPacket = WebSocketProtocolAbstraction.protocolToRawPacket(aVersion, new ByteArrayInputStream(aBuffer));
+			lRawPacket = WebSocketProtocolAbstraction.protocolToRawPacket(aVersion, aIS);
+
 			if (lRawPacket.getFrameType() == WebSocketFrameType.PING) {
 				// As per spec, server must respond to PING with PONG (maybe
 				// this should be handled higher up in the hierarchy?)
@@ -506,19 +607,23 @@ public class NioTcpEngine extends BaseEngine {
 				mLog.debug(getClass().getSimpleName() + ": Discarding unsupported ('"
 						+ lRawPacket.getFrameType().toString() + "')incoming packet... ");
 			}
+
+			//Reading pending packets in the buffer (for high concurrency scenarios)
+			if (aIS.available() > 0) {
+				readHybi(aVersion, aIS, aConnector);
+			}
 		} catch (Exception e) {
 			mLog.error("(other) " + e.getClass().getSimpleName() + ": " + e.getMessage(), e);
 			clientDisconnect(aConnector, CloseReason.SERVER);
 		}
 	}
 
-	private void readHixie(byte[] aBuffer, NioTcpConnector lConnector) throws IOException {
-		ByteArrayInputStream lIn = new ByteArrayInputStream(aBuffer);
+	private void readHixie(ByteArrayInputStream aIS, NioTcpConnector lConnector) throws IOException {
 		ByteArrayOutputStream lBuff = new ByteArrayOutputStream();
 
 		while (true) {
 			try {
-				int lByte = WebSocketProtocolAbstraction.read(lIn);
+				int lByte = WebSocketProtocolAbstraction.read(aIS);
 				// start of frame
 				if (lByte == 0x00) {
 					lBuff.reset();
@@ -527,6 +632,10 @@ public class NioTcpEngine extends BaseEngine {
 					RawPacket lPacket = new RawPacket(lBuff.toByteArray());
 					try {
 						lConnector.flushPacket(lPacket);
+						//Reading pending packets in the buffer (for high concurrency scenarios)
+						if (aIS.available() > 0) {
+							readHixie(aIS, lConnector);
+						}
 					} catch (Exception lEx) {
 						mLog.error(lEx.getClass().getSimpleName()
 								+ " in processPacket of connector "

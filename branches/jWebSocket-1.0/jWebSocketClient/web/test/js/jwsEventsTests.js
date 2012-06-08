@@ -16,6 +16,7 @@
 jws.tests.Events = {
 
 	NS: "jws.tests.events", 
+	authenticated: false,
 
 	// this spec tests the login operation of the test application
 	testLogon: function() {
@@ -41,7 +42,7 @@ jws.tests.Events = {
 					return( lResponse != null );
 				},
 				lSpec,
-				3000
+				5000
 				);
 
 			runs( function() {
@@ -49,9 +50,7 @@ jws.tests.Events = {
 				expect( lResponse.username ).toEqual( lUsername );
 				expect( lResponse.uuid ).toEqual( lUsername );
 				expect( lResponse.roles instanceof Array ).toEqual( true );
-				jws.user.principal = lResponse.username;
-				jws.user.uuid = lResponse.uuid;
-				jws.user.roles = lResponse.roles;
+				jws.tests.Events.authenticated = true;
 			});
 		});
 	},
@@ -65,7 +64,7 @@ jws.tests.Events = {
 			var lResponse = null;
 			
 			waitsFor(function(){
-				return jws.user.isAuthenticated();
+				return jws.tests.Events.authenticated;
 			});
 			
 			auth.logoff({
@@ -77,12 +76,12 @@ jws.tests.Events = {
 			waitsFor(
 				function() {
 					return( lResponse != null );
-				}, lSpec, 3000
+				}, lSpec, 5000
 				);
 
 			runs( function() {
 				expect( lResponse.code ).toEqual( 0 );
-				jws.user.clear();
+				jws.tests.Events.authenticated = false;
 			});
 		});
 	},
@@ -104,7 +103,7 @@ jws.tests.Events = {
 			waitsFor(
 				function() {
 					return( lResponse != null );
-				}, lSpec, 3000
+				}, lSpec, 5000
 				);
 
 			runs( function() {
@@ -139,7 +138,7 @@ jws.tests.Events = {
 			waitsFor(
 				function() {
 					return lCalled;
-				}, lSpec, 3000
+				}, lSpec, 5000
 				);
 
 			runs( function() {

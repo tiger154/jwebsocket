@@ -15,9 +15,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp.nio;
 
-import java.util.Collection;
 import java.util.Iterator;
-import javolution.util.FastSet;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+import javolution.util.FastMap;
 
 /**
  *
@@ -25,49 +27,46 @@ import javolution.util.FastSet;
  */
 public class DelayedPacketsQueue {
 
-	private Collection<IDelayedPacketNotifier> mDelayedPackets = new FastSet().shared();
+	private final Map<NioTcpConnector, Queue<IDelayedPacketNotifier>> mDelayedPackets = new FastMap<NioTcpConnector, Queue<IDelayedPacketNotifier>>().shared();
 
 	/**
-	 * Enqueue a delayed packets to be processed by the workers when the
-	 * connector be ready
+	 * Enqueue a delayed packets to be processed by the workers
 	 *
 	 * @param aDelayedPacket
 	 */
 	public void addDelayedPacket(IDelayedPacketNotifier aDelayedPacket) {
-		mDelayedPackets.add(aDelayedPacket);
+		if (!mDelayedPackets.containsKey(aDelayedPacket.getConnector())) {
+			mDelayedPackets.put(aDelayedPacket.getConnector(), new LinkedBlockingQueue<IDelayedPacketNotifier>());
+		}
+		mDelayedPackets.get(aDelayedPacket.getConnector()).offer(aDelayedPacket);
 	}
 
 	/**
 	 *
 	 * @return The top available delayed packet to be processed by the workers
 	 */
-	public synchronized IDelayedPacketNotifier pop() {
-		IDelayedPacketNotifier lResult = null;
+	public synchronized IDelayedPacketNotifier take() throws InterruptedException {
+		while (true) {
+			Iterator<NioTcpConnector> lKeys = mDelayedPackets.keySet().iterator();
+			while (lKeys.hasNext()) {
+				NioTcpConnector lConnector = lKeys.next();
+				if (lConnector.getWorkerId() == -1 && !mDelayedPackets.get(lConnector).isEmpty()) {
+					try {
+						IDelayedPacketNotifier lPacket = mDelayedPackets.get(lConnector).remove();
+						lConnector.setWorkerId(Thread.currentThread().hashCode());
 
-		if (mDelayedPackets.isEmpty()) {
-			return lResult;
-		}
-
-		for (Iterator<IDelayedPacketNotifier> it = mDelayedPackets.iterator(); it.hasNext();) {
-			IDelayedPacketNotifier lDelayedPacket = it.next();
-
-			if (lDelayedPacket.getConnector().getWorkerId() == -1) {
-				//Setting the connector worker thread inside this synchronized call
-				lDelayedPacket.getConnector().setWorkerId(Thread.currentThread().hashCode());
-				lResult = lDelayedPacket;
-				it.remove();
-
-				return lResult;
+						return lPacket;
+					} catch (Exception lEx) {
+						// ignore it. the connector was stopped in the middle
+					}
+				}
 			}
+			// CPU release
+			Thread.sleep(5);
 		}
-
-		return lResult;
 	}
 
-	/**
-	 * Clear the delayed packets queue
-	 */
-	public void clear() {
-		mDelayedPackets.clear();
+	public Map<NioTcpConnector, Queue<IDelayedPacketNotifier>> getDelayedPackets() {
+		return mDelayedPackets;
 	}
 }

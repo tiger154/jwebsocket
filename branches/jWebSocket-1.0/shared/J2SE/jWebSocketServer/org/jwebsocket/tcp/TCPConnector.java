@@ -536,6 +536,10 @@ public class TCPConnector extends BaseConnector {
 						RawPacket lPacket = new RawPacket(lBuff.toByteArray());
 						try {
 							aEngine.processPacket(mConnector, lPacket);
+							//Reading pending packets in the buffer (for high concurrency scenarios)
+							if (mIn.available() > 0) {
+								processHixie(aEngine);
+							}
 						} catch (Exception lEx) {
 							mLog.error(lEx.getClass().getSimpleName()
 									+ " in processPacket of connector "
@@ -581,6 +585,10 @@ public class TCPConnector extends BaseConnector {
 							mLog.debug("Processing 'text' frame from " + lFrom + "...");
 						}
 						aEngine.processPacket(mConnector, lPacket);
+						//Reading pending packets in the buffer (for high concurrency scenarios)
+						if (mIn.available() > 0) {
+							processHybi(aVersion, aEngine);
+						}
 					} else if (WebSocketFrameType.PING.equals(lPacket.getFrameType())) {
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Processing 'ping' frame from " + lFrom + "...");
