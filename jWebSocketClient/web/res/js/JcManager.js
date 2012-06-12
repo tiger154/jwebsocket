@@ -1,8 +1,8 @@
 /***
 * This component handle the communication with the JavaCard controller applet ("JcControllerApplet")
 * 
-* @author: Marta Rodriguez Freire
-* @author: Rolando Santamaria Maso
+* 
+* 
 */
 var JcManager = {
 	//Store JcManager listeners
