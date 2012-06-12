@@ -15,7 +15,7 @@
 //	****************************************************************************
 
 /*
- * @author vbarzana
+ * 
  */
 $.widget("jws.auth",{
     
@@ -67,7 +67,6 @@ $.widget("jws.auth",{
 			OnSuccess: function(aResponseEvent){
 				log( "<font style='color:red'>User authenticated successfully.</font>" );
 				lWSC.fUsername = aResponseEvent.username;
-
 				setTimeout(function(){
 					jc.getUserInfo({
 						OnSuccess: function(aResponse){
@@ -77,10 +76,9 @@ $.widget("jws.auth",{
 							$(".secondname").attr("value", aResponse.secondname);
 							$(".address").text(aResponse.address);
 						}
+						
 					});
 				}, 50);
-				
-				
 			}
 		});
 	}

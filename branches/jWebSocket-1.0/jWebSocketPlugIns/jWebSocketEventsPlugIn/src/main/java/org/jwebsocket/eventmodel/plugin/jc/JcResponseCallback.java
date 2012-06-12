@@ -16,7 +16,6 @@
 package org.jwebsocket.eventmodel.plugin.jc;
 
 import javax.smartcardio.ResponseAPDU;
-import org.apache.commons.codec.binary.Base64;
 import org.jwebsocket.eventmodel.s2c.OnResponse;
 import org.jwebsocket.util.Tools;
 
