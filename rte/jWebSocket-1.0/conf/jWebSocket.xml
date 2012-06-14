@@ -92,6 +92,9 @@
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<!-- you optionally can add asterisks as wild cards -->
 			<domains>
+				<domain>*</domain>
+				<!-- limit allowed domains here -->
+				<!--
 				<domain>http*://jwebsocket.org</domain>
 				<domain>http*://jwebsocket.com</domain>
 				<domain>http*://*.jwebsocket.org</domain>
@@ -100,6 +103,7 @@
 				<domain>http*://10.21.*</domain>
 				<domain>http*://192.168.*</domain>
 				<domain>http*://localhost*</domain>
+				-->
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
@@ -137,6 +141,9 @@
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<!-- you optionally can add asterisks as wild cards -->
 			<domains>
+				<domain>*</domain>
+				<!-- limit allowed domains here -->
+				<!--
 				<domain>http*://jwebsocket.org</domain>
 				<domain>http*://jwebsocket.com</domain>
 				<domain>http*://*.jwebsocket.org</domain>
@@ -145,6 +152,7 @@
 				<domain>http*://10.21.*</domain>
 				<domain>http*://192.168.*</domain>
 				<domain>http*://localhost*</domain>
+				-->
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
@@ -202,6 +210,9 @@
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<!-- you optionally can add asterisks as wild cards -->
 			<domains>
+				<domain>*</domain>
+				<!-- limit allowed domains here -->
+				<!--
 				<domain>http*://jwebsocket.org</domain>
 				<domain>http*://jwebsocket.com</domain>
 				<domain>http*://*.jwebsocket.org</domain>
@@ -210,6 +221,7 @@
 				<domain>http*://10.21.*</domain>
 				<domain>http*://192.168.*</domain>
 				<domain>http*://localhost*</domain>
+				-->
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
@@ -270,6 +282,17 @@
 				 on the above mentioned port -->
 			<domains>
 				<domain>*</domain>
+				<!-- limit allowed domains here -->
+				<!--
+				<domain>http*://jwebsocket.org</domain>
+				<domain>http*://jwebsocket.com</domain>
+				<domain>http*://*.jwebsocket.org</domain>
+				<domain>http*://*.jwebsocket.com</domain>
+				<domain>http*://10.10.*</domain>
+				<domain>http*://10.21.*</domain>
+				<domain>http*://192.168.*</domain>
+				<domain>http*://localhost*</domain>
+				-->
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>60000</timeout>
@@ -315,6 +338,9 @@
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<!-- you optionally can add asterisks as wild cards -->
 			<domains>
+				<domain>*</domain>
+				<!-- limit allowed domains here -->
+				<!--
 				<domain>http*://jwebsocket.org</domain>
 				<domain>http*://jwebsocket.com</domain>
 				<domain>http*://*.jwebsocket.org</domain>
@@ -323,6 +349,7 @@
 				<domain>http*://10.21.*</domain>
 				<domain>http*://192.168.*</domain>
 				<domain>http*://localhost*</domain>
+				-->
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
@@ -371,6 +398,9 @@
 			<password>jWebSocket</password>
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<domains>
+				<domain>*</domain>
+				<!-- limit allowed domains here -->
+				<!--
 				<domain>http*://jwebsocket.org</domain>
 				<domain>http*://jwebsocket.com</domain>
 				<domain>http*://*.jwebsocket.org</domain>
@@ -379,6 +409,7 @@
 				<domain>http*://10.21.*</domain>
 				<domain>http*://192.168.*</domain>
 				<domain>http*://localhost*</domain>
+				-->
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
@@ -433,14 +464,18 @@
 			<sslport>9797</sslport>
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<domains>
+				<domain>*</domain>
+				<!-- limit allowed domains here -->
+				<!--
 				<domain>http*://jwebsocket.org</domain>
 				<domain>http*://jwebsocket.com</domain>
+				<domain>http*://*.jwebsocket.org</domain>
+				<domain>http*://*.jwebsocket.com</domain>
 				<domain>http*://10.10.*</domain>
 				<domain>http*://10.21.*</domain>
 				<domain>http*://192.168.*</domain>
-				<domain>http*://www.jwebsocket.org</domain>
-				<domain>http*://www.jwebsocket.com</domain>
 				<domain>http*://localhost*</domain>
+				-->
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
@@ -497,6 +532,17 @@
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<domains>
 				<domain>*</domain>
+				<!-- limit allowed domains here -->
+				<!--
+				<domain>http*://jwebsocket.org</domain>
+				<domain>http*://jwebsocket.com</domain>
+				<domain>http*://*.jwebsocket.org</domain>
+				<domain>http*://*.jwebsocket.com</domain>
+				<domain>http*://10.10.*</domain>
+				<domain>http*://10.21.*</domain>
+				<domain>http*://192.168.*</domain>
+				<domain>http*://localhost*</domain>
+				-->
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
