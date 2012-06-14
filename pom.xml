@@ -155,7 +155,15 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
+			<!-- we want to use servlet spec 3.1.1, currently by GlassFish, see below -->
+			<scope>provided</scope>
 		</dependency>	
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.servlet</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>

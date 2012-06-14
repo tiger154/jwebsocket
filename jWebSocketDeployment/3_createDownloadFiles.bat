@@ -24,6 +24,7 @@ set conf=%rte%conf\
 set libs=%rte%libs\
 set logs=%rte%logs\
 set cache=%rte%cache\
+set web=%rte%web\
 
 set depl=..\jWebSocketDeployment\jWebSocket\
 set down=..\..\..\downloads\jWebSocket-%ver%\
@@ -110,34 +111,15 @@ xcopy %bin%jWebSocketAdmin.sh %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAdmin_Ubuntu.sh %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAdmin.command %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAMQStockTicker.bat %tempdir%bin\ /s /i /y
-rem Others
-xcopy %libs%javax.servlet-3.1.1.jar %tempdir%libs\ /s /i /y
-rem Jasper reports
-xcopy %libs%log4j-1.2.16.jar %tempdir%libs\ /s /i /y
-xcopy %libs%javolution-5.5.1.jar %tempdir%libs\ /s /i /y
-xcopy %libs%netty-3.2.4.Final.jar %tempdir%libs\ /s /i /y
+
 xcopy %libs%mysql-connector-java-5.1.16.jar %tempdir%libs\ /s /i /y
-rem caching and persistance
-xcopy %libs%ehcache-core-2.4.4.jar %tempdir%libs\ /s /i /y
-xcopy %libs%memcached-2.5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%mongo-java-driver-2.7.3.jar %tempdir%libs\ /s /i /y
 xcopy %libs%kahadb-5.5.0.jar %tempdir%libs\ /s /i /y
-rem Tomcat support
-xcopy %libs%tomcat-embed-core-7.0.27.jar %tempdir%libs\ /s /i /y
-xcopy %libs%tomcat-embed-jasper-7.0.27.jar %tempdir%libs\ /s /i /y
-xcopy %libs%tomcat-embed-logging-juli-7.0.27.jar %tempdir%libs\ /s /i /y
-xcopy %libs%tomcat-embed-logging-log4j-7.0.27.jar %tempdir%libs\ /s /i /y
-rem Grizzly support
-xcopy %libs%grizzly-core-2.2.5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%grizzly-framework-2.2.5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%grizzly-websockets-2.2.5.jar %tempdir%libs\ /s /i /y
-xcopy %libs%grizzly-websockets-server-2.2.5.jar %tempdir%libs\ /s /i /y
-rem xcopy %libs%servlet-api-2.5-6.1.14.jar %tempdir%libs\ /s /i /y
-rem Jackson JSON support
-xcopy %libs%jcl-core-2.2.2.jar %tempdir%libs\ /s /i /y
 
 rem jWebSocket engines
 xcopy %libs%jWebSocketJettyEngine-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketGrizzlyEngine-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketTomcatEngine-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketCometEngine-%ver%.jar %tempdir%libs\ /s /i /y
 
 rem jWebSocket .jars
 xcopy %libs%jWebSocketCommon-%ver%.jar %tempdir%libs\ /s /i /y
@@ -217,6 +199,9 @@ xcopy %conf%XMPPPlugIn\*.xml %tempdir%conf\XMPPPlugIn\ /s /i /y
 
 rem log4j config files (from v1.0)
 xcopy %conf%log4j.xml %tempdir%conf\ /s /i /y
+
+rem web folder
+xcopy %web%index.htm %tempdir%web\ /s /i /y
 
 rem cache readme (from v1.0, will create cache folder at target)
 xcopy %cache%ReadMe_Cache.txt %tempdir%cache\ /s /i /y

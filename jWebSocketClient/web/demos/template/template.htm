@@ -27,7 +27,7 @@
 		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
 		
 		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
-		<script src="../../res/js/jWebSocketComet.js" type="text/javascript"></script>
+		<!-- <script src="../../res/js/jWebSocketComet.js" type="text/javascript"></script> -->
 
 		<script type="text/javascript" language="JavaScript" id="jsTemplate">
 
@@ -55,7 +55,7 @@
 			var lWSC = null;
 
 			function connect() {
-				var lURL = "http://localhost:8787/jWebSocket/jWebSocket"; // eURL.value;
+				var lURL = eURL.value;
 
 				log( "Connecting to " + lURL + " ..." );
 				if( lWSC.isConnected()) {

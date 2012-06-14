@@ -35,9 +35,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC0 (nightly build 20523)
+	//:const:*:VERSION:String:1.0 beta 9 (nightly build 20613)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC0 (nightly build 20523)",
+	VERSION: "1.0 beta 9 (nightly build 20613)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -1547,240 +1547,6 @@ jws.flashBridgeVer = "n/a";
 if( window.swfobject) {
 	var lInfo = swfobject.getFlashPlayerVersion();
 	jws.flashBridgeVer = lInfo.major + "." + lInfo.minor + "." + lInfo.release;
-}
-
-jws.XHR = {
-	//:i:en:AJAX constants
-
-	//:const:*:XHR_ASYNC
-	//:d:de:Asynchrone Kommunikation mit dem Server verwenden. Laufender Prozess wird fortgesetzt.
-	//:d:en:Use asynchronous communication with the server. The current process is continued.
-	ASYNC: true,
-	//:const:*:SYNC
-	//:d:de:Synchrone Kommunikation mit dem Server verwenden. Laufender Prozess wird geblockt.
-	//:d:en:Use synchronous communication with the server. The current process is blocked.
-	SYNC: false,
-	
-	METHOD_GET: "get",
-	METHOD_POST: "post",
-	METHOD_HEAD: "head",
-	
-	getXHRInstance: function() {
-		var lXHR = null;
-
-		//:i:de:Firefox, Opera, Safari etc. verf&uuml;gen &uuml;ber ein XMLHttpRequest Objekt
-		if ( window.XMLHttpRequest ) {
-			lXHR = new XMLHttpRequest();
-		//:i:de:f&uuml;r den Internet Explorer muss ein ActiveX Objekt instantiiert werden.
-		} else if( window.ActiveXObject ) {
-			/*
- var XMLHTTP_IDS = new Array('MSXML2.XMLHTTP.5.0',
-                                     'MSXML2.XMLHTTP.4.0',
-                                     'MSXML2.XMLHTTP.3.0',
-                                     'MSXML2.XMLHTTP',
-                                     'Microsoft.XMLHTTP' );
-          var success = false;
-          for (var i=0;i < XMLHTTP_IDS.length && !success; i++) {
-              try {
-                   xmlhttp = new ActiveXObject(XMLHTTP_IDS[i]);
-                      success = true;
-                } catch (e) {}
-          }
-          if (!success) {
-              throw new Error('Unable to create XMLHttpRequest.');
-          }
-			 */
-			try {
-				lXHR = new ActiveXObject( "Msxml2.XMLHTTP" );
-			} catch( e1 ) {
-				try{
-					lXHR = new ActiveXObject( "Microsoft.XMLHTTP" );
-				} catch( e2 ) {
-					//:todo:de:Exception handling implementieren falls kein AJAX Object geladen werden kann!
-					throw "f3.cfw.std.ex.xhr.NotAvail";
-				}
-			}
-		} else {
-			throw "f3.cfw.std.ex.xhr.NotAvail";
-		}
-		return lXHR;
-	},
-
-	isProtocolOk: function( aContext ) {
-		if( !aContext ) {
-			aContext = self;
-		}	
-		//:i:en:file protocol does not allow XHR requests.
-		return(
-			!(	aContext.location.protocol &&
-				aContext.location.protocol.toLowerCase() == "file:"
-				)
-			);
-	},
-	
-	//:i:de:Default AJAX handler, falls keine solchen von der Applikation bereit gestellt werden.
-	//:i:en:default AJAX handler if no handler are provided by application
-	mXHRSucClbk: function( aXHR, aArgs ) {
-		throw "f3.cfw.std.ex.xhr.NoSuccObs";
-	},
-
-	mXHRErrClbk: function( aXHR, aArgs ) {
-		throw "f3.cfw.std.ex.xhr.NoErrObs";
-	},
-
-	mXHRRespLsnr: function() {
-		//:i:de:M&ouml;glicherweise kommt eine Antwort nachdem ein Fenster beendet wurde!
-		var aOptions = arguments.callee.options;
-
-		if( f3.ajax.Request !== undefined /* && f3.ajax.Request.mXHRStChgObs */ ) {
-
-			if( aOptions.OnReadyStateChange ) {
-				aOptions.OnReadyStateChange( aOptions.XHR, aOptions );
-			}
-			switch( aOptions.XHR.readyState ) {
-				//:i:en:uninitialized
-				case 0:
-				//:i:en:loading
-				case 1:
-				//:i:en:loaded
-				case 2:
-				//:i:en:interactive
-				case 3:
-					break;
-				//:i:en:complete
-				case 4:
-					clearTimeout( aOptions.hTimeout );
-					if( aOptions.XHR.status == 200 ) {
-						// aOptions.OnSuccess( aOptions.XHR, aOptions );
-						f3.dom.Event.callObserver( aOptions.OnSuccess, aOptions.XHR, aOptions );
-					} else	{
-						// aOptions.OnError( aOptions.XHR, aOptions );
-						f3.dom.Event.callObserver( aOptions.OnError, aOptions.XHR, aOptions );
-					}	
-					aOptions.XHR = null;
-					aOptions = null;
-					arguments.callee.self = null;
-					arguments.callee.options = null;
-					// arguments.callee = null;
-					break;
-				default:
-					aOptions.OnError( aOptions.XHR, aOptions );
-					aOptions.XHR = null;
-					aOptions = null;
-					arguments.callee.self = null;
-					arguments.callee.options = null;
-					// arguments.callee = null;
-					break;
-			}
-		}
-	},
-
-	//	this.mXHRRespLsnr.options = aOptions;
-	//	this.mXHRRespLsnr.self = this;
-
-
-	//:m:*:request
-	//:d:de:Diese Methode f&uuml;hrt den eigentlichen XHR-Request aus.
-	//:a:de::aURL:String:Server URL zu einer Datei (Ressource) oder einem Servlet oder einem anderen Dienst.
-	//:a:de:aOptions:method:String:Entweder "post" (Daten&uuml;bermittlung im Post-Body) oder "get" (&uuml;bermittlung in der URL).
-	//:a:de:aOptions:asynchronous:Boolean:Bestimmt ob die Anfrage asynchron (non-blocking) oder synchron (blocking) durchgef&uuml;hrt werden soll.
-	//:a:de:aOptions:OnSuccess:Function:Callback der bei erfolgreicher Anfrage ausgef&uuml;hrt werden soll.
-	//:a:de:aOptions:OnError:Function:Callback der bei fehlerhafter Anfrage ausgef&uuml;hrt werden soll.
-	//:d:en:This method performs a AJAX call. The call either can be asynchronous or synchronous.
-	//:a:en::aURL:String:Server URL to access a resource or servlet.
-	//:a:en:aOptions:method:String:Can be "post" or "get".
-	//:a:en:aOptions:asynchronous:Boolean:Perform the request asynchronously (non-blocking) oder synchronously (blocking).
-	//:a:en:aOptions:OnSuccess:Function:Callback for a successful request.
-	//:a:en:aOptions:OnError:Function:Callback for a erroneous request.
-	//:r:*:::void
-	request: function( aURL, aOptions ) {
-
-		//i:de:Einige Vorgabewerte pr&uuml;fen...
-		//i:en:Check some default values
-		aOptions = f3.core.OOP.getDefaultOptions( aOptions, {
-			method			: "POST",
-			asynchronous	: f3.ajax.Common.ASYNC,
-			postBody		: null,
-			timeout			: -1,
-			// username		: null,
-			// password		: null,
-			OnSuccess		: f3.ajax.Request.mXHRSucClbk,
-			OnError			: f3.ajax.Request.mXHRErrClbk,
-			contentType		: "text/plain; charset=UTF-8", // "application/x-www-form-urlencoded"
-			cacheControl	: "must-revalidate"
-		});
-
-		//:i:de:Beim file Protokoll ist kein XHR m&ouml;glich.
-		if( !f3.ajax.Common.isProtocolOk() ) {
-			throw new Error( 0, f3.localeManager.getCurLocStr( "f3.cfw.std.ex.xhr.file" ) );
-		}
-
-		aOptions.XHR = f3.ajax.Common.getXHRInstance();
-		if( aOptions.XHR ) {
-
-			//:i:de:&Ouml;ffnen des XHR Objektes und...
-			aOptions.XHR.open( aOptions.method, aURL, aOptions.asynchronous );
-
-			//:i:de:Sobald ein Request offen ist, k&ouml;nnen wir den ContentType auf plain/text setzen.
-			if ( aOptions.method.toLowerCase() == "post" ) {
-				aOptions.XHR.setRequestHeader(
-					"Content-type",
-					aOptions.contentType
-					);
-			}
-
-			if( aOptions.cacheControl )
-				aOptions.XHR.setRequestHeader( "Cache-Control", aOptions.cacheControl );
-
-			//:i:de:Eventhandler setzen (callback Funktion zuweisen)
-			//:i:de:Dies funktioniert nicht f&uuml;r den Firefox im synchronen Modus, die Callback Funktion wird _
-			//:i:de:nicht aufgerufen. Daher muss in diesem Fall der Handler nach dem "send" explizit _
-			//:i:de:aufgerufen werden.
-		
-			var lResponseHandler = new $f3.$XHRResponse( aOptions );
-
-			if( !f3.browser.Browser.isFirefox() || aOptions.asynchronous ) {
-				aOptions.XHR.onreadystatechange = lResponseHandler.mXHRRespLsnr;
-			// function() {
-			//:i:de:M&ouml;glicherweise kommt eine Antwort nachdem ein Fenster beendet wurde!
-			//	if( f3.ajax.Request !== undefined && f3.ajax.Request.mXHRStChgObs )
-			//		f3.ajax.Request.mXHRStChgObs( aOptions );
-			//};
-			} else {
-				aOptions.XHR.onreadystatechange = null;
-			}
-			
-			if( aOptions.timeout > 0 ) {
-				aOptions.hTimeout = 
-				setTimeout(
-					function() {
-						aOptions.XHR.abort();
-						if( f3.browser.Browser.isFirefox() && !aOptions.asynchronous ) {
-							lResponseHandler.handler( aOptions );
-						}
-					},
-					aOptions.timeout
-					);
-			}	
-			
-			//:i:de:...absetzen des Requests, bei GET-Requests ist postBody "null"
-			try {
-				aOptions.XHR.send( aOptions.postBody );
-			} catch( e ) {
-				aOptions.OnError( aOptions.XHR, aOptions );
-			}	
-			//:i:de:Siehe oben bzgl. Firefox Work-Around
-			if( f3.browser.Browser.isFirefox() && !aOptions.asynchronous ) {
-				lResponseHandler.mXHRRespLsnr( aOptions );
-			}
-		// f3.ajax.Request.mXHRStChgObs( aOptions );
-		}
-
-		//:todo:de:Was passiert, wenn kein AJAX Object geladen werden konnte? Z.B. wegen Sicherheitseinstellungen... ?
-		//:todo:de:Es k&ouml;nnte ein hilfreiches Ergebnis erzeugt werden, z.B. ob und wie der Request ausgef&uuml;hrt werden konnte.
-
-		return aOptions.XHR;
-	}
 }
 
 // JSON support if not provided natively by Browsetr
@@ -4112,8 +3878,7 @@ var CachePriority = {
 function Cache(maxSize, debug, storage) {
     this.maxSize_ = maxSize || -1;
     this.debug_ = debug || false;
-    this.items_ = storage || new Cache.BasicCacheStorage();
-    this.count_ = 0;
+    this.storage_ = storage || new Cache.BasicCacheStorage();
 
     this.fillFactor_ = .75;
 
@@ -4129,15 +3894,23 @@ function Cache(maxSize, debug, storage) {
 */
 Cache.BasicCacheStorage = function() {
   this.items_ = {};
+  this.count_ = 0;
 }
 Cache.BasicCacheStorage.prototype.get = function(key) {
   return this.items_[key];
 }
 Cache.BasicCacheStorage.prototype.set = function(key, value) {
+  if (typeof this.get(key) === "undefined")
+    this.count_++;
   this.items_[key] = value;
+}
+Cache.BasicCacheStorage.prototype.size = function(key, value) {
+  return this.count_;
 }
 Cache.BasicCacheStorage.prototype.remove = function(key) {
   var item = this.get(key);
+  if (typeof item !== "undefined")
+    this.count_--;
   delete this.items_[key];
   return item;
 }
@@ -4168,21 +3941,24 @@ Cache.LocalStorageCacheStorage = function(namespace) {
   this.regexp_ = new RegExp('^' + escapedPrefix)
 }
 Cache.LocalStorageCacheStorage.prototype.get = function(key) {
-  var item = localStorage[this.prefix_ + key];
+  var item = window.localStorage[this.prefix_ + key];
   if (item) return JSON.parse(item);
   return null;
 }
 Cache.LocalStorageCacheStorage.prototype.set = function(key, value) {
-  localStorage[this.prefix_ + key] = JSON.stringify(value);
+  window.localStorage[this.prefix_ + key] = JSON.stringify(value);
+}
+Cache.LocalStorageCacheStorage.prototype.size = function(key, value) {
+  return this.keys().length;
 }
 Cache.LocalStorageCacheStorage.prototype.remove = function(key) {
   var item = this.get(key);
-  delete localStorage[this.prefix_ + key];
+  delete window.localStorage[this.prefix_ + key];
   return item;
 }
 Cache.LocalStorageCacheStorage.prototype.keys = function() {
   var ret = [], p;
-  for (p in localStorage) {
+  for (p in window.localStorage) {
     if (p.match(this.regexp_)) ret.push(p.replace(this.prefix_, ''));
   };
   return ret;
@@ -4196,7 +3972,7 @@ Cache.LocalStorageCacheStorage.prototype.keys = function() {
 Cache.prototype.getItem = function(key) {
 
   // retrieve the item from the cache
-  var item = this.items_.get(key);
+  var item = this.storage_.get(key);
 
   if (item != null) {
     if (!this.isExpired_(item)) {
@@ -4205,7 +3981,7 @@ Cache.prototype.getItem = function(key) {
       item.lastAccessed = new Date().getTime();
     } else {
       // if the item is expired, remove it from the cache
-      this.removeItem_(key);
+      this.removeItem(key);
       item = null;
     }
   }
@@ -4264,14 +4040,14 @@ Cache._CacheItem = function(k, v, o) {
 Cache.prototype.setItem = function(key, value, options) {
 
   // add a new cache item to the cache
-  if (this.items_.get(key) != null) {
-    this.removeItem_(key);
+  if (this.storage_.get(key) != null) {
+    this.removeItem(key);
   }
   this.addItem_(new Cache._CacheItem(key, value, options));
   this.log_("Setting key " + key);
 
   // if the cache is full, purge it
-  if ((this.maxSize_ > 0) && (this.count_ > this.maxSize_)) {
+  if ((this.maxSize_ > 0) && (this.size() > this.maxSize_)) {
     var that = this;
     setTimeout(function() {
       that.purge_.call(that);
@@ -4285,9 +4061,9 @@ Cache.prototype.setItem = function(key, value, options) {
 */
 Cache.prototype.clear = function() {
   // loop through each item in the cache and remove it
-  var keys = this.items_.keys()
+  var keys = this.storage_.keys()
   for (var i = 0; i < keys.length; i++) {
-    this.removeItem_(keys[i]);
+    this.removeItem(keys[i]);
   }
   this.log_('Cache cleared');
 };
@@ -4305,10 +4081,10 @@ Cache.prototype.getStats = function() {
 * @return {string} Returns an HTML string representation of the cache.
 */
 Cache.prototype.toHtmlString = function() {
-  var returnStr = this.count_ + " item(s) in cache<br /><ul>";
-  var keys = this.items_.keys()
+  var returnStr = this.size() + " item(s) in cache<br /><ul>";
+  var keys = this.storage_.keys()
   for (var i = 0; i < keys.length; i++) {
-    var item = this.items_.get(keys[i]);
+    var item = this.storage_.get(keys[i]);
     returnStr = returnStr + "<li>" + item.key.toString() + " = " +
         item.value.toString() + "</li>";
   }
@@ -4328,7 +4104,7 @@ Cache.prototype.resize = function(newMaxSize) {
   this.maxSize_ = newMaxSize;
 
   if (newMaxSize > 0 && (oldMaxSize < 0 || newMaxSize < oldMaxSize)) {
-    if (this.count_ > newMaxSize) {
+    if (this.size() > newMaxSize) {
       // Cache needs to be purged as it does contain too much entries for the new size
       this.purge_();
     } // else if cache isn't filled up to the new limit nothing is to do
@@ -4344,15 +4120,15 @@ Cache.prototype.purge_ = function() {
   var tmparray = new Array();
   var purgeSize = Math.round(this.maxSize_ * this.fillFactor_);
   if (this.maxSize_ < 0)
-    purgeSize = this.count_ * this.fillFactor_;
+    purgeSize = this.size() * this.fillFactor_;
   // loop through the cache, expire items that should be expired
   // otherwise, add the item to an array
-  var keys = this.items_.keys();
+  var keys = this.storage_.keys();
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
-    var item = this.items_.get(key);
+    var item = this.storage_.get(key);
     if (this.isExpired_(item)) {
-      this.removeItem_(key);
+      this.removeItem(key);
     } else {
       tmparray.push(item);
     }
@@ -4370,7 +4146,7 @@ Cache.prototype.purge_ = function() {
     // remove items from the end of the array
     while (tmparray.length > purgeSize) {
       var ritem = tmparray.pop();
-      this.removeItem_(ritem.key);
+      this.removeItem(ritem.key);
     }
   }
   this.log_('Purged cached');
@@ -4385,8 +4161,7 @@ Cache.prototype.purge_ = function() {
 Cache.prototype.addItem_ = function(item, attemptedAlready) {
   var cache = this;
   try {
-    this.items_.set(item.key, item);
-    this.count_++;
+    this.storage_.set(item.key, item);
   } catch(err) {
     if (attemptedAlready) {
       this.log_('Failed setting again, giving up: ' + err.toString());
@@ -4404,18 +4179,22 @@ Cache.prototype.addItem_ = function(item, attemptedAlready) {
 * @param {String} key The key of the item to remove
 * @private
 */
-Cache.prototype.removeItem_ = function(key) {
-  var item = this.items_.remove(key);
-  this.count_--;
+Cache.prototype.removeItem = function(key) {
+  var item = this.storage_.remove(key);
   this.log_("removed key " + key);
 
   // if there is a callback function, call it at the end of execution
-  if (item.options.callback != null) {
+  if (item && item.options && item.options.callback) {
     setTimeout(function() {
       item.options.callback.call(null, item.key, item.value);
     }, 0);
   }
+  return item ? item.value : null;
 };
+
+Cache.prototype.size = function() {
+  return this.storage_.size();
+}
 
 
 /**
@@ -4456,8 +4235,7 @@ Cache.prototype.log_ = function(msg) {
 
 if (typeof module !== "undefined") {
   module.exports = Cache;
-}
-//	---------------------------------------------------------------------------
+}//	---------------------------------------------------------------------------
 //	jWebSocket API PlugIn (uses jWebSocket Client and Server)
 //	(C) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
 //	---------------------------------------------------------------------------
@@ -5783,7 +5561,15 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 	//:a:en::aToken:Object:Token to be processed
 	//:r:*:::void:none
 	processToken: function (aToken) {
-		if (this.NS == aToken.ns && "s2c.en" == aToken.type){
+		if ((this.NS == aToken.ns && "auth.logon" == aToken.reqType && 0 == aToken.code)){
+			this.user.principal = aToken.username;
+			this.user.uuid = aToken.uuid;
+			this.user.roles = aToken.roles;
+		}
+		else if ((this.NS == aToken.ns && "auth.logoff" == aToken.reqType && 0 == aToken.code)){
+			this.user.clear();
+		} 
+		else if (this.NS == aToken.ns && "s2c.en" == aToken.type){
 			var lMethod = aToken._e;
 			var lPlugIn = aToken._p;
 
@@ -5970,8 +5756,11 @@ jws.oop.declareClass( "jws", "EventsBaseFilter", null, {
 jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 	id: "security"
 	,
+	user: null
+	,
 	initialize: function(aNotifier){
-		jws.user = new jws.AppUser();
+		aNotifier.user = new jws.AppUser();
+		this.user = aNotifier.user;
 	},
 	
 	//:m:*:beforeCall
@@ -5999,7 +5788,7 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 			lRoles = aRequest.args.meta.eventDefinition.roles;
 			
 			//Avoid unnecessary checks if the user is not authenticated
-			if (lUsers && lRoles && !jws.user.isAuthenticated()){
+			if (lUsers && lRoles && !this.user.isAuthenticated()){
 				if (aRequest.OnResponse){
 					aRequest.OnResponse({
 						code: -2,
@@ -6020,7 +5809,7 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 						lExclusion = (lU.substring(0,1) == "!") ? true : false;
 						lU = (lExclusion) ? lU.substring(1) : lU;
 
-						if (lU == jws.user.principal){
+						if (lU == this.user.principal){
 							lUserMatch = true;
 							if (!lExclusion){
 								lUserAuthorized = true;
@@ -6049,14 +5838,14 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 			//Checking if the user have the allowed roles
 			if (lRoles.length > 0){
 				for (var i = 0; i < lRoles.length; i++){
-					for (var j = 0; j < jws.user.roles.length; j++){
+					for (var j = 0; j < this.user.roles.length; j++){
 						lR = lRoles[i];
 					
 						if ("all" != lR){
 							lExclusion = (lR.substring(0,1) == "!") ? true : false;
 							lR = (lExclusion) ? lR.substring(1) : lR;
 
-							if (lR == jws.user.roles[j]){
+							if (lR == this.user.roles[j]){
 								if (!lExclusion){
 									lRoleAuthorized = true;
 								}
@@ -6111,18 +5900,21 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 	,
 	cache:{}
 	,
-	initialize: function(notifier){
-		notifier.notify("clientcacheaspect.setstatus", {
+	user: null
+	,
+	initialize: function(aNotifier){
+		this.user = aNotifier.user;
+		aNotifier.notify("clientcacheaspect.setstatus", {
 			args: {
 				enabled: true
 			}
 		});
 		
-		notifier.plugIns['__cache__'] = {
+		aNotifier.plugIns['__cache__'] = {
 			cache: this.cache,
 			cleanEntries: function(event){
 				for (var i = 0, end = event.entries.length; i < end; i++){
-					this.cache.removeItem_(jws.user.principal.toString() + event.suffix + event.entries[i]);
+					this.cache.removeItem_(this.user.principal.toString() + event.suffix + event.entries[i]);
 				}
 			}
 		}
@@ -6140,8 +5932,8 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 			var lKey = aRequest.args.meta.eventDefinition.type + aRequest.args.meta.UTID;
 			
 			//Storing in the user private cache storage if required
-			if (aRequest.args.meta.eventDefinition.isCachePrivate && jws.user.isAuthenticated()){
-				lKey = jws.user.uuid + lKey;
+			if (aRequest.args.meta.eventDefinition.isCachePrivate && this.user.isAuthenticated()){
+				lKey = this.user.uuid + lKey;
 			}
 			
 			var lCachedResponseEvent = this.cache.getItem(lKey);
@@ -6177,7 +5969,7 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 
 			//Storing in the user private cache storage if required
 			if (aRequest.eventDefinition.isCachePrivate){
-				lKey = jws.user.uuid + lKey;
+				lKey = this.user.uuid + lKey;
 			}
 			
 			this.cache.setItem(lKey, aResponseEvent, {
