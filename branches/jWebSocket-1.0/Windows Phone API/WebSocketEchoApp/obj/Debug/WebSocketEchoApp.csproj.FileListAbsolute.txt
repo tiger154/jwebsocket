@@ -1,0 +1,17 @@
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\Bin\Debug\ApplicationIcon.png
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\Bin\Debug\Background.png
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\Bin\Debug\WebSocketEchoApp.dll
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\Bin\Debug\WebSocketEchoApp.pdb
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\Bin\Debug\AppManifest.xaml
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\Bin\Debug\WebSocketEchoApp.xap
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\Bin\Debug\Newtonsoft.Json.dll
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\Bin\Debug\WebSocketWPClient.pdb
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\Bin\Debug\Newtonsoft.Json.pdb
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\Bin\Debug\Newtonsoft.Json.xml
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\obj\Debug\ResolveAssemblyReference.cache
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\obj\Debug\App.g.i.cs
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\obj\Debug\MainPage.g.i.cs
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\obj\Debug\WebSocketEchoApp.g.resources
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\obj\Debug\WebSocketEchoApp.dll
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\obj\Debug\WebSocketEchoApp.pdb
+J:\Development\NET Project\jWebSocketCSClient\SamplePingClient\WebSocketEchoApp\obj\Debug\XapCacheFile.xml
