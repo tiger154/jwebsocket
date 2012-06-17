@@ -1,0 +1,8 @@
+J:\Development\NET Project\jWebSocketCSClient\WebSocketWPClient\Bin\Debug\WebSocketWPClient.dll
+J:\Development\NET Project\jWebSocketCSClient\WebSocketWPClient\Bin\Debug\WebSocketWPClient.pdb
+J:\Development\NET Project\jWebSocketCSClient\WebSocketWPClient\obj\Debug\ResolveAssemblyReference.cache
+J:\Development\NET Project\jWebSocketCSClient\WebSocketWPClient\obj\Debug\WebSocketWPClient.dll
+J:\Development\NET Project\jWebSocketCSClient\WebSocketWPClient\obj\Debug\WebSocketWPClient.pdb
+J:\Development\NET Project\jWebSocketCSClient\WebSocketWPClient\Bin\Debug\Newtonsoft.Json.dll
+J:\Development\NET Project\jWebSocketCSClient\WebSocketWPClient\Bin\Debug\Newtonsoft.Json.pdb
+J:\Development\NET Project\jWebSocketCSClient\WebSocketWPClient\Bin\Debug\Newtonsoft.Json.xml
