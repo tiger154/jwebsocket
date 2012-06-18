@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - WebSocket NIO Engine, IDelayedPacketNotifier
+//	jWebSocket - IDelayedSSLPacketNotifier
 //	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org, Author: Jan Gnezda
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
@@ -13,14 +13,13 @@
 //	You should have received a copy of the GNU Lesser General Public License along
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.tcp.nio;
+package org.jwebsocket.tcp.nio.ssl;
+
+import org.jwebsocket.tcp.nio.IDelayedPacketNotifier;
 
 /**
- * @author jang
+ *
+ * @author kyberneees
  */
-public interface IDelayedPacketNotifier {
-
-	ReadBean getBean();
-
-	NioTcpConnector getConnector();
+public interface IDelayedSSLPacketNotifier extends IDelayedPacketNotifier {
 }

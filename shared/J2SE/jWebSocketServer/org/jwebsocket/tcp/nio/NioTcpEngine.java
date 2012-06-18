@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngineResult;
+import javax.net.ssl.SSLEngine;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -37,6 +37,8 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.tcp.EngineUtils;
+import org.jwebsocket.tcp.nio.ssl.IDelayedSSLPacketNotifier;
+import org.jwebsocket.tcp.nio.ssl.NioSSLHandler;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -90,7 +92,7 @@ public class NioTcpEngine extends BaseEngine {
 			mChannelToConnectorMap = new ConcurrentHashMap<SocketChannel, String>();
 			mReadBuffer = ByteBuffer.allocate(getConfiguration().getMaxFramesize());
 			mPlainSelector = SelectorProvider.provider().openSelector();
-//			mSSLSelector = SelectorProvider.provider().openSelector();
+			mSSLSelector = SelectorProvider.provider().openSelector();
 
 			mPlainServer = Util.createServerSocketChannel(getConfiguration().getPort());
 			mPlainServer.register(mPlainSelector, SelectionKey.OP_ACCEPT);
@@ -99,18 +101,18 @@ public class NioTcpEngine extends BaseEngine {
 			}
 
 			// creating the SSL server only if required
-//			if (getConfiguration().getSSLPort() > 0) {
-//				mSSLContext = Util.createSSLContext(getConfiguration().getKeyStore(),
-//						getConfiguration().getKeyStorePassword());
-//				if (mLog.isDebugEnabled()) {
-//					mLog.debug("SSLContext created with key-store: " + getConfiguration().getKeyStore() + "...");
-//				}
-//				mSSLServer = Util.createServerSocketChannel(getConfiguration().getSSLPort());
-//				mSSLServer.register(mSSLSelector, SelectionKey.OP_ACCEPT);
-//				if (mLog.isDebugEnabled()) {
-//					mLog.debug("SSL server running at port: " + getConfiguration().getSSLPort() + "...");
-//				}
-//			}
+			if (getConfiguration().getSSLPort() > 0) {
+				mSSLContext = Util.createSSLContext(getConfiguration().getKeyStore(),
+						getConfiguration().getKeyStorePassword());
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("SSLContext created with key-store: " + getConfiguration().getKeyStore() + "...");
+				}
+				mSSLServer = Util.createServerSocketChannel(getConfiguration().getSSLPort());
+				mSSLServer.register(mSSLSelector, SelectionKey.OP_ACCEPT);
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("SSL server running at port: " + getConfiguration().getSSLPort() + "...");
+				}
+			}
 
 			mIsRunning = true;
 
@@ -132,11 +134,11 @@ public class NioTcpEngine extends BaseEngine {
 			mPlainSelectorThread = new Thread(new SelectorThread(mPlainSelector));
 			mPlainSelectorThread.start();
 
-//			if (getConfiguration().getSSLPort() > 0) {
-//				// start SSL selector thread
-//				mSSLSelectorThread = new Thread(new SelectorThread(mSSLSelector));
-//				mSSLSelectorThread.start();
-//			}
+			if (getConfiguration().getSSLPort() > 0) {
+				// start SSL selector thread
+				mSSLSelectorThread = new Thread(new SelectorThread(mSSLSelector));
+				mSSLSelectorThread.start();
+			}
 
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("NioTcpEngine started successfully with '" + lNumWorkers + "' workers!");
@@ -171,14 +173,10 @@ public class NioTcpEngine extends BaseEngine {
 		try {
 			if (mPendingWrites.containsKey(aConnectorId)) {
 				NioTcpConnector lConnector = (NioTcpConnector) getConnectors().get(aConnectorId);
-				mPendingWrites.get(aConnectorId).add(aFuture);
 				if (lConnector.isSSL()) {
-					aFuture.setData(Util.wrap(
-							aFuture.getData(),
-							lConnector.getSSLEngine(),
-							getConfiguration().getMaxFramesize()));
-					mSSLSelector.wakeup();
+					lConnector.getSSLHandler().send(aFuture.getData());
 				} else {
+					mPendingWrites.get(aConnectorId).add(aFuture);
 					mPlainSelector.wakeup();
 				}
 			} else {
@@ -197,13 +195,18 @@ public class NioTcpEngine extends BaseEngine {
 		if (mConnectorToChannelMap.containsKey(aConnector.getId())) {
 			mPendingWrites.remove(aConnector.getId());
 			SocketChannel lChannel = mConnectorToChannelMap.remove(aConnector.getId());
+			mChannelToConnectorMap.remove(lChannel);
+
 			try {
 				lChannel.close();
 				lChannel.socket().close();
 			} catch (Exception lEx) {
 				//Ignore it. Channel has been closed previously!
 			}
-			mChannelToConnectorMap.remove(lChannel);
+
+			if (mDelayedPacketsQueue.getDelayedPackets().containsKey(aConnector)) {
+				mDelayedPacketsQueue.getDelayedPackets().remove(aConnector);
+			}
 		}
 
 		if (((NioTcpConnector) aConnector).isAfterWSHandshake()) {
@@ -326,12 +329,20 @@ public class NioTcpEngine extends BaseEngine {
 				NioTcpConnector lConnector = new NioTcpConnector(
 						this, lSocketChannel.socket().getInetAddress(),
 						lSocketPort);
-				// proceed with SSL connector
+
+				// initialize the SSLHandler
 				if (lServerPort == getConfiguration().getSSLPort()) {
 					lConnector.setSSL(true);
-					lConnector.setSSLEngine(mSSLContext.createSSLEngine());
-					lConnector.getSSLEngine().setUseClientMode(false);
-					lConnector.getSSLEngine().beginHandshake();
+					SSLEngine lEngine = mSSLContext.createSSLEngine();
+					lEngine.setUseClientMode(false);
+					lEngine.beginHandshake();
+
+					lConnector.setSSLHandler(new NioSSLHandler(lConnector,
+							mPendingWrites,
+							mDelayedPacketsQueue,
+							mSSLSelector,
+							lEngine,
+							getConfiguration().getMaxFramesize()));
 				}
 				getConnectors().put(lConnector.getId(), lConnector);
 				mPendingWrites.put(lConnector.getId(), new ConcurrentLinkedQueue<DataFuture>());
@@ -369,18 +380,34 @@ public class NioTcpEngine extends BaseEngine {
 			String lConnectorId = mChannelToConnectorMap.get(lSocketChannel);
 			final ReadBean lBean = new ReadBean(lConnectorId, Arrays.copyOf(mReadBuffer.array(), lNumRead));
 			final NioTcpConnector lConnector = (NioTcpConnector) getConnectors().get(lBean.getConnectorId());
-			mDelayedPacketsQueue.addDelayedPacket(new IDelayedPacketNotifier() {
 
-				@Override
-				public NioTcpConnector getConnector() {
-					return lConnector;
-				}
+			if (lSocketChannel.socket().getLocalPort() == getConfiguration().getSSLPort()) {
+				mDelayedPacketsQueue.addDelayedPacket(new IDelayedSSLPacketNotifier() {
 
-				@Override
-				public ReadBean getBean() {
-					return lBean;
-				}
-			});
+					@Override
+					public NioTcpConnector getConnector() {
+						return lConnector;
+					}
+
+					@Override
+					public ReadBean getBean() {
+						return lBean;
+					}
+				});
+			} else {
+				mDelayedPacketsQueue.addDelayedPacket(new IDelayedPacketNotifier() {
+
+					@Override
+					public NioTcpConnector getConnector() {
+						return lConnector;
+					}
+
+					@Override
+					public ReadBean getBean() {
+						return lBean;
+					}
+				});
+			}
 		}
 	}
 
@@ -418,7 +445,8 @@ public class NioTcpEngine extends BaseEngine {
 	private void clientDisconnect(WebSocketConnector aConnector,
 			CloseReason aReason) throws IOException {
 		if (mConnectorToChannelMap.containsKey(aConnector.getId())) {
-			clientDisconnect(mConnectorToChannelMap.get(aConnector.getId()).keyFor(mPlainSelector), aReason);
+			Selector lSelector = (aConnector.isSSL()) ? mSSLSelector : mPlainSelector;
+			clientDisconnect(mConnectorToChannelMap.get(aConnector.getId()).keyFor(lSelector), aReason);
 		}
 	}
 
@@ -440,25 +468,14 @@ public class NioTcpEngine extends BaseEngine {
 					lDelayedPacket = mDelayedPacketsQueue.take();
 
 					// processing SSL packets
-//					if (lDelayedPacket.getConnector().isSSL()) {
-//						boolean lContinue = false;
-//						try {
-//							lContinue = lDelayedPacket.getConnector().isAfterSSLHandshake();
-//							processSSLPacket(lDelayedPacket);
-//						} catch (Exception lEx) {
-//							if (mLog.isDebugEnabled()) {
-//								mLog.debug(Logging.getSimpleExceptionMessage(lEx, "processing SSL packet"));
-//							}
-//							clientDisconnect(lDelayedPacket.getConnector(), CloseReason.SERVER);
-//						}
-//
-//						if (!lContinue) {
-//							continue; // ssl handshaking
-//						}
-//					}
-					// executing read operation
-					doRead(lDelayedPacket.getConnector(), lDelayedPacket.getBean());
-
+					if (lDelayedPacket instanceof IDelayedSSLPacketNotifier) {
+						lDelayedPacket.getConnector().getSSLHandler().
+								processSSLPacket(ByteBuffer.wrap(lDelayedPacket.getBean().getData()));
+					} else {
+						// executing normal read operation
+						doRead(lDelayedPacket.getConnector(), lDelayedPacket.getBean());
+					}
+					// release the worker
 					lDelayedPacket.getConnector().releaseWorker();
 				} catch (Exception e) {
 					// uncaught exception during packet processing - kill the worker (todo: think about worker restart)
@@ -467,58 +484,6 @@ public class NioTcpEngine extends BaseEngine {
 				}
 			}
 		}
-
-//		private void processSSLPacket(IDelayedPacketNotifier aDelayedPacket) throws Exception {
-//			NioTcpConnector lConnector = aDelayedPacket.getConnector();
-//			ByteBuffer lIn = ByteBuffer.wrap(aDelayedPacket.getBean().getData());
-//			ByteBuffer lOut;
-//
-//			switch (lConnector.getSSLEngine().getHandshakeStatus()) {
-//				case NOT_HANDSHAKING:
-//					lOut = Util.unwrap(
-//							lIn,
-//							lConnector.getSSLEngine(),
-//							getConfiguration().getMaxFramesize());
-//					aDelayedPacket.getBean().setData(lOut.array());
-//					break;
-//				case NEED_WRAP:
-//					lOut = Util.wrap(
-//							lIn,
-//							lConnector.getSSLEngine(),
-//							getConfiguration().getMaxFramesize());
-//					aDelayedPacket.getBean().setData(lOut.array());
-//
-//					mPendingWrites.get(lConnector.getId()).offer(new DataFuture(lConnector, lOut));
-//					mSSLSelector.wakeup();
-//
-//					// checking if the SSL handshake is complete
-//					if (lConnector.getSSLEngine().getHandshakeStatus().equals(SSLEngineResult.HandshakeStatus.FINISHED)) {
-//						lConnector.sslHandshakeValidated();
-//					} else {
-//						processSSLPacket(aDelayedPacket);
-//					}
-//
-//					break;
-//				case NEED_UNWRAP:
-//					Util.unwrap(
-//							lIn,
-//							lConnector.getSSLEngine(),
-//							getConfiguration().getMaxFramesize());
-//
-//					//aDelayedPacket.getBean().setData(lOut.array());
-//					processSSLPacket(aDelayedPacket);
-//					break;
-//				case NEED_TASK:
-//					Runnable lTask;
-//					while ((lTask = lConnector.getSSLEngine().getDelegatedTask()) != null) {
-//						lTask.run();
-//					}
-//					processSSLPacket(aDelayedPacket);
-//					break;
-//				case FINISHED:
-//					throw new IllegalStateException("SSL handshake FINISHED on connector: " + lConnector.generateUID());
-//			}
-//		}
 
 		private void doRead(NioTcpConnector aConnector, ReadBean aBean) throws IOException {
 			if (aConnector.isAfterWSHandshake()) {
@@ -608,7 +573,8 @@ public class NioTcpEngine extends BaseEngine {
 						+ lRawPacket.getFrameType().toString() + "')incoming packet... ");
 			}
 
-			//Reading pending packets in the buffer (for high concurrency scenarios)
+			// read more pending packets in the buffer (for high concurrency scenarios)
+			// DO NOT REMOVE 
 			if (aIS.available() > 0) {
 				readHybi(aVersion, aIS, aConnector);
 			}
@@ -632,7 +598,8 @@ public class NioTcpEngine extends BaseEngine {
 					RawPacket lPacket = new RawPacket(lBuff.toByteArray());
 					try {
 						lConnector.flushPacket(lPacket);
-						//Reading pending packets in the buffer (for high concurrency scenarios)
+						// read more pending packets in the buffer (for high concurrency scenarios)
+						// DO NOT REMOVE
 						if (aIS.available() > 0) {
 							readHixie(aIS, lConnector);
 						}
