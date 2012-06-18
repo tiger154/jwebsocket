@@ -15,16 +15,15 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp.nio;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import javax.net.ssl.SSLEngine;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.tcp.nio.ssl.SSLHandler;
 
 /**
  *
@@ -39,7 +38,7 @@ public class NioTcpConnector extends BaseConnector {
 	private boolean mIsAfterWSHandshake;
 	private int mWorkerId = -1;
 	private boolean mIsAfterSSLHandshake;
-	private SSLEngine mSSLEngine;
+	private SSLHandler mSSLHandler;
 
 	public NioTcpConnector(NioTcpEngine aEngine, InetAddress aRemoteAddress,
 			int aRemotePort) {
@@ -51,12 +50,12 @@ public class NioTcpConnector extends BaseConnector {
 		mWorkerId = -1;
 	}
 
-	public SSLEngine getSSLEngine() {
-		return mSSLEngine;
+	public SSLHandler getSSLHandler() {
+		return mSSLHandler;
 	}
 
-	public void setSSLEngine(SSLEngine aSSLEngine) {
-		this.mSSLEngine = aSSLEngine;
+	public void setSSLHandler(SSLHandler aSSLHandler) {
+		this.mSSLHandler = aSSLHandler;
 	}
 
 	@Override
@@ -135,7 +134,7 @@ public class NioTcpConnector extends BaseConnector {
 		this.mWorkerId = aWorkerId;
 	}
 
-	public void releaseWorker() throws IOException {
+	public void releaseWorker() {
 		mWorkerId = -1;
 	}
 }

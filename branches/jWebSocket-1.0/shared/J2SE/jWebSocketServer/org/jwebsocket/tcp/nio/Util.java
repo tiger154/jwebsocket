@@ -19,10 +19,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.security.KeyStore;
-import javax.net.ssl.*;
+import java.security.SecureRandom;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 import org.jwebsocket.config.JWebSocketConfig;
 
 /**
@@ -50,8 +51,10 @@ public class Util {
 			URL lURL = JWebSocketConfig.getURLFromPath(lKeyStorePath);
 			lKeyStore.load(new FileInputStream(lURL.getPath()), lPassword);
 			lKMF.init(lKeyStore, lPassword);
+			SecureRandom lSecureRandom = new java.security.SecureRandom();
+			lSecureRandom.nextInt();
 
-			lSSLContext.init(lKMF.getKeyManagers(), null, new java.security.SecureRandom());
+			lSSLContext.init(lKMF.getKeyManagers(), null, lSecureRandom);
 		}
 
 		return lSSLContext;
@@ -70,53 +73,5 @@ public class Util {
 		lServer.socket().bind(new InetSocketAddress(aPort));
 
 		return lServer;
-	}
-
-	public static ByteBuffer wrap(ByteBuffer aIn, SSLEngine aEngine, int aBufferSize) throws Exception {
-		ByteBuffer lOut = ByteBuffer.allocate(aBufferSize);
-		aIn.flip();
-		SSLEngineResult lWrapResult = aEngine.wrap(aIn, lOut);
-		aIn.compact();
-
-		switch (lWrapResult.getStatus()) {
-			case OK:
-				if (lOut.position() > 0) {
-					lOut.flip();
-				}
-				return lOut;
-			case BUFFER_UNDERFLOW:
-				break;
-			case BUFFER_OVERFLOW:
-				break;
-			case CLOSED:
-				throw new SSLException("SSL connection closed!");
-		}
-
-		throw new IllegalStateException("Failed to wrap!");
-	}
-
-	public static ByteBuffer unwrap(ByteBuffer aIn, SSLEngine aEngine, int aBufferSize) throws Exception {
-		ByteBuffer lOut = ByteBuffer.allocate(aBufferSize);
-		aIn = aIn.slice();
-		SSLEngineResult lUnwrapResult = aEngine.unwrap(aIn, lOut);
-		aIn.compact();
-		lOut = lOut.slice();
-		lOut.compact();
-
-		switch (lUnwrapResult.getStatus()) {
-			case OK:
-				if (lOut.position() > 0) {
-					lOut.flip();
-				}
-				return lOut;
-			case BUFFER_UNDERFLOW:
-				break;
-			case BUFFER_OVERFLOW:
-				break;
-			case CLOSED:
-				throw new SSLException("SSL connection closed!");
-		}
-
-		throw new IllegalStateException("Failed to unwrap!");
 	}
 }
