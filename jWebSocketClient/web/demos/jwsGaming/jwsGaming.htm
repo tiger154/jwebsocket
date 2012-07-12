@@ -25,38 +25,30 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
 
-        <title>jWebSocket Gaming</title>
+        <title>jWebSocket Gaming Demo</title>
 
         <!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsGaming.css"/>
-		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
 
-        <!-- JQUERY DEPENDENCIES -->
+		<!-- JQUERY DEPENDENCIES -->
+		<link rel="stylesheet" type="text/css" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" />
         <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
-        <script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
+		<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
 
         <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
-        <!-- this one imports the client side sample plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsSamplesPlugIn.js"></script>
-        <!-- this one imports the client side JDBC plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsJDBCPlugIn.js"></script>
-        <!-- this one imports the client side file system plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
-        <!-- this one imports the client side reporting plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
-        <!-- this one imports the client side rpc plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsRPCPlugIn.js"></script>
+        <script type="text/javascript" src="../../res/js/jwsChannelPlugIn.js"></script>
 
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
 
-        <!--  PRIVATE WIDGETS  -->
+        <script type="text/javascript" src='js/wGaming.js'></script>
+
 		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
-		
+
         <!--  MAIN JAVASCRIPT FILE   -->
         <script type="text/javascript" src='js/init.js'></script>
 
@@ -65,12 +57,13 @@
         <div id="demo_box">
             <!--       DEMO_HEADER       -->
             <div id="demo_box_header">
-                <h1>Gaming</h1>
+                <h1>jWebSocket Gaming Demo</h1>
                 <div id="demo_box_header_login">
                     <div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
-                            <div id="logoff_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                            <div id="logoff_button" class="button onmouseup" 
+								 onmouseover="this.className='button onmouseover'" 
                                  onmousedown="this.className='button onmousedown'" 
                                  onmouseup="this.className='button onmouseup'" 
                                  onmouseout="this.className='button onmouseout'" 
@@ -85,10 +78,11 @@
                         <div id="login_form">
                             <label class="first">Username</label>
                             <label class="second">Password</label>
-                            <input type="text" id="user_text" value="root"/>
-                            <input type="password" id="user_password" value="root"/>
+                            <input type="text" id="user_text" value="guest"/>
+                            <input type="password" id="user_password" value="guest"/>
                         </div>
-                        <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                        <div id="login_button" class="button onmouseup" 
+							 onmouseover="this.className='button onmouseover'" 
                              onmousedown="this.className='button onmousedown'" 
                              onmouseup="this.className='button onmouseup'" 
                              onmouseout="this.className='button onmouseout'" 
@@ -97,16 +91,15 @@
                             <div class="c">Login</div>
                             <div class="r"></div>
                         </div>
-
                     </div>
-
                 </div>
             </div>
             <div id="container">
                 <!--       STATUSBAR         -->
                 <div id="demo_box_statusbar">
                     <div id='status'>Status: </div>
-                    <div id="client_status" class='offline'>disconnected</div><div class="line"></div>
+                    <div id="client_status" class='offline'>disconnected</div>
+					<div class="line"></div>
                     <div id='client_id'>Client-ID: - </div><div class="line"></div>
                     <div id='websocket_type'>WebSocket: - </div>
                 </div>
@@ -123,7 +116,8 @@
                         SystemPlugIn.
                         If you are not sure wether your favorite browser supports 
                         WebSockets please refer to our jWebSocket Cross-Browser 
-                        Compatibility page. </p>
+                        Compatibility page. 
+					</p>
                 </div>
 
                 <!--       SCENARIO          -->
@@ -131,29 +125,38 @@
                     <!--    MESSAGE_BOX      -->
                     <div id="message_box" class="box">
                         <div id="message_box_header">Playground</div>
-                        <div id="message_box_description">
-                            <p>Login to start as a green player. If other players are 
-                                online they are shown in red. Use the arrow keys to move 
-                                your player and automatically broadcast your move to 
-                                other users.
-                            </p>  
+						<div id="message_box_description">
+                            Login to start as a green player. If other players are 
+							online they are shown in red. Use the arrow keys to move 
+							your player and automatically broadcast your move to 
+							other users.
                         </div>
+						<div id="amount_of_players" class="box">
+							<div id="total_green" class="box">0</div>
+							<div id="total_red" class="box">0</div>
+							<div class="box">
+								<input type="checkbox" id="debug" value="ON">Debug</input>
+							</div>
+						</div>
                         <div id="players_area">
-                            <div id="green_player"></div>
-                            <div id="red_player"></div>
+							<!-- <div class="player green_player">
+								Player 01.38649.1
+							</div>
+							<div class="player red_player">
+								Player 01.38649.2
+							</div>-->
                         </div>
                     </div>
-
                 </div>
 
-                    <!--       LOG BOX           -->
-                    <div id="log_box" class="box">
-                        <div id="log_box_header">
-                            <div id="show_hide_log" class="hide">Hide Log</div>
-                            <div id="clear_log">Clear Log</div>
-                        </div>
-                        <div id="log_box_content" class="log_box_visible"></div>
-                    </div>
+				<!--       LOG BOX           -->
+				<div id="log_box" class="box">
+					<div id="log_box_header">
+						<div id="show_hide_log" class="hide">Hide Log</div>
+						<div id="clear_log">Clear Log</div>
+					</div>
+					<div id="log_box_content" class="log_box_visible"></div>
+				</div>
 
 
                 <!--       DOWNLOAD_BUTTON   -->
