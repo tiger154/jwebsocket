@@ -26,9 +26,10 @@ import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 
 /**
- * Utility methods for tcp and nio engines.
+ * Utility methods for TCP and NIO engines.
  *
  * @author jang
+ * @author kyberneees
  */
 public class EngineUtils {
 

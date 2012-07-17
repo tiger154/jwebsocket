@@ -51,15 +51,6 @@ public class Subscriber {
 	}
 
 	/**
-	 * @return the connector
-	 */
-	public WebSocketConnector getConnector() {
-		WebSocketConnector lConnector =
-				JWebSocketFactory.getTokenServer().getConnector(mConnectionId);
-		return lConnector;
-	}
-
-	/**
 	 * @return the channels
 	 */
 	public List<String> getChannels() {
@@ -85,30 +76,6 @@ public class Subscriber {
 	public void removeChannel(String aChannel) {
 		if (this.mChannels != null) {
 			this.mChannels.remove(aChannel);
-		}
-	}
-
-	/**
-	 * Sends the token data asynchronously to the token server
-	 * @param aToken the token data
-	 * @return future object for IO status
-	 */
-	public IOFuture sendTokenAsync(Token aToken) {
-		WebSocketConnector lConnector = getConnector();
-		if (lConnector != null && aToken != null) {
-			return JWebSocketFactory.getTokenServer().sendTokenAsync(lConnector, aToken);
-		}
-		return null;
-	}
-
-	/**
-	 *
-	 * @param aToken
-	 */
-	public void sendToken(Token aToken) {
-		WebSocketConnector lConnector = getConnector();
-		if (lConnector != null && aToken != null) {
-			JWebSocketFactory.getTokenServer().sendToken(lConnector, aToken);
 		}
 	}
 }

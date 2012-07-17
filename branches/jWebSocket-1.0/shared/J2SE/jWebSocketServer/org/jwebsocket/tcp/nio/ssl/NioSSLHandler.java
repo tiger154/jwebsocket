@@ -1,6 +1,6 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - NioSSLHandler
-//	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org, Author: Jan Gnezda
+//	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -20,12 +20,15 @@ import java.nio.channels.Selector;
 import java.util.Map;
 import java.util.Queue;
 import javax.net.ssl.SSLEngine;
+import org.apache.log4j.Logger;
 import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.tcp.nio.*;
 
 /**
- * Concept from http://www.java-gaming.org/index.php?PHPSESSID=1omilg2ptvh0a138gcfsnjqki1&topic=21984.msg181208#msg181208
- * 
+ * Concept:
+ * http://www.java-gaming.org/index.php?PHPSESSID=1omilg2ptvh0a138gcfsnjqki1&topic=21984.msg181208#msg181208
+ *
  * @author kyberneees
  */
 public class NioSSLHandler extends SSLHandler {
@@ -34,6 +37,7 @@ public class NioSSLHandler extends SSLHandler {
 	final Map<String, Queue<DataFuture>> mWritesQueue;
 	final DelayedPacketsQueue mDelayedPacketsQueue;
 	final Selector mSelector;
+	private static Logger mLog = Logging.getLogger();
 
 	public NioSSLHandler(NioTcpConnector aConnector, Map<String, Queue<DataFuture>> aWritesQueue,
 			DelayedPacketsQueue aDelayedPacketsQueue, Selector aSelector, SSLEngine aEngine, int aBufferSize) {
@@ -46,25 +50,21 @@ public class NioSSLHandler extends SSLHandler {
 
 	@Override
 	public void onInboundData(ByteBuffer aDecrypted) {
-		if (mConnector.isAfterSSLHandshake()) {
-			byte[] lArray = new byte[aDecrypted.remaining()];
-			aDecrypted.get(lArray);
-			
-			System.out.println(new String(lArray));
-			final ReadBean lBean = new ReadBean(mConnector.getId(), lArray);
-			mDelayedPacketsQueue.addDelayedPacket(new IDelayedPacketNotifier() {
+		byte[] lArray = new byte[aDecrypted.remaining()];
+		aDecrypted.get(lArray);
+		final ReadBean lBean = new ReadBean(mConnector.getId(), lArray);
+		mDelayedPacketsQueue.addDelayedPacket(new IDelayedPacketNotifier() {
 
-				@Override
-				public ReadBean getBean() {
-					return lBean;
-				}
+			@Override
+			public ReadBean getBean() {
+				return lBean;
+			}
 
-				@Override
-				public NioTcpConnector getConnector() {
-					return mConnector;
-				}
-			});
-		}
+			@Override
+			public NioTcpConnector getConnector() {
+				return mConnector;
+			}
+		});
 	}
 
 	@Override
@@ -81,6 +81,9 @@ public class NioSSLHandler extends SSLHandler {
 	@Override
 	public void onHandshakeFailure(Exception cause) {
 		mConnector.getEngine().connectorStopped(mConnector, CloseReason.BROKEN);
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("SSL handshake failure!");
+		}
 	}
 
 	@Override
@@ -90,6 +93,10 @@ public class NioSSLHandler extends SSLHandler {
 
 	@Override
 	public void onClosed() {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("SSL session has been closed on connector '" + mConnector.getRemoteHost()
+					+ "@" + mConnector.getRemotePort() + "'!");
+		}
 		mConnector.getEngine().connectorStopped(mConnector, CloseReason.BROKEN);
 	}
 }

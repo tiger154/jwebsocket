@@ -112,8 +112,14 @@ public class NioTcpConnector extends BaseConnector {
 		return mIsAfterSSLHandshake;
 	}
 
+	/**
+	 * SSL session established successfully 
+	 */
 	public void sslHandshakeValidated() {
 		mIsAfterSSLHandshake = true;
+		if (mLog.isDebugEnabled()){
+			mLog.debug("SSL session established successfully!");
+		}
 	}
 
 	public void flushPacket(WebSocketPacket aPacket) {

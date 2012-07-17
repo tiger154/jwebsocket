@@ -18,35 +18,48 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-
 import org.jwebsocket.api.IBasicStorage;
+import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.channels.Channel.ChannelState;
+import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 
 /**
  * Manager class responsible for all the channel operations within the
  * jWebSocket server system.
- * 
+ *
  * @author puran, aschulze
  * @version $Id: ChannelManager.java 1592 2011-02-20 00:49:48Z fivefeetfurther $
  */
 public class ChannelManager {
 
-	/** logger */
+	/**
+	 * logger
+	 */
 	private static Logger mLog = Logging.getLogger(ChannelManager.class);
-	/** id for the logger channel */
+	/**
+	 * id for the logger channel
+	 */
 	private static final String LOGGER_CHANNEL_ID = "jws.logger.channel";
-	/** id for the admin channel */
+	/**
+	 * id for the admin channel
+	 */
 	private static final String ADMIN_CHANNEL_ID = "jws.admin.channel";
-	/** settings key strings */
+	/**
+	 * settings key strings
+	 */
 	private static final String USE_PERSISTENT_STORE = "use_persistent_store";
 	private static final String ALLOW_NEW_CHANNELS = "allow_new_channels";
-	/** persistent storage objects */
+	/**
+	 * persistent storage objects
+	 */
 	private final ChannelStore mChannelStore;
 	private final SubscriberStore mSubscriberStore;
 	private final PublisherStore mPublisherStore;
-	/** in-memory store maps */
+	/**
+	 * in-memory store maps
+	 */
 	// private final Map<String, Channel> mChannels = new ConcurrentHashMap<String, Channel>();
 	private Map<String, Object> mChannelPluginSettings = null;
 	/**
@@ -57,8 +70,10 @@ public class ChannelManager {
 	 * admin channel to monitor channel plugin activity
 	 */
 	private static Channel mAdminChannel = null;
-	/** setting to check if new channel creation or registration is allowed */
-	private static boolean mAllowNewChannels;
+	/**
+	 * setting to check if new channel creation or registration is allowed
+	 */
+	private boolean mAllowNewChannels = false;
 
 	private ChannelManager(Map aSettings,
 			IBasicStorage aChannelStorage,
@@ -94,117 +109,64 @@ public class ChannelManager {
 					}
 				}
 				if (lParseOk) {
+
 					String lName = null;
-					String lAccessKey = null;
-					String lSecretKey = null;
-					String lOwner = null;
-					boolean lIsPrivate = false;
-					boolean lIsSystem = false;
+					String lAccessKey;
+					String lSecretKey;
+					String lOwner;
+					String lState;
+					boolean lIsPrivate;
+					boolean lIsSystem;
+					String lServerId;
 					try {
-						lName = lJSON.getString("name");
-					} catch (Exception lEx) {
-					}
-					try {
-						lAccessKey = lJSON.getString("access_key");
-					} catch (Exception lEx) {
-					}
-					try {
-						lSecretKey = lJSON.getString("secret_key");
-					} catch (Exception lEx) {
-					}
-					try {
-						lOwner = lJSON.getString("owner");
-					} catch (Exception lEx) {
-					}
-					try {
-						lIsPrivate = lJSON.getBoolean("isPrivate");
-					} catch (Exception lEx) {
-					}
-					try {
-						lIsSystem = lJSON.getBoolean("isSystem");
-					} catch (Exception lEx) {
-					}
+						lName = lJSON.getString(BaseChannelStore.NAME);
+						lAccessKey = lJSON.getString(BaseChannelStore.ACCESS_KEY);
+						lSecretKey = lJSON.getString(BaseChannelStore.SECRET_KEY);
+						lOwner = lJSON.getString(BaseChannelStore.OWNER);
+						lIsPrivate = lJSON.has(BaseChannelStore.PRIVATE) ? lJSON.getBoolean(BaseChannelStore.PRIVATE) : false;
+						lIsSystem = lJSON.has(BaseChannelStore.SYSTEM) ? lJSON.getBoolean(BaseChannelStore.SYSTEM) : false;
+						lState = lJSON.has(BaseChannelStore.STATE) ? lJSON.getString(BaseChannelStore.STATE) : ChannelState.CREATED.name();
+						lServerId = lJSON.getString(BaseChannelStore.SERVER_ID);
 
-					if (mLog.isDebugEnabled()) {
-						mLog.debug("Instantiating channel '"
-								+ lChannelId + "' by configuration"
-								+ " (private: "
-								+ lIsPrivate
-								+ ", system: " + lIsSystem + ")...");
-					}
+						if (mLog.isDebugEnabled()) {
+							mLog.debug("Instantiating channel '"
+									+ lChannelId + "' by configuration"
+									+ " (private: "
+									+ lIsPrivate
+									+ ", system: " + lIsSystem + ")...");
+						}
 
-					Channel lChannel = new Channel(
-							lChannelId, // String aId,
-							lName, // String aName,
-							lIsPrivate, // boolean aPrivateChannel,
-							lIsSystem, // boolean aSystemChannel,
-							lAccessKey, // String aAccessKey,
-							lSecretKey, // String aSecretKey,
-							lOwner, // String aOwner,
-							ChannelState.INITIALIZED // ChannelState aState,
-							);
-					// put in channels map
-					mChannelStore.storeChannel(lChannel);
-					lSuccess++;
+						Channel lChannel = new Channel(
+								lChannelId, // String aId,
+								lName, // String aName,
+								lIsPrivate, // boolean aPrivateChannel,
+								lIsSystem, // boolean aSystemChannel,
+								lAccessKey, // String aAccessKey,
+								lSecretKey, // String aSecretKey,
+								lOwner, // String aOwner,
+								ChannelState.valueOf(lState), // ChannelState aState,
+								(TokenServer) JWebSocketFactory.getServer(lServerId));
+
+						// initializing channel if possible
+						// the channel could be initialized
+						if (lChannel.getState().equals(ChannelState.CREATED)) {
+							lChannel.init();
+						}
+						
+						// put in channels map
+						mChannelStore.storeChannel(lChannel);
+
+						lSuccess++;
+					} catch (Exception lEx) {
+						mLog.error(Logging.getSimpleExceptionMessage(lEx, "loading '" + lName
+								+ "' channel"));
+					}
 				}
 			}
 		}
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(lSuccess + " channels successfully instantiated.");
 		}
-	}
-
-	/**
-	 * @param aSettings
-	 * @return the static manager instance
-	 */
-	/*
-	public static ChannelManager getChannelManager(Map<String, Object> aSettings) {
-	return new ChannelManager(aSettings);
-	}
-	 */
-	/**
-	 * Starts the system channels within the jWebSocket system configured via
-	 * jWebSocket.xml, Note that it doesn't insert the system channels to the
-	 * channel store.
-	 *
-	 * @throws ChannelLifeCycleException
-	 *             if exception starting the system channels
-	 */
-	public void startChannels() throws ChannelLifeCycleException {
-		/*
-		User lRoot = SecurityFactory.getRootUser();
-		for (Channel lChannel : mChannels.values()) {
-		try {
-		lChannel.start(lRoot.getLoginname());
-		} catch (Exception lEx) {
-		mLog.error(lEx.getClass().getSimpleName()
-		+ " on starting channel '" + lChannel.getId() + "': "
-		+ lEx.getMessage());
-		}
-		}
-		 */
-	}
-
-	/**
-	 * Stops all the system channels running in the system and clears the system
-	 * channels map
-	 *
-	 * @throws ChannelLifeCycleException
-	 */
-	public void stopChannels() throws ChannelLifeCycleException {
-		/*
-		User lRoot = SecurityFactory.getRootUser();
-		for (Channel lChannel : mChannels.values()) {
-		try {
-		lChannel.stop(lRoot.getLoginname());
-		} catch (Exception lEx) {
-		mLog.error(lEx.getClass().getSimpleName()
-		+ " on stopping channel '" + lChannel.getId() + "': "
-		+ lEx.getMessage());
-		}
-		}
-		 */
 	}
 
 	/**
@@ -249,8 +211,7 @@ public class ChannelManager {
 	 * Adds the given channel to the list of channels maintained by the
 	 * jWebSocket system.
 	 *
-	 * @param aChannel
-	 *            the channel to store.
+	 * @param aChannel the channel to store.
 	 */
 	public void storeChannel(Channel aChannel) {
 		mChannelStore.storeChannel(aChannel);
@@ -259,8 +220,7 @@ public class ChannelManager {
 	/**
 	 * Returns the registered subscriber object for the given subscriber id
 	 *
-	 * @param aSubscriberId
-	 *            the subscriber id
+	 * @param aSubscriberId the subscriber id
 	 * @return the subscriber object
 	 */
 	public Subscriber getSubscriber(String aSubscriberId) {
@@ -270,8 +230,7 @@ public class ChannelManager {
 	/**
 	 * Stores the registered subscriber information in the channel store
 	 *
-	 * @param aSubscriber
-	 *            the subscriber to register
+	 * @param aSubscriber the subscriber to register
 	 */
 	public void storeSubscriber(Subscriber aSubscriber) {
 		mSubscriberStore.storeSubscriber(aSubscriber);
@@ -280,8 +239,7 @@ public class ChannelManager {
 	/**
 	 * Removes the given subscriber information from channel store
 	 *
-	 * @param aSubscriber
-	 *            the subscriber object
+	 * @param aSubscriber the subscriber object
 	 */
 	public void removeSubscriber(Subscriber aSubscriber) {
 		mSubscriberStore.removeSubscriber(aSubscriber.getId());
@@ -290,8 +248,7 @@ public class ChannelManager {
 	/**
 	 * Returns the registered publisher for the given publisher id
 	 *
-	 * @param aPublisherId
-	 *            the publisher id
+	 * @param aPublisherId the publisher id
 	 * @return the publisher object
 	 */
 	public Publisher getPublisher(String aPublisherId) {
@@ -311,8 +268,7 @@ public class ChannelManager {
 	/**
 	 * Removes the publisher from the channel store permanently
 	 *
-	 * @param aPublisher
-	 *            the publisher to remove
+	 * @param aPublisher the publisher to remove
 	 */
 	public void removePublisher(Publisher aPublisher) {
 		mPublisherStore.removePublisher(aPublisher.getId());
@@ -355,5 +311,9 @@ public class ChannelManager {
 	 */
 	public Map<String, Channel> getChannels() {
 		return mChannelStore.getChannels();
+	}
+
+	public boolean isAllowNewChannels() {
+		return mAllowNewChannels;
 	}
 }

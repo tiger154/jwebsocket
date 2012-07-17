@@ -15,15 +15,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.grizzly;
 
-import java.io.FileInputStream;
-import java.net.URL;
-import java.security.KeyStore;
 import java.util.Date;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.grizzly.websockets.WebSocketAddOn;
 import org.glassfish.grizzly.websockets.WebSocketApplication;
@@ -37,6 +32,7 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.tcp.nio.Util;
 
 /**
  *
@@ -65,6 +61,8 @@ public class GrizzlyEngine extends BaseEngine {
 			// load the ports from the configuration
 			mGrizzlyPort = aConfiguration.getPort();
 			mGrizzlySSLPort = aConfiguration.getSSLPort();
+			mKeyStore = aConfiguration.getKeyStore();
+			mKeyStorePassword = aConfiguration.getKeyStorePassword();
 
 			String lEngineContext = aConfiguration.getContext();
 			String lEngineApp = aConfiguration.getServlet();
@@ -121,42 +119,25 @@ public class GrizzlyEngine extends BaseEngine {
 								+ "...");
 					}
 					try {
-						SSLContext lSSLContext = SSLContext.getInstance("TLS");
-						KeyManagerFactory lKMF = KeyManagerFactory.getInstance("SunX509");
-						KeyStore lKeyStore = KeyStore.getInstance("JKS");
+						String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
+						SSLContext lSSLContext = Util.createSSLContext(lKeyStorePath, mKeyStorePassword);
 
-						String lKeyStorePath = JWebSocketConfig.getJWebSocketHome() + "conf/" + JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
-						if (lKeyStorePath != null) {
-							char[] lPassword = mKeyStorePassword.toCharArray();
-							URL lURL = JWebSocketConfig.getURLFromPath(lKeyStorePath);
-							lKeyStore.load(new FileInputStream(lURL.getPath()), lPassword);
-							lKMF.init(lKeyStore, lPassword);
+						mGrizzlySSLServer = HttpServer.createSimpleServer("/var/www", mGrizzlySSLPort);
+						mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
+						mGrizzlySSLServer.getListener("grizzly").setSecure(true);
 
-							lSSLContext.init(lKMF.getKeyManagers(), null, new java.security.SecureRandom());
+						SSLEngineConfigurator lSSLEngineConfigurator = new SSLEngineConfigurator(lSSLContext, false, false, false);
+						lSSLEngineConfigurator.setEnabledProtocols(new String[]{"TLSv1", "SSLv3"});
+						lSSLEngineConfigurator.setProtocolConfigured(true);
 
-							mGrizzlySSLServer = HttpServer.createSimpleServer("/var/www", mGrizzlySSLPort);
+						String[] lEnabledCipherSuites = {"SSL_RSA_WITH_RC4_128_SHA", "TLS_KRB5_WITH_RC4_128_SHA"};
+						//cipherSuites 	null means 'use SSLEngine's default.'
+						lSSLEngineConfigurator.setEnabledCipherSuites(lEnabledCipherSuites);
+						lSSLEngineConfigurator.setCipherConfigured(true);
 
-							mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
+						mGrizzlySSLServer.getListener("grizzly").
+								setSSLEngineConfig(lSSLEngineConfigurator);
 
-							mGrizzlySSLServer.getListener("grizzly").setSecure(true);
-
-							SSLEngineConfigurator lSSLEngineConfigurator = new SSLEngineConfigurator(lSSLContext, false, false, false);
-
-							lSSLEngineConfigurator.setEnabledProtocols(new String[]{"TLSv1", "SSLv3"});
-							lSSLEngineConfigurator.setProtocolConfigured(true);
-
-							String[] lEnabledCipherSuites = {"SSL_RSA_WITH_RC4_128_SHA", "TLS_KRB5_WITH_RC4_128_SHA"};
-
-							//cipherSuites 	null means 'use SSLEngine's default.'
-							lSSLEngineConfigurator.setEnabledCipherSuites(lEnabledCipherSuites);
-							lSSLEngineConfigurator.setCipherConfigured(true);
-
-							mGrizzlySSLServer.getListener("grizzly").
-									setSSLEngineConfig(lSSLEngineConfigurator);
-						} else {
-							mLog.error("SSL engine could not be instantiated: "
-									+ "KeyStore '" + mKeyStore + "' not found.");
-						}
 					} catch (Exception lEx) {
 						mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SSL engine"));
 					}
@@ -166,7 +147,6 @@ public class GrizzlyEngine extends BaseEngine {
 				}
 
 			}
-
 
 			// The WebSocketApplication will control the incoming and
 			//outgoing flow, connection, listeners, etc...
@@ -303,31 +283,5 @@ public class GrizzlyEngine extends BaseEngine {
 	@Override
 	public boolean isAlive() {
 		return mIsRunning;
-	}
-
-	private SSLEngineConfigurator createSSLConfig() throws Exception {
-		final SSLContextConfigurator sslContextConfigurator =
-				new SSLContextConfigurator();
-		/*
-		 * final ClassLoader cl = SuspendTest.class.getClassLoader();
-		 *
-		 * // override system properties final URL cacertsUrl =
-		 * cl.getResource("ssltest-cacerts.jks"); if (cacertsUrl != null) {
-		 * sslContextConfigurator.setTrustStoreFile(cacertsUrl.getFile());
-		 * sslContextConfigurator.setTrustStorePass("changeit"); }
-		 *
-		 * // override system properties final URL keystoreUrl =
-		 * cl.getResource("ssltest-keystore.jks");
-		 *
-		 *
-		 * if (keystoreUrl != null) {
-		 * sslContextConfigurator.setKeyStoreFile(keystoreUrl.getFile());
-		 * sslContextConfigurator.setKeyStorePass("changeit"); }
-		 */
-		sslContextConfigurator.setKeyStoreFile(mKeyStore);
-		sslContextConfigurator.setKeyStorePass(mKeyStorePassword);
-
-		return new SSLEngineConfigurator(sslContextConfigurator.createSSLContext(),
-				false, false, false);
 	}
 }

@@ -15,8 +15,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.system;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.Map.Entry;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
@@ -54,6 +54,7 @@ import org.springframework.security.core.GrantedAuthority;
  * etc...
  *
  * @author aschulze
+ * @author kybernees {Support for client-side session management and Spring authentication}
  */
 public class SystemPlugIn extends TokenPlugIn {
 
@@ -81,6 +82,17 @@ public class SystemPlugIn extends TokenPlugIn {
 	private static final String TT_WAIT = "wait";
 	private static final String TT_ALLOC_CHANNEL = "alloc";
 	private static final String TT_DEALLOC_CHANNEL = "dealloc";
+	// session CRUD operations
+	private static final String TT_SESSION_GET = "sessionGet";
+	private static final String TT_SESSION_PUT = "sessionPut";
+	private static final String TT_SESSION_HAS = "sessionHas";
+	private static final String TT_SESSION_REMOVE = "sessionRemove";
+	private static final String TT_SESSION_KEYS = "sessionKeys";
+	private static final String TT_SESSION_GETALL = "sessionGetAll";
+	private static final String TT_SESSION_GETMANY = "sessionGetMany";
+	// session key subfix for public data storage
+	// other clients can read public connector's session data
+	public static final String SESSION_PUBLIC_KEY_SUBFIX = "public::";
 	// specify shared connector variables
 	private static final String VAR_GROUP = NS_SYSTEM + ".group";
 	private static boolean BROADCAST_OPEN = true;
@@ -100,25 +112,16 @@ public class SystemPlugIn extends TokenPlugIn {
 	private ProviderManager mAuthProvMgr;
 	private ISessionManager mSessionManager;
 	/**
-	 *
+	 * Spring authentication session indexes
 	 */
 	public static final String USERNAME = "$username";
-	/**
-	 *
-	 */
 	public static final String AUTHORITIES = "$authorities";
-	/**
-	 *
-	 */
 	public static final String UUID = "$uuid";
-	/**
-	 *
-	 */
 	public static final String IS_AUTHENTICATED = "$is_authenticated";
-	private static ApplicationContext mBeanFactory;
-	/*
-	 * static { Logging.addLogger(SystemPlugIn.class); }
+	/**
+	 * Core Spring application context
 	 */
+	private static ApplicationContext mBeanFactory;
 
 	/**
 	 * Constructor with configuration object
@@ -225,6 +228,20 @@ public class SystemPlugIn extends TokenPlugIn {
 				allocChannel(aConnector, aToken);
 			} else if (lType.equals(TT_DEALLOC_CHANNEL)) {
 				deallocChannel(aConnector, aToken);
+			} else if (lType.equals(TT_SESSION_GET)) {
+				sessionGet(aConnector, aToken);
+			} else if (lType.equals(TT_SESSION_GETALL)) {
+				sessionGetAll(aConnector, aToken);
+			} else if (lType.equals(TT_SESSION_GETMANY)) {
+				sessionGetMany(aConnector, aToken);
+			} else if (lType.equals(TT_SESSION_HAS)) {
+				sessionHas(aConnector, aToken);
+			} else if (lType.equals(TT_SESSION_KEYS)) {
+				sessionKeys(aConnector, aToken);
+			} else if (lType.equals(TT_SESSION_PUT)) {
+				sessionPut(aConnector, aToken);
+			} else if (lType.equals(TT_SESSION_REMOVE)) {
+				sessionRemove(aConnector, aToken);
 			}
 			aResponse.abortChain();
 		}
@@ -762,27 +779,6 @@ public class SystemPlugIn extends TokenPlugIn {
 			lResponse.setInteger("code", -1);
 			lResponse.setString("msg", "missing 'data' argument for 'echo' command");
 		}
-		
-		/*
-		String lString = "{\"data\":{\"presetIdentifier\":\"DefaultPreset\", \"context\":\"tuner\", \"presetEntries\":[{\"entryIdentifier\":\"100.3 MHz\", \"imageIdentifier\":\"100.3 MHz\", \"entryName\":\"FFN\"}, null]}}";
-		Token lTestToken = JSONProcessor.jsonStringToToken(lString);
-		sendToken(aConnector, aConnector, lTestToken);
-		
-		
-		List lTestList = new FastList();
-		Map lTestMap = new FastMap();
-		lTestMap.put("field1", "test1");
-		lTestMap.put("field2", "null");
-		lTestList.add(lTestMap);
-		lTestList.add(null);
-		lResponse.setMap("data", lTestMap);
-		lResponse.setList("list", lTestList);
-
-		Token lToken = TokenFactory.createToken();
-		lToken.setMap("data", lTestMap);
-		lToken.setList("list", lTestList);
-		sendToken(aConnector, aConnector, lToken);
-		*/
 
 		sendToken(aConnector, aConnector, lResponse);
 	}
@@ -949,7 +945,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Starting authentication ...");
 		}
-		
+
 		Authentication lAuthRequest = new UsernamePasswordAuthenticationToken(lUsername, lPassword);
 		Authentication lAuthResult;
 		try {
@@ -1050,5 +1046,255 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// Sending the response
 		sendToken(aConnector, aConnector, lResponse);
+	}
+
+	void sessionGet(WebSocketConnector aConnector, Token aToken) {
+		String lConnectorId = aToken.getString("clientId", aConnector.getId());
+		boolean lPublic = true;
+		if (lConnectorId.equals(aConnector.getId())) {
+			lPublic = aToken.getBoolean("public", false);
+		}
+		// getting the key
+		String lKey = aToken.getString("key", null);
+		if (null == lKey) {
+			sendErrorToken(aConnector, aToken, -1, "Argument 'key' is required!");
+			return;
+		}
+
+		// getting the connector session storage
+		Map<String, Object> lSessionStorage;
+		try {
+			lSessionStorage = getServer().getConnector(lConnectorId).
+					getSession().getStorage();
+		} catch (Exception lEx) {
+			sendErrorToken(aConnector, aToken, -1, "Client with id '" + lConnectorId + "' does not exists!");
+			return;
+		}
+		// setting the key as public if required
+		lKey = (lPublic) ? SESSION_PUBLIC_KEY_SUBFIX + lKey : lKey;
+		if (!lSessionStorage.containsKey(lKey)) {
+			sendErrorToken(aConnector, aToken, -1, "The key '" + lKey
+					+ "' does not exists in the targeted client session storage!");
+			return;
+		}
+
+		// getting the value
+		Object lValue = lSessionStorage.get(lKey);
+
+		Token lResponse = createResponse(aToken);
+		Map lMap = new HashMap();
+		lMap.put("value", lValue);
+		lMap.put("key", lKey);
+		lResponse.setMap("data", lMap);
+
+		getServer().sendToken(aConnector, lResponse);
+	}
+
+	void sessionPut(WebSocketConnector aConnector, Token aToken) {
+		boolean lPublic = aToken.getBoolean("public", false);
+
+		// getting the key
+		String lKey = aToken.getString("key", null);
+		if (null == lKey) {
+			sendErrorToken(aConnector, aToken, -1, "Argument 'key' is required!");
+			return;
+		}
+
+		lKey = (lPublic) ? SESSION_PUBLIC_KEY_SUBFIX + lKey : lKey;
+		if (lKey.equals(UUID) || lKey.equals(USERNAME) || lKey.equals(AUTHORITIES)) {
+			sendErrorToken(aConnector, aToken, -1, "The given key '" + lKey + "', target a read only value!");
+			return;
+		}
+
+		// getting the value
+		Object lValue = aToken.getObject("value");
+		if (null == lValue) {
+			sendErrorToken(aConnector, aToken, -1, "Argument 'value' is required!");
+			return;
+		}
+
+		aConnector.getSession().getStorage().put(lKey, lValue);
+
+		getServer().sendToken(aConnector, createResponse(aToken));
+	}
+
+	void sessionHas(WebSocketConnector aConnector, Token aToken) {
+		String lConnectorId = aToken.getString("clientId", aConnector.getId());
+		boolean lPublic = true;
+		if (lConnectorId.equals(aConnector.getId())) {
+			lPublic = aToken.getBoolean("public", false);
+		}
+
+		// getting the key
+		String lKey = aToken.getString("key", null);
+		if (null == lKey) {
+			sendErrorToken(aConnector, aToken, -1, "Argument 'key' is required!");
+			return;
+		}
+
+		// getting the connector session storage
+		Map<String, Object> lSessionStorage;
+		try {
+			lSessionStorage = getServer().getConnector(lConnectorId).
+					getSession().getStorage();
+		} catch (Exception lEx) {
+			sendErrorToken(aConnector, aToken, -1, "Client with id '" + lConnectorId + "' does not exists!");
+			return;
+		}
+
+		lKey = (lPublic) ? SESSION_PUBLIC_KEY_SUBFIX + lKey : lKey;
+		boolean lExists = lSessionStorage.containsKey(lKey);
+
+		Token lResponse = createResponse(aToken);
+		Map lMap = new HashMap();
+		lMap.put("key", lKey);
+		lMap.put("exists", lExists);
+		lResponse.setMap("data", lMap);
+
+		getServer().sendToken(aConnector, lResponse);
+	}
+
+	void sessionRemove(WebSocketConnector aConnector, Token aToken) {
+		boolean lPublic = aToken.getBoolean("public", false);
+
+		// getting the key
+		String lKey = aToken.getString("key", null);
+		if (null == lKey) {
+			sendErrorToken(aConnector, aToken, -1, "Argument 'key' is required!");
+			return;
+		}
+
+		// getting the connector session storage
+		Map< String, Object> lSessionStorage = aConnector.getSession().getStorage();
+
+		lKey = (lPublic) ? SESSION_PUBLIC_KEY_SUBFIX + lKey : lKey;
+		if (!lSessionStorage.containsKey(lKey)) {
+			sendErrorToken(aConnector, aToken, -1, "The key '" + lKey
+					+ "' does not exists!");
+			return;
+		}
+		// removing the session entry
+		Object lValue = lSessionStorage.remove(lKey);
+
+		Token lResponse = createResponse(aToken);
+		Map lMap = new HashMap();
+		lMap.put("key", lKey);
+		lMap.put("value", lValue);
+		lResponse.setMap("data", lMap);
+
+		getServer().sendToken(aConnector, lResponse);
+	}
+
+	void sessionKeys(WebSocketConnector aConnector, Token aToken) {
+		String lConnectorId = aToken.getString("clientId", aConnector.getId());
+		boolean lPublic = true;
+		if (lConnectorId.equals(aConnector.getId())) {
+			lPublic = aToken.getBoolean("public", false);
+		}
+
+		// getting the connector session storage
+		Map<String, Object> lSessionStorage;
+		try {
+			lSessionStorage = getServer().getConnector(lConnectorId).
+					getSession().getStorage();
+		} catch (Exception lEx) {
+			sendErrorToken(aConnector, aToken, -1, "Client with id '" + lConnectorId + "' does not exists!");
+			return;
+		}
+
+		Iterator<String> lKeySet = lSessionStorage.keySet().iterator();
+		List<String> lKeys = new LinkedList<String>();
+
+		while (lKeySet.hasNext()) {
+			String lKey = lKeySet.next();
+			if (lPublic && !lKey.startsWith(SESSION_PUBLIC_KEY_SUBFIX)) {
+				continue;
+			} else {
+				lKeys.add(lKey);
+			}
+		}
+
+		Token lResponse = createResponse(aToken);
+		lResponse.setList("data", lKeys);
+
+		getServer().sendToken(aConnector, lResponse);
+	}
+
+	void sessionGetAll(WebSocketConnector aConnector, Token aToken) {
+		String lConnectorId = aToken.getString("clientId", aConnector.getId());
+		boolean lPublic = true;
+		if (lConnectorId.equals(aConnector.getId())) {
+			lPublic = aToken.getBoolean("public", false);
+		}
+
+		// getting the connector session storage
+		Map<String, Object> lSessionStorage;
+		try {
+			lSessionStorage = getServer().getConnector(lConnectorId).
+					getSession().getStorage();
+		} catch (Exception lEx) {
+			sendErrorToken(aConnector, aToken, -1, "Client with id '" + lConnectorId + "' does not exists!");
+			return;
+		}
+
+		// getting entries
+		Iterator<Entry<String, Object>> lEntries = lSessionStorage.entrySet().iterator();
+		Map<String, Object> lResult = new HashMap<String, Object>();
+		while (lEntries.hasNext()) {
+			Entry<String, Object> lEntry = lEntries.next();
+			if (lPublic && !lEntry.getKey().startsWith(SESSION_PUBLIC_KEY_SUBFIX)) {
+				continue;
+			} else {
+				lResult.put(lEntry.getKey(), lEntry.getValue());
+			}
+		}
+
+		// creating the response
+		Token lResponse = createResponse(aToken);
+		lResponse.setMap("data", lResult);
+
+		// sending entries to the client
+		getServer().sendToken(aConnector, lResponse);
+	}
+
+	void sessionGetMany(WebSocketConnector aConnector, Token aToken) {
+		List lClients = aToken.getList("clients");
+		List lKeys = aToken.getList("keys");
+		if (null == lClients || lClients.isEmpty()) {
+			sendErrorToken(aConnector, aToken, -1, "Argument 'clients' is required!");
+			return;
+		}
+		if (null == lKeys || lKeys.isEmpty()) {
+			sendErrorToken(aConnector, aToken, -1, "Argument 'keys' is required!");
+			return;
+		}
+
+		Map<String, Object> lResult = new HashMap<String, Object>();
+		for (Object lConnectorId : lClients) {
+			// getting the connector session storage
+			Map<String, Object> lSessionStorage;
+			try {
+				lSessionStorage = getServer().getConnector(lConnectorId.toString()).
+						getSession().getStorage();
+				Map<String, Object> lVars = new HashMap<String, Object>();
+				for (Object lKey : lKeys) {
+					try {
+						lVars.put(lKey.toString(), lSessionStorage.get(SESSION_PUBLIC_KEY_SUBFIX + lKey));
+					} catch (Exception lEx) {
+					}
+				}
+
+				lResult.put(lConnectorId.toString(), lVars);
+			} catch (Exception lEx) {
+				continue;
+			}
+		}
+
+		// creating the response
+		Token lResponse = createResponse(aToken);
+		lResponse.setMap("data", lResult);
+
+		// sending entries to the client
+		getServer().sendToken(aConnector, lResponse);
 	}
 }

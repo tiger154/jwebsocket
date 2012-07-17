@@ -26,6 +26,8 @@ import java.util.Map;
  */
 public interface ChannelStore {
 
+	
+	
 	/**
 	 * Returns the channel from the data store based on channel key or id
 	 * @param id the channel id

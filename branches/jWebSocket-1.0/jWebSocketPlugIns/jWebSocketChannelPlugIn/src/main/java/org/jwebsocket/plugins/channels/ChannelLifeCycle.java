@@ -23,11 +23,9 @@ package org.jwebsocket.plugins.channels;
  */
 public interface ChannelLifeCycle {
 
-	void init();
+	void init() throws ChannelLifeCycleException;
 
 	void start(String user) throws ChannelLifeCycleException;
-
-	void suspend(String user) throws ChannelLifeCycleException;
 
 	void stop(String user) throws ChannelLifeCycleException;
 }

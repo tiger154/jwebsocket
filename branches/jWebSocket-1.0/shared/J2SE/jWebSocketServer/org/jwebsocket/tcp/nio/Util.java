@@ -1,6 +1,6 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - Util
-//	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org, Author: Jan Gnezda
+//	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -15,6 +15,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp.nio;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -24,6 +25,7 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import org.jwebsocket.config.JWebSocketConfig;
 
 /**
@@ -42,11 +44,16 @@ public class Util {
 	 */
 	public static SSLContext createSSLContext(String aKeyStore, String aKeyStorePassword) throws Exception {
 		SSLContext lSSLContext = SSLContext.getInstance("TLS");
+
 		KeyManagerFactory lKMF = KeyManagerFactory.getInstance("SunX509");
+
 		KeyStore lKeyStore = KeyStore.getInstance("JKS");
 
+		TrustManagerFactory lTM = TrustManagerFactory.getInstance("SunX509");
+		lTM.init(lKeyStore);
+
 		String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(aKeyStore);
-		if (lKeyStorePath != null) {
+		if (new File(lKeyStorePath).exists()) {
 			char[] lPassword = aKeyStorePassword.toCharArray();
 			URL lURL = JWebSocketConfig.getURLFromPath(lKeyStorePath);
 			lKeyStore.load(new FileInputStream(lURL.getPath()), lPassword);
@@ -54,7 +61,9 @@ public class Util {
 			SecureRandom lSecureRandom = new java.security.SecureRandom();
 			lSecureRandom.nextInt();
 
-			lSSLContext.init(lKMF.getKeyManagers(), null, lSecureRandom);
+			lSSLContext.init(lKMF.getKeyManagers(), lTM.getTrustManagers(), lSecureRandom);
+		} else {
+			throw new Exception("KeyStore file not found!");
 		}
 
 		return lSSLContext;

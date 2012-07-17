@@ -39,7 +39,6 @@ jws.ChannelPlugIn = {
 	REMOVE_CHANNEL: "removeChannel",
 	GET_SUBSCRIBERS: "getSubscribers",
 	GET_SUBSCRIPTIONS: "getSubscriptions",
-
 	AUTHORIZE: "authorize",
 	PUBLISH: "publish",
 	STOP: "stop",
@@ -57,6 +56,22 @@ jws.ChannelPlugIn = {
 				} else if( "channelRemoved" == aToken.name ) {
 					if( this.fOnChannelRemoved ) {
 						this.fOnChannelRemoved( aToken );
+					}
+				} else if( "channelStarted" == aToken.name ) {
+					if( this.fOnChannelStarted ) {
+						this.fOnChannelStarted( aToken );
+					}
+				} else if( "channelStopped" == aToken.name ) {
+					if( this.fOnChannelStopped ) {
+						this.fOnChannelStopped( aToken );
+					}
+				} else if( "subscription" == aToken.name ) {
+					if( this.fOnChannelSubscription ) {
+						this.fOnChannelSubscription( aToken );
+					}
+				} else if( "unsubscription" == aToken.name ) {
+					if( this.fOnChannelUnsubscription ) {
+						this.fOnChannelUnsubscription( aToken );
 					}
 				} 
 			} else if( "getChannels" == aToken.reqType ) {
@@ -357,6 +372,18 @@ jws.ChannelPlugIn = {
 		}
 		if( aListeners.OnChannelRemoved !== undefined ) {
 			this.fOnChannelRemoved = aListeners.OnChannelRemoved;
+		}
+		if( aListeners.OnChannelStarted !== undefined ) {
+			this.fOnChannelStarted = aListeners.OnChannelStarted;
+		}
+		if( aListeners.OnChannelStopped !== undefined ) {
+			this.fOnChannelStopped = aListeners.OnChannelStopped;
+		}
+		if( aListeners.OnChannelSubscription !== undefined ) {
+			this.fOnChannelSubscription = aListeners.OnChannelSubscription;
+		}
+		if( aListeners.OnChannelUnsubscription !== undefined ) {
+			this.fOnChannelUnsubscription = aListeners.OnChannelUnsubscription;
 		}
 	}
 

@@ -15,14 +15,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URL;
-import java.security.KeyStore;
 import java.util.Date;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -37,6 +33,7 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.tcp.nio.Util;
 
 /**
  * Implementation of the jWebSocket TCP engine. The TCP engine provide a Java
@@ -44,6 +41,7 @@ import org.jwebsocket.logging.Logging;
  *
  * @author aschulze
  * @author jang
+ * @author kyberneees
  */
 public class TCPEngine extends BaseEngine {
 
@@ -128,41 +126,29 @@ public class TCPEngine extends BaseEngine {
 							+ "...");
 				}
 				try {
-					SSLContext lSSLContext = SSLContext.getInstance("TLS");
-					KeyManagerFactory lKMF = KeyManagerFactory.getInstance("SunX509");
-					KeyStore lKeyStore = KeyStore.getInstance("JKS");
-
 					String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
-					if (lKeyStorePath != null) {
-						char[] lPassword = mKeyStorePassword.toCharArray();
-						URL lURL = JWebSocketConfig.getURLFromPath(lKeyStorePath);
-						lKeyStore.load(new FileInputStream(lURL.getPath()), lPassword);
-						lKMF.init(lKeyStore, lPassword);
+					SSLContext lSSLContext = Util.createSSLContext(lKeyStorePath, mKeyStorePassword);
+					
+					SSLServerSocketFactory lSSLFactory = lSSLContext.getServerSocketFactory();
+					mSSLServerSocket = (SSLServerSocket) lSSLFactory.createServerSocket(
+							mSSLListenerPort);
+					// enable all protocols
+					mSSLServerSocket.setEnabledProtocols(mSSLServerSocket.getEnabledProtocols());
+					// enable all cipher suites
+					mSSLServerSocket.setEnabledCipherSuites(mSSLServerSocket.getSupportedCipherSuites());
+					EngineListener lSSLListener = new EngineListener(this, mSSLServerSocket);
+					mSSLEngineThread = new Thread(lSSLListener);
+					mSSLEngineThread.start();
 
-						lSSLContext.init(lKMF.getKeyManagers(), null, new java.security.SecureRandom());
-						SSLServerSocketFactory lSSLFactory = lSSLContext.getServerSocketFactory();
-						mSSLServerSocket = (SSLServerSocket) lSSLFactory.createServerSocket(
-								mSSLListenerPort);
-						// enable all protocols
-						mSSLServerSocket.setEnabledProtocols(mSSLServerSocket.getEnabledProtocols());
-						// enable all cipher suites
-						mSSLServerSocket.setEnabledCipherSuites(mSSLServerSocket.getSupportedCipherSuites());
-						EngineListener lSSLListener = new EngineListener(this, mSSLServerSocket);
-						mSSLEngineThread = new Thread(lSSLListener);
-						mSSLEngineThread.start();
-
-						if (mLog.isInfoEnabled()) {
-							mLog.info("SSL engine '"
-									+ getId() + "' started' at port "
-									+ mSSLListenerPort + " with default timeout "
-									+ (mSessionTimeout > 0
-									? mSessionTimeout + "ms" : "infinite")
-									+ ".");
-						}
-					} else {
-						mLog.error("SSL engine could not be instantiated: "
-								+ "KeyStore '" + mKeyStore + "' not found.");
+					if (mLog.isInfoEnabled()) {
+						mLog.info("SSL engine '"
+								+ getId() + "' started' at port "
+								+ mSSLListenerPort + " with default timeout "
+								+ (mSessionTimeout > 0
+								? mSessionTimeout + "ms" : "infinite")
+								+ ".");
 					}
+
 				} catch (Exception lEx) {
 					mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SSL engine"));
 				}
