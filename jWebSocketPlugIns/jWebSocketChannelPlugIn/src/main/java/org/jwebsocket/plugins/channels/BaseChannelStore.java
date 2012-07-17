@@ -20,39 +20,41 @@ import java.util.Map;
 import java.util.Set;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jwebsocket.api.IBasicStorage;
+import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.server.TokenServer;
 
 /**
  * Base JDBC based implementation of the <tt>ChannelStore</tt>
- * 
+ *
  * @author puran, aschulze
- * @version $Id: BaseChannelStore.java 1101 2010-10-19 12:36:12Z fivefeetfurther$
+ * @version $Id: BaseChannelStore.java 1101 2010-10-19 12:36:12Z
+ * fivefeetfurther$
  */
 public class BaseChannelStore implements ChannelStore {
 
-	/** logger object */
+	/**
+	 * logger object
+	 */
 	private static Logger logger = Logging.getLogger(BaseChannelStore.class);
-	private static final String ID = "id";
-	private static final String NAME = "name";
-	private static final String PRIVATE = "private";
-	private static final String SYSTEM = "system";
-	private static final String SECRET_KEY = "secret_key";
-	private static final String ACCESS_KEY = "access_key";
-	private static final String OWNER = "owner";
-	private static final String STATE = "state";
-	private static final String SUBSCRIBERS = "subscribers";
-	private static final String PUBLISHERS = "publishers";
+	public static final String ID = "id";
+	public static final String NAME = "name";
+	public static final String PRIVATE = "isPrivate";
+	public static final String SYSTEM = "isSystem";
+	public static final String SECRET_KEY = "secret_key";
+	public static final String ACCESS_KEY = "access_key";
+	public static final String OWNER = "owner";
+	public static final String STATE = "state";
+	public static final String SUBSCRIBERS = "subscribers";
+	public static final String PUBLISHERS = "publishers";
+	public static final String SERVER_ID = "token_server";
 	private IBasicStorage mStorage = null;
 
-	/**
-	 * default constructor
-	 */
 	public BaseChannelStore(IBasicStorage aStorage) {
 		setStorage(aStorage);
 	}
@@ -91,21 +93,16 @@ public class BaseChannelStore implements ChannelStore {
 			String lSecretKey = lJSONObj.getString(SECRET_KEY);
 			String lAccessKey = lJSONObj.getString(ACCESS_KEY);
 			String lOwner = lJSONObj.getString(OWNER);
-			int lStateValue = lJSONObj.getInt(STATE);
+			String lStateValue = lJSONObj.getString(STATE);
 			JSONArray lJSSubscribers = lJSONObj.getJSONArray(SUBSCRIBERS);
 			JSONArray lJSPublishers = lJSONObj.getJSONArray(PUBLISHERS);
-			Channel.ChannelState lState = null;
-			for (Channel.ChannelState lChannelState : Channel.ChannelState.values()) {
-				if (lChannelState.getValue() == lStateValue) {
-					lState = lChannelState;
-					break;
-				}
-			}
+			String lServerId = lJSONObj.getString(SERVER_ID);
 			// construct the channel object
 			lChannel = new Channel(lChannelId, lChannelName,
 					lPrivate, lSystem,
 					lAccessKey, lSecretKey,
-					lOwner, lState);
+					lOwner, Channel.ChannelState.valueOf(lStateValue),
+					(TokenServer) JWebSocketFactory.getServer(lServerId));
 			List lSubscribers = new FastList<String>();
 			List lPublishers = new FastList<String>();
 			for (int i = 0; i < lJSSubscribers.length(); i++) {
@@ -139,11 +136,12 @@ public class BaseChannelStore implements ChannelStore {
 			lJSON.put(SECRET_KEY, aChannel.getSecretKey());
 			lJSON.put(ACCESS_KEY, aChannel.getAccessKey());
 			lJSON.put(OWNER, aChannel.getOwner());
-			lJSON.put(STATE, Channel.ChannelState.STARTED.getValue());
+			lJSON.put(STATE, aChannel.getState().name());
 			JSONArray lSubscribers = new JSONArray(aChannel.getSubscribers());
 			lJSON.put(SUBSCRIBERS, lSubscribers);
 			JSONArray lPublishers = new JSONArray(aChannel.getPublishers());
 			lJSON.put(PUBLISHERS, lPublishers);
+			lJSON.put(SERVER_ID, aChannel.getServer().getId());
 
 			// now save
 			// TODO: Need to think about how to return potential error (Exception?)
@@ -182,7 +180,6 @@ public class BaseChannelStore implements ChannelStore {
 
 	@Override
 	public Map<String, Channel> getChannels() {
-		// TODO: EhCacheStorage does not yet implement values and entryset! Implement to be more efficient!
 		Set lKeys = mStorage.keySet();
 		Map lRes = new FastMap<String, Channel>();
 		if (lKeys != null) {

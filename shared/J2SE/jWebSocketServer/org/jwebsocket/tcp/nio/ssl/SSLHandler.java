@@ -1,6 +1,6 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - SSLHandler
-//	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org, Author: Jan Gnezda
+//	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -21,49 +21,102 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLException;
 
 /**
- * Concept from http://www.java-gaming.org/index.php?PHPSESSID=1omilg2ptvh0a138gcfsnjqki1&topic=21984.msg181208#msg181208
- * 
+ * Concept:
+ * http://www.java-gaming.org/index.php?PHPSESSID=1omilg2ptvh0a138gcfsnjqki1&topic=21984.msg181208#msg181208
+ *
  * @author kyberneees
  */
 public abstract class SSLHandler {
 
-	final ByteBuffer mWrapSrc, mUnwrapSrc;
-	final ByteBuffer mWrapDst, mUnwrapDst;
-	final SSLEngine mEngine;
+	private ByteBuffer mWrapSrc, mUnwrapSrc;
+	private ByteBuffer mWrapDst, mUnwrapDst;
+	private final SSLEngine mEngine;
 	private boolean mAfterHandshake = false;
+	private int mBufferSize;
 
 	public SSLHandler(SSLEngine aEngine, int aBufferSize) {
-		mWrapSrc = ByteBuffer.allocateDirect(aBufferSize);
-		mWrapDst = ByteBuffer.allocateDirect(aBufferSize);
+		mWrapSrc = ByteBuffer.allocate(aBufferSize);
+		mWrapDst = ByteBuffer.allocate(aBufferSize);
 
-		mUnwrapSrc = ByteBuffer.allocateDirect(aBufferSize);
-		mUnwrapDst = ByteBuffer.allocateDirect(aBufferSize);
+		mUnwrapSrc = ByteBuffer.allocate(aBufferSize);
+		mUnwrapDst = ByteBuffer.allocate(aBufferSize);
 
-
+		mBufferSize = aBufferSize;
 		mEngine = aEngine;
 	}
 
+	/**
+	 * Handles incoming decrypted packets
+	 *
+	 * @param aDecrypted
+	 */
 	public abstract void onInboundData(ByteBuffer aDecrypted);
 
+	/**
+	 * Handles outgoing encrypted (SSL) packets
+	 *
+	 * @param aEncrypted
+	 */
 	public abstract void onOutboundData(ByteBuffer aEncrypted);
 
+	/**
+	 * Handles SSL handshake failure
+	 *
+	 * @param aCause
+	 */
 	public abstract void onHandshakeFailure(Exception aCause);
 
+	/**
+	 * Handles SSl handshake success
+	 */
 	public abstract void onHandshakeSuccess();
 
+	/**
+	 * Handles SSL handshake close
+	 */
 	public abstract void onClosed();
 
+	/**
+	 * Encrypts outgoing packet to be sent to the client
+	 *
+	 * @param aData
+	 */
 	public synchronized void send(final ByteBuffer aData) {
+		if (mAfterHandshake) {
+			mWrapSrc = ByteBuffer.allocate(mBufferSize);
+			mWrapDst = ByteBuffer.allocate(mBufferSize);
+		}
+
 		mWrapSrc.put(aData);
 		execute();
+
+		if (mAfterHandshake) {
+			//release buffer's memory
+			mWrapSrc = null;
+			mWrapDst = null;
+		}
 	}
 
+	/**
+	 * Decrypt incoming SSL encrypted packet and execute "onInboundData"
+	 * callback
+	 *
+	 * @param aData
+	 */
 	public synchronized void processSSLPacket(final ByteBuffer aData) {
+		if (mAfterHandshake) {
+			mUnwrapSrc = ByteBuffer.allocate(mBufferSize);
+			mUnwrapDst = ByteBuffer.allocate(mBufferSize);
+		}
+
 		mUnwrapSrc.put(aData);
 		execute();
 	}
 
-	public void execute() {
+	/**
+	 * Execute SSL work-flow
+	 */
+	private void execute() {
 		while (this.step()) {
 			continue;
 		}
@@ -73,10 +126,10 @@ public abstract class SSLHandler {
 		switch (mEngine.getHandshakeStatus()) {
 			case NOT_HANDSHAKING:
 				boolean lContinue = false; {
-				if (mWrapSrc.position() > 0) {
+				if (null != mWrapSrc && mWrapSrc.position() > 0) {
 					lContinue |= this.wrap();
 				}
-				if (mUnwrapSrc.position() > 0) {
+				if (null != mUnwrapSrc && mUnwrapSrc.position() > 0) {
 					lContinue |= this.unwrap();
 				}
 			}
@@ -131,7 +184,6 @@ public abstract class SSLHandler {
 				break;
 
 			case BUFFER_UNDERFLOW:
-				// try again later
 				break;
 
 			case BUFFER_OVERFLOW:
@@ -157,17 +209,34 @@ public abstract class SSLHandler {
 			return false;
 		}
 
+		//Use NOT_HANDSHAKING inside "unwrap" method 
+		//instead of FINISHED inside the "wrap" method
+		if (lResult.getHandshakeStatus().equals(SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING)
+				&& !mAfterHandshake) {
+			this.onHandshakeSuccess();
+			mAfterHandshake = true;
+
+			//release buffer's memory
+			mWrapDst = null;
+			mWrapSrc = null;
+		}
+
 		switch (lResult.getStatus()) {
 			case OK:
 				if (mUnwrapDst.position() > 0) {
 					mUnwrapDst.flip();
-					this.onInboundData(mUnwrapDst);
+					if (mAfterHandshake) {
+						//Ensure that limit is bigger than 1 
+						if (mUnwrapDst.limit() > 1) {
+							this.onInboundData(mUnwrapDst);
+
+							//release buffer's memory
+							mUnwrapDst = null;
+							mUnwrapSrc = null;
+							break;
+						}
+					}
 					mUnwrapDst.compact();
-				}
-				if (lResult.getHandshakeStatus().equals(SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING)
-						&& !mAfterHandshake) {
-					this.onHandshakeSuccess();
-					mAfterHandshake = true;
 				}
 				break;
 

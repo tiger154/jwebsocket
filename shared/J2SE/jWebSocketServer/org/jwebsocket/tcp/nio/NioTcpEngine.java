@@ -57,7 +57,7 @@ import org.jwebsocket.util.Tools;
  * locking or spinning, depending on actual scenario). </p>
  *
  * @author jang
- * @author kyberneees (bug fixes, session identifier cookie support and
+ * @author kyberneees (bug fixes, session identifier cookie support, SSL and
  * performance improvements)
  */
 public class NioTcpEngine extends BaseEngine {
@@ -154,10 +154,17 @@ public class NioTcpEngine extends BaseEngine {
 		if (mPlainSelector != null) {
 			try {
 				mIsRunning = false;
+
 				mPlainSelectorThread.join();
 				mPlainSelector.wakeup();
 				mPlainServer.close();
 				mPlainSelector.close();
+
+				mSSLSelectorThread.join();
+				mSSLSelector.wakeup();
+				mSSLServer.close();
+				mSSLSelector.close();
+
 				mPendingWrites.clear();
 				mExecutorService.shutdown();
 				mLog.info("NIO engine stopped.");
@@ -285,7 +292,12 @@ public class NioTcpEngine extends BaseEngine {
 
 	private void write(SelectionKey aKey, Selector aSelector) throws IOException {
 		SocketChannel lSocketChannel = (SocketChannel) aKey.channel();
-		Queue<DataFuture> lQueue = mPendingWrites.get(mChannelToConnectorMap.get(lSocketChannel));
+		Queue<DataFuture> lQueue = null;
+		try {
+			lQueue = mPendingWrites.get(mChannelToConnectorMap.get(lSocketChannel));
+		} catch (Exception lEx) {
+			// the client was disconnected previously. ignore it
+		}
 		if (!lQueue.isEmpty()) {
 			DataFuture future = lQueue.element();
 			try {
@@ -324,11 +336,18 @@ public class NioTcpEngine extends BaseEngine {
 				SocketChannel lSocketChannel = ((ServerSocketChannel) aKey.channel()).accept();
 				lSocketChannel.configureBlocking(false);
 				lSocketChannel.register(aSelector, SelectionKey.OP_READ);
+
 				int lSocketPort = lSocketChannel.socket().getPort();
 				int lServerPort = lSocketChannel.socket().getLocalPort();
+
 				NioTcpConnector lConnector = new NioTcpConnector(
 						this, lSocketChannel.socket().getInetAddress(),
 						lSocketPort);
+
+				getConnectors().put(lConnector.getId(), lConnector);
+				mPendingWrites.put(lConnector.getId(), new ConcurrentLinkedQueue<DataFuture>());
+				mConnectorToChannelMap.put(lConnector.getId(), lSocketChannel);
+				mChannelToConnectorMap.put(lSocketChannel, lConnector.getId());
 
 				// initialize the SSLHandler
 				if (lServerPort == getConfiguration().getSSLPort()) {
@@ -344,13 +363,9 @@ public class NioTcpEngine extends BaseEngine {
 							lEngine,
 							getConfiguration().getMaxFramesize()));
 				}
-				getConnectors().put(lConnector.getId(), lConnector);
-				mPendingWrites.put(lConnector.getId(), new ConcurrentLinkedQueue<DataFuture>());
-				mConnectorToChannelMap.put(lConnector.getId(), lSocketChannel);
-				mChannelToConnectorMap.put(lSocketChannel, lConnector.getId());
 
-				mLog.info("NIO " + ((lConnector.isSSL()) ? "(SSL)" : "(plain)")
-						+ "client started. Address: " + lConnector.getRemoteHost()
+				mLog.info("NIO" + ((lConnector.isSSL()) ? "(SSL)" : "(plain)")
+						+ " client started. Address: " + lConnector.getRemoteHost()
 						+ "@" + lConnector.getRemotePort());
 			}
 		} catch (IOException e) {
@@ -472,10 +487,11 @@ public class NioTcpEngine extends BaseEngine {
 						lDelayedPacket.getConnector().getSSLHandler().
 								processSSLPacket(ByteBuffer.wrap(lDelayedPacket.getBean().getData()));
 					} else {
-						// executing normal read operation
+						// processing plain packets
 						doRead(lDelayedPacket.getConnector(), lDelayedPacket.getBean());
 					}
-					// release the worker
+
+					// release the connector for future reads
 					lDelayedPacket.getConnector().releaseWorker();
 				} catch (Exception e) {
 					// uncaught exception during packet processing - kill the worker (todo: think about worker restart)
@@ -570,7 +586,7 @@ public class NioTcpEngine extends BaseEngine {
 			} else if (lRawPacket.getFrameType() == WebSocketFrameType.FRAGMENT
 					|| lRawPacket.getFrameType() == WebSocketFrameType.BINARY) {
 				mLog.debug(getClass().getSimpleName() + ": Discarding unsupported ('"
-						+ lRawPacket.getFrameType().toString() + "')incoming packet... ");
+						+ lRawPacket.getFrameType().toString() + "') incoming packet... ");
 			}
 
 			// read more pending packets in the buffer (for high concurrency scenarios)

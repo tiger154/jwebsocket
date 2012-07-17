@@ -43,7 +43,7 @@ jws.tests.System = {
 				},
 				lSpec,
 				1500
-			);
+				);
 
 			runs( function() {
 				expect( lResponse.code ).toEqual( 0 );
@@ -78,7 +78,7 @@ jws.tests.System = {
 				},
 				lSpec,
 				1500
-			);
+				);
 
 			runs( function() {
 				expect( lResponse.code ).toEqual( -1 );
@@ -124,7 +124,7 @@ jws.tests.System = {
 				},
 				lSpec,
 				1500
-			);
+				);
 
 			runs( function() {
 				expect( lResponse.data ).toEqual( lMsg );
@@ -137,7 +137,7 @@ jws.tests.System = {
 	// this spec tests the connect timeout behaviour of the client
 	testConnectTimeout: function( aURL, aOpenTimeout, aExpectedResult ) {
 		var lSpec = this.NS + ": connect timeout" 
-			+ " (timeout: " + aOpenTimeout + "ms)";
+		+ " (timeout: " + aOpenTimeout + "ms)";
 		
 		it( lSpec, function () {
 
@@ -173,7 +173,7 @@ jws.tests.System = {
 				},
 				lSpec,
 				aOpenTimeout + 500
-			);
+				);
 
 			runs( function() {
 				expect( lStatus ).toEqual( aExpectedResult );
@@ -185,8 +185,8 @@ jws.tests.System = {
 	// this spec tests the response timeout behaviour of the client
 	testResponseTimeout: function( aServerDelay, aClientTimeout ) {
 		var lSpec = this.NS + ": response timeout" 
-			+ " (Server: " + aServerDelay + "ms," 
-			+ " client: " + aClientTimeout + "ms)";
+		+ " (Server: " + aServerDelay + "ms," 
+		+ " client: " + aClientTimeout + "ms)";
 		
 		it( lSpec, function () {
 
@@ -217,7 +217,7 @@ jws.tests.System = {
 				},
 				lSpec,
 				aClientTimeout + 1000
-			);
+				);
 
 			runs( function() {
 				if( lExpectTimeout ) {
@@ -229,7 +229,229 @@ jws.tests.System = {
 
 		});
 	},
+	
+	testSessionPut: function(aKey, aValue, aPublic){
+		var lSpec = this.NS + ": putting data on the server session of the client" 
+		it( lSpec, function () {
+			var lResponse = null;
+		
+			waitsFor(
+				function() {
+					return jws.Tests.getAdminConn() != null;
+				},
+				this.NS + ": waiting for admin connection",
+				1000
+				);
 
+			runs(function () {
+				jws.Tests.getAdminConn().sessionPut(aKey, aValue, aPublic, {
+					OnResponse: function(aResponse){
+						lResponse = aResponse;
+					} 
+				});
+			})
+		
+			waitsFor(
+				function() {
+					return lResponse != null;
+				},
+				lSpec,
+				1000
+				);
+		
+			runs( function() {
+				expect( lResponse.code ).toEqual( 0 );
+			});
+		});
+	},
+
+	testSessionGet: function(aKey, aPublic, aExpectedValue){
+		var lSpec = this.NS + ": getting data from the server session of a given client"
+		it( lSpec, function () {
+			var lResponse = null;
+		
+			runs(function () {
+				jws.Tests.getAdminConn().sessionGet(jws.Tests.getAdminConn().getId(), 
+					aKey, aPublic, {
+						OnResponse: function(aResponse){
+							lResponse = aResponse;
+						} 
+					});
+			})
+		
+			waitsFor(
+				function() {
+					return lResponse != null;
+				},
+				lSpec,
+				1000
+				);
+		
+			runs( function() {
+				expect( lResponse.code ).toEqual( 0 );
+				expect( lResponse.data.key ).toEqual( (aPublic) ? "public::" + aKey : aKey );
+				expect( lResponse.data.value ).toEqual( aExpectedValue );
+			});
+		});
+	},
+	
+	testSessionHas: function(aKey, aPublic, aExpectedValue){
+		var lSpec = this.NS + ": checking if the server session of a given client has a given entry"
+		it( lSpec, function () {
+			var lResponse = null;
+		
+			runs(function () {
+				jws.Tests.getAdminConn().sessionHas(jws.Tests.getAdminConn().getId(), 
+					aKey, aPublic, {
+						OnResponse: function(aResponse){
+							lResponse = aResponse;
+						} 
+					});
+			})
+		
+			waitsFor(
+				function() {
+					return lResponse != null;
+				},
+				lSpec,
+				1000
+				);
+		
+			runs( function() {
+				expect( lResponse.code ).toEqual( 0 );
+				expect( lResponse.data.key ).toEqual( (aPublic) ? "public::" + aKey : aKey );
+				expect( lResponse.data.exists ).toEqual( aExpectedValue );
+			});
+		});
+	},
+	
+	testSessionKeys: function(aPublic, aExpectedValue){
+		var lSpec = this.NS + ": getting the server session keys of a given client"
+		it( lSpec, function () {
+			var lResponse = null;
+		
+			runs(function () {
+				jws.Tests.getAdminConn().sessionKeys(jws.Tests.getAdminConn().getId(), 
+					aPublic, {
+						OnResponse: function(aResponse){
+							lResponse = aResponse;
+						} 
+					});
+			})
+		
+			waitsFor(
+				function() {
+					return lResponse != null;
+				},
+				lSpec,
+				1000
+				);
+		
+			runs( function() {
+				expect( lResponse.code ).toEqual( 0 );
+				expect( lResponse.data.length ).toEqual( aExpectedValue );
+			});
+		});
+	},
+	
+	testSessionRemove: function(aKey, aPublic, aExpectedCode){
+		var lSpec = this.NS + ": removing server session entry"
+		it( lSpec, function () {
+			var lResponse = null;
+		
+			runs(function () {
+				jws.Tests.getAdminConn().sessionRemove(aKey, aPublic, {
+					OnResponse: function(aResponse){
+						lResponse = aResponse;
+					} 
+				});
+			})
+		
+			waitsFor(
+				function() {
+					return lResponse != null;
+				},
+				lSpec,
+				1000
+				);
+		
+			runs( function() {
+				expect( lResponse.code ).toEqual( aExpectedCode );
+				if (0 == aExpectedCode){
+					expect( lResponse.data.key ).toEqual( (aPublic) ? "public::" + aKey : aKey );
+					expect( lResponse.data.value != null ).toEqual( true );
+				}
+			});
+		});
+	},
+	
+	testSessionGetAll: function(aPublic, aExpectedResult){
+		var lSpec = this.NS + ": getting the server session keys of a given client"
+		it( lSpec, function () {
+			var lResponse = null;
+		
+			runs(function () {
+				jws.Tests.getAdminConn().sessionGetAll(jws.Tests.getAdminConn().getId(), 
+					aPublic, {
+						OnResponse: function(aResponse){
+							lResponse = aResponse;
+						} 
+					});
+			})
+		
+			waitsFor(
+				function() {
+					return lResponse != null;
+				},
+				lSpec,
+				1000
+				);
+		
+			runs( function() {
+				expect( lResponse.code ).toEqual( 0 );
+				for (var lProp in aExpectedResult){
+					expect( lResponse.data[lProp] ).toEqual( aExpectedResult[lProp] );
+				}
+			});
+		});
+	},
+	
+	testSessionGetMany: function(aKeys, aExpectedResult){
+		var lSpec = this.NS + ": getting multiple public session entries for a given collection of clients"
+		it( lSpec, function () {
+			var lResponse = null;
+			var lClients = [jws.Tests.getAdminConn().getId()];
+			runs(function () {
+				jws.Tests.getAdminConn().sessionGetMany(lClients, 
+					aKeys, {
+						OnResponse: function(aResponse){
+							lResponse = aResponse;
+						} 
+					});
+			})
+		
+			waitsFor(
+				function() {
+					return lResponse != null;
+				},
+				lSpec,
+				1000
+				);
+		
+			runs( function() {
+				var lExpected = {};
+				lExpected[jws.Tests.getAdminConn().getId()] = aExpectedResult;
+				expect( lResponse.code ).toEqual( 0 );
+				for (var i = 0; i < lClients.length; i++) {
+					for (var j = 0; j < aKeys.length; j++) {
+						expect( lResponse.data[lClients[i]][aKeys[j]] ).
+						toEqual( lExpected[lClients[i]][aKeys[j]] );
+					}
+				}
+			});
+		});
+	},
+	
 	runSpecs: function() {
 		jws.tests.System.testLoginValidCredentials();
 		jws.tests.System.testLoginInvalidCredentials();
@@ -246,6 +468,31 @@ jws.tests.System = {
 		jws.tests.System.testResponseTimeout( 500, 100 );
 		// should exceed the timeout and fire timeout event
 		jws.tests.System.testResponseTimeout( 1000, 500 );
+		
+		// server side session management support
+		jws.tests.System.testSessionPut("myVar", "myVarValue", true);
+		jws.tests.System.testSessionPut("myPrivateVar", "myPrivateVarValue", false);
+		jws.tests.System.testSessionGet("myVar", true, "myVarValue");
+		jws.tests.System.testSessionHas("myVar", true, true);
+		jws.tests.System.testSessionHas("myNonExistingVar", true, false);
+		jws.tests.System.testSessionHas("myNonExistingVar", false, false);
+		jws.tests.System.testSessionKeys(false, 2);
+		jws.tests.System.testSessionKeys(true, 1);
+		jws.tests.System.testSessionRemove("myVar", true, 0);
+		jws.tests.System.testSessionRemove("myNonExistingVar", true, -1);
+		jws.tests.System.testSessionRemove("myNonExistingVar", false, -1);
+		jws.tests.System.testSessionKeys(false, 1);
+		jws.tests.System.testSessionKeys(true, 0);
+		jws.tests.System.testSessionPut("myVar2", "myVarValue2", true);
+		jws.tests.System.testSessionGetAll(false, {
+			"myPrivateVar": "myPrivateVarValue",
+			"public::myVar2": "myVarValue2"
+		});
+		jws.tests.System.testSessionGetMany(["myVar2"], {
+			"myVar2": "myVarValue2"
+		});
+		jws.tests.System.testSessionRemove("myVar2", true, 0);
+		
 	},
 
 	runSuite: function() {

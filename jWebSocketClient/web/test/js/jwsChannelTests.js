@@ -323,7 +323,7 @@ jws.tests.Channels = {
 								this.channelSubscribe( 
 									lChId, 
 									"testAccessKey"
-								);
+									);
 							// once all subscribers are allocated the publishers can fire		
 							} else if( jws.ChannelPlugIn.NS == aToken.ns
 								&& "subscribe" == aToken.reqType
@@ -386,7 +386,7 @@ jws.tests.Channels = {
 										accessKey: "testAccessKey",
 										secretKey: "testSecretKey"
 									}
-								);
+									);
 							// once channel is created authenticate for publishing
 							} else if( jws.ChannelPlugIn.NS == aToken.ns
 								&& "createChannel" == aToken.reqType) {
@@ -400,7 +400,7 @@ jws.tests.Channels = {
 										OnResponse: function( aToken ) {
 											jws.console.log( "Channel " + aToken.channelId + " authenticated." );
 											if( lPubsCreated == lPubCnt ) {
-												// lCreateSubs();
+											// lCreateSubs();
 											}
 										}
 									}
@@ -411,7 +411,9 @@ jws.tests.Channels = {
 								// once channel is removed the connection can be closed
 								jws.console.log( "Channel " + aToken.channelId + " removed.");
 								if( aToken.channelId.substr( 0, 3 ) == "ch_" ) {
-									this.close({ timeout: 1000 });
+									this.close({
+										timeout: 1000
+									});
 								}	
 							}
 						}
@@ -430,11 +432,11 @@ jws.tests.Channels = {
 					return( 
 						lPubsCreated == lPubCnt
 						&& lPacketsReceived == lSubCnt
-					);
+						);
 				},
 				lSpec,
 				3000
-			);
+				);
 
 			runs( function() {
 				var lClient;
@@ -458,7 +460,9 @@ jws.tests.Channels = {
 				for( var lSubIdx = 0; lSubIdx < lSubCnt; lSubIdx++ ) {
 					var lChId = "ch_" + (lSubIdx + 1);
 					jws.console.log( "Closing subscriber ch_" + lChId + "..." );
-					lSubs[ lSubIdx ].client.close({ timeout: 1000 });
+					lSubs[ lSubIdx ].client.close({
+						timeout: 1000
+					});
 				}
 			   
 				expect( lPubsCreated ).toEqual( lPubCnt );
@@ -520,18 +524,17 @@ jws.tests.Channels = {
 				}
 			},
 			1
-		);
+			);
 
 		// testing unsubscribing from existing, pre-defined channels
 		jws.tests.Channels.testUnsubscribe( "systemA", "access" );
 		// Retreiving subscriptions of current client
 		jws.tests.Channels.testChannelSubscriptions( 
 			"Retreiving subscriptions of current client (should return 0).", 
-			{
-			},
+			{},
 			0
-		);
-
+			);
+	
 		// creating new public channels
 		jws.tests.Channels.testChannelCreate( "myPubSec", "myPublicSecure", "myPublicAccess", "myPublicSecret", false, false, 
 			"Creating public channel with correct credentials (allowed)", 0 );
@@ -591,8 +594,8 @@ jws.tests.Channels = {
 			);
 
 		// run complex publish and subscribe test
-		jws.tests.Channels.testChannelComplexTest(
-			"Multiple publishers distributing messages to multiple subscribers.", 0 );
+		//jws.tests.Channels.testChannelComplexTest(
+		//	"Multiple publishers distributing messages to multiple subscribers.", 0 );
 	   
 		// removing public channels
 		jws.tests.Channels.testChannelRemove( "myPubSec", "myInvalidAccess", "myInvalidSecret",

@@ -19,57 +19,63 @@ import org.jwebsocket.token.Token;
 
 /**
  * Listener interface for the <tt>Channel</tt>. 
- * @author puran, aschulze
+ * @author puran, aschulze, kyberneees
  * @version $Id: ChannelListener.java 1592 2011-02-20 00:49:48Z fivefeetfurther $
  */
 public interface ChannelListener {
 
 	/**
-	 * Called when the channel is started.
-	 * @param channel the started channel
+	 * Called when the channel is initialized.
+	 * @param aChannel the started channel
 	 */
-	void channelStarted(Channel channel, String user);
+	void channelInitialized(Channel aChannel);
+	
+	/**
+	 * Called when the channel is started.
+	 * @param aChannel the started channel
+	 */
+	void channelStarted(Channel aChannel, String aUser);
 
 	/**
 	 * called when the channel is stopped for receiving/sending any data
-	 * @param channel the stopped channel object
+	 * @param aChannel the stopped channel object
+	 * @param aUser the user that stopped the channel
 	 */
-	void channelStopped(Channel channel, String user);
+	void channelStopped(Channel aChannel, String aUser);
 
 	/**
-	 * called when the channel is suspended that means the channel suspended
-	 * can no longer be used to send and receive data unless it is started again
-	 * @param channel the suspended channel
+	 * called when the is removed
+	 * @param aChannel the suspended channel
 	 */
-	void channelSuspended(Channel channel, String user);
+	void channelRemoved(Channel aChannel, String aUser);
 
 	/**
 	 * called when a new subscriber subscribes the channel
-	 * @param channel the channel
-	 * @param subscriber the subscriber
+	 * @param aChannel the channel
+	 * @param aSubscriber the subscriber
 	 */
-	void subscribed(Channel channel, Subscriber subscriber);
+	void subscribed(Channel aChannel, String aSubscriber);
 
 	/**
 	 * called when someone unsuscribes the channel
-	 * @param channel the channel
-	 * @param subscriber the subscriber who unsuscribed
+	 * @param aChannel the channel
+	 * @param aSubscriber the subscriber who unsuscribed
 	 */
-	void unsubscribed(Channel channel, Subscriber subscriber);
+	void unsubscribed(Channel aChannel, String aSubscriber);
 
 	/**
 	 * called when channel receives the data from the publisher.
-	 * @param channel the channel object
-	 * @param token the token data received that will be broadcasted
+	 * @param aChannel the channel object
+	 * @param aToken the token data received that will be broadcasted
 	 * to the subscribers
 	 */
-	void dataReceived(Channel channel, Token token);
+	void dataReceived(Channel aChannel, Token aToken);
 
 	/**
 	 * Called when channel is done with the broadcast of the data it received to 
 	 * all the subscribers.
-	 * @param channel the channel object
-	 * @param token the token data which was broadcasted
+	 * @param aChannel the channel object
+	 * @param aToken the token data which was broadcasted
 	 */
-	void dataBroadcasted(Channel channel, Token token);
+	void dataBroadcasted(Channel aChannel, Token aToken);
 }

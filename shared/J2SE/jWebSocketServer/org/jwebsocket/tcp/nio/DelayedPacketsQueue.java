@@ -22,6 +22,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import javolution.util.FastMap;
 
 /**
+ * Dispatch incoming packets for the NIO workers
  *
  * @author kyberneees
  */
@@ -30,7 +31,7 @@ public class DelayedPacketsQueue {
 	private final Map<NioTcpConnector, Queue<IDelayedPacketNotifier>> mDelayedPackets = new FastMap<NioTcpConnector, Queue<IDelayedPacketNotifier>>().shared();
 
 	/**
-	 * Enqueue a delayed packets to be processed by the workers
+	 * Enqueue a delayed packet to be processed by the workers
 	 *
 	 * @param aDelayedPacket
 	 */
