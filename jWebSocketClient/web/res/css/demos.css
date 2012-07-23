@@ -233,7 +233,7 @@ textarea{
     height: 20px;
     font-size: 10px;
     font-family: "Verdana";
-    width: 414px;
+    min-width: 414px;
     background: #ffffff;
     margin-left: 300px;
     padding-left: 4px;
@@ -249,8 +249,8 @@ textarea{
 #demo_box_statusbar div{
     float: left;
     display: inline;
-    padding-right: 5px;
-    padding-left:5px;
+    padding-right: 4px;
+    padding-left:4px;
     height: 16px;
     margin-top: 3px;
 }
@@ -264,7 +264,7 @@ textarea{
 }
 
 #client_status{
-    padding-left: 18px !important;
+    padding-left: 15px !important;
 }
 
 #client_status.online{
