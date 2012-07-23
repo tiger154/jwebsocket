@@ -1,0 +1,33 @@
+.description_box{
+    float: left;
+    width: 63%;
+}
+
+.description_box p{
+    margin-left: 3px; 
+}
+
+#message_box{
+    background: #E4E4E4;
+    width: 33%;
+    border: 1px solid #C8C8C8;
+    float: left;
+    padding: 12px;
+    margin-top: 20px;
+	margin-left: 1px;
+}
+
+.choices, .buttons{
+	float: left;
+	font-size: 11px;
+}
+
+.buttons{
+	width: 105px;
+	margin: 5px 0 0 12px;
+	padding: 5px 0 0 4px;
+}
+
+#unregister_btn{
+	margin-top: 7px;
+}
