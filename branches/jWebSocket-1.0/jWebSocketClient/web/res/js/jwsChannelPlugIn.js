@@ -42,6 +42,7 @@ jws.ChannelPlugIn = {
 	AUTHORIZE: "authorize",
 	PUBLISH: "publish",
 	STOP: "stop",
+	START: "start",
 
 	processToken: function( aToken ) {
 		// check if namespace matches
@@ -359,7 +360,50 @@ jws.ChannelPlugIn = {
 		}
 		return lRes;
 	},
+	
+	//:m:*:channelStop
+	//:d:en:Stop a channel given the channel identifier
+	//:a:en::aChannel:String:The id of the server side data channel.
+	//:r:*:::void:none
+	channelStop: function( aChannel, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			this.sendToken({
+				ns: jws.ChannelPlugIn.NS,
+				"channel": aChannel,
+				type: jws.ChannelPlugIn.STOP
+			}, aOptions );
+		}
+		return lRes;
+	},
+	
+	//:m:*:channelStart
+	//:d:en:Start a channel given the channel identifier
+	//:a:en::aChannel:String:The id of the server side data channel.
+	//:r:*:::void:none
+	channelStart: function( aChannel, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			this.sendToken({
+				ns: jws.ChannelPlugIn.NS,
+				"channel": aChannel,
+				type: jws.ChannelPlugIn.START
+			}, aOptions );
+		}
+		return lRes;
+	},
 
+	//:m:*:setChannelCallbacks
+	//:d:en:Set the channels lifecycle callbacks
+	//:a:en::aListeners:Object:JSONObject containing the channels lifecycle callbacks
+	//:a:en::aListeners.OnChannelCreated:Function:Called when a new channel has been created
+	//:a:en::aListeners.OnChannelsReceived:Function:Called when the list of available channels is received
+	//:a:en::aListeners.OnChannelRemoved:Function:Called when a channel has been removed
+	//:a:en::aListeners.OnChannelStarted:Function:Called when a channel has been started
+	//:a:en::aListeners.OnChannelStopped:Function:Called when a channel has been stopped
+	//:a:en::aListeners.OnChannelSubscription:Function:Called when a channel receives a new subscription
+	//:a:en::aListeners.OnChannelUnsubscription:Function:Called when a channel receives an unsubscription
+	//:r:*:::void:none
 	setChannelCallbacks: function( aListeners ) {
 		if( !aListeners ) {
 			aListeners = {};

@@ -54,30 +54,43 @@ jws.FileSystemPlugIn = {
 						this.OnFileError( aToken );
 					}
 				}
+			} else if( "send" == aToken.reqType ) {
+				if( aToken.code == 0 ) {
+					if( this.OnFileLoaded ) {
+						this.OnFileSent( aToken );
+					}
+				} else {
+					if( this.OnFileError ) {
+						this.OnFileError( aToken );
+					}
+				}
 			} else if( "event" == aToken.type ) {
 				if( "filesaved" == aToken.name ) {
 					if( this.OnFileSaved ) {
 						this.OnFileSaved( aToken );
 					}
-				} else if( "filesent" == aToken.name ) {
-					if( this.OnFileSent ) {
-						this.OnFileSent( aToken );
+				} else if( "filereceived" == aToken.name ) {
+					
+					if( this.OnFileReceived ) {
+						this.OnFileReceived( aToken );
 					}
 				}
 			}
 		}
 	},
 
+	//:m:*:fileGetFilelist
+	//:d:en:Gets the file list for a given alias
+	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
+	//:a:en::aFilemasks:Array:The filemasks for filtering. <tt>Example: ["*.txt"]</tt>
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	fileGetFilelist: function( aAlias, aFilemasks, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
-			var lScope = jws.SCOPE_PRIVATE;
 			var lRecursive = false;
 
 			if( aOptions ) {
-				if( aOptions.scope != undefined ) {
-					lScope = aOptions.scope;
-				}
 				if( aOptions.recursive != undefined ) {
 					lRecursive = aOptions.recursive;
 				}
@@ -87,14 +100,59 @@ jws.FileSystemPlugIn = {
 				type: "getFilelist",
 				alias: aAlias,
 				recursive: lRecursive,
-				scope: lScope,
 				filemasks: aFilemasks
 			};
 			this.sendToken( lToken,	aOptions );
 		}	
 		return lRes;
 	},
+	
+	//:m:*:fileDelete
+	//:d:en:Deletes a file in the private scope
+	//:a:en::aFilename:String:The filename value
+	//:a:en::aForce:Boolean:Force file delete
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	fileDelete: function( aFilename, aForce, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.FileSystemPlugIn.NS,
+				type: "delete",
+				filename: aFilename,
+				force: aForce
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:fileExists
+	//:d:en:Indicates if a custom file exists on a given alias
+	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
+	//:a:en::aFilename:String:The filename value
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	fileExists: function( aAlias, aFilename, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.FileSystemPlugIn.NS,
+				type: "exists",
+				filename: aFilename,
+				alias: aAlias
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
 
+	//:m:*:fileLoad
+	//:d:en:Loads a file from a given scope
+	//:a:en::aFilename:String:The filename value
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.scope:String:The scope value. <tt>Example: jws.SCOPE_PRIVATE</tt>
+	//:r:*:::void:none
 	fileLoad: function( aFilename, aOptions ) {
 		var lRes = this.createDefaultResult();
 		var lScope = jws.SCOPE_PRIVATE;
@@ -120,23 +178,35 @@ jws.FileSystemPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:fileSave
+	//:d:en:Saves a file in a given scope
+	//:a:en::aFilename:String:The filename value
+	//:a:en::aData:Object:The file content. Could be encoded optionally.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.scope:String:The scope value. <tt>Example: jws.SCOPE_PRIVATE</tt>
+	//:a:en::aOptions.encode:Boolean:Indicates in the file content require to be encoded. Default value is TRUE.
+	//:a:en::aOptions.encoding:String:The encoding method. Currently "base64" is only supported and enabled by default.
+	//:r:*:::void:none
 	fileSave: function( aFilename, aData, aOptions ) {
 		var lRes = this.createDefaultResult();
 		var lEncoding = "base64";
-		var lSuppressEncoder = false;
+		var lEncode = true;
 		var lScope = jws.SCOPE_PRIVATE;
 		if( aOptions ) {
 			if( aOptions.scope != undefined ) {
 				lScope = aOptions.scope;
 			}
+			if( aOptions.encode != undefined ) {
+				lEncode = aOptions.encode;
+			}
 			if( aOptions.encoding != undefined ) {
 				lEncoding = aOptions.encoding;
 			}
-			if( aOptions.suppressEncoder != undefined ) {
-				lSuppressEncoder = aOptions.suppressEncoder;
+			if( aOptions.encode != undefined ) {
+				lEncode = aOptions.encode;
 			}
 		}
-		if( !lSuppressEncoder ) {
+		if( lEncode ) {
 			if( lEncoding == "base64" ) {
 				aData = Base64.encode( aData );
 			}
@@ -160,13 +230,21 @@ jws.FileSystemPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:fileSend
+	//:d:en:Sends a file to a targeted client
+	//:a:en::aTargetId:String:The targeted client identifier
+	//:a:en::aFilename:String:The filename value
+	//:a:en::aData:Object:The file content. Could be encoded optionally.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.encoding:String:The encoding method. Default value is "base64"
+	//:r:*:::void:none
 	fileSend: function( aTargetId, aFilename, aData, aOptions ) {
-		var lEncoding = "base64";
 		var lIsNode = false;
+		var lEncoding = "base64";
+		
 		if( aOptions ) {
-			if( aOptions.encoding != undefined ) {
-				lEncoding = aOptions.encoding;
-			}
+			lEncoding = aOptions["encoding"] || "base64";
+			
 			if( aOptions.isNode != undefined ) {
 				lIsNode = aOptions.isNode;
 			}
@@ -185,7 +263,8 @@ jws.FileSystemPlugIn = {
 			} else {
 				lToken.targetId = aTargetId;				
 			}
-			this.sendToken( lToken );
+			
+			this.sendToken( lToken, aOptions);
 		}
 		return lRes;
 	},
@@ -376,6 +455,17 @@ jws.FileSystemPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:setFileSystemCallbacks
+	//:d:en:Set the filesystem lifecycle callbacks
+	//:a:en::aListeners:Object:JSONObject containing the filesystem lifecycle callbacks
+	//:a:en::aListeners.OnFileLoaded:Function:Called when a file has been loaded
+	//:a:en::aListeners.OnFileSaved:Function:Called when a file has been saved
+	//:a:en::aListeners.OnFileReceived:Function:Called when a file has been received from other client
+	//:a:en::aListeners.OnFileSent:Function:Called when a file has been sent to other client
+	//:a:en::aListeners.OnFileError:Function:Called when an error occur in the filesystem lifecycle
+	//:a:en::aListeners.OnLocalFileRead:Function:Called when a file has been read locally
+	//:a:en::aListeners.OnLocalFileError:Function:Called when an error occur during a file local read
+	//:r:*:::void:none
 	setFileSystemCallbacks: function( aListeners ) {
 		if( !aListeners ) {
 			aListeners = {};
@@ -386,13 +476,15 @@ jws.FileSystemPlugIn = {
 		if( aListeners.OnFileSaved !== undefined ) {
 			this.OnFileSaved = aListeners.OnFileSaved;
 		}
+		if( aListeners.OnFileReceived !== undefined ) {
+			this.OnFileReceived = aListeners.OnFileReceived;
+		}
 		if( aListeners.OnFileSent !== undefined ) {
 			this.OnFileSent = aListeners.OnFileSent;
 		}
 		if( aListeners.OnFileError !== undefined ) {
 			this.OnFileError = aListeners.OnFileError;
 		}
-
 		if( aListeners.OnLocalFileRead !== undefined ) {
 			this.OnLocalFileRead = aListeners.OnLocalFileRead;
 		}

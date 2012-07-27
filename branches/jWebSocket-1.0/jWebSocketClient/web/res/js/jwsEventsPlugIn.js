@@ -1,6 +1,7 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket - EventsPlugIn
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
+//  Author: Rolando Santamaria Maso
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
 //  under the terms of the GNU Lesser General Public License as published by the
@@ -157,7 +158,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 			this.jwsClient.sendToken(lToken, lRequest);
 		}
 		else
-			throw "client:not_connected";
+			jws.console.error( "client:not_connected" );
 	}
 	,
 	//:m:*:processToken
@@ -203,7 +204,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 						_rid: aToken.uid
 					}
 				});
-				throw "s2c_event_support_not_found for: " + lMethod;
+				jws.console.error( "s2c_event_support_not_found for: " + lMethod );
 			}
 		}
 	}
@@ -221,9 +222,10 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 	//:d:en:Processes an incoming token. Used to support S2C events notifications. _
 	//:a:en::aPlugInId:String:Remote plug-in "id" to generate in the client.
 	//:a:en::aNotifier:jws.EventsNotifier:The event notifier used to connect with the server.
-	//:a:en::OnReady:Function:This callback is called when the plug-in has been generated.
+	//:a:en::aCallbacks:Function:This callback is called when the plug-in has been generated successfully.
+	//:a:en::aCallbacks:Object:Contains the OnSuccess and OnFailure callbacks
 	//:r:*:::void:none
-	generate: function(aPlugInId, aNotifier, OnReady){
+	generate: function(aPlugInId, aNotifier, aCallbacks){
 		var lPlugIn = new jws.EventsPlugIn();
 		lPlugIn.notifier = aNotifier;
 
@@ -234,7 +236,7 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 			,
 			plugIn: lPlugIn
 			,
-			OnReady: OnReady
+			callbacks: aCallbacks
 			,
 			OnSuccess: function(aResponseEvent){
 				this.plugIn.id = aResponseEvent.id;
@@ -248,12 +250,20 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 				//Registering the plugin in the notifier
 				this.plugIn.notifier.plugIns[this.plugIn.id] = this.plugIn;
 
-				//Plugin is ready to use
-				this.OnReady(this.plugIn);
+				//Plugin is generated successfully
+				if ("function" == typeof(this.callbacks)){
+					this.callbacks(this.plugIn);
+				} else if ("function" == typeof( this.callbacks["OnSuccess"] )){
+					this.callbacks.OnSuccess(this.plugIn);
+				}
 			}
 			,
 			OnFailure: function(aResponseEvent){
-				throw aResponseEvent.msg;
+				if ("function" == typeof( this.callbacks["OnFailure"] )){
+					this.callbacks.OnFailure(this.plugIn);
+				} else {
+					jws.console.error("Failure generating plug-in: " + aResponseEvent.msg );
+				}
 			}	
 		});
 
@@ -491,7 +501,7 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 	//:a:en::aToken:Object:The "not authorized" token to be processed.
 	//:r:*:::void:none
 	OnNotAuthorized: function(aToken){
-		throw "not_authorized";
+		jws.console.error( "not_authorized" );
 	}
 });
 
@@ -509,18 +519,22 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 	user: null
 	,
 	initialize: function(aNotifier){
+		// setting the user instance reference
 		this.user = aNotifier.user;
+		
+		// notifying to the server that cache is enabled in the client
 		aNotifier.notify("clientcacheaspect.setstatus", {
 			args: {
 				enabled: true
 			}
 		});
 		
+		// supporting clean cache entries event from the server
+		var lFilter = this;
 		aNotifier.plugIns['__cache__'] = {
-			cache: this.cache,
 			cleanEntries: function(event){
 				for (var i = 0, end = event.entries.length; i < end; i++){
-					this.cache.removeItem_(this.user.principal.toString() + event.suffix + event.entries[i]);
+					lFilter.cache.removeItem_(lFilter.user.principal.toString() + event.suffix + event.entries[i]);
 				}
 			}
 		}

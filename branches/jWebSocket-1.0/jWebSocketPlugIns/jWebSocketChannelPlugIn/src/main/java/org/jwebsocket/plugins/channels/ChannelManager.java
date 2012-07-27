@@ -84,7 +84,7 @@ public class ChannelManager {
 		mSubscriberStore = new BaseSubscriberStore(aSubscriberStorage);
 		mPublisherStore = new BasePublisherStore(aPublisherStorage);
 
-		this.mChannelPluginSettings = new ConcurrentHashMap<String, Object>(aSettings);
+		mChannelPluginSettings = new ConcurrentHashMap<String, Object>(aSettings);
 
 		Object lAllowNewChannels = mChannelPluginSettings.get(ALLOW_NEW_CHANNELS);
 		if (lAllowNewChannels != null && lAllowNewChannels.equals("true")) {
@@ -95,6 +95,15 @@ public class ChannelManager {
 			String lOption = (String) lKey;
 			if (lOption.startsWith("channel:")) {
 				String lChannelId = lOption.substring(8);
+
+				if (mChannelStore.hasChannel(lChannelId)) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Channel '" + lChannelId + "' already exists. "
+								+ "Loading from configuration ommited!");
+					}
+					// ommit this channel
+					continue;
+				}
 				Object lObj = aSettings.get(lOption);
 				JSONObject lJSON = null;
 				boolean lParseOk = false;
@@ -152,7 +161,7 @@ public class ChannelManager {
 						if (lChannel.getState().equals(ChannelState.CREATED)) {
 							lChannel.init();
 						}
-						
+
 						// put in channels map
 						mChannelStore.storeChannel(lChannel);
 
@@ -315,5 +324,34 @@ public class ChannelManager {
 
 	public boolean isAllowNewChannels() {
 		return mAllowNewChannels;
+	}
+
+	/**
+	 * Indicates if the subscriber store contains a subscriber with the given
+	 * subscriber identifier
+	 *
+	 * @return TRUE if the subscriber exists, FALSE otherwise
+	 */
+	public boolean hasSubscriber(String aSubscriberId) {
+		return mSubscriberStore.hasSubscriber(aSubscriberId);
+	}
+
+	/**
+	 * Indicates if the publisher store contains the given publisher identifier
+	 *
+	 * @return TRUE if the publisher exists, FALSE otherwise
+	 */
+	public boolean hasPublisher(String aPublisherId) {
+		return mPublisherStore.hasPublisher(aPublisherId);
+	}
+	
+	/**
+	 * Indicates if the channel store contains a channel with the given channel
+	 * identifier
+	 *
+	 * @return TRUE if the channel exists, FALSE otherwise
+	 */
+	public boolean hasChannel(String aChannelId){
+		return mChannelStore.hasChannel(aChannelId);
 	}
 }

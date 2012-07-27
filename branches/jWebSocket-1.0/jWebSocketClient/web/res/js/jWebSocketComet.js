@@ -59,7 +59,6 @@
         
         
 		XHRWebSocket.prototype.dispatchEvent = function(event) {
-            
 			var events = this.__events[event.type] || [];
 			for (var i = 0; i < events.length; ++i) {
 				events[i](event);

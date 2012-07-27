@@ -20,8 +20,8 @@ import java.util.Map;
 /**
  * Channel store interface that defines the operation for store/retrieval of
  * channel data.
- * 
- * @author puran
+ *
+ * @author puran, kyberneees
  * @version $Id: ChannelStore.java 1592 2011-02-20 00:49:48Z fivefeetfurther $
  */
 public interface ChannelStore {
@@ -30,6 +30,7 @@ public interface ChannelStore {
 	
 	/**
 	 * Returns the channel from the data store based on channel key or id
+	 *
 	 * @param id the channel id
 	 * @return the channel object
 	 */
@@ -37,12 +38,14 @@ public interface ChannelStore {
 
 	/**
 	 * Returns all channels from the data store
+	 *
 	 * @return the channel object
 	 */
 	Map<String, Channel> getChannels();
 
 	/**
 	 * Store the given channel in the channel store
+	 *
 	 * @param channel the channel object
 	 * @return {@code true} if insert successful
 	 */
@@ -56,15 +59,24 @@ public interface ChannelStore {
 	void removeChannel(String id);
 
 	/**
-	 * Clears the channel store, use this method with care since it removes
-	 * all the channel information from the store physically and cannot be
-	 * rolled back.
+	 * Clears the channel store, use this method with care since it removes all
+	 * the channel information from the store physically and cannot be rolled
+	 * back.
 	 */
 	void clearChannels();
 
 	/**
 	 * Returns the size of the channel store
+	 *
 	 * @return the size value
 	 */
 	int getChannelStoreSize();
+
+	/**
+	 * Indicates if the channel store contains a channel with the given channel
+	 * identifier
+	 *
+	 * @return TRUE if the channel exists, FALSE otherwise
+	 */
+	boolean hasChannel(String aChannelId);
 }

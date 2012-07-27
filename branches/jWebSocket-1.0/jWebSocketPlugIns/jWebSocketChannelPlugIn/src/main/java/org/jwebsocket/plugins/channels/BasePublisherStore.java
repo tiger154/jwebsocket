@@ -23,7 +23,8 @@ import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.logging.Logging;
 
 /**
- *
+ * Storage based implementation of the <tt>PublisherStore</tt>
+ * 
  * @author aschulze
  */
 public class BasePublisherStore implements PublisherStore {
@@ -120,5 +121,13 @@ public class BasePublisherStore implements PublisherStore {
 	@Override
 	public int getPublisherStoreSize() {
 		return mStorage.size();
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public boolean hasPublisher(String aPublisherId) {
+		return mStorage.containsKey(aPublisherId);
 	}
 }

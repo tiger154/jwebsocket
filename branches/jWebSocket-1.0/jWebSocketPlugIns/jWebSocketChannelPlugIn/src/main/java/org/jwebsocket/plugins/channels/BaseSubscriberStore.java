@@ -23,14 +23,17 @@ import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.logging.Logging;
 
 /**
- * JDBC store based extension of SubscriberStore interface.
- * 
+ * Storage based implementation of the <tt>SubscriberStore</tt>
+ *
  * @author puran, aschulze
- * @version $Id: BaseSubscriberStore.java 1592 2011-02-20 00:49:48Z fivefeetfurther $
+ * @version $Id: BaseSubscriberStore.java 1592 2011-02-20 00:49:48Z
+ * fivefeetfurther $
  */
 public class BaseSubscriberStore implements SubscriberStore {
 
-	/** logger object */
+	/**
+	 * logger object
+	 */
 	private static Logger mLog = Logging.getLogger(BaseSubscriberStore.class);
 	private static final String ID = "id";
 	private static final String CHANNELS = "channels";
@@ -116,5 +119,13 @@ public class BaseSubscriberStore implements SubscriberStore {
 	@Override
 	public int getSubscribersStoreSize() {
 		return mStorage.size();
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public boolean hasSubscriber(String aSubscriberId) {
+		return mStorage.containsKey(aSubscriberId);
 	}
 }
