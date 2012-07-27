@@ -9,12 +9,12 @@
 				<!-- folder alias for private user data -->
 				<entry>
 					<key><value>privateDir</value></key>
-					<value>${JWEBSOCKET_HOME}users/{username}/</value>
+					<value>${JWEBSOCKET_HOME}filesystem/private/{username}/</value>
 				</entry>
 				<!-- folder alias for shared public data -->
 				<entry>
 					<key><value>publicDir</value></key>
-					<value>${JWEBSOCKET_HOME}public/</value>
+					<value>${JWEBSOCKET_HOME}filesystem/public/</value>
 				</entry>                
 				<!-- folder alias for reports (.jrxml), used by reporting plug-in -->
 				<entry>

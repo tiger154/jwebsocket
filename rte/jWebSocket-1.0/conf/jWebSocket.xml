@@ -71,26 +71,24 @@
 		 configuring individual ports per engine!
 	-->
 	<!-- jWebSocket engine configuration -->
-	<engines>
-		<!-- TCP Engine Configuration -->
+	<engines>	
+		<!-- NIO Engine Configuration -->
 		<engine>
-			<name>org.jwebsocket.tcp.TCPEngine</name>
-			<id>tcp0</id>
-			<jar>jWebSocketTCPEngine-1.0.jar</jar>
+			<name>org.jwebsocket.tcp.nio.NioTcpEngine</name>
+			<id>nio0</id>
+			<jar>jWebSocketNIOEngine-1.0.jar</jar>
 			<port>8787</port>
 			<sslport>9797</sslport>
-			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
-			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
-			<!-- password to access keystore file -->
-			<password>jWebSocket</password>
+			<!-- keystore file with in %JWEBSOCKET_HOME%/conf -->
 			<!-- CAUTION! -->
 			<!-- not all browsers automatically accept self-signed certificates -->
 			<!-- please follow instructions on the jWebSocket.org website, how
 			     to trust self-signed certificates for the various browsers or
 				 how to import signed private key/certificate bundles into the keystore -->
-
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
-			<!-- you optionally can add asterisks as wild cards -->
 			<domains>
 				<domain>*</domain>
 				<!-- limit allowed domains here -->
@@ -111,16 +109,13 @@
 				maximum size of the data packet that the engine will read,
 				if the frame size is larger than this the connection will be closed.
 			-->
-			<maxframesize>1048840</maxframesize>
-			
+			<maxframesize>20480</maxframesize>
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
-			
-			<!-- on max connections reached strategy -->
-			<!-- wait, close, reject, redirect --> 
-			<onmaxconnections>reject</onmaxconnections>
+			<settings>
+				<setting key="workers">500</setting>
+			</settings>			
 		</engine>
-
 		<!-- Comet Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.comet.CometEngine</name>
@@ -393,7 +388,7 @@
 			<!-- please follow instructions on the jWebSocket.org website, how
 			     to trust self-signed certificates for the various browsers or
 				 how to import signed private key/certificate bundles into the keystore -->
-			<keystore>jWebSocket.ks</keystore>
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
 			<!-- password to access keystore file -->
 			<password>jWebSocket</password>
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
@@ -421,7 +416,7 @@
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
 			<settings>
-				<setting key="workers">500</setting>
+				<setting key="workers">100</setting>
 			</settings>			
 		</engine>
 
@@ -529,6 +524,10 @@
 			-->
 			<port>8787</port>
 			<sslport>9797</sslport>
+			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
 			<domains>
 				<domain>*</domain>
@@ -709,37 +708,37 @@
 		<right>
 			<ns>org.jwebsocket.plugins.jdbc</ns>
 			<id>select</id>
-			<description>Allow to select from jdbc resources</description>
+			<description>Allows to select from jdbc resources</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.jdbc</ns>
 			<id>insert</id>
-			<description>Allow to insert into jdbc resources</description>
+			<description>Allows to insert into jdbc resources</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.jdbc</ns>
 			<id>delete</id>
-			<description>Allow to delete from jdbc resources</description>
+			<description>Allows to delete from jdbc resources</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.jdbc</ns>
 			<id>update</id>
-			<description>Allow to update jdbc resources</description>
+			<description>Allows to update jdbc resources</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.jdbc</ns>
 			<id>querySQL</id>
-			<description>Allow to select from jdbc resources using native SQL</description>
+			<description>Allows to select from jdbc resources using native SQL</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.jdbc</ns>
 			<id>updateSQL</id>
-			<description>Allow to update/insert/delete jdbc resources using native SQL</description>
+			<description>Allows to update/insert/delete jdbc resources using native SQL</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.jdbc</ns>
 			<id>execSQL</id>
-			<description>Allow to update database meta data using native SQL</description>
+			<description>Allows to update database meta data using native SQL</description>
 		</right>
 
 		<!-- configuration of jms plug-in specific rights -->
@@ -794,22 +793,32 @@
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<id>load</id>
-			<description>Allow to load files from file system (public area)</description>
+			<description>Allows to load files from file system (public area)</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<id>save</id>
-			<description>Allow to save files to file system (public area)</description>
+			<description>Allows to save files to file system (public area)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>delete</id>
+			<description>Allows to delete files from file system (private area)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>exists</id>
+			<description>Allows to know if a file exists</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<id>send</id>
-			<description>Allow to send files from one client to another client</description>
+			<description>Allows to send files from one client to another client</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<id>getFilelist</id>
-			<description>Allow to retrieve file lists from the server</description>
+			<description>Allows to retrieve file lists from the server</description>
 		</right>
 
 		<!-- Caution! Be careful with this right!
@@ -818,7 +827,7 @@
 		<right>
 			<ns>org.jwebsocket.plugins.admin</ns>
 			<id>shutdown</id>
-			<description>Allow to shutdown the server</description>
+			<description>Allows to shutdown the server</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.admin</ns>
@@ -828,69 +837,69 @@
 		<right>
 			<ns>org.jwebsocket.plugins.admin</ns>
 			<id>getConnections</id>
-			<description>Allow to retreive current connections</description>
+			<description>Allows to retreive current connections</description>
 		</right>
 
 		<!-- Channel rights -->
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>start</id>
-			<description>Allow to start a channel</description>
+			<description>Allows to start a channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>stop</id>
-			<description>Allow to stop a channel</description>
+			<description>Allows to stop a channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>suspend</id>
-			<description>Allow to suspend a channel</description>
+			<description>Allows to suspend a channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>resume</id>
-			<description>Allow to resume a channel</description>
+			<description>Allows to resume a channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>subscribe</id>
-			<description>Allow to subscribe to and unsubscribe from a channel</description>
+			<description>Allows to subscribe to and unsubscribe from a channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>publish</id>
-			<description>Allow to publish to a channel</description>
+			<description>Allows to publish to a channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>getChannels</id>
-			<description>Allow to retrieve the list of available channels</description>
+			<description>Allows to retrieve the list of available channels</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>getSubscribers</id>
-			<description>Allow to retrieve the list of scubscribers of a certain channel</description>
+			<description>Allows to retrieve the list of scubscribers of a certain channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>getSubscriptions</id>
-			<description>Allow to retrieve the list of channels the current client subscribed to</description>
+			<description>Allows to retrieve the list of channels the current client subscribed to</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>createChannel</id>
-			<description>Allow to create a new channel</description>
+			<description>Allows to create a new channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>removeChannel</id>
-			<description>Allow to remove an existing channel</description>
+			<description>Allows to remove an existing channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>manageSystemChannels</id>
-			<description>Allow to manage (create and remove) system channels from clients</description>
+			<description>Allows to manage (create and remove) system channels from clients</description>
 		</right>
 
 	</rights>
@@ -940,6 +949,8 @@
 				<!-- filesystem rights -->
 				<right>org.jwebsocket.plugins.filesystem.load</right>
 				<right>org.jwebsocket.plugins.filesystem.save</right>
+				<right>org.jwebsocket.plugins.filesystem.delete</right>
+				<right>org.jwebsocket.plugins.filesystem.exists</right>
 				<right>org.jwebsocket.plugins.filesystem.send</right>
 				<right>org.jwebsocket.plugins.filesystem.getFilelist</right>
 
@@ -983,6 +994,8 @@
 				<!-- filesystem rights -->
 				<right>org.jwebsocket.plugins.filesystem.load</right>
 				<right>org.jwebsocket.plugins.filesystem.save</right>
+				<right>org.jwebsocket.plugins.filesystem.delete</right>
+				<right>org.jwebsocket.plugins.filesystem.exists</right>
 				<right>org.jwebsocket.plugins.filesystem.send</right>
 				<right>org.jwebsocket.plugins.filesystem.getFilelist</right>
 			</rights>
@@ -1337,7 +1350,7 @@
 			</settings>
 		</plugin>
 
-		<!-- plug-in for messaging via JMS -->
+		<!-- plug-in for messaging via JMS 
 		<plugin>
 			<name>org.jwebsocket.plugins.jms.JMSPlugIn</name>
 			<id>jws.jms</id>
@@ -1354,7 +1367,7 @@
 				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 			</settings>
 		</plugin>
-		
+		-->
 		
 		<!-- plug-in to support server side logging for clients -->
 		<!-- THIS PLUG-IN REQUIRES THE JDBC PLUG-IN! -->
@@ -1463,9 +1476,9 @@
 				<setting key="webroot">http://jwebsocket.org/</setting>
 				-->
 				<!-- examples for windows based websocket servers -->
-				<setting key="alias:privateDir">c:/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/users/{username}/</setting>
-				<setting key="alias:publicDir">c:/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/public/</setting>
-				<setting key="alias:webRoot">http://localhost/jwc10/public/</setting>
+				<setting key="alias:privateDir">${JWEBSOCKET_HOME}filesystem/private/{username}/</setting>
+				<setting key="alias:publicDir">${JWEBSOCKET_HOME}filesystem/public/</setting>
+				<setting key="alias:webRoot">http://localhost/public/</setting>
 				<setting key="alias:reportRoot">${JWEBSOCKET_HOME}/reports</setting>
 				<!-- examples for Jetty based websocket servers -->
 				<!--
@@ -1691,7 +1704,7 @@
 		</plugin>
 		-->
 		
-		<!-- JMX Plug-in -->
+		<!-- JMX Plug-in 
 		<plugin>
 			<name>org.jwebsocket.plugins.jmx.JMXPlugIn</name>
 			<ns>org.jwebsocket.plugins.jmx</ns>

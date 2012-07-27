@@ -27,14 +27,7 @@
 			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
 			<password>jWebSocket</password>
 			<domains>
-				<domain>http*://jwebsocket.org</domain>
-				<domain>http*://jwebsocket.com</domain>
-				<domain>http*://*.jwebsocket.org</domain>
-				<domain>http*://*.jwebsocket.com</domain>
-				<domain>http*://10.10.*</domain>
-				<domain>http*://10.21.*</domain>
-				<domain>http*://192.168.*</domain>
-				<domain>http*://localhost*</domain>
+				<domain>*</domain>
 			</domains>
 			<timeout>0</timeout>
 			<maxframesize>1048840</maxframesize>
@@ -194,6 +187,16 @@
 				     "allow all ports and domains" default crossdomain.xml -->
 				<setting key="crossdomain_xml">${JWEBSOCKET_HOME}conf/FlashPlugIn/crossdomain.xml</setting>
 			</settings>
+		</plugin>
+
+		<plugin>
+			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
+			<ns>alarm</ns>
+			<id>jws.eventsplugin.alarm</id>
+			<jar>jWebSocketEventsPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
 		</plugin>
 
 	</plugins>
