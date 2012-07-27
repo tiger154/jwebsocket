@@ -57,6 +57,7 @@ import org.springframework.context.ApplicationContext;
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
 public class FileSystemPlugIn extends TokenPlugIn {
 
@@ -67,19 +68,18 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	private static String PRIVATE_DIR_KEY = "alias:privateDir";
 	private static String PUBLIC_DIR_KEY = "alias:publicDir";
 	private static String WEB_ROOT_KEY = "alias:webRoot";
-	private static String PRIVATE_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/private/{username}/";
-	private static String PUBLIC_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/public/";
+	private static String PRIVATE_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/private/{username}/";
+	private static String PUBLIC_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/public/";
 	private static String WEB_ROOT_DEF = "http://jwebsocket.org/";
 	private static FileAlterationMonitor mPublicMonitor = null;
-	
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 
 	/**
-	 * 
+	 *
 	 * @param aConfiguration
 	 */
-	public FileSystemPlugIn(PluginConfiguration aConfiguration) {
+	public FileSystemPlugIn(PluginConfiguration aConfiguration) throws Exception {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating FileSystem plug-in...");
@@ -100,6 +100,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating filesystem plug-in"));
+			throw lEx;
 		}
 	}
 
@@ -128,8 +129,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				send(aConnector, aToken);
 			} else if (lType.equals("getFilelist")) {
 				getFilelist(aConnector, aToken);
-			} else if (lType.equals("watch")) {
-				watch(aConnector, aToken);
+			} else if (lType.equals("delete")) {
+				delete(aConnector, aToken);
+			} else if (lType.equals("exists")) {
+				exists(aConnector, aToken);
 			}
 		}
 	}
@@ -141,14 +144,62 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		if (lType != null && getNamespace().equals(lNS)) {
 			if (lType.equals("getFilelist")) {
-				return getFilelist(aToken);
+				return getFilelist(aConnector.getUsername(), aToken);
 			}
 		}
 		return null;
 	}
 
 	/**
-	 * save a file
+	 * Indicates if a file exists in a given alias
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
+	private void exists(WebSocketConnector aConnector, Token aToken) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'exists'...");
+		}
+
+		TokenServer lServer = getServer();
+
+		// check if user is allowed to run 'exists' command
+		if (!SecurityFactory.hasRight(aConnector.getUsername(), NS_FILESYSTEM + ".exists")) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Returning 'Access denied'...");
+			}
+			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
+			return;
+		}
+
+		String lAlias = aToken.getString("alias", "privateDir");
+		String lFilename = aToken.getString("filename", null);
+		if (null == lFilename) {
+			sendErrorToken(aConnector, aToken, -1, "Missing filename argument!");
+		}
+
+		String lFolder = mSettings.getAlias(lAlias);
+		File lFile = null;
+		if (lFolder != null) {
+			String lFilePath = lFolder.replace("{username}", aConnector.getUsername()) + lFilename;
+			lFilePath = JWebSocketConfig.expandEnvAndJWebSocketVars(lFilePath);
+			lFile = new File(lFilePath);
+		} else {
+			sendErrorToken(aConnector, aToken, -1, "The given alias '" + lAlias + "' does not exists!");
+		}
+
+		// file exists?
+		boolean lExists = lFile.exists();
+
+		Token lResponse = createResponse(aToken);
+		lResponse.setBoolean("exists", lExists);
+
+		lServer.sendToken(aConnector, lResponse);
+	}
+
+	/**
+	 * saves a file
+	 *
 	 * @param aConnector
 	 * @param aToken
 	 */
@@ -161,7 +212,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'save' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_FILESYSTEM + ".save")) {
+		if (!SecurityFactory.hasRight(aConnector.getUsername(), NS_FILESYSTEM + ".save")) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Returning 'Access denied'...");
 			}
@@ -179,7 +230,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		// scope may be "private" or "public"
 		String lBaseDir;
 		if (JWebSocketCommonConstants.SCOPE_PRIVATE.equals(lScope)) {
-			String lUsername = getUsername(aConnector);
+			String lUsername = aConnector.getUsername();
 			lBaseDir = getString(PRIVATE_DIR_KEY, PRIVATE_DIR_DEF);
 			if (lUsername != null) {
 				lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir).replace("{username}", lUsername);
@@ -226,7 +277,6 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "saving file"));
 		}
 
-		// complete the response token
 		String lFullPath = lBaseDir + lFilename;
 		File lFile = new File(lFullPath);
 		try {
@@ -253,22 +303,27 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		// send notification event to other affected clients
 		// to allow to update their content (if desired)
-		if (lNotify) {
-			// create token of type "event"
-			Token lEvent = TokenFactory.createToken(BaseToken.TT_EVENT);
-			// include name space of this plug-in
-			lEvent.setNS(NS_FILESYSTEM);
-			lEvent.setString("name", "filesaved");
-			lEvent.setString("filename", lFilename);
-			lEvent.setString("sourceId", aConnector.getId());
+		Token lEvent;
+		// create token of type "event"
+		lEvent = TokenFactory.createToken(BaseToken.TT_EVENT);
+		lEvent.setNS(NS_FILESYSTEM);
+		lEvent.setString("name", "filesaved");
+		lEvent.setString("filename", lFilename);
+		lEvent.setString("sourceId", aConnector.getId());
+		if (lScope.equals(JWebSocketCommonConstants.SCOPE_PUBLIC)) {
 			lEvent.setString("url", getString(WEB_ROOT_KEY, WEB_ROOT_DEF) + lFilename);
-			// TODO: Limit notification to desired scope
+		}
+		if (lNotify && lScope.equals(JWebSocketCommonConstants.SCOPE_PUBLIC)) {
 			lServer.broadcastToken(lEvent);
+		} else {
+			// notify always the requester
+			lServer.sendToken(aConnector, lEvent);
 		}
 	}
 
 	/**
-	 * load a file
+	 * load a file 
+	 *
 	 * @param aConnector
 	 * @param aToken
 	 */
@@ -350,6 +405,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 	/**
 	 * send a file from one client to another client
+	 *
 	 * @param aConnector
 	 * @param aToken
 	 */
@@ -374,6 +430,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lData = aToken.getString("data");
 		String lNodeId = aToken.getString("unid");
 		String lTargetId = aToken.getString("targetId");
+		String lEncoding = aToken.getString("encoding");
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
@@ -391,10 +448,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			Token lEvent = TokenFactory.createToken(BaseToken.TT_EVENT);
 			// include name space of this plug-in
 			lEvent.setNS(NS_FILESYSTEM);
-			lEvent.setString("name", "filesent");
+			lEvent.setString("name", "filereceived");
 			lEvent.setString("filename", lFilename);
 			lEvent.setString("sourceId", aConnector.getId());
 			lEvent.setString("data", lData);
+			lEvent.setString("encoding", lEncoding);
 			// send file to target client
 			lServer.sendToken(lTarget, lEvent);
 		} else {
@@ -410,7 +468,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		lServer.sendToken(aConnector, lResponse);
 	}
 
-	private Token getFilelist(Token aToken) {
+	private Token getFilelist(String aUsername, Token aToken) {
 
 		String lAlias = aToken.getString("alias");
 		boolean lRecursive = aToken.getBoolean("recursive", false);
@@ -420,56 +478,106 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lFolder = null;
 		Token lToken = TokenFactory.createToken();
 
-		if (mSettings != null) {
-			lObject = mSettings.getAlias(lAlias);
-			if (lObject != null) {
-				lFolder = (String) lObject;
-				File lDir = new File(JWebSocketConfig.expandEnvAndJWebSocketVars(lFolder));
-				lFolder = lDir.getPath();
-				// IOFileFilter lFileFilter = FileFilterUtils.nameFileFilter(lFilemask);
-				String[] lFilemaskArray = new String[lFilemasks.size()];
-				int lIdx = 0;
-				for (Object lMask : lFilemasks) {
-					lFilemaskArray[lIdx] = (String) lMask;
-					lIdx++;
-				}
-				IOFileFilter lFileFilter = new WildcardFileFilter(lFilemaskArray);
-				IOFileFilter lDirFilter = null;
-				if (lRecursive) {
-					lDirFilter = FileFilterUtils.directoryFileFilter();
-				}
-				Collection<File> lFiles = FileUtils.listFiles(lDir, lFileFilter, lDirFilter);
-				List lFileList = new FastList<Map>();
-				for (File lFile : lFiles) {
-					Map lFileData = new FastMap< String, Object>();
-					String lName = lFile.getName();
-					lFileData.put("filename", lName);
-					String lPath = lFile.getPath();
-					if (lPath != null && lPath.indexOf(lFolder) == 0) {
-						lPath = lPath.substring(lFolder.length() + 1, lPath.length() - lName.length());
-					}
-					lFileData.put("path", lPath);
-					lFileData.put("size", lFile.length());
-					lFileData.put("modified", Tools.DateToISO8601(new Date(lFile.lastModified())));
-					lFileData.put("hidden", lFile.isHidden());
-					lFileData.put("canRead", lFile.canRead());
-					lFileData.put("canWrite", lFile.canWrite());
-					lFileList.add(lFileData);
-				}
-				lToken.setList("files", lFileList);
-				lToken.setInteger("code", 0);
-				lToken.setString("msg", "ok");
-			} else {
-				lToken.setInteger("code", -1);
-				lToken.setString("msg", "no alias '" + lAlias + "' defined for filesystem plug-in");
+		lObject = mSettings.getAlias(lAlias);
+		if (lObject != null) {
+			lFolder = (String) lObject;
+			lFolder = JWebSocketConfig.expandEnvAndJWebSocketVars(lFolder).
+					replace("{username}", aUsername);
+			File lDir = new File(lFolder);
+			lFolder = lDir.getPath();
+			// IOFileFilter lFileFilter = FileFilterUtils.nameFileFilter(lFilemask);
+			String[] lFilemaskArray = new String[lFilemasks.size()];
+			int lIdx = 0;
+			for (Object lMask : lFilemasks) {
+				lFilemaskArray[lIdx] = (String) lMask;
+				lIdx++;
 			}
+			IOFileFilter lFileFilter = new WildcardFileFilter(lFilemaskArray);
+			IOFileFilter lDirFilter = null;
+			if (lRecursive) {
+				lDirFilter = FileFilterUtils.directoryFileFilter();
+			}
+			Collection<File> lFiles = FileUtils.listFiles(lDir, lFileFilter, lDirFilter);
+			List lFileList = new FastList<Map>();
+			for (File lFile : lFiles) {
+				Map lFileData = new FastMap< String, Object>();
+				String lName = lFile.getName();
+				lFileData.put("filename", lName);
+				lFileData.put("size", lFile.length());
+				lFileData.put("modified", Tools.DateToISO8601(new Date(lFile.lastModified())));
+				lFileData.put("hidden", lFile.isHidden());
+				lFileData.put("canRead", lFile.canRead());
+				lFileData.put("canWrite", lFile.canWrite());
+				lFileList.add(lFileData);
+			}
+			lToken.setList("files", lFileList);
+			lToken.setInteger("code", 0);
+			lToken.setString("msg", "ok");
 		} else {
 			lToken.setInteger("code", -1);
-			lToken.setString("msg", "no settings defined for filesystem plug-in");
+			lToken.setString("msg", "no alias '" + lAlias + "' defined for filesystem plug-in");
 		}
+
 		return lToken;
 	}
 
+	/**
+	 * Delete a file
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
+	private void delete(WebSocketConnector aConnector, Token aToken) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'delete'...");
+		}
+
+		// check if user is allowed to run 'delete' command
+		if (!SecurityFactory.hasRight(aConnector.getUsername(), NS_FILESYSTEM + ".delete")) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Returning 'Access denied'...");
+			}
+			getServer().sendToken(aConnector, createAccessDenied(aToken));
+			return;
+		}
+
+		boolean lForce = aToken.getBoolean("force", true);
+		String lFilename = aToken.getString("filename", null);
+
+		String lUsername = aConnector.getUsername();
+		String lBaseDir = getString(PRIVATE_DIR_KEY, PRIVATE_DIR_DEF);
+		lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir).replace("{username}", lUsername);
+
+		String lFullPath = lBaseDir + lFilename;
+		File lFile = new File(lFullPath);
+
+		if (null == lFilename || !lFile.exists()) {
+			sendErrorToken(aConnector, aToken, -1, "The given filename '" + lFilename + "' is invalid or not exists!");
+			return;
+		}
+
+		try {
+			if (lForce) {
+				FileUtils.forceDelete(lFile);
+			} else {
+				if (!FileUtils.deleteQuietly(lFile)) {
+					throw new Exception("File could not be deleted quietly!");
+				}
+			}
+		} catch (Exception lEx) {
+			sendErrorToken(aConnector, aToken, -1, "File '" + lFilename + "' could not be deleted!");
+			return;
+		}
+
+		getServer().sendToken(aConnector, createResponse(aToken));
+	}
+
+	/**
+	 * Gets the file list for a given alias
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	private void getFilelist(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 
@@ -486,7 +594,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		Token lResponse = getFilelist(aToken);
+		Token lResponse = getFilelist(aConnector.getUsername(), aToken);
 		lServer.setResponseFields(aToken, lResponse);
 
 		// send response to requester
@@ -547,9 +655,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		@Override
 		public void onStart(FileAlterationObserver aObserver) {
 			/*
-			if (mLog.isDebugEnabled()) {
-			mLog.debug("Monitor has been started.");
-			}
+			 * if (mLog.isDebugEnabled()) { mLog.debug("Monitor has been
+			 * started."); }
 			 */
 		}
 
@@ -557,9 +664,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		@Override
 		public void onStop(FileAlterationObserver aObserver) {
 			/*
-			if (mLog.isDebugEnabled()) {
-			mLog.debug("Monitor has been stopped.");
-			}
+			 * if (mLog.isDebugEnabled()) { mLog.debug("Monitor has been
+			 * stopped."); }
 			 */
 		}
 	}
@@ -576,7 +682,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aInterval
 	 */
 	public void startPublicMonitor(int aInterval) {
@@ -602,7 +708,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void stopPublicMonitor() {
 		if (null != mPublicMonitor) {
@@ -616,29 +722,28 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			}
 		}
 	}
-
-	private void watch(WebSocketConnector aConnector, Token aToken) {
-		TokenServer lServer = getServer();
-
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing 'watch'...");
-		}
-
-		// check if user is allowed to run 'save' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_FILESYSTEM + ".watch")) {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Returning 'Access denied'...");
-			}
-			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
-			return;
-		}
-
-		String lPath = aToken.getString("path");
-		String lFilename = aToken.getString("filename");
-
-		Token lResponse = createResponse(aToken);
-
-		// send response to requester
-		lServer.sendToken(aConnector, lResponse);
-	}
+//	private void watch(WebSocketConnector aConnector, Token aToken) {
+//		TokenServer lServer = getServer();
+//
+//		if (mLog.isDebugEnabled()) {
+//			mLog.debug("Processing 'watch'...");
+//		}
+//
+//		// check if user is allowed to run 'save' command
+//		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_FILESYSTEM + ".watch")) {
+//			if (mLog.isDebugEnabled()) {
+//				mLog.debug("Returning 'Access denied'...");
+//			}
+//			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
+//			return;
+//		}
+//
+//		String lPath = aToken.getString("path");
+//		String lFilename = aToken.getString("filename");
+//
+//		Token lResponse = createResponse(aToken);
+//
+//		// send response to requester
+//		lServer.sendToken(aConnector, lResponse);
+//	}
 }

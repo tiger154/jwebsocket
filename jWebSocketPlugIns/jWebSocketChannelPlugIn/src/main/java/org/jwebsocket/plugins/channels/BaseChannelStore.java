@@ -191,4 +191,12 @@ public class BaseChannelStore implements ChannelStore {
 		}
 		return lRes;
 	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public boolean hasChannel(String aChannelId) {
+		return mStorage.containsKey(aChannelId);
+	}
 }

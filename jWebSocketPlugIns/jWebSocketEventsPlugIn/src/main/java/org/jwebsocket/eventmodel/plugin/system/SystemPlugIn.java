@@ -44,7 +44,7 @@ public class SystemPlugIn extends EventModelPlugIn {
 
 	/**
 	 * Return the plug-ins identifiers list
-	 * 
+	 *
 	 * @param aEvent
 	 * @param aResponseEvent
 	 * @throws Exception
@@ -64,22 +64,23 @@ public class SystemPlugIn extends EventModelPlugIn {
 
 	/**
 	 * Return the plug-ins identifiers list
-	 * 
+	 *
 	 * @param aEvent
 	 * @param aResponseEvent
 	 * @throws Exception
 	 */
 	public void processEvent(ClientCacheAspectStatus aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Setting the client cache aspect status ...");
+			mLog.debug("Setting the client cache aspect status in the session storage ...");
 		}
 
-		aEvent.getConnector().setVar(CacheFilter.CLIENT_CACHE_ASPECT_STATUS, aEvent.isEnabled());
+		aEvent.getConnector().getSession().getStorage().
+				put(CacheFilter.CLIENT_CACHE_ASPECT_STATUS, aEvent.isEnabled());
 	}
 
 	/**
 	 * Indicate if a plug-in exists using it identifier
-	 * 
+	 *
 	 * @param aEvent
 	 * @param aResponseEvent
 	 * @throws Exception
@@ -98,7 +99,7 @@ public class SystemPlugIn extends EventModelPlugIn {
 
 	/**
 	 * Return a plug-in API using it identifier
-	 * 
+	 *
 	 * @param aEvent
 	 * @param aResponseEvent
 	 * @throws Exception

@@ -17,7 +17,8 @@ package org.jwebsocket.plugins.channels;
 
 /**
  * Base interface that defines the store operations for publishers
- * @author puran
+ * 
+ * @author puran, kyberneees
  * @version $Id: PublisherStore.java 1270 2010-12-23 08:53:06Z fivefeetfurther $
  */
 public interface PublisherStore {
@@ -54,4 +55,11 @@ public interface PublisherStore {
 	 * @return the size value
 	 */
 	int getPublisherStoreSize();
+	
+	/**
+	 * Indicates if the publisher store contains the given publisher identifier
+	 *
+	 * @return TRUE if the publisher exists, FALSE otherwise
+	 */
+	boolean hasPublisher(String aPublisherId);
 }

@@ -158,7 +158,6 @@ var jws = {
 	//:d:en:An individual timeout can be passed per request.
 	DEF_RESP_TIMEOUT: 30000,
 
-
 	//:i:en:Browsertype Constants
 	//:const:*:BT_UNKNOWN:Integer:0
 	//:d:en:Browsertype is unknown.
@@ -4724,6 +4723,13 @@ jws.SystemClientPlugIn = {
 		}
 	},
 	
+	//:m:*:sessionPut
+	//:d:en:Put key/value entry in the server-side client session storage.
+	//:a:en::aKey:String:The entry key
+	//:a:en::aValue:Object:The entry value
+	//:a:en::aPublic:Boolean:Indicates if the entry will be readable by other clients. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	sessionPut: function (aKey, aValue, aPublic, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
@@ -4734,6 +4740,13 @@ jws.SystemClientPlugIn = {
 		}, aOptions);
 	},
 	
+	//:m:*:sessionHas
+	//:d:en:Indicates if the client server-side session storage contains a custom entry given the entry key.
+	//:a:en::aClientId:String:The client identifier
+	//:a:en::aKey:String:The entry key
+	//:a:en::aPublic:Boolean:Indicates if the entry is declared as public. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	sessionHas: function (aClientId, aKey, aPublic, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
@@ -4744,6 +4757,13 @@ jws.SystemClientPlugIn = {
 		}, aOptions);
 	},
 	
+	//:m:*:sessionGet
+	//:d:en:Gets a server-side client session storage entry given the entry key.
+	//:a:en::aClientId:String:The client identifier
+	//:a:en::aKey:String:The entry key
+	//:a:en::aPublic:Boolean:Indicates if the entry is declared as public. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	sessionGet: function (aClientId, aKey, aPublic, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
@@ -4754,6 +4774,12 @@ jws.SystemClientPlugIn = {
 		}, aOptions);
 	},
 	
+	//:m:*:sessionRemove
+	//:d:en:Removes a server-side client session storage entry given the entry key.
+	//:a:en::aKey:String:The entry key
+	//:a:en::aPublic:Boolean:Indicates if the entry is declared as public. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	sessionRemove: function (aKey, aPublic, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
@@ -4763,6 +4789,13 @@ jws.SystemClientPlugIn = {
 		}, aOptions);
 	},
 	
+	//:m:*:sessionKeys
+	//:d:en:Retrieves the list of entry keys stored in the server-side session storage of a given client. _
+	//:d:en:A client can only get the public entries from others.
+	//:a:en::aClientId:String:The client identifier
+	//:a:en::aPublic:Boolean:Indicates if only the public entry keys will be retrieved. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	sessionKeys: function (aClientId, aPublic, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
@@ -4772,6 +4805,13 @@ jws.SystemClientPlugIn = {
 		}, aOptions);
 	},
 	
+	//:m:*:sessionGetAll
+	//:d:en:Retrieves all the entries stored in the server-side session storage of a given client. _
+	//:d:en:A client can only get the public entries from others.
+	//:a:en::aClientId:String:The client identifier
+	//:a:en::aPublic:Boolean:Indicates if only the public entries will be retrieved. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	sessionGetAll: function (aClientId, aPublic, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
@@ -4781,6 +4821,12 @@ jws.SystemClientPlugIn = {
 		}, aOptions);
 	},
 	
+	//:m:*:sessionGetMany
+	//:d:en:Retrieves a list of public entries stored in the server-side session storage of many clients. 
+	//:a:en::aClients:Array:The list of clients
+	//:a:en::aKeys:Array:The list of entry keys to retrieve
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	sessionGetMany: function (aClients, aKeys, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,

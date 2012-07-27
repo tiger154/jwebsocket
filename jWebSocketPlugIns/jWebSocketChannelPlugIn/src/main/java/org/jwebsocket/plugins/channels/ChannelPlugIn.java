@@ -128,8 +128,8 @@ public class ChannelPlugIn extends TokenPlugIn {
 	 */
 	private static final String AUTHORIZE = "authorize";
 	private static final String PUBLISH = "publish";
-	private static final String STOP_CHANNEL = "stopChannel";
-	private static final String START_CHANNEL = "startChannel";
+	private static final String STOP_CHANNEL = "stop";
+	private static final String START_CHANNEL = "start";
 	private static final String SUBSCRIBE = "subscribe";
 	private static final String UNSUBSCRIBE = "unsubscribe";
 	private static final String GET_CHANNELS = "getChannels";
@@ -491,7 +491,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			if (lChannel == null) {
 				sendErrorToken(aConnector, aToken, -1,
 						"'" + aConnector.getId()
-						+ "' channel not found for given channelId '"
+						+ "' channel not found for given channel identifier '"
 						+ lChannelId + "'");
 				return;
 			}
@@ -628,12 +628,11 @@ public class ChannelPlugIn extends TokenPlugIn {
 			return;
 		}
 		// check if channel already exists
-		Channel lChannel = mChannelManager.getChannel(lChannelId);
-		if (lChannel != null) {
+		if (mChannelManager.hasChannel(lChannelId)) {
 			lResponseToken.setInteger("code", -1);
 			lResponseToken.setString("msg", "Channel with id '" + lChannelId + "' already exists.");
 		} else {
-			lChannel = new Channel(
+			Channel lChannel = new Channel(
 					lChannelId,
 					lName,
 					lIsPrivate,
@@ -780,7 +779,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 		Channel lChannel = mChannelManager.getChannel(lChannelId);
 		if (lChannel == null) {
 			sendErrorToken(aConnector, aToken, -1,
-					"No channel found with id '" + lChannelId + "'");
+					"Channel with id '" + lChannelId + "' does not exist.");
 			return;
 		}
 
@@ -884,7 +883,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 		if (lChannel == null) {
 			sendErrorToken(aConnector, aToken, -1,
 					"'" + aConnector.getId()
-					+ "' channel not found for given channelId '"
+					+ "' channel not found for given channel identifier '"
 					+ lChannelId + "'");
 			return;
 		}
