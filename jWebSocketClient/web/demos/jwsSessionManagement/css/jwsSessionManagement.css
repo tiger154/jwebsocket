@@ -1,0 +1,142 @@
+/*-------------- DEMO_DESCRIPTION ------------*/
+#demo_box_description{
+    margin-top: 10px;
+    padding: 5px 15px 5px 15px;
+    font-size: 10pt;
+}
+/*-------------- DEMO_DESCRIPTION ------------*/
+
+
+/*---------------- DEMO_SCENARIO -------------*/
+#demo_box_scenario{
+    float: left;
+    margin: 10px; 
+    padding: 5px;
+}
+
+#functional_box_header{
+    height: 18px;
+    color: #414141;
+    font-family: fantasy;
+    font-size: 12px;
+    margin-left: 10px;
+    margin-bottom: 2px;
+}
+
+#functional_box_header a{
+    background: #c8c8c8;
+    display: inline;
+    
+    border: 1px solid #C8C8C8;
+    border-bottom: none;
+    -moz-border-radius-topleft: 6px;
+    -moz-border-radius-topright: 6px;
+    -moz-border-radius-bottomright: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-radius: 6px 6px 0px 0px;
+    border-radius: 6px 6px 0px 0px;
+    text-decoration: none;
+    cursor: pointer;
+    
+    
+    
+   float: left;
+   padding-left: 20px;
+   padding-right: 20px;
+   
+   font-family: "Verdana";
+   font-size: 11px;
+   font-style: normal;  
+   margin-right: 3px;
+   
+   height: 25px;
+}
+
+#functional_box_header a span{
+    margin-top: 6px;
+    float: left;
+}
+
+#functional_box_header a:hover{
+    background: #E4E4E4;
+}
+
+#functional_box_header a.pressed{
+    background: #E4E4E4;
+}
+
+.functional_box_content_text{
+    overflow: auto;
+    height: 60px;
+    padding: 5px 3px 3px 10px;
+    color: #797878;
+    font-size: 11px;
+    font-family: "Verdana";
+}
+
+.functional_box_content_buttons{
+    height: 30px;
+    margin-top: 5px;
+    padding: 5px 5px 5px 20px;
+	text-align: center;
+}
+
+.functional_box_content_buttons > div{
+    display: inline;
+    height: 25px;
+    float:left;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.complex_object_btn{
+    padding-bottom: 10px;
+    float: left;
+}
+/*---------------- DEMO_SCENARIO -------------*/
+
+
+.box{
+    float: left;
+
+}
+
+#log_box{
+    width: 708px;
+	float: left;
+	margin-top: 20px;
+}
+
+#scenario_container{
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+
+
+#functional_box{
+    margin-left: 12px;
+    width: 600px;
+}
+
+#functional_box_content{
+    background: #E4E4E4;    
+    height: 115px;
+    border: 1px solid #C8C8C8;
+}
+
+#button_container{
+    margin-top: 8px;
+}
+
+
+/*FUNTIONAL BOX*/
+#functional_box_header{
+    float: left;
+    width: 390px;
+    height: 24px; 
+}
+
+#functional_box_content{
+    float: left;
+}
