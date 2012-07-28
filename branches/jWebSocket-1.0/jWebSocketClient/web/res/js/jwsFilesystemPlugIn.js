@@ -24,6 +24,10 @@ jws.FileSystemPlugIn = {
 	// namespace for filesystem plugin
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.filesystem",
+	
+	// core aliases
+	ALIAS_PRIVATE: "privateDir",
+	ALIAS_PUBLIC: "publicDir",
 
 	NOT_FOUND_ERR: 1,
 	SECURITY_ERR: 2,
@@ -80,10 +84,11 @@ jws.FileSystemPlugIn = {
 	},
 
 	//:m:*:fileGetFilelist
-	//:d:en:Gets the file list for a given alias
+	//:d:en:Retrieves the file list from a given alias
 	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
-	//:a:en::aFilemasks:Array:The filemasks for filtering. <tt>Example: ["*.txt"]</tt>
+	//:a:en::aFilemasks:Array:The filtering filemasks. <tt>Example: ["*.txt"]</tt>
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.recursive:Boolean:Recursive file listing flag. Default value is FALSE
 	//:r:*:::void:none
 	fileGetFilelist: function( aAlias, aFilemasks, aOptions ) {
 		var lRes = this.checkConnected();
@@ -150,23 +155,16 @@ jws.FileSystemPlugIn = {
 	//:m:*:fileLoad
 	//:d:en:Loads a file from a given scope
 	//:a:en::aFilename:String:The filename value
+	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
-	//:a:en::aOptions.scope:String:The scope value. <tt>Example: jws.SCOPE_PRIVATE</tt>
 	//:r:*:::void:none
-	fileLoad: function( aFilename, aOptions ) {
+	fileLoad: function( aFilename, aAlias, aOptions ) {
 		var lRes = this.createDefaultResult();
-		var lScope = jws.SCOPE_PRIVATE;
-
-		if( aOptions ) {
-			if( aOptions.scope != undefined ) {
-				lScope = aOptions.scope;
-			}
-		}
 		if( this.isConnected() ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "load",
-				scope: lScope,
+				alias: aAlias,
 				filename: aFilename
 			};
 			this.sendToken( lToken,	aOptions );
@@ -181,16 +179,18 @@ jws.FileSystemPlugIn = {
 	//:m:*:fileSave
 	//:d:en:Saves a file in a given scope
 	//:a:en::aFilename:String:The filename value
-	//:a:en::aData:Object:The file content. Could be encoded optionally.
+	//:a:en::aData:String:The file content. Could be base64 encoded optionally.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:a:en::aOptions.scope:String:The scope value. <tt>Example: jws.SCOPE_PRIVATE</tt>
-	//:a:en::aOptions.encode:Boolean:Indicates in the file content require to be encoded. Default value is TRUE.
+	//:a:en::aOptions.encode:Boolean:Indicates if the file content require to be encoded internally before send. Default value is TRUE.
+	//:a:en::aOptions.notify:Boolean:Indicates if the server should notify the file save to connected clients. Default value is FALSE.
 	//:a:en::aOptions.encoding:String:The encoding method. Currently "base64" is only supported and enabled by default.
 	//:r:*:::void:none
 	fileSave: function( aFilename, aData, aOptions ) {
 		var lRes = this.createDefaultResult();
 		var lEncoding = "base64";
 		var lEncode = true;
+		var lNotify = false;
 		var lScope = jws.SCOPE_PRIVATE;
 		if( aOptions ) {
 			if( aOptions.scope != undefined ) {
@@ -205,6 +205,10 @@ jws.FileSystemPlugIn = {
 			if( aOptions.encode != undefined ) {
 				lEncode = aOptions.encode;
 			}
+			if( aOptions.notify != undefined ) {
+				// notify only is the scope is public
+				lNotify = (jws.SCOPE_PRIVATE == false) || aOptions.notify;
+			}
 		}
 		if( lEncode ) {
 			if( lEncoding == "base64" ) {
@@ -217,7 +221,7 @@ jws.FileSystemPlugIn = {
 				type: "save",
 				scope: lScope,
 				encoding: lEncoding,
-				notify: true,
+				notify: lNotify,
 				data: aData,
 				filename: aFilename
 			};

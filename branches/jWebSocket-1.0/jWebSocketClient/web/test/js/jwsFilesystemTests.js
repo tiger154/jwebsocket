@@ -48,6 +48,7 @@ jws.tests.FileSystem = {
 				);
 
 			runs( function() {
+				console.log(JSON.stringify(lResponse));
 				expect( lResponse.code ).toEqual( 0 );
 			});
 
@@ -122,8 +123,8 @@ jws.tests.FileSystem = {
 		});
 	},
 
-	testFileLoad: function(aFilename, aScope, aExpectedData) {
-		var lSpec = this.NS + ": FileLoad (admin, " + aFilename + ", " + aScope + ")";
+	testFileLoad: function(aFilename, aAlias, aExpectedData) {
+		var lSpec = this.NS + ": FileLoad (admin, " + aFilename + ", " + aAlias + ")";
 		var lData = aExpectedData;
 		var lFilename = aFilename;
 		
@@ -131,9 +132,7 @@ jws.tests.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileLoad( lFilename, {
-				encoding: "base64",
-				scope: aScope,
+			jws.Tests.getAdminConn().fileLoad( lFilename, aAlias, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -214,14 +213,47 @@ jws.tests.FileSystem = {
 	},
 
 	runSpecs: function() {
-		jws.tests.FileSystem.testFileSave(this.TEST_FILE_NAME, this.TEST_FILE_DATA, jws.SCOPE_PUBLIC);
-		jws.tests.FileSystem.testFileLoad(this.TEST_FILE_NAME, jws.SCOPE_PUBLIC, this.TEST_FILE_DATA);
-		jws.tests.FileSystem.testFileExists("publicDir", this.TEST_FILE_NAME, true);
-		jws.tests.FileSystem.testFileExists("privateDir", "unexisting_file.txt", false);
-		jws.tests.FileSystem.testFileSave(this.TEST_FILE_NAME, this.TEST_FILE_DATA, jws.SCOPE_PRIVATE);
-		jws.tests.FileSystem.testFileExists("privateDir", this.TEST_FILE_NAME, true);
-		jws.tests.FileSystem.testGetFilelist("publicDir", ["*.txt"], true, [this.TEST_FILE_NAME]);
-		jws.tests.FileSystem.testGetFilelist("privateDir", ["*.txt"], true, [this.TEST_FILE_NAME]);
+		jws.tests.FileSystem.testFileSave(
+			this.TEST_FILE_NAME,
+			this.TEST_FILE_DATA, 
+			jws.SCOPE_PUBLIC);
+		
+		jws.tests.FileSystem.testFileLoad(
+			this.TEST_FILE_NAME, 
+			jws.FileSystemPlugIn.ALIAS_PUBLIC,
+			this.TEST_FILE_DATA);
+		
+		jws.tests.FileSystem.testFileExists(
+			jws.FileSystemPlugIn.ALIAS_PUBLIC, 
+			this.TEST_FILE_NAME, 
+			true);
+		
+		jws.tests.FileSystem.testFileExists(
+			jws.FileSystemPlugIn.ALIAS_PRIVATE, 
+			"unexisting_file.txt", 
+			false);
+		
+		jws.tests.FileSystem.testFileSave(
+			this.TEST_FILE_NAME, 
+			this.TEST_FILE_DATA, 
+			jws.SCOPE_PRIVATE);
+			
+		jws.tests.FileSystem.testFileExists(
+			jws.FileSystemPlugIn.ALIAS_PRIVATE, 
+			this.TEST_FILE_NAME, 
+			true);
+		
+		jws.tests.FileSystem.testGetFilelist(
+			jws.FileSystemPlugIn.ALIAS_PUBLIC, 
+			["*.txt"], 
+			true, [this.TEST_FILE_NAME]);
+		
+		jws.tests.FileSystem.testGetFilelist(
+			jws.FileSystemPlugIn.ALIAS_PRIVATE, 
+			["*.txt"], 
+			true, 
+			[this.TEST_FILE_NAME]);
+		
 		jws.tests.FileSystem.testFileSend(this.TEST_FILE_NAME, this.TEST_FILE_DATA);
 		jws.tests.FileSystem.testFileDelete(this.TEST_FILE_NAME, true, 0);
 		jws.tests.FileSystem.testFileDelete(this.TEST_FILE_NAME, true, -1);

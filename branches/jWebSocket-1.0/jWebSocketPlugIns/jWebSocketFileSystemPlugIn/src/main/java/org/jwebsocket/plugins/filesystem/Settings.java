@@ -41,11 +41,24 @@ public class Settings {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aAlias
 	 * @return
 	 */
 	public String getAlias(String aAlias) {
 		return mAliases.get(aAlias);
+	}
+
+	/**
+	 *
+	 * @param aAlias
+	 * @return
+	 */
+	public String getAlias(String aAlias, String aDefaultValue) {
+		String lValue = mAliases.get(aAlias);
+		if (null == lValue) {
+			return aDefaultValue;
+		}
+		return lValue;
 	}
 }
