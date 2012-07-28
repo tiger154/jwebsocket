@@ -6,16 +6,6 @@
 	<bean id="org.jwebsocket.plugins.filesystem.settings" class="org.jwebsocket.plugins.filesystem.Settings">
 		<property name="aliases">
 			<map>
-				<!-- folder alias for private user data -->
-				<entry>
-					<key><value>privateDir</value></key>
-					<value>${JWEBSOCKET_HOME}filesystem/private/{username}/</value>
-				</entry>
-				<!-- folder alias for shared public data -->
-				<entry>
-					<key><value>publicDir</value></key>
-					<value>${JWEBSOCKET_HOME}filesystem/public/</value>
-				</entry>                
 				<!-- folder alias for reports (.jrxml), used by reporting plug-in -->
 				<entry>
 					<key><value>reportRoot</value></key>

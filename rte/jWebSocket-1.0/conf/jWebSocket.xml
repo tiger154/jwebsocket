@@ -116,68 +116,6 @@
 				<setting key="workers">500</setting>
 			</settings>			
 		</engine>
-		<!-- Comet Engine Configuration -->
-		<engine>
-			<name>org.jwebsocket.comet.CometEngine</name>
-			<id>ce0</id>
-			<jar>jWebSocketCometEngine-1.0.jar</jar>
-			<port>8780</port>
-			<sslport>9790</sslport>
-			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
-			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
-			<!-- password to access keystore file -->
-			<password>jWebSocket</password>
-			<!-- CAUTION! -->
-			<!-- not all browsers automatically accept self-signed certificates -->
-			<!-- please follow instructions on the jWebSocket.org website, how
-			     to trust self-signed certificates for the various browsers or
-				 how to import signed private key/certificate bundles into the keystore -->
-
-			<!-- these domains are accepted by the engine listening on the above mentioned port -->
-			<!-- you optionally can add asterisks as wild cards -->
-			<domains>
-				<domain>*</domain>
-				<!-- limit allowed domains here -->
-				<!--
-				<domain>http*://jwebsocket.org</domain>
-				<domain>http*://jwebsocket.com</domain>
-				<domain>http*://*.jwebsocket.org</domain>
-				<domain>http*://*.jwebsocket.com</domain>
-				<domain>http*://10.10.*</domain>
-				<domain>http*://10.21.*</domain>
-				<domain>http*://192.168.*</domain>
-				<domain>http*://localhost*</domain>
-				-->
-			</domains>
-			<!-- default session timeout 1h, max timeout currently 1 hour -->
-			<timeout>0</timeout>
-			<!-- context and servlet settings, these settings are applied only
-				 in embedded mode. In standard web app mode the context is specified 
-				 by the context.xml of the web-app and the servlet is specified 
-				 in the web.xml of the web-app. -->
-			<!-- Comet provides a WebSocket Servlet, set the context path here -->
-			<context>/jWebSocket</context>
-			<!-- Comet provides a WebSocket Servlet, set the servlet path here -->
-			<servlet>/jWebSocket</servlet>
-			<!--
-				maximum size of the data packet that the engine will read,
-				if the frame size is larger than this the connection will be closed.
-			-->
-			<maxframesize>1048840</maxframesize>
-			
-			<!-- maximun number of connections allowed by this engine -->
-			<maxconnections>10000</maxconnections>
-			
-			<!-- on max connections reached strategy -->
-			<!-- wait, close, reject, redirect --> 
-			<onmaxconnections>reject</onmaxconnections>
-			
-			<settings>
-				<!-- directory that contains the public web folder path -->
-				<setting key="document_root">${JWEBSOCKET_HOME}web/</setting>
-			</settings>
-		</engine>
-
 	</engines>	
 		
 	<!-- The <engineDefaults> section is stored here only for convenience!
@@ -1471,15 +1409,14 @@
 				<!-- specify folder locations -->
 				<!-- examples for pure websocket server w/o an attached web server -->
 				<!--
-				<setting key="publicDir">%JWEBSOCKET_HOME%/public/</setting>
-				<setting key="privateDir">%JWEBSOCKET_HOME%/private/</setting>
-				<setting key="webroot">http://jwebsocket.org/</setting>
+				<setting key="alias:publicDir">%JWEBSOCKET_HOME%/public/</setting>
+				<setting key="alias:privateDir">%JWEBSOCKET_HOME%/private/</setting>
+				<setting key="alias:webroot">http://jwebsocket.org/</setting>
 				-->
 				<!-- examples for windows based websocket servers -->
 				<setting key="alias:privateDir">${JWEBSOCKET_HOME}filesystem/private/{username}/</setting>
 				<setting key="alias:publicDir">${JWEBSOCKET_HOME}filesystem/public/</setting>
 				<setting key="alias:webRoot">http://localhost/public/</setting>
-				<setting key="alias:reportRoot">${JWEBSOCKET_HOME}/reports</setting>
 				<!-- examples for Jetty based websocket servers -->
 				<!--
 				<setting key="alias:privateDir">c:/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/users/{username}/</setting>
@@ -1492,11 +1429,6 @@
 				<setting key="alias:publicDir">/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/public/</setting>
 				<setting key="alias:webroot">http://localhost/jwc/</setting>
 				-->
-				<!-- MIME Types -->
-				<setting key="mimetype:image/gif">.gif</setting>
-				<setting key="mimetype:image/png">.png</setting>
-				<setting key="mimetype:image/jpeg">.jpg .jpeg .jpe</setting>
-				<setting key="mimetype:image/tiff">.tif .tiff</setting>
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
@@ -1720,9 +1652,9 @@
 				<setting key="http_password">jmxadmin</setting>
 			</settings>
 		</plugin>
-
+		-->
 	</plugins>
-
+    
 	<!-- filters to be instantiated for jWebSocket -->
 	<filters>
         
