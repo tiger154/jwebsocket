@@ -65,12 +65,12 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_FILESYSTEM = JWebSocketServerConstants.NS_BASE + ".plugins.filesystem";
 	// TODO: make these settings configurable
-	private static String PRIVATE_DIR_KEY = "alias:privateDir";
-	private static String PUBLIC_DIR_KEY = "alias:publicDir";
-	private static String WEB_ROOT_KEY = "alias:webRoot";
-	private static String PRIVATE_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/private/{username}/";
-	private static String PUBLIC_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/public/";
-	private static String WEB_ROOT_DEF = "http://jwebsocket.org/";
+	private static String PRIVATE_ALIAS_DIR_KEY = "privateDir";
+	private static String PUBLIC_ALIAS_DIR_KEY = "publicDir";
+	private static String WEB_ROOT_KEY = "webRoot";
+	private static String PRIVATE_ALIAS_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/private/{username}/";
+	private static String PUBLIC_ALIAS_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/public/";
+	private static String WEB_ROOT_DEF = "http://jwebsocket.org/filesystem/";
 	private static FileAlterationMonitor mPublicMonitor = null;
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
@@ -94,6 +94,12 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			} else {
 				mBeanFactory = getConfigBeanFactory();
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.filesystem.settings");
+				// setting core aliases (private, public)
+				String lPrivateAlias = getString("alias:" + PRIVATE_ALIAS_DIR_KEY, PRIVATE_ALIAS_DIR_DEF);
+				String lPublicAlias = getString("alias:" + PUBLIC_ALIAS_DIR_KEY, PUBLIC_ALIAS_DIR_DEF);
+				mSettings.getAliases().put(PRIVATE_ALIAS_DIR_KEY, lPrivateAlias);
+				mSettings.getAliases().put(PUBLIC_ALIAS_DIR_KEY, lPublicAlias);
+
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Filesystem plug-in successfully instantiated.");
 				}
@@ -172,7 +178,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		String lAlias = aToken.getString("alias", "privateDir");
+		String lAlias = aToken.getString("alias", PRIVATE_ALIAS_DIR_KEY);
 		String lFilename = aToken.getString("filename", null);
 		if (null == lFilename) {
 			sendErrorToken(aConnector, aToken, -1, "Missing filename argument!");
@@ -231,7 +237,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lBaseDir;
 		if (JWebSocketCommonConstants.SCOPE_PRIVATE.equals(lScope)) {
 			String lUsername = aConnector.getUsername();
-			lBaseDir = getString(PRIVATE_DIR_KEY, PRIVATE_DIR_DEF);
+			lBaseDir = mSettings.getAlias(PRIVATE_ALIAS_DIR_KEY);
 			if (lUsername != null) {
 				lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir).replace("{username}", lUsername);
 			} else {
@@ -246,7 +252,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				return;
 			}
 		} else if (JWebSocketCommonConstants.SCOPE_PUBLIC.equals(lScope)) {
-			lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(getString(PUBLIC_DIR_KEY, PUBLIC_DIR_DEF));
+			lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(
+					mSettings.getAlias(PUBLIC_ALIAS_DIR_KEY));
 		} else {
 			lMsg = "invalid scope";
 			if (mLog.isDebugEnabled()) {
@@ -322,7 +329,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * load a file 
+	 * load a file
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -346,45 +353,39 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		// obtain required parameters for file load operation
 		String lFilename = aToken.getString("filename");
-		String lScope = aToken.getString("scope", JWebSocketCommonConstants.SCOPE_PRIVATE);
+		String lAlias = aToken.getString("alias", PRIVATE_ALIAS_DIR_KEY);
 		String lData = "";
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
 
 		String lBaseDir;
-		if (JWebSocketCommonConstants.SCOPE_PRIVATE.equals(lScope)) {
-			String lUsername = getUsername(aConnector);
-			lBaseDir = getString(PRIVATE_DIR_KEY, PRIVATE_DIR_DEF);
-			if (lUsername != null) {
-				lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir).replace("{username}", lUsername);
-			} else {
-				lMsg = "not authenticated to load private file";
-				if (mLog.isDebugEnabled()) {
-					mLog.debug(lMsg);
-				}
-				lResponse.setInteger("code", -1);
-				lResponse.setString("msg", lMsg);
-				// send error response to requester
-				lServer.sendToken(aConnector, lResponse);
-				return;
-			}
-		} else if (JWebSocketCommonConstants.SCOPE_PUBLIC.equals(lScope)) {
-			lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(getString(PUBLIC_DIR_KEY, PUBLIC_DIR_DEF));
-		} else {
-			lMsg = "invalid scope";
-			if (mLog.isDebugEnabled()) {
-				mLog.debug(lMsg);
-			}
-			lResponse.setInteger("code", -1);
-			lResponse.setString("msg", lMsg);
-			// send error response to requester
-			lServer.sendToken(aConnector, lResponse);
+		String lUsername = getUsername(aConnector);
+		lBaseDir = mSettings.getAlias(lAlias);
+
+		if (null == lBaseDir) {
+			sendErrorToken(aConnector, aToken, -1, "The given alias '" + lAlias
+					+ "' does not exists!");
 			return;
 		}
 
-		// complete the response token
+		lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir);
+		if (lAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
+			if (lUsername != null) {
+				lBaseDir = lBaseDir.replace("{username}", lUsername);
+			} else {
+				sendErrorToken(aConnector, aToken, -1, "Not authenticated to load private files!");
+				return;
+			}
+		}
+
 		File lFile = new File(lBaseDir + lFilename);
+		if (!lFile.exists()) {
+			sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
+					+ "' does not exists in the given alias!");
+			return;
+		}
+
 		byte[] lBA = null;
 		try {
 			lBA = FileUtils.readFileToByteArray(lFile);
@@ -515,7 +516,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			lToken.setString("msg", "ok");
 		} else {
 			lToken.setInteger("code", -1);
-			lToken.setString("msg", "no alias '" + lAlias + "' defined for filesystem plug-in");
+			lToken.setString("msg", "No alias '" + lAlias + "' defined for filesystem plug-in");
 		}
 
 		return lToken;
@@ -545,7 +546,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lFilename = aToken.getString("filename", null);
 
 		String lUsername = aConnector.getUsername();
-		String lBaseDir = getString(PRIVATE_DIR_KEY, PRIVATE_DIR_DEF);
+		String lBaseDir = mSettings.getAlias(PRIVATE_ALIAS_DIR_KEY);
 		lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir).replace("{username}", lUsername);
 
 		String lFullPath = lBaseDir + lFilename;
@@ -681,15 +682,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 	}
 
-	/**
-	 *
-	 * @param aInterval
-	 */
 	public void startPublicMonitor(int aInterval) {
 		if (null == mPublicMonitor) {
 			mPublicMonitor = new FileAlterationMonitor(aInterval);
 			mPublicMonitor.setThreadFactory(new MonitorThreadFactory());
-			String lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(getString(PUBLIC_DIR_KEY, PUBLIC_DIR_DEF));
+			String lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(getString(PUBLIC_ALIAS_DIR_KEY, PUBLIC_ALIAS_DIR_DEF));
 			String lMask = "*";
 			IOFileFilter lFileFilter = new WildcardFileFilter(lMask);
 			if (mLog.isDebugEnabled()) {
@@ -707,9 +704,6 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 	}
 
-	/**
-	 *
-	 */
 	public void stopPublicMonitor() {
 		if (null != mPublicMonitor) {
 			try {
@@ -722,28 +716,4 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			}
 		}
 	}
-//	private void watch(WebSocketConnector aConnector, Token aToken) {
-//		TokenServer lServer = getServer();
-//
-//		if (mLog.isDebugEnabled()) {
-//			mLog.debug("Processing 'watch'...");
-//		}
-//
-//		// check if user is allowed to run 'save' command
-//		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_FILESYSTEM + ".watch")) {
-//			if (mLog.isDebugEnabled()) {
-//				mLog.debug("Returning 'Access denied'...");
-//			}
-//			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
-//			return;
-//		}
-//
-//		String lPath = aToken.getString("path");
-//		String lFilename = aToken.getString("filename");
-//
-//		Token lResponse = createResponse(aToken);
-//
-//		// send response to requester
-//		lServer.sendToken(aConnector, lResponse);
-//	}
 }
