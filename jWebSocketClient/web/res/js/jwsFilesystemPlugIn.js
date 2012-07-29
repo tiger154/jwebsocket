@@ -49,7 +49,9 @@ jws.FileSystemPlugIn = {
 			// directy in the plug-in if desired.
 			if( "load" == aToken.reqType ) {
 				if( aToken.code == 0 ) {
-					aToken.data = Base64.decode( aToken.data );
+					if (aToken.decode){
+						aToken.data = Base64.decode( aToken.data );
+					}
 					if( this.OnFileLoaded ) {
 						this.OnFileLoaded( aToken );
 					}
@@ -113,9 +115,9 @@ jws.FileSystemPlugIn = {
 	},
 	
 	//:m:*:fileDelete
-	//:d:en:Deletes a file in the private scope
-	//:a:en::aFilename:String:The filename value
-	//:a:en::aForce:Boolean:Force file delete
+	//:d:en:Deletes a file in the user private scope.
+	//:a:en::aFilename:String:The filename value.
+	//:a:en::aForce:Boolean:Force file delete flag.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
 	fileDelete: function( aFilename, aForce, aOptions ) {
@@ -153,10 +155,11 @@ jws.FileSystemPlugIn = {
 	},
 
 	//:m:*:fileLoad
-	//:d:en:Loads a file from a given scope
+	//:d:en:Loads a file from a given alias
 	//:a:en::aFilename:String:The filename value
 	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.decode:Boolean:Indicates if the received file content should be "base64" decoded automatically.
 	//:r:*:::void:none
 	fileLoad: function( aFilename, aAlias, aOptions ) {
 		var lRes = this.createDefaultResult();
@@ -165,7 +168,8 @@ jws.FileSystemPlugIn = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "load",
 				alias: aAlias,
-				filename: aFilename
+				filename: aFilename,
+				decode: (aOptions.decode) || false
 			};
 			this.sendToken( lToken,	aOptions );
 		} else {
@@ -332,9 +336,12 @@ jws.FileSystemPlugIn = {
 	//:m:*:fileLoadLocal
 	//:d:en:This is a call back method which gets the number of files selected from the user.
 	//:d:en:Construts a FileReader object that is specified in HTML 5 specification
-	//:d:en:Finally calls its readAsDataURL with the filename obeject and reads the
+	//:d:en:and calls its readAsDataURL with the filename obeject and reads the
 	//:d:en:file content in Base64 encoded string.
-	//:a:en::evt:Object:File Selection event object.
+	//:a:en::aDOMElem:Object:File Selection event object.
+	//:a:en::aOptions:Object:Contains success and failure callbacks to control the files load
+	//:a:en::aOptions.OnSuccess:Function:Called when a file has been loaded successfully
+	//:a:en::aOptions.OnFailure:Function:Called when an error occur during the file load process
 	//:r:*:::void:none
 	fileLoadLocal: function( aDOMElem, aOptions ) {
 		// to locally load a file no check for websocket connection is required
@@ -361,10 +368,10 @@ jws.FileSystemPlugIn = {
 		if( !aOptions ) {
 			aOptions = {};
 		}
-		// if no encoding was passed and a default one
-		if( !aOptions.encoding ) {
-			aOptions.encoding = "base64";
-		}
+		
+		// settign the encoding method. "base64" only supported already.
+		aOptions.encoding = "base64";
+		
 		// iterate through list of files
 		var lFileList = aDOMElem.files;
 		if( !lFileList || !lFileList.length ) {
@@ -460,15 +467,15 @@ jws.FileSystemPlugIn = {
 	},
 
 	//:m:*:setFileSystemCallbacks
-	//:d:en:Set the filesystem lifecycle callbacks
+	//:d:en:Sets the file-system plug-in lifecycle callbacks
 	//:a:en::aListeners:Object:JSONObject containing the filesystem lifecycle callbacks
 	//:a:en::aListeners.OnFileLoaded:Function:Called when a file has been loaded
 	//:a:en::aListeners.OnFileSaved:Function:Called when a file has been saved
 	//:a:en::aListeners.OnFileReceived:Function:Called when a file has been received from other client
 	//:a:en::aListeners.OnFileSent:Function:Called when a file has been sent to other client
-	//:a:en::aListeners.OnFileError:Function:Called when an error occur in the filesystem lifecycle
+	//:a:en::aListeners.OnFileError:Function:Called when an error occur during the file-system lifecycle
 	//:a:en::aListeners.OnLocalFileRead:Function:Called when a file has been read locally
-	//:a:en::aListeners.OnLocalFileError:Function:Called when an error occur during a file local read
+	//:a:en::aListeners.OnLocalFileError:Function:Called when an error occur during a local file load
 	//:r:*:::void:none
 	setFileSystemCallbacks: function( aListeners ) {
 		if( !aListeners ) {

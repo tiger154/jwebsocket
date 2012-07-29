@@ -232,7 +232,7 @@ public class AdminPlugIn extends TokenPlugIn {
 
 		// check if user is allowed to run 'shutdown' command
 		// should be limited to administrators
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_ADMIN + ".shutdown")) {
+		if (!hasAuthority(aConnector, NS_ADMIN + ".shutdown")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
@@ -260,7 +260,7 @@ public class AdminPlugIn extends TokenPlugIn {
 
 		// check if user is allowed to run 'shutdown' command
 		// should be limited to administrators
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_ADMIN + ".gc")) {
+		if (!hasAuthority(aConnector, NS_ADMIN + ".gc")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
@@ -287,7 +287,7 @@ public class AdminPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'getConnections' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_ADMIN + ".getConnections")) {
+		if (!hasAuthority(aConnector, NS_ADMIN + ".getConnections")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
@@ -323,7 +323,7 @@ public class AdminPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'getUserRights' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_ADMIN + ".getUserRights")) {
+		if (!hasAuthority(aConnector, NS_ADMIN + ".getUserRights")) {
 			// TODO: create right in jWebSocket.xml!
 			// lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
@@ -358,7 +358,7 @@ public class AdminPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'getUserRoles' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_ADMIN + ".getUserRoles")) {
+		if (!hasAuthority(aConnector, NS_ADMIN + ".getUserRoles")) {
 			// TODO: create right in jWebSocket.xml!
 			// lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;

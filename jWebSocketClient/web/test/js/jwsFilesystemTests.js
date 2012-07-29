@@ -48,7 +48,6 @@ jws.tests.FileSystem = {
 				);
 
 			runs( function() {
-				console.log(JSON.stringify(lResponse));
 				expect( lResponse.code ).toEqual( 0 );
 			});
 
@@ -133,6 +132,7 @@ jws.tests.FileSystem = {
 			var lResponse = null;
 
 			jws.Tests.getAdminConn().fileLoad( lFilename, aAlias, {
+				decode: true,
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}

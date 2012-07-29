@@ -37,7 +37,6 @@ import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.storage.ehcache.EhCacheStorage;
 import org.jwebsocket.token.Token;
@@ -46,7 +45,7 @@ import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 
 /**
- * 
+ *
  * @author aschulze EhChache
  */
 public class JDBCPlugIn extends TokenPlugIn {
@@ -80,7 +79,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		try {
 			mBeanFactory = getConfigBeanFactory();
-			
+
 			mNativeAccess = (NativeAccess) mBeanFactory.getBean("nativeAccess");
 			if (null != mNativeAccess) {
 				mSelectSequenceSQL = mNativeAccess.getSelectSequenceSQL();
@@ -190,7 +189,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".querySQL")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".querySQL")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
@@ -373,7 +372,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 
 		// check if user is allowed to run 'updateSQL' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".updateSQL")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".updateSQL")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
@@ -405,7 +404,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".execSQL")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".execSQL")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
@@ -499,7 +498,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".select")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".select")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
@@ -571,7 +570,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".update")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".update")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
@@ -651,7 +650,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".insert")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".insert")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
@@ -716,7 +715,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".delete")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".delete")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
@@ -788,17 +787,17 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".transactions")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".transactions")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
 		}
 
 		/*
-		String lSQL = aToken.getString("sql");
-		Token lResponse = mExecSQL(lSQL);
-		
-		// send response to requester
-		lServer.sendToken(aConnector, lResponse);
+		 * String lSQL = aToken.getString("sql"); Token lResponse =
+		 * mExecSQL(lSQL);
+		 *
+		 * // send response to requester lServer.sendToken(aConnector,
+		 * lResponse);
 		 */
 	}
 
@@ -815,17 +814,17 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".transactions")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".transactions")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
 		}
 
 		/*
-		String lSQL = aToken.getString("sql");
-		Token lResponse = mExecSQL(lSQL);
-		
-		// send response to requester
-		lServer.sendToken(aConnector, lResponse);
+		 * String lSQL = aToken.getString("sql"); Token lResponse =
+		 * mExecSQL(lSQL);
+		 *
+		 * // send response to requester lServer.sendToken(aConnector,
+		 * lResponse);
 		 */
 	}
 
@@ -842,17 +841,17 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".transactions")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".transactions")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
 		}
 
 		/*
-		String lSQL = aToken.getString("sql");
-		Token lResponse = mExecSQL(lSQL);
-		
-		// send response to requester
-		lServer.sendToken(aConnector, lResponse);
+		 * String lSQL = aToken.getString("sql"); Token lResponse =
+		 * mExecSQL(lSQL);
+		 *
+		 * // send response to requester lServer.sendToken(aConnector,
+		 * lResponse);
 		 */
 	}
 
@@ -869,17 +868,17 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".getSecure")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".getSecure")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
 		}
 
 		/*
-		String lSQL = aToken.getString("sql");
-		Token lResponse = mExecSQL(lSQL);
-		
-		// send response to requester
-		lServer.sendToken(aConnector, lResponse);
+		 * String lSQL = aToken.getString("sql"); Token lResponse =
+		 * mExecSQL(lSQL);
+		 *
+		 * // send response to requester lServer.sendToken(aConnector,
+		 * lResponse);
 		 */
 	}
 
@@ -896,17 +895,17 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".postSecure")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".postSecure")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
 		}
 
 		/*
-		String lSQL = aToken.getString("sql");
-		Token lResponse = mExecSQL(lSQL);
-		
-		// send response to requester
-		lServer.sendToken(aConnector, lResponse);
+		 * String lSQL = aToken.getString("sql"); Token lResponse =
+		 * mExecSQL(lSQL);
+		 *
+		 * // send response to requester lServer.sendToken(aConnector,
+		 * lResponse);
 		 */
 	}
 
@@ -923,17 +922,17 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".getSQL")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".getSQL")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
 		}
 
 		/*
-		String lSQL = aToken.getString("sql");
-		Token lResponse = mExecSQL(lSQL);
-		
-		// send response to requester
-		lServer.sendToken(aConnector, lResponse);
+		 * String lSQL = aToken.getString("sql"); Token lResponse =
+		 * mExecSQL(lSQL);
+		 *
+		 * // send response to requester lServer.sendToken(aConnector,
+		 * lResponse);
 		 */
 	}
 
@@ -950,17 +949,17 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'select' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_JDBC + ".postSQL")) {
+		if (!hasAuthority(aConnector, NS_JDBC + ".postSQL")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			// return;
 		}
 
 		/*
-		String lSQL = aToken.getString("sql");
-		Token lResponse = mExecSQL(lSQL);
-		
-		// send response to requester
-		lServer.sendToken(aConnector, lResponse);
+		 * String lSQL = aToken.getString("sql"); Token lResponse =
+		 * mExecSQL(lSQL);
+		 *
+		 * // send response to requester lServer.sendToken(aConnector,
+		 * lResponse);
 		 */
 	}
 
@@ -996,19 +995,15 @@ public class JDBCPlugIn extends TokenPlugIn {
 			lConnInfo.put("driverVersion", meta.getDriverVersion());
 			lConnInfo.put("majorJdbcVersion", meta.getJDBCMajorVersion());
 			lConnInfo.put("minorJdbcVersion", meta.getJDBCMinorVersion());
-			/*				
-			System.out.println("Server name: "
-			+ meta.getDatabaseProductName());
-			System.out.println("Server version: "
-			+ meta.getDatabaseProductVersion());
-			System.out.println("Driver name: "
-			+ meta.getDriverName());
-			System.out.println("Driver version: "
-			+ meta.getDriverVersion());
-			System.out.println("JDBC major version: "
-			+ meta.getJDBCMajorVersion());
-			System.out.println("JDBC minor version: "
-			+ meta.getJDBCMinorVersion());
+			/*
+			 * System.out.println("Server name: " +
+			 * meta.getDatabaseProductName()); System.out.println("Server
+			 * version: " + meta.getDatabaseProductVersion());
+			 * System.out.println("Driver name: " + meta.getDriverName());
+			 * System.out.println("Driver version: " + meta.getDriverVersion());
+			 * System.out.println("JDBC major version: " +
+			 * meta.getJDBCMajorVersion()); System.out.println("JDBC minor
+			 * version: " + meta.getJDBCMinorVersion());
 			 */
 			lResponse.setMap("currentConnection", lConnInfo);
 		} catch (Exception lEx) {
