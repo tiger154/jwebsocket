@@ -25,13 +25,15 @@ import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.plugins.system.SecurityHelper;
+import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
 
 /**
- * 
+ *
  * @author aschulze
  * @author Marcos Antonio González Huerta (markos0886, UCI)
  */
@@ -39,6 +41,10 @@ public class TokenPlugIn extends BasePlugIn {
 
 	private String mNamespace = null;
 	private static boolean mBeanFactoryLoaded = false;
+	protected String mAuthenticationMethod = "static";
+	public static String AUTHENTICATION_METHOD_KEY = "authentication_method";
+	public static String AUTHENTICATION_METHOD_STATIC = "static";
+	public static String AUTHENTICATION_METHOD_SPRING = "spring";
 
 	/**
 	 *
@@ -46,6 +52,9 @@ public class TokenPlugIn extends BasePlugIn {
 	 */
 	public TokenPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
+
+		// setting the authentication method value
+		mAuthenticationMethod = getString(AUTHENTICATION_METHOD_KEY, AUTHENTICATION_METHOD_STATIC);
 	}
 
 	@Override
@@ -76,7 +85,7 @@ public class TokenPlugIn extends BasePlugIn {
 	/**
 	 * @param aConnector
 	 * @param aToken
-	 * 
+	 *
 	 * @return
 	 */
 	public Token invoke(WebSocketConnector aConnector, Token aToken) {
@@ -84,13 +93,13 @@ public class TokenPlugIn extends BasePlugIn {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public List<String> invokeMethodList() {
 		return null;
 	}
-	
+
 	@Override
 	public void processPacket(PlugInResponse aResponse, WebSocketConnector aConnector, WebSocketPacket aDataPacket) {
 		//
@@ -112,8 +121,7 @@ public class TokenPlugIn extends BasePlugIn {
 	}
 
 	/**
-	 * @param aNamespace
-	 * the namespace to set
+	 * @param aNamespace the namespace to set
 	 */
 	public void setNamespace(String aNamespace) {
 		this.mNamespace = aNamespace;
@@ -176,8 +184,9 @@ public class TokenPlugIn extends BasePlugIn {
 	}
 
 	/**
-	 * Sends the the given token asynchronously and returns the future object to keep track of
-	 * the send operation
+	 * Sends the the given token asynchronously and returns the future object to
+	 * keep track of the send operation
+	 *
 	 * @param aSource the source connector
 	 * @param aTarget the target connector
 	 * @param aToken the token object
@@ -219,7 +228,7 @@ public class TokenPlugIn extends BasePlugIn {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aConnector
 	 * @param aInToken
 	 * @param aErrCode
@@ -234,7 +243,7 @@ public class TokenPlugIn extends BasePlugIn {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aResponse
 	 * @param aType
 	 * @param aVersion
@@ -250,7 +259,7 @@ public class TokenPlugIn extends BasePlugIn {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public ApplicationContext getConfigBeanFactory() {
@@ -261,9 +270,9 @@ public class TokenPlugIn extends BasePlugIn {
 		JWebSocketBeanFactory.load(lSpringConfig, getClass().getClassLoader());
 		return JWebSocketBeanFactory.getInstance();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public ApplicationContext getConfigBeanFactory(String aNamespace) {
@@ -273,5 +282,11 @@ public class TokenPlugIn extends BasePlugIn {
 		}
 		JWebSocketBeanFactory.load(lSpringConfig, getClass().getClassLoader());
 		return JWebSocketBeanFactory.getInstance(aNamespace);
+	}
+
+	public boolean hasAuthority(WebSocketConnector aConnector, String aAuthority) {
+		return mAuthenticationMethod.equals(AUTHENTICATION_METHOD_STATIC)
+				? SecurityFactory.hasRight(aConnector.getUsername(), aAuthority)
+				: SecurityHelper.userHasAuthority(aConnector, aAuthority);
 	}
 }

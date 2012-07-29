@@ -46,7 +46,6 @@ import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
@@ -94,6 +93,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			} else {
 				mBeanFactory = getConfigBeanFactory();
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.filesystem.settings");
+
 				// setting core aliases (private, public)
 				String lPrivateAlias = getString("alias:" + PRIVATE_ALIAS_DIR_KEY, PRIVATE_ALIAS_DIR_DEF);
 				String lPublicAlias = getString("alias:" + PUBLIC_ALIAS_DIR_KEY, PUBLIC_ALIAS_DIR_DEF);
@@ -170,7 +170,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 
 		// check if user is allowed to run 'exists' command
-		if (!SecurityFactory.hasRight(aConnector.getUsername(), NS_FILESYSTEM + ".exists")) {
+		if (hasAuthority(aConnector, NS_FILESYSTEM + "exists")) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Returning 'Access denied'...");
 			}
@@ -218,7 +218,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'save' command
-		if (!SecurityFactory.hasRight(aConnector.getUsername(), NS_FILESYSTEM + ".save")) {
+		if (!hasAuthority(aConnector, NS_FILESYSTEM + ".save")) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Returning 'Access denied'...");
 			}
@@ -343,7 +343,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'load' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_FILESYSTEM + ".load")) {
+		if (!hasAuthority(aConnector, NS_FILESYSTEM + ".load")) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Returning 'Access denied'...");
 			}
@@ -401,6 +401,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// send response to requester
+		lResponse.setBoolean("decode", aToken.getBoolean("decode", false));
 		lServer.sendToken(aConnector, lResponse);
 	}
 
@@ -419,7 +420,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'save' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_FILESYSTEM + ".send")) {
+		if (!hasAuthority(aConnector, NS_FILESYSTEM + ".send")) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Returning 'Access denied'...");
 			}
@@ -534,7 +535,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'delete' command
-		if (!SecurityFactory.hasRight(aConnector.getUsername(), NS_FILESYSTEM + ".delete")) {
+		if (!hasAuthority(aConnector, NS_FILESYSTEM + ".delete")) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Returning 'Access denied'...");
 			}
@@ -587,7 +588,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'save' command
-		if (!SecurityFactory.hasRight(lServer.getUsername(aConnector), NS_FILESYSTEM + ".getFilelist")) {
+		if (!hasAuthority(aConnector, NS_FILESYSTEM + ".getFilelist")) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Returning 'Access denied'...");
 			}

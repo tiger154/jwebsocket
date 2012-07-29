@@ -29,7 +29,6 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.channels.Channel.ChannelState;
-import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -269,7 +268,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'subscribe'...");
 		}
 		// check if user is allowed to run 'subscribe' command
-		if (!SecurityFactory.hasRight(getUsername(aConnector), NS_CHANNELS + ".subscribe")) {
+		if (!hasAuthority(aConnector, NS_CHANNELS + ".subscribe")) {
 			sendToken(aConnector, aConnector, createAccessDenied(aToken));
 			return;
 		}
@@ -376,7 +375,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'unsubscribe'...");
 		}
 		// check if user is allowed to run 'subscribe' command (no extra unsubscribe right!)
-		if (!SecurityFactory.hasRight(getUsername(aConnector), NS_CHANNELS + ".subscribe")) {
+		if (!hasAuthority(aConnector, NS_CHANNELS + ".subscribe")) {
 			sendToken(aConnector, aConnector, createAccessDenied(aToken));
 			return;
 		}
@@ -434,7 +433,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'getChannels'...");
 		}
 		// check if user is allowed to run 'subscribe' command (no extra unsubscribe right!)
-		if (!SecurityFactory.hasRight(getUsername(aConnector), NS_CHANNELS + ".getChannels")) {
+		if (!hasAuthority(aConnector, NS_CHANNELS + ".getChannels")) {
 			sendToken(aConnector, aConnector, createAccessDenied(aToken));
 			return;
 		}
@@ -475,13 +474,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 		String lChannelId = aToken.getString(CHANNEL);
 		String lAccessKey = aToken.getString(ACCESSKEY);
 		String lSecretKey = aToken.getString(SECRETKEY);
-		/*
-		 * String lLogin = aToken.getString("login"); User lUser =
-		 * SecurityFactory.getUser(lLogin); if (lUser == null) {
-		 * sendErrorToken(aConnector, aToken, -1, "'" + aConnector.getId() + "'
-		 * Authorization failed for channel '" + lChannelId + "', channel owner
-		 * is not registered in the jWebSocket server system"); return; }
-		 */
+
 		if (lSecretKey == null || lAccessKey == null) {
 			sendErrorToken(aConnector, aToken, -1,
 					"'" + aConnector.getId()
@@ -539,7 +532,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'publish'...");
 		}
 		// check if user is allowed to publish data on channels at all
-		if (!SecurityFactory.hasRight(getUsername(aConnector), NS_CHANNELS + ".publish")) {
+		if (!hasAuthority(aConnector, NS_CHANNELS + ".publish")) {
 			sendToken(aConnector, aConnector, createAccessDenied(aToken));
 			return;
 		}
@@ -591,7 +584,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'createChannel'...");
 		}
 		// check if user is allowed to create a new channel
-		if (!SecurityFactory.hasRight(getUsername(aConnector), NS_CHANNELS + ".createChannel")) {
+		if (!hasAuthority(aConnector, NS_CHANNELS + ".createChannel")) {
 			sendToken(aConnector, aConnector, createAccessDenied(aToken));
 			return;
 		}
@@ -691,7 +684,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'removeChannel'...");
 		}
 		// check if user is allowed to remove an existing channel
-		if (!SecurityFactory.hasRight(getUsername(aConnector), NS_CHANNELS + ".removeChannel")) {
+		if (!hasAuthority(aConnector, NS_CHANNELS + ".removeChannel")) {
 			sendToken(aConnector, aConnector, createAccessDenied(aToken));
 			return;
 		}
@@ -769,7 +762,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'getSubscribers'...");
 		}
 		// check if user is allowed to retrieve subscribers of a channel
-		if (!SecurityFactory.hasRight(getUsername(aConnector), NS_CHANNELS + ".getSubscribers")) {
+		if (!hasAuthority(aConnector, NS_CHANNELS + ".getSubscribers")) {
 			sendToken(aConnector, aConnector, createAccessDenied(aToken));
 			return;
 		}
@@ -843,7 +836,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'getSubscriptions'...");
 		}
 		// check if user is allowed to retrieve all its subscriptions
-		if (!SecurityFactory.hasRight(getUsername(aConnector), NS_CHANNELS + ".getSubscriptions")) {
+		if (!hasAuthority(aConnector, NS_CHANNELS + ".getSubscriptions")) {
 			sendToken(aConnector, aConnector, createAccessDenied(aToken));
 			return;
 		}

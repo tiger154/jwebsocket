@@ -16,7 +16,7 @@
 package org.jwebsocket.plugins.jms;
 
 /**
- * 
+ *
  * @author Johannes Smutny
  */
 import org.apache.log4j.Logger;
@@ -31,7 +31,6 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.jms.util.ActionJms;
 import org.jwebsocket.plugins.jms.util.FieldJms;
 import org.jwebsocket.plugins.jms.util.RightJms;
-import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
@@ -66,10 +65,8 @@ public class JMSPlugIn extends TokenPlugIn {
 	 * {@inheritDoc}
 	 */
 	/*
-	@Override
-	public void connectorStarted(WebSocketConnector aConnector) {
-	super.connectorStarted(aConnector);
-	}
+	 * @Override public void connectorStarted(WebSocketConnector aConnector) {
+	 * super.connectorStarted(aConnector); }
 	 */
 	/**
 	 * {@inheritDoc}
@@ -297,8 +294,7 @@ public class JMSPlugIn extends TokenPlugIn {
 		}
 
 		for (RightJms next : aInput.mRights) {
-			if (SecurityFactory.hasRight(
-					getUsername(aInput.mConnector),
+			if (hasAuthority(aInput.mConnector,
 					NS_JMS + "." + next + "." + (aInput.mDi.isPubSubDomain() ? "topic" : "queue") + "."
 					+ aInput.mDi.getDestinationName())) {
 				return true;

@@ -17,7 +17,6 @@ package org.jwebsocket.security;
 
 import java.util.List;
 import java.util.Set;
-
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.xml.RightConfig;
 import org.jwebsocket.config.xml.RoleConfig;

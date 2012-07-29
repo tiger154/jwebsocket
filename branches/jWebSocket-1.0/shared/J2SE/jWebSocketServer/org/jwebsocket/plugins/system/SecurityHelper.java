@@ -48,6 +48,9 @@ public class SecurityHelper {
 	}
 
 	public static boolean userHasAuthority(String aSessionId, String aAuthority) {
+		if (!isUserAuthenticated(aSessionId)) {
+			return false;
+		}
 		try {
 			Map<String, Object> session = getSessionManager().getSession(aSessionId);
 			if (session.containsKey(SystemPlugIn.AUTHORITIES)) {
