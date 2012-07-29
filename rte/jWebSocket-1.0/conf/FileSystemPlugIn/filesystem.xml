@@ -6,7 +6,7 @@
 	<bean id="org.jwebsocket.plugins.filesystem.settings" class="org.jwebsocket.plugins.filesystem.Settings">
 		<property name="aliases">
 			<map>
-				<!-- folder alias for reports (.jrxml), used by reporting plug-in -->
+				<!-- Alias for the ReportingPlugIn report's directory (.jrxml) -->
 				<entry>
 					<key><value>reportRoot</value></key>
 					<value>${JWEBSOCKET_HOME}conf/ReportingPlugIn/reports</value>

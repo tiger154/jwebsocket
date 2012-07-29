@@ -731,12 +731,12 @@
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<id>load</id>
-			<description>Allows to load files from file system (public area)</description>
+			<description>Allows to load files from file system</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<id>save</id>
-			<description>Allows to save files to file system (public area)</description>
+			<description>Allows to save files to file system</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
@@ -756,7 +756,7 @@
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<id>getFilelist</id>
-			<description>Allows to retrieve file lists from the server</description>
+			<description>Allows to retrieve file lists from file system</description>
 		</right>
 
 		<!-- Caution! Be careful with this right!
@@ -1406,6 +1406,22 @@
 			<!-- plug-in specific settings -->
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/FileSystemPlugIn/filesystem.xml</setting>
+				<!-- Authorization method 
+				     - spring: Uses the user Spring authentication to check for granted authorities 
+					 - static: Uses the user static (jWebSocket.xml users definition) authentication
+					   to check for granted authorities (rights)
+					   
+					 Default value is "static"
+					   
+					 Required user authorities for the FileSystem plug-in:
+					 - org.jwebsocket.plugins.filesystem.load
+					 - org.jwebsocket.plugins.filesystem.save
+					 - org.jwebsocket.plugins.filesystem.delete
+					 - org.jwebsocket.plugins.filesystem.exists
+					 - org.jwebsocket.plugins.filesystem.send
+					 - org.jwebsocket.plugins.filesystem.getFilelist
+				-->
+				<setting key="authentication_method">static</setting>
 				<!-- specify folder locations -->
 				<!-- examples for pure websocket server w/o an attached web server -->
 				<!--
