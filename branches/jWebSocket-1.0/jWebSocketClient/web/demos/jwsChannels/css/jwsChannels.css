@@ -132,6 +132,11 @@
 
 #channel_table_container tr:hover{
 	background: #bbdaff;
+	cursor: pointer;
+}
+
+#channel_table_container tr.hover{
+	background: #baccff;
 }
 
 #channel_table_container .gray{

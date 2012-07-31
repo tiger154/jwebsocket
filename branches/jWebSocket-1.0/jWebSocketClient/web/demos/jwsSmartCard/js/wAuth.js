@@ -52,7 +52,7 @@ $.widget("jws.auth",{
 		var lUsername = w.auth.eUsername.val();
 		var lPassword = w.auth.ePassword.val();
 		if(lUsername == "" || lPassword == ""){
-			dialog("Incorrect Data", "User or password are not correct, please check");
+			dialog( "User or password are not correct, please check", "Incorrect Data" );
 			return;
 		}
 	

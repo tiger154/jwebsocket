@@ -17,18 +17,20 @@ function init(){
 		maxLogLines: 200, 
 		linesToDelete: 20
 	});
-	
 	//configuring tooltip as we wish
-	$( "[title]" ).tooltip({
-		position: "top center", 
-		onShow: function() {
-			var lTip = this.getTip();
+	$( "[title]" ).tooltip( {
+		position: "bottom center", 
+		onShow: function( ) {
+			var lTip = this.getTip( );
 			var lTop = ( "<div class='top'></div>" );
-			var lMiddle = $( "<div class='middle'></div>" ).text( lTip.text() );
+			var lMiddle = $( "<div class='middle'></div>" ).text( lTip.text( ) );
 			var lBottom = ( "<div class='bottom'></div>" );
 			lTip.html( "" ).append( lTop ).append( lMiddle ).append( lBottom );
-			lTip.mouseover( function(){
-				$( this ).hide();
+			this.getTrigger( ).mouseout( function( ) {
+				lTip.hide( ).hide( );
+			});
+			this.getTrigger( ).mousemove( function( ) {
+				lTip.show( );
 			});
 		}
 	});

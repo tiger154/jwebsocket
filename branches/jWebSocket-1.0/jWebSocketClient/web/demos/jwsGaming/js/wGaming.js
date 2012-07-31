@@ -29,7 +29,7 @@ $.widget( "jws.gaming", {
 		w.gaming.mChannelId = "jws-gaming-ch";
 		w.gaming.mChannelName = "jWebSocketGaming"
 		w.gaming.mChannelIsPrivate = false;
-		w.gaming.mChannelIsSystem = false;
+		w.gaming.mChannelIsSystem = true;
 		w.gaming.mChannelAccessKey = "play1";
 		w.gaming.mChannelSecretKey = "t0ps3cr3t!";
 		
@@ -77,7 +77,7 @@ $.widget( "jws.gaming", {
 				w.gaming.destroy();
 			},
 			OnGoodBye: function( aToken ){
-				w.gaming.removeClient( aToken.sourceId );
+				w.gaming.destroy();
 			},
 			OnMessage: function( aEvent, aToken ) {
 				w.gaming.onMessage( aEvent, aToken );
@@ -250,6 +250,7 @@ $.widget( "jws.gaming", {
 	 * @param aToken
 	 **/
 	onMessage: function( aEvent, aToken ) {
+		console.log(aToken);
 		if( w.gaming.eDebug.get(0).checked ) {
 			log( "<font style='color:#888'>" + aEvent.data + "</font>" );
 		}
@@ -260,7 +261,6 @@ $.widget( "jws.gaming", {
 				if( aToken.reqType == "login" ) {
 					// If successfully logged in
 					if( aToken.code == 0 ) {
-						
 						w.gaming.mAuthenticatedUser = aToken.sourceId;
 						// Getting the coordinates of the position of the player
 						var lX = w.gaming.getRandomNumber( 400 );
@@ -271,9 +271,10 @@ $.widget( "jws.gaming", {
 						
 						w.gaming.addGreenClient( w.gaming.mAuthenticatedUser, lX, lY );
 						
-					//						w.gaming.startMovingRandom();
+					// w.gaming.startMovingRandom();
 					}
-				// If the request is an authorization from the channels
+				// If the request is an authorization from the channel
+				// then you can receive the list of all connected users
 				} else if( aToken.reqType == "authorize" ){
 					if( aToken.code == 0 ){
 						w.gaming.getSubscribers();
@@ -287,37 +288,6 @@ $.widget( "jws.gaming", {
 				}
 			}
 		}
-		
-	/*
-			
-				// figure out of which request
-						 + "@" + aToken.;
-						// Sending a register token to the server
-						var lRegister = {
-							x: lX,
-							y: lY,
-							ns: w.gaming.NS,
-							type: "register"
-						};
-						mWSC.sendToken( lRegister );
-					}
-				}
-			// is it an event w/o a previous request ?
-			} else if( aToken.type == "getGamingClients" ) {
-				w.gaming.loadClientsList( aToken.clients );
-			} else if( aToken.type == "event" ) {
-				if( "logout" == aToken.name || "disconnect" == aToken.name ){
-					w.gaming.removeClient( aToken.sourceId );
-				}
-			// is it any token from another client
-			} else if( aToken.type == "moveTo" ) {
-				w.gaming.moveTo( aToken.sourceId, aToken.x, aToken.y );
-			} else if( aToken.type == "newClientConnected" ){
-				w.gaming.addRedClient( aToken.sourceId, aToken.x, aToken.y );
-			}
-			console.log(aToken);
-		}
-			 */
 	},
 	
 	processKeyDown: function( aEvent ) {
@@ -447,24 +417,17 @@ $.widget( "jws.gaming", {
 				x: aX,
 				y: aY
 			};
+			// Notify the other clients with the movement of this player 
+			// inside the current channel
 			w.gaming.publish( lData );
-		//			
-		//			//			
-		//			// Preparing Token to notify movement
-		//			var lMovementToken = {
-		//				ns: w.gaming.NS,
-		//				type: "moveTo",
-		//				x: aX,
-		//				y: aY,
-		//				sourceId: aClientId
-		//			};
-		//			
-		//			// Sending the notification to all registered users
-		//			mWSC.sendToken( lMovementToken );
+			
+			// Store the new position of the player to be sent to the new 
+			// connected clients to know the position of each player
+			mWSC.sessionPut( aClientId, lData, true );
 		} else{
-			dialog("Sorry, you are not connected with jWebSocket server, \n\
-						try clicking in the login button!", 
-				"Not connected", false, null, null, "alert");
+			dialog("Sorry, you are not connected with jWebSocket server, " +
+				"try clicking in the login button!", 
+				"jWebSocket detected an error", false, null, null, "alert");
 		}
 	},
 	
@@ -500,7 +463,7 @@ $.widget( "jws.gaming", {
 	/**
 		 * Shows connected clients in the playground
 		 * @param aSubscribers 
-		 *  The list of clients to be shown to the users
+		 *  The list of all connected players
 		 **/
 	loadClientsList: function( aSubscribers ){
 		console.log(aSubscribers);

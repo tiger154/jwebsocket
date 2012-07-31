@@ -19,8 +19,8 @@ Ext.define('Customer', {
 
 function exitDemo(){
 	var win1 = Ext.WindowManager.get("formDemo");
-    var win2 = Ext.WindowManager.get("gridDemo");
-    var win3 = Ext.WindowManager.get("consoleDemo");
+	var win2 = Ext.WindowManager.get("gridDemo");
+	var win3 = Ext.WindowManager.get("consoleDemo");
 	if (win1 != undefined)
 		win1.close();
 	if (win2 != undefined)
@@ -69,6 +69,7 @@ Ext.onReady(function(){
 		eBtnConnect.show();
 		exitDemo();
 		eWebSocketType.innerHTML = "WebSocket: -";
+		eClientId.innerHTML = "Client-ID: - ";
 	});
 
 });
@@ -419,13 +420,13 @@ function initDemo(){
 		items: [tabpanel]
 	}).show();
 
-	var plugin = {}
-	plugin.processToken = function(aToken){
+	var plugin = {};
+	plugin.processToken = function( aToken ){
 		if (aToken.ns == 'jws.ext.gridformdemo'){
-
-			if (aToken.type == 'notifyCreate' || aToken.type == 'notifyUpdate' || aToken.type == 'notifyDestroy'){
+			if (aToken.type == 'notifyCreate' || aToken.type == 'notifyUpdate' 
+				|| aToken.type == 'notifyDestroy'){
                 
-				log(0,aToken.message);
+				log( 0, aToken.message );
 				store.load();
 			}
 		}
