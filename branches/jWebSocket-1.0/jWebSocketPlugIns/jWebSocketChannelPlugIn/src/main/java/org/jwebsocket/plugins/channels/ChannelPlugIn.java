@@ -657,6 +657,9 @@ public class ChannelPlugIn extends TokenPlugIn {
 				lChannelCreated.setString("name", "channelCreated");
 				lChannelCreated.setString("channelId", lChannelId);
 				lChannelCreated.setString("channelName", lName);
+				lChannelCreated.setBoolean("isPrivate", lIsPrivate);
+				lChannelCreated.setBoolean("isSystem", lIsSystem);
+				lChannelCreated.setString("state", lChannel.getState().name());
 
 				// TODO: make broadcast options optional here, not hardcoded!
 				// TODO: maybe send on admin channel only?

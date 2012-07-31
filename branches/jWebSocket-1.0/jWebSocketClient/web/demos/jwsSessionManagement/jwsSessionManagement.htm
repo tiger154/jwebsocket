@@ -52,6 +52,7 @@
 
         <!--  MAIN JAVASCRIPT FILE   -->
         <script type="text/javascript" src='js/init.js'></script>
+        <script type="text/javascript" src='js/tabPanel.js'></script>
 
     </head>
     <body>
@@ -116,131 +117,262 @@
                 <!--       SCENARIO          -->
                 <div id="scenario_container" class="box">
                     <!--    FUNCTIONAL_BOX   -->
-                    <div id="functional_box" class="box">
+
+
+					<!--					new box-->
+					<div id="functional_box" class="box tab_panel">
+                        <div id="functional_box_header">
+                            <a class="pressed" name="put" ><span>Put</span></a>
+                            <a name="get"><span>Get</span></a>
+                            <a name="has"><span>Has</span></a>
+                            <a name="remove"><span>Remove</span></a>
+                            <a name="keys"><span>Keys</span></a>
+                            <a name="get_all"><span>Get All</span></a>
+                            <a name="get_many"><span>Get Many</span></a>
+                        </div>
                         <div id="functional_box_content">
-                            <div id="functiodfg_area">
-                                <div class="functional_box_content_text">
-                                    The following operations allows you to manage the client
-									server-side session storage by setting, getting, 
-									removing and listing entries. Also retrieve public entries from
-									other connected clients.
+                            <div id="token_area" class="put tab_element">
+                                <div class="functional_box_content_text left">
+                                    Put key/value entry in the server-side client session storage. 
+                                </div>
+                                <div class="functional_box_content_buttons right" style="padding-left: 30px;">
+                                    <div class="form">
+										<label>Key:</label>
+										<input type="text" id="put_key" />
+										<label>Value:</label>
+										<input type="text" id="put_value" />
+										<label>Public:</label>
+										<input type="checkbox" id="put_public" />
+										<div class="bt_container">	
+											<div class="complex_object_btn">
+												<div id="put_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+													 onmousedown="this.className='button onmousedown'" 
+													 onmouseup="this.className='button onmouseup'" 
+													 onmouseout="this.className='button onmouseout'" 
+													 onclick="this.className='button onmouseover'"
+													 title="Put key/value entry in the server-side client session storage.">
+													<div class="l"></div>
+													<div class="c">Put</div>
+													<div class="r"></div>
+												</div>
+											</div>
+										</div>
+									</div>
+                                </div>
+								<div class="clear"></div>
+                            </div>
+
+							<div id="token_area" class="get tab_element" style="display: none;">
+                                <div class="functional_box_content_text left">
+                                    Gets a server-side client session storage entry given the entry key.
+                                </div>
+                                <div class="functional_box_content_buttons right" style="padding-left: 30px;">
+                                    <div class="form">
+										<label>Client:</label>
+										<input type="text" id="get_client" />
+										<label>Key:</label>
+										<input type="text" id="get_key" />
+										<label>Public:</label>
+										<input type="checkbox" id="get_public" />
+										<div class="bt_container">	
+											<div class="complex_object_btn">
+												<div id="get_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+													 onmousedown="this.className='button onmousedown'" 
+													 onmouseup="this.className='button onmouseup'" 
+													 onmouseout="this.className='button onmouseout'" 
+													 onclick="this.className='button onmouseover'"
+													 title="Gets a server-side client session storage entry given the entry key.">
+													<div class="l"></div>
+													<div class="c">Get</div>
+													<div class="r"></div>
+												</div>
+											</div>
+										</div>
+									</div>
                                 </div>
 								
-                                <div class="functional_box_content_buttons" style="padding-left: 30px;">
-                                    <div class="complex_object_btn">
-                                        <div id="put_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                             onmousedown="this.className='button onmousedown'" 
-                                             onmouseup="this.className='button onmouseup'" 
-                                             onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'"
-											 title="Put key/value entry in the server-side client session storage.">
-                                            <div class="l"></div>
-                                            <div class="c">Put</div>
-                                            <div class="r"></div>
-                                        </div>
-                                    </div>
-                                    <div class="complex_object_btn">
-                                        <div id="get_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                             onmousedown="this.className='button onmousedown'" 
-                                             onmouseup="this.className='button onmouseup'" 
-                                             onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'"
-											 title="Gets a server-side client session storage entry given the entry key.">
-                                            <div class="l"></div>
-                                            <div class="c">Get</div>
-                                            <div class="r"></div>
-                                        </div>
-                                    </div>
-                                    <div class="complex_object_btn">
-                                        <div id="has_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                             onmousedown="this.className='button onmousedown'" 
-                                             onmouseup="this.className='button onmouseup'" 
-                                             onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'"
-											 title="Indicates if the client server-side session storage contains a custom entry given the entry key.">
-                                            <div class="l"></div>
-                                            <div class="c">Has</div>
-                                            <div class="r"></div>
-                                        </div>
-                                    </div>
-                                    <div class="complex_object_btn">
-                                        <div id="remove_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                             onmousedown="this.className='button onmousedown'" 
-                                             onmouseup="this.className='button onmouseup'" 
-                                             onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'"
-											 title="Removes a server-side client session storage entry given the entry key.">
-                                            <div class="l"></div>
-                                            <div class="c">Remove</div>
-                                            <div class="r"></div>
-                                        </div>
-                                    </div>
-                                    <div class="complex_object_btn">
-                                        <div id="keys_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                             onmousedown="this.className='button onmousedown'" 
-                                             onmouseup="this.className='button onmouseup'" 
-                                             onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'"
-											 title="Retrieves the list of entry keys stored in the server-side session storage of a given client. A client can only get the public entries from others.">
-                                            <div class="l"></div>
-                                            <div class="c">Keys</div>
-                                            <div class="r"></div>
-                                        </div>
-                                    </div>
-                                    <div class="complex_object_btn">
-                                        <div id="getall_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                             onmousedown="this.className='button onmousedown'" 
-                                             onmouseup="this.className='button onmouseup'" 
-                                             onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'"
-											 title="Retrieves all the entries stored in the server-side session storage of a given client. A client can only get the public entries from others.">
-                                            <div class="l"></div>
-                                            <div class="c">Get All</div>
-                                            <div class="r"></div>
-                                        </div>
-                                    </div>
-                                    <div class="complex_object_btn">
-                                        <div id="getmany_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                             onmousedown="this.className='button onmousedown'" 
-                                             onmouseup="this.className='button onmouseup'" 
-                                             onmouseout="this.className='button onmouseout'" 
-                                             onclick="this.className='button onmouseover'"
-											 title="Retrieves a list of public entries stored in the server-side session storage of many clients. ">
-                                            <div class="l"></div>
-                                            <div class="c">Get Many</div>
-                                            <div class="r"></div>
-                                        </div>
-                                    </div>
+                            </div>
+
+							<div id="token_area" class="has tab_element" style="display: none;">
+                                <div class="functional_box_content_text left">
+									Indicates if the client server-side session storage contains a custom entry given the entry key.
                                 </div>
-                            </div> 
-                        </div>
-                    </div>
+                                <div class="functional_box_content_buttons right" style="padding-left: 30px;">
+                                    <div class="form">
+										<label>Client:</label>
+										<input type="text" id="has_client" />
+										<label>Key:</label>
+										<input type="text" id="has_key" />
+										<label>Public:</label>
+										<input type="checkbox" id="has_public" />
+										<div class="bt_container">
+											<div class="complex_object_btn">
+												<div id="has_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+													 onmousedown="this.className='button onmousedown'" 
+													 onmouseup="this.className='button onmouseup'" 
+													 onmouseout="this.className='button onmouseout'" 
+													 onclick="this.className='button onmouseover'"
+													 title="Indicates if the client server-side session storage contains a custom entry given the entry key.">
+													<div class="l"></div>
+													<div class="c">Has</div>
+													<div class="r"></div>
+												</div>
+											</div>
+										</div>
+									</div>
+                                </div>
+                            </div>
 
-                    <!--       LOG BOX           -->
-                    <div id="log_box" class="box">
-                        <div id="log_box_header">
-                            <div id="show_hide_log" class="hide">Hide Log</div>
-                            <div id="clear_log">Clear Log</div>
-                        </div>
-                        <div id="log_box_content" class="log_box_visible"></div>
-                    </div>
 
-                </div>
 
-                <!--       DOWNLOAD_BUTTON   -->
-                <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
-                        <div class="r_download"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+							<div id="token_area" class="remove tab_element" style="display: none;">
+                                <div class="functional_box_content_text left">
+                                    Removes a server-side client session storage entry given the entry key.
+                                </div>
+                                <div class="functional_box_content_buttons right" style="padding-left: 30px;">
+                                    <div class="form">
+										<label>Key:</label>
+										<input type="text" id="remove_key" />
+										<label>Public:</label>
+										<input type="checkbox" id="remove_public" />
+										<div class="bt_container">
+											<div class="complex_object_btn">
+												<div id="remove_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+													 onmousedown="this.className='button onmousedown'" 
+													 onmouseup="this.className='button onmouseup'" 
+													 onmouseout="this.className='button onmouseout'" 
+													 onclick="this.className='button onmouseover'"
+													 title="Removes a server-side client session storage entry given the entry key.">
+													<div class="l"></div>
+													<div class="c">Remove</div>
+													<div class="r"></div>
+												</div>
+											</div>
+										</div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+							<div id="token_area" class="keys tab_element" style="display: none;">
+                                <div class="functional_box_content_text left">
+                                    Retrieves the list of entry keys stored in the server-side session 
+									storage of a given client. A client can only get the public entries from others.
+                                </div>
+                                <div class="functional_box_content_buttons right" style="padding-left: 30px;">
+                                    <div class="form">
+										<label>Client:</label>
+										<input type="text" id="keys_client" />
+										<label>Public:</label>
+										<input type="checkbox" id="keys_public" />
+										<div class="bt_container">
+											<div class="complex_object_btn">
+												<div id="keys_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+													 onmousedown="this.className='button onmousedown'" 
+													 onmouseup="this.className='button onmouseup'" 
+													 onmouseout="this.className='button onmouseout'" 
+													 onclick="this.className='button onmouseover'"
+													 title="Retrieves the list of entry keys stored in the server-side session storage of a given client. A client can only get the public entries from others.">
+													<div class="l"></div>
+													<div class="c">Keys</div>
+													<div class="r"></div>
+												</div>
+											</div>
+										</div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+
+							<div id="token_area" class="get_all tab_element" style="display: none;">
+                                <div class="functional_box_content_text left">
+                                    Retrieves all the entries stored in the server-side session storage of a given client. 
+									A client can only get the public entries from others.
+                                </div>
+                                <div class="functional_box_content_buttons right" style="padding-left: 30px;">
+                                    <div class="form">
+										<label>Client:</label>
+										<input type="text" id="getall_client" />
+										<label>Public:</label>
+										<input type="checkbox" id="getall_public" />
+										<div class="bt_container">
+											<div class="complex_object_btn">
+												<div id="getall_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+													 onmousedown="this.className='button onmousedown'" 
+													 onmouseup="this.className='button onmouseup'" 
+													 onmouseout="this.className='button onmouseout'" 
+													 onclick="this.className='button onmouseover'"
+													 title="Retrieves all the entries stored in the server-side session storage of a given client. A client can only get the public entries from others.">
+													<div class="l"></div>
+													<div class="c">Get All</div>
+													<div class="r"></div>
+												</div>
+											</div>
+										</div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+							<div id="token_area" class="get_many tab_element" style="display: none;">
+                                <div class="functional_box_content_text left">
+                                    Retrieves a list of public entries stored in the server-side session storage of many clients. 
+                                </div>
+                                <div class="functional_box_content_buttons right" style="padding-left: 30px;">
+                                    <div class="form">
+										<label>Clients:</label>
+										<input title="Use comma to separate the client identifiers. Example: '4999201, 6555655'" type="text" id="getmany_client" />
+										<label>Keys:</label>
+										<input title="Use comma to separate the keys. Example: 'name, sex'" type="text" id="getmany_key" />
+										<div class="complex_object_btn">
+											<div id="getmany_btn" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+												 onmousedown="this.className='button onmousedown'" 
+												 onmouseup="this.className='button onmouseup'" 
+												 onmouseout="this.className='button onmouseout'" 
+												 onclick="this.className='button onmouseover'"
+												 title="Retrieves a list of public entries stored in the server-side session storage of many clients. ">
+												<div class="l"></div>
+												<div class="c">Get Many</div>
+												<div class="r"></div>
+											</div>
+										</div>
+                                    </div>
+								</div>
+
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+				<!--       LOG BOX           -->
+				<div id="log_box" class="box">
+					<div id="log_box_header">
+						<div id="show_hide_log" class="hide">Hide Log</div>
+						<div id="clear_log">Clear Log</div>
+					</div>
+					<div id="log_box_content" class="log_box_visible"></div>
+				</div>
+				<!--       DOWNLOAD_BUTTON   -->
+				<div id="demo_box_footer">
+					<div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+						 onmousedown="this.className='button onmousedown'" 
+						 onmouseup="this.className='button onmouseup'" 
+						 onmouseout="this.className='button onmouseout'" 
+						 onclick="this.className='button onmouseover'">
+						<div class="l"></div>
+						<div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
+						<div class="r_download"></div>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
 
     </body>
 </html>

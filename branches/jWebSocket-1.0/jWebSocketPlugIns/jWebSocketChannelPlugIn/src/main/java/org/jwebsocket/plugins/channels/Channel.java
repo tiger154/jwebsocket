@@ -179,6 +179,10 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setString("subscriber", aSubscriber);
 				lEvent.setString("channelName", aChannel.getName());
 				lEvent.setString("channelId", aChannel.getId());
+				lEvent.setString("state", aChannel.getState().name());
+				lEvent.setBoolean("isSystem", aChannel.isSystem());
+				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
+				
 				aChannel.broadcastTokenAsync(lEvent);
 			}
 
@@ -189,6 +193,10 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setString("subscriber", aSubscriber);
 				lEvent.setString("channelName", aChannel.getName());
 				lEvent.setString("channelId", aChannel.getId());
+				lEvent.setString("state", aChannel.getState().name());
+				lEvent.setBoolean("isSystem", aChannel.isSystem());
+				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
+				
 				aChannel.broadcastTokenAsync(lEvent);
 			}
 
