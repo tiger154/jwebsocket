@@ -66,10 +66,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	// TODO: make these settings configurable
 	private static String PRIVATE_ALIAS_DIR_KEY = "privateDir";
 	private static String PUBLIC_ALIAS_DIR_KEY = "publicDir";
-	private static String WEB_ROOT_KEY = "webRoot";
+	private static String ALIAS_WEB_ROOT_KEY = "webRoot";
 	private static String PRIVATE_ALIAS_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/private/{username}/";
 	private static String PUBLIC_ALIAS_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/public/";
-	private static String WEB_ROOT_DEF = "http://jwebsocket.org/filesystem/";
+	private static String ALIAS_WEB_ROOT_DEF = "http://localhost/public/";
 	private static FileAlterationMonitor mPublicMonitor = null;
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
@@ -94,11 +94,14 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				mBeanFactory = getConfigBeanFactory();
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.filesystem.settings");
 
-				// setting core aliases (private, public)
+				// setting core aliases (private, public and webRoot)
 				String lPrivateAlias = getString("alias:" + PRIVATE_ALIAS_DIR_KEY, PRIVATE_ALIAS_DIR_DEF);
 				String lPublicAlias = getString("alias:" + PUBLIC_ALIAS_DIR_KEY, PUBLIC_ALIAS_DIR_DEF);
+				String lWebRootAlias = getString("alias:" + ALIAS_WEB_ROOT_KEY, ALIAS_WEB_ROOT_DEF);
+				
 				mSettings.getAliases().put(PRIVATE_ALIAS_DIR_KEY, lPrivateAlias);
 				mSettings.getAliases().put(PUBLIC_ALIAS_DIR_KEY, lPublicAlias);
+				mSettings.getAliases().put(ALIAS_WEB_ROOT_KEY, lWebRootAlias);
 
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Filesystem plug-in successfully instantiated.");
@@ -317,9 +320,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		lEvent.setString("name", "filesaved");
 		lEvent.setString("filename", lFilename);
 		lEvent.setString("sourceId", aConnector.getId());
-		if (lScope.equals(JWebSocketCommonConstants.SCOPE_PUBLIC)) {
-			lEvent.setString("url", getString(WEB_ROOT_KEY, WEB_ROOT_DEF) + lFilename);
-		}
+
 		if (lNotify && lScope.equals(JWebSocketCommonConstants.SCOPE_PUBLIC)) {
 			lServer.broadcastToken(lEvent);
 		} else {
@@ -486,7 +487,6 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			lFolder = JWebSocketConfig.expandEnvAndJWebSocketVars(lFolder).
 					replace("{username}", aUsername);
 			File lDir = new File(lFolder);
-			lFolder = lDir.getPath();
 			// IOFileFilter lFileFilter = FileFilterUtils.nameFileFilter(lFilemask);
 			String[] lFilemaskArray = new String[lFilemasks.size()];
 			int lIdx = 0;
@@ -510,6 +510,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				lFileData.put("hidden", lFile.isHidden());
 				lFileData.put("canRead", lFile.canRead());
 				lFileData.put("canWrite", lFile.canWrite());
+				if (lAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
+					lFileData.put("url", getString(ALIAS_WEB_ROOT_KEY, ALIAS_WEB_ROOT_DEF) + lName);
+				}
+
 				lFileList.add(lFileData);
 			}
 			lToken.setList("files", lFileList);

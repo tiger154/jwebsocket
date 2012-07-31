@@ -26,50 +26,48 @@ $.widget("jws.actions",{
 	},
 	
 	put: function(){
-		var lClientId = mWSC.getId();
-		var lKey = "myVar1";
-		var lValue = "myVar1Value";
-		var lPublic = true;
-
+		var lKey = $("#put_key").attr("value");
+		var lValue = $("#put_value").attr("value");
+		var lPublic = ($("#put_public").attr("checked")) ? true : false;
+		
 		mWSC.sessionPut(lKey, lValue, lPublic);
 	},
 	get: function(){
-		var lClientId = mWSC.getId();
-		var lKey = "myVar1";
-		var lPublic = true;
+		var lClientId = $("#get_client").attr("value");
+		var lKey = $("#get_key").attr("value");
+		var lPublic = ($("#get_public").attr("checked")) ? true : false;
 		
 		mWSC.sessionGet(lClientId, lKey, lPublic);
 	},
 	has: function(){
-		var lClientId = mWSC.getId();
-		var lKey = "myVar1";
-		var lPublic = true;
+		var lClientId = $("#has_client").attr("value");
+		var lKey = $("#has_key").attr("value");
+		var lPublic = ($("#has_public").attr("checked")) ? true : false;
 		
 		mWSC.sessionHas(lClientId, lKey, lPublic);
 	},
 	keys: function(){
-		var lClientId = mWSC.getId();
-		var lPublic = true;
+		var lClientId = $("#keys_client").attr("value");
+		var lPublic = ($("#keys_public").attr("checked")) ? true : false;
 		
 		mWSC.sessionKeys(lClientId, lPublic);
 	},
 	remove: function(){
-		var lKey = "myVar1";
-		var lPublic = true;
+		var lKey = $("#remove_key").attr("value");
+		var lPublic = ($("#remove_public").attr("checked")) ? true : false;
 		
 		mWSC.sessionRemove(lKey, lPublic);
 	},
 	getAll: function(){
-		var lClientId = mWSC.getId();
-		var lPublic = true;
+		var lClientId = $("#getall_client").attr("value");
+		var lPublic = ($("#getall_public").attr("checked")) ? true : false;
 		
 		mWSC.sessionGetAll(lClientId, lPublic);
 	},
 	getMany: function(){
-		var lClients = [mWSC.getId()];
-		var lKeys = ["myVar1"];
-		var lPublic = true;
+		var lClients = $("#getmany_client").attr("value").replace(" ", "").split(",");
+		var lKeys = $("#getmany_key").attr("value").replace(" ", "").split(",");
 		
-		mWSC.sessionGetMany(lClients, lKeys, lPublic);
+		mWSC.sessionGetMany(lClients, lKeys);
 	}
 });

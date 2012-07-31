@@ -26,7 +26,7 @@
 #functional_box_header a{
     background: #c8c8c8;
     display: inline;
-    
+
     border: 1px solid #C8C8C8;
     border-bottom: none;
     -moz-border-radius-topleft: 6px;
@@ -37,19 +37,19 @@
     border-radius: 6px 6px 0px 0px;
     text-decoration: none;
     cursor: pointer;
-    
-    
-    
-   float: left;
-   padding-left: 20px;
-   padding-right: 20px;
-   
-   font-family: "Verdana";
-   font-size: 11px;
-   font-style: normal;  
-   margin-right: 3px;
-   
-   height: 25px;
+
+
+
+	float: left;
+	padding-left: 20px;
+	padding-right: 20px;
+
+	font-family: "Verdana";
+	font-size: 11px;
+	font-style: normal;  
+	margin-right: 3px;
+
+	height: 25px;
 }
 
 #functional_box_header a span{
@@ -105,6 +105,7 @@
     width: 708px;
 	float: left;
 	margin-top: 20px;
+	margin-left: 12px;
 }
 
 #scenario_container{
@@ -139,4 +140,78 @@
 
 #functional_box_content{
     float: left;
+}
+
+
+.tab_panel #functional_box_header{
+	width: 550px;
+}
+
+.tab_panel #functional_box_content{
+	height: auto;
+	
+}
+
+.tab_panel #token_area{
+	float: left;
+	height: 180px;
+}
+
+.clear{
+	clear: both;
+	float: left;
+}
+
+.tab_panel .form label {
+	font-family: Arial;
+	font-size: 10px;
+	font-weight: bold;
+	color: #969696;
+	float: left;
+	padding-bottom: 2px;
+	padding-top: 2px;
+	text-align: left;
+	padding-left: 5px;
+	
+}
+
+.tab_panel .form{
+	width: 200px;
+	height: auto;
+	margin-bottom: 10px;
+}
+
+
+.tab_panel .form label{
+	width: 100%;
+	float: left;
+}
+
+.tab_panel .form input{
+	margin-bottom: 10px;
+	float: left;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.tab_panel .bt_container{
+	width: 100%;
+	float: left;
+}  
+.tab_panel #token_area{
+	width: 718px;
+}
+
+.tab_panel{
+	float: left;
+	margin-left: 0px !important;
+}
+
+.tab_panel .left{
+	float: left;
+	width: 50%;
+}
+.tab_panel .right{
+	float: left;
+	width: 40%;
 }

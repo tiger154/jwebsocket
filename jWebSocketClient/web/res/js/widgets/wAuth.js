@@ -19,7 +19,7 @@
  */
 $.widget("jws.auth",{
     
-	_init:function(){
+	_init:function( ){
 		w.auth   = this;
 		
 		// Stores the jWebSocketJSONClient
@@ -38,17 +38,17 @@ $.widget("jws.auth",{
 		w.auth.eConnectButton	= w.auth.element.find('#connect_button');
 		w.auth.eDisConnectButton= w.auth.element.find('#disconnect_button');
 		
-		w.auth.eDisConnectButton.hide();
-		w.auth.eLogoffArea.hide();
+		w.auth.eDisConnectButton.hide( );
+		w.auth.eLogoffArea.hide( );
 		
 		w.auth.mUsername = null;
 		
-		w.auth.checkWebSocketSupport();
+		w.auth.checkWebSocketSupport( );
 		
-		w.auth.registerEvents();
+		w.auth.registerEvents( );
 	},
 	
-	checkWebSocketSupport: function(){
+	checkWebSocketSupport: function( ){
 		if( jws.browserSupportsWebSockets( ) ) {
 			mWSC = new jws.jWebSocketJSONClient( );
 			// Setting the type of WebSocket
@@ -63,27 +63,27 @@ $.widget("jws.auth",{
 		}
 	},
 	
-	registerEvents: function() {
+	registerEvents: function( ) {
 		//adding click functions
-		w.auth.eLoginButton.click( function() {
+		w.auth.eLoginButton.click( function( ) {
 			// If there is not a connect button
 			if( !w.auth.eConnectButton.attr("id") ) {
 				// we open the connection and then login
-				w.auth.logon();
+				w.auth.logon( );
 			} else {
 				// must be connected, otherwise it won't work
-				w.auth.login();
+				w.auth.login( );
 			}
 		});
 		w.auth.eLogoffButton.click( 
-			function(){
+			function( ){
 				// If there is not a connect button
 				if( !w.auth.eConnectButton.attr("id") ) {
 					// logout and close the connection
-					w.auth.disconnect();
+					w.auth.disconnect( );
 				} else {
 					// just logout
-					w.auth.logoff();
+					w.auth.logoff( );
 				}
 			}
 			);
@@ -96,7 +96,7 @@ $.widget("jws.auth",{
 	},
 	
 	// Logs in, only if there is connection with the server, otherwise it won't work
-	login: function() {
+	login: function( ) {
 		if( mWSC ) {
 			if( mLog.isDebugEnabled ) {
 				log( "Logging in..." );
@@ -133,7 +133,7 @@ $.widget("jws.auth",{
 		}
 	},
 	
-	getCallbacks: function(){
+	getCallbacks: function( ){
 		return {
 			// use JSON sub protocol
 			subProtocol:  (w.auth.options.subProtocol)?w.auth.options.subProtocol:jws.WS_SUBPROT_JSON,
@@ -182,14 +182,14 @@ $.widget("jws.auth",{
 					log( "<font style='color:red'>jWebSocket Welcome received.</font>" );
 				}
 				
-				if ("anonymous" != aToken.username){
-					w.auth.eLogonArea.hide();
-					w.auth.eLogoffArea.fadeIn(300);
+				if ( "anonymous" != aToken.username ) {
+					w.auth.eLogonArea.hide( );
+					w.auth.eLogoffArea.fadeIn( 300 );
 
-					w.auth.eUserInfoName.text(aToken.username);
+					w.auth.eUserInfoName.text( aToken.username );
 					w.auth.mUsername = aToken.username;
-					w.auth.eClientId.text("Client-ID: " + aToken.sourceId);
-					w.auth.eClientStatus.attr( "class", "authenticated").text("authenticated");
+					w.auth.eClientId.text( "Client-ID: " + aToken.sourceId );
+					w.auth.eClientStatus.attr( "class", "authenticated" ).text( "authenticated" );
 				}
 			},
 
@@ -204,16 +204,16 @@ $.widget("jws.auth",{
 
 			// OnMessage callback
 			OnMessage: function( aEvent, aToken ) {
-				if( "login" == aToken.reqType || "logon" ==  aToken.reqType) {
+				if( "login" == aToken.reqType || "logon" ==  aToken.reqType ) {
 					if( aToken.code != -1 ) {
 						if( mLog.isDebugEnabled ) {
 							log( "<font style='color:green'>Successfully authenticated as: " 
 								+ aToken.username + "</font>");
 						}
-						w.auth.eLogonArea.hide();
-						w.auth.eLogoffArea.fadeIn(300);
+						w.auth.eLogonArea.hide( );
+						w.auth.eLogoffArea.fadeIn( 300 );
 
-						w.auth.eUserInfoName.text(aToken.username);
+						w.auth.eUserInfoName.text( aToken.username );
 						w.auth.mUsername = aToken.username;
 						w.auth.eClientId.text("Client-ID: " + aToken.sourceId);
 						w.auth.eClientStatus.attr( "class", "authenticated").text("authenticated");
@@ -236,8 +236,8 @@ $.widget("jws.auth",{
 					
 				}
 				// Debug if the user doesn't have an OnMessage method
-				if(w.auth.options.OnMessage) {
-					w.auth.options.OnMessage(aEvent, aToken);
+				if( w.auth.options.OnMessage ) {
+					w.auth.options.OnMessage( aEvent, aToken );
 				} else{
 					var lDate = "";
 					if( aToken.date_val ) {
@@ -277,7 +277,7 @@ $.widget("jws.auth",{
 	
 	// If there is not connection with the server, opens a connection and then 
 	// tries to log the user in the system
-	logon: function() {
+	logon: function( ) {
 		var lURL = ( w.auth.options.lURL )? w.auth.options.lURL: jws.getDefaultServerURL( );
         
 		var lUsername = w.auth.eUsername.val( );
@@ -295,7 +295,7 @@ $.widget("jws.auth",{
 			log( "Connecting to " + lURL + " and logging in as '" + lUsername + "'..." );
 		}
 		
-		var lRes = mWSC.logon( lURL, lUsername, lPassword, w.auth.getCallbacks() );
+		var lRes = mWSC.logon( lURL, lUsername, lPassword, w.auth.getCallbacks( ) );
 		
 		if( mLog.isDebugEnabled ) {
 			log( mWSC.resultToString( lRes ) );
@@ -310,9 +310,9 @@ $.widget("jws.auth",{
 			}
 			// the timeout below  is optional,
 			// if you use it you'll get a good-bye message.
-			var lRes = mWSC.logout( {
+			var lRes = mWSC.logout({
 				timeout: 3000
-			} );
+			});
 			
 			if( mLog.isDebugEnabled ) {
 				log( mWSC.resultToString( lRes ) );
@@ -334,7 +334,7 @@ $.widget("jws.auth",{
 		}
 
 		try {
-			mWSC.open( lURL, w.auth.getCallbacks() );
+			mWSC.open( lURL, w.auth.getCallbacks( ) );
 		} catch( ex ) {
 			console.log( ex );
 			if( mLog.isDebugEnabled ) {
@@ -343,7 +343,7 @@ $.widget("jws.auth",{
 		}
 	},
 	
-	disconnect: function() {
+	disconnect: function( ) {
 		if( mWSC ) {
 			if( mLog.isDebugEnabled ) {
 				log( "Disconnecting..." );
@@ -367,7 +367,7 @@ $.widget("jws.auth",{
 		}
 	},
 	
-	auth: function() {
+	auth: function( ) {
 		if( mWSC ) {
 			if( mLog.isDebugEnabled ) {
 				log( "Authenticating..." );
@@ -395,13 +395,13 @@ $.widget("jws.auth",{
 		}
 	},
 
-	deauth: function() {
+	deauth: function( ) {
 		if( mWSC ) {
 			if( mLog.isDebugEnabled ) {
 				log( "Deauthenticating..." );
 			}
 			try {
-				var lRes = mWSC.systemLogoff();
+				var lRes = mWSC.systemLogoff( );
 				if( lRes.code == 0 ) {
 					if( mLog.isDebugEnabled ) {
 						log( "Asychronously waiting for response..." );
@@ -420,13 +420,13 @@ $.widget("jws.auth",{
 		}
 	},
 
-	getAuth: function() {
+	getAuth: function( ) {
 		if( mWSC ) {
 			if( mLog.isDebugEnabled ) {
 				log( "Getting authorities..." );
 			}
 			try {
-				var lRes = mWSC.systemGetAuthorities();
+				var lRes = mWSC.systemGetAuthorities( );
 				if( lRes.code == 0 ) {
 					if( mLog.isDebugEnabled ) {
 						log( "Asychronously waiting for response..." );
@@ -447,13 +447,13 @@ $.widget("jws.auth",{
 	// EVENTS FUNCTIONS
 	eUsernameKeypress: function( aEvent ) {
 		if( aEvent.keyCode == 13 || aEvent.keyChar == 13 ) {
-			w.auth.ePassword.focus();
+			w.auth.ePassword.focus( );
 		}
 	},
 	
 	ePasswordKeypress: function( aEvent ) {
 		if( aEvent.keyCode == 13 || aEvent.keyChar == 13 ) {
-			w.auth.logon();
+			w.auth.logon( );
 		}
 	}
 });
