@@ -97,10 +97,12 @@ $.widget("jws.SMSGateway",{
 					var lCallbacks = {
 						OnSuccess: function(aToken){
 							//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
-							dialog("SMS sent correctly", "Congratulations!, you have sent a free SMS using jWebSocket Framework");
+							dialog( "Congratulations!, you have sent a free SMS" +
+								" using jWebSocket Framework", "SMS sent correctly" );
 						},
 						OnFailure: function(aToken){
-							dialog("Error sending the SMS", "The following error has been encoutered: " + aToken.msg, true);
+							dialog( "The following error has been encoutered: "
+								+ aToken.msg, "Error sending the SMS", true);
 						}
 					};
 					mWSC.sendToken(lSMSToken, lCallbacks);
@@ -111,13 +113,16 @@ $.widget("jws.SMSGateway",{
 						times:3
 					}, 100);
 					
-					log("<b style='color:red;'>Wrong captcha validation, try another captcha</b>");
+					log("<b style='color:red;'>Wrong captcha validation, " +
+						"try another captcha</b>");
 					var lGetNewCaptcha = function(){
 						w.SMSGateway.getCaptcha();
 						w.SMSGateway.eTextCaptcha.val("").focus();
 					};
 					//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
-					dialog("Captcha error", "Error found in the Captcha, the server will send you other captcha, please try again!", true, lGetNewCaptcha);
+					dialog( "Error found in the Captcha, the server will send " +
+						"you other captcha, please try again!", "Captcha error", 
+						true, lGetNewCaptcha);
 				}
 			};
 			mWSC.sendToken(lToken, lOptions);

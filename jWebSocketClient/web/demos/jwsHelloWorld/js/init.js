@@ -13,9 +13,10 @@ function init(){
 		},
 		OnClose: function(aEvent){
 		},
-		OnMessage: function(aEvent, aToken){
-			
-		},
+		// If not OnMessage given, will be used the default callback
+//		OnMessage: function(aEvent, aToken){
+//			
+//		},
 		OnWelcome: function(aEvent){
 		},
 		OnGoodBye: function(aEvent){
@@ -43,6 +44,12 @@ function init(){
 			var lMiddle = $("<div class='middle'></div>").text(lTip.text());
 			var lBottom = ("<div class='bottom'></div>");
 			lTip.html("").append(lTop).append(lMiddle).append(lBottom);
+			this.getTrigger( ).mouseout( function( ) {
+				lTip.hide( ).hide( );
+			});
+			this.getTrigger( ).mousemove( function( ) {
+				lTip.show( );
+			});
 		}
 	});
 	

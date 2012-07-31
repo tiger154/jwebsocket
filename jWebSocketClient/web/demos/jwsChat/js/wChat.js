@@ -194,8 +194,8 @@ $.widget( "jws.chat", {
 					"No users online", false, null, null, "alert");
 			}
 		} else{
-			dialog("Sorry, you are not connected with jWebSocket server, \n\
-						try clicking in the login button!", 
+			dialog("Sorry, you are not connected with jWebSocket server, " +
+						"try clicking the login button!", 
 				"Not connected", false, null, null, "alert");
 		}
 	},

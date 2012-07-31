@@ -42,6 +42,12 @@ function init(){
             var lMiddle = $("<div class='middle'></div>").text(lTip.text());
             var lBottom = ("<div class='bottom'></div>");
             lTip.html("").append(lTop).append(lMiddle).append(lBottom);
+			this.getTrigger( ).mouseout( function( ) {
+				lTip.hide( ).hide( );
+			});
+			this.getTrigger( ).mousemove( function( ) {
+				lTip.show( );
+			});
         }
     });
 }
@@ -88,7 +94,7 @@ function sendCommand(aCmd){
             OnSuccess: function(aResponse){
                 //  log("Sending C2SEvent Command: {cmd:"+aCmd+"}")
                 if(aResponse.message != null)
-                    showMessage(aResponse.message+"<br><br>"+"Disconnect and reconnect the microcontroller, set the port and restart the jWebSocket server.",'error');
+                    showMessage(aResponse.message + "<br><br>"+"Disconnect and reconnect the microcontroller, set the port and restart the jWebSocket server.",'error');
             }
         });
     }

@@ -79,8 +79,8 @@
                         <div id="login_form">
                             <label class="first">Username</label>
                             <label class="second">Password</label>
-                            <input type="text" id="user_text" value="guest"/>
-                            <input type="password" id="user_password" value="guest"/>
+                            <input type="text" id="user_text" value="root"/>
+                            <input type="password" id="user_password" value="root"/>
                         </div>
                         <div id="login_button" class="button onmouseup" 
 							 onmouseover="this.className='button onmouseover'" 
@@ -114,173 +114,165 @@
                             <a id="switch_subscribers_btn">Subscribers</a>
                         </div>
                         <div id="basic_channels_box_content">
-                            <div id="channels_area">
-								<div id="channel_table_container" class="rounded_top">
-									<table width="100%" border="0" class="rounded_top" cellspacing="0">
+							<div id="channel_table_container" class="rounded_top">
+								<div id="channels_area">
+									<table id="channels_table" width="100%" 
+										   border="0" class="rounded_top" cellspacing="0">
+										<tr class="table_header">
+											<td class="rounded_left">Name</td>
+											<td>Id</td>
+											<td>Type</td>
+											<td class="rounded_right">System</td>
+										</tr>
+										<tr class="no_channels">
+											<td rowspan="4">
+												There are not channels to show.
+											</td>
+										</tr>
+									</table>
+								</div>
+								<div id="subscriptions_area">
+									<table id="subscriptions_table" width="100%" border="0" 
+										   class="rounded_top" cellspacing="0">
 										<tr class="table_header">
 											<td class="rounded_left">Name</td>
 											<td>Id</td>
 											<td>Type</td>
 											<td>System</td>
-											<td>Access</td>
-											<td class="rounded_right">Secret</td>
 										</tr>
-										<tr style="position: relative;">
-											<td>Channel A</td>
-											<td>enapso</td>
-											<td>private</td>
-											<td class="bullet_on"></td>
-											<td class="bullet_off"></td>
-											<td class="bullet_on"></td>
+										<tr class="no_channels">
+											<td rowspan="4">
+												There are not subscriptions to show.
+											</td>
 										</tr>
-										<tr class="gray">
-											<td>Channel B</td>
-											<td>xyz</td>
-											<td>public</td>
-											<td class="bullet_on"></td>
-											<td class="bullet_off"></td>
-											<td class="bullet_off"></td>
-										</tr>
-										<tr>
-											<td>Channel B</td>
-											<td>xyz</td>
-											<td>public</td>
-											<td class="bullet_on"></td>
-											<td class="bullet_off"></td>
-											<td class="bullet_off"></td>
-										</tr>
-										<tr class="gray">
-											<td>Channel B</td>
-											<td>xyz</td>
-											<td>public</td>
-											<td class="bullet_on"></td>
-											<td class="bullet_off"></td>
-											<td class="bullet_off"></td>
-										</tr>
-										<tr>
-											<td>Channel B</td>
-											<td>xyz</td>
-											<td>public</td>
-											<td class="bullet_on"></td>
-											<td class="bullet_off"></td>
-											<td class="bullet_off"></td>
-										</tr>
-										<tr class="gray">
-											<td>Channel B</td>
-											<td>xyz</td>
-											<td>public</td>
-											<td class="bullet_on"></td>
-											<td class="bullet_off"></td>
-											<td class="bullet_off"></td>
+									</table>
+								</div> 
+								<div id="subscribers_area">
+									<table id="subscribers_table" width="100%" border="0" 
+										   class="rounded_top" cellspacing="0">
+										<tr class="table_header">
+											<td class="rounded_top">id</td>
 										</tr>
 									</table>
 								</div>
-								<div id="channel_subscribe_area">
-									<div id="subscribe_btn" class="button onmouseup" 
+							</div>
+							<div id="channel_subscribe_area">
+								<div id="subscribe_btn" class="button onmouseup" 
+									 onmouseover="this.className='button onmouseover'" 
+									 onmousedown="this.className='button onmousedown'" 
+									 onmouseup="this.className='button onmouseup'" 
+									 onmouseout="this.className='button onmouseout'" 
+									 onclick="this.className='button onmouseover'">
+									<div class="l"></div>
+									<div class="c">Subscribe</div>
+									<div class="r"></div>
+								</div>
+								<div id="unsubscribe_btn" class="button onmouseup" 
+									 onmouseover="this.className='button onmouseover'" 
+									 onmousedown="this.className='button onmousedown'" 
+									 onmouseup="this.className='button onmouseup'" 
+									 onmouseout="this.className='button onmouseout'" 
+									 onclick="this.className='button onmouseover'">
+									<div class="l"></div>
+									<div class="c">Unsubscribe</div>
+									<div class="r"></div>
+								</div>
+								<div id="getchannels_btn" class="button onmouseup" 
+									 onmouseover="this.className='button onmouseover'" 
+									 onmousedown="this.className='button onmousedown'" 
+									 onmouseup="this.className='button onmouseup'" 
+									 onmouseout="this.className='button onmouseout'" 
+									 onclick="this.className='button onmouseover'">
+									<div class="l"></div>
+									<div class="c">Get Channels</div>
+									<div class="r"></div>
+								</div>
+							</div>
+							<div id="channel_management_area">
+								<div id="management_area">
+									<div class="box left_area">
+										<div class="box left_area1">
+											<input type="text" id="txt_access_key" 
+												   value="access key" tabindex="3"
+												   title="Access key to authorize 
+												   publish operations"/>
+											<input type="text" id="txt_channel_id" 
+												   value="channel id" tabindex="5"
+												   title="Channel identifier to 
+												   create or remove channels"/>
+										</div>
+										<div class="box left_area2">
+											<input type="text" id="txt_secret_key" 
+												   value="secret key" tabindex="4"
+												   title="Secret key to authorize 
+												   publish operations"/>
+											<input type="text" id="txt_channel_name" 
+												   value="channel name" tabindex="6"
+												   title="Channel name to 
+												   create new channels"/>
+										</div>
+									</div>
+									<div class="box" id="management_options">
+										<input type="radio" name="visibility" 
+											   value="public" checked="checked" />Public
+										<input type="radio" name="visibility" 
+											   value="private" /> Private <br/>
+										<input type="checkbox" name="system" 
+											   value="ON" />System
+									</div>
+								</div>
+								<div class="box">
+									<div id="authenticate_btn" class="button onmouseup" 
 										 onmouseover="this.className='button onmouseover'" 
 										 onmousedown="this.className='button onmousedown'" 
 										 onmouseup="this.className='button onmouseup'" 
 										 onmouseout="this.className='button onmouseout'" 
 										 onclick="this.className='button onmouseover'">
 										<div class="l"></div>
-										<div class="c">Subscribe</div>
+										<div class="c">Authenticate</div>
 										<div class="r"></div>
 									</div>
-									<div id="unsubscribe_btn" class="button onmouseup" 
+									<div id="createchannel_btn" class="button onmouseup" 
 										 onmouseover="this.className='button onmouseover'" 
 										 onmousedown="this.className='button onmousedown'" 
 										 onmouseup="this.className='button onmouseup'" 
 										 onmouseout="this.className='button onmouseout'" 
 										 onclick="this.className='button onmouseover'">
 										<div class="l"></div>
-										<div class="c">Unsubscribe</div>
+										<div class="c">New Channel</div>
 										<div class="r"></div>
 									</div>
-									<div id="getchannels_btn" class="button onmouseup" 
+									<div id="deletechannel_btn" class="button onmouseup" 
 										 onmouseover="this.className='button onmouseover'" 
 										 onmousedown="this.className='button onmousedown'" 
 										 onmouseup="this.className='button onmouseup'" 
 										 onmouseout="this.className='button onmouseout'" 
 										 onclick="this.className='button onmouseover'">
 										<div class="l"></div>
-										<div class="c">Get Channels</div>
+										<div class="c">Delete Channel</div>
 										<div class="r"></div>
 									</div>
 								</div>
-								<div id="channel_management_area">
-									<div id="management_area">
-										<div class="box left_area">
-											<div class="box left_area1">
-												<input type="text" name="txt_access_key" value="access key" />
-												<input type="text" name="txt_channel_id" value="channel id" />
-											</div>
-											<div class="box left_area2">
-												<input type="text" name="txt_secret_key" value="secret key" />
-												<input type="text" name="txt_channel_name" value="channel name" />
-											</div>
-										</div>
-										<div class="box" id="management_options">
-											<input type="radio" name="visibility" value="public" checked="checked" />Public
-											<input type="radio" name="visibility" value="private" /> Private <br/>
-											<input type="checkbox" name="system" value="ON" />System
-										</div>
-									</div>
-									<div class="box">
-										<div id="authenticate_btn" class="button onmouseup" 
-											 onmouseover="this.className='button onmouseover'" 
-											 onmousedown="this.className='button onmousedown'" 
-											 onmouseup="this.className='button onmouseup'" 
-											 onmouseout="this.className='button onmouseout'" 
-											 onclick="this.className='button onmouseover'">
-											<div class="l"></div>
-											<div class="c">Authenticate</div>
-											<div class="r"></div>
-										</div>
-										<div id="createchannel_btn" class="button onmouseup" 
-											 onmouseover="this.className='button onmouseover'" 
-											 onmousedown="this.className='button onmousedown'" 
-											 onmouseup="this.className='button onmouseup'" 
-											 onmouseout="this.className='button onmouseout'" 
-											 onclick="this.className='button onmouseover'">
-											<div class="l"></div>
-											<div class="c">New Channel</div>
-											<div class="r"></div>
-										</div>
-										<div id="deletechannel_btn" class="button onmouseup" 
-											 onmouseover="this.className='button onmouseover'" 
-											 onmousedown="this.className='button onmousedown'" 
-											 onmouseup="this.className='button onmouseup'" 
-											 onmouseout="this.className='button onmouseout'" 
-											 onclick="this.className='button onmouseover'">
-											<div class="l"></div>
-											<div class="c">Delete Channel</div>
-											<div class="r"></div>
-										</div>
-									</div>
+							</div>
+							<div id="channel_publish_area" class="rounded_bottom">
+								<input type="text" id="txt_message" 
+									   value="Type your message..." 
+									   title="Message to be published"/>
+								<div id="publish_btn" class="button onmouseup"
+									 onmouseover="this.className='button onmouseover'" 
+									 onmousedown="this.className='button onmousedown'" 
+									 onmouseup="this.className='button onmouseup'" 
+									 onmouseout="this.className='button onmouseout'" 
+									 onclick="this.className='button onmouseover'">
+									<div class="l"></div>
+									<div class="c">Publish</div>
+									<div class="r"></div>
 								</div>
-								<div id="channel_publish_area" class="rounded_bottom">
-									<input type="text" name="txt_message" value="Type your message..." />
-									<div id="publish_btn" class="button onmouseup"
-										 onmouseover="this.className='button onmouseover'" 
-										 onmousedown="this.className='button onmousedown'" 
-										 onmouseup="this.className='button onmouseup'" 
-										 onmouseout="this.className='button onmouseout'" 
-										 onclick="this.className='button onmouseover'">
-										<div class="l"></div>
-										<div class="c">Publish</div>
-										<div class="r"></div>
-									</div>
-								</div>
-
-                            </div> 
-                            <div id="subscriptions_area">
-                            </div> 
-                            <div id="subscribers_area">
-                            </div> 
+							</div>
                         </div>
                     </div>
                 </div>
-				
+
 				<div id="demo_box_description" class="box">
 					This demo shows how messages can be retrieved and broadcasted 
 					using a publish/subscribe mechanism based on multiple channels.
@@ -297,13 +289,16 @@
 
                 <!--       DOWNLOAD_BUTTON   -->
                 <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                    <div id="jws_download_button" class="button onmouseup" 
+						 onmouseover="this.className='button onmouseover'" 
                          onmousedown="this.className='button onmousedown'" 
                          onmouseup="this.className='button onmouseup'" 
                          onmouseout="this.className='button onmouseout'" 
                          onclick="this.className='button onmouseover'">
                         <div class="l"></div>
-                        <div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
+                        <div class="c">
+							<a href="http://jwebsocket.org" target="blank">
+								Download jWebSocket</a></div>
                         <div class="r_download"></div>
                     </div>
                 </div>

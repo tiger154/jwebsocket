@@ -178,29 +178,6 @@ function resetDetails(){
 
 }
 
-
-function dialog(title, message){
-	// Dialog			
-	var ldialog = $('<div id="dialog"></div>');
-	var content = $("<p>"+message + "</p>");
-	ldialog.append(content);
-    
-	ldialog.prependTo("body");
-    
-	ldialog.dialog({
-		autoOpen: true,
-		width: 600,
-		buttons: {
-			"Ok": function() { 
-				$(this).dialog("close"); 
-				ldialog.remove();
-			}
-		}, 
-		title: title
-	});
-}
-
-
 $(document).ready(function(){
 	init();
 });

@@ -28,6 +28,12 @@ function init(  ) {
 			var lMiddle = $( "<div class='middle'></div>" ).text( lTip.text(  ) );
 			var lBottom = ( "<div class='bottom'></div>" );
 			lTip.html( "" ).append( lTop ).append( lMiddle ).append( lBottom );
+			this.getTrigger( ).mouseout( function( ) {
+				lTip.hide( ).hide( );
+			});
+			this.getTrigger( ).mousemove( function( ) {
+				lTip.show( );
+			});
 		}
 	} );
 }

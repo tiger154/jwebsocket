@@ -20,46 +20,46 @@
 
 function changeledsStatus(aBlue, aRed, aGreen, aYellow){
   
-    if(aBlue){
-        gElements.eLedBlue.removeClass("off").addClass("on");
-    }
-    else{
-        gElements.eLedBlue.removeClass("on").addClass("off");
-    }
-    if(aRed){
-        gElements.eLedRed.removeClass("off").addClass("on");
-    }
-    else{
-        gElements.eLedRed.removeClass("on").addClass("off");
-    }
-    if(aGreen){
-        gElements.eLedGreen.removeClass("off").addClass("on");
-    }
-    else{
-        gElements.eLedGreen.removeClass("on").addClass("off");
-    }
-    if(aYellow){
-        gElements.eLedYellow.removeClass("off").addClass("on");
-    }
-    else{
-        gElements.eLedYellow.removeClass("on").addClass("off");
-    }
+	if(aBlue){
+		gElements.eLedBlue.removeClass("off").addClass("on");
+	}
+	else{
+		gElements.eLedBlue.removeClass("on").addClass("off");
+	}
+	if(aRed){
+		gElements.eLedRed.removeClass("off").addClass("on");
+	}
+	else{
+		gElements.eLedRed.removeClass("on").addClass("off");
+	}
+	if(aGreen){
+		gElements.eLedGreen.removeClass("off").addClass("on");
+	}
+	else{
+		gElements.eLedGreen.removeClass("on").addClass("off");
+	}
+	if(aYellow){
+		gElements.eLedYellow.removeClass("off").addClass("on");
+	}
+	else{
+		gElements.eLedYellow.removeClass("on").addClass("off");
+	}
 }
   
 function changePosition(aX , aY){
-    //positioning value of x and y value in the center    
-    var lX = 147 - (aX ) * 27;
-    var lY = 147 + (aY) * 27;
-    var lDistance = Math.sqrt(Math.pow(147 - lX, 2) + Math.pow(147 - lY, 2)   );
+	//positioning value of x and y value in the center    
+	var lX = 147 - (aX ) * 27;
+	var lY = 147 + (aY) * 27;
+	var lDistance = Math.sqrt(Math.pow(147 - lX, 2) + Math.pow(147 - lY, 2)   );
    
-    if(lDistance <= 138){       
-        gPoint.attr("cy", lY);  
-        gPoint.attr("cx", lX);   
-    }    
+	if(lDistance <= 138){       
+		gPoint.attr("cy", lY);  
+		gPoint.attr("cx", lX);   
+	}    
 }
 function showMessage(aMessage, aType){
     
-   /* var lMessageBox = $("<div id='messageBox'> </div>");
+	/* var lMessageBox = $("<div id='messageBox'> </div>");
     switch(aType){
         case 'error':
             lMessageBox.append("<div id='messageType' class='error'></div>");
@@ -85,15 +85,15 @@ function showMessage(aMessage, aType){
         }
 				
     }); */
-var lButtons = [{
-                id: "buttonOk",        
-                text: "Ok",
-                aFunction: function(){
-                        this.close()
-                }
-        }];
+	var lButtons = [{
+		id: "buttonOk",        
+		text: "Ok",
+		aFunction: function(){
+			this.close()
+		}
+	}];
 
-dialog(aMessage, "Arduino Remote Control Demo", true, null, lButtons, aType);
+	dialog(aMessage, "Arduino Remote Control Demo", true, null, lButtons, aType);
 
 
 }

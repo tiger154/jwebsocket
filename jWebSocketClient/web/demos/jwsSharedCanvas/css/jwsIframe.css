@@ -14,7 +14,8 @@
 #demo_box_statusbar{
 	float: right !important;
     width: 97px !important;
-    position: absolute;
+    min-width: 97px !important;
+    position: absolute !important;
 	margin-top: 76px;
 	margin-left: 230px !important;
     border: 1px solid #C8C8C8;
