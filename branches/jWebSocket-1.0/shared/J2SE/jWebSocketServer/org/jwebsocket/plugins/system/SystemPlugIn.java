@@ -54,7 +54,8 @@ import org.springframework.security.core.GrantedAuthority;
  * etc...
  *
  * @author aschulze
- * @author kybernees {Support for client-side session management and Spring authentication}
+ * @author kybernees {Support for client-side session management and Spring
+ * authentication}
  */
 public class SystemPlugIn extends TokenPlugIn {
 
@@ -260,13 +261,16 @@ public class SystemPlugIn extends TokenPlugIn {
 				aConnector.getSession().
 						setStorage((Map<String, Object>) (mSessionManager.getSession(aConnector.getSession().getSessionId())));
 
-				//Setting the username if exists in the connector instance
-				Map<String, Object> lSessionParams = aConnector.getSession().getStorage();
-				if (lSessionParams.containsKey(USERNAME)) {
-					aConnector.setUsername(lSessionParams.get(USERNAME).toString());
-				}
 			} catch (Exception lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing connector session"), lEx);
+			}
+		}
+
+		//Setting the username if exists in the connector instance
+		if (null != aConnector.getSession().getStorage()) {
+			Map<String, Object> lSessionParams = aConnector.getSession().getStorage();
+			if (lSessionParams.containsKey(USERNAME)) {
+				setUsername(aConnector, lSessionParams.get(USERNAME).toString());
 			}
 		}
 

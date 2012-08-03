@@ -141,6 +141,9 @@ $.widget("jws.auth",{
 			openTimeout: (w.auth.options.timeout)?w.auth.options.timeout:3000,
 				
 			OnOpen: function( aEvent, aToken ) {
+				// starting keepAlive mechanism (required)
+				mWSC.startKeepAlive();
+				
 				if( w.auth.options.OnOpen ){
 					w.auth.options.OnOpen( aEvent );
 				}

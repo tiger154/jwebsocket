@@ -22,15 +22,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
+import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.console.JWebSocketServer;
+import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.instance.JWebSocketInstance;
 
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
 public class TomcatServlet extends WebSocketServlet {
 
 	private HttpServletRequest mRequest;
 
+	@Override
+	public void init() throws ServletException {
+		if (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()){
+			// running in embedded mode
+			// starting the jWebSocket application server
+			JWebSocketServer.main(new String[0]);
+		}
+		super.init();
+	}
+	
+	
 	@Override
 	protected void service(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
 		// save the request, since this is not available anymore in the createWebSocketInbound method
@@ -46,8 +62,11 @@ public class TomcatServlet extends WebSocketServlet {
 
 	@Override
 	protected boolean verifyOrigin(String aOrigin) {
+		// TODO: we need to fix this hardcoded solution
+		WebSocketEngine mEngine = JWebSocketFactory.getEngine("tomcat0");
+		
 		// super.verifyOrigin(aOrigin);
-		return TomcatWrapper.verifyOrigin(aOrigin);
+		return TomcatWrapper.verifyOrigin(aOrigin, mEngine.getConfiguration().getDomains());
 	}
 
 	/**
