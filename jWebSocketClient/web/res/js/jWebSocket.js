@@ -4649,7 +4649,7 @@ jws.SystemClientPlugIn = {
 	startKeepAlive: function( aOptions ) {
 		// if we have a keep alive running already stop it
 		if( this.hKeepAlive ) {
-			stopKeepAlive();
+			this.stopKeepAlive();
 		}
 		// return if not (yet) connected
 		if( !this.isOpened() ) {

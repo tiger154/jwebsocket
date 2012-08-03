@@ -54,6 +54,7 @@ public class TomcatWrapper extends MessageInbound {
 	private RequestHeader mHeader;
 	private InetAddress mRemoteHost;
 	private int mRemotePort;
+	private boolean mIsSecure;
 
 	public static String selectSubProtocol(List<String> aSubProtocols) {
 		// TODO: implement correct algorithm here!
@@ -66,17 +67,23 @@ public class TomcatWrapper extends MessageInbound {
 		return lSubProt;
 	}
 
-	public static boolean verifyOrigin(String aOrigin) {
-		// TODO: implement correct origin check here!
-		boolean lVerified = true;
-		return lVerified;
+	public static boolean verifyOrigin(String aOrigin, List<String> aDomains) {
+		for (String lDomain : aDomains) {
+			lDomain = lDomain.replace("*", ".*");
+			if (aOrigin.matches(lDomain)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public TomcatWrapper(HttpServletRequest aRequest, String aSubProtocol) {
 		super();
 		// TODO: we need to fix this hardcoded solution
 		mEngine = JWebSocketFactory.getEngine("tomcat0");
+
 		mRequest = aRequest;
+		mIsSecure = aRequest.isSecure();
 		mSession = aRequest.getSession();
 		if (null != mEngine) {
 			EngineConfiguration lConfig = mEngine.getConfiguration();
@@ -146,9 +153,37 @@ public class TomcatWrapper extends MessageInbound {
 	protected void onOpen(WsOutbound aOutbound) {
 		// super.onOpen(aOutbound);
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Connecting Tomcat Client...");
+			mLog.debug("Connecting Tomcat ("
+					+ (mIsSecure ? "SSL" : "plain")
+					+ ") client...");
 		}
+
+		// supporting max connections reached strategy
+		if (mEngine.getConnectors().size() == mEngine.getConfiguration().getMaxConnections()) {
+			String lMessage = "Client(" + mRemoteHost.getHostAddress() + ") not accepted due to max connections reached.";
+			if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("close")) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug(lMessage + " Connection closed!");
+				}
+				try {
+					aOutbound.close(0, null);
+				} catch (IOException ex) {
+				}
+			} else if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("reject")) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug(lMessage + " Connection rejected!");
+				}
+				try {
+					aOutbound.close(CloseReason.SERVER_REJECT_CONNECTION.getCode(), null);
+				} catch (IOException ex) {
+				}
+			}
+
+			return;
+		}
+
 		mConnector = new TomcatConnector(mEngine, aOutbound);
+		mConnector.setSSL(mIsSecure);
 		mConnector.getSession().setSessionId(mSession.getId());
 		mConnector.getSession().setStorage(new HttpSessionStorage(mSession));
 

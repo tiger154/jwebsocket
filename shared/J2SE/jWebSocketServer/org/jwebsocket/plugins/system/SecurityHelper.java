@@ -16,8 +16,6 @@ package org.jwebsocket.plugins.system;
 
 import java.util.Map;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.session.SessionManager;
-import org.jwebsocket.spring.JWebSocketBeanFactory;
 
 /**
  *
@@ -25,20 +23,10 @@ import org.jwebsocket.spring.JWebSocketBeanFactory;
  */
 public class SecurityHelper {
 
-	private static SessionManager mSessionManager = null;
-
-	private static SessionManager getSessionManager() {
-		if (null == mSessionManager) {
-			mSessionManager = (SessionManager) JWebSocketBeanFactory.getInstance().getBean("sessionManager");
-		}
-		return mSessionManager;
-	}
-
-	public static Boolean isUserAuthenticated(String aSessionId) {
+	public static Boolean isUserAuthenticated(Map<String, Object> aSessionStorage) {
 		try {
-			Map<String, Object> session = getSessionManager().getSession(aSessionId);
-			if (session.containsKey(SystemPlugIn.IS_AUTHENTICATED)) {
-				return (Boolean) session.get(SystemPlugIn.IS_AUTHENTICATED);
+			if (aSessionStorage.containsKey(SystemPlugIn.IS_AUTHENTICATED)) {
+				return (Boolean) aSessionStorage.get(SystemPlugIn.IS_AUTHENTICATED);
 			}
 			return false;
 		} catch (Exception ex) {
@@ -47,14 +35,13 @@ public class SecurityHelper {
 		}
 	}
 
-	public static boolean userHasAuthority(String aSessionId, String aAuthority) {
-		if (!isUserAuthenticated(aSessionId)) {
+	public static boolean userHasAuthority(Map<String, Object> aSessionStorage, String aAuthority) {
+		if (!isUserAuthenticated(aSessionStorage)) {
 			return false;
 		}
 		try {
-			Map<String, Object> session = getSessionManager().getSession(aSessionId);
-			if (session.containsKey(SystemPlugIn.AUTHORITIES)) {
-				String[] authorities = ((String) session.get(aSessionId)).split(" ");
+			if (aSessionStorage.containsKey(SystemPlugIn.AUTHORITIES)) {
+				String[] authorities = ((String) aSessionStorage.get(SystemPlugIn.AUTHORITIES)).split(" ");
 				int end = authorities.length;
 
 				for (int i = 0; i < end; i++) {
@@ -72,10 +59,10 @@ public class SecurityHelper {
 	}
 
 	public static boolean isUserAuthenticated(WebSocketConnector aConnector) {
-		return isUserAuthenticated(aConnector.getSession().getSessionId());
+		return isUserAuthenticated(aConnector.getSession().getStorage());
 	}
 
 	public static boolean userHasAuthority(WebSocketConnector aConnector, String aAuthority) {
-		return userHasAuthority(aConnector.getSession().getSessionId(), aAuthority);
+		return userHasAuthority(aConnector.getSession().getStorage(), aAuthority);
 	}
 }

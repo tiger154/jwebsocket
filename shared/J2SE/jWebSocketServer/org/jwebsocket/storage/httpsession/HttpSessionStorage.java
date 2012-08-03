@@ -16,6 +16,7 @@
 package org.jwebsocket.storage.httpsession;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Set;
 import javax.servlet.http.HttpSession;
 import javolution.util.FastSet;
@@ -109,7 +110,11 @@ public class HttpSessionStorage extends BaseStorage<String, Object> {
 	 */
 	@Override
 	public void clear() {
-		mSession.invalidate();
+		Iterator lIterator = keySet().iterator();
+		while (lIterator.hasNext()){
+			Object lKey = lIterator.next();
+			remove(lKey);
+		}
 	}
 
 	/**

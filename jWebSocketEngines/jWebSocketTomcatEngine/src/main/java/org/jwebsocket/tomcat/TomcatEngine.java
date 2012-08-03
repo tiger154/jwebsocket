@@ -18,10 +18,12 @@ package org.jwebsocket.tomcat;
 import java.util.Date;
 import java.util.Map;
 import org.apache.catalina.Context;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
@@ -31,6 +33,7 @@ import org.jwebsocket.util.Tools;
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
 public class TomcatEngine extends BaseEngine {
 
@@ -47,13 +50,6 @@ public class TomcatEngine extends BaseEngine {
 		// load the ports
 		Integer lPort = aConfiguration.getPort();
 		Integer lSSLPort = aConfiguration.getSSLPort();
-		Map<String, Object> lSettings = aConfiguration.getSettings();
-		if (null != lSettings) {
-			Object lDocRoot = lSettings.get("document_root");
-			if (null != lDocRoot) {
-				mDocumentRoot = Tools.expandEnvVarsAndProps(lDocRoot.toString());
-			}
-		}
 
 		// If ports are 0 use the WebSocket Servlet capabilities
 		// of the Tomcat Engine and do not instantiate a separate engine here!
@@ -63,10 +59,17 @@ public class TomcatEngine extends BaseEngine {
 			// fire the engine start event
 			engineStarted();
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Using Tomcat"
-						+ " configured by Tomcat's server.xml...");
+				mLog.debug("Running TomcatEngine in embedded mode...");
 			}
 			return;
+		}
+
+		Map<String, Object> lSettings = aConfiguration.getSettings();
+		if (null != lSettings) {
+			Object lDocRoot = lSettings.get("document_root");
+			if (null != lDocRoot) {
+				mDocumentRoot = Tools.expandEnvVarsAndProps(lDocRoot.toString());
+			}
 		}
 
 		String lContext = aConfiguration.getContext();
@@ -92,10 +95,30 @@ public class TomcatEngine extends BaseEngine {
 			mTomcat.setBaseDir(".");
 
 			Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
+
 			Tomcat.addServlet(lCtx, "jWebSocketServlet", "org.jwebsocket.tomcat.TomcatServlet");
 			lCtx.addServletMapping(lServlet, "jWebSocketServlet");
 
-			mTomcat.start();
+			// setting the session timeout
+			lCtx.setSessionTimeout(getConfiguration().getTimeout());
+
+			// setting the SSL connector
+			Connector lConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+			lConnector.setEnableLookups(false);
+			lConnector.setScheme("https");
+			lConnector.setSecure(true);
+			lConnector.setPort(lSSLPort);
+			lConnector.setProperty("maxHttpHeaderSize", "8192");
+			lConnector.setProperty("SSLEnabled", "true");
+			lConnector.setProperty("clientAuth", "false");
+			lConnector.setProperty("sslProtocol", "TLS");
+			lConnector.setProperty("keystoreFile",
+					JWebSocketConfig.expandEnvAndJWebSocketVars(getConfiguration().getKeyStore()));
+			lConnector.setProperty("keystorePass",
+					JWebSocketConfig.expandEnvAndJWebSocketVars(getConfiguration().getKeyStorePassword()));
+
+			// registering the SSL connector
+			mTomcat.getService().addConnector(lConnector);
 
 			// mTomcatServer.setStopAtShutdown(true);
 			if (mLog.isDebugEnabled()) {
@@ -104,10 +127,6 @@ public class TomcatEngine extends BaseEngine {
 			}
 
 			mTomcat.start();
-			// if (mLog.isDebugEnabled()) {
-			//	mLog.debug("Joining embedded Tomcat server...");
-			// }
-			// mTomcatServer.join();
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ "Instantiating Embedded Tomcat Server '"
@@ -122,14 +141,14 @@ public class TomcatEngine extends BaseEngine {
 	}
 
 	@Override
-	public void startEngine()
-			throws WebSocketException {
+	public void startEngine() throws WebSocketException {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Starting Tomcat '" + mTomcatVersion + "' engine '"
 					+ getId()
 					+ "...");
 		}
 
+		mIsRunning = true;
 		super.startEngine();
 
 		if (mLog.isInfoEnabled()) {
@@ -183,20 +202,6 @@ public class TomcatEngine extends BaseEngine {
 					+ mTomcatVersion + "': "
 					+ lEx.getMessage());
 		}
-
-		/*
-		 * // now wait until all connectors have been closed properly // or
-		 * timeout exceeds... try { while (getConnectors().size() > 0 && new
-		 * Date().getTime() - lStarted < 10000) { Thread.sleep(250); } } catch
-		 * (Exception lEx) { mLog.error(lEx.getClass().getSimpleName() + ": " +
-		 * lEx.getMessage()); } if (mLog.isDebugEnabled()) { long lDuration =
-		 * new Date().getTime() - lStarted; int lRemConns =
-		 * getConnectors().size(); if (lRemConns > 0) { mLog.warn(lRemConns + "
-		 * of " + lNumConns + " Tomcat connectors '" + getId() + "' did not stop
-		 * after " + lDuration + "ms."); } else { mLog.debug(lNumConns + "
-		 * Tomcat connectors '" + getId() + "' stopped after " + lDuration +
-		 * "ms."); } }
-		 */
 
 		// fire the engine stopped event
 		engineStopped();
