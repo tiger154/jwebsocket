@@ -253,6 +253,16 @@ var jws = {
 			jws.JWS_SERVER_SERVLET
 			));
 	},
+	
+	//:m:*:getDefaultServerCometURL
+	//:d:en:Returns the default comet URL to the un-secured jWebSocket Server. This is a convenience _
+	//:d:en:method used in all jWebSocket demo dialogs. In case of changes to the _
+	//:d:en:server URL you only need to change to above JWS_SERVER_xxx constants.
+	//:a:en::::none
+	//:r:*:::void:Default jWebSocket server comet URL consisting of schema://host:port/context/servlet+Comet
+	getDefaultServerCometURL: function() {
+		return this.getDefaultServerURL() + "Comet";
+	},
 
 	//:m:*:getDefaultSSLServerURL
 	//:d:en:Returns the default URL to the secured jWebSocket Server. This is a convenience _
@@ -269,6 +279,16 @@ var jws = {
 			jws.JWS_SERVER_SERVLET
 			));
 	},
+	
+	//:m:*:getDefaultSSLServerCometURL
+	//:d:en:Returns the default comet URL to the secured jWebSocket Server. This is a convenience _
+	//:d:en:method used in all jWebSocket demo dialogs. In case of changes to the _
+	//:d:en:server URL you only need to change to above JWS_SERVER_xxx constants.
+	//:a:en::::none
+	//:r:*:::void:Default jWebSocket server comet URL consisting of schema://host:port/context/servlet+Comet
+	getDefaultSSLServerCometURL: function() {
+		return this.getDefaultSSLServerURL() + "Comet";
+	},
 
 	//:m:*:browserSupportsWebSockets
 	//:d:en:checks if the browser or one of its plug-ins like flash or chrome _
@@ -279,6 +299,15 @@ var jws = {
 		return( 
 			window.WebSocket !== null && window.WebSocket !== undefined
 			);
+	},
+	
+	//:m:*:enableCometSupportForWebSockets
+	//:d:en:Sets the XHRWebSocket implementation as default WebSocket class.
+	//:d:en:Uses Comet technique to provide a WebSocket simulation.
+	//:a:en::::none
+	enableCometSupportForWebSockets: function(){
+		// setting the XHRWebSocket implementation 
+		window.WebSocket = XHRWebSocket;
 	},
 
 	//:m:*:browserSupportsNativeWebSockets

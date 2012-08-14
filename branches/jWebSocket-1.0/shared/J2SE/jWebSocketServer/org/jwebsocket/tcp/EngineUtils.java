@@ -41,20 +41,20 @@ public class EngineUtils {
 
 		// domain check, asterisks as wildcards are supported!
 		if (null != aDomains && !aDomains.isEmpty()) {
-			boolean lOk = false;
+			boolean lAccepted = false;
 			String lOrigin = (String) aReqMap.get("origin");
 			if (null != lOrigin) {
 				for (String lDomain : aDomains) {
 					// make a correct regular expression
 					lDomain = lDomain.replace("*", ".*");
 					if (lOrigin.matches(lDomain)) {
-						lOk = true;
+						lAccepted = true;
 						break;
 					}
 				}
 			}
-			if (!lOk) {
-				aLogger.error("Client origin '" + aReqMap.get("origin") + "' does not match allowed domains.");
+			if (!lAccepted) {
+				aLogger.error("Client origin '" + aReqMap.get("origin") + "' does not match allowed domains!");
 				return null;
 			}
 		}

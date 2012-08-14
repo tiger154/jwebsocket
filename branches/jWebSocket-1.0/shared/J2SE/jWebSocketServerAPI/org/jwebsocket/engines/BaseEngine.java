@@ -16,7 +16,6 @@
 package org.jwebsocket.engines;
 
 import java.util.Map;
-import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.jwebsocket.api.*;
 import org.jwebsocket.config.JWebSocketCommonConstants;

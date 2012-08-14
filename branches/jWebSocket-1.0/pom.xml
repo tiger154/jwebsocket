@@ -19,7 +19,6 @@
 		
 		<module>jWebSocketEngines/jWebSocketJettyEngine</module>
 		<module>jWebSocketEngines/jWebSocketTomcatEngine</module>
-		<module>jWebSocketEngines/jWebSocketCometEngine</module>
 		<module>jWebSocketEngines/jWebSocketGrizzlyEngine</module>
 		<!-- Netty is not yet supported -->
 		<!-- <module>jWebSocketEngines/jWebSocketNettyEngine</module> -->

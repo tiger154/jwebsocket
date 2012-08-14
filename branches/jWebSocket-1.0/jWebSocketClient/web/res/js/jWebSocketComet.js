@@ -14,14 +14,15 @@
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
 
-// author Osvaldo Aguilar Lauzurique @email osvaldo2627@hab.uci.cu
+// @author Osvaldo Aguilar Lauzurique @email osvaldo2627@hab.uci.cu
+// @author kyberneees (issues fixes)
 
 (function() {
 
-	XHRWebSocket = function(url, subprotocol) {
+	XHRWebSocket = function(aUrl, aSubprotocol) {
 		var self              = this;
-		self.url              = url;
-		self.subPrcol         = subprotocol;
+		self.url              = (aUrl.substr(0, 2) == "ws")? "http" + aUrl.substr(2) : aUrl;
+		self.subPrcol         = aSubprotocol;
 		self.readyStateValues = {
 			CONNECTING:0, 
 			OPEN:1, 
@@ -29,110 +30,109 @@
 			CLOSED:3
 		}
         
-		self.readyState= this.readyStateValues.CONNECTING;
-		self.bufferedAmount=0;
+		self.readyState = self.readyStateValues.CONNECTING;
+		self.bufferedAmount = 0;
 		self.__events = {};
         
 		self.__ableToSend = true;
 		self.__pendingMessages = [];
 		XHRWebSocket.prototype.__already = false;
         
-        
-		XHRWebSocket.prototype.addEventListener = function(type, listener){
-			if (!(type in this.__events)){
-				this.__events[type] = [];
+		XHRWebSocket.prototype.addEventListener = function(aType, aListener){
+			if (!(aType in this.__events)){
+				this.__events[aType] = [];
 			}
-			this.__events[type].push(listener);
+			this.__events[aType].push(aListener);
 		};
         
-        
-		XHRWebSocket.prototype.removeEventListener = function(type, listener, useCapture) {
-			if (!(type in this.__events)) return;
-			var events = this.__events[type];
-			for (var i = events.length - 1; i >= 0; --i) {
-				if (events[i] === listener) {
-					events.splice(i, 1);
+		XHRWebSocket.prototype.removeEventListener = function(aType, aListener, aUseCapture) {
+			if (!(aType in this.__events)) return;
+			var lEvents = this.__events[aType];
+			for (var lIndex = lEvents.length - 1; lIndex >= 0; --lIndex) {
+				if (lEvents[lIndex] === aListener) {
+					lEvents.splice(lIndex, 1);
 					break;
 				}
 			}
 		}
         
-        
-		XHRWebSocket.prototype.dispatchEvent = function(event) {
-			var events = this.__events[event.type] || [];
-			for (var i = 0; i < events.length; ++i) {
-				events[i](event);
+		XHRWebSocket.prototype.dispatchEvent = function(aEvent) {
+			var lEvents = this.__events[aEvent.type] || [];
+			for (var lIndex = 0; lIndex < lEvents.length; ++lIndex) {
+				lEvents[lIndex](aEvent);
 			}
-			var handler = this["on" + event.type];
-			if (handler) handler(event);
+			var lHandler = self["on" + aEvent.type];
+			if (lHandler) lHandler(aEvent);
 		}
         
-        
-		XHRWebSocket.prototype.send=function(sdata){
-			self.__pendingMessages.push(sdata);
-			if (self.__ableToSend == true)
-				self.__sendMessage(self.__pendingMessages.shift());
-                
+		XHRWebSocket.prototype.send=function(aData){
+			this.__pendingMessages.push(aData);
+			if (true == this.__ableToSend){
+				this.__sendMessage(this.__pendingMessages.shift());
+			}
 		}
         
-		XHRWebSocket.prototype.close=function(){
-			if(this.readyState==this.readyStateValues.CONNECTING)
+		XHRWebSocket.prototype.close = function(){
+			if (this.readyState == this.readyStateValues.CONNECTING)
 				throw "The websocket connection is closing";
 			else if (this.readyState == this.readyStateValues.CLOSED)
-				throw "The websocket connection is already closing";
-			else{
-				var message = this.__messageFactory({
+				throw "The websocket connection is already closed";
+			else {
+				var lMessage = this.__messageFactory({
 					cometType:"message",
 					readyState:3
 				});
-				var messageString = JSON.stringify(message);
+				var lJSONMessage = JSON.stringify(lMessage);
                  
-				self.__handleEvent({
+				this.__handleEvent({
 					type:"close"
 				});
                     
-				var request = this.__getXHRTransport();
-				request.open("POST", this.url, true);
-				request.setRequestHeader("Content-Type", "application/x-javascript;");
+				var lXHR = this.__getXHRTransport();
+				lXHR.open("POST", this.url, true);
+				lXHR.setRequestHeader("Content-Type", "application/x-javascript;");
       
-				request.onreadystatechange = function(){
+				lXHR.onreadystatechange = function(){
 
-					if (request.readyState >= 4 && request.status == 200) {				
-						if (request.responseText) {
-							self.readyState=WebSocket.CLOSING;
-							self.__handleEvent({
-								type:"close"
-							});
+					if (lXHR.readyState >= 4 && lXHR.status == 200) {				
+						if (lXHR.responseText) {
+							self.readyState = self.readyStateValues.CLOSED;
+							setTimeout(function(){
+								self.__handleEvent({
+									type:"close"
+								});
+							}, 0)
 						}	      
 					}
 				};
-				request.send(messageString);
+				
+				lXHR.send(lJSONMessage);
 			}
 		}    
-        
     
-		self.__handleEvent = function(xhrWsEventType){
-			var event;
-			if ( xhrWsEventType.type == "close" || xhrWsEventType.type == "open" || xhrWsEventType.type == "error") {
-				event = this.__createSimpleEvent(xhrWsEventType.type);
-			} else if (xhrWsEventType.type == "message") {
-				event = this.__createMessageEvent("message", xhrWsEventType.data);
+		self.__handleEvent = function(aXHREvent){
+			var lEvent;
+			if ( aXHREvent.type == "close" || aXHREvent.type == "open" || aXHREvent.type == "error") {
+				lEvent = this.__createSimpleEvent(aXHREvent.type);
+			} else if (aXHREvent.type == "message") {
+				lEvent = this.__createMessageEvent("message", aXHREvent.data);
 			} else {
-				throw "unknown event type: " + xhrWsEventType.type;
+				throw "unknown event type: " + aXHREvent.type;
 			}
 
-			this.dispatchEvent(event);
+			this.dispatchEvent(lEvent);
 		}
         
     
-		self.__createSimpleEvent = function(type) {
+		self.__createSimpleEvent = function(lType) {
 			if (document.createEvent && window.Event) {
-				var event = document.createEvent("Event");
-				event.initEvent(type, false, false);
-				return event;
+				var lEvent = document.createEvent("Event");
+				lEvent.initEvent(lType, false, false);
+				
+				return lEvent;
 			} else {
 				return {
-					type: type, 
+					type: lType, 
 					bubbles: false, 
 					cancelable: false
 				};
@@ -140,205 +140,226 @@
 		};
         
     
-		self.__createMessageEvent = function(type, data) {
+		self.__createMessageEvent = function(aType, aData) {
 			if (document.createEvent && window.MessageEvent && !window.opera) {
-				var event = document.createEvent("MessageEvent");
-				event.initMessageEvent("message", false, false, data, null, null, window, null);
-				return event;
+				var lEvent = document.createEvent("MessageEvent");
+				lEvent.initMessageEvent("message", false, false, aData, null, null, window, null);
+				return lEvent;
 			} else {
 				// IE and Opera, the latter one truncates the data parameter after any 0x00 bytes.
 				return {
-					type: type, 
-					data: data, 
+					type: aType, 
+					data: aData, 
 					bubbles: false, 
 					cancelable: false
 				};
 			}
 		};
         
-		self.__checkPendingMessage = function(){
-			if (self.__pendingMessages.length > 0){
-				var sdata = self.__pendingMessages.shift()
-				self.__sendMessage(sdata);
+		this.__checkPendingMessage = function(){
+			if (this.__pendingMessages.length > 0){
+				var lData = this.__pendingMessages.shift()
+				this.__sendMessage(lData);
 			}
 		}
        
 		this.open = function(){
-			if (self.readyState == self.readyStateValues.OPEN)
+			if (this.readyState == this.readyStateValues.OPEN)
 				throw "the connection is already opening";
 			else
-				self.__handlerConnectionChannel();
+				this.__handlerConnectionChannel();
 		}
     
-		self.keepConnection = function(){
-			self.__handlerConnectionChannel();
+		this.keepConnection = function(){
+			this.__handlerConnectionChannel();
 		}
 
-		self.__handlerConnectionChannel = function(){
+		this.__handlerConnectionChannel = function(){
             
-			var request = this.__getXHRTransport();
-			this.activeConnectionRequest = request;
+			var lXHR = this.__getXHRTransport();
+			this.__xhr = lXHR;
             
-			request.open("POST", this.url, true);
-			request.setRequestHeader("Content-Type", "application/x-javascript;");
+			lXHR.open("POST", this.url, true);
+			lXHR.setRequestHeader("Content-Type", "application/x-javascript;");
 
-			request.onreadystatechange = function(){
-
-				if (request.readyState >= 4 && request.status == 200) {				
-					if (request.responseText) {
-						var response    = JSON.parse(request.responseText);
-						if (response.data != ""){
-							self.__handleEvent({
-								type:"message",
-								data:JSON.stringify(response.data)
-							});
+			lXHR.onreadystatechange = function(){
+				if (lXHR.readyState >= 4){
+					lXHR.active = false;
+					
+					if (lXHR.status == 200) {				
+						if (lXHR.responseText) {
+							var lResponse = JSON.parse(lXHR.responseText);
+						
+							if (lResponse.data != ""){
+								setTimeout(function(){
+									for (var lIndex = 0; lIndex < lResponse.data.length; lIndex++) {
+										self.__handleEvent({
+											type:"message",
+											data: lResponse.data[lIndex]
+										});
+									
+									}
+								}, 0);
+							}
+							
+							self.handleConnectionState(lResponse);
 						}
-          
-						self.managementConnectionState(response);
-					}	      
+					}
 				}
 			};
-			var message = this.__messageFactory({
+			var lMessage = this.__messageFactory({
 				cometType:"connection"
 			});
-			var messageString = JSON.stringify(message);
-			request.send(messageString);
+			var lJSONMessage = JSON.stringify(lMessage);
+			
+			lXHR.send(lJSONMessage);
+			lXHR.active = true;
+			
+			// keeps the base XHR connection active
+			if (!this.__timerTaskActive){
+				this.__timerTaskActive = true;
+				setInterval(function(){
+					if (false == self.__xhr.active 
+						&& self.readyStateValues.OPEN == self.readyState){
+						self.keepConnection();
+						self.__checkPendingMessage();
+					}
+				}, 100);
+			}
 		}
                 
-		self.__objectMessageBasePrototype = function(){
-			var message = {
-				subPl: "json", //Make this for the other three sub protocols that jwebsocket's suport'
+		this.__objectMessageBasePrototype = function(){
+			var lMessage = {
+				subPl: "json", //jWebSocket subprotocol support
 				cometType: undefined,
 				data: undefined,
 				readyState: self.readyState
-                
 			}
-			return message;
+			return lMessage;
 		} 
         
-		self.__sendMessage = function(sdata){
-			if(self.readyState==self.readyStateValues.CONNECTING)
+		this.__sendMessage = function(aData){
+			if (this.readyState == this.readyStateValues.CONNECTING){
 				throw "The websocket connection has not been stablished";
-			else if (self.readyState == self.readyStateValues.CLOSED)
+			} else if (this.readyState == this.readyStateValues.CLOSED) {
 				throw "The websocket connection has been closed, the message can not be sent to the server";
-			else if (self.__ableToSend == true){  
-				var message = this.__messageFactory({
+			} else if (this.__ableToSend == true){  
+				// basic synchronism
+				this.__ableToSend = false;
+				
+				var lMessage = this.__messageFactory({
 					cometType:"message",
-					data:sdata
+					data:aData
 				});
-				var messageString = JSON.stringify(message);
-				var request = this.__getXHRTransport();
+				var lJSONMessage = JSON.stringify(lMessage);
+				var lXHR = this.__getXHRTransport();
             
-				request.open("POST", this.url, true);
-				request.setRequestHeader("Content-Type", "application/x-javascript;");
+				lXHR.open("POST", this.url, true);
+				lXHR.setRequestHeader("Content-Type", "application/x-javascript;");
             
-				request.onreadystatechange = function(){
-                                       
-					if (request.readyState >= 4 && request.status == 200) {				
-						if (request.responseText) {
-							var response  = JSON.parse(request.responseText)
-							if (response.data != ""){
-								self.__handleEvent({
-									type:"message",
-									data:JSON.stringify(response.data)
-								});
-							}
+				lXHR.onreadystatechange = function(){
+					// the channel is released
+					self.__ableToSend = true;
+					
+					if (lXHR.readyState >= 4 && lXHR.status == 200) {				
+						if (lXHR.responseText) {
+							var lResponse  = JSON.parse(lXHR.responseText)
+							
+							setTimeout(function(){
+								for (var lIndex = 0; lIndex < lResponse.data.length; lIndex++) {
+									self.__handleEvent({
+										type:"message",
+										data: lResponse.data[lIndex]
+									});
+									
+								}
+							}, 0);
 						}
-						self.__ableToSend = true;
 						self.__checkPendingMessage();
 					}
-					else if (request.status == 500)
-						self.__ableToSend = true;
-					else if (request.status == 404)
-						self.__ableToSend = true;
 				};
-				request.send(messageString);
-				self.__ableToSend = false;
+				
+				// sending XHR message
+				lXHR.send(lJSONMessage);
 			}else{
-				self.__pendingMessages.push(sdata);
+				this.__pendingMessages.push(aData);
 			}
 
 		}
         
-		self.__messageFactory = function(args){
+		this.__messageFactory = function(aArgs){
             
-			var message = self.__objectMessageBasePrototype();
-			if (args != undefined)
-				if (args.cometType == undefined)
+			var lMessage = this.__objectMessageBasePrototype();
+			if (aArgs != undefined)
+				if (aArgs.cometType == undefined)
 					throw "Error up, type message not found";
 				else{
-					message.cometType = args.cometType;
-					if (args.data != undefined)
-						message.data = args.data;
+					lMessage.cometType = aArgs.cometType;
+					if (aArgs.data != undefined)
+						lMessage.data = aArgs.data;
 					else
-						message.data = undefined;
-					if (args.readyState != undefined)
-						message.readyState = args.readyState;
+						lMessage.data = undefined;
+					if (aArgs.readyState != undefined)
+						lMessage.readyState = aArgs.readyState;
 				}
                 
-			return message;
+			return lMessage;
 		}
     
- 
-        
-		self.managementConnectionState = function(response){
-			if (    self.readyState == self.readyStateValues.CONNECTING 
-				&& response.readyState == self.readyStateValues.OPEN){
-				self.__handleEvent({
+		this.handleConnectionState = function(lResponse){
+			if (this.readyState == this.readyStateValues.CONNECTING 
+				&& lResponse.readyState == this.readyStateValues.OPEN){
+				// require to affect the readyState flag before call the onopen callback
+				this.readyState = lResponse.readyState;
+				this.__handleEvent({
 					type:"open"
 				}); 
 			}
-			if (response.readyState)
-				self.readyState = response.readyState;
+
+			if (lResponse.readyState)
+				this.readyState = lResponse.readyState;
 			else
-				console.log("the server not response with readyState value");
+				throw "Missing 'readyState' argument from the server";
 
             
-			if (self.readyState == 2 || self.readyState == 3){
-				self.__handleEvent({
+			if (this.readyState == 2 || this.readyState == 3){
+				this.__handleEvent({
 					type:"close"
 				}); 
-			}else{
-				self.keepConnection();            
-				self.__checkPendingMessage();
 			}
 		}
         
-        
-		self.__getXHRTransport = function(){
+		this.__getXHRTransport = function(){
 
-			var httpRequest;
+			var lXHR;
 			if (window.XMLHttpRequest) { // Mozilla, Safari, ...
 				ie = 0;
-				httpRequest = new XMLHttpRequest();
-				if (httpRequest.overrideMimeType) 
-					httpRequest.overrideMimeType('text/xml');
+				lXHR = new XMLHttpRequest();
+				if (lXHR.overrideMimeType) 
+					lXHR.overrideMimeType('text/xml');
 			}
 			else { // IE
 				ie = 1;
 				try {
-					httpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+					lXHR = new ActiveXObject("Msxml2.XMLHTTP");
 				}
 				catch (e) {}
 				if ( typeof httpRequest == 'undefined' ) {
 					try {
-						httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+						lXHR = new ActiveXObject("Microsoft.XMLHTTP");
 					}
 					catch (f) {}
 				}
 			}
-			if (!httpRequest) {
+			if (!lXHR) {
 				throw "Cannot create an XMLHTTP instance";
 				return false;
 			}
 			else 
-				return httpRequest ;
+				return lXHR ;
 		}
                
-		self.open();
+		this.open();
 	}
 
 })();
-
-
-window.WebSocket = XHRWebSocket;

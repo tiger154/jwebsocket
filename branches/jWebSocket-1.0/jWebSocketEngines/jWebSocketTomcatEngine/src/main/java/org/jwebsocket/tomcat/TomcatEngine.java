@@ -94,31 +94,43 @@ public class TomcatEngine extends BaseEngine {
 			mTomcat.setPort(lPort);
 			mTomcat.setBaseDir(".");
 
-			Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
+			// removing default Tomcat connector
+			mTomcat.getService().removeConnector(mTomcat.getConnector());
 
-			Tomcat.addServlet(lCtx, "jWebSocketServlet", "org.jwebsocket.tomcat.TomcatServlet");
-			lCtx.addServletMapping(lServlet, "jWebSocketServlet");
-
-			// setting the session timeout
-			lCtx.setSessionTimeout(getConfiguration().getTimeout());
+			// creating plain connector
+			Connector lPlainConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+			lPlainConnector.setPort(lPort);
+			mTomcat.getService().addConnector(lPlainConnector);
 
 			// setting the SSL connector
-			Connector lConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-			lConnector.setEnableLookups(false);
-			lConnector.setScheme("https");
-			lConnector.setSecure(true);
-			lConnector.setPort(lSSLPort);
-			lConnector.setProperty("maxHttpHeaderSize", "8192");
-			lConnector.setProperty("SSLEnabled", "true");
-			lConnector.setProperty("clientAuth", "false");
-			lConnector.setProperty("sslProtocol", "TLS");
-			lConnector.setProperty("keystoreFile",
+			Connector lSSLConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+			lSSLConnector.setEnableLookups(false);
+			lSSLConnector.setScheme("https");
+			lSSLConnector.setSecure(true);
+			lSSLConnector.setPort(lSSLPort);
+			lSSLConnector.setProperty("maxHttpHeaderSize", "8192");
+			lSSLConnector.setProperty("SSLEnabled", "true");
+			lSSLConnector.setProperty("clientAuth", "false");
+			lSSLConnector.setProperty("sslProtocol", "TLS");
+			lSSLConnector.setProperty("keystoreFile",
 					JWebSocketConfig.expandEnvAndJWebSocketVars(getConfiguration().getKeyStore()));
-			lConnector.setProperty("keystorePass",
+			lSSLConnector.setProperty("keystorePass",
 					JWebSocketConfig.expandEnvAndJWebSocketVars(getConfiguration().getKeyStorePassword()));
 
 			// registering the SSL connector
-			mTomcat.getService().addConnector(lConnector);
+			mTomcat.getService().addConnector(lSSLConnector);
+
+			Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
+
+			// registering WebSocket and Comet servlets
+			Tomcat.addServlet(lCtx, "jWebSocketServlet", "org.jwebsocket.tomcat.TomcatServlet");
+			lCtx.addServletMapping(lServlet, "jWebSocketServlet");
+
+			Tomcat.addServlet(lCtx, "jWebSocketCometServlet", "org.jwebsocket.tomcat.comet.CometServlet");
+			lCtx.addServletMapping(lServlet + "Comet", "jWebSocketCometServlet");
+
+			// setting the context session timeout
+			lCtx.setSessionTimeout(getConfiguration().getTimeout());
 
 			// mTomcatServer.setStopAtShutdown(true);
 			if (mLog.isDebugEnabled()) {

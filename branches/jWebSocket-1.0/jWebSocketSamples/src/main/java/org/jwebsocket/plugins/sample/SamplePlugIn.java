@@ -20,9 +20,13 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.kit.WebSocketServerEvent;
+import org.jwebsocket.listener.WebSocketServerTokenEvent;
+import org.jwebsocket.listener.WebSocketServerTokenListener;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
@@ -66,6 +70,30 @@ public class SamplePlugIn extends TokenPlugIn {
 
 	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
+		WebSocketServerTokenListener lListener = new WebSocketServerTokenListener() {
+
+			@Override
+			public void processToken(WebSocketServerTokenEvent aEvent, Token aToken) {
+				processAllTokens(aEvent.getConnector(), aToken);
+			}
+
+			@Override
+			public void processOpened(WebSocketServerEvent aEvent) {
+			}
+
+			@Override
+			public void processPacket(WebSocketServerEvent aEvent, WebSocketPacket aPacket) {
+			}
+
+			@Override
+			public void processClosed(WebSocketServerEvent aEvent) {
+			}
+		};
+
+		if (!getServer().getListeners().contains(lListener)) {
+			getServer().addListener(lListener);
+		}
+
 		// RandomData data = new RandomData();
 
 		// TODO: can the following line be ultimately removed?
@@ -79,6 +107,10 @@ public class SamplePlugIn extends TokenPlugIn {
 	public void engineStopped(WebSocketEngine aEngine) {
 		// this method is called when the engine has stopped
 		super.engineStopped(aEngine);
+	}
+
+	public void processAllTokens(WebSocketConnector aConnector, Token aToken) {
+		//System.out.println(aToken.toString());
 	}
 
 	@Override
