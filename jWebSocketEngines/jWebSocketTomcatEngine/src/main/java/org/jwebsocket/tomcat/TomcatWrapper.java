@@ -68,6 +68,11 @@ public class TomcatWrapper extends MessageInbound {
 	}
 
 	public static boolean verifyOrigin(String aOrigin, List<String> aDomains) {
+		// if no domain list passed allow all domains per default
+		if (null == aDomains) {
+			return true;
+		}
+		// otherwise check if domain matches allowed domains
 		for (String lDomain : aDomains) {
 			lDomain = lDomain.replace("*", ".*");
 			if (aOrigin.matches(lDomain)) {
