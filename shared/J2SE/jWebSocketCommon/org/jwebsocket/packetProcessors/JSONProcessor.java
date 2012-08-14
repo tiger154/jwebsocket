@@ -176,6 +176,8 @@ public class JSONProcessor {
 			return objectListToJsonArray((Object[]) aObject);
 		} else if (aObject instanceof Map) {
 			return mapToJsonObject((Map<?, ?>) aObject);
+		} else if (aObject instanceof WebSocketPacket) {
+			return aObject.toString();
 		} else {
 			return aObject;
 		}

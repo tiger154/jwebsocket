@@ -802,9 +802,6 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		if (lEcho) {
 			Token lResponse = createResponse(aToken);
-			// TODO: here could we optionally send a time stamp
-			// TODO: implement response time on client!
-			// lResponseToken.put("","");
 			sendToken(aConnector, aConnector, lResponse);
 		}
 	}

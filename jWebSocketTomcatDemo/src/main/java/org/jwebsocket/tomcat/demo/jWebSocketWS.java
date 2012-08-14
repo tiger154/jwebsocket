@@ -54,6 +54,8 @@ public class jWebSocketWS extends WebSocketServlet {
 	@Override
 	protected boolean verifyOrigin(String aOrigin) {
 		// super.verifyOrigin(aOrigin);
+		
+		// @TODO pass a list of valid domains here
 		return TomcatWrapper.verifyOrigin(aOrigin, null);
 	}
 

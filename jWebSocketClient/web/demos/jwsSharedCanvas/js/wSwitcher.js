@@ -46,9 +46,8 @@ $.widget("jws.switcher",{
 			// instaniate new TokenClient, either JSON, CSV or XML
 			mWSC = new jws.jWebSocketJSONClient({ });
 			// adjust this URL to your jWebSocket server
-			var lURL = jws.getDefaultSSLServerURL();// + ( frameElement.id ? ";unid=" + frameElement.id : "");
 			// try to establish connection to jWebSocket server
-			mWSC.logon( lURL, "Guest", "guest", {
+			mWSC.logon(jws.JWS_SERVER_URL, "Guest", "guest", {
 				// OnOpen callback
 				OnOpen: function( aEvent ) {
 					

@@ -29,6 +29,7 @@
 		<script type="text/javascript" src="../../res/js/jwsEventsPlugIn.js"></script>
 		<script type="text/javascript" src="../../res/js/jwsCache.js"></script>
 		<script type="text/javascript" src="../../res/js/JcManager.js"></script>
+		<script type="text/javascript" src="../../res/js/jWebSocketComet.js"></script>
 		<script type="text/javascript" language="JavaScript">
 
 			var eLog = null;
@@ -54,7 +55,7 @@
 					//jws.console.level = 0;
 					
 					//jws.myConn.open(jws.JWS_SERVER_URL, {
-					jws.myConn.open(jws.JWS_SERVER_URL, {
+					jws.myConn.open("http://localhost:8787/jWebSocket/jWebSocket", {
 						OnOpen: function (){
 							log(">>> Connected successfully! <br/>")
 

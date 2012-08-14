@@ -22,7 +22,7 @@
 //:d:en:This class handle request callbacks on the events plug-in
 jws.oop.declareClass( "jws", "EventsCallbacksHandler", null, {
 	OnTimeout: function(aRawRequest, aArgs){
-		if ("function" == typeof(aArgs.meta["OnTimeout"])){
+		if (undefined != aArgs.meta["OnTimeout"] && "function" == typeof(aArgs.meta["OnTimeout"])){
 			aArgs.meta.OnTimeout(aRawRequest);
 		}
 	}

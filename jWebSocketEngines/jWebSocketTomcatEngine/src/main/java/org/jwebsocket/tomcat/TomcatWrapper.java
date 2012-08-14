@@ -29,7 +29,6 @@ import javolution.util.FastMap;
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketCommonConstants;
@@ -90,15 +89,6 @@ public class TomcatWrapper extends MessageInbound {
 		mRequest = aRequest;
 		mIsSecure = aRequest.isSecure();
 		mSession = aRequest.getSession();
-		if (null != mEngine) {
-			EngineConfiguration lConfig = mEngine.getConfiguration();
-			if (null != lConfig) {
-				int lTimeout = mEngine.getConfiguration().getTimeout();
-				if (lTimeout >= 1000) {
-					mSession.setMaxInactiveInterval(lTimeout);
-				}
-			}
-		}
 
 		mRemotePort = mRequest.getRemotePort();
 		InetAddress lAddr;
@@ -214,8 +204,6 @@ public class TomcatWrapper extends MessageInbound {
 			mLog.debug("Disconnecting Tomcat Client...");
 		}
 		if (mConnector != null) {
-			// inherited BaseConnector.stopConnector
-			// calls mEngine connector stopped
 			mConnector.stopConnector(CloseReason.CLIENT);
 			mEngine.removeConnector(mConnector);
 		}

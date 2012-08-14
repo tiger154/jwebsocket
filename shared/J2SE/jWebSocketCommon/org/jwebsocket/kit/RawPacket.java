@@ -20,9 +20,10 @@ import java.util.Date;
 import org.jwebsocket.api.WebSocketPacket;
 
 /**
- * Implements the low level data packets which are interchanged between
- * client and server. Data packets do not have a special format at this
- * communication level.
+ * Implements the low level data packets which are interchanged between client
+ * and server. Data packets do not have a special format at this communication
+ * level.
+ *
  * @author aschulze
  */
 public class RawPacket implements WebSocketPacket {
@@ -46,6 +47,7 @@ public class RawPacket implements WebSocketPacket {
 	/**
 	 * Instantiates a new data packet and initializes its value to the passed
 	 * array of bytes.
+	 *
 	 * @param aByteArray byte array to be used as value for the data packet.
 	 */
 	public RawPacket(byte[] aByteArray) {
@@ -55,6 +57,7 @@ public class RawPacket implements WebSocketPacket {
 	/**
 	 * Instantiates a new data packet and initializes its value to the passed
 	 * array of bytes.
+	 *
 	 * @param aByteArray byte array to be used as value for the data packet.
 	 */
 	public RawPacket(WebSocketFrameType aFrameType, byte[] aByteArray) {
@@ -65,6 +68,7 @@ public class RawPacket implements WebSocketPacket {
 	/**
 	 * Instantiates a new data packet and initializes its value to the passed
 	 * string using the default encoding.
+	 *
 	 * @param aString string to be used as value for the data packet.
 	 */
 	public RawPacket(String aString) {
@@ -74,6 +78,7 @@ public class RawPacket implements WebSocketPacket {
 	/**
 	 * Instantiates a new data packet and initializes its value to the passed
 	 * string using the default encoding.
+	 *
 	 * @param aString string to be used as value for the data packet.
 	 */
 	public RawPacket(WebSocketFrameType aFrameType, String aString) {
@@ -84,6 +89,7 @@ public class RawPacket implements WebSocketPacket {
 	/**
 	 * Instantiates a new data packet and initializes its value to the passed
 	 * string using the passed encoding (should always be "UTF-8").
+	 *
 	 * @param aString string to be used as value for the data packet.
 	 * @param aEncoding should always be "UTF-8"
 	 * @throws UnsupportedEncodingException
@@ -130,6 +136,11 @@ public class RawPacket implements WebSocketPacket {
 	@Override
 	public final byte[] getByteArray() {
 		return mData;
+	}
+
+	@Override
+	public String toString() {
+		return getString();
 	}
 
 	@Override
