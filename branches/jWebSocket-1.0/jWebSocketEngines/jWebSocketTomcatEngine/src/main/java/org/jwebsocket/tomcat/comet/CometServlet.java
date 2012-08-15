@@ -128,21 +128,25 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	@Override
 	public void event(CometEvent aEvent) throws IOException, ServletException {
 		String lConnectorId = generateUID(aEvent);
-		aEvent.setTimeout(Integer.MAX_VALUE);
+		aEvent.setTimeout(mEngine.getConfiguration().getTimeout());
 
 		if (aEvent.getEventType() == EventType.BEGIN) {
 			/**
 			 *
 			 */
 		} else if (aEvent.getEventType() == EventType.ERROR) {
+			CloseReason lReason = CloseReason.CLIENT;
 			if (aEvent.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
-				aEvent.close();
+				lReason = CloseReason.TIMEOUT;
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Stopping CometConnector '" + lConnectorId + "' due to timeout reason...");
+				}
 			} else {
 				mLog.error("Unexpected error detected. Stopping CometConnector '" + lConnectorId + "' ...");
-				CometConnector lConnector = ((CometConnector) mEngine.getConnectors().get(lConnectorId));
-				lConnector.stopConnector(CloseReason.CLIENT);
-				mMonitoringClientDisconnect.remove(lConnectorId);
 			}
+			CometConnector lConnector = ((CometConnector) mEngine.getConnectors().get(lConnectorId));
+			lConnector.stopConnector(lReason);
+			mMonitoringClientDisconnect.remove(lConnectorId);
 		} else if (aEvent.getEventType() == EventType.READ) {
 			InputStream lIn = aEvent.getHttpServletRequest().getInputStream();
 			byte[] lBuffer = new byte[mEngine.getConfiguration().getMaxFramesize()];
@@ -228,30 +232,28 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 					lWriter.flush();
 					lWriter.close();
 
-					if (!mEngine.getConnectors().containsKey(lConnectorId)) {
-						if (mLog.isDebugEnabled()) {
-							mLog.debug("Request for connection received...");
-						}
-
-						CometConnector lConnector = new CometConnector(mEngine, aEvent);
-						mEngine.addConnector(lConnector);
-						lConnector.setServlet(this);
-						getPacketsQueue().put(lConnectorId, new LinkedBlockingDeque<WebSocketPacket>());
-
-						mMonitoringClientDisconnect.put(lConnector.getId(), 0);
-
-						RequestHeader lHeader = new RequestHeader();
-						lHeader.put(RequestHeader.WS_PROTOCOL, aSubProt);
-
-						lConnector.setHeader(lHeader);
-						lConnector.setReadyState(1);
-
-						lConnector.getSession().setSessionId(lConnectorId);
-						lConnector.getSession().setStorage(new HttpSessionStorage(lSession));
-
-						// starting connector notification
-						lConnector.startConnector();
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Request for connection received...");
 					}
+
+					CometConnector lConnector = new CometConnector(mEngine, aEvent);
+					mEngine.addConnector(lConnector);
+					lConnector.setServlet(this);
+					getPacketsQueue().put(lConnectorId, new LinkedBlockingDeque<WebSocketPacket>());
+
+					mMonitoringClientDisconnect.put(lConnector.getId(), 0);
+
+					RequestHeader lHeader = new RequestHeader();
+					lHeader.put(RequestHeader.WS_PROTOCOL, aSubProt);
+
+					lConnector.setHeader(lHeader);
+					lConnector.setReadyState(1);
+
+					lConnector.getSession().setSessionId(lConnectorId);
+					lConnector.getSession().setStorage(new HttpSessionStorage(lSession));
+
+					// starting connector notification
+					lConnector.startConnector();
 				} else {
 					mLog.error("Client origin '" + lOrigin + "' does not match allowed domains!");
 					aEvent.close();

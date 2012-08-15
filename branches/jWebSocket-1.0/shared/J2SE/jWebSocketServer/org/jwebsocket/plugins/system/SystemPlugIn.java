@@ -164,7 +164,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 *
+	 * 
 	 * @return
 	 */
 	public AuthenticationProvider getAuthProvider() {
@@ -469,7 +469,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param aConnector
 	 * @param aCloseReason
 	 */

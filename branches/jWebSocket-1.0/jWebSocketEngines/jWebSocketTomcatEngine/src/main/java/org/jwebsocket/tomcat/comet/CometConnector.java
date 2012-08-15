@@ -121,9 +121,9 @@ public class CometConnector extends BaseConnector {
 			mLog.debug("Stopping connector '" + getId() + "'...");
 		}
 
-		if (aCloseReason.equals(CloseReason.SERVER) || aCloseReason.equals(CloseReason.SHUTDOWN)) {
+		if (!aCloseReason.equals(CloseReason.CLIENT)) {
 			// creating message
-			String lCloseMessage = CometServlet.createMessage(getSubprot(), "connection", 3, "");
+			String lCloseMessage = CometServlet.createMessage(getSubprot(), "connection", 3, aCloseReason.name());
 			List<WebSocketPacket> lPackets = new LinkedList<WebSocketPacket>();
 			lPackets.add(new RawPacket(lCloseMessage));
 

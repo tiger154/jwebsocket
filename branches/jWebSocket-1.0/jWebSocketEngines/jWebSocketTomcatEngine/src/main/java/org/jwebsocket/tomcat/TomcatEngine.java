@@ -121,6 +121,7 @@ public class TomcatEngine extends BaseEngine {
 			mTomcat.getService().addConnector(lSSLConnector);
 
 			Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
+			lCtx.setDocBase(JWebSocketConfig.getJWebSocketHome() + "web/");
 
 			// registering WebSocket and Comet servlets
 			Tomcat.addServlet(lCtx, "jWebSocketServlet", "org.jwebsocket.tomcat.TomcatServlet");

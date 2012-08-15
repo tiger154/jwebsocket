@@ -15,6 +15,7 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.plugins.channels;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
@@ -146,7 +147,6 @@ public class ChannelPlugIn extends TokenPlugIn {
 	private static final String SECRETKEY = "secretKey";
 	private static final String OWNER = "owner";
 	private static final String CHANNEL = "channel";
-	private static final String CONNECTED = "connected";
 	private static ApplicationContext mBeanFactory;
 
 	/**
@@ -573,6 +573,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			lToken.setMap("map", lMap);
 		}
 		lToken.setString("publisher", lPublisher.getId());
+		lToken.setString("user", aConnector.getUsername());
 		lToken.setString("channelId", lChannelId);
 
 		// broadcast the token in the channel
@@ -602,7 +603,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 		if (lName == null) {
 			lName = lChannelId;
 		}
-		String lOwner = aToken.getString("owner");
+		String lOwner = aToken.getString(OWNER);
 		// TODO: introduce validation here
 		if (lOwner == null) {
 			lOwner = aConnector.getUsername();
@@ -660,6 +661,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 				lChannelCreated.setBoolean("isPrivate", lIsPrivate);
 				lChannelCreated.setBoolean("isSystem", lIsSystem);
 				lChannelCreated.setString("state", lChannel.getState().name());
+				lChannelCreated.setString("user", lOwner);
 
 				// TODO: make broadcast options optional here, not hardcoded!
 				// TODO: maybe send on admin channel only?
@@ -748,6 +750,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 		lChannelCreated.setString("name", "channelRemoved");
 		lChannelCreated.setString("channelId", lChannelId);
 		lChannelCreated.setString("channelName", lChannel.getName());
+		lChannelCreated.setString("user", aConnector.getUsername());
 
 		// TODO: make broadcast options optional here, not hardcoded!
 		// TODO: maybe send on admin channel only?
@@ -820,8 +823,9 @@ public class ChannelPlugIn extends TokenPlugIn {
 		List<Map> lSubscribers = new FastList<Map>();
 		if (null != lChannelSubscribers) {
 			for (String lSubscriber : lChannelSubscribers) {
-				Map<String, Object> lItem = new FastMap<String, Object>();
+				Map<String, Object> lItem = new HashMap<String, Object>();
 				lItem.put("id", lSubscriber);
+				lItem.put("user", getConnector(lSubscriber).getUsername());
 				lSubscribers.add(lItem);
 			}
 		}
