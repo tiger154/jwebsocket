@@ -152,10 +152,6 @@
 			<!-- on max connections reached strategy -->
 			<!-- close, reject --> 
 			<onmaxconnections>reject</onmaxconnections>
-			<settings>
-				<!-- directory that contains the public web folder path -->
-				<setting key="document_root">${JWEBSOCKET_HOME}web/</setting>
-			</settings>
 		</engine>
 	</engines>	
 		
