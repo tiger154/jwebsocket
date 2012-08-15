@@ -155,9 +155,6 @@
 			<settings>
 				<!-- directory that contains the public web folder path -->
 				<setting key="document_root">${JWEBSOCKET_HOME}web/</setting>
-				<setting key="SSLCertificateFile">${JWEBSOCKET_HOME}conf/tomcatcert.pem</setting>
-				<setting key="SSLCertificateKeyFile">${JWEBSOCKET_HOME}conf/tomcatkey.pem</setting>
-				<setting key="SSLPassword">tomcat</setting>
 			</settings>
 		</engine>
 	</engines>	
@@ -221,6 +218,10 @@
 			<name>org.jwebsocket.tomcat.TomcatEngine</name>
 			<id>tomcat0</id>
 			<jar>jWebSocketTomcatEngine-1.0.jar</jar>
+			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
 			<!-- The jWebSocket TomcatEngine can either work in embedded mode 
 				 or in standard web app mode. In standard wep app mode the 
 				 jWebSocket Tomcat engine listens on same port like
@@ -289,6 +290,9 @@
 			<maxframesize>1048840</maxframesize>
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
+			<!-- on max connections reached strategy -->
+			<!-- close, reject --> 
+			<onmaxconnections>reject</onmaxconnections>
 			<settings>
 				<!-- directory that contains the public web folder path -->
 				<setting key="document_root">${JWEBSOCKET_HOME}web/</setting>
