@@ -19,17 +19,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.HttpCookie;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.util.HttpCookie;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -40,9 +36,6 @@ import org.jwebsocket.util.Tools;
  */
 public final class WebSocketHandshake {
 
-	/**
-	 *
-	 */
 	public static int MAX_HEADER_SIZE = 16834;
 	private String mHybiKey = null;
 	private String mHybiKeyAccept = null;
@@ -460,6 +453,7 @@ public final class WebSocketHandshake {
 		String lOrigin = (String) aRequest.get(RequestHeader.WS_ORIGIN);
 		String lLocation = (String) aRequest.get(RequestHeader.WS_LOCATION);
 		String lSubProt = (String) aRequest.get(RequestHeader.WS_PROTOCOL);
+		String lPath = (String) aRequest.get(RequestHeader.WS_PATH);
 		String lRes =
 				// since IETF draft 76 "WebSocket Protocol" not "Web Socket Protocol"
 				// change implemented since v0.9.5.0701
@@ -470,7 +464,8 @@ public final class WebSocketHandshake {
 				+ (lSubProt != null ? (lIsSecure ? "Sec-" : "") + "WebSocket-Protocol: " + lSubProt + "\r\n" : "")
 				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Origin: " + lOrigin + "\r\n"
 				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Location: " + lLocation + "\r\n"
-				+ "Set-Cookie: " + JWebSocketCommonConstants.SESSIONID_COOKIE_NAME + "=" + ((Map) aRequest.get(RequestHeader.WS_COOKIES)).get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME) + "; HttpOnly\r\n";
+				+ "Set-Cookie: " + JWebSocketCommonConstants.SESSIONID_COOKIE_NAME + "=" + ((Map) aRequest.get(RequestHeader.WS_COOKIES)).get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)
+				+ "; Path=" + lPath + "; HttpOnly\r\n";
 		lRes += "\r\n";
 
 		byte[] lBA;
@@ -570,7 +565,7 @@ public final class WebSocketHandshake {
 				+ "Host: " + lHost + "\r\n"
 				+ "Upgrade: WebSocket\r\n"
 				+ "Connection: Upgrade\r\n"
-				+ "Sec-WebSocket-Origin: " + mOrigin + "\r\n";
+				+ "Origin: " + mOrigin + "\r\n";
 		if (mProtocol != null) {
 			lHandshake += "Sec-WebSocket-Protocol: " + mProtocol + "\r\n";
 		}
@@ -579,8 +574,8 @@ public final class WebSocketHandshake {
 		if (null != aCookies && !aCookies.isEmpty()) {
 			//Generating Cookie header
 			String lCookies = "";
-			for (HttpCookie lCookie : aCookies){
-				if (!lCookies.equals("")){
+			for (HttpCookie lCookie : aCookies) {
+				if (!lCookies.equals("")) {
 					lCookies += "; ";
 				}
 				lCookies += lCookie.getName() + "=" + lCookie.getValue();
@@ -626,7 +621,7 @@ public final class WebSocketHandshake {
 	 */
 	public void verifyServerResponse(Headers aHeaders) throws WebSocketException {
 		if (WebSocketProtocolAbstraction.isHybiVersion(mVersion)) {
-			String lWebSocketAccept = aHeaders.getField(Headers.SEC_WEBSOCKET_ACCEPT);
+			String lWebSocketAccept = aHeaders.getField(Headers.SEC_WEBSOCKET_ACCEPT).toString();
 			if (null == mHybiKeyAccept || !mHybiKeyAccept.equals(lWebSocketAccept)) {
 				throw new WebSocketException("WebSocket handshake: Illegal hybi server response detected.");
 			}

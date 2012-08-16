@@ -33,4 +33,17 @@ public final class JWebSocketClientConstants {
 	 * Name space base for tokens and plug-ins.
 	 */
 	public static final String NS_BASE = "org.jwebsocket";
+	/**
+	 * Name space for the system plug-in and core jWebSocket operations.
+	 */
+	public static final String NS_SYSTEM = NS_BASE + ".plugins.system";
+	/**
+	 * Name space for the channels plug-in.
+	 */
+	public static final String NS_CHANNELS = NS_BASE + ".plugins.channels";
+	/**
+	 * Name space for the file-system plug-in.
+	 */
+	public static final String NS_FILESYSTEM = NS_BASE + ".plugins.filesystem";
+			
 }

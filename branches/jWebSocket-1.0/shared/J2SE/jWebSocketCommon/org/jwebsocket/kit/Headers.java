@@ -18,7 +18,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
+import javolution.util.FastList;
 import javolution.util.FastMap;
 
 /**
@@ -31,21 +33,24 @@ public class Headers {
 	public static final String UPGRADE = "Upgrade";
 	public static final String CONNECTION = "Connection";
 	public static final String SEC_WEBSOCKET_KEY = "Sec-WebSocket-Key";
-	public static final String SEC_WEBSOCKET_ORIGIN = "Sec-WebSocket-Origin";
+	public static final String ORIGIN = "Origin";
 	public static final String SEC_WEBSOCKET_PROTOCOL = "Sec-WebSocket-Protocol";
 	public static final String SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
 	public static final String SEC_WEBSOCKET_ACCEPT = "Sec-WebSocket-Accept";
-	private Map<String, String> mFields = new FastMap<String, String>();
+	public static final String SET_COOKIE = "Set-Cookie";
+	private Map<String, Object> mFields = new FastMap<String, Object>();
 	private String mFirstLine = null;
 	private byte[] mTrailingBytes = null;
 
 	/**
-	 * 
+	 *
 	 * @param aVersion
 	 * @param aIS
 	 * @throws WebSocketException
 	 */
 	public void readFromStream(int aVersion, InputStream aIS) throws WebSocketException {
+		mFields.put(SET_COOKIE, new FastList<String>());
+
 		// the header is complete when the first empty line is detected
 		boolean lHeaderComplete = false;
 
@@ -91,7 +96,11 @@ public class Headers {
 					} else {
 						String[] lKeyVal = lLine.split(":", 2);
 						if (2 == lKeyVal.length) {
-							mFields.put(lKeyVal[0].trim(), lKeyVal[1].trim());
+							if (SET_COOKIE.equals(lKeyVal[0].trim())) {
+								((List) mFields.get(SET_COOKIE)).add(lKeyVal[1].trim());
+							} else {
+								mFields.put(lKeyVal[0].trim(), lKeyVal[1].trim());
+							}
 						}
 					}
 					lLineNo++;
@@ -105,16 +114,16 @@ public class Headers {
 	/**
 	 * @return the mFields
 	 */
-	public Map<String, String> getFields() {
+	public Map<String, Object> getFields() {
 		return mFields;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aField
 	 * @return
 	 */
-	public String getField(String aField) {
+	public Object getField(String aField) {
 		if (null != mFields) {
 			return mFields.get(aField);
 		}
@@ -129,8 +138,9 @@ public class Headers {
 	}
 
 	/**
-	 * Returns the trailing bytes of the hixie header. Kept for backward 
+	 * Returns the trailing bytes of the hixie header. Kept for backward
 	 * compatibility with older browsers, flash-bridge and other clients.
+	 *
 	 * @return the trailing bytes (16) of the header.
 	 */
 	public byte[] getTrailingBytes() {
