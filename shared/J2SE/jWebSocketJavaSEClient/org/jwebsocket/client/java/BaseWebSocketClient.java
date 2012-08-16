@@ -15,16 +15,12 @@
 package org.jwebsocket.client.java;
 
 import java.io.*;
-import java.net.HttpCookie;
 import java.net.Socket;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -34,11 +30,12 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javolution.util.FastList;
 import javolution.util.FastMap;
+import javolution.util.FastSet;
 import org.jwebsocket.api.*;
+import org.jwebsocket.util.HttpCookie;
 import org.jwebsocket.client.token.WebSocketTokenClientEvent;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.kit.*;
-import org.jwebsocket.util.Tools;
 
 /**
  * Base {@code WebSocket} implementation based on
@@ -120,7 +117,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	private Boolean mIsReconnecting = false;
 	private final Object mReconnectLock = new Object();
 	private Headers mHeaders = null;
-	private List<HttpCookie> mCookies = new ArrayList<HttpCookie>();
+	private Set<HttpCookie> mCookies = new FastSet<HttpCookie>();
 
 	/**
 	 * Base constructor
@@ -251,17 +248,15 @@ public class BaseWebSocketClient implements WebSocketClient {
 			// pass session cookie, if already was set for this client instance
 			byte[] lBA;
 			List<HttpCookie> lTempCookies = new ArrayList();
-			if (null != mCookies) {
-				HttpCookie lCookie;
-				for (int lIndex = 0; lIndex < mCookies.size(); lIndex++) {
-					lCookie = mCookies.get(lIndex);
-					boolean lValid = Tools.isCookieValid(mURI, lCookie);
-					if (lValid) {
+			if (!mCookies.isEmpty()) {
+				for (HttpCookie lCookie : mCookies) {
+					if (HttpCookie.isValid(mURI, lCookie)) {
 						// Cookie is valid
 						lTempCookies.add(lCookie);
 					}
 				}
 			}
+
 			lBA = lHandshake.generateC2SRequest(lTempCookies);
 			mOut.write(lBA);
 
@@ -275,28 +270,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 			}
 
 			// registering new cookies from the server response
-			String lSetCookie = mHeaders.getField("Set-Cookie");
-			if (null != lSetCookie) {
-				List<HttpCookie> lCookies = HttpCookie.parse(lSetCookie);
-				if (mCookies.isEmpty()) {
-					mCookies.addAll(lCookies);
-				} else {
-					for (HttpCookie lCookie : lCookies) {
-						for (int lIndex = 0; lIndex < mCookies.size(); lIndex++) {
-							if (null == mCookies.get(lIndex).getDomain()
-									|| HttpCookie.domainMatches(mCookies.get(lIndex).getDomain(), mURI.getHost())
-									&& (null == lCookie.getPath()
-									|| (null != mURI.getPath()
-									&& mURI.getPath().startsWith(lCookie.getPath())))) {
-								mCookies.set(lIndex, lCookie);
-							}
-						}
-						if (!mCookies.contains(lCookie)) {
-							mCookies.add(lCookie);
-						}
-					}
-				}
-			}
+			List<String> lResponseCookies = (List) mHeaders.getField("Set-Cookie");
+			mCookies.addAll(HttpCookie.parse(mURI, lResponseCookies));
 
 			if (!mHeaders.isValid()) {
 				WebSocketClientEvent lEvent =
@@ -307,7 +282,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			}
 
 			// parse negotiated sub protocol
-			String lProtocol = mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
+			String lProtocol = mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL).toString();
 			if (lProtocol != null) {
 				mNegotiatedSubProtocol = new WebSocketSubProtocol(lProtocol, mEncoding);
 			} else {
