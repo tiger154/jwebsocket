@@ -1,6 +1,6 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - Tomcat WebSocket Servlet, from Tomcat 7.0.27
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	Copyright (c) 2010 jWebSocket.org, Innotrade GmbH
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -22,10 +22,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
-import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.console.JWebSocketServer;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.instance.JWebSocketInstance;
+import org.apache.log4j.Logger;
+import org.jwebsocket.logging.Logging;
 
 /**
  *
@@ -34,22 +35,40 @@ import org.jwebsocket.instance.JWebSocketInstance;
  */
 public class TomcatServlet extends WebSocketServlet {
 
-	private HttpServletRequest mRequest;
+	private static Logger mLog;
+	private boolean mRunningEmbedded = false;
+	private ThreadLocal<HttpServletRequest> mRequestContainer = new ThreadLocal<HttpServletRequest>();
+	private TomcatEngine mEngine;
+
+	public boolean isRunningEmbedded() {
+		return mRunningEmbedded;
+	}
 
 	@Override
 	public void init() throws ServletException {
 		if (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()) {
+			log("Starting jWebSocket application server...");
 			// running in embedded mode
 			// starting the jWebSocket application server
 			JWebSocketServer.main(new String[0]);
+			log("jWebSocket application server started!");
+
+			mRunningEmbedded = true;
+
 		}
+		mLog = Logging.getLogger();
+		mEngine = (TomcatEngine) JWebSocketFactory.getEngine("tomcat0");
+		
 		super.init();
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("TomcatServlet successfully initialized.");
+		}
 	}
 
 	@Override
 	protected void service(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
 		// save the request, since this is not available anymore in the createWebSocketInbound method
-		mRequest = aRequest;
+		mRequestContainer.set(aRequest);
 		super.service(aRequest, aResponse);
 	}
 
@@ -61,10 +80,6 @@ public class TomcatServlet extends WebSocketServlet {
 
 	@Override
 	protected boolean verifyOrigin(String aOrigin) {
-		// TODO: we need to fix this hardcoded solution
-		WebSocketEngine mEngine = JWebSocketFactory.getEngine("tomcat0");
-
-		// super.verifyOrigin(aOrigin);
 		return TomcatWrapper.verifyOrigin(aOrigin, mEngine.getConfiguration().getDomains());
 	}
 
@@ -80,6 +95,15 @@ public class TomcatServlet extends WebSocketServlet {
 
 	@Override
 	protected StreamInbound createWebSocketInbound(String aSubProtocol) {
-		return new TomcatWrapper(mRequest, aSubProtocol);
+		return new TomcatWrapper(mEngine, mRequestContainer.get(), aSubProtocol);
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+
+		if (mRunningEmbedded && JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
+			JWebSocketFactory.stop();
+		}
 	}
 }

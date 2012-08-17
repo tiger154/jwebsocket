@@ -134,8 +134,8 @@ public class CometConnector extends BaseConnector {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping connector '" + getId() + "' ..."));
 			}
 		}
+		// removing delayed packets for connector
 		mServlet.getPacketsQueue().remove(getId());
-		getEngine().getConnectors().remove(getId());
 
 		super.stopConnector(aCloseReason);
 	}
@@ -184,7 +184,7 @@ public class CometConnector extends BaseConnector {
 	public synchronized void checkPacketQueueByEvent(CometEvent aEvent) {
 		String lConnectorId = CometServlet.generateUID(aEvent);
 		try {
-			if (!mServlet.getPacketsQueue().get(lConnectorId).isEmpty()) {
+			if (!mServlet.isPacketQueueEmpty(lConnectorId)) {
 				List<WebSocketPacket> lDelayedPackets = getAvailablePackets(mServlet.getPacketsQueue().get(getId()));
 				WebSocketPacket lPacket = __setupCometMessageResponse(getReadyState(), "message", lDelayedPackets);
 
@@ -201,14 +201,15 @@ public class CometConnector extends BaseConnector {
 
 	public synchronized void checkPacketQueue() {
 		if (null != mEvent) {
-			if (!mServlet.getPacketsQueue().get(getId()).isEmpty()) {
+			if (!mServlet.isPacketQueueEmpty(getId())) {
 				try {
 					List<WebSocketPacket> lPackets = getAvailablePackets(mServlet.getPacketsQueue().get(getId()));
 					sendPacketsInConnectionMessage(lPackets);
 					mEvent.close();
 					mEvent = null;
 				} catch (Exception lEx) {
-					mLog.error(Logging.getSimpleExceptionMessage(lEx, "unexpected error sending pending packet to the client"));
+					// DO NOT NOTIFY. The connection with the client has been broken.
+					// mLog.error(lEx.getClass().getSimpleName() + " sending data packet: " + lEx.getMessage());
 				}
 			}
 		}

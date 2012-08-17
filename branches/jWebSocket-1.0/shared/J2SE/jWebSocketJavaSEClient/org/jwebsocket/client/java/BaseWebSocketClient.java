@@ -32,10 +32,10 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 import javolution.util.FastSet;
 import org.jwebsocket.api.*;
-import org.jwebsocket.util.HttpCookie;
 import org.jwebsocket.client.token.WebSocketTokenClientEvent;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.kit.*;
+import org.jwebsocket.util.HttpCookie;
 
 /**
  * Base {@code WebSocket} implementation based on
@@ -270,7 +270,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			}
 
 			// registering new cookies from the server response
-			List<String> lResponseCookies = (List) mHeaders.getField("Set-Cookie");
+			List<String> lResponseCookies = (List) mHeaders.getField(Headers.SET_COOKIE);
 			mCookies.addAll(HttpCookie.parse(mURI, lResponseCookies));
 
 			if (!mHeaders.isValid()) {

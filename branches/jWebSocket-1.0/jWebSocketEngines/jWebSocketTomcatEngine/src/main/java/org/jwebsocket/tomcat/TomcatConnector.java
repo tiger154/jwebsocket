@@ -82,12 +82,7 @@ public class TomcatConnector extends BaseConnector {
 						+ aCloseReason.name() + ") at port "
 						+ getRemotePort() + "...");
 			}
-			// call client stopped method of engine
-			// (e.g. to release client from streams)
-			WebSocketEngine lEngine = getEngine();
-			if (lEngine != null) {
-				lEngine.connectorStopped(this, aCloseReason);
-			}
+			super.stopConnector(aCloseReason);
 			try {
 				mOutbound.close(0, null);
 			} catch (IOException ex) {
@@ -122,11 +117,12 @@ public class TomcatConnector extends BaseConnector {
 			} else {
 				mOutbound.writeTextMessage(CharBuffer.wrap(aDataPacket.getUTF8().toCharArray()));
 			}
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Packet '" + aDataPacket.getUTF8() + "' sent.");
+			}
 		} catch (Exception lEx) {
-			mLog.error(lEx.getClass().getSimpleName() + " sending data packet: " + lEx.getMessage());
-		}
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Packet '" + aDataPacket.getUTF8() + "' sent.");
+			// DO NOT NOTIFY. The connection with the client has been broken.
+			// mLog.error(lEx.getClass().getSimpleName() + " sending data packet: " + lEx.getMessage());
 		}
 	}
 
