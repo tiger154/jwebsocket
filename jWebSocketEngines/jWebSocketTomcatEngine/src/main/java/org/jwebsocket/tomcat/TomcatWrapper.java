@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketCommonConstants;
-import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
@@ -42,6 +41,7 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
 public class TomcatWrapper extends MessageInbound {
 
@@ -68,9 +68,10 @@ public class TomcatWrapper extends MessageInbound {
 
 	public static boolean verifyOrigin(String aOrigin, List<String> aDomains) {
 		// if no domain list passed allow all domains per default
-		if (null == aOrigin || null == aDomains || aDomains.isEmpty()) {
+		if (null == aDomains || aDomains.isEmpty()) {
 			return true;
 		}
+
 		// otherwise check if domain matches allowed domains
 		for (String lDomain : aDomains) {
 			lDomain = lDomain.replace("*", ".*");
@@ -81,15 +82,13 @@ public class TomcatWrapper extends MessageInbound {
 		return false;
 	}
 
-	public TomcatWrapper(HttpServletRequest aRequest, String aSubProtocol) {
+	public TomcatWrapper(TomcatEngine aEngine, HttpServletRequest aRequest, String aSubProtocol) {
 		super();
-		// TODO: we need to fix this hardcoded solution
-		mEngine = JWebSocketFactory.getEngine("tomcat0");
-
+		mEngine = aEngine;
 		mRequest = aRequest;
 		mIsSecure = aRequest.isSecure();
 		mSession = aRequest.getSession();
-
+		
 		mRemotePort = mRequest.getRemotePort();
 		InetAddress lAddr;
 		try {
@@ -113,7 +112,7 @@ public class TomcatWrapper extends MessageInbound {
 		lHeader.put(RequestHeader.URL_ARGS, lArgs);
 
 		// set default sub protocol if none passed
-		if (aSubProtocol == null) {
+		if (null == aSubProtocol) {
 			aSubProtocol = JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
 		}
 		lHeader.put(RequestHeader.WS_PROTOCOL, aSubProtocol);
@@ -123,7 +122,7 @@ public class TomcatWrapper extends MessageInbound {
 		Enumeration<String> lHeaderNames = aRequest.getHeaderNames();
 		while (lHeaderNames.hasMoreElements()) {
 			String lHeaderName = lHeaderNames.nextElement();
-			if (lHeaderName != null) {
+			if (null != lHeaderName) {
 				lHeaderName = lHeaderName.toLowerCase();
 				lHeader.put(lHeaderName, aRequest.getHeader(lHeaderName));
 			}
@@ -203,9 +202,8 @@ public class TomcatWrapper extends MessageInbound {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Disconnecting Tomcat Client...");
 		}
-		if (mConnector != null) {
+		if (null != mConnector) {
 			mConnector.stopConnector(CloseReason.CLIENT);
-			mEngine.removeConnector(mConnector);
 		}
 	}
 
@@ -214,7 +212,7 @@ public class TomcatWrapper extends MessageInbound {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Message (binary) from Tomcat client...");
 		}
-		if (mConnector != null) {
+		if (null != mConnector) {
 			// TODO: implement binary Tomcat messages!
 			WebSocketPacket lDataPacket = new RawPacket(aMessage.array());
 			mEngine.processPacket(mConnector, lDataPacket);
@@ -226,7 +224,7 @@ public class TomcatWrapper extends MessageInbound {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Message (text) from Tomcat client...");
 		}
-		if (mConnector != null) {
+		if (null != mConnector) {
 			WebSocketPacket lDataPacket = new RawPacket(aMessage.toString());
 			mEngine.processPacket(mConnector, lDataPacket);
 		}

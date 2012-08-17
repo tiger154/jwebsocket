@@ -53,17 +53,21 @@ import org.jwebsocket.util.Tools;
  */
 public class CometServlet extends HttpServlet implements CometProcessor {
 
+	private boolean mRunningEmbedded = false;
 	private static Logger mLog;
 	private Map<String, Integer> mMonitoringClientDisconnect = new FastMap<String, Integer>();
 	private Map<String, Queue<WebSocketPacket>> mPacketsQueue = new FastMap<String, Queue<WebSocketPacket>>();
 	private TomcatEngine mEngine;
 
 	public CometServlet() {
-		mEngine = (TomcatEngine) JWebSocketFactory.getEngine("tomcat0");
 	}
 
-	public boolean isQueuePacketEmpty(String aIdConnector) {
-		return mPacketsQueue.get(aIdConnector).isEmpty();
+	public boolean isRunningEmbedded() {
+		return mRunningEmbedded;
+	}
+
+	public boolean isPacketQueueEmpty(String aConnectorId) {
+		return mPacketsQueue.get(aConnectorId).isEmpty();
 	}
 
 	public Map<String, Queue<WebSocketPacket>> getPacketsQueue() {
@@ -104,11 +108,15 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	@Override
 	public void init() throws ServletException {
 		if (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()) {
+			log("Starting jWebSocket application server...");
 			// running in embedded mode
 			// starting the jWebSocket application server
 			JWebSocketServer.main(new String[0]);
+			log("jWebSocket application server started!");
 		}
+		mEngine = (TomcatEngine) JWebSocketFactory.getEngine("tomcat0");
 		mLog = Logging.getLogger();
+		
 		super.init();
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("CometServlet successfully initialized.");
@@ -282,7 +290,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 			lConnector.processPacket(new RawPacket(aData.toString()));
 
 			// looking for pending packets on the queue (performance requirement)
-			if (!getPacketsQueue().get(lConnectorId).isEmpty()) {
+			if (!isPacketQueueEmpty(lConnectorId)) {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Sending a pending packet in the received request response...");
 				}
@@ -323,5 +331,14 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		}
 
 		return null;
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+
+		if (mRunningEmbedded && JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
+			JWebSocketFactory.stop();
+		}
 	}
 }

@@ -42,6 +42,9 @@ public class TomcatEngine extends BaseEngine {
 	private Tomcat mTomcat = null;
 	private String mTomcatVersion = "7+";
 	private String mDocumentRoot;
+	private final String DOCUMENT_ROOT_CONFIG_KEY = "document_root";
+	private final String MAX_THREADS_CONFIG_KEY = "max_threads";
+	private final Integer DEFAULT_MAX_THREADS = 200;
 
 	public TomcatEngine(EngineConfiguration aConfiguration) {
 
@@ -66,7 +69,7 @@ public class TomcatEngine extends BaseEngine {
 
 		Map<String, Object> lSettings = aConfiguration.getSettings();
 		if (null != lSettings) {
-			Object lDocRoot = lSettings.get("document_root");
+			Object lDocRoot = lSettings.get(DOCUMENT_ROOT_CONFIG_KEY);
 			if (null != lDocRoot) {
 				mDocumentRoot = Tools.expandEnvVarsAndProps(lDocRoot.toString());
 			}
@@ -97,9 +100,17 @@ public class TomcatEngine extends BaseEngine {
 			// removing default Tomcat connector
 			mTomcat.getService().removeConnector(mTomcat.getConnector());
 
+			// getting maxThreads setting value
+			String lMaxThreads = DEFAULT_MAX_THREADS.toString();
+			if (getConfiguration().getSettings().containsKey(MAX_THREADS_CONFIG_KEY)) {
+				lMaxThreads = getConfiguration().getSettings().get(MAX_THREADS_CONFIG_KEY).toString();
+			}
+
 			// creating plain connector
 			Connector lPlainConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 			lPlainConnector.setPort(lPort);
+			lPlainConnector.setProperty("maxThreads", lMaxThreads);
+
 			mTomcat.getService().addConnector(lPlainConnector);
 
 			// setting the SSL connector
@@ -107,8 +118,8 @@ public class TomcatEngine extends BaseEngine {
 			lSSLConnector.setEnableLookups(false);
 			lSSLConnector.setScheme("https");
 			lSSLConnector.setSecure(true);
+			lSSLConnector.setProperty("maxThreads", lMaxThreads);
 			lSSLConnector.setPort(lSSLPort);
-			lSSLConnector.setProperty("maxHttpHeaderSize", "8192");
 			lSSLConnector.setProperty("SSLEnabled", "true");
 			lSSLConnector.setProperty("clientAuth", "false");
 			lSSLConnector.setProperty("sslProtocol", "TLS");
