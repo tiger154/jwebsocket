@@ -22,11 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
+import org.apache.log4j.Logger;
 import org.jwebsocket.console.JWebSocketServer;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.instance.JWebSocketInstance;
-import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.tcp.EngineUtils;
 
 /**
  *
@@ -58,7 +59,7 @@ public class TomcatServlet extends WebSocketServlet {
 		}
 		mLog = Logging.getLogger();
 		mEngine = (TomcatEngine) JWebSocketFactory.getEngine("tomcat0");
-		
+
 		super.init();
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("TomcatServlet successfully initialized.");
@@ -80,7 +81,7 @@ public class TomcatServlet extends WebSocketServlet {
 
 	@Override
 	protected boolean verifyOrigin(String aOrigin) {
-		return TomcatWrapper.verifyOrigin(aOrigin, mEngine.getConfiguration().getDomains());
+		return EngineUtils.isOriginValid(aOrigin, mEngine.getConfiguration().getDomains());
 	}
 
 	/**

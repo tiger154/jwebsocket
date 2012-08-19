@@ -4758,6 +4758,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aValue:Object:The entry value
 	//:a:en::aPublic:Boolean:Indicates if the entry will be readable by other clients. Public entries key returned by the server, contains the 'public::' subfix.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionPut: function (aKey, aValue, aPublic, aOptions){
 		this.sendToken({
@@ -4765,7 +4766,8 @@ jws.SystemClientPlugIn = {
 			type: "sessionPut",
 			key: aKey,
 			value: aValue,
-			"public": aPublic 
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
 		}, aOptions);
 	},
 	
@@ -4775,6 +4777,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aKey:String:The entry key
 	//:a:en::aPublic:Boolean:Indicates if the entry is declared as public. Public entries key returned by the server, contains the 'public::' subfix.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionHas: function (aClientId, aKey, aPublic, aOptions){
 		this.sendToken({
@@ -4782,7 +4785,8 @@ jws.SystemClientPlugIn = {
 			type: "sessionHas",
 			key: aKey,
 			clientId: aClientId,
-			"public": aPublic 
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
 		}, aOptions);
 	},
 	
@@ -4792,6 +4796,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aKey:String:The entry key
 	//:a:en::aPublic:Boolean:Indicates if the entry is declared as public. Public entries key returned by the server, contains the 'public::' subfix.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionGet: function (aClientId, aKey, aPublic, aOptions){
 		this.sendToken({
@@ -4799,7 +4804,8 @@ jws.SystemClientPlugIn = {
 			type: "sessionGet",
 			key: aKey,
 			clientId: aClientId,
-			"public": aPublic 
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
 		}, aOptions);
 	},
 	
@@ -4808,13 +4814,15 @@ jws.SystemClientPlugIn = {
 	//:a:en::aKey:String:The entry key
 	//:a:en::aPublic:Boolean:Indicates if the entry is declared as public. Public entries key returned by the server, contains the 'public::' subfix.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionRemove: function (aKey, aPublic, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionRemove",
 			key: aKey,
-			"public": aPublic 
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
 		}, aOptions);
 	},
 	
@@ -4824,13 +4832,15 @@ jws.SystemClientPlugIn = {
 	//:a:en::aClientId:String:The client identifier
 	//:a:en::aPublic:Boolean:Indicates if only the public entry keys will be retrieved. Public entries key returned by the server, contains the 'public::' subfix.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionKeys: function (aClientId, aPublic, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionKeys",
 			clientId: aClientId,
-			"public": aPublic 
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
 		}, aOptions);
 	},
 	
@@ -4840,13 +4850,15 @@ jws.SystemClientPlugIn = {
 	//:a:en::aClientId:String:The client identifier
 	//:a:en::aPublic:Boolean:Indicates if only the public entries will be retrieved. Public entries key returned by the server, contains the 'public::' subfix.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionGetAll: function (aClientId, aPublic, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionGetAll",
 			clientId: aClientId,
-			"public": aPublic 
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
 		}, aOptions);
 	},
 	
@@ -4855,13 +4867,15 @@ jws.SystemClientPlugIn = {
 	//:a:en::aClients:Array:The list of clients
 	//:a:en::aKeys:Array:The list of entry keys to retrieve
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionGetMany: function (aClients, aKeys, aOptions){
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionGetMany",
 			clients: aClients,
-			keys: aKeys 
+			keys: aKeys,
+			connectionStorage: aOptions.connectionStorage || false
 		}, aOptions);
 	}
 };
@@ -5119,47 +5133,3 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 	}
 
 });
-
-	/*
-(function() {
-	var lObj = {
-		aNumber: 1,
-		aString: "test1",
-		aBoolean: true,
-		aArray: [ 2, "test2", false ],
-		aObject: {
-			bNumber: 3,
-			bString: "test3",
-			bBoolean: true,
-			bArray: [ 3, "test3", true ]
-		}
-	};
-	var lStream = 
-		'<?xml version="1.0" encoding="windows-1252"?>' +
-		'<token>' +
-			'<aNumber type="number">1</aNumber>' +
-			'<aString type="string">test1</aString>' +
-			'<aBoolean type="boolean">true</aBoolean>' +
-			'<aArray type="array">' +
-				'<item type="number">2</item>'+
-				'<item type="string">test2</item>' +
-				'<item type="boolean">false</item>' +
-			'</aArray>' +
-			'<aObject type="object">' +
-				'<bNumber type="number">3</bNumber>'+
-				'<bString type="string">test3</bString>' +
-				'<bBoolean type="boolean">true</bBoolean>' +
-				'<bArray type="array">'+
-					'<item type="number">3</item>' +
-					'<item type="string">test3</item>' +
-					'<item type="boolean">true</item>' +
-				'</bArray>' +
-			'</aObject>' +
-		'</token>';
-
-	var lXMLClient = new jws.jWebSocketXMLClient();
-//	var lStream = lXMLClient.tokenToStream( lObj );
-	var lToken = lXMLClient.streamToToken( lStream );
-	console.log( lStream );
-})();
-	 */

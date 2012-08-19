@@ -120,6 +120,11 @@ public class SystemPlugIn extends TokenPlugIn {
 	public static final String UUID = "$uuid";
 	public static final String IS_AUTHENTICATED = "$is_authenticated";
 	/**
+	 * jWebSocket core spring beans identifiers
+	 */
+	public static final String BEAN_AUTHENTICATION_MANAGER = "authManager";
+	public static final String BEAN_SESSION_MANAGER = "sessionManager";
+	/**
 	 * Core Spring application context
 	 */
 	private static ApplicationContext mBeanFactory;
@@ -143,14 +148,14 @@ public class SystemPlugIn extends TokenPlugIn {
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for system plug-in, some features may not be available.");
 			} else {
-				mAuthProvMgr = (ProviderManager) mBeanFactory.getBean("authManager");
+				mAuthProvMgr = (ProviderManager) mBeanFactory.getBean(BEAN_AUTHENTICATION_MANAGER);
 				List<AuthenticationProvider> lProviders = mAuthProvMgr.getProviders();
 				mAuthProv = lProviders.get(0);
 
 				// sessionManager bean is not used in embedded mode and should not
 				// be declared in this case
-				if (mBeanFactory.containsBean("sessionManager")) {
-					mSessionManager = (SessionManager) mBeanFactory.getBean("sessionManager");
+				if (mBeanFactory.containsBean(BEAN_SESSION_MANAGER)) {
+					mSessionManager = (SessionManager) mBeanFactory.getBean(BEAN_SESSION_MANAGER);
 				}
 
 				// give a success message to the administrator
@@ -164,7 +169,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public AuthenticationProvider getAuthProvider() {
@@ -305,6 +310,15 @@ public class SystemPlugIn extends TokenPlugIn {
 					((SessionManager) mSessionManager).getSessionsReferences().remove(lSessionId);
 				}
 				mSessionManager.getReconnectionManager().putInReconnectionMode(lSessionId);
+			}
+		}
+		if (null != mSessionManager) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Removing connection specific storage for connector '" + aConnector.getId() + "'...");
+			}
+			try {
+				mSessionManager.getStorageProvider().removeStorage(aConnector.getId());
+			} catch (Exception lEx) {
 			}
 		}
 
@@ -469,7 +483,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aConnector
 	 * @param aCloseReason
 	 */
@@ -1051,6 +1065,7 @@ public class SystemPlugIn extends TokenPlugIn {
 
 	void sessionGet(WebSocketConnector aConnector, Token aToken) {
 		String lConnectorId = aToken.getString("clientId", aConnector.getId());
+		boolean lConnectionStorage = aToken.getBoolean("connectionStorage", false);
 		boolean lPublic = true;
 		if (lConnectorId.equals(aConnector.getId())) {
 			lPublic = aToken.getBoolean("public", false);
@@ -1062,25 +1077,27 @@ public class SystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		// getting the connector session storage
-		Map<String, Object> lSessionStorage;
+		Map<String, Object> lStorage;
 		try {
-			lSessionStorage = getServer().getConnector(lConnectorId).
-					getSession().getStorage();
+			if (lConnectionStorage) {
+				lStorage = mSessionManager.getStorageProvider().getStorage(lConnectorId);
+			} else {
+				lStorage = getServer().getConnector(lConnectorId).getSession().getStorage();
+			}
 		} catch (Exception lEx) {
 			sendErrorToken(aConnector, aToken, -1, "Client with id '" + lConnectorId + "' does not exists!");
 			return;
 		}
 		// setting the key as public if required
 		lKey = (lPublic) ? SESSION_PUBLIC_KEY_SUBFIX + lKey : lKey;
-		if (!lSessionStorage.containsKey(lKey)) {
+		if (!lStorage.containsKey(lKey)) {
 			sendErrorToken(aConnector, aToken, -1, "The key '" + lKey
 					+ "' does not exists in the targeted client session storage!");
 			return;
 		}
 
 		// getting the value
-		Object lValue = lSessionStorage.get(lKey);
+		Object lValue = lStorage.get(lKey);
 
 		Token lResponse = createResponse(aToken);
 		Map lMap = new HashMap();
@@ -1093,6 +1110,8 @@ public class SystemPlugIn extends TokenPlugIn {
 
 	void sessionPut(WebSocketConnector aConnector, Token aToken) {
 		boolean lPublic = aToken.getBoolean("public", false);
+		boolean lConnectionStorage = aToken.getBoolean("connectionStorage", false);
+		String lConnectorId = aConnector.getId();
 
 		// getting the key
 		String lKey = aToken.getString("key", null);
@@ -1114,14 +1133,28 @@ public class SystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		aConnector.getSession().getStorage().put(lKey, lValue);
+		Map<String, Object> lStorage;
+		try {
+			if (lConnectionStorage) {
+				lStorage = mSessionManager.getStorageProvider().getStorage(lConnectorId);
+			} else {
+				lStorage = aConnector.getSession().getStorage();
+			}
+		} catch (Exception lEx) {
+			sendErrorToken(aConnector, aToken, -1, "Error getting the client session storage!");
+			return;
+		}
+
+		lStorage.put(lKey, lValue);
 
 		getServer().sendToken(aConnector, createResponse(aToken));
 	}
 
 	void sessionHas(WebSocketConnector aConnector, Token aToken) {
 		String lConnectorId = aToken.getString("clientId", aConnector.getId());
+		boolean lConnectionStorage = aToken.getBoolean("connectionStorage", false);
 		boolean lPublic = true;
+
 		if (lConnectorId.equals(aConnector.getId())) {
 			lPublic = aToken.getBoolean("public", false);
 		}
@@ -1133,18 +1166,20 @@ public class SystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		// getting the connector session storage
-		Map<String, Object> lSessionStorage;
+		Map<String, Object> lStorage;
 		try {
-			lSessionStorage = getServer().getConnector(lConnectorId).
-					getSession().getStorage();
+			if (lConnectionStorage) {
+				lStorage = mSessionManager.getStorageProvider().getStorage(lConnectorId);
+			} else {
+				lStorage = aConnector.getSession().getStorage();
+			}
 		} catch (Exception lEx) {
 			sendErrorToken(aConnector, aToken, -1, "Client with id '" + lConnectorId + "' does not exists!");
 			return;
 		}
 
 		lKey = (lPublic) ? SESSION_PUBLIC_KEY_SUBFIX + lKey : lKey;
-		boolean lExists = lSessionStorage.containsKey(lKey);
+		boolean lExists = lStorage.containsKey(lKey);
 
 		Token lResponse = createResponse(aToken);
 		Map lMap = new HashMap();
@@ -1157,6 +1192,7 @@ public class SystemPlugIn extends TokenPlugIn {
 
 	void sessionRemove(WebSocketConnector aConnector, Token aToken) {
 		boolean lPublic = aToken.getBoolean("public", false);
+		boolean lConnectionStorage = aToken.getBoolean("connectionStorage", false);
 
 		// getting the key
 		String lKey = aToken.getString("key", null);
@@ -1165,17 +1201,26 @@ public class SystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		// getting the connector session storage
-		Map< String, Object> lSessionStorage = aConnector.getSession().getStorage();
+		Map<String, Object> lStorage;
+		try {
+			if (lConnectionStorage) {
+				lStorage = mSessionManager.getStorageProvider().getStorage(aConnector.getId());
+			} else {
+				lStorage = aConnector.getSession().getStorage();
+			}
+		} catch (Exception lEx) {
+			sendErrorToken(aConnector, aToken, -1, "Error getting the client session storage!");
+			return;
+		}
 
 		lKey = (lPublic) ? SESSION_PUBLIC_KEY_SUBFIX + lKey : lKey;
-		if (!lSessionStorage.containsKey(lKey)) {
+		if (!lStorage.containsKey(lKey)) {
 			sendErrorToken(aConnector, aToken, -1, "The key '" + lKey
 					+ "' does not exists!");
 			return;
 		}
 		// removing the session entry
-		Object lValue = lSessionStorage.remove(lKey);
+		Object lValue = lStorage.remove(lKey);
 
 		Token lResponse = createResponse(aToken);
 		Map lMap = new HashMap();
@@ -1188,22 +1233,26 @@ public class SystemPlugIn extends TokenPlugIn {
 
 	void sessionKeys(WebSocketConnector aConnector, Token aToken) {
 		String lConnectorId = aToken.getString("clientId", aConnector.getId());
+		boolean lConnectionStorage = aToken.getBoolean("connectionStorage", false);
 		boolean lPublic = true;
+
 		if (lConnectorId.equals(aConnector.getId())) {
 			lPublic = aToken.getBoolean("public", false);
 		}
 
-		// getting the connector session storage
-		Map<String, Object> lSessionStorage;
+		Map<String, Object> lStorage;
 		try {
-			lSessionStorage = getServer().getConnector(lConnectorId).
-					getSession().getStorage();
+			if (lConnectionStorage) {
+				lStorage = mSessionManager.getStorageProvider().getStorage(aConnector.getId());
+			} else {
+				lStorage = aConnector.getSession().getStorage();
+			}
 		} catch (Exception lEx) {
 			sendErrorToken(aConnector, aToken, -1, "Client with id '" + lConnectorId + "' does not exists!");
 			return;
 		}
 
-		Iterator<String> lKeySet = lSessionStorage.keySet().iterator();
+		Iterator<String> lKeySet = lStorage.keySet().iterator();
 		List<String> lKeys = new LinkedList<String>();
 
 		while (lKeySet.hasNext()) {
@@ -1223,23 +1272,26 @@ public class SystemPlugIn extends TokenPlugIn {
 
 	void sessionGetAll(WebSocketConnector aConnector, Token aToken) {
 		String lConnectorId = aToken.getString("clientId", aConnector.getId());
+		boolean lConnectionStorage = aToken.getBoolean("connectionStorage", false);
 		boolean lPublic = true;
 		if (lConnectorId.equals(aConnector.getId())) {
 			lPublic = aToken.getBoolean("public", false);
 		}
 
-		// getting the connector session storage
-		Map<String, Object> lSessionStorage;
+		Map<String, Object> lStorage;
 		try {
-			lSessionStorage = getServer().getConnector(lConnectorId).
-					getSession().getStorage();
+			if (lConnectionStorage) {
+				lStorage = mSessionManager.getStorageProvider().getStorage(aConnector.getId());
+			} else {
+				lStorage = aConnector.getSession().getStorage();
+			}
 		} catch (Exception lEx) {
 			sendErrorToken(aConnector, aToken, -1, "Client with id '" + lConnectorId + "' does not exists!");
 			return;
 		}
 
 		// getting entries
-		Iterator<Entry<String, Object>> lEntries = lSessionStorage.entrySet().iterator();
+		Iterator<Entry<String, Object>> lEntries = lStorage.entrySet().iterator();
 		Map<String, Object> lResult = new HashMap<String, Object>();
 		while (lEntries.hasNext()) {
 			Entry<String, Object> lEntry = lEntries.next();
@@ -1259,6 +1311,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	void sessionGetMany(WebSocketConnector aConnector, Token aToken) {
+		boolean lConnectionStorage = aToken.getBoolean("connectionStorage", false);
 		List lClients = aToken.getList("clients");
 		List lKeys = aToken.getList("keys");
 		if (null == lClients || lClients.isEmpty()) {
@@ -1272,15 +1325,17 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		Map<String, Object> lResult = new HashMap<String, Object>();
 		for (Object lConnectorId : lClients) {
-			// getting the connector session storage
-			Map<String, Object> lSessionStorage;
+			Map<String, Object> lStorage;
 			try {
-				lSessionStorage = getServer().getConnector(lConnectorId.toString()).
-						getSession().getStorage();
+				if (lConnectionStorage) {
+					lStorage = mSessionManager.getStorageProvider().getStorage(aConnector.getId());
+				} else {
+					lStorage = aConnector.getSession().getStorage();
+				}
 				Map<String, Object> lVars = new HashMap<String, Object>();
 				for (Object lKey : lKeys) {
 					try {
-						lVars.put(lKey.toString(), lSessionStorage.get(SESSION_PUBLIC_KEY_SUBFIX + lKey));
+						lVars.put(lKey.toString(), lStorage.get(SESSION_PUBLIC_KEY_SUBFIX + lKey));
 					} catch (Exception lEx) {
 					}
 				}

@@ -382,7 +382,7 @@ public class TCPEngine extends BaseEngine {
 						if (mEngine.getConnectors().size() >= mEngine.getMaxConnections()) {
 							if (mLog.isDebugEnabled()) {
 								mLog.debug("Closing incoming socket client on  port '" + lClientSocket.getPort() + "' "
-										+ "because the maximum number of connections "
+										+ "because the maximum number of supported connections "
 										+ "has been reached...");
 							}
 
@@ -414,7 +414,7 @@ public class TCPEngine extends BaseEngine {
 							if (mLog.isDebugEnabled()) {
 								mLog.debug("Rejecting incoming connector '"
 										+ lConnector.getId() + "' "
-										+ "because the maximum number of connections "
+										+ "because the maximum number of supported connections "
 										+ "has been reached.");
 							}
 							lConnector.stopConnector(CloseReason.SERVER_REJECT_CONNECTION);
@@ -426,7 +426,7 @@ public class TCPEngine extends BaseEngine {
 
 							if (mLog.isDebugEnabled()) {
 								mLog.debug("Redirecting incoming connector '" + lConnector.getId() + "' "
-										+ "because the maximum number of connections "
+										+ "because the maximum number of supported connections "
 										+ "has been reached.");
 							}
 							lConnector.stopConnector(CloseReason.SERVER_REDIRECT_CONNECTION);

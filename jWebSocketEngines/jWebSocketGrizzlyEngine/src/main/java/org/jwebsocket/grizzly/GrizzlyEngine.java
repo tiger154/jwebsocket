@@ -23,6 +23,7 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.grizzly.websockets.WebSocketAddOn;
 import org.glassfish.grizzly.websockets.WebSocketApplication;
 import org.glassfish.grizzly.websockets.WebSocketEngine;
+import org.glassfish.grizzly.websockets.WebSocketServer;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
@@ -45,9 +46,10 @@ public class GrizzlyEngine extends BaseEngine {
 	private static Integer mGrizzlySSLPort = 443;
 	private String mKeyStore = JWebSocketServerConstants.JWEBSOCKET_KEYSTORE;
 	private String mKeyStorePassword = JWebSocketServerConstants.JWEBSOCKET_KS_DEF_PWD;
+	private final String DOCUMENT_ROOT_CONFIG_KEY = "document_root";
 	private Integer mSessionTimeout = 3000;
 	private boolean mIsRunning = false;
-	private HttpServer mGrizzlyServer = null;
+	private WebSocketServer mGrizzlyServer = null;
 	private HttpServer mGrizzlySSLServer;
 
 	/**
@@ -67,7 +69,6 @@ public class GrizzlyEngine extends BaseEngine {
 			String lEngineContext = aConfiguration.getContext();
 			String lEngineApp = aConfiguration.getServlet();
 			mSessionTimeout = aConfiguration.getTimeout();
-
 
 			if (mGrizzlySSLPort == 0) {
 				mGrizzlySSLPort = JWebSocketCommonConstants.DEFAULT_SSLPORT;
@@ -92,18 +93,11 @@ public class GrizzlyEngine extends BaseEngine {
 						+ "', servlet: '" + lEngineApp + "'...");
 			}
 
-//			mGrizzlyServer = WebSocketServer.createServer(mGrizzlyPort);
-//			mGrizzlyServer.register("jWebSocketEngine", new GrizzlyWebSocketApplication(this));
-
-			mGrizzlyServer = HttpServer.createSimpleServer(lEngineApp, mGrizzlyPort);
-			mGrizzlyServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
-
-			// HttpHandler lHttpHandler = new	StaticHttpHandler(mDemoRootDirectory);
-			// mGrizzlyServer.getServerConfiguration().addHttpHandler(lHttpHandler, mDemoContext);
+			mGrizzlyServer = WebSocketServer.createServer(mGrizzlyPort);
+			mGrizzlyServer.register("jWebSocketEngine", new GrizzlyWebSocketApplication(this));
 
 			// Create encrypted (SSL) server socket for wss:// protocol
 			if (mGrizzlySSLPort > 0) {
-				// create unencrypted server socket for ws:// protocol
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Trying to initiate SSL on port " + mGrizzlySSLPort + "...");
 				}
@@ -122,7 +116,11 @@ public class GrizzlyEngine extends BaseEngine {
 						String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
 						SSLContext lSSLContext = Util.createSSLContext(lKeyStorePath, mKeyStorePassword);
 
-						mGrizzlySSLServer = HttpServer.createSimpleServer("/var/www", mGrizzlySSLPort);
+						String lDocumentRoot = JWebSocketConfig.getJWebSocketHome() + "web/";
+						if (getConfiguration().getSettings().containsKey(DOCUMENT_ROOT_CONFIG_KEY)) {
+							lDocumentRoot = getConfiguration().getSettings().get(DOCUMENT_ROOT_CONFIG_KEY).toString();
+						}
+						mGrizzlySSLServer = HttpServer.createSimpleServer(lDocumentRoot, mGrizzlySSLPort);
 						mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
 						mGrizzlySSLServer.getListener("grizzly").setSecure(true);
 
@@ -271,7 +269,7 @@ public class GrizzlyEngine extends BaseEngine {
 			mLog.debug("Detected stopped Grizzly connector at port "
 					+ aConnector.getRemotePort() + ".");
 		}
-		//The BaseEngine removes the connector from the list
+
 		super.connectorStopped(aConnector, aCloseReason);
 	}
 

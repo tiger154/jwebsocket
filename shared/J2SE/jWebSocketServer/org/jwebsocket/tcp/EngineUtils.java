@@ -34,31 +34,40 @@ import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 public class EngineUtils {
 
 	/**
+	 * Indicates if a given origin is included on a domain's list.
+	 */
+	public static boolean isOriginValid(String aOrigin, List<String> aDomains) {
+		boolean lAccepted = false;
+		String lOrigin = aOrigin;
+
+		if (null == aDomains || aDomains.isEmpty()) {
+			return true;
+		}
+
+		if (null != lOrigin) {
+			for (String lDomain : aDomains) {
+				lDomain = lDomain.replace("*", ".*");
+				if (lOrigin.matches(lDomain)) {
+					lAccepted = true;
+					break;
+				}
+			}
+		}
+
+		return lAccepted;
+	}
+
+	/**
 	 * Validates draft header and constructs RequestHeader object.
 	 */
 	public static RequestHeader validateC2SRequest(List<String> aDomains,
 			Map aReqMap, Logger aLogger) throws UnsupportedEncodingException {
 
-		// domain check, asterisks as wildcards are supported!
-		if (null != aDomains && !aDomains.isEmpty()) {
-			boolean lAccepted = false;
-			String lOrigin = (String) aReqMap.get("origin");
-			if (null != lOrigin) {
-				for (String lDomain : aDomains) {
-					// make a correct regular expression
-					lDomain = lDomain.replace("*", ".*");
-					if (lOrigin.matches(lDomain)) {
-						lAccepted = true;
-						break;
-					}
-				}
-			}
-			if (!lAccepted) {
-				aLogger.error("Client origin '" + aReqMap.get("origin") + "' does not match allowed domains!");
-				return null;
-			}
+		boolean lAccepted = isOriginValid(aReqMap.get("origin").toString(), aDomains);
+		if (!lAccepted) {
+			aLogger.error("Client origin '" + aReqMap.get("origin") + "' does not match allowed domains!");
+			return null;
 		}
-
 
 		// Check for WebSocket protocol version.
 		// If it is present and if it's something unrecognizable, force disconnect (return null).
@@ -70,21 +79,22 @@ public class EngineUtils {
 			aLogger.error("Error in Handshake: Draft #'" + lDraft + "' not supported.");
 			return null;
 		}
+
 		if (!WebSocketProtocolAbstraction.isValidVersion(lVersion)) {
 			aLogger.error("Error in Handshake: Version #'" + lVersion + "' not supported.");
 			return null;
 		}
+
 		if (aLogger.isDebugEnabled()) {
 			aLogger.debug("Client uses websocket protocol version #" + lVersion + "/draft #" + lDraft + " for communication.");
 		}
-
 		RequestHeader lHeader = new RequestHeader();
 		Map<String, String> lArgs = new HashMap<String, String>();
 		String lPath = (String) aReqMap.get("path");
-
 		// isolate search string
 		String lSearchString = "";
-		if (lPath != null) {
+		if (lPath
+				!= null) {
 			int lPos = lPath.indexOf(JWebSocketCommonConstants.PATHARG_SEPARATOR);
 			if (lPos >= 0) {
 				lSearchString = lPath.substring(lPos + 1);
@@ -106,13 +116,14 @@ public class EngineUtils {
 				}
 			}
 		}
-
 		// if no sub protocol given in request header , try
 		String lSubProt = (String) aReqMap.get(RequestHeader.WS_PROTOCOL);
-		if (lSubProt == null) {
+		if (lSubProt
+				== null) {
 			lSubProt = lArgs.get(RequestHeader.WS_PROTOCOL);
 		}
-		if (lSubProt == null) {
+		if (lSubProt
+				== null) {
 			lSubProt = JWebSocketCommonConstants.WS_SUBPROT_DEFAULT;
 		}
 
@@ -122,7 +133,8 @@ public class EngineUtils {
 		// choice. Right now, we will just choose the first one if more than one are
 		// available.
 		// TODO: implement subprotocol choice handling by deferring the decision to plugins/listeners
-		if (lSubProt.indexOf(' ') != -1) {
+		if (lSubProt.indexOf(
+				' ') != -1) {
 			lSubProt = lSubProt.split(" ")[0];
 			aReqMap.put(RequestHeader.WS_PROTOCOL, lSubProt);
 		}
@@ -131,15 +143,20 @@ public class EngineUtils {
 		lHeader.put(RequestHeader.WS_ORIGIN, aReqMap.get(RequestHeader.WS_ORIGIN));
 		lHeader.put(RequestHeader.WS_LOCATION, aReqMap.get(RequestHeader.WS_LOCATION));
 		lHeader.put(RequestHeader.WS_PROTOCOL, lSubProt);
+
 		lHeader.put(RequestHeader.WS_PATH, aReqMap.get(RequestHeader.WS_PATH));
 		lHeader.put(RequestHeader.WS_SEARCHSTRING, lSearchString);
+
 		lHeader.put(RequestHeader.URL_ARGS, lArgs);
+
 		lHeader.put(RequestHeader.WS_DRAFT,
-				lDraft == null
+				lDraft
+				== null
 				? JWebSocketCommonConstants.WS_DRAFT_DEFAULT
 				: lDraft);
 		lHeader.put(RequestHeader.WS_VERSION,
-				lVersion == null
+				lVersion
+				== null
 				? JWebSocketCommonConstants.WS_VERSION_DEFAULT
 				: lVersion);
 
@@ -175,7 +192,7 @@ public class EngineUtils {
 				}
 			}
 		}
-		
+
 		aReqMap.put(RequestHeader.WS_COOKIES, lCookiesMap);
 	}
 }

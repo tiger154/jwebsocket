@@ -66,22 +66,6 @@ public class TomcatWrapper extends MessageInbound {
 		return lSubProt;
 	}
 
-	public static boolean verifyOrigin(String aOrigin, List<String> aDomains) {
-		// if no domain list passed allow all domains per default
-		if (null == aDomains || aDomains.isEmpty()) {
-			return true;
-		}
-
-		// otherwise check if domain matches allowed domains
-		for (String lDomain : aDomains) {
-			lDomain = lDomain.replace("*", ".*");
-			if (aOrigin.matches(lDomain)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public TomcatWrapper(TomcatEngine aEngine, HttpServletRequest aRequest, String aSubProtocol) {
 		super();
 		mEngine = aEngine;
