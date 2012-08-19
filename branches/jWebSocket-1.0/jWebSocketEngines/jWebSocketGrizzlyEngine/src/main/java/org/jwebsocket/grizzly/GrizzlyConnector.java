@@ -71,7 +71,6 @@ public class GrizzlyConnector extends BaseConnector {
 
 		RequestHeader lHeader = new RequestHeader();
 
-		// TODO: check with Alex which are the url args, these? (?param1=data&param2=other&...)
 		if (null != aRequest.getQueryString()) {
 			try {
 				// Parsing URL arguments
@@ -130,14 +129,8 @@ public class GrizzlyConnector extends BaseConnector {
 	public void startConnector() {
 		mRunning = true;
 
-		int lPort = -1;
 		int lTimeout = -1;
-		try {
-			lPort = getRemotePort();
-			// TODO: Get Grizzly connection timeout
-			// lTimeout = mRequest.getTimeout();
-		} catch (Exception lEx) {
-		}
+		int lPort = getRemotePort();
 		String lNodeStr = getNodeId();
 		if (lNodeStr != null) {
 			lNodeStr = " (unid: " + lNodeStr + ")";
@@ -151,54 +144,43 @@ public class GrizzlyConnector extends BaseConnector {
 					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
 		}
 
-		// call connectorStarted method of engine
-		WebSocketEngine lEngine = getEngine();
-		if (lEngine != null) {
-			lEngine.connectorStarted(this);
-		}
+		super.startConnector();
 	}
 
 	@Override
 	public void stopConnector(CloseReason aCloseReason) {
-		if (mConnection.isConnected()) {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Stopping " + mLogInfo
-						+ " connector (" + aCloseReason.name()
-						+ ") at port " + getRemotePort() + "...");
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Stopping " + mLogInfo
+					+ " connector (" + aCloseReason.name()
+					+ ") at port " + getRemotePort() + "...");
+		}
+
+		if (CloseReason.CLIENT != aCloseReason) {
+			WebSocketPacket lClose;
+			lClose = new RawPacket(WebSocketFrameType.CLOSE,
+					WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name()));
+			WebSocketConnectorStatus lStatus = getStatus();
+			try {
+				// to ensure that the close packet can be sent at all!
+				setStatus(WebSocketConnectorStatus.UP);
+				sendPacketInTransaction(lClose);
+			} catch (WebSocketException ex) {
+				mLog.error("Could not send close notification packet "
+						+ ex.getMessage());
+			} finally {
+				setStatus(lStatus);
 			}
+		}
 
-			if (CloseReason.CLIENT != aCloseReason) {
-				WebSocketPacket lClose;
-				lClose = new RawPacket(WebSocketFrameType.CLOSE,
-						WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name()));
-				WebSocketConnectorStatus lStatus = getStatus();
-				try {
-					// to ensure that the close packet can be sent at all!
-					setStatus(WebSocketConnectorStatus.UP);
-					sendPacketInTransaction(lClose);
-				} catch (WebSocketException ex) {
-					mLog.error("Could not send close notification packet "
-							+ ex.getMessage());
-				} finally {
-					setStatus(lStatus);
-				}
-			}
+		mConnection.close();
+		mRunning = false;
 
-			mConnection.close();
-			mRunning = false;
+		super.stopConnector(aCloseReason);
 
-			//if the server shuts down the server we have to notify again 
-			// call connectorStarted method of engine
-//			WebSocketEngine lEngine = getEngine();
-//			if (lEngine != null) {
-//				lEngine.connectorStopped(this, aCloseReason);
-//			}
-
-			if (mLog.isInfoEnabled()) {
-				mLog.info("Stopped Grizzly connector ("
-						+ aCloseReason.name() + ") at port "
-						+ getRemotePort() + ".");
-			}
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Stopped Grizzly connector ("
+					+ aCloseReason.name() + ") at port "
+					+ getRemotePort() + ".");
 		}
 	}
 
@@ -211,9 +193,9 @@ public class GrizzlyConnector extends BaseConnector {
 
 	@Override
 	public synchronized void sendPacket(WebSocketPacket aDataPacket) {
-//		if (mLog.isDebugEnabled()) {
-//			mLog.debug("Sending packet '" + aDataPacket.getUTF8() + "'...");
-//		}
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Sending packet '" + aDataPacket.getUTF8() + "'...");
+		}
 
 		try {
 			if (mConnection.isConnected()) {
@@ -225,13 +207,13 @@ public class GrizzlyConnector extends BaseConnector {
 				} else {
 					mConnection.send(aDataPacket.getByteArray());
 				}
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Packet '" + aDataPacket.getUTF8() + "' sent.");
+				}
 			}
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " sending data packet: " + lEx.getMessage());
 		}
-//		if (mLog.isDebugEnabled()) {
-//			mLog.debug("Packet '" + aDataPacket.getUTF8() + "' sent.");
-//		}
 	}
 
 	@Override
@@ -303,14 +285,12 @@ public class GrizzlyConnector extends BaseConnector {
 	 */
 	@Override
 	public String toString() {
-		// TODO: weird results like... '0:0:0:0:0:0:0:1:61130'... on JDK 1.6u19
-		// Windows 7 64bit
 		String lRes = getRemoteHost().getHostAddress() + ":" + getRemotePort();
-		// TODO: don't hard code. At least use JWebSocketConstants field here.
-		String lUsername = getString("org.jwebsocket.plugins.system.username");
+		String lUsername = getUsername();
 		if (lUsername != null) {
 			lRes += " (" + lUsername + ")";
 		}
+
 		return lRes;
 	}
 }

@@ -28,23 +28,24 @@ public class jWebSocketGrizzlyTools {
 
 	/**
 	 *
-	 * @param uri
+	 * @param aUri
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public static Map<String, String> getUrlParameters(String uri)
+	public static Map<String, String> getUrlParameters(String aUri)
 			throws UnsupportedEncodingException {
-		Map<String, String> params = new FastMap<String, String>();
+		Map<String, String> lParams = new FastMap<String, String>();
 
-		for (String param : uri.split("&")) {
-			String pair[] = param.split("=");
-			String key = URLDecoder.decode(pair[0], "UTF-8");
-			String value = "";
-			if (pair.length > 1) {
-				value = URLDecoder.decode(pair[1], "UTF-8");
+		for (String lParam : aUri.split("&")) {
+			String lPair[] = lParam.split("=");
+			String lKey = URLDecoder.decode(lPair[0], "UTF-8");
+			String lValue = "";
+			if (lPair.length > 1) {
+				lValue = URLDecoder.decode(lPair[1], "UTF-8");
 			}
-			params.put(key, value);
+			lParams.put(lKey, lValue);
 		}
-		return params;
+		
+		return lParams;
 	}
 }

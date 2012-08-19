@@ -43,9 +43,9 @@ import org.jwebsocket.kit.RequestHeader;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.storage.httpsession.HttpSessionStorage;
+import org.jwebsocket.tcp.EngineUtils;
 import org.jwebsocket.tomcat.TomcatEngine;
 import org.jwebsocket.tomcat.TomcatWrapper;
-import org.jwebsocket.util.Tools;
 
 /**
  * @author Osvaldo Aguilar Lauzurique @email osvaldo2627@hab.uci.cu
@@ -58,6 +58,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	private Map<String, Integer> mMonitoringClientDisconnect = new FastMap<String, Integer>();
 	private Map<String, Queue<WebSocketPacket>> mPacketsQueue = new FastMap<String, Queue<WebSocketPacket>>();
 	private TomcatEngine mEngine;
+	Map<String, String> mInternalConnectorIds = new FastMap<String, String>();
 
 	public CometServlet() {
 	}
@@ -116,26 +117,29 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		}
 		mEngine = (TomcatEngine) JWebSocketFactory.getEngine("tomcat0");
 		mLog = Logging.getLogger();
-		
+
 		super.init();
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("CometServlet successfully initialized.");
 		}
 	}
 
-	/**
-	 * Generate comet connector's UIDs
-	 *
-	 * @param aEvent
-	 * @return a connector UID
-	 */
-	public static String generateUID(CometEvent aEvent) {
-		return Tools.getMD5(aEvent.getHttpServletRequest().getSession().getId() + "comet");
+	public void saveIntervalId(String aConnectorId, String aSessionId) {
+		mInternalConnectorIds.put(aSessionId, aConnectorId);
+	}
+
+	public String getInternalId(String aSessionId) {
+		return mInternalConnectorIds.get(aSessionId);
+	}
+
+	public void removeInternalId(String aSessionId) {
+		mInternalConnectorIds.remove(aSessionId);
 	}
 
 	@Override
 	public void event(CometEvent aEvent) throws IOException, ServletException {
-		String lConnectorId = generateUID(aEvent);
+		String lHttpSessionId = aEvent.getHttpServletRequest().getSession().getId();
+		String lConnectorId = getInternalId(lHttpSessionId);
 		aEvent.setTimeout(mEngine.getConfiguration().getTimeout());
 
 		if (aEvent.getEventType() == EventType.BEGIN) {
@@ -143,18 +147,20 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 			 *
 			 */
 		} else if (aEvent.getEventType() == EventType.ERROR) {
-			CloseReason lReason = CloseReason.CLIENT;
-			if (aEvent.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
-				lReason = CloseReason.TIMEOUT;
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Stopping CometConnector '" + lConnectorId + "' due to timeout reason...");
+			if (mEngine.getConnectors().containsKey(lConnectorId)) {
+				CloseReason lReason = CloseReason.CLIENT;
+				if (aEvent.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
+					lReason = CloseReason.TIMEOUT;
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Stopping CometConnector '" + lConnectorId + "' due to timeout reason...");
+					}
+				} else {
+					mLog.error("Unexpected error detected. Stopping CometConnector '" + lConnectorId + "' ...");
 				}
-			} else {
-				mLog.error("Unexpected error detected. Stopping CometConnector '" + lConnectorId + "' ...");
+				CometConnector lConnector = ((CometConnector) mEngine.getConnectors().get(lConnectorId));
+				lConnector.stopConnector(lReason);
+				mMonitoringClientDisconnect.remove(lHttpSessionId);
 			}
-			CometConnector lConnector = ((CometConnector) mEngine.getConnectors().get(lConnectorId));
-			lConnector.stopConnector(lReason);
-			mMonitoringClientDisconnect.remove(lConnectorId);
 		} else if (aEvent.getEventType() == EventType.READ) {
 			InputStream lIn = aEvent.getHttpServletRequest().getInputStream();
 			byte[] lBuffer = new byte[mEngine.getConfiguration().getMaxFramesize()];
@@ -172,14 +178,14 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 			processMessage(lInputMessage, aEvent);
 		} else if (aEvent.getEventType() == EventType.END) {
 
-			int lCode = mMonitoringClientDisconnect.get(lConnectorId);
+			int lCode = mMonitoringClientDisconnect.get(lHttpSessionId);
 			if (lCode < 2) {
 				lCode++;
-				mMonitoringClientDisconnect.put(lConnectorId, lCode);
+				mMonitoringClientDisconnect.put(lHttpSessionId, lCode);
 			} else {
 				CometConnector lConnector = ((CometConnector) mEngine.getConnectors().get(lConnectorId));
 				lConnector.stopConnector(CloseReason.CLIENT);
-				mMonitoringClientDisconnect.remove(lConnectorId);
+				mMonitoringClientDisconnect.remove(lHttpSessionId);
 			}
 			aEvent.close();
 		}
@@ -195,8 +201,8 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 			lData = aMessage.get("data");
 		}
 
-		String lConnectorId = generateUID(aEvent);
-		mMonitoringClientDisconnect.put(lConnectorId, 0);
+		String lHttpSessionId = aEvent.getHttpServletRequest().getSession().getId();
+		mMonitoringClientDisconnect.put(lHttpSessionId, 0);
 
 		if (lCometType.equals("connection")) {
 			handleConnectionMessage(lSubProt, lReadyState, aEvent);
@@ -216,7 +222,8 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	 */
 	private void handleConnectionMessage(String aSubProt, int aState, CometEvent aEvent) {
 		HttpSession lSession = aEvent.getHttpServletRequest().getSession();
-		String lConnectorId = generateUID(aEvent);
+		String lHttpSessionId = lSession.getId();
+		String lConnectorId = getInternalId(lHttpSessionId);
 
 		// client tries to open a connection
 		if (aState == 0) {
@@ -224,11 +231,11 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 				String lOrigin = aEvent.getHttpServletRequest().getScheme() + "//"
 						+ aEvent.getHttpServletRequest().getServerName();
 
-				if (TomcatWrapper.verifyOrigin(lOrigin, mEngine.getConfiguration().getDomains())) {
+				if (EngineUtils.isOriginValid(lOrigin, mEngine.getConfiguration().getDomains())) {
 					String lMessage = createMessage(aSubProt, "connection", 1, "");
 
 					// stopping connector if previously exists (for browser reload support)
-					if (mEngine.getConnectors().containsKey(lConnectorId)) {
+					if (null != lConnectorId && mEngine.getConnectors().containsKey(lConnectorId)) {
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Stopping connector '" + lConnectorId + "' due to web application reload...");
 						}
@@ -244,12 +251,12 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 						mLog.debug("Request for connection received...");
 					}
 
-					CometConnector lConnector = new CometConnector(mEngine, aEvent);
+					CometConnector lConnector = new CometConnector(mEngine, this, aEvent);
 					mEngine.addConnector(lConnector);
-					lConnector.setServlet(this);
-					getPacketsQueue().put(lConnectorId, new LinkedBlockingDeque<WebSocketPacket>());
+					saveIntervalId(lConnector.getId(), lHttpSessionId);
+					getPacketsQueue().put(lConnector.getId(), new LinkedBlockingDeque<WebSocketPacket>());
 
-					mMonitoringClientDisconnect.put(lConnector.getId(), 0);
+					mMonitoringClientDisconnect.put(lHttpSessionId, 0);
 
 					RequestHeader lHeader = new RequestHeader();
 					lHeader.put(RequestHeader.WS_PROTOCOL, aSubProt);
@@ -257,7 +264,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 					lConnector.setHeader(lHeader);
 					lConnector.setReadyState(1);
 
-					lConnector.getSession().setSessionId(lConnectorId);
+					lConnector.getSession().setSessionId(lHttpSessionId);
 					lConnector.getSession().setStorage(new HttpSessionStorage(lSession));
 
 					// starting connector notification
@@ -282,7 +289,12 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	}
 
 	private void handleDataMessage(int aState, Object aData, CometEvent aEvent) {
-		String lConnectorId = generateUID(aEvent);
+		String lConnectorId = getInternalId(aEvent.getHttpServletRequest().
+				getSession().getId());
+		if (null == lConnectorId) {
+			return;
+		}
+
 		CometConnector lConnector = (CometConnector) mEngine.getConnectors().get(lConnectorId);
 
 		if (aState == 1) {

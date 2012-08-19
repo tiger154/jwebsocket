@@ -49,11 +49,12 @@ public class CometConnector extends BaseConnector {
 	private InetAddress mRemoteHost;
 	private CometServlet mServlet;
 
-	public CometConnector(WebSocketEngine aEngine, CometEvent aEvent) {
+	public CometConnector(WebSocketEngine aEngine, CometServlet aServlet, CometEvent aEvent) {
 		super(aEngine);
 
 		mEvent = aEvent;
-		mId = CometServlet.generateUID(aEvent);
+		mServlet = aServlet;
+
 		mRemotePort = mEvent.getHttpServletRequest().getRemotePort();
 		try {
 			mRemoteHost = InetAddress.getByName(mEvent.getHttpServletRequest().getRemoteAddr());
@@ -64,10 +65,6 @@ public class CometConnector extends BaseConnector {
 
 	public CometServlet getServlet() {
 		return mServlet;
-	}
-
-	public void setServlet(CometServlet aServlet) {
-		this.mServlet = aServlet;
 	}
 
 	public int getReadyState() {
@@ -102,11 +99,6 @@ public class CometConnector extends BaseConnector {
 	}
 
 	@Override
-	public String getId() {
-		return mId;
-	}
-
-	@Override
 	public void startConnector() {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Starting connector '" + getId() + "'...");
@@ -134,6 +126,9 @@ public class CometConnector extends BaseConnector {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping connector '" + getId() + "' ..."));
 			}
 		}
+		// removing internal connector id
+		mServlet.removeInternalId(getSession().getSessionId());
+
 		// removing delayed packets for connector
 		mServlet.getPacketsQueue().remove(getId());
 
@@ -182,9 +177,8 @@ public class CometConnector extends BaseConnector {
 	}
 
 	public synchronized void checkPacketQueueByEvent(CometEvent aEvent) {
-		String lConnectorId = CometServlet.generateUID(aEvent);
 		try {
-			if (!mServlet.isPacketQueueEmpty(lConnectorId)) {
+			if (!mServlet.isPacketQueueEmpty(getId())) {
 				List<WebSocketPacket> lDelayedPackets = getAvailablePackets(mServlet.getPacketsQueue().get(getId()));
 				WebSocketPacket lPacket = __setupCometMessageResponse(getReadyState(), "message", lDelayedPackets);
 

@@ -100,13 +100,29 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	 */
 	@Override
 	public boolean isApplicationRequest(HttpRequestPacket aRequest) {
+		String lOrigin = aRequest.getHeader("origin");
+		if (!EngineUtils.isOriginValid(lOrigin, mEngine.getConfiguration().getDomains())) {
+			mLog.error("Client origin '" + lOrigin + "' does not match allowed domains!");
+			return false;
+		}
 
 		// The jWebSocket context from the engine configuration
 		String lContext = mEngine.getConfiguration().getContext();
 		// The jWebSocket servlet from the engine configuration
 		String lServlet = mEngine.getConfiguration().getServlet();
 
-		boolean isApp = (lContext + lServlet).equals(aRequest.getRequestURI());
+		// boolean isApp = (lContext + lServlet).equals(aRequest.getRequestURI());
+		boolean isApp = true; // all request URIs must be allowed
+
+		if (mEngine.getMaxConnections() == mEngine.getConnectors().size()) {
+			// max connections reached
+			// Grizzly only supports "close" as max connections reached strategy 
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Incoming connection on  port '" + aRequest.getRemotePort() + "' "
+						+ "has been closed due to maximum number of connections reached!");
+			}
+			aRequest.getConnection().close();
+		}
 
 		if (isApp) {
 			mRequest = aRequest;
@@ -119,10 +135,12 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 			EngineUtils.parseCookies(mCookies);
 			Map lCookies = (Map) mCookies.get(RequestHeader.WS_COOKIES);
 			Object lSessionId = lCookies.get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME);
+			String lPath = aRequest.getRequestURI();
 
 			if (null == lSessionId) {
 				lSessionId = Tools.getMD5(UUID.randomUUID().toString());
-				mRequest.getResponse().addHeader("Set-Cookie", JWebSocketCommonConstants.SESSIONID_COOKIE_NAME + "=" + lSessionId + "; HttpOnly");
+				mRequest.getResponse().addHeader("Set-Cookie", JWebSocketCommonConstants.SESSIONID_COOKIE_NAME + "="
+						+ lSessionId + "; Path=" + lPath + "; HttpOnly");
 				lCookies.put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, lSessionId);
 			}
 		}
@@ -164,48 +182,13 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	 */
 	@Override
 	public void onClose(WebSocket aWebSocket, DataFrame aFrame) {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Disconnecting Grizzly Client...");
-		}
 		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
 
 		if (lConnector != null) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Disconnecting Grizzly Client...");
+			}
 			lConnector.stopConnector(CloseReason.CLIENT);
-			mEngine.connectorStopped(lConnector, CloseReason.CLIENT);
-		}
-
-		mConnectors.remove(aWebSocket);
-	}
-
-	/**
-	 *
-	 * @param aWebSocket
-	 * @param aFragment
-	 * @param aLast
-	 */
-	@Override
-	public void onFragment(WebSocket aWebSocket, String aFragment, boolean aLast) {
-		super.onFragment(aWebSocket, aFragment, aLast);
-
-		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
-		if (lConnector != null) {
-			mEngine.processPacket(lConnector, new RawPacket(aFragment));
-		}
-	}
-
-	/**
-	 *
-	 * @param aWebSocket
-	 * @param aFragment
-	 * @param aLast
-	 */
-	@Override
-	public void onFragment(WebSocket aWebSocket, byte[] aFragment, boolean aLast) {
-		super.onFragment(aWebSocket, aFragment, aLast);
-
-		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
-		if (lConnector != null) {
-			mEngine.processPacket(lConnector, new RawPacket(aFragment));
 		}
 	}
 
@@ -216,11 +199,11 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	 */
 	@Override
 	public void onMessage(WebSocket aWebSocket, String aData) {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Message (text) from Grizzly client...");
-		}
 		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
 		if (lConnector != null) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Processing (text) message from '" + lConnector.getId() + "' connector...");
+			}
 			mEngine.processPacket(lConnector, new RawPacket(aData));
 		}
 	}
@@ -232,11 +215,11 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	 */
 	@Override
 	public void onMessage(WebSocket aWebSocket, byte[] aBytes) {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Message (binary) from Grizzly client...");
-		}
 		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
 		if (lConnector != null) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Processing (binary) message from '" + lConnector.getId() + "' connector...");
+			}
 			mEngine.processPacket(lConnector, new RawPacket(aBytes));
 		}
 	}
