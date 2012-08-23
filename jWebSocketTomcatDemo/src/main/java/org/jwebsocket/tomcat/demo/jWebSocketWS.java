@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.tomcat.TomcatEngine;
 import org.jwebsocket.tomcat.TomcatWrapper;
 
 /**
@@ -30,19 +32,21 @@ import org.jwebsocket.tomcat.TomcatWrapper;
  */
 public class jWebSocketWS extends WebSocketServlet {
 
-	private HttpServletRequest mRequest;
+	private ThreadLocal<HttpServletRequest> mRequestContainer = new ThreadLocal<HttpServletRequest>();
+	private TomcatEngine mEngine;
 
 	@Override
 	protected StreamInbound createWebSocketInbound(String aSubProtocol) {
 		if (null == aSubProtocol) {
 			aSubProtocol = JWebSocketCommonConstants.WS_SUBPROT_JSON;
 		}
-		return new TomcatWrapper(mRequest, aSubProtocol);
+		return new TomcatWrapper(mEngine, mRequestContainer.get(), aSubProtocol);
 	}
 
 	@Override
 	public void init() throws ServletException {
 		super.init();
+		mEngine = (TomcatEngine) JWebSocketFactory.getEngine("tomcat0");
 	}
 
 	@Override
@@ -54,7 +58,7 @@ public class jWebSocketWS extends WebSocketServlet {
 	@Override
 	protected boolean verifyOrigin(String aOrigin) {
 		// super.verifyOrigin(aOrigin);
-		
+
 		// @TODO pass a list of valid domains here
 		return TomcatWrapper.verifyOrigin(aOrigin, null);
 	}
@@ -62,7 +66,7 @@ public class jWebSocketWS extends WebSocketServlet {
 	@Override
 	protected void service(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
 		// save the request, since this is not available anymore in the createWebSocketInbound method
-		mRequest = aRequest;
+		mRequestContainer.set(aRequest);
 		super.service(aRequest, aResponse);
 	}
 }
