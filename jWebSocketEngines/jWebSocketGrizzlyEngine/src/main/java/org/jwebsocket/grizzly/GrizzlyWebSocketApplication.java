@@ -107,9 +107,9 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		}
 
 		// The jWebSocket context from the engine configuration
-		String lContext = mEngine.getConfiguration().getContext();
+		// String lContext = mEngine.getConfiguration().getContext();
 		// The jWebSocket servlet from the engine configuration
-		String lServlet = mEngine.getConfiguration().getServlet();
+		// String lServlet = mEngine.getConfiguration().getServlet();
 
 		// boolean isApp = (lContext + lServlet).equals(aRequest.getRequestURI());
 		boolean isApp = true; // all request URIs must be allowed

@@ -48,7 +48,7 @@ jws.tests.Load = {
 			}
 			
 			waitsFor(
-				// wait a maximum of 200ms per connection
+				// wait a maximum of 300ms per connection
 				function() {
 					return( lLoggedIn == aAmount );
 				},

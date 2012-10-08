@@ -23,8 +23,6 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javolution.util.FastMap;
 import org.apache.catalina.comet.CometEvent;
@@ -34,7 +32,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
 import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.console.JWebSocketServer;
+import org.jwebsocket.engines.ServletUtils;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.CloseReason;
@@ -44,18 +42,17 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 import org.jwebsocket.tcp.EngineUtils;
+import org.jwebsocket.tomcat.ContextListener;
 import org.jwebsocket.tomcat.TomcatEngine;
-import org.jwebsocket.tomcat.TomcatWrapper;
+import org.jwebsocket.util.Tools;
 
 /**
- * @author Osvaldo Aguilar Lauzurique @email osvaldo2627@hab.uci.cu
+ * @author Osvaldo Aguilar Lauzurique <osvaldo2627@gmail.com>
  * @author kyberneees
  */
 public class CometServlet extends HttpServlet implements CometProcessor {
 
-	private boolean mRunningEmbedded = false;
 	private static Logger mLog;
-	private Map<String, Integer> mMonitoringClientDisconnect = new FastMap<String, Integer>();
 	private Map<String, Queue<WebSocketPacket>> mPacketsQueue = new FastMap<String, Queue<WebSocketPacket>>();
 	private TomcatEngine mEngine;
 	Map<String, String> mInternalConnectorIds = new FastMap<String, String>();
@@ -64,7 +61,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	}
 
 	public boolean isRunningEmbedded() {
-		return mRunningEmbedded;
+		return ContextListener.isRunningEmbedded();
 	}
 
 	public boolean isPacketQueueEmpty(String aConnectorId) {
@@ -75,52 +72,50 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		return mPacketsQueue;
 	}
 
-	private void checkHeaders(HttpServletRequest aRequest, HttpServletResponse aResponse) {
-		String lAllowedMethods = aResponse.getHeader("Allow");
-
-		if (null == lAllowedMethods) {
-			lAllowedMethods = "GET, HEAD, POST, TRACE, OPTIONS";
-		}
-		aResponse.setHeader("Allow", lAllowedMethods);
-
-		String lOrigin = aRequest.getHeader("Origin");
-		String lMethod = aRequest.getHeader("Access-Control-Request-Method");
-		String lHeaders = aRequest.getHeader("Access-Control-Request-Headers");
-		if (null != lOrigin) {
-			aResponse.setHeader("Access-Control-Allow-Origin", lOrigin);
-		}
-		if (null != lMethod) {
-			aResponse.setHeader("Access-Control-Allow-Methods", lMethod);
-		} else {
-			aResponse.setHeader("Access-Control-Allow-Methods", lAllowedMethods);
-		}
-		if (null != lHeaders) {
-			aResponse.setHeader("Access-Control-Allow-Headers", lHeaders);
-		} else {
-			aResponse.setHeader("Access-Control-Allow-Headers", "origin, content-type");
-		}
-	}
-
-	@Override
-	protected void doOptions(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
-		checkHeaders(aRequest, aResponse);
-	}
-
 	@Override
 	public void init() throws ServletException {
-		if (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()) {
-			log("Starting jWebSocket application server...");
-			// running in embedded mode
-			// starting the jWebSocket application server
-			JWebSocketServer.main(new String[0]);
-			log("jWebSocket application server started!");
-		}
-		mEngine = (TomcatEngine) JWebSocketFactory.getEngine("tomcat0");
-		mLog = Logging.getLogger();
+//		if (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()) {
+//			log("Starting jWebSocket application server...");
+//			// running in embedded mode
+//			// starting the jWebSocket application server
+//			final HttpServlet lThis = this;
+//			mJWebSocketThread = new Thread(new Runnable() {
+//				@Override
+//				public void run() {
+//					JWebSocketServer.main(ServletUtils.extractStartupArguments(lThis));
+//				}
+//			});
+//			mJWebSocketThread.start();
+//
+//			// waiting for the jWebSocket server "start process"
+//			while (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()
+//					|| JWebSocketInstance.STARTING == JWebSocketInstance.getStatus()) {
+//			};
+//
+//			if (JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
+//				log("jWebSocket application server started!");
+//				mRunningEmbedded = true;
+//			} else {
+//				// error happen during the jWebSocket server load
+//				throw new ServletException("jWebSocket server could not start!");
+//			}
+//		}
 
-		super.init();
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("CometServlet successfully initialized.");
+		if (JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
+			mLog = Logging.getLogger();
+
+			String lEngineId = getInitParameter(ServletUtils.SERVLET_ENGINE_CONFIG_KEY);
+			if (null == lEngineId) {
+				lEngineId = "tomcat0";
+			}
+			mEngine = (TomcatEngine) JWebSocketFactory.getEngine(lEngineId);
+
+			super.init();
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Servlet successfully initialized.");
+			}
+		} else {
+			throw new ServletException("The jWebSocket server is not started!");
 		}
 	}
 
@@ -139,14 +134,18 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	@Override
 	public void event(CometEvent aEvent) throws IOException, ServletException {
 		String lHttpSessionId = aEvent.getHttpServletRequest().getSession().getId();
-		String lConnectorId = getInternalId(lHttpSessionId);
 		aEvent.setTimeout(mEngine.getConfiguration().getTimeout());
+		String lConnectorId = getInternalId(lHttpSessionId);
 
 		if (aEvent.getEventType() == EventType.BEGIN) {
 			/**
 			 *
 			 */
 		} else if (aEvent.getEventType() == EventType.ERROR) {
+			if (null == lConnectorId) {
+				return;
+			}
+
 			if (mEngine.getConnectors().containsKey(lConnectorId)) {
 				CloseReason lReason = CloseReason.CLIENT;
 				if (aEvent.getEventSubType() == CometEvent.EventSubType.TIMEOUT) {
@@ -159,7 +158,6 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 				}
 				CometConnector lConnector = ((CometConnector) mEngine.getConnectors().get(lConnectorId));
 				lConnector.stopConnector(lReason);
-				mMonitoringClientDisconnect.remove(lHttpSessionId);
 			}
 		} else if (aEvent.getEventType() == EventType.READ) {
 			InputStream lIn = aEvent.getHttpServletRequest().getInputStream();
@@ -177,16 +175,13 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 			// process incoming message
 			processMessage(lInputMessage, aEvent);
 		} else if (aEvent.getEventType() == EventType.END) {
-
-			int lCode = mMonitoringClientDisconnect.get(lHttpSessionId);
-			if (lCode < 2) {
-				lCode++;
-				mMonitoringClientDisconnect.put(lHttpSessionId, lCode);
-			} else {
-				CometConnector lConnector = ((CometConnector) mEngine.getConnectors().get(lConnectorId));
-				lConnector.stopConnector(CloseReason.CLIENT);
-				mMonitoringClientDisconnect.remove(lHttpSessionId);
+			if (null != lConnectorId) {
+				final CometConnector lConnector = ((CometConnector) mEngine.getConnectors().get(lConnectorId));
+				if (aEvent.equals(lConnector.getEvent())) {
+					Tools.getTimer().schedule(lConnector.getNewCloseTask(), 5000);
+				}
 			}
+			// finally close event
 			aEvent.close();
 		}
 	}
@@ -200,9 +195,6 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		if (aMessage.containsKey("data")) {
 			lData = aMessage.get("data");
 		}
-
-		String lHttpSessionId = aEvent.getHttpServletRequest().getSession().getId();
-		mMonitoringClientDisconnect.put(lHttpSessionId, 0);
 
 		if (lCometType.equals("connection")) {
 			handleConnectionMessage(lSubProt, lReadyState, aEvent);
@@ -226,37 +218,38 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		String lConnectorId = getInternalId(lHttpSessionId);
 
 		// client tries to open a connection
-		if (aState == 0) {
+		if (0 == aState) {
 			try {
 				String lOrigin = aEvent.getHttpServletRequest().getScheme() + "//"
 						+ aEvent.getHttpServletRequest().getServerName();
 
 				if (EngineUtils.isOriginValid(lOrigin, mEngine.getConfiguration().getDomains())) {
-					String lMessage = createMessage(aSubProt, "connection", 1, "");
+					CometConnector lConnector;
 
 					// stopping connector if previously exists (for browser reload support)
 					if (null != lConnectorId && mEngine.getConnectors().containsKey(lConnectorId)) {
 						if (mLog.isDebugEnabled()) {
 							mLog.debug("Stopping connector '" + lConnectorId + "' due to web application reload...");
 						}
-						mEngine.getConnectors().get(lConnectorId).stopConnector(CloseReason.CLIENT);
-					}
+						lConnector = (CometConnector) mEngine.getConnectors().get(lConnectorId);
 
-					PrintWriter lWriter = aEvent.getHttpServletResponse().getWriter();
-					lWriter.print(lMessage);
-					lWriter.flush();
-					lWriter.close();
+						lConnector.cancelActiveCloseTask();
+						lConnector.stopConnector(CloseReason.CLIENT);
+					}
 
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Request for connection received...");
 					}
 
-					CometConnector lConnector = new CometConnector(mEngine, this, aEvent);
+					lConnector = new CometConnector(mEngine, this, aEvent);
+					lConnector.setRequest(aEvent.getHttpServletRequest());
+
+					// registering the connector on the engine collection
 					mEngine.addConnector(lConnector);
+
+					// initializing utility collections
 					saveIntervalId(lConnector.getId(), lHttpSessionId);
 					getPacketsQueue().put(lConnector.getId(), new LinkedBlockingDeque<WebSocketPacket>());
-
-					mMonitoringClientDisconnect.put(lHttpSessionId, 0);
 
 					RequestHeader lHeader = new RequestHeader();
 					lHeader.put(RequestHeader.WS_PROTOCOL, aSubProt);
@@ -269,6 +262,13 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 
 					// starting connector notification
 					lConnector.startConnector();
+
+					// sending conection state message
+					String lMessage = createMessage(aSubProt, "connection", lConnector.getReadyState(), "");
+					PrintWriter lWriter = aEvent.getHttpServletResponse().getWriter();
+					lWriter.print(lMessage);
+					lWriter.flush();
+					lWriter.close();
 				} else {
 					mLog.error("Client origin '" + lOrigin + "' does not match allowed domains!");
 					aEvent.close();
@@ -277,9 +277,20 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 			} catch (IOException lEx) {
 				mLog.error("IOExeption sending openning message", lEx);
 			}
-		} else if (aState == 1) {
+		} else if (1 == aState && null != lConnectorId) {
 			CometConnector lConnector = ((CometConnector) mEngine.getConnectors().get(lConnectorId));
+			if (null == lConnector) {
+				try {
+					aEvent.close();
+				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "discarding invalid request!"));
+				}
+				return;
+			}
+			lConnector.cancelActiveCloseTask();
 			lConnector.setEvent(aEvent);
+			// refreshing the http request instance
+			lConnector.setRequest(aEvent.getHttpServletRequest());
 
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Base client connection restarted for connector '" + lConnectorId + "'...");
@@ -292,6 +303,14 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		String lConnectorId = getInternalId(aEvent.getHttpServletRequest().
 				getSession().getId());
 		if (null == lConnectorId) {
+			try {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Discarding incoming data message...");
+				}
+				aEvent.close();
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "discarding data message!"));
+			}
 			return;
 		}
 
@@ -343,14 +362,5 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		}
 
 		return null;
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-
-		if (mRunningEmbedded && JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
-			JWebSocketFactory.stop();
-		}
 	}
 }

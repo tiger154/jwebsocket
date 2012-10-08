@@ -27,6 +27,7 @@
 		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
 		
 		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
+		<script src="../../res/js/jWebSocketComet.js" type="text/javascript"></script>
 		<script type="text/javascript" language="JavaScript">
 
 			var eLog = null;
@@ -50,8 +51,8 @@
 			function connect() {
 				// URL is ws[s]://[hostname|localhost][:port][/context][/servlet/][;args...]
 				// var lURL = "wss://localhost:9797/jWebSocket/jWebSocket"; // for Jetty SSL Servlet
-				var lURL = jws.getDefaultServerURL();
-
+				var lURL = jws.getDefaultServerCometURL();
+				jws.enableCometSupportForWebSockets();
 				log( "Connecting to " + lURL + " ..." );
 				if( lWSC.isConnected()) {
 					log( "Already connected." );

@@ -433,5 +433,5 @@ jws.ChannelPlugIn = {
 
 };
 
-// add the ChannelPlugIn PlugIn into the jWebSocketTokenClient class
+// add the ChannelPlugIn into the jWebSocketTokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ChannelPlugIn );

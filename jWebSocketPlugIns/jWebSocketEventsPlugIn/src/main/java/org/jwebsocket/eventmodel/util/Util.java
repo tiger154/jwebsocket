@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import javolution.util.FastList;
 import org.json.JSONObject;
+import org.jwebsocket.api.IEmbeddedAuthentication;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.api.IServerSecureComponent;
 import org.jwebsocket.eventmodel.exception.InvalidExecutionTime;
@@ -42,8 +43,8 @@ public class Util {
 
 	/**
 	 * Generate a string unique token identifier (UTID)
-	 * 
-	 * @param aToken 
+	 *
+	 * @param aToken
 	 * @return The string unique token identifier
 	 */
 	public static String generateSharedUTID(Token aToken) throws Exception {
@@ -62,10 +63,12 @@ public class Util {
 	}
 
 	/**
-	 * Takes a specific IP address and a range using the IP/Netmask (e.g. 192.168.1.0/24 or 202.24.0.0/14).
+	 * Takes a specific IP address and a range using the IP/Netmask (e.g.
+	 * 192.168.1.0/24 or 202.24.0.0/14).
 	 *
 	 * @param aIpAddress the address to check
-	 * @param aIpAddressRange the range of addresses that most contain the IP address
+	 * @param aIpAddressRange the range of addresses that most contain the IP
+	 * address
 	 * @return true if the IP address is in the range of addresses.
 	 */
 	public static boolean isIpAddressInRange(String aIpAddress, String aIpAddressRange) {
@@ -160,27 +163,143 @@ public class Util {
 	}
 
 	/**
-	 * Check the security restrictions on a ISecureComponent. 
-	 * <p>
-	 * If the check fail, an exception is Thrown
+	 * Check the security restrictions on a ISecureComponent. <p> If the check
+	 * fail, an exception is Thrown
 	 *
 	 * @throws Exception
 	 */
 	public static void checkSecurityRestrictions(IServerSecureComponent aSecureObject,
-			WebSocketConnector aConnector, boolean aIsAuthenticated, String aUsername, List<String> aAuthorities) throws Exception {
-		//Leaving if the security checks are not enabled
+			IEmbeddedAuthentication aAuthentication) throws Exception {
+		//Leaving if the security checks are not required
 		if (!aSecureObject.isSecurityEnabled()) {
 			return;
 		}
 
 		//NOT '!' operator flag
-		boolean lExclusion = false;
+		boolean lExclusion;
 
 		//Temporal variables
 		Iterator<String> lIterator;
 		String lValue;
-		boolean lAuthorityAuthorized = false, lIpAuthorized = false,
-				lUserAuthorized = false, lUserMatch = false, lStop = false;
+		boolean lAuthorityAuthorized = false,
+				lIpAuthorized = false,
+				lUserAuthorized = false,
+				lUserMatch = false;
+
+		// caching local
+		boolean lIsClientAuthenticated = aAuthentication.isAuthenticated();
+
+		//Processing ip addresses restrictions
+		if (aSecureObject.getIpAddresses().size() > 0) {
+			lIterator = aSecureObject.getIpAddresses().iterator();
+			while (lIterator.hasNext()) {
+				lValue = lIterator.next();
+
+				if (!lValue.equals("all")) {
+					lExclusion = (lValue.startsWith("!")) ? true : false;
+					lValue = (lExclusion) ? lValue.substring(1) : lValue;
+
+					if (Util.isIpAddressInRange(aAuthentication.getRemoteHost().getHostAddress(), lValue)) {
+						lIpAuthorized = (lExclusion) ? false : true;
+						break;
+					}
+				} else {
+					lIpAuthorized = true;
+					break;
+				}
+			}
+			if (!lIpAuthorized) {
+				throw new NotAuthorizedException("Your IP address '"
+						+ aAuthentication.getRemoteHost().getHostAddress()
+						+ "' is not authorized to execute the operation!");
+			}
+		}
+
+		//Processing users
+		if (aSecureObject.getUsers().size() > 0) {
+			if (lIsClientAuthenticated) {
+				lIterator = aSecureObject.getUsers().iterator();
+				while (lIterator.hasNext()) {
+					lValue = lIterator.next();	//Required USER
+
+					if (!lValue.equals("all")) {
+						lExclusion = (lValue.startsWith("!")) ? true : false;
+						lValue = (lExclusion) ? lValue.substring(1) : lValue;
+
+						if (lValue.equals(aAuthentication.getUsername())) {
+							lUserMatch = true;
+							if (!lExclusion) {
+								lUserAuthorized = true;
+								break;
+							}
+						}
+					} else {
+						lUserMatch = true;
+						lUserAuthorized = true;
+						break;
+					}
+				}
+			}
+			//Not authorized!
+			if (!lUserAuthorized && lUserMatch || aSecureObject.getRoles().isEmpty()) {
+				throw new NotAuthorizedException("Invalid credentials to execute the operation!");
+			}
+		}
+
+		//Processing roles restrictions
+		if (aSecureObject.getRoles().size() > 0) {
+			if (lIsClientAuthenticated) {
+				lIterator = aSecureObject.getRoles().iterator();
+				while (lIterator.hasNext()) {
+					lValue = lIterator.next();	//Required ROLE
+
+					if (!lValue.equals("all")) {
+						lExclusion = (lValue.startsWith("!")) ? true : false;
+						lValue = (lExclusion) ? lValue.substring(1) : lValue;
+
+						if (aAuthentication.hasAuthority(lValue)) {
+							if (!lExclusion) {
+								lAuthorityAuthorized = true; //Authorized!
+							}
+							break;
+						}
+					} else {
+						lAuthorityAuthorized = true;
+						break;
+					}
+				}
+			}
+			//Not authorized!
+			if (!lAuthorityAuthorized) {
+				throw new NotAuthorizedException("Invalid credentials to execute the operation!");
+			}
+		}
+	}
+
+	/**
+	 * Check the security restrictions on a ISecureComponent. <p> If the check
+	 * fail, an exception is Thrown
+	 *
+	 * @throws Exception
+	 */
+	public static void checkSecurityRestrictions(IServerSecureComponent aSecureObject,
+			WebSocketConnector aConnector, boolean aIsAuthenticated, String aUsername, List<String> aAuthorities) throws Exception {
+		//Leaving if the security checks are not required
+		if (!aSecureObject.isSecurityEnabled()) {
+			return;
+		}
+
+		//NOT '!' operator flag
+		boolean lExclusion;
+
+		//Temporal variables
+		Iterator<String> lIterator;
+		String lValue;
+		boolean lAuthorityAuthorized = false,
+				lIpAuthorized = false,
+				lUserAuthorized = false,
+				lUserMatch = false,
+				lStop = false;
 
 		//Processing ip addresses restrictions
 		if (aSecureObject.getIpAddresses().size() > 0) {

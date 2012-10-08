@@ -23,8 +23,49 @@ import org.jwebsocket.api.ITokenizable;
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
 public interface Token {
+
+	/**
+	 *
+	 * @return TRUE if the token is a logical chunk, FALSE otherwise
+	 */
+	Boolean isChunk();
+
+	/**
+	 *
+	 * @return TRUE if the token is the last chunk, FALSE otherwise
+	 */
+	Boolean isLastChunk();
+
+	/**
+	 * Chunk type is an optional attribute used to identify each chunk.
+	 *
+	 * @return
+	 */
+	String getChunkType();
+
+	/**
+	 * Set the chunk type attribute value.
+	 *
+	 * @param aChunkType
+	 */
+	void setChunkType(String aChunkType);
+
+	/**
+	 * Set/Unset the token as a logical chunk
+	 *
+	 * @param aIsChunk
+	 */
+	void setChunk(Boolean aIsChunk);
+
+	/**
+	 * Set/Unset the token as a last chunk
+	 *
+	 * @param aIsLastChunk
+	 */
+	void setLastChunk(Boolean aIsLastChunk);
 
 	/**
 	 * resets all fields of the token. After this operation the token is empty.

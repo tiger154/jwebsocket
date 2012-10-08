@@ -80,8 +80,8 @@ public class JWebSocketBeanFactory {
 		} else {
 			lXmlReader = new XmlBeanDefinitionReader(getInstance());
 		}
-		
- 		lXmlReader.setBeanClassLoader(aClassLoader);
+
+		lXmlReader.setBeanClassLoader(aClassLoader);
 
 		// if no JWEBSOCKET_HOME environment variable set 
 		// then use the classpath resource, otherwise the file system resource
@@ -93,5 +93,18 @@ public class JWebSocketBeanFactory {
 			// System.out.println("Loading resource from filesystem: " + aPath + "...");
 			lXmlReader.loadBeanDefinitions(new FileSystemResource(lPath));
 		}
+	}
+
+	/**
+	 * Destroy all GenericApplicationContext instances.
+	 */
+	public static void destroy() {
+		// destroying namespaced application contexts
+		for (GenericApplicationContext lContext : JWebSocketBeanFactory.mContextMap.values()) {
+			lContext.destroy();
+		}
+
+		// destroying global application context
+		JWebSocketBeanFactory.mGlobalContext.destroy();
 	}
 }

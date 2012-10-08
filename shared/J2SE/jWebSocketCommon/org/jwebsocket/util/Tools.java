@@ -670,11 +670,20 @@ public class Tools {
 	}
 
 	/**
-	 *
+	 * Starts the jebSocket utility timer. The timer automatically purge expired
+	 * tasks every 1 minute.
 	 */
 	public static void startUtilityTimer() {
 		if (null == mTimer) {
 			mTimer = new Timer("jWebSocket Utility Timer");
+
+			final Timer lTimer = mTimer;
+			mTimer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					lTimer.purge();
+				}
+			}, 0, 60000);
 		}
 	}
 
@@ -755,6 +764,7 @@ public class Tools {
 	/**
 	 * Checks if a path has trailing separator, if not it appends the correct
 	 * one according to the operating system.
+	 *
 	 * @param aPath the path to be checked for the trailing separator.
 	 * @return the path ensuring the trailing separator or null if no path was given.
 	 */

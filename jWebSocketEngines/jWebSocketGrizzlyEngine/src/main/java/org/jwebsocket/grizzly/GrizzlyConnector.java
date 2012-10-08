@@ -218,21 +218,7 @@ public class GrizzlyConnector extends BaseConnector {
 
 	@Override
 	public void sendPacketInTransaction(WebSocketPacket aDataPacket) throws WebSocketException {
-		if (WebSocketConnectorStatus.UP == getStatus()) {
-			boolean lSendSuccess = false;
-			String lExMsg = null;
-			try {
-				if (mConnection.isConnected()) {
-					mConnection.send(aDataPacket.getUTF8());
-					lSendSuccess = true;
-				} else {
-					mLog.error("Trying to send transaction to closed connection: "
-							+ getId() + ", " + aDataPacket.getUTF8());
-				}
-			} catch (Exception lEx) {
-				lExMsg = lEx.getMessage();
-			}
-		}
+		throw new UnsupportedOperationException("GrizzlyEngine does not support 'sendPacketInTransaction' operation!");
 	}
 
 	@Override

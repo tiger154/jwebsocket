@@ -24,10 +24,40 @@ import java.util.Map;
  */
 public abstract class BaseToken implements Token {
 
-	/**
-	 *
-	 */
 	public static final String TT_EVENT = "event";
+	public static final String IS_CHUNK = "isChunk";
+	public static final String IS_LAST_CHUNK = "isLastChunk";
+	public static final String CHUNK_TYPE = "chunkType";
+
+	@Override
+	public Boolean isChunk() {
+		return getBoolean(IS_CHUNK, false);
+	}
+
+	@Override
+	public Boolean isLastChunk() {
+		return getBoolean(IS_LAST_CHUNK, false);
+	}
+
+	@Override
+	public String getChunkType() {
+		return getString(CHUNK_TYPE);
+	}
+
+	@Override
+	public void setChunkType(String aChunkType) {
+		setString(CHUNK_TYPE, aChunkType);
+	}
+
+	@Override
+	public void setChunk(Boolean aIsChunk) {
+		setBoolean(IS_CHUNK, aIsChunk);
+	}
+
+	@Override
+	public void setLastChunk(Boolean aIsLastChunk) {
+		setBoolean(IS_LAST_CHUNK, aIsLastChunk);
+	}
 
 	@Override
 	public void setDouble(String aKey, Float aValue) {
@@ -39,7 +69,7 @@ public abstract class BaseToken implements Token {
 		boolean lRes = true;
 		if (aObj instanceof BaseTokenizable) {
 			Token lToken = TokenFactory.createToken();
-			((BaseTokenizable)aObj).writeToToken(lToken);
+			((BaseTokenizable) aObj).writeToToken(lToken);
 			setToken(aKey, lToken);
 		} else if (aObj instanceof Boolean) {
 			setBoolean(aKey, (Boolean) aObj);
@@ -81,6 +111,7 @@ public abstract class BaseToken implements Token {
 	 * Returns the name space of the token. If you have the same token type
 	 * interpreted by multiple different plug-ins the name space allows to
 	 * uniquely address a certain plug-in. Each plug-in has its own name space.
+	 *
 	 * @return the name space.
 	 */
 	@Override
@@ -92,6 +123,7 @@ public abstract class BaseToken implements Token {
 	 * Sets the name space of the token. If you have the same token type
 	 * interpreted by multiple different plug-ins the namespace allows to
 	 * uniquely address a certain plug-in. Each plug-in has its own namespace.
+	 *
 	 * @param aNS the namespace to be set for the token.
 	 */
 	@Override

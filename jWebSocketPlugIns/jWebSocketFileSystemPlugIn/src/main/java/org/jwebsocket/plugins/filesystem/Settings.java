@@ -17,10 +17,12 @@ package org.jwebsocket.plugins.filesystem;
 
 import java.util.Map;
 import javolution.util.FastMap;
+import org.jwebsocket.config.JWebSocketConfig;
 
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
 public class Settings {
 
@@ -42,20 +44,36 @@ public class Settings {
 
 	/**
 	 *
-	 * @param aAlias
+	 * @param aAliasName
 	 * @return
 	 */
-	public String getAlias(String aAlias) {
-		return mAliases.get(aAlias);
+	public String getAliasPath(String aAliasName) {
+		return mAliases.get(aAliasName);
 	}
 
 	/**
 	 *
-	 * @param aAlias
+	 * @param aPath
 	 * @return
 	 */
-	public String getAlias(String aAlias, String aDefaultValue) {
-		String lValue = mAliases.get(aAlias);
+	public String getAliasName(String aPath) {
+		for (Map.Entry<String, String> lEntry : mAliases.entrySet()) {
+			if (aPath.startsWith(lEntry.getValue())
+					|| aPath.startsWith(JWebSocketConfig.expandEnvAndJWebSocketVars(lEntry.getValue()))) {
+				return lEntry.getKey();
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 *
+	 * @param aAliasName
+	 * @return
+	 */
+	public String getAliasPath(String aAliasName, String aDefaultValue) {
+		String lValue = mAliases.get(aAliasName);
 		if (null == lValue) {
 			return aDefaultValue;
 		}

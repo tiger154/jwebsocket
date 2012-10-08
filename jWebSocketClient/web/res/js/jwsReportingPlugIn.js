@@ -163,5 +163,5 @@ jws.ReportingPlugIn = {
 	
 }
 
-// add the JWebSocket Shared Objects PlugIn into the TokenClient class
+// add the JWebSocket Reporting PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ReportingPlugIn );

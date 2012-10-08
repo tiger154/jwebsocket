@@ -165,16 +165,16 @@
        
 		this.open = function(){
 			if (this.readyState == this.readyStateValues.OPEN)
-				throw "the connection is already opening";
+				throw "the connection is already opened";
 			else
-				this.__handlerConnectionChannel();
+				this.__handleConnectionChannel();
 		}
     
 		this.keepConnection = function(){
-			this.__handlerConnectionChannel();
+			this.__handleConnectionChannel();
 		}
 
-		this.__handlerConnectionChannel = function(){
+		this.__handleConnectionChannel = function(){
             
 			var lXHR = this.__getXHRTransport();
 			this.__xhr = lXHR;
@@ -184,8 +184,6 @@
 
 			lXHR.onreadystatechange = function(){
 				if (lXHR.readyState >= 4){
-					lXHR.active = false;
-					
 					if (lXHR.status == 200) {				
 						if (lXHR.responseText) {
 							var lResponse = JSON.parse(lXHR.responseText);
@@ -197,13 +195,20 @@
 											type:"message",
 											data: lResponse.data[lIndex]
 										});
-									
 									}
 								}, 0);
 							}
 							
+							// process response from the server
 							self.handleConnectionState(lResponse);
-						}
+							
+							// IMPORTANT: wait for the XHR connection close
+							if (1 == self.readyState){
+								setTimeout(function(){
+									self.keepConnection();
+								}, 50);
+							}
+						} 
 					}
 				}
 			};
@@ -213,19 +218,6 @@
 			var lJSONMessage = JSON.stringify(lMessage);
 			
 			lXHR.send(lJSONMessage);
-			lXHR.active = true;
-			
-			// keeps the base XHR connection active
-			if (!this.__timerTaskActive){
-				this.__timerTaskActive = true;
-				setInterval(function(){
-					if (false == self.__xhr.active 
-						&& self.readyStateValues.OPEN == self.readyState){
-						self.keepConnection();
-						self.__checkPendingMessage();
-					}
-				}, 100);
-			}
 		}
                 
 		this.__objectMessageBasePrototype = function(){
@@ -321,7 +313,6 @@
 			else
 				throw "Missing 'readyState' argument from the server";
 
-            
 			if (this.readyState == 2 || this.readyState == 3){
 				this.__handleEvent({
 					type:"close"
@@ -355,11 +346,12 @@
 				throw "Cannot create an XMLHTTP instance";
 				return false;
 			}
-			else 
-				return lXHR ;
+			
+			return lXHR ;
 		}
                
 		this.open();
 	}
 
 })();
+

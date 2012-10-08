@@ -26,6 +26,7 @@ import org.springframework.security.authentication.ProviderManager;
 
 /**
  * implements the security capabilities of jWebSocket.
+ *
  * @author aschulze
  */
 public class SecurityFactory {
@@ -48,50 +49,51 @@ public class SecurityFactory {
 	private static ProviderManager mAuthProvMgr;
 
 	/**
-	 * Initializes the security system programmatically to allow to
-	 * a startup without a config file in embedded environments!
+	 * Initializes the security system programmatically to allow to a startup
+	 * without a config file in embedded environments!
 	 */
 	/*
-	public static void initDefault() {
-	mRights = new Rights();
-	// specify rights
-	Right lRPC = new Right("org.jwebsocket.plugins.rpc", "rpc", "Allow Remote Procedure Calls (RPC) to server");
-	Right lRRPC = new Right("org.jwebsocket.plugins.rpc", "rrpc", "Allow Reverse Remote Procedure Calls (RRPC) to other clients");
-	mRights.addRight(lRPC);
-	mRights.addRight(lRRPC);
+	 public static void initDefault() {
+	 mRights = new Rights();
+	 // specify rights
+	 Right lRPC = new Right("org.jwebsocket.plugins.rpc", "rpc", "Allow Remote Procedure Calls (RPC) to server");
+	 Right lRRPC = new Right("org.jwebsocket.plugins.rpc", "rrpc", "Allow Reverse Remote Procedure Calls (RRPC) to other clients");
+	 mRights.addRight(lRPC);
+	 mRights.addRight(lRRPC);
 	
-	// specify roles and assign rights to roles
-	// TODO: needs to be removed in final release!
-	Role lGuestRole = new Role("guest", "Guests", lRPC, lRRPC);
-	Role lUserRole = new Role("regUser", "Registered Users", lRPC, lRRPC);
-	Role lAdminRole = new Role("admin", "Administrators", lRPC, lRRPC);
+	 // specify roles and assign rights to roles
+	 // TODO: needs to be removed in final release!
+	 Role lGuestRole = new Role("guest", "Guests", lRPC, lRRPC);
+	 Role lUserRole = new Role("regUser", "Registered Users", lRPC, lRRPC);
+	 Role lAdminRole = new Role("admin", "Administrators", lRPC, lRRPC);
 	
-	// specify role sets for a simpler assignment to the users
-	Roles lGuestRoles = new Roles(lGuestRole);
-	Roles lUserRoles = new Roles(lGuestRole, lUserRole);
-	Roles lAdminRoles = new Roles(lGuestRole, lUserRole, lAdminRole);
+	 // specify role sets for a simpler assignment to the users
+	 Roles lGuestRoles = new Roles(lGuestRole);
+	 Roles lUserRoles = new Roles(lGuestRole, lUserRole);
+	 Roles lAdminRoles = new Roles(lGuestRole, lUserRole, lAdminRole);
 	
-	User lAnonymous = new User(User.generateUUID(), USER_ANONYMOUS, "anonymous", "", "", lGuestRoles);
-	User lGuest = new User(User.generateUUID(), USER_GUEST, "guest", "guest", "guest", lGuestRoles);
-	User lUser = new User(User.generateUUID(), USER_USER, "user", "user", "user", lUserRoles);
-	User lRoot = new User(User.generateUUID(), USER_ROOT, "root", "root", "root", lAdminRoles);
-	// add a locked user for test purposes, e.g. to reject token in system filter
-	User lLockedUser = new User(User.generateUUID(), USER_LOCKED, "locked", "locked", "locked", lGuestRoles);
-	lLockedUser.setStatus(User.ST_LOCKED);
+	 User lAnonymous = new User(User.generateUUID(), USER_ANONYMOUS, "anonymous", "", "", lGuestRoles);
+	 User lGuest = new User(User.generateUUID(), USER_GUEST, "guest", "guest", "guest", lGuestRoles);
+	 User lUser = new User(User.generateUUID(), USER_USER, "user", "user", "user", lUserRoles);
+	 User lRoot = new User(User.generateUUID(), USER_ROOT, "root", "root", "root", lAdminRoles);
+	 // add a locked user for test purposes, e.g. to reject token in system filter
+	 User lLockedUser = new User(User.generateUUID(), USER_LOCKED, "locked", "locked", "locked", lGuestRoles);
+	 lLockedUser.setStatus(User.ST_LOCKED);
 	
-	mUsers = new Users();
-	mUsers.addUser(lAnonymous);
-	mUsers.addUser(lGuest);
-	mUsers.addUser(lUser);
-	mUsers.addUser(lRoot);
-	mUsers.addUser(lLockedUser);
+	 mUsers = new Users();
+	 mUsers.addUser(lAnonymous);
+	 mUsers.addUser(lGuest);
+	 mUsers.addUser(lUser);
+	 mUsers.addUser(lRoot);
+	 mUsers.addUser(lLockedUser);
 	
-	// log.info("Default rights, roles and users initialized.");
-	}
+	 // log.info("Default rights, roles and users initialized.");
+	 }
 	 */
 	/**
 	 * initializes the security system with the settings from the
 	 * jWebSocket.xml.
+	 *
 	 * @param aConfig
 	 */
 	public static void initFromConfig(JWebSocketConfig aConfig) {
@@ -160,6 +162,7 @@ public class SecurityFactory {
 	/**
 	 * Returns a user by its loginname or <tt>null</tt> if no user with the
 	 * given loginname could be found.
+	 *
 	 * @param aLoginname
 	 * @return
 	 */
@@ -193,6 +196,7 @@ public class SecurityFactory {
 
 	/**
 	 * checks if a user identified by its login name has a certain right.
+	 *
 	 * @param aLoginname
 	 * @param aRight
 	 * @return
@@ -207,13 +211,12 @@ public class SecurityFactory {
 	}
 
 	public static boolean hasAuthority(String aLoginname, String aAuthority) {
-		boolean lHasRight = false;
-		
-		return lHasRight;
+		return hasRight(aLoginname, aAuthority);
 	}
-	
+
 	/**
 	 * checks if a user identified by its login name has a certain role.
+	 *
 	 * @param aLoginname
 	 * @param aRole
 	 * @return
@@ -230,6 +233,7 @@ public class SecurityFactory {
 
 	/**
 	 * returns an unmodifiable set of role ids for a user instance.
+	 *
 	 * @return
 	 */
 	public static Set<String> getRoleIdSet(String aUsername) {
@@ -242,6 +246,7 @@ public class SecurityFactory {
 
 	/**
 	 * returns an unmodifiable set of right ids for a given user instance.
+	 *
 	 * @return
 	 */
 	public static Set<String> getRightIdSet(String aUsername) {
@@ -254,6 +259,7 @@ public class SecurityFactory {
 
 	/**
 	 * returns an unmodifiable set of roles for a given user instance.
+	 *
 	 * @return
 	 */
 	public static Roles getUserRoles(String aUsername) {
@@ -266,6 +272,7 @@ public class SecurityFactory {
 
 	/**
 	 * returns an unmodifiable set of global roles.
+	 *
 	 * @return
 	 */
 	public static Roles getGlobalRoles() {
@@ -274,6 +281,7 @@ public class SecurityFactory {
 
 	/**
 	 * returns an unmodifiable set of rights for a given user instance.
+	 *
 	 * @return
 	 */
 	public static Rights getUserRights(String aUsername) {
@@ -286,6 +294,7 @@ public class SecurityFactory {
 
 	/**
 	 * returns an unmodifiable set of global rights.
+	 *
 	 * @return
 	 */
 	public static Rights getGlobalRights() {
@@ -294,6 +303,7 @@ public class SecurityFactory {
 
 	/**
 	 * returns an unmodifiable set of rights for this user instance.
+	 *
 	 * @return
 	 */
 	public static Rights getGlobalRights(String aNamespace) {
@@ -312,6 +322,7 @@ public class SecurityFactory {
 
 	/**
 	 * returns an unmodifiable set of global users.
+	 *
 	 * @return
 	 */
 	public static Users getGlobalUsers() {

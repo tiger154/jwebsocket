@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.IEmbeddedAuthentication;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
@@ -33,7 +35,7 @@ import org.jwebsocket.logging.Logging;
  *
  * @author aschulze
  */
-public class TomcatConnector extends BaseConnector {
+public class TomcatConnector extends BaseConnector implements IEmbeddedAuthentication {
 
 	private static Logger mLog = Logging.getLogger();
 	private boolean mIsRunning = false;
@@ -41,6 +43,7 @@ public class TomcatConnector extends BaseConnector {
 	private WsOutbound mOutbound;
 	private InetAddress mRemoteHost;
 	private int mRemotePort;
+	private HttpServletRequest mRequest;
 
 	/**
 	 * creates a new TCP connector for the passed engine using the passed client
@@ -50,10 +53,12 @@ public class TomcatConnector extends BaseConnector {
 	 * @param aEngine
 	 * @param aClientSocket
 	 */
-	public TomcatConnector(WebSocketEngine aEngine, WsOutbound aOutbound) {
+	public TomcatConnector(WebSocketEngine aEngine, HttpServletRequest aRequest, WsOutbound aOutbound) {
 		super(aEngine);
+
 		// save the outbound object to send data to the client of this connection
 		mOutbound = aOutbound;
+		mRequest = aRequest;
 	}
 
 	@Override
@@ -62,10 +67,6 @@ public class TomcatConnector extends BaseConnector {
 			mLog.debug("Starting Tomcat connector at port " + getRemotePort() + "...");
 		}
 		mIsRunning = true;
-
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Started Tomcat connector at port " + getRemotePort());
-		}
 
 		// call connectorStarted method of engine
 		WebSocketEngine lEngine = getEngine();
@@ -90,9 +91,7 @@ public class TomcatConnector extends BaseConnector {
 			mCloseReason = aCloseReason;
 			mIsRunning = false;
 			if (mLog.isInfoEnabled()) {
-				mLog.info("Stopped Tomcat connector ("
-						+ aCloseReason.name() + ") at port "
-						+ getRemotePort() + ".");
+				mLog.info("Tomcat connector stopped!");
 			}
 		}
 	}
@@ -118,7 +117,7 @@ public class TomcatConnector extends BaseConnector {
 				mOutbound.writeTextMessage(CharBuffer.wrap(aDataPacket.getUTF8().toCharArray()));
 			}
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Packet '" + aDataPacket.getUTF8() + "' sent.");
+				mLog.debug("Packet sent!");
 			}
 		} catch (Exception lEx) {
 			// DO NOT NOTIFY. The connection with the client has been broken.
@@ -152,7 +151,7 @@ public class TomcatConnector extends BaseConnector {
 	public String toString() {
 		String lRes = getRemoteHost().getHostAddress() + ":" + getRemotePort();
 		// TODO: don't hard code. At least use JWebSocketConstants field here.
-		String lUsername = getString("org.jwebsocket.plugins.system.username");
+		String lUsername = getUsername();
 		if (lUsername != null) {
 			lRes += " (" + lUsername + ")";
 		}
@@ -171,5 +170,29 @@ public class TomcatConnector extends BaseConnector {
 	 */
 	public void setRemotePort(int mRemotePort) {
 		this.mRemotePort = mRemotePort;
+	}
+
+	@Override
+	public String getAuthenticationType() {
+		return mRequest.getAuthType();
+	}
+
+	@Override
+	public boolean hasAuthority(String aAuthority) {
+		return mRequest.isUserInRole(aAuthority);
+	}
+
+	@Override
+	public boolean isAuthenticated() {
+		return getUsername() != null;
+	}
+
+	@Override
+	public String getUsername() {
+		if (null != super.getUsername()) {
+			return super.getUsername();
+		}
+
+		return mRequest.getRemoteUser();
 	}
 }

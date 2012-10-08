@@ -20,6 +20,10 @@ jws.tests.FileSystem = {
 	NS: "jws.tests.filesystem", 
 	
 	TEST_FILE_DATA: "This is a string to be saved into the test file!",
+	TEST_FILE_DATA2: " The commercial FileSystem plug-in supports ",
+	TEST_FILE_DATA3: " saving files by chunks!",
+	
+	TEST_FOLDER: "privFolder",
 	TEST_FILE_NAME: "test.txt",
 
 	testFileSave: function(aFilename, aData, aScope) {
@@ -32,6 +36,39 @@ jws.tests.FileSystem = {
 			var lResponse = null;
 
 			jws.Tests.getAdminConn().fileSave( lFilename, lData, {
+				encode: true,
+				scope: aScope,
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( 0 );
+			});
+
+		});
+	},
+	
+	testFileSaveByChunks: function(aFilename, aData, aIsChunk, aScope) {
+		var lSpec = this.NS + ": FileSaveByChunks (admin, " + aFilename + ", " + aScope + ")";
+		var lData = aData;
+		var lFilename = aFilename;
+		var lIsChunk = aIsChunk;
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminConn().fileSaveByChunks( lFilename, lData, lIsChunk, {
 				encode: true,
 				scope: aScope,
 				OnResponse: function( aToken ) {
@@ -80,6 +117,45 @@ jws.tests.FileSystem = {
 			runs( function() {
 				expect( lResponse.filename ).toEqual( aFilename );
 				expect( lResponse.data ).toEqual( aData );
+			});
+
+		});
+	},
+	
+	testFileSendByChunks: function(aFilename, aDataArray) {
+		var lSpec = this.NS + ": FileSendByChunks (admin, " + aFilename + ")";
+		
+		it( lSpec, function () {
+
+			var lChunks = aDataArray;
+			var lChunkPosition = 0;
+			var lOK = true;
+			
+			jws.Tests.getAdminConn().setEnterpriseFileSystemCallbacks({
+				OnChunkReceived: function(aToken){
+					if (!(lChunks[lChunkPosition++] == aToken.data)){
+						lOK = false;
+					}
+				}
+			});
+			for (var lIndex = 0; lIndex < aDataArray.length; lIndex++ ){
+				var lIsLast = (lIndex + 1 == aDataArray.length);
+				jws.Tests.getAdminConn().fileSendByChunks( jws.Tests.getAdminConn().getId(), 
+					aFilename, aDataArray[lIndex], lIsLast, {
+						encoding: "base64"
+					});
+			}
+
+			waitsFor(
+				function() {
+					return( lChunkPosition == lChunks.length  );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lOK ).toEqual( true );
 			});
 
 		});
@@ -153,6 +229,92 @@ jws.tests.FileSystem = {
 		});
 	},
 	
+	testStartObserve: function(aExpectedCode) {
+		var lSpec = this.NS + ": startObserve (admin)";
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminConn().fsStartObserve({
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( aExpectedCode );
+			});
+
+		});
+	},
+	
+	testStopObserve: function(aExpectedCode) {
+		var lSpec = this.NS + ": stopObserve (admin)";
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminConn().fsStopObserve({
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( aExpectedCode );
+			});
+
+		});
+	},
+	
+	testFileLoadByChunks: function(aFilename, aAlias, aOffset, aLength, aExpectedData) {
+		var lSpec = this.NS + ": FileLoadByChunks (admin, " + aFilename + ", " + aAlias + ")";
+		var lData = aExpectedData;
+		var lFilename = aFilename;
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminConn().fileLoadByChunks( lFilename, aAlias, aOffset, aLength ,{
+				decode: true,
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.data ).toEqual( lData );
+			});
+		});
+	},
+	
 	testFileDelete: function(aFilename, aForce, aExpectedCode) {
 		var lSpec = this.NS + ": FileDelete (admin, " + aFilename + ", " + aExpectedCode + ")";
 		
@@ -161,6 +323,34 @@ jws.tests.FileSystem = {
 			var lResponse = null;
 
 			jws.Tests.getAdminConn().fileDelete( aFilename, aForce, {
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( aExpectedCode );
+			});
+
+		});
+	},
+	
+	testDirectoryDelete: function(aDirectory, aExpectedCode) {
+		var lSpec = this.NS + ": DirectoryDelete (admin, " + aDirectory + ", " + aExpectedCode + ")";
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminConn().directoryDelete( aDirectory, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -213,6 +403,35 @@ jws.tests.FileSystem = {
 	},
 
 	runSpecs: function() {
+		jws.tests.FileSystem.testStartObserve(0);
+		jws.tests.FileSystem.testStartObserve(-1);
+		
+		jws.tests.FileSystem.testFileSaveByChunks(
+			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
+			this.TEST_FILE_DATA,
+			false, 
+			jws.SCOPE_PRIVATE);
+
+		jws.tests.FileSystem.testFileSaveByChunks(
+			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
+			this.TEST_FILE_DATA2,
+			false, 
+			jws.SCOPE_PRIVATE);
+		
+		jws.tests.FileSystem.testFileSaveByChunks(
+			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
+			this.TEST_FILE_DATA3,
+			true, 
+			jws.SCOPE_PRIVATE);
+			
+		jws.tests.FileSystem.testFileLoad(
+			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
+			jws.FileSystemPlugIn.ALIAS_PRIVATE,
+			this.TEST_FILE_DATA + this.TEST_FILE_DATA2 + this.TEST_FILE_DATA3);
+
+		jws.tests.FileSystem.testDirectoryDelete(this.TEST_FOLDER, 0);	
+		jws.tests.FileSystem.testDirectoryDelete(this.TEST_FOLDER, -1);	
+
 		jws.tests.FileSystem.testFileSave(
 			this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA, 
@@ -222,6 +441,26 @@ jws.tests.FileSystem = {
 			this.TEST_FILE_NAME, 
 			jws.FileSystemPlugIn.ALIAS_PUBLIC,
 			this.TEST_FILE_DATA);
+			
+		jws.tests.FileSystem.testFileLoadByChunks(
+			this.TEST_FILE_NAME, 
+			jws.FileSystemPlugIn.ALIAS_PUBLIC,
+			-5,
+			4,
+			"file");
+		jws.tests.FileSystem.testFileLoadByChunks(
+			this.TEST_FILE_NAME, 
+			jws.FileSystemPlugIn.ALIAS_PUBLIC,
+			0,
+			4,
+			"This");
+			
+		jws.tests.FileSystem.testFileLoadByChunks(
+			this.TEST_FILE_NAME, 
+			jws.FileSystemPlugIn.ALIAS_PUBLIC,
+			2,
+			4,
+			"is i");
 		
 		jws.tests.FileSystem.testFileExists(
 			jws.FileSystemPlugIn.ALIAS_PUBLIC, 
@@ -255,8 +494,16 @@ jws.tests.FileSystem = {
 			[this.TEST_FILE_NAME]);
 		
 		jws.tests.FileSystem.testFileSend(this.TEST_FILE_NAME, this.TEST_FILE_DATA);
+		jws.tests.FileSystem.testFileSendByChunks(this.TEST_FILE_NAME, 
+			[this.TEST_FILE_DATA, 
+			this.TEST_FILE_DATA2, 
+			this.TEST_FILE_DATA3]);
+		jws.tests.FileSystem.testFileSend(this.TEST_FILE_NAME, this.TEST_FILE_DATA);
 		jws.tests.FileSystem.testFileDelete(this.TEST_FILE_NAME, true, 0);
 		jws.tests.FileSystem.testFileDelete(this.TEST_FILE_NAME, true, -1);
+		
+		jws.tests.FileSystem.testStopObserve(0);
+		jws.tests.FileSystem.testStopObserve(-1);
 	},
 
 	runSuite: function() {

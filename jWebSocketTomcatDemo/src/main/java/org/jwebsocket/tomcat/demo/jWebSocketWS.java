@@ -23,6 +23,7 @@ import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.tcp.EngineUtils;
 import org.jwebsocket.tomcat.TomcatEngine;
 import org.jwebsocket.tomcat.TomcatWrapper;
 
@@ -40,7 +41,8 @@ public class jWebSocketWS extends WebSocketServlet {
 		if (null == aSubProtocol) {
 			aSubProtocol = JWebSocketCommonConstants.WS_SUBPROT_JSON;
 		}
-		return new TomcatWrapper(mEngine, mRequestContainer.get(), aSubProtocol);
+		//return new TomcatWrapper(mRequest, aSubProtocol);
+		return null;
 	}
 
 	@Override
@@ -60,7 +62,7 @@ public class jWebSocketWS extends WebSocketServlet {
 		// super.verifyOrigin(aOrigin);
 
 		// @TODO pass a list of valid domains here
-		return TomcatWrapper.verifyOrigin(aOrigin, null);
+		return EngineUtils.isOriginValid(aOrigin, null);
 	}
 
 	@Override

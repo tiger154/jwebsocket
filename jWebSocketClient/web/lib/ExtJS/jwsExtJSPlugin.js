@@ -1,259 +1,257 @@
 		
 Ext.define( 'Ext.jws', {
-    extend: 'Ext.util.Observable',
-    singleton: true,
+	extend: 'Ext.util.Observable',
+	singleton: true,
 
-    constructor: function( config ) {
+	constructor: function( aConfig ) {
 
-        this.addEvents( {
-            "open" : true,
-            "close" : true,
-            "timeout":true
-        } );
+		this.addEvents( {
+			"open" : true,
+			"close" : true,
+			"timeout":true
+		} );
 
-        // Call our superclass constructor to complete construction process.
-        this.superclass.constructor.call( this, config )
-    },
+		// Call our superclass constructor to complete construction process.
+		this.superclass.constructor.call( this, aConfig )
+	},
 		
-    init:function( config ) {
+	init:function( aConfig ) {
         
-        /*=== Override the submit method in the prototype of the class=====*/
-        Ext.form.Basic.prototype.submit = function( options ) {
-            return this.doAction( this.standardSubmit ? 'standardsubmit' : this.api ? 'directsubmit': this.jwsSubmit ? 'jwssubmit' : 'submit', options );
-	}
+		/*=== Override the submit method in the prototype of the class=====*/
+		Ext.form.Basic.prototype.submit = function( options ) {
+			return this.doAction( this.standardSubmit ? 'standardsubmit' : this.api ? 'directsubmit': this.jwsSubmit ? 'jwssubmit' : 'submit', options );
+		}
 	
-        /*=== Override the load method in the prototype of the class=====*/
-	Ext.form.Basic.prototype.load = function( options ) {
-            return this.doAction( this.api ? 'directload' : this.jwsSubmit ? 'jwsload' : 'load', options );
-	}
+		/*=== Override the load method in the prototype of the class=====*/
+		Ext.form.Basic.prototype.load = function( aOptions ) {
+			return this.doAction( this.api ? 'directload' : this.jwsSubmit ? 'jwsload' : 'load', aOptions );
+		}
 							
-    },
+	},
 
-    open: function( jwsServerURL, aTokenClient, timeout ) {
-        var me = this;
-        if( jws.browserSupportsWebSockets() ) {
-            var url = jwsServerURL || jws.getDefaultServerURL();
+	open: function( aURL, aTokenClient, aTimeout ) {
+		var self = this;
+		if( jws.browserSupportsWebSockets() ) {
+			var lUrl = aURL || jws.getDefaultServerURL();
 
-            if( aTokenClient )
-                this.aTokenClient = aTokenClient;
-            else
-                this.aTokenClient = new jws.jWebSocketJSONClient();
+			if( aTokenClient )
+				this.fTokenClient = aTokenClient;
+			else
+				this.fTokenClient = new jws.jWebSocketJSONClient();
 
 
-            this.aTokenClient.open( url, {
-                OnOpen: function( aToken ) {
-                    me.init();
-                    me.fireEvent( 'open' );
-                },
-                OnClose: function() {
-                    me.fireEvent( 'close' );
-                },
-                OnTimeout: function() {
-                    me.fireEvent( 'timeout' );
-                }
-            } );
-            if( timeout )
-                this.setDefaultTimeOut( timeout );
-        }
-        else{
-            var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-            Ext.Error.raise( lMsg );
-        }
-    },
-		
-    send: function( ns, type, args, callbacks, scope ) {
+			this.fTokenClient.open( lUrl, {
+				OnOpen: function( aToken ) {
+					self.init();
+					self.fireEvent( 'open' );
+				},
+				OnClose: function() {
+					self.fireEvent( 'close' );
+				},
+				OnTimeout: function() {
+					self.fireEvent( 'timeout' );
+				}
+			} );
+			if( aTimeout )
+				this.setDefaultTimeOut( aTimeout );
+		}
+		else{
+			var lMsg = jws.MSG_WS_NOT_SUPPORTED;
+			Ext.Error.raise( lMsg );
+		}
+	},
+	getConnection: function(){
+		return this.fTokenClient;
+	},
+	send: function( aNS, aType, aArgs, aCallbacks, aScope ) {
         
-        var meScope  = scope;
-        var lToken   = {};
-        if ( args ) {
-            lToken = args;
-        }
-        lToken.ns   = ns;
-        lToken.type = type;
+		var lScope  = aScope;
+		var lToken  = {};
+		if ( aArgs ) {
+			lToken = aArgs;
+		}
+		lToken.ns   = aNS;
+		lToken.type = aType;
 
-        this.aTokenClient.sendToken( lToken, {
-            callbacks: callbacks,
-            OnResponse: function( token ) {
-                if ( token.code == -1 ) {
-                    if( scope == undefined )
-                        return callbacks.failure( token );
-                    return callbacks.failure.call( meScope,token );
+		this.fTokenClient.sendToken( lToken, {
+			callbacks: aCallbacks,
+			OnResponse: function( aToken ) {
+				if ( aToken.code == -1 ) {
+					if( aScope == undefined )
+						return aCallbacks.failure( aToken );
+					return aCallbacks.failure.call( lScope,aToken );
 
-                }
-                else if ( token.code == 0 ) {
-                    if( scope == undefined )
-                        return callbacks.success( token );
-                    return callbacks.success.call( meScope,token );
+				}
+				else if ( aToken.code == 0 ) {
+					if( aScope == undefined )
+						return aCallbacks.success( aToken );
+					return aCallbacks.success.call( lScope,aToken );
 						
-                }
-            },
-            OnTimeOut: function( token ) {
-                if( scope == undefined )
-                    return callbacks.timeout( token );
-                return callbacks.timeout.call( meScope,token );
+				}
+			},
+			OnTimeOut: function( aToken ) {
+				if( aScope == undefined )
+					return aCallbacks.timeout( aToken );
+				return aCallbacks.timeout.call( lScope,aToken );
 					
-            }
-        } );
-    },
+			}
+		} );
+	},
 		
-    addPlugIn: function( aPlugin ) {
-        this.aTokenClient.addPlugIn( aPlugin );
-    },
-    setDefaultTimeOut:function( timeout ) {
-
-        if( this.aTokenClient )
-            this.aTokenClient.DEF_RESP_TIMEOUT = timeout;
-        else
-            jws.DEF_RESP_TIMEOUT = timeout;
-    },
-    close : function() {
-        this.aTokenClient.close();
-        this.fireEvent( 'close' );
-    }
+	addPlugIn: function( aPlugIn ) {
+		this.fTokenClient.addPlugIn( aPlugIn );
+	},
+	
+	setDefaultTimeOut:function( aTimeout ) {
+		if( this.fTokenClient )
+			this.fTokenClient.DEF_RESP_TIMEOUT = aTimeout;
+		else
+			jws.DEF_RESP_TIMEOUT = aTimeout;
+	},
+	
+	close : function() {
+		this.fTokenClient.close();
+		this.fireEvent( 'close' );
+	}
 
 } );
 	
 	
- /*
+/*
  *    This class is the jWebSocket implementation for Ext.data.proxy     
  *                
  */       
 
 Ext.define( 'Ext.jws.data.proxy', {
-    extend: 'Ext.data.proxy.Server',
+	extend: 'Ext.data.proxy.Server',
+	alias: 'Ext.jws.data.proxy',
         
-    /**
+	/**
      * @cfg {String} ns default namespace used for all proxy's actions ( read, write, create,  )
     */
        
-    ns: undefined,
+	ns: undefined,
     
-    /**
+	/**
      * @cfg {Object} api define tokens for each action that will be performs by the proxy
     */
-    api: {
-        create : 'create',
-        read   : 'read',
-        update : 'update',
-        destroy: 'destroy'
-    },     
+	api: {
+		create : 'create',
+		read   : 'read',
+		update : 'update',
+		destroy: 'destroy'
+	},     
        
-    /**
+	/**
      * Creates the proxy, throws an error if namespace is not given
-     * @param {Object} config Config object is not Opcional.
+     * @param {Object} aConfig Config object is not Opcional.
      */
-    constructor: function( config ) {
-        me = this;
+	constructor: function( aConfig ) {
+		var self = this;
 			
-        me.callParent( arguments );
+		self.callParent( arguments );
         
-        if ( me.ns == undefined )
-            Ext.Error.raise( "the namespace must be specify, jwk proxy need a namespace" );
-				       
-    },
+		if ( self.ns == undefined )
+			Ext.Error.raise( "the namespace must be specify, jwk proxy need a namespace" );
+	},
 
     
-    doRequest: function( operation, callback, scope ) {
-
-        var  me      = this;
-        var  writer  = this.getWriter(),
-        request = this.buildRequest( operation, callback, scope );
+	doRequest: function( aOperation, aCallback, aScope ) {
+		var self     = this;
+		var lWriter  = this.getWriter();
+		var lRequest = this.buildRequest( aOperation, aCallback, aScope );
             
-        if ( operation.allowWrite() ) {
-            request = writer.write( request );
-        }
+		if ( aOperation.allowWrite() ) {
+			lRequest = lWriter.write( lRequest );
+		}
         
-        var requestData = this.setupDataForRequest( request );
+		var lRequestData = this.setupDataForRequest( lRequest );
         
-        
-        
-        Ext.jws.send( requestData.ns, requestData.tt,requestData.data,{
-            success : function( aToken ) {
+		Ext.jws.send( lRequestData.ns, lRequestData.tt, lRequestData.data, {
+			success : function( aToken ) {
                 
-                var text = Ext.encode( aToken );
+				var lText = Ext.encode( aToken );
                 
-                var response = {
-                    request       : request,
-                    requestId     : request.id,
-                    status        : aToken.code,
-                    statusText    : aToken.msg,
-                    responseText  : text,
-                    responseObject: aToken
-                };
+				var lResponse = {
+					request       : lRequest,
+					requestId     : lRequest.id,
+					status        : aToken.code,
+					statusText    : aToken.msg,
+					responseText  : lText,
+					responseObject: aToken
+				};
+				
                 
-                me.processResponse( true, operation, request, response, callback, scope );
+				self.processResponse( true, aOperation, lRequest, lResponse, aCallback, aScope );
+			},
+			
+			failure:  function( aToken ) {
                 
-                                
-            },
-            failure:  function( aToken ) {
-                
-                    var text = Ext.encode( aToken );
+				var lText = Ext.encode( aToken );
                     
-                    var response = {
-                        request       : request,
-                        requestId     : request.id,
-                        status        : aToken.code,
-                        statusText    : aToken.msg,
-                        responseText  : text,
-                        responseObject: aToken
-                    };
+				var lResponse = {
+					request       : lRequest,
+					requestId     : lRequest.id,
+					status        : aToken.code,
+					statusText    : aToken.msg,
+					responseText  : lText,
+					responseObject: aToken
+				};
                     
-                me.processResponse( false, operation, request, response, callback, scope );
-            }
-        },scope );
-        
-    },
-    setupDataForRequest:function( options ) {
+				self.processResponse( false, aOperation, lRequest, lResponse, aCallback, aScope );
+			}
+		},aScope );
+	},
+	
+	setupDataForRequest:function( aOptions ) {
             
-        var params  = options.params || {},                     
-        jsonData    = options.jsonData,
-        nameSpace   = this.ns,
-        tokenType   = undefined,
-        data;
+		var lParams  = aOptions.params || {},                     
+		lJsonData    = aOptions.jsonData,
+		lNS   = this.ns,
+		lTokenType   = undefined,
+		lData;
             
-        var scope = options;
+		var lScope = aOptions;
             
-        if ( Ext.isFunction( params ) ) {
-            params = params.call( scope, options );
-        }
+		if ( Ext.isFunction( lParams ) ) {
+			lParams = lParams.call( lScope, aOptions );
+		}
                 
-        data = options.rawData || options.xmlData || jsonData || null;    
+		lData = aOptions.rawData || aOptions.xmlData || lJsonData || null;    
                
+		switch ( aOptions.action ) {
+			case 'create':
+				lTokenType = this.api.create;
+				break;
+			case 'update':
+				lTokenType = this.api.update;
+				break;
+			case 'destroy':
+				lTokenType = this.api.destroy;
+				break;
+			case 'read':
+				lTokenType = this.api.read;
+				break;
+			default:
+				break;
+		}
+            
+		return  {
+			ns: lNS,
+			tt: lTokenType,
+			data: lData || lParams || null
+		};
             
             
-        switch ( options.action ) {
-            case 'create':
-                tokenType = this.api.create;
-                break;
-            case 'update':
-                tokenType = this.api.update;
-                break;
-            case 'destroy':
-                tokenType = this.api.destroy;
-                break;
-            case 'read':
-                tokenType = this.api.read;
-                break;
-            default:
-                break;
-        }
-            
-        return  {
-            ns: nameSpace,
-            tt: tokenType,
-            data: data || params || null
-        };
-            
-            
-    },
-    setException: function( operation, response ) {
-        operation.setException( {
-            status        : response.status,
-            statusText    : response.statusText,
-            responseText  : response.responseText,
-            responseObject: response.responseObject
-        } );     
-    }
+	},
+	setException: function( aOperation, aResponse ) {
+		aOperation.setException( {
+			status        : aResponse.status,
+			statusText    : aResponse.statusText,
+			responseText  : aResponse.responseText,
+			responseObject: aResponse.responseObject
+		} );     
+	}
 } );
 
 /*
@@ -263,82 +261,82 @@ Ext.define( 'Ext.jws.data.proxy', {
  */
 
 Ext.define( 'Ext.jws.form.action.Submit', {
-    extend:'Ext.form.action.Submit',
-    alternateClassName: 'Ext.jws.form.Action.Submit',
-    alias: 'formaction.jwssubmit',
+	extend:'Ext.form.action.Submit',
+	alternateClassName: 'Ext.jws.form.Action.Submit',
+	alias: 'formaction.jwssubmit',
 
-    type: 'jwssubmit',
-    ns: undefined,
-    tokentype: undefined,
+	type: 'jwssubmit',
+	ns: undefined,
+	tokentype: undefined,
 
-    constructor:function( config ) {
-        me = this;
+	constructor:function( aConfig ) {
+		var self = this;
 
-        me.callParent( arguments );
+		self.callParent( arguments );
 
-        if ( me.ns == undefined )
+		if ( self.ns == undefined )
 			Ext.Error.raise( "you must specify the namespace" );
-        if ( me.tokentype == undefined )
+		if ( self.tokentype == undefined )
 			Ext.Error.raise( "you must specify the tokentype" );
-    },
+	},
 
 
-    getNS: function() {
-        return this.ns  || this.form.ns;
-       },
-     getTokenType: function() {
-         return this.tokentype || this.form.tokentype;
-       },
+	getNS: function() {
+		return this.ns  || this.form.ns;
+	},
+	getTokenType: function() {
+		return this.tokentype || this.form.tokentype;
+	},
 
-    doSubmit: function() {
-        var formEl,
-            jwsOptions = Ext.apply( {
-                ns: this.getNS(),
-                tokentype: this.getTokenType()
-              } );
-          var callbacks = this.createCallback();
+	doSubmit: function() {
+		var lFormEl,
+		
+		jwsOptions = Ext.apply( {
+			ns: this.getNS(),
+			tokentype: this.getTokenType()
+		} );
+		var lCallbacks = this.createCallback();
 
-        if ( this.form.hasUpload() ) {
-            formEl = jwsOptions.form = this.buildForm();
-            jwsOptions.isUpload = true;
+		if ( this.form.hasUpload() ) {
+			lFormEl = jwsOptions.form = this.buildForm();
+			jwsOptions.isUpload = true;
 
-        } else {
-            jwsOptions.params = this.getParams();
+		} else {
+			jwsOptions.params = this.getParams();
+		}
 
-        }
-
-        Ext.jws.send( jwsOptions.ns,jwsOptions.tokentype,jwsOptions.params,callbacks,this );
-        if ( formEl ) {
-            Ext.removeNode( formEl );
-        }
-    },
-     processResponse : function( response ) {
-        this.response = response;
-        if ( !response.responseText && !response.responseXML && !response.type ) {
-            return true;
-        }
-        return ( this.result = this.handleResponse( response ) );
-    },
-    handleResponse: function( response ) {
-        if ( response ) {
-            records = response.data;
-            data = [];
-            if ( records ) {
-                for( i = 0, len = records.length; i < len; i++ ) {
-                    data[i] = records[i];
-                }
-            }
+		Ext.jws.send( jwsOptions.ns, jwsOptions.tokentype, jwsOptions.params, lCallbacks,this );
+		if ( lFormEl ) {
+			Ext.removeNode( lFormEl );
+		}
+	},
+	processResponse : function( aResponse ) {
+		this.fResponse = aResponse;
+		if ( !aResponse.responseText && !aResponse.responseXML && !aResponse.type ) {
+			return true;
+		}
+		return ( this.fResult = this.handleResponse( aResponse ) );
+	},
+	handleResponse: function( aResponse ) {
+		if ( aResponse ) {
+			var lRecords = aResponse.data;
+			var lData = [];
+			if ( lRecords ) {
+				for( var i = 0, len = lRecords.length; i < len; i++ ) {
+					lData[i] = lRecords[i];
+				}
+			}
             
-            if ( data.length < 1 ) {
-                data = null;
-            }
-            return {
-                success : response.success,
-                data : data
-            };
-        }
-        return Ext.decode( response.data );
-    }
+			if ( lData.length < 1 ) {
+				lData = null;
+			}
+			return {
+				success : aResponse.success,
+				data : lData
+			};
+		}
+		return Ext.decode( aResponse.data );
+	}
   
 } );
 
@@ -350,68 +348,55 @@ Ext.define( 'Ext.jws.form.action.Submit', {
  */
 
 Ext.define( 'Ext.jws.form.action.Load', {
-    extend:'Ext.form.action.Load',
-    requires: ['Ext.direct.Manager'],
-    alternateClassName: 'Ext.jws.form.action.Load',
-    alias: 'formaction.jwsload',
+	extend:'Ext.form.action.Load',
+	requires: ['Ext.direct.Manager'],
+	alternateClassName: 'Ext.jws.form.action.Load',
+	alias: 'formaction.jwsload',
 
-    type: 'jwsload',
-    ns: undefined,
-    tokentype: undefined,
+	type: 'jwsload',
+	ns: undefined,
+	tokentype: undefined,
 
-    constructor:function( config ) {
-        me = this;
-        me.callParent( arguments );
+	constructor:function( aConfig ) {
+		var self = this;
+		self.callParent( arguments );
 
-        if ( me.ns == undefined )
+		if ( self.ns == undefined )
 			Ext.Error.raise( "you must specify the namespace" );
-        if ( me.tokentype == undefined )
+		if ( self.tokentype == undefined )
 			Ext.Error.raise( "you must specify the tokentype" );
-    },
+	},
 
 
-run: function() {
-        var callbacks =  this.createCallback();
-        Ext.jws.send( Ext.apply( 
-            {
-                ns:this.ns,
-                tokentype:this.tokentype,
-                params: this.getParams()
-            }
-         ) );
-        Ext.jws.send( this.ns,this.tokentype,this.getParams(),callbacks,this );
+	run: function() {
+		var lCallbacks =  this.createCallback();
+		Ext.jws.send( Ext.apply( 
+		{
+			ns:this.ns,
+			tokentype:this.tokentype,
+			params: this.getParams()
+		}
+		) );
+		Ext.jws.send( this.ns, this.tokentype, this.getParams(), lCallbacks,this );
         
-    },
+	},
 
-    processResponse : function( response ) {
-        this.response = response;
-        if ( !response.responseText && !response.responseXML && !response.type ) {
-            return true;
-        }
-        return ( this.result = this.handleResponse( response ) );
-    },
+	processResponse : function( aResponse ) {
+		this.fResponse = aResponse;
+		if ( !aResponse.responseText && !aResponse.responseXML && !aResponse.type ) {
+			return true;
+		}
+		return ( this.fResult = this.handleResponse( aResponse ) );
+	},
     
-  handleResponse: function( response ) {
-        if ( response ) {
-            
-            data = response.data[0] ? response.data : null;
-            return {
-                success : response.success,
-                data : data
-            };
-        }
-        return Ext.decode( response.data );
-    }
-
+	handleResponse: function( aResponse ) {
+		if ( aResponse ) {
+			var data = aResponse.data[0] ? aResponse.data : null;
+			return {
+				success : aResponse.success,
+				data : data
+			};
+		}
+		return Ext.decode( aResponse.data );
+	}
 } );
-
-
-
-
-
-
-
-
-
-
-
