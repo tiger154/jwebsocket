@@ -23,9 +23,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.TimerTask;
+import javax.servlet.http.HttpServletRequest;
 import javolution.util.FastMap;
 import org.apache.catalina.comet.CometEvent;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.IEmbeddedAuthentication;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.connectors.BaseConnector;
@@ -36,18 +39,47 @@ import org.jwebsocket.packetProcessors.JSONProcessor;
 
 /**
  *
- * @author Osvaldo Aguilar Lauzurique @email osvaldo2627@hab.uci.cu
+ * @author Osvaldo Aguilar Lauzurique <osvaldo2627@hab.uci.cu>
  * @author kyberneees
  */
-public class CometConnector extends BaseConnector {
+public class CometConnector extends BaseConnector implements IEmbeddedAuthentication {
 
 	private CometEvent mEvent;
 	private int mReadyState = 0;
 	private static Logger mLog = Logging.getLogger();
-	private String mId;
 	private int mRemotePort;
 	private InetAddress mRemoteHost;
 	private CometServlet mServlet;
+	private HttpServletRequest mRequest;
+	private TimerTask mCloseTask;
+
+	class CloseTimerTask extends TimerTask {
+
+		private CometConnector mConnector;
+
+		public CloseTimerTask(CometConnector aConnector) {
+			mConnector = aConnector;
+		}
+
+		@Override
+		public void run() {
+			mConnector.setReadyState(3);
+			mConnector.stopConnector(CloseReason.BROKEN);
+		}
+	}
+
+	public void cancelActiveCloseTask() {
+		if (null != mCloseTask) {
+			mCloseTask.cancel();
+			mCloseTask = null;
+		}
+	}
+
+	public TimerTask getNewCloseTask() {
+		mCloseTask = new CloseTimerTask(this);
+
+		return mCloseTask;
+	}
 
 	public CometConnector(WebSocketEngine aEngine, CometServlet aServlet, CometEvent aEvent) {
 		super(aEngine);
@@ -61,6 +93,14 @@ public class CometConnector extends BaseConnector {
 		} catch (UnknownHostException ex) {
 			// never happen
 		}
+	}
+
+	public void setRequest(HttpServletRequest aRequest) {
+		mRequest = aRequest;
+	}
+
+	public HttpServletRequest getRequest() {
+		return mRequest;
 	}
 
 	public CometServlet getServlet() {
@@ -112,6 +152,7 @@ public class CometConnector extends BaseConnector {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Stopping connector '" + getId() + "'...");
 		}
+		setReadyState(2);
 
 		if (!aCloseReason.equals(CloseReason.CLIENT)) {
 			// creating message
@@ -124,6 +165,7 @@ public class CometConnector extends BaseConnector {
 				mEvent.close();
 			} catch (IOException lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping connector '" + getId() + "' ..."));
+			} catch (Exception lEx) {
 			}
 		}
 		// removing internal connector id
@@ -132,6 +174,7 @@ public class CometConnector extends BaseConnector {
 		// removing delayed packets for connector
 		mServlet.getPacketsQueue().remove(getId());
 
+		setReadyState(3);
 		super.stopConnector(aCloseReason);
 	}
 
@@ -207,5 +250,28 @@ public class CometConnector extends BaseConnector {
 				}
 			}
 		}
+	}
+
+	@Override
+	public String getAuthenticationType() {
+		return mRequest.getAuthType();
+	}
+
+	@Override
+	public boolean hasAuthority(String aAuthority) {
+		return mRequest.isUserInRole(aAuthority);
+	}
+
+	@Override
+	public boolean isAuthenticated() {
+		return getUsername() != null;
+	}
+
+	@Override
+	public String getUsername() {
+		if (null != super.getUsername()) {
+			return super.getUsername();
+		}
+		return mRequest.getRemoteUser();
 	}
 }

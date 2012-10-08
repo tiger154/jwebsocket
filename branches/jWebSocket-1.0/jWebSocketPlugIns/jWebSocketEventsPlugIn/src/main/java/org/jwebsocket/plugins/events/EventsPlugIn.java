@@ -59,6 +59,10 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 	 */
 	public EventsPlugIn(PluginConfiguration aConfiguration) throws Exception {
 		super(aConfiguration);
+		// setting 'spring' as default authentication method instead of 'static'
+		if (!aConfiguration.getSettings().containsKey(TokenPlugIn.AUTHENTICATION_METHOD_KEY)) {
+			setAuthenticationMethod(TokenPlugIn.AUTHENTICATION_METHOD_SPRING);
+		}
 		setNamespace(aConfiguration.getNamespace());
 
 		if (mLog.isDebugEnabled()) {

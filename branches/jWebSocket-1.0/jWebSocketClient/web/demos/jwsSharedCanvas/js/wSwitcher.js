@@ -47,7 +47,7 @@ $.widget("jws.switcher",{
 			mWSC = new jws.jWebSocketJSONClient({ });
 			// adjust this URL to your jWebSocket server
 			// try to establish connection to jWebSocket server
-			mWSC.logon(jws.JWS_SERVER_URL, "Guest", "guest", {
+			mWSC.logon(jws.JWS_SERVER_URL, "guest", "guest", {
 				// OnOpen callback
 				OnOpen: function( aEvent ) {
 					

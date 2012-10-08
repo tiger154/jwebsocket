@@ -1,6 +1,6 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - Tomcat WebSocket Servlet, from Tomcat 7.0.27
-//	Copyright (c) 2010 jWebSocket.org, Innotrade GmbH
+//	Copyright (c) 2012 jWebSocket.org, Innotrade GmbH
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.log4j.Logger;
-import org.jwebsocket.console.JWebSocketServer;
+import org.jwebsocket.engines.ServletUtils;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.logging.Logging;
@@ -37,32 +37,30 @@ import org.jwebsocket.tcp.EngineUtils;
 public class TomcatServlet extends WebSocketServlet {
 
 	private static Logger mLog;
-	private boolean mRunningEmbedded = false;
 	private ThreadLocal<HttpServletRequest> mRequestContainer = new ThreadLocal<HttpServletRequest>();
 	private TomcatEngine mEngine;
 
 	public boolean isRunningEmbedded() {
-		return mRunningEmbedded;
+		return ContextListener.isRunningEmbedded();
 	}
 
 	@Override
 	public void init() throws ServletException {
-		if (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()) {
-			log("Starting jWebSocket application server...");
-			// running in embedded mode
-			// starting the jWebSocket application server
-			JWebSocketServer.main(new String[0]);
-			log("jWebSocket application server started!");
+		if (JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
+			mLog = Logging.getLogger();
 
-			mRunningEmbedded = true;
+			String lEngineId = getInitParameter(ServletUtils.SERVLET_ENGINE_CONFIG_KEY);
+			if (null == lEngineId) {
+				lEngineId = "tomcat0";
+			}
+			mEngine = (TomcatEngine) JWebSocketFactory.getEngine(lEngineId);
 
-		}
-		mLog = Logging.getLogger();
-		mEngine = (TomcatEngine) JWebSocketFactory.getEngine("tomcat0");
-
-		super.init();
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("TomcatServlet successfully initialized.");
+			super.init();
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Servlet successfully initialized.");
+			}
+		} else {
+			throw new ServletException("The jWebSocket server is not started!");
 		}
 	}
 
@@ -97,14 +95,5 @@ public class TomcatServlet extends WebSocketServlet {
 	@Override
 	protected StreamInbound createWebSocketInbound(String aSubProtocol) {
 		return new TomcatWrapper(mEngine, mRequestContainer.get(), aSubProtocol);
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-
-		if (mRunningEmbedded && JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
-			JWebSocketFactory.stop();
-		}
 	}
 }

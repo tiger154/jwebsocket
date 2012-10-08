@@ -58,25 +58,22 @@ public final class JWebSocketServerConstants {
 	 * Default password for demo key store
 	 */
 	public static final String JWEBSOCKET_KS_DEF_PWD = "jWebSocket";
-
 	/**
 	 * Default engine for jWebSocket server.
 	 */
 	public static String DEFAULT_ENGINE = "tcp";
 	/**
-	 * Default node id if non given in jWebSocket.xml.
-	 * Empty means do not use node-id for single stand-alone systems
+	 * Default node id if non given in jWebSocket.xml. Empty means do not use
+	 * node-id for single stand-alone systems
 	 */
 	public static String DEFAULT_NODE_ID = "";
-	
 	/**
 	 * the default maximum number of connections allowed by an engine
 	 */
 	public static final int DEFAULT_MAX_CONNECTIONS = 10000;
-	
 	/**
-	 * the default "on max connections reached" strategy {wait, close, reject, redirect}
+	 * the default "on max connections reached" strategy {wait, close, reject,
+	 * redirect}
 	 */
 	public static final String DEFAULT_ON_MAX_CONNECTIONS_STRATEGY = "reject";
-	
 }

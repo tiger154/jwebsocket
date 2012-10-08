@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket Filesyste, Client PlugIn (uses jWebSocket Client and Server)
+//	jWebSocket FileSystem, Client PlugIn (uses jWebSocket Client and Server)
 //	(C) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
@@ -62,7 +62,7 @@ jws.FileSystemPlugIn = {
 				}
 			} else if( "send" == aToken.reqType ) {
 				if( aToken.code == 0 ) {
-					if( this.OnFileLoaded ) {
+					if( this.OnFileSent ) {
 						this.OnFileSent( aToken );
 					}
 				} else {
@@ -211,7 +211,7 @@ jws.FileSystemPlugIn = {
 			}
 			if( aOptions.notify != undefined ) {
 				// notify only is the scope is public
-				lNotify = (jws.SCOPE_PRIVATE == false) || aOptions.notify;
+				lNotify = (jws.SCOPE_PUBLIC == lScope) && aOptions.notify;
 			}
 		}
 		if( lEncode ) {
@@ -506,5 +506,5 @@ jws.FileSystemPlugIn = {
 
 }
 
-// add the JWebSocket Shared Objects PlugIn into the TokenClient class
+// add the jWebSocket FileSystem PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.FileSystemPlugIn );

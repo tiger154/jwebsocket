@@ -69,10 +69,12 @@ public class TomcatWrapper extends MessageInbound {
 	public TomcatWrapper(TomcatEngine aEngine, HttpServletRequest aRequest, String aSubProtocol) {
 		super();
 		mEngine = aEngine;
+		// setting the max frame size
+		setByteBufferMaxSize(aEngine.getMaxFrameSize());
 		mRequest = aRequest;
 		mIsSecure = aRequest.isSecure();
 		mSession = aRequest.getSession();
-		
+
 		mRemotePort = mRequest.getRemotePort();
 		InetAddress lAddr;
 		try {
@@ -160,7 +162,7 @@ public class TomcatWrapper extends MessageInbound {
 			return;
 		}
 
-		mConnector = new TomcatConnector(mEngine, aOutbound);
+		mConnector = new TomcatConnector(mEngine, mRequest, aOutbound);
 		mConnector.setSSL(mIsSecure);
 		mConnector.getSession().setSessionId(mSession.getId());
 		mConnector.getSession().setStorage(new HttpSessionStorage(mSession));

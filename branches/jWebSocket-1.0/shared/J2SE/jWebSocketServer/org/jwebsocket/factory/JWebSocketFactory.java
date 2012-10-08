@@ -28,6 +28,7 @@ import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.storage.ehcache.EhCacheManager;
 import org.jwebsocket.util.Tools;
 import org.springframework.beans.factory.BeanFactory;
 
@@ -60,12 +61,10 @@ public class JWebSocketFactory {
 	 *
 	 * @param classLoader
 	 */
-	
 	public static void setClassLoader(JWebSocketJarClassLoader aClassLoader) {
 		JWebSocketFactory.mClassLoader = aClassLoader;
 	}
-	
-	
+
 	/**
 	 *
 	 */
@@ -327,10 +326,21 @@ public class JWebSocketFactory {
 				}
 			}
 		}
+		
+		if (null != mLog && mLog.isInfoEnabled()) {
+			mLog.info("jWebSocket Server bean factories stopped.");
+		}
+		
+		// destroy (Spring) bean factories
+		JWebSocketBeanFactory.destroy();
+		
+		// stopping EhCache manager
+		EhCacheManager.getInstance().shutdown();
 
 		if (null != mLog && mLog.isInfoEnabled()) {
 			mLog.info("jWebSocket Server Sub System stopped.");
 		}
+
 		Logging.exitLogs();
 
 		// stop the shared utility timer

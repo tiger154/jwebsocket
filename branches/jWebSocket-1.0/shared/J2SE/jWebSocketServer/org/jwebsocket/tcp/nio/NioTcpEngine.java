@@ -274,7 +274,7 @@ public class NioTcpEngine extends BaseEngine {
 								} else if (lKey.isValid() && lKey.isWritable()) {
 									write(lKey, mSelector);
 								}
-							} catch (CancelledKeyException lCKEx) {
+							} catch (CancelledKeyException lEx) {
 								// ignore, key was cancelled an instant after isValid() returned true,
 								// most probably the client disconnected just at the wrong moment
 							}
@@ -282,7 +282,7 @@ public class NioTcpEngine extends BaseEngine {
 					}
 				} catch (Exception lEx) {
 					// something happened during socket operation (select, read or write), just log it
-					mLog.error("Error during socket operation", lEx);
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "Error during socket operation"));
 				}
 			}
 

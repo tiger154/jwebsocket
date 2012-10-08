@@ -275,5 +275,5 @@ jws.JDBCPlugIn = {
 
 }
 
-// add the JWebSocket Shared Objects PlugIn into the TokenClient class
+// add the JWebSocket JDBC PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.JDBCPlugIn );

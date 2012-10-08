@@ -238,7 +238,7 @@ jws.CanvasPlugIn = {
 
 }
 
-// add the JWebSocket Shared Objects PlugIn into the TokenClient class
+// add the JWebSocket Canvas PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.CanvasPlugIn );
 
 // optionally include canvas support for IE8

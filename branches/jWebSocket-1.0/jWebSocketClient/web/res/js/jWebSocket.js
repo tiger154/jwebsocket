@@ -2849,7 +2849,7 @@ jws.oop.declareClass = function( aNamespace, aClassname, aAncestor, aFields ) {
 // plug-in functionality to allow to add plug-ins into existing classes
 jws.oop.addPlugIn = function( aClass, aPlugIn ) {
 
-	// if the class has no plug-ins yet initialize array
+	// if the class has no plug-ins yet, initialize array
 	if( !aClass.fPlugIns ) {
 		aClass.fPlugIns = [];
 	}
@@ -4345,7 +4345,7 @@ jws.SystemClientPlugIn = {
 	//:d:en:sending a [tt]login[/tt] token.
 	//:a:en::aUsername:String:The login name of the user.
 	//:a:en::aPassword:String:The password of the user.
-	//:a:en::aOptions:Object:Optional arguments as listed below...
+	//:a:en::aOptions:Object:Optional arguments for the sendToken operation
 	//:a:en:aOptions:pool:String:Default pool the user want to register at (default [tt]null[/tt], no pool).
 	//:a:en:aOptions:autoConnect:Boolean:not yet supported (defautl [tt]true[/tt]).
 	//:r:*:::void:none
@@ -4382,7 +4382,7 @@ jws.SystemClientPlugIn = {
 				password: aPassword,
 				encoding: lEncoding,
 				pool: lPool
-			});
+			}, aOptions);
 		} else {
 			lRes.code = -1;
 			lRes.localeKey = "jws.jsc.res.notConnected";

@@ -266,7 +266,6 @@ public class TokenServer extends BaseServer {
 								+ "' from '" + aConnector + "'...");
 					}
 					mCachedThreadPool.execute(new Runnable() {
-
 						@Override
 						public void run() {
 							processToken(aConnector, lToken);
@@ -610,7 +609,7 @@ public class TokenServer extends BaseServer {
 	 * creates a standard response
 	 *
 	 * @param aInToken
-	 * @param aOutToken 
+	 * @param aOutToken
 	 */
 	public void setResponseFields(Token aInToken, Token aOutToken) {
 		Integer lTokenId = null;
@@ -639,7 +638,7 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aInToken
 	 * @return
 	 */
@@ -653,8 +652,8 @@ public class TokenServer extends BaseServer {
 	 * creates an error token yet with a code and a message
 	 *
 	 * @param aInToken
-	 * @param aCode 
-	 * @param aMessage 
+	 * @param aCode
+	 * @param aMessage
 	 * @return
 	 */
 	public Token createErrorToken(Token aInToken, int aCode, String aMessage) {

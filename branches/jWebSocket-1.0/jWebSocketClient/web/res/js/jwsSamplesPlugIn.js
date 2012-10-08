@@ -68,5 +68,5 @@ jws.SamplesPlugIn = {
 
 }
 
-// add the JWebSocket Shared Objects PlugIn into the TokenClient class
+// add the JWebSocket Samples PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SamplesPlugIn );

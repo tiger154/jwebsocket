@@ -41,11 +41,11 @@ public class SecurityHelper {
 		}
 		try {
 			if (aSessionStorage.containsKey(SystemPlugIn.AUTHORITIES)) {
-				String[] authorities = ((String) aSessionStorage.get(SystemPlugIn.AUTHORITIES)).split(" ");
-				int end = authorities.length;
+				String[] lAuthorities = ((String) aSessionStorage.get(SystemPlugIn.AUTHORITIES)).split(" ");
+				int end = lAuthorities.length;
 
-				for (int i = 0; i < end; i++) {
-					if (authorities[i].equals(aAuthority)) {
+				for (int lIndex = 0; lIndex < end; lIndex++) {
+					if (lAuthorities[lIndex].equals(aAuthority)) {
 						return true;
 					}
 				}

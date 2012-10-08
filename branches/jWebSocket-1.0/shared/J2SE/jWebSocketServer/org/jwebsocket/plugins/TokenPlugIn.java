@@ -16,6 +16,7 @@
 package org.jwebsocket.plugins;
 
 import java.util.List;
+import org.jwebsocket.api.IEmbeddedAuthentication;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
@@ -36,15 +37,11 @@ import org.springframework.context.ApplicationContext;
  *
  * @author aschulze
  * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author kyberneees
  */
 public class TokenPlugIn extends BasePlugIn {
 
 	private String mNamespace = null;
-	private static boolean mBeanFactoryLoaded = false;
-	protected String mAuthenticationMethod = "static";
-	public static String AUTHENTICATION_METHOD_KEY = "authentication_method";
-	public static String AUTHENTICATION_METHOD_STATIC = "static";
-	public static String AUTHENTICATION_METHOD_SPRING = "spring";
 
 	/**
 	 *
@@ -52,9 +49,6 @@ public class TokenPlugIn extends BasePlugIn {
 	 */
 	public TokenPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
-
-		// setting the authentication method value
-		mAuthenticationMethod = getString(AUTHENTICATION_METHOD_KEY, AUTHENTICATION_METHOD_STATIC);
 	}
 
 	@Override
@@ -184,6 +178,21 @@ public class TokenPlugIn extends BasePlugIn {
 	}
 
 	/**
+	 * Convenience method, just a wrapper for token server method
+	 * <tt>sendToken</tt> to simplify token plug-in code.
+	 *
+	 * @param aSource
+	 * @param aTarget
+	 * @param aToken
+	 */
+	public void sendToken(WebSocketConnector aTarget, Token aToken) {
+		TokenServer lServer = getServer();
+		if (lServer != null) {
+			lServer.sendToken(aTarget, aToken);
+		}
+	}
+
+	/**
 	 * Sends the the given token asynchronously and returns the future object to
 	 * keep track of the send operation
 	 *
@@ -260,7 +269,7 @@ public class TokenPlugIn extends BasePlugIn {
 
 	/**
 	 *
-	 * @return
+	 * @return The global jWebSocket application context (spring beans)
 	 */
 	public ApplicationContext getConfigBeanFactory() {
 		String lSpringConfig = getString("spring_config");
@@ -273,7 +282,7 @@ public class TokenPlugIn extends BasePlugIn {
 
 	/**
 	 *
-	 * @return
+	 * @return An named application context (spring beans)
 	 */
 	public ApplicationContext getConfigBeanFactory(String aNamespace) {
 		String lSpringConfig = getString("spring_config");
@@ -285,8 +294,22 @@ public class TokenPlugIn extends BasePlugIn {
 	}
 
 	public boolean hasAuthority(WebSocketConnector aConnector, String aAuthority) {
-		return mAuthenticationMethod.equals(AUTHENTICATION_METHOD_STATIC)
-				? SecurityFactory.hasRight(aConnector.getUsername(), aAuthority)
-				: SecurityHelper.userHasAuthority(aConnector, aAuthority);
+		String lAuthenticationMethod = getAuthenticationMethod();
+
+		if (lAuthenticationMethod.equals(AUTHENTICATION_METHOD_STATIC)) {
+			return SecurityFactory.hasRight(aConnector.getUsername(), aAuthority);
+		} else if (lAuthenticationMethod.equals(AUTHENTICATION_METHOD_SPRING)) {
+			return SecurityHelper.userHasAuthority(aConnector, aAuthority);
+		} else if (lAuthenticationMethod.equals(AUTHENTICATION_METHOD_EMBEDDED)) {
+			if (aConnector instanceof IEmbeddedAuthentication) {
+				return ((IEmbeddedAuthentication) aConnector).hasAuthority(aAuthority);
+			} else {
+				throw new UnsupportedOperationException("The connector does not "
+						+ "implements 'org.jwebsocket.api.IEmbeddedAuthentication'!");
+			}
+		}
+		// authentication method not supported
+		throw new UnsupportedOperationException("Unsupported authentication method. "
+				+ "Available methods are: spring, static or embedded!");
 	}
 }
