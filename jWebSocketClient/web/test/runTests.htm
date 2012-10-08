@@ -60,6 +60,9 @@
 
 		<!-- tests for the filesystem plug-in -->
 		<script type="text/javascript" src="js/jwsFilesystemTests.js"></script>
+		
+		<!-- tests for the enterprise filesystem plug-in -->
+		<script type="text/javascript" src="js/jwsFilesystemEETests.js"></script>
 
 		<!-- tests for the logging plug-in -->
 		<script type="text/javascript" src="js/jwsLoggingTests.js"></script>
@@ -124,6 +127,8 @@
 							<br>
 							<label><input id="filesystemPlugIn" type="checkbox" checked="checked"> File System PlugIn</label>
 							<br>
+							<label><input id="filesystemPlugInEE" type="checkbox" checked="checked"> File System PlugIn (Enterprise)</label>
+							<br>
 							<label><input id="systemPlugIn" type="checkbox" checked="checked"> System PlugIn</label>
 							<br>
 							<label><input id="load" type="checkbox" checked="checked"> Load</label>
@@ -182,6 +187,7 @@
 						rpcPlugIn: (jws.$("rpcPlugIn").checked)? true : false,
 						automatedAPIPlugIn: (jws.$("automatedAPIPlugIn").checked)? true : false,
 						filesystemPlugIn: (jws.$("filesystemPlugIn").checked)? true : false,
+						filesystemPlugInEE: (jws.$("filesystemPlugInEE").checked)? true : false,
 						systemPlugIn: (jws.$("systemPlugIn").checked)? true : false,
 						load: (jws.$("load").checked)? true : false,
 						closeConns: (jws.$("closeConns").checked)? true : false,
@@ -207,6 +213,7 @@
 						rpcPlugIn: true,
 						automatedAPIPlugIn: true,
 						filesystemPlugIn: true,
+						filesystemPlugInEE: true,
 						systemPlugIn: true,
 						load: true,
 						closeConns: true,
