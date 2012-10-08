@@ -1,6 +1,6 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket TestSpecs for the Filesystem Plug-in
-//	(C) 2011 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
+//	jWebSocket TestSpecs for the Enterprise Filesystem Plug-in
+//	(C) 2012 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -14,12 +14,17 @@
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
 
+if ( undefined == jws.tests.enterprise ){
+	jws.tests.enterprise = {};
+}
+jws.tests.enterprise.FileSystem = {
 
-jws.tests.FileSystem = {
-
-	NS: "jws.tests.filesystem", 
+	NS: "jws.tests.enterprise.filesystem", 
 	
 	TEST_FILE_DATA: "This is a string to be saved into the test file!",
+	TEST_FILE_DATA2: " The enterprise FileSystem plug-in supports ",
+	TEST_FILE_DATA3: " saving files by chunks!",
+	
 	TEST_FOLDER: "privFolder",
 	TEST_FILE_NAME: "test.txt",
 
@@ -33,6 +38,39 @@ jws.tests.FileSystem = {
 			var lResponse = null;
 
 			jws.Tests.getAdminConn().fileSave( lFilename, lData, {
+				encode: true,
+				scope: aScope,
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( 0 );
+			});
+
+		});
+	},
+	
+	testFileSaveByChunks: function(aFilename, aData, aIsChunk, aScope) {
+		var lSpec = this.NS + ": FileSaveByChunks (admin, " + aFilename + ", " + aScope + ")";
+		var lData = aData;
+		var lFilename = aFilename;
+		var lIsChunk = aIsChunk;
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminConn().fileSaveByChunks( lFilename, lData, lIsChunk, {
 				encode: true,
 				scope: aScope,
 				OnResponse: function( aToken ) {
@@ -86,6 +124,45 @@ jws.tests.FileSystem = {
 		});
 	},
 	
+	testFileSendByChunks: function(aFilename, aDataArray) {
+		var lSpec = this.NS + ": FileSendByChunks (admin, " + aFilename + ")";
+		
+		it( lSpec, function () {
+
+			var lChunks = aDataArray;
+			var lChunkPosition = 0;
+			var lOK = true;
+			
+			jws.Tests.getAdminConn().setEnterpriseFileSystemCallbacks({
+				OnChunkReceived: function(aToken){
+					if (!(lChunks[lChunkPosition++] == aToken.data)){
+						lOK = false;
+					}
+				}
+			});
+			for (var lIndex = 0; lIndex < aDataArray.length; lIndex++ ){
+				var lIsLast = (lIndex + 1 == aDataArray.length);
+				jws.Tests.getAdminConn().fileSendByChunks( jws.Tests.getAdminConn().getId(), 
+					aFilename, aDataArray[lIndex], lIsLast, {
+						encoding: "base64"
+					});
+			}
+
+			waitsFor(
+				function() {
+					return( lChunkPosition == lChunks.length  );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lOK ).toEqual( true );
+			});
+
+		});
+	},
+
 	testGetFilelist: function(aAlias, aFilemasks, aRecursive, aExpectedList){
 		var lSpec = this.NS + ": GetFilelist (admin, " + aAlias + ", " + 
 		JSON.stringify(aFilemasks) + ", " + aRecursive + ")";
@@ -154,6 +231,92 @@ jws.tests.FileSystem = {
 		});
 	},
 	
+	testStartObserve: function(aExpectedCode) {
+		var lSpec = this.NS + ": startObserve (admin)";
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminConn().fsStartObserve({
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( aExpectedCode );
+			});
+
+		});
+	},
+	
+	testStopObserve: function(aExpectedCode) {
+		var lSpec = this.NS + ": stopObserve (admin)";
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminConn().fsStopObserve({
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( aExpectedCode );
+			});
+
+		});
+	},
+	
+	testFileLoadByChunks: function(aFilename, aAlias, aOffset, aLength, aExpectedData) {
+		var lSpec = this.NS + ": FileLoadByChunks (admin, " + aFilename + ", " + aAlias + ")";
+		var lData = aExpectedData;
+		var lFilename = aFilename;
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminConn().fileLoadByChunks( lFilename, aAlias, aOffset, aLength ,{
+				decode: true,
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.data ).toEqual( lData );
+			});
+		});
+	},
+	
 	testFileDelete: function(aFilename, aForce, aExpectedCode) {
 		var lSpec = this.NS + ": FileDelete (admin, " + aFilename + ", " + aExpectedCode + ")";
 		
@@ -162,6 +325,34 @@ jws.tests.FileSystem = {
 			var lResponse = null;
 
 			jws.Tests.getAdminConn().fileDelete( aFilename, aForce, {
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( aExpectedCode );
+			});
+
+		});
+	},
+	
+	testDirectoryDelete: function(aDirectory, aExpectedCode) {
+		var lSpec = this.NS + ": DirectoryDelete (admin, " + aDirectory + ", " + aExpectedCode + ")";
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminConn().directoryDelete( aDirectory, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -214,6 +405,35 @@ jws.tests.FileSystem = {
 	},
 
 	runSpecs: function() {
+		jws.tests.enterprise.FileSystem.testStartObserve(0);
+		jws.tests.enterprise.FileSystem.testStartObserve(-1);
+		
+		jws.tests.enterprise.FileSystem.testFileSaveByChunks(
+			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
+			this.TEST_FILE_DATA,
+			false, 
+			jws.SCOPE_PRIVATE);
+
+		jws.tests.enterprise.FileSystem.testFileSaveByChunks(
+			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
+			this.TEST_FILE_DATA2,
+			false, 
+			jws.SCOPE_PRIVATE);
+		
+		jws.tests.enterprise.FileSystem.testFileSaveByChunks(
+			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
+			this.TEST_FILE_DATA3,
+			true, 
+			jws.SCOPE_PRIVATE);
+			
+		jws.tests.FileSystem.testFileLoad(
+			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
+			jws.FileSystemPlugIn.ALIAS_PRIVATE,
+			this.TEST_FILE_DATA + this.TEST_FILE_DATA2 + this.TEST_FILE_DATA3);
+
+		jws.tests.enterprise.FileSystem.testDirectoryDelete(this.TEST_FOLDER, 0);	
+		jws.tests.enterprise.FileSystem.testDirectoryDelete(this.TEST_FOLDER, -1);	
+
 		jws.tests.FileSystem.testFileSave(
 			this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA, 
@@ -224,6 +444,26 @@ jws.tests.FileSystem = {
 			jws.FileSystemPlugIn.ALIAS_PUBLIC,
 			this.TEST_FILE_DATA);
 			
+		jws.tests.enterprise.FileSystem.testFileLoadByChunks(
+			this.TEST_FILE_NAME, 
+			jws.FileSystemPlugIn.ALIAS_PUBLIC,
+			-5,
+			4,
+			"file");
+		jws.tests.enterprise.FileSystem.testFileLoadByChunks(
+			this.TEST_FILE_NAME, 
+			jws.FileSystemPlugIn.ALIAS_PUBLIC,
+			0,
+			4,
+			"This");
+			
+		jws.tests.enterprise.FileSystem.testFileLoadByChunks(
+			this.TEST_FILE_NAME, 
+			jws.FileSystemPlugIn.ALIAS_PUBLIC,
+			2,
+			4,
+			"is i");
+		
 		jws.tests.FileSystem.testFileExists(
 			jws.FileSystemPlugIn.ALIAS_PUBLIC, 
 			this.TEST_FILE_NAME, 
@@ -256,9 +496,16 @@ jws.tests.FileSystem = {
 			[this.TEST_FILE_NAME]);
 		
 		jws.tests.FileSystem.testFileSend(this.TEST_FILE_NAME, this.TEST_FILE_DATA);
+		jws.tests.enterprise.FileSystem.testFileSendByChunks(this.TEST_FILE_NAME, 
+			[this.TEST_FILE_DATA, 
+			this.TEST_FILE_DATA2, 
+			this.TEST_FILE_DATA3]);
 		jws.tests.FileSystem.testFileSend(this.TEST_FILE_NAME, this.TEST_FILE_DATA);
 		jws.tests.FileSystem.testFileDelete(this.TEST_FILE_NAME, true, 0);
 		jws.tests.FileSystem.testFileDelete(this.TEST_FILE_NAME, true, -1);
+		
+		jws.tests.enterprise.FileSystem.testStopObserve(0);
+		jws.tests.enterprise.FileSystem.testStopObserve(-1);
 	},
 
 	runSuite: function() {
@@ -267,4 +514,5 @@ jws.tests.FileSystem = {
 			lThis.runSpecs();
 		});
 	}	
+
 };
