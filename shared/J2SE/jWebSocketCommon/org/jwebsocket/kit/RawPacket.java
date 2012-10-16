@@ -29,20 +29,9 @@ import org.jwebsocket.api.WebSocketPacket;
 public class RawPacket implements WebSocketPacket {
 
 	private byte[] mData = null;
-	private String[] mFragments = null;
 	// private String mUTF8 = null;
-	// fragmentation support
-	private int mFragmentsLoaded = 0;
-	private int mFragmentsExpected = 0;
-	private boolean mIsFragmented = false;
-	private boolean mIsComplete = false;
 	private Date mCreationDate = null;
-	private long mTimeout = 0;
 	private WebSocketFrameType mFrameType = WebSocketFrameType.TEXT;
-
-	public RawPacket(int aInitialSize) {
-		initFragmented(aInitialSize);
-	}
 
 	/**
 	 * Instantiates a new data packet and initializes its value to the passed
@@ -189,39 +178,8 @@ public class RawPacket implements WebSocketPacket {
 	}
 
 	@Override
-	public final boolean isFragmented() {
-		return mIsFragmented;
-	}
-
-	@Override
-	public final boolean isComplete() {
-		return mIsComplete;
-	}
-
-	@Override
-	public final void setFragment(String aString, int aIdx) {
-		mFragments[aIdx] = aString;
-		mFragmentsLoaded++;
-		mIsComplete = mFragmentsLoaded >= mFragmentsExpected;
-	}
-
-	@Override
-	public void packFragments() {
-		StringBuilder lSB = new StringBuilder();
-		for (int lIdx = 0; lIdx < mFragments.length; lIdx++) {
-			lSB.append(mFragments[lIdx]);
-			mFragments[lIdx] = null;
-		}
-		try {
-			mData = lSB.toString().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException lEx) {
-		}
-	}
-
-	@Override
-	public final void initFragmented(int aTotal) {
-		mFragmentsExpected = aTotal;
-		mFragments = new String[aTotal];
+	public final boolean isFragment() {
+		return mFrameType.equals(WebSocketFrameType.FRAGMENT);
 	}
 
 	@Override
@@ -235,12 +193,7 @@ public class RawPacket implements WebSocketPacket {
 	}
 
 	@Override
-	public final void setTimeout(long aMilliseconds) {
-		mTimeout = aMilliseconds;
-	}
-
-	@Override
-	public final boolean isTimedOut() {
-		return mCreationDate.getTime() + mTimeout < new Date().getTime();
+	public Integer size() {
+		return mData.length;
 	}
 }

@@ -128,7 +128,7 @@ public class TCPEngine extends BaseEngine {
 				try {
 					String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
 					SSLContext lSSLContext = Util.createSSLContext(lKeyStorePath, mKeyStorePassword);
-					
+
 					SSLServerSocketFactory lSSLFactory = lSSLContext.getServerSocketFactory();
 					mSSLServerSocket = (SSLServerSocket) lSSLFactory.createServerSocket(
 							mSSLListenerPort);
@@ -433,10 +433,10 @@ public class TCPEngine extends BaseEngine {
 
 							continue;
 						} else {
-							// log.debug("Adding connector to engine...");
+							// registering connector
 							getConnectors().put(lConnector.getId(), lConnector);
-							//Starting new connection
-							lConnector.startConnector();
+							// initting connector
+							((TCPConnector) lConnector).init();
 						}
 					} catch (Exception lEx) {
 						mLog.error(

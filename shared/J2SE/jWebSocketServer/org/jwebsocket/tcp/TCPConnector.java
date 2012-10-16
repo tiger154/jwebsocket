@@ -30,6 +30,7 @@ import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.connectors.BaseConnector;
+import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.util.Tools;
@@ -87,6 +88,12 @@ public class TCPConnector extends BaseConnector {
 		}
 	}
 
+	public void init() {
+		ClientProcessor lClientProc = new ClientProcessor(this);
+		mClientThread = new Thread(lClientProc);
+		mClientThread.start();
+	}
+
 	@Override
 	public void startConnector() {
 		int lPort = -1;
@@ -107,10 +114,9 @@ public class TCPConnector extends BaseConnector {
 					+ lPort + " with timeout "
 					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
 		}
-		// pass reference to connector instance to reader thread
-		ClientProcessor lClientProc = new ClientProcessor(this);
-		mClientThread = new Thread(lClientProc);
-		mClientThread.start();
+
+		super.startConnector();
+
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Started " + mLogInfo + " connector" + lNodeStr + " on port "
 					+ lPort + " with timeout "
@@ -172,15 +178,10 @@ public class TCPConnector extends BaseConnector {
 				WebSocketPacket lClose;
 				lClose = new RawPacket(WebSocketFrameType.CLOSE, WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name()));
 				WebSocketConnectorStatus lStatus = getStatus();
-				try {
-					// to ensure that the close packet can be sent at all!
-					setStatus(WebSocketConnectorStatus.UP);
-					sendPacketInTransaction(lClose);
-				} catch (WebSocketException ex) {
-					// TODO: check if we need to handle that here!
-				} finally {
-					setStatus(lStatus);
-				}
+				// to ensure that the close packet can be sent at all!
+				setStatus(WebSocketConnectorStatus.UP);
+				sendPacket(lClose);
+				setStatus(lStatus);
 			}
 			stopReader();
 		}
@@ -207,55 +208,18 @@ public class TCPConnector extends BaseConnector {
 		}
 	}
 
-	@Override
-	public void processPacket(WebSocketPacket aDataPacket) {
-		// forward the data packet to the engine
-		getEngine().processPacket(this, aDataPacket);
-	}
-
-	@Override
-	public void sendPacketInTransaction(WebSocketPacket aDataPacket) throws WebSocketException {
-		if (WebSocketConnectorStatus.UP != getStatus()) {
-			// TODO: think about if and how to handle the scenario 
-			// that other threads send data to a closed or closing connector.
-			/*
-			 * mLog.warn("Trying to send to closing connection: " + getId() + ",
-			 * " + aDataPacket.getUTF8());
-			 */
-			return;
-		}
-		boolean lSendSuccess = false;
-		String lExMsg = null;
-		try {
-			if (mClientSocket.isConnected()) {
-				if (isHixie()) {
-					sendHixie(aDataPacket);
-				} else {
-					sendHybi(getVersion(), aDataPacket);
-				}
-				lSendSuccess = true;
-			} else {
-				mLog.error("Trying to send to closed connection: "
-						+ getId() + ", " + aDataPacket.getUTF8());
-			}
-		} catch (Exception lEx) {
-			lExMsg = lEx.getMessage();
-		}
-		// if sending data leads to an exception ...
-		// we need to terminate the connection
-		if (!lSendSuccess) {
-			stopReader();
-		}
-		if (null != lExMsg) {
-			throw new WebSocketException(lExMsg);
-		}
-	}
-
 	/*
 	 * this is called by the TimeoutOutputstreamWriter, the data is first
 	 * written into a queue and then send by a watched thread
 	 */
 	public synchronized void _sendPacket(WebSocketPacket aDataPacket) {
+		try {
+			checkBeforeSend(aDataPacket);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "sending packet to '" + getId() + "' connector!"));
+			return;
+		}
+
 		try {
 			if (isHixie()) {
 				sendHixie(aDataPacket);
@@ -498,8 +462,8 @@ public class TCPConnector extends BaseConnector {
 			mConnector.getSession().setSessionId(mConnector.getHeader().
 					getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
 
-			// call connectorStarted method of engine
-			lEngine.connectorStarted(mConnector);
+			// start connector
+			mConnector.startConnector();
 
 			// readHixie and readHybi process potential exceptions already!
 			try {
@@ -512,9 +476,7 @@ public class TCPConnector extends BaseConnector {
 				terminateConnector(mCloseReason);
 			}
 
-			// call client stopped method of engine
-			// (e.g. to release client from streams)
-			lEngine.connectorStopped(mConnector, mCloseReason);
+			mConnector.stopConnector(mCloseReason);
 
 			if (mLog.isInfoEnabled()) {
 				mLog.info("Stopped " + mLogInfo
@@ -533,20 +495,24 @@ public class TCPConnector extends BaseConnector {
 						lBuff.reset();
 						// end of frame
 					} else if (lIn == 0xFF) {
-						RawPacket lPacket = new RawPacket(lBuff.toByteArray());
-						try {
-							aEngine.processPacket(mConnector, lPacket);
-							//Reading pending packets in the buffer (for high concurrency scenarios)
-							if (mIn.available() > 0) {
-								processHixie(aEngine);
+						if (lBuff.size() > getMaxFrameSize()) {
+							mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, lBuff.size()));
+						} else {
+							RawPacket lPacket = new RawPacket(lBuff.toByteArray());
+							try {
+								mConnector.processPacket(lPacket);
+							} catch (Exception lEx) {
+								mLog.error(lEx.getClass().getSimpleName()
+										+ " in processPacket of connector "
+										+ mConnector.getClass().getSimpleName()
+										+ ": " + lEx.getMessage());
 							}
-						} catch (Exception lEx) {
-							mLog.error(lEx.getClass().getSimpleName()
-									+ " in processPacket of connector "
-									+ mConnector.getClass().getSimpleName()
-									+ ": " + lEx.getMessage());
 						}
 						lBuff.reset();
+						// reading pending packets in the buffer (for high concurrency scenarios)
+						if (mIn.available() > 0) {
+							processHixie(aEngine);
+						}
 					} else if (lIn < 0) {
 						mCloseReason = CloseReason.CLIENT;
 						setStatus(WebSocketConnectorStatus.DOWN);
@@ -581,11 +547,15 @@ public class TCPConnector extends BaseConnector {
 						mCloseReason = CloseReason.CLIENT;
 						setStatus(WebSocketConnectorStatus.DOWN);
 					} else if (WebSocketFrameType.TEXT.equals(lPacket.getFrameType())) {
-						if (mLog.isDebugEnabled()) {
-							mLog.debug("Processing 'text' frame from " + lFrom + "...");
+						if (lPacket.size() > getMaxFrameSize()) {
+							mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, lPacket.size()));
+						} else {
+							if (mLog.isDebugEnabled()) {
+								mLog.debug("Processing 'text' frame from " + lFrom + "...");
+							}
+							mConnector.processPacket(lPacket);
 						}
-						aEngine.processPacket(mConnector, lPacket);
-						//Reading pending packets in the buffer (for high concurrency scenarios)
+						// reading pending packets in the buffer (for high concurrency scenarios)
 						if (mIn.available() > 0) {
 							processHybi(aVersion, aEngine);
 						}

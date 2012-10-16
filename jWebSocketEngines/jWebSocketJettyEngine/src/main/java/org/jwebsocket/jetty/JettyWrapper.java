@@ -26,6 +26,7 @@ import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
@@ -37,7 +38,6 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 // Jetty M1 JavaDoc: http://www.jarvana.com/jarvana/browse/org/eclipse/jetty/aggregate/jetty-all-server/8.0.0.M1/
 // SSL Tutorial: http://docs.codehaus.org/display/JETTY/How+to+configure+SSL
 // " http://www.opennms.org/wiki/Standalone_HTTPS_with_Jetty
-
 /**
  *
  * @author alexanderschulze
@@ -84,7 +84,7 @@ public class JettyWrapper implements WebSocket,
 		mConnector = new JettyConnector(mEngine, mRequest, mProtocol, aConnection);
 		mConnector.getSession().setSessionId(mRequest.getSession().getId());
 		mConnector.getSession().setStorage(new HttpSessionStorage(mRequest.getSession()));
-		
+
 		mEngine.addConnector(mConnector);
 		// inherited BaseConnector.startConnector
 		// calls mEngine connector started
@@ -94,7 +94,6 @@ public class JettyWrapper implements WebSocket,
 		// because Jetty does not allow to send a welcome message 
 		// during it's onConnect listener.
 		new Thread() {
-
 			@Override
 			public void run() {
 				mConnector.startConnector();
@@ -111,29 +110,38 @@ public class JettyWrapper implements WebSocket,
 			// inherited BaseConnector.stopConnector
 			// calls mEngine connector stopped
 			mConnector.stopConnector(CloseReason.CLIENT);
-			mEngine.removeConnector(mConnector);
+			// TODO: check this
+			// mEngine.removeConnector(mConnector);
 		}
 	}
 
 	@Override
 	public void onMessage(String aMessage) {
+		if (aMessage.length() > mConnector.getMaxFrameSize()) {
+			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.length()));
+			return;
+		}
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Message (text) from Jetty client...");
 		}
 		if (mConnector != null) {
 			WebSocketPacket lDataPacket = new RawPacket(aMessage);
-			mEngine.processPacket(mConnector, lDataPacket);
+			mConnector.processPacket(lDataPacket);
 		}
 	}
 
 	@Override
 	public void onMessage(byte[] aMessage, int i, int i1) {
+		if (aMessage.length > mConnector.getMaxFrameSize()) {
+			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.length));
+			return;
+		}
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Message (binary) from Jetty client...");
 		}
 		if (mConnector != null) {
 			WebSocketPacket lDataPacket = new RawPacket(aMessage);
-			mEngine.processPacket(mConnector, lDataPacket);
+			mConnector.processPacket(lDataPacket);
 		}
 	}
 }

@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.connectors.BaseConnector;
+import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.tcp.nio.ssl.SSLHandler;
@@ -65,6 +66,13 @@ public class NioTcpConnector extends BaseConnector {
 
 	@Override
 	public IOFuture sendPacketAsync(WebSocketPacket aPacket) {
+		try {
+			checkBeforeSend(aPacket);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "sending packet to '" + getId() + "' connector!"));
+			return null;
+		}
+
 		byte[] lProtocolPacket;
 		if (isHixie()) {
 			lProtocolPacket = new byte[aPacket.getByteArray().length + 2];
@@ -113,18 +121,22 @@ public class NioTcpConnector extends BaseConnector {
 	}
 
 	/**
-	 * SSL session established successfully 
+	 * SSL session established successfully
 	 */
 	public void sslHandshakeValidated() {
 		mIsAfterSSLHandshake = true;
-		if (mLog.isDebugEnabled()){
+		if (mLog.isDebugEnabled()) {
 			mLog.debug("SSL session established successfully!");
 		}
 	}
 
 	public void flushPacket(WebSocketPacket aPacket) {
+		if (aPacket.size() > getMaxFrameSize()) {
+			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(this, aPacket.size()));
+			return;
+		}
 		try {
-			getEngine().processPacket(this, aPacket);
+			super.processPacket(aPacket);
 		} catch (Exception e) {
 			mLog.error(e.getClass().getSimpleName()
 					+ " in processPacket of connector "

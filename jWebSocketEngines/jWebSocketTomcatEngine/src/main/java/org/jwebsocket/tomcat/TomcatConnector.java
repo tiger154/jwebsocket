@@ -68,11 +68,7 @@ public class TomcatConnector extends BaseConnector implements IEmbeddedAuthentic
 		}
 		mIsRunning = true;
 
-		// call connectorStarted method of engine
-		WebSocketEngine lEngine = getEngine();
-		if (lEngine != null) {
-			lEngine.connectorStarted(this);
-		}
+		super.startConnector();
 	}
 
 	@Override
@@ -97,14 +93,14 @@ public class TomcatConnector extends BaseConnector implements IEmbeddedAuthentic
 	}
 
 	@Override
-	public void processPacket(WebSocketPacket aDataPacket) {
-		// forward the data packet to the engine
-		// the engine forwards the packet to all connected servers
-		getEngine().processPacket(this, aDataPacket);
-	}
-
-	@Override
 	public synchronized void sendPacket(WebSocketPacket aDataPacket) {
+		try {
+			checkBeforeSend(aDataPacket);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "sending packet to '" + getId() + "' connector!"));
+			return;
+		}
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Sending packet '" + aDataPacket.getUTF8() + "'...");
 		}

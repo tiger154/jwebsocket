@@ -211,8 +211,8 @@ public class NioTcpEngine extends BaseEngine {
 				//Ignore it. Channel has been closed previously!
 			}
 
-			if (mDelayedPacketsQueue.getDelayedPackets().containsKey(aConnector)) {
-				mDelayedPacketsQueue.getDelayedPackets().remove(aConnector);
+			if (mDelayedPacketsQueue.getDelayedPackets().containsKey((NioTcpConnector) aConnector)) {
+				mDelayedPacketsQueue.getDelayedPackets().remove((NioTcpConnector) aConnector);
 			}
 		}
 
@@ -398,7 +398,6 @@ public class NioTcpEngine extends BaseEngine {
 
 			if (lSocketChannel.socket().getLocalPort() == getConfiguration().getSSLPort()) {
 				mDelayedPacketsQueue.addDelayedPacket(new IDelayedSSLPacketNotifier() {
-
 					@Override
 					public NioTcpConnector getConnector() {
 						return lConnector;
@@ -411,7 +410,6 @@ public class NioTcpEngine extends BaseEngine {
 				});
 			} else {
 				mDelayedPacketsQueue.addDelayedPacket(new IDelayedPacketNotifier() {
-
 					@Override
 					public NioTcpConnector getConnector() {
 						return lConnector;
@@ -445,11 +443,11 @@ public class NioTcpEngine extends BaseEngine {
 			mConnectorToChannelMap.remove(lId);
 
 			WebSocketConnector lConnector = getConnectors().get(lId);
-			if (mDelayedPacketsQueue.getDelayedPackets().containsKey(lConnector)) {
-				mDelayedPacketsQueue.getDelayedPackets().remove(lConnector);
+			if (mDelayedPacketsQueue.getDelayedPackets().containsKey((NioTcpConnector) lConnector)) {
+				mDelayedPacketsQueue.getDelayedPackets().remove((NioTcpConnector) lConnector);
 			}
 
-			connectorStopped(lConnector, aReason);
+			lConnector.stopConnector(aReason);
 		}
 	}
 
@@ -481,18 +479,19 @@ public class NioTcpEngine extends BaseEngine {
 				try {
 					IDelayedPacketNotifier lDelayedPacket;
 					lDelayedPacket = mDelayedPacketsQueue.take();
+					NioTcpConnector lConnector = lDelayedPacket.getConnector();
 
 					// processing SSL packets
 					if (lDelayedPacket instanceof IDelayedSSLPacketNotifier) {
-						lDelayedPacket.getConnector().getSSLHandler().
+						lConnector.getSSLHandler().
 								processSSLPacket(ByteBuffer.wrap(lDelayedPacket.getBean().getData()));
 					} else {
 						// processing plain packets
-						doRead(lDelayedPacket.getConnector(), lDelayedPacket.getBean());
+						doRead(lConnector, lDelayedPacket.getBean());
 					}
 
 					// release the connector for future reads
-					lDelayedPacket.getConnector().releaseWorker();
+					lConnector.releaseWorker();
 				} catch (Exception e) {
 					// uncaught exception during packet processing - kill the worker (todo: think about worker restart)
 					mLog.error("Unexpected exception during incoming packet processing", e);

@@ -15,6 +15,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.server;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -27,6 +28,7 @@ import org.jwebsocket.api.*;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.filter.TokenFilterChain;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.listener.WebSocketServerTokenEvent;
@@ -35,6 +37,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugInChain;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.springframework.util.Assert;
 
 /**
  * @author aschulze
@@ -276,17 +279,7 @@ public class TokenServer extends BaseServer {
 						mLog.debug("Processing token '" + lToken.toString()
 								+ "' from '" + aConnector + "'...");
 					}
-					if ("org.jwebsocket.plugins.system".equals(lToken.getNS())
-							&& "fragment".equals(lToken.getType())) {
-
-						Token llToken = FragmentedTokenBuilder.putFragment(
-								aConnector, lToken);
-						if (llToken != null) {
-							processToken(aConnector, llToken);
-						}
-					} else {
-						processToken(aConnector, lToken);
-					}
+					processToken(aConnector, lToken);
 				}
 			} else {
 				mLog.error("Packet '" + aDataPacket.toString()
@@ -318,6 +311,138 @@ public class TokenServer extends BaseServer {
 	 */
 	public void sendToken(WebSocketConnector aTarget, Token aToken) {
 		sendToken(null, aTarget, aToken);
+	}
+
+	public void sendTokenInTransaction(WebSocketConnector aTarget, Token aToken,
+			IPacketDeliveryListener aListener) {
+		Assert.notNull(aTarget, "The target connector argument cannot be null!");
+		sendTokenInTransaction(aTarget, aToken, aTarget.getMaxFrameSize(), aListener);
+	}
+
+	public void sendTokenInTransaction(WebSocketConnector aTarget, Token aToken,
+			int aFragmentSize, IPacketDeliveryListener aListener) {
+		Assert.notNull(aTarget, "The target connector argument cannot be null!");
+		Assert.notNull(aToken, "The token argument cannot be null!");
+		Assert.notNull(aListener, "The listener argument cannot be null!");
+
+		if (aTarget.getBool(VAR_IS_TOKENSERVER)) {
+			// before sending the token push it through filter chain
+			FilterResponse lFilterResponse = getFilterChain().processTokenOut(null, aTarget, aToken);
+			if (!lFilterResponse.isRejected()) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Sending token '" + aToken + "' to '" + aTarget + "'...");
+				}
+				super.sendPacketInTransaction(
+						aTarget,
+						tokenToPacket(aTarget, aToken),
+						aFragmentSize,
+						aListener);
+			} else {
+				aListener.OnFailure(new Exception("The token has been rejected by the filters!!"));
+			}
+		} else {
+			aListener.OnFailure(new Exception("The target connector does not support tokens!"));
+		}
+	}
+
+	class ChunkableListener implements IChunkableDeliveryListener {
+
+		WebSocketConnector mTarget;
+		Iterator<Token> mChunkableIterator;
+		IChunkableDeliveryListener mOriginListener;
+		long mSentTime;
+		Token mCurrentChunk;
+		String mNS, mType;
+
+		public ChunkableListener(WebSocketConnector aTarget, Token aCurrentChunk,
+				Iterator<Token> aChunkableIterator, IChunkableDeliveryListener aOriginListener, long aSentTime) {
+			mTarget = aTarget;
+			mChunkableIterator = aChunkableIterator;
+			mOriginListener = aOriginListener;
+			mSentTime = aSentTime;
+			mCurrentChunk = aCurrentChunk;
+			mNS = aCurrentChunk.getNS();
+			mType = aCurrentChunk.getType();
+		}
+
+		@Override
+		public long getTimeout() {
+			long lTimeout = mSentTime + mOriginListener.getTimeout() - System.currentTimeMillis();
+			if (lTimeout < 0) {
+				lTimeout = 0;
+			}
+
+			return lTimeout;
+		}
+
+		@Override
+		public void OnTimeout() {
+			mOriginListener.OnTimeout();
+		}
+
+		@Override
+		public void OnSuccess() {
+			// notify chunk delivered
+			OnChunkDelivered(mCurrentChunk);
+
+			// process next chunks
+			if (mChunkableIterator.hasNext()) {
+				mCurrentChunk = mChunkableIterator.next();
+				Assert.notNull(mCurrentChunk, "Iterator returned null on 'next' method call!");
+
+				// setting chunk properties
+				mCurrentChunk.setNS(mNS);
+				mCurrentChunk.setType(mType);
+				mCurrentChunk.setChunk(true);
+				if (!mChunkableIterator.hasNext()) {
+					mCurrentChunk.setLastChunk(true);
+				}
+				sendTokenInTransaction(mTarget, mCurrentChunk, this);
+			} else {
+				mOriginListener.OnSuccess();
+			}
+		}
+
+		@Override
+		public void OnFailure(Exception lEx) {
+			mOriginListener.OnFailure(lEx);
+		}
+
+		@Override
+		public void OnChunkDelivered(Token aToken) {
+			mOriginListener.OnChunkDelivered(mCurrentChunk);
+		}
+	}
+
+	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable,
+			IChunkableDeliveryListener aListener) {
+		try {
+			if (0 > aChunkable.getFragmentSize()) {
+				aChunkable.setFragmentSize(aConnector.getMaxFrameSize() - BaseConnector.PACKET_TRANSACTION_MAX_BYTES_PREFIXED);
+			}
+			Iterator<Token> lChunksIterator = aChunkable.getChunksIterator();
+			Assert.isTrue(lChunksIterator.hasNext(), "The chunks iterator is empty. No data to send!");
+			Token lCurrentChunk = lChunksIterator.next();
+			Assert.notNull(lCurrentChunk, "Iterator returned null on 'next' method call!");
+
+			// setting chunk properties
+			lCurrentChunk.setNS(aChunkable.getNS());
+			lCurrentChunk.setType(aChunkable.getType());
+			lCurrentChunk.setChunk(true);
+			if (!lChunksIterator.hasNext()) {
+				lCurrentChunk.setLastChunk(true);
+			}
+
+			// sending chunks
+			sendTokenInTransaction(aConnector, lCurrentChunk, new ChunkableListener(
+					aConnector,
+					lCurrentChunk,
+					lChunksIterator,
+					aListener,
+					System.currentTimeMillis()));
+		} catch (Exception lEx) {
+			aListener.OnFailure(lEx);
+		}
 	}
 
 	/**
@@ -355,10 +480,19 @@ public class TokenServer extends BaseServer {
 			if (lTargetConnector.getBool(VAR_IS_TOKENSERVER)) {
 				// before sending the token push it through filter chain
 				FilterResponse lFilterResponse = getFilterChain().processTokenOut(null, lTargetConnector, aToken);
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Sending token '" + aToken + "' to '" + lTargetConnector + "'...");
+				// only forward the token to the plug-in chain
+				// if filter chain does not response "aborted"
+				if (!lFilterResponse.isRejected()) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Sending token '" + aToken
+								+ "' to '" + lTargetConnector + "'...");
+					}
+					sendPacketData(lTargetConnector, tokenToPacket(lTargetConnector, aToken), false);
+				} else {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Unable to send the token. The token has been rejected by the filters!");
+					}
 				}
-				sendPacketData(lTargetConnector, tokenToPacket(lTargetConnector, aToken), false);
 			} else {
 				mLog.warn("Connector not supposed to handle tokens.");
 			}
@@ -384,10 +518,10 @@ public class TokenServer extends BaseServer {
 							+ "' to '" + aTarget + "'...");
 				}
 				WebSocketPacket lPacket = tokenToPacket(aTarget, aToken);
-				return sendPacketData(aTarget, lPacket, false);
+				return sendPacketData(aTarget, lPacket, aIsAsync);
 			} else {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug("");
+					mLog.debug("Unable to send the token. The token has been rejected by the filters!");
 				}
 			}
 		} else {

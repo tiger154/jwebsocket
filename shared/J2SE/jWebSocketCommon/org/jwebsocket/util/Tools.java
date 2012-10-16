@@ -108,6 +108,30 @@ public class Tools {
 	}
 
 	/**
+	 * Returns the MD5 sum of the given byte array. The output always has 32
+	 * digits.
+	 *
+	 * @param aByteArray Byte array to calculate the MD5 sum for.
+	 * @return MD5 sum of the given string.
+	 */
+	public static String getMD5(byte[] aByteArray) {
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("MD5");
+			byte[] lBufTarget = md.digest(aByteArray);
+			Formatter formatter = new Formatter();
+			for (byte b : lBufTarget) {
+				formatter.format("%02x", b);
+			}
+			return (formatter.toString());
+		} catch (Exception ex) {
+			// log.error("getMD5: " + ex.getMessage());
+			System.out.println("getMD5: " + ex.getMessage());
+		}
+		return null;
+	}
+
+	/**
 	 * Returns the SHA1 sum of the given string. The output always has 32
 	 * digits.
 	 *
@@ -766,7 +790,8 @@ public class Tools {
 	 * one according to the operating system.
 	 *
 	 * @param aPath the path to be checked for the trailing separator.
-	 * @return the path ensuring the trailing separator or null if no path was given.
+	 * @return the path ensuring the trailing separator or null if no path was
+	 * given.
 	 */
 	public static String appendTrailingSeparator(String aPath) {
 		if (null != aPath) {

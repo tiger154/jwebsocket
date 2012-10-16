@@ -16,7 +16,10 @@
 package org.jwebsocket.plugins;
 
 import java.util.List;
+import org.jwebsocket.api.IChunkable;
+import org.jwebsocket.api.IChunkableDeliveryListener;
 import org.jwebsocket.api.IEmbeddedAuthentication;
+import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
@@ -32,6 +35,7 @@ import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.Assert;
 
 /**
  *
@@ -172,9 +176,9 @@ public class TokenPlugIn extends BasePlugIn {
 	 */
 	public void sendToken(WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
 		TokenServer lServer = getServer();
-		if (lServer != null) {
-			lServer.sendToken(aSource, aTarget, aToken);
-		}
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		lServer.sendToken(aSource, aTarget, aToken);
 	}
 
 	/**
@@ -187,9 +191,33 @@ public class TokenPlugIn extends BasePlugIn {
 	 */
 	public void sendToken(WebSocketConnector aTarget, Token aToken) {
 		TokenServer lServer = getServer();
-		if (lServer != null) {
-			lServer.sendToken(aTarget, aToken);
-		}
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		lServer.sendToken(aTarget, aToken);
+	}
+
+	public void sendTokenInTransaction(WebSocketConnector aTarget, Token aToken,
+			IPacketDeliveryListener aListener) {
+		TokenServer lServer = getServer();
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		lServer.sendTokenInTransaction(aTarget, aToken, aListener);
+	}
+
+	public void sendTokenInTransaction(WebSocketConnector aTarget, Token aToken,
+			int aFragmentSize, IPacketDeliveryListener aListener) {
+		TokenServer lServer = getServer();
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		lServer.sendTokenInTransaction(aTarget, aToken, aFragmentSize, aListener);
+	}
+
+	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable,
+			IChunkableDeliveryListener aListener) {
+		TokenServer lServer = getServer();
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		lServer.sendChunkable(aConnector, aChunkable, aListener);
 	}
 
 	/**
@@ -203,10 +231,9 @@ public class TokenPlugIn extends BasePlugIn {
 	 */
 	public IOFuture sendTokenAsync(WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
 		TokenServer lServer = getServer();
-		if (lServer != null) {
-			return lServer.sendTokenAsync(aSource, aTarget, aToken);
-		}
-		return null;
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		return lServer.sendTokenAsync(aSource, aTarget, aToken);
 	}
 
 	/**
@@ -218,9 +245,9 @@ public class TokenPlugIn extends BasePlugIn {
 	 */
 	public void broadcastToken(WebSocketConnector aSource, Token aToken) {
 		TokenServer lServer = getServer();
-		if (lServer != null) {
-			lServer.broadcastToken(aSource, aToken);
-		}
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		lServer.broadcastToken(aSource, aToken);
 	}
 
 	/**
@@ -231,9 +258,9 @@ public class TokenPlugIn extends BasePlugIn {
 	 */
 	public void broadcastToken(WebSocketConnector aSource, Token aToken, BroadcastOptions aBroadcastOptions) {
 		TokenServer lServer = getServer();
-		if (lServer != null) {
-			lServer.broadcastToken(aSource, aToken, aBroadcastOptions);
-		}
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		lServer.broadcastToken(aSource, aToken, aBroadcastOptions);
 	}
 
 	/**
@@ -246,9 +273,9 @@ public class TokenPlugIn extends BasePlugIn {
 	public void sendErrorToken(WebSocketConnector aConnector, Token aInToken,
 			int aErrCode, String aMessage) {
 		TokenServer lServer = getServer();
-		if (lServer != null) {
-			lServer.sendErrorToken(aConnector, aInToken, aErrCode, aMessage);
-		}
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		lServer.sendErrorToken(aConnector, aInToken, aErrCode, aMessage);
 	}
 
 	/**
@@ -310,6 +337,6 @@ public class TokenPlugIn extends BasePlugIn {
 		}
 		// authentication method not supported
 		throw new UnsupportedOperationException("Unsupported authentication method. "
-				+ "Available methods are: spring, static or embedded!");
+				+ "Supported methods are: spring, static or embedded!");
 	}
 }
