@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
@@ -195,24 +196,32 @@ public class TomcatWrapper extends MessageInbound {
 
 	@Override
 	protected void onBinaryMessage(ByteBuffer aMessage) throws IOException {
+		if (aMessage.remaining() > mConnector.getMaxFrameSize()) {
+			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.remaining()));
+			return;
+		}
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Message (binary) from Tomcat client...");
 		}
 		if (null != mConnector) {
 			// TODO: implement binary Tomcat messages!
 			WebSocketPacket lDataPacket = new RawPacket(aMessage.array());
-			mEngine.processPacket(mConnector, lDataPacket);
+			mConnector.processPacket(lDataPacket);
 		}
 	}
 
 	@Override
 	protected void onTextMessage(CharBuffer aMessage) throws IOException {
+		if (aMessage.remaining() > mConnector.getMaxFrameSize()) {
+			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, aMessage.length()));
+			return;
+		}
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Message (text) from Tomcat client...");
 		}
 		if (null != mConnector) {
 			WebSocketPacket lDataPacket = new RawPacket(aMessage.toString());
-			mEngine.processPacket(mConnector, lDataPacket);
+			mConnector.processPacket(lDataPacket);
 		}
 	}
 }

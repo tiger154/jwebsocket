@@ -271,7 +271,8 @@
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketCommon</artifactId>
-			<version>${project.version}</version>
+			<version>1.0</version>
+		 <type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>

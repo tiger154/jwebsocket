@@ -15,11 +15,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.api;
 
+import java.net.InetAddress;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.kit.CloseReason;
-import java.net.InetAddress;
 import org.jwebsocket.kit.RequestHeader;
-import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.kit.WebSocketSession;
 
 /**
@@ -27,6 +26,7 @@ import org.jwebsocket.kit.WebSocketSession;
  * link to the client. Connectors are maintained by the engine only but can be
  * accessed up to the application. Each connector provides a Map for shared
  * custom variables (public) which can be used in all overlying tiers.
+ *
  * @author aschulze
  */
 public interface WebSocketConnector {
@@ -50,37 +50,40 @@ public interface WebSocketConnector {
 	void stopConnector(CloseReason aCloseReason);
 
 	/**
-	 * Returns the current status for the connector.
-	 * Please refer to the WebSocketConnectorStatus enumeration.
-	 * 
-	 * @return 
+	 * Returns the current status for the connector. Please refer to the
+	 * WebSocketConnectorStatus enumeration.
+	 *
+	 * @return
 	 */
 	WebSocketConnectorStatus getStatus();
 
 	/**
-	 * Sets the current status for the connector.
-	 * Please refer to the WebSocketConnectorStatus enumeration.
-	 * 
-	 * @param aStatus 
+	 * Sets the current status for the connector. Please refer to the
+	 * WebSocketConnectorStatus enumeration.
+	 *
+	 * @param aStatus
 	 */
 	void setStatus(WebSocketConnectorStatus aStatus);
 
 	/**
 	 * Returns the engine the connector is bound to.
+	 *
 	 * @return WebSocketEngine Engine the connector is bound to
 	 */
 	WebSocketEngine getEngine();
 
 	/**
-	 * Processes an incoming ping from a WebSocket client. Usually the
-	 * ping needs to be answered by a pong.
+	 * Processes an incoming ping from a WebSocket client. Usually the ping
+	 * needs to be answered by a pong.
+	 *
 	 * @param aDataPacket raw web socket data packet
 	 */
 	void processPing(WebSocketPacket aDataPacket);
 
 	/**
-	 * Processes an incoming pong from a WebSocket client. Usually the
-	 * pong packet is an answer to a previously send ping.
+	 * Processes an incoming pong from a WebSocket client. Usually the pong
+	 * packet is an answer to a previously send ping.
+	 *
 	 * @param aDataPacket raw web socket data packet
 	 */
 	void processPong(WebSocketPacket aDataPacket);
@@ -89,62 +92,76 @@ public interface WebSocketConnector {
 	 * Processes an incoming datapacket from a WebSocket client. Usually the
 	 * data packet is not processed in any way but only passed up to the
 	 * {@code processPacket} method of the overlying engine.
+	 *
 	 * @param aDataPacket raw web socket data packet
 	 */
 	void processPacket(WebSocketPacket aDataPacket);
 
 	/**
 	 * Return the synchronization object for write transactions.
+	 *
 	 * @return
 	 */
 	public Object getWriteLock();
 
 	/**
 	 * Return the synchronization object for read transactions.
+	 *
 	 * @return
 	 */
 	public Object getReadLock();
-	
+
 	/**
-	 * Sends a data packet to a WebSocket client. Here the packet is finally
-	 * passed to client via the web socket connection. This packet is not 
-	 * synchronized. This allows to send transactions by synchronizing 
-	 * to the getWriteLock() object.
-	 * @param aDataPacket raw web socket data packet
+	 * Send a data packet to a WebSocket client and control the delivery by
+	 * using a listener.
 	 */
-	void sendPacketInTransaction(WebSocketPacket aDataPacket) throws WebSocketException;
+	void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener);
+
+	/**
+	 * Send a fragmented data packet to a WebSocket client and control the
+	 * delivery by using a listener.
+	 *
+	 * @param aDataPacket
+	 * @param aFragmentSize
+	 */
+	void sendPacketInTransaction(WebSocketPacket aDataPacket,
+			Integer aFragmentSize, IPacketDeliveryListener aListener);
 
 	/**
 	 * Sends a data packet to a WebSocket client. Here the packet is finally
-	 * passed to client via the web socket connection. This method is 
+	 * passed to client via the web socket connection. This method is
 	 * synchronized to ensure that not multiple threads send at the same time.
+	 *
 	 * @param aDataPacket raw web socket data packet
 	 */
 	void sendPacket(WebSocketPacket aDataPacket);
 
 	/**
-	 * Sends a data packet to a WebSocket client asynchronously. This method immediately returns
-	 * the future object to the caller so that it can proceed with the processing
-	 * and not wait for the response.
+	 * Sends a data packet to a WebSocket client asynchronously. This method
+	 * immediately returns the future object to the caller so that it can
+	 * proceed with the processing and not wait for the response.
+	 *
 	 * @param aDataPacket raw web socket data packet
-	 * @return the {@link IOFuture} which will be notified when the
-	 *         write request succeeds or fails
-	 * null if there's any problem with the send operation.
+	 * @return the {@link IOFuture} which will be notified when the write
+	 * request succeeds or fails null if there's any problem with the send
+	 * operation.
 	 */
 	IOFuture sendPacketAsync(WebSocketPacket aDataPacket);
 
 	/**
 	 * Returns the request header from the client during the connection
-	 * establishment. In the request header all fields of the client request
-	 * and its URL parameters are stored.
+	 * establishment. In the request header all fields of the client request and
+	 * its URL parameters are stored.
+	 *
 	 * @return RequestHeader object
 	 */
 	RequestHeader getHeader();
 
 	/**
-	 * Sets the request header. This methode is called after the hand shake
-	 * of the web socket protocol has been accomplished and all data of the
-	 * request header is known.
+	 * Sets the request header. This methode is called after the hand shake of
+	 * the web socket protocol has been accomplished and all data of the request
+	 * header is known.
+	 *
 	 * @param aHeader RequestHeader object
 	 */
 	void setHeader(RequestHeader aHeader);
@@ -153,6 +170,7 @@ public interface WebSocketConnector {
 	 * Returns the given custom variable as an Object. Custom variables in a
 	 * connector are public and can be shared over all modules of an
 	 * application.
+	 *
 	 * @param aKey Name of the shared custom variable
 	 * @return Object
 	 */
@@ -162,6 +180,7 @@ public interface WebSocketConnector {
 	 * Set the given custom variable to the passed value. Custom variables in a
 	 * connector are public and can be shared over all modules of an
 	 * application.
+	 *
 	 * @param aKey Name of the shared custom variable
 	 * @param aValue Object
 	 */
@@ -170,6 +189,7 @@ public interface WebSocketConnector {
 	/**
 	 * Returns the boolean object of the passed variable or null if the variable
 	 * does not exist.
+	 *
 	 * @param aKey Name of the shared custom variable
 	 * @return Boolean object
 	 */
@@ -178,6 +198,7 @@ public interface WebSocketConnector {
 	/**
 	 * Returns the boolean value of the passed variable. If the variable does
 	 * not exist always {@code false} is returned.
+	 *
 	 * @param aKey Name of the shared custom variable
 	 * @return boolean value (simple type, not an Object)
 	 */
@@ -185,6 +206,7 @@ public interface WebSocketConnector {
 
 	/**
 	 * Sets the boolean value of the given shared custom variable.
+	 *
 	 * @param aKey Name of the shared custom variable
 	 * @param aValue Boolean value
 	 */
@@ -193,6 +215,7 @@ public interface WebSocketConnector {
 	/**
 	 * Returns the string object of the passed variable or null if the variable
 	 * does not exist. The default character encoding is applied.
+	 *
 	 * @param aKey Name of the shared custom variable
 	 * @return String
 	 */
@@ -200,6 +223,7 @@ public interface WebSocketConnector {
 
 	/**
 	 * Sets the string value of the given shared custom variable.
+	 *
 	 * @param aKey Name of the shared custom variable
 	 * @param aValue String
 	 */
@@ -208,6 +232,7 @@ public interface WebSocketConnector {
 	/**
 	 * Returns the integer object of the passed variable or null if the variable
 	 * does not exist.
+	 *
 	 * @param aKey Name of the shared custom variable
 	 * @return Integer object
 	 */
@@ -215,33 +240,38 @@ public interface WebSocketConnector {
 
 	/**
 	 * Sets the integer value of the given shared custom variable.
+	 *
 	 * @param aKey Name of the shared custom variable
 	 * @param aValue Integer value
 	 */
 	void setInteger(String aKey, Integer aValue);
 
 	/**
-	 * Removes the given shared custom variable from the connector.
-	 * After this operation the variable is not accessible anymore.
+	 * Removes the given shared custom variable from the connector. After this
+	 * operation the variable is not accessible anymore.
+	 *
 	 * @param aKey Name of the shared custom variable
 	 */
 	void removeVar(String aKey);
 
 	/**
-	 * Generates a unique ID for this connector to be used to calculate
-	 * a session ID in overlying tiers.
+	 * Generates a unique ID for this connector to be used to calculate a
+	 * session ID in overlying tiers.
+	 *
 	 * @return a unique ID for this connector
 	 */
 	String generateUID();
 
 	/**
 	 * Returns the remote port of the connected client.
+	 *
 	 * @return int Number of the remote port.
 	 */
 	int getRemotePort();
 
 	/**
 	 * Returns the IP number of the connected remote host.
+	 *
 	 * @return InetAddress object of the given remote host
 	 */
 	InetAddress getRemoteHost();
@@ -252,6 +282,7 @@ public interface WebSocketConnector {
 	 * Because a multiple logins for a user are basically supported, the user-id
 	 * cannot be used to address a client. The descendant classes use the shared
 	 * custom variables of the connectors to store user specific data.
+	 *
 	 * @return String Unique id of the connector.
 	 */
 	String getId();
@@ -302,7 +333,7 @@ public interface WebSocketConnector {
 
 	/**
 	 *
-	 * @param aVersion 
+	 * @param aVersion
 	 */
 	void setVersion(int aVersion);
 
@@ -312,8 +343,9 @@ public interface WebSocketConnector {
 	void removeSubprot();
 
 	/**
-	 * returns if the connector is connected to a local TCP port or
-	 * if it is a connection on a remote (cluster) node.
+	 * returns if the connector is connected to a local TCP port or if it is a
+	 * connection on a remote (cluster) node.
+	 *
 	 * @return
 	 */
 	boolean isLocal();
@@ -337,27 +369,39 @@ public interface WebSocketConnector {
 
 	/**
 	 *
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	boolean isSSL();
 
 	/**
 	 *
-	 * 
-	 * @param aIsSSL 
+	 *
+	 * @param aIsSSL
 	 */
 	void setSSL(boolean aIsSSL);
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isHixie();
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isHybi();
+
+	/**
+	 * The "max frame size" variable indicates the "maximum packet size"
+	 * supported by a client. The clients are able to choose the variable
+	 * according to their scenarios. The client value is transmitted in the
+	 * connection handshake. If the value exceeds the engine max frame size
+	 * value, then the client value is ignored. The server transmit the selected
+	 * value in the welcome message.
+	 *
+	 * @return The connector specific max frame size
+	 */
+	Integer getMaxFrameSize();
 }

@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URI;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -375,6 +376,11 @@ public final class WebSocketHandshake {
 			lRes.put(RequestHeader.WS_COOKIES, lCookies);
 		}
 		lRes.put(RequestHeader.WS_PATH, lPath);
+		try {
+		 String lQuery = new URL(lPath).getQuery();
+		} catch (Exception ex){
+			
+		}
 		lRes.put(RequestHeader.WS_HOST, lHost);
 		lRes.put(RequestHeader.WS_ORIGIN, lOrigin);
 		lRes.put(RequestHeader.WS_LOCATION, lLocation);

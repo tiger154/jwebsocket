@@ -208,6 +208,25 @@ var jws = {
 	//:d:en:Root user password is "root" (if not changed on the server).
 	//:d:en:FOR DEMO AND DEBUG PURPOSES ONLY! NEVER SAVE PRODUCTION ROOT CREDENTIALS HERE!
 	DEMO_ROOT_PASSWORD: "root",
+	//:const:*:PACKET_DELIVERY_ACKNOWLEDGE_PREFIX:String:pda
+	//:d:en:Prefix for delivery acknowledge packets
+	PACKET_DELIVERY_ACKNOWLEDGE_PREFIX : "pda",
+	//:const:*:PACKET_ID_DELIMETER:String:,
+	//:d:en:Packet identifier delimeter
+	PACKET_ID_DELIMETER: ",",
+	//:const:*:PACKET_FRAGMENT_PREFIX:String:FRAGMENT
+	//:d:en:Prefix used to sign fragmented packets
+	PACKET_FRAGMENT_PREFIX: "FRAGMENT",
+	//:const:*:PACKET_LAST_FRAGMENT_PREFIX:String:LFRAGMENT
+	//:d:en:Prefix used to sign the last fragment on a packet fragmentation
+	PACKET_LAST_FRAGMENT_PREFIX: "LFRAGMENT",
+	//:const:*:MAX_FRAME_SIZE_FREFIX:String:maxframesize
+	//:d:en:Prefix used on the max frame size handshake 
+	MAX_FRAME_SIZE_FREFIX: "maxframesize",
+	//:const:*:PACKET_TRANSACTION_MAX_BYTES_PREFIXED:Integer:31
+	//:d:en:Maximum number of bytes that can be prefixed during a packet transaction
+	PACKET_TRANSACTION_MAX_BYTES_PREFIXED: 31,
+	
 	
 	//:m:*:$
 	//:d:en:Convenience replacement for [tt]document.getElementById()[/tt]. _
@@ -1310,6 +1329,17 @@ function bit_rol(num,cnt){
 //:ancestor:*:-
 //:d:en:Implements some required JavaScript tools.
 jws.tools = {
+	
+	//:m:*:getUniqueInteger
+	//:d:en:Gets a unique number
+	//:r:*:::Integer:A unique integer number
+	getUniqueInteger: function () {
+		if ( undefined == this.fUniqueInteger || 2147483647 == this.fUniqueInteger ){
+			this.fUniqueInteger = 1;
+		}
+		
+		return this.fUniqueInteger++;
+	},
 
 	//:m:*:zerofill
 	//:d:en:Fills up an integer value with the given number of zero characters
@@ -2888,7 +2918,7 @@ jws.oop.addPlugIn = function( aClass, aPlugIn ) {
 //:d:en:which are (have to be) handled by the descendant classes.
 
 jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
-
+	
 	create: function( aOptions ) {
 		// turn off connection reliability by default
 		if( !this.fReliabilityOptions ) {
@@ -2991,21 +3021,12 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 						jws.console.debug("[onopen]: " + JSON.stringify( aEvent ));
 					}	
 					
-					//Sending client headers to the server 
-					lThis.sendToken({
-						ns: jws.SystemClientPlugIn.NS,
-						type: "header",
-						clientType: "browser",
-						clientName: jws.getBrowserName(),
-						clientVersion: jws.getBrowserVersionString(),
-						clientInfo: navigator.userAgent,
-						jwsType: "javascript",
-						jwsVersion: jws.VERSION,
-						jwsInfo: 
-						jws.browserSupportsNativeWebSockets 
-						? "native"
-						: "flash " + jws.flashBridgeVer
-					});
+					// creating a map to store the incoming fragments
+					lThis.fInFragments = {};
+					// creating a map to store the packet delivery listeners
+					lThis.fPacketDeliveryListeners = {};
+					// creating a map to store the packet delivery listeners timer tasks
+					lThis.fPacketDeliveryTimerTasks = {};
 					
 					if( lThis.hOpenTimeout ) {
 						clearTimeout( lThis.hOpenTimeout );
@@ -3022,10 +3043,96 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				};
 
 				this.fConn.onmessage = function( aEvent ) {
+					// utility variable
+					var lPos, lPID;
+					
+					// supporting the max frame size handshake
+					if ( undefined == lThis.fMaxFrameSize ){
+						lPos = aEvent.data.indexOf( jws.MAX_FRAME_SIZE_FREFIX );
+						if (0 == lPos){
+							lThis.fMaxFrameSize = parseInt( aEvent.data.substr( jws.MAX_FRAME_SIZE_FREFIX.length ) );
+							aEvent.stopPropagation();
+							if( jws.console.isDebugEnabled() ) {
+								jws.console.debug( "Maximum frame size for connection is: " + lThis.fMaxFrameSize );
+							}
+							return;
+						}
+					} else if (aEvent.data.length > this.fMaxFrameSize){
+						aEvent.stopPropagation();
+						jws.console.warn( "Data packet discarded. The packet size " + 
+							"exceeds the max frame size supported by the client!" );
+						return;
+					}
+					
+					var lPacket = aEvent.data;
+					
+					// processing packet delivery acknowledge from the server
+					if ( 0 == lPacket.indexOf(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX) ){
+						if ( lPacket.length <= (10 + jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length) ){
+							lPID = parseInt( lPacket.replace(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, "") );
+							clearTimeout( lThis.fPacketDeliveryTimerTasks[ lPID ] );
+							
+							if ( lThis.fPacketDeliveryListeners[ lPID ] ){
+								// cleaning expired data and calling success
+								lThis.fPacketDeliveryListeners[ lPID ].OnSuccess();
+								delete lThis.fPacketDeliveryListeners[ lPID ];
+								delete lThis.fPacketDeliveryTimerTasks[ lPID ];
+							}
+						}
+						
+						return;
+					}
+					
+					// supporting packet delivery acknowledge to the server
+					lPos = aEvent.data.indexOf( jws.PACKET_ID_DELIMETER );
+					if ( lPos >=0 && lPos < 10 && false == isNaN(aEvent.data.substr( 0, lPos ))){
+						lPID = aEvent.data.substr( 0, lPos );
+						// send packet delivery acknowledge
+						lThis.sendStream( jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPID );
+						if( jws.console.isDebugEnabled() ) {
+							jws.console.debug( "PDA sent for packet with id: " + lPID );
+						}
+						
+						// generating the new packet
+						lPacket = lPacket.substr( lPos + 1 );
+						
+						// supporting fragmentation
+						var lFragmentContent;
+						if (0 == lPacket.indexOf( jws.PACKET_FRAGMENT_PREFIX )){
+							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
+							lPID = lPacket.substr( jws.PACKET_FRAGMENT_PREFIX.length, 
+								lPos - jws.PACKET_FRAGMENT_PREFIX.length );
+							lFragmentContent = lPacket.substr( lPos + 1 );
+							// storing the packet fragment
+							if (undefined == lThis.fInFragments[ lPID ]){
+								lThis.fInFragments[ lPID ] = lFragmentContent;
+							} else {
+								lThis.fInFragments[ lPID ] += lFragmentContent;
+							}
+							
+							// do not process packet fragments
+							return;
+						} else if (0 == lPacket.indexOf( jws.PACKET_LAST_FRAGMENT_PREFIX )){
+							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
+							lPID = lPacket.substr( jws.PACKET_LAST_FRAGMENT_PREFIX.length, 
+								lPos - jws.PACKET_LAST_FRAGMENT_PREFIX.length );
+							lFragmentContent = lPacket.substr( lPos + 1 );
+							// storing the packet fragment
+							lThis.fInFragments[ lPID ] += lFragmentContent;
+							// getting the complete packet content
+							lPacket = lThis.fInFragments[ lPID ];
+							// removing packet data from the fragments storage 
+							delete lThis.fInFragments[ lPID ];
+						}
+					}
+					
 					if( jws.console.isDebugEnabled() ) {
-						jws.console.debug("[onmessage]: " + JSON.stringify( aEvent ));
-					}	
-					lValue = lThis.processPacket( aEvent );
+						jws.console.debug("[onclose]: " + lPacket);
+					}
+					
+					// process the packet
+					lValue = lThis.processPacket( lPacket );
+					
 					// give application change to handle event first
 					if( aOptions.OnMessage ) {
 						aOptions.OnMessage( aEvent, lValue, lThis );
@@ -3041,6 +3148,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 						lThis.hOpenTimeout = null;
 					}
 					lThis.fStatus = jws.CLOSED;
+					delete lThis.fMaxFrameSize;
+					
 					// check if still disconnect timeout active and clear if needed
 					if( lThis.hDisconnectTimeout ) {
 						clearTimeout( lThis.hDisconnectTimeout );
@@ -3068,8 +3177,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 								}
 								lThis.open( lThis.fURL, aOptions );
 							},
-							lThis.fReliabilityOptions.reconnectDelay
-							);
+							lThis.fReliabilityOptions.reconnectDelay );
 					}
 				};
 
@@ -3129,11 +3237,16 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	},
 
 	//:m:*:sendStream
-	//:d:en:Sends a given string to the jWebSocket Server. The methods checks _
+	//:d:en:Sends a given string (packet) to the jWebSocket Server. The methods checks _
 	//:d:en:if the connection is still up and throws an exception if not.
 	//:a:en::aData:String:String to be send the jWebSocketServer
 	//:r:*:::void:none
 	sendStream: function( aData ) {
+		if (aData.length > this.fMaxFrameSize){
+			throw new Error( "Data packet discarded. The packet size " + 
+				"exceeds the max frame size supported by the client!" );
+		}
+		
 		// is client already connected
 		if( this.isOpened() ) {
 			try {
@@ -3149,6 +3262,154 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				// if not raise exception
 				throw new Error( "Not connected" );
 			}	
+		}
+	},
+	
+	//:m:*:sendStream
+	//:d:en:Sends a given string (packet) to the jWebSocket Server. The methods checks _
+	//:d:en:if the connection is still up and throws an exception if not.
+	//:a:en::aData:String:String to be send the jWebSocketServer
+	//:a:en::aListener:Object:A packet delivery listener
+	//:a:en::aListener.getTimeout:function:Returns the transaction timeout
+	//:a:en::aListener.OnTimeout:function:Called if the packet delivery has timed out
+	//:a:en::aListener.OnSuccess:function:Called if the packet has been delivered successfully 
+	//:a:en::aListener.OnFailure:function:Called if the packet delivery has failed
+	//:a:en::aFragmentSize:Integer:The size of the packet fragments if fragmentation is required. Default value is connection max frame size value.
+	//:r:*:::void:none
+	sendStreamInTransaction: function ( aData, aListener, aFragmentSize){
+		var lPID = jws.tools.getUniqueInteger();
+		var lThis = this;
+		
+		try {
+			if ( undefined == aFragmentSize ){
+				aFragmentSize = this.fMaxFrameSize;
+			} else if ( aFragmentSize < 0 || aFragmentSize > this.fMaxFrameSize ) {
+				throw new Error("Invalid 'fragment size' argument. " 
+					+ "Expected value: fragment_size > 0 && fragment_size <= max_frame_size");
+			}
+		
+			if ( typeof( aData ) != "string" || aData.length == 0 ) {
+				throw new Error("Invalid value for argument 'data'!");
+			}
+			if ( typeof( aListener ) != "object" ) {
+				throw new Error("Invalid value for argument 'listener'!");
+			}
+			if ( typeof( aListener["getTimeout"] ) != "function" ) {
+				throw new Error("Missing 'getTimeout' method on argument 'listener'!");
+			}
+			if ( typeof( aListener["OnSuccess"] ) != "function" ) {
+				throw new Error("Missing 'OnSuccess' method on argument 'listener'!");
+			}
+			if ( typeof( aListener["OnTimeout"] ) != "function" ) {
+				throw new Error("Missing 'OnTimeout' method on argument 'listener'!");
+			}
+			if ( typeof( aListener["OnFailure"] ) != "function" ) {
+				throw new Error("Missing 'OnFailure' method on argument 'listener'!");
+			}
+			
+			// generating packet prefix
+			var lPacketPrefix = lPID + jws.PACKET_ID_DELIMETER;
+		
+			// processing fragmentation
+			if ( aFragmentSize < this.fMaxFrameSize && aFragmentSize < aData.length ){
+				
+				// first fragment is never the last
+				var lIsLast = false; 
+				// fragmentation id, allows multiplexing
+				var lFragmentationId = jws.tools.getUniqueInteger();
+				// prefix the packet for fragmentation
+				var lFragmentedPacket = jws.PACKET_FRAGMENT_PREFIX 
+				+ lFragmentationId 
+				+ jws.PACKET_ID_DELIMETER 
+				+ aData.substr( 0, aFragmentSize );
+				
+				if ( lFragmentedPacket.length + lPacketPrefix.length > this.fMaxFrameSize ){
+					throw new Error( "The packet size exceeds the max frame size supported by the client! "
+						+ "Consider that the packet has been prefixed with "
+						+ ( lFragmentedPacket.length + lPacketPrefix.length - aData.length )
+						+ " bytes for fragmented transaction.");
+				}
+				
+				this.sendStreamInTransaction ( lFragmentedPacket, {
+					fOriginPacket: aData,
+					fOriginFragmentSize: aFragmentSize,
+					fOriginListener: aListener,
+					fSentTime: new Date().getTime(),
+					fFragmentationId: lFragmentationId,
+					fBytesSent: 0,
+					
+					getTimeout: function (){
+						var lTimeout = this.fSentTime + this.fOriginListener.getTimeout() - new Date().getTime();
+						if (lTimeout < 0) {
+							lTimeout = 0;
+						}
+
+						return lTimeout;
+					}, 
+					
+					OnTimeout: function (){
+						this.fOriginListener.OnTimeout();
+					},
+					
+					OnSuccess: function (){
+						// updating bytes sent
+						this.fBytesSent += this.fOriginFragmentSize;
+						if ( this.fBytesSent >= this.fOriginPacket.length ) {
+							// calling success if the packet was transmitted complete
+							this.fOriginListener.OnSuccess();
+						} else {
+							// prepare to sent a next fragment
+							var lLength = ( this.fOriginFragmentSize + this.fBytesSent <= this.fOriginPacket.length )
+							? this.fOriginFragmentSize : this.fOriginPacket.length - this.fBytesSent;
+
+							var lNextFragment = this.fOriginPacket.substr( this.fBytesSent, lLength );
+							var lIsLast = ( lLength + this.fBytesSent == this.fOriginPacket.length ) ? true : false;
+					
+							// prefixing next fragment
+							lNextFragment = ( ( lIsLast ) ? jws.PACKET_LAST_FRAGMENT_PREFIX : jws.PACKET_FRAGMENT_PREFIX )
+							+ this.fFragmentationId 
+							+ jws.PACKET_ID_DELIMETER 
+							+ lNextFragment;
+						
+							// send fragment
+							lThis.sendStreamInTransaction(lNextFragment, this);
+						}
+					},
+					
+					OnFailure: function ( lEx ){
+						this.fOriginListener.OnFailure( lEx ); 
+					}
+				});
+				
+				// REQUIRED
+				return;
+			}
+		
+			// prefixing the packet
+			aData = lPacketPrefix + aData;
+			// saving the listener
+			this.fPacketDeliveryListeners[ lPID ] = aListener;
+		
+			// sending the packet
+			this.sendStream( aData );
+		
+			// setting the timer task for OnTimeout support
+			var lTT = setTimeout(function(){
+				if ( lThis.fPacketDeliveryListeners[ lPID ] ){
+					// cleaning expired data and calling timeout
+					lThis.fPacketDeliveryListeners[ lPID ].OnTimeout();
+					delete lThis.fPacketDeliveryListeners[ lPID ];
+					delete lThis.fPacketDeliveryTimerTasks[ lPID ];
+				}
+			}, 
+			aListener.getTimeout());
+			this.fPacketDeliveryTimerTasks[ lPID ] = lTT; 
+		}catch ( lEx ){
+			// cleaning expired data and calling OnFailure
+			delete this.fPacketDeliveryListeners[ lPID ];
+			clearTimeout( this.fPacketDeliveryTimerTasks[ lPID ] );
+			delete this.fPacketDeliveryTimerTasks[ lPID ];
+			aListener.OnFailure ( lEx );
 		}
 	},
 
@@ -3503,7 +3764,6 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			delete this.fParams;
 		}
 	}
-
 });
 
 
@@ -3519,6 +3779,24 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 //:d:en:an abstract class as an ancestor for the JSON-, CSV- and XML client. _
 //:d:en:Do not create direct instances of jWebSocketTokenClient.
 jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, {
+
+	processOpened: function ( aEvent ){
+		// sending client headers to the server 
+		this.sendToken({
+			ns: jws.SystemClientPlugIn.NS,
+			type: "header",
+			clientType: "browser",
+			clientName: jws.getBrowserName(),
+			clientVersion: jws.getBrowserVersionString(),
+			clientInfo: navigator.userAgent,
+			jwsType: "javascript",
+			jwsVersion: jws.VERSION,
+			jwsInfo: 
+			jws.browserSupportsNativeWebSockets 
+			? "native"
+			: "flash " + jws.flashBridgeVer
+		});
+	},
 
 	//:m:*:create
 	//:d:en:This method is called by the contructor of this class _
@@ -3620,9 +3898,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:a:en::::none
 	//:r:*:::void:none
 	isWriteable: function() {
-		return(
-			this.isOpened() || this.fStatus == jws.RECONNECTING
-			);
+		return(	this.isOpened() || this.fStatus == jws.RECONNECTING );
 	},
 
 	//:m:*:checkWriteable
@@ -3690,7 +3966,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		// needs to be overwritten in descendant classes!
 		throw new Error( "tokenToStream needs to be overwritten in descendant classes" );
 	},
-
+	
 	//:m:*:streamToToken
 	//:d:en:Converts a string (stream) into a token. This method needs to be _
 	//:d:en:overwritten by the descendant classes to implement a certain _
@@ -3761,11 +4037,11 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:d:en:its descendant who is responsible to implement the sub protocol _
 	//:d:en:JSON, CSV or XML, here to parse the raw packet in the corresponding _
 	//:d:en:format.
-	//:a:en::aEvent:Object:Event object from the browser's WebSocket instance.
+	//:a:en::aPacket:String: Received packet content
 	//:r:*:::void:none
-	processPacket: function( aEvent ) {
+	processPacket: function( aPacket ) {
 		// parse incoming token...
-		var lToken = this.streamToToken( aEvent.data );
+		var lToken = this.streamToToken( aPacket );
 		// and process it...
 		this.processToken( lToken );
 		return lToken;
@@ -3921,24 +4197,12 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			}
 		}
 	},
-
-	//:m:*:sendToken
-	//:d:en:Sends a token to the jWebSocket server.
-	//:a:en::aToken:Object:Token to be send to the jWebSocket server.
-	//:a:en::aOptions:Object:Optional arguments as listed below...
-	//:a:en:aOptions:timeout:Integer:Timeout to wait for a response to be received from the server (default is [tt]jws.DEF_RESP_TIMEOUT[/tt]), if timeout is exceeded a OnTimeout callback can be fired.
-	//:a:en:aOptions:spawnThread:Boolean:Specifies whether to run the request in a separate thread ([tt]true[/tt]), or within the (pooled) thread of the connection ([tt]false[/tt]).
-	//:a:en:aOptions:args:Object:Optional arguments to be passed the optional response, success, failure and timeout callbacks to be easily processed.
-	//:a:en:aOptions:OnResponse:Function:Reference to a response callback function, which is called when [b]any[/b] response is received.
-	//:a:en:aOptions:OnSuccess:Function:Reference to a success function, which is called when a successful response is received ([tt]code=0[/tt]).
-	//:a:en:aOptions:OnFailure:Function:Reference to a failure function, which is called when an failure or error was received ([tt]code!=0[/tt]).
-	//:a:en:aOptions:OnTimeout:Function:Reference to a timeout function, which is called when the given response timeout is exceeded.
-	//:r:*:::void:none
-	sendToken: function( aToken, aOptions ) {
+	
+	__sendToken: function(aIsTransaction, aToken, aOptions, aListener ) {
 		var lRes = this.checkWriteable();
 		if( lRes.code == 0 ) {
 			var lSpawnThread = false;
-			var lL2FragmSize = 0;
+			var lL2FragmSize = this.fMaxFrameSize;
 			var lTimeout = jws.DEF_RESP_TIMEOUT;
 			var lKeepRequest = false;
 			var lArgs = null;
@@ -4019,23 +4283,11 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				aToken.spawnThread = true;
 			}
 			var lStream = this.tokenToStream( aToken );
-			if( lL2FragmSize > 0 && lStream.length > 0 ) {
-				var lToken, lFragment, lFragmId = 0, lStart = 0, lTotal = lStream.length;
-				while( lStream.length > 0 ) {
-					lToken = {
-						ns: jws.NS_SYSTEM,
-						type: "fragment",
-						utid: aToken.utid,
-						index: lFragmId++,
-						total: parseInt( lTotal / lL2FragmSize ) + 1,
-						data: lStream.substr( 0, lL2FragmSize )
-					};
-					lStart += lL2FragmSize;
-					lStream = lStream.substr( lL2FragmSize );
-					lFragment = this.tokenToStream( lToken );
-					this.sendStream( lFragment );
-				// console.log( "sending fragment " + lFragment + "..." );
+			if ( aIsTransaction ) {
+				if( jws.console.isDebugEnabled() ) {
+					jws.console.debug( "[sendToken]: Sending stream in transaction " + lStream + "..." );
 				}
+				this.sendStreamInTransaction( lStream, aListener, lL2FragmSize );
 			} else {
 				if( jws.console.isDebugEnabled() ) {
 					jws.console.debug( "[sendToken]: Sending stream " + lStream + "..." );
@@ -4044,6 +4296,101 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			}
 		}
 		return lRes;
+	}, 
+
+	//:m:*:sendToken
+	//:d:en:Sends a token to the jWebSocket server.
+	//:a:en::aToken:Object:Token to be send to the jWebSocket server.
+	//:a:en::aOptions:Object:Optional arguments as listed below...
+	//:a:en:aOptions:timeout:Integer:Timeout to wait for a response to be received from the server (default is [tt]jws.DEF_RESP_TIMEOUT[/tt]), if timeout is exceeded a OnTimeout callback can be fired.
+	//:a:en:aOptions:spawnThread:Boolean:Specifies whether to run the request in a separate thread ([tt]true[/tt]), or within the (pooled) thread of the connection ([tt]false[/tt]).
+	//:a:en:aOptions:args:Object:Optional arguments to be passed the optional response, success, failure and timeout callbacks to be easily processed.
+	//:a:en:aOptions:OnResponse:Function:Reference to a response callback function, which is called when [b]any[/b] response is received.
+	//:a:en:aOptions:OnSuccess:Function:Reference to a success function, which is called when a successful response is received ([tt]code=0[/tt]).
+	//:a:en:aOptions:OnFailure:Function:Reference to a failure function, which is called when an failure or error was received ([tt]code!=0[/tt]).
+	//:a:en:aOptions:OnTimeout:Function:Reference to a timeout function, which is called when the given response timeout is exceeded.
+	//:r:*:::void:none
+	sendToken: function( aToken, aOptions ) {
+		return this.__sendToken( false, aToken, aOptions);
+	},
+	
+	//:m:*:sendTokenInTransaction
+	//:d:en:Sends a token to the jWebSocket server in transaction.
+	//:a:en::aToken:Object:Token to be send to the jWebSocket server.
+	//:a:en::aOptions:Object:Optional arguments as listed below...
+	//:a:en:aOptions:timeout:Integer:Timeout to wait for a response to be received from the server (default is [tt]jws.DEF_RESP_TIMEOUT[/tt]), if timeout is exceeded a OnTimeout callback can be fired.
+	//:a:en:aOptions:fragmentSize:Integer:The fragment size parameter to be used in the fragmentation process. Expected value: [tt]fragment_size > 0 && fragment_size <= max_frame_size[/tt]. Argument is optional.
+	//:a:en:aOptions:spawnThread:Boolean:Specifies whether to run the request in a separate thread ([tt]true[/tt]), or within the (pooled) thread of the connection ([tt]false[/tt]).
+	//:a:en:aOptions:args:Object:Optional arguments to be passed the optional response, success, failure and timeout callbacks to be easily processed.
+	//:a:en:aOptions:OnResponse:Function:Reference to a response callback function, which is called when [b]any[/b] response is received.
+	//:a:en:aOptions:OnSuccess:Function:Reference to a success function, which is called when a successful response is received ([tt]code=0[/tt]).
+	//:a:en:aOptions:OnFailure:Function:Reference to a failure function, which is called when an failure or error was received ([tt]code!=0[/tt]).
+	//:a:en:aOptions:OnTimeout:Function:Reference to a timeout function, which is called when the given response timeout is exceeded.
+	//:a:en::aListener:Object:A packet delivery listener
+	//:a:en::aListener.getTimeout:function:Returns the packet delivery timeout
+	//:a:en::aListener.OnTimeout:function:Called if the packet delivery has timed out
+	//:a:en::aListener.OnSuccess:function:Called if the packet has been delivered successfully 
+	//:a:en::aListener.OnFailure:function:Called if the packet delivery has failed
+	//:r:*:::void:none
+	sendTokenInTransaction: function( aToken, aOptions, aListener ) {
+		// generating packet delivery listener for developer convenience
+		if (!aListener){
+			aListener = {}
+		}
+		if (!aListener[ "getTimeout" ]){
+			var lTimeout = aOptions.timeout || jws.DEF_RESP_TIMEOUT;
+			aListener[ "getTimeout" ] = function() {
+				return lTimeout;
+			} 
+		}
+		if (!aListener[ "OnTimeout" ]){
+			aListener[ "OnTimeout" ] = function() {}
+		}
+		if (!aListener[ "OnSuccess" ]){
+			aListener[ "OnSuccess" ] = function() {}
+		}
+		if (!aListener[ "OnFailure" ]){
+			aListener[ "OnFailure" ] = function() {}
+		}
+		
+		// sending the token
+		return this.__sendToken( true, aToken, aOptions, aListener );
+	},
+	
+	// TODO: Implemented partially!!!
+	sendChunkable: function( aChunkable, aOptions, aListener ) {
+		try {
+			if (0 > aChunkable.getFragmentSize) {
+				aChunkable.fragmentSize(this.fMaxFrameSize - jws.PACKET_TRANSACTION_MAX_BYTES_PREFIXED );
+			}
+		
+			var lChunksIterator = aChunkable.getChunksIterator();
+			if ( !lChunksIterator.hasNext() ){
+				throw new Error( "The chunks iterator is empty. No data to send!" );
+			}
+			
+			var lCurrentChunk = lChunksIterator.next();
+			if (!lCurrentChunk){
+				throw new Error( "Iterator returned null on 'next' method call!" );
+			}
+			
+			// setting chunk properties
+			lCurrentChunk.ns = aChunkable.ns;
+			lCurrentChunk.type = aChunkable.type;
+			lCurrentChunk.isChunk = true;
+			if (!lChunksIterator.hasNext()) {
+				lCurrentChunk.isLastChunk = true;
+			}
+			
+			// sending chunks
+			this.sendTokenInTransaction(lCurrentChunk, aOptions, new ChunkableListener(
+				lCurrentChunk,
+				lChunksIterator,
+				aListener,
+				new Date().getTime()));
+		} catch (lEx){
+			aListener.OnFailure(lEx);
+		}
 	},
 
 	//:m:*:getLastTokenId

@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.websockets.*;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
@@ -200,11 +201,15 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	@Override
 	public void onMessage(WebSocket aWebSocket, String aData) {
 		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
+		if (aData.length() > lConnector.getMaxFrameSize()) {
+			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(lConnector, aData.length()));
+			return;
+		}
 		if (lConnector != null) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Processing (text) message from '" + lConnector.getId() + "' connector...");
 			}
-			mEngine.processPacket(lConnector, new RawPacket(aData));
+			lConnector.processPacket(new RawPacket(aData));
 		}
 	}
 
@@ -216,11 +221,15 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	@Override
 	public void onMessage(WebSocket aWebSocket, byte[] aBytes) {
 		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
+		if (aBytes.length > lConnector.getMaxFrameSize()) {
+			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(lConnector, aBytes.length));
+			return;
+		}
 		if (lConnector != null) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Processing (binary) message from '" + lConnector.getId() + "' connector...");
 			}
-			mEngine.processPacket(lConnector, new RawPacket(aBytes));
+			lConnector.processPacket(new RawPacket(aBytes));
 		}
 	}
 

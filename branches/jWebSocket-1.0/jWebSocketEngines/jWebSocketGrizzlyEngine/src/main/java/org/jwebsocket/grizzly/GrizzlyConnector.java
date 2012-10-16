@@ -160,16 +160,10 @@ public class GrizzlyConnector extends BaseConnector {
 			lClose = new RawPacket(WebSocketFrameType.CLOSE,
 					WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name()));
 			WebSocketConnectorStatus lStatus = getStatus();
-			try {
-				// to ensure that the close packet can be sent at all!
-				setStatus(WebSocketConnectorStatus.UP);
-				sendPacketInTransaction(lClose);
-			} catch (WebSocketException ex) {
-				mLog.error("Could not send close notification packet "
-						+ ex.getMessage());
-			} finally {
-				setStatus(lStatus);
-			}
+
+			setStatus(WebSocketConnectorStatus.UP);
+			sendPacket(lClose);
+			setStatus(lStatus);
 		}
 
 		mConnection.close();
@@ -185,14 +179,14 @@ public class GrizzlyConnector extends BaseConnector {
 	}
 
 	@Override
-	public void processPacket(WebSocketPacket aDataPacket) {
-		// forward the data packet to the engine
-		// the engine forwards the packet to all connected servers
-		getEngine().processPacket(this, aDataPacket);
-	}
-
-	@Override
 	public synchronized void sendPacket(WebSocketPacket aDataPacket) {
+		try {
+			checkBeforeSend(aDataPacket);
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "sending packet to '" + getId() + "' connector!"));
+			return;
+		}
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Sending packet '" + aDataPacket.getUTF8() + "'...");
 		}
@@ -214,11 +208,6 @@ public class GrizzlyConnector extends BaseConnector {
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " sending data packet: " + lEx.getMessage());
 		}
-	}
-
-	@Override
-	public void sendPacketInTransaction(WebSocketPacket aDataPacket) throws WebSocketException {
-		throw new UnsupportedOperationException("GrizzlyEngine does not support 'sendPacketInTransaction' operation!");
 	}
 
 	@Override

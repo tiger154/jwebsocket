@@ -26,7 +26,7 @@ import org.jwebsocket.kit.WebSocketException;
  * Provides the basic implementation of the jWebSocket engines. The
  * {@code BaseEngine} is supposed to be used as ancestor for the engine
  * implementations like e.g. the {@code TCPEngine} or the {@code NettyEngine}.
- * 
+ *
  * @author aschulze
  */
 public class BaseEngine implements WebSocketEngine {
@@ -208,6 +208,10 @@ public class BaseEngine implements WebSocketEngine {
 	public Integer getMaxConnections() {
 		return mConfiguration.getMaxConnections();
 	}
-	
-	
+
+	public static String getUnsupportedIncomingPacketSizeMsg(WebSocketConnector aConnector, int aPacketSize) {
+		return "Incoming packet from '" + aConnector.getId() + "' connector "
+				+ "cannot be processed! Supported packet size: " + aConnector.getMaxFrameSize()
+				+ ", received: " + aPacketSize;
+	}
 }

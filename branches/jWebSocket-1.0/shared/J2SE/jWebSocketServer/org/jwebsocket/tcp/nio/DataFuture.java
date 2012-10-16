@@ -79,9 +79,9 @@ public class DataFuture implements IOFuture {
 	}
 
 	@Override
-	public boolean setFailure(Throwable cause) {
+	public boolean setFailure(Throwable lCause) {
 		if (!mSuccess && !mDone) {
-			this.mCause = cause;
+			this.mCause = lCause;
 			mSuccess = false;
 			mDone = true;
 			notifyListeners();
@@ -92,18 +92,25 @@ public class DataFuture implements IOFuture {
 	}
 
 	@Override
-	public boolean setProgress(long amount, long current, long total) {
+	public boolean setProgress(long aAmount, long aCurrent, long aTotal) {
 		return false;  // not implemented
 	}
 
 	@Override
-	public void addListener(IOFutureListener listener) {
-		mListeners.add(listener);
+	public void addListener(IOFutureListener aListener) {
+		if (mDone) {
+			try {
+				aListener.operationComplete(this);
+			} catch (Exception lEx) {
+				mLog.info("Exception while notifying IOFuture listener", lEx);
+			}
+		}
+		mListeners.add(aListener);
 	}
 
 	@Override
-	public void removeListener(IOFutureListener listener) {
-		mListeners.remove(listener);
+	public void removeListener(IOFutureListener aListener) {
+		mListeners.remove(aListener);
 	}
 
 	public ByteBuffer getData() {
