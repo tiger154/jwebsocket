@@ -28,7 +28,6 @@ import org.jwebsocket.api.*;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
-import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.filter.TokenFilterChain;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.listener.WebSocketServerTokenEvent;
@@ -37,6 +36,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugInChain;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Fragmentation;
 import org.springframework.util.Assert;
 
 /**
@@ -313,12 +313,24 @@ public class TokenServer extends BaseServer {
 		sendToken(null, aTarget, aToken);
 	}
 
+	/**
+	 *
+	 * @param aTarget
+	 * @param aToken
+	 * @param aListener
+	 */
 	public void sendTokenInTransaction(WebSocketConnector aTarget, Token aToken,
 			IPacketDeliveryListener aListener) {
-		Assert.notNull(aTarget, "The target connector argument cannot be null!");
 		sendTokenInTransaction(aTarget, aToken, aTarget.getMaxFrameSize(), aListener);
 	}
 
+	/**
+	 *
+	 * @param aTarget
+	 * @param aToken
+	 * @param aFragmentSize
+	 * @param aListener
+	 */
 	public void sendTokenInTransaction(WebSocketConnector aTarget, Token aToken,
 			int aFragmentSize, IPacketDeliveryListener aListener) {
 		Assert.notNull(aTarget, "The target connector argument cannot be null!");
@@ -387,17 +399,21 @@ public class TokenServer extends BaseServer {
 
 			// process next chunks
 			if (mChunkableIterator.hasNext()) {
-				mCurrentChunk = mChunkableIterator.next();
-				Assert.notNull(mCurrentChunk, "Iterator returned null on 'next' method call!");
+				try {
+					mCurrentChunk = mChunkableIterator.next();
+					Assert.notNull(mCurrentChunk, "Iterator returned null on 'next' method call!");
 
-				// setting chunk properties
-				mCurrentChunk.setNS(mNS);
-				mCurrentChunk.setType(mType);
-				mCurrentChunk.setChunk(true);
-				if (!mChunkableIterator.hasNext()) {
-					mCurrentChunk.setLastChunk(true);
+					// setting chunk properties
+					mCurrentChunk.setNS(mNS);
+					mCurrentChunk.setType(mType);
+					mCurrentChunk.setChunk(true);
+					if (!mChunkableIterator.hasNext()) {
+						mCurrentChunk.setLastChunk(true);
+					}
+					sendTokenInTransaction(mTarget, mCurrentChunk, this);
+				} catch (Exception lEx) {
+					mOriginListener.OnFailure(lEx);
 				}
-				sendTokenInTransaction(mTarget, mCurrentChunk, this);
 			} else {
 				mOriginListener.OnSuccess();
 			}
@@ -418,7 +434,7 @@ public class TokenServer extends BaseServer {
 			IChunkableDeliveryListener aListener) {
 		try {
 			if (0 > aChunkable.getFragmentSize()) {
-				aChunkable.setFragmentSize(aConnector.getMaxFrameSize() - BaseConnector.PACKET_TRANSACTION_MAX_BYTES_PREFIXED);
+				aChunkable.setFragmentSize(aConnector.getMaxFrameSize() - Fragmentation.PACKET_TRANSACTION_MAX_BYTES_PREFIXED);
 			}
 			Iterator<Token> lChunksIterator = aChunkable.getChunksIterator();
 			Assert.isTrue(lChunksIterator.hasNext(), "The chunks iterator is empty. No data to send!");
