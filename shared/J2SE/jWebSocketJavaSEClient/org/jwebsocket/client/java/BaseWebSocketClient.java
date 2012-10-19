@@ -18,6 +18,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -35,7 +36,9 @@ import org.jwebsocket.api.*;
 import org.jwebsocket.client.token.WebSocketTokenClientEvent;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.kit.*;
+import org.jwebsocket.util.Fragmentation;
 import org.jwebsocket.util.HttpCookie;
+import org.jwebsocket.util.Tools;
 
 /**
  * Base {@code WebSocket} implementation based on
@@ -118,6 +121,14 @@ public class BaseWebSocketClient implements WebSocketClient {
 	private final Object mReconnectLock = new Object();
 	private Headers mHeaders = null;
 	private Set<HttpCookie> mCookies = new FastSet<HttpCookie>();
+	/**
+	 * fragmentation model
+	 */
+	private Map<Integer, IPacketDeliveryListener> mPacketDeliveryListeners = new FastMap<Integer, IPacketDeliveryListener>().shared();
+	private Map<Integer, TimerTask> mPacketDeliveryTimerTasks = new FastMap<Integer, TimerTask>().shared();
+	private final Object mPacketDeliveryListenersLock = new Object();
+	private Integer mMaxFrameSize;
+	private Map<String, String> mFragments = new LinkedHashMap<String, String>();
 
 	/**
 	 * Base constructor
@@ -132,6 +143,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 			throw new Exception("The value '" + aStatus.name()
 					+ "' cannot be assigned. Restricted to internal usage only!");
 		}
+	}
+
+	@Override
+	public Integer getMaxFrameSize() {
+		return mMaxFrameSize;
 	}
 
 	/**
@@ -297,11 +313,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 			mReceiver.start();
 			// now set official status, may listeners ask for that
 			mStatus = WebSocketStatus.OPEN;
-			// and finally notify listeners for OnOpen event
-			WebSocketClientEvent lEvent =
-					new WebSocketBaseClientEvent(this, EVENT_OPEN, "");
-			// notify listeners that client has opened.
-			notifyOpened(lEvent);
 
 			// reset close reason to be specified by next reason
 			mCloseReason = null;
@@ -313,24 +324,143 @@ public class BaseWebSocketClient implements WebSocketClient {
 		}
 	}
 
-	private void sendInTransaction(byte[] aData) throws WebSocketException {
-		if (isHixie()) {
-			sendInternal(aData);
+	@Override
+	public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+		sendPacketInTransaction(aDataPacket, getMaxFrameSize(), aListener);
+	}
+
+	@Override
+	public void sendPacketInTransaction(final WebSocketPacket aDataPacket,
+			Integer aFragmentSize, final IPacketDeliveryListener aListener) {
+		// getting packet identifier
+		final Integer lPacketId = Fragmentation.generateUID();
+
+		// ommiting control frames
+		if (WebSocketFrameType.BINARY.equals(aDataPacket.getFrameType())
+				|| WebSocketFrameType.TEXT.equals(aDataPacket.getFrameType())) {
+
+			String lPacketPrefix = lPacketId.toString() + Fragmentation.PACKET_ID_DELIMETER;
+
+			try {
+				if (!(lPacketPrefix.length() + aDataPacket.size() <= getMaxFrameSize())) {
+					throw new Exception("The packet size exceeds the max frame size supported by the client! "
+							+ "Consider that the packet has been prefixed with " + lPacketPrefix.length()
+							+ " bytes for transaction.");
+
+				}
+
+				if (!(aFragmentSize > 0 && aFragmentSize <= getMaxFrameSize())) {
+					throw new Exception("Invalid 'fragment size' argument! "
+							+ "Expected: fragment_size > 0 && fragment_size <= MAX_FRAME_SIZE");
+				}
+				// processing fragmentation
+				if (aFragmentSize < aDataPacket.size() && aFragmentSize < getMaxFrameSize()) {
+					// first fragment is never the last
+					boolean lIsLast = false;
+
+					// fragmentation id, allows multiplexing
+					int lFragmentationId = Fragmentation.generateUID();
+
+					// creating a special packet for fragmentation
+					WebSocketPacket lPacketFragmented = Fragmentation.createFragmentedPacket(
+							Arrays.copyOfRange(aDataPacket.getByteArray(), 0, aFragmentSize),
+							lFragmentationId, lIsLast);
+
+					// checking the new packet size
+					if (!(lPacketFragmented.size() + lPacketPrefix.length() <= getMaxFrameSize())) {
+						throw new Exception("The packet size exceeds the max frame size supported by the client! "
+								+ "Consider that the packet has been prefixed with "
+								+ (lPacketFragmented.size() + lPacketPrefix.length() - aDataPacket.size())
+								+ " bytes for fragmented transaction.");
+					}
+
+					// process fragmentation
+					final BaseWebSocketClient lSender = this;
+					sendPacketInTransaction(
+							lPacketFragmented,
+							// passing special listener for fragmentation
+							Fragmentation.createListener(
+							aDataPacket,
+							aFragmentSize,
+							aListener,
+							System.currentTimeMillis(),
+							lFragmentationId,
+							new InFragmentationListenerSender() {
+								@Override
+								public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+									lSender.sendPacketInTransaction(aDataPacket, aListener);
+								}
+							}));
+					return;
+				}
+
+				// preparing to send in transaction
+				byte[] lPrefixBytes = lPacketPrefix.getBytes();
+				// adding the prefix to the packet content
+				ByteBuffer lBuffer = ByteBuffer.allocate(lPrefixBytes.length + aDataPacket.size());
+				lBuffer.put(lPrefixBytes);
+				lBuffer.put(aDataPacket.getByteArray());
+
+				// setting the new packet content
+				aDataPacket.setByteArray(lBuffer.array());
+				lBuffer = null;
+
+				// saving the delivery listener
+				mPacketDeliveryListeners.put(lPacketId, aListener);
+
+				// setting the timer task for timeout support
+				TimerTask lTT = new TimerTask() {
+					@Override
+					public void run() {
+						synchronized (mPacketDeliveryListenersLock) {
+							if (mPacketDeliveryListeners.containsKey(lPacketId)) {
+								// cleaning expired data and calling timeout
+								mPacketDeliveryTimerTasks.remove(lPacketId);
+								mPacketDeliveryListeners.remove(lPacketId).OnTimeout();
+							}
+						}
+					}
+				};
+
+				// saving the timer task reference
+				mPacketDeliveryTimerTasks.put(lPacketId, lTT);
+
+				// sending the packet to the client
+				send(aDataPacket);
+
+				// schedule the timer task
+				Tools.getTimer().schedule(lTT, aListener.getTimeout());
+			} catch (Exception lEx) {
+				synchronized (mPacketDeliveryListenersLock) {
+					if (mPacketDeliveryListeners.containsKey(lPacketId)) {
+						// cleaning expired data and calling OnFailure 
+						if (mPacketDeliveryTimerTasks.containsKey(lPacketId)) {
+							mPacketDeliveryTimerTasks.remove(lPacketId).cancel();
+						}
+						mPacketDeliveryListeners.remove(lPacketId);
+					}
+				}
+				aListener.OnFailure(lEx);
+			}
 		} else {
-			WebSocketPacket lPacket = new RawPacket(aData);
-			lPacket.setFrameType(
-					WebSocketProtocolAbstraction.encodingToFrameType(
-					mNegotiatedSubProtocol.getEncoding()));
-			sendInternal(
-					WebSocketProtocolAbstraction.rawToProtocolPacket(
-					mVersion, lPacket));
+			aListener.OnFailure(new Exception("Control frames cannot be sent in transaction!"));
 		}
 	}
 
 	@Override
 	public void send(byte[] aData) throws WebSocketException {
 		synchronized (mWriteLock) {
-			sendInTransaction(aData);
+			if (isHixie()) {
+				sendInternal(aData);
+			} else {
+				WebSocketPacket lPacket = new RawPacket(aData);
+				lPacket.setFrameType(
+						WebSocketProtocolAbstraction.encodingToFrameType(
+						mNegotiatedSubProtocol.getEncoding()));
+				sendInternal(
+						WebSocketProtocolAbstraction.rawToProtocolPacket(
+						mVersion, lPacket));
+			}
 		}
 	}
 
@@ -339,17 +469,15 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 */
 	@Override
 	public void send(String aData, String aEncoding) throws WebSocketException {
-		synchronized (mWriteLock) {
-			byte[] lData;
-			try {
-				lData = aData.getBytes(aEncoding);
-			} catch (UnsupportedEncodingException lEx) {
-				throw new WebSocketException(
-						"Encoding exception while sending the data:"
-						+ lEx.getMessage(), lEx);
-			}
-			send(lData);
+		byte[] lData;
+		try {
+			lData = aData.getBytes(aEncoding);
+		} catch (UnsupportedEncodingException lEx) {
+			throw new WebSocketException(
+					"Encoding exception while sending the data:"
+					+ lEx.getMessage(), lEx);
 		}
+		send(lData);
 	}
 
 	/**
@@ -492,7 +620,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 					// Create a trust manager to accept unsigned certificates
 					TrustManager[] lTrustManager = new TrustManager[]{
 						new X509TrustManager() {
-
 							@Override
 							public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 								return null;
@@ -603,6 +730,87 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 */
 	@Override
 	public void notifyPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+		// supporting the max frame size handshake
+		String lData = aPacket.getString();
+		if (null == mMaxFrameSize) {
+			int lPos = lData.indexOf(Fragmentation.ARG_MAX_FRAME_SIZE);
+			if (0 == lPos) {
+				mMaxFrameSize = Integer.parseInt(lData.substring(Fragmentation.ARG_MAX_FRAME_SIZE.length()));
+
+				// The end of the "max frame size" handshake indicates that the connection is finally opened
+				WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_OPEN, "");
+				// notify listeners that client has opened.
+				notifyOpened(lEvent);
+
+				return;
+			}
+		} else if (lData.length() > mMaxFrameSize) {
+			// Data packet discarded. The packet size exceeds the max frame size supported by the client!
+			return;
+		}
+
+		// processing packet delivery acknowledge from the server
+		if (lData.length() <= (10 + Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length())) {
+			if (lData.startsWith(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX)) {
+				try {
+					// getting the delivered packet id
+					Integer lPID = Integer.parseInt(lData.replace(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, ""));
+
+					synchronized (mPacketDeliveryListenersLock) {
+						if (mPacketDeliveryListeners.containsKey(lPID)) {
+							// canceling timeout timer task
+							mPacketDeliveryTimerTasks.remove(lPID).cancel();
+							// calling the success callback on the delivery listener
+							mPacketDeliveryListeners.remove(lPID).OnSuccess();
+						}
+					}
+				} catch (NumberFormatException lEx) {
+				}
+				// do not process the packet because it is a delivery acknowledge
+				return;
+			}
+		}
+
+		// supporting packet delivery acknowledge to the server
+		int lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
+		if (lPos >= 0 && lPos <= 10) {
+			try {
+				Integer lPacketId = Integer.parseInt(lData.substring(0, lPos));
+				aPacket.setString(lData.substring(lPos + 1));
+
+				// sending acknowledge packet
+				send(new RawPacket(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPacketId.toString()));
+			} catch (Exception lEx) {
+			}
+		}
+
+		// supporting fragmentation
+		String lFragmentContent;
+		String lKey;
+		if (lData.startsWith(Fragmentation.PACKET_FRAGMENT_PREFIX)) {
+			lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
+			lKey = lData.substring(0, lPos);
+			lFragmentContent = lData.substring(lPos + 1);
+
+			// storing the packet fragment
+			if (!mFragments.containsKey(lKey)) {
+				mFragments.put(lKey, lFragmentContent);
+			} else {
+				mFragments.put(lKey, mFragments.get(lKey) + lFragmentContent);
+			}
+
+			// do not process fragment packets
+			return;
+		} else if (lData.startsWith(Fragmentation.PACKET_LAST_FRAGMENT_PREFIX)) {
+			lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
+			lKey = lData.substring(Fragmentation.PACKET_LAST_FRAGMENT_PREFIX.length(), lPos);
+			lFragmentContent = lData.substring(lPos + 1);
+
+			// getting the complete packet content
+			aPacket.setString(mFragments.remove(Fragmentation.PACKET_FRAGMENT_PREFIX + lKey) + lFragmentContent);
+		}
+
+		// finally notify the listeners
 		for (WebSocketClientListener lListener : getListeners()) {
 			lListener.processPacket(aEvent, aPacket);
 		}
@@ -631,17 +839,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 	public void setReliabilityOptions(ReliabilityOptions mReliabilityOptions) {
 		this.mReliabilityOptions = mReliabilityOptions;
 	}
-	/*
-	 * class ReOpener implements Runnable {
-	 *
-	 * private WebSocketClientEvent mEvent;
-	 *
-	 * public ReOpener(WebSocketClientEvent aEvent) { mEvent = aEvent; }
-	 *
-	 * @Override public void run() { notifyReconnecting(mEvent); try {
-	 * open(mURI.toString()); } catch (WebSocketException ex) { // TODO: process
-	 * potential exception here! } } }
-	 */
 
 	/**
 	 * @return the mHeaders

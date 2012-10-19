@@ -20,9 +20,9 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicInteger;
 import javolution.util.FastMap;
 import org.jwebsocket.api.IPacketDeliveryListener;
+import org.jwebsocket.api.InFragmentationListenerSender;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
@@ -31,6 +31,7 @@ import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.kit.*;
+import org.jwebsocket.util.Fragmentation;
 import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
 
@@ -61,14 +62,6 @@ public class BaseConnector implements WebSocketConnector {
 	 * Default name for shared custom variable <tt>nodeid</tt>.
 	 */
 	public final static String VAR_NODEID = "$nodeid";
-	/**
-	 * Fragmentation model constants 
-	 */
-	public final static String ARG_MAX_FRAME_SIZE = "maxframesize";
-	public static final String PACKET_FRAGMENT_PREFIX = "FRAGMENT";
-	public static final String PACKET_LAST_FRAGMENT_PREFIX = "LFRAGMENT";
-	public static final Integer MIN_FRAME_SIZE = 1024;
-	public static final Integer PACKET_TRANSACTION_MAX_BYTES_PREFIXED = 31;
 	/**
 	 * Is connector using SSL encryption?
 	 */
@@ -105,14 +98,8 @@ public class BaseConnector implements WebSocketConnector {
 	 */
 	private static Map<Integer, IPacketDeliveryListener> mPacketDeliveryListeners = new FastMap<Integer, IPacketDeliveryListener>().shared();
 	private static Map<Integer, TimerTask> mPacketDeliveryTimerTasks = new FastMap<Integer, TimerTask>().shared();
-	private static AtomicInteger mPacketCounter = new AtomicInteger(0);
-	public static final String PACKET_ID_DELIMETER = ",";
-	public static final String PACKET_DELIVERY_ACKNOWLEDGE_PREFIX = "pda";
 	private final Object mPacketDeliveryListenersLock = new Object();
 
-	/**
-	 * Variables for the packet fragmentation mechanism
-	 */
 	/**
 	 *
 	 * @param aEngine
@@ -123,7 +110,7 @@ public class BaseConnector implements WebSocketConnector {
 
 	@Override
 	public void startConnector() {
-		if (getMaxFrameSize() < MIN_FRAME_SIZE) {
+		if (getMaxFrameSize() < Fragmentation.MIN_FRAME_SIZE) {
 			// minimum frame size is required to establish a connection
 			// reject connection at this point
 			stopConnector(CloseReason.SERVER);
@@ -131,7 +118,7 @@ public class BaseConnector implements WebSocketConnector {
 		}
 
 		// sending agreed max frame size to the client
-		sendPacket(new RawPacket(ARG_MAX_FRAME_SIZE + getMaxFrameSize()));
+		sendPacket(new RawPacket(Fragmentation.ARG_MAX_FRAME_SIZE + getMaxFrameSize()));
 
 		// notifying connector started
 		if (mEngine != null) {
@@ -190,12 +177,12 @@ public class BaseConnector implements WebSocketConnector {
 	public void processPacket(WebSocketPacket aDataPacket) {
 		// processing packet delivery acknowledge from the client
 		//MAX_INTEGER_TO_STRING_SIZE + PREFIX_SIZE
-		if (aDataPacket.size() <= (10 + PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length())) {
+		if (aDataPacket.size() <= (10 + Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length())) {
 			String lContent = aDataPacket.getString();
-			if (lContent.startsWith(PACKET_DELIVERY_ACKNOWLEDGE_PREFIX)) {
+			if (lContent.startsWith(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX)) {
 				try {
 					// getting the delivered packet id
-					Integer lPID = Integer.parseInt(lContent.replace(PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, ""));
+					Integer lPID = Integer.parseInt(lContent.replace(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, ""));
 
 					synchronized (mPacketDeliveryListenersLock) {
 						if (mPacketDeliveryListeners.containsKey(lPID)) {
@@ -218,15 +205,15 @@ public class BaseConnector implements WebSocketConnector {
 		String lPID;
 
 		// supporting packet delivery acknowledge to the client
-		lPos = lData.indexOf(PACKET_ID_DELIMETER);
+		lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
 
-		if (lPos >= 0 && lPos < 10) {
+		if (lPos >= 0 && lPos <= 10) {
 			try {
 				Integer lPacketId = Integer.parseInt(lData.substring(0, lPos));
 				aDataPacket.setString(lData.substring(lPos + 1));
 
 				// sending acknowledge packet
-				sendPacket(new RawPacket(PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPacketId.toString()));
+				sendPacket(new RawPacket(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPacketId.toString()));
 			} catch (NumberFormatException lEx) {
 			}
 		}
@@ -235,9 +222,9 @@ public class BaseConnector implements WebSocketConnector {
 		lData = aDataPacket.getString();
 		String lFragmentContent;
 		Map<String, Object> lStorage;
-		if (lData.startsWith(PACKET_FRAGMENT_PREFIX)) {
+		if (lData.startsWith(Fragmentation.PACKET_FRAGMENT_PREFIX)) {
 			lStorage = getSession().getStorage();
-			lPos = lData.indexOf(PACKET_ID_DELIMETER);
+			lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
 			lPID = lData.substring(0, lPos);
 			lFragmentContent = lData.substring(lPos + 1);
 
@@ -251,15 +238,15 @@ public class BaseConnector implements WebSocketConnector {
 
 			// do not process fragment packets
 			return;
-		} else if (lData.startsWith(PACKET_LAST_FRAGMENT_PREFIX)) {
+		} else if (lData.startsWith(Fragmentation.PACKET_LAST_FRAGMENT_PREFIX)) {
 			lStorage = getSession().getStorage();
-			lPos = lData.indexOf(PACKET_ID_DELIMETER);
-			lPID = lData.substring(PACKET_LAST_FRAGMENT_PREFIX.length(), lPos);
+			lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
+			lPID = lData.substring(Fragmentation.PACKET_LAST_FRAGMENT_PREFIX.length(), lPos);
 			lFragmentContent = lData.substring(lPos + 1);
 
 			// getting the complete packet content
 			// lPID = PACKET_FRAGMENT_PREFIX + FRAGMENTATION_ID
-			aDataPacket.setString(lStorage.remove(PACKET_FRAGMENT_PREFIX + lPID) + lFragmentContent);
+			aDataPacket.setString(lStorage.remove(Fragmentation.PACKET_FRAGMENT_PREFIX + lPID) + lFragmentContent);
 		}
 
 		// notifying engine
@@ -291,90 +278,17 @@ public class BaseConnector implements WebSocketConnector {
 		sendPacketInTransaction(aDataPacket, getMaxFrameSize(), aListener);
 	}
 
-	class FragmentationListener implements IPacketDeliveryListener {
-
-		WebSocketPacket mOriginPacket;
-		int mFragmentSize;
-		IPacketDeliveryListener mOriginListener;
-		int mNumberOfFragments;
-		int mBytesSent = 0;
-		long mTimeout;
-		long mSentTime;
-		int mFragmentationId;
-
-		public FragmentationListener(WebSocketPacket aOriginPacket, int aFragmentSize,
-				IPacketDeliveryListener aOriginListener, long aSentTime, int aFragmentationId) {
-			mOriginPacket = aOriginPacket;
-			mFragmentSize = aFragmentSize;
-			mOriginListener = aOriginListener;
-			mTimeout = aOriginListener.getTimeout();
-			mSentTime = aSentTime;
-			mFragmentationId = aFragmentationId;
-		}
-
-		@Override
-		public long getTimeout() {
-			long lTimeout = mSentTime + mOriginListener.getTimeout() - System.currentTimeMillis();
-			if (lTimeout < 0) {
-				lTimeout = 0;
-			}
-
-			return lTimeout;
-		}
-
-		@Override
-		public void OnTimeout() {
-			mOriginListener.OnTimeout();
-		}
-
-		@Override
-		public void OnSuccess() {
-			// updating bytes sent
-			mBytesSent += mFragmentSize;
-			if (mBytesSent >= mOriginPacket.size()) {
-				// calling success if the packet was transmitted complete
-				mOriginListener.OnSuccess();
-			} else {
-				// prepare to sent a next fragment
-				int lLength = (mFragmentSize + mBytesSent <= mOriginPacket.size())
-						? mFragmentSize
-						: mOriginPacket.size() - mBytesSent;
-
-				byte[] lBytes = Arrays.copyOfRange(mOriginPacket.getByteArray(), mBytesSent, mBytesSent + lLength);
-				boolean lIsLast = (lLength + mBytesSent == mOriginPacket.size()) ? true : false;
-				// send fragment
-				sendPacketInTransaction(__createFragmentedPacket(lBytes, mFragmentationId, lIsLast), this);
-			}
-		}
-
-		@Override
-		public void OnFailure(Exception lEx) {
-			mOriginListener.OnFailure(lEx);
-		}
-	}
-
-	private WebSocketPacket __createFragmentedPacket(byte[] aByteArray, int aFragmentationId, boolean aIsLast) {
-		return new RawPacket(((aIsLast) ? PACKET_LAST_FRAGMENT_PREFIX : PACKET_FRAGMENT_PREFIX)
-				+ String.valueOf(aFragmentationId)
-				+ PACKET_ID_DELIMETER
-				+ new String(aByteArray));
-	}
-
 	@Override
 	public void sendPacketInTransaction(final WebSocketPacket aDataPacket,
 			Integer aFragmentSize, final IPacketDeliveryListener aListener) {
 		// getting packet identifier
-		final Integer lPacketId = mPacketCounter.incrementAndGet();
-		// reset packet counter if arrive to the max value
-		if (lPacketId.equals(Integer.MAX_VALUE)) {
-			mPacketCounter.set(0);
-		}
+		final Integer lPacketId = Fragmentation.generateUID();
 
 		// ommiting control frames
 		if (WebSocketFrameType.BINARY.equals(aDataPacket.getFrameType())
 				|| WebSocketFrameType.TEXT.equals(aDataPacket.getFrameType())) {
 
-			String lPacketPrefix = lPacketId.toString() + PACKET_ID_DELIMETER;
+			String lPacketPrefix = lPacketId.toString() + Fragmentation.PACKET_ID_DELIMETER;
 
 			try {
 				Assert.isTrue(lPacketPrefix.length() + aDataPacket.size() <= getMaxFrameSize(),
@@ -391,10 +305,10 @@ public class BaseConnector implements WebSocketConnector {
 					boolean lIsLast = false;
 
 					// fragmentation id, allows multiplexing
-					int lFragmentationId = mPacketCounter.incrementAndGet();
+					int lFragmentationId = Fragmentation.generateUID();
 
 					// creating a special packet for fragmentation
-					WebSocketPacket lPacketFragmented = __createFragmentedPacket(
+					WebSocketPacket lPacketFragmented = Fragmentation.createFragmentedPacket(
 							Arrays.copyOfRange(aDataPacket.getByteArray(), 0, aFragmentSize),
 							lFragmentationId, lIsLast);
 
@@ -406,15 +320,22 @@ public class BaseConnector implements WebSocketConnector {
 							+ " bytes for fragmented transaction.");
 
 					// process fragmentation
+					final BaseConnector lSender = this;
 					sendPacketInTransaction(
 							lPacketFragmented,
 							// passing special listener for fragmentation
-							new FragmentationListener(
+							Fragmentation.createListener(
 							aDataPacket,
 							aFragmentSize,
 							aListener,
 							System.currentTimeMillis(),
-							lFragmentationId));
+							lFragmentationId,
+							new InFragmentationListenerSender() {
+								@Override
+								public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+									lSender.sendPacketInTransaction(aDataPacket, aListener);
+								}
+							}));
 					return;
 				}
 
@@ -689,7 +610,7 @@ public class BaseConnector implements WebSocketConnector {
 	public Integer getMaxFrameSize() {
 		Integer lMaxFrameSize = mEngine.getConfiguration().getMaxFramesize();
 		try {
-			Integer lArgMaxFrameSize = Integer.parseInt((String) mHeader.getArgs().get(ARG_MAX_FRAME_SIZE));
+			Integer lArgMaxFrameSize = Integer.parseInt((String) mHeader.getArgs().get(Fragmentation.ARG_MAX_FRAME_SIZE));
 			if (lArgMaxFrameSize <= lMaxFrameSize) {
 				return lArgMaxFrameSize;
 			}

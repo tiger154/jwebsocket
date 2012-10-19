@@ -45,6 +45,7 @@ import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.ChunkableInputStream;
+import org.jwebsocket.util.Fragmentation;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -290,37 +291,6 @@ public class SystemPlugIn extends TokenPlugIn {
 		// sending the welcome token
 		sendWelcome(aConnector);
 		
-//		ChunkableInputStream lChunkable = new ChunkableInputStream("org.jwebsocket.test", "string_message",
-//				new ByteArrayInputStream(("jWebSocket Rocks!").getBytes()));
-//		lChunkable.setFragmentSize(5);
-//
-//		sendChunkable(aConnector, lChunkable, new IChunkableDeliveryListener() {
-//			@Override
-//			public void OnChunkDelivered(Token aToken) {
-//				System.out.println("Chunk delivered: " + aToken.toString());
-//			}
-//
-//			@Override
-//			public long getTimeout() {
-//				return 5000;
-//			}
-//
-//			@Override
-//			public void OnTimeout() {
-//				System.out.println("on timeout");
-//			}
-//
-//			@Override
-//			public void OnSuccess() {
-//				System.out.println("on success");
-//			}
-//
-//			@Override
-//			public void OnFailure(Exception lEx) {
-//				System.out.println("on failure: " + lEx.getMessage());
-//			}
-//		});
-
 		// if new connector is active broadcast this event to then network
 		broadcastConnectEvent(aConnector);
 	}
@@ -437,7 +407,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		lWelcome.setString("vendor", JWebSocketCommonConstants.VENDOR);
 		lWelcome.setString("version", JWebSocketServerConstants.VERSION_STR);
 		lWelcome.setString("sourceId", aConnector.getId());
-		lWelcome.setInteger(BaseConnector.ARG_MAX_FRAME_SIZE, aConnector.getMaxFrameSize());
+		lWelcome.setInteger(Fragmentation.ARG_MAX_FRAME_SIZE, aConnector.getMaxFrameSize());
 		// if a unique node id is specified for the client include that
 		String lNodeId = aConnector.getNodeId();
 		if (lNodeId != null) {

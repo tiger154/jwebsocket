@@ -30,6 +30,7 @@ import org.jwebsocket.kit.WebSocketSubProtocol;
  *
  * @author aschulze
  * @author puran
+ * @author kyberneees
  * @version $Id: WebSocketClient.java 701 2010-07-18 17:53:06Z
  * mailtopuran@gmail.com $
  */
@@ -188,4 +189,34 @@ public interface WebSocketClient {
 	 * @param aVersion which draft to use for web socket protocol communication
 	 */
 	void setVersion(int aVersion);
+
+	/**
+	 * The "max frame size" variable indicates the "maximum packet size"
+	 * supported by a client. The clients are able to choose the variable
+	 * according to their scenarios. The client value is transmitted in the
+	 * connection handshake. If the value exceeds the engine max frame size
+	 * value, then the client value is ignored. The server transmit the selected
+	 * value in the welcome message.
+	 *
+	 * @return The connector specific max frame size
+	 */
+	Integer getMaxFrameSize();
+
+	/**
+	 * Send a fragmented data packet to the server and control the delivery by
+	 * using a listener.
+	 *
+	 * @param aDataPacket
+	 * @param aFragmentSize
+	 */
+	void sendPacketInTransaction(WebSocketPacket aDataPacket,
+			Integer aFragmentSize, IPacketDeliveryListener aListener);
+
+	/**
+	 * Send a fragmented data packet to the server and control the delivery by
+	 * using a listener.
+	 *
+	 * @param aDataPacket
+	 */
+	void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener);
 }

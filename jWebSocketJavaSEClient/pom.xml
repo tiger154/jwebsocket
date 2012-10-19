@@ -1,6 +1,6 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>jWebSocket-Parent</artifactId>
 		<groupId>org.jwebsocket</groupId>
@@ -16,21 +16,21 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-<!--
-	<scm>
-		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJavaSEClient</connection>
-		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJavaSEClient</developerConnection>
-	</scm>
--->
+	<!--
+		<scm>
+			<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJavaSEClient</connection>
+			<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJavaSEClient</developerConnection>
+		</scm>
+	-->
 	<build>
 		<sourceDirectory>../shared/J2SE/jWebSocketJavaSEClient</sourceDirectory>
-<!--
-        <resources>
-            <resource>
-                <directory>../shared/J2SE/jWebSocketJavaSEClient</directory>
-            </resource>
-        </resources>
--->
+		<!--
+    <resources>
+     <resource>
+      <directory>../shared/J2SE/jWebSocketJavaSEClient</directory>
+     </resource>
+    </resources>
+		-->
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

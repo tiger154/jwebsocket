@@ -3033,13 +3033,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 						lThis.hOpenTimeout = null;
 					}
 					lThis.fStatus = jws.OPEN;
-					lValue = lThis.processOpened( aEvent );
-					// give application change to handle event
-					if( aOptions.OnOpen ) {
-						aOptions.OnOpen( aEvent, lValue, lThis );
-					}
-					// process outgoing queue
-					lThis.processQueue();
+					lThis.fOpenEvent = aEvent;
 				};
 
 				this.fConn.onmessage = function( aEvent ) {
@@ -3055,6 +3049,16 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 							if( jws.console.isDebugEnabled() ) {
 								jws.console.debug( "Maximum frame size for connection is: " + lThis.fMaxFrameSize );
 							}
+							
+							// The end of the "max frame size" handshake indicates that the connection is finally opened
+							lValue = lThis.processOpened( aEvent );
+							// give application change to handle event
+							if( aOptions.OnOpen ) {
+								aOptions.OnOpen( aEvent, lValue, lThis );
+							}
+							// process outgoing queue
+							lThis.processQueue();
+							
 							return;
 						}
 					} else if (aEvent.data.length > this.fMaxFrameSize){
