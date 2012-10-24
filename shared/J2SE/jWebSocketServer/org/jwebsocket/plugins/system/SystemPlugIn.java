@@ -15,13 +15,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.system;
 
-import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.Map.Entry;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.IChunkableDeliveryListener;
 import org.jwebsocket.api.ISessionManager;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
@@ -34,7 +32,6 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.security.User;
@@ -44,7 +41,6 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.util.ChunkableInputStream;
 import org.jwebsocket.util.Fragmentation;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
@@ -349,7 +345,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	 * @param aConnector
 	 */
 	public void broadcastConnectEvent(WebSocketConnector aConnector) {
-		// only broadcast if corresponding global plugin setting is "true"
+		// only broadcast if corresponding global plugin setting is "true"sendChu
 		if (BROADCAST_OPEN) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Broadcasting connect...");

@@ -365,9 +365,11 @@ public class TokenServer extends BaseServer {
 		long mSentTime;
 		Token mCurrentChunk;
 		String mNS, mType;
+		Integer mFragmentSize;
 
 		public ChunkableListener(WebSocketConnector aTarget, Token aCurrentChunk,
-				Iterator<Token> aChunkableIterator, IChunkableDeliveryListener aOriginListener, long aSentTime) {
+				Iterator<Token> aChunkableIterator, IChunkableDeliveryListener aOriginListener,
+				long aSentTime, Integer aFragmentSize) {
 			mTarget = aTarget;
 			mChunkableIterator = aChunkableIterator;
 			mOriginListener = aOriginListener;
@@ -375,6 +377,7 @@ public class TokenServer extends BaseServer {
 			mCurrentChunk = aCurrentChunk;
 			mNS = aCurrentChunk.getNS();
 			mType = aCurrentChunk.getType();
+			mFragmentSize = aFragmentSize;
 		}
 
 		@Override
@@ -410,7 +413,8 @@ public class TokenServer extends BaseServer {
 					if (!mChunkableIterator.hasNext()) {
 						mCurrentChunk.setLastChunk(true);
 					}
-					sendTokenInTransaction(mTarget, mCurrentChunk, this);
+
+					sendTokenInTransaction(mTarget, mCurrentChunk, mFragmentSize, this);
 				} catch (Exception lEx) {
 					mOriginListener.OnFailure(lEx);
 				}
@@ -433,8 +437,8 @@ public class TokenServer extends BaseServer {
 	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable,
 			IChunkableDeliveryListener aListener) {
 		try {
-			if (0 > aChunkable.getFragmentSize()) {
-				aChunkable.setFragmentSize(aConnector.getMaxFrameSize() - Fragmentation.PACKET_TRANSACTION_MAX_BYTES_PREFIXED);
+			if (0 > aChunkable.getMaxFrameSize()) {
+				aChunkable.setMaxFrameSize(aConnector.getMaxFrameSize() - Fragmentation.PACKET_TRANSACTION_MAX_BYTES_PREFIXED);
 			}
 			Iterator<Token> lChunksIterator = aChunkable.getChunksIterator();
 			Assert.isTrue(lChunksIterator.hasNext(), "The chunks iterator is empty. No data to send!");
@@ -450,12 +454,13 @@ public class TokenServer extends BaseServer {
 			}
 
 			// sending chunks
-			sendTokenInTransaction(aConnector, lCurrentChunk, new ChunkableListener(
+			sendTokenInTransaction(aConnector, lCurrentChunk, aChunkable.getFragmentSize(), new ChunkableListener(
 					aConnector,
 					lCurrentChunk,
 					lChunksIterator,
 					aListener,
-					System.currentTimeMillis()));
+					System.currentTimeMillis(),
+					aChunkable.getFragmentSize()));
 		} catch (Exception lEx) {
 			aListener.OnFailure(lEx);
 		}

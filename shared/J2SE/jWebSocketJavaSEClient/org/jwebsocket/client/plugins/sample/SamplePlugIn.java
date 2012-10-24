@@ -15,7 +15,7 @@
 package org.jwebsocket.client.plugins.sample;
 
 import org.jwebsocket.api.WebSocketClientEvent;
-import org.jwebsocket.client.plugins.ClientTokenPlugIn;
+import org.jwebsocket.client.plugins.BaseClientTokenPlugIn;
 import org.jwebsocket.client.token.BaseTokenClient;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
@@ -25,12 +25,12 @@ import org.jwebsocket.token.TokenFactory;
  *
  * @author aschulze
  */
-public class SamplePlugIn extends ClientTokenPlugIn {
+public class SamplePlugIn extends BaseClientTokenPlugIn {
 
-	private String NS_SAMPLES = "org.jwebsocket.plugins.samples";
+	public static final String NS_SAMPLES = "org.jwebsocket.plugins.samples";
 
 	public SamplePlugIn(BaseTokenClient aClient) {
-		super(aClient);
+		super(aClient, NS_SAMPLES);
 	}
 
 	@Override
@@ -52,6 +52,6 @@ public class SamplePlugIn extends ClientTokenPlugIn {
 
 	public void getRandom() throws WebSocketException {
 		Token lToken = TokenFactory.createToken(NS_SAMPLES, "getRandom");
-		getClient().sendToken(lToken);
+		getTokenClient().sendToken(lToken);
 	}
 }
