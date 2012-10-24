@@ -26,7 +26,8 @@ abstract class BaseChunkable implements IChunkable {
 
 	private String mNS;
 	private String mType;
-	private Integer mFragmentSize = -1;
+	private Integer mFragmentSize = 1024; // 1 KB by default
+	private Integer mMaxFrameSize = -1;
 
 	public BaseChunkable(String aNS, String aType) {
 		mNS = aNS;
@@ -61,5 +62,15 @@ abstract class BaseChunkable implements IChunkable {
 	@Override
 	public Integer getFragmentSize() {
 		return mFragmentSize;
+	}
+
+	@Override
+	public Integer getMaxFrameSize() {
+		return mMaxFrameSize;
+	}
+
+	@Override
+	public void setMaxFrameSize(Integer aMaxFrameSize) {
+		mMaxFrameSize = aMaxFrameSize;
 	}
 }

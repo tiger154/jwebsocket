@@ -29,21 +29,21 @@ import org.jwebsocket.token.Token;
 public interface IChunkable {
 
 	/**
-	 * Chunk name-space attribute is equivalent to Token name-space attribute.
+	 * Chunkable name-space attribute is equivalent to Token name-space attribute.
 	 *
 	 * @return The chunk name-space
 	 */
 	String getNS();
 
 	/**
-	 * Set the chunk name-space attribute value
+	 * Set the chunkable name-space attribute value
 	 *
 	 * @param aNS
 	 */
 	void setNS(String aNS);
 
 	/**
-	 * Chunk type attribute is equivalent to Token type attribute
+	 * Chunkable type attribute is equivalent to Token type attribute
 	 *
 	 * @return The chunk type
 	 */
@@ -58,19 +58,33 @@ public interface IChunkable {
 
 	/**
 	 *
-	 * @return The max fragment size that the chunks can use
+	 * @return The fragment size parameter to be used in the chunks
+	 * fragmentation
 	 */
 	Integer getFragmentSize();
 
 	/**
-	 * Set the max fragment size that the chunks can use
+	 * Set the max fragment size parameter
 	 *
 	 * @param aFragmentSize
 	 */
 	void setFragmentSize(Integer aFragmentSize);
 
 	/**
-	 * Allows to iterate over the data structure chunks
+	 *
+	 * @return The max fragment size that the chunks can use
+	 */
+	Integer getMaxFrameSize();
+
+	/**
+	 * Set the max fragment size that the chunks can use
+	 *
+	 * @param aMaxFrameSize
+	 */
+	void setMaxFrameSize(Integer aMaxFrameSize);
+
+	/**
+	 * Allows to iterate over the chunkable object chunks
 	 *
 	 * @return The chunks iterator
 	 */

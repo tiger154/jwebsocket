@@ -22,8 +22,11 @@ import java.nio.ByteBuffer;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -113,6 +116,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	private WebSocketEncoding mEncoding = WebSocketEncoding.TEXT;
 	private ReliabilityOptions mReliabilityOptions = null;
 	private final ScheduledThreadPoolExecutor mExecutor = new ScheduledThreadPoolExecutor(1);
+	private final ExecutorService mListenersExecutor = Executors.newFixedThreadPool(5);
 	private final Map<String, Object> mParams = new FastMap<String, Object>();
 	private final Object mWriteLock = new Object();
 	private String mCloseReason = null;
@@ -429,7 +433,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 				send(aDataPacket);
 
 				// schedule the timer task
-				Tools.getTimer().schedule(lTT, aListener.getTimeout());
+				try {
+					Tools.getTimer().schedule(lTT, aListener.getTimeout());
+				} catch (IllegalStateException lEx) {
+					// nothing, the task was cancelled
+				}
 			} catch (Exception lEx) {
 				synchronized (mPacketDeliveryListenersLock) {
 					if (mPacketDeliveryListeners.containsKey(lPacketId)) {
@@ -565,6 +573,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 		} catch (Exception lEx) {
 			// ignore that, connection is about to be terminated
 		}
+		// stopping listeners executor
+		mListenersExecutor.shutdown();
 	}
 
 	private void sendCloseHandshake() throws WebSocketException {
@@ -719,9 +729,19 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void notifyOpened(WebSocketClientEvent aEvent) {
-		for (WebSocketClientListener lListener : getListeners()) {
-			lListener.processOpened(aEvent);
+	public void notifyOpened(final WebSocketClientEvent aEvent) {
+		for (final WebSocketClientListener lListener : getListeners()) {
+			mListenersExecutor.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						lListener.processOpened(aEvent);
+					} catch (Exception lEx) {
+						// nothing, soppose to be catched internally
+					}
+				}
+			});
+
 		}
 	}
 
@@ -729,7 +749,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void notifyPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+	public void notifyPacket(final WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 		// supporting the max frame size handshake
 		String lData = aPacket.getString();
 		if (null == mMaxFrameSize) {
@@ -811,8 +831,18 @@ public class BaseWebSocketClient implements WebSocketClient {
 		}
 
 		// finally notify the listeners
-		for (WebSocketClientListener lListener : getListeners()) {
-			lListener.processPacket(aEvent, aPacket);
+		for (final WebSocketClientListener lListener : getListeners()) {
+			final WebSocketPacket lPacket = aPacket;
+			mListenersExecutor.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						lListener.processPacket(aEvent, lPacket);
+					} catch (Exception lEx) {
+						// nothing, soppose to be catched internally
+					}
+				}
+			});
 		}
 	}
 
@@ -820,9 +850,18 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void notifyReconnecting(WebSocketClientEvent aEvent) {
-		for (WebSocketClientListener lListener : getListeners()) {
-			lListener.processReconnecting(aEvent);
+	public void notifyReconnecting(final WebSocketClientEvent aEvent) {
+		for (final WebSocketClientListener lListener : getListeners()) {
+			mListenersExecutor.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						lListener.processReconnecting(aEvent);
+					} catch (Exception lEx) {
+						// nothing, soppose to be catched internally
+					}
+				}
+			});
 		}
 	}
 
@@ -916,9 +955,18 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void notifyClosed(WebSocketClientEvent aEvent) {
-		for (WebSocketClientListener lListener : getListeners()) {
-			lListener.processClosed(aEvent);
+	public void notifyClosed(final WebSocketClientEvent aEvent) {
+		for (final WebSocketClientListener lListener : getListeners()) {
+			mListenersExecutor.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						lListener.processClosed(aEvent);
+					} catch (Exception lEx) {
+						// nothing, suppose to be catched internally
+					}
+				}
+			});
 		}
 	}
 

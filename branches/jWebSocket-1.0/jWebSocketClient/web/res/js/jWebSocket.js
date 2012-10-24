@@ -2970,9 +2970,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		// otherwise flash bridge may have embedded WebSocket class
 		if( self.WebSocket ) {
 
-			// TODO: !this.fConn is not enough here! Check for readystate!
-			// if connection not already established...
-			if( !this.fConn ) {
+			if( !this.fConn || this.fConn.readyState > 2 ) {
 				var lThis = this;
 				var lValue = null;
 
@@ -3274,10 +3272,10 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:d:en:if the connection is still up and throws an exception if not.
 	//:a:en::aData:String:String to be send the jWebSocketServer
 	//:a:en::aListener:Object:A packet delivery listener
-	//:a:en::aListener.getTimeout:function:Returns the transaction timeout
-	//:a:en::aListener.OnTimeout:function:Called if the packet delivery has timed out
-	//:a:en::aListener.OnSuccess:function:Called if the packet has been delivered successfully 
-	//:a:en::aListener.OnFailure:function:Called if the packet delivery has failed
+	//:a:en:aListener:getTimeout:function:Returns the transaction timeout
+	//:a:en:aListener:OnTimeout:function:Called if the packet delivery has timed out
+	//:a:en:aListener:OnSuccess:function:Called if the packet has been delivered successfully 
+	//:a:en:aListener:OnFailure:function:Called if the packet delivery has failed
 	//:a:en::aFragmentSize:Integer:The size of the packet fragments if fragmentation is required. Default value is connection max frame size value.
 	//:r:*:::void:none
 	sendStreamInTransaction: function ( aData, aListener, aFragmentSize){
@@ -3622,9 +3620,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				lTimeout = aOptions.timeout;
 			}
 		}
-		// connection established at all?
-		// TODO: Shouldn't we test for ready state here?
-		if( this.fConn ) {
+		
+		if( this.fConn && 1 == this.fConn.readyState ) {
 			if( lTimeout <= 0 ) {
 				this.forceClose( aOptions );
 			} else {
@@ -3679,28 +3676,15 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		if( !this.fPlugIns ) {
 			this.fPlugIns = [];
 		}
-		// add the plug-in to the class
+		
 		this.fPlugIns.push( aPlugIn );
-		/*
- 		 var lField;
-			 */
+
 		if( !aId ) {
 			aId = aPlugIn.ID;
 		}
 		//:todo:en:check if plug-in with given id already exists!
 		if( aId ) {
 			aPlugIn.conn = this;
-		/*
-			// blend all methods of the plug-in to the connection instance
-			this[ aId ] = {
-				conn: this
-			};
-			for( lField in aPlugIn ) {
-				if( lField != "conn" ) {
-					this[ aId ][ lField ] = aPlugIn[ lField ];
-				}
-			}
-				 */
 		}
 	},
 
@@ -4331,29 +4315,29 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:a:en:aOptions:OnFailure:Function:Reference to a failure function, which is called when an failure or error was received ([tt]code!=0[/tt]).
 	//:a:en:aOptions:OnTimeout:Function:Reference to a timeout function, which is called when the given response timeout is exceeded.
 	//:a:en::aListener:Object:A packet delivery listener
-	//:a:en::aListener.getTimeout:function:Returns the packet delivery timeout
-	//:a:en::aListener.OnTimeout:function:Called if the packet delivery has timed out
-	//:a:en::aListener.OnSuccess:function:Called if the packet has been delivered successfully 
-	//:a:en::aListener.OnFailure:function:Called if the packet delivery has failed
+	//:a:en:aListener:getTimeout:function:Returns the packet delivery timeout
+	//:a:en:aListener:OnTimeout:function:Called if the packet delivery has timed out
+	//:a:en:aListener:OnSuccess:function:Called if the packet has been delivered successfully 
+	//:a:en:aListener:OnFailure:function:Called if the packet delivery has failed
 	//:r:*:::void:none
 	sendTokenInTransaction: function( aToken, aOptions, aListener ) {
-		// generating packet delivery listener for developer convenience
-		if (!aListener){
+		// generating packet delivery listener for developer convenience if missing
+		if ( !aListener ){
 			aListener = {}
 		}
-		if (!aListener[ "getTimeout" ]){
+		if ( !aListener[ "getTimeout" ] ){
 			var lTimeout = aOptions.timeout || jws.DEF_RESP_TIMEOUT;
 			aListener[ "getTimeout" ] = function() {
 				return lTimeout;
 			} 
 		}
-		if (!aListener[ "OnTimeout" ]){
+		if ( !aListener[ "OnTimeout" ] ){
 			aListener[ "OnTimeout" ] = function() {}
 		}
-		if (!aListener[ "OnSuccess" ]){
+		if ( !aListener[ "OnSuccess" ] ){
 			aListener[ "OnSuccess" ] = function() {}
 		}
-		if (!aListener[ "OnFailure" ]){
+		if ( !aListener[ "OnFailure" ] ){
 			aListener[ "OnFailure" ] = function() {}
 		}
 		
@@ -4361,11 +4345,33 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		return this.__sendToken( true, aToken, aOptions, aListener );
 	},
 	
-	// TODO: Implemented partially!!!
+	//:m:*:sendChunkable
+	//:d:en:Sends a chunkable objecto to the server
+	//:a:en::aChunkable:Object:The chunkable object to be sent
+	//:a:en:aChunkable:maxFrameSize:Integer:The maximum frame size that the chunks can use. Argument is optional.
+	//:a:en:aChunkable:fragmentSize:Integer:The fragment size parameter to be used in the fragmentation process. Expected value: [tt]fragment_size > 0 && fragment_size <= connection.max_frame_size[/tt]. Argument is optional.
+	//:a:en:aChunkable:ns:String:Chunkable namespace attribute is equivalent to Token namespace attribute.
+	//:a:en:aChunkable:type:String:Chunkable type attribute is equivalent to Token type attribute.
+	//:a:en:aChunkable:getChunksIterator:function:Allows to iterate over the chunkable object chunks. See the Java language [tt]Iterator[/tt] interface.
+	//:a:en::aOptions:Object:Optional arguments as listed below...
+	//:a:en:aOptions:timeout:Integer:Timeout to wait for a chunkable complete processing from the server (default is [tt]jws.DEF_RESP_TIMEOUT[/tt]), if timeout is exceeded a OnTimeout callback is fired.
+	//:a:en:aOptions:spawnThread:Boolean:Specifies whether to run the request in a separate thread ([tt]true[/tt]), or within the (pooled) thread of the connection ([tt]false[/tt]).
+	//:a:en:aOptions:args:Object:Optional arguments to be passed the optional response, success, failure and timeout callbacks to be easily processed.
+	//:a:en:aOptions:OnResponse:Function:Reference to a response callback function, which is called when a chunk has been processed by the server
+	//:a:en:aOptions:OnSuccess:Function:Reference to a success function, which is called when a chunk processing has been successful.
+	//:a:en:aOptions:OnFailure:Function:Reference to a failure function, which is called when a chunk processing has been failed.
+	//:a:en:aOptions:OnTimeout:Function:Reference to a timeout function, which is called when a chunkable processing has timeout. 
+	//:a:en::aListener:Object:A chunkable delivery listener
+	//:a:en:aListener:getTimeout:function:Returns the packet delivery timeout
+	//:a:en:aListener:OnTimeout:function:Called if the chunkable delivery has timed out
+	//:a:en:aListener:OnSuccess:function:Called if the chunkable has been delivered successfully 
+	//:a:en:aListener:OnFailure:function:Called if the chunkable delivery has failed
+	//:a:en:aListener:OnChunkDelivered:function:Called if a chunk has been delivered successfully
+	//:r:*:::void:none
 	sendChunkable: function( aChunkable, aOptions, aListener ) {
 		try {
-			if (0 > aChunkable.getFragmentSize) {
-				aChunkable.fragmentSize(this.fMaxFrameSize - jws.PACKET_TRANSACTION_MAX_BYTES_PREFIXED );
+			if (undefined == aChunkable.maxFrameSize) {
+				aChunkable.maxFrameSize = this.fMaxFrameSize - jws.PACKET_TRANSACTION_MAX_BYTES_PREFIXED;
 			}
 		
 			var lChunksIterator = aChunkable.getChunksIterator();
@@ -4374,7 +4380,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			}
 			
 			var lCurrentChunk = lChunksIterator.next();
-			if (!lCurrentChunk){
+			if ( !lCurrentChunk ){
 				throw new Error( "Iterator returned null on 'next' method call!" );
 			}
 			
@@ -4382,16 +4388,105 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			lCurrentChunk.ns = aChunkable.ns;
 			lCurrentChunk.type = aChunkable.type;
 			lCurrentChunk.isChunk = true;
-			if (!lChunksIterator.hasNext()) {
+			if ( !lChunksIterator.hasNext() ) {
 				lCurrentChunk.isLastChunk = true;
 			}
 			
+			// setting the fragment size
+			if ( !aOptions ) {
+				aOptions = {};
+			}
+			aOptions.fragmentSize = aChunkable.fragmentSize;
+			
+			// checking chunkable delivery listener
+			if ( !aListener ){
+				aListener = {}
+			}
+			if ( !aListener[ "getTimeout" ] ){
+				var lTimeout = aOptions.timeout || jws.DEF_RESP_TIMEOUT;
+				aListener[ "getTimeout" ] = function() {
+					return lTimeout;
+				} 
+			}
+			if ( !aListener[ "OnTimeout" ] ){
+				aListener[ "OnTimeout" ] = function() {}
+			}
+			if ( !aListener[ "OnSuccess" ] ){
+				aListener[ "OnSuccess" ] = function() {}
+			}
+			if ( !aListener[ "OnFailure" ] ){
+				aListener[ "OnFailure" ] = function() {}
+			}
+			if ( !aListener[ "OnChunkDelivered" ] ){
+				aListener[ "OnChunkDelivered" ] = function() {}
+			}
+			
 			// sending chunks
-			this.sendTokenInTransaction(lCurrentChunk, aOptions, new ChunkableListener(
-				lCurrentChunk,
-				lChunksIterator,
-				aListener,
-				new Date().getTime()));
+			this.sendTokenInTransaction(lCurrentChunk, aOptions, {
+				fChunkableIterator: lChunksIterator,
+				fOriginListener: aListener,
+				fSentTime: new Date().getTime(),
+				fCurrentChunk: lCurrentChunk,
+				fNs: lCurrentChunk.ns,
+				fType: lCurrentChunk.type,
+				fOriginOptions: aOptions,
+				
+				getTimeout: function (){
+					var lTimeout = this.fSentTime + this.fOriginListener.getTimeout() - new Date().getTime();
+					if (lTimeout < 0) {
+						lTimeout = 0;
+					}
+
+					return lTimeout;
+				}, 
+					
+				OnTimeout: function (){
+					this.fOriginListener.OnTimeout();
+				}, 
+				
+				OnSuccess: function() {
+					this.OnChunkDelivered( this.fCurrentChunk );
+					
+					// process next chunks
+					if ( this.fChunkableIterator.hasNext() ) {
+						try {
+							this.fCurrentChunk = mChunkableIterator.next();
+							if ( !this.fCurrentChunk ){
+								throw new Error( "Iterator returned null on 'next' method call!" );
+							}
+								
+							// setting chunk properties
+							this.fCurrentChunk.ns = this.fNs;
+							this.fCurrentChunk.type = this.fType;
+							this.fCurrentChunk.isChunk = true;
+								
+							if ( !this.fChunkableIterator.hasNext() ) {
+								this.fCurrentChunk.isLastChunk = true;
+							}
+							
+							// setting aOptions timeout parameter appropiate value
+							// since aOptions.timeout is the global processing timeout
+							if ( aOptions.timeout ){
+								aOptions.timeout = this.fSentTime + aOptions.timeout - new Date().getTime();
+								if (aOptions.timeout < 0) {
+									aOptions.timeout = 0;
+								}
+							}
+							
+							// sending the token in transaction
+							this.sendTokenInTransaction(this.fCurrentChunk, this.fOriginOptions, this);
+						} catch (lEx) {
+							this.fOriginListener.OnFailure(lEx);
+						}
+					} else {
+						this.fOriginListener.OnSuccess();
+					}
+				},
+				
+				OnChunkDelivered: function( aChunk ) {
+					this.fOriginListener.OnChunkDelivered( aChunk );
+				}
+			});
 		} catch (lEx){
 			aListener.OnFailure(lEx);
 		}

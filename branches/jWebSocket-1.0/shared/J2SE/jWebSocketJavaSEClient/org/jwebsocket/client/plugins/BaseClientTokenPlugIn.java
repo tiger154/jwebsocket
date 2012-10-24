@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - WebSocket CGI Client
+//	jWebSocket - BaseClientTokenPlugIn
 //	Copyright (c) 2012 jWebSocket.org, Alexander Schulze, Innotrade GmbH
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
@@ -15,26 +15,43 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.plugins;
 
+import java.util.Iterator;
+import javolution.util.FastList;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
+import org.jwebsocket.api.WebSocketClientTokenPlugIn;
+import org.jwebsocket.api.WebSocketClientTokenPlugInListener;
 import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.client.token.BaseTokenClient;
+import org.jwebsocket.api.WebSocketTokenClient;
 import org.jwebsocket.token.Token;
 
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
-public class ClientTokenPlugIn {
+public class BaseClientTokenPlugIn implements WebSocketClientTokenPlugIn {
 
-	BaseTokenClient mClient = null;
-	TokenListener mListener = null;
+	WebSocketTokenClient mClient = null;
+	WebSocketClientTokenListener mListener = null;
+	String mNS;
+	FastList<WebSocketClientTokenPlugInListener> mListeners = new FastList<WebSocketClientTokenPlugInListener>();
+
+	@Override
+	public void addListener(WebSocketClientTokenPlugInListener aListener) {
+		mListeners.add(aListener);
+	}
+
+	@Override
+	public void removeListener(WebSocketClientTokenPlugInListener aListener) {
+		mListeners.remove(aListener);
+	}
 
 	private class TokenListener implements WebSocketClientTokenListener {
 
-		ClientTokenPlugIn mPlugIn;
+		WebSocketClientTokenPlugIn mPlugIn;
 
-		public TokenListener(ClientTokenPlugIn aPlugIn) {
+		public TokenListener(WebSocketClientTokenPlugIn aPlugIn) {
 			mPlugIn = aPlugIn;
 		}
 
@@ -69,31 +86,50 @@ public class ClientTokenPlugIn {
 		}
 	}
 
-	public ClientTokenPlugIn(BaseTokenClient aClient) {
+	public BaseClientTokenPlugIn(WebSocketTokenClient aClient, String aNS) {
 		mListener = new TokenListener(this);
 		mClient = aClient;
 		mClient.addListener(mListener);
+		mNS = aNS;
 	}
 
-	public final BaseTokenClient getClient() {
+	@Override
+	public WebSocketTokenClient getTokenClient() {
 		return mClient;
 	}
 
-	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
+	@Override
+	public String getNS() {
+		return mNS;
 	}
 
+	@Override
+	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
+		if (getNS().equals(aToken.getNS())) {
+			for (Iterator<WebSocketClientTokenPlugInListener> lIt = mListeners.iterator(); lIt.hasNext();) {
+				WebSocketClientTokenPlugInListener lListener = lIt.next();
+				lListener.processToken(aToken);
+			}
+		}
+	}
+
+	@Override
 	public void processOpening(WebSocketClientEvent aEvent) {
 	}
 
+	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
 	}
 
+	@Override
 	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 	}
 
+	@Override
 	public void processClosed(WebSocketClientEvent aEvent) {
 	}
 
+	@Override
 	public void processReconnecting(WebSocketClientEvent aEvent) {
 	}
 }

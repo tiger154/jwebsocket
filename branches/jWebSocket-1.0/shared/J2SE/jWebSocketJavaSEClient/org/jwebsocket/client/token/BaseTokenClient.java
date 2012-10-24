@@ -43,6 +43,7 @@ import org.jwebsocket.util.Tools;
  * @author aschulze
  * @author puran
  * @author jang
+ * @author kyberneees
  * @version $Id:$
  */
 public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTokenClient {
@@ -71,7 +72,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	// private String mSubProt;
 	// private WebSocketEncoding mEncoding;
 	private String mUsername = null;
-	private String fClientId = null;
+	private String mClientId = null;
 	private final Map<Integer, PendingResponseQueueItem> mPendingResponseQueue =
 			new FastMap<Integer, PendingResponseQueueItem>().shared();
 	private final ScheduledThreadPoolExecutor mResponseQueueExecutor =
@@ -135,7 +136,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		@Override
 		public void processOpened(WebSocketClientEvent aEvent) {
 			mUsername = null;
-			fClientId = null;
+			mClientId = null;
 		}
 
 		/**
@@ -154,7 +155,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 
 			if (lType != null) {
 				if (WELCOME.equals(lType)) {
-					fClientId = lToken.getString("sourceId");
+					mClientId = lToken.getString("sourceId");
 					String lUsername = lToken.getString("username");
 					if (null != lUsername && !lUsername.equals("anonymous")) {
 						mUsername = lUsername;
@@ -203,7 +204,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 				}
 			}
 
-			//Notifying listeners
+			// notifying listeners
 			for (WebSocketClientListener lListener : getListeners()) {
 				if (lListener instanceof WebSocketClientTokenListener) {
 					((WebSocketClientTokenListener) lListener).processToken(aEvent, lToken);
@@ -218,7 +219,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		public void processClosed(WebSocketClientEvent aEvent) {
 			// clean up resources
 			mUsername = null;
-			fClientId = null;
+			mClientId = null;
 		}
 
 		/**
@@ -239,20 +240,15 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		super.removeListener(aTokenListener);
 	}
 
-	/**
-	 * {
-	 *
-	 * @
-	 */
 	@Override
 	public void close() {
 		super.close();
 		mUsername = null;
-		fClientId = null;
+		mClientId = null;
 	}
 
 	/**
-	 * @return the fUsername
+	 * @return the active username
 	 */
 	@Override
 	public String getUsername() {
@@ -269,10 +265,10 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * @return the fClientId
+	 * @return the connection identifier
 	 */
 	public String getClientId() {
-		return fClientId;
+		return mClientId;
 	}
 
 	/**
@@ -313,10 +309,9 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 *
-	 * @param aToken
-	 * @throws WebSocketException
+	 * {@inheritDoc }
 	 */
+	@Override
 	public void sendToken(Token aToken) throws WebSocketException {
 		__setUTID(aToken);
 		super.send(tokenToPacket(aToken));
@@ -365,11 +360,9 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 *
-	 * @param aToken
-	 * @param aResponseListener
-	 * @throws WebSocketException
+	 * {@inheritDoc }
 	 */
+	@Override
 	public void sendToken(Token aToken, WebSocketResponseTokenListener aResponseListener) throws WebSocketException {
 		__processResponseListener(aToken, aResponseListener);
 
@@ -378,25 +371,18 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Send a token in transaction
-	 *
-	 * @param aToken
-	 * @param aResponseListener
-	 * @throws WebSocketException
+	 * {@inheritDoc }
 	 */
+	@Override
 	public void sendTokenInTransaction(Token aToken, WebSocketResponseTokenListener aResponseListener,
 			IPacketDeliveryListener aDeliveryListener) throws WebSocketException {
 		sendTokenInTransaction(aToken, getMaxFrameSize(), aResponseListener, aDeliveryListener);
 	}
 
 	/**
-	 * Send a fragmented token in transaction
-	 *
-	 * @param aToken
-	 * @param aFragmentSize
-	 * @param aResponseListener
-	 * @throws WebSocketException
+	 * {@inheritDoc }
 	 */
+	@Override
 	public void sendTokenInTransaction(Token aToken, int aFragmentSize,
 			final WebSocketResponseTokenListener aResponseListener) throws WebSocketException {
 		sendTokenInTransaction(aToken, aFragmentSize, aResponseListener, new IPacketDeliveryListener() {
@@ -420,14 +406,9 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Send a fragmented token in transaction
-	 *
-	 * @param aToken
-	 * @param aFragmentSize
-	 * @param aResponseListener
-	 * @param aDeliveryListener
-	 * @throws WebSocketException
+	 * {@inheritDoc }
 	 */
+	@Override
 	public void sendTokenInTransaction(Token aToken, int aFragmentSize, WebSocketResponseTokenListener aResponseListener,
 			IPacketDeliveryListener aDeliveryListener) throws WebSocketException {
 		__processResponseListener(aToken, aResponseListener);
@@ -445,16 +426,18 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		Token mCurrentChunk;
 		String mNS, mType;
 		WebSocketResponseTokenListener mResponseListener;
+		Integer mFragmentSize;
 
 		public ChunkableListener(Token aCurrentChunk,
 				Iterator<Token> aChunkableIterator, WebSocketResponseTokenListener aResponseListener,
-				IChunkableDeliveryListener aOriginChunkableListener, long aSentTime) {
+				IChunkableDeliveryListener aOriginChunkableListener, long aSentTime, Integer aFragmentSize) {
 			mChunkableIterator = aChunkableIterator;
 			mOriginChunkableListener = aOriginChunkableListener;
 			mSentTime = aSentTime;
 			mCurrentChunk = aCurrentChunk;
 			mNS = aCurrentChunk.getNS();
 			mType = aCurrentChunk.getType();
+			mFragmentSize = aFragmentSize;
 		}
 
 		@Override
@@ -493,7 +476,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 						mCurrentChunk.setLastChunk(true);
 					}
 
-					sendTokenInTransaction(mCurrentChunk, mResponseListener, this);
+					sendTokenInTransaction(mCurrentChunk, mFragmentSize, mResponseListener, this);
 				} catch (Exception lEx) {
 					mOriginChunkableListener.OnFailure(lEx);
 				}
@@ -514,10 +497,9 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * 
-	 * @param aChunkable
-	 * @param aResponseListener
+	 * {@inheritDoc }
 	 */
+	@Override
 	public void sendChunkable(IChunkable aChunkable, final WebSocketResponseTokenListener aResponseListener) {
 		sendChunkable(aChunkable, aResponseListener, new IChunkableDeliveryListener() {
 			@Override
@@ -543,17 +525,67 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		});
 	}
 
+	class InChunkingResponseListener implements WebSocketResponseTokenListener {
+
+		WebSocketResponseTokenListener mOriginListener;
+		long mSentTime;
+
+		public InChunkingResponseListener(WebSocketResponseTokenListener aOriginListener, long aSentTime) {
+			mOriginListener = aOriginListener;
+			mSentTime = aSentTime;
+		}
+
+		@Override
+		public long getTimeout() {
+			// setting the timeout parameter appropiate value
+			// since WebSocketResponseTokenListener timeout is the global processing timeout
+			long lTimeout = mSentTime + mOriginListener.getTimeout() - System.currentTimeMillis();
+			if (lTimeout < 0) {
+				lTimeout = 0;
+			}
+
+			return lTimeout;
+		}
+
+		@Override
+		public void setTimeout(long aTimeout) {
+			mOriginListener.setTimeout(aTimeout);
+		}
+
+		@Override
+		public void OnTimeout(Token aToken) {
+			mOriginListener.OnTimeout(aToken);
+		}
+
+		@Override
+		public void OnResponse(Token aToken) {
+			mOriginListener.OnResponse(aToken);
+		}
+
+		@Override
+		public void OnSuccess(Token aToken) {
+			mOriginListener.OnSuccess(aToken);
+		}
+
+		@Override
+		public void OnFailure(Token aToken) {
+			mOriginListener.OnFailure(aToken);
+		}
+	}
+
 	/**
+	 * Send an IChunkable object to the server
 	 *
 	 * @param aChunkable
 	 * @param aResponseListener
 	 * @param aDeliveryListener
 	 */
+	@Override
 	public void sendChunkable(IChunkable aChunkable, WebSocketResponseTokenListener aResponseListener,
 			IChunkableDeliveryListener aDeliveryListener) {
 		try {
-			if (0 > aChunkable.getFragmentSize()) {
-				aChunkable.setFragmentSize(getMaxFrameSize() - Fragmentation.PACKET_TRANSACTION_MAX_BYTES_PREFIXED);
+			if (0 > aChunkable.getMaxFrameSize()) {
+				aChunkable.setMaxFrameSize(getMaxFrameSize() - Fragmentation.PACKET_TRANSACTION_MAX_BYTES_PREFIXED);
 			}
 			Iterator<Token> lChunksIterator = aChunkable.getChunksIterator();
 			if (!lChunksIterator.hasNext()) {
@@ -573,12 +605,16 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 			}
 
 			// sending chunks
-			sendTokenInTransaction(lCurrentChunk, aResponseListener, new ChunkableListener(
+			long lSentTime = System.currentTimeMillis();
+			sendTokenInTransaction(lCurrentChunk, aChunkable.getFragmentSize(),
+					new InChunkingResponseListener(aResponseListener, lSentTime),
+					new ChunkableListener(
 					lCurrentChunk,
 					lChunksIterator,
 					aResponseListener,
 					aDeliveryListener,
-					System.currentTimeMillis()));
+					lSentTime,
+					aChunkable.getFragmentSize()));
 		} catch (Exception lEx) {
 			aDeliveryListener.OnFailure(lEx);
 		}

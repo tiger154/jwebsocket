@@ -374,7 +374,11 @@ public class BaseConnector implements WebSocketConnector {
 				sendPacket(aDataPacket);
 
 				// schedule the timer task
-				Tools.getTimer().schedule(lTT, aListener.getTimeout());
+				try {
+					Tools.getTimer().schedule(lTT, aListener.getTimeout());
+				} catch (IllegalStateException lEx) {
+					// nothing, task was cancelled
+				}
 			} catch (Exception lEx) {
 				synchronized (mPacketDeliveryListenersLock) {
 					if (mPacketDeliveryListeners.containsKey(lPacketId)) {

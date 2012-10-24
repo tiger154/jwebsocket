@@ -15,6 +15,8 @@
 package org.jwebsocket.api;
 
 import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.token.Token;
+import org.jwebsocket.token.WebSocketResponseTokenListener;
 
 /**
  * Base interface that represents the <tt>Token</tt> based jWebSocket client.
@@ -107,4 +109,73 @@ public interface WebSocketTokenClient extends WebSocketClient {
 	 * @param tokenListener the token client listener
 	 */
 	void removeTokenClientListener(WebSocketClientTokenListener aTokenListener);
+
+	/**
+	 * Send a token to the server
+	 *
+	 * @param aToken
+	 * @throws WebSocketException
+	 */
+	void sendToken(Token aToken) throws WebSocketException;
+
+	/**
+	 * Send a token to the server
+	 *
+	 * @param aToken
+	 * @param aResponseListener
+	 * @throws WebSocketException
+	 */
+	void sendToken(Token aToken, WebSocketResponseTokenListener aResponseListener) throws WebSocketException;
+
+	/**
+	 * Send a token in transaction to the server
+	 *
+	 * @param aToken
+	 * @param aResponseListener
+	 * @param aDeliveryListener
+	 * @throws WebSocketException
+	 */
+	void sendTokenInTransaction(Token aToken, WebSocketResponseTokenListener aResponseListener,
+			IPacketDeliveryListener aDeliveryListener) throws WebSocketException;
+
+	/**
+	 * Send a token in transaction to the server using high level fragmentation
+	 *
+	 * @param aToken
+	 * @param aFragmentSize
+	 * @param aResponseListener
+	 * @throws WebSocketException
+	 */
+	void sendTokenInTransaction(Token aToken, int aFragmentSize,
+			final WebSocketResponseTokenListener aResponseListener) throws WebSocketException;
+
+	/**
+	 * Send a token in transaction to the server using high level fragmentation
+	 *
+	 * @param aToken
+	 * @param aFragmentSize
+	 * @param aResponseListener
+	 * @param aDeliveryListener
+	 * @throws WebSocketException
+	 */
+	void sendTokenInTransaction(Token aToken, int aFragmentSize, WebSocketResponseTokenListener aResponseListener,
+			IPacketDeliveryListener aDeliveryListener) throws WebSocketException;
+
+	/**
+	 * Send an IChunkable object to the server
+	 *
+	 * @param aChunkable
+	 * @param aResponseListener
+	 */
+	void sendChunkable(IChunkable aChunkable, final WebSocketResponseTokenListener aResponseListener);
+
+	/**
+	 * Send an IChunkable object to the server
+	 *
+	 * @param aChunkable
+	 * @param aResponseListener
+	 * @param aDeliveryListener
+	 */
+	void sendChunkable(IChunkable aChunkable, WebSocketResponseTokenListener aResponseListener,
+			IChunkableDeliveryListener aDeliveryListener);
 }
