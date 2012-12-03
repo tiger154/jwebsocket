@@ -36,6 +36,8 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
+import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 
 /**
  *
@@ -194,7 +196,6 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 
 	private WebSocketPacket __setupCometMessageResponse(int readyState, String CometType,
 			List<WebSocketPacket> aDataPacketList) {
-		String lJson = null;
 		try {
 			Map<String, Object> lMessage = new FastMap();
 
@@ -203,11 +204,14 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 			lMessage.put("subPl", getSubprot());
 			lMessage.put("data", aDataPacketList);
 
-			lJson = JSONProcessor.mapToJsonObject(lMessage).toString();
+			Token lToken = TokenFactory.createToken();
+			lToken.setMap(lMessage);
+
+			return JSONProcessor.tokenToPacket(lToken);
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "creating internal communication packet"));
 		}
-		return new RawPacket(lJson.toString());
+		return new RawPacket("");
 	}
 
 	private List<WebSocketPacket> getAvailablePackets(Queue<WebSocketPacket> aPacketsQueue) {

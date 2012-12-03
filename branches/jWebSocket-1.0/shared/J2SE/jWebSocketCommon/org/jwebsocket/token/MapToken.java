@@ -15,7 +15,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.token;
 
-import org.jwebsocket.api.ITokenizable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -23,9 +22,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javolution.util.FastList;
 import javolution.util.FastMap;
+import org.jwebsocket.api.ITokenizable;
 
 /**
  * A token is ...
+ *
  * @author aschulze
  */
 public class MapToken extends BaseToken implements Token {
@@ -33,8 +34,8 @@ public class MapToken extends BaseToken implements Token {
 	private Map mData = null;
 
 	/**
-	 * Creates a new empty instance of a token.
-	 * The token does not contain any items.
+	 * Creates a new empty instance of a token. The token does not contain any
+	 * items.
 	 */
 	public MapToken() {
 		mData = new FastMap();
@@ -124,8 +125,9 @@ public class MapToken extends BaseToken implements Token {
 	}
 
 	/**
-	 * puts a new key/value pair into the token, in other words it adds a
-	 * new item to the token.
+	 * puts a new key/value pair into the token, in other words it adds a new
+	 * item to the token.
+	 *
 	 * @param aKey key of the the token item.
 	 * @param aValue value of the token item.
 	 */
@@ -412,6 +414,10 @@ public class MapToken extends BaseToken implements Token {
 	 */
 	@Override
 	public void setToken(String aKey, ITokenizable aTokenizable) {
+		if (null == aTokenizable) {
+			mData.put(aKey, null);
+			return;
+		}
 		Token lToken = TokenFactory.createToken();
 		aTokenizable.writeToToken(lToken);
 		setToken(aKey, lToken);
@@ -425,7 +431,7 @@ public class MapToken extends BaseToken implements Token {
 	@Override
 	public void setToken(String aKey, Token aToken) {
 		try {
-			mData.put(aKey, aToken.getMap());
+			mData.put(aKey, aToken);
 		} catch (Exception lEx) {
 			// TODO: handle exception
 		}
@@ -460,7 +466,6 @@ public class MapToken extends BaseToken implements Token {
 		}
 		return lResult;
 	}
-
 
 	/**
 	 *

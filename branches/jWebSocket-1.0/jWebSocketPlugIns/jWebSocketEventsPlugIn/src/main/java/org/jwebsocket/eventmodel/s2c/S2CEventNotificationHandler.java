@@ -15,10 +15,13 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.s2c;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IInitializable;
+import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.eventmodel.api.IListener;
 import org.jwebsocket.eventmodel.core.EventModel;
@@ -32,6 +35,7 @@ import org.jwebsocket.eventmodel.filter.validator.TypesMap;
 import org.jwebsocket.eventmodel.observable.Event;
 import org.jwebsocket.eventmodel.observable.ResponseEvent;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
@@ -56,6 +60,8 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 	 * @param aOnResponse The server on-response callbacks
 	 */
 	public void send(S2CEvent aEvent, String aConnectorId, OnResponse aOnResponse) throws InvalidConnectorIdentifier {
+		TokenServer lServer = getEm().getParent().getServer();
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Preparing S2C event notification...");
 		}
@@ -99,11 +105,11 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 		}
 
 		//Getting the local WebSocketConnector instance if exists
-		WebSocketConnector lConnector = getEm().getParent().getServer().getConnector(aConnectorId);
+		WebSocketConnector lConnector = lServer.getConnector(aConnectorId);
 
 		if (null != lConnector) {
 			//Sending locally on the server
-			getEm().getParent().getServer().sendToken(lConnector, lToken);
+			lServer.sendTokenFragmented(lConnector, lToken, getEm().getFragmentSize());
 		} else if (getEm().isClusterNode() && getEm().getClusterNode().
 				getAllConnectors().contains(aConnectorId)) {
 			//Sending the token to the cluster network
@@ -194,11 +200,9 @@ public class S2CEventNotificationHandler implements IInitializable, IListener {
 			FastMap<String, OnResponse> lPendingCallbacks = mCallbacks.remove(lConnectorId);
 
 			double lCurrentTime = System.nanoTime();
-
-			for (Map.Entry<String, OnResponse> lCalls : lPendingCallbacks.entrySet()) {
-				//Updating the  elapsed time
+			for (Iterator<Entry<String, OnResponse>> lIt = lPendingCallbacks.entrySet().iterator(); lIt.hasNext();) {
+				Map.Entry<String, OnResponse> lCalls = lIt.next();
 				lCalls.getValue().setElapsedTime(lCurrentTime - lCalls.getValue().getSentTime());
-				//Calling the failure method
 				lCalls.getValue().failure(FailureReason.CONNECTOR_STOPPED, lConnectorId);
 			}
 		}

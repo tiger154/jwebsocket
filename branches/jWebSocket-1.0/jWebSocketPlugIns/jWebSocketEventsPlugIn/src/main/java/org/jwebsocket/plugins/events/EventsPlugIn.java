@@ -59,10 +59,7 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 	 */
 	public EventsPlugIn(PluginConfiguration aConfiguration) throws Exception {
 		super(aConfiguration);
-		// setting 'spring' as default authentication method instead of 'static'
-		if (!aConfiguration.getSettings().containsKey(TokenPlugIn.AUTHENTICATION_METHOD_KEY)) {
-			setAuthenticationMethod(TokenPlugIn.AUTHENTICATION_METHOD_SPRING);
-		}
+		setAuthenticationMethod(TokenPlugIn.AUTHENTICATION_METHOD_SPRING);
 		setNamespace(aConfiguration.getNamespace());
 
 		if (mLog.isDebugEnabled()) {
@@ -85,10 +82,10 @@ public class EventsPlugIn extends TokenPlugIn implements IServerSecureComponent 
 				}
 
 				String[] lJars = getString("jars").split(",");
-				for (int lIndex = 0; lIndex < lJars.length; lIndex++) {
-					JWebSocketFactory.getClassLoader().addFile(JWebSocketConfig.getLibsFolder(lJars[lIndex]));
+				for (String lJar : lJars) {
+					JWebSocketFactory.getClassLoader().addFile(JWebSocketConfig.getLibsFolder(lJar));
 					if (mLog.isDebugEnabled()) {
-						mLog.debug("Loading jar: '" + lJars[lIndex] + "'...");
+						mLog.debug("Loading jar: '" + lJar + "'...");
 					}
 				}
 			}

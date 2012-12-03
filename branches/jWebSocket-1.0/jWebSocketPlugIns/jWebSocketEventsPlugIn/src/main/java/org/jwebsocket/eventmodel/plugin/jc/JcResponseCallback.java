@@ -29,9 +29,13 @@ public abstract class JcResponseCallback extends OnResponse {
 		super(aContext);
 	}
 
+	public JcResponseCallback() {
+		super();
+	}
+
 	/**
-	 * Execute custom validations in client responses 
-	 * 
+	 * Execute custom validations in client responses
+	 *
 	 * @param aResponse The response to validate
 	 * @param aFrom The target client connector
 	 * @return
@@ -42,8 +46,8 @@ public abstract class JcResponseCallback extends OnResponse {
 	}
 
 	/**
-	 * Execute custom validations for client card calls responses 
-	 * 
+	 * Execute custom validations for client card calls responses
+	 *
 	 * @param aResponse The response to validate
 	 * @param aFrom The target client connector
 	 * @return
@@ -52,14 +56,14 @@ public abstract class JcResponseCallback extends OnResponse {
 		if (aResponse.getSW() == 0x9000) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	/**
 	 * Callback used to handle the success response from the client
-	 * 
-	 * @param aResponse The response returned by the client-side 
+	 *
+	 * @param aResponse The response returned by the client-side
 	 * @param aFrom The target client connector
 	 */
 	@Override
@@ -69,8 +73,8 @@ public abstract class JcResponseCallback extends OnResponse {
 
 	/**
 	 * Callback used to handle the success response from the client card
-	 * 
-	 * @param aResponse The response returned by the client-side 
+	 *
+	 * @param aResponse The response returned by the client-side
 	 * @param aFrom The target client connector
 	 */
 	public void success(ResponseAPDU aResponse, String aFrom) {

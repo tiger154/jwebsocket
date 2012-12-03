@@ -1,6 +1,6 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket TestSpecs for the Enterprise Filesystem Plug-in
-//	(C) 2012 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
+//	(C) 2012 jWebSocket.org, Rolando Santamaria Maso, Innotrade GmbH, Herzogenrath
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -88,6 +88,34 @@ jws.tests.enterprise.FileSystem = {
 
 			runs( function() {
 				expect( lResponse.code ).toEqual( 0 );
+			});
+
+		});
+	},
+	
+	testFileRename: function(aFilename, aNewFilename, aScope, aExpectedCode){
+		var lSpec = this.NS + ": FileRename (admin, " + aFilename + ", " + aNewFilename + ",  " + aScope + ")";
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+			
+			jws.Tests.getAdminConn().fileRename( aFilename, aNewFilename, aScope, {
+				OnResponse: function(aToken){
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( lResponse.code ).toEqual( aExpectedCode );
 			});
 
 		});
@@ -426,6 +454,16 @@ jws.tests.enterprise.FileSystem = {
 			true, 
 			jws.SCOPE_PRIVATE);
 			
+		jws.tests.enterprise.FileSystem.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME, 
+			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME + 5, 
+			jws.FileSystemPlugIn.SCOPE_PRIVATE, 
+			0);
+
+		jws.tests.enterprise.FileSystem.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME + 5, 
+			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME, 
+			jws.FileSystemPlugIn.SCOPE_PRIVATE, 
+			0);
+
 		jws.tests.FileSystem.testFileLoad(
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			jws.FileSystemPlugIn.ALIAS_PRIVATE,

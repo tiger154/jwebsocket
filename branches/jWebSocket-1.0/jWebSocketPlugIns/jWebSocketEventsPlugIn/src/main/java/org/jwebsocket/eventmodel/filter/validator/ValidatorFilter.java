@@ -68,8 +68,8 @@ public class ValidatorFilter extends EventModelFilter {
 			}
 			if (lErrors.hasErrors()) {
 				if (mLog.isDebugEnabled()) {
-					for (Iterator<FieldError> it = lErrors.getFieldErrors().iterator(); it.hasNext();) {
-						FieldError lError = it.next();
+					for (Iterator<FieldError> lIt = lErrors.getFieldErrors().iterator(); lIt.hasNext();) {
+						FieldError lError = lIt.next();
 						mLog.debug("Detected argument error: [" + lError.getField() + ": " + lError.getCode() + "]");
 					}
 				}
@@ -134,8 +134,8 @@ public class ValidatorFilter extends EventModelFilter {
 			}
 			if (lErrors.hasErrors()) {
 				if (mLog.isDebugEnabled()) {
-					for (Iterator<FieldError> it = lErrors.getFieldErrors().iterator(); it.hasNext();) {
-						FieldError lError = it.next();
+					for (Iterator<FieldError> lIt = lErrors.getFieldErrors().iterator(); lIt.hasNext();) {
+						FieldError lError = lIt.next();
 						mLog.debug("Detected argument error: [" + lError.getField() + ": " + lError.getCode() + "]");
 					}
 				}

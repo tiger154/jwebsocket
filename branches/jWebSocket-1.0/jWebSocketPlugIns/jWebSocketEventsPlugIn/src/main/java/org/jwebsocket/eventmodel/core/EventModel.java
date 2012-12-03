@@ -59,6 +59,15 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	private S2CEventNotificationHandler mS2CEventNotificationHandler;
 	private IWebSocketClusterNode mClusterNode;
 	private String mNamespace;
+	private int mFragmentSize = 1024 * 5;
+
+	public int getFragmentSize() {
+		return mFragmentSize;
+	}
+
+	public void setFragmentSize(int aFragmentSize) {
+		this.mFragmentSize = aFragmentSize;
+	}
 
 	public String getNamespace() {
 		return mNamespace;

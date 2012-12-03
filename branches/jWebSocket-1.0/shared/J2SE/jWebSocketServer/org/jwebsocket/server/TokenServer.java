@@ -325,6 +325,34 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
+	 * Sends a token fragmented
+	 *
+	 * @param aTarget
+	 * @param aToken
+	 * @param aFragmentSize
+	 */
+	public void sendTokenFragmented(WebSocketConnector aTarget, Token aToken, int aFragmentSize) {
+		sendTokenInTransaction(aTarget, aToken, aFragmentSize, new IPacketDeliveryListener() {
+			@Override
+			public long getTimeout() {
+				return 60 * 1000;
+			}
+
+			@Override
+			public void OnTimeout() {
+			}
+
+			@Override
+			public void OnSuccess() {
+			}
+
+			@Override
+			public void OnFailure(Exception lEx) {
+			}
+		});
+	}
+
+	/**
 	 *
 	 * @param aTarget
 	 * @param aToken
@@ -432,6 +460,31 @@ public class TokenServer extends BaseServer {
 		public void OnChunkDelivered(Token aToken) {
 			mOriginListener.OnChunkDelivered(mCurrentChunk);
 		}
+	}
+
+	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable) {
+		sendChunkable(aConnector, aChunkable, new IChunkableDeliveryListener() {
+			@Override
+			public void OnChunkDelivered(Token aToken) {
+			}
+
+			@Override
+			public long getTimeout() {
+				return 60 * 1000;
+			}
+
+			@Override
+			public void OnTimeout() {
+			}
+
+			@Override
+			public void OnSuccess() {
+			}
+
+			@Override
+			public void OnFailure(Exception lEx) {
+			}
+		});
 	}
 
 	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable,

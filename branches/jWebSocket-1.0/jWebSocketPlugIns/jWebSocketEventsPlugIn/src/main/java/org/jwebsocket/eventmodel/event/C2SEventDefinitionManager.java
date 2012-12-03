@@ -59,8 +59,8 @@ public class C2SEventDefinitionManager implements IC2SEventDefinitionManager {
 	 */
 	public Set<C2SEventDefinition> getDefinitions() {
 		Set<C2SEventDefinition> lResult = new FastSet<C2SEventDefinition>();
-		for (Iterator<C2SEventDefinition> it = mIdToDef.values().iterator(); it.hasNext();) {
-			C2SEventDefinition lDef = it.next();
+		for (Iterator<C2SEventDefinition> lIt = mIdToDef.values().iterator(); lIt.hasNext();) {
+			C2SEventDefinition lDef = lIt.next();
 			lResult.add(lDef);
 		}
 
@@ -104,8 +104,8 @@ public class C2SEventDefinitionManager implements IC2SEventDefinitionManager {
 	 */
 	@Override
 	public void registerDefinitions(Set<C2SEventDefinition> aDefs) throws Exception {
-		for (Iterator<C2SEventDefinition> it = aDefs.iterator(); it.hasNext();) {
-			C2SEventDefinition lDef = it.next();
+		for (Iterator<C2SEventDefinition> lIt = aDefs.iterator(); lIt.hasNext();) {
+			C2SEventDefinition lDef = lIt.next();
 			registerDefinition(lDef);
 		}
 	}

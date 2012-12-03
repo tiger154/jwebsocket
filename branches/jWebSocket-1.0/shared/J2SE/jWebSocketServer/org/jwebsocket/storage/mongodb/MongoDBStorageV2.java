@@ -47,9 +47,6 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 		mCollection = aCollection;
 	}
 
-	/**
-	 * {@inheritDoc
-	 */
 	@Override
 	public void initialize() throws Exception {
 		mCollection.ensureIndex(new BasicDBObject().append("ns", 1).append("k", 1),

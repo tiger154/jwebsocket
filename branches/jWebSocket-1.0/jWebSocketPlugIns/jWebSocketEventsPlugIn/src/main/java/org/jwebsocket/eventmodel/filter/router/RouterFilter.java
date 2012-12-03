@@ -22,11 +22,12 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
 import org.jwebsocket.eventmodel.event.C2SEventDefinition;
 import org.jwebsocket.eventmodel.event.C2SResponseEvent;
 import org.jwebsocket.eventmodel.event.filter.BeforeRouteResponseToken;
-import org.jwebsocket.eventmodel.exception.ListenerNotFoundException;
 import org.jwebsocket.eventmodel.exception.InvalidConnectorIdentifier;
+import org.jwebsocket.eventmodel.exception.ListenerNotFoundException;
 import org.jwebsocket.eventmodel.filter.EventModelFilter;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
@@ -39,7 +40,7 @@ public class RouterFilter extends EventModelFilter {
 	private static Logger mLog = Logging.getLogger(RouterFilter.class);
 
 	/**
-	 *{@inheritDoc }
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void beforeCall(WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
@@ -67,6 +68,7 @@ public class RouterFilter extends EventModelFilter {
 	 */
 	@Override
 	public void afterCall(WebSocketConnector aConnector, C2SResponseEvent aEvent) throws Exception {
+		TokenServer lServer = getEm().getParent().getServer();
 		C2SEventDefinition lDef = getEm().getEventFactory().getEventDefinitions().getDefinition(aEvent.getId());
 		if (!lDef.isResponseRequired()) {
 			return;
@@ -95,31 +97,26 @@ public class RouterFilter extends EventModelFilter {
 		//Sending the sender connector
 		if (aEvent.getTo().contains(aConnector.getId())) {
 			aEvent.getTo().remove(aConnector.getId());
-
-			if (lDef.isResponseAsync()) {
-				getEm().getParent().getServer().sendTokenAsync(aConnector, lToken);
-			} else {
-				getEm().getParent().getServer().sendToken(aConnector, lToken);
-			}
+			lServer.sendTokenFragmented(aConnector, lToken, getEm().getFragmentSize());
 		}
 
 		//Sending to the rest of connectors
 		if (!aEvent.getTo().isEmpty()) {
-			Token lResponseNotification = TokenFactory.createToken("external.response");
-			lResponseNotification.setNS(getEm().getParent().getNamespace());
-			lResponseNotification.setToken("response", lToken);
-			lResponseNotification.setString("owner", aConnector.getId());
+			Token lResponse = TokenFactory.createToken("external.response");
+			lResponse.setNS(getEm().getParent().getNamespace());
+			lResponse.setToken("response", lToken);
+			lResponse.setString("owner", aConnector.getId());
 
 			if (aEvent.getTo().size() > 0) {
 				for (String lId : aEvent.getTo()) {
 					//Getting the local WebSocketConnector instance if exists
-					WebSocketConnector lConnector = getEm().getParent().getServer().getConnector(lId);
+					WebSocketConnector lConnector = lServer.getConnector(lId);
 					if (null != lConnector) {
 						//Sending locally on the server
-						getEm().getParent().getServer().sendToken(lConnector, lResponseNotification);
+						lServer.sendTokenFragmented(aConnector, lToken, getEm().getFragmentSize());
 					} else if (getEm().isClusterNode()) {
 						//Sending the token to the cluster network
-						getEm().getClusterNode().sendToken(lId, lResponseNotification);
+						getEm().getClusterNode().sendToken(lId, lResponse);
 					} else {
 						throw new InvalidConnectorIdentifier("Not engine or cluster detected to send "
 								+ "the token to the giving connector: '" + lId + "'!");

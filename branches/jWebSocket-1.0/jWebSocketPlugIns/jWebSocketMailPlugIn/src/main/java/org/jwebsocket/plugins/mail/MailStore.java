@@ -46,7 +46,7 @@ public class MailStore {
 		Token lRes = null;
 		try {
 			String lStr = (String) mStorage.get(aId);
-			lRes = JSONProcessor.jsonStringToToken(lStr);
+			lRes = JSONProcessor.JSONStringToToken(lStr);
 		} catch (Exception lEx) {
 			String lMsg = lEx.getClass().getSimpleName()
 					+ " parsing JSON data for mail id '"

@@ -62,9 +62,9 @@ public class CacheFilter extends EventModelFilter implements IListener {
 		}
 
 		if (lDef.getCacheTime() > 0) {
-			Token lResponse = null;
+			Token lResponse;
+			String lCachedResponse;
 
-			String lCachedResponse = null;
 			if (lDef.isCachePrivate()) {
 
 				String uuid = aConnector.getString("uuid");
@@ -82,8 +82,8 @@ public class CacheFilter extends EventModelFilter implements IListener {
 					mLog.debug("Element recovered from cache: " + lCachedResponse);
 				}
 
-				//Converting the stored stringyfied token to object
-				lResponse = JSONProcessor.jsonStringToToken(lCachedResponse);
+				//Converting the stored serialized token to object
+				lResponse = JSONProcessor.JSONStringToToken(lCachedResponse);
 
 				//ResponseFromCache event notification
 				ResponseFromCache lEvent = new ResponseFromCache();
@@ -97,11 +97,9 @@ public class CacheFilter extends EventModelFilter implements IListener {
 				lResponse.setDouble("processingTime", 0.0);
 
 				//Sending the cached response clients the c
-				if (lDef.isResponseAsync()) {
-					getEm().getParent().getServer().sendTokenAsync(aConnector, lResponse);
-				} else {
-					getEm().getParent().getServer().sendToken(aConnector, lResponse);
-				}
+				getEm().getParent().getServer().sendTokenFragmented(aConnector,
+						lResponse,
+						getEm().getFragmentSize());
 
 				//Stopping the filter chain
 				throw new CachedResponseException();
@@ -111,9 +109,9 @@ public class CacheFilter extends EventModelFilter implements IListener {
 
 	/**
 	 * Called before send the response clients the client
-	 * 
+	 *
 	 * @param aEvent The event clients process
-	 * @param aResponseEvent 
+	 * @param aResponseEvent
 	 */
 	public void processEvent(BeforeRouteResponseToken aEvent, ResponseEvent aResponseEvent) throws Exception {
 		C2SEventDefinition lDef = aEvent.getEventDefinition();

@@ -1,5 +1,6 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2011 jwebsocket.org
+//	jWebSocket - ToMap interface
+//	Copyright (c) 2012, Innotrade GmbH
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -12,32 +13,18 @@
 //	You should have received a copy of the GNU Lesser General Public License along
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.cachestorage.mongodb;
+package org.jwebsocket.api;
 
-import org.jwebsocket.api.IBasicCacheStorage;
-import org.jwebsocket.api.ICacheStorageProvider;
-import org.jwebsocket.storage.mongodb.MongoDBStorageBuilder;
+import java.util.Map;
 
 /**
- *
- * @author kyberneees, aschulze
+ * Allows data structures conversion to and from Maps 
+ *   
+ * @author kyberneees
  */
-public class MongoDBCacheStorageProvider extends MongoDBCacheStorageBuilder implements ICacheStorageProvider {
+public interface IMappable {
 
-	public MongoDBCacheStorageProvider() {
-		super();
-	}
+	void toMap(Map<String, Object> aMap);
 
-	/**
-	 * {@inheritDoc
-	 */
-	@Override
-	public IBasicCacheStorage getCacheStorage(String aName) throws Exception {
-		return this.getCacheStorage(MongoDBStorageBuilder.V2, aName);
-	}
-
-	@Override
-	public void removeCacheStorage(String aName) throws Exception {
-		super.removeCacheStorage(V2, aName);
-	}
+	void fromMap(Map<String, Object> aMap);
 }

@@ -204,12 +204,26 @@ public class TokenPlugIn extends BasePlugIn {
 		lServer.sendTokenInTransaction(aTarget, aToken, aListener);
 	}
 
+	public void sendTokenFragmented(WebSocketConnector aTarget, Token aToken, int aFragmentSize) {
+		TokenServer lServer = getServer();
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		lServer.sendTokenFragmented(aTarget, aToken, aFragmentSize);
+	}
+
 	public void sendTokenInTransaction(WebSocketConnector aTarget, Token aToken,
 			int aFragmentSize, IPacketDeliveryListener aListener) {
 		TokenServer lServer = getServer();
 		Assert.notNull(lServer, "Token server reference cannot be null!");
 
 		lServer.sendTokenInTransaction(aTarget, aToken, aFragmentSize, aListener);
+	}
+
+	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable) {
+		TokenServer lServer = getServer();
+		Assert.notNull(lServer, "Token server reference cannot be null!");
+
+		lServer.sendChunkable(aConnector, aChunkable);
 	}
 
 	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable,

@@ -156,6 +156,9 @@ function runFullTestSuite(aArgs) {
 		if (aArgs.filesystemPlugInEE){
 			jws.tests.enterprise.FileSystem.runSuite();
 		}
+		if (aArgs.itemstoragePlugInEE){
+			jws.tests.enterprise.ItemStorage.runSuite();
+		}
 		// jws.tests.Logging.runSuite();
 		if (aArgs.automatedAPIPlugIn){
 			jws.tests.AutomatedAPI.runSuite();

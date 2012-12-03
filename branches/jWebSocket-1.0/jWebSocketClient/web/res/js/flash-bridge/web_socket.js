@@ -14,7 +14,7 @@
     window.WebSocket = MozWebSocket;
     return;
   }
-  
+
   var logger;
   if (window.WEB_SOCKET_LOGGER) {
     logger = WEB_SOCKET_LOGGER;
@@ -232,7 +232,7 @@
    * @param {string} url
    */
   WebSocket.loadFlashPolicyFile = function(url){
-    WebSocket.__addTask(function() {
+   WebSocket.__addTask(function() {
       WebSocket.__flash.loadManualPolicyFile(url);
     });
   };

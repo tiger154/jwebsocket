@@ -15,6 +15,7 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.plugin.system;
 
+import java.util.Iterator;
 import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.api.IEventModelPlugIn;
@@ -55,7 +56,8 @@ public class SystemPlugIn extends EventModelPlugIn {
 		}
 
 		FastList<String> lPlugInIds = new FastList<String>();
-		for (IEventModelPlugIn lPlugIn : getEm().getPlugIns()) {
+		for (Iterator<IEventModelPlugIn> lIt = getEm().getPlugIns().iterator(); lIt.hasNext();) {
+			IEventModelPlugIn lPlugIn = lIt.next();
 			lPlugInIds.add(lPlugIn.getId());
 		}
 
@@ -87,7 +89,8 @@ public class SystemPlugIn extends EventModelPlugIn {
 	 */
 	public void processEvent(HasPlugIn aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		boolean lHas = false;
-		for (IEventModelPlugIn lPlugIn : getEm().getPlugIns()) {
+		for (Iterator<IEventModelPlugIn> lIt = getEm().getPlugIns().iterator(); lIt.hasNext();) {
+			IEventModelPlugIn lPlugIn = lIt.next();
 			if (lPlugIn.getId().equals(aEvent.getPluginId())) {
 				lHas = true;
 				break;

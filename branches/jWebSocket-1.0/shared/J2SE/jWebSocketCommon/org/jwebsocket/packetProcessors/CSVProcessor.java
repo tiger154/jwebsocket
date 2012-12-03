@@ -18,7 +18,6 @@ package org.jwebsocket.packetProcessors;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.token.Token;

@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,28 +37,29 @@ import org.jwebsocket.token.TokenFactory;
  * @author Alexander Schulze, Roderick Baier (improvements regarding JSON
  * array), Quentin Ambard (add support for Map and List for PacketToToken and
  * tokeToPacket).
+ * @author kyberneees (improvements performance converting Object to JSON string)
  */
 @SuppressWarnings("rawtypes")
 public class JSONProcessor {
 
 	/**
-	 * Convert a json string to a token. If the json string isn't a valid one,
+	 * Convert a JSON string to a token. If the JSON string isn't a valid one,
 	 * return an empty token. Note that if you need a more generic conversion
-	 * (other sub protocol than json), you may also use the following: Token
+	 * (other sub protocol than JSON), you may also use the following: Token
 	 * lToken = TokenServer.packetToToken(aConnector, new
 	 * RawPacket(aJsonString)) Depending of the SubProtocol of aConnector, the
 	 * token will be automatically created (if the SubProtocol is
 	 * WS_SUBPROT_JSON, the conversion will be done internally using this
 	 * method)
 	 *
-	 * @param aJsonString a json string
-	 * @return the token corresponding to the json string, or an empty token
+	 * @param aJSONString a JSON string
+	 * @return the token corresponding to the JSON string, or an empty token
 	 */
-	public static Token jsonStringToToken(String aJsonString) {
+	public static Token JSONStringToToken(String aJSONString) {
 		Token lToken = new MapToken();
 		try {
 			ObjectMapper lMapper = new ObjectMapper();
-			Map<String, Object> lTree = lMapper.readValue(aJsonString, Map.class);
+			Map<String, Object> lTree = lMapper.readValue(aJSONString, Map.class);
 			lToken.setMap(lTree);
 		} catch (Exception lEx) {
 			// // TODO: process exception
@@ -76,7 +78,7 @@ public class JSONProcessor {
 	public static Token packetToToken(WebSocketPacket aDataPacket) {
 		Token lToken = null;
 		try {
-			lToken = jsonStringToToken(aDataPacket.getString("UTF-8"));
+			lToken = JSONStringToToken(aDataPacket.getString("UTF-8"));
 		} catch (Exception lEx) {
 			// // TODO: process exception
 			// log.error(ex.getClass().getSimpleName() + ": " +
@@ -85,21 +87,102 @@ public class JSONProcessor {
 		return lToken;
 	}
 
+	public static void listToJSONString(List aList, StringBuffer aBuffer) {
+		aBuffer.append("[");
+		for (Iterator lIt = aList.iterator(); lIt.hasNext();) {
+			Object lObj = lIt.next();
+
+			objectToJSONString(lObj, aBuffer);
+
+			if (lIt.hasNext()) {
+				aBuffer.append(",");
+			}
+		}
+		aBuffer.append("]");
+	}
+
+	public static void arrayToJSONString(Object[] aArray, StringBuffer aBuffer) {
+		aBuffer.append("[");
+		boolean lWritten = false;
+
+		if (aArray.length > 0) {
+			for (Object lObj : aArray) {
+
+				objectToJSONString(lObj, aBuffer);
+				lWritten = true;
+				aBuffer.append(",");
+			}
+		}
+
+		if (lWritten) {
+			aBuffer.deleteCharAt(aBuffer.length() - 1);
+		}
+		aBuffer.append("]");
+	}
+
+	public static void mapToJSONString(Map aMap, StringBuffer aBuffer) {
+		aBuffer.append("{");
+		for (Iterator lIt = aMap.entrySet().iterator(); lIt.hasNext();) {
+			Map.Entry lE = (Map.Entry) lIt.next();
+			String lK = lE.getKey().toString();
+			Object lV = lE.getValue();
+
+			aBuffer.append("\"").append(lK).append("\":");
+			objectToJSONString(lV, aBuffer);
+
+			if (lIt.hasNext()) {
+				aBuffer.append(",");
+			}
+		}
+		aBuffer.append("}");
+	}
+
+	public static void objectToJSONString(Object aObject, StringBuffer aBuffer) {
+		if (null == aObject) {
+			aBuffer.append("null");
+		} else if (aObject instanceof String || aObject instanceof WebSocketPacket) {
+			aBuffer.append("\"").append(aObject.toString().replace("\"", "\\\"")).append("\"");
+		} else if (aObject instanceof Integer) {
+			aBuffer.append(((Integer) aObject).toString());
+		} else if (aObject instanceof Object[]) {
+			arrayToJSONString((Object[]) aObject, aBuffer);
+		} else if (aObject instanceof Double) {
+			aBuffer.append(((Double) aObject).toString());
+		} else if (aObject instanceof Long) {
+			aBuffer.append(((Long) aObject).toString());
+		} else if (aObject instanceof Boolean) {
+			aBuffer.append(((Boolean) aObject).toString());
+		} else if (aObject instanceof Token) {
+			objectToJSONString(((Token) aObject).getMap(), aBuffer);
+		} else if (aObject instanceof ITokenizable) {
+			Token lToken = TokenFactory.createToken();
+			((ITokenizable) aObject).writeToToken(lToken);
+			objectToJSONString(((Token) lToken).getMap(), aBuffer);
+		} else if (aObject instanceof List) {
+			listToJSONString((List) aObject, aBuffer);
+		} else if (aObject instanceof Map) {
+			mapToJSONString((Map) aObject, aBuffer);
+		} else {
+			aBuffer.append("\"").append(aObject.toString().replace("\"", "\\\"")).append("\"");
+		}
+	}
+
+	/**
+	 * Transforms a Token object into a WebSocketPacket object
+	 *
+	 * @param aToken
+	 * @return
+	 */
 	public static WebSocketPacket tokenToPacket(Token aToken) {
 		WebSocketPacket lPacket = null;
+		StringBuffer lBuffer = new StringBuffer();
+
 		try {
-			// use Jackson for JSON conversion here, since 1.0 beta 5
-			// is quicker and less memory consuming
-			// can reuse, share globally
-			ObjectMapper lMapper = new ObjectMapper();
-			String lData = lMapper.writeValueAsString(aToken.getMap());
-			lPacket = new RawPacket(lData, "UTF-8");
+			objectToJSONString(aToken.getMap(), lBuffer);
+			lPacket = new RawPacket(lBuffer.toString(), "UTF-8");
 		} catch (Exception lEx) {
-			// System.out.println(lEx.getMessage());
-			// TODO: process exception
-			// log.error(ex.getClass().getSimpleName() + ": " +
-			// ex.getMessage());
 		}
+
 		return lPacket;
 	}
 
@@ -110,10 +193,10 @@ public class JSONProcessor {
 	 * @return a JSONArray which represents aList
 	 * @throws JSONException
 	 */
-	public static JSONArray listToJsonArray(List aList) throws JSONException {
+	public static JSONArray listToJSONArray(List aList) throws JSONException {
 		JSONArray lArray = new JSONArray();
 		for (Object item : aList) {
-			lArray.put(convertObjectToJson(item));
+			lArray.put(convertObjectToJSON(item));
 		}
 		return lArray;
 	}
@@ -125,12 +208,11 @@ public class JSONProcessor {
 	 * @return a JSONArray which represents aObjectList
 	 * @throws JSONException
 	 */
-	public static JSONArray objectListToJsonArray(Object[] aObjectList)
+	public static JSONArray objectListToJSONArray(Object[] aObjectList)
 			throws JSONException {
 		JSONArray lArray = new JSONArray();
-		for (int lIdx = 0; lIdx < aObjectList.length; lIdx++) {
-			Object lObj = aObjectList[lIdx];
-			lArray.put(convertObjectToJson(lObj));
+		for (Object lObj : aObjectList){
+			lArray.put(convertObjectToJSON(lObj));
 		}
 		return lArray;
 	}
@@ -143,12 +225,11 @@ public class JSONProcessor {
 	 * passed as String using the toString method of the key.
 	 * @throws JSONException
 	 */
-	public static JSONObject mapToJsonObject(Map<?, ?> aMap)
-			throws JSONException {
+	public static JSONObject mapToJSONObject(Map<?, ?> aMap) throws JSONException {
 		JSONObject lObject = new JSONObject();
 		for (Entry<?, ?> lEntry : aMap.entrySet()) {
 			String lKey = lEntry.getKey().toString();
-			Object lValue = convertObjectToJson(lEntry.getValue());
+			Object lValue = convertObjectToJSON(lEntry.getValue());
 			lObject.put(lKey, lValue);
 		}
 		return lObject;
@@ -158,14 +239,13 @@ public class JSONProcessor {
 	 * transform an object to another JSON object (match all possibilities)
 	 *
 	 * @param aObject
-	 * @return an Object which represents aObject (looks for List, Token and
-	 * Maps)
+	 * @return an Object which represents aObject
 	 * @throws JSONException
 	 */
-	public static Object convertObjectToJson(Object aObject)
+	public static Object convertObjectToJSON(Object aObject)
 			throws JSONException {
 		if (aObject instanceof List) {
-			return listToJsonArray((List) aObject);
+			return listToJSONArray((List) aObject);
 		} else if (aObject instanceof ITokenizable) {
 			Token lToken = TokenFactory.createToken();
 			((ITokenizable) aObject).writeToToken(lToken);
@@ -173,9 +253,9 @@ public class JSONProcessor {
 		} else if (aObject instanceof Token) {
 			return tokenToJSON((Token) aObject);
 		} else if (aObject instanceof Object[]) {
-			return objectListToJsonArray((Object[]) aObject);
+			return objectListToJSONArray((Object[]) aObject);
 		} else if (aObject instanceof Map) {
-			return mapToJsonObject((Map<?, ?>) aObject);
+			return mapToJSONObject((Map<?, ?>) aObject);
 		} else if (aObject instanceof WebSocketPacket) {
 			return aObject.toString();
 		} else {
@@ -184,7 +264,7 @@ public class JSONProcessor {
 	}
 
 	/**
-	 * transform a token to a json object
+	 * transform a token to a JSON object
 	 *
 	 * @param aToken
 	 * @return a JSONObject which represents aToken (looks for List, Token and
@@ -197,7 +277,7 @@ public class JSONProcessor {
 		while (iterator.hasNext()) {
 			String key = iterator.next();
 			Object value = aToken.getObject(key);
-			lJSO.put(key, convertObjectToJson(value));
+			lJSO.put(key, convertObjectToJSON(value));
 		}
 		return lJSO;
 	}

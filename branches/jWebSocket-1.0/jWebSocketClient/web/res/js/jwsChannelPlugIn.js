@@ -92,7 +92,6 @@ jws.ChannelPlugIn = {
 	//:d:en:or less time until you get the first token from the channel.
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:r:*:::void:none
-	// TODO: introduce OnResponse here too to get notified on error or success.
 	channelSubscribe: function( aChannel, aAccessKey, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -112,7 +111,6 @@ jws.ChannelPlugIn = {
 	//:d:en:on this channel anymore.
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:r:*:::void:none
-	// TODO: introduce OnResponse here too to get notified on error or success.
 	channelUnsubscribe: function( aChannel, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -131,7 +129,6 @@ jws.ChannelPlugIn = {
 	//:a:en::aAccessKey:String:Access key configured for the channel.
 	//:a:en::aSecretKey:String:Secret key configured for the channel.
 	//:r:*:::void:none
-	// TODO: introduce OnResponse here too to get notified on error or success.
 	channelAuth: function( aChannel, aAccessKey, aSecretKey, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -155,7 +152,6 @@ jws.ChannelPlugIn = {
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:a:en::aData:String:String (text) to be sent to the server side data channel.
 	//:r:*:::void:none
-	// TODO: introduce OnResponse here too to get noticed on error or success.
 	channelPublishString: function( aChannel, aString, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -200,7 +196,6 @@ jws.ChannelPlugIn = {
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:a:en::aMap:Map:Data object to be sent to the server side data channel.
 	//:r:*:::void:none
-	// TODO: introduce OnResponse here too to get noticed on error or success.
 	channelPublishMap: function( aChannel, aMap, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {

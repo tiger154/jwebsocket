@@ -28,6 +28,17 @@ public abstract class BaseToken implements Token {
 	public static final String IS_CHUNK = "isChunk";
 	public static final String IS_LAST_CHUNK = "isLastChunk";
 	public static final String CHUNK_TYPE = "chunkType";
+	public static final String CODE = "code";
+
+	@Override
+	public Integer getCode() {
+		return getInteger(CODE);
+	}
+
+	@Override
+	public void setCode(Integer aCode) {
+		setInteger(CODE, aCode);
+	}
 
 	@Override
 	public Boolean isChunk() {

@@ -126,9 +126,8 @@ public class Util {
 
 	public static List<String> parseStringArrayToList(String[] aArray) {
 		FastList<String> lList = new FastList<String>();
-		int lEnd = aArray.length;
-		for (int lIndex = 0; lIndex < lEnd; lIndex++) {
-			lList.add(aArray[lIndex]);
+		for (String lItem : aArray) {
+			lList.add(lItem);
 		}
 
 		return lList;
