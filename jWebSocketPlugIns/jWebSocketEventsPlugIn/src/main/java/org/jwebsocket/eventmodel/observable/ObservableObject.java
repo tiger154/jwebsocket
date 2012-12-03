@@ -63,8 +63,8 @@ public abstract class ObservableObject implements IObservable {
 	 */
 	@Override
 	public void on(Collection<Class<? extends Event>> aEventClassCollection, IListener aListener) throws Exception {
-		for (Class<? extends Event> c : aEventClassCollection) {
-			on(c, aListener);
+		for (Class<? extends Event> lClass : aEventClassCollection) {
+			on(lClass, aListener);
 		}
 	}
 
@@ -84,8 +84,8 @@ public abstract class ObservableObject implements IObservable {
 	 */
 	@Override
 	public void addEvents(Collection<Class<? extends Event>> aEventClassCollection) {
-		for (Class<? extends Event> c : aEventClassCollection) {
-			addEvents(c);
+		for (Class<? extends Event> lClass : aEventClassCollection) {
+			addEvents(lClass);
 		}
 	}
 

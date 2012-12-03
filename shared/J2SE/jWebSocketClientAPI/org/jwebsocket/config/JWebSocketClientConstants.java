@@ -45,5 +45,4 @@ public final class JWebSocketClientConstants {
 	 * Name space for the file-system plug-in.
 	 */
 	public static final String NS_FILESYSTEM = NS_BASE + ".plugins.filesystem";
-			
 }

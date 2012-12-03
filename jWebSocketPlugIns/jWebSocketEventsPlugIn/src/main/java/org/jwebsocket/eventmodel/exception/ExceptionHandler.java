@@ -55,8 +55,8 @@ public class ExceptionHandler implements IExceptionHandler {
 
 		//Executing notifications
 		if (null != mNotifiers) {
-			for (Iterator<IExceptionNotifier> it = mNotifiers.iterator(); it.hasNext();) {
-				IExceptionNotifier lNotifier = it.next();
+			for (Iterator<IExceptionNotifier> lIt = mNotifiers.iterator(); lIt.hasNext();) {
+				IExceptionNotifier lNotifier = lIt.next();
 				lNotifier.notify(ex);
 			}
 		}

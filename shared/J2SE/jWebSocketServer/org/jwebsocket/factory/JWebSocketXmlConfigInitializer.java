@@ -285,7 +285,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 						// now add the plugin to plugin map based on server ids
 						for (String lServerId : lPlugInConfig.getServers()) {
 							List<WebSocketPlugIn> lPlugIns = lPlugInMap.get(lServerId);
-							if (lPlugIns != null) {
+							if (lPlugIns != null
+									&& lPlugIn.getPluginConfiguration().getServers().contains(lServerId)) {
 								lPlugIns.add((WebSocketPlugIn) lPlugIn);
 							}
 						}

@@ -89,11 +89,6 @@ public class NioTcpConnector extends BaseConnector {
 	}
 
 	@Override
-	public String getId() {
-		return String.valueOf(hashCode());
-	}
-
-	@Override
 	public String generateUID() {
 		return mRemoteAddress.getHostAddress() + '@' + mRemotePort;
 	}

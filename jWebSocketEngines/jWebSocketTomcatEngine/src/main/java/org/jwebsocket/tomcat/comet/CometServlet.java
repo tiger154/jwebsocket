@@ -30,7 +30,6 @@ import org.apache.catalina.comet.CometEvent.EventType;
 import org.apache.catalina.comet.CometProcessor;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONObject;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.engines.ServletUtils;
 import org.jwebsocket.factory.JWebSocketFactory;
@@ -353,9 +352,9 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		lMessage.put("readyState", aReadyState);
 		lMessage.put("data", aData);
 
-		JSONObject lJSON;
 		try {
-			lJSON = JSONProcessor.mapToJsonObject(lMessage);
+			StringBuffer lJSON = new StringBuffer();
+			JSONProcessor.objectToJSONString(lMessage, lJSON);
 			return lJSON.toString();
 		} catch (Exception ex) {
 			mLog.error(ex.toString());

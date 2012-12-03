@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -116,7 +115,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	private WebSocketEncoding mEncoding = WebSocketEncoding.TEXT;
 	private ReliabilityOptions mReliabilityOptions = null;
 	private final ScheduledThreadPoolExecutor mExecutor = new ScheduledThreadPoolExecutor(1);
-	private final ExecutorService mListenersExecutor = Executors.newFixedThreadPool(5);
+	private final ExecutorService mListenersExecutor = Executors.newFixedThreadPool(1);
 	private final Map<String, Object> mParams = new FastMap<String, Object>();
 	private final Object mWriteLock = new Object();
 	private String mCloseReason = null;
@@ -302,7 +301,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			}
 
 			// parse negotiated sub protocol
-			String lProtocol = mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL).toString();
+			String lProtocol = (String)mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
 			if (lProtocol != null) {
 				mNegotiatedSubProtocol = new WebSocketSubProtocol(lProtocol, mEncoding);
 			} else {
@@ -321,6 +320,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			// reset close reason to be specified by next reason
 			mCloseReason = null;
 		} catch (Exception lEx) {
+			lEx.printStackTrace();
 			WebSocketClientEvent lEvent =
 					new WebSocketBaseClientEvent(this, EVENT_CLOSE, mCloseReason);
 			notifyClosed(lEvent);

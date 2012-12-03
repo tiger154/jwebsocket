@@ -105,6 +105,21 @@ public interface Token {
 	Object getObject(String aKey);
 
 	/**
+	 * The token code is an special attribute used to indicate the server
+	 * response status
+	 *
+	 * @return The token code
+	 */
+	Integer getCode();
+
+	/**
+	 * Set the token code
+	 *
+	 * @param aCode
+	 */
+	void setCode(Integer aCode);
+
+	/**
 	 *
 	 * @param aKey
 	 * @param aDefault

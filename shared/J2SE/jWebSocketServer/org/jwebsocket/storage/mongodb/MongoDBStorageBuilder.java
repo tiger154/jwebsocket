@@ -15,6 +15,7 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.storage.mongodb;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
@@ -57,13 +58,6 @@ public class MongoDBStorageBuilder {
 		this.mCon = aCon;
 	}
 
-	/**
-	 *
-	 * @param aVersion
-	 * @param aName The storage name
-	 * @return The MongoDB storage ready to use.
-	 * @throws Exception
-	 */
 	public IBasicStorage<String, Object> getStorage(String aVersion, String aName) throws Exception {
 		IBasicStorage<String, Object> lStorage = null;
 		if (aVersion.equals(V1)) {
@@ -75,6 +69,14 @@ public class MongoDBStorageBuilder {
 		}
 
 		return lStorage;
+	}
+
+	public void removeStorage(String aVersion, String aName) throws Exception {
+		if (aVersion.equals(V1)) {
+			mDatabase.getCollection(aName).drop();
+		} else if (aVersion.equals(V2)) {
+			mCollection.remove(new BasicDBObject().append("ns", aName));
+		}
 	}
 
 	/**

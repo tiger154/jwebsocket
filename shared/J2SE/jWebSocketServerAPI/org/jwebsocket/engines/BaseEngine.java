@@ -96,13 +96,14 @@ public class BaseEngine implements WebSocketEngine {
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector,
 			CloseReason aCloseReason) {
+		// once a connector stopped remove it from the list of connectors
+		// FastMap ensures that the entry is being kept in shared mode
+		getConnectors().remove(aConnector.getId());
+
 		// notify servers that a connector has stopped
 		for (WebSocketServer lServer : mServers.values()) {
 			lServer.connectorStopped(aConnector, aCloseReason);
 		}
-		// once a connector stopped remove it from the list of connectors
-		// FastMap ensures that the entry is being kept in shared mode
-		mConnectors.remove(aConnector.getId());
 	}
 
 	@Override

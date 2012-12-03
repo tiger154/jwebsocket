@@ -16,6 +16,7 @@
 package org.jwebsocket.eventmodel.plugin;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import javolution.util.FastMap;
@@ -214,7 +215,8 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 		Map lApi = new FastMap();
 		Token lTokenEventDef;
 		C2SEventDefinition lEventDef;
-		for (String lKey : getClientAPI().keySet()) {
+		for (Iterator<String> lIt = getClientAPI().keySet().iterator(); lIt.hasNext();) {
+			String lKey = lIt.next();
 			try {
 				String aEventId = getEm().getEventFactory().eventClassToEventId(getClientAPI().get(lKey));
 				lEventDef = getEm().getEventFactory().getEventDefinitions().getDefinition(aEventId);

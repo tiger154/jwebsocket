@@ -88,7 +88,7 @@ jws.FileSystemPlugIn = {
 	//:m:*:fileGetFilelist
 	//:d:en:Retrieves the file list from a given alias
 	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
-	//:a:en::aFilemasks:Array:The filtering filemasks. <tt>Example: ["*.txt"]</tt>
+	//:a:en::aFilemasks:Array:The filtering filemasks. <tt>Example: ["txt"]</tt>
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:a:en::aOptions.recursive:Boolean:Recursive file listing flag. Default value is FALSE
 	//:r:*:::void:none

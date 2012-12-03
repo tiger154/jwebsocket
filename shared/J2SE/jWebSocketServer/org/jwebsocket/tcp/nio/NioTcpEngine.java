@@ -11,7 +11,7 @@
 //	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
 //	more details.
 //	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	with this programengineStarted; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp.nio;
 
@@ -237,7 +237,9 @@ public class NioTcpEngine extends BaseEngine {
 		public void run() {
 			Thread.currentThread().setName("jWebSocket NIO-Engine SelectorThread");
 
-			engineStarted();
+			if (mSelector == mPlainSelector) {
+				engineStarted();
+			}
 
 			while (mIsRunning && mSelector.isOpen()) {
 				boolean lWrite = false;
@@ -286,7 +288,9 @@ public class NioTcpEngine extends BaseEngine {
 				}
 			}
 
-			engineStopped();
+			if (mSelector == mPlainSelector) {
+				engineStopped();
+			}
 		}
 	}
 
@@ -298,6 +302,10 @@ public class NioTcpEngine extends BaseEngine {
 		} catch (Exception lEx) {
 			// the client was disconnected previously. ignore it
 		}
+		if (null == lQueue) {
+			return; // client disconnected
+		}
+
 		if (!lQueue.isEmpty()) {
 			DataFuture future = lQueue.element();
 			try {

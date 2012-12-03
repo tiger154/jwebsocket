@@ -185,7 +185,8 @@ public class TCPConnector extends BaseConnector {
 			}
 			stopReader();
 		}
-		// the connector is removed in the read thread once terminated
+
+		super.stopConnector(aCloseReason);
 	}
 
 	public void stopReader() {

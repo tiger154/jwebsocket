@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javolution.util.FastList;
 import javolution.util.FastMap;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Provides some convenience methods to support the web socket development.
@@ -677,6 +678,10 @@ public class Tools {
 			op++;
 		}
 		return new String(out);
+	}
+
+	public static byte[] base64Decode(String aBase64String) {
+		return Base64.decodeBase64(aBase64String);
 	}
 
 	/**

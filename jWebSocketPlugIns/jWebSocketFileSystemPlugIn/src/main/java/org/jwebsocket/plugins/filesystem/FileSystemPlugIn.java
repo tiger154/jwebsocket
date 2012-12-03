@@ -200,20 +200,32 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// getting alias
-		String lFolder = getAliasPath(aConnector, lAlias);
+		String lBaseDir = getAliasPath(aConnector, lAlias);
 		File lFile = null;
-		if (lFolder != null) {
-			lFile = new File(lFolder + "/" + lFilename);
+		if (lBaseDir != null) {
+			lFile = new File(lBaseDir + "/" + lFilename);
 		} else {
 			sendErrorToken(aConnector, aToken, -1, "The given alias '" + lAlias + "' does not exists!");
+		}
+
+		Token lResponse = createResponse(aToken);
+		try {
+			if (!lFile.getCanonicalPath().startsWith(lBaseDir)) {
+				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
+						+ "' is out of the file-system location!");
+				return;
+			}
+		} catch (Exception lEx) {
+			lResponse.setInteger("code", -1);
+			String lMsg = lEx.getClass().getSimpleName() + " on exists: " + lEx.getMessage();
+			lResponse.setString("msg", lMsg);
+			mLog.error(lMsg);
 		}
 
 		// file exists?
 		boolean lExists = lFile.exists();
 
-		Token lResponse = createResponse(aToken);
 		lResponse.setBoolean("exists", lExists);
-
 		lServer.sendToken(aConnector, lResponse);
 	}
 
@@ -288,6 +300,12 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lFullPath = lBaseDir + lFilename;
 		File lFile = new File(lFullPath);
 		try {
+			if (!lFile.getCanonicalPath().startsWith(lBaseDir)) {
+				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
+						+ "' is out of the file-system location!");
+				return;
+			}
+
 			checkForSave(aConnector, lFile);
 			// prevent two threads at a time writing to the same file
 			synchronized (this) {
@@ -376,14 +394,21 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		File lFile = new File(lBaseDir + lFilename);
-		if (!lFile.exists()) {
-			sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
-					+ "' does not exists in the given alias!");
-			return;
-		}
 
 		byte[] lBA;
 		try {
+			if (!lFile.getCanonicalPath().startsWith(lBaseDir)) {
+				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
+						+ "' is out of the file-system location!");
+				return;
+			}
+
+			if (!lFile.exists()) {
+				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
+						+ "' does not exists in the given alias!");
+				return;
+			}
+
 			lBA = FileUtils.readFileToByteArray(lFile);
 			if (lBA != null && lBA.length > 0) {
 				lData = new String(Base64.encodeBase64(lBA), "UTF-8");
@@ -398,6 +423,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		// send response to requester
 		lResponse.setBoolean("decode", aToken.getBoolean("decode", false));
+		lResponse.setString("filename", lFilename);
 		lServer.sendToken(aConnector, lResponse);
 	}
 
@@ -549,12 +575,18 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lFilePath = lBaseDir + lFilename;
 		File lFile = new File(lFilePath);
 
-		if (null == lFilename || !lFile.exists()) {
-			sendErrorToken(aConnector, aToken, -1, "The given filename '" + lFilename + "' is invalid or not exists!");
-			return;
-		}
-
 		try {
+			if (!lFile.getCanonicalPath().startsWith(lBaseDir)) {
+				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
+						+ "' is out of the file-system location!");
+				return;
+			}
+
+			if (null == lFilename || !lFile.exists()) {
+				sendErrorToken(aConnector, aToken, -1, "The given filename '" + lFilename + "' is invalid or not exists!");
+				return;
+			}
+
 			if (lForce) {
 				FileUtils.forceDelete(lFile);
 			} else {

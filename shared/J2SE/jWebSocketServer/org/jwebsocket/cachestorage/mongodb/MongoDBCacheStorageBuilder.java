@@ -15,6 +15,7 @@
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.cachestorage.mongodb;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
@@ -67,6 +68,14 @@ public class MongoDBCacheStorageBuilder {
 		}
 
 		return lCache;
+	}
+	
+	public void removeCacheStorage(String aVersion, String aName) throws Exception {
+		if (aVersion.equals(V1)) {
+			mDatabase.getCollection(aName).drop();
+		} else if (aVersion.equals(V2)) {
+			mCollection.remove(new BasicDBObject().append("ns", aName));
+		}
 	}
 
 	/**

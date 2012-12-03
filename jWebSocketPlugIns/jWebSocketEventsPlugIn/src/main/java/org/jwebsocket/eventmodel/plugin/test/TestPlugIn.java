@@ -111,7 +111,7 @@ public class TestPlugIn extends JcPlugIn {
 				mLog.debug("Sending '" + lApdu.toString() + "' APDU to '" + lTerminal + "' terminal on '" + lClient + "' client ...");
 			}
 
-			transmit(lClient, lTerminal, new CommandAPDU(lApdu), new JcResponseCallback(null) {
+			transmit(lClient, lTerminal, new CommandAPDU(lApdu), new JcResponseCallback() {
 
 				@Override
 				public void success(ResponseAPDU aResponse, String aFrom) {

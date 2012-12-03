@@ -52,6 +52,7 @@
 		
 		<!-- Including Enterprise jWebSocket plug-ins-->
 		<script type="text/javascript" src="../web-enterprise/res/js/jwsFilesystemPlugIn.js"></script>
+		<script type="text/javascript" src="../web-enterprise/res/js/jwsItemStoragePlugIn.js"></script>
 
 		<!-- shared test specs for opening and closing connections -->
 		<script type="text/javascript" src="js/jwsSharedTests.js"></script>
@@ -63,6 +64,9 @@
 		
 		<!-- tests for the enterprise filesystem plug-in -->
 		<script type="text/javascript" src="js/jwsFilesystemEETests.js"></script>
+		
+		<!-- tests for the enterprise itemstorage plug-in -->
+		<script type="text/javascript" src="js/jwsItemStorageEETests.js"></script>
 
 		<!-- tests for the logging plug-in -->
 		<script type="text/javascript" src="js/jwsLoggingTests.js"></script>
@@ -129,6 +133,8 @@
 							<br>
 							<label><input id="filesystemPlugInEE" type="checkbox" checked="checked"> File System PlugIn (Enterprise)</label>
 							<br>
+							<label><input id="itemstoragePlugInEE" type="checkbox" checked="checked"> Item Storage PlugIn (Enterprise)</label>
+							<br>
 							<label><input id="systemPlugIn" type="checkbox" checked="checked"> System PlugIn</label>
 							<br>
 							<label><input id="load" type="checkbox" checked="checked"> Load</label>
@@ -188,6 +194,7 @@
 						automatedAPIPlugIn: (jws.$("automatedAPIPlugIn").checked)? true : false,
 						filesystemPlugIn: (jws.$("filesystemPlugIn").checked)? true : false,
 						filesystemPlugInEE: (jws.$("filesystemPlugInEE").checked)? true : false,
+						itemstoragePlugInEE: (jws.$("itemstoragePlugInEE").checked)? true : false,
 						systemPlugIn: (jws.$("systemPlugIn").checked)? true : false,
 						load: (jws.$("load").checked)? true : false,
 						closeConns: (jws.$("closeConns").checked)? true : false,

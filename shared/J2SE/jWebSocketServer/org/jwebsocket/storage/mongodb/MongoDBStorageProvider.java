@@ -38,10 +38,10 @@ public class MongoDBStorageProvider extends MongoDBStorageBuilder implements ISt
 	public IBasicStorage<String, Object> getStorage(String aName) throws Exception {
 		return this.getStorage(MongoDBStorageBuilder.V2, aName);
 	}
-	
+
 	@Override
 	public void removeStorage(String aName) throws Exception {
-		this.getStorage(aName).clear();
+		super.removeStorage(MongoDBStorageBuilder.V2, aName);
 	}
 
 	/**

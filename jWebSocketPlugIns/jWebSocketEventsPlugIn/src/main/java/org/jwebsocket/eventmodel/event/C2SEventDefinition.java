@@ -424,6 +424,7 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	 * @return <tt>TRUE</tt> if the response delivery to the client need to be
 	 * asynchronous, <tt>FALSE</tt> otherwise
 	 */
+	@Deprecated
 	public boolean isResponseAsync() {
 		return mResponseAsync;
 	}
@@ -433,6 +434,7 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	 * need to be asynchronous
 	 * @return C2SEventDefinition provide a fluent interface
 	 */
+	@Deprecated
 	public C2SEventDefinition setResponseAsync(boolean aResponseAsync) {
 		this.mResponseAsync = aResponseAsync;
 
