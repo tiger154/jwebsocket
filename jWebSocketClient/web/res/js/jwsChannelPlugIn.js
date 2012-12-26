@@ -79,6 +79,10 @@ jws.ChannelPlugIn = {
 				if( this.fOnChannelsReceived ) {
 					this.fOnChannelsReceived( aToken );
 				}
+			} else if ( "data" == aToken.type ) {
+				if( this.fOnChannelBroadcast ) {
+					this.fOnChannelBroadcast( aToken );
+				}
 			}
 		}
 	},
@@ -136,7 +140,6 @@ jws.ChannelPlugIn = {
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.AUTHORIZE,
 				channel: aChannel,
-				// login: this.getUsername(),
 				accessKey: aAccessKey,
 				secretKey: aSecretKey
 			}, aOptions );
@@ -365,7 +368,7 @@ jws.ChannelPlugIn = {
 		if( 0 == lRes.code ) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
-				"channel": aChannel,
+				channel: aChannel,
 				type: jws.ChannelPlugIn.STOP
 			}, aOptions );
 		}
@@ -381,7 +384,7 @@ jws.ChannelPlugIn = {
 		if( 0 == lRes.code ) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
-				"channel": aChannel,
+				channel: aChannel,
 				type: jws.ChannelPlugIn.START
 			}, aOptions );
 		}
@@ -398,6 +401,7 @@ jws.ChannelPlugIn = {
 	//:a:en::aListeners.OnChannelStopped:Function:Called when a channel has been stopped
 	//:a:en::aListeners.OnChannelSubscription:Function:Called when a channel receives a new subscription
 	//:a:en::aListeners.OnChannelUnsubscription:Function:Called when a channel receives an unsubscription
+	//:a:en::aListeners.OnChannelBroadcast:Function:Called when a channel broadcast data because of a publication
 	//:r:*:::void:none
 	setChannelCallbacks: function( aListeners ) {
 		if( !aListeners ) {
@@ -423,6 +427,9 @@ jws.ChannelPlugIn = {
 		}
 		if( aListeners.OnChannelUnsubscription !== undefined ) {
 			this.fOnChannelUnsubscription = aListeners.OnChannelUnsubscription;
+		}
+		if( aListeners.OnChannelBroadcast !== undefined ) {
+			this.fOnChannelBroadcast = aListeners.OnChannelBroadcast;
 		}
 	}
 

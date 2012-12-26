@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.eventmodel.api.IExceptionHandler;
 import org.jwebsocket.eventmodel.api.IExceptionNotifier;
 import org.jwebsocket.logging.Logging;
+import org.springframework.security.authentication.BadCredentialsException;
 
 /**
  * An Exception handler is a component used to handle (uncaught) exceptions
@@ -46,18 +47,19 @@ public class ExceptionHandler implements IExceptionHandler {
 	 * {@inheritDoc }
 	 */
 	@Override
-	public void process(Exception ex) {
-		if (mLog.isDebugEnabled()) {
-			mLog.error(ex.toString(), ex);
+	public void process(Exception lEx) {
+		String lExMsg = lEx.getClass().getName() + ":" + lEx.getMessage();
+		if (mLog.isDebugEnabled() && !lEx.getClass().equals(BadCredentialsException.class)) {
+			mLog.error(lExMsg, lEx);
 		} else {
-			mLog.error(ex.getMessage());
+			mLog.error(lExMsg);
 		}
 
 		//Executing notifications
 		if (null != mNotifiers) {
 			for (Iterator<IExceptionNotifier> lIt = mNotifiers.iterator(); lIt.hasNext();) {
 				IExceptionNotifier lNotifier = lIt.next();
-				lNotifier.notify(ex);
+				lNotifier.notify(lEx);
 			}
 		}
 	}
@@ -77,11 +79,11 @@ public class ExceptionHandler implements IExceptionHandler {
 		try {
 			Method aMethod = aExceptionHandlerClass.getMethod("process", aExClass);
 			aMethod.invoke(aExceptionHandler, aExClass.cast(aEx));
-		} catch (NoSuchMethodException ex) {
+		} catch (NoSuchMethodException lEx) {
 			//Calling the base method
 			aExceptionHandler.process(aEx);
-		} catch (Exception ex) {
-			mLog.error(ex.getMessage(), ex);
+		} catch (Exception lEx) {
+			mLog.error(lEx.getMessage(), lEx);
 		}
 	}
 

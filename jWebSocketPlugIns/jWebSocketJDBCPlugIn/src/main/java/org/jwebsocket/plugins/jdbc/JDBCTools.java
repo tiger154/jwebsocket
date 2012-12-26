@@ -181,7 +181,7 @@ public class JDBCTools {
 		List<Object> lDataRow = new FastList<Object>();
 		// Caution! index for getObjects starts with 1!
 		int lIdx = 1;
-		WebSocketDataType lType = WebSocketDataType.INVALID;
+		WebSocketDataType lType;
 		for (int lColIdx = 0; lColIdx < lColCount; lColIdx++) {
 			lType = lDataTypes[lColIdx];
 			Object lObj = aRowSet.getObject(lIdx);
@@ -234,7 +234,7 @@ public class JDBCTools {
 		// instantiate response token
 		Token lResponse = TokenFactory.createToken();
 		int lRowCount = 0;
-		int lColCount = 0;
+		int lColCount;
 		// TODO: should work with usual arrays as well!
 		List<Map> lColumns = new FastList<Map>();
 		List lData = new FastList();

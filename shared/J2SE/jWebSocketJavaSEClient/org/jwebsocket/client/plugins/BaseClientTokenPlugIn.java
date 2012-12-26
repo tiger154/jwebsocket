@@ -108,7 +108,10 @@ public class BaseClientTokenPlugIn implements WebSocketClientTokenPlugIn {
 		if (getNS().equals(aToken.getNS())) {
 			for (Iterator<WebSocketClientTokenPlugInListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 				WebSocketClientTokenPlugInListener lListener = lIt.next();
-				lListener.processToken(aToken);
+				try {
+					lListener.processToken(aToken);
+				} catch (Exception lEx) {
+				}
 			}
 		}
 	}

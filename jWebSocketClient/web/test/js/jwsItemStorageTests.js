@@ -14,12 +14,12 @@
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
 
-if ( undefined == jws.tests.enterprise ){
-	jws.tests.enterprise = {};
+if ( undefined == jws.tests ){
+	jws.tests = {};
 }
-jws.tests.enterprise.ItemStorage = {
+jws.tests.ItemStorage = {
 
-	NS: "jws.tests.enterprise.itemstorage", 
+	NS: "jws.tests.itemstorage", 
 	
 	testCreateCollection: function(aCollectionName, aItemType, aSecretPwd, aAccessPwd, aIsPrivate, aCapacity, aExpectedCode) {
 		
@@ -479,33 +479,6 @@ jws.tests.enterprise.ItemStorage = {
 		});
 	},
 	
-	testFindItemRandom: function( aCollectionName, aExpectedCode, aExists ) {
-		var lSpec = this.NS + ": findItemRandom (admin, " + aCollectionName + ", " + aExists + ")";
-		
-		it( lSpec, function () {
-
-			var lResponse = null;
-			jws.Tests.getAdminConn().findItemRandom(aCollectionName, {
-				OnResponse: function( aToken ) {
-					lResponse = aToken;
-				}
-			});
-
-			waitsFor(
-				function() {
-					return( null != lResponse );
-				},
-				lSpec,
-				3000
-				);
-
-			runs( function() {
-				expect( lResponse.code ).toEqual( aExpectedCode );
-				expect( null != lResponse.data  ).toEqual( aExists );
-			});
-		});
-	},
-	
 	testExistsItem: function( aCollectionName, aPK, aExists ) {
 		var lSpec = this.NS + ": findItemByPK (admin, " + aCollectionName + ", " + aPK + ", " + aExists + ")";
 		
@@ -528,90 +501,6 @@ jws.tests.enterprise.ItemStorage = {
 
 			runs( function() {
 				expect( lResponse.exists  ).toEqual( aExists );
-			});
-		});
-	},
-	
-	testFindItems: function( aCollectionName, aAttr, aValue, aExpectedCode, aExists ) {
-		var lSpec = this.NS + ": findItems (admin, " + aCollectionName + ", " + aAttr 
-		+ ", " + aValue + ", " + aExists + ", " + aExpectedCode + ")";
-		
-		it( lSpec, function () {
-
-			var lResponse = null;
-			jws.Tests.getAdminConn().findItems(aCollectionName, aAttr, aValue, {
-				OnResponse: function( aToken ) {
-					lResponse = aToken;
-				}
-			});
-
-			waitsFor(
-				function() {
-					return( null != lResponse );
-				},
-				lSpec,
-				3000
-				);
-
-			runs( function() {
-				expect( lResponse.code ).toEqual( aExpectedCode );
-				if (0 == lResponse.code && aExists){
-					expect( lResponse.data.length > 0 ).toEqual( true );
-				}
-			});
-		});
-	},
-	
-	testRegisterItemDef: function( aItemType, aItemPK, aAttributes, aExpectedCode ) {
-		var lSpec = this.NS + ": registerItemDefinition (admin, " + aItemType + ", " + aItemPK 
-		+ ", " + aExpectedCode + ")";
-		
-		it( lSpec, function () {
-
-			var lResponse = null;
-			jws.Tests.getAdminConn().registerItemDefinition(aItemType, aItemPK, aAttributes, {
-				OnResponse: function( aToken ) {
-					lResponse = aToken;
-				}
-			});
-
-			waitsFor(
-				function() {
-					return( null != lResponse );
-				},
-				lSpec,
-				3000
-				);
-
-			runs( function() {
-				expect( lResponse.code ).toEqual( aExpectedCode );
-			});
-		});
-	},
-	
-	testRemoveItemDef: function( aItemType, aExpectedCode ) {
-		var lSpec = this.NS + ": removeItemDefinition (admin, " + aItemType + ", " 
-		+ aExpectedCode + ")";
-		
-		it( lSpec, function () {
-
-			var lResponse = null;
-			jws.Tests.getAdminConn().removeItemDefinition(aItemType, {
-				OnResponse: function( aToken ) {
-					lResponse = aToken;
-				}
-			});
-
-			waitsFor(
-				function() {
-					return( null != lResponse );
-				},
-				lSpec,
-				3000
-				);
-
-			runs( function() {
-				expect( lResponse.code ).toEqual( aExpectedCode );
 			});
 		});
 	},
@@ -728,69 +617,6 @@ jws.tests.enterprise.ItemStorage = {
 		});
 	},
 	
-	testGetCollectionLogs: function( aCollectionName, aOffset, aLength, aExpectedCode, aExpectedSize) {
-		var lSpec = this.NS + ": getLogs (admin, " + aCollectionName + ", " + aOffset 
-		+ ", " + aLength + ", " + aExpectedCode + ", " + aExpectedSize + ")";
-		
-		it( lSpec, function () {
-			var lResponse = null;
-			jws.Tests.getAdminConn().getISLogs("collection", aCollectionName, {
-				offset: aOffset,
-				length: aLength,
-				OnResponse: function( aToken ) {
-					lResponse = aToken;
-				}
-			});
-
-			waitsFor(
-				function() {
-					return( null != lResponse );
-				},
-				lSpec,
-				3000
-				);
-
-			runs( function() {
-				expect( lResponse.code ).toEqual( aExpectedCode );
-				if (0 == lResponse.code){
-					expect( lResponse.data.length  ).toEqual( aExpectedSize );
-				}
-			});
-		});
-	},
-	
-	testGetItemLogs: function( aCollectionName, aItemPK, aOffset, aLength, aExpectedCode, aExpectedSize) {
-		var lSpec = this.NS + ": getLogs (admin, " + aCollectionName + ":" + aItemPK+ ", " + aOffset 
-		+ ", " + aLength + ", " + aExpectedCode + ", " + aExpectedSize + ")";
-		
-		it( lSpec, function () {
-			var lResponse = null;
-			jws.Tests.getAdminConn().getISLogs("item", aCollectionName, {
-				offset: aOffset,
-				length: aLength,
-				itemPK: aItemPK,
-				OnResponse: function( aToken ) {
-					lResponse = aToken;
-				}
-			});
-
-			waitsFor(
-				function() {
-					return( null != lResponse );
-				},
-				lSpec,
-				3000
-				);
-
-			runs( function() {
-				expect( lResponse.code ).toEqual( aExpectedCode );
-				if (0 == lResponse.code){
-					expect( lResponse.data.length  ).toEqual( aExpectedSize );
-				}
-			});
-		});
-	},
-	
 	runSpecs: function() {
 		var lCollectionName = "myContacts";
 		var lPwd = "123";
@@ -828,13 +654,6 @@ jws.tests.enterprise.ItemStorage = {
 		this.testSubscribeCollection(lCollectionName, lPwd, -1); // subscribed already
 		this.testSubscribeCollection(lCollectionName, "wrong password", -1);
 
-		// get logs (testing pagination)
-		this.testGetCollectionLogs(lCollectionName, 0, 10, 0, 3);
-		this.testGetCollectionLogs(lCollectionName, 1, 10, 0, 2);
-		this.testGetCollectionLogs(lCollectionName, 2, 10, 0, 1);
-		this.testGetCollectionLogs(lCollectionName, 3, 10, 0, 0);
-		this.testGetCollectionLogs("wrongCollectionName", 0, 10, -1, 3); // should fail (collection not exists)
-
 		// restart
 		this.testRestartCollection(lCollectionName, lPwd, 0);
 		
@@ -844,12 +663,6 @@ jws.tests.enterprise.ItemStorage = {
 		this.testFindItemByPK(lCollectionName, "rsantamaria", -1, 
 			false); // should fail (not subscribed)
 			
-		// find items
-		this.testFindItems("wrongCollectionName", "username", "rsantamaria", -1, 
-			true); // should fail (collection not exists)
-		this.testFindItems(lCollectionName, "username", "rsantamaria", -1, 
-			false); // should fail (not subscribed)
-		
 		// subscribe again
 		this.testSubscribeCollection(lCollectionName, lPwd, 0);
 		
@@ -894,42 +707,15 @@ jws.tests.enterprise.ItemStorage = {
 			sex: true
 		}, 0);
 		
-		this.testGetItemLogs(lCollectionName, "rsantamaria", 0, 10, 0, 1);
-		
-		// find random
-		this.testFindItemRandom(lCollectionName, 0, true);
-		// find random
-		this.testFindItemRandom("wrong collection name", -1, false);
-		
 		// save item (modify)
 		this.testSaveItem(lCollectionName, {
 			name: "Rolando Santamaria Maso",
 			username: "rsantamaria"
 		}, 0);
 		
-		this.testGetItemLogs(lCollectionName, "rsantamaria", 0, 10, 0, 2);
-		this.testGetItemLogs(lCollectionName, "rsantamaria", 1, 10, 0, 1);
-		
 		// find by PK
 		this.testFindItemByPK(lCollectionName, "rsantamaria", 0, true);
 		this.testFindItemByPK(lCollectionName, "wrongPK", 0, false);
-		
-		// find items
-		this.testFindItems(lCollectionName, "siteURL", "http://jwebsocket.org", 0, 
-			true); 
-		// find items
-		this.testFindItems(lCollectionName, "siteURL", ".*.jwebsocket.org", 0, 
-			true); 
-		// find items
-		this.testFindItems(lCollectionName, "siteURL", "http://jwebsocket..*", 0, 
-			true); 
-		// find items
-		this.testFindItems(lCollectionName, "siteURL", ".*.://jwebsocket..*", 0, 
-			true); 
-		this.testFindItems(lCollectionName, "siteURL", "http://microsoft.com", 0, 
-			false); 
-		this.testFindItems(lCollectionName, "siteURL2", "http://microsoft.com", -1, 
-			false); // should fail (invalid attr name)
 		
 		// list items
 		this.testListItems(lCollectionName, 0, 1, 0, 1);
@@ -943,7 +729,6 @@ jws.tests.enterprise.ItemStorage = {
 		
 		// remove item
 		this.testRemoveItem(lCollectionName, "rsantamaria", 0);
-		this.testGetItemLogs(lCollectionName, "rsantamaria", 0, 10, -1, 2); //should fail (item not exists)
 		this.testExistsItem(lCollectionName, "rsantamaria", false);
 		this.testRemoveItem(lCollectionName, "rsantamaria", 
 			-1); // should fail (item not exists)
@@ -992,71 +777,9 @@ jws.tests.enterprise.ItemStorage = {
 		this.testEditCollection(lCollectionName, lPwd, "abc", "abc", true, -1);
 		this.testEditCollection(lCollectionName, "abc", lPwd, lPwd, false, 0);
 		
-		// register definition
-		this.testRegisterItemDef("mixedValues", "id", {
-			integer: "integer",
-			string: "string" + JSON.stringify({
-				min_length: 2,
-				max_length: 140,
-				required: true,
-				reg_exp: "^[a-z]+[a-z]*"
-			}),
-			mail: "string" + JSON.stringify({
-				mail: true
-			}),
-			bool: "boolean",
-			doublee: "double"+ JSON.stringify({
-				"between": [1,4],
-				"in": [2,5]
-			}),
-			longe: "long"
-		}, 0);
-		this.testCreateCollection("myMixed", "mixedValues", "123", "123", false, 1, 0);
-		this.testSubscribeCollection("myMixed", "123", 0);
-		this.testAuthorizeCollection("myMixed", "123", 0);
-		this.testSaveItem("myMixed", {
-			string: "abc",
-			mail:"rsantamaria@jwebsocket.org",
-			integer: 654,
-			bool: false,
-			doublee: 2,
-			longe: 12313123123131
-		}, 0);
-		
-		// find random
-		this.testFindItemRandom("myMixed", 0, true);
-		
-		this.testSaveItem("myMixed", {
-			string: "abccv",
-			mail:"rsantamaria22@jwebsocket.org",
-			integer: 654,
-			bool: false,
-			doublee: 2,
-			longe: 5645
-		}, -1); // should fail, exceeds collection capacity
-		
-		//list definitions
-		this.testListItemDef(2);
-
-		// exists definition
-		this.testExistsItemDef("mixedValues", true);
-		
-		// find item def
-		this.testFindItemDef("mixedValues", true);
-
-		// remove definition
-		this.testRemoveItemDef("mixedValues", -1); // should fail (item definition in use)
-		this.testClearCollection("myMixed", lPwd, 0);
-		
-		// remove collection
 		this.testRemoveCollection(lCollectionName, "wrong password", -1);
 		this.testRemoveCollection(lCollectionName, lPwd, 0);
-		this.testRemoveCollection("myMixed", lPwd, 0);
 		this.testRemoveCollection(lCollectionName + "1", lPwd, 0);
-		
-		this.testRemoveItemDef("mixedValues", 0); 
-		this.testExistsItemDef("mixedValues", false);
-		this.testRemoveItemDef("mixedValues", -1); // should fail (def not found)
 		
 		// list definitions
 		this.testListItemDef(1);

@@ -353,4 +353,33 @@ public class TokenPlugIn extends BasePlugIn {
 		throw new UnsupportedOperationException("Unsupported authentication method. "
 				+ "Supported methods are: spring, static or embedded!");
 	}
+
+	/**
+	 * Gets a client configuration parameter for this plug-in.
+	 *
+	 * @param aConnector
+	 * @param aKey The parameter name
+	 * @return
+	 */
+	public Object getConfigParam(WebSocketConnector aConnector, String aKey) {
+		return getConfigParam(aConnector, aKey, null);
+	}
+
+	/**
+	 * Gets a client configuration parameter for this plug-in.
+	 *
+	 * @param aConnector
+	 * @param aKey The parameter name
+	 * @param aDefaultValue A default value if the parameter value is null
+	 * @return
+	 */
+	public Object getConfigParam(WebSocketConnector aConnector, String aKey, Object aDefaultValue) {
+		Object lValue = aConnector.getSession().getStorage().get(getNamespace() + "." + aKey);
+
+		if (null == lValue) {
+			return aDefaultValue;
+		}
+
+		return lValue;
+	}
 }
