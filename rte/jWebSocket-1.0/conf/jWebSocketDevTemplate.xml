@@ -173,7 +173,6 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-
 		<plugin>
 			<name>org.jwebsocket.plugins.flashbridge.FlashBridgePlugIn</name>
 			<id>jws.flashbridge</id>
@@ -184,21 +183,10 @@
 			</server-assignments>
 			<settings>
 				<!-- if you remove this setting the plug-in uses an internal
-				     "allow all ports and domains" default crossdomain.xml -->
+    "allow all ports and domains" default crossdomain.xml -->
 				<setting key="crossdomain_xml">${JWEBSOCKET_HOME}conf/FlashPlugIn/crossdomain.xml</setting>
 			</settings>
 		</plugin>
-
-		<plugin>
-			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
-			<ns>alarm</ns>
-			<id>jws.eventsplugin.alarm</id>
-			<jar>jWebSocketEventsPlugIn-1.0.jar</jar>
-			<server-assignments>
-				<server-assignment>ts0</server-assignment>
-			</server-assignments>
-		</plugin>
-
 	</plugins>
 
 	<filters>
