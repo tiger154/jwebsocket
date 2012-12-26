@@ -898,7 +898,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			lChannel.stop(lPublisher.getId());
 			mChannelManager.storeChannel(lChannel);
 			Token lSuccessToken = createResponse(aToken);
-			sendTokenAsync(aConnector, aConnector, lSuccessToken);
+			sendToken(aConnector, aConnector, lSuccessToken);
 		} catch (ChannelLifeCycleException lEx) {
 			mLog.error("Error stopping channel '" + lChannelId
 					+ "' from publisher "
@@ -911,7 +911,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 					+ "' Error stopping channel '" + lChannelId
 					+ "' from publisher '" + lPublisher.getId() + "'");
 
-			sendTokenAsync(aConnector, aConnector, lErrorToken);
+			sendToken(aConnector, aConnector, lErrorToken);
 		}
 	}
 
@@ -942,7 +942,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			lChannel.start(lPublisher.getId());
 			mChannelManager.storeChannel(lChannel);
 			Token lSuccessToken = createResponse(aToken);
-			sendTokenAsync(aConnector, aConnector, lSuccessToken);
+			sendToken(aConnector, aConnector, lSuccessToken);
 		} catch (ChannelLifeCycleException lEx) {
 			mLog.error("Error starting channel '" + lChannelId
 					+ "' from publisher "
@@ -955,7 +955,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 					+ "' Error starting channel '" + lChannelId
 					+ "' from publisher '" + lPublisher.getId() + "'");
 
-			sendTokenAsync(aConnector, aConnector, lErrorToken);
+			sendToken(aConnector, aConnector, lErrorToken);
 		}
 	}
 }

@@ -154,11 +154,22 @@ jws.tests.Channels = {
 	// this spec tests the create method for a new channel
 	testChannelPublish: function( aChannelId, aData,
 		aComment, aExpectedReturnCode ) {
-		var lSpec = this.NS + ": channelAuth (id: " + aChannelId + ", data: " + aData + ", " + aComment + ")";
+		var lSpec = this.NS + ": channelPublish (id: " + aChannelId + ", data: " + aData + ", " + aComment + ")";
 		
 		it( lSpec, function () {
 
-			var lResponse = {};
+			var lResponse = null;
+			var lEvent = null;
+			
+			if ( 0 == aExpectedReturnCode ) {
+				jws.Tests.getAdminConn().setChannelCallbacks({
+					OnChannelBroadcast: function (aEvent){
+						lEvent = aEvent;
+					}
+				});
+			} else {
+				lEvent = true;
+			}
 			jws.Tests.getAdminConn().channelPublish( 
 				aChannelId, 
 				aData,
@@ -172,14 +183,17 @@ jws.tests.Channels = {
 
 			waitsFor(
 				function() {
-					return( lResponse.code !== undefined );
+					return( lResponse != null && lEvent != null );
 				},
 				lSpec,
-				1000
+				3000
 				);
 
 			runs( function() {
 				expect( lResponse.code ).toEqual( aExpectedReturnCode );
+				if ( 0 == aExpectedReturnCode ) {
+					expect ( lEvent.data ).toEqual( aData );
+				}
 			});
 
 		});
@@ -558,6 +572,7 @@ jws.tests.Channels = {
 			"Publishing test message on a non-authenticated channel (not allowed)", -1 );
 		jws.tests.Channels.testChannelAuth( "myPubSec", "myPublicAccess", "myPublicSecret",
 			"Authenticating against public channel access key and secret key (allowed)", 0 );
+		jws.tests.Channels.testSubscribe( "myPubSec", "myPublicAccess" );
 		jws.tests.Channels.testChannelPublish( "myPubSec", jws.tests.Channels.TEST_MESSAGE,
 			"Publishing test message on authenticated channel (allowed)", 0 );
 

@@ -37,6 +37,7 @@
 		<script type="text/javascript" src="../res/js/jwsClientGamingPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsEventsPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsFilesystemPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsItemStoragePlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsJDBCPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsJMSPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsLoggingPlugIn.js"></script>
@@ -64,6 +65,9 @@
 		
 		<!-- tests for the enterprise filesystem plug-in -->
 		<script type="text/javascript" src="js/jwsFilesystemEETests.js"></script>
+		
+		<!-- tests for the itemstorage plug-in -->
+		<script type="text/javascript" src="js/jwsItemStorageTests.js"></script>
 		
 		<!-- tests for the enterprise itemstorage plug-in -->
 		<script type="text/javascript" src="js/jwsItemStorageEETests.js"></script>
@@ -133,6 +137,8 @@
 							<br>
 							<label><input id="filesystemPlugInEE" type="checkbox" checked="checked"> File System PlugIn (Enterprise)</label>
 							<br>
+							<label><input id="itemstoragePlugIn" type="checkbox" checked="checked"> Item Storage PlugIn</label>
+							<br>
 							<label><input id="itemstoragePlugInEE" type="checkbox" checked="checked"> Item Storage PlugIn (Enterprise)</label>
 							<br>
 							<label><input id="systemPlugIn" type="checkbox" checked="checked"> System PlugIn</label>
@@ -194,6 +200,7 @@
 						automatedAPIPlugIn: (jws.$("automatedAPIPlugIn").checked)? true : false,
 						filesystemPlugIn: (jws.$("filesystemPlugIn").checked)? true : false,
 						filesystemPlugInEE: (jws.$("filesystemPlugInEE").checked)? true : false,
+						itemstoragePlugIn: (jws.$("itemstoragePlugIn").checked)? true : false,
 						itemstoragePlugInEE: (jws.$("itemstoragePlugInEE").checked)? true : false,
 						systemPlugIn: (jws.$("systemPlugIn").checked)? true : false,
 						load: (jws.$("load").checked)? true : false,

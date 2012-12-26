@@ -63,7 +63,7 @@ public class XMPPPlugIn extends TokenPlugIn {
 	private static final String NS_XMPP = JWebSocketServerConstants.NS_BASE + ".plugins.xmpp";
 
 	/**
-	 * 
+	 *
 	 * @param aConfiguration
 	 */
 	public XMPPPlugIn(PluginConfiguration aConfiguration) {
@@ -295,16 +295,20 @@ public class XMPPPlugIn extends TokenPlugIn {
 				// especially for google talk!
 				lConnCfg.setSASLAuthenticationEnabled(false);
 				lXMPPConn = new XMPPConnection(lConnCfg);
+				setCredentials(aConnector, lCredentials);
+				setXMPPConnection(aConnector, lXMPPConn);
 			}
+
 			if (!lXMPPConn.isConnected()) {
 				lXMPPConn.connect();
 			}
+
 			lMsg = "Successfully connected to XMPP server";
 			lResponse.setString("msg", lMsg);
+
 			if (mLog.isInfoEnabled()) {
 				mLog.info(lMsg);
 			}
-			setXMPPConnection(aConnector, lXMPPConn);
 		} catch (Exception lEx) {
 			lMsg = lEx.getClass().getSimpleName() + ": " + lEx.getMessage();
 			mLog.error(lMsg);
@@ -327,8 +331,14 @@ public class XMPPPlugIn extends TokenPlugIn {
 		try {
 			// check if already connected to the same or a different server.
 			XMPPConnection lXMPPConn = getXMPPConnection(aConnector);
-			if (lXMPPConn != null && lXMPPConn.isConnected()) {
-				lXMPPConn.disconnect();
+			if (lXMPPConn != null) {
+				removeXMPPConnection(aConnector);
+				removeCredentials(aConnector);
+				
+				if (lXMPPConn.isConnected()) {
+					lXMPPConn.disconnect();
+				}
+				
 				lMsg = "Successfully disconnected from XMPP server";
 			} else {
 				lResponse.setInteger("code", -1);
@@ -344,7 +354,6 @@ public class XMPPPlugIn extends TokenPlugIn {
 			lResponse.setInteger("code", -1);
 			lResponse.setString("msg", lMsg);
 		}
-		removeXMPPConnection(aConnector);
 
 		// send response to requester
 		lServer.sendToken(aConnector, lResponse);
@@ -559,6 +568,7 @@ public class XMPPPlugIn extends TokenPlugIn {
 			lToken.setString("from", aMessage.getFrom());
 			lToken.setString("to", aMessage.getTo());
 			lToken.setString("body", aMessage.getBody());
+
 			mServer.sendToken(mConnector, lToken);
 		}
 	}
@@ -625,8 +635,9 @@ public class XMPPPlugIn extends TokenPlugIn {
 			lMsg = lEx.getClass().getSimpleName() + ": " + lEx.getMessage();
 			mLog.error(lMsg);
 			lResponse.setInteger("code", -1);
-			lResponse.setString("msg", lMsg);
 		}
+		// setting response message
+		lResponse.setString("msg", lMsg);
 
 		// send response to requester
 		lServer.sendToken(aConnector, lResponse);
@@ -654,8 +665,9 @@ public class XMPPPlugIn extends TokenPlugIn {
 			lMsg = lEx.getClass().getSimpleName() + ": " + lEx.getMessage();
 			mLog.error(lMsg);
 			lResponse.setInteger("code", -1);
-			lResponse.setString("msg", lMsg);
 		}
+		// setting response message
+		lResponse.setString("msg", lMsg);
 
 		// send response to requester
 		lServer.sendToken(aConnector, lResponse);

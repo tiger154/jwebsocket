@@ -15,6 +15,7 @@
 package org.jwebsocket.client.token;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -345,6 +346,10 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	private void __processResponseListener(Token aToken, WebSocketResponseTokenListener aListener) {
+		if (null == aListener) {
+			return;
+		}
+
 		// supporting response listener
 		PendingResponseQueueItem lPRQI = new PendingResponseQueueItem(aToken, aListener);
 		int lUTID = CUR_TOKEN_ID + 1;
@@ -752,5 +757,265 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		Token lToken = TokenFactory.createToken(NS_ADMIN_PLUGIN, "getUserRoles");
 		lToken.setString("username", aUsername);
 		sendToken(lToken);
+	}
+
+	/**
+	 * Retrieves a list of public entries stored in the server-side session
+	 * storage of many clients.
+	 *
+	 * @param aClients
+	 * @param aKeys
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionGetMany(List<String> aClients, List<String> aKeys,
+			WebSocketResponseTokenListener aListener) throws Exception {
+		sessionGetMany(aClients, aKeys, false, aListener);
+	}
+
+	/**
+	 * Retrieves a list of public entries stored in the server-side session
+	 * storage of many clients.
+	 *
+	 * @param aClients
+	 * @param aKeys
+	 * @param aConnectionStorage
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionGetMany(List<String> aClients, List<String> aKeys,
+			boolean aConnectionStorage, WebSocketResponseTokenListener aListener) throws Exception {
+		Token lToken = TokenFactory.createToken(NS_SYSTEM_PLUGIN, "sessionGetMany");
+		lToken.setList("clients", aClients);
+		lToken.setList("keys", aKeys);
+		lToken.setBoolean("connectionStorage", aConnectionStorage);
+
+		sendToken(lToken, aListener);
+	}
+
+	/**
+	 * Retrieves all the entries stored in the server-side session storage of a
+	 * given client. A client can only get the public entries from others.
+	 *
+	 * @param aClientId
+	 * @param aPublic
+	 * @param aConnectionStorage
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionGetAll(String aClientId, boolean aPublic,
+			boolean aConnectionStorage, WebSocketResponseTokenListener aListener) throws Exception {
+		Token lToken = TokenFactory.createToken(NS_SYSTEM_PLUGIN, "sessionGetAll");
+		lToken.setString("clientId", aClientId);
+		lToken.setBoolean("public", aPublic);
+		lToken.setBoolean("connectionStorage", aConnectionStorage);
+
+		sendToken(lToken, aListener);
+	}
+
+	/**
+	 * Retrieves all the entries stored in the server-side session storage of a
+	 * given client. A client can only get the public entries from others.
+	 *
+	 * @param aClientId
+	 * @param aPublic
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionGetAll(String aClientId, boolean aPublic,
+			WebSocketResponseTokenListener aListener) throws Exception {
+		sessionGetAll(aClientId, aPublic, false, aListener);
+	}
+
+	/**
+	 * Retrieves the list of entry keys stored in the server-side session
+	 * storage of a given client. A client can only get the public entries from
+	 * others.
+	 *
+	 * @param aClientId
+	 * @param aPublic
+	 * @param aConnectionStorage
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionKeys(String aClientId, boolean aPublic,
+			boolean aConnectionStorage, WebSocketResponseTokenListener aListener) throws Exception {
+		Token lToken = TokenFactory.createToken(NS_SYSTEM_PLUGIN, "sessionKeys");
+		lToken.setString("clientId", aClientId);
+		lToken.setBoolean("public", aPublic);
+		lToken.setBoolean("connectionStorage", aConnectionStorage);
+
+		sendToken(lToken, aListener);
+	}
+
+	/**
+	 * Retrieves the list of entry keys stored in the server-side session
+	 * storage of a given client. A client can only get the public entries from
+	 * others.
+	 *
+	 * @param aClientId
+	 * @param aPublic
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionKeys(String aClientId, boolean aPublic,
+			WebSocketResponseTokenListener aListener) throws Exception {
+		sessionKeys(aClientId, aPublic, false, aListener);
+	}
+
+	/**
+	 * Removes a server-side client session storage entry given the entry key.
+	 *
+	 * @param aKey
+	 * @param aPublic
+	 * @param aConnectionStorage
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionRemove(String aKey, boolean aPublic,
+			boolean aConnectionStorage, WebSocketResponseTokenListener aListener) throws Exception {
+		Token lToken = TokenFactory.createToken(NS_SYSTEM_PLUGIN, "sessionRemove");
+		lToken.setString("key", aKey);
+		lToken.setBoolean("public", aPublic);
+		lToken.setBoolean("connectionStorage", aConnectionStorage);
+
+		sendToken(lToken, aListener);
+	}
+
+	/**
+	 * Removes a server-side client session storage entry given the entry key.
+	 *
+	 * @param aKey
+	 * @param aPublic
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionRemove(String aKey, boolean aPublic,
+			WebSocketResponseTokenListener aListener) throws Exception {
+		sessionRemove(aKey, aPublic, false, aListener);
+	}
+
+	/**
+	 * Gets a server-side client session storage entry given the entry key.
+	 *
+	 * @param aClientId
+	 * @param aKey
+	 * @param aPublic
+	 * @param aConnectionStorage
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionGet(String aClientId, String aKey, boolean aPublic,
+			boolean aConnectionStorage, WebSocketResponseTokenListener aListener) throws Exception {
+		Token lToken = TokenFactory.createToken(NS_SYSTEM_PLUGIN, "sessionGet");
+		lToken.setString("key", aKey);
+		lToken.setString("clientId", aClientId);
+		lToken.setBoolean("public", aPublic);
+		lToken.setBoolean("connectionStorage", aConnectionStorage);
+
+		sendToken(lToken, aListener);
+	}
+
+	/**
+	 * Gets a server-side client session storage entry given the entry key.
+	 *
+	 * @param aClientId
+	 * @param aKey
+	 * @param aPublic
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionGet(String aClientId, String aKey, boolean aPublic,
+			WebSocketResponseTokenListener aListener) throws Exception {
+		sessionGet(aClientId, aKey, aPublic, false, aListener);
+	}
+
+	/**
+	 * Indicates if the client server-side session storage contains a custom
+	 * entry given the entry key.
+	 *
+	 * @param aClientId
+	 * @param aKey
+	 * @param aPublic
+	 * @param aConnectionStorage
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionHas(String aClientId, String aKey, boolean aPublic,
+			boolean aConnectionStorage, WebSocketResponseTokenListener aListener) throws Exception {
+		Token lToken = TokenFactory.createToken(NS_SYSTEM_PLUGIN, "sessionHas");
+		lToken.setString("key", aKey);
+		lToken.setString("clientId", aClientId);
+		lToken.setBoolean("public", aPublic);
+		lToken.setBoolean("connectionStorage", aConnectionStorage);
+
+		sendToken(lToken, aListener);
+	}
+
+	/**
+	 * Indicates if the client server-side session storage contains a custom
+	 * entry given the entry key.
+	 *
+	 * @param aClientId
+	 * @param aKey
+	 * @param aPublic
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionHas(String aClientId, String aKey, boolean aPublic,
+			WebSocketResponseTokenListener aListener) throws Exception {
+		sessionHas(aClientId, aKey, aPublic, false, aListener);
+	}
+
+	/**
+	 * Put key/value entry in the server-side client session storage.
+	 *
+	 * @param aKey
+	 * @param aValue
+	 * @param aPublic
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionPut(String aKey, Object aValue, boolean aPublic,
+			WebSocketResponseTokenListener aListener) throws Exception {
+		sessionPut(aKey, aValue, aPublic, false, aListener);
+	}
+
+	/**
+	 * Put key/value entry in the server-side client session storage.
+	 *
+	 * @param aKey
+	 * @param aValue
+	 * @param aPublic
+	 * @param aConnectionStorage
+	 * @param aListener
+	 * @throws Exception
+	 */
+	public void sessionPut(String aKey, Object aValue, boolean aPublic, boolean aConnectionStorage,
+			WebSocketResponseTokenListener aListener) throws Exception {
+		Token lToken = TokenFactory.createToken(NS_SYSTEM_PLUGIN, "sessionPut");
+		lToken.setString("key", aKey);
+		lToken.getMap().put("value", aValue);
+		lToken.setBoolean("public", aPublic);
+		lToken.setBoolean("connectionStorage", aConnectionStorage);
+
+		sendToken(lToken, aListener);
+	}
+
+	/**
+	 * Sets server-side plug-ins configuration on the client session storage
+	 *
+	 * @param aNS
+	 * @param aConfiguration
+	 * @throws Exception
+	 */
+	public void setConfiguration(String aNS, Map<String, Object> aConfiguration) throws Exception {
+		for (String lKey : aConfiguration.keySet()) {
+			if (aConfiguration.get(lKey) instanceof Map) {
+				setConfiguration(aNS + "." + lKey, (Map<String, Object>) aConfiguration.get(lKey));
+			} else {
+				this.sessionPut(aNS + "." + lKey, aConfiguration.get(lKey), false, null);
+			}
+		}
 	}
 }

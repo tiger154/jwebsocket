@@ -4713,6 +4713,26 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:r:*:::Deprecated:Please refer to the [tt]close[/tt] method.
 	disconnect: function( aOptions ) {
 		return this.close( aOptions );
+	},
+	
+	//:m:*:setConfiguration
+	//:d:en:Sets server-side plug-ins configuration per session
+	//:a:en::aNS:String:The plug-in namespace
+	//:a:en::aParams:Object:The configuration params. 
+	//:r:*:::void:none
+	setConfiguration: function ( aNS, aParams ){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			for (var lKey in aParams){
+				var lValue = aParams[lKey];
+				if ("object" == typeof (lValue)){
+					this.setConfiguration(aNS + "." + lKey, lValue);
+				} else {
+					this.sessionPut(aNS + "." + lKey, lValue, false, {});
+				}
+			}
+		}	
+		return lRes;
 	}
 
 });

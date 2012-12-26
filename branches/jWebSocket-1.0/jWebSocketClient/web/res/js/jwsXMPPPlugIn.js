@@ -204,19 +204,6 @@ jws.XMPPPlugIn = {
 		return lRes;
 	},
 
-	xmpp: function( aUserId, aOptions ) {
-		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
-			var lToken = {
-				ns: jws.XMPPPlugIn.NS,
-				userId: aUserId,
-				type: "closeChat"
-			};
-			this.sendToken( lToken,	aOptions );
-		}
-		return lRes;
-	},
-
 	setXMPPCallbacks: function( aListeners ) {
 		if( !aListeners ) {
 			aListeners = {};

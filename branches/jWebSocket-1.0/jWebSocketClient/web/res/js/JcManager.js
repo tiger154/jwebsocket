@@ -71,7 +71,6 @@ var JcManager = {
 			this.listeners.splice(index, 1);
 		}
 	}
-
 };
 
 /**

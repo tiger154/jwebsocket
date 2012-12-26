@@ -306,7 +306,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				return;
 			}
 
-			checkForSave(aConnector, lFile);
+			checkForSave(aConnector, lFile, lBA);
 			// prevent two threads at a time writing to the same file
 			synchronized (this) {
 				// force create folder if not yet exists
@@ -351,7 +351,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 *
 	 * @param lFile
 	 */
-	protected void checkForSave(WebSocketConnector aConnector, File lFile) throws Exception {
+	protected void checkForSave(WebSocketConnector aConnector, File lFile, byte[] lBA) throws Exception {
 		// TODO: to be overwritten for enterprise filesystem plug-in
 	}
 
