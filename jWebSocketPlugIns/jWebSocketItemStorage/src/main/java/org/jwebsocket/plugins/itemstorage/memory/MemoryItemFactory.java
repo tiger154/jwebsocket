@@ -87,7 +87,7 @@ public class MemoryItemFactory implements IItemFactory {
 	}
 
 	@Override
-	public int totalOfDefinitions() {
+	public int size() {
 		return mDefinitions.size();
 	}
 

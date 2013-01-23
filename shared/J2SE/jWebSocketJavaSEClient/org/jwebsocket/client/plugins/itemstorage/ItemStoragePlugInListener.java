@@ -35,6 +35,8 @@ public class ItemStoragePlugInListener implements WebSocketClientTokenPlugInList
 				OnCollectionCleaned(aToken);
 			} else if ("collectionRestarted".equals(aToken.getString("name"))) {
 				OnCollectionRestarted(aToken);
+			} else if ("collectionSaved".equals(aToken.getString("name"))) {
+				OnCollectionSaved(aToken);
 			} else if ("collectionRemoved".equals(aToken.getString("name"))) {
 				OnCollectionRemoved(aToken);
 			} else if ("authorization".equals(aToken.getString("name"))) {
@@ -85,6 +87,14 @@ public class ItemStoragePlugInListener implements WebSocketClientTokenPlugInList
 	 * @param aToken
 	 */
 	public void OnCollectionRemoved(Token aToken) {
+	}
+
+	/**
+	 * Called when a subscribed collection has been saved
+	 *
+	 * @param aToken
+	 */
+	public void OnCollectionSaved(Token aToken) {
 	}
 
 	/**

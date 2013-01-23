@@ -1,5 +1,6 @@
 package org.jwebsocket.plugins.itemstorage.base;
 
+import java.util.List;
 import java.util.Set;
 import org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
@@ -77,5 +78,9 @@ public class BaseListener implements IItemStorageListener {
 
 	@Override
 	public void onBeforeCreateCollection(ItemCollection aCollection) {
+	}
+
+	@Override
+	public void onCollectionSaved(String aCollectionName, List<String> aAffectedClients) {
 	}
 }

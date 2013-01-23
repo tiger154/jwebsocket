@@ -32,6 +32,10 @@ jws.ItemStoragePlugIn = {
 					if ( this.OnCollectionRemoved ){
 						this.OnCollectionRemoved(aToken);
 					} 
+				} else if ( "collectionSaved" == aToken.name ){
+					if ( this.OnCollectionSaved ){
+						this.OnCollectionSaved(aToken);
+					} 
 				} else if ( "authorization" == aToken.name ){
 					if ( this.OnCollectionAuthorization ){
 						this.OnCollectionAuthorization(aToken);
@@ -229,6 +233,9 @@ jws.ItemStoragePlugIn = {
 			}
 			if (aOptions.capped){
 				lToken.capped = aOptions.capped;
+			}
+			if (aOptions.capacity){
+				lToken.capacity = aOptions.capacity;
 			}
 			this.sendToken( lToken,	aOptions );
 		}	
@@ -470,6 +477,7 @@ jws.ItemStoragePlugIn = {
 	//:a:en::aListeners.OnCollectionCleaned:Function:Called when a subscribed collection has been cleaned
 	//:a:en::aListeners.OnCollectionRemoved:Function:Called when a subscribed collection has been removed
 	//:a:en::aListeners.OnCollectionRestarted:Function:Called when a subscribed collection has been restarted
+	//:a:en::aListeners.OnCollectionSaved:Function:Called when a subscribed collection has been saved (edited)
 	//:a:en::aListeners.OnCollectionSubscription:Function:Called when a new client gets subscribed to a subscribed collection
 	//:a:en::aListeners.OnCollectionUnsubscription:Function:Called when a client gets unsubscribed from a subscribed collection
 	//:a:en::aListeners.OnCollectionAuthorization:Function:Called when a client gets authorized to a subscribed collection
@@ -492,6 +500,9 @@ jws.ItemStoragePlugIn = {
 		}
 		if( aListeners.OnCollectionRemoved !== undefined ) {
 			this.OnCollectionRemoved = aListeners.OnCollectionRemoved;
+		}
+		if( aListeners.OnCollectionSaved !== undefined ) {
+			this.OnCollectionSaved = aListeners.OnCollectionSaved;
 		}
 		if( aListeners.OnCollectionSubscription !== undefined ) {
 			this.OnCollectionSubscription = aListeners.OnCollectionSubscription;

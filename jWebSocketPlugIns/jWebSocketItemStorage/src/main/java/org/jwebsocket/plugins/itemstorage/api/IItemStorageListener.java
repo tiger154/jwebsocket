@@ -1,5 +1,6 @@
 package org.jwebsocket.plugins.itemstorage.api;
 
+import java.util.List;
 import java.util.Set;
 import org.jwebsocket.plugins.itemstorage.collection.ItemCollection;
 
@@ -95,6 +96,14 @@ public interface IItemStorageListener {
 	 * @param aAffectedClients
 	 */
 	void onCollectionRestarted(String aCollectionName, Set<String> aAffectedClients);
+
+	/**
+	 * Called when a collection has been saved
+	 *
+	 * @param aCollectionName
+	 * @param lSubscribers
+	 */
+	void onCollectionSaved(String aCollectionName, List<String> lSubscribers);
 
 	/**
 	 * Called before save an item on a storage

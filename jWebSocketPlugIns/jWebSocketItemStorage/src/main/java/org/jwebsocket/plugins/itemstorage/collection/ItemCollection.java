@@ -66,6 +66,7 @@ public class ItemCollection implements IItemCollection {
 
 	@Override
 	public void setCapped(boolean aIsCapped) {
+		Assert.isTrue(getCapacity() > 0, "The collection capacity is unlimited. The capped property can't be set!");
 		mData.put(ATTR_CAPPED, aIsCapped);
 	}
 
@@ -76,9 +77,13 @@ public class ItemCollection implements IItemCollection {
 
 	@Override
 	public void setCapacity(int aCapacity) {
-		Assert.isTrue(getCapacity() == 0, "The collection capacity has been previously assigned!");
-		Assert.isTrue(aCapacity > 0, "Invalid item collection capacity! Expected value: capacity > 0");
+		Assert.isTrue(aCapacity >= 0, "Invalid item collection capacity! Expected value: capacity > 0");
+		Assert.isTrue(aCapacity >= getItemStorage().size(), "Invalid item collection capacity! Expected value: capacity > size");
 		mData.put(ATTR_CAPACITY, aCapacity);
+		
+		if (0 == aCapacity){
+			mData.put(ATTR_CAPPED, false);
+		}
 	}
 
 	@Override
@@ -113,7 +118,6 @@ public class ItemCollection implements IItemCollection {
 
 	@Override
 	public void setAccessPassword(String aPassword) {
-
 		mData.put(ATTR_ACCESS_PASSWORD, aPassword);
 	}
 
@@ -208,7 +212,7 @@ public class ItemCollection implements IItemCollection {
 		mData.put(ATTR_CREATED_AT, (Long) aMap.get(ATTR_CREATED_AT));
 		mData.put(ATTR_CAPACITY, (Integer) aMap.get(ATTR_CAPACITY));
 		setOwner((String) aMap.get(ATTR_OWNER));
-		setCapped((Boolean) aMap.get(ATTR_CAPPED));
+		mData.put(ATTR_CAPPED, (Boolean) aMap.get(ATTR_CAPPED));
 	}
 
 	@Override
