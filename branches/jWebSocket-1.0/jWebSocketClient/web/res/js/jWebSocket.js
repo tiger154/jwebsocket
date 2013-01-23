@@ -1482,6 +1482,19 @@ jws.tools = {
 		return lRes;
 	},
 	
+	isArrayOf: function( aArray, aType ){
+		if ( !Ext.isArray(aArray) ){
+			return false;
+		}
+		for ( var lIndex in aArray ){
+			if (this.getType(aArray[lIndex]) != aType){
+				return false;
+			}
+		}
+	
+		return true;
+	},
+	
 	setProperties: function(aObject, aProperties, aSubfix){
 		var lSubfix = aSubfix || "";
 		var lSetter = null;
@@ -4081,8 +4094,14 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				// check login and logout manage the username
 				if( aToken.reqType == "login" || aToken.reqType == "logon") {
 					this.fUsername = aToken.username;
+					// call logon callback
+					if ( "function" == typeof this.fOnLogon )
+						this.fOnLogon( aToken );
 				} else if( aToken.reqType == "logout" || aToken.reqType == "logoff") {
 					this.fUsername = null;
+					// call logoff callback
+					if ( "function" == typeof this.fOnLogon )
+						this.fOnLogoff( aToken );
 				}
 				// check if some requests need to be answered
 				this.checkCallbacks( aToken );
@@ -4613,6 +4632,12 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			}
 			if( aOptions && aOptions.OnGoodBye && typeof aOptions.OnGoodBye == "function" ) {
 				this.fOnGoodBye = aOptions.OnGoodBye;
+			}
+			if( aOptions && aOptions.OnLogon && typeof aOptions.OnLogon == "function" ) {
+				this.fOnLogon = aOptions.OnLogon;
+			}
+			if( aOptions && aOptions.OnLogoff && typeof aOptions.OnLogoff == "function" ) {
+				this.fOnLogoff = aOptions.OnLogoff;
 			}
 			// call inherited connect, catching potential exception
 			arguments.callee.inherited.call( this, aURL, aOptions );

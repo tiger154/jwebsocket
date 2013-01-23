@@ -55,11 +55,19 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 	@Override
 	public void saveCollection(IItemCollection aCollection) throws Exception {
 		aCollection.validate();
+		boolean lNew = false;
+
 		// notify event
 		if (!collectionExists(aCollection.getName())) {
+			lNew = true;
 			ItemStorageEventManager.onBeforeCreateCollection((ItemCollection) aCollection);
 		}
 		mCollections.put(aCollection.getName(), aCollection);
+		
+		// notify event
+		if (!lNew) {
+			ItemStorageEventManager.onCollectionSaved((ItemCollection) aCollection);
+		}
 	}
 
 	@Override
@@ -128,12 +136,37 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 	public boolean isItemTypeInUse(String aItemType) {
 		for (Iterator<IItemCollection> lIt = mCollections.values().iterator(); lIt.hasNext();) {
 			IItemCollection lCollection = lIt.next();
-			if (lCollection.getItemStorage().getItemType().equals(aItemType)
-					&& lCollection.getItemStorage().size() > 0) {
+			if (lCollection.getItemStorage().getItemType().equals(aItemType)) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	@Override
+	public long size() {
+		long lSize = 0;
+		for (Iterator<IItemCollection> lIt = mCollections.values().iterator(); lIt.hasNext();) {
+			IItemCollection lCollection = lIt.next();
+			if (!lCollection.isPrivate()) {
+				lSize++;
+			}
+		}
+
+		return lSize;
+	}
+
+	@Override
+	public long size(String aOwner) {
+		long lSize = 0;
+		for (Iterator<IItemCollection> lIt = mCollections.values().iterator(); lIt.hasNext();) {
+			IItemCollection lCollection = lIt.next();
+			if (lCollection.getOwner().equals(aOwner)) {
+				lSize++;
+			}
+		}
+
+		return lSize;
 	}
 }

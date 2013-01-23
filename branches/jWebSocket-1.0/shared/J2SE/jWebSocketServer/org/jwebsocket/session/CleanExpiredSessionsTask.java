@@ -55,5 +55,5 @@ public class CleanExpiredSessionsTask extends TimerTask {
 		}
 	}
 	// TODO: clean up this tasks when shutting down the server
-	// TODO: check if this task has a name fo rdebug purposes
+	// TODO: check if this task has a name for rdebug purposes
 }

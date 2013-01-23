@@ -77,5 +77,5 @@ public interface IItemFactory extends IInitializable {
 	 *
 	 * @return The number of existing item definitions
 	 */
-	int totalOfDefinitions();
+	int size();
 }

@@ -1,11 +1,13 @@
 package org.jwebsocket.plugins.itemstorage.event;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javolution.util.FastList;
+import javolution.util.FastSet;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
 import org.jwebsocket.plugins.itemstorage.api.IItemCollection;
 import org.jwebsocket.plugins.itemstorage.api.IItemStorage;
@@ -154,6 +156,18 @@ public class ItemStorageEventManager {
 				@Override
 				public void run() {
 					lListener.onCollectionRestarted(aCollectionName, aAffectedClients);
+				}
+			});
+		}
+	}
+
+	public static void onCollectionSaved(final ItemCollection aCollection) {
+		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
+			final IItemStorageListener lListener = lIt.next();
+			mThreadPool.execute(new Runnable() {
+				@Override
+				public void run() {
+					lListener.onCollectionSaved(aCollection.getName(), aCollection.getSubcribers());
 				}
 			});
 		}

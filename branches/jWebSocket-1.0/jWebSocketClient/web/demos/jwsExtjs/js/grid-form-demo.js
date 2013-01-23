@@ -94,7 +94,7 @@ function initDemo(){
 
 	};
 	
-	var jWSProxy  = new Ext.jws.data.proxy(proxy_cfg);
+	var jWSProxy  = new Ext.jws.data.Proxy(proxy_cfg);
 	
 	var store = new Ext.data.Store({
 		autoSync: true,

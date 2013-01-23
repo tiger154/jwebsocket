@@ -6,9 +6,13 @@ Ext.define( 'Ext.jws', {
 	constructor: function( aConfig ) {
 
 		this.addEvents( {
-			"open" : true,
-			"close" : true,
-			"timeout":true
+			'open' : true,
+			'close' : true,
+			'timeout':true,
+			'logon': true,
+			'logoff': true,
+			'beforesend': true,
+			'message': true
 		} );
 
 		// Call our superclass constructor to complete construction process.
@@ -16,7 +20,6 @@ Ext.define( 'Ext.jws', {
 	},
 		
 	init:function( aConfig ) {
-        
 		/*=== Override the submit method in the prototype of the class=====*/
 		Ext.form.Basic.prototype.submit = function( options ) {
 			return this.doAction( this.standardSubmit ? 'standardsubmit' : this.api ? 'directsubmit': this.jwsSubmit ? 'jwssubmit' : 'submit', options );
@@ -26,7 +29,6 @@ Ext.define( 'Ext.jws', {
 		Ext.form.Basic.prototype.load = function( aOptions ) {
 			return this.doAction( this.api ? 'directload' : this.jwsSubmit ? 'jwsload' : 'load', aOptions );
 		}
-							
 	},
 
 	open: function( aURL, aTokenClient, aTimeout ) {
@@ -41,7 +43,7 @@ Ext.define( 'Ext.jws', {
 
 
 			this.fTokenClient.open( lUrl, {
-				OnOpen: function( aToken ) {
+				OnWelcome: function( aToken ) {
 					self.init();
 					self.fireEvent( 'open' );
 				},
@@ -50,6 +52,15 @@ Ext.define( 'Ext.jws', {
 				},
 				OnTimeout: function() {
 					self.fireEvent( 'timeout' );
+				},
+				OnLogon: function( aToken ) {
+					self.fireEvent( 'logon' , aToken );
+				},
+				OnLogoff: function( aToken ) {
+					self.fireEvent( 'logoff' , aToken );
+				},
+				OnMessage: function( aToken ) {
+					self.fireEvent( 'message' , aToken );
 				}
 			} );
 			if( aTimeout )
@@ -60,9 +71,11 @@ Ext.define( 'Ext.jws', {
 			Ext.Error.raise( lMsg );
 		}
 	},
+	
 	getConnection: function(){
 		return this.fTokenClient;
 	},
+	
 	send: function( aNS, aType, aArgs, aCallbacks, aScope ) {
         
 		var lScope  = aScope;
@@ -72,28 +85,29 @@ Ext.define( 'Ext.jws', {
 		}
 		lToken.ns   = aNS;
 		lToken.type = aType;
-
+		
+		this.fireEvent( 'beforesend', lToken );
+		
 		this.fTokenClient.sendToken( lToken, {
 			callbacks: aCallbacks,
 			OnResponse: function( aToken ) {
-				if ( aToken.code == -1 ) {
-					if( aScope == undefined )
+				if ( aToken.code < 0 ) {
+					if( aScope == undefined ){
 						return aCallbacks.failure( aToken );
+					}
 					return aCallbacks.failure.call( lScope,aToken );
-
-				}
-				else if ( aToken.code == 0 ) {
-					if( aScope == undefined )
+				} else {
+					if( aScope == undefined ) {
 						return aCallbacks.success( aToken );
+					}
 					return aCallbacks.success.call( lScope,aToken );
-						
 				}
 			},
 			OnTimeOut: function( aToken ) {
-				if( aScope == undefined )
+				if( aScope == undefined ) {
 					return aCallbacks.timeout( aToken );
+				}
 				return aCallbacks.timeout.call( lScope,aToken );
-					
 			}
 		} );
 	},
@@ -118,13 +132,12 @@ Ext.define( 'Ext.jws', {
 	
 	
 /*
- *    This class is the jWebSocket implementation for Ext.data.proxy     
- *                
+ * This class contains the jWebSocket implementation of the Ext.data.proxy.Proxy class
  */       
-
-Ext.define( 'Ext.jws.data.proxy', {
+Ext.define( 'Ext.jws.data.Proxy', {
+	alternateClassName: 'Ext.jws.data.proxy',
 	extend: 'Ext.data.proxy.Server',
-	alias: 'Ext.jws.data.proxy',
+	alias: 'proxy.jws',
         
 	/**
      * @cfg {String} ns default namespace used for all proxy's actions ( read, write, create,  )
@@ -140,7 +153,11 @@ Ext.define( 'Ext.jws.data.proxy', {
 		read   : 'read',
 		update : 'update',
 		destroy: 'destroy'
-	},     
+	},  
+	
+	transform: function(){
+		
+	},
        
 	/**
      * Creates the proxy, throws an error if namespace is not given
@@ -152,9 +169,8 @@ Ext.define( 'Ext.jws.data.proxy', {
 		self.callParent( arguments );
         
 		if ( self.ns == undefined )
-			Ext.Error.raise( "the namespace must be specify, jwk proxy need a namespace" );
+			Ext.Error.raise( "the namespace must be specify, jws proxy requires a namespace" );
 	},
-
     
 	doRequest: function( aOperation, aCallback, aScope ) {
 		var self     = this;
@@ -165,11 +181,12 @@ Ext.define( 'Ext.jws.data.proxy', {
 			lRequest = lWriter.write( lRequest );
 		}
         
-		var lRequestData = this.setupDataForRequest( lRequest );
-        
-		Ext.jws.send( lRequestData.ns, lRequestData.tt, lRequestData.data, {
+		var lToken = this.setupDataForRequest( lRequest );
+		
+		this.transform( lToken );
+		
+		Ext.jws.send( lToken.ns, lToken.type, lToken.data, {
 			success : function( aToken ) {
-                
 				var lText = Ext.encode( aToken );
                 
 				var lResponse = {
@@ -180,13 +197,11 @@ Ext.define( 'Ext.jws.data.proxy', {
 					responseText  : lText,
 					responseObject: aToken
 				};
-				
                 
 				self.processResponse( true, aOperation, lRequest, lResponse, aCallback, aScope );
 			},
 			
 			failure:  function( aToken ) {
-                
 				var lText = Ext.encode( aToken );
                     
 				var lResponse = {
@@ -204,7 +219,6 @@ Ext.define( 'Ext.jws.data.proxy', {
 	},
 	
 	setupDataForRequest:function( aOptions ) {
-            
 		var lParams  = aOptions.params || {},                     
 		lJsonData    = aOptions.jsonData,
 		lNS   = this.ns,
@@ -238,12 +252,11 @@ Ext.define( 'Ext.jws.data.proxy', {
             
 		return  {
 			ns: lNS,
-			tt: lTokenType,
+			type: lTokenType,
 			data: lData || lParams || null
 		};
-            
-            
 	},
+	
 	setException: function( aOperation, aResponse ) {
 		aOperation.setException( {
 			status        : aResponse.status,
@@ -254,12 +267,24 @@ Ext.define( 'Ext.jws.data.proxy', {
 	}
 } );
 
-/*
- * This class is the jWebSocket implementation for Ext.form.action.Submit
- * 
- * 
- */
+Ext.define('Ext.jws.data.Reader', {
+	extend: 'Ext.data.reader.Json',
+	alternateClassName: 'Ext.jws.data.Reader',
+	alias : 'reader.jws',
 
+	root: 'data',
+	transform: function(){},
+	
+	readRecords: function( aData ){
+		this.transform( aData );
+		
+		return this.callParent( [aData] );
+	}
+});
+
+/* 
+ * This class constains the jWebSocket implementation of the Ext.form.action.Submit class
+ */
 Ext.define( 'Ext.jws.form.action.Submit', {
 	extend:'Ext.form.action.Submit',
 	alternateClassName: 'Ext.jws.form.Action.Submit',
@@ -275,15 +300,15 @@ Ext.define( 'Ext.jws.form.action.Submit', {
 		self.callParent( arguments );
 
 		if ( self.ns == undefined )
-			Ext.Error.raise( "you must specify the namespace" );
+			Ext.Error.raise( "You must specify a namespace (ns) value!" );
 		if ( self.tokentype == undefined )
-			Ext.Error.raise( "you must specify the tokentype" );
+			Ext.Error.raise( "You must specify a token type (tokentype) value!" );
 	},
-
 
 	getNS: function() {
 		return this.ns  || this.form.ns;
 	},
+	
 	getTokenType: function() {
 		return this.tokentype || this.form.tokentype;
 	},
@@ -310,6 +335,7 @@ Ext.define( 'Ext.jws.form.action.Submit', {
 			Ext.removeNode( lFormEl );
 		}
 	},
+	
 	processResponse : function( aResponse ) {
 		this.fResponse = aResponse;
 		if ( !aResponse.responseText && !aResponse.responseXML && !aResponse.type ) {
@@ -317,6 +343,7 @@ Ext.define( 'Ext.jws.form.action.Submit', {
 		}
 		return ( this.fResult = this.handleResponse( aResponse ) );
 	},
+	
 	handleResponse: function( aResponse ) {
 		if ( aResponse ) {
 			var lRecords = aResponse.data;
@@ -352,7 +379,6 @@ Ext.define( 'Ext.jws.form.action.Load', {
 	requires: ['Ext.direct.Manager'],
 	alternateClassName: 'Ext.jws.form.action.Load',
 	alias: 'formaction.jwsload',
-
 	type: 'jwsload',
 	ns: undefined,
 	tokentype: undefined,
@@ -362,11 +388,10 @@ Ext.define( 'Ext.jws.form.action.Load', {
 		self.callParent( arguments );
 
 		if ( self.ns == undefined )
-			Ext.Error.raise( "you must specify the namespace" );
+			Ext.Error.raise( "You must specify a namespace (ns) value!" );
 		if ( self.tokentype == undefined )
-			Ext.Error.raise( "you must specify the tokentype" );
+			Ext.Error.raise( "You must specify a token type (tokentype) value!" );
 	},
-
 
 	run: function() {
 		var lCallbacks =  this.createCallback();

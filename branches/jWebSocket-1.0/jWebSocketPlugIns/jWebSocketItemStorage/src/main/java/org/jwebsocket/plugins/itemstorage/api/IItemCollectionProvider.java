@@ -84,4 +84,16 @@ public interface IItemCollectionProvider extends IInitializable {
 	 * @return
 	 */
 	boolean isItemTypeInUse(String aItemType);
+
+	/**
+	 *
+	 * @return The number of existing collections
+	 */
+	long size();
+
+	/**
+	 *
+	 * @return The number of existing collections
+	 */
+	long size(String aOwner);
 }
