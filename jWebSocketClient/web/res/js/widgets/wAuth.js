@@ -15,7 +15,7 @@
 //	****************************************************************************
 
 /*
- * @author vbarzana
+ * @author Victor Antonio Barzana Crespo
  */
 $.widget("jws.auth",{
     
@@ -24,19 +24,20 @@ $.widget("jws.auth",{
 		
 		// Stores the jWebSocketJSONClient
 		mWSC = null;
-		
-		w.auth.eLogoffArea		= w.auth.element.find("#logoff_area");
-		w.auth.eLogonArea		= w.auth.element.find("#login_area");
-		w.auth.eUsername		= w.auth.element.find("#user_text");
-		w.auth.ePassword		= w.auth.element.find("#user_password");
-		w.auth.eClientStatus	= w.auth.element.find("#client_status");
-		w.auth.eUserInfoName	= w.auth.element.find("#user_info_name");
-		w.auth.eWebSocketType	= w.auth.element.find("#websocket_type");
-		w.auth.eClientId		= w.auth.element.find("#client_id");
-		w.auth.eLoginButton		= w.auth.element.find('#login_button');
-		w.auth.eLogoffButton	= w.auth.element.find('#logoff_button');
-		w.auth.eConnectButton	= w.auth.element.find('#connect_button');
-		w.auth.eDisConnectButton= w.auth.element.find('#disconnect_button');
+		AUTO_USER_AND_PASSWORD	= false;
+		this.eLogoffArea		= this.element.find("#logoff_area");
+		this.eLogonArea			= this.element.find("#login_area");
+		this.eUsername			= this.element.find("#user_text");
+		this.ePassword			= this.element.find("#user_password");
+		this.eClientStatus		= this.element.find("#client_status");
+		this.eUserInfoName		= this.element.find("#user_info_name");
+		this.eWebSocketType		= this.element.find("#websocket_type");
+		this.eClientId			= this.element.find("#client_id");
+		this.eLoginButton		= this.element.find('#login_button');
+		this.eLogoffButton		= this.element.find('#logoff_button');
+		this.eConnectButton		= this.element.find('#connect_button');
+		this.eDisConnectButton	= this.element.find('#disconnect_button');
+		this.mUsername = null;
 		
 		w.auth.eDisConnectButton.hide( );
 		w.auth.eLogoffArea.hide( );
@@ -280,11 +281,18 @@ $.widget("jws.auth",{
 	
 	// If there is not connection with the server, opens a connection and then 
 	// tries to log the user in the system
-	logon: function( ) {
+	logon: function( aUser, aPassword ) {
 		var lURL = ( w.auth.options.lURL )? w.auth.options.lURL: jws.getDefaultServerURL( );
         
-		var lUsername = w.auth.eUsername.val( );
-		var lPassword = w.auth.ePassword.val( );
+		var lUsername;
+		var lPassword;
+		if( AUTO_USER_AND_PASSWORD ) {
+			lUsername = aUser || jws.GUEST_USER_LOGINNAME;
+			lPassword = aPassword || jws.GUEST_USER_LOGINNAME;
+		} else{
+			lUsername = w.auth.eUsername.val( );
+			lPassword = w.auth.ePassword.val( );
+		}
 		
 		if( lUsername == "" || lPassword == "" ){
 			if( mLog.isDebugEnabled ) {
