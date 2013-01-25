@@ -1561,17 +1561,25 @@
 		</plugin>
 		
 		<!-- JQuery Demo plugin -->
-		<!--
 		<plugin>
-			<name>org.jwebsocket.plugins.jquery.JQueryPlugIn</name>
-			<id>jws.jquery</id>
-			<ns>org.jwebsocket.jquery</ns>
+			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
+			<ns>test</ns>
+			<id>jws.events.test</id>
+			<jar>jWebSocketEventsPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		<!-- jQuery Mobile Form plugin -->
+		<plugin>
+			<name>org.jwebsocket.plugins.jquery.JQueryFormsPlugIn</name>
+			<ns>jws.jq.mobile.user</ns>
+			<id>jWebSocketJQueryPlugIn</id>
 			<jar>jWebSocketJQueryPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
-		</plugin>		
-		-->
+		</plugin>
 		
 		<!-- jWeSocket Ping-Pong Game Plug-in -->
 		<!--
