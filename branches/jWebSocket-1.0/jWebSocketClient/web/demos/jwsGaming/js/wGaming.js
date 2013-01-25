@@ -20,60 +20,60 @@
  */
 
 $.widget( "jws.gaming", {
-	_init:function( ) {
-		w.gaming = this;
-		
+	_init:function() {
 		// Default namespace for demos org.jwebsocket.plugins.gaming
-		w.gaming.NS = jws.NS_BASE + ".plugins.gaming";
+		this.NS = jws.NS_BASE + ".plugins.gaming";
 		
-		w.gaming.mChannelId = "jws-gaming-ch";
-		w.gaming.mChannelName = "jWebSocketGaming"
-		w.gaming.mChannelIsPrivate = false;
-		w.gaming.mChannelIsSystem = true;
-		w.gaming.mChannelAccessKey = "play1";
-		w.gaming.mChannelSecretKey = "t0ps3cr3t!";
+		this.mChannelId = "jws-gaming-ch";
+		this.mChannelName = "jWebSocketGaming"
+		this.mChannelIsPrivate = false;
+		this.mChannelIsSystem = true;
+		this.mChannelAccessKey = "play1";
+		this.mChannelSecretKey = "t0ps3cr3t!";
 		
-		w.gaming.mAuthenticatedUser = null;
-		w.gaming.mOnlineClients = {};
+		this.mAuthenticatedUser = null;
+		this.mOnlineClients = {};
 		
 		// Represents each connected user using a different color
-		w.gaming.mUserColors = {
+		this.mUserColors = {
 		//	01.38649.1: "#0000FF"
 		};
-		
 		// this is the location of the green player
-		w.gaming.mPlayer = {
+		this.mPlayer = {
 			loc_x: 100,
 			loc_y: 100,
 			speed: 10
 		};
-		
-		w.gaming.ePlayGround  = w.gaming.element.find( "#players_area" );
-		w.gaming.eTotalPlayers  = w.gaming.element.find( "#total_red" );
-		w.gaming.eTotalGreen  = w.gaming.element.find( "#total_green" );
-		w.gaming.eDebug  = w.gaming.element.find( "#debug" );
-		
-		w.gaming.registerEvents( );
+		this.ePlayGround  = this.element.find( "#players_area" );
+		this.eTotalPlayers  = this.element.find( "#total_red" );
+		this.eTotalGreen  = this.element.find( "#total_green" );
+		this.eDebug  = this.element.find( "#debug" );
+
+		w.gaming = this;
+		w.gaming.registerEvents();
 	},
     
-	registerEvents: function( ) {
+	registerEvents: function() {
 		$( document ).keydown( w.gaming.processKeyDown );
 		$( w.gaming.ePlayGround ).mousemove( w.gaming.playGroundMouseMove );
 		
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
-			// OnOpen: function( aEvent ){},
-			OnWelcome: function( aEvent ){
+			// OnOpen: function( aEvent ) {},
+			OnWelcome: function( aEvent ) {
 				// Registering the callbacks for the channels
 				mWSC.setChannelCallbacks({
-					OnChannelCreated: w.gaming.onChannelCreatedObs,
-					OnChannelRemoved: w.gaming.onChannelRemovedObs,
-					OnChannelsReceived: w.gaming.onChannelsReceivedObs
+					OnChannelCreated: w.gaming.onChannelCreated,
+					OnChannelRemoved: w.gaming.onChannelRemoved,
+					OnChannelsReceived: w.gaming.onChannelsReceived,
+					// When any subscription arrives from the server
+					OnChannelSubscription: w.gaming.onChannelSubscription,
+					OnChannelUnsubscription: w.gaming.onChannelUnsubscription
 				});
 				w.gaming.getChannels();
 			},
-			OnClose: function( ){
+			OnClose: function() {
 				w.gaming.destroy();
 			},
 			OnGoodBye: function( aToken ){
@@ -83,37 +83,42 @@ $.widget( "jws.gaming", {
 				w.gaming.onMessage( aEvent, aToken );
 			}
 		};
+		// This is an authentication widget for all demos
+		// you can find it here ../res/js/widgets/wAuth.js
 		$( "#demo_box" ).auth( lCallbacks );
 	},
 	
 	// Trying to obtain all available channels on the server
 	getChannels: function() {
 		log( "Trying to obtain channels..." );
+		// After the channels arrive, will be fired the callback 
+		// w.gaming.onChannelsReceived
 		var lRes = mWSC.channelGetIds();
 		log( mWSC.resultToString( lRes ) );
 	},
 	
 	// this method is called when a new channel has been created on the server
-	onChannelCreatedObs: function( aEvent ) {
+	onChannelCreated: function( aEvent ) {
 		log( "The following channel has been created for the game: { name: '" 
 			+ aEvent.channelName + "', id: '" + aEvent.channelId  + "'}");
 	},
 
 	// this method is called when a channel has been removed from the server
-	onChannelRemovedObs: function( aEvent ) {
-	// Nothing to do here
+	onChannelRemoved: function( aEvent ) {
+	// Not implemented yet
 	},
 	
-	onChannelsReceivedObs: function( aEvent ) {
+	onChannelsReceived: function( aEvent ) {
 		var lChannelExists = false;
-		// Add all channels from event
+		// Get all channels from the event
 		for( var lIdx = 0, lCnt = aEvent.channels.length; lIdx < lCnt; lIdx++ ) {
-			if( aEvent.channels[ lIdx ].id == w.gaming.mChannelId ){
+			// Checking if the gaming channel already exists
+			if( aEvent.channels[ lIdx ].id == w.gaming.mChannelId ) {
 				lChannelExists = true;
 			}
 		}
-		// If the channel has not being created yet, create it
-		if( !lChannelExists ){
+		// If the channel has not being created yet, we create it
+		if( !lChannelExists ) {
 			w.gaming.createChannel();
 		}
 		// Subscribe to a certain channel
@@ -123,6 +128,32 @@ $.widget( "jws.gaming", {
 		
 		log( "<font style='color:#888'>jWebSocket channels received: '" 
 			+ JSON.stringify( aEvent.channels ) + "'</font>" );
+	},
+	
+	onChannelSubscription: function( aEvent ) {
+		// Get the location of the subscriber
+		var aSubscriber = aEvent.subscriber;
+		if( aSubscriber != w.gaming.mAuthenticatedUser ) {
+			// TODO: change the key for "position"
+			mWSC.sessionGet( aSubscriber, aSubscriber, true, {
+				OnSuccess: function( aEvent ) {
+					w.gaming.addRedClient( aSubscriber,
+						aEvent.data.value.x, 
+						aEvent.data.value.y );
+				}
+			});
+		}
+	},
+	
+	onChannelUnsubscription: function( aEvent ) {
+		w.gaming.removeClient( aEvent.subscriber );
+	},
+	
+	onChannelPublish: function( aEvent ) {
+		var lX = aEvent.map.x;
+		var lY = aEvent.map.y;
+		var lPublisher = aEvent.publisher;
+		w.gaming.moveTo( lPublisher, lX, lY );
 	},
 	
 	// try to create a new channel on the server
@@ -158,21 +189,49 @@ $.widget( "jws.gaming", {
 		log( mWSC.resultToString( lRes ) );
 	},
 	
-	// try to obtain all subscribers for a certain channel
+	
 	getSubscribers: function() {
-		log( "Trying to obtain subscribers for channel '" + w.gaming.mChannelId + "'..." );
-		var lRes = mWSC.channelGetSubscribers(w.gaming.mChannelId, w.gaming.mChannelAccessKey);
+		log( "Trying to obtain subscribers for channel '" + 
+			w.gaming.mChannelId + "'..." );
+		// try to obtain all subscribers for a certain channel
+		var lRes = mWSC.channelGetSubscribers( 
+			w.gaming.mChannelId, w.gaming.mChannelAccessKey, {
+				// On subscrihers arrive
+				OnSuccess: function( aEvent ) {
+					var lArray = [];
+					for( var lIndex in aEvent.subscribers ) {
+						if( aEvent.subscribers[ lIndex ].id != w.gaming.mAuthenticatedUser ) {
+							lArray.push( aEvent.subscribers[ lIndex ].id );
+						}
+					}
+					// TODO: GET MANY SHOULD WORK WITH THE KEY "position", 
+					// it is not working correctly
+					
+					// Ask for the position of each subscriber
+					mWSC.sessionGetMany( lArray, lArray, {
+						OnSuccess: function( aResponse ) {
+							console.log(aResponse);
+							for( var lIndex in aResponse.data ) {
+								// when the positions arrive
+								w.gaming.addRedClient( lIndex,
+									aResponse.data[lIndex][lIndex].x, 
+									aResponse.data[lIndex][lIndex].y );
+							}
+						}
+					});
+				}
+			});
 		log( mWSC.resultToString( lRes ) );
 	},
 	
-	publish: function( aData, aMessage ){
+	publish: function( aData, aMessage ) {
 		mWSC.channelPublish( w.gaming.mChannelId, aMessage || "jws-gaming", aData );
 	},
 	
-	playGroundMouseMove: function(){
+	playGroundMouseMove: function() {
 		var lClient = $('.ui-draggable-dragging');
 		// If the element is been dragged
-		if( lClient.get(0) ){
+		if( lClient.get(0) ) {
 			var lTop = lClient.css( "top" );
 			var lLeft = lClient.css( "left" );
 			w.gaming.mPlayer.loc_x = parseInt( lLeft.substr( 0, lLeft.length - 1 ) );
@@ -184,7 +243,7 @@ $.widget( "jws.gaming", {
 		}
 	},
 	
-	startMovingRandom: function(){
+	startMovingRandom: function() {
 		// return if not (yet) connected
 		if( !mWSC.isLoggedIn() ) {
 			// TODO: provide reasonable result here!
@@ -210,13 +269,13 @@ $.widget( "jws.gaming", {
 			);
 	},
 	
-	stopMovingRandom: function(){
+	stopMovingRandom: function() {
 		clearInterval( w.gaming.hSimulation );
 		w.gaming.hSimulation = null;
 	},
 	
-	destroy: function(){
-		if( w.gaming.hSimulation ){
+	destroy: function() {
+		if( w.gaming.hSimulation ) {
 			w.gaming.stopMovingRandom();
 		}
 		
@@ -230,7 +289,7 @@ $.widget( "jws.gaming", {
 		w.gaming.eTotalGreen.text( 0 );
 	},
 	
-	moveGreenPlayerRandom: function( aSpeed ){
+	moveGreenPlayerRandom: function( aSpeed ) {
 		aSpeed = aSpeed || 4;
 		var lPlusMinus = (w.gaming.getRandomNumber( 5 ) <= 4)?"+":"-";
 		
@@ -255,7 +314,6 @@ $.widget( "jws.gaming", {
 			log( "<font style='color:#888'>" + aEvent.data + "</font>" );
 		}
 		if( aToken ) {
-			//			console.log(aToken);
 			// is it a response from a previous request of this client?
 			if( aToken.type == "response" ) {
 				if( aToken.reqType == "login" ) {
@@ -279,50 +337,49 @@ $.widget( "jws.gaming", {
 					if( aToken.code == 0 ){
 						w.gaming.getSubscribers();
 					}
-				} else if( aToken.reqType == "getSubscribers"){
-					w.gaming.loadClientsList( aToken.subscribers );
 				} else if( aToken.type == "event" ) {
-					if( "logout" == aToken.name || "disconnect" == aToken.name ){
+					if( "logout" == aToken.name || "disconnect" == aToken.name ) {
 						w.gaming.removeClient( aToken.sourceId );
 					}
 				}
+			} else if( aToken.type == "data" ) {
+				w.gaming.onChannelPublish( aToken );		
 			}
 		}
 	},
 	
 	processKeyDown: function( aEvent ) {
-		if( w.gaming.canMove() ){
+		if( w.gaming.canMove() ) {
 			// here the "gaming" event is broadcasted to all other clients
-			// console.log( "keydown: " + aEvent.keyCode );
 			//some firefox versions need keyChar event
 			var lCode = aEvent.keyCode || aEvent.keyChar;
 			var lCanMove = false;
 			switch( lCode ) {
 				case 13:
-					if( !mWSC.isLoggedIn() ){
+					if( !mWSC.isLoggedIn() ) {
 						w.auth.logon();
 					}
 					return;
 				case 38: // up
-					if( w.gaming.canMove( "up" ) ){
+					if( w.gaming.canMove( "up" ) ) {
 						w.gaming.mPlayer.loc_y -= w.gaming.mPlayer.speed;
 						lCanMove = true;
 					}
 					break;
 				case 40: // down
-					if( w.gaming.canMove( "down" ) ){
+					if( w.gaming.canMove( "down" ) ) {
 						w.gaming.mPlayer.loc_y += w.gaming.mPlayer.speed;
 						lCanMove = true;
 					}
 					break;
 				case 37: // left
-					if( w.gaming.canMove( "left" ) ){
+					if( w.gaming.canMove( "left" ) ) {
 						w.gaming.mPlayer.loc_x -= w.gaming.mPlayer.speed;
 						lCanMove = true;
 					}
 					break;
 				case 39: // right
-					if( w.gaming.canMove( "right" ) ){
+					if( w.gaming.canMove( "right" ) ) {
 						w.gaming.mPlayer.loc_x += w.gaming.mPlayer.speed;
 						lCanMove = true;
 					}
@@ -330,7 +387,7 @@ $.widget( "jws.gaming", {
 				default:
 					return;
 			}
-			if( lCanMove ){
+			if( lCanMove ) {
 				w.gaming.notifyMovement( w.gaming.mAuthenticatedUser, 
 					w.gaming.mPlayer.loc_x, 
 					w.gaming.mPlayer.loc_y );
@@ -349,17 +406,16 @@ $.widget( "jws.gaming", {
 		}
 	},
 	
-	canMove: function( aLocation ){
+	canMove: function( aLocation ) {
 		var lClient = w.gaming.mOnlineClients[ w.gaming.mAuthenticatedUser ];
 		var lX = w.gaming.mPlayer.loc_x;
 		var lY = w.gaming.mPlayer.loc_y;
 		
 		var lCanMove = true;
 		
-		switch( aLocation ){
+		switch( aLocation ) {
 			case "up":
 				var lTop = lClient.css("top");
-				//				console.log(lTop);
 				break;
 			case "down":
 				break;
@@ -381,8 +437,8 @@ $.widget( "jws.gaming", {
 		 * position of the y axis
 		 * 
 		 **/
-	addGreenClient: function( aClientId, aX, aY ){
-		if( aClientId ){
+	addGreenClient: function( aClientId, aX, aY ) {
+		if( aClientId ) {
 			var lPlayer = $('<div class="player green_player" id="'+ aClientId +
 				'">'+ aClientId +'</div>');
 				
@@ -395,7 +451,7 @@ $.widget( "jws.gaming", {
 				top: aY + "px"
 			});
 			
-			// jQuery-ui method, starts dragging an element
+			// jQuery-ui method, enables dragging an element
 			lPlayer.draggable();
 				
 			// Add the user in a random location in the playGround
@@ -411,9 +467,8 @@ $.widget( "jws.gaming", {
 	},
 	
 	notifyMovement: function( aClientId, aX, aY ) {
-		if( mWSC.isConnected() ){
+		if( mWSC.isConnected() ) {
 			var lData = {
-				sourceId: aClientId,
 				x: aX,
 				y: aY
 			};
@@ -434,17 +489,17 @@ $.widget( "jws.gaming", {
 	/**
 		 * Moves a client in the current playGround
 		 **/
-	moveTo: function( aClientId, aX, aY ){
+	moveTo: function( aClientId, aX, aY ) {
 		var lClient = $('.ui-draggable-dragging');
 		// don't move it if is been dragged by jQuery, 
 		// the drag event is responsible for that
-		if( !lClient.get(0) ){
+		if( !lClient.get(0) ) {
 			w.gaming.mOnlineClients[ aClientId ].css({
 				"left": aX + "px",
 				"top": aY + "px"
 			});
 		
-			if( aClientId == w.gaming.mAuthenticatedUser ){
+			if( aClientId == w.gaming.mAuthenticatedUser ) {
 				var lHeight = w.gaming.mOnlineClients[ aClientId ].get( 0 ).height;
 				lHeight = ( lHeight )?lHeight.substr( 0, lHeight.length ):70;
 			
@@ -465,42 +520,35 @@ $.widget( "jws.gaming", {
 		 * @param aSubscribers 
 		 *  The list of all connected players
 		 **/
-	loadClientsList: function( aSubscribers ){
-		console.log(aSubscribers);
-		return;
-		// Remove green player from the subscribers list
-		for(var lElem in aSubscribers ){
-			if( w.gaming.mAuthenticatedUser ==  aSubscribers[ lElem ].id ) {
-				delete aSubscribers[ lElem ];
-				break;
+	loadClientsList: function( aSubscribers ) {
+		for( var aClient in aSubscribers ) {
+			// Remove green player from the subscribers list
+			if( w.gaming.mAuthenticatedUser ==  aClient ) {
+				delete aSubscribers[ aClient ];
+				continue;
 			}
-		}
-	
-		w.gaming.eTotalPlayers.text( aSubscribers.length );
-		if( aSubscribers.length > 0 ){
-			
-			$( aSubscribers ).each(function( aIndex, aClient ){
-				var lClientId = aClient;
+			//			console.log( aSubscribers[ aClient ] );
+			var lClientId = aClient;
 				
-				var lPlayerItem = $('<div class="player red_player" id="'+ lClientId +
-					'">'+ lClientId + '</div>');
+			var lPlayerItem = $('<div class="player red_player" id="'+ lClientId +
+				'">'+ lClientId + '</div>');
 				
-				// Use a default color for each client
-				var lColor = w.gaming.getClientColor( lClientId );
+			// Use a default color for each client
+			var lColor = w.gaming.getClientColor( lClientId );
 				
-				lPlayerItem.css({
-					color: lColor,
-					left: aClient.x +"px",
-					top: aClient.y + "px"
-				});
-				
-				// Add the user in a random location in the playGround
-				w.gaming.ePlayGround.append( lPlayerItem );
-				
-				// Saving the client in the onlineClients array
-				w.gaming.mOnlineClients[ lClientId ] = lPlayerItem;
+			lPlayerItem.css({
+				color: lColor,
+				left: aClient.x +"px",
+				top: aClient.y + "px"
 			});
+				
+			// Add the user in a random location in the playGround
+			w.gaming.ePlayGround.append( lPlayerItem );
+				
+			// Saving the client in the onlineClients array
+			w.gaming.mOnlineClients[ lClientId ] = lPlayerItem;
 		}
+		w.gaming.eTotalPlayers.text( aSubscribers.length );
 	},
 	
 	/**
@@ -513,10 +561,9 @@ $.widget( "jws.gaming", {
 		 * position of the y axis
 		 * 
 		 **/
-	addRedClient: function( aClientId, aX, aY ){
-		var lArr = aClientId.split( "@" );
+	addRedClient: function( aClientId, aX, aY ) {
 		var lPlayerItem = $('<div class="player red_player" id="'+ aClientId +
-			'">'+ lArr[0]+"<br/>"+ lArr[1] +'</div>');
+			'">'+ aClientId +'</div>');
 				
 		// Use a default color for each client
 		var lColor = w.gaming.getClientColor( aClientId );
@@ -540,16 +587,14 @@ $.widget( "jws.gaming", {
 		 * @param aClients 
 		 *  The list of clients to be shown to the users
 		 **/
-	removeClient: function( aClientId ){
+	removeClient: function( aClientId ) {
+		
 		if( w.gaming.mOnlineClients ) {
 			var lFoundKey = null;
 			for( var lKey in w.gaming.mOnlineClients ) {
-				var lId = lKey.split( "@" );
-				
-				if( aClientId  ==  lId[1] ) {
-					lFoundKey = lKey;
+				if( aClientId  ==  lKey ) {
 					w.gaming.mOnlineClients[ lKey ].detach().remove();
-					delete w.gaming.mOnlineClients[ lFoundKey ];
+					delete w.gaming.mOnlineClients[ lKey ];
 					w.gaming.eTotalPlayers.text( parseInt( w.gaming.eTotalPlayers.text()) - 1 );
 					return;
 				}
@@ -562,9 +607,9 @@ $.widget( "jws.gaming", {
 		 * Gets a color for a given clientID
 		 * @param aClientID
 		 **/
-	getClientColor: function( aClientID ){
+	getClientColor: function( aClientID ) {
 		var lColor = null;
-		if( aClientID != undefined ){
+		if( aClientID != undefined ) {
 			do{
 				// Change the color if it is assigned to other client
 				lColor = w.gaming.getRandomColor( 12 );
@@ -582,10 +627,10 @@ $.widget( "jws.gaming", {
 		 * Removes a defined color for a given clientID
 		 * @param aClientID
 		 **/
-	removeClientColor: function( aClientID ){
+	removeClientColor: function( aClientID ) {
 		if( w.gaming.mUserColors ) {
 			for( var lIdx = 0; lIdx < w.gaming.mUserColors.length; lIdx++ ) {
-				for(var lElem in w.gaming.mUserColors[ lIdx ]){
+				for(var lElem in w.gaming.mUserColors[ lIdx ]) {
 					if( aClientID ==  lElem) {
 						w.gaming.mUserColors.splice( lIdx, 1 );
 						break;
@@ -599,11 +644,11 @@ $.widget( "jws.gaming", {
 		 * Determines wether a given color is assigned to a user
 		 * @param aColor
 		 **/
-	isColorUsed: function( aColor ){
+	isColorUsed: function( aColor ) {
 		var lFound = false;
-		$( w.gaming.mUserColors ).each( function( aIndex, aElem ){
-			for ( var aKey in aElem ){
-				if( aElem[ aKey ] == aColor ){
+		$( w.gaming.mUserColors ).each( function( aIndex, aElem ) {
+			for ( var aKey in aElem ) {
+				if( aElem[ aKey ] == aColor ) {
 					lFound = true;
 					break;
 				}
@@ -620,7 +665,7 @@ $.widget( "jws.gaming", {
 		 * 10 - 15 high intensity   (light)
 		 * default intensity = 10
 		 */
-	getRandomColor: function( aIntensity ){
+	getRandomColor: function( aIntensity ) {
 		var lColorChars = [
 		'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
 		];
@@ -638,7 +683,7 @@ $.widget( "jws.gaming", {
 
 		return "#"+lRed + lGreen + lBlue;
 	},
-	getRandomNumber: function( aNumber ){
+	getRandomNumber: function( aNumber ) {
 		return Math.floor(Math.random(aNumber) * aNumber);
 	}
 });
