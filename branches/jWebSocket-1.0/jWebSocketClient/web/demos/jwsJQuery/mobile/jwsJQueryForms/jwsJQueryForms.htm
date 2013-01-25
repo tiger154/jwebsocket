@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+		<meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+		<!-- If Google's chrome frame installed, use it! -->
+		<!-- Comment needs to be BELOW this meta tag! -->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket jQuery Demo (uses jWebSocket Client and Server)
+		//	Copyright (c) 2011 Innotrade GmbH, Herzogenrath
+		//	****************************************************************************
+		//	This program is free software; you can redistribute it and/or modify it
+		//	under the terms of the GNU Lesser General Public License as published by the
+		//	Free Software Foundation; either version 3 of the License, or (at your
+		//	option) any later version.
+		//	This program is distributed in the hope that it will be useful, but WITHOUT
+		//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+		//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+		//	more details.
+		//	You should have received a copy of the GNU Lesser General Public License along
+		//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+		//	****************************************************************************
+		// authors: Victor and Carlos
+		-->
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<title>Compatibility of jQuery jWebSocket plugIn with jQueryMobile</title>
+
+		<link rel="stylesheet" href="../../../../lib/jQuery/jquery.mobile-v1.0b1.css"/>
+		<link rel="stylesheet" href="css/jwsJQueryForms.css"/>
+
+		<script type="text/javascript" src="../../../../lib/jQuery/jquery.js"></script>
+		<script type="text/javascript" src="../../../../lib/jQuery/jquery-ui/jquery-ui.js"></script>
+
+		<!--  JWEBSOCKET FRAMEWORK CLIENT LIBRARY	-->
+		<script type="text/javascript" src="../../../../res/js/jWebSocket.js"></script>
+
+		<!--  JWEBSOCKET JQUERY MOBILE PLUGIN -->
+		<script type="text/javascript" src="../../../../lib/jQuery/jws-plugin-1.0.js"></script>
+
+		<!--  Demo private script -->
+		<script type="text/javascript" src="js/jwsJQueryForms.js"></script>
+
+		<!-- JQUERY MOBILE JS LIBRARY -->
+		<script type="text/javascript" src="../../../../lib/jQuery/jquery.mobile-v1.0b1.js"></script>
+	</head>
+	<body>
+		<!-- MAIN PAGE       -->
+		<div data-role="page" data-theme="b" id="mainPage">
+
+            <div data-role="header" data-theme="b" data-position="inline">
+                <h1>jQuery plugin for jWebSocket compatible with jQuery Mobile</h1>
+            </div>
+			<div class="demo_box_statusbar">
+				<div class="client_status offline">disconnected</div><div class="line"></div>
+				<div class="client_id">Client-ID: - </div>
+			</div>
+
+            <div data-role="content" id="users_list">
+				<ul data-role="listview" data-inset="true" 
+					data-theme="c" data-dividertheme="a" id="list">
+					<li data-role="list-divider" data-inset="true">User control 
+						<div class="ui-li-count" title="New users" id="new_users">0</div>
+					</li> <!-- /list-divider -->
+					<li class="no_elements">There are not items to show</li>
+					<!--					<li>
+											<a>
+												<h3>rschulze</h3>
+												<p>Name: <strong>Rebecca Schulze</strong></p>
+												<p class="ui-li-aside"><strong>r.schulze@web.de</strong></p>
+											</a>
+											<a data-theme='b' data-icon='delete'></a>
+										</li>-->
+				</ul>
+
+				<div id="pager">
+					<div data-role="controlgroup" data-type="horizontal" data-position="inline">
+						<a id="btn_first" data-role="button" data-icon="back" data-iconpos="notext" data-theme="a" title="First"></a>
+						<a id="btn_prev" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="a" title="Previous"></a>
+						<div data-role="button" data-theme="c" style="margin-left: 2px;">
+							<div class="ui-block-a" id="page_counter">
+								<div>Page&nbsp;</div>
+								<div class="current_page">0</div> 
+								<div>&nbsp;of&nbsp;</div> 
+								<div class="max_pages">0</div>
+							</div>
+						</div><!-- /grid-a -->
+						<a id="btn_next" data-role="button" data-icon="arrow-r" data-iconpos="notext" data-theme="a" title="Next"></a>
+						<a id="btn_last" data-role="button" data-icon="forward" data-iconpos="notext" data-theme="a" title="Last"></a>
+					</div>
+				</div>
+            </div>
+
+			<div class="footer" data-role="footer" data-position="fixed">
+				<div data-role="navbar">
+					<ul>
+						<li><a data-theme="a" data-icon="home" href="#mainPage" class="ui-btn-active">Home</a></li>
+						<li><a data-theme="a" data-icon="add" href="#createUserPage">Create User</a></li>
+					</ul>
+				</div><!-- /navbar -->
+				<div data-role="footer" data-theme="b" class="jwebsocket_links">
+					<a href ="http://jwebsocket.org">jWebSocket.org</a>
+					<a href ="http://jquery.com">jQuery.com</a>
+					<a href ="http://jquerymobile.com">jQueryMobile.com</a>
+				</div>
+			</div>
+		</div>
+
+		<!--   FORM PAGE TO BE SHOWN    -->
+        <div data-role="page" data-theme="b" id="createUserPage">
+            <div data-role="header" data-position="inline">
+				<a data-icon="back" data-rel="back">Back</a>
+				<h1>Create User</h1>
+			</div>
+
+			<div class="demo_box_statusbar">
+				<div class="client_status offline">disconnected</div><div class="line"></div>
+				<div class="client_id">Client-ID: - </div>
+			</div>
+            <div data-role="content">
+                <h1>Write your personal data please:</h1>
+                <div data-role="fieldcontain">
+                    <label for="username">User:</label>
+                    <input type="text" name="username" id="username" value=""  />
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" id="name" value=""  />
+                    <label for="lastname">Last Name:</label>
+                    <input type="text" name="lastname" id="lastname" value=""  />
+					<label for="mail">Mail:</label>
+                    <input type="text" name="mail" id="mail" value=""  />
+					<div data-role="controlgroup" data-type="horizontal">
+						<a data-role="button" data-icon="check" style="width:150px;" id="senduser">Accept</a>
+						<a data-role="button" data-icon="delete" data-rel="back">Cancel</a>
+					</div>
+                </div>
+            </div>
+            <div data-role="footer" class="footer" data-position="fixed">
+				<div data-role="navbar">
+					<ul>
+						<li><a data-theme="a" data-icon="home" href="#mainPage" data-transition="flip" class="ui-btn-up-a">Home</a></li>
+						<li><a data-theme="a" data-icon="add" href="#createUserPage" class="ui-btn-active">Create User</a></li>
+					</ul>
+				</div><!-- /navbar -->
+				<div data-role="footer" data-theme="b" class="jwebsocket_links">
+					<a href ="http://jwebsocket.org">jWebSocket.org</a>
+					<a href ="http://jquery.com">jQuery.com</a>
+					<a href ="http://jquerymobile.com">jQueryMobile.com</a>
+				</div>
+			</div>
+        </div>
+	</body>
+</html>
