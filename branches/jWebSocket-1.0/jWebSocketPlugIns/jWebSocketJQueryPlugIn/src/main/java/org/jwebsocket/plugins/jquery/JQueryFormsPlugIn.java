@@ -17,7 +17,9 @@ package org.jwebsocket.plugins.jquery;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import javolution.util.FastList;
+import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -138,8 +140,18 @@ public class JQueryFormsPlugIn extends TokenPlugIn {
 		mUsers.setPageSize(aToken.getInteger("pagesize"));
 
 		List<User> lPageList = mUsers.getPageList();
+		Token ltk;
+		FastList<Token> lUsersList = new FastList<Token>();
+		for (User lUser : lPageList) {
+			ltk = TokenFactory.createToken();
+			ltk.setString("name", lUser.getName());
+			ltk.setString("lastname", lUser.getLastname());
+			ltk.setString("mail", lUser.getMail());
+			ltk.setString("username", lUser.getUsername());
+			lUsersList.add(ltk);
+		}
 		//SETTING THE DATA LIST TO THE OUTGOING TOKEN
-		lResult.setList("users", lPageList);
+		lResult.setList("users", lUsersList);
 		lResult.setInteger("currentpage", mUsers.getPage());
 		lResult.setInteger("maxpages", mUsers.getPageCount());
 
