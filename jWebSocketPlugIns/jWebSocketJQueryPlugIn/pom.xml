@@ -70,6 +70,7 @@
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketServerAPI</artifactId>
 			<version>${project.version}</version>
+			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>

@@ -18,8 +18,6 @@
  * of this plugIn is implemented in the StreamingPlugIn in the following class:
  * <tt>org.jwebsocket.plugins.streaming.StreamingPlugIn</tt>, this plugIn is not
  * used anymore by jWebSocket, will be removed very soon.
- *
- * @author Victor and Carlos
  */
 package org.jwebsocket.plugins.jquery;
 
@@ -37,6 +35,9 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
+/**
+ * @author Victor Antonio Barzana Crespo
+ */
 public class JQueryPlugIn extends TokenPlugIn {
 
 	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>().shared();
