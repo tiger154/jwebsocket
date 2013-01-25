@@ -17,9 +17,7 @@ package org.jwebsocket.plugins.jquery;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import javolution.util.FastList;
-import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -170,15 +168,9 @@ public class JQueryFormsPlugIn extends TokenPlugIn {
 		mUsers.getSource().add(new User("aschulze", "a.schulze@jwebsocket.org", "Alexander", "Schulze"));
 		mUsers.getSource().add(new User("rsantamaria", "rsantamaria@jwebsocket.org", "Rolando", "Santamaria"));
 		mUsers.getSource().add(new User("vbarzana", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
-		mUsers.getSource().add(new User("vbarzana1", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
-		mUsers.getSource().add(new User("vbarzana2", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
-		mUsers.getSource().add(new User("vbarzana3", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
-		mUsers.getSource().add(new User("vbarzana4", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
-		mUsers.getSource().add(new User("vbarzana5", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
-		mUsers.getSource().add(new User("vbarzana6", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
-		mUsers.getSource().add(new User("vbarzana7", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
-		mUsers.getSource().add(new User("vbarzana8", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
-		mUsers.getSource().add(new User("vbarzana9", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
+		mUsers.getSource().add(new User("predrag", "stojadinovicp@gmail.com", "Predrag", "Stojadinovic"));
+		mUsers.getSource().add(new User("puran", "p.singh@jwebsocket.org", "Puran", "Singh"));
+		mUsers.getSource().add(new User("quentin", "quentin.ambard@gmail.com", "Quentin", "Ambard"));
 	}
 
 	private void broadcast(Token aToken) {
