@@ -16,7 +16,7 @@
 
 /**
  * jWebSocket Channels Widget
- * @author vbarzana
+ * @author Victor Antonio Barzana Crespo
  */
 
 $.widget( "jws.channels", {
@@ -453,7 +453,7 @@ $.widget( "jws.channels", {
 	 * Fired when a user subscribes to a channel you are subscribed already
 	 **/
 	onChannelSubscription: function( aEvent ) {
-//		w.channels.addSubscriberToTable( aEvent );
+		w.channels.addSubscriberToTable( aEvent );
 		w.channels.addChannelToTable( w.channels.mChannelsList[ aEvent.channelId ], w.channels.eSubscriptionsTable );
 		w.channels.switchSubscriptionsArea( );
 	},
@@ -484,10 +484,10 @@ $.widget( "jws.channels", {
 	},
 	
 	/**
- * Executed every time the server sends a message to the client
- * @param aEvent
- * @param aToken
- **/
+	 * Executed every time the server sends a message to the client
+	 * @param aEvent
+	 * @param aToken
+	 **/
 	onMessage: function( aEvent, aToken ) {
 		if( aToken ) {
 			// is it a response from a previous request of this client?
@@ -502,7 +502,7 @@ $.widget( "jws.channels", {
 				} else if ( aToken.reqType == "getSubscribers" ){
 					w.channels.onChannelSubscribers( aToken );
 				} else if ( aToken.reqType == "subscribe" ){
-//					w.channels.onChannelSubscription( aToken );
+					w.channels.onChannelSubscription( aToken );
 				} else if ( aToken.reqType == "unsubscribe" ){
 					w.channels.onChannelUnsubscription( aToken );
 				}
@@ -794,6 +794,62 @@ $.widget( "jws.channels", {
 		}
 	},
 	
+	/**
+	 * Removes a subscription in the subscriptions table
+	 */
+	removeSubscriptionFromTable: function( aChannelId ) {
+		var lChannelId = null,
+		lRow = null, lAllRows = w.channels.eSubscriptionsTable.find( "tr" );
+		lAllRows.each( function( ) {
+			lRow = $( this );
+			// Don't check in the header of the table
+			if( !lRow.hasClass( w.channels.CLS_TH ) ) {
+				// Getting the channel id cell
+				lChannelId = lRow.children( ).first( ).next( ).text( );
+				if( lChannelId == aChannelId ) {
+					lRow.remove( );
+					w.channels.eSubscriptionsTable.stripe( );
+				}
+			}
+		});
+		lAllRows = w.channels.eSubscriptionsTable.find( "tr" );
+		if( lAllRows.length <= 1 ) {
+			var lNoSubscriptionsRow = $( "<tr class='" + 
+				w.channels.CLS_NOCHANNELS + "'></tr>" );
+			lNoSubscriptionsRow.append( $( "<td rowspan='4'>" + 
+				w.channels.MSG_NOSUBSCRIPTIONS + "</td>" ) );
+			w.channels.eSubscriptionsTable.append( lNoSubscriptionsRow );
+		}
+	},
+	
+	/**
+	 * Removes a subscriber in the subscribers table
+	 */
+	removeSubscriberFromTable: function( aSubscriber ) {
+		var lSubscriberId = null,
+		lRow = null, lAllRows = w.channels.eSubscribersTable.find( "tr" );
+		lAllRows.each( function( ) {
+			lRow = $( this );
+			// Don't check in the header of the table
+			if( !lRow.hasClass( w.channels.CLS_TH ) ) {
+				// Getting the channel id cell
+				lSubscriberId = lRow.children( ).first( ).text( );
+				if( lSubscriberId == aSubscriber ) {
+					lRow.remove( );
+					w.channels.eSubscribersTable.stripe( );
+				}
+			}
+		});
+		lAllRows = w.channels.eSubscribersTable.find( "tr" );
+		if( lAllRows.length <= 1 ) {
+			var lNoSubscribersRow = $( "<tr class='" + 
+				w.channels.CLS_NOCHANNELS + "'></tr>" );
+			lNoSubscribersRow.append( $( "<td rowspan='4'>" + 
+				w.channels.MSG_NOSUBSCRIBERS + "</td>" ) );
+			w.channels.eSubscribersTable.append( lNoSubscribersRow );
+		}
+	},
+	
 	clearChannelTable: function( ) {
 		w.channels.eChannelsTable.find( "tr" ).each( function( ) {
 			if( $( this ).attr( "class" ) != w.channels.CLS_TH ) {
@@ -843,10 +899,10 @@ $.widget( "jws.channels", {
 });
 
 /**
-  * Creating an extension to stripe tables
-  * The simplest way to use is $("#anytable").stripe( );
-  * Note: this is especially adapted to the structure of the tables of this demo
-  */
+ * Creating an extension to stripe tables
+ * The simplest way to use is $("#anytable").stripe( );
+ * Note: this is especially adapted to the structure of the tables of this demo
+ */
 (function($){
 	$.fn.stripe = function( ) {
 		var lTable = this,
