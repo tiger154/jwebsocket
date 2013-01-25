@@ -22,7 +22,7 @@ w = { };
 $.widget( "jws.pager", {
 	_init: function( ) {
 		// ------------- VARIABLES -------------
-		this.mPageSize	= 5; 
+		this.mPageSize	= 3; 
 		this.mCurrPage	= 1;
 		this.mMaxPages	= 0;
 		
