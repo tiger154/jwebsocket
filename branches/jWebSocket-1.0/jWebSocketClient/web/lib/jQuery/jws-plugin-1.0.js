@@ -7,7 +7,7 @@
  * Requires: jQuery v1.3.2 or later, jWebSocket.js
  */
 ( function( $ ){
-	$.jws = $( {} );
+	$.jws = $( { } );
     
 	$.jws.open = function(  aJwsServerURL, aTokenClient, aTimeout ){
 		if( jws.browserSupportsWebSockets() ){
@@ -20,8 +20,8 @@
 				$.jws.aTokenClient = new jws.jWebSocketJSONClient();
 				$.jws.aTokenClient.open( lURL, {
 					OnOpen: function( aToken ){
-						$.jws.trigger( 'open', aToken );
 						$.jws.aTokenClient.addPlugIn( $.jws );
+						$.jws.trigger( 'open', aToken );
 					},
 					OnClose: function(){
 						$.jws.trigger( 'close' );
@@ -42,7 +42,7 @@
 	};
 	
 	$.jws.submit = function( aNs, aType, aArgs, aCallbacks, aOptions ){
-		var lToken = {};
+		var lToken = { };
 		if ( aArgs ){
 			lToken = aArgs;
 		}
@@ -60,10 +60,14 @@
 			callbacks: aCallbacks,
 			OnResponse: function( aToken ){
 				if ( aToken.code == -1 ) {
-					return aCallbacks.failure( aToken );
+					if( aCallbacks && aCallbacks.failure ) {
+						return aCallbacks.failure( aToken );
+					}
 				}
 				else if ( aToken.code == 0 ) {
-					return aCallbacks.success( aToken );
+					if( aCallbacks && aCallbacks.success ) {
+						return aCallbacks.success( aToken );
+					}
 				}
 			},
 			OnTimeOut: function(){
