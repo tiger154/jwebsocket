@@ -549,7 +549,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Returns TRUE if a file path is inside of a given base path, FALSE otherwise
+	 * Returns TRUE if a file path is inside of a given base path, FALSE
+	 * otherwise 
 	 *
 	 * @param aFile
 	 * @param aBasePath
