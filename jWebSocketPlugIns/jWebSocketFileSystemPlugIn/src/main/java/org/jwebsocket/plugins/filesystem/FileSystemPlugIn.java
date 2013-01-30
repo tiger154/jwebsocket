@@ -549,14 +549,16 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
+	 * Returns TRUE if a file path is inside of a given base path, FALSE otherwise
 	 *
 	 * @param aFile
-	 * @param aBaseDir
+	 * @param aBasePath
 	 * @return
 	 */
-	protected boolean isPathInFS(File aFile, String aBaseDir) {
+	protected boolean isPathInFS(File aFile, String aBasePath) {
 		try {
-			if (!FilenameUtils.separatorsToSystem(aFile.getCanonicalPath()).startsWith(FilenameUtils.separatorsToSystem(aBaseDir))) {
+			if (!FilenameUtils.separatorsToSystem(aFile.getCanonicalPath())
+					.startsWith(FilenameUtils.separatorsToSystem(aBasePath))) {
 				return false;
 			}
 		} catch (Exception lEx) {
