@@ -210,9 +210,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		Token lResponse = createResponse(aToken);
 		try {
-			// TODO: standardize this condition with all other similar conditions in this file
-			if (!FilenameUtils.separatorsToSystem(lFile.getCanonicalPath()).startsWith(FilenameUtils.separatorsToSystem(lBaseDir))) {
-			// if (!lFile.getCanonicalPath().startsWith(lBaseDir)) {
+			if (!isPathInFS(lFile, lBaseDir)) {
 				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
 						+ "' is out of the file-system location!");
 				return;
@@ -302,9 +300,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lFullPath = lBaseDir + lFilename;
 		File lFile = new File(lFullPath);
 		try {
-			// TODO: standardize this condition with all other similar conditions in this file
-			if (!FilenameUtils.separatorsToSystem(lFile.getCanonicalPath()).startsWith(FilenameUtils.separatorsToSystem(lBaseDir))) {
-			// if (!lFile.getCanonicalPath().startsWith(lBaseDir)) {
+			if (!isPathInFS(lFile, lBaseDir)) {
 				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
 						+ "' is out of the file-system location!");
 				return;
@@ -401,9 +397,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		byte[] lBA;
 		try {
-			// TODO: standardize this condition with all other similar conditions in this file
-			if (!FilenameUtils.separatorsToSystem(lFile.getCanonicalPath()).startsWith(FilenameUtils.separatorsToSystem(lBaseDir))) {
-			// if (!lFile.getCanonicalPath().startsWith(lBaseDir)) {
+			if (!isPathInFS(lFile, lBaseDir)) {
 				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
 						+ "' is out of the file-system location!");
 				return;
@@ -555,6 +549,24 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
+	 *
+	 * @param aFile
+	 * @param aBaseDir
+	 * @return
+	 */
+	protected boolean isPathInFS(File aFile, String aBaseDir) {
+		try {
+			if (!FilenameUtils.separatorsToSystem(aFile.getCanonicalPath()).startsWith(FilenameUtils.separatorsToSystem(aBaseDir))) {
+				return false;
+			}
+		} catch (Exception lEx) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Delete a file
 	 *
 	 * @param aConnector
@@ -582,9 +594,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		File lFile = new File(lFilePath);
 
 		try {
-			// TODO: standardize this condition with all other similar conditions in this file
-			if (!FilenameUtils.separatorsToSystem(lFile.getCanonicalPath()).startsWith(FilenameUtils.separatorsToSystem(lBaseDir))) {
-			// if (!lFile.getCanonicalPath().startsWith(lBaseDir)) {
+			if (!isPathInFS(lFile, lBaseDir)) {
 				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
 						+ "' is out of the file-system location!");
 				return;
