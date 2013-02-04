@@ -37,7 +37,8 @@ import org.jwebsocket.token.TokenFactory;
  * @author Alexander Schulze, Roderick Baier (improvements regarding JSON
  * array), Quentin Ambard (add support for Map and List for PacketToToken and
  * tokeToPacket).
- * @author kyberneees (improvements performance converting Object to JSON string)
+ * @author kyberneees (improvements performance converting Object to JSON
+ * string)
  */
 @SuppressWarnings("rawtypes")
 public class JSONProcessor {
@@ -141,7 +142,7 @@ public class JSONProcessor {
 		if (null == aObject) {
 			aBuffer.append("null");
 		} else if (aObject instanceof String || aObject instanceof WebSocketPacket) {
-			aBuffer.append("\"").append(aObject.toString().replace("\"", "\\\"")).append("\"");
+			aBuffer.append("\"").append(escapeForJSON(aObject.toString())).append("\"");
 		} else if (aObject instanceof Integer) {
 			aBuffer.append(((Integer) aObject).toString());
 		} else if (aObject instanceof Object[]) {
@@ -163,8 +164,16 @@ public class JSONProcessor {
 		} else if (aObject instanceof Map) {
 			mapToJSONString((Map) aObject, aBuffer);
 		} else {
-			aBuffer.append("\"").append(aObject.toString().replace("\"", "\\\"")).append("\"");
+			aBuffer.append("\"").append(escapeForJSON(aObject.toString())).append("\"");
 		}
+	}
+
+	public static String escapeForJSON(String aValue) {
+		aValue = aValue.replace("\"", "\\\"");
+		aValue = aValue.replace("\n", "<br/>");
+		aValue = aValue.replace("\t", "    ");
+
+		return aValue;
 	}
 
 	/**
@@ -211,7 +220,7 @@ public class JSONProcessor {
 	public static JSONArray objectListToJSONArray(Object[] aObjectList)
 			throws JSONException {
 		JSONArray lArray = new JSONArray();
-		for (Object lObj : aObjectList){
+		for (Object lObj : aObjectList) {
 			lArray.put(convertObjectToJSON(lObj));
 		}
 		return lArray;

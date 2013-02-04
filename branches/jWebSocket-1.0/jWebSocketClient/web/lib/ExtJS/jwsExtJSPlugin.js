@@ -1,5 +1,6 @@
 		
 Ext.define( 'Ext.jws', {
+	requires: ['Ext.form.Basic'],
 	extend: 'Ext.util.Observable',
 	singleton: true,
 
@@ -89,27 +90,32 @@ Ext.define( 'Ext.jws', {
 		this.fireEvent( 'beforesend', lToken );
 		
 		this.fTokenClient.sendToken( lToken, {
-			callbacks: aCallbacks,
 			OnResponse: function( aToken ) {
 				if ( aToken.code < 0 ) {
-					if( aScope == undefined ){
-						return aCallbacks.failure( aToken );
+					if ('function' == typeof aCallbacks['failure']){
+						if( aScope == undefined ){
+							return aCallbacks.failure( aToken );
+						}
+						aCallbacks.failure.call( lScope,aToken );
 					}
-					return aCallbacks.failure.call( lScope,aToken );
 				} else {
-					if( aScope == undefined ) {
-						return aCallbacks.success( aToken );
+					if ('function' == typeof aCallbacks['success']){
+						if( aScope == undefined ) {
+							return aCallbacks.success( aToken );
+						}
+						aCallbacks.success.call( lScope,aToken );
 					}
-					return aCallbacks.success.call( lScope,aToken );
 				}
 			},
 			OnTimeOut: function( aToken ) {
-				if( aScope == undefined ) {
-					return aCallbacks.timeout( aToken );
+				if ('function' == typeof aCallbacks['timeout']){
+					if( aScope == undefined ) {
+						return aCallbacks.timeout( aToken );
+					}
+					aCallbacks.timeout.call( lScope,aToken );
 				}
-				return aCallbacks.timeout.call( lScope,aToken );
 			}
-		} );
+		});
 	},
 		
 	addPlugIn: function( aPlugIn ) {

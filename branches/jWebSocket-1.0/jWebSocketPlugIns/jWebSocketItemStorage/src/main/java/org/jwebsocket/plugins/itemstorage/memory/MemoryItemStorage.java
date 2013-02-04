@@ -58,7 +58,7 @@ public class MemoryItemStorage extends BaseItemStorage {
 		ItemStorageEventManager.onBeforeSaveItem(aItem, this);
 
 		mData.put(aItem.getPK(), aItem);
-		
+
 		ItemStorageEventManager.onItemSaved(aItem, this);
 	}
 
@@ -74,10 +74,9 @@ public class MemoryItemStorage extends BaseItemStorage {
 
 	@Override
 	public List<IItem> list(int aOffset, int aLength) throws Exception {
-		int lTotalSize = mData.size();
 		Assert.notNull(aOffset, "The offset argument cannot be null!");
 		Assert.notNull(aLength, "The length argument cannot be null!");
-		Assert.isTrue(aOffset >= 0 && aOffset < lTotalSize,
+		Assert.isTrue(aOffset >= 0 && aOffset <= size(),
 				"Index out of bound!");
 		Assert.isTrue(aLength > 0, "Invalid length value. Expected: length > 0!");
 
@@ -106,10 +105,9 @@ public class MemoryItemStorage extends BaseItemStorage {
 		Assert.isTrue(lDef.containsAttribute(aAttribute),
 				"The atribute '" + aAttribute + "' does not exists on item of type '" + mType + "'!");
 
-		int lTotalSize = mData.size();
 		Assert.notNull(aOffset, "The offset argument cannot be null!");
 		Assert.notNull(aLength, "The length argument cannot be null!");
-		Assert.isTrue(aOffset >= 0 && aOffset < lTotalSize,
+		Assert.isTrue(aOffset >= 0 && aOffset <= size(),
 				"Index out of bound!");
 		Assert.isTrue(aLength > 0, "Invalid length value. Expected: length > 0!");
 

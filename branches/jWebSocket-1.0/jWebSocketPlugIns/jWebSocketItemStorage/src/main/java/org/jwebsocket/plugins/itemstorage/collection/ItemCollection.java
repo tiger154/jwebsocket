@@ -77,11 +77,13 @@ public class ItemCollection implements IItemCollection {
 
 	@Override
 	public void setCapacity(int aCapacity) {
-		Assert.isTrue(aCapacity >= 0, "Invalid item collection capacity! Expected value: capacity > 0");
-		Assert.isTrue(aCapacity >= getItemStorage().size(), "Invalid item collection capacity! Expected value: capacity > size");
+		Assert.isTrue(aCapacity >= 0, "Invalid item collection capacity! Expected value: capacity >= 0");
+		if (aCapacity > 0) {
+			Assert.isTrue(aCapacity >= getItemStorage().size(), "Invalid item collection capacity! Expected value: capacity > size");
+		}
 		mData.put(ATTR_CAPACITY, aCapacity);
-		
-		if (0 == aCapacity){
+
+		if (0 == aCapacity) {
 			mData.put(ATTR_CAPPED, false);
 		}
 	}
