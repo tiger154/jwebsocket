@@ -72,4 +72,19 @@ public class BaseLogsManager implements ILogsManager {
 	@Override
 	public void shutdown() throws Exception {
 	}
+
+	@Override
+	public Long size() {
+		return null;
+	}
+
+	@Override
+	public Long size(String aElementType, String aActionId) {
+		return null;
+	}
+
+	@Override
+	public Long size(String aElementType, String aCollection, String aActionId) {
+		return null;
+	}
 }

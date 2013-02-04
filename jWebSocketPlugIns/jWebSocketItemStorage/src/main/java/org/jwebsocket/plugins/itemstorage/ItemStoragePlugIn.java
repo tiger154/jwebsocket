@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.plugins.annotations.Role;
@@ -293,6 +294,30 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 			}
 		} catch (Exception lEx) {
 		}
+	}
+
+	@Override
+	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+		for (String lCollectionName : mCollectionProvider.collectionNames()) {
+			try {
+				IItemCollection lCollection = mCollectionProvider.getCollection(lCollectionName);
+				String lClient = aConnector.getId();
+				
+				// removing subscriber
+				if (lCollection.getSubcribers().contains(lClient)) {
+					ItemCollectionUtils.unsubscribeCollection(mCollectionProvider, lCollection, lClient);
+				}
+				
+				// removing publisher
+				if (lCollection.getPublishers().contains(lClient)){
+					lCollection.getPublishers().remove(lClient);
+					mCollectionProvider.saveCollection(lCollection);
+				}
+			} catch (Exception lEx) {
+			}
+		}
+
+		super.connectorStopped(aConnector, aCloseReason);
 	}
 
 	/**

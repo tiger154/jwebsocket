@@ -47,13 +47,13 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 	}
 
 	@Override
-	public void removeCollection(String aName) throws Exception {
+	public synchronized void removeCollection(String aName) throws Exception {
 		mItemStorageProvider.removeItemStorage(aName);
 		mCollections.remove(aName);
 	}
 
 	@Override
-	public void saveCollection(IItemCollection aCollection) throws Exception {
+	public synchronized void saveCollection(IItemCollection aCollection) throws Exception {
 		aCollection.validate();
 		boolean lNew = false;
 
