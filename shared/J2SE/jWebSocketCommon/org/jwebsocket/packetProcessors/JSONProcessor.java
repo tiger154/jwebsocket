@@ -169,10 +169,15 @@ public class JSONProcessor {
 	}
 
 	public static String escapeForJSON(String aValue) {
-		aValue = aValue.replace("\"", "\\\"");
-		aValue = aValue.replace("\n", "<br/>");
-		aValue = aValue.replace("\t", "    ");
-
+		aValue = aValue
+				.replace("\\", "\\\\")
+				.replace("\"", "\\\"")
+				.replace("\n", "\\n")
+				.replace("\t", "\\t")
+				.replace("\r", "\\r")
+				.replace("\b", "\\b")
+				.replace("\f", "\\f")
+				;
 		return aValue;
 	}
 
