@@ -50,7 +50,7 @@ public class ClusterPlugIn extends TokenPlugIn {
 		// specify default name space for admin plugin
 		this.setNamespace(NS_CLUSTER);
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Cluster plug-in successfully loaded.");
+			mLog.info("Cluster plug-in successfully instantiated.");
 		}
 	}
 
