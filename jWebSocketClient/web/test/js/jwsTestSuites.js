@@ -66,8 +66,8 @@ function runDefaultAPISuite() {
 function runEventsSuite() {
 	//run Events tests
 	jws.myConn = new jws.jWebSocketJSONClient();
-	//jws.myConn.open(jws.JWS_SERVER_URL, {
-	jws.myConn.open("wss://localhost:9797/jWebSocket/jWebSocket", {
+	jws.myConn.open(jws.JWS_SERVER_URL, {
+	// jws.myConn.open("wss://localhost:9797/jWebSocket/jWebSocket", {
 		OnWelcome: function (){
 			console.log("Welcome received...");
 			//Initializing events in the client... 
