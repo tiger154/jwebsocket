@@ -22,7 +22,6 @@ import android.widget.*;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.client.plugins.sample.SamplePlugIn;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
 
