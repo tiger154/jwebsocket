@@ -316,6 +316,7 @@ public class JWebSocketConfig implements Config {
 						mBootstrapPath = aArgs[lIdx + 1];
 					} else if ("-home".equals(aArgs[lIdx])) {
 						mJWebSocketHome = aArgs[lIdx + 1];
+						mJWebSocketHome = Tools.expandEnvVarsAndProps(mJWebSocketHome);
 						// check trailing backslash
 						adjustJWebSocketHome();
 						System.setProperty(

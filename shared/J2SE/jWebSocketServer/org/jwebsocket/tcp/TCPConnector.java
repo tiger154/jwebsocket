@@ -47,7 +47,7 @@ public class TCPConnector extends BaseConnector {
 	private InputStream mIn = null;
 	private OutputStream mOut = null;
 	private Socket mClientSocket = null;
-	private static final int CONNECT_TIMEOUT = 2000;
+	private static final int CONNECT_TIMEOUT = 5000;
 	/**
 	 *
 	 */
