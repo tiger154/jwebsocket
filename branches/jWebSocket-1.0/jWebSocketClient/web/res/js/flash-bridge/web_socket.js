@@ -14,7 +14,7 @@
     window.WebSocket = MozWebSocket;
     return;
   }
-
+  
   var logger;
   if (window.WEB_SOCKET_LOGGER) {
     logger = WEB_SOCKET_LOGGER;
@@ -221,6 +221,8 @@
   WebSocket.CLOSING = 2;
   WebSocket.CLOSED = 3;
 
+  // Field to check implementation of WebSocket.
+  WebSocket.__isFlashImplementation = true;
   WebSocket.__initialized = false;
   WebSocket.__flash = null;
   WebSocket.__instances = {};
@@ -232,7 +234,7 @@
    * @param {string} url
    */
   WebSocket.loadFlashPolicyFile = function(url){
-   WebSocket.__addTask(function() {
+    WebSocket.__addTask(function() {
       WebSocket.__flash.loadManualPolicyFile(url);
     });
   };
