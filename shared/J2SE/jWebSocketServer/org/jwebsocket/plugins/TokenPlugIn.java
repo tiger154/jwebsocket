@@ -374,6 +374,10 @@ public class TokenPlugIn extends BasePlugIn {
 	 * @return
 	 */
 	public Object getConfigParam(WebSocketConnector aConnector, String aKey, Object aDefaultValue) {
+		if (null == aConnector.getSession().getStorage()) {
+			return aDefaultValue;
+		}
+
 		Object lValue = aConnector.getSession().getStorage().get(getNamespace() + "." + aKey);
 
 		if (null == lValue) {

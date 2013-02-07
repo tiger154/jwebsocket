@@ -19,10 +19,13 @@ import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.*;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.plugins.system.SystemPlugIn;
+import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 
 /**
- * Manages the jWebSocket sessions. It uses a cache implementation, 
- * which can be configured by Spring.
+ * Manages the jWebSocket sessions. It uses a cache implementation, which can be
+ * configured by Spring.
+ *
  * @author kyberneees, aschulze
  */
 public class SessionManager implements ISessionManager {
@@ -33,7 +36,7 @@ public class SessionManager implements ISessionManager {
 	private Map<String, IBasicStorage<String, Object>> mSessionsReferences;
 
 	/**
-	 * 
+	 *
 	 * {@inheritDoc }
 	 */
 	@Override
@@ -42,7 +45,7 @@ public class SessionManager implements ISessionManager {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aReconnectionManager
 	 */
 	public void setReconnectionManager(ISessionReconnectionManager aReconnectionManager) {
@@ -50,7 +53,7 @@ public class SessionManager implements ISessionManager {
 	}
 
 	/**
-	 * 
+	 *
 	 * {@inheritDoc }
 	 */
 	@Override
@@ -59,7 +62,7 @@ public class SessionManager implements ISessionManager {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aStorageProvider
 	 */
 	public void setStorageProvider(IStorageProvider aStorageProvider) {
@@ -67,7 +70,7 @@ public class SessionManager implements ISessionManager {
 	}
 
 	/**
-	 * 
+	 *
 	 * {@inheritDoc }
 	 */
 	@Override
@@ -76,7 +79,7 @@ public class SessionManager implements ISessionManager {
 	}
 
 	/**
-	 * 
+	 *
 	 * {@inheritDoc }
 	 */
 	@Override
@@ -100,10 +103,9 @@ public class SessionManager implements ISessionManager {
 
 			return lStorage;
 		} else {
-            
-			// Avoid security holes 
+			// avoid security holes 
 			mReconnectionManager.getReconnectionIndex().remove(aSessionId);
-			// Recovered session, require to be removed from the trash
+			// recovered session, require to be removed from the trash
 			mReconnectionManager.getSessionIdsTrash().remove(aSessionId);
 
 			IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(aSessionId);
@@ -114,7 +116,7 @@ public class SessionManager implements ISessionManager {
 	}
 
 	/**
-	 * 
+	 *
 	 * {@inheritDoc }
 	 */
 	@Override
@@ -123,7 +125,7 @@ public class SessionManager implements ISessionManager {
 	}
 
 	/**
-	 * 
+	 *
 	 * {@inheritDoc }
 	 */
 	@Override
@@ -131,10 +133,54 @@ public class SessionManager implements ISessionManager {
 		mSessionsReferences.clear();
 	}
 
-    /**
-     * @return the mSessionsReferences
-     */
-    public Map<String, IBasicStorage<String, Object>> getSessionsReferences() {
-        return mSessionsReferences;
-    }
+	/**
+	 * @return the mSessionsReferences
+	 */
+	public Map<String, IBasicStorage<String, Object>> getSessionsReferences() {
+		return mSessionsReferences;
+	}
+
+	@Override
+	public void connectorStarted(WebSocketConnector aConnector) throws Exception {
+		Map<String, Object> lStorage = null;
+		if (null == aConnector.getSession().getStorage()) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Creating the WebSocketSession persistent storage "
+						+ "for connector '" + aConnector.getId() + "'...");
+			}
+			lStorage = (Map<String, Object>) getSession(aConnector.getSession().getSessionId());
+			aConnector.getSession().setStorage(lStorage);
+		}
+
+		// setting the username
+		if (lStorage.containsKey(SystemPlugIn.USERNAME)) {
+			aConnector.setUsername(lStorage.get(SystemPlugIn.USERNAME).toString());
+		}
+	}
+
+	@Override
+	public void connectorStopped(WebSocketConnector aConnector) throws Exception {
+		Map<String, Object> lStorage = aConnector.getSession().getStorage();
+
+		// ommiting if running in embedded session mode (HTTP servlet containers)
+		if (lStorage != null && !(lStorage instanceof HttpSessionStorage)) {
+			String lSessionId = aConnector.getSession().getSessionId();
+
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Putting the session: " + lSessionId
+						+ ", in reconnection mode...");
+			}
+			synchronized (this) {
+				// removing the local cached  storage instance. 
+				// free space if the client never gets reconnected
+				getSessionsReferences().remove(lSessionId);
+				getReconnectionManager().putInReconnectionMode(aConnector.getSession());
+			}
+		}
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Removing connection specific storage for connector '" + aConnector.getId() + "'...");
+		}
+		getStorageProvider().removeStorage(aConnector.getId());
+	}
 }

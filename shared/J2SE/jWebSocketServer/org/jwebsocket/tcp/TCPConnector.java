@@ -78,8 +78,7 @@ public class TCPConnector extends BaseConnector {
 			mIn = mClientSocket.getInputStream();
 			mOut = mClientSocket.getOutputStream();
 
-			// @TODO: Make the timeout constructor argument configurable for the future
-			mOutputStreamNIOSender = new TimeoutOutputStreamNIOWriter(this, mIn, mOut, 1000);
+			mOutputStreamNIOSender = new TimeoutOutputStreamNIOWriter(this, mIn, mOut);
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " instantiating "
@@ -242,7 +241,6 @@ public class TCPConnector extends BaseConnector {
 	@Override
 	public void sendPacket(WebSocketPacket aDataPacket) {
 		mOutputStreamNIOSender.sendPacket(aDataPacket);
-		// _sendPacket(aDataPacket);
 	}
 
 	@Override
@@ -584,11 +582,13 @@ public class TCPConnector extends BaseConnector {
 						mLog.error("Unknown frame type '" + lPacket.getFrameType() + "', ignoring frame.");
 					}
 				} catch (SocketTimeoutException lEx) {
-					mLog.error(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + "): " + lEx.getMessage());
+					if (mLog.isDebugEnabled()) {
+						mLog.error(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + "): " + lEx.getMessage());
+					}
 					mCloseReason = CloseReason.TIMEOUT;
 					setStatus(WebSocketConnectorStatus.DOWN);
 				} catch (Exception lEx) {
-					if (WebSocketConnectorStatus.UP == getStatus()) {
+					if (mLog.isDebugEnabled() && WebSocketConnectorStatus.UP == getStatus()) {
 						mLog.error(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + "): " + lEx.getMessage());
 					}
 					mCloseReason = CloseReason.SERVER;

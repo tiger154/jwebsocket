@@ -15,6 +15,7 @@
 package org.jwebsocket.session;
 
 import org.jwebsocket.api.*;
+import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -84,11 +85,11 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 	}
 
 	@Override
-	public void putInReconnectionMode(String aSessionId) {
-		getReconnectionIndex().put(aSessionId, true, getSessionExpirationTime());
+	public void putInReconnectionMode(WebSocketSession aSession) {
+		getReconnectionIndex().put(aSession.getSessionId(), true, getSessionExpirationTime());
 
-		//Used by a deamon to release expired sessions resources
-		getSessionIdsTrash().put(aSessionId, System.currentTimeMillis() + (getSessionExpirationTime() * 1000));
+		// used by a deamon to release expired sessions resources
+		getSessionIdsTrash().put(aSession.getSessionId(), System.currentTimeMillis() + (getSessionExpirationTime() * 1000));
 	}
 
 	@Override

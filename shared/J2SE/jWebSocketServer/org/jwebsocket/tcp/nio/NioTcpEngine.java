@@ -63,8 +63,8 @@ import org.jwebsocket.util.Tools;
 public class NioTcpEngine extends BaseEngine {
 
 	private static Logger mLog = Logging.getLogger();
-	private static final String NUM_WORKERS_CONFIG_KEY = "workers";
-	private static final int DEFAULT_NUM_WORKERS = 100;
+	public static final String NUM_WORKERS_CONFIG_KEY = "workers";
+	public static final int DEFAULT_NUM_WORKERS = 100;
 	private Selector mPlainSelector;
 	private Selector mSSLSelector;
 	private ServerSocketChannel mPlainServer;
@@ -79,6 +79,11 @@ public class NioTcpEngine extends BaseEngine {
 	private Thread mSSLSelectorThread;
 	private final DelayedPacketsQueue mDelayedPacketsQueue = new DelayedPacketsQueue();
 	private SSLContext mSSLContext;
+	private int mNumWorkers = DEFAULT_NUM_WORKERS;
+
+	public int getWorkers() {
+		return mNumWorkers;
+	}
 
 	public NioTcpEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -117,15 +122,14 @@ public class NioTcpEngine extends BaseEngine {
 			mIsRunning = true;
 
 			// start worker threads
-			Integer lNumWorkers = DEFAULT_NUM_WORKERS;
 			if (getConfiguration().getSettings().containsKey(NUM_WORKERS_CONFIG_KEY)) {
-				lNumWorkers = Integer.parseInt(getConfiguration().
+				mNumWorkers = Integer.parseInt(getConfiguration().
 						getSettings().
 						get(NUM_WORKERS_CONFIG_KEY).
 						toString());
 			}
-			mExecutorService = Executors.newFixedThreadPool(lNumWorkers);
-			for (int lIdx = 0; lIdx < lNumWorkers; lIdx++) {
+			mExecutorService = Executors.newFixedThreadPool(mNumWorkers);
+			for (int lIdx = 0; lIdx < mNumWorkers; lIdx++) {
 				// give an index to each worker thread
 				mExecutorService.submit(new ReadWorker(lIdx));
 			}
@@ -141,7 +145,7 @@ public class NioTcpEngine extends BaseEngine {
 			}
 
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("NioTcpEngine started successfully with '" + lNumWorkers + "' workers!");
+				mLog.debug("NioTcpEngine started successfully with '" + mNumWorkers + "' workers!");
 			}
 		} catch (Exception e) {
 			throw new WebSocketException(e.getMessage(), e);

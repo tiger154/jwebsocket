@@ -258,25 +258,11 @@ public class SystemPlugIn extends TokenPlugIn {
 	public void connectorStarted(WebSocketConnector aConnector) {
 		// Setting the session only if a session manager is defined,
 		// ommitting if the session storage was previously setted (embedded mode)
-		if (null != mSessionManager && null == aConnector.getSession().getStorage()) {
+		if (null != mSessionManager) {
 			try {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Creating the WebSocketSession persistent storage "
-							+ "for connector '" + aConnector.getId() + "'...");
-				}
-				aConnector.getSession().
-						setStorage((Map<String, Object>) (mSessionManager.getSession(aConnector.getSession().getSessionId())));
-
+				mSessionManager.connectorStarted(aConnector);
 			} catch (Exception lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing connector session"), lEx);
-			}
-		}
-
-		//Setting the username if exists in the connector instance
-		if (null != aConnector.getSession().getStorage()) {
-			Map<String, Object> lSessionParams = aConnector.getSession().getStorage();
-			if (lSessionParams.containsKey(USERNAME)) {
-				setUsername(aConnector, lSessionParams.get(USERNAME).toString());
 			}
 		}
 
@@ -293,33 +279,12 @@ public class SystemPlugIn extends TokenPlugIn {
 
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
-		// Allowing all connectors for a reconnection
-		// Ommitting if running in embedded mode like a servlet container
-		WebSocketSession lSession = aConnector.getSession();
-		if (lSession.getStorage() != null && !(lSession.getStorage() instanceof HttpSessionStorage)
-				&& mSessionManager != null) {
-			String lSessionId =
-					lSession.getSessionId();
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Putting the session: " + lSessionId
-						+ ", in reconnection mode...");
-			}
-			synchronized (this) {
-				//Removing the local cached  storage instance. 
-				//Free space if the client never gets reconnected
-				if (mSessionManager instanceof SessionManager) {
-					((SessionManager) mSessionManager).getSessionsReferences().remove(lSessionId);
-				}
-				mSessionManager.getReconnectionManager().putInReconnectionMode(lSessionId);
-			}
-		}
-		if (null != mSessionManager) {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Removing connection specific storage for connector '" + aConnector.getId() + "'...");
-			}
+		// allowing all connectors for a reconnection
+		if (mSessionManager != null) {
 			try {
-				mSessionManager.getStorageProvider().removeStorage(aConnector.getId());
+				mSessionManager.connectorStopped(aConnector);
 			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping connector session"), lEx);
 			}
 		}
 

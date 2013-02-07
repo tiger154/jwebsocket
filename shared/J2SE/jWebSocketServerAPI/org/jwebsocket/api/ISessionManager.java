@@ -29,5 +29,9 @@ public interface ISessionManager extends IInitializable {
 	ISessionReconnectionManager getReconnectionManager();
 	
 	IStorageProvider getStorageProvider();
+	
+	void connectorStarted(WebSocketConnector aConnector) throws Exception;
+	
+	void connectorStopped(WebSocketConnector aConnector) throws Exception;
 		
 }
