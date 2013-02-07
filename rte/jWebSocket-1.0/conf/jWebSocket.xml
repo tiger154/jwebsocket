@@ -201,6 +201,12 @@
 			<!-- on max connections reached strategy -->
 			<!-- wait, close, reject, redirect --> 
 			<onmaxconnections>reject</onmaxconnections>
+			<settings>
+				<!-- NIO output writer mechanism thread pool size -->
+				<setting key="workers">500</setting>
+				<!-- NIO output writer mechanism writes timeout -->
+				<setting key="writer_timeout">1000</setting>
+			</settings>		
 		</engine>
 		<!-- NIO Engine Configuration -->
 		<engine>

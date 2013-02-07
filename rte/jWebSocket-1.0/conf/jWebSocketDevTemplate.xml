@@ -33,6 +33,12 @@
 			<maxframesize>1048840</maxframesize>
 			<maxconnections>10000</maxconnections>
 			<onmaxconnections>reject</onmaxconnections>
+			<settings>
+				<!-- NIO output writer mechanism thread pool size -->
+				<setting key="workers">500</setting>
+				<!-- NIO output writer mechanism writes timeout -->
+				<setting key="writer_timeout">1000</setting>
+			</settings>	
 		</engine>
 	</engines>
 
