@@ -15,6 +15,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins;
 
+import java.util.Iterator;
 import java.util.List;
 import javolution.util.FastList;
 import org.apache.log4j.Logger;
@@ -112,7 +113,8 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 					+ aConnector.getId() + "' started...");
 		}
 		try {
-			for (WebSocketPlugIn lPlugIn : getPlugIns()) {
+			for (Iterator<WebSocketPlugIn> lIterator = getPlugIns().iterator(); lIterator.hasNext();) {
+				WebSocketPlugIn lPlugIn = lIterator.next();
 				if (lPlugIn.getEnabled()) {
 					try {
 						// log.debug("Notifying plug-in " + plugIn + " that connector started...");
@@ -176,7 +178,8 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Notifying plug-ins that connector '" + aConnector.getId() + "' stopped (" + aCloseReason.name() + ")...");
 		}
-		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
+		for (Iterator<WebSocketPlugIn> lIterator = getPlugIns().iterator(); lIterator.hasNext();) {
+			WebSocketPlugIn lPlugIn = lIterator.next();
 			if (lPlugIn.getEnabled()) {
 				try {
 					lPlugIn.connectorStopped(aConnector, aCloseReason);
