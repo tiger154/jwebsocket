@@ -30,14 +30,12 @@ import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
-import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.security.User;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.session.SessionManager;
-import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -736,12 +734,9 @@ public class SystemPlugIn extends TokenPlugIn {
 	private void close(WebSocketConnector aConnector, Token aToken) {
 		int lTimeout = aToken.getInteger("timeout", 0);
 
-		Boolean lNoGoodBye =
-				aToken.getBoolean("noGoodBye", false);
-		Boolean lNoLogoutBroadcast =
-				aToken.getBoolean("noLogoutBroadcast", false);
-		Boolean lNoDisconnectBroadcast =
-				aToken.getBoolean("noDisconnectBroadcast", false);
+		Boolean lNoGoodBye = aToken.getBoolean("noGoodBye", false);
+		Boolean lNoLogoutBroadcast = aToken.getBoolean("noLogoutBroadcast", false);
+		Boolean lNoDisconnectBroadcast = aToken.getBoolean("noDisconnectBroadcast", false);
 
 		// only send a good bye message if timeout is > 0 and not to be noed
 		if (lTimeout > 0 && !lNoGoodBye) {
