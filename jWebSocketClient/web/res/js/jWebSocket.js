@@ -1043,8 +1043,21 @@ jws.events = {
 		function( aEvent ) {
 			return aEvent.preventDefault();
 		}
-		)
+		),
 
+	stopEvent : (
+		jws.isIE ?
+		function( aEvent ) {
+			if( aEvent && aEvent.preventDefault ) {
+				return aEvent.preventDefault();
+			}
+		}
+		:
+		function( aEvent ) {
+			return aEvent.stopPropagation();
+		}
+		)
+		
 };
 
 //  <JasobNoObfs>
@@ -2103,7 +2116,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 						lPos = aEvent.data.indexOf( jws.MAX_FRAME_SIZE_FREFIX );
 						if (0 == lPos){
 							lThis.fMaxFrameSize = parseInt( aEvent.data.substr( jws.MAX_FRAME_SIZE_FREFIX.length ) );
-							aEvent.stopPropagation();
+							jws.events.stopEvent( aEvent );
 							if( jws.console.isDebugEnabled() ) {
 								jws.console.debug( "Maximum frame size for connection is: " + lThis.fMaxFrameSize );
 							}
@@ -2120,7 +2133,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 							return;
 						}
 					} else if (aEvent.data.length > this.fMaxFrameSize){
-						aEvent.stopPropagation();
+							jws.events.stopEvent( aEvent );
 						jws.console.warn( "Data packet discarded. The packet size " + 
 							"exceeds the max frame size supported by the client!" );
 						return;
