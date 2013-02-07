@@ -69,6 +69,7 @@ public class TomcatWrapper extends MessageInbound {
 
 	public TomcatWrapper(TomcatEngine aEngine, HttpServletRequest aRequest, String aSubProtocol) {
 		super();
+		
 		mEngine = aEngine;
 		// setting the max frame size
 		setByteBufferMaxSize(aEngine.getMaxFrameSize());

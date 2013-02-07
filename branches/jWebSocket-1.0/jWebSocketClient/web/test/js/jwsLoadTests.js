@@ -18,31 +18,20 @@ jws.tests.Load = {
 
 	NS: "jws.tests.load", 
 	
-	// this spec tests the login function of the system plug-in
+	// this spec tests the speed of a complete client connection to the server
 	testConcurrentConnections: function( aAmount ) {
 		var lSpec = this.NS + ": Trying to establish " + aAmount + " concurrent connections...";
 		it( lSpec, function () {
 
-			var lLoggedIn = 0;
+			var lConnected = 0;
 
 			var lConns = [];
 			for( var lIdx = 0; lIdx < aAmount; lIdx++ ) {
 				lConns[ lIdx ] = new jws.jWebSocketJSONClient();
 				lConns[ lIdx ].setParam( "connectionIndex", lIdx );
-				lConns[ lIdx ].logon( jws.getDefaultServerURL(), 
-					jws.GUEST_USER_LOGINNAME, 
-					jws.GUEST_USER_PASSWORD, {
-					OnToken: function ( aToken ) {
-						if( "org.jwebsocket.plugins.system" == aToken.ns
-							&& "login" == aToken.reqType) {
-							if( 0 == aToken.code ) {
-								lLoggedIn++;
-								// console.log("Logged-In " + this.getParam( "connectionIndex" ) + ": " + lLoggedIn );
-							}
-						} else if( "org.jwebsocket.plugins.system" == aToken.ns
-							&& "welcome" == aToken.type) {
-							// console.log("Connected " + this.getParam( "connectionIndex" ) + ": " + aToken.usid );
-						}
+				lConns[ lIdx ].open( jws.getDefaultServerURL(), {
+					OnWelcome: function ( aToken ) {
+						lConnected++;
 					}
 				});
 			}
@@ -50,14 +39,14 @@ jws.tests.Load = {
 			waitsFor(
 				// wait a maximum of 300ms per connection
 				function() {
-					return( lLoggedIn == aAmount );
+					return( lConnected == aAmount );
 				},
 				lSpec,
 				aAmount * 300
 			);
 
 			runs( function() {
-				expect( lLoggedIn ).toEqual( aAmount );
+				expect( lConnected ).toEqual( aAmount );
 				for( var lIdx = 0, lCnt = lConns.length; lIdx < lCnt; lIdx++ ) {
 					lConns[ lIdx ].close();
 				}

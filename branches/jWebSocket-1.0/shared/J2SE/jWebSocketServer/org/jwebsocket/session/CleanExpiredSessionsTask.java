@@ -31,11 +31,11 @@ public class CleanExpiredSessionsTask extends TimerTask {
 	private IStorageProvider mStorageProvider;
 	private static Logger mLog = Logging.getLogger(CleanExpiredSessionsTask.class);
 
-	public CleanExpiredSessionsTask(IBasicStorage<String, Object> sessionIdsTrash, IStorageProvider aStorageProvider) {
-		this.mSessionIdsTrash = sessionIdsTrash;
-		this.mStorageProvider = aStorageProvider;
+	public CleanExpiredSessionsTask(IBasicStorage<String, Object> aSessionIdsTrash, IStorageProvider aStorageProvider) {
+		mSessionIdsTrash = aSessionIdsTrash;
+		mStorageProvider = aStorageProvider;
 	}
-
+	
 	@Override
 	public void run() {
 		Iterator<String> lKeys = mSessionIdsTrash.keySet().iterator();
@@ -54,6 +54,5 @@ public class CleanExpiredSessionsTask extends TimerTask {
 			}
 		}
 	}
-	// TODO: clean up this tasks when shutting down the server
 	// TODO: check if this task has a name for rdebug purposes
 }

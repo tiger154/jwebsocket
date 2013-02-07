@@ -14,6 +14,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.api;
 
+import org.jwebsocket.kit.WebSocketSession;
+
 /**
  *
  * @author kyberneees
@@ -47,13 +49,13 @@ public interface ISessionReconnectionManager {
 	boolean isExpired(String aSessionId);
 
 	/**
-	 * Put a session identifier in "reconnection mode", this means, the client
-	 * data will be stored for a future reconnection. <br> The
-	 * "sessionExpirationTime" is used
+	 * Put a WebSocketSession in "reconnection mode", this means, the client
+	 * data will be stored for a possible future reconnection. <br> The
+	 * "session expiration time" setting is used
 	 *
 	 * @param aSessionId
 	 */
-	void putInReconnectionMode(String aSessionId);
+	void putInReconnectionMode(WebSocketSession aSession);
 
 	/**
 	 *

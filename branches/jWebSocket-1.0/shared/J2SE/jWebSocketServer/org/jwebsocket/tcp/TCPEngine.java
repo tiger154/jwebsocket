@@ -33,6 +33,7 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.tcp.nio.NioTcpEngine;
 import org.jwebsocket.tcp.nio.Util;
 
 /**
@@ -57,6 +58,21 @@ public class TCPEngine extends BaseEngine {
 	private boolean mEventsFired = false;
 	private Thread mTCPEngineThread = null;
 	private Thread mSSLEngineThread = null;
+	// variables for the OutputStreamNIOWriter mechanism
+	private static int DEFAULT_NUM_WORKERS = NioTcpEngine.DEFAULT_NUM_WORKERS;
+	private static int DEFAULT_WRITER_TIMEOUT = 3000; // increase the time for slow networks
+	private static String NUM_WORKERS_CONFIG_KEY = NioTcpEngine.NUM_WORKERS_CONFIG_KEY;
+	public static String WRITER_TIMEOUT_CONFIG_KEY = "writer_timeout";
+	private int mNumWorkers = DEFAULT_NUM_WORKERS;
+	private int mWriterTimeout = DEFAULT_WRITER_TIMEOUT;
+
+	public int getWriterTimeout() {
+		return mWriterTimeout;
+	}
+
+	public int getWorkers() {
+		return mNumWorkers;
+	}
 
 	public TCPEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -65,14 +81,35 @@ public class TCPEngine extends BaseEngine {
 		mSessionTimeout = aConfiguration.getTimeout();
 		mKeyStore = aConfiguration.getKeyStore();
 		mKeyStorePassword = aConfiguration.getKeyStorePassword();
+
+		// settings for the OutputStreamNIOWriter mechanism
+		if (getConfiguration().getSettings().containsKey(NUM_WORKERS_CONFIG_KEY)) {
+			if (mLog.isDebugEnabled()){
+				mLog.debug("Setting '" + NUM_WORKERS_CONFIG_KEY + "' configuration "
+						+ "from engine configuration settings...");
+			}
+			mNumWorkers = Integer.parseInt(getConfiguration().
+					getSettings().
+					get(NUM_WORKERS_CONFIG_KEY).
+					toString());
+		}
+		
+		if (getConfiguration().getSettings().containsKey(WRITER_TIMEOUT_CONFIG_KEY)) {
+			if (mLog.isDebugEnabled()){
+				mLog.debug("Setting '" + WRITER_TIMEOUT_CONFIG_KEY + "' configuration "
+						+ "from engine configuration settings...");
+			}
+			mWriterTimeout = Integer.parseInt(getConfiguration().
+					getSettings().
+					get(WRITER_TIMEOUT_CONFIG_KEY).
+					toString());
+		}
 	}
 
 	@Override
-	public void startEngine()
-			throws WebSocketException {
-
-		// start timeout surveillance timer
-		TimeoutOutputStreamNIOWriter.startTimer();
+	public void startEngine() throws WebSocketException {
+		// start output NIO writer mechanism
+		TimeoutOutputStreamNIOWriter.start(mNumWorkers, mWriterTimeout);
 
 		setSessionTimeout(mSessionTimeout);
 
@@ -295,7 +332,7 @@ public class TCPEngine extends BaseEngine {
 		}
 
 		// stop timeout surveillance timer
-		TimeoutOutputStreamNIOWriter.stopTimer();
+		TimeoutOutputStreamNIOWriter.stop();
 	}
 
 	@Override
