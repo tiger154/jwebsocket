@@ -195,6 +195,12 @@ public class TCPConnector extends BaseConnector {
 			stopReader();
 		}
 
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Stopped " + mLogInfo
+					+ " connector (" + mCloseReason
+					+ ") on port " + mClientSocket.getPort() + ".");
+		}
+
 		super.stopConnector(aCloseReason);
 	}
 
@@ -486,12 +492,6 @@ public class TCPConnector extends BaseConnector {
 			}
 
 			mConnector.stopConnector(mCloseReason);
-
-			if (mLog.isInfoEnabled()) {
-				mLog.info("Stopped " + mLogInfo
-						+ " connector (" + mCloseReason
-						+ ") on port " + lPort + ".");
-			}
 		}
 
 		private void processHixie(WebSocketEngine aEngine) {
