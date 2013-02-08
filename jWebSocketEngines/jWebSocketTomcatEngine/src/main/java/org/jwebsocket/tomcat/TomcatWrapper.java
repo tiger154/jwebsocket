@@ -179,12 +179,6 @@ public class TomcatWrapper extends MessageInbound {
 	}
 
 	@Override
-	public void onUpgradeComplete() {
-		super.onUpgradeComplete();
-
-	}
-
-	@Override
 	protected void onClose(int aStatus) {
 		// super.onClose(status);
 		if (mLog.isDebugEnabled()) {

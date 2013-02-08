@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Tomcat WebSocket Servlet, from Tomcat 7.0.27
+//	jWebSocket - Tomcat WebSocket Servlet, from Tomcat 7.0.35
 //	Copyright (c) 2012 jWebSocket.org, Innotrade GmbH
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
@@ -93,7 +93,9 @@ public class TomcatServlet extends WebSocketServlet {
 	}
 
 	@Override
-	protected StreamInbound createWebSocketInbound(String aSubProtocol) {
+	protected StreamInbound createWebSocketInbound(String aSubProtocol, HttpServletRequest aRequest) {
+		// do not use the aRequest paremeter here,
+		// it is a facede to be used only in this context
 		return new TomcatWrapper(mEngine, mRequestContainer.get(), aSubProtocol);
 	}
 }

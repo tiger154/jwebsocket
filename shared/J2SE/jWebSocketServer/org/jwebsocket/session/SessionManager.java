@@ -150,6 +150,8 @@ public class SessionManager implements ISessionManager {
 			}
 			lStorage = (Map<String, Object>) getSession(aConnector.getSession().getSessionId());
 			aConnector.getSession().setStorage(lStorage);
+		} else {
+			lStorage = aConnector.getSession().getStorage();
 		}
 
 		// setting the username

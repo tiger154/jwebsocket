@@ -22,6 +22,7 @@ import org.jwebsocket.api.*;
 import org.jwebsocket.config.xml.PluginConfig;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.kit.WebSocketSession;
 
 /**
  * Abstract implementation of WebSocketPlugin
@@ -56,6 +57,14 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 
 		// setting the authentication method value
 		mAuthenticationMethod = getString(AUTHENTICATION_METHOD_KEY, AUTHENTICATION_METHOD_STATIC);
+	}
+
+	@Override
+	public void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession) {
+	}
+
+	@Override
+	public void sessionStopped(WebSocketSession aSession) {
 	}
 
 	public String getAuthenticationMethod() {

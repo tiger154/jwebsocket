@@ -19,25 +19,28 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.kit.WebSocketSession;
 
 /**
- * 
+ *
  * @author aschulze
  */
 public interface WebSocketPlugIn {
 
 	/**
 	 * returns the id of the plug-in.
+	 *
 	 * @return
 	 */
 	String getId();
-	
+
 	/**
 	 * return the version of the plug-in.
+	 *
 	 * @return
 	 */
 	String getVersion();
-	
+
 	/**
 	 * set the version of the plug-in.
 	 */
@@ -45,6 +48,7 @@ public interface WebSocketPlugIn {
 
 	/**
 	 * return the enabled status of the plug-in.
+	 *
 	 * @return
 	 */
 	boolean getEnabled();
@@ -61,6 +65,7 @@ public interface WebSocketPlugIn {
 
 	/**
 	 * returns the name of the plug-in.
+	 *
 	 * @return
 	 */
 	String getName();
@@ -101,6 +106,25 @@ public interface WebSocketPlugIn {
 	void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason);
 
 	/**
+	 * Called when a WebSocketSession is created. Future enterprise applications
+	 * will use this event instead of "connectorStarted", because the second
+	 * does not guarantee a session storage creation.
+	 *
+	 * @param aSession
+	 */
+	void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession);
+
+	/**
+	 * Called when a WebSocketSession expired. This event represents the real
+	 * client disconnection. The "connectorStopped" event should happen multiple
+	 * times, but the session is kept. When a session is stopped (expired) it
+	 * means: A client is finally disconnected.
+	 *
+	 * @param aSession
+	 */
+	void sessionStopped(WebSocketSession aSession);
+
+	/**
 	 *
 	 * @param aPlugInChain
 	 */
@@ -112,17 +136,16 @@ public interface WebSocketPlugIn {
 	WebSocketPlugInChain getPlugInChain();
 
 	/**
-	 * Set the plugin configuration
+	 * Set the plug-in configuration
 	 *
-	 * @param configuration
-	 *          the plugin configuration object to set
+	 * @param configuration the plug-in configuration object to set
 	 */
 	// void setPluginConfiguration(PluginConfiguration configuration);
 	/**
-	 * Returns the plugin configuration object based on the configuration file
+	 * Returns the plug-in configuration object based on the configuration file
 	 * values
 	 *
-	 * @return the plugin configuration object
+	 * @return the plug-in configuration object
 	 */
 	PluginConfiguration getPluginConfiguration();
 
