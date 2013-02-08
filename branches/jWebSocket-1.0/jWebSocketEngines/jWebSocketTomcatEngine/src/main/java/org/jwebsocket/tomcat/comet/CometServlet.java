@@ -73,33 +73,6 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 
 	@Override
 	public void init() throws ServletException {
-//		if (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()) {
-//			log("Starting jWebSocket application server...");
-//			// running in embedded mode
-//			// starting the jWebSocket application server
-//			final HttpServlet lThis = this;
-//			mJWebSocketThread = new Thread(new Runnable() {
-//				@Override
-//				public void run() {
-//					JWebSocketServer.main(ServletUtils.extractStartupArguments(lThis));
-//				}
-//			});
-//			mJWebSocketThread.start();
-//
-//			// waiting for the jWebSocket server "start process"
-//			while (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()
-//					|| JWebSocketInstance.STARTING == JWebSocketInstance.getStatus()) {
-//			};
-//
-//			if (JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
-//				log("jWebSocket application server started!");
-//				mRunningEmbedded = true;
-//			} else {
-//				// error happen during the jWebSocket server load
-//				throw new ServletException("jWebSocket server could not start!");
-//			}
-//		}
-
 		if (JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
 			mLog = Logging.getLogger();
 

@@ -53,7 +53,7 @@ public class ContextListener implements ServletContextListener {
 			// waiting for the jWebSocket server "start process"
 			while (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()
 					|| JWebSocketInstance.STARTING == JWebSocketInstance.getStatus()) {
-			};
+			}
 
 			if (JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
 				lContext.log("jWebSocket application server started!");

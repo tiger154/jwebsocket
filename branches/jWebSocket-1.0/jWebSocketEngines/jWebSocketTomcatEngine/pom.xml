@@ -15,7 +15,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<org.apache.tomcat.version>7.0.27</org.apache.tomcat.version>
+		<org.apache.tomcat.version>7.0.35</org.apache.tomcat.version>
 	</properties>
 <!--
 	<scm>
