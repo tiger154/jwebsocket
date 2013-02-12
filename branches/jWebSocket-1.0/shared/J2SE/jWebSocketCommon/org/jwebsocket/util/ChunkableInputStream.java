@@ -59,7 +59,7 @@ public class ChunkableInputStream extends BaseChunkable {
 				try {
 					int lLength = (mIS.available() > getFragmentSize()) ? getFragmentSize() : mIS.available();
 					Token lChunk = TokenFactory.createToken();
-					lChunk.setChunkType("stream");
+					lChunk.setChunkType("stream" + getUniqueChunkId());
 
 					LinkedList<Integer> lData = new LinkedList<Integer>();
 					while (lLength > 0) {

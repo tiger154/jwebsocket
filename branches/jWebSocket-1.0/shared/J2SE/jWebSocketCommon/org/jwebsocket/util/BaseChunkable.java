@@ -28,6 +28,11 @@ abstract class BaseChunkable implements IChunkable {
 	private String mType;
 	private Integer mFragmentSize = 1024; // 1 KB by default
 	private Integer mMaxFrameSize = -1;
+	private Long mUCID = new Long(0);
+
+	public Long getUniqueChunkId() {
+		return mUCID++;
+	}
 
 	public BaseChunkable(String aNS, String aType) {
 		mNS = aNS;
