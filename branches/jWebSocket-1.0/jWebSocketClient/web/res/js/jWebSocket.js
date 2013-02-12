@@ -1343,6 +1343,32 @@ function bit_rol(num,cnt){
 //:d:en:Implements some required JavaScript tools.
 jws.tools = {
 	
+	//:m:*:str2bytes
+	//:d:en:Converts a string to byte array
+	//:a:en::aString:String:The string value to be converted to byte array
+	//:r:*:::Array:The byte array representation of the given string parameter
+	str2bytes: function(aString){
+		var lBytes = [];
+		for (var lIndex = 0; lIndex < aString.length; lIndex++){
+			lBytes.push(aString.charCodeAt(lIndex));
+		}
+		
+		return lBytes;
+	},
+	
+	//:m:*:bytes2str
+	//:d:en:Converts a byte array to string
+	//:a:en::aByteArray:Array:The byte array to be converted to string
+	//:r:*:::String:The string representation of the given byte array parameter
+	bytes2str: function(aByteArray){
+		var lString = "";
+		for (var lIndex = 0; lIndex < aByteArray.length; lIndex++){
+			lString += String.fromCharCode(aByteArray[lIndex]);
+		}
+		
+		return lString;
+	},
+	
 	//:m:*:getUniqueInteger
 	//:d:en:Gets a unique number
 	//:r:*:::Integer:A unique integer number

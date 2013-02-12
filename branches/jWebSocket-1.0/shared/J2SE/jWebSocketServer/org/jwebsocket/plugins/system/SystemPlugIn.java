@@ -24,12 +24,16 @@ import org.jwebsocket.api.ISessionManager;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.api.WebSocketConnectorStatus;
+import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.connectors.BaseConnector;
+import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.security.SecurityFactory;
@@ -140,7 +144,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for system plugin
 		this.setNamespace(NS_SYSTEM);
-		mGetSettings();
+		settings();
 
 		try {
 			mBeanFactory = getConfigBeanFactory();
@@ -183,7 +187,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		mAuthProv = aAuthMgr;
 	}
 
-	private void mGetSettings() {
+	private void settings() {
 		// load global settings, default to "true"
 		BROADCAST_OPEN = "true".equals(getString(BROADCAST_OPEN_KEY, "true"));
 		BROADCAST_CLOSE = "true".equals(getString(BROADCAST_CLOSE_KEY, "true"));
@@ -252,6 +256,20 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	public static void startSession(WebSocketConnector aConnector, WebSocketSession aSession) {
+		Iterator<WebSocketServer> lServers = JWebSocketFactory.getServers().iterator();
+		while (lServers.hasNext()) {
+			lServers.next().sessionStarted(aConnector, aSession);
+		}
+	}
+
+	public static void stopSession(WebSocketSession aSession) {
+		Iterator<WebSocketServer> lServers = JWebSocketFactory.getServers().iterator();
+		while (lServers.hasNext()) {
+			lServers.next().sessionStopped(aSession);
+		}
+	}
+
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
 		// Setting the session only if a session manager is defined,
@@ -273,6 +291,13 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// if new connector is active broadcast this event to then network
 		broadcastConnectEvent(aConnector);
+
+		// notify session started
+		WebSocketSession lSession = aConnector.getSession();
+		if (null != lSession.getStorage() && null == lSession.getCreatedAt()) {
+			lSession.setCreatedAt();
+			startSession(aConnector, aConnector.getSession());
+		}
 	}
 
 	@Override
@@ -758,6 +783,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		// broadcasts disconnect event to other clients
 		// if not explicitely noed
 		aConnector.setBoolean("noDisconnectBroadcast", lNoDisconnectBroadcast);
+		aConnector.setStatus(WebSocketConnectorStatus.DOWN);
 		aConnector.stopConnector(CloseReason.CLIENT);
 	}
 
@@ -1102,9 +1128,13 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 
 		lKey = (lPublic) ? SESSION_PUBLIC_KEY_SUBFIX + lKey : lKey;
-		if (lKey.equals(UUID) || lKey.equals(USERNAME) || lKey.equals(AUTHORITIES)) {
-			sendErrorToken(aConnector, aToken, -1, "The given key '" + lKey + "', target a read only value!");
-			return;
+		// protect system session entries
+		if (!lConnectionStorage) {
+			if (lKey.equals(UUID) || lKey.equals(USERNAME) || lKey.equals(AUTHORITIES)
+					|| lKey.equals(WebSocketSession.CREATED_AT)) {
+				sendErrorToken(aConnector, aToken, -1, "The given key '" + lKey + "', target a read only value!");
+				return;
+			}
 		}
 
 		// getting the value
@@ -1182,6 +1212,16 @@ public class SystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
+		lKey = (lPublic) ? SESSION_PUBLIC_KEY_SUBFIX + lKey : lKey;
+		// protect system session entries
+		if (!lConnectionStorage) {
+			if (lKey.equals(UUID) || lKey.equals(USERNAME) || lKey.equals(AUTHORITIES)
+					|| lKey.equals(WebSocketSession.CREATED_AT)) {
+				sendErrorToken(aConnector, aToken, -1, "The given key '" + lKey + "', target a read only value!");
+				return;
+			}
+		}
+
 		Map<String, Object> lStorage;
 		try {
 			if (lConnectionStorage) {
@@ -1194,12 +1234,12 @@ public class SystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		lKey = (lPublic) ? SESSION_PUBLIC_KEY_SUBFIX + lKey : lKey;
 		if (!lStorage.containsKey(lKey)) {
 			sendErrorToken(aConnector, aToken, -1, "The key '" + lKey
 					+ "' does not exists!");
 			return;
 		}
+
 		// removing the session entry
 		Object lValue = lStorage.remove(lKey);
 

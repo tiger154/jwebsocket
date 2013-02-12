@@ -17,6 +17,7 @@ package org.jwebsocket.session;
 import org.jwebsocket.api.*;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.util.Tools;
+import org.springframework.util.Assert;
 
 /**
  *
@@ -31,7 +32,6 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 	private String mTrashStorageName;
 	private IStorageProvider mStorageProvider;
 	private ICacheStorageProvider mCacheStorageProvider;
-	private Integer mGCProcessTime = 300000; //Five minutes by default
 
 	public ICacheStorageProvider getCacheStorageProvider() {
 		return mCacheStorageProvider;
@@ -64,6 +64,7 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 	}
 
 	public void setSessionExpirationTime(Integer aSessionExpirationTime) {
+		Assert.isTrue(aSessionExpirationTime > 0, "Expecting 'sessionExpirationTime' argument value > 0!");
 		this.mSessionExpirationTime = aSessionExpirationTime;
 	}
 
@@ -103,9 +104,11 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 
 	@Override
 	public void initialize() throws Exception {
+		// The session cleaner will run every minute, 
+		// since 1 minute is the minimum session expiration time allowed value
 		Tools.getTimer().scheduleAtFixedRate(
 				new CleanExpiredSessionsTask(
-				getSessionIdsTrash(), getStorageProvider()), 0, getGCProcessTime());
+				getSessionIdsTrash(), getStorageProvider()), 0, 1000);
 	}
 
 	@Override
@@ -119,14 +122,5 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 		}
 
 		return true;
-	}
-
-	@Override
-	public Integer getGCProcessTime() {
-		return mGCProcessTime;
-	}
-
-	public void setGCProcessTime(Integer aGCProcessTime) {
-		this.mGCProcessTime = aGCProcessTime;
 	}
 }

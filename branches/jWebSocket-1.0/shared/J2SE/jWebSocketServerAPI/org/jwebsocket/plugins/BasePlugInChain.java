@@ -22,14 +22,17 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.*;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 
 /**
- * Implements the basic chain of plug-ins which is triggered by a server
- * when data packets are received. Each data packet is pushed through the chain
- * and can be processed by the plug-ins.
+ * Implements the basic chain of plug-ins which is triggered by a server when
+ * data packets are received. Each data packet is pushed through the chain and
+ * can be processed by the plug-ins.
+ *
  * @author aschulze
  * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author kyberneees (session events)
  */
 public class BasePlugInChain implements WebSocketPlugInChain {
 
@@ -137,11 +140,29 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 		}
 	}
 
-	/**
-	 *
-	 * @param aConnector
-	 * @return
-	 */
+	@Override
+	public void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Notifying plug-ins that client session '"
+					+ aSession.getSessionId() + "' started...");
+		}
+		for (Iterator<WebSocketPlugIn> lIterator = getPlugIns().iterator(); lIterator.hasNext();) {
+			WebSocketPlugIn lPlugIn = lIterator.next();
+			if (lPlugIn.getEnabled()) {
+				try {
+					lPlugIn.sessionStarted(aConnector, aSession);
+				} catch (Exception lEx) {
+					mLog.error("Session '"
+							+ aSession.getSessionId()
+							+ "' started at plug-in '"
+							+ lPlugIn.getId() + "': "
+							+ lEx.getClass().getSimpleName() + ": "
+							+ lEx.getMessage());
+				}
+			}
+		}
+	}
+
 	@Override
 	public PlugInResponse processPacket(WebSocketConnector aConnector, WebSocketPacket aDataPacket) {
 		if (mLog.isDebugEnabled()) {
@@ -168,11 +189,6 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 		return lPluginResponse;
 	}
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aCloseReason
-	 */
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
 		if (mLog.isDebugEnabled()) {
@@ -186,6 +202,29 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 				} catch (Exception lEx) {
 					mLog.error("Connector '"
 							+ aConnector.getId()
+							+ "' stopped at plug-in '"
+							+ lPlugIn.getId() + "': "
+							+ lEx.getClass().getSimpleName() + ": "
+							+ lEx.getMessage());
+				}
+			}
+		}
+	}
+
+	@Override
+	public void sessionStopped(WebSocketSession aSession) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Notifying plug-ins that client session '"
+					+ aSession.getSessionId() + "' stopped...");
+		}
+		for (Iterator<WebSocketPlugIn> lIterator = getPlugIns().iterator(); lIterator.hasNext();) {
+			WebSocketPlugIn lPlugIn = lIterator.next();
+			if (lPlugIn.getEnabled()) {
+				try {
+					lPlugIn.sessionStopped(aSession);
+				} catch (Exception lEx) {
+					mLog.error("Session '"
+							+ aSession.getSessionId()
 							+ "' stopped at plug-in '"
 							+ lPlugIn.getId() + "': "
 							+ lEx.getClass().getSimpleName() + ": "

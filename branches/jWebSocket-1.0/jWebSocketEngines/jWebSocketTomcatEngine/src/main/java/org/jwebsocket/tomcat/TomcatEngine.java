@@ -15,10 +15,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tomcat;
 
-import java.util.Date;
+import java.io.File;
 import java.util.Map;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
@@ -95,7 +96,7 @@ public class TomcatEngine extends BaseEngine {
 			mTomcat = new Tomcat();
 			mTomcatVersion = mTomcat.getServer().getInfo();
 			mTomcat.setPort(lPort);
-			mTomcat.setBaseDir(".");
+			mTomcat.setBaseDir(JWebSocketConfig.getConfigFolder("TomcatEngine"));
 
 			// removing default Tomcat connector
 			mTomcat.getService().removeConnector(mTomcat.getConnector());
@@ -131,9 +132,9 @@ public class TomcatEngine extends BaseEngine {
 			// registering the SSL connector
 			mTomcat.getService().addConnector(lSSLConnector);
 
-			Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
+			final Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
 			lCtx.setDocBase(JWebSocketConfig.getJWebSocketHome() + "web/");
-
+			
 			// registering WebSocket and Comet servlets
 			Tomcat.addServlet(lCtx, "jWebSocketServlet", "org.jwebsocket.tomcat.TomcatServlet");
 			lCtx.addServletMapping(lServlet, "jWebSocketServlet");
@@ -141,15 +142,11 @@ public class TomcatEngine extends BaseEngine {
 			Tomcat.addServlet(lCtx, "jWebSocketCometServlet", "org.jwebsocket.tomcat.comet.CometServlet");
 			lCtx.addServletMapping(lServlet + "Comet", "jWebSocketCometServlet");
 
-			// setting the context session timeout
-			lCtx.setSessionTimeout(getConfiguration().getTimeout());
-
-			// mTomcatServer.setStopAtShutdown(true);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Starting embedded Tomcat Server '"
 						+ mTomcatVersion + "'...");
 			}
-
+			
 			mTomcat.start();
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
@@ -199,10 +196,8 @@ public class TomcatEngine extends BaseEngine {
 
 		// resetting "isRunning" causes engine listener to terminate
 		mIsRunning = false;
-		// inherited method stops all connectors
 
-		long lStarted = new Date().getTime();
-		int lNumConns = getConnectors().size();
+		// inherited method stops all connectors
 		super.stopEngine(aCloseReason);
 
 		try {

@@ -36,15 +36,17 @@ import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.kit.WebSocketServerEvent;
+import org.jwebsocket.kit.WebSocketSession;
 
 /**
- * The implementation of the basic websocket server. A server is the central
+ * The implementation of the basic WebSocket server. A server is the central
  * instance which either processes incoming data from the engines directly or
  * routes it to the chain of plug-ins. Each server maintains a FastMap of
  * underlying engines. An application can instantiate multiple servers to
  * process different kinds of data packets.
  *
  * @author aschulze
+ * @author kyberneees
  */
 public class BaseServer implements WebSocketServer {
 
@@ -86,6 +88,16 @@ public class BaseServer implements WebSocketServer {
 		aEngine.removeServer(this);
 	}
 
+	@Override
+	public void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession) {
+		mPlugInChain.sessionStarted(aConnector, aSession);
+	}
+
+	@Override
+	public void sessionStopped(WebSocketSession aSession) {
+		mPlugInChain.sessionStopped(aSession);
+	}
+	
 	/**
 	 * {@inheritDoc }
 	 */
