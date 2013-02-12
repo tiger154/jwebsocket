@@ -20,8 +20,6 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.log4j.Logger;
@@ -68,6 +66,7 @@ public class TomcatServlet extends WebSocketServlet {
 
 	@Override
 	protected void service(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
+		mRequestContainer.set(aRequest);
 		super.service(aRequest, aResponse);
 	}
 
