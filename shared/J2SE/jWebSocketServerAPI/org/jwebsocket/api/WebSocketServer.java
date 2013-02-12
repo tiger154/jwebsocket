@@ -17,11 +17,11 @@ package org.jwebsocket.api;
 
 import java.util.List;
 import java.util.Map;
-
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.kit.WebSocketSession;
 
 /**
  * Specifies the API of the jWebSocket server core and its capabilities. Each
@@ -36,6 +36,25 @@ import org.jwebsocket.kit.WebSocketException;
  */
 public interface WebSocketServer {
 
+	/**
+	 * Called when a WebSocketSession is created. Future enterprise applications
+	 * will use this event instead of "connectorStarted", because the second
+	 * does not guarantee a session storage creation.
+	 *
+	 * @param aSession
+	 */
+	void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession);
+
+	/**
+	 * Called when a WebSocketSession expired. This event represents the real
+	 * client disconnection. The "connectorStopped" event should happen multiple
+	 * times, but the session is kept. When a session is stopped (expired) it
+	 * means: A client is finally disconnected.
+	 *
+	 * @param aSession
+	 */
+	void sessionStopped(WebSocketSession aSession);
+	
 	/**
 	 * Starts the server and all underlying engines.
 	 *

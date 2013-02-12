@@ -349,6 +349,11 @@ jws.tests.System = {
 		
 			runs( function() {
 				expect( lResponse.code ).toEqual( 0 );
+				if (!aPublic){
+					// the server adds a session entry (session creation time)
+					// KEEP THIS
+					aExpectedValue++;
+				}
 				expect( lResponse.data.length ).toEqual( aExpectedValue );
 			});
 		});

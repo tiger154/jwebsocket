@@ -15,10 +15,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.api;
 
+import java.util.List;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
-import java.util.List;
-import org.jwebsocket.token.Token;
+import org.jwebsocket.kit.WebSocketSession;
 
 /**
  * A plug-in chain maintains a map of plug-ins. A server in the jWebSocket model
@@ -60,6 +60,25 @@ public interface WebSocketPlugInChain {
 	 */
 	void connectorStarted(WebSocketConnector aConnector);
 
+	/**
+	 * Called when a WebSocketSession is created. Future enterprise applications
+	 * will use this event instead of "connectorStarted", because the second
+	 * does not guarantee a session storage creation.
+	 *
+	 * @param aSession
+	 */
+	void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession);
+
+	/**
+	 * Called when a WebSocketSession expired. This event represents the real
+	 * client disconnection. The "connectorStopped" event should happen multiple
+	 * times, but the session is kept. When a session is stopped (expired) it
+	 * means: A client is finally disconnected.
+	 *
+	 * @param aSession
+	 */
+	void sessionStopped(WebSocketSession aSession);
+	
 	/**
 	 * is called when a data packet from a client was received and has to be
 	 * processed. Usually the implementations iterate through the chain of 

@@ -21,8 +21,11 @@ import java.net.URI;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Map.Entry;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javolution.util.FastList;
@@ -39,6 +42,7 @@ public class Tools {
 	private static final Map<String, String> JAVA_2_GENERIC_MAP = new FastMap<String, String>();
 	private static final Map<String, String> GENERIC_2_JAVA_MAP = new FastMap<String, String>();
 	private static Timer mTimer = null;
+	private static ExecutorService mThreadPool = null;
 
 	static {
 		JAVA_2_GENERIC_MAP.put("java.lang.String", "string");
@@ -698,26 +702,49 @@ public class Tools {
 		return lRes;
 	}
 
+	public static void startUtilityThreadPool() {
+		if (null == mThreadPool) {
+			mThreadPool = Executors.newFixedThreadPool(5, new ThreadFactory() {
+				@Override
+				public Thread newThread(Runnable r) {
+					return new Thread(r, "jWebSocket Utility ThreadPool");
+				}
+			});
+		}
+	}
+
+	public static void stopUtilityThreadPool() {
+		mThreadPool.shutdownNow();
+	}
+
+	public static ExecutorService getThreadPool() {
+		if (null == mThreadPool) {
+			startUtilityThreadPool();
+		}
+
+		return mThreadPool;
+	}
+
 	/**
-	 * Starts the jebSocket utility timer. The timer automatically purge expired
-	 * tasks every 1 minute.
+	 * Starts the jWebSocket utility timer. The timer automatically purge
+	 * expired tasks every 5 minute.
 	 */
 	public static void startUtilityTimer() {
 		if (null == mTimer) {
 			mTimer = new Timer("jWebSocket Utility Timer");
 
 			final Timer lTimer = mTimer;
-			mTimer.schedule(new TimerTask() {
+			mTimer.scheduleAtFixedRate(new TimerTask() {
 				@Override
 				public void run() {
 					lTimer.purge();
 				}
-			}, 0, 60000);
+			}, 0, 300000);
 		}
 	}
 
 	/**
-	 *
+	 * Stops the jWebSocket utility time.
 	 */
 	public static void stopUtilityTimer() {
 		if (null != mTimer) {

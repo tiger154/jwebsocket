@@ -326,14 +326,14 @@ public class JWebSocketFactory {
 				}
 			}
 		}
-		
+
 		if (null != mLog && mLog.isInfoEnabled()) {
 			mLog.info("jWebSocket Server bean factories stopped.");
 		}
-		
+
 		// destroy (Spring) bean factories
 		JWebSocketBeanFactory.destroy();
-		
+
 		// stopping EhCache manager
 		EhCacheManager.getInstance().shutdown();
 
@@ -345,6 +345,9 @@ public class JWebSocketFactory {
 
 		// stop the shared utility timer
 		Tools.stopUtilityTimer();
+
+		// stop the shared utility thread pool
+		Tools.startUtilityThreadPool();
 
 		// set instance status
 		JWebSocketInstance.setStatus(JWebSocketInstance.STOPPED);

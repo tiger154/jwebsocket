@@ -26,10 +26,27 @@ public class WebSocketSession {
 
 	private String mSessionId = null;
 	private Map<String, Object> mStorage;
+	public static final String CREATED_AT = "$created_at";
 
 	public WebSocketSession() {
 	}
 
+	public Long getCreatedAt() {
+		if (null != mStorage) {
+			return (Long) mStorage.get(CREATED_AT);
+		}
+
+		return null;
+	}
+
+	public void setCreatedAt(){
+		if (null == getCreatedAt()) {
+			mStorage.put(CREATED_AT, System.currentTimeMillis());
+		} else {
+			throw new UnsupportedOperationException("The session 'createdAt' property is in read-only state!");
+		}
+	}
+	
 	/**
 	 *
 	 * @param aSessionId a session identifier

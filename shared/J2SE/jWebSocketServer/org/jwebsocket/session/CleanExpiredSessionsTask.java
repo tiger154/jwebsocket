@@ -19,7 +19,10 @@ import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.IStorageProvider;
+import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.plugins.system.SystemPlugIn;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -35,21 +38,36 @@ public class CleanExpiredSessionsTask extends TimerTask {
 		mSessionIdsTrash = aSessionIdsTrash;
 		mStorageProvider = aStorageProvider;
 	}
-	
+
 	@Override
 	public void run() {
 		Iterator<String> lKeys = mSessionIdsTrash.keySet().iterator();
 		while (lKeys.hasNext()) {
 			String lKey = lKeys.next();
 			if (((Long) (mSessionIdsTrash.get(lKey)) < System.currentTimeMillis())) {
-				if (mLog.isDebugEnabled()) {
-					mLog.debug("Cleaning expired session storage '" + lKey + "' ...");
-				}
 				try {
-					mSessionIdsTrash.remove(lKey);
-					mStorageProvider.removeStorage(lKey);
+					if (null != mSessionIdsTrash.remove(lKey)) { // protection for clustering (DO NOT CHANGE)
+						IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(lKey);
+						mStorageProvider.removeStorage(lKey);
+
+						if (null != lStorage) {
+							final WebSocketSession lSession = new WebSocketSession(lKey);
+							lSession.setStorage(lStorage);
+
+							if (mLog.isDebugEnabled()) {
+								mLog.debug("Expired '" + lKey + "' session data cleaned!");
+							}
+
+							Tools.getThreadPool().submit(new Runnable() {
+								@Override
+								public void run() {
+									SystemPlugIn.stopSession(lSession);
+								}
+							});
+						}
+					}
 				} catch (Exception ex) {
-					mLog.error(ex.toString() + " in session: " + lKey);
+					mLog.error(ex.toString() + " cleaning expired '" + lKey + "' session data");
 				}
 			}
 		}

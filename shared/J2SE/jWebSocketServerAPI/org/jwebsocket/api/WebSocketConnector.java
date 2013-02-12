@@ -39,7 +39,7 @@ public interface WebSocketConnector {
 	 * of the overlying engine is called if the connector successfully started.
 	 */
 	void startConnector();
-
+	
 	/**
 	 * Stops and cleans up the connector. Usually here the listener thread for
 	 * this connection is stopped. Further the {@code connectorStopped} method

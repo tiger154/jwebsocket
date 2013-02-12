@@ -24,16 +24,9 @@ public interface ISessionReconnectionManager {
 
 	/**
 	 *
-	 * @return The session expiration time after a client gets disconnected
+	 * @return The session expiration time after a client gets disconnected (minutes)
 	 */
 	Integer getSessionExpirationTime();
-
-	/**
-	 *
-	 * @return The garbage collector process time. 
-	 * Remove expired session storages.
-	 */
-	Integer getGCProcessTime();
 
 	/**
 	 *

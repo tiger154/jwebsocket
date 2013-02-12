@@ -33,7 +33,7 @@ public class SessionManager implements ISessionManager {
 	private IStorageProvider mStorageProvider;
 	private ISessionReconnectionManager mReconnectionManager;
 	private static Logger mLog = Logging.getLogger();
-	private Map<String, IBasicStorage<String, Object>> mSessionsReferences;
+	private Map<String, IBasicStorage<String, Object>> mStorageRefs;
 
 	/**
 	 *
@@ -88,9 +88,9 @@ public class SessionManager implements ISessionManager {
 			mLog.debug("Getting session for: " + aSessionId + "...");
 		}
 
-		if (mSessionsReferences.containsKey(aSessionId)) {
+		if (mStorageRefs.containsKey(aSessionId)) {
 			// Getting the local cached storage instance if exists
-			return mSessionsReferences.get(aSessionId);
+			return mStorageRefs.get(aSessionId);
 		}
 
 		if (mReconnectionManager.isExpired(aSessionId)) {
@@ -99,7 +99,7 @@ public class SessionManager implements ISessionManager {
 			}
 			IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(aSessionId);
 			lStorage.clear();
-			mSessionsReferences.put(aSessionId, lStorage);
+			mStorageRefs.put(aSessionId, lStorage);
 
 			return lStorage;
 		} else {
@@ -109,7 +109,7 @@ public class SessionManager implements ISessionManager {
 			mReconnectionManager.getSessionIdsTrash().remove(aSessionId);
 
 			IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(aSessionId);
-			mSessionsReferences.put(aSessionId, lStorage);
+			mStorageRefs.put(aSessionId, lStorage);
 
 			return lStorage;
 		}
@@ -121,7 +121,7 @@ public class SessionManager implements ISessionManager {
 	 */
 	@Override
 	public void initialize() throws Exception {
-		mSessionsReferences = new FastMap<String, IBasicStorage<String, Object>>();
+		mStorageRefs = new FastMap<String, IBasicStorage<String, Object>>();
 	}
 
 	/**
@@ -130,19 +130,12 @@ public class SessionManager implements ISessionManager {
 	 */
 	@Override
 	public void shutdown() throws Exception {
-		mSessionsReferences.clear();
-	}
-
-	/**
-	 * @return the mSessionsReferences
-	 */
-	public Map<String, IBasicStorage<String, Object>> getSessionsReferences() {
-		return mSessionsReferences;
+		mStorageRefs.clear();
 	}
 
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) throws Exception {
-		Map<String, Object> lStorage = null;
+		Map<String, Object> lStorage;
 		if (null == aConnector.getSession().getStorage()) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Creating the WebSocketSession persistent storage "
@@ -175,7 +168,7 @@ public class SessionManager implements ISessionManager {
 			synchronized (this) {
 				// removing the local cached  storage instance. 
 				// free space if the client never gets reconnected
-				getSessionsReferences().remove(lSessionId);
+				mStorageRefs.remove(lSessionId);
 				getReconnectionManager().putInReconnectionMode(aConnector.getSession());
 			}
 		}
