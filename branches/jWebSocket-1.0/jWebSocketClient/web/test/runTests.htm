@@ -8,13 +8,13 @@
 		<link rel="stylesheet" type="text/css" href="../lib/jasmine-1.0.2/jasmine.css">
 		<script type="text/javascript" src="../lib/jasmine-1.0.2/jasmine.js"></script>
 		<script type="text/javascript" src="../lib/jasmine-1.0.2/jasmine-html.js"></script>
-		
+
 		<!-- JQUERY DEPENDENCIES -->
 		<link rel="stylesheet" href="../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
         <script type="text/javascript" src='../lib/jQuery/jquery.js'></script>
         <script type="text/javascript" src='../lib/jQuery/jquery-ui/jquery-ui.js'></script>
 		<script type="text/javascript" src='../res/js/widgets/dialogs.js'></script>
-		
+
 		<!-- jWebSocket style sheet -->
 		<link rel="stylesheet" type="text/css" href="../res/css/demos.css">
 		<link rel="stylesheet" type="text/css" href="css/tests.css">
@@ -50,7 +50,7 @@
 		<script type="text/javascript" src="../res/js/jwsTwitterPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsXMPPPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsWorker.js"></script>
-		
+
 		<!-- Including Enterprise jWebSocket plug-ins-->
 		<script type="text/javascript" src="../web-enterprise/res/js/jwsFilesystemPlugInEE.js"></script>
 		<script type="text/javascript" src="../web-enterprise/res/js/jwsItemStoragePlugInEE.js"></script>
@@ -62,13 +62,13 @@
 
 		<!-- tests for the filesystem plug-in -->
 		<script type="text/javascript" src="js/jwsFilesystemTests.js"></script>
-		
+
 		<!-- tests for the enterprise filesystem plug-in -->
 		<script type="text/javascript" src="js/jwsFilesystemEETests.js"></script>
-		
+
 		<!-- tests for the itemstorage plug-in -->
 		<script type="text/javascript" src="js/jwsItemStorageTests.js"></script>
-		
+
 		<!-- tests for the enterprise itemstorage plug-in -->
 		<script type="text/javascript" src="js/jwsItemStorageEETests.js"></script>
 
@@ -94,7 +94,7 @@
 		<script type="text/javascript" src="js/jwsLoadTests.js"></script>
 
 		<script type="text/javascript" src="js/jwsAutomatedAPITests.js"></script>
-		
+
 		<!-- tests for the Dependency Injection Container -->
 		<script type="text/javascript" src="js/jwsIOC.js"></script>
 
@@ -122,8 +122,14 @@
 				<tr>
 					<td>
 						<h3>Select test modules to be executed</h3>
-						<p>
-							<label><input id="openConns" type="checkbox" checked="checked"> Open connections for admin and guest</label>
+						&nbsp;Test set:<select id="test_groups">
+							<option value="ce">Community Edition</option>
+							<option value="system">System Core</option>
+							<option value="performance">Performance</option>
+							<option value="ee">Enterprise Edition</option>
+						</select>
+						<p id="tests">
+							<label><input id="openConns" type="checkbox" disabled checked="checked"> Open connections for admin and guest</label>
 							<br>
 							<label><input id="streamingPlugIn" type="checkbox" checked="checked"> Streaming PlugIn</label>
 							<br>
@@ -145,7 +151,7 @@
 							<br>
 							<label><input id="load" type="checkbox" checked="checked"> Load</label>
 							<br>
-							<label><input id="closeConns" type="checkbox" checked="checked"> Close connections for admin and guest</label>
+							<label><input id="closeConns" type="checkbox" disabled checked="checked"> Close connections for admin and guest</label>
 							<br>
 							<label><input id="ioc" type="checkbox" checked="checked"> IOC Container</label>
 							<br>
@@ -162,7 +168,7 @@
 							 onclick="run({action:'runFullTestSuite'});this.className='button onmouseover';"
 							 title="Runs the manual (programmatic) test suite.">
 							<div class="l"></div>
-							<div class="c">Programmatic</div>
+							<div class="c">Run selected tests!</div>
 							<div class="r"></div>
 						</div>
 
@@ -173,7 +179,7 @@
 							 onclick="run({action:'runBenchmarkSuite'});this.className='button onmouseover';"
 							 title="Runs the benchmark suite.">
 							<div class="l"></div>
-							<div class="c">Benchmark</div>
+							<div class="c">Run benchmark test!</div>
 							<div class="r"></div>
 						</div>
 					</td>
@@ -181,6 +187,50 @@
 			</table>
 		</div>
 		<script type="text/javascript">
+			
+			var lCheckboxes = $('#tests').find('input[type=checkbox]');
+			$.each(lCheckboxes,  function(aIndex, aItem){
+				if ($(aItem).prop('id').substr(-2) == 'EE'){
+					$(aItem).prop('checked', false);
+				}
+			});
+				
+			$('#test_groups').bind('change', function(aValue) {
+				$.each(lCheckboxes,  function(aIndex, aItem){
+					var lId = $(aItem).prop('id');
+					if ('openConns' == lId || 'closeConns' == lId){
+						return;
+					}
+					
+					if ('ce' == $('#test_groups').val()){
+						if (lId.substr(-2) == 'EE'){
+							$(aItem).prop('checked', false);
+						} else {
+							$(aItem).prop('checked', true);	
+						}
+					} else if ('ee' == $('#test_groups').val()){
+						if (lId.substr(-2) == 'EE'){
+							$(aItem).prop('checked', true);
+						} else {
+							$(aItem).prop('checked', false);	
+						}
+					} else if ('performance' == $('#test_groups').val()){
+						if (lId == 'load'){
+							$(aItem).prop('checked', true);
+						} else {
+							$(aItem).prop('checked', false);	
+						}
+					} else if ('system' == $('#test_groups').val()){
+						if (lId == 'systemPlugIn'){
+							$(aItem).prop('checked', true);
+						} else {
+							$(aItem).prop('checked', false);	
+						}
+					}
+					
+				});
+			});
+			
 			function getURL() {
 				var lHref = location.href;
 				var lIdx = lHref.indexOf( "?" );
@@ -193,7 +243,7 @@
 			function run( aCall ) {
 				if ( "runFullTestSuite" == aCall.action ){
 					aCall.args = {
-						openConns: (jws.$("openConns").checked)? true : false,
+						openConns: true,
 						streamingPlugIn: (jws.$("streamingPlugIn").checked)? true : false,
 						channelsPlugIn: (jws.$("channelsPlugIn").checked)? true : false,
 						rpcPlugIn: (jws.$("rpcPlugIn").checked)? true : false,
@@ -204,7 +254,7 @@
 						itemstoragePlugInEE: (jws.$("itemstoragePlugInEE").checked)? true : false,
 						systemPlugIn: (jws.$("systemPlugIn").checked)? true : false,
 						load: (jws.$("load").checked)? true : false,
-						closeConns: (jws.$("closeConns").checked)? true : false,
+						closeConns: true,
 						ioc: (jws.$("ioc").checked)? true : false,
 						events: (jws.$("events").checked)? true : false
 					};
