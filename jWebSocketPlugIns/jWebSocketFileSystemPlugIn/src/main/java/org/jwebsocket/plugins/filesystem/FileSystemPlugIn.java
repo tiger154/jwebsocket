@@ -185,7 +185,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 
 		// check if user is allowed to run 'exists' command
-		if (hasAuthority(aConnector, NS_FILESYSTEM + "exists")) {
+		if (!hasAuthority(aConnector, NS_FILESYSTEM + ".exists")) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Returning 'Access denied'...");
 			}
