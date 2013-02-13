@@ -126,8 +126,7 @@ public class TomcatEngine extends BaseEngine {
 			lSSLConnector.setProperty("sslProtocol", "TLS");
 			lSSLConnector.setProperty("keystoreFile",
 					JWebSocketConfig.expandEnvAndJWebSocketVars(getConfiguration().getKeyStore()));
-			lSSLConnector.setProperty("keystorePass",
-					JWebSocketConfig.expandEnvAndJWebSocketVars(getConfiguration().getKeyStorePassword()));
+			lSSLConnector.setProperty("keystorePass", getConfiguration().getKeyStorePassword());
 
 			// registering the SSL connector
 			mTomcat.getService().addConnector(lSSLConnector);
