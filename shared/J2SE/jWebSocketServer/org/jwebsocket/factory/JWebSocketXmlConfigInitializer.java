@@ -68,42 +68,44 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 		return lInitializer;
 	}
 
+	private void loadLibrary(String aPath) {
+		try {
+			String lPath = JWebSocketConfig.expandEnvAndJWebSocketVars(aPath);
+			mClassLoader.addFile(lPath);
+			ClassPathUpdater.add(new File(lPath));
+
+			// URLClassLoader lURLCL = (URLClassLoader) Thread.currentThread().getContextClassLoader();
+			URLClassLoader lURLCL = (URLClassLoader) ClassLoader.getSystemClassLoader();
+			Method lMethod = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
+			lMethod.setAccessible(true);
+			String lURLStr = "file:" + lPath;
+			URL lURL = new URL(lURLStr);
+			lMethod.invoke(lURLCL, new Object[]{lURL});
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding external library"));
+		}
+	}
+
 	@Override
 	public ClassLoader initializeLibraries() {
 		List<LibraryConfig> lLibs = jWebSocketConfig.getLibraries();
 		if (lLibs != null) {
-			try {
-				for (LibraryConfig lLibConf : lLibs) {
-					if (mLog.isDebugEnabled()) {
-						mLog.debug("Adding external library '" + lLibConf.getId()
-								+ "' from '" + lLibConf.getURL() + "'...");
-					}
-					String lPath = JWebSocketConfig.expandEnvAndJWebSocketVars(lLibConf.getURL());
-					mClassLoader.addFile(lPath);
-					ClassPathUpdater.add(new File(lPath));
 
-					try {
-						// URLClassLoader lURLCL = (URLClassLoader) Thread.currentThread().getContextClassLoader();
-						URLClassLoader lURLCL = (URLClassLoader) ClassLoader.getSystemClassLoader();
-						Method lMethod = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
-						lMethod.setAccessible(true);
-						String lURLStr = "file:" + lPath;
-						URL lURL = new URL(lURLStr);
-						lMethod.invoke(lURLCL, new Object[]{lURL});
-					} catch (Exception lEx) {
-						String lMsg = lEx.getMessage();
-						System.out.println(lMsg);
-					}
-
-					if (mLog.isInfoEnabled()) {
-						mLog.info("External library '" + lLibConf.getId()
-								+ "' from '" + lPath
-								+ "' successfully added.");
-					}
+			for (LibraryConfig lLibConf : lLibs) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Adding external library '" + lLibConf.getId()
+							+ "' from '" + lLibConf.getURL() + "'...");
 				}
-			} catch (Exception lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "adding external libraries"));
+
+				loadLibrary(lLibConf.getURL());
+
+				if (mLog.isInfoEnabled()) {
+					mLog.info("External library '" + lLibConf.getId()
+							+ "' from '" + lLibConf.getURL()
+							+ "' successfully added.");
+				}
 			}
+
 		} else {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("No external libraries referenced in config file.");
@@ -270,6 +272,15 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 				}
 				// if class found try to create an instance
 				if (lPlugInClass != null) {
+					if (!lPlugInConfig.getJars().isEmpty()) {
+						if (mLog.isDebugEnabled()) {
+							mLog.info("Adding plug-in required libraries: " + lPlugInConfig.getJars());
+						}
+						for (String lPath : lPlugInConfig.getJars()) {
+							loadLibrary(lPath);
+						}
+					}
+
 					WebSocketPlugIn lPlugIn;
 
 					Constructor<WebSocketPlugIn> lPlugInConstructor;

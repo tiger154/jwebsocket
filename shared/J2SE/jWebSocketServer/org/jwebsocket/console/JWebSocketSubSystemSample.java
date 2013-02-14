@@ -15,6 +15,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.console;
 
+import java.util.ArrayList;
 import java.util.List;
 import javolution.util.FastList;
 import javolution.util.FastMap;
@@ -110,6 +111,7 @@ public class JWebSocketSubSystemSample {
 					"SystemPlugIn", // name
 					"org.jwebsocket.plugins.system", // package
 					"jWebSocketServer-1.0.jar", // jar
+					new ArrayList<String>(),
 					"org.jwebsocket.plugins.system", // namespace
 					lDomains, // list of accepted domains
 					null, // settings

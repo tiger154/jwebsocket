@@ -19,7 +19,7 @@ import java.util.Map;
 import org.json.JSONObject;
 
 /**
- * The Base interface for plugin configuration
+ * The Base interface for plug-in configuration
  * @author puran
  * @version $Id: PluginConfiguration.java 1840 2011-11-28 13:41:15Z fivefeetfurther $
  */
@@ -44,6 +44,11 @@ public interface PluginConfiguration extends Configuration {
 	 * @return the list of servers
 	 */
 	List<String> getServers();
+	
+	/**
+	 * @return the list of required jars
+	 */
+	List<String> getJars();
 
 	/**
 	 * @return the settings

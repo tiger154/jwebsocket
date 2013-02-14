@@ -369,7 +369,7 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 		Boolean lOldEnabled = mConfiguration.getEnabled();
 		mConfiguration = new PluginConfig(mConfiguration.getId(),
 				mConfiguration.getName(), mConfiguration.getPackage(),
-				mConfiguration.getJar(), mConfiguration.getNamespace(),
+				mConfiguration.getJar(), mConfiguration.getJars(), mConfiguration.getNamespace(),
 				mConfiguration.getServers(), mSettings, aEnabled);
 		// notify plug-in for change of enabled status
 		if (aEnabled != lOldEnabled) {
