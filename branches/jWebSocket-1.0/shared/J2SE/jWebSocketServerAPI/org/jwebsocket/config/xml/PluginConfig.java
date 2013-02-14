@@ -24,10 +24,10 @@ import org.jwebsocket.kit.WebSocketRuntimeException;
 
 /**
  * Class that represents the plugin config
- * 
+ *
  * @author puran
  * @version $Id: PluginConfig.java 596 2010-06-22 17:09:54Z fivefeetfurther $
- * 
+ *
  */
 public final class PluginConfig implements Config, PluginConfiguration {
 
@@ -37,31 +37,28 @@ public final class PluginConfig implements Config, PluginConfiguration {
 	private final String mPackageName;
 	private final String mNamespace;
 	private final List<String> mServers;
+	private final List<String> mJars;
 	private final Map<String, Object> mSettings;
 	private final boolean mEnabled;
 
 	/**
 	 * default constructor
 	 *
-	 * @param aId
-	 *          the plugin id
-	 * @param aName
-	 *          the plugin name
+	 * @param aId the plug-in id
+	 * @param aName the plug-in name
 	 * @param aPackage
-	 * @param aJar
-	 *          the plugin jar
-	 * @param aNamespace
-	 *          the namespace
+	 * @param aJar the plug-in jar
+	 * @param aNamespace the name-space
 	 * @param aServers
-	 * @param aSettings
-	 *          FastMap of settings key and value
+	 * @param aSettings FastMap of settings key and value
 	 */
-	public PluginConfig(String aId, String aName, String aPackage, String aJar,
+	public PluginConfig(String aId, String aName, String aPackage, String aJar, List<String> aJars,
 			String aNamespace, List<String> aServers, Map<String, Object> aSettings, boolean aEnabled) {
 		mId = aId;
 		mName = aName;
 		mPackageName = aPackage;
 		mJar = aJar;
+		mJars = aJars;
 		mNamespace = aNamespace;
 		mServers = aServers;
 		mSettings = aSettings;
@@ -101,6 +98,11 @@ public final class PluginConfig implements Config, PluginConfiguration {
 		return mJar;
 	}
 
+	@Override
+	public List<String> getJars() {
+		return mJars;
+	}
+
 	/**
 	 * @return the namespace
 	 */
@@ -133,7 +135,8 @@ public final class PluginConfig implements Config, PluginConfiguration {
 		if ((mId != null && mId.length() > 0)
 				&& (mName != null && mName.length() > 0)
 				&& (mJar != null && mJar.length() > 0)
-				&& (mNamespace != null && mNamespace.length() > 0)) {
+				&& (mNamespace != null && mNamespace.length() > 0)
+				&& (mJars != null)) {
 			return;
 		}
 		throw new WebSocketRuntimeException(
@@ -197,5 +200,4 @@ public final class PluginConfig implements Config, PluginConfiguration {
 	public boolean getEnabled() {
 		return mEnabled;
 	}
-
 }

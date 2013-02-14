@@ -24,9 +24,12 @@ import org.jwebsocket.config.ConfigHandler;
 
 /**
  * Config handler for reading plugins configuration
+ *
  * @author puran
- * @version $Id: PluginConfigHandler.java 596 2010-06-22 17:09:54Z fivefeetfurther $
- * 
+ * @author kyberneees (fixes and <jars> tag support)
+ * @version $Id: PluginConfigHandler.java 596 2010-06-22 17:09:54Z
+ * fivefeetfurther $
+ *
  */
 public class PluginConfigHandler implements ConfigHandler {
 
@@ -35,6 +38,7 @@ public class PluginConfigHandler implements ConfigHandler {
 	private static final String NAME = "name";
 	private static final String PACKAGE = "package";
 	private static final String JAR = "jar";
+	private static final String JARS = "jars";
 	private static final String NAMESPACE = "ns";
 	private static final String ENABLED = "enabled";
 	private static final String SERVERS = "server-assignments";
@@ -49,6 +53,7 @@ public class PluginConfigHandler implements ConfigHandler {
 		String lId = "", lName = "", lPackage = "", lJar = "", lNamespace = "";
 		boolean lEnabled = true;
 		List<String> lServers = new FastList<String>();
+		List<String> lJars = new FastList<String>();
 		Map<String, Object> lSettings = null;
 		while (aStreamReader.hasNext()) {
 			aStreamReader.next();
@@ -72,7 +77,9 @@ public class PluginConfigHandler implements ConfigHandler {
 				} else if (lElementName.equals(JWebSocketConfigHandler.SETTINGS)) {
 					lSettings = JWebSocketConfigHandler.getSettings(aStreamReader);
 				} else if (lElementName.equals(SERVERS)) {
-					lServers = getServers(aStreamReader);
+					getServers(aStreamReader, lServers);
+				} else if (lElementName.equals(JARS)) {
+					getJars(aStreamReader, lJars);
 				} else if (lElementName.equals(ENABLED)) {
 					aStreamReader.next();
 					try {
@@ -91,19 +98,18 @@ public class PluginConfigHandler implements ConfigHandler {
 				}
 			}
 		}
-		return new PluginConfig(lId, lName, lPackage, lJar,
+		return new PluginConfig(lId, lName, lPackage, lJar, lJars,
 				lNamespace, lServers, lSettings, lEnabled);
 	}
 
 	/**
-	 * private method that reads the list of servers from the plugin configuration 
+	 * private method that reads the list of servers from the plugin
+	 * configuration
+	 *
 	 * @param aStreamReader the stream reader object
-	 * @return the list of right ids
 	 * @throws XMLStreamException if exception while reading
 	 */
-	private List<String> getServers(XMLStreamReader aStreamReader)
-			throws XMLStreamException {
-		List<String> lServers = new FastList<String>();
+	private void getServers(XMLStreamReader aStreamReader, List<String> aServers) throws XMLStreamException {
 		while (aStreamReader.hasNext()) {
 			aStreamReader.next();
 			if (aStreamReader.isStartElement()) {
@@ -111,7 +117,7 @@ public class PluginConfigHandler implements ConfigHandler {
 				if (lElementName.equals(SERVER)) {
 					aStreamReader.next();
 					String lServer = aStreamReader.getText();
-					lServers.add(lServer);
+					aServers.add(lServer);
 				}
 			}
 			if (aStreamReader.isEndElement()) {
@@ -121,8 +127,26 @@ public class PluginConfigHandler implements ConfigHandler {
 				}
 			}
 		}
-		return lServers;
 	}
 
-	
+	private void getJars(XMLStreamReader aStreamReader, List<String> lJars) 
+			throws XMLStreamException {
+		while (aStreamReader.hasNext()) {
+			aStreamReader.next();
+			if (aStreamReader.isStartElement()) {
+				String lElementName = aStreamReader.getLocalName();
+				if (lElementName.equals(JAR)) {
+					aStreamReader.next();
+					String lJar = aStreamReader.getText();
+					lJars.add(lJar);
+				}
+			}
+			if (aStreamReader.isEndElement()) {
+				String lElementName = aStreamReader.getLocalName();
+				if (lElementName.equals(JARS)) {
+					break;
+				}
+			}
+		}
+	}
 }
