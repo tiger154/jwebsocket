@@ -135,7 +135,7 @@
 	
 	<root>
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
-		<priority value="INFO" />
+		<priority value="DEBUG" />
 		<!-- select one of the above declared appenders -->
 		<!-- for automated tests: -->
 		<!-- <appender-ref ref="testLog" /> -->

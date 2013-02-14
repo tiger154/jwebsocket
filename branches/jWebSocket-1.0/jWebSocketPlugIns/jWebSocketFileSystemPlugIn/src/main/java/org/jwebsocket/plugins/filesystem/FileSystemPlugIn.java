@@ -29,6 +29,8 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -550,7 +552,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 	/**
 	 * Returns TRUE if a file path is inside of a given base path, FALSE
-	 * otherwise 
+	 * otherwise
 	 *
 	 * @param aFile
 	 * @param aBasePath
@@ -558,14 +560,20 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 */
 	protected boolean isPathInFS(File aFile, String aBasePath) {
 		try {
-			if (!FilenameUtils.separatorsToSystem(aFile.getCanonicalPath())
-					.startsWith(FilenameUtils.separatorsToSystem(aBasePath))) {
-				return false;
+			String lCanonicalPath = FilenameUtils.separatorsToSystem(aFile.getCanonicalPath());
+			String lBasePath = FilenameUtils.separatorsToSystem(aBasePath);
+			if (SystemUtils.IS_OS_WINDOWS) {
+				if (!StringUtils.startsWithIgnoreCase(lCanonicalPath, lBasePath)) {
+					return false;
+				}
+			} else {
+				if (!lCanonicalPath.startsWith(lBasePath)) {
+					return false;
+				}
 			}
 		} catch (Exception lEx) {
 			return false;
 		}
-
 		return true;
 	}
 

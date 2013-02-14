@@ -53,7 +53,13 @@
 			<url>${JWEBSOCKET_HOME}libs/mysql-connector-java-5.1.16.jar</url>
 			<description>MySQL JDBC driver to access MySQL databases from jWebSocket and its plug-ins</description>
 		</library>
-
+		<!--
+		<library>
+			<id>jWebSocketFileSystemPlugIn</id>
+			<url>${JWEBSOCKET_HOME}libs/jWebSocketFileSystemPlugIn-1.0.jar</url>
+			<description>Filesystem plug-in, community edition</description>
+		</library>
+		-->
 	</libraries>
 
 	<!-- jWebSocket logging configuration -->
@@ -71,49 +77,26 @@
 		 configuring individual ports per engine!
 	-->
 	<!-- jWebSocket engine configuration -->
-	<engines>	
-		<!-- Grizzly Engine Configuration -->
+	<engines>
+		<!-- TCP Engine Configuration -->
 		<engine>
-			<name>org.jwebsocket.grizzly.GrizzlyEngine</name>
-			<id>grizzly0</id>
-			<jar>jWebSocketGrizzlyEngine-1.0.jar</jar>
-			<!-- Attention! The jWebSocket Grizzly Engine listens on same port like
-				 Grizzly's http. The http protocol is upgraded to use WebSockets.
-				 The http/websocket port can be configured via the Grizzly
-				 configuration file.
-			-->
-			<!-- set both port settings to "0" (null) if running Jetty
-				 Servlet Container for Web Apps and embed jWebSocket library.
-				 This uses the settings from jetty.xml, wraps the existing
-				 Jetty WebSocket servlet and does not instantiate a separate
-				 engine at run time within jWebSocket.
-			-->
-			<!--
-			<port>0</port>
-			<sslport>0</sslport>
-			-->
-			<!-- use 80/443 for default http/ws or https/wss connections
-				 when running a jWebSocket Server and use Jetty as an engine.
-				 These settings are recommended only when running jWebSocket
-				 on a separate server beside a WebServer and the firewall
-				 does not allow access to ports 8787 and 9797.
-			-->
-			<!--
-			<port>80</port>
-			<sslport>443</sslport>
-			-->
-			<!-- use 8787/9797 for default http/ws or https/wss connections
-				 These settings are recommended only when running jWebSocket
-				 on the same server beside a WebServer and the firewall
-				 grants access to ports 8787 and 9797.
-			-->
+			<name>org.jwebsocket.tcp.TCPEngine</name>
+			<id>tcp0</id>
+			<jar>jWebSocketTCPEngine-1.0.jar</jar>
 			<port>8787</port>
 			<sslport>9797</sslport>
 			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
 			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
 			<!-- password to access keystore file -->
 			<password>jWebSocket</password>
+			<!-- CAUTION! -->
+			<!-- not all browsers automatically accept self-signed certificates -->
+			<!-- please follow instructions on the jWebSocket.org website, how
+			     to trust self-signed certificates for the various browsers or
+				 how to import signed private key/certificate bundles into the keystore -->
+
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
+			<!-- you optionally can add asterisks as wild cards -->
 			<domains>
 				<domain>*</domain>
 				<!-- limit allowed domains here -->
@@ -130,25 +113,27 @@
 			</domains>
 			<!-- default session timeout 1h, max timeout currently 1 hour -->
 			<timeout>0</timeout>
-			<!-- Jetty provides a WebSocket Servlet, set the context path here -->
-			<context>/jWebSocket</context>
-			<!-- Jetty provides a WebSocket Servlet, set the servlet path here -->
-			<servlet>/jWebSocket</servlet>
 			<!--
 				maximum size of the data packet that the engine will read,
 				if the frame size is larger than this the connection will be closed.
 			-->
 			<maxframesize>1048840</maxframesize>
+			
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
-			<settings>
-				<!-- directory that contains the public web folder path -->
-				<setting key="document_root">${JWEBSOCKET_HOME}web/</setting>
-			</settings>
 			
+			<!-- on max connections reached strategy -->
+			<!-- wait, close, reject, redirect --> 
+			<onmaxconnections>reject</onmaxconnections>
+			<settings>
+				<!-- NIO output writer mechanism thread pool size -->
+				<setting key="workers">500</setting>
+				<!-- NIO output writer mechanism writes timeout -->
+				<setting key="writer_timeout">1000</setting>
+			</settings>		
 		</engine>
-	</engines>	
-		
+	</engines>
+
 	<!-- The <engineDefaults> section is stored here only for convenience!
 		 To use a certain engine move the engine configuration from here to
 		 the <engines> section.
@@ -208,6 +193,7 @@
 				<setting key="writer_timeout">1000</setting>
 			</settings>		
 		</engine>
+
 		<!-- NIO Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.tcp.nio.NioTcpEngine</name>
@@ -394,6 +380,7 @@
 				<setting key="document_root">${JWEBSOCKET_HOME}web/</setting>
 			</settings>
 		</engine>
+
 		<!-- Tomcat Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.tomcat.TomcatEngine</name>
@@ -744,6 +731,12 @@
 			<id>getFilelist</id>
 			<description>Allows to retrieve file lists from file system</description>
 		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>observe</id>
+			<description>Allows to observer changes in files of the file system</description>
+		</right>
+
 
 		<!-- Caution! Be careful with this right!
 				Unauthorized use could stop your server from
@@ -877,6 +870,7 @@
 				<right>org.jwebsocket.plugins.filesystem.exists</right>
 				<right>org.jwebsocket.plugins.filesystem.send</right>
 				<right>org.jwebsocket.plugins.filesystem.getFilelist</right>
+				<right>org.jwebsocket.plugins.filesystem.observe</right>
 
 				<!-- Caution! Be careful with this right!
 						Unauthorized use could stop your server from
@@ -922,6 +916,7 @@
 				<right>org.jwebsocket.plugins.filesystem.exists</right>
 				<right>org.jwebsocket.plugins.filesystem.send</right>
 				<right>org.jwebsocket.plugins.filesystem.getFilelist</right>
+				<right>org.jwebsocket.plugins.filesystem.observe</right>
 			</rights>
 		</role>
 		<role>
@@ -1386,8 +1381,10 @@
 		<!-- filesystem plug-in to access server files via WebSockets -->
 		<plugin>
 			<name>org.jwebsocket.plugins.filesystem.FileSystemPlugIn</name>
+			<!-- <name>org.jwebsocket.enterprise.plugins.filesystem.FileSystemPlugIn</name> -->
 			<id>jws.filesystem</id>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<!-- <jar>jWebSocketFileSystemPlugIn-1.0.jar</jar> -->
 			<jar>jWebSocketFileSystemPlugIn-1.0.jar</jar>
 			<!-- plug-in specific settings -->
 			<settings>
@@ -1406,31 +1403,12 @@
 					 - org.jwebsocket.plugins.filesystem.exists
 					 - org.jwebsocket.plugins.filesystem.send
 					 - org.jwebsocket.plugins.filesystem.getFilelist
+					 - org.jwebsocket.plugins.filesystem.observe
 				-->
-				<setting key="authentication_method">static</setting>
-				<!-- specify folder locations -->
-				<!-- examples for pure websocket server w/o an attached web server -->
-				<!--
-				<setting key="alias:publicDir">%JWEBSOCKET_HOME%/public/</setting>
-				<setting key="alias:privateDir">%JWEBSOCKET_HOME%/private/</setting>
-				<setting key="alias:webroot">http://jwebsocket.org/</setting>
-				-->
-				<!-- examples for windows based websocket servers -->
+				<!-- <setting key="authentication_method">spring</setting> -->
 				<setting key="alias:privateDir">${JWEBSOCKET_HOME}filesystem/private/{username}/</setting>
 				<setting key="alias:publicDir">${JWEBSOCKET_HOME}filesystem/public/</setting>
 				<setting key="alias:webRoot">http://localhost/public/</setting>
-				<!-- examples for Jetty based websocket servers -->
-				<!--
-				<setting key="alias:privateDir">c:/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/users/{username}/</setting>
-				<setting key="alias:publicDir">c:/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/public/</setting>
-				<setting key="alias:webroot">http://localhost/jWebSocket/public/</setting>
-				-->
-				<!-- examples for linux or mac osx based websocket servers -->
-				<!--
-				<setting key="alias:privateDir">/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/users/{username}/</setting>
-				<setting key="alias:publicDir">/svn/jWebSocket/branches/jWebSocket-1.0/jWebSocketClient/web/public/</setting>
-				<setting key="alias:webroot">http://localhost/jwc/</setting>
-				-->
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
@@ -1492,6 +1470,7 @@
 			</server-assignments>
 		</plugin>
 		-->
+
 		<!-- API disclosure plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.api.APIPlugIn</name>
@@ -1576,6 +1555,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
+
 		<!-- jQuery Mobile Form plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.jquery.JQueryFormsPlugIn</name>
@@ -1643,9 +1623,12 @@
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
+			<settings>
+				<setting key="jars">jWebSocketArduinoPlugIn-1.0.jar</setting>
+			</settings>
 		</plugin>
 		-->
-		
+
 		<!-- JMX Plug-in 
 		<plugin>
 			<name>org.jwebsocket.plugins.jmx.JMXPlugIn</name>
