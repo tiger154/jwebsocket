@@ -158,7 +158,6 @@ var jws = {
 	//:d:en:An individual timeout can be passed per request.
 	DEF_RESP_TIMEOUT: 30000,
 
-
 	//:i:en:Browsertype Constants
 	//:const:*:BT_UNKNOWN:Integer:0
 	//:d:en:Browsertype is unknown.
@@ -209,6 +208,25 @@ var jws = {
 	//:d:en:Root user password is "root" (if not changed on the server).
 	//:d:en:FOR DEMO AND DEBUG PURPOSES ONLY! NEVER SAVE PRODUCTION ROOT CREDENTIALS HERE!
 	DEMO_ROOT_PASSWORD: "root",
+	//:const:*:PACKET_DELIVERY_ACKNOWLEDGE_PREFIX:String:pda
+	//:d:en:Prefix for delivery acknowledge packets
+	PACKET_DELIVERY_ACKNOWLEDGE_PREFIX : "pda",
+	//:const:*:PACKET_ID_DELIMETER:String:,
+	//:d:en:Packet identifier delimeter
+	PACKET_ID_DELIMETER: ",",
+	//:const:*:PACKET_FRAGMENT_PREFIX:String:FRAGMENT
+	//:d:en:Prefix used to sign fragmented packets
+	PACKET_FRAGMENT_PREFIX: "FRAGMENT",
+	//:const:*:PACKET_LAST_FRAGMENT_PREFIX:String:LFRAGMENT
+	//:d:en:Prefix used to sign the last fragment on a packet fragmentation
+	PACKET_LAST_FRAGMENT_PREFIX: "LFRAGMENT",
+	//:const:*:MAX_FRAME_SIZE_FREFIX:String:maxframesize
+	//:d:en:Prefix used on the max frame size handshake 
+	MAX_FRAME_SIZE_FREFIX: "maxframesize",
+	//:const:*:PACKET_TRANSACTION_MAX_BYTES_PREFIXED:Integer:31
+	//:d:en:Maximum number of bytes that can be prefixed during a packet transaction
+	PACKET_TRANSACTION_MAX_BYTES_PREFIXED: 31,
+	
 	
 	//:m:*:$
 	//:d:en:Convenience replacement for [tt]document.getElementById()[/tt]. _
@@ -254,6 +272,16 @@ var jws = {
 			jws.JWS_SERVER_SERVLET
 			));
 	},
+	
+	//:m:*:getDefaultServerCometURL
+	//:d:en:Returns the default comet URL to the un-secured jWebSocket Server. This is a convenience _
+	//:d:en:method used in all jWebSocket demo dialogs. In case of changes to the _
+	//:d:en:server URL you only need to change to above JWS_SERVER_xxx constants.
+	//:a:en::::none
+	//:r:*:::void:Default jWebSocket server comet URL consisting of schema://host:port/context/servlet+Comet
+	getDefaultServerCometURL: function() {
+		return this.getDefaultServerURL() + "Comet";
+	},
 
 	//:m:*:getDefaultSSLServerURL
 	//:d:en:Returns the default URL to the secured jWebSocket Server. This is a convenience _
@@ -270,6 +298,16 @@ var jws = {
 			jws.JWS_SERVER_SERVLET
 			));
 	},
+	
+	//:m:*:getDefaultSSLServerCometURL
+	//:d:en:Returns the default comet URL to the secured jWebSocket Server. This is a convenience _
+	//:d:en:method used in all jWebSocket demo dialogs. In case of changes to the _
+	//:d:en:server URL you only need to change to above JWS_SERVER_xxx constants.
+	//:a:en::::none
+	//:r:*:::void:Default jWebSocket server comet URL consisting of schema://host:port/context/servlet+Comet
+	getDefaultSSLServerCometURL: function() {
+		return this.getDefaultSSLServerURL() + "Comet";
+	},
 
 	//:m:*:browserSupportsWebSockets
 	//:d:en:checks if the browser or one of its plug-ins like flash or chrome _
@@ -280,6 +318,15 @@ var jws = {
 		return( 
 			window.WebSocket !== null && window.WebSocket !== undefined
 			);
+	},
+	
+	//:m:*:enableCometSupportForWebSockets
+	//:d:en:Sets the XHRWebSocket implementation as default WebSocket class.
+	//:d:en:Uses Comet technique to provide a WebSocket simulation.
+	//:a:en::::none
+	enableCometSupportForWebSockets: function(){
+		// setting the XHRWebSocket implementation 
+		window.WebSocket = XHRWebSocket;
 	},
 
 	//:m:*:browserSupportsNativeWebSockets
@@ -968,7 +1015,7 @@ jws.events = {
 		function( aElement, aEvent, aListener ) {
 			aElement.removeEventListener( aEvent, aListener, false );
 		}
-	),
+		),
 
 	//:m:*:getTarget
 	//:d:en:Returns the element which originally fired the event in a cross-browser compatible way.
@@ -982,7 +1029,7 @@ jws.events = {
 		function( aEvent ) {
 			return aEvent.target;
 		}
-	),
+		),
 	
 	preventDefault : (
 		jws.isIE ?
@@ -996,8 +1043,21 @@ jws.events = {
 		function( aEvent ) {
 			return aEvent.preventDefault();
 		}
-	)
+		),
 
+	stopEvent : (
+		jws.isIE ?
+		function( aEvent ) {
+			if( aEvent && aEvent.preventDefault ) {
+				return aEvent.preventDefault();
+			}
+		}
+		:
+		function( aEvent ) {
+			return aEvent.stopPropagation();
+		}
+		)
+		
 };
 
 //  <JasobNoObfs>
@@ -1282,6 +1342,17 @@ function bit_rol(num,cnt){
 //:ancestor:*:-
 //:d:en:Implements some required JavaScript tools.
 jws.tools = {
+	
+	//:m:*:getUniqueInteger
+	//:d:en:Gets a unique number
+	//:r:*:::Integer:A unique integer number
+	getUniqueInteger: function () {
+		if ( undefined == this.fUniqueInteger || 2147483647 == this.fUniqueInteger ){
+			this.fUniqueInteger = 1;
+		}
+		
+		return this.fUniqueInteger++;
+	},
 
 	//:m:*:zerofill
 	//:d:en:Fills up an integer value with the given number of zero characters
@@ -1424,6 +1495,19 @@ jws.tools = {
 		return lRes;
 	},
 	
+	isArrayOf: function( aArray, aType ){
+		if ( !Ext.isArray(aArray) ){
+			return false;
+		}
+		for ( var lIndex in aArray ){
+			if (this.getType(aArray[lIndex]) != aType){
+				return false;
+			}
+		}
+	
+		return true;
+	},
+	
 	setProperties: function(aObject, aProperties, aSubfix){
 		var lSubfix = aSubfix || "";
 		var lSetter = null;
@@ -1484,7 +1568,7 @@ jws.tools = {
 
 if( !jws.browserSupportsNativeWebSockets ) {
 	//	<JasobNoObfs>
-	// --- swfobject.js ---
+	// --- original code, please refer to swfobject.js in folder flash-bridge ---
 	// SWFObject v2.2 <http://code.google.com/p/swfobject/> 
 	// released under the MIT License <http://www.opensource.org/licenses/mit-license.php> 
 	var swfobject=function(){var D="undefined",r="object",S="Shockwave Flash",W="ShockwaveFlash.ShockwaveFlash",q="application/x-shockwave-flash",R="SWFObjectExprInst",x="onreadystatechange",O=window,j=document,t=navigator,T=false,U=[h],o=[],N=[],I=[],l,Q,E,B,J=false,a=false,n,G,m=true,M=function(){var aa=typeof j.getElementById!=D&&typeof j.getElementsByTagName!=D&&typeof j.createElement!=D,ah=t.userAgent.toLowerCase(),Y=t.platform.toLowerCase(),ae=Y?/win/.test(Y):/win/.test(ah),ac=Y?/mac/.test(Y):/mac/.test(ah),af=/webkit/.test(ah)?parseFloat(ah.replace(/^.*webkit\/(\d+(\.\d+)?).*$/,"$1")):false,X=!+"\v1",ag=[0,0,0],ab=null;if(typeof t.plugins!=D&&typeof t.plugins[S]==r){ab=t.plugins[S].description;if(ab&&!(typeof t.mimeTypes!=D&&t.mimeTypes[q]&&!t.mimeTypes[q].enabledPlugin)){T=true;X=false;ab=ab.replace(/^.*\s+(\S+\s+\S+$)/,"$1");ag[0]=parseInt(ab.replace(/^(.*)\..*$/,"$1"),10);ag[1]=parseInt(ab.replace(/^.*\.(.*)\s.*$/,"$1"),10);ag[2]=/[a-zA-Z]/.test(ab)?parseInt(ab.replace(/^.*[a-zA-Z]+(.*)$/,"$1"),10):0}}else{if(typeof O.ActiveXObject!=D){try{var ad=new ActiveXObject(W);if(ad){ab=ad.GetVariable("$version");if(ab){X=true;ab=ab.split(" ")[1].split(",");ag=[parseInt(ab[0],10),parseInt(ab[1],10),parseInt(ab[2],10)]}}}catch(Z){}}}return{w3:aa,pv:ag,wk:af,ie:X,win:ae,mac:ac}}(),k=function(){if(!M.w3){return}if((typeof j.readyState!=D&&j.readyState=="complete")||(typeof j.readyState==D&&(j.getElementsByTagName("body")[0]||j.body))){f()}if(!J){if(typeof j.addEventListener!=D){j.addEventListener("DOMContentLoaded",f,false)}if(M.ie&&M.win){j.attachEvent(x,function(){if(j.readyState=="complete"){j.detachEvent(x,arguments.callee);f()}});if(O==top){(function(){if(J){return}try{j.documentElement.doScroll("left")}catch(X){setTimeout(arguments.callee,0);return}f()})()}}if(M.wk){(function(){if(J){return}if(!/loaded|complete/.test(j.readyState)){setTimeout(arguments.callee,0);return}f()})()}s(f)}}();function f(){if(J){return}try{var Z=j.getElementsByTagName("body")[0].appendChild(C("span"));Z.parentNode.removeChild(Z)}catch(aa){return}J=true;var X=U.length;for(var Y=0;Y<X;Y++){U[Y]()}}function K(X){if(J){X()}else{U[U.length]=X}}function s(Y){if(typeof O.addEventListener!=D){O.addEventListener("load",Y,false)}else{if(typeof j.addEventListener!=D){j.addEventListener("load",Y,false)}else{if(typeof O.attachEvent!=D){i(O,"onload",Y)}else{if(typeof O.onload=="function"){var X=O.onload;O.onload=function(){X();Y()}}else{O.onload=Y}}}}}function h(){if(T){V()}else{H()}}function V(){var X=j.getElementsByTagName("body")[0];var aa=C(r);aa.setAttribute("type",q);var Z=X.appendChild(aa);if(Z){var Y=0;(function(){if(typeof Z.GetVariable!=D){var ab=Z.GetVariable("$version");if(ab){ab=ab.split(" ")[1].split(",");M.pv=[parseInt(ab[0],10),parseInt(ab[1],10),parseInt(ab[2],10)]}}else{if(Y<10){Y++;setTimeout(arguments.callee,10);return}}X.removeChild(aa);Z=null;H()})()}else{H()}}function H(){var ag=o.length;if(ag>0){for(var af=0;af<ag;af++){var Y=o[af].id;var ab=o[af].callbackFn;var aa={success:false,id:Y};if(M.pv[0]>0){var ae=c(Y);if(ae){if(F(o[af].swfVersion)&&!(M.wk&&M.wk<312)){w(Y,true);if(ab){aa.success=true;aa.ref=z(Y);ab(aa)}}else{if(o[af].expressInstall&&A()){var ai={};ai.data=o[af].expressInstall;ai.width=ae.getAttribute("width")||"0";ai.height=ae.getAttribute("height")||"0";if(ae.getAttribute("class")){ai.styleclass=ae.getAttribute("class")}if(ae.getAttribute("align")){ai.align=ae.getAttribute("align")}var ah={};var X=ae.getElementsByTagName("param");var ac=X.length;for(var ad=0;ad<ac;ad++){if(X[ad].getAttribute("name").toLowerCase()!="movie"){ah[X[ad].getAttribute("name")]=X[ad].getAttribute("value")}}P(ai,ah,Y,ab)}else{p(ae);if(ab){ab(aa)}}}}}else{w(Y,true);if(ab){var Z=z(Y);if(Z&&typeof Z.SetVariable!=D){aa.success=true;aa.ref=Z}ab(aa)}}}}}function z(aa){var X=null;var Y=c(aa);if(Y&&Y.nodeName=="OBJECT"){if(typeof Y.SetVariable!=D){X=Y}else{var Z=Y.getElementsByTagName(r)[0];if(Z){X=Z}}}return X}function A(){return !a&&F("6.0.65")&&(M.win||M.mac)&&!(M.wk&&M.wk<312)}function P(aa,ab,X,Z){a=true;E=Z||null;B={success:false,id:X};var ae=c(X);if(ae){if(ae.nodeName=="OBJECT"){l=g(ae);Q=null}else{l=ae;Q=X}aa.id=R;if(typeof aa.width==D||(!/%$/.test(aa.width)&&parseInt(aa.width,10)<310)){aa.width="310"}if(typeof aa.height==D||(!/%$/.test(aa.height)&&parseInt(aa.height,10)<137)){aa.height="137"}j.title=j.title.slice(0,47)+" - Flash Player Installation";var ad=M.ie&&M.win?"ActiveX":"PlugIn",ac="MMredirectURL="+O.location.toString().replace(/&/g,"%26")+"&MMplayerType="+ad+"&MMdoctitle="+j.title;if(typeof ab.flashvars!=D){ab.flashvars+="&"+ac}else{ab.flashvars=ac}if(M.ie&&M.win&&ae.readyState!=4){var Y=C("div");X+="SWFObjectNew";Y.setAttribute("id",X);ae.parentNode.insertBefore(Y,ae);ae.style.display="none";(function(){if(ae.readyState==4){ae.parentNode.removeChild(ae)}else{setTimeout(arguments.callee,10)}})()}u(aa,ab,X)}}function p(Y){if(M.ie&&M.win&&Y.readyState!=4){var X=C("div");Y.parentNode.insertBefore(X,Y);X.parentNode.replaceChild(g(Y),X);Y.style.display="none";(function(){if(Y.readyState==4){Y.parentNode.removeChild(Y)}else{setTimeout(arguments.callee,10)}})()}else{Y.parentNode.replaceChild(g(Y),Y)}}function g(ab){var aa=C("div");if(M.win&&M.ie){aa.innerHTML=ab.innerHTML}else{var Y=ab.getElementsByTagName(r)[0];if(Y){var ad=Y.childNodes;if(ad){var X=ad.length;for(var Z=0;Z<X;Z++){if(!(ad[Z].nodeType==1&&ad[Z].nodeName=="PARAM")&&!(ad[Z].nodeType==8)){aa.appendChild(ad[Z].cloneNode(true))}}}}}return aa}function u(ai,ag,Y){var X,aa=c(Y);if(M.wk&&M.wk<312){return X}if(aa){if(typeof ai.id==D){ai.id=Y}if(M.ie&&M.win){var ah="";for(var ae in ai){if(ai[ae]!=Object.prototype[ae]){if(ae.toLowerCase()=="data"){ag.movie=ai[ae]}else{if(ae.toLowerCase()=="styleclass"){ah+=' class="'+ai[ae]+'"'}else{if(ae.toLowerCase()!="classid"){ah+=" "+ae+'="'+ai[ae]+'"'}}}}}var af="";for(var ad in ag){if(ag[ad]!=Object.prototype[ad]){af+='<param name="'+ad+'" value="'+ag[ad]+'" />'}}aa.outerHTML='<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"'+ah+">"+af+"</object>";N[N.length]=ai.id;X=c(ai.id)}else{var Z=C(r);Z.setAttribute("type",q);for(var ac in ai){if(ai[ac]!=Object.prototype[ac]){if(ac.toLowerCase()=="styleclass"){Z.setAttribute("class",ai[ac])}else{if(ac.toLowerCase()!="classid"){Z.setAttribute(ac,ai[ac])}}}}for(var ab in ag){if(ag[ab]!=Object.prototype[ab]&&ab.toLowerCase()!="movie"){e(Z,ab,ag[ab])}}aa.parentNode.replaceChild(Z,aa);X=Z}}return X}function e(Z,X,Y){var aa=C("param");aa.setAttribute("name",X);aa.setAttribute("value",Y);Z.appendChild(aa)}function y(Y){var X=c(Y);if(X&&X.nodeName=="OBJECT"){if(M.ie&&M.win){X.style.display="none";(function(){if(X.readyState==4){b(Y)}else{setTimeout(arguments.callee,10)}})()}else{X.parentNode.removeChild(X)}}}function b(Z){var Y=c(Z);if(Y){for(var X in Y){if(typeof Y[X]=="function"){Y[X]=null}}Y.parentNode.removeChild(Y)}}function c(Z){var X=null;try{X=j.getElementById(Z)}catch(Y){}return X}function C(X){return j.createElement(X)}function i(Z,X,Y){Z.attachEvent(X,Y);I[I.length]=[Z,X,Y]}function F(Z){var Y=M.pv,X=Z.split(".");X[0]=parseInt(X[0],10);X[1]=parseInt(X[1],10)||0;X[2]=parseInt(X[2],10)||0;return(Y[0]>X[0]||(Y[0]==X[0]&&Y[1]>X[1])||(Y[0]==X[0]&&Y[1]==X[1]&&Y[2]>=X[2]))?true:false}function v(ac,Y,ad,ab){if(M.ie&&M.mac){return}var aa=j.getElementsByTagName("head")[0];if(!aa){return}var X=(ad&&typeof ad=="string")?ad:"screen";if(ab){n=null;G=null}if(!n||G!=X){var Z=C("style");Z.setAttribute("type","text/css");Z.setAttribute("media",X);n=aa.appendChild(Z);if(M.ie&&M.win&&typeof j.styleSheets!=D&&j.styleSheets.length>0){n=j.styleSheets[j.styleSheets.length-1]}G=X}if(M.ie&&M.win){if(n&&typeof n.addRule==r){n.addRule(ac,Y)}}else{if(n&&typeof j.createTextNode!=D){n.appendChild(j.createTextNode(ac+" {"+Y+"}"))}}}function w(Z,X){if(!m){return}var Y=X?"visible":"hidden";if(J&&c(Z)){c(Z).style.visibility=Y}else{v("#"+Z,"visibility:"+Y)}}function L(Y){var Z=/[\\\"<>\.;]/;var X=Z.exec(Y)!=null;return X&&typeof encodeURIComponent!=D?encodeURIComponent(Y):Y}var d=function(){if(M.ie&&M.win){window.attachEvent("onunload",function(){var ac=I.length;for(var ab=0;ab<ac;ab++){I[ab][0].detachEvent(I[ab][1],I[ab][2])}var Z=N.length;for(var aa=0;aa<Z;aa++){y(N[aa])}for(var Y in M){M[Y]=null}M=null;for(var X in swfobject){swfobject[X]=null}swfobject=null})}}();return{registerObject:function(ab,X,aa,Z){if(M.w3&&ab&&X){var Y={};Y.id=ab;Y.swfVersion=X;Y.expressInstall=aa;Y.callbackFn=Z;o[o.length]=Y;w(ab,false)}else{if(Z){Z({success:false,id:ab})}}},getObjectById:function(X){if(M.w3){return z(X)}},embedSWF:function(ab,ah,ae,ag,Y,aa,Z,ad,af,ac){var X={success:false,id:ah};if(M.w3&&!(M.wk&&M.wk<312)&&ab&&ah&&ae&&ag&&Y){w(ah,false);K(function(){ae+="";ag+="";var aj={};if(af&&typeof af===r){for(var al in af){aj[al]=af[al]}}aj.data=ab;aj.width=ae;aj.height=ag;var am={};if(ad&&typeof ad===r){for(var ak in ad){am[ak]=ad[ak]}}if(Z&&typeof Z===r){for(var ai in Z){if(typeof am.flashvars!=D){am.flashvars+="&"+ai+"="+Z[ai]}else{am.flashvars=ai+"="+Z[ai]}}}if(F(Y)){var an=u(aj,am,ah);if(aj.id==ah){w(ah,true)}X.success=true;X.ref=an}else{if(aa&&A()){aj.data=aa;P(aj,am,ah,ac);return}else{w(ah,true)}}if(ac){ac(X)}})}else{if(ac){ac(X)}}},switchOffAutoHideShow:function(){m=false},ua:M,getFlashPlayerVersion:function(){return{major:M.pv[0],minor:M.pv[1],release:M.pv[2]}},hasFlashPlayerVersion:F,createSWF:function(Z,Y,X){if(M.w3){return u(Z,Y,X)}else{return undefined}},showExpressInstall:function(Z,aa,X,Y){if(M.w3&&A()){P(Z,aa,X,Y)}},removeSWF:function(X){if(M.w3){y(X)}},createCSS:function(aa,Z,Y,X){if(M.w3){v(aa,Z,Y,X)}},addDomLoadEvent:K,addLoadEvent:s,getQueryParamValue:function(aa){var Z=j.location.search||j.location.hash;if(Z){if(/\?/.test(Z)){Z=Z.split("?")[1]}if(aa==null){return L(Z)}var Y=Z.split("&");for(var X=0;X<Y.length;X++){if(Y[X].substring(0,Y[X].indexOf("="))==aa){return L(Y[X].substring((Y[X].indexOf("=")+1)))}}}return""},expressInstallCallback:function(){if(a){var X=c(R);if(X&&l){X.parentNode.replaceChild(l,X);if(Q){w(Q,true);if(M.ie&&M.win){l.style.display="block"}}if(E){E(B)}}a=false}}}}();
@@ -1532,8 +1616,8 @@ if( !jws.browserSupportsNativeWebSockets ) {
 			// License: New BSD License
 			// Reference: http://dev.w3.org/html5/websockets/
 			// Reference: http://tools.ietf.org/html/rfc6455
-			// Full sources codes provided in web_socket.js
-			(function(){if(window.WEB_SOCKET_FORCE_FLASH){}else if(window.WebSocket){return;}else if(window.MozWebSocket){window.WebSocket=MozWebSocket;return;}var logger;if(window.WEB_SOCKET_LOGGER){logger=WEB_SOCKET_LOGGER;}else if(window.console&&window.console.log&&window.console.error){logger=window.console;}else{logger={log:function(){},error:function(){}};}if(swfobject.getFlashPlayerVersion().major<10){logger.error("Flash Player >= 10.0.0 is required.");return;}if(location.protocol=="file:"){logger.error("WARNING: web-socket-js doesn't work in file:///... URL "+"unless you set Flash Security Settings properly. "+"Open the page via Web server i.e. http://...");}window.WebSocket=function(url,protocols,proxyHost,proxyPort,headers){var self=this;self.__id=WebSocket.__nextId++;WebSocket.__instances[self.__id]=self;self.readyState=WebSocket.CONNECTING;self.bufferedAmount=0;self.__events={};if(!protocols){protocols=[];}else if(typeof protocols=="string"){protocols=[protocols];}self.__createTask=setTimeout(function(){WebSocket.__addTask(function(){self.__createTask=null;WebSocket.__flash.create(self.__id,url,protocols,proxyHost||null,proxyPort||0,headers||null);});},0);};WebSocket.prototype.send=function(data){if(this.readyState==WebSocket.CONNECTING){throw "INVALID_STATE_ERR: Web Socket connection has not been established";}var result=WebSocket.__flash.send(this.__id,encodeURIComponent(data));if(result<0){return true;}else{this.bufferedAmount+=result;return false;}};WebSocket.prototype.close=function(){if(this.__createTask){clearTimeout(this.__createTask);this.__createTask=null;this.readyState=WebSocket.CLOSED;return;}if(this.readyState==WebSocket.CLOSED||this.readyState==WebSocket.CLOSING){return;}this.readyState=WebSocket.CLOSING;WebSocket.__flash.close(this.__id);};WebSocket.prototype.addEventListener=function(type,listener,useCapture){if(!(type in this.__events)){this.__events[type]=[];}this.__events[type].push(listener);};WebSocket.prototype.removeEventListener=function(type,listener,useCapture){if(!(type in this.__events))return;var events=this.__events[type];for(var i=events.length-1;i>=0;--i){if(events[i]===listener){events.splice(i,1);break;}}};WebSocket.prototype.dispatchEvent=function(event){var events=this.__events[event.type]||[];for(var i=0;i<events.length;++i){events[i](event);}var handler=this["on"+event.type];if(handler)handler.apply(this,[event]);};WebSocket.prototype.__handleEvent=function(flashEvent){if("readyState"in flashEvent){this.readyState=flashEvent.readyState;}if("protocol"in flashEvent){this.protocol=flashEvent.protocol;}var jsEvent;if(flashEvent.type=="open"||flashEvent.type=="error"){jsEvent=this.__createSimpleEvent(flashEvent.type);}else if(flashEvent.type=="close"){jsEvent=this.__createSimpleEvent("close");jsEvent.wasClean=flashEvent.wasClean?true:false;jsEvent.code=flashEvent.code;jsEvent.reason=flashEvent.reason;}else if(flashEvent.type=="message"){var data=decodeURIComponent(flashEvent.message);jsEvent=this.__createMessageEvent("message",data);}else{throw "unknown event type: "+flashEvent.type;}this.dispatchEvent(jsEvent);};WebSocket.prototype.__createSimpleEvent=function(type){if(document.createEvent&&window.Event){var event=document.createEvent("Event");event.initEvent(type,false,false);return event;}else{return{type:type,bubbles:false,cancelable:false};}};WebSocket.prototype.__createMessageEvent=function(type,data){if(document.createEvent&&window.MessageEvent&& !window.opera){var event=document.createEvent("MessageEvent");event.initMessageEvent("message",false,false,data,null,null,window,null);return event;}else{return{type:type,data:data,bubbles:false,cancelable:false};}};WebSocket.CONNECTING=0;WebSocket.OPEN=1;WebSocket.CLOSING=2;WebSocket.CLOSED=3;WebSocket.__initialized=false;WebSocket.__flash=null;WebSocket.__instances={};WebSocket.__tasks=[];WebSocket.__nextId=0;WebSocket.loadFlashPolicyFile=function(url){WebSocket.__addTask(function(){WebSocket.__flash.loadManualPolicyFile(url);});};WebSocket.__initialize=function(){if(WebSocket.__initialized)return;WebSocket.__initialized=true;if(WebSocket.__swfLocation){window.WEB_SOCKET_SWF_LOCATION=WebSocket.__swfLocation;}if(!window.WEB_SOCKET_SWF_LOCATION){logger.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf");return;}if(!window.WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR&& !WEB_SOCKET_SWF_LOCATION.match(/(^|\/)WebSocketMainInsecure\.swf(\?.*)?$/)&&WEB_SOCKET_SWF_LOCATION.match(/^\w+:\/\/([^\/]+)/)){var swfHost=RegExp.$1;if(location.host!=swfHost){logger.error("[WebSocket] You must host HTML and WebSocketMain.swf in the same host "+"('"+location.host+"' != '"+swfHost+"'). "+"See also 'How to host HTML file and SWF file in different domains' section "+"in README.md. If you use WebSocketMainInsecure.swf, you can suppress this message "+"by WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;");}}var container=document.createElement("div");container.id="webSocketContainer";container.style.position="absolute";if(WebSocket.__isFlashLite()){container.style.left="0px";container.style.top="0px";}else{container.style.left="-100px";container.style.top="-100px";}var holder=document.createElement("div");holder.id="webSocketFlash";container.appendChild(holder);document.body.appendChild(container);swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION,"webSocketFlash","1","1","10.0.0",null,null,{hasPriority:true,swliveconnect:true,allowScriptAccess:"always"},null,function(e){if(!e.success){logger.error("[WebSocket] swfobject.embedSWF failed");}});};WebSocket.__onFlashInitialized=function(){setTimeout(function(){WebSocket.__flash=document.getElementById("webSocketFlash");WebSocket.__flash.setCallerUrl(location.href);WebSocket.__flash.setDebug(! !window.WEB_SOCKET_DEBUG);for(var i=0;i<WebSocket.__tasks.length;++i){WebSocket.__tasks[i]();}WebSocket.__tasks=[];},0);};WebSocket.__onFlashEvent=function(){setTimeout(function(){try{var events=WebSocket.__flash.receiveEvents();for(var i=0;i<events.length;++i){WebSocket.__instances[events[i].webSocketId].__handleEvent(events[i]);}}catch(e){logger.error(e);}},0);return true;};WebSocket.__log=function(message){logger.log(decodeURIComponent(message));};WebSocket.__error=function(message){logger.error(decodeURIComponent(message));};WebSocket.__addTask=function(task){if(WebSocket.__flash){task();}else{WebSocket.__tasks.push(task);}};WebSocket.__isFlashLite=function(){if(!window.navigator|| !window.navigator.mimeTypes){return false;}var mimeType=window.navigator.mimeTypes["application/x-shockwave-flash"];if(!mimeType|| !mimeType.enabledPlugin|| !mimeType.enabledPlugin.filename){return false;}return mimeType.enabledPlugin.filename.match(/flashlite/i)?true:false;};if(!window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION){swfobject.addDomLoadEvent(function(){WebSocket.__initialize();});}})();
+			// Full sources codes provided in web_socket.js in folder flash-bridge
+			(function(){if(window.WEB_SOCKET_FORCE_FLASH){}else if(window.WebSocket){return;}else if(window.MozWebSocket){window.WebSocket=MozWebSocket;return;}var logger;if(window.WEB_SOCKET_LOGGER){logger=WEB_SOCKET_LOGGER;}else if(window.console&&window.console.log&&window.console.error){logger=window.console;}else{logger={log:function(){},error:function(){}};}if(swfobject.getFlashPlayerVersion().major<10){logger.error("Flash Player >= 10.0.0 is required.");return;}if(location.protocol=="file:"){logger.error("WARNING: web-socket-js doesn't work in file:///... URL "+"unless you set Flash Security Settings properly. "+"Open the page via Web server i.e. http://...");}window.WebSocket=function(url,protocols,proxyHost,proxyPort,headers){var self=this;self.__id=WebSocket.__nextId++;WebSocket.__instances[self.__id]=self;self.readyState=WebSocket.CONNECTING;self.bufferedAmount=0;self.__events={};if(!protocols){protocols=[];}else if(typeof protocols=="string"){protocols=[protocols];}self.__createTask=setTimeout(function(){WebSocket.__addTask(function(){self.__createTask=null;WebSocket.__flash.create(self.__id,url,protocols,proxyHost||null,proxyPort||0,headers||null);});},0);};WebSocket.prototype.send=function(data){if(this.readyState==WebSocket.CONNECTING){throw "INVALID_STATE_ERR: Web Socket connection has not been established";}var result=WebSocket.__flash.send(this.__id,encodeURIComponent(data));if(result<0){return true;}else{this.bufferedAmount+=result;return false;}};WebSocket.prototype.close=function(){if(this.__createTask){clearTimeout(this.__createTask);this.__createTask=null;this.readyState=WebSocket.CLOSED;return;}if(this.readyState==WebSocket.CLOSED||this.readyState==WebSocket.CLOSING){return;}this.readyState=WebSocket.CLOSING;WebSocket.__flash.close(this.__id);};WebSocket.prototype.addEventListener=function(type,listener,useCapture){if(!(type in this.__events)){this.__events[type]=[];}this.__events[type].push(listener);};WebSocket.prototype.removeEventListener=function(type,listener,useCapture){if(!(type in this.__events))return;var events=this.__events[type];for(var i=events.length-1;i>=0;--i){if(events[i]===listener){events.splice(i,1);break;}}};WebSocket.prototype.dispatchEvent=function(event){var events=this.__events[event.type]||[];for(var i=0;i<events.length;++i){events[i](event);}var handler=this["on"+event.type];if(handler)handler.apply(this,[event]);};WebSocket.prototype.__handleEvent=function(flashEvent){if("readyState"in flashEvent){this.readyState=flashEvent.readyState;}if("protocol"in flashEvent){this.protocol=flashEvent.protocol;}var jsEvent;if(flashEvent.type=="open"||flashEvent.type=="error"){jsEvent=this.__createSimpleEvent(flashEvent.type);}else if(flashEvent.type=="close"){jsEvent=this.__createSimpleEvent("close");jsEvent.wasClean=flashEvent.wasClean?true:false;jsEvent.code=flashEvent.code;jsEvent.reason=flashEvent.reason;}else if(flashEvent.type=="message"){var data=decodeURIComponent(flashEvent.message);jsEvent=this.__createMessageEvent("message",data);}else{throw "unknown event type: "+flashEvent.type;}this.dispatchEvent(jsEvent);};WebSocket.prototype.__createSimpleEvent=function(type){if(document.createEvent&&window.Event){var event=document.createEvent("Event");event.initEvent(type,false,false);return event;}else{return{type:type,bubbles:false,cancelable:false};}};WebSocket.prototype.__createMessageEvent=function(type,data){if(document.createEvent&&window.MessageEvent&& !window.opera){var event=document.createEvent("MessageEvent");event.initMessageEvent("message",false,false,data,null,null,window,null);return event;}else{return{type:type,data:data,bubbles:false,cancelable:false};}};WebSocket.CONNECTING=0;WebSocket.OPEN=1;WebSocket.CLOSING=2;WebSocket.CLOSED=3;WebSocket.__isFlashImplementation=true;WebSocket.__initialized=false;WebSocket.__flash=null;WebSocket.__instances={};WebSocket.__tasks=[];WebSocket.__nextId=0;WebSocket.loadFlashPolicyFile=function(url){WebSocket.__addTask(function(){WebSocket.__flash.loadManualPolicyFile(url);});};WebSocket.__initialize=function(){if(WebSocket.__initialized)return;WebSocket.__initialized=true;if(WebSocket.__swfLocation){window.WEB_SOCKET_SWF_LOCATION=WebSocket.__swfLocation;}if(!window.WEB_SOCKET_SWF_LOCATION){logger.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf");return;}if(!window.WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR&& !WEB_SOCKET_SWF_LOCATION.match(/(^|\/)WebSocketMainInsecure\.swf(\?.*)?$/)&&WEB_SOCKET_SWF_LOCATION.match(/^\w+:\/\/([^\/]+)/)){var swfHost=RegExp.$1;if(location.host!=swfHost){logger.error("[WebSocket] You must host HTML and WebSocketMain.swf in the same host "+"('"+location.host+"' != '"+swfHost+"'). "+"See also 'How to host HTML file and SWF file in different domains' section "+"in README.md. If you use WebSocketMainInsecure.swf, you can suppress this message "+"by WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;");}}var container=document.createElement("div");container.id="webSocketContainer";container.style.position="absolute";if(WebSocket.__isFlashLite()){container.style.left="0px";container.style.top="0px";}else{container.style.left="-100px";container.style.top="-100px";}var holder=document.createElement("div");holder.id="webSocketFlash";container.appendChild(holder);document.body.appendChild(container);swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION,"webSocketFlash","1","1","10.0.0",null,null,{hasPriority:true,swliveconnect:true,allowScriptAccess:"always"},null,function(e){if(!e.success){logger.error("[WebSocket] swfobject.embedSWF failed");}});};WebSocket.__onFlashInitialized=function(){setTimeout(function(){WebSocket.__flash=document.getElementById("webSocketFlash");WebSocket.__flash.setCallerUrl(location.href);WebSocket.__flash.setDebug(! !window.WEB_SOCKET_DEBUG);for(var i=0;i<WebSocket.__tasks.length;++i){WebSocket.__tasks[i]();}WebSocket.__tasks=[];},0);};WebSocket.__onFlashEvent=function(){setTimeout(function(){try{var events=WebSocket.__flash.receiveEvents();for(var i=0;i<events.length;++i){WebSocket.__instances[events[i].webSocketId].__handleEvent(events[i]);}}catch(e){logger.error(e);}},0);return true;};WebSocket.__log=function(message){logger.log(decodeURIComponent(message));};WebSocket.__error=function(message){logger.error(decodeURIComponent(message));};WebSocket.__addTask=function(task){if(WebSocket.__flash){task();}else{WebSocket.__tasks.push(task);}};WebSocket.__isFlashLite=function(){if(!window.navigator|| !window.navigator.mimeTypes){return false;}var mimeType=window.navigator.mimeTypes["application/x-shockwave-flash"];if(!mimeType|| !mimeType.enabledPlugin|| !mimeType.enabledPlugin.filename){return false;}return mimeType.enabledPlugin.filename.match(/flashlite/i)?true:false;};if(!window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION){swfobject.addDomLoadEvent(function(){WebSocket.__initialize();});}})();
 			//	</JasobNoObfs>
 		}
 		
@@ -1553,15 +1637,251 @@ if( window.swfobject) {
 if( !jws.browserSupportsNativeJSON ) {
 	// <JasobNoObfs>
 	// Please refer to http://json.org/js
-	if(!this.JSON){this.JSON={};}(function(){function f(n){return n<10?'0'+n:n;}if(typeof Date.prototype.toJSON!=='function'){Date.prototype.toJSON=function(key){return isFinite(this.valueOf())?this.getUTCFullYear()+'-'+f(this.getUTCMonth()+1)+'-'+f(this.getUTCDate())+'T'+f(this.getUTCHours())+':'+f(this.getUTCMinutes())+':'+f(this.getUTCSeconds())+'Z':null;};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(key){return this.valueOf();};}var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'},rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?'"'+string.replace(escapable,function(a){var c=meta[a];return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);})+'"':'"'+string+'"';}function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&&typeof value==='object'&&typeof value.toJSON==='function'){value=value.toJSON(key);}if(typeof rep==='function'){value=rep.call(holder,key,value);}switch(typeof value){case'string':return quote(value);case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value){return'null';}gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==='[object Array]'){length=value.length;for(i=0;i<length;i+=1){partial[i]=str(i,value)||'null';}v=partial.length===0?'[]':gap?'[\n'+gap+partial.join(',\n'+gap)+'\n'+mind+']':'['+partial.join(',')+']';gap=mind;return v;}if(rep&&typeof rep==='object'){length=rep.length;for(i=0;i<length;i+=1){k=rep[i];if(typeof k==='string'){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}else{for(k in value){if(Object.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+mind+'}':'{'+partial.join(',')+'}';gap=mind;return v;}}if(typeof JSON.stringify!=='function'){JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){for(i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}rep=replacer;if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){throw new Error('JSON.stringify');}return str('',{'':value});};}if(typeof JSON.parse!=='function'){JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==='object'){for(k in value){if(Object.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}return reviver.call(holder,key,value);}text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);});}if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof reviver==='function'?walk({'':j},''):j;}throw new SyntaxError('JSON.parse');};}}());
-	// </JasobNoObfs>
+	if(!this.JSON){
+		this.JSON={};
+		
+	}(function(){
+		function f(n){
+			return n<10?'0'+n:n;
+		}
+		if(typeof Date.prototype.toJSON!=='function'){
+			Date.prototype.toJSON=function(key){
+				return isFinite(this.valueOf())?this.getUTCFullYear()+'-'+f(this.getUTCMonth()+1)+'-'+f(this.getUTCDate())+'T'+f(this.getUTCHours())+':'+f(this.getUTCMinutes())+':'+f(this.getUTCSeconds())+'Z':null;
+			};
+		
+			String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(key){
+				return this.valueOf();
+			};
+	
+		}
+		var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={
+			'\b':'\\b',
+			'\t':'\\t',
+			'\n':'\\n',
+			'\f':'\\f',
+			'\r':'\\r',
+			'"':'\\"',
+			'\\':'\\\\'
+		},rep;
+		function quote(string){
+			escapable.lastIndex=0;
+			return escapable.test(string)?'"'+string.replace(escapable,function(a){
+				var c=meta[a];
+				return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);
+			})+'"':'"'+string+'"';
+		}
+		function str(key,holder){
+			var i,k,v,length,mind=gap,partial,value=holder[key];
+			if(value&&typeof value==='object'&&typeof value.toJSON==='function'){
+				value=value.toJSON(key);
+			}
+			if(typeof rep==='function'){
+				value=rep.call(holder,key,value);
+			}
+			switch(typeof value){
+				case'string':
+					return quote(value);
+				case'number':
+					return isFinite(value)?String(value):'null';
+				case'boolean':case'null':
+					return String(value);
+				case'object':
+					if(!value){
+						return'null';
+					}
+					gap+=indent;
+					partial=[];
+					if(Object.prototype.toString.apply(value)==='[object Array]'){
+						length=value.length;
+						for(i=0;i<length;i+=1){
+							partial[i]=str(i,value)||'null';
+						}
+						v=partial.length===0?'[]':gap?'[\n'+gap+partial.join(',\n'+gap)+'\n'+mind+']':'['+partial.join(',')+']';
+						gap=mind;
+						return v;
+					}
+					if(rep&&typeof rep==='object'){
+						length=rep.length;
+						for(i=0;i<length;i+=1){
+							k=rep[i];
+							if(typeof k==='string'){
+								v=str(k,value);
+								if(v){
+									partial.push(quote(k)+(gap?': ':':')+v);
+								}
+							}
+						}
+					}else{
+						for(k in value){
+							if(Object.hasOwnProperty.call(value,k)){
+								v=str(k,value);
+								if(v){
+									partial.push(quote(k)+(gap?': ':':')+v);
+								}
+							}
+						}
+					}
+					v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+mind+'}':'{'+partial.join(',')+'}';
+					gap=mind;
+					return v;
+			}
+		}
+		if(typeof JSON.stringify!=='function'){
+			JSON.stringify=function(value,replacer,space){
+				var i;
+				gap='';
+				indent='';
+				if(typeof space==='number'){
+					for(i=0;i<space;i+=1){
+						indent+=' ';
+					}
+				}else if(typeof space==='string'){
+					indent=space;
+				}
+				rep=replacer;
+				if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){
+					throw new Error('JSON.stringify');
+				}
+				return str('',{
+					'':value
+				});
+			};
+
+		}
+		if(typeof JSON.parse!=='function'){
+			JSON.parse=function(text,reviver){
+				var j;
+				function walk(holder,key){
+					var k,v,value=holder[key];
+					if(value&&typeof value==='object'){
+						for(k in value){
+							if(Object.hasOwnProperty.call(value,k)){
+								v=walk(value,k);
+								if(v!==undefined){
+									value[k]=v;
+								}else{
+									delete value[k];
+								}
+							}
+						}
+					}
+					return reviver.call(holder,key,value);
+				}
+				text=String(text);
+				cx.lastIndex=0;
+				if(cx.test(text)){
+					text=text.replace(cx,function(a){
+						return'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);
+					});
+				}
+				if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){
+					j=eval('('+text+')');
+					return typeof reviver==='function'?walk({
+						'':j
+					},''):j;
+				}
+				throw new SyntaxError('JSON.parse');
+			};
+
+		}
+	}());
+// </JasobNoObfs>
 }
 
 // Base64 support 
 //	<JasobNoObfs>
 //	Base64 encode / decode
 //  http://www.webtoolkit.info/
-var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(input){var output="";var chr1,chr2,chr3,enc1,enc2,enc3,enc4;var i=0;input=Base64._utf8_encode(input);while(i<input.length){chr1=input.charCodeAt(i++);chr2=input.charCodeAt(i++);chr3=input.charCodeAt(i++);enc1=chr1>>2;enc2=((chr1&3)<<4)|(chr2>>4);enc3=((chr2&15)<<2)|(chr3>>6);enc4=chr3&63;if(isNaN(chr2)){enc3=enc4=64;}else if(isNaN(chr3)){enc4=64;}output=output+this._keyStr.charAt(enc1)+this._keyStr.charAt(enc2)+this._keyStr.charAt(enc3)+this._keyStr.charAt(enc4);}return output;},decode:function(input){var output="";var chr1,chr2,chr3;var enc1,enc2,enc3,enc4;var i=0;input=input.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(i<input.length){enc1=this._keyStr.indexOf(input.charAt(i++));enc2=this._keyStr.indexOf(input.charAt(i++));enc3=this._keyStr.indexOf(input.charAt(i++));enc4=this._keyStr.indexOf(input.charAt(i++));chr1=(enc1<<2)|(enc2>>4);chr2=((enc2&15)<<4)|(enc3>>2);chr3=((enc3&3)<<6)|enc4;output=output+String.fromCharCode(chr1);if(enc3!=64){output=output+String.fromCharCode(chr2);}if(enc4!=64){output=output+String.fromCharCode(chr3);}}output=Base64._utf8_decode(output);return output;},_utf8_encode:function(string){string=string.replace(/\r\n/g,"\n");var utftext="";for(var n=0;n<string.length;n++){var c=string.charCodeAt(n);if(c<128){utftext+=String.fromCharCode(c);}else if((c>127)&&(c<2048)){utftext+=String.fromCharCode((c>>6)|192);utftext+=String.fromCharCode((c&63)|128);}else{utftext+=String.fromCharCode((c>>12)|224);utftext+=String.fromCharCode(((c>>6)&63)|128);utftext+=String.fromCharCode((c&63)|128);}}return utftext;},_utf8_decode:function(utftext){var string="";var i=0;var c=c1=c2=0;while(i<utftext.length){c=utftext.charCodeAt(i);if(c<128){string+=String.fromCharCode(c);i++;}else if((c>191)&&(c<224)){c2=utftext.charCodeAt(i+1);string+=String.fromCharCode(((c&31)<<6)|(c2&63));i+=2;}else{c2=utftext.charCodeAt(i+1);c3=utftext.charCodeAt(i+2);string+=String.fromCharCode(((c&15)<<12)|((c2&63)<<6)|(c3&63));i+=3;}}return string;}}
+var Base64={
+	_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+	encode:function(input){
+		var output="";
+		var chr1,chr2,chr3,enc1,enc2,enc3,enc4;
+		var i=0;
+		input=Base64._utf8_encode(input);
+		while(i<input.length){
+			chr1=input.charCodeAt(i++);
+			chr2=input.charCodeAt(i++);
+			chr3=input.charCodeAt(i++);
+			enc1=chr1>>2;
+			enc2=((chr1&3)<<4)|(chr2>>4);
+			enc3=((chr2&15)<<2)|(chr3>>6);
+			enc4=chr3&63;
+			if(isNaN(chr2)){
+				enc3=enc4=64;
+			}else if(isNaN(chr3)){
+				enc4=64;
+			}
+			output=output+this._keyStr.charAt(enc1)+this._keyStr.charAt(enc2)+this._keyStr.charAt(enc3)+this._keyStr.charAt(enc4);
+		}
+		return output;
+	},
+	decode:function(input){
+		var output="";
+		var chr1,chr2,chr3;
+		var enc1,enc2,enc3,enc4;
+		var i=0;
+		input=input.replace(/[^A-Za-z0-9\+\/\=]/g,"");
+		while(i<input.length){
+			enc1=this._keyStr.indexOf(input.charAt(i++));
+			enc2=this._keyStr.indexOf(input.charAt(i++));
+			enc3=this._keyStr.indexOf(input.charAt(i++));
+			enc4=this._keyStr.indexOf(input.charAt(i++));
+			chr1=(enc1<<2)|(enc2>>4);
+			chr2=((enc2&15)<<4)|(enc3>>2);
+			chr3=((enc3&3)<<6)|enc4;
+			output=output+String.fromCharCode(chr1);
+			if(enc3!=64){
+				output=output+String.fromCharCode(chr2);
+			}
+			if(enc4!=64){
+				output=output+String.fromCharCode(chr3);
+			}
+		}
+		output=Base64._utf8_decode(output);
+		return output;
+	},
+	_utf8_encode:function(string){
+		string=string.replace(/\r\n/g,"\n");
+		var utftext="";
+		for(var n=0;n<string.length;n++){
+			var c=string.charCodeAt(n);
+			if(c<128){
+				utftext+=String.fromCharCode(c);
+			}else if((c>127)&&(c<2048)){
+				utftext+=String.fromCharCode((c>>6)|192);
+				utftext+=String.fromCharCode((c&63)|128);
+			}else{
+				utftext+=String.fromCharCode((c>>12)|224);
+				utftext+=String.fromCharCode(((c>>6)&63)|128);
+				utftext+=String.fromCharCode((c&63)|128);
+			}
+		}
+		return utftext;
+	},
+	_utf8_decode:function(utftext){
+		var string="";
+		var i=0;
+		var c=c1=c2=0;
+		while(i<utftext.length){
+			c=utftext.charCodeAt(i);
+			if(c<128){
+				string+=String.fromCharCode(c);
+				i++;
+			}else if((c>191)&&(c<224)){
+				c2=utftext.charCodeAt(i+1);
+				string+=String.fromCharCode(((c&31)<<6)|(c2&63));
+				i+=2;
+			}else{
+				c2=utftext.charCodeAt(i+1);
+				c3=utftext.charCodeAt(i+2);
+				string+=String.fromCharCode(((c&15)<<12)|((c2&63)<<6)|(c3&63));
+				i+=3;
+			}
+		}
+		return string;
+	}
+}
 //	</JasobNoObfs>
 
 
@@ -1632,7 +1952,7 @@ jws.oop.declareClass = function( aNamespace, aClassname, aAncestor, aFields ) {
 // plug-in functionality to allow to add plug-ins into existing classes
 jws.oop.addPlugIn = function( aClass, aPlugIn ) {
 
-	// if the class has no plug-ins yet initialize array
+	// if the class has no plug-ins yet, initialize array
 	if( !aClass.fPlugIns ) {
 		aClass.fPlugIns = [];
 	}
@@ -1671,7 +1991,7 @@ jws.oop.addPlugIn = function( aClass, aPlugIn ) {
 //:d:en:which are (have to be) handled by the descendant classes.
 
 jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
-
+	
 	create: function( aOptions ) {
 		// turn off connection reliability by default
 		if( !this.fReliabilityOptions ) {
@@ -1723,9 +2043,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		// otherwise flash bridge may have embedded WebSocket class
 		if( self.WebSocket ) {
 
-			// TODO: !this.fConn is not enough here! Check for readystate!
-			// if connection not already established...
-			if( !this.fConn ) {
+			if( !this.fConn || this.fConn.readyState > 2 ) {
 				var lThis = this;
 				var lValue = null;
 
@@ -1774,41 +2092,122 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 						jws.console.debug("[onopen]: " + JSON.stringify( aEvent ));
 					}	
 					
-					//Sending client headers to the server 
-					lThis.sendToken({
-						ns: jws.SystemClientPlugIn.NS,
-						type: "header",
-						clientType: "browser",
-						clientName: jws.getBrowserName(),
-						clientVersion: jws.getBrowserVersionString(),
-						clientInfo: navigator.userAgent,
-						jwsType: "javascript",
-						jwsVersion: jws.VERSION,
-						jwsInfo: 
-						jws.browserSupportsNativeWebSockets 
-						? "native"
-						: "flash " + jws.flashBridgeVer
-					});
+					// creating a map to store the incoming fragments
+					lThis.fInFragments = {};
+					// creating a map to store the packet delivery listeners
+					lThis.fPacketDeliveryListeners = {};
+					// creating a map to store the packet delivery listeners timer tasks
+					lThis.fPacketDeliveryTimerTasks = {};
 					
 					if( lThis.hOpenTimeout ) {
 						clearTimeout( lThis.hOpenTimeout );
 						lThis.hOpenTimeout = null;
 					}
 					lThis.fStatus = jws.OPEN;
-					lValue = lThis.processOpened( aEvent );
-					// give application change to handle event
-					if( aOptions.OnOpen ) {
-						aOptions.OnOpen( aEvent, lValue, lThis );
-					}
-					// process outgoing queue
-					lThis.processQueue();
+					lThis.fOpenEvent = aEvent;
 				};
 
 				this.fConn.onmessage = function( aEvent ) {
+					// utility variable
+					var lPos, lPID;
+					
+					// supporting the max frame size handshake
+					if ( undefined == lThis.fMaxFrameSize ){
+						lPos = aEvent.data.indexOf( jws.MAX_FRAME_SIZE_FREFIX );
+						if (0 == lPos){
+							lThis.fMaxFrameSize = parseInt( aEvent.data.substr( jws.MAX_FRAME_SIZE_FREFIX.length ) );
+							jws.events.stopEvent( aEvent );
+							if( jws.console.isDebugEnabled() ) {
+								jws.console.debug( "Maximum frame size for connection is: " + lThis.fMaxFrameSize );
+							}
+							
+							// The end of the "max frame size" handshake indicates that the connection is finally opened
+							lValue = lThis.processOpened( aEvent );
+							// give application change to handle event
+							if( aOptions.OnOpen ) {
+								aOptions.OnOpen( aEvent, lValue, lThis );
+							}
+							// process outgoing queue
+							lThis.processQueue();
+							
+							return;
+						}
+					} else if (aEvent.data.length > this.fMaxFrameSize){
+							jws.events.stopEvent( aEvent );
+						jws.console.warn( "Data packet discarded. The packet size " + 
+							"exceeds the max frame size supported by the client!" );
+						return;
+					}
+					
+					var lPacket = aEvent.data;
+					
+					// processing packet delivery acknowledge from the server
+					if ( 0 == lPacket.indexOf(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX) ){
+						if ( lPacket.length <= (10 + jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length) ){
+							lPID = parseInt( lPacket.replace(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, "") );
+							clearTimeout( lThis.fPacketDeliveryTimerTasks[ lPID ] );
+							
+							if ( lThis.fPacketDeliveryListeners[ lPID ] ){
+								// cleaning expired data and calling success
+								lThis.fPacketDeliveryListeners[ lPID ].OnSuccess();
+								delete lThis.fPacketDeliveryListeners[ lPID ];
+								delete lThis.fPacketDeliveryTimerTasks[ lPID ];
+							}
+						}
+						
+						return;
+					}
+					
+					// supporting packet delivery acknowledge to the server
+					lPos = aEvent.data.indexOf( jws.PACKET_ID_DELIMETER );
+					if ( lPos >=0 && lPos < 10 && false == isNaN(aEvent.data.substr( 0, lPos ))){
+						lPID = aEvent.data.substr( 0, lPos );
+						// send packet delivery acknowledge
+						lThis.sendStream( jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPID );
+						if( jws.console.isDebugEnabled() ) {
+							jws.console.debug( "PDA sent for packet with id: " + lPID );
+						}
+						
+						// generating the new packet
+						lPacket = lPacket.substr( lPos + 1 );
+						
+						// supporting fragmentation
+						var lFragmentContent;
+						if (0 == lPacket.indexOf( jws.PACKET_FRAGMENT_PREFIX )){
+							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
+							lPID = lPacket.substr( jws.PACKET_FRAGMENT_PREFIX.length, 
+								lPos - jws.PACKET_FRAGMENT_PREFIX.length );
+							lFragmentContent = lPacket.substr( lPos + 1 );
+							// storing the packet fragment
+							if (undefined == lThis.fInFragments[ lPID ]){
+								lThis.fInFragments[ lPID ] = lFragmentContent;
+							} else {
+								lThis.fInFragments[ lPID ] += lFragmentContent;
+							}
+							
+							// do not process packet fragments
+							return;
+						} else if (0 == lPacket.indexOf( jws.PACKET_LAST_FRAGMENT_PREFIX )){
+							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
+							lPID = lPacket.substr( jws.PACKET_LAST_FRAGMENT_PREFIX.length, 
+								lPos - jws.PACKET_LAST_FRAGMENT_PREFIX.length );
+							lFragmentContent = lPacket.substr( lPos + 1 );
+							// storing the packet fragment
+							lThis.fInFragments[ lPID ] += lFragmentContent;
+							// getting the complete packet content
+							lPacket = lThis.fInFragments[ lPID ];
+							// removing packet data from the fragments storage 
+							delete lThis.fInFragments[ lPID ];
+						}
+					}
+					
 					if( jws.console.isDebugEnabled() ) {
-						jws.console.debug("[onmessage]: " + JSON.stringify( aEvent ));
-					}	
-					lValue = lThis.processPacket( aEvent );
+						jws.console.debug("[onclose]: " + lPacket);
+					}
+					
+					// process the packet
+					lValue = lThis.processPacket( lPacket );
+					
 					// give application change to handle event first
 					if( aOptions.OnMessage ) {
 						aOptions.OnMessage( aEvent, lValue, lThis );
@@ -1824,6 +2223,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 						lThis.hOpenTimeout = null;
 					}
 					lThis.fStatus = jws.CLOSED;
+					delete lThis.fMaxFrameSize;
+					
 					// check if still disconnect timeout active and clear if needed
 					if( lThis.hDisconnectTimeout ) {
 						clearTimeout( lThis.hDisconnectTimeout );
@@ -1851,8 +2252,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 								}
 								lThis.open( lThis.fURL, aOptions );
 							},
-							lThis.fReliabilityOptions.reconnectDelay
-							);
+							lThis.fReliabilityOptions.reconnectDelay );
 					}
 				};
 
@@ -1912,11 +2312,16 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	},
 
 	//:m:*:sendStream
-	//:d:en:Sends a given string to the jWebSocket Server. The methods checks _
+	//:d:en:Sends a given string (packet) to the jWebSocket Server. The methods checks _
 	//:d:en:if the connection is still up and throws an exception if not.
 	//:a:en::aData:String:String to be send the jWebSocketServer
 	//:r:*:::void:none
 	sendStream: function( aData ) {
+		if (aData.length > this.fMaxFrameSize){
+			throw new Error( "Data packet discarded. The packet size " + 
+				"exceeds the max frame size supported by the client!" );
+		}
+		
 		// is client already connected
 		if( this.isOpened() ) {
 			try {
@@ -1932,6 +2337,154 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				// if not raise exception
 				throw new Error( "Not connected" );
 			}	
+		}
+	},
+	
+	//:m:*:sendStream
+	//:d:en:Sends a given string (packet) to the jWebSocket Server. The methods checks _
+	//:d:en:if the connection is still up and throws an exception if not.
+	//:a:en::aData:String:String to be send the jWebSocketServer
+	//:a:en::aListener:Object:A packet delivery listener
+	//:a:en:aListener:getTimeout:function:Returns the transaction timeout
+	//:a:en:aListener:OnTimeout:function:Called if the packet delivery has timed out
+	//:a:en:aListener:OnSuccess:function:Called if the packet has been delivered successfully 
+	//:a:en:aListener:OnFailure:function:Called if the packet delivery has failed
+	//:a:en::aFragmentSize:Integer:The size of the packet fragments if fragmentation is required. Default value is connection max frame size value.
+	//:r:*:::void:none
+	sendStreamInTransaction: function ( aData, aListener, aFragmentSize){
+		var lPID = jws.tools.getUniqueInteger();
+		var lThis = this;
+		
+		try {
+			if ( undefined == aFragmentSize ){
+				aFragmentSize = this.fMaxFrameSize;
+			} else if ( aFragmentSize < 0 || aFragmentSize > this.fMaxFrameSize ) {
+				throw new Error("Invalid 'fragment size' argument. " 
+					+ "Expected value: fragment_size > 0 && fragment_size <= max_frame_size");
+			}
+		
+			if ( typeof( aData ) != "string" || aData.length == 0 ) {
+				throw new Error("Invalid value for argument 'data'!");
+			}
+			if ( typeof( aListener ) != "object" ) {
+				throw new Error("Invalid value for argument 'listener'!");
+			}
+			if ( typeof( aListener["getTimeout"] ) != "function" ) {
+				throw new Error("Missing 'getTimeout' method on argument 'listener'!");
+			}
+			if ( typeof( aListener["OnSuccess"] ) != "function" ) {
+				throw new Error("Missing 'OnSuccess' method on argument 'listener'!");
+			}
+			if ( typeof( aListener["OnTimeout"] ) != "function" ) {
+				throw new Error("Missing 'OnTimeout' method on argument 'listener'!");
+			}
+			if ( typeof( aListener["OnFailure"] ) != "function" ) {
+				throw new Error("Missing 'OnFailure' method on argument 'listener'!");
+			}
+			
+			// generating packet prefix
+			var lPacketPrefix = lPID + jws.PACKET_ID_DELIMETER;
+		
+			// processing fragmentation
+			if ( aFragmentSize < this.fMaxFrameSize && aFragmentSize < aData.length ){
+				
+				// first fragment is never the last
+				var lIsLast = false; 
+				// fragmentation id, allows multiplexing
+				var lFragmentationId = jws.tools.getUniqueInteger();
+				// prefix the packet for fragmentation
+				var lFragmentedPacket = jws.PACKET_FRAGMENT_PREFIX 
+				+ lFragmentationId 
+				+ jws.PACKET_ID_DELIMETER 
+				+ aData.substr( 0, aFragmentSize );
+				
+				if ( lFragmentedPacket.length + lPacketPrefix.length > this.fMaxFrameSize ){
+					throw new Error( "The packet size exceeds the max frame size supported by the client! "
+						+ "Consider that the packet has been prefixed with "
+						+ ( lFragmentedPacket.length + lPacketPrefix.length - aData.length )
+						+ " bytes for fragmented transaction.");
+				}
+				
+				this.sendStreamInTransaction ( lFragmentedPacket, {
+					fOriginPacket: aData,
+					fOriginFragmentSize: aFragmentSize,
+					fOriginListener: aListener,
+					fSentTime: new Date().getTime(),
+					fFragmentationId: lFragmentationId,
+					fBytesSent: 0,
+					
+					getTimeout: function (){
+						var lTimeout = this.fSentTime + this.fOriginListener.getTimeout() - new Date().getTime();
+						if (lTimeout < 0) {
+							lTimeout = 0;
+						}
+
+						return lTimeout;
+					}, 
+					
+					OnTimeout: function (){
+						this.fOriginListener.OnTimeout();
+					},
+					
+					OnSuccess: function (){
+						// updating bytes sent
+						this.fBytesSent += this.fOriginFragmentSize;
+						if ( this.fBytesSent >= this.fOriginPacket.length ) {
+							// calling success if the packet was transmitted complete
+							this.fOriginListener.OnSuccess();
+						} else {
+							// prepare to sent a next fragment
+							var lLength = ( this.fOriginFragmentSize + this.fBytesSent <= this.fOriginPacket.length )
+							? this.fOriginFragmentSize : this.fOriginPacket.length - this.fBytesSent;
+
+							var lNextFragment = this.fOriginPacket.substr( this.fBytesSent, lLength );
+							var lIsLast = ( lLength + this.fBytesSent == this.fOriginPacket.length ) ? true : false;
+					
+							// prefixing next fragment
+							lNextFragment = ( ( lIsLast ) ? jws.PACKET_LAST_FRAGMENT_PREFIX : jws.PACKET_FRAGMENT_PREFIX )
+							+ this.fFragmentationId 
+							+ jws.PACKET_ID_DELIMETER 
+							+ lNextFragment;
+						
+							// send fragment
+							lThis.sendStreamInTransaction(lNextFragment, this);
+						}
+					},
+					
+					OnFailure: function ( lEx ){
+						this.fOriginListener.OnFailure( lEx ); 
+					}
+				});
+				
+				// REQUIRED
+				return;
+			}
+		
+			// prefixing the packet
+			aData = lPacketPrefix + aData;
+			// saving the listener
+			this.fPacketDeliveryListeners[ lPID ] = aListener;
+		
+			// sending the packet
+			this.sendStream( aData );
+		
+			// setting the timer task for OnTimeout support
+			var lTT = setTimeout(function(){
+				if ( lThis.fPacketDeliveryListeners[ lPID ] ){
+					// cleaning expired data and calling timeout
+					lThis.fPacketDeliveryListeners[ lPID ].OnTimeout();
+					delete lThis.fPacketDeliveryListeners[ lPID ];
+					delete lThis.fPacketDeliveryTimerTasks[ lPID ];
+				}
+			}, 
+			aListener.getTimeout());
+			this.fPacketDeliveryTimerTasks[ lPID ] = lTT; 
+		}catch ( lEx ){
+			// cleaning expired data and calling OnFailure
+			delete this.fPacketDeliveryListeners[ lPID ];
+			clearTimeout( this.fPacketDeliveryTimerTasks[ lPID ] );
+			delete this.fPacketDeliveryTimerTasks[ lPID ];
+			aListener.OnFailure ( lEx );
 		}
 	},
 
@@ -2140,9 +2693,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				lTimeout = aOptions.timeout;
 			}
 		}
-		// connection established at all?
-		// TODO: Shouldn't we test for ready state here?
-		if( this.fConn ) {
+		
+		if( this.fConn && 1 == this.fConn.readyState ) {
 			if( lTimeout <= 0 ) {
 				this.forceClose( aOptions );
 			} else {
@@ -2197,28 +2749,15 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		if( !this.fPlugIns ) {
 			this.fPlugIns = [];
 		}
-		// add the plug-in to the class
+		
 		this.fPlugIns.push( aPlugIn );
-		/*
- 		 var lField;
-			 */
+
 		if( !aId ) {
 			aId = aPlugIn.ID;
 		}
 		//:todo:en:check if plug-in with given id already exists!
 		if( aId ) {
 			aPlugIn.conn = this;
-		/*
-			// blend all methods of the plug-in to the connection instance
-			this[ aId ] = {
-				conn: this
-			};
-			for( lField in aPlugIn ) {
-				if( lField != "conn" ) {
-					this[ aId ][ lField ] = aPlugIn[ lField ];
-				}
-			}
-				 */
 		}
 	},
 
@@ -2286,7 +2825,6 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			delete this.fParams;
 		}
 	}
-
 });
 
 
@@ -2302,6 +2840,24 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 //:d:en:an abstract class as an ancestor for the JSON-, CSV- and XML client. _
 //:d:en:Do not create direct instances of jWebSocketTokenClient.
 jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, {
+
+	processOpened: function ( aEvent ){
+		// sending client headers to the server 
+		this.sendToken({
+			ns: jws.SystemClientPlugIn.NS,
+			type: "header",
+			clientType: "browser",
+			clientName: jws.getBrowserName(),
+			clientVersion: jws.getBrowserVersionString(),
+			clientInfo: navigator.userAgent,
+			jwsType: "javascript",
+			jwsVersion: jws.VERSION,
+			jwsInfo: 
+			jws.browserSupportsNativeWebSockets 
+			? "native"
+			: "flash " + jws.flashBridgeVer
+		});
+	},
 
 	//:m:*:create
 	//:d:en:This method is called by the contructor of this class _
@@ -2403,9 +2959,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:a:en::::none
 	//:r:*:::void:none
 	isWriteable: function() {
-		return(
-			this.isOpened() || this.fStatus == jws.RECONNECTING
-			);
+		return(	this.isOpened() || this.fStatus == jws.RECONNECTING );
 	},
 
 	//:m:*:checkWriteable
@@ -2473,7 +3027,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		// needs to be overwritten in descendant classes!
 		throw new Error( "tokenToStream needs to be overwritten in descendant classes" );
 	},
-
+	
 	//:m:*:streamToToken
 	//:d:en:Converts a string (stream) into a token. This method needs to be _
 	//:d:en:overwritten by the descendant classes to implement a certain _
@@ -2544,11 +3098,11 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:d:en:its descendant who is responsible to implement the sub protocol _
 	//:d:en:JSON, CSV or XML, here to parse the raw packet in the corresponding _
 	//:d:en:format.
-	//:a:en::aEvent:Object:Event object from the browser's WebSocket instance.
+	//:a:en::aPacket:String: Received packet content
 	//:r:*:::void:none
-	processPacket: function( aEvent ) {
+	processPacket: function( aPacket ) {
 		// parse incoming token...
-		var lToken = this.streamToToken( aEvent.data );
+		var lToken = this.streamToToken( aPacket );
 		// and process it...
 		this.processToken( lToken );
 		return lToken;
@@ -2600,8 +3154,14 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				// check login and logout manage the username
 				if( aToken.reqType == "login" || aToken.reqType == "logon") {
 					this.fUsername = aToken.username;
+					// call logon callback
+					if ( "function" == typeof this.fOnLogon )
+						this.fOnLogon( aToken );
 				} else if( aToken.reqType == "logout" || aToken.reqType == "logoff") {
 					this.fUsername = null;
+					// call logoff callback
+					if ( "function" == typeof this.fOnLogon )
+						this.fOnLogoff( aToken );
 				}
 				// check if some requests need to be answered
 				this.checkCallbacks( aToken );
@@ -2704,24 +3264,12 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			}
 		}
 	},
-
-	//:m:*:sendToken
-	//:d:en:Sends a token to the jWebSocket server.
-	//:a:en::aToken:Object:Token to be send to the jWebSocket server.
-	//:a:en::aOptions:Object:Optional arguments as listed below...
-	//:a:en:aOptions:timeout:Integer:Timeout to wait for a response to be received from the server (default is [tt]jws.DEF_RESP_TIMEOUT[/tt]), if timeout is exceeded a OnTimeout callback can be fired.
-	//:a:en:aOptions:spawnThread:Boolean:Specifies whether to run the request in a separate thread ([tt]true[/tt]), or within the (pooled) thread of the connection ([tt]false[/tt]).
-	//:a:en:aOptions:args:Object:Optional arguments to be passed the optional response, success, failure and timeout callbacks to be easily processed.
-	//:a:en:aOptions:OnResponse:Function:Reference to a response callback function, which is called when [b]any[/b] response is received.
-	//:a:en:aOptions:OnSuccess:Function:Reference to a success function, which is called when a successful response is received ([tt]code=0[/tt]).
-	//:a:en:aOptions:OnFailure:Function:Reference to a failure function, which is called when an failure or error was received ([tt]code!=0[/tt]).
-	//:a:en:aOptions:OnTimeout:Function:Reference to a timeout function, which is called when the given response timeout is exceeded.
-	//:r:*:::void:none
-	sendToken: function( aToken, aOptions ) {
+	
+	__sendToken: function(aIsTransaction, aToken, aOptions, aListener ) {
 		var lRes = this.checkWriteable();
 		if( lRes.code == 0 ) {
 			var lSpawnThread = false;
-			var lL2FragmSize = 0;
+			var lL2FragmSize = this.fMaxFrameSize;
 			var lTimeout = jws.DEF_RESP_TIMEOUT;
 			var lKeepRequest = false;
 			var lArgs = null;
@@ -2802,23 +3350,11 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				aToken.spawnThread = true;
 			}
 			var lStream = this.tokenToStream( aToken );
-			if( lL2FragmSize > 0 && lStream.length > 0 ) {
-				var lToken, lFragment, lFragmId = 0, lStart = 0, lTotal = lStream.length;
-				while( lStream.length > 0 ) {
-					lToken = {
-						ns: jws.NS_SYSTEM,
-						type: "fragment",
-						utid: aToken.utid,
-						index: lFragmId++,
-						total: parseInt( lTotal / lL2FragmSize ) + 1,
-						data: lStream.substr( 0, lL2FragmSize )
-					};
-					lStart += lL2FragmSize;
-					lStream = lStream.substr( lL2FragmSize );
-					lFragment = this.tokenToStream( lToken );
-					this.sendStream( lFragment );
-				// console.log( "sending fragment " + lFragment + "..." );
+			if ( aIsTransaction ) {
+				if( jws.console.isDebugEnabled() ) {
+					jws.console.debug( "[sendToken]: Sending stream in transaction " + lStream + "..." );
 				}
+				this.sendStreamInTransaction( lStream, aListener, lL2FragmSize );
 			} else {
 				if( jws.console.isDebugEnabled() ) {
 					jws.console.debug( "[sendToken]: Sending stream " + lStream + "..." );
@@ -2827,6 +3363,212 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			}
 		}
 		return lRes;
+	}, 
+
+	//:m:*:sendToken
+	//:d:en:Sends a token to the jWebSocket server.
+	//:a:en::aToken:Object:Token to be send to the jWebSocket server.
+	//:a:en::aOptions:Object:Optional arguments as listed below...
+	//:a:en:aOptions:timeout:Integer:Timeout to wait for a response to be received from the server (default is [tt]jws.DEF_RESP_TIMEOUT[/tt]), if timeout is exceeded a OnTimeout callback can be fired.
+	//:a:en:aOptions:spawnThread:Boolean:Specifies whether to run the request in a separate thread ([tt]true[/tt]), or within the (pooled) thread of the connection ([tt]false[/tt]).
+	//:a:en:aOptions:args:Object:Optional arguments to be passed the optional response, success, failure and timeout callbacks to be easily processed.
+	//:a:en:aOptions:OnResponse:Function:Reference to a response callback function, which is called when [b]any[/b] response is received.
+	//:a:en:aOptions:OnSuccess:Function:Reference to a success function, which is called when a successful response is received ([tt]code=0[/tt]).
+	//:a:en:aOptions:OnFailure:Function:Reference to a failure function, which is called when an failure or error was received ([tt]code!=0[/tt]).
+	//:a:en:aOptions:OnTimeout:Function:Reference to a timeout function, which is called when the given response timeout is exceeded.
+	//:r:*:::void:none
+	sendToken: function( aToken, aOptions ) {
+		return this.__sendToken( false, aToken, aOptions);
+	},
+	
+	//:m:*:sendTokenInTransaction
+	//:d:en:Sends a token to the jWebSocket server in transaction.
+	//:a:en::aToken:Object:Token to be send to the jWebSocket server.
+	//:a:en::aOptions:Object:Optional arguments as listed below...
+	//:a:en:aOptions:timeout:Integer:Timeout to wait for a response to be received from the server (default is [tt]jws.DEF_RESP_TIMEOUT[/tt]), if timeout is exceeded a OnTimeout callback can be fired.
+	//:a:en:aOptions:fragmentSize:Integer:The fragment size parameter to be used in the fragmentation process. Expected value: [tt]fragment_size > 0 && fragment_size <= max_frame_size[/tt]. Argument is optional.
+	//:a:en:aOptions:spawnThread:Boolean:Specifies whether to run the request in a separate thread ([tt]true[/tt]), or within the (pooled) thread of the connection ([tt]false[/tt]).
+	//:a:en:aOptions:args:Object:Optional arguments to be passed the optional response, success, failure and timeout callbacks to be easily processed.
+	//:a:en:aOptions:OnResponse:Function:Reference to a response callback function, which is called when [b]any[/b] response is received.
+	//:a:en:aOptions:OnSuccess:Function:Reference to a success function, which is called when a successful response is received ([tt]code=0[/tt]).
+	//:a:en:aOptions:OnFailure:Function:Reference to a failure function, which is called when an failure or error was received ([tt]code!=0[/tt]).
+	//:a:en:aOptions:OnTimeout:Function:Reference to a timeout function, which is called when the given response timeout is exceeded.
+	//:a:en::aListener:Object:A packet delivery listener
+	//:a:en:aListener:getTimeout:function:Returns the packet delivery timeout
+	//:a:en:aListener:OnTimeout:function:Called if the packet delivery has timed out
+	//:a:en:aListener:OnSuccess:function:Called if the packet has been delivered successfully 
+	//:a:en:aListener:OnFailure:function:Called if the packet delivery has failed
+	//:r:*:::void:none
+	sendTokenInTransaction: function( aToken, aOptions, aListener ) {
+		// generating packet delivery listener for developer convenience if missing
+		if ( !aListener ){
+			aListener = {}
+		}
+		if ( !aListener[ "getTimeout" ] ){
+			var lTimeout = aOptions.timeout || jws.DEF_RESP_TIMEOUT;
+			aListener[ "getTimeout" ] = function() {
+				return lTimeout;
+			} 
+		}
+		if ( !aListener[ "OnTimeout" ] ){
+			aListener[ "OnTimeout" ] = function() {}
+		}
+		if ( !aListener[ "OnSuccess" ] ){
+			aListener[ "OnSuccess" ] = function() {}
+		}
+		if ( !aListener[ "OnFailure" ] ){
+			aListener[ "OnFailure" ] = function() {}
+		}
+		
+		// sending the token
+		return this.__sendToken( true, aToken, aOptions, aListener );
+	},
+	
+	//:m:*:sendChunkable
+	//:d:en:Sends a chunkable objecto to the server
+	//:a:en::aChunkable:Object:The chunkable object to be sent
+	//:a:en:aChunkable:maxFrameSize:Integer:The maximum frame size that the chunks can use. Argument is optional.
+	//:a:en:aChunkable:fragmentSize:Integer:The fragment size parameter to be used in the fragmentation process. Expected value: [tt]fragment_size > 0 && fragment_size <= connection.max_frame_size[/tt]. Argument is optional.
+	//:a:en:aChunkable:ns:String:Chunkable namespace attribute is equivalent to Token namespace attribute.
+	//:a:en:aChunkable:type:String:Chunkable type attribute is equivalent to Token type attribute.
+	//:a:en:aChunkable:getChunksIterator:function:Allows to iterate over the chunkable object chunks. See the Java language [tt]Iterator[/tt] interface.
+	//:a:en::aOptions:Object:Optional arguments as listed below...
+	//:a:en:aOptions:timeout:Integer:Timeout to wait for a chunkable complete processing from the server (default is [tt]jws.DEF_RESP_TIMEOUT[/tt]), if timeout is exceeded a OnTimeout callback is fired.
+	//:a:en:aOptions:spawnThread:Boolean:Specifies whether to run the request in a separate thread ([tt]true[/tt]), or within the (pooled) thread of the connection ([tt]false[/tt]).
+	//:a:en:aOptions:args:Object:Optional arguments to be passed the optional response, success, failure and timeout callbacks to be easily processed.
+	//:a:en:aOptions:OnResponse:Function:Reference to a response callback function, which is called when a chunk has been processed by the server
+	//:a:en:aOptions:OnSuccess:Function:Reference to a success function, which is called when a chunk processing has been successful.
+	//:a:en:aOptions:OnFailure:Function:Reference to a failure function, which is called when a chunk processing has been failed.
+	//:a:en:aOptions:OnTimeout:Function:Reference to a timeout function, which is called when a chunkable processing has timeout. 
+	//:a:en::aListener:Object:A chunkable delivery listener
+	//:a:en:aListener:getTimeout:function:Returns the packet delivery timeout
+	//:a:en:aListener:OnTimeout:function:Called if the chunkable delivery has timed out
+	//:a:en:aListener:OnSuccess:function:Called if the chunkable has been delivered successfully 
+	//:a:en:aListener:OnFailure:function:Called if the chunkable delivery has failed
+	//:a:en:aListener:OnChunkDelivered:function:Called if a chunk has been delivered successfully
+	//:r:*:::void:none
+	sendChunkable: function( aChunkable, aOptions, aListener ) {
+		try {
+			if (undefined == aChunkable.maxFrameSize) {
+				aChunkable.maxFrameSize = this.fMaxFrameSize - jws.PACKET_TRANSACTION_MAX_BYTES_PREFIXED;
+			}
+		
+			var lChunksIterator = aChunkable.getChunksIterator();
+			if ( !lChunksIterator.hasNext() ){
+				throw new Error( "The chunks iterator is empty. No data to send!" );
+			}
+			
+			var lCurrentChunk = lChunksIterator.next();
+			if ( !lCurrentChunk ){
+				throw new Error( "Iterator returned null on 'next' method call!" );
+			}
+			
+			// setting chunk properties
+			lCurrentChunk.ns = aChunkable.ns;
+			lCurrentChunk.type = aChunkable.type;
+			lCurrentChunk.isChunk = true;
+			if ( !lChunksIterator.hasNext() ) {
+				lCurrentChunk.isLastChunk = true;
+			}
+			
+			// setting the fragment size
+			if ( !aOptions ) {
+				aOptions = {};
+			}
+			aOptions.fragmentSize = aChunkable.fragmentSize;
+			
+			// checking chunkable delivery listener
+			if ( !aListener ){
+				aListener = {}
+			}
+			if ( !aListener[ "getTimeout" ] ){
+				var lTimeout = aOptions.timeout || jws.DEF_RESP_TIMEOUT;
+				aListener[ "getTimeout" ] = function() {
+					return lTimeout;
+				} 
+			}
+			if ( !aListener[ "OnTimeout" ] ){
+				aListener[ "OnTimeout" ] = function() {}
+			}
+			if ( !aListener[ "OnSuccess" ] ){
+				aListener[ "OnSuccess" ] = function() {}
+			}
+			if ( !aListener[ "OnFailure" ] ){
+				aListener[ "OnFailure" ] = function() {}
+			}
+			if ( !aListener[ "OnChunkDelivered" ] ){
+				aListener[ "OnChunkDelivered" ] = function() {}
+			}
+			
+			// sending chunks
+			this.sendTokenInTransaction(lCurrentChunk, aOptions, {
+				fChunkableIterator: lChunksIterator,
+				fOriginListener: aListener,
+				fSentTime: new Date().getTime(),
+				fCurrentChunk: lCurrentChunk,
+				fNs: lCurrentChunk.ns,
+				fType: lCurrentChunk.type,
+				fOriginOptions: aOptions,
+				
+				getTimeout: function (){
+					var lTimeout = this.fSentTime + this.fOriginListener.getTimeout() - new Date().getTime();
+					if (lTimeout < 0) {
+						lTimeout = 0;
+					}
+
+					return lTimeout;
+				}, 
+					
+				OnTimeout: function (){
+					this.fOriginListener.OnTimeout();
+				}, 
+				
+				OnSuccess: function() {
+					this.OnChunkDelivered( this.fCurrentChunk );
+					
+					// process next chunks
+					if ( this.fChunkableIterator.hasNext() ) {
+						try {
+							this.fCurrentChunk = mChunkableIterator.next();
+							if ( !this.fCurrentChunk ){
+								throw new Error( "Iterator returned null on 'next' method call!" );
+							}
+								
+							// setting chunk properties
+							this.fCurrentChunk.ns = this.fNs;
+							this.fCurrentChunk.type = this.fType;
+							this.fCurrentChunk.isChunk = true;
+								
+							if ( !this.fChunkableIterator.hasNext() ) {
+								this.fCurrentChunk.isLastChunk = true;
+							}
+							
+							// setting aOptions timeout parameter appropiate value
+							// since aOptions.timeout is the global processing timeout
+							if ( aOptions.timeout ){
+								aOptions.timeout = this.fSentTime + aOptions.timeout - new Date().getTime();
+								if (aOptions.timeout < 0) {
+									aOptions.timeout = 0;
+								}
+							}
+							
+							// sending the token in transaction
+							this.sendTokenInTransaction(this.fCurrentChunk, this.fOriginOptions, this);
+						} catch (lEx) {
+							this.fOriginListener.OnFailure(lEx);
+						}
+					} else {
+						this.fOriginListener.OnSuccess();
+					}
+				},
+				
+				OnChunkDelivered: function( aChunk ) {
+					this.fOriginListener.OnChunkDelivered( aChunk );
+				}
+			});
+		} catch (lEx){
+			aListener.OnFailure(lEx);
+		}
 	},
 
 	//:m:*:getLastTokenId
@@ -2951,6 +3693,12 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			if( aOptions && aOptions.OnGoodBye && typeof aOptions.OnGoodBye == "function" ) {
 				this.fOnGoodBye = aOptions.OnGoodBye;
 			}
+			if( aOptions && aOptions.OnLogon && typeof aOptions.OnLogon == "function" ) {
+				this.fOnLogon = aOptions.OnLogon;
+			}
+			if( aOptions && aOptions.OnLogoff && typeof aOptions.OnLogoff == "function" ) {
+				this.fOnLogoff = aOptions.OnLogoff;
+			}
 			// call inherited connect, catching potential exception
 			arguments.callee.inherited.call( this, aURL, aOptions );
 		} catch( ex ) {
@@ -3050,6 +3798,26 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:r:*:::Deprecated:Please refer to the [tt]close[/tt] method.
 	disconnect: function( aOptions ) {
 		return this.close( aOptions );
+	},
+	
+	//:m:*:setConfiguration
+	//:d:en:Sets server-side plug-ins configuration per session
+	//:a:en::aNS:String:The plug-in namespace
+	//:a:en::aParams:Object:The configuration params. 
+	//:r:*:::void:none
+	setConfiguration: function ( aNS, aParams ){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			for (var lKey in aParams){
+				var lValue = aParams[lKey];
+				if ("object" == typeof (lValue)){
+					this.setConfiguration(aNS + "." + lKey, lValue);
+				} else {
+					this.sessionPut(aNS + "." + lKey, lValue, false, {});
+				}
+			}
+		}	
+		return lRes;
 	}
 
 });
@@ -3128,7 +3896,7 @@ jws.SystemClientPlugIn = {
 	//:d:en:sending a [tt]login[/tt] token.
 	//:a:en::aUsername:String:The login name of the user.
 	//:a:en::aPassword:String:The password of the user.
-	//:a:en::aOptions:Object:Optional arguments as listed below...
+	//:a:en::aOptions:Object:Optional arguments for the sendToken operation
 	//:a:en:aOptions:pool:String:Default pool the user want to register at (default [tt]null[/tt], no pool).
 	//:a:en:aOptions:autoConnect:Boolean:not yet supported (defautl [tt]true[/tt]).
 	//:r:*:::void:none
@@ -3165,7 +3933,7 @@ jws.SystemClientPlugIn = {
 				password: aPassword,
 				encoding: lEncoding,
 				pool: lPool
-			});
+			}, aOptions);
 		} else {
 			lRes.code = -1;
 			lRes.localeKey = "jws.jsc.res.notConnected";
@@ -3461,7 +4229,7 @@ jws.SystemClientPlugIn = {
 	startKeepAlive: function( aOptions ) {
 		// if we have a keep alive running already stop it
 		if( this.hKeepAlive ) {
-			stopKeepAlive();
+			this.stopKeepAlive();
 		}
 		// return if not (yet) connected
 		if( !this.isOpened() ) {
@@ -3533,6 +4301,133 @@ jws.SystemClientPlugIn = {
 		if( aListeners.OnLogoutError !== undefined ) {
 			this.fOnLogoutError = aListeners.OnLogoutError;
 		}
+	},
+	
+	//:m:*:sessionPut
+	//:d:en:Put key/value entry in the server-side client session storage.
+	//:a:en::aKey:String:The entry key
+	//:a:en::aValue:Object:The entry value
+	//:a:en::aPublic:Boolean:Indicates if the entry will be readable by other clients. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
+	//:r:*:::void:none
+	sessionPut: function (aKey, aValue, aPublic, aOptions){
+		this.sendToken({
+			ns: jws.SystemClientPlugIn.NS,
+			type: "sessionPut",
+			key: aKey,
+			value: aValue,
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
+		}, aOptions);
+	},
+	
+	//:m:*:sessionHas
+	//:d:en:Indicates if the client server-side session storage contains a custom entry given the entry key.
+	//:a:en::aClientId:String:The client identifier
+	//:a:en::aKey:String:The entry key
+	//:a:en::aPublic:Boolean:Indicates if the entry is declared as public. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
+	//:r:*:::void:none
+	sessionHas: function (aClientId, aKey, aPublic, aOptions){
+		this.sendToken({
+			ns: jws.SystemClientPlugIn.NS,
+			type: "sessionHas",
+			key: aKey,
+			clientId: aClientId,
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
+		}, aOptions);
+	},
+	
+	//:m:*:sessionGet
+	//:d:en:Gets a server-side client session storage entry given the entry key.
+	//:a:en::aClientId:String:The client identifier
+	//:a:en::aKey:String:The entry key
+	//:a:en::aPublic:Boolean:Indicates if the entry is declared as public. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
+	//:r:*:::void:none
+	sessionGet: function (aClientId, aKey, aPublic, aOptions){
+		this.sendToken({
+			ns: jws.SystemClientPlugIn.NS,
+			type: "sessionGet",
+			key: aKey,
+			clientId: aClientId,
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
+		}, aOptions);
+	},
+	
+	//:m:*:sessionRemove
+	//:d:en:Removes a server-side client session storage entry given the entry key.
+	//:a:en::aKey:String:The entry key
+	//:a:en::aPublic:Boolean:Indicates if the entry is declared as public. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
+	//:r:*:::void:none
+	sessionRemove: function (aKey, aPublic, aOptions){
+		this.sendToken({
+			ns: jws.SystemClientPlugIn.NS,
+			type: "sessionRemove",
+			key: aKey,
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
+		}, aOptions);
+	},
+	
+	//:m:*:sessionKeys
+	//:d:en:Retrieves the list of entry keys stored in the server-side session storage of a given client. _
+	//:d:en:A client can only get the public entries from others.
+	//:a:en::aClientId:String:The client identifier
+	//:a:en::aPublic:Boolean:Indicates if only the public entry keys will be retrieved. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
+	//:r:*:::void:none
+	sessionKeys: function (aClientId, aPublic, aOptions){
+		this.sendToken({
+			ns: jws.SystemClientPlugIn.NS,
+			type: "sessionKeys",
+			clientId: aClientId,
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
+		}, aOptions);
+	},
+	
+	//:m:*:sessionGetAll
+	//:d:en:Retrieves all the entries stored in the server-side session storage of a given client. _
+	//:d:en:A client can only get the public entries from others.
+	//:a:en::aClientId:String:The client identifier
+	//:a:en::aPublic:Boolean:Indicates if only the public entries will be retrieved. Public entries key returned by the server, contains the 'public::' subfix.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
+	//:r:*:::void:none
+	sessionGetAll: function (aClientId, aPublic, aOptions){
+		this.sendToken({
+			ns: jws.SystemClientPlugIn.NS,
+			type: "sessionGetAll",
+			clientId: aClientId,
+			"public": aPublic,
+			connectionStorage: aOptions.connectionStorage || false
+		}, aOptions);
+	},
+	
+	//:m:*:sessionGetMany
+	//:d:en:Retrieves a list of public entries stored in the server-side session storage of many clients. 
+	//:a:en::aClients:Array:The list of clients
+	//:a:en::aKeys:Array:The list of entry keys to retrieve
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
+	//:r:*:::void:none
+	sessionGetMany: function (aClients, aKeys, aOptions){
+		this.sendToken({
+			ns: jws.SystemClientPlugIn.NS,
+			type: "sessionGetMany",
+			clients: aClients,
+			keys: aKeys,
+			connectionStorage: aOptions.connectionStorage || false
+		}, aOptions);
 	}
 };
 
@@ -3788,52 +4683,7 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 		return lToken;
 	}
 
-});
-
-	/*
-(function() {
-	var lObj = {
-		aNumber: 1,
-		aString: "test1",
-		aBoolean: true,
-		aArray: [ 2, "test2", false ],
-		aObject: {
-			bNumber: 3,
-			bString: "test3",
-			bBoolean: true,
-			bArray: [ 3, "test3", true ]
-		}
-	};
-	var lStream = 
-		'<?xml version="1.0" encoding="windows-1252"?>' +
-		'<token>' +
-			'<aNumber type="number">1</aNumber>' +
-			'<aString type="string">test1</aString>' +
-			'<aBoolean type="boolean">true</aBoolean>' +
-			'<aArray type="array">' +
-				'<item type="number">2</item>'+
-				'<item type="string">test2</item>' +
-				'<item type="boolean">false</item>' +
-			'</aArray>' +
-			'<aObject type="object">' +
-				'<bNumber type="number">3</bNumber>'+
-				'<bString type="string">test3</bString>' +
-				'<bBoolean type="boolean">true</bBoolean>' +
-				'<bArray type="array">'+
-					'<item type="number">3</item>' +
-					'<item type="string">test3</item>' +
-					'<item type="boolean">true</item>' +
-				'</bArray>' +
-			'</aObject>' +
-		'</token>';
-
-	var lXMLClient = new jws.jWebSocketXMLClient();
-//	var lStream = lXMLClient.tokenToStream( lObj );
-	var lToken = lXMLClient.streamToToken( lStream );
-	console.log( lStream );
-})();
-	 */
-/*
+});/*
 MIT LICENSE
 Copyright (c) 2007 Monsur Hossain (http://monsur.hossai.in)
 
@@ -4452,10 +5302,10 @@ jws.ChannelPlugIn = {
 	REMOVE_CHANNEL: "removeChannel",
 	GET_SUBSCRIBERS: "getSubscribers",
 	GET_SUBSCRIPTIONS: "getSubscriptions",
-
 	AUTHORIZE: "authorize",
 	PUBLISH: "publish",
 	STOP: "stop",
+	START: "start",
 
 	processToken: function( aToken ) {
 		// check if namespace matches
@@ -4471,10 +5321,30 @@ jws.ChannelPlugIn = {
 					if( this.fOnChannelRemoved ) {
 						this.fOnChannelRemoved( aToken );
 					}
+				} else if( "channelStarted" == aToken.name ) {
+					if( this.fOnChannelStarted ) {
+						this.fOnChannelStarted( aToken );
+					}
+				} else if( "channelStopped" == aToken.name ) {
+					if( this.fOnChannelStopped ) {
+						this.fOnChannelStopped( aToken );
+					}
+				} else if( "subscription" == aToken.name ) {
+					if( this.fOnChannelSubscription ) {
+						this.fOnChannelSubscription( aToken );
+					}
+				} else if( "unsubscription" == aToken.name ) {
+					if( this.fOnChannelUnsubscription ) {
+						this.fOnChannelUnsubscription( aToken );
+					}
 				} 
 			} else if( "getChannels" == aToken.reqType ) {
 				if( this.fOnChannelsReceived ) {
 					this.fOnChannelsReceived( aToken );
+				}
+			} else if ( "data" == aToken.type ) {
+				if( this.fOnChannelBroadcast ) {
+					this.fOnChannelBroadcast( aToken );
 				}
 			}
 		}
@@ -4489,7 +5359,6 @@ jws.ChannelPlugIn = {
 	//:d:en:or less time until you get the first token from the channel.
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:r:*:::void:none
-	// TODO: introduce OnResponse here too to get notified on error or success.
 	channelSubscribe: function( aChannel, aAccessKey, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -4509,7 +5378,6 @@ jws.ChannelPlugIn = {
 	//:d:en:on this channel anymore.
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:r:*:::void:none
-	// TODO: introduce OnResponse here too to get notified on error or success.
 	channelUnsubscribe: function( aChannel, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -4528,7 +5396,6 @@ jws.ChannelPlugIn = {
 	//:a:en::aAccessKey:String:Access key configured for the channel.
 	//:a:en::aSecretKey:String:Secret key configured for the channel.
 	//:r:*:::void:none
-	// TODO: introduce OnResponse here too to get notified on error or success.
 	channelAuth: function( aChannel, aAccessKey, aSecretKey, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -4536,7 +5403,6 @@ jws.ChannelPlugIn = {
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.AUTHORIZE,
 				channel: aChannel,
-				// login: this.getUsername(),
 				accessKey: aAccessKey,
 				secretKey: aSecretKey
 			}, aOptions );
@@ -4552,7 +5418,6 @@ jws.ChannelPlugIn = {
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:a:en::aData:String:String (text) to be sent to the server side data channel.
 	//:r:*:::void:none
-	// TODO: introduce OnResponse here too to get noticed on error or success.
 	channelPublishString: function( aChannel, aString, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -4597,7 +5462,6 @@ jws.ChannelPlugIn = {
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:a:en::aMap:Map:Data object to be sent to the server side data channel.
 	//:r:*:::void:none
-	// TODO: introduce OnResponse here too to get noticed on error or success.
 	channelPublishMap: function( aChannel, aMap, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
@@ -4757,7 +5621,51 @@ jws.ChannelPlugIn = {
 		}
 		return lRes;
 	},
+	
+	//:m:*:channelStop
+	//:d:en:Stop a channel given the channel identifier
+	//:a:en::aChannel:String:The id of the server side data channel.
+	//:r:*:::void:none
+	channelStop: function( aChannel, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			this.sendToken({
+				ns: jws.ChannelPlugIn.NS,
+				channel: aChannel,
+				type: jws.ChannelPlugIn.STOP
+			}, aOptions );
+		}
+		return lRes;
+	},
+	
+	//:m:*:channelStart
+	//:d:en:Start a channel given the channel identifier
+	//:a:en::aChannel:String:The id of the server side data channel.
+	//:r:*:::void:none
+	channelStart: function( aChannel, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			this.sendToken({
+				ns: jws.ChannelPlugIn.NS,
+				channel: aChannel,
+				type: jws.ChannelPlugIn.START
+			}, aOptions );
+		}
+		return lRes;
+	},
 
+	//:m:*:setChannelCallbacks
+	//:d:en:Set the channels lifecycle callbacks
+	//:a:en::aListeners:Object:JSONObject containing the channels lifecycle callbacks
+	//:a:en::aListeners.OnChannelCreated:Function:Called when a new channel has been created
+	//:a:en::aListeners.OnChannelsReceived:Function:Called when the list of available channels is received
+	//:a:en::aListeners.OnChannelRemoved:Function:Called when a channel has been removed
+	//:a:en::aListeners.OnChannelStarted:Function:Called when a channel has been started
+	//:a:en::aListeners.OnChannelStopped:Function:Called when a channel has been stopped
+	//:a:en::aListeners.OnChannelSubscription:Function:Called when a channel receives a new subscription
+	//:a:en::aListeners.OnChannelUnsubscription:Function:Called when a channel receives an unsubscription
+	//:a:en::aListeners.OnChannelBroadcast:Function:Called when a channel broadcast data because of a publication
+	//:r:*:::void:none
 	setChannelCallbacks: function( aListeners ) {
 		if( !aListeners ) {
 			aListeners = {};
@@ -4771,11 +5679,26 @@ jws.ChannelPlugIn = {
 		if( aListeners.OnChannelRemoved !== undefined ) {
 			this.fOnChannelRemoved = aListeners.OnChannelRemoved;
 		}
+		if( aListeners.OnChannelStarted !== undefined ) {
+			this.fOnChannelStarted = aListeners.OnChannelStarted;
+		}
+		if( aListeners.OnChannelStopped !== undefined ) {
+			this.fOnChannelStopped = aListeners.OnChannelStopped;
+		}
+		if( aListeners.OnChannelSubscription !== undefined ) {
+			this.fOnChannelSubscription = aListeners.OnChannelSubscription;
+		}
+		if( aListeners.OnChannelUnsubscription !== undefined ) {
+			this.fOnChannelUnsubscription = aListeners.OnChannelUnsubscription;
+		}
+		if( aListeners.OnChannelBroadcast !== undefined ) {
+			this.fOnChannelBroadcast = aListeners.OnChannelBroadcast;
+		}
 	}
 
 };
 
-// add the ChannelPlugIn PlugIn into the jWebSocketTokenClient class
+// add the ChannelPlugIn into the jWebSocketTokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ChannelPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Sample Client PlugIn (uses jWebSocket Client and Server)
@@ -5017,7 +5940,7 @@ jws.CanvasPlugIn = {
 
 }
 
-// add the JWebSocket Shared Objects PlugIn into the TokenClient class
+// add the JWebSocket Canvas PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.CanvasPlugIn );
 
 // optionally include canvas support for IE8
@@ -5395,6 +6318,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ClientGamingPlugIn );
 //  ---------------------------------------------------------------------------
 //  jWebSocket - EventsPlugIn
 //  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
+//  Author: Rolando Santamaria Maso
 //  ---------------------------------------------------------------------------
 //  This program is free software; you can redistribute it and/or modify it
 //  under the terms of the GNU Lesser General Public License as published by the
@@ -5415,7 +6339,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ClientGamingPlugIn );
 //:d:en:This class handle request callbacks on the events plug-in
 jws.oop.declareClass( "jws", "EventsCallbacksHandler", null, {
 	OnTimeout: function(aRawRequest, aArgs){
-		if ("function" == typeof(aArgs.meta["OnTimeout"])){
+		if (undefined != aArgs.meta["OnTimeout"] && "function" == typeof(aArgs.meta["OnTimeout"])){
 			aArgs.meta.OnTimeout(aRawRequest);
 		}
 	}
@@ -5551,7 +6475,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 			this.jwsClient.sendToken(lToken, lRequest);
 		}
 		else
-			throw "client:not_connected";
+			jws.console.error( "client:not_connected" );
 	}
 	,
 	//:m:*:processToken
@@ -5597,7 +6521,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 						_rid: aToken.uid
 					}
 				});
-				throw "s2c_event_support_not_found for: " + lMethod;
+				jws.console.error( "s2c_event_support_not_found for: " + lMethod );
 			}
 		}
 	}
@@ -5615,9 +6539,10 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 	//:d:en:Processes an incoming token. Used to support S2C events notifications. _
 	//:a:en::aPlugInId:String:Remote plug-in "id" to generate in the client.
 	//:a:en::aNotifier:jws.EventsNotifier:The event notifier used to connect with the server.
-	//:a:en::OnReady:Function:This callback is called when the plug-in has been generated.
+	//:a:en::aCallbacks:Function:This callback is called when the plug-in has been generated successfully.
+	//:a:en::aCallbacks:Object:Contains the OnSuccess and OnFailure callbacks
 	//:r:*:::void:none
-	generate: function(aPlugInId, aNotifier, OnReady){
+	generate: function(aPlugInId, aNotifier, aCallbacks){
 		var lPlugIn = new jws.EventsPlugIn();
 		lPlugIn.notifier = aNotifier;
 
@@ -5628,7 +6553,7 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 			,
 			plugIn: lPlugIn
 			,
-			OnReady: OnReady
+			callbacks: aCallbacks
 			,
 			OnSuccess: function(aResponseEvent){
 				this.plugIn.id = aResponseEvent.id;
@@ -5642,12 +6567,20 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 				//Registering the plugin in the notifier
 				this.plugIn.notifier.plugIns[this.plugIn.id] = this.plugIn;
 
-				//Plugin is ready to use
-				this.OnReady(this.plugIn);
+				//Plugin is generated successfully
+				if ("function" == typeof(this.callbacks)){
+					this.callbacks(this.plugIn);
+				} else if ("function" == typeof( this.callbacks["OnSuccess"] )){
+					this.callbacks.OnSuccess(this.plugIn);
+				}
 			}
 			,
 			OnFailure: function(aResponseEvent){
-				throw aResponseEvent.msg;
+				if ("function" == typeof( this.callbacks["OnFailure"] )){
+					this.callbacks.OnFailure(this.plugIn);
+				} else {
+					jws.console.error("Failure generating plug-in: " + aResponseEvent.msg );
+				}
 			}	
 		});
 
@@ -5885,7 +6818,7 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 	//:a:en::aToken:Object:The "not authorized" token to be processed.
 	//:r:*:::void:none
 	OnNotAuthorized: function(aToken){
-		throw "not_authorized";
+		jws.console.error( "not_authorized" );
 	}
 });
 
@@ -5903,18 +6836,22 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 	user: null
 	,
 	initialize: function(aNotifier){
+		// setting the user instance reference
 		this.user = aNotifier.user;
+		
+		// notifying to the server that cache is enabled in the client
 		aNotifier.notify("clientcacheaspect.setstatus", {
 			args: {
 				enabled: true
 			}
 		});
 		
+		// supporting clean cache entries event from the server
+		var lFilter = this;
 		aNotifier.plugIns['__cache__'] = {
-			cache: this.cache,
 			cleanEntries: function(event){
 				for (var i = 0, end = event.entries.length; i < end; i++){
-					this.cache.removeItem_(this.user.principal.toString() + event.suffix + event.entries[i]);
+					lFilter.cache.removeItem_(lFilter.user.principal.toString() + event.suffix + event.entries[i]);
 				}
 			}
 		}
@@ -6033,7 +6970,7 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 	}
 });
 //	---------------------------------------------------------------------------
-//	jWebSocket Filesyste, Client PlugIn (uses jWebSocket Client and Server)
+//	jWebSocket FileSystem, Client PlugIn (uses jWebSocket Client and Server)
 //	(C) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
@@ -6058,6 +6995,10 @@ jws.FileSystemPlugIn = {
 	// namespace for filesystem plugin
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.filesystem",
+	
+	// core aliases
+	ALIAS_PRIVATE: "privateDir",
+	ALIAS_PUBLIC: "publicDir",
 
 	NOT_FOUND_ERR: 1,
 	SECURITY_ERR: 2,
@@ -6079,9 +7020,21 @@ jws.FileSystemPlugIn = {
 			// directy in the plug-in if desired.
 			if( "load" == aToken.reqType ) {
 				if( aToken.code == 0 ) {
-					aToken.data = Base64.decode( aToken.data );
+					if (aToken.decode){
+						aToken.data = Base64.decode( aToken.data );
+					}
 					if( this.OnFileLoaded ) {
 						this.OnFileLoaded( aToken );
+					}
+				} else {
+					if( this.OnFileError ) {
+						this.OnFileError( aToken );
+					}
+				}
+			} else if( "send" == aToken.reqType ) {
+				if( aToken.code == 0 ) {
+					if( this.OnFileSent ) {
+						this.OnFileSent( aToken );
 					}
 				} else {
 					if( this.OnFileError ) {
@@ -6093,25 +7046,29 @@ jws.FileSystemPlugIn = {
 					if( this.OnFileSaved ) {
 						this.OnFileSaved( aToken );
 					}
-				} else if( "filesent" == aToken.name ) {
-					if( this.OnFileSent ) {
-						this.OnFileSent( aToken );
+				} else if( "filereceived" == aToken.name ) {
+					
+					if( this.OnFileReceived ) {
+						this.OnFileReceived( aToken );
 					}
 				}
 			}
 		}
 	},
 
+	//:m:*:fileGetFilelist
+	//:d:en:Retrieves the file list from a given alias
+	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
+	//:a:en::aFilemasks:Array:The filtering filemasks. <tt>Example: ["txt"]</tt>
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.recursive:Boolean:Recursive file listing flag. Default value is FALSE
+	//:r:*:::void:none
 	fileGetFilelist: function( aAlias, aFilemasks, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
-			var lScope = jws.SCOPE_PRIVATE;
 			var lRecursive = false;
 
 			if( aOptions ) {
-				if( aOptions.scope != undefined ) {
-					lScope = aOptions.scope;
-				}
 				if( aOptions.recursive != undefined ) {
 					lRecursive = aOptions.recursive;
 				}
@@ -6121,29 +7078,69 @@ jws.FileSystemPlugIn = {
 				type: "getFilelist",
 				alias: aAlias,
 				recursive: lRecursive,
-				scope: lScope,
 				filemasks: aFilemasks
 			};
 			this.sendToken( lToken,	aOptions );
 		}	
 		return lRes;
 	},
+	
+	//:m:*:fileDelete
+	//:d:en:Deletes a file in the user private scope.
+	//:a:en::aFilename:String:The filename value.
+	//:a:en::aForce:Boolean:Force file delete flag.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	fileDelete: function( aFilename, aForce, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.FileSystemPlugIn.NS,
+				type: "delete",
+				filename: aFilename,
+				force: aForce
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:fileExists
+	//:d:en:Indicates if a custom file exists on a given alias
+	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
+	//:a:en::aFilename:String:The filename value
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	fileExists: function( aAlias, aFilename, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.FileSystemPlugIn.NS,
+				type: "exists",
+				filename: aFilename,
+				alias: aAlias
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
 
-	fileLoad: function( aFilename, aOptions ) {
+	//:m:*:fileLoad
+	//:d:en:Loads a file from a given alias
+	//:a:en::aFilename:String:The filename value
+	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.decode:Boolean:Indicates if the received file content should be "base64" decoded automatically.
+	//:r:*:::void:none
+	fileLoad: function( aFilename, aAlias, aOptions ) {
 		var lRes = this.createDefaultResult();
-		var lScope = jws.SCOPE_PRIVATE;
-
-		if( aOptions ) {
-			if( aOptions.scope != undefined ) {
-				lScope = aOptions.scope;
-			}
-		}
 		if( this.isConnected() ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "load",
-				scope: lScope,
-				filename: aFilename
+				alias: aAlias,
+				filename: aFilename,
+				decode: (aOptions.decode) || false
 			};
 			this.sendToken( lToken,	aOptions );
 		} else {
@@ -6154,23 +7151,41 @@ jws.FileSystemPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:fileSave
+	//:d:en:Saves a file in a given scope
+	//:a:en::aFilename:String:The filename value
+	//:a:en::aData:String:The file content. Could be base64 encoded optionally.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.scope:String:The scope value. <tt>Example: jws.SCOPE_PRIVATE</tt>
+	//:a:en::aOptions.encode:Boolean:Indicates if the file content require to be encoded internally before send. Default value is TRUE.
+	//:a:en::aOptions.notify:Boolean:Indicates if the server should notify the file save to connected clients. Default value is FALSE.
+	//:a:en::aOptions.encoding:String:The encoding method. Currently "base64" is only supported and enabled by default.
+	//:r:*:::void:none
 	fileSave: function( aFilename, aData, aOptions ) {
 		var lRes = this.createDefaultResult();
 		var lEncoding = "base64";
-		var lSuppressEncoder = false;
+		var lEncode = true;
+		var lNotify = false;
 		var lScope = jws.SCOPE_PRIVATE;
 		if( aOptions ) {
 			if( aOptions.scope != undefined ) {
 				lScope = aOptions.scope;
 			}
+			if( aOptions.encode != undefined ) {
+				lEncode = aOptions.encode;
+			}
 			if( aOptions.encoding != undefined ) {
 				lEncoding = aOptions.encoding;
 			}
-			if( aOptions.suppressEncoder != undefined ) {
-				lSuppressEncoder = aOptions.suppressEncoder;
+			if( aOptions.encode != undefined ) {
+				lEncode = aOptions.encode;
+			}
+			if( aOptions.notify != undefined ) {
+				// notify only is the scope is public
+				lNotify = (jws.SCOPE_PUBLIC == lScope) && aOptions.notify;
 			}
 		}
-		if( !lSuppressEncoder ) {
+		if( lEncode ) {
 			if( lEncoding == "base64" ) {
 				aData = Base64.encode( aData );
 			}
@@ -6181,7 +7196,7 @@ jws.FileSystemPlugIn = {
 				type: "save",
 				scope: lScope,
 				encoding: lEncoding,
-				notify: true,
+				notify: lNotify,
 				data: aData,
 				filename: aFilename
 			};
@@ -6194,13 +7209,21 @@ jws.FileSystemPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:fileSend
+	//:d:en:Sends a file to a targeted client
+	//:a:en::aTargetId:String:The targeted client identifier
+	//:a:en::aFilename:String:The filename value
+	//:a:en::aData:Object:The file content. Could be encoded optionally.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.encoding:String:The encoding method. Default value is "base64"
+	//:r:*:::void:none
 	fileSend: function( aTargetId, aFilename, aData, aOptions ) {
-		var lEncoding = "base64";
 		var lIsNode = false;
+		var lEncoding = "base64";
+		
 		if( aOptions ) {
-			if( aOptions.encoding != undefined ) {
-				lEncoding = aOptions.encoding;
-			}
+			lEncoding = aOptions["encoding"] || "base64";
+			
 			if( aOptions.isNode != undefined ) {
 				lIsNode = aOptions.isNode;
 			}
@@ -6219,7 +7242,8 @@ jws.FileSystemPlugIn = {
 			} else {
 				lToken.targetId = aTargetId;				
 			}
-			this.sendToken( lToken );
+			
+			this.sendToken( lToken, aOptions);
 		}
 		return lRes;
 	},
@@ -6283,9 +7307,12 @@ jws.FileSystemPlugIn = {
 	//:m:*:fileLoadLocal
 	//:d:en:This is a call back method which gets the number of files selected from the user.
 	//:d:en:Construts a FileReader object that is specified in HTML 5 specification
-	//:d:en:Finally calls its readAsDataURL with the filename obeject and reads the
+	//:d:en:and calls its readAsDataURL with the filename obeject and reads the
 	//:d:en:file content in Base64 encoded string.
-	//:a:en::evt:Object:File Selection event object.
+	//:a:en::aDOMElem:Object:File Selection event object.
+	//:a:en::aOptions:Object:Contains success and failure callbacks to control the files load
+	//:a:en::aOptions.OnSuccess:Function:Called when a file has been loaded successfully
+	//:a:en::aOptions.OnFailure:Function:Called when an error occur during the file load process
 	//:r:*:::void:none
 	fileLoadLocal: function( aDOMElem, aOptions ) {
 		// to locally load a file no check for websocket connection is required
@@ -6312,10 +7339,10 @@ jws.FileSystemPlugIn = {
 		if( !aOptions ) {
 			aOptions = {};
 		}
-		// if no encoding was passed and a default one
-		if( !aOptions.encoding ) {
-			aOptions.encoding = "base64";
-		}
+		
+		// settign the encoding method. "base64" only supported already.
+		aOptions.encoding = "base64";
+		
 		// iterate through list of files
 		var lFileList = aDOMElem.files;
 		if( !lFileList || !lFileList.length ) {
@@ -6410,6 +7437,17 @@ jws.FileSystemPlugIn = {
 		return lRes;
 	},
 
+	//:m:*:setFileSystemCallbacks
+	//:d:en:Sets the file-system plug-in lifecycle callbacks
+	//:a:en::aListeners:Object:JSONObject containing the filesystem lifecycle callbacks
+	//:a:en::aListeners.OnFileLoaded:Function:Called when a file has been loaded
+	//:a:en::aListeners.OnFileSaved:Function:Called when a file has been saved
+	//:a:en::aListeners.OnFileReceived:Function:Called when a file has been received from other client
+	//:a:en::aListeners.OnFileSent:Function:Called when a file has been sent to other client
+	//:a:en::aListeners.OnFileError:Function:Called when an error occur during the file-system lifecycle
+	//:a:en::aListeners.OnLocalFileRead:Function:Called when a file has been read locally
+	//:a:en::aListeners.OnLocalFileError:Function:Called when an error occur during a local file load
+	//:r:*:::void:none
 	setFileSystemCallbacks: function( aListeners ) {
 		if( !aListeners ) {
 			aListeners = {};
@@ -6420,13 +7458,15 @@ jws.FileSystemPlugIn = {
 		if( aListeners.OnFileSaved !== undefined ) {
 			this.OnFileSaved = aListeners.OnFileSaved;
 		}
+		if( aListeners.OnFileReceived !== undefined ) {
+			this.OnFileReceived = aListeners.OnFileReceived;
+		}
 		if( aListeners.OnFileSent !== undefined ) {
 			this.OnFileSent = aListeners.OnFileSent;
 		}
 		if( aListeners.OnFileError !== undefined ) {
 			this.OnFileError = aListeners.OnFileError;
 		}
-
 		if( aListeners.OnLocalFileRead !== undefined ) {
 			this.OnLocalFileRead = aListeners.OnLocalFileRead;
 		}
@@ -6437,7 +7477,7 @@ jws.FileSystemPlugIn = {
 
 }
 
-// add the JWebSocket Shared Objects PlugIn into the TokenClient class
+// add the jWebSocket FileSystem PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.FileSystemPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Sample Client PlugIn (uses jWebSocket Client and Server)
@@ -6716,7 +7756,7 @@ jws.JDBCPlugIn = {
 
 }
 
-// add the JWebSocket Shared Objects PlugIn into the TokenClient class
+// add the JWebSocket JDBC PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.JDBCPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket JMS PlugIn (uses jWebSocket Client and Server)
@@ -7461,7 +8501,7 @@ jws.ReportingPlugIn = {
 	
 }
 
-// add the JWebSocket Shared Objects PlugIn into the TokenClient class
+// add the JWebSocket Reporting PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ReportingPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Mail RPC/RRPC  (uses jWebSocket Client and Server)
@@ -7741,7 +8781,7 @@ jws.SamplesPlugIn = {
 
 }
 
-// add the JWebSocket Shared Objects PlugIn into the TokenClient class
+// add the JWebSocket Samples PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SamplesPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Shared Objects PlugIn (uses jWebSocket Client and Server)
@@ -8617,19 +9657,6 @@ jws.XMPPPlugIn = {
 	},
 
 	xmppCloseChat: function( aUserId, aOptions ) {
-		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
-			var lToken = {
-				ns: jws.XMPPPlugIn.NS,
-				userId: aUserId,
-				type: "closeChat"
-			};
-			this.sendToken( lToken,	aOptions );
-		}
-		return lRes;
-	},
-
-	xmpp: function( aUserId, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
 			var lToken = {

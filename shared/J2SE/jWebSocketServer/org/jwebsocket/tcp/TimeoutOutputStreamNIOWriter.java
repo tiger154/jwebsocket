@@ -66,7 +66,7 @@ public class TimeoutOutputStreamNIOWriter {
 
 				@Override
 				public Thread newThread(Runnable aRunnable) {
-					return new Thread(aRunnable, "[pool]TCPEngine NIO writer thread");
+					return new Thread(aRunnable, "jWebSocket TCP-Engine NIO writer");
 				}
 			});
 			mTimeout = aTimeout;
