@@ -135,7 +135,7 @@
 					},
 					// OnLoginError event
 					OnLoginError: function( aEvent )  {
-						log( "<font style='color:red'>jWebSocket LogginError received.</font>" );
+						log( "<font style='color:red'>jWebSocket LoginError received.</font>" );
 					},
 					// OnLoggedOut event
 					OnLoggedOut: function( aEvent )  {
@@ -144,6 +144,22 @@
 					// OnLogoutError event
 					OnLogoutError: function( aEvent )  {
 						log( "<font style='color:red'>jWebSocket LogoutError received.</font>" );
+					},
+					// OnLoggedOn event
+					OnLoggedOn: function( aEvent )  {
+						log( "<font style='color:red'>jWebSocket LoggedOn received.</font>" );
+					},
+					// OnLogonError event
+					OnLogonError: function( aEvent )  {
+						log( "<font style='color:red'>jWebSocket LogonError received.</font>" );
+					},
+					// OnLoggedOff event
+					OnLoggedOff: function( aEvent )  {
+						log( "<font style='color:red'>jWebSocket LoggedOff received.</font>" );
+					},
+					// OnLogoffError event
+					OnLogoffError: function( aEvent )  {
+						log( "<font style='color:red'>jWebSocket LogoffError received.</font>" );
 					}
 				});
 			}
@@ -339,14 +355,6 @@
 		onload="initPage();"
 		onunload="exitPage();"
 		>
-		<!--	remarked temporarily due to chrome 5 browser bug
-		<script type="text/javascript">
-			var lFrameElem = this.frameElement;
-			if( !lFrameElem ) {
-				location.replace( "../../index.htm?page=demos/fundamentals/fundamentals.htm" );
-			}
-		</script>
-		-->
 		<table class="tblHeader" width="100%" cellspacing="0" cellpadding="0">
 			<tr>
 				<td class="tdHeader" width="">jWebSocket Fundamentals Demo</td>
@@ -367,16 +375,17 @@
 				<tr class="strDlg">
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnConnect" type="button" value="Connect" onclick="connect();"
-							   >
+							   title="Connects you to the jWebSocket server.">
 					</td>
 					<td class="stdDlg" width="5">
-						<input class="sbtnDlg" id="sbtnDisconnect" type="button" value="Disconnect" onclick="disconnect();">
+						<input class="sbtnDlg" id="sbtnDisconnect" type="button" value="Disconnect" onclick="disconnect();"
+							   title="Disconnects you from the jWebSocket server.">
 					</td>
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnClear" type="button" value="Clear Log" onclick="clearLog();"
 							   title="Clears the result and event log above.">
 					</td>
-					<td class="stdDlg" width="5">Message</td>
+					<td class="stdDlg" width="120">Message</td>
 					<td class="stdDlg" width="">
 						<input class="stxfDlg" id="stxfMsg" type="text" value="Please type your message here!" style="width:100%">
 					</td>
@@ -387,7 +396,7 @@
 				<tr class="strDlg">
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnLogin" type="button" value="Login" onclick="login();"
-							   title="Authenticates you against the jWebSocket Server.">
+							   title="Logs you in into the jWebSocket Server using jWebSocket.xml authentication.">
 					</td>
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnLogout" type="button" value="Logout" onclick="logout();"
@@ -397,7 +406,7 @@
 						<input class="sbtnDlg" id="sbtnReliability" type="button" value="Conn.Opt." onclick="showReliabilityOptions();"
 							   title="Returns the current connection reliability options." >
 					</td>
-					<td class="stdDlg" width="5" >Auto-Reconnect</td>
+					<td class="stdDlg" width="120" >Auto-Reconnect</td>
 					<td class="stdDlg" width="">
 						<input class="sbtnDlg" id="schkReconnect" type="checkbox" value="off" onclick="toggleReconnect();"
 							   title="Toggle the auto-reconnect status.">
@@ -410,7 +419,7 @@
 				<tr class="strDlg">
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnAuth" type="button" value="Auth" onclick="auth();"
-							   title="Authenticates you against the jWebSocket Server.">
+							   title="Authenticates you against the jWebSocket Server using new spring based authentication.">
 					</td>
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnDeauth" type="button" value="De-Auth" onclick="deauth();"
@@ -419,6 +428,15 @@
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnDeauth" type="button" value="Get Auth." onclick="getAuth();"
 							   title="Retreives the authorities for the user.">
+					</td>
+					<td class="stdDlg" width="120">
+						&nbsp;
+					</td>
+					<td class="stdDlg" width="">
+						&nbsp;
+					</td>
+					<td class="stdDlg" width="5">
+						&nbsp;
 					</td>
 				</tr>
 			</table>
