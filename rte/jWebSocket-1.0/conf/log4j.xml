@@ -23,7 +23,7 @@
 	</appender>
 	
 	<appender name="developmentLog" class="org.apache.log4j.ConsoleAppender">
-		<param name="threshold" value="debug"/>
+		<param name="threshold" value="info"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p - %C{1}: %m%n" />
 		</layout>
@@ -137,10 +137,15 @@
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
 		<priority value="INFO" />
 		<!-- select one of the above declared appenders -->
+
 		<!-- for automated tests: -->
 		<!-- <appender-ref ref="testLog" /> -->
+
 		<!-- during the development -->
 		<appender-ref ref="developmentLog"/>
+
+		<!-- during debug cycles  -->
+		<!-- <appender-ref ref="debugLog"/> -->
 	</root>
 
 </log4j:configuration>
