@@ -215,6 +215,12 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 
 					lConnector = new CometConnector(mEngine, this, aEvent);
 					lConnector.setRequest(aEvent.getHttpServletRequest());
+					
+					// setting the session timeout
+					if (ContextListener.isRunningEmbedded()) {
+						aEvent.getHttpServletRequest().getSession()
+								.setMaxInactiveInterval(mEngine.getConfiguration().getTimeout());
+					}
 
 					// registering the connector on the engine collection
 					mEngine.addConnector(lConnector);

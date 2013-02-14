@@ -29,7 +29,7 @@ import org.jwebsocket.instance.JWebSocketInstance;
  */
 public class ContextListener implements ServletContextListener {
 
-	private static boolean mRunningEmbedded = false;
+	private static boolean mRunningEmbedded = true;
 
 	public static boolean isRunningEmbedded() {
 		return mRunningEmbedded;
@@ -57,7 +57,7 @@ public class ContextListener implements ServletContextListener {
 
 			if (JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
 				lContext.log("jWebSocket application server started!");
-				mRunningEmbedded = true;
+				mRunningEmbedded = false;
 			} else {
 				// error happen during the jWebSocket server load
 				lContext.log("ERROR: jWebSocket server could not start!");
@@ -75,5 +75,6 @@ public class ContextListener implements ServletContextListener {
 		}
 
 		lContext.log("jWebSocket application server stopped!");
+		mRunningEmbedded = true;
 	}
 }
