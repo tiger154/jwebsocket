@@ -18,27 +18,92 @@
 	<initializerClass>org.jwebsocket.factory.JWebSocketInitializer</initializerClass>
 
 	<engines>
+		<!-- Tomcat Engine Configuration -->
 		<engine>
-			<name>org.jwebsocket.tcp.TCPEngine</name>
-			<id>tcp0</id>
-			<jar>jWebSocketTCPEngine-1.0.jar</jar>
+			<name>org.jwebsocket.tomcat.TomcatEngine</name>
+			<id>tomcat0</id>
+			<jar>jWebSocketTomcatEngine-1.0.jar</jar>
+			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
+			<!-- The jWebSocket TomcatEngine can either work in embedded mode 
+				 or in standard web app mode. In standard wep app mode the 
+				 jWebSocket Tomcat engine listens on same port like
+				 Tomcats's http. The http protocol is upgraded to use WebSockets.
+				 The http/websocket port can be configured via the Tomcat
+				 configuration in the server.xml configuration file.
+			-->
+			<!-- set both port settings to "0" (null) if running Tomcat
+				 Servlet Container for Web Apps and embed jWebSocket library.
+				 This uses the settings from server.xml, wraps the existing
+				 Tomcat WebSocket servlet and does NOT instantiate a separate
+				 embedded engine at run time within jWebSocket.
+			-->
+			<!--
+			<port>0</port>
+			<sslport>0</sslport>
+			-->
+			<!-- use 80/443 for default http/ws or https/wss connections
+				 when running a jWebSocket Server and use Tomcat as an embedded 
+				 engine. These settings are recommended only when running 
+				 jWebSocket on a SEPARATE server beside a WebServer and the 
+				 firewall does not allow access to ports 8787 and 9797.
+			-->
+			<!--
+			<port>80</port>
+			<sslport>443</sslport>
+			-->
+			<!-- use 8787/9797 for default http/ws or https/wss connections
+				 These settings are recommended only when running jWebSocket
+				 on the same server beside a Tomcat WebServer and the firewall
+				 grants access to ports 8787 and 9797.
+			-->
 			<port>8787</port>
 			<sslport>9797</sslport>
-			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
-			<password>jWebSocket</password>
+			<!-- these domains are accepted by the engine listening
+				 on the above mentioned port -->
 			<domains>
 				<domain>*</domain>
+				<!-- limit allowed domains here -->
+				<!--
+				<domain>http*://jwebsocket.org</domain>
+				<domain>http*://jwebsocket.com</domain>
+				<domain>http*://*.jwebsocket.org</domain>
+				<domain>http*://*.jwebsocket.com</domain>
+				<domain>http*://10.10.*</domain>
+				<domain>http*://10.21.*</domain>
+				<domain>http*://192.168.*</domain>
+				<domain>http*://localhost*</domain>
+				-->
 			</domains>
-			<timeout>0</timeout>
+			<!-- default session timeout (minutes) -->
+			<timeout>1</timeout>
+
+			<!-- context and servlet settings, these settings are applied only
+				 in embedded mode. In standard web app mode the context is specified 
+				 by the context.xml of the web-app and the servlet is specified 
+				 in the web.xml of the web-app. -->
+			<!-- Tomcat provides a WebSocket Servlet, set the context path here -->
+			<context>/jWebSocket</context>
+			<!-- Tomcat provides a WebSocket Servlet, set the servlet path here -->
+			<servlet>/jWebSocket</servlet>
+			<!--
+				maximum size of the data packet that the engine will read,
+				if the frame size is larger than this the connection will be closed.
+			-->
 			<maxframesize>1048840</maxframesize>
+			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
+			<!-- on max connections reached strategy -->
+			<!-- close, reject --> 
 			<onmaxconnections>reject</onmaxconnections>
 			<settings>
-				<!-- NIO output writer mechanism thread pool size -->
-				<setting key="workers">500</setting>
-				<!-- NIO output writer mechanism writes timeout -->
-				<setting key="writer_timeout">1000</setting>
-			</settings>	
+				<!-- directory that contains the public web folder path -->
+				<setting key="document_root">${JWEBSOCKET_HOME}web/</setting>
+				<!-- max threads property value for each tomcat connector -->
+				<setting key="max_threads">200</setting>
+			</settings>
 		</engine>
 	</engines>
 
@@ -157,7 +222,6 @@
 			</roles>
 		</user>
 	</users>
-
 	<plugins>
 		<plugin>
 			<name>org.jwebsocket.plugins.system.SystemPlugIn</name>
