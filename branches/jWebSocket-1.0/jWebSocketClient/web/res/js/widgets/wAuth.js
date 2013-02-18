@@ -39,14 +39,14 @@ $.widget("jws.auth",{
 		this.eDisConnectButton	= this.element.find('#disconnect_button');
 		this.mUsername = null;
 		
-		w.auth.eDisConnectButton.hide( );
-		w.auth.eLogoffArea.hide( );
+		this.eDisConnectButton.hide( );
+		this.eLogoffArea.hide( );
 		
-		w.auth.mUsername = null;
+		this.mUsername = null;
 		
-		w.auth.checkWebSocketSupport( );
+		this.checkWebSocketSupport( );
 		
-		w.auth.registerEvents( );
+		this.registerEvents( );
 	},
 	
 	checkWebSocketSupport: function( ){
