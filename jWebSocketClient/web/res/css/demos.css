@@ -37,10 +37,11 @@
 body{
     margin: 0px;
     font-family: Verdana, sans-serif;
+	overflow: hidden;
 }
 #demo_box{
     float: left;
-    width: 744px;
+    width: 710px;
     height: 100%;
     border: 1px solid #C8C8C8;
 }
@@ -89,24 +90,24 @@ div#container{
 #demo_box_header h1{
     font-family: Arial !important;
     color: #FFFFFF;
-    font-size: 19px;
+    font-size: 18px;
     margin-left: 12px;
     margin-top: 14px;
-    width: 300px;
+    width: 270px;
     float: left;
     font-weight: normal;
 }
 
 #demo_box_header_login{
     float:right;
-    width: 432px;
+    width: 400px;
     height: 36px;
     color:white;
 }
 
 #login_form{
     float:left;
-    width: 214px;
+    width: 200px;
     height: 50px;
     padding-top: 5px;
 }
@@ -120,18 +121,20 @@ div#container{
 
 #login_form .second{
     float: left;
-    padding-left: 57px;
+    padding-left: 40px;
     padding-top: 0px !important;
     padding-bottom: 0px !important;
 }
 
 #user_text{
     float: left;
+	width: 85px !important;
 }
 
 #user_password{
     float: left;
     margin-left: 5px;
+	width: 85px !important;
 }
 
 #login_button{
@@ -306,7 +309,7 @@ textarea{
 
 /*---------------- DEMO_SCENARIO -------------*/
 #log_box{
-    width: 708px;
+    width: 98%;
     margin-top: 20px;
 	float: left;
 }
@@ -554,6 +557,33 @@ p{
 	height: 13px;
 }
 
+/* --------------------------- SCROLLBARS PERSONALIZATION -----------------------*/
+.scroll-pane{
+	width: 100%;
+	height: auto;
+	padding-bottom: 30px;
+	/*position: fixed;*/
+}
+/*Overriding the width of the scrollbars*/
+.jspVerticalBar{
+	width: 8px !important;
+	background: transparent !important;
+}
+
+.jspTrack {
+	background: none !important;
+}
+
+.jspDrag {
+	background: #6c8dc8;
+	opacity: 0.3;
+	filter: alpha(opacity=30); /* For IE8 and earlier */
+}
+
+.jspHorizontalBar{
+	background: transparent !important;
+	height: 10px !important;
+}
 /* ----------------------- CHECKBOXES PERSONALIZATION -------------------------- */
 input[type="checkbox"]{
 	font-style: "Verdana";

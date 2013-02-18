@@ -20,20 +20,18 @@
 $.widget( "jws.fundamentals", {
 	_init:function( ) {
 		w.fundamentals = this;
-		
 		// DOM Elements
-		w.fundamentals.eMessageBox		= w.fundamentals.element.find( "#message_box_text" );
-		w.fundamentals.eBtnEcho			= w.fundamentals.element.find( "#echo_btn" );
-		w.fundamentals.eBtnThread		= w.fundamentals.element.find( "#thread_btn" );
-		w.fundamentals.eBtnConectivity	= w.fundamentals.element.find( "#connectivity_btn" );
-		w.fundamentals.eBtnAuth			= w.fundamentals.element.find( "#auth_btn" );
-		w.fundamentals.eBtnDeauth		= w.fundamentals.element.find( "#deauth_btn" );
-		w.fundamentals.eBtnGetAuth		= w.fundamentals.element.find( "#get_auth_btn" );
-		w.fundamentals.eCbAutoReconn	= w.fundamentals.element.find( "#auto_reconnect" );
+		this.eMessageBox		= this.element.find( "#message_box_text" );
+		this.eBtnEcho			= this.element.find( "#echo_btn" );
+		this.eBtnThread			= this.element.find( "#thread_btn" );
+		this.eBtnConectivity	= this.element.find( "#connectivity_btn" );
+		this.eBtnAuth			= this.element.find( "#auth_btn" );
+		this.eBtnDeauth			= this.element.find( "#deauth_btn" );
+		this.eBtnGetAuth		= this.element.find( "#get_auth_btn" );
+		this.eCbAutoReconn		= this.element.find( "#auto_reconnect" );
 		
-		
-		w.fundamentals.doWebSocketConnection( );
-		w.fundamentals.registerEvents( );
+		this.doWebSocketConnection( );
+		this.registerEvents( );
 	},
 	
 	doWebSocketConnection: function(){
@@ -163,20 +161,20 @@ $.widget( "jws.fundamentals", {
 	// ------------- EVENTS ---------------------------
 	messageBoxBlur : function( ) {
 		if( $( this ).val() == "" ) {
-			$( this ).val("Type your message...").attr( "class", "" ).addClass( "opaque" );;
+			$( this ).val("Type your message...").attr( "class", "opaque" );
 		}
 	},
 	
 	messageBoxClick: function( ) { 
 		if( $( this ).val( ) == "Type your message..." ) {
-			$( this ).val( "" ).attr( "class", "" ).addClass( "dark" );
+			$( this ).val( "" ).attr( "class", "dark" );
 		}
 	},
 	
 	messageBoxKeyPressed: function( aEvt ) {
 		if( aEvt.keyCode == 13 && ( !aEvt.shiftKey ) ) {
 			aEvt.preventDefault( );
-			w.fundamentals.echo();
+			w.fundamentals.echo( );
 			$( this ).val( "" );
 		}
 	}

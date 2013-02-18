@@ -17,7 +17,8 @@ function init(  ) {
 	} );
 	
 	//starting the widget fundamentals
-	$("#demo_box").fundamentals();
+	$("#demo_box").fundamentals( );
+	$('.scroll-pane').jScrollPane( );
 	
 	//configuring tooltip as we wish
 	$( "[title]" ).tooltip( {
