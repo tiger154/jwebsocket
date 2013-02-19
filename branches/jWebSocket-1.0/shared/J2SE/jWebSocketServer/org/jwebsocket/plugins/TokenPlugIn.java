@@ -47,6 +47,12 @@ public class TokenPlugIn extends BasePlugIn {
 
 	private String mNamespace = null;
 
+	public void processLogon(WebSocketConnector aConnector) {
+	}
+
+	public void processLogoff(WebSocketConnector aConnector) {
+	}
+
 	/**
 	 *
 	 * @param aConfiguration

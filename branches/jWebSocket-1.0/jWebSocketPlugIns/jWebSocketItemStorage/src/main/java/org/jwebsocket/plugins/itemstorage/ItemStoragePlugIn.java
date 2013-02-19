@@ -8,8 +8,13 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.api.WebSocketPlugInChain;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.config.xml.FilterConfig;
+import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.plugins.annotations.Role;
@@ -71,6 +76,12 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	protected ILogsManager mLogsManager;
 	protected int mFragmentSize;
 	protected BeanFactory mBeanFactory;
+
+	@Override
+	public void setPlugInChain(WebSocketPlugInChain aPlugInChain) {
+		super.setPlugInChain(aPlugInChain);
+
+	}
 
 	public ItemStoragePlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -196,15 +207,14 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 			}
 
 			@Override
-			public void onUnsubscription(String aCollectionName, String aSubscriber) {
-				String lUser = getConnector(aSubscriber).getUsername();
-				notifyGenericEvent("unsubscription", aCollectionName, lUser);
+			public void onUnsubscription(String aCollectionName, String aSubscriber, String aUser) {
+				notifyGenericEvent("unsubscription", aCollectionName, aUser);
 
 				try {
 					// log action
 					Map<String, Object> lLog = BaseLogsManager.createActionPrototype(
 							BaseLogsManager.ETYPE_COLLECTION,
-							aCollectionName, "unsubscribe", lUser);
+							aCollectionName, "unsubscribe", aUser);
 					mLogsManager.logAction(lLog);
 				} catch (Exception lEx) {
 					mLog.error(Logging.getSimpleExceptionMessage(lEx, "logging unsubscription action..."));
@@ -297,19 +307,31 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	}
 
 	@Override
-	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+	public void processLogoff(WebSocketConnector aConnector) {
+		unsubscribeFromAll(aConnector);
+	}
+
+	/**
+	 * Un-subscribe the client from all subscribed collections
+	 *
+	 * @param aConnector
+	 */
+	void unsubscribeFromAll(WebSocketConnector aConnector) {
 		for (String lCollectionName : mCollectionProvider.collectionNames()) {
 			try {
 				IItemCollection lCollection = mCollectionProvider.getCollection(lCollectionName);
 				String lClient = aConnector.getId();
-				
+
 				// removing subscriber
 				if (lCollection.getSubcribers().contains(lClient)) {
-					ItemCollectionUtils.unsubscribeCollection(mCollectionProvider, lCollection, lClient);
+					ItemCollectionUtils.unsubscribeCollection(mCollectionProvider,
+							lCollection,
+							lClient,
+							aConnector.getUsername());
 				}
-				
+
 				// removing publisher
-				if (lCollection.getPublishers().contains(lClient)){
+				if (lCollection.getPublishers().contains(lClient)) {
 					lCollection.getPublishers().remove(lClient);
 					mCollectionProvider.saveCollection(lCollection);
 				}
@@ -317,7 +339,11 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 			}
 		}
 
-		super.connectorStopped(aConnector, aCloseReason);
+	}
+
+	@Override
+	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+		unsubscribeFromAll(aConnector);
 	}
 
 	/**
@@ -611,7 +637,10 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 		Assert.isTrue(lCollection.getSubcribers().contains(aConnector.getId()),
 				"The client is not subscribed!");
 
-		ItemCollectionUtils.unsubscribeCollection(mCollectionProvider, lCollection, aConnector.getId());
+		ItemCollectionUtils.unsubscribeCollection(mCollectionProvider,
+				lCollection,
+				aConnector.getId(),
+				aConnector.getUsername());
 
 		sendToken(aConnector, createResponse(aToken));
 	}

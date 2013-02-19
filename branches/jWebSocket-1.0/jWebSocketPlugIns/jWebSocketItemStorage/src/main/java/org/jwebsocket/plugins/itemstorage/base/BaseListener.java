@@ -61,7 +61,7 @@ public class BaseListener implements IItemStorageListener {
 	}
 
 	@Override
-	public void onUnsubscription(String aCollectionName, String aSubscriber) {
+	public void onUnsubscription(String aCollectionName, String aSubscriber, String aUser) {
 	}
 
 	@Override

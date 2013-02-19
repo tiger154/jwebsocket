@@ -27,6 +27,7 @@ import org.jwebsocket.token.Token;
 
 /**
  * instantiates the chain of token plug-ins.
+ *
  * @author aschulze
  */
 public class TokenPlugInChain extends BasePlugInChain {
@@ -39,6 +40,38 @@ public class TokenPlugInChain extends BasePlugInChain {
 	 */
 	public TokenPlugInChain(WebSocketServer aServer) {
 		super(aServer);
+	}
+
+	public void processLogon(WebSocketConnector aConnector) {
+		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
+			if (lPlugIn.getEnabled()) {
+				try {
+					TokenPlugIn lTokenPlugIn = ((TokenPlugIn) lPlugIn);
+					lTokenPlugIn.processLogon(aConnector);
+				} catch (Exception lEx) {
+					mLog.error("(plug-in '"
+							+ ((TokenPlugIn) lPlugIn).getNamespace() + "') "
+							+ lEx.getClass().getSimpleName() + ": "
+							+ lEx.getMessage());
+				}
+			}
+		}
+	}
+
+	public void processLogoff(WebSocketConnector aConnector) {
+		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
+			if (lPlugIn.getEnabled()) {
+				try {
+					TokenPlugIn lTokenPlugIn = ((TokenPlugIn) lPlugIn);
+					lTokenPlugIn.processLogoff(aConnector);
+				} catch (Exception lEx) {
+					mLog.error("(plug-in '"
+							+ ((TokenPlugIn) lPlugIn).getNamespace() + "') "
+							+ lEx.getClass().getSimpleName() + ": "
+							+ lEx.getMessage());
+				}
+			}
+		}
 	}
 
 	/**
@@ -74,10 +107,10 @@ public class TokenPlugInChain extends BasePlugInChain {
 		}
 		return lPlugInResponse;
 	}
-	
-	public Boolean reloadPlugIn(WebSocketPlugIn aPlugIn, Token aReasonOfChange,String aVersion, String aReason) {
+
+	public Boolean reloadPlugIn(WebSocketPlugIn aPlugIn, Token aReasonOfChange, String aVersion, String aReason) {
 		List<WebSocketPlugIn> lPlugins = getPlugIns();
-		
+
 		for (int i = 0; i < lPlugins.size(); i++) {
 			if (lPlugins.get(i).getId().equals(aPlugIn.getId())) {
 				aPlugIn.setPlugInChain(this);

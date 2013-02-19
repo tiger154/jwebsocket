@@ -30,10 +30,10 @@ public class ItemCollectionUtils {
 		ItemStorageEventManager.onSubscription(aCollection.getName(), aSubscriber);
 	}
 
-	public static void unsubscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber) throws Exception {
+	public static void unsubscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber, String aUser) throws Exception {
 		aCollection.getSubcribers().remove(aSubscriber);
 		aProvider.saveCollection(aCollection);
-		ItemStorageEventManager.onUnsubscription(aCollection.getName(), aSubscriber);
+		ItemStorageEventManager.onUnsubscription(aCollection.getName(), aSubscriber, aUser);
 	}
 
 	public static void authorizeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aPublisher) throws Exception {

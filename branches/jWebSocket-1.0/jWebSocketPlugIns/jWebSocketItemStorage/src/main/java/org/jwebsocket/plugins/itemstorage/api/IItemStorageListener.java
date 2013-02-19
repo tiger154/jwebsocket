@@ -78,8 +78,9 @@ public interface IItemStorageListener {
 	 *
 	 * @param aCollectionName
 	 * @param aSubscriber
+	 * @param aUser
 	 */
-	void onUnsubscription(String aCollectionName, String aSubscriber);
+	void onUnsubscription(String aCollectionName, String aSubscriber, String aUser);
 
 	/**
 	 * Called when a new client is authorized on a collection
