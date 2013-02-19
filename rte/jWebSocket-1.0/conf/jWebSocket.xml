@@ -53,13 +53,6 @@
 			<url>${JWEBSOCKET_HOME}libs/mysql-connector-java-5.1.16.jar</url>
 			<description>MySQL JDBC driver to access MySQL databases from jWebSocket and its plug-ins</description>
 		</library>
-		<!--
-		<library>
-			<id>jWebSocketFileSystemPlugIn</id>
-			<url>${JWEBSOCKET_HOME}libs/jWebSocketFileSystemPlugIn-1.0.jar</url>
-			<description>Filesystem plug-in, community edition</description>
-		</library>
-		-->
 	</libraries>
 
 	<!-- jWebSocket logging configuration -->
@@ -127,11 +120,12 @@
 			<onmaxconnections>reject</onmaxconnections>
 			<settings>
 				<!-- NIO output writer mechanism thread pool size -->
-				<setting key="workers">500</setting>
+				<setting key="workers">50</setting>
 				<!-- NIO output writer mechanism writes timeout -->
 				<setting key="writer_timeout">1000</setting>
 			</settings>		
 		</engine>
+
 	</engines>
 
 	<!-- The <engineDefaults> section is stored here only for convenience!
@@ -737,6 +731,37 @@
 			<description>Allows to observer changes in files of the file system</description>
 		</right>
 
+		<!-- ItemStorage rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>write_collection</id>
+			<description>Allows to admin item collections (create, remove, clear, changeConfig)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>read_collection</id>
+			<description>Allows to access item collections (list, getInfo, subscribe, authorize)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>write_item</id>
+			<description>Allows to admin collection items (save, remove)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>read_item</id>
+			<description>Allows to access collection items (find, list)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>write_definition</id>
+			<description>Allows to admin item definitions (register, remove)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>read_definition</id>
+			<description>Allows to access item definitions (list)</description>
+		</right>
 
 		<!-- Caution! Be careful with this right!
 				Unauthorized use could stop your server from
@@ -902,6 +927,14 @@
 				<right>org.jwebsocket.plugins.filesystem.send</right>
 				<right>org.jwebsocket.plugins.filesystem.getFilelist</right>
 				<right>org.jwebsocket.plugins.filesystem.observe</right>
+
+				<!-- itemstorage rights -->
+				<right>org.jwebsocket.plugins.itemstorage.write_collection</right>
+				<right>org.jwebsocket.plugins.itemstorage.read_collection</right>
+				<right>org.jwebsocket.plugins.itemstorage.write_item</right>
+				<right>org.jwebsocket.plugins.itemstorage.read_item</right>
+				<right>org.jwebsocket.plugins.itemstorage.write_definition</right>
+				<right>org.jwebsocket.plugins.itemstorage.read_definition</right>
 
 				<!-- Caution! Be careful with this right!
 						Unauthorized use could stop your server from
@@ -1154,37 +1187,6 @@
 				<!-- Number of days. Show the logs that are in the range of n last days. -->
 				<setting key="numberOfDays">30</setting>
 			</settings>
-		</plugin>
-
-		<plugin>
-			<name>org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn</name>
-			<id>jws.itemstorage</id>
-			<ns>org.jwebsocket.plugins.itemstorage</ns>
-			<jar>jWebSocketItemStoragePlugIn-1.0.jar</jar>
-			<!-- plug-in specific settings -->
-			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ItemStoragePlugIn/itemstorage.xml</setting>
-				<!-- Authorization method 
-				     - spring: Uses the user Spring authentication to check for granted authorities 
-					 - static: Uses the user static (jWebSocket.xml users definition) authentication
-					   to check for granted authorities (rights)
-					   
-					 Default value is "static"
-					   
-					 Required user authorities for the ItemStorage plug-in:
-					 - org.jwebsocket.plugins.itemstorage.write_collection
-					 - org.jwebsocket.plugins.itemstorage.read_collection
-					 - org.jwebsocket.plugins.itemstorage.write_item
-					 - org.jwebsocket.plugins.itemstorage.read_item
-					 - org.jwebsocket.plugins.itemstorage.read_definition
-				-->
-				<setting key="authentication_method">static</setting>
-				<!-- The fragment size attribute is used on the fragmentation  of outgoing messages -->
-				<setting key="fragmentSize">2000</setting>
-			</settings>
-			<server-assignments>
-				<server-assignment>ts0</server-assignment>
-			</server-assignments>
 		</plugin>
 
 		<!-- FlashBridge-Plug-in to support WebSocket communication on older browsers via flash -->
@@ -1453,11 +1455,18 @@
 		<!-- filesystem plug-in to access server files via WebSockets -->
 		<plugin>
 			<name>org.jwebsocket.plugins.filesystem.FileSystemPlugIn</name>
-			<!-- <name>org.jwebsocket.enterprise.plugins.filesystem.FileSystemPlugIn</name> -->
+			<!-- to use the enterprise edition of jWebSocketFileSystemPlugIn replace the above line by the following one -->
+			<!-- <name>org.jwebsocket.enterprise.plugins.filesystem.FileSystemPlugInEE</name> -->
 			<id>jws.filesystem</id>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
-			<!-- <jar>jWebSocketFileSystemPlugIn-1.0.jar</jar> -->
+			<!-- to use the enterprise edition of jWebSocketFileSystemPlugIn add the following line -->
+			<!-- <jar>jWebSocketFileSystemPlugInEE-1.0.jar</jar> -->
 			<jar>jWebSocketFileSystemPlugIn-1.0.jar</jar>
+			<!--
+			<jars>
+				<jar>${JWEBSOCKET_HOME}libs/jWebSocketFileSystemPlugIn-1.0.jar</jar>
+			</jars>
+			-->
 			<!-- plug-in specific settings -->
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/FileSystemPlugIn/filesystem.xml</setting>
@@ -1520,6 +1529,9 @@
 			<id>jws.itemstorage</id>
 			<ns>org.jwebsocket.plugins.itemstorage</ns>
 			<jar>jWebSocketItemStoragePlugIn-1.0.jar</jar>
+			<jars>
+			<jar>${JWEBSOCKET_HOME}libs/jWebSocketItemStoragePlugIn-1.0.jar</jar>
+			<jars>
 			<!-- plug-in specific settings -->
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ItemStoragePlugIn/itemstorage.xml</setting>
@@ -1649,17 +1661,6 @@
 			</server-assignments>
 		</plugin>
 		
-		<!-- JQuery Demo plugin -->
-		<plugin>
-			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
-			<ns>test</ns>
-			<id>jws.events.test</id>
-			<jar>jWebSocketEventsPlugIn-1.0.jar</jar>
-			<server-assignments>
-				<server-assignment>ts0</server-assignment>
-			</server-assignments>
-		</plugin>
-
 		<!-- jQuery Mobile Form plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.jquery.JQueryFormsPlugIn</name>
