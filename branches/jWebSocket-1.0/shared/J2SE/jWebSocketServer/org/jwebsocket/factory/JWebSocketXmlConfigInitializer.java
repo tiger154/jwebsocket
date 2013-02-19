@@ -246,6 +246,15 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 		// now initialize the plugins
 		for (PluginConfig lPlugInConfig : jWebSocketConfig.getPlugins()) {
 			try {
+				if (!lPlugInConfig.getJars().isEmpty()) {
+					if (mLog.isDebugEnabled()) {
+						mLog.info("Adding plug-in required libraries: " + lPlugInConfig.getJars());
+					}
+					for (String lPath : lPlugInConfig.getJars()) {
+						loadLibrary(lPath);
+					}
+				}
+
 				Class<WebSocketPlugIn> lPlugInClass =
 						loadPluginFromClasspath(lPlugInConfig.getName());
 				// if not in classpath..try to load plug-in from given .jar file
@@ -272,15 +281,6 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 				}
 				// if class found try to create an instance
 				if (lPlugInClass != null) {
-					if (!lPlugInConfig.getJars().isEmpty()) {
-						if (mLog.isDebugEnabled()) {
-							mLog.info("Adding plug-in required libraries: " + lPlugInConfig.getJars());
-						}
-						for (String lPath : lPlugInConfig.getJars()) {
-							loadLibrary(lPath);
-						}
-					}
-
 					WebSocketPlugIn lPlugIn;
 
 					Constructor<WebSocketPlugIn> lPlugInConstructor;
