@@ -573,8 +573,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 		} catch (Exception lEx) {
 			// ignore that, connection is about to be terminated
 		}
-		// stopping listeners executor
-		mListenersExecutor.shutdown();
 	}
 
 	private void sendCloseHandshake() throws WebSocketException {
