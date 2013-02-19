@@ -134,11 +134,14 @@ public final class PluginConfig implements Config, PluginConfiguration {
 	public void validate() {
 		if ((mId != null && mId.length() > 0)
 				&& (mName != null && mName.length() > 0)
-				&& (mJar != null && mJar.length() > 0)
-				&& (mNamespace != null && mNamespace.length() > 0)
-				&& (mJars != null)) {
+				&& (mNamespace != null && mNamespace.length() > 0)) {
 			return;
 		}
+
+		if ((mJar != null && mJar.length() > 0) || !mJars.isEmpty()) {
+			return;
+		}
+
 		throw new WebSocketRuntimeException(
 				"Missing one of the plugin configuration, "
 				+ "please check your configuration file");
