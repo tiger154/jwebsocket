@@ -25,6 +25,7 @@ import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketConnectorStatus;
+import org.jwebsocket.api.WebSocketPlugInChain;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
@@ -36,6 +37,7 @@ import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.plugins.TokenPlugInChain;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.security.User;
 import org.jwebsocket.server.TokenServer;
@@ -445,6 +447,15 @@ public class SystemPlugIn extends TokenPlugIn {
 	 *
 	 */
 	private void broadcastLoginEvent(WebSocketConnector aConnector) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Notifying 'logon' operation to plug-ins...");
+		}
+		for (WebSocketServer lServer : JWebSocketFactory.getServers()) {
+			if (lServer instanceof TokenServer) {
+				WebSocketPlugInChain lChain = lServer.getPlugInChain();
+				((TokenPlugInChain) lChain).processLogon(aConnector);
+			}
+		}
 		// only broadcast if corresponding global plugin setting is "true"
 		if (BROADCAST_LOGIN) {
 			if (mLog.isDebugEnabled()) {
@@ -470,6 +481,16 @@ public class SystemPlugIn extends TokenPlugIn {
 	 *
 	 */
 	private void broadcastLogoutEvent(WebSocketConnector aConnector) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Notifying 'logoff' operation to plug-ins...");
+		}
+		for (WebSocketServer lServer : JWebSocketFactory.getServers()) {
+			if (lServer instanceof TokenServer) {
+				WebSocketPlugInChain lChain = lServer.getPlugInChain();
+				((TokenPlugInChain) lChain).processLogoff(aConnector);
+			}
+		}
+
 		// only broadcast if corresponding global plugin setting is "true"
 		if (BROADCAST_LOGOUT) {
 			if (mLog.isDebugEnabled()) {
@@ -1048,6 +1069,9 @@ public class SystemPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logoff process finished successfully!");
 		}
+
+		// and broadcast the logout event
+		broadcastLogoutEvent(aConnector);
 	}
 
 	void getAuthorities(WebSocketConnector aConnector, Token aToken) {

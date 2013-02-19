@@ -2704,15 +2704,20 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			} else if( aToken.type == "response" ) {
 				// check login and logout manage the username
 				if( aToken.reqType == "login" || aToken.reqType == "logon") {
-					this.fUsername = aToken.username;
-					// call logon callback
-					if ( "function" == typeof this.fOnLogon )
-						this.fOnLogon( aToken );
+					if (0 == aToken.code){
+						this.fUsername = aToken.username;
+						// call logon callback
+						if ( "function" == typeof this.fOnLogon ){
+							this.fOnLogon( aToken );
+						}
+					}
 				} else if( aToken.reqType == "logout" || aToken.reqType == "logoff") {
-					this.fUsername = null;
-					// call logoff callback
-					if ( "function" == typeof this.fOnLogoff )
-						this.fOnLogoff( aToken );
+					if (0 == aToken.code){
+						this.fUsername = null;
+						// call logoff callback
+						if ( "function" == typeof this.fOnLogoff )
+							this.fOnLogoff( aToken );
+					}
 				}
 				// check if some requests need to be answered
 				this.checkCallbacks( aToken );
