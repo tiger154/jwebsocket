@@ -257,8 +257,9 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 
 				Class<WebSocketPlugIn> lPlugInClass =
 						loadPluginFromClasspath(lPlugInConfig.getName());
+				
 				// if not in classpath..try to load plug-in from given .jar file
-				if (lPlugInClass == null) {
+				if (lPlugInClass == null && null != lPlugInConfig.getJar() && lPlugInConfig.getJar().length() > 0) {
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Plug-in '" + lPlugInConfig.getName()
 								+ "' trying to load from file...");
