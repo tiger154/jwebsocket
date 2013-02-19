@@ -1,3 +1,4 @@
+Ext.Loader.setConfig({enabled:true});
 Ext.application({
 	name: 'IS',
 	enableQuickTips: true,
