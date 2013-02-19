@@ -19,7 +19,7 @@
  */
 $.widget( "jws.fundamentals", {
 	_init:function( ) {
-		w.fundamentals = this;
+		w.fund = this;
 		// DOM Elements
 		this.eMessageBox		= this.element.find( "#message_box_text" );
 		this.eBtnEcho			= this.element.find( "#echo_btn" );
@@ -29,12 +29,27 @@ $.widget( "jws.fundamentals", {
 		this.eBtnDeauth			= this.element.find( "#deauth_btn" );
 		this.eBtnGetAuth		= this.element.find( "#get_auth_btn" );
 		this.eCbAutoReconn		= this.element.find( "#auto_reconnect" );
+		this.eDemoBox			= $( "#demo_box" );
+		
+		this.mArgumentsOfThread	= [ "This was the passed argument" ];
+		
+		// Messages to be used
+		this.MSG_TypeYourMessage= "Type your message...";
+		this.MSG_StartingThread = "Starting method as thread..."
+		this.MSG_DemoTitle		= "Fundamentals Demo";
+		this.MSG_TypeSthg		= "Please you must type something in the field";
+		this.MSG_WebWorker		= "This method was called in a WebWorker " + 
+		"thread and returned: ";
+	
+		//CSS classes
+		this.CSS_DARK			= "dark";
+		this.CSS_OPAQUE			= "opaque";
 		
 		this.doWebSocketConnection( );
 		this.registerEvents( );
 	},
 	
-	doWebSocketConnection: function(){
+	doWebSocketConnection: function( ) {
 		// Each widget utilizes the same authentication mechanism, please refer
 		// to the public widget ../../res/js/widgets/wAuth.js
 		var lCallbacks = {
@@ -47,7 +62,7 @@ $.widget( "jws.fundamentals", {
 				if( aToken.date_val ) {
 					lDate = jws.tools.ISO2Date( aToken.date_val );
 				} else {
-					lDate = new Date();
+					lDate = new Date( );
 				}
 				
 				if( mLog.isDebugEnabled ) {
@@ -62,29 +77,29 @@ $.widget( "jws.fundamentals", {
 			}
 		};
 		// this widget will be accessible from the global variable w.auth
-		$( "#demo_box" ).auth( lCallbacks );
+		w.fund.eDemoBox.auth( lCallbacks );
 	},
 	
 	registerEvents: function( ) {
 		//MESSAGE BOX EVENTS
-		w.fundamentals.eMessageBox.click( w.fundamentals.messageBoxClick );
-		w.fundamentals.eMessageBox.blur( w.fundamentals.messageBoxBlur );
-		w.fundamentals.eMessageBox.keypress( w.fundamentals.messageBoxKeyPressed );
-		w.fundamentals.eMessageBox.focus( w.fundamentals.messageBoxClick );
+		w.fund.eMessageBox.click( w.fund.messageBoxClick );
+		w.fund.eMessageBox.blur( w.fund.messageBoxBlur );
+		w.fund.eMessageBox.keypress( w.fund.messageBoxKeyPressed );
+		w.fund.eMessageBox.focus( w.fund.messageBoxClick );
 		
-		w.fundamentals.eCbAutoReconn.change( w.fundamentals.toggleReconnect );
-		w.fundamentals.eBtnThread.click( w.fundamentals.thread );
-		w.fundamentals.eBtnEcho.click( w.fundamentals.echo );
-		w.fundamentals.eBtnConectivity.click( w.fundamentals.showReliabilityOptions );
-		w.fundamentals.eBtnAuth.click( w.auth.auth );
-		w.fundamentals.eBtnDeauth.click( w.auth.deauth );
-		w.fundamentals.eBtnGetAuth.click( w.auth.getAuth );
+		w.fund.eCbAutoReconn.change( w.fund.toggleReconnect );
+		w.fund.eBtnThread.click( w.fund.thread );
+		w.fund.eBtnEcho.click( w.fund.echo );
+		w.fund.eBtnConectivity.click( w.fund.showReliabilityOptions );
+		w.fund.eBtnAuth.click( w.auth.auth );
+		w.fund.eBtnDeauth.click( w.auth.deauth );
+		w.fund.eBtnGetAuth.click( w.auth.getAuth );
 		
 	},
 
-	toggleReconnect: function() {
+	toggleReconnect: function( ) {
 		if( mWSC ) {
-			var lReconnect = w.fundamentals.eCbAutoReconn.get(0).checked;
+			var lReconnect = w.fund.eCbAutoReconn.get(0).checked;
 			if ( mLog.isDebugEnabled ) {
 				log( "Turning auto-reconnect " + ( lReconnect ? "on" : "off" ) );
 			}
@@ -92,10 +107,10 @@ $.widget( "jws.fundamentals", {
 		}
 	},
 			
-	showReliabilityOptions: function() {
+	showReliabilityOptions: function( ) {
 		if( mWSC ) {
-			var lOptions = mWSC.getReliabilityOptions();
-			var lQueue = mWSC.getOutQueue();
+			var lOptions = mWSC.getReliabilityOptions( );
+			var lQueue = mWSC.getOutQueue( );
 			if ( mLog.isDebugEnabled ) {
 				log( "Reliability Options: " 
 					+ ( lQueue ? lQueue.length : "no" ) + " items in queue"
@@ -108,39 +123,47 @@ $.widget( "jws.fundamentals", {
 		}
 	},
 
-	echo: function() {
-		var lMsg = w.fundamentals.eMessageBox.val();
-		if ( mLog.isDebugEnabled ) {
-			log( "Sending '" + lMsg + "', waiting for echo..." );
-		}
-		try {
-			var lRes = mWSC.echo( lMsg );
-			if( lRes.code == 0 ) {
-				if ( mLog.isDebugEnabled ) {
-					log( "Message sent." );
-				}
-			} else {
-				if ( mLog.isDebugEnabled ) {
-					log( lRes.msg );
-				}
-			}
-		} catch( ex ) {
-			console.log( ex.message );
+	echo: function( ) {
+		var lMsg = w.fund.eMessageBox.val( );
+		if( lMsg && lMsg != w.fund.MSG_TypeYourMessage ) {
 			if ( mLog.isDebugEnabled ) {
-				log( "Exception: " + ex.message );
+				log( "Sending '" + lMsg + "', waiting for echo..." );
 			}
+			try {
+				var lRes = mWSC.echo( lMsg );
+				if( lRes.code == 0 ) {
+					if ( mLog.isDebugEnabled ) {
+						log( "Message sent." );
+					}
+				} else {
+					if ( mLog.isDebugEnabled ) {
+						log( lRes.msg );
+					}
+				}
+			} catch( ex ) {
+				console.log( ex.message );
+				if ( mLog.isDebugEnabled ) {
+					log( "Exception: " + ex.message );
+				}
+			}
+		} else {
+			dialog( w.fund.MSG_TypeSthg, w.fund.MSG_DemoTitle, true, 
+				function( ) {
+					w.fund.eMessageBox.focus( );
+				});
+			
 		}
 	},
 
-	thread: function() {
+	thread: function( ) {
 		if ( mLog.isDebugEnabled ) {
-			log( "Starting method as thread..." );
+			log( w.fund.MSG_StartingThread );
 		}
 		var lRes = jws.runAsThread({
 			method: function( aOut ) {
-				return( "This method was called in a WebWorker thread and returned: " + aOut );
+				return( w.fund.MSG_WebWorker + aOut );
 			},
-			args: [ "This was the passed argument" ],
+			args: w.fund.mArgumentsOfThread,
 			OnMessage: function( aToken ) {
 				var lData = aToken.data;
 				if ( mLog.isDebugEnabled ) {
@@ -160,21 +183,22 @@ $.widget( "jws.fundamentals", {
 	
 	// ------------- EVENTS ---------------------------
 	messageBoxBlur : function( ) {
-		if( $( this ).val() == "" ) {
-			$( this ).val("Type your message...").attr( "class", "opaque" );
+		if( $( this ).val( ) == "" ) {
+			$( this ).val( w.fund.MSG_TypeYourMessage ).attr( "class", 
+				w.fund.CSS_OPAQUE );
 		}
 	},
 	
-	messageBoxClick: function( ) { 
-		if( $( this ).val( ) == "Type your message..." ) {
-			$( this ).val( "" ).attr( "class", "dark" );
+	messageBoxClick: function( ) {
+		if( $( this ).val( ) == w.fund.MSG_TypeYourMessage ) {
+			$( this ).val( "" ).attr( "class", w.fund.CSS_DARK );
 		}
 	},
 	
 	messageBoxKeyPressed: function( aEvt ) {
 		if( aEvt.keyCode == 13 && ( !aEvt.shiftKey ) ) {
 			aEvt.preventDefault( );
-			w.fundamentals.echo( );
+			w.fund.echo( );
 			$( this ).val( "" );
 		}
 	}
