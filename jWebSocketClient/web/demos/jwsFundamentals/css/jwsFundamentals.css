@@ -19,10 +19,7 @@
 
 #message_box_header{
     margin: -1px -1px 0 -1px;
-    -moz-border-radius-topleft: 6px;
-    -moz-border-radius-topright: 6px;
-    -moz-border-radius-bottomright: 0px;
-    -moz-border-radius-bottomleft: 0px;
+    -moz-border-radius: 6px 6px 0px 0px;
     -webkit-border-radius: 6px 6px 0px 0px;
     border-radius: 6px 6px 0px 0px;
     background: #2584C1 url(../img/header.png) repeat-x;
@@ -92,7 +89,7 @@
     padding-bottom: 10px
 }
 
-#connectivity_btn .c{
+#connectivity_btn .btn_center{
     font-family: "Verdana";
     font-weight: bold !important;
     color: white;
@@ -105,7 +102,7 @@
 }
 
 
-#echo_btn .c{
+#echo_btn .btn_center{
     font-family: "Verdana";
     font-weight: bold !important;
     color: white;
@@ -122,7 +119,7 @@
 	margin-right: 1px;
 }
 
-#thread_btn .c{
+#thread_btn .btn_center{
     font-family: "Verdana";
     font-weight: bold !important;
     color: white;

@@ -37,7 +37,7 @@
 body{
     margin: 0px;
     font-family: Verdana, sans-serif;
-	overflow: hidden;
+	/*overflow: hidden;*/
 }
 #demo_box{
     float: left;
@@ -426,9 +426,9 @@ textarea{
 	user-select: none;
 } 
 
-.button .l,
-.button .c,
-.button .r{
+.button .btn_left,
+.button .btn_center,
+.button .btn_right{
     float: left;
     height: 25px;
 }
@@ -438,14 +438,14 @@ textarea{
     width: 26px;
 }
 
-.button .l,
-.button .r{
+.button .btn_left,
+.button .btn_right{
     float: left;
     height: 25px;
     width: 9px;
 }
 
-.button .c{
+.button .btn_center{
     font-family: "Verdana";
     font-weight: bold !important;
     color: white;
@@ -457,13 +457,13 @@ textarea{
     padding-right: 8px;
 }
 
-.button .c{
+.button .btn_center{
     background: url(../../res/img/buttons/n_c.png) top left repeat-x;
 }
-.button .l{
+.button .btn_left{
     background: url(../../res/img/buttons/n_l.png) top left no-repeat;
 }
-.button .r{
+.button .btn_right{
     background: url(../../res/img/buttons/n_r.png) top left no-repeat;
 }
 
@@ -471,26 +471,26 @@ textarea{
     background: url(../../res/img/buttons/n_r_download.png) top left no-repeat;
 }
 
-.button.onmouseout .c{
+.button.onmouseout .btn_center{
     background: url(../../res/img/buttons/n_c.png) top left repeat-x;
 }
-.button.onmouseout .l{
+.button.onmouseout .btn_left{
     background: url(../../res/img/buttons/n_l.png) top left no-repeat;
 }
-.button.onmouseout .r{
+.button.onmouseout .btn_right{
     background: url(../../res/img/buttons/n_r.png) top left no-repeat;
 }
 .button.onmouseout .r_download{
     background: url(../../res/img/buttons/n_r_download.png) top left no-repeat;
 }
 
-.button.onmouseover .c{
+.button.onmouseover .btn_center{
     background: url(../../res/img/buttons/h_c.png) top left repeat-x;
 }
-.button.onmouseover .l{
+.button.onmouseover .btn_left{
     background: url(../../res/img/buttons/h_l.png) top left no-repeat;
 }
-.button.onmouseover .r{
+.button.onmouseover .btn_right{
     background: url(../../res/img/buttons/h_r.png) top left no-repeat;
 }
 
@@ -498,13 +498,13 @@ textarea{
     background: url(../../res/img/buttons/h_r_download.png) top left no-repeat;
 }
 
-.button.onmousedown .c{
+.button.onmousedown .btn_center{
     background: url(../../res/img/buttons/p_c.png) top left repeat-x;
 }
-.button.onmousedown .l{
+.button.onmousedown .btn_left{
     background: url(../../res/img/buttons/p_l.png) top left no-repeat;
 }
-.button.onmousedown .r{
+.button.onmousedown .btn_right{
     background: url(../../res/img/buttons/p_r.png) top left no-repeat;
 }
 
@@ -555,33 +555,6 @@ p{
 	height: 13px;
 }
 
-/* --------------------------- SCROLLBARS PERSONALIZATION -----------------------*/
-.scroll-pane{
-	width: 100%;
-	height: auto;
-	padding-bottom: 60px;
-	/*position: fixed;*/
-}
-/*Overriding the width of the scrollbars*/
-.jspVerticalBar{
-	width: 8px !important;
-	background: transparent !important;
-}
-
-.jspTrack {
-	background: none !important;
-}
-
-.jspDrag {
-	background: #6c8dc8;
-	opacity: 0.3;
-	filter: alpha(opacity=30); /* For IE8 and earlier */
-}
-
-.jspHorizontalBar{
-	background: transparent !important;
-	height: 10px !important;
-}
 /* ----------------------- CHECKBOXES PERSONALIZATION -------------------------- */
 input[type="checkbox"]{
 	font-style: "Verdana";
@@ -665,5 +638,4 @@ input[type="checkbox"]{
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#86add8', endColorstr='#2585c1',GradientType=0 ) !important; /* IE6-8 */
 	color: white !important;
 }
-
 /* ----------------------- JQUERY UI DIALOG PERSONALIZATION -------------------------- */

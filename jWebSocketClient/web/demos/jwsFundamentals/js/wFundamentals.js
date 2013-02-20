@@ -19,7 +19,7 @@
  */
 $.widget( "jws.fundamentals", {
 	_init:function( ) {
-		w.fund = this;
+		
 		// DOM Elements
 		this.eMessageBox		= this.element.find( "#message_box_text" );
 		this.eBtnEcho			= this.element.find( "#echo_btn" );
@@ -38,13 +38,12 @@ $.widget( "jws.fundamentals", {
 		this.MSG_StartingThread = "Starting method as thread..."
 		this.MSG_DemoTitle		= "Fundamentals Demo";
 		this.MSG_TypeSthg		= "Please you must type something in the field";
-		this.MSG_WebWorker		= "This method was called in a WebWorker " + 
-		"thread and returned: ";
 	
 		//CSS classes
 		this.CSS_DARK			= "dark";
 		this.CSS_OPAQUE			= "opaque";
 		
+		w.fund = this;
 		this.doWebSocketConnection( );
 		this.registerEvents( );
 	},
@@ -76,12 +75,13 @@ $.widget( "jws.fundamentals", {
 			OnGoodBye: function( aEvent ) {
 			}
 		};
-		// this widget will be accessible from the global variable w.auth
+		// For more information check the public login widget
+		// ../../res/js/widgets/wAuth.js
 		w.fund.eDemoBox.auth( lCallbacks );
 	},
 	
 	registerEvents: function( ) {
-		//MESSAGE BOX EVENTS
+		// SWITCHING THE EVENTS TO THE DOM ELEMENTS
 		w.fund.eMessageBox.click( w.fund.messageBoxClick );
 		w.fund.eMessageBox.blur( w.fund.messageBoxBlur );
 		w.fund.eMessageBox.keypress( w.fund.messageBoxKeyPressed );
@@ -99,7 +99,7 @@ $.widget( "jws.fundamentals", {
 
 	toggleReconnect: function( ) {
 		if( mWSC ) {
-			var lReconnect = w.fund.eCbAutoReconn.get(0).checked;
+			var lReconnect = w.fund.eCbAutoReconn.get( 0 ).checked;
 			if ( mLog.isDebugEnabled ) {
 				log( "Turning auto-reconnect " + ( lReconnect ? "on" : "off" ) );
 			}
@@ -161,7 +161,8 @@ $.widget( "jws.fundamentals", {
 		}
 		var lRes = jws.runAsThread({
 			method: function( aOut ) {
-				return( w.fund.MSG_WebWorker + aOut );
+				return( "This method was called in a WebWorker " + 
+					"thread and returned: " + aOut );
 			},
 			args: w.fund.mArgumentsOfThread,
 			OnMessage: function( aToken ) {
