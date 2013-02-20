@@ -29,7 +29,7 @@
     font-size: 11px;
     padding: 3px 3px 3px 10px;
     font-weight: bold;
-    
+
     background: rgb(134,173,216); /* Old browsers */
     /* IE9 SVG, needs conditional override of 'filter' to 'none' */
     background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzg2YWRkOCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMyNTg1YzEiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
@@ -89,46 +89,15 @@
     padding-bottom: 10px
 }
 
-#connectivity_btn .btn_center{
-    font-family: "Verdana";
-    font-weight: bold !important;
-    color: white;
-    text-shadow: 0px 1px #678613;
-    text-align: center;
-    font-size: 11px;
-    padding-top: 4px;
-    padding-left: 3px;
-    padding-right: 3px;
-}
-
-
-#echo_btn .btn_center{
-    font-family: "Verdana";
-    font-weight: bold !important;
-    color: white;
-    text-shadow: 0px 1px #678613;
-    text-align: center;
-    font-size: 11px;
-    padding-top: 4px;
-    padding-left: 25px;
-    padding-right: 25px;
-}
-
 .button{
 	float: right;
 	margin-right: 1px;
 }
 
-#thread_btn .btn_center{
-    font-family: "Verdana";
-    font-weight: bold !important;
-    color: white;
-    text-shadow: 0px 1px #678613;
-    text-align: center;
-    font-size: 11px;
-    padding-top: 4px;
-    padding-left: 18px;
-    padding-right: 19px;
+#thread_btn .btn_center, 
+#echo_btn .btn_center,
+#connectivity_btn .btn_center{
+	width: 80px;
 }
 
 #form_check{
@@ -147,21 +116,21 @@
 }
 
 .checkbox {
-  width: 18px !important;
-  height: 20px !important;
-  padding: 0 0 0 0px;
-  background: url(images/cb_n.png) no-repeat !important;
-  /*display: block;*/
-  float: left !important;
-  margin: 14px 6px 0 6px !important;
+	width: 18px !important;
+	height: 20px !important;
+	padding: 0 0 0 0px;
+	background: url(images/cb_n.png) no-repeat !important;
+	/*display: block;*/
+	float: left !important;
+	margin: 14px 6px 0 6px !important;
 }
 
 .checkbox:hover {
-  background: url(images/cb_h.png) no-repeat !important;
+	background: url(images/cb_h.png) no-repeat !important;
 }
 
 .checkbox:checked {
-  width: 18px !important;
-  height: 20px !important;
-  background: url(images/cb_p.png) no-repeat !important;
+	width: 18px !important;
+	height: 20px !important;
+	background: url(images/cb_p.png) no-repeat !important;
 }
