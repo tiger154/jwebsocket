@@ -65,7 +65,7 @@ public class APIPlugIn extends TokenPlugIn {
 
 		// give a success message to the administrator
 		if (mLog.isInfoEnabled()) {
-			mLog.info("API plug-in successfully loaded.");
+			mLog.info("API plug-in successfully instantiated.");
 		}
 	}
 

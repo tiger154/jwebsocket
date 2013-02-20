@@ -47,7 +47,7 @@ public class JQueryFormsPlugIn extends TokenPlugIn {
 		this.setNamespace(aConfiguration.getNamespace());
 		createUsers();
 		if (mLog.isInfoEnabled()) {
-			mLog.info("JQueryForms plug-in successfully loaded.");
+			mLog.info("JQueryForms plug-in successfully instantiated.");
 		}
 	}
 

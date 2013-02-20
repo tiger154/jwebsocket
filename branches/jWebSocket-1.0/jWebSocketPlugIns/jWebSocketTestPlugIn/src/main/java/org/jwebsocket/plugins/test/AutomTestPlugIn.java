@@ -53,7 +53,7 @@ public class AutomTestPlugIn extends TokenPlugIn {
 		this.setNamespace(NS_TEST_AUTOMATION);
 		// give a success message to the administrator
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Automated test plug-in successfully loaded.");
+			mLog.info("Automated test plug-in successfully instantiated.");
 		}
 	}
 
