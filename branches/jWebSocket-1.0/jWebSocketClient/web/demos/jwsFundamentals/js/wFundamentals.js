@@ -147,7 +147,7 @@ $.widget( "jws.fundamentals", {
 				}
 			}
 		} else {
-			dialog( w.fund.MSG_TypeSthg, w.fund.MSG_DemoTitle, true, 
+			jwsDialog( w.fund.MSG_TypeSthg, w.fund.MSG_DemoTitle, true, "alert",
 				function( ) {
 					w.fund.eMessageBox.focus( );
 				});

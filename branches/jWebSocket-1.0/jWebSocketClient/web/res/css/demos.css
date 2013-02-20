@@ -372,7 +372,7 @@ textarea{
     border-radius: 0px 6px 6px 6px;
     overflow: auto;
     padding: 5px;
-    font-size: 12px;
+    font-size: 8pt;
 	line-height: 20px;
 	word-wrap: break-word;
 }
@@ -638,5 +638,10 @@ input[type="checkbox"]{
     background: linear-gradient(top,  rgba(134,173,216,1) 0%,rgba(37,133,193,1) 100%) !important; /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#86add8', endColorstr='#2585c1',GradientType=0 ) !important; /* IE6-8 */
 	color: white !important;
+}
+
+.ui-dialog-titlebar{
+	padding: 0 5px 0 12px !important;
+	font-size: 11px;
 }
 /* ----------------------- JQUERY UI DIALOG PERSONALIZATION -------------------------- */

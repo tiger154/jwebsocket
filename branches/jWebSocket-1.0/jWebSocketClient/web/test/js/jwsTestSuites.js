@@ -103,15 +103,15 @@ function runEventsSuite() {
 			});
 		},
 		OnClose: function(){
-			if ( undefined != dialog ) {
-				dialog( "You are not connected to the server!", "jWebSocket Message", true, null, null, "alert");
+			if ( undefined != jwsDialog ) {
+				jwsDialog( "You are not connected to the server!", "jWebSocket Message", true, "alert" );
 			} else {
 				alert( "You are not connected to the server!" );
 			}
 		},
 		OnTimeout: function(){
-			if ( undefined != dialog ) {
-				dialog( "Timeout openning connection!", "jWebSocket Message", true, null, null, "alert");
+			if ( undefined != jwsDialog ) {
+				jwsDialog( "Timeout openning connection!", "jWebSocket Message", true, "alert" );
 			} else {
 				alert( "Timeout openning connection!" );
 			}

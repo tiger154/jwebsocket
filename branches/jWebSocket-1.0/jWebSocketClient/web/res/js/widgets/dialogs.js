@@ -18,100 +18,111 @@
  * @author vbarzana
  */
 /**
+ * @function jwsDialog
+ * @example
+ *	jwsDialog( "Are you sure?", "title", true, "error", 
+ *			function( ) {alert( "closing" )}, lButtons );
  * @param aTitle
  * @param aMessage
  * @param aIsModal
+ * @param aIconType 
+ *	 Optional, { error|information|alert|important|warning }
  * @param aCloseFunction
- * @param aButtons
+ * @param aMoreButtons
  *   var lButtons = [{
-		id: "buttonYes",
-		text: "Yes",
-		aFunction: function() {
-			alert( "you clicked YES button" );
-		}
-	},{
-		id: "buttonNo",
-		text: "No",
-		aFunction: function() {
-			alert( "you clicked button NO" );
-		}
-	}];
-* @param aIconType
-*    { error|information|alert|important|warning }
-* 
-	dialog( "Are you sure?", "title", true, function() {alert( "closing" )}, lButtons, "error" );
+ *		id: "buttonYes",
+ *		text: "Yes",
+ *		aFunction: function( ) {
+ *			alert( "you clicked YES button" );
+ *		}
+ *	},{
+ *		id: "buttonNo",
+ *		text: "No",
+ *		aFunction: function( ) {
+ *			alert( "you clicked button NO" );
+ *		}
+ *	}];
+ * This is an example of how to use this function:
+ * @param aWidth Optional, the width of the dialog window
  */
-function dialog( aMessage, aTitle, aIsModal, aCloseFunction, aButtons, aIconType, aWidth ) {
-	// Dialog
-	var lDialog = $(  "<div id='dialog'></div>"  );
-	
-	var lContentWidth = "100%";
-	if( aIconType ) {
-		lContentWidth = "80%";
-	}
-	var lContent = $(  "<div><p>" + aMessage + "</p></div>"  ).css( {
+function jwsDialog( aMessage, aTitle, aIsModal, aIconType, aCloseFunction, aMoreButtons, aWidth ) {
+	var lDialog = $(  "<div id='dialog'></div>"  ), 
+	lContentWidth = aIconType?"80%":"100%",
+	lContent = $(  "<div><p>" + aMessage + "</p></div>"  ).css({
 		"width": lContentWidth,
 		"float": "left"
-	});
+	}),
+	lButtonsArea = $( "<div class='ui-dialog-buttonpane "+ 
+		"ui-widget-content ui-helper-clearfix'></div>" ),
+	lButton = $( '<div style="float: right;" '+
+		'class="button onmouseup" '+
+		'onmouseover="this.className=\'button onmouseover\'" '+
+		'onmousedown="this.className=\'button onmousedown\'" ' +
+		'onmouseup="this.className=\'button onmouseup\'"' + 
+		'onmouseout="this.className=\'button onmouseout\'" ' + 
+		'onclick="this.className=\'button onmouseover\'">' );
 	
-	var lButtonsArea = $( "<div class='ui-dialog-buttonpane ui-widget-content ui-helper-clearfix'></div>" );
-	
-	var lButton = $( '<div style="float: right;" class="button onmouseup" onmouseover="this.className=\'button onmouseover\'" onmousedown="this.className=\'button onmousedown\'"onmouseup="this.className=\'button onmouseup\'"onmouseout="this.className=\'button onmouseout\'" onclick="this.className=\'button onmouseover\'">' );
-	
-	if( aButtons ) {
-		$( aButtons ).each( function( aIndex, aElement ) {
+	if( aMoreButtons ) {
+		$( aMoreButtons ).each( function( aIndex, aElement ) {
 			var lText = aElement.text || "aButton";
 			var lFunction = aElement.aFunction;
-			var lNewButton = $( '<div style="float: right;" class="button onmouseup" onmouseover="this.className=\'button onmouseover\'" onmousedown="this.className=\'button onmousedown\'" onmouseup="this.className=\'button onmouseup\'" onmouseout="this.className=\'button onmouseout\'" onclick="this.className=\'button onmouseover\'">' )
+			var lNewButton = lButton.clone( )
 			
-			.click( function() {
-				lFunction();
+			.click( function( ) {
+				lFunction( );
 				lDialog.dialog( "close" );
-				$( this ).parent().parent().remove();
-			} );
+				$( this ).parent( ).parent( ).remove( );
+			});
 			if (  aElement.id  ) {
 				lNewButton.attr( "id", aElement.id );
 			}
 
-			lNewButton.append( $( '<div class="l"></div>' ) ).append( $( '<div class="c">' + lText + '</div>' ) ).append( $( '<div class="r"></div>' ) );
+			lNewButton.append( $( '<div class="btn_left"></div>' ) )
+			.append( $( '<div class="btn_center">' + lText + '</div>' ) )
+			.append( $( '<div class="btn_right"></div>' ) );
 			lButtonsArea.prepend( lNewButton );
-		} );
+		});
 	}else{
-		lButton.append( $( '<div class="l"></div>' ) ).append( $( '<div class="c">Ok</div>' ) ).append( $( '<div class="r"></div>' ) );
-		lButton.click( function() {
+		lButton.append( $( '<div class="btn_left"></div>' ) )
+		.append( $( '<div class="btn_center">Ok</div>' ) )
+		.append( $( '<div class="btn_right"></div>' ) );
+		lButton.click( function( ) {
 			if( aCloseFunction ) {
-				aCloseFunction();
+				aCloseFunction( );
 			}
 			lDialog.dialog( "close" );
-			$( this ).parent().parent().remove();
-		} );
+			$( this ).parent( ).parent( ).remove( );
+		});
 		lButtonsArea.append( lButton );
 	}
-	if(  aIconType  ) {
-		if(  aIconType == "error" || aIconType == "information" || aIconType == "warning" || aIconType == "alert" || aIconType == "important"  ) {
-			var lIcon = $( "<div id='icon' class='"+ "icon_" + aIconType + "'></div>" );
+	if( aIconType ) {
+		if(  aIconType == "error" || aIconType == "information" || 
+			aIconType == "warning" || aIconType == "alert" || 
+			aIconType == "important"  ) {
+			var lIcon = $( "<div id='icon' class='"+ "icon_" +
+				aIconType + "'></div>" );
 			lDialog.append( lIcon );
 		}
 		else {
-			console.log( "Unrecognized type of icon+' " + aIconType + "', the allowed types are { error|information|warning|alert }" )
+			console.log( "Unrecognized type of icon+' " + aIconType + 
+				"', the allowed types are { error|information|warning|alert }" )
 		}
 	}
 	lDialog.append( lContent );
-	
 	lDialog.prependTo( "body" );
 	
-	lDialog.dialog( {
+	lDialog.dialog({
 		autoOpen: true,
 		resizable: false,
 		modal: aIsModal || false,
 		width: aWidth || 300,
 		title: aTitle || "jWebSocket Message"
-	} );
+	});
 	lDialog.append( lButtonsArea );
 }
 
-function closeDialog() {
+function closeDialog( ) {
 	var	lDialog = $( '<div id="dialog"></div>' );
 	lDialog.dialog( "close" ); 
-	$( ".ui-dialog" ).remove();
+	$( ".ui-dialog" ).remove( );
 }
