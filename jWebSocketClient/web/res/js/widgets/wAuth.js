@@ -102,7 +102,6 @@ $.widget("jws.auth",{
 			if( mLog.isDebugEnabled ) {
 				log( "Logging in..." );
 			}
-			
 			try {
 				// you can choose the username entered by the user or 
 				// jWebSocket defalut jws.GUEST_USER_LOGINNAME
@@ -149,7 +148,7 @@ $.widget("jws.auth",{
 					w.auth.options.OnOpen( aEvent );
 				}
 				if( mLog.isDebugEnabled ) {
-					log( "<font style='color:#888'>jWebSocket connection established.</font>" );
+					log( "<div style='color:#888'>jWebSocket connection established.</div>" );
 				}
 				
 				w.auth.eConnectButton.hide( );
@@ -183,7 +182,8 @@ $.widget("jws.auth",{
 					w.auth.options.OnWelcome( aToken );
 				}
 				if( mLog.isDebugEnabled ) {
-					log( "<font style='color:red'>jWebSocket Welcome received.</font>" );
+					log( "<div style='color:red'>jWebSocket Welcome received.</div>" );
+					w.auth.eClientId.text( "Client-ID: " + aToken.sourceId );
 				}
 				
 				if ( "anonymous" != aToken.username ) {
@@ -202,7 +202,7 @@ $.widget("jws.auth",{
 					w.auth.options.OnGoodBye( aEvent );
 				}
 				if( mLog.isDebugEnabled ) {
-					log( "<font style='color:red'>jWebSocket GoodBye received.</font>" );
+					log( "<div style='color:red'>jWebSocket GoodBye received.</div>" );
 				}
 			},
 
@@ -211,8 +211,8 @@ $.widget("jws.auth",{
 				if( "login" == aToken.reqType || "logon" ==  aToken.reqType ) {
 					if( aToken.code != -1 ) {
 						if( mLog.isDebugEnabled ) {
-							log( "<font style='color:green'>Successfully authenticated as: " 
-								+ aToken.username + "</font>");
+							log( "<div style='color:green'>Successfully authenticated as: " 
+								+ aToken.username + "</div>");
 						}
 						w.auth.eLogonArea.hide( );
 						w.auth.eLogoffArea.fadeIn( 300 );
@@ -223,8 +223,8 @@ $.widget("jws.auth",{
 						w.auth.eClientStatus.attr( "class", "authenticated").text("authenticated");
 					} else {
 						if( mLog.isDebugEnabled ) {
-							log( "<font style='color:red'><b>Error trying to login, \n\
-								invalid credentials, please, check your user or password</font>");
+							log( "<div style='color:red'><b>Error trying to login, \n\
+								invalid credentials, please, check your user or password</div>");
 						}
 					}
 				} else if( "logout" == aToken.reqType || "logoff" == aToken.reqType) {
@@ -249,16 +249,16 @@ $.widget("jws.auth",{
 					}
 				
 					if( mLog.isDebugEnabled ) {
-						log( "<font style='color:#888'>jWebSocket '" + aToken.type 
+						log( "<div style='color:#888'>jWebSocket '" + aToken.type 
 							+ "' token received, full message: '" + aEvent.data + "' " 
-							+ lDate + "</font>" );
+							+ lDate + "</div>" );
 					}
 				}
 			},
 			// OnClose callback
 			OnClose: function( aEvent ) {
 				if( mLog.isDebugEnabled ) {
-					log( "<font style='color:#888'>jWebSocket connection closed.</font>" );
+					log( "<div style='color:#888'>jWebSocket connection closed.</div>" );
 				}
 				w.auth.eLogoffArea.hide( );
 				w.auth.eLogonArea.fadeIn( 200 );
@@ -296,8 +296,8 @@ $.widget("jws.auth",{
 		
 		if( lUsername == "" || lPassword == "" ){
 			if( mLog.isDebugEnabled ) {
-				log("<font style='color:red'>User or password can not be empty,\n\
-						please check your login information.</font>")
+				log("<div style='color:red'>User or password can not be empty,\n\
+						please check your login information.</div>")
 			}
 			return;
 		}

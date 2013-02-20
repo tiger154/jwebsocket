@@ -41,7 +41,7 @@ body{
 }
 #demo_box{
     float: left;
-    width: 710px;
+    width: 700px;
     height: 100%;
     border: 1px solid #C8C8C8;
 }
@@ -301,14 +301,14 @@ textarea{
 
 
 #scenario_container{
-	width: 100%;
+	width: 98%;
 	float: left;
-	padding: 12px;
+	padding: 5px;
 }
 
 /*---------------- DEMO_SCENARIO -------------*/
 #log_box{
-    width: 98%;
+    width: 100%;
     margin-top: 20px;
 	float: left;
 }
@@ -359,7 +359,7 @@ textarea{
 }
 
 #log_box_content{
-    width: 96%;
+    width: 98%;
     float: left;
     z-index: 0;
     background: #FFFFFF;
@@ -374,6 +374,7 @@ textarea{
     padding: 5px;
     font-size: 12px;
 	line-height: 20px;
+	word-wrap: break-word;
 }
 
 .log_box_hidden{
@@ -394,7 +395,7 @@ textarea{
 #demo_box_footer{
     float:left;
     padding: 5px;
-    width: 100%;
+    width: 98%;
 }
 
 #jws_download_button{

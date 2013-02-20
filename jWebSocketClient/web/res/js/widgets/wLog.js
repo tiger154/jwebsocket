@@ -67,7 +67,7 @@ function log( aString ) {
 				lLines = w.log.options.linesToDelete;
 			}
 			if( aIndex > lLines ) {
-				lHtml += aElement+"<br>";
+				lHtml += aElement + "<br/>";
 			}
 		});
 		w.log.eLog.html( lHtml );
