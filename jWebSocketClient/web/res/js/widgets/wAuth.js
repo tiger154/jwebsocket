@@ -68,7 +68,7 @@ $.widget("jws.auth",{
 		//adding click functions
 		w.auth.eLoginButton.click( function( ) {
 			// If there is not a connect button
-			if( !w.auth.eConnectButton.attr("id") ) {
+			if( !w.auth.eConnectButton.attr( "id" ) ) {
 				// we open the connection and then login
 				w.auth.logon( );
 			} else {
@@ -76,10 +76,10 @@ $.widget("jws.auth",{
 				w.auth.login( );
 			}
 		});
-		w.auth.eLogoffButton.click( 
+		w.auth.eLogoffButton.click(
 			function( ){
 				// If there is not a connect button
-				if( !w.auth.eConnectButton.attr("id") ) {
+				if( !w.auth.eConnectButton.attr( "id" ) ) {
 					// logout and close the connection
 					w.auth.disconnect( );
 				} else {
@@ -98,7 +98,7 @@ $.widget("jws.auth",{
 	
 	// Logs in, only if there is connection with the server, otherwise it won't work
 	login: function( ) {
-		if( mWSC ) {
+		if( mWSC && mWSC.isConnected( ) ) {
 			if( mLog.isDebugEnabled ) {
 				log( "Logging in..." );
 			}
@@ -125,11 +125,13 @@ $.widget("jws.auth",{
 					}
 				}
 			} catch( ex ) {
-				console.log( ex.message );
+				jws.console.log( ex.message );
 				if( mLog.isDebugEnabled ) {
 					log( "Exception: " + ex.message );
 				}
 			}
+		} else {
+			log( "Not connected, please click 'Connect button'" );
 		}
 	},
 	
@@ -347,7 +349,7 @@ $.widget("jws.auth",{
 		try {
 			mWSC.open( lURL, w.auth.getCallbacks( ) );
 		} catch( ex ) {
-			console.log( ex );
+			jws.console.log( ex );
 			if( mLog.isDebugEnabled ) {
 				log( "Exception: " + ex.message );
 			}
@@ -370,7 +372,7 @@ $.widget("jws.auth",{
 					}
 				}
 			} catch( ex ) {
-				console.log( ex );
+				jws.console.log( ex );
 				if( mLog.isDebugEnabled ) {
 					log( "Exception: " + ex.message );
 				}
@@ -398,7 +400,7 @@ $.widget("jws.auth",{
 					}
 				}
 			} catch( ex ) {
-				console.log( ex.message );
+				jws.console.log( ex.message );
 				if( mLog.isDebugEnabled ) {
 					log( "Exception: " + ex.message );
 				}
@@ -423,7 +425,7 @@ $.widget("jws.auth",{
 					}
 				}
 			} catch( ex ) {
-				console.log( ex.message );
+				jws.console.log( ex.message );
 				if( mLog.isDebugEnabled ) {
 					log( "Exception: " + ex.message );
 				}
