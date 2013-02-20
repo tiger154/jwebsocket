@@ -48,7 +48,7 @@ public class ChatPlugIn extends TokenPlugIn {
 		this.setNamespace(aConfiguration.getNamespace());
 
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Chat plug-in successfully loaded.");
+			mLog.info("Chat plug-in successfully instantiated.");
 		}
 	}
 
