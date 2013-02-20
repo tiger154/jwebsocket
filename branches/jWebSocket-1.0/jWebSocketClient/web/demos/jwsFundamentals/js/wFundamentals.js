@@ -65,9 +65,9 @@ $.widget( "jws.fundamentals", {
 				}
 				
 				if( mLog.isDebugEnabled ) {
-					log( "<font style='color:#888'>jWebSocket '" + aToken.type 
+					log( "<div style='color:#888'>jWebSocket '" + aToken.type 
 						+ "' token received, full message: '" + aEvent.data + "' " 
-						+ lDate + "</font>" );
+						+ lDate + "</div>" );
 				}
 			},
 			OnWelcome: function( aEvent ) {
