@@ -33,7 +33,7 @@ function init(){
 	});
 	
 	$("#demo_box").auth(lCallbacks);
-	$("#demo_box").actions();
+	$("#demo_box").helloWorld();
 	
 	//configuring tooltip as we wish
 	$("[title]").tooltip({
