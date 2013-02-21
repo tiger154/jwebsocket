@@ -27,8 +27,8 @@
 		<meta http-equiv="Content-Language" content="en"/>
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252"/>
 
-		<link rel="stylesheet" type="text/css" href="css/jwsIframe.css"/>
 		<link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+		<link rel="stylesheet" type="text/css" href="css/jwsIframe.css"/>
 
 		<!-- JQUERY DEPENDENCIES -->
 		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
@@ -48,7 +48,7 @@
 		<!--  MAIN JAVASCRIPT FILE   -->
 		<script type="text/javascript" src='js/init.js'></script>
 	</head>
-	<body>
+	<body onunload="w.switcher.exitPage">
 		<div id="clients">
 			<div class="header">
 				<div id="tabs_shared_color">
@@ -72,17 +72,9 @@
 					<div id="color_gray"     class="color_gray">        </div>
 					<div id="color_black"    class="color_black">       </div>
 				</div>				
-				<canvas id="paint_canvas" width="344" height="170"></canvas>
+				<canvas id="paint_canvas" width="320" height="170"></canvas>
 				<div class="buttons_container">
-					<div id="clear_paint" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-						 onmousedown="this.className='button onmousedown'" 
-						 onmouseup="this.className='button onmouseup'" 
-						 onmouseout="this.className='button onmouseout'" 
-						 onclick="this.className='button onmouseover'">
-						<div class="l"></div>
-						<div class="c">Clear</div>
-						<div class="r"></div>
-					</div>
+					<div id="clear_paint" class="button">Clear</div>
 				</div>
 			</div>
 			<div id="image_area">
@@ -98,17 +90,9 @@
 					<div id="image08_small" class="small_img">      </div>
 					<div id="image09_small" class="small_img">      </div>
 				</div>
-				<canvas id="image_canvas" width="344" height="170"></canvas>
+				<canvas id="image_canvas" width="320" height="170"></canvas>
 				<div class="buttons_container">
-					<div id="clear_image" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-						 onmousedown="this.className='button onmousedown'" 
-						 onmouseup="this.className='button onmouseup'" 
-						 onmouseout="this.className='button onmouseout'" 
-						 onclick="this.className='button onmouseover'">
-						<div class="l"></div>
-						<div class="c">Clear</div>
-						<div class="r"></div>
-					</div>
+					<div id="clear_image" class="button">Clear</div>
 				</div>
 			</div>
 		</div>

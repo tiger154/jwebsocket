@@ -1,11 +1,11 @@
 //	****************************************************************************
-//	jWebSocket Hello World (uses jWebSocket Client and Server)
-//	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+//	jWebSocket Hello World ( uses jWebSocket Client and Server )
+//	( C ) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
 //	****************************************************************************
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
+//	Free Software Foundation; either version 3 of the License, or ( at your
+//	option ) any later version.
 //	This program is distributed in the hope that it will be useful, but WITHOUT
 //	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 //	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
@@ -17,57 +17,63 @@
 /*
  * @author daimi
  */
-$.widget( "jws.paint", {
+$.widget( "jws.paint", { 
     
-	_init:function() {
-		wPaint   = this;
-		
+	_init:function( ) {
 		// Getting some elements from the dom
-		wPaint.lJWSID		= "jWebSocket Canvas";
-		wPaint.eCanvas		= document.getElementById( "paint_canvas" );
-		wPaint.ctx			= wPaint.eCanvas.getContext( "2d" );
-		wPaint.eBtnClear	= wPaint.element.find("#clear_paint");
+		this.lJWSID			= "jWebSocket Canvas";
+		this.eCanvas		= document.getElementById( "paint_canvas" );
+		this.ctx			= this.eCanvas.getContext( "2d" );
+		this.eBtnClear		= this.element.find( "#clear_paint" );
 		
-		color_blue = { 
-			elem: wPaint.element.find("#color_blue"),
-			color: "#0072bc"
-		};
-		color_green = { 
-			elem: wPaint.element.find("#color_green"),
-			color: "#53b369"
-		};
-		color_red = { 
-			elem: wPaint.element.find("#color_red"),
-			color: "#c64e4d"
-		};
-		color_yellow = { 
-			elem: wPaint.element.find("#color_yellow"),
-			color: "#c9cb4c"
-		};
-		color_orange = { 
-			elem: wPaint.element.find("#color_orange"),
-			color: "#be8e44"
-		};
-		color_darkblue = { 
-			elem: wPaint.element.find("#color_darkblue"),
-			color: "#273c4d"
-		};
-		color_purple = { 
-			elem: wPaint.element.find("#color_purple"),
-			color: "#6864a1"
-		};
-		color_gray = { 
-			elem: wPaint.element.find("#color_gray"),
-			color: "#6864a1"
-		};
-		color_black = { 
-			elem: wPaint.element.find("#color_black"),
-			color: "#000000"
-		};
+		this.color = {
+			blue : {  
+				elem: this.element.find( "#color_blue" ),
+				color: "#0072bc"
+			},
+			green : {  
+				elem: this.element.find( "#color_green" ),
+				color: "#53b369"
+			}
+			,
+			red : {  
+				elem: this.element.find( "#color_red" ),
+				color: "#c64e4d"
+			}
+			,
+			yellow : {  
+				elem: this.element.find( "#color_yellow" ),
+				color: "#c9cb4c"
+			}
+			,
+			orange : {  
+				elem: this.element.find( "#color_orange" ),
+				color: "#be8e44"
+			}
+			,
+			darkblue : {  
+				elem: this.element.find( "#color_darkblue" ),
+				color: "#273c4d"
+			}
+			,
+			purple : {  
+				elem: this.element.find( "#color_purple" ),
+				color: "#6864a1"
+			}
+			,
+			gray : {  
+				elem: this.element.find( "#color_gray" ),
+				color: "#6864a1"
+			}
+			,
+			black : {  
+				elem: this.element.find( "#color_black" ),
+				color: "#000000"
+			}
+		}
 		
-		wPaint.eStatus = null;
-		mIsConnected = false;
-		wPaint.mColor = "#000000";
+		this.eStatus = null;
+		this.mColor = "#000000";
 		CANVAS_ID = "c1";
 
 		IN = 0;
@@ -76,54 +82,72 @@ $.widget( "jws.paint", {
 		SYS = "SYS";
 		USR = null;
 		
-		mPainting = false;
+		this.mIsPainting = false;
 		mX1 = -1;
 		mY1 = -1;
 		
-		wPaint.eAvg = null;
-		wPaint.loops = 0;
-		wPaint.total = 0;
+		this.eAvg = null;
+		this.loops = 0;
+		this.total = 0;
 		
-		wPaint.registerEvents();
-		wPaint.initPage();
+		w.paint   = this;
+		w.paint.registerEvents( );
+		w.paint.initPage( );
 	},
 	
-	registerEvents: function(){
-		$(wPaint.eCanvas).mousedown(wPaint.mouseDownLsnr);
-		$(wPaint.eCanvas).mousemove(wPaint.mouseMoveLsnr);
-		$(wPaint.eCanvas).mouseup(wPaint.mouseUpLsnr);
-		$(wPaint.eCanvas).mouseout(wPaint.mouseOutLsnr);
-		wPaint.eBtnClear.click(wPaint.doClear);
+	registerEvents: function( ) {
+		$( w.paint.eCanvas ).mousedown( w.paint.mouseDownLsnr );
+		$( w.paint.eCanvas ).mousemove( w.paint.mouseMoveLsnr );
+		$( w.paint.eCanvas ).mouseup( w.paint.mouseUpLsnr );
+		$( w.paint.eCanvas ).mouseout( w.paint.mouseOutLsnr );
+		w.paint.eBtnClear.click( w.paint.doClear );
 		
-				color_blue.elem.click(function(){wPaint.selectColor(color_blue.color)});
-		color_green.elem.click(function(){wPaint.selectColor(color_green.color)});
-		color_red.elem.click(function(){wPaint.selectColor(color_red.color)});
-		color_yellow.elem.click(function(){wPaint.selectColor(color_yellow.color)});
-		color_orange.elem.click(function(){wPaint.selectColor(color_orange.color)});
-		color_darkblue.elem.click(function(){wPaint.selectColor(color_darkblue.color)});
-		color_purple.elem.click(function(){wPaint.selectColor(color_purple.color)});
-		color_gray.elem.click(function(){wPaint.selectColor(color_gray.color)});
-		color_black.elem.click(function(){wPaint.selectColor(color_black.color)});
+		w.paint.color.blue.elem.click( function( ) {
+			w.paint.selectColor( w.paint.color.blue.color );
+		});
+		w.paint.color.green.elem.click( function( ) {
+			w.paint.selectColor( w.paint.color.green.color );
+		});
+		w.paint.color.red.elem.click( function( ) {
+			w.paint.selectColor( w.paint.color.red.color );
+		});
+		w.paint.color.yellow.elem.click( function( ) {
+			w.paint.selectColor( w.paint.color.yellow.color );
+		});
+		w.paint.color.orange.elem.click( function( ) {
+			w.paint.selectColor( w.paint.color.orange.color );
+		});
+		w.paint.color.darkblue.elem.click( function( ) {
+			w.paint.selectColor( w.paint.color.darkblue.color );
+		});
+		w.paint.color.purple.elem.click( function( ) {
+			w.paint.selectColor( w.paint.color.purple.color );
+		});
+		w.paint.color.gray.elem.click( function( ) {
+			w.paint.selectColor( w.paint.color.gray.color );
+		});
+		w.paint.color.black.elem.click( function( ) {
+			w.paint.selectColor( w.paint.color.black.color );
+		});
 	},
 	
 	mouseDownLsnr: function( aEvent ) {
 		jws.events.preventDefault( aEvent );
-		if( mIsConnected ) {
-			mPainting = true;
-			mX1 = aEvent.clientX - wPaint.eCanvas.offsetLeft;
-			mY1 = aEvent.clientY - wPaint.eCanvas.offsetTop;
+		if( mWSC.isConnected( ) ) {
+			w.paint.mIsPainting = true;
+			mX1 = aEvent.clientX - w.paint.eCanvas.offsetLeft;
+			mY1 = aEvent.clientY - w.paint.eCanvas.offsetTop;
 		}
 	},
 	
 	mouseMoveLsnr: function ( aEvent ) {
-		// aEvent.preventDefault();
-		jws.events.preventDefault( aEvent );
-		if( mIsConnected && mPainting ) {
-			var lX2 = aEvent.clientX - wPaint.eCanvas.offsetLeft;
-			var lY2 = aEvent.clientY - wPaint.eCanvas.offsetTop;
+		aEvent.preventDefault( );
+		if( mWSC.isConnected( ) && w.paint.mIsPainting ) {
+			var lX2 = aEvent.clientX - w.paint.eCanvas.offsetLeft;
+			var lY2 = aEvent.clientY - w.paint.eCanvas.offsetTop;
 
-			mWSC.canvasLine( CANVAS_ID, mX1, mY1, lX2, lY2, {
-				color: wPaint.mColor
+			mWSC.canvasLine( CANVAS_ID, mX1, mY1, lX2, lY2, { 
+				color: w.paint.mColor
 			});
 
 			mX1 = lX2;
@@ -132,34 +156,36 @@ $.widget( "jws.paint", {
 	}, 
 	
 	mouseUpLsnr: function ( aEvent ) {
-		// aEvent.preventDefault();
+		// aEvent.preventDefault( );
 		jws.events.preventDefault( aEvent );
-		if( mIsConnected && mPainting ) {
-			lX2 = aEvent.clientX - wPaint.eCanvas.offsetLeft;
-			lY2 = aEvent.clientY - wPaint.eCanvas.offsetTop;
-			mWSC.canvasLine( CANVAS_ID, mX1, mY1, lX2, lY2, {color: wPaint.mColor});
-			mPainting = false;
+		if( mWSC.isConnected( ) && w.paint.mIsPainting ) {
+			lX2 = aEvent.clientX - w.paint.eCanvas.offsetLeft;
+			lY2 = aEvent.clientY - w.paint.eCanvas.offsetTop;
+			mWSC.canvasLine( CANVAS_ID, mX1, mY1, lX2, lY2, {
+				color: w.paint.mColor
+			});
+			w.paint.mIsPainting = false;
 		}
 	},
 
 	mouseOutLsnr: function ( aEvent ) {
-		wPaint.mouseUpLsnr( aEvent );
+		w.paint.mouseUpLsnr( aEvent );
 	},
 
-	selectColor: function (aColor ) {
-		wPaint.mColor = aColor;
+	selectColor: function ( aColor ) {
+		w.paint.mColor = aColor;
 	},
 
-	doClear: function() {
-		if( mIsConnected ) {
+	doClear: function( ) {
+		if( mWSC.isConnected( ) ) {
 			mWSC.canvasClear( CANVAS_ID );
 		}
 	},
 
-	initPage: function(){
+	initPage: function( ) {
 		mWSC.canvasOpen( CANVAS_ID, "paint_canvas" );
 	},
-	exitPage: function() {
+	exitPage: function( ) {
 		mWSC.canvasClose( CANVAS_ID );
 	}
 });
