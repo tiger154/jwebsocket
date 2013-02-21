@@ -67,6 +67,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	private static Logger mLog = Logging.getLogger();
 	// specify name space for system plug-in
 	private static final String NS_SYSTEM = JWebSocketServerConstants.NS_BASE + ".plugins.system";
+	private final static String VERSION = "1.0.0";
 	// specify token types processed by system plug-in
 	private static final String TT_SEND = "send";
 	private static final String TT_RESPOND = "respond";
@@ -98,6 +99,9 @@ public class SystemPlugIn extends TokenPlugIn {
 	private static final String TT_SESSION_GETMANY = "sessionGetMany";
 	// session key subfix for public data storage
 	// other clients can read public connector's session data
+	/**
+	 *
+	 */
 	public static final String SESSION_PUBLIC_KEY_SUBFIX = "public::";
 	// specify shared connector variables
 	private static final String VAR_GROUP = NS_SYSTEM + ".group";
@@ -121,13 +125,25 @@ public class SystemPlugIn extends TokenPlugIn {
 	 * Spring authentication session indexes
 	 */
 	public static final String USERNAME = "$username";
+	/**
+	 *
+	 */
 	public static final String AUTHORITIES = "$authorities";
+	/**
+	 *
+	 */
 	public static final String UUID = "$uuid";
+	/**
+	 *
+	 */
 	public static final String IS_AUTHENTICATED = "$is_authenticated";
 	/**
 	 * jWebSocket core spring beans identifiers
 	 */
 	public static final String BEAN_AUTHENTICATION_MANAGER = "authManager";
+	/**
+	 *
+	 */
 	public static final String BEAN_SESSION_MANAGER = "sessionManager";
 	/**
 	 * Core Spring application context
@@ -171,6 +187,11 @@ public class SystemPlugIn extends TokenPlugIn {
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating system plug-in"));
 		}
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
 	}
 
 	/**
@@ -258,6 +279,11 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aSession
+	 */
 	public static void startSession(WebSocketConnector aConnector, WebSocketSession aSession) {
 		Iterator<WebSocketServer> lServers = JWebSocketFactory.getServers().iterator();
 		while (lServers.hasNext()) {
@@ -265,6 +291,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aSession
+	 */
 	public static void stopSession(WebSocketSession aSession) {
 		Iterator<WebSocketServer> lServers = JWebSocketFactory.getServers().iterator();
 		while (lServers.hasNext()) {

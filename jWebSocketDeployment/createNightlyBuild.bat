@@ -38,7 +38,6 @@ rem create client side bundles and minified versions
 echo Running 0_createJSDocs.bat...
 call 0_createJSDocs.bat /y >> %logfile%
 
-
 rem clean and build the project
 echo Running 1_cleanAndBuildAll...
 call 1_cleanAndBuildAll.bat /y >> %logfile%

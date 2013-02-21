@@ -22,7 +22,7 @@ cd
 pushd ..\jWebSocketClient\web\res\js
 
 rem do *NOT* include the demo plug-in here! This will be loaded separately and is proprietary to the jWebSocket demos only!
-copy /b jWebSocket.js + jwsCache.js + jwsAPIPlugIn.js + jwsChannelPlugIn.js + jwsCanvasPlugIn.js + jwsChatPlugIn.js + jwsClientGamingPlugIn.js + jwsEventsPlugIn.js + jwsFileSystemPlugIn.js + jwsJDBCPlugIn.js + jwsJMSPlugIn.js + jwsLoggingPlugIn.js + jwsMailPlugIn.js + jwsReportingPlugIn.js + jwsRPCPlugIn.js + jwsSamplesPlugIn.js + jwsSharedObjectsPlugIn.js + jwsStreamingPlugIn.js + jwsTestPlugIn.js + jwsTwitterPlugIn.js + jwsXMPPPlugIn.js + jwsWorker.js jWebSocket_Bundle.js
+copy /b jWebSocket.js + jWebSocketComet.js + jwsCache.js + jwsAPIPlugIn.js + jwsCanvasPlugIn.js + jwsChannelPlugIn.js + jwsCanvasPlugIn.js + jwsChatPlugIn.js + jwsClientGamingPlugIn.js + jwsEventsPlugIn.js + jwsFileSystemPlugIn.js + jwsIOC.js + jwsItemStoragePlugIn.js + jwsJDBCPlugIn.js + jwsJMSPlugIn.js + jwsLoggingPlugIn.js + jwsMailPlugIn.js + jwsReportingPlugIn.js + jwsRPCPlugIn.js + jwsSamplesPlugIn.js + jwsSharedObjectsPlugIn.js + jwsStreamingPlugIn.js + jwsTestPlugIn.js + jwsTwitterPlugIn.js + jwsXMPPPlugIn.js + jwsWorker.js jWebSocket_Bundle.js
 
 rem switch back to deployment folder
 popd
