@@ -1,7 +1,7 @@
 Ext.define('IS.view.portal.Logon', {
 	extend: 'IS.view.base.Window',
 	iconCls: 'key',
-	title: 'ItemStorage plug-in',
+	title: 'jWebSocket ItemStorage plug-in',
 	closable: false,
 	
 	doAction: function(){
