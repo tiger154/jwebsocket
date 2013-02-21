@@ -34,9 +34,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC0 (build 30214)
+	//:const:*:VERSION:String:1.0 RC0 (build 30221)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC0 (build 30214)",
+	VERSION: "1.0 RC0 (build 30221)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -2704,15 +2704,20 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			} else if( aToken.type == "response" ) {
 				// check login and logout manage the username
 				if( aToken.reqType == "login" || aToken.reqType == "logon") {
-					this.fUsername = aToken.username;
-					// call logon callback
-					if ( "function" == typeof this.fOnLogon )
-						this.fOnLogon( aToken );
+					if (0 == aToken.code){
+						this.fUsername = aToken.username;
+						// call logon callback
+						if ( "function" == typeof this.fOnLogon ){
+							this.fOnLogon( aToken );
+						}
+					}
 				} else if( aToken.reqType == "logout" || aToken.reqType == "logoff") {
-					this.fUsername = null;
-					// call logoff callback
-					if ( "function" == typeof this.fOnLogoff )
-						this.fOnLogoff( aToken );
+					if (0 == aToken.code){
+						this.fUsername = null;
+						// call logoff callback
+						if ( "function" == typeof this.fOnLogoff )
+							this.fOnLogoff( aToken );
+					}
 				}
 				// check if some requests need to be answered
 				this.checkCallbacks( aToken );
@@ -4266,7 +4271,364 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 		return lToken;
 	}
 
-});/*
+});//	---------------------------------------------------------------------------
+//	jWebSocket Comet PlugIn (uses jWebSocket Client and Server)
+//	(C) 2012 Innotrade GmbH, Herzogenrath
+//	---------------------------------------------------------------------------
+//	This program is free software; you can redistribute it and/or modify it
+//	under the terms of the GNU Lesser General Public License as published by the
+//	Free Software Foundation; either version 3 of the License, or (at your
+//	option) any later version.
+//	This program is distributed in the hope that it will be useful, but WITHOUT
+//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//	more details.
+//	You should have received a copy of the GNU Lesser General Public License along
+//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	---------------------------------------------------------------------------
+
+// @author Osvaldo Aguilar Lauzurique @email osvaldo2627@hab.uci.cu
+// @author kyberneees (issues fixes)
+
+(function() {
+
+	XHRWebSocket = function(aUrl, aSubprotocol) {
+		var self              = this;
+		self.url              = (aUrl.substr(0, 2) == "ws")? "http" + aUrl.substr(2) : aUrl;
+		self.subPrcol         = aSubprotocol;
+		self.readyStateValues = {
+			CONNECTING:0, 
+			OPEN:1, 
+			CLOSING:2, 
+			CLOSED:3
+		}
+        
+		self.readyState = self.readyStateValues.CONNECTING;
+		self.bufferedAmount = 0;
+		self.__events = {};
+        
+		self.__ableToSend = true;
+		self.__pendingMessages = [];
+		XHRWebSocket.prototype.__already = false;
+        
+		XHRWebSocket.prototype.addEventListener = function(aType, aListener){
+			if (!(aType in this.__events)){
+				this.__events[aType] = [];
+			}
+			this.__events[aType].push(aListener);
+		};
+        
+		XHRWebSocket.prototype.removeEventListener = function(aType, aListener, aUseCapture) {
+			if (!(aType in this.__events)) return;
+			var lEvents = this.__events[aType];
+			for (var lIndex = lEvents.length - 1; lIndex >= 0; --lIndex) {
+				if (lEvents[lIndex] === aListener) {
+					lEvents.splice(lIndex, 1);
+					break;
+				}
+			}
+		}
+        
+		XHRWebSocket.prototype.dispatchEvent = function(aEvent) {
+			var lEvents = this.__events[aEvent.type] || [];
+			for (var lIndex = 0; lIndex < lEvents.length; ++lIndex) {
+				lEvents[lIndex](aEvent);
+			}
+			var lHandler = self["on" + aEvent.type];
+			if (lHandler) lHandler(aEvent);
+		}
+        
+		XHRWebSocket.prototype.send=function(aData){
+			this.__pendingMessages.push(aData);
+			if (true == this.__ableToSend){
+				this.__sendMessage(this.__pendingMessages.shift());
+			}
+		}
+        
+		XHRWebSocket.prototype.close = function(){
+			if (this.readyState == this.readyStateValues.CONNECTING)
+				throw "The websocket connection is closing";
+			else if (this.readyState == this.readyStateValues.CLOSED)
+				throw "The websocket connection is already closed";
+			else {
+				var lMessage = this.__messageFactory({
+					cometType:"message",
+					readyState:3
+				});
+				var lJSONMessage = JSON.stringify(lMessage);
+                 
+				this.__handleEvent({
+					type:"close"
+				});
+                    
+				var lXHR = this.__getXHRTransport();
+				lXHR.open("POST", this.url, true);
+				lXHR.setRequestHeader("Content-Type", "application/x-javascript;");
+      
+				lXHR.onreadystatechange = function(){
+
+					if (lXHR.readyState >= 4 && lXHR.status == 200) {				
+						if (lXHR.responseText) {
+							self.readyState = self.readyStateValues.CLOSED;
+							setTimeout(function(){
+								self.__handleEvent({
+									type:"close"
+								});
+							}, 0)
+						}	      
+					}
+				};
+				
+				lXHR.send(lJSONMessage);
+			}
+		}    
+    
+		self.__handleEvent = function(aXHREvent){
+			var lEvent;
+			if ( aXHREvent.type == "close" || aXHREvent.type == "open" || aXHREvent.type == "error") {
+				lEvent = this.__createSimpleEvent(aXHREvent.type);
+			} else if (aXHREvent.type == "message") {
+				lEvent = this.__createMessageEvent("message", aXHREvent.data);
+			} else {
+				throw "unknown event type: " + aXHREvent.type;
+			}
+
+			this.dispatchEvent(lEvent);
+		}
+        
+    
+		self.__createSimpleEvent = function(lType) {
+			if (document.createEvent && window.Event) {
+				var lEvent = document.createEvent("Event");
+				lEvent.initEvent(lType, false, false);
+				
+				return lEvent;
+			} else {
+				return {
+					type: lType, 
+					bubbles: false, 
+					cancelable: false
+				};
+			}
+		};
+        
+    
+		self.__createMessageEvent = function(aType, aData) {
+			if (document.createEvent && window.MessageEvent && !window.opera) {
+				var lEvent = document.createEvent("MessageEvent");
+				lEvent.initMessageEvent("message", false, false, aData, null, null, window, null);
+				return lEvent;
+			} else {
+				// IE and Opera, the latter one truncates the data parameter after any 0x00 bytes.
+				return {
+					type: aType, 
+					data: aData, 
+					bubbles: false, 
+					cancelable: false
+				};
+			}
+		};
+        
+		this.__checkPendingMessage = function(){
+			if (this.__pendingMessages.length > 0){
+				var lData = this.__pendingMessages.shift()
+				this.__sendMessage(lData);
+			}
+		}
+       
+		this.open = function(){
+			if (this.readyState == this.readyStateValues.OPEN)
+				throw "the connection is already opened";
+			else
+				this.__handleConnectionChannel();
+		}
+    
+		this.keepConnection = function(){
+			this.__handleConnectionChannel();
+		}
+
+		this.__handleConnectionChannel = function(){
+            
+			var lXHR = this.__getXHRTransport();
+			this.__xhr = lXHR;
+            
+			lXHR.open("POST", this.url, true);
+			lXHR.setRequestHeader("Content-Type", "application/x-javascript;");
+
+			lXHR.onreadystatechange = function(){
+				if (lXHR.readyState >= 4){
+					if (lXHR.status == 200) {				
+						if (lXHR.responseText) {
+							var lResponse = JSON.parse(lXHR.responseText);
+						
+							if (lResponse.data != ""){
+								setTimeout(function(){
+									for (var lIndex = 0; lIndex < lResponse.data.length; lIndex++) {
+										self.__handleEvent({
+											type:"message",
+											data: lResponse.data[lIndex]
+										});
+									}
+								}, 0);
+							}
+							
+							// process response from the server
+							self.handleConnectionState(lResponse);
+							
+							// IMPORTANT: wait for the XHR connection close
+							if (1 == self.readyState){
+								setTimeout(function(){
+									self.keepConnection();
+								}, 50);
+							}
+						} 
+					}
+				}
+			};
+			var lMessage = this.__messageFactory({
+				cometType:"connection"
+			});
+			var lJSONMessage = JSON.stringify(lMessage);
+			
+			lXHR.send(lJSONMessage);
+		}
+                
+		this.__objectMessageBasePrototype = function(){
+			var lMessage = {
+				subPl: "json", //jWebSocket subprotocol support
+				cometType: undefined,
+				data: undefined,
+				readyState: self.readyState
+			}
+			return lMessage;
+		} 
+        
+		this.__sendMessage = function(aData){
+			if (this.readyState == this.readyStateValues.CONNECTING){
+				throw "The websocket connection has not been stablished";
+			} else if (this.readyState == this.readyStateValues.CLOSED) {
+				throw "The websocket connection has been closed, the message can not be sent to the server";
+			} else if (this.__ableToSend == true){  
+				// basic synchronism
+				this.__ableToSend = false;
+				
+				var lMessage = this.__messageFactory({
+					cometType:"message",
+					data:aData
+				});
+				var lJSONMessage = JSON.stringify(lMessage);
+				var lXHR = this.__getXHRTransport();
+            
+				lXHR.open("POST", this.url, true);
+				lXHR.setRequestHeader("Content-Type", "application/x-javascript;");
+            
+				lXHR.onreadystatechange = function(){
+					// the channel is released
+					self.__ableToSend = true;
+					
+					if (lXHR.readyState >= 4 && lXHR.status == 200) {				
+						if (lXHR.responseText) {
+							var lResponse  = JSON.parse(lXHR.responseText)
+							
+							setTimeout(function(){
+								for (var lIndex = 0; lIndex < lResponse.data.length; lIndex++) {
+									self.__handleEvent({
+										type:"message",
+										data: lResponse.data[lIndex]
+									});
+									
+								}
+							}, 0);
+						}
+						self.__checkPendingMessage();
+					}
+				};
+				
+				// sending XHR message
+				lXHR.send(lJSONMessage);
+			}else{
+				this.__pendingMessages.push(aData);
+			}
+
+		}
+        
+		this.__messageFactory = function(aArgs){
+            
+			var lMessage = this.__objectMessageBasePrototype();
+			if (aArgs != undefined)
+				if (aArgs.cometType == undefined)
+					throw "Error up, type message not found";
+				else{
+					lMessage.cometType = aArgs.cometType;
+					if (aArgs.data != undefined)
+						lMessage.data = aArgs.data;
+					else
+						lMessage.data = undefined;
+					if (aArgs.readyState != undefined)
+						lMessage.readyState = aArgs.readyState;
+				}
+                
+			return lMessage;
+		}
+    
+		this.handleConnectionState = function(lResponse){
+			if (this.readyState == this.readyStateValues.CONNECTING 
+				&& lResponse.readyState == this.readyStateValues.OPEN){
+				// require to affect the readyState flag before call the onopen callback
+				this.readyState = lResponse.readyState;
+				this.__handleEvent({
+					type:"open"
+				}); 
+			}
+
+			if (lResponse.readyState)
+				this.readyState = lResponse.readyState;
+			else
+				throw "Missing 'readyState' argument from the server";
+
+			if (this.readyState == 2 || this.readyState == 3){
+				this.__handleEvent({
+					type:"close"
+				}); 
+			}
+		}
+        
+		this.__getXHRTransport = function(){
+
+			var lXHR;
+			if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+				ie = 0;
+				lXHR = new XMLHttpRequest();
+				if (lXHR.overrideMimeType) 
+					lXHR.overrideMimeType('text/xml');
+			}
+			else { // IE
+				ie = 1;
+				try {
+					lXHR = new ActiveXObject("Msxml2.XMLHTTP");
+				}
+				catch (e) {}
+				if ( typeof httpRequest == 'undefined' ) {
+					try {
+						lXHR = new ActiveXObject("Microsoft.XMLHTTP");
+					}
+					catch (f) {}
+				}
+			}
+			if (!lXHR) {
+				throw "Cannot create an XMLHTTP instance";
+				return false;
+			}
+			
+			return lXHR ;
+		}
+               
+		this.open();
+	}
+
+})();
+
+/*
 MIT LICENSE
 Copyright (c) 2007 Monsur Hossain (http://monsur.hossai.in)
 
@@ -4845,6 +5207,327 @@ jws.APIPlugIn = function() {
 
 jws.APIPlugIn.prototype = jws.APIPlugInClass;
 //	---------------------------------------------------------------------------
+//	jWebSocket Sample Client PlugIn (uses jWebSocket Client and Server)
+//	(C) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
+//	---------------------------------------------------------------------------
+//	This program is free software; you can redistribute it and/or modify it
+//	under the terms of the GNU Lesser General Public License as published by the
+//	Free Software Foundation; either version 3 of the License, or (at your
+//	option) any later version.
+//	This program is distributed in the hope that it will be useful, but WITHOUT
+//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//	more details.
+//	You should have received a copy of the GNU Lesser General Public License along
+//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	---------------------------------------------------------------------------
+
+//	---------------------------------------------------------------------------
+//  jWebSocket Sample Client Plug-In
+//	---------------------------------------------------------------------------
+
+jws.CanvasPlugIn = {
+
+	// namespace for shared objects plugin
+	// if namespace is changed update server plug-in accordingly!
+	NS: jws.NS_BASE + ".plugins.canvas",
+
+	processToken: function( aToken ) {
+		// check if namespace matches
+		if( aToken.reqNS == jws.CanvasPlugIn.NS ) {
+			// here you can handle incomimng tokens from the server
+			// directy in the plug-in if desired.
+			if( "clear" == aToken.reqType ) {
+				this.doClear( aToken.id );
+			} else if( "beginPath" == aToken.reqType ) {
+				this.doBeginPath( aToken.id );
+			} else if( "moveTo" == aToken.reqType ) {
+				this.doMoveTo( aToken.id, aToken.x, aToken.y );
+			} else if( "lineTo" == aToken.reqType ) {
+				this.doLineTo( aToken.id, aToken.x, aToken.y );
+			} else if( "line" == aToken.reqType ) {
+				this.doLine( aToken.id, aToken.x1, aToken.y1,
+					aToken.x2, aToken.y2, { color: aToken.color });
+			} else if( "closePath" == aToken.reqType ) {
+				this.doClosePath( aToken.id );
+			}
+		}
+	},
+
+	fCanvas: {},
+
+	canvasOpen: function( aId, aElementId ) {
+		var lElem = jws.$( aElementId );
+		this.fCanvas[ aId ] = {
+			fDOMElem: lElem,
+			ctx: lElem.getContext( "2d" )
+		};
+	},
+
+	canvasClose: function( aId ) {
+		this.fCanvas[ aId ] = null;
+		delete this.fCanvas[ aId ];
+	},
+
+	doClear: function( aId ) {
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			var lW = lCanvas.fDOMElem.getAttribute( "width" );
+			var lH = lCanvas.fDOMElem.getAttribute( "height" );
+			lCanvas.ctx.clearRect( 0, 0, lW, lH );
+			return true;
+		}
+		return false;
+	},
+
+	canvasClear: function( aId ) {
+		if( this.doClear( aId ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "clear",
+				id: aId
+			};
+			this.broadcastToken(lToken);
+		}
+	},
+
+	canvasGetBase64: function( aId, aMimeType ) {
+		var lRes = {
+			code: -1,
+			msg : "Ok"
+		};
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			if( typeof lCanvas.fDOMElem.toDataURL == "function" ) {
+				lRes.code = 0;
+				lRes.encoding = "base64";
+				lRes.data = lCanvas.fDOMElem.toDataURL( aMimeType );
+			} else {
+				lRes.msg = "Retrieving image data from canvas not (yet) supported by browser.";
+			}
+		} else {
+			lRes.msg = "Canvas not found.";
+		}
+		return lRes;
+	},
+
+	doBeginPath: function( aId ) {
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			// console.log( "doBeginPath: " + aId);
+			lCanvas.ctx.beginPath();
+			return true;
+		}
+		return false;
+	},
+
+	canvasBeginPath: function( aId ) {
+		if( this.doBeginPath( aId ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "beginPath",
+				id: aId
+			};
+			this.broadcastToken(lToken);
+		}
+	},
+
+	doMoveTo: function( aId, aX, aY ) {
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			// console.log( "doMoveTo: " + aId + ", x:" + aX + ", y: " + aX );
+			lCanvas.ctx.moveTo( aX, aY );
+			return true;
+		}
+		return false;
+	},
+
+	canvasMoveTo: function( aId, aX, aY ) {
+		if( this.doMoveTo( aId, aX, aY ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "moveTo",
+				id: aId,
+				x: aX,
+				y: aY
+			};
+			this.broadcastToken(lToken);
+		}
+	},
+
+	doLineTo: function( aId, aX, aY ) {
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			// console.log( "doLineTo: " + aId + ", x:" + aX + ", y: " + aX );
+			lCanvas.ctx.lineTo( aX, aY );
+			lCanvas.ctx.stroke();
+			return true;
+		}
+		return false;
+	},
+
+	canvasLineTo: function( aId, aX, aY ) {
+		if( this.doLineTo( aId, aX, aY ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "lineTo",
+				id: aId,
+				x: aX,
+				y: aY
+			};
+			this.broadcastToken(lToken);
+		}
+	},
+
+	doLine: function( aId, aX1, aY1, aX2, aY2, aOptions ) {
+		if( undefined == aOptions ) {
+			aOptions = {};
+		}
+		var lColor = "black";
+		if( aOptions.color ) {
+			lColor = aOptions.color;
+		}
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			lCanvas.ctx.beginPath();
+			lCanvas.ctx.moveTo( aX1, aY1 );
+			lCanvas.ctx.strokeStyle = lColor;
+			lCanvas.ctx.lineTo( aX2, aY2 );
+			lCanvas.ctx.stroke();
+			lCanvas.ctx.closePath();
+			return true;
+		}
+		return false;
+	},
+
+	canvasLine: function( aId, aX1, aY1, aX2, aY2, aOptions ) {
+		if( undefined == aOptions ) {
+			aOptions = {};
+		}
+		var lColor = "black";
+		if( aOptions.color ) {
+			lColor = aOptions.color;
+		}
+		if( this.doLine( aId, aX1, aY1, aX2, aY2, aOptions ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "line",
+				id: aId,
+				x1: aX1,
+				y1: aY1,
+				x2: aX2,
+				y2: aY2,
+				color: lColor
+			};
+			this.broadcastToken(lToken);
+		}
+	},
+
+	doClosePath: function( aId ) {
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			// console.log( "doClosePath" );
+			lCanvas.ctx.closePath();
+			return true;
+		}
+		return false;
+	},
+
+	canvasClosePath: function( aId ) {
+		if( this.doClosePath( aId ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "closePath",
+				id: aId
+			};
+			this.broadcastToken(lToken);
+		}
+	}
+
+}
+
+// add the JWebSocket Canvas PlugIn into the TokenClient class
+jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.CanvasPlugIn );
+
+// optionally include canvas support for IE8
+if( jws.isIE ) {
+
+	//  <JasobNoObfs>
+	//
+	//	-------------------------------------------------------------------------------
+	//	ExplorerCanvas
+	//
+	//	Google Open Source:
+	//		<http://code.google.com>
+	//		<opensource@google.com>
+	//
+	//	Developers:
+	//		Emil A Eklund <emil@eae.net>
+	//		Erik Arvidsson <erik@eae.net>
+	//		Glen Murphy <glen@glenmurphy.com>
+	//
+	//	-------------------------------------------------------------------------------
+	//	DESCRIPTION
+	//
+	//	Firefox, Safari and Opera 9 support the canvas tag to allow 2D command-based
+	//	drawing operations. ExplorerCanvas brings the same functionality to Internet
+	//	Explorer; web developers only need to include a single script tag in their
+	//	existing canvas webpages to enable this support.
+	//
+	//	-------------------------------------------------------------------------------
+	//	INSTALLATION
+	//
+	//	Include the ExplorerCanvas tag in the same directory as your HTML files, and
+	//	add the following code to your page, preferably in the <head> tag.
+	//
+	//	<!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+	//
+	//	If you run into trouble, please look at the included example code to see how
+	//	to best implement this
+	//	
+	//	Copyright 2006 Google Inc.
+	//
+	//	Licensed under the Apache License, Version 2.0 (the "License");
+	//	you may not use this file except in compliance with the License.
+	//	You may obtain a copy of the License at
+	//
+	//	http://www.apache.org/licenses/LICENSE-2.0
+	//
+	//	Unless required by applicable law or agreed to in writing, software
+	//	distributed under the License is distributed on an "AS IS" BASIS,
+	//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	//	See the License for the specific language governing permissions and
+	//	limitations under the License.
+	//
+	//	Fullsource code at: http://excanvas.sourceforge.net/
+	//	and http://code.google.com/p/explorercanvas/
+	//
+	//	</JasobNoObfs>
+
+	document.createElement("canvas").getContext||(function(){var s=Math,j=s.round,F=s.sin,G=s.cos,V=s.abs,W=s.sqrt,k=10,v=k/2;function X(){return this.context_||(this.context_=new H(this))}var L=Array.prototype.slice;function Y(b,a){var c=L.call(arguments,2);return function(){return b.apply(a,c.concat(L.call(arguments)))}}var M={init:function(b){if(/MSIE/.test(navigator.userAgent)&&!window.opera){var a=b||document;a.createElement("canvas");a.attachEvent("onreadystatechange",Y(this.init_,this,a))}},init_:function(b){b.namespaces.g_vml_||
+	b.namespaces.add("g_vml_","urn:schemas-microsoft-com:vml","#default#VML");b.namespaces.g_o_||b.namespaces.add("g_o_","urn:schemas-microsoft-com:office:office","#default#VML");if(!b.styleSheets.ex_canvas_){var a=b.createStyleSheet();a.owningElement.id="ex_canvas_";a.cssText="canvas{display:inline-block;overflow:hidden;text-align:left;width:300px;height:150px}g_vml_\\:*{behavior:url(#default#VML)}g_o_\\:*{behavior:url(#default#VML)}"}var c=b.getElementsByTagName("canvas"),d=0;for(;d<c.length;d++)this.initElement(c[d])},
+	initElement:function(b){if(!b.getContext){b.getContext=X;b.innerHTML="";b.attachEvent("onpropertychange",Z);b.attachEvent("onresize",$);var a=b.attributes;if(a.width&&a.width.specified)b.style.width=a.width.nodeValue+"px";else b.width=b.clientWidth;if(a.height&&a.height.specified)b.style.height=a.height.nodeValue+"px";else b.height=b.clientHeight}return b}};function Z(b){var a=b.srcElement;switch(b.propertyName){case "width":a.style.width=a.attributes.width.nodeValue+"px";a.getContext().clearRect();
+	break;case "height":a.style.height=a.attributes.height.nodeValue+"px";a.getContext().clearRect();break}}function $(b){var a=b.srcElement;if(a.firstChild){a.firstChild.style.width=a.clientWidth+"px";a.firstChild.style.height=a.clientHeight+"px"}}M.init();var N=[],B=0;for(;B<16;B++){var C=0;for(;C<16;C++)N[B*16+C]=B.toString(16)+C.toString(16)}function I(){return[[1,0,0],[0,1,0],[0,0,1]]}function y(b,a){var c=I(),d=0;for(;d<3;d++){var f=0;for(;f<3;f++){var h=0,g=0;for(;g<3;g++)h+=b[d][g]*a[g][f];c[d][f]=
+	h}}return c}function O(b,a){a.fillStyle=b.fillStyle;a.lineCap=b.lineCap;a.lineJoin=b.lineJoin;a.lineWidth=b.lineWidth;a.miterLimit=b.miterLimit;a.shadowBlur=b.shadowBlur;a.shadowColor=b.shadowColor;a.shadowOffsetX=b.shadowOffsetX;a.shadowOffsetY=b.shadowOffsetY;a.strokeStyle=b.strokeStyle;a.globalAlpha=b.globalAlpha;a.arcScaleX_=b.arcScaleX_;a.arcScaleY_=b.arcScaleY_;a.lineScale_=b.lineScale_}function P(b){var a,c=1;b=String(b);if(b.substring(0,3)=="rgb"){var d=b.indexOf("(",3),f=b.indexOf(")",d+
+	1),h=b.substring(d+1,f).split(",");a="#";var g=0;for(;g<3;g++)a+=N[Number(h[g])];if(h.length==4&&b.substr(3,1)=="a")c=h[3]}else a=b;return{color:a,alpha:c}}function aa(b){switch(b){case "butt":return"flat";case "round":return"round";case "square":default:return"square"}}function H(b){this.m_=I();this.mStack_=[];this.aStack_=[];this.currentPath_=[];this.fillStyle=this.strokeStyle="#000";this.lineWidth=1;this.lineJoin="miter";this.lineCap="butt";this.miterLimit=k*1;this.globalAlpha=1;this.canvas=b;
+	var a=b.ownerDocument.createElement("div");a.style.width=b.clientWidth+"px";a.style.height=b.clientHeight+"px";a.style.overflow="hidden";a.style.position="absolute";b.appendChild(a);this.element_=a;this.lineScale_=this.arcScaleY_=this.arcScaleX_=1}var i=H.prototype;i.clearRect=function(){this.element_.innerHTML=""};i.beginPath=function(){this.currentPath_=[]};i.moveTo=function(b,a){var c=this.getCoords_(b,a);this.currentPath_.push({type:"moveTo",x:c.x,y:c.y});this.currentX_=c.x;this.currentY_=c.y};
+	i.lineTo=function(b,a){var c=this.getCoords_(b,a);this.currentPath_.push({type:"lineTo",x:c.x,y:c.y});this.currentX_=c.x;this.currentY_=c.y};i.bezierCurveTo=function(b,a,c,d,f,h){var g=this.getCoords_(f,h),l=this.getCoords_(b,a),e=this.getCoords_(c,d);Q(this,l,e,g)};function Q(b,a,c,d){b.currentPath_.push({type:"bezierCurveTo",cp1x:a.x,cp1y:a.y,cp2x:c.x,cp2y:c.y,x:d.x,y:d.y});b.currentX_=d.x;b.currentY_=d.y}i.quadraticCurveTo=function(b,a,c,d){var f=this.getCoords_(b,a),h=this.getCoords_(c,d),g={x:this.currentX_+
+	0.6666666666666666*(f.x-this.currentX_),y:this.currentY_+0.6666666666666666*(f.y-this.currentY_)};Q(this,g,{x:g.x+(h.x-this.currentX_)/3,y:g.y+(h.y-this.currentY_)/3},h)};i.arc=function(b,a,c,d,f,h){c*=k;var g=h?"at":"wa",l=b+G(d)*c-v,e=a+F(d)*c-v,m=b+G(f)*c-v,r=a+F(f)*c-v;if(l==m&&!h)l+=0.125;var n=this.getCoords_(b,a),o=this.getCoords_(l,e),q=this.getCoords_(m,r);this.currentPath_.push({type:g,x:n.x,y:n.y,radius:c,xStart:o.x,yStart:o.y,xEnd:q.x,yEnd:q.y})};i.rect=function(b,a,c,d){this.moveTo(b,
+	a);this.lineTo(b+c,a);this.lineTo(b+c,a+d);this.lineTo(b,a+d);this.closePath()};i.strokeRect=function(b,a,c,d){var f=this.currentPath_;this.beginPath();this.moveTo(b,a);this.lineTo(b+c,a);this.lineTo(b+c,a+d);this.lineTo(b,a+d);this.closePath();this.stroke();this.currentPath_=f};i.fillRect=function(b,a,c,d){var f=this.currentPath_;this.beginPath();this.moveTo(b,a);this.lineTo(b+c,a);this.lineTo(b+c,a+d);this.lineTo(b,a+d);this.closePath();this.fill();this.currentPath_=f};i.createLinearGradient=function(b,
+	a,c,d){var f=new D("gradient");f.x0_=b;f.y0_=a;f.x1_=c;f.y1_=d;return f};i.createRadialGradient=function(b,a,c,d,f,h){var g=new D("gradientradial");g.x0_=b;g.y0_=a;g.r0_=c;g.x1_=d;g.y1_=f;g.r1_=h;return g};i.drawImage=function(b){var a,c,d,f,h,g,l,e,m=b.runtimeStyle.width,r=b.runtimeStyle.height;b.runtimeStyle.width="auto";b.runtimeStyle.height="auto";var n=b.width,o=b.height;b.runtimeStyle.width=m;b.runtimeStyle.height=r;if(arguments.length==3){a=arguments[1];c=arguments[2];h=g=0;l=d=n;e=f=o}else if(arguments.length==
+	5){a=arguments[1];c=arguments[2];d=arguments[3];f=arguments[4];h=g=0;l=n;e=o}else if(arguments.length==9){h=arguments[1];g=arguments[2];l=arguments[3];e=arguments[4];a=arguments[5];c=arguments[6];d=arguments[7];f=arguments[8]}else throw Error("Invalid number of arguments");var q=this.getCoords_(a,c),t=[];t.push(" <g_vml_:group",' coordsize="',k*10,",",k*10,'"',' coordorigin="0,0"',' style="width:',10,"px;height:",10,"px;position:absolute;");if(this.m_[0][0]!=1||this.m_[0][1]){var E=[];E.push("M11=",
+	this.m_[0][0],",","M12=",this.m_[1][0],",","M21=",this.m_[0][1],",","M22=",this.m_[1][1],",","Dx=",j(q.x/k),",","Dy=",j(q.y/k),"");var p=q,z=this.getCoords_(a+d,c),w=this.getCoords_(a,c+f),x=this.getCoords_(a+d,c+f);p.x=s.max(p.x,z.x,w.x,x.x);p.y=s.max(p.y,z.y,w.y,x.y);t.push("padding:0 ",j(p.x/k),"px ",j(p.y/k),"px 0;filter:progid:DXImageTransform.Microsoft.Matrix(",E.join(""),", sizingmethod='clip');")}else t.push("top:",j(q.y/k),"px;left:",j(q.x/k),"px;");t.push(' ">','<g_vml_:image src="',b.src,
+	'"',' style="width:',k*d,"px;"," height:",k*f,'px;"',' cropleft="',h/n,'"',' croptop="',g/o,'"',' cropright="',(n-h-l)/n,'"',' cropbottom="',(o-g-e)/o,'"'," />","</g_vml_:group>");this.element_.insertAdjacentHTML("BeforeEnd",t.join(""))};i.stroke=function(b){var a=[],c=P(b?this.fillStyle:this.strokeStyle),d=c.color,f=c.alpha*this.globalAlpha;a.push("<g_vml_:shape",' filled="',!!b,'"',' style="position:absolute;width:',10,"px;height:",10,'px;"',' coordorigin="0 0" coordsize="',k*10," ",k*10,'"',' stroked="',
+	!b,'"',' path="');var h={x:null,y:null},g={x:null,y:null},l=0;for(;l<this.currentPath_.length;l++){var e=this.currentPath_[l];switch(e.type){case "moveTo":a.push(" m ",j(e.x),",",j(e.y));break;case "lineTo":a.push(" l ",j(e.x),",",j(e.y));break;case "close":a.push(" x ");e=null;break;case "bezierCurveTo":a.push(" c ",j(e.cp1x),",",j(e.cp1y),",",j(e.cp2x),",",j(e.cp2y),",",j(e.x),",",j(e.y));break;case "at":case "wa":a.push(" ",e.type," ",j(e.x-this.arcScaleX_*e.radius),",",j(e.y-this.arcScaleY_*e.radius),
+	" ",j(e.x+this.arcScaleX_*e.radius),",",j(e.y+this.arcScaleY_*e.radius)," ",j(e.xStart),",",j(e.yStart)," ",j(e.xEnd),",",j(e.yEnd));break}if(e){if(h.x==null||e.x<h.x)h.x=e.x;if(g.x==null||e.x>g.x)g.x=e.x;if(h.y==null||e.y<h.y)h.y=e.y;if(g.y==null||e.y>g.y)g.y=e.y}}a.push(' ">');if(b)if(typeof this.fillStyle=="object"){var m=this.fillStyle,r=0,n={x:0,y:0},o=0,q=1;if(m.type_=="gradient"){var t=m.x1_/this.arcScaleX_,E=m.y1_/this.arcScaleY_,p=this.getCoords_(m.x0_/this.arcScaleX_,m.y0_/this.arcScaleY_),
+	z=this.getCoords_(t,E);r=Math.atan2(z.x-p.x,z.y-p.y)*180/Math.PI;if(r<0)r+=360;if(r<1.0E-6)r=0}else{var p=this.getCoords_(m.x0_,m.y0_),w=g.x-h.x,x=g.y-h.y;n={x:(p.x-h.x)/w,y:(p.y-h.y)/x};w/=this.arcScaleX_*k;x/=this.arcScaleY_*k;var R=s.max(w,x);o=2*m.r0_/R;q=2*m.r1_/R-o}var u=m.colors_;u.sort(function(ba,ca){return ba.offset-ca.offset});var J=u.length,da=u[0].color,ea=u[J-1].color,fa=u[0].alpha*this.globalAlpha,ga=u[J-1].alpha*this.globalAlpha,S=[],l=0;for(;l<J;l++){var T=u[l];S.push(T.offset*q+
+	o+" "+T.color)}a.push('<g_vml_:fill type="',m.type_,'"',' method="none" focus="100%"',' color="',da,'"',' color2="',ea,'"',' colors="',S.join(","),'"',' opacity="',ga,'"',' g_o_:opacity2="',fa,'"',' angle="',r,'"',' focusposition="',n.x,",",n.y,'" />')}else a.push('<g_vml_:fill color="',d,'" opacity="',f,'" />');else{var K=this.lineScale_*this.lineWidth;if(K<1)f*=K;a.push("<g_vml_:stroke",' opacity="',f,'"',' joinstyle="',this.lineJoin,'"',' miterlimit="',this.miterLimit,'"',' endcap="',aa(this.lineCap),
+	'"',' weight="',K,'px"',' color="',d,'" />')}a.push("</g_vml_:shape>");this.element_.insertAdjacentHTML("beforeEnd",a.join(""))};i.fill=function(){this.stroke(true)};i.closePath=function(){this.currentPath_.push({type:"close"})};i.getCoords_=function(b,a){var c=this.m_;return{x:k*(b*c[0][0]+a*c[1][0]+c[2][0])-v,y:k*(b*c[0][1]+a*c[1][1]+c[2][1])-v}};i.save=function(){var b={};O(this,b);this.aStack_.push(b);this.mStack_.push(this.m_);this.m_=y(I(),this.m_)};i.restore=function(){O(this.aStack_.pop(),
+	this);this.m_=this.mStack_.pop()};function ha(b){var a=0;for(;a<3;a++){var c=0;for(;c<2;c++)if(!isFinite(b[a][c])||isNaN(b[a][c]))return false}return true}function A(b,a,c){if(!!ha(a)){b.m_=a;if(c)b.lineScale_=W(V(a[0][0]*a[1][1]-a[0][1]*a[1][0]))}}i.translate=function(b,a){A(this,y([[1,0,0],[0,1,0],[b,a,1]],this.m_),false)};i.rotate=function(b){var a=G(b),c=F(b);A(this,y([[a,c,0],[-c,a,0],[0,0,1]],this.m_),false)};i.scale=function(b,a){this.arcScaleX_*=b;this.arcScaleY_*=a;A(this,y([[b,0,0],[0,a,
+	0],[0,0,1]],this.m_),true)};i.transform=function(b,a,c,d,f,h){A(this,y([[b,a,0],[c,d,0],[f,h,1]],this.m_),true)};i.setTransform=function(b,a,c,d,f,h){A(this,[[b,a,0],[c,d,0],[f,h,1]],true)};i.clip=function(){};i.arcTo=function(){};i.createPattern=function(){return new U};function D(b){this.type_=b;this.r1_=this.y1_=this.x1_=this.r0_=this.y0_=this.x0_=0;this.colors_=[]}D.prototype.addColorStop=function(b,a){a=P(a);this.colors_.push({offset:b,color:a.color,alpha:a.alpha})};function U(){}G_vmlCanvasManager=
+	M;CanvasRenderingContext2D=H;CanvasGradient=D;CanvasPattern=U})();
+
+}//	---------------------------------------------------------------------------
 //	jWebSocket Channel PlugIn (uses jWebSocket Client and Server)
 //	(C) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
 //	---------------------------------------------------------------------------
@@ -7062,6 +7745,1292 @@ jws.FileSystemPlugIn = {
 
 // add the jWebSocket FileSystem PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.FileSystemPlugIn );
+//  ---------------------------------------------------------------------------
+//  jWebSocket - Dependency Injection Container
+//  Copyright (c) 2012 Innotrade GmbH, jWebSocket.org
+//  ---------------------------------------------------------------------------
+//  This program is free software; you can redistribute it and/or modify it
+//  under the terms of the GNU Lesser General Public License as published by the
+//  Free Software Foundation; either version 3 of the License, or (at your
+//  option) any later version.
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
+//  more details.
+//  You should have received a copy of the GNU Lesser General Public License along
+//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//  ---------------------------------------------------------------------------
+
+/**
+ * Author: Rolando Santamaria Maso <kyberneees@gmail.com>
+ * 
+ * This library depends of cujojs-aop (http://cujojs.com/)
+ **/
+jws.ioc = {};
+
+/**
+ * This class is used to reference services in dependencies
+ **/
+jws.ioc.ServiceReference = function ServiceReference(aName){
+	this._name = aName;
+}
+
+jws.ioc.ServiceReference.prototype.getName = function(){
+	return this._name;
+}
+  
+/**
+ * This class is used to reference parameters in dependencies
+ **/
+jws.ioc.ParameterReference = function ParameterReference(aName){
+	this._name = aName;
+}
+
+jws.ioc.ParameterReference.prototype.getName = function(){
+	return this._name;
+}
+
+/**
+ * This class is used to reference DOM elements in dependencies
+ **/
+jws.ioc.DOMReference = function DOMReference(aId){
+	this._id = aId;
+}
+
+jws.ioc.DOMReference.prototype.getId = function(){
+	return this._id;
+}
+
+/**
+ * This class is used to pass the result of method's execution as dependencies
+ **/
+jws.ioc.MethodExecutionReference = function MethodExecutionReference(aSource, aMethodName, aArguments){
+	this._source = aSource;
+	this._methodName = aMethodName;
+	this._arguments = aArguments;
+}
+
+jws.ioc.MethodExecutionReference.prototype.getSource = function(){
+	return this._source;
+}
+
+jws.ioc.MethodExecutionReference.prototype.setSource = function(aSource){
+	this._source = aSource;
+	
+	return this;
+}
+
+jws.ioc.MethodExecutionReference.prototype.getMethodName = function(){
+	return this._methodName;
+}
+
+jws.ioc.MethodExecutionReference.prototype.setMethodName = function(aMethodName){
+	this._methodName = aMethodName;
+	
+	return this;
+}
+
+jws.ioc.MethodExecutionReference.prototype.getArguments = function(){
+	return this._arguments;
+}
+
+jws.ioc.MethodExecutionReference.prototype.setArguments = function(aArguments){
+	this._arguments = aArguments;
+	
+	return this;
+}
+
+/*
+ * This class is used as a map for service"s instances
+ */
+jws.ioc.ServiceContainer = function ServiceContainer(){
+	this._services   = {};
+	this._parameters = {};
+};
+
+jws.ioc.ServiceContainer.prototype.getParameter = function (aName){
+	if (this.hasParameter(aName)){
+		return this._parameters[aName];
+	}
+      
+	throw new Error("IndexOutOfBound:" + aName);
+}
+
+jws.ioc.ServiceContainer.prototype.setParameter = function (aName, aValue){
+	this._parameters[aName] = aValue;
+
+	return this;
+}
+
+jws.ioc.ServiceContainer.prototype.getService = function (aName){
+	if (this.hasService(aName)){
+		return this._services[aName];
+	}
+
+	throw new Error("IndexOutOfBound:"+aName);
+}
+
+jws.ioc.ServiceContainer.prototype.setService = function (aName, aService){
+	this._services[aName] = aService;
+
+	return this;
+}
+
+jws.ioc.ServiceContainer.prototype.hasParameter = function(aName){
+	if (!aName){
+		throw new Error("RequiredParameter:name");
+	}
+      
+	if (undefined !== this._parameters[aName])
+		return true;
+
+	return false;
+}
+
+jws.ioc.ServiceContainer.prototype.hasService = function(aName){
+	if (!aName){
+		throw new Error("RequiredParameter:name");
+	}
+	
+	if (undefined !== this._services[aName])
+		return true;
+
+	return false;
+}
+
+jws.ioc.ServiceContainer.prototype.removeParameter = function (aName){
+	if (!aName){
+		throw new Error("RequiredParameter:name");
+	}
+	
+	var lResult = null;
+	if (undefined !== this._parameters[aName]){
+		lResult = this._parameters[aName];
+		delete this._parameters[aName];
+	}
+	
+	return lResult;
+}
+
+jws.ioc.ServiceContainer.prototype.removeService = function (aName){
+	if (!aName){
+		throw new Error("RequiredParameter:name");
+	}
+	
+	var lResult = null;
+	if (undefined !== this._services[aName]){
+		lResult = this._services[aName];
+		delete this._services[aName];
+	}
+	
+	return lResult;
+}
+
+/*
+ * This class is used to define a service
+ */
+jws.ioc.ServiceDefinition = function ServiceDefinition(aConfig){
+	this._name = null;
+	this._className = null;
+	this._shared = true;
+	this._initArguments = null;
+	this._methodCalls = new Array();
+	this._factoryService = null;
+	this._factoryMethod = null;
+	this._initMethod = null;
+	this._destroyMethod = null;
+	this._onCreate = null;
+	this._onRemove = null;
+	this._extend = null;
+	this._aspects = new Array();
+
+	if (undefined != aConfig.className){
+		this._className = aConfig.className;
+	} 
+	
+	if (undefined != aConfig.name){
+		this._name = aConfig.name;
+	} 
+
+	if (undefined != aConfig.shared){
+		this._shared = aConfig.shared;
+	}
+	
+	if (undefined != aConfig.factoryService){
+		this._factoryService = aConfig.factoryService;
+	}
+	
+	if (undefined != aConfig.factoryMethod){
+		this._factoryMethod = aConfig.factoryMethod;
+	}
+	
+	if (undefined != aConfig.initArguments){
+		this._initArguments = aConfig.initArguments;
+	}
+	
+	if (undefined != aConfig.initMethod){
+		this._initMethod = aConfig.initMethod;
+	}
+	
+	if (undefined != aConfig.destroyMethod){
+		this._destroyMethod = aConfig.destroyMethod;
+	}
+	
+	if ("function" == typeof(aConfig.onCreate)){
+		this._onCreate = aConfig.onCreate;
+	}
+	
+	if ("function" == typeof(aConfig.onRemove)){
+		this._onRemove = aConfig.onRemove;
+	}
+	
+	if (aConfig.methodCalls instanceof Array){
+		this._methodCalls = aConfig.methodCalls;
+	}
+	
+	if (null != aConfig.extend){
+		this._extend = aConfig.extend;
+	}
+	
+	if (null != aConfig.aspects){
+		this._aspects = aConfig.aspects;
+	}
+}
+
+jws.ioc.ServiceDefinition.prototype.getName = function(){
+	return this._name;
+}
+
+jws.ioc.ServiceDefinition.prototype.setName = function (aName){
+	this._name = aName;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getClassName = function (){
+	return this._className;
+}
+
+jws.ioc.ServiceDefinition.prototype.setClassName = function (aClassName){
+	this._className = aClassName;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.isShared = function (){
+	return this._shared;
+}
+
+jws.ioc.ServiceDefinition.prototype.setShared = function (aShared){
+	this._shared = aShared;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getFactoryMethod = function (){
+	return this._factoryMethod;
+}
+
+jws.ioc.ServiceDefinition.prototype.setFactoryMethod = function (aFactoryMethod){
+	this._factoryMethod = aFactoryMethod;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getFactoryService = function (){
+	return this._factoryService;
+}
+
+jws.ioc.ServiceDefinition.prototype.setFactoryService = function (aFactoryService){
+	this._factoryService = aFactoryService;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getInitArguments = function (){
+	return this._initArguments;
+}
+
+jws.ioc.ServiceDefinition.prototype.setInitArguments = function (aArguments){
+	this._initArguments = aArguments;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getOnCreate = function (){
+	return this._onCreate;
+}
+
+jws.ioc.ServiceDefinition.prototype.setOnCreate = function (aFunction){
+	this._onCreate = aFunction;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getOnRemove = function (){
+	return this._onRemove;
+}
+
+jws.ioc.ServiceDefinition.prototype.setOnRemove = function (aFunction){
+	this._onRemove = aFunction;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getInitMethod = function (){
+	return this._initMethod;
+}
+
+jws.ioc.ServiceDefinition.prototype.setInitMethod = function (aMethodName){
+	this._initMethod = aMethodName;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getDestroyMethod = function (){
+	return this._destroyMethod;
+}
+
+jws.ioc.ServiceDefinition.prototype.setDestroyMethod = function (aMethodName){
+	this._destroyMethod = aMethodName;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getExtend = function (){
+	return this._extend;
+}
+
+jws.ioc.ServiceDefinition.prototype.setExtend = function (aServiceName){
+	this._extend = aServiceName;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getAspects = function (){
+	return this._aspects;
+}
+
+jws.ioc.ServiceDefinition.prototype.setAspects = function (aAspects){
+	this._aspects = aAspects;
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.addAspect = function (aPointcut, aAdvices){
+	if (!aPointcut){
+		throw new Error("RequiredParameter:pointcut");
+	}
+	if (!aAdvices){
+		throw new Error("RequiredParameter:advices");
+	}
+	
+	this._aspects.push({
+		pointcut: aPointcut, 
+		advices: aAdvices
+	})
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.addMethodCall = function (aMethod, aArguments){
+	if (!aMethod){
+		throw new Error("RequiredParameter:method");
+	}
+	
+	this._methodCalls.push({
+		method: aMethod,
+		arguments: aArguments
+	});
+
+	return this;
+}
+
+jws.ioc.ServiceDefinition.prototype.getMethodCalls = function (){
+	return this._methodCalls;
+}
+
+/*
+ * This class represents the dependency injection container
+ */
+jws.ioc.ServiceContainerBuilder = function ServiceContainerBuilder(aConfig){
+	this._definitions = {};
+	this._id = null;
+	
+	if (aConfig.id){
+		this._id = aConfig.id;
+	} else {
+		throw new Error("RequiredParameter:{config.id}");
+	}
+
+	if (aConfig.container){
+		this._container = aConfig.container;
+	} else {
+		throw new Error("RequiredParameter:{config.container}");
+	}
+
+	if (aConfig.definitions){
+		this._definitions = aConfig.definitions;
+	}
+	
+	// Logging the service container operations using AOP
+	var lRegExp = new RegExp(/.*/); 
+	aop.around(this, lRegExp, function(aArgs){
+		jws.console.debug(">> " + this._id + ": Calling method '" + aArgs.method + "' with arguments '" + JSON.stringify(aArgs.args) + "'...");
+		var lResponse = aArgs.proceed();
+		jws.console.debug("<< " + this._id + ": Response for '" + aArgs.method + "' method call: "+ JSON.stringify(lResponse));
+		 
+		return lResponse;
+	});
+}	
+
+jws.ioc.ServiceContainerBuilder.prototype.getParameter = function (aName){
+	return this._container.getParameter(aName);
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.getServiceDefinition = function (aName){
+	if (this.hasServiceDefinition(aName)){
+		return this._definitions[aName];
+	}
+
+	throw new Error("IndexOutOfBound:"+aName);
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.setParameter = function (aName, aValue){
+	this._container.setParameter(aName, aValue);
+
+	return this;
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.setService = function (aName, aValue){
+	this._container.setService(aName, aValue);
+
+	return this;
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.getService = function (aName){
+	var lResult = null;
+	try {
+		lResult =  this._container.getService(aName);
+	} catch(err) {
+		switch (err.message)
+		{
+			case "IndexOutOfBound:"+aName:
+				var lServiceDef = this.getServiceDefinition(aName);
+				lResult = this.createService(lServiceDef);
+				break;
+			default:
+				throw err;
+				break;
+		}
+	}
+	
+	return lResult;
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.hasParameter = function (aName){
+	return this._container.hasParameter(aName);
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.hasService = function(aName){
+	return this.hasServiceDefinition(aName) || this._container.hasService(aName);
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.removeParameter = function (aName){
+	return this._container.removeParameter(aName);
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.removeService = function (aName){
+	var lService = null;
+	
+	try{
+		lService = this._container.removeService(aName);
+	} catch(err){
+	//Service instance not created already
+	}
+	
+	var lDef = this._definitions[aName];
+	if (lDef){
+		delete this._definitions[aName];
+		
+		//Removing service definition
+		if (null != lDef.getOnRemove()){
+			//Executing the callback
+			lDef.getOnRemove()(lService);
+		}
+	}
+	
+	return lService;
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.destroy = function(){
+	var lDef = null;
+	var lService = null;
+	
+	for (var lName in this._definitions){
+		lDef = this._definitions[lName];
+		
+		lService = this.removeService(lName);
+		//Supporting destroy method
+		if (null != lService && null != lDef.getDestroyMethod()){
+			lService[lDef.getDestroyMethod()]();
+		}
+	}
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.addServiceDefinition = function (aServiceDefinition){
+	var lName = aServiceDefinition.getName();
+	
+	//Generate a name for anonymous services
+	if (null == lName){
+		//Attach random posfix to avoid duplicate names
+		var lPostfix = "";
+			
+		//Using the classname as name if missing
+		if (null != aServiceDefinition.getClassName()){
+			lName = aServiceDefinition.getClassName().toString().toLowerCase();
+		}
+		
+		//Adding a postfix to avoid duplicate indexes
+		while(this.hasServiceDefinition(lName + lPostfix)) {
+			lPostfix = "#" + parseInt(Math.random() * 10000000);
+		} 
+		
+		//Setting the generated name
+		aServiceDefinition.setName(lName + lPostfix);
+		lName = lName + lPostfix;
+	}
+	
+	if (this._container.hasService(lName)){
+		this._container.removeService(lName);
+	}
+
+	this._definitions[lName] = aServiceDefinition;
+      
+	return this;
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.register = function (aName, aClassName){
+	return this.addServiceDefinition(
+		new jws.ioc.ServiceDefinition({
+			name: aName,
+			className: aClassName
+		})
+		).getServiceDefinition(aName);
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.getServiceDefinition = function (aName){
+	if (this.hasServiceDefinition(aName)){
+		return this._definitions[aName];
+	}
+      
+	throw new Error("IndexOutOfBound:"+aName);
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.hasServiceDefinition = function (aName){
+	if (!aName){
+		throw new Error("RequiredParameter:name");
+	}
+	
+	if (undefined !== this._definitions[aName]){
+		return true;
+	}
+
+	return false;
+}
+
+jws.ioc.ServiceContainerBuilder.prototype._parseArguments = function(aArguments){
+	if (typeof(aArguments) != "object"){
+		return aArguments;
+	}
+	
+	if (aArguments instanceof jws.ioc.ServiceReference){
+		return this.getService(aArguments.getName());
+	} else if (aArguments instanceof jws.ioc.ServiceDefinition){
+		this.addServiceDefinition(aArguments);
+		return this.getService(aArguments.getName());
+	} else if (aArguments instanceof jws.ioc.ParameterReference){
+		return this.getParameter(aArguments.getName());
+	} else if (aArguments instanceof jws.ioc.ServiceDefinition){
+		return this.getService(aArguments.getName());
+	} else if (aArguments instanceof jws.ioc.DOMReference){
+		return document.getElementById(aArguments.getId());
+	} else if (aArguments instanceof jws.ioc.MethodExecutionReference){
+		var lMethod = aArguments.getMethodName();
+		var lSource = aArguments.getSource();
+		var lMethodArgs = aArguments.getArguments();
+			
+		if (lSource instanceof jws.ioc.ServiceReference ||
+			lSource instanceof jws.ioc.ParameterReference ||
+			lSource instanceof jws.ioc.DOMReference ||
+			lSource instanceof jws.ioc.MethodExecutionReference){
+			
+			lSource = this._parseArguments(lSource);
+		}
+		lMethodArgs = this._parseArguments(lMethodArgs);
+			
+		return lSource[lMethod](lMethodArgs);
+	}
+	
+	var lArgs;
+	if (aArguments instanceof Array){
+		lArgs = new Array();
+		
+		var lEnd = aArguments.length;
+		for (var lIndex = 0; lIndex < lEnd; lIndex++) {
+			lArgs[lIndex] = this._parseArguments(aArguments[lIndex]);
+		}
+	} else {
+		lArgs = {}
+	
+		for (lKey in aArguments){
+			lArgs[lKey] = this._parseArguments(aArguments[lKey]);
+		}
+	}
+
+	return lArgs;
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.createService =  function (aServiceDefinition){
+	var lService = null;
+	var lDef = aServiceDefinition;
+	var lIndex = 0;
+	
+	//Supporting the service name as parameter
+	if ("string" == typeof(lDef)){
+		lDef = this.getServiceDefinition(lDef);
+	}
+	
+	//Supporting extend feature for service definitions
+	if (null != lDef.getExtend()){
+		lDef = this.extendDefinition(lDef, this.getServiceDefinition(lDef.getExtend()));
+	}
+	
+	//Supporting factory-method
+	if (null != lDef.getFactoryMethod()){
+		var lFactoryMethod = lDef.getFactoryMethod();
+		var lFactoryMethodArgs = null;
+		
+		if (typeof(lFactoryMethod) == "object"){
+			lFactoryMethodArgs = this._parseArguments(lFactoryMethod.arguments);
+			lFactoryMethod = lFactoryMethod.method;
+		}
+		
+		if (null == lDef.getFactoryService()){
+			lService = eval(lDef.getClassName() + "[lFactoryMethod](lFactoryMethodArgs);");
+		} else {
+			//Supporting factory services
+			lService = this.getService(lDef.getFactoryService())[lFactoryMethod](lFactoryMethodArgs);
+		}
+	
+		//Adding the service name in the service instance
+		lService["__SERVICE_NAME__"] = lDef.getName();
+		
+		//Applying aspects
+		this._applyAspects(lDef.getAspects(), lService);
+	} else {
+		lService = eval("new " + lDef.getClassName() + "();");
+		
+		//Adding the service name in the service instance
+		lService["__SERVICE_NAME__"] = lDef.getName();
+	
+		//Applying aspects before initialize the service
+		this._applyAspects(lDef.getAspects(), lService);
+		
+		//Supporting init-method
+		var lInitMethod = lDef.getInitMethod();
+		if (null != lDef.getInitArguments()){
+			if (null == lInitMethod){
+				//Setting default init-method for more productivity
+				lInitMethod = "initialize";
+			}
+			lService[lInitMethod](this._parseArguments(lDef.getInitArguments()));
+		} else if (null != lInitMethod) {
+			lService[lInitMethod]();
+		}
+	}
+
+	//Executing method calls
+	var lMethodCalls = lDef.getMethodCalls();
+	for (lIndex = 0; lIndex < lMethodCalls.length; lIndex++){
+		if (null != lMethodCalls[lIndex].arguments){
+			lService[lMethodCalls[lIndex].method](this._parseArguments(lMethodCalls[lIndex].arguments));
+		} else {
+			lService[lMethodCalls[lIndex].method]();
+		}
+	}
+	
+	//Saving service if shared
+	if (true == lDef.isShared())	{
+		this._container.setService(lDef.getName(), lService);
+	}
+	
+	if (null != lDef.getOnCreate()){
+		//Calling the OnCreate callback passing the created service as argument
+		lDef.getOnCreate()(lService);
+	}
+
+	return lService;
+}
+
+jws.ioc.ServiceContainerBuilder.prototype._applyAspects = function(aAspects, aService){
+	//Adding aspects before initialize the service
+	var lEnd = aAspects.length;
+	var lAspect = null;
+	
+	if (lEnd > 0){
+		for (var lIndex = 0; lIndex < lEnd; lIndex++) {
+			lAspect = aAspects[lIndex];
+			aop.add(aService, lAspect.pointcut, lAspect.advices);
+		}
+	}
+}
+
+jws.ioc.ServiceContainerBuilder.prototype.extendDefinition = function(aChild, aParent){
+	//Require to return a prototype to allow runtime changes on the parent definition property values
+	var lExtendedDef = new jws.ioc.ServiceDefinition({
+		name: aChild.getName(),
+		className: aChild.getClassName(),
+		shared: aChild.getShared(),
+		extend: aChild.getExtend(),
+		initArguments: (null != aChild.getInitArguments()) ? aChild.getInitArguments() : aParent.getInitArguments(),
+		initMethod: (null != aChild.getInitMethod()) ? aChild.getInitMethod() : aParent.getInitMethod(),
+		destroyMethod: (null != aChild.getDestroyMethod()) ? aChild.getDestroyMethod() : aParent.getDestoryMethod(),
+		factoryMethod: (null != aChild.getFactoryMethod()) ? aChild.getFactoryMethod() : aParent.getFactoryMethod(),
+		methodCalls: (0 < aChild.getMethodCalls().length) ? aChild.getMethodCalls() : aParent.getMethodCalls(),
+		onCreate: (null != aChild.getOnCreate()) ? aChild.getOnCreate() : aParent.getOnCreate(),
+		onRemove: (null != aChild.getOnRemove()) ? aChild.getOnRemove() : aParent.getOnRemove(),
+		aspects: (0 < aChild.getAspects().length) ? aChild.getAspects() : aParent.getAspects()
+	});
+	
+	return lExtendedDef;
+}
+
+// Create the service container default instance
+jws.sc = new jws.ioc.ServiceContainerBuilder({
+	id: "jws.sc",
+	container: new jws.ioc.ServiceContainer()
+});
+//	---------------------------------------------------------------------------
+//  jWebSocket ItemStorage Client Plug-In
+//	---------------------------------------------------------------------------
+
+jws.ItemStoragePlugIn = {
+
+	// namespace for item storage plugin
+	// if namespace is changed update server plug-in accordingly!
+	NS: jws.NS_BASE + ".plugins.itemstorage",
+	
+	processToken: function( aToken ) {
+		// check if namespace matches
+		if( aToken.ns == jws.ItemStoragePlugIn.NS ) {
+			if ( "event" == aToken.type ){
+				if ( "itemSaved" == aToken.name ){
+					if ( this.OnItemSaved ){
+						this.OnItemSaved(aToken);
+					} 
+				} else if ( "itemRemoved" == aToken.name ){
+					if ( this.OnItemRemoved ){
+						this.OnItemRemoved(aToken);
+					} 
+				} else if ( "collectionCleaned" == aToken.name ){
+					if ( this.OnCollectionCleaned ){
+						this.OnCollectionCleaned(aToken);
+					} 
+				} else if ( "collectionRestarted" == aToken.name ){
+					if ( this.OnCollectionRestarted ){
+						this.OnCollectionRestarted(aToken);
+					} 
+				} else if ( "collectionRemoved" == aToken.name ){
+					if ( this.OnCollectionRemoved ){
+						this.OnCollectionRemoved(aToken);
+					} 
+				} else if ( "collectionSaved" == aToken.name ){
+					if ( this.OnCollectionSaved ){
+						this.OnCollectionSaved(aToken);
+					} 
+				} else if ( "authorization" == aToken.name ){
+					if ( this.OnCollectionAuthorization ){
+						this.OnCollectionAuthorization(aToken);
+					} 
+				} else if ( "subscription" == aToken.name ){
+					if ( this.OnCollectionSubscription ){
+						this.OnCollectionSubscription(aToken);
+					} 
+				} else if ( "unsubscription" == aToken.name ){
+					if ( this.OnCollectionUnsubscription ){
+						this.OnCollectionUnsubscription(aToken);
+					} 
+				} 
+			}
+		}
+	},
+	
+	//:m:*:createCollection
+	//:d:en:Creates an item collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aItemType:String:The collection item type
+	//:a:en::aSecretPwd:String:The collection secret password
+	//:a:en::aAccessPwd:String:The collection access password
+	//:a:en::aIsPrivate:Boolean:Indicates if the collection will be privated or public
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.capacity:Integer:The collection capacity. A collection by default has unlimited capacity.
+	//:a:en::aOptions.capped:Boolean:Indicates if the collection is capped. 
+	//:r:*:::void:none
+	createCollection: function(aCollectionName, aItemType, aSecretPwd, aAccessPwd, aIsPrivate, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "createCollection",
+				collectionName: aCollectionName,
+				itemType: aItemType,
+				secretPassword: aSecretPwd,
+				accessPassword: aAccessPwd,
+				"private": aIsPrivate
+			};
+			if (aOptions.capacity){
+				lToken.capacity = aOptions.capacity;
+			}
+			if (aOptions.capped){
+				lToken.capped = aOptions.capped;
+			}
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:removeCollection
+	//:d:en:Removes an item collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aSecretPwd:String:The collection secret password
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	removeCollection: function(aCollectionName, aSecretPwd, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "removeCollection",
+				collectionName: aCollectionName,
+				secretPassword: aSecretPwd
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:existsCollection
+	//:d:en:Indicates if an item collection exists
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	existsCollection: function(aCollectionName, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "existsCollection",
+				collectionName: aCollectionName
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+
+	//:m:*:subscribeCollection
+	//:d:en:Subscribe to an item collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aAccessPwd:String:The collection access password
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	subscribeCollection: function(aCollectionName, aAccessPwd, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "subscribe",
+				collectionName: aCollectionName,
+				accessPassword: aAccessPwd
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:unsubscribeCollection
+	//:d:en:Unsubscribe from an item collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	unsubscribeCollection: function(aCollectionName, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "unsubscribe",
+				collectionName: aCollectionName
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:authorizeCollection
+	//:d:en:Authorize to an item collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aSecretPwd:String:The collection secret password
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	authorizeCollection: function(aCollectionName, aSecretPwd, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "authorize",
+				collectionName: aCollectionName,
+				secretPassword: aSecretPwd
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:clearCollection
+	//:d:en:Clear an item collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aSecretPwd:String:The collection secret password
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	clearCollection: function(aCollectionName, aSecretPwd, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "clearCollection",
+				collectionName: aCollectionName,
+				secretPassword: aSecretPwd
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:editCollection
+	//:d:en:Edit an item collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aSecretPwd:String:The collection secret password
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.newSecretPassword:String:Optional argument that override the collection 'secretPassword' attribute value.
+	//:a:en::aOptions.accessPassword:String:Optional argument that override the collection 'accessPassword' attribute value.
+	//:a:en::aOptions.private:String:Optional argument that override the collection 'private' attribute value.
+	//:a:en::aOptions.capped:Boolean:Optional argument that override the collection 'capped' attribute value.
+	//:r:*:::void:none	
+	editCollection: function(aCollectionName, aSecretPwd, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "editCollection",
+				collectionName: aCollectionName,
+				secretPassword: aSecretPwd
+			};
+			if (aOptions.newSecretPassword){
+				lToken.newSecretPassword = aOptions.newSecretPassword;
+			}
+			if (aOptions.accessPassword){
+				lToken.accessPassword = aOptions.accessPassword;
+			}
+			if (aOptions["private"]){
+				lToken["private"] = aOptions["private"];
+			}
+			if (aOptions.capped){
+				lToken.capped = aOptions.capped;
+			}
+			if (aOptions.capacity){
+				lToken.capacity = aOptions.capacity;
+			}
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:restartCollection
+	//:d:en:Restart an item collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aSecretPwd:String:The collection secret password
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	restartCollection: function(aCollectionName, aSecretPwd, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "restartCollection",
+				collectionName: aCollectionName,
+				secretPassword: aSecretPwd
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:getCollectionNames
+	//:d:en:Get the name of existing collections
+	//:a:en::aUserOnly:Boolean:If TRUE, only the user collections name are returned. 
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.offset:Integer:The number of collection names to be discarded on the result. Default value is 0
+	//:a:en::aOptions.length:Integer:The maximum number of collection names to be returned. Default value is 10 
+	//:r:*:::void:none
+	getCollectionNames: function(aUserOnly, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "getCollectionNames",
+				userOnly: aUserOnly || false
+			};
+			if (!aOptions){
+				aOptions = {};
+			}
+			if (aOptions.offset){
+				lToken.offset = aOptions.offset;
+			}
+			if (aOptions.length){
+				lToken.length = aOptions.length;
+			}
+			
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:findCollection
+	//:d:en:Find an item collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	findCollection: function(aCollectionName, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "findCollection",
+				collectionName: aCollectionName
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+
+	//:m:*:saveItem
+	//:d:en:Saves an item on a target collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aItem:Object:The item to be saved
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	saveItem: function(aCollectionName, aItem, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "saveItem",
+				collectionName: aCollectionName,
+				item: aItem
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:removeCollection
+	//:d:en:Removes an item on a target collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aPK:String:The primary key of the item to be removed
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	removeItem: function(aCollectionName, aPK, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "removeItem",
+				collectionName: aCollectionName,
+				itemPK: aPK
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:findItemByPK
+	//:d:en:Find an item by primary key
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aPK:String:The item primary key
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	findItemByPK: function(aCollectionName, aPK, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "findItemByPK",
+				collectionName: aCollectionName,
+				itemPK: aPK
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:existsItem
+	//:d:en:Indicates if an item exists on a target collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aPK:String:The item primary key
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	existsItem: function(aCollectionName, aPK, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "existsItem",
+				collectionName: aCollectionName,
+				itemPK: aPK
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:listItems
+	//:d:en:List items from a collection
+	//:a:en::aCollectionName:String:The item collection name
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.offset:Integer:The listing start position
+	//:a:en::aOptions.length:Integer:The maximum number of items to be listed 
+	//:r:*:::void:none
+	listItems: function(aCollectionName, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "listItems",
+				collectionName: aCollectionName,
+				offset: aOptions["offset"] || 0,
+				length: aOptions["length"] || 10
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:findItemDefinition
+	//:d:en:Finds an item definition. 
+	//:a:en::aItemType: The item type value
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	findItemDefinition: function (aItemType, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "findDefinition",
+				itemType: aItemType
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:existsItemDefinition
+	//:d:en:Indicates if an item definition exists
+	//:a:en::aItemType: The item type value
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	existsItemDefinition: function (aItemType, aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "existsDefinition",
+				itemType: aItemType
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+	//:m:*:listItemDefinitions
+	//:d:en:List item definitions
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.offset:Integer:The listing start position
+	//:a:en::aOptions.length:Integer:The maximum number of item definitions to be listed 
+	//:r:*:::void:none
+	listItemDefinitions: function (aOptions){
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			var lToken = {
+				ns: jws.ItemStoragePlugIn.NS,
+				type: "listDefinitions",
+				offset: aOptions["offset"] || 0,
+				length: aOptions["length"] || 10
+			};
+			this.sendToken( lToken,	aOptions );
+		}	
+		return lRes;
+	},
+	
+
+	//:m:*:setItemStorageCallbacks
+	//:d:en:Sets the item storage plug-in lifecycle callbacks
+	//:a:en::aListeners:Object:JSONObject containing the item storage plug-in lifecycle callbacks
+	//:a:en::aListeners.OnItemSaved:Function:Called when an item has been saved on a subscribed collection
+	//:a:en::aListeners.OnItemRemoved:Function:Called when an item has been removed on a subscribed collection
+	//:a:en::aListeners.OnCollectionCleaned:Function:Called when a subscribed collection has been cleaned
+	//:a:en::aListeners.OnCollectionRemoved:Function:Called when a subscribed collection has been removed
+	//:a:en::aListeners.OnCollectionRestarted:Function:Called when a subscribed collection has been restarted
+	//:a:en::aListeners.OnCollectionSaved:Function:Called when a subscribed collection has been saved (edited)
+	//:a:en::aListeners.OnCollectionSubscription:Function:Called when a new client gets subscribed to a subscribed collection
+	//:a:en::aListeners.OnCollectionUnsubscription:Function:Called when a client gets unsubscribed from a subscribed collection
+	//:a:en::aListeners.OnCollectionAuthorization:Function:Called when a client gets authorized to a subscribed collection
+	//:r:*:::void:none
+	setItemStorageCallbacks: function( aListeners ) {
+		if( !aListeners ) {
+			aListeners = {};
+		}
+		if( aListeners.OnItemSaved !== undefined ) {
+			this.OnItemSaved = aListeners.OnItemSaved;
+		}
+		if( aListeners.OnItemRemoved !== undefined ) {
+			this.OnItemRemoved = aListeners.OnItemRemoved;
+		}
+		if( aListeners.OnCollectionCleaned !== undefined ) {
+			this.OnCollectionCleaned = aListeners.OnCollectionCleaned;
+		}
+		if( aListeners.OnCollectionRestarted !== undefined ) {
+			this.OnCollectionRestarted = aListeners.OnCollectionRestarted;
+		}
+		if( aListeners.OnCollectionRemoved !== undefined ) {
+			this.OnCollectionRemoved = aListeners.OnCollectionRemoved;
+		}
+		if( aListeners.OnCollectionSaved !== undefined ) {
+			this.OnCollectionSaved = aListeners.OnCollectionSaved;
+		}
+		if( aListeners.OnCollectionSubscription !== undefined ) {
+			this.OnCollectionSubscription = aListeners.OnCollectionSubscription;
+		}
+		if( aListeners.OnCollectionAuthorization !== undefined ) {
+			this.OnCollectionAuthorization = aListeners.OnCollectionAuthorization;
+		}
+		if( aListeners.OnCollectionUnsubscription !== undefined ) {
+			this.OnCollectionUnsubscription = aListeners.OnCollectionUnsubscription;
+		}
+	}
+}
+
+// add the jWebSocket ItemStoragePlugIn into the TokenClient class
+jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ItemStoragePlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Sample Client PlugIn (uses jWebSocket Client and Server)
 //	(C) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath

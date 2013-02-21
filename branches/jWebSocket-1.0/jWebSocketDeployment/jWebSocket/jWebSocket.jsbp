@@ -19,7 +19,7 @@
               saveAlwaysUseDefaultEncoding="false">
 <files>
 	<file srcPath="..\..\jWebSocketClient\web\res\css\jwebsocket.css" obfsPath="..\..\jWebSocketClient\web\res\css\jwebsocket_min.css" description="CSS Files" ssParams="0" ssScriptLangs="" ssElemsStartWith="" ssElems="" csParams="1016320" csCustomElemsFile="" csEscapeStrPercent="" csRemoveWSNonJSorCSSExceptElems="" csMaxObfsLineLength="" excluded="false"/>
-	<file srcPath="..\..\jWebSocketClient\web\res\js\jWebSocket.js" obfsPath="" description="JavaScript Files" ssParams="0" ssScriptLangs="" ssElemsStartWith="" ssElems="" csParams="7681" csCustomElemsFile="" csEscapeStrPercent="" csRemoveWSNonJSorCSSExceptElems="" csMaxObfsLineLength="" excluded="false"/>
+	<file srcPath="..\..\jWebSocketClient\web\res\js\jWebSocket.js" obfsPath="..\..\jWebSocketClient\web\res\js\jWebSocket_min.js" description="JavaScript Files" ssParams="0" ssScriptLangs="" ssElemsStartWith="" ssElems="" csParams="7681" csCustomElemsFile="" csEscapeStrPercent="" csRemoveWSNonJSorCSSExceptElems="" csMaxObfsLineLength="" excluded="false"/>
 	<file srcPath="..\..\jWebSocketClient\web\res\js\jWebSocket_Bundle.js" obfsPath="..\..\jWebSocketClient\web\res\js\jWebSocket_Bundle_min.js" description="JavaScript Files" ssParams="0" ssScriptLangs="" ssElemsStartWith="" ssElems="" csParams="7681" csCustomElemsFile="" csEscapeStrPercent="" csRemoveWSNonJSorCSSExceptElems="" csMaxObfsLineLength="" excluded="false"/>
 </files>
 <systemNames>
