@@ -10,7 +10,7 @@ Ext.define('IS.view.portal.Header' ,{
 		xtype: 'panel',
 		border: 0,
 		width: 400,
-		html: '<h1>ItemStoragePlugIn administration tool</h1>'
+		html: '<h1>jWebSocket ItemStoragePlugIn administration tool</h1>'
 	},{
 		xtype: 'button',
 		id: 'logoff_button',
