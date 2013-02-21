@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import javolution.util.FastList;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
 import org.jwebsocket.plugins.itemstorage.api.IItemCollection;
@@ -19,7 +20,13 @@ import org.jwebsocket.plugins.itemstorage.collection.ItemCollection;
 public class ItemStorageEventManager {
 
 	private static List<IItemStorageListener> mListeners = new FastList<IItemStorageListener>();
-	private static ExecutorService mThreadPool = Executors.newFixedThreadPool(10);
+	private static ExecutorService mThreadPool = Executors.newFixedThreadPool(10, new ThreadFactory() {
+
+		@Override
+		public Thread newThread(Runnable aRunnable) {
+			return new Thread(aRunnable, "jWebSocket ItemStoragePlugIn");
+		}
+	});
 
 	public static void addListener(IItemStorageListener aListener) {
 		mListeners.add(aListener);
