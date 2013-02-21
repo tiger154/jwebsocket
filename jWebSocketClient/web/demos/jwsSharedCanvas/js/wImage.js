@@ -1,11 +1,11 @@
 //	****************************************************************************
-//	jWebSocket Hello World (uses jWebSocket Client and Server)
-//	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
+//	jWebSocket Hello World ( uses jWebSocket Client and Server )
+//	( C ) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
 //	****************************************************************************
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
+//	Free Software Foundation; either version 3 of the License, or ( at your
+//	option ) any later version.
 //	This program is distributed in the hope that it will be useful, but WITHOUT
 //	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 //	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
@@ -15,361 +15,236 @@
 //	****************************************************************************
 
 /*
- * @author daimi
+ * @author daimi, vbarzana
  */
-$.widget("jws.image",{
+$.widget( "jws.image", {
     
-	_init:function(){
-		wImage    = this;
+	_init:function( ) {
 		//Images
-		wImage.image01 = wImage.element.find("#image01_small");
-		wImage.image02 = wImage.element.find("#image02_small");
-		wImage.image03 = wImage.element.find("#image03_small");
-		wImage.image04 = wImage.element.find("#image04_small");
-		wImage.image05 = wImage.element.find("#image05_small");
-		wImage.image06 = wImage.element.find("#image06_small");
-		wImage.image07 = wImage.element.find("#image07_small");
-		wImage.image08 = wImage.element.find("#image08_small");
-		wImage.image09 = wImage.element.find("#image09_small");
+		this.eToolImg01		= this.element.find( "#image01_small" );
+		this.eToolImg02		= this.element.find( "#image02_small" );
+		this.eToolImg03		= this.element.find( "#image03_small" );
+		this.eToolImg04		= this.element.find( "#image04_small" );
+		this.eToolImg05		= this.element.find( "#image05_small" );
+		this.eToolImg06		= this.element.find( "#image06_small" );
+		this.eToolImg07		= this.element.find( "#image07_small" );
+		this.eToolImg08		= this.element.find( "#image08_small" );
+		this.eToolImg09		= this.element.find( "#image09_small" );
 		
-		wImage.eBtnClear= wImage.element.find("#clear_image");
-		wImage.undo = wImage.element.find("#undo");
-		wImage.redo = wImage.element.find("#redo");
-            
-		wImage.eCanvas = document.getElementById( "image_canvas" );
-		wImage.ctx = wImage.eCanvas.getContext( "2d" );
-
-		canvas_w= wImage.eCanvas.width;
-		canvas_h= wImage.eCanvas.height;
+		this.eBtnClear		= this.element.find( "#clear_image" );
+		this.undo			= this.element.find( "#undo" );
+		this.redo			= this.element.find( "#redo" );
+		this.eCanvas		= document.getElementById( "image_canvas" );
+		this.ctx			= this.eCanvas.getContext( "2d" );
 		
-		bg = new Image;	
-		picture = new Image;
+		this.canvasWidth	= this.eCanvas.width;
+		this.canvasHeight	= this.eCanvas.height;
 		
-		image01= false;
-		image02= false;
-		image03= false;
-		image04= false;
-		image05= false;
-		image06= false;
-		image07= false;
-		image08= false;
-		image09= false;
+		this.mBgImage		= new Image;	
+		this.mAuxImage		= new Image;
+		this.mActiveImage	= "1";
         
 		mHistory = [];
 		mSteps = 0;	
         
-		mPainting = false;
+		this.mIsDrawing = false;
 		x1 = -1;
 		y1 = -1;
 		x2 = "";
 		y2 = "";
-		w = '';
-		h = '';
+		mWidth = '';
+		mHeight = '';
 		
-		wImage.registerEvents();
-		wImage.listener();
+		w.img    = this;
+		w.img.registerEvents( );
+		w.img.listener( );
 	},
 	
-	registerEvents: function(){
-		$(wImage.eCanvas).mousedown(wImage.mouseDownLsnr);
-		$(wImage.eCanvas).mousemove(wImage.mouseMoveLsnr);
-		$(wImage.eCanvas).mouseup(wImage.mouseUpLsnr);
-		$(wImage.eCanvas).mouseout(wImage.mouseOutLsnr);
+	registerEvents: function( ) {
+		$( w.img.eCanvas ).mousedown( w.img.mouseDownLsnr );
+		$( w.img.eCanvas ).mousemove( w.img.mouseMoveLsnr );
+		$( w.img.eCanvas ).mouseup( w.img.mouseUpLsnr );
+		$( w.img.eCanvas ).mouseout( w.img.mouseOutLsnr );
 		
-		wImage.image01.click(wImage.setActive01);
-		wImage.image02.click(wImage.setActive02);
-		wImage.image03.click(wImage.setActive03);
-		wImage.image04.click(wImage.setActive04);
-		wImage.image05.click(wImage.setActive05);
-		wImage.image06.click(wImage.setActive06);
-		wImage.image07.click(wImage.setActive07);
-		wImage.image08.click(wImage.setActive08);
-		wImage.image09.click(wImage.setActive09);
+		w.img.eToolImg01.click( function( ) {
+			w.img.setActiveImage( 1 );
+		});
+		w.img.eToolImg02.click( function( ) {
+			w.img.setActiveImage( 2 );
+		});
+		w.img.eToolImg03.click( function( ) {
+			w.img.setActiveImage( 3 );
+		});
+		w.img.eToolImg04.click( function( ) {
+			w.img.setActiveImage( 4 );
+		});
+		w.img.eToolImg05.click( function( ) {
+			w.img.setActiveImage( 5 );
+		});
+		w.img.eToolImg06.click( function( ) {
+			w.img.setActiveImage( 6 );
+		});
+		w.img.eToolImg07.click( function( ) {
+			w.img.setActiveImage( 7 );
+		});
+		w.img.eToolImg08.click( function( ) {
+			w.img.setActiveImage( 8 );
+		});
+		w.img.eToolImg09.click( function( ) {
+			w.img.setActiveImage( 9 );
+		});
         
-		wImage.eBtnClear.click(wImage.doClear);
-	//        wImage.undo.click(wImage.undo);
-	//        wImage.undo.click(wImage.redo);
+		w.img.eBtnClear.click( w.img.doClear );
+		//        w.img.undo.click( w.img.undo );
+		//        w.img.undo.click( w.img.redo );
 	},
 	
 	mouseDownLsnr: function( aEvent ) {
-		jws.events.preventDefault( aEvent );
-		if( mIsConnected ) {
-			mPainting = true;
-			x1 = aEvent.clientX - wImage.eCanvas.offsetLeft;
-			y1 = aEvent.clientY - wImage.eCanvas.offsetTop;
-			w=0;
-			h=0;
+		aEvent.preventDefault( );
+		//		mWSC.events.preventDefault( aEvent );
+		if( mWSC.isConnected( ) ) {
+			w.img.mIsDrawing = true;
+			x1 = aEvent.clientX - w.img.eCanvas.offsetLeft;
+			y1 = aEvent.clientY - w.img.eCanvas.offsetTop;
+			mWidth=0;
+			mHeight=0;
             
-			var img = document.createElement("img");
+			var img = document.createElement( "img" );
             
-			if(image01){
-				img.setAttribute("src", "../../res/img/image1.jpg");
-			}
-
-			if(image02){
-				img.setAttribute("src", "../../res/img/image2.jpg");
-			}
-            
-			if(image03){
-				img.setAttribute("src", "../../res/img/image3.jpg");
-			}
-            
-			if(image04){
-				img.setAttribute("src", "../../res/img/image4.jpg");
-			}
-            
-			if(image05){
-				img.setAttribute("src", "../../res/img/image5.jpg");
-			}
-            
-			if(image06){
-				img.setAttribute("src", "../../res/img/image6.jpg");
-			}
-            
-			if(image07){
-				img.setAttribute("src", "../../res/img/image7.jpg");
-			}
-            
-			if(image08){
-				img.setAttribute("src", "../../res/img/image8.jpg");
-			}
-            
-			if(image09){
-				img.setAttribute("src", "../../res/img/image9.jpg");
-			}
-            
+			img.setAttribute( "src", "../../res/img/image" + 
+				w.img.mActiveImage + ".jpg" );
+			
 			var args = {
 				x: x1,
 				y: y1,
-				w: w,
-				h: h,
+				mWidth: mWidth,
+				mHeight: mHeight,
 				src: img.src
 			};
             
-			wImage.broadcast(args, "first");
+			w.img.broadcast( args, "first" );
 		}
 	},
     
 	mouseMoveLsnr: function ( aEvent ) {
-		// aEvent.preventDefault();
-		jws.events.preventDefault( aEvent );
-		if( mIsConnected && mPainting ) {
+		aEvent.preventDefault( );
+		if( mWSC.isConnected( ) && w.img.mIsDrawing ) {
             
-			if(mPainting){
-				x2 = aEvent.clientX - wImage.eCanvas.offsetLeft;
-				y2 = aEvent.clientY - wImage.eCanvas.offsetTop;
+			if( w.img.mIsDrawing ) {
+				x2 = aEvent.clientX - w.img.eCanvas.offsetLeft;
+				y2 = aEvent.clientY - w.img.eCanvas.offsetTop;
                 
-				if((x2>x1) && (y1>y2)){
-					w=x2-x1;
-					h=y1-y2;
+				if( ( x2>x1 ) && ( y1>y2 ) ) {
+					mWidth=x2-x1;
+					mHeight=y1-y2;
 				}
         
-				if((x1>x2) && (y1>y2)){
-					w=x1-x2;
-					h=y1-y2;
+				if( ( x1>x2 ) && ( y1>y2 ) ) {
+					mWidth=x1-x2;
+					mHeight=y1-y2;
 				}
                 
-				if((x2>x1) && (y2>y1)){
-					w=x2-x1;
-					h=y2-y1;
+				if( ( x2>x1 ) && ( y2>y1 ) ) {
+					mWidth=x2-x1;
+					mHeight=y2-y1;
 				}
                 
-				if((x1>x2) && (y2>y1)){
-					w=x1-x2;
-					h=y2-y1;
+				if( ( x1>x2 ) && ( y2>y1 ) ) {
+					mWidth=x1-x2;
+					mHeight=y2-y1;
 				}
                
 				var args = {
-					w: w,
-					h: h
+					mWidth: mWidth,
+					mHeight: mHeight
 				};
                 
-				wImage.broadcast(args, "moveto");
+				w.img.broadcast( args, "moveto" );
 			}
 		}
 	}, 
 	
 	mouseUpLsnr: function ( aEvent ) {
-		jws.events.preventDefault( aEvent );
-		if( mIsConnected && mPainting ) {
-			mPainting = false;
+		aEvent.preventDefault( );
+		//		mWSC.events.preventDefault( aEvent );
+		if( mWSC.isConnected( ) && w.img.mIsDrawing ) {
+			w.img.mIsDrawing = false;
 		}
 	},
     
-	broadcast:function(aArgs, aType){
-		$.jws.submit(NS, aType, aArgs);
+	broadcast:function( aArgs, aType ) {
+		$.jws.submit( NS, aType, aArgs );
 	},
     
-	listener:function(){
-		$.jws.bind(NS + ':clearall', function(aEvt, aToken){
-			wImage.ctx.fillStyle = 'white';
-			wImage.ctx.fillRect(0, 0, canvas_w, canvas_h);
+	listener:function( ) {
+		$.jws.bind( NS + ':clearall', function( aEvt, aToken ) {
+			w.img.ctx.fillStyle = 'white';
+			w.img.ctx.fillRect( 0, 0, w.img.canvasWidth, w.img.canvasHeight );
 		});
             
-		$.jws.bind(NS + ":first", function(aEvt, aToken){
-			picture = document.createElement("img");
-			picture.setAttribute("src", aToken.src);
+		$.jws.bind( NS + ":first", function( aEvt, aToken ) {
+			w.img.mAuxImage = document.createElement( "img" );
+			w.img.mAuxImage.setAttribute( "src", aToken.src );
 			x1 = aToken.x;
 			y1 = aToken.y;
-			w = aToken.w;
-			h = aToken.h;    
-			bg.src = wImage.ctx.canvas.toDataURL("image/png");
-			mHistory[mSteps] = bg.src;
+			mWidth = aToken.mWidth;
+			mHeight = aToken.mHeight;    
+			w.img.mBgImage.src = w.img.ctx.canvas.toDataURL( "image/png" );
+			mHistory[mSteps] = w.img.mBgImage.src;
 			mSteps ++;
 		});
             
-		$.jws.bind(NS + ":moveto", function(aEvt, aToken){
-			w = aToken.w;
-			h = aToken.h;
-
-			wImage.ctx.clearRect(0, 0, canvas_w, canvas_h);
-			wImage.ctx.drawImage(bg, 0, 0, canvas_w, canvas_h);
-			wImage.ctx.drawImage(picture, x1, y1, w, h);
-                
+		$.jws.bind( NS + ":moveto", function( aEvt, aToken ) {
+			mWidth = aToken.mWidth;
+			mHeight = aToken.mHeight;
+			try{
+				w.img.ctx.clearRect( 0, 0, w.img.canvasWidth, w.img.canvasHeight );
+				w.img.ctx.drawImage( w.img.mBgImage, 0, 0, w.img.canvasWidth, w.img.canvasHeight );
+				w.img.ctx.drawImage( w.img.mAuxImage, x1, y1, mWidth, mHeight );
+			} catch( lException ) {
+				jws.console.log( lException );
+			}
 		});
         
-		$.jws.bind(NS + ":undo", function(aEvt, aToken){
-			wImage.ctx.clearRect(0, 0, canvas_w, canvas_h);
+		$.jws.bind( NS + ":undo", function( aEvt, aToken ) {
+			w.img.ctx.clearRect( 0, 0, w.img.canvasWidth, w.img.canvasHeight );
 			lUndo = new Image;
 			lUndo.src = mHistory[--mSteps];
                  
-			wImage.ctx.drawImage(lUndo, 0, 0, canvas_w, canvas_h);
+			w.img.ctx.drawImage( lUndo, 0, 0, w.img.canvasWidth, w.img.canvasHeight );
 		});
-		$.jws.bind(NS + ":redo", function(aEvt, aToken){
-			wImage.ctx.clearRect(0, 0, canvas_w, canvas_h);
+		$.jws.bind( NS + ":redo", function( aEvt, aToken ) {
+			w.img.ctx.clearRect( 0, 0, w.img.canvasWidth, w.img.canvasHeight );
 			lUndo = new Image;
 			lUndo.src = mHistory[++mSteps];
                  
-			wImage.ctx.drawImage(lUndo, 0, 0, canvas_w, canvas_h);
+			w.img.ctx.drawImage( lUndo, 0, 0, w.img.canvasWidth, w.img.canvasHeight );
 		});
         
 	},
         
-	setActive01: function(){
-		image01 = true;
-		image02= false;
-		image03= false;
-		image04= false;
-		image05= false;
-		image06= false;
-		image07= false;
-		image08= false;
-		image09= false;
+	setActiveImage: function( aNumber ) {
+		w.img.mActiveImage = aNumber;
 	},
-        
-	setActive02: function(){
-		image02 = true;
-		image01= false;
-		image03= false;
-		image04= false;
-		image05= false;
-		image06= false;
-		image07= false;
-		image08= false;
-		image09= false;
-	},
-        
-	setActive03: function(){
-		image03 = true;
-		image01= false;
-		image02= false;
-		image04= false;
-		image05= false;
-		image06= false;
-		image07= false;
-		image08= false;
-		image09= false;
-	},
-        
-	setActive04: function(){
-		image04 = true;
-		image01= false;
-		image02= false;
-		image03= false;
-		image05= false;
-		image06= false;
-		image07= false;
-		image08= false;
-		image09= false;
-	},
-        
-	setActive05: function(){
-		image05 = true;
-		image01= false;
-		image02= false;
-		image03= false;
-		image04= false;
-		image06= false;
-		image07= false;
-		image08= false;
-		image09= false;
-	},
-        
-	setActive06: function(){
-		image06 = true;
-		image01= false;
-		image02= false;
-		image03= false;
-		image04= false;
-		image05= false;
-		image07= false;
-		image08= false;
-		image09= false;
-	},
-        
-	setActive07: function(){
-		image07 = true;
-		image01= false;
-		image02= false;
-		image03= false;
-		image04= false;
-		image05= false;
-		image06= false;
-		image08= false;
-		image09= false;
-	},
-        
-	setActive08: function(){
-		image08 = true;
-		image01= false;
-		image02= false;
-		image03= false;
-		image04= false;
-		image05= false;
-		image06= false;
-		image07= false;
-		image09= false;
-	},
-        
-	setActive09: function(){
-		image09 = true;
-		image01= false;
-		image02= false;
-		image03= false;
-		image04= false;
-		image05= false;
-		image06= false;
-		image07= false;
-		image08= false;
+	
+    
+	undo: function ( ) {
+		$.jws.submit( NS, "undo" );
 	},
     
-	undo: function (){
-		$.jws.submit(NS, "undo");
-	},
-    
-	redo: function (){
-		$.jws.submit(NS, "redo");
+	redo: function ( ) {
+		$.jws.submit( NS, "redo" );
 	},
 
 	mouseOutLsnr: function ( aEvent ) {
-		wImage.mouseUpLsnr( aEvent );
+		w.img.mouseUpLsnr( aEvent );
 	},
 
 
-	doClear: function() {
-		if( mIsConnected ) {
-			$.jws.submit(NS, "clearall");
-			wImage.ctx.clearRect(0, 0, canvas_w, canvas_h);
+	doClear: function( ) {
+		if( mWSC.isConnected( ) ) {
+			$.jws.submit( NS, "clearall" );
+			w.img.ctx.clearRect( 0, 0, w.img.canvasWidth, w.img.canvasHeight );
 		}
 	}
 });

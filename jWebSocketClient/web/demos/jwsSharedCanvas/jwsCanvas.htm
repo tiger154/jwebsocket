@@ -25,18 +25,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252"/>
 
-
         <title>jWebSocket Shared Canvas</title>
 
-        <!-- DEMO STYLES  -->
+		<!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsCanvas.css"/>
-
-        <!-- JQUERY DEPENDENCIES -->
-        <link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
-        <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
-        <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
-		<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
     </head>
     <body>
         <div id="demo_box">
@@ -71,24 +64,27 @@
 							<iframe id="target1" src="iframe.htm" scrolling="no"></iframe>
 							<iframe id="target2" src="iframe.htm" scrolling="no"></iframe>
 						</div>
-						<!-- ************************ CANVAS AREA ****************************** -->
 					</div>
                 </div>
 
                 <!--       DOWNLOAD_BUTTON   -->
                 <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                    <div id="jws_download_button" class="button onmouseup" 
+						 onmouseover="this.className='button onmouseover'" 
                          onmousedown="this.className='button onmousedown'" 
                          onmouseup="this.className='button onmouseup'" 
                          onmouseout="this.className='button onmouseout'" 
                          onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
+                        <div class="btn_left"></div>
+                        <div class="btn_center">
+							<a href="http://jwebsocket.org" target="blank">
+								Download jWebSocket
+							</a>
+						</div>
                         <div class="r_download"></div>
                     </div>
                 </div>
             </div>
         </div>
-
     </body>
 </html>
