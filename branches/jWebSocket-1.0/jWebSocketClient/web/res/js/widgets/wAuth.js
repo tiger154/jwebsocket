@@ -185,7 +185,9 @@ $.widget("jws.auth",{
 				}
 				if( mLog.isDebugEnabled ) {
 					log( "<div style='color:red'>jWebSocket Welcome received.</div>" );
-					w.auth.eClientId.text( "Client-ID: " + aToken.sourceId );
+					if( aToken.sourceId ) {
+						w.auth.eClientId.text( "Client-ID: " + aToken.sourceId );
+					}
 				}
 				
 				if ( "anonymous" != aToken.username ) {
@@ -221,7 +223,6 @@ $.widget("jws.auth",{
 
 						w.auth.eUserInfoName.text( aToken.username );
 						w.auth.mUsername = aToken.username;
-						w.auth.eClientId.text("Client-ID: " + aToken.sourceId);
 						w.auth.eClientStatus.attr( "class", "authenticated").text("authenticated");
 					} else {
 						if( mLog.isDebugEnabled ) {
