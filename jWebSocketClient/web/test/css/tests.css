@@ -37,3 +37,11 @@
 .suite{
 	font-size: 10pt;
 }
+
+#sbtnManualTest, #sbtnBenchmarkTest{
+	margin-left: 5px;
+}
+
+#demo_box table {
+	margin-left: 15px;
+}

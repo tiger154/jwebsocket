@@ -161,26 +161,29 @@
 				</tr>
 				<tr>
 					<td>
-						<div id="sbtnManualTest" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+						<div id="sbtnManualTest" class="button" 
+							 onmouseover="this.className='button onmouseover'" 
 							 onmousedown="this.className='button onmousedown'" 
 							 onmouseup="this.className='button onmouseup'" 
 							 onmouseout="this.className='button onmouseout'" 
-							 onclick="run({action:'runFullTestSuite'});this.className='button onmouseover';"
+							 onclick="run({action:'runFullTestSuite'});
+								 this.className='button onmouseover';"
 							 title="Runs the manual (programmatic) test suite.">
-							<div class="l"></div>
-							<div class="c">Run selected tests!</div>
-							<div class="r"></div>
+							<div class="btn_left"></div>
+							<div class="btn_center">Run selected tests!</div>
+							<div class="btn_right"></div>
 						</div>
 
-						<div id="sbtnBenchmarkTest" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+						<div id="sbtnBenchmarkTest" class="button onmouseup" 
+							 onmouseover="this.className='button onmouseover'" 
 							 onmousedown="this.className='button onmousedown'" 
 							 onmouseup="this.className='button onmouseup'" 
 							 onmouseout="this.className='button onmouseout'" 
 							 onclick="run({action:'runBenchmarkSuite'});this.className='button onmouseover';"
 							 title="Runs the benchmark suite.">
-							<div class="l"></div>
-							<div class="c">Run benchmark test!</div>
-							<div class="r"></div>
+							<div class="btn_left"></div>
+							<div class="btn_center">Run benchmark test!</div>
+							<div class="btn_right"></div>
 						</div>
 					</td>
 				</tr>
