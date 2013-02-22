@@ -108,6 +108,7 @@
     height: 200px;
     font-size: 8pt;
     width: 100%;
+	word-wrap: break-word;
 }
 
 #chat_box_history .private, #chat_box_history .public{
