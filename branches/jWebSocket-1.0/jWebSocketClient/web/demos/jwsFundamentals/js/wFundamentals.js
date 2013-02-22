@@ -124,7 +124,8 @@ $.widget( "jws.fundamentals", {
 	},
 
 	echo: function( ) {
-		var lMsg = w.fund.eMessageBox.val( );
+		var lMsg = w.auth.cleanHTML( w.fund.eMessageBox.val( ) );
+		
 		if( lMsg && lMsg != w.fund.MSG_TypeYourMessage ) {
 			if ( mLog.isDebugEnabled ) {
 				log( "Sending '" + lMsg + "', waiting for echo..." );

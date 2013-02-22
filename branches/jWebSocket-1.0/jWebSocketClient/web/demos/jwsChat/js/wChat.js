@@ -1,11 +1,11 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - Chat Plug-In
-//  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
+//  Copyright ( c ) 2010 Innotrade GmbH, jWebSocket.org
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
+//	Free Software Foundation; either version 3 of the License, or ( at your
+//	option ) any later version.
 //	This program is distributed in the hope that it will be useful, but WITHOUT
 //	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 //	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
@@ -14,100 +14,111 @@
 //	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
 //	---------------------------------------------------------------------------
 /**
- * jWebSocket Channels Widget
+ * jWebSocket Chat Widget
  * @author Victor Antonio Barzana Crespo
  */
 $.widget( "jws.chat", {
 	_init:function( ) {
-		w.chat = this;
 		
-		w.chat.mIsPublicActive = false;
-		w.chat.mUserColors = {
+		this.mIsPublicActive		= false;
+		this.mUserColors			= {
 			// Color RED for the system logs
 			SYS: "#FF0000",
 			// Color BLUE for the personal logs
 			USR: "#0000FF"
 		};
-		w.chat.mSelectionStart = null;
-		w.chat.mSelectionEnd = null;
+		this.mSelectionStart		= null;
+		this.mSelectionEnd			= null;
+		this.mOnlineClients			= [ ];
+		this.mPrivateClients		= { };
+		this.mPrivateUnreadMessages = 0;
 		
-		w.chat.mOnlineClients = [];
-		w.chat.mPrivateClients = {};
-		
-		w.chat.mPrivateUnreadMessages = 0;
-		
-		w.chat.mEmoticons = {
+		this.mEmoticons				= {
 			// Faces with 2 chars
 			":)": "smile", 
-			":(": "sad",
+			":( ": "sad",
 			":o": "surprise",
 			":d": "smile-big",
-			"<3": "heart",
+			"{3": "heart",
 			":p": "raspberry",
 			":]": "embarrassed",
 			":{": "sick",
 			"+1": "opinion-agree",
 			"-1": "opinion-disagree",
 			";)": "wink",
-			
 			// Faces with three chars
-			"</3": "heart-broken",
+			"{/3": "heart-broken",
 			"(r)": "rose",
-			":;(": "crying",
+			":;( ": "crying",
 			":?": "confused",
-			"-)<": "jWebSocketLogo"
+			"-){": "jWebSocketLogo"
 		};
-		w.chat.mEmoticonsPath = "css/images/emoticons/";
+		this.mEmoticonsPath			= "css/images/emoticons/";
 		
 		// Here will be stored the current ID that you are chatting with
-		w.chat.mPrivateChatWith = null;
+		this.mPrivateChatWith		= null;
 		
-		w.chat.mAuthenticatedUser = null;
+		this.mAuthenticatedUser		= null;
 		
 		// Default namespace for demos org.jwebsocket.plugins.chat
-		w.chat.NS = jws.NS_BASE + ".plugins.chat";
-		w.chat.mNextWindowId = 1;
-		
-		w.chat.MSG_NOT_CONNECTED_USERS = "There are not connected users";
-		
-		
+		this.NS						= jws.NS_BASE + ".plugins.chat";
+		this.mNextWindowId			= 1;
 		
 		// MESSAGEBOX
-		w.chat.eMessageBoxArea	= w.chat.element.find( "#message_box" );
-		w.chat.eMessageBox		= w.chat.element.find( "#message_box_text" );
-		
-		w.chat.eChatTitle		= w.chat.element.find( "#chat_box_header" );
-		
-		w.chat.ePublicUsersBox	= w.chat.element.find( "#public_users_box_body" );
-		w.chat.ePrivateUsersBox = w.chat.element.find( "#users_box_body" );
-		
-		w.chat.eLogPrivate		= w.chat.element.find( "#chat_box_history .private" );
-		w.chat.eLogPublic		= w.chat.element.find( "#chat_box_history .public" );
-		
+		this.eMessageBoxArea		= this.element.find( "#message_box" );
+		this.eMessageBox			= this.element.find( "#message_box_text" );
+		this.eChatTitle				= this.element.find( "#chat_box_header" );
+		this.ePublicUsersBox		= this.element.find( "#public_users_box_body" );
+		this.ePrivateUsersBox		= this.element.find( "#users_box_body" );
+		this.eLogPrivate			= this.element.find( "#chat_box_history .private" );
+		this.eLogPublic				= this.element.find( "#chat_box_history .public" );
 		// Area to show the new incoming messages
-		w.chat.eUnreadMessages  = w.chat.element.find( "#new_message_notification" );
+		this.eUnreadMessages		= this.element.find( "#new_message_notification" );
 		
 		// BUTTONS
-		w.chat.eBtnPrivateChat	= w.chat.element.find( "#btn_private_chat" );
-		w.chat.eBtnPublicChat	= w.chat.element.find( "#btn_public_chat" );
-		w.chat.eBtnBroadcast	= w.chat.element.find( "#message_box_broadcast_btn" );
-		w.chat.eBtnClear		= w.chat.element.find( "#message_box_clear_btn" );
-		w.chat.eBtnNewChatWindow= w.chat.element.find( "#new_box_chat_btn" );
+		this.eBtnPrivateChat		= this.element.find( "#btn_private_chat" );
+		this.eBtnPublicChat			= this.element.find( "#btn_public_chat" );
+		this.eBtnBroadcast			= this.element.find( "#message_box_broadcast_btn" );
+		this.eBtnClear				= this.element.find( "#message_box_clear_btn" );
+		this.eBtnNewChatWindow		= this.element.find( "#new_box_chat_btn" );
 		
 		// EMOTICONS
-		w.chat.eEmoticonsWindow	= w.chat.element.find( "#select_emoticon_window" );
-		w.chat.eBtnActiveEmoticon = w.chat.element.find( "#selected_emoticon" );
-		w.chat.eBtnMoreEmoticons  = w.chat.element.find( "#show_more_emoticons" );
-		w.chat.eBtnCloseEmoticonWindow  = w.chat.element.find( "#close_emoticon_window" );
+		this.eEmoticonsWindow		= this.element.find( "#select_emoticon_window" );
+		this.eBtnActiveEmoticon		= this.element.find( "#selected_emoticon" );
+		this.eBtnMoreEmoticons		= this.element.find( "#show_more_emoticons" );
+		this.eBtnCloseEmotWindow	= this.element.find( "#close_emoticon_window" );
+		this.eMainContainer			= $( "#demo_box" );
 		
+		// Messages used in the widget
+		this.MSG_NOT_CONNECTED_USERS= "There are not connected users";
+		this.MSG_USER_OFFLINE		= "The user you are chatting with is offline";
+		this.MSG_COULDNT_SEND_MSG	= "The message could not be sent";
+		this.MSG_TYPE_YOUR_MSG		= "Type your message...";
+		this.MSG_NOT_CONNECTED_JWS	= "Sorry, you are not connected with " + 
+		"jWebSocket server, try clicking the login button!";
+		
+		// CSS RULES
+		this.CSS_CLIENT_ID			= "client_id";
+		this.CSS_NEW_MSG			= "new_message";
+		this.CSS_NO_USERS_ONLINE	= "no_users_online";
+		this.CSS_ACTIVE				= "active";
+		this.CSS_ONLINE				= "online";
+		this.CSS_OFFLINE			= "offline";
+		this.CSS_PUBLIC_ONLINE		= "public_online";
+		this.CSS_EMOTICON_BTN		= "emoticon_btn";
+		this.CSS_OPAQUE				= "opaque";
+		this.CSS_DARK				= "dark";
+		this.CSS_REM_PRIV_CLIENT	= "remove_private_client";
+		this.CSS_HISTORY			= "history";
+		this.CSS_TITLE				= "title";
+		
+		w.chat = this;
 		// Executing some init functions
 		//		w.chat.switchPrivate( );
 		w.chat.switchPublic( );
-		
-		w.chat.eUnreadMessages.hide();
-		w.chat.eEmoticonsWindow.hide();
-		w.chat.loadEmoticons();
-		
+		w.chat.eUnreadMessages.hide( );
+		w.chat.eEmoticonsWindow.hide( );
+		w.chat.loadEmoticons( );
 		w.chat.registerEvents( );
 	},
     
@@ -129,78 +140,75 @@ $.widget( "jws.chat", {
 		w.chat.eBtnNewChatWindow.click( w.chat.openNewChatWindow );
 		
 		// EMOTICONS
-		w.chat.eBtnMoreEmoticons.click( function(){
-			w.chat.eEmoticonsWindow.show();
+		w.chat.eBtnMoreEmoticons.click( function( ) {
+			w.chat.eEmoticonsWindow.show( );
 		});
-		
-		// Disable all elements in the chat window
-		//		w.chat.eMessageBoxArea.children().each(function(){
-		//			$( this ).attr( "disabled", true );
-		//		});
 		
 		w.chat.eBtnActiveEmoticon.click( w.chat.addEmoticon );
 		
-		w.chat.eBtnCloseEmoticonWindow.click( function(){
-			w.chat.eEmoticonsWindow.hide();
+		w.chat.eBtnCloseEmotWindow.click( function( ) {
+			w.chat.eEmoticonsWindow.hide( );
 		});
 		
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
 			OnOpen: function( aEvent ) {
 				// Enabling all elements in the chat window again
-				w.chat.eMessageBoxArea.children().each(function(){
-					$( this ).attr("disabled", false);
+				w.chat.eMessageBoxArea.children( ).each( function( ) {
+					$( this ).attr( "disabled", false );
 				});
 			},
-			OnWelcome: function( aEvent )  {
+			OnWelcome: function( aEvent ) {
 			},
-			OnGoodBye: function( aEvent )  {
+			OnGoodBye: function( aEvent ) {
 			},
 			OnMessage: function( aEvent, aToken ) {
 				w.chat.processToken( aEvent, aToken );
 			},
+			// When closing clear all chat panels and users
 			OnClose: function( aEvent ) {
-				w.chat.cleanAll();
-				w.chat.eMessageBoxArea.children().each(function(){
-					$( this ).attr("disabled", true);
+				w.chat.cleanAll( );
+				w.chat.eMessageBoxArea.children( ).each( function( ) {
+					$( this ).attr( "disabled", true );
 				});
 			}
 		};
-		$("#demo_box").auth(lCallbacks);
+		$( w.chat.eMainContainer ).auth( lCallbacks );
 	},
 	
-	openNewChatWindow: function(){
-		window.open(
+	openNewChatWindow: function( ) {
+		window.open( 
 			// "http://www.jwebsocket.org/demos/jwsChat/jwsChat.htm"
 			"jwsChat.htm",
 			"chatWindow" + w.chat.mNextWindowId,
-			"width=720,height=700,left=" + (50 + w.chat.mNextWindowId * 30) + ", top=" + (50 + w.chat.mNextWindowId * 25)
-			);
+			"width=720,height=700,left=" + 
+			( 50 + w.chat.mNextWindowId * 30 ) + ", top=" + 
+			( 50 + w.chat.mNextWindowId * 25 ));
 		w.chat.mNextWindowId++;
 		if( w.chat.mNextWindowId > 10 ) {
 			w.chat.mNextWindowId = 1;
 		}
 	},
 	sendMessage: function( ) {
-		if( mWSC.isConnected() ){
-			if(w.chat.mOnlineClients.length > 0){
-				var lMessage = w.chat.eMessageBox.val();
-				if( lMessage &&  "Type your message..." != lMessage ){
-					if( w.chat.mIsPublicActive ){
+		if( mWSC.isConnected( ) ) {
+			if( w.chat.mOnlineClients.length > 0 ) {
+				var lMessage = w.auth.cleanHTML( w.chat.eMessageBox.val( ) );
+				if( lMessage &&  w.chat.MSG_TYPE_YOUR_MSG != lMessage ) {
+					if( w.chat.mIsPublicActive ) {
 						w.chat.sendBroadcastMessage( lMessage );
-					} else {
+					// Only send if is chatting with someone
+					} else if( w.chat.mPrivateChatWith ) {
 						w.chat.sendPrivateMessage( w.chat.mPrivateChatWith, lMessage );
 					}
 				}
-				w.chat.eMessageBox.val("").focus();
-			}else {
-				dialog("You can not send messages. All users are disconnected", 
-					"No users online", false, null, null, "alert");
+				w.chat.eMessageBox.val( "" ).focus( );
+			} else {
+				jwsDialog( w.chat.MSG_NOT_CONNECTED_USERS, 
+					"No users online", true, "alert" );
 			}
-		} else{
-			dialog("Sorry, you are not connected with jWebSocket server, " +
-						"try clicking the login button!", 
-				"Not connected", false, null, null, "alert");
+		} else {
+			jwsDialog( w.chat.MSG_NOT_CONNECTED_JWS, "Not connected", true, 
+				"alert" );
 		}
 	},
 	
@@ -213,8 +221,8 @@ $.widget( "jws.chat", {
 		};
 		// If no message is defined an error comes from the server
 		var lCallbacks = {
-			OnFailure: function( aToken ){
-				dialog( aToken.msg, "Empty Message" );
+			OnFailure: function( aToken ) {
+				jwsDialog( aToken.msg, "Empty Message" );
 			}
 		};
 		// Sending the broadcast message to the server
@@ -222,12 +230,12 @@ $.widget( "jws.chat", {
 	},
 	
 	sendPrivateMessage: function( aTargetId, aMessage ) {
-		if( aTargetId ){
-			var lArray = w.chat.mPrivateChatWith.split("@");
+		if( aTargetId ) {
+			var lArray = w.chat.mPrivateChatWith.split( "@" );
 			var lTargetId = lArray[ 1 ];
 			
-			if( w.chat.isUserOnline( lTargetId ) ){
-				if( aMessage != null || aMessage == ""){
+			if( w.chat.isUserOnline( lTargetId ) ) {
+				if( aMessage != null || aMessage != "" ) {
 					// Preparing broadcast Token
 					var lMessageToken = {
 						ns: w.chat.NS,
@@ -237,21 +245,20 @@ $.widget( "jws.chat", {
 					};
 					// If no message is defined an error comes from the server
 					var lCallbacks = {
-						OnFailure: function( aToken ){
-							dialog( aToken.msg, "The message could not be sent", 
-								false, null, null, "alert" );
+						OnFailure: function( aToken ) {
+							jwsDialog( aToken.msg, w.chat.MSG_COULDNT_SEND_MSG, 
+								false, "alert" );
 						}
 					};
 					// Sending the broadcast message to the server
 					mWSC.sendToken( lMessageToken, lCallbacks );
 					// w.chat.logChatMessage( aClientId, aMessage, aIsPrivate );
-					var lOnlineId = mWSC.getUsername() + "@" + mWSC.getId();
+					var lOnlineId = mWSC.getUsername( ) + "@" + mWSC.getId( );
 					w.chat.logChatMessage( lOnlineId, aMessage, true );
 				}
 			}else {
-				dialog( "The user you are chatting with is offline", 
-					"User offline",
-					false, null, null, "alert" );
+				jwsDialog( w.chat.MSG_USER_OFFLINE, "User offline",
+					false, "alert" );
 			}
 			
 			
@@ -266,8 +273,10 @@ $.widget( "jws.chat", {
 				if( aToken.reqType == "login" ) {
 					if( aToken.code == 0 ) {
 						// logChatMessage( aID, aString )
-						w.chat.logChatMessage( "SYS", "Welcome '" + aToken.username + "'" );
-						w.chat.mAuthenticatedUser = aToken.username + "@" + aToken.sourceId;
+						w.chat.logChatMessage( "SYS", "Welcome '" + 
+							aToken.username + "'" );
+						w.chat.mAuthenticatedUser = aToken.username + "@" + 
+						aToken.sourceId;
 						// Sending a register token to the server
 						var lRegister = {
 							ns: w.chat.NS,
@@ -276,40 +285,50 @@ $.widget( "jws.chat", {
 						mWSC.sendToken( lRegister );
 						
 						// select message field for convenience
-						w.chat.eMessageBox.focus();
+						w.chat.eMessageBox.focus( );
 					}
 				}
 			// is it an event w/o a previous request ?
 			} else if( aToken.type == "getChatClients" ) {
 				w.chat.setClients( aToken.clients );
 			} else if( aToken.type == "event" ) {
-				if( "logout" == aToken.name || "disconnect" == aToken.name ){
+				if( "logout" == aToken.name || "disconnect" == aToken.name ) {
+					if( w.chat.isUserOnline( aToken.sourceId ) ) {
+						log( "The client " + aToken.sourceId + " has left the chat" );
+					}
 					w.chat.removeClient( aToken.sourceId );
 				}
 			} else if( aToken.type == "goodBye" ) {
-				w.chat.logChatMessage( "SYS", "Chat PlugIn says good bye (reason: " + aToken.reason + ")!" );
+				w.chat.logChatMessage( "SYS", 
+					"Chat PlugIn says good bye ( reason: " + aToken.reason + " )!" );
 				
 			// is it any token from another client
 			} else if( aToken.type == "broadcast" ) {
 				if( aToken.msg && aToken.sourceId ) {
 					//logChatMessage( aID, aString )
-					w.chat.logChatMessage( aToken.sourceId, aToken.msg );
+					log( "New <b>public </b>message received: " + 
+						JSON.stringify( aToken ) );
+					w.chat.logChatMessage( aToken.sourceId, 
+						w.auth.cleanHTML( aToken.msg ) );
 				}
-			} else if( aToken.type == "newClientConnected" ){
+			} else if( aToken.type == "newClientConnected" ) {
+				log( aToken.msg + " " + aToken.sourceId );
 				w.chat.addClient( aToken.sourceId );
 			} else if( aToken.type == "messageTo" ) {
+				log( "<b>New private message received:</b> " + 
+					JSON.stringify( aToken ) );
 				w.chat.onPrivateMessage( aToken );
 			}
 		}
 	},
 	
-	onPrivateMessage: function( aToken ){
+	onPrivateMessage: function( aToken ) {
 		// If the user is in the public area, hint new message incoming
-		if( w.chat.mIsPublicActive ){
-			var lQuantity = w.chat.eUnreadMessages.text();
+		if( w.chat.mIsPublicActive ) {
+			var lQuantity = w.chat.eUnreadMessages.text( );
 			
-			w.chat.eUnreadMessages.text( parseInt(parseInt(lQuantity) + 1) )
-			.fadeIn( 300 ).fadeOut(100).fadeIn(300).fadeOut(100).fadeIn(100);
+			w.chat.eUnreadMessages.text( parseInt( parseInt( lQuantity ) + 1 ) )
+			.fadeIn( 300 ).fadeOut( 100 ).fadeIn( 300 ).fadeOut( 100 ).fadeIn( 100 );
 			
 			w.chat.addPrivateTab( aToken.sourceId );
 			
@@ -322,55 +341,62 @@ $.widget( "jws.chat", {
 		w.chat.logChatMessage( aToken.sourceId, aToken.msg, true );
 	},
 	
-	addPrivateTab: function( aSourceId ){
-		var lMsgNoUsersOnline = w.chat.ePrivateUsersBox.find('.no_users_online');
-		if( lMsgNoUsersOnline ){
-			lMsgNoUsersOnline.remove();
+	addPrivateTab: function( aSourceId ) {
+		var lMsgNoUsersOnline = w.chat.ePrivateUsersBox.find( '.' + 
+			w.chat.CSS_NO_USERS_ONLINE );
+		if( lMsgNoUsersOnline ) {
+			lMsgNoUsersOnline.remove( );
 		}
 		
-		var lFullId  = aSourceId.split("@");
+		var lFullId  = aSourceId.split( "@" );
 		var lId  = lFullId[1];
 		
 		var lTab = null;
-		w.chat.ePrivateUsersBox.children().each( function(){
-			if( "_" + lId == $( this ).attr( "id" )){
+		w.chat.ePrivateUsersBox.children( ).each( function( ) {
+			if( "_" + lId == $( this ).attr( "id" ) ) {
 				lTab = $( this );
 			}
 		});
 		
 		// If exists the tab, don't create it
-		if( !lTab ){
-			var lPrivateItem = $('<div class="online" id="_'+ lId + '">'+ 
-				'<div class="client_id">' + aSourceId +'</div></div>');
+		if( !lTab ) {
+			var lPrivateItem = $( '<div class="' + w.chat.CSS_ONLINE + 
+				'" id="_'+ lId + '">'+ 
+				'<div class="' + w.chat.CSS_CLIENT_ID + '">' + aSourceId +
+				'</div></div>' );
 			
-			var lCloseButton = $('<div class="remove_private_client">x</div>');
-			lCloseButton.click(function(){
-				$( '.tooltip' ).hide().remove();
-				var lNext = lPrivateItem.next();
-				var lPrev = lPrivateItem.prev();
+			var lCloseButton = $( '<div class="' + w.chat.CSS_REM_PRIV_CLIENT + 
+				'">x</div>' );
+			lCloseButton.click( function( ) {
+				$( '.tooltip' ).hide( ).remove( );
+				var lNext = lPrivateItem.next( );
+				var lPrev = lPrivateItem.prev( );
 				
-				if ( lNext.get(0) ){
-					w.chat.setTabActive( lNext.find('.client_id').text() );
-				} else if( lPrev.get(0) ){
-					w.chat.setTabActive( lPrev.find('.client_id').text() );
+				if ( lNext.get( 0 ) ) {
+					w.chat.setTabActive( 
+						lNext.find( '.' + w.chat.CSS_CLIENT_ID ).text( ) );
+				} else if( lPrev.get( 0 ) ) {
+					w.chat.setTabActive( 
+						lPrev.find( '.' + w.chat.CSS_CLIENT_ID ).text( ) );
 				} else{
 					w.chat.startConversationWith( null );
+					w.chat.switchPublic( );
 				}
-				lPrivateItem.remove();
+				lPrivateItem.remove( );
 			});
 			
 			lPrivateItem.append( lCloseButton );
 			
-			lPrivateItem.click( function(){
+			lPrivateItem.click( function( ) {
 				w.chat.startConversationWith( aSourceId );
-			} );
+			});
 			
 			var lColor = w.chat.getClientColor( aSourceId );
-			lPrivateItem.css({
+			lPrivateItem.css( {
 				color: lColor
 			});
 		
-			lPrivateItem.click( function(){
+			lPrivateItem.click( function( ) {
 				w.chat.addPrivateTab( aSourceId );
 				w.chat.startConversationWith( aSourceId );
 			});
@@ -380,35 +406,36 @@ $.widget( "jws.chat", {
 	
 	},
 	
-	setTabActive: function( aClientId ){
-		var lFullId  = aClientId.split("@");
+	setTabActive: function( aClientId ) {
+		var lFullId  = aClientId.split( "@" );
 		var lId  = lFullId[1];
 		
-		w.chat.ePrivateUsersBox.children().each( function(){
-			if( "_" + lId == $( this ).attr( "id" )){
-				$( this ).addClass( "active" ).removeClass("new_message");
+		w.chat.ePrivateUsersBox.children( ).each( function( ) {
+			if( "_" + lId == $( this ).attr( "id" ) ) {
+				$( this ).addClass( w.chat.CSS_ACTIVE ).removeClass( 
+					w.chat.CSS_NEW_MSG );
 			} else{
-				$( this ).removeClass( "active" );
+				$( this ).removeClass( w.chat.CSS_ACTIVE );
 			}
 		});
 	},
 	
-	notifyTabWithMessage: function( aSourceId ){
-		if( aSourceId != w.chat.mPrivateChatWith ){
-			var lFullId  = aSourceId.split("@");
+	notifyTabWithMessage: function( aSourceId ) {
+		if( aSourceId != w.chat.mPrivateChatWith ) {
+			var lFullId  = aSourceId.split( "@" );
 			var lId  = lFullId[1];
 		
 			var lTab = null;
-			w.chat.ePrivateUsersBox.children().each( function(){
-				if( "_" + lId == $( this ).attr( "id" )){
+			w.chat.ePrivateUsersBox.children( ).each( function( ) {
+				if( "_" + lId == $( this ).attr( "id" ) ) {
 					lTab = $( this );
 				}
 			});
-			if( lTab.hasClass( "new_message" ) ){
-				lTab.fadeTo(300, 0.25).fadeTo( 300, 0.80 )
-				.fadeTo(300, 0.25).fadeTo( 300, 1 );
+			if( lTab.hasClass( w.chat.CSS_NEW_MSG ) ) {
+				lTab.fadeTo( 300, 0.25 ).fadeTo( 300, 0.80 )
+				.fadeTo( 300, 0.25 ).fadeTo( 300, 1 );
 			}else {
-				lTab.addClass( "new_message" );
+				lTab.addClass( w.chat.CSS_NEW_MSG );
 			}
 		} else{
 			
@@ -416,15 +443,15 @@ $.widget( "jws.chat", {
 		
 	},
 	
-	startConversationWith: function( aClientId ){
-		if ( aClientId ){
+	startConversationWith: function( aClientId ) {
+		if ( aClientId ) {
 			w.chat.mPrivateChatWith = aClientId;
 		
-			w.chat.eChatTitle.html( "User: " + "<b>" + aClientId + "</b>");
+			w.chat.eChatTitle.html( "User: " + "<b>" + aClientId + "</b>" );
 			
 			// Change to the private area
-			if( w.chat.mIsPublicActive ){
-				w.chat.switchPrivate();
+			if( w.chat.mIsPublicActive ) {
+				w.chat.switchPrivate( );
 			}
 			
 			// Load the history for this user
@@ -434,16 +461,17 @@ $.widget( "jws.chat", {
 			w.chat.setTabActive( aClientId );
 			
 			// Set the cursor to start typing
-			w.chat.eMessageBox.focus();
+			w.chat.eMessageBox.focus( );
 		} else {
-			w.chat.eChatTitle.html( "User: ?" ); 
+			w.chat.eChatTitle.html( "User: ?" );
+			w.chat.mPrivateChatWith = null;
 			w.chat.switchHistory( null );
 		}
 	},
 	
-	isUserOnline: function( lTargetId ){
-		for( var lIndex in w.chat.mOnlineClients){
-			if( w.chat.mOnlineClients[ lIndex ] == lTargetId ){
+	isUserOnline: function( lTargetId ) {
+		for( var lIndex in w.chat.mOnlineClients ) {
+			if( w.chat.mOnlineClients[ lIndex ] == lTargetId ) {
 				return true;
 			}
 		}
@@ -453,18 +481,15 @@ $.widget( "jws.chat", {
 	/**
 	 * Changes the history of the chat window between two users
 	 **/
-	switchHistory: function( aClientId ){
-		if( aClientId ){
+	switchHistory: function( aClientId ) {
+		if( aClientId ) {
 			var lHistory = w.chat.mPrivateClients[ aClientId ];
-		
-			if( lHistory ){
+			if( lHistory ) {
 				w.chat.eLogPrivate.html( lHistory );
-			} else{
-				w.chat.eLogPrivate.html("");
+				return;
 			}
-		} else{
-			w.chat.eLogPrivate.html("");
 		}
+		w.chat.eLogPrivate.html( "" );
 	},
 	
 	/**
@@ -473,16 +498,16 @@ $.widget( "jws.chat", {
 	logChatMessage: function( aClientId, aMessage, aIsPrivate ) {
 		// set a default user name if not yet logged in
 		if( !aClientId ) {
-			aClientId = mWSC.getUsername() + "@" + mWSC.getId();
+			aClientId = mWSC.getUsername( ) + "@" + mWSC.getId( );
 		}
-		var lHistoryItem = $( '<div class="history"></div>' );
+		var lHistoryItem = $( '<div class="' + w.chat.CSS_HISTORY + '"></div>' ),
+		lIsMe = aClientId == w.chat.mAuthenticatedUser?"me":aClientId,
+		lEUsername = $( '<div class="' + w.chat.CSS_TITLE + '">'+ 
+			lIsMe + ": " + '</div>' ),
+		lColor = w.chat.getClientColor( aClientId );
 		
-		var lEUsername = $( '<div class="title">'+ aClientId + ": " + '</div>' );
-		
-		var lColor = w.chat.getClientColor( aClientId );
-		
-		if( lColor != null ){
-			lEUsername.css({
+		if( lColor != null ) {
+			lEUsername.css( {
 				"color": lColor
 			});
 		}
@@ -490,38 +515,38 @@ $.widget( "jws.chat", {
 		lHistoryItem.append( lEUsername );
 		
 		var lParsedMessage = w.chat.parseEmoticons( aMessage );
-		
 		lHistoryItem.append( '<div class="text">'+ lParsedMessage +'</div>' );
 		
 		// Save the history of all private messages
-		if( aIsPrivate ){
+		if( aIsPrivate ) {
+			// If the user selected someone to chat with
 			var lPrivateHistory = $( '<div></div>' ).append( lHistoryItem );
 			if( w.chat.mPrivateChatWith == aClientId || 
-				aClientId == w.chat.mAuthenticatedUser ){
+				aClientId == w.chat.mAuthenticatedUser ) {
 				
 				w.chat.eLogPrivate.append( lPrivateHistory );
 				
 				// Scroll to the bottom of the conversation
 				w.chat.eLogPrivate.scrollTop( w.chat.eLogPrivate.get( 0 ).scrollHeight -
-				w.chat.eLogPrivate.get( 0 ).clientHeight );
+					w.chat.eLogPrivate.get( 0 ).clientHeight );
 			
 				// Save conversation in history
-				if( w.chat.mPrivateClients[ w.chat.mPrivateChatWith ] ){
+				if( w.chat.mPrivateClients[ w.chat.mPrivateChatWith ] ) {
 					w.chat.mPrivateClients[ w.chat.mPrivateChatWith ] += 
-					lPrivateHistory.html();
+					lPrivateHistory.html( );
 				} else{
 					w.chat.mPrivateClients[ w.chat.mPrivateChatWith ] = 
-					lPrivateHistory.html();
+					lPrivateHistory.html( );
 				}
+				
+			}
+			// If you just pressed send button or the message 
+			// comes from someone you are chatting with
+			// Save conversation in history
+			if( w.chat.mPrivateClients[ aClientId ] ) {
+				w.chat.mPrivateClients[ aClientId ] += lPrivateHistory.html( );
 			} else{
-				// If you just pressed send button or the message 
-				// comes from someone you are chatting with
-				// Save conversation in history
-				if( w.chat.mPrivateClients[ aClientId ] ){
-					w.chat.mPrivateClients[ aClientId ] += lPrivateHistory.html();
-				} else{
-					w.chat.mPrivateClients[ aClientId ] = lPrivateHistory.html();
-				}
+				w.chat.mPrivateClients[ aClientId ] = lPrivateHistory.html( );
 			}
 		} else{
 			w.chat.eLogPublic.append( lHistoryItem );
@@ -535,39 +560,40 @@ $.widget( "jws.chat", {
 	 * @param aClients 
 	 *  The list of clients to be shown to the users
 	 **/
-	setClients: function( aClients ){
+	setClients: function( aClients ) {
 		w.chat.ePublicUsersBox.html( "" );
 		
-		if( aClients.length > 0 ){
-			$( aClients ).each(function( aIndex, aClientId ){
-				var lFullId  = aClientId.split("@");
+		if( aClients.length > 0 ) {
+			$( aClients ).each( function( aIndex, aClientId ) {
+				var lFullId  = aClientId.split( "@" );
 				var lId  = lFullId[1];
 			
-				var lPublicItem = $('<div class="public_online" id="'+ lId +
-					'">'+ aClientId +'</div>');
+				var lPublicItem = $( '<div class="' + w.chat.CSS_PUBLIC_ONLINE + 
+					'" id="'+ lId + '">'+ aClientId +'</div>' );
 				
 				// Use a default color for each client
 				var lColor = w.chat.getClientColor( aClientId );
 				
-				lPublicItem.css({
+				lPublicItem.css( {
 					color: lColor
 				});
 				
-				lPublicItem.click( function(){
+				lPublicItem.click( function( ) {
 					// Load the tab
 					w.chat.addPrivateTab( aClientId );
 					// Start a new conversation with this client
 					w.chat.startConversationWith( aClientId );
-				} );
+				});
 				
 				w.chat.ePublicUsersBox.append( lPublicItem );
 				
-				w.chat.mOnlineClients.push(lId);
+				w.chat.mOnlineClients.push( lId );
 			});
 		} else {
-			w.chat.ePublicUsersBox.html("").append(
-				'<div class="no_users_online">' + w.chat.MSG_NOT_CONNECTED_USERS + 
-				'</div>');
+			w.chat.ePublicUsersBox.html( "" ).append( 
+				'<div class="' + w.chat.CSS_NO_USERS_ONLINE + '">' +
+				w.chat.MSG_NOT_CONNECTED_USERS + 
+				'</div>' );
 		}
 	},
 	
@@ -576,32 +602,33 @@ $.widget( "jws.chat", {
 	 * @param aClients 
 	 *  The list of clients to be shown to the users
 	 **/
-	addClient: function( aClientId ){
+	addClient: function( aClientId ) {
 		// if there are not users online remove the sign no_users_online
-		var lENoUsersOnline = w.chat.ePublicUsersBox.find('.no_users_online');
+		var lENoUsersOnline = w.chat.ePublicUsersBox.find( '.' + 
+			w.chat.CSS_NO_USERS_ONLINE );
 		
-		if( lENoUsersOnline ){
-			lENoUsersOnline.remove();	
+		if( lENoUsersOnline ) {
+			lENoUsersOnline.remove( );	
 		}
-		var lArray = aClientId.split("@");
+		var lArray = aClientId.split( "@" );
 		var lClientId = lArray[1];
 		
-		var lPublicItem = $("<div class='public_online' id='"+ lClientId +"'>" + 
-			aClientId +"</div>");
+		var lPublicItem = $( "<div class='" + w.chat.CSS_PUBLIC_ONLINE + 
+			"' id='"+ lClientId +"'>" + aClientId +"</div>" );
 		
 		// Registering clicks of elements
 		var lColor = w.chat.getClientColor( aClientId );
 		
-		lPublicItem.css({
+		lPublicItem.css( {
 			color: lColor
 		});
 		
-		lPublicItem.click( function(){
+		lPublicItem.click( function( ) {
 			// Load the tab
 			w.chat.addPrivateTab( aClientId );
 			// Start a new conversation with this client
 			w.chat.startConversationWith( aClientId );
-		} );
+		});
 		
 		w.chat.ePublicUsersBox.append( lPublicItem );
 		
@@ -613,7 +640,7 @@ $.widget( "jws.chat", {
 	 * @param aClients 
 	 *  The list of clients to be shown to the users
 	 **/
-	removeClient: function( aClientId ){
+	removeClient: function( aClientId ) {
 		if( w.chat.mOnlineClients ) {
 			for( var lIdx = 0; lIdx < w.chat.mOnlineClients.length; lIdx++ ) {
 				if( aClientId  ==  w.chat.mOnlineClients[ lIdx ] ) {
@@ -622,23 +649,24 @@ $.widget( "jws.chat", {
 				}
 			}
 
-			w.chat.ePublicUsersBox.children().each(function(){
-				if( $( this ).attr("id") == aClientId ){
-					$( this ).remove();
+			w.chat.ePublicUsersBox.children( ).each( function( ) {
+				if( $( this ).attr( "id" ) == aClientId ) {
+					$( this ).remove( );
 				}
 			});
 			
-			w.chat.ePrivateUsersBox.children().each(function(){
-				if( $( this ).attr("id") == "_" + aClientId ){
-					$( this ).removeClass( "online" ).addClass( "offline" )
-					.attr( "title", "User offline" );
-					refreshTooltips();
+			w.chat.ePrivateUsersBox.children( ).each( function( ) {
+				if( $( this ).attr( "id" ) == "_" + aClientId ) {
+					$( this ).removeClass( w.chat.CSS_ONLINE ).addClass( 
+						w.chat.CSS_OFFLINE ).attr( "title", "User offline" );
+					refreshTooltips( );
 				}
 			});
 			
-			if(w.chat.mOnlineClients.length <= 0){
-				w.chat.ePublicUsersBox.html("").append( 
-					'<div class="no_users_online">'+ w.chat.MSG_NOT_CONNECTED_USERS + 
+			if( w.chat.mOnlineClients.length <= 0 ) {
+				w.chat.ePublicUsersBox.html( "" ).append( 
+					'<div class="' + w.chat.CSS_NO_USERS_ONLINE + '">' + 
+					w.chat.MSG_NOT_CONNECTED_USERS + 
 					'</div>' );
 			}
 		}
@@ -647,25 +675,24 @@ $.widget( "jws.chat", {
 	/**
 	 * Removes all elements from the clients list
 	 **/
-	cleanAll: function(){
+	cleanAll: function( ) {
 		if( w.chat.mOnlineClients ) {
-			w.chat.mOnlineClients = [];
+			w.chat.mOnlineClients = [ ];
 		}
-		w.chat.ePublicUsersBox.html("").append(
-			'<div class="no_users_online">'+ w.chat.MSG_NOT_CONNECTED_USERS +'</div>');
-		
-		w.chat.ePrivateUsersBox.html("").append(
-			'<div class="no_users_online">'+ w.chat.MSG_NOT_CONNECTED_USERS +'</div>');
-			
-		w.chat.eLogPublic.html("");
-		w.chat.eLogPrivate.html("");
+		var lNotConnected = '<div class="' + w.chat.CSS_NO_USERS_ONLINE + '">'+ 
+		w.chat.MSG_NOT_CONNECTED_USERS +'</div>';
+	
+		w.chat.ePublicUsersBox.html( "" ).append( lNotConnected );
+		w.chat.ePrivateUsersBox.html( "" ).append( lNotConnected );
+		w.chat.eLogPublic.html( "" );
+		w.chat.eLogPrivate.html( "" );
 	},
 	
-	clearChatLog: function(){
-		if( w.chat.mIsPublicActive ){
-			w.chat.eLogPublic.html("");
+	clearChatLog: function( ) {
+		if( w.chat.mIsPublicActive ) {
+			w.chat.eLogPublic.html( "" );
 		} else {
-			w.chat.eLogPrivate.html("");
+			w.chat.eLogPrivate.html( "" );
 		}
 	},
 	
@@ -674,9 +701,9 @@ $.widget( "jws.chat", {
 	 * Gets a color for a given clientID
 	 * @param aClientID
 	 **/
-	getClientColor: function( aClientID ){
+	getClientColor: function( aClientID ) {
 		var lColor = null;
-		if( aClientID != undefined ){
+		if( aClientID != undefined ) {
 			do{
 				// Change the color if it is assigned to other client
 				lColor = w.chat.getRandomColor( 12 );
@@ -693,11 +720,11 @@ $.widget( "jws.chat", {
 	 * Removes a defined color for a given clientID
 	 * @param aClientID
 	 **/
-	removeClientColor: function( aClientID ){
+	removeClientColor: function( aClientID ) {
 		if( w.chat.mUserColors ) {
 			for( var lIdx = 0; lIdx < w.chat.mUserColors.length; lIdx++ ) {
-				for(var lElem in w.chat.mUserColors[ lIdx ]){
-					if( aClientID ==  lElem) {
+				for( var lElem in w.chat.mUserColors[ lIdx ] ) {
+					if( aClientID ==  lElem ) {
 						w.chat.mUserColors.splice( lIdx, 1 );
 						break;
 					}
@@ -710,11 +737,11 @@ $.widget( "jws.chat", {
 	 * Determines wether a given color is assigned to a user
 	 * @param aColor
 	 **/
-	isColorUsed: function( aColor ){
+	isColorUsed: function( aColor ) {
 		var lFound = false;
-		$( w.chat.mUserColors ).each( function( aIndex, aElem ){
-			for ( var aKey in aElem ){
-				if( aElem[ aKey ] == aColor ){
+		$( w.chat.mUserColors ).each( function( aIndex, aElem ) {
+			for ( var aKey in aElem ) {
+				if( aElem[ aKey ] == aColor ) {
 					lFound = true;
 					break;
 				}
@@ -726,12 +753,12 @@ $.widget( "jws.chat", {
 	/**
 	 * Returns a color using a given intensity
 	 * @param aIntensity
-	 * 0 -  5  low intensity	(dark)
-	 * 5 -  10 medium intensity (half dark)
-	 * 10 - 15 high intensity   (light)
+	 * 0 -  5  low intensity	( dark )
+	 * 5 -  10 medium intensity ( half dark )
+	 * 10 - 15 high intensity   ( light )
 	 * default intensity = 10
 	 */
-	getRandomColor: function( aIntensity ){
+	getRandomColor: function( aIntensity ) {
 		var lColorChars = [
 		'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
 		];
@@ -749,8 +776,8 @@ $.widget( "jws.chat", {
 
 		return "#"+lRed + lGreen + lBlue;
 	},
-	getRandomNumber: function( aNumber ){
-		return Math.floor(Math.random(aNumber) * aNumber);
+	getRandomNumber: function( aNumber ) {
+		return Math.floor( Math.random( aNumber ) * aNumber );
 		
 	},
 	
@@ -758,24 +785,24 @@ $.widget( "jws.chat", {
 	 * Replaces all faces( emoticons ) by their respective image
 	 * @param aMessage
 	 */
-	parseEmoticons: function( aMessage ){
+	parseEmoticons: function( aMessage ) {
 		// TODO: Implement a better structure for this
 		var lParsedMessage = "";
-		for( var lIndex = 0; lIndex < aMessage.length; lIndex++ ){
+		for( var lIndex = 0; lIndex < aMessage.length; lIndex++ ) {
 			var lImage = null;
-			if( ( aMessage.length - lIndex ) >= 2 ){
+			if( ( aMessage.length - lIndex ) >= 2 ) {
 				var l2CharsSymbol = ( aMessage[ lIndex ] + aMessage[ lIndex + 1 ] )
-				.toLowerCase();
+				.toLowerCase( );
 				lImage = w.chat.mEmoticons[ l2CharsSymbol ];
 				
 				var l3CharsSymbol = null;
 				
-				if( !lImage ){
-					if( (aMessage.length - lIndex ) >= 3 ){
+				if( !lImage ) {
+					if( ( aMessage.length - lIndex ) >= 3 ) {
 						l3CharsSymbol = ( aMessage[ lIndex ] + aMessage[ lIndex + 1 ] 
-							+ aMessage[ lIndex + 2 ]).toLowerCase();
+							+ aMessage[ lIndex + 2 ] ).toLowerCase( );
 						lImage = w.chat.mEmoticons[ l3CharsSymbol ];
-						if( lImage ){
+						if( lImage ) {
 							lIndex += 2;
 						}
 					}
@@ -783,7 +810,7 @@ $.widget( "jws.chat", {
 					lIndex++;
 				}
 			}
-			if( lImage ){
+			if( lImage ) {
 				lParsedMessage += "<img src='" + w.chat.mEmoticonsPath + 
 				lImage + ".png" + "' title='"+ lImage + "'>";
 			} else{
@@ -793,64 +820,64 @@ $.widget( "jws.chat", {
 		return lParsedMessage;
 	},
 	
-	loadEmoticons: function(){
-		//		w.chat.eEmoticonsWindow.hide();
-		w.chat.eEmoticonsWindow.children().each( function(){
-			var lId = $( this ).attr( "id" );
-			if( $( this ).hasClass("emoticon_btn") ){
+	loadEmoticons: function( ) {
+		//		w.chat.eEmoticonsWindow.hide( );
+		w.chat.eEmoticonsWindow.children( ).each( function( ) {
+			var lId = $( this ).attr( "id" ),
+			lImgPath = w.chat.mEmoticonsPath + lId;
+			if( $( this ).hasClass( w.chat.CSS_EMOTICON_BTN ) ) {
 				var lNormalStyle = {
-					"background": "url(css/images/emoticons/" + lId +
-					".png) no-repeat"
+					"background": "url(" + lImgPath + ".png ) no-repeat"
 				};
 				var lHoverStyle = {
-					"background": "url(css/images/emoticons/" + lId +
-					"_h.png) no-repeat"
+					"background": "url(" + lImgPath + "_h.png ) no-repeat"
 				};
 			
 				var lPressedStyle = {
-					"background": "url(css/images/emoticons/" + lId +
-					"_p.png) no-repeat"
+					"background": "url( " + lImgPath + "_p.png ) no-repeat"
 				};
-				$( this ).css(lNormalStyle);
-				$( this ).mouseover(function(){
-					$( this ).css(lHoverStyle);
+				$( this ).css( lNormalStyle );
+				$( this ).mouseover( function( ) {
+					$( this ).css( lHoverStyle );
 				});
-				$( this ).mouseout(function(){
-					$( this ).css(lNormalStyle);
+				$( this ).mouseout( function( ) {
+					$( this ).css( lNormalStyle );
 				});
-				$( this ).mousedown(function(){
-					$( this ).css(lPressedStyle);
+				$( this ).mousedown( function( ) {
+					$( this ).css( lPressedStyle );
 				});
-				$( this ).click( function(){
-					w.chat.eBtnActiveEmoticon.css( lNormalStyle ).attr( "title", lId );
-					w.chat.eBtnActiveEmoticon.click();
-					w.chat.eEmoticonsWindow.hide();
+				$( this ).click( function( ) {
+					w.chat.eBtnActiveEmoticon.css( lNormalStyle )
+					.attr( "title", lId );
+					w.chat.eBtnActiveEmoticon.click( );
+					w.chat.eEmoticonsWindow.hide( );
 				});
 			
 			}
 		});
 	},
 	
-	addEmoticon: function( ){
-		if( mWSC.isConnected() ){
-			if( !$( this ).attr( "title" ) ){
+	addEmoticon: function( ) {
+		if( mWSC.isConnected( ) ) {
+			if( !$( this ).attr( "title" ) ) {
 				$( this ).attr( "title", "wink" );
 			}
 			var lSymbol = null;
-			for( var lKey in w.chat.mEmoticons ){
-				if( w.chat.mEmoticons[ lKey ] == $( this ).attr( "title" ) ){
+			for( var lKey in w.chat.mEmoticons ) {
+				if( w.chat.mEmoticons[ lKey ] == $( this ).attr( "title" ) ) {
 					lSymbol = lKey;
 					break;
 				}
 			}
-			if( lSymbol ){
-				var lMessage = w.chat.eMessageBox.val();
-				if( lMessage == "Type your message..."){
+			if( lSymbol ) {
+				var lMessage = w.chat.eMessageBox.val( );
+				if( lMessage == w.chat.MSG_TYPE_YOUR_MSG ) {
 					w.chat.eMessageBox.val( lSymbol );
 				} else{
-					if( w.chat.mSelectionStart >= 0 && w.chat.mSelectionEnd >= 0 ){
+					if( w.chat.mSelectionStart >= 0 && w.chat.mSelectionEnd >= 0 ) {
 						var lFirst = lMessage.slice( 0, w.chat.mSelectionStart );
-						var lEnd = lMessage.slice( w.chat.mSelectionEnd, lMessage.length );
+						var lEnd = lMessage.slice( w.chat.mSelectionEnd, 
+							lMessage.length );
 						var lJoin = lFirst + lSymbol + lEnd;
 						w.chat.eMessageBox.val( lJoin );
 					}
@@ -861,72 +888,72 @@ $.widget( "jws.chat", {
 	},
 	
 	messageBoxBlur : function( aEvent ) {
-		if( $( this ).val() == "" ) {
-			$( this ).val("Type your message...").attr( "class", "opaque" );
+		if( $( this ).val( ) == "" ) {
+			$( this ).val( w.chat.MSG_TYPE_YOUR_MSG ).attr( "class", 
+				w.chat.CSS_OPAQUE );
 		}
 		var lTarget = aEvent.target;
-		if( lTarget ){
+		if( lTarget ) {
 			w.chat.mSelectionStart = lTarget.selectionStart;
 			w.chat.mSelectionEnd = lTarget.selectionEnd;
 		}
 	},
 	
 	messageBoxClick: function( aEvent ) { 
-		if( $( this ).val( ) == "Type your message..." ) {
-			$( this ).val( "" ).attr( "class", "dark" );
+		if( $( this ).val( ) == w.chat.MSG_TYPE_YOUR_MSG ) {
+			$( this ).val( "" ).attr( "class", w.chat.CSS_DARK );
 		}
 	},
 	
 	messageBoxKeyPressed: function( aEvt ) {
 		if( aEvt.keyCode == 13 && ( !aEvt.shiftKey ) ) {
 			aEvt.preventDefault( );
-			
-			w.chat.sendMessage( $( this ).val( ) );
+			var lText = $( this ).val( );
+			w.chat.sendMessage( lText );
 			$( this ).val( "" );
 		}
 	},
 	
 	switchPrivate: function( ) {
-		
-		var lQuantity = parseInt(w.chat.eUnreadMessages.text());
-		if (lQuantity > 0 ){
-			w.chat.eUnreadMessages.fadeOut( 500 ).text(0);
-			if( w.chat.ePrivateUsersBox.children().length == 1 ){
-				var lActiveClient = w.chat.ePrivateUsersBox.first()
-				.find('.client_id').text();
+		var lQuantity = parseInt( w.chat.eUnreadMessages.text( ) );
+		if ( lQuantity > 0 ) {
+			w.chat.eUnreadMessages.fadeOut( 500 ).text( 0 );
+			if( w.chat.ePrivateUsersBox.children( ).length == 1 ) {
+				var lActiveClient = w.chat.ePrivateUsersBox.first( )
+				.find( '.' + w.chat.CSS_CLIENT_ID ).text( );
 				
 				w.chat.startConversationWith( lActiveClient );
 			}
 		}
 		// Show the privateLogArea
-		w.chat.eLogPrivate.show();
-		w.chat.eLogPublic.hide();
+		w.chat.eLogPrivate.show( );
+		w.chat.eLogPublic.hide( );
 		
 		w.chat.eChatTitle.text( "User: " + 
-			(w.chat.mPrivateChatWith || "?") );
+			( w.chat.mPrivateChatWith || "?" ) );
 		
 		// Show the privateUsersBox
-		w.chat.ePublicUsersBox.hide();
-		w.chat.ePrivateUsersBox.show();
+		w.chat.ePublicUsersBox.hide( );
+		w.chat.ePrivateUsersBox.show( );
 		
-		w.chat.eBtnPublicChat.attr("class", "");
-		w.chat.eBtnPrivateChat.attr("class", "active");
+		w.chat.eBtnPublicChat.attr( "class", "" );
+		w.chat.eBtnPrivateChat.attr( "class", w.chat.CSS_ACTIVE );
 		w.chat.mIsPublicActive = false;
 	},
 	
 	switchPublic: function( ) {
 		// Show the publicLogArea
-		w.chat.eLogPrivate.hide();
-		w.chat.eLogPublic.show();
+		w.chat.eLogPrivate.hide( );
+		w.chat.eLogPublic.show( );
 		
 		w.chat.eChatTitle.text( "Public chat" );
 		
 		// Show the publicUsersBox
-		w.chat.ePrivateUsersBox.hide();
-		w.chat.ePublicUsersBox.show();
+		w.chat.ePrivateUsersBox.hide( );
+		w.chat.ePublicUsersBox.show( );
 		
-		w.chat.eBtnPublicChat.attr("class", "active");
-		w.chat.eBtnPrivateChat.attr("class", "");
+		w.chat.eBtnPublicChat.attr( "class", w.chat.CSS_ACTIVE );
+		w.chat.eBtnPrivateChat.attr( "class", "" );
 		w.chat.mIsPublicActive = true;
 	}
 });

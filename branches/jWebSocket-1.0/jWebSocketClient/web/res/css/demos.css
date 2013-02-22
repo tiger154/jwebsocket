@@ -235,7 +235,7 @@ textarea{
     height: 20px;
     font-size: 10px;
     font-family: "Verdana";
-    min-width: 414px;
+    min-width: 422px;
     background: #ffffff;
     margin-left: 300px;
     padding-left: 4px;
@@ -641,7 +641,7 @@ input[type="checkbox"]{
 }
 
 .ui-dialog-titlebar{
-	padding: 2px 5px 2px 12px !important;
+	padding: 5px 5px 5px 12px !important;
 	font-size: 12px;
 }
 /* ----------------------- JQUERY UI DIALOG PERSONALIZATION -------------------------- */
