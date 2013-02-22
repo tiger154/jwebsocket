@@ -1,22 +1,20 @@
 #main_content{
-	height: 305px;
 	float: left;
 	width: 100%;
-	/*	border: 1px solid gray;*/
 	padding-top: 10px;
 }
 
 #description_box p{
-	margin: 0px 0 0 12px;
-	padding: 0;
+	margin: 0;
+	padding: 0 5px 5px 5px;
 }
 
 #description_box{
 	margin-top: 0px;
-	padding: 0;
-	width: 250px;
-    height: 100px;
-    float: left;
+	margin-left: 15px;
+	width: 200px;
+	height: auto;
+	float: left;
 }
 
 #chat_box{
@@ -50,10 +48,10 @@
 }
 
 #new_box{
-	width: 238px;
+	width: 200px;
     height: 100px;
     float: left;
-	margin-left: 12px;
+	margin-left: 16px;
 	margin-top: 18px;
     padding-bottom: 10px;
 	border: 1px solid #C8C8C8;
@@ -108,7 +106,7 @@
     background: #fff;
     color: #797878;
     height: 200px;
-    font-size: 12px;
+    font-size: 8pt;
     width: 100%;
 }
 
@@ -193,7 +191,7 @@
 }
 
 .user_box_body div.public_online{
-	background: url(images/public_online_user.png) no-repeat  7px 3px;
+	background: url(images/private_online_user.png) no-repeat  7px 6px;
 }
 
 .user_box_body .client_id{
@@ -210,7 +208,16 @@
 	width: 5px !important;
 	float: right;
 	padding: 0 3px 2px 0px !important;
-	
+
+}
+
+.user_box_body .no_users_online{
+	padding-left: 7px;
+}
+
+.user_box_body .no_users_online:hover{
+	color: #797878;
+	cursor: auto;
 }
 
 #message_box textarea{
@@ -369,7 +376,7 @@
 #new_box_chat_btn{
 	padding-top: 5px;
 	float: left;
-	margin-left: 60px;
+	margin-left: 10%;
 }
 
 #jws_download_button{

@@ -51,14 +51,14 @@ $.widget( "jws.log", {
 });
 
 function log( aString ) {
-	w.log.eLog.append( aString + "<br>" );
+	w.log.eLog.append( aString + ( ( aString[ 0 ]!="<" )?"<br/>":"" ) );
 	
 	var lLineHeight = 20; // This should match the line-height in the CSS
 	var lScrollHeight = w.log.eLog.get( 0 ).scrollHeight;
 	w.log.eLog.get( 0 ).style.height = lScrollHeight;
 	var numberOfLines = Math.floor( lScrollHeight/lLineHeight );
 	if( numberOfLines >= w.log.options.maxLogLines ) {
-		var lSplitted = w.log.eLog.html( ).split( "<br>" );
+		var lSplitted = w.log.eLog.html( ).split( "<br/>" );
 		
 		var lHtml = "";
 		$( lSplitted ).each( function( aIndex, aElement ) {

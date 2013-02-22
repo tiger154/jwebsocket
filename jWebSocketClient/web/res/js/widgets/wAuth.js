@@ -468,5 +468,22 @@ $.widget("jws.auth",{
 		if( aEvent.keyCode == 13 || aEvent.keyChar == 13 ) {
 			w.auth.logon( );
 		}
+	},
+	
+	cleanHTML: function( aMsg ) {
+		var lResult = "", lEnd = 0, lChar = '';
+		for( var lIdx = 0; lEnd = aMsg.length, lIdx < lEnd; lIdx++ ) {
+			lChar = aMsg[ lIdx ];
+			if( lChar == '<' ) {
+				lResult += '%3c';
+			} else if( lChar == '>' ) {
+				lResult += '%3e';
+			} else if( lChar == '&' ) {
+				lResult += '%26';
+			} else {
+				lResult += lChar;
+			}
+		}
+		return lResult;
 	}
 });

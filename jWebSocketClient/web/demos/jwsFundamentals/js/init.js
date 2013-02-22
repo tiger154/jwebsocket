@@ -1,4 +1,5 @@
 /* 
+ * jWebSocket Fundamentals Initialization script
  * @author vbarzana
  */
 
@@ -22,7 +23,7 @@ function init( ) {
 			lBtn.html( )+ '</div>' + '<div class="' + lRightClass + '"></div>' );
 	});
 	
-	//configuring tooltip as we wish
+	//configuring tooltip
 	$( "[title]" ).tooltip({
 		position: "bottom center", 
 		onShow: function( ) {

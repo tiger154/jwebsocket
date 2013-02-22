@@ -24,16 +24,17 @@
         <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
-
         <title>jWebSocket Chat Demo</title>
 
-        <!-- DEMO STYLES  -->
+		<!-- JQUERY STYLES -->
+		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+
+		<!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsChat.css"/>
 
-        <!-- JQUERY DEPENDENCIES -->
-		<link rel="stylesheet" type="text/css" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" />
-        <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+		<!-- JQUERY DEPENDENCIES -->
+		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
 		<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
 
@@ -60,15 +61,7 @@
 					<div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
-                            <div id="logoff_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                 onmousedown="this.className='button onmousedown'" 
-                                 onmouseup="this.className='button onmouseup'" 
-                                 onmouseout="this.className='button onmouseout'" 
-                                 onclick="this.className='button onmouseover'">
-                                <div class="l"></div>
-                                <div class="c">Logout</div>
-                                <div class="r"></div>
-                            </div>
+                            <div id="logoff_button" class="button">Logout</div>
                         </div>
                     </div>
                     <div id="login_area">
@@ -78,17 +71,8 @@
                             <input type="text" id="user_text" value="guest"/>
                             <input type="password" id="user_password" value="guest"/>
                         </div>
-                        <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'"
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Login</div>
-                            <div class="r"></div>
-                        </div>
+                        <div id="login_button" class="button">Login</div>
                     </div>
-
                 </div>
             </div>
             <div id="container">
@@ -140,26 +124,10 @@
 							</div>
 
 							<div id="message_box_broadcast_btn" class="message_box_btn">
-								<div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">Send</div>
-									<div class="r"></div>
-								</div>
+								<div class="button">Send</div>
 							</div>
 							<div id="message_box_clear_btn" class="message_box_btn">
-								<div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">Clear</div>
-									<div class="r"></div>
-								</div>
+								<div class="button">Clear</div>
 							</div>
 						</div>
 
@@ -169,7 +137,7 @@
 								<div>
 									<div id="btn_private_chat" class="active">
 										<div id="new_message_notification" 
-											title="New private messages pending...">0</div>
+											 title="New private messages pending...">0</div>
 										Private chat 
 									</div>
 									<div id="separator">|</div>
@@ -179,7 +147,7 @@
 							<div id="users_box_body_header"></div>
 							<!--  Private users list  -->
 							<div id="users_box_body" class="user_box_body">
-<!--								<div class="online" id="_01.38134.1"><div class="client_id">guest@01.38134.10ffdfg0</div><div class="remove_private_client">x</div></div>-->
+								<!--								<div class="online" id="_01.38134.1"><div class="client_id">guest@01.38134.10ffdfg0</div><div class="remove_private_client">x</div></div>-->
 								<!-- <div class="offline" id="_01.38134.1">guest@01.38134.1</div>-->
 								<div class="no_users_online box">There are not connected users</div>
 							</div>
@@ -199,54 +167,37 @@
 									Cross-Browser Compatibility</a> page.
 							</p>
 						</div>
-						<!--						<div id="notification_area" class="box">
-													<div class="box_header">
-														Notification area
-													</div>
-												</div>-->
+						<!-- <div id="notification_area" class="box">
+								<div class="box_header">
+									Notification area
+								</div>
+							 </div>-->
 
 						<div id="new_box" class="box">
 							<p>To run chat on a single system, you can simulate other 
 								guests by opening one or more new chat windows.</p>
-							<div id="new_box_chat_btn" title="New Chat Window...">
-								<div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">New Chat Window</div>
-									<div class="r"></div>
-								</div>
+							<div id="new_box_chat_btn" class="button" 
+								 title="New Chat Window...">New Chat Window</div>
+						</div>
+						<!--       LOG BOX           -->
+						<div id="log_box" class="box">
+							<div id="log_box_header">
+								<div id="show_hide_log" class="hide">Hide Log</div>
+								<div id="clear_log">Clear Log</div>
+							</div>
+							<div id="log_box_content" class="log_box_visible"></div>
+						</div>
+
+						<!--       DOWNLOAD_BUTTON   -->
+						<div id="demo_box_footer">
+							<div id="jws_download_button" class="button download">
+								<a href="http://jwebsocket.org" target="blank">Download jWebSocket</a>
 							</div>
 						</div>
 						<!--	END	\\HERE GOES THE CONTENT OF EACH SPECIFIC DEMO\\			-->
 					</div>
-                    <!--       LOG BOX           -->
-                    <div id="log_box" class="box">
-                        <div id="log_box_header">
-                            <div id="show_hide_log" class="hide">Hide Log</div>
-                            <div id="clear_log">Clear Log</div>
-                        </div>
-                        <div id="log_box_content" class="log_box_visible"></div>
-                    </div>
-
-                </div>
-
-                <!--       DOWNLOAD_BUTTON   -->
-                <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
-                        <div class="r_download"></div>
-                    </div>
                 </div>
             </div>
         </div>
-
     </body>
 </html>
