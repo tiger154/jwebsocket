@@ -36,7 +36,7 @@ $.widget( "jws.chat", {
 		this.mEmoticons				= {
 			// Faces with 2 chars
 			":)": "smile", 
-			":( ": "sad",
+			":(": "sad",
 			":o": "surprise",
 			":d": "smile-big",
 			"{3": "heart",
@@ -49,9 +49,10 @@ $.widget( "jws.chat", {
 			// Faces with three chars
 			"{/3": "heart-broken",
 			"(r)": "rose",
-			":;( ": "crying",
+			":;(": "crying",
 			":?": "confused",
-			"-){": "jWebSocketLogo"
+			"-){": "jWebSocketLogo",
+			":-P": "raspberry"
 		};
 		this.mEmoticonsPath			= "css/images/emoticons/";
 		
