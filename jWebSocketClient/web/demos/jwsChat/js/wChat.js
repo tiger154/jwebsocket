@@ -52,7 +52,9 @@ $.widget( "jws.chat", {
 			":;(": "crying",
 			":?": "confused",
 			"-){": "jWebSocketLogo",
-			":-P": "raspberry"
+			":-p": "raspberry",
+			":-)": "smile",
+			":-(": "sad"
 		};
 		this.mEmoticonsPath			= "css/images/emoticons/";
 		
