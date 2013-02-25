@@ -23,22 +23,24 @@ import org.jwebsocket.config.ConfigHandler;
  * Handler for the logging configuration
  *
  * @author puran, aschulze
- * @version $Id: LoggingConfigHandler.java 616 2010-07-01 08:04:51Z fivefeetfurther $
+ * @version $Id: LoggingConfigHandler.java 616 2010-07-01 08:04:51Z
+ * fivefeetfurther $
  */
 public class LoggingConfigHandler implements ConfigHandler {
 
 	private static final String ELEMENT_LOG4J = "log4j";
 	private static final String RELOAD_DELAY = "autoreload";
+	private static final String MAX_LOG_TOKEN_LENGTH = "max_log_token_length";
 
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @param aStreamReader 
+	 *
+	 * @param aStreamReader
 	 */
 	@Override
 	public Config processConfig(XMLStreamReader aStreamReader)
 			throws XMLStreamException {
-		Integer lReloadDelay = null;
+		Integer lReloadDelay = null, lMaxLogTokenLength = null;
 		while (aStreamReader.hasNext()) {
 			aStreamReader.next();
 			if (aStreamReader.isStartElement()) {
@@ -46,6 +48,9 @@ public class LoggingConfigHandler implements ConfigHandler {
 				if (elementName.equals(RELOAD_DELAY)) {
 					aStreamReader.next();
 					lReloadDelay = Integer.parseInt(aStreamReader.getText());
+				} else if (elementName.equals(MAX_LOG_TOKEN_LENGTH)) {
+					aStreamReader.next();
+					lMaxLogTokenLength = Integer.parseInt(aStreamReader.getText());
 				} else {
 					//ignore
 				}
@@ -57,6 +62,6 @@ public class LoggingConfigHandler implements ConfigHandler {
 				}
 			}
 		}
-		return new LoggingConfig(lReloadDelay);
+		return new LoggingConfig(lReloadDelay, lMaxLogTokenLength);
 	}
 }

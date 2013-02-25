@@ -18,6 +18,7 @@ package org.jwebsocket.logging;
 import org.apache.log4j.Logger;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.xml.LoggingConfig;
+import org.jwebsocket.token.Token;
 
 /**
  * Provides the common used jWebSocket logging support based on Apache's log4j.
@@ -40,16 +41,24 @@ public class Logging {
 	 */
 	public final static int SINGLE_FILE = 2;
 	private static int mReloadDelay = 20000;
+	/**
+	 *
+	 */
+	public static int mMaxLogTokenLength = 512;
 
 	/**
 	 * Initializes the jWebSocket logging system with the given log level. All
 	 * subsequently instantiated class specific loggers will use this setting.
 	 *
 	 * @param aReloadDelay
+	 * @param aMaxLogTokenLength  
 	 */
-	public static void initLogs(Integer aReloadDelay) {
+	public static void initLogs(Integer aReloadDelay, Integer aMaxLogTokenLength) {
 		if (aReloadDelay != null) {
 			mReloadDelay = aReloadDelay;
+		}
+		if (aMaxLogTokenLength != null) {
+			mMaxLogTokenLength = aMaxLogTokenLength;
 		}
 	}
 
@@ -59,7 +68,7 @@ public class Logging {
 	 */
 	public static void initLogs(LoggingConfig aLoggingConfig) {
 		if (aLoggingConfig != null) {
-			initLogs(aLoggingConfig.getReloadDelay());
+			initLogs(aLoggingConfig.getReloadDelay(), aLoggingConfig.getMaxLogTokenLength());
 		}
 	}
 
@@ -139,5 +148,36 @@ public class Logging {
 	 */
 	public static Logger getLogger() {
 		return JWebSocketConfig.getLogger();
+	}
+
+	/**
+	 *
+	 * @param aString 
+	 * @return
+	 */
+	public static String getTokenStr(String aString) {
+		if (null != aString) {
+			if (mMaxLogTokenLength > 0 && aString.length() > mMaxLogTokenLength) {
+				aString = aString.substring(0, mMaxLogTokenLength) + "...";
+			}
+		} else {
+			aString = "null";
+		}
+		return aString;
+	}
+
+	/**
+	 *
+	 * @param aToken
+	 * @return
+	 */
+	public static String getTokenStr(Token aToken) {
+		String lToken;
+		if (null != aToken) {
+			lToken = getTokenStr(aToken.toString());
+		} else {
+			lToken = "null";
+		}
+		return lToken;
 	}
 }
