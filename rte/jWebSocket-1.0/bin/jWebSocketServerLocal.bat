@@ -1,11 +1,8 @@
 @echo off
-echo Starting the jWebSocket Server...
+echo Starting the jWebSocket Server in the current path (temporarily overwriting JWEBSOCKET_HOME!)...
 echo (C) Copyright 2012 Innotrade GmbH - jWebSocket.org
 echo.
-rem if JWEBSOCKET_HOME not set try to create a temporary one
-goto start
 
-if not "%JWEBSOCKET_HOME%"=="" goto start
 pushd ..
 set JWEBSOCKET_HOME=%cd%
 popd

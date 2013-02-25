@@ -60,6 +60,10 @@
 		<log4j>
 			<!-- automatic reload of log config options in ms (0 for none, minimum 5000ms) -->
 			<autoreload>20000</autoreload>
+			<!-- In the log file (not for the C/S-transmission) tokens exceeding 
+				the here configured maximum log length will be automatically cut
+				(use 0 to log the tokens in full size, default: 512 characters) -->
+			<max_log_token_length>512</max_log_token_length>
 		</log4j>
 	</logging>
 
@@ -1456,17 +1460,14 @@
 		<plugin>
 			<name>org.jwebsocket.plugins.filesystem.FileSystemPlugIn</name>
 			<!-- to use the enterprise edition of jWebSocketFileSystemPlugIn replace the above line by the following one -->
-			<!-- <name>org.jwebsocket.enterprise.plugins.filesystem.FileSystemPlugInEE</name> -->
+			<!-- <name>org.jwebsocket.enterprise.plugins.filesystem.FileSystemPlugIn</name> -->
 			<id>jws.filesystem</id>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<!-- to use the enterprise edition of jWebSocketFileSystemPlugIn add the following line -->
-			<!-- <jar>jWebSocketFileSystemPlugInEE-1.0.jar</jar> -->
-			<jar>jWebSocketFileSystemPlugIn-1.0.jar</jar>
-			<!--
 			<jars>
 				<jar>${JWEBSOCKET_HOME}libs/jWebSocketFileSystemPlugIn-1.0.jar</jar>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketFileSystemPlugInEE-1.0.jar</jar>
 			</jars>
-			-->
 			<!-- plug-in specific settings -->
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/FileSystemPlugIn/filesystem.xml</setting>
@@ -1525,16 +1526,18 @@
 
 		<!-- ItemStorage plug-in -->
 		<plugin>
-			<name>org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn</name>
+			<!-- <name>org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn</name> -->
+			<!-- to use the enterprise edition of jWebSocketFileSystemPlugIn replace the above line by the following one -->
+			<name>org.jwebsocket.enterprise.plugins.itemstorage.ItemStoragePlugIn</name>
 			<id>jws.itemstorage</id>
 			<ns>org.jwebsocket.plugins.itemstorage</ns>
-			<jar>jWebSocketItemStoragePlugIn-1.0.jar</jar>
 			<jars>
-			<jar>${JWEBSOCKET_HOME}libs/jWebSocketItemStoragePlugIn-1.0.jar</jar>
-			<jars>
+				<jar>${JWEBSOCKET_HOME}libs/jWebSocketItemStoragePlugIn-1.0.jar</jar>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketItemStoragePlugInEE-1.0.jar</jar>
+			</jars>
 			<!-- plug-in specific settings -->
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ItemStoragePlugIn/itemstorage.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/ItemStoragePlugIn/itemstorage.xml</setting>
 				<!-- Authorization method
 					- spring: Uses the user Spring authentication to check for granted authorities
 					- static: Uses the user static (jWebSocket.xml users definition) authentication

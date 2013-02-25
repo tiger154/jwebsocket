@@ -1,8 +1,9 @@
 @echo off
-set ksFile=enapso.org.ks
-set keyFile=enapso.org.key
-set crtFile=enapso.org.crt
-set bundleFile=enapso.org.bundle.crt
+set host=YourHost.tld
+set ksFile=%host%.ks
+set keyFile=%host%.key
+set crtFile=%host%.crt
+set bundleFile=%host%.bundle.crt
 set pkcsFile=temporary.pkcs12
 
 echo This script generates a new a keystore for jWebSocket based on a private key and certificate file provided by an SSL cert issuer.

@@ -1,6 +1,7 @@
 @echo off
 echo Starting the jWebSocket ActiveMQ Stock Ticker...
-
+echo (C) Copyright 2012 Innotrade GmbH - jWebSocket.org
+echo.
 rem if JWEBSOCKET_HOME not set try to create a temporary one
 if not "%JWEBSOCKET_HOME%"=="" goto start
 pushd ..

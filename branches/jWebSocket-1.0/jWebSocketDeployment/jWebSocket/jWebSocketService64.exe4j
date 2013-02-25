@@ -16,7 +16,7 @@
       <versionLine x="20" y="40" text="version %VERSION%" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
     </text>
   </splashScreen>
-  <java mainClass="org.jwebsocket.console.JWebSocketServer" vmParameters="" arguments="logtarget=rollingfile loglevel=debug" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true" minVersion="1.5" maxVersion="" allowBetaVM="false" jdkOnly="false">
+  <java mainClass="org.jwebsocket.console.JWebSocketServer" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true" minVersion="1.6" maxVersion="" allowBetaVM="false" jdkOnly="false">
     <searchSequence>
       <registry />
       <envVar name="JAVA_HOME" />

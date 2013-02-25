@@ -34,9 +34,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC0 (build 30221)
+	//:const:*:VERSION:String:1.0 RC0 (build 30222)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC0 (build 30221)",
+	VERSION: "1.0 RC0 (build 30222)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -308,6 +308,24 @@ var jws = {
 		return this.getDefaultSSLServerURL() + "Comet";
 	},
 
+	//:m:*:getAutoServerURL
+	//:d:en:Returns the default URL to the jWebSocket Server. The schema ws/wss _
+	//:d:en:is automatically selected by the http/https schema. This is a convenience _
+	//:d:en:method used for the jWebSocket demo dialogs. In case of changes to the _
+	//:d:en:server URL you only need to change to above JWS_SERVER_xxx constants.
+	//:a:en::::none
+	//:r:*:::void:Default jWebSocket server URL consisting of schema://host:port/context/servlet
+	getAutoServerURL: function() {
+		var lIsWSS = location.protocol && location.protocol.indexOf("https") >= 0;
+		return( this.getServerURL(
+			(lIsWSS ? jws.JWS_SERVER_SSL_SCHEMA : jws.JWS_SERVER_SCHEMA ),
+			jws.JWS_SERVER_HOST,
+			(lIsWSS ? jws.JWS_SERVER_SSL_PORT : jws.JWS_SERVER_PORT ),
+			jws.JWS_SERVER_CONTEXT,
+			jws.JWS_SERVER_SERVLET
+			));
+	},
+	
 	//:m:*:browserSupportsWebSockets
 	//:d:en:checks if the browser or one of its plug-ins like flash or chrome _
 	//:d:en:do support web sockets to be used by an application.
