@@ -26,10 +26,22 @@ copy /b jWebSocket.js + jWebSocketComet.js + jwsCache.js + jwsAPIPlugIn.js + jws
 
 rem switch back to deployment folder
 popd
-cd
+set cd=%cd%
 
-rem call obfuscator
-start /wait "" "C:\Program Files (x86)\DAMIANI\Jasob 4.0\jasob.exe" /src:"jWebSocket\jWebSocket.jsbp" /log:%temp%\jasob.log
+rem call obfuscator CE
+start /wait "" "C:\Program Files (x86)\DAMIANI\Jasob 4.0\jasob.exe" /src:"jWebSocket\jWebSocket.jsbp" /log:%cd%\jasobCE.log
+
+rem call obfuscator EE
+start /wait "" "C:\Program Files (x86)\DAMIANI\Jasob 4.0\jasob.exe" /src:"%JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise\jWebSocketDeployment\jWebSocketEE.jsbp" /log:%cd%\jasobEE.log
+
+rem copy minified/obfuscated EE editions into CE deployment
+set jsCE=%JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketClient\web\res\js\
+set jsEE=%JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise\jWebSocketClient\web\res\js\
+echo jsCE=%jsCE%
+echo jsEE=%jsEE%
+copy %jsEE%jwsItemStoragePlugInEE_min.js %jsCE% /v
+copy %jsEE%jwsFileSystemPlugInEE_min.js %jsCE% /v
+copy %jsEE%jwsMailPlugInEE_min.js %jsCE% /v
 
 echo finished! Please check if JavaScript Docs have been created.
 if "%1"=="/y" goto dontAsk2
