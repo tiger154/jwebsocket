@@ -307,6 +307,18 @@
 	cursor: pointer;
 }
 
+#emoticons-url{
+	font-size: 7pt;
+	float: none;
+	width: 100%;
+}
+
+#icons{
+	width: 100%;
+	height: 100%;
+	float: left;
+}
+
 #select_emoticon_btn .click_to_slide{
 	background: url(images/down_arrow.png) no-repeat 3px 8px;
 	float: left;

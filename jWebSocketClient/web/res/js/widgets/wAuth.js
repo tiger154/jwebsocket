@@ -285,7 +285,7 @@ $.widget("jws.auth",{
 	// If there is not connection with the server, opens a connection and then 
 	// tries to log the user in the system
 	logon: function( aUser, aPassword ) {
-		var lURL = ( w.auth.options.lURL )? w.auth.options.lURL: jws.getDefaultServerURL( );
+		var lURL = ( w.auth.options.lURL )? w.auth.options.lURL: jws.getAutoServerURL( );
         
 		var lUsername;
 		var lPassword;
@@ -335,7 +335,7 @@ $.widget("jws.auth",{
 	},
 	
 	connect: function( ) {
-		var lURL = ( w.auth.options.lURL )?w.auth.options.lURL:jws.getDefaultServerURL( );
+		var lURL = ( w.auth.options.lURL )?w.auth.options.lURL:jws.getAutoServerURL( );
 		if( mLog.isDebugEnabled ) {
 			log( "Connecting to " + lURL + " ..." );
 		}

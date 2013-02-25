@@ -35,26 +35,33 @@ $.widget( "jws.chat", {
 		
 		this.mEmoticons				= {
 			// Faces with 2 chars
-			":)": "smile", 
+			":-)": "smile",
+			":)": "smile",
+			"=)": "smile",
 			":(": "sad",
-			":o": "surprise",
+			"=(": "sad",
+			":-(": "sad",
+			":p": "tongue",
+			"=p": "tongue",
+			":-p": "tongue",
+			";)": "wink",
+			";-)": "wink",
 			":d": "smile-big",
+			"=d": "smile-big",
+			":-d": "smile-big",
+			":-*": "kiss",
+			":*": "kiss",
+			":o": "surprise",
 			"{3": "heart",
-			":p": "raspberry",
 			":]": "embarrassed",
 			":{": "sick",
 			"+1": "opinion-agree",
 			"-1": "opinion-disagree",
-			";)": "wink",
-			// Faces with three chars
 			"{/3": "heart-broken",
 			"(r)": "rose",
 			":;(": "crying",
 			":?": "confused",
-			"-){": "jWebSocketLogo",
-			":-p": "raspberry",
-			":-)": "smile",
-			":-(": "sad"
+			"-){": "jWebSocketLogo"
 		};
 		this.mEmoticonsPath			= "css/images/emoticons/";
 		
@@ -785,39 +792,21 @@ $.widget( "jws.chat", {
 	},
 	
 	/**
-	 * Replaces all faces( emoticons ) by their respective image
+	 * Replaces all emoticons by their respective image
 	 * @param aMessage
 	 */
 	parseEmoticons: function( aMessage ) {
 		// TODO: Implement a better structure for this
-		var lParsedMessage = "";
-		for( var lIndex = 0; lIndex < aMessage.length; lIndex++ ) {
-			var lImage = null;
-			if( ( aMessage.length - lIndex ) >= 2 ) {
-				var l2CharsSymbol = ( aMessage[ lIndex ] + aMessage[ lIndex + 1 ] )
-				.toLowerCase( );
-				lImage = w.chat.mEmoticons[ l2CharsSymbol ];
-				
-				var l3CharsSymbol = null;
-				
-				if( !lImage ) {
-					if( ( aMessage.length - lIndex ) >= 3 ) {
-						l3CharsSymbol = ( aMessage[ lIndex ] + aMessage[ lIndex + 1 ] 
-							+ aMessage[ lIndex + 2 ] ).toLowerCase( );
-						lImage = w.chat.mEmoticons[ l3CharsSymbol ];
-						if( lImage ) {
-							lIndex += 2;
-						}
-					}
-				} else{
-					lIndex++;
-				}
-			}
-			if( lImage ) {
-				lParsedMessage += "<img src='" + w.chat.mEmoticonsPath + 
-				lImage + ".png" + "' title='"+ lImage + "'>";
-			} else{
-				lParsedMessage += aMessage[ lIndex ];
+		var lParsedMessage = aMessage,
+		lPos = -1, lImg = "";
+		for( var lIdx in w.chat.mEmoticons ) {
+			while( ( lPos = lParsedMessage.search( new RegExp( lIdx.replace(
+				/([.?*+^$[\]\\(){}|-])/g, "\\$1"), "i" ), "i" ) ) != -1 ) {
+				lImg = "<img src='" + w.chat.mEmoticonsPath + 
+				w.chat.mEmoticons[ lIdx ] + ".png" + "' title='"+ 
+				w.chat.mEmoticons[ lIdx ] + "'>";
+				lParsedMessage = lParsedMessage.substr( 0, lPos ) + lImg + 
+				lParsedMessage.substr( lPos + lIdx.length, lParsedMessage.length - 1 );
 			}
 		}
 		return lParsedMessage;
@@ -825,7 +814,7 @@ $.widget( "jws.chat", {
 	
 	loadEmoticons: function( ) {
 		//		w.chat.eEmoticonsWindow.hide( );
-		w.chat.eEmoticonsWindow.children( ).each( function( ) {
+		w.chat.eEmoticonsWindow.find( '#icons' ).children( ).each( function( ) {
 			var lId = $( this ).attr( "id" ),
 			lImgPath = w.chat.mEmoticonsPath + lId;
 			if( $( this ).hasClass( w.chat.CSS_EMOTICON_BTN ) ) {
