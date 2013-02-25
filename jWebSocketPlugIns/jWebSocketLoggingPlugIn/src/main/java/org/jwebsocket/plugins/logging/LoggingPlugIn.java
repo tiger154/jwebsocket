@@ -83,7 +83,6 @@ public class LoggingPlugIn extends TokenPlugIn {
 		mJDBCPlugIn = (TokenPlugIn) lServer.getPlugInById("jws.jdbc");
 		try {
 			JDBCTools = (Class) Tools.invoke(mJDBCPlugIn, "getJDBCTools");
-			// JDBCTools.getClassLoader().loadClass(JDBCTools.getName());
 			return true;
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "loading tools from JDBC plug-in"));
@@ -91,15 +90,6 @@ public class LoggingPlugIn extends TokenPlugIn {
 		return false;
 	}
 
-	/*
-	@Override
-	public void connectorStarted(WebSocketConnector aConnector) {
-	}
-	
-	@Override
-	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseRease) {
-	}
-	 */
 	@Override
 	public void processToken(PlugInResponse aResponse,
 			WebSocketConnector aConnector, Token aToken) {

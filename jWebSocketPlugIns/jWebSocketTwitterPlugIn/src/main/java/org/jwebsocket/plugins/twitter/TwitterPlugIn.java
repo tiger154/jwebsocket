@@ -170,14 +170,14 @@ public class TwitterPlugIn extends TokenPlugIn {
 				}
 				// The factory instance is re-useable and thread safe.
 				/*
-				ConfigurationBuilder lCB = new ConfigurationBuilder();
-				lCB.setDebugEnabled(true);
-				lCB.setOAuthConsumerKey(mSettings.getConsumerKey());
-				lCB.setOAuthConsumerSecret(mSettings.getConsumerSecret());
-				lCB.setOAuthAccessToken(mSettings.getAccessKey());
-				lCB.setOAuthAccessTokenSecret(mSettings.getAccessSecret());
-				mTwitterFactory = new TwitterFactory(lCB.build());
-				*/
+				 ConfigurationBuilder lCB = new ConfigurationBuilder();
+				 lCB.setDebugEnabled(true);
+				 lCB.setOAuthConsumerKey(mSettings.getConsumerKey());
+				 lCB.setOAuthConsumerSecret(mSettings.getConsumerSecret());
+				 lCB.setOAuthAccessToken(mSettings.getAccessKey());
+				 lCB.setOAuthAccessTokenSecret(mSettings.getAccessSecret());
+				 mTwitterFactory = new TwitterFactory(lCB.build());
+				 */
 				mTwitterFactory = new TwitterFactory();
 				mTwitter = mTwitterFactory.getInstance();
 				// mTwitter.setOAuthConsumer(mSettings.getConsumerKey(), mSettings.getConsumerSecret());
@@ -649,7 +649,6 @@ public class TwitterPlugIn extends TokenPlugIn {
 		lServer.sendToken(aConnector, lResponse);
 	}
 	StatusListener mTwitterStreamListener = new StatusListener() {
-
 		@Override
 		public void onStatus(Status aStatus) {
 			Token lToken = TokenFactory.createToken(NS_TWITTER, "event");

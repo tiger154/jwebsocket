@@ -1030,8 +1030,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 						mSocket.shutdownInput();
 					}
 				}
-			} catch (IOException lIOEx) {
-				lExMsg += "Shutdown input: " + lIOEx.getMessage() + ", ";
+			} catch (Exception lEx) {
+				lExMsg += "Shutdown input: " + lEx.getMessage() + ", ";
 			}
 			try {
 				// shutdown methods are not implemented for SSL sockets

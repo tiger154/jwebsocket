@@ -334,11 +334,11 @@ public class XMPPPlugIn extends TokenPlugIn {
 			if (lXMPPConn != null) {
 				removeXMPPConnection(aConnector);
 				removeCredentials(aConnector);
-				
+
 				if (lXMPPConn.isConnected()) {
 					lXMPPConn.disconnect();
 				}
-				
+
 				lMsg = "Successfully disconnected from XMPP server";
 			} else {
 				lResponse.setInteger("code", -1);

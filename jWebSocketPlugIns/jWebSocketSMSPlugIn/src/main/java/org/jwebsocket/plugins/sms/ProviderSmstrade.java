@@ -45,10 +45,10 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	private String mMessageType;
 	private String mKey = "";
 
-	public ProviderSmstrade(String aMessageId, String aCount, String dlr) {
+	public ProviderSmstrade(String aMessageId, String aCount, String aDlr) {
 		mMessageId = aMessageId;
 		mCount = aCount;
-		mDlr = dlr;
+		mDlr = aDlr;
 	}
 
 	public ProviderSmstrade() {
@@ -213,10 +213,10 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	}
 
 	/**
-	 * @param debug the debug to set
+	 * @param aDebug the debug to set
 	 */
-	public void setDebug(String debug) {
-		this.mDebug = debug;
+	public void setDebug(String aDebug) {
+		this.mDebug = aDebug;
 	}
 
 	/**
@@ -229,7 +229,7 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	/**
 	 * @return the messagge_id
 	 */
-	public String getMessagge_id() {
+	public String getMessaggeId() {
 		return mMessageId;
 	}
 
@@ -247,101 +247,65 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 		return mDlr;
 	}
 
-	/**
-	 * @return the ref
-	 */
 	public String getRef() {
 		return mRef;
 	}
 
-	/**
-	 * @return the concat_sms
-	 */
-	public String getConcat_sms() {
+	public String getConcatSms() {
 		return mConcatSms;
 	}
 
-	/**
-	 * @return the route
-	 */
 	public String getRoute() {
 		return mRoute;
 	}
 
-	/**
-	 * @return the senddate
-	 */
-	public String getSenddate() {
+	public String getSendDate() {
 		return mSendDate;
 	}
 
-	/**
-	 * @return the messagetype
-	 */
-	public String getMessagetype() {
+	public String getMessageType() {
 		return mMessageType;
 	}
 
-	/**
-	 * @param cost the cost to set
-	 */
-	public void setCost(String cost) {
-		this.mCost = cost;
+	public void setCost(String aCost) {
+		this.mCost = aCost;
+	}
+
+	public void setMessaggeId(String aMessaggeId) {
+		this.mMessageId = aMessaggeId;
 	}
 
 	/**
-	 * @param messagge_id the messagge_id to set
+	 * @param aCount the count to set
 	 */
-	public void setMessagge_id(String messagge_id) {
-		this.mMessageId = messagge_id;
+	public void setCount(String aCount) {
+		this.mCount = aCount;
 	}
 
 	/**
-	 * @param count the count to set
+	 * @param aDlr the dlr to set
 	 */
-	public void setCount(String count) {
-		this.mCount = count;
+	public void setDlr(String aDlr) {
+		this.mDlr = aDlr;
 	}
 
-	/**
-	 * @param dlr the dlr to set
-	 */
-	public void setDlr(String dlr) {
-		this.mDlr = dlr;
+	public void setRef(String aRef) {
+		this.mRef = aRef;
 	}
 
-	/**
-	 * @param ref the ref to set
-	 */
-	public void setRef(String ref) {
-		this.mRef = ref;
+	public void setConcatSms(String aConcatSms) {
+		this.mConcatSms = aConcatSms;
 	}
 
-	/**
-	 * @param concat_sms the concat_sms to set
-	 */
-	public void setConcat_sms(String concat_sms) {
-		this.mConcatSms = concat_sms;
+	public void setRoute(String aRoute) {
+		this.mRoute = aRoute;
 	}
 
-	/**
-	 * @param route the route to set
-	 */
-	public void setRoute(String route) {
-		this.mRoute = route;
+	public void setSendDate(String aSendDate) {
+		this.mSendDate = aSendDate;
 	}
 
-	/**
-	 * @param senddate the senddate to set
-	 */
-	public void setSenddate(String senddate) {
-		this.mSendDate = senddate;
-	}
-
-	/**
-	 * @param messagetype the messagetype to set
-	 */
-	public void setMessagetype(String messagetype) {
-		this.mMessageType = messagetype;
+	public void setMessageType(String aMessageType) {
+		this.mMessageType = aMessageType;
 	}
 }

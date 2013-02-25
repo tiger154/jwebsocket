@@ -439,7 +439,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 		}
 
 		// TODO: Here we probably have to introduce restrictions
-		// not all clients should be allowed to retreive system or private channels
+		// not all clients should be allowed to retreive system channels
 		Token lResponseToken = createResponse(aToken);
 
 		List lChannels = new FastList();
@@ -447,7 +447,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 		for (Map.Entry<String, Channel> lEntry : lCMChannels.entrySet()) {
 			Map lItem = new FastMap();
 			Channel lChannel = lEntry.getValue();
-			if (!lChannel.isPrivate()) {
+			if (!lChannel.isPrivate() || lChannel.getOwner().equals(aConnector.getUsername())) {
 				lItem.put("id", lChannel.getId());
 				lItem.put("name", lChannel.getName());
 				lItem.put("isPrivate", lChannel.isPrivate());
