@@ -23,7 +23,7 @@ public class ItemStorageEventManager {
 	private static ExecutorService mThreadPool = null;
 
 	public static boolean isThreadPoolUP() {
-		return mThreadPool != null;
+		return null != mThreadPool && !mThreadPool.isShutdown();
 	}
 
 	public static void startThreadPool() {
