@@ -50,7 +50,7 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 		LoggingConfig lLoggingConfig = jWebSocketConfig.getLoggingConfig();
 		// initialize log4j logging engine
 		// BEFORE instantiating any jWebSocket classes
-		Logging.initLogs(lLoggingConfig.getReloadDelay());
+		Logging.initLogs(lLoggingConfig.getReloadDelay(), lLoggingConfig.getMaxLogTokenLength());
 		mLog = Logging.getLogger(AbstractJWebSocketInitializer.class);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logging settings: "
