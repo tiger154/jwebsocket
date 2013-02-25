@@ -8,8 +8,10 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPlugInChain;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
@@ -299,6 +301,20 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 				}
 			}
 		} catch (Exception lEx) {
+		}
+	}
+
+	@Override
+	public void engineStarted(WebSocketEngine aEngine) {
+		if (JWebSocketFactory.getEngines().size() == 1) {
+			ItemStorageEventManager.startThreadPool();
+		}
+	}
+
+	@Override
+	public void engineStopped(WebSocketEngine aEngine) {
+		if (JWebSocketFactory.getEngines().size() == 1) {
+			ItemStorageEventManager.stopThreadPool();
 		}
 	}
 

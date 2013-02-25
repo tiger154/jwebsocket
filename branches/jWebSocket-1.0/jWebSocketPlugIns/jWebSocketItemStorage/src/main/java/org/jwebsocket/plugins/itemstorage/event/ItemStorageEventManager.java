@@ -20,13 +20,27 @@ import org.jwebsocket.plugins.itemstorage.collection.ItemCollection;
 public class ItemStorageEventManager {
 
 	private static List<IItemStorageListener> mListeners = new FastList<IItemStorageListener>();
-	private static ExecutorService mThreadPool = Executors.newFixedThreadPool(10, new ThreadFactory() {
+	private static ExecutorService mThreadPool = null;
 
-		@Override
-		public Thread newThread(Runnable aRunnable) {
-			return new Thread(aRunnable, "jWebSocket ItemStoragePlugIn");
+	public static boolean isThreadPoolUP() {
+		return mThreadPool != null;
+	}
+
+	public static void startThreadPool() {
+		mThreadPool = Executors.newFixedThreadPool(10, new ThreadFactory() {
+			@Override
+			public Thread newThread(Runnable aRunnable) {
+				return new Thread(aRunnable, "jWebSocket ItemStoragePlugIn");
+			}
+		});
+	}
+
+	public static void stopThreadPool() {
+		if (isThreadPoolUP()) {
+				mThreadPool.shutdownNow();
+			mThreadPool = null;
 		}
-	});
+	}
 
 	public static void addListener(IItemStorageListener aListener) {
 		mListeners.add(aListener);
