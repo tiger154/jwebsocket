@@ -51,7 +51,7 @@ public class SystemFilter extends TokenFilter {
 			String lOut = aToken.toString();
 			mLog.debug("Checking incoming token from "
 					+ (aConnector != null ? aConnector.getId() : "[not given]")
-					+ " (" + lOut.length() + "b): " + lOut + "...");
+					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut) + "...");
 		}
 
 		TokenServer lServer = (TokenServer) getServer();
@@ -80,7 +80,7 @@ public class SystemFilter extends TokenFilter {
 			mLog.debug("Checking outgoing token from "
 					+ (aSource != null ? aSource.getId() : "[not given]")
 					+ " to " + (aTarget != null ? aTarget.getId() : "[not given]")
-					+ " (" + lOut.length() + "b): " + lOut + "...");
+					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut) + "...");
 		}
 	}
 }
