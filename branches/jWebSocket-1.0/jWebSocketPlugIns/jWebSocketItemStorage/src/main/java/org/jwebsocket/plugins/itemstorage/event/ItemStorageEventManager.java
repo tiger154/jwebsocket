@@ -38,7 +38,6 @@ public class ItemStorageEventManager {
 	public static void stopThreadPool() {
 		if (isThreadPoolUP()) {
 				mThreadPool.shutdownNow();
-			mThreadPool = null;
 		}
 	}
 
