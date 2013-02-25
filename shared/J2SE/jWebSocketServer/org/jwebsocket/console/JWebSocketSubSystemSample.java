@@ -62,7 +62,7 @@ public class JWebSocketSubSystemSample {
 
 		// initialize the logging system
 		LoggingConfig lLoggingConfig = new LoggingConfig(
-				20000 // reload delay
+				20000, 512 // reload delay, max_log_token_length
 				);
 		Logging.initLogs(lLoggingConfig);
 		mLog = Logging.getLogger(JWebSocketEmbedded.class);
