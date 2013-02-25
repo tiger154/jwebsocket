@@ -22,15 +22,16 @@ import org.jwebsocket.config.Config;
 public class LoggingConfig implements Config {
 
 	private final Integer mReloadDelay;
+	private final Integer mMaxLogTokenLength;
 
 	/**
 	 * Constructor
 	 *
-	 * @param aLog4JConfigFile
 	 * @param aReloadDelay
 	 */
-	public LoggingConfig(Integer aReloadDelay) {
+	public LoggingConfig(Integer aReloadDelay, Integer aMaxLogTokenLength) {
 		mReloadDelay = aReloadDelay;
+		mMaxLogTokenLength = aMaxLogTokenLength;
 	}
 
 	/**
@@ -46,6 +47,13 @@ public class LoggingConfig implements Config {
 	 */
 	@Override
 	public void validate() {
-		return;
 	}
+
+	/**
+	 * @return the mMaxLogTokenLength
+	 */
+	public Integer getMaxLogTokenLength() {
+		return mMaxLogTokenLength;
+	}
+
 }
