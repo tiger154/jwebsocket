@@ -15,8 +15,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.factory;
 
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.*;
 import org.jwebsocket.config.JWebSocketCommonConstants;
@@ -92,12 +94,31 @@ public class JWebSocketFactory {
 	public static void start(String aConfigPath, String aBootstrapPath) {
 
 		mLog = Logging.getLogger();
-
 		if (null == aConfigPath) {
 			aConfigPath = JWebSocketConfig.getConfigPath();
 		}
 		if (null == aBootstrapPath) {
 			aBootstrapPath = JWebSocketConfig.getBootstrapPath();
+		}
+
+		boolean lDebug = true;
+		if (lDebug) {
+			Logger lLogger = mLog.getRootLogger();
+			String lAppenderStr = "";
+			Enumeration lAppenders = lLogger.getAllAppenders();
+			while (lAppenders.hasMoreElements()) {
+				Appender lAppender = (Appender) lAppenders.nextElement();
+				lAppenderStr += " " + lAppender.getName();
+			}
+			if (lAppenderStr.length() <= 0) {
+				lAppenderStr = " none detected";
+			}
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Starting instance, logger(s):"
+						+ lAppenderStr
+						+ ", ConfigPath: " + aConfigPath
+						+ ", BootstrapPath: " + aBootstrapPath);
+			}
 		}
 
 		JWebSocketInstance.setStatus(JWebSocketInstance.STARTING);

@@ -46,6 +46,8 @@ public class PluginConfigHandler implements ConfigHandler {
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @param aStreamReader 
 	 */
 	@Override
 	public Config processConfig(XMLStreamReader aStreamReader)
@@ -129,7 +131,7 @@ public class PluginConfigHandler implements ConfigHandler {
 		}
 	}
 
-	private void getJars(XMLStreamReader aStreamReader, List<String> lJars) 
+	private void getJars(XMLStreamReader aStreamReader, List<String> aJars)
 			throws XMLStreamException {
 		while (aStreamReader.hasNext()) {
 			aStreamReader.next();
@@ -138,7 +140,7 @@ public class PluginConfigHandler implements ConfigHandler {
 				if (lElementName.equals(JAR)) {
 					aStreamReader.next();
 					String lJar = aStreamReader.getText();
-					lJars.add(lJar);
+					aJars.add(lJar);
 				}
 			}
 			if (aStreamReader.isEndElement()) {
