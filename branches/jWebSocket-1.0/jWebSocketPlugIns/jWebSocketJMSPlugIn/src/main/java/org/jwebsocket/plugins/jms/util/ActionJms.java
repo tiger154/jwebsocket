@@ -16,13 +16,13 @@
 package org.jwebsocket.plugins.jms.util;
 
 /**
- * 
+ *
  * @author Johannes Smutny
  */
 public enum ActionJms {
 
 	LISTEN("listenJms"), LISTEN_MESSAGE("listenJmsMessage"), UNLISTEN("unlistenJms"), SEND_TEXT("sendJmsText"), SEND_TEXT_MESSAGE(
-			"sendJmsTextMessage"), SEND_MAP("sendJmsMap"), SEND_MAP_MESSAGE("sendJmsMapMessage");
+	"sendJmsTextMessage"), SEND_MAP("sendJmsMap"), SEND_MAP_MESSAGE("sendJmsMapMessage");
 	private String mValue;
 
 	private ActionJms(String value) {
@@ -43,12 +43,15 @@ public enum ActionJms {
 	}
 
 	public static ActionJms get(String value) {
-		if (null == value)
+		if (null == value) {
 			throw new IllegalArgumentException("missing value");
+		}
 
-		for (ActionJms next : ActionJms.values())
-			if (next.getValue().equals(value))
+		for (ActionJms next : ActionJms.values()) {
+			if (next.getValue().equals(value)) {
 				return next;
+			}
+		}
 
 		throw new IllegalArgumentException("missing ActionJms for value: '" + value + "'");
 	}

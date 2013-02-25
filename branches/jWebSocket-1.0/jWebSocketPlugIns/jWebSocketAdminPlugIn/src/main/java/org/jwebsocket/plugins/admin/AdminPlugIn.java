@@ -258,7 +258,7 @@ public class AdminPlugIn extends TokenPlugIn {
 			mLog.debug("Processing 'Garbage Collection '...");
 		}
 
-		// check if user is allowed to run 'shutdown' command
+		// check if user is allowed to run 'gc' command
 		// should be limited to administrators
 		if (!hasAuthority(aConnector, NS_ADMIN + ".gc")) {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
@@ -267,10 +267,7 @@ public class AdminPlugIn extends TokenPlugIn {
 
 		System.gc();
 
-		// notify all connected clients about pending shutdown
-		Token lResponse = lServer.createResponse(aToken);
-		lResponse.setString("msg", "Garbage Collection in progress...");
-		lServer.sendToken(aConnector, lResponse);
+		lServer.sendToken(aConnector, createResponse(aToken));
 	}
 
 	/**

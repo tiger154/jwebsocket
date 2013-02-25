@@ -80,9 +80,10 @@ public class SMSPlugIn extends TokenPlugIn {
 					mLog.error(ex.getClass().getSimpleName() + ": " + ex.getMessage());
 				}
 			}
-			if (aToken.getType().equals("smsList")) {
-				mClients.remove(aConnector);
-			}
+			
+//			if (aToken.getType().equals("smsList")) {
+//				mClients.remove(aConnector);
+//			}
 		}
 	}
 
@@ -94,7 +95,4 @@ public class SMSPlugIn extends TokenPlugIn {
 		getServer().setResponseFields(aToken, lRes);
 		sendToken(aConnector, aConnector, lRes);
 	}
-	//public boolean[] sendSmsList(Token aToken){
-	//     
-	// }
 }
