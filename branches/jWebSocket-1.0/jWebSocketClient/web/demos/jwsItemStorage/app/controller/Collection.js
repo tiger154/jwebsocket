@@ -83,28 +83,29 @@ Ext.define('IS.controller.Collection', {
 	__callSubscription: function( aCollectionName, aItemDefinition ){
 		var self = this;
 		
-		var lView = Ext.create('IS.view.collection.EnterAccessPwd');
-		lView.title = 'Subscription required';
+		var lView = Ext.create('IS.view.collection.EnterAccessPwd', {
+			title : 'Subscription required',
+			text: 'To read the collection content is required that you subscribe first.',
+			doAction : function (){
+				var lForm = this.down('form');
+				if (!lForm.getForm().isValid()){
+					return;
+				}
+						
+				var lArguments = lForm.getValues();
+				lArguments.collectionName = aCollectionName;
+					
+				Ext.jws.send(jws.ItemStoragePlugIn.NS, 'subscribe', lArguments, {
+					success: function() {
+						self.__showCollectionTab(aCollectionName, aItemDefinition);
+						lView.close();
+					}
+				})
+			}
+		});
 		lView.showAt({
 			y: 100
 		});
-		lView.doAction = function (){
-			var lForm = this.down('form');
-			if (!lForm.getForm().isValid()){
-				return;
-			}
-						
-			var lArguments = lForm.getValues();
-			lArguments.collectionName = aCollectionName;
-					
-			Ext.jws.send(jws.ItemStoragePlugIn.NS, 'subscribe', lArguments, {
-				success: function() {
-					self.__showCollectionTab(aCollectionName, aItemDefinition);
-					lView.close();
-				}
-			});
-		}
-		lView.show();
 	},
 	
 	open: function( aCollectionName){
@@ -266,78 +267,81 @@ Ext.define('IS.controller.Collection', {
 			},
 			'c_toolbar > button[iconCls=c_remove]': {
 				click: function(aButton){
-					var lView = Ext.widget('c_confirmpwd');
-					lView.title = 'Remove collection?';
+					var lView =  Ext.create('IS.view.collection.EnterSecretPwd', {
+						title: 'Remove collection?',
+						text: 'Removing a collection will destroy the collection content forever. <br>Subscribers are notified.',
+						doAction: function (){
+							var lForm = this.down('form');
+							if (!lForm.getForm().isValid()){
+								return;
+							}
+						
+							var lArguments = lForm.getValues();
+							lArguments.collectionName = self.getActiveCollectionName(aButton.findParentByType('grid'));
+					
+							Ext.jws.send(jws.ItemStoragePlugIn.NS, 'removeCollection', lArguments, {
+								success: function() {
+									self.getCollectionNamesStore().reload();
+									lView.close();
+								}
+							});
+						}
+					});
 					lView.showAt({
 						y: 100
-					});
-					lView.doAction = function (){
-						var lForm = this.down('form');
-						if (!lForm.getForm().isValid()){
-							return;
-						}
-						
-						var lArguments = lForm.getValues();
-						lArguments.collectionName = self.getActiveCollectionName(aButton.findParentByType('grid'));
-					
-						Ext.jws.send(jws.ItemStoragePlugIn.NS, 'removeCollection', lArguments, {
-							success: function() {
-								self.getCollectionNamesStore().reload();
-								lView.close();
-							}
-						});
-					}
-					lView.show();
+					})
 				}
 			},
 			'c_toolbar > button[iconCls=c_restart]': {
 				click: function(aButton){
-					var lView = Ext.widget('c_confirmpwd');
-					lView.title = 'Restart collection?';
+					var lView =  Ext.create('IS.view.collection.EnterSecretPwd', {
+						title: 'Restart collection?',
+						text: 'Restarting a collection will expire the current collection autorizations and subscriptions. Restart a collection is recommended if you changed the collection secret or access password.<br>Subscribers and publishers are notified.',
+						doAction: function (){
+							var lForm = this.down('form');
+							if (!lForm.getForm().isValid()){
+								return;
+							}
+						
+							var lArguments = lForm.getValues();
+							lArguments.collectionName = self.getActiveCollectionName(aButton.findParentByType('grid'));
+					
+							Ext.jws.send(jws.ItemStoragePlugIn.NS, 'restartCollection', lArguments, {
+								success: function() {
+									lView.close();
+								}
+							});
+						}
+					});
 					lView.showAt({
 						y: 100
-					});
-					lView.doAction = function (){
-						var lForm = this.down('form');
-						if (!lForm.getForm().isValid()){
-							return;
-						}
-						
-						var lArguments = lForm.getValues();
-						lArguments.collectionName = self.getActiveCollectionName(aButton.findParentByType('grid'));
-					
-						Ext.jws.send(jws.ItemStoragePlugIn.NS, 'restartCollection', lArguments, {
-							success: function() {
-								lView.close();
-							}
-						});
-					}
-					lView.show();
+					})
 				}
 			},
 			'c_toolbar > button[iconCls=c_clear]': {
 				click: function(aButton){
-					var lView = Ext.widget('c_confirmpwd');
-					lView.title = 'Clear collection?';
+					var lView =  Ext.create('IS.view.collection.EnterSecretPwd', {
+						title: 'Clear collection?',
+						text: 'Clearing a collection will remove all collection items. <br>Subscribers are notified',
+						doAction: function (){
+							var lForm = this.down('form');
+							if (!lForm.getForm().isValid()){
+								return;
+							}
+						
+							var lArguments = lForm.getValues();
+							lArguments.collectionName = self.getActiveCollectionName(aButton.findParentByType('grid'));
+					
+							Ext.jws.send(jws.ItemStoragePlugIn.NS, 'clearCollection', lArguments, {
+								success: function() {
+									lView.close();
+								}
+							});
+						}
+					});
 					lView.showAt({
 						y: 100
-					});
-					lView.doAction = function (){
-						var lForm = this.down('form');
-						if (!lForm.getForm().isValid()){
-							return;
-						}
-						
-						var lArguments = lForm.getValues();
-						lArguments.collectionName = self.getActiveCollectionName(aButton.findParentByType('grid'));
-					
-						Ext.jws.send(jws.ItemStoragePlugIn.NS, 'clearCollection', lArguments, {
-							success: function() {
-								lView.close();
-							}
-						});
-					}
-					lView.show();
+					})
 				}
 			},
 			'c_create button[action=create]': {
@@ -398,7 +402,7 @@ Ext.define('IS.controller.Collection', {
 			},
 			'c_list ': {
 				itemdblclick: function(){
-					self.getDetailsBtn().fireEvent('click', self.getDetailsBtn());
+					self.getOpenBtn().fireEvent('click', self.getOpenBtn());
 				},
 				
 				selectionchange: function( aModel ){

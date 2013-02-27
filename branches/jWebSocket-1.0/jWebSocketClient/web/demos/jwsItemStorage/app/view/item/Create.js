@@ -10,8 +10,8 @@ Ext.define('IS.view.item.Create', {
 		this.setTitle('Edit item (' + aItemDefinition.type + ')');
 		var lForm = this.down('form');
 		
-		lForm.getForm().getFields().each(function (aItem){
-			aItem.setValue(aRecord.get(aItem.name));
+		lForm.getForm().getFields().each(function (aField){
+			aField.setValue(aRecord.get(aField.name));
 		});
 		if (aRecord.get('id')){
 			this.recordId = aRecord.get('id');
@@ -40,6 +40,14 @@ Ext.define('IS.view.item.Create', {
 		
 		this.showAt({
 			y: 100
+		});
+		
+		lForm.getForm().getFields().each(function (aField){
+			Ext.tip.QuickTipManager.register({
+				target: aField.getId(),
+				text: aItemDefinition.attr_types[aField.name],
+				title: 'Definition:'
+			});
 		});
 	},
 	

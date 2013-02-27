@@ -16,20 +16,23 @@ Ext.define('IS.view.collection.Create', {
 				fieldLabel: 'Name',
 				maskRe: /^[a-zA-Z0-9_-]/,
 				regex: /^[a-zA-Z0-9]+(.[_a-zA-Z0-9-]+)*/,
-				allowBlank: false
+				allowBlank: false,
+				tooltip: 'The collection name attribute should be unique and it acts as the collection identifier.'
 			}, {
 				xtype: 'textfield',
 				name : 'itemType',
 				fieldLabel: 'Item type',
 				maskRe: /^[a-zA-Z0-9]/,
 				regex: /^[a-zA-Z]+([a-zA-Z0-9]+)*/,
-				allowBlank: false
+				allowBlank: false,
+				tooltip: 'The item type collection attribute, refers the definition(class) of the items that the collection will hold. Example: contact.'
 			}, {
 				xtype: 'textfield',
 				inputType: 'password',
 				name : 'secretPassword',
 				fieldLabel: 'Secret Password',
-				minLength: 4
+				minLength: 4,
+				tooltip: 'The secret password of a collection is used to allow users to "write" data on the collection. The secret password is also requested to the onwer before execute administrative operations(clear, restart, remove, edit) on the collection.'
 			}, {
 				xtype: 'textfield',
 				inputType: 'password',
@@ -42,7 +45,8 @@ Ext.define('IS.view.collection.Create', {
 				inputType: 'password',
 				name : 'accessPassword',
 				fieldLabel: 'Access Password',
-				minLength: 4
+				minLength: 4,
+				tooltip: 'The access password of a collection is used to allow users to "read" data from the collection.'
 			}, {
 				xtype: 'textfield',
 				inputType: 'password',
@@ -54,19 +58,22 @@ Ext.define('IS.view.collection.Create', {
 				xtype: 'checkbox',
 				name : 'private',
 				fieldLabel: 'Private',
-				checked: true
+				checked: true,
+				tooltip: 'Private collections becomes hidden expect for the owner. The name of a private collection is never revealed to the users.'
 			}, {
 				xtype: 'numberfield',
 				name : 'capacity',
 				fieldLabel: 'Capacity',
 				minValue: 0,
 				maxValue: 2147483647,
-				allowDecimals: false
+				allowDecimals: false,
+				tooltip: 'The capacity attribute of a collection defines the maximum number of items that the collection will hold. Default value: "0"(unlimited)'
 			}, {
 				xtype: 'checkbox',
 				name : 'capped',
 				fieldLabel: 'Capped',
-				disabled: true
+				disabled: true,
+				tooltip: 'A capped collection removes the oldest item on insertion when the capacity is full. Capped collections will always accept new items.'
 			}]
 		}];
 

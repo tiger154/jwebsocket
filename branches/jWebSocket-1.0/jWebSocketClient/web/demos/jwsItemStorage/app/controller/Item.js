@@ -23,28 +23,30 @@ Ext.define('IS.controller.Item', {
 					return;
 				}
 				
-				var lView = Ext.create('IS.view.collection.EnterSecretPwd');
-				lView.title = 'Authorization required';
+				var lView = Ext.create('IS.view.collection.EnterSecretPwd', {
+					title: 'Authorization required',
+					text: 'To write content on a collection is required that you be authorized first.',
+					textColor: 'green',
+					doAction : function (){
+						var lForm = this.down('form');
+						if (!lForm.getForm().isValid()){
+							return;
+						}
+						
+						var lArguments = lForm.getValues();
+						lArguments.collectionName = aCollectionName;
+					
+						Ext.jws.send(jws.ItemStoragePlugIn.NS, 'authorize', lArguments, {
+							success: function() {
+								aAction();
+								lView.close();
+							}
+						});
+					}
+				});
 				lView.showAt({
 					y: 100
 				});
-				lView.doAction = function (){
-					var lForm = this.down('form');
-					if (!lForm.getForm().isValid()){
-						return;
-					}
-						
-					var lArguments = lForm.getValues();
-					lArguments.collectionName = aCollectionName;
-					
-					Ext.jws.send(jws.ItemStoragePlugIn.NS, 'authorize', lArguments, {
-						success: function() {
-							aAction();
-							lView.close();
-						}
-					});
-				}
-				lView.show();
 			}
 		});
 	},
@@ -151,7 +153,7 @@ Ext.define('IS.controller.Item', {
 			'i_list': {
 				itemdblclick: function(){
 					var lTab = this.getWorkspace().getActiveTab();
-					var lBtn = lTab.down('button[iconCls=i_details]');
+					var lBtn = lTab.down('button[iconCls=i_edit]');
 					lBtn.fireEvent('click', lBtn);
 				},
 				selectionchange: function( aModel ){
