@@ -3,7 +3,6 @@ $.widget( "jws.log", {
 	_init:function( ) {
 		// Global variable that will contain all widgets reference
 		// to allow a common communication poing among them
-		w = w||{};
 		w.log               = this;
 		w.log.logVisible    = true;
 		w.log.eLog          = w.log.element.find( "#log_box_content" );
@@ -45,13 +44,14 @@ $.widget( "jws.log", {
 			w.log.logVisible = true;
 		}
 	},
+	
 	clearLog: function( ) {
 		w.log.eLog.text( "" );
 	}
 });
 
 function log( aString ) {
-	w.log.eLog.append( aString + ( ( aString[ 0 ]!="<" )?"<br/>":"" ) );
+	w.log.eLog.append( aString + "<br/>" );
 	
 	var lLineHeight = 20; // This should match the line-height in the CSS
 	var lScrollHeight = w.log.eLog.get( 0 ).scrollHeight;

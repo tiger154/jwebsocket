@@ -1,3 +1,7 @@
+#demo_box{
+	width: 718px;
+}
+
 .description_box{
     float: left;
     width: 63%;
@@ -8,13 +12,12 @@
 }
 
 #message_box{
-    background: #E4E4E4;
-    width: 33%;
-    border: 1px solid #C8C8C8;
-    float: left;
-    padding: 12px;
-    margin-top: 20px;
-	margin-left: 1px;
+	background: #E4E4E4;
+	width: 35%;
+	border: 1px solid #C8C8C8;
+	float: left;
+	padding: 5px;
+	margin-top: 20px;
 }
 
 .choices, .buttons{
@@ -26,6 +29,10 @@
 	width: 105px;
 	margin: 5px 0 0 12px;
 	padding: 5px 0 0 4px;
+}
+
+.buttons .button .btn_center{
+	width: 70px;
 }
 
 #unregister_btn{
