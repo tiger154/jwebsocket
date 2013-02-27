@@ -27,17 +27,21 @@
 
         <title>jWebSocket Streaming Demo</title>
 
-        <!-- DEMO STYLES  -->
+		<!-- JQUERY STYLES -->
+		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+
+		<!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsStreaming.css"/>
 
-        <!-- JQUERY DEPENDENCIES -->
-		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
-        <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+		<!-- JQUERY DEPENDENCIES -->
+		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
 		<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
+		<!--  jQuery Tooltip -->
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
-        <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
+        <!-- JWEBSOCKET CLIENT JAVASCRIPT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
 		<!-- this one imports the client side streaming plug-in -->
 		<script type="text/javascript" src="../../res/js/jwsStreamingPlugIn.js"></script>
@@ -45,9 +49,6 @@
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
-
-		<!--  jQuery Tooltip -->
-		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
         <!--  ALL DEMO LOGIC IS INCLUDED IN THIS FILE  -->
 		<script type="text/javascript" src='js/wStreaming.js'></script>
@@ -65,15 +66,7 @@
                     <div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
-                            <div id="logoff_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                 onmousedown="this.className='button onmousedown'" 
-                                 onmouseup="this.className='button onmouseup'" 
-                                 onmouseout="this.className='button onmouseout'" 
-                                 onclick="this.className='button onmouseover'">
-                                <div class="l"></div>
-                                <div class="c">Logout</div>
-                                <div class="r"></div>
-                            </div>
+                            <div id="logoff_button" class="button">Logout</div>
                         </div>
                     </div>
                     <div id="login_area">
@@ -83,16 +76,7 @@
                             <input type="text" id="user_text" value="guest"/>
                             <input type="password" id="user_password" value="guest"/>
                         </div>
-                        <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Login</div>
-                            <div class="r"></div>
-                        </div>
-
+                        <div id="login_button" class="button">Login</div>
                     </div>
 
                 </div>
@@ -116,7 +100,8 @@
 							This example is based on the org.jwebsocket.streaming package which simply 
 							sends a tokens in a certain interval to the client. If you are not sure 
 							whether your favorite browser supports WebSockets please refer to our 
-							jWebSocket <a href="">Cross-Browser Compatibility</a> page.</p>
+							jWebSocket <a href="">Cross-Browser Compatibility</a> page.
+						</p>
 					</div>
 
                     <!--    MESSAGE_BOX      -->
@@ -135,31 +120,15 @@
 								Keep-Alive</input>
 						</div>
 						<div class="buttons">
-							<div id="register_btn" class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-								 onmousedown="this.className='button onmousedown'" 
-								 onmouseup="this.className='button onmouseup'" 
-								 onmouseout="this.className='button onmouseout'" 
-								 onclick="this.className='button onmouseover'"
+							<div id="register_btn" class="button"
 								 title="Registers a user to a specified streaming.">
-								<div class="l"></div>
-								<div class="c">&nbsp;Register&nbsp;&nbsp;</div>
-								<div class="r"></div>
-							</div>
-							<div id="unregister_btn" class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-								 onmousedown="this.className='button onmousedown'" 
-								 onmouseup="this.className='button onmouseup'" 
-								 onmouseout="this.className='button onmouseout'" 
-								 onclick="this.className='button onmouseover'"
+								Register</div>
+
+							<div id="unregister_btn" class="button"
 								 title="Unregisters a user from a specified streaming.">
-								<div class="l"></div>
-								<div class="c">Unregister</div>
-								<div class="r"></div>
-							</div>
+								Unregister</div>
 						</div>
 					</div>
-
 
 					<!--       LOG BOX           -->
 					<div id="log_box" class="box">
@@ -170,22 +139,15 @@
 						<div id="log_box_content" class="log_box_visible"></div>
 					</div>
 
-				</div>
-
-				<!--       DOWNLOAD_BUTTON   -->
-				<div id="demo_box_footer">
-					<div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-						 onmousedown="this.className='button onmousedown'" 
-						 onmouseup="this.className='button onmouseup'" 
-						 onmouseout="this.className='button onmouseout'" 
-						 onclick="this.className='button onmouseover'">
-						<div class="l"></div>
-						<div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
-						<div class="r_download"></div>
+					<!--       DOWNLOAD_BUTTON   -->
+					<div id="demo_box_footer">
+						<div id="jws_download_button" class="button download">
+							<a href="http://jwebsocket.org/downloads/downloads.htm" 
+							   target="blank">Download jWebSocket</a>
+						</div>
 					</div>
 				</div>
 			</div>
         </div>
-
     </body>
 </html>
