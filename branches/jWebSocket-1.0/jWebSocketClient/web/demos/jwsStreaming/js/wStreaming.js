@@ -70,8 +70,7 @@ $.widget( "jws.streaming", {
 		}
 		else{
 			jwsDialog( "Sorry, you are not connected to the server, you can't" + 
-				" execute this action", "jWebSocket Error", true, null, null, 
-				"error" );
+				" execute this action", "jWebSocket Error", true, "error" );
 		}
 	},
 	
@@ -85,8 +84,7 @@ $.widget( "jws.streaming", {
 		}
 		else{
 			jwsDialog( "Sorry, you are not connected to the server, you can't" + 
-				" execute this action", "jWebSocket Error", true, null, null, 
-				"error" );
+				" execute this action", "jWebSocket Error", true, "error" );
 		}
 	},
 	

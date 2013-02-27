@@ -1,19 +1,13 @@
-#log_box{
-    width: 95%;
-	float: left;
-	margin: 20px 12px 0 12px;
-}
-
 #scenario_container{
-    float:left;
-    width: 60%;
-    margin-top: 19px;
+	padding-left: 8px;
 }
 
 #basic_channels_box{
 	height: 400px;
 	margin-bottom: 12px;
 	float: left;
+	width: 70%;
+	margin-top: 10px;
 }
 
 #basic_channels_box input[type=text]{
@@ -250,14 +244,13 @@
 #channel_publish_area input[type=text]{
 	width: 92%;
 	margin-left: 12px;
-	
+
 }
 
 #demo_box_description{
 	float: left;
-	width: 30%;
-	margin-top: 40px;
-	padding-left: 20px;
+	width: 25%;
+	margin-top: 30px;
 }
 
 .opaque_field{

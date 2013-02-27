@@ -160,8 +160,8 @@ $.widget( "jws.channels", {
 			var lRes = mWSC.channelGetIds( );
 			log( mWSC.resultToString( lRes ) );
 		} else{
-			dialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", 
-				true, null, null, "error" );
+			jwsDialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", 
+				true, "error" );
 		}
 	},
 	
@@ -206,9 +206,9 @@ $.widget( "jws.channels", {
 			}
 		
 			if( lError != "" ) {
-				dialog( " The field <b>" +
+				jwsDialog( " The field <b>" +
 					lError + "</b> is required", 
-					"jWebSocket error", true, null, null, "error" );
+					"jWebSocket error", true, "error" );
 			} else{
 				log( "Creating channel '" + lChannelId + "'..." );
 				var lRes = mWSC.channelCreate(
@@ -223,8 +223,8 @@ $.widget( "jws.channels", {
 				log( mWSC.resultToString( lRes ) );
 			}
 		} else{
-			dialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", 
-				true, null, null, "error" );
+			jwsDialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", 
+				true, "error" );
 		}
 	},
 	
@@ -262,12 +262,12 @@ $.widget( "jws.channels", {
 					);
 				log( mWSC.resultToString( lRes ) );
 			} else {
-				dialog( "Incorrect value for <b>" + lError + "</b>. Please, check again",
-					"jWebSocket error", true, null, null, "error" );
+				jwsDialog( "Incorrect value for <b>" + lError + "</b>. Please, check again",
+					"jWebSocket error", true, "error" );
 			}
 		} else{
-			dialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", 
-				true, null, null, "error" );
+			jwsDialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", 
+				true, "error" );
 		}
 	},
 	
@@ -294,12 +294,12 @@ $.widget( "jws.channels", {
 				var lRes = mWSC.channelSubscribe( lChannelId, lAccessKey );
 				log( mWSC.resultToString( lRes ) );
 			} else {
-				dialog( "Incorrect value for <b>" + lError + "</b>. Please, check again",
-					"jWebSocket error", true, null, null, "error" );
+				jwsDialog( "Incorrect value for <b>" + lError + "</b>. Please, check again",
+					"jWebSocket error", true, "error" );
 			}
 		} else{
-			dialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", 
-				true, null, null, "error" );
+			jwsDialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", 
+				true, "error" );
 		}
 	},
 	
@@ -314,13 +314,13 @@ $.widget( "jws.channels", {
 				var lRes = mWSC.channelUnsubscribe( lChannelId );
 				log( mWSC.resultToString( lRes ) );
 			} else {
-				dialog( "Incorrect value for <b>" + w.channels.MSG_CHANNELID +
+				jwsDialog( "Incorrect value for <b>" + w.channels.MSG_CHANNELID +
 					"</b>. Please, check again", "jWebSocket error", true, 
-					null, null, "error" );
+					"error" );
 			}
 		} else{
-			dialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", true, 
-				null, null, "error" );
+			jwsDialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", true, 
+				"error" );
 		}
 	},
 	
@@ -356,12 +356,12 @@ $.widget( "jws.channels", {
 				var lRes = mWSC.channelAuth( lChannelId, lAccessKey, lSecretKey );
 				log( mWSC.resultToString( lRes ) );
 			} else {
-				dialog( "Incorrect value for <b>" + lError + "</b>. Please, check again",
-					"jWebSocket error", true, null, null, "error" );
+				jwsDialog( "Incorrect value for <b>" + lError + "</b>. Please, check again",
+					"jWebSocket error", true, "error" );
 			}
 		} else{
-			dialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", true, 
-				null, null, "error" );
+			jwsDialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", true, 
+				"error" );
 		}
 	},
 	
@@ -389,13 +389,13 @@ $.widget( "jws.channels", {
 					lChannelId, lAccessKey );
 				log( mWSC.resultToString( lRes ) );
 			} else {
-				dialog( "Incorrect value for <b>" + lError +
+				jwsDialog( "Incorrect value for <b>" + lError +
 					"</b>. Please, check again", "jWebSocket error", true, 
-					null, null, "error" );
+					"error" );
 			}
 		} else{
-			dialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", true, 
-				null, null, "error" );
+			jwsDialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", true, 
+				"error" );
 		}
 	},
 	
@@ -416,13 +416,13 @@ $.widget( "jws.channels", {
 				mWSC.channelPublish( lChannelId, lMessage );
 				w.channels.eTxtMessage.val( "" ).focus( );
 			} else {
-				dialog( "Incorrect value for <b>" + lError +
+				jwsDialog( "Incorrect value for <b>" + lError +
 					"</b>. Please, check again", "jWebSocket error", true, 
-					null, null, "error" );
+					"error" );
 			}
 		} else{
-			dialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", true, 
-				null, null, "error" );
+			jwsDialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", true, 
+				"error" );
 		}
 	},
 	
@@ -440,8 +440,8 @@ $.widget( "jws.channels", {
 	},
 	
 	onChannelsReceived: function( aEvent ) {
-		w.channels.destroy();
-		w.channels.mChannelsList = {};
+		w.channels.destroy( );
+		w.channels.mChannelsList = { };
 		// Put all channels in the table
 		for( var lIdx = 0, lCnt = aEvent.channels.length; lIdx < lCnt; lIdx++ ) {
 			w.channels.addChannelToTable( aEvent.channels[ lIdx ], w.channels.eChannelsTable );
@@ -508,7 +508,7 @@ $.widget( "jws.channels", {
 				}
 				// If anything went wrong in the server show information error
 				if( aToken.code == -1 ){
-					dialog( aToken.msg, "jWebSocket error", true, null, null, "error" );
+					jwsDialog( aToken.msg, "jWebSocket error", true, "error" );
 				}
 			}
 		}
