@@ -28,15 +28,18 @@
 
 		<title>jWebSocket Channels Demo</title>
 
+		<!-- JQUERY STYLES -->
+		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+
 		<!-- DEMO STYLES  -->
-		<link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+        <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
 		<link rel="stylesheet" type="text/css" href="css/jwsChannels.css"/>
 
 		<!-- JQUERY DEPENDENCIES -->
-		<link rel="stylesheet" type="text/css" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" />
 		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
-		<script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
 		<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
 		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
 		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
@@ -47,8 +50,6 @@
 		<script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
 
 		<script type="text/javascript" src='js/wChannels.js'></script>
-
-		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
 		<!--  MAIN JAVASCRIPT FILE   -->
 		<script type="text/javascript" src='js/init.js'></script>
@@ -63,16 +64,7 @@
                     <div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
-                            <div id="logoff_button" class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-                                 onmousedown="this.className='button onmousedown'" 
-                                 onmouseup="this.className='button onmouseup'" 
-                                 onmouseout="this.className='button onmouseout'" 
-                                 onclick="this.className='button onmouseover'">
-                                <div class="l"></div>
-                                <div class="c">Logout</div>
-                                <div class="r"></div>
-                            </div>
+                            <div id="logoff_button" class="button">Logout</div>
                         </div>
                     </div>
                     <div id="login_area">
@@ -82,16 +74,7 @@
                             <input type="text" id="user_text" value="root"/>
                             <input type="password" id="user_password" value="root"/>
                         </div>
-                        <div id="login_button" class="button onmouseup" 
-							 onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Login</div>
-                            <div class="r"></div>
-                        </div>
+                        <div id="login_button" class="button">Login</div>
                     </div>
                 </div>
             </div>
@@ -157,36 +140,9 @@
 								</div>
 							</div>
 							<div id="channel_subscribe_area">
-								<div id="subscribe_btn" class="button onmouseup" 
-									 onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">Subscribe</div>
-									<div class="r"></div>
-								</div>
-								<div id="unsubscribe_btn" class="button onmouseup" 
-									 onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">Unsubscribe</div>
-									<div class="r"></div>
-								</div>
-								<div id="getchannels_btn" class="button onmouseup" 
-									 onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">Get Channels</div>
-									<div class="r"></div>
-								</div>
+								<div id="subscribe_btn" class="button">Subscribe</div>
+								<div id="unsubscribe_btn" class="button">Unsubscribe</div>
+								<div id="getchannels_btn" class="button">Get Channels</div>
 							</div>
 							<div id="channel_management_area">
 								<div id="management_area">
@@ -222,86 +178,43 @@
 									</div>
 								</div>
 								<div class="box">
-									<div id="authenticate_btn" class="button onmouseup" 
-										 onmouseover="this.className='button onmouseover'" 
-										 onmousedown="this.className='button onmousedown'" 
-										 onmouseup="this.className='button onmouseup'" 
-										 onmouseout="this.className='button onmouseout'" 
-										 onclick="this.className='button onmouseover'">
-										<div class="l"></div>
-										<div class="c">Authenticate</div>
-										<div class="r"></div>
-									</div>
-									<div id="createchannel_btn" class="button onmouseup" 
-										 onmouseover="this.className='button onmouseover'" 
-										 onmousedown="this.className='button onmousedown'" 
-										 onmouseup="this.className='button onmouseup'" 
-										 onmouseout="this.className='button onmouseout'" 
-										 onclick="this.className='button onmouseover'">
-										<div class="l"></div>
-										<div class="c">New Channel</div>
-										<div class="r"></div>
-									</div>
-									<div id="deletechannel_btn" class="button onmouseup" 
-										 onmouseover="this.className='button onmouseover'" 
-										 onmousedown="this.className='button onmousedown'" 
-										 onmouseup="this.className='button onmouseup'" 
-										 onmouseout="this.className='button onmouseout'" 
-										 onclick="this.className='button onmouseover'">
-										<div class="l"></div>
-										<div class="c">Delete Channel</div>
-										<div class="r"></div>
-									</div>
+									<div id="authenticate_btn" class="button">Authenticate</div>
+									<div id="createchannel_btn" class="button">New Channel</div>
+									<div id="deletechannel_btn" class="button">Delete Channel</div>
 								</div>
 							</div>
 							<div id="channel_publish_area" class="rounded_bottom">
 								<input type="text" id="txt_message" 
 									   value="Type your message..." 
 									   title="Message to be published"/>
-								<div id="publish_btn" class="button onmouseup"
-									 onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">Publish</div>
-									<div class="r"></div>
-								</div>
+								<div id="publish_btn" class="button">Publish</div>
 							</div>
                         </div>
                     </div>
-                </div>
-
-				<div id="demo_box_description" class="box">
-					This demo shows how messages can be retrieved and broadcasted 
-					using a publish/subscribe mechanism based on multiple channels.
-				</div>
-				<!--       LOG BOX           -->
-				<div id="log_box" class="box">
-					<div id="log_box_header">
-						<div id="show_hide_log" class="hide">Hide Log</div>
-						<div id="clear_log">Clear Log</div>
+					<div id="demo_box_description" class="box">
+						This demo shows how messages can be retrieved and broadcasted 
+						using a publish/subscribe mechanism based on multiple channels.
 					</div>
-					<div id="log_box_content" class="log_box_visible"></div>
-				</div>
+					<!--       LOG BOX           -->
+					<div id="log_box" class="box">
+						<div id="log_box_header">
+							<div id="show_hide_log" class="hide">Hide Log</div>
+							<div id="clear_log">Clear Log</div>
+						</div>
+						<div id="log_box_content" class="log_box_visible"></div>
+					</div>
 
-
-                <!--       DOWNLOAD_BUTTON   -->
-                <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" 
-						 onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c">
-							<a href="http://jwebsocket.org" target="blank">
-								Download jWebSocket</a></div>
-                        <div class="r_download"></div>
-                    </div>
+					<!--       DOWNLOAD_BUTTON   -->
+					<div id="demo_box_footer">
+						<div id="jws_download_button" class="button download">
+							<a href="http://jwebsocket.org/downloads/downloads.htm" 
+							   target="blank">Download jWebSocket</a>
+						</div>
+					</div>
                 </div>
+
+
+
             </div>
         </div>
 
