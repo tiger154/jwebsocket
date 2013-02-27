@@ -2,6 +2,10 @@ Ext.define('IS.view.collection.Toolbar' ,{
 	extend: 'Ext.toolbar.Toolbar',
 	alias: 'widget.c_toolbar',
 	items: [{
+		iconCls: 'c_open',
+		tooltip: 'Open collection...',
+		disabled: true
+	},{
 		iconCls: 'c_add',
 		tooltip: 'Add collection...'
 	},{
@@ -27,10 +31,6 @@ Ext.define('IS.view.collection.Toolbar' ,{
 	}, {
 		iconCls: 'c_edit',
 		tooltip: 'Edit collection...',
-		disabled: true
-	}, {
-		iconCls: 'c_open',
-		tooltip: 'Open collection...',
 		disabled: true
 	}]
 });

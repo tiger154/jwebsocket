@@ -32,10 +32,6 @@ Ext.define('IS.view.definition.Create', {
 	},
 	
 	loadForPrototype: function ( aFieldValues ){
-		this.showAt({
-			y: 100
-		});
-		
 		var lForm = this.down('form');
 		lForm.down('textfield[name=itemPK]').setValue(aFieldValues['pk_attr']);
 		lForm.up('window').down('button[action=create]').setText('Save');
@@ -48,6 +44,10 @@ Ext.define('IS.view.definition.Create', {
 				lAttrView.down('combobox').setValue(aAttr.type);
 				lForm.add(lAttrView);
 			}
+		});
+		
+		this.showAt({
+			y: 100
 		});
 	},
 			
@@ -65,7 +65,8 @@ Ext.define('IS.view.definition.Create', {
 				fieldLabel: 'Type name',
 				maskRe: /^[a-zA-Z0-9]/,
 				regex: /^[a-zA-Z]+([a-zA-Z0-9]+)*/,
-				allowBlank: false
+				allowBlank: false,
+				tooltip: 'The type name attribute should be unique and it acts as the definition identifier. It is like a database entity name.'
 			}, {
 				xtype: 'textfield',
 				name : 'itemPK',
@@ -73,7 +74,8 @@ Ext.define('IS.view.definition.Create', {
 				value: 'id',
 				maskRe: /^[a-zA-Z0-9]/,
 				regex: /^[a-zA-Z]+([a-zA-Z0-9]+)*/,
-				allowBlank: false
+				allowBlank: false,
+				tooltip: 'The definition primary key attribute acts as a database entity primary key.'
 			}, {
 				xtype: 'd_attribute'
 			}] 

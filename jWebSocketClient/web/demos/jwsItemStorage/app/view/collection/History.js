@@ -7,6 +7,7 @@ Ext.define('IS.view.collection.History', {
 	width: 500,
 	height: 400,
 	iconCls: 'history',
+	modal: false,
 	
 	loadHistory: function( aCollection ){
 		this.setTitle( 'History viewer: ' + aCollection );

@@ -3,6 +3,7 @@ Ext.define('IS.view.item.Details', {
 	title: 'Details',
 	iconCls: 'i_details',
 	autoShow: true,
+	modal: false,
 
 	loadData: function ( aItemPK, aData, aTpl ){
 		this.setTitle('Details: ' + aItemPK );

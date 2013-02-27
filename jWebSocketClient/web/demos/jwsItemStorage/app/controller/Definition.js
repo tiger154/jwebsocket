@@ -68,7 +68,7 @@ Ext.define('IS.controller.Definition', {
 		this.control({
 			'#definitionsGrid': {
 				itemdblclick: function(aGrid, aRecord) {
-					self.showDetails(aRecord);
+					Ext.ComponentQuery.query('d_toolbar button[iconCls=d_edit]')[0].fireEvent('click');
 				}
 			},
 			

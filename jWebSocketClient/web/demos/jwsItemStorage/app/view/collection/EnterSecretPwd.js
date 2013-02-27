@@ -2,10 +2,9 @@ Ext.define('IS.view.collection.EnterSecretPwd', {
 	extend: 'IS.view.base.Window',
 	alias: 'widget.c_confirmpwd',
 	iconCls: 'key',
-	
-	doAction: function(){
-		
-	},
+	doAction: function(){},
+	text: "",
+	textColor: "red",
 	
 	initComponent: function() {
 		this.items = [{
@@ -13,12 +12,26 @@ Ext.define('IS.view.collection.EnterSecretPwd', {
 			bodyPadding: 10,
 			border: 0,
 			items: [{
+				xtype: 'panel',
+				border: 0,
+				padding: '0 0 20 0',
+				html: '<font size=small color=' + this.textColor + '>' + this.text + '</font>',
+				maxWidth: 280
+			},{
 				xtype: 'textfield',
 				inputType: 'password',
 				name : 'secretPassword',
 				fieldLabel: 'Please enter the collection secret password',
 				labelWidth: 150,
-				minLength: 4
+				minLength: 4,
+				listeners:{  
+					scope:this,  
+					specialkey: function(f,e){  
+						if(e.getKey()==e.ENTER){  
+							this.doAction();
+						}  
+					}  
+				}  
 			}]
 		}];
 

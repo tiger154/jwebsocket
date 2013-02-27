@@ -26,7 +26,15 @@ Ext.define('IS.view.portal.Logon', {
 				xtype: 'textfield',
 				inputType: 'password',
 				name : 'password',
-				fieldLabel: 'Password'
+				fieldLabel: 'Password',
+				listeners:{  
+					scope:this,  
+					specialkey: function(f,e){  
+						if(e.getKey()==e.ENTER){  
+							this.doAction();
+						}  
+					}  
+				}  
 			}]
 		}];
 
