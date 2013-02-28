@@ -647,6 +647,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 * @param aToken
 	 */
 	protected void delete(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		String lMsg;
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'delete'...");
 		}
@@ -662,8 +665,24 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		boolean lForce = aToken.getBoolean("force", true);
 		String lFilename = aToken.getString("filename", null);
+		String lScope = aToken.getString("scope", JWebSocketCommonConstants.SCOPE_PRIVATE);
+		Boolean lNotify = aToken.getBoolean("notify", false);
 
-		String lBaseDir = getAliasPath(aConnector, PRIVATE_ALIAS_DIR_KEY);
+		// scope may be "private" or "public"
+		String lBaseDir;
+		if (JWebSocketCommonConstants.SCOPE_PRIVATE.equals(lScope)) {
+			lBaseDir = getAliasPath(aConnector, PRIVATE_ALIAS_DIR_KEY);
+		} else if (JWebSocketCommonConstants.SCOPE_PUBLIC.equals(lScope)) {
+			lBaseDir = getAliasPath(aConnector, PUBLIC_ALIAS_DIR_KEY);
+		} else {
+			lMsg = "invalid scope";
+			if (mLog.isDebugEnabled()) {
+				mLog.debug(lMsg);
+			}
+			lServer.sendErrorToken(aConnector, aToken, -1, lMsg);
+			return;
+		}
+
 		String lFilePath = lBaseDir + lFilename;
 		File lFile = new File(lFilePath);
 
@@ -691,7 +710,20 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		getServer().sendToken(aConnector, createResponse(aToken));
+		if (lNotify && lScope.equals(JWebSocketCommonConstants.SCOPE_PUBLIC)) {
+			// send notification event to other affected clients
+			// to allow to update their content (if desired)
+			Token lEvent;
+			// create token of type "event"
+			lEvent = TokenFactory.createToken(BaseToken.TT_EVENT);
+			lEvent.setNS(NS_FILESYSTEM);
+			lEvent.setString("name", "filedeleted");
+			lEvent.setString("filename", lFilename);
+			lEvent.setString("sourceId", aConnector.getId());
+			lServer.broadcastToken(lEvent);
+		}
+
+		lServer.sendToken(aConnector, createResponse(aToken));
 	}
 
 	/**
