@@ -1,16 +1,19 @@
-//  ---------------------------------------------------------------------------
-//  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
-//  ---------------------------------------------------------------------------
-//  This program is free software; you can redistribute it and/or modify it
-//  under the terms of the GNU Lesser General Public License as published by the
-//  Free Software Foundation; either version 3 of the License, or (at your
-//  option) any later version.
-//  This program is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//  more details.
-//  You should have received a copy of the GNU Lesser General Public License along
-//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	---------------------------------------------------------------------------
+//	jWebSocket Channel Manager (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //  ---------------------------------------------------------------------------
 package org.jwebsocket.plugins.channels;
 
@@ -49,8 +52,7 @@ public class ChannelManager {
 	/**
 	 * settings key strings
 	 */
-	private static final String USE_PERSISTENT_STORE = "use_persistent_store";
-	private static final String ALLOW_NEW_CHANNELS = "allow_new_channels";
+	private static final String ALLOW_CREATE_SYSTEM_CHANNELS = "allowCreateSystemChannels";
 	/**
 	 * persistent storage objects
 	 */
@@ -67,13 +69,13 @@ public class ChannelManager {
 	 */
 	private static Channel mLoggerChannel = null;
 	/**
-	 * admin channel to monitor channel plugin activity
+	 * admin channel to monitor channel plug-in activity
 	 */
 	private static Channel mAdminChannel = null;
 	/**
 	 * setting to check if new channel creation or registration is allowed
 	 */
-	private boolean mAllowNewChannels = false;
+	private boolean mAllowCreateSystemChannels = false;
 
 	private ChannelManager(Map aSettings,
 			IBasicStorage aChannelStorage,
@@ -86,9 +88,10 @@ public class ChannelManager {
 
 		mChannelPluginSettings = new ConcurrentHashMap<String, Object>(aSettings);
 
-		Object lAllowNewChannels = mChannelPluginSettings.get(ALLOW_NEW_CHANNELS);
-		if (lAllowNewChannels != null && lAllowNewChannels.equals("true")) {
-			mAllowNewChannels = true;
+		Object lAllowCreateSystemChannels = mChannelPluginSettings.get(ALLOW_CREATE_SYSTEM_CHANNELS);
+		if (lAllowCreateSystemChannels != null
+				&& lAllowCreateSystemChannels.equals("true")) {
+			mAllowCreateSystemChannels = true;
 		}
 		int lSuccess = 0;
 		for (Object lKey : aSettings.keySet()) {
@@ -322,14 +325,19 @@ public class ChannelManager {
 		return mChannelStore.getChannels();
 	}
 
-	public boolean isAllowNewChannels() {
-		return mAllowNewChannels;
+	/**
+	 *
+	 * @return
+	 */
+	public boolean isAllowCreateSystemChannels() {
+		return mAllowCreateSystemChannels;
 	}
 
 	/**
 	 * Indicates if the subscriber store contains a subscriber with the given
 	 * subscriber identifier
 	 *
+	 * @param aSubscriberId
 	 * @return TRUE if the subscriber exists, FALSE otherwise
 	 */
 	public boolean hasSubscriber(String aSubscriberId) {
@@ -339,19 +347,21 @@ public class ChannelManager {
 	/**
 	 * Indicates if the publisher store contains the given publisher identifier
 	 *
+	 * @param aPublisherId
 	 * @return TRUE if the publisher exists, FALSE otherwise
 	 */
 	public boolean hasPublisher(String aPublisherId) {
 		return mPublisherStore.hasPublisher(aPublisherId);
 	}
-	
+
 	/**
 	 * Indicates if the channel store contains a channel with the given channel
 	 * identifier
 	 *
+	 * @param aChannelId
 	 * @return TRUE if the channel exists, FALSE otherwise
 	 */
-	public boolean hasChannel(String aChannelId){
+	public boolean hasChannel(String aChannelId) {
 		return mChannelStore.hasChannel(aChannelId);
 	}
 }

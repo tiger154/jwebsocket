@@ -1,6 +1,6 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - Basic PlugIn Class
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	Copyright (c) 2010-2013 Alexander Schulze, Innotrade GmbH
 //	---------------------------------------------------------------------------
 //	This program is free software; you can redistribute it and/or modify it
 //	under the terms of the GNU Lesser General Public License as published by the
@@ -32,7 +32,32 @@ import org.jwebsocket.kit.WebSocketSession;
  */
 public abstract class BasePlugIn implements WebSocketPlugIn {
 
-	private String mVersion = null;
+	/**
+	 * custom vendor string - NEEDS TO BE OVERWRITTEN BY CUSTOM PLUGIN!
+	 */
+	public static final String PLUGIN_CUSTOM_VENDOR = "<return vendor in getVendor() method of plug-in>";
+	/**
+	 * custom plug-in version string - NEEDS TO BE OVERWRITTEN BY CUSTOM PLUGIN!
+	 */
+	public static final String PLUGIN_CUSTOM_VERSION = "<return version in getVersion() method of plug-in>";
+	/**
+	 * custom plug-in description string - NEEDS TO BE OVERWRITTEN BY CUSTOM
+	 * PLUGIN!
+	 */
+	public static final String PLUGIN_CUSTOM_DESCRIPTION = "<return description in getDescription() method of plug-in>";
+	/**
+	 * custom plug-in label string - NEEDS TO BE OVERWRITTEN BY CUSTOM
+	 * PLUGIN!
+	 */
+	public static final String PLUGIN_CUSTOM_LABEL = "<return label in getLabel() method of plug-in>";
+	/**
+	 * custom copyright string - NEEDS TO BE OVERWRITTEN BY CUSTOM PLUGIN!
+	 */
+	public static final String PLUGIN_CUSTOM_COPYRIGHT = "<return copyright in getCopyright() method of plug-in>";
+	/**
+	 * custom license string - NEEDS TO BE OVERWRITTEN BY CUSTOM PLUGIN!
+	 */
+	public static final String PLUGIN_CUSTOM_LICENSE = "<return license in getLicense() method of plug-in>";
 	private WebSocketPlugInChain mPlugInChain = null;
 	private Map<String, Object> mSettings = new FastMap<String, Object>();
 	private PluginConfiguration mConfiguration;
@@ -379,11 +404,31 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 
 	@Override
 	public String getVersion() {
-		return mVersion;
+		return PLUGIN_CUSTOM_VERSION;
 	}
 
 	@Override
-	public void setVersion(String aVersion) {
-		this.mVersion = aVersion;
+	public String getVendor() {
+		return PLUGIN_CUSTOM_VENDOR;
+	}
+
+	@Override
+	public String getLabel() {
+		return PLUGIN_CUSTOM_LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return PLUGIN_CUSTOM_DESCRIPTION;
+	}
+
+	@Override
+	public String getCopyright() {
+		return PLUGIN_CUSTOM_COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return PLUGIN_CUSTOM_LICENSE;
 	}
 }

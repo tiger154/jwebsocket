@@ -26,20 +26,33 @@ import org.jwebsocket.kit.WebSocketEncoding;
 public class JWebSocketCommonConstants {
 
 	/**
-	 * jWebSocket copyright string - MAY NOT BE CHANGED due to GNU LGPL v3.0 license!
-	 * Please ask for conditions of a commercial license on demand.
+	 * jWebSocket copyright string - NEEDS TO BE KEPT due to Apache License,
+	 * Version 2.0! Please ask for conditions of a commercial license on demand.
 	 */
-	public static final String COPYRIGHT = "(c) 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath";
+	public static final String COPYRIGHT_CE = "(C) 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath";
 	/**
-	 * jWebSocket license string - MAY NOT BE CHANGED due to GNU LGPL v3.0 license!
-	 * Please ask for conditions of a commercial license on demand.
+	 * jWebSocket copyright string - NEEDS TO BE KEPT!
 	 */
-	public static final String LICENSE = "Distributed under GNU LGPL License Version 3.0 (http://www.gnu.org/licenses/lgpl.html)";
+	public static final String COPYRIGHT_EE = COPYRIGHT_CE;
+	;
 	/**
-	 * jWebSocket vendor string - MAY NOT BE CHANGED due to GNU LGPL v3.0 license!
-	 * Please ask for conditions of a commercial license on demand.
+	 * jWebSocket license string - NEEDS TO BE KEPT due to Apache License,
+	 * Version 2.0! Please ask for conditions of a commercial license on demand.
 	 */
-	public static final String VENDOR = "jWebSocket.org";
+	public static final String LICENSE_CE = "Licensed under the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)";
+	/**
+	 * jWebSocket enterprise edition license string - NEEDS TO BE KEPT.
+	 */
+	public static final String LICENSE_EE = "Put commercial license here";
+	/**
+	 * jWebSocket CE vendor string - NEEDS TO BE KEPT due to Apache License,
+	 * Version 2.0! Please ask for conditions of a commercial license on demand.
+	 */
+	public static final String VENDOR_CE = "jWebSocket.org";
+	/**
+	 * jWebSocket EE vendor string - NEEDS TO BE KEPT!
+	 */
+	public static final String VENDOR_EE = "jWebSocket.com";
 	/**
 	 * jWebSocket sub protocol prefix
 	 */
@@ -93,27 +106,33 @@ public class JWebSocketCommonConstants {
 	 */
 	public static String WS_FORMAT_DEFAULT = WS_FORMAT_JSON;
 	/**
-	 * WebSocket protocol hybi draft 10 (http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76)
+	 * WebSocket protocol hybi draft 10
+	 * (http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76)
 	 */
 	public final static String WS_HIXIE_DRAFT_76 = "76";
 	/**
-	 * WebSocket protocol hybi draft 03 (http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-02)
+	 * WebSocket protocol hybi draft 03
+	 * (http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-02)
 	 */
 	public final static String WS_HYBI_DRAFT_02 = "2";
 	/**
-	 * WebSocket protocol hybi draft 03 (http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-03)
+	 * WebSocket protocol hybi draft 03
+	 * (http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-03)
 	 */
 	public final static String WS_HYBI_DRAFT_03 = "3";
 	/**
-	 * WebSocket protocol hybi draft 07 (http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-07)
+	 * WebSocket protocol hybi draft 07
+	 * (http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-07)
 	 */
 	public final static String WS_HYBI_DRAFT_07 = "7";
 	/**
-	 * WebSocket protocol hybi draft 08 (http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-08)
+	 * WebSocket protocol hybi draft 08
+	 * (http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-08)
 	 */
 	public final static String WS_HYBI_DRAFT_08 = "8";
 	/**
-	 * WebSocket protocol hybi draft 10 (http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10)
+	 * WebSocket protocol hybi draft 10
+	 * (http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10)
 	 */
 	public final static String WS_HYBI_DRAFT_10 = "10";
 	/**
@@ -165,7 +184,8 @@ public class JWebSocketCommonConstants {
 	 */
 	public final static int WS_DRAFT_DEFAULT = 10;
 	/**
-	 * Use text format as default encoding for WebSocket Packets if not explicitly specified
+	 * Use text format as default encoding for WebSocket Packets if not
+	 * explicitly specified
 	 */
 	public final static WebSocketEncoding WS_ENCODING_DEFAULT = WebSocketEncoding.TEXT;
 	/**
@@ -213,17 +233,17 @@ public class JWebSocketCommonConstants {
 	 */
 	public static int DEFAULT_TIMEOUT = 120000;
 	/**
-	 * private scope, only authenticated user can read and write his personal items
+	 * private scope, only authenticated user can read and write his personal
+	 * items
 	 */
 	public static final String SCOPE_PRIVATE = "private";
 	/**
 	 * public scope, everybody can read and write items from this scope
 	 */
 	public static final String SCOPE_PUBLIC = "public";
-	
 	/**
-	 * jWebSocket cookie name for the session identifier used when running 
-	 * in standalone mode.
+	 * jWebSocket cookie name for the session identifier used when running in
+	 * standalone mode.
 	 */
 	public static final String SESSIONID_COOKIE_NAME = "JWSSESSIONID";
 

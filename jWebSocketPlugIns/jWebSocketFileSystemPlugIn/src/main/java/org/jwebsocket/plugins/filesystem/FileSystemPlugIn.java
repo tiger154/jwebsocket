@@ -1,17 +1,19 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket Filesystem Plug-In
-//	Copyright (c) 2010 Innotrade GmbH
+//	jWebSocket Filesystem Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.filesystem;
 
@@ -57,6 +59,12 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	public static final String NS_FILESYSTEM = JWebSocketServerConstants.NS_BASE + ".plugins.filesystem";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket FileSystemPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket FileSystemPlugIn - Community Edition";
 	public static final String PRIVATE_ALIAS_DIR_KEY = "privateDir";
 	public static final String PUBLIC_ALIAS_DIR_KEY = "publicDir";
 	public static final String ALIAS_WEB_ROOT_KEY = "webRoot";
@@ -107,6 +115,36 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
+
+	@Override
 	public synchronized void engineStarted(WebSocketEngine aEngine) {
 		if (getServer().getEngines().size() == 1) {
 			startAliasesMonitor(1000);
@@ -138,6 +176,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				delete(aConnector, aToken);
 			} else if (lType.equals("exists")) {
 				exists(aConnector, aToken);
+			} else if (lType.equals("append")) {
+				append(aConnector, aToken);
 			}
 		}
 	}
@@ -232,21 +272,22 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * saves a file
+	 * saves or appends a file, depending on the aToken.append (Boolean) arg
 	 *
 	 * @param aConnector
 	 * @param aToken
 	 */
-	protected void save(WebSocketConnector aConnector, Token aToken) {
+	private void mWrite(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 		String lMsg;
 
+		boolean lAppend = aToken.getBoolean("append");
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing 'save'...");
+			mLog.debug("Processing '" + (lAppend ? "append" : "save") + "'...");
 		}
 
-		// check if user is allowed to run 'save' command
-		if (!hasAuthority(aConnector, NS_FILESYSTEM + ".save")) {
+		// check if user is allowed to run 'save' or 'append' command
+		if (!hasAuthority(aConnector, NS_FILESYSTEM + "." + (lAppend ? "append" : "save"))) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Returning 'Access denied'...");
 			}
@@ -315,9 +356,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				File lDir = new File(FilenameUtils.getFullPath(lFullPath));
 				FileUtils.forceMkdir(lDir);
 				if (lBA != null) {
-					FileUtils.writeByteArrayToFile(lFile, lBA);
+					FileUtils.writeByteArrayToFile(lFile, lBA, lAppend);
 				} else {
-					FileUtils.writeStringToFile(lFile, lData, "UTF-8");
+					FileUtils.writeStringToFile(lFile, lData, "UTF-8", lAppend);
 				}
 			}
 		} catch (Exception lEx) {
@@ -336,7 +377,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		// create token of type "event"
 		lEvent = TokenFactory.createToken(BaseToken.TT_EVENT);
 		lEvent.setNS(NS_FILESYSTEM);
-		lEvent.setString("name", "filesaved");
+		lEvent.setString("name", lAppend ? "fileappended" : "filesaved");
 		lEvent.setString("filename", lFilename);
 		lEvent.setString("sourceId", aConnector.getId());
 
@@ -346,6 +387,28 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			// notify always the requester
 			lServer.sendToken(aConnector, lEvent);
 		}
+	}
+
+	/**
+	 * saves a file
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
+	protected void save(WebSocketConnector aConnector, Token aToken) {
+		aToken.setBoolean("append", Boolean.FALSE);
+		mWrite(aConnector, aToken);
+	}
+
+	/**
+	 * appends a file
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
+	protected void append(WebSocketConnector aConnector, Token aToken) {
+		aToken.setBoolean("append", Boolean.TRUE);
+		mWrite(aConnector, aToken);
 	}
 
 	/**

@@ -35,6 +35,13 @@ public interface WebSocketPlugIn {
 	String getId();
 
 	/**
+	 * returns the name of the plug-in.
+	 *
+	 * @return
+	 */
+	String getName();
+
+	/**
 	 * return the version of the plug-in.
 	 *
 	 * @return
@@ -42,12 +49,42 @@ public interface WebSocketPlugIn {
 	String getVersion();
 
 	/**
-	 * set the version of the plug-in.
+	 * return the label of the plug-in.
+	 *
+	 * @return
 	 */
-	void setVersion(String aVersion);
+	String getLabel();
 
 	/**
-	 * return the enabled status of the plug-in.
+	 * returns the description of the plug-in.
+	 *
+	 * @return
+	 */
+	String getDescription();
+
+	/**
+	 * returns the vendor of the plug-in.
+	 *
+	 * @return
+	 */
+	String getVendor();
+
+	/**
+	 * returns the copyright of the plug-in.
+	 *
+	 * @return
+	 */
+	String getCopyright();
+
+	/**
+	 * returns the license of the plug-in.
+	 *
+	 * @return
+	 */
+	String getLicense();
+
+	/**
+	 * returns the enabled status of the plug-in.
 	 *
 	 * @return
 	 */
@@ -62,13 +99,6 @@ public interface WebSocketPlugIn {
 	 * notifies the plug-in about a change in enabled status.
 	 */
 	void processEnabled(boolean aEnabled);
-
-	/**
-	 * returns the name of the plug-in.
-	 *
-	 * @return
-	 */
-	String getName();
 
 	/**
 	 * is called by the server when the engine has been started.

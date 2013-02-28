@@ -53,6 +53,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed updateSQL client plug-in accordingly!
 	private static final String NS_JDBC = JWebSocketServerConstants.NS_BASE + ".plugins.jdbc";
+	private final static String VERSION = "1.0.0";
 	private IBasicStorage mCache = null;
 	private int mConnValTimeout = 300;
 	private static ApplicationContext mBeanFactory;
@@ -75,8 +76,6 @@ public class JDBCPlugIn extends TokenPlugIn {
 		this.setNamespace(NS_JDBC);
 		mCache = new EhCacheStorage(NS_JDBC);
 
-		String lVal = getString("conn_val_timeout");
-
 		try {
 			mBeanFactory = getConfigBeanFactory();
 
@@ -95,6 +94,11 @@ public class JDBCPlugIn extends TokenPlugIn {
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " at JDBC plug-in instantiation: " + lEx.getMessage());
 		}
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
 	}
 
 	@Override
@@ -747,8 +751,6 @@ public class JDBCPlugIn extends TokenPlugIn {
 	}
 
 	private Token mQuerySQL(String aSQL, int aExpiration) {
-
-
 		String lHash = "hash";
 		Token lResponse = null;
 

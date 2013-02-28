@@ -357,6 +357,10 @@ public class JWebSocketConfig implements Config {
 	 *
 	 */
 	public static void initForWebApp(ServletContext aContext) {
+		boolean lDebug = true;
+		if (lDebug) {
+			System.out.println("jWebSocket: Initializing web application...");
+		}
 		mIsWebApp = true;
 		try {
 			// get base folder of unpacked war file
@@ -368,9 +372,15 @@ public class JWebSocketConfig implements Config {
 			}
 			// this path must match the pom.xml
 			lLog4JPath += "WEB-INF/classes/conf/log4j.xml";
+			if (lDebug) {
+				System.out.println("jWebSocket: Loading log4j config from " + lLog4JPath);
+			}
 			// load the log4j xml config file
 			DOMConfigurator.configure(lLog4JPath);
 			mLog = Logger.getLogger(JWebSocketConfig.class);
+			if (lDebug) {
+				System.out.println("jWebSocket: logger instantiated: " + mLog);
+			}
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("WebApp-Mode: Logs successfully configured by '" + lLog4JPath + "'.");
 			}
