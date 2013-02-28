@@ -31,8 +31,6 @@
 		<script type="text/javascript" src="../../res/js/jwsSamplesPlugIn.js"></script>
 		<!-- this one imports the client side JDBC plug-in -->
 		<script type="text/javascript" src="../../res/js/jwsJDBCPlugIn.js"></script>
-		<!-- this one imports the client side file system plug-in -->
-		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
 		<!-- this one imports the client side reporting plug-in -->
 		<script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
 		<!-- this one imports the client side rpc plug-in -->
@@ -328,70 +326,6 @@
 				*/
 			}
 			
-			function getFilelist() {
-				log( "Retrieving file list from the server via WebSockets..." );
-				// call the getFilelist method of the client side plug-in
-				var lRes = lWSC.fileGetFilelist(
-					"publicDir", [ "*.*" ],
-					{	recursive: true
-					}
-				);
-				// log error only, on success don't confuse the user
-				if( lRes.code != 0 ) {
-					log( lWSC.resultToString( lRes ) );
-				}
-				/*
-				log( "Creating a report via WebSockets..." );
-				// call the getReports method of the client side plug-in
-				var lRes = lWSC.reportingCreateReport(
-					"Browser Usage",	// report id
-					null				// report params
-				);
-				// log error only, on success don't confuse the user
-				if( lRes.code != 0 ) {
-					log( lWSC.resultToString( lRes ) );
-				}
-				log( "Retrieving reports via WebSockets..." );
-				// call the getReports method of the client side plug-in
-				var lRes = lWSC.reportingGetReports				(
-					[ "*.*" ],
-				);
-				// log error only, on success don't confuse the user
-				if( lRes.code != 0 ) {
-					log( lWSC.resultToString( lRes ) );
-				}
-				*/
-			}
-
-			function loadFile() {
-				log( "Loading a file from the server via WebSockets..." );
-				// call the getTime method of the client side plug-in
-				var lRes = lWSC.fileLoad(
-					"test.txt",
-					{	scope: jws.SCOPE_PUBLIC
-					}
-			);
-				// log error only, on success don't confuse the user
-				if( lRes.code != 0 ) {
-					log( lWSC.resultToString( lRes ) );
-				}
-			}
-
-			function saveFile() {
-				log( "Saving a file from the server via WebSockets..." );
-				// call the getTime method of the client side plug-in
-				var lRes = lWSC.fileSave(
-					"test.txt",
-					eMessage.value,
-					{	scope: jws.SCOPE_PUBLIC
-					}
-				);
-				// log error only, on success don't confuse the user
-				if( lRes.code != 0 ) {
-					log( lWSC.resultToString( lRes ) );
-				}
-			}
-			
 			function cgiTest() {
 				lWSC.sendToken({
 					ns: "org.jwebsocket.plugins.system",
@@ -400,28 +334,6 @@
 					unid: "ssal",
 					cmd: "test()"
 				});
-			}
-
-			function onFileLoadedObs( aToken ) {
-				log( "Loaded file: " + aToken.data );
-				eMessage.value = aToken.data;
-			}
-
-			function onFileErrorObs( aToken ) {
-				log( "Error loading file: " + aToken.msg );
-			}
-
-			function onFileSavedObs( aToken ) {
-				var lURL = aToken.url.toLowerCase();
-				if( lURL.indexOf(".png") > 0
-					|| lURL.indexOf(".jpg") > 0
-					|| lURL.indexOf(".jpeg") > 0
-					|| lURL.indexOf(".gif") > 0) {
-					var lHTML = "<img src=\"" + aToken.url + "\"/>";
-					log( lHTML );
-				} else {
-					log( "File " + aToken.url + " has been stored on server.");
-				}
 			}
 
 			function initPage() {
@@ -438,11 +350,6 @@
 					});
 					lWSC.setSamplesCallbacks({
 						OnSamplesServerTime: getServerTimeCallback
-					});
-					lWSC.setFileSystemCallbacks({
-						OnFileLoaded: onFileLoadedObs,
-						OnFileSaved: onFileSavedObs,
-						OnFileError: onFileErrorObs
 					});
 					eUsername.focus();
 				} else {
@@ -517,17 +424,9 @@
 						<input class="sbtnDlg" id="sbtnListener" type="button" value="Listener" onclick="sampleListener();"
 							   title="Retreives a result (copyright and license token) from a server side listener.">
 					</td>
-					<td class="stdDlg" width="5">
+					<td class="stdDlg" width="">
 						<input class="sbtnDlg" id="sbtnTokenizable" type="button" value="Tokenizable" onclick="sampleTokenizable();"
 							   title="Retreives a tokenizable object from a server via a listener.">
-					</td>
-					<td class="stdDlg" width="5">
-						<input class="sbtnDlg" id="sbtnSaveFile" type="button" value="Save File" onclick="saveFile();"
-							   title="Saves the message below into a shared file on the jWebSocket server.">
-					</td>
-					<td class="stdDlg" width="">
-						<input class="sbtnDlg" id="sbtnGetFilelist" type="button" value="Filelist" onclick="getFilelist();"
-							   title="Retreives the filelist from the server.">
 					</td>
 				</tr>
 				<tr class="strDlg">
@@ -552,13 +451,9 @@
 						<input class="sbtnDlg" id="sbtnSelect" type="button" value="Select" onclick="sampleSelect();"
 							   title="Retreives a single record from a JDBC datasource on the server.">
 					</td>
-					<td class="stdDlg" width="5">
+					<td class="stdDlg" width="">
 						<input class="sbtnDlg" id="sbtnRPC" type="button" value="RPC" onclick="sampleRPC();"
 							   title="Shows how to call a simple RPC on the server.">
-					</td>
-					<td class="stdDlg" width="">
-						<input class="sbtnDlg" id="sbtnLoadFile" type="button" value="Load File" onclick="loadFile();"
-							   title="Loads a shared file on the jWebSocket server and displays it below.">
 					</td>
 				</tr>
 				<tr class="strDlg">

@@ -47,6 +47,18 @@
 				}
 			}
 
+			function info( aString ) {
+				log("<font style=\"color:green\">" + aString + "</font>");
+			}
+
+			function warn( aString ) {
+				log("<font style=\"color:olive\">" + aString + "</font>");
+			}
+
+			function error( aString ) {
+				log("<font style=\"color:red\">" + aString + "</font>");
+			}
+
 			function clearLog() {
 				eLog.innerHTML = "";
 				eLog.scrollTop = 0;

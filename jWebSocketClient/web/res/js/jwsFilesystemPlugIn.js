@@ -1,22 +1,19 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket FileSystem, Client PlugIn (uses jWebSocket Client and Server)
-//	(C) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH, Herzogenrath
+//	jWebSocket Filesystem Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//	---------------------------------------------------------------------------
-
-
-//	---------------------------------------------------------------------------
-//  jWebSocket Filesystem Client Plug-In
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 
 jws.FileSystemPlugIn = {
@@ -76,9 +73,12 @@ jws.FileSystemPlugIn = {
 						this.OnFileSaved( aToken );
 					}
 				} else if( "filereceived" == aToken.name ) {
-					
 					if( this.OnFileReceived ) {
 						this.OnFileReceived( aToken );
+					}
+				} else if( "filedeleted" == aToken.name ) {
+					if( this.OnFileDeleted ) {
+						this.OnFileDeleted( aToken );
 					}
 				}
 			}
@@ -119,15 +119,29 @@ jws.FileSystemPlugIn = {
 	//:a:en::aFilename:String:The filename value.
 	//:a:en::aForce:Boolean:Force file delete flag.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en:aOptions:scope:String:"private" or "public"
 	//:r:*:::void:none
 	fileDelete: function( aFilename, aForce, aOptions ) {
+		var lScope = jws.SCOPE_PRIVATE;
+		var lNotify = false;
 		var lRes = this.checkConnected();
+		if( aOptions ) {
+			if( aOptions.scope != undefined ) {
+				lScope = aOptions.scope;
+			}
+			if( aOptions.notify != undefined ) {
+				// notify only is the scope is public
+				lNotify = (jws.SCOPE_PUBLIC == lScope) && aOptions.notify;
+			}
+		}	
 		if( 0 == lRes.code ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "delete",
 				filename: aFilename,
-				force: aForce
+				force: aForce,
+				notify: lNotify,
+				scope: lScope
 			};
 			this.sendToken( lToken,	aOptions );
 		}	
@@ -136,11 +150,11 @@ jws.FileSystemPlugIn = {
 	
 	//:m:*:fileExists
 	//:d:en:Indicates if a custom file exists on a given alias
-	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
 	//:a:en::aFilename:String:The filename value
+	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
-	fileExists: function( aAlias, aFilename, aOptions ) {
+	fileExists: function( aFilename, aAlias, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
 			var lToken = {
@@ -169,7 +183,66 @@ jws.FileSystemPlugIn = {
 				type: "load",
 				alias: aAlias,
 				filename: aFilename,
-				decode: (aOptions.decode) || false
+				decode: (aOptions.decode) || true
+			};
+			this.sendToken( lToken,	aOptions );
+		} else {
+			lRes.code = -1;
+			lRes.localeKey = "jws.jsc.res.notConnected";
+			lRes.msg = "Not connected.";
+		}
+		return lRes;
+	},
+
+	mFileWrite: function( aFilename, aData, aOptions ) {
+		var lRes = this.createDefaultResult();
+		var lEncoding = "base64";
+		var lEncode = true;
+		var lNotify = false;
+		var lScope = jws.SCOPE_PRIVATE;
+		var lType = null;
+		if( aOptions ) {
+			if( aOptions.append  ) {
+				lType = "append";
+			} else {
+				lType = "save";
+			}
+			if( aOptions.scope != undefined ) {
+				lScope = aOptions.scope;
+			}
+			if( aOptions.encode != undefined ) {
+				lEncode = aOptions.encode;
+			}
+			if( aOptions.encoding != undefined ) {
+				lEncoding = aOptions.encoding;
+			}
+			if( aOptions.encode != undefined ) {
+				lEncode = aOptions.encode;
+			}
+			if( aOptions.notify != undefined ) {
+				// notify only is the scope is public
+				lNotify = (jws.SCOPE_PUBLIC == lScope) && aOptions.notify;
+			}
+		}
+		if( !lType ) {
+			lRes.code = -1;
+			lRes.msg = "No save/append option passed.";
+			return lRes;
+		}
+		if( lEncode ) {
+			if( lEncoding == "base64" ) {
+				aData = Base64.encode( aData );
+			}
+		}
+		if( this.isConnected() ) {
+			var lToken = {
+				ns: jws.FileSystemPlugIn.NS,
+				type: lType,
+				scope: lScope,
+				encoding: lEncoding,
+				notify: lNotify,
+				data: aData,
+				filename: aFilename
 			};
 			this.sendToken( lToken,	aOptions );
 		} else {
@@ -191,51 +264,30 @@ jws.FileSystemPlugIn = {
 	//:a:en::aOptions.encoding:String:The encoding method. Currently "base64" is only supported and enabled by default.
 	//:r:*:::void:none
 	fileSave: function( aFilename, aData, aOptions ) {
-		var lRes = this.createDefaultResult();
-		var lEncoding = "base64";
-		var lEncode = true;
-		var lNotify = false;
-		var lScope = jws.SCOPE_PRIVATE;
-		if( aOptions ) {
-			if( aOptions.scope != undefined ) {
-				lScope = aOptions.scope;
-			}
-			if( aOptions.encode != undefined ) {
-				lEncode = aOptions.encode;
-			}
-			if( aOptions.encoding != undefined ) {
-				lEncoding = aOptions.encoding;
-			}
-			if( aOptions.encode != undefined ) {
-				lEncode = aOptions.encode;
-			}
-			if( aOptions.notify != undefined ) {
-				// notify only is the scope is public
-				lNotify = (jws.SCOPE_PUBLIC == lScope) && aOptions.notify;
-			}
+		if( !aOptions ) {
+			aOptions = {};
 		}
-		if( lEncode ) {
-			if( lEncoding == "base64" ) {
-				aData = Base64.encode( aData );
-			}
+		aOptions.append = false;
+		return this.mFileWrite( aFilename, aData, aOptions );
+	},
+
+	//:m:*:fileAppend
+	//:d:en:Appends a file in a given scope. _
+	//:d:en:If the file does not exist yet it will be created automatically.
+	//:a:en::aFilename:String:The filename value
+	//:a:en::aData:String:The content to be appended. Could be base64 encoded optionally.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.scope:String:The scope value. <tt>Example: jws.SCOPE_PRIVATE</tt>
+	//:a:en::aOptions.encode:Boolean:Indicates if the file content require to be encoded internally before send. Default value is TRUE.
+	//:a:en::aOptions.notify:Boolean:Indicates if the server should notify the file save to connected clients. Default value is FALSE.
+	//:a:en::aOptions.encoding:String:The encoding method. Currently "base64" is only supported and enabled by default.
+	//:r:*:::void:none
+	fileAppend: function( aFilename, aData, aOptions ) {
+		if( !aOptions ) {
+			aOptions = {};
 		}
-		if( this.isConnected() ) {
-			var lToken = {
-				ns: jws.FileSystemPlugIn.NS,
-				type: "save",
-				scope: lScope,
-				encoding: lEncoding,
-				notify: lNotify,
-				data: aData,
-				filename: aFilename
-			};
-			this.sendToken( lToken,	aOptions );
-		} else {
-			lRes.code = -1;
-			lRes.localeKey = "jws.jsc.res.notConnected";
-			lRes.msg = "Not connected.";
-		}
-		return lRes;
+		aOptions.append = true;
+		return this.mFileWrite( aFilename, aData, aOptions );
 	},
 
 	//:m:*:fileSend
@@ -486,6 +538,9 @@ jws.FileSystemPlugIn = {
 		}
 		if( aListeners.OnFileSaved !== undefined ) {
 			this.OnFileSaved = aListeners.OnFileSaved;
+		}
+		if( aListeners.OnFileDeleted !== undefined ) {
+			this.OnFileDeleted = aListeners.OnFileDeleted;
 		}
 		if( aListeners.OnFileReceived !== undefined ) {
 			this.OnFileReceived = aListeners.OnFileReceived;
