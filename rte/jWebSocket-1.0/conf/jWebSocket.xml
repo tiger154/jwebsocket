@@ -707,7 +707,12 @@
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<id>save</id>
-			<description>Allows to save files to file system</description>
+			<description>Allows to save files on the server's alias based file system</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>append</id>
+			<description>Allows to append files on the server's alias based file system</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
@@ -926,6 +931,7 @@
 				<!-- filesystem rights -->
 				<right>org.jwebsocket.plugins.filesystem.load</right>
 				<right>org.jwebsocket.plugins.filesystem.save</right>
+				<right>org.jwebsocket.plugins.filesystem.append</right>
 				<right>org.jwebsocket.plugins.filesystem.delete</right>
 				<right>org.jwebsocket.plugins.filesystem.exists</right>
 				<right>org.jwebsocket.plugins.filesystem.send</right>
@@ -989,6 +995,7 @@
 				<!-- filesystem rights -->
 				<right>org.jwebsocket.plugins.filesystem.load</right>
 				<right>org.jwebsocket.plugins.filesystem.save</right>
+				<right>org.jwebsocket.plugins.filesystem.append</right>
 				<right>org.jwebsocket.plugins.filesystem.delete</right>
 				<right>org.jwebsocket.plugins.filesystem.exists</right>
 				<right>org.jwebsocket.plugins.filesystem.send</right>
@@ -1055,8 +1062,6 @@
 				<right>org.jwebsocket.plugins.channels.getChannels</right>
 				<right>org.jwebsocket.plugins.channels.createChannel</right>
 				<right>org.jwebsocket.plugins.channels.removeChannel</right>
-
-				
 			</rights>
 
 		</role>
@@ -1329,21 +1334,6 @@
 			</server-assignments>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JDBCPlugIn/jdbc.xml</setting>
-
-				<!-- specify database settings -->
-				<setting key="db_driver">com.mysql.jdbc.Driver</setting>
-				<setting key="db_url">jdbc:mysql://localhost:3306/ria-db</setting>
-				<!-- System user -->
-				<setting key="db_sys_usr_id">fffSys</setting>
-				<setting key="db_sys_usr_pw">sys_password</setting>
-				<!-- Demo user -->
-				<setting key="db_demo_user_id">fffDemo</setting>
-				<setting key="db_demo_user_pw">demo_password</setting>
-				<!-- Application user  -->
-				<setting key="db_app_user_id">fffApp</setting>
-				<setting key="db_app_user_pw">app_password</setting>
-				<!-- connection validity check timeout in ms -->
-				<setting key="conn_val_timeout">300</setting>
 			</settings>
 		</plugin>
 
@@ -1481,6 +1471,7 @@
 					 Required user authorities for the FileSystem plug-in:
 					 - org.jwebsocket.plugins.filesystem.load
 					 - org.jwebsocket.plugins.filesystem.save
+					 - org.jwebsocket.plugins.filesystem.append
 					 - org.jwebsocket.plugins.filesystem.delete
 					 - org.jwebsocket.plugins.filesystem.exists
 					 - org.jwebsocket.plugins.filesystem.send
