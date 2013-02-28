@@ -3,7 +3,7 @@
 }
 
 #basic_channels_box{
-	height: 400px;
+	height: auto;
 	margin-bottom: 12px;
 	float: left;
 	width: 70%;
@@ -88,7 +88,8 @@
 
 /* channel_table_container */
 #channel_table_container{
-	height: 154px;
+	height: auto;
+	max-height: 160px;
 	background: #e4e4e4;
 	border: 1px solid #c8c8c8;
 	border-top: none;
@@ -102,6 +103,7 @@
 	background: #FFFFFF;
 	font-family: "Verdana";
 	font-size: 12px;
+	width: 100%;
 }
 
 #channel_table_container .table_header{
@@ -259,4 +261,27 @@
 
 .active_field{
 	color: black;
+}
+
+#resize_channels_area{
+	text-align: right;
+	cursor: pointer;
+	font-weight: bold;
+	font-size: 6pt;
+	height: 10px;
+	float: right;
+	width: 100%;
+	border: 1px solid #c8c8c8;
+	margin: -13px 0 6px 0;
+	color: #969696;
+	width: auto;
+}
+
+#resize_channels_area .more, #resize_channels_area .less{
+	float: right;
+	width: 15px;
+	text-align: center;
+}
+#resize_channels_area .more{
+	border-left: 1px solid #c8c8c8;
 }
