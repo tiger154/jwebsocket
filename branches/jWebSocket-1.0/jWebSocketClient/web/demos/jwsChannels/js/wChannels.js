@@ -23,68 +23,71 @@ $.widget( "jws.channels", {
 	_init: function( ) {
 		// ------------- VARIABLES -------------
 		// Persists the current selected channel
-		this.mChannelsList = {};
+		this.mChannelsList			= {};
 		
-		this.mSelectedChannel = null;
-		this.mSelectedRow = null;
+		this.mSelectedChannel		= null;
+		this.mSelectedRow			= null;
 		
 		// Messages to show in the demo
-		this.MSG_NOCHANNELS = "There are not channels to show.";
-		this.MSG_NOSUBSCRIPTIONS = "There are not subscriptions to show.";
-		this.MSG_NOSUBSCRIBERS = "There are no subscribers for this channel yet.";
-		this.MSG_ACCESSKEY = "access key";
-		this.MSG_SECRETKEY = "secret key";
-		this.MSG_CHANNELID = "channel id";
-		this.MSG_CHANNELNAME = "channel name";
-		this.MSG_MESSAGE = "message";
-		this.MSG_PUBLISHMESSAGE = "Type your message...";
-		this.MSG_PRIVATE = "private";
-		this.MSG_PUBLIC = "public";
-		this.MSG_NOTCONNECTED = "Sorry, you are not connected to the " +
+		this.MSG_NOCHANNELS			= "There are not channels to show.";
+		this.MSG_NOSUBSCRIPTIONS	= "There are not subscriptions to show.";
+		this.MSG_NOSUBSCRIBERS		= "There are no subscribers for this channel yet.";
+		this.MSG_ACCESSKEY			= "access";
+		this.MSG_SECRETKEY			= "secret";
+		this.MSG_CHANNELID			= "channel id";
+		this.MSG_CHANNELNAME		= "channel name";
+		this.MSG_MESSAGE			= "message";
+		this.MSG_PUBLISHMESSAGE		= "Type your message...";
+		this.MSG_PRIVATE			= "private";
+		this.MSG_PUBLIC				= "public";
+		this.MSG_NOTCONNECTED		= "Sorry, you are not connected to the " +
 		"server, try updating your browser or clicking the login button";
 		
 		// Class names used in the demo
-		this.CLS_TH = "table_header";
-		this.CLS_ACTIVE = "active";
-		this.CLS_NOCHANNELS = "no_channels";
-		this.CLS_ON = "bullet_on";
-		this.CLS_OFF = "bullet_off";
-		this.CLS_HOVER = "hover";
-		this.CLS_STRIPE = "gray";
+		this.CLS_TH					= "table_header";
+		this.CLS_ACTIVE				= "active";
+		this.CLS_NOCHANNELS			= "no_channels";
+		this.CLS_ON					= "bullet_on";
+		this.CLS_OFF				= "bullet_off";
+		this.CLS_HOVER				= "hover";
+		this.CLS_STRIPE				= "gray";
 		
 		// ------------- TEXT FIELDS -------------
 		// Text field elements
-		this.eTxtAccessKey = this.element.find("#txt_access_key");
-		this.eTxtChannelId = this.element.find("#txt_channel_id");
-		this.eTxtSecretKey = this.element.find("#txt_secret_key");
-		this.eTxtChannelName = this.element.find("#txt_channel_name");
-		this.eTxtMessage = this.element.find("#txt_message");
+		this.eTxtAccessKey			= this.element.find( "#txt_access_key" );
+		this.eTxtChannelId			= this.element.find( "#txt_channel_id" );
+		this.eTxtSecretKey			= this.element.find( "#txt_secret_key" );
+		this.eTxtChannelName		= this.element.find( "#txt_channel_name" );
+		this.eTxtMessage			= this.element.find( "#txt_message" );
 		
 		// ------------- BUTTONS -------------
-		this.eBtnSwitchChannels = this.element.find("#switch_channels_btn");
-		this.eBtnSwitchSubscriptions = this.element.find("#switch_subscriptions_btn");
-		this.eBtnSwitchSubscribers = this.element.find("#switch_subscribers_btn");
-		this.eBtnGetChannels = this.element.find("#getchannels_btn");
-		this.eBtnSubscribe = this.element.find("#subscribe_btn");
-		this.eBtnUnsubscribe = this.element.find("#unsubscribe_btn");
-		this.eBtnAuthenticate = this.element.find("#authenticate_btn");
-		this.eBtnCreateChannel = this.element.find("#createchannel_btn");
-		this.eBtnDeleteChannel = this.element.find("#deletechannel_btn");
-		this.eBtnPublish = this.element.find("#publish_btn");
+		this.eBtnSwitchChannels		= this.element.find( "#switch_channels_btn" );
+		this.eBtnSwitchSubscriptions= this.element.find( "#switch_subscriptions_btn" );
+		this.eBtnSwitchSubscribers	= this.element.find( "#switch_subscribers_btn" );
+		this.eBtnGetChannels		= this.element.find( "#getchannels_btn" );
+		this.eBtnSubscribe			= this.element.find( "#subscribe_btn" );
+		this.eBtnUnsubscribe		= this.element.find( "#unsubscribe_btn" );
+		this.eBtnAuthenticate		= this.element.find( "#authenticate_btn" );
+		this.eBtnCreateChannel		= this.element.find( "#createchannel_btn" );
+		this.eBtnDeleteChannel		= this.element.find( "#deletechannel_btn" );
+		this.eBtnPublish			= this.element.find( "#publish_btn" );
 		
 		// Radio elements
-		this.eRbtnPublish = this.element.find("input[name=visibility]");
+		this.eRbtnPublish			= this.element.find( "input[name=visibility]" );
 		
 		// Combobox elements
-		this.eCbSystem = this.element.find("input[name=system]");
+		this.eCbSystem				= this.element.find( "input[name=system]" );
 		
 		// Some other elements
-		this.eChannelsArea = this.element.find("#channels_area");
-		this.eSubscriptionsArea = this.element.find("#subscriptions_area");
-		this.eSubscribersArea = this.element.find("#subscribers_area");
-		this.eChannelsTable = this.element.find("#channels_table");
-		this.eSubscriptionsTable = this.element.find("#subscriptions_table");
-		this.eSubscribersTable = this.element.find("#subscribers_table");
+		this.eChannelsArea			= this.element.find( "#channels_area" );
+		this.eSubscriptionsArea		= this.element.find( "#subscriptions_area" );
+		this.eSubscribersArea		= this.element.find( "#subscribers_area" );
+		this.eChannelsTable			= this.element.find( "#channels_table" );
+		this.eSubscriptionsTable	= this.element.find( "#subscriptions_table" );
+		this.eSubscribersTable		= this.element.find( "#subscribers_table" );
+		this.eBtnBiggerArea			= this.element.find( "#resize_channels_area div" );
+		this.eChannelsAreaResizable	= this.element.find( "#channel_table_container" );
+		this.eTables				= this.element.find( "#channel_table_container table" );
 		
 		// Keeping a reference of the widget, when a websocket message
 		// comes from the server the scope "this" doesnt exist anymore
@@ -103,7 +106,7 @@ $.widget( "jws.channels", {
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
-			OnOpen: function( aEvent ) {},
+			OnOpen: function( aEvent ) { },
 			OnWelcome: function( aEvent ) {
 				// Registering the callbacks for the channels
 				mWSC.setChannelCallbacks({
@@ -113,11 +116,16 @@ $.widget( "jws.channels", {
 					OnChannelUnsubscription: w.channels.onChannelUnsubscription,
 					// When any subscription arrives from the server
 					OnChannelSubscription: w.channels.onChannelSubscription
+				//					OnChannelStarted: null,
+				//					OnChannelStopped: null
 				});
 				w.channels.getChannels( );
 			},
 			OnClose: function( ) {
 				w.channels.destroy( );
+				w.channels.eChannelsAreaResizable.animate({
+					"height": 50
+				});
 			},
 			OnGoodBye: function( aToken ) {
 				w.channels.destroy( );
@@ -139,7 +147,6 @@ $.widget( "jws.channels", {
 		w.channels.eBtnSwitchChannels.click( w.channels.switchChannelsArea );
 		w.channels.eBtnSwitchSubscriptions.click( w.channels.switchSubscriptionsArea );
 		w.channels.eBtnSwitchSubscribers.click( w.channels.getSubscribers );
-		
 		w.channels.eBtnGetChannels.click( w.channels.getChannels );
 		w.channels.eBtnCreateChannel.click( w.channels.createChannel );
 		w.channels.eBtnDeleteChannel.click( w.channels.removeChannel );
@@ -148,6 +155,7 @@ $.widget( "jws.channels", {
 		w.channels.eBtnAuthenticate.click( w.channels.auth );
 		w.channels.eBtnPublish.click( w.channels.publish );
 		w.channels.eTxtMessage.keypress( w.channels.messageKeypress );
+		w.channels.eBtnBiggerArea.click( w.channels.resizeChannelsArea );
 	},
 	
 	/**
@@ -196,12 +204,10 @@ $.widget( "jws.channels", {
 				lChannelName == w.channels.MSG_CHANNELNAME ) {
 				lError = w.channels.MSG_CHANNELNAME;
 			}
-			else if( lSecretKey == null || lSecretKey == "" || 
-				lSecretKey == w.channels.MSG_SECRETKEY ) {
+			else if( lSecretKey == null || lSecretKey == "" ) {
 				lError = w.channels.MSG_SECRETKEY;
 			}
-			else if( lAccessKey == null || lAccessKey == "" || 
-				lAccessKey == w.channels.MSG_ACCESSKEY ) {
+			else if( lAccessKey == null || lAccessKey == "" ) {
 				lError = w.channels.MSG_ACCESSKEY;
 			}
 		
@@ -243,29 +249,25 @@ $.widget( "jws.channels", {
 			if( lChannelId == null || lChannelId == "" || 
 				lChannelId == w.channels.MSG_CHANNELID ) {
 				lError = w.channels.MSG_CHANNELID;
-			} else if( lAccessKey == null || lAccessKey == "" || 
-				lAccessKey == w.channels.MSG_ACCESSKEY ) {
+			} else if( lAccessKey == null || lAccessKey == "" ) {
 				lError = w.channels.MSG_ACCESSKEY;
-			} else if( lSecretKey == null || lSecretKey == "" || 
-				lSecretKey == w.channels.MSG_SECRETKEY ) {
+			} else if( lSecretKey == null || lSecretKey == "" ) {
 				lError = w.channels.MSG_SECRETKEY;
 			}
 			
 			if( lError == null ) {
 				log( "Removing channel '" + lChannelId + "'..." );
-				var lRes = mWSC.channelRemove( 
-					lChannelId,
-					{
+				var lRes = mWSC.channelRemove(
+					lChannelId, {
 						accessKey: lAccessKey,
 						secretKey: lSecretKey
-					}
-					);
+					});
 				log( mWSC.resultToString( lRes ) );
 			} else {
 				jwsDialog( "Incorrect value for <b>" + lError + "</b>. Please, check again",
 					"jWebSocket error", true, "error" );
 			}
-		} else{
+		} else {
 			jwsDialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", 
 				true, "error" );
 		}
@@ -284,8 +286,7 @@ $.widget( "jws.channels", {
 				lChannelId == w.channels.MSG_CHANNELID ) {
 				lError = w.channels.MSG_CHANNELID;
 			}
-			else if( lAccessKey == null || lAccessKey == "" || 
-				lAccessKey == w.channels.MSG_ACCESSKEY ) {
+			else if( lAccessKey == null || lAccessKey == "" ) {
 				lError = w.channels.MSG_ACCESSKEY;
 			}
 			
@@ -339,11 +340,9 @@ $.widget( "jws.channels", {
 			if( lChannelId == null || lChannelId == "" || 
 				lChannelId == w.channels.MSG_CHANNELID ) {
 				lError = w.channels.MSG_CHANNELID;
-			} else if( lAccessKey == null || lAccessKey == "" || 
-				lAccessKey == w.channels.MSG_ACCESSKEY ) {
+			} else if( lAccessKey == null || lAccessKey == "" ) {
 				lError = w.channels.MSG_ACCESSKEY;
-			} else if( lSecretKey == null || lSecretKey == "" || 
-				lSecretKey == w.channels.MSG_SECRETKEY ) {
+			} else if( lSecretKey == null || lSecretKey == "" ) {
 				lError = w.channels.MSG_SECRETKEY;
 			}
 			
@@ -378,8 +377,7 @@ $.widget( "jws.channels", {
 			if( lChannelId == null || lChannelId == "" || 
 				lChannelId == w.channels.MSG_CHANNELID ) {
 				lError = w.channels.MSG_CHANNELID;
-			} else if( lAccessKey == null || lAccessKey == "" || 
-				lAccessKey == w.channels.MSG_ACCESSKEY ) {
+			} else if( lAccessKey == null || lAccessKey == "" ) {
 				lError = w.channels.MSG_ACCESSKEY;
 			}
 			if( lError == null ){
@@ -437,16 +435,30 @@ $.widget( "jws.channels", {
 	// this method is called when a channel has been removed from the server
 	onChannelRemoved: function( aEvent ) {
 		w.channels.removeChannelFromTable( aEvent.channelId );
+		w.channels.removeChannelFromTable( aEvent.channelId, 
+			w.channels.eSubscriptionsTable );
+		w.channels.switchChannelsArea( );
 	},
 	
 	onChannelsReceived: function( aEvent ) {
 		w.channels.destroy( );
 		w.channels.mChannelsList = { };
+		w.channels.eChannelsAreaResizable.animate({
+			"height": 160,
+			"max-height": 160
+		});
+		$( w.channels.eTables ).animate({
+			"width": "100%"
+		});
 		// Put all channels in the table
 		for( var lIdx = 0, lCnt = aEvent.channels.length; lIdx < lCnt; lIdx++ ) {
-			w.channels.addChannelToTable( aEvent.channels[ lIdx ], w.channels.eChannelsTable );
-			w.channels.mChannelsList[ aEvent.channels[ lIdx ].id ] = aEvent.channels[ lIdx ];
+			w.channels.addChannelToTable( aEvent.channels[ lIdx ], 
+				w.channels.eChannelsTable );
+			w.channels.mChannelsList[ aEvent.channels[ lIdx ].id ] = 
+			aEvent.channels[ lIdx ];
 		}
+		
+		
 	},
 	
 	/**
@@ -454,7 +466,8 @@ $.widget( "jws.channels", {
 	 **/
 	onChannelSubscription: function( aEvent ) {
 		w.channels.addSubscriberToTable( aEvent );
-		w.channels.addChannelToTable( w.channels.mChannelsList[ aEvent.channelId ], w.channels.eSubscriptionsTable );
+		//		w.channels.addChannelToTable( w.channels.mChannelsList[ aEvent.channelId ], 
+		//			w.channels.eSubscriptionsTable );
 		w.channels.switchSubscriptionsArea( );
 	},
 	
@@ -492,18 +505,11 @@ $.widget( "jws.channels", {
 		if( aToken ) {
 			// is it a response from a previous request of this client?
 			if( aToken.type == "response" ) {
-				// If the request is an authorization from the channels
-				if( aToken.reqType == "authorize" && aToken.code == 0) {
-					
-				} else if( aToken.reqType == "event" ) {
-					if( /^(logout|disconnect)$/.test( aToken.name ) ) {
-						w.channels.destroy( );
-					}
-				} else if ( aToken.reqType == "getSubscribers" ){
+				if ( aToken.reqType == "getSubscribers" ) {
 					w.channels.onChannelSubscribers( aToken );
-				} else if ( aToken.reqType == "subscribe" ){
+				} else if ( aToken.reqType == "subscribe" ) {
 					w.channels.onChannelSubscription( aToken );
-				} else if ( aToken.reqType == "unsubscribe" ){
+				} else if ( aToken.reqType == "unsubscribe" ) {
 					w.channels.onChannelUnsubscription( aToken );
 				}
 				// If anything went wrong in the server show information error
@@ -515,19 +521,6 @@ $.widget( "jws.channels", {
 	},
 	
 	registerElementsEvents: function( ) {
-		// On click, focus and blur for text fields
-		w.channels.eTxtAccessKey.bind({
-			"click focus": function( ) {
-				if( $( this ).val( ) == w.channels.MSG_ACCESSKEY ) {
-					$( this ).val( "" );
-				}
-			},
-			"blur": function( ) {
-				if( $( this ).val( ) == "" ) {
-					$( this ).val( w.channels.MSG_ACCESSKEY );
-				}
-			}
-		});
 		w.channels.eTxtChannelId.bind({
 			"click focus": function( ) {
 				if( $( this ).val( ) == w.channels.MSG_CHANNELID ) {
@@ -537,18 +530,6 @@ $.widget( "jws.channels", {
 			"blur": function( ) {
 				if( $( this ).val( ) == "" ) {
 					$( this ).val( w.channels.MSG_CHANNELID );
-				}
-			}
-		});
-		w.channels.eTxtSecretKey.bind({
-			"click focus": function( ) {
-				if( $( this ).val( ) == w.channels.MSG_SECRETKEY ) {
-					$( this ).val( "" );
-				}
-			},
-			"blur": function( ) {
-				if( $( this ).val( ) == "" ) {
-					$( this ).val( w.channels.MSG_SECRETKEY );
 				}
 			}
 		});
@@ -591,15 +572,35 @@ $.widget( "jws.channels", {
 	},
 	
 	switchSubscriptionsArea: function( ) {
-		// Add and remove active class to the switch buttons
-		w.channels.eBtnSwitchChannels.attr( "class", "" );
-		w.channels.eBtnSwitchSubscribers.attr( "class", "" );
-		w.channels.eBtnSwitchSubscriptions.attr( "class", w.channels.CLS_ACTIVE );
+		if( mWSC.isConnected( ) ) {
+			mWSC.channelGetSubscriptions({
+				OnSuccess: function( aToken ) {
+					w.channels.clearSubscriptionsTable( );
+					var lChannels = aToken.channels, lChannel;
+					//					console.log( aToken );
+					for( var lIdx in lChannels ) {
+						lChannel = lChannels[ lIdx ];
+						console.log( lChannel );
+						if( w.channels.mChannelsList[ lChannel.id ] ) {
+							w.channels.addChannelToTable( 
+								w.channels.mChannelsList[ lChannel.id ],
+								w.channels.eSubscriptionsTable );
+						}
+					}
+					
+					// Add and remove active class to the switch buttons
+					w.channels.eBtnSwitchChannels.attr( "class", "" );
+					w.channels.eBtnSwitchSubscribers.attr( "class", "" );
+					w.channels.eBtnSwitchSubscriptions.attr( "class", 
+						w.channels.CLS_ACTIVE );
 		
-		// Hide and show areas
-		w.channels.eChannelsArea.fadeOut( 100 );
-		w.channels.eSubscribersArea.fadeOut( 100 );
-		w.channels.eSubscriptionsArea.fadeIn( 100 );
+					// Hide and show areas
+					w.channels.eChannelsArea.fadeOut( 100 );
+					w.channels.eSubscribersArea.fadeOut( 100 );
+					w.channels.eSubscriptionsArea.fadeIn( 100 );
+				}
+			});
+		}
 	},
 	
 	switchSubscribersArea: function( ) {
@@ -668,7 +669,7 @@ $.widget( "jws.channels", {
 			// Updating text fields with the information of the selected channel
 			w.channels.eTxtChannelName.val( lChannelName );
 			w.channels.eTxtChannelId.val( lChannelId );
-			w.channels.eRbtnPublish.each(function(){
+			w.channels.eRbtnPublish.each( function( ) {
 				if( $( this ).val( ) == lType ){
 					$( this ).attr( "checked", true );
 				}
@@ -701,10 +702,11 @@ $.widget( "jws.channels", {
 	/**
 	 * Removes a channel in the channels table
 	 */
-	removeChannelFromTable: function( aChannelId ) {
+	removeChannelFromTable: function( aChannelId, aTable ) {
 		var lChannelId = null,
-		lRow = null;
-		w.channels.eChannelsTable.find( "tr" ).each( function( ) {
+		lRow = null,
+		lTable = aTable || w.channels.eChannelsTable;
+		lTable.find( "tr" ).each( function( ) {
 			lRow = $( this );
 			// Don't check in the header of the table
 			if( !lRow.hasClass( w.channels.CLS_TH ) ) {
@@ -712,7 +714,7 @@ $.widget( "jws.channels", {
 				lChannelId = lRow.children( ).first( ).next( ).text( );
 				if( lChannelId == aChannelId ) {
 					lRow.remove( );
-					w.channels.eChannelsTable.stripe( );
+					lTable.stripe( );
 					return;
 				}
 			}
@@ -794,62 +796,6 @@ $.widget( "jws.channels", {
 		}
 	},
 	
-	/**
-	 * Removes a subscription in the subscriptions table
-	 */
-	removeSubscriptionFromTable: function( aChannelId ) {
-		var lChannelId = null,
-		lRow = null, lAllRows = w.channels.eSubscriptionsTable.find( "tr" );
-		lAllRows.each( function( ) {
-			lRow = $( this );
-			// Don't check in the header of the table
-			if( !lRow.hasClass( w.channels.CLS_TH ) ) {
-				// Getting the channel id cell
-				lChannelId = lRow.children( ).first( ).next( ).text( );
-				if( lChannelId == aChannelId ) {
-					lRow.remove( );
-					w.channels.eSubscriptionsTable.stripe( );
-				}
-			}
-		});
-		lAllRows = w.channels.eSubscriptionsTable.find( "tr" );
-		if( lAllRows.length <= 1 ) {
-			var lNoSubscriptionsRow = $( "<tr class='" + 
-				w.channels.CLS_NOCHANNELS + "'></tr>" );
-			lNoSubscriptionsRow.append( $( "<td rowspan='4'>" + 
-				w.channels.MSG_NOSUBSCRIPTIONS + "</td>" ) );
-			w.channels.eSubscriptionsTable.append( lNoSubscriptionsRow );
-		}
-	},
-	
-	/**
-	 * Removes a subscriber in the subscribers table
-	 */
-	removeSubscriberFromTable: function( aSubscriber ) {
-		var lSubscriberId = null,
-		lRow = null, lAllRows = w.channels.eSubscribersTable.find( "tr" );
-		lAllRows.each( function( ) {
-			lRow = $( this );
-			// Don't check in the header of the table
-			if( !lRow.hasClass( w.channels.CLS_TH ) ) {
-				// Getting the channel id cell
-				lSubscriberId = lRow.children( ).first( ).text( );
-				if( lSubscriberId == aSubscriber ) {
-					lRow.remove( );
-					w.channels.eSubscribersTable.stripe( );
-				}
-			}
-		});
-		lAllRows = w.channels.eSubscribersTable.find( "tr" );
-		if( lAllRows.length <= 1 ) {
-			var lNoSubscribersRow = $( "<tr class='" + 
-				w.channels.CLS_NOCHANNELS + "'></tr>" );
-			lNoSubscribersRow.append( $( "<td rowspan='4'>" + 
-				w.channels.MSG_NOSUBSCRIBERS + "</td>" ) );
-			w.channels.eSubscribersTable.append( lNoSubscribersRow );
-		}
-	},
-	
 	clearChannelTable: function( ) {
 		w.channels.eChannelsTable.find( "tr" ).each( function( ) {
 			if( $( this ).attr( "class" ) != w.channels.CLS_TH ) {
@@ -866,6 +812,21 @@ $.widget( "jws.channels", {
 		w.channels.eChannelsTable.append( lNoChannelsRow );
 		w.channels.eCbSystem.attr( "checked", false );
 		w.channels.mSelectedChannel = null;
+	},
+	
+	clearSubscriptionsTable: function( ) {
+		w.channels.eSubscriptionsTable.find( "tr" ).each( function( ) {
+			if( $( this ).attr( "class" ) != w.channels.CLS_TH ) {
+				$( this ).remove( );
+			}
+		});
+		
+		var lNoSubscriptionsRow = null;
+		lNoSubscriptionsRow = $( "<tr class='" + w.channels.CLS_NOCHANNELS +
+			"'></tr>" );
+		lNoSubscriptionsRow.append( $( "<td rowspan='4'>" +
+			w.channels.MSG_NOSUBSCRIPTIONS + "</td>" ) );
+		w.channels.eSubscriptionsTable.append( lNoSubscriptionsRow );
 	},
 	
 	clearSubscribersTable: function( ) {
@@ -890,6 +851,26 @@ $.widget( "jws.channels", {
 		w.channels.eTxtSecretKey.val( w.channels.MSG_SECRETKEY );
 		w.channels.eTxtChannelName.val( w.channels.MSG_CHANNELNAME );
 		w.channels.eTxtMessage.val( w.channels.MSG_PUBLISHMESSAGE );
+	},
+	
+	resizeChannelsArea: function( aElement ) {
+		var lTarget = $( aElement.currentTarget ),
+		lText = lTarget.text( ), lArea = w.channels.eChannelsAreaResizable,
+		lPixels = 150, lHeight = parseInt( lArea.css( "height" ) );
+		
+		if( lText == '+' ) {
+			lArea.animate({
+				"height": lHeight + lPixels,
+				"max-height": lHeight + lPixels
+			});
+		} else if( lHeight - lPixels >= 100 ) {
+			lArea.animate({
+				"height": lHeight - lPixels
+			});
+		}
+		$( w.channels.eTables ).animate({
+			"width": "100%"
+		});
 	},
 	
 	destroy: function( ) {
