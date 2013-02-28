@@ -257,7 +257,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 
 				Class<WebSocketPlugIn> lPlugInClass =
 						loadPluginFromClasspath(lPlugInConfig.getName());
-				
+
 				// if not in classpath..try to load plug-in from given .jar file
 				if (lPlugInClass == null && null != lPlugInConfig.getJar() && lPlugInConfig.getJar().length() > 0) {
 					if (mLog.isDebugEnabled()) {
@@ -290,9 +290,15 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 					if (lPlugInConstructor != null) {
 						lPlugInConstructor.setAccessible(true);
 						lPlugIn = lPlugInConstructor.newInstance(lPlugInConfig);
-						if (mLog.isDebugEnabled()) {
-							mLog.debug("Plug-in '" + lPlugInConfig.getId()
-									+ "' successfully instantiated.");
+
+						if (mLog.isInfoEnabled()) {
+							mLog.info("Plug-in '" 
+									+ lPlugInConfig.getId()
+									+ "' successfully instantiated, "
+									+ lPlugIn.getLabel()
+									+ " " + lPlugIn.getVersion()
+									+ ", " + lPlugIn.getCopyright()
+									+ ", " + lPlugIn.getLicense());
 						}
 						// now add the plugin to plugin map based on server ids
 						for (String lServerId : lPlugInConfig.getServers()) {

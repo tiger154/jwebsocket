@@ -52,6 +52,7 @@ public class ReportingPlugIn extends TokenPlugIn {
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_REPORTING = JWebSocketServerConstants.NS_BASE + ".plugins.reporting";
+	private final static String VERSION = "1.0.0";
 	private static final String VAR_FILES_TO_DELETE = NS_REPORTING + ".filesToDelete";
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
@@ -81,6 +82,11 @@ public class ReportingPlugIn extends TokenPlugIn {
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating reporting plug-in"));
 		}
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
 	}
 
 	@Override

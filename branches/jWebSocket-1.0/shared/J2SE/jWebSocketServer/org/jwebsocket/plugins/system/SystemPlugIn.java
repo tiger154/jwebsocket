@@ -68,6 +68,11 @@ public class SystemPlugIn extends TokenPlugIn {
 	// specify name space for system plug-in
 	private static final String NS_SYSTEM = JWebSocketServerConstants.NS_BASE + ".plugins.system";
 	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket SystemPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket SystemPlugIn - Community Edition";
 	// specify token types processed by system plug-in
 	private static final String TT_SEND = "send";
 	private static final String TT_RESPOND = "respond";
@@ -192,6 +197,31 @@ public class SystemPlugIn extends TokenPlugIn {
 	@Override
 	public String getVersion() {
 		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
 	}
 
 	/**
@@ -439,7 +469,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 		// send "welcome" token to client
 		Token lWelcome = TokenFactory.createToken(NS_SYSTEM, TT_WELCOME);
-		lWelcome.setString("vendor", JWebSocketCommonConstants.VENDOR);
+		lWelcome.setString("vendor", JWebSocketCommonConstants.VENDOR_CE);
 		lWelcome.setString("version", JWebSocketServerConstants.VERSION_STR);
 		lWelcome.setString("sourceId", aConnector.getId());
 		lWelcome.setInteger(Fragmentation.ARG_MAX_FRAME_SIZE, aConnector.getMaxFrameSize());
@@ -554,7 +584,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		// send "goodBye" token to client
 		Token lGoodBye = TokenFactory.createToken(TT_GOODBYE);
 		lGoodBye.setString("ns", getNamespace());
-		lGoodBye.setString("vendor", JWebSocketCommonConstants.VENDOR);
+		lGoodBye.setString("vendor", JWebSocketCommonConstants.VENDOR_CE);
 		lGoodBye.setString("version", JWebSocketServerConstants.VERSION_STR);
 		lGoodBye.setString("sourceId", aConnector.getId());
 		if (aCloseReason != null) {

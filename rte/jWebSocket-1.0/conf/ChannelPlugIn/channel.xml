@@ -24,26 +24,30 @@
 	<bean id="channelManager" class="org.jwebsocket.plugins.channels.ChannelManager">
 		<constructor-arg>
 			<map>
-				<entry key="allow_new_channels">
-					<value>true</value>
+				<!-- set this to true if you want to allow to create new system channels 
+					from the client side, default is false, not recommended! -->
+				<!--
+				<entry key="allowCreateSystemChannels">
+					<value>false</value>
 				</entry>
+				-->
 				<entry key="channel:privateA">
-					<value>{state:"CREATED",owner:"root",name:"Private A",isPrivate:true ,isSystem:false,access_key:"access",secret_key:"secret", token_server:"ts0"}</value>
+					<value>{state:"CREATED",owner:"root",name:"Private A",isPrivate:true ,isSystem:false,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:privateB">
-					<value>{state:"CREATED",owner:"root",name:"Private B",isPrivate:true ,isSystem:false,access_key:"access",secret_key:"secret", token_server:"ts0"}</value>
+					<value>{state:"CREATED",owner:"root",name:"Private B",isPrivate:true ,isSystem:false,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:publicA">
-					<value>{state:"CREATED",owner:"root",name:"Public A" ,isPrivate:false,isSystem:false,access_key:"access",secret_key:"secret", token_server:"ts0"}</value>
+					<value>{state:"CREATED",owner:"root",name:"Public A" ,isPrivate:false,isSystem:false,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:publicB">
-					<value>{state:"CREATED",owner:"root",name:"Public B" ,isPrivate:false,isSystem:false,access_key:"access",secret_key:"secret", token_server:"ts0"}</value>
+					<value>{state:"CREATED",owner:"root",name:"Public B" ,isPrivate:false,isSystem:false,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:systemA">
-					<value>{state:"CREATED",owner:"root",name:"System A" ,isPrivate:false,isSystem:true ,access_key:"access",secret_key:"secret", token_server:"ts0"}</value>
+					<value>{state:"CREATED",owner:"root",name:"System A" ,isPrivate:false,isSystem:true ,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:systemB">
-					<value>{state:"CREATED",owner:"root",name:"System B" ,isPrivate:false,isSystem:true ,access_key:"access",secret_key:"secret", token_server:"ts0"}</value>
+					<value>{state:"CREATED",owner:"root",name:"System B" ,isPrivate:false,isSystem:true ,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
 				</entry>
 			</map>
 		</constructor-arg>	

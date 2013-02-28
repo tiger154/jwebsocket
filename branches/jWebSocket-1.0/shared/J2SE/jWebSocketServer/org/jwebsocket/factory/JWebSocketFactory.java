@@ -75,8 +75,8 @@ public class JWebSocketFactory {
 		System.out.println("jWebSocket Ver. "
 				+ JWebSocketServerConstants.VERSION_STR
 				+ " (" + System.getProperty("sun.arch.data.model") + "bit)");
-		System.out.println(JWebSocketCommonConstants.COPYRIGHT);
-		System.out.println(JWebSocketCommonConstants.LICENSE);
+		System.out.println(JWebSocketCommonConstants.COPYRIGHT_CE);
+		System.out.println(JWebSocketCommonConstants.LICENSE_CE);
 	}
 
 	/**

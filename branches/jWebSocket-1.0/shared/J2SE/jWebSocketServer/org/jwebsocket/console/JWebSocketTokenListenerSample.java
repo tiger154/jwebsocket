@@ -80,10 +80,10 @@ public class JWebSocketTokenListenerSample implements WebSocketServerTokenListen
 			// if type is "getInfo" return some server information
 			Token lResponse = aEvent.createResponse(aToken);
 			if ("getInfo".equals(lType)) {
-				lResponse.setString("vendor", JWebSocketCommonConstants.VENDOR);
+				lResponse.setString("vendor", JWebSocketCommonConstants.VENDOR_CE);
 				lResponse.setString("version", JWebSocketServerConstants.VERSION_STR);
-				lResponse.setString("copyright", JWebSocketCommonConstants.COPYRIGHT);
-				lResponse.setString("license", JWebSocketCommonConstants.LICENSE);
+				lResponse.setString("copyright", JWebSocketCommonConstants.COPYRIGHT_CE);
+				lResponse.setString("license", JWebSocketCommonConstants.LICENSE_CE);
 			} else if ("getTokenizable".equals(lType)) {
 				// create a new tokenizable object and put it to the token
 				SampleTokenizable lTokenizable = new SampleTokenizable(

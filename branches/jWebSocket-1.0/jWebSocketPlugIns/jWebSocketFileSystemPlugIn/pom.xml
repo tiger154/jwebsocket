@@ -60,12 +60,6 @@
 
 	<!--  define all the dependencies here -->
 	<dependencies>
-		<!-- for the watch features -->
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.0.1</version>
-		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketCommon</artifactId>
