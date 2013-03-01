@@ -3918,6 +3918,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionPut: function (aKey, aValue, aPublic, aOptions){
+		if( !aOptions ) { aOptions = {}; }
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionPut",
@@ -3937,6 +3938,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionHas: function (aClientId, aKey, aPublic, aOptions){
+		if( !aOptions ) { aOptions = {}; }
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionHas",
@@ -3956,6 +3958,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionGet: function (aClientId, aKey, aPublic, aOptions){
+		if( !aOptions ) { aOptions = {}; }
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionGet",
@@ -3974,6 +3977,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionRemove: function (aKey, aPublic, aOptions){
+		if( !aOptions ) { aOptions = {}; }
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionRemove",
@@ -3992,6 +3996,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionKeys: function (aClientId, aPublic, aOptions){
+		if( !aOptions ) { aOptions = {}; }
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionKeys",
@@ -4010,6 +4015,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionGetAll: function (aClientId, aPublic, aOptions){
+		if( !aOptions ) { aOptions = {}; }
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionGetAll",
@@ -4027,6 +4033,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aOptions.connectionStorage:Boolean:Uses the active connection specific persistent storage. 
 	//:r:*:::void:none
 	sessionGetMany: function (aClients, aKeys, aOptions){
+		if( !aOptions ) { aOptions = {}; }
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
 			type: "sessionGetMany",
