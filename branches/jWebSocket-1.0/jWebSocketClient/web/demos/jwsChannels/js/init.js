@@ -1,5 +1,5 @@
 /* 
- * jWebSocket Fundamentals Initialization script
+ * jWebSocket Channels Initialization script
  * @author vbarzana
  */
 
@@ -41,7 +41,6 @@ function init( ) {
 		}
 	});
 	
-	
 	// Initializing the log widget to allow logging in the logs area
 	// @maxLogLines: maximum number of lines that will be logged
 	// @linesToDelete: quantity of lines that will be deleted from 
@@ -52,7 +51,6 @@ function init( ) {
 	});
 	
 	$( "#demo_box" ).channels( );
-	
 }
 
 $( document ).ready( function( ) {
