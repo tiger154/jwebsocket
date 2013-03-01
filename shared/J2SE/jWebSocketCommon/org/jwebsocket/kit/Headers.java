@@ -1,16 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2010 Innotrade GmbH
+//	jWebSocket - Headers (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.kit;
 
@@ -29,14 +33,41 @@ import javolution.util.FastMap;
  */
 public class Headers {
 
+	/**
+	 *
+	 */
 	public static final String HOST = "Host";
+	/**
+	 *
+	 */
 	public static final String UPGRADE = "Upgrade";
+	/**
+	 *
+	 */
 	public static final String CONNECTION = "Connection";
+	/**
+	 *
+	 */
 	public static final String SEC_WEBSOCKET_KEY = "Sec-WebSocket-Key";
+	/**
+	 *
+	 */
 	public static final String ORIGIN = "Origin";
+	/**
+	 *
+	 */
 	public static final String SEC_WEBSOCKET_PROTOCOL = "Sec-WebSocket-Protocol";
+	/**
+	 *
+	 */
 	public static final String SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
+	/**
+	 *
+	 */
 	public static final String SEC_WEBSOCKET_ACCEPT = "Sec-WebSocket-Accept";
+	/**
+	 *
+	 */
 	public static final String SET_COOKIE = "Set-Cookie";
 	private Map<String, Object> mFields = new FastMap<String, Object>();
 	private String mFirstLine = null;
@@ -147,6 +178,10 @@ public class Headers {
 		return mTrailingBytes;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public boolean isValid() {
 		// TODO: improve header validation based on protocol version and header content!
 		return (mFirstLine != null && mFields.size() > 0);

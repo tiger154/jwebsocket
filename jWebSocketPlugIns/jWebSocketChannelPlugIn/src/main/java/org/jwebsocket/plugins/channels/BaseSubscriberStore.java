@@ -1,7 +1,8 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket - BaseSubscriberStore (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -43,15 +44,25 @@ public class BaseSubscriberStore implements SubscriberStore {
 
 	/**
 	 * default constructor
+	 *
+	 * @param aStorage
 	 */
 	public BaseSubscriberStore(IBasicStorage aStorage) {
 		setStorage(aStorage);
 	}
 
+	/**
+	 *
+	 * @param aStorage
+	 */
 	public final void setStorage(IBasicStorage aStorage) {
 		mStorage = aStorage;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public final IBasicStorage getStorage() {
 		return mStorage;
 	}
@@ -125,6 +136,8 @@ public class BaseSubscriberStore implements SubscriberStore {
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @param aSubscriberId
 	 */
 	@Override
 	public boolean hasSubscriber(String aSubscriberId) {

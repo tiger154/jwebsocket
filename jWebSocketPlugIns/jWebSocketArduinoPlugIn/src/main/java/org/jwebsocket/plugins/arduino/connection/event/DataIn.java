@@ -23,10 +23,18 @@ import org.jwebsocket.eventmodel.observable.Event;
  */
 public class DataIn extends Event {
 
+	/**
+	 *
+	 * @param aData
+	 */
 	public DataIn(String aData) {
 		getArgs().setString("data", aData);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getData() {
 		return getArgs().getString("data");
 	}

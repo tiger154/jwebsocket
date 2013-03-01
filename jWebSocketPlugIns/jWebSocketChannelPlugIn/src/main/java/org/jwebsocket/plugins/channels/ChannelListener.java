@@ -1,7 +1,8 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket - ChannelListener (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -39,6 +40,7 @@ public interface ChannelListener {
 	 * Called when the channel is started.
 	 *
 	 * @param aChannel the started channel
+	 * @param aUser
 	 */
 	void channelStarted(Channel aChannel, String aUser);
 
@@ -54,6 +56,7 @@ public interface ChannelListener {
 	 * called when the is removed
 	 *
 	 * @param aChannel the suspended channel
+	 * @param aUser
 	 */
 	void channelRemoved(Channel aChannel, String aUser);
 

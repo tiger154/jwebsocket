@@ -1,7 +1,8 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - WebSocketDemo (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -43,7 +44,10 @@ public class WebSocketDemo extends HttpServlet implements WebSocketServerTokenLi
 	private static Logger mLog = null;
 
 	/**
-	 * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+	 * Processes requests for both HTTP
+	 * <code>GET</code> and
+	 * <code>POST</code> methods.
+	 *
 	 * @param aRequest servlet request
 	 * @param aResponse servlet response
 	 * @throws ServletException if a servlet-specific error occurs
@@ -63,6 +67,9 @@ public class WebSocketDemo extends HttpServlet implements WebSocketServerTokenLi
 		}
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void init() {
 		mLog = Logging.getLogger(WebSocketDemo.class);
@@ -101,7 +108,9 @@ public class WebSocketDemo extends HttpServlet implements WebSocketServerTokenLi
 
 	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 	/**
-	 * Handles the HTTP <code>GET</code> method.
+	 * Handles the HTTP
+	 * <code>GET</code> method.
+	 *
 	 * @param aRequest servlet request
 	 * @param aResponse servlet response
 	 * @throws ServletException if a servlet-specific error occurs
@@ -114,7 +123,9 @@ public class WebSocketDemo extends HttpServlet implements WebSocketServerTokenLi
 	}
 
 	/**
-	 * Handles the HTTP <code>POST</code> method.
+	 * Handles the HTTP
+	 * <code>POST</code> method.
+	 *
 	 * @param aRequest servlet request
 	 * @param aResponse servlet response
 	 * @throws ServletException if a servlet-specific error occurs
@@ -128,6 +139,7 @@ public class WebSocketDemo extends HttpServlet implements WebSocketServerTokenLi
 
 	/**
 	 * Returns a short description of the servlet.
+	 *
 	 * @return a String containing servlet description
 	 */
 	@Override

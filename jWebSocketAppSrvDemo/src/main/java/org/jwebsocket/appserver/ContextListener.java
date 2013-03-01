@@ -1,7 +1,8 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - ContextListener (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -26,22 +27,23 @@ import org.jwebsocket.server.TokenServer;
 
 /**
  * Web application life cycle listener.
- * 
+ *
  * @author aschulze
  */
 public class ContextListener implements ServletContextListener {
 
 	/**
 	 * initializes the web application on startup.
+	 *
 	 * @param aSCE
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent aSCE) {
 		// the following line must not be removed due to GNU LGPL 3.0 license!
 		JWebSocketFactory.printCopyrightToConsole();
-		
+
 		JWebSocketConfig.initForWebApp(aSCE.getServletContext());
-		
+
 		// start the jWebSocket server sub system with default config and bootstrap
 		JWebSocketFactory.start();
 
@@ -59,6 +61,7 @@ public class ContextListener implements ServletContextListener {
 
 	/**
 	 * cleans up the web application on termination.
+	 *
 	 * @param aSCE
 	 */
 	@Override

@@ -1,7 +1,8 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket - Channel (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -131,7 +132,7 @@ public final class Channel implements ChannelLifeCycle {
 	 * @param aAccessKey
 	 * @param aSecretKey
 	 * @param aState
-	 * @param aCreatedDate
+	 * @param aServer
 	 */
 	public Channel(String aId, String aName,
 			boolean aIsPrivate, boolean aIsSystem,
@@ -148,7 +149,6 @@ public final class Channel implements ChannelLifeCycle {
 		this.mServer = aServer;
 
 		registerListener(new ChannelListener() {
-
 			@Override
 			public void channelStarted(Channel aChannel, String aUser) {
 				Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
@@ -185,7 +185,7 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setString("state", aChannel.getState().name());
 				lEvent.setBoolean("isSystem", aChannel.isSystem());
 				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
-				
+
 				aChannel.broadcastTokenAsync(lEvent);
 			}
 
@@ -200,7 +200,7 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setBoolean("isSystem", aChannel.isSystem());
 				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
 				lEvent.setString("user", mServer.getConnector(aSubscriber).getUsername());
-				
+
 				aChannel.broadcastTokenAsync(lEvent);
 			}
 
@@ -356,7 +356,6 @@ public final class Channel implements ChannelLifeCycle {
 	 * Subscribe to this channel
 	 *
 	 * @param aSubscriber the subscriber which wants to subscribe
-	 * @param aChannelManager
 	 */
 	public void subscribe(String aSubscriber) {
 		// create new subscribers if needed
@@ -373,7 +372,6 @@ public final class Channel implements ChannelLifeCycle {
 				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
 					lPool.submit(new Runnable() {
-
 						@Override
 						public void run() {
 							lListener.subscribed(lChannel, lSubscriber);
@@ -389,7 +387,6 @@ public final class Channel implements ChannelLifeCycle {
 	 * Unsubscribe from this channel, and updates the channel store information
 	 *
 	 * @param aSubscriber the subscriber to unsubscribe
-	 * @param aChannelManager the channel manager
 	 */
 	public void unsubscribe(String aSubscriber) {
 		if (this.mSubscribers == null) {
@@ -405,7 +402,6 @@ public final class Channel implements ChannelLifeCycle {
 				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
 					lPool.submit(new Runnable() {
-
 						@Override
 						public void run() {
 							lListener.unsubscribed(lChannel, lSubscriber);
@@ -458,7 +454,6 @@ public final class Channel implements ChannelLifeCycle {
 			while (lSubscribers.hasNext()) {
 				final String lSubscriber = lSubscribers.next();
 				lExecutor.submit(new Runnable() {
-
 					@Override
 					public void run() {
 						WebSocketConnector lConnector = mServer.getConnector(lSubscriber);
@@ -480,6 +475,10 @@ public final class Channel implements ChannelLifeCycle {
 		}
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 */
 	public void broadcastToken(final Token aToken) {
 		if (mSubscribers != null && mSubscribers.size() > 0) {
 			Iterator<String> lSubscribers = mSubscribers.iterator();
@@ -529,6 +528,8 @@ public final class Channel implements ChannelLifeCycle {
 
 	/**
 	 * Initialize the channel
+	 *
+	 * @throws ChannelLifeCycleException
 	 */
 	@Override
 	public void init() throws ChannelLifeCycleException {
@@ -546,7 +547,6 @@ public final class Channel implements ChannelLifeCycle {
 			ExecutorService lPool = Executors.newCachedThreadPool();
 			for (final ChannelListener lListener : mChannelListeners) {
 				lPool.submit(new Runnable() {
-
 					@Override
 					public void run() {
 						lListener.channelInitialized(lChannel);
@@ -596,7 +596,6 @@ public final class Channel implements ChannelLifeCycle {
 			ExecutorService lPool = Executors.newCachedThreadPool();
 			for (final ChannelListener lListener : mChannelListeners) {
 				lPool.submit(new Runnable() {
-
 					@Override
 					public void run() {
 
@@ -649,7 +648,6 @@ public final class Channel implements ChannelLifeCycle {
 			ExecutorService pool = Executors.newCachedThreadPool();
 			for (final ChannelListener listener : mChannelListeners) {
 				pool.submit(new Runnable() {
-
 					@Override
 					public void run() {
 						listener.channelStopped(channel, aUser);

@@ -1,7 +1,8 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket Administration Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -58,6 +59,8 @@ public class AdminPlugIn extends TokenPlugIn {
 
 	/**
 	 * Constructor that takes configuration object
+	 *
+	 * @param aConfiguration
 	 */
 	public AdminPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -244,7 +247,7 @@ public class AdminPlugIn extends TokenPlugIn {
 		lMethodList.add("addFilter");
 		lMethodList.add("reloadPlugIn");
 		lMethodList.add("reloadFilter");
-				
+
 		return lMethodList;
 	}
 
@@ -419,7 +422,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * return the last logs registered. 
+	 * return the last logs registered.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -509,7 +512,7 @@ public class AdminPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * return all ids of filters container in the jar 
+	 * return all ids of filters container in the jar
 	 *
 	 * @param aConnector
 	 * @param aToken

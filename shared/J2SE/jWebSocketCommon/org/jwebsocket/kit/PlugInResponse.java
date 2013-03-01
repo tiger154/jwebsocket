@@ -1,25 +1,29 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Result from a PlugIn in the PlugInChain
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	jWebSocket - PlugInResponse (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.kit;
 
 /**
- * Implements the response class to return results from the plug-in chain to
- * the server. The server can forward data packets to a chain of plug-ins.
- * Each plug-in can either process or ignore the packet. If the packet was
+ * Implements the response class to return results from the plug-in chain to the
+ * server. The server can forward data packets to a chain of plug-ins. Each
+ * plug-in can either process or ignore the packet. If the packet was
  * successfully processed the plug-in can abort the chain.
+ *
  * @author aschulze
  */
 public class PlugInResponse {
@@ -32,6 +36,7 @@ public class PlugInResponse {
 	/**
 	 * Returns if the plug-in chain has to be aborted after a plug-in has
 	 * finished its work.
+	 *
 	 * @return the chainAborted
 	 */
 	public Boolean isChainAborted() {
@@ -71,7 +76,8 @@ public class PlugInResponse {
 	}
 
 	/**
-	 * @param mReturnCode the mReturnCode to set
+	 *
+	 * @param aReturnCode
 	 */
 	public void setReturnCode(int aReturnCode) {
 		this.mReturnCode = aReturnCode;
@@ -85,10 +91,10 @@ public class PlugInResponse {
 	}
 
 	/**
-	 * @param mMessage the mMessage to set
+	 *
+	 * @param aMessage
 	 */
 	public void setMessage(String aMessage) {
 		this.mMessage = aMessage;
 	}
-
 }

@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - RequestHeader Object
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	jWebSocket - RequestHeader (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.kit;
 
@@ -31,20 +34,65 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 public final class RequestHeader {
 
 	private Map<String, Object> mFields = new FastMap<String, Object>();
+	/**
+	 *
+	 */
 	public static final String WS_PROTOCOL = "subprot";
+	/**
+	 *
+	 */
 	public static final String WS_DRAFT = "draft";
+	/**
+	 *
+	 */
 	public static final String WS_VERSION = "version";
+	/**
+	 *
+	 */
 	public static final String WS_ORIGIN = "origin";
+	/**
+	 *
+	 */
 	public static final String WS_LOCATION = "location";
+	/**
+	 *
+	 */
 	public static final String WS_PATH = "path";
+	/**
+	 *
+	 */
 	public static final String WS_SEARCHSTRING = "searchString";
+	/**
+	 *
+	 */
 	public static final String WS_HOST = "host";
+	/**
+	 *
+	 */
 	public static final String WS_SECKEY = "secKey";
+	/**
+	 *
+	 */
 	public static final String WS_SECKEY1 = "secKey1";
+	/**
+	 *
+	 */
 	public static final String WS_SECKEY2 = "secKey2";
+	/**
+	 *
+	 */
 	public static final String WS_COOKIES = "cookie";
+	/**
+	 *
+	 */
 	public static final String URL_ARGS = "args";
+	/**
+	 *
+	 */
 	public static final String TIMEOUT = "timeout";
+	/**
+	 *
+	 */
 	public static final String USER_AGENT = "User-Agent";
 
 	/**
@@ -162,10 +210,18 @@ public final class RequestHeader {
 		return (lTimeout != null ? lTimeout : aDefault);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getVersion() {
 		return (Integer) mFields.get(WS_VERSION);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Map getCookies() {
 		return (Map) get(WS_COOKIES);
 	}

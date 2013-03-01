@@ -1,7 +1,8 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket - Benchmark Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -46,6 +47,11 @@ public class BenchmarkPlugIn extends TokenPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket BenchmarkPlugIn - Community Edition";
 
+	/**
+	 *
+	 * @param aConfiguration
+	 * @throws Exception
+	 */
 	public BenchmarkPlugIn(PluginConfiguration aConfiguration) throws Exception {
 		super(aConfiguration);
 

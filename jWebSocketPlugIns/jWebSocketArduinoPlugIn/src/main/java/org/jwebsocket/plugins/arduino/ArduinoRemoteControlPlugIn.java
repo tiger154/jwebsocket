@@ -39,6 +39,10 @@ import org.jwebsocket.plugins.arduino.event.s2c.S2CLedState;
 import org.jwebsocket.plugins.arduino.util.JoystickProgram;
 import org.jwebsocket.plugins.arduino.util.LedsProgram;
 
+/**
+ *
+ * @author aschulze
+ */
 public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
@@ -119,7 +123,6 @@ public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 	}
 
 	/**
-	 * @return void
 	 * @param aEvent
 	 * @param aResponseEvent
 	 * @throws IOException

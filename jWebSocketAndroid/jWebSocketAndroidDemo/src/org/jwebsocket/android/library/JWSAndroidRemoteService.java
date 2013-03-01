@@ -14,15 +14,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.android.library;
 
-import java.util.Properties;
-
-import org.jwebsocket.api.WebSocketClientEvent;
-import org.jwebsocket.api.WebSocketClientTokenListener;
-import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.client.token.BaseTokenClient;
-import org.jwebsocket.kit.WebSocketException;
-import org.jwebsocket.token.Token;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
@@ -32,18 +23,23 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
+import java.util.Properties;
+import org.jwebsocket.api.WebSocketClientEvent;
+import org.jwebsocket.api.WebSocketClientTokenListener;
+import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.client.token.BaseTokenClient;
+import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.token.Token;
 
 /**
  * jWebSocket android service that runs in a different process than the
  * application. Because it runs in another process, the client code using this
  * process must use IPC to interact with it. Please follow the sample
- * application to see the usage of this service.
- * <p>
- * Note that the most applications do not need to deal with the complexity shown
- * here. If your application simply has a service running in its own process,
- * the {@code JWC} is a simpler way to interact with it.
- * </p>
- * 
+ * application to see the usage of this service. <p> Note that the most
+ * applications do not need to deal with the complexity shown here. If your
+ * application simply has a service running in its own process, the {@code JWC}
+ * is a simpler way to interact with it. </p>
+ *
  * @author puran
  */
 public class JWSAndroidRemoteService extends Service {
@@ -61,6 +57,9 @@ public class JWSAndroidRemoteService extends Service {
 	private static String jwsURL = "ws://jwebsocket.org:8787";
 	private static BaseTokenClient mTokenClient;
 
+	/**
+	 *
+	 */
 	@Override
 	public void onCreate() {
 		mTokenClient = new BaseTokenClient();
@@ -73,10 +72,10 @@ public class JWSAndroidRemoteService extends Service {
 		jwsURL = (String) lProps.getProperty("url", "http://jwebsocket.org:8787/");
 	}
 	/**
-	 * Handler used to invoke the callback methods based on the remote interface operations. 
+	 * Handler used to invoke the callback methods based on the remote interface
+	 * operations.
 	 */
 	private final Handler jwsHandler = new Handler() {
-
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -94,6 +93,7 @@ public class JWSAndroidRemoteService extends Service {
 
 	/**
 	 * Broadcast the given message to all the callback listeners
+	 *
 	 * @param message the message object
 	 */
 	private void broadCastMessageToCallback(Message message) {
@@ -112,11 +112,10 @@ public class JWSAndroidRemoteService extends Service {
 	/**
 	 * This is the actual <tt>jWebSocket</tt> {@code BaseTokenClient} based
 	 * implementation of the remote {@code JWSAndroidRemoteService} interface.
-	 * Note that no exception thrown by the remote process can be sent back to the
-	 * client.
+	 * Note that no exception thrown by the remote process can be sent back to
+	 * the client.
 	 */
 	private final IJWSAndroidRemoteService.Stub mBinder = new IJWSAndroidRemoteService.Stub() {
-
 		private void handleException(String tag, String error, Throwable lEx) {
 			Log.e(tag, error, lEx);
 			Message errorMsg = Message.obtain(jwsHandler, MT_ERROR, lEx.getMessage());
@@ -249,6 +248,9 @@ public class JWSAndroidRemoteService extends Service {
 	/**
 	 * When binding to the service, we return an interface to our messenger for
 	 * sending messages to the service.
+	 *
+	 * @param intent
+	 * @return
 	 */
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -259,7 +261,8 @@ public class JWSAndroidRemoteService extends Service {
 	}
 
 	/**
-	 * Token listener to receives the callback event from jWebSocket token client
+	 * Token listener to receives the callback event from jWebSocket token
+	 * client
 	 */
 	class Listener implements WebSocketClientTokenListener {
 

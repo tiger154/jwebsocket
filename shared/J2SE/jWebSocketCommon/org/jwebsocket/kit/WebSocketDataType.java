@@ -1,53 +1,86 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket Protocol DataType Enum - Copyright (c) 2011 Innotrade GmbH
-//  ---------------------------------------------------------------------------
-//  This program is free software; you can redistribute it and/or modify it
-//  under the terms of the GNU Lesser General Public License as published by the
-//  Free Software Foundation; either version 3 of the License, or (at your
-//  option) any later version.
-//  This program is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//  more details.
-//  You should have received a copy of the GNU Lesser General Public License along
-//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//  ---------------------------------------------------------------------------
+//  jWebSocket - WebSocketDataType (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.kit;
 
 /**
- * These enumeration specifies the supported data types for data exchange 
+ * These enumeration specifies the supported data types for data exchange
  * between multiple platforms.
+ *
  * @author aschulze
  */
 public enum WebSocketDataType {
 
-	/** Invalid data type */
+	/**
+	 * Invalid data type
+	 */
 	INVALID(-1),
-	/** UTF formatted text */
+	/**
+	 * UTF formatted text
+	 */
 	TEXT(0),
-	/** binary data (byte array) */
+	/**
+	 * binary data (byte array)
+	 */
 	BINARY(1),
-	/** 32 bit integer */
+	/**
+	 * 32 bit integer
+	 */
 	INTEGER(2),
-	/** 8 bit byte */
+	/**
+	 * 8 bit byte
+	 */
 	BYTE(3),
-	/** 64 long integer */
+	/**
+	 * 64 long integer
+	 */
 	LONG(4),
-	/** normal precision float  */
+	/**
+	 * normal precision float
+	 */
 	FLOAT(5),
-	/** double precision float  */
+	/**
+	 * double precision float
+	 */
 	DOUBLE(6),
-	/** date without time  */
+	/**
+	 * date without time
+	 */
 	DATE(7),
-	/** time with outdate */
+	/**
+	 * time with outdate
+	 */
 	TIME(8),
-	/** date and date */
+	/**
+	 * date and date
+	 */
 	TIMESTAMP(9),
-	/** boolean (true/false)  */
+	/**
+	 * boolean (true/false)
+	 */
 	BOOLEAN(10),
-	/** list of objects (only WebSocketDataTypes allowed) */
+	/**
+	 * list of objects (only WebSocketDataTypes allowed)
+	 */
 	LIST(11),
-	/** map of objects (only WebSocketDataTypes allowed) */
+	/**
+	 * map of objects (only WebSocketDataTypes allowed)
+	 */
 	MAP(12);
 	private int mDataType;
 

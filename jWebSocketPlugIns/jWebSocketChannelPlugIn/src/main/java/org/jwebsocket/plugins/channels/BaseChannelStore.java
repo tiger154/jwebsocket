@@ -1,7 +1,8 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket - BaseChannelStore (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -44,27 +45,72 @@ public class BaseChannelStore implements ChannelStore {
 	 * logger object
 	 */
 	private static Logger logger = Logging.getLogger(BaseChannelStore.class);
+	/**
+	 *
+	 */
 	public static final String ID = "id";
+	/**
+	 *
+	 */
 	public static final String NAME = "name";
+	/**
+	 *
+	 */
 	public static final String PRIVATE = "isPrivate";
+	/**
+	 *
+	 */
 	public static final String SYSTEM = "isSystem";
+	/**
+	 *
+	 */
 	public static final String SECRET_KEY = "secret_key";
+	/**
+	 *
+	 */
 	public static final String ACCESS_KEY = "access_key";
+	/**
+	 *
+	 */
 	public static final String OWNER = "owner";
+	/**
+	 *
+	 */
 	public static final String STATE = "state";
+	/**
+	 *
+	 */
 	public static final String SUBSCRIBERS = "subscribers";
+	/**
+	 *
+	 */
 	public static final String PUBLISHERS = "publishers";
+	/**
+	 *
+	 */
 	public static final String SERVER_ID = "token_server";
 	private IBasicStorage mStorage = null;
 
+	/**
+	 *
+	 * @param aStorage
+	 */
 	public BaseChannelStore(IBasicStorage aStorage) {
 		setStorage(aStorage);
 	}
 
+	/**
+	 *
+	 * @param aStorage
+	 */
 	public final void setStorage(IBasicStorage aStorage) {
 		mStorage = aStorage;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public final IBasicStorage getStorage() {
 		return mStorage;
 	}
@@ -196,6 +242,8 @@ public class BaseChannelStore implements ChannelStore {
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @param aChannelId
 	 */
 	@Override
 	public boolean hasChannel(String aChannelId) {
