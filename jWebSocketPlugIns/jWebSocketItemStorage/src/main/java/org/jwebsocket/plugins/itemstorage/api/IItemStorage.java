@@ -134,6 +134,12 @@ public interface IItemStorage extends IInitializable {
 	 * @return The number of stored items
 	 */
 	Integer size();
+	
+	/**
+	 *
+	 * @return The number of stored items that matches the criteria
+	 */
+	Integer size(String aAttribute, Object aValue) throws Exception;
 
 	/**
 	 * Returns TRUE if an stored item matches the given PK, FALSE otherwise

@@ -120,7 +120,7 @@ Ext.define('IS.lib.Util', {
 		});
 	},
 	
-	createDynamicStore: function(aCollectionName){
+	createDynamicStore: function(aCollectionName, aApp){
 		var lStore = Ext.create('Ext.data.Store', {
 			model: aCollectionName + 'Model',
 			autoLoad: true,
@@ -140,13 +140,19 @@ Ext.define('IS.lib.Util', {
 					}
 				},
 				transform: function ( aRequest ){
-					if ( 'listItems' == aRequest.type ){
+					if ( 'listItems' == aRequest.type){
+						if (aApp.itemSearchs[aCollectionName]){
+							aRequest.type = 'findItems';
+							aRequest.data.attrName = aApp.itemSearchs[aCollectionName].attr;
+							aRequest.data.attrValue = aApp.itemSearchs[aCollectionName].value;
+						}
+						
 						aRequest.data.offset = aRequest.data.start;
 						aRequest.data.length = aRequest.data.limit;
 				
 						// setting the target collection name
 						aRequest.data.collectionName = aCollectionName;
-
+						
 						delete aRequest.data.start;
 						delete aRequest.data.limit;
 						delete aRequest.data.page;

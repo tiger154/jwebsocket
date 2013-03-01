@@ -1,4 +1,6 @@
-Ext.Loader.setConfig({enabled:true});
+Ext.Loader.setConfig({
+	enabled:true
+});
 Ext.application({
 	name: 'IS',
 	enableQuickTips: true,
@@ -12,6 +14,7 @@ Ext.application({
 		var self = this;
 		// declaring the collections definition cache container
 		self.collection2def = {};
+		self.itemSearchs = {};
 		
 		// declaring app events
 		self.addEvents({
