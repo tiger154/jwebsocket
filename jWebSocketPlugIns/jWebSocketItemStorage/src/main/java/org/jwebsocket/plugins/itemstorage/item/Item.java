@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import javolution.util.FastMap;
-import org.apache.commons.lang.RandomStringUtils;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
 import org.jwebsocket.plugins.itemstorage.api.IItemDefinition;
 import org.jwebsocket.token.Token;
@@ -20,8 +20,9 @@ public class Item implements IItem {
 
 	private Map<String, Object> mAttrs = new FastMap<String, Object>().shared();
 	public static final String ATTR_ATTRS = "attrs";
+	public static final String ATTR_TARGET_PK = "targetPK";
 	public static final String ATTR_PK = "pk";
-	public static final String DEFAULT_PK_ATTR_NAME = "id";
+	public static final String ATTR_INTERNAL_ID = ItemDefinition.ATTR_UNIQUE_ID;
 	private IItemDefinition mDefinition;
 	private Map<String, Object> mUpdate = new FastMap<String, Object>().shared();
 
@@ -133,9 +134,12 @@ public class Item implements IItem {
 
 	@Override
 	public void validate() {
-		if (null == getPK() && getDefinition().getPrimaryKeyAttribute().equals(DEFAULT_PK_ATTR_NAME)) {
-			set(DEFAULT_PK_ATTR_NAME, RandomStringUtils.randomAlphanumeric(32));
+		// setting internal unique id if missing
+		if (!mAttrs.containsKey(ATTR_INTERNAL_ID)) {
+			mAttrs.put(ATTR_INTERNAL_ID, UUID.randomUUID().toString());
 		}
+
+		// checking for missing PK
 		Assert.notNull(getPK(), "The item PK argument value cannot be null!");
 	}
 

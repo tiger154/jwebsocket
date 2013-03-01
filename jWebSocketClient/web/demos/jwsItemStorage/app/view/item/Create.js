@@ -13,9 +13,8 @@ Ext.define('IS.view.item.Create', {
 		lForm.getForm().getFields().each(function (aField){
 			aField.setValue(aRecord.get(aField.name));
 		});
-		if (aRecord.get('id')){
-			this.recordId = aRecord.get('id');
-		}
+		
+		this.targetPK = aRecord.get(aItemDefinition.pk_attr);
 	},
 	
 	loadForCreation: function(aCollectionName, aItemDefinition){

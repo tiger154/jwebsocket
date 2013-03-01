@@ -21,7 +21,10 @@ Ext.define('IS.lib.Util', {
 			
 			for (var lAttr in aItemDefinition.attr_types){
 				lTpl += '<p><b>' + lAttr.substr(0,1).toUpperCase() + lAttr.substr(1)
-					+ '</b>: {'+ lAttr + '}</p>';
+				+ '</b>: {'+ lAttr + '}</p>';
+			}
+			if ('id' != aItemDefinition.pk_attr){
+				lTpl += '<p><b>Id</b>: {id}</p>';
 			}
 			
 			this.def2tpl[aItemDefinition.type] = Ext.create('Ext.XTemplate', lTpl);
@@ -106,6 +109,9 @@ Ext.define('IS.lib.Util', {
 		for (var lAttrName in aItemDefinition.attr_types){
 			lFiels.push(lAttrName);
 		}
+		if (lFiels.lastIndexOf("id") < 0){
+			lFiels.push("id");
+		}
 		
 		Ext.define(aCollectionName + 'Model', {
 			extend: 'Ext.data.Model',
@@ -118,6 +124,7 @@ Ext.define('IS.lib.Util', {
 		var lStore = Ext.create('Ext.data.Store', {
 			model: aCollectionName + 'Model',
 			autoLoad: true,
+			pageSize: 18,
 			proxy: Ext.create('Ext.jws.data.Proxy', {
 				type: 'jws',
 				ns: jws.ItemStoragePlugIn.NS,

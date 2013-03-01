@@ -32,19 +32,27 @@ Ext.define('IS.view.definition.EditAttribute', {
 	initComponent: function() {
 		var self = this;
 		
-		this.on('render', function() {
-			self.down('form').add([{
+		this.on('beforerender', function() {
+			var lForm = self.down('form');
+			lForm.add([{
 				xtype: 'checkbox',
 				name: 'required',
+				tooltip: 'If TRUE, the attribute value is required.',
 				fieldLabel: 'Required'
 			}, {
 				xtype: 'arrayfield',
 				name: 'in',
-				fieldLabel: 'In'
+				tooltip: 'Attribute value domain values.',
+				fieldLabel: 'In',
+				emptyText: self.parentMeta['in'].emptyText,
+				vtype: self.parentMeta['in'].vtype
 			}, {
 				xtype: 'arrayfield',
 				name: 'not_in',
-				fieldLabel: 'Not In'
+				tooltip: 'Attribute value domain exclusion values.',
+				fieldLabel: 'Not In',
+				emptyText: self.parentMeta['not_in'].emptyText,
+				vtype: self.parentMeta['not_in'].vtype
 			}]);
 		});
 		

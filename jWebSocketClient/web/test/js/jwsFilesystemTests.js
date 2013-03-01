@@ -191,7 +191,7 @@ jws.tests.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileExists( lAlias, lFilename, {
+			jws.Tests.getAdminConn().fileExists( lFilename, lAlias, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}

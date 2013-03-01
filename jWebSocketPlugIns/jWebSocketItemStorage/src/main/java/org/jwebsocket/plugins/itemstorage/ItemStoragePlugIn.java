@@ -122,7 +122,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 					// log action
 					Map<String, Object> lLog = BaseLogsManager.createActionPrototype(
 							BaseLogsManager.ETYPE_ITEM,
-							aItem.getPK(), "save", aUser);
+							aItem.getPK(), "save", aUser, aItem.getUpdate().toString());
 					lLog.put(BaseLogsManager.ATTR_COLLECTION, aItemCollection.getName());
 					mLogsManager.logAction(lLog);
 				} catch (Exception lEx) {
@@ -390,6 +390,18 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 		mCollectionProvider.saveCollection(lCollection);
 
+		// log action
+		HashMap lMapCollection = new HashMap();
+		lCollection.toMap(lMapCollection);
+		lMapCollection.remove(ItemCollection.ATTR_ACCESS_PASSWORD);
+		lMapCollection.remove(ItemCollection.ATTR_SECRET_PASSWORD);
+		lMapCollection.remove(ItemCollection.ATTR_SUBSCRIBERS);
+		lMapCollection.remove(ItemCollection.ATTR_PUBLISHERS);
+		Map<String, Object> lLog = BaseLogsManager.createActionPrototype(
+				BaseLogsManager.ETYPE_COLLECTION,
+				lCollectionName, "save", aConnector.getUsername(), lMapCollection.toString());
+		mLogsManager.logAction(lLog);
+
 		sendToken(aConnector, createResponse(aToken));
 	}
 
@@ -415,7 +427,14 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 		Assert.isTrue(lCollection.getSecretPassword().equals(lSecretPwd),
 				"The given collection secret password is not correct!");
 
-		ItemCollectionUtils.restartCollection(mCollectionProvider, lCollection);
+
+		Integer lUsers = ItemCollectionUtils.restartCollection(mCollectionProvider, lCollection).size();
+
+		Map<String, Object> lLog = BaseLogsManager.createActionPrototype(
+				BaseLogsManager.ETYPE_COLLECTION,
+				lCollectionName, "restart", aConnector.getUsername(), lUsers + " users");
+		mLogsManager.logAction(lLog);
+
 
 		sendToken(aConnector, createResponse(aToken));
 	}
@@ -466,7 +485,14 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 		Assert.isTrue(lCollection.getSecretPassword().equals(lSecretPwd),
 				"The given collection secret password is not correct!");
 
+		Integer lExistingItems = lCollection.getItemStorage().size();
 		lCollection.getItemStorage().clear();
+
+		// log action
+		Map<String, Object> lLog = BaseLogsManager.createActionPrototype(
+				BaseLogsManager.ETYPE_COLLECTION,
+				lCollectionName, "clear", aConnector.getUsername(), lExistingItems + " items");
+		mLogsManager.logAction(lLog);
 
 		sendToken(aConnector, createResponse(aToken));
 	}
@@ -534,6 +560,18 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 		// saving collection changes
 		mCollectionProvider.saveCollection(lCollection);
+
+		// log action
+		HashMap lMapCollection = new HashMap();
+		lCollection.toMap(lMapCollection);
+		lMapCollection.remove(ItemCollection.ATTR_ACCESS_PASSWORD);
+		lMapCollection.remove(ItemCollection.ATTR_SECRET_PASSWORD);
+		lMapCollection.remove(ItemCollection.ATTR_SUBSCRIBERS);
+		lMapCollection.remove(ItemCollection.ATTR_PUBLISHERS);
+		Map<String, Object> lLog = BaseLogsManager.createActionPrototype(
+				BaseLogsManager.ETYPE_COLLECTION,
+				lCollectionName, "save", aConnector.getUsername(), lMapCollection.toString());
+		mLogsManager.logAction(lLog);
 
 		sendToken(aConnector, createResponse(aToken));
 	}

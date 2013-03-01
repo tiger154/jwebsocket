@@ -36,6 +36,14 @@ public interface IItemStorage extends IInitializable {
 	Set<String> getPKs() throws Exception;
 
 	/**
+	 * Save an item that changed his PK value
+	 *
+	 * @param aTargetPK
+	 * @param aItem
+	 */
+	void save(String aTargetPK, IItem aItem) throws Exception;
+
+	/**
 	 * Save an item
 	 *
 	 * @param aItem

@@ -10,45 +10,55 @@ Ext.define('IS.view.definition.EditStringAttribute', {
 			items: [{
 				xtype: 'textfield',
 				fieldLabel: 'Default',
-				name: 'default'
+				name: 'default',
+				tooltip: 'Default attribute value.'
 			},{
 				xtype: 'numberfield',
 				name : 'min_length',
 				fieldLabel: 'Min Length',
 				minValue: 0,
-				allowDecimals: false
+				allowDecimals: false,
+				tooltip: 'Minimum attribute value\'s length restriction.'
 			},{
 				xtype: 'numberfield',
 				name : 'max_length',
 				fieldLabel: 'Max Length',
 				minValue: 0,
 				allowDecimals: false,
-				vtype: 'max'
+				vtype: 'max',
+				tooltip: 'Maximum attribute value\'s length restriction.'
 			}, {
 				xtype: 'checkbox',
 				name : 'mail',
-				fieldLabel: 'Mail'
+				fieldLabel: 'Mail',
+				tooltip: 'If TRUE, the attribute value require to be a valid email address. Example: rsantamaria@jwebsocket.org'
 			}, {
 				xtype: 'textfield',
 				name : 'input_type',
-				fieldLabel: 'Input Type'
+				fieldLabel: 'Input Type',
+				tooltip: 'The input type for the attribute value. Example: \'password\'.'
 			}, {
 				xtype: 'textfield',
 				name : 'reg_exp',
-				fieldLabel: 'Reg Exp'
+				fieldLabel: 'Reg Exp',
+				tooltip: 'The attribute value require to match the regular expression.'
 			}, {
 				xtype: 'checkbox',
 				name : 'multi_line',
-				fieldLabel: 'Multi Line'
+				fieldLabel: 'Multi Line',
+				tooltip: 'If TRUE, the user interface will show a multi-line text field to set the attribute value.'
 			}]
-		}];
-	
-		this.on('afterrender', function ( aWindow ){
-			aWindow.down('form').down('textfield[name=in]').emptyText = "['Juan', 'Pedro', 'Maria']";
-			aWindow.down('form').down('textfield[name=in]').vtype = 'stringArray';
-			aWindow.down('form').down('textfield[name=not_in]').emptyText = "['Judas']";
-			aWindow.down('form').down('textfield[name=not_in]').vtype = 'stringArray';
-		});
+		}];	
+		
+		this.parentMeta = {
+			'in': {},
+			'not_in': {}
+		};
+		
+		this.parentMeta['in'].emptyText = "['Juan', 'Pedro', 'Maria']";
+		this.parentMeta['in'].vtype = 'stringArray';
+		this.parentMeta['not_in'].emptyText = "['Judas']";
+		this.parentMeta['not_in'].vtype = 'stringArray';
 
 		this.callParent(arguments);
 	}
