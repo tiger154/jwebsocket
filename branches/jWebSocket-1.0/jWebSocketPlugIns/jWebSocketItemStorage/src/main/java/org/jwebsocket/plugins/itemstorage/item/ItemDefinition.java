@@ -13,6 +13,8 @@ import org.springframework.util.Assert;
  */
 public class ItemDefinition implements IItemDefinition {
 
+	public static final String ATTR_UNIQUE_ID = "id";
+	public static final String ATTR_INTERNAL_TARGET_PK = "_targetPK";
 	public static final String ATTR_TYPE = "type";
 	public static final String ATTR_PK = "pk_attr";
 	public static final String ATTR_ATTR_TYPES = "attr_types";
@@ -62,9 +64,13 @@ public class ItemDefinition implements IItemDefinition {
 		for (Map.Entry<String, String> lE : aAttributes.entrySet()) {
 			Assert.isTrue(lE.getKey().matches(ATTR_NAME_REGEXP),
 					"Invalid definition attribute '" + lE.getKey() + "' argument!");
-			Assert.isTrue(!lE.getKey().equals(Item.DEFAULT_PK_ATTR_NAME),
-					"The attribute name '" + Item.DEFAULT_PK_ATTR_NAME
+			Assert.isTrue(!lE.getKey().equals(Item.ATTR_INTERNAL_ID),
+					"The attribute name '" + Item.ATTR_INTERNAL_ID
 					+ "' can be used for primary key only!");
+
+			Assert.isTrue(!lE.getKey().equals(ItemDefinition.ATTR_INTERNAL_TARGET_PK),
+					"The attribute name '" + ItemDefinition.ATTR_INTERNAL_TARGET_PK
+					+ "' is reserved for system operations!");
 
 			String lType = lE.getValue();
 			Assert.isTrue(lType.startsWith("string")
@@ -103,7 +109,7 @@ public class ItemDefinition implements IItemDefinition {
 		Assert.notNull(getAttributeTypes(), "Missing attribute types on item definition!");
 
 		if (null == getPrimaryKeyAttribute()) {
-			setPrimaryKeyAttribute(Item.DEFAULT_PK_ATTR_NAME);
+			setPrimaryKeyAttribute(Item.ATTR_INTERNAL_ID);
 		}
 	}
 

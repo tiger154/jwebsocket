@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import javolution.util.FastList;
 import javolution.util.FastMap;
+import javolution.util.FastSet;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
 import org.jwebsocket.plugins.itemstorage.api.IItemDefinition;
 import org.jwebsocket.plugins.itemstorage.api.IItemFactory;
@@ -20,9 +21,9 @@ import org.springframework.util.Assert;
  */
 public class MemoryItemStorage extends BaseItemStorage {
 
-	private static FastMap<String, FastMap> mContainer = new FastMap<String, FastMap>();
+	private static FastMap<String, FastList> mContainer = new FastMap<String, FastList>();
 	private static FastMap<String, String> mTypes = new FastMap<String, String>();
-	private FastMap<String, IItem> mData;
+	private FastList<IItem> mData;
 
 	public MemoryItemStorage(String aName, String aType, IItemFactory aItemFactory) {
 		super(aName, aType, aItemFactory);
@@ -40,13 +41,24 @@ public class MemoryItemStorage extends BaseItemStorage {
 		mTypes.remove(aStorageName);
 	}
 
-	public static Map<String, FastMap> getContainer() {
+	public static Map<String, FastList> getContainer() {
 		return Collections.unmodifiableMap(mContainer);
 	}
 
 	@Override
 	public Set<String> getPKs() throws Exception {
-		return mData.keySet();
+		FastSet<String> lPKs = new FastSet<String>();
+		for (Iterator<IItem> lIt = mData.iterator(); lIt.hasNext();) {
+			IItem lItem = lIt.next();
+			lPKs.add(lItem.getPK());
+		}
+
+		return lPKs;
+	}
+
+	@Override
+	public void save(String aTargetPK, IItem aItem) throws Exception {
+		save(aItem);
 	}
 
 	@Override
@@ -57,19 +69,26 @@ public class MemoryItemStorage extends BaseItemStorage {
 
 		ItemStorageEventManager.onBeforeSaveItem(aItem, this);
 
-		mData.put(aItem.getPK(), aItem);
+		if (!mData.contains(aItem)) {
+			mData.add(aItem);
+		}
 
 		ItemStorageEventManager.onItemSaved(aItem, this);
 	}
 
 	@Override
 	public IItem remove(String aPK) throws Exception {
-		IItem lItem = (IItem) mData.remove(aPK);
-		if (null != lItem) {
-			ItemStorageEventManager.onItemRemoved(lItem, this);
+		for (Iterator<IItem> lIt = mData.iterator(); lIt.hasNext();) {
+			IItem lItem = lIt.next();
+			if (lItem.getPK().equals(aPK)) {
+				lIt.remove();
+				ItemStorageEventManager.onItemRemoved(lItem, this);
+
+				return lItem;
+			}
 		}
 
-		return lItem;
+		return null;
 	}
 
 	@Override
@@ -81,14 +100,13 @@ public class MemoryItemStorage extends BaseItemStorage {
 		Assert.isTrue(aLength > 0, "Invalid length value. Expected: length > 0!");
 
 		FastList<IItem> lList = new FastList<IItem>();
-		Iterator<IItem> lItems = mData.values().iterator();
-		while (lItems.hasNext() && aOffset > 0) {
-			lItems.next();
-			aOffset--;
-		}
-		while (lItems.hasNext() && aLength > 0) {
-			lList.add(lItems.next());
-			aOffset--;
+		try {
+			while (aLength > 0) {
+				lList.add(mData.get(aOffset++));
+				aLength--;
+			}
+		} catch (IndexOutOfBoundsException Ex) {
+			// this exception is expected ;)
 		}
 
 		return lList;
@@ -96,7 +114,14 @@ public class MemoryItemStorage extends BaseItemStorage {
 
 	@Override
 	public IItem findByPK(String aPK) throws Exception {
-		return (IItem) mData.get(aPK);
+		for (Iterator<IItem> lIt = mData.iterator(); lIt.hasNext();) {
+			IItem lItem = lIt.next();
+			if (lItem.getPK().equals(aPK)) {
+				return lItem;
+			}
+		}
+
+		return null;
 	}
 
 	@Override
@@ -111,35 +136,38 @@ public class MemoryItemStorage extends BaseItemStorage {
 				"Index out of bound!");
 		Assert.isTrue(aLength > 0, "Invalid length value. Expected: length > 0!");
 
+		int lIndex = 0;
 		List<IItem> lFound = new FastList<IItem>();
-		for (Iterator<IItem> lIt = mData.values().iterator(); lIt.hasNext();) {
-			IItem lItem = lIt.next();
-			boolean lMatch = false;
+		try {
+			while (aLength > 0) {
+				boolean lMatch = false;
+				Object lAttrValue = mData.get(lIndex).get(aAttribute);
 
-			Object lAttrValue = lItem.get(aAttribute);
-
-			if (null == lAttrValue && lAttrValue == aValue) {
-				// both null match
-				lMatch = true;
-			} else if (null == aValue) {
-				// if null at this point: not match
-				lMatch = false;
-			} else if (lDef.getAttributeTypes().get(aAttribute).equals("string")) {
-				// if string support regular expressions
-				if (lAttrValue.toString().matches((String) aValue)) {
+				if (null == lAttrValue && lAttrValue == aValue) {
+					// both null match
+					lMatch = true;
+				} else if (null == aValue) {
+					// if null at this point: not match
+					lMatch = false;
+				} else if (lDef.getAttributeTypes().get(aAttribute).equals("string")) {
+					// if string support regular expressions
+					if (lAttrValue.toString().matches((String) aValue)) {
+						lMatch = true;
+					}
+				} else if (lAttrValue.equals(aValue)) {
+					// if objects use equals
 					lMatch = true;
 				}
-			} else if (lAttrValue.equals(aValue)) {
-				// if objects use equals
-				lMatch = true;
-			}
 
-			if (lMatch && 0 == aOffset && aLength > 0) {
-				lFound.add(lItem);
-				aLength--;
-			} else {
-				aOffset--;
+				if (lMatch) {
+					lFound.add(mData.get(lIndex));
+					aLength--;
+				}
+				
+				lIndex++;
 			}
+		} catch (IndexOutOfBoundsException Ex) {
+			// this exception is expected ;)
 		}
 
 		return lFound;
@@ -154,7 +182,7 @@ public class MemoryItemStorage extends BaseItemStorage {
 	@Override
 	public void initialize() throws Exception {
 		if (!mContainer.containsKey(mName) || null == mContainer.get(mName)) {
-			mContainer.put(mName, new FastMap<String, Object>());
+			mContainer.put(mName, new FastList<IItem>());
 			mTypes.put(mName, mType);
 		}
 
@@ -170,6 +198,13 @@ public class MemoryItemStorage extends BaseItemStorage {
 
 	@Override
 	public boolean exists(String aPK) {
-		return mData.containsKey(aPK);
+		for (Iterator<IItem> lIt = mData.iterator(); lIt.hasNext();) {
+			IItem lItem = lIt.next();
+			if (lItem.getPK().equals(aPK)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

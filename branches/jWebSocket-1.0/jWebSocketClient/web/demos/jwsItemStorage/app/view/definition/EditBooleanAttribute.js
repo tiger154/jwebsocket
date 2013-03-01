@@ -10,16 +10,20 @@ Ext.define('IS.view.definition.EditBooleanAttribute', {
 			items: [{
 				xtype: 'checkbox',
 				fieldLabel: 'Default',
-				name: 'default'
+				name: 'default',
+				tooltip: 'Default attribute value.'
 			}]
 		}];
 	
-		this.on('afterrender', function ( aWindow ){
-			aWindow.down('form').down('textfield[name=in]').emptyText = "[true]";
-			aWindow.down('form').down('textfield[name=in]').vtype = 'booleanArray';
-			aWindow.down('form').down('textfield[name=not_in]').emptyText = "[]";
-			aWindow.down('form').down('textfield[name=not_in]').vtype = 'booleanArray';
-		});
+		this.parentMeta = {
+			'in': {},
+			'not_in': {}
+		};
+		
+		this.parentMeta['in'].emptyText = '[true]';
+		this.parentMeta['in'].vtype = 'booleanArray';
+		this.parentMeta['not_in'].emptyText = '[]';
+		this.parentMeta['not_in'].vtype = 'booleanArray';
 
 		this.callParent(arguments);
 	}

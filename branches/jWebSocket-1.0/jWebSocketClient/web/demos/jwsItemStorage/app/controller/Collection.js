@@ -27,13 +27,19 @@ Ext.define('IS.controller.Collection', {
 		var self = this;
 		
 		var lColumns = [];
-		var lFields = [];
+		
 		for (var lAttrName in aItemDefinition.attr_types){
-			lFields.push(lAttrName);
-			
 			lColumns.push({
 				header:		lAttrName.substr(0,1).toUpperCase() + lAttrName.substr(1),
 				dataIndex: lAttrName,
+				flex: 1,
+				minWidth: 100
+			});
+		}
+		if ('id' != aItemDefinition.pk_attr){
+			lColumns.push({
+				header:		'Id',
+				dataIndex: 'id',
 				flex: 1,
 				minWidth: 100
 			});

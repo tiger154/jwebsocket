@@ -12,7 +12,7 @@ Ext.define('IS.controller.Item', {
 		return aTab.down('grid').getSelectionModel().getSelection()[0];
 	},
 	
-	checkAuthorization: function(aCollectionName, aAction){
+	checkAuthorization: function(aCollectionName, aAction, aText){
 		Ext.jws.send(jws.ItemStoragePlugIn.NS, 'findCollection', {
 			collectionName: aCollectionName
 		}, {
@@ -25,7 +25,7 @@ Ext.define('IS.controller.Item', {
 				
 				var lView = Ext.create('IS.view.collection.EnterSecretPwd', {
 					title: 'Authorization required',
-					text: 'To write content on a collection is required that you be authorized first.',
+					text: aText || 'To write content on a collection is required that you be authorized first.',
 					textColor: 'green',
 					doAction : function (){
 						var lForm = this.down('form');
@@ -77,9 +77,10 @@ Ext.define('IS.controller.Item', {
 					}
 					
 					var lItem = lForm.getForm().getFieldValues();
-					if (lView.recordId){
-						lItem['id'] = lView.recordId;
+					if (null != lView.targetPK){
+						lItem._targetPK = lView.targetPK;
 					}
+					
 					Ext.jws.send(jws.ItemStoragePlugIn.NS, 'saveItem', {
 						collectionName: lView.collectionName,
 						item: lItem
@@ -141,13 +142,12 @@ Ext.define('IS.controller.Item', {
 					var lCollectionName = lTab.getId()
 					var lRecord = self.getActiveItem(lTab);
 					var lDef = self.application.collection2def[lCollectionName];
-					console.log(lDef);
 					self.checkAuthorization(lCollectionName, function(){
 						if (!self.historyView){
 							self.historyView = Ext.create('IS.view.item.History');
 						}
 						self.historyView.loadHistory(lCollectionName, lRecord.get(lDef.pk_attr));
-					});
+					}, 'To access the item history is required that you be authorized first.');
 				}
 			},
 			'i_list': {
@@ -174,6 +174,7 @@ Ext.define('IS.controller.Item', {
 					var lTab = aButton.findParentByType('tabpanel').getActiveTab();
 					var lCollectionName = lTab.getId()
 					var lRecord = self.getActiveItem(lTab);
+					var lDef = self.application.collection2def[lCollectionName];
 					
 					self.checkAuthorization(lCollectionName, function(){
 						Ext.Msg.show({
@@ -187,7 +188,7 @@ Ext.define('IS.controller.Item', {
 							
 								var lArguments = {
 									collectionName: lCollectionName,
-									itemPK: lRecord.get('id')
+									itemPK: lRecord.get(lDef.pk_attr)
 								}
 					
 								Ext.jws.send(jws.ItemStoragePlugIn.NS, 'removeItem', lArguments);

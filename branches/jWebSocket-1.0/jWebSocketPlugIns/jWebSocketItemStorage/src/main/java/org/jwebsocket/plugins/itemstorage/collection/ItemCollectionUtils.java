@@ -9,19 +9,23 @@ import org.jwebsocket.plugins.itemstorage.api.IItemDefinition;
 import org.jwebsocket.plugins.itemstorage.api.IItemFactory;
 import org.jwebsocket.plugins.itemstorage.event.ItemStorageEventManager;
 import org.jwebsocket.plugins.itemstorage.item.Item;
+import org.jwebsocket.plugins.itemstorage.item.ItemDefinition;
 import org.springframework.util.Assert;
 
 /**
- * This utility class wraps collection operations that are supposed to be called out of the WebSocket API
+ * This utility class wraps collection operations that are supposed to be called
+ * out of the WebSocket API
  *
  * @author kyberneees
  */
 public class ItemCollectionUtils {
 
-	public static void restartCollection(IItemCollectionProvider aProvider, IItemCollection aCollection) throws Exception {
+	public static Set<String> restartCollection(IItemCollectionProvider aProvider, IItemCollection aCollection) throws Exception {
 		Set<String> lAffectedClients = aCollection.restart();
 		aProvider.saveCollection(aCollection);
 		ItemStorageEventManager.onCollectionRestarted(aCollection.getName(), lAffectedClients);
+		
+		return lAffectedClients;
 	}
 
 	public static void subscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber) throws Exception {
@@ -45,14 +49,19 @@ public class ItemCollectionUtils {
 	public static IItem saveItem(String aUser, IItemFactory aItemFactory, IItemCollection aCollection, Map<String, Object> aData) throws Exception {
 		// getting the item definition
 		IItemDefinition lDef = aItemFactory.getDefinition(aCollection.getItemStorage().getItemType());
-		// getting the item pk if exists
-		String lPK = (String) aData.get(lDef.getPrimaryKeyAttribute());
+
+		// required to change the primary key value of an item
+		String lTargetPK = (String) aData.remove(ItemDefinition.ATTR_INTERNAL_TARGET_PK);
+		if (null == lTargetPK) {
+			// target PK is the PK
+			lTargetPK = (String) aData.get(lDef.getPrimaryKeyAttribute());
+		}
 
 		IItem lItem = null;
 		boolean lIsNew = false;
 
-		if (null != lPK) {
-			lItem = aCollection.getItemStorage().findByPK(lPK);
+		if (null != lTargetPK) {
+			lItem = aCollection.getItemStorage().findByPK(lTargetPK);
 		}
 		if (null == lItem) {
 			lIsNew = true;
@@ -61,10 +70,12 @@ public class ItemCollectionUtils {
 
 		// adjusting JSON types (special support for JavaScript)
 		Item.adjustJSONTypes(aData, lItem.getDefinition());
+
 		// setting the data on the item
 		lItem.setAll(aData);
+
 		// saving
-		aCollection.getItemStorage().save(lItem);
+		aCollection.getItemStorage().save(lTargetPK, lItem);
 
 		// getting item updates
 		if (lIsNew) {

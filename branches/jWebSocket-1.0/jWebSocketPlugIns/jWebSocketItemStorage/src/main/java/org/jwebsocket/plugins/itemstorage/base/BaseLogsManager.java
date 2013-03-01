@@ -16,19 +16,25 @@ public class BaseLogsManager implements ILogsManager {
 	public static String ATTR_ETYPE = "eType";
 	public static String ATTR_ACTION = "action";
 	public static String ATTR_TIME = "time";
+	public static String ATTR_INFO = "info";
 	public static String ATTR_COLLECTION = "collection";
 	public static String ETYPE_ITEM = "item";
 	public static String ETYPE_COLLECTION = "collection";
 
-	public static Map<String, Object> createActionPrototype(String aElementType, String aId, String aAction, String aUser) {
+	public static Map<String, Object> createActionPrototype(String aElementType, String aId, String aAction, String aUser, String aInfo) {
 		HashMap<String, Object> lAction = new HashMap<String, Object>();
 		lAction.put(ATTR_USER, aUser);
 		lAction.put(ATTR_ID, aId);
 		lAction.put(ATTR_ETYPE, aElementType);
 		lAction.put(ATTR_ACTION, aAction);
 		lAction.put(ATTR_TIME, System.currentTimeMillis());
+		lAction.put(ATTR_INFO, aInfo);
 
 		return lAction;
+	}
+
+	public static Map<String, Object> createActionPrototype(String aElementType, String aId, String aAction, String aUser) {
+		return createActionPrototype(aElementType, aId, aAction, aUser, "");
 	}
 
 	@Override

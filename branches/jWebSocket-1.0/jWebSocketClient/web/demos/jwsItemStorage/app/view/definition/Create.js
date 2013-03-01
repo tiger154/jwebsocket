@@ -5,6 +5,7 @@ Ext.define('IS.view.definition.Create', {
 	title: 'Create item definition',
 	mode: 'create',
 	iconCls: 'd_add',
+	maxHeight: 450,
 	
 	loadForEdit: function ( aFieldValues ){
 		this.setTitle('Edit definition');
@@ -57,7 +58,6 @@ Ext.define('IS.view.definition.Create', {
 			bodyPadding: 10,
 			border: 0,
 			autoScroll: true,
-			maxHeight: 300,
 			width: 320,
 			items: [{
 				xtype: 'textfield',
@@ -75,7 +75,7 @@ Ext.define('IS.view.definition.Create', {
 				maskRe: /^[a-zA-Z0-9]/,
 				regex: /^[a-zA-Z]+([a-zA-Z0-9]+)*/,
 				allowBlank: false,
-				tooltip: 'The definition primary key attribute acts as a database entity primary key.'
+				tooltip: 'The definition primary key attribute acts as a database entity primary key. The system internally generates a unique string value for "id" attribute, we suggest to use this attribute if possible for primary key as a good practice.'
 			}, {
 				xtype: 'd_attribute'
 			}] 

@@ -5,7 +5,7 @@ Ext.define('IS.view.base.Window', {
 	modal: true,
 	
 	initComponent: function() {
-		this.on('render', function(self) {
+		this.on('afterrender', function(self) {
 			var lForm = self.down('form');
 			if (null != lForm){
 				var lFields = lForm.queryBy(function(aField){
