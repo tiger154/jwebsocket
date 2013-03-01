@@ -37,7 +37,7 @@ import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 
 /**
- * @author aschulze
+ * @author Alexander Schulze
  * @author Marcos Antonio González Huerta (markos0886, UCI)
  */
 public class AdminPlugIn extends TokenPlugIn {
