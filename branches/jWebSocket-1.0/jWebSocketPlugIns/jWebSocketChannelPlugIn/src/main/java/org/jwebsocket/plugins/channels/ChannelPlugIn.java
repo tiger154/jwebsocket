@@ -628,7 +628,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			sendToken(aConnector, aConnector, createAccessDenied(aToken));
 			return;
 		}
-		
+
 		Token lResponseToken = createResponse(aToken);
 
 		// get arguments from request
@@ -659,12 +659,12 @@ public class ChannelPlugIn extends TokenPlugIn {
 					"For private channels both access key and secret key are mandatory.");
 			return;
 		}
-		if( lIsSystem && !mChannelManager.isAllowCreateSystemChannels()) {
+		if (lIsSystem && !mChannelManager.isAllowCreateSystemChannels()) {
 			sendErrorToken(aConnector, aToken, -1,
 					"Not allowed to create system channels from a client.");
 			return;
 		}
-		
+
 		// check if channel already exists
 		if (mChannelManager.hasChannel(lChannelId)) {
 			lResponseToken.setInteger("code", -1);

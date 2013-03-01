@@ -1,23 +1,25 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - ChannelStore
-//  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
-//  ---------------------------------------------------------------------------
-//  This program is free software; you can redistribute it and/or modify it
-//  under the terms of the GNU Lesser General Public License as published by the
-//  Free Software Foundation; either version 3 of the License, or (at your
-//  option) any later version.
-//  This program is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//  more details.
-//  You should have received a copy of the GNU Lesser General Public License along
-//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//  ---------------------------------------------------------------------------
+//  jWebSocket - PublisherStore (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.channels;
 
 /**
  * Base interface that defines the store operations for publishers
- * 
+ *
  * @author puran, kyberneees
  * @version $Id: PublisherStore.java 1270 2010-12-23 08:53:06Z fivefeetfurther $
  */
@@ -25,6 +27,7 @@ public interface PublisherStore {
 
 	/**
 	 * Returns the publisher information for the given publisher id
+	 *
 	 * @param id the publisher id to fetch
 	 * @return the publisher object, null if the publisher doesn't exist.
 	 */
@@ -32,6 +35,7 @@ public interface PublisherStore {
 
 	/**
 	 * Store the given publisher in the channel store
+	 *
 	 * @param publisher the publisher object
 	 * @return {@code true} if insert successful
 	 */
@@ -39,6 +43,7 @@ public interface PublisherStore {
 
 	/**
 	 * Removes the publisher from the store based on given id
+	 *
 	 * @param key the key of the data to remove from the store
 	 */
 	void removePublisher(String id);
@@ -52,10 +57,11 @@ public interface PublisherStore {
 
 	/**
 	 * Returns the size of the publisher store
+	 *
 	 * @return the size value
 	 */
 	int getPublisherStoreSize();
-	
+
 	/**
 	 * Indicates if the publisher store contains the given publisher identifier
 	 *
