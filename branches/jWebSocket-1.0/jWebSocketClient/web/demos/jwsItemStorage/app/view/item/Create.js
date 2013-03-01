@@ -10,10 +10,7 @@ Ext.define('IS.view.item.Create', {
 		this.setTitle('Edit item (' + aItemDefinition.type + ')');
 		var lForm = this.down('form');
 		
-		lForm.getForm().getFields().each(function (aField){
-			aField.setValue(aRecord.get(aField.name));
-		});
-		
+		lForm.loadRecord(aRecord);
 		this.targetPK = aRecord.get(aItemDefinition.pk_attr);
 	},
 	

@@ -1,7 +1,7 @@
 Ext.define('IS.controller.Item', {
 	extend: 'Ext.app.Controller',
 	stores: ['ItemLogs'],
-	models: ['ItemLog'],
+	models: ['ItemLog', 'AttributeName'],
 	views: ['item.Toolbar', 'item.List'],
 	refs: [{
 		ref: 'workspace',
@@ -68,6 +68,29 @@ Ext.define('IS.controller.Item', {
 		}, this);
 		
 		this.control({
+			'i_find button[action=find]': {
+				click: function( aButton ){
+					var lView = aButton.up('window');
+					var lForm = lView.down('form');
+					if (!lForm.getForm().isValid()){
+						return;
+					}
+					
+					var lValues = lForm.getForm().getFieldValues();
+					self.application.itemSearchs[lView.collectionName] = Ext.clone(lValues);
+					self.getWorkspace().getActiveTab().down('pagingtoolbar').moveFirst();
+					lView.close();
+				}
+			},
+			'i_find button[action=clear]': {
+				click: function( aButton ){
+					var lView = aButton.up('window');
+					
+					self.application.itemSearchs[lView.collectionName] = null;
+					lView.link.findParentByType('tabpanel').down('pagingtoolbar').moveFirst();
+					lView.close();
+				}
+			},
 			'i_create button[action=save]': {
 				click: function( aButton ){
 					var lView = aButton.up('window');
@@ -76,7 +99,7 @@ Ext.define('IS.controller.Item', {
 						return;
 					}
 					
-					var lItem = lForm.getForm().getFieldValues();
+					var lItem = lForm.getForm().getFieldValues(true);
 					if (null != lView.targetPK){
 						lItem._targetPK = lView.targetPK;
 					}
@@ -102,6 +125,18 @@ Ext.define('IS.controller.Item', {
 						lView.link = aButton;
 						lView.loadForCreation(lCollectionName, lDef);
 					});
+				}
+			},
+			'i_toolbar > button[iconCls=find]': {
+				click: function( aButton ){
+					var lCollectionName = aButton.findParentByType('tabpanel').getActiveTab().getId()
+					
+					var lDef = self.application.collection2def[lCollectionName];
+					
+					var lView = Ext.create('IS.view.item.Find');
+					lView.collectionName = lCollectionName;
+					lView.link = aButton;
+					lView.loadData(lDef, self.application.itemSearchs[lCollectionName]);
 				}
 			},
 			'i_toolbar > button[iconCls=i_edit]': {

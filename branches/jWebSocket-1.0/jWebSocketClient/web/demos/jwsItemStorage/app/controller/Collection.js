@@ -45,7 +45,7 @@ Ext.define('IS.controller.Collection', {
 			});
 		}
 						
-		var lStore = IS.lib.Util.createDynamicStore(aCollectionName);
+		var lStore = IS.lib.Util.createDynamicStore(aCollectionName, self.application);
 						
 		self.getWorkspace().add({
 			title: aCollectionName,

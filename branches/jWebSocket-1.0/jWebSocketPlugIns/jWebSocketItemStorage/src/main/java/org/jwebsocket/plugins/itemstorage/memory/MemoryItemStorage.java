@@ -163,7 +163,7 @@ public class MemoryItemStorage extends BaseItemStorage {
 					lFound.add(mData.get(lIndex));
 					aLength--;
 				}
-				
+
 				lIndex++;
 			}
 		} catch (IndexOutOfBoundsException Ex) {
@@ -171,6 +171,49 @@ public class MemoryItemStorage extends BaseItemStorage {
 		}
 
 		return lFound;
+	}
+
+	@Override
+	public Integer size(String aAttribute, Object aValue) throws Exception {
+		Integer lSize = 0;
+		Integer lIndex = 0;
+
+		IItemDefinition lDef = mItemFactory.getDefinition(mType);
+		Assert.isTrue(lDef.containsAttribute(aAttribute),
+				"The atribute '" + aAttribute + "' does not exists on item of type '" + mType + "'!");
+
+		try {
+			while (true) {
+				boolean lMatch = false;
+				Object lAttrValue = mData.get(lIndex).get(aAttribute);
+
+				if (null == lAttrValue && lAttrValue == aValue) {
+					// both null match
+					lMatch = true;
+				} else if (null == aValue) {
+					// if null at this point: not match
+					lMatch = false;
+				} else if (lDef.getAttributeTypes().get(aAttribute).equals("string")) {
+					// if string support regular expressions
+					if (lAttrValue.toString().matches((String) aValue)) {
+						lMatch = true;
+					}
+				} else if (lAttrValue.equals(aValue)) {
+					// if objects use equals
+					lMatch = true;
+				}
+
+				if (lMatch) {
+					lSize++;
+				}
+
+				lIndex++;
+			}
+		} catch (IndexOutOfBoundsException Ex) {
+			// this exception is expected ;)
+		}
+
+		return lSize;
 	}
 
 	@Override
