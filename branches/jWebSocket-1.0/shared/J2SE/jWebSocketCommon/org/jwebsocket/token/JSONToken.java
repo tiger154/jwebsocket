@@ -1,21 +1,23 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - JSON Token Implementation
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	jWebSocket JSONToken (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.token;
 
-import org.jwebsocket.api.ITokenizable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -25,9 +27,11 @@ import javolution.util.FastMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jwebsocket.api.ITokenizable;
 
 /**
  * A token is ...
+ *
  * @author aschulze
  */
 public class JSONToken extends BaseToken implements Token {
@@ -35,8 +39,8 @@ public class JSONToken extends BaseToken implements Token {
 	private JSONObject mData = null;
 
 	/**
-	 * Creates a new empty instance of a token.
-	 * The token does not contain any items.
+	 * Creates a new empty instance of a token. The token does not contain any
+	 * items.
 	 */
 	public JSONToken() {
 		mData = new JSONObject();
@@ -93,7 +97,7 @@ public class JSONToken extends BaseToken implements Token {
 	/**
 	 *
 	 *
-	 * @param aMap 
+	 * @param aMap
 	 */
 	@Override
 	public void setMap(Map aMap) {
@@ -147,8 +151,9 @@ public class JSONToken extends BaseToken implements Token {
 	}
 
 	/**
-	 * puts a new key/value pair into the token, in other words it adds a
-	 * new item to the token.
+	 * puts a new key/value pair into the token, in other words it adds a new
+	 * item to the token.
+	 *
 	 * @param aKey key of the the token item.
 	 * @param aValue value of the token item.
 	 */

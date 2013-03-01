@@ -1,17 +1,21 @@
-// ---------------------------------------------------------------------------
-// jWebSocket - Copyright (c) 2010 Innotrade GmbH
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
-// for more details.
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+//	---------------------------------------------------------------------------
+//	jWebSocket - JWC (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.android.demo;
 
 import android.app.Activity;
@@ -49,6 +53,9 @@ public class JWC {
 	private static List<WebSocketClientTokenListener> mListeners = new FastList<WebSocketClientTokenListener>();
 	private static String DEF_ENCODING = "UTF-8";
 
+	/**
+	 *
+	 */
 	public static void init() {
 		mJWC = new BaseTokenClient();
 		mJWC.addListener(new Listener());
@@ -58,6 +65,10 @@ public class JWC {
 		Rrpc.setDefaultBaseTokenClient(mJWC);
 	}
 
+	/**
+	 *
+	 * @param aActivity
+	 */
 	public static void loadSettings(Activity aActivity) {
 		Properties lProps = new Properties();
 		try {
@@ -70,6 +81,10 @@ public class JWC {
 		mURL = (String) lProps.getProperty("url", "ws://jwebsocket.org:8787/");
 	}
 
+	/**
+	 *
+	 * @param aActivity
+	 */
 	public static void saveSettings(Activity aActivity) {
 		Properties lProps = new Properties();
 		try {
@@ -82,50 +97,102 @@ public class JWC {
 		}
 	}
 
+	/**
+	 *
+	 * @throws WebSocketException
+	 */
 	public static void open() throws WebSocketException {
 		mJWC.open(mURL);
 	}
 
+	/**
+	 *
+	 * @throws WebSocketException
+	 */
 	public static void close() throws WebSocketException {
 		mJWC.close();
 	}
 
+	/**
+	 *
+	 * @param aString
+	 * @throws WebSocketException
+	 */
 	public static void send(String aString) throws WebSocketException {
 		mJWC.send(mURL, DEF_ENCODING);
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @throws WebSocketException
+	 */
 	public static void sendToken(Token aToken) throws WebSocketException {
 		mJWC.sendToken(aToken);
 	}
 
+	/**
+	 *
+	 * @param aTarget
+	 * @param aData
+	 * @throws WebSocketException
+	 */
 	public static void sendText(String aTarget, String aData) throws WebSocketException {
 		mJWC.sendText(aTarget, aData);
 
 	}
 
+	/**
+	 *
+	 * @param aData
+	 * @throws WebSocketException
+	 */
 	public static void broadcastText(String aData) throws WebSocketException {
 		mJWC.broadcastText(aData);
 	}
 
+	/**
+	 *
+	 * @param aData
+	 * @param aFilename
+	 * @param aScope
+	 * @param aNotify
+	 * @throws WebSocketException
+	 */
 	public static void saveFile(byte[] aData, String aFilename, String aScope,
 			Boolean aNotify) throws WebSocketException {
 		mJWC.saveFile(aData, aFilename, aScope, aNotify);
 	}
 
+	/**
+	 *
+	 * @param aHeader
+	 * @param aData
+	 * @param aFilename
+	 * @param aTarget
+	 * @throws WebSocketException
+	 */
 	public static void sendFile(String aHeader, byte[] aData, String aFilename, String aTarget)
 			throws WebSocketException {
 		mJWC.sendFile(aHeader, aData, aFilename, aTarget);
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public static void addListener(WebSocketClientTokenListener aListener) {
 		mListeners.add(aListener);
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public static void removeListener(WebSocketClientTokenListener aListener) {
 		mListeners.remove(aListener);
 	}
 	private static Handler messageHandler = new Handler() {
-
 		@Override
 		public void handleMessage(Message aMessage) {
 
@@ -146,24 +213,42 @@ public class JWC {
 		}
 	};
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	public static void notifyOpened(WebSocketClientEvent aEvent) {
 		for (WebSocketClientTokenListener lListener : mListeners) {
 			lListener.processOpened(aEvent);
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aPacket
+	 */
 	public static void notifyPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 		for (WebSocketClientTokenListener lListener : mListeners) {
 			lListener.processPacket(aEvent, aPacket);
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aToken
+	 */
 	public static void notifyToken(WebSocketClientEvent aEvent, Token aToken) {
 		for (WebSocketClientTokenListener lListener : mListeners) {
 			lListener.processToken(aEvent, aToken);
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	public static void notifyClosed(WebSocketClientEvent aEvent) {
 		for (WebSocketClientTokenListener lListener : mListeners) {
 			lListener.processClosed(aEvent);

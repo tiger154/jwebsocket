@@ -1,7 +1,8 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket - ChannelEventEnum (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -17,7 +18,38 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.channels;
 
+/**
+ *
+ * @author aschulze
+ */
 public enum ChannelEventEnum {
 
-	LOGIN, AUTHORIZE, START, STOP, PUBLISH, SUSCRIBE, UNSUSCRIBE;
+	/**
+	 *
+	 */
+	LOGIN,
+	/**
+	 *
+	 */
+	AUTHORIZE,
+	/**
+	 *
+	 */
+	START,
+	/**
+	 *
+	 */
+	STOP,
+	/**
+	 *
+	 */
+	PUBLISH,
+	/**
+	 *
+	 */
+	SUSCRIBE,
+	/**
+	 *
+	 */
+	UNSUSCRIBE;
 }

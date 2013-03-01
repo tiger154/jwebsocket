@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Method Matcher
-//	Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
+//	jWebSocket MethodMatcher (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.rpc;
 
@@ -20,25 +23,34 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-
 import org.jwebsocket.plugins.rpc.util.ListConverter;
 import org.jwebsocket.plugins.rpc.util.MethodMatcherConversionException;
 import org.jwebsocket.token.BaseTokenizable;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
+/**
+ *
+ * @author aschulze
+ */
 @SuppressWarnings("rawtypes")
 public class MethodMatcher {
 
 	private Object[] mMethodParameters;
 	private Method mMethod;
 
+	/**
+	 *
+	 * @param aMethod
+	 */
 	public MethodMatcher(Method aMethod) {
 		mMethod = aMethod;
 	}
 
 	/**
-	 * Should only be used after isMethodMatchingAgainstParameter() is invoked and returns true.
+	 * Should only be used after isMethodMatchingAgainstParameter() is invoked
+	 * and returns true.
+	 *
 	 * @return the list of the parameters you need to invoke the method.
 	 */
 	public Object[] getMethodParameters() {
@@ -46,10 +58,11 @@ public class MethodMatcher {
 	}
 
 	/**
-	 * Match the given parameters again the method
-	 * If the parameters match, cast and save the parameters in mMethodParameters object.
-	 * Once this method is called (and if true), getMethodParameters() will contains all the correct parameters you need to invoke the method.
-	 * @param mMethod
+	 * Match the given parameters again the method If the parameters match, cast
+	 * and save the parameters in mMethodParameters object. Once this method is
+	 * called (and if true), getMethodParameters() will contains all the correct
+	 * parameters you need to invoke the method.
+	 *
 	 * @param aArgs
 	 * @return true if the method is matching, false otherwise.
 	 */
@@ -154,15 +167,19 @@ public class MethodMatcher {
 	}
 
 	/**
-	 * @return the number of valid paramters inside a method.
-	 * Specific parameter can be ignored here. (For instance, a WebSocketConnector is ignored in ServerMethodMatcher)
+	 * @param aListOfParametersType
+	 * @return the number of valid paramters inside a method. Specific parameter
+	 * can be ignored here. (For instance, a WebSocketConnector is ignored in
+	 * ServerMethodMatcher)
 	 */
 	protected int getNumberOfValidParameters(Class[] aListOfParametersType) {
 		return aListOfParametersType.length;
 	}
 
 	/**
-	 * Set the parameter "aIndice" to aParameter (in the list of parameter used to invoke the method)
+	 * Set the parameter "aIndice" to aParameter (in the list of parameter used
+	 * to invoke the method)
+	 *
 	 * @param aIndice
 	 * @param aParameter
 	 */
@@ -171,9 +188,13 @@ public class MethodMatcher {
 	}
 
 	/**
-	 * Specific method if you need to add a specific matching type for the server or a client.
-	 * For instance, specificMatching is redefined in ServerMethodMatcher to detects if a WebSocketConnector is on of the parameters.
+	 * Specific method if you need to add a specific matching type for the
+	 * server or a client. For instance, specificMatching is redefined in
+	 * ServerMethodMatcher to detects if a WebSocketConnector is on of the
+	 * parameters.
+	 *
 	 * @param lParameterType
+	 * @param aIndice
 	 * @return
 	 */
 	protected boolean specificMatching(Class lParameterType, int aIndice) {

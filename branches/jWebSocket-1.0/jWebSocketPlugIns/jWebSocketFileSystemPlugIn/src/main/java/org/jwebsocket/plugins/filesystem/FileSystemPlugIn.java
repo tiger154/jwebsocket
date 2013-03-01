@@ -1,7 +1,8 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket Filesystem Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -58,6 +59,9 @@ import org.springframework.context.ApplicationContext;
 public class FileSystemPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	/**
+	 *
+	 */
 	public static final String NS_FILESYSTEM = JWebSocketServerConstants.NS_BASE + ".plugins.filesystem";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
@@ -65,19 +69,44 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket FileSystemPlugIn - Community Edition";
+	/**
+	 *
+	 */
 	public static final String PRIVATE_ALIAS_DIR_KEY = "privateDir";
+	/**
+	 *
+	 */
 	public static final String PUBLIC_ALIAS_DIR_KEY = "publicDir";
+	/**
+	 *
+	 */
 	public static final String ALIAS_WEB_ROOT_KEY = "webRoot";
+	/**
+	 *
+	 */
 	public static final String PRIVATE_ALIAS_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/private/{username}/";
+	/**
+	 *
+	 */
 	public static final String PUBLIC_ALIAS_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/public/";
+	/**
+	 *
+	 */
 	public static final String ALIAS_WEB_ROOT_DEF = "http://localhost/public/";
 	private FileAlterationMonitor mFileSystemMonitor = null;
+	/**
+	 *
+	 */
 	protected ApplicationContext mBeanFactory;
+	/**
+	 *
+	 */
 	protected Settings mSettings;
 
 	/**
 	 *
 	 * @param aConfiguration
+	 * @throws Exception
 	 */
 	public FileSystemPlugIn(PluginConfiguration aConfiguration) throws Exception {
 		super(aConfiguration);
@@ -202,6 +231,12 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		return null;
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aAlias
+	 * @return
+	 */
 	public String getAliasPath(WebSocketConnector aConnector, String aAlias) {
 		String lBaseDir = mSettings.getAliasPath(aAlias);
 		lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir);
@@ -414,7 +449,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	/**
 	 * Allows to perform actions and checks before save a file.
 	 *
+	 * @param aConnector
 	 * @param lFile
+	 * @param lBA
+	 * @throws Exception
 	 */
 	protected void checkForSave(WebSocketConnector aConnector, File lFile, byte[] lBA) throws Exception {
 		// TODO: to be overwritten for enterprise filesystem plug-in
@@ -557,6 +595,12 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		lServer.sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 *
+	 * @param aUsername
+	 * @param aToken
+	 * @return
+	 */
 	protected Token getFilelist(String aUsername, Token aToken) {
 
 		String lAlias = aToken.getString("alias");
@@ -827,6 +871,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aInterval
+	 */
 	public void startAliasesMonitor(int aInterval) {
 		if (null == mFileSystemMonitor) {
 			mFileSystemMonitor = new FileAlterationMonitor(aInterval);
@@ -860,6 +908,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public void stopAliasesMonitor() {
 		if (null != mFileSystemMonitor) {
 			try {
@@ -873,6 +924,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public FileAlterationListener getFileSystemListener() {
 		return new ChangeListener();
 	}

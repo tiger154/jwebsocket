@@ -1,17 +1,21 @@
-// ---------------------------------------------------------------------------
-// jWebSocket - Copyright (c) 2010 Innotrade GmbH
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License 
-// for more details.
-// You should have received a copy of the GNU Lesser General Public License 
-// along with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+//	---------------------------------------------------------------------------
+//	jWebSocket - CanvasActivity (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.android.demo;
 
 import android.app.Activity;
@@ -21,9 +25,9 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.*;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
-import android.view.*;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -54,7 +58,11 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	private Timer mTimer;
 	private volatile boolean mIsDirty = false;
 
-	/** Called when the activity is first created. */
+	/**
+	 * Called when the activity is first created.
+	 *
+	 * @param icicle
+	 */
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -95,7 +103,6 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		setContentView(mLayout);
 
 		lImgView.setOnTouchListener(new OnTouchListener() {
-
 			// start and end coordinates for a single line
 			float lSX, lSY, lEX, lEY;
 
@@ -141,7 +148,6 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 
 		mTimer = new Timer();
 		mTimer.schedule(new TimerTask() { // AtFixedRate
-
 			@Override
 			public void run() {
 				if (mIsDirty) {
@@ -159,6 +165,11 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	}
 
 	// added by Alex: 2010-08-20
+	/**
+	 *
+	 * @param ax
+	 * @param ay
+	 */
 	public void sendBeginPath(float ax, float ay) {
 		// use broadcast of system plug-in
 		// use namespace and type for server's broadcast "command"
@@ -181,6 +192,11 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	/**
+	 *
+	 * @param aX
+	 * @param aY
+	 */
 	public void sendLineTo(float aX, float aY) {
 		// added by Alex: 2010-08-20
 		// use broadcast of system plug-in
@@ -201,6 +217,9 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 	}
 
 	// added by Alex: 2010-08-20
+	/**
+	 *
+	 */
 	public void sendClosePath() {
 		// use broadcast of system plug-in
 		// use namespace and type for server's broadcast "command"
@@ -221,6 +240,11 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	/**
+	 *
+	 * @param aMenu
+	 * @return
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu aMenu) {
 		MenuInflater lMenInfl = getMenuInflater();
@@ -228,6 +252,11 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		return true;
 	}
 
+	/**
+	 *
+	 * @param item
+	 * @return
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
@@ -266,6 +295,9 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -288,6 +320,9 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -300,6 +335,11 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aToken
+	 */
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 		// check if incoming token is targetted to canvas (by name space)
 		if ("org.jwebsocket.plugins.canvas".equals(aToken.getString("reqNS"))) {
@@ -361,6 +401,10 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
 		// lImgStatus = (ImageView) findViewById(R.id.cameraImgStatus);
@@ -370,10 +414,19 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aPacket
+	 */
 	@Override
 	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	@Override
 	public void processClosed(WebSocketClientEvent aEvent) {
 		// lImgStatus = (ImageView) findViewById(R.id.cameraImgStatus);
@@ -382,10 +435,18 @@ public class CanvasActivity extends Activity implements WebSocketClientTokenList
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	@Override
 	public void processOpening(WebSocketClientEvent aEvent) {
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	@Override
 	public void processReconnecting(WebSocketClientEvent aEvent) {
 	}

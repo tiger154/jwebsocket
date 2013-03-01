@@ -35,165 +35,214 @@ import org.jwebsocket.eventmodel.observable.ObservableObject;
  */
 public class ArduinoConnection extends ObservableObject implements SerialPortEventListener {
 
-    private InputStream mInput;
-    private OutputStream mOutput;
-    private CommPortIdentifier mPortId;
-    private SerialPort mPort;
-    private Integer mTimeOut = 2000;
-    private String mPortName;
-    private Integer mDebugRate;
-    private Integer mDataBits;
-    private Integer mStopBits;
-    private Integer mParity;
-    private byte[] mBuffer;
+	private InputStream mInput;
+	private OutputStream mOutput;
+	private CommPortIdentifier mPortId;
+	private SerialPort mPort;
+	private Integer mTimeOut = 2000;
+	private String mPortName;
+	private Integer mDebugRate;
+	private Integer mDataBits;
+	private Integer mStopBits;
+	private Integer mParity;
+	private byte[] mBuffer;
 
-    /**
-     *
-     * @param aPortName
-     */
-    public ArduinoConnection(String aPortName) {
-        addEvents(DataIn.class);
-        //COM0,...,COM4 for windows
-        //in Mac would probably be something like /dev/tty.usbserial-1B1
-        //in Linux, it should be /dev/ttyUSB0, /dev/ttyUSB1 or similar.
-        this.mPortName = aPortName;
-        //default debug rate: 9600 bps
-        this.mDebugRate = 9600;
-        this.mDataBits = SerialPort.DATABITS_8;
-        this.mStopBits = SerialPort.STOPBITS_1;
-        this.mParity = SerialPort.PARITY_NONE;
-        this.mBuffer = new byte[1024];
-    }
+	/**
+	 *
+	 * @param aPortName
+	 */
+	public ArduinoConnection(String aPortName) {
+		addEvents(DataIn.class);
+		//COM0,...,COM4 for windows
+		//in Mac would probably be something like /dev/tty.usbserial-1B1
+		//in Linux, it should be /dev/ttyUSB0, /dev/ttyUSB1 or similar.
+		this.mPortName = aPortName;
+		//default debug rate: 9600 bps
+		this.mDebugRate = 9600;
+		this.mDataBits = SerialPort.DATABITS_8;
+		this.mStopBits = SerialPort.STOPBITS_1;
+		this.mParity = SerialPort.PARITY_NONE;
+		this.mBuffer = new byte[1024];
+	}
 
-    /**
-     *
-     * @throws NoSuchPortException
-     * @throws PortInUseException
-     * @throws IOException
-     * @throws UnsupportedCommOperationException
-     * @throws TooManyListenersException
-     */
-    public void init() throws NoSuchPortException, PortInUseException, IOException, UnsupportedCommOperationException, TooManyListenersException {
-        mPortId = CommPortIdentifier.getPortIdentifier(getPortName());
-        //Open the serial port for data exchange
-        mPort = (SerialPort) mPortId.open("arduino", getTimeOut());
-        //Get input port for receiving data
-        mInput = mPort.getInputStream();
-        //Get output port to send data
-        mOutput = mPort.getOutputStream();
-        //Set the port settings for the exchange
-        mPort.setSerialPortParams(getDebugRate(),
-                getDataBits(),
-                getStopBits(),
-                getParity());
-        mPort.addEventListener(this);
-        mPort.notifyOnDataAvailable(true);
-    }
+	/**
+	 *
+	 * @throws NoSuchPortException
+	 * @throws PortInUseException
+	 * @throws IOException
+	 * @throws UnsupportedCommOperationException
+	 * @throws TooManyListenersException
+	 */
+	public void init() throws NoSuchPortException, PortInUseException, IOException, UnsupportedCommOperationException, TooManyListenersException {
+		mPortId = CommPortIdentifier.getPortIdentifier(getPortName());
+		//Open the serial port for data exchange
+		mPort = (SerialPort) mPortId.open("arduino", getTimeOut());
+		//Get input port for receiving data
+		mInput = mPort.getInputStream();
+		//Get output port to send data
+		mOutput = mPort.getOutputStream();
+		//Set the port settings for the exchange
+		mPort.setSerialPortParams(getDebugRate(),
+				getDataBits(),
+				getStopBits(),
+				getParity());
+		mPort.addEventListener(this);
+		mPort.notifyOnDataAvailable(true);
+	}
 
-    public Integer getTimeOut() {
-        return mTimeOut;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Integer getTimeOut() {
+		return mTimeOut;
+	}
 
-    /**
-     *
-     * @param aTimeOut
-     */
-    public void setTimeOut(Integer aTimeOut) {
-        mTimeOut = aTimeOut;
-    }
+	/**
+	 *
+	 * @param aTimeOut
+	 */
+	public void setTimeOut(Integer aTimeOut) {
+		mTimeOut = aTimeOut;
+	}
 
-    /**
-     *
-     * @param aCmd
-     * @throws IOException
-     */
-    public void sendCommand(Integer aCmd) throws IOException {
-        //Write a simple Integer as ASCII code in the Port
-        mOutput.write(aCmd);
-    }
+	/**
+	 *
+	 * @param aCmd
+	 * @throws IOException
+	 */
+	public void sendCommand(Integer aCmd) throws IOException {
+		//Write a simple Integer as ASCII code in the Port
+		mOutput.write(aCmd);
+	}
 
-    /**
-     *
-     * @param aCmd
-     * @throws IOException
-     */
-    public void sendCommand(String aCmd) throws IOException {
-        mOutput.write(aCmd.getBytes());
-    }
+	/**
+	 *
+	 * @param aCmd
+	 * @throws IOException
+	 */
+	public void sendCommand(String aCmd) throws IOException {
+		mOutput.write(aCmd.getBytes());
+	}
 
-    /**
-     * {@inheritDoc }
-     */
-    @Override
-    public void serialEvent(SerialPortEvent aEvent) {
-        try {
-            switch (aEvent.getEventType()) {
-                //Notifies when there is data in the port
-                case SerialPortEvent.DATA_AVAILABLE:
-                    int data;
-                    int len = 0;
-                    // Read character to character when there is data
-                    while ((data = mInput.read()) > -1) {
-                        if (data == '\n') {// 
-                            break;
-                        }
-                        //Stored in a buffer of bytes read from port
-                        mBuffer[len++] = (byte) data;
-                    }
-                    //Notice DataIn event to listeners...  					
-                    notify(new DataIn(new String(mBuffer, 0, len)), null, true);
-                    break;
-            }
-        } catch (Exception e) {
-            System.err.println(e.toString());
-        }
-    }
+	/**
+	 * {@inheritDoc }
+	 *
+	 * @param aEvent
+	 */
+	@Override
+	public void serialEvent(SerialPortEvent aEvent) {
+		try {
+			switch (aEvent.getEventType()) {
+				//Notifies when there is data in the port
+				case SerialPortEvent.DATA_AVAILABLE:
+					int data;
+					int len = 0;
+					// Read character to character when there is data
+					while ((data = mInput.read()) > -1) {
+						if (data == '\n') {// 
+							break;
+						}
+						//Stored in a buffer of bytes read from port
+						mBuffer[len++] = (byte) data;
+					}
+					//Notice DataIn event to listeners...  					
+					notify(new DataIn(new String(mBuffer, 0, len)), null, true);
+					break;
+			}
+		} catch (Exception e) {
+			System.err.println(e.toString());
+		}
+	}
 
-    public void closePort() {
-        if (this.mPort != null) {
-            // Remove all Event listeners
-            mPort.removeEventListener();
-            mPort.close();
-        }
-    }
+	/**
+	 *
+	 */
+	public void closePort() {
+		if (this.mPort != null) {
+			// Remove all Event listeners
+			mPort.removeEventListener();
+			mPort.close();
+		}
+	}
 
-    public String getPortName() {
-        return mPortName;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public String getPortName() {
+		return mPortName;
+	}
 
-    public void setPortName(String aPortName) {
-        this.mPortName = aPortName;
-    }
+	/**
+	 *
+	 * @param aPortName
+	 */
+	public void setPortName(String aPortName) {
+		this.mPortName = aPortName;
+	}
 
-    public Integer getDebugRate() {
-        return mDebugRate;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Integer getDebugRate() {
+		return mDebugRate;
+	}
 
-    public void setDebugRate(Integer aDebugRate) {
-        this.mDebugRate = aDebugRate;
-    }
+	/**
+	 *
+	 * @param aDebugRate
+	 */
+	public void setDebugRate(Integer aDebugRate) {
+		this.mDebugRate = aDebugRate;
+	}
 
-    public Integer getDataBits() {
-        return mDataBits;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Integer getDataBits() {
+		return mDataBits;
+	}
 
-    public void setDataBits(Integer aDataBits) {
-        this.mDataBits = aDataBits;
-    }
+	/**
+	 *
+	 * @param aDataBits
+	 */
+	public void setDataBits(Integer aDataBits) {
+		this.mDataBits = aDataBits;
+	}
 
-    public Integer getStopBits() {
-        return mStopBits;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Integer getStopBits() {
+		return mStopBits;
+	}
 
-    public void setStopBits(Integer aStopBits) {
-        this.mStopBits = aStopBits;
-    }
+	/**
+	 *
+	 * @param aStopBits
+	 */
+	public void setStopBits(Integer aStopBits) {
+		this.mStopBits = aStopBits;
+	}
 
-    public Integer getParity() {
-        return mParity;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Integer getParity() {
+		return mParity;
+	}
 
-    public void setParity(Integer aParity) {
-        this.mParity = aParity;
-    }
+	/**
+	 *
+	 * @param aParity
+	 */
+	public void setParity(Integer aParity) {
+		this.mParity = aParity;
+	}
 }

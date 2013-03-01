@@ -27,6 +27,11 @@ public class S2CJoystickPosition extends S2CEvent {
 	private Integer mX;
 	private Integer mY;
 
+	/**
+	 *
+	 * @param aX
+	 * @param aY
+	 */
 	public S2CJoystickPosition(Integer aX, Integer aY) {
 		super();
 		this.setId("joystickPosition");
@@ -34,10 +39,18 @@ public class S2CJoystickPosition extends S2CEvent {
 		this.mY = aY;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Integer getmX() {
 		return mX;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Integer getmY() {
 		return mY;
 	}

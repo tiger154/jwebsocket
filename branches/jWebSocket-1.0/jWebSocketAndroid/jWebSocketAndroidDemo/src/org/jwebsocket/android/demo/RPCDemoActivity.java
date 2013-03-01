@@ -1,7 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket - RPCDemoActivity (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.android.demo;
 
 import android.app.Activity;
@@ -27,7 +41,7 @@ import org.jwebsocket.plugins.rpc.CommonRpcPlugin;
 import org.jwebsocket.token.Token;
 
 /**
- * 
+ *
  * @author prashant
  */
 public class RPCDemoActivity extends Activity implements
@@ -48,6 +62,10 @@ public class RPCDemoActivity extends Activity implements
 	private ImageView statusImage;
 	private Target selectedTarget = Target.ANDROID;
 
+	/**
+	 *
+	 * @param icicle
+	 */
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -68,7 +86,6 @@ public class RPCDemoActivity extends Activity implements
 
 		final CheckBox checkbox = (CheckBox) findViewById(R.id.rrpcCheckBox);
 		checkbox.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				if (((CheckBox) v).isChecked()) {
@@ -91,7 +108,6 @@ public class RPCDemoActivity extends Activity implements
 		});
 
 		invokeBtn.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View arg0) {
 				sendMethodInvokeToken();
@@ -133,6 +149,11 @@ public class RPCDemoActivity extends Activity implements
 //			predefinedValues();
 //		}
 //	};
+	/**
+	 *
+	 * @param aMenu
+	 * @return
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu aMenu) {
 		MenuInflater lMenInfl = getMenuInflater();
@@ -140,6 +161,11 @@ public class RPCDemoActivity extends Activity implements
 		return true;
 	}
 
+	/**
+	 *
+	 * @param item
+	 * @return
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
@@ -172,6 +198,9 @@ public class RPCDemoActivity extends Activity implements
 		}
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -179,6 +208,9 @@ public class RPCDemoActivity extends Activity implements
 		RPCDemoActivity.mContext = getApplicationContext();
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -203,6 +235,11 @@ public class RPCDemoActivity extends Activity implements
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aToken
+	 */
 	@Override
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 		if ((CommonRpcPlugin.RPC_TYPE).equals(aToken.getString("reqType"))) {
@@ -214,6 +251,10 @@ public class RPCDemoActivity extends Activity implements
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	@Override
 	public void processOpened(WebSocketClientEvent aEvent) {
 		if (statusImage != null) {
@@ -221,23 +262,39 @@ public class RPCDemoActivity extends Activity implements
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aPacket
+	 */
 	@Override
 	public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	@Override
 	public void processClosed(WebSocketClientEvent aEvent) {
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	@Override
 	public void processOpening(WebSocketClientEvent aEvent) {
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	@Override
 	public void processReconnecting(WebSocketClientEvent aEvent) {
 	}
 	private static Handler handler = new Handler() {
-
 		@Override
 		public void handleMessage(Message msg) {
 			Toast.makeText(
@@ -248,6 +305,9 @@ public class RPCDemoActivity extends Activity implements
 	};
 	private static Context mContext;
 
+	/**
+	 *
+	 */
 	@RPCCallable(C2CAuthorized = true)
 	public static void rrpcTest1() {
 		Bundle b = new Bundle();
@@ -258,6 +318,10 @@ public class RPCDemoActivity extends Activity implements
 		handler.sendMessage(msg);
 	}
 
+	/**
+	 *
+	 * @param arg1
+	 */
 	@RPCCallable(C2CAuthorized = true)
 	public static void rrpcTest1(String arg1) {
 		Bundle b = new Bundle();
@@ -268,6 +332,10 @@ public class RPCDemoActivity extends Activity implements
 		handler.sendMessage(msg);
 	}
 
+	/**
+	 *
+	 * @param arg1
+	 */
 	@RPCCallable(C2CAuthorized = true)
 	public static void rrpcTest1(int arg1) {
 		Bundle b = new Bundle();
@@ -278,6 +346,11 @@ public class RPCDemoActivity extends Activity implements
 		handler.sendMessage(msg);
 	}
 
+	/**
+	 *
+	 * @param aList
+	 * @param aList2
+	 */
 	@RPCCallable(C2CAuthorized = true)
 	public static void rrpcTest2(List<String> aList, List<List<Integer>> aList2) {
 		Bundle b = new Bundle();
@@ -288,6 +361,10 @@ public class RPCDemoActivity extends Activity implements
 		handler.sendMessage(msg);
 	}
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	@RPCCallable(C2CAuthorized = true)
 	public static void receiveMessage(String aMessage) {
 		Bundle b = new Bundle();
@@ -298,6 +375,9 @@ public class RPCDemoActivity extends Activity implements
 		handler.sendMessage(msg);
 	}
 
+	/**
+	 *
+	 */
 	public static void rrpcTest3() {
 		Bundle b = new Bundle();
 		b.putString("method", "rrpcTest3");

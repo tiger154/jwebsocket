@@ -29,6 +29,13 @@ public class S2CLedState extends S2CEvent {
 	private Boolean mGreen;
 	private Boolean mYellow;
 
+	/**
+	 *
+	 * @param aBlue
+	 * @param aRed
+	 * @param aGreen
+	 * @param aYellow
+	 */
 	public S2CLedState(Boolean aBlue, Boolean aRed, Boolean aGreen, Boolean aYellow) {
 		super();
 		this.setId("ledState");
@@ -38,18 +45,34 @@ public class S2CLedState extends S2CEvent {
 		this.mYellow = aYellow;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Boolean getBlue() {
 		return mBlue;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Boolean getRed() {
 		return mRed;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Boolean getGreen() {
 		return mGreen;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Boolean getYellow() {
 		return mYellow;
 	}

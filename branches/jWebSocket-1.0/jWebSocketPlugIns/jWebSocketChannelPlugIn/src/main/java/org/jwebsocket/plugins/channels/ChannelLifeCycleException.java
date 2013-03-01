@@ -1,7 +1,8 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket - ChannelLifeCycleException (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -25,14 +26,27 @@ package org.jwebsocket.plugins.channels;
  */
 public class ChannelLifeCycleException extends Exception {
 
+	/**
+	 *
+	 * @param error
+	 */
 	public ChannelLifeCycleException(String error) {
 		super(error);
 	}
 
+	/**
+	 *
+	 * @param error
+	 */
 	public ChannelLifeCycleException(Throwable error) {
 		super(error);
 	}
 
+	/**
+	 *
+	 * @param error
+	 * @param throwable
+	 */
 	public ChannelLifeCycleException(String error, Throwable throwable) {
 		super(error, throwable);
 	}

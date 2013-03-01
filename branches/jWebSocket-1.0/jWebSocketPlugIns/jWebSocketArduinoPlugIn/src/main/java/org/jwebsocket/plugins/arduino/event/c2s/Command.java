@@ -23,6 +23,10 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class Command extends C2SEvent {
 
+	/**
+	 *
+	 * @return
+	 */
 	public Integer getCmd() {
 		return getArgs().getInteger("cmd");
 	}

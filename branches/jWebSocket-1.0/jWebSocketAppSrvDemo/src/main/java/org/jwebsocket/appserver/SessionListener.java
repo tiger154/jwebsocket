@@ -1,7 +1,8 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket - SessionListener (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -23,9 +24,9 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
 
 /**
- * Web application lifecycle listener.
- * Here the http session is added or removed respectively from the
- * global WebSocketHttpSessionMerger.
+ * Web application lifecycle listener. Here the http session is added or removed
+ * respectively from the global WebSocketHttpSessionMerger.
+ *
  * @author aschulze
  */
 public class SessionListener implements HttpSessionListener {
@@ -38,6 +39,10 @@ public class SessionListener implements HttpSessionListener {
 		}
 	}
 
+	/**
+	 *
+	 * @param aHSE
+	 */
 	@Override
 	public void sessionCreated(HttpSessionEvent aHSE) {
 		// when a new session is created by the servlet engine
@@ -47,6 +52,10 @@ public class SessionListener implements HttpSessionListener {
 		mLog.info("Created Http session: '" + aHSE.getSession().getId() + "'");
 	}
 
+	/**
+	 *
+	 * @param aHSE
+	 */
 	@Override
 	public void sessionDestroyed(HttpSessionEvent aHSE) {
 		// when an existing session is destroyed by the servlet engine

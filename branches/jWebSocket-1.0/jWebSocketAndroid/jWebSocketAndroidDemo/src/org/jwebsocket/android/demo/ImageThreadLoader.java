@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - ImageThreadLoader
-//	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
+//	jWebSocket - ImageThreadLoader (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.android.demo;
 
@@ -31,8 +34,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This is an object that can load images from a URL on a thread.
- * taken from http://ballardhack.wordpress.com/2010/04/10/loading-images-over-http-on-a-separate-thread-on-android/
+ * This is an object that can load images from a URL on a thread. taken from
+ * http://ballardhack.wordpress.com/2010/04/10/loading-images-over-http-on-a-separate-thread-on-android/
  *
  * @author Prashant
  */
@@ -62,19 +65,21 @@ public class ImageThreadLoader {
 	}
 
 	/**
-	 * Defines an interface for a callback that will handle
-	 * responses from the thread loader when an image is done
-	 * being loaded.
+	 * Defines an interface for a callback that will handle responses from the
+	 * thread loader when an image is done being loaded.
 	 */
 	public interface ImageLoadedListener {
 
+		/**
+		 *
+		 * @param imageBitmap
+		 */
 		public void imageLoaded(Bitmap imageBitmap);
 	}
 
 	/**
-	 * Provides a Runnable class to handle loading
-	 * the image from the URL and settings the
-	 * ImageView on the UI thread.
+	 * Provides a Runnable class to handle loading the image from the URL and
+	 * settings the ImageView on the UI thread.
 	 */
 	private class QueueRunner implements Runnable {
 
@@ -89,7 +94,6 @@ public class ImageThreadLoader {
 							&& mCache.get(lItem.url.toString()) != null) {
 						// Use a handler to get back onto the UI thread for the update
 						mHandler.post(new Runnable() {
-
 							@Override
 							public void run() {
 								if (lItem.listener != null) {
@@ -110,7 +114,6 @@ public class ImageThreadLoader {
 
 							// Use a handler to get back onto the UI thread for the update
 							mHandler.post(new Runnable() {
-
 								public void run() {
 									if (lItem.listener != null) {
 										lItem.listener.imageLoaded(bmp);
@@ -130,7 +133,7 @@ public class ImageThreadLoader {
 	 * Queues up a URI to load an image from for a given image view.
 	 *
 	 * @param aURI	The URI source of the image
-	 * @param callback	The listener class to call when the image is loaded
+	 * @param aListener
 	 * @throws MalformedURLException If the provided uri cannot be parsed
 	 * @return A Bitmap image if the image is in the cache, else null.
 	 */
@@ -160,13 +163,12 @@ public class ImageThreadLoader {
 	}
 
 	/**
-	 * Convenience method to retrieve a bitmap image from
-	 * a URL over the network. The built-in methods do
-	 * not seem to work, as they return a FileNotFound
-	 * exception.
+	 * Convenience method to retrieve a bitmap image from a URL over the
+	 * network. The built-in methods do not seem to work, as they return a
+	 * FileNotFound exception.
 	 *
-	 * Note that this does not perform any threading --
-	 * it blocks the call while retrieving the data.
+	 * Note that this does not perform any threading -- it blocks the call while
+	 * retrieving the data.
 	 *
 	 * @param aURL The URL to read the bitmap from.
 	 * @return A Bitmap image or null if an error occurs.

@@ -1,7 +1,8 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket - SubscriberStore (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -37,7 +38,7 @@ public interface SubscriberStore {
 	/**
 	 * Store the given channel in the channel store
 	 *
-	 * @param channel the channel object
+	 * @param subscriber
 	 * @return {@code true} if insert successful
 	 */
 	boolean storeSubscriber(Subscriber subscriber);
@@ -45,7 +46,8 @@ public interface SubscriberStore {
 	/**
 	 * Removes the subscriber from the store based on given id
 	 *
-	 * @param key the key of the data to remove from the store
+	 *
+	 * @param id
 	 */
 	void removeSubscriber(String id);
 
@@ -67,6 +69,7 @@ public interface SubscriberStore {
 	 * Indicates if the subscriber store contains a subscriber with the given
 	 * subscriber identifier
 	 *
+	 * @param aSubscriberId
 	 * @return TRUE if the subscriber exists, FALSE otherwise
 	 */
 	boolean hasSubscriber(String aSubscriberId);

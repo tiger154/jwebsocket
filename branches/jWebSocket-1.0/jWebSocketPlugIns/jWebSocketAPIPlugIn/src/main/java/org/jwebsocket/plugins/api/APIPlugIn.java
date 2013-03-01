@@ -1,7 +1,8 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket API Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -49,6 +50,11 @@ public class APIPlugIn extends TokenPlugIn {
 	private static final String NS_INTERFACE =
 			JWebSocketServerConstants.NS_BASE + ".plugins.api";
 
+	/**
+	 *
+	 * @param configuration
+	 * @throws Exception
+	 */
 	public APIPlugIn(PluginConfiguration configuration) throws Exception {
 		super(configuration);
 		if (mLog.isDebugEnabled()) {
@@ -228,5 +234,4 @@ public class APIPlugIn extends TokenPlugIn {
 		//Sending the response
 		sendToken(aConnector, aConnector, lResponse);
 	}
-
 }
