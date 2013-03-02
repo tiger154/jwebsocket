@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket SMS Provider implementation for SMSTrade
-//  Copyright (c) 2012 Innotrade GmbH, jWebSocket.org
+//	jWebSocket - SMS Provider implementation for SMSTrade (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.sms;
 
@@ -45,12 +48,21 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	private String mMessageType;
 	private String mKey = "";
 
+	/**
+	 *
+	 * @param aMessageId
+	 * @param aCount
+	 * @param aDlr
+	 */
 	public ProviderSmstrade(String aMessageId, String aCount, String aDlr) {
 		mMessageId = aMessageId;
 		mCount = aCount;
 		mDlr = aDlr;
 	}
 
+	/**
+	 *
+	 */
 	public ProviderSmstrade() {
 		mMessageId = "1";
 		mCount = "1";
@@ -65,7 +77,7 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	}
 
 	/**
-	 * @param mKey the Key to set
+	 * @param aKey
 	 */
 	public void setKey(String aKey) {
 		mKey = aKey;
@@ -99,6 +111,11 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 		return lRes;
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @return
+	 */
 	@Override
 	public Token sendSms(Token aToken) {
 		Token lRes = TokenFactory.createToken();
@@ -190,16 +207,31 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 		return lRes;
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @return
+	 */
 	@Override
 	public Token longerSms(Token aToken) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @return
+	 */
 	@Override
 	public Token gsmSms(Token aToken) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @return
+	 */
 	@Override
 	public Token bulkSms(Token aToken) {
 		throw new UnsupportedOperationException("Not supported yet.");
@@ -247,30 +279,58 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 		return mDlr;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getRef() {
 		return mRef;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getConcatSms() {
 		return mConcatSms;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getRoute() {
 		return mRoute;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getSendDate() {
 		return mSendDate;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getMessageType() {
 		return mMessageType;
 	}
 
+	/**
+	 *
+	 * @param aCost
+	 */
 	public void setCost(String aCost) {
 		this.mCost = aCost;
 	}
 
+	/**
+	 *
+	 * @param aMessaggeId
+	 */
 	public void setMessaggeId(String aMessaggeId) {
 		this.mMessageId = aMessaggeId;
 	}
@@ -289,22 +349,42 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 		this.mDlr = aDlr;
 	}
 
+	/**
+	 *
+	 * @param aRef
+	 */
 	public void setRef(String aRef) {
 		this.mRef = aRef;
 	}
 
+	/**
+	 *
+	 * @param aConcatSms
+	 */
 	public void setConcatSms(String aConcatSms) {
 		this.mConcatSms = aConcatSms;
 	}
 
+	/**
+	 *
+	 * @param aRoute
+	 */
 	public void setRoute(String aRoute) {
 		this.mRoute = aRoute;
 	}
 
+	/**
+	 *
+	 * @param aSendDate
+	 */
 	public void setSendDate(String aSendDate) {
 		this.mSendDate = aSendDate;
 	}
 
+	/**
+	 *
+	 * @param aMessageType
+	 */
 	public void setMessageType(String aMessageType) {
 		this.mMessageType = aMessageType;
 	}
