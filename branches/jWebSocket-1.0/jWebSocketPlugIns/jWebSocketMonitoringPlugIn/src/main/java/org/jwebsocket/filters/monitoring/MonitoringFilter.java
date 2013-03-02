@@ -1,7 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket - MonitoringFilter (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.filters.monitoring;
 
 import org.jwebsocket.filter.TokenFilter;
@@ -28,6 +42,10 @@ public class MonitoringFilter extends TokenFilter {
 	DBCollection mColl;
 	private static Logger mLog = Logging.getLogger(MonitoringFilter.class);
 
+	/**
+	 *
+	 * @param aConfig
+	 */
 	public MonitoringFilter(FilterConfiguration aConfig) {
 
 		super(aConfig);
@@ -43,6 +61,12 @@ public class MonitoringFilter extends TokenFilter {
 		}
 	}
 
+	/**
+	 *
+	 * @param aResponse
+	 * @param aConnector
+	 * @param aToken
+	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
@@ -64,6 +88,13 @@ public class MonitoringFilter extends TokenFilter {
 		}
 	}
 
+	/**
+	 *
+	 * @param aResponse
+	 * @param aSource
+	 * @param aTarget
+	 * @param aToken
+	 */
 	@Override
 	public void processTokenOut(FilterResponse aResponse, WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
 

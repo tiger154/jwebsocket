@@ -113,7 +113,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating FileSystem plug-in...");
 		}
-		// specify default name space for admin plugin
+		// specify default name space for file system plugin
 		this.setNamespace(NS_FILESYSTEM);
 
 		try {
