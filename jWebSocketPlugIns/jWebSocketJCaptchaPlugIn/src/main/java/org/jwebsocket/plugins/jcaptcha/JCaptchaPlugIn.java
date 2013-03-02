@@ -44,10 +44,10 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 	private static final String NS_JCAPTCHA = JWebSocketServerConstants.NS_BASE + ".plugins.jcaptcha";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
-	private final static String LABEL = "jWebSocket JDBCPlugIn";
+	private final static String LABEL = "jWebSocket JCaptchaPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
-	private final static String DESCRIPTION = "jWebSocket JDBCPlugIn - Community Edition";
+	private final static String DESCRIPTION = "jWebSocket JCaptchaPlugIn - Community Edition";
 	private String mImgType = null;
 
 	public JCaptchaPlugIn(PluginConfiguration aConfiguration) {
@@ -55,8 +55,7 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating JCaptcha plug-in...");
 		}
-		String lNS = aConfiguration.getNamespace();
-		setNamespace(null == lNS ? NS_JCAPTCHA : lNS);
+		setNamespace(NS_JCAPTCHA);
 
 		if (mLog.isInfoEnabled()) {
 			mLog.info("JCaptcha plug-in successfully instantiated.");

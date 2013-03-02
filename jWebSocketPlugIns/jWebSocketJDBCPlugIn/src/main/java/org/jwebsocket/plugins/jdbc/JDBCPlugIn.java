@@ -77,8 +77,8 @@ public class JDBCPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating JDBC plug-in...");
 		}
-		// specify default name space for admin plugin
-		this.setNamespace(NS_JDBC);
+		// specify default name space for JDBC plugin
+		setNamespace(NS_JDBC);
 		mCache = new EhCacheStorage(NS_JDBC);
 
 		try {
