@@ -1,22 +1,25 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket JCaptcha Plug-in
-//  Copyright (c) 2012 Innotrade GmbH, jWebSocket.org
+//	jWebSocket - jWebSocket JCaptcha Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jcaptcha;
 
 /**
- * 
+ *
  * @author mayra, vbarzana, aschulze
  */
 import com.octo.captcha.service.CaptchaServiceException;
@@ -27,6 +30,8 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
@@ -36,23 +41,61 @@ import org.jwebsocket.util.Tools;
 public class JCaptchaPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	private static final String NS_JCAPTCHA = JWebSocketServerConstants.NS_BASE + ".plugins.jcaptcha";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket JDBCPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket JDBCPlugIn - Community Edition";
 	private String mImgType = null;
 
 	public JCaptchaPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Instantiating Captcha plug-in...");
+			mLog.debug("Instantiating JCaptcha plug-in...");
 		}
-		setNamespace(aConfiguration.getNamespace());
-		
+		String lNS = aConfiguration.getNamespace();
+		setNamespace(null == lNS ? NS_JCAPTCHA : lNS);
+
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Captcha plug-in successfully instantiated.");
+			mLog.info("JCaptcha plug-in successfully instantiated.");
 		}
 	}
 
 	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
+
+	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-		
+
 		if (aToken.getNS().equals(getNamespace())) {
 			if ("getcaptcha".equals(aToken.getType())) {
 
