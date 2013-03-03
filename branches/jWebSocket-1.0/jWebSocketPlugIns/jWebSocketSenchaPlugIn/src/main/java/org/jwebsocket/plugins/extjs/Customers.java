@@ -1,24 +1,25 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - ExtJS Plugin
-//	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org, Alexander Schulze,
+//	jWebSocket - Customers for ExtJS plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.extjs;
 
 import java.util.LinkedList;
 import java.util.List;
-
-
 
 /**
  *
@@ -26,119 +27,157 @@ import java.util.List;
  */
 public class Customers {
 
-    private LinkedList<CustomerDef> customers;
-    private Integer count;
+	private LinkedList<CustomerDef> mCustomers;
+	private Integer mCount;
 
-    public Customers() {
-        count = 0;
-        customers = new LinkedList<CustomerDef>();
-        try{
-			add(new CustomerDef(count, "Alexander", "arojash@uci.cu", 24));
-			add(new CustomerDef(count, "Alexander", "a.schulze@jwebsocket.org", 40));
-			add(new CustomerDef(count, "Anuradha", "galianuradha@gmail.com", 25));
-			add(new CustomerDef(count, "Armando", "alsimon@uci.cu", 26));
-			add(new CustomerDef(count, "Carlos", "carlosfeyt@hab.uci.cu", 25));
-			add(new CustomerDef(count, "Carlos", "ckcespedes@uci.cu", 25));
-			add(new CustomerDef(count, "Daimi", "dmederos@hab.uci.cu", 24));
-			add(new CustomerDef(count, "Dariel", "dnoa@uci.cu", 25));
-			add(new CustomerDef(count, "Eduardo", "ebourzach@uci.cu", 26));
+	/**
+	 *
+	 */
+	public Customers() {
+		mCount = 0;
+		mCustomers = new LinkedList<CustomerDef>();
+		try {
+			add(new CustomerDef(mCount, "Alexander", "arojash@uci.cu", 24));
+			add(new CustomerDef(mCount, "Alexander", "a.schulze@jwebsocket.org", 40));
+			add(new CustomerDef(mCount, "Anuradha", "galianuradha@gmail.com", 25));
+			add(new CustomerDef(mCount, "Armando", "alsimon@uci.cu", 26));
+			add(new CustomerDef(mCount, "Carlos", "carlosfeyt@hab.uci.cu", 25));
+			add(new CustomerDef(mCount, "Carlos", "ckcespedes@uci.cu", 25));
+			add(new CustomerDef(mCount, "Daimi", "dmederos@hab.uci.cu", 24));
+			add(new CustomerDef(mCount, "Dariel", "dnoa@uci.cu", 25));
+			add(new CustomerDef(mCount, "Eduardo", "ebourzach@uci.cu", 26));
 
-			add(new CustomerDef(count, "Johannes", "johannes.schoenborn@gmail.com", 25));
-			add(new CustomerDef(count, "Johannes", "j.smutny@gmail.com", 25));
-			add(new CustomerDef(count, "Lester", "lzaila@hab.uci.cu", 25));
-			add(new CustomerDef(count, "Lisdey", "lperez@hab.uci.cu", 23));
-			add(new CustomerDef(count, "Merly", "mlopez@hab.uci.cu", 24));
-			add(new CustomerDef(count, "Marcos ", "magonzalez@hab.uci.cu", 25));
-			add(new CustomerDef(count, "Marta ", "mrodriguez@hab.uci.cu", 25));
-			add(new CustomerDef(count, "Mayra", "memaranon@hab.uci.cu", 25));
-			add(new CustomerDef(count, "Orlando", "omiranda@uci.cu", 25));
-			add(new CustomerDef(count, "Osvaldo", "oaguilar@uci.cu", 25));
+			add(new CustomerDef(mCount, "Johannes", "johannes.schoenborn@gmail.com", 25));
+			add(new CustomerDef(mCount, "Johannes", "j.smutny@gmail.com", 25));
+			add(new CustomerDef(mCount, "Lester", "lzaila@hab.uci.cu", 25));
+			add(new CustomerDef(mCount, "Lisdey", "lperez@hab.uci.cu", 23));
+			add(new CustomerDef(mCount, "Merly", "mlopez@hab.uci.cu", 24));
+			add(new CustomerDef(mCount, "Marcos ", "magonzalez@hab.uci.cu", 25));
+			add(new CustomerDef(mCount, "Marta ", "mrodriguez@hab.uci.cu", 25));
+			add(new CustomerDef(mCount, "Mayra", "memaranon@hab.uci.cu", 25));
+			add(new CustomerDef(mCount, "Orlando", "omiranda@uci.cu", 25));
+			add(new CustomerDef(mCount, "Osvaldo", "oaguilar@uci.cu", 25));
 
-			add(new CustomerDef(count, "Prashant", "prashantkhanal@gmail.com", 25));
-			add(new CustomerDef(count, "Puran", "mailtopuran@gmail.com", 25));
-			add(new CustomerDef(count, "Quentin", "quentin.ambard@gmail.com", 25));
-			add(new CustomerDef(count, "Rebecca", "r.schulze@jwebsocket.org", 23));
-			add(new CustomerDef(count, "Rolando", "rbetancourt@hab.uci.cu", 24));
-			add(new CustomerDef(count, "Rolando", "rsantamaria@hab.uci.cu", 26));
-			add(new CustomerDef(count, "Roylandi", "rgpujol@hab.uci.cu", 25));
-			add(new CustomerDef(count, "Unni", "unnivm@gmail.com", 25));
-			add(new CustomerDef(count, "Victor", "vbarzana@uci.cu", 25));
-			add(new CustomerDef(count, "Yamila", "yvigil@hab.uci.cu", 27));
+			add(new CustomerDef(mCount, "Prashant", "prashantkhanal@gmail.com", 25));
+			add(new CustomerDef(mCount, "Puran", "mailtopuran@gmail.com", 25));
+			add(new CustomerDef(mCount, "Quentin", "quentin.ambard@gmail.com", 25));
+			add(new CustomerDef(mCount, "Rebecca", "r.schulze@jwebsocket.org", 23));
+			add(new CustomerDef(mCount, "Rolando", "rbetancourt@hab.uci.cu", 24));
+			add(new CustomerDef(mCount, "Rolando", "rsantamaria@hab.uci.cu", 26));
+			add(new CustomerDef(mCount, "Roylandi", "rgpujol@hab.uci.cu", 25));
+			add(new CustomerDef(mCount, "Unni", "unnivm@gmail.com", 25));
+			add(new CustomerDef(mCount, "Victor", "vbarzana@uci.cu", 25));
+			add(new CustomerDef(mCount, "Yamila", "yvigil@hab.uci.cu", 27));
 
-			add(new CustomerDef(count, "Yasmany", "ynbosh@hab.uci.cu", 24));			
-        }catch(Exception ex){
-        
-        }
-        
-    }
+			add(new CustomerDef(mCount, "Yasmany", "ynbosh@hab.uci.cu", 24));
+		} catch (Exception ex) {
+		}
 
-    public void add(CustomerDef customer) throws Exception {
-        for (CustomerDef u : customers) {
-            if (u.getEmail().equals(customer.getEmail())) {
-                throw new Exception("customers duplicated");
-            }
-        }
-        customers.add(customer);
-        count++;
-    }
+	}
 
-    public LinkedList<CustomerDef> getCustomers() {
-        return customers;
-    }
+	/**
+	 *
+	 * @param aCustomer
+	 * @throws Exception
+	 */
+	public void add(CustomerDef aCustomer) throws Exception {
+		for (CustomerDef lCustomer : mCustomers) {
+			if (lCustomer.getEmail().equals(aCustomer.getEmail())) {
+				throw new Exception("customer duplicated");
+			}
+		}
+		mCustomers.add(aCustomer);
+		mCount++;
+	}
 
-    public List<CustomerDef> getSubList(int start, int limit) {
+	/**
+	 *
+	 * @return
+	 */
+	public LinkedList<CustomerDef> getCustomers() {
+		return mCustomers;
+	}
 
+	/**
+	 *
+	 * @param aStart
+	 * @param aLimit
+	 * @return
+	 */
+	public List<CustomerDef> getSubList(int aStart, int aLimit) {
+		if (aLimit > mCustomers.size()) {
+			aLimit -= aLimit - mCustomers.size();
+		}
 
-        if (limit >  customers.size())
-        {
-            limit -= limit - customers.size();
-        }
-        
-        return customers.subList(start, limit);
-         
-    }
+		return mCustomers.subList(aStart, aLimit);
 
-    public Integer getSize(){
-        return customers.size();
-    }
+	}
 
+	/**
+	 *
+	 * @return
+	 */
+	public Integer getSize() {
+		return mCustomers.size();
+	}
 
-    public CustomerDef getCustomer(Integer id) {
-        CustomerDef customer = null;
-        for (CustomerDef u : customers) {
-            if (u.getId().equals(id)) {
-                return u;
-            }
-        }
-        return customer;
-    }
+	/**
+	 *
+	 * @param aId
+	 * @return
+	 */
+	public CustomerDef getCustomer(Integer aId) {
+		CustomerDef lCustomer = null;
+		for (CustomerDef lCustDef : mCustomers) {
+			if (lCustDef.getId().equals(aId)) {
+				return lCustDef;
+			}
+		}
+		return lCustomer;
+	}
 
-    public void setCount(Integer count) {
-        this.count = count;
-    }
+	/**
+	 *
+	 * @param aCount
+	 */
+	public void setCount(Integer aCount) {
+		this.mCount = aCount;
+	}
 
-    public Integer getCount() {
-        return count;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Integer getCount() {
+		return mCount;
+	}
 
-    public boolean findCustomer(Integer id) {
-        for (CustomerDef u : customers) {
-            if (u.getId().equals(id)) {
-                return true;
-            }
-        }
+	/**
+	 *
+	 * @param aId
+	 * @return
+	 */
+	public boolean findCustomer(Integer aId) {
+		for (CustomerDef lCustDef : mCustomers) {
+			if (lCustDef.getId().equals(aId)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-        return false;
-    }
-
-    public boolean deleteCustomer(Integer id) {
-        for (CustomerDef u : customers) {
-            if (u.getId().equals(id)) {
-                customers.remove(u);
-                return true;
-            }
-        }
-
-        return false;
-    }
+	/**
+	 *
+	 * @param aId
+	 * @return
+	 */
+	public boolean deleteCustomer(Integer aId) {
+		for (CustomerDef lCustDef : mCustomers) {
+			if (lCustDef.getId().equals(aId)) {
+				mCustomers.remove(lCustDef);
+				return true;
+			}
+		}
+		return false;
+	}
 }
