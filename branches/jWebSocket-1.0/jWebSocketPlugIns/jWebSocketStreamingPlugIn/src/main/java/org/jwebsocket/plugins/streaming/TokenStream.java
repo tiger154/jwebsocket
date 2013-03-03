@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Token In- and Outbound Stream
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	jWebSocket - Token In- and Outbound Stream (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.streaming;
 
@@ -23,26 +26,28 @@ import org.jwebsocket.token.Token;
 
 /**
  * implements a stream with a queue of token instances. In addition to the
- * <tt>BaseStream</tt> the <tt>TokenStream</tt> also maintains a reference
- * to a <tt>TokenServer</tt> instance. Unlike the <tt>BaseStream</tt> which has
- * no control or limitation regarding the objects in the Queue, the
+ * <tt>BaseStream</tt> the <tt>TokenStream</tt> also maintains a reference to a
+ * <tt>TokenServer</tt> instance. Unlike the <tt>BaseStream</tt> which has no
+ * control or limitation regarding the objects in the Queue, the
  * <tt>TokenStream</tt> allow tokens in the queue only. To support the various
- * sub protocols the TokenStream does not send the queued tokens directly to
- * the client but via the <tt>TokenServer</tt>. The <tt>TokenServer</tt> knows
- * about the used sub protocols of the clients and can decide wether to format
- * them as JSON, CSV or XML. Thus application streams usually are descend from
+ * sub protocols the TokenStream does not send the queued tokens directly to the
+ * client but via the <tt>TokenServer</tt>. The <tt>TokenServer</tt> knows about
+ * the used sub protocols of the clients and can decide wether to format them as
+ * JSON, CSV or XML. Thus application streams usually are descend from
  * <tt>TokenStream</tt>.
+ *
  * @author aschulze
  */
 public class TokenStream extends BaseStream {
 
-	private static Logger mLog = Logging.getLogger(TokenStream.class);
+	private static Logger mLog = Logging.getLogger();
 	private TokenServer mServer = null;
 
 	/**
 	 * creates a new instance of the TokenStream. In Addition to the
 	 * <tt>BaseStream</tt> the <tt>TokenStream</tt> also maintains a reference
 	 * to a <tt>TokenServer</tt> instance.
+	 *
 	 * @param aStreamID
 	 * @param aServer
 	 */
@@ -64,6 +69,7 @@ public class TokenStream extends BaseStream {
 
 	/**
 	 * returns the referenced <tt>TokenServer</tt> instance.
+	 *
 	 * @return the server
 	 */
 	public TokenServer getServer() {
@@ -73,6 +79,7 @@ public class TokenStream extends BaseStream {
 	/**
 	 *
 	 * @param aToken
+	 * @return
 	 */
 	public Token control(Token aToken) {
 		// needs to be implemented in descending classes
