@@ -1,20 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket XMPP/Jabber Plug-In
-//  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
+//	jWebSocket XMPP/Jabber Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//  THIS CODE IS FOR RESEARCH, EVALUATION AND TEST PURPOSES ONLY!
-//  THIS CODE MAY BE SUBJECT TO CHANGES WITHOUT ANY NOTIFICATION!
-//	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.xmpp;
 
@@ -32,6 +32,7 @@ import org.jivesoftware.smack.packet.RosterPacket.ItemStatus;
 import org.jivesoftware.smack.packet.RosterPacket.ItemType;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -56,11 +57,17 @@ import org.jwebsocket.token.TokenFactory;
 public class XMPPPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	// if namespace changed update client plug-in accordingly!
+	private static final String NS_XMPP = JWebSocketServerConstants.NS_BASE + ".plugins.xmpp";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket XMPPPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket XMPPPlugIn - Community Edition";
 	private static final String XMPP_CONN_VAR = "$xmpp_connection";
 	private static final String XMPP_CHAT_VAR = "$xmpp_chat";
 	private static final String XMPP_CRED_VAR = "$xmpp_credentials";
-	// if namespace changed update client plug-in accordingly!
-	private static final String NS_XMPP = JWebSocketServerConstants.NS_BASE + ".plugins.xmpp";
 
 	/**
 	 *
@@ -74,6 +81,39 @@ public class XMPPPlugIn extends TokenPlugIn {
 		// specify default name space for xmpp plugin
 		this.setNamespace(NS_XMPP);
 		mGetSettings();
+		if (mLog.isInfoEnabled()) {
+			mLog.info("XMPP plug-in successfully instantiated.");
+		}
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
 	}
 
 	private void mGetSettings() {
