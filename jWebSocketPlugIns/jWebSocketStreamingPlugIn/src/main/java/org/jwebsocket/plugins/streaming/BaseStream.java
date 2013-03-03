@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - In- and Outbound Stream
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	jWebSocket - In- and Outbound Stream (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.streaming;
 
@@ -27,17 +30,19 @@ import org.jwebsocket.server.BaseServer;
 
 /**
  * implements a stream on which connectors can be registered and unregistered.
- * The fundamental streaming capabilities are provided by the <tt>BaseStream</tt>
+ * The fundamental streaming capabilities are provided by the
+ * <tt>BaseStream</tt>
  * class. The <tt>BaseStream</tt> implements an internal queue to which messages
  * can be posted. The message then are broadcasted to the registered clients.
- * Therefore the <tt>BaseStream</tt> class maintains a list of clients. A certain
- * client can register at or unregister from the stream. Basically streams send
- * their messages only to clients that are registered at a stream.
+ * Therefore the <tt>BaseStream</tt> class maintains a list of clients. A
+ * certain client can register at or unregister from the stream. Basically
+ * streams send their messages only to clients that are registered at a stream.
+ *
  * @author aschulze
  */
 public class BaseStream implements WebSocketStream {
 
-	private static Logger mLog = Logging.getLogger(BaseStream.class);
+	private static Logger mLog = Logging.getLogger();
 	private List<WebSocketConnector> mConnectors = new FastList<WebSocketConnector>();
 	private boolean mIsRunning = false;
 	private String mStreamID = null;
@@ -46,12 +51,17 @@ public class BaseStream implements WebSocketStream {
 
 	/**
 	 * creates a new stream with a certain id.
+	 *
 	 * @param aStreamID
 	 */
 	public BaseStream(String aStreamID) {
 		this.mStreamID = aStreamID;
 	}
 
+	/**
+	 *
+	 * @param aTimeout
+	 */
 	@Override
 	public void startStream(long aTimeout) {
 		if (mLog.isDebugEnabled()) {
@@ -62,6 +72,10 @@ public class BaseStream implements WebSocketStream {
 		mQueueThread.start();
 	}
 
+	/**
+	 *
+	 * @param aTimeout
+	 */
 	@Override
 	public void stopStream(long aTimeout) {
 		if (mLog.isDebugEnabled()) {
@@ -89,8 +103,9 @@ public class BaseStream implements WebSocketStream {
 	}
 
 	/**
-	 * registers a connector at the stream. After this operation the stream
-	 * will send new messages to this client as well.
+	 * registers a connector at the stream. After this operation the stream will
+	 * send new messages to this client as well.
+	 *
 	 * @param aConnector
 	 */
 	public void registerConnector(WebSocketConnector aConnector) {
@@ -101,8 +116,10 @@ public class BaseStream implements WebSocketStream {
 
 	/**
 	 * checks if a certain connector is registered at the stream.
+	 *
 	 * @param aConnector
-	 * @return <tt>true</tt> if the connector is already registered otherwise <tt>false</tt>.
+	 * @return <tt>true</tt> if the connector is already registered otherwise
+	 * <tt>false</tt>.
 	 */
 	public boolean isConnectorRegistered(WebSocketConnector aConnector) {
 		return (aConnector != null && mConnectors.indexOf(aConnector) >= 0);
@@ -111,6 +128,7 @@ public class BaseStream implements WebSocketStream {
 	/**
 	 * unregisters a connector from the stream. After this operation the stream
 	 * will no longer new messages to this client.
+	 *
 	 * @param aConnector
 	 */
 	public void unregisterConnector(WebSocketConnector aConnector) {
@@ -121,8 +139,9 @@ public class BaseStream implements WebSocketStream {
 
 	/**
 	 * registers all connectors of the given server at the stream. After this
-	 * operation the stream will send new messages to all clients on the
-	 * given server.
+	 * operation the stream will send new messages to all clients on the given
+	 * server.
+	 *
 	 * @param aServer
 	 */
 	public void registerAllConnectors(BaseServer aServer) {
@@ -131,8 +150,9 @@ public class BaseStream implements WebSocketStream {
 
 	/**
 	 * unregisters all connectors of the given server from the stream. After
-	 * this operation the stream will no longer send new messages to any
-	 * clients on the given server.
+	 * this operation the stream will no longer send new messages to any clients
+	 * on the given server.
+	 *
 	 * @param aServer
 	 */
 	public void unregisterAllConnectors(BaseServer aServer) {
@@ -141,6 +161,7 @@ public class BaseStream implements WebSocketStream {
 
 	/**
 	 * puts a data packet into the stream queue.
+	 *
 	 * @param aObject
 	 */
 	public void put(Object aObject) {
@@ -154,6 +175,7 @@ public class BaseStream implements WebSocketStream {
 
 	/**
 	 * sends a message from the queue to a certain connector.
+	 *
 	 * @param aConnector
 	 * @param aObject
 	 */
@@ -166,8 +188,9 @@ public class BaseStream implements WebSocketStream {
 	}
 
 	/**
-	 * iterates through all registered connectors and runs 
+	 * iterates through all registered connectors and runs
 	 * <tt>processConnector</tt> for each.
+	 *
 	 * @param aObject
 	 */
 	protected void processItem(Object aObject) {
@@ -182,7 +205,7 @@ public class BaseStream implements WebSocketStream {
 		public void run() {
 			mIsRunning = true;
 			Thread.currentThread().setName("jWebSocket StreamingPlugIn Queue");
-			
+
 			while (mIsRunning) {
 				synchronized (mQueue) {
 					if (mQueue.size() > 0) {
@@ -203,6 +226,7 @@ public class BaseStream implements WebSocketStream {
 
 	/**
 	 * returns the id of the stream.
+	 *
 	 * @return the streamID
 	 */
 	public String getStreamID() {
