@@ -1,19 +1,21 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - ExtJS Plugin
-//	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org, Alexander Schulze,
+//	jWebSocket - CustomerDef for ExtJS plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.extjs;
 
 /**
@@ -22,75 +24,80 @@ package org.jwebsocket.plugins.extjs;
  */
 public class CustomerDef {
 
-        private Integer id;
-        private String name;
-	private String email;
-        private Integer age;
+	private Integer mId;
+	private String mName;
+	private String mEmail;
+	private Integer mAge;
 
+	/**
+	 *
+	 * @param aId
+	 * @param aName
+	 * @param aEmail
+	 * @param aAge
+	 */
+	public CustomerDef(Integer aId, String aName, String aEmail, Integer aAge) {
+		this.mName = aName;
+		this.mId = aId;
+		this.mEmail = aEmail;
+		this.mAge = aAge;
+	}
 
-    public CustomerDef(Integer id, String name, String email,Integer age) {
-	this.name   = name;
-	this.id     = id;
-	this.email  = email;
-        this.age    = age;
-    }
+	/**
+	 * @return the id
+	 */
+	public Integer getId() {
+		return mId;
+	}
 
+	/**
+	 * @param aId the id to set
+	 */
+	public void setId(Integer aId) {
+		this.mId = aId;
+	}
 
-    /**
-     * @return the id
-     */
-    public Integer getId() {
-        return id;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return mName;
+	}
 
-    /**
-     * @param id the id to set
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	/**
+	 * @param aName the name to set
+	 */
+	public void setName(String aName) {
+		this.mName = aName;
+	}
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return mEmail;
+	}
 
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * 
+	 * @param aEmail 
+	 */
+	public void setEmail(String aEmail) {
+		this.mEmail = aEmail;
+	}
 
-    /**
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
+	/**
+	 * @return the age
+	 */
+	public Integer getAge() {
+		return mAge;
+	}
 
-    /**
-     * @param email the email to set
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /**
-     * @return the age
-     */
-    public Integer getAge() {
-        return age;
-    }
-
-    /**
-     * @param age the age to set
-     */
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-
+	/**
+	 * 
+	 * @param aAge 
+	 */
+	public void setAge(Integer aAge) {
+		this.mAge = aAge;
+	}
 }
