@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
@@ -40,7 +41,7 @@ public class ExtJSDemoPlugin extends TokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_EXTJSDEMO = "jws.ext.gridformdemo";
+	public static final String NS_EXTJSDEMO = "jws.ext.demo";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket ExtJSDemoPlugin";
@@ -91,7 +92,6 @@ public class ExtJSDemoPlugin extends TokenPlugIn {
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		if (aToken.getNS().equals(getNamespace())) {
-
 			if (aToken.getType().equals("create")) {
 				processCreate(aResponse, aConnector, aToken);
 			} else if (aToken.getType().equals("update")) {
