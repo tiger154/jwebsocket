@@ -1,18 +1,21 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - CometServlet
-// Copyright (c) 2012 jWebSocket.org, Innotrade GmbH
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+// jWebSocket - CometServlet (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.tomcat.comet;
 
 import java.io.IOException;
@@ -56,21 +59,41 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	private TomcatEngine mEngine;
 	Map<String, String> mInternalConnectorIds = new FastMap<String, String>();
 
+	/**
+	 *
+	 */
 	public CometServlet() {
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public boolean isRunningEmbedded() {
 		return ContextListener.isRunningEmbedded();
 	}
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @return
+	 */
 	public boolean isPacketQueueEmpty(String aConnectorId) {
 		return mPacketsQueue.get(aConnectorId).isEmpty();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Map<String, Queue<WebSocketPacket>> getPacketsQueue() {
 		return mPacketsQueue;
 	}
 
+	/**
+	 *
+	 * @throws ServletException
+	 */
 	@Override
 	public void init() throws ServletException {
 		if (JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
@@ -91,18 +114,38 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @param aSessionId
+	 */
 	public void saveIntervalId(String aConnectorId, String aSessionId) {
 		mInternalConnectorIds.put(aSessionId, aConnectorId);
 	}
 
+	/**
+	 *
+	 * @param aSessionId
+	 * @return
+	 */
 	public String getInternalId(String aSessionId) {
 		return mInternalConnectorIds.get(aSessionId);
 	}
 
+	/**
+	 *
+	 * @param aSessionId
+	 */
 	public void removeInternalId(String aSessionId) {
 		mInternalConnectorIds.remove(aSessionId);
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @throws IOException
+	 * @throws ServletException
+	 */
 	@Override
 	public void event(CometEvent aEvent) throws IOException, ServletException {
 		String lHttpSessionId = aEvent.getHttpServletRequest().getSession().getId();
@@ -158,6 +201,11 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		}
 	}
 
+	/**
+	 *
+	 * @param aMessage
+	 * @param aEvent
+	 */
 	public void processMessage(Map<String, Object> aMessage, CometEvent aEvent) {
 		String lCometType = (String) aMessage.get("cometType");
 		String lSubProt = (String) (aMessage.get("subPl"));
@@ -215,7 +263,7 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 
 					lConnector = new CometConnector(mEngine, this, aEvent);
 					lConnector.setRequest(aEvent.getHttpServletRequest());
-					
+
 					// setting the session timeout
 					if (ContextListener.isRunningEmbedded()) {
 						aEvent.getHttpServletRequest().getSession()
@@ -324,6 +372,14 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 		}
 	}
 
+	/**
+	 *
+	 * @param aSubProt
+	 * @param aType
+	 * @param aReadyState
+	 * @param aData
+	 * @return
+	 */
 	public static String createMessage(String aSubProt, String aType, int aReadyState, String aData) {
 		Map<String, Object> lMessage = new FastMap<String, Object>();
 		lMessage.put("subPl", aSubProt);

@@ -1,18 +1,21 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - CometConnector
-// Copyright (c) 2012 jWebSocket.org, Innotrade GmbH
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+// jWebSocket - CometConnector (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.tomcat.comet;
 
 import java.io.IOException;
@@ -70,6 +73,9 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 		}
 	}
 
+	/**
+	 *
+	 */
 	public void cancelActiveCloseTask() {
 		if (null != mCloseTask) {
 			mCloseTask.cancel();
@@ -77,12 +83,22 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public TimerTask getNewCloseTask() {
 		mCloseTask = new CloseTimerTask(this);
 
 		return mCloseTask;
 	}
 
+	/**
+	 *
+	 * @param aEngine
+	 * @param aServlet
+	 * @param aEvent
+	 */
 	public CometConnector(WebSocketEngine aEngine, CometServlet aServlet, CometEvent aEvent) {
 		super(aEngine);
 
@@ -97,30 +113,58 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 		}
 	}
 
+	/**
+	 *
+	 * @param aRequest
+	 */
 	public void setRequest(HttpServletRequest aRequest) {
 		mRequest = aRequest;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public HttpServletRequest getRequest() {
 		return mRequest;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public CometServlet getServlet() {
 		return mServlet;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getReadyState() {
 		return mReadyState;
 	}
 
+	/**
+	 *
+	 * @param mReadyState
+	 */
 	public void setReadyState(int mReadyState) {
 		this.mReadyState = mReadyState;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public CometEvent getEvent() {
 		return mEvent;
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	public void setEvent(CometEvent aEvent) {
 		this.mEvent = aEvent;
 	}
@@ -223,6 +267,10 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 		return lAvailable;
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	public synchronized void checkPacketQueueByEvent(CometEvent aEvent) {
 		try {
 			if (!mServlet.isPacketQueueEmpty(getId())) {
@@ -240,6 +288,9 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 		}
 	}
 
+	/**
+	 *
+	 */
 	public synchronized void checkPacketQueue() {
 		if (null != mEvent) {
 			if (!mServlet.isPacketQueueEmpty(getId())) {
