@@ -9,7 +9,7 @@ Ext.define('IS.view.portal.Header' ,{
 	items: [{
 		xtype: 'panel',
 		border: 0,
-		width: 400,
+		width: 600,
 		html: '<h1>jWebSocket ItemStoragePlugIn administration tool</h1>'
 	},{
 		xtype: 'button',
@@ -17,6 +17,22 @@ Ext.define('IS.view.portal.Header' ,{
 		text: 'Logoff',
 		handler: function() {
 			Ext.jws.getConnection().logout();
+		}
+	},{
+		xtype: 'button',
+		id: 'help_button',
+		href: 'http://jwebsocket.org/plugins/itemstorage',
+		text: 'Help'
+	},{
+		xtype: 'button',
+		id: 'about_button',
+		text: 'About',
+		handler: function() {
+			Ext.Msg.show({
+				msg: '<center>jWebSocket ItemStorage Admin GUI v1.0 <br> Copyright (c) 2013 Innotrade GmbH <p>&nbsp<p><a href="http://jwebsocket.org">http://jwebsocket.org</a></center>', 
+				buttons: Ext.Msg.OK, 
+				icon: Ext.Msg.INFO
+			});
 		}
 	}]
 });
