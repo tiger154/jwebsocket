@@ -8,9 +8,14 @@ Ext.define('IS.view.portal.Header' ,{
 	padding: 5,
 	items: [{
 		xtype: 'panel',
+		border:0,
+		minWidth: 150,
+		html: '<img src="resources/images/jwebsocket_logo.png"/> '
+	},{
+		xtype: 'panel',
 		border: 0,
-		width: 600,
-		html: '<h1>jWebSocket ItemStoragePlugIn administration tool</h1>'
+		html: '<h1>ItemStoragePlugIn administration tool</h1> <div class="header_text">The best way to easily synchronize your cross-platform application objects in real-time.</div>',
+		padding: '10 10 0 0'
 	},{
 		xtype: 'button',
 		id: 'logoff_button',

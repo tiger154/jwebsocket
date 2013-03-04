@@ -7,7 +7,6 @@ Ext.define('IS.view.portal.Right' ,{
 	items: [{
 		xtype: 'tabpanel',
 		id: 'workspace',
-		height: 500,
 		activeTab: 0,
 		items: [{
 			id: '$intro',

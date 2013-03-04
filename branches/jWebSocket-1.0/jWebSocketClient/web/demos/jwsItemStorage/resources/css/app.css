@@ -78,5 +78,19 @@
 /* Introduction */
 .intro_text{
 	font-size: smaller;
-	padding: 5;
+	padding-top: 5px;
+	padding-bottom: 10px;
+	padding-right: 10px;
+	line-height:11pt;
+}
+.header_text{
+	font-size: smaller;
+	padding-top: 5px;
+	padding-bottom: 10px;
+}
+.question{
+	font-size: smaller;
+	font-weight: bold;
+	padding-top: 10px;
+	padding-bottom: 5px;
 }
