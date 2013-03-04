@@ -12,7 +12,9 @@ Ext.define('IS.view.portal.Right' ,{
 		items: [{
 			id: '$intro',
 			title: '.: Introduction :.',
-			html: 'Introduction here...'
+			items: [{
+					xtype: 'p_introduction'
+			}]
 		}]
 	}]
 });

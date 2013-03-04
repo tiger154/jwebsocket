@@ -75,7 +75,8 @@
     background-image: url( ../images/key.png ) !important;
 }
 
-/* Header */
-#header_operations{
-	font-size: smaller
+/* Introduction */
+.intro_text{
+	font-size: smaller;
+	padding: 5;
 }

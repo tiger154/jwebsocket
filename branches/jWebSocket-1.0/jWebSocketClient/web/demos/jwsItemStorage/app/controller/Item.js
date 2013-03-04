@@ -87,7 +87,7 @@ Ext.define('IS.controller.Item', {
 					var lView = aButton.up('window');
 					
 					self.application.itemSearchs[lView.collectionName] = null;
-					lView.link.findParentByType('tabpanel').down('pagingtoolbar').moveFirst();
+					self.getWorkspace().getActiveTab().down('pagingtoolbar').moveFirst();
 					lView.close();
 				}
 			},
