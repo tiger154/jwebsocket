@@ -57,10 +57,10 @@ public class TwitterPlugIn extends TokenPlugIn {
 	private static final String NS_TWITTER = JWebSocketServerConstants.NS_BASE + ".plugins.twitter";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
-	private final static String LABEL = "jWebSocket FileSystemPlugIn";
+	private final static String LABEL = "jWebSocket TwitterPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
-	private final static String DESCRIPTION = "jWebSocket FileSystemPlugIn - Community Edition";
+	private final static String DESCRIPTION = "jWebSocket TwitterPlugIn - Community Edition";
 	private static final String TWITTER_VAR = "$twitter";
 	private static final String OAUTH_REQUEST_TOKEN = "$twUsrReqTok";
 	private static final String OAUTH_VERIFIER = "$twUsrVerifier";
