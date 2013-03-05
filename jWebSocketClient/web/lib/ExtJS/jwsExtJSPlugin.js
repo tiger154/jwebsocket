@@ -82,7 +82,7 @@ Ext.define( 'Ext.jws', {
 		var lScope  = aScope;
 		var lToken  = {};
 		if ( aArgs ) {
-			lToken = aArgs;
+			lToken = Ext.clone(aArgs);
 		}
 		lToken.ns   = aNS;
 		lToken.type = aType;
@@ -188,7 +188,6 @@ Ext.define( 'Ext.jws.data.Proxy', {
 		}
         
 		var lToken = this.setupDataForRequest( lRequest );
-		
 		this.transform( lToken );
 		
 		Ext.jws.send( lToken.ns, lToken.type, lToken.data, {
@@ -230,7 +229,7 @@ Ext.define( 'Ext.jws.data.Proxy', {
 		lNS   = this.ns,
 		lTokenType   = undefined,
 		lData;
-            
+		
 		var lScope = aOptions;
             
 		if ( Ext.isFunction( lParams ) ) {
@@ -238,7 +237,7 @@ Ext.define( 'Ext.jws.data.Proxy', {
 		}
                 
 		lData = aOptions.rawData || aOptions.xmlData || lJsonData || null;    
-               
+
 		switch ( aOptions.action ) {
 			case 'create':
 				lTokenType = this.api.create;
