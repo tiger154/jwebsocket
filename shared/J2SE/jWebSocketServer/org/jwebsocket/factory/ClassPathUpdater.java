@@ -1,16 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2012 Innotrade GmbH, jWebSocket.org
+//	jWebSocket - ClassPathUpdater (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.factory;
 
@@ -43,10 +47,10 @@ public class ClassPathUpdater {
 	 *
 	 * @param aDir The directory to add to the classpath (or a file, which will
 	 * relegate to its directory).
-	 * @throws IOException 
+	 * @throws IOException
 	 * @throws NoSuchMethodException
 	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException  
+	 * @throws InvocationTargetException
 	 */
 	public static void add(String aDir)
 			throws IOException, NoSuchMethodException, IllegalAccessException,
@@ -62,10 +66,10 @@ public class ClassPathUpdater {
 	 *
 	 * @param aFile The directory (or enclosing directory if a file) to add to
 	 * the classpath.
-	 * @throws IOException 
+	 * @throws IOException
 	 * @throws NoSuchMethodException
 	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException  
+	 * @throws InvocationTargetException
 	 */
 	public static void add(File aFile)
 			throws IOException, NoSuchMethodException, IllegalAccessException,
@@ -75,7 +79,7 @@ public class ClassPathUpdater {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aFile
 	 * @throws IOException
 	 * @throws NoSuchMethodException
@@ -87,17 +91,16 @@ public class ClassPathUpdater {
 			InvocationTargetException {
 		add(aFile.toURI().toURL());
 	}
-	
-	
+
 	/**
 	 * Adds a new path to the classloader. The class must point to a directory,
 	 * not a file.
 	 *
 	 * @param aURL The path to include when searching the classpath.
-	 * @throws IOException 
+	 * @throws IOException
 	 * @throws InvocationTargetException
-	 * @throws NoSuchMethodException 
-	 * @throws IllegalAccessException  
+	 * @throws NoSuchMethodException
+	 * @throws IllegalAccessException
 	 */
 	public static void add(URL aURL)
 			throws IOException, NoSuchMethodException, IllegalAccessException,
@@ -106,9 +109,9 @@ public class ClassPathUpdater {
 		lMethod.setAccessible(true);
 		lMethod.invoke(getClassLoader(), new Object[]{aURL});
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param aURL
 	 * @param aClassLoader
 	 * @throws IOException
@@ -123,21 +126,21 @@ public class ClassPathUpdater {
 		lMethod.setAccessible(true);
 		lMethod.invoke(aClassLoader, new Object[]{aURL});
 	}
-	
+
 	private static URLClassLoader getClassLoader() {
 		return (URLClassLoader) ClassLoader.getSystemClassLoader();
 	}
-/*	
-	static{
-		try{
-			Method lMethod = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
-			lMethod.setAccessible(true);
-			lMethod.invoke((URLClassLoader) ClassLoader.getSystemClassLoader(), new Object[]{new URL("file:C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs")});
-			lMethod.invoke((URLClassLoader) Thread.currentThread().getContextClassLoader(), new Object[]{new URL("file:C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs")});
-		} catch(Exception lEx) {
-			String lMsg = lEx.getMessage();
-			System.out.println(lMsg);
-		}
-	}
-*/	
+	/*	
+	 static{
+	 try{
+	 Method lMethod = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
+	 lMethod.setAccessible(true);
+	 lMethod.invoke((URLClassLoader) ClassLoader.getSystemClassLoader(), new Object[]{new URL("file:C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs")});
+	 lMethod.invoke((URLClassLoader) Thread.currentThread().getContextClassLoader(), new Object[]{new URL("file:C:/svn/jWebSocketDev/rte/jWebSocket-1.0/libs")});
+	 } catch(Exception lEx) {
+	 String lMsg = lEx.getMessage();
+	 System.out.println(lMsg);
+	 }
+	 }
+	 */
 }

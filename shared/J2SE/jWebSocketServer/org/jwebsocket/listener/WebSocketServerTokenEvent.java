@@ -1,16 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2010 Innotrade GmbH
+//	jWebSocket - WebSocketServerTokenEvent (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.listener;
 
@@ -28,7 +32,7 @@ import org.jwebsocket.token.Token;
 public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 
 	/**
-	 * 
+	 *
 	 * @param aConnector
 	 * @param aServer
 	 */
@@ -47,6 +51,7 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 	/**
 	 * Convenience method, just a wrapper for token server method
 	 * <tt>createResponse</tt> to simplify token plug-in code.
+	 *
 	 * @param aInToken
 	 * @return
 	 */
@@ -62,6 +67,7 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 	/**
 	 * Convenience method, just a wrapper for token server method
 	 * <tt>createAccessDenied</tt> to simplify token plug-in code.
+	 *
 	 * @param aInToken
 	 * @return
 	 */
@@ -77,6 +83,7 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 	/**
 	 * Convenience method, just a wrapper for token server method
 	 * <tt>sendToken</tt> to simplify token plug-in code.
+	 *
 	 * @param aSource
 	 * @param aTarget
 	 * @param aToken
@@ -91,23 +98,24 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 	/**
 	 * Convenience method, just a wrapper for token server method
 	 * <tt>sendToken</tt> to simplify token plug-in code.
+	 *
 	 * @param aSource
 	 * @param aTarget
 	 * @param aToken
 	 */
 	/*
-	public void sendToken(WebSocketConnector aTarget, Token aToken) {
-	TokenServer lServer = getServer();
-	if (lServer != null) {
-	lServer.sendToken(aTarget, aToken);
-	}
-	}
+	 public void sendToken(WebSocketConnector aTarget, Token aToken) {
+	 TokenServer lServer = getServer();
+	 if (lServer != null) {
+	 lServer.sendToken(aTarget, aToken);
+	 }
+	 }
 	 */
 	/**
 	 * Convenience method, just a wrapper for token server method
 	 * <tt>sendToken</tt> to simplify token plug-in code.
+	 *
 	 * @param aSource
-	 * @param aTarget
 	 * @param aToken
 	 */
 	public void broadcastToken(WebSocketConnector aSource, Token aToken) {
@@ -117,6 +125,12 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 		}
 	}
 
+	/**
+	 *
+	 * @param aSource
+	 * @param aToken
+	 * @param aBroadcastOptions
+	 */
 	public void broadcastToken(WebSocketConnector aSource, Token aToken,
 			BroadcastOptions aBroadcastOptions) {
 		TokenServer lServer = (TokenServer) getServer();
@@ -128,9 +142,9 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 	/**
 	 * Convenience method, just a wrapper for token server method
 	 * <tt>getUsername</tt> to simplify token plug-in code.
-	 * @param aSource
-	 * @param aTarget
-	 * @param aToken
+	 *
+	 * @param aConnector
+	 * @return
 	 */
 	public String getUsername(WebSocketConnector aConnector) {
 		return ((TokenServer) getServer()).getUsername(aConnector);
@@ -139,9 +153,9 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 	/**
 	 * Convenience method, just a wrapper for token server method
 	 * <tt>setUsername</tt> to simplify token plug-in code.
-	 * @param aSource
-	 * @param aTarget
-	 * @param aToken
+	 *
+	 * @param aConnector
+	 * @param aUsername
 	 */
 	public void setUsername(WebSocketConnector aConnector, String aUsername) {
 		((TokenServer) getServer()).setUsername(aConnector, aUsername);
@@ -150,9 +164,8 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 	/**
 	 * Convenience method, just a wrapper for token server method
 	 * <tt>removeUsername</tt> to simplify token plug-in code.
-	 * @param aSource
-	 * @param aTarget
-	 * @param aToken
+	 *
+	 * @param aConnector
 	 */
 	public void removeUsername(WebSocketConnector aConnector) {
 		((TokenServer) getServer()).removeUsername(aConnector);
@@ -161,9 +174,9 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 	/**
 	 * Convenience method, just a wrapper for token server method
 	 * <tt>getConnector</tt> to simplify token plug-in code.
-	 * @param aSource
-	 * @param aTarget
-	 * @param aToken
+	 *
+	 * @param aId
+	 * @return
 	 */
 	public WebSocketConnector getConnector(String aId) {
 		return ((TokenServer) getServer()).getConnector(aId);
@@ -171,11 +184,10 @@ public class WebSocketServerTokenEvent extends WebSocketServerEvent {
 
 	/**
 	 * Convenience method, just a wrapper for token server method
-	 * <tt>getServer().getAllConnectors().size()</tt> to simplify token
-	 * plug-in code.
-	 * @param aSource
-	 * @param aTarget
-	 * @param aToken
+	 * <tt>getServer().getAllConnectors().size()</tt> to simplify token plug-in
+	 * code.
+	 *
+	 * @return
 	 */
 	public int getConnectorCount() {
 		return ((TokenServer) getServer()).getAllConnectors().size();

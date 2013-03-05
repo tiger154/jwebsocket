@@ -60,7 +60,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 			"<cross-domain-policy>"
 			+ "<allow-access-from domain=\"*\" to-ports=\"*\" />"
 			+ "</cross-domain-policy>";
-	
+
 	/**
 	 *
 	 * @param aConfiguration

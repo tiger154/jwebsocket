@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Demo how to communicate between Servlets and WebSockets
-//	Copyright (c) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH
+//	jWebSocket - ServletBridge (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.appserver;
 
@@ -30,6 +33,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  * demonstrates how to communicate between servlets and web sockets.
+ *
  * @author aschulze
  */
 public class ServletBridge extends HttpServlet {
@@ -60,7 +64,10 @@ public class ServletBridge extends HttpServlet {
 	}
 
 	/**
-	 * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+	 * Processes requests for both HTTP
+	 * <code>GET</code> and
+	 * <code>POST</code> methods.
+	 *
 	 * @param aRequest servlet request
 	 * @param aResponse servlet response
 	 * @throws ServletException if a servlet-specific error occurs
@@ -112,7 +119,9 @@ public class ServletBridge extends HttpServlet {
 
 	// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 	/**
-	 * Handles the HTTP <code>GET</code> method.
+	 * Handles the HTTP
+	 * <code>GET</code> method.
+	 *
 	 * @param request servlet request
 	 * @param response servlet response
 	 * @throws ServletException if a servlet-specific error occurs
@@ -125,7 +134,9 @@ public class ServletBridge extends HttpServlet {
 	}
 
 	/**
-	 * Handles the HTTP <code>POST</code> method.
+	 * Handles the HTTP
+	 * <code>POST</code> method.
+	 *
 	 * @param request servlet request
 	 * @param response servlet response
 	 * @throws ServletException if a servlet-specific error occurs
@@ -139,6 +150,7 @@ public class ServletBridge extends HttpServlet {
 
 	/**
 	 * Returns a short description of the servlet.
+	 *
 	 * @return a String containing servlet description
 	 */
 	@Override

@@ -1,16 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2011 jwebsocket.org
+//	jWebSocket - BaseReconnectionManager (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.session;
 
@@ -33,18 +37,34 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 	private IStorageProvider mStorageProvider;
 	private ICacheStorageProvider mCacheStorageProvider;
 
+	/**
+	 *
+	 * @return
+	 */
 	public ICacheStorageProvider getCacheStorageProvider() {
 		return mCacheStorageProvider;
 	}
 
+	/**
+	 *
+	 * @param aCacheStorageProvider
+	 */
 	public void setCacheStorageProvider(ICacheStorageProvider aCacheStorageProvider) {
 		this.mCacheStorageProvider = aCacheStorageProvider;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getCacheStorageName() {
 		return mCacheStorageName;
 	}
 
+	/**
+	 *
+	 * @param aCacheStorageName
+	 */
 	public void setCacheStorageName(String aCacheStorageName) {
 		this.mCacheStorageName = aCacheStorageName;
 	}
@@ -54,6 +74,10 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 		return mReconnectionIndex;
 	}
 
+	/**
+	 *
+	 * @param aReconnectionIndex
+	 */
 	public void setReconnectionIndex(IBasicCacheStorage<String, Object> aReconnectionIndex) {
 		this.mReconnectionIndex = aReconnectionIndex;
 	}
@@ -63,6 +87,10 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 		return mSessionExpirationTime;
 	}
 
+	/**
+	 *
+	 * @param aSessionExpirationTime
+	 */
 	public void setSessionExpirationTime(Integer aSessionExpirationTime) {
 		Assert.isTrue(aSessionExpirationTime > 0, "Expecting 'sessionExpirationTime' argument value > 0!");
 		this.mSessionExpirationTime = aSessionExpirationTime;
@@ -73,14 +101,26 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 		return mSessionIdsTrash;
 	}
 
+	/**
+	 *
+	 * @param aSessionIdsTrash
+	 */
 	public void setSessionIdsTrash(IBasicStorage<String, Object> aSessionIdsTrash) {
 		this.mSessionIdsTrash = aSessionIdsTrash;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getTrashStorageName() {
 		return mTrashStorageName;
 	}
 
+	/**
+	 *
+	 * @param aTrashStorageName
+	 */
 	public void setTrashStorageName(String aTrashStorageName) {
 		this.mTrashStorageName = aTrashStorageName;
 	}
@@ -98,6 +138,10 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 		return mStorageProvider;
 	}
 
+	/**
+	 *
+	 * @param mStorageProvider
+	 */
 	public void setStorageProvider(IStorageProvider mStorageProvider) {
 		this.mStorageProvider = mStorageProvider;
 	}

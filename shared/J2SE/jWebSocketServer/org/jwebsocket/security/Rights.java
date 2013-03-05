@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Right Class
-//	Copyright (c) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH
+//	jWebSocket - Rights (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.security;
 
@@ -23,6 +26,7 @@ import javolution.util.FastMap;
 
 /**
  * implements a FastMap of rights to act as a role.
+ *
  * @author aschulze
  */
 public class Rights {
@@ -30,9 +34,10 @@ public class Rights {
 	private Map<String, Right> mRights = new FastMap<String, Right>();
 
 	/**
-	 * adds a new right to the FastMap of rights. If there is already a right with
-	 * the given stored in the FastMap it will be overwritten. If null is passed or
-	 * if the right has no valid key no operation is performed.
+	 * adds a new right to the FastMap of rights. If there is already a right
+	 * with the given stored in the FastMap it will be overwritten. If null is
+	 * passed or if the right has no valid key no operation is performed.
+	 *
 	 * @param aRight
 	 */
 	public void addRight(Right aRight) {
@@ -44,6 +49,7 @@ public class Rights {
 	/**
 	 * returns a right identified by its key or <tt>null</tt> if the right
 	 * cannot be found in the FastMap or the key passed is <tt>null</tt>.
+	 *
 	 * @param aKey
 	 * @return
 	 */
@@ -58,6 +64,7 @@ public class Rights {
 	 * removes a certain right identified by its key from the FastMap of rights.
 	 * If the key is <tt>null</tt> or right could not be found in the FastMap no
 	 * operation is performed.
+	 *
 	 * @param aKey
 	 */
 	public void removeRight(String aKey) {
@@ -67,8 +74,9 @@ public class Rights {
 	}
 
 	/**
-	 * removes a certain right from the FastMap of rights.
-	 * If the right could not be found in the FastMap no operation is performed.
+	 * removes a certain right from the FastMap of rights. If the right could
+	 * not be found in the FastMap no operation is performed.
+	 *
 	 * @param aRight
 	 */
 	public void removeRight(Right aRight) {
@@ -80,6 +88,7 @@ public class Rights {
 	/**
 	 * checks if the FastMap of rights contains a certain right. The key of the
 	 * right passed must not be null.
+	 *
 	 * @param aRight
 	 * @return
 	 */
@@ -92,8 +101,9 @@ public class Rights {
 	}
 
 	/**
-	 * checks if the FastMap of rights contains a certain right identified by its
-	 * key. The key must not be null.
+	 * checks if the FastMap of rights contains a certain right identified by
+	 * its key. The key must not be null.
+	 *
 	 * @param aKey
 	 * @return
 	 */
@@ -107,6 +117,7 @@ public class Rights {
 
 	/**
 	 * returns an unmodifiable collection of rights.
+	 *
 	 * @return
 	 */
 	public Collection<Right> getRights() {
@@ -115,6 +126,7 @@ public class Rights {
 
 	/**
 	 * returns an unmodifiable set of the ids of all rights.
+	 *
 	 * @return
 	 */
 	public Set<String> getRightIdSet() {

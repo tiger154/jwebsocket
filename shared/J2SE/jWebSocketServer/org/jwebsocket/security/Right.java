@@ -1,22 +1,26 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Right Class
-//	Copyright (c) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH
+//	jWebSocket - Right (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.security;
 
 /**
  * implements a right as part of a FastMap of rights for a certain role.
+ *
  * @author aschulze
  */
 public class Right {
@@ -26,6 +30,8 @@ public class Right {
 
 	/**
 	 * creates a new default right with a name space, an id and a description.
+	 *
+	 * @param aNS
 	 * @param aId
 	 * @param aDescription
 	 */
@@ -36,6 +42,7 @@ public class Right {
 
 	/**
 	 * creates a new default right with a id and a description.
+	 *
 	 * @param aId
 	 * @param aDescription
 	 */
@@ -43,11 +50,12 @@ public class Right {
 		mId = aId;
 		mDescription = aDescription;
 	}
+
 	/**
 	 * returns the id of the right. The key is the unique identifier of the
-	 * right and should contain the entire name space 
-	 * e.g. <tt>org.jwebsocket.plugins.chat.broadcast</tt>.
-	 * The key is case-sensitve.
+	 * right and should contain the entire name space e.g.
+	 * <tt>org.jwebsocket.plugins.chat.broadcast</tt>. The key is case-sensitve.
+	 *
 	 * @return
 	 */
 	public String getId() {
@@ -56,9 +64,9 @@ public class Right {
 
 	/**
 	 * specifies the id of the right. The key is the unique identifier of the
-	 * right and should contain the entire name space
-	 * e.g. <tt>org.jwebsocket.plugins.chat.broadcast</tt>.
-	 * The key is case-sensitve.
+	 * right and should contain the entire name space e.g.
+	 * <tt>org.jwebsocket.plugins.chat.broadcast</tt>. The key is case-sensitve.
+	 *
 	 * @param aId
 	 */
 	public void setId(String aId) {
@@ -67,6 +75,7 @@ public class Right {
 
 	/**
 	 * returns the description of the right.
+	 *
 	 * @return
 	 */
 	public String getDescription() {
@@ -75,10 +84,10 @@ public class Right {
 
 	/**
 	 * specifies the description of the right.
+	 *
 	 * @param description
 	 */
 	public void setDescription(String description) {
 		this.mDescription = description;
 	}
-
 }

@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - TimeoutOutputStreamNIOWriter
-//	Copyright (c) 2011 Alexander Schulze, Innotrade GmbH
+//	jWebSocket - TimeoutOutputStreamNIOWriter (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp;
 
@@ -58,12 +61,16 @@ public class TimeoutOutputStreamNIOWriter {
 	private InputStream mIn = null;
 	private WebSocketConnector mConnector = null;
 
+	/**
+	 *
+	 * @param aNumWorkers
+	 * @param aTimeout
+	 */
 	public static void start(int aNumWorkers, int aTimeout) {
 		if (null == mTimer) {
 			mTimer = new Timer("jWebSocket TCP-Engine SendScheduler");
 			Tools.getTimer().schedule(new PurgeCancelledWriterTasks(mTimer), 0, 2000);
 			mPool = Executors.newFixedThreadPool(aNumWorkers, new ThreadFactory() {
-
 				@Override
 				public Thread newThread(Runnable aRunnable) {
 					return new Thread(aRunnable, "jWebSocket TCP-Engine NIO writer");
@@ -73,6 +80,9 @@ public class TimeoutOutputStreamNIOWriter {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public static void stop() {
 		if (null != mTimer) {
 			mPool.shutdownNow();
@@ -84,7 +94,7 @@ public class TimeoutOutputStreamNIOWriter {
 	/**
 	 *
 	 * @param aConnector
-	 * @param aTimeout
+	 * @param aIn
 	 * @param aOut
 	 */
 	public TimeoutOutputStreamNIOWriter(WebSocketConnector aConnector,
@@ -102,10 +112,18 @@ public class TimeoutOutputStreamNIOWriter {
 		return mPool;
 	}
 
+	/**
+	 *
+	 * @param aTimeout
+	 */
 	public static void setTimeout(int aTimeout) {
 		mTimeout = aTimeout;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static int getTimeout() {
 		return mTimeout;
 	}
