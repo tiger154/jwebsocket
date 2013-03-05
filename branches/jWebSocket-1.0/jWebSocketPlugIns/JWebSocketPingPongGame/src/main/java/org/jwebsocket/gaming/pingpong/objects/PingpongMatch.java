@@ -1,7 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket - PingpongMatch (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.gaming.pingpong.objects;
 
 import org.jwebsocket.gaming.pingpong.listeners.BallListener;
@@ -40,6 +54,13 @@ public class PingpongMatch extends Match implements Runnable {
 	private BallListener mBallListener;
 	private List<Class<? extends Event>> mEventsB, mEventsP;
 
+	/**
+	 *
+	 * @param aUserPlugIn
+	 * @param aPingpongStage
+	 * @param aPingpongPlayer1
+	 * @param aPingpongPlayer2
+	 */
 	public PingpongMatch(PingPongPlugIn aUserPlugIn, PingpongStage aPingpongStage,
 			PingpongPlayer aPingpongPlayer1, PingpongPlayer aPingpongPlayer2) {
 		this.mPingpongPlayerList = new ArrayList<PingpongPlayer>(2);
@@ -83,26 +104,47 @@ public class PingpongMatch extends Match implements Runnable {
 	}
 
 	// Se devuelve la lista de los jugadores
+	/**
+	 *
+	 * @return
+	 */
 	public List<PingpongPlayer> getPingpongPlayerList() {
 		return mPingpongPlayerList;
 	}
 
 	// Se devuelve el largo de la lista
+	/**
+	 *
+	 * @return
+	 */
 	public int getsize() {
 		return this.mPingpongPlayerList.size();
 	}
 
 	// Eliminar jugador
+	/**
+	 *
+	 */
 	public void delete() {
 		this.mPingpongPlayerList.clear();
 	}
 
 	//Se devuelve un jugador por su posicion
+	/**
+	 *
+	 * @param aPos
+	 * @return
+	 */
 	public PingpongPlayer getPingpongPlayer(int aPos) {
 		return this.mPingpongPlayerList.get(aPos);
 	}
 
 	// Se davuelve un jugardor dado su nombre
+	/**
+	 *
+	 * @param aUserName
+	 * @return
+	 */
 	public PingpongPlayer getPingpongPlayer(String aUserName) {
 		for (PingpongPlayer p : mPingpongPlayerList) {
 			if (p.getPlayerName().equals(aUserName)) {
@@ -113,6 +155,10 @@ public class PingpongMatch extends Match implements Runnable {
 	}
 
 	// Se devuelve la pelota
+	/**
+	 *
+	 * @return
+	 */
 	public PingpongBall getBall() {
 		return this.mBall;
 	}
@@ -207,6 +253,9 @@ public class PingpongMatch extends Match implements Runnable {
 	}
 
 	//Comenzar partida
+	/**
+	 *
+	 */
 	public void NewGame() {
 		mPingpongPlayerList.get(0).setPlayerScore(0);
 		mPingpongPlayerList.get(1).setPlayerScore(0);
@@ -231,6 +280,9 @@ public class PingpongMatch extends Match implements Runnable {
 	}
 
 	// inicializo la ball
+	/**
+	 *
+	 */
 	public void initBall() {
 		mGameOver = false;
 		mBall.setMoveBallX(mBall.getSpeedBall() * mActServ);
@@ -250,6 +302,10 @@ public class PingpongMatch extends Match implements Runnable {
 	}
 
 	//
+	/**
+	 *
+	 * @param aPingpongPlayer
+	 */
 	public void hitBall(PingpongPlayer aPingpongPlayer) {
 		int lTopBall = mBall.getPosition().getY();
 		int lCenterBall = Math.round(lTopBall + mBall.getDimension().getHeight() / 2);
@@ -289,6 +345,9 @@ public class PingpongMatch extends Match implements Runnable {
 	}
 
 	//Pause
+	/**
+	 *
+	 */
 	public void pause() {
 		if (mStop) {
 			mStop = false;
@@ -300,15 +359,28 @@ public class PingpongMatch extends Match implements Runnable {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public boolean stop() {
 		return mStop;
 	}
 
+	/**
+	 *
+	 */
 	public void destroy() {
 		mThread.stop();
 	}
 
 	// mando a moverce los  player
+	/**
+	 *
+	 * @param aEvent
+	 * @param aUsername
+	 * @param aValue
+	 */
 	public void movePlayer(int aEvent, String aUsername, String aValue) {
 		try {
 			PingpongPlayer lPingpongPlayer = getPingpongPlayer(aUsername);

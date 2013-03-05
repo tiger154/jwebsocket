@@ -1,7 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket PingPong Plug-in (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.gaming.pingpong.plugin;
 
 import com.mongodb.DBCollection;
@@ -19,6 +33,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -34,11 +49,21 @@ import org.jwebsocket.util.Tools;
 public class PingPongPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger(PingPongPlugIn.class);
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket FileSystemPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket FileSystemPlugIn - Community Edition";
 	private PingpongGame mPingpongGame;
 	private UserServiceImpl mUserServiceImpl;
 	private boolean mDatabaseError;
 	private String mDatabaseErrorMessage;
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public PingPongPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		setNamespace(aConfiguration.getNamespace());
@@ -72,6 +97,36 @@ public class PingPongPlugIn extends TokenPlugIn {
 				mDatabaseErrorMessage = "There was an error during the connection: " + ex.getMessage();
 			}
 		}
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
 	}
 
 	@Override
@@ -166,6 +221,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	// cuando se elimina una partida 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processEndGame(WebSocketConnector aConnector, Token aToken) {
 
 		PingpongMatch lPingpongMatch = mPingpongGame.getMatch(
@@ -190,6 +250,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	//inicialiso mi exenario
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processInitStage(WebSocketConnector aConnector, Token aToken) {
 
 		int lWidth = mPingpongGame.getPingpongStage().getStageWidth();
@@ -206,6 +271,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	//Crear usser
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processCreateAccount(WebSocketConnector aConnector, Token aToken) {
 
 		User lUser = new User(aToken.getString("username"),
@@ -236,6 +306,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	//Registrar usuario
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processUsser(WebSocketConnector aConnector, Token aToken) {
 
 		boolean lPwdCorrect = mUserServiceImpl.isPwdCorrect(
@@ -273,6 +348,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	// envio solicitud de juego
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processSendRequest(WebSocketConnector aConnector, Token aToken) {
 
 		WebSocketConnector lConnector = connectorUser(aToken.getString("username"));
@@ -287,6 +367,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	//creo la partida com mis jugadores
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processSubmitRequest(WebSocketConnector aConnector, Token aToken) {
 
 		boolean lAccepted = aToken.getBoolean("accepted");
@@ -327,6 +412,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	// Mando a mover los player
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processMovePlayer(WebSocketConnector aConnector, Token aToken) {
 		if (aConnector.getBoolean("state")) {
 			String lUserName = aConnector.getString("username");
@@ -337,6 +427,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	//Aqui le envio el msj de que va a comenzar la partida
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processSendNewGame(WebSocketConnector aConnector, Token aToken) {
 
 		PingpongMatch lPingpongMatch = mPingpongGame.getMatch(
@@ -356,6 +451,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	//Comenzar la partida
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processNewGame(WebSocketConnector aConnector, Token aToken) {
 
 		if (aToken.getBoolean("newgame")) {
@@ -368,6 +468,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	// Pause o Comtinuo
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processPause(WebSocketConnector aConnector, Token aToken) {
 
 		PingpongMatch lPingpongMatch = mPingpongGame.getMatch(
@@ -397,6 +502,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	//Desconectar al user
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processLogoff(WebSocketConnector aConnector, Token aToken) {
 
 		if (mPingpongGame.getMatch(aConnector.getString("username")) != null) {
@@ -433,6 +543,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processSms(WebSocketConnector aConnector, Token aToken) {
 
 		PingpongMatch lPingpongMatch = mPingpongGame.getMatch(
@@ -452,6 +567,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 				lPingpongMatch.getPingpongPlayer(1).getPlayerName()), lMessage);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processSound(WebSocketConnector aConnector, Token aToken) {
 
 		if (aConnector.getBoolean("sound")) {
@@ -498,6 +618,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	// Aqui mando a actualizar los player pasandole los nombre los jugadores
+	/**
+	 *
+	 * @param aPingpongMatch
+	 * @param aJoystick
+	 */
 	public void playerUpdate(PingpongMatch aPingpongMatch, String aJoystick) {
 		try {
 			Token lMessage = TokenFactory.createToken(getNamespace(), "submitrequest");
@@ -566,6 +691,10 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	// Mando actualizar los puntos de una partida dado un user (score)
+	/**
+	 *
+	 * @param aPingpongMatch
+	 */
 	public void scoreUpdate(PingpongMatch aPingpongMatch) {
 		try {
 			Token lMessage = TokenFactory.createToken(getNamespace(), "score");
@@ -627,6 +756,10 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	//Aqui es donde le doy la posicion a mi pelota
+	/**
+	 *
+	 * @param aPingpongMatch
+	 */
 	public void moveBall(PingpongMatch aPingpongMatch) {
 		try {
 			Token lMessage = TokenFactory.createToken(getNamespace(), "moveball");
@@ -648,6 +781,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	//Aqui activo y desctivo el Game Over
+	/**
+	 *
+	 * @param aPingpongMatch
+	 * @param aBool
+	 */
 	public void gameOver(PingpongMatch aPingpongMatch, boolean aBool) {
 		try {
 			Token lMessage = TokenFactory.createToken(getNamespace(), "gameover");
@@ -677,6 +815,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	// Muestro en el cliente el contador 3-2-1
+	/**
+	 *
+	 * @param aPingpongMatch
+	 * @param aCount
+	 */
 	public void initCounter(PingpongMatch aPingpongMatch, int aCount) {
 		try {
 			Token lMessage = TokenFactory.createToken(getNamespace(), "counter");
@@ -697,6 +840,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	//activar el sonido 
+	/**
+	 *
+	 * @param aPingpongMatch
+	 * @param aSound
+	 */
 	public void sound(PingpongMatch aPingpongMatch, int aSound) {
 		try {
 			Token lMessage = TokenFactory.createToken(getNamespace(), "sound");
@@ -721,6 +869,10 @@ public class PingPongPlugIn extends TokenPlugIn {
 	}
 
 	/*------------------------------------mongoDB-------------------------------*/
+	/**
+	 *
+	 * @param aPingpongMatch
+	 */
 	public void updateValueDB(PingpongMatch aPingpongMatch) {
 		try {
 			for (PingpongPlayer lPlayer : aPingpongMatch.getPingpongPlayerList()) {
