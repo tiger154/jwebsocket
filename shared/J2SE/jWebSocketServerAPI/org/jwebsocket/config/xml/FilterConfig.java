@@ -1,17 +1,21 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - Copyright (c) 2010 jwebsocket.org
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+// jWebSocket - FilterConfig (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
 import java.util.Collections;
@@ -24,9 +28,10 @@ import org.jwebsocket.kit.WebSocketRuntimeException;
 
 /**
  * Class that represents the filter config
+ *
  * @author puran
  * @version $Id: FilterConfig.java 596 2010-06-22 17:09:54Z fivefeetfurther $
- * 
+ *
  */
 public final class FilterConfig implements Config, FilterConfiguration {
 
@@ -41,11 +46,15 @@ public final class FilterConfig implements Config, FilterConfiguration {
 
 	/**
 	 * default constructor
-	 * @param id the plugin id
-	 * @param name the plugin name
-	 * @param jar the plugin jar
-	 * @param namespace the namespace 
-	 * @param settings map of settings key and value
+	 *
+	 * @param aId
+	 * @param aPackageName
+	 * @param aName
+	 * @param aJar
+	 * @param aServers
+	 * @param aNamespace
+	 * @param aSettings
+	 * @param aEnabled
 	 */
 	public FilterConfig(String aId, String aName, String aPackageName, String aJar, String aNamespace,
 			List<String> aServers, Map<String, String> aSettings, boolean aEnabled) {
@@ -77,7 +86,7 @@ public final class FilterConfig implements Config, FilterConfiguration {
 	}
 
 	/**
-	 * @return the package 
+	 * @return the package
 	 */
 	public String getPackage() {
 		return mPackageName;
@@ -104,7 +113,7 @@ public final class FilterConfig implements Config, FilterConfiguration {
 	 */
 	@Override
 	public List<String> getServers() {
-		return (null == mServers)? null : Collections.unmodifiableList(mServers);
+		return (null == mServers) ? null : Collections.unmodifiableList(mServers);
 	}
 
 	/**
@@ -112,7 +121,7 @@ public final class FilterConfig implements Config, FilterConfiguration {
 	 */
 	@Override
 	public Map<String, String> getSettings() {
-		return (null == mSettings)? null : Collections.unmodifiableMap(mSettings);
+		return (null == mSettings) ? null : Collections.unmodifiableMap(mSettings);
 	}
 
 	/**
@@ -130,6 +139,10 @@ public final class FilterConfig implements Config, FilterConfiguration {
 				"Missing one of the filter configuration, please check your configuration file");
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String getPackageName() {
 		return mPackageName;

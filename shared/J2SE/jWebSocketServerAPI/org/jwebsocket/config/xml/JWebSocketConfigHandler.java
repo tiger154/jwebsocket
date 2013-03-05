@@ -1,16 +1,20 @@
+// ---------------------------------------------------------------------------
+// jWebSocket - JWebSocketConfigHandler (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2010 jwebsocket.org
-//	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
@@ -38,11 +42,11 @@ import org.jwebsocket.kit.WebSocketRuntimeException;
  * Handler class that handles the <tt>jWebSocket.xml</tt> configuration. This
  * class starts from the root and delegates the handler to specific config
  * handler, to read the whole config file.
- * 
+ *
  * @author puran
  * @author Marcos Antonio González Huerta (markos0886, UCI)
  * @version $Id: JWebSocketConfigHandler.java 596 2010-06-22 17:09:54Z
- *          fivefeetfurther $
+ * fivefeetfurther $
  */
 @SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class JWebSocketConfigHandler implements ConfigHandler {
@@ -60,9 +64,21 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	private static final String ELEMENT_ENGINE = "engine";
 	private static final String ELEMENT_SERVERS = "servers";
 	private static final String ELEMENT_SERVER = "server";
+	/**
+	 *
+	 */
 	protected static final String ELEMENT_PLUGINS = "plugins";
+	/**
+	 *
+	 */
 	protected static final String ELEMENT_PLUGIN = "plugin";
+	/**
+	 *
+	 */
 	protected static final String ELEMENT_FILTERS = "filters";
+	/**
+	 *
+	 */
 	protected static final String ELEMENT_FILTER = "filter";
 	private static final String ELEMENT_LOGGING = "logging";
 	private static final String ELEMENT_LOG4J = "log4j";
@@ -72,6 +88,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	private static final String ELEMENT_ROLE = "role";
 	private static final String ELEMENT_USERS = "users";
 	private static final String ELEMENT_USER = "user";
+	/**
+	 *
+	 */
 	protected static final String JWEBSOCKET = "jWebSocket";
 	private static final String ELEMENT_THREAD_POOL = "threadPool";
 	private static Map<String, ConfigHandler> handlerContext = new FastMap<String, ConfigHandler>();
@@ -93,6 +112,8 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aStreamReader
 	 */
 	@Override
 	public Config processConfig(XMLStreamReader aStreamReader) {
@@ -169,11 +190,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	/**
 	 * private method to handle the user config.
 	 *
-	 * @param aStreamReader
-	 *          the stream reader object
+	 * @param aStreamReader the stream reader object
 	 * @return the list of user config
-	 * @throws XMLStreamException
-	 *           if there's any exception reading configuration
+	 * @throws XMLStreamException if there's any exception reading configuration
 	 */
 	private List<UserConfig> handleUsers(XMLStreamReader aStreamReader)
 			throws XMLStreamException {
@@ -201,11 +220,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	/**
 	 * method that reads the roles configuration
 	 *
-	 * @param aStreamReader
-	 *          the stream reader object
+	 * @param aStreamReader the stream reader object
 	 * @return the list of roles config
-	 * @throws XMLStreamException
-	 *           if there's any exception reading configuration
+	 * @throws XMLStreamException if there's any exception reading configuration
 	 */
 	private List<RoleConfig> handleRoles(XMLStreamReader aStreamReader) throws XMLStreamException {
 		List<RoleConfig> lRoles = new FastList<RoleConfig>();
@@ -232,11 +249,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	/**
 	 * private method to read the list of rights configuration
 	 *
-	 * @param aStreamReader
-	 *          the stream reader object
+	 * @param aStreamReader the stream reader object
 	 * @return the list of rights configuration
-	 * @throws XMLStreamException
-	 *           if there's any exception reading configuration
+	 * @throws XMLStreamException if there's any exception reading configuration
 	 */
 	private List<RightConfig> handleRights(XMLStreamReader aStreamReader) throws XMLStreamException {
 		List<RightConfig> lRights = new FastList<RightConfig>();
@@ -263,11 +278,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	/**
 	 * private method that reads the config for plugins
 	 *
-	 * @param aStreamReader
-	 *          the stream reader object
+	 * @param aStreamReader the stream reader object
 	 * @return the list of plugin configs
-	 * @throws XMLStreamException
-	 *           if exception occurs while reading
+	 * @throws XMLStreamException if exception occurs while reading
 	 */
 	protected List<PluginConfig> handlePlugins(XMLStreamReader aStreamReader) throws XMLStreamException {
 		List<PluginConfig> lPlugins = new FastList<PluginConfig>();
@@ -294,11 +307,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	/**
 	 * private method that reads the config for filters
 	 *
-	 * @param aStreamReader
-	 *          the stream reader object
+	 * @param aStreamReader the stream reader object
 	 * @return the list of filter configs
-	 * @throws XMLStreamException
-	 *           if exception occurs while reading
+	 * @throws XMLStreamException if exception occurs while reading
 	 */
 	protected List<FilterConfig> handleFilters(XMLStreamReader aStreamReader) throws XMLStreamException {
 		List<FilterConfig> lFilters = new FastList<FilterConfig>();
@@ -325,11 +336,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	/**
 	 * private method that reads the config for logging
 	 *
-	 * @param aStreamReader
-	 *          the stream reader object
+	 * @param aStreamReader the stream reader object
 	 * @return the list of logging configs
-	 * @throws XMLStreamException
-	 *           if exception occurs while reading
+	 * @throws XMLStreamException if exception occurs while reading
 	 */
 	private List<LoggingConfig> handleLoggingConfigs(XMLStreamReader aStreamReader) throws XMLStreamException {
 		List<LoggingConfig> loggingConfigs = new FastList<LoggingConfig>();
@@ -356,11 +365,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	/**
 	 * private method that reads the list of server configs
 	 *
-	 * @param aStreamReader
-	 *          the stream reader object
+	 * @param aStreamReader the stream reader object
 	 * @return the list of server configs
-	 * @throws XMLStreamException
-	 *           if exception occurs reading xml
+	 * @throws XMLStreamException if exception occurs reading xml
 	 */
 	private List<ServerConfig> handleServers(XMLStreamReader aStreamReader) throws XMLStreamException {
 		List<ServerConfig> lServers = new FastList<ServerConfig>();
@@ -386,11 +393,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	/**
 	 * private method that reads the list of engines config from the xml file
 	 *
-	 * @param aStreamReader
-	 *          the stream reader object
+	 * @param aStreamReader the stream reader object
 	 * @return the list of engine configs
-	 * @throws XMLStreamException
-	 *           if exception occurs while reading
+	 * @throws XMLStreamException if exception occurs while reading
 	 */
 	private List<LibraryConfig> handleLibraries(XMLStreamReader aStreamReader) throws XMLStreamException {
 		List<LibraryConfig> lLibraries = new FastList<LibraryConfig>();
@@ -417,11 +422,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	/**
 	 * private method that reads the list of engines config from the xml file
 	 *
-	 * @param aStreamReader
-	 *          the stream reader object
+	 * @param aStreamReader the stream reader object
 	 * @return the list of engine configs
-	 * @throws XMLStreamException
-	 *           if exception occurs while reading
+	 * @throws XMLStreamException if exception occurs while reading
 	 */
 	private List<EngineConfig> handleEngines(XMLStreamReader aStreamReader) throws XMLStreamException {
 		List<EngineConfig> lEngines = new FastList<EngineConfig>();
@@ -445,18 +448,36 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		return lEngines;
 	}
 
+	/**
+	 *
+	 * @param aPath
+	 * @return
+	 * @throws Exception
+	 */
 	protected Document getDocument(String aPath) throws Exception {
 		SAXBuilder lBuilder = new SAXBuilder();
 		File lFile = new File(aPath);
 		return (Document) lBuilder.build(lFile);
 	}
 
+	/**
+	 *
+	 * @param aDoc
+	 * @param aPath
+	 * @throws IOException
+	 */
 	protected void saveChange(Document aDoc, String aPath) throws IOException {
 		XMLOutputter lXmlOutput = new XMLOutputter();
 		lXmlOutput.setFormat(Format.getPrettyFormat());
 		lXmlOutput.output(aDoc, new FileWriter(aPath));
 	}
 
+	/**
+	 *
+	 * @param aId
+	 * @param aEnabled
+	 * @throws Exception
+	 */
 	public void setEnabledPlugIn(String aId, Boolean aEnabled) throws Exception {
 		Document lDoc = getDocument(JWebSocketConfig.getConfigPath());
 		Element lRootNode = lDoc.getRootElement();
@@ -476,6 +497,12 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		saveChange(lDoc, JWebSocketConfig.getConfigPath());
 	}
 
+	/**
+	 *
+	 * @param aId
+	 * @param aEnabled
+	 * @throws Exception
+	 */
 	public void setEnabledFilter(String aId, Boolean aEnabled) throws Exception {
 		Document lDoc = getDocument(JWebSocketConfig.getConfigPath());
 		Element lRootNode = lDoc.getRootElement();
@@ -495,6 +522,11 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		saveChange(lDoc, JWebSocketConfig.getConfigPath());
 	}
 
+	/**
+	 *
+	 * @param aId
+	 * @throws Exception
+	 */
 	public void addPlugInConfig(String aId) throws Exception {
 		Document lDoc = getDocument(JWebSocketConfig.getConfigPath());
 		Document lDocAdmin = getDocument(JWebSocketConfig.getConfigFolder(JWS_MGMT_DESK_PATH));
@@ -508,7 +540,7 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 
 		for (int i = 0; i < lPluginsList.size(); i++) {
 			if (aId.equals(lPluginsList.get(i).getChildText("id"))) {
-				lPlugins.addContent((Element)lPluginsList.get(i).clone());
+				lPlugins.addContent((Element) lPluginsList.get(i).clone());
 				lPluginsList.remove(i);
 				break;
 			}
@@ -518,6 +550,11 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		saveChange(lDocAdmin, JWebSocketConfig.getConfigFolder(JWS_MGMT_DESK_PATH));
 	}
 
+	/**
+	 *
+	 * @param aId
+	 * @throws Exception
+	 */
 	public void addFilterConfig(String aId) throws Exception {
 		Document lDoc = getDocument(JWebSocketConfig.getConfigPath());
 		Document lDocAdmin = getDocument(JWebSocketConfig.getConfigFolder(JWS_MGMT_DESK_PATH));
@@ -531,7 +568,7 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 
 		for (int i = 0; i < lFiltersList.size(); i++) {
 			if (aId.equals(lFiltersList.get(i).getChildText("id"))) {
-				lFilters.addContent((Element)lFiltersList.get(i).clone());
+				lFilters.addContent((Element) lFiltersList.get(i).clone());
 				lFiltersList.remove(i);
 				break;
 			}
@@ -541,6 +578,11 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		saveChange(lDocAdmin, JWebSocketConfig.getConfigFolder(JWS_MGMT_DESK_PATH));
 	}
 
+	/**
+	 *
+	 * @param aId
+	 * @throws Exception
+	 */
 	public void removePlugInConfig(String aId) throws Exception {
 		Document lDoc = getDocument(JWebSocketConfig.getConfigPath());
 		Document lDocAdmin = getDocument(JWebSocketConfig.getConfigFolder(JWS_MGMT_DESK_PATH));
@@ -552,7 +594,7 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		Element lRootNodeAdmin = lDocAdmin.getRootElement();
 		Element lPluginsAdmin = lRootNodeAdmin.getChild(ELEMENT_PLUGINS);
 		List<Element> lPluginsAdminList = lPluginsAdmin.getChildren(ELEMENT_PLUGIN);
-		
+
 		Boolean lExist = false;
 		for (int i = 0; i < lPluginsAdminList.size(); i++) {
 			if (aId.equals(lPluginsAdminList.get(i).getChildText("id"))) {
@@ -563,8 +605,8 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 
 		for (int i = 0; i < lPluginsList.size(); i++) {
 			if (aId.equals(lPluginsList.get(i).getChildText("id"))) {
-				if(false == lExist) {
-					lPluginsAdmin.addContent((Element)lPluginsList.get(i).clone());
+				if (false == lExist) {
+					lPluginsAdmin.addContent((Element) lPluginsList.get(i).clone());
 				}
 				lPluginsList.remove(i);
 				break;
@@ -575,6 +617,11 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		saveChange(lDocAdmin, JWebSocketConfig.getConfigFolder(JWS_MGMT_DESK_PATH));
 	}
 
+	/**
+	 *
+	 * @param aId
+	 * @throws Exception
+	 */
 	public void removeFilterConfig(String aId) throws Exception {
 		Document lDoc = getDocument(JWebSocketConfig.getConfigPath());
 		Document lDocAdmin = getDocument(JWebSocketConfig.getConfigFolder(JWS_MGMT_DESK_PATH));
@@ -588,7 +635,7 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 
 		for (int i = 0; i < lFiltersList.size(); i++) {
 			if (aId.equals(lFiltersList.get(i).getChildText("id"))) {
-				lFiltersAdmin.addContent((Element)lFiltersList.get(i).clone());
+				lFiltersAdmin.addContent((Element) lFiltersList.get(i).clone());
 				lFiltersList.remove(i);
 				break;
 			}
@@ -598,16 +645,22 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		saveChange(lDocAdmin, JWebSocketConfig.getConfigFolder(JWS_MGMT_DESK_PATH));
 	}
 
+	/**
+	 *
+	 * @param aId
+	 * @param aSteps
+	 * @throws Exception
+	 */
 	public void changeOrderOfPlugInConfig(String aId, Integer aSteps) throws Exception {
 		Document lDoc = getDocument(JWebSocketConfig.getConfigPath());
 		Element lRootNode = lDoc.getRootElement();
 		Element lPlugins = lRootNode.getChild(ELEMENT_PLUGINS);
 		List<Element> lPluginsList = lPlugins.getChildren(ELEMENT_PLUGIN);
-		
+
 		for (int i = 0; i < lPluginsList.size(); i++) {
 			if (aId.equals(lPluginsList.get(i).getChildText("id"))) {
-				Element lPlugIn = (Element)lPluginsList.get(i).clone();
-				lPluginsList.set(i, (Element)lPluginsList.get(i + aSteps).clone());
+				Element lPlugIn = (Element) lPluginsList.get(i).clone();
+				lPluginsList.set(i, (Element) lPluginsList.get(i + aSteps).clone());
 				lPluginsList.set(i + aSteps, lPlugIn);
 				break;
 			}
@@ -615,17 +668,23 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 
 		saveChange(lDoc, JWebSocketConfig.getConfigPath());
 	}
-	
+
+	/**
+	 *
+	 * @param aId
+	 * @param aSteps
+	 * @throws Exception
+	 */
 	public void changeOrderOfFilterConfig(String aId, Integer aSteps) throws Exception {
 		Document lDoc = getDocument(JWebSocketConfig.getConfigPath());
 		Element lRootNode = lDoc.getRootElement();
 		Element lFilters = lRootNode.getChild(ELEMENT_FILTERS);
 		List<Element> lFiltersList = lFilters.getChildren(ELEMENT_FILTER);
-		
+
 		for (int i = 0; i < lFiltersList.size(); i++) {
 			if (aId.equals(lFiltersList.get(i).getChildText("id"))) {
-				Element lFilter = (Element)lFiltersList.get(i).clone();
-				lFiltersList.set(i, (Element)lFiltersList.get(i + aSteps).clone());
+				Element lFilter = (Element) lFiltersList.get(i).clone();
+				lFiltersList.set(i, (Element) lFiltersList.get(i + aSteps).clone());
 				lFiltersList.set(i + aSteps, lFilter);
 				break;
 			}
@@ -633,17 +692,21 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 
 		saveChange(lDoc, JWebSocketConfig.getConfigPath());
 	}
-	
-	
+	/**
+	 *
+	 */
 	public static final String SETTINGS = "settings";
+	/**
+	 *
+	 */
 	public static final String SETTING = "setting";
+
 	/**
 	 * Read the map of plug-in specific settings
-	 * @param aStreamReader
-	 *            the stream reader object
+	 *
+	 * @param aStreamReader the stream reader object
 	 * @return the list of domains for the engine
-	 * @throws XMLStreamException
-	 *             in case of stream exception
+	 * @throws XMLStreamException in case of stream exception
 	 */
 	public static Map<String, Object> getSettings(XMLStreamReader aStreamReader)
 			throws XMLStreamException {
@@ -683,7 +746,7 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 				}
 			}
 		}
-		
+
 		return lSettings;
 	}
 }

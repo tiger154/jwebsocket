@@ -1,16 +1,20 @@
+// ---------------------------------------------------------------------------
+// jWebSocket - EngineConfig (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2010 jwebsocket.org
-//	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.config.xml;
 
@@ -48,19 +52,27 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	/**
 	 * Constructor for engine
 	 *
-	 * @param aId           the engine id
-	 * @param aName         the name of the engine
-	 * @param aJar          the jar file name
-	 * @param aPort         the port number where engine runs
-	 * @param aTimeout      the timeout value
-	 * @param aMaxFrameSize the maximum frame size that engine will
-	 *						receive without closing the connection
-	 * @param aDomains      list of domain names
+	 * @param aId the engine id
+	 * @param aName the name of the engine
+	 * @param aJar the jar file name
+	 * @param aPort the port number where engine runs
+	 * @param aSSLPort
+	 * @param aTimeout the timeout value
+	 * @param aKeyStorePassword
+	 * @param aKeyStore
+	 * @param aMaxFrameSize the maximum frame size that engine will receive
+	 * without closing the connection
+	 * @param aServlet
+	 * @param aDomains list of domain names
+	 * @param aContext
+	 * @param aSettigns
+	 * @param aMaxConnections
+	 * @param aOnMaxConnectionsStrategy
 	 */
 	public EngineConfig(String aId, String aName, String aJar, Integer aPort,
 			Integer aSSLPort, String aKeyStore, String aKeyStorePassword,
 			String aContext, String aServlet, int aTimeout,
-			int aMaxFrameSize, List<String> aDomains, Integer aMaxConnections, 
+			int aMaxFrameSize, List<String> aDomains, Integer aMaxConnections,
 			String aOnMaxConnectionsStrategy, Map<String, Object> aSettigns) {
 		this.mId = aId;
 		this.mName = aName;
@@ -77,7 +89,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 		this.mMaxConnections = aMaxConnections;
 		this.mOnMaxConnectionsStrategy = aOnMaxConnectionsStrategy;
 		this.mSettings = aSettigns;
-		
+
 		validate();
 	}
 
@@ -123,6 +135,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 
 	/**
 	 * Returns the context for servlet based engines like Jetty
+	 *
 	 * @return the context for servlet based engines, null for native servers
 	 */
 	@Override
@@ -132,6 +145,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 
 	/**
 	 * Returns the servlet for servlet based engines like Jetty
+	 *
 	 * @return the servlet for servlet based engines, null for native servers
 	 */
 	@Override
@@ -166,7 +180,8 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	/**
 	 * validate the engine configuration
 	 *
-	 * @throws WebSocketRuntimeException if any of the engine configuration is mising
+	 * @throws WebSocketRuntimeException if any of the engine configuration is
+	 * mising
 	 */
 	@Override
 	public void validate() {
@@ -181,7 +196,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 				|| (mSSLPort >= 0 && mSSLPort < 65536
 				&& mKeyStore != null && mKeyStore.length() > 0
 				&& mKeyStorePassword != null && mKeyStorePassword.length() > 0))
-				&& mTimeout >= 0 
+				&& mTimeout >= 0
 				&& mMaxConnections > 0
 				&& null != mOnMaxConnectionsStrategy && mOnMaxConnectionsStrategy.length() > 0) {
 			return;
@@ -225,6 +240,6 @@ public final class EngineConfig implements Config, EngineConfiguration {
 
 	@Override
 	public Map<String, Object> getSettings() {
-		return Collections.unmodifiableMap(mSettings); 
+		return Collections.unmodifiableMap(mSettings);
 	}
 }

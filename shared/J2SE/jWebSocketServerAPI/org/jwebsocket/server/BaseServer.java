@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Basic server (dispatcher)
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	jWebSocket - Basic server (dispatcher) (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.server;
 
@@ -52,7 +55,13 @@ public class BaseServer implements WebSocketServer {
 
 	private Map<String, WebSocketEngine> mEngines = null;
 	private String mId = null;
+	/**
+	 *
+	 */
 	protected WebSocketPlugInChain mPlugInChain = null;
+	/**
+	 *
+	 */
 	protected WebSocketFilterChain mFilterChain = null;
 	private List<WebSocketServerListener> mListeners = new FastList<WebSocketServerListener>();
 	private ServerConfiguration mConfiguration;
@@ -62,7 +71,7 @@ public class BaseServer implements WebSocketServer {
 	 * FastMap of all its underlying engines. Each Server has an Id which can be
 	 * used to easily address a certain server.
 	 *
-	 * @param aId Id for the new server.
+	 * @param aServerConfig
 	 */
 	public BaseServer(ServerConfiguration aServerConfig) {
 		this.mConfiguration = aServerConfig;
@@ -97,7 +106,7 @@ public class BaseServer implements WebSocketServer {
 	public void sessionStopped(WebSocketSession aSession) {
 		mPlugInChain.sessionStopped(aSession);
 	}
-	
+
 	/**
 	 * {@inheritDoc }
 	 */
@@ -333,7 +342,8 @@ public class BaseServer implements WebSocketServer {
 	 * no connector with that id could be found. This method iterates through
 	 * all embedded engines.
 	 *
-	 * @param aId id of the connector to be returned.
+	 * @param aFilterId
+	 * @param aFilterValue
 	 * @return WebSocketConnector with the given id or <tt>null</tt> if not
 	 * found.
 	 */
@@ -385,7 +395,7 @@ public class BaseServer implements WebSocketServer {
 	 * connector with that id could be found. This method iterates through all
 	 * embedded engines.
 	 *
-	 * @param aId id of the connector to be returned.
+	 * @param aNodeId
 	 * @return WebSocketConnector with the given id or <tt>null</tt> if not
 	 * found.
 	 */
@@ -520,11 +530,19 @@ public class BaseServer implements WebSocketServer {
 		aConnector.removeVar(BaseConnector.VAR_NODEID);
 	}
 
+	/**
+	 *
+	 * @param aConfiguraion
+	 */
 	@Override
 	public void setServerConfiguration(ServerConfiguration aConfiguraion) {
 		this.mConfiguration = aConfiguraion;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public ServerConfiguration getServerConfiguration() {
 		return mConfiguration;
