@@ -17,12 +17,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-<!--
-	<scm>
-		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketTwitterPlugIn</connection>
-		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketTwitterPlugIn</developerConnection>
-	</scm>
--->
+	<!--
+		<scm>
+			<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketTwitterPlugIn</connection>
+			<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketTwitterPlugIn</developerConnection>
+		</scm>
+	-->
 	<build>
 		<plugins>
 			<plugin>
@@ -38,9 +38,9 @@
 						</manifest>
 					</archive>
 					<!--
-						<includes>
-							<include>**/twitter4j.properties</include>
-						</includes>-->
+					<includes>
+						<include>**/twitter4j.properties</include>
+					</includes>-->
 					<!--<excludes><exclude></exclude></excludes>-->
 				</configuration>
 			</plugin>
@@ -113,17 +113,17 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.1.3</version>
+			<version>4.2.3</version>
 		</dependency>		
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
-			<version>4.1.3</version>
+			<version>4.2.3</version>
 		</dependency>		
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.1.3</version>
+			<version>4.2.3</version>
 		</dependency>		
 		<dependency>
 			<groupId>org.twitter4j</groupId>
