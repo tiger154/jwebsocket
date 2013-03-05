@@ -8,9 +8,15 @@ Ext.define('IS.view.item.Find', {
 		this.itemDefinition = aItemDefinition;
 		
 		var lStoreData = [];
-		for (var lAttrName in aItemDefinition.attr_types){
+		if (IS.lib.Util.isEE(false)){
+			for (var lAttrName in aItemDefinition.attr_types){
+				lStoreData.push({
+					'attr': lAttrName
+				});
+			}
+		} else {
 			lStoreData.push({
-				'attr': lAttrName
+				'attr': aItemDefinition.pk_attr
 			});
 		}
 		

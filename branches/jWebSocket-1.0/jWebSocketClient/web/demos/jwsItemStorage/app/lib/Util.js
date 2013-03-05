@@ -2,13 +2,17 @@ Ext.define('IS.lib.Util', {
 	singleton: true,
 	def2tpl: {},
 	
-	isEE: function (){
+	isEE: function (aShowMessage){
+		var lShow = (undefined == aShowMessage) ? true : aShowMessage ;
 		if ( 'undefined' == typeof jws.ItemStoragePlugIn.registerItemDefinition ){
-			Ext.Msg.show({
-				msg: 'Feature available only for enterprise clients! <br>See http://jwebsocket.org for details.',
-				buttons: Ext.Msg.OK, 
-				icon: Ext.Msg.ERROR
-			});
+			if (lShow){
+				Ext.Msg.show({
+					msg: 'Feature available only for enterprise clients! <br>See http://jwebsocket.org for details.',
+					buttons: Ext.Msg.OK, 
+					icon: Ext.Msg.ERROR
+				});
+			}
+			
 			return false;
 		}
 		
@@ -116,7 +120,7 @@ Ext.define('IS.lib.Util', {
 		Ext.define(aCollectionName + 'Model', {
 			extend: 'Ext.data.Model',
 			fields: lFiels,
-			idProperty: aItemDefinition.pk_attr
+			idProperty: aItemDefinition.id
 		});
 	},
 	
@@ -129,22 +133,38 @@ Ext.define('IS.lib.Util', {
 				type: 'jws',
 				ns: jws.ItemStoragePlugIn.NS,
 				api: {
-					read: 'listItems'
+					read: 'listItems',
+					update: 'saveItem'
 				},
 				reader: {
 					type: 'jws',
 					transform: function( aResponse ){
-						for (var lIndex = 0; lIndex < aResponse.data.length; lIndex++){
-							aResponse.data[lIndex] = aResponse.data[lIndex].attrs;
+						if ('findItemByPK' == aResponse.reqType){
+							if (aResponse.data){
+								aResponse.data = [aResponse.data.attrs];
+							}else {
+								aResponse.data = [];
+							}
+							
+							aResponse.total = aResponse.data.length;
+						} else {
+							for (var lIndex = 0; lIndex < aResponse.data.length; lIndex++){
+								aResponse.data[lIndex] = aResponse.data[lIndex].attrs;
+							}
 						}
 					}
 				},
 				transform: function ( aRequest ){
 					if ( 'listItems' == aRequest.type){
 						if (aApp.itemSearchs[aCollectionName]){
-							aRequest.type = 'findItems';
-							aRequest.data.attrName = aApp.itemSearchs[aCollectionName].attr;
-							aRequest.data.attrValue = aApp.itemSearchs[aCollectionName].value;
+							if (IS.lib.Util.isEE(false)){
+								aRequest.type = 'findItems';
+								aRequest.data.attrName = aApp.itemSearchs[aCollectionName].attr;
+								aRequest.data.attrValue = aApp.itemSearchs[aCollectionName].value;
+							} else {
+								aRequest.type = 'findItemByPK';
+								aRequest.data.itemPK = aApp.itemSearchs[aCollectionName].value;
+							}
 						}
 						
 						aRequest.data.offset = aRequest.data.start;
@@ -156,7 +176,17 @@ Ext.define('IS.lib.Util', {
 						delete aRequest.data.start;
 						delete aRequest.data.limit;
 						delete aRequest.data.page;
-					}
+					} 
+				//					else if ('saveItem' == aRequest.type){
+				//						var lDef =aApp.collection2def[aCollectionName];
+				//						if ('id' != lDef.pk_attr){
+				//							delete aRequest.data['id'];
+				//						}
+				//						aRequest.data = {
+				//							item: aRequest.data,
+				//							collectionName: aCollectionName
+				//						}
+				//					}
 				}
 			})
 		});

@@ -56,7 +56,8 @@ Ext.define('IS.controller.Collection', {
 			}, {
 				xtype: 'pagingtoolbar',
 				store: lStore,
-				dock: 'bottom'
+				dock: 'bottom',
+				displayInfo: true
 			}],
 			items: [{
 				xtype: 'i_list',
