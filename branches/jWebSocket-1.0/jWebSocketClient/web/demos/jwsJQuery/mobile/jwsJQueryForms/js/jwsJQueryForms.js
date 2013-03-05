@@ -75,7 +75,7 @@ $.widget( "jws.pager", {
 				
 				// If anything went wrong in the server show information error
 				if( aToken.code == -1 ){
-					dialog( aToken.msg, "jWebSocket error", true, null, null, "error" );
+					jwsDialog( aToken.msg, "jWebSocket error", true, null, null, "error" );
 				}
 			}
 		}
@@ -133,7 +133,7 @@ $.widget( "jws.pager", {
 $.widget( "jws.forms", {
 	_init: function( ) {
 		// ------------- VARIABLES -------------
-		this.NS = "jws.jq.mobile.user";
+		this.NS = jws.NS_BASE + ".plugins.jquerydemo";
 		this.NS_SYSTEM	= "org.jwebsocket.plugins.system";
 		this.mCountNewUsers	= 0;
 		
