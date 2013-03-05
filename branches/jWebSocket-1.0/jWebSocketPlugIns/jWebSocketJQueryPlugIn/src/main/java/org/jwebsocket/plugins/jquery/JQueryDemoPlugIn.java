@@ -24,6 +24,8 @@ import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -35,9 +37,16 @@ import org.springframework.beans.support.PagedListHolder;
 /**
  * @author Victor Antonio Barzana Crespo
  */
-public class JQueryFormsPlugIn extends TokenPlugIn {
+public class JQueryDemoPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	public static final String NS_JQUERYDEMO = JWebSocketServerConstants.NS_BASE + ".plugins.jquerydemo";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket JQueryDemoPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket JQueryDemoPlugIn - Community Edition";
 	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>().shared();
 	private static PagedListHolder<User> mUsers = new PagedListHolder<User>();
 
@@ -45,17 +54,47 @@ public class JQueryFormsPlugIn extends TokenPlugIn {
 	 *
 	 * @param aConfiguration
 	 */
-	public JQueryFormsPlugIn(PluginConfiguration aConfiguration) {
+	public JQueryDemoPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Instantiating JQueryForms plug-in...");
+			mLog.debug("Instantiating JQueryDemo plug-in...");
 		}
 		// specify default name space for JQueryForms plugin
-		this.setNamespace(aConfiguration.getNamespace());
+		this.setNamespace(NS_JQUERYDEMO);
 		createUsers();
 		if (mLog.isInfoEnabled()) {
-			mLog.info("JQueryForms plug-in successfully instantiated.");
+			mLog.info("JQueryDemo plug-in successfully instantiated.");
 		}
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
 	}
 
 	@Override
