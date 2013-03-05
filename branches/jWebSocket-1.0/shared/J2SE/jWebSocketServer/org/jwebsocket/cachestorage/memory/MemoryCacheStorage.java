@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - MemoryCacheStorage
-//  Copyright (c) 2010 jwebsocket.org
+//	jWebSocket - MemoryCacheStorage (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.cachestorage.memory;
 
@@ -26,6 +29,8 @@ import org.jwebsocket.api.IBasicCacheStorage;
 
 /**
  *
+ * @param <K>
+ * @param <V>
  * @author kyberneees
  */
 public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
@@ -72,13 +77,19 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	/**
 	 * Create a new MemoryStorage instance
+	 *
 	 * @param aName The name of the storage container
-	 * */
+	 *
+	 */
 	public MemoryCacheStorage(String aName) {
 		this.mName = aName;
 
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static FastMap<String, FastMap> getContainer() {
 		return mContainer;
 	}
@@ -90,6 +101,8 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aNewName
 	 */
 	@Override
 	public synchronized void setName(String aNewName) throws Exception {
@@ -158,11 +171,13 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aKey
 	 */
 	@Override
 	public boolean containsKey(Object aKey) {
 		if (mMap.containsKey((String) aKey)) {
-			if (isValid((K)aKey, mMap.get(aKey))){
+			if (isValid((K) aKey, mMap.get(aKey))) {
 				return true;
 			}
 		}
@@ -170,7 +185,7 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param r The Element object
 	 * @return TRUE if the element is not expired, FALSE otherwise
 	 */
@@ -188,17 +203,19 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 		return false;
 	}
-	
+
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aValue
 	 */
 	@Override
 	public boolean containsValue(Object aValue) {
 		Iterator<K> lKeys = mMap.keySet().iterator();
-		while (lKeys.hasNext()){
+		while (lKeys.hasNext()) {
 			K lKey = lKeys.next();
 			Element<V> lElement = mMap.get(lKey);
-			if (lElement.getValue().equals(aValue) && isValid((K)lKey, lElement)){
+			if (lElement.getValue().equals(aValue) && isValid((K) lKey, lElement)) {
 				return true;
 			}
 		}
@@ -207,19 +224,24 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aKey
 	 */
 	@Override
 	public V get(Object aKey) {
 		Element<V> lElement = mMap.get(aKey);
-		if (lElement != null && isValid((K)aKey, lElement)){
+		if (lElement != null && isValid((K) aKey, lElement)) {
 			return lElement.getValue();
 		}
-		
+
 		return null;
 	}
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aKey
+	 * @param aValue
 	 */
 	@Override
 	public V put(K aKey, V aValue) {
@@ -228,20 +250,24 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aKey
+	 * @param aValue
+	 * @param aExpTime
 	 */
 	@Override
 	public V put(K aKey, V aValue, int aExpTime) {
 		Element<V> lElement = new Element<V>(aValue, (Long) (System.currentTimeMillis() / 1000), aExpTime);
 		mMap.put(aKey, lElement);
-		
+
 		return lElement.getValue();
 	}
 
 	/**
 	 * {@inheritDoc
-	 * 
-	 * @param key
-	 * @return  
+	 *
+	 * @param aKey
+	 * @return
 	 */
 	@Override
 	public V remove(Object aKey) {
@@ -250,12 +276,14 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @param aMap
 	 */
 	@Override
 	public void putAll(Map<? extends K, ? extends V> aMap) {
 		Iterator keys = aMap.keySet().iterator();
-		while (keys.hasNext()){
-			K key = (K)keys.next();
+		while (keys.hasNext()) {
+			K key = (K) keys.next();
 			put(key, aMap.get(key));
 		}
 	}
@@ -275,14 +303,14 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	public Set<K> keySet() {
 		Set<K> lKeyset = new FastSet<K>();
 		Iterator<K> lKeys = mMap.keySet().iterator();
-		while (lKeys.hasNext()){
+		while (lKeys.hasNext()) {
 			K lKey = lKeys.next();
 			Element<V> lElement = mMap.get(lKey);
-			if (isValid(lKey, lElement)){
+			if (isValid(lKey, lElement)) {
 				lKeyset.add(lKey);
 			}
 		}
-		
+
 		return lKeyset;
 	}
 
@@ -293,12 +321,13 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	public Collection<V> values() {
 		Set<V> lValues = new FastSet<V>();
 		Set<K> lKeys = keySet();
-		
-		if (!lKeys.isEmpty())
-		for (K k: lKeys){
-			lValues.add(mMap.get(k).getValue());
+
+		if (!lKeys.isEmpty()) {
+			for (K k : lKeys) {
+				lValues.add(mMap.get(k).getValue());
+			}
 		}
-		
+
 		return lValues;
 	}
 

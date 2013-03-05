@@ -1,18 +1,21 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - MongoDBCacheStorageBuilder
-//  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
-//  ---------------------------------------------------------------------------
-//  This program is free software; you can redistribute it and/or modify it
-//  under the terms of the GNU Lesser General Public License as published by the
-//  Free Software Foundation; either version 3 of the License, or (at your
-//  option) any later version.
-//  This program is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//  more details.
-//  You should have received a copy of the GNU Lesser General Public License along
-//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//  ---------------------------------------------------------------------------
+//  jWebSocket - MongoDBCacheStorageBuilder (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.cachestorage.mongodb;
 
 import com.mongodb.BasicDBObject;
@@ -31,13 +34,19 @@ public class MongoDBCacheStorageBuilder {
 	private Mongo mCon;
 	private String mDatabaseName;
 	private String mCollectionName;
+	/**
+	 *
+	 */
 	public static final String V1 = "v1";
+	/**
+	 *
+	 */
 	public static final String V2 = "v2";
 	private DBCollection mCollection = null;
 	private DB mDatabase = null;
 
 	/**
-	 * 
+	 *
 	 * @return The Mongo database connection
 	 */
 	public Mongo getCon() {
@@ -45,7 +54,7 @@ public class MongoDBCacheStorageBuilder {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aCon The Mongo database connection to set
 	 */
 	public void setCon(Mongo aCon) {
@@ -53,9 +62,11 @@ public class MongoDBCacheStorageBuilder {
 	}
 
 	/**
-	 * 
+	 *
+	 * @param aVersion
 	 * @param aName The cache storage name to build
 	 * @return The cache storage ready to use.
+	 * @throws Exception
 	 */
 	public IBasicCacheStorage<String, Object> getCacheStorage(String aVersion, String aName) throws Exception {
 		IBasicCacheStorage<String, Object> lCache = null;
@@ -69,7 +80,13 @@ public class MongoDBCacheStorageBuilder {
 
 		return lCache;
 	}
-	
+
+	/**
+	 *
+	 * @param aVersion
+	 * @param aName
+	 * @throws Exception
+	 */
 	public void removeCacheStorage(String aVersion, String aName) throws Exception {
 		if (aVersion.equals(V1)) {
 			mDatabase.getCollection(aName).drop();
@@ -86,7 +103,8 @@ public class MongoDBCacheStorageBuilder {
 	}
 
 	/**
-	 * @param databaseName the databaseName to set
+	 *
+	 * @param aDatabaseName
 	 */
 	public void setDatabaseName(String aDatabaseName) {
 		this.mDatabaseName = aDatabaseName;
@@ -103,7 +121,8 @@ public class MongoDBCacheStorageBuilder {
 	}
 
 	/**
-	 * @param aCollectionName The database collection name for cache storages of version 2
+	 * @param aCollectionName The database collection name for cache storages of
+	 * version 2
 	 */
 	public void setCollectionName(String aCollectionName) {
 		this.mCollectionName = aCollectionName;

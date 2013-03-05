@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Security Factory
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	jWebSocket - Security Factory (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.security;
 
@@ -39,9 +42,21 @@ public class SecurityFactory {
 	 *
 	 */
 	public static String USER_ANONYMOUS = "anonymous";
+	/**
+	 *
+	 */
 	public static String USER_GUEST = "guest";
+	/**
+	 *
+	 */
 	public static String USER_USER = "user";
+	/**
+	 *
+	 */
 	public static String USER_ROOT = "root";
+	/**
+	 *
+	 */
 	public static String USER_LOCKED = "locked";
 	private static boolean mAutoAnonymous = false;
 	private static boolean mUseSpring = true;
@@ -152,6 +167,9 @@ public class SecurityFactory {
 		// log.info("Rights, roles and users successfully initialized.");
 	}
 
+	/**
+	 *
+	 */
 	public static void init() {
 		// initialize the security factory with some default demo data
 		// to show at least something even with no config
@@ -178,6 +196,11 @@ public class SecurityFactory {
 		return lUser;
 	}
 
+	/**
+	 *
+	 * @param aLoginname
+	 * @return
+	 */
 	public static boolean isValidUser(String aLoginname) {
 		User lUser = mUsers.getUserByLoginName(aLoginname);
 		if (lUser != null) {
@@ -189,6 +212,8 @@ public class SecurityFactory {
 
 	/**
 	 * Returns the root user for the jWebSocket system.
+	 *
+	 * @return
 	 */
 	public static User getRootUser() {
 		return mUsers.getUserByLoginName(USER_ROOT);
@@ -210,6 +235,12 @@ public class SecurityFactory {
 		return lHasRight;
 	}
 
+	/**
+	 *
+	 * @param aLoginname
+	 * @param aAuthority
+	 * @return
+	 */
 	public static boolean hasAuthority(String aLoginname, String aAuthority) {
 		return hasRight(aLoginname, aAuthority);
 	}
@@ -234,6 +265,7 @@ public class SecurityFactory {
 	/**
 	 * returns an unmodifiable set of role ids for a user instance.
 	 *
+	 * @param aUsername
 	 * @return
 	 */
 	public static Set<String> getRoleIdSet(String aUsername) {
@@ -247,6 +279,7 @@ public class SecurityFactory {
 	/**
 	 * returns an unmodifiable set of right ids for a given user instance.
 	 *
+	 * @param aUsername
 	 * @return
 	 */
 	public static Set<String> getRightIdSet(String aUsername) {
@@ -260,6 +293,7 @@ public class SecurityFactory {
 	/**
 	 * returns an unmodifiable set of roles for a given user instance.
 	 *
+	 * @param aUsername
 	 * @return
 	 */
 	public static Roles getUserRoles(String aUsername) {
@@ -282,6 +316,7 @@ public class SecurityFactory {
 	/**
 	 * returns an unmodifiable set of rights for a given user instance.
 	 *
+	 * @param aUsername
 	 * @return
 	 */
 	public static Rights getUserRights(String aUsername) {
@@ -304,6 +339,7 @@ public class SecurityFactory {
 	/**
 	 * returns an unmodifiable set of rights for this user instance.
 	 *
+	 * @param aNamespace
 	 * @return
 	 */
 	public static Rights getGlobalRights(String aNamespace) {

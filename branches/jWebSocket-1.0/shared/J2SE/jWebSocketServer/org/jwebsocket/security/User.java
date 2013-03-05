@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - User Class
-//	Copyright (c) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH
+//	jWebSocket - User (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.security;
 
@@ -21,6 +24,7 @@ import org.jwebsocket.util.Tools;
 
 /**
  * implements a user with all its data fields and roles.
+ *
  * @author aschulze
  */
 public class User {
@@ -31,36 +35,35 @@ public class User {
 	 */
 	public static int MAX_PWD_FAIL_COUNT = 3;
 	/**
-	 * The state of the user is unknown. This state is used only as default
-	 * when instantiating a new user. This value should not be saved.
+	 * The state of the user is unknown. This state is used only as default when
+	 * instantiating a new user. This value should not be saved.
 	 */
 	public static int ST_UNKNOWN = -1;
 	/**
-	 * The user is already registered but not activated.
-	 * A user needs to get activated to get access to the system.
+	 * The user is already registered but not activated. A user needs to get
+	 * activated to get access to the system.
 	 */
 	public static int ST_REGISTERED = 0;
 	/**
-	 * The user is activated and has access to the system according to his 
+	 * The user is activated and has access to the system according to his
 	 * rights and roles.
 	 */
 	public static int ST_ACTIVE = 1;
 	/**
-	 * The user is (temporarily) inactive.
-	 * He needs to get (re-)activated to get access to the system.
+	 * The user is (temporarily) inactive. He needs to get (re-)activated to get
+	 * access to the system.
 	 */
 	public static int ST_INACTIVE = 2;
 	/**
-	 * The user is (temporarily) locked, eg due to too much logins 
-	 * with wrong credentials.
-	 * He needs to gets unlocked again to get access to the system.
+	 * The user is (temporarily) locked, eg due to too much logins with wrong
+	 * credentials. He needs to gets unlocked again to get access to the system.
 	 */
 	public static int ST_LOCKED = 3;
 	/**
-	 * The user is deleted, he can't log in and is not reachable for others.
-	 * The row is kept in the database for reference purposes only and
-	 * to keep the database consistent (eg for logs, journal or transactions).
-	 * He can be activated again to get access to the system.
+	 * The user is deleted, he can't log in and is not reachable for others. The
+	 * row is kept in the database for reference purposes only and to keep the
+	 * database consistent (eg for logs, journal or transactions). He can be
+	 * activated again to get access to the system.
 	 */
 	public static int ST_DELETED = 4;
 	private Integer mUserId = null;
@@ -87,6 +90,8 @@ public class User {
 	/**
 	 * creates a new user instance by loginname, firstname, lastname, password
 	 * and roles.
+	 *
+	 * @param aUUID
 	 * @param aLoginName
 	 * @param aFirstname
 	 * @param aLastname
@@ -110,6 +115,7 @@ public class User {
 	/**
 	 * returns the id of the user. The id is supposed to be used for storing
 	 * users in a database. It's the primary key.
+	 *
 	 * @return id of the user.
 	 */
 	public Integer getUserId() {
@@ -119,6 +125,7 @@ public class User {
 	/**
 	 * specifies the id of the user. The id is supposed to be used for storing
 	 * users in a database. It's the primary key.
+	 *
 	 * @param userId
 	 */
 	public void setUserId(Integer userId) {
@@ -139,14 +146,19 @@ public class User {
 		this.mUUID = aUUID;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static String generateUUID() {
 		String lData = Double.toString(Math.random()) + Double.toString(System.nanoTime());
 		return Tools.getMD5(lData);
 	}
 
 	/**
-	 * returns the login name of the user. The login name needs to be unique
-	 * for each user. It's the key to identify a user within jWebSocket.
+	 * returns the login name of the user. The login name needs to be unique for
+	 * each user. It's the key to identify a user within jWebSocket.
+	 *
 	 * @return
 	 */
 	public String getLoginname() {
@@ -156,6 +168,7 @@ public class User {
 	/**
 	 * specifies the login name of the user. The login name needs to be unique
 	 * for each user. It's the key to identify a user within jWebSocket.
+	 *
 	 * @param aLoginName
 	 */
 	public void setLoginname(String aLoginName) {
@@ -164,6 +177,7 @@ public class User {
 
 	/**
 	 * returns the title of the user (e.g. mr./mrs.).
+	 *
 	 * @return the title
 	 */
 	public String getTitle() {
@@ -172,6 +186,7 @@ public class User {
 
 	/**
 	 * specifies the title of the user (e.g. mr./mrs.).
+	 *
 	 * @param aTitle
 	 */
 	public void setTitle(String aTitle) {
@@ -180,6 +195,7 @@ public class User {
 
 	/**
 	 * returns the company of the user.
+	 *
 	 * @return the company
 	 */
 	public String getCompany() {
@@ -188,6 +204,7 @@ public class User {
 
 	/**
 	 * specifies the company of the user.
+	 *
 	 * @param company the company to set
 	 */
 	public void setCompany(String company) {
@@ -196,6 +213,7 @@ public class User {
 
 	/**
 	 * returns the firstname of the user.
+	 *
 	 * @return
 	 */
 	public String getFirstname() {
@@ -204,6 +222,7 @@ public class User {
 
 	/**
 	 * specifies the firstname of the user.
+	 *
 	 * @param firstName
 	 */
 	public void setFirstname(String firstName) {
@@ -212,6 +231,7 @@ public class User {
 
 	/**
 	 * returns the lastname of the user.
+	 *
 	 * @return
 	 */
 	public String getLastname() {
@@ -220,6 +240,7 @@ public class User {
 
 	/**
 	 * specifies the lastname of the user.
+	 *
 	 * @param lastName
 	 */
 	public void setLastname(String lastName) {
@@ -229,10 +250,12 @@ public class User {
 	/**
 	 * checks if the given password matches the user password, it is not
 	 * possible to obtain the password for the user. If the password is not
-	 * correct the fail counter is incremented. If the fail counter exceeds
-	 * the configured maximum the account gets locked. If the password is
-	 * correct the password fail counter is reseted.
+	 * correct the fail counter is incremented. If the fail counter exceeds the
+	 * configured maximum the account gets locked. If the password is correct
+	 * the password fail counter is reseted.
+	 *
 	 * @param aPassword
+	 * @param aEncoding
 	 * @return
 	 */
 	public boolean checkPassword(String aPassword, String aEncoding) {
@@ -253,8 +276,9 @@ public class User {
 	/**
 	 * changes the password of the user, to change it the caller needs to know
 	 * the original password. For initialization purposes e.g. during the
-	 * startup process the original password is null.
-	 * The password cannot be reset to null.
+	 * startup process the original password is null. The password cannot be
+	 * reset to null.
+	 *
 	 * @param aOldPW original password or null of password is set first time.
 	 * @param aNewPW new password, nust not be <tt>null</tt>.
 	 * @return true if the password was changed successfully otherwise false.
@@ -277,6 +301,7 @@ public class User {
 	// TODO: potential security hole: don't allow to change roles w/o a special permission!
 	/**
 	 * specifies the roles of the user.
+	 *
 	 * @param aRoles
 	 */
 	public void setRoles(Roles aRoles) {
@@ -285,6 +310,7 @@ public class User {
 
 	/**
 	 * returns the user's current status (one of the ST_XXX constants).
+	 *
 	 * @return
 	 */
 	public int getStatus() {
@@ -294,6 +320,7 @@ public class User {
 	// TODO: potential security hole: don't allow to e.g. unlock a user w/o a special permission!
 	/**
 	 * specifies the user's current status (one of the ST_XXX constants).
+	 *
 	 * @param status
 	 */
 	public void setStatus(int status) {
@@ -302,8 +329,9 @@ public class User {
 
 	/**
 	 * returns the user's current password fail counter. Please consider that
-	 * since currently the users are stored in memory only the fail counter
-	 * is reset after an application restart.
+	 * since currently the users are stored in memory only the fail counter is
+	 * reset after an application restart.
+	 *
 	 * @return
 	 */
 	public Integer getPwdFailCount() {
@@ -313,6 +341,7 @@ public class User {
 	// TODO: potential security hole: don't allow to reset password fail counter w/o a special permission!
 	/**
 	 * explicitly sets the password fail counter for the user.
+	 *
 	 * @param aPwdFailCount
 	 */
 	public void setPwdFailCount(Integer aPwdFailCount) {
@@ -322,10 +351,10 @@ public class User {
 	// TODO: potential security hole: don't allow to roll over password fail counter!
 	/**
 	 * increments the password fail counter. If the password fail counter
-	 * exceeds the maximum value the user gets locked.
-	 * This is called after the application passed an incorrect password to
-	 * the checkPassword method.
-	 * @return 
+	 * exceeds the maximum value the user gets locked. This is called after the
+	 * application passed an incorrect password to the checkPassword method.
+	 *
+	 * @return
 	 */
 	private Integer incPwdFailCount() {
 		setPwdFailCount(mPwdFailCount + 1);
@@ -347,6 +376,7 @@ public class User {
 	/**
 	 * returns the default locale for the user.For future use in an
 	 * internationalized environment.
+	 *
 	 * @return
 	 */
 	public String getDefaultLocale() {
@@ -356,6 +386,7 @@ public class User {
 	/**
 	 * specifies the default locale for the user. For future use in an
 	 * internationalized environment.
+	 *
 	 * @param default_locale
 	 */
 	public void setDefaultLocale(String default_locale) {
@@ -364,6 +395,7 @@ public class User {
 
 	/**
 	 * returns the city of the user.
+	 *
 	 * @return
 	 */
 	public String getCity() {
@@ -372,6 +404,7 @@ public class User {
 
 	/**
 	 * specifies the city of the user.
+	 *
 	 * @param city
 	 */
 	public void setCity(String city) {
@@ -380,6 +413,7 @@ public class User {
 
 	/**
 	 * returns the address of the user.
+	 *
 	 * @return
 	 */
 	public String getAddress() {
@@ -388,6 +422,7 @@ public class User {
 
 	/**
 	 * specifies the address of the user.
+	 *
 	 * @param address
 	 */
 	public void setAddress(String address) {
@@ -396,6 +431,7 @@ public class User {
 
 	/**
 	 * returns the zip code of the user.
+	 *
 	 * @return
 	 */
 	public String getZipcode() {
@@ -404,6 +440,7 @@ public class User {
 
 	/**
 	 * specifies the zip code of the user.
+	 *
 	 * @param zipcode
 	 */
 	public void setZipcode(String zipcode) {
@@ -411,8 +448,9 @@ public class User {
 	}
 
 	/**
-	 * returns the country code of the user, either 2 digits like "DE" or
-	 * 5 digits like "EN-US".
+	 * returns the country code of the user, either 2 digits like "DE" or 5
+	 * digits like "EN-US".
+	 *
 	 * @return
 	 */
 	public String getCountryCode() {
@@ -420,8 +458,9 @@ public class User {
 	}
 
 	/**
-	 * specifies the country code of the user, either 2 digits like "DE" or
-	 * 5 digits like "EN-US".
+	 * specifies the country code of the user, either 2 digits like "DE" or 5
+	 * digits like "EN-US".
+	 *
 	 * @param country_code
 	 */
 	public void setCountryCode(String country_code) {
@@ -430,6 +469,7 @@ public class User {
 
 	/**
 	 * returns the phone number of the user.
+	 *
 	 * @return
 	 */
 	public String getPhone() {
@@ -438,6 +478,7 @@ public class User {
 
 	/**
 	 * specifies the phone number of the user.
+	 *
 	 * @param aPhone
 	 */
 	public void setPhone(String aPhone) {
@@ -446,6 +487,7 @@ public class User {
 
 	/**
 	 * returns the email address of the user.
+	 *
 	 * @return
 	 */
 	public String getEmail() {
@@ -454,6 +496,7 @@ public class User {
 
 	/**
 	 * specifies the email address of the user.
+	 *
 	 * @param aEmail
 	 */
 	public void setEmail(String aEmail) {
@@ -462,6 +505,7 @@ public class User {
 
 	/**
 	 * returns the fax number of the user.
+	 *
 	 * @return
 	 */
 	public String getFax() {
@@ -470,6 +514,7 @@ public class User {
 
 	/**
 	 * specifies the fax number of the user.
+	 *
 	 * @param aFax
 	 */
 	public void setFax(String aFax) {
@@ -477,8 +522,8 @@ public class User {
 	}
 
 	/**
-	 * returns the individual session timeout for the user -
-	 * not yet supported.
+	 * returns the individual session timeout for the user - not yet supported.
+	 *
 	 * @return
 	 */
 	public int getSessionTimeout() {
@@ -486,8 +531,9 @@ public class User {
 	}
 
 	/**
-	 * specifies the individual session timeout for the user -
-	 * not yet supported.
+	 * specifies the individual session timeout for the user - not yet
+	 * supported.
+	 *
 	 * @param session_timeout
 	 */
 	public void setSessionTimeout(int session_timeout) {
@@ -512,6 +558,7 @@ public class User {
 	/**
 	 * checks if the user has a certain right. The right is passed as a string
 	 * which associates the key of the right.
+	 *
 	 * @param aRight
 	 * @return
 	 */
@@ -522,6 +569,7 @@ public class User {
 	/**
 	 * checks if the user has a certain role. The role is passed as a string
 	 * which associates the key of the role.
+	 *
 	 * @param aRole
 	 * @return
 	 */
@@ -531,6 +579,7 @@ public class User {
 
 	/**
 	 * returns the roles of the user.
+	 *
 	 * @return
 	 */
 	public Roles getRoles() {
@@ -539,6 +588,8 @@ public class User {
 
 	/**
 	 * returns an unmodifiable set of rights for this user instance.
+	 *
+	 * @param aNamespace
 	 * @return
 	 */
 	public Rights getRights(String aNamespace) {
@@ -555,6 +606,7 @@ public class User {
 
 	/**
 	 * returns an unmodifiable set of rights for this user instance.
+	 *
 	 * @return
 	 */
 	public Rights getRights() {
@@ -563,6 +615,7 @@ public class User {
 
 	/**
 	 * returns an unmodifiable set of role ids for this user instance.
+	 *
 	 * @return
 	 */
 	public Set<String> getRoleIdSet() {
@@ -571,6 +624,7 @@ public class User {
 
 	/**
 	 * returns an unmodifiable set of right ids for this user instance.
+	 *
 	 * @return
 	 */
 	public Set<String> getRightIdSet() {

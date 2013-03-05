@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - WebSocket NIO Engine
-//	Copyright (c) 2011 Innotrade GmbH, jWebSocket.org, Author: Jan Gnezda
+//	jWebSocket - NioTcpConnector (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tcp.nio;
 
@@ -41,6 +44,12 @@ public class NioTcpConnector extends BaseConnector {
 	private boolean mIsAfterSSLHandshake;
 	private SSLHandler mSSLHandler;
 
+	/**
+	 *
+	 * @param aEngine
+	 * @param aRemoteAddress
+	 * @param aRemotePort
+	 */
 	public NioTcpConnector(NioTcpEngine aEngine, InetAddress aRemoteAddress,
 			int aRemotePort) {
 		super(aEngine);
@@ -51,10 +60,18 @@ public class NioTcpConnector extends BaseConnector {
 		mWorkerId = -1;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public SSLHandler getSSLHandler() {
 		return mSSLHandler;
 	}
 
+	/**
+	 *
+	 * @param aSSLHandler
+	 */
 	public void setSSLHandler(SSLHandler aSSLHandler) {
 		this.mSSLHandler = aSSLHandler;
 	}
@@ -103,14 +120,25 @@ public class NioTcpConnector extends BaseConnector {
 		return mRemotePort;
 	}
 
+	/**
+	 *
+	 */
 	public void wsHandshakeValidated() {
 		mIsAfterWSHandshake = true;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public boolean isAfterWSHandshake() {
 		return mIsAfterWSHandshake;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public boolean isAfterSSLHandshake() {
 		return mIsAfterSSLHandshake;
 	}
@@ -125,6 +153,10 @@ public class NioTcpConnector extends BaseConnector {
 		}
 	}
 
+	/**
+	 *
+	 * @param aPacket
+	 */
 	public void flushPacket(WebSocketPacket aPacket) {
 		if (aPacket.size() > getMaxFrameSize()) {
 			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(this, aPacket.size()));
@@ -139,14 +171,25 @@ public class NioTcpConnector extends BaseConnector {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getWorkerId() {
 		return mWorkerId;
 	}
 
+	/**
+	 *
+	 * @param aWorkerId
+	 */
 	public void setWorkerId(int aWorkerId) {
 		this.mWorkerId = aWorkerId;
 	}
 
+	/**
+	 *
+	 */
 	public void releaseWorker() {
 		mWorkerId = -1;
 	}

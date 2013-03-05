@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Wrapper for Token based PlugIns (Convenience Class)
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	jWebSocket - TokenPlugIn (Convenience Class) (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins;
 
@@ -47,9 +50,17 @@ public class TokenPlugIn extends BasePlugIn {
 
 	private String mNamespace = null;
 
+	/**
+	 *
+	 * @param aConnector
+	 */
 	public void processLogon(WebSocketConnector aConnector) {
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 */
 	public void processLogoff(WebSocketConnector aConnector) {
 	}
 
@@ -191,7 +202,6 @@ public class TokenPlugIn extends BasePlugIn {
 	 * Convenience method, just a wrapper for token server method
 	 * <tt>sendToken</tt> to simplify token plug-in code.
 	 *
-	 * @param aSource
 	 * @param aTarget
 	 * @param aToken
 	 */
@@ -202,6 +212,12 @@ public class TokenPlugIn extends BasePlugIn {
 		lServer.sendToken(aTarget, aToken);
 	}
 
+	/**
+	 *
+	 * @param aTarget
+	 * @param aToken
+	 * @param aListener
+	 */
 	public void sendTokenInTransaction(WebSocketConnector aTarget, Token aToken,
 			IPacketDeliveryListener aListener) {
 		TokenServer lServer = getServer();
@@ -210,6 +226,12 @@ public class TokenPlugIn extends BasePlugIn {
 		lServer.sendTokenInTransaction(aTarget, aToken, aListener);
 	}
 
+	/**
+	 *
+	 * @param aTarget
+	 * @param aToken
+	 * @param aFragmentSize
+	 */
 	public void sendTokenFragmented(WebSocketConnector aTarget, Token aToken, int aFragmentSize) {
 		TokenServer lServer = getServer();
 		Assert.notNull(lServer, "Token server reference cannot be null!");
@@ -217,6 +239,13 @@ public class TokenPlugIn extends BasePlugIn {
 		lServer.sendTokenFragmented(aTarget, aToken, aFragmentSize);
 	}
 
+	/**
+	 *
+	 * @param aTarget
+	 * @param aToken
+	 * @param aFragmentSize
+	 * @param aListener
+	 */
 	public void sendTokenInTransaction(WebSocketConnector aTarget, Token aToken,
 			int aFragmentSize, IPacketDeliveryListener aListener) {
 		TokenServer lServer = getServer();
@@ -225,6 +254,11 @@ public class TokenPlugIn extends BasePlugIn {
 		lServer.sendTokenInTransaction(aTarget, aToken, aFragmentSize, aListener);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aChunkable
+	 */
 	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable) {
 		TokenServer lServer = getServer();
 		Assert.notNull(lServer, "Token server reference cannot be null!");
@@ -232,6 +266,12 @@ public class TokenPlugIn extends BasePlugIn {
 		lServer.sendChunkable(aConnector, aChunkable);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aChunkable
+	 * @param aListener
+	 */
 	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable,
 			IChunkableDeliveryListener aListener) {
 		TokenServer lServer = getServer();
@@ -329,6 +369,7 @@ public class TokenPlugIn extends BasePlugIn {
 
 	/**
 	 *
+	 * @param aNamespace
 	 * @return An named application context (spring beans)
 	 */
 	public ApplicationContext getConfigBeanFactory(String aNamespace) {
@@ -340,6 +381,12 @@ public class TokenPlugIn extends BasePlugIn {
 		return JWebSocketBeanFactory.getInstance(aNamespace);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aAuthority
+	 * @return
+	 */
 	public boolean hasAuthority(WebSocketConnector aConnector, String aAuthority) {
 		String lAuthenticationMethod = getAuthenticationMethod();
 

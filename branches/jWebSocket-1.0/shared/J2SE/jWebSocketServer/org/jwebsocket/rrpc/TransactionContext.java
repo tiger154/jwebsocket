@@ -1,18 +1,21 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
-//  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
-//  ---------------------------------------------------------------------------
-//  This program is free software; you can redistribute it and/or modify it
-//  under the terms of the GNU Lesser General Public License as published by the
-//  Free Software Foundation; either version 3 of the License, or (at your
-//  option) any later version.
-//  This program is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//  more details.
-//  You should have received a copy of the GNU Lesser General Public License along
-//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//  ---------------------------------------------------------------------------
+//  jWebSocket - TransactionContext (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.rrpc;
 
 import java.util.Map;
@@ -22,8 +25,8 @@ import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 
 /**
- * The Transaction context is a collection of resources used to success
- * back to the target client the response on a S2C call
+ * The Transaction context is a collection of resources used to success back to
+ * the target client the response on a S2C call
  *
  * @author kyberneees
  */
@@ -36,6 +39,13 @@ public class TransactionContext {
 	private double elapsedTime;
 	private WebSocketConnector senderConnector;
 
+	/**
+	 *
+	 * @param aServer
+	 * @param aSenderConnector
+	 * @param aRequest
+	 * @param aResources
+	 */
 	public TransactionContext(TokenServer aServer, WebSocketConnector aSenderConnector,
 			Token aRequest, Map<String, Object> aResources) {
 		server = aServer;
@@ -44,41 +54,73 @@ public class TransactionContext {
 		senderConnector = aSenderConnector;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Token getRequest() {
 		return request;
 	}
 
+	/**
+	 *
+	 * @param request
+	 */
 	public void setRequest(Token request) {
 		this.request = request;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Map<String, Object> getResources() {
 		return resources;
 	}
 
+	/**
+	 *
+	 * @param resources
+	 */
 	public void setResources(Map<String, Object> resources) {
 		this.resources = resources;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public WebSocketServer getServer() {
 		return server;
 	}
 
+	/**
+	 *
+	 * @param server
+	 */
 	public void setServer(TokenServer server) {
 		this.server = server;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public WebSocketConnector getSenderConnector() {
 		return senderConnector;
 	}
 
+	/**
+	 *
+	 * @param senderConnector
+	 */
 	public void setSenderConnector(WebSocketConnector senderConnector) {
 		this.senderConnector = senderConnector;
 	}
 
 	/**
 	 * Notify the sender connector about the success transaction
-	 * 
+	 *
 	 * @param response The response from the target client
 	 */
 	public void success(Object response) {
@@ -101,7 +143,7 @@ public class TransactionContext {
 
 	/**
 	 * Notify the sender client about the failure transaction
-	 * 
+	 *
 	 * @param reason Failure reason
 	 * @param message Custom failure message
 	 */
@@ -130,16 +172,16 @@ public class TransactionContext {
 	}
 
 	/**
-	 * @return The complete time in nanoseconds passed from the "sent" time mark to 
-	 * the "response received" time mark
+	 * @return The complete time in nanoseconds passed from the "sent" time mark
+	 * to the "response received" time mark
 	 */
 	public double getElapsedTime() {
 		return elapsedTime;
 	}
 
 	/**
-	 * @param elapsedTime The complete time in nanoseconds passed from the "sent" 
-	 * time mark to the "response received" time mark
+	 * @param elapsedTime The complete time in nanoseconds passed from the
+	 * "sent" time mark to the "response received" time mark
 	 */
 	public void setElapsedTime(double elapsedTime) {
 		this.elapsedTime = elapsedTime;
