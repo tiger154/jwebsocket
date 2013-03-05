@@ -504,12 +504,12 @@
 		<right>
 			<ns>org.jwebsocket.plugins.system</ns>
 			<id>broadcast</id>
-			<description>Broadcast message to all other clients.</description>
+			<description>Allow to broadcast message to all other clients.</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.system</ns>
 			<id>send</id>
-			<description>Send message to a single target client.</description>
+			<description>Allow to send message to a single target client.</description>
 		</right>
 
 		<!-- configuration of chat plug-in specific rights -->
@@ -722,7 +722,7 @@
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<id>exists</id>
-			<description>Allows to know if a file exists</description>
+			<description>Allows to detect if a file exists</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
@@ -737,7 +737,7 @@
 		<right>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<id>observe</id>
-			<description>Allows to observer changes in files of the file system</description>
+			<description>Allows to monitor changes in files of the file system</description>
 		</right>
 
 		<!-- ItemStorage rights -->
@@ -1657,9 +1657,8 @@
 		
 		<!-- jQuery Mobile Form plugin -->
 		<plugin>
-			<name>org.jwebsocket.plugins.jquery.JQueryFormsPlugIn</name>
-			<ns>jws.jq.mobile.user</ns>
-			<id>jWebSocketJQueryPlugIn</id>
+			<name>org.jwebsocket.plugins.jquery.JQueryDemoPlugIn</name>
+			<id>jWebSocketDemoPlugIn</id>
 			<jar>jWebSocketJQueryPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>

@@ -16,8 +16,10 @@
 			
 			<includes>
 				<include>${groupId}:${artifactId}</include>
+				<!--
 				<include>org.slf4j:slf4j-api</include>
 				<include>org.slf4j:slf4j-log4j12</include>
+				-->
 				<include>log4j:log4j</include>
 				<include>org.jdom:jdom</include>
 				<include>commons-io:commons-io</include>
