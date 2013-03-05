@@ -1,20 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket Twitter Plug-In
-//  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
+//	jWebSocket Twitter Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//  THIS CODE IS FOR RESEARCH, EVALUATION AND TEST PURPOSES ONLY!
-//  THIS CODE MAY BE SUBJECT TO CHANGES WITHOUT ANY NOTIFICATION!
-//	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.twitter;
 
@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
@@ -52,12 +53,18 @@ import twitter4j.auth.RequestToken;
 public class TwitterPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	// if namespace changed update client plug-in accordingly!
+	private static final String NS_TWITTER = JWebSocketServerConstants.NS_BASE + ".plugins.twitter";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket FileSystemPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket FileSystemPlugIn - Community Edition";
 	private static final String TWITTER_VAR = "$twitter";
 	private static final String OAUTH_REQUEST_TOKEN = "$twUsrReqTok";
 	private static final String OAUTH_VERIFIER = "$twUsrVerifier";
 	private static final String TWITTER_STREAM = "$twStream";
-	// if namespace changed update client plug-in accordingly!
-	private static final String NS_TWITTER = JWebSocketServerConstants.NS_BASE + ".plugins.twitter";
 	// the global Twitter object is used for general, non user specific information
 	private Twitter mTwitter = null;
 	private final static int MAX_STREAM_KEYWORDS_PER_CONNECTION = 5;
@@ -105,6 +112,36 @@ public class TwitterPlugIn extends TokenPlugIn {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating Twitter plug-in"));
 		}
 
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
 	}
 
 	@Override
