@@ -57,7 +57,16 @@ Ext.define('IS.controller.Item', {
 		this.application.on('itemSaved', function(aEvent){
 			var lCollectionTab = this.getWorkspace().queryById(aEvent.collectionName);
 			if (lCollectionTab){
-				lCollectionTab.down('grid').getStore().reload();
+				var lGrid = lCollectionTab.down('grid');
+				var lStore = lGrid.getStore();
+				var lDef = self.application.collection2def[aEvent.collectionName];
+				lStore.reload();
+				lStore.on('load', function(){
+					var lRowIndex = this.find('id', aEvent.item.attrs['id']); 
+					if (lRowIndex >= 0){
+						lGrid.getView().select(lRowIndex);
+					}
+				});
 			}
 		}, this);
 		this.application.on('itemRemoved', function(aEvent){

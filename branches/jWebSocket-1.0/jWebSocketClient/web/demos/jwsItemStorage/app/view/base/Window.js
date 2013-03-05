@@ -20,7 +20,8 @@ Ext.define('IS.view.base.Window', {
 					Ext.tip.QuickTipManager.register({
 						target: lField.getId(),
 						text: lField.tooltip,
-						title: 'Description:'
+						title: 'Description:',
+						mouseOffset: [10,0]
 					});
 				});
 			}
