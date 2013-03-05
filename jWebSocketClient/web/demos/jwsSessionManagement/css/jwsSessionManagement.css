@@ -170,6 +170,7 @@
 	-moz-border-radius: 6px 6px 6px 6px;
     -webkit-border-radius: 6px 6px 6px 6px;
     border-radius: 6px 6px 6px 6px;
+	word-wrap: break-word;
 }
 
 .keys_list{

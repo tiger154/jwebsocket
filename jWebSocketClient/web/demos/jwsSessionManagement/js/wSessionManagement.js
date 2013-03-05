@@ -104,8 +104,14 @@ $.widget("jws.sessionManagement", {
 	keys: function( ) {
 		var lClientId = w.SM.eKeysClient.val( );
 		var lIsPublic = (w.SM.eKeysPublic.attr("checked")) ? true : false;
-
-		mWSC.sessionKeys(lClientId, lIsPublic);
+		var lCallbacks = {
+			OnSuccess: function(aToken) {
+				w.SM.eClientId.text(lClientId);
+				// Once the client saves the key ask again for the list
+				w.SM.updateLists(aToken);
+			}
+		}
+		mWSC.sessionKeys(lClientId, lIsPublic, lCallbacks);
 	},
 	remove: function( ) {
 		var lKey = w.SM.eRemoveKey.val( );
