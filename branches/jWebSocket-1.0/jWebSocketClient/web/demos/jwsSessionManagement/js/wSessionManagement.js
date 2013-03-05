@@ -32,6 +32,7 @@ $.widget("jws.sessionManagement", {
 		this.eBtnRemove = this.element.find("#remove_btn");
 		this.eBtnGetAll = this.element.find("#getall_btn");
 		this.eBtnGetMany = this.element.find("#getmany_btn");
+		this.mAuthUser = "";
 
 		w.SM = this;
 		w.SM.registerEvents( );
@@ -49,6 +50,7 @@ $.widget("jws.sessionManagement", {
 				log("<font style='color:#888'>" + JSON.stringify(aToken) + "</font>");
 			},
 			OnWelcome: function(aEvent) {
+				w.SM.mAuthUser = aEvent.sourceId;
 				w.SM.eClientId.text(aEvent.sourceId || "-");
 
 				mWSC.sessionKeys(aEvent.sourceId, false, {
@@ -78,6 +80,7 @@ $.widget("jws.sessionManagement", {
 				lPublic = (w.SM.ePutPublic.attr("checked")) ? true : false;
 		var lCallbacks = {
 			OnSuccess: function(aToken) {
+				w.SM.eClientId.text( w.SM.mAuthUser );
 				// Once the client saves the key ask again for the list
 				w.SM.getKeys(w.SM.eClientId.text( ));
 			}
@@ -109,6 +112,7 @@ $.widget("jws.sessionManagement", {
 		var lPublic = (w.SM.eRemovePublic.attr("checked")) ? true : false;
 		var lCallbacks = {
 			OnSuccess: function(aToken) {
+				w.SM.eClientId.text( w.SM.mAuthUser );
 				// Once the client saves the key ask again for the list
 				w.SM.getKeys(w.SM.eClientId.text( ));
 			}
@@ -118,8 +122,14 @@ $.widget("jws.sessionManagement", {
 	getAll: function( ) {
 		var lClientId = w.SM.eGetAllClient.val( );
 		var lPublic = (w.SM.eGetAllPublic.attr("checked")) ? true : false;
-
-		mWSC.sessionGetAll(lClientId, lPublic);
+		var lCallbacks = {
+			OnSuccess: function(aToken) {
+				w.SM.eClientId.text(lClientId);
+				// Once the client saves the key ask again for the list
+				w.SM.updateListsAll(aToken);
+			}
+		}
+		mWSC.sessionGetAll(lClientId, lPublic, lCallbacks);
 	},
 	getMany: function( ) {
 		var lClients = w.SM.eGetManyClient.val( ).replace(" ", "").split(",");
@@ -151,6 +161,21 @@ $.widget("jws.sessionManagement", {
 					w.SM.addKeyToList(lPublicKey[ 1 ], w.SM.ePublicList);
 				} else {
 					w.SM.addKeyToList(lData, w.SM.ePrivateList);
+				}
+			}
+		}
+	},
+	updateListsAll: function(aToken) {
+		w.SM.clearList(w.SM.ePublicList, true);
+		w.SM.clearList(w.SM.ePrivateList, false);
+		var lData = "", lPublicKey = "";
+		for (var lIdx in aToken.data) {
+			if (lIdx !== "$created_at") {
+				lPublicKey = lIdx.trim( ).split("::");
+				if (lPublicKey.length > 1) {
+					w.SM.addKeyToList(lPublicKey[1] + ": " + aToken.data[ lIdx ], w.SM.ePublicList);
+				} else {
+					w.SM.addKeyToList(lIdx + ": " + aToken.data[ lIdx ], w.SM.ePrivateList);
 				}
 			}
 		}
