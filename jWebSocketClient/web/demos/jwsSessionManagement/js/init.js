@@ -63,17 +63,6 @@ function init( ) {
 		linesToDelete: 20
 	});
 	
-	var lCallbacks = {
-		OnOpen: function( aEvent ) { },
-		OnClose: function( aEvent ){ },
-		OnMessage: function( aEvent, aToken ) {
-			log( "<font style='color:#888'>" + JSON.stringify(aToken) + "</font>" );
-		},
-		OnWelcome: function( aEvent ) { },
-		OnGoodBye: function( aEvent ) { }
-	};
-		
-	$( "#demo_box" ).auth( lCallbacks );
 	$( "#demo_box" ).sessionManagement( );
 }
 
