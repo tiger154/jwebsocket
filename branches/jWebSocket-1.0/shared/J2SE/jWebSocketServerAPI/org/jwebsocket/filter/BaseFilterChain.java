@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - BaseFilterChain Implementation
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH
+//	jWebSocket - BaseFilterChain Implementation (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.filter;
 
@@ -45,15 +48,22 @@ public class BaseFilterChain implements WebSocketFilterChain {
 	public WebSocketServer getServer() {
 		return mServer;
 	}
-	
-	// TODO: Filters are currently organized in a map, which does not allow to specify an order. This needs to be changed!
 
+	// TODO: Filters are currently organized in a map, which does not allow to specify an order. This needs to be changed!
+	/**
+	 *
+	 * @param aFilter
+	 */
 	@Override
 	public void addFilter(WebSocketFilter aFilter) {
 		mFilters.add(aFilter);
 		aFilter.setFilterChain(this);
 	}
 
+	/**
+	 *
+	 * @param aFilter
+	 */
 	@Override
 	public void removeFilter(WebSocketFilter aFilter) {
 		mFilters.remove(aFilter);
@@ -69,6 +79,11 @@ public class BaseFilterChain implements WebSocketFilterChain {
 		return mFilters;
 	}
 
+	/**
+	 *
+	 * @param aId
+	 * @return
+	 */
 	@Override
 	public WebSocketFilter getFilterById(String aId) {
 		if (aId != null) {
@@ -82,6 +97,12 @@ public class BaseFilterChain implements WebSocketFilterChain {
 		return null;
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aPacket
+	 * @return
+	 */
 	@Override
 	public FilterResponse processPacketIn(WebSocketConnector aConnector, WebSocketPacket aPacket) {
 		FilterResponse lResponse = new FilterResponse();
@@ -94,6 +115,13 @@ public class BaseFilterChain implements WebSocketFilterChain {
 		return lResponse;
 	}
 
+	/**
+	 *
+	 * @param aSource
+	 * @param aTarget
+	 * @param aPacket
+	 * @return
+	 */
 	@Override
 	public FilterResponse processPacketOut(WebSocketConnector aSource, WebSocketConnector aTarget, WebSocketPacket aPacket) {
 		FilterResponse lResponse = new FilterResponse();
@@ -106,6 +134,11 @@ public class BaseFilterChain implements WebSocketFilterChain {
 		return lResponse;
 	}
 
+	/**
+	 *
+	 * @param aPosition
+	 * @param aFilter
+	 */
 	@Override
 	public void addFilter(Integer aPosition, WebSocketFilter aFilter) {
 		mFilters.add(aPosition, aFilter);

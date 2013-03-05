@@ -1,17 +1,21 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - Copyright (c) 2010 jwebsocket.org
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+// jWebSocket - IOFuture (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.async;
 
 import org.jwebsocket.api.WebSocketConnector;
@@ -65,6 +69,7 @@ public interface IOFuture {
   /**
    * Returns a connector where the I/O operation associated with this
    * future takes place.
+   * @return 
    */
   WebSocketConnector getConnector();
 
@@ -72,18 +77,21 @@ public interface IOFuture {
    * Returns {@code true} if and only if this future is
    * complete, regardless of whether the operation was successful, failed,
    * or cancelled.
+   * @return 
    */
   boolean isDone();
 
   /**
    * Returns {@code true} if and only if this future was
    * cancelled by a {@link #cancel()} method.
+   * @return 
    */
   boolean isCancelled();
 
   /**
    * Returns {@code true} if and only if the I/O operation was completed
    * successfully.
+   * @return 
    */
   boolean isSuccess();
 
@@ -121,6 +129,7 @@ public interface IOFuture {
    * Marks this future as a failure and notifies all
    * listeners.
    *
+   * @param cause 
    * @return {@code true} if and only if successfully marked this future as
    *         a failure. Otherwise {@code false} because this future is
    *         already marked as either a success or a failure.
@@ -133,6 +142,9 @@ public interface IOFuture {
    * not do anything and return {@code false} if this future is complete
    * already.
    *
+   * @param amount 
+   * @param current 
+   * @param total 
    * @return {@code true} if and only if notification was made.
    */
   boolean setProgress(long amount, long current, long total);
@@ -142,6 +154,7 @@ public interface IOFuture {
    * specified listener is notified when this future is
    * {@linkplain #isDone() done}.  If this future is already
    * completed, the specified listener is notified immediately.
+   * @param listener 
    */
   void addListener(IOFutureListener listener);
 
@@ -151,6 +164,7 @@ public interface IOFuture {
    * future is {@linkplain #isDone() done}.  If the specified
    * listener is not associated with this future, this method
    * does nothing and returns silently.
+   * @param listener 
    */
   void removeListener(IOFutureListener listener);
 
