@@ -1,7 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket - PingpongBall (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.gaming.pingpong.objects;
 
 import org.jwebsocket.gaming.pingpong.events.Counter;
@@ -26,6 +40,10 @@ public final class PingpongBall extends Ball {
 	private int mBallSpeed;
 	private PingpongStage mPingpongStage;
 
+	/**
+	 *
+	 * @param aPingpongStage
+	 */
 	public PingpongBall(PingpongStage aPingpongStage) {
 		this.mBallMoveX = 0;
 		this.mBallMoveY = 0;
@@ -46,6 +64,9 @@ public final class PingpongBall extends Ball {
 		initBall();
 	}
 
+	/**
+	 *
+	 */
 	public void initBall() {
 		mBallSpeed = Math.round(mPingpongStage.getStageWidth() / 40);
 
@@ -60,30 +81,58 @@ public final class PingpongBall extends Ball {
 
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getMoveBallX() {
 		return this.mBallMoveX;
 	}
 
+	/**
+	 *
+	 * @param aMoveBallX
+	 */
 	public void setMoveBallX(int aMoveBallX) {
 		this.mBallMoveX = aMoveBallX;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getMoveBallY() {
 		return this.mBallMoveY;
 	}
 
+	/**
+	 *
+	 * @param ballMoveY
+	 */
 	public void setMoveBallY(int ballMoveY) {
 		this.mBallMoveY = ballMoveY;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getSpeedBall() {
 		return this.mBallSpeed;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getBallX() {
 		return this.mBallX;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getBallY() {
 		return this.mBallY;
 	}

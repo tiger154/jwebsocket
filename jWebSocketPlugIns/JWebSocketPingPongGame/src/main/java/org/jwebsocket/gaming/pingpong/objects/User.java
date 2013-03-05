@@ -19,6 +19,13 @@ public class User implements IMongoDocument {
 	private String mPwdName;
 	private int mWins, mLost, mRanking;
 
+	/**
+	 *
+	 * @param username
+	 * @param pwsname
+	 * @param aWins
+	 * @param aLost
+	 */
 	public User(String username, String pwsname, int aWins, int aLost) {
 		this.mUserName = username;
 		this.mPwdName = pwsname;
@@ -26,18 +33,34 @@ public class User implements IMongoDocument {
 		this.mLost = aLost;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getUserName() {
 		return this.mUserName;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getPwdName() {
 		return this.mUserName;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getWins() {
 		return this.mWins;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getLost() {
 		return this.mLost;
 	}
