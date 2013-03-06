@@ -136,6 +136,7 @@ xcopy %libs%jWebSocketChannelPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketChatPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketClusterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketEventsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketExtProcessPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketFileSystemPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJCaptchaPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJDBCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
@@ -192,6 +193,7 @@ xcopy %conf%APIPlugIn\*.xml %tempdir%conf\APIPlugIn\ /s /i /y
 xcopy %conf%ChannelPlugIn\*.xml %tempdir%conf\ChannelPlugIn\ /s /i /y
 xcopy %conf%EventsPlugIn\*.xml %tempdir%conf\EventsPlugIn\ /s /i /y
 xcopy %conf%FileSystemPlugIn\*.xml %tempdir%conf\FileSystemPlugIn\ /s /i /y
+xcopy %conf%ExtProcessPlugIn\*.xml %tempdir%conf\ExtProcessPlugIn\ /s /i /y
 rem Flash Cross-Domain configuration
 xcopy %conf%FlashPlugIn\*.xml %tempdir%conf\FlashPlugIn\ /s /i /y
 xcopy %conf%ItemStoragePlugIn\*.xml %tempdir%conf\ItemStoragePlugIn\ /s /i /y

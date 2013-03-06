@@ -17,9 +17,11 @@
 		<module>jWebSocketJavaSEClient</module>
 		<module>jWebSocketSamples</module>
 		
-		<module>jWebSocketEngines/jWebSocketJettyEngine</module>
 		<module>jWebSocketEngines/jWebSocketTomcatEngine</module>
-		<module>jWebSocketEngines/jWebSocketGrizzlyEngine</module>
+		<!-- Jetty needs to be updated to be updated to latest version-->
+		<!-- <module>jWebSocketEngines/jWebSocketJettyEngine</module> -->
+		<!-- Grizzly/Glassfish needs to be updated to latest version -->
+		<!-- <module>jWebSocketEngines/jWebSocketGrizzlyEngine</module> -->
 		<!-- Netty is not yet supported -->
 		<!-- <module>jWebSocketEngines/jWebSocketNettyEngine</module> -->
 		
@@ -35,6 +37,7 @@
 		<module>jWebSocketPlugIns/jWebSocketMailPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketReportingPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketFileSystemPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketExtProcessPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketChannelPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketEventsPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketLoggingPlugIn</module>
@@ -59,7 +62,9 @@
 		
 		<module>jWebSocketAppServer</module>
 		<module>jWebSocketAppSrvDemo</module>
+		<!--
 		<module>jWebSocketJetty</module>
+		-->
 		
 		<!-- <module>jWebSocketGlassFish</module> -->
 		<!-- <module>jWebSocketGlassFishDemo</module> -->
