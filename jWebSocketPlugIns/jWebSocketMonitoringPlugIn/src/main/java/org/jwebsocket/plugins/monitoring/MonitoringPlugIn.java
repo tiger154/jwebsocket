@@ -84,7 +84,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	 */
 	public MonitoringPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
-		this.setNamespace(aConfiguration.getNamespace());
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating Monitoring plug-in...");
 		}
