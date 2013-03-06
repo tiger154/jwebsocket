@@ -1674,9 +1674,9 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<setting key="sHeight">290</setting>
-				<setting key="sWidth">478</setting>
-				<setting key="dbHost">localhost</setting>
+				<setting key="sHeight">286</setting>
+				<setting key="sWidth">464</setting>
+				<setting key="dbHost">127.0.0.1</setting>
 				<setting key="dbPort">27017</setting>
 				<setting key="dbDay">30</setting>
 				<setting key="dbTime">1</setting>
