@@ -275,32 +275,32 @@ input.enabled{
 /*---------------------------------------------------------------------------*/
 /* buttons */
 /*---------------------------------------------------------------------------*/
-#sound .c, #pause .c{
+#sound .btn_center, #pause .btn_center{
 	padding-left: 0px !important; 
 	padding-right: 0px !important; 
 }
 
-.button .c .audio_on{
+.button .btn_center .audio_on{
 	float: left;
 	width: 17px;
 	height: 18px;
     background: url(images/btn_audio_n.png) 1px no-repeat;
 }
 
-.button .c .audio_off{
+.button .btn_center .audio_off{
 	float: left;
 	width: 17px;
 	height: 18px;
     background: url(images/btn_audio_p.png) 1px no-repeat;
 }
 
-.button .c .pause{
+.button .btn_center .pause{
 	float: left;
 	width: 12px;
 	height: 18px;
     background: url(images/btn_pause_n.png) 1px no-repeat;
 }
-.button .c .play{
+.button .btn_center .play{
 	float: left;
 	width: 12px;
 	height: 18px;
