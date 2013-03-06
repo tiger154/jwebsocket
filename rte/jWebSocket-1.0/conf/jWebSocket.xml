@@ -1666,7 +1666,6 @@
 		</plugin>
 		
 		<!-- jWeSocket Ping-Pong Game Plug-in -->
-		<!--
 		<plugin>
 			<name>cu.uci.hab.pingpong.plugin.PingPongPlugIn</name>
 			<id>jws.user</id>
@@ -1684,7 +1683,7 @@
 				<setting key="dbTime">1</setting>
 			</settings>
 		</plugin>
-		-->
+		
 		
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
