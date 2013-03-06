@@ -7,8 +7,8 @@ Ext.require([
 	'Ext.tip.QuickTipManager',
 	'Ext.data.*'
 ]);
-NS_MONITORING = jws.NS_BASE + "plugins.monitoring";
-NS_SYSTEM = jws.NS_BASE + "plugins.system";
+NS_MONITORING = jws.NS_BASE + ".plugins.monitoring";
+NS_SYSTEM = jws.NS_BASE + ".plugins.system";
 
 // Token types
 TT_COMPUTER_INFO = "computerInfo";
@@ -22,7 +22,6 @@ TT_REGISTER = "register";
 
 Ext.onReady(function( ) {
 	Ext.tip.QuickTipManager.init( );
-
 
 	// Namespaces
 	var
@@ -87,11 +86,11 @@ function initDemo( ) {
 		fields: ['name', 'Plugins in Use']
 	});
 
-	var plugin = {};
+	var lPlugin = {};
 	var monthError = false;
 	var yearError = false;
 
-	plugin.processToken = function(aToken) {
+	lPlugin.processToken = function(aToken) {
 		if (aToken.ns === NS_MONITORING) {
 			if (aToken.type === TT_COMPUTER_INFO) {
 				var memory = parseInt(aToken.usedMemPercent);
@@ -505,16 +504,17 @@ function initDemo( ) {
 			}
 		}
 
-		else if (aToken.ns == NS_SYSTEM) {
-			if (aToken.type == TT_WELCOME) {
-				lClientId.dom.innerHTML = "Client-ID: " + aToken.sourceId;
-				lClientStatus.dom.innerHTML = "online";
-				lClientStatus.dom.className = "authenticated";
+		else if (aToken.ns === NS_SYSTEM) {
+			console.log("here");
+			if (aToken.type === TT_WELCOME) {
+				Ext.get("client_id").dom.innerHTML = "Client-ID: " + aToken.sourceId;
+				Ext.get("client_status").dom.innerHTML = "online";
+				Ext.get("client_status").dom.className = "authenticated";
 			}
 		}
 	}
 
-	Ext.jws.addPlugIn(plugin);
+	Ext.jws.addPlugIn(lPlugin);
 
 
 	//**************** graphical representations*****************
