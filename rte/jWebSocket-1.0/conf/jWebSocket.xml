@@ -1569,17 +1569,15 @@
 		</plugin>
 		
 		<!-- Monitoring plugin -->
-		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
-			<ns>monitoringPlugin.pcinfo</ns>
-			<id>pcInfo</id>
+			<id>MonitoringPlugIn</id>
 			<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		-->
+		
 
 		<!-- API disclosure plugin -->
 		<plugin>
@@ -1796,6 +1794,16 @@
 			<id>jws.sampleFilter</id>
 			<ns>org.jwebsocket.filters.sample</ns>
 			<jar>jWebSocketSamples-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</filter>
+		
+		<filter>
+			<name>org.jwebsocket.filters.monitoring.MonitoringFilter</name>
+			<id>jws.monitoringFilter</id>
+			<ns>org.jwebsocket.plugins.monitoring</ns>
+			<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
