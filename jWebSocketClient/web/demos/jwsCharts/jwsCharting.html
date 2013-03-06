@@ -5,7 +5,7 @@
         <!-- Comment needs to be BELOW this meta tag! -->
         <!--
         //	****************************************************************************
-        //	jWebSocket Hello World (uses jWebSocket Client and Server)
+        //	jWebSocket Charting (uses jWebSocket Client and Server)
         //	(C) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
         //	****************************************************************************
         //	This program is free software; you can redistribute it and/or modify it
@@ -30,8 +30,8 @@
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsCharts.css"/>
 
-        <!-- JQUERY DEPENDENCIES -->
-        <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+         <!--JQUERY DEPENDENCIES--> 
+        <!--<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>-->
 
         <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
@@ -40,7 +40,7 @@
         <link rel="stylesheet" type="text/css" href="../../lib/ExtJS/css/ext-all.css"/>
         <script type="text/javascript" src="../../lib/ExtJS/ext-all.js"></script>
         <script type="text/javascript" src="../../lib/ExtJS/jwsExtJSPlugin.js"></script>
-        <script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+        <!--<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>-->
 
         <!--  MAIN FILE (CHARTS)  -->
         <script type="text/javascript" src="js/charting.js"></script>
@@ -77,13 +77,14 @@
                 </div>
                 <!--       DOWNLOAD_BUTTON   -->
                 <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
+                    <div id="jws_download_button" class="button onmouseup" 
+						 onmouseover="this.className='button onmouseover'"
                          onmousedown="this.className='button onmousedown'" 
                          onmouseup="this.className='button onmouseup'" 
                          onmouseout="this.className='button onmouseout'" 
                          onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
+                        <div class="btn_left"></div>
+                        <div class="btn_center">Download jWebSocket</div>
                         <div class="r_download"></div>
                     </div>
                 </div>
