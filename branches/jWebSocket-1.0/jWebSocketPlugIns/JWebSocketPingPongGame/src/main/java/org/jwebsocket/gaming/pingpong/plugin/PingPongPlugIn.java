@@ -69,9 +69,8 @@ public class PingPongPlugIn extends TokenPlugIn {
 	public PingPongPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		setNamespace(NS_PINGPONG);
-		// System.out.println(">> Loading the plug-in...");
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("PlugIn instantiated successfully!");
+		if (mLog.isInfoEnabled()) {
+			mLog.info("PingPong plug-in successfully instantiated.");
 		}
 		try {
 			String lHost = (String) aConfiguration.getSettings().get("dbHost");
@@ -91,6 +90,9 @@ public class PingPongPlugIn extends TokenPlugIn {
 			mUserServiceImpl = new UserServiceImpl(lCollection, lDay);
 			Tools.getTimer().scheduleAtFixedRate(mUserServiceImpl, 0,
 					lTime * 1000 * 60 * 60 * 24);
+			if (mLog.isInfoEnabled()) {
+				mLog.info("PingPong plug-in connected to MongoDB.");
+			}
 
 		} catch (Exception ex) {
 			if (mLog.isDebugEnabled()) {
