@@ -1667,9 +1667,8 @@
 		
 		<!-- jWeSocket Ping-Pong Game Plug-in -->
 		<plugin>
-			<name>cu.uci.hab.pingpong.plugin.PingPongPlugIn</name>
+			<name>org.jwebsocket.gaming.pingpong.plugin.PingPongPlugIn</name>
 			<id>jws.user</id>
-			<ns>pingpong</ns>
 			<jar>jWebSocketPingPongGame-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
