@@ -27,14 +27,14 @@ $.widget( "jws.ranking", {
         w.Ranking.onMessage(  );         
     },
     onMessage: function(  ) {        
-        $.jws.bind( 'pingpong:ranking', function( aEvt, aToken ) {
+        $.jws.bind( NS + ':ranking', function( aEvt, aToken ) {
             
             w.Ranking.eRankingDiv.html( "" );
             for ( var i = 0; i < aToken.username.length; i++ ) {
                 w.Ranking.initRanking( aToken.username[i], aToken.wins[i], aToken.lost[i] );
             }                       
         } );    
-        $.jws.bind( 'pingpong:deleteranking', function( aEvt, aToken ) {
+        $.jws.bind( NS + ':deleteranking', function( aEvt, aToken ) {
             w.Ranking.eRankingDiv.html( "" );                                
         } );     
     },

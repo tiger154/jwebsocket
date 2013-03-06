@@ -1,5 +1,14 @@
+#demo_box{
+	width: 718px;
+}
+
 #scenario_container{
-	width: 724px;
+	width: 99%;
+	padding: 3px;
+}
+
+p{
+	margin-bottom: 0;
 }
 
 #demo_box_header_login{
@@ -13,7 +22,7 @@
 #main_content{
 	height: 405px;
 	float: left;
-	width: 724px !important;
+	/*width: 100%;*/
 	-webkit-border-radius: 6px;
     -moz-border-radius: 6px;
 	border-radius: 6px; 
@@ -176,8 +185,8 @@
 	position: relative;
     float:left;
     background: transparent url(images/scenario.png) no-repeat;
-    height: 290px;
-    width: 484px;
+    height: 286px;
+    width: 464px;
 	margin-left: 5px;
 }
 #obj_area{

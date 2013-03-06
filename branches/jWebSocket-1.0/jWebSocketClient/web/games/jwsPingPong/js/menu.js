@@ -39,11 +39,11 @@ $.widget( "jws.menu", {
 		w.menu.onMessage(  );
 	},
 	onMessage: function(  ) {
-		$.jws.bind( 'pingpong:sendnewgame', function( aEvt, aToken ) {
+		$.jws.bind( NS + ':sendnewgame', function( aEvt, aToken ) {
 			w.menu.sendNewGame(  );
 			w.menu.eSendPpause.html( "" );
 		} );
-		$.jws.bind( 'pingpong:pause', function( aEvt, aToken ) {
+		$.jws.bind( NS + ':pause', function( aEvt, aToken ) {
 			console.log( aToken.pause );
 			if(  aToken.pause == "pause"  ) {
 				w.menu.ePause.find( "#play_pause" ).attr( "class", "play" );
@@ -83,16 +83,16 @@ $.widget( "jws.menu", {
 		} );
 	},
 	newGame: function(  ) {
-		$.jws.submit( 'pingpong','sendnewgame' );       
+		$.jws.submit( NS,'sendnewgame' );       
 	},
 	pause: function(  ) {
-		$.jws.submit( 'pingpong','pause' );
+		$.jws.submit( NS,'pause' );
 	},
 	endGame: function(  ) {
-		$.jws.submit( 'pingpong','endgame' );
+		$.jws.submit( NS,'endgame' );
 	},
 	Sound: function(  ) {
-		$.jws.submit( 'pingpong','sound' );
+		$.jws.submit( NS,'sound' );
 		if(  w.menu.mIsSoundActive  ) {
 			w.menu.mIsSoundActive = false;
 			w.menu.eSound.find( "#audio_on_off" ).attr( "class", "audio_off" );
@@ -111,7 +111,7 @@ $.widget( "jws.menu", {
 				var args={
 					newgame: false
 				}; 
-				$.jws.submit( 'pingpong','newgame',args );
+				$.jws.submit( NS,'newgame',args );
 			}
 		}, {
 			id: "buttonYes",
@@ -120,7 +120,7 @@ $.widget( "jws.menu", {
 				var args={
 					newgame:true
 				}; 
-				$.jws.submit( 'pingpong','newgame',args );
+				$.jws.submit( NS,'newgame',args );
 			}
 		}];
 		dialog( "Ping Pong Game", 'You received a New Game request.<b> Would you like to proceed?</b>', true, null, lButtons );
