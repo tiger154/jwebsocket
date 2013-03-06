@@ -29,7 +29,7 @@ $.widget( "jws.stage", {
 		eBoard			= $eStage.find( '#board' );
 		eCounter		= $eStage.find( '#counter' );
 		
-		$.jws.submit( 'pingpong','stage' );
+		$.jws.submit( NS,'stage' );
 		
 		eStage.onMessage(  );
 		eObjArea.hide(  );
@@ -39,23 +39,23 @@ $.widget( "jws.stage", {
 	
 	onMessage: function(  ) {
 		//Creating the scenario
-		$.jws.bind( 'pingpong:stage', function( aEvt, aToken ) {
+		$.jws.bind( NS + ':stage', function( aEvt, aToken ) {
 			eStage.initStage( aToken.width, aToken.height, aToken.gameBorder );
 		} );
-		$.jws.bind( 'pingpong:gameover', function( aEvt, aToken ) { 
+		$.jws.bind( NS + ':gameover', function( aEvt, aToken ) { 
 			eStage.gameOver( aToken.gameover, aToken.message );           
 		} );
 		//Enable or disable the main area with all objects inside
-		$.jws.bind( 'pingpong:objarea', function( aEvt, aToken ) {
+		$.jws.bind( NS + ':objarea', function( aEvt, aToken ) {
 			eStage.objArea( aToken.objarea );   
 		} ); 
 		//Enable or disable the counter
-		$.jws.bind( 'pingpong:counter', function( aEvt, aToken ) {
+		$.jws.bind( NS + ':counter', function( aEvt, aToken ) {
 			//show button pause because game already started
 			w.menu.ePause.show(  );
 			eStage.counter( aToken.counter );           
 		} );
-		$.jws.bind( 'pingpong:sendexit', function( aEvt, aToken ) {
+		$.jws.bind( NS + ':sendexit', function( aEvt, aToken ) {
 			dialog( "Ping Pong Game", aToken.username + ' has left the game', true );
 		} );
 	},

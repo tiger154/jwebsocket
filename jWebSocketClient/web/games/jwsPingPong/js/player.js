@@ -41,17 +41,17 @@ $.widget( "jws.player",  {
 			e: parseInt( aKeyNumber ), 
 			v: aIdentifier
 		};            
-		$.jws.submit( 'pingpong', 'moveplayer',  lArgs );
+		$.jws.submit( NS, 'moveplayer',  lArgs );
 	}, 
 	
 	//all incoming messages from the server
 	onMessage: function(  ) {
 		//Initializing rackets of both players
-		$.jws.bind( 'pingpong:submitrequest',  function( aEvt,  aToken ) {
+		$.jws.bind( NS + ':submitrequest',  function( aEvt,  aToken ) {
 			w.player.initPlayer( aToken.player, aToken.width, aToken.Heigth, aToken.posX, aToken.posY );          
 		} ); 
 		//To update the scores
-		$.jws.bind( 'pingpong:score',  function( aEvt,  aToken ) {
+		$.jws.bind( NS + ':score',  function( aEvt,  aToken ) {
 			w.player.scoreUpdate( aToken.username1, aToken.score1, aToken.username2, aToken.score2 );          
 		} );
 	}, 

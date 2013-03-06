@@ -42,7 +42,7 @@
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
 		<script type="text/javascript" src='../../lib/jQuery/jws-plugin-1.0.js'></script>
 
-        <!--  MAIN JAVASCRIPT FILE   -->
+		<script type="text/javascript" src='js/wAuthentication.js'></script>
         <script type="text/javascript" src='js/ball.js'></script>
         <script type="text/javascript" src='js/chat.js'></script>
         <script type="text/javascript" src='js/connected.js'></script>
@@ -51,7 +51,6 @@
         <script type="text/javascript" src='js/ranking.js'></script>
         <script type="text/javascript" src='js/stage.js'></script>
 
-        <script type="text/javascript" src='js/wAuthentication.js'></script>
 		<script type="text/javascript" src='js/init.js'></script>
     </head>
     <body>
@@ -66,15 +65,7 @@
 					<div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
-                            <div id="logoff_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                 onmousedown="this.className='button onmousedown'" 
-                                 onmouseup="this.className='button onmouseup'" 
-                                 onmouseout="this.className='button onmouseout'" 
-                                 onclick="this.className='button onmouseover'">
-                                <div class="l"></div>
-                                <div class="c">Logout</div>
-                                <div class="r"></div>
-                            </div>
+                            <div id="logoff_button" class="button">Logout</div>
                         </div>
                     </div>
                     <div id="login_area">
@@ -84,24 +75,8 @@
                             <input type="text" id="user_text" value="User" class="disabled"/>
                             <input type="text" id="user_password" value="Password" class="disabled"/>
 						</div>
-                        <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Login</div>
-                            <div class="r"></div>
-                        </div>
-                        <div id="register_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Register</div>
-                            <div class="r"></div>
-                        </div>
+                        <div id="login_button" class="button">Login</div>
+                        <div id="register_button" class="button">Register</div>
                     </div>
 					<div id="register_area">
                         <div id="register_form">
@@ -112,24 +87,8 @@
                             <input type="text" id="register_user_password" value="Password" style="color: graytext"/>
                             <input type="text" id="register_user_password_repeat" value="Password" style="color: graytext"/>
                         </div>
-						<div id="show_register_area_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Register</div>
-                            <div class="r"></div>
-                        </div>
-                        <div id="register_login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Login</div>
-                            <div class="r"></div>
-                        </div>
+						<div id="show_register_area_button" class="button">Register</div>
+                        <div id="register_login_button" class="button">Login</div>
 					</div>
                 </div>
             </div>
@@ -159,54 +118,14 @@
 						<div id="scenario_header">
 							<div id="scenario_header_left">Ranking</div>
 							<div id="scenario_menu">
-								<div id="new_game" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">New Game</div>
-									<div class="r"></div>
-								</div>
-								<!--								<a id="new_game">New Game</a>-->
-								<div id="pause" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c"><div class="pause" id="play_pause"></div></div>
-									<div class="r"></div>
-								</div>
+								<div id="new_game" class="button">New Game</div>
+								<div id="pause" class="button"><div class="pause" id="play_pause"></div></div>
 								<!--								<a id="pause">Pause</a>-->
 
-								<div id="sound" class="button onmouseup"  
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 >
-									<div class="l"></div>
-									<div class="c"><div class="audio_on" id="audio_on_off"></div></div>
-									<div class="r"></div>
-								</div>
+								<div id="sound_btn" class="button"><div class="audio_on" id="audio_on_off"></div></div>
 								<!--								<a id="sound">Sound</a> -->
-								<div id="help" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">?</div>
-									<div class="r"></div>
-								</div>
-								<div id="end_game" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">End Game</div>
-									<div class="r"></div>
-								</div>
+								<div id="help" class="button">?</div>
+								<div id="end_game" class="button">End Game</div>
 								<!--								<a id="end_game">End Game</a>							-->
 							</div>  
 							<div id="scenario_header_right">Online</div>
@@ -255,19 +174,13 @@
 						</div>
 					</div>
                 </div>
-
-                <!--       DOWNLOAD_BUTTON   -->
-                <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
-                        <div class="r_download"></div>
-                    </div>
-                </div>
+				<!--       DOWNLOAD_BUTTON   -->
+				<div id="demo_box_footer">
+					<div id="jws_download_button" class="button download">
+						<a href="http://jwebsocket.org/downloads/downloads.htm" 
+						   target="blank">Download jWebSocket</a>
+					</div>
+				</div>
             </div>
         </div>
     </body>

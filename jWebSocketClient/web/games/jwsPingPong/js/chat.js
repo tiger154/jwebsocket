@@ -95,10 +95,10 @@ $.widget( "jws.chat", {
 		var lArgs = {
 			text: text
 		};
-		$.jws.submit( "pingpong","sms", lArgs );
+		$.jws.submit( NS,"sms", lArgs );
 	},
 	onMessage: function(  ) {
-		$.jws.bind( 'pingpong:sms', function( aEvt, aToken ) {
+		$.jws.bind( NS + ':sms', function( aEvt, aToken ) {
 			if( w.chat.hidden ) {
 				w.chat.eWindow.fadeIn( 150 );
 				w.chat.hidden = false;

@@ -27,13 +27,13 @@ $.widget( "jws.ball", {
     }, 
     onMessage: function(  ) {
      
-        $.jws.bind( 'pingpong:ball', function( aEvt, aToken ) {
+        $.jws.bind( NS + ':ball', function( aEvt, aToken ) {
             w.ball.updateBall( aToken.width, aToken.height );           
         } ); 
-        $.jws.bind( 'pingpong:moveball', function( aEvt, aToken ) {
+        $.jws.bind( NS + ':moveball', function( aEvt, aToken ) {
            w.ball.moveBall( aToken.posX,aToken.posY );           
         } );
-        $.jws.bind( 'pingpong:sound', function( aEvt, aToken ) {
+        $.jws.bind( NS + ':sound', function( aEvt, aToken ) {
             $( "#sound" )[0].play(  );
         } );
     },

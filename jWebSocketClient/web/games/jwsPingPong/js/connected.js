@@ -31,7 +31,7 @@ $.widget( "jws.connected", {
 	},
 	onMessage: function(  ) {
 		//crear la lista de los que estan conectados
-		$.jws.bind( 'pingpong:usser', function( aEvt, aToken ) {
+		$.jws.bind( NS + ':usser', function( aEvt, aToken ) {
 			w.auth.eClientStatus.hide(  ).attr( "class", "" )
 			.addClass( "authenticated" ).text( "authenticated" ).show( );
 			
@@ -54,7 +54,7 @@ $.widget( "jws.connected", {
             
 		} );
 		//recive quien te manda la solicitud de juego
-		$.jws.bind( 'pingpong:sendrequest', function( ev, aToken ) {	
+		$.jws.bind( NS + ':sendrequest', function( ev, aToken ) {	
 			var lButtons = [{
 				id: "buttonNo",
 				text: "No",
@@ -70,11 +70,11 @@ $.widget( "jws.connected", {
 			}];
 			dialog( "Ping Pong Game", "<b>" + aToken.username + "</b>"+' wants to play Ping Pong with you. Would you like to proceed?',true, function(  ) {}, lButtons );
 		} );
-		$.jws.bind( 'pingpong:deleteusser', function( ev, aToken ) {
+		$.jws.bind( NS + ':deleteusser', function( ev, aToken ) {
 			w.conn.ePlayerslist.html( "" );              
 		} );
 		//recive la respuesta donde dice que no asecta la solicitud		
-		$.jws.bind( 'pingpong:submitsequestno', function( ev, aToken ) {
+		$.jws.bind( NS + ':submitsequestno', function( ev, aToken ) {
 			dialog( "Ping Pong Game", aToken.username+' does not want to start a game',true );
 		} );
         
@@ -108,7 +108,7 @@ $.widget( "jws.connected", {
 		var args = {
 			username:username
 		};
-		$.jws.submit( 'pingpong', 'sendrequest', args );
+		$.jws.submit( NS, 'sendrequest', args );
 	},//ha aceptado o no la solicitud
 	has_accepted_request: function( accepted, username ) {
               
@@ -116,6 +116,6 @@ $.widget( "jws.connected", {
 			username: username,
 			accepted: accepted
 		};
-		$.jws.submit( 'pingpong', 'submitsequest', args );        
+		$.jws.submit( NS, 'submitsequest', args );        
 	}        
 } );
