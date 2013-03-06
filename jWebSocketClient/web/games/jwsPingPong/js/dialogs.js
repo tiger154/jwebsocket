@@ -54,11 +54,11 @@ function dialog( aTitle, aMessage, aIsModal, aCloseFunction, aButtons, aWidth ) 
 				lNewButton.attr( "id", aElement.id );
 			}
 
-			lNewButton.append( $( '<div class="l"></div>' ) ).append( $( '<div class="c">'+lText+'</div>' ) ).append( $( '<div class="r"></div>' ) );
+			lNewButton.append( $( '<div class="btn_left"></div>' ) ).append( $( '<div class="btn_center">'+lText+'</div>' ) ).append( $( '<div class="btn_right"></div>' ) );
 			lButtonsArea.append( lNewButton );
 		} );
 	}else{
-		lButton.append( $( '<div class="l"></div>' ) ).append( $( '<div class="c">Ok</div>' ) ).append( $( '<div class="r"></div>' ) );
+		lButton.append( $( '<div class="btn_left"></div>' ) ).append( $( '<div class="btn_center">Ok</div>' ) ).append( $( '<div class="btn_right"></div>' ) );
 		lButton.click( function(  ) {
 			if( aCloseFunction ) {
 				aCloseFunction(  );
