@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -49,6 +50,7 @@ import org.jwebsocket.util.Tools;
 public class PingPongPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger(PingPongPlugIn.class);
+	public static final String NS_PINGPONG = JWebSocketServerConstants.NS_BASE + ".plugins.pingpong";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket FileSystemPlugIn";
@@ -66,7 +68,7 @@ public class PingPongPlugIn extends TokenPlugIn {
 	 */
 	public PingPongPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
-		setNamespace(aConfiguration.getNamespace());
+		setNamespace(NS_PINGPONG);
 		// System.out.println(">> Loading the plug-in...");
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("PlugIn instantiated successfully!");
