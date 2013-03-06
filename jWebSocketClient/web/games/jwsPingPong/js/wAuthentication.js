@@ -20,7 +20,7 @@
 $.widget("jws.authentication", {
 	_init: function(  ) {
 		w.auth = this;
-		NS = jws.NS_BASE + 'plugins.pingpong';
+		NS = jws.NS_BASE + '.plugins.pingpong';
 		w.auth.eLogoffArea = w.auth.element.find("#logoff_area");
 		w.auth.eLogonArea = w.auth.element.find("#login_area");
 		w.auth.eRegisterArea = w.auth.element.find("#register_area");

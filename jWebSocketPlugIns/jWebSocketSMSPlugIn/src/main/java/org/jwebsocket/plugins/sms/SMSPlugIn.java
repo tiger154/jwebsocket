@@ -140,9 +140,9 @@ public class SMSPlugIn extends TokenPlugIn {
 	 */
 	public void sendSms(WebSocketConnector aConnector, Token aToken) throws MalformedURLException, IOException {
 		Token lRes = mProvider.sendSms(aToken);
-
-		mLog.info("Provider returned: " + lRes.toString());
-
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Provider returned: " + lRes.toString());
+		}
 		getServer().setResponseFields(aToken, lRes);
 		sendToken(aConnector, aConnector, lRes);
 	}
