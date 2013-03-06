@@ -1658,7 +1658,7 @@
 		<!-- jQuery Mobile Form plugin -->
 		<plugin>
 			<name>org.jwebsocket.plugins.jquery.JQueryDemoPlugIn</name>
-			<id>jWebSocketDemoPlugIn</id>
+			<id>jWebSocketJQueryPlugIn</id>
 			<jar>jWebSocketJQueryPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
@@ -1668,7 +1668,7 @@
 		<!-- jWeSocket Ping-Pong Game Plug-in -->
 		<plugin>
 			<name>org.jwebsocket.gaming.pingpong.plugin.PingPongPlugIn</name>
-			<id>jws.user</id>
+			<id>jWebSocketPingPongGame</id>
 			<jar>jWebSocketPingPongGame-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
@@ -1681,6 +1681,19 @@
 				<setting key="dbDay">30</setting>
 				<setting key="dbTime">1</setting>
 			</settings>
+		</plugin>
+		
+		<!-- External processes plug-in, e.g. to call perl or other server side scripts -->
+		<plugin>
+			<name>org.jwebsocket.plugins.extprocess.ExtProcessPlugIn</name>
+			<id>jWebSocketExtProcessPlugIn</id>
+			<jar>jWebSocketExtProcessPlugIn-1.0.jar</jar>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ExtProcessPlugIn/extprocess.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
 		</plugin>
 		
 		

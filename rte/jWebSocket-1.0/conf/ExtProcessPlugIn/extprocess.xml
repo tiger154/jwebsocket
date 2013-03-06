@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="org.jwebsocket.plugins.extprocess.settings" class="org.jwebsocket.plugins.extprocess.Settings">
+		<property name="allowedProgs">
+			<map>
+				<!-- list of allowed programs to be called as external processes -->
+				<entry>
+					<key>
+						<value>perl_demo_1</value>
+					</key>
+					<value>C:/Perl/bin/perl.exe ${JWEBSOCKET_HOME}conf/ExtProcessPlugIn/demos/perl/perl_demo_1.pl ${1} ${2}</value>
+				</entry>                
+			</map>
+		</property>
+	</bean>
+</beans>
