@@ -117,6 +117,12 @@ public class AdminPlugIn extends TokenPlugIn {
 	}
 
 	@Override
+	public String getNamespace() {
+		return NS_ADMIN;
+	}
+	
+
+	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
 		String lNS = aToken.getNS();

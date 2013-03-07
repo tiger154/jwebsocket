@@ -42,13 +42,14 @@ public class SharedCanvasPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_SHAREDCANVAS = JWebSocketServerConstants.NS_BASE + ".plugins.sharedcanvas";
+	public static final String NS_SHAREDCANVAS =
+			JWebSocketServerConstants.NS_BASE + ".plugins.sharedcanvas";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
-	private final static String LABEL = "jWebSocket MonitoringPlugIn";
+	private final static String LABEL = "jWebSocket SharedCanvasPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
-	private final static String DESCRIPTION = "jWebSocket MonitoringPlugIn - Community Edition";
+	private final static String DESCRIPTION = "jWebSocket SharedCanvas Plugin - Community Edition";
 	private Collection<WebSocketConnector> mClients;
 
 	/**
@@ -95,6 +96,11 @@ public class SharedCanvasPlugIn extends TokenPlugIn {
 	@Override
 	public String getLicense() {
 		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_SHAREDCANVAS;
 	}
 
 	@Override

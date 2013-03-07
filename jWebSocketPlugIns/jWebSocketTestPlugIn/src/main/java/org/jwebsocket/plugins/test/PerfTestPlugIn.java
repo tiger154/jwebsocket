@@ -22,6 +22,7 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -40,7 +41,15 @@ public class PerfTestPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger(PerfTestPlugIn.class);
 	// if namespace changed update client plug-in accordingly!
-	private static final String NS_TEST = JWebSocketServerConstants.NS_BASE + ".plugins.test";
+	private static final String NS_TEST =
+			JWebSocketServerConstants.NS_BASE + ".plugins.test";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket PerfTestPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION =
+			"jWebSocket Performance Tests PlugIn - Community Edition";
 
 	/**
 	 *
@@ -53,6 +62,41 @@ public class PerfTestPlugIn extends TokenPlugIn {
 		}
 		// specify default name space for admin plugin
 		this.setNamespace(NS_TEST);
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_TEST;
 	}
 
 	@Override

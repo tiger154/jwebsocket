@@ -77,6 +77,12 @@ public class APIPlugIn extends TokenPlugIn {
 		}
 	}
 
+	@Override
+	public String getNamespace() {
+		return NS_INTERFACE;
+	}
+	
+
 	/**
 	 *
 	 * {@inheritDoc }

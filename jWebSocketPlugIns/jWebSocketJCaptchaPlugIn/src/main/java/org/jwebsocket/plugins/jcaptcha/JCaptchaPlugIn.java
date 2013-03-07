@@ -41,7 +41,8 @@ import org.jwebsocket.util.Tools;
 public class JCaptchaPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
-	private static final String NS_JCAPTCHA = JWebSocketServerConstants.NS_BASE + ".plugins.jcaptcha";
+	private static final String NS_JCAPTCHA = 
+			JWebSocketServerConstants.NS_BASE + ".plugins.jcaptcha";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JCaptchaPlugIn";
@@ -90,6 +91,11 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 	@Override
 	public String getLicense() {
 		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_JCAPTCHA;
 	}
 
 	@Override

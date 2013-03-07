@@ -227,6 +227,11 @@ public class SystemPlugIn extends TokenPlugIn {
 		return LICENSE;
 	}
 
+	@Override
+	public String getNamespace() {
+		return NS_SYSTEM;
+	}
+	
 	/**
 	 *
 	 * @return

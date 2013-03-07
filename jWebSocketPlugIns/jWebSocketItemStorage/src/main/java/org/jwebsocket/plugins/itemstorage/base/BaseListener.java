@@ -23,7 +23,7 @@ public class BaseListener implements IItemStorageListener {
 
 	public BaseListener() {
 		mCollectionProvider = (IItemCollectionProvider) JWebSocketBeanFactory
-				.getInstance(ItemStoragePlugIn.NS)
+				.getInstance(ItemStoragePlugIn.NS_ITEM_STORAGE)
 				.getBean("collectionProvider");
 		mItemFactory = mCollectionProvider.getItemStorageProvider().getItemFactory();
 	}

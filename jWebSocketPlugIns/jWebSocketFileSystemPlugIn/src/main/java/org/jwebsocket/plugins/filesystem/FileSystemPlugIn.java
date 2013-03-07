@@ -62,7 +62,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_FILESYSTEM = JWebSocketServerConstants.NS_BASE + ".plugins.filesystem";
+	public static final String NS_FILESYSTEM =
+			JWebSocketServerConstants.NS_BASE + ".plugins.filesystem";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket FileSystemPlugIn";
@@ -185,6 +186,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		if (getServer().getEngines().size() == 1) {
 			stopAliasesMonitor();
 		}
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_FILESYSTEM;
 	}
 
 	@Override

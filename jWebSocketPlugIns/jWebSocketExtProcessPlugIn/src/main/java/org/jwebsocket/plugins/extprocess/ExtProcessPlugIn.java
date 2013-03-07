@@ -117,6 +117,11 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 	}
 
 	@Override
+	public String getNamespace() {
+		return NS_EXTPROCESS;
+	}
+	
+	@Override
 	public synchronized void engineStarted(WebSocketEngine aEngine) {
 	}
 

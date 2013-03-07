@@ -88,6 +88,11 @@ public class RPCPlugIn extends TokenPlugIn {
 	}
 
 	@Override
+	public String getNamespace() {
+		return CommonRpcPlugin.NS_RPC_DEFAULT;
+	}
+
+	@Override
 	@SuppressWarnings("rawtypes")
 	public void engineStarted(WebSocketEngine aEngine) {
 		// we get the instance of the Plugin for the rrpc module:

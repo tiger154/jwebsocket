@@ -85,6 +85,13 @@ public interface WebSocketPlugIn {
 	 * @return
 	 */
 	String getLicense();
+	
+	/**
+	 * returns the Namespace of the plug-in.
+	 *
+	 * @return
+	 */
+	String getNamespace();
 
 	/**
 	 * returns the enabled status of the plug-in.

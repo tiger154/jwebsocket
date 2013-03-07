@@ -52,13 +52,14 @@ public class ReportingPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
-	private static final String NS_REPORTING = JWebSocketServerConstants.NS_BASE + ".plugins.reporting";
+	private static final String NS_REPORTING =
+			JWebSocketServerConstants.NS_BASE + ".plugins.reporting";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
-	private final static String LABEL = "jWebSocket FileSystemPlugIn";
+	private final static String LABEL = "jWebSocket ReportingPlugin";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
-	private final static String DESCRIPTION = "jWebSocket FileSystemPlugIn - Community Edition";
+	private final static String DESCRIPTION = "jWebSocket ReportingPlugin - Community Edition";
 	private static final String VAR_FILES_TO_DELETE = NS_REPORTING + ".filesToDelete";
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
@@ -118,6 +119,11 @@ public class ReportingPlugIn extends TokenPlugIn {
 	@Override
 	public String getLicense() {
 		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_REPORTING;
 	}
 
 	@Override

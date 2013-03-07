@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
@@ -38,7 +39,14 @@ import org.springframework.context.ApplicationContext;
 public class JMSPlugIn extends TokenPlugIn {
 
 	private Logger mLog = Logging.getLogger(getClass());
-	private static final String NS_JMS = JWebSocketServerConstants.NS_BASE + ".plugins.jms";
+	private static final String NS_JMS =
+			JWebSocketServerConstants.NS_BASE + ".plugins.jms";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket JMSPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket JMSPlugIn - Community Edition";
 	private JmsManager mJmsManager = null;
 
 	public JMSPlugIn(PluginConfiguration aConfiguration) {
@@ -59,6 +67,41 @@ public class JMSPlugIn extends TokenPlugIn {
 		if (mLog.isInfoEnabled()) {
 			mLog.info("JMS plug-in successfully loaded.");
 		}
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_JMS;
 	}
 
 	/**
@@ -131,7 +174,6 @@ public class JMSPlugIn extends TokenPlugIn {
 	private void unlisten(WebSocketConnector aConnector, Token aToken) {
 		mLog.debug("Processing 'unlisten'...");
 		executeAction(createActionInput(aConnector, aToken, "Successfully unlisten jms listener"), new ActionCommand() {
-
 			@Override
 			void execute(ActionInput aInput) throws Exception {
 				mJmsManager.deregisterConnectorFromMessageListener(aInput);
@@ -144,7 +186,6 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(
 				createActionInput(aConnector, aToken, "Successfully got jms listener", RightJms.LISTEN,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-
 			@Override
 			void execute(ActionInput aInput) throws Exception {
 				mJmsManager.registerConnectorWithListener(aInput, JMSPlugIn.this);
@@ -157,7 +198,6 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(
 				createActionInput(aConnector, aToken, "Successfully got jms message listener", RightJms.LISTEN,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-
 			@Override
 			void execute(ActionInput aInput) throws Exception {
 				mJmsManager.registerConnectorWithMessageListener(aInput, JMSPlugIn.this);
@@ -170,12 +210,11 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(
 				createActionInput(aConnector, aToken, "Text successfully sent", RightJms.SEND, RightJms.SEND_AND_LISTEN),
 				new ActionCommand() {
-
-					@Override
-					void execute(ActionInput aInput) throws Exception {
-						mJmsManager.sendText(aInput);
-					}
-				});
+			@Override
+			void execute(ActionInput aInput) throws Exception {
+				mJmsManager.sendText(aInput);
+			}
+		});
 	}
 
 	private void sendTextMessage(WebSocketConnector aConnector, Token aToken) {
@@ -183,7 +222,6 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(
 				createActionInput(aConnector, aToken, "Jms text message successfully sent", RightJms.SEND,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-
 			@Override
 			void execute(ActionInput aInput) throws Exception {
 				mJmsManager.sendTextMessage(aInput);
@@ -196,7 +234,6 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(
 				createActionInput(aConnector, aToken, "Map message successfully sent", RightJms.SEND,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-
 			@Override
 			void execute(ActionInput aInput) throws Exception {
 				mJmsManager.sendMap(aInput);
@@ -209,7 +246,6 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(
 				createActionInput(aConnector, aToken, "Jms map message successfully sent", RightJms.SEND,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-
 			@Override
 			void execute(ActionInput aInput) throws Exception {
 				mJmsManager.sendMapMessage(aInput);

@@ -10,6 +10,7 @@ import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPlugInChain;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.CloseReason;
@@ -52,12 +53,13 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	/**
 	 * PlugIn constants
 	 */
-	public static final String NS = JWebSocketServerConstants.NS_BASE + ".plugins.itemstorage";
 	public static final String ATTR_COLLECTION_NAME = "collectionName";
 	public static final String ATTR_ITEM_PK = "itemPK";
 	public static final String ATTR_ITEM_TYPE = "itemType";
-	public static final String ATTR_ACCESS_PASSWORD = ItemCollection.ATTR_ACCESS_PASSWORD;
-	public static final String ATTR_SECRET_PASSWORD = ItemCollection.ATTR_SECRET_PASSWORD;
+	public static final String ATTR_ACCESS_PASSWORD =
+			ItemCollection.ATTR_ACCESS_PASSWORD;
+	public static final String ATTR_SECRET_PASSWORD =
+			ItemCollection.ATTR_SECRET_PASSWORD;
 	public static final String ATTR_NEW_SECRET_PASSWORD = "newSecretPassword";
 	public static final String ATTR_ITEM = "item";
 	public static final String ATTR_OFFSET = "offset";
@@ -66,6 +68,14 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	public static final String ATTR_CAPPED = ItemCollection.ATTR_CAPPED;
 	public static final String ATTR_CAPACITY = ItemCollection.ATTR_CAPACITY;
 	public static final String ATTR_EXISTS = "exists";
+	public static final String NS_ITEM_STORAGE =
+			JWebSocketServerConstants.NS_BASE + ".plugins.itemstorage";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket ItemStoragePlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket ItemStoragePlugIn - Community Edition";
 	/**
 	 * PlugIn dependencies
 	 */
@@ -81,12 +91,47 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 	}
 
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_ITEM_STORAGE;
+	}
+
 	public ItemStoragePlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
-		setNamespace(NS);
+		setNamespace(NS_ITEM_STORAGE);
 
 		mFragmentSize = Integer.parseInt(aConfiguration.getString("fragmentSize"));
-		mBeanFactory = getConfigBeanFactory(NS);
+		mBeanFactory = getConfigBeanFactory(NS_ITEM_STORAGE);
 
 		mCollectionProvider = (IItemCollectionProvider) mBeanFactory.getBean("collectionProvider");
 		mLogsManager = new BaseLogsManager();
@@ -222,7 +267,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 			@Override
 			public void onCollectionRestarted(String aCollectionName, Set<String> aAffectedClients) {
 				String lEventName = "collectionRestarted";
-				Token lEvent = TokenFactory.createToken(NS, "event");
+				Token lEvent = TokenFactory.createToken(NS_ITEM_STORAGE, "event");
 				lEvent.setString("name", lEventName);
 				lEvent.setString(ATTR_COLLECTION_NAME, aCollectionName);
 
@@ -244,7 +289,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 			@Override
 			public void onCollectionSaved(String aCollectionName, List<String> aSubscribers) {
 				String lEventName = "collectionSaved";
-				Token lEvent = TokenFactory.createToken(NS, "event");
+				Token lEvent = TokenFactory.createToken(NS_ITEM_STORAGE, "event");
 				lEvent.setString("name", lEventName);
 				lEvent.setString(ATTR_COLLECTION_NAME, aCollectionName);
 
@@ -272,7 +317,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 			}
 
 			IItemCollection lCollection = mCollectionProvider.getCollection(aCollectionName);
-			Token lEvent = TokenFactory.createToken(NS, "event");
+			Token lEvent = TokenFactory.createToken(NS_ITEM_STORAGE, "event");
 			lEvent.setString("name", aEventName);
 			lEvent.setString(ATTR_COLLECTION_NAME, aCollectionName);
 			if (aEventName.startsWith(ATTR_ITEM) || "authorization".equals(aEventName) || aEventName.endsWith("subscription")) {
@@ -365,7 +410,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".write_collection")
+	@Role(name = NS_ITEM_STORAGE + ".write_collection")
 	public void createCollectionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		String lType = aToken.getString(ATTR_ITEM_TYPE);
@@ -413,7 +458,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".write_collection")
+	@Role(name = NS_ITEM_STORAGE + ".write_collection")
 	public void restartCollectionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		String lSecretPwd = aToken.getString(ATTR_SECRET_PASSWORD);
@@ -446,7 +491,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".write_collection")
+	@Role(name = NS_ITEM_STORAGE + ".write_collection")
 	public void removeCollectionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		String lSecretPwd = aToken.getString(ATTR_SECRET_PASSWORD);
@@ -472,7 +517,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".write_item")
+	@Role(name = NS_ITEM_STORAGE + ".write_item")
 	public void clearCollectionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		String lSecretPwd = aToken.getString(ATTR_SECRET_PASSWORD);
@@ -504,7 +549,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_collection")
+	@Role(name = NS_ITEM_STORAGE + ".read_collection")
 	public void existsCollectionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 
@@ -521,7 +566,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".write_collection")
+	@Role(name = NS_ITEM_STORAGE + ".write_collection")
 	public void editCollectionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		String lSecretPwd = aToken.getString(ATTR_SECRET_PASSWORD);
@@ -583,7 +628,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_collection")
+	@Role(name = NS_ITEM_STORAGE + ".read_collection")
 	public void getCollectionNamesAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		int lOffset = aToken.getInteger(ATTR_OFFSET, 0);
 		int lLength = aToken.getInteger(ATTR_LENGTH, 10);
@@ -608,7 +653,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_collection")
+	@Role(name = NS_ITEM_STORAGE + ".read_collection")
 	public void findCollectionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		Token lResponse = createResponse(aToken);
@@ -647,7 +692,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_collection")
+	@Role(name = NS_ITEM_STORAGE + ".read_collection")
 	public void subscribeAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		Assert.isTrue(mCollectionProvider.collectionExists(lCollectionName),
@@ -676,7 +721,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_collection")
+	@Role(name = NS_ITEM_STORAGE + ".read_collection")
 	public void unsubscribeAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		Assert.isTrue(mCollectionProvider.collectionExists(lCollectionName),
@@ -702,7 +747,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_collection")
+	@Role(name = NS_ITEM_STORAGE + ".read_collection")
 	public void authorizeAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		Assert.isTrue(mCollectionProvider.collectionExists(lCollectionName),
@@ -731,7 +776,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".write_item")
+	@Role(name = NS_ITEM_STORAGE + ".write_item")
 	public void saveItemAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		Assert.isTrue(mCollectionProvider.collectionExists(lCollectionName),
@@ -760,7 +805,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".write_item")
+	@Role(name = NS_ITEM_STORAGE + ".write_item")
 	public void removeItemAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		Assert.isTrue(mCollectionProvider.collectionExists(lCollectionName),
@@ -786,7 +831,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_item")
+	@Role(name = NS_ITEM_STORAGE + ".read_item")
 	public void findItemByPKAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		Assert.isTrue(mCollectionProvider.collectionExists(lCollectionName),
@@ -814,7 +859,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_item")
+	@Role(name = NS_ITEM_STORAGE + ".read_item")
 	public void existsItemAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		Assert.isTrue(mCollectionProvider.collectionExists(lCollectionName),
@@ -841,7 +886,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_item")
+	@Role(name = NS_ITEM_STORAGE + ".read_item")
 	public void listItemsAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
 		Assert.isTrue(mCollectionProvider.collectionExists(lCollectionName),
@@ -870,7 +915,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_definition")
+	@Role(name = NS_ITEM_STORAGE + ".read_definition")
 	public void existsDefinitionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lItemType = aToken.getString(ATTR_ITEM_TYPE);
 
@@ -887,7 +932,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_definition")
+	@Role(name = NS_ITEM_STORAGE + ".read_definition")
 	public void listDefinitionsAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		int lOffset = aToken.getInteger(ATTR_OFFSET, 0);
 		int lLength = aToken.getInteger(ATTR_LENGTH, 10);
@@ -906,7 +951,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aToken
 	 * @throws Exception
 	 */
-	@Role(name = NS + ".read_definition")
+	@Role(name = NS_ITEM_STORAGE + ".read_definition")
 	public void findDefinitionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lItemType = aToken.getString(ATTR_ITEM_TYPE);
 

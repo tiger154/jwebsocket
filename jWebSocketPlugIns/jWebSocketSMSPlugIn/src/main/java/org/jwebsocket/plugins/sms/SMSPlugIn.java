@@ -40,14 +40,16 @@ import org.springframework.context.ApplicationContext;
 public class SMSPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
-	private static final String NS_SMS = JWebSocketServerConstants.NS_BASE + ".plugins.sms";
+	private static final String NS_SMS =
+			JWebSocketServerConstants.NS_BASE + ".plugins.sms";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket SMSPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket SMSPlugIn - Community Edition";
-	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>().shared();
+	private static Collection<WebSocketConnector> mClients =
+			new FastList<WebSocketConnector>().shared();
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 	private ISMSProvider mProvider;
@@ -112,6 +114,11 @@ public class SMSPlugIn extends TokenPlugIn {
 	@Override
 	public String getLicense() {
 		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_SMS;
 	}
 
 	@Override

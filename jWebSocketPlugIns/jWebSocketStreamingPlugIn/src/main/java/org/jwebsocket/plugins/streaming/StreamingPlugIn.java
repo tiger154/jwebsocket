@@ -46,7 +46,8 @@ import org.jwebsocket.token.Token;
 public class StreamingPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
-	private final static String NS_STREAMING = JWebSocketServerConstants.NS_BASE + ".plugins.streaming";
+	private final static String NS_STREAMING =
+			JWebSocketServerConstants.NS_BASE + ".plugins.streaming";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket StreaminglugIn";
@@ -105,6 +106,11 @@ public class StreamingPlugIn extends TokenPlugIn {
 	@Override
 	public String getLicense() {
 		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_STREAMING;
 	}
 
 	private void startStreams() {

@@ -88,6 +88,11 @@ public class BenchmarkPlugIn extends TokenPlugIn {
 		return LICENSE;
 	}
 
+	@Override
+	public String getNamespace() {
+		return NS_BENCHMARK;
+	}
+
 	/**
 	 *
 	 * {@inheritDoc }

@@ -24,6 +24,8 @@ import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -41,6 +43,14 @@ public class ChatPlugIn extends TokenPlugIn {
 	private static Logger mLog = Logging.getLogger();
 	private static FastMap<String, WebSocketConnector> mClients =
 			new FastMap<String, WebSocketConnector>().shared();
+	public static final String NS_CHAT =
+			JWebSocketServerConstants.NS_BASE + ".plugins.chat";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket ChatPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket ChatPlugIn - Community Edition";
 
 	/**
 	 *
@@ -52,11 +62,46 @@ public class ChatPlugIn extends TokenPlugIn {
 			mLog.debug("Instantiating chat plug-in...");
 		}
 		// specify default name space for chat plugin
-		this.setNamespace(aConfiguration.getNamespace());
+		this.setNamespace(NS_CHAT);
 
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Chat plug-in successfully instantiated.");
 		}
+	}
+	
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_CHAT;
 	}
 
 	@Override
