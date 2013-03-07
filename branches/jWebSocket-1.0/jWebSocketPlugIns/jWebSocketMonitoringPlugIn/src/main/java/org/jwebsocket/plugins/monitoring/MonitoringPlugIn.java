@@ -41,7 +41,7 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
 /**
- * @author Merly, Orlando
+ * @author Merly, Orlando, vbarzana
  */
 public class MonitoringPlugIn extends TokenPlugIn {
 
@@ -327,9 +327,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		public void run() {
 
 			while (mUserInfoRunning) {
-
 				mConnectedUsersList.add(mTimeCounter, mConnectedUsers);
-
 				Token lToken = TokenFactory.createToken(getNamespace(),
 						TT_USER_INFO);
 				lToken.setList("connectedUsers", mConnectedUsersList);
@@ -345,16 +343,13 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				}
 				try {
 					Thread.sleep(1000);
-					if (mTimeCounter < 60) {
-						mTimeCounter++;
-					} else {
-						for (int i = 0; i < mTimeCounter; i++) {
-							mConnectedUsersList.set(i,
-									mConnectedUsersList.get(i + 1));
-						}
+					if (mTimeCounter == 59) {
+						mConnectedUsersList.removeFirst();
+						mTimeCounter--;
 					}
 				} catch (InterruptedException ex) {
 				}
+				mTimeCounter++;
 			}
 		}
 	}
