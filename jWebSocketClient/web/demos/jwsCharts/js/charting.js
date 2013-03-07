@@ -100,7 +100,7 @@ function initDemo( ) {
 				for (var i = 0; i < cpu.length; i++) {
 					dataToShow.push({
 						name: 'CPU ' + (i + 1),
-						data1: parseFloat(cpu[i])
+						data: parseFloat(cpu[i])
 					});
 				}
 
@@ -109,15 +109,15 @@ function initDemo( ) {
 				dataToShow.push(
 						{
 							name: 'Total CPU',
-							data1: totalConsumeCPU
+							data: totalConsumeCPU
 						});
 				dataToShow.push({
 					name: 'Memory',
-					data1: memory
+					data: memory
 				});
 				dataToShow.push({
 					name: 'Swap',
-					data1: swap
+					data: swap
 				});
 				myStore.loadData(dataToShow);
 
@@ -128,110 +128,26 @@ function initDemo( ) {
 				var show = [
 					{
 						name: 'Free Hdd Space',
-						data1: freehd
+						data: freehd
 					}, {
 						name: 'Used Hdd Space',
-						data1: usedhd
+						data: usedhd
 					}];
 				myStorePie.loadData(show);
 
 			}
 			else if (aToken.type === TT_USER_INFO) {
 
-				var lConnUsers = aToken.connectedUsers;
-				var usersOnline = [
-					{
-						name: '0',
-						data1: lConnUsers[0]
-					}, {
-						name: '2',
-						data1: lConnUsers[2]
-					}, {
-						name: '4',
-						data1: lConnUsers[4]
-					}, {
-						name: '6',
-						data1: lConnUsers[6]
-					}, {
-						name: '8',
-						data1: lConnUsers[8]
-					}, {
-						name: '10',
-						data1: lConnUsers[10]
-					}, {
-						name: '12',
-						data1: lConnUsers[12]
-					}, {
-						name: '14',
-						data1: lConnUsers[14]
-					}, {
-						name: '16',
-						data1: lConnUsers[16]
-					}, {
-						name: '18',
-						data1: lConnUsers[18]
-					}, {
-						name: '20',
-						data1: lConnUsers[20]
-					}, {
-						name: '22',
-						data1: lConnUsers[22]
-					}, {
-						name: '24',
-						data1: lConnUsers[24]
-					}, {
-						name: '26',
-						data1: lConnUsers[26]
-					}, {
-						name: '28',
-						data1: lConnUsers[28]
-					}, {
-						name: '30',
-						data1: lConnUsers[30]
-					}, {
-						name: '32',
-						data1: lConnUsers[32]
-					}, {
-						name: '34',
-						data1: lConnUsers[34]
-					}, {
-						name: '36',
-						data1: lConnUsers[36]
-					}, {
-						name: '38',
-						data1: lConnUsers[38]
-					}, {
-						name: '40',
-						data1: lConnUsers[40]
-					}, {
-						name: '42',
-						data1: lConnUsers[42]
-					}, {
-						name: '44',
-						data1: lConnUsers[44]
-					}, {
-						name: '46',
-						data1: lConnUsers[46]
-					}, {
-						name: '48',
-						data1: lConnUsers[48]
-					}, {
-						name: '50',
-						data1: lConnUsers[50]
-					}, {
-						name: '52',
-						data1: lConnUsers[52]
-					}, {
-						name: '54',
-						data1: lConnUsers[54]
-					}, {
-						name: '56',
-						data1: lConnUsers[56]
-					}, {
-						name: '58',
-						data1: lConnUsers[58]
-					}];
-				myStoreUsersOnline.loadData(usersOnline);
+				var lConnUsers = aToken.connectedUsers,
+						lOnlineUsers = [];
+				// Rendering 60 seconds of connected users in the graph
+				for (var lKey = 59; lKey >= 0; lKey--) {
+					lOnlineUsers.push({
+						name: 59 - lKey,
+						data: lConnUsers[ lKey ]
+					});
+				}
+				myStoreUsersOnline.loadData(lOnlineUsers);
 			}
 			else if (aToken.type === TT_SERVER_XCHG_INFO) {
 
@@ -241,86 +157,23 @@ function initDemo( ) {
 				}
 				else
 				{
-					var lExchangeInfo = [{
-							name: '0',
-							data1: parseInt(aToken.exchanges.h0) || 0
-						}, {
-							name: '1',
-							data1: parseInt(aToken.exchanges.h1) || 0
-						}, {
-							name: '2',
-							data1: parseInt(aToken.exchanges.h2) || 0
-						}, {
-							name: '3',
-							data1: parseInt(aToken.exchanges.h3) || 0
-						}, {
-							name: '4',
-							data1: parseInt(aToken.exchanges.h4) || 0
-						}, {
-							name: '5',
-							data1: parseInt(aToken.exchanges.h5) || 0
-						}, {
-							name: '6',
-							data1: parseInt(aToken.exchanges.h6) || 0
-						}, {
-							name: '7',
-							data1: parseInt(aToken.exchanges.h7) || 0
-						}, {
-							name: '8',
-							data1: parseInt(aToken.exchanges.h8) || 0
-						}, {
-							name: '9',
-							data1: parseInt(aToken.exchanges.h9) || 0
-						}, {
-							name: '10',
-							data1: parseInt(aToken.exchanges.h10) || 0
-						}, {
-							name: '11',
-							data1: parseInt(aToken.exchanges.h11) || 0
-						}, {
-							name: '12',
-							data1: parseInt(aToken.exchanges.h12) || 0
-						}, {
-							name: '13',
-							data1: parseInt(aToken.exchanges.h13) || 0
-						}, {
-							name: '14',
-							data1: parseInt(aToken.exchanges.h14) || 0
-						}, {
-							name: '15',
-							data1: parseInt(aToken.exchanges.h15) || 0
-						}, {
-							name: '16',
-							data1: parseInt(aToken.exchanges.h16) || 0
-						}, {
-							name: '17',
-							data1: parseInt(aToken.exchanges.h17) || 0
-						}, {
-							name: '18',
-							data1: parseInt(aToken.exchanges.h18) || 0
-						}, {
-							name: '19',
-							data1: parseInt(aToken.exchanges.h19) || 0
-						}, {
-							name: '20',
-							data1: parseInt(aToken.exchanges.h20) || 0
-						}, {
-							name: '21',
-							data1: parseInt(aToken.exchanges.h21) || 0
-						}, {
-							name: '22',
-							data1: parseInt(aToken.exchanges.h22) || 0
-						}, {
-							name: '23',
-							data1: parseInt(aToken.exchanges.h23) || 0
-						}];
+					var lExchangeInfo = [], lCounter = 0;
+
+					for (var lKey in aToken.exchanges) {
+						if (lKey.toString()[0] === 'h') {
+							lExchangeInfo.push({
+								name: lKey.substr(1, lKey.length),
+								data: parseInt(aToken.exchanges[ lKey ]) || 0
+							});
+						}
+					}
 					myStoreExchange.loadData(lExchangeInfo);
 
 				}
 
 			}
 			else if (aToken.type === TT_SERVER_XCHG_INFO_X_DAYS) {
-				if (aToken.code == -1) {
+				if (aToken.code === -1) {
 					if (!monthError) {
 						Ext.MessageBox.alert("Information", "There is not information \n\
 						for this month in the server");
@@ -331,101 +184,13 @@ function initDemo( ) {
 				else
 				{
 					monthError = false;
-					var lExchangeInfoForDays = [
-						{
-							name: '1',
-							data1: aToken["01"] || 0
-						}, {
-							name: '2',
-							data1: aToken["02"] || 0
-						}, {
-							name: '3',
-							data1: aToken["03"] || 0
-						}, {
-							name: '4',
-							data1: aToken["04"] || 0
-						}, {
-							name: '5',
-							data1: aToken["05"] || 0
-						}, {
-							name: '6',
-							data1: aToken["06"] || 0
-						}, {
-							name: '7',
-							data1: aToken["07"] || 0
-						}, {
-							name: '8',
-							data1: aToken["08"] || 0
-						}, {
-							name: '9',
-							data1: aToken["09"] || 0
-						}, {
-							name: '10',
-							data1: aToken["10"] || 0
-						}, {
-							name: '11',
-							data1: aToken["11"] || 0
-						}, {
-							name: '12',
-							data1: aToken["12"] || 0
-						}, {
-							name: '13',
-							data1: aToken["13"] || 0
-						}, {
-							name: '14',
-							data1: aToken["14"] || 0
-						}, {
-							name: '15',
-							data1: aToken["15"] || 0
-						}, {
-							name: '16',
-							data1: aToken["16"] || 0
-						}, {
-							name: '17',
-							data1: aToken["17"] || 0
-						}, {
-							name: '18',
-							data1: aToken["18"] || 0
-						}, {
-							name: '19',
-							data1: aToken["19"] || 0
-						}, {
-							name: '20',
-							data1: aToken["20"] || 0
-						}, {
-							name: '21',
-							data1: aToken["21"] || 0
-						}, {
-							name: '22',
-							data1: aToken["22"] || 0
-						}, {
-							name: '23',
-							data1: aToken["23"] || 0
-						}, {
-							name: '24',
-							data1: aToken["24"] || 0
-						}, {
-							name: '25',
-							data1: aToken["25"] || 0
-						}, {
-							name: '26',
-							data1: aToken["26"] || 0
-						}, {
-							name: '27',
-							data1: aToken["27"] || 0
-						}, {
-							name: '28',
-							data1: aToken["28"] || 0
-						}, {
-							name: '29',
-							data1: aToken["29"] || 0
-						}, {
-							name: '30',
-							data1: aToken["30"] || 0
-						}, {
-							name: '31',
-							data1: aToken["31"] || 0
-						}];
+					var lExchangeInfoForDays = [];
+					for (var lDay = 1; lDay <= 31; lDay++) {
+						lExchangeInfoForDays.push({
+							name: lDay,
+							data: aToken[(lDay < 10) ? '0' + lDay : lDay] || 0
+						});
+					}
 					myStoreExchangeForDays.loadData(lExchangeInfoForDays);
 				}
 			}
@@ -443,59 +208,57 @@ function initDemo( ) {
 					var lExchangeInfoForMonth = [
 						{
 							name: 'Jan',
-							data1: aToken["01"] || 0
+							data: aToken["01"] || 0
 						}, {
 							name: 'Feb',
-							data1: aToken["02"] || 0
+							data: aToken["02"] || 0
 						}, {
 							name: 'Mar',
-							data1: aToken["03"] || 0
+							data: aToken["03"] || 0
 						}, {
 							name: 'Apr',
-							data1: aToken["04"] || 0
+							data: aToken["04"] || 0
 						}, {
 							name: 'May',
-							data1: aToken["05"] || 0
+							data: aToken["05"] || 0
 						}, {
 							name: 'Jun',
-							data1: aToken["06"] || 0
+							data: aToken["06"] || 0
 						}, {
 							name: 'Jul',
-							data1: aToken["07"] || 0
+							data: aToken["07"] || 0
 						}, {
 							name: 'Aug',
-							data1: aToken["08"] || 0
+							data: aToken["08"] || 0
 						}, {
 							name: 'Sep',
-							data1: aToken["09"] || 0
+							data: aToken["09"] || 0
 						}, {
 							name: 'Oct',
-							data1: aToken["10"] || 0
+							data: aToken["10"] || 0
 						}, {
 							name: 'Nov',
-							data1: aToken["11"] || 0
+							data: aToken["11"] || 0
 						}, {
 							name: 'Dec',
-							data1: aToken["12"] || 0
+							data: aToken["12"] || 0
 						}];
 					myStoreExchangeForMonth.loadData(lExchangeInfoForMonth);
 				}
-
 			}
 
 			else if (aToken.type === TT_PLUGINS_INFO) {
-
 				var lUsePlugins = new Array( );
 				var lPluginsInUse = aToken.usePlugins;
-				if (lPluginsInUse.length == 0) {
-					Ext.MessageBox.alert('Msg', 'No hay plugins en uso.');
+				if (lPluginsInUse.length === 0) {
+					Ext.MessageBox.alert('No Plug-ins', 'No plugIn has been used.');
 				}
 				else
 				{
 					for (var j = 0; j < lPluginsInUse.length; j++) {
 						lUsePlugins.push({
 							name: aToken.usePlugins[j].id,
-							data1: aToken.usePlugins[j].requests || 0
+							data: aToken.usePlugins[j].requests || 0
 						});
 					}
 
@@ -505,7 +268,6 @@ function initDemo( ) {
 		}
 
 		else if (aToken.ns === NS_SYSTEM) {
-			console.log("here");
 			if (aToken.type === TT_WELCOME) {
 				Ext.get("client_id").dom.innerHTML = "Client-ID: " + aToken.sourceId;
 				Ext.get("client_status").dom.innerHTML = "online";
@@ -513,7 +275,6 @@ function initDemo( ) {
 			}
 		}
 	}
-
 	Ext.jws.addPlugIn(lPlugin);
 
 
@@ -549,7 +310,7 @@ function initDemo( ) {
 					axes: [{
 							type: 'Numeric',
 							position: 'left',
-							fields: ['data1'],
+							fields: ['data'],
 							label: {
 								renderer: Ext.util.Format.numberRenderer('0,0')
 							},
@@ -574,19 +335,19 @@ function initDemo( ) {
 								height: 28,
 								renderer: function(storeItem, item) {
 									this.setTitle(storeItem.get('name') + ': '
-											+ storeItem.get('data1') + ' %');
+											+ storeItem.get('data') + ' %');
 								}
 							},
 							label: {
 								display: 'outside',
 								'text-anchor': 'middle',
-								field: 'data1',
+								field: 'data',
 								renderer: Ext.util.Format.numberRenderer('0.0'),
 								orientation: 'horizontal',
 								color: '#333'
 							},
 							xField: 'name',
-							yField: 'data1'
+							yField: 'data'
 						}]
 				}
 			},
@@ -612,7 +373,7 @@ function initDemo( ) {
 					theme: 'Base:gradients',
 					series: [{
 							type: 'pie',
-							field: 'data1',
+							field: 'data',
 							showInLegend: true,
 							//  donut: donut,
 							tips: {
@@ -623,10 +384,10 @@ function initDemo( ) {
 									//calculate percentage.
 									var total = 0;
 									myStorePie.each(function(rec) {
-										total += rec.get('data1');
+										total += rec.get('data');
 									});
 									this.setTitle(storeItem.get('name') + ': '
-											+ Math.round(storeItem.get('data1')
+											+ Math.round(storeItem.get('data')
 											/ total * 100) + '%');
 								}
 							},
@@ -679,7 +440,7 @@ function initDemo( ) {
 					axes: [{
 							type: 'Numeric',
 							position: 'left',
-							fields: ['data1'],
+							fields: ['data'],
 							label: {
 								renderer: Ext.util.Format.numberRenderer('0,0')
 							},
@@ -702,19 +463,19 @@ function initDemo( ) {
 								height: 28,
 								renderer: function(storeItem, item) {
 									this.setTitle(storeItem.get('name') + ': '
-											+ storeItem.get('data1') + ' requests');
+											+ storeItem.get('data') + ' requests');
 								}
 							},
 							label: {
 								display: 'outside',
 								'text-anchor': 'middle',
-								field: 'data1',
+								field: 'data',
 								renderer: Ext.util.Format.numberRenderer('0'),
 								orientation: 'horizontal',
 								color: '#333'
 							},
 							xField: 'name',
-							yField: 'data1'
+							yField: 'data'
 						}]
 				}
 
@@ -734,7 +495,7 @@ function initDemo( ) {
 					axes: [{
 							type: 'Numeric',
 							position: 'left',
-							fields: ['data1'],
+							fields: ['data'],
 							label: {
 								renderer: Ext.util.Format.numberRenderer('0,0')
 							},
@@ -757,19 +518,19 @@ function initDemo( ) {
 								height: 28,
 								renderer: function(storeItem, item) {
 									this.setTitle(storeItem.get('name') + ': '
-											+ storeItem.get('data1') + ' requests');
+											+ storeItem.get('data') + ' requests');
 								}
 							},
 							label: {
 								display: 'outside',
 								'text-anchor': 'middle',
-								field: 'data1',
+								field: 'data',
 								renderer: Ext.util.Format.numberRenderer('0'),
 								orientation: 'horizontal',
 								color: '#333'
 							},
 							xField: 'name',
-							yField: 'data1'
+							yField: 'data'
 						}]
 				}
 
@@ -789,7 +550,7 @@ function initDemo( ) {
 					axes: [{
 							type: 'Numeric',
 							position: 'left',
-							fields: ['data1'],
+							fields: ['data'],
 							label: {
 								renderer: Ext.util.Format.numberRenderer('0,0')
 							},
@@ -812,19 +573,19 @@ function initDemo( ) {
 								height: 28,
 								renderer: function(storeItem, item) {
 									this.setTitle(storeItem.get('name') + ': '
-											+ storeItem.get('data1') + ' requests');
+											+ storeItem.get('data') + ' requests');
 								}
 							},
 							label: {
 								display: 'outside',
 								'text-anchor': 'middle',
-								field: 'data1',
+								field: 'data',
 								renderer: Ext.util.Format.numberRenderer('0'),
 								orientation: 'horizontal',
 								color: '#333'
 							},
 							xField: 'name',
-							yField: 'data1'
+							yField: 'data'
 						}]
 				}
 
@@ -836,14 +597,14 @@ function initDemo( ) {
 	var graph_users_online = new Ext.TabPanel({
 		renderTo: Ext.getBody( ),
 		id: 'userOnline-main-tabs',
-		// layout: 'fit',
+		layout: 'fit',
 		height: 380,
 		width: 400,
 		border: false,
 		activeTab: 0,
 		margin: 0,
 		defaults: {
-			padding: 10
+			padding: 5
 		},
 		hideTabStripItem: true,
 		bodyStyle: 'background:#e4e4e4;',
@@ -856,58 +617,48 @@ function initDemo( ) {
 				border: false,
 				items: {
 					xtype: 'chart',
-					animate: false,
+					animate: true,
 					store: myStoreUsersOnline,
-					insetPadding: 30,
+					insetPadding: 10,
 					axes: [{
 							type: 'Numeric',
 							minimum: 0,
 							position: 'left',
-							fields: ['data1'],
-							title: "Users Connected",
+							fields: ['data'],
+							title: "Online Users",
 							grid: true,
 							label: {
 								renderer: Ext.util.Format.numberRenderer('0,0'),
-								font: '10px Arial'
+								font: '7pt Verdana'
 							}
 						}, {
 							type: 'Category',
 							position: 'bottom',
 							fields: ['name'],
-							title: "Seconds",
+							title: "Seconds ago",
 							label: {
-								font: '11px Arial'
-										//                    renderer: function(name) {
-										//                        return name.substr(0, 3) + ' 07';
-										//                    }
+								font: '7pt Verdana'
 							}
 						}],
 					series: [{
 							type: 'line',
 							axis: 'left',
 							xField: 'name',
-							yField: 'data1',
-							//					listeners: {
-							//						itemmouseup: function(item) {
-							//							Ext.example.msg('Item Selected', item.value[1] 
-							//							+ ' visits on ' + Ext.Date.monthNames[item.value[0]
-							//							]);
-							//						}  
-							//					},
+							yField: 'data',
 							tips: {
 								trackMouse: true,
-								width: 90,
+								width: 120,
 								height: 40,
 								renderer: function(storeItem, item) {
-									this.setTitle(storeItem.get('name') + " Seconds"
-											+ '<br />' + storeItem.get('data1')
-											+ " Connected");
+									this.setTitle(storeItem.get('name') + " Seconds ago"
+											+ '<br />' + storeItem.get('data')
+											+ " users online");
 								}
 							},
 							style: {
 								fill: '#38B8BF',
 								stroke: '#38B8BF',
-								'stroke-width': 3
+								'stroke-width': 1
 							},
 							markerConfig: {
 								type: 'circle',
@@ -953,7 +704,7 @@ function initDemo( ) {
 					axes: [{
 							type: 'Numeric',
 							position: 'bottom',
-							fields: ['data1'],
+							fields: ['data'],
 							label: {
 								renderer: Ext.util.Format.numberRenderer('0,0')
 							},
@@ -977,19 +728,19 @@ function initDemo( ) {
 								height: 28,
 								renderer: function(storeItem, item) {
 									this.setTitle(storeItem.get('name') + ': '
-											+ storeItem.get('data1') + ' %');
+											+ storeItem.get('data') + ' %');
 								}
 							},
 							label: {
 								display: 'insideEnd',
-								field: 'data1',
+								field: 'data',
 								renderer: Ext.util.Format.numberRenderer('0'),
 								orientation: 'horizontal',
 								color: '#333',
 								'text-anchor': 'middle'
 							},
 							xField: 'name',
-							yField: ['data1']
+							yField: ['data']
 						}]
 				}
 			}
