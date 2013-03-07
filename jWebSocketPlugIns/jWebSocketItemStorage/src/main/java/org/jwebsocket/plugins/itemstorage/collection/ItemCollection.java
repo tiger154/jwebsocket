@@ -173,7 +173,7 @@ public class ItemCollection implements IItemCollection {
 	}
 
 	@Override
-	public Set<String> restart() {
+	public Set<String> restart() throws Exception {
 		Set<String> lClients = new HashSet<String>();
 		lClients.addAll(this.getPublishers().getAll());
 		lClients.addAll(this.getSubcribers().getAll());

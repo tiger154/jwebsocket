@@ -185,7 +185,10 @@ public class ItemStorageEventManager {
 			mThreadPool.execute(new Runnable() {
 				@Override
 				public void run() {
-					lListener.onCollectionSaved(aCollection.getName(), aCollection.getSubcribers().getAll());
+					try {
+						lListener.onCollectionSaved(aCollection.getName(), aCollection.getSubcribers().getAll());
+					} catch (Exception lEx) {
+					}
 				}
 			});
 		}
