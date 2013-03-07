@@ -37,7 +37,7 @@ public class ItemStorageEventManager {
 
 	public static void stopThreadPool() {
 		if (isThreadPoolUP()) {
-				mThreadPool.shutdownNow();
+			mThreadPool.shutdownNow();
 		}
 	}
 
@@ -185,7 +185,7 @@ public class ItemStorageEventManager {
 			mThreadPool.execute(new Runnable() {
 				@Override
 				public void run() {
-					lListener.onCollectionSaved(aCollection.getName(), aCollection.getSubcribers());
+					lListener.onCollectionSaved(aCollection.getName(), aCollection.getSubcribers().getAll());
 				}
 			});
 		}

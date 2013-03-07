@@ -1,6 +1,5 @@
 package org.jwebsocket.plugins.itemstorage.api;
 
-import java.util.List;
 import java.util.Set;
 import org.jwebsocket.api.IMappable;
 import org.jwebsocket.api.ITokenizable;
@@ -106,7 +105,7 @@ public interface IItemCollection extends ITokenizable, IMappable {
 	 *
 	 * @return The collection subscribers
 	 */
-	List<String> getSubcribers();
+	IClientCollection getSubcribers();
 
 	/**
 	 * The publishers are the clients authorized to modify the content of the
@@ -114,7 +113,7 @@ public interface IItemCollection extends ITokenizable, IMappable {
 	 *
 	 * @return The collection publishers
 	 */
-	List<String> getPublishers();
+	IClientCollection getPublishers();
 
 	/**
 	 * The collection owner is the user that creates the item collection
@@ -157,5 +156,5 @@ public interface IItemCollection extends ITokenizable, IMappable {
 	 *
 	 * @param aCapacity
 	 */
-	void setCapacity(int aCapacity);
+	void setCapacity(int aCapacity) throws Exception;
 }

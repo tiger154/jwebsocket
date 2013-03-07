@@ -39,7 +39,7 @@ public interface IItemFactory extends IInitializable {
 	 * @param aType
 	 * @return TRUE if the item type exists, FALSE otherwise
 	 */
-	Boolean supportsType(String aType);
+	Boolean supportsType(String aType) throws Exception;
 
 	/**
 	 * Register a new item definition. If the definition exists, then it is
@@ -77,5 +77,5 @@ public interface IItemFactory extends IInitializable {
 	 *
 	 * @return The number of existing item definitions
 	 */
-	int size();
+	int size() throws Exception;
 }

@@ -54,7 +54,12 @@ Ext.define('IS.view.item.Find', {
 						
 						var lField = IS.lib.Util.createFormField('value', aItemDefinition.attr_types[aNewValue]);
 						lField.fieldLabel = 'Value';
-						lField.regex = null;
+						
+						// fixing if string for search with Regular Expressions
+						delete lField.regex;
+						delete lField.minLength;
+						delete lField.maxLength;
+						
 						lField.tooltip = aItemDefinition.attr_types[aNewValue];
 						lForm.add(lField);
 						
