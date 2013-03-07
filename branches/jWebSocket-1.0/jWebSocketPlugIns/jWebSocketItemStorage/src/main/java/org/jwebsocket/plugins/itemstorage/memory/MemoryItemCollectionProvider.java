@@ -38,7 +38,7 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 		}
 
 		return new ItemCollection(System.currentTimeMillis(), getItemStorageProvider()
-				.getItemStorage(aName, aItemType));
+				.getItemStorage(aName, aItemType), new MemoryClientManager(), new MemoryClientManager());
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 			ItemStorageEventManager.onBeforeCreateCollection((ItemCollection) aCollection);
 		}
 		mCollections.put(aCollection.getName(), aCollection);
-		
+
 		// notify event
 		if (!lNew) {
 			ItemStorageEventManager.onCollectionSaved((ItemCollection) aCollection);

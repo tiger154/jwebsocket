@@ -34,7 +34,7 @@ Ext.define('IS.view.portal.Header' ,{
 		text: 'About',
 		handler: function() {
 			Ext.Msg.show({
-				msg: '<center>jWebSocket ItemStorage Admin GUI v1.0 <br> Copyright (c) 2013 Innotrade GmbH <p>&nbsp<p><a href="http://jwebsocket.org">http://jwebsocket.org</a></center>', 
+				msg: '<center>jWebSocket ItemStorage Web Admin v1.0 <br> Copyright (c) 2013 Innotrade GmbH <p>&nbsp<p><a href="http://jwebsocket.org">http://jwebsocket.org</a></center>', 
 				buttons: Ext.Msg.OK, 
 				icon: Ext.Msg.INFO
 			});

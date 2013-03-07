@@ -22,10 +22,10 @@ abstract public class BaseItemStorage implements IItemStorage {
 		this.mType = aType;
 		this.mItemFactory = aItemFactory;
 
+		// validating
 		Assert.notNull(aName, "The storage name argument cannot be null!");
 		Assert.notNull(aType, "The storage type argument cannot be null!");
 		Assert.notNull(aItemFactory, "The storage item factory argument cannot be null!");
-		Assert.isTrue(mItemFactory.supportsType(aType), "Item type not supported!");
 	}
 
 	@Override
@@ -72,6 +72,7 @@ abstract public class BaseItemStorage implements IItemStorage {
 
 	@Override
 	public void initialize() throws Exception {
+		Assert.isTrue(mItemFactory.supportsType(getItemType()), "Item type not supported!");
 	}
 
 	@Override

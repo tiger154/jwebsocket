@@ -1,11 +1,10 @@
 package org.jwebsocket.plugins.itemstorage.collection;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javolution.util.FastList;
 import javolution.util.FastMap;
+import org.jwebsocket.plugins.itemstorage.api.IClientCollection;
 import org.jwebsocket.plugins.itemstorage.api.IItemCollection;
 import org.jwebsocket.plugins.itemstorage.api.IItemStorage;
 import org.jwebsocket.plugins.itemstorage.item.ItemDefinition;
@@ -33,27 +32,27 @@ public class ItemCollection implements IItemCollection {
 	public static final String ATTR_CAPPED = "capped";
 	public static final String COLLECTION_NAME_REGEXP = "^[a-zA-Z0-9]+(.[_a-zA-Z0-9-]+)*";
 	public static final Integer MAX_PASSWORD_SIZE = 100;
+	private IClientCollection mSubscribers;
+	private IClientCollection mPublishers;
 
-	public ItemCollection(long aCreationTime, IItemStorage aItemStorage) {
-		mStorage = aItemStorage;
-		Assert.notNull(aItemStorage, "The collection item storage cannot be null!");
-
+	public ItemCollection(long aCreationTime, IItemStorage aItemStorage,
+			IClientCollection aSubscribers, IClientCollection aPublishers) {
 		mData.put(ATTR_CREATED_AT, aCreationTime);
 
-		init();
+		init(aItemStorage, aSubscribers, aPublishers);
 	}
 
-	public ItemCollection(IItemStorage aItemStorage) {
-		mStorage = aItemStorage;
+	public ItemCollection(IItemStorage aItemStorage, IClientCollection aSubscribers, IClientCollection aPublishers) {
+		init(aItemStorage, aSubscribers, aPublishers);
+	}
+
+	private void init(IItemStorage aItemStorage, IClientCollection aSubscribers, IClientCollection aPublishers) {
 		Assert.notNull(aItemStorage, "The collection item storage cannot be null!");
+		mStorage = aItemStorage;
+		mSubscribers = aSubscribers;
+		mPublishers = aPublishers;
 
-		init();
-	}
-
-	private void init() {
 		mData.put(ATTR_CAPPED, false);
-		mData.put(ATTR_PUBLISHERS, new FastList<String>());
-		mData.put(ATTR_SUBSCRIBERS, new FastList<String>());
 		mData.put(ATTR_IS_PRIVATE, false);
 		mData.put(ATTR_IS_SYSTEM, false);
 		mData.put(ATTR_CAPACITY, 0);
@@ -76,7 +75,7 @@ public class ItemCollection implements IItemCollection {
 	}
 
 	@Override
-	public void setCapacity(int aCapacity) {
+	public void setCapacity(int aCapacity) throws Exception {
 		Assert.isTrue(aCapacity >= 0, "Invalid item collection capacity! Expected value: capacity >= 0");
 		if (aCapacity > 0) {
 			Assert.isTrue(aCapacity >= getItemStorage().size(), "Invalid item collection capacity! Expected value: capacity > size");
@@ -149,13 +148,13 @@ public class ItemCollection implements IItemCollection {
 	}
 
 	@Override
-	public List<String> getSubcribers() {
-		return (List<String>) mData.get(ATTR_SUBSCRIBERS);
+	public IClientCollection getSubcribers() {
+		return mSubscribers;
 	}
 
 	@Override
-	public List<String> getPublishers() {
-		return (List<String>) mData.get(ATTR_PUBLISHERS);
+	public IClientCollection getPublishers() {
+		return mPublishers;
 	}
 
 	@Override
@@ -176,8 +175,8 @@ public class ItemCollection implements IItemCollection {
 	@Override
 	public Set<String> restart() {
 		Set<String> lClients = new HashSet<String>();
-		lClients.addAll(this.getPublishers());
-		lClients.addAll(this.getSubcribers());
+		lClients.addAll(this.getPublishers().getAll());
+		lClients.addAll(this.getSubcribers().getAll());
 
 		this.getSubcribers().clear();
 		this.getPublishers().clear();
@@ -209,8 +208,6 @@ public class ItemCollection implements IItemCollection {
 		setSecretPassword((String) aMap.get(ATTR_SECRET_PASSWORD));
 		setSystem((Boolean) aMap.get(ATTR_IS_SYSTEM));
 		setPrivate((Boolean) aMap.get(ATTR_IS_PRIVATE));
-		getPublishers().addAll((List) aMap.get(ATTR_PUBLISHERS));
-		getSubcribers().addAll((List) aMap.get(ATTR_SUBSCRIBERS));
 		mData.put(ATTR_CREATED_AT, (Long) aMap.get(ATTR_CREATED_AT));
 		mData.put(ATTR_CAPACITY, (Integer) aMap.get(ATTR_CAPACITY));
 		setOwner((String) aMap.get(ATTR_OWNER));
@@ -224,8 +221,6 @@ public class ItemCollection implements IItemCollection {
 		aMap.put(ATTR_NAME, getItemStorage().getName());
 		aMap.put(ATTR_IS_SYSTEM, isSystem());
 		aMap.put(ATTR_IS_PRIVATE, isPrivate());
-		aMap.put(ATTR_SUBSCRIBERS, getSubcribers());
-		aMap.put(ATTR_PUBLISHERS, getPublishers());
 		aMap.put(ATTR_CREATED_AT, createdAt());
 		aMap.put(ATTR_CAPACITY, getCapacity());
 		aMap.put(ATTR_OWNER, getOwner());

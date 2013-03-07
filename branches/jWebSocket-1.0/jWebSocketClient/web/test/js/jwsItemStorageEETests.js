@@ -829,10 +829,10 @@ jws.tests.enterprise.ItemStorage = {
 		this.testSubscribeCollection(lCollectionName, "wrong password", -1);
 
 		// get logs (testing pagination)
-		this.testGetCollectionLogs(lCollectionName, 0, 10, 0, 3);
-		this.testGetCollectionLogs(lCollectionName, 1, 10, 0, 2);
-		this.testGetCollectionLogs(lCollectionName, 2, 10, 0, 1);
-		this.testGetCollectionLogs(lCollectionName, 3, 10, 0, 0);
+		this.testGetCollectionLogs(lCollectionName, 0, 10, 0, 4);
+		this.testGetCollectionLogs(lCollectionName, 1, 10, 0, 3);
+		this.testGetCollectionLogs(lCollectionName, 2, 10, 0, 2);
+		this.testGetCollectionLogs(lCollectionName, 3, 10, 0, 1);
 		this.testGetCollectionLogs("wrongCollectionName", 0, 10, -1, 3); // should fail (collection not exists)
 
 		// restart

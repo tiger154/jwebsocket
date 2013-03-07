@@ -133,7 +133,7 @@ public interface IItemStorage extends IInitializable {
 	 *
 	 * @return The number of stored items
 	 */
-	Integer size();
+	Integer size() throws Exception;
 	
 	/**
 	 *
@@ -147,5 +147,5 @@ public interface IItemStorage extends IInitializable {
 	 * @param aPK
 	 * @return
 	 */
-	boolean exists(String aPK);
+	boolean exists(String aPK) throws Exception;
 }

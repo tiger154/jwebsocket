@@ -22,27 +22,23 @@ public class ItemCollectionUtils {
 
 	public static Set<String> restartCollection(IItemCollectionProvider aProvider, IItemCollection aCollection) throws Exception {
 		Set<String> lAffectedClients = aCollection.restart();
-		aProvider.saveCollection(aCollection);
 		ItemStorageEventManager.onCollectionRestarted(aCollection.getName(), lAffectedClients);
-		
+
 		return lAffectedClients;
 	}
 
 	public static void subscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber) throws Exception {
 		aCollection.getSubcribers().add(aSubscriber);
-		aProvider.saveCollection(aCollection);
 		ItemStorageEventManager.onSubscription(aCollection.getName(), aSubscriber);
 	}
 
 	public static void unsubscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber, String aUser) throws Exception {
 		aCollection.getSubcribers().remove(aSubscriber);
-		aProvider.saveCollection(aCollection);
 		ItemStorageEventManager.onUnsubscription(aCollection.getName(), aSubscriber, aUser);
 	}
 
 	public static void authorizeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aPublisher) throws Exception {
 		aCollection.getPublishers().add(aPublisher);
-		aProvider.saveCollection(aCollection);
 		ItemStorageEventManager.onAuthorization(aCollection.getName(), aPublisher);
 	}
 

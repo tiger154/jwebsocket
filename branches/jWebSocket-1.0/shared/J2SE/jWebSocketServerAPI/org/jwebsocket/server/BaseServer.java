@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.server;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
@@ -367,6 +368,32 @@ public class BaseServer implements WebSocketServer {
 				}
 			}
 		}
+		return null;
+	}
+
+	/**
+	 * Returns the connector identified by it's connector-username or
+	 * <tt>null</tt> if no connector with that username could be found. This
+	 * method iterates through all embedded engines.
+	 *
+	 * @param aUsername username of the connector to be returned.
+	 * @return WebSocketConnector with the given username or <tt>null</tt> if
+	 * not found.
+	 */
+	@Override
+	public WebSocketConnector getConnectorByUsername(String aUsername) {
+		for (Iterator<WebSocketEngine> lEngineIt = mEngines.values().iterator(); lEngineIt.hasNext();) {
+			WebSocketEngine lEngine = lEngineIt.next();
+			for (Iterator<WebSocketConnector> lConnectorsIt = lEngine.getConnectors().values().iterator();
+					lConnectorsIt.hasNext();) {
+				WebSocketConnector lConnector = lConnectorsIt.next();
+				Object lUsername = lConnector.getUsername();
+				if (null != lUsername && aUsername.equals(lUsername)) {
+					return lConnector;
+				}
+			}
+		}
+
 		return null;
 	}
 

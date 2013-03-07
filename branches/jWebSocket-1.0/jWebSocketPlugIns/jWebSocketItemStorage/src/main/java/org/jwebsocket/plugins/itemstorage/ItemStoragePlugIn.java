@@ -324,7 +324,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 				lEvent.setString("user", aParam[0].toString());
 			}
 
-			for (String lSubscriber : lCollection.getSubcribers()) {
+			for (String lSubscriber : lCollection.getSubcribers().getAll()) {
 				WebSocketConnector lConnector = getConnector(lSubscriber);
 				if (null != lConnector) {
 					// checking per user events notification configuration
@@ -440,8 +440,6 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 		lCollection.toMap(lMapCollection);
 		lMapCollection.remove(ItemCollection.ATTR_ACCESS_PASSWORD);
 		lMapCollection.remove(ItemCollection.ATTR_SECRET_PASSWORD);
-		lMapCollection.remove(ItemCollection.ATTR_SUBSCRIBERS);
-		lMapCollection.remove(ItemCollection.ATTR_PUBLISHERS);
 		Map<String, Object> lLog = BaseLogsManager.createActionPrototype(
 				BaseLogsManager.ETYPE_COLLECTION,
 				lCollectionName, "save", aConnector.getUsername(), lMapCollection.toString());
@@ -611,8 +609,6 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 		lCollection.toMap(lMapCollection);
 		lMapCollection.remove(ItemCollection.ATTR_ACCESS_PASSWORD);
 		lMapCollection.remove(ItemCollection.ATTR_SECRET_PASSWORD);
-		lMapCollection.remove(ItemCollection.ATTR_SUBSCRIBERS);
-		lMapCollection.remove(ItemCollection.ATTR_PUBLISHERS);
 		Map<String, Object> lLog = BaseLogsManager.createActionPrototype(
 				BaseLogsManager.ETYPE_COLLECTION,
 				lCollectionName, "save", aConnector.getUsername(), lMapCollection.toString());

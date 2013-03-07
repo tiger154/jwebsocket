@@ -65,6 +65,7 @@ Ext.define('IS.view.collection.Create', {
 				name : 'capacity',
 				fieldLabel: 'Capacity',
 				minValue: 0,
+				value: 0,
 				maxValue: 2147483647,
 				allowDecimals: false,
 				tooltip: 'The capacity attribute of a collection defines the maximum number of items that the collection will hold. Default value: "0"(unlimited)'

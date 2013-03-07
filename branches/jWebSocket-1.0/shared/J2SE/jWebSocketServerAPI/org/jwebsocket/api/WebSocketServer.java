@@ -305,6 +305,13 @@ public interface WebSocketServer {
 	WebSocketConnector getNode(String aNodeId);
 
 	/**
+	 * 
+	 * @param aUsername
+	 * @return 
+	 */
+	WebSocketConnector getConnectorByUsername(String aUsername);
+	
+	/**
 	 *
 	 * @param aEngine
 	 * @return
