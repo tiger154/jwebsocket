@@ -58,7 +58,8 @@ public class XMPPPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
-	private static final String NS_XMPP = JWebSocketServerConstants.NS_BASE + ".plugins.xmpp";
+	private static final String NS_XMPP =
+			JWebSocketServerConstants.NS_BASE + ".plugins.xmpp";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket XMPPPlugIn";
@@ -114,6 +115,11 @@ public class XMPPPlugIn extends TokenPlugIn {
 	@Override
 	public String getLicense() {
 		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_XMPP;
 	}
 
 	private void mGetSettings() {

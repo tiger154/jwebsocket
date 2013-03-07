@@ -46,10 +46,8 @@ import org.jwebsocket.token.TokenFactory;
 public class MonitoringPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
-	/**
-	 *
-	 */
-	public static final String NS_MONITORING = JWebSocketServerConstants.NS_BASE + ".plugins.monitoring";
+	public final static String NS_MONITORING =
+			JWebSocketServerConstants.NS_BASE + ".plugins.monitoring";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket FileSystemPlugIn";
@@ -77,6 +75,14 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	private static int mConnectedUsers = 0;
 	private static int mTimeCounter = 0;
 	private static FastList<Integer> mConnectedUsersList = new FastList<Integer>(60);
+	private final static String TT_REGISTER = "register";
+	private final static String TT_UNREGISTER = "unregister";
+	private final static String TT_SERVER_XCHG_INFO = "serverXchgInfo";
+	private final static String TT_SERVER_XCHG_INFO_DAYS = "serverXchgInfoXDays";
+	private final static String TT_SERVER_XCHG_INFO_MONTH = "serverXchgInfoXMonth";
+	private final static String TT_USER_INFO = "userInfo";
+	private final static String TT_PC_INFO = "computerInfo";
+	private final static String TT_PLUGINS_INFO = "pluginsInfo";
 
 	/**
 	 *
@@ -148,6 +154,11 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	}
 
 	@Override
+	public String getNamespace() {
+		return NS_MONITORING;
+	}
+
+	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
 		//Initializing thread
 		mInformationRunning = true;
@@ -215,12 +226,12 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			WebSocketConnector aConnector, Token aToken) {
 		if (aToken.getNS().equals(getNamespace())) {
 
-			if (aToken.getType().equals("register")) {
+			if (aToken.getType().equals(TT_REGISTER)) {
 				String lInterest = aToken.getString("interest");
 				if (null != lInterest && !lInterest.isEmpty()) {
 					aConnector.setVar("interest", aToken.getString("interest"));
 
-					if ("serverXchgInfo".equals(lInterest)) {
+					if (TT_SERVER_XCHG_INFO.equals(lInterest)) {
 						String lDay = aToken.getString("day");
 						String lMonth = aToken.getString("month");
 						String lYear = aToken.getString("year");
@@ -244,7 +255,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 							broadcastServerXchgInfoPreviousDate(aConnector,
 									lDay, lMonth, lCurrentYear.toString());
 						}
-					} else if ("serverXchgInfoXDays".equals(lInterest)) {
+					} else if (TT_SERVER_XCHG_INFO_DAYS.equals(lInterest)) {
 						//obtienes el mes y el anno del cliente                        
 						String lMonth = aToken.getString("month");
 
@@ -256,7 +267,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 							aConnector.setVar("currentMonth", false);
 							broadcastServerXchgInfoXDay(aConnector, lMonth);
 						}
-					} else if ("serverXchgInfoXMonth".equals(lInterest)) {
+					} else if (TT_SERVER_XCHG_INFO_MONTH.equals(lInterest)) {
 						//obtienes anno del cliente                        
 						String lYear = aToken.getString("year");
 						//System.out.println(lYear);
@@ -273,7 +284,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 					mClients.add(aConnector);
 				}
 
-			} else if (aToken.getType().equals("unregister")) {
+			} else if (aToken.getType().equals(TT_UNREGISTER)) {
 				mClients.remove(aConnector);
 			}
 		}
@@ -292,11 +303,11 @@ public class MonitoringPlugIn extends TokenPlugIn {
 
 					String lInterest = lConnector.getString("interest");
 
-					if ("computerInfo".equals(lInterest)) {
+					if (TT_PC_INFO.equals(lInterest)) {
 
 						getServer().sendToken(lConnector, lPCInfoToken);
 
-					} else if ("pluginsInfo".equals(lInterest)) {
+					} else if (TT_PLUGINS_INFO.equals(lInterest)) {
 						//TODO: Get the plugins info
 //                            gatherBrowsersInfo();
 						broadcastPluginsInfo(lConnector);
@@ -320,7 +331,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				mConnectedUsersList.add(mTimeCounter, mConnectedUsers);
 
 				Token lToken = TokenFactory.createToken(getNamespace(),
-						"userInfo");
+						TT_USER_INFO);
 				lToken.setList("connectedUsers", mConnectedUsersList);
 
 				String lInterest = "";
@@ -328,7 +339,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 
 					lInterest = lConnector.getString("interest");
 
-					if ("userInfo".equals(lInterest)) {
+					if (TT_USER_INFO.equals(lInterest)) {
 						getServer().sendToken(lConnector, lToken);
 					}
 				}
@@ -354,20 +365,20 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		public void run() {
 			while (mInformationRunning) {
 				for (WebSocketConnector lConnector : mClients) {
-					if ("serverXchgInfo".equals(
+					if (TT_SERVER_XCHG_INFO.equals(
 							lConnector.getString("interest"))) {
 						if (lConnector.getBoolean("currentDate") == true) {
 							broadcastServerXchgInfo(lConnector);
 						}
 					}
-					if ("serverXchgInfoXDays".equals(
+					if (TT_SERVER_XCHG_INFO_DAYS.equals(
 							lConnector.getString("interest"))) {
 						if (lConnector.getBoolean("currentMonth") == true) {
 							broadcastServerXchgInfoXDay(lConnector,
 									lConnector.getVar("month").toString());
 						}
 					}
-					if ("serverXchgInfoXMonth".equals(
+					if (TT_SERVER_XCHG_INFO_MONTH.equals(
 							lConnector.getString("interest"))) {
 						if (lConnector.getBoolean("currentYear") == true) {
 							broadcastServerXchgInfoXMonth(lConnector,
@@ -388,7 +399,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	 * @return
 	 */
 	public Token computerInfoToToken() {
-		Token lToken = TokenFactory.createToken(getNamespace(), "computerInfo");
+		Token lToken = TokenFactory.createToken(getNamespace(), TT_PC_INFO);
 		//Memory Information
 		lToken.setInteger("totalMem", mMemory[0]);
 		lToken.setInteger("usedMem", mMemory[1]);
@@ -429,7 +440,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	 */
 	public void broadcastServerXchgInfo(WebSocketConnector aConnector) {
 		Token lToken = TokenFactory.createToken(getNamespace(),
-				"serverXchgInfo");
+				TT_SERVER_XCHG_INFO);
 
 		//Getting server exchanges
 		try {
@@ -454,7 +465,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	 */
 	public void broadcastServerXchgInfoPreviousDate(WebSocketConnector aConnector, String aDay, String aMonth, String aYear) {
 		Token token = TokenFactory.createToken(getNamespace(),
-				"serverXchgInfo");
+				TT_SERVER_XCHG_INFO);
 		//Getting server exchanges
 		try {
 			String lToday = aMonth + "/" + aDay + "/" + aYear;
@@ -480,7 +491,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	 */
 	public void broadcastServerXchgInfoXDay(WebSocketConnector aConnector,
 			String aMonth) {
-		Token token = TokenFactory.createToken(getNamespace(), "serverXchgInfoXDays");
+		Token token = TokenFactory.createToken(getNamespace(), TT_SERVER_XCHG_INFO_DAYS);
 		//Getting server exchanges
 		try {
 			String lMonth = aMonth;
@@ -532,7 +543,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	public void broadcastServerXchgInfoXMonth(WebSocketConnector aConnector,
 			String aYear) {
 		Token token = TokenFactory.createToken(getNamespace(),
-				"serverXchgInfoXMonth");
+				TT_SERVER_XCHG_INFO_MONTH);
 		//Getting server exchanges
 		try {
 			String lYear = aYear;
@@ -566,7 +577,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 						lTotal = 0;
 						m = true;
 					}
-					//System.out.println(lCursor);
 				}
 			}
 			if (m == false) {
@@ -602,7 +612,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	 * @param aConnector
 	 */
 	public void broadcastPluginsInfo(WebSocketConnector aConnector) {
-		Token lToken = TokenFactory.createToken(getNamespace(), "pluginsInfo");
+		Token lToken = TokenFactory.createToken(getNamespace(), TT_PLUGINS_INFO);
 		String lNamespace = lToken.getNS();
 		FastList<Map> lList = new FastList<Map>();
 

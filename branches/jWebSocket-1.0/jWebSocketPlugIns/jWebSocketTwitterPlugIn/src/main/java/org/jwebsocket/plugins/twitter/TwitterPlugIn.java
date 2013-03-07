@@ -54,7 +54,8 @@ public class TwitterPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
-	private static final String NS_TWITTER = JWebSocketServerConstants.NS_BASE + ".plugins.twitter";
+	private static final String NS_TWITTER =
+			JWebSocketServerConstants.NS_BASE + ".plugins.twitter";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket TwitterPlugIn";
@@ -142,6 +143,11 @@ public class TwitterPlugIn extends TokenPlugIn {
 	@Override
 	public String getLicense() {
 		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_TWITTER;
 	}
 
 	@Override

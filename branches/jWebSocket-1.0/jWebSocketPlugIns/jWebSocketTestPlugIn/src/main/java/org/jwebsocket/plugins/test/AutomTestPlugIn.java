@@ -22,6 +22,7 @@ import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -39,6 +40,13 @@ public class AutomTestPlugIn extends TokenPlugIn {
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_TEST_AUTOMATION =
 			JWebSocketServerConstants.NS_BASE + ".plugins.test";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket AutomTestPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = 
+			"jWebSocket Automated Tests PlugIn - Community Edition";
 	// TODO: remove t. prefix here!
 	private final static String BROADCAST = "t.broadcast";
 	private final static String COMPLEX_VALIDATION = "t.complex_validation";
@@ -55,6 +63,41 @@ public class AutomTestPlugIn extends TokenPlugIn {
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Automated test plug-in successfully instantiated.");
 		}
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_TEST_AUTOMATION;
 	}
 
 	/**
@@ -79,9 +122,9 @@ public class AutomTestPlugIn extends TokenPlugIn {
 
 	/**
 	 * Broadcast a text to all the connectors
-	 * 
+	 *
 	 * @param aConnector
-	 * @param aToken 
+	 * @param aToken
 	 */
 	public void broadcast(WebSocketConnector aConnector, Token aToken) {
 		Token lToken = TokenFactory.createToken();
@@ -93,16 +136,16 @@ public class AutomTestPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Simply waits for a given amount of milliseconds.
-	 * This is to test the timeout behaviour of the client.
-	 * Default is 2000ms (=2sec).
+	 * Simply waits for a given amount of milliseconds. This is to test the
+	 * timeout behaviour of the client. Default is 2000ms (=2sec).
+	 *
 	 * @param aConnector
-	 * @param aToken 
+	 * @param aToken
 	 */
 	public void delay(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = createResponse(aToken);
 
-		int lDelay = aToken.getInteger( "delay", 2000 );
+		int lDelay = aToken.getInteger("delay", 2000);
 		try {
 			Thread.sleep(lDelay);
 		} catch (Exception lEx) {
@@ -113,9 +156,9 @@ public class AutomTestPlugIn extends TokenPlugIn {
 
 	/**
 	 * Return a complex object to validate
-	 * 
+	 *
 	 * @param aConnector
-	 * @param aToken 
+	 * @param aToken
 	 */
 	public void complexValidation(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = createResponse(aToken);

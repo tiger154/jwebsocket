@@ -218,6 +218,11 @@ public class ChannelPlugIn extends TokenPlugIn {
 		return LICENSE;
 	}
 
+	@Override
+	public String getNamespace() {
+		return NS_CHANNELS;
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */

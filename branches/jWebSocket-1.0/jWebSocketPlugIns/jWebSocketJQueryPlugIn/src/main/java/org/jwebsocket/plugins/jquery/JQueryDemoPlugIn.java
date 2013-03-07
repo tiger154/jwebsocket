@@ -40,7 +40,8 @@ import org.springframework.beans.support.PagedListHolder;
 public class JQueryDemoPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
-	public static final String NS_JQUERYDEMO = JWebSocketServerConstants.NS_BASE + ".plugins.jquerydemo";
+	public static final String NS_JQUERYDEMO =
+			JWebSocketServerConstants.NS_BASE + ".plugins.jquerydemo";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JQueryDemoPlugIn";
@@ -95,6 +96,11 @@ public class JQueryDemoPlugIn extends TokenPlugIn {
 	@Override
 	public String getLicense() {
 		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_JQUERYDEMO;
 	}
 
 	@Override

@@ -39,7 +39,7 @@ import java.net.UnknownHostException;
 public class MonitoringFilter extends TokenFilter {
 
 	Mongo mConnection;
-	DBCollection mColl;
+	DBCollection mPluginCollection;
 	private static Logger mLog = Logging.getLogger(MonitoringFilter.class);
 
 	/**
@@ -55,7 +55,7 @@ public class MonitoringFilter extends TokenFilter {
 
 		try {
 			mConnection = new Mongo();
-			mColl = mConnection.getDB("db_charting").getCollection("use_plugins");
+			mPluginCollection = mConnection.getDB("db_charting").getCollection("use_plugins");
 		} catch (UnknownHostException ex) {
 			mLog.error(ex.getMessage());
 		}
@@ -73,16 +73,16 @@ public class MonitoringFilter extends TokenFilter {
 		String lNamespace = aToken.getNS();
 		String lPlugInId = null;
 		for (WebSocketPlugIn lPlugIn : getServer().getPlugInChain().getPlugIns()) {
-			if (lNamespace.equals(lPlugIn.getPluginConfiguration().getNamespace())) {
+			if (lNamespace.equals(lPlugIn.getNamespace())) {
 				lPlugInId = lPlugIn.getId();
 
 				//To save in the database
-				DBObject lRecord = mColl.findOne(new BasicDBObject().append("id", lPlugInId));
+				DBObject lRecord = mPluginCollection.findOne(new BasicDBObject().append("id", lPlugInId));
 
 				if (lRecord == null) {
-					mColl.insert(new BasicDBObject().append("id", lPlugInId));
+					mPluginCollection.insert(new BasicDBObject().append("id", lPlugInId));
 				} else {
-					mColl.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("requests", 1)));
+					mPluginCollection.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("requests", 1)));
 				}
 			}
 		}
@@ -105,12 +105,12 @@ public class MonitoringFilter extends TokenFilter {
 				lPlugInId = lPlugIn.getId();
 
 				//To save in the database
-				DBObject lRecord = mColl.findOne(new BasicDBObject().append("id", lPlugInId));
+				DBObject lRecord = mPluginCollection.findOne(new BasicDBObject().append("id", lPlugInId));
 
 				if (lRecord == null) {
-					mColl.insert(new BasicDBObject().append("id", lPlugInId));
+					mPluginCollection.insert(new BasicDBObject().append("id", lPlugInId));
 				} else {
-					mColl.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("requests", 1)));
+					mPluginCollection.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("requests", 1)));
 				}
 			}
 		}

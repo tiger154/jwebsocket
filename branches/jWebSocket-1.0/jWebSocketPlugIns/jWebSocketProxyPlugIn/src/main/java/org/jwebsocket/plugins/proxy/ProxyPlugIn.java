@@ -25,6 +25,7 @@ import jlibs.core.nio.handlers.ServerHandler;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
@@ -36,18 +37,26 @@ import org.jwebsocket.util.Tools;
 public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 
 	private static Logger mLog = Logging.getLogger();
-	// specify name space for system plug-in
-	private static final String NS_PROXY = JWebSocketServerConstants.NS_BASE + ".plugins.system";
 	// specify token types processed by system plug-in
 	private Endpoint mInEndpoint, mHttpEndpoint, mWebSocketEndpoint;
 	private ServerChannel mServer;
+	private int mCount;
+	// specify name space for system plug-in
+	private static final String NS_PROXY =
+			JWebSocketServerConstants.NS_BASE + ".plugins.system";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket ProxyPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket ProxyPlugIn - Community Edition";
 
 	public ProxyPlugIn(PluginConfiguration aConfiguration) throws IOException {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating proxy plug-in...");
 		}
-
+		this.setNamespace(NS_PROXY);
 		String lFromHost = getString("from_host", "localhost");
 		int lFromPort = Tools.stringToInt(getString("from_port"), 80);
 		String lHttpHost = getString("http_host", "localhost");
@@ -71,16 +80,48 @@ public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 		lNIOSelector.shutdownOnExit(false);
 		new NIOThread(lNIOSelector).start();
 
- 		if (mLog.isInfoEnabled()) {
+		if (mLog.isInfoEnabled()) {
 			mLog.info("Proxy successfully setup "
 					+ mInEndpoint.getAddress().toString()
 					+ " <-> "
 					+ mWebSocketEndpoint.getAddress().toString());
 		}
-
 	}
-	
-	private int mCount;
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_PROXY;
+	}
 
 	@Override
 	public void onAccept(ServerChannel aServer, ClientChannel aInClient) {
@@ -110,7 +151,7 @@ public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 			aInClient.addInterest(ClientChannel.OP_READ);
 
 		} catch (IOException ex) {
-			mLog.error("onAccept: " 
+			mLog.error("onAccept: "
 					+ ex.getClass().getSimpleName() + ": "
 					+ ex.getMessage());
 			try {
@@ -118,7 +159,7 @@ public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 					lOutClient.close();
 				}
 			} catch (IOException ignore) {
-				mLog.error("onAccept: " 
+				mLog.error("onAccept: "
 						+ ignore.getClass().getSimpleName() + ": "
 						+ ignore.getMessage());
 			}
@@ -127,7 +168,7 @@ public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 
 	@Override
 	public void onAcceptFailure(ServerChannel aServer, IOException aException) {
-		mLog.error("onAcceptFailure: " 
+		mLog.error("onAcceptFailure: "
 				+ aException.getClass().getSimpleName() + ": "
 				+ aException.getMessage());
 	}
@@ -136,9 +177,5 @@ public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 	public void engineStopped(WebSocketEngine aEngine) {
 		// here the server must be terminated and
 		// all client connections must be closed as well.
-		
 	}
-
-
 }
-

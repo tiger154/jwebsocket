@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONStringer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -41,12 +42,20 @@ public class SharedObjectsPlugIn extends TokenPlugIn {
 
 	private static Logger log = Logging.getLogger();
 	// if namespace is changed update client plug-in accordingly!
-	private String NS_SHARED_OBJECTS = JWebSocketServerConstants.NS_BASE + ".plugins.sharedObjs";
+	private String NS_SHARED_OBJECTS =
+			JWebSocketServerConstants.NS_BASE + ".plugins.sharedObjs";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket SharedObjectsPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION =
+			"jWebSocket SharedObjects PlugIn - Community Edition";
 	private SharedObjects sharedObjects = new SharedObjects();
 	// if data types are changed update client plug-in accordingly!
 	private List<String> DATA_TYPES = new FastList<String>(Arrays.asList(
 			new String[]{"number", "string", "boolean", "object",
-				"set", "list", "map", "table"}));
+		"set", "list", "map", "table"}));
 
 	public SharedObjectsPlugIn() {
 		this(null);
@@ -56,6 +65,41 @@ public class SharedObjectsPlugIn extends TokenPlugIn {
 		super(aConfiguration);
 		// specify default name space
 		this.setNamespace(NS_SHARED_OBJECTS);
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_SHARED_OBJECTS;
 	}
 
 	private boolean isDataTypeValid(String aDataType, WebSocketConnector aConnector, Token aResponse) {

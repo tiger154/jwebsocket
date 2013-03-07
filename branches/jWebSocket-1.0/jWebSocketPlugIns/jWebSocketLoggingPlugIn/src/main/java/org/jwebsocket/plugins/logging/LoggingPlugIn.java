@@ -117,6 +117,11 @@ public class LoggingPlugIn extends TokenPlugIn {
 		return LICENSE;
 	}
 
+	@Override
+	public String getNamespace() {
+		return NS_LOGGING;
+	}
+
 	// check if the JDBC Plug-in was laoded properly
 	private boolean getJDBCPlugIn() {
 		TokenServer lServer = getServer();

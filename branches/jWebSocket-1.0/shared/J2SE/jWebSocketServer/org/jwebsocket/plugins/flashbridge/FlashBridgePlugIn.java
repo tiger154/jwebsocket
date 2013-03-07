@@ -31,6 +31,7 @@ import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 
@@ -49,6 +50,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket FlashBridgePlugIn - Community Edition";
+	public final static String NS_FLASH_BRIDGE = JWebSocketServerConstants.NS_BASE + ".plugins.flashbridge";
 	private ServerSocket mServerSocket = null;
 	private int mListenerPort = 843;
 	private boolean mIsRunning = false;
@@ -72,7 +74,8 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 		}
 
 		mGetSettings();
-
+		// specify default name space for flash_bridge plug-in
+		setNamespace(NS_FLASH_BRIDGE);
 		try {
 			mServerSocket = new ServerSocket(mListenerPort);
 
@@ -144,6 +147,12 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 	public String getLicense() {
 		return LICENSE;
 	}
+
+	@Override
+	public String getNamespace() {
+		return NS_FLASH_BRIDGE;
+	}
+	
 
 	private class BridgeProcess implements Runnable {
 

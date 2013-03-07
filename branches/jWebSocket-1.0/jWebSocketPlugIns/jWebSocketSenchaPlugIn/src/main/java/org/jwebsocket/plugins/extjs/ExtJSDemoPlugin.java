@@ -38,10 +38,8 @@ import org.jwebsocket.token.TokenFactory;
 public class ExtJSDemoPlugin extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
-	/**
-	 *
-	 */
-	public static final String NS_EXTJSDEMO = "jws.ext.demo";
+	public static final String NS_EXTJSDEMO =
+			JWebSocketServerConstants.NS_BASE + ".plugins.sencha";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket ExtJSDemoPlugin";
@@ -87,6 +85,11 @@ public class ExtJSDemoPlugin extends TokenPlugIn {
 	@Override
 	public String getLicense() {
 		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_EXTJSDEMO;
 	}
 
 	@Override

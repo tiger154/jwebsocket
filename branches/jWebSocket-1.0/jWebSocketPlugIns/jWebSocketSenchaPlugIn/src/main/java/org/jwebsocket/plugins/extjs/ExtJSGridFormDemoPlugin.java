@@ -23,6 +23,7 @@ import javolution.util.FastList;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
@@ -38,7 +39,8 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_EXTJSDEMO = "jws.ext.gridformdemo";
+	public static final String NS_EXTJSDEMO = 
+			JWebSocketServerConstants.NS_BASE + "plugins.extjsgrid";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket ExtJSGridFormDemoPlugin";
@@ -84,6 +86,11 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 	@Override
 	public String getLicense() {
 		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_EXTJSDEMO;
 	}
 
 	@Override
