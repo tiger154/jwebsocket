@@ -133,7 +133,7 @@ public interface IItemCollection extends ITokenizable, IMappable {
 	 * Restart a collection. When a collection is restarted all publishers and
 	 * subscribers are removed from the collection.
 	 */
-	Set<String> restart();
+	Set<String> restart() throws Exception;
 
 	/**
 	 * Validates the collection argument's value before save
