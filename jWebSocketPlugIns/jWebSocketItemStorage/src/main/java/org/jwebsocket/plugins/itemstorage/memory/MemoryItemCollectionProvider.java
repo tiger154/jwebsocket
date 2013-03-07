@@ -38,7 +38,7 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 		}
 
 		return new ItemCollection(System.currentTimeMillis(), getItemStorageProvider()
-				.getItemStorage(aName, aItemType), new MemoryClientManager(), new MemoryClientManager());
+				.getItemStorage(aName, aItemType), new MemoryClientCollection(), new MemoryClientCollection());
 	}
 
 	@Override
