@@ -380,7 +380,7 @@ function initDemo() {
 		x: 310,
 		bodyStyle: 'float: right;position:relative;padding:5px',
 		width: 400,
-		height: 300,
+		height: 382,
 		resizable: false,
 		draggable: false,
 		closable: false,
