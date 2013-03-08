@@ -1627,26 +1627,9 @@
 		</plugin>
 		
 		<!-- Sencha Demo plugin -->
-		<!--
 		<plugin>
-			<name>org.jwebsocket.plugins.extjs.ExtJSGridFormDemoPlugin</name>
-			<id>jws.extjsdemo</id>
-			<ns>jws.ext.gridformdemo</ns>
-			<jar>jWebSocketSenchaPlugIn-1.0.jar</jar>
-			<server-assignments>
-				<server-assignment>ts0</server-assignment>
-			</server-assignments>
-		</plugin>
-		-->
-		
-		<!-- Sencha Demo plugin -->
-		<plugin>
-			<name>org.jwebsocket.plugins.extjs.ExtJSGridFormDemoPlugin</name>
-			<id>ExtJSGridFormDemoPlugin</id>
-			<ns>jws.ext.gridformdemo</ns>
-			<!-- <name>org.jwebsocket.plugins.extjs.ExtJSDemoPlugin</name> -->
-			<!-- <ns>jws.ext.demo</ns> -->
-			
+			<name>org.jwebsocket.plugins.extjs.SenchaDemoPlugIn</name>
+			<id>SenchaDemoPlugIn</id>
 			<jar>jWebSocketSenchaPlugIn-1.0.jar</jar>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
