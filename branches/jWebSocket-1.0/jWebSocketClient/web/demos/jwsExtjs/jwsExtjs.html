@@ -24,47 +24,55 @@
         <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
-        <title>jWebSocket Sencha PlugIn Demo</title>
+        <title>jWebSocket Sencha Demo</title>
+
+        <!-- ExtJS STYLES  -->
+		<link rel="stylesheet" type="text/css" href="../../lib/ExtJS/css/ext-all.css"/>
 
         <!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
-		<link rel="stylesheet" type="text/css" href="css/grid-form-demo.css" />
+		<link rel="stylesheet" type="text/css" href="css/jwsExtjs.css" />
+
+		<!-- EXTJS LIBRARIES	-->
+		<script type="text/javascript" src="../../lib/ExtJS/ext-all.js"></script>
 
 		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
 
-		<!--	EXTJS LIBRARIES	-->
-		<link rel="stylesheet" type="text/css" href="../../lib/ExtJS/css/ext-all.css"/>
-		<script type="text/javascript" src="../../lib/ExtJS/ext-all.js"></script>
+		<!--DEMO LIBRARIES -->
 		<script type="text/javascript" src="../../lib/ExtJS/jwsExtJSPlugin.js"></script>
-		<script type="text/javascript" src="js/grid-form-demo.js"></script>
+		<script type="text/javascript" src="js/jwsExtjs.js"></script>
 
     </head>
     <body>
         <div id="demo_box">
             <!--       DEMO_HEADER       -->
             <div id="demo_box_header">
-                <h1>jWebSocket Sencha PlugIn</h1>
+                <h1>jWebSocket Sencha Demo</h1>
 				<div id="demo_box_header_login">
 					<div id="connect_area">
-						<div id="connect_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-							 onmousedown="this.className='button onmousedown'" 
-							 onmouseup="this.className='button onmouseup'" 
-							 onmouseout="this.className='button onmouseout'" 
-							 onclick="this.className='button onmouseover'">
-							<div class="l"></div>
-							<div class="c">Connect</div>
-							<div class="r"></div>
+						<div id="connect_button" class="button onmouseup" 
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'" 
+							 onclick="this.className = 'button onmouseover'">
+							<div class="btn_left"></div>
+							<div class="btn_center">Connect</div>
+							<div class="btn_right"></div>
 						</div>
-						
-						<div id="disconnect_button" style="margin-left: -90px; display: none;" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-							 onmousedown="this.className='button onmousedown'" 
-							 onmouseup="this.className='button onmouseup'" 
-							 onmouseout="this.className='button onmouseout'" 
-							 onclick="this.className='button onmouseover'">
-							<div class="l"></div>
-							<div class="c">Disconnect</div>
-							<div class="r"></div>
+
+						<div id="disconnect_button" 
+							 style="margin-left: -90px; display: none;" 
+							 class="button onmouseup" 
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'" 
+							 onclick="this.className = 'button onmouseover'">
+							<div class="btn_left"></div>
+							<div class="btn_center">Disconnect</div>
+							<div class="btn_right"></div>
 						</div>
 					</div>
 				</div>
@@ -85,7 +93,7 @@
 						<div id="not_connected">You are not connected, please press connect button!</div>
                         <div  style="display: none;">
 							<div id="contact">
-								<b id="header">jWebSocket Plug-in for Sencha</b>
+								<b id="header">jWebSocket Sencha Demo</b>
 								<div id="line"></div>
 								<div id="image"></div>
 								<p class="text">
@@ -102,13 +110,14 @@
                 </div>
                 <!--       DOWNLOAD_BUTTON   -->
                 <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
+                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className = 'button onmouseover'" 
+                         onmousedown="this.className = 'button onmousedown'" 
+                         onmouseup="this.className = 'button onmouseup'" 
+                         onmouseout="this.className = 'button onmouseout'" 
+                         onclick="this.className = 'button onmouseover'">
+                        <div class="btn_left"></div>
+                        <div class="btn_center"><a href="http://jwebsocket.org/downloads/downloads.htm" 
+												   target="blank">Download jWebSocket</a></div>
                         <div class="r_download"></div>
                     </div>
                 </div>
