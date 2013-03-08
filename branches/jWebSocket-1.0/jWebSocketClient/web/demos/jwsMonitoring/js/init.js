@@ -2,41 +2,34 @@
  * @author vbarzana
  */
 
-function init(){
-	w                   = {};
-	mLog                = {};
+function init() {
+	w = {};
+	mLog = {};
 	mLog.isDebugEnabled = true;
-	
-	//Each demo will configure its own callbacks to be passed to the login widget
-	var lCallbacks = {
-		OnOpen: function(){
-			//CONFIGURING JWEBSOCKET CLIENT mWSC defined in widget Auth
-			$.jws.setTokenClient(mWSC);
-			$.jws.submit("monitoringPlugin.pcinfo", "register", { interest: "computerInfo" });
-			updateGauge();
-		},
-		OnClose: function(){
-			if(!mWSC.isConnected()) {
-				resetGauges();
-			}
-		},
-		OnMessage: function(aEvent, aToken){
-			var lDate = "";
-			if( aToken.date_val ) {
-				lDate = jws.tools.ISO2Date( aToken.date_val );
-			}
-			log( "<font style='color:#888'>jWebSocket '" + aToken.type + "' token received, full message: '" + aEvent.data + "' " + lDate + "</font>" );
-		}
-	};
-	
-	
+
+	// Setting the styles to the buttons, avoiding to fill the HTML code 
+	// with unnecessary data
+	$('.button').each(function( ) {
+		var lBtn = $(this);
+		var lRightClass = lBtn.hasClass('download') ? 'r_download' : 'btn_right';
+		lBtn.attr("class", "button onmouseup")
+				.attr("onmouseover", "this.className='button onmouseover'")
+				.attr("onmousedown", "this.className='button onmousedown'")
+				.attr("onmouseup", "this.className='button onmouseup'")
+				.attr("onmouseout", "this.className='button onmouseout'")
+				.attr("onclick", "this.className='button onmouseover'");
+		lBtn.html('<div class="btn_left"/>' + '<div class="btn_center">' +
+				lBtn.html( ) + '</div>' + '<div class="' + lRightClass + '"></div>');
+	});
+
 	$("#log_box").log({
-		maxLogLines: 200, 
+		maxLogLines: 200,
 		linesToDelete: 20
 	});
-	$("#demo_box").auth(lCallbacks);
+	
+	$("#scenario_container").monitoring( );
 }
 
-$(document).ready(function(){
+$(document).ready(function() {
 	init();
 });
