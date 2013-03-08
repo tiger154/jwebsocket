@@ -30,7 +30,7 @@
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsCharts.css"/>
 
-         <!--JQUERY DEPENDENCIES--> 
+		<!--JQUERY DEPENDENCIES--> 
         <!--<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>-->
 
         <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
@@ -64,11 +64,11 @@
                 <div id="scenario_container">
                     <div id="main_content" style="float: left; width: 100% !important;">
                         <!--		\\HERE GOES THE CONTENT OF EACH SPECIFIC DEMO\\				-->
-                       <!-- <div id="demo_description">
-                            <p>
-                                Charting Demo allows real-time graph server behavior. To see the behavior of the server to select the data source and type of graphic in which to display the required information.
-                            </p>
-                        </div>-->
+						<!-- <div id="demo_description">
+							 <p>
+								 Charting Demo allows real-time graph server behavior. To see the behavior of the server to select the data source and type of graphic in which to display the required information.
+							 </p>
+						 </div>-->
                         <div id="combo"></div>
                         <div id="content"></div>
 
@@ -78,13 +78,15 @@
                 <!--       DOWNLOAD_BUTTON   -->
                 <div id="demo_box_footer">
                     <div id="jws_download_button" class="button onmouseup" 
-						 onmouseover="this.className='button onmouseover'"
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
+						 onmouseover="this.className = 'button onmouseover'"
+                         onmousedown="this.className = 'button onmousedown'" 
+                         onmouseup="this.className = 'button onmouseup'" 
+                         onmouseout="this.className = 'button onmouseout'" 
+                         onclick="this.className = 'button onmouseover'">
                         <div class="btn_left"></div>
-                        <div class="btn_center">Download jWebSocket</div>
+                        <div class="btn_center">
+							<a href="http://jwebsocket.org/downloads/downloads.htm" 
+							   target="blank">Download jWebSocket</a></div>
                         <div class="r_download"></div>
                     </div>
                 </div>
