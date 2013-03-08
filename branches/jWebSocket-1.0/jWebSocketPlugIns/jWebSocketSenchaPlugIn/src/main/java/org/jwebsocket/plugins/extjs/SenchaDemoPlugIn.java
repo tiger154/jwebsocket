@@ -18,13 +18,18 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.extjs;
 
+import org.jwebsocket.plugins.extjs.Util.User;
+import org.jwebsocket.plugins.extjs.Util.Users;
 import java.util.Collection;
+import java.util.List;
 import javolution.util.FastList;
+import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -34,28 +39,29 @@ import org.jwebsocket.token.TokenFactory;
  * @author Osvaldo Aguilar Lauzurique, Alexander Rojas Hernandez
  *
  */
-public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
+public class SenchaDemoPlugIn extends TokenPlugIn {
 
-	/**
-	 *
-	 */
-	public static final String NS_EXTJSDEMO = 
-			JWebSocketServerConstants.NS_BASE + "plugins.extjsgrid";
+	private static Logger mLog = Logging.getLogger();
+	public static final String NS_EXTJSDEMO =
+			JWebSocketServerConstants.NS_BASE + ".plugins.sencha";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket ExtJSGridFormDemoPlugin";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket ExtJSGridFormDemoPlugin - Community Edition";
-	private static Customers mCustomers = new Customers();
+	private static Users mUsers = new Users();
 
 	/**
 	 *
 	 * @param aConfiguration
 	 */
-	public ExtJSGridFormDemoPlugin(PluginConfiguration aConfiguration) {
+	public SenchaDemoPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		setNamespace(NS_EXTJSDEMO);
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("ExtJSGridFormDemoPlugin successfully instantiated!");
+		}
 	}
 
 	@Override
@@ -123,13 +129,13 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 		}
 
 		Token result = createResponse(aToken);
-		CustomerDef lCustomer = null;
+		User lCustomer = null;
 
 		if ((name != null) && (email != null) && (age != null)) {
 
 			try {
-				lCustomer = new CustomerDef(mCustomers.getCount(), name, email, age);
-				mCustomers.add(lCustomer);
+				lCustomer = new User(mUsers.getCount(), name, email, age);
+				mUsers.add(lCustomer);
 				//{"success":true,"message":"User Create","data":   {"id":5,"name":"osvaldo","email":"oaguilar@rubble.com"}}
 				//DATA FOR EXTJS
 				result.setInteger("code", 0);
@@ -143,7 +149,7 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 				result.setBoolean("failure", true);
 			}
 			//REACHING DATA FOR SHOWING TO THE USER
-			FastList<CustomerDef> data = new FastList<CustomerDef>();
+			FastList<User> data = new FastList<User>();
 			data.add(lCustomer);
 
 			//SETTING THE DATA LIST TO THE OUTGOING TOKEN
@@ -164,7 +170,7 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 	private void proccessRead(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
 		Token result = createResponse(aToken);
-		FastList<CustomerDef> data = new FastList<CustomerDef>();
+		FastList<User> data = new FastList<User>();
 		Integer id = null;
 
 		try {
@@ -173,17 +179,28 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 		}
 
 		if (id != null) {
-			CustomerDef customer = mCustomers.getCustomer(id);
+			User customer = mUsers.getCustomer(id);
 			data.add(customer);
 
 		} else {
 
 			Integer start = aToken.getInteger("start");
 			Integer limit = aToken.getInteger("limit");
-			result.setList("data", mCustomers.getSubList(start, start + limit));
+			List<User> lSubList =
+					mUsers.getSubList(start, start + limit);
+			FastList<Token> lList = new FastList<Token>();
+			for (User lCustomer : lSubList) {
+				Token lTk = TokenFactory.createToken();
+				lTk.setInteger("id", lCustomer.getId());
+				lTk.setString("name", lCustomer.getName());
+				lTk.setString("email", lCustomer.getEmail());
+				lTk.setInteger("age", lCustomer.getAge());
+				lList.add(lTk);
+			}
+			result.setList("data", lList);
 
 			result.setInteger("code", 0);
-			result.setInteger("totalCount", mCustomers.getSize());
+			result.setInteger("totalCount", mUsers.getSize());
 		}
 		getServer().sendToken(aConnector, result);
 
@@ -191,7 +208,7 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 
 	private void notifyAllConectors(String typeNotify, String message) {
 
-		Token Notify = TokenFactory.createToken("jws.ext.gridformdemo", typeNotify);
+		Token Notify = TokenFactory.createToken(NS_EXTJSDEMO, typeNotify);
 		Collection<WebSocketConnector> clients = getServer().getAllConnectors().values();
 
 		Notify.setString("message", message);
@@ -204,7 +221,7 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 
 	private void notifyAllConectorsWithoutMe(WebSocketConnector aConnector, String typeNotify, String message) {
 
-		Token Notify = TokenFactory.createToken("jws.ext.gridformdemo", typeNotify);
+		Token Notify = TokenFactory.createToken(NS_EXTJSDEMO, typeNotify);
 		Collection<WebSocketConnector> clients = getServer().getAllConnectors().values();
 		clients.remove(aConnector);
 
@@ -236,7 +253,7 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 			age = Integer.parseInt(aToken.getString("age"));
 		}
 
-		CustomerDef customer = mCustomers.getCustomer(id);
+		User customer = mUsers.getCustomer(id);
 
 		if (customer == null) {
 			result.setInteger("code", -1);
@@ -248,7 +265,7 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 
 			msg = "User with id: " + id + " updated correctly";
 
-			FastList<CustomerDef> data = new FastList<CustomerDef>();
+			FastList<User> data = new FastList<User>();
 			data.add(customer);
 			result.setList("data", data);
 
@@ -269,7 +286,7 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 		Token result = createResponse(aToken);
 		FastList<Token> data = new FastList<Token>();
 
-		if (mCustomers.deleteCustomer(id)) {
+		if (mUsers.deleteCustomer(id)) {
 			result.setInteger("code", 0);
 			result.setBoolean("success", true);
 			result.setString("message", "delete success customer with id: " + id);
@@ -280,7 +297,7 @@ public class ExtJSGridFormDemoPlugin extends TokenPlugIn {
 			result.setString("message", "An error has occurred.  could not delete the user with id: " + id);
 		}
 
-		result.setInteger("totalCount", mCustomers.getSize());
+		result.setInteger("totalCount", mUsers.getSize());
 		getServer().sendToken(aConnector, result);
 
 		String msg = "delete success customer with id: " + id;

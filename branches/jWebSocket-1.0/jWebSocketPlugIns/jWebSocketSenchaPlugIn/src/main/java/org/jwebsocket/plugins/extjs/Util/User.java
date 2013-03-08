@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - UserDef for ExtJS plug-in (Community Edition, CE)
+//	jWebSocket - CustomerDef for ExtJS plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -16,44 +16,66 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.plugins.extjs;
+package org.jwebsocket.plugins.extjs.Util;
 
 /**
  *
  * @author Osvaldo Aguilar Lauzurique, Alexander Rojas Hernandez
  */
-public class UserDef {
+public class User {
 
-	private String mName;
 	private Integer mId;
+	private String mName;
 	private String mEmail;
+	private Integer mAge;
 
 	/**
 	 *
 	 * @param aId
 	 * @param aName
 	 * @param aEmail
+	 * @param aAge
 	 */
-	public UserDef(Integer aId, String aName, String aEmail) {
+	public User(Integer aId, String aName, String aEmail, Integer aAge) {
 		this.mName = aName;
 		this.mId = aId;
 		this.mEmail = aEmail;
+		this.mAge = aAge;
 	}
 
 	/**
-	 *
-	 * @return
-	 */
-	public String getEmail() {
-		return mEmail;
-	}
-
-	/**
-	 *
-	 * @return
+	 * @return the id
 	 */
 	public Integer getId() {
 		return mId;
+	}
+
+	/**
+	 * @param aId the id to set
+	 */
+	public void setId(Integer aId) {
+		this.mId = aId;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return mName;
+	}
+
+	/**
+	 * @param aName the name to set
+	 */
+	public void setName(String aName) {
+		this.mName = aName;
+	}
+
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return mEmail;
 	}
 
 	/**
@@ -65,26 +87,17 @@ public class UserDef {
 	}
 
 	/**
-	 *
-	 * @param aId
+	 * @return the age
 	 */
-	public void setId(Integer aId) {
-		this.mId = aId;
+	public Integer getAge() {
+		return mAge;
 	}
 
 	/**
 	 *
-	 * @param aName
+	 * @param aAge
 	 */
-	public void setName(String aName) {
-		this.mName = aName;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public String getName() {
-		return mName;
+	public void setAge(Integer aAge) {
+		this.mAge = aAge;
 	}
 }
