@@ -295,9 +295,14 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		@Override
 		public void run() {
 			mSigar = new Sigar();
+			Token lPCInfoToken = null;
 			while (mInformationRunning) {
-				gatherComputerInfo();
-				Token lPCInfoToken = computerInfoToToken();
+				try {
+					gatherComputerInfo();
+					lPCInfoToken = computerInfoToToken();
+				} catch (Exception e) {
+				}
+
 
 				for (WebSocketConnector lConnector : mClients) {
 
@@ -393,7 +398,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	 *
 	 * @return
 	 */
-	public Token computerInfoToToken() {
+	public Token computerInfoToToken() throws SigarException {
 		Token lToken = TokenFactory.createToken(getNamespace(), TT_PC_INFO);
 		//Memory Information
 		lToken.setInteger("totalMem", mMemory[0]);
@@ -419,13 +424,16 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		lToken.setString("consumeTotal", CpuPerc.format(mCpu));
 
 		//HDD Information
+		long lTotalHddSpace = 0;
+		long lFreeHddSpace = 0;
 		for (File lRoot : mRoots) {
-			lToken.setString("totalHddSpace", inMeasure(lRoot.getTotalSpace()));
-			lToken.setString("freeHddSpace", inMeasure(lRoot.getFreeSpace()));
-			lToken.setString("usedHddSpace", inMeasure(lRoot.getTotalSpace()
-					- lRoot.getFreeSpace()));
+			lTotalHddSpace += lRoot.getTotalSpace();
+			lFreeHddSpace += lRoot.getFreeSpace();
 		}
 
+		lToken.setString("totalHddSpace", inMeasure(lTotalHddSpace));
+		lToken.setString("freeHddSpace", inMeasure(lFreeHddSpace));
+		lToken.setString("usedHddSpace", inMeasure(lTotalHddSpace - lFreeHddSpace));
 		return lToken;
 	}
 
