@@ -25,44 +25,35 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
 
-        <title>SMS Gateway</title>
+        <title>SMS Gateway Demo</title>
 
-        <!-- DEMO STYLES  -->
+		<!-- JQUERY STYLES -->
+		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+
+		<!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsSMSGateway.css"/>
 
-        <!-- JQUERY DEPENDENCIES -->
-        <link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
-        <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
-        <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
-        <script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
+		<!-- JQUERY DEPENDENCIES -->
+		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+		<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
-        <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
-        <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
-        <!-- this one imports the client side sample plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsSamplesPlugIn.js"></script>
-        <!-- this one imports the client side JDBC plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsJDBCPlugIn.js"></script>
-        <!-- this one imports the client side file system plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
-        <!-- this one imports the client side reporting plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
-        <!-- this one imports the client side rpc plug-in -->
-        <script type="text/javascript" src="../../res/js/jwsRPCPlugIn.js"></script>
+		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
+		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
 
-        <!--  PUBLIC WIDGETS   -->
-        <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
-        <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
+		<!--  PUBLIC WIDGETS   -->
+		<script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
+		<script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
 
-        <!--  MY WIDGETS   -->
-        <script type="text/javascript" src='js/jwsSMSGateway.js'></script>
-        <script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+		<!--  MY WIDGETS   -->
+		<script type="text/javascript" src='js/jwsSMSGateway.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
-        <!--  MAIN JAVASCRIPT FILE   -->
-        <script type="text/javascript" src='js/init.js'></script>
-
-
-    </head>
+		<!--  MAIN JAVASCRIPT FILE   -->
+		<script type="text/javascript" src='js/init.js'></script>
+	</head>
     <body>
         <div id="demo_box">
             <!--       DEMO_HEADER       -->
@@ -72,15 +63,7 @@
                     <div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
-                            <div id="logoff_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                 onmousedown="this.className='button onmousedown'" 
-                                 onmouseup="this.className='button onmouseup'" 
-                                 onmouseout="this.className='button onmouseout'" 
-                                 onclick="this.className='button onmouseover'">
-                                <div class="l"></div>
-                                <div class="c">Logout</div>
-                                <div class="r"></div>
-                            </div>
+                            <div id="logoff_button" class="button" >Logout</div>
                         </div>
                     </div>
                     <div id="login_area">
@@ -90,16 +73,7 @@
                             <input type="text" id="user_text" value="root"/>
                             <input type="password" id="user_password" value="root"/>
                         </div>
-                        <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Login</div>
-                            <div class="r"></div>
-                        </div>
-
+                        <div id="login_button" class="button">Login</div>
                     </div>
 
                 </div>
@@ -115,7 +89,10 @@
 
                 <!--       DESCRIPTION       -->
                 <div class="box">
-                    <p>Here we show how to easily send SMS to smartphones using the jWebSocket SMS Gateway. Just type a number and a message. For security and anti-spam reasons please use the captcha service.</p>
+                    <p>Here we show how to easily send SMS to smartphones using 
+						the jWebSocket SMS Gateway. Just type a number and a 
+						message. For security and anti-spam reasons please use 
+						the captcha service.</p>
                 </div>
 
 
@@ -127,36 +104,49 @@
                         <div id="imgCaptcha">
                             <img id="img"></img>
                         </div>
-                        <div id="update" class="update" title="Update the captcha image with a new one!"></div>
-
-                        <p id="wordType">Type the words:</p>
-                        <input type="text" id="captchaText" class="texts"/>
+                        <div id="update" class="update" 
+							 title="Update the captcha image with a new one!"></div>
+                        <input type="text" id="captchaText" class="texts" value="Type the words here..."/>
                     </div>
                     <div id="messageDiv" class="contentDiv box">
+						<table width="100%">
+							<tr>
+								<td width="30%">Phone number</td>
+								<td>
+									<input type="text" id="phoneNumberInput" 
+										   class="texts" value="+49 160 90915843"/>
+								</td>
+							</tr>
+							<tr>
+								<td>From</td>
+								<td><input type="text" id="fromInput" 
+										   class="texts" value="jWebSocket"/></td>
+							</tr>
+							<tr>
+								<td>Text message</td>
+								<td>
+									<textarea id="smsInput" NAME="sms" ROWS="6" COLS="30" class="texts">Hello from the jWebSocket real-time SMS service. Security with user-verification and monitoring.</textarea>
+								</td>
+							</tr>
+						</table>
 
-                        <p id="phone"> Phone number </p>
-                        <input type="text" id="phoneNumberInput" class="texts" value="+49 160 90915843"/>
-                        <p id="from"> From </p>
-                        <input type="text" id="fromInput" class="texts" value="jWebSocket"/>
-                        <p id="message"> Text message </p>
-                        <textarea id="smsInput" NAME="sms" ROWS="6" COLS="30" class="texts">Hello from the jWebSocket real-time SMS service. Security with user-verification and monitoring.</textarea>
                         <div id="radioDiv">
-                            <p id="smsType">Select SMS type:</p>
-                            <input type="radio" value="gold" name="messageRadio" class="radio" id="gold"/><label>Gold</label>
-                            <input type="radio"  value="direct" name="messageRadio" class="radio" id="direct"/><label>Direct</label>
-                            <input type="radio" value="basic" name="messageRadio" checked="checked" class="radio" id="basic"/><label>Basic</label>
-
+							<div id="character_counter">
+								<div class="text">characters left</div>
+								<div class="count">150</div>
+							</div>
+							<div id="sms_actions">
+								<p id="smsType">Select SMS type:</p>
+								<input type="radio" value="gold" name="messageRadio" 
+									   class="radio" id="gold"/><label>Gold</label>
+								<input type="radio"  value="direct" name="messageRadio" 
+									   class="radio" id="direct"/><label>Direct</label>
+								<input type="radio" value="basic" name="messageRadio" 
+									   checked="checked" class="radio" id="basic"/>
+								<label>Basic</label>
+							</div>
                         </div>
-						<div id="send_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Send</div>
-                            <div class="r"></div>
-                        </div>
-
+						<div id="send_button" class="button">Send</div>
                     </div>
 					<!--       LOG BOX           -->
                     <div id="log_box" class="box">
@@ -165,22 +155,16 @@
                             <div id="clear_log">Clear Log</div>
                         </div>
                         <div id="log_box_content" class="log_box_visible"></div>
-                    </div>
-                </div>
-                <!--       DOWNLOAD_BUTTON   -->
-                <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
-                        <div class="r_download"></div>
-                    </div>
+                    </div> 
+					<!--       DOWNLOAD_BUTTON   -->
+					<div id="demo_box_footer">
+						<div id="jws_download_button" class="button download">
+							<a href="http://jwebsocket.org/downloads/downloads.htm" 
+							   target="blank">Download jWebSocket</a>
+						</div>
+					</div>
                 </div>
             </div>
         </div>
-
     </body>
 </html>

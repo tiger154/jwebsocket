@@ -6,14 +6,11 @@
 }
 /*-------------- DEMO_DESCRIPTION ------------*/
 
-
 /*---------------- DEMO_SCENARIO -------------*/
-#demo_box_scenario{
-    float: left;
-    margin: 10px; 
-    padding: 5px;
+#scenario_container input, #scenario_container textarea{
+	padding: 0 5px 0 5px;
+	color: #606060;
 }
-
 #generalDiv {
     background: #EDF6E2;
     width: 754px;
@@ -39,15 +36,14 @@ h1#header{
     padding: 10px 10px 10px 10px;
 }
 #jCaptchaDiv {
-    width: 255px;
-    height: 130px;
+    width: 37%;
     float: left;
 }
 #messageDiv {
-    width: 400px;
-    height: 240px;
+    width: 55%;
+    height: auto;
     float: left;
-    margin: 0 6px 0 10px;
+    margin: 0 0 0 10px;
 }
 p.pText {
 	font-family: Arial, Helvetica, sans-serif;
@@ -72,11 +68,9 @@ p.pText {
 #imgCaptcha {
     width: 220px;
     background-color: #ffffff;
-    height: 65px;
     -moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
     float: left;
-    margin: 0 0 10px 0;
     border: 1px solid #c8c8c8;
 }
 
@@ -107,9 +101,13 @@ p.pText {
 }
 #captchaText {
     float: left;
-	width: 95%;
+	width: 81%;
+	margin: 5px 5px 5px 2px;
 }
 
+#messageDiv{
+	font-size: 8pt;
+}
 
 #description {
     width: 750px;
@@ -122,60 +120,62 @@ p.pText {
     border: 1px solid #c8c8c8;
     height: 25px;
 }
-#phoneNumberInput {
-    float: right;
-    width: 295px
+
+#smsInput{
+	height: 45px;
 }
-#phone {
-    float: left;
-    margin: 5px 0 0 5px;
-	padding-left: 7px;
+
+#messageDiv table input, #messageDiv table textarea{
+	width: 97%;
 }
-#from {
-    margin-top: 35px;
-}
-#message {
-    margin-top: 6px;
-}
-#fromInput {
-    float: right;
-    width: 295px;
-    margin: -30px 0 0 0;
-}
-#smsInput {
-    float: right;
-    width: 295px;
-	height: 50px;
-}
+
 #smsType {
     float: left;
-    margin: 22px 5px 0 0;
-	
 }
+
 .radio {
     float: left;
-	
+
 }
 
 label{
 	float: left;
 	font-size: 12px;
-	padding-top: 21px;
 	font-family: "Verdana";
 }
 
 #radioDiv {
     float: left;
-	width: 98%;
+	width: 75%;
 	padding-left: 94px;
-	margin-bottom: 20px;
 }
 
-#basic,#gold, #direct {
-    margin-top: 22px;  
+#sms_actions{
+	float: left;
+}
+
+#basic,#gold, #direct, #sms_actions label, #smsType {
+    margin-top: 12px; 
 }
 
 #send_button{
 	float: right;
-	
+}
+
+#character_counter{
+	font-size: 11px;
+	margin-top: 5px;
+	color: #606060;
+}
+
+#character_counter div{
+	float: right;
+}
+
+#character_counter .count{
+	padding-right: 3px;
+}
+
+.error{
+	color: #ff0000 !important;
 }
