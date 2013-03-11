@@ -393,14 +393,11 @@ textarea{
 
 /*----------------- DEMO_FOOTER --------------*/
 #demo_box_footer{
-    float:left;
-    padding: 5px;
-    width: 98%;
+    float:right;
 }
 
 #jws_download_button{
     cursor: pointer;
-    width: 200px;
     height: 25px;
     float:right;
     margin: 5px 5px 5px 0;
