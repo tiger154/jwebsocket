@@ -27,62 +27,38 @@
 
         <title>jWebSocket Remote Control Demo</title>
 
+        <!-- JQUERY STYLES  -->
+		<link rel="stylesheet" type="text/css" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css"/>
+
         <!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsRemoteControl.css"/>
-        <link rel="stylesheet" type="text/css" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css"/>
 
         <!-- JQUERY DEPENDENCIES -->
         <script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
-        
+
         <!-- RAPHAEL DEPENDENCIES -->
-        <script type="text/javascript" src='js/lib/raphael.js'></script>
-        
+        <script type="text/javascript" src='../../lib/raphaelJS/raphael.js'></script>
+
         <!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
         <script type="text/javascript" src="../../res/js/jwsEventsPlugIn.js"></script>
         <script type="text/javascript" src="../../res/js/jwsCache.js"></script>
 
         <!--  PUBLIC WIDGETS   -->
-        <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>        
-        <script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>        
-
+        <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
+        <script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
         <!--  MAIN JAVASCRIPT FILE   -->
 		<script type="text/javascript" src='js/jwsRemoteControl.js'></script>
-		<script type="text/javascript" src='js/init.js'></script>
-		
-		
     </head>
     <body>
         <div id="demo_box" >
             <!--       DEMO_HEADER       -->
             <div id="demo_box_header">
                 <h1>Arduino Remote Control</h1>
-				<!--<div id="demo_box_header_login">
-					<div id="connect_area">
-						<div id="connect_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-							 onmousedown="this.className='button onmousedown'" 
-							 onmouseup="this.className='button onmouseup'" 
-							 onmouseout="this.className='button onmouseout'" 
-							 onclick="this.className='button onmouseover'">
-							<div class="l"></div>
-							<div class="c">Connect</div>
-							<div class="r"></div>
-						</div>
-						<div id="disconnect_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-							 onmousedown="this.className='button onmousedown'" 
-							 onmouseup="this.className='button onmouseup'" 
-							 onmouseout="this.className='button onmouseout'" 
-							 onclick="this.className='button onmouseover'">
-							<div class="l"></div>
-							<div class="c">Disconnect</div>
-							<div class="r"></div>
-						</div> 
-					</div>
-				</div> -->
             </div>
             <div id="container">
                 <!--       STATUSBAR         -->
@@ -110,7 +86,7 @@
                     <label id ="joystickTitle" class="title">Remote Monitoring</label>
                     <label id="joystickMiniDescription" class="miniDescription">Use your joystick to display its movements in the browser. </label>
                     <div id="joystickPosition"> </div></div> 
-                
+
                 <div id="ledsContainer" class="container"> 
                     <label id ="ledsTitle" class="title">Remote Control</label>
                     <label id="ledsMiniDescription" class="miniDescription">Click on the lights to turn on or off your external LEDs.</label>
@@ -139,13 +115,16 @@
 
                 <!--       DOWNLOAD_BUTTON   -->
                 <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
+                    <div id="jws_download_button" class="button onmouseup" 
+						 onmouseover="this.className = 'button onmouseover'" 
+                         onmousedown="this.className = 'button onmousedown'" 
+                         onmouseup="this.className = 'button onmouseup'" 
+                         onmouseout="this.className = 'button onmouseout'" 
+                         onclick="this.className = 'button onmouseover'">
+                        <div class="btn_left"></div>
+                        <div class="btn_center">
+							<a href="http://jwebsocket.org/downloads/downloads.htm" 
+							   target="blank">Download jWebSocket</a></div>
                         <div class="r_download"></div>
                     </div>
                 </div>
