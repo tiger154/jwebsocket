@@ -1120,6 +1120,23 @@
 		</user>
         
 		<user>
+			<uuid>000-000-004-2013-03-11-12-27-34-384</uuid>
+			<loginname>demo</loginname>
+			<firstname>jWebSocket Demo User</firstname>
+			<lastname>(Demo Role)</lastname>
+			<password>demo</password>
+			<description>jWebSocket Demo User</description>
+			<!-- 0=blocked 1=allowed ... future states pending -->
+			<status>1</status>
+			<roles>
+				<!-- the rights of all roles are merged -->
+				<role>Guest</role>
+				<role>User</role>
+				<role>Administrator</role>
+			</roles>
+		</user>
+        
+		<user>
 			<uuid>000-000-004-2011-07-14-11-35-54-871</uuid>
 			<loginname>anonymous</loginname>
 			<firstname>jWebSocket Anonymous User</firstname>

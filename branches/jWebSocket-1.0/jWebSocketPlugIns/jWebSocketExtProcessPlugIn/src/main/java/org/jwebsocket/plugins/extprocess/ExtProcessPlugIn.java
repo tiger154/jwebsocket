@@ -18,6 +18,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.extprocess;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -27,8 +34,11 @@ import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.StringUtils;
 
 /**
  *
@@ -120,7 +130,7 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 	public String getNamespace() {
 		return NS_EXTPROCESS;
 	}
-	
+
 	@Override
 	public synchronized void engineStarted(WebSocketEngine aEngine) {
 	}
@@ -135,11 +145,9 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 		String lNS = aToken.getNS();
 
 		if (lType != null && getNamespace().equals(lNS)) {
-			/*
-			 if (lType.equals("save")) {
-			 save(aConnector, aToken);
-			 }
-			 */
+			if (lType.equals("call")) {
+				call(aConnector, aToken);
+			}
 		}
 	}
 
@@ -163,5 +171,79 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 		}
 
 		return null;
+	}
+
+	private void call(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'call'...");
+		}
+		Token lResponse = createResponse(aToken);
+
+		// check if user is allowed to run 'exists' command
+		/*
+		 if (!hasAuthority(aConnector, NS_EXTPROCESS + ".call")) {
+		 if (mLog.isDebugEnabled()) {
+		 mLog.debug("Returning 'Access denied'...");
+		 }
+		 lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
+		 return;
+		 }
+		 */
+
+		String lAlias = aToken.getString("alias");
+		if (null == lAlias) {
+			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", "No alias passed.");
+			lServer.sendToken(aConnector, lResponse);
+			return;
+		}
+		String lCmdLine = mSettings.getAllowedProgs().get(lAlias);
+		if (null == lCmdLine) {
+			lResponse.setInteger("code", -1);
+			lResponse.setString("msg", "Alias '" + lAlias + "' not found.");
+			lServer.sendToken(aConnector, lResponse);
+			return;
+		}
+		List<String> lArgs = aToken.getList("args");
+
+		String[] lCmdTokens = StringUtils.tokenizeToStringArray(lCmdLine, " ", true, false);
+		List<String> lCmd = new ArrayList<String>();
+		for (int lCmdIdx = 0; lCmdIdx < lCmdTokens.length; lCmdIdx++) {
+			String lCmdToken = lCmdTokens[lCmdIdx];
+			for (int lArgIdx = 0; lArgIdx < lArgs.size(); lArgIdx++) {
+				lCmdToken = lCmdToken.replace("${" + ( lArgIdx + 1) + "}", lArgs.get(lArgIdx).toString());
+			}
+			lCmd.add(lCmdToken);
+		}
+
+		ProcessBuilder lProcBuilder = new ProcessBuilder(lCmd);
+		Map<String, String> lEnv = lProcBuilder.environment();
+		lProcBuilder.directory(new File(System.getenv("temp")));
+
+		try {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Directory: " + System.getenv("temp"));
+			}
+			final Process process = lProcBuilder.start();
+			InputStream lIS = process.getInputStream();
+			InputStreamReader lISR = new InputStreamReader(lIS);
+			BufferedReader lBR = new BufferedReader(lISR);
+			String lLine;
+			while ((lLine = lBR.readLine()) != null) {
+				Token lEventToken = TokenFactory.createToken(getNamespace(), "event");
+				lEventToken.setString("line", lLine);
+				lServer.sendToken(aConnector, lEventToken);
+			}
+			lResponse.setInteger("exitCode", process.exitValue());
+		} catch (Exception lEx) {
+			lResponse.setInteger("code", -1);
+			String lMsg = Logging.getSimpleExceptionMessage(lEx, "calling external process");
+			lResponse.setString("msg", lMsg);
+			mLog.error(lMsg);
+		}
+
+		lServer.sendToken(aConnector, lResponse);
 	}
 }

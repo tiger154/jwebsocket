@@ -7,7 +7,17 @@
 	<bean id="org.jwebsocket.plugins.extprocess.settings" class="org.jwebsocket.plugins.extprocess.Settings">
 		<property name="allowedProgs">
 			<map>
-				<!-- list of allowed programs to be called as external processes -->
+				<!-- list of allowed programs to be called as external processes 
+					Please take care to add command line calls here only which 
+					do not rely on any user input but which communuicate via 
+					StdIn/StdOut only.
+				-->
+				<entry>
+					<key>
+						<value>dir_demo</value>
+					</key>
+					<value>C:/Windows/System32/cmd.exe /c dir ${1}</value>
+				</entry>                
 				<entry>
 					<key>
 						<value>perl_demo_1</value>

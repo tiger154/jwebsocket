@@ -32,7 +32,7 @@ public class Settings {
 	/**
 	 * @return the aliases
 	 */
-	public Map getAllowedProgs() {
+	public Map<String, String> getAllowedProgs() {
 		return mAllowedProgs;
 	}
 
