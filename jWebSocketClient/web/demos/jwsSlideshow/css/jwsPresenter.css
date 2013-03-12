@@ -1,0 +1,40 @@
+#toolbar{
+	width: 150px;
+	height: 40px;
+	margin: auto;
+}
+
+/*---------------------------------------------------------------------------*/
+/* buttons */
+/*---------------------------------------------------------------------------*/
+#btn_first .c, #btn_prev .c, #btn_next .c, #btn_last .c{
+	padding: 3px 0 0 0 !important;
+}
+
+.button .c .first{
+	float: left;
+	width: 12px;
+	height: 18px;
+    background: url(images/btn_first_n.png) 1px no-repeat;
+}
+
+.button .c .prev{
+	float: left;
+	width: 12px;
+	height: 18px;
+    background: url(images/btn_prev_n.png) 1px no-repeat;
+}
+
+.button .c .next{
+	float: left;
+	width: 12px;
+	height: 18px;
+    background: url(images/btn_next_n.png) 1px no-repeat;
+}
+
+.button .c .last{
+	float: left;
+	width: 12px;
+	height: 18px;
+    background: url(images/btn_last_n.png) 1px no-repeat;
+}
