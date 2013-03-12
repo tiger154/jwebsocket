@@ -41,18 +41,17 @@
 
 		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
 		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+		<script type="text/javascript" src="../../res/js/jwsChannelPlugIn.js"></script>
 
 		<!--  PUBLIC WIDGETS  -->
 		<script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
 		<script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
-		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
 		<!--  PRIVATE WIDGETS  -->
 		<script type="text/javascript" src='js/presenter/wPresenter.js'></script>
 
 		<!--  MAIN JAVASCRIPT FILE   -->
 		<script type="text/javascript" src='js/presenter/init.js'></script>
-		
 	</head>
 	<body>
 		<div class="container row-fluid">
@@ -71,7 +70,8 @@
 						<div id="demo_box_statusbar" class="row-fluid">
 							<div id="client_status" class='offline'>disconnected</div><div class="line"></div>
 							<div id='client_id'>Client-ID: - </div><div class="line"></div>
-							<div id='viewers' title="Connected clients">0</div>
+							<div id='presenters' title="Presenters">0</div><div class="line"></div>
+							<div id='viewers' title="Viewers">0</div>
 						</div>
 						<div class="row-fluid" style="background: black;">
 							<div class="span12"><img id="slide" src="slides/Slide0001.gif"/></div>
@@ -80,47 +80,10 @@
 					<div class="row-fluid">
 						<div id="toolbar">
 							<!-- Carousel nav -->
-							<div id="btn_first" class="button onmouseup"
-								 onmouseover="this.className='button onmouseover'" 
-								 onmousedown="this.className='button onmousedown'" 
-								 onmouseup="this.className='button onmouseup'" 
-								 onmouseout="this.className='button onmouseout'" 
-								 onclick="this.className='button onmouseover'">
-								<div class="l"></div>
-								<div class="c"><div class="first"></div></div>
-								<div class="r"></div>
-							</div>
-							<div id="btn_prev" class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-								 onmousedown="this.className='button onmousedown'" 
-								 onmouseup="this.className='button onmouseup'" 
-								 onmouseout="this.className='button onmouseout'" 
-								 onclick="this.className='button onmouseover'">
-								<div class="l"></div>
-								<div class="c"><div class="prev"></div></div>
-								<div class="r"></div>
-							</div>
-							<div id="btn_next" data-slide="next" 
-								 class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-								 onmousedown="this.className='button onmousedown'" 
-								 onmouseup="this.className='button onmouseup'" 
-								 onmouseout="this.className='button onmouseout'" 
-								 onclick="this.className='button onmouseover'">
-								<div class="l"></div>
-								<div class="c"><div class="next"></div></div>
-								<div class="r"></div>
-							</div>
-							<div id="btn_last" class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-								 onmousedown="this.className='button onmousedown'" 
-								 onmouseup="this.className='button onmouseup'" 
-								 onmouseout="this.className='button onmouseout'" 
-								 onclick="this.className='button onmouseover'">
-								<div class="l"></div>
-								<div class="c"><div class="last"></div></div>
-								<div class="r"></div>
-							</div>
+							<div id="btn_first" class="button"><div class="first"></div></div>
+							<div id="btn_prev" class="button"><div class="prev"></div></div>
+							<div id="btn_next" class="button" data-slide="next"><div class="next"></div></div>
+							<div id="btn_last" class="button"><div class="last"></div></div>
 						</div>
 					</div>
 				</div>

@@ -53,14 +53,11 @@
             <div id="container">
                 <!--       DESCRIPTION       -->
                 <div class="box" id="demo_box_description">
-					<p>
-                        This demo shows how to make a presentation in form of slideshow 
-						for an unlimited number of viewers all over the world.
-						<br/><br/>
-                        Connected as a presenter you have the full control of the navigation
-						through the slides. Viewers can follow the presenter's activities, 
-						but not intervene the presentation process.
-                    </p>
+					This demo shows how to make a presentation in form of slideshow 
+					for an unlimited number of viewers all over the world.
+					Connected as a presenter you have the full control of the navigation
+					through the slides. Viewers can follow the presenter's activities, 
+					but not intervene the presentation process.
                 </div>
 
                 <!--       SCENARIO          -->
@@ -73,32 +70,32 @@
 						</div>
 						<!-- ************************ CANVAS AREA ****************************** -->
 					</div>
-                </div>
-
-				<!--       LOG BOX           -->
-				<div id="log_box" class="box">
-					<div id="log_box_header">
-						<div id="show_hide_log" class="hide">Hide Log</div>
-						<div id="clear_log">Clear Log</div>
+					<!--       LOG BOX           -->
+					<div id="log_box" class="box">
+						<div id="log_box_header">
+							<div id="show_hide_log" class="hide">Hide Log</div>
+							<div id="clear_log">Clear Log</div>
+						</div>
+						<div id="log_box_content" class="log_box_visible"></div>
 					</div>
-					<div id="log_box_content" class="log_box_visible"></div>
+
+					<!--       DOWNLOAD_BUTTON   -->
+					<div id="demo_box_footer">
+						<div id="jws_download_button" class="button onmouseup" 
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'" 
+							 onclick="this.className = 'button onmouseover'">
+							<div class="btn_left"></div>
+							<div class="btn_center">
+								<a href="http://jwebsocket.org/downloads/downloads.htm" 
+								   target="blank">Download jWebSocket</a></div>
+							<div class="r_download"></div>
+						</div>
+					</div>
 				</div>
-
-                <!--       DOWNLOAD_BUTTON   -->
-                <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" 
-						 onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
-                        <div class="r_download"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+			</div>
+		</div>
     </body>
 </html>

@@ -3,7 +3,7 @@
     padding: 5px !important;
 }
 
-#demo_box_description p{
+#demo_box_description{
 	font-family: "Verdana";
     font-size: 11px !important;
 	margin-left: 5px !important;
@@ -20,19 +20,24 @@
 
 #scenario_container{
 	float: left;
-	width: 100%;
+	width: 99%;
 	margin: 0px !important;
 }
 
 iframe{
 	border: none;
-	width: 365px;
+	width: 49%;
 	height: 400px;
 	float: left;
-	margin-left: 5px;
+	margin-left: 0;
+	margin-right: 5px;
 }
 
 #iframes.target{
 	float: left;
 	width: 200px;
+}
+
+#log_box {
+	margin-top: 0;
 }
