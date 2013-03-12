@@ -481,17 +481,18 @@ $.widget( "jws.channels", {
 
 	onChannelSubscribers: function( aToken ) {
 		w.channels.clearSubscribersTable( );
-		var lRow = null, lEnd = aToken.subscribers.length;
-		if( lEnd > 0 ) {
-			w.channels.eSubscribersTable
-			.find( "." + w.channels.CLS_NOCHANNELS ).remove( );
-			for( var i =0; i < lEnd; i++ ) {
-				lRow = $( "<tr></tr>" ).append( "<td>" + 
-					aToken.subscribers[ i ].id + "</td>");
-				w.channels.eSubscribersTable.append( lRow );
+		if(aToken.subscribers ) {
+			var lRow = null, lEnd = aToken.subscribers.length;
+			if( lEnd > 0 ) {
+				w.channels.eSubscribersTable
+				.find( "." + w.channels.CLS_NOCHANNELS ).remove( );
+				for( var i =0; i < lEnd; i++ ) {
+					lRow = $( "<tr></tr>" ).append( "<td>" + 
+						aToken.subscribers[ i ].id + "</td>");
+					w.channels.eSubscribersTable.append( lRow );
+				}
 			}
 		}
-		
 		w.channels.eSubscribersTable.stripe( );
 		w.channels.switchSubscribersArea( );
 	},
@@ -580,7 +581,6 @@ $.widget( "jws.channels", {
 					//					console.log( aToken );
 					for( var lIdx in lChannels ) {
 						lChannel = lChannels[ lIdx ];
-						console.log( lChannel );
 						if( w.channels.mChannelsList[ lChannel.id ] ) {
 							w.channels.addChannelToTable( 
 								w.channels.mChannelsList[ lChannel.id ],
