@@ -7,32 +7,32 @@
 /*---------------------------------------------------------------------------*/
 /* buttons */
 /*---------------------------------------------------------------------------*/
-#btn_first .c, #btn_prev .c, #btn_next .c, #btn_last .c{
+#btn_first .btn_center, #btn_prev .btn_center, #btn_next .btn_center, #btn_last .btn_center{
 	padding: 3px 0 0 0 !important;
 }
 
-.button .c .first{
+.button .btn_center .first{
 	float: left;
 	width: 12px;
 	height: 18px;
     background: url(images/btn_first_n.png) 1px no-repeat;
 }
 
-.button .c .prev{
+.button .btn_center .prev{
 	float: left;
 	width: 12px;
 	height: 18px;
     background: url(images/btn_prev_n.png) 1px no-repeat;
 }
 
-.button .c .next{
+.button .btn_center .next{
 	float: left;
 	width: 12px;
 	height: 18px;
     background: url(images/btn_next_n.png) 1px no-repeat;
 }
 
-.button .c .last{
+.button .btn_center .last{
 	float: left;
 	width: 12px;
 	height: 18px;
