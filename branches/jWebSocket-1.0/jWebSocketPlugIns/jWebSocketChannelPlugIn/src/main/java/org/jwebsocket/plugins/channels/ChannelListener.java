@@ -67,7 +67,7 @@ public interface ChannelListener {
 	 * @param aChannel the channel
 	 * @param aSubscriber the subscriber
 	 */
-	void subscribed(Channel aChannel, String aSubscriber);
+	void subscribed(Channel aChannel, WebSocketConnector aSubscriber);
 
 	/**
 	 * called when someone unsuscribes the channel

@@ -395,7 +395,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			return;
 		} else {
 			// this adds the subscriber id the channel
-			lChannel.subscribe(lSubscriber.getId());
+			lChannel.subscribe(lSubscriber.getId(), aConnector);
 			// this add the channel to the subscriber
 			lSubscriber.addChannel(lChannel.getId());
 			// this saves the subscriber
