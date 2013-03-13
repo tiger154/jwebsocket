@@ -465,7 +465,7 @@ public final class Channel implements ChannelLifeCycle {
 					public void run() {
 						WebSocketConnector lConnector = mServer.getConnector(lSubscriber);
 						if (lConnector != null) {
-							mServer.sendToken(lConnector, aToken);
+							mServer.sendTokenAsync(lConnector, aToken);
 						} else {
 							mLog.warn("Trying to asynchronously broadcast token to unknown subscriber '"
 									+ lSubscriber + "' " + aToken.toString() + ".");
