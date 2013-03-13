@@ -37,13 +37,15 @@ Ext.define('IS.view.collection.EnterAccessPwd', {
 		this.buttons = [{
 			text: 'Do Action',
 			scope: this,
+			tooltip: 'Tries to subscribe on the collection by using entered password, executes the requested operation if success.',
 			handler: function (){
 				this.doAction();
 			}
 		},{
 			text: 'Cancel',
 			scope: this,
-			handler: this.close
+			handler: this.close,
+			tooltip: 'Cancel operation.'
 		}];
 
 		this.callParent(arguments);

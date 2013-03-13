@@ -103,7 +103,9 @@ Ext.application({
 				
 				// openning main view
 				Ext.create('Ext.container.Viewport', {
-					padding: 20,
+					autoScroll: true,
+					resizable: false,
+					maxWidth: 700,
 					id: 'viewport',
 					items: [{
 						xtype: 'p_header'
@@ -124,6 +126,8 @@ Ext.application({
 						}]
 					}]
 				});
+				
+				IS.lib.Util.registerTooltip(['showUserOnly']);
 			});
 		});
 		

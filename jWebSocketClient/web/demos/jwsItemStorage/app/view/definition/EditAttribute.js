@@ -59,12 +59,14 @@ Ext.define('IS.view.definition.EditAttribute', {
 		this.buttons = [{
 			xtype: 'button',
 			text: 'Save',
-			action: 'save'
+			action: 'save',
+			tooltip: 'Saves attribute definition by using entered form data.'
 		},{
 			xtype: 'button',
 			text: 'Cancel',
 			scope: self,
-			handler: self.close
+			handler: self.close,
+			tooltip: 'Cancel operation.'
 		}];
 
 		this.callParent(arguments);

@@ -1,7 +1,7 @@
 Ext.define('IS.view.portal.Right' ,{
 	extend: 'Ext.panel.Panel',
 	alias: 'widget.p_right',
-	width: 600,
+	width: 500,
 	border: 0,
 	padding: 5,
 	items: [{

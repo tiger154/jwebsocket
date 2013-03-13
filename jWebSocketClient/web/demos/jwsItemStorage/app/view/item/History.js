@@ -6,6 +6,7 @@ Ext.define('IS.view.item.History', {
 	autoShow: false,
 	width: 550,
 	height: 400,
+	resizable: false,
 	iconCls: 'history',
 	modal: false,
 	

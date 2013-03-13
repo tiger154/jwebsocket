@@ -5,7 +5,9 @@ Ext.define('IS.view.definition.Create', {
 	title: 'Create item definition',
 	mode: 'create',
 	iconCls: 'd_add',
-	maxHeight: 450,
+	minHeight: 260,
+	minWidth: 330,
+	maxWidth: 330,
 	
 	loadForEdit: function ( aFieldValues ){
 		this.setTitle('Edit definition');
@@ -83,6 +85,7 @@ Ext.define('IS.view.definition.Create', {
 
 		this.buttons = [{
 			text: 'Add attribute',
+			tooltip: 'Adds a new "Attribute" box that allows you to add a new attribute in the item definition.',
 			action: 'addAttr',
 			margin: '0 60 0 0',
 			iconCls: 'attr_add',
@@ -98,11 +101,13 @@ Ext.define('IS.view.definition.Create', {
 			}
 		},{
 			text: 'Create',
-			action: 'create'
+			action: 'create',
+			tooltip: 'Creates item definition by using entered form data.'
 		},{
 			text: 'Cancel',
 			scope: this,
-			handler: this.close
+			handler: this.close,
+			tooltip: 'Cancel operation.'
 		}];
 
 		this.callParent(arguments);

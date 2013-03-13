@@ -1,8 +1,9 @@
 Ext.define('IS.view.item.Find', {
 	extend: 'IS.view.base.Window',
-	title: 'Find items',
+	title: 'Filter items',
 	iconCls: 'find',
 	alias: 'widget.i_find',
+	resizable: false,
 	
 	loadData: function(aItemDefinition, aPreviousCriteria){
 		this.itemDefinition = aItemDefinition;
@@ -43,7 +44,7 @@ Ext.define('IS.view.item.Find', {
 			},
 			allowBlank: false,
 			editable: false,
-			tooltip: 'The attribute name to search for.',
+			tooltip: 'The attribute name to filter for.',
 			listeners: {
 				change: {
 					fn: function(aField, aNewValue){
@@ -113,14 +114,14 @@ Ext.define('IS.view.item.Find', {
 			hidden: true,
 			tooltip: 'Clear criteria. List all the records.'
 		},{
-			text: 'Find',
+			text: 'Filter',
 			action: 'find',
-			tooltip: 'Find by criteria.'
+			tooltip: 'Filter by criteria.'
 		},{
 			text: 'Cancel',
 			scope: this,
 			handler: this.close,
-			tooltip: 'Close the window.'
+			tooltip: 'Cancel operation.'
 		}];
 
 		this.callParent(arguments);

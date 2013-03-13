@@ -3,14 +3,14 @@ Ext.define('IS.view.collection.Toolbar' ,{
 	alias: 'widget.c_toolbar',
 	items: [{
 		iconCls: 'c_open',
-		tooltip: 'Open collection...',
+		tooltip: 'Open collection',
 		disabled: true
 	},{
 		iconCls: 'c_add',
-		tooltip: 'Add collection...'
+		tooltip: 'Add collection'
 	},{
 		iconCls: 'c_remove',
-		tooltip: 'Remove collection...',
+		tooltip: 'Remove collection',
 		disabled: true
 	}, {
 		iconCls: 'c_restart',
@@ -18,19 +18,19 @@ Ext.define('IS.view.collection.Toolbar' ,{
 		disabled: true
 	}, {
 		iconCls: 'c_clear',
-		tooltip: 'Clear collection...',
+		tooltip: 'Clear collection',
 		disabled: true
 	},{
 		iconCls: 'c_details',
-		tooltip: 'Show details...',
+		tooltip: 'Show details',
 		disabled: true
 	},{
 		iconCls: 'history',
-		tooltip: 'Show history...',
+		tooltip: 'Show history',
 		disabled: true
 	}, {
 		iconCls: 'c_edit',
-		tooltip: 'Edit collection...',
+		tooltip: 'Edit collection',
 		disabled: true
 	}]
 });

@@ -23,10 +23,11 @@ Ext.define('IS.view.collection.List' ,{
 		dock: 'bottom',
 		items: [{
 			xtype: 'checkbox',
-			boxLabel: 'Show user collections',
+			boxLabel: 'User/Public collections',
 			height: 22,
 			checked: true,
-			id: 'showUserOnly'
+			id: 'showUserOnly',
+			tooltip: 'If set, only the user collections are shown, otherwise the public ones.'
 		}]
 	}],
 	columns: [{
