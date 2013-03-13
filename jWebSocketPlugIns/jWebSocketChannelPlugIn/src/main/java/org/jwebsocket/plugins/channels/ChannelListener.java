@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.channels;
 
+import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.token.Token;
 
 /**
@@ -74,7 +75,7 @@ public interface ChannelListener {
 	 * @param aChannel the channel
 	 * @param aSubscriber the subscriber who unsuscribed
 	 */
-	void unsubscribed(Channel aChannel, String aSubscriber);
+	void unsubscribed(Channel aChannel, WebSocketConnector aSubscriber);
 
 	/**
 	 * called when channel receives the data from the publisher.

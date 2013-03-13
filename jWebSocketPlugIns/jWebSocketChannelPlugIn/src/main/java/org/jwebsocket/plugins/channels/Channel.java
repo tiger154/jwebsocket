@@ -192,16 +192,16 @@ public final class Channel implements ChannelLifeCycle {
 			}
 
 			@Override
-			public void unsubscribed(Channel aChannel, String aSubscriber) {
+			public void unsubscribed(Channel aChannel, WebSocketConnector aConnector) {
 				Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
 				lEvent.setString("name", "unsubscription");
-				lEvent.setString("subscriber", aSubscriber);
+				lEvent.setString("subscriber", aConnector.getId());
 				lEvent.setString("channelName", aChannel.getName());
 				lEvent.setString("channelId", aChannel.getId());
 				lEvent.setString("state", aChannel.getState().name());
 				lEvent.setBoolean("isSystem", aChannel.isSystem());
 				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
-				lEvent.setString("user", mServer.getConnector(aSubscriber).getUsername());
+				lEvent.setString("user", aConnector.getUsername());
 				
 				aChannel.broadcastToken(lEvent);
 			}
@@ -390,7 +390,7 @@ public final class Channel implements ChannelLifeCycle {
 	 *
 	 * @param aSubscriber the subscriber to unsubscribe
 	 */
-	public void unsubscribe(String aSubscriber) {
+	public void unsubscribe(String aSubscriber, WebSocketConnector aConnector) {
 		if (this.mSubscribers == null) {
 			return;
 		}
@@ -399,18 +399,10 @@ public final class Channel implements ChannelLifeCycle {
 
 			// listeners notification
 			final Channel lChannel = this;
-			final String lSubscriber = aSubscriber;
 			if (mChannelListeners != null) {
-				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
-					lPool.submit(new Runnable() {
-						@Override
-						public void run() {
-							lListener.unsubscribed(lChannel, lSubscriber);
-						}
-					});
+							lListener.unsubscribed(lChannel, aConnector);
 				}
-				lPool.shutdown();
 			}
 		}
 	}
