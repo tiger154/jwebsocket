@@ -3,6 +3,7 @@ Ext.define('IS.view.item.Create', {
 	alias: 'widget.i_create',
 	requires: ['IS.lib.Util'],
 	iconCls: 'i_add',
+	resizable: false,
 	
 	loadForEdit: function ( aCollectionName, aItemDefinition, aRecord ){
 		this.loadForCreation(aCollectionName, aItemDefinition);
@@ -60,11 +61,13 @@ Ext.define('IS.view.item.Create', {
 
 		this.buttons = [{
 			text: 'Save',
-			action: 'save'
+			action: 'save',
+			tooltip: 'Saves item by using entered form data.'
 		},{
 			text: 'Cancel',
 			scope: this,
-			handler: this.close
+			handler: this.close,
+			tooltip: 'Cancel operation.'
 		}];
 
 		this.callParent(arguments);

@@ -21,12 +21,14 @@ Ext.define('IS.view.portal.Logon', {
 				xtype: 'textfield',
 				name : 'username',
 				fieldLabel: 'Username',
+				value: 'demo',
 				allowBlank: false
 			},{
 				xtype: 'textfield',
 				inputType: 'password',
 				name : 'password',
 				fieldLabel: 'Password',
+				value: 'demo',
 				listeners:{  
 					scope:this,  
 					specialkey: function(f,e){  

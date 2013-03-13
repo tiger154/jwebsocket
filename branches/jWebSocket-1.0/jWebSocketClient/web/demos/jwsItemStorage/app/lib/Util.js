@@ -19,6 +19,18 @@ Ext.define('IS.lib.Util', {
 		return true;
 	},
 	
+	registerTooltip: function(aItemsId) {
+		Ext.each(aItemsId, function(aId){
+			var lField = Ext.getCmp(aId);
+			Ext.tip.QuickTipManager.register({
+				target: lField.getId(),
+				text: lField.tooltip,
+				title: 'Description:',
+				mouseOffset: [10,0]
+			});
+		});
+	},
+	
 	createDetailsTpl: function (aItemDefinition){
 		if (!this.def2tpl[aItemDefinition.type]){
 			var lTpl = "";
@@ -106,6 +118,7 @@ Ext.define('IS.lib.Util', {
 	
 	createBooleanField: function ( aField, aDefinition ){
 		aField.xtype = 'checkbox';
+		aField.value = false;
 	},
 	
 	defineModel: function ( aCollectionName, aItemDefinition ){

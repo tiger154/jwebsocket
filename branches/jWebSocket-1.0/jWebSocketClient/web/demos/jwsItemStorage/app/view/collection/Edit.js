@@ -3,6 +3,7 @@ Ext.define('IS.view.collection.Edit', {
 	title: 'Edit collection',
 	alias: 'widget.c_edit',
 	iconCls: 'c_edit',
+	resizable: false,
 	
 	loadData: function( aData ){
 		this.showAt({
@@ -53,6 +54,7 @@ Ext.define('IS.view.collection.Edit', {
 				name : 'newSecretPassword',
 				fieldLabel: 'New Secret Password',
 				minLength: 4,
+				tooltip: 'Enter new secret password value.',
 				linkType: 'pwd' 
 			}, {
 				xtype: 'textfield',
@@ -60,7 +62,8 @@ Ext.define('IS.view.collection.Edit', {
 				name : 'newSecretPassword2',
 				fieldLabel: 'Confirm New Secret Password',
 				minLength: 4,
-				vtype: 'confirm'
+				vtype: 'confirm',
+				tooltip: 'Confirm new secret password value.'
 			}, {
 				xtype: 'textfield',
 				inputType: 'password',
@@ -75,7 +78,8 @@ Ext.define('IS.view.collection.Edit', {
 				name : 'accessPassword2',
 				fieldLabel: 'Confirm Access Password',
 				minLength: 4,
-				vtype: 'confirm'
+				vtype: 'confirm',
+				tooltip: 'Confirm access password value.'
 			}, {
 				xtype: 'checkbox',
 				name : 'private',
@@ -101,11 +105,13 @@ Ext.define('IS.view.collection.Edit', {
 
 		this.buttons = [{
 			text: 'Save',
-			action: 'edit'
+			action: 'edit',
+			tooltip: 'Edit collection using entered form data.'
 		},{
 			text: 'Cancel',
 			scope: this,
-			handler: this.close
+			handler: this.close,
+			tooltip: 'Cancel operation.'
 		}];
 
 		this.callParent(arguments);

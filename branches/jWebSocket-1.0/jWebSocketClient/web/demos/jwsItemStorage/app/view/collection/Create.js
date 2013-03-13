@@ -4,7 +4,8 @@ Ext.define('IS.view.collection.Create', {
 
 	title: 'Create collection',
 	iconCls: 'c_add',
-
+	resizable: false,
+	
 	initComponent: function() {
 		this.items = [{
 			xtype: 'form',
@@ -38,6 +39,7 @@ Ext.define('IS.view.collection.Create', {
 				inputType: 'password',
 				name : 'secretPassword2',
 				fieldLabel: 'Confirm Secret Password',
+				tooltip: 'Confirm secret password value.',
 				minLength: 4,
 				vtype: 'confirm'
 			}, {
@@ -52,6 +54,7 @@ Ext.define('IS.view.collection.Create', {
 				inputType: 'password',
 				name : 'accessPassword2',
 				fieldLabel: 'Confirm Access Password',
+				tooltip: 'Confirm access password value.',
 				minLength: 4,
 				vtype: 'confirm'
 			}, {
@@ -80,11 +83,13 @@ Ext.define('IS.view.collection.Create', {
 
 		this.buttons = [{
 			text: 'Save',
-			action: 'create'
+			action: 'create',
+			tooltip: 'Create collection using entered form data.'
 		},{
 			text: 'Cancel',
 			scope: this,
-			handler: this.close
+			handler: this.close,
+			tooltip: 'Cancel operation.'
 		}];
 
 		this.callParent(arguments);

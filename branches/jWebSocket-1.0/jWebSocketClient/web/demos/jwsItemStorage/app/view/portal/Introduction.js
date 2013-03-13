@@ -29,7 +29,7 @@ The jWebSocket ItemStorage plug-in is open for any requirements – let us know 
 What is this tool?\n\
 </div>\n\
 	<div class="intro_text">\n\
-	The jWebSocket ItemStorage administration tool is a Sencha ExtJS web applicacion, that allows you in the best simple way \n\
+	The jWebSocket ItemStorage administration tool is a Sencha ExtJS web applicacion, that allows you easily \n\
 to interact with the server-side ItemStorage plug-in. The tool incorporates support for almost all existing features in the \n\
 CE and EE edition.\n\
 </div>\n\

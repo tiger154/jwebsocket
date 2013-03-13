@@ -108,7 +108,7 @@ Ext.define('IS.controller.Item', {
 						return;
 					}
 					
-					var lItem = lForm.getForm().getFieldValues(true);
+					var lItem = lForm.getForm().getFieldValues();
 					if (null != lView.targetPK){
 						lItem._targetPK = lView.targetPK;
 					}

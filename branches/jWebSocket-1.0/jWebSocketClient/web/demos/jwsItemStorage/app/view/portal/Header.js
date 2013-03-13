@@ -14,7 +14,7 @@ Ext.define('IS.view.portal.Header' ,{
 	},{
 		xtype: 'panel',
 		border: 0,
-		html: '<h1>ItemStoragePlugIn administration tool</h1> <div class="header_text">The best way to easily synchronize your cross-platform application objects in real-time.</div>',
+		html: '<h1>ItemStoragePlugIn administration tool</h1> <div class="header_text">Synchronizing cross-platform application data in real-time.</div>',
 		padding: '10 10 0 0'
 	},{
 		xtype: 'button',
@@ -27,7 +27,8 @@ Ext.define('IS.view.portal.Header' ,{
 		xtype: 'button',
 		id: 'help_button',
 		href: 'http://jwebsocket.org/plugins/itemstorage',
-		text: 'Help'
+		text: 'Help',
+		target: '_blank'
 	},{
 		xtype: 'button',
 		id: 'about_button',
