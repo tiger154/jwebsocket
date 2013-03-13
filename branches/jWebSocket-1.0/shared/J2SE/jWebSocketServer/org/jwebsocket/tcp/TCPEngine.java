@@ -104,23 +104,34 @@ public class TCPEngine extends BaseEngine {
 		if (getConfiguration().getSettings().containsKey(NUM_WORKERS_CONFIG_KEY)) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Setting '" + NUM_WORKERS_CONFIG_KEY + "' configuration "
-						+ "from engine configuration settings...");
+						+ "from engine configuration...");
 			}
-			mNumWorkers = Integer.parseInt(getConfiguration().
-					getSettings().
-					get(NUM_WORKERS_CONFIG_KEY).
-					toString());
+			try {
+				mNumWorkers = Integer.parseInt(getConfiguration().
+						getSettings().
+						get(NUM_WORKERS_CONFIG_KEY).
+						toString());
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx,
+						"setting '" + NUM_WORKERS_CONFIG_KEY + "' configuration"));
+			}
+
 		}
 
 		if (getConfiguration().getSettings().containsKey(WRITER_TIMEOUT_CONFIG_KEY)) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Setting '" + WRITER_TIMEOUT_CONFIG_KEY + "' configuration "
-						+ "from engine configuration settings...");
+						+ "from engine configuration...");
 			}
-			mWriterTimeout = Integer.parseInt(getConfiguration().
-					getSettings().
-					get(WRITER_TIMEOUT_CONFIG_KEY).
-					toString());
+			try {
+				mWriterTimeout = Integer.parseInt(getConfiguration().
+						getSettings().
+						get(WRITER_TIMEOUT_CONFIG_KEY).
+						toString());
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx,
+						"setting '" + WRITER_TIMEOUT_CONFIG_KEY + "' configuration"));
+			}
 		}
 	}
 

@@ -41,7 +41,7 @@
 			function call( aToken ) {
 				log( "Calling external server process keys..." );
 				if( lWSC.isConnected() ) {
-					lWSC.extProcessCall( "dir_demo", [ "*maven*" ], {
+					lWSC.extProcessCall( "perl_hello_world", [ "*maven*" ], {
 						OnResponse: function( aToken ) {
 							// log("Reports " + JSON.stringify( aToken ) );
 						}

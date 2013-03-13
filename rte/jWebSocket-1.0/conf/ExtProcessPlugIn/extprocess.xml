@@ -20,9 +20,9 @@
 				</entry>                
 				<entry>
 					<key>
-						<value>perl_demo_1</value>
+						<value>perl_hello_world</value>
 					</key>
-					<value>C:/Perl/bin/perl.exe ${JWEBSOCKET_HOME}conf/ExtProcessPlugIn/demos/perl/perl_demo_1.pl ${1} ${2}</value>
+					<value>C:/Perl/bin/perl.exe ${JWEBSOCKET_HOME}conf/ExtProcessPlugIn/demos/perl/hello_world.pl Argument1 Argument2</value>
 				</entry>                
 			</map>
 		</property>
