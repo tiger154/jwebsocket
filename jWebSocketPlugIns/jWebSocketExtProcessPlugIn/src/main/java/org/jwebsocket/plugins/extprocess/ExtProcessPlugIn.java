@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -37,6 +38,7 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
@@ -86,6 +88,11 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 			} else {
 				mBeanFactory = getConfigBeanFactory();
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.extprocess.settings");
+				// replace all alias values with environment variables
+				Map<String, String> lAllowedProgs = mSettings.getAllowedProgs();
+				for (Entry<String, String> lEntry : lAllowedProgs.entrySet()) {
+					lEntry.setValue(Tools.expandEnvVarsAndProps(lEntry.getValue()));
+				}
 				if (mLog.isInfoEnabled()) {
 					mLog.info("External Process plug-in successfully instantiated.");
 				}
@@ -176,9 +183,6 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 	private void call(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing 'call'...");
-		}
 		Token lResponse = createResponse(aToken);
 
 		// check if user is allowed to run 'exists' command
@@ -208,18 +212,26 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 		}
 		List<String> lArgs = aToken.getList("args");
 
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'call'"
+					+ " (alias: "
+					+ lAlias
+					+ ", args: "
+					+ StringUtils.collectionToDelimitedString(lArgs, ", ")
+					+ ")...");
+		}
 		String[] lCmdTokens = StringUtils.tokenizeToStringArray(lCmdLine, " ", true, false);
 		List<String> lCmd = new ArrayList<String>();
 		for (int lCmdIdx = 0; lCmdIdx < lCmdTokens.length; lCmdIdx++) {
 			String lCmdToken = lCmdTokens[lCmdIdx];
 			for (int lArgIdx = 0; lArgIdx < lArgs.size(); lArgIdx++) {
-				lCmdToken = lCmdToken.replace("${" + ( lArgIdx + 1) + "}", lArgs.get(lArgIdx).toString());
+				lCmdToken = lCmdToken.replace("${" + (lArgIdx + 1) + "}", lArgs.get(lArgIdx).toString());
 			}
 			lCmd.add(lCmdToken);
 		}
 
 		ProcessBuilder lProcBuilder = new ProcessBuilder(lCmd);
-		Map<String, String> lEnv = lProcBuilder.environment();
+		// Map<String, String> lEnv = lProcBuilder.environment();
 		lProcBuilder.directory(new File(System.getenv("temp")));
 
 		try {
@@ -231,12 +243,17 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 			InputStreamReader lISR = new InputStreamReader(lIS);
 			BufferedReader lBR = new BufferedReader(lISR);
 			String lLine;
+			StringBuilder lStrBuf = new StringBuilder();
 			while ((lLine = lBR.readLine()) != null) {
 				Token lEventToken = TokenFactory.createToken(getNamespace(), "event");
 				lEventToken.setString("line", lLine);
+				lStrBuf.append(lLine).append("\n");
 				lServer.sendToken(aConnector, lEventToken);
 			}
 			lResponse.setInteger("exitCode", process.exitValue());
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Sent '" + lStrBuf.toString().replace("\n", "\\n") + "'.");
+			}
 		} catch (Exception lEx) {
 			lResponse.setInteger("code", -1);
 			String lMsg = Logging.getSimpleExceptionMessage(lEx, "calling external process");

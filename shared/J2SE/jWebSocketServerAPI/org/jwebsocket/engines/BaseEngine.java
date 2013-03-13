@@ -65,7 +65,7 @@ public class BaseEngine implements WebSocketEngine {
 	public void stopEngine(CloseReason aCloseReason) throws WebSocketException {
 		try {
 			// stop all connectors of this engine
-			for (WebSocketConnector lConnector : mConnectors.values()) {
+			for (final WebSocketConnector lConnector : mConnectors.values()) {
 				lConnector.stopConnector(aCloseReason);
 			}
 		} catch (Exception ex) {
@@ -79,7 +79,7 @@ public class BaseEngine implements WebSocketEngine {
 	@Override
 	public void engineStarted() {
 		// notify servers that the engine has started
-		for (WebSocketServer lServer : mServers.values()) {
+		for (final WebSocketServer lServer : mServers.values()) {
 			lServer.engineStarted(this);
 		}
 	}
@@ -87,7 +87,7 @@ public class BaseEngine implements WebSocketEngine {
 	@Override
 	public void engineStopped() {
 		// notify servers that the engine has stopped
-		for (WebSocketServer lServer : mServers.values()) {
+		for (final WebSocketServer lServer : mServers.values()) {
 			lServer.engineStopped(this);
 		}
 	}
@@ -95,7 +95,7 @@ public class BaseEngine implements WebSocketEngine {
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
 		// notify servers that a connector has started
-		for (WebSocketServer lServer : mServers.values()) {
+		for (final WebSocketServer lServer : mServers.values()) {
 			lServer.connectorStarted(aConnector);
 		}
 	}
@@ -108,7 +108,7 @@ public class BaseEngine implements WebSocketEngine {
 		getConnectors().remove(aConnector.getId());
 
 		// notify servers that a connector has stopped
-		for (WebSocketServer lServer : mServers.values()) {
+		for (final WebSocketServer lServer : mServers.values()) {
 			lServer.connectorStopped(aConnector, aCloseReason);
 		}
 	}
@@ -122,7 +122,7 @@ public class BaseEngine implements WebSocketEngine {
 	public void processPacket(WebSocketConnector aConnector,
 			WebSocketPacket aDataPacket) {
 		Map<String, WebSocketServer> lServers = getServers();
-		for (WebSocketServer lServer : lServers.values()) {
+		for (final WebSocketServer lServer : lServers.values()) {
 			lServer.processPacket(this, aConnector, aDataPacket);
 		}
 	}
@@ -136,7 +136,7 @@ public class BaseEngine implements WebSocketEngine {
 	@Override
 	public void broadcastPacket(WebSocketConnector aSource,
 			WebSocketPacket aDataPacket) {
-		for (WebSocketConnector lConnector : mConnectors.values()) {
+		for (final WebSocketConnector lConnector : mConnectors.values()) {
 			lConnector.sendPacket(aDataPacket);
 		}
 	}
@@ -224,8 +224,9 @@ public class BaseEngine implements WebSocketEngine {
 	 * @return
 	 */
 	public static String getUnsupportedIncomingPacketSizeMsg(WebSocketConnector aConnector, int aPacketSize) {
-		return "Incoming packet from '" + aConnector.getId() + "' connector "
-				+ "cannot be processed! Supported packet size: " + aConnector.getMaxFrameSize()
+		return "Incoming packet from connector '" + aConnector.getId() + "'"
+				+ " cannot be processed!"
+				+ " Supported packet size: " + aConnector.getMaxFrameSize()
 				+ ", received: " + aPacketSize;
 	}
 }
