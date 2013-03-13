@@ -177,11 +177,13 @@ public final class Channel implements ChannelLifeCycle {
 			}
 
 			@Override
-			public void subscribed(Channel aChannel, String aSubscriber) {
+			public void subscribed(Channel aChannel, WebSocketConnector aConnector) {
 				Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
 				lEvent.setString("name", "subscription");
-				lEvent.setString("subscriber", aSubscriber);
-				lEvent.setString("user", mServer.getConnector(aSubscriber).getUsername());
+//				lEvent.setString("subscriber", aSubscriber);
+				lEvent.setString("subscriber", aConnector.getId());
+//				lEvent.setString("user", mServer.getConnector(aSubscriber).getUsername());
+				lEvent.setString("user", aConnector.getUsername());
 				lEvent.setString("channelName", aChannel.getName());
 				lEvent.setString("channelId", aChannel.getId());
 				lEvent.setString("state", aChannel.getState().name());
@@ -195,12 +197,14 @@ public final class Channel implements ChannelLifeCycle {
 			public void unsubscribed(Channel aChannel, WebSocketConnector aConnector) {
 				Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
 				lEvent.setString("name", "unsubscription");
+//				lEvent.setString("subscriber", aSubscriber);
 				lEvent.setString("subscriber", aConnector.getId());
 				lEvent.setString("channelName", aChannel.getName());
 				lEvent.setString("channelId", aChannel.getId());
 				lEvent.setString("state", aChannel.getState().name());
 				lEvent.setBoolean("isSystem", aChannel.isSystem());
 				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
+//				lEvent.setString("user", mServer.getConnector(aSubscriber).getUsername());
 				lEvent.setString("user", aConnector.getUsername());
 
 				aChannel.broadcastToken(lEvent);
@@ -358,8 +362,9 @@ public final class Channel implements ChannelLifeCycle {
 	 * Subscribe to this channel
 	 *
 	 * @param aSubscriber the subscriber which wants to subscribe
+	 * @param aConnector the connector which wants to subscribe
 	 */
-	public void subscribe(String aSubscriber) {
+	public void subscribe(String aSubscriber, WebSocketConnector aConnector) {
 		// create new subscribers if needed
 		if (this.mSubscribers == null) {
 			this.mSubscribers = new FastList<String>();
@@ -369,18 +374,19 @@ public final class Channel implements ChannelLifeCycle {
 
 			// listeners notification
 			final Channel lChannel = this;
-			final String lSubscriber = aSubscriber;
+//			final String lSubscriber = aSubscriber;
 			if (mChannelListeners != null) {
-				ExecutorService lPool = Executors.newCachedThreadPool();
+//				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
-					lPool.submit(new Runnable() {
-						@Override
-						public void run() {
-							lListener.subscribed(lChannel, lSubscriber);
-						}
-					});
+//					lPool.submit(new Runnable() {
+//						@Override
+//						public void run() {
+//							lListener.subscribed(lChannel, lSubscriber);
+//						}
+//					});
+					lListener.subscribed(lChannel, aConnector);
 				}
-				lPool.shutdown();
+//				lPool.shutdown();
 			}
 		}
 	}
@@ -389,6 +395,7 @@ public final class Channel implements ChannelLifeCycle {
 	 * Unsubscribe from this channel, and updates the channel store information
 	 *
 	 * @param aSubscriber the subscriber to unsubscribe
+	 * @param aSubscriber the connector to unsubscribe
 	 */
 	public void unsubscribe(String aSubscriber, WebSocketConnector aConnector) {
 		if (this.mSubscribers == null) {
@@ -399,10 +406,19 @@ public final class Channel implements ChannelLifeCycle {
 
 			// listeners notification
 			final Channel lChannel = this;
+//			final String lSubscriber = aSubscriber;
 			if (mChannelListeners != null) {
+//				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
+//					lPool.submit(new Runnable() {
+//						@Override
+//						public void run() {
+//							lListener.subscribed(lChannel, lSubscriber);
+//						}
+//					});
 					lListener.unsubscribed(lChannel, aConnector);
 				}
+//				lPool.shutdown();
 			}
 		}
 	}
