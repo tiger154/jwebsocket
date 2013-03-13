@@ -156,6 +156,7 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setString("user", aUser);
 				lEvent.setString("channelName", aChannel.getName());
 				lEvent.setString("channelId", aChannel.getId());
+				//TODO: ALL ENGINES DOES NOT SUPPORT TOKEN ASYNC, CHANGE THIS SEND OPTION
 				aChannel.broadcastTokenAsync(lEvent);
 			}
 
@@ -166,6 +167,7 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setString("user", aUser);
 				lEvent.setString("channelName", aChannel.getName());
 				lEvent.setString("channelId", aChannel.getId());
+				//TODO: ALL ENGINES DOES NOT SUPPORT TOKEN ASYNC, CHANGE THIS SEND OPTION
 				aChannel.broadcastTokenAsync(lEvent);
 			}
 
@@ -185,7 +187,7 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setString("state", aChannel.getState().name());
 				lEvent.setBoolean("isSystem", aChannel.isSystem());
 				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
-
+				//TODO: ALL ENGINES DOES NOT SUPPORT TOKEN ASYNC, CHANGE THIS SEND OPTION
 				aChannel.broadcastTokenAsync(lEvent);
 			}
 
@@ -199,8 +201,9 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setString("state", aChannel.getState().name());
 				lEvent.setBoolean("isSystem", aChannel.isSystem());
 				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
+				//TODO: LISTENER FIRED IN A THREAD POOL, THE CONNECTOR INSTANCE IS NULL
 				lEvent.setString("user", mServer.getConnector(aSubscriber).getUsername());
-
+				//TODO: ALL ENGINES DOES NOT SUPPORT TOKEN ASYNC, CHANGE THIS SEND OPTION
 				aChannel.broadcastTokenAsync(lEvent);
 			}
 
@@ -369,6 +372,8 @@ public final class Channel implements ChannelLifeCycle {
 			final Channel lChannel = this;
 			final String lSubscriber = aSubscriber;
 			if (mChannelListeners != null) {
+				//TODO: CHANGE THE THREAD EXECUTION FOR ANOTHER STRUCTURE
+				//TODO:the connector is null when the unsubscribed listener is thrown
 				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
 					lPool.submit(new Runnable() {
@@ -399,6 +404,8 @@ public final class Channel implements ChannelLifeCycle {
 			final Channel lChannel = this;
 			final String lSubscriber = aSubscriber;
 			if (mChannelListeners != null) {
+				//TODO: CHANGE THE THREAD EXECUTION FOR ANOTHER STRUCTURE
+				//TODO:the connector is null when the unsubscribed listener is thrown
 				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
 					lPool.submit(new Runnable() {
@@ -458,7 +465,7 @@ public final class Channel implements ChannelLifeCycle {
 					public void run() {
 						WebSocketConnector lConnector = mServer.getConnector(lSubscriber);
 						if (lConnector != null) {
-							mServer.sendTokenAsync(lConnector, aToken);
+							mServer.sendToken(lConnector, aToken);
 						} else {
 							mLog.warn("Trying to asynchronously broadcast token to unknown subscriber '"
 									+ lSubscriber + "' " + aToken.toString() + ".");
