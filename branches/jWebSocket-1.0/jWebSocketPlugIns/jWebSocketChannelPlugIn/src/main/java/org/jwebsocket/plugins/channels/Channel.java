@@ -156,7 +156,7 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setString("user", aUser);
 				lEvent.setString("channelName", aChannel.getName());
 				lEvent.setString("channelId", aChannel.getId());
-				
+
 				aChannel.broadcastToken(lEvent);
 			}
 
@@ -167,7 +167,7 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setString("user", aUser);
 				lEvent.setString("channelName", aChannel.getName());
 				lEvent.setString("channelId", aChannel.getId());
-				
+
 				aChannel.broadcastToken(lEvent);
 			}
 
@@ -187,7 +187,7 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setString("state", aChannel.getState().name());
 				lEvent.setBoolean("isSystem", aChannel.isSystem());
 				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
-				
+
 				aChannel.broadcastToken(lEvent);
 			}
 
@@ -202,7 +202,7 @@ public final class Channel implements ChannelLifeCycle {
 				lEvent.setBoolean("isSystem", aChannel.isSystem());
 				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
 				lEvent.setString("user", aConnector.getUsername());
-				
+
 				aChannel.broadcastToken(lEvent);
 			}
 
@@ -401,7 +401,7 @@ public final class Channel implements ChannelLifeCycle {
 			final Channel lChannel = this;
 			if (mChannelListeners != null) {
 				for (final ChannelListener lListener : mChannelListeners) {
-							lListener.unsubscribed(lChannel, aConnector);
+					lListener.unsubscribed(lChannel, aConnector);
 				}
 			}
 		}
