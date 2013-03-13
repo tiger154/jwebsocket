@@ -244,7 +244,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 				Channel lChannel = mChannelManager.getChannel(lChannelId);
 				if (lChannel != null) {
 					// remove subscriber from channel
-					lChannel.unsubscribe(lSubscriber.getId());
+					lChannel.unsubscribe(lSubscriber.getId(), aConnector);
 					// and store channel
 					mChannelManager.storeChannel(lChannel);
 					// remove subscriber from subscriber store
@@ -444,7 +444,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			Channel lChannel = mChannelManager.getChannel(lChannelId);
 			if (lChannel != null) {
 				// this removes the subscriber id from the channel
-				lChannel.unsubscribe(lSubscriber.getId());
+				lChannel.unsubscribe(lSubscriber.getId(), aConnector);
 				// this add the channel to the subscriber
 				lSubscriber.removeChannel(lChannel.getId());
 				// this saves the subscriber
