@@ -115,14 +115,22 @@ $.widget("jws.presenter", {
 						// Pass the current slide
 						w.presenter.goTo(aToken.map.slide);
 						break;
-					// Whenever a new user goes subscribed on the channel
-					// through the channel is published the number of presenters
-					// the number of viewers and the current slide, so the 
-					// new registered client or publisher will automatically  
-					// synchronize itself the existing clients
+						// Whenever a new user goes subscribed on the channel
+						// through the channel is published the number of presenters
+						// the number of viewers and the current slide, so the 
+						// new registered client or publisher will automatically  
+						// synchronize itself the existing clients
 					case w.presenter.TT_SEND:
 						w.presenter.updateUsers(aToken.map);
 						break;
+				}
+			}
+		} else if (aToken.ns === w.presenter.NS_SYSTEM) {
+			if (aToken.type === w.presenter.TT_SEND) {
+				if (aToken.data && aToken.data.action === w.presenter.TT_SLIDE) {
+					w.presenter.mCurrSlide = aToken.data.currslide;
+					w.presenter.mOldSlide = aToken.data.oldslide;
+					w.presenter.goTo(w.presenter.mCurrSlide);
 				}
 			}
 		}
@@ -148,22 +156,20 @@ $.widget("jws.presenter", {
 		w.presenter.updateSlide();
 	},
 	goTo: function(aSlide) {
-		if (w.presenter.mOldSlide != aSlide) {
-			w.presenter.eSlide.attr("src", "slides/Slide" +
-					jws.tools.zerofill(aSlide, 4) + ".gif");
-			w.presenter.eBtnLast.isDisabled && w.presenter.eBtnLast.enable();
-			w.presenter.eBtnNext.isDisabled && w.presenter.eBtnNext.enable();
-			w.presenter.eBtnFirst.isDisabled && w.presenter.eBtnFirst.enable();
-			w.presenter.eBtnPrev.isDisabled && w.presenter.eBtnPrev.enable();
-			if (aSlide == 1) {
-				w.presenter.eBtnPrev.disable();
-				w.presenter.eBtnFirst.disable();
-			} else if (aSlide == w.presenter.mMaxSlides) {
-				w.presenter.eBtnNext.disable();
-				w.presenter.eBtnLast.disable();
-			}
-			w.presenter.mOldSlide = aSlide;
+		w.presenter.eSlide.attr("src", "slides/Slide" +
+				jws.tools.zerofill(aSlide, 4) + ".gif");
+		w.presenter.eBtnLast.isDisabled && w.presenter.eBtnLast.enable();
+		w.presenter.eBtnNext.isDisabled && w.presenter.eBtnNext.enable();
+		w.presenter.eBtnFirst.isDisabled && w.presenter.eBtnFirst.enable();
+		w.presenter.eBtnPrev.isDisabled && w.presenter.eBtnPrev.enable();
+		if (aSlide == 1) {
+			w.presenter.eBtnPrev.disable();
+			w.presenter.eBtnFirst.disable();
+		} else if (aSlide == w.presenter.mMaxSlides) {
+			w.presenter.eBtnNext.disable();
+			w.presenter.eBtnLast.disable();
 		}
+		w.presenter.mOldSlide = aSlide;
 	},
 	updateSlide: function() {
 		if (w.presenter.mOldSlide !== w.presenter.mCurrSlide) {
@@ -177,6 +183,7 @@ $.widget("jws.presenter", {
 		aData = aData || {};
 		aData.currslide && w.presenter.goTo(aData.currslide);
 		w.presenter.mCurrSlide = aData.currslide || w.presenter.mCurrSlide;
+		w.presenter.mOldSlide = aData.oldslide || w.presenter.mOldSlide;
 		w.presenter.mViewers = aData.viewers || w.presenter.mViewers;
 		w.presenter.eViewers.text(w.presenter.mViewers);
 		// copying the presenters elements to our list
@@ -209,12 +216,22 @@ $.widget("jws.presenter", {
 				}
 
 				var lData = {
-					currslide: w.presenter.mCurrSlide,
 					viewers: lIsViewer ? w.presenter.mViewers + 1 :
 							w.presenter.mViewers
 				};
 
 				if (lIsPresenter) {
+					if (lSubscriber != w.presenter.mClientId) {
+						// When a new presenter comes should know exactly which
+						// slide the other presenters have and synchronize with them
+						// check OnMessage 
+						mWSC.sendText(lSubscriber, {
+							action: w.presenter.TT_SLIDE,
+							currslide: w.presenter.mCurrSlide,
+							oldslide: w.presenter.mOldSlide
+						});
+					}
+
 					w.presenter.mPresenters++;
 					lData.presenters = w.presenter.mPresenters;
 					w.presenter.mPresentersList[lSubscriber] = true;
@@ -244,6 +261,8 @@ $.widget("jws.presenter", {
 						w.presenter.publish(w.presenter.TT_SEND, lData);
 					}
 				} else if (lIsViewer) {
+					lData.currslide = w.presenter.mCurrSlide;
+					lData.oldslide = w.presenter.mOldSlide;
 					lData.presenters = w.presenter.mPresenters;
 					lData.presentersList = w.presenter.mPresentersList;
 					w.presenter.publish(w.presenter.TT_SEND, lData);

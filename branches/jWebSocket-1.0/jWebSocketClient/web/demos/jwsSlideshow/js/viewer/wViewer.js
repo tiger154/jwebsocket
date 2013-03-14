@@ -105,6 +105,7 @@ $.widget("jws.viewer", {
 		aData = aData || {};
 		aData.currslide && w.viewer.goTo(aData.currslide);
 		w.viewer.mCurrSlide = aData.currslide || w.viewer.mCurrSlide;
+		w.viewer.mOldSlide = aData.oldslide || w.viewer.mOldSlide;
 		w.viewer.mViewers = aData.viewers || w.viewer.mViewers;
 		w.viewer.eViewers.text(w.viewer.mViewers);
 		// copying the presenters elements to our list
