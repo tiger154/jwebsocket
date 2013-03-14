@@ -353,7 +353,7 @@ public final class Channel implements ChannelLifeCycle {
 	 * @param aPublisher the publisher to add
 	 */
 	public void removePublisher(String aPublisher) {
-		if (this.mPublishers == null) {
+		if (this.mPublishers != null) {
 			this.mPublishers.remove(aPublisher);
 		}
 	}
@@ -374,19 +374,18 @@ public final class Channel implements ChannelLifeCycle {
 
 			// listeners notification
 			final Channel lChannel = this;
-//			final String lSubscriber = aSubscriber;
+			final WebSocketConnector lSubscriber = aConnector;
 			if (mChannelListeners != null) {
-//				ExecutorService lPool = Executors.newCachedThreadPool();
+				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
-//					lPool.submit(new Runnable() {
-//						@Override
-//						public void run() {
-//							lListener.subscribed(lChannel, lSubscriber);
-//						}
-//					});
-					lListener.subscribed(lChannel, aConnector);
+					lPool.submit(new Runnable() {
+						@Override
+						public void run() {
+							lListener.subscribed(lChannel, lSubscriber);
+						}
+					});
 				}
-//				lPool.shutdown();
+				lPool.shutdown();
 			}
 		}
 	}
@@ -406,19 +405,20 @@ public final class Channel implements ChannelLifeCycle {
 
 			// listeners notification
 			final Channel lChannel = this;
+			
 //			final String lSubscriber = aSubscriber;
+			final WebSocketConnector lConnector = aConnector;
 			if (mChannelListeners != null) {
-//				ExecutorService lPool = Executors.newCachedThreadPool();
+				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
-//					lPool.submit(new Runnable() {
-//						@Override
-//						public void run() {
-//							lListener.subscribed(lChannel, lSubscriber);
-//						}
-//					});
-					lListener.unsubscribed(lChannel, aConnector);
+					lPool.submit(new Runnable() {
+						@Override
+						public void run() {
+							lListener.unsubscribed(lChannel, lConnector);
+						}
+					});
 				}
-//				lPool.shutdown();
+				lPool.shutdown();
 			}
 		}
 	}
