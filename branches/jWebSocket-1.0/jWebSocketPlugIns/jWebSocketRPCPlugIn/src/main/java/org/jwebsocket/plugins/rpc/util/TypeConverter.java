@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - RPC PlugIn TypeConverter
-//	Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
+//	jWebSocket - TypeConverter (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.rpc.util;
 
@@ -22,24 +25,44 @@ import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.plugins.rpc.RPCPlugIn;
 import org.jwebsocket.token.Token;
 
 /**
  * map javascript types with java types
+ *
  * @author Quentin Ambard
  */
 public class TypeConverter {
 
-	private static Logger mLog = Logging.getLogger(RPCPlugIn.class);
-	
+	private static Logger mLog = Logging.getLogger();
 	//allowed type that can be found in the .xml file
+	/**
+	 *
+	 */
 	public final static String PROTOCOL_TYPE_INT = "int";
+	/**
+	 *
+	 */
 	public final static String PROTOCOL_TYPE_BOOLEAN = "boolean";
+	/**
+	 *
+	 */
 	public final static String PROTOCOL_TYPE_STRING = "string";
+	/**
+	 *
+	 */
 	public final static String PROTOCOL_TYPE_MAP = "map";
+	/**
+	 *
+	 */
 	public final static String PROTOCOL_TYPE_DOUBLE = "double";
+	/**
+	 *
+	 */
 	public final static String PROTOCOL_TYPE_ARRAY = "array";
+	/**
+	 *
+	 */
 	public final static String PROTOCOL_TYPE_TOKENIZABLE = "tokenizable";
 	private final static Map<String, String> mProtocolValue = new FastMap<String, String>();
 	private final static List<String> mProtocolList = new FastList<String>();
@@ -67,9 +90,10 @@ public class TypeConverter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aProtocolType
-	 * @return true if "aProtocolType" (value found in the jwebsocket.xml for instance) is a correct type
+	 * @return true if "aProtocolType" (value found in the jwebsocket.xml for
+	 * instance) is a correct type
 	 */
 	public static boolean isValidProtocolType(String aProtocolType) {
 		return mProtocolList.contains(aProtocolType);
@@ -77,7 +101,8 @@ public class TypeConverter {
 
 	/**
 	 * @param aJavaType
-	 * @return protocol value that match with aJavaType, for instance String ==> string, Token ==> map...
+	 * @return protocol value that match with aJavaType, for instance String ==>
+	 * string, Token ==> map...
 	 */
 	public static String getProtocolValue(String aJavaType) {
 		return mProtocolValue.get(aJavaType);
@@ -85,7 +110,8 @@ public class TypeConverter {
 
 	/**
 	 * @param aJavaClass
-	 * @return protocol value that match with aJavaType, for instance String ==> string, Token ==> map...
+	 * @return protocol value that match with aJavaType, for instance String ==>
+	 * string, Token ==> map...
 	 */
 	public static String getProtocolValue(Class aJavaClass) {
 		return getProtocolValue(aJavaClass.getName());
@@ -100,7 +126,7 @@ public class TypeConverter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aJavaClass
 	 * @return true if aJavaClass is allowed in the protocol
 	 */
@@ -120,10 +146,11 @@ public class TypeConverter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aProtocolType
 	 * @param aJavaType
-	 * @return true if aProtocolType match with aJavaType, for instance (map, Token) returns true
+	 * @return true if aProtocolType match with aJavaType, for instance (map,
+	 * Token) returns true
 	 */
 	public static boolean matchProtocolTypeToJavaType(String aProtocolType, String aJavaType) {
 		if (!mProtocolValue.containsKey(aJavaType)) {
@@ -134,22 +161,24 @@ public class TypeConverter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aProtocolType
 	 * @param aJavaClass
-	 * @return true if aProtocolType match with aJavaClass, for instance (map, Token) returns true
+	 * @return true if aProtocolType match with aJavaClass, for instance (map,
+	 * Token) returns true
 	 */
 	public static boolean matchProtocolTypeToJavaType(String aProtocolType, Class aJavaClass) {
 		return matchProtocolTypeToJavaType(aProtocolType, aJavaClass.getName());
 	}
 
 	/**
-	 * @return the list of valid parameter types that can be found in the jwebsocket.xml file
+	 * @return the list of valid parameter types that can be found in the
+	 * jwebsocket.xml file
 	 */
 	public static String getValidParameterTypes() {
 		StringBuilder lValidParameters = new StringBuilder();
-		for (String type : mProtocolList) {
-			lValidParameters.append(type + ", ");
+		for (String lType : mProtocolList) {
+			lValidParameters.append(lType).append(", ");
 		}
 		return lValidParameters.toString();
 	}
