@@ -23,23 +23,23 @@ package org.jwebsocket.plugins.jquery;
  */
 public class User {
 
-	private String username;
-	private String name;
-	private String lastname;
-	private String mail;
+	private String mUsername;
+	private String mName;
+	private String mLastname;
+	private String mMail;
 
 	/**
 	 *
-	 * @param username
-	 * @param mail
-	 * @param name
-	 * @param lastname
+	 * @param aUsername
+	 * @param aMail
+	 * @param aName
+	 * @param aLastname
 	 */
-	public User(String username, String mail, String name, String lastname) {
-		this.username = username;
-		this.name = name;
-		this.lastname = lastname;
-		this.mail = mail;
+	public User(String aUsername, String aMail, String aName, String aLastname) {
+		this.mUsername = aUsername;
+		this.mName = aName;
+		this.mLastname = aLastname;
+		this.mMail = aMail;
 	}
 
 	/**
@@ -47,15 +47,15 @@ public class User {
 	 * @return
 	 */
 	public String getLastname() {
-		return lastname;
+		return mLastname;
 	}
 
 	/**
 	 *
-	 * @param lastname
+	 * @param aLastname
 	 */
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
+	public void setLastname(String aLastname) {
+		this.mLastname = aLastname;
 	}
 
 	/**
@@ -63,15 +63,15 @@ public class User {
 	 * @return
 	 */
 	public String getMail() {
-		return mail;
+		return mMail;
 	}
 
 	/**
 	 *
-	 * @param mail
+	 * @param aMail
 	 */
-	public void setMail(String mail) {
-		this.mail = mail;
+	public void setMail(String aMail) {
+		this.mMail = aMail;
 	}
 
 	/**
@@ -79,15 +79,15 @@ public class User {
 	 * @return
 	 */
 	public String getName() {
-		return name;
+		return mName;
 	}
 
 	/**
 	 *
-	 * @param name
+	 * @param aName
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String aName) {
+		this.mName = aName;
 	}
 
 	/**
@@ -95,34 +95,34 @@ public class User {
 	 * @return
 	 */
 	public String getUsername() {
-		return username;
+		return mUsername;
 	}
 
 	/**
 	 *
-	 * @param username
+	 * @param aUsername
 	 */
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUsername(String aUsername) {
+		this.mUsername = aUsername;
 	}
 
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 37 * hash + (this.username != null ? this.username.hashCode() : 0);
+		hash = 37 * hash + (this.mUsername != null ? this.mUsername.hashCode() : 0);
 		return hash;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
+	public boolean equals(Object aObj) {
+		if (aObj == null) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != aObj.getClass()) {
 			return false;
 		}
-		final User other = (User) obj;
-		if ((this.username == null) ? (other.username != null) : !this.username.equals(other.username)) {
+		final User other = (User) aObj;
+		if ((this.mUsername == null) ? (other.mUsername != null) : !this.mUsername.equals(other.mUsername)) {
 			return false;
 		}
 		return true;
