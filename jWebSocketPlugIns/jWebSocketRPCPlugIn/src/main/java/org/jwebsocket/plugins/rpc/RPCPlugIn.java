@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - RPC PlugIn
-//	Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
+//	jWebSocket - RPC PlugIn (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.rpc;
 
@@ -32,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.JWebSocketJarClassLoader;
 import org.jwebsocket.kit.CloseReason;
@@ -64,6 +68,12 @@ public class RPCPlugIn extends TokenPlugIn {
 	// keys to buil the rrpc call
 	private static RPCPlugIn sRPCPlugIn = null;
 	private static Logger mLog = Logging.getLogger();
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket RPCPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket RPCPlugIn - Community Edition";
 	// Store the parameters type allowed for rpc method.
 	private Map<String, RPCCallableClassLoader> mRpcCallableClassLoader = new FastMap<String, RPCCallableClassLoader>();
 
@@ -78,6 +88,10 @@ public class RPCPlugIn extends TokenPlugIn {
 		this(null);
 	}
 
+	/**
+	 *
+	 * @param configuration
+	 */
 	public RPCPlugIn(PluginConfiguration configuration) {
 		super(configuration);
 		if (mLog.isDebugEnabled()) {
@@ -85,6 +99,36 @@ public class RPCPlugIn extends TokenPlugIn {
 		}
 		// specify default name space
 		this.setNamespace(CommonRpcPlugin.NS_RPC_DEFAULT);
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
 	}
 
 	@Override
@@ -139,6 +183,7 @@ public class RPCPlugIn extends TokenPlugIn {
 
 	/**
 	 * Load the class from classpath with logs of needed.
+	 *
 	 * @param aClassName the class to be load
 	 * @return the class loaded, or null if not found.
 	 */
@@ -163,7 +208,8 @@ public class RPCPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Try to load the classes which are not suposed to be on the classPath, so the right definition isn't enought;
+	 * Try to load the classes which are not suposed to be on the classPath, so
+	 * the right definition isn't enought;
 	 */
 	@SuppressWarnings("rawtypes")
 	private void loadClassFromThirdJavaPart() {
@@ -208,9 +254,10 @@ public class RPCPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Try to load an instance of the RPCCallable class in parameter.
-	 * Log an error if we can't loag this class.
-	 * RPCCallable class must have a default constructor or a constructor whith a single WebSocketConnector parameter
+	 * Try to load an instance of the RPCCallable class in parameter. Log an
+	 * error if we can't loag this class. RPCCallable class must have a default
+	 * constructor or a constructor whith a single WebSocketConnector parameter
+	 *
 	 * @param aClass
 	 * @param aClassName
 	 */
@@ -348,6 +395,7 @@ public class RPCPlugIn extends TokenPlugIn {
 
 	/**
 	 * Do a rrpc call from a rrpc-ready-to-use token
+	 *
 	 * @param aConnectorFrom
 	 * @param aToken rrpc-ready-to-use
 	 */
@@ -362,7 +410,8 @@ public class RPCPlugIn extends TokenPlugIn {
 	/**
 	 * reverse remote procedure call (RRPC)
 	 *
-	 * @param aConnector
+	 * @param aConnectorFrom
+	 * @param aConnectorsTo
 	 * @param aToken
 	 */
 	public static void processRrpc(WebSocketConnector aConnectorFrom, List<WebSocketConnector> aConnectorsTo, Token aToken) {
@@ -479,14 +528,15 @@ public class RPCPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Check if a RPCCallable method has correct parameters type Store each class
-	 * methods inside mClassMethods to grant a faster access for each rpc call.
-	 * Log an error if on parameter is not valid Only called during the plugin
-	 * initialization
+	 * Check if a RPCCallable method has correct parameters type Store each
+	 * class methods inside mClassMethods to grant a faster access for each rpc
+	 * call. Log an error if on parameter is not valid Only called during the
+	 * plugin initialization
 	 *
 	 * @param aClassName class name
 	 * @param aMethodName method name
-	 * @param aXmlParametersType list of parameter type found in the xml file (for instance: "int, string, map")
+	 * @param aXmlParametersType list of parameter type found in the xml file
+	 * (for instance: "int, string, map")
 	 * @return true if the parameters are OK
 	 */
 	@SuppressWarnings("rawtypes")
@@ -554,7 +604,8 @@ public class RPCPlugIn extends TokenPlugIn {
 	 * Check if the method aMethod match with aXmlParametersType.
 	 *
 	 * @param aMethod
-	 * @param aXmlParametersType  list of parameter type found in the xml file (for instance: "int, string, map")
+	 * @param aXmlParametersType list of parameter type found in the xml file
+	 * (for instance: "int, string, map")
 	 * @param aClassName
 	 * @return true if the method match, false otherwise
 	 */
@@ -659,8 +710,8 @@ public class RPCPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * call the getConnector method of the instance of the server of the RpcPlugin
-	 * loaded
+	 * call the getConnector method of the instance of the server of the
+	 * RpcPlugin loaded
 	 *
 	 * @param aEngine
 	 * @param aConnectorId

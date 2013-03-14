@@ -1,3 +1,21 @@
+//	---------------------------------------------------------------------------
+//	jWebSocket - Rrpc (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.rpc.rrpc;
 
 import java.util.List;
@@ -23,10 +41,21 @@ public class Rrpc extends AbstractRrpc {//implements RpcInterface, RpcInterfaceC
 	private WebSocketConnector mConnectorFrom = null;
 	private List<WebSocketConnector> mConnectorsTo;
 
+	/**
+	 *
+	 * @param aClassname
+	 * @param aMethod
+	 */
 	public Rrpc(String aClassname, String aMethod) {
 		super(aClassname, aMethod);
 	}
 
+	/**
+	 *
+	 * @param aClassname
+	 * @param aMethod
+	 * @param aSpawnTread
+	 */
 	public Rrpc(String aClassname, String aMethod, boolean aSpawnTread) {
 		super(aClassname, aMethod, aSpawnTread);
 	}
@@ -37,7 +66,6 @@ public class Rrpc extends AbstractRrpc {//implements RpcInterface, RpcInterfaceC
 	 *
 	 * @param aToken
 	 * @throws RrpcRightNotGrantedException
-	 * @throws RrpcConnectorNotFoundException
 	 */
 	public Rrpc(Token aToken) throws RrpcRightNotGrantedException {
 		super(aToken);
@@ -52,6 +80,7 @@ public class Rrpc extends AbstractRrpc {//implements RpcInterface, RpcInterfaceC
 	 * called during the rrpc, the server will be the source.
 	 *
 	 * @param aConnector
+	 * @return
 	 * @throws RrpcRightNotGrantedException
 	 */
 	public Rrpc from(WebSocketConnector aConnector) throws RrpcRightNotGrantedException {
@@ -67,7 +96,8 @@ public class Rrpc extends AbstractRrpc {//implements RpcInterface, RpcInterfaceC
 	 * Eventually, the connectorId the rrpc comes from. If this method is not
 	 * called during the rrpc, the server will be the source.
 	 *
-	 * @param aConnector
+	 * @param aConnectorId
+	 * @return
 	 * @throws RrpcRightNotGrantedException
 	 */
 	public Rrpc from(String aConnectorId) throws RrpcRightNotGrantedException {
@@ -78,6 +108,7 @@ public class Rrpc extends AbstractRrpc {//implements RpcInterface, RpcInterfaceC
 	 * The connector you want to send the rrpc
 	 *
 	 * @param aConnector
+	 * @return
 	 */
 	public Rrpc to(WebSocketConnector aConnector) {
 		if (mConnectorsTo == null) {
@@ -90,7 +121,8 @@ public class Rrpc extends AbstractRrpc {//implements RpcInterface, RpcInterfaceC
 	/**
 	 * The connectors you want to send the rrpc
 	 *
-	 * @param aConnector
+	 * @param aConnectors
+	 * @return
 	 */
 	public Rrpc toConnectors(List<WebSocketConnector> aConnectors) {
 		mConnectorsTo = aConnectors;
@@ -100,7 +132,6 @@ public class Rrpc extends AbstractRrpc {//implements RpcInterface, RpcInterfaceC
 	/**
 	 * The connectorId you want to send the rrpc
 	 *
-	 * @param aConnector
 	 */
 	public Rrpc to(String aConnectorId) {
 		WebSocketConnector lConnector = RPCPlugIn.getConnector("tcp0", aConnectorId);
@@ -111,8 +142,7 @@ public class Rrpc extends AbstractRrpc {//implements RpcInterface, RpcInterfaceC
 	/**
 	 * The connectorsId you want to send the rrpc
 	 *
-	 * @param aConnector
-	 * @throws RrpcConnectorNotFoundException
+	 * @param aConnectorsId
 	 */
 	public Rrpc to(List<String> aConnectorsId) {
 		mConnectorsTo = new FastList<WebSocketConnector>();
