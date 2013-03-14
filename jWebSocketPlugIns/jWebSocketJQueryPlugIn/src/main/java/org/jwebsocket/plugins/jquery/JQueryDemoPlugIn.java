@@ -40,6 +40,9 @@ import org.springframework.beans.support.PagedListHolder;
 public class JQueryDemoPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	/**
+	 *
+	 */
 	public static final String NS_JQUERYDEMO =
 			JWebSocketServerConstants.NS_BASE + ".plugins.jquerydemo";
 	private final static String VERSION = "1.0.0";
@@ -123,13 +126,13 @@ public class JQueryDemoPlugIn extends TokenPlugIn {
 	}
 
 	private void createUser(WebSocketConnector aConnector, Token aToken) {
-		//EXPECTED PARAMETERS
+		// EXPECTED PARAMETERS
 		String lUserName = aToken.getString("username");
 		String lName = aToken.getString("name");
 		String lLastName = aToken.getString("lastname");
 		String lMail = aToken.getString("mail");
 
-		//VALIDATING INCOMING ARGUMENTS
+		// VALIDATING INCOMING ARGUMENTS
 		if ((lUserName != null) && (lName != null) && (lLastName != null)) {
 			if (!(lUserName.trim().equals("")) && !(lLastName.trim().equals(""))
 					&& !(lName.trim().equals(""))) {
