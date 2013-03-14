@@ -22,9 +22,7 @@ import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-import org.apache.log4j.Logger;
 import org.jwebsocket.api.ITokenizable;
-import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
 
 /**
@@ -34,8 +32,7 @@ import org.jwebsocket.token.Token;
  */
 public class TypeConverter {
 
-	private static Logger mLog = Logging.getLogger();
-	//allowed type that can be found in the .xml file
+	// allowed types that can be found in the .xml file
 	/**
 	 *
 	 */
