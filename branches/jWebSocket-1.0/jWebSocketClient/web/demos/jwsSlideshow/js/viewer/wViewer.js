@@ -21,6 +21,7 @@ $.widget("jws.viewer", {
 	_init: function() {
 		this.NS_CHANNELS = jws.NS_BASE + '.plugins.channels';
 		this.NS_SYSTEM = jws.NS_BASE + '.plugins.system';
+		this.TITLE = "Viewer window ";
 		// ------ DOM ELEMENTS --------
 		this.ePresenters = this.element.find("#presenters");
 		this.eViewers = this.element.find("#viewers");
@@ -36,7 +37,7 @@ $.widget("jws.viewer", {
 		this.mChannelAccessKey = "5l1d35h0w";
 		this.TT_SEND = "send";
 		this.TT_SLIDE = "slide";
-
+		this.mPresentersList = {};
 		this.mClientId = "";
 
 		w.viewer = this;
@@ -53,8 +54,8 @@ $.widget("jws.viewer", {
 			OnWelcome: function(aToken) {
 				// Registering the callbacks for the channels
 				mWSC.setChannelCallbacks({
-					// When any subscription arrives from the server
-					OnChannelSubscription: w.viewer.onChannelSubscription
+					// When any unsubscription arrives from the server
+					OnChannelUnsubscription: w.viewer.onChannelUnsubscription
 				});
 				w.viewer.mClientId = aToken.sourceId;
 			}
@@ -64,11 +65,19 @@ $.widget("jws.viewer", {
 		w.auth.logon();
 	},
 	onMessage: function(aEvent, aToken) {
-		if (aToken.reqType === "login" && aToken.code === 0) {
-			// Subscribe to a certain channel
-			mWSC.channelSubscribe(w.viewer.mChannelId,
-					w.viewer.mChannelAccessKey);
-		} else if (aToken.ns === w.viewer.NS_CHANNELS) {
+		if (aToken.type === "response" && aToken.reqType === "login") {
+			mWSC.sessionPut("viewer", aToken.sourceId, true, {
+				OnSuccess: function(aToken) {
+					mWSC.channelSubscribe(w.viewer.mChannelId,
+							w.viewer.mChannelAccessKey);
+				}
+			});
+		}
+		if (aToken.ns === w.viewer.NS_CHANNELS) {
+			if (mLog.isDebugEnabled) {
+				log(" <b>" + w.viewer.TITLE + " new message received: </b>" +
+						JSON.stringify(aToken));
+			}
 			// When information is published in the channel the data is sent
 			// in a map inside the token and the type of the token comes in 
 			// the key "data"
@@ -78,16 +87,10 @@ $.widget("jws.viewer", {
 						// Pass the current slide
 						w.viewer.goTo(aToken.map.slide);
 						break;
-					case w.viewer.TT_USER_UNREGISTER:
-						w.viewer.userUnregistered(aToken.map);
+					case w.viewer.TT_SEND:
+						w.viewer.updateUsers(aToken.map);
 						break;
 				}
-			}
-		} else if (aToken.ns === w.viewer.NS_SYSTEM) {
-			if (aToken.type === w.viewer.TT_SEND) {
-				console.log( aToken );
-				w.viewer.updateUsers(aToken.data);
-				w.viewer.goTo(aToken.data.currslide);
 			}
 		}
 	},
@@ -99,21 +102,31 @@ $.widget("jws.viewer", {
 		}
 	},
 	updateUsers: function(aData) {
-		w.viewer.mPresenters = aData.presenters;
-		w.viewer.mViewers = aData.viewers;
-		w.viewer.ePresenters.text(w.viewer.mPresenters);
+		aData = aData || {};
+		aData.currslide && w.viewer.goTo(aData.currslide);
+		w.viewer.mCurrSlide = aData.currslide || w.viewer.mCurrSlide;
+		w.viewer.mViewers = aData.viewers || w.viewer.mViewers;
 		w.viewer.eViewers.text(w.viewer.mViewers);
+		// copying the presenters elements to our list
+		for (var lIdx in aData.presentersList) {
+			w.viewer.mPresentersList[lIdx] = aData.presentersList[lIdx];
+		}
+		var lCounter = 0;
+		// Counting how many presenters we have
+		for (var lIdx in w.viewer.mPresentersList) {
+			lCounter++;
+		}
+		w.viewer.mPresenters = lCounter;
+		w.viewer.ePresenters.text(w.viewer.mPresenters);
 	},
-	userUnregistered: function(aData) {
-		var lUser = aData.value.trim().split("_");
-		if (lUser[0] == "presenter") {
+	onChannelUnsubscription: function(aToken) {
+		var lUnsubscriber = aToken.subscriber;
+		if (w.viewer.mPresentersList[lUnsubscriber]) {
+			delete w.viewer.mPresentersList[lUnsubscriber];
 			w.viewer.mPresenters > 0 && w.viewer.mPresenters--;
 		} else {
 			w.viewer.mViewers > 0 && w.viewer.mViewers--;
 		}
-		w.viewer.updateUsers({
-			presenters: w.viewer.mPresenters,
-			viewers: w.viewer.mViewers
-		})
+		w.viewer.updateUsers();
 	}
 });
