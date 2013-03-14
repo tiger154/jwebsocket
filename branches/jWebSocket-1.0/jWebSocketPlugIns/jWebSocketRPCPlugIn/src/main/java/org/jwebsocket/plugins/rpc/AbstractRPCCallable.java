@@ -29,7 +29,7 @@ import org.jwebsocket.logging.Logging;
  */
 public abstract class AbstractRPCCallable {
 
-	private static Logger mLog = Logging.getLogger(AbstractRPCCallable.class);
+	private static Logger mLog = Logging.getLogger();
 
 	/**
 	 * Return an instance of the RpcCallableClass which extends this
