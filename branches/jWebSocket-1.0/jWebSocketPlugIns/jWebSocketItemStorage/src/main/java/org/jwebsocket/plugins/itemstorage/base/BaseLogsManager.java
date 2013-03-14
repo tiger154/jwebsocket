@@ -11,15 +11,15 @@ import org.jwebsocket.plugins.itemstorage.api.ILogsManager;
  */
 public class BaseLogsManager implements ILogsManager {
 
-	public static String ATTR_USER = "user";
-	public static String ATTR_ID = "id";
-	public static String ATTR_ETYPE = "eType";
-	public static String ATTR_ACTION = "action";
-	public static String ATTR_TIME = "time";
-	public static String ATTR_INFO = "info";
-	public static String ATTR_COLLECTION = "collection";
-	public static String ETYPE_ITEM = "item";
-	public static String ETYPE_COLLECTION = "collection";
+	public static final String ATTR_USER = "user";
+	public static final String ATTR_ID = "id";
+	public static final String ATTR_ETYPE = "eType";
+	public static final String ATTR_ACTION = "action";
+	public static final String ATTR_TIME = "time";
+	public static final String ATTR_INFO = "info";
+	public static final String ATTR_COLLECTION = "collection";
+	public static final String ETYPE_ITEM = "item";
+	public static final String ETYPE_COLLECTION = "collection";
 
 	public static Map<String, Object> createActionPrototype(String aElementType, String aId, String aAction, String aUser, String aInfo) {
 		HashMap<String, Object> lAction = new HashMap<String, Object>();
@@ -35,6 +35,14 @@ public class BaseLogsManager implements ILogsManager {
 
 	public static Map<String, Object> createActionPrototype(String aElementType, String aId, String aAction, String aUser) {
 		return createActionPrototype(aElementType, aId, aAction, aUser, "");
+	}
+
+	@Override
+	public void initialize() throws Exception {
+	}
+
+	@Override
+	public void shutdown() throws Exception {
 	}
 
 	@Override
@@ -63,34 +71,26 @@ public class BaseLogsManager implements ILogsManager {
 
 	@Override
 	public List<Map> getItemLogs(String aCollectionName, String aItemPK, int aOffset, int aLength) throws Exception {
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
 	public List<Map> getCollectionLogs(String aCollectionName, int aOffset, int aLength) throws Exception {
-		return null;
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void initialize() throws Exception {
+	public Long size() throws Exception {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void shutdown() throws Exception {
+	public Long size(String aElementType, String aActionId) throws Exception {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public Long size() {
-		return null;
-	}
-
-	@Override
-	public Long size(String aElementType, String aActionId) {
-		return null;
-	}
-
-	@Override
-	public Long size(String aElementType, String aCollection, String aActionId) {
-		return null;
+	public Long size(String aElementType, String aCollection, String aActionId) throws Exception {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }
