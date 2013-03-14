@@ -50,10 +50,10 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			JWebSocketServerConstants.NS_BASE + ".plugins.monitoring";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
-	private final static String LABEL = "jWebSocket FileSystemPlugIn";
+	private final static String LABEL = "jWebSocket MonitoringPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
-	private final static String DESCRIPTION = "jWebSocket FileSystemPlugIn - Community Edition";
+	private final static String DESCRIPTION = "jWebSocket MonitoringPlugIn - Community Edition";
 	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>();
 	private static Thread mInformationThread;
 	private static Thread mServerExchangeInfoThread;

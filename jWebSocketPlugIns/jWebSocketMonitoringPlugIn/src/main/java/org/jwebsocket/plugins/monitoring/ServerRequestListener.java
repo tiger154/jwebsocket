@@ -41,7 +41,7 @@ public class ServerRequestListener implements WebSocketServerListener {
 
 	private Mongo mConnection;
 	private DBCollection mColl;
-	private static Logger mLog = Logging.getLogger(ServerRequestListener.class);
+	private static Logger mLog = Logging.getLogger();
 
 	/**
 	 *
