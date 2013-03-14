@@ -55,26 +55,26 @@ public interface IItemCollectionProvider extends IInitializable {
 	 *
 	 * @return A list containing the name of all existing collections
 	 */
-	List<String> collectionNames();
+	List<String> collectionNames() throws Exception;;
 
 	/**
 	 *
 	 * @return A list containing the name of all existing public collections
 	 */
-	List<String> collectionPublicNames(int aOffset, int aLength);
+	List<String> collectionPublicNames(int aOffset, int aLength) throws Exception;;
 
 	/**
 	 *
 	 * @param aOwner
 	 * @return A list containing the name of the given owner collections
 	 */
-	List<String> collectionNamesByOwner(String aOwner, int aOffset, int aLength);
+	List<String> collectionNamesByOwner(String aOwner, int aOffset, int aLength) throws Exception;;
 
 	/**
 	 *
 	 * @return TRUE if the collection exists, FALSE otherwise
 	 */
-	Boolean collectionExists(String aCollectionName);
+	Boolean collectionExists(String aCollectionName) throws Exception;;
 
 	/**
 	 * Returns TRUE if the given item type is being used by a collection (with
@@ -83,17 +83,17 @@ public interface IItemCollectionProvider extends IInitializable {
 	 * @param aItemType
 	 * @return
 	 */
-	boolean isItemTypeInUse(String aItemType);
+	boolean isItemTypeInUse(String aItemType) throws Exception;;
 
 	/**
 	 *
 	 * @return The number of existing collections
 	 */
-	long size();
+	long size() throws Exception;;
 
 	/**
 	 *
 	 * @return The number of existing collections
 	 */
-	long size(String aOwner);
+	long size(String aOwner) throws Exception;;
 }

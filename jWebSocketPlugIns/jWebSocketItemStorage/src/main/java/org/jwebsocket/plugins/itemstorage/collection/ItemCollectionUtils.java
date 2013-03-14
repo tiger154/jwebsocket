@@ -48,9 +48,10 @@ public class ItemCollectionUtils {
 
 		// required to change the primary key value of an item
 		String lTargetPK = (String) aData.remove(ItemDefinition.ATTR_INTERNAL_TARGET_PK);
+		String lPK = (String) aData.get(lDef.getPrimaryKeyAttribute());
 		if (null == lTargetPK) {
 			// target PK is the PK
-			lTargetPK = (String) aData.get(lDef.getPrimaryKeyAttribute());
+			lTargetPK = lPK;
 		}
 
 		IItem lItem = null;
@@ -62,6 +63,8 @@ public class ItemCollectionUtils {
 		if (null == lItem) {
 			lIsNew = true;
 			lItem = aItemFactory.getItemPrototype(lDef.getType());
+		} else {
+			Assert.isTrue(lTargetPK.equals(lPK), "An item with primary key '" + lPK + "' already exists!");
 		}
 
 		// adjusting JSON types (special support for JavaScript)

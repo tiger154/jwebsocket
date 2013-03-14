@@ -26,9 +26,9 @@ public interface ILogsManager extends IInitializable {
 
 	List<Map> getCollectionLogs(String aCollectionName, int aOffset, int aLength) throws Exception;
 
-	Long size();
+	Long size() throws Exception;
 
-	Long size(String aElementType, String aActionId);
+	Long size(String aElementType, String aActionId) throws Exception;
 
-	Long size(String aElementType, String aCollection, String aActionId);
+	Long size(String aElementType, String aCollection, String aActionId) throws Exception;
 }

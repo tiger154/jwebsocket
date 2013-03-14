@@ -189,31 +189,41 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 			@Override
 			public void onStorageCleaned(IItemStorage aItemStorage) {
 				// ensure that the storage represents a collection
-				if (lCollectionProvider.collectionExists(aItemStorage.getName())) {
-					notifyGenericEvent("collectionCleaned", aItemStorage.getName());
+				try {
+					if (lCollectionProvider.collectionExists(aItemStorage.getName())) {
+						notifyGenericEvent("collectionCleaned", aItemStorage.getName());
 
-					try {
-						mLogsManager.clearItemLogs(aItemStorage.getName());
-					} catch (Exception lEx) {
-						mLog.error(Logging.getSimpleExceptionMessage(lEx,
-								"cleaning collection(" + aItemStorage.getName() + ") items logs..."));
+						try {
+							mLogsManager.clearItemLogs(aItemStorage.getName());
+						} catch (Exception lEx) {
+							mLog.error(Logging.getSimpleExceptionMessage(lEx,
+									"cleaning collection(" + aItemStorage.getName() + ") items logs..."));
+						}
 					}
+				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx,
+							"processing (" + aItemStorage.getName() + ") + storage cleaned..."));
 				}
 			}
 
 			@Override
 			public void onStorageRemoved(String aStorageName) {
 				// ensure that the storage represents a collection
-				if (lCollectionProvider.collectionExists(aStorageName)) {
-					notifyGenericEvent("collectionRemoved", aStorageName);
+				try {
+					if (lCollectionProvider.collectionExists(aStorageName)) {
+						notifyGenericEvent("collectionRemoved", aStorageName);
 
-					try {
-						mLogsManager.clearItemLogs(aStorageName);
-						mLogsManager.clearCollectionLogs(aStorageName);
-					} catch (Exception lEx) {
-						mLog.error(Logging.getSimpleExceptionMessage(lEx,
-								"cleaning collection(" + aStorageName + ") + items logs..."));
+						try {
+							mLogsManager.clearItemLogs(aStorageName);
+							mLogsManager.clearCollectionLogs(aStorageName);
+						} catch (Exception lEx) {
+							mLog.error(Logging.getSimpleExceptionMessage(lEx,
+									"cleaning collection(" + aStorageName + ") + items logs..."));
+						}
 					}
+				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx,
+							"processing (" + aStorageName + ") + storage removed..."));
 				}
 			}
 
@@ -374,28 +384,34 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	 * @param aConnector
 	 */
 	void unsubscribeFromAll(WebSocketConnector aConnector) {
-		for (String lCollectionName : mCollectionProvider.collectionNames()) {
-			try {
-				IItemCollection lCollection = mCollectionProvider.getCollection(lCollectionName);
-				String lClient = aConnector.getId();
+		try {
+			for (String lCollectionName : mCollectionProvider.collectionNames()) {
+				try {
+					IItemCollection lCollection = mCollectionProvider.getCollection(lCollectionName);
+					String lClient = aConnector.getId();
 
-				// removing subscriber
-				if (lCollection.getSubcribers().contains(lClient)) {
-					ItemCollectionUtils.unsubscribeCollection(mCollectionProvider,
-							lCollection,
-							lClient,
-							aConnector.getUsername());
-				}
+					// removing subscriber
+					if (lCollection.getSubcribers().contains(lClient)) {
+						ItemCollectionUtils.unsubscribeCollection(mCollectionProvider,
+								lCollection,
+								lClient,
+								aConnector.getUsername());
+					}
 
-				// removing publisher
-				if (lCollection.getPublishers().contains(lClient)) {
-					lCollection.getPublishers().remove(lClient);
-					mCollectionProvider.saveCollection(lCollection);
+					// removing publisher
+					if (lCollection.getPublishers().contains(lClient)) {
+						lCollection.getPublishers().remove(lClient);
+						mCollectionProvider.saveCollection(lCollection);
+					}
+				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx,
+							"unsubscribing  connector..."));
 				}
-			} catch (Exception lEx) {
 			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx,
+					"processing unsubscribe from all..."));
 		}
-
 	}
 
 	@Override
