@@ -38,9 +38,9 @@ import java.net.UnknownHostException;
  */
 public class MonitoringFilter extends TokenFilter {
 
-	Mongo mConnection;
-	DBCollection mPluginCollection;
-	private static Logger mLog = Logging.getLogger(MonitoringFilter.class);
+	private static Logger mLog = Logging.getLogger();
+	private Mongo mConnection;
+	private DBCollection mPluginCollection;
 
 	/**
 	 *
