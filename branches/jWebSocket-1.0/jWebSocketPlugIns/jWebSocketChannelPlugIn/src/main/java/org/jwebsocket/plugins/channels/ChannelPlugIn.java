@@ -541,6 +541,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 			if (lChannel.getAccessKey().equals(lAccessKey)
 					&& lChannel.getSecretKey().equals(lSecretKey)) {
 				lPublisher = new Publisher(aConnector.getId());
+				lPublisher.addChannel(lChannelId);
 				// store publisher
 				mChannelManager.storePublisher(lPublisher);
 			}
@@ -562,7 +563,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 				lChannel.addPublisher(lPublisher.getId());
 				// and store the channel including the new publisher
 				mChannelManager.storeChannel(lChannel);
-
+				
 				Token lResponseToken = createResponse(aToken);
 				// mChannelManager.publishToLoggerChannel(lResponseToken);
 
