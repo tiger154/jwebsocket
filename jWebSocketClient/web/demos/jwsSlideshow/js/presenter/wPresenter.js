@@ -31,7 +31,6 @@ $.widget("jws.presenter", {
 		this.eViewers = this.element.find("#viewers");
 		this.eSlide = this.element.find("#slide");
 		this.eContainer = $(".container");
-
 		// ------ VARIABLES --------
 		this.mCurrSlide = 1;
 		this.mOldSlide = 0;
@@ -41,12 +40,11 @@ $.widget("jws.presenter", {
 		this.mChannelId = "jWebSocketSlideShowDemo";
 		this.mChannelAccessKey = "5l1d35h0w";
 		this.mChannelSecretKey = "5l1d35h0w53cr3t!";
-		this.TT_USER_REGISTER = "userregistered";
-		this.TT_USER_UNREGISTER = "userunregistered";
 		this.TT_SEND = "send";
 		this.TT_SLIDE = "slide";
 		this.mClientId = "";
-
+		this.mPresentersList = {};
+		this.mViewersList = {};
 		w.presenter = this;
 		w.presenter.registerEvents();
 	},
@@ -59,26 +57,19 @@ $.widget("jws.presenter", {
 		// When closing the window notify the other clients about who is 
 		// leaving the conference room
 		$(window).bind('beforeunload', function() {
-			var lData = {
-				value: "presenter_" + mWSC.getUsername() + "@" + w.presenter.mClientId
-			};
-			w.presenter.publish(w.presenter.TT_USER_UNREGISTER, lData);
+			jws.channelUnsubscribe(w.presenter.mChannelId);
 		});
-
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
 			OnMessage: function(aEvent, aToken) {
-				if (mLog.isDebugEnabled) {
-					log(" <b>" + w.presenter.TITLE + " new message received: </b>" +
-							JSON.stringify(aToken));
-				}
 				w.presenter.onMessage(aEvent, aToken);
 			},
 			OnWelcome: function(aToken) {
 				// Registering the callbacks for the channels
 				mWSC.setChannelCallbacks({
 					// When any subscription arrives from the server
+					OnChannelUnsubscription: w.presenter.onChannelUnsubscription,
 					OnChannelSubscription: w.presenter.onChannelSubscription
 				});
 				w.presenter.mClientId = aToken.sourceId;
@@ -89,15 +80,20 @@ $.widget("jws.presenter", {
 		w.auth.logon();
 	},
 	onMessage: function(aEvent, aToken) {
-		if (aToken.reqType === "login" && aToken.code === 0) {
-			// Subscribe to a certain channel
+		if (aToken.type === "response" && aToken.reqType === "login") {
+			mWSC.sessionPut("presenter", aToken.sourceId, true);
 			mWSC.channelSubscribe(w.presenter.mChannelId,
 					w.presenter.mChannelAccessKey, {
-				OnSuccess: function( ) {
+				OnSuccess: function() {
 					w.presenter.authenticateChannel();
 				}
 			});
-		} else if (aToken.ns === w.presenter.NS_CHANNELS) {
+		}
+		if (aToken.ns === w.presenter.NS_CHANNELS) {
+			if (mLog.isDebugEnabled) {
+				log(" <b>" + w.presenter.TITLE + " new message received: </b>" +
+						JSON.stringify(aToken));
+			}
 			// When the channel authorizes the user to publish on it
 			if (aToken.reqType === "authorize") {
 				if (aToken.code === 0) {
@@ -114,60 +110,57 @@ $.widget("jws.presenter", {
 				// the key "data"
 			} else if (aToken.type === "data") {
 				switch (aToken.data) {
-					case w.presenter.TT_USER_REGISTER:
-						w.presenter.userRegistered(aToken.map, aToken.publisher);
-						break;
+					// When the slides pass
 					case w.presenter.TT_SLIDE:
 						// Pass the current slide
 						w.presenter.goTo(aToken.map.slide);
 						break;
-					case w.presenter.TT_USER_UNREGISTER:
-						w.presenter.userUnregistered(aToken.map);
+					// Whenever a new user goes subscribed on the channel
+					// through the channel is published the number of presenters
+					// the number of viewers and the current slide, so the 
+					// new registered client or publisher will automatically  
+					// synchronize itself the existing clients
+					case w.presenter.TT_SEND:
+						w.presenter.updateUsers(aToken.map);
 						break;
 				}
 			}
-		} else if (aToken.ns === w.presenter.NS_SYSTEM) {
-			if (aToken.type === w.presenter.TT_SEND) {
-				w.presenter.updateUsers(aToken.data);
-				w.presenter.goTo(aToken.data.currslide);
-			}
 		}
 	},
-	nextSlide: function( ) {
+	nextSlide: function() {
 		if (w.presenter.mCurrSlide < w.presenter.mMaxSlides) {
 			w.presenter.mCurrSlide++;
-			w.presenter.updateSlide( );
+			w.presenter.updateSlide();
 		}
 	},
-	prevSlide: function( ) {
+	prevSlide: function() {
 		if (w.presenter.mCurrSlide > 1) {
 			w.presenter.mCurrSlide--;
-			w.presenter.updateSlide( );
+			w.presenter.updateSlide();
 		}
 	},
-	lastSlide: function( ) {
+	lastSlide: function() {
 		w.presenter.mCurrSlide = w.presenter.mMaxSlides;
-		w.presenter.updateSlide( );
+		w.presenter.updateSlide();
 	},
-	firstSlide: function( ) {
+	firstSlide: function() {
 		w.presenter.mCurrSlide = 1;
-		w.presenter.updateSlide( );
+		w.presenter.updateSlide();
 	},
 	goTo: function(aSlide) {
 		if (w.presenter.mOldSlide != aSlide) {
 			w.presenter.eSlide.attr("src", "slides/Slide" +
 					jws.tools.zerofill(aSlide, 4) + ".gif");
-			w.presenter.eBtnLast.isDisabled && w.presenter.eBtnLast.enable( );
-			w.presenter.eBtnNext.isDisabled && w.presenter.eBtnNext.enable( );
-			w.presenter.eBtnFirst.isDisabled && w.presenter.eBtnFirst.enable( );
-			w.presenter.eBtnPrev.isDisabled && w.presenter.eBtnPrev.enable( );
-
+			w.presenter.eBtnLast.isDisabled && w.presenter.eBtnLast.enable();
+			w.presenter.eBtnNext.isDisabled && w.presenter.eBtnNext.enable();
+			w.presenter.eBtnFirst.isDisabled && w.presenter.eBtnFirst.enable();
+			w.presenter.eBtnPrev.isDisabled && w.presenter.eBtnPrev.enable();
 			if (aSlide == 1) {
-				w.presenter.eBtnPrev.disable( );
-				w.presenter.eBtnFirst.disable( );
+				w.presenter.eBtnPrev.disable();
+				w.presenter.eBtnFirst.disable();
 			} else if (aSlide == w.presenter.mMaxSlides) {
-				w.presenter.eBtnNext.disable( );
-				w.presenter.eBtnLast.disable( );
+				w.presenter.eBtnNext.disable();
+				w.presenter.eBtnLast.disable();
 			}
 			w.presenter.mOldSlide = aSlide;
 		}
@@ -181,34 +174,92 @@ $.widget("jws.presenter", {
 		}
 	},
 	updateUsers: function(aData) {
-		w.presenter.mPresenters = aData.presenters;
-		w.presenter.mViewers = aData.viewers;
-		w.presenter.ePresenters.text(w.presenter.mPresenters);
+		aData = aData || {};
+		aData.currslide && w.presenter.goTo(aData.currslide);
+		w.presenter.mCurrSlide = aData.currslide || w.presenter.mCurrSlide;
+		w.presenter.mViewers = aData.viewers || w.presenter.mViewers;
 		w.presenter.eViewers.text(w.presenter.mViewers);
-	},
-	userRegistered: function(aData, aPublisher) {
-		var lUser = aData.value.trim().split("_");
-		var lData = {
-			currslide: w.presenter.mCurrSlide,
-			presenters: lUser[0] == "presenter" ? ++w.presenter.mPresenters : w.presenter.mPresenters,
-			viewers: lUser[0] == "viewer" ? ++w.presenter.mViewers : w.presenter.mViewers,
-		};
-		if (aPublisher !== w.presenter.mClientId) {
-			mWSC.sendText(aPublisher, lData);
+		// copying the presenters elements to our list
+		for (var lIdx in aData.presentersList) {
+			w.presenter.mPresentersList[lIdx] = aData.presentersList[lIdx];
 		}
-		w.presenter.updateUsers(lData);
+		var lCounter = 0;
+		// Counting how many presenters we have
+		for (var lIdx in w.presenter.mPresentersList) {
+			lCounter++;
+		}
+		w.presenter.mPresenters = lCounter;
+		w.presenter.ePresenters.text(w.presenter.mPresenters);
+
 	},
-	userUnregistered: function(aData) {
-		var lUser = aData.value.trim().split("_");
-		if (lUser[0] == "presenter") {
+	onChannelSubscription: function(aToken) {
+		var lSubscriber = aToken.subscriber;
+		mWSC.sessionGetAll(lSubscriber, true, {
+			OnSuccess: function(aToken) {
+				var lId = "";
+				var lIsPresenter = false, lIsViewer = false;
+				for (var lKey in aToken.data) {
+					lId = lKey.split("::")[1];
+					if (lId === 'presenter' && lSubscriber === aToken.data[lKey]) {
+						lIsPresenter = true;
+					}
+					if (lId === 'viewer' && lSubscriber === aToken.data[lKey]) {
+						lIsViewer = true;
+					}
+				}
+
+				var lData = {
+					currslide: w.presenter.mCurrSlide,
+					viewers: lIsViewer ? w.presenter.mViewers + 1 :
+							w.presenter.mViewers
+				};
+
+				if (lIsPresenter) {
+					w.presenter.mPresenters++;
+					lData.presenters = w.presenter.mPresenters;
+					w.presenter.mPresentersList[lSubscriber] = true;
+					lData.presentersList = w.presenter.mPresentersList;
+					// In case that the presenter arrives after the viewers and there 
+					// are no more presenters to send him the information he should
+					// request for the clients from the server
+					if (w.presenter.mPresenters === 1) {
+						mWSC.channelGetSubscribers(w.presenter.mChannelId,
+								w.presenter.mChannelAccessKey, {
+							OnSuccess: function(aToken) {
+								var lViewers = aToken.subscribers.length -
+										w.presenter.mPresenters;
+								lData.viewers = lViewers > 0 ? lViewers :
+										w.presenter.mViewers;
+								if (lViewers + w.presenter.mPresenters ===
+										aToken.subscribers.length) {
+									// The presenter will only be able to publish 
+									// information when there are not more 
+									// presenters in the conference and his 
+									// information is correct
+									w.presenter.publish(w.presenter.TT_SEND, lData);
+								}
+							}
+						});
+					} else {
+						w.presenter.publish(w.presenter.TT_SEND, lData);
+					}
+				} else if (lIsViewer) {
+					lData.presenters = w.presenter.mPresenters;
+					lData.presentersList = w.presenter.mPresentersList;
+					w.presenter.publish(w.presenter.TT_SEND, lData);
+				}
+			}
+		});
+	},
+	onChannelUnsubscription: function(aToken) {
+		var lUnsubscriber = aToken.subscriber;
+		if (w.presenter.mPresentersList[lUnsubscriber]) {
+			delete w.presenter.mPresentersList[lUnsubscriber];
 			w.presenter.mPresenters > 0 && w.presenter.mPresenters--;
 		} else {
 			w.presenter.mViewers > 0 && w.presenter.mViewers--;
 		}
-		w.presenter.updateUsers({
-			presenters: w.presenter.mPresenters,
-			viewers: w.presenter.mViewers
-		})
+		w.presenter.updateUsers();
 	},
 	keydown: function(aEvent) {
 		if (mWSC.isConnected()) {
@@ -244,10 +295,9 @@ $.widget("jws.presenter", {
 		mWSC.channelPublish(w.presenter.mChannelId, aType, aData);
 	}
 });
-
 (function($) {
 	$.fn.buttons = {};
-	$.fn.disable = function( ) {
+	$.fn.disable = function() {
 		var lButton = this;
 		var lId = lButton.attr("id");
 		lButton.isDisabled = true;
@@ -258,7 +308,7 @@ $.widget("jws.presenter", {
 		});
 		lButton.attr("class", "button onmousedown");
 	};
-	$.fn.enable = function( ) {
+	$.fn.enable = function() {
 		var lButton = this;
 		var lId = lButton.attr("id");
 		var lEvents = ["onmouseover", "onmousedown", "onmouseup", "onmouseout", "onclick"];
@@ -266,7 +316,6 @@ $.widget("jws.presenter", {
 			lButton.attr(aAttribute, $.fn.buttons[ lId ].attr(aAttribute));
 		});
 		lButton.attr("class", "button onmouseout");
-
 		lButton.isDisabled = false;
 	};
 })(jQuery);
