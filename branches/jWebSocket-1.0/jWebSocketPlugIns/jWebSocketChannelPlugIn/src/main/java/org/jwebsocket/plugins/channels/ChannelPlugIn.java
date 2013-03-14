@@ -222,7 +222,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 	public String getNamespace() {
 		return NS_CHANNELS;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -563,7 +563,7 @@ public class ChannelPlugIn extends TokenPlugIn {
 				lChannel.addPublisher(lPublisher.getId());
 				// and store the channel including the new publisher
 				mChannelManager.storeChannel(lChannel);
-				
+
 				Token lResponseToken = createResponse(aToken);
 				// mChannelManager.publishToLoggerChannel(lResponseToken);
 
@@ -877,10 +877,13 @@ public class ChannelPlugIn extends TokenPlugIn {
 		List<Map> lSubscribers = new FastList<Map>();
 		if (null != lChannelSubscribers) {
 			for (String lSubscriber : lChannelSubscribers) {
-				Map<String, Object> lItem = new HashMap<String, Object>();
-				lItem.put("id", lSubscriber);
-				lItem.put("user", getConnector(lSubscriber).getUsername());
-				lSubscribers.add(lItem);
+				//TODO: Some subscribers remain in the list after connector disconnected
+				if (getConnector(lSubscriber) != null) {
+					Map<String, Object> lItem = new HashMap<String, Object>();
+					lItem.put("id", lSubscriber);
+					lItem.put("user", getConnector(lSubscriber).getUsername());
+					lSubscribers.add(lItem);
+				}
 			}
 		}
 		Token lResponseToken = createResponse(aToken);
