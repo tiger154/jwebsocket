@@ -64,7 +64,7 @@ public class SharedCanvasPlugIn extends TokenPlugIn {
 		setNamespace(NS_SHAREDCANVAS);
 		mClients = new FastList<WebSocketConnector>().shared();
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Shared canvas plug-in instantiated correctly.");
+			mLog.info("Shared canvas plug-in successfully instantiated .");
 		}
 	}
 
