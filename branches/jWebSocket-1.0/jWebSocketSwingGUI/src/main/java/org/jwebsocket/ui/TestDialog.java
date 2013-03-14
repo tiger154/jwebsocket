@@ -1,16 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2010 Innotrade GmbH
+//	jWebSocket - TestDialog (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 
 /*
@@ -45,6 +49,7 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
 
 /**
  * Java Swing client for jWebSocket
+ *
  * @author aschulze
  * @version $Id:$
  */
@@ -58,7 +63,9 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	private ImageIcon mIcoAuthenticated = null;
 	private ReliabilityOptions mReliabilityOptions = null;
 
-	/** Creates new form TestDialog */
+	/**
+	 * Creates new form TestDialog
+	 */
 	public TestDialog() {
 		initComponents();
 		try {
@@ -808,6 +815,9 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+	/**
+	 *
+	 */
 	public void checkDisconnect() {
 		// closes the connection, clears garbage and 
 		// terminates potential re-connection tasks.
@@ -858,18 +868,18 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 		// getMD5
 		// pass the method to be called
 		/*
-		lToken.setString("method", "getMD5");
-		lArgs.add(txfMessage.getText());
+		 lToken.setString("method", "getMD5");
+		 lArgs.add(txfMessage.getText());
 		 */
 
 		// runOverloadDemo
 		/*
-		lToken.setString("method", "runOverloadDemo");
-		// create the list of arguments to be applied to the method
-		List lListArg = new ArrayList();
-		lListArg.add(1);	lListArg.add(2);	lListArg.add(3);	lListArg.add(4);
-		lListArg.add("a");	lListArg.add("b");	lListArg.add("c");	lListArg.add("d");
-		lArgs.add(lListArg);
+		 lToken.setString("method", "runOverloadDemo");
+		 // create the list of arguments to be applied to the method
+		 List lListArg = new ArrayList();
+		 lListArg.add(1);	lListArg.add(2);	lListArg.add(3);	lListArg.add(4);
+		 lListArg.add("a");	lListArg.add("b");	lListArg.add("c");	lListArg.add("d");
+		 lArgs.add(lListArg);
 		 */
 
 		// demo for getRPCObject
@@ -964,7 +974,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	private void btnStressTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStressTestActionPerformed
 		for (int i = 0; i < 10; i++) {
 			new Thread() {
-
 				@Override
 				public void run() {
 					StressTests lTests = new StressTests(new MyLogListener());
@@ -1000,7 +1009,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.filesystem", "save");
 			lToken.setString("scope", "public");
 			lToken.setBoolean("notify", false);
-			
+
 			File lFile = new File(txfFilename.getText());
 			byte[] lBA = FileUtils.readFileToByteArray(lFile);
 			String lBase64Enc = Base64.encodeBase64String(lBA);
@@ -1086,12 +1095,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	}// GEN-LAST:event_btnGetSessionsActionPerformed
 
 	/**
-	 * @param args
-	 *            the command line arguments
+	 * @param args the command line arguments
 	 */
 	public static void main(String args[]) {
 		java.awt.EventQueue.invokeLater(new Runnable() {
-
 			@Override
 			public void run() {
 				new TestDialog().setVisible(true);
