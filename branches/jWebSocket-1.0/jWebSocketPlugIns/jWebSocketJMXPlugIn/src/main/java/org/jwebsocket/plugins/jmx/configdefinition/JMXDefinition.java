@@ -1,30 +1,29 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - JMXPlugIn v1.0
-// Copyright(c) 2010-2012 Innotrade GmbH, Herzogenrath, Germany, jWebSocket.org
-// ---------------------------------------------------------------------------
-// THIS CODE IS FOR RESEARCH, EVALUATION AND TEST PURPOSES ONLY!
-// THIS CODE MAY BE SUBJECT TO CHANGES WITHOUT ANY NOTIFICATION!
-// THIS CODE IS NOT YET SECURE AND MAY NOT BE USED FOR PRODUCTION ENVIRONMENTS!
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+// jWebSocket - JMXDefinition (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 import javax.management.modelmbean.*;
 
 /**
- * The main class that contains all the elements necessary to conform the class 
+ * The main class that contains all the elements necessary to conform the class
  * or plugin object to export and its metadata.
- * 
+ *
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class JMXDefinition {
@@ -36,12 +35,24 @@ public class JMXDefinition {
 	private String mDescription = "";
 	private String mClassName;
 	private String mJarName;
-	
+
+	/**
+	 *
+	 */
 	public JMXDefinition() {
 	}
 
+	/**
+	 *
+	 * @param aClassName
+	 * @param aJarName
+	 * @param aAttributes
+	 * @param aOperations
+	 * @param aConstructors
+	 * @param aNotifications
+	 */
 	public JMXDefinition(String aClassName, String aJarName, AttributeDefinition[] aAttributes,
-			OperationDefinition[] aOperations, ConstructorDefinition[] aConstructors, 
+			OperationDefinition[] aOperations, ConstructorDefinition[] aConstructors,
 			NotificationDefinition[] aNotifications) {
 
 		this.mAttributes = aAttributes;
@@ -66,38 +77,74 @@ public class JMXDefinition {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public AttributeDefinition[] getAttributes() {
 		return mAttributes;
 	}
 
+	/**
+	 *
+	 * @param aAttributes
+	 */
 	public void setAttributes(AttributeDefinition[] aAttributes) {
 		this.mAttributes = aAttributes;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getDescription() {
 		return mDescription;
 	}
 
+	/**
+	 *
+	 * @param aDescription
+	 */
 	public void setDescription(String aDescription) {
 		this.mDescription = aDescription;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public OperationDefinition[] getOperations() {
 		return mOperations;
 	}
 
+	/**
+	 *
+	 * @param aOperations
+	 */
 	public void setOperations(OperationDefinition[] aOperations) {
 		this.mOperations = aOperations;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public ConstructorDefinition[] getConstructors() {
 		return mConstructors;
 	}
 
+	/**
+	 *
+	 * @param aConstructors
+	 */
 	public void setConstructors(ConstructorDefinition[] aConstructors) {
 		this.mConstructors = aConstructors;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getClassName() {
 		if (this.mClassName != null) {
 			return mClassName;
@@ -106,6 +153,10 @@ public class JMXDefinition {
 		}
 	}
 
+	/**
+	 *
+	 * @param aClassName
+	 */
 	public void setClassName(String aClassName) {
 		if (!aClassName.equals("")) {
 			this.mClassName = aClassName;
@@ -114,14 +165,26 @@ public class JMXDefinition {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public NotificationDefinition[] getNotifications() {
 		return mNotifications;
 	}
 
+	/**
+	 *
+	 * @param aNotifications
+	 */
 	public void setNotifications(NotificationDefinition[] aNotifications) {
 		this.mNotifications = aNotifications;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getJarName() {
 		if (this.mJarName != null) {
 			return mJarName;
@@ -130,6 +193,10 @@ public class JMXDefinition {
 		}
 	}
 
+	/**
+	 *
+	 * @param aJarName
+	 */
 	public void setJarName(String aJarName) {
 		if (!aJarName.equals("")) {
 			if (!aJarName.toLowerCase().endsWith(".jar")) {
@@ -141,7 +208,11 @@ public class JMXDefinition {
 			throw new IllegalArgumentException("The jar name must not be empty.");
 		}
 	}
-	
+
+	/**
+	 *
+	 * @return
+	 */
 	public ModelMBeanInfo createMBeanInfo() {
 		if (this.mClassName != null) {
 			return new ModelMBeanInfoSupport(mClassName, mDescription,
@@ -154,8 +225,12 @@ public class JMXDefinition {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	protected ModelMBeanAttributeInfo[] createMBeanAttributeInfoArray() {
-		ModelMBeanAttributeInfo[] lInfoArray = 
+		ModelMBeanAttributeInfo[] lInfoArray =
 				new ModelMBeanAttributeInfo[mAttributes.length];
 		for (int i = 0; i < mAttributes.length; i++) {
 			lInfoArray[i] = mAttributes[i].createMBeanAttributeInfo();
@@ -163,9 +238,13 @@ public class JMXDefinition {
 		return lInfoArray;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	protected ModelMBeanConstructorInfo[] createMBeanConstructorInfoArray() {
 		int lCount = mConstructors.length;
-		ModelMBeanConstructorInfo[] lInfoArray = 
+		ModelMBeanConstructorInfo[] lInfoArray =
 				new ModelMBeanConstructorInfo[lCount];
 		for (int i = 0; i < lCount; i++) {
 			lInfoArray[i] = mConstructors[i].createMBeanConstructorInfo();
@@ -173,8 +252,12 @@ public class JMXDefinition {
 		return lInfoArray;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	protected ModelMBeanOperationInfo[] createMBeanOperationInfoArray() {
-		ModelMBeanOperationInfo[] lInfoArray = 
+		ModelMBeanOperationInfo[] lInfoArray =
 				new ModelMBeanOperationInfo[mOperations.length];
 		for (int i = 0; i < mOperations.length; i++) {
 			lInfoArray[i] = mOperations[i].createMBeanOperationInfo();
@@ -182,8 +265,12 @@ public class JMXDefinition {
 		return lInfoArray;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	protected ModelMBeanNotificationInfo[] createMBeanNotificationInfoArray() {
-		ModelMBeanNotificationInfo[] lInfoArray = 
+		ModelMBeanNotificationInfo[] lInfoArray =
 				new ModelMBeanNotificationInfo[mNotifications.length];
 		for (int i = 0; i < mNotifications.length; i++) {
 			lInfoArray[i] = mNotifications[i].createMBeanNotificationInfo();

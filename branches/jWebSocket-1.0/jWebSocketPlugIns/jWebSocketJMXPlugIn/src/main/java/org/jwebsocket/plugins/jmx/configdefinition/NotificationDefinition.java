@@ -1,30 +1,29 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - JMXPlugIn v1.0
-// Copyright(c) 2010-2012 Innotrade GmbH, Herzogenrath, Germany, jWebSocket.org
-// ---------------------------------------------------------------------------
-// THIS CODE IS FOR RESEARCH, EVALUATION AND TEST PURPOSES ONLY!
-// THIS CODE MAY BE SUBJECT TO CHANGES WITHOUT ANY NOTIFICATION!
-// THIS CODE IS NOT YET SECURE AND MAY NOT BE USED FOR PRODUCTION ENVIRONMENTS!
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+// jWebSocket - NotificationDefinition (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmx.configdefinition;
 
 import javax.management.modelmbean.ModelMBeanNotificationInfo;
 
 /**
- * Class that allows to define an event notifications for the plugins and 
+ * Class that allows to define an event notifications for the plugins and
  * classes to export and their metadata.
- * 
+ *
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class NotificationDefinition extends FeatureDefinition {
@@ -38,7 +37,7 @@ public class NotificationDefinition extends FeatureDefinition {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aTypes
 	 * @param aName
 	 * @param aDescription
@@ -59,7 +58,7 @@ public class NotificationDefinition extends FeatureDefinition {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return String[]
 	 */
 	public String[] getTypes() {
@@ -72,7 +71,7 @@ public class NotificationDefinition extends FeatureDefinition {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aTypes
 	 */
 	public void setTypes(String[] aTypes) {
@@ -91,12 +90,12 @@ public class NotificationDefinition extends FeatureDefinition {
 
 	/**
 	 * Create the metadata of the notification definition.
-	 * 
+	 *
 	 * @return ModelMBeanNotificationInfo
 	 */
 	public ModelMBeanNotificationInfo createMBeanNotificationInfo() {
 		if (mTypes != null) {
-			return new ModelMBeanNotificationInfo(mTypes, super.getName(), 
+			return new ModelMBeanNotificationInfo(mTypes, super.getName(),
 					super.getDescription());
 		} else {
 			throw new IllegalArgumentException("The notification types must have"

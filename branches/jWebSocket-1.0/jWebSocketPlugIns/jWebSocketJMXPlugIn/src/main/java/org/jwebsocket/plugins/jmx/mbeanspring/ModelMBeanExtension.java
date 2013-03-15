@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - JMXPlugIn v1.0
+// jWebSocket - ModelMBeanExtension v1.0
 // Copyright(c) 2010-2012 Innotrade GmbH, Herzogenrath, Germany, jWebSocket.org
 // ---------------------------------------------------------------------------
 // THIS CODE IS FOR RESEARCH, EVALUATION AND TEST PURPOSES ONLY!
@@ -29,18 +29,27 @@ import javax.management.modelmbean.RequiredModelMBean;
 
 /**
  * Class that implements a specific ModelMBean for the module.
- * 
+ *
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class ModelMBeanExtension extends RequiredModelMBean {
-	
+
+	/**
+	 *
+	 */
 	protected NotificationInfoMap mNotificationInfoMap;
+	/**
+	 *
+	 */
 	protected ModelMBeanInfo mModelMBeanInfo;
+	/**
+	 *
+	 */
 	protected Object mManagedMBean;
 
 	/**
 	 * The class default constructor.
-	 * 
+	 *
 	 * @throws MBeanException
 	 */
 	public ModelMBeanExtension() throws MBeanException {
@@ -59,6 +68,8 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aModelMBeanInfo
 	 */
 	@Override
 	public void setModelMBeanInfo(ModelMBeanInfo aModelMBeanInfo) throws MBeanException {
@@ -77,30 +88,33 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aManagedBean
+	 * @param aType
 	 */
 	@Override
 	public void setManagedResource(Object aManagedBean, String aType) throws MBeanException,
-			RuntimeOperationsException, InstanceNotFoundException, 
+			RuntimeOperationsException, InstanceNotFoundException,
 			InvalidTargetObjectTypeException {
 		super.setManagedResource(aManagedBean, aType);
 		this.mManagedMBean = aManagedBean;
 	}
 
 	/**
-	 * Method that allows launch the notifications defined for a particular 
+	 * Method that allows launch the notifications defined for a particular
 	 * operation.
-	 * 
+	 *
 	 * @param aType
 	 * @param aName
 	 * @throws MBeanException
 	 */
 	protected void maybeSendMethodNotification(String aType, String aName)
 			throws MBeanException {
-		MBeanNotificationInfo lInfo = 
+		MBeanNotificationInfo lInfo =
 				mNotificationInfoMap.findNotificationInfo(aType, aName);
 		if (lInfo != null) {
 			long lTimeStamp = System.currentTimeMillis();
-			String lNotificationType = 
+			String lNotificationType =
 					ModelMBeanUtil.matchType(lInfo, "." + aType + "." + aName);
 			sendNotification(new Notification(
 					lNotificationType, this, lTimeStamp,
@@ -109,9 +123,9 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 	}
 
 	/**
-	 * Method that allows launch the notifications defined for a particular 
+	 * Method that allows launch the notifications defined for a particular
 	 * attribute.
-	 * 
+	 *
 	 * @param aAttribute
 	 * @throws MBeanException
 	 * @throws AttributeNotFoundException
@@ -122,13 +136,13 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 			throws MBeanException, AttributeNotFoundException,
 			InvalidAttributeValueException, ReflectionException {
 		String lName = aAttribute.getName();
-		MBeanNotificationInfo lInfo = 
+		MBeanNotificationInfo lInfo =
 				mNotificationInfoMap.findNotificationInfo("set", aAttribute.getName());
 		if (lInfo != null) {
 			Object lOldValue = getAttribute(lName);
 			Object lNewValue = aAttribute.getValue();
 			long lTimeStamp = System.currentTimeMillis();
-			String lNotificationType = 
+			String lNotificationType =
 					ModelMBeanUtil.matchType(lInfo, ".set." + lName);
 			sendNotification(new AttributeChangeNotification(
 					this, lTimeStamp, lTimeStamp,
@@ -139,6 +153,10 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aName
+	 * @param aSignature
+	 * @param aArgs
 	 */
 	@Override
 	public Object invoke(String aName, Object[] aArgs, String[] aSignature)
@@ -151,6 +169,8 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aName
 	 */
 	@Override
 	public Object getAttribute(String aName) throws MBeanException,
@@ -158,7 +178,7 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 		try {
 			ModelMBeanAttributeInfo lInfo = mModelMBeanInfo.getAttribute(aName);
 			if (!lInfo.isReadable()) {
-				throw new AttributeNotFoundException("getAttribute is failed: " 
+				throw new AttributeNotFoundException("getAttribute is failed: "
 						+ aName + " is not readable");
 			}
 			Method lMethod = ModelMBeanUtil.findGetMethod(
@@ -173,13 +193,15 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aAttribute
 	 */
 	@Override
 	public void setAttribute(Attribute aAttribute) throws MBeanException,
-			AttributeNotFoundException, InvalidAttributeValueException, 
+			AttributeNotFoundException, InvalidAttributeValueException,
 			ReflectionException {
 		try {
-			ModelMBeanAttributeInfo lInfo = 
+			ModelMBeanAttributeInfo lInfo =
 					mModelMBeanInfo.getAttribute(aAttribute.getName());
 			if (lInfo.isWritable()) {
 				Method lMethod = ModelMBeanUtil.findSetMethod(
@@ -187,7 +209,7 @@ public class ModelMBeanExtension extends RequiredModelMBean {
 				lMethod.invoke(mManagedMBean, aAttribute.getValue());
 				maybeSendAttributeNotification(aAttribute);
 			} else {
-				throw new AttributeNotFoundException("setAttribute failed: " 
+				throw new AttributeNotFoundException("setAttribute failed: "
 						+ aAttribute.getName() + " is not writable");
 			}
 		} catch (IllegalAccessException e) {

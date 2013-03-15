@@ -1,22 +1,21 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - JMXPlugIn v1.0
-// Copyright(c) 2010-2012 Innotrade GmbH, Herzogenrath, Germany, jWebSocket.org
-// ---------------------------------------------------------------------------
-// THIS CODE IS FOR RESEARCH, EVALUATION AND TEST PURPOSES ONLY!
-// THIS CODE MAY BE SUBJECT TO CHANGES WITHOUT ANY NOTIFICATION!
-// THIS CODE IS NOT YET SECURE AND MAY NOT BE USED FOR PRODUCTION ENVIRONMENTS!
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+// jWebSocket - JMXPlugInsExporter (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmx;
 
 import java.io.File;
@@ -41,9 +40,9 @@ import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Main class of the mechanism that allows integrate plugins and classes to JMX 
+ * Main class of the mechanism that allows integrate plugins and classes to JMX
  * infrastructure of the module.
- * 
+ *
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class JMXPlugInsExporter {
@@ -54,10 +53,9 @@ public class JMXPlugInsExporter {
 
 	/**
 	 * The class constructor.
-	 * 
+	 *
 	 * @param aPath
 	 * @param aMBeanServer
-	 * @param aLog
 	 */
 	public JMXPlugInsExporter(String aPath, MBeanServer aMBeanServer) {
 		this.mConfigFilePath = aPath;
@@ -65,17 +63,17 @@ public class JMXPlugInsExporter {
 	}
 
 	/**
-	 * Private method that allows to list the names of the configuration files 
+	 * Private method that allows to list the names of the configuration files
 	 * for the plugins and classes that will be exported.
-	 * 
+	 *
 	 * @return List
 	 */
 	private List listConfigFilesNames() {
 		List lAllConfigFiles = new FastList();
 		try {
 			File lPathOfConfig = new File(mConfigFilePath);
-			if (false == lPathOfConfig.exists() || 
-					false == lPathOfConfig.isDirectory()) {
+			if (false == lPathOfConfig.exists()
+					|| false == lPathOfConfig.isDirectory()) {
 				throw new IllegalArgumentException("The config file path is "
 						+ "incorrect.");
 			}
@@ -85,17 +83,17 @@ public class JMXPlugInsExporter {
 				}
 			}
 		} catch (Exception ex) {
-			mLog.error("JMXPlugInExporter on listConfigFilesNames: " 
+			mLog.error("JMXPlugInExporter on listConfigFilesNames: "
 					+ ex.getMessage());
 		}
 		return lAllConfigFiles;
 	}
 
 	/**
-	 * Main method of the class that is responsible for loading the configuration 
-	 * files, create the objects of classes and plugins to export and register 
-	 * it in JMX infrastructure created.
-	 * 
+	 * Main method of the class that is responsible for loading the
+	 * configuration files, create the objects of classes and plugins to export
+	 * and register it in JMX infrastructure created.
+	 *
 	 * @throws Exception
 	 */
 	public void createMBeansToExport() throws Exception {
@@ -106,7 +104,7 @@ public class JMXPlugInsExporter {
 		for (String lConfigFile : lConfigFiles) {
 			JWebSocketBeanFactory.load(mConfigFilePath + lConfigFile, getClass().getClassLoader());
 			ApplicationContext lBeanFactory = JWebSocketBeanFactory.getInstance();
-			
+
 			if (lConfigFile.toLowerCase().endsWith("beanconfig.xml")) {
 				String lBeanName = lConfigFile.substring(0, lConfigFile.length() - 14);
 				registerMBean(lExporter, lBeanFactory, lBeanName, lBean);
@@ -118,23 +116,23 @@ public class JMXPlugInsExporter {
 				lExporter.afterPropertiesSet();
 			}
 		} catch (Exception ex) {
-			mLog.error("JMXPlugInExporter on createMBeansToExport: " 
+			mLog.error("JMXPlugInExporter on createMBeansToExport: "
 					+ ex.getMessage());
 		}
 	}
 
 	/**
 	 * Private method that creates a new instance of a class given its name, the
-	 * values of the parameters of the constructor and the .jar in which it is 
+	 * values of the parameters of the constructor and the .jar in which it is
 	 * contained.
-	 * 
+	 *
 	 * @param aClassName
 	 * @param aJarName
 	 * @param aValues
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
-	private Object getNewClassInstance(String aClassName, String aJarName, 
+	private Object getNewClassInstance(String aClassName, String aJarName,
 			Object[] aValues) throws Exception {
 		JWebSocketJarClassLoader lClassLoader = new JWebSocketJarClassLoader();
 		String lJarFilePath = JWebSocketConfig.getLibsFolder(aJarName);
@@ -176,35 +174,34 @@ public class JMXPlugInsExporter {
 
 	private void registerMBean(MBeanEnabledExporter aExporter, ApplicationContext aBeanFactory, String aBeanName, Map aBeanMap) throws Exception {
 		try {
-			JMXDefinition lDefinition = (JMXDefinition) 
-					aBeanFactory.getBean(aBeanName);
+			JMXDefinition lDefinition = (JMXDefinition) aBeanFactory.getBean(aBeanName);
 
 			if (lDefinition instanceof JMXPluginDefinition) {
-				JMXPluginDefinition lPluginDefinition = 
+				JMXPluginDefinition lPluginDefinition =
 						(JMXPluginDefinition) lDefinition;
 				//get the object of the server
-				WebSocketServer lServer = 
+				WebSocketServer lServer =
 						JWebSocketFactory.getServer(lPluginDefinition.getServerId());
 				//get the plugin by id
-				Object lMbeanObject = 
+				Object lMbeanObject =
 						lServer.getPlugInById(lPluginDefinition.getPluginId());
 
 				aBeanMap.put("jWebSocketServer:name=" + aBeanName, lMbeanObject);
 			} else {
 				Object lClass = null;
 				if (lDefinition.getConstructors().length > 0) {
-					ConstuctorParameterDefinition[] lParameters = 
+					ConstuctorParameterDefinition[] lParameters =
 							lDefinition.getConstructors()[0].getParameters();
 
 					if (lParameters.length == 0 || lParameters == null) {
-						lClass = getNewClassInstance(lDefinition.getClassName(), 
+						lClass = getNewClassInstance(lDefinition.getClassName(),
 								lDefinition.getJarName(), null);
 					} else {
 						Object[] lValues = new Object[lParameters.length];
 						for (int i = 0; i < lParameters.length; i++) {
 							lValues[i] = lParameters[i].getValue();
 						}
-						lClass = getNewClassInstance(lDefinition.getClassName(), 
+						lClass = getNewClassInstance(lDefinition.getClassName(),
 								lDefinition.getJarName(), lValues);
 					}
 				}
@@ -217,24 +214,24 @@ public class JMXPlugInsExporter {
 			}
 
 			if (!aBeanName.equals("")) {
-				aExporter.setDefinition("jWebSocketServer:name=" + aBeanName, 
+				aExporter.setDefinition("jWebSocketServer:name=" + aBeanName,
 						lDefinition);
 			}
 		} catch (Exception e) {
 			mLog.error("JMXPlugInExporter on registerMBean: " + e.getMessage());
 
-			JMXDefinitionException lDefinitionException = 
-					new JMXDefinitionException("Unable to register the class: " 
+			JMXDefinitionException lDefinitionException =
+					new JMXDefinitionException("Unable to register the class: "
 					+ e.getMessage());
-			
+
 			if (!aBeanName.equals("")) {
-				aBeanMap.put("jWebSocketServer:name=" + aBeanName + "Exception", 
+				aBeanMap.put("jWebSocketServer:name=" + aBeanName + "Exception",
 						lDefinitionException);
 			} else {
-				aBeanMap.put("jWebSocketServer:name=MBeanException", 
+				aBeanMap.put("jWebSocketServer:name=MBeanException",
 						lDefinitionException);
 			}
-			aExporter.setDefinition("jWebSocketServer:name=" + aBeanName 
+			aExporter.setDefinition("jWebSocketServer:name=" + aBeanName
 					+ "Exception", lDefinitionException);
 		}
 	}

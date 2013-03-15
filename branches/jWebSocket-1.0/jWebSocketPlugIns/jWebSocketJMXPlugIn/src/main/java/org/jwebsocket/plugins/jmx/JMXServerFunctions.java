@@ -1,22 +1,21 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - JMXPlugIn v1.0
-// Copyright(c) 2010-2012 Innotrade GmbH, Herzogenrath, Germany, jWebSocket.org
-// ---------------------------------------------------------------------------
-// THIS CODE IS FOR RESEARCH, EVALUATION AND TEST PURPOSES ONLY!
-// THIS CODE MAY BE SUBJECT TO CHANGES WITHOUT ANY NOTIFICATION!
-// THIS CODE IS NOT YET SECURE AND MAY NOT BE USED FOR PRODUCTION ENVIRONMENTS!
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+// jWebSocket - JMXServerFunctions (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmx;
 
 import java.net.InetAddress;
@@ -38,7 +37,7 @@ import org.jwebsocket.plugins.jmx.util.JMXHandler;
 
 /**
  * Class that allows to manage certain functions of jWebSocket server .
- * 
+ *
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class JMXServerFunctions {
@@ -52,9 +51,9 @@ public class JMXServerFunctions {
 	}
 
 	/**
-	 * Displays information about the existing connectors on a certain 
+	 * Displays information about the existing connectors on a certain
 	 * jWebSocket server.
-	 * 
+	 *
 	 * @param aServer
 	 * @return
 	 * @throws Exception
@@ -66,16 +65,16 @@ public class JMXServerFunctions {
 				throw new IllegalArgumentException("The server Id must not be "
 						+ "empty.");
 			}
-			Map lAllConnectors = 
+			Map lAllConnectors =
 					JWebSocketFactory.getServer(aServer).getAllConnectors();
-			
+
 			Map lServerConnectors = new FastMap();
 			if (!lAllConnectors.isEmpty()) {
 				for (int i = 0; i < lAllConnectors.size(); i++) {
 					Map lTempConnectors = new FastMap();
-					lTempConnectors.put("connectionId", 
+					lTempConnectors.put("connectionId",
 							lAllConnectors.keySet().toArray()[i]);
-					
+
 					if (null != ((WebSocketConnector) lAllConnectors.values().toArray()[i]).getUsername()) {
 						lTempConnectors.put("userName", ((WebSocketConnector) lAllConnectors.values().toArray()[i]).getUsername());
 					} else {
@@ -99,7 +98,7 @@ public class JMXServerFunctions {
 
 	/**
 	 * Shows characteristics about the jWebSocket servers that are running.
-	 * 
+	 *
 	 * @return CompositeData
 	 * @throws Exception
 	 */
@@ -112,15 +111,15 @@ public class JMXServerFunctions {
 			for (int i = 0; i < lAllServers.size(); i++) {
 				Map lServerData = new FastMap();
 				lServerData.put("id", lAllServers.get(i).getId());
-				lServerData.put("jarName", 
+				lServerData.put("jarName",
 						lAllServers.get(i).getServerConfiguration().getJar());
-				lServerData.put("corePoolSize", 
+				lServerData.put("corePoolSize",
 						lAllServers.get(i).getServerConfiguration().getThreadPoolConfig().getCorePoolSize());
-				lServerData.put("maximunPoolSize", 
+				lServerData.put("maximunPoolSize",
 						lAllServers.get(i).getServerConfiguration().getThreadPoolConfig().getMaximumPoolSize());
-				lServerData.put("keepAliveTime", 
+				lServerData.put("keepAliveTime",
 						lAllServers.get(i).getServerConfiguration().getThreadPoolConfig().getKeepAliveTime());
-				lServerData.put("blockingQueueSize", 
+				lServerData.put("blockingQueueSize",
 						lAllServers.get(i).getServerConfiguration().getThreadPoolConfig().getBlockingQueueSize());
 
 				lServers.put("server_" + lAllServers.get(i).getId(), lServerData);
@@ -137,7 +136,7 @@ public class JMXServerFunctions {
 	/**
 	 * Displays information about the plugins that are loaded on the jWebSocket
 	 * server.
-	 * 
+	 *
 	 * @return CompositeData
 	 * @throws Exception
 	 */
@@ -149,14 +148,13 @@ public class JMXServerFunctions {
 
 			for (int i = 0; i < lAllServers.size(); i++) {
 				if (lAllServers.get(i).getPlugInChain() != null) {
-					List<WebSocketPlugIn> lAllPlugins = 
+					List<WebSocketPlugIn> lAllPlugins =
 							lAllServers.get(i).getPlugInChain().getPlugIns();
 					Map lServerPlugins = new FastMap();
 					if (!lAllPlugins.isEmpty()) {
 						for (int j = 1; j <= lAllPlugins.size(); j++) {
 							Map lPlugins = new FastMap();
-							TokenPlugIn lValue = (TokenPlugIn) 
-									lAllPlugins.get(j - 1);
+							TokenPlugIn lValue = (TokenPlugIn) lAllPlugins.get(j - 1);
 							lPlugins.put("id", lValue.getId());
 							lPlugins.put("name", lValue.getName());
 							lPlugins.put("namespace", lValue.getNamespace());
@@ -189,6 +187,7 @@ public class JMXServerFunctions {
 	/**
 	 * Displays information about the filters that are loaded on the jWebSocket
 	 * server.
+	 *
 	 * @return CompositeData
 	 * @throws Exception
 	 */
@@ -200,7 +199,7 @@ public class JMXServerFunctions {
 
 			for (int i = 0; i < lAllServers.size(); i++) {
 				if (lAllServers.get(i).getFilterChain() != null) {
-					List<WebSocketFilter> lAllFilters = 
+					List<WebSocketFilter> lAllFilters =
 							lAllServers.get(i).getFilterChain().getFilters();
 					Map lServerFilters = new FastMap();
 					if (!lAllFilters.isEmpty()) {
@@ -212,14 +211,14 @@ public class JMXServerFunctions {
 							lFilters.put("version", lValue.getVersion());
 							lFilters.put("isEnable", lValue.getEnabled());
 
-							lServerFilters.put("filter_" 
+							lServerFilters.put("filter_"
 									+ lValue.getId(), lFilters);
 						}
 					} else {
 						lServerFilters.put("filter", "This server doesn't have "
 								+ "any filters loaded");
 					}
-					lServers.put("serverId_" + lAllServers.get(i).getId(), 
+					lServers.put("serverId_" + lAllServers.get(i).getId(),
 							lServerFilters);
 				} else {
 					lServers.put("serverId_" + lAllServers.get(i).getId(), "This"
@@ -236,7 +235,7 @@ public class JMXServerFunctions {
 
 	/**
 	 * Shows characteristics of the jWebSocket server engine.
-	 * 
+	 *
 	 * @return CompositeData
 	 * @throws Exception
 	 */
@@ -251,11 +250,11 @@ public class JMXServerFunctions {
 			lEngineConf.put("port", lEngine.getConfiguration().getPort());
 			lEngineConf.put("sslPort", lEngine.getConfiguration().getSSLPort());
 			lEngineConf.put("timeout", lEngine.getConfiguration().getTimeout());
-			lEngineConf.put("maxFrameSize", 
+			lEngineConf.put("maxFrameSize",
 					lEngine.getConfiguration().getMaxFramesize());
-			lEngineConf.put("maxConnections", 
+			lEngineConf.put("maxConnections",
 					lEngine.getConfiguration().getMaxConnections());
-			lEngineConf.put("onMaxConnectionStrategy", 
+			lEngineConf.put("onMaxConnectionStrategy",
 					lEngine.getConfiguration().getOnMaxConnectionStrategy());
 			lEngineConf.put("domains", lEngine.getConfiguration().getDomains());
 
@@ -268,9 +267,9 @@ public class JMXServerFunctions {
 	}
 
 	/**
-	 * Displays information about the node where the jWebSocket server is 
+	 * Displays information about the node where the jWebSocket server is
 	 * located .
-	 * 
+	 *
 	 * @return CompositeData
 	 * @throws Exception
 	 */
@@ -292,7 +291,7 @@ public class JMXServerFunctions {
 			FastMap instanceInfo = new FastMap();
 			instanceInfo.put("nodeId", lNodeId);
 			instanceInfo.put("engine", lEngine);
-			instanceInfo.put("ipNumber", 
+			instanceInfo.put("ipNumber",
 					lIpNumber.substring(0, lIpNumber.length() - 1));
 
 			result = JMXHandler.convertMapToCompositeData(instanceInfo);
