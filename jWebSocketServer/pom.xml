@@ -289,7 +289,11 @@
 			<artifactId>geronimo-jms_1.1_spec</artifactId>
 			<version>1.0.1</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.j256.ormlite</groupId>
+			<artifactId>ormlite-jdbc</artifactId>
+			<version>4.43</version>
+		</dependency>
 	</dependencies>
 
 	<!-- define repositories -->
