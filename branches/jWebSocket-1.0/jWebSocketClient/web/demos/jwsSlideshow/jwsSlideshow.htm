@@ -65,8 +65,8 @@
 					<div id="main_content">
 						<!-- ************************ CANVAS AREA ****************************** -->
 						<div id="iframe">
-							<iframe id="presenter" src="presenterIframe.htm" scrolling="no"></iframe>
-							<iframe id="viewer" src="viewerIframe.htm" scrolling="no"></iframe>
+							<iframe id="presenter" src="presenterIframe.htm" scrolling="no" webkitAllowFullScreen="true" mozallowfullscreen="true" allowFullScreen="true"></iframe>
+							<iframe id="viewer" src="viewerIframe.htm" scrolling="no" webkitAllowFullScreen="true" mozallowfullscreen="true" allowFullScreen="true"></iframe>
 						</div>
 						<!-- ************************ CANVAS AREA ****************************** -->
 					</div>
@@ -81,17 +81,9 @@
 
 					<!--       DOWNLOAD_BUTTON   -->
 					<div id="demo_box_footer">
-						<div id="jws_download_button" class="button onmouseup" 
-							 onmouseover="this.className = 'button onmouseover'" 
-							 onmousedown="this.className = 'button onmousedown'" 
-							 onmouseup="this.className = 'button onmouseup'" 
-							 onmouseout="this.className = 'button onmouseout'" 
-							 onclick="this.className = 'button onmouseover'">
-							<div class="btn_left"></div>
-							<div class="btn_center">
-								<a href="http://jwebsocket.org/downloads/downloads.htm" 
-								   target="blank">Download jWebSocket</a></div>
-							<div class="r_download"></div>
+						<div id="jws_download_button" class="button download">
+							<a href="http://jwebsocket.org/downloads/downloads.htm" 
+							   target="blank">Download jWebSocket</a>
 						</div>
 					</div>
 				</div>

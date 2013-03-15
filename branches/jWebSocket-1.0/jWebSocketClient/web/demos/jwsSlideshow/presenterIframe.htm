@@ -66,7 +66,7 @@
 							your activities are displayed inmediately on all viewers screens.
 						</div>
 					</div>
-					<div class="carousel row-fluid">
+					<div id="fullscreen" class="carousel row-fluid">
 						<div id="demo_box_statusbar" class="row-fluid">
 							<div id="client_status" class='offline'>disconnected</div><div class="line"></div>
 							<div id='client_id'>Client-ID: - </div><div class="line"></div>
@@ -74,16 +74,19 @@
 							<div id='viewers' title="Viewers">0</div>
 						</div>
 						<div class="row-fluid" style="background: black;">
-							<div class="span12"><img id="slide" src="slides/Slide0001.gif"/></div>
+							<div class="span12">
+								<div id="fullscreen_btn"></div>
+								<img id="slide" src="slides/Slide0001.gif"/>
+							</div>
 						</div>
-					</div>
-					<div class="row-fluid">
-						<div id="toolbar">
-							<!-- Carousel nav -->
-							<div id="btn_first" class="button"><div class="first"></div></div>
-							<div id="btn_prev" class="button"><div class="prev"></div></div>
-							<div id="btn_next" class="button" data-slide="next"><div class="next"></div></div>
-							<div id="btn_last" class="button"><div class="last"></div></div>
+						<div class="row-fluid">
+							<div id="toolbar">
+								<!-- Carousel nav -->
+								<div id="btn_first" class="button"><div class="first"></div></div>
+								<div id="btn_prev" class="button"><div class="prev"></div></div>
+								<div id="btn_next" class="button" data-slide="next"><div class="next"></div></div>
+								<div id="btn_last" class="button"><div class="last"></div></div>
+							</div>
 						</div>
 					</div>
 				</div>
