@@ -1,22 +1,21 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - JMXPlugIn v1.0
-// Copyright(c) 2010-2012 Innotrade GmbH, Herzogenrath, Germany, jWebSocket.org
-// ---------------------------------------------------------------------------
-// THIS CODE IS FOR RESEARCH, EVALUATION AND TEST PURPOSES ONLY!
-// THIS CODE MAY BE SUBJECT TO CHANGES WITHOUT ANY NOTIFICATION!
-// THIS CODE IS NOT YET SECURE AND MAY NOT BE USED FOR PRODUCTION ENVIRONMENTS!
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+// jWebSocket - JMXHandler (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmx.util;
 
 import java.util.List;
@@ -28,9 +27,9 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
 
 /**
- * Class that dynamically converts the Map data type to the CompositeData data 
- * type.  
- * 
+ * Class that dynamically converts the Map data type to the CompositeData data
+ * type.
+ *
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class JMXHandler {
@@ -38,16 +37,16 @@ public class JMXHandler {
 	private static Logger mLog = Logging.getLogger();
 
 	/**
-	 * Determine if the data type of the values contained within the map is 
+	 * Determine if the data type of the values contained within the map is
 	 * simple or not.
-	 * 
+	 *
 	 * @param aMap
 	 * @return Boolean
 	 */
 	public static Boolean isSimpleType(Map aMap) {
 		for (int i = 0; i < aMap.size(); i++) {
 			Object lValue = aMap.values().toArray()[i];
-			if ((lValue instanceof Map) || (lValue instanceof Token) 
+			if ((lValue instanceof Map) || (lValue instanceof Token)
 					|| (lValue instanceof List)) {
 				return false;
 			}
@@ -57,7 +56,7 @@ public class JMXHandler {
 
 	/**
 	 * It allows to dynamically set the values of CompositeType data type.
-	 * 
+	 *
 	 * @param aMap
 	 * @param aKey
 	 * @return CompositeType
@@ -107,12 +106,12 @@ public class JMXHandler {
 
 	/**
 	 * It allows to dynamically set the values of CompositeData data type.
-	 * 
+	 *
 	 * @param aMap
 	 * @param aMapType
 	 * @return CompositeData
 	 */
-	public static CompositeData createDynamicCompositeData(Map aMap, 
+	public static CompositeData createDynamicCompositeData(Map aMap,
 			CompositeType aMapType) {
 		CompositeData lMapData = null;
 		try {
@@ -127,7 +126,7 @@ public class JMXHandler {
 					lItemValues[i] = aMap.values().toArray()[i];
 				}
 			}
-			lMapData = new CompositeDataSupport(aMapType, lItemNames, 
+			lMapData = new CompositeDataSupport(aMapType, lItemNames,
 					lItemValues);
 		} catch (Exception e) {
 			mLog.error("JMXHandler on actionPerformed: " + e.getMessage());
@@ -136,9 +135,9 @@ public class JMXHandler {
 	}
 
 	/**
-	 * Recursive method to convert the Map data type to the CompositeData data 
+	 * Recursive method to convert the Map data type to the CompositeData data
 	 * type.
-	 * 
+	 *
 	 * @param aMap
 	 * @param aKey
 	 * @return CompositeData
@@ -155,7 +154,7 @@ public class JMXHandler {
 
 		for (int i = 0; i < aMap.size(); i++) {
 			Object lValue = aMap.values().toArray()[i];
-			if ((lValue instanceof Map) || (lValue instanceof Token) 
+			if ((lValue instanceof Map) || (lValue instanceof Token)
 					|| (lValue instanceof List)) {
 				Map lMap = null;
 				if (lValue instanceof Token) {
@@ -170,7 +169,7 @@ public class JMXHandler {
 					lMap = (Map) lValue;
 				}
 
-				CompositeData lCompositeData = convertMapToCompositeData(lMap, 
+				CompositeData lCompositeData = convertMapToCompositeData(lMap,
 						aMap.keySet().toArray()[i].toString());
 				aMap.put(aMap.keySet().toArray()[i].toString(), lCompositeData);
 				lItemValues[i] = lCompositeData;
@@ -198,7 +197,7 @@ public class JMXHandler {
 	/**
 	 * Main method of the class which calls the recursive method that allows the
 	 * conversion.
-	 * 
+	 *
 	 * @param aMap
 	 * @return CompositeData
 	 */
@@ -208,7 +207,7 @@ public class JMXHandler {
 
 	/**
 	 * Converts a list on a map.
-	 * 
+	 *
 	 * @param aList
 	 * @param aKey
 	 * @return Map

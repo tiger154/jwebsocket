@@ -1,22 +1,21 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - JMXPlugIn v1.0
-// Copyright(c) 2010-2012 Innotrade GmbH, Herzogenrath, Germany, jWebSocket.org
-// ---------------------------------------------------------------------------
-// THIS CODE IS FOR RESEARCH, EVALUATION AND TEST PURPOSES ONLY!
-// THIS CODE MAY BE SUBJECT TO CHANGES WITHOUT ANY NOTIFICATION!
-// THIS CODE IS NOT YET SECURE AND MAY NOT BE USED FOR PRODUCTION ENVIRONMENTS!
-// ---------------------------------------------------------------------------
-// This program is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as published by the
-// Free Software Foundation; either version 3 of the License, or (at your
-// option) any later version.
-// This program is distributed in the hope that it will be useful, but WITHOUT
-// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-// more details.
-// You should have received a copy of the GNU Lesser General Public License along
-// with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-// ---------------------------------------------------------------------------
+// jWebSocket - JMXPlugInFunctions (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmx;
 
 import java.util.List;
@@ -35,14 +34,14 @@ import org.jwebsocket.token.JSONToken;
 import org.jwebsocket.token.Token;
 
 /**
- * Class to invoke certain features of the plugins that are running on a given 
- * server. It also provides information about the plugins that are loaded and the 
- * functionalities that can be invoked.
- * 
+ * Class to invoke certain features of the plugins that are running on a given
+ * server. It also provides information about the plugins that are loaded and
+ * the functionalities that can be invoked.
+ *
  * @author Lisdey Pérez Hernández(lisdey89, UCI)
  */
 public class JMXPlugInFunctions {
-	
+
 	private static CompositeData mInformationOfRunningServers;
 	private static Logger mLog = Logging.getLogger();
 
@@ -51,11 +50,11 @@ public class JMXPlugInFunctions {
 	 */
 	public JMXPlugInFunctions() {
 	}
-	
+
 	/**
-	 * Displays information about the plugins that are loaded on the jWebSocket 
+	 * Displays information about the plugins that are loaded on the jWebSocket
 	 * server.
-	 * 
+	 *
 	 * @return CompositeData
 	 * @throws Exception
 	 */
@@ -66,7 +65,7 @@ public class JMXPlugInFunctions {
 			Map lServers = new FastMap();
 
 			for (int i = 0; i < lAllServers.size(); i++) {
-				List<WebSocketPlugIn> lAllPlugins = 
+				List<WebSocketPlugIn> lAllPlugins =
 						lAllServers.get(i).getPlugInChain().getPlugIns();
 				Map lServerPlugins = new FastMap();
 				if (!lAllPlugins.isEmpty()) {
@@ -77,11 +76,12 @@ public class JMXPlugInFunctions {
 						lPlugins.put("name", lValue.getName());
 						lPlugins.put("namespace", lValue.getNamespace());
 						List<String> methodsList = lValue.invokeMethodList();
-						if(methodsList != null)
+						if (methodsList != null) {
 							lPlugins.put("methodsName", methodsList);
-						else 
+						} else {
 							lPlugins.put("methodsName", "No supported yet.");
-						
+						}
+
 						lServerPlugins.put("plugin_" + lValue.getId(), lPlugins);
 					}
 				} else {
@@ -94,17 +94,17 @@ public class JMXPlugInFunctions {
 
 			result = JMXHandler.convertMapToCompositeData(lServers);
 		} catch (Exception ex) {
-			mLog.error("JMXPlugInFunctions on getInformationOfRunningServers: " 
+			mLog.error("JMXPlugInFunctions on getInformationOfRunningServers: "
 					+ ex.getMessage());
 			throw new Exception(ex.getMessage());
 		}
 		return result;
 	}
-	
+
 	/**
-	 * Allows remotely invoke the functionalities of the plugins that are loaded 
+	 * Allows remotely invoke the functionalities of the plugins that are loaded
 	 * on the jWebSocket server.
-	 * 
+	 *
 	 * @param aServer
 	 * @param aPluginId
 	 * @param aMethodName
@@ -115,7 +115,7 @@ public class JMXPlugInFunctions {
 	public CompositeData invokePluginOperation(String aServer, String aPluginId,
 			String aMethodName, String aMethodParameters) throws Exception {
 		try {
-			if (aServer.equals("") || aPluginId.equals("") || aMethodName.equals("") 
+			if (aServer.equals("") || aPluginId.equals("") || aMethodName.equals("")
 					|| aMethodParameters.equals("")) {
 				throw new IllegalArgumentException("The parameters must not be "
 						+ "empty.");
@@ -159,7 +159,7 @@ public class JMXPlugInFunctions {
 				}
 			}
 		} catch (Exception ex) {
-			mLog.error("JMXPlugInFunctions on invokePluginOperation: " 
+			mLog.error("JMXPlugInFunctions on invokePluginOperation: "
 					+ ex.getMessage());
 			throw new Exception(ex.getMessage());
 		}
