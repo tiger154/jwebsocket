@@ -74,7 +74,11 @@ public class ItemCollectionUtils {
 		lItem.setAll(aData);
 
 		// saving
-		aCollection.getItemStorage().save(lTargetPK, lItem);
+		if (null != lTargetPK) {
+			aCollection.getItemStorage().save(lTargetPK, lItem);
+		} else {
+			aCollection.getItemStorage().save(lItem);
+		}
 
 		// getting item updates
 		if (lIsNew) {

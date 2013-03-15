@@ -33,6 +33,14 @@ Ext.application({
 		Ext.require('lib.FieldTypes');
 		Ext.require('lib.Util');
 		
+		Ext.jws.on('close', function() {
+			Ext.Msg.show({
+				msg: "Could not establish a connection with the application.<br>Please contact the system administrator!", 
+				buttons: Ext.Msg.NONE, 
+				icon: Ext.Msg.ERROR
+			});
+		});
+		
 		Ext.jws.on('open', function() {
 			
 			Ext.jws.addPlugIn({

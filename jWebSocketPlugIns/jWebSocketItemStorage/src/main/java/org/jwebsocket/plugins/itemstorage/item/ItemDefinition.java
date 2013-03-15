@@ -127,6 +127,7 @@ public class ItemDefinition implements IItemDefinition {
 
 		Map lAttrTypes = (Map) aMap.get(ATTR_ATTR_TYPES);
 		lAttrTypes.remove(aMap.get(ATTR_PK));
+		lAttrTypes.remove(aMap.get(ATTR_UNIQUE_ID));
 		setAttributeTypes(lAttrTypes);
 	}
 }
