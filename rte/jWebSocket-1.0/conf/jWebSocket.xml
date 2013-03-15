@@ -53,6 +53,11 @@
 			<url>${JWEBSOCKET_HOME}libs/mysql-connector-java-5.1.16.jar</url>
 			<description>MySQL JDBC driver to access MySQL databases from jWebSocket and its plug-ins</description>
 		</library>
+		<library>
+			<id>SQLLiteDriver</id>
+			<url>${JWEBSOCKET_HOME}libs/sqlite-jdbc-3.7.2.jar</url>
+			<description>SQLLite JDBC driver to access SQLLite databases from jWebSocket and its plug-ins</description>
+		</library>
 	</libraries>
 
 	<!-- jWebSocket logging configuration -->
