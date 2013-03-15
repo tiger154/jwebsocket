@@ -12,18 +12,10 @@
 					do not rely on any user input but which communuicate via 
 					StdIn/StdOut only.
 				-->
-				<entry>
-					<key>
-						<value>dir_demo</value>
-					</key>
-					<value>C:/Windows/System32/cmd.exe /c dir ${1}</value>
-				</entry>                
-				<entry>
-					<key>
-						<value>perl_hello_world</value>
-					</key>
-					<value>C:/Perl/bin/perl.exe ${JWEBSOCKET_HOME}conf/ExtProcessPlugIn/demos/perl/hello_world.pl Argument1 Argument2</value>
-				</entry>                
+				<entry key="dir_demo" 
+					   value="C:/Windows/System32/cmd.exe /c dir ${1}" />
+				<entry key="perl_hello_world" 
+					   value="C:/Perl/bin/perl.exe ${JWEBSOCKET_HOME}conf/ExtProcessPlugIn/demos/perl/hello_world.pl Argument1 Argument2" />                
 			</map>
 		</property>
 	</bean>
