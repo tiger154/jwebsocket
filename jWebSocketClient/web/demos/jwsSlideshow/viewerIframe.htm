@@ -66,7 +66,7 @@
 							real time wherever with a device of your choice.
 						</div>
 					</div>
-					<div class="carousel row-fluid">
+					<div id="fullscreen" class="carousel row-fluid">
 						<div id="demo_box_statusbar" class="row-fluid">
 							<div id="client_status" class='offline'>disconnected</div><div class="line"></div>
 							<div id='client_id'>Client-ID: - </div><div class="line"></div>
@@ -74,10 +74,16 @@
 							<div id='viewers' title="Viewers">0</div>
 						</div>
 						<div class="row-fluid" style="background: black;">
-							<div class="span12"><img id="slide" src="slides/Slide0001.gif"/></div>
+							<div class="span12">
+								<div id="fullscreen_btn_viewer"></div>
+								<img id="slide" src="slides/Slide0001.gif"/>
+							</div>
 						</div>
 					</div>
-					<div class="row-fluid" id="toolbar"></div>
+					<div class="row-fluid" id="new_viewer_window">
+						<div id="new_viewer_window_btn" class="button" 
+							 title="Open new viewer Window to feel the real time in the conference">New Viewer Window</div>
+					</div>
 				</div>
 			</div>
 		</div>

@@ -27,7 +27,11 @@ $.widget("jws.viewer", {
 		this.eViewers = this.element.find("#viewers");
 		this.eSlide = this.element.find("#slide");
 		this.eContainer = $(".container");
-
+		this.eBtnFullScreen = this.element.find("#fullscreen_btn_viewer");
+		this.eFullScreenArea = this.element.find("#fullscreen");
+		this.eStatusbarArea = this.element.find("#demo_box_statusbar");
+		this.eBtnNewViewer = this.element.find("#new_viewer_window_btn");
+		this.mNextWindowId = 1;
 		// ------ VARIABLES --------
 		this.mCurrSlide = 1;
 		this.mOldSlide = 0;
@@ -37,6 +41,7 @@ $.widget("jws.viewer", {
 		this.mChannelAccessKey = "5l1d35h0w";
 		this.TT_SEND = "send";
 		this.TT_SLIDE = "slide";
+		this.mIsFS = false;
 		this.mPresentersList = {};
 		this.mClientId = "";
 
@@ -45,6 +50,37 @@ $.widget("jws.viewer", {
 	},
 	registerEvents: function() {
 		$(document).keydown(w.viewer.keydown);
+		w.viewer.eBtnFullScreen.click(w.viewer.toggleFullScreen);
+		w.viewer.eBtnFullScreen.fadeTo(400, 0);
+		w.viewer.eSlide.bind({
+			mousemove: function( ) {
+				if (w.viewer.mIsFS) {
+					w.viewer.eStatusbarArea.stop(true, true).show(300);
+					clearInterval(w.viewer.mInterval);
+					w.viewer.mInterval = setInterval(function() {
+						w.viewer.eStatusbarArea.stop(true, true).hide(800);
+					}, 4000);
+				}
+			},
+			mouseover: function() {
+				w.viewer.eBtnFullScreen.fadeTo(100, 0.5);
+			},
+			mouseout: function(aEvent) {
+				if (aEvent.relatedTarget == w.viewer.eBtnFullScreen.get(0)) {
+					return false;
+				}
+				w.viewer.eBtnFullScreen.stop(true, true).fadeTo(400, 0.1);
+			}
+		})
+
+		$(document).bind('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+			if (!w.viewer.isFullScreen()) {
+				w.viewer.mIsFS = false;
+				clearInterval(w.viewer.mInterval);
+				w.viewer.eStatusbarArea.show();
+			}
+		});
+		w.viewer.eBtnNewViewer.click(w.viewer.openViewerWindow);
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
@@ -129,5 +165,67 @@ $.widget("jws.viewer", {
 			w.viewer.mViewers > 0 && w.viewer.mViewers--;
 		}
 		w.viewer.updateUsers();
+	},
+	toggleFullScreen: function() {
+		if (w.viewer.isFullScreen()) {
+			w.viewer.exitFullScreen(document);
+			w.viewer.mIsFS = false;
+		} else {
+			w.viewer.initFullScreen(w.viewer.eFullScreenArea.get(0));
+			w.viewer.mIsFS = true;
+		}
+		return false;
+	},
+	isFullScreen: function() {
+		return  (document.fullScreen && document.fullScreen != null) ||
+				(document.mozFullScreen || document.webkitIsFullScreen);
+	},
+	exitFullScreen: function(aElement) {
+		// Exit full-screen mode, supported by Firefox 9 || + or Chrome 15 || +
+		var lNativeMethod = aElement.cancelFullScreen ||
+				aElement.webkitCancelFullScreen ||
+				aElement.mozCancelFullScreen ||
+				aElement.exitFullscreen;
+		if (lNativeMethod) {
+			lNativeMethod.call(aElement);
+			// Support for IE old versions
+		} else if (typeof window.ActiveXObject !== "undefined") {
+			var lAXScript = new ActiveXObject("WScript.Shell");
+			if (lAXScript !== null) {
+				lAXScript.SendKeys("{F11}");
+			}
+		}
+	},
+	initFullScreen: function(aElement) {
+		// Full-screen mode, supported by Firefox 9 || + or Chrome 15 || +
+		var lNativeMethod = aElement.requestFullScreen ||
+				aElement.webkitRequestFullScreen ||
+				aElement.mozRequestFullScreen ||
+				aElement.msRequestFullScreen;
+
+		if (lNativeMethod) {
+			console.log("native");
+			console.log(aElement);
+			lNativeMethod.call(aElement);
+		} else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+			var lAXScript = new ActiveXObject("WScript.Shell");
+			if (lAXScript !== null) {
+				lAXScript.SendKeys("{F11}");
+			}
+		}
+		return false;
+	},
+	openViewerWindow: function( ) {
+		window.open(
+				// "http://www.jwebsocket.org/demos/jwsSlideshow/viewerIframe.htm"
+				"viewerIframe.htm",
+				"viewerWindow" + w.viewer.mNextWindowId,
+				"width=400,height=400,left=" +
+				(50 + w.viewer.mNextWindowId * 30) + ", top=" +
+				(50 + w.viewer.mNextWindowId * 25));
+		w.viewer.mNextWindowId++;
+		if (w.viewer.mNextWindowId > 10) {
+			w.viewer.mNextWindowId = 1;
+		}
 	}
 });

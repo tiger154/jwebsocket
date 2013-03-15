@@ -86,3 +86,26 @@ img{
 	line-height: normal;
 	height: 30px;
 }
+
+#fullscreen_btn_viewer{
+	position:absolute;
+	right: 5px;
+	bottom: 5px;
+	width: 16px;
+	height: 16px;
+	background: transparent url(images/fullscreen-viewer-btn.png) no-repeat;
+	cursor: pointer;
+}
+
+#new_viewer_window{
+	height: 30px;
+	padding: 0px !important;
+}
+
+#new_viewer_window .button{
+	margin: -8px 10px 10px 0;
+	float:right;
+}
+#new_viewer_window .button .btn_center{
+	padding-top: 3px;
+}

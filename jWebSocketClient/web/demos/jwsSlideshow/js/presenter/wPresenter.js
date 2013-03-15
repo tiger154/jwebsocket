@@ -27,9 +27,13 @@ $.widget("jws.presenter", {
 		this.eBtnPrev = this.element.find("#btn_prev");
 		this.eBtnFirst = this.element.find("#btn_first");
 		this.eBtnLast = this.element.find("#btn_last");
+		this.eBtnFullScreen = this.element.find("#fullscreen_btn");
 		this.ePresenters = this.element.find("#presenters");
 		this.eViewers = this.element.find("#viewers");
 		this.eSlide = this.element.find("#slide");
+		this.eFullScreenArea = this.element.find("#fullscreen");
+		this.eStatusbarArea = this.element.find("#demo_box_statusbar");
+		this.eFullToolbarArea = this.element.find("#toolbar");
 		this.eContainer = $(".container");
 		// ------ VARIABLES --------
 		this.mCurrSlide = 1;
@@ -43,6 +47,8 @@ $.widget("jws.presenter", {
 		this.TT_SEND = "send";
 		this.TT_SLIDE = "slide";
 		this.mClientId = "";
+		this.mIsFS = false;
+		this.mInterval = null;
 		this.mPresentersList = {};
 		this.mViewersList = {};
 		w.presenter = this;
@@ -53,11 +59,48 @@ $.widget("jws.presenter", {
 		w.presenter.eBtnPrev.click(w.presenter.prevSlide);
 		w.presenter.eBtnLast.click(w.presenter.lastSlide);
 		w.presenter.eBtnFirst.click(w.presenter.firstSlide);
+		w.presenter.eBtnFullScreen.click(w.presenter.toggleFullScreen);
+		w.presenter.eBtnFullScreen.fadeTo(400, 0);
+		w.presenter.eSlide.bind({
+			mousemove: function( ) {
+				if (w.presenter.mIsFS) {
+					w.presenter.eFullToolbarArea.stop(true, true).show(300);
+					w.presenter.eStatusbarArea.stop(true, true).show(300);
+					clearInterval(w.presenter.mInterval);
+					w.presenter.mInterval = setInterval(function() {
+						w.presenter.eFullToolbarArea.stop(true, true).hide(800);
+						w.presenter.eStatusbarArea.stop(true, true).hide(800);
+					}, 4000);
+				}
+			},
+			mouseover: function() {
+				w.presenter.eBtnFullScreen.fadeTo(100, 0.5);
+
+			},
+			mouseout: function(aEvent) {
+				if (aEvent.relatedTarget == w.presenter.eBtnFullScreen.get(0)) {
+					return false;
+				}
+				w.presenter.eBtnFullScreen.stop(true, true).fadeTo(400, 0.1);
+			}
+		})
 		$(document).keydown(w.presenter.keydown);
+
 		// When closing the window notify the other clients about who is 
 		// leaving the conference room
-		$(window).bind('beforeunload', function() {
-			jws.channelUnsubscribe(w.presenter.mChannelId);
+		$(window).bind({
+			'beforeunload': function() {
+				jws.channelUnsubscribe(w.presenter.mChannelId);
+			}
+		});
+		$(document).bind('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
+			if (!w.presenter.isFullScreen()) {
+				console.log("is fs");
+				w.presenter.mIsFS = false;
+				clearInterval(w.presenter.mInterval);
+				w.presenter.eFullToolbarArea.show();
+				w.presenter.eStatusbarArea.show();
+			}
 		});
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
@@ -312,6 +355,53 @@ $.widget("jws.presenter", {
 	},
 	publish: function(aType, aData) {
 		mWSC.channelPublish(w.presenter.mChannelId, aType, aData);
+	},
+	isFullScreen: function() {
+		return  (document.fullScreen && document.fullScreen != null) ||
+				(document.mozFullScreen || document.webkitIsFullScreen);
+	},
+	toggleFullScreen: function() {
+		if (w.presenter.isFullScreen()) {
+			w.presenter.exitFullScreen(document);
+			w.presenter.mIsFS = false;
+		} else {
+			w.presenter.initFullScreen(w.presenter.eFullScreenArea.get(0));
+			w.presenter.mIsFS = true;
+		}
+		return false;
+	},
+	exitFullScreen: function(aElement) {
+		// Exit full-screen mode, supported by Firefox 9 || + or Chrome 15 || +
+		var lNativeMethod = aElement.cancelFullScreen ||
+				aElement.webkitCancelFullScreen ||
+				aElement.mozCancelFullScreen ||
+				aElement.exitFullscreen;
+		if (lNativeMethod) {
+			lNativeMethod.call(aElement);
+			// Support for IE old versions
+		} else if (typeof window.ActiveXObject !== "undefined") {
+			var lAXScript = new ActiveXObject("WScript.Shell");
+			if (lAXScript !== null) {
+				lAXScript.SendKeys("{F11}");
+			}
+		}
+	},
+	initFullScreen: function(aElement) {
+		// Full-screen mode, supported by Firefox 9 || + or Chrome 15 || +
+		var lNativeMethod = aElement.requestFullScreen ||
+				aElement.webkitRequestFullScreen ||
+				aElement.mozRequestFullScreen ||
+				aElement.msRequestFullScreen;
+
+		if (lNativeMethod) {
+			lNativeMethod.call(aElement);
+		} else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+			var lAXScript = new ActiveXObject("WScript.Shell");
+			if (lAXScript !== null) {
+				lAXScript.SendKeys("{F11}");
+			}
+		}
+		return false;
 	}
 });
 (function($) {
