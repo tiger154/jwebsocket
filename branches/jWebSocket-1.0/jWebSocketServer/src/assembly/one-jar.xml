@@ -81,6 +81,8 @@
 				<include>org.apache.xbean:xbean-spring-v2</include>
 				<include>org.apache.xbean:xbean-spring-v2c</include>
 				
+				<include>com.j256.ormlite:ormlite-jdbc</include>
+				<include>com.j256.ormlite:ormlite-core</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>
