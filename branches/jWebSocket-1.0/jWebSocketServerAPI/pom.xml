@@ -16,7 +16,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- shared version number properties -->
-		<org.springframework.version>3.1.0.RELEASE</org.springframework.version>
+		<org.springframework.version>3.1.3.RELEASE</org.springframework.version>
+		<org.apache.xbean.version>2.8</org.apache.xbean.version>
 	</properties>
 <!--
 	<scm>
@@ -236,17 +237,17 @@
 		<dependency> 
 			<groupId>org.apache.xbean</groupId> 
 			<artifactId>xbean-spring-common</artifactId> 
-			<version>2.8</version> 
+			<version>${org.apache.xbean.version}</version> 
 		</dependency>		
 		<dependency> 
 			<groupId>org.apache.xbean</groupId> 
 			<artifactId>xbean-spring-v2</artifactId> 
-			<version>2.8</version> 
+			<version>${org.apache.xbean.version}</version> 
 		</dependency>		
 		<dependency> 
 			<groupId>org.apache.xbean</groupId> 
 			<artifactId>xbean-spring-v2c</artifactId> 
-			<version>2.8</version> 
+			<version>${org.apache.xbean.version}</version> 
 		</dependency>		
 	
 		<dependency>
