@@ -1,17 +1,20 @@
+//  ---------------------------------------------------------------------------
+//  jWebSocket - SampleRPCLibrary (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	jWebSocket - jWebSocket Sample RPC-Library
-//	Copyright (c) 2010 jWebSocket.org, Alexander Schulze, Innotrade GmbH
-//	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.rpc.sample;
 
@@ -45,6 +48,7 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 
 	/**
 	 * simply returns the MD5 sum of the given string.
+	 *
 	 * @param aArg
 	 * @return MD5 sum of the given string.
 	 */
@@ -54,7 +58,7 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 
 	/**
 	 *
-	 * @param aArg
+	 * @param aObject
 	 * @return MD5 sum of the given string.
 	 */
 	public SampleRPCObject getRPCObject(SampleRPCObject aObject) {
@@ -62,9 +66,10 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * echos the given integer back to the client.
-	 * This method is for demonstration, test and debug purpose only.
-	 * @param aString
+	 * echos the given integer back to the client. This method is for
+	 * demonstration, test and debug purpose only.
+	 *
+	 * @param aInt
 	 * @return
 	 */
 	public Object runIntDemo(int aInt) {
@@ -72,8 +77,9 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * echos the given string back to the client.
-	 * This method is for demonstration, test and debug purpose only.
+	 * echos the given string back to the client. This method is for
+	 * demonstration, test and debug purpose only.
+	 *
 	 * @param aString
 	 * @return
 	 */
@@ -82,8 +88,9 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * echos the given list back to the client.
-	 * This method is for demonstration, test and debug purpose only.
+	 * echos the given list back to the client. This method is for
+	 * demonstration, test and debug purpose only.
+	 *
 	 * @param aList
 	 * @return
 	 */
@@ -92,8 +99,9 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * echos the given map back to the client.
-	 * This method is for demonstration, test and debug purpose only.
+	 * echos the given map back to the client. This method is for demonstration,
+	 * test and debug purpose only.
+	 *
 	 * @param aMap
 	 * @return
 	 */
@@ -102,9 +110,10 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * echos the given integer back to the client.
-	 * This method demonstrates the use of overloaded methods.
-	 * @param aString
+	 * echos the given integer back to the client. This method demonstrates the
+	 * use of overloaded methods.
+	 *
+	 * @param aInt
 	 * @return
 	 */
 	public Object runOverloadDemo(int aInt) {
@@ -112,8 +121,9 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * echos the given string back to the client.
-	 * This method demonstrates the use of overloaded methods.
+	 * echos the given string back to the client. This method demonstrates the
+	 * use of overloaded methods.
+	 *
 	 * @param aString
 	 * @return
 	 */
@@ -122,8 +132,9 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * echos the given list back to the client.
-	 * This method demonstrates the use of overloaded methods.
+	 * echos the given list back to the client. This method demonstrates the use
+	 * of overloaded methods.
+	 *
 	 * @param aList
 	 * @return
 	 */
@@ -132,8 +143,9 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * echos the given map back to the client.
-	 * This method demonstrates the use of overloaded methods.
+	 * echos the given map back to the client. This method demonstrates the use
+	 * of overloaded methods.
+	 *
 	 * @param aMap
 	 * @return
 	 */
@@ -142,8 +154,9 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * usually protected (i.e. cannot be called from client
-	 * until explicitely granted).
+	 * usually protected (i.e. cannot be called from client until explicitely
+	 * granted).
+	 *
 	 * @param aArg
 	 * @return MD5 sum of the given string.
 	 */
@@ -162,8 +175,9 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * Exemple of 2 overloaded methods 
+	 * Exemple of 2 overloaded methods
 	 * org.jwebsocket.rpc.sample.SampleRPCLibrary.sampleOverloadRPC(int)
+	 *
 	 * @param aString
 	 * @return aString
 	 */
@@ -173,8 +187,9 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * Exemple of 2 overloaded methods 
+	 * Exemple of 2 overloaded methods
 	 * org.jwebsocket.rpc.sample.SampleRPCLibrary.sampleOverloadRPC(int)
+	 *
 	 * @param aInt
 	 * @return aInt
 	 */
@@ -203,7 +218,7 @@ public class SampleRPCLibrary extends BaseRPCCallable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param arg1
 	 */
 	public void rrpcTest1(String arg1) {
