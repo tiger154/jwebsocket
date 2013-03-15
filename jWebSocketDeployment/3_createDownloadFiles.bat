@@ -115,7 +115,9 @@ xcopy %bin%jWebSocketAdmin_Ubuntu.sh %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAdmin.command %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAMQStockTicker.bat %tempdir%bin\ /s /i /y
 
+rem Database driver and other required external libs
 xcopy %libs%mysql-connector-java-5.1.16.jar %tempdir%libs\ /s /i /y
+xcopy %libs%sqlite-jdbc-3.7.2.jar %tempdir%libs\ /s /i /y
 xcopy %libs%kahadb-5.5.0.jar %tempdir%libs\ /s /i /y
 
 rem jWebSocket engines
