@@ -1,18 +1,21 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventsPlugIn
-//  Copyright (c) 2012 Innotrade GmbH, jWebSocket.org
-//  ---------------------------------------------------------------------------
-//  This program is free software; you can redistribute it and/or modify it
-//  under the terms of the GNU Lesser General Public License as published by the
-//  Free Software Foundation; either version 3 of the License, or (at your
-//  option) any later version.
-//  This program is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//  more details.
-//  You should have received a copy of the GNU Lesser General Public License along
-//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//  ---------------------------------------------------------------------------
+//  jWebSocket - AuthPlugIn (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jc;
 
 import java.util.Map;
@@ -45,6 +48,12 @@ public class AuthPlugIn extends JcPlugIn {
 	private byte[] mSiteName = "jwebsocket.com".getBytes();
 	private StateMachine mState;
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 * @throws Exception
+	 */
 	public void processEvent(GetUserInfo aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		String lUsername = aEvent.getConnector().getUsername();
 		if (lUsername.equals("alex")) {
@@ -58,11 +67,16 @@ public class AuthPlugIn extends JcPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 * @throws Exception
+	 */
 	public void processEvent(DoLogin aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		mState = StateMachine.READY;
 		String lClient = aEvent.getConnector().getId();
 		transmit(lClient, getTerminals(lClient).toArray()[0].toString(), new CommandAPDU(new Select(mAppName).getBytes()), new JcResponseCallback(new TransactionContext(getEm(), aEvent, null)) {
-
 			private String mUsername = null;
 			private String mPassword = null;
 
@@ -93,8 +107,8 @@ public class AuthPlugIn extends JcPlugIn {
 						Map<String, String> lResponse = new FastMap<String, String>();
 						lResponse.put("username", mUsername);
 						lResponse.put("password", mPassword);
-						
-						((TransactionContext)getContext()).success(lResponse);
+
+						((TransactionContext) getContext()).success(lResponse);
 					}
 				} catch (InvalidConnectorIdentifier ex) {
 					mLog.error(ex.getMessage(), ex);

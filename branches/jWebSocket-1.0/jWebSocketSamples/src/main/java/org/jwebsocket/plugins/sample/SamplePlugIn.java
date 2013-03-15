@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket Sample Plug-In (Community Edition, CE)
+//	jWebSocket Sample Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
 //
@@ -131,11 +131,6 @@ public class SamplePlugIn extends TokenPlugIn {
 			getServer().addListener(lListener);
 		}
 
-		// RandomData data = new RandomData();
-
-		// TODO: can the following line be ultimately removed?
-		// System.out.println(data.getRandomText());
-
 		// this method is called when the engine has started
 		super.engineStarted(aEngine);
 	}
@@ -146,6 +141,11 @@ public class SamplePlugIn extends TokenPlugIn {
 		super.engineStopped(aEngine);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processAllTokens(WebSocketConnector aConnector, Token aToken) {
 		//System.out.println(aToken.toString());
 	}
