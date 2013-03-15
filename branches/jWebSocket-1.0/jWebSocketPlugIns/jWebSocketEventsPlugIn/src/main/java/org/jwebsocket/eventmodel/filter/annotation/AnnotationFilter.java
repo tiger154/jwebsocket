@@ -1,18 +1,21 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - AnnotationFilter
-//  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
-//  ---------------------------------------------------------------------------
-//  This program is free software; you can redistribute it and/or modify it
-//  under the terms of the GNU Lesser General Public License as published by the
-//  Free Software Foundation; either version 3 of the License, or (at your
-//  option) any later version.
-//  This program is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//  more details.
-//  You should have received a copy of the GNU Lesser General Public License along
-//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//  ---------------------------------------------------------------------------
+//  jWebSocket - AnnotationFilter (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.filter.annotation;
 
 import java.lang.reflect.Method;
@@ -38,7 +41,7 @@ public class AnnotationFilter extends EventModelFilter {
 	public void beforeCall(WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
 		//Getting all fields
 		for (Method lMethod : aEvent.getClass().getMethods()) {
-			if (lMethod.getName().startsWith("set")){
+			if (lMethod.getName().startsWith("set")) {
 				processAnnotations(lMethod, aConnector, aEvent);
 			}
 		}
@@ -46,18 +49,18 @@ public class AnnotationFilter extends EventModelFilter {
 
 	/**
 	 * Process existing annotations in the event fields
-	 * 
+	 *
 	 * @param f The processing field
 	 * @param aConnector The client WebSocketConnector
 	 * @param aEvent The incoming C2SEvent from the client
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	void processAnnotations(Method aMethod, WebSocketConnector aConnector, C2SEvent aEvent) throws Exception {
 		//Processing ImportFromToken annotations
 		if (aMethod.isAnnotationPresent(ImportFromToken.class)) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Processing annotation '" +
-						ImportFromToken.class.toString() + "' in method '"
+				mLog.debug("Processing annotation '"
+						+ ImportFromToken.class.toString() + "' in method '"
 						+ aMethod.getName() + "'...");
 			}
 			//Processing the annotation...
@@ -67,8 +70,8 @@ public class AnnotationFilter extends EventModelFilter {
 
 	/**
 	 * Process the ImportFromToken annotation
-	 * 
-	 * @param f
+	 *
+	 * @param aMethod
 	 * @param aConnector
 	 * @param aEvent
 	 * @throws Exception
@@ -77,7 +80,7 @@ public class AnnotationFilter extends EventModelFilter {
 		//Getting fields with the "ImportFromToken" annotation
 		ImportFromToken lAnnotation = aMethod.getAnnotation(ImportFromToken.class);
 		Object lValue;
-		String lMethodName = aMethod.getName().subSequence(3,4).toString().toLowerCase() + aMethod.getName().substring(4);
+		String lMethodName = aMethod.getName().subSequence(3, 4).toString().toLowerCase() + aMethod.getName().substring(4);
 		String lKey = (lAnnotation.key().isEmpty()) ? lMethodName : lAnnotation.key();
 
 		//Importing parameter if exists
@@ -89,9 +92,9 @@ public class AnnotationFilter extends EventModelFilter {
 			if (lAnnotation.strategy().equals("move")) {
 				aEvent.getArgs().remove(lKey);
 			}
-			
+
 			//Invoking the setter method for the annotated field
 			aMethod.invoke(aEvent, lValue.getClass().cast(lValue));
-		} 
+		}
 	}
 }

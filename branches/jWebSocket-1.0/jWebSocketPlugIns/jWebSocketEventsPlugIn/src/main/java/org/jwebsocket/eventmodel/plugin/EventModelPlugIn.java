@@ -1,18 +1,21 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventModelPlugIn
-//  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
-//  ---------------------------------------------------------------------------
-//  This program is free software; you can redistribute it and/or modify it
-//  under the terms of the GNU Lesser General Public License as published by the
-//  Free Software Foundation; either version 3 of the License, or (at your
-//  option) any later version.
-//  This program is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//  more details.
-//  You should have received a copy of the GNU Lesser General Public License along
-//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//  ---------------------------------------------------------------------------
+//  jWebSocket - EventModelPlugIn (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.plugin;
 
 import java.util.Collection;
@@ -59,6 +62,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	 * Short-cut to set the plug-in events definitions
 	 *
 	 * @param aDefs The plug-in events definitions
+	 * @throws Exception
 	 */
 	public void setEventsDefinitions(Set<C2SEventDefinition> aDefs) throws Exception {
 		getEm().getEventFactory().getEventDefinitions().registerDefinitions(aDefs);
@@ -107,6 +111,11 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 		getEm().on(aEmEvents, this);
 	}
 
+	/**
+	 *
+	 * @param aEmEvents
+	 * @throws Exception
+	 */
 	public void setEmEventClasses(Set<String> aEmEvents) throws Exception {
 		Set lClasses = new FastSet();
 		for (String lClass : aEmEvents) {
@@ -127,6 +136,11 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 		getEm().on(aEmEvents.values(), this);
 	}
 
+	/**
+	 *
+	 * @param aEmEvents
+	 * @throws Exception
+	 */
 	public void setEmEventClassesAndClientAPI(Map<String, String> aEmEvents) throws Exception {
 		Map lClasses = new FastMap<String, Class>();
 		for (String lKey : aEmEvents.keySet()) {
@@ -151,6 +165,8 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @param aId
 	 */
 	@Override
 	public void setId(String aId) {
@@ -167,6 +183,8 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @param aEm
 	 */
 	@Override
 	public void setEm(EventModel aEm) {
@@ -183,6 +201,8 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @param aClientAPI
 	 */
 	@Override
 	public void setClientAPI(Map<String, Class<? extends Event>> aClientAPI) {
@@ -196,7 +216,7 @@ public abstract class EventModelPlugIn extends ObservableObject implements IEven
 	public String toString() {
 		return getId();
 	}
-	
+
 	/**
 	 *
 	 * {@inheritDoc }

@@ -1,18 +1,21 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - EventModel
-//  Copyright (c) 2010 Innotrade GmbH, jWebSocket.org
-//  ---------------------------------------------------------------------------
-//  This program is free software; you can redistribute it and/or modify it
-//  under the terms of the GNU Lesser General Public License as published by the
-//  Free Software Foundation; either version 3 of the License, or (at your
-//  option) any later version.
-//  This program is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//  more details.
-//  You should have received a copy of the GNU Lesser General Public License along
-//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//  ---------------------------------------------------------------------------
+//  jWebSocket - EventModel (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.core;
 
 import java.util.Set;
@@ -48,7 +51,13 @@ import org.jwebsocket.token.Token;
 public class EventModel extends ObservableObject implements IInitializable, IListener {
 
 	private String mEnv = EventModel.DEV_ENV;
+	/**
+	 *
+	 */
 	public final static String DEV_ENV = "dev";
+	/**
+	 *
+	 */
 	public final static String PROD_ENV = "prod";
 	private Set<IEventModelFilter> mFilterChain = new FastSet<IEventModelFilter>();
 	private Set<IEventModelPlugIn> mPlugIns = new FastSet<IEventModelPlugIn>();
@@ -61,22 +70,45 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	private String mNamespace;
 	private int mFragmentSize = 1024 * 5;
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getFragmentSize() {
 		return mFragmentSize;
 	}
 
+	/**
+	 *
+	 * @param aFragmentSize
+	 */
 	public void setFragmentSize(int aFragmentSize) {
 		this.mFragmentSize = aFragmentSize;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getNamespace() {
 		return mNamespace;
 	}
 
+	/**
+	 *
+	 * @param aNamespace
+	 */
 	public void setNamespace(String aNamespace) {
 		this.mNamespace = aNamespace;
 	}
 
+	/**
+	 *
+	 * @param aNamespace
+	 * @param aEventFactory
+	 * @param aS2CEventNH
+	 * @param aExceptionHandler
+	 */
 	public EventModel(String aNamespace, EventFactory aEventFactory,
 			S2CEventNotificationHandler aS2CEventNH, IExceptionHandler aExceptionHandler) {
 		super();
@@ -279,7 +311,8 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 	}
 
 	/**
-	 * @param filterChain The EventModelFilter chain to set
+	 *
+	 * @param aFilterChain
 	 */
 	public void setFilterChain(Set<IEventModelFilter> aFilterChain) {
 		this.mFilterChain.addAll(aFilterChain);
@@ -358,22 +391,42 @@ public class EventModel extends ObservableObject implements IInitializable, ILis
 		return mEnv;
 	}
 
+	/**
+	 *
+	 * @param aEnv
+	 */
 	public void setEnv(String aEnv) {
 		this.mEnv = aEnv;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public IWebSocketClusterNode getClusterNode() {
 		return mClusterNode;
 	}
 
+	/**
+	 *
+	 * @param aClusterNode
+	 */
 	public void setClusterNode(IWebSocketClusterNode aClusterNode) {
 		this.mClusterNode = aClusterNode;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public S2CEventNotificationHandler getS2CEventNotificationHandler() {
 		return mS2CEventNotificationHandler;
 	}
 
+	/**
+	 *
+	 * @param aS2CEventNotificationHandler
+	 */
 	public void setS2CEventNotificationHandler(S2CEventNotificationHandler aS2CEventNotificationHandler) {
 		this.mS2CEventNotificationHandler = aS2CEventNotificationHandler;
 	}
