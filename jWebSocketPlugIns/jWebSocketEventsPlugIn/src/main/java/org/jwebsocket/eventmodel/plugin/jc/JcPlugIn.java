@@ -1,18 +1,21 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - JcPlugIn
-//  Copyright (c) 2011 Innotrade GmbH, jWebSocket.org
-//  ---------------------------------------------------------------------------
-//  This program is free software; you can redistribute it and/or modify it
-//  under the terms of the GNU Lesser General Public License as published by the
-//  Free Software Foundation; either version 3 of the License, or (at your
-//  option) any later version.
-//  This program is distributed in the hope that it will be useful, but WITHOUT
-//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//  FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//  more details.
-//  You should have received a copy of the GNU Lesser General Public License along
-//  with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//  ---------------------------------------------------------------------------
+//  jWebSocket - JcPlugIn (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.plugin.jc;
 
 import java.util.Map;
@@ -32,26 +35,17 @@ import org.jwebsocket.util.Tools;
 /**
  *
  * @author kyberneees
- * 
- * Usage:
- * -----------------------
- *		byte[] lApdu = {(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x08,
-//			(byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-//
-//		String lClient = aConnectorId;
-//		String lTerminal = aTerminal;
-//		transmit(lClient, lTerminal, new CommandAPDU(lApdu), new JcResponseCallback(null) {
-//
-//			@Override
-//			public void success(ResponseAPDU response, String from) {
-//				System.out.println("success " + from + " " + response.getBytes());
-//			}
-//
-//			@Override
-//			public void failure(FailureReason reason, String from) {
-//				System.out.println("failure " + from + " " + reason.name());
-//			}
-//		});
+ *
+ * Usage: ----------------------- byte[] lApdu = {(byte) 0x00, (byte) 0xA4,
+ * (byte) 0x04, (byte) 0x00, (byte) 0x08, //	(byte) 0xA0, (byte) 0x00, (byte)
+ * 0x00, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00}; // //
+ * String lClient = aConnectorId; //	String lTerminal = aTerminal; //
+ * transmit(lClient, lTerminal, new CommandAPDU(lApdu), new
+ * JcResponseCallback(null) { // //
+ * @Override //	public void success(ResponseAPDU response, String from) { //
+ * System.out.println("success " + from + " " + response.getBytes()); //	} // //
+ * @Override //	public void failure(FailureReason reason, String from) { //
+ * System.out.println("failure " + from + " " + reason.name()); //	} //	});
  */
 public class JcPlugIn extends EventModelPlugIn {
 
@@ -60,6 +54,11 @@ public class JcPlugIn extends EventModelPlugIn {
 	 */
 	private Map<String, Set<String>> mTerminals = new FastMap<String, Set<String>>().shared();
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @return
+	 */
 	public Set<String> getTerminals(String aConnectorId) {
 		if (!mTerminals.containsKey(aConnectorId)) {
 			mTerminals.put(aConnectorId, new FastSet<String>());
@@ -69,7 +68,7 @@ public class JcPlugIn extends EventModelPlugIn {
 
 	/**
 	 * Register a terminal on a connector as ready
-	 * 
+	 *
 	 * @param aConnectorId
 	 * @param aTerminal The terminal name
 	 */
@@ -79,7 +78,7 @@ public class JcPlugIn extends EventModelPlugIn {
 
 	/**
 	 * Unregister a terminal on a connector
-	 * 
+	 *
 	 * @param aConnectorId
 	 * @param aTerminal The terminal name
 	 */
@@ -114,21 +113,33 @@ public class JcPlugIn extends EventModelPlugIn {
 
 	/**
 	 * Transmit a CommandAPDU to the client smartcard terminals
-	 * 
-	 * @param aConnector
+	 *
+	 * @param aConnectorId
 	 * @param aTerminalId
 	 * @param aCommand
 	 * @param aCallback
-	 * @throws MissingTokenSender 
+	 * @throws InvalidConnectorIdentifier
 	 */
 	public void transmit(String aConnectorId, String aTerminalId, CommandAPDU aCommand, JcResponseCallback aCallback) throws InvalidConnectorIdentifier {
 		this.notifyS2CEvent(new TransmitEvent(aCommand.getBytes(), aTerminalId)).to(aConnectorId, aCallback);
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 * @throws Exception
+	 */
 	public void processEvent(JcTerminalNotReady aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		unregisterTerminal(aEvent.getConnector().getId(), aEvent.getTerminal());
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 * @throws Exception
+	 */
 	public void processEvent(JcTerminalReady aEvent, C2SResponseEvent aResponseEvent) throws Exception {
 		registerTerminal(aEvent.getConnector().getId(), aEvent.getTerminal());
 	}

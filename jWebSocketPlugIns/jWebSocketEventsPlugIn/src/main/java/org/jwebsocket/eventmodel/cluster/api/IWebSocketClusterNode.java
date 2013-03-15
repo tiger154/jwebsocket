@@ -1,16 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2010 jwebsocket.org
+//	jWebSocket - IWebSocketClusterNode (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.eventmodel.cluster.api;
 
@@ -25,14 +29,14 @@ import org.jwebsocket.token.Token;
 public interface IWebSocketClusterNode {
 
 	/**
-	 * 
+	 *
 	 * @return The cluster node unique identifier
 	 */
 	String getId();
 
 	/**
 	 * Send a token to a connector on a cluster network
-	 * 
+	 *
 	 * @param aTarget to
 	 * @param aToken The token to be sent
 	 */
@@ -40,7 +44,7 @@ public interface IWebSocketClusterNode {
 
 	/**
 	 * Send a token to a connector on a cluster network
-	 * 
+	 *
 	 * @param aTarget to
 	 * @param aSource from
 	 * @param aToken The token to be sent
@@ -49,77 +53,79 @@ public interface IWebSocketClusterNode {
 
 	/**
 	 * Process a token from the backbone
-	 * 
+	 *
 	 * @param aBackbone The backbone connector
-	 * @param aToken 
+	 * @param aToken
 	 */
 	void processToken(WebSocketConnector aBackbone, Token aToken);
 
 	/**
-	 * 
+	 *
 	 * @return The list of the connectors identifiers on the network
 	 */
 	List<String> getAllConnectors();
 
 	/**
 	 * Get statistics from a custom node
-	 * 
+	 *
 	 * @param nodeId The node identifier
-	 * @return The node statistics 
+	 * @return The node statistics
+	 * @throws Exception
 	 */
 	INodeStatistics getNodeStatistics(String nodeId) throws Exception;
 
 	/**
-	 * 
-	 * @return The node statistics 
+	 *
+	 * @return The node statistics
+	 * @throws Exception
 	 */
 	INodeStatistics getNodeStatistics() throws Exception;
 
 	/**
-	 * 
-	 * @return The cluster statistics 
+	 *
+	 * @return The cluster statistics
 	 */
 	IClusterStatistics getClusterStatistics();
 
 	/**
 	 * Process an event from the backbone
-	 * 
+	 *
 	 * @param aEvent The cluster event
 	 */
 	void processClusterEvent(IClusterEvent aEvent);
 
 	/**
 	 * Indicates if the server allow new connections, default FALSE
-	 * 
-	 * @param flag 
+	 *
+	 * @param flag
 	 */
 	void setAllowConnections(boolean flag);
 
 	/**
-	 * 
+	 *
 	 * @return TRUE if the server allow new connections, FALSE otherwise
 	 */
 	boolean isAllowConnections();
 
 	/**
 	 * Shutdown the server slowly
-	 * 
-	 * @param minClients Minimal connections number before disconnect 
-	 * @param disconnectionsNumber Number of disconnections on interval 
+	 *
+	 * @param minClients Minimal connections number before disconnect
+	 * @param disconnectionsNumber Number of disconnections on interval
 	 * @param timeInterval Time interval to disconnect the clients slowly
 	 */
 	void slowShutdown(Integer minClients, Integer disconnectionsNumber, Integer timeInterval);
 
 	/**
-	 * Register a new client in the shared clientsIndexStorage 
-	 * 
+	 * Register a new client in the shared clientsIndexStorage
+	 *
 	 * @param connectorId The connector identifier
 	 */
 	void registerNewClient(String connectorId);
 
 	/**
 	 * Removes a client from the shared clientsIndexStorage
-	 * 
+	 *
 	 * @param connectorId The connector identifier
 	 */
 	void removeClient(String connectorId);
