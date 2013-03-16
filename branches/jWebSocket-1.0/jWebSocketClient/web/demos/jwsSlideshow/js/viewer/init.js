@@ -3,10 +3,9 @@
  */
 
 function init( ) {
-	w = {};
+	w = typeof(w) == "undefined"? {}:w;
 	mLog = {};
-	mLog.isDebugEnabled = false;
-	
+
 	$('.button').each(function( ) {
 		var lBtn = $(this);
 		var lRightClass = lBtn.hasClass('download') ? 'r_download' : 'btn_right';
@@ -28,7 +27,8 @@ function init( ) {
 		mLog.isDebugEnabled = true;
 		$(top.document).find("#log_box").log({
 			maxLogLines: 200,
-			linesToDelete: 20
+			linesToDelete: 20,
+			embededIframe: true
 		});
 	}
 	//starting the widget viewer

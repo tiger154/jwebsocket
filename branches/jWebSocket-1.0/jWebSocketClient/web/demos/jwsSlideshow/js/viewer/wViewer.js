@@ -51,25 +51,27 @@ $.widget("jws.viewer", {
 	registerEvents: function() {
 		$(document).keydown(w.viewer.keydown);
 		w.viewer.eBtnFullScreen.click(w.viewer.toggleFullScreen);
-		w.viewer.eBtnFullScreen.fadeTo(400, 0);
+		w.viewer.eBtnFullScreen.fadeTo(400, 0.4);
 		w.viewer.eSlide.bind({
 			mousemove: function( ) {
 				if (w.viewer.mIsFS) {
 					w.viewer.eStatusbarArea.stop(true, true).show(300);
+					w.viewer.eBtnFullScreen.stop(true, true).fadeTo(400, 0.8);
 					clearInterval(w.viewer.mInterval);
 					w.viewer.mInterval = setInterval(function() {
 						w.viewer.eStatusbarArea.stop(true, true).hide(800);
+						w.viewer.eBtnFullScreen.stop(true, true).fadeTo(400, 0.3);
 					}, 4000);
 				}
 			},
 			mouseover: function() {
-				w.viewer.eBtnFullScreen.fadeTo(100, 0.5);
+				w.viewer.eBtnFullScreen.fadeTo(100, 0.8);
 			},
 			mouseout: function(aEvent) {
 				if (aEvent.relatedTarget == w.viewer.eBtnFullScreen.get(0)) {
 					return false;
 				}
-				w.viewer.eBtnFullScreen.stop(true, true).fadeTo(400, 0.1);
+				w.viewer.eBtnFullScreen.stop(true, true).fadeTo(400, 0.4);
 			}
 		})
 
@@ -216,16 +218,14 @@ $.widget("jws.viewer", {
 		return false;
 	},
 	openViewerWindow: function( ) {
+		var lDate = new Date();
+		w.viewer.mNextWindowId = lDate.getMilliseconds();
 		window.open(
 				// "http://www.jwebsocket.org/demos/jwsSlideshow/viewerIframe.htm"
 				"viewerIframe.htm",
 				"viewerWindow" + w.viewer.mNextWindowId,
-				"width=400,height=400,left=" +
-				(50 + w.viewer.mNextWindowId * 30) + ", top=" +
-				(50 + w.viewer.mNextWindowId * 25));
-		w.viewer.mNextWindowId++;
-		if (w.viewer.mNextWindowId > 10) {
-			w.viewer.mNextWindowId = 1;
-		}
+				"width=400,height=420,left=" +
+				(1000 - w.viewer.mNextWindowId) + ", top=" +
+				(1000 - w.viewer.mNextWindowId)/2);
 	}
 });

@@ -52,3 +52,8 @@
 	background: transparent url(images/fullscreen-presenter-btn.png) no-repeat;
 	cursor: pointer;
 }
+/*#fullscreen:-webkit-full-screen #slide{ width: 70%; height: 80%; }*/
+#fullscreen:-moz-full-screen #slide { width: 70%; height: 80%; margin-left: 15%; }
+/*#fullscreen:-ms-full-screen #slide { width: 70%; height: 80%;  }*/
+/*#fullscreen:-o-full-screen #slide { width: 70%; height: 80%;  }
+#fullscreen:full-screen  #slide{ width: 70%; height: 80%;  }*/
