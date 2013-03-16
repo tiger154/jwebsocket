@@ -147,7 +147,7 @@ $.widget("jws.auth",{
 				mWSC.startKeepAlive();
 				
 				if( w.auth.options.OnOpen ){
-					w.auth.options.OnOpen( aEvent );
+					w.auth.options.OnOpen( aEvent, aToken );
 				}
 				if( mLog.isDebugEnabled ) {
 					log( "<div style='color:#888'>jWebSocket connection established.</div>" );
@@ -220,10 +220,11 @@ $.widget("jws.auth",{
 						}
 						w.auth.eLogonArea.hide( );
 						w.auth.eLogoffArea.fadeIn( 300 );
-
+						
 						w.auth.eUserInfoName.text( aToken.username );
 						w.auth.mUsername = aToken.username;
 						w.auth.eClientStatus.attr( "class", "authenticated").text("authenticated");
+						w.auth.eClientId.text( "Client-ID: " + aToken.sourceId );
 					} else {
 						if( mLog.isDebugEnabled ) {
 							log( "<div style='color:red'><b>Error trying to login, \n\
