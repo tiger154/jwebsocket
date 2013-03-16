@@ -60,28 +60,33 @@ $.widget("jws.presenter", {
 		w.presenter.eBtnLast.click(w.presenter.lastSlide);
 		w.presenter.eBtnFirst.click(w.presenter.firstSlide);
 		w.presenter.eBtnFullScreen.click(w.presenter.toggleFullScreen);
-		w.presenter.eBtnFullScreen.fadeTo(400, 0);
+		w.presenter.eBtnFullScreen.fadeTo(400, 0.4);
+		w.presenter.eFullToolbarArea.mouseover(function() {
+			clearInterval(w.presenter.mInterval);
+		});
 		w.presenter.eSlide.bind({
 			mousemove: function( ) {
 				if (w.presenter.mIsFS) {
 					w.presenter.eFullToolbarArea.stop(true, true).show(300);
 					w.presenter.eStatusbarArea.stop(true, true).show(300);
+					w.presenter.eBtnFullScreen.fadeTo(100, 0.8);
 					clearInterval(w.presenter.mInterval);
 					w.presenter.mInterval = setInterval(function() {
 						w.presenter.eFullToolbarArea.stop(true, true).hide(800);
 						w.presenter.eStatusbarArea.stop(true, true).hide(800);
+						w.presenter.eBtnFullScreen.fadeTo(100, 0.3);
 					}, 4000);
 				}
 			},
 			mouseover: function() {
-				w.presenter.eBtnFullScreen.fadeTo(100, 0.5);
+				w.presenter.eBtnFullScreen.fadeTo(100, 0.8);
 
 			},
 			mouseout: function(aEvent) {
 				if (aEvent.relatedTarget == w.presenter.eBtnFullScreen.get(0)) {
 					return false;
 				}
-				w.presenter.eBtnFullScreen.stop(true, true).fadeTo(400, 0.1);
+				w.presenter.eBtnFullScreen.stop(true, true).fadeTo(400, 0.4);
 			}
 		})
 		$(document).keydown(w.presenter.keydown);
@@ -95,7 +100,6 @@ $.widget("jws.presenter", {
 		});
 		$(document).bind('webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
 			if (!w.presenter.isFullScreen()) {
-				console.log("is fs");
 				w.presenter.mIsFS = false;
 				clearInterval(w.presenter.mInterval);
 				w.presenter.eFullToolbarArea.show();

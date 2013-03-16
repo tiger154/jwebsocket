@@ -3,9 +3,8 @@
  */
 
 function init(  ) {
-	w = {};
+	w = typeof(w) == "undefined"? {}:w;
 	mLog = {};
-	mLog.isDebugEnabled = false;
 
 	// Options
 	// @maxLogLines: maximum number of lines that will be logged
@@ -16,10 +15,11 @@ function init(  ) {
 		mLog.isDebugEnabled = true;
 		$(top.document).find("#log_box").log({
 			maxLogLines: 200,
-			linesToDelete: 20
+			linesToDelete: 20,
+			embededIframe: true
 		});
 	}
-	
+
 	// Setting the styles to the buttons, avoiding to fill the HTML code 
 	// with unnecessary data
 	$('.button').each(function( ) {
