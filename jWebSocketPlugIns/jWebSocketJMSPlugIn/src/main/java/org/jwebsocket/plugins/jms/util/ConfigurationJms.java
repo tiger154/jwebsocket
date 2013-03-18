@@ -43,8 +43,7 @@ public enum ConfigurationJms {
 	/**
 	 *
 	 */
-	PUB_SUB_DOMAIN(
-	"pubSubDomain"),
+	PUB_SUB_DOMAIN("pubSubDomain"),
 	/**
 	 *
 	 */
@@ -56,8 +55,7 @@ public enum ConfigurationJms {
 	/**
 	 *
 	 */
-	DELIVERY_PERSISTENT(
-	"deliveryPersistent");
+	DELIVERY_PERSISTENT("deliveryPersistent");
 	private String mValue;
 
 	private ConfigurationJms(String value) {

@@ -35,8 +35,7 @@ public enum FieldJms {
 	/**
 	 *
 	 */
-	PUB_SUB_DOMAIN(
-	"pubSubDomain"),
+	PUB_SUB_DOMAIN("pubSubDomain"),
 	/**
 	 *
 	 */
@@ -65,8 +64,7 @@ public enum FieldJms {
 	/**
 	 *
 	 */
-	JMS_HEADER_MESSAGE_ID(
-	"JMSMessageID"),
+	JMS_HEADER_MESSAGE_ID("JMSMessageID"),
 	/**
 	 *
 	 */
@@ -78,8 +76,7 @@ public enum FieldJms {
 	/**
 	 *
 	 */
-	JMS_HEADER_REDELIVERED(
-	"JMSRedelivered"),
+	JMS_HEADER_REDELIVERED("JMSRedelivered"),
 	/**
 	 *
 	 */
@@ -91,8 +88,7 @@ public enum FieldJms {
 	/**
 	 *
 	 */
-	MESSSAGE_PAYLOAD(
-	"msgPayLoad"),
+	MESSSAGE_PAYLOAD("msgPayLoad"),
 	/**
 	 *
 	 */
@@ -112,16 +108,15 @@ public enum FieldJms {
 	/**
 	 *
 	 */
-	JMS_HEADER_PROPERTIES(
-	"jmsHeaderProperties"),
+	JMS_HEADER_PROPERTIES("jmsHeaderProperties"),
 	/**
 	 *
 	 */
 	DESTINATION_IDENTIFIER("destinationIdentifier");
 	private String mValue;
 
-	private FieldJms(String value) {
-		this.mValue = value;
+	private FieldJms(String aValue) {
+		this.mValue = aValue;
 	}
 
 	/**

@@ -22,7 +22,7 @@ import java.util.Collection;
 import org.jwebsocket.plugins.jms.infra.impl.JmsListenerContainer;
 
 /**
- * Base interface that defines the store operations for jms consumers
+ * Base interface that defines the store operations for JMS consumers
  *
  * @author Johannes Smutny
  */

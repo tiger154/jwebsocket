@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.jms.infra.impl;
 
 /**
  *
- * @author Johannes Smutny
+ * @author Johannes Smutny, Alexander Schulze
  */
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -29,10 +29,6 @@ import org.jwebsocket.plugins.jms.infra.MessageConsumerRegistry;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 
-/**
- *
- * @author aschulze
- */
 public class JmsListenerContainer extends DefaultMessageListenerContainer {
 
 	private MessageConsumerRegistry mMessageConsumerRegistry;
@@ -49,9 +45,9 @@ public class JmsListenerContainer extends DefaultMessageListenerContainer {
 	 */
 	public static JmsListenerContainer valueOf(DefaultMessageDelegate aMessageDelegate,
 			ConnectionFactory aConnectionFactory, Destination aDestination) {
-		JmsListenerContainer result = initContainer(aMessageDelegate);
-		init(result, aMessageDelegate, aConnectionFactory, aDestination);
-		return result;
+		JmsListenerContainer lResult = initContainer(aMessageDelegate);
+		init(lResult, aMessageDelegate, aConnectionFactory, aDestination);
+		return lResult;
 	}
 
 	private static JmsListenerContainer initContainer(DefaultMessageDelegate aMessageDelegate) {
@@ -62,17 +58,18 @@ public class JmsListenerContainer extends DefaultMessageListenerContainer {
 		return lResult;
 	}
 
-	private static void init(JmsListenerContainer result, MessageConsumerRegistry aMessageConsumerRegistry,
+	private static void init(JmsListenerContainer aResult,
+			MessageConsumerRegistry aMessageConsumerRegistry,
 			ConnectionFactory aConnectionFactory, Destination aDestination) {
-		result.setMessageConsumerRegistry(aMessageConsumerRegistry);
-		result.setConnectionFactory(aConnectionFactory);
-		result.setDestination(aDestination);
-		result.setConcurrentConsumers(1);
+		aResult.setMessageConsumerRegistry(aMessageConsumerRegistry);
+		aResult.setConnectionFactory(aConnectionFactory);
+		aResult.setDestination(aDestination);
+		aResult.setConcurrentConsumers(1);
 	}
 
-	private void setMessageConsumerRegistry(MessageConsumerRegistry aMessageConsumerRegistry) {
+	private void setMessageConsumerRegistry(
+			MessageConsumerRegistry aMessageConsumerRegistry) {
 		mMessageConsumerRegistry = aMessageConsumerRegistry;
-
 	}
 
 	/**

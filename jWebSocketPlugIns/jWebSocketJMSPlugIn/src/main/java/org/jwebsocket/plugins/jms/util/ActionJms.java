@@ -83,20 +83,20 @@ public enum ActionJms {
 
 	/**
 	 *
-	 * @param value
+	 * @param aValue
 	 * @return
 	 */
-	public static ActionJms get(String value) {
-		if (null == value) {
-			throw new IllegalArgumentException("missing value");
+	public static ActionJms get(String aValue) {
+		if (null == aValue) {
+			throw new IllegalArgumentException("Missing value");
 		}
 
-		for (ActionJms next : ActionJms.values()) {
-			if (next.getValue().equals(value)) {
-				return next;
+		for (ActionJms lNext : ActionJms.values()) {
+			if (lNext.getValue().equals(aValue)) {
+				return lNext;
 			}
 		}
 
-		throw new IllegalArgumentException("missing ActionJms for value: '" + value + "'");
+		throw new IllegalArgumentException("Missing ActionJms for value: '" + aValue + "'");
 	}
 }

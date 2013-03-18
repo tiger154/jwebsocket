@@ -58,7 +58,7 @@ public class JmsManager {
 	/**
 	 * logger
 	 */
-	private Logger mLog = Logging.getLogger();
+	private static Logger mLog = Logging.getLogger();
 	private final Map<String, ConnectionFactory> mConnectionFactories = new HashMap<String, ConnectionFactory>();
 	private final Map<String, Queue> mQueues = new HashMap<String, Queue>();
 	private final Map<String, Topic> mTopics = new HashMap<String, Topic>();
@@ -97,7 +97,7 @@ public class JmsManager {
 		String lName = getName(lJSON);
 		mConnectionFactories.put(lName, (ConnectionFactory) aBeanFactory.getBean(lName));
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("added jms connectionFactory with bean name: '" + lName + "'");
+			mLog.debug("Added JMS connectionFactory with bean name: '" + lName + "'");
 		}
 	}
 
@@ -134,14 +134,14 @@ public class JmsManager {
 	private void storeQueue(BeanFactory aBeanFactory, String aName) {
 		mQueues.put(aName, (Queue) aBeanFactory.getBean(aName));
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("added jms queue with bean name: '" + aName + "'");
+			mLog.debug("Added JMS queue with bean name: '" + aName + "'");
 		}
 	}
 
 	private void storeTopic(BeanFactory aBeanFactory, String aName) {
 		mTopics.put(aName, (Topic) aBeanFactory.getBean(aName));
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("added jms topic with bean name: '" + aName + "'");
+			mLog.debug("Added JMS topic with bean name: '" + aName + "'");
 		}
 	}
 
@@ -149,7 +149,8 @@ public class JmsManager {
 		try {
 			return aJson.getString(ConfigurationJms.CONNECTION_FACTORY_NAME.getValue());
 		} catch (Exception lEx) {
-			throw new IllegalArgumentException("JMSPlugIn configuration error: missing cfName Property", lEx);
+			throw new IllegalArgumentException(
+					"JMSPlugIn configuration error: missing cfName Property", lEx);
 		}
 	}
 
@@ -157,7 +158,8 @@ public class JmsManager {
 		try {
 			return aJson.getString(ConfigurationJms.NAME.getValue());
 		} catch (Exception lEx) {
-			throw new IllegalArgumentException("JMSPlugIn configuration error: missing name Property", lEx);
+			throw new IllegalArgumentException(
+					"JMSPlugIn configuration error: missing name Property", lEx);
 		}
 	}
 
@@ -165,7 +167,8 @@ public class JmsManager {
 		try {
 			return aJson.getBoolean(ConfigurationJms.PUB_SUB_DOMAIN.getValue());
 		} catch (Exception lEx) {
-			throw new IllegalArgumentException("JMSPlugIn configuration error: missing pubSubDomain Property", lEx);
+			throw new IllegalArgumentException(
+					"JMSPlugIn configuration error: missing pubSubDomain Property", lEx);
 		}
 	}
 
@@ -216,7 +219,9 @@ public class JmsManager {
 
 	private JmsTemplate createSender(DestinationIdentifier aDestinationIdentifier) {
 		JmsTemplate lSender = new JmsTemplate();
-		lSender.setConnectionFactory(mConnectionFactories.get(aDestinationIdentifier.getConnectionFactoryName()));
+		lSender.setConnectionFactory(
+				mConnectionFactories.get(
+				aDestinationIdentifier.getConnectionFactoryName()));
 		lSender.setDefaultDestination(getDestination(aDestinationIdentifier));
 		lSender.setPubSubDomain(aDestinationIdentifier.isPubSubDomain());
 		setSessionAckModeAndSessionTransacted(lSender, aDestinationIdentifier);
@@ -240,13 +245,13 @@ public class JmsManager {
 	public void sendTextMessage(final ActionInput aInput) {
 		JmsTemplate lSender = getSender(aInput.mDi);
 		lSender.send(lSender.getDefaultDestination(), new MessageCreator() {
-			public Message createMessage(Session session) throws JMSException {
-				Message result = session.createTextMessage(aInput.mReqToken.getString(FieldJms.MESSSAGE_PAYLOAD
+			public Message createMessage(Session aSession) throws JMSException {
+				Message result = aSession.createTextMessage(aInput.mReqToken.getString(FieldJms.MESSSAGE_PAYLOAD
 						.getValue()));
 				try {
 					enrichMessageWithHeaders(result, aInput.mReqToken.getMap(FieldJms.JMS_HEADER_PROPERTIES.getValue()));
-				} catch (JSONException e) {
-					mLog.error("could not enrich message with headers: " + e.getMessage());
+				} catch (JSONException lEx) {
+					mLog.error("Could not enrich message with headers: " + lEx.getMessage());
 				}
 				return result;
 			}
@@ -260,7 +265,7 @@ public class JmsManager {
 	public void sendMap(ActionInput aInput) {
 		JmsTemplate lSender = getSender(aInput.mDi);
 		if (null == lSender) {
-			throw new IllegalArgumentException("missing sender for destination: isPubSubdomain: "
+			throw new IllegalArgumentException("Missing sender for destination: isPubSubdomain: "
 					+ aInput.mDi.isPubSubDomain() + " name: " + aInput.mDi.getDestinationName());
 		}
 
@@ -292,7 +297,6 @@ public class JmsManager {
 		if (null == jmsHeaderProperties || jmsHeaderProperties.size() == 0) {
 			return;
 		}
-
 		addHeader(FieldJms.JMS_HEADER_CORRELATION_ID, msg, jmsHeaderProperties);
 		addHeader(FieldJms.JMS_HEADER_REPLY_TO, msg, jmsHeaderProperties);
 		addHeader(FieldJms.JMS_HEADER_TYPE, msg, jmsHeaderProperties);
@@ -404,7 +408,7 @@ public class JmsManager {
 		Destination lDestination = aDestinationIdentifier.isPubSubDomain() ? mTopics.get(aDestinationIdentifier
 				.getDestinationName()) : mQueues.get(aDestinationIdentifier.getDestinationName());
 		if (null == lDestination) {
-			throw new IllegalArgumentException("missing destination: isPubSubdomain: "
+			throw new IllegalArgumentException("Missing destination: isPubSubdomain: "
 					+ aDestinationIdentifier.isPubSubDomain() + " name: " + aDestinationIdentifier.getDestinationName());
 		}
 		return lDestination;

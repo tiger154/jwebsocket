@@ -20,9 +20,7 @@ package org.jwebsocket.plugins.jms;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.jms.Session;
-
 import org.jwebsocket.plugins.jms.util.FieldJms;
 import org.jwebsocket.token.Token;
 

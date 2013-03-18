@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.jms;
 
 /**
  *
- * @author Johannes Smutny
+ * @author Johannes Smutny, Alexander Schulze
  */
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
@@ -39,10 +39,6 @@ import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
 
-/**
- *
- * @author aschulze
- */
 public class JMSPlugIn extends TokenPlugIn {
 
 	private Logger mLog = Logging.getLogger();
@@ -72,11 +68,12 @@ public class JMSPlugIn extends TokenPlugIn {
 			mJmsManager = JmsManager.getInstance(aConfiguration.getSettings(),
 					lBeanFactory);
 		} catch (Exception lEx) {
-			mLog.error(lEx.getClass().getSimpleName() + " instantiation: " + lEx.getMessage());
+			mLog.error(lEx.getClass().getSimpleName()
+					+ " instantiation: " + lEx.getMessage());
 		}
 		// give a success message to the administrator
 		if (mLog.isInfoEnabled()) {
-			mLog.info("JMS plug-in successfully loaded.");
+			mLog.info("JMS plug-in successfully instantiated.");
 		}
 	}
 
@@ -188,8 +185,11 @@ public class JMSPlugIn extends TokenPlugIn {
 	}
 
 	private void unlisten(WebSocketConnector aConnector, Token aToken) {
-		mLog.debug("Processing 'unlisten'...");
-		executeAction(createActionInput(aConnector, aToken, "Successfully unlisten jms listener"), new ActionCommand() {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'unlisten'...");
+		}
+		executeAction(createActionInput(aConnector, aToken,
+				"Successfully unlisten JMS listener"), new ActionCommand() {
 			@Override
 			void execute(ActionInput aInput) throws Exception {
 				mJmsManager.deregisterConnectorFromMessageListener(aInput);
@@ -198,9 +198,11 @@ public class JMSPlugIn extends TokenPlugIn {
 	}
 
 	private void listen(WebSocketConnector aConnector, Token aToken) {
-		mLog.debug("Processing 'listen'...");
-		executeAction(
-				createActionInput(aConnector, aToken, "Successfully got jms listener", RightJms.LISTEN,
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'listen'...");
+		}
+		executeAction(createActionInput(aConnector, aToken,
+				"Successfully got JMS listener", RightJms.LISTEN,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
 			@Override
 			void execute(ActionInput aInput) throws Exception {
@@ -210,9 +212,11 @@ public class JMSPlugIn extends TokenPlugIn {
 	}
 
 	private void listenMessage(WebSocketConnector aConnector, Token aToken) {
-		mLog.debug("Processing 'listenMessage'...");
-		executeAction(
-				createActionInput(aConnector, aToken, "Successfully got jms message listener", RightJms.LISTEN,
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'listenMessage'...");
+		}
+		executeAction(createActionInput(aConnector, aToken,
+				"Successfully got JMS message listener", RightJms.LISTEN,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
 			@Override
 			void execute(ActionInput aInput) throws Exception {
@@ -222,9 +226,11 @@ public class JMSPlugIn extends TokenPlugIn {
 	}
 
 	private void sendText(WebSocketConnector aConnector, Token aToken) {
-		mLog.debug("Processing 'sendText'...");
-		executeAction(
-				createActionInput(aConnector, aToken, "Text successfully sent", RightJms.SEND, RightJms.SEND_AND_LISTEN),
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'sendText'...");
+		}
+		executeAction(createActionInput(aConnector, aToken,
+				"Text successfully sent", RightJms.SEND, RightJms.SEND_AND_LISTEN),
 				new ActionCommand() {
 			@Override
 			void execute(ActionInput aInput) throws Exception {
@@ -234,9 +240,11 @@ public class JMSPlugIn extends TokenPlugIn {
 	}
 
 	private void sendTextMessage(WebSocketConnector aConnector, Token aToken) {
-		mLog.debug("Processing 'sendTextMessage'...");
-		executeAction(
-				createActionInput(aConnector, aToken, "Jms text message successfully sent", RightJms.SEND,
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'sendTextMessage'...");
+		}
+		executeAction(createActionInput(aConnector, aToken,
+				"JMS text message successfully sent", RightJms.SEND,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
 			@Override
 			void execute(ActionInput aInput) throws Exception {
@@ -246,7 +254,9 @@ public class JMSPlugIn extends TokenPlugIn {
 	}
 
 	private void sendMap(WebSocketConnector aConnector, Token aToken) {
-		mLog.debug("Processing 'sendMap'...");
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'sendMap'...");
+		}
 		executeAction(
 				createActionInput(aConnector, aToken, "Map message successfully sent", RightJms.SEND,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
@@ -258,9 +268,11 @@ public class JMSPlugIn extends TokenPlugIn {
 	}
 
 	private void sendMapMessage(WebSocketConnector aConnector, Token aToken) {
-		mLog.debug("Processing 'sendMapMessage'...");
-		executeAction(
-				createActionInput(aConnector, aToken, "Jms map message successfully sent", RightJms.SEND,
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'sendMapMessage'...");
+		}
+		executeAction(createActionInput(aConnector, aToken,
+				"JMS map message successfully sent", RightJms.SEND,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
 			@Override
 			void execute(ActionInput aInput) throws Exception {
@@ -302,13 +314,15 @@ public class JMSPlugIn extends TokenPlugIn {
 
 	private void sendMissingJmsManagerResponseToken(WebSocketConnector aConnector, Token aToken) {
 		Token lResponseToken = createResponse(aToken);
-		setCodeAndMsg(lResponseToken, -1, "missing jms manager: correct your config");
+		setCodeAndMsg(lResponseToken, -1,
+				"missing JMS manager: correct your config");
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
 	private void sendMissingBeanFactoryResponseToken(WebSocketConnector aConnector, Token aToken) {
 		Token lResponseToken = createResponse(aToken);
-		setCodeAndMsg(lResponseToken, -1, "missing jms spring beanfactory: correct your config");
+		setCodeAndMsg(lResponseToken, -1,
+				"missing JMS spring beanfactory: correct your config");
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
@@ -319,7 +333,8 @@ public class JMSPlugIn extends TokenPlugIn {
 
 	private boolean isDestinationIdentifierValid(ActionInput aInput) {
 		if (aInput.mDi.isMissingData()) {
-			setCodeAndMsg(aInput.mResToken, -1, "Missing destination identifier input  data");
+			setCodeAndMsg(aInput.mResToken, -1,
+					"Missing destination identifier input  data");
 			sendToken(aInput);
 			return false;
 		}
@@ -347,8 +362,10 @@ public class JMSPlugIn extends TokenPlugIn {
 
 		for (RightJms next : aInput.mRights) {
 			if (hasAuthority(aInput.mConnector,
-					NS_JMS + "." + next + "." + (aInput.mDi.isPubSubDomain() ? "topic" : "queue") + "."
-					+ aInput.mDi.getDestinationName())) {
+					NS_JMS
+					+ "." + next
+					+ "." + (aInput.mDi.isPubSubDomain() ? "topic" : "queue")
+					+ "." + aInput.mDi.getDestinationName())) {
 				return true;
 			}
 		}
@@ -371,7 +388,8 @@ public class JMSPlugIn extends TokenPlugIn {
 		RightJms[] mRights;
 		DestinationIdentifier mDi;
 
-		private ActionInput(WebSocketConnector aConnector, Token aToken, String aPositiveMsg, RightJms... aRights) {
+		private ActionInput(WebSocketConnector aConnector, Token aToken,
+				String aPositiveMsg, RightJms... aRights) {
 			mDi = DestinationIdentifier.valueOf(aToken);
 			mConnector = aConnector;
 			mReqToken = aToken;

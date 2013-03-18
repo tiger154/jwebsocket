@@ -38,8 +38,8 @@ public enum RightJms {
 	SEND_AND_LISTEN("sendAndListen");
 	private String mValue;
 
-	private RightJms(String value) {
-		this.mValue = value;
+	private RightJms(String aValue) {
+		this.mValue = aValue;
 	}
 
 	/**
