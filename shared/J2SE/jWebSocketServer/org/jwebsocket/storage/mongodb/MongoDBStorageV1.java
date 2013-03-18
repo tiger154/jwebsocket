@@ -22,6 +22,7 @@ import com.mongodb.*;
 import java.util.Set;
 import javolution.util.FastSet;
 import org.jwebsocket.storage.BaseStorage;
+import org.springframework.util.Assert;
 
 /**
  * This class uses MongoDB servers to persist the information. <br> Each storage
@@ -47,7 +48,6 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 	public MongoDBStorageV1(String aName, DB aDatabase) {
 		this.mDatabase = aDatabase;
 		this.mName = aName;
-		mCollection = aDatabase.getCollection(aName);
 	}
 
 	/**
@@ -55,6 +55,10 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 	 */
 	@Override
 	public void initialize() throws Exception {
+		Assert.notNull(mName, "The 'name', argument cannot be null!");
+		Assert.notNull(mDatabase, "The 'database', argument cannot be null!");
+
+		mCollection = mDatabase.getCollection(mName);
 		mCollection.ensureIndex(new BasicDBObject().append("k", 1),
 				new BasicDBObject().append("unique", true));
 	}
@@ -74,6 +78,8 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 	 */
 	@Override
 	public void setName(String newName) throws Exception {
+		Assert.isTrue(null != mName, "The 'newName', argument cannot be null!");
+
 		mDatabase.createCollection(newName, null);
 		DBCollection lNewCollection = mDatabase.getCollection(newName);
 

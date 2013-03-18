@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import javolution.util.FastMap;
 import org.jwebsocket.api.IBasicStorage;
+import org.springframework.util.Assert;
 
 /**
  *
@@ -107,6 +108,8 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 */
 	@Override
 	public void initialize() throws Exception {
+		Assert.notNull(mName, "The 'name', argument cannot be null!");
+
 		if (!getContainer().containsKey(mName) || null == getContainer().get(mName)) {
 			getContainer().put(mName, new FastMap<K, V>());
 		}
