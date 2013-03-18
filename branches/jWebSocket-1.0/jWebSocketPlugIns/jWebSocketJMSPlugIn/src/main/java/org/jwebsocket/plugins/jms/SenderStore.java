@@ -25,7 +25,6 @@ package org.jwebsocket.plugins.jms;
  *
  */
 import java.util.Collection;
-
 import org.springframework.jms.core.JmsTemplate;
 
 /**

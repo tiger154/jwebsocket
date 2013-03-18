@@ -25,8 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * @author jsmutny holds references to all available jms senders
- */
+ * holds references to all available JMS senders
+ *
+  * @author Johannes Smutny
+*/
 public class BaseSenderStore implements SenderStore {
 
 	private Map<DestinationIdentifier, JmsTemplate> mListeners =

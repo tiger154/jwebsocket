@@ -39,8 +39,7 @@ public enum EventJms {
 	/**
 	 *
 	 */
-	HANDLE_MAP_MESSAGE(
-	"handleJmsMapMessage");
+	HANDLE_MAP_MESSAGE("handleJmsMapMessage");
 	private String mValue;
 
 	private EventJms(String value) {

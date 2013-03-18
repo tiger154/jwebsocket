@@ -21,7 +21,6 @@ package org.jwebsocket.plugins.jms;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.jwebsocket.plugins.jms.infra.impl.JmsListenerContainer;
 
 /**

@@ -300,9 +300,9 @@ public class DefaultMessageDelegate implements MessageDelegate, MessageConsumerR
 		private Token mToken;
 		private boolean getsMessagePayloadOnly;
 
-		private MessageListenerToken(Token token, boolean getsMessagePayloadOnly) {
+		private MessageListenerToken(Token aToken, boolean getsMessagePayloadOnly) {
 			super();
-			mToken = token;
+			mToken = aToken;
 			this.getsMessagePayloadOnly = getsMessagePayloadOnly;
 		}
 	}
@@ -349,9 +349,9 @@ public class DefaultMessageDelegate implements MessageDelegate, MessageConsumerR
 			super(aMessage);
 			try {
 				mMsgPayLoad = aMessage.getText();
-			} catch (JMSException e) {
+			} catch (JMSException lEx) {
 				mOk = false;
-				mLog = e.getMessage();
+				mLog = lEx.getMessage();
 			}
 		}
 	}
@@ -365,9 +365,9 @@ public class DefaultMessageDelegate implements MessageDelegate, MessageConsumerR
 			super(aMessage);
 			try {
 				mMsgPayLoad = (Map) mMsgConverter.fromMessage(aMessage);
-			} catch (JMSException e) {
+			} catch (JMSException lEx) {
 				mOk = false;
-				mLog = e.getMessage();
+				mLog = lEx.getMessage();
 			}
 		}
 	}
