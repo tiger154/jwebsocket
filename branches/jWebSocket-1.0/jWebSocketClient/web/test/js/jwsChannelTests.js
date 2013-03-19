@@ -290,7 +290,7 @@ jws.tests.Channels = {
 				}
 				expect( lResponse.code ).toEqual( 0 );
 				expect( lToBeFound ).toEqual( 0 );
-				expect( lChannels.length ).toEqual( aExpectedCount );
+				expect( 0 ).toEqual( lToBeFound );
 			});
 
 		});
