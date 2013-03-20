@@ -268,7 +268,7 @@ public class TokenServer extends BaseServer {
 				if (lRunReqInOwnThread) {
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Processing threaded token '"
-								+ lToken.toString()
+								+ Logging.getTokenStr(lToken)
 								+ "' from '" + aConnector + "'...");
 					}
 					mCachedThreadPool.execute(new Runnable() {
@@ -279,13 +279,13 @@ public class TokenServer extends BaseServer {
 					});
 				} else {
 					if (mLog.isDebugEnabled()) {
-						mLog.debug("Processing token '" + lToken.toString()
+						mLog.debug("Processing token '" + Logging.getTokenStr(lToken)
 								+ "' from '" + aConnector + "'...");
 					}
 					processToken(aConnector, lToken);
 				}
 			} else {
-				mLog.error("Packet '" + aDataPacket.toString()
+				mLog.error("Packet '" + Logging.getTokenStr(aDataPacket.toString())
 						+ "' could not be converted into token.");
 			}
 		} else {
@@ -373,7 +373,8 @@ public class TokenServer extends BaseServer {
 			FilterResponse lFilterResponse = getFilterChain().processTokenOut(null, aTarget, aToken);
 			if (!lFilterResponse.isRejected()) {
 				if (mLog.isDebugEnabled()) {
-					mLog.debug("Sending token '" + aToken + "' to '" + aTarget + "'...");
+					mLog.debug("Sending token '" + Logging.getTokenStr(aToken)
+							+ "' to '" + aTarget + "'...");
 				}
 				super.sendPacketInTransaction(
 						aTarget,
@@ -572,7 +573,7 @@ public class TokenServer extends BaseServer {
 				// if filter chain does not response "aborted"
 				if (!lFilterResponse.isRejected()) {
 					if (mLog.isDebugEnabled()) {
-						mLog.debug("Sending token '" + aToken
+						mLog.debug("Sending token '" + Logging.getTokenStr(aToken)
 								+ "' to '" + lTargetConnector + "'...");
 					}
 					sendPacketData(lTargetConnector, tokenToPacket(lTargetConnector, aToken), false);
@@ -593,7 +594,7 @@ public class TokenServer extends BaseServer {
 			WebSocketConnector aTarget, Token aToken, boolean aIsAsync) {
 		if (null == aTarget) {
 			mLog.error("Trying to send token to removed or closed connector: "
-					+ aToken.toString());
+					+ Logging.getTokenStr(aToken));
 		} else if (aTarget.getBool(VAR_IS_TOKENSERVER)) {
 			// before sending the token push it through filter chain
 			FilterResponse lFilterResponse = getFilterChain().processTokenOut(

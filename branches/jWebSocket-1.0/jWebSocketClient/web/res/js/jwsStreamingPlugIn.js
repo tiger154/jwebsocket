@@ -28,6 +28,11 @@ jws.StreamingPlugIn = {
 	//:d:en:Namespace for the [tt]StreamingPlugIn[/tt] class.
 	// if namespace changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.streaming",
+			
+	//:const:*:JWS_NS:String:streaming
+	//:d:en:Namespace within the jWebSocketClient instance.
+	// if namespace changed update the applications accordingly!
+	JWS_NS: "streaming",
 
 	//:m:*:registerStream
 	//:d:en:Registers the client at the given stream on the server. _
