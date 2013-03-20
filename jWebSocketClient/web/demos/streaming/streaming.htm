@@ -53,7 +53,7 @@
 			function connect() {
 				// URL is ws[s]://[hostname|localhost]:8787[/context][/servlet/][;args...]
 				// deprecated: JWS_SERVER_URL;
-				var lURL = jws.getDefaultServerURL();
+				var lURL = jws.getAutoServerURL();
 
 				log( "Connecting to " + lURL + " ..." );
 				try {
@@ -104,14 +104,14 @@
 			function registerStream() {
 				var lStream = eStream.value; // "timeStream";
 				log( "Registering at stream '" + lStream + "'..." );
-				var lRes = lWSC.registerStream( lStream );
+				var lRes = lWSC.streaming.registerStream( lStream );
 				log( lWSC.resultToString( lRes ) );
 			}
 
 			function unregisterStream() {
 				var lStream = eStream.value; // "timeStream";
 				log( "Unregistering from stream '" + lStream + "'..." );
-				var lRes = lWSC.unregisterStream( lStream );
+				var lRes = lWSC.streaming.unregisterStream( lStream );
 				log( lWSC.resultToString( lRes ) );
 			}
 

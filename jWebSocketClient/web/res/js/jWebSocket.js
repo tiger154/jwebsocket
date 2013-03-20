@@ -438,16 +438,16 @@ var jws = {
 		var lMethod = null;
 		var lArgs = [];
 		// checked options passed
-		if( aOptions.OnMessage && typeof aOptions.OnMessage == "function" ) {
+		if( aOptions.OnMessage && "function" === typeof aOptions.OnMessage ) {
 			lOnMessage = aOptions.OnMessage;
 		}
-		if( aOptions.OnError && typeof aOptions.OnError == "function" ) {
+		if( aOptions.OnError && "function" === typeof aOptions.OnError ) {
 			lOnError = aOptions.OnError;
 		}
-		if( aOptions.file && typeof aOptions.file == "String" ) {
+		if( aOptions.file && "String" === typeof aOptions.file ) {
 			lFile = aOptions.file;
 		}
-		if( aOptions.method && typeof aOptions.method == "function" ) {
+		if( aOptions.method && "function" === typeof aOptions.method ) {
 			lMethod = aOptions.method;
 		}
 		if( aOptions.args ) {
@@ -464,7 +464,7 @@ var jws = {
 			// This listener is called when a message from the thread
 			// to the application is posted.
 			jws.worker.onmessage = function( aEvent ) {
-				if( lOnMessage != null ) {
+				if( null !== lOnMessage ) {
 					lOnMessage.call( lThis, {
 						data: aEvent.data
 					});
@@ -475,7 +475,7 @@ var jws = {
 			// This listener is called when an error
 			// occurred within the thread.
 			jws.worker.onerror = function( aEvent ) {
-				if( lOnError != null ) {
+				if( null !== lOnError ) {
 					lOnError.call( lThis, {
 						message: aEvent.message
 					});
@@ -860,19 +860,19 @@ var jws = {
 			if( jws.fIsNetscape ) {
 				jws.fBrowserType = jws.BT_NETSCAPE;
 			} else {
-				jws.fIsFirefox = navigator.appName == "Netscape";
+				jws.fIsFirefox = "Netscape" === navigator.appName;
 				if( jws.fIsFirefox ) {
 					jws.fBrowserType = jws.BT_FIREFOX;
 				} else {
-					jws.fIsOpera = navigator.appName == "Opera";
+					jws.fIsOpera = "Opera" === navigator.appName;
 					if( jws.fIsOpera ) {
 						jws.fBrowserType = jws.BT_OPERA;
 					} else {
-						jws.fIsIExplorer = navigator.appName == "Microsoft Internet Explorer";
+						jws.fIsIExplorer = "Microsoft Internet Explorer" === navigator.appName;
 						if( jws.fIsIExplorer ) {
 							jws.fBrowserType = jws.BT_IEXPLORER;
 						} else {
-							jws.fIsPocketIE = navigator.appName == "Microsoft Pocket Internet Explorer";
+							jws.fIsPocketIE = "Microsoft Pocket Internet Explorer" === navigator.appName;
 							if( jws.fIsPocketIE ) {
 								jws.fBrowserType = jws.BT_IEXPLORER;
 							}
@@ -883,7 +883,7 @@ var jws = {
 		}
 	}
 
-	var p, i;
+	var p, lIdx;
 	var lStr;
 	var lFound;
 	var lVersion;
@@ -913,17 +913,17 @@ var jws = {
 				jws.fBrowserVerStr = lStr;
 			}	
 			lFound = 0;
-			i = 0;
-			while( i < lStr.length ) {
-				if( lStr.charAt( i ) == '.' ) {
+			lIdx = 0;
+			while( lIdx < lStr.length ) {
+				if( '.' === lStr.charAt( lIdx ) ) {
 					lFound++;
 				}	
 				if( lFound >= 2 ) {
 					break;
 				}	
-				i++;
+				lIdx++;
 			}
-			lStr = lStr.substring( 0, i );
+			lStr = lStr.substring( 0, lIdx );
 			jws.fBrowserVerNo = parseFloat( lStr );
 		}
 	}
@@ -941,17 +941,17 @@ var jws = {
 				jws.fBrowserVerStr = lStr;
 			}
 			lFound = 0;
-			i = 0;
-			while( i < lStr.length ) {
-				if( lStr.charAt( i ) == '.' ) {
+			lIdx = 0;
+			while( lIdx < lStr.length ) {
+				if( '.' === lStr.charAt( lIdx ) ) {
 					lFound++;
 				}
 				if( lFound >= 2 ) {
 					break;
 				}	
-				i++;
+				lIdx++;
 			}
-			lStr = lStr.substring( 0, i );
+			lStr = lStr.substring( 0, lIdx );
 			jws.fBrowserVerNo = parseFloat( lStr );
 		}
 	} else if( jws.fIsOpera ) {
@@ -995,17 +995,17 @@ var jws = {
 			jws.fBrowserVerStr = p > 0 ? lStr.substr( 0, p ) : lStr;
 
 			lFound = 0;
-			i = 0;
-			while( i < lStr.length ) {
-				if( lStr.charAt( i ) == '.' ) {
+			lIdx = 0;
+			while( lIdx < lStr.length ) {
+				if( '.' === lStr.charAt( lIdx ) ) {
 					lFound++;
 				}	
 				if( lFound >= 2 ) {
 					break;
 				}	
-				i++;
+				lIdx++;
 			}
-			lStr = lStr.substring( 0, i );
+			lStr = lStr.substring( 0, lIdx );
 			jws.fBrowserVerNo = parseFloat( lStr );
 
 			lVersion = lUA.match( /Safari\/.*/i );
@@ -1487,6 +1487,32 @@ jws.oop.declareClass = function( aNamespace, aClassname, aAncestor, aFields ) {
 	var lConstructor = function() {
 		if( this.create ) {
 			this.create.apply( this, arguments );
+			
+			// introduce plug-in running in its separate name space, use a wrapper 
+			// function to run the plug-in method in the context of the jWebSocket client
+			var lJWSClass = this.constructor;
+			// check if client instance has plug-ins
+			if( lJWSClass.fPlugIns ) {
+				// iterate through all plug-ins if such exist
+				for( var lIdx = 0; lIdx < lJWSClass.fPlugIns.length; lIdx++ ) {
+					// get plug-in class
+					var lPlugIn = lJWSClass.fPlugIns[ lIdx ];
+					// check if this class has a desired name space within the jws instance
+					if( lPlugIn.JWS_NS ) {
+						// create the jws name space
+						this[ lPlugIn.JWS_NS ] = { };
+						// create wrappwer methods for all methods of the plug-in
+						for( lField in lPlugIn ) {
+							if( "function" === typeof( lPlugIn[ lField ] ) ) {
+								var lInst = this;
+								var lJS = "lFunc = function() { return lPlugIn." + lField + ".apply( lInst, arguments ); }";
+								this[ lPlugIn.JWS_NS ][ lField ] = eval( lJS );
+							}
+						}
+					}
+				}
+			}	
+
 		}
 	};
 	
@@ -1498,7 +1524,7 @@ jws.oop.declareClass = function( aNamespace, aClassname, aAncestor, aFields ) {
 	for( lField in aFields ) {
 		lConstructor.prototype[ lField ] = aFields[ lField ];
 	}
-	if( aAncestor != null ) {
+	if( null !== aAncestor ) {
 		// every class maintains an array of its direct descendants
 		if( !aAncestor.descendants ) {
 			aAncestor.descendants = [];
@@ -1506,7 +1532,7 @@ jws.oop.declareClass = function( aNamespace, aClassname, aAncestor, aFields ) {
 		aAncestor.descendants.push( lConstructor );
 		for( lField in aAncestor.prototype ) {
 			var lAncMthd = aAncestor.prototype[ lField ];
-			if( typeof lAncMthd == "function" ) {
+			if( typeof lAncMthd === "function" ) {
 				if( lConstructor.prototype[ lField ] ) {
 					lConstructor.prototype[ lField ].inherited = lAncMthd;
 				} else {
@@ -1520,30 +1546,33 @@ jws.oop.declareClass = function( aNamespace, aClassname, aAncestor, aFields ) {
 	}
 };
 
-
 // plug-in functionality to allow to add plug-ins into existing classes
-jws.oop.addPlugIn = function( aClass, aPlugIn ) {
+jws.oop.addPlugIn = function( aClass, aPlugIn, aOptions ) {
+
+	var lField;
 
 	// if the class has no plug-ins yet, initialize array
 	if( !aClass.fPlugIns ) {
 		aClass.fPlugIns = [];
 	}
+	
 	// add the plug-in to the class
 	aClass.fPlugIns.push( aPlugIn );
+	
 	// clone all methods of the plug-in to the class
-	for( var lField in aPlugIn ) {
+	for( lField in aPlugIn ) {
 		// don't overwrite existing methods of class with plug-in methods
 		// ensure that native jWebSocket methods don't get overwritten!
 		if( !aClass.prototype[ lField ] ) {
 			aClass.prototype[ lField ] = aPlugIn[ lField ];
-		// var lObj = aClass.prototype[ lField ];
 		}
 	}
+
 	// if the class already has descendants recursively
 	// clone the plug-in methods to these as well.
 	if( aClass.descendants ) {
 		for( var lIdx = 0, lCnt = aClass.descendants.length; lIdx < lCnt; lIdx ++ ) {
-			jws.oop.addPlugIn( aClass.descendants[ lIdx ], aPlugIn );
+			jws.oop.addPlugIn( aClass.descendants[ lIdx ], aPlugIn, aOptions );
 		}
 	}
 };
@@ -1935,22 +1964,22 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					+ "Expected value: fragment_size > 0 && fragment_size <= max_frame_size");
 			}
 		
-			if ( typeof( aData ) != "string" || aData.length == 0 ) {
+			if ( typeof( aData ) !== "string" || aData.length === 0 ) {
 				throw new Error("Invalid value for argument 'data'!");
 			}
-			if ( typeof( aListener ) != "object" ) {
+			if ( typeof( aListener ) !== "object" ) {
 				throw new Error("Invalid value for argument 'listener'!");
 			}
-			if ( typeof( aListener["getTimeout"] ) != "function" ) {
+			if ( typeof( aListener["getTimeout"] ) !== "function" ) {
 				throw new Error("Missing 'getTimeout' method on argument 'listener'!");
 			}
-			if ( typeof( aListener["OnSuccess"] ) != "function" ) {
+			if ( typeof( aListener["OnSuccess"] ) !== "function" ) {
 				throw new Error("Missing 'OnSuccess' method on argument 'listener'!");
 			}
-			if ( typeof( aListener["OnTimeout"] ) != "function" ) {
+			if ( typeof( aListener["OnTimeout"] ) !== "function" ) {
 				throw new Error("Missing 'OnTimeout' method on argument 'listener'!");
 			}
-			if ( typeof( aListener["OnFailure"] ) != "function" ) {
+			if ( typeof( aListener["OnFailure"] ) !== "function" ) {
 				throw new Error("Missing 'OnFailure' method on argument 'listener'!");
 			}
 			
@@ -2476,12 +2505,12 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				lCallback.OnResponse.call( this, aToken, lArgs );
 			}	
 			if( lCallback.OnSuccess
-				&& aToken.code === 0 ) {
+				&& 0 === aToken.code ) {
 				lCallback.OnSuccess.call( this, aToken, lArgs );
 			}	
 			if( lCallback.OnFailure
-				&& aToken.code != undefined 
-				&& aToken.code != 0 ) {
+				&& undefined !== aToken.code
+				&& 0 !== aToken.code ) {
 				lCallback.OnFailure.call( this, aToken, lArgs );
 			}
 			delete this.fRequestCallbacks[ lField ];

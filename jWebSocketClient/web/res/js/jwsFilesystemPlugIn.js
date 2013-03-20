@@ -42,11 +42,11 @@ jws.FileSystemPlugIn = {
 
 	processToken: function( aToken ) {
 		// check if namespace matches
-		if( aToken.ns == jws.FileSystemPlugIn.NS ) {
+		if( aToken.ns === jws.FileSystemPlugIn.NS ) {
 			// here you can handle incomimng tokens from the server
 			// directy in the plug-in if desired.
-			if( "load" == aToken.reqType ) {
-				if( aToken.code == 0 ) {
+			if( "load" === aToken.reqType ) {
+				if( 0 === aToken.code ) {
 					if (aToken.decode){
 						aToken.data = Base64.decode( aToken.data );
 					}
@@ -58,8 +58,8 @@ jws.FileSystemPlugIn = {
 						this.OnFileError( aToken );
 					}
 				}
-			} else if( "send" == aToken.reqType ) {
-				if( aToken.code == 0 ) {
+			} else if( "send" === aToken.reqType ) {
+				if( 0 === aToken.code ) {
 					if( this.OnFileSent ) {
 						this.OnFileSent( aToken );
 					}
@@ -68,16 +68,16 @@ jws.FileSystemPlugIn = {
 						this.OnFileError( aToken );
 					}
 				}
-			} else if( "event" == aToken.type ) {
-				if( "filesaved" == aToken.name ) {
+			} else if( "event" === aToken.type ) {
+				if( "filesaved" === aToken.name ) {
 					if( this.OnFileSaved ) {
 						this.OnFileSaved( aToken );
 					}
-				} else if( "filereceived" == aToken.name ) {
+				} else if( "filereceived" === aToken.name ) {
 					if( this.OnFileReceived ) {
 						this.OnFileReceived( aToken );
 					}
-				} else if( "filedeleted" == aToken.name ) {
+				} else if( "filedeleted" === aToken.name ) {
 					if( this.OnFileDeleted ) {
 						this.OnFileDeleted( aToken );
 					}

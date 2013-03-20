@@ -65,7 +65,7 @@ $.widget( "jws.streaming", {
 			var lStream = w.streaming.element
 			.find( "input[name=streaming]:checked" ).val( ); // "timeStream";
 			log( "Registering at stream '" + lStream + "'..." );
-			var lRes = mWSC.registerStream( lStream );
+			var lRes = mWSC.streaming.registerStream( lStream );
 			log( mWSC.resultToString( lRes ) );
 		}
 		else{
@@ -79,7 +79,7 @@ $.widget( "jws.streaming", {
 			var lStream = w.streaming.element
 			.find( "input[name=streaming]:checked" ).val( ); // "timeStream";
 			log( "Unregistering from stream '" + lStream + "'..." );
-			var lRes = mWSC.unregisterStream( lStream );
+			var lRes = mWSC.streaming.unregisterStream( lStream );
 			log( mWSC.resultToString( lRes ) );
 		}
 		else{
