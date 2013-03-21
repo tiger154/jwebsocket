@@ -6,27 +6,34 @@
 
 	<!-- ####### EhCache settings for channel plug-in ####### -->
 	   
-	<!-- ChannelStorage -->
-	<bean id="channelStorage" class="org.jwebsocket.storage.ehcache.EhCacheStorage">
-		<!-- ensure that cache with name "channelStore" is specified in ehcache.xml -->
-		<constructor-arg value="channelStore"/>
+	<!-- ORMLite (JDBC) Storage -->
+	<bean id="databaseUrl" class="org.jwebsocket.util.Tools"
+		  factory-method="expandEnvVarsAndProps">
+		<constructor-arg index="0" value="jdbc:sqlite:${JWEBSOCKET_HOME}database/channels.db" />
 	</bean>
-	<!-- Channel Subscribers -->
-	<bean id="subscriberStorage" class="org.jwebsocket.storage.ehcache.EhCacheStorage">
-		<!-- ensure that cache with name "channelSubscribers" is specified in ehcache.xml -->
-		<constructor-arg value="channelSubscribers"/>
+
+	<bean id="connectionSource"
+		  class="com.j256.ormlite.jdbc.JdbcConnectionSource" init-method="initialize">
+		<property name="url" ref="databaseUrl" />
+		<property name="username" value="" />
+		<property name="password" value="" />
 	</bean>
-	<!-- Channel Publishers -->
-	<bean id="publisherStorage" class="org.jwebsocket.storage.ehcache.EhCacheStorage">
-		<!-- ensure that cache with name "channelPublishers" is specified in ehcache.xml -->
-		<constructor-arg value="channelPublishers"/>
+
+	<bean id="entriesDao" class="com.j256.ormlite.spring.DaoFactory"
+		  factory-method="createDao">
+		<constructor-arg index="0" ref="connectionSource" />
+		<constructor-arg index="1" value="org.jwebsocket.storage.ormlite.EntryEntity" />
 	</bean>
-	
-	<bean id="channelManager" class="org.jwebsocket.plugins.channels.ChannelManager">
+
+	<bean id="storageProvider" class="org.jwebsocket.storage.ormlite.OrmLiteStorageProvider" init-method="initialize">
+		<constructor-arg index="0" ref="entriesDao" />
+	</bean>
+
+	<bean id="channelManager" class="org.jwebsocket.plugins.channels.ChannelManager" init-method="initialize">
 		<constructor-arg>
 			<map>
 				<!-- set this to true if you want to allow to create new system channels 
-					from the client side, default is false, not recommended! -->
+				from the client side, default is false, not recommended! -->
 				<!--
 				<entry key="allowCreateSystemChannels">
 					<value>false</value>
@@ -55,9 +62,7 @@
 				</entry>
 			</map>
 		</constructor-arg>	
-		<constructor-arg ref="channelStorage"/>
-		<constructor-arg ref="subscriberStorage"/>
-		<constructor-arg ref="publisherStorage"/>
+		<constructor-arg ref="storageProvider"/>
 	</bean>
 
 </beans>
