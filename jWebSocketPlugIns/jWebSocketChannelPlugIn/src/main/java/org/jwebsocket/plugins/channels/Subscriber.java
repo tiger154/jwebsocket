@@ -18,62 +18,16 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.channels;
 
-import java.util.List;
-import javolution.util.FastList;
+import org.jwebsocket.api.IBasicStorage;
 
 /**
  * Class that represents the subscriber of a channel
  *
- * @author puran, aschulze
- * @version $Id: Subscriber.java 1592 2011-02-20 00:49:48Z fivefeetfurther $
+ * @author kyberneees
  */
-public class Subscriber {
+public class Subscriber extends Publisher {
 
-	private String mConnectionId;
-	private List<String> mChannels = new FastList<String>();
-
-	/**
-	 * Default constructor
-	 *
-	 * @param aConnectionId
-	 */
-	public Subscriber(String aConnectionId) {
-		this.mConnectionId = aConnectionId;
-	}
-
-	/**
-	 * @return the id
-	 */
-	public String getId() {
-		return mConnectionId;
-	}
-
-	/**
-	 * @return the channels
-	 */
-	public List<String> getChannels() {
-		return mChannels;
-	}
-
-	/**
-	 * Add the channel id to the list of channels this subscriber is subscribed
-	 *
-	 * @param aChannel
-	 */
-	public void addChannel(String aChannel) {
-		if (this.mChannels != null) {
-			this.mChannels.add(aChannel);
-		}
-	}
-
-	/**
-	 * Removes the channel from the subscriber list of channels
-	 *
-	 * @param aChannel the channel id to remove.
-	 */
-	public void removeChannel(String aChannel) {
-		if (this.mChannels != null) {
-			this.mChannels.remove(aChannel);
-		}
+	public Subscriber(String aId, IBasicStorage<String, Object> aStorage) {
+		super(aId, aStorage);
 	}
 }

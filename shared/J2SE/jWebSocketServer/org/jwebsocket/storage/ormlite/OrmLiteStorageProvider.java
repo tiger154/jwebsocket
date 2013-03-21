@@ -19,7 +19,9 @@
 package org.jwebsocket.storage.ormlite;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.table.TableUtils;
 import org.jwebsocket.api.IBasicStorage;
+import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.IStorageProvider;
 import org.springframework.util.Assert;
 
@@ -27,14 +29,24 @@ import org.springframework.util.Assert;
  *
  * @author kyberneees
  */
-public class OrmLiteStorageProvider implements IStorageProvider {
+public class OrmLiteStorageProvider implements IStorageProvider, IInitializable {
 
 	private Dao<EntryEntity, String> mEntries;
 
 	public OrmLiteStorageProvider(Dao<EntryEntity, String> aEntries) {
 		Assert.notNull(aEntries, "The 'entries', argument cannot be null!");
-
 		this.mEntries = aEntries;
+	}
+
+	@Override
+	public void initialize() throws Exception {
+		if (!mEntries.isTableExists()) {
+			TableUtils.createTable(mEntries.getConnectionSource(), EntryEntity.class);
+		}
+	}
+
+	@Override
+	public void shutdown() throws Exception {
 	}
 
 	@Override

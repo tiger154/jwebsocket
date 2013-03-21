@@ -18,20 +18,20 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.channels;
 
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javolution.util.FastList;
+import javolution.util.FastMap;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.security.Right;
-import org.jwebsocket.security.Rights;
-import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
@@ -79,10 +79,11 @@ public final class Channel implements ChannelLifeCycle {
 	private String mAccessKey;
 	private String mOwner;
 	private volatile boolean mAuthenticated = false;
-	private List<String> mSubscribers;
-	private List<String> mPublishers;
+	private IBasicStorage<String, Object> mSubscribers;
+	private IBasicStorage<String, Object> mPublishers;
 	private ChannelState mState = ChannelState.CREATED;
 	private List<ChannelListener> mChannelListeners;
+	private static Map<String, List<ChannelListener>> mListeners = new FastMap<String, List<ChannelListener>>().shared();
 	private TokenServer mServer;
 
 	/**
@@ -137,7 +138,10 @@ public final class Channel implements ChannelLifeCycle {
 	public Channel(String aId, String aName,
 			boolean aIsPrivate, boolean aIsSystem,
 			String aAccessKey, String aSecretKey, String aOwner,
-			ChannelState aState, TokenServer aServer) {
+			ChannelState aState, TokenServer aServer,
+			IBasicStorage<String, Object> aSubscribers,
+			IBasicStorage<String, Object> aPublishers) {
+
 		this.mId = aId;
 		this.mName = aName;
 		this.mIsPrivate = aIsPrivate;
@@ -147,81 +151,87 @@ public final class Channel implements ChannelLifeCycle {
 		this.mOwner = aOwner;
 		this.mState = aState;
 		this.mServer = aServer;
+		mPublishers = aPublishers;
+		mSubscribers = aSubscribers;
 
-		registerListener(new ChannelListener() {
-			@Override
-			public void channelStarted(Channel aChannel, String aUser) {
-				Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
-				lEvent.setString("name", "channelStarted");
-				lEvent.setString("user", aUser);
-				lEvent.setString("channelName", aChannel.getName());
-				lEvent.setString("channelId", aChannel.getId());
+		if (!mListeners.containsKey(aId)) {
+			mListeners.put(aId, new FastList<ChannelListener>());
+		}
+		mChannelListeners = mListeners.get(aId);
 
-				aChannel.broadcastToken(lEvent);
-			}
+		// register core channel listener
+		if (mChannelListeners.isEmpty()) {
+			registerListener(new ChannelListener() {
+				@Override
+				public void channelStarted(Channel aChannel, String aUser) {
+					Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
+					lEvent.setString("name", "channelStarted");
+					lEvent.setString("user", aUser);
+					lEvent.setString("channelName", aChannel.getName());
+					lEvent.setString("channelId", aChannel.getId());
 
-			@Override
-			public void channelStopped(Channel aChannel, String aUser) {
-				Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
-				lEvent.setString("name", "channelStopped");
-				lEvent.setString("user", aUser);
-				lEvent.setString("channelName", aChannel.getName());
-				lEvent.setString("channelId", aChannel.getId());
+					aChannel.broadcastToken(lEvent);
+				}
 
-				aChannel.broadcastToken(lEvent);
-			}
+				@Override
+				public void channelStopped(Channel aChannel, String aUser) {
+					Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
+					lEvent.setString("name", "channelStopped");
+					lEvent.setString("user", aUser);
+					lEvent.setString("channelName", aChannel.getName());
+					lEvent.setString("channelId", aChannel.getId());
 
-			@Override
-			public void channelRemoved(Channel aChannel, String aUser) {
-				// already supporting by broadcasting
-			}
+					aChannel.broadcastToken(lEvent);
+				}
 
-			@Override
-			public void subscribed(Channel aChannel, WebSocketConnector aConnector) {
-				Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
-				lEvent.setString("name", "subscription");
-//				lEvent.setString("subscriber", aSubscriber);
-				lEvent.setString("subscriber", aConnector.getId());
-//				lEvent.setString("user", mServer.getConnector(aSubscriber).getUsername());
-				lEvent.setString("user", aConnector.getUsername());
-				lEvent.setString("channelName", aChannel.getName());
-				lEvent.setString("channelId", aChannel.getId());
-				lEvent.setString("state", aChannel.getState().name());
-				lEvent.setBoolean("isSystem", aChannel.isSystem());
-				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
+				@Override
+				public void channelRemoved(Channel aChannel, String aUser) {
+					// already supporting by broadcasting
+				}
 
-				aChannel.broadcastToken(lEvent);
-			}
+				@Override
+				public void subscribed(Channel aChannel, WebSocketConnector aConnector) {
+					Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
+					lEvent.setString("name", "subscription");
+					lEvent.setString("subscriber", aConnector.getId());
+					lEvent.setString("user", aConnector.getUsername());
+					lEvent.setString("channelName", aChannel.getName());
+					lEvent.setString("channelId", aChannel.getId());
+					lEvent.setString("state", aChannel.getState().name());
+					lEvent.setBoolean("isSystem", aChannel.isSystem());
+					lEvent.setBoolean("isPrivate", aChannel.isPrivate());
 
-			@Override
-			public void unsubscribed(Channel aChannel, WebSocketConnector aConnector) {
-				Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
-				lEvent.setString("name", "unsubscription");
-//				lEvent.setString("subscriber", aSubscriber);
-				lEvent.setString("subscriber", aConnector.getId());
-				lEvent.setString("channelName", aChannel.getName());
-				lEvent.setString("channelId", aChannel.getId());
-				lEvent.setString("state", aChannel.getState().name());
-				lEvent.setBoolean("isSystem", aChannel.isSystem());
-				lEvent.setBoolean("isPrivate", aChannel.isPrivate());
-//				lEvent.setString("user", mServer.getConnector(aSubscriber).getUsername());
-				lEvent.setString("user", aConnector.getUsername());
+					aChannel.broadcastToken(lEvent);
+				}
 
-				aChannel.broadcastToken(lEvent);
-			}
+				@Override
+				public void unsubscribed(Channel aChannel, WebSocketConnector aConnector) {
+					Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
+					lEvent.setString("name", "unsubscription");
+					lEvent.setString("subscriber", aConnector.getId());
+					lEvent.setString("channelName", aChannel.getName());
+					lEvent.setString("channelId", aChannel.getId());
+					lEvent.setString("state", aChannel.getState().name());
+					lEvent.setBoolean("isSystem", aChannel.isSystem());
+					lEvent.setBoolean("isPrivate", aChannel.isPrivate());
+					lEvent.setString("user", aConnector.getUsername());
 
-			@Override
-			public void dataReceived(Channel aChannel, Token aToken) {
-			}
+					aChannel.broadcastToken(lEvent);
+				}
 
-			@Override
-			public void dataBroadcasted(Channel aChannel, Token aToken) {
-			}
+				@Override
+				public void dataReceived(Channel aChannel, Token aToken) {
+				}
 
-			@Override
-			public void channelInitialized(Channel aChannel) {
-			}
-		});
+				@Override
+				public void dataBroadcasted(Channel aChannel, Token aToken) {
+				}
+
+				@Override
+				public void channelInitialized(Channel aChannel) {
+				}
+			});
+		}
 	}
 
 	/**
@@ -304,35 +314,29 @@ public final class Channel implements ChannelLifeCycle {
 	 * @return the list of subscribers
 	 */
 	public List<String> getSubscribers() {
-		return (mSubscribers != null
-				? Collections.unmodifiableList(mSubscribers)
-				: null);
-	}
+		List<String> lList = new LinkedList<String>();
+		lList.addAll(mSubscribers.keySet());
 
-	/**
-	 * Set the subscribers to this channel. Note that this method simply
-	 * replaces the existing list of subscribers.
-	 *
-	 * @param aSubscribers the list of subscribers
-	 */
-	public void setSubscribers(List<String> aSubscribers) {
-		this.mSubscribers = aSubscribers;
+		return lList;
 	}
 
 	/**
 	 * @return the publishers who is currently publishing to this channel
 	 */
 	public List<String> getPublishers() {
-		return (mPublishers != null
-				? Collections.unmodifiableList(mPublishers)
-				: null);
+		List<String> lList = new LinkedList<String>();
+		lList.addAll(mPublishers.keySet());
+
+		return lList;
 	}
 
 	/**
 	 * @param aPublishers the publishers to set
 	 */
 	public void setPublishers(List<String> aPublishers) {
-		this.mPublishers = aPublishers;
+		for (String lPub : aPublishers) {
+			addPublisher(lPub);
+		}
 	}
 
 	/**
@@ -341,10 +345,15 @@ public final class Channel implements ChannelLifeCycle {
 	 * @param aPublisher the publisher to add
 	 */
 	public void addPublisher(String aPublisher) {
-		if (this.mPublishers == null) {
-			this.mPublishers = new FastList<String>();
-		}
-		this.mPublishers.add(aPublisher);
+		mPublishers.put(aPublisher, true);
+	}
+	
+	public void clearPublishers(){
+		mPublishers.clear();
+	}
+	
+	public void clearSubscribers(){
+		mSubscribers.clear();
 	}
 
 	/**
@@ -353,9 +362,7 @@ public final class Channel implements ChannelLifeCycle {
 	 * @param aPublisher the publisher to add
 	 */
 	public void removePublisher(String aPublisher) {
-		if (this.mPublishers != null) {
-			this.mPublishers.remove(aPublisher);
-		}
+		this.mPublishers.remove(aPublisher);
 	}
 
 	/**
@@ -365,12 +372,8 @@ public final class Channel implements ChannelLifeCycle {
 	 * @param aConnector the connector which wants to subscribe
 	 */
 	public void subscribe(String aSubscriber, WebSocketConnector aConnector) {
-		// create new subscribers if needed
-		if (this.mSubscribers == null) {
-			this.mSubscribers = new FastList<String>();
-		}
-		if (!mSubscribers.contains(aSubscriber)) {
-			mSubscribers.add(aSubscriber);
+		if (!mSubscribers.containsKey(aSubscriber)) {
+			mSubscribers.put(aSubscriber, true);
 
 			// listeners notification
 			final Channel lChannel = this;
@@ -397,15 +400,12 @@ public final class Channel implements ChannelLifeCycle {
 	 * @param aSubscriber the connector to unsubscribe
 	 */
 	public void unsubscribe(String aSubscriber, WebSocketConnector aConnector) {
-		if (this.mSubscribers == null) {
-			return;
-		}
-		if (mSubscribers.contains(aSubscriber)) {
+		if (mSubscribers.containsKey(aSubscriber)) {
 			mSubscribers.remove(aSubscriber);
 
 			// listeners notification
 			final Channel lChannel = this;
-			
+
 //			final String lSubscriber = aSubscriber;
 			final WebSocketConnector lConnector = aConnector;
 			if (mChannelListeners != null) {
@@ -460,7 +460,7 @@ public final class Channel implements ChannelLifeCycle {
 		if (mSubscribers != null && mSubscribers.size() > 0) {
 			ExecutorService lExecutor = Executors.newCachedThreadPool();
 
-			Iterator<String> lSubscribers = mSubscribers.iterator();
+			Iterator<String> lSubscribers = mSubscribers.keySet().iterator();
 			while (lSubscribers.hasNext()) {
 				final String lSubscriber = lSubscribers.next();
 				lExecutor.submit(new Runnable() {
@@ -492,7 +492,7 @@ public final class Channel implements ChannelLifeCycle {
 	 */
 	public void broadcastToken(final Token aToken) {
 		if (mSubscribers != null && mSubscribers.size() > 0) {
-			Iterator<String> lSubscribers = mSubscribers.iterator();
+			Iterator<String> lSubscribers = mSubscribers.keySet().iterator();
 			while (lSubscribers.hasNext()) {
 				final String lSubscriber = lSubscribers.next();
 				WebSocketConnector lConnector = mServer.getConnector(lSubscriber);
@@ -521,9 +521,6 @@ public final class Channel implements ChannelLifeCycle {
 	 * @param aChannelListener the channel listener to register
 	 */
 	public void registerListener(ChannelListener aChannelListener) {
-		if (mChannelListeners == null) {
-			mChannelListeners = new FastList<ChannelListener>();
-		}
 		mChannelListeners.add(aChannelListener);
 	}
 
@@ -532,9 +529,7 @@ public final class Channel implements ChannelLifeCycle {
 	 * @param aChannelListener
 	 */
 	public void removeListener(ChannelListener aChannelListener) {
-		if (mChannelListeners != null) {
-			mChannelListeners.remove(aChannelListener);
-		}
+		mChannelListeners.remove(aChannelListener);
 	}
 
 	/**
@@ -579,28 +574,14 @@ public final class Channel implements ChannelLifeCycle {
 			throw new ChannelLifeCycleException(
 					"Channel '" + this.getName() + "' is started already!");
 		}
-		if (!SecurityFactory.isValidUser(aUser)) {
+
+		// verify the owner
+		if (!getOwner().equals(aUser)) {
 			throw new ChannelLifeCycleException(
-					"Cannot start the channel '"
-					+ this.getName()
-					+ "' for invalid user login '" + aUser + "'");
-		} else {
-			Rights lRights = SecurityFactory.getUserRights(aUser);
-			Right lRight = lRights.get("org.jwebsocket.plugins.channels.start");
-			if (lRight == null) {
-				throw new ChannelLifeCycleException(
-						"User '" + aUser
-						+ "' is not granted to start the channel");
-			} else {
-				// verify the owner
-				if (aUser != null && !aUser.equals(getOwner())) {
-					throw new ChannelLifeCycleException(
-							"User '" + aUser + "' is not the owner of this channel"
-							+ ", only owner of the channel can start.");
-				}
-				this.mAuthenticated = true;
-			}
+					"User '" + aUser + "' is not the owner of this channel"
+					+ ", only owner of the channel can start.");
 		}
+
 		this.mState = ChannelState.STARTED;
 		final Channel lChannel = this;
 		if (mChannelListeners != null) {
@@ -629,25 +610,12 @@ public final class Channel implements ChannelLifeCycle {
 			throw new ChannelLifeCycleException(
 					"Channel '" + getName() + "' is not started yet!");
 		}
-		if (!SecurityFactory.isValidUser(aUser) && !mAuthenticated) {
+
+		// verify the owner
+		if (!getOwner().equals(aUser)) {
 			throw new ChannelLifeCycleException(
-					"Cannot stop the channel '" + this.getName()
-					+ "' for invalid user login '" + aUser + "'");
-		} else {
-			Rights rights = SecurityFactory.getUserRights(aUser);
-			Right right = rights.get("org.jwebsocket.plugins.channels.stop");
-			if (right == null) {
-				throw new ChannelLifeCycleException(
-						"User '" + aUser
-						+ "' is not granted to stop the channel");
-			} else {
-				// verify the owner
-				if (aUser != null && !aUser.equals(getOwner())) {
-					throw new ChannelLifeCycleException(
-							"User '" + aUser + "' is not the owner of this channel"
-							+ ", only owner of the channel can stop");
-				}
-			}
+					"User '" + aUser + "' is not the owner of this channel"
+					+ ", only owner of the channel can stop");
 		}
 
 		// setting the new state value

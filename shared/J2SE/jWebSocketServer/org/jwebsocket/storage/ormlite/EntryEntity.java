@@ -28,8 +28,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "jws_storages")
 public class EntryEntity {
 
-	@DatabaseField(id = true, generatedId = true)
-	private String id;
+	@DatabaseField(generatedId = true)
+	private Long id;
 	@DatabaseField(columnName = FIELD_KEY)
 	private String key;
 	@DatabaseField(columnName = FIELD_VALUE)
@@ -40,11 +40,11 @@ public class EntryEntity {
 	public static final String FIELD_KEY = "key";
 	public static final String FIELD_VALUE = "value";
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String aId) {
+	public void setId(Long aId) {
 		this.id = aId;
 	}
 	

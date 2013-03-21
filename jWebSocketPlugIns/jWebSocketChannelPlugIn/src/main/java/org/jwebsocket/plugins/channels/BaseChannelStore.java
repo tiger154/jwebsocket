@@ -18,16 +18,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.channels;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jwebsocket.api.IBasicStorage;
+import org.jwebsocket.api.IStorageProvider;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.server.TokenServer;
@@ -89,30 +87,16 @@ public class BaseChannelStore implements ChannelStore {
 	 *
 	 */
 	public static final String SERVER_ID = "token_server";
-	private IBasicStorage mStorage = null;
+	private final IBasicStorage mStorage;
+	private final IStorageProvider mStorageProvider;
 
 	/**
 	 *
 	 * @param aStorage
 	 */
-	public BaseChannelStore(IBasicStorage aStorage) {
-		setStorage(aStorage);
-	}
-
-	/**
-	 *
-	 * @param aStorage
-	 */
-	public final void setStorage(IBasicStorage aStorage) {
+	public BaseChannelStore(IBasicStorage aStorage, IStorageProvider aStorageProvider) {
 		mStorage = aStorage;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final IBasicStorage getStorage() {
-		return mStorage;
+		mStorageProvider = aStorageProvider;
 	}
 
 	/**
@@ -121,7 +105,7 @@ public class BaseChannelStore implements ChannelStore {
 	 * @param aId
 	 */
 	@Override
-	public Channel getChannel(String aId) {
+	public Channel getChannel(String aId) throws Exception {
 		Object lObj = mStorage.get(aId);
 		String lJSONString = (String) lObj;
 		if (null == lJSONString) {
@@ -130,7 +114,7 @@ public class BaseChannelStore implements ChannelStore {
 		return json2Channel(lJSONString);
 	}
 
-	private Channel json2Channel(String lJSONStr) {
+	private Channel json2Channel(String lJSONStr) throws Exception {
 		Channel lChannel = null;
 		try {
 			JSONObject lJSONObj = new JSONObject(lJSONStr);
@@ -142,26 +126,15 @@ public class BaseChannelStore implements ChannelStore {
 			String lAccessKey = lJSONObj.getString(ACCESS_KEY);
 			String lOwner = lJSONObj.getString(OWNER);
 			String lStateValue = lJSONObj.getString(STATE);
-			JSONArray lJSSubscribers = lJSONObj.getJSONArray(SUBSCRIBERS);
-			JSONArray lJSPublishers = lJSONObj.getJSONArray(PUBLISHERS);
 			String lServerId = lJSONObj.getString(SERVER_ID);
 			// construct the channel object
 			lChannel = new Channel(lChannelId, lChannelName,
 					lPrivate, lSystem,
 					lAccessKey, lSecretKey,
 					lOwner, Channel.ChannelState.valueOf(lStateValue),
-					(TokenServer) JWebSocketFactory.getServer(lServerId));
-			List lSubscribers = new FastList<String>();
-			List lPublishers = new FastList<String>();
-			for (int i = 0; i < lJSSubscribers.length(); i++) {
-				lSubscribers.add(lJSSubscribers.getString(i));
-			}
-			for (int i = 0; i < lJSPublishers.length(); i++) {
-				lPublishers.add(lJSPublishers.getString(i));
-			}
-
-			lChannel.setSubscribers(lSubscribers);
-			lChannel.setPublishers(lPublishers);
+					(TokenServer) JWebSocketFactory.getServer(lServerId),
+					mStorageProvider.getStorage(ChannelManager.CHANNEL_SUBSCRIBERS_STORAGE_PREFIX + lChannelId),
+					mStorageProvider.getStorage(ChannelManager.CHANNEL_PUBLISHERS_STORAGE_PREFIX + lChannelId));
 		} catch (JSONException lEx) {
 			logger.error("Error parsing JSON response from the channel store:", lEx);
 		}
@@ -185,10 +158,6 @@ public class BaseChannelStore implements ChannelStore {
 			lJSON.put(ACCESS_KEY, aChannel.getAccessKey());
 			lJSON.put(OWNER, aChannel.getOwner());
 			lJSON.put(STATE, aChannel.getState().name());
-			JSONArray lSubscribers = new JSONArray(aChannel.getSubscribers());
-			lJSON.put(SUBSCRIBERS, lSubscribers);
-			JSONArray lPublishers = new JSONArray(aChannel.getPublishers());
-			lJSON.put(PUBLISHERS, lPublishers);
 			lJSON.put(SERVER_ID, aChannel.getServer().getId());
 
 			// now save
@@ -227,7 +196,7 @@ public class BaseChannelStore implements ChannelStore {
 	}
 
 	@Override
-	public Map<String, Channel> getChannels() {
+	public Map<String, Channel> getChannels() throws Exception {
 		Set lKeys = mStorage.keySet();
 		Map lRes = new FastMap<String, Channel>();
 		if (lKeys != null) {

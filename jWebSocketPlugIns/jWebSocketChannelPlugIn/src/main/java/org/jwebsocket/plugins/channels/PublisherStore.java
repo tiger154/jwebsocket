@@ -29,46 +29,16 @@ public interface PublisherStore {
 	/**
 	 * Returns the publisher information for the given publisher id
 	 *
-	 * @param id the publisher id to fetch
-	 * @return the publisher object, null if the publisher doesn't exist.
+	 * @param aId the publisher id to fetch
+	 * @return the publisher object
 	 */
-	Publisher getPublisher(String id);
-
-	/**
-	 * Store the given publisher in the channel store
-	 *
-	 * @param publisher the publisher object
-	 * @return {@code true} if insert successful
-	 */
-	boolean storePublisher(Publisher publisher);
+	Publisher getPublisher(String aId) throws Exception;
 
 	/**
 	 * Removes the publisher from the store based on given id
 	 *
 	 *
-	 * @param id
+	 * @param aId
 	 */
-	void removePublisher(String id);
-
-	/**
-	 * Clears the publisher store, use this method with care since it removes
-	 * all the publishers information from the store physically and cannot be
-	 * rolled back.
-	 */
-	void clearPublishers();
-
-	/**
-	 * Returns the size of the publisher store
-	 *
-	 * @return the size value
-	 */
-	int getPublisherStoreSize();
-
-	/**
-	 * Indicates if the publisher store contains the given publisher identifier
-	 *
-	 * @param aPublisherId
-	 * @return TRUE if the publisher exists, FALSE otherwise
-	 */
-	boolean hasPublisher(String aPublisherId);
+	void removePublisher(String aId) throws Exception;
 }

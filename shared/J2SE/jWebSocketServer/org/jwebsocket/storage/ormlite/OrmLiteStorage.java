@@ -176,7 +176,7 @@ public class OrmLiteStorage extends BaseStorage<String, Object> {
 		try {
 			DeleteBuilder<EntryEntity, String> lDEntries = mEntries.deleteBuilder();
 			lDEntries.where().eq(EntryEntity.FIELD_STORAGE_NAME, mName);
-			lDEntries.clear();
+			lDEntries.delete();
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "clearing data from database..."));
 			//TODO: Should we silence this exception: 

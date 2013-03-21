@@ -22,7 +22,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.jwebsocket.api.IBasicStorage;
+import org.jwebsocket.api.IInitializable;
+import org.jwebsocket.api.IStorageProvider;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.channels.Channel.ChannelState;
@@ -36,7 +37,7 @@ import org.jwebsocket.token.Token;
  * @author puran, aschulze
  * @version $Id: ChannelManager.java 1592 2011-02-20 00:49:48Z fivefeetfurther $
  */
-public class ChannelManager {
+public class ChannelManager implements IInitializable {
 
 	/**
 	 * logger
@@ -57,9 +58,9 @@ public class ChannelManager {
 	/**
 	 * persistent storage objects
 	 */
-	private final ChannelStore mChannelStore;
-	private final SubscriberStore mSubscriberStore;
-	private final PublisherStore mPublisherStore;
+	private ChannelStore mChannelStore;
+	private SubscriberStore mSubscriberStore;
+	private PublisherStore mPublisherStore;
 	/**
 	 * in-memory store maps
 	 */
@@ -76,18 +77,22 @@ public class ChannelManager {
 	/**
 	 * setting to check if new channel creation or registration is allowed
 	 */
+	private final IStorageProvider mStorageProvider;
 	private boolean mAllowCreateSystemChannels = false;
+	public static final String PLUGIN_STORAGES_PREFIX = "jws.channel.";
+	public static final String CHANNELS_STORAGE = PLUGIN_STORAGES_PREFIX + "channels";
+	public static final String CHANNEL_PUBLISHERS_STORAGE_PREFIX = PLUGIN_STORAGES_PREFIX + "channel.pub.";
+	public static final String CHANNEL_SUBSCRIBERS_STORAGE_PREFIX = PLUGIN_STORAGES_PREFIX + "channel.sub.";
+	public static final String PUBLISHERS_STORAGE_PREFIX = PLUGIN_STORAGES_PREFIX + "pub.";
+	public static final String SUBSCRIBER_STORAGE_PREFIX = PLUGIN_STORAGES_PREFIX + "sub.";
+	private final Map mSettings;
 
-	private ChannelManager(Map aSettings,
-			IBasicStorage aChannelStorage,
-			IBasicStorage aSubscriberStorage,
-			IBasicStorage aPublisherStorage) {
-
-		mChannelStore = new BaseChannelStore(aChannelStorage);
-		mSubscriberStore = new BaseSubscriberStore(aSubscriberStorage);
-		mPublisherStore = new BasePublisherStore(aPublisherStorage);
-
-		mChannelPluginSettings = new ConcurrentHashMap<String, Object>(aSettings);
+	@Override
+	public void initialize() throws Exception {
+		mChannelStore = new BaseChannelStore(mStorageProvider.getStorage(CHANNELS_STORAGE), mStorageProvider);
+		mSubscriberStore = new BaseSubscriberStore(mStorageProvider);
+		mPublisherStore = new BasePublisherStore(mStorageProvider);
+		mChannelPluginSettings = new ConcurrentHashMap<String, Object>(mSettings);
 
 		Object lAllowCreateSystemChannels = mChannelPluginSettings.get(ALLOW_CREATE_SYSTEM_CHANNELS);
 		if (lAllowCreateSystemChannels != null
@@ -95,7 +100,7 @@ public class ChannelManager {
 			mAllowCreateSystemChannels = true;
 		}
 		int lSuccess = 0;
-		for (Object lKey : aSettings.keySet()) {
+		for (Object lKey : mSettings.keySet()) {
 			String lOption = (String) lKey;
 			if (lOption.startsWith("channel:")) {
 				String lChannelId = lOption.substring(8);
@@ -108,7 +113,7 @@ public class ChannelManager {
 					// ommit this channel
 					continue;
 				}
-				Object lObj = aSettings.get(lOption);
+				Object lObj = mSettings.get(lOption);
 				JSONObject lJSON = null;
 				boolean lParseOk = false;
 				if (lObj instanceof JSONObject) {
@@ -158,7 +163,9 @@ public class ChannelManager {
 								lSecretKey, // String aSecretKey,
 								lOwner, // String aOwner,
 								ChannelState.valueOf(lState), // ChannelState aState,
-								(TokenServer) JWebSocketFactory.getServer(lServerId));
+								(TokenServer) JWebSocketFactory.getServer(lServerId),
+								mStorageProvider.getStorage(CHANNEL_SUBSCRIBERS_STORAGE_PREFIX + lChannelId),
+								mStorageProvider.getStorage(CHANNEL_PUBLISHERS_STORAGE_PREFIX + lChannelId));
 
 						// initializing channel if possible
 						// the channel could be initialized
@@ -178,10 +185,23 @@ public class ChannelManager {
 			}
 		}
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(lSuccess + " channels successfully instantiated.");
+			mLog.debug(lSuccess + " channels successfully initialized.");
 		}
 	}
 
+	@Override
+	public void shutdown() throws Exception {
+	}
+
+	private ChannelManager(Map aSettings, IStorageProvider aStorageProvider) {
+		mStorageProvider = aStorageProvider;
+		mSettings = aSettings;
+	}
+
+	public IStorageProvider getStorageProvider() {
+		return mStorageProvider;
+	}
+	
 	/**
 	 * Returns the channel registered in the jWebSocket system based on channel
 	 * id it does a various lookup and then if it doesn't find anywhere from the
@@ -191,7 +211,7 @@ public class ChannelManager {
 	 * @param aChannelId
 	 * @return channel object, null if not found
 	 */
-	public Channel getChannel(String aChannelId) {
+	public Channel getChannel(String aChannelId) throws Exception {
 		return mChannelStore.getChannel(aChannelId);
 	}
 
@@ -200,9 +220,19 @@ public class ChannelManager {
 	 * @param aChannelId
 	 * @return
 	 */
-	public Channel removeChannel(String aChannelId) {
+	public Channel removeChannel(String aChannelId) throws Exception {
 		Channel lChannel = getChannel(aChannelId);
 		if (lChannel != null) {
+			for (String lPublisher : lChannel.getPublishers()){
+				mPublisherStore.removePublisher(lPublisher);
+			}
+			for (String lSubscriber: lChannel.getSubscribers()){
+				mSubscriberStore.removeSubscriber(lSubscriber);
+			}
+			
+			lChannel.clearPublishers();
+			lChannel.clearSubscribers();
+			
 			mChannelStore.removeChannel(aChannelId);
 		}
 		return lChannel;
@@ -213,7 +243,7 @@ public class ChannelManager {
 	 * @param aChannel
 	 * @return
 	 */
-	public Channel removeChannel(Channel aChannel) {
+	public Channel removeChannel(Channel aChannel) throws Exception {
 		if (aChannel != null) {
 			return removeChannel(aChannel.getId());
 		}
@@ -236,17 +266,8 @@ public class ChannelManager {
 	 * @param aSubscriberId the subscriber id
 	 * @return the subscriber object
 	 */
-	public Subscriber getSubscriber(String aSubscriberId) {
+	public Subscriber getSubscriber(String aSubscriberId) throws Exception {
 		return mSubscriberStore.getSubscriber(aSubscriberId);
-	}
-
-	/**
-	 * Stores the registered subscriber information in the channel store
-	 *
-	 * @param aSubscriber the subscriber to register
-	 */
-	public void storeSubscriber(Subscriber aSubscriber) {
-		mSubscriberStore.storeSubscriber(aSubscriber);
 	}
 
 	/**
@@ -254,7 +275,7 @@ public class ChannelManager {
 	 *
 	 * @param aSubscriber the subscriber object
 	 */
-	public void removeSubscriber(Subscriber aSubscriber) {
+	public void removeSubscriber(Subscriber aSubscriber) throws Exception {
 		mSubscriberStore.removeSubscriber(aSubscriber.getId());
 	}
 
@@ -264,18 +285,8 @@ public class ChannelManager {
 	 * @param aPublisherId the publisher id
 	 * @return the publisher object
 	 */
-	public Publisher getPublisher(String aPublisherId) {
+	public Publisher getPublisher(String aPublisherId) throws Exception {
 		return mPublisherStore.getPublisher(aPublisherId);
-	}
-
-	/**
-	 * Stores the given publisher to the channel store
-	 *
-	 *
-	 * @param aPublisher
-	 */
-	public void storePublisher(Publisher aPublisher) {
-		mPublisherStore.storePublisher(aPublisher);
 	}
 
 	/**
@@ -283,7 +294,7 @@ public class ChannelManager {
 	 *
 	 * @param aPublisher the publisher to remove
 	 */
-	public void removePublisher(Publisher aPublisher) {
+	public void removePublisher(Publisher aPublisher) throws Exception {
 		mPublisherStore.removePublisher(aPublisher.getId());
 	}
 
@@ -322,7 +333,7 @@ public class ChannelManager {
 	/**
 	 * @return the channels
 	 */
-	public Map<String, Channel> getChannels() {
+	public Map<String, Channel> getChannels() throws Exception {
 		return mChannelStore.getChannels();
 	}
 
@@ -332,27 +343,6 @@ public class ChannelManager {
 	 */
 	public boolean isAllowCreateSystemChannels() {
 		return mAllowCreateSystemChannels;
-	}
-
-	/**
-	 * Indicates if the subscriber store contains a subscriber with the given
-	 * subscriber identifier
-	 *
-	 * @param aSubscriberId
-	 * @return TRUE if the subscriber exists, FALSE otherwise
-	 */
-	public boolean hasSubscriber(String aSubscriberId) {
-		return mSubscriberStore.hasSubscriber(aSubscriberId);
-	}
-
-	/**
-	 * Indicates if the publisher store contains the given publisher identifier
-	 *
-	 * @param aPublisherId
-	 * @return TRUE if the publisher exists, FALSE otherwise
-	 */
-	public boolean hasPublisher(String aPublisherId) {
-		return mPublisherStore.hasPublisher(aPublisherId);
 	}
 
 	/**

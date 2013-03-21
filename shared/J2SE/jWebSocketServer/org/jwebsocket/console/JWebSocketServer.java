@@ -18,7 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.console;
 
-import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.config.JWebSocketConfig; 
 import org.jwebsocket.factory.JWebSocketFactory;
 
 /**

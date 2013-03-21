@@ -20,7 +20,7 @@ import org.jwebsocket.util.Tools;
 public class StressTest {
 
 	public static int connections = 0;
-	public static int concurrentConnections = 1000;
+	public static int concurrentConnections = 3000;
 
 	public static void main(String[] args) {
 		final List<BaseTokenClient> lClients = new ArrayList();
