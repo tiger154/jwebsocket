@@ -4,23 +4,25 @@
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
 		<!-- If Google's chrome frame installed, use it! -->
 		<!-- Comment needs to be BELOW this meta tag! -->
-<!--
-//	****************************************************************************
-//	jWebSocket Stream Demo (uses jWebSocket Client and Server)
-//	Copyright (c) 2010 Alexander Schulze, Innotrade GmbH, Herzogenrath
-//	****************************************************************************
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//	****************************************************************************
--->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket Streaming Demo (Community Edition, CE)
+		//	****************************************************************************
+		//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+		//
+		//	Licensed under the Apache License, Version 2.0 (the "License");
+		//	you may not use this file except in compliance with the License.
+		//	You may obtain a copy of the License at
+		//
+		//	http://www.apache.org/licenses/LICENSE-2.0
+		//
+		//	Unless required by applicable law or agreed to in writing, software
+		//	distributed under the License is distributed on an "AS IS" BASIS,
+		//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		//	See the License for the specific language governing permissions and
+		//	limitations under the License.
+		//	****************************************************************************
+		-->
 		<meta http-equiv="Content-Language" content="en">
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 		<title>jWebSocket Streaming Demo</title>
@@ -32,12 +34,12 @@
 		<script type="text/javascript" language="JavaScript">
 
 			var eLog = null,
-				eKeepAlive = null;
+					eKeepAlive = null;
 
-			function log( aString ) {
+			function log(aString) {
 				eLog.innerHTML +=
-					aString + "<br>";
-				if( eLog.scrollHeight > eLog.clientHeight ) {
+						aString + "<br>";
+				if (eLog.scrollHeight > eLog.clientHeight) {
 					eLog.scrollTop = eLog.scrollHeight - eLog.clientHeight;
 				}
 			}
@@ -55,93 +57,90 @@
 				// deprecated: JWS_SERVER_URL;
 				var lURL = jws.getAutoServerURL();
 
-				log( "Connecting to " + lURL + " ..." );
+				log("Connecting to " + lURL + " ...");
 				try {
-					var lRes = lWSC.logon( lURL, jws.GUEST_USER_LOGINNAME, jws.GUEST_USER_PASSWORD, {
-
+					var lRes = lWSC.logon(lURL, jws.GUEST_USER_LOGINNAME, jws.GUEST_USER_PASSWORD, {
 						// OnOpen callback
-						OnOpen: function( aEvent ) {
-							log( "<font style='color:#888'>jWebSocket connection established.</font>" );
+						OnOpen: function(aEvent) {
+							log("<font style='color:#888'>jWebSocket connection established.</font>");
 							jws.$("simgStatus").src = "../../images/connected.png";
 						},
-
 						// OnMessage callback
-						OnMessage: function( aEvent ) {
-							log( "<font style='color:#888'>jWebSocket message received: '" + aEvent.data + "'</font>" );
-							if( lWSC.isLoggedIn() ) {
+						OnMessage: function(aEvent) {
+							log("<font style='color:#888'>jWebSocket message received: '" + aEvent.data + "'</font>");
+							if (lWSC.isLoggedIn()) {
 								jws.$("simgStatus").src = "../../images/authenticated.png";
 							} else {
 								jws.$("simgStatus").src = "../../images/connected.png";
 							}
 							jws.$("slblClientId").innerHTML =
-								"&nbsp;Client&#x2011;Id:&nbsp;"
-								+ lWSC.getId() + "&nbsp;"
-								+ ( jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)" );
+									"&nbsp;Client&#x2011;Id:&nbsp;"
+									+ lWSC.getId() + "&nbsp;"
+									+ (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)");
 						},
-
 						// OnClose callback
-						OnClose: function( aEvent ) {
-							log( "<font style='color:#888'>jWebSocket connection closed.</font>" );
+						OnClose: function(aEvent) {
+							log("<font style='color:#888'>jWebSocket connection closed.</font>");
 							jws.$("simgStatus").src = "../../images/disconnected.png";
 							jws.$("slblClientId").innerHTML = "&nbsp;Client&#x2011;Id:&nbsp;-";
 						}
 
 					});
-				} catch( ex ) {
-					log( "Exception: " + ex.message );
+				} catch (ex) {
+					log("Exception: " + ex.message);
 				}
 			}
 
 			function disconnect() {
-				if( lWSC ) {
+				if (lWSC) {
 					lWSC.stopKeepAlive();
-					log( "Disconnecting..." );
+					log("Disconnecting...");
 					var lRes = lWSC.close();
-					log( lWSC.resultToString( lRes ) );
+					log(lWSC.resultToString(lRes));
 				}
 			}
 
 			function registerStream() {
 				var lStream = eStream.value; // "timeStream";
-				log( "Registering at stream '" + lStream + "'..." );
-				var lRes = lWSC.streaming.registerStream( lStream );
-				log( lWSC.resultToString( lRes ) );
+				log("Registering at stream '" + lStream + "'...");
+				var lRes = lWSC.streaming.registerStream(lStream);
+				log(lWSC.resultToString(lRes));
 			}
 
 			function unregisterStream() {
 				var lStream = eStream.value; // "timeStream";
-				log( "Unregistering from stream '" + lStream + "'..." );
-				var lRes = lWSC.streaming.unregisterStream( lStream );
-				log( lWSC.resultToString( lRes ) );
+				log("Unregistering from stream '" + lStream + "'...");
+				var lRes = lWSC.streaming.unregisterStream(lStream);
+				log(lWSC.resultToString(lRes));
 			}
 
 			function toggleKeepAlive() {
-				if( eKeepAlive.checked ) {
-					lWSC.startKeepAlive({ interval: 30000 });
+				if (eKeepAlive.checked) {
+					lWSC.startKeepAlive({interval: 30000});
 				} else {
 					lWSC.stopKeepAlive();
 				}
 			}
 
 			function initPage() {
-				eLog = jws.$( "sdivChat" );
-				eMessage = jws.$( "stxfMsg" );
-				eKeepAlive =  jws.$( "schkKeepAlive" );
-				eStream = jws.$( "sselStream" );
+				eLog = jws.$("sdivChat");
+				eMessage = jws.$("stxfMsg");
+				eKeepAlive = jws.$("schkKeepAlive");
+				eStream = jws.$("sselStream");
 
-				if( window.WebSocket ) {
+				if (window.WebSocket) {
 					lWSC = new jws.jWebSocketJSONClient();
 				} else {
-					jws.$( "sbtnConnect" ).setAttribute( "disabled", "disabled" );
-					jws.$( "sbtnDisconnect" ).setAttribute( "disabled", "disabled" );
-					jws.$( "sbtnClear" ).setAttribute( "disabled", "disabled" );
-					jws.$( "sbtnReg" ).setAttribute( "disabled", "disabled" );
-					jws.$( "sbtnUnreg" ).setAttribute( "disabled", "disabled" );
-					jws.$( "schkKeepAlive" ).setAttribute( "disabled", "disabled" );
+					jws.$("sbtnConnect").setAttribute("disabled", "disabled");
+					jws.$("sbtnDisconnect").setAttribute("disabled", "disabled");
+					jws.$("sbtnClear").setAttribute("disabled", "disabled");
+					jws.$("sbtnReg").setAttribute("disabled", "disabled");
+					jws.$("sbtnUnreg").setAttribute("disabled", "disabled");
+					jws.$("schkKeepAlive").setAttribute("disabled", "disabled");
 
 					var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-					alert( lMsg );
-					log( lMsg );
+					alert(lMsg);
+					log(lMsg);
 				}
 			}
 
@@ -157,14 +156,14 @@
 		onload="initPage();"
 		onunload="exitPage();"
 		>
-<!--	remarked temporarily due to chrome 5 browser bug
-		<script type="text/javascript">
-			var lFrameElem = this.frameElement;
-			if( !lFrameElem ) {
-				location.replace( "../../index.htm?page=demos/streaming/streaming.htm" );
-			}
-		</script>
--->		
+		<!--	remarked temporarily due to chrome 5 browser bug
+				<script type="text/javascript">
+					var lFrameElem = this.frameElement;
+					if( !lFrameElem ) {
+						location.replace( "../../index.htm?page=demos/streaming/streaming.htm" );
+					}
+				</script>
+		-->		
 		<table class="tblHeader" width="100%" cellspacing="0" cellpadding="0">
 			<tr>
 				<td class="tdHeader" width="">jWebSocket Streaming Demo</td>
@@ -173,11 +172,11 @@
 			</tr>
 		</table>
 		<p>This demo shows how to easily register at a jWebSocket data feed (stream).
-		This example is based on the <code>org.jwebsocket.streaming</code> package which simply
-		sends a tokens in a certain interval to the client. If you are not sure
-		whether your favorite browser supports WebSockets please refer to our
-		<a target="_top" href="http://jwebsocket.org/jws_for_all.htm">jWebSocket Cross-Browser Compatibility</a>
-		page.</p>
+			This example is based on the <code>org.jwebsocket.streaming</code> package which simply
+			sends a tokens in a certain interval to the client. If you are not sure
+			whether your favorite browser supports WebSockets please refer to our
+			<a target="_top" href="http://jwebsocket.org/jws_for_all.htm">jWebSocket Cross-Browser Compatibility</a>
+			page.</p>
 		<div id="sdivChat" class="sdivContainer"
 			 style="position:relative; height:300px; overflow:auto;">
 		</div>

@@ -21,7 +21,6 @@ package org.jwebsocket.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.LinkedList;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
@@ -29,7 +28,7 @@ import org.jwebsocket.token.TokenFactory;
  * The class implements the IChunkable interface to support the transmission of
  * data from a InputStream to the client
  *
- * @author kyberneees
+ * @author kyberneees, aschulze
  */
 public class ChunkableInputStream extends BaseChunkable {
 
@@ -73,14 +72,19 @@ public class ChunkableInputStream extends BaseChunkable {
 					int lLength = (mIS.available() > getFragmentSize()) ? getFragmentSize() : mIS.available();
 					Token lChunk = TokenFactory.createToken();
 					lChunk.setChunkType("stream" + getUniqueChunkId());
+					/*
+					 LinkedList<Integer> lData = new LinkedList<Integer>();
+					 while (lLength > 0) {
+					 lData.add(mIS.read());
+					 lLength--;
+					 }
+					 lChunk.setList("data", lData);
+					 */
+					byte[] lBA = new byte[lLength];
+					mIS.read(lBA, 0, lLength);
+					String lData = Tools.base64Encode(lBA);
+					lChunk.setString("data", lData);
 
-					LinkedList<Integer> lData = new LinkedList<Integer>();
-					while (lLength > 0) {
-						lData.add(mIS.read());
-						lLength--;
-					}
-
-					lChunk.setList("data", lData);
 					return lChunk;
 				} catch (IOException lEx) {
 					return null;
