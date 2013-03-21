@@ -71,7 +71,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 		try {
 			lblTitle.setText(lblTitle.getText().replace("{ver}", JWebSocketClientConstants.VERSION_STR));
 			mReliabilityOptions = new ReliabilityOptions(true, 1500, 3000, 1, -1);
-			mClient = new BaseTokenClient(mReliabilityOptions);
+			mClient = new BaseTokenClient(mReliabilityOptions); 
 			mClient.addListener(this);
 			mIcoDisconnected = new ImageIcon(getClass().getResource("/images/disconnected.png"));
 			mIcoConnected = new ImageIcon(getClass().getResource("/images/connected.png"));

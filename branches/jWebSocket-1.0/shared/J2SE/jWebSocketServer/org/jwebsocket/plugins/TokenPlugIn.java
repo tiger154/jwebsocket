@@ -131,6 +131,7 @@ public class TokenPlugIn extends BasePlugIn {
 	/**
 	 * @return the namespace
 	 */
+	@Override
 	public String getNamespace() {
 		return mNamespace;
 	}

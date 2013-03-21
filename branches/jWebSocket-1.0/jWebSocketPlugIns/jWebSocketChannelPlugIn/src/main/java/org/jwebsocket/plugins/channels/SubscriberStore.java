@@ -22,8 +22,6 @@ package org.jwebsocket.plugins.channels;
  * Base interface that defines the store operations for subscribers
  *
  * @author puran, kyberneees
- * @version $Id: SubscriberStore.java 1275 2011-01-02 08:25:12Z fivefeetfurther
- * $
  */
 public interface SubscriberStore {
 
@@ -31,17 +29,9 @@ public interface SubscriberStore {
 	 * Returns the subscriber information for the given subscriber id
 	 *
 	 * @param id the subscriber id to fetch
-	 * @return the subscriber object, null if the subscriber doesn't exist.
+	 * @return the subscriber object
 	 */
-	Subscriber getSubscriber(String id);
-
-	/**
-	 * Store the given channel in the channel store
-	 *
-	 * @param subscriber
-	 * @return {@code true} if insert successful
-	 */
-	boolean storeSubscriber(Subscriber subscriber);
+	Subscriber getSubscriber(String id) throws Exception;
 
 	/**
 	 * Removes the subscriber from the store based on given id
@@ -49,28 +39,5 @@ public interface SubscriberStore {
 	 *
 	 * @param id
 	 */
-	void removeSubscriber(String id);
-
-	/**
-	 * Clears the subscriber store, use this method with care since it removes
-	 * all the channel information from the store physically and cannot be
-	 * rolled back.
-	 */
-	void clearSubscribers();
-
-	/**
-	 * Returns the size of the subscriber store
-	 *
-	 * @return the size value
-	 */
-	int getSubscribersStoreSize();
-
-	/**
-	 * Indicates if the subscriber store contains a subscriber with the given
-	 * subscriber identifier
-	 *
-	 * @param aSubscriberId
-	 * @return TRUE if the subscriber exists, FALSE otherwise
-	 */
-	boolean hasSubscriber(String aSubscriberId);
+	void removeSubscriber(String id) throws Exception;
 }

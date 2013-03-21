@@ -43,7 +43,7 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	private Set<Argument> mOutgoingArgsValidation = new FastSet();
 	private boolean mResponseRequired = false;
 	private boolean mResponseToOwnerConnector = true;
-	private boolean mResponseAsync = true;
+	private boolean mResponseAsync = false;
 	private boolean mCacheEnabled = false;
 	private boolean mCachePrivate = true;
 	private boolean mNotificationConcurrent = false;

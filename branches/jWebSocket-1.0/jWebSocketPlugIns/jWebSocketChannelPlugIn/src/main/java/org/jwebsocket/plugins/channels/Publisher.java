@@ -18,35 +18,37 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.channels;
 
+import java.util.LinkedList;
 import java.util.List;
-import javolution.util.FastList;
+import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.factory.JWebSocketFactory;
 
 /**
  * Represents the single publisher connected to a particular channel
  *
- * @author puran, aschulze
+ * @author puran, aschulze, kyberneees
  * @version $Id: Publisher.java 1120 2010-10-24 06:03:08Z mailtopuran@gmail.com$
  */
-public final class Publisher {
+public class Publisher {
 
-	private String mConnectionId;
-	private List<String> mChannels = new FastList<String>();
+	private String mPublisherId;
+	private IBasicStorage<String, Object> mStorage;
 
 	/**
 	 *
-	 * @param aConnId
+	 * @param aId
 	 */
-	public Publisher(String aConnId) {
-		this.mConnectionId = aConnId;
+	public Publisher(String aId, IBasicStorage<String, Object> aStorage) {
+		mPublisherId = aId;
+		mStorage = aStorage;
 	}
 
 	/**
 	 * @return the id
 	 */
 	public String getId() {
-		return mConnectionId;
+		return mPublisherId;
 	}
 
 	/**
@@ -54,7 +56,7 @@ public final class Publisher {
 	 */
 	public WebSocketConnector getConnector() {
 		WebSocketConnector lConnector =
-				JWebSocketFactory.getTokenServer().getConnector(mConnectionId);
+				JWebSocketFactory.getTokenServer().getConnector(mPublisherId);
 		return lConnector;
 	}
 
@@ -62,7 +64,14 @@ public final class Publisher {
 	 * @return the channels
 	 */
 	public List<String> getChannels() {
-		return mChannels;
+		List<String> lList = new LinkedList<String>();
+		lList.addAll(mStorage.keySet());
+
+		return lList;
+	}
+
+	public Boolean inChannel(String aChannel) {
+		return mStorage.containsKey(aChannel);
 	}
 
 	/**
@@ -71,9 +80,7 @@ public final class Publisher {
 	 * @param aChannel
 	 */
 	public void addChannel(String aChannel) {
-		if (this.mChannels != null) {
-			this.mChannels.add(aChannel);
-		}
+		mStorage.put(aChannel, true);
 	}
 
 	/**
@@ -82,8 +89,6 @@ public final class Publisher {
 	 * @param aChannel the channel id to remove.
 	 */
 	public void removeChannel(String aChannel) {
-		if (this.mChannels != null) {
-			this.mChannels.remove(aChannel);
-		}
+		mStorage.remove(aChannel);
 	}
 }
