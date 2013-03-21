@@ -69,7 +69,6 @@ public class SystemFilter extends TokenFilter {
 			Token lToken = lServer.createAccessDenied(aToken);
 			lServer.sendToken(aConnector, lToken);
 			aResponse.rejectMessage();
-			return;
 		}
 	}
 
