@@ -1509,6 +1509,23 @@
 			</server-assignments>
 		</plugin>
 
+		<!-- user-admin plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.useradmin.UserAdminPlugIn</name>
+			<id>jws.useradmin</id>
+			<ns>org.jwebsocket.enterprise.plugins.useradmin</ns>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketUserAdminPlugInEE-1.0.jar</jar>
+			</jars>
+			<!-- plug-in specific settings -->
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/UserAdminPlugIn/useradmin.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+
 		<!-- this is a sample for a user plug-in -->
 		<plugin>
 			<name>org.jwebsocket.plugins.sample.SamplePlugIn</name>
