@@ -71,18 +71,20 @@ public class MonitoringFilter extends TokenFilter {
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
 		String lNamespace = aToken.getNS();
-		String lPlugInId = null;
-		for (WebSocketPlugIn lPlugIn : getServer().getPlugInChain().getPlugIns()) {
-			if (lNamespace.equals(lPlugIn.getNamespace())) {
-				lPlugInId = lPlugIn.getId();
+		if (null != lNamespace) {
+			String lPlugInId;
+			for (WebSocketPlugIn lPlugIn : getServer().getPlugInChain().getPlugIns()) {
+				if (lNamespace.equals(lPlugIn.getNamespace())) {
+					lPlugInId = lPlugIn.getId();
 
-				//To save in the database
-				DBObject lRecord = mPluginCollection.findOne(new BasicDBObject().append("id", lPlugInId));
+					//To save in the database
+					DBObject lRecord = mPluginCollection.findOne(new BasicDBObject().append("id", lPlugInId));
 
-				if (lRecord == null) {
-					mPluginCollection.insert(new BasicDBObject().append("id", lPlugInId));
-				} else {
-					mPluginCollection.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("requests", 1)));
+					if (lRecord == null) {
+						mPluginCollection.insert(new BasicDBObject().append("id", lPlugInId));
+					} else {
+						mPluginCollection.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("requests", 1)));
+					}
 				}
 			}
 		}
@@ -99,18 +101,20 @@ public class MonitoringFilter extends TokenFilter {
 	public void processTokenOut(FilterResponse aResponse, WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
 
 		String lNamespace = aToken.getNS();
-		String lPlugInId = null;
-		for (WebSocketPlugIn lPlugIn : getServer().getPlugInChain().getPlugIns()) {
-			if (lNamespace.equals(lPlugIn.getPluginConfiguration().getNamespace())) {
-				lPlugInId = lPlugIn.getId();
+		if (null != lNamespace) {
+			String lPlugInId;
+			for (WebSocketPlugIn lPlugIn : getServer().getPlugInChain().getPlugIns()) {
+				if (lNamespace.equals(lPlugIn.getPluginConfiguration().getNamespace())) {
+					lPlugInId = lPlugIn.getId();
 
-				//To save in the database
-				DBObject lRecord = mPluginCollection.findOne(new BasicDBObject().append("id", lPlugInId));
+					//To save in the database
+					DBObject lRecord = mPluginCollection.findOne(new BasicDBObject().append("id", lPlugInId));
 
-				if (lRecord == null) {
-					mPluginCollection.insert(new BasicDBObject().append("id", lPlugInId));
-				} else {
-					mPluginCollection.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("requests", 1)));
+					if (lRecord == null) {
+						mPluginCollection.insert(new BasicDBObject().append("id", lPlugInId));
+					} else {
+						mPluginCollection.update(lRecord, new BasicDBObject().append("$inc", new BasicDBObject().append("requests", 1)));
+					}
 				}
 			}
 		}
