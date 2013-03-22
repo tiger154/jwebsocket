@@ -1,7 +1,8 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket JMS Plug-in (Community Edition, CE)
+//	jWebSocket JMS Plug-in  (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -27,7 +28,7 @@
 jws.JMSPlugIn = {
 
 	// :const:*:NS:String:org.jwebsocket.plugins.channels (jws.NS_BASE +
-	// ".plugins.channels")
+	// ".plugins.jms")
 	// :d:en:Namespace for the [tt]ChannelPlugIn[/tt] class.
 	// if namespace changes update server plug-in accordingly!
 	NS : jws.NS_BASE + ".plugins.jms",
@@ -179,7 +180,7 @@ jws.JMSPlugIn = {
 		}
 	},
 
-	setHandleMessageCallbacks : function(aListeners) {
+	setJMSCallbacks : function(aListeners) {
 		if (!aListeners) {
 			aListeners = {};
 		}
