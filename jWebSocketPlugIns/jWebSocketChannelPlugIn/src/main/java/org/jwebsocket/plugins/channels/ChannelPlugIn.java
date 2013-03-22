@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.channels;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
@@ -241,7 +242,8 @@ public class ChannelPlugIn extends ActionPlugIn {
 		try {
 			// unsubscribe from the channel, if subscribed
 			Subscriber lSubscriber = mChannelManager.getSubscriber(aConnector.getId());
-			for (String lChannelId : lSubscriber.getChannels()) {
+			for (Iterator<String> lIt = lSubscriber.getChannels().iterator(); lIt.hasNext();) {
+				String lChannelId = lIt.next();
 				Channel lChannel = mChannelManager.getChannel(lChannelId);
 				if (lChannel != null) {
 					// remove subscriber from channel
@@ -256,7 +258,8 @@ public class ChannelPlugIn extends ActionPlugIn {
 
 		try {
 			Publisher lPublisher = mChannelManager.getPublisher(aConnector.getId());
-			for (String lChannelId : lPublisher.getChannels()) {
+			for (Iterator<String> lIt = lPublisher.getChannels().iterator(); lIt.hasNext();) {
+				String lChannelId = lIt.next();
 				Channel lChannel = mChannelManager.getChannel(lChannelId);
 				if (lChannel != null) {
 					// remove publisher from channel

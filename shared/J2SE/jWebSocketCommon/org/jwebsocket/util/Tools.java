@@ -715,7 +715,7 @@ public class Tools {
 	 */
 	public static void startUtilityThreadPool() {
 		if (null == mThreadPool) {
-			mThreadPool = Executors.newFixedThreadPool(5, new ThreadFactory() {
+			mThreadPool = Executors.newFixedThreadPool(8, new ThreadFactory() {
 				@Override
 				public Thread newThread(Runnable r) {
 					return new Thread(r, "jWebSocket Utility ThreadPool");
