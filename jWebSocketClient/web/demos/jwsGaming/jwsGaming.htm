@@ -27,15 +27,18 @@
 
 		<title>jWebSocket Gaming Demo</title>
 
+		<!-- JQUERY STYLES -->
+		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
+
 		<!-- DEMO STYLES  -->
-		<link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
+        <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
 		<link rel="stylesheet" type="text/css" href="css/jwsGaming.css"/>
 
 		<!-- JQUERY DEPENDENCIES -->
-		<link rel="stylesheet" type="text/css" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" />
 		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
-		<script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+        <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
 		<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
 		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
 		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
@@ -46,8 +49,6 @@
 		<script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
 
 		<script type="text/javascript" src='js/wGaming.js'></script>
-
-		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
 		<!--  MAIN JAVASCRIPT FILE   -->
 		<script type="text/javascript" src='js/init.js'></script>
@@ -62,16 +63,7 @@
                     <div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
-                            <div id="logoff_button" class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-                                 onmousedown="this.className='button onmousedown'" 
-                                 onmouseup="this.className='button onmouseup'" 
-                                 onmouseout="this.className='button onmouseout'" 
-                                 onclick="this.className='button onmouseover'">
-                                <div class="l"></div>
-                                <div class="c">Logout</div>
-                                <div class="r"></div>
-                            </div>
+                            <div id="logoff_button" class="button">Logout</div>
                         </div>
                     </div>
                     <div id="login_area">
@@ -81,16 +73,7 @@
                             <input type="text" id="user_text" value="root"/>
                             <input type="password" id="user_password" value="root"/>
                         </div>
-                        <div id="login_button" class="button onmouseup" 
-							 onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Login</div>
-                            <div class="r"></div>
-                        </div>
+                        <div id="login_button" class="button">Login</div>
                     </div>
                 </div>
             </div>
@@ -158,19 +141,13 @@
 					<div id="log_box_content" class="log_box_visible"></div>
 				</div>
 
-
-                <!--       DOWNLOAD_BUTTON   -->
-                <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
-                        <div class="r_download"></div>
-                    </div>
-                </div>
+				<!--       DOWNLOAD_BUTTON   -->
+				<div id="demo_box_footer">
+					<div id="jws_download_button" class="button download">
+						<a href="http://jwebsocket.org/downloads/downloads.htm" 
+						   target="blank">Download jWebSocket</a>
+					</div>
+				</div>
             </div>
         </div>
 
