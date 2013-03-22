@@ -57,6 +57,7 @@
 		<module>jWebSocketPlugIns/jWebSocketClusterPlugIn</module>
 		<module>jWebSocketPlugIns/JWebSocketPingPongGame</module>
 		<module>jWebSocketPlugIns/jWebSocketItemStorage</module>
+		<module>jWebSocketPlugIns/jWebSocketScriptingPlugIn</module>
 		<module>jWebSocketSwingGUI</module>
 		<module>jWebSocketProxy</module>
 		

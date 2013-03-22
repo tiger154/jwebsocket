@@ -46,7 +46,7 @@ public class JWebSocketCommonConstants {
 	/**
 	 * jWebSocket enterprise edition license string - NEEDS TO BE KEPT.
 	 */
-	public static final String LICENSE_EE = "Put commercial license here";
+	public static final String LICENSE_EE = "Licensed under jWebSocket Enterprise License, Version 1.0 (http://jwebsocket.org/license-1.0/)";
 	/**
 	 * jWebSocket CE vendor string - NEEDS TO BE KEPT due to Apache License,
 	 * Version 2.0! Please ask for conditions of a commercial license on demand.

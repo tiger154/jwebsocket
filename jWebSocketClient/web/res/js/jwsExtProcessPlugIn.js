@@ -25,7 +25,7 @@
 //:d:en:ExtProcess plug-in on the jWebSocket server.
 jws.ExtProcessPlugIn = {
 
-	//:const:*:NS:String:org.jwebsocket.plugins.jdbc (jws.NS_BASE + ".plugins.extprocess")
+	//:const:*:NS:String:org.jwebsocket.plugins.extprocess (jws.NS_BASE + ".plugins.extprocess")
 	//:d:en:Namespace for the [tt]ExtProcessPlugIn[/tt] class.
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.extprocess",
@@ -51,9 +51,8 @@ jws.ExtProcessPlugIn = {
 		}
 	},
 
-	//:m:*:jdbcQuerySQL
-	//:d:en:Runs a single native SQL query on the server utilizing the ExtProcess plug-in. 
-	//:d:en:For security reasons it is recommended to use the abstract SQL commands.
+	//:m:*:ExtProcessCall
+	//:d:en:Pending...
 	//:a:en::aQuery:String:Single SQL query string to be executed by the server side ExtProcess plug-in.
 	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
 	//:r:*:::void:none
