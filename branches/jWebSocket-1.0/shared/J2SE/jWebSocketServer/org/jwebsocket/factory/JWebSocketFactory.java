@@ -372,7 +372,7 @@ public class JWebSocketFactory {
 		Tools.stopUtilityTimer();
 
 		// stop the shared utility thread pool
-		Tools.startUtilityThreadPool();
+		Tools.stopUtilityThreadPool();
 
 		// set instance status
 		JWebSocketInstance.setStatus(JWebSocketInstance.STOPPED);

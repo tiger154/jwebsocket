@@ -22,9 +22,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
@@ -36,6 +33,7 @@ import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
 
 /**
  * Channel class represents the data channel which is used by the
@@ -347,12 +345,12 @@ public final class Channel implements ChannelLifeCycle {
 	public void addPublisher(String aPublisher) {
 		mPublishers.put(aPublisher, true);
 	}
-	
-	public void clearPublishers(){
+
+	public void clearPublishers() {
 		mPublishers.clear();
 	}
-	
-	public void clearSubscribers(){
+
+	public void clearSubscribers() {
 		mSubscribers.clear();
 	}
 
@@ -379,16 +377,14 @@ public final class Channel implements ChannelLifeCycle {
 			final Channel lChannel = this;
 			final WebSocketConnector lSubscriber = aConnector;
 			if (mChannelListeners != null) {
-				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
-					lPool.submit(new Runnable() {
+					Tools.getThreadPool().submit(new Runnable() {
 						@Override
 						public void run() {
 							lListener.subscribed(lChannel, lSubscriber);
 						}
 					});
 				}
-				lPool.shutdown();
 			}
 		}
 	}
@@ -409,16 +405,14 @@ public final class Channel implements ChannelLifeCycle {
 //			final String lSubscriber = aSubscriber;
 			final WebSocketConnector lConnector = aConnector;
 			if (mChannelListeners != null) {
-				ExecutorService lPool = Executors.newCachedThreadPool();
 				for (final ChannelListener lListener : mChannelListeners) {
-					lPool.submit(new Runnable() {
+					Tools.getThreadPool().submit(new Runnable() {
 						@Override
 						public void run() {
 							lListener.unsubscribed(lChannel, lConnector);
 						}
 					});
 				}
-				lPool.shutdown();
 			}
 		}
 	}
@@ -458,30 +452,20 @@ public final class Channel implements ChannelLifeCycle {
 	public void broadcastTokenAsync(final Token aToken) {
 		// If no subscribers exist do nothing!
 		if (mSubscribers != null && mSubscribers.size() > 0) {
-			ExecutorService lExecutor = Executors.newCachedThreadPool();
 
 			Iterator<String> lSubscribers = mSubscribers.keySet().iterator();
 			while (lSubscribers.hasNext()) {
 				final String lSubscriber = lSubscribers.next();
-				lExecutor.submit(new Runnable() {
+				Tools.getThreadPool().submit(new Runnable() {
 					@Override
 					public void run() {
 						WebSocketConnector lConnector = mServer.getConnector(lSubscriber);
+						// if the connector does not exists at this point, then is has been stopped before
 						if (lConnector != null) {
-							//TODO: CALLING A NON IMPLEMENTED METHOD
 							mServer.sendTokenAsync(lConnector, aToken);
-						} else {
-							mLog.warn("Trying to asynchronously broadcast token to unknown subscriber '"
-									+ lSubscriber + "' " + aToken.toString() + ".");
 						}
 					}
 				});
-			}
-			// TODO: aopprove this weird async implementation
-			try {
-				lExecutor.awaitTermination(10, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
 			}
 		}
 	}
@@ -496,11 +480,9 @@ public final class Channel implements ChannelLifeCycle {
 			while (lSubscribers.hasNext()) {
 				final String lSubscriber = lSubscribers.next();
 				WebSocketConnector lConnector = mServer.getConnector(lSubscriber);
+				// if the connector does not exists at this point, then is has been stopped before
 				if (lConnector != null) {
 					mServer.sendToken(lConnector, aToken);
-				} else {
-					mLog.warn("Trying to broadcast token to unknown subscriber '"
-							+ lSubscriber + "' " + aToken.toString() + ".");
 				}
 			}
 		}
@@ -550,16 +532,14 @@ public final class Channel implements ChannelLifeCycle {
 		// listeners notification
 		final Channel lChannel = this;
 		if (mChannelListeners != null) {
-			ExecutorService lPool = Executors.newCachedThreadPool();
 			for (final ChannelListener lListener : mChannelListeners) {
-				lPool.submit(new Runnable() {
+				Tools.getThreadPool().submit(new Runnable() {
 					@Override
 					public void run() {
 						lListener.channelInitialized(lChannel);
 					}
 				});
 			}
-			lPool.shutdown();
 		}
 	}
 
@@ -585,9 +565,8 @@ public final class Channel implements ChannelLifeCycle {
 		this.mState = ChannelState.STARTED;
 		final Channel lChannel = this;
 		if (mChannelListeners != null) {
-			ExecutorService lPool = Executors.newCachedThreadPool();
 			for (final ChannelListener lListener : mChannelListeners) {
-				lPool.submit(new Runnable() {
+				Tools.getThreadPool().submit(new Runnable() {
 					@Override
 					public void run() {
 
@@ -595,7 +574,6 @@ public final class Channel implements ChannelLifeCycle {
 					}
 				});
 			}
-			lPool.shutdown();
 		}
 	}
 
@@ -624,16 +602,14 @@ public final class Channel implements ChannelLifeCycle {
 		// listeners notification
 		final Channel channel = this;
 		if (mChannelListeners != null) {
-			ExecutorService pool = Executors.newCachedThreadPool();
 			for (final ChannelListener listener : mChannelListeners) {
-				pool.submit(new Runnable() {
+				Tools.getThreadPool().submit(new Runnable() {
 					@Override
 					public void run() {
 						listener.channelStopped(channel, aUser);
 					}
 				});
 			}
-			pool.shutdown();
 		}
 	}
 
