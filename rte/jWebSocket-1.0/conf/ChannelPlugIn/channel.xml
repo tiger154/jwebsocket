@@ -60,6 +60,9 @@
 				<entry key="channel:jWebSocketSlideShowDemo">
 					<value>{state:"STARTED",owner:"root",name:"jWebSocket SlideShowDemo" ,isPrivate:false,isSystem:true, access_key:"5l1d35h0w",secret_key:"5l1d35h0w53cr3t!",token_server:"ts0"}</value>
 				</entry>
+				<entry key="channel:jWebSocketGamingDemo">
+					<value>{state:"STARTED",owner:"root",name:"jWebSocket Gaming Demo" ,isPrivate:false,isSystem:true, access_key:"gaming",secret_key:"64m1n6D3m0!",token_server:"ts0"}</value>
+				</entry>
 			</map>
 		</constructor-arg>	
 		<constructor-arg ref="storageProvider"/>
