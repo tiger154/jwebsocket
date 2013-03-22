@@ -95,7 +95,6 @@ $.widget( "jws.gaming", {
 		$( "#demo_box" ).auth( lCallbacks );
 	},
 	onChannelSubscription: function( aSubscriptionTk ) {
-		console.log( aSubscriptionTk );
 		// Get the location of the subscriber
 		var aSubscriber = aSubscriptionTk.subscriber;
 		if ( aSubscriber != w.gaming.mAuthenticatedUser ) {
