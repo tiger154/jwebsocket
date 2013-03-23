@@ -1728,6 +1728,19 @@
 			</server-assignments>
 		</plugin>
 		
+		<!-- RTC plug-in -->
+		<plugin>
+			<name>org.jwebsocket.plugins.rtc.RTCPlugIn</name>
+			<id>jWebSocketRTCPlugIn</id>
+			<jar>jWebSocketRTCPlugIn-1.0.jar</jar>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/RTCPlugIn/rtc.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
 			<ns>test</ns>
