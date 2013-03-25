@@ -20,7 +20,9 @@ package org.jwebsocket.spring;
 
 import java.util.Map;
 import javolution.util.FastMap;
+import org.apache.log4j.Logger;
 import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.util.Tools;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -38,6 +40,7 @@ import org.springframework.core.io.FileSystemResource;
  */
 public class JWebSocketBeanFactory {
 
+	private static Logger mLog = Logging.getLogger();
 	private static GenericApplicationContext mGlobalContext = null;
 	private static Map<String, GenericApplicationContext> mContextMap = new FastMap<String, GenericApplicationContext>();
 
@@ -47,6 +50,9 @@ public class JWebSocketBeanFactory {
 	 */
 	public static GenericApplicationContext getInstance() {
 		if (null == mGlobalContext) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Creating global bean factory...");
+			}
 			mGlobalContext = new GenericApplicationContext(new DefaultListableBeanFactory());
 		}
 		return mGlobalContext;
@@ -59,6 +65,9 @@ public class JWebSocketBeanFactory {
 	 */
 	public static GenericApplicationContext getInstance(String aNamespace) {
 		if (!mContextMap.containsKey(aNamespace)) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Creating namespaced bean factory '" + aNamespace + "'...");
+			}
 			mContextMap.put(aNamespace, new GenericApplicationContext(new DefaultListableBeanFactory()));
 			//Setting the default (core) application context as parent
 			mContextMap.get(aNamespace).setParent(mGlobalContext);
@@ -84,6 +93,14 @@ public class JWebSocketBeanFactory {
 	 * @param aClassLoader
 	 */
 	public static void load(String aNamespace, String aPath, ClassLoader aClassLoader) {
+		if (mLog.isDebugEnabled()) {
+			if (null != aNamespace) {
+				mLog.debug("Loading '" + aPath + "' content beans on '" + aNamespace + "' bean factory...");
+			} else {
+				mLog.debug("Loading '" + aPath + "' content beans on global bean factory...");
+			}
+		}
+
 		String lPath = Tools.expandEnvVarsAndProps(aPath);
 
 		XmlBeanDefinitionReader lXmlReader;
@@ -111,12 +128,26 @@ public class JWebSocketBeanFactory {
 	 * Destroy all GenericApplicationContext instances.
 	 */
 	public static void destroy() {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Destroying bean factories...");
+		}
+
 		// destroying namespaced application contexts
 		for (GenericApplicationContext lContext : JWebSocketBeanFactory.mContextMap.values()) {
-			lContext.destroy();
+			try {
+				lContext.refresh();
+				lContext.destroy();
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "destroying " + lContext.getDisplayName() + " bean factory..."));
+			}
 		}
 
 		// destroying global application context
-		JWebSocketBeanFactory.mGlobalContext.destroy();
+		try {
+			mGlobalContext.refresh();
+			mGlobalContext.destroy();
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "destroying global bean factory..."));
+		}
 	}
 }
