@@ -9,7 +9,7 @@
 	<groupId>org.jwebsocket</groupId>
 	<artifactId>jWebSocketAppSrvDemo</artifactId>
 	<name>jWebSocketAppSrvDemo</name>
-	<description>jWebSocket Web Application Project including WebClient</description>
+	<description>jWebSocket Web Application Project</description>
 	<version>1.0</version>
 	<packaging>war</packaging>
 	
@@ -60,12 +60,11 @@
 								<include>**/log4j.xml</include>
 							</includes>							
 						</resource>
-						-->
+						
 						<resource>
 							<targetPath>WEB-INF/classes/conf</targetPath>						
 							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
 						</resource>
-						<!-- put all jWebSocket jars into the lib folder too, to be in the classpath -->
 						<resource>
 							<targetPath>WEB-INF/lib</targetPath>						
 							<directory>../../../rte/jWebSocket-${project.version}/libs</directory>
@@ -73,20 +72,15 @@
 								<include>**/jWebSocket*.jar</include>
 							</includes>							
 						</resource>
-						
+						-->
 						<resource>
-              				<!-- this is relative to the pom.xml directory -->
-							<directory>../jWebSocketClient/web</directory>
-							<!-- disable filtering! otherwise flash swf files get destroyed! -->
-							<filtering>false</filtering>
-							<excludes>
-								<!-- don't include documentation in the .war -->
-								<exclude>**/javadocs/**</exclude>
-								<exclude>**/quickguide/**</exclude>
-								<exclude>**/devguide/**</exclude>
-							</excludes>
+							<!-- this is relative to the pom.xml directory -->
+							<directory>../jWebSocketWebAppDemo/web/</directory>
 						</resource>
-						
+						<resource>
+							<!-- this is relative to the pom.xml directory -->
+							<directory>../jWebSocketWebAppDemo/src/java/</directory>
+						</resource>
 					</webResources>
 				</configuration>
 			</plugin>
@@ -118,34 +112,9 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
-			<artifactId>jWebSocketServer</artifactId>
-			<version>${project.version}</version>
-			
-			<!-- forcing to explicitely use latest Spring version -->
-			<exclusions>
-				<exclusion>
-					<artifactId>spring</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-<!--
-		<dependency>
-			<groupId>org.jwebsocket</groupId>
-			<artifactId>jWebSocketArduinoPlugIn</artifactId>
+			<artifactId>jWebSocketTomcatEngine</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.jwebsocket</groupId>
-			<artifactId>jWebSocketJCaptchaPlugIn</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jwebsocket</groupId>
-			<artifactId>jWebSocketMonitoringPlugIn</artifactId>
-			<version>${project.version}</version>
-		</dependency>
--->		
 	</dependencies>
 	
 	<!--  define repositories -->
