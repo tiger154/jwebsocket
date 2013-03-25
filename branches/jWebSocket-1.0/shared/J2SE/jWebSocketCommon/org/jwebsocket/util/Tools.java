@@ -728,7 +728,7 @@ public class Tools {
 	 *
 	 */
 	public static void stopUtilityThreadPool() {
-		if (null == mThreadPool) {
+		if (null != mThreadPool && !mThreadPool.isShutdown()) {
 			mThreadPool.shutdownNow();
 		}
 	}

@@ -57,7 +57,7 @@ public interface IItemCollection extends ITokenizable, IMappable {
 
 	/**
 	 * The access password of a collection allows the users to read the
-	 * collection it content but not write.
+	 * collection content but not write.
 	 *
 	 * @return The collection access password
 	 */
@@ -72,7 +72,7 @@ public interface IItemCollection extends ITokenizable, IMappable {
 
 	/**
 	 * The secret password of a collection allows the users to modify the
-	 * content of it.
+	 * content of the collection.
 	 *
 	 * @return The collection secret password
 	 */
