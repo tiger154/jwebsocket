@@ -40,6 +40,11 @@ Ext.define('IS.view.definition.EditAttribute', {
 				tooltip: 'If TRUE, the attribute value is required.',
 				fieldLabel: 'Required'
 			}, {
+				xtype: 'checkbox',
+				name: 'unique',
+				tooltip: 'If TRUE, the attribute value require to be unique in the collection.',
+				fieldLabel: 'Unique'
+			}, {
 				xtype: 'arrayfield',
 				name: 'in',
 				tooltip: 'Attribute value domain values.',
