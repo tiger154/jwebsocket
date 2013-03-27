@@ -34,12 +34,13 @@
         <script type="text/javascript" src="../../lib/jQuery/jquery.js"></script>
         <script type="text/javascript" src="../../lib/RecordRTC/RecordRTC.js"></script>
         <script type="text/javascript" src="../../lib/RecordRTC/audio-recorder.js"></script>
+        <script type="text/javascript" src="../../lib/zip/rawdeflate.js"></script>
+        <script type="text/javascript" src="../../lib/zip/rawinflate.js"></script>
     </head>
     <body style="font-family: Verdana; font-size: smaller">
 		<h1>Presenter</h1>
 		<div>
 			<video id="in" width="320"  height="240" autoplay></video>
-			<video id="out" width="320" height="240" autoplay></video>
 		</div>
 
 		<script type="text/javascript">
@@ -53,19 +54,33 @@
 							
 						navigator.webkitGetUserMedia({video: true}, function (stream) {
 							vIn.src = window.webkitURL.createObjectURL(stream);
-							recorder = RecordRTC({
-								stream: stream,
-								video: vIn
+							//							recorder = RecordRTC({
+							//								stream: stream,
+							//								video: vIn
+							//							});
+							//					
+							//							recorder.recordVideo();
+							//							
+							//							setInterval(function(){
+							//								recorder.getLiveBase64(function(aBase64){
+							//									console.log(aBase64.length);
+							//									lConn.broadcastText(null, aBase64);
+							//								});
+							//							}, 1000);
+
+							videoRec = new VideoRecorder({
+								video: vIn,
+								quality: 0.5
 							});
-					
-							recorder.recordVideo();
 							
+							videoRec.start();
 							setInterval(function(){
-								recorder.getLiveBase64(function(aBase64){
+								videoRec.getStream(function(aBase64){
 									console.log(aBase64.length);
 									lConn.broadcastText(null, aBase64);
 								});
-							}, 500);
+							}, 1000);
+
 						});
 						
 						

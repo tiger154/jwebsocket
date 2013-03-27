@@ -67,7 +67,7 @@
 						timer = setInterval(
 						function () {
 							ctx.drawImage(video, 0, 0, 320, 240);
-							lConn.sendText(lConn.getId(), canvas.get()[0].toDataURL('image/jpeg', 1.0));
+							lConn.sendText(lConn.getId(), canvas.get()[0].toDataURL('image/webp', 1.0));
 						}, 70);
 						
 						lConn.addPlugIn({
