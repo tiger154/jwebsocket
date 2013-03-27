@@ -1,3 +1,43 @@
+VideoRecorder = function VideoRecorder(aConfig){
+	this.video = aConfig.video;
+	this.canvas  = aConfig["canvas"] || document.createElement('canvas');
+	this.context = this.canvas.getContext('2d');
+	
+	this.width = this.video.width = this.canvas.width = aConfig["width"] || 320;
+	this.height =  this.video.height = this.canvas.height = aConfig["height"] || 240;
+	
+	this.frames = [];
+	this.quality = aConfig["quality"] || 1.0;
+}
+
+VideoRecorder.prototype.start = function(){
+	var self = this;
+	this.timer = setInterval(function(){
+		self.context.drawImage(self.video, 0, 0, self.width, self.height);
+		self.frames.push(self.canvas.toDataURL('image/webp', self.quality));
+	}, 65);
+}
+
+VideoRecorder.prototype.stop = function(){
+	clearInterval(this.timer);
+}
+
+VideoRecorder.prototype.clear = function(){
+	this.frames = [];
+}
+
+VideoRecorder.prototype.getStream = function (aFn){
+	var lStreamImages = this.frames;
+	this.frames = [];
+		
+	var reader = new FileReader();
+	reader.onload = function(event){
+		aFn(event.target.result); 
+	};
+	reader.readAsDataURL(Whammy.fromImageArray(lStreamImages, 16));
+}
+
+
 function RecordRTC(config) {
 	var win = window,
 	requestAnimationFrame = win.webkitRequestAnimationFrame,
@@ -6,10 +46,11 @@ function RecordRTC(config) {
 	canvas = document.createElement('canvas'),
 	context = canvas.getContext('2d'),
 	video = config.video;
+	var timer;
 
 	if (video) {
-		video.width = canvas.width = 200;
-		video.height = canvas.height =150;
+		video.width = canvas.width = 320;
+		video.height = canvas.height =240;
 	}
 
 	var requestedAnimationFrame, frames = [];
@@ -25,13 +66,19 @@ function RecordRTC(config) {
 
 		frames = [];
 
-		function drawVideoFrame() {
-			requestedAnimationFrame = requestAnimationFrame(drawVideoFrame);
+		//				function drawVideoFrame() {
+		//					requestedAnimationFrame = requestAnimationFrame(drawVideoFrame);
+		//					context.drawImage(video, 0, 0, width, height);
+		//					frames.push(canvas.toDataURL('image/webp', 1.0));
+		//				};
+		//		
+		//				requestedAnimationFrame = requestAnimationFrame(drawVideoFrame);
+		timer = setInterval(function(){
 			context.drawImage(video, 0, 0, width, height);
-			frames.push(canvas.toDataURL('image/webp', 0.8));
-		};
+			frames.push(canvas.toDataURL('image/webp', 0.5));
+		}, 65);
+		
 
-		requestedAnimationFrame = requestAnimationFrame(drawVideoFrame);
 	}
 
 	var blobURL, blobURL2, fileType;
@@ -54,7 +101,7 @@ function RecordRTC(config) {
 		reader.onload = function(event){
 			aFn(event.target.result); 
 		};
-		reader.readAsDataURL(Whammy.fromImageArray(lRecordedFrames, 1000 / 60));
+		reader.readAsDataURL(Whammy.fromImageArray(lRecordedFrames, 15));
 	}
 
 	function saveToDisk() {
