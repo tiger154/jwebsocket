@@ -26,17 +26,69 @@ VideoRecorder.prototype.clear = function(){
 	this.frames = [];
 }
 
-VideoRecorder.prototype.getStream = function (aFn){
+VideoRecorder.prototype.getStream = function (aCallback){
 	var lStreamImages = this.frames;
 	this.frames = [];
 		
 	var reader = new FileReader();
 	reader.onload = function(event){
-		aFn(event.target.result); 
+		aCallback(event.target.result); 
 	};
 	reader.readAsDataURL(Whammy.fromImageArray(lStreamImages, 16));
 }
 
+AudioRecorder = function AudioRecorder(aConfig){
+	this.stream = aConfig.stream;
+}
+
+AudioRecorder.prototype.start = function(){
+	initAudioRecorder(this.audioWorkerPath);
+	
+	var audioContext = new AudioContext;
+	var mediaStreamSource = audioContext.createMediaStreamSource(this.stream);
+
+	mediaStreamSource.connect(this.audioContext.destination);
+	this.recorder = new Recorder(mediaStreamSource);
+	this.recorder.record();
+}
+
+AudioRecorder.prototype.stop = function(){
+	this.recorder.stop();
+	this.recorder.clear();
+}
+
+AudioRecorder.prototype.clear = function(){
+	this.recorder.clear();
+}
+
+AudioRecorder.prototype.getStream = function (aCallback){
+	this.recorder.exportWAV(aCallback);
+}
+
+
+
+
+//WebRTCVideoRecorder = function WebRTCVideoRecorder(aConfig){
+//	this.stream = aConfig.stream;
+//}
+//
+//WebRTCVideoRecorder.prototype.start = function(){
+//	this.streamRecorder = this.stream.record();
+//}
+//
+//WebRTCVideoRecorder.prototype.stop = function(){
+//	this.streamRecorder.getRecordedData(function(){});
+//}
+//
+//WebRTCVideoRecorder.prototype.getStream = function(aCallback){
+//	this.streamRecorder.getRecordedData(function(aBlob){
+//		var reader = new FileReader();
+//		reader.onload = function(event){
+//			aCallback(event.target.result); 
+//		};
+//		reader.readAsDataURL(aBlob);
+//	});
+//}
 
 function RecordRTC(config) {
 	var win = window,
