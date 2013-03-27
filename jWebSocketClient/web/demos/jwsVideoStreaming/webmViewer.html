@@ -38,20 +38,21 @@
     <body style="font-family: Verdana; font-size: smaller">
 		<h1>Viewer</h1>
 		<div>
-			<video id="out" width="320" height="240" autoplay></video>
+			<video id="out" width="320" height="240"></video>
 		</div>
 
 		<script type="text/javascript">
 			$( document ).ready( function( ) {
 				vOut = $("#out").get()[0];
-				
+				streams = [];
 				var lConn = new jws.jWebSocketJSONClient();
 				lConn.open(jws.getDefaultServerURL(), {
 					OnOpen: function(){
 							
 							
 						$("#out").bind("ended", function() {
-							vOut.src = data;
+							vOut.src = streams[streams.length - 1];
+							vOut.play();
 						});
 						
 						loaded = false;
@@ -59,9 +60,10 @@
 							processToken: function(aToken){
 								if ("broadcast" == aToken["type"]){
 									if (aToken['data']){
-										data = aToken["data"];
+										streams.push(aToken["data"]);
 										if (!loaded){
-											vOut.src = data;
+											vOut.src = streams[streams.length - 1];
+											vOut.play();
 											loaded = true;
 										}
 									}
