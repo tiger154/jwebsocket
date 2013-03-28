@@ -80,6 +80,13 @@ jws.ChannelPlugIn = {
 				if( this.fOnChannelBroadcast ) {
 					this.fOnChannelBroadcast( aToken );
 				}
+			} else if( aToken.type == "response" && 
+					this.CREATE_CHANNEL == aToken.reqType && aToken.isPrivate ) {
+				// When a private channel is created the callback 
+				// OnChannelCreated is fired to the user
+				if( this.fOnChannelCreated ) {
+						this.fOnChannelCreated( aToken );
+				}
 			}
 		}
 	},
