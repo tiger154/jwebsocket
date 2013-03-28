@@ -38,6 +38,9 @@
 		<script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
 		<!-- this one imports the client side rpc plug-in -->
 		<script type="text/javascript" src="../../res/js/jwsRPCPlugIn.js"></script>
+		<script type="text/javascript" src="../../lib/zip/zlib_and_gzip.min.js"></script>
+		<script type="text/javascript" src="../../lib/zip/rawdeflate.js"></script>
+		<script type="text/javascript" src="../../lib/zip/rawinflate.js"></script>
 		<script type="text/javascript" language="JavaScript">
 
 			var eLog = null;
@@ -103,6 +106,11 @@
 							+ lWSC.getId() + "&nbsp;"
 							+ ( jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)" );
 					},
+					
+					OnToken: function(aToken){
+						console.log(aToken);
+					},
+					
 					// OnClose callback
 					OnClose: function( aEvent ) {
 						log( "<font style='color:#888'>jWebSocket connection closed.</font>" );
@@ -129,9 +137,9 @@
 				if( lMsg.length > 0 ) {
 					log( "Broadcasting '" + lMsg + "'..." );
 					var lRes = lWSC.broadcastText(
-						"",		// broadcast to all clients (not limited to a certain pool)
-						lMsg	// broadcast this message
-					);
+					"",		// broadcast to all clients (not limited to a certain pool)
+					lMsg	// broadcast this message
+				);
 					// you may want log error only,
 					// on success don't confuse the user
 					// if( lRes.code != 0 ) {
@@ -186,7 +194,7 @@
 							log("Server responded: "
 								+ "vendor: " + aToken.vendor
 								+ ", version: " + aToken.version
-							);
+						);
 						}
 					});
 				} else {
@@ -206,7 +214,7 @@
 						OnResponse: function( aToken ) {
 							log("Server responded: "
 								+ "aToken: " + aToken
-							);
+						);
 						}
 					});
 				} else {
@@ -242,20 +250,20 @@
 						
 					}
 				);
-				*/
+				 */
 				// call the getMD5 method of the server
 				var lRes = lWSC.rpc(
-					"org.jwebsocket.rpc.sample.SampleRPCLibrary", // class
-					"runListDemo", // method
-					[ // args, a list in an array of arguments
-						// 1234	// int
-						// eMessage.value // string
-						[ 1, 2, 3, 4, "a", "b", "c", "d" ] // array/list
-					],
-					{
+				"org.jwebsocket.rpc.sample.SampleRPCLibrary", // class
+				"runListDemo", // method
+				[ // args, a list in an array of arguments
+					// 1234	// int
+					// eMessage.value // string
+					[ 1, 2, 3, 4, "a", "b", "c", "d" ] // array/list
+				],
+				{
 
-					}
-				);
+				}
+			);
 				// log error only, on success don't confuse the user
 				if( lRes.code != 0 ) {
 					log( lWSC.resultToString( lRes ) );
@@ -291,7 +299,7 @@
 				if( lRes.code != 0 ) {
 					log( lWSC.resultToString( lRes ) );
 				}
-				*/
+				 */
 				/*
 				log( "Updating JDBC data via WebSockets..." );
 				// call the getTime method of the client side plug-in
@@ -305,8 +313,8 @@
 				if( lRes.code != 0 ) {
 					log( lWSC.resultToString( lRes ) );
 				}
-				*/
-			   /*
+				 */
+				/*
 				log( "Inserting JDBC data via WebSockets..." );
 				// call the getTime method of the client side plug-in
 				var lRes = lWSC.jdbcInsert({
@@ -318,15 +326,15 @@
 				if( lRes.code != 0 ) {
 					log( lWSC.resultToString( lRes ) );
 				}
-				*/
-			   /*
+				 */
+				/*
 				log( "Deleting JDBC data via WebSockets..." );
 				// call the getTime method of the client side plug-in
 				var lRes = lWSC.jdbcDelete({
 					table	: "demo_master",
 					where	: "master_id=6"
 				});
-				*/
+				 */
 			}
 			
 			function cgiTest() {
@@ -398,7 +406,7 @@
 			</tr>
 		</table>
 		<p>This little &quot;Hello World&quot; demonstrates how to easily logon to the jWebSocket Server, broadcast a message and logoff again.<br/>
-		Please use the browser's show frame source function to see the entire source code of this page.
+			Please use the browser's show frame source function to see the entire source code of this page.
 		</p>
 		<div id="sdivChat" class="sdivContainer"
 			 style="position:relative; height:300px; overflow:auto;">
