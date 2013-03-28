@@ -360,4 +360,10 @@ public interface Token {
 	 * @return
 	 */
 	Iterator<String> getKeyIterator();
+
+	/**
+	 *
+	 * @return
+	 */
+	String getLogString();
 }

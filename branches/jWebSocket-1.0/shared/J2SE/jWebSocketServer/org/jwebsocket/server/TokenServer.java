@@ -467,11 +467,12 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 *
+	 * @deprecated 
 	 * @param aConnector
 	 * @param aChunkable
 	 */
 	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable) {
+		
 		sendChunkable(aConnector, aChunkable, new IChunkableDeliveryListener() {
 			@Override
 			public void OnChunkDelivered(Token aToken) {

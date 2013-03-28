@@ -384,7 +384,7 @@ public class MapToken extends BaseToken implements Token {
 	 */
 	@Override
 	public List getList(String aKey, List aDefault) {
-		List lResult = null;
+		List lResult;
 		try {
 			lResult = (List) mData.get(aKey);
 			if (lResult == null) {
@@ -458,7 +458,7 @@ public class MapToken extends BaseToken implements Token {
 	 */
 	@Override
 	public Token getToken(String aKey, Token aDefault) {
-		Token lResult = null;
+		Token lResult;
 		try {
 			lResult = (Token) mData.get(aKey);
 			if (lResult == null) {
@@ -478,7 +478,7 @@ public class MapToken extends BaseToken implements Token {
 	 */
 	@Override
 	public Map getMap(String aKey, Map aDefault) {
-		Map lResult = null;
+		Map lResult;
 		try {
 			lResult = (Map) mData.get(aKey);
 			if (lResult == null) {
@@ -545,5 +545,14 @@ public class MapToken extends BaseToken implements Token {
 			//
 		}
 		return lObj;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	@Override
+	public String getLogString() {
+		return mData.toString();
 	}
 }
