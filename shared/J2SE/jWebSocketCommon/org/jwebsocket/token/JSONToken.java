@@ -530,4 +530,13 @@ public class JSONToken extends BaseToken implements Token {
 		}
 		return lObj;
 	}
+
+	/**
+	 *
+	 * @return
+	 */
+	@Override
+	public String getLogString() {
+		return mData.toString();
+	}
 }
