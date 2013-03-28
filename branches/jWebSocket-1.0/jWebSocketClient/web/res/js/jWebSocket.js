@@ -3598,6 +3598,11 @@ jws.SystemClientPlugIn = {
 				if( lAppOnWelcomeClBk ) {
 					lAppOnWelcomeClBk.call( lThis, aEvent );
 				}
+				aOptions.OnSuccess = function( aToken ) {
+					if ( lAppOnWelcomeClBk ) {
+						lAppOnWelcomeClBk.call( lThis, aToken );
+					}
+				}
 				lThis.login( aUsername, aPassword, aOptions );
 			};
 			this.open(
