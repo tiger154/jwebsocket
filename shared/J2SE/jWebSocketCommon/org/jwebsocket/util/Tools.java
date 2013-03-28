@@ -31,6 +31,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.codec.binary.Base64;
@@ -41,12 +43,12 @@ import org.apache.commons.codec.binary.Base64;
  * @author aschulze
  */
 public class Tools {
-
+	
 	private static final Map<String, String> JAVA_2_GENERIC_MAP = new FastMap<String, String>();
 	private static final Map<String, String> GENERIC_2_JAVA_MAP = new FastMap<String, String>();
 	private static Timer mTimer = null;
 	private static ExecutorService mThreadPool = null;
-
+	
 	static {
 		JAVA_2_GENERIC_MAP.put("java.lang.String", "string");
 		JAVA_2_GENERIC_MAP.put("java.lang.Boolean", "boolean");
@@ -57,12 +59,12 @@ public class Tools {
 		JAVA_2_GENERIC_MAP.put("java.lang.Float", "float");
 		JAVA_2_GENERIC_MAP.put("java.lang.Double", "double");
 		JAVA_2_GENERIC_MAP.put("java.math.BigDecimal", "double");
-
+		
 		JAVA_2_GENERIC_MAP.put("java.sql.Timestamp", "datetime");
 		JAVA_2_GENERIC_MAP.put("java.sql.Date", "date");
 		JAVA_2_GENERIC_MAP.put("java.sql.Time", "time");
 		JAVA_2_GENERIC_MAP.put("java.util.Date", "datetime");
-
+		
 		JAVA_2_GENERIC_MAP.put("java.util.Collection", "list");
 		JAVA_2_GENERIC_MAP.put("java.util.List", "list");
 		JAVA_2_GENERIC_MAP.put("java.util.Set", "list");
@@ -463,7 +465,7 @@ public class Tools {
 		 * not found."); }
 		 */
 		Object lRes;
-
+		
 		Class[] lArgClasses = null;
 		if (aArgs != null) {
 			lArgClasses = new Class[aArgs.length];
@@ -477,7 +479,7 @@ public class Tools {
 		 * "' not found."); }
 		 */
 		lRes = lMthd.invoke(null, aArgs);
-
+		
 		return lRes;
 	}
 
@@ -495,7 +497,7 @@ public class Tools {
 			throw new Exception("No class passed for call.");
 		}
 		Object lRes;
-
+		
 		Class[] lArgClasses = null;
 		if (aArgs != null) {
 			lArgClasses = new Class[aArgs.length];
@@ -509,7 +511,7 @@ public class Tools {
 			throw new Exception("Method '" + aMethodName + "' not found.");
 		}
 		lRes = lMthd.invoke(null, aArgs);
-
+		
 		return lRes;
 	}
 
@@ -530,7 +532,7 @@ public class Tools {
 			throw new Exception("No method name passed for call.");
 		}
 		Object lRes;
-
+		
 		Class[] lArgClasses;
 		if (aArgs != null) {
 			lArgClasses = new Class[aArgs.length];
@@ -539,7 +541,7 @@ public class Tools {
 				lArgClasses[lIdx] = lClass;
 			}
 		}
-
+		
 		Method lMthd = null;
 		Method[] lMethods = aClass.getMethods();
 		for (int lIdx = 0; lIdx < lMethods.length; lIdx++) {
@@ -552,7 +554,7 @@ public class Tools {
 			throw new Exception("Method '" + aMethodName + "' not found.");
 		}
 		lRes = lMthd.invoke(null, aArgs);
-
+		
 		return lRes;
 	}
 
@@ -577,7 +579,7 @@ public class Tools {
 			throw new Exception("No method name passed for call.");
 		}
 		Object lRes;
-
+		
 		Class[] lArgClasses;
 		if (aArgs != null) {
 			lArgClasses = new Class[aArgs.length];
@@ -586,7 +588,7 @@ public class Tools {
 				lArgClasses[lIdx] = lClass;
 			}
 		}
-
+		
 		Method lMthd = null;
 		Method[] lMethods = aClass.getMethods();
 		for (int lIdx = 0; lIdx < lMethods.length; lIdx++) {
@@ -599,7 +601,7 @@ public class Tools {
 			throw new Exception("Method '" + aMethodName + "' not found.");
 		}
 		lRes = lMthd.invoke(null, aArgs);
-
+		
 		return lRes;
 	}
 
@@ -618,7 +620,7 @@ public class Tools {
 		}
 		Class lClass = aInstance.getClass();
 		Object lRes;
-
+		
 		Class[] lArgClasses = null;
 		if (aArgs != null) {
 			lArgClasses = new Class[aArgs.length];
@@ -635,11 +637,11 @@ public class Tools {
 			aArgs = new Object[0];
 		}
 		lRes = lMthd.invoke(aInstance, aArgs);
-
+		
 		return lRes;
 	}
 	private static char[] BASE64_CHAR_MAP = new char[64];
-
+	
 	static {
 		int lIdx = 0;
 		for (char lC = 'A'; lC <= 'Z'; lC++) {
@@ -741,7 +743,7 @@ public class Tools {
 		if (null == mThreadPool) {
 			startUtilityThreadPool();
 		}
-
+		
 		return mThreadPool;
 	}
 
@@ -752,7 +754,7 @@ public class Tools {
 	public static void startUtilityTimer() {
 		if (null == mTimer) {
 			mTimer = new Timer("jWebSocket Utility Timer");
-
+			
 			final Timer lTimer = mTimer;
 			mTimer.scheduleAtFixedRate(new TimerTask() {
 				@Override
@@ -852,5 +854,54 @@ public class Tools {
 			}
 		}
 		return aPath;
+	}
+
+	/**
+	 * Deflate a byte array with Zip compression
+	 *
+	 * @param aUncompressedData The uncompressed data
+	 * @return The compressed data
+	 * @throws Exception
+	 */
+	public static byte[] deflate(byte[] aUncompressedData) throws Exception {
+		Deflater lDeflater = new Deflater();
+		lDeflater.setInput(aUncompressedData);
+		lDeflater.finish();
+		byte[] lOut = new byte[1024 * 1000 * 5];
+		int lWritten = lDeflater.deflate(lOut);
+		byte[] lResult = new byte[lWritten];
+		
+		System.arraycopy(lOut, 0, lResult, 0, lWritten);
+		
+		return lResult;
+
+//		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//		GZIPOutputStream zos = new GZIPOutputStream(baos);
+//
+//		zos.write(aUncompressedData);
+//		zos.finish();
+//		zos.flush();
+//
+//
+//		return baos.toByteArray();
+	}
+
+	/**
+	 * Inflate a byte array with Zip compression
+	 *
+	 * @param aCompressedData
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] inflate(byte[] aCompressedData) throws Exception {
+		Inflater lInflater = new Inflater();
+		lInflater.setInput(aCompressedData);
+		byte[] lOut = new byte[1024 * 1000 * 5];
+		int lWritten = lInflater.inflate(lOut);
+		byte[] lResult = new byte[lWritten];
+		
+		System.arraycopy(lOut, 0, lResult, 0, lWritten);
+		
+		return lResult;
 	}
 }

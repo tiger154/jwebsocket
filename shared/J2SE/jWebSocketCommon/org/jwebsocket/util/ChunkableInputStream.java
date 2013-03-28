@@ -33,6 +33,7 @@ import org.jwebsocket.token.TokenFactory;
 public class ChunkableInputStream extends BaseChunkable {
 
 	private final InputStream mIS;
+	private boolean mZipCompression = false;
 
 	/**
 	 *
@@ -43,6 +44,18 @@ public class ChunkableInputStream extends BaseChunkable {
 	public ChunkableInputStream(String aNS, String aType, InputStream aIS) {
 		super(aNS, aType);
 		mIS = aIS;
+	}
+
+	/**
+	 *
+	 * @param aNS
+	 * @param aType
+	 * @param aIS
+	 */
+	public ChunkableInputStream(String aNS, String aType, InputStream aIS, boolean aZipCompression) {
+		super(aNS, aType);
+		mIS = aIS;
+		mZipCompression = aZipCompression;
 	}
 
 	/**
@@ -72,21 +85,24 @@ public class ChunkableInputStream extends BaseChunkable {
 					int lLength = (mIS.available() > getFragmentSize()) ? getFragmentSize() : mIS.available();
 					Token lChunk = TokenFactory.createToken();
 					lChunk.setChunkType("stream" + getUniqueChunkId());
-					/*
-					 LinkedList<Integer> lData = new LinkedList<Integer>();
-					 while (lLength > 0) {
-					 lData.add(mIS.read());
-					 lLength--;
-					 }
-					 lChunk.setList("data", lData);
-					 */
+
 					byte[] lBA = new byte[lLength];
 					mIS.read(lBA, 0, lLength);
-					String lData = Tools.base64Encode(lBA);
+					
+					String lData;
+					
+					// supporting zip compression
+					if (mZipCompression) {
+						lData = Tools.base64Encode(Tools.deflate(lBA));
+						lChunk.setString("enc", "zip");
+					} else {
+						lData = Tools.base64Encode(lBA);
+					}
+
 					lChunk.setString("data", lData);
 
 					return lChunk;
-				} catch (IOException lEx) {
+				} catch (Exception lEx) {
 					return null;
 				}
 			}
