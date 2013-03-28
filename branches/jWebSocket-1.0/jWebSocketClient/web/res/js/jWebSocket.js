@@ -2726,6 +2726,17 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			aToken.ns = "org.jwebsocket.plugins.system";
 		}
 
+		// processing zip compression in chunks
+		if (true == aToken.isChunk && 'zip' == aToken.enc){
+			// using Zlib
+//			var gunzip = new Zlib.Gunzip(Base64.decode(aToken.data));
+//			var plain = gunzip.decompress();
+//			console.log(plain);
+			
+			// Using RawDeflate
+			//console.log(RawDeflate.inflate(Base64.decode(aToken.data)));
+		}
+		
 		// is it a token from the system plug-in at all?
 		if( jws.NS_SYSTEM === aToken.ns ) {
 			// check welcome and goodBye tokens to manage the session
@@ -4329,3 +4340,13 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 	}
 
 });
+
+// supporting String to ByteArray conversion
+String.prototype.getBytes = function () {
+  var lBytes = [];
+  for (var lIndex = 0; lIndex < this.length; ++lIndex) {
+    lBytes.push(this.charCodeAt(lIndex));
+  }
+  
+  return lBytes;
+};
