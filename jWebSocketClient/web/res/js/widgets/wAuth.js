@@ -179,7 +179,7 @@ $.widget("jws.auth",{
 				}
 			},
 					
-			OnWelcome: function( aToken )  {
+			OnWelcome: function( aToken ) {
 				if( w.auth.options.OnWelcome ) {
 					w.auth.options.OnWelcome( aToken );
 				}
@@ -189,16 +189,37 @@ $.widget("jws.auth",{
 						w.auth.eClientId.text( "Client-ID: " + aToken.sourceId );
 					}
 				}
-				
-				if ( "anonymous" != aToken.username ) {
-					w.auth.eLogonArea.hide( );
-					w.auth.eLogoffArea.fadeIn( 300 );
-
-					w.auth.eUserInfoName.text( aToken.username );
-					w.auth.mUsername = aToken.username;
-					w.auth.eClientId.text( "Client-ID: " + aToken.sourceId );
-					w.auth.eClientStatus.attr( "class", "authenticated" ).text( "authenticated" );
+			},
+			OnLogon: function( aToken ) {
+				if ( w.auth.options.OnLogon ) {
+					w.auth.options.OnLogon( aToken );
 				}
+				if ( mLog.isDebugEnabled ) {
+					log( "<div style='color:green'>Successfully authenticated as: "
+							+ aToken.username + "</div>" );
+				}
+				w.auth.eLogonArea.hide( );
+				w.auth.eLogoffArea.fadeIn( 300 );
+
+				w.auth.eUserInfoName.text( aToken.username );
+				w.auth.mUsername = aToken.username;
+				w.auth.eClientId.text( "Client-ID: " + aToken.sourceId );
+				w.auth.eClientStatus.attr( "class", "authenticated" ).text( "authenticated" );
+			},
+					
+			OnLogoff: function( aToken ) {
+				if ( w.auth.options.OnLogoff ) {
+					w.auth.options.OnLogoff( aToken );
+				}
+				w.auth.eLogoffArea.hide( );
+				w.auth.eLogonArea.fadeIn( 200 );
+
+				w.auth.eConnectButton.hide( );
+				w.auth.eDisConnectButton.show( );
+
+				w.auth.mUsername = null;
+				w.auth.eUserInfoName.text( "" );
+				w.auth.eClientStatus.attr( "class", "online" ).text( "online" );
 			},
 
 			OnGoodBye: function( aEvent ) {
@@ -213,35 +234,12 @@ $.widget("jws.auth",{
 			// OnMessage callback
 			OnMessage: function( aEvent, aToken ) {
 				if( "login" == aToken.reqType || "logon" ==  aToken.reqType ) {
-					if( aToken.code != -1 ) {
-						if( mLog.isDebugEnabled ) {
-							log( "<div style='color:green'>Successfully authenticated as: " 
-								+ aToken.username + "</div>");
-						}
-						w.auth.eLogonArea.hide( );
-						w.auth.eLogoffArea.fadeIn( 300 );
-						
-						w.auth.eUserInfoName.text( aToken.username );
-						w.auth.mUsername = aToken.username;
-						w.auth.eClientStatus.attr( "class", "authenticated").text("authenticated");
-						w.auth.eClientId.text( "Client-ID: " + aToken.sourceId );
-					} else {
+					if( aToken.code == -1 ) {
 						if( mLog.isDebugEnabled ) {
 							log( "<div style='color:red'><b>Error trying to login, \n\
 								invalid credentials, please, check your user or password</div>");
 						}
 					}
-				} else if( "logout" == aToken.reqType || "logoff" == aToken.reqType) {
-					w.auth.eLogoffArea.hide( );
-					w.auth.eLogonArea.fadeIn( 200 );
-					
-					w.auth.eConnectButton.hide( );
-					w.auth.eDisConnectButton.show( );
-					
-					w.auth.mUsername = null;
-					w.auth.eUserInfoName.text( "" );
-					w.auth.eClientStatus.attr( "class", "online" ).text( "online" );
-					
 				}
 				// Debug if the user doesn't have an OnMessage method
 				if( w.auth.options.OnMessage ) {
