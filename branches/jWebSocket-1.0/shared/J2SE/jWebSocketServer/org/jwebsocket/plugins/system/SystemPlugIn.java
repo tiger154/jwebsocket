@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.system;
 
+import java.io.StringBufferInputStream;
 import java.util.*;
 import java.util.Map.Entry;
 import javolution.util.FastList;
@@ -48,6 +49,7 @@ import org.jwebsocket.session.SessionManager;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.ChunkableInputStream;
 import org.jwebsocket.util.Fragmentation;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
@@ -358,6 +360,8 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// sending the welcome token
 		sendWelcome(aConnector);
+		
+		//sendChunkable(aConnector, new ChunkableInputStream("sdfsdf", "sdfsdf", new StringBufferInputStream("Hello World"), true));
 
 		// if new connector is active broadcast this event to then network
 		broadcastConnectEvent(aConnector);
