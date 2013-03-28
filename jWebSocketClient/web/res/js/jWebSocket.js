@@ -3298,10 +3298,10 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			if( aOptions && aOptions.OnGoodBye && "function" === typeof aOptions.OnGoodBye ) {
 				this.fOnGoodBye = aOptions.OnGoodBye;
 			}
-			if( aOptions && aOptions.OnLogon && typeof "function" === aOptions.OnLogon ) {
+			if( aOptions && aOptions.OnLogon && "function" === typeof aOptions.OnLogon ) {
 				this.fOnLogon = aOptions.OnLogon;
 			}
-			if( aOptions && aOptions.OnLogoff && typeof "function" === aOptions.OnLogoff ) {
+			if( aOptions && aOptions.OnLogoff && "function" === typeof aOptions.OnLogoff ) {
 				this.fOnLogoff = aOptions.OnLogoff;
 			}
 			// call inherited connect, catching potential exception
@@ -3598,11 +3598,7 @@ jws.SystemClientPlugIn = {
 				if( lAppOnWelcomeClBk ) {
 					lAppOnWelcomeClBk.call( lThis, aEvent );
 				}
-				aOptions.OnSuccess = function( aToken ) {
-					if ( lAppOnWelcomeClBk ) {
-						lAppOnWelcomeClBk.call( lThis, aToken );
-					}
-				}
+				
 				lThis.login( aUsername, aPassword, aOptions );
 			};
 			this.open(
