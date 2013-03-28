@@ -106,8 +106,7 @@ $.widget( "jws.channels", {
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
-			OnOpen: function( aEvent ) { },
-			OnWelcome: function( aEvent ) {
+			OnOpen: function( aEvent ) {
 				// Registering the callbacks for the channels
 				mWSC.setChannelCallbacks({
 					OnChannelCreated: w.channels.onChannelCreated,
@@ -116,9 +115,11 @@ $.widget( "jws.channels", {
 					OnChannelUnsubscription: w.channels.onChannelUnsubscription,
 					// When any subscription arrives from the server
 					OnChannelSubscription: w.channels.onChannelSubscription
-				//					OnChannelStarted: null,
-				//					OnChannelStopped: null
+				    // OnChannelStarted: null,
+				    // OnChannelStopped: null
 				});
+			},
+			OnWelcome: function( aEvent ) {
 				w.channels.getChannels( );
 			},
 			OnClose: function( ) {
