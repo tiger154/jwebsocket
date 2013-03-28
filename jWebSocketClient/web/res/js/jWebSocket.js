@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC0 (build 30312)
+	//:const:*:VERSION:String:1.0 RC0 (build 30328)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC0 (build 30312)",
+	VERSION: "1.0 RC0 (build 30328)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -1154,7 +1154,7 @@ jws.tools = {
 	//:d:en:Gets a unique number
 	//:r:*:::Integer:A unique integer number
 	getUniqueInteger: function () {
-		if ( undefined == this.fUniqueInteger || 2147483647 == this.fUniqueInteger ){
+		if ( undefined === this.fUniqueInteger || 2147483647 === this.fUniqueInteger ){
 			this.fUniqueInteger = 1;
 		}
 		
@@ -1196,7 +1196,7 @@ jws.tools = {
 	//:a:en::aSQL:String:SQL String to be escaped for SQL queries.
 	//:r:*:::String:Escaped SQL String for use SQL queries.
 	escapeSQL: function( aSQL ) {
-		if( aSQL && typeof aValue == "string" ) {
+		if( aSQL && typeof aValue === "string" ) {
 		// escape single quotes in strings by double single quotes
 		// aSQL = aSQL.replace( /[']/g, "''" );
 		// here can be done further escapes as required for the particular database...
@@ -1250,13 +1250,13 @@ jws.tools = {
 
 	date2String: function( aDate ) {
 		var lRes =
-		aDate.getUTCFullYear() 
-		+ this.zerofill( aDate.getUTCMonth() + 1, 2 )
-		+ this.zerofill( aDate.getUTCDate(), 2 )
-		+ this.zerofill( aDate.getUTCHours(), 2 )
-		+ this.zerofill( aDate.getUTCMinutes(), 2 )
-		+ this.zerofill( aDate.getUTCSeconds(), 2 )
-		+ this.zerofill( aDate.getUTCMilliseconds(), 2 )
+			aDate.getUTCFullYear() 
+			+ this.zerofill( aDate.getUTCMonth() + 1, 2 )
+			+ this.zerofill( aDate.getUTCDate(), 2 )
+			+ this.zerofill( aDate.getUTCHours(), 2 )
+			+ this.zerofill( aDate.getUTCMinutes(), 2 )
+			+ this.zerofill( aDate.getUTCSeconds(), 2 )
+			+ this.zerofill( aDate.getUTCMilliseconds(), 2 );
 		return lRes;
 	},
 
@@ -1286,8 +1286,8 @@ jws.tools = {
 		var lRes = typeof lValue;
 
 		// differentation between integer and float types
-		if ( "number" == lRes ) {
-			if( ( parseFloat( lValue ) == parseInt( lValue ) ) ){
+		if ( "number" === lRes ) {
+			if( ( parseFloat( lValue ) === parseInt( lValue ) ) ){
 				lRes = "integer";
 			} else {
 				lRes = "double";
@@ -1307,7 +1307,7 @@ jws.tools = {
 			return false;
 		}
 		for ( var lIndex in aArray ){
-			if (this.getType(aArray[lIndex]) != aType){
+			if (this.getType(aArray[lIndex]) !== aType){
 				return false;
 			}
 		}
@@ -1321,7 +1321,7 @@ jws.tools = {
 		var lProp = null;
 		for (lProp in aProperties){
 			lSetter = "set" + lProp.substr(0, 1).toUpperCase() + lProp.substr(1);
-			if (typeof(aObject[lSetter]) == "function"){
+			if ( "function" === typeof( aObject[ lSetter ] ) ) {
 				aObject[lSetter](aProperties[lProp]);
 			} else {
 				aObject[lSubfix + lProp] = aProperties[lProp];
@@ -1332,25 +1332,25 @@ jws.tools = {
 	},
 	
 	clone: function(aObject){
-		if(null == aObject || "object" != typeof(aObj)){
+		if( null === aObject || "object" !== typeof( aObj ) ) {
 			return aObject;
 		}
 		
 		//Supporting "clone" method
-		if ("function" == typeof(aObject["clone"])){
+		if( "function" === typeof( aObject[ "clone" ] ) ) {
 			return aObject.clone();
 		}
 		
 		//Supporting clonation in Date objects
-		if (aObject instanceof Date){
-			return new Date(aObject.getTime());
+		if( aObject instanceof Date ){
+			return new Date( aObject.getTime() );
 		}
 		
 		//Special clone for Array objects
-		var cloneArray = function(aArray){
+		var cloneArray = function( aArray ) {
 			var lLength = aArray.length;
 			var lCopy = [];
-			if (lLength > 0){
+			if( lLength > 0 ){
 				for (var lIndex = 0; lIndex < lLength; lIndex++){
 					lCopy[lIndex] = jws.tools.clone(aArray[lIndex]);
 				}
@@ -1360,13 +1360,12 @@ jws.tools = {
 		};
 
 		var lConstructor = new aObject.constructor();
-		for (var lProperty in aObject)
-		{
-			var lValue = aObject[lProperty];
-			if (lValue instanceof Array)
-				lConstructor[lProperty] = cloneArray(lValue);
+		for( var lProperty in aObject ) {
+			var lValue = aObject[ lProperty ];
+			if ( lValue instanceof Array )
+				lConstructor[ lProperty ] = cloneArray( lValue );
 			else {
-				lConstructor[lProperty] = jws.tools.clone(lValue);
+				lConstructor[ lProperty ] = jws.tools.clone( lValue );
 			}
 		}
 		return lConstructor;
@@ -1665,12 +1664,12 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				}
 				
 				// maintain own status flag
-				if( this.fStatus != jws.RECONNECTING ) {
+				if( jws.RECONNECTING !== this.fStatus ) {
 					this.fStatus = jws.CONNECTING;
 				}	
 				
 				if( aOptions.OnOpenTimeout
-					&& typeof aOptions.OnOpenTimeout == "function"
+					&& "function" === typeof aOptions.OnOpenTimeout
 					&& aOptions.openTimeout ) {
 					this.fOpenTimeout = aOptions.openTimeout;
 					this.hOpenTimeout = setTimeout( function() {
@@ -1713,9 +1712,9 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					var lPos, lPID;
 					
 					// supporting the max frame size handshake
-					if ( undefined == lThis.fMaxFrameSize ){
+					if( undefined === lThis.fMaxFrameSize ) {
 						lPos = aEvent.data.indexOf( jws.MAX_FRAME_SIZE_FREFIX );
-						if (0 == lPos){
+						if( 0 === lPos ) {
 							lThis.fMaxFrameSize = parseInt( aEvent.data.substr( jws.MAX_FRAME_SIZE_FREFIX.length ) );
 							jws.events.stopEvent( aEvent );
 							if( jws.console.isDebugEnabled() ) {
@@ -1743,7 +1742,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					var lPacket = aEvent.data;
 					
 					// processing packet delivery acknowledge from the server
-					if ( 0 == lPacket.indexOf(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX) ){
+					if ( 0 === lPacket.indexOf(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX) ){
 						if ( lPacket.length <= (10 + jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length) ){
 							lPID = parseInt( lPacket.replace(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, "") );
 							clearTimeout( lThis.fPacketDeliveryTimerTasks[ lPID ] );
@@ -1761,7 +1760,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					
 					// supporting packet delivery acknowledge to the server
 					lPos = aEvent.data.indexOf( jws.PACKET_ID_DELIMETER );
-					if ( lPos >=0 && lPos < 10 && false == isNaN(aEvent.data.substr( 0, lPos ))){
+					if ( lPos >=0 && lPos < 10 && false === isNaN( aEvent.data.substr( 0, lPos ) ) ) {
 						lPID = aEvent.data.substr( 0, lPos );
 						// send packet delivery acknowledge
 						lThis.sendStream( jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPID );
@@ -1774,13 +1773,13 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 						
 						// supporting fragmentation
 						var lFragmentContent;
-						if (0 == lPacket.indexOf( jws.PACKET_FRAGMENT_PREFIX )){
+						if ( 0 === lPacket.indexOf( jws.PACKET_FRAGMENT_PREFIX ) ) {
 							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
 							lPID = lPacket.substr( jws.PACKET_FRAGMENT_PREFIX.length, 
 								lPos - jws.PACKET_FRAGMENT_PREFIX.length );
 							lFragmentContent = lPacket.substr( lPos + 1 );
 							// storing the packet fragment
-							if (undefined == lThis.fInFragments[ lPID ]){
+							if( undefined === lThis.fInFragments[ lPID ] ){
 								lThis.fInFragments[ lPID ] = lFragmentContent;
 							} else {
 								lThis.fInFragments[ lPID ] += lFragmentContent;
@@ -1788,7 +1787,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 							
 							// do not process packet fragments
 							return;
-						} else if (0 == lPacket.indexOf( jws.PACKET_LAST_FRAGMENT_PREFIX )){
+						} else if ( 0 === lPacket.indexOf( jws.PACKET_LAST_FRAGMENT_PREFIX ) ) {
 							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
 							lPID = lPacket.substr( jws.PACKET_LAST_FRAGMENT_PREFIX.length, 
 								lPos - jws.PACKET_LAST_FRAGMENT_PREFIX.length );
@@ -1882,7 +1881,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		// is there a queue at all?
 		if( this.fOutQueue ) {
 			var lRes = this.checkConnected();
-			if( lRes.code == 0 ) {
+			if( 0 === lRes.code ) {
 				var lItem;
 				while( this.fOutQueue.length > 0 ) {
 					// get first element of the queue
@@ -1957,7 +1956,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		var lThis = this;
 		
 		try {
-			if ( undefined == aFragmentSize ){
+			if ( undefined === aFragmentSize ){
 				aFragmentSize = this.fMaxFrameSize;
 			} else if ( aFragmentSize < 0 || aFragmentSize > this.fMaxFrameSize ) {
 				throw new Error("Invalid 'fragment size' argument. " 
@@ -2039,7 +2038,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 							? this.fOriginFragmentSize : this.fOriginPacket.length - this.fBytesSent;
 
 							var lNextFragment = this.fOriginPacket.substr( this.fBytesSent, lLength );
-							var lIsLast = ( lLength + this.fBytesSent == this.fOriginPacket.length ) ? true : false;
+							var lIsLast = ( lLength + this.fBytesSent === this.fOriginPacket.length ) ? true : false;
 					
 							// prefixing next fragment
 							lNextFragment = ( ( lIsLast ) ? jws.PACKET_LAST_FRAGMENT_PREFIX : jws.PACKET_FRAGMENT_PREFIX )
@@ -2110,7 +2109,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aAutoReconnect:Boolean:[tt]true[/tt] if auto-reconnect is desired, otherwise [tt]false[/tt].
 	//:r:*:::void:none
 	setAutoReconnect: function( aAutoReconnect ) {
-		if( aAutoReconnect && typeof( aLimit ) == "boolean" ) {
+		if( aAutoReconnect && "boolean" === typeof( aLimit ) ) {
 			this.fReliabilityOptions.autoReconnect = aAutoReconnect;
 		} else {
 			this.fReliabilityOptions.autoReconnect = false;
@@ -2128,7 +2127,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aLimit:Integer:Maximum of allowed messages in the queue.
 	//:r:*:::void:none
 	setQueueItemLimit: function( aLimit ) {
-		if( aLimit && typeof( aLimit ) == "number" && aLimit > 0 ) {
+		if( aLimit && "number" === typeof( aLimit ) && aLimit > 0 ) {
 			this.fReliabilityOptions.queueItemLimit = parseInt( aLimit );
 		} else {
 			this.fReliabilityOptions.queueItemLimit = 0;
@@ -2142,7 +2141,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aLimit:Integer:Maximum size of the queue in bytes.
 	//:r:*:::void:none
 	setQueueSizeLimit: function( aLimit ) {
-		if( aLimit && typeof( aLimit ) == "number" && aLimit > 0 ) {
+		if( aLimit && "number" === typeof( aLimit ) && aLimit > 0 ) {
 			this.fReliabilityOptions.queueSizeLimit = parseInt( aLimit );
 		} else {
 			this.fReliabilityOptions.queueSizeLimit = 0;
@@ -2198,9 +2197,9 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:r:*:::boolean:[tt]true[/tt] if the WebSocket connection is up otherwise [tt]false[/tt].
 	isOpened: function() {
 		return(
-			this.fConn != undefined
-			&& this.fConn != null
-			&& this.fConn.readyState == jws.OPEN
+			undefined !== this.fConn
+			&& null !== this.fConn
+			&& jws.OPEN === this.fConn.readyState
 			);
 	},
 
@@ -2267,8 +2266,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			this.fConn.onopen = null;
 			this.fConn.onmessage = null;
 			this.fConn.onclose = null;
-			if( this.fConn.readyState == jws.OPEN
-				|| this.fConn.readyState == jws.CONNECTING ) {
+			if( this.fConn.readyState === jws.OPEN
+				|| this.fConn.readyState === jws.CONNECTING ) {
 				this.fConn.close();
 			}
 			// TODO: should be called only if client was really opened before
@@ -2295,7 +2294,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			}
 		}
 		
-		if( this.fConn && 1 == this.fConn.readyState ) {
+		if( this.fConn && 1 === this.fConn.readyState ) {
 			if( lTimeout <= 0 ) {
 				this.forceClose( aOptions );
 			} else {
@@ -2334,7 +2333,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	removeListener: function( aCallback ) {
 		if( this.fListeners ) {
 			for( var lIdx = 0, lCnt = this.fListeners; lIdx < lCnt; lIdx++ ) {
-				if( aCallback == this.fListeners[ lIdx ] ) {
+				if( aCallback === this.fListeners[ lIdx ] ) {
 					this.fListeners.splice( lIdx, 1 );
 				}
 			}
@@ -2560,7 +2559,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:a:en::::none
 	//:r:*:::void:none
 	isWriteable: function() {
-		return(	this.isOpened() || this.fStatus == jws.RECONNECTING );
+		return(	this.isOpened() || this.fStatus === jws.RECONNECTING );
 	},
 
 	//:m:*:checkWriteable
@@ -2594,7 +2593,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:r:*:::void:none
 	checkLoggedIn: function() {
 		var lRes = this.checkConnected();
-		if( lRes.code == 0 && !this.isLoggedIn() ) {
+		if( 0 === lRes.code && !this.isLoggedIn() ) {
 			lRes.code = -1;
 			lRes.localeKey = "jws.jsc.res.notLoggedIn";
 			lRes.msg = "Not logged in.";
@@ -2609,7 +2608,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:r:*:::String:The human readable string output of the result token.
 	resultToString: function( aResToken ) {
 		return(
-			( aResToken && typeof aResToken == "object" && aResToken.msg ? 
+			( aResToken && "object" === typeof aResToken && aResToken.msg ? 
 				aResToken.msg : "invalid response token" )
 			// + " (code: " + aRes.code + ", tid: " + aRes.tid + ")"
 			);
@@ -2721,16 +2720,16 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		// TODO: Remove this temporary hack with final release 1.0
 		// TODO: this was required to ensure upward compatibility from 0.10 to 0.11
 		var lNS = aToken.ns;
-		if ( lNS != null && lNS.indexOf( "org.jWebSocket" ) == 1 ) {
+		if ( null !== lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
 			aToken.ns = "org.jwebsocket" + lNS.substring( 15 );
-		} else if( lNS == null ) {
+		} else if( null === lNS ) {
 			aToken.ns = "org.jwebsocket.plugins.system";
 		}
 
 		// is it a token from the system plug-in at all?
-		if( jws.NS_SYSTEM == aToken.ns ) {
+		if( jws.NS_SYSTEM === aToken.ns ) {
 			// check welcome and goodBye tokens to manage the session
-			if ( aToken.type == "welcome") {
+			if ( aToken.type === "welcome") {
 				this.fClientId = aToken.sourceId;
 				this.fUsername = aToken.username;
 				
@@ -2739,44 +2738,44 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				if( this.fOnWelcome ) {
 					this.fOnWelcome( aToken );
 				}
-			} else if( aToken.type == "goodBye" ) {
+			} else if( aToken.type === "goodBye" ) {
 				// fire OnGoodBye Event if assigned
 				if( this.fOnGoodBye ) {
 					this.fOnGoodBye( aToken );
 				}
 				this.fUsername = null;
-			} else if( aToken.type == "close" ) {
+			} else if( aToken.type === "close" ) {
 				// if the server closes the connection close immediately too.
 				this.close({
 					timeout: 0
 				});
 			// check if we got a response from a previous request
-			} else if( aToken.type == "response" ) {
+			} else if( aToken.type === "response" ) {
 				// check login and logout manage the username
-				if( aToken.reqType == "login" || aToken.reqType == "logon") {
-					if (0 == aToken.code){
+				if( aToken.reqType === "login" || aToken.reqType === "logon") {
+					if (0 === aToken.code){
 						this.fUsername = aToken.username;
 						// call logon callback
-						if ( "function" == typeof this.fOnLogon ){
+						if ( "function" === typeof this.fOnLogon ){
 							this.fOnLogon( aToken );
 						}
 					}
-				} else if( aToken.reqType == "logout" || aToken.reqType == "logoff") {
-					if (0 == aToken.code){
+				} else if( aToken.reqType === "logout" || aToken.reqType === "logoff") {
+					if (0 === aToken.code){
 						this.fUsername = null;
 						// call logoff callback
-						if ( "function" == typeof this.fOnLogoff )
+						if ( "function" === typeof this.fOnLogoff )
 							this.fOnLogoff( aToken );
 					}
 				}
 				// check if some requests need to be answered
 				this.checkCallbacks( aToken );
-			} else if( aToken.type == "event" ) {
+			} else if( aToken.type === "event" ) {
 				// check login and logout manage the username
-				if( aToken.name == "connect" ) {
+				if( aToken.name === "connect" ) {
 					this.processConnected( aToken );
 				}
-				if( aToken.name == "disconnect" ) {
+				if( aToken.name === "disconnect" ) {
 					this.processDisconnected( aToken );
 				}
 			}
@@ -2873,7 +2872,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	
 	__sendToken: function(aIsTransaction, aToken, aOptions, aListener ) {
 		var lRes = this.checkWriteable();
-		if( lRes.code == 0 ) {
+		if( 0 === lRes.code ) {
 			var lSpawnThread = false;
 			var lL2FragmSize = this.fMaxFrameSize;
 			var lTimeout = jws.DEF_RESP_TIMEOUT;
@@ -3008,22 +3007,22 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	sendTokenInTransaction: function( aToken, aOptions, aListener ) {
 		// generating packet delivery listener for developer convenience if missing
 		if ( !aListener ){
-			aListener = {}
+			aListener = {};
 		}
 		if ( !aListener[ "getTimeout" ] ){
 			var lTimeout = aOptions.timeout || jws.DEF_RESP_TIMEOUT;
 			aListener[ "getTimeout" ] = function() {
 				return lTimeout;
-			} 
+			};
 		}
 		if ( !aListener[ "OnTimeout" ] ){
-			aListener[ "OnTimeout" ] = function() {}
+			aListener[ "OnTimeout" ] = function() {};
 		}
 		if ( !aListener[ "OnSuccess" ] ){
-			aListener[ "OnSuccess" ] = function() {}
+			aListener[ "OnSuccess" ] = function() {};
 		}
 		if ( !aListener[ "OnFailure" ] ){
-			aListener[ "OnFailure" ] = function() {}
+			aListener[ "OnFailure" ] = function() {};
 		}
 		
 		// sending the token
@@ -3055,7 +3054,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:r:*:::void:none
 	sendChunkable: function( aChunkable, aOptions, aListener ) {
 		try {
-			if (undefined == aChunkable.maxFrameSize) {
+			if (undefined === aChunkable.maxFrameSize) {
 				aChunkable.maxFrameSize = this.fMaxFrameSize - jws.PACKET_TRANSACTION_MAX_BYTES_PREFIXED;
 			}
 		
@@ -3085,25 +3084,25 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			
 			// checking chunkable delivery listener
 			if ( !aListener ){
-				aListener = {}
+				aListener = {};
 			}
 			if ( !aListener[ "getTimeout" ] ){
 				var lTimeout = aOptions.timeout || jws.DEF_RESP_TIMEOUT;
 				aListener[ "getTimeout" ] = function() {
 					return lTimeout;
-				} 
+				};
 			}
 			if ( !aListener[ "OnTimeout" ] ){
-				aListener[ "OnTimeout" ] = function() {}
+				aListener[ "OnTimeout" ] = function() {};
 			}
 			if ( !aListener[ "OnSuccess" ] ){
-				aListener[ "OnSuccess" ] = function() {}
+				aListener[ "OnSuccess" ] = function() {};
 			}
 			if ( !aListener[ "OnFailure" ] ){
-				aListener[ "OnFailure" ] = function() {}
+				aListener[ "OnFailure" ] = function() {};
 			}
 			if ( !aListener[ "OnChunkDelivered" ] ){
-				aListener[ "OnChunkDelivered" ] = function() {}
+				aListener[ "OnChunkDelivered" ] = function() {};
 			}
 			
 			// sending chunks
@@ -3206,7 +3205,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:r:*:::void:none
 	sendText: function( aTarget, aText ) {
 		var lRes = this.checkLoggedIn();
-		if( lRes.code == 0 ) {
+		if( 0 === lRes.code ) {
 			this.sendToken({
 				ns: jws.NS_SYSTEM,
 				type: "send",
@@ -3244,7 +3243,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				lResponseRequested = aOptions.responseRequested;
 			}
 		}
-		if( lRes.code == 0 ) {
+		if( 0 === lRes.code ) {
 			this.sendToken({
 				ns: jws.NS_SYSTEM,
 				type: "broadcast",
@@ -3268,7 +3267,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:r:*:::void:none
 	echo: function( aData ) {
 		var lRes = this.checkWriteable();
-		if( lRes.code == 0 ) {
+		if( 0 === lRes.code ) {
 			this.sendToken({
 				ns: jws.NS_SYSTEM,
 				type: "echo",
@@ -3290,19 +3289,19 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	open: function( aURL, aOptions ) {
 		var lRes = this.createDefaultResult();
 		try {
-			if( aOptions && aOptions.OnToken && typeof aOptions.OnToken == "function" ) {
+			if( aOptions && aOptions.OnToken && "function" === typeof aOptions.OnToken ) {
 				this.fOnToken = aOptions.OnToken;
 			}
-			if( aOptions && aOptions.OnWelcome && typeof aOptions.OnWelcome == "function" ) {
+			if( aOptions && aOptions.OnWelcome && "function" === typeof aOptions.OnWelcome ) {
 				this.fOnWelcome = aOptions.OnWelcome;
 			}
-			if( aOptions && aOptions.OnGoodBye && typeof aOptions.OnGoodBye == "function" ) {
+			if( aOptions && aOptions.OnGoodBye && "function" === typeof aOptions.OnGoodBye ) {
 				this.fOnGoodBye = aOptions.OnGoodBye;
 			}
-			if( aOptions && aOptions.OnLogon && typeof aOptions.OnLogon == "function" ) {
+			if( aOptions && aOptions.OnLogon && typeof "function" === aOptions.OnLogon ) {
 				this.fOnLogon = aOptions.OnLogon;
 			}
-			if( aOptions && aOptions.OnLogoff && typeof aOptions.OnLogoff == "function" ) {
+			if( aOptions && aOptions.OnLogoff && typeof "function" === aOptions.OnLogoff ) {
 				this.fOnLogoff = aOptions.OnLogoff;
 			}
 			// call inherited connect, catching potential exception
@@ -3361,7 +3360,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		try {
 			// if connected and timeout is passed give server a chance to
 			// register the disconnect properly and send a good bye response.
-			if( lRes.code == 0 ) {
+			if( 0 === lRes.code ) {
 				if( lTimeout > 0 ) {
 					var lToken = {
 						ns: jws.NS_SYSTEM,
@@ -3413,13 +3412,13 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:r:*:::void:none
 	setConfiguration: function ( aNS, aParams ){
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
-			for (var lKey in aParams){
-				var lValue = aParams[lKey];
-				if ("object" == typeof (lValue)){
-					this.setConfiguration(aNS + "." + lKey, lValue);
+		if( 0 === lRes.code ) {
+			for( var lKey in aParams ){
+				var lValue = aParams[ lKey ];
+				if( "object" === typeof ( lValue ) ){
+					this.setConfiguration( aNS + "." + lKey, lValue );
 				} else {
-					this.sessionPut(aNS + "." + lKey, lValue, false, {});
+					this.sessionPut( aNS + "." + lKey, lValue, false, {} );
 				}
 			}
 		}	
@@ -3472,9 +3471,9 @@ jws.SystemClientPlugIn = {
 	processToken: function( aToken ) {
 
 		// is it a token from the system plug-in at all?
-		if( jws.NS_SYSTEM == aToken.ns ) {
-			if( "login" == aToken.reqType ) {
-				if( aToken.code == 0 ) {
+		if( jws.NS_SYSTEM === aToken.ns ) {
+			if( "login" === aToken.reqType ) {
+				if( 0 === aToken.code ) {
 					if( this.fOnLoggedIn ) {
 						this.fOnLoggedIn( aToken );
 					}
@@ -3483,8 +3482,8 @@ jws.SystemClientPlugIn = {
 						this.fOnLoginError( aToken );
 					}
 				}
-			} else if( "logon" == aToken.reqType ) {
-				if( aToken.code == 0 ) {
+			} else if( "logon" === aToken.reqType ) {
+				if( 0 === aToken.code ) {
 					if( this.fOnLoggedOn ) {
 						this.fOnLoggedOn( aToken );
 					}
@@ -3493,8 +3492,8 @@ jws.SystemClientPlugIn = {
 						this.fOnLogonError( aToken );
 					}
 				}
-			} else if( "logout" == aToken.reqType ) {
-				if( aToken.code == 0 ) {
+			} else if( "logout" === aToken.reqType ) {
+				if( 0 === aToken.code ) {
 					if( this.fOnLoggedOut ) {
 						this.fOnLoggedOut( aToken );
 					}
@@ -3503,8 +3502,8 @@ jws.SystemClientPlugIn = {
 						this.fOnLogoutError( aToken );
 					}
 				}
-			} else if( "logoff" == aToken.reqType ) {
-				if( aToken.code == 0 ) {
+			} else if( "logoff" === aToken.reqType ) {
+				if( 0 === aToken.code ) {
 					if( this.fOnLoggedOff ) {
 						this.fOnLoggedOff( aToken );
 					}
@@ -3536,13 +3535,13 @@ jws.SystemClientPlugIn = {
 			if( aOptions.encoding !== undefined ) {
 				lEncoding = aOptions.encoding;
 				// check if password has to be converted into a MD5 sum
-				if( jws.SystemClientPlugIn.PW_ENCODE_MD5 == lEncoding ) {
+				if( lEncoding === jws.SystemClientPlugIn.PW_ENCODE_MD5 ) {
 					if( aPassword ) {
 						aPassword = jws.tools.calcMD5( aPassword );
 					}
 					lEncoding = "md5";
 				// check if password is already md5 encoded
-				} else if( jws.SystemClientPlugIn.PW_MD5_ENCODED == lEncoding ) {
+				} else if( lEncoding === jws.SystemClientPlugIn.PW_MD5_ENCODED ) {
 					lEncoding = "md5";
 				} else {
 					// TODO: raise error here due to invalid encoding option
@@ -3621,7 +3620,7 @@ jws.SystemClientPlugIn = {
 	//:r:*:::void:none
 	logout: function() {
 		var lRes = this.checkConnected();
-		if( lRes.code == 0 ) {
+		if( 0 === lRes.code ) {
 			this.sendToken({
 				ns: jws.SystemClientPlugIn.NS,
 				type: "logout"
@@ -3632,7 +3631,7 @@ jws.SystemClientPlugIn = {
 	
 	systemLogon: function( aUsername, aPassword, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.SystemClientPlugIn.NS,
 				type: "logon",
@@ -3646,7 +3645,7 @@ jws.SystemClientPlugIn = {
 
 	systemLogoff: function( aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.SystemClientPlugIn.NS,
 				type: "logoff"
@@ -3658,7 +3657,7 @@ jws.SystemClientPlugIn = {
 
 	systemGetAuthorities: function( aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.SystemClientPlugIn.NS,
 				type: "getAuthorities"
@@ -3709,8 +3708,8 @@ jws.SystemClientPlugIn = {
 		var lMode = jws.SystemClientPlugIn.ALL_CLIENTS;
 		var lPool = null;
 		if( aOptions ) {
-			if( aOptions.mode == jws.SystemClientPlugIn.AUTHENTICATED ||
-				aOptions.mode == jws.SystemClientPlugIn.NON_AUTHENTICATED ) {
+			if( aOptions.mode === jws.SystemClientPlugIn.AUTHENTICATED ||
+				aOptions.mode === jws.SystemClientPlugIn.NON_AUTHENTICATED ) {
 				lMode = aOptions.mode;
 			}
 			if( aOptions.pool ) {
@@ -3822,10 +3821,10 @@ jws.SystemClientPlugIn = {
 	//:r:*:::void:none
 	wait: function( aDuration, aOptions ) {
 		var lRes = this.checkConnected();
-		if( lRes.code == 0 ) {
+		if( 0 === lRes.code ) {
 			var lResponseRequested = true;
 			if( aOptions ) {
-				if( aOptions.responseRequested != undefined ) {
+				if( undefined !== aOptions.responseRequested ) {
 					lResponseRequested = aOptions.responseRequested;
 				}
 			}
@@ -3866,13 +3865,13 @@ jws.SystemClientPlugIn = {
 		var lEcho = true;
 		var lImmediate = true;
 		if( aOptions ) {
-			if( aOptions.interval != undefined ) {
+			if( undefined !== aOptions.interval ) {
 				lInterval = aOptions.interval;
 			}
-			if( aOptions.echo != undefined ) {
+			if( undefined !== aOptions.echo  ) {
 				lEcho = aOptions.echo;
 			}
-			if( aOptions.immediate != undefined ) {
+			if( undefined !== aOptions.immediate ) {
 				lImmediate = aOptions.immediate;
 			}
 		}
@@ -4144,7 +4143,7 @@ jws.oop.declareClass( "jws", "jWebSocketCSVClient", jws.jWebSocketTokenClient, {
 			if( lVal === null || lVal === undefined ) {
 				// simply do not generate a value, keep value field empty
 				lCSV += "," + lKey + "=";
-			} else if( typeof lVal == "string" ) {
+			} else if( "string" === typeof lVal ) {
 				// escape commata and quotes
 				lVal = lVal.replace( /[,]/g, "\\x2C" );
 				lVal = lVal.replace( /["]/g, "\\x22" );
@@ -4167,12 +4166,12 @@ jws.oop.declareClass( "jws", "jWebSocketCSVClient", jws.jWebSocketTokenClient, {
 		var lItems = aStream.split(",");
 		for( var lIdx = 0, lCnt = lItems.length; lIdx < lCnt; lIdx++ ) {
 			var lKeyVal = lItems[ lIdx ].split( "=" );
-			if( lKeyVal.length == 2 ) {
+			if( 2 === lKeyVal.length ) {
 				var lKey = lKeyVal[ 0 ];
 				var lVal = lKeyVal[ 1 ];
 				if( lVal.length >= 2 
-					&& lVal.charAt(0)=="\""
-					&& lVal.charAt(lVal.length-1)=="\"" ) {
+					&& "\"" === lVal.charAt( 0 )
+					&& "\"" === lVal.charAt( lVal.length - 1 ) ) {
 					// unescape commata and quotes
 					lVal = lVal.replace( /\\x2C/g, "\x2C" );
 					lVal = lVal.replace( /\\x22/g, "\x22" );
@@ -4218,7 +4217,7 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 				lXML += "</" + aKey + ">";
 			}
 			// or do we have an object?
-			else if ( typeof aValue  == "object" ) {
+			else if ( "object" === typeof aValue ) {
 				lXML += "<" + aKey + " type=\"" + "object" + "\">";
 				for(var lField in aValue ) {
 					lXML += obj2xml( lField, aValue[ lField ] );
@@ -4278,21 +4277,21 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 
 		function node2obj( aNode, aObj ) {
 			var lNode = aNode.firstChild;
-			while( lNode != null ) {
+			while( null !== lNode ) {
 				// 1 = element node
-				if( lNode.nodeType == 1 ) {
+				if( 1 === lNode.nodeType ) {
 					var lType = lNode.getAttribute( "type" );
 					var lKey = lNode.nodeName;
 					if( lType ) {
 						var lValue = lNode.firstChild;
 						// 3 = text node
-						if( lValue && lValue.nodeType == 3 ) {
+						if( lValue && 3 === lValue.nodeType ) {
 							lValue = lValue.nodeValue;
 							if( lValue ) {
-								if( lType == "string" ) {
-								} else if( lType == "number" ) {
-								} else if( lType == "boolean" ) {
-								} else if( lType == "date" ) {
+								if( "string" === lType ) {
+								} else if( "number" === lType ) {
+								} else if( "boolean" === lType ) {
+								} else if( "date" === lType ) {
 								} else {
 									lValue = undefined;
 								}
@@ -4306,11 +4305,11 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 							}
 						} else
 						// 1 = element node
-						if( lValue && lValue.nodeType == 1 ) {
-							if( lType == "array" ) {
+						if( lValue && 1 === lValue.nodeType ) {
+							if( "array" === lType ) {
 								aObj[ lKey ] = [];
 								node2obj( lNode, aObj[ lKey ] );
-							} else if( lType == "object" ) {
+							} else if( "object" === lType ) {
 								aObj[ lKey ] = {};
 								node2obj( lNode, aObj[ lKey ] );
 							}
