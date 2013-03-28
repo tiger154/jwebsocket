@@ -119,14 +119,15 @@ $.widget( "jws.channels", {
 				    // OnChannelStopped: null
 				});
 			},
-			OnWelcome: function( aEvent ) {
+			OnWelcome: function( aEvent ) { },
+			OnLogon: function( aToken ) {
 				w.channels.getChannels( );
+			},
+			OnLogoff: function( aToken ) {
+				w.channels.destroy( );
 			},
 			OnClose: function( ) {
 				w.channels.destroy( );
-				w.channels.eChannelsAreaResizable.animate({
-					"height": 50
-				});
 			},
 			OnGoodBye: function( aToken ) {
 				w.channels.destroy( );
@@ -877,6 +878,9 @@ $.widget( "jws.channels", {
 	destroy: function( ) {
 		w.channels.clearChannelTable( );
 		w.channels.clearTextFields( );
+		w.channels.eChannelsAreaResizable.animate({
+			"height": 50
+		});
 	}
 });
 

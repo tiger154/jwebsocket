@@ -35,7 +35,7 @@ Ext.define( 'Ext.jws', {
 	open: function( aURL, aTokenClient, aTimeout ) {
 		var self = this;
 		if( jws.browserSupportsWebSockets() ) {
-			var lUrl = aURL || jws.getDefaultServerURL();
+			var lUrl = aURL || jws.getAutoServerURL();
 
 			if( aTokenClient )
 				this.fTokenClient = aTokenClient;
