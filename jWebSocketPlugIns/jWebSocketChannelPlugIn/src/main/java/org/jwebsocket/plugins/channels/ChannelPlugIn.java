@@ -546,6 +546,10 @@ public class ChannelPlugIn extends ActionPlugIn {
 		if (!lChannel.isPrivate()) {
 			broadcastToken(aConnector, lChannelCreated,
 					new BroadcastOptions(BroadcastOptions.SENDER_INCLUDED, BroadcastOptions.RESPONSE_IGNORED));
+		} else{
+			// The user needs this "channelCreated" event, so, here we don't broadcast
+			// but we send it to him as a notification
+			sendToken(aConnector, lChannelCreated);
 		}
 
 		Token lResponseToken = createResponse(aToken);
