@@ -36,7 +36,7 @@ $.widget( "jws.vplayer", {
 		this.mViewers = 0;
 		this.mChannelId = "jWebSocketVideoStreamingDemo";
 		this.mChannelAccessKey = "stream";
-		this.mChannelSecretKey = "5tr34m53cr3t!!";
+		this.mChannelSecretKey = "5tr34m53cr3t!";
 		this.TT_SEND = "send";
 		this.TT_VIDEO = "video";
 		this.mClientId = "";
