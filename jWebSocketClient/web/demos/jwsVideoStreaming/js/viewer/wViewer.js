@@ -37,8 +37,8 @@ $.widget( "jws.viewer", {
 		this.mOldSlide = 0;
 		this.mPresenters = 0;
 		this.mViewers = 0;
-		this.mChannelId = "jWebSocketSlideShowDemo";
-		this.mChannelAccessKey = "5l1d35h0w";
+		this.mChannelId = "jWebSocketVideoStreamingDemo";
+		this.mChannelAccessKey = "stream";
 		this.TT_SEND = "send";
 		this.mIsFS = false;
 		this.TT_VIDEO = "video";
