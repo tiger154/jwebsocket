@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import javolution.util.FastList;
 import javolution.util.FastMap;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.ISessionManager;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
@@ -59,12 +60,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * implements the jWebSocket system tokens like login, logout, send, broadcast
- * etc...
+ * implements the jWebSocket system tokens like login, logout, send, broadcast etc...
  *
  * @author aschulze
- * @author kybernees {Support for client-side session management and Spring
- * authentication}
+ * @author kybernees {Support for client-side session management and Spring authentication}
  */
 public class SystemPlugIn extends TokenPlugIn {
 
@@ -362,7 +361,7 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// if new connector is active broadcast this event to then network
 		broadcastConnectEvent(aConnector);
-		
+
 		// notify session started
 		WebSocketSession lSession = aConnector.getSession();
 		if (null != lSession.getStorage() && null == lSession.getCreatedAt()) {
@@ -921,9 +920,9 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * simply waits for a certain amount of time and does not perform any _
-	 * operation. This feature is used for debugging and simulation purposes _
-	 * only and is not related to any business logic.
+	 * simply waits for a certain amount of time and does not perform any _ operation. This feature
+	 * is used for debugging and simulation purposes _ only and is not related to any business
+	 * logic.
 	 *
 	 * @param aToken
 	 */
@@ -968,6 +967,14 @@ public class SystemPlugIn extends TokenPlugIn {
 		aConnector.setVar("jwsType", aToken.getString("jwsType"));
 		aConnector.setVar("jwsVersion", aToken.getString("jwsVersion"));
 		aConnector.setVar("jwsInfo", aToken.getString("jwsInfo"));
+		List lUserFormats = aToken.getList("encodingFormats");
+		List lEncodingFormats = new FastList();
+		if (null == lUserFormats){
+			lEncodingFormats.add("base64");
+		} else {
+			lEncodingFormats.addAll(lUserFormats);
+		}
+		aConnector.setVar("encodingFormats", CollectionUtils.intersection(lEncodingFormats, SystemFilter.getSupportedEncodings()));
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getHeaders' from connector '"
 					+ aConnector.getId() + "'...");
@@ -1007,8 +1014,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * allocates a "non-interruptable" communication channel between two
-	 * clients.
+	 * allocates a "non-interruptable" communication channel between two clients.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -1023,8 +1029,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * deallocates a "non-interruptable" communication channel between two
-	 * clients.
+	 * deallocates a "non-interruptable" communication channel between two clients.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -1039,8 +1044,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Logon a user given the username and password by using the Spring Security
-	 * module
+	 * Logon a user given the username and password by using the Spring Security module
 	 *
 	 * @param aConnector
 	 * @param aToken The token with the username and password
