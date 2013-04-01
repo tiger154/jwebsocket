@@ -1755,6 +1755,7 @@
 		</plugin>
 		
 		<!-- Sample for Java Card -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
 			<ns>jc</ns>
@@ -1764,7 +1765,8 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-
+		-->
+		
 		<!-- Arduino Remote Control Plug-in -->
 		<!-- 
 			This plug-in requires Arduino hardware to be connected and configured.
@@ -1848,6 +1850,8 @@
 			</server-assignments>
 		</filter>
 		
+		<!-- this filter is required to capture all events for the monitoring plug-in -->
+		<!--
 		<filter>
 			<name>org.jwebsocket.filters.monitoring.MonitoringFilter</name>
 			<id>jws.monitoringFilter</id>
@@ -1857,7 +1861,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</filter>
-        
+        -->
 	</filters>
 
 </jWebSocket>
