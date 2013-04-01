@@ -1,5 +1,6 @@
 package org.jwebsocket.plugins.itemstorage.collection;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
@@ -13,8 +14,8 @@ import org.jwebsocket.plugins.itemstorage.item.ItemDefinition;
 import org.springframework.util.Assert;
 
 /**
- * This utility class wraps collection operations that are supposed to be called
- * out of the WebSocket API
+ * This utility class wraps collection operations that are supposed to be called out of the
+ * WebSocket API
  *
  * @author kyberneees
  */
@@ -25,6 +26,12 @@ public class ItemCollectionUtils {
 		ItemStorageEventManager.onCollectionRestarted(aCollection.getName(), lAffectedClients);
 
 		return lAffectedClients;
+	}
+
+	public void saveCollections(List<IItemCollection> aCollections, IItemCollectionProvider aProvider) throws Exception {
+		for (IItemCollection lCollection : aCollections) {
+			aProvider.saveCollection(lCollection);
+		}
 	}
 
 	public static void subscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber) throws Exception {
