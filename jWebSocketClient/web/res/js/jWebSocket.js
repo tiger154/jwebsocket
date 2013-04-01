@@ -2533,7 +2533,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 					
 					if (0 > self.fEncodingFormats.lastIndexOf(lFormat)){
 						jws.console.error( "[process encoding]: Invalid encoding format '" + lFormat +"'received. Token cannot be sent!" );
-						throw new Error("Invalid encoding format '" + lFormat +"'received. Token cannot be sent!");
+						throw new Error("Invalid encoding format '" + lFormat +"'received (not supported). Token cannot be sent!");
 					} else if ("zipBase64" == lFormat){
 						aToken[lAttr] = jws.tools.zip(lValue, true);
 					} else if ("base64" == lFormat){
@@ -2551,7 +2551,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 					var lValue = aToken[lAttr];
 					if (0 > self.fEncodingFormats.lastIndexOf(lFormat)){
 						jws.console.error( "[process decoding]: Invalid encoding format '" + lFormat +"'received. Token cannot be processed!" );
-						throw new Error("Invalid encoding format '" + lFormat +"'received. Token cannot be processed!");
+						throw new Error("Invalid encoding format '" + lFormat +"'received  (not supported). Token cannot be processed!");
 					} else if ("zipBase64" == lFormat){
 						aToken[lAttr] = jws.tools.unzip(lValue, true);
 					} else if ("base64" == lFormat){
