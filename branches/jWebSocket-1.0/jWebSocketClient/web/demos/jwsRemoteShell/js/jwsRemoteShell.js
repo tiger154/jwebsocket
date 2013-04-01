@@ -89,7 +89,7 @@ $.widget( "jws.RemoteShell",{
 	openSSHConnection: function(){
 		if ( !w.rShell.eHostName.val() || !w.rShell.eUserName.val() || 
 			!w.rShell.ePassword.val() ) {
-			dialog( "Please complete all fields" );
+			jwsDialog( "Please complete all fields" );
 		}
 		else
 		{
@@ -119,7 +119,7 @@ $.widget( "jws.RemoteShell",{
 	
 	consoleKeyDown: function( aEvt ){
 		if ( !w.rShell.mIsShellConnected ) {
-			dialog( "You must be connected" );
+			jwsDialog( "You must be connected" );
 			aEvt.preventDefault();
 		}else if( aEvt.which === 13 ){//enter
 			w.rShell.mLineCount = 0;
