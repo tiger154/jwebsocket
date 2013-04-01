@@ -44,7 +44,7 @@ public class SystemFilter extends TokenFilter {
 	static {
 		mSupportedEncodings = new FastList<String>();
 		mSupportedEncodings.add("base64");
-		mSupportedEncodings.add("gzip");
+		mSupportedEncodings.add("zipBase64");
 	}
 
 	public static List<String> getSupportedEncodings() {
@@ -88,23 +88,23 @@ public class SystemFilter extends TokenFilter {
 				String lFormat = lEnc.get(lAttr);
 				String lValue = aToken.getString(lAttr);
 
+				List lUserEncodingFormats = (List) aConnector.getVar("encodingFormats");
 				try {
-					if (!mSupportedEncodings.contains(lFormat)) {
+					if (!lUserEncodingFormats.contains(lFormat)) {
 						mLog.error("Invalid encoding format '" + lFormat + "' received. Message rejected!");
 						aResponse.rejectMessage();
 					} else if ("base64".equals(lFormat)) {
 						aToken.setString(lAttr, new String(Tools.base64Decode(lValue), "UTF-8"));
-					} else if ("gzip".equals(lFormat)) {
+					} else if ("zipBase64".equals(lFormat)) {
 						aToken.setString(lAttr, new String(Tools.unzip(lValue.getBytes(), Boolean.TRUE), "UTF-8"));
 					}
 				} catch (Exception lEx) {
-					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to decode '" + lAttr + "' value in '" 
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to decode '" + lAttr + "' value in '"
 							+ lFormat + "' format..."));
 					aResponse.rejectMessage();
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -135,17 +135,18 @@ public class SystemFilter extends TokenFilter {
 				String lFormat = lEnc.get(lAttr);
 				String lValue = aToken.getString(lAttr);
 
+				List lUserEncodingFormats = (List) aTarget.getVar("encodingFormats");
 				try {
-					if (!mSupportedEncodings.contains(lFormat)) {
-						mLog.error("Invalid encoding format '" + lFormat + "' received. Message rejected!");
+					if (!lUserEncodingFormats.contains(lFormat)) {
+						mLog.error("Invalid encoding format '" + lFormat + "' received (not supported). Message rejected!");
 						aResponse.rejectMessage();
 					} else if ("base64".equals(lFormat)) {
 						aToken.setString(lAttr, Tools.base64Encode(lValue.getBytes()));
-					} else if ("gzip".equals(lFormat)) {
+					} else if ("zipBase64".equals(lFormat)) {
 						aToken.setString(lAttr, new String(Tools.zip(lValue.getBytes(), Boolean.TRUE), "UTF-8"));
 					}
 				} catch (Exception lEx) {
-					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to encode '" + lAttr + "' value to '" 
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to encode '" + lAttr + "' value to '"
 							+ lFormat + "' format..."));
 					aResponse.rejectMessage();
 				}
