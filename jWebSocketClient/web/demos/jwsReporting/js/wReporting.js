@@ -91,7 +91,7 @@ $.widget( "jws.reporting", {
 				}
 				// If anything went wrong in the server show information error
 				if( aToken.code == -1 ){
-					dialog( aToken.msg, "jWebSocket error", true, null, null, "error" );
+					jwsDialog( aToken.msg, "jWebSocket error", true, null, null, "error" );
 				}
 			}
 		}
@@ -106,7 +106,7 @@ $.widget( "jws.reporting", {
 				}
 			});
 		} else {
-			dialog( w.reporting.MSG_NOTCONNECTED, "jWebSocket error", 
+			jwsDialog( w.reporting.MSG_NOTCONNECTED, "jWebSocket error", 
 				true, null, null, "error" );
 		}
 	},
@@ -121,7 +121,7 @@ $.widget( "jws.reporting", {
 				}
 			});
 		} else {
-			dialog( w.reporting.MSG_NOTCONNECTED, "jWebSocket error", 
+			jwsDialog( w.reporting.MSG_NOTCONNECTED, "jWebSocket error", 
 				true, null, null, "error" );
 		}
 	},
@@ -168,7 +168,7 @@ $.widget( "jws.reporting", {
 				}
 			});
 		} else {
-			dialog( w.reporting.MSG_NOTCONNECTED, "jWebSocket error", 
+			jwsDialog( w.reporting.MSG_NOTCONNECTED, "jWebSocket error", 
 				true, null, null, "error" );
 		}
 	},
