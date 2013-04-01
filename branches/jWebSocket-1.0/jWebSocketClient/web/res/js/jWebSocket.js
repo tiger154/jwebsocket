@@ -1331,6 +1331,23 @@ jws.tools = {
 		return aObject;
 	},
 	
+	zip: function(aString, aBase64Encode){
+		var lBase64 = aBase64Encode || false;
+		var lJSZip = new JSZip();
+		lJSZip.file( "temp.zip", aString);
+		var lZipped = lJSZip.generate({ compression: "DEFLATE",  base64 : lBase64 });
+		
+		return lZipped;
+	},
+	
+	unzip: function(aString, aBase64Decode){
+		var lBase64 = aBase64Decode || false;
+		var lJSZip = new JSZip( aString, { base64: lBase64 });
+		var lFile = lJSZip.file( "temp.zip" );
+		
+		return lFile.asBinary();
+	},
+	
 	clone: function(aObject){
 		if( null === aObject || "object" !== typeof( aObj ) ) {
 			return aObject;
@@ -1591,6 +1608,9 @@ jws.oop.addPlugIn = function( aClass, aPlugIn, aOptions ) {
 //:d:en:which are (have to be) handled by the descendant classes.
 
 jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
+	registerFilters: function(){
+	// method to be overwritten in descendant classes
+	},
 	
 	create: function( aOptions ) {
 		// turn off connection reliability by default
@@ -1616,7 +1636,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aEvent:Object:Pending...
 	//:r:*:::void:none
 	processPacket: function( aEvent ) {
-	// method to be overwritten in descendant classes
+		return aEvent;
 	},
 
 	//:m:*:processClosed
@@ -1808,9 +1828,22 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					// process the packet
 					lValue = lThis.processPacket( lPacket );
 					
-					// give application change to handle event first
-					if( aOptions.OnMessage ) {
-						aOptions.OnMessage( aEvent, lValue, lThis );
+					try {
+						// call filter chain
+						if( this.fFilters ) {
+							for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
+								if ( typeof this.fFilters[ lIdx ]["filterStreamIn"] == "function" ){
+									this.fFilters[ lIdx ]["filterStreamIn"]( lValue );
+								}
+							}
+						}
+						
+						// give application change to handle event first
+						if( aOptions.OnMessage ) {
+							aOptions.OnMessage( aEvent, lValue, lThis );
+						}
+					} catch( lEx ) {
+						jws.console.error( "[onmessage]: Exception: " + lEx.message );
 					}
 				};
 
@@ -1925,6 +1958,16 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		// is client already connected
 		if( this.isOpened() ) {
 			try {
+				// call filter chain
+				if( this.fFilters ) {
+					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
+						if ( typeof this.fFilters[ lIdx ]["filterStreamOut"] == "function" ){
+							this.fFilters[ lIdx ]["filterStreamOut"]( aData );
+						}
+					}
+				}
+				
+				// send data
 				this.fConn.send( aData );
 			} catch( lEx ) {
 				// this is never fired !
@@ -2339,6 +2382,32 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			}
 		}
 	},
+	
+	//:m:*:addFilter
+	//:d:en:Adds a client side filter to the instance - not to the class!
+	//:a:en::aFilter:Object:Filter to be appended to the client side filter chain.
+	//:r:*:::void:none
+	addFilter: function( aFilter ) {
+		// if the class has no filters yet initialize array
+		if( !this.fFilters ) {
+			this.fFilters = [];
+		}
+		this.fFilters.push( aFilter );
+	},
+
+	//:m:*:removeFilter
+	//:d:en:Removes a client side filter from the instance - not to the class!
+	//:a:en::aFilter:Object:Filter to be removed from the client side filter chain.
+	//:r:*:::void:none
+	removeFilter: function( aFilter ) {
+		if( this.fFilters ) {
+			for( var lIdx = 0, lCnt = this.fFilters; lIdx < lCnt; lIdx++ ) {
+				if( aFilter === this.fFilters[ lIdx ] ) {
+					this.fFilters.splice( lIdx, 1 );
+				}
+			}
+		}
+	},
 
 	//:m:*:addPlugIn
 	//:d:en:Adds a client side plug-in to the instance - not to the class!
@@ -2440,7 +2509,49 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 //:d:en:an abstract class as an ancestor for the JSON-, CSV- and XML client. _
 //:d:en:Do not create direct instances of jWebSocketTokenClient.
 jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, {
-
+	registerFilters: function(){
+		var self = this;
+		this.addFilter({
+			filterTokenOut: function(aToken){
+				var lEnc = aToken['enc'];
+				if (!lEnc)
+					return;
+				
+				for (var lAttr in lEnc){
+					var lFormat = lEnc[lAttr];
+					var lValue = aToken[lAttr];
+					
+					if (0 > self.fEncodingFormats.lastIndexOf(lFormat)){
+						jws.console.error( "[process encoding]: Invalid encoding format '" + lFormat +"'received. Token cannot be sent!" );
+						throw new Error("Invalid encoding format '" + lFormat +"'received. Token cannot be sent!");
+					} else if ("gzip" == lFormat){
+						aToken[lAttr] = jws.tools.zip(lValue, true);
+					} else if ("base64" == lFormat){
+						aToken[lAttr] = Base64.encode(lValue);
+					}
+				}
+			},
+			filterTokenIn: function(aToken){
+				var lEnc = aToken['enc'];
+				if (!lEnc)
+					return;
+				
+				for (var lAttr in lEnc){
+					var lFormat = lEnc[lAttr];
+					var lValue = aToken[lAttr];
+					if (0 > self.fEncodingFormats.lastIndexOf(lFormat)){
+						jws.console.error( "[process decoding]: Invalid encoding format '" + lFormat +"'received. Token cannot be processed!" );
+						throw new Error("Invalid encoding format '" + lFormat +"'received. Token cannot be processed!");
+					} else if ("gzip" == lFormat){
+						aToken[lAttr] = jws.tools.unzip(lValue, true);
+					} else if ("base64" == lFormat){
+						aToken[lAttr] = Base64.decode(lValue);
+					}
+				}
+			}
+		})
+	},
+	
 	processOpened: function ( aEvent ){
 		// sending client headers to the server 
 		this.sendToken({
@@ -2703,9 +2814,24 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	processPacket: function( aPacket ) {
 		// parse incoming token...
 		var lToken = this.streamToToken( aPacket );
-		// and process it...
-		this.processToken( lToken );
-		return lToken;
+
+		try {
+			// call filter chain
+			if( this.fFilters ) {
+				for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
+					if ( typeof this.fFilters[ lIdx ]["filterTokenIn"] == "function" ){
+						this.fFilters[ lIdx ]["filterTokenIn"]( lToken );
+					}
+				}
+			}
+
+			// and process it...
+			this.processToken( lToken );
+			
+			return lToken;
+		} catch( lEx ) {
+			jws.console.error( "[processPacket]: Exception: " + lEx.message );
+		}
 	},
 
 	// TODO: move handlers to system plug-in in the same way as on server.
@@ -2725,17 +2851,6 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		} else if( null === lNS ) {
 			aToken.ns = "org.jwebsocket.plugins.system";
 		}
-
-		// processing zip compression in chunks
-		if (true == aToken.isChunk && 'zip' == aToken.enc){
-			// using Zlib
-//			var gunzip = new Zlib.Gunzip(Base64.decode(aToken.data));
-//			var plain = gunzip.decompress();
-//			console.log(plain);
-			
-			// Using RawDeflate
-			//console.log(RawDeflate.inflate(Base64.decode(aToken.data)));
-		}
 		
 		// is it a token from the system plug-in at all?
 		if( jws.NS_SYSTEM === aToken.ns ) {
@@ -2743,8 +2858,11 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			if ( aToken.type === "welcome") {
 				this.fClientId = aToken.sourceId;
 				this.fUsername = aToken.username;
+				this.fEncodingFormats = aToken.encodingFormats;
 				
+				this.registerFilters();
 				this.notifyPlugInsOpened();
+				
 				// fire OnWelcome Event if assigned
 				if( this.fOnWelcome ) {
 					this.fOnWelcome( aToken );
@@ -2832,7 +2950,6 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				this.fListeners[ lIdx ]( aToken );
 			}
 		}
-
 	},
 
 	//:m:*:processClosed
@@ -2883,6 +3000,24 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	
 	__sendToken: function(aIsTransaction, aToken, aOptions, aListener ) {
 		var lRes = this.checkWriteable();
+		if( 0 === lRes.code ) {
+			try {
+				// call filter chain
+				if( this.fFilters ) {
+					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
+						if ( typeof this.fFilters[ lIdx ]["filterTokenOut"] == "function" ){
+							this.fFilters[ lIdx ]["filterTokenOut"]( aToken );
+						}
+					}
+				}
+			} catch( lEx ) {
+				jws.console.error( "[processPacket]: Exception: " + lEx.message );
+				lRes.code = -1;
+				lRes.localeKey = "jws.jsc.res.filterChainException";
+				lRes.msg = lEx.message;
+			}
+		}
+		
 		if( 0 === lRes.code ) {
 			var lSpawnThread = false;
 			var lL2FragmSize = this.fMaxFrameSize;

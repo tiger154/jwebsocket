@@ -39,6 +39,7 @@
 		<h1>Presenter</h1>
 		<div>
 			<video id="in" width="320"  height="240" autoplay></video>
+			<video id="out" width="320"  height="240" autoplay></video>
 		</div>
 
 		<script type="text/javascript">
@@ -52,25 +53,11 @@
 							
 						navigator.webkitGetUserMedia({video: true}, function (stream) {
 							vIn.src = window.webkitURL.createObjectURL(stream);
-							//							recorder = RecordRTC({
-							//								stream: stream,
-							//								video: vIn
-							//							});
-							//					
-							//							recorder.recordVideo();
-							//							
-							//							setInterval(function(){
-							//								recorder.getLiveBase64(function(aBase64){
-							//									console.log(aBase64.length);
-							//									lConn.broadcastText(null, aBase64);
-							//								});
-							//							}, 1000);
-
 							videoRec = new VideoRecorder({
 								video: vIn,
 								quality: 0.5
 							});
-							
+														
 							videoRec.start();
 							setInterval(function(){
 								videoRec.getStream(function(aBase64){
@@ -78,6 +65,16 @@
 									lConn.broadcastText(null, aBase64);
 								});
 							}, 100);
+							//							recorder = new WebRTCVideoRecorder({
+							//								stream: stream
+							//							});
+							//							recorder.start();
+							//							
+							//							setInterval(function(){
+							//								recorder.getStream(function(aBase64){
+							//									console.log(aBase64.length);
+							//								});
+							//							}, 1000);
 						});
 					},
 					
