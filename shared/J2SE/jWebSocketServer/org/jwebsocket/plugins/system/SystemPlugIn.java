@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.system;
 
-import java.io.StringBufferInputStream;
 import java.util.*;
 import java.util.Map.Entry;
 import javolution.util.FastList;
@@ -35,6 +34,7 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.filters.system.SystemFilter;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
@@ -49,7 +49,6 @@ import org.jwebsocket.session.SessionManager;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.util.ChunkableInputStream;
 import org.jwebsocket.util.Fragmentation;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
@@ -233,7 +232,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	public String getNamespace() {
 		return NS_SYSTEM;
 	}
-	
+
 	/**
 	 *
 	 * @return
@@ -360,12 +359,10 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// sending the welcome token
 		sendWelcome(aConnector);
-		
-		//sendChunkable(aConnector, new ChunkableInputStream("sdfsdf", "sdfsdf", new StringBufferInputStream("Hello World"), true));
 
 		// if new connector is active broadcast this event to then network
 		broadcastConnectEvent(aConnector);
-
+		
 		// notify session started
 		WebSocketSession lSession = aConnector.getSession();
 		if (null != lSession.getStorage() && null == lSession.getCreatedAt()) {
@@ -503,6 +500,9 @@ public class SystemPlugIn extends TokenPlugIn {
 		// and negotiated sub protocol
 		// TODO: The client does not get anything here!
 		lWelcome.setString("subProtocol", aConnector.getSubprot());
+
+		// sending to the client supported encoding formats
+		lWelcome.setList("encodingFormats", SystemFilter.getSupportedEncodings());
 
 		// if anoymous user allowed send corresponding flag for 
 		// clarification that auto anonymous may have been applied.

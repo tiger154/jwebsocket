@@ -89,14 +89,13 @@ public class ChunkableInputStream extends BaseChunkable {
 					byte[] lBA = new byte[lLength];
 					mIS.read(lBA, 0, lLength);
 					
-					String lData;
+					String lData = new String(lBA);
 					
 					// supporting zip compression
 					if (mZipCompression) {
-						lData = Tools.base64Encode(Tools.deflate(lBA));
-						lChunk.setString("enc", "zip");
+						lChunk.setMap("enc", new MapAppender().append("data", "gzip").getMap());
 					} else {
-						lData = Tools.base64Encode(lBA);
+						lChunk.setMap("enc", new MapAppender().append("data", "base64").getMap());
 					}
 
 					lChunk.setString("data", lData);

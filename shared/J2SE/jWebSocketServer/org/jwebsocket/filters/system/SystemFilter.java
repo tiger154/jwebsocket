@@ -18,22 +18,38 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.filters.system;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.Tools;
 
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
 public class SystemFilter extends TokenFilter {
 
 	private static Logger mLog = Logging.getLogger();
+	private static final List<String> mSupportedEncodings;
+
+	static {
+		mSupportedEncodings = new FastList<String>();
+		mSupportedEncodings.add("base64");
+		mSupportedEncodings.add("gzip");
+	}
+
+	public static List<String> getSupportedEncodings() {
+		return mSupportedEncodings;
+	}
 
 	/**
 	 *
@@ -56,20 +72,39 @@ public class SystemFilter extends TokenFilter {
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		if (mLog.isDebugEnabled()) {
 			String lOut = aToken.toString();
-			mLog.debug("Checking incoming token from "
+			mLog.debug("Filtering incoming token from "
 					+ (aConnector != null ? aConnector.getId() : "[not given]")
 					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut) + "...");
 		}
 
-		TokenServer lServer = (TokenServer) getServer();
-		String lUsername = lServer.getUsername(aConnector);
+		// processing decoding
+		Map<String, String> lEnc = aToken.getMap("enc");
+		if (null != lEnc && !lEnc.isEmpty()) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Processing decoding...");
+			}
+			for (Iterator<String> lIt = lEnc.keySet().iterator(); lIt.hasNext();) {
+				String lAttr = lIt.next();
+				String lFormat = lEnc.get(lAttr);
+				String lValue = aToken.getString(lAttr);
 
-		// TODO: very first security test, replace by user's locked state!
-		if ("locked".equals(lUsername)) {
-			Token lToken = lServer.createAccessDenied(aToken);
-			lServer.sendToken(aConnector, lToken);
-			aResponse.rejectMessage();
+				try {
+					if (!mSupportedEncodings.contains(lFormat)) {
+						mLog.error("Invalid encoding format '" + lFormat + "' received. Message rejected!");
+						aResponse.rejectMessage();
+					} else if ("base64".equals(lFormat)) {
+						aToken.setString(lAttr, new String(Tools.base64Decode(lValue), "UTF-8"));
+					} else if ("gzip".equals(lFormat)) {
+						aToken.setString(lAttr, new String(Tools.unzip(lValue.getBytes(), Boolean.TRUE), "UTF-8"));
+					}
+				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to decode '" + lAttr + "' value in '" 
+							+ lFormat + "' format..."));
+					aResponse.rejectMessage();
+				}
+			}
 		}
+
 	}
 
 	/**
@@ -83,10 +118,38 @@ public class SystemFilter extends TokenFilter {
 	public void processTokenOut(FilterResponse aResponse, WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
 		if (mLog.isDebugEnabled()) {
 			String lOut = aToken.toString();
-			mLog.debug("Checking outgoing token from "
+			mLog.debug("Filtering outgoing token from "
 					+ (aSource != null ? aSource.getId() : "[not given]")
 					+ " to " + (aTarget != null ? aTarget.getId() : "[not given]")
 					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut) + "...");
+		}
+
+		// processing encoding
+		Map<String, String> lEnc = aToken.getMap("enc");
+		if (null != lEnc && !lEnc.isEmpty()) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Processing encoding...");
+			}
+			for (Iterator<String> lIt = lEnc.keySet().iterator(); lIt.hasNext();) {
+				String lAttr = lIt.next();
+				String lFormat = lEnc.get(lAttr);
+				String lValue = aToken.getString(lAttr);
+
+				try {
+					if (!mSupportedEncodings.contains(lFormat)) {
+						mLog.error("Invalid encoding format '" + lFormat + "' received. Message rejected!");
+						aResponse.rejectMessage();
+					} else if ("base64".equals(lFormat)) {
+						aToken.setString(lAttr, Tools.base64Encode(lValue.getBytes()));
+					} else if ("gzip".equals(lFormat)) {
+						aToken.setString(lAttr, new String(Tools.zip(lValue.getBytes(), Boolean.TRUE), "UTF-8"));
+					}
+				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to encode '" + lAttr + "' value to '" 
+							+ lFormat + "' format..."));
+					aResponse.rejectMessage();
+				}
+			}
 		}
 	}
 }

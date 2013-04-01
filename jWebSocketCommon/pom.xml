@@ -16,12 +16,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
-<!--
-	<scm>
-		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketCommon</connection>
-		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketCommon</developerConnection>
-	</scm>
--->
+	<!--
+		<scm>
+			<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketCommon</connection>
+			<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketCommon</developerConnection>
+		</scm>
+	-->
 	<build>
 		<!-- use shared directory here, to share code across various platforms -->
 		<sourceDirectory>../shared/J2SE/jWebSocketCommon</sourceDirectory>
@@ -87,7 +87,7 @@
 		</plugins>
 	</build>
 
-    <!--  define all the dependencies here -->
+	<!--  define all the dependencies here -->
 	<dependencies>
 		<!-- javolution -->
 		<dependency>
@@ -119,7 +119,11 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.5</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.5</version>
+		</dependency>
 	</dependencies>
 
 	<!-- define repositories once required -->

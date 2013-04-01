@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -36,6 +38,11 @@ import java.util.zip.Inflater;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Provides some convenience methods to support the web socket development.
@@ -43,12 +50,12 @@ import org.apache.commons.codec.binary.Base64;
  * @author aschulze
  */
 public class Tools {
-	
+
 	private static final Map<String, String> JAVA_2_GENERIC_MAP = new FastMap<String, String>();
 	private static final Map<String, String> GENERIC_2_JAVA_MAP = new FastMap<String, String>();
 	private static Timer mTimer = null;
 	private static ExecutorService mThreadPool = null;
-	
+
 	static {
 		JAVA_2_GENERIC_MAP.put("java.lang.String", "string");
 		JAVA_2_GENERIC_MAP.put("java.lang.Boolean", "boolean");
@@ -59,12 +66,12 @@ public class Tools {
 		JAVA_2_GENERIC_MAP.put("java.lang.Float", "float");
 		JAVA_2_GENERIC_MAP.put("java.lang.Double", "double");
 		JAVA_2_GENERIC_MAP.put("java.math.BigDecimal", "double");
-		
+
 		JAVA_2_GENERIC_MAP.put("java.sql.Timestamp", "datetime");
 		JAVA_2_GENERIC_MAP.put("java.sql.Date", "date");
 		JAVA_2_GENERIC_MAP.put("java.sql.Time", "time");
 		JAVA_2_GENERIC_MAP.put("java.util.Date", "datetime");
-		
+
 		JAVA_2_GENERIC_MAP.put("java.util.Collection", "list");
 		JAVA_2_GENERIC_MAP.put("java.util.List", "list");
 		JAVA_2_GENERIC_MAP.put("java.util.Set", "list");
@@ -465,7 +472,7 @@ public class Tools {
 		 * not found."); }
 		 */
 		Object lRes;
-		
+
 		Class[] lArgClasses = null;
 		if (aArgs != null) {
 			lArgClasses = new Class[aArgs.length];
@@ -479,7 +486,7 @@ public class Tools {
 		 * "' not found."); }
 		 */
 		lRes = lMthd.invoke(null, aArgs);
-		
+
 		return lRes;
 	}
 
@@ -497,7 +504,7 @@ public class Tools {
 			throw new Exception("No class passed for call.");
 		}
 		Object lRes;
-		
+
 		Class[] lArgClasses = null;
 		if (aArgs != null) {
 			lArgClasses = new Class[aArgs.length];
@@ -511,7 +518,7 @@ public class Tools {
 			throw new Exception("Method '" + aMethodName + "' not found.");
 		}
 		lRes = lMthd.invoke(null, aArgs);
-		
+
 		return lRes;
 	}
 
@@ -532,7 +539,7 @@ public class Tools {
 			throw new Exception("No method name passed for call.");
 		}
 		Object lRes;
-		
+
 		Class[] lArgClasses;
 		if (aArgs != null) {
 			lArgClasses = new Class[aArgs.length];
@@ -541,7 +548,7 @@ public class Tools {
 				lArgClasses[lIdx] = lClass;
 			}
 		}
-		
+
 		Method lMthd = null;
 		Method[] lMethods = aClass.getMethods();
 		for (int lIdx = 0; lIdx < lMethods.length; lIdx++) {
@@ -554,7 +561,7 @@ public class Tools {
 			throw new Exception("Method '" + aMethodName + "' not found.");
 		}
 		lRes = lMthd.invoke(null, aArgs);
-		
+
 		return lRes;
 	}
 
@@ -579,7 +586,7 @@ public class Tools {
 			throw new Exception("No method name passed for call.");
 		}
 		Object lRes;
-		
+
 		Class[] lArgClasses;
 		if (aArgs != null) {
 			lArgClasses = new Class[aArgs.length];
@@ -588,7 +595,7 @@ public class Tools {
 				lArgClasses[lIdx] = lClass;
 			}
 		}
-		
+
 		Method lMthd = null;
 		Method[] lMethods = aClass.getMethods();
 		for (int lIdx = 0; lIdx < lMethods.length; lIdx++) {
@@ -601,7 +608,7 @@ public class Tools {
 			throw new Exception("Method '" + aMethodName + "' not found.");
 		}
 		lRes = lMthd.invoke(null, aArgs);
-		
+
 		return lRes;
 	}
 
@@ -620,7 +627,7 @@ public class Tools {
 		}
 		Class lClass = aInstance.getClass();
 		Object lRes;
-		
+
 		Class[] lArgClasses = null;
 		if (aArgs != null) {
 			lArgClasses = new Class[aArgs.length];
@@ -637,11 +644,11 @@ public class Tools {
 			aArgs = new Object[0];
 		}
 		lRes = lMthd.invoke(aInstance, aArgs);
-		
+
 		return lRes;
 	}
 	private static char[] BASE64_CHAR_MAP = new char[64];
-	
+
 	static {
 		int lIdx = 0;
 		for (char lC = 'A'; lC <= 'Z'; lC++) {
@@ -743,7 +750,7 @@ public class Tools {
 		if (null == mThreadPool) {
 			startUtilityThreadPool();
 		}
-		
+
 		return mThreadPool;
 	}
 
@@ -754,7 +761,7 @@ public class Tools {
 	public static void startUtilityTimer() {
 		if (null == mTimer) {
 			mTimer = new Timer("jWebSocket Utility Timer");
-			
+
 			final Timer lTimer = mTimer;
 			mTimer.scheduleAtFixedRate(new TimerTask() {
 				@Override
@@ -870,20 +877,10 @@ public class Tools {
 		byte[] lOut = new byte[1024 * 1000 * 5];
 		int lWritten = lDeflater.deflate(lOut);
 		byte[] lResult = new byte[lWritten];
-		
-		System.arraycopy(lOut, 0, lResult, 0, lWritten);
-		
-		return lResult;
 
-//		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//		GZIPOutputStream zos = new GZIPOutputStream(baos);
-//
-//		zos.write(aUncompressedData);
-//		zos.finish();
-//		zos.flush();
-//
-//
-//		return baos.toByteArray();
+		System.arraycopy(lOut, 0, lResult, 0, lWritten);
+
+		return lResult;
 	}
 
 	/**
@@ -899,9 +896,62 @@ public class Tools {
 		byte[] lOut = new byte[1024 * 1000 * 5];
 		int lWritten = lInflater.inflate(lOut);
 		byte[] lResult = new byte[lWritten];
-		
+
 		System.arraycopy(lOut, 0, lResult, 0, lWritten);
-		
+
 		return lResult;
+	}
+
+	/**
+	 * Compress a byte array using zip compression
+	 *
+	 * @param aBA
+	 * @param aBase64Encode if TRUE, the result is Base64 encoded
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] zip(byte[] aBA, Boolean aBase64Encode) throws Exception {
+		ByteArrayOutputStream lBAOS = new ByteArrayOutputStream();
+		ArchiveOutputStream lAOS =
+				new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, lBAOS);
+		ZipArchiveEntry lZipEntry = new ZipArchiveEntry("temp.zip");
+		lZipEntry.setSize(aBA.length);
+		lAOS.putArchiveEntry(lZipEntry);
+		lAOS.write(aBA);
+		lAOS.closeArchiveEntry();
+		lAOS.flush();
+		lAOS.close();
+
+		if (aBase64Encode) {
+			aBA = Base64.encodeBase64(lBAOS.toByteArray());
+		} else {
+			aBA = lBAOS.toByteArray();
+		}
+
+		return aBA;
+	}
+
+	/**
+	 * Uncompress a byte array using zip compression
+	 *
+	 * @param aBA
+	 * @param aBase64Decode If TRUE, the byte array is Base64 decoded before
+	 * uncompress
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] unzip(byte[] aBA, Boolean aBase64Decode) throws Exception {
+		if (aBase64Decode) {
+			aBA = Base64.decodeBase64(aBA);
+		}
+		ByteArrayInputStream lBAIS = new ByteArrayInputStream(aBA);
+		ZipArchiveInputStream lAIOS = new ZipArchiveInputStream(lBAIS);
+		ZipArchiveEntry lZipEntry = (ZipArchiveEntry) lAIOS.getNextZipEntry();
+
+		ByteArrayOutputStream lBAOS = new ByteArrayOutputStream();
+		IOUtils.copy(lAIOS, lBAOS);
+		lAIOS.close();
+
+		return lBAOS.toByteArray();
 	}
 }
