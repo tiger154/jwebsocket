@@ -22,7 +22,7 @@ del /p /s *.?.nblh~
 
 call mvn clean install
 
-cd %JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%
+cd %JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise
 
 rem cleanup temporary work files...
 del /p /s *.?.nblh~

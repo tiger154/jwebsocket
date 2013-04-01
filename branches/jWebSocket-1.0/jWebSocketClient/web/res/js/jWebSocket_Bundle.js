@@ -1331,6 +1331,23 @@ jws.tools = {
 		return aObject;
 	},
 	
+	zip: function(aString, aBase64Encode){
+		var lBase64 = aBase64Encode || false;
+		var lJSZip = new JSZip();
+		lJSZip.file( "temp.zip", aString);
+		var lZipped = lJSZip.generate({ compression: "DEFLATE",  base64 : lBase64 });
+		
+		return lZipped;
+	},
+	
+	unzip: function(aString, aBase64Decode){
+		var lBase64 = aBase64Decode || false;
+		var lJSZip = new JSZip( aString, { base64: lBase64 });
+		var lFile = lJSZip.file( "temp.zip" );
+		
+		return lFile.asBinary();
+	},
+	
 	clone: function(aObject){
 		if( null === aObject || "object" !== typeof( aObj ) ) {
 			return aObject;
@@ -1591,6 +1608,9 @@ jws.oop.addPlugIn = function( aClass, aPlugIn, aOptions ) {
 //:d:en:which are (have to be) handled by the descendant classes.
 
 jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
+	registerFilters: function(){
+	// method to be overwritten in descendant classes
+	},
 	
 	create: function( aOptions ) {
 		// turn off connection reliability by default
@@ -1616,7 +1636,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aEvent:Object:Pending...
 	//:r:*:::void:none
 	processPacket: function( aEvent ) {
-	// method to be overwritten in descendant classes
+		return aEvent;
 	},
 
 	//:m:*:processClosed
@@ -1808,9 +1828,22 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					// process the packet
 					lValue = lThis.processPacket( lPacket );
 					
-					// give application change to handle event first
-					if( aOptions.OnMessage ) {
-						aOptions.OnMessage( aEvent, lValue, lThis );
+					try {
+						// call filter chain
+						if( this.fFilters ) {
+							for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
+								if ( typeof this.fFilters[ lIdx ]["filterStreamIn"] == "function" ){
+									this.fFilters[ lIdx ]["filterStreamIn"]( lValue );
+								}
+							}
+						}
+						
+						// give application change to handle event first
+						if( aOptions.OnMessage ) {
+							aOptions.OnMessage( aEvent, lValue, lThis );
+						}
+					} catch( lEx ) {
+						jws.console.error( "[onmessage]: Exception: " + lEx.message );
 					}
 				};
 
@@ -1925,6 +1958,16 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		// is client already connected
 		if( this.isOpened() ) {
 			try {
+				// call filter chain
+				if( this.fFilters ) {
+					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
+						if ( typeof this.fFilters[ lIdx ]["filterStreamOut"] == "function" ){
+							this.fFilters[ lIdx ]["filterStreamOut"]( aData );
+						}
+					}
+				}
+				
+				// send data
 				this.fConn.send( aData );
 			} catch( lEx ) {
 				// this is never fired !
@@ -2339,6 +2382,32 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			}
 		}
 	},
+	
+	//:m:*:addFilter
+	//:d:en:Adds a client side filter to the instance - not to the class!
+	//:a:en::aFilter:Object:Filter to be appended to the client side filter chain.
+	//:r:*:::void:none
+	addFilter: function( aFilter ) {
+		// if the class has no filters yet initialize array
+		if( !this.fFilters ) {
+			this.fFilters = [];
+		}
+		this.fFilters.push( aFilter );
+	},
+
+	//:m:*:removeFilter
+	//:d:en:Removes a client side filter from the instance - not to the class!
+	//:a:en::aFilter:Object:Filter to be removed from the client side filter chain.
+	//:r:*:::void:none
+	removeFilter: function( aFilter ) {
+		if( this.fFilters ) {
+			for( var lIdx = 0, lCnt = this.fFilters; lIdx < lCnt; lIdx++ ) {
+				if( aFilter === this.fFilters[ lIdx ] ) {
+					this.fFilters.splice( lIdx, 1 );
+				}
+			}
+		}
+	},
 
 	//:m:*:addPlugIn
 	//:d:en:Adds a client side plug-in to the instance - not to the class!
@@ -2440,7 +2509,49 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 //:d:en:an abstract class as an ancestor for the JSON-, CSV- and XML client. _
 //:d:en:Do not create direct instances of jWebSocketTokenClient.
 jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, {
-
+	registerFilters: function(){
+		var self = this;
+		this.addFilter({
+			filterTokenOut: function(aToken){
+				var lEnc = aToken['enc'];
+				if (!lEnc)
+					return;
+				
+				for (var lAttr in lEnc){
+					var lFormat = lEnc[lAttr];
+					var lValue = aToken[lAttr];
+					
+					if (0 > self.fEncodingFormats.lastIndexOf(lFormat)){
+						jws.console.error( "[process encoding]: Invalid encoding format '" + lFormat +"'received. Token cannot be sent!" );
+						throw new Error("Invalid encoding format '" + lFormat +"'received. Token cannot be sent!");
+					} else if ("zipBase64" == lFormat){
+						aToken[lAttr] = jws.tools.zip(lValue, true);
+					} else if ("base64" == lFormat){
+						aToken[lAttr] = Base64.encode(lValue);
+					}
+				}
+			},
+			filterTokenIn: function(aToken){
+				var lEnc = aToken['enc'];
+				if (!lEnc)
+					return;
+				
+				for (var lAttr in lEnc){
+					var lFormat = lEnc[lAttr];
+					var lValue = aToken[lAttr];
+					if (0 > self.fEncodingFormats.lastIndexOf(lFormat)){
+						jws.console.error( "[process decoding]: Invalid encoding format '" + lFormat +"'received. Token cannot be processed!" );
+						throw new Error("Invalid encoding format '" + lFormat +"'received. Token cannot be processed!");
+					} else if ("zipBase64" == lFormat){
+						aToken[lAttr] = jws.tools.unzip(lValue, true);
+					} else if ("base64" == lFormat){
+						aToken[lAttr] = Base64.decode(lValue);
+					}
+				}
+			}
+		})
+	},
+	
 	processOpened: function ( aEvent ){
 		// sending client headers to the server 
 		this.sendToken({
@@ -2455,7 +2566,8 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			jwsInfo: 
 			jws.browserSupportsNativeWebSockets 
 			? "native"
-			: "flash " + jws.flashBridgeVer
+			: "flash " + jws.flashBridgeVer,
+			encodingFormats: ["base64", "zipBase64"]
 		});
 	},
 
@@ -2703,9 +2815,24 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	processPacket: function( aPacket ) {
 		// parse incoming token...
 		var lToken = this.streamToToken( aPacket );
-		// and process it...
-		this.processToken( lToken );
-		return lToken;
+
+		try {
+			// call filter chain
+			if( this.fFilters ) {
+				for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
+					if ( typeof this.fFilters[ lIdx ]["filterTokenIn"] == "function" ){
+						this.fFilters[ lIdx ]["filterTokenIn"]( lToken );
+					}
+				}
+			}
+
+			// and process it...
+			this.processToken( lToken );
+			
+			return lToken;
+		} catch( lEx ) {
+			jws.console.error( "[processPacket]: Exception: " + lEx.message );
+		}
 	},
 
 	// TODO: move handlers to system plug-in in the same way as on server.
@@ -2725,17 +2852,6 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		} else if( null === lNS ) {
 			aToken.ns = "org.jwebsocket.plugins.system";
 		}
-
-		// processing zip compression in chunks
-		if (true == aToken.isChunk && 'zip' == aToken.enc){
-			// using Zlib
-//			var gunzip = new Zlib.Gunzip(Base64.decode(aToken.data));
-//			var plain = gunzip.decompress();
-//			console.log(plain);
-			
-			// Using RawDeflate
-			//console.log(RawDeflate.inflate(Base64.decode(aToken.data)));
-		}
 		
 		// is it a token from the system plug-in at all?
 		if( jws.NS_SYSTEM === aToken.ns ) {
@@ -2743,8 +2859,11 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			if ( aToken.type === "welcome") {
 				this.fClientId = aToken.sourceId;
 				this.fUsername = aToken.username;
+				this.fEncodingFormats = aToken.encodingFormats;
 				
+				this.registerFilters();
 				this.notifyPlugInsOpened();
+				
 				// fire OnWelcome Event if assigned
 				if( this.fOnWelcome ) {
 					this.fOnWelcome( aToken );
@@ -2832,7 +2951,6 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				this.fListeners[ lIdx ]( aToken );
 			}
 		}
-
 	},
 
 	//:m:*:processClosed
@@ -2883,6 +3001,24 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	
 	__sendToken: function(aIsTransaction, aToken, aOptions, aListener ) {
 		var lRes = this.checkWriteable();
+		if( 0 === lRes.code ) {
+			try {
+				// call filter chain
+				if( this.fFilters ) {
+					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
+						if ( typeof this.fFilters[ lIdx ]["filterTokenOut"] == "function" ){
+							this.fFilters[ lIdx ]["filterTokenOut"]( aToken );
+						}
+					}
+				}
+			} catch( lEx ) {
+				jws.console.error( "[processPacket]: Exception: " + lEx.message );
+				lRes.code = -1;
+				lRes.localeKey = "jws.jsc.res.filterChainException";
+				lRes.msg = lEx.message;
+			}
+		}
+		
 		if( 0 === lRes.code ) {
 			var lSpawnThread = false;
 			var lL2FragmSize = this.fMaxFrameSize;
@@ -7317,6 +7453,91 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 	}
 });
 //	---------------------------------------------------------------------------
+//	jWebSocket External Processes Plug-in (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
+
+//:package:*:jws
+//:class:*:jws.ExtProcessPlugIn
+//:ancestor:*:-
+//:d:en:Implementation of the [tt]jws.ExtProcessPlugIn[/tt] class.
+//:d:en:This client-side plug-in provides the API to access the features of the _
+//:d:en:ExtProcess plug-in on the jWebSocket server.
+jws.ExtProcessPlugIn = {
+
+	//:const:*:NS:String:org.jwebsocket.plugins.extprocess (jws.NS_BASE + ".plugins.extprocess")
+	//:d:en:Namespace for the [tt]ExtProcessPlugIn[/tt] class.
+	// if namespace is changed update server plug-in accordingly!
+	NS: jws.NS_BASE + ".plugins.extprocess",
+	
+	//:m:*:processToken
+	//:d:en:Processes an incoming token from the server side ExtProcess plug-in and _
+	//:d:en:checks if certains events have to be fired. _
+	//:d:en:If e.g. the request type was [tt]selectSQL[/tt] and data is _
+	//:d:en:returned the [tt]OnExtProcessRowSet[/tt] event is fired. Normally this _
+	//:d:en:method is not called by the application directly.
+	//:a:en::aToken:Object:Token to be processed by the plug-in in the plug-in chain.
+	//:r:*:::void:none
+	processToken: function( aToken ) {
+		// check if namespace matches
+		if( aToken.ns === jws.ExtProcessPlugIn.NS ) {
+			// here you can handle incomimng tokens from the server
+			// directy in the plug-in if desired.
+			if( "selectSQL" === aToken.reqType ) {
+				if( this.OnExtProcessRowSet ) {
+					this.OnExtProcessRowSet( aToken );
+				}
+			}
+		}
+	},
+
+	//:m:*:ExtProcessCall
+	//:d:en:Pending...
+	//:a:en::aQuery:String:Single SQL query string to be executed by the server side ExtProcess plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
+	extProcessCall: function( aAlias, aArgs, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 === lRes.code ) {
+			var lToken = {
+				ns: jws.ExtProcessPlugIn.NS,
+				type: "call",
+				alias: aAlias,
+				args: aArgs
+			};
+			this.sendToken( lToken, aOptions );
+		}
+		return lRes;
+	},
+
+	setExtProcessCallbacks: function( aListeners ) {
+		if( !aListeners ) {
+			aListeners = {};
+		}
+		if( aListeners.OnExtProcessMsg !== undefined ) {
+			this.OnExtProcessMsg = aListeners.OnExtProcessMsg;
+		}
+	}
+
+};
+
+// add the JWebSocket ExtProcess PlugIn into the TokenClient class
+jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ExtProcessPlugIn );
+//	---------------------------------------------------------------------------
 //	jWebSocket Filesystem Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
@@ -10404,6 +10625,90 @@ jws.RPCClientPlugIn = {
 // add the JWebSocket RPC PlugIn into the BaseClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.RPCClientPlugIn );
 //	---------------------------------------------------------------------------
+//	jWebSocket RTC Plug-in (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
+
+//:package:*:jws
+//:class:*:jws.RTCPlugIn
+//:ancestor:*:-
+//:d:en:Implementation of the [tt]jws.RTCPlugIn[/tt] class.
+//:d:en:This client-side plug-in provides the API to access the features of the _
+//:d:en:RTC plug-in on the jWebSocket server.
+jws.RTCPlugIn = {
+
+	//:const:*:NS:String:org.jwebsocket.plugins.rtc (jws.NS_BASE + ".plugins.rtc")
+	//:d:en:Namespace for the [tt]RTCPlugIn[/tt] class.
+	// if namespace is changed update server plug-in accordingly!
+	NS: jws.NS_BASE + ".plugins.rtc",
+	
+	//:m:*:processToken
+	//:d:en:Processes an incoming token from the server side RTC plug-in and _
+	//:d:en:checks if certains events have to be fired. _
+	//:d:en:If e.g. the request type was [tt]selectSQL[/tt] and data is _
+	//:d:en:returned the [tt]OnRTCRowSet[/tt] event is fired. Normally this _
+	//:d:en:method is not called by the application directly.
+	//:a:en::aToken:Object:Token to be processed by the plug-in in the plug-in chain.
+	//:r:*:::void:none
+	processToken: function( aToken ) {
+		// check if namespace matches
+		if( aToken.ns === jws.RTCPlugIn.NS ) {
+			// here you can handle incomimng tokens from the server
+			// directy in the plug-in if desired.
+			if( "selectSQL" === aToken.reqType ) {
+				if( this.OnRTCRowSet ) {
+					this.OnRTCRowSet( aToken );
+				}
+			}
+		}
+	},
+
+	//:m:*:requestChannelId
+	//:d:en:Pending...
+	//:a:en::aTarget:String:...
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
+	requestChannelId: function( aTarget, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 === lRes.code ) {
+			var lToken = {
+				ns: jws.RTCPlugIn.NS,
+				type: "requestChannelId",
+				target: aTarget
+			};
+			this.sendToken( lToken, aOptions );
+		}
+		return lRes;
+	},
+
+	setRTCCallbacks: function( aListeners ) {
+		if( !aListeners ) {
+			aListeners = {};
+		}
+		if( aListeners.OnRTCMsg !== undefined ) {
+			this.OnRTCMsg = aListeners.OnRTCMsg;
+		}
+	}
+
+};
+
+// add the JWebSocket RTC PlugIn into the TokenClient class
+jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.RTCPlugIn );
+//	---------------------------------------------------------------------------
 //	jWebSocket Sample Client PlugIn (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
@@ -10472,6 +10777,99 @@ jws.SamplesPlugIn = {
 
 // add the JWebSocket Samples PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SamplesPlugIn );
+//	---------------------------------------------------------------------------
+//	jWebSocket Scripting Plug-in (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
+
+//:package:*:jws
+//:class:*:jws.ScriptingPlugIn
+//:ancestor:*:-
+//:d:en:Implementation of the [tt]jws.ScriptingPlugIn[/tt] class.
+//:d:en:This client-side plug-in provides the API to access the features of the _
+//:d:en:Scripting plug-in on the jWebSocket server.
+jws.ScriptingPlugIn = {
+
+	//:const:*:NS:String:org.jwebsocket.plugins.scripting (jws.NS_BASE + ".plugins.scripting")
+	//:d:en:Namespace for the [tt]ScriptingPlugIn[/tt] class.
+	// if namespace is changed update server plug-in accordingly!
+	NS: jws.NS_BASE + ".plugins.scripting",
+	
+	//:const:*:JWS_NS:String:scripting
+	//:d:en:Namespace within the jWebSocketClient instance.
+	// if namespace changed update the applications accordingly!
+	JWS_NS: "scripting",
+
+	//:m:*:processToken
+	//:d:en:Processes an incoming token from the server side scripting plug-in and _
+	//:d:en:checks if certains events have to be fired. _
+	//:d:en:If e.g. the request type was [tt]selectSQL[/tt] and data is _
+	//:d:en:returned the [tt]OnScriptingRowSet[/tt] event is fired. Normally this _
+	//:d:en:method is not called by the application directly.
+	//:a:en::aToken:Object:Token to be processed by the plug-in in the plug-in chain.
+	//:r:*:::void:none
+	processToken: function( aToken ) {
+		// check if namespace matches
+		if( aToken.ns === jws.ScriptingPlugIn.NS ) {
+			// here you can handle incomimng tokens from the server
+			// directy in the plug-in if desired.
+			/*
+			if( "selectSQL" === aToken.reqType ) {
+				if( this.OnScriptingRowSet ) {
+					this.OnScriptingRowSet( aToken );
+				}
+			}
+			*/
+		}
+	},
+
+	//:m:*:invokeJavaScript
+	//:d:en:Pending...
+	//:a:en::aQuery:String:Single SQL query string to be executed by the server side Scripting plug-in.
+	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
+	//:r:*:::void:none
+	invokeJavaScript: function( aAlias, aFunction, aArgs, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 === lRes.code ) {
+			var lToken = {
+				ns: jws.ScriptingPlugIn.NS,
+				type: "invokeJavaScript",
+				alias: aAlias,
+				function: aFunction,
+				args: aArgs
+			};
+			this.sendToken( lToken, aOptions );
+		}
+		return lRes;
+	},
+
+	setScriptingCallbacks: function( aListeners ) {
+		if( !aListeners ) {
+			aListeners = {};
+		}
+		if( aListeners.OnScriptingMsg !== undefined ) {
+			this.OnScriptingMsg = aListeners.OnScriptingMsg;
+		}
+	}
+
+};
+
+// add the JWebSocket Scripting PlugIn into the TokenClient class
+jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ScriptingPlugIn );
 //	---------------------------------------------------------------------------
 //	jWebSocket Shared Objects Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
