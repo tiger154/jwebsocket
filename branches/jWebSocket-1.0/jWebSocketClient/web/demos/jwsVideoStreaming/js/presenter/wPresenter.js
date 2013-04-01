@@ -178,19 +178,6 @@ $.widget( "jws.vplayer", {
 			var lVideo = w.vplayer.eVideo.get( 0 );
 
 			lVideo.src = (window.URL && window.URL.createObjectURL( aStream )) || aStream;
-			//							recorder = RecordRTC({
-			//								stream: stream,
-			//								video: vIn
-			//							});
-			//					
-			//							recorder.recordVideo();
-			//							
-			//							setInterval(function(){
-			//								recorder.getLiveBase64(function(aBase64){
-			//									console.log(aBase64.length);
-			//									lConn.broadcastText(null, aBase64);
-			//								});
-			//							}, 1000);
 
 			videoRec = new VideoRecorder( {
 				video: lVideo,
@@ -206,7 +193,7 @@ $.widget( "jws.vplayer", {
 						stream: w.vplayer.zipBase64( aBase64 )
 					} );
 				} );
-			}, 100 );
+			}, 1000 );
 		}, function( aError ) {
 			console.log( aError );
 		} );
