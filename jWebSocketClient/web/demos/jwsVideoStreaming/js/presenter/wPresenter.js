@@ -42,6 +42,7 @@ $.widget( "jws.vplayer", {
 		this.mClientId = "";
 		this.mIsFS = false;
 		this.mInterval = null;
+		this.mFilename = "compressed.txt";
 		this.mPresentersList = { };
 		w.vplayer = this;
 		w.vplayer.registerEvents();
@@ -166,16 +167,17 @@ $.widget( "jws.vplayer", {
 		}
 	},
 	startStreaming: function() {
-		navigator.getUserMedia = navigator.getUserMedia || 
-				navigator.webkitGetUserMedia || 
-				navigator.mozGetUserMedia || 
-				navigator.msGetUserMedia;;
+		navigator.getUserMedia = navigator.getUserMedia ||
+				navigator.webkitGetUserMedia ||
+				navigator.mozGetUserMedia ||
+				navigator.msGetUserMedia;
+		;
 		window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
-		
+
 		navigator.getUserMedia( { video: true }, function( aStream ) {
 			var lVideo = w.vplayer.eVideo.get( 0 );
-			
-			lVideo.src = (window.URL && window.URL.createObjectURL(aStream)) || aStream;
+
+			lVideo.src = (window.URL && window.URL.createObjectURL( aStream )) || aStream;
 			//							recorder = RecordRTC({
 			//								stream: stream,
 			//								video: vIn
@@ -200,7 +202,9 @@ $.widget( "jws.vplayer", {
 			videoRec.start();
 			setInterval( function() {
 				videoRec.getStream( function( aBase64 ) {
-					w.vplayer.publish( w.vplayer.TT_VIDEO, {stream: aBase64} );
+					w.vplayer.publish( w.vplayer.TT_VIDEO, {
+						stream: w.vplayer.zipBase64( aBase64 )
+					} );
 				} );
 			}, 100 );
 		}, function( aError ) {
@@ -306,6 +310,12 @@ $.widget( "jws.vplayer", {
 	},
 	publish: function( aType, aData ) {
 		mWSC.channelPublish( w.vplayer.mChannelId, aType, aData );
+	},
+	zipBase64: function( aIn ) {
+		var lJSZip = new JSZip();
+		lJSZip.file( w.vplayer.mFilename, "" );
+		var lZipped = lJSZip.generate( { compression: "DEFLATE" } );
+		return lZipped;
 	},
 	isFullScreen: function() {
 		return  (document.fullScreen && document.fullScreen != null) ||

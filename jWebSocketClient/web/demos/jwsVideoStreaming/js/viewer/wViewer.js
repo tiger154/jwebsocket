@@ -33,8 +33,6 @@ $.widget( "jws.viewer", {
 		this.eBtnNewViewer = this.element.find( "#new_viewer_window_btn" );
 		this.mNextWindowId = 1;
 		// ------ VARIABLES --------
-		this.mCurrSlide = 1;
-		this.mOldSlide = 0;
 		this.mPresenters = 0;
 		this.mViewers = 0;
 		this.mChannelId = "jWebSocketVideoStreamingDemo";
@@ -45,6 +43,7 @@ $.widget( "jws.viewer", {
 		this.mPresentersList = { };
 		this.mClientId = "";
 		this.mLoaded = false;
+		this.mFilename = "compressed.txt";
 
 		w.viewer = this;
 		w.viewer.registerEvents();
@@ -132,10 +131,10 @@ $.widget( "jws.viewer", {
 			} );
 		}
 		if ( aToken.ns === w.viewer.NS_CHANNELS ) {
-			if ( mLog.isDebugEnabled ) {
-				log( " <b>" + w.viewer.TITLE + " new message received: </b>" +
-						JSON.stringify( aToken ) );
-			}
+//			if ( mLog.isDebugEnabled ) {
+//				log( " <b>" + w.viewer.TITLE + " new message received: </b>" +
+//						JSON.stringify( aToken ) );
+//			}
 			// When information is published in the channel the data is sent
 			// in a map inside the token and the type of the token comes in 
 			// the key "data"
@@ -154,7 +153,7 @@ $.widget( "jws.viewer", {
 	},
 	playStream: function( aStream ) {
 		if ( aStream ) {
-			streams.push( aStream );
+			streams.push( w.viewer.unzipBase64( aStream ) );
 //			if ( !w.viewer.mLoaded ) {
 			w.viewer.eVideo.get( 0 ).src = streams[streams.length - 1];
 			w.viewer.eVideo.get( 0 ).play();
@@ -162,11 +161,14 @@ $.widget( "jws.viewer", {
 //			}
 		}
 	},
+	unzipBase64: function( aIn ) {
+		var lJSZip = new JSZip( aIn, { base64: true } );
+		var lFile = lJSZip.file( w.viewer.mFilename );
+		console.log(lJSZip.file( w.viewer.mFilename ).asBinary());
+		return lFile.asText();
+	},
 	updateUsers: function( aData ) {
 		aData = aData || { };
-		aData.currslide && w.viewer.playStream( aData.currslide );
-		w.viewer.mCurrSlide = aData.currslide || w.viewer.mCurrSlide;
-		w.viewer.mOldSlide = aData.oldslide || w.viewer.mOldSlide;
 		w.viewer.mViewers = aData.viewers || w.viewer.mViewers;
 		w.viewer.eViewers.text( w.viewer.mViewers );
 		// copying the presenters elements to our list
