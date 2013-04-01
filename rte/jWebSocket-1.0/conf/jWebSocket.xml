@@ -1607,6 +1607,7 @@
 		</plugin>
 		
 		<!-- Monitoring plugin -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
 			<id>MonitoringPlugIn</id>
@@ -1615,7 +1616,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-		
+		-->
 
 		<!-- API disclosure plugin -->
 		<plugin>
@@ -1685,6 +1686,7 @@
 		</plugin>
 		
 		<!-- jWeSocket Ping-Pong Game Plug-in -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.gaming.pingpong.plugin.PingPongPlugIn</name>
 			<id>jWebSocketPingPongGame</id>
@@ -1701,6 +1703,7 @@
 				<setting key="dbTime">1</setting>
 			</settings>
 		</plugin>
+		-->
 		
 		<!-- External processes plug-in, e.g. to call perl or other server side scripts -->
 		<plugin>
