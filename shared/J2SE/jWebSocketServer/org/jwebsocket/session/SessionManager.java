@@ -19,7 +19,6 @@
 package org.jwebsocket.session;
 
 import java.util.Map;
-import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.*;
 import org.jwebsocket.logging.Logging;
@@ -37,7 +36,6 @@ public class SessionManager implements ISessionManager {
 	private IStorageProvider mStorageProvider;
 	private ISessionReconnectionManager mReconnectionManager;
 	private static Logger mLog = Logging.getLogger();
-	private Map<String, IBasicStorage<String, Object>> mStorageRefs;
 
 	/**
 	 *
@@ -104,18 +102,12 @@ public class SessionManager implements ISessionManager {
 			mLog.debug("Getting session for: " + aSessionId + "...");
 		}
 
-		if (mStorageRefs.containsKey(aSessionId)) {
-			// Getting the local cached storage instance if exists
-			return mStorageRefs.get(aSessionId);
-		}
-
 		if (mReconnectionManager.isExpired(aSessionId)) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Creating a blank storage for session: " + aSessionId + "...");
 			}
 			IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(aSessionId);
 			lStorage.clear();
-			mStorageRefs.put(aSessionId, lStorage);
 
 			return lStorage;
 		} else {
@@ -125,7 +117,6 @@ public class SessionManager implements ISessionManager {
 			mReconnectionManager.getSessionIdsTrash().remove(aSessionId);
 
 			IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(aSessionId);
-			mStorageRefs.put(aSessionId, lStorage);
 
 			return lStorage;
 		}
@@ -137,7 +128,6 @@ public class SessionManager implements ISessionManager {
 	 */
 	@Override
 	public void initialize() throws Exception {
-		mStorageRefs = new FastMap<String, IBasicStorage<String, Object>>();
 	}
 
 	/**
@@ -146,7 +136,6 @@ public class SessionManager implements ISessionManager {
 	 */
 	@Override
 	public void shutdown() throws Exception {
-		mStorageRefs.clear();
 	}
 
 	/**
@@ -192,9 +181,6 @@ public class SessionManager implements ISessionManager {
 						+ ", in reconnection mode...");
 			}
 			synchronized (this) {
-				// removing the local cached  storage instance. 
-				// free space if the client never gets reconnected
-				mStorageRefs.remove(lSessionId);
 				getReconnectionManager().putInReconnectionMode(aConnector.getSession());
 			}
 		}

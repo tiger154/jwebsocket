@@ -21,6 +21,7 @@
 				<include>org.codehaus.jackson:jackson-mapper-asl</include>
 				<include>org.netbeans.external:json-2</include>
 				<include>commons-codec:commons-codec</include>
+				<include>org.apache.commons:commons-compress</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>
