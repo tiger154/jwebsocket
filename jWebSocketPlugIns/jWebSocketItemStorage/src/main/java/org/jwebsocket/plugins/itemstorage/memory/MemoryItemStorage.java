@@ -21,8 +21,8 @@ import org.springframework.util.Assert;
  */
 public class MemoryItemStorage extends BaseItemStorage {
 
-	private static FastMap<String, FastList> mContainer = new FastMap<String, FastList>();
-	private static FastMap<String, String> mTypes = new FastMap<String, String>();
+	private static FastMap<String, FastList> mContainer;
+	private static FastMap<String, String> mTypes;
 	private FastList<IItem> mData;
 
 	public MemoryItemStorage(String aName, String aType, IItemFactory aItemFactory) {
@@ -37,12 +37,22 @@ public class MemoryItemStorage extends BaseItemStorage {
 	public static void release(String aStorageName) {
 		Assert.notNull(aStorageName, "The storage name argument cannot be null!");
 
-		mContainer.remove(aStorageName).clear();
-		mTypes.remove(aStorageName);
+		getContainer().remove(aStorageName).clear();
+		getTypes().remove(aStorageName);
 	}
 
 	public static Map<String, FastList> getContainer() {
-		return Collections.unmodifiableMap(mContainer);
+		if (null == mContainer){
+			mContainer = new FastMap<String, FastList>().shared();
+		}
+		return mContainer;
+	}
+	
+	public static Map<String, String> getTypes() {
+		if (null == mTypes){
+			mTypes = new FastMap<String, String>().shared();
+		}
+		return mTypes;
 	}
 
 	@Override
@@ -224,14 +234,14 @@ public class MemoryItemStorage extends BaseItemStorage {
 
 	@Override
 	public void initialize() throws Exception {
-		if (!mContainer.containsKey(mName) || null == mContainer.get(mName)) {
-			mContainer.put(mName, new FastList<IItem>());
-			mTypes.put(mName, mType);
+		if (!getContainer().containsKey(mName) || null == getContainer().get(mName)) {
+			getContainer().put(mName, new FastList<IItem>());
+			getTypes().put(mName, mType);
 		}
 
-		Assert.isTrue(mType.equals(mTypes.get(mName)), "Invalid storage 'type' argument. "
+		Assert.isTrue(mType.equals(getTypes().get(mName)), "Invalid storage 'type' argument. "
 				+ "A storage with name '" + mName + "' already exists with a different type!");
-		mData = mContainer.get(mName);
+		mData = getContainer().get(mName);
 	}
 
 	@Override
