@@ -320,7 +320,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 			// reset close reason to be specified by next reason
 			mCloseReason = null;
 		} catch (Exception lEx) {
-			lEx.printStackTrace();
 			WebSocketClientEvent lEvent =
 					new WebSocketBaseClientEvent(this, EVENT_CLOSE, mCloseReason);
 			notifyClosed(lEvent);
