@@ -249,6 +249,11 @@ public class JWebSocketCommonConstants {
 	 * standalone mode.
 	 */
 	public static final String SESSIONID_COOKIE_NAME = "JWSSESSIONID";
+	
+	/**
+	 * jWebSocket encoding mechanism constant
+	 */
+	public static final String ENCODING_FORMATS_VAR_KEY = "encodingFormats";
 
 	static {
 		// hixie support (versions)

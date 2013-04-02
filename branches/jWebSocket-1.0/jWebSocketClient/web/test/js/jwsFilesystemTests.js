@@ -34,6 +34,7 @@ jws.tests.FileSystem = {
 
 			jws.Tests.getAdminConn().fileSave( lFilename, lData, {
 				encode: true,
+				encoding: 'zipBase64',
 				scope: aScope,
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
@@ -134,6 +135,7 @@ jws.tests.FileSystem = {
 
 			jws.Tests.getAdminConn().fileLoad( lFilename, aAlias, {
 				decode: true,
+				encoding: 'zipBase64',
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}

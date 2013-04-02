@@ -342,6 +342,9 @@ public class SystemPlugIn extends TokenPlugIn {
 
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
+		// setting connector encodingFormats container
+		aConnector.setVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY, new FastList<String>());
+		
 		// Setting the session only if a session manager is defined,
 		// ommitting if the session storage was previously setted (embedded mode)
 		if (null != mSessionManager) {
@@ -501,7 +504,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		lWelcome.setString("subProtocol", aConnector.getSubprot());
 
 		// sending to the client supported encoding formats
-		lWelcome.setList("encodingFormats", SystemFilter.getSupportedEncodings());
+		lWelcome.setList(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY, SystemFilter.getSupportedEncodings());
 
 		// if anoymous user allowed send corresponding flag for 
 		// clarification that auto anonymous may have been applied.
@@ -967,14 +970,15 @@ public class SystemPlugIn extends TokenPlugIn {
 		aConnector.setVar("jwsType", aToken.getString("jwsType"));
 		aConnector.setVar("jwsVersion", aToken.getString("jwsVersion"));
 		aConnector.setVar("jwsInfo", aToken.getString("jwsInfo"));
-		List lUserFormats = aToken.getList("encodingFormats");
+		List lUserFormats = aToken.getList(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
 		List lEncodingFormats = new FastList();
-		if (null == lUserFormats){
-			lEncodingFormats.add("base64");
-		} else {
+		if (null != lUserFormats && !lUserFormats.isEmpty()){
 			lEncodingFormats.addAll(lUserFormats);
 		}
-		aConnector.setVar("encodingFormats", CollectionUtils.intersection(lEncodingFormats, SystemFilter.getSupportedEncodings()));
+		
+		((List)aConnector.getVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY)).addAll(
+				CollectionUtils.intersection(lEncodingFormats, SystemFilter.getSupportedEncodings()));
+		
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getHeaders' from connector '"
 					+ aConnector.getId() + "'...");
