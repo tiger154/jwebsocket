@@ -31,9 +31,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 
 /**
- * This is required to load the bootstrap.xml config file. It provides a shared
- * beanFactory for all plug-ins and this allows inter-dependencies between the
- * plug-ins and core components.
+ * This is required to load the bootstrap.xml config file. It provides a shared beanFactory for all
+ * plug-ins and this allows inter-dependencies between the plug-ins and core components.
  *
  * @author alexanderschulze
  * @author kyberneees
@@ -55,6 +54,7 @@ public class JWebSocketBeanFactory {
 			}
 			mGlobalContext = new GenericApplicationContext(new DefaultListableBeanFactory());
 		}
+
 		return mGlobalContext;
 	}
 
@@ -72,6 +72,7 @@ public class JWebSocketBeanFactory {
 			//Setting the default (core) application context as parent
 			mContextMap.get(aNamespace).setParent(mGlobalContext);
 		}
+
 		return mContextMap.get(aNamespace);
 	}
 
@@ -135,7 +136,6 @@ public class JWebSocketBeanFactory {
 		// destroying namespaced application contexts
 		for (GenericApplicationContext lContext : JWebSocketBeanFactory.mContextMap.values()) {
 			try {
-				lContext.refresh();
 				lContext.destroy();
 			} catch (Exception lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "destroying " + lContext.getDisplayName() + " bean factory..."));

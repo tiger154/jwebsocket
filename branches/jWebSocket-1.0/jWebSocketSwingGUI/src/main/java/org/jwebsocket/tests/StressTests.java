@@ -33,7 +33,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class StressTests implements WebSocketClientTokenListener {
 
-	private int MAX_CONNS = 50;
+	private int MAX_CONNS = 200;
 	private BaseTokenClient[] mClients = new BaseTokenClient[MAX_CONNS];
 	private int PROT_VER = 8;
 	private volatile int mFinished = 0;
@@ -106,7 +106,7 @@ public class StressTests implements WebSocketClientTokenListener {
 	 */
 	public void runStressTest(String aURL) {
 		init(aURL);
-		long lTimeout = 10000;
+		long lTimeout = 5000 * MAX_CONNS;
 		long lStart = new Date().getTime();
 		while (new Date().getTime() - lStart < lTimeout && mFinished < MAX_CONNS) {
 			try {

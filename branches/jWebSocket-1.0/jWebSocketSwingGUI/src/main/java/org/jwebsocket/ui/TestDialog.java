@@ -971,7 +971,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	}
 
 	private void btnStressTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStressTestActionPerformed
-		for (int i = 0; i < 10; i++) {
 			new Thread() {
 				@Override
 				public void run() {
@@ -979,7 +978,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 					lTests.runStressTest(txfURL.getText());
 				}
 			}.start();
-		}
 	}//GEN-LAST:event_btnStressTestActionPerformed
 
 	private void btnDebugOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDebugOutActionPerformed
