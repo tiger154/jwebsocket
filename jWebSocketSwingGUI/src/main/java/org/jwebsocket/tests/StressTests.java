@@ -73,7 +73,7 @@ public class StressTests implements WebSocketClientTokenListener {
 	public void init(String aURL) {
 		BaseTokenClient lClient;
 		for (int lIdx = 0; lIdx < MAX_CONNS; lIdx++) {
-			mLog("Opening client #" + lIdx + "...");
+			mLog("Opening client #" + lIdx + " on thread: " + Thread.currentThread().hashCode() + "...");
 			mClients[lIdx] = new BaseTokenClient();
 			lClient = mClients[lIdx];
 			lClient.setParam("idx", lIdx);
@@ -87,14 +87,15 @@ public class StressTests implements WebSocketClientTokenListener {
 	 */
 	public void exit() {
 		BaseTokenClient lClient;
-		for (int lIdx = 0; lIdx < MAX_CONNS; lIdx++) {
+		for (int lIdx = 0; lIdx < mFinished; lIdx++) {
 			lClient = mClients[lIdx];
 			lClient.removeTokenClientListener(this);
 			try {
-				mLog("Closing client #" + lIdx + "...");
+				mLog("Closing client #" + lIdx + " on thread: " + Thread.currentThread().hashCode() + "...");
 				lClient.close();
 				Thread.sleep(20);
 			} catch (Exception lEx) {
+				mLog("Exception: " + lEx.getMessage() + ". Closing client #" + lIdx + "...");
 			}
 		}
 	}

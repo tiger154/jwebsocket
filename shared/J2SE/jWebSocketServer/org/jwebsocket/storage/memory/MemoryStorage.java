@@ -34,10 +34,10 @@ import org.springframework.util.Assert;
  */
 public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 
-	private static FastMap<String, FastMap> mContainer = new FastMap<String, FastMap>();
+	private static FastMap<String, FastMap> mContainer;
 	private String mName;
 	private FastMap mMap;
-
+	
 	/**
 	 * Create a new MemoryStorage instance
 	 *
@@ -53,6 +53,9 @@ public class MemoryStorage<K, V> implements IBasicStorage<K, V> {
 	 * @return
 	 */
 	public static FastMap<String, FastMap> getContainer() {
+		if (null == mContainer){
+			mContainer = new FastMap<String, FastMap>().shared();
+		}
 		return mContainer;
 	}
 

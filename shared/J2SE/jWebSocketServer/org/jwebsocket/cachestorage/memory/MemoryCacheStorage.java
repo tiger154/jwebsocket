@@ -71,7 +71,7 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 			this.mInsertionTime = insertionTime;
 		}
 	}
-	private static FastMap<String, FastMap> mContainer = new FastMap<String, FastMap>();
+	private static FastMap<String, FastMap> mContainer;
 	private String mName;
 	private FastMap<K, Element<V>> mMap;
 
@@ -83,7 +83,6 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 */
 	public MemoryCacheStorage(String aName) {
 		this.mName = aName;
-
 	}
 
 	/**
@@ -91,6 +90,10 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 * @return
 	 */
 	public static FastMap<String, FastMap> getContainer() {
+		if (null == mContainer){
+			mContainer = new FastMap<String, FastMap>().shared();
+		}
+		
 		return mContainer;
 	}
 
