@@ -1,6 +1,6 @@
 @echo off
 echo Starting the jWebSocket Server...
-echo (C) Copyright 2012 Innotrade GmbH - jWebSocket.org
+echo (C) Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
 echo.
 rem if JWEBSOCKET_HOME not set try to create a temporary one
 goto start

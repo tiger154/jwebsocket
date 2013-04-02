@@ -1,6 +1,6 @@
 @echo off
 echo Starting the jWebSocket Server in the current path (temporarily overwriting JWEBSOCKET_HOME!)...
-echo (C) Copyright 2012 Innotrade GmbH - jWebSocket.org
+echo (C) Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
 echo.
 
 pushd ..

@@ -1,7 +1,8 @@
 ﻿#!/bin/sh
 clear
 PWD=$(cd .. 'dirname $0' && pwd)
-echo "Starting the jWebSocket Server..."
+echo "Starting the jWebSocket Swing UI..."
+echo "(C) Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath"
 
 if [ -z "$JWEBSOCKET_HOME" ]; then
    echo "JWEBSOCKET_HOME is not set, setting to the path of a dir above current"

@@ -1,6 +1,6 @@
 @echo off
 echo jWebSocket Windows Service Control
-echo (C) Copyright 2012 Innotrade GmbH - jWebSocket.org
+echo (C) Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
 echo.
 echo Usage jWebSocketWinSvcCtl.bat start^|stop^|delete [service name]   (default: 'jWebSocket Service')
 echo.
