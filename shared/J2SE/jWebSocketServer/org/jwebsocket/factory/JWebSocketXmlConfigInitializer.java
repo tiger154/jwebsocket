@@ -255,7 +255,9 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 		}
 		// now initialize the plugins
 		for (PluginConfig lPlugInConfig : jWebSocketConfig.getPlugins()) {
+			String lPlugInLogStr = null;
 			try {
+				lPlugInLogStr = lPlugInConfig.getNamespace();
 				if (!lPlugInConfig.getJars().isEmpty()) {
 					if (mLog.isDebugEnabled()) {
 						mLog.info("Adding plug-in required libraries: " + lPlugInConfig.getJars());
@@ -325,7 +327,11 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 				}
 
 			} catch (Exception lEx) {
-				mLog.error("Couldn't instantiate the plug-in.", lEx);
+				mLog.error("Could not instantiate plug-in "
+						+ (lPlugInLogStr == null
+						? "[no plug-in namespace detected]"
+						: lPlugInLogStr)
+						+ ".", lEx);
 			}
 		}
 		return lPlugInMap;
