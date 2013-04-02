@@ -211,6 +211,7 @@
 			<artifactId>commons-digester</artifactId>
 			<version>2.1</version>
 		</dependency>
+		
 		<!-- Required for the jWebSocket Mail Plugin -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>

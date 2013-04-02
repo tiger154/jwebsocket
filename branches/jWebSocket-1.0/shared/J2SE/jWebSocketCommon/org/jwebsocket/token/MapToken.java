@@ -553,6 +553,7 @@ public class MapToken extends BaseToken implements Token {
 	 */
 	@Override
 	public String getLogString() {
+		
 		return mData.toString();
 	}
 }

@@ -1348,6 +1348,17 @@ jws.tools = {
 		return lFile.asBinary();
 	},
 	
+	intersect: function(aArray1, aArray2) {
+		var lResult = [];
+		for (var lIndex = 0; lIndex < aArray1.length; lIndex++){
+			if (-1 < aArray2.lastIndexOf(aArray1[lIndex])){
+				lResult.push(aArray1[lIndex]);
+			}
+		}
+		
+		return lResult;
+	},
+	
 	clone: function(aObject){
 		if( null === aObject || "object" !== typeof( aObj ) ) {
 			return aObject;
@@ -2496,7 +2507,6 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	}
 });
 
-
 //	---------------------------------------------------------------------------
 //  jWebSocket token client (this is an abstract class)
 //  don't create direct instances of jWebSocketTokenClient
@@ -2523,7 +2533,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 					
 					if (0 > self.fEncodingFormats.lastIndexOf(lFormat)){
 						jws.console.error( "[process encoding]: Invalid encoding format '" + lFormat +"'received. Token cannot be sent!" );
-						throw new Error("Invalid encoding format '" + lFormat +"'received. Token cannot be sent!");
+						throw new Error("Invalid encoding format '" + lFormat +"'received (not supported). Token cannot be sent!");
 					} else if ("zipBase64" == lFormat){
 						aToken[lAttr] = jws.tools.zip(lValue, true);
 					} else if ("base64" == lFormat){
@@ -2541,7 +2551,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 					var lValue = aToken[lAttr];
 					if (0 > self.fEncodingFormats.lastIndexOf(lFormat)){
 						jws.console.error( "[process decoding]: Invalid encoding format '" + lFormat +"'received. Token cannot be processed!" );
-						throw new Error("Invalid encoding format '" + lFormat +"'received. Token cannot be processed!");
+						throw new Error("Invalid encoding format '" + lFormat +"'received  (not supported). Token cannot be processed!");
 					} else if ("zipBase64" == lFormat){
 						aToken[lAttr] = jws.tools.unzip(lValue, true);
 					} else if ("base64" == lFormat){
@@ -2553,6 +2563,8 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	},
 	
 	processOpened: function ( aEvent ){
+		this.fEncodingFormats = ["base64", "zipBase64"];
+		
 		// sending client headers to the server 
 		this.sendToken({
 			ns: jws.SystemClientPlugIn.NS,
@@ -2567,7 +2579,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			jws.browserSupportsNativeWebSockets 
 			? "native"
 			: "flash " + jws.flashBridgeVer,
-			encodingFormats: ["base64", "zipBase64"]
+			encodingFormats: this.fEncodingFormats
 		});
 	},
 
@@ -2859,7 +2871,11 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			if ( aToken.type === "welcome") {
 				this.fClientId = aToken.sourceId;
 				this.fUsername = aToken.username;
-				this.fEncodingFormats = aToken.encodingFormats;
+				alert(JSON.stringify(this.fEncodingFormats));
+				alert(JSON.stringify(aToken.encodingFormats));
+				alert(JSON.stringify(jws.tools.intersect(this.fEncodingFormats, aToken.encodingFormats)));
+				
+				this.fEncodingFormats = jws.tools.intersect(this.fEncodingFormats, aToken.encodingFormats);
 				
 				this.registerFilters();
 				this.notifyPlugInsOpened();
