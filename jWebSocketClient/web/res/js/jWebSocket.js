@@ -1332,6 +1332,9 @@ jws.tools = {
 	},
 	
 	zip: function(aString, aBase64Encode){
+		if (!JSZip){
+			throw new Error('JSZip library is missing. Class not found!')
+		}
 		var lBase64 = aBase64Encode || false;
 		var lJSZip = new JSZip();
 		lJSZip.file( "temp.zip", aString);
@@ -1341,6 +1344,9 @@ jws.tools = {
 	},
 	
 	unzip: function(aString, aBase64Decode){
+		if (!JSZip){
+			throw new Error('JSZip library is missing. Class not found!')
+		}
 		var lBase64 = aBase64Decode || false;
 		var lJSZip = new JSZip( aString, { base64: lBase64 });
 		var lFile = lJSZip.file( "temp.zip" );
@@ -2871,10 +2877,6 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			if ( aToken.type === "welcome") {
 				this.fClientId = aToken.sourceId;
 				this.fUsername = aToken.username;
-				alert(JSON.stringify(this.fEncodingFormats));
-				alert(JSON.stringify(aToken.encodingFormats));
-				alert(JSON.stringify(jws.tools.intersect(this.fEncodingFormats, aToken.encodingFormats)));
-				
 				this.fEncodingFormats = jws.tools.intersect(this.fEncodingFormats, aToken.encodingFormats);
 				
 				this.registerFilters();

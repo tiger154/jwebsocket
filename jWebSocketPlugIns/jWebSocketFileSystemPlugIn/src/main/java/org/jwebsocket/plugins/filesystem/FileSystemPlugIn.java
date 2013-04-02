@@ -23,7 +23,6 @@ import java.util.*;
 import java.util.concurrent.ThreadFactory;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -48,6 +47,7 @@ import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.MapAppender;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 
@@ -366,19 +366,16 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		String lEncoding = aToken.getString("encoding", "base64");
-		byte[] lBA = null;
-		try {
-			if ("base64".equals(lEncoding)) {
-				int lIdx = lData.indexOf(',');
-				if (lIdx >= 0) {
-					lData = lData.substring(lIdx + 1);
-				}
-				lBA = Base64.decodeBase64(lData);
-			} else {
-				lBA = lData.getBytes("UTF-8");
+		Boolean lEncode = aToken.getBoolean("encode", false);
+		byte[] lBA;
+		if (!lEncode && "base64".equals(lEncoding)) {
+			int lIdx = lData.indexOf(',');
+			if (lIdx >= 0) {
+				lData = lData.substring(lIdx + 1);
 			}
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "decoding file"));
+			lBA = Tools.base64Decode(lData);
+		} else {
+			lBA = lData.getBytes();
 		}
 
 		String lFullPath = lBaseDir + lFilename;
@@ -520,7 +517,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 			lBA = FileUtils.readFileToByteArray(lFile);
 			if (lBA != null && lBA.length > 0) {
-				lData = new String(Base64.encodeBase64(lBA), "UTF-8");
+				lData = new String(lBA);
 			}
 			lResponse.setString("data", lData);
 		} catch (Exception lEx) {
@@ -531,7 +528,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// send response to requester
-		lResponse.setBoolean("decode", aToken.getBoolean("decode", false));
+		String lEncoding = aToken.getString("encoding", "base64");
+		lResponse.setMap("enc", new MapAppender().append("data", lEncoding).getMap());
 		lResponse.setString("filename", lFilename);
 		lServer.sendToken(aConnector, lResponse);
 	}

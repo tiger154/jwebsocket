@@ -25,6 +25,7 @@ import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.logging.Logging;
@@ -88,7 +89,7 @@ public class SystemFilter extends TokenFilter {
 				String lFormat = lEnc.get(lAttr);
 				String lValue = aToken.getString(lAttr);
 
-				List lUserEncodingFormats = (List) aConnector.getVar("encodingFormats");
+				List lUserEncodingFormats = (List) aConnector.getVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
 				try {
 					if (!lUserEncodingFormats.contains(lFormat)) {
 						mLog.error("Invalid encoding format '" + lFormat + "' received. Message rejected!");
@@ -135,7 +136,7 @@ public class SystemFilter extends TokenFilter {
 				String lFormat = lEnc.get(lAttr);
 				String lValue = aToken.getString(lAttr);
 
-				List lUserEncodingFormats = (List) aTarget.getVar("encodingFormats");
+				List lUserEncodingFormats = (List) aTarget.getVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
 				try {
 					if (!lUserEncodingFormats.contains(lFormat)) {
 						mLog.error("Invalid encoding format '" + lFormat + "' received (not supported). Message rejected!");
