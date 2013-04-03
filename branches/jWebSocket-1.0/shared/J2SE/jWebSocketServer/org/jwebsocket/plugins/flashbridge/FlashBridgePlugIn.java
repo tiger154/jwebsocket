@@ -58,6 +58,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 	private BridgeProcess mBridgeProcess = null;
 	private Thread mBridgeThread = null;
 	private final static String PATH_TO_CROSSDOMAIN_XML = "crossdomain_xml";
+	private final static String PORT_CONFIGURATION = "port";
 	private static String mCrossDomainXML =
 			"<cross-domain-policy>"
 			+ "<allow-access-from domain=\"*\" to-ports=\"*\" />"
@@ -83,7 +84,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 			mBridgeThread = new Thread(mBridgeProcess);
 			mBridgeThread.start();
 			if (mLog.isInfoEnabled()) {
-				mLog.info("FlashBridge plug-in successfully instantiated.");
+				mLog.info("FlashBridge plug-in successfully instantiated and listening on port " + mListenerPort);
 			}
 		} catch (IOException lEx) {
 			mLog.error("FlashBridge could not be started: " + lEx.getMessage());
@@ -114,6 +115,19 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 			} catch (Exception lEx) {
 				mLog.error(lEx.getClass().getSimpleName()
 						+ " reading crossdomain.xml: " + lEx.getMessage());
+			}
+		}
+		String lPort = getString(PORT_CONFIGURATION);
+		if (lPort != null) {
+			try {
+				// Checking if there is any port defined in the configuration
+				Integer lInPort = Integer.parseInt(lPort.trim());
+				if (lInPort > 0) {
+					mListenerPort = lInPort;
+				}
+			} catch (Exception e) {
+				mLog.error("Port configuration error found while trying to parse "
+						+ lPort + ". Please check your Flashbridge port configuration section");
 			}
 		}
 	}
@@ -152,7 +166,6 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 	public String getNamespace() {
 		return NS_FLASH_BRIDGE;
 	}
-	
 
 	private class BridgeProcess implements Runnable {
 
