@@ -153,19 +153,13 @@ $.widget( "jws.viewer", {
 	},
 	playStream: function( aStream ) {
 		if ( aStream ) {
-			streams.push( w.viewer.unzipBase64( aStream ) );
+			streams.push( jws.tools.unzip( aStream, true ) );
 //			if ( !w.viewer.mLoaded ) {
 			w.viewer.eVideo.get( 0 ).src = streams[streams.length - 1];
 			w.viewer.eVideo.get( 0 ).play();
 			w.viewer.mLoaded = true;
 //			}
 		}
-	},
-	unzipBase64: function( aIn ) {
-		var lJSZip = new JSZip( aIn, { base64: true } );
-		var lFile = lJSZip.file( w.viewer.mFilename );
-		console.log(lJSZip.file( w.viewer.mFilename ).asBinary());
-		return lFile.asText();
 	},
 	updateUsers: function( aData ) {
 		aData = aData || { };

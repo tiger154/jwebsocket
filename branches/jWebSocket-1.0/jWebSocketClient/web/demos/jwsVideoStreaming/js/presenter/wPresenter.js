@@ -190,7 +190,7 @@ $.widget( "jws.vplayer", {
 			setInterval( function() {
 				videoRec.getStream( function( aBase64 ) {
 					w.vplayer.publish( w.vplayer.TT_VIDEO, {
-						stream: w.vplayer.zipBase64( aBase64 )
+						stream: jws.tools.zip( aBase64, true )
 					} );
 				} );
 			}, 1000 );
@@ -297,12 +297,6 @@ $.widget( "jws.vplayer", {
 	},
 	publish: function( aType, aData ) {
 		mWSC.channelPublish( w.vplayer.mChannelId, aType, aData );
-	},
-	zipBase64: function( aIn ) {
-		var lJSZip = new JSZip();
-		lJSZip.file( w.vplayer.mFilename, "" );
-		var lZipped = lJSZip.generate( { compression: "DEFLATE" } );
-		return lZipped;
 	},
 	isFullScreen: function() {
 		return  (document.fullScreen && document.fullScreen != null) ||
