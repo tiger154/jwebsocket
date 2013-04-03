@@ -1233,6 +1233,12 @@
 				<!-- if you remove this setting the plug-in uses an internal
 				     "allow all ports and domains" default crossdomain.xml -->
 				<setting key="crossdomain_xml">${JWEBSOCKET_HOME}conf/FlashPlugIn/crossdomain.xml</setting>
+				 <!-- Please don't change this configuration if not necessary -->
+				 <!-- In case that you are running the server from linux you will 
+				 need special privileges to use any port under 1024, for special 
+                 requirements in Linux OS, please refer to our Linux Tips page:
+				 http://jwebsocket.org/documentation/reference-guide/linux-tips. -->
+				<!--<setting key="port">8843</setting>-->
 			</settings>
 		</plugin>
 
