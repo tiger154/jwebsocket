@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC0 (build 30401)
+	//:const:*:VERSION:String:1.0 RC0 (build 30405)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC0 (build 30401)",
+	VERSION: "1.0 RC0 (build 30405)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -1128,14 +1128,21 @@ if (!('lastIndexOf' in Array.prototype)) {
 	//:a:en::aSearchElem:The string value to be converted to byte array
 	//:a:en::aFromIndex:The index at which to start searching backwards
 	//:r:*:::Number:The last index at which a given element can be found in the array
-	
-    Array.prototype.lastIndexOf = function(aSearchElem, aFromIndex /*opt*/) {
-        if (aFromIndex === undefined) aFromIndex = this.length - 1;
-        if (aFromIndex < 0) aFromIndex += this.length;
-        if (aFromIndex > this.length - 1) aFromIndex = this.length - 1;
-        for (aFromIndex++; aFromIndex --> 0;)
-            if (aFromIndex in this && this[aFromIndex] === aSearchElem)
+    Array.prototype.lastIndexOf = function( aSearchElem, aFromIndex /*opt*/ ) {
+        if( aFromIndex === undefined ) {
+			aFromIndex = this.length - 1;
+		}
+        if( aFromIndex < 0 ) {
+			aFromIndex += this.length;
+		}
+        if( aFromIndex > this.length - 1 ) {
+			aFromIndex = this.length - 1;
+		}
+        for( aFromIndex++; aFromIndex --> 0; ) {
+            if( aFromIndex in this && this[ aFromIndex ] === aSearchElem ) {
                 return aFromIndex;
+			}
+		}
         return -1;
     };
 }
@@ -1376,14 +1383,19 @@ jws.tools = {
 		return lFile.asBinary();
 	},
 	
-	intersect: function(aArray1, aArray2) {
+	intersect: function( aArray1, aArray2 ) {
 		var lResult = [];
-		for (var lIndex = 0; lIndex < aArray1.length; lIndex++){
-			if (-1 < aArray2.lastIndexOf(aArray1[lIndex])){
-				lResult.push(aArray1[lIndex]);
+		if( aArray1 && aArray2 ) {
+			for( var lIndex = 0; lIndex < aArray1.length; lIndex++ ){
+				if ( -1 < aArray2.lastIndexOf( aArray1[ lIndex ] ) ){
+					lResult.push( aArray1[ lIndex ] );
+				}
 			}
+		} else if( aArray1 ) {
+			lResult = aArray1;
+		} else if( aArray2 ) {
+			lResult = aArray2;
 		}
-		
 		return lResult;
 	},
 	
@@ -1861,7 +1873,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					}
 					
 					if( jws.console.isDebugEnabled() ) {
-						jws.console.debug("[onclose]: " + lPacket);
+						jws.console.debug( "[onmessage]: " + lPacket );
 					}
 					
 					// process the packet
@@ -1871,8 +1883,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 						// call filter chain
 						if( this.fFilters ) {
 							for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-								if ( typeof this.fFilters[ lIdx ]["filterStreamIn"] == "function" ){
-									this.fFilters[ lIdx ]["filterStreamIn"]( lValue );
+								if ( typeof this.fFilters[ lIdx ][ "filterStreamIn" ] == "function" ){
+									this.fFilters[ lIdx ][ "filterStreamIn" ]( lValue );
 								}
 							}
 						}
