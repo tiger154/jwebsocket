@@ -25,15 +25,15 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
 /**
- * The class implements the IChunkable interface to support the transmission of
- * data from a InputStream to the client
+ * The class implements the IChunkable interface to support the transmission of data from a
+ * InputStream to the client
  *
  * @author kyberneees, aschulze
  */
 public class ChunkableInputStream extends BaseChunkable {
 
 	private final InputStream mIS;
-	private boolean mZipCompression = false;
+	private String mEncodingFormat = "base64";
 
 	/**
 	 *
@@ -55,7 +55,17 @@ public class ChunkableInputStream extends BaseChunkable {
 	public ChunkableInputStream(String aNS, String aType, InputStream aIS, boolean aZipCompression) {
 		super(aNS, aType);
 		mIS = aIS;
-		mZipCompression = aZipCompression;
+
+		if (aZipCompression) {
+			mEncodingFormat = "zipBase64";
+		}
+	}
+
+	public ChunkableInputStream(String aNS, String aType, InputStream aIS, String aEncodingFormat) {
+		super(aNS, aType);
+		mIS = aIS;
+
+		mEncodingFormat = aEncodingFormat;
 	}
 
 	/**
@@ -88,16 +98,10 @@ public class ChunkableInputStream extends BaseChunkable {
 
 					byte[] lBA = new byte[lLength];
 					mIS.read(lBA, 0, lLength);
-					
-					String lData = new String(lBA);
-					
-					// supporting zip compression
-					if (mZipCompression) {
-						lChunk.setMap("enc", new MapAppender().append("data", "gzip").getMap());
-					} else {
-						lChunk.setMap("enc", new MapAppender().append("data", "base64").getMap());
-					}
 
+					String lData = new String(lBA);
+
+					lChunk.setMap("enc", new MapAppender().append("data", mEncodingFormat).getMap());
 					lChunk.setString("data", lData);
 
 					return lChunk;
