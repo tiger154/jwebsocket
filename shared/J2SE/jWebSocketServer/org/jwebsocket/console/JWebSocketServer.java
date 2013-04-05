@@ -32,7 +32,7 @@ public class JWebSocketServer {
 	 * @param aArgs the command line arguments
 	 */
 	public static void main(String[] aArgs) {
-		// the following line must not be removed due to GNU LGPL 3.0 license!
+		// the following line must not be removed due to Apache 2.0 license!
 		JWebSocketFactory.printCopyrightToConsole();
 
 		// check if home, config or bootstrap path are passed by command line

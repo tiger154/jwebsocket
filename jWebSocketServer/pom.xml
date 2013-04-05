@@ -272,12 +272,12 @@
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketCommon</artifactId>
-			<version>1.0</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketServerAPI</artifactId>
-			<version>1.0</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>

@@ -58,7 +58,7 @@ public class SampleFilter extends TokenFilter {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Checking incoming token from "
 					+ (aConnector != null ? aConnector.getId() : "[not given]")
-					+ ": " + aToken.toString() + "...");
+					+ ": " + Logging.getTokenStr(aToken) + "...");
 		}
 
 		TokenServer lServer = (TokenServer) getServer();
@@ -91,7 +91,7 @@ public class SampleFilter extends TokenFilter {
 					+ (aSource != null ? aSource.getId() : "[not given]")
 					+ " to "
 					+ (aTarget != null ? aTarget.getId() : "[not given]")
-					+ ": " + aToken.toString() + "...");
+					+ ": " + Logging.getTokenStr(aToken) + "...");
 		}
 	}
 }
