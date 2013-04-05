@@ -164,6 +164,7 @@ div#container{
 	height: 50px;
     float: right;
     padding-right: 10px;
+	width: 120px;
 }
 
 #user_info{
