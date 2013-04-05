@@ -24,7 +24,11 @@ $.widget("jws.log", {
 		if (w.log.logVisible) {
 			w.log.eBtnHide.attr("class", "show").text("Show Log");
 			w.log.eLog.slideUp(500, function( ) {
-				$(this).attr("class", "log_box_hidden").slideDown(100).hide( );
+				$(this).attr("class", "log_box_hidden");
+				$(this).css({
+					height: 5,
+					display: 'block'
+				})
 			});
 			w.log.logVisible = false;
 		}

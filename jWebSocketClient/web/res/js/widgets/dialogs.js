@@ -46,8 +46,8 @@
  * @param aWidth Optional, the width of the dialog window
  */
 function jwsDialog( aMessage, aTitle, aIsModal, aIconType, aCloseFunction, aMoreButtons, aWidth ) {
-	var lDialog = $(  "<div id='dialog'></div>"  ), 
-	lContentWidth = aIconType?"80%":"100%",
+	var lDialog = $(  "<div id='dialog'></div>"  ).css({overflow:'hidden'}), 
+	lContentWidth = aIconType?"80%":"99%",
 	lContent = $(  "<div><p>" + aMessage + "</p></div>"  ).css({
 		"width": lContentWidth,
 		"float": "left"
