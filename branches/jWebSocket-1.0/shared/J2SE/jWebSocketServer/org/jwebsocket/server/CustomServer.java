@@ -57,7 +57,11 @@ public class CustomServer extends BaseServer {
 	@Override
 	public void processPacket(WebSocketEngine aEngine, WebSocketConnector aConnector, WebSocketPacket aDataPacket) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing data packet '" + aDataPacket.getUTF8() + "'...");
+			// don't show the content of the data packet here, 
+			// potential plain passwords in log files may lead to security issues! 
+			// mLog.debug("Processing data packet '" + aDataPacket.getUTF8() + "'...");
+			mLog.debug("Processing data packet (content suppressed, length="
+					+ aDataPacket.size() + " bytes)...");
 		}
 		RequestHeader lHeader = aConnector.getHeader();
 		String lFormat = (lHeader != null ? lHeader.getFormat() : null);

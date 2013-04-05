@@ -553,7 +553,22 @@ public class MapToken extends BaseToken implements Token {
 	 */
 	@Override
 	public String getLogString() {
-		
-		return mData.toString();
+		StringBuilder lSB = new StringBuilder();
+		for (Object lEntry : mData.entrySet()) {
+			Map.Entry<String, Object> lFME = (Map.Entry) lEntry;
+			String lVal = getExclLogField(lFME.getKey());
+			lSB.append(lFME.getKey()).append("=");
+			if (null == lVal) {
+				lSB.append(lFME.getValue());
+			} else {
+				lSB.append(lVal);
+			}
+			lSB.append(", ");
+		}
+		int lLen = lSB.length();
+		if (lLen > 2) {
+			lSB.delete(lLen - 2, lLen);
+		}
+		return lSB.toString();
 	}
 }

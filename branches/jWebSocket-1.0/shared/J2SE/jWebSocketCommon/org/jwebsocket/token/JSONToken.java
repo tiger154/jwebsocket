@@ -537,6 +537,7 @@ public class JSONToken extends BaseToken implements Token {
 	 */
 	@Override
 	public String getLogString() {
+		// TODO: Filter suppressed fields for JSON Token implementation!
 		return mData.toString();
 	}
 }

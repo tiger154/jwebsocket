@@ -65,7 +65,7 @@ public class StatisticsFilter extends TokenFilter {
 					+ (aConnector != null
 					? aConnector.getId()
 					: "[not given]")
-					+ ": " + aToken.toString() + "...");
+					+ ": " + Logging.getTokenStr(aToken) + "...");
 		}
 
 		TokenServer lServer = (TokenServer) getServer();
@@ -96,7 +96,7 @@ public class StatisticsFilter extends TokenFilter {
 					? aSource.getId()
 					: "[not given]") + " to "
 					+ (aTarget != null ? aTarget.getId() : "[not given]")
-					+ ": " + aToken.toString() + "...");
+					+ ": " + Logging.getTokenStr(aToken.getLogString()) + "...");
 		}
 	}
 }

@@ -75,7 +75,7 @@ public class JWebSocketFactory {
 	 *
 	 */
 	public static void printCopyrightToConsole() {
-		// the following 3 lines must not be removed due to GNU LGPL 3.0 license!
+		// the following 3 lines must not be removed due to Apache 2.0 license!
 		System.out.println("jWebSocket Ver. "
 				+ JWebSocketServerConstants.VERSION_STR
 				+ " (" + System.getProperty("sun.arch.data.model") + "bit)");

@@ -72,7 +72,7 @@ public class SystemFilter extends TokenFilter {
 	@Override
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		if (mLog.isDebugEnabled()) {
-			String lOut = aToken.toString();
+			String lOut = aToken.getLogString();
 			mLog.debug("Filtering incoming token from "
 					+ (aConnector != null ? aConnector.getId() : "[not given]")
 					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut) + "...");
@@ -118,7 +118,7 @@ public class SystemFilter extends TokenFilter {
 	@Override
 	public void processTokenOut(FilterResponse aResponse, WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
 		if (mLog.isDebugEnabled()) {
-			String lOut = aToken.toString();
+			String lOut = aToken.getLogString();
 			mLog.debug("Filtering outgoing token from "
 					+ (aSource != null ? aSource.getId() : "[not given]")
 					+ " to " + (aTarget != null ? aTarget.getId() : "[not given]")

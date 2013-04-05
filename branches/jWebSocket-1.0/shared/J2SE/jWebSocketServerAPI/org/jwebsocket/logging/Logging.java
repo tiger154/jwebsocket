@@ -183,7 +183,7 @@ public class Logging {
 	public static String getTokenStr(Token aToken) {
 		String lToken;
 		if (null != aToken) {
-			lToken = getTokenStr(aToken.toString());
+			lToken = getTokenStr(aToken.getLogString());
 		} else {
 			lToken = "null";
 		}

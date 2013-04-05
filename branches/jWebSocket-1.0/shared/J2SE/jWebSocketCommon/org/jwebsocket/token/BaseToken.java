@@ -20,6 +20,7 @@ package org.jwebsocket.token;
 
 import java.util.List;
 import java.util.Map;
+import javolution.util.FastMap;
 
 /**
  *
@@ -47,6 +48,12 @@ public abstract class BaseToken implements Token {
 	 *
 	 */
 	public static final String CODE = "code";
+	private static FastMap<String, String> mExclFromLogs = null;
+
+	static {
+		mExclFromLogs = new FastMap<String, String>();
+		mExclFromLogs.put("password", "*******");
+	}
 
 	@Override
 	public Integer getCode() {
@@ -158,5 +165,9 @@ public abstract class BaseToken implements Token {
 	@Override
 	public final void setNS(String aNS) {
 		setString("ns", aNS);
+	}
+
+	public String getExclLogField(String aKey) {
+		return mExclFromLogs.get(aKey);
 	}
 }
