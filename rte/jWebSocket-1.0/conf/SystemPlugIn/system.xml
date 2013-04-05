@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
+<beans>
 
 	<!-- ####### STATIC authentication ####### -->
 	
@@ -37,10 +35,10 @@
 	<!-- http://www.springsource.com/files/AdvancedSpringSecurity_handout.pdf -->
 
 	<!-- for LDAP see: 
-		http://static.springsource.org/spring-security/site/docs/3.0.x/reference/ldap.html -->
+	http://static.springsource.org/spring-security/site/docs/3.0.x/reference/ldap.html -->
 	<!-- hints for AD:
-		http://www.coderanch.com/t/525031/Spring/Spring-LDAP-Active-Directory-Security
-		http://www.opennms.org/wiki/Spring_Security_and_LDAP -->
+	http://www.coderanch.com/t/525031/Spring/Spring-LDAP-Active-Directory-Security
+	http://www.opennms.org/wiki/Spring_Security_and_LDAP -->
 		
 	<!-- this specifies the user to auth against the directory service -->
 	<bean id="ldapContext" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
@@ -183,8 +181,8 @@
 			<list>
 				<!-- Select here the authentication provider -->
 				<!-- <ref local="ldapAuthProvider"/> -->
-				<ref local="jdbcAuthProvider"/>
-				<!-- <ref local="staticAuthProvider"/> -->
+				<!--<ref local="jdbcAuthProvider"/> -->
+				<ref local="staticAuthProvider"/>
 			</list>
 		</property>
 	</bean>
