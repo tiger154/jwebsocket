@@ -1356,8 +1356,9 @@ jws.tools = {
 	
 	intersect: function(aArray1, aArray2) {
 		var lResult = [];
+		var lArray2 = aArray2.toString();
 		for (var lIndex = 0; lIndex < aArray1.length; lIndex++){
-			if (-1 < aArray2.lastIndexOf(aArray1[lIndex])){
+			if (-1 < lArray2.lastIndexOf(aArray1[lIndex])){
 				lResult.push(aArray1[lIndex]);
 			}
 		}
