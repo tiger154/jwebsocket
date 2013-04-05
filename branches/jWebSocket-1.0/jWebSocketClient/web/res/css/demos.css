@@ -22,7 +22,7 @@
     Description: This is the main Stylesheet for all jWebSocket Demos
 */
 #demo_box, #functional_box_content, 
-#message_box, textarea{
+#message_box{
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
     border-radius: 6px;
@@ -214,7 +214,7 @@ input[type=password]:focus, textarea:focus{
     outline: none;
 }
 
-#demo_box_header_login input[type=text], #demo_box_header_login input[type=password], textarea{
+#demo_box_header_login input[type=text], #demo_box_header_login input[type=password]{
     width: 95px;
     padding-left: 5px;
 }
@@ -237,7 +237,7 @@ textarea{
     font-family: "Verdana";
     min-width: 422px;
     background: #ffffff;
-    margin-left: 300px;
+    /*margin-left: 300px;*/
     padding-left: 4px;
     margin-right: 12px;
     border: 1px solid #C8C8C8;
@@ -379,13 +379,16 @@ textarea{
 
 .log_box_hidden{
     height: 2px;
+	max-height: 2px;
     padding:0px 5px 0 5px !important;
-    background: white;
+    /*background: white;*/
 	overflow: hidden !important;
 }
 
 .log_box_visible{
     height: 200px;
+	max-height: 200px;
+	min-height: 200px;
 	overflow: auto !important;
 }
 /*----------------- DEMO_LOG_BOX -------------*/
