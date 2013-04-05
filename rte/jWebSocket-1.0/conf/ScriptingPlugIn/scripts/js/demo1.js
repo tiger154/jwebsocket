@@ -1,7 +1,7 @@
 
 function getScriptingPlugInInfo() {
 	var lInfo = {
-		version: 
+		version: "1.0"
 	};
 	return lInfo;
 }
