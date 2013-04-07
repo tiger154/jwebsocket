@@ -18,10 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.sms;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Collection;
-import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -35,7 +31,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  *
- * @author mayra
+ * @author mayra, aschulze
  */
 public class SMSPlugIn extends TokenPlugIn {
 
@@ -48,8 +44,6 @@ public class SMSPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket SMSPlugIn - Community Edition";
-	private static Collection<WebSocketConnector> mClients =
-			new FastList<WebSocketConnector>().shared();
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 	private ISMSProvider mProvider;
@@ -124,33 +118,51 @@ public class SMSPlugIn extends TokenPlugIn {
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		if (aToken.getNS().equals(getNamespace())) {
-			if (aToken.getType().equals("sms")) {
+			if (aToken.getType().equals("sendSMS")) {
 				try {
-					sendSms(aConnector, aToken);
+					sendSMS(aConnector, aToken);
 				} catch (Exception ex) {
 					mLog.error(ex.getClass().getSimpleName() + ": " + ex.getMessage());
 				}
 			}
-
-//			if (aToken.getType().equals("smsList")) {
-//				mClients.remove(aConnector);
-//			}
 		}
+	}
+
+	@Override
+	public Token invoke(WebSocketConnector aConnector, Token aToken) {
+		String lType = aToken.getType();
+		String lNS = aToken.getNS();
+
+		if (lType != null && getNamespace().equals(lNS)) {
+			if (lType.equals("sendSMS")) {
+				return send(aConnector, aToken);
+			}
+		}
+		return null;
 	}
 
 	/**
 	 *
 	 * @param aConnector
 	 * @param aToken
-	 * @throws MalformedURLException
-	 * @throws IOException
+	 * @return
 	 */
-	public void sendSms(WebSocketConnector aConnector, Token aToken) throws MalformedURLException, IOException {
+	private Token send(WebSocketConnector aConnector, Token aToken) {
 		Token lRes = mProvider.sendSms(aToken);
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Provider returned: " + lRes.toString());
 		}
 		getServer().setResponseFields(aToken, lRes);
+		return lRes;
+	}
+
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
+	private void sendSMS(WebSocketConnector aConnector, Token aToken) {
+		Token lRes = send(aConnector, aToken);
 		sendToken(aConnector, aConnector, lRes);
 	}
 }

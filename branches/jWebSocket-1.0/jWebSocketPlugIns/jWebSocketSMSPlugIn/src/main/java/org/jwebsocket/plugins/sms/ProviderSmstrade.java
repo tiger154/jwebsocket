@@ -135,7 +135,7 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 		// validate target phone number
 		lTo = trimPhoneNumber(lTo);
 
-		URL lURL = null;
+		URL lURL;
 		URLConnection lConn = null;
 
 		BufferedReader lReader = null;

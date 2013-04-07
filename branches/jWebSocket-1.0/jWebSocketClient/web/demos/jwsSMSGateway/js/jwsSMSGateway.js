@@ -1,24 +1,29 @@
-//	****************************************************************************
-//	jWebSocket Hello World ( uses jWebSocket Client and Server )
-//	( C ) 2010 Alexander Schulze, jWebSocket.org, Innotrade GmbH, Herzogenrath
-//	****************************************************************************
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or ( at your
-//	option ) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
-//	****************************************************************************
+//	---------------------------------------------------------------------------
+//	jWebSocket SMS Gateway (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 
 /*
  * @author mayra, vbarzana, aschulze
  */
-$.widget("jws.SMSGateway", {
+$.widget( "jws.SMSGateway", {
+	
 	_init: function() {
+		
 		NS_SMS = jws.NS_BASE + ".plugins.sms";
 		NS_JCAPTCHA = jws.NS_BASE + ".plugins.jcaptcha";
 
@@ -51,23 +56,28 @@ $.widget("jws.SMSGateway", {
 		w.SMSGateway.doWebSocketConnection();
 		w.SMSGateway.registerEvents();
 	},
+			
 	doWebSocketConnection: function( ) {
 		// Each demo will configure its own callbacks to be passed to the login widget
 		// Default callbacks { OnOpen | OnClose | OnMessage | OnWelcome | OnGoodBye}
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
+			
 			OnWelcome: function(aEvent) {
 				// Ask for a new captcha image
 				w.SMSGateway.getCaptcha();
 			},
+					
 			OnClose: function(aEvent) {
 				w.SMSGateway.eImg.attr("src", "css/images/blank.png");
 			}
 		};
 
-		$("#demo_box").auth(lCallbacks);
+		$("#demo_b\n\ox").auth(lCallbacks);
 	},
+			
 	getCaptcha: function() {
+
 		var lToken = {
 			ns: NS_JCAPTCHA,
 			type: "getcaptcha",
@@ -83,25 +93,33 @@ $.widget("jws.SMSGateway", {
 				w.SMSGateway.eTextCaptcha.focus( );
 			}
 		};
+		
 		mWSC.sendToken(lToken, lCallbacks);
 	},
+			
 	registerEvents: function() {
+
 		w.SMSGateway.eBtnUpdate.click(function() {
 			w.SMSGateway.getCaptcha();
 		});
+		
 		w.SMSGateway.eTextCaptcha.bind({
+			
 			'click | focus': function( ) {
 				if ($(this).val() === w.SMSGateway.mTXT_CAPTCHA) {
 					$(this).val("");
 				}
 			},
+					
 			blur: function( ) {
 				if ($(this).val() === "") {
 					$(this).val(w.SMSGateway.mTXT_CAPTCHA);
 				}
 			}
 		});
+		
 		w.SMSGateway.eBtnSend.click(function() {
+			
 			var lToken = {
 				ns: NS_JCAPTCHA,
 				type: "validate",
@@ -109,14 +127,16 @@ $.widget("jws.SMSGateway", {
 			};
 
 			var lOptions = {
+				
 				args: {
 					inputChars: w.SMSGateway.eTextCaptcha.val()
 				},
+				
 				OnSuccess: function(aToken) {
 					log("Success in the captcha validation...");
 					var lSMSToken = {
 						ns: NS_SMS,
-						type: "sms",
+						type: "sendSMS",
 						to: w.SMSGateway.ePhoneNumber.val(),
 						from: w.SMSGateway.eInputFrom.val(),
 						message: w.SMSGateway.eInputSMS.val(),
@@ -135,6 +155,7 @@ $.widget("jws.SMSGateway", {
 					};
 					mWSC.sendToken(lSMSToken, lCallbacks);
 				},
+						
 				OnFailure: function(aToken) {
 					$("#imgCaptcha").effect("shake", {
 						times: 3
@@ -158,6 +179,7 @@ $.widget("jws.SMSGateway", {
 		w.SMSGateway.eInputSMS.keydown(w.SMSGateway.updateCounter);
 		w.SMSGateway.eInputSMS.keyup(w.SMSGateway.updateCounter);
 	},
+	
 	countCharacters: function( ) {
 		var lCount = w.SMSGateway.eInputSMS.val().length;
 		w.SMSGateway.mCount = lCount;
@@ -165,6 +187,7 @@ $.widget("jws.SMSGateway", {
 		// Update the counter
 		w.SMSGateway.eCCounter.text(lValue > 0 ? lValue : 0);
 	},
+			
 	// Updates the counter when a key is pressed
 	updateCounter: function(aEvent) {
 		w.SMSGateway.countCharacters();
