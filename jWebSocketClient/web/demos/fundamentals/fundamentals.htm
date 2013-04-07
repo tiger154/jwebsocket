@@ -326,6 +326,16 @@
 				log( lRes.msg );
 			}
 
+			function test() {
+				// use this for your individual test purposes
+				/*
+				var lToken = {
+				};
+				lWSC.sendToken( lToken );
+				*/
+				log( "Currently no custom specific tests assigned." );
+			}
+
 			function initPage() {
 				eLog = jws.$( "sdivLog" );
 				eReconnect = jws.$( "schkReconnect" );
@@ -439,7 +449,8 @@
 						&nbsp;
 					</td>
 					<td class="stdDlg" width="5">
-						&nbsp;
+						<input class="sbtnDlg" id="sbtnTest" type="button" value="Test" onclick="test();"
+							   title="This starts a custome specific test method.">
 					</td>
 				</tr>
 			</table>
