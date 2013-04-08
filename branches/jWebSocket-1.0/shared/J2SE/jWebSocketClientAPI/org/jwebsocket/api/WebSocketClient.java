@@ -24,19 +24,16 @@ import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.kit.WebSocketSubProtocol;
 
 /**
- * Base interface that represents the <tt>jWebSocket</tt> java client and it
- * defines all the methods and operations to allow the implementation of
- * jWebSocket specific client protocols and allows to register/deregister
- * different types of listeners for different types of communication and data
- * format.The implementation of this interface handles all the data formats and
- * client protocols and delegates the events and the data to different listeners
- * for further processing.
+ * Base interface that represents the <tt>jWebSocket</tt> java client and it defines all the methods
+ * and operations to allow the implementation of jWebSocket specific client protocols and allows to
+ * register/deregister different types of listeners for different types of communication and data
+ * format.The implementation of this interface handles all the data formats and client protocols and
+ * delegates the events and the data to different listeners for further processing.
  *
  * @author aschulze
  * @author puran
  * @author kyberneees
- * @version $Id: WebSocketClient.java 701 2010-07-18 17:53:06Z
- * mailtopuran@gmail.com $
+ * @version $Id: WebSocketClient.java 701 2010-07-18 17:53:06Z mailtopuran@gmail.com $
  */
 public interface WebSocketClient {
 
@@ -47,6 +44,27 @@ public interface WebSocketClient {
 	 * @throws WebSocketException if therre's an
 	 */
 	void open(String aURL) throws WebSocketException;
+
+	/**
+	 * Adds a new filter
+	 *
+	 * @param aFilter
+	 */
+	void addFilter(WebSocketClientFilter aFilter);
+
+	/**
+	 * Removes a filter
+	 *
+	 * @param aFilter
+	 */
+	void removeFilter(WebSocketClientFilter aFilter);
+
+	/**
+	 * Returns the registered client filters
+	 *
+	 * @return
+	 */
+	List<WebSocketClientFilter> getFilters();
 
 	/**
 	 * Send the given byte data to the server
@@ -61,8 +79,7 @@ public interface WebSocketClient {
 	 *
 	 * @param aData the data to send
 	 * @param aEncoding the encoding type
-	 * @throws WebSocketException if there's any exception while sending the
-	 * data
+	 * @throws WebSocketException if there's any exception while sending the data
 	 */
 	void send(String aData, String aEncoding) throws WebSocketException;
 
@@ -75,20 +92,18 @@ public interface WebSocketClient {
 	void send(WebSocketPacket aPacket) throws WebSocketException;
 
 	/**
-	 * Close the jWebSocket connection. This method should perform all the
-	 * cleanup operation to release the jWebSocket resources. Closing and
-	 * connection which is already closed should not lead to any error.
+	 * Close the jWebSocket connection. This method should perform all the cleanup operation to
+	 * release the jWebSocket resources. Closing and connection which is already closed should not
+	 * lead to any error.
 	 *
 	 * @throws WebSocketException if exception while close operation
 	 */
 	void close() throws WebSocketException;
 
 	/**
-	 * Method to check if the jWebSocketClient is still connected to the
-	 * jWebSocketServer
+	 * Method to check if the jWebSocketClient is still connected to the jWebSocketServer
 	 *
-	 * @return {@code true} if there's a persistent connection {@code false}
-	 * otherwise
+	 * @return {@code true} if there's a persistent connection {@code false} otherwise
 	 */
 	boolean isConnected();
 
@@ -100,16 +115,16 @@ public interface WebSocketClient {
 	WebSocketStatus getStatus();
 
 	/**
-	 * Notifies the <tt>jWebSocket</tt> client implementation about the
-	 * connection being opened to the jWebSocket server via <tt>WebSocket</tt>
+	 * Notifies the <tt>jWebSocket</tt> client implementation about the connection being opened to
+	 * the jWebSocket server via <tt>WebSocket</tt>
 	 *
 	 * @param aEvent the websocket client event object
 	 */
 	void notifyOpened(WebSocketClientEvent aEvent);
 
 	/**
-	 * Notifies the <tt>jWebSocket</tt> client implementation about the packet
-	 * being received from the <tt>WebSocket</tt> client.
+	 * Notifies the <tt>jWebSocket</tt> client implementation about the packet being received from
+	 * the <tt>WebSocket</tt> client.
 	 *
 	 * @param aEvent the websocket client event object
 	 * @param aPacket the data packet received
@@ -117,34 +132,32 @@ public interface WebSocketClient {
 	void notifyPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket);
 
 	/**
-	 * Notifies the <tt>jWebSocket</tt> client implementation about the
-	 * connection being closed
+	 * Notifies the <tt>jWebSocket</tt> client implementation about the connection being closed
 	 *
 	 * @param aEvent the websocket client event object
 	 */
 	void notifyClosed(WebSocketClientEvent aEvent);
 
 	/**
-	 * Notifies the <tt>jWebSocket</tt> client implementation about the
-	 * connection being re-established
+	 * Notifies the <tt>jWebSocket</tt> client implementation about the connection being
+	 * re-established
 	 *
 	 * @param aEvent the websocket client event object
 	 */
 	void notifyReconnecting(WebSocketClientEvent aEvent);
 
 	/**
-	 * Adds the client listener to the lists of listener which are interested in
-	 * receiving the <tt>jWebSocket</tt> connection and data events. Listeners
-	 * are good way to handle all the <tt>jWebSocket</tt> specific protocol and
-	 * data format
+	 * Adds the client listener to the lists of listener which are interested in receiving the
+	 * <tt>jWebSocket</tt> connection and data events. Listeners are good way to handle all the
+	 * <tt>jWebSocket</tt> specific protocol and data format
 	 *
 	 * @param aListener the event listener object
 	 */
 	void addListener(WebSocketClientListener aListener);
 
 	/**
-	 * Remove the listener from the list of listeners, once the listener is
-	 * removed it won't be notified of any <tt>jWebSocket</tt> events.
+	 * Remove the listener from the list of listeners, once the listener is removed it won't be
+	 * notified of any <tt>jWebSocket</tt> events.
 	 *
 	 * @param aListener the listener object to remove
 	 */
@@ -158,56 +171,51 @@ public interface WebSocketClient {
 	List<WebSocketClientListener> getListeners();
 
 	/**
-	 * Adds subprotocol to the list of supported protocols which are negotiated
-	 * during handshake with web socket server.
+	 * Adds subprotocol to the list of supported protocols which are negotiated during handshake
+	 * with web socket server.
 	 *
 	 * @param aSubProt sub protocol
 	 */
 	void addSubProtocol(WebSocketSubProtocol aSubProt);
 
 	/**
-	 * If subprotocol was negotiated, then this method returns sub protocol
-	 * name.
+	 * If subprotocol was negotiated, then this method returns sub protocol name.
 	 *
 	 * @return name of the subprotocol or null if no subprotocol was negotiated
 	 */
 	String getNegotiatedSubProtocol();
 
 	/**
-	 * If subprotocol was negotiated, then this method returns sub protocol
-	 * format (json, csv, binary, custom)
+	 * If subprotocol was negotiated, then this method returns sub protocol format (json, csv,
+	 * binary, custom)
 	 *
-	 * @return format of the subprotocol or null if no subprotocol was
-	 * negotiated
+	 * @return format of the subprotocol or null if no subprotocol was negotiated
 	 */
 	WebSocketEncoding getNegotiatedEncoding();
 
 	/**
-	 * Web socket protocol draft. Specification recommends using only draft
-	 * number in relevant header, but anything may be used as long as server
-	 * understands it. JWebSocket adheres to the specification and therefore
-	 * understands only draft number as valid value, e.g. "Sec-WebSocket-Draft:
-	 * 3". Anything else will probably fail on server side.
+	 * Web socket protocol draft. Specification recommends using only draft number in relevant
+	 * header, but anything may be used as long as server understands it. JWebSocket adheres to the
+	 * specification and therefore understands only draft number as valid value, e.g.
+	 * "Sec-WebSocket-Draft: 3". Anything else will probably fail on server side.
 	 *
 	 * @param aVersion which draft to use for web socket protocol communication
 	 */
 	void setVersion(int aVersion);
 
 	/**
-	 * The "max frame size" variable indicates the "maximum packet size"
-	 * supported by a client. The clients are able to choose the variable
-	 * according to their scenarios. The client value is transmitted in the
-	 * connection handshake. If the value exceeds the engine max frame size
-	 * value, then the client value is ignored. The server transmit the selected
-	 * value in the welcome message.
+	 * The "max frame size" variable indicates the "maximum packet size" supported by a client. The
+	 * clients are able to choose the variable according to their scenarios. The client value is
+	 * transmitted in the connection handshake. If the value exceeds the engine max frame size
+	 * value, then the client value is ignored. The server transmit the selected value in the
+	 * welcome message.
 	 *
 	 * @return The connector specific max frame size
 	 */
 	Integer getMaxFrameSize();
 
 	/**
-	 * Send a fragmented data packet to the server and control the delivery by
-	 * using a listener.
+	 * Send a fragmented data packet to the server and control the delivery by using a listener.
 	 *
 	 * @param aDataPacket
 	 * @param aFragmentSize
@@ -217,8 +225,7 @@ public interface WebSocketClient {
 			Integer aFragmentSize, IPacketDeliveryListener aListener);
 
 	/**
-	 * Send a fragmented data packet to the server and control the delivery by
-	 * using a listener.
+	 * Send a fragmented data packet to the server and control the delivery by using a listener.
 	 *
 	 * @param aDataPacket
 	 * @param aListener

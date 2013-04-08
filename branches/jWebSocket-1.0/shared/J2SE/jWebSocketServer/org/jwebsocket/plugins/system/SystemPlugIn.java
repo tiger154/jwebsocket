@@ -51,6 +51,7 @@ import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Fragmentation;
+import org.jwebsocket.util.MapAppender;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -263,9 +264,8 @@ public class SystemPlugIn extends TokenPlugIn {
 	public void processToken(PlugInResponse aResponse,
 			WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
-		String lNS = aToken.getNS();
 
-		if (lType != null && getNamespace().equals(lNS)) {
+		if (lType != null) {
 			if (lType.equals(TT_SEND)) {
 				send(aConnector, aToken);
 			} else if (lType.equals(TT_RESPOND)) {

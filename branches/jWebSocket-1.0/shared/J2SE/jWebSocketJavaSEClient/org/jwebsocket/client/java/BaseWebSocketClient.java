@@ -43,9 +43,9 @@ import org.jwebsocket.util.HttpCookie;
 import org.jwebsocket.util.Tools;
 
 /**
- * Base {@code WebSocket} implementation based on
- * http://weberknecht.googlecode.com by Roderick Baier. This uses thread model
- * for handling WebSocket connection which is defined by the <tt>WebSocket</tt>
+ * Base {@code WebSocket} implementation based on http://weberknecht.googlecode.com by Roderick
+ * Baier. This uses thread model for handling WebSocket connection which is defined by the
+ * <tt>WebSocket</tt>
  * protocol specification. {@linkplain http://www.whatwg.org/specs/web-socket-protocol/}
  * {@linkplain http://www.w3.org/TR/websockets/}
  *
@@ -64,9 +64,13 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 */
 	private URI mURI = null;
 	/**
-	 * list of the listeners registered
+	 * list of the registered listeners
 	 */
 	private List<WebSocketClientListener> mListeners = new FastList<WebSocketClientListener>();
+	/**
+	 * list of the registered filters
+	 */
+	private List<WebSocketClientFilter> mFilters = new FastList<WebSocketClientFilter>();
 	/**
 	 * TCP socket
 	 */
@@ -81,7 +85,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 */
 	private WebSocketReceiver mReceiver = null;
 	/**
-	 * represents the WebSocket status
+	 * represents the WebSocket status 
 	 */
 	protected volatile WebSocketStatus mStatus = WebSocketStatus.CLOSED;
 	private List<WebSocketSubProtocol> mSubprotocols;
@@ -89,6 +93,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	/**
 	 *
 	 */
+	public static String EVENT_OPENING = "opening";
 	public static String EVENT_OPEN = "open";
 	/**
 	 *
@@ -153,6 +158,21 @@ public class BaseWebSocketClient implements WebSocketClient {
 		return mMaxFrameSize;
 	}
 
+	@Override
+	public void addFilter(WebSocketClientFilter aFilter) {
+		mFilters.add(aFilter);
+	}
+
+	@Override
+	public void removeFilter(WebSocketClientFilter aFilter) {
+		mFilters.add(aFilter);
+	}
+
+	@Override
+	public List<WebSocketClientFilter> getFilters() {
+		return Collections.unmodifiableList(mFilters);
+	}
+
 	/**
 	 * Constructor including reliability options
 	 */
@@ -203,8 +223,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 	}
 
 	/**
-	 * Make a sub protocol string for Sec-WebSocket-Protocol header. The result
-	 * is something like this:
+	 * Make a sub protocol string for Sec-WebSocket-Protocol header. The result is something like
+	 * this:
 	 * <pre>
 	 * org.jwebsocket.json org.websocket.text org.jwebsocket.binary
 	 * </pre>
@@ -301,7 +321,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			}
 
 			// parse negotiated sub protocol
-			String lProtocol = (String)mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
+			String lProtocol = (String) mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
 			if (lProtocol != null) {
 				mNegotiatedSubProtocol = new WebSocketSubProtocol(lProtocol, mEncoding);
 			} else {
@@ -316,6 +336,23 @@ public class BaseWebSocketClient implements WebSocketClient {
 			mReceiver.start();
 			// now set official status, may listeners ask for that
 			mStatus = WebSocketStatus.OPEN;
+
+			// notifying logic "opening" listeners notification
+			// we consider that a client has finally openned when 
+			// the "max frame size" handshake has completed 
+			final WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_OPENING, null);
+			for (final WebSocketClientListener lListener : getListeners()) {
+				mListenersExecutor.submit(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							lListener.processOpening(lEvent);
+						} catch (Exception lEx) {
+							// nothing, soppose to be catched internally
+						}
+					}
+				});
+			}
 
 			// reset close reason to be specified by next reason
 			mCloseReason = null;
@@ -389,11 +426,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 							System.currentTimeMillis(),
 							lFragmentationId,
 							new InFragmentationListenerSender() {
-								@Override
-								public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
-									lSender.sendPacketInTransaction(aDataPacket, aListener);
-								}
-							}));
+						@Override
+						public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+							lSender.sendPacketInTransaction(aDataPacket, aListener);
+						}
+					}));
 					return;
 				}
 
@@ -494,6 +531,14 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 */
 	@Override
 	public void send(WebSocketPacket aDataPacket) throws WebSocketException {
+		try {
+			for (WebSocketClientFilter lFilter : mFilters) {
+				lFilter.filterPacketOut(aDataPacket);
+			}
+		} catch (Exception lEx) {
+			throw new WebSocketException("Outbound filtering process exception!", lEx);
+		}
+
 		synchronized (mWriteLock) {
 			if (isHixie()) {
 				sendInternal(aDataPacket.getByteArray());
@@ -738,7 +783,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 					}
 				}
 			});
-
 		}
 	}
 
@@ -755,7 +799,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 				mMaxFrameSize = Integer.parseInt(lData.substring(Fragmentation.ARG_MAX_FRAME_SIZE.length()));
 
 				// The end of the "max frame size" handshake indicates that the connection is finally opened
-				WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_OPEN, "");
+				WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_OPEN, null);
+
 				// notify listeners that client has opened.
 				notifyOpened(lEvent);
 
@@ -825,6 +870,14 @@ public class BaseWebSocketClient implements WebSocketClient {
 
 			// getting the complete packet content
 			aPacket.setString(mFragments.remove(Fragmentation.PACKET_FRAGMENT_PREFIX + lKey) + lFragmentContent);
+		}
+
+		try {
+			for (WebSocketClientFilter lFilter : mFilters) {
+				lFilter.filterPacketIn(aPacket);
+			}
+		} catch (Exception lEx) {
+			return;
 		}
 
 		// finally notify the listeners
