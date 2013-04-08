@@ -136,7 +136,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 		mCollectionProvider = (IItemCollectionProvider) mBeanFactory.getBean("collectionProvider");
 		mLogsManager = new BaseLogsManager();
 		mItemFactory = mCollectionProvider.getItemStorageProvider().getItemFactory();
-
+		
 		// registering extension listeners
 		mBeanFactory.getBean(ListenersRegistrator.class).registerAll();
 

@@ -210,7 +210,7 @@ public class ScriptingPlugIn extends TokenPlugIn {
 			mJavaScript.put("server", this);
 			lScript = (Invocable) mJavaScript;
 			Object lRes = lScript.invokeFunction(lFunction, lArgs.toArray());
-			lResponse.setString("result", lRes.toString());
+			lResponse.getMap().put("result", lRes);
 			if (mLog.isInfoEnabled()) {
 				mLog.info("Parsing successful.");
 			}
@@ -251,6 +251,7 @@ public class ScriptingPlugIn extends TokenPlugIn {
 				+ "var a = org.jwebsocket.plugins.scripting.ScriptingPlugIn.getScriptingPlugInInfo();"
 				+ "return a;"
 				+ "}";
+		
 		if (null == lFunction) {
 			lMsg = "No function passed in scripting call.";
 			if (mLog.isDebugEnabled()) {
