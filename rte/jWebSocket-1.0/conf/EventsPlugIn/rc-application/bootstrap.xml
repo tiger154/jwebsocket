@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
-
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
+<beans>
 	<!--  Event Definitions-->
 	<import resource="event_definitions.xml" />
 	<import resource="filters.xml" />
@@ -13,7 +10,7 @@
 	<!-- Core -->
 	<!-- Core -->
 	<bean id="EventModel" class="org.jwebsocket.eventmodel.core.EventModel"
-		  init-method="initialize" destroy-method="shutdown" scope="singleton">
+		  init-method="initialize" destroy-method="shutdown">
 	
 		<!--  Application namespace -->
 		<constructor-arg index="0" value="test"/>
@@ -49,11 +46,11 @@
 	
 	<!-- Global exception handler for uncaught exceptions -->
 	<bean id="ExceptionHandler" class="org.jwebsocket.eventmodel.exception.ExceptionHandler"
-			  scope="singleton" init-method="initialize" destroy-method="shutdown" />
+			  init-method="initialize" destroy-method="shutdown" />
 	
 	<!-- WebSocket events factory-->
 	<bean id="EventFactory" class="org.jwebsocket.eventmodel.factory.EventFactory"
-			  scope="singleton" depends-on="EventDefinitionManager">
+			  depends-on="EventDefinitionManager">
 		<property name="eventDefinitions" ref="EventDefinitionManager" />
 	</bean>
 	
@@ -76,7 +73,7 @@
 	
 	<!-- S2CEventNotificationHandler-->
 	<bean id="S2CEventNotificationHandler" class="org.jwebsocket.eventmodel.s2c.S2CEventNotificationHandler"
-		destroy-method="shutdown" scope="singleton">
+		destroy-method="shutdown">
 		<property name="typesMap" ref="TypesMap" />
 	</bean>
 

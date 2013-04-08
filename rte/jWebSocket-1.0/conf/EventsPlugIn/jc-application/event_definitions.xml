@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
+<beans>
   
 	<!-- Event Definitions-->
 	<bean id="AbstractEventDefinition" abstract="true" class="org.jwebsocket.eventmodel.event.C2SEventDefinition"
-		init-method="initialize" destroy-method="shutdown" scope="singleton">
+		init-method="initialize" destroy-method="shutdown">
 	</bean>
 	
 	<bean id="EventDefinitionManager" class="org.jwebsocket.eventmodel.event.C2SEventDefinitionManager"
-	init-method="initialize" scope="singleton">
+	init-method="initialize">
 		<property name="definitions">
 			<set>
 				<bean parent="AbstractEventDefinition">
