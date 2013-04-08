@@ -51,7 +51,6 @@ import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Fragmentation;
-import org.jwebsocket.util.MapAppender;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationProvider;
