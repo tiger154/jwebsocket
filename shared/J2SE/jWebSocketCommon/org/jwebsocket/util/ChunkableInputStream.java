@@ -25,8 +25,8 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
 /**
- * The class implements the IChunkable interface to support the transmission of data from a
- * InputStream to the client
+ * The class implements the IChunkable interface to support the transmission of
+ * data from a InputStream to the client
  *
  * @author kyberneees, aschulze
  */
@@ -51,6 +51,7 @@ public class ChunkableInputStream extends BaseChunkable {
 	 * @param aNS
 	 * @param aType
 	 * @param aIS
+	 * @param aZipCompression
 	 */
 	public ChunkableInputStream(String aNS, String aType, InputStream aIS, boolean aZipCompression) {
 		this(aNS, aType, aIS);
@@ -60,6 +61,13 @@ public class ChunkableInputStream extends BaseChunkable {
 		}
 	}
 
+	/**
+	 *
+	 * @param aNS
+	 * @param aType
+	 * @param aIS
+	 * @param aEncodingFormat
+	 */
 	public ChunkableInputStream(String aNS, String aType, InputStream aIS, String aEncodingFormat) {
 		this(aNS, aType, aIS);
 
