@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans
-	xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
-	xmlns:aop="http://www.springframework.org/schema/aop">
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
+<beans>
 
-	<bean id="jws.api" class="org.jwebsocket.plugins.api.PlugInDefinition" scope="singleton">
+	<bean id="jws.api" class="org.jwebsocket.plugins.api.PlugInDefinition">
 		<property name="id" value="jws.api" />
 		<property name="namespace" value="org.jwebsocket.plugins.api" />
 		<property name="comment" value= "jWebSockt plug-in to export the server API" />

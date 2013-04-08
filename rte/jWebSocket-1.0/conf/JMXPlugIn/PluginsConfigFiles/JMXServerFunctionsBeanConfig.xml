@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
-      "http://www.springframework.org/dtd/spring-beans.dtd">
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
     <bean id="JMXServerFunctions" class="org.jwebsocket.plugins.jmx.configdefinition.JMXDefinition">
        <property name="description" value="This MBean allow to execute some important functionalities of the jWebSocket server."/>
