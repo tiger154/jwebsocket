@@ -18,12 +18,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tomcat;
 
+import java.net.URLClassLoader;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.engines.ServletUtils;
 import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.factory.JWebSocketJarClassLoader;
 import org.jwebsocket.instance.JWebSocketInstance;
 
 /**
@@ -58,6 +60,11 @@ public class ContextListener implements ServletContextListener {
 			// check if home, config or bootstrap path are passed by context params
 			JWebSocketConfig.initForConsoleApp(ServletUtils.extractStartupArguments(lContext));
 
+			// getting the tomcat class loader
+			JWebSocketJarClassLoader lLoader = new JWebSocketJarClassLoader();
+			lLoader.setClassLoader((URLClassLoader) Thread.currentThread().getContextClassLoader());
+			JWebSocketFactory.setClassLoader(lLoader);
+			
 			// start the jWebSocket Server
 			JWebSocketFactory.start();
 
