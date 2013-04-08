@@ -55,6 +55,14 @@ public class Tools {
 	private static final Map<String, String> GENERIC_2_JAVA_MAP = new FastMap<String, String>();
 	private static Timer mTimer = null;
 	private static ExecutorService mThreadPool = null;
+	/**
+	 *
+	 */
+	public static final boolean BASE64_ENCODED = true;
+	/**
+	 *
+	 */
+	public static final boolean BINARY = false;
 
 	static {
 		JAVA_2_GENERIC_MAP.put("java.lang.String", "string");

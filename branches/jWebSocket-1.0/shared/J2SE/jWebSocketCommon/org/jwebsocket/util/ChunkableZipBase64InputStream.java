@@ -29,25 +29,26 @@ import org.jwebsocket.token.TokenFactory;
  * The class implements the IChunkable interface to support the transmission of
  * data from a InputStream zipped to the client.
  *
- * @author kyberneees
+ * @author kyberneees, aschulze
  */
-public class ChunkableZipInputStream extends BaseChunkable {
-
+public class ChunkableZipBase64InputStream extends BaseChunkable {
+	
 	private InputStream mIS;
 
 	/**
 	 *
 	 * @param aNS
 	 * @param aType
-	 * @param aIS
+	 * @param aData
 	 */
-	public ChunkableZipInputStream(String aNS, String aType, InputStream aIS) {
+	public ChunkableZipBase64InputStream(String aNS, String aType, InputStream aData) {
 		super(aNS, aType);
-
+		
 		try {
-			byte[] lData = new byte[aIS.available()];
-			aIS.read(lData, 0, aIS.available());
-			mIS = new ByteArrayInputStream(Tools.zip(lData, Tools.BINARY));
+			byte[] lData = new byte[aData.available()];
+			aData.read(lData, 0, aData.available());
+			byte[] lZip = Tools.zip(lData, Tools.BASE64_ENCODED);
+			mIS = new ByteArrayInputStream(lZip);
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx.getCause());
 		}
@@ -59,9 +60,9 @@ public class ChunkableZipInputStream extends BaseChunkable {
 	 * @param aType
 	 * @param aData
 	 */
-	public ChunkableZipInputStream(String aNS, String aType, byte[] aData) {
+	public ChunkableZipBase64InputStream(String aNS, String aType, byte[] aData) {
 		super(aNS, aType);
-
+		
 		try {
 			byte[] lData = Tools.zip(aData, Tools.BASE64_ENCODED);
 			mIS = new ByteArrayInputStream(lData);
@@ -76,12 +77,12 @@ public class ChunkableZipInputStream extends BaseChunkable {
 	 * @param aType
 	 * @param aData
 	 */
-	public ChunkableZipInputStream(String aNS, String aType, String aData) {
+	public ChunkableZipBase64InputStream(String aNS, String aType, String aData) {
 		super(aNS, aType);
-
+		
 		try {
-			byte[] lData = aData.getBytes("UTF-8");
-			mIS = new ByteArrayInputStream(Tools.zip(lData, Tools.BINARY));
+			byte[] lData = Tools.zip(aData.getBytes("UTF-8"), Tools.BASE64_ENCODED);
+			mIS = new ByteArrayInputStream(lData);
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx.getCause());
 		}
@@ -94,10 +95,10 @@ public class ChunkableZipInputStream extends BaseChunkable {
 	public InputStream getIS() {
 		return mIS;
 	}
-
+	
 	@Override
 	public Iterator<Token> getChunksIterator() {
-
+		
 		return new Iterator<Token>() {
 			@Override
 			public boolean hasNext() {
@@ -107,28 +108,29 @@ public class ChunkableZipInputStream extends BaseChunkable {
 					return false;
 				}
 			}
-
+			
 			@Override
 			public Token next() {
 				try {
 					int lLength = (mIS.available() > getFragmentSize()) ? getFragmentSize() : mIS.available();
 					Token lChunk = TokenFactory.createToken();
 					lChunk.setChunkType("stream" + getUniqueChunkId());
-
+					
 					byte[] lBA = new byte[lLength];
 					mIS.read(lBA, 0, lLength);
-
+					
 					String lData = new String(lBA);
-
-					lChunk.setMap("enc", new MapAppender().append("data", "base64").getMap());
+					
+					// do not encode this chunk again, the complete packet is already encoded
+					// lChunk.setMap("enc", new MapAppender().append("data", "plain").getMap());
 					lChunk.setString("data", lData);
-
+					
 					return lChunk;
 				} catch (Exception lEx) {
 					return null;
 				}
 			}
-
+			
 			@Override
 			public void remove() {
 				throw new UnsupportedOperationException("Not supported on InputStream objects!");
