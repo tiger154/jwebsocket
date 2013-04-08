@@ -68,23 +68,25 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 	/**
 	 * Load the engine from the classpath
 	 *
-	 * @param engineName the name of the engine to load
+	 * @param aEngineName the name of the engine to load
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public Class<WebSocketEngine> loadEngineFromClassPath(String engineName) {
+	public Class<WebSocketEngine> loadEngineFromClassPath(String aEngineName) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating engine...");
 		}
 		try {
-			Class<WebSocketEngine> lEngineClass = (Class<WebSocketEngine>) Class.forName(engineName);
+			Class<WebSocketEngine> lEngineClass = (Class<WebSocketEngine>) Class.forName(aEngineName, true, 
+					JWebSocketFactory.getClassLoader().getClassLoader());
+			
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Engine '" + engineName + "' loaded from classpath.");
+				mLog.debug("Engine '" + aEngineName + "' loaded from classpath.");
 			}
 			return lEngineClass;
 		} catch (ClassNotFoundException e) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Engine '" + engineName + "' not yet in classpath.");
+				mLog.debug("Engine '" + aEngineName + "' not yet in classpath.");
 			}
 		}
 		return null;
@@ -98,7 +100,9 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 	@SuppressWarnings("unchecked")
 	public Class<WebSocketServer> loadServerFromClasspath(String aServerName) {
 		try {
-			Class<WebSocketServer> lServerClass = (Class<WebSocketServer>) Class.forName(aServerName);
+			Class<WebSocketServer> lServerClass = (Class<WebSocketServer>) Class.forName(aServerName, true, 
+					JWebSocketFactory.getClassLoader().getClassLoader());
+			
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Server '" + aServerName + "' loaded from classpath.");
 			}
@@ -113,21 +117,23 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 
 	/**
 	 *
-	 * @param aPluginName
+	 * @param aPlugInName
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public Class<WebSocketPlugIn> loadPluginFromClasspath(String aPluginName) {
+	public Class<WebSocketPlugIn> loadPluginFromClasspath(String aPlugInName) {
 		try {
-			Class<WebSocketPlugIn> lPluginClass = (Class<WebSocketPlugIn>) Class.forName(aPluginName);
+			Class<WebSocketPlugIn> lPluginClass = (Class<WebSocketPlugIn>) Class.forName(aPlugInName, true, 
+					JWebSocketFactory.getClassLoader().getClassLoader());
+			
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Plug-in '" + aPluginName + "' loaded from classpath.");
+				mLog.debug("Plug-in '" + aPlugInName + "' loaded from classpath.");
 			}
 			// System.out.println("Plug-in '" + aPluginName + "' loaded from classpath.");
 			return lPluginClass;
 		} catch (ClassNotFoundException ex) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Plug-in '" + aPluginName + "' not yet in classpath.");
+				mLog.debug("Plug-in '" + aPlugInName + "' not yet in classpath.");
 			}
 			// System.out.println("Plug-in '" + aPluginName + "' not yet in classpath.");
 		}
@@ -142,7 +148,9 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 	@SuppressWarnings("unchecked")
 	public Class<WebSocketFilter> loadFilterFromClasspath(String aFilterName) {
 		try {
-			Class<WebSocketFilter> lFilterClass = (Class<WebSocketFilter>) Class.forName(aFilterName);
+			Class<WebSocketFilter> lFilterClass = (Class<WebSocketFilter>) Class.forName(aFilterName, true, 
+					JWebSocketFactory.getClassLoader().getClassLoader());
+			
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Filter '" + aFilterName + "' loaded from classpath.");
 			}
