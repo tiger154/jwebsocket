@@ -53,8 +53,7 @@ public class ChunkableInputStream extends BaseChunkable {
 	 * @param aIS
 	 */
 	public ChunkableInputStream(String aNS, String aType, InputStream aIS, boolean aZipCompression) {
-		super(aNS, aType);
-		mIS = aIS;
+		this(aNS, aType, aIS);
 
 		if (aZipCompression) {
 			mEncodingFormat = "zipBase64";
@@ -62,8 +61,7 @@ public class ChunkableInputStream extends BaseChunkable {
 	}
 
 	public ChunkableInputStream(String aNS, String aType, InputStream aIS, String aEncodingFormat) {
-		super(aNS, aType);
-		mIS = aIS;
+		this(aNS, aType, aIS);
 
 		mEncodingFormat = aEncodingFormat;
 	}

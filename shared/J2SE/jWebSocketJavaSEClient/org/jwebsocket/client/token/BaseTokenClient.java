@@ -14,16 +14,19 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.token;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.codec.binary.Base64;
 import org.jwebsocket.api.*;
 import org.jwebsocket.client.java.BaseWebSocketClient;
 import org.jwebsocket.client.java.ReliabilityOptions;
+import org.jwebsocket.config.JWebSocketClientConstants;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.kit.WebSocketEncoding;
 import org.jwebsocket.kit.WebSocketException;
@@ -36,6 +39,7 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.token.WebSocketResponseTokenListener;
 import org.jwebsocket.util.Fragmentation;
+import org.jwebsocket.util.MapAppender;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -78,9 +82,10 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 			new FastMap<Integer, PendingResponseQueueItem>().shared();
 	private final ScheduledThreadPoolExecutor mResponseQueueExecutor =
 			new ScheduledThreadPoolExecutor(1);
+	private List<String> mEncodingFormats = new FastList<String>();
 
 	/**
-	 * Default constructor
+	 * Default constructormListe
 	 */
 	public BaseTokenClient() {
 		this(JWebSocketCommonConstants.WS_SUBPROT_DEFAULT, JWebSocketCommonConstants.WS_ENCODING_DEFAULT);
@@ -104,6 +109,62 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		mSubProt = new WebSocketSubProtocol(aSubProt, aEncoding);
 		addSubProtocol(mSubProt);
 		addListener(new TokenClientListener());
+
+		mEncodingFormats.add("base64");
+		mEncodingFormats.add("zipBase64");
+
+		// registering encoding filter
+		addFilter(new WebSocketClientTokenFilter() {
+			@Override
+			public void filterTokenIn(Token aToken) throws Exception {
+				Map<String, String> lEnc = aToken.getMap("enc", null);
+				if (null == lEnc) {
+					return;
+				}
+
+				for (String lAttr : lEnc.keySet()) {
+					String lFormat = lEnc.get(lAttr);
+					String lValue = aToken.getString(lAttr);
+
+					if (!mEncodingFormats.contains(lFormat)) {
+						throw new Exception("Invalid encoding format '" + lFormat + "' received (not supported). Token cannot be received!");
+					} else if ("base64".equals(lFormat)) {
+						aToken.setString(lAttr, new String(Tools.base64Decode(lValue)));
+					} else if ("zipBase64".equals(lFormat)) {
+						aToken.setString(lAttr, new String(Tools.unzip(lValue.getBytes(), Boolean.TRUE)));
+					}
+				}
+			}
+
+			@Override
+			public void filterTokenOut(Token aToken) throws Exception {
+				Map<String, String> lEnc = aToken.getMap("enc", null);
+				if (null == lEnc) {
+					return;
+				}
+
+				for (String lAttr : lEnc.keySet()) {
+					String lFormat = lEnc.get(lAttr);
+					String lValue = aToken.getString(lAttr);
+
+					if (!mEncodingFormats.contains(lFormat)) {
+						throw new Exception("Invalid encoding format '" + lFormat + "' received (not supported). Token cannot be sent!");
+					} else if ("base64".equals(lFormat)) {
+						aToken.setString(lAttr, Tools.base64Encode(lValue.getBytes()));
+					} else if ("zipBase64".equals(lFormat)) {
+						aToken.setString(lAttr, new String(Tools.zip(lValue.getBytes(), Boolean.TRUE)));
+					}
+				}
+			}
+
+			@Override
+			public void filterPacketIn(WebSocketPacket aPacket) throws Exception {
+			}
+
+			@Override
+			public void filterPacketOut(WebSocketPacket aPacket) throws Exception {
+			}
+		});
 	}
 
 	/**
@@ -117,8 +178,17 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * WebSocketClient listener implementation that receives the data packet and
-	 * creates <tt>token</tt> objects
+	 * Returns the client encoding formats
+	 *
+	 * @return
+	 */
+	public List<String> getEncodingFormats() {
+		return Collections.unmodifiableList(mEncodingFormats);
+	}
+
+	/**
+	 * WebSocketClient listener implementation that receives the data packet and creates
+	 * <tt>token</tt> objects
 	 *
 	 * @author aschulze
 	 */
@@ -129,6 +199,21 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		 */
 		@Override
 		public void processOpening(WebSocketClientEvent aEvent) {
+			// sending high level client headers
+			Token lHeaders = TokenFactory.createToken(JWebSocketClientConstants.NS_SYSTEM, "header");
+			lHeaders.setString("clientType", "native");
+			lHeaders.setString("clientName", "JavaSEClient");
+			lHeaders.setString("clientVersion", "1.0");
+			lHeaders.setString("clientInfo", "Java Client");
+			lHeaders.setString("jwsType", "Java");
+			lHeaders.setString("jwsVersion", "1.0");
+			lHeaders.setList(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY, mEncodingFormats);
+			
+			try {
+				sendToken(lHeaders);
+			} catch (Exception lEx) {
+				// never happens
+			}
 		}
 
 		/**
@@ -141,15 +226,26 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		}
 
 		/**
-		 * {@inheritDoc} This callback method is invoked by jWebSocket client
-		 * after the data is received from low-level <tt>WebSocket</tt>
-		 * connection. This method then generates the <tt>token</tt> objects
-		 * using the data packets.
+		 * {@inheritDoc} This callback method is invoked by jWebSocket client after the data is
+		 * received from low-level <tt>WebSocket</tt> connection. This method then generates the
+		 * <tt>token</tt> objects using the data packets.
 		 */
 		@Override
 		public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
 
 			Token lToken = packetToToken(aPacket);
+
+			try {
+				for (WebSocketClientFilter lFilter : getFilters()) {
+					if (lFilter instanceof WebSocketClientTokenFilter) {
+						((WebSocketClientTokenFilter) lFilter).filterTokenIn(lToken);
+					}
+				}
+			} catch (Exception lEx) {
+				// leave the flow here since the token does not
+				// passed the filtering process
+				return;
+			}
 
 			String lType = lToken.getType();
 			String lReqType = lToken.getString("reqType");
@@ -162,6 +258,15 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 						mUsername = lUsername;
 						mStatus = WebSocketStatus.AUTHENTICATED;
 					}
+
+					// synchronizing the c2s encoding formats
+					List<String> lEncodingFormats = lToken.getList(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
+					for (String lClientFormat : mEncodingFormats) {
+						if (!lEncodingFormats.contains(lClientFormat)) {
+							mEncodingFormats.remove(lClientFormat);
+						}
+					}
+
 				} else if (GOODBYE.equals(lType)) {
 					mUsername = null;
 				}
@@ -314,6 +419,18 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	 */
 	@Override
 	public void sendToken(Token aToken) throws WebSocketException {
+		try {
+			for (WebSocketClientFilter lFilter : getFilters()) {
+				if (lFilter instanceof WebSocketClientTokenFilter) {
+					((WebSocketClientTokenFilter) lFilter).filterTokenOut(aToken);
+				}
+			}
+		} catch (Exception lEx) {
+			// leave the flow here since the token does not
+			// passed the filtering process
+			return;
+		}
+
 		__setUTID(aToken);
 		super.send(tokenToPacket(aToken));
 	}
@@ -760,8 +877,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves a list of public entries stored in the server-side session
-	 * storage of many clients.
+	 * Retrieves a list of public entries stored in the server-side session storage of many clients.
 	 *
 	 * @param aClients
 	 * @param aKeys
@@ -774,8 +890,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves a list of public entries stored in the server-side session
-	 * storage of many clients.
+	 * Retrieves a list of public entries stored in the server-side session storage of many clients.
 	 *
 	 * @param aClients
 	 * @param aKeys
@@ -794,8 +909,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves all the entries stored in the server-side session storage of a
-	 * given client. A client can only get the public entries from others.
+	 * Retrieves all the entries stored in the server-side session storage of a given client. A
+	 * client can only get the public entries from others.
 	 *
 	 * @param aClientId
 	 * @param aPublic
@@ -814,8 +929,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves all the entries stored in the server-side session storage of a
-	 * given client. A client can only get the public entries from others.
+	 * Retrieves all the entries stored in the server-side session storage of a given client. A
+	 * client can only get the public entries from others.
 	 *
 	 * @param aClientId
 	 * @param aPublic
@@ -828,9 +943,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves the list of entry keys stored in the server-side session
-	 * storage of a given client. A client can only get the public entries from
-	 * others.
+	 * Retrieves the list of entry keys stored in the server-side session storage of a given client.
+	 * A client can only get the public entries from others.
 	 *
 	 * @param aClientId
 	 * @param aPublic
@@ -849,9 +963,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves the list of entry keys stored in the server-side session
-	 * storage of a given client. A client can only get the public entries from
-	 * others.
+	 * Retrieves the list of entry keys stored in the server-side session storage of a given client.
+	 * A client can only get the public entries from others.
 	 *
 	 * @param aClientId
 	 * @param aPublic
@@ -931,8 +1044,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Indicates if the client server-side session storage contains a custom
-	 * entry given the entry key.
+	 * Indicates if the client server-side session storage contains a custom entry given the entry
+	 * key.
 	 *
 	 * @param aClientId
 	 * @param aKey
@@ -953,8 +1066,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Indicates if the client server-side session storage contains a custom
-	 * entry given the entry key.
+	 * Indicates if the client server-side session storage contains a custom entry given the entry
+	 * key.
 	 *
 	 * @param aClientId
 	 * @param aKey

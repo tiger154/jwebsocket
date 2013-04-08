@@ -95,9 +95,9 @@ public class SystemFilter extends TokenFilter {
 						mLog.error("Invalid encoding format '" + lFormat + "' received. Message rejected!");
 						aResponse.rejectMessage();
 					} else if ("base64".equals(lFormat)) {
-						aToken.setString(lAttr, new String(Tools.base64Decode(lValue), "UTF-8"));
+						aToken.setString(lAttr, new String(Tools.base64Decode(lValue)));
 					} else if ("zipBase64".equals(lFormat)) {
-						aToken.setString(lAttr, new String(Tools.unzip(lValue.getBytes(), Boolean.TRUE), "UTF-8"));
+						aToken.setString(lAttr, new String(Tools.unzip(lValue.getBytes(), Boolean.TRUE)));
 					}
 				} catch (Exception lEx) {
 					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to decode '" + lAttr + "' value in '"
