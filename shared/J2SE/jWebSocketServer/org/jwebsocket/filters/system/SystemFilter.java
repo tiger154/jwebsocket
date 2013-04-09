@@ -97,7 +97,7 @@ public class SystemFilter extends TokenFilter {
 					} else if ("base64".equals(lFormat)) {
 						aToken.setString(lAttr, new String(Tools.base64Decode(lValue), "UTF-8"));
 					} else if ("zipBase64".equals(lFormat)) {
-						aToken.setString(lAttr, new String(Tools.unzip(lValue.getBytes(), Tools.BASE64_ENCODED), "UTF-8"));
+						aToken.setString(lAttr, new String(Tools.unzip(lValue.getBytes(), Tools.ENC_BASE64), "UTF-8"));
 					}
 				} catch (Exception lEx) {
 					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to decode '" + lAttr + "' value in '"
@@ -144,7 +144,7 @@ public class SystemFilter extends TokenFilter {
 					} else if ("base64".equals(lFormat)) {
 						aToken.setString(lAttr, Tools.base64Encode(lValue.getBytes()));
 					} else if ("zipBase64".equals(lFormat)) {
-						aToken.setString(lAttr, new String(Tools.zip(lValue.getBytes(), Tools.BASE64_ENCODED), "UTF-8"));
+						aToken.setString(lAttr, new String(Tools.zip(lValue.getBytes(), Tools.ENC_BASE64), "UTF-8"));
 					}
 				} catch (Exception lEx) {
 					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to encode '" + lAttr + "' value to '"

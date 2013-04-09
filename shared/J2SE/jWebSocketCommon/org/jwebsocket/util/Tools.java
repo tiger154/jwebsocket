@@ -58,11 +58,11 @@ public class Tools {
 	/**
 	 *
 	 */
-	public static final boolean BASE64_ENCODED = true;
+	public static final boolean ENC_BASE64 = true;
 	/**
 	 *
 	 */
-	public static final boolean BINARY = false;
+	public static final boolean ENC_PLAIN = false;
 
 	static {
 		JAVA_2_GENERIC_MAP.put("java.lang.String", "string");

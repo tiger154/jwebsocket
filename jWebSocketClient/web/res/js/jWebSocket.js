@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC0 (build 30405)
+	//:const:*:VERSION:String:1.0 RC0 (build 30409)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC0 (build 30405)",
+	VERSION: "1.0 RC0 (build 30409)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -1360,24 +1360,24 @@ jws.tools = {
 		return aObject;
 	},
 	
-	zip: function(aString, aBase64Encode){
-		if (!JSZip){
-			throw new Error('JSZip library is missing. Class not found!')
+	zip: function( aString, aBase64Encode ) {
+		if( !JSZip ) {
+			throw new Error( 'JSZip library is missing. Class not found!' );
 		}
 		var lBase64 = aBase64Encode || false;
 		var lJSZip = new JSZip();
-		lJSZip.file( "temp.zip", aString);
-		var lZipped = lJSZip.generate({ compression: "DEFLATE",  base64 : lBase64 });
+		lJSZip.file( "temp.zip", aString );
+		var lZipped = lJSZip.generate( { compression: "DEFLATE",  base64 : lBase64 } );
 		
 		return lZipped;
 	},
 	
-	unzip: function(aString, aBase64Decode){
-		if (!JSZip){
-			throw new Error('JSZip library is missing. Class not found!')
+	unzip: function( aString, aBase64Decode ){
+		if( !JSZip ) {
+			throw new Error( 'JSZip library is missing. Class not found!' );
 		}
 		var lBase64 = aBase64Decode || false;
-		var lJSZip = new JSZip( aString, { base64: lBase64 });
+		var lJSZip = new JSZip( aString, { base64: lBase64 } );
 		var lFile = lJSZip.file( "temp.zip" );
 		
 		return lFile.asBinary();

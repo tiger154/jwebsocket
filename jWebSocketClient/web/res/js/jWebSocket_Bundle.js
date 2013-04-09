@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC0 (build 30328)
+	//:const:*:VERSION:String:1.0 RC0 (build 30401)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC0 (build 30328)",
+	VERSION: "1.0 RC0 (build 30401)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -1332,6 +1332,9 @@ jws.tools = {
 	},
 	
 	zip: function(aString, aBase64Encode){
+		if (!JSZip){
+			throw new Error('JSZip library is missing. Class not found!')
+		}
 		var lBase64 = aBase64Encode || false;
 		var lJSZip = new JSZip();
 		lJSZip.file( "temp.zip", aString);
@@ -1341,6 +1344,9 @@ jws.tools = {
 	},
 	
 	unzip: function(aString, aBase64Decode){
+		if (!JSZip){
+			throw new Error('JSZip library is missing. Class not found!')
+		}
 		var lBase64 = aBase64Decode || false;
 		var lJSZip = new JSZip( aString, { base64: lBase64 });
 		var lFile = lJSZip.file( "temp.zip" );
@@ -2871,10 +2877,6 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			if ( aToken.type === "welcome") {
 				this.fClientId = aToken.sourceId;
 				this.fUsername = aToken.username;
-				alert(JSON.stringify(this.fEncodingFormats));
-				alert(JSON.stringify(aToken.encodingFormats));
-				alert(JSON.stringify(jws.tools.intersect(this.fEncodingFormats, aToken.encodingFormats)));
-				
 				this.fEncodingFormats = jws.tools.intersect(this.fEncodingFormats, aToken.encodingFormats);
 				
 				this.registerFilters();
@@ -7602,9 +7604,6 @@ jws.FileSystemPlugIn = {
 			// directy in the plug-in if desired.
 			if( "load" === aToken.reqType ) {
 				if( 0 === aToken.code ) {
-					if (aToken.decode){
-						aToken.data = Base64.decode( aToken.data );
-					}
 					if( this.OnFileLoaded ) {
 						this.OnFileLoaded( aToken );
 					}
@@ -7729,7 +7728,7 @@ jws.FileSystemPlugIn = {
 	//:a:en::aFilename:String:The filename value
 	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
-	//:a:en::aOptions.decode:Boolean:Indicates if the received file content should be "base64" decoded automatically.
+	//:a:en::aOptions.encoding:String:Indicates the encoding format used by the server to encode the file content. Default: base64.
 	//:r:*:::void:none
 	fileLoad: function( aFilename, aAlias, aOptions ) {
 		var lRes = this.createDefaultResult();
@@ -7739,7 +7738,7 @@ jws.FileSystemPlugIn = {
 				type: "load",
 				alias: aAlias,
 				filename: aFilename,
-				decode: (aOptions.decode) || true
+				encoding: aOptions['encoding']
 			};
 			this.sendToken( lToken,	aOptions );
 		} else {
@@ -7785,10 +7784,9 @@ jws.FileSystemPlugIn = {
 			lRes.msg = "No save/append option passed.";
 			return lRes;
 		}
+		var lEnc = {}
 		if( lEncode ) {
-			if( lEncoding == "base64" ) {
-				aData = Base64.encode( aData );
-			}
+			lEnc.data = lEncoding;
 		}
 		if( this.isConnected() ) {
 			var lToken = {
@@ -7796,9 +7794,11 @@ jws.FileSystemPlugIn = {
 				type: lType,
 				scope: lScope,
 				encoding: lEncoding,
+				encode: lEncode,
 				notify: lNotify,
 				data: aData,
-				filename: aFilename
+				filename: aFilename,
+				enc: lEnc
 			};
 			this.sendToken( lToken,	aOptions );
 		} else {
@@ -7817,7 +7817,7 @@ jws.FileSystemPlugIn = {
 	//:a:en::aOptions.scope:String:The scope value. <tt>Example: jws.SCOPE_PRIVATE</tt>
 	//:a:en::aOptions.encode:Boolean:Indicates if the file content require to be encoded internally before send. Default value is TRUE.
 	//:a:en::aOptions.notify:Boolean:Indicates if the server should notify the file save to connected clients. Default value is FALSE.
-	//:a:en::aOptions.encoding:String:The encoding method. Currently "base64" is only supported and enabled by default.
+	//:a:en::aOptions.encoding:String:The encoding method. Default: base64.
 	//:r:*:::void:none
 	fileSave: function( aFilename, aData, aOptions ) {
 		if( !aOptions ) {
@@ -7836,7 +7836,7 @@ jws.FileSystemPlugIn = {
 	//:a:en::aOptions.scope:String:The scope value. <tt>Example: jws.SCOPE_PRIVATE</tt>
 	//:a:en::aOptions.encode:Boolean:Indicates if the file content require to be encoded internally before send. Default value is TRUE.
 	//:a:en::aOptions.notify:Boolean:Indicates if the server should notify the file save to connected clients. Default value is FALSE.
-	//:a:en::aOptions.encoding:String:The encoding method. Currently "base64" is only supported and enabled by default.
+	//:a:en::aOptions.encoding:String:The encoding method. Default: base64.
 	//:r:*:::void:none
 	fileAppend: function( aFilename, aData, aOptions ) {
 		if( !aOptions ) {
@@ -7852,11 +7852,13 @@ jws.FileSystemPlugIn = {
 	//:a:en::aFilename:String:The filename value
 	//:a:en::aData:Object:The file content. Could be encoded optionally.
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.encode:Boolean:Indicates if the file content require to be encoded internally before send. Default value is TRUE.
 	//:a:en::aOptions.encoding:String:The encoding method. Default value is "base64"
 	//:r:*:::void:none
 	fileSend: function( aTargetId, aFilename, aData, aOptions ) {
 		var lIsNode = false;
 		var lEncoding = "base64";
+		var lEncode = true;
 		
 		if( aOptions ) {
 			lEncoding = aOptions["encoding"] || "base64";
@@ -7864,13 +7866,23 @@ jws.FileSystemPlugIn = {
 			if( aOptions.isNode != undefined ) {
 				lIsNode = aOptions.isNode;
 			}
+			if( aOptions.encode != undefined ) {
+				lEncode = aOptions.encode;
+			}
 		}
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
+			var lEnc = {}
+			if( lEncode ) {
+				lEnc.data = lEncoding;
+			}
+			
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "send",
 				data: aData,
+				enc: lEnc,
+				encode: lEncode,
 				encoding: lEncoding,
 				filename: aFilename
 			};
