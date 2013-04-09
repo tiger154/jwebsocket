@@ -49,7 +49,7 @@ public class ScriptingPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	/**
-	 *
+	 * Namespace for scripting plug-in.
 	 */
 	public static final String NS_Scripting =
 			JWebSocketServerConstants.NS_BASE + ".plugins.scripting";
