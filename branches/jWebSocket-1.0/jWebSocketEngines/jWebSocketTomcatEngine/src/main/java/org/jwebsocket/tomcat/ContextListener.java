@@ -24,6 +24,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.engines.ServletUtils;
+import static org.jwebsocket.engines.ServletUtils.CONTEXT_BOOTSTRAP_PARAMETER;
+import static org.jwebsocket.engines.ServletUtils.CONTEXT_CONFIG_PARAMETER;
+import static org.jwebsocket.engines.ServletUtils.CONTEXT_HOME_PARAMETER;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.factory.JWebSocketJarClassLoader;
 import org.jwebsocket.instance.JWebSocketInstance;
@@ -64,7 +67,7 @@ public class ContextListener implements ServletContextListener {
 			JWebSocketJarClassLoader lLoader = new JWebSocketJarClassLoader();
 			lLoader.setClassLoader((URLClassLoader) Thread.currentThread().getContextClassLoader());
 			JWebSocketFactory.setClassLoader(lLoader);
-			
+
 			// start the jWebSocket Server
 			JWebSocketFactory.start();
 

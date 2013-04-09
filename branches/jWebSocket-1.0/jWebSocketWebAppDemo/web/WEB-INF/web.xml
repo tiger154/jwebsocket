@@ -3,7 +3,7 @@
     <display-name>jWebSocket Web Application Demo</display-name>
     <context-param>
         <param-name>jws_config</param-name>
-        <param-value>${JWEBSOCKET_HOME}conf/jWebSocketWebApp/jWebSocket.xml</param-value>
+        <param-value>${WEB_APP_HOME}WEB-INF/jWebSocket.xml</param-value>
     </context-param>
     <listener>
         <description>Context listener used to start and stop the jWebSocket application server.</description>
