@@ -18,12 +18,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.scripting;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javolution.util.FastMap;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -35,7 +37,10 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
+import sun.org.mozilla.javascript.Context;
+import sun.org.mozilla.javascript.ScriptableObject;
 
 /**
  *
@@ -59,11 +64,13 @@ public class ScriptingPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket Scripting Plug-in - Community Edition";
-	private static ScriptEngineManager mScrEngMgr = new ScriptEngineManager();
+	private static ScriptEngineManager mEngine = new ScriptEngineManager();
 	/**
 	 *
 	 */
 	public static ScriptEngine mJavaScript = null;
+	private Map<String, ScriptEngine> mApps = new FastMap<String, ScriptEngine>().shared();
+	
 	/**
 	 *
 	 */
@@ -86,9 +93,9 @@ public class ScriptingPlugIn extends TokenPlugIn {
 		// specify default name space for file system plugin
 		this.setNamespace(NS_Scripting);
 
-		mScrEngMgr = new ScriptEngineManager();
-		mJavaScript = mScrEngMgr.getEngineByExtension("js");
-
+		mEngine = new ScriptEngineManager();
+		mJavaScript = mEngine.getEngineByExtension("js");
+		
 		try {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
@@ -97,6 +104,11 @@ public class ScriptingPlugIn extends TokenPlugIn {
 				mBeanFactory = getConfigBeanFactory();
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.scripting.settings");
 
+				// initializing apps
+				for (String lApp : mSettings.getApps().keySet()){
+					loadApp(lApp, mSettings.getApps().get(lApp));
+				}
+				
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Scripting plug-in successfully instantiated.");
 				}
@@ -233,11 +245,14 @@ public class ScriptingPlugIn extends TokenPlugIn {
 		}
 	}
 
-	/**
-	 * Invokes a JavaScript file on the server.
-	 * @param aConnector
-	 * @param aToken
-	 */
+	public void loadApp(String aApp, String aFilePath) throws Exception {
+		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFilePath)));
+		mApps.put(aApp, mEngine.getEngineByName("javascript"));
+		
+		// loading the app script
+		mApps.get(aApp).eval(lFile);
+	}
+
 	protected void invokeJavaScript(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 		String lMsg;
@@ -268,7 +283,7 @@ public class ScriptingPlugIn extends TokenPlugIn {
 				+ "var a = org.jwebsocket.plugins.scripting.ScriptingPlugIn.getScriptingPlugInInfo();"
 				+ "return a;"
 				+ "}";
-		
+
 		if (null == lFunction) {
 			lMsg = "No function passed in scripting call.";
 			if (mLog.isDebugEnabled()) {
