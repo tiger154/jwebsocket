@@ -83,7 +83,10 @@ public class SampleWebSocketPlugIn extends ActionPlugIn {
 		<script type="text/javascript">
 			var lConn = new jws.jWebSocketJSONClient();
 			
-			lConn.open(jws.getDefaultServerURL(), {
+			var lURL = 
+					// jws.getDefaultServerURL(); 
+					"ws://localhost:8080/jWebSocket/jWebSocket";
+			lConn.open( lURL, {
 				OnOpen: function(){
 					$( document ).ready( function( ) {
 						$("#btnHttp").click(function(){

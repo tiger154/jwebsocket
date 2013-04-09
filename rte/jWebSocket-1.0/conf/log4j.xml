@@ -25,7 +25,7 @@
 	</appender>
 	
 	<appender name="developmentLog" class="org.apache.log4j.ConsoleAppender">
-		<param name="threshold" value="info"/>
+		<param name="threshold" value="debug"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p - %C{1}: %m%n" />
 		</layout>
@@ -111,6 +111,7 @@
 	</appender>
 	-->
 
+	<!-- special treatment for all logging activities of the spring-framework -->
 	<logger name="org.springframework" additivity="false">
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
 		<level value="WARN"/>

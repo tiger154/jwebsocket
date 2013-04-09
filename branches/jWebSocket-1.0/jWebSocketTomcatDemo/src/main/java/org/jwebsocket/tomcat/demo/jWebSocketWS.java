@@ -37,7 +37,7 @@ public class jWebSocketWS extends WebSocketServlet {
 	private TomcatEngine mEngine;
 
 	@Override
-	protected StreamInbound createWebSocketInbound(String aSubProtocol) {
+	protected StreamInbound createWebSocketInbound(String aSubProtocol, HttpServletRequest aRequest) {
 		if (null == aSubProtocol) {
 			aSubProtocol = JWebSocketCommonConstants.WS_SUBPROT_JSON;
 		}
