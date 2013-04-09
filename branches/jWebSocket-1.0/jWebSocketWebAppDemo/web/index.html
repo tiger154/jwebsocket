@@ -39,7 +39,7 @@
 		<input type="text" id="name" />
 		<input type="button" id="btnHttp" value="SayHello (HttpServlet)" />
 		<input type="button" id="btnWs" value="SayHello (jWebSocket plug-in)" />
-		
+
 		<font style="color: #387038">
 		<pre>
 
@@ -82,36 +82,41 @@ public class SampleWebSocketPlugIn extends ActionPlugIn {
 		</font>
 		<script type="text/javascript">
 			var lConn = new jws.jWebSocketJSONClient();
-			
-			var lURL = 
-					// jws.getDefaultServerURL(); 
-					"ws://localhost:8080/jWebSocket/jWebSocket";
-			lConn.open( lURL, {
-				OnOpen: function(){
-					$( document ).ready( function( ) {
-						$("#btnHttp").click(function(){
-							$.get('/jWebSocket/http', { name: $("#name").val()}, function(aResponse) {
+
+			var lURL = jws.getServerURL(
+					"https" === self.location.protocol ? "wss" : "ws",
+					self.location.hostname,
+					self.location.port,
+					self.location.pathname,
+					"jWebSocket"
+					);
+
+			lConn.open(lURL, {
+				OnOpen: function() {
+					$(document).ready(function( ) {
+						$("#btnHttp").click(function() {
+							$.get(self.location.pathname + '/http', {name: $("#name").val()}, function(aResponse) {
 								alert(aResponse);
 							});
 						});
-						$("#btnWs").click(function(){
+						$("#btnWs").click(function() {
 							lConn.sendToken({
 								ns: "org.jwebsocket.appserver",
 								type: "sayHello",
 								name: $("#name").val()
 							}, {
-								OnSuccess: function(aResponse){
+								OnSuccess: function(aResponse) {
 									alert(aResponse.data);
 								}
 							})
 						});
 					});
 				},
-				OnClose: function(){
+				OnClose: function() {
 					alert("Cannot establish connection with the server!");
 				}
 			})
-			
+
 		</script>
     </body>
 </html>
