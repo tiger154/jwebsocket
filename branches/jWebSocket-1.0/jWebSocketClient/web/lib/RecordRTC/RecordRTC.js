@@ -8,7 +8,7 @@ VideoRecorder = function VideoRecorder(aConfig){
 	
 	this.frames = [];
 	this.quality = aConfig["quality"] || 1.0;
-}
+};
 
 VideoRecorder.prototype.start = function(){
 	var self = this;
@@ -16,15 +16,15 @@ VideoRecorder.prototype.start = function(){
 		self.context.drawImage(self.video, 0, 0, self.width, self.height);
 		self.frames.push(self.canvas.toDataURL('image/webp', self.quality));
 	}, 65);
-}
+};
 
 VideoRecorder.prototype.stop = function(){
 	clearInterval(this.timer);
-}
+};
 
 VideoRecorder.prototype.clear = function(){
 	this.frames = [];
-}
+};
 
 VideoRecorder.prototype.getStream = function (aCallback){
 	var lStreamImages = this.frames;
@@ -35,11 +35,11 @@ VideoRecorder.prototype.getStream = function (aCallback){
 		aCallback(event.target.result); 
 	};
 	reader.readAsDataURL(Whammy.fromImageArray(lStreamImages, 16));
-}
+};
 
 AudioRecorder = function AudioRecorder(aConfig){
 	this.stream = aConfig.stream;
-}
+};
 
 AudioRecorder.prototype.start = function(){
 	initAudioRecorder(this.audioWorkerPath);
@@ -50,22 +50,20 @@ AudioRecorder.prototype.start = function(){
 	mediaStreamSource.connect(this.audioContext.destination);
 	this.recorder = new Recorder(mediaStreamSource);
 	this.recorder.record();
-}
+};
 
 AudioRecorder.prototype.stop = function(){
 	this.recorder.stop();
 	this.recorder.clear();
-}
+};
 
 AudioRecorder.prototype.clear = function(){
 	this.recorder.clear();
-}
+};
 
 AudioRecorder.prototype.getStream = function (aCallback){
 	this.recorder.exportWAV(aCallback);
-}
-
-
+};
 
 
 //WebRTCVideoRecorder = function WebRTCVideoRecorder(aConfig){

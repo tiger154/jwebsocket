@@ -145,7 +145,7 @@
 				</configuration>
 			</plugin>
 			
-            <!-- Build with spring.schemas 
+			<!-- Build with spring.schemas 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -239,13 +239,6 @@
 			<groupId>org.xeustechnologies</groupId>
 			<artifactId>jcl-core</artifactId>
 			<version>2.2.2</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.servlet</artifactId>
-			<version>3.1.1</version>
-			<!-- <scope>provided</scope> -->
 		</dependency>
 
 		<!-- memcached dependency -->
