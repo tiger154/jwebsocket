@@ -7,5 +7,10 @@
 				<entry key="demo1" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/demo1.js"/>
 			</map>
 		</property>
+		<property name="javascript">
+			<map>
+				<entry key="demo" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/demo1.js"/>
+			</map>
+		</property>
 	</bean>
 </beans>
