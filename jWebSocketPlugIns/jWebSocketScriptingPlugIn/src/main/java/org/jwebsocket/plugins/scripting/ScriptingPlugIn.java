@@ -289,7 +289,7 @@ public class ScriptingPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 *
+	 * Executes a JavaScript file on the server.
 	 * @param aConnector
 	 * @param aToken
 	 */
