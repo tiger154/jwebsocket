@@ -31,9 +31,8 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
  *
  * @author aschulze
  */
-public class jWebSockeEcho extends WebSocketServlet {
+public class jWebSocketEcho extends WebSocketServlet {
 
-	private HttpServletRequest mRequest;
 	private TomcatHandler mHandler = null;
 
 	private class TomcatHandler extends MessageInbound {
@@ -48,13 +47,7 @@ public class jWebSockeEcho extends WebSocketServlet {
 		protected void onOpen(WsOutbound aOutbound) {
 			mOutbound = aOutbound;
 		}
-
-		@Override
-		public void onUpgradeComplete() {
-			super.onUpgradeComplete();
-
-		}
-
+		
 		@Override
 		protected void onClose(int aStatus) {
 		}
@@ -73,11 +66,11 @@ public class jWebSockeEcho extends WebSocketServlet {
 	}
 
 	@Override
-	protected StreamInbound createWebSocketInbound(String aSubProtocol) {
+	protected StreamInbound createWebSocketInbound(String aSubProtocol, HttpServletRequest aRequest) {
 		if (null == aSubProtocol) {
 			aSubProtocol = JWebSocketCommonConstants.WS_SUBPROT_JSON;
 		}
-		mHandler = new TomcatHandler(mRequest, aSubProtocol);
+		mHandler = new TomcatHandler(aRequest, aSubProtocol);
 		return mHandler;
 	}
 
@@ -108,7 +101,6 @@ public class jWebSockeEcho extends WebSocketServlet {
 	@Override
 	protected void service(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
 		// save the request, since this is not available anymore in the createWebSocketInbound method
-		mRequest = aRequest;
 		super.service(aRequest, aResponse);
 	}
 }
