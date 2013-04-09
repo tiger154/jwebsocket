@@ -16,7 +16,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-
+/**
  * @author Victor Antonio Barzana Crespo
  */
 $.widget("jws.auth",{
@@ -198,7 +198,7 @@ $.widget("jws.auth",{
 				}
 				if ( mLog.isDebugEnabled ) {
 					log( "<div style='color:green'>Successfully authenticated as: "
-							+ aToken.username + "</div>" );
+						+ aToken.username + "</div>" );
 				}
 				w.auth.eLogonArea.hide( );
 				w.auth.eLogoffArea.fadeIn( 300 );
