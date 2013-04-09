@@ -119,18 +119,7 @@
 	width: 18px !important;
 	height: 20px !important;
 	padding: 0 0 0 0px;
-	background: url(images/cb_n.png) no-repeat !important;
-	/*display: block;*/
+	/*background: url(images/cb_n.png) no-repeat !important;*/
 	float: left !important;
 	margin: 14px 6px 0 6px !important;
-}
-
-.checkbox:hover {
-	background: url(images/cb_h.png) no-repeat !important;
-}
-
-.checkbox:checked {
-	width: 18px !important;
-	height: 20px !important;
-	background: url(images/cb_p.png) no-repeat !important;
 }
