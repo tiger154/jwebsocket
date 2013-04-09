@@ -24,10 +24,20 @@ import javolution.util.FastMap;
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
 public class Settings {
 
-	private Map<String, String> mJavaScript = new FastMap<String, String>();
+	private Map<String, String> mJavaScript = new FastMap<String, String>().shared();
+	private Map<String, String> mApps = new FastMap<String, String>().shared();
+
+	public Map<String, String> getApps() {
+		return mApps;
+	}
+
+	public void setApps(Map<String, String> aMaps) {
+		mApps.putAll(aMaps);
+	}
 
 	/**
 	 * @return the aliases
@@ -40,6 +50,6 @@ public class Settings {
 	 * @param aJavaScripts
 	 */
 	public void setJavascript(Map aJavaScripts) {
-		mJavaScript = aJavaScripts;
+		mJavaScript.putAll(aJavaScripts);
 	}
 }
