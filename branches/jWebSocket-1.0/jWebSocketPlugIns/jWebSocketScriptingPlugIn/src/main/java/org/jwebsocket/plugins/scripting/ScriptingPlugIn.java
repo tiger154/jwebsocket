@@ -234,7 +234,7 @@ public class ScriptingPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 *
+	 * Invokes a JavaScript file on the server.
 	 * @param aConnector
 	 * @param aToken
 	 */
