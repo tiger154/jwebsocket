@@ -642,6 +642,7 @@ var jws = {
 		// per deploy default set isActive to false and level = 2 (info)
 		mIsActive: false,
 		mLevel: 2, 
+		mMaxLogLineLen: 512,
 		// don't use below constants here for the level but use the number!
 		// They are not yet defined at this point in time!
 			 
@@ -791,6 +792,14 @@ var jws = {
 					console.log( "[fatal]: " + aMsg );
 				}	
 			}
+		},
+		
+		//:m:*:getMaxLogLineLen
+		//:d:en:Returns the maximum length of the log lines to avoid too long log output.
+		//:a:en::::none
+		//:r:en:::Integer:The configured maximum log line length
+		getMaxLogLineLen: function() {
+			return jws.console.mMaxLogLineLen; 
 		},
 		
 		//:m:*:getLevel
@@ -1372,7 +1381,7 @@ jws.tools = {
 		return lZipped;
 	},
 	
-	unzip: function( aString, aBase64Decode ){
+	unzip: function( aString, aBase64Decode ) {
 		if( !JSZip ) {
 			throw new Error( 'JSZip library is missing. Class not found!' );
 		}
@@ -1391,10 +1400,6 @@ jws.tools = {
 					lResult.push( aArray1[ lIndex ] );
 				}
 			}
-		} else if( aArray1 ) {
-			lResult = aArray1;
-		} else if( aArray2 ) {
-			lResult = aArray2;
 		}
 		return lResult;
 	},
@@ -1873,7 +1878,12 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					}
 					
 					if( jws.console.isDebugEnabled() ) {
-						jws.console.debug( "[onmessage]: " + lPacket );
+						var lMaxLen = jws.console.getMaxLogLineLen();
+						if( lMaxLen > 0 && lPacket.length > lMaxLen ) {
+							jws.console.debug( "[onmessage]: " + lPacket.substr( 0, lMaxLen ) + "..." );
+						} else {
+							jws.console.debug( "[onmessage]: " + lPacket );
+						}	
 					}
 					
 					// process the packet
@@ -1883,7 +1893,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 						// call filter chain
 						if( this.fFilters ) {
 							for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-								if ( typeof this.fFilters[ lIdx ][ "filterStreamIn" ] == "function" ){
+								if ( "function" === typeof this.fFilters[ lIdx ][ "filterStreamIn" ] ){
 									this.fFilters[ lIdx ][ "filterStreamIn" ]( lValue );
 								}
 							}
@@ -2012,7 +2022,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				// call filter chain
 				if( this.fFilters ) {
 					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-						if ( typeof this.fFilters[ lIdx ]["filterStreamOut"] == "function" ){
+						if ( "function" === typeof this.fFilters[ lIdx ]["filterStreamOut"] ){
 							this.fFilters[ lIdx ]["filterStreamOut"]( aData );
 						}
 					}
@@ -2559,47 +2569,62 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 //:d:en:an abstract class as an ancestor for the JSON-, CSV- and XML client. _
 //:d:en:Do not create direct instances of jWebSocketTokenClient.
 jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, {
-	registerFilters: function(){
+	
+	registerFilters: function( ) {
 		var self = this;
 		this.addFilter({
-			filterTokenOut: function(aToken){
-				var lEnc = aToken['enc'];
-				if (!lEnc)
+			
+			filterTokenOut: function( aToken ) {
+				var lEnc = aToken.enc;
+				if( !lEnc ) {
 					return;
-				
-				for (var lAttr in lEnc){
-					var lFormat = lEnc[lAttr];
-					var lValue = aToken[lAttr];
+				}
+				for( var lAttr in lEnc ) {
+					var lFormat = lEnc[ lAttr ];
+					var lValue = aToken[ lAttr ];
 					
-					if (0 > self.fEncodingFormats.lastIndexOf(lFormat)){
-						jws.console.error( "[process encoding]: Invalid encoding format '" + lFormat +"'received. Token cannot be sent!" );
-						throw new Error("Invalid encoding format '" + lFormat +"'received (not supported). Token cannot be sent!");
-					} else if ("zipBase64" == lFormat){
-						aToken[lAttr] = jws.tools.zip(lValue, true);
-					} else if ("base64" == lFormat){
-						aToken[lAttr] = Base64.encode(lValue);
+					if( 0 > self.fEncodingFormats.lastIndexOf( lFormat ) ) {
+						jws.console.error(
+								"[process encoding]: Invalid encoding format '"
+								+ lFormat
+								+ " 'received. Token cannot be sent!" );
+						throw new Error(
+								"Invalid encoding format '"
+								+ lFormat
+								+ " 'received (not supported). Token cannot be sent!" );
+					} else if( "zipBase64" === lFormat ) {
+						aToken[lAttr] = jws.tools.zip( lValue, true );
+					} else if( "base64" === lFormat ) {
+						aToken[lAttr] = Base64.encode( lValue );
 					}
 				}
 			},
-			filterTokenIn: function(aToken){
-				var lEnc = aToken['enc'];
-				if (!lEnc)
+					
+			filterTokenIn: function( aToken ) {
+				var lEnc = aToken.enc;
+				if ( !lEnc ) {
 					return;
-				
-				for (var lAttr in lEnc){
-					var lFormat = lEnc[lAttr];
-					var lValue = aToken[lAttr];
-					if (0 > self.fEncodingFormats.lastIndexOf(lFormat)){
-						jws.console.error( "[process decoding]: Invalid encoding format '" + lFormat +"'received. Token cannot be processed!" );
-						throw new Error("Invalid encoding format '" + lFormat +"'received  (not supported). Token cannot be processed!");
-					} else if ("zipBase64" == lFormat){
-						aToken[lAttr] = jws.tools.unzip(lValue, true);
-					} else if ("base64" == lFormat){
-						aToken[lAttr] = Base64.decode(lValue);
+				}	
+				for( var lAttr in lEnc ) {
+					var lFormat = lEnc[ lAttr ];
+					var lValue = aToken[ lAttr ];
+					if( 0 > self.fEncodingFormats.lastIndexOf( lFormat ) ) {
+						jws.console.error( 
+								"[process decoding]: Invalid encoding format '" 
+								+ lFormat 
+								+ "' received. Token cannot be processed!" );
+						throw new Error( 
+								"Invalid encoding format '" 
+								+ lFormat 
+								+ " 'received  (not supported). Token cannot be processed!" );
+					} else if( "zipBase64" === lFormat ) {
+						aToken[lAttr] = jws.tools.unzip( lValue, true );
+					} else if( "base64" === lFormat ) {
+						aToken[lAttr] = Base64.decode( lValue );
 					}
 				}
 			}
-		})
+		});
 	},
 	
 	processOpened: function ( aEvent ){
@@ -2872,8 +2897,8 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			// call filter chain
 			if( this.fFilters ) {
 				for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-					if ( typeof this.fFilters[ lIdx ]["filterTokenIn"] == "function" ){
-						this.fFilters[ lIdx ]["filterTokenIn"]( lToken );
+					if( typeof this.fFilters[ lIdx ][ "filterTokenIn" ] === "function" ) {
+						this.fFilters[ lIdx ][ "filterTokenIn" ]( lToken );
 					}
 				}
 			}
@@ -3058,8 +3083,8 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				// call filter chain
 				if( this.fFilters ) {
 					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-						if ( typeof this.fFilters[ lIdx ]["filterTokenOut"] == "function" ){
-							this.fFilters[ lIdx ]["filterTokenOut"]( aToken );
+						if ( "function" === typeof this.fFilters[ lIdx ]["filterTokenOut"] ) {
+							this.fFilters[ lIdx ][ "filterTokenOut" ]( aToken );
 						}
 					}
 				}
