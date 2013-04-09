@@ -60,6 +60,9 @@ public class ScriptingPlugIn extends TokenPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket Scripting Plug-in - Community Edition";
 	private static ScriptEngineManager mScrEngMgr = new ScriptEngineManager();
+	/**
+	 *
+	 */
 	public static ScriptEngine mJavaScript = null;
 	/**
 	 *
@@ -163,6 +166,10 @@ public class ScriptingPlugIn extends TokenPlugIn {
 	}
 
 	/* example for a static method which can be accessed from a script */
+	/**
+	 *
+	 * @return
+	 */
 	public static Map getScriptingPlugInInfo() {
 		FastMap<String, String> lInfo = new FastMap<String, String>();
 		lInfo.put("version", VERSION);
@@ -170,6 +177,11 @@ public class ScriptingPlugIn extends TokenPlugIn {
 		return lInfo;
 	}
 
+	/**
+	 *
+	 * @param aConnectorId
+	 * @param aToken
+	 */
 	public void sendToken(String aConnectorId, Object[] aToken) {
 		TokenServer lServer = getServer();
 		Token lToken = TokenFactory.createToken();
@@ -221,6 +233,11 @@ public class ScriptingPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	protected void invokeJavaScript(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 		String lMsg;
@@ -271,6 +288,11 @@ public class ScriptingPlugIn extends TokenPlugIn {
 		lServer.sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	protected void executeJavaScript(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 		String lMsg;
