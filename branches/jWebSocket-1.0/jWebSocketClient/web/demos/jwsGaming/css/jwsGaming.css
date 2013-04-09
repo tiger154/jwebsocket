@@ -76,9 +76,10 @@
 .player{
 	width: 65px;
 	position: absolute;
-	padding: 46px 0 0 0;
+	padding: 59px 0 0 0;
 	font-size: 9px;
 	text-align: center;
+	height: 20px;
 }
 
 .green_player{
@@ -123,8 +124,7 @@
 	background: white url(images/jws_green.png) no-repeat 4px 1px;
 }
 
-#debug{
-	font-family: "Verdana";
+.debug{
 	font-size: 10px;
 	margin-top: 0px;
 	padding-top: 2px;
