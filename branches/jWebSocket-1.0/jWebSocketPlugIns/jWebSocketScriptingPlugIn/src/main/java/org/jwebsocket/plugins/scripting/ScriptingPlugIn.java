@@ -39,8 +39,6 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
-import sun.org.mozilla.javascript.Context;
-import sun.org.mozilla.javascript.ScriptableObject;
 
 /**
  *
