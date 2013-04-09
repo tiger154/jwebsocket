@@ -16,9 +16,6 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-
- * @author aschulze, vbarzana
- */
 $.widget( "jws.helloWorld", {
 	_init: function( ) {
 		this.eMessage = this.element.find( "#message_box_text" );
