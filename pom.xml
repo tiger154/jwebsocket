@@ -61,8 +61,6 @@
 		<module>jWebSocketPlugIns/jWebSocketScriptingPlugIn</module>
 		<module>jWebSocketSwingGUI</module>
 		<module>jWebSocketProxy</module>
-		
-		<module>jWebSocketAppServer</module>
 		<module>jWebSocketAppSrvDemo</module>
 		<!--
 		<module>jWebSocketJetty</module>

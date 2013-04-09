@@ -52,35 +52,6 @@
 					</packagingExcludes>
 					
 					<webResources>
-						<!--
-						<resource>
-							<targetPath>WEB-INF/classes</targetPath>						
-							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
-							<includes>
-								<include>**/log4j.xml</include>
-							</includes>							
-						</resource>
-						
-						<resource>
-							<targetPath>WEB-INF/classes/conf</targetPath>						
-							<directory>../../../rte/jWebSocket-${project.version}/conf</directory>
-						</resource>
-						<resource>
-							<targetPath>WEB-INF/lib</targetPath>						
-							<directory>../../../rte/jWebSocket-${project.version}/libs</directory>
-							<includes>
-								<include>**/jWebSocket*.jar</include>
-							</includes>							
-						</resource>
-						-->
-						<resource>
-							<!-- this is relative to the pom.xml directory -->
-							<directory>../jWebSocketWebAppDemo/web/</directory>
-						</resource>
-						<resource>
-							<!-- this is relative to the pom.xml directory -->
-							<directory>../jWebSocketWebAppDemo/src/java/</directory>
-						</resource>
 					</webResources>
 				</configuration>
 			</plugin>
