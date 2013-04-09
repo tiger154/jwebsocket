@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket Filesystem Plug-in (Community Edition, CE)
+//	jWebSocket  (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)

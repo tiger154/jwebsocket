@@ -61,10 +61,10 @@
 							videoRec.start();
 							setInterval(function(){
 								videoRec.getStream(function(aBase64){
-//									console.log(aBase64.length);
+									console.log(aBase64.length);
 									lConn.broadcastText(null, aBase64);
 								});
-							}, 100);
+							}, 1000);
 							//							recorder = new WebRTCVideoRecorder({
 							//								stream: stream
 							//							});

@@ -47,7 +47,7 @@ public class ChunkableZipBase64InputStream extends BaseChunkable {
 		try {
 			byte[] lData = new byte[aData.available()];
 			aData.read(lData, 0, aData.available());
-			byte[] lZip = Tools.zip(lData, Tools.BASE64_ENCODED);
+			byte[] lZip = Tools.zip(lData, Tools.ENC_BASE64);
 			mIS = new ByteArrayInputStream(lZip);
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx.getCause());
@@ -64,7 +64,7 @@ public class ChunkableZipBase64InputStream extends BaseChunkable {
 		super(aNS, aType);
 		
 		try {
-			byte[] lData = Tools.zip(aData, Tools.BASE64_ENCODED);
+			byte[] lData = Tools.zip(aData, Tools.ENC_BASE64);
 			mIS = new ByteArrayInputStream(lData);
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx.getCause());
@@ -81,7 +81,7 @@ public class ChunkableZipBase64InputStream extends BaseChunkable {
 		super(aNS, aType);
 		
 		try {
-			byte[] lData = Tools.zip(aData.getBytes("UTF-8"), Tools.BASE64_ENCODED);
+			byte[] lData = Tools.zip(aData.getBytes("UTF-8"), Tools.ENC_BASE64);
 			mIS = new ByteArrayInputStream(lData);
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx.getCause());
