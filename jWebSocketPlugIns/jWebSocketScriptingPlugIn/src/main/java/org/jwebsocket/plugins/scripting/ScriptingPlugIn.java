@@ -66,7 +66,7 @@ public class ScriptingPlugIn extends TokenPlugIn {
 	 */
 	protected ApplicationContext mBeanFactory;
 	/**
-	 *
+	 * Configuration settings for the scripting plug-in. Controlled by Spring configuration.
 	 */
 	protected Settings mSettings;
 
