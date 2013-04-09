@@ -473,9 +473,9 @@ $.widget("jws.auth",{
 	},
 	
 	cleanHTML: function( aMsg ) {
-		var lResult = "", lEnd = 0, lChar = '';
-		for( var lIdx = 0; lEnd = aMsg.length, lIdx < lEnd; lIdx++ ) {
-			lChar = aMsg[ lIdx ];
+		var lResult = "", lEnd = aMsg.length, lChar = '';
+		for( var lIdx = 0; lIdx < lEnd; lIdx++ ) {
+			lChar = aMsg.charAt( lIdx );
 			if( lChar == '<' ) {
 				lResult += '%3c';
 			} else if( lChar == '>' ) {

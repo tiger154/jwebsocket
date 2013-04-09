@@ -572,20 +572,10 @@ input[type="checkbox"]{
 	width: 18px !important;
 	height: 20px !important;
 	padding: 0 0 0 0px;
-	background: url(img/cb_n.png) no-repeat !important;
+	/*background: url(img/cb_n.png) no-repeat !important;*/
 	/*display: block;*/
 	float: left !important;
 	margin: 0px 0px 0 0px;
-}
-
-.checkbox:hover {
-	background: url(img/cb_h.png) no-repeat !important;
-}
-
-.checkbox:checked {
-	width: 18px !important;
-	height: 20px !important;
-	background: url(img/cb_p.png) no-repeat !important;
 }
 /* ----------------------- CHECKBOXES PERSONALIZATION -------------------------- */
 
