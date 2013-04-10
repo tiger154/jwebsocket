@@ -258,6 +258,18 @@ var jws = {
 		}
 		return lURL;
 	},
+			
+	getWebAppURL: function(aContext, aServlet){
+		var lContext = aContext || self.location.pathname;
+		var lServlet = aServlet || jws.JWS_SERVER_SERVLET;
+		return jws.getServerURL(
+					"https" === self.location.protocol ? "wss" : "ws",
+					self.location.hostname,
+					self.location.port,
+					lContext,
+					lServlet
+					);
+	},
 
 	//:m:*:getDefaultServerURL
 	//:d:en:Returns the default URL to the un-secured jWebSocket Server. This is a convenience _

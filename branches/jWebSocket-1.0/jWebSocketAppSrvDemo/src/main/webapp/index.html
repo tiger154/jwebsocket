@@ -83,13 +83,7 @@ public class SampleWebSocketPlugIn extends ActionPlugIn {
 		<script type="text/javascript">
 			var lConn = new jws.jWebSocketJSONClient();
 
-			var lURL = jws.getServerURL(
-					"https" === self.location.protocol ? "wss" : "ws",
-					self.location.hostname,
-					self.location.port,
-					self.location.pathname,
-					"jWebSocket"
-					);
+			var lURL = jws.getWebAppURL();
 
 			lConn.open(lURL, {
 				OnOpen: function() {
