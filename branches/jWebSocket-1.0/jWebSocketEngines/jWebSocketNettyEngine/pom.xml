@@ -17,12 +17,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<org.jboss.netty.version>3.2.4.Final</org.jboss.netty.version>
 	</properties>
-<!--
-	<scm>
-		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketNettyEngine</connection>
-		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketNettyEngine</developerConnection>
-	</scm>
--->
 	<build>
 		<plugins>
 			<plugin>

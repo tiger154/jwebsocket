@@ -17,12 +17,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<org.apache.tomcat.version>7.0.35</org.apache.tomcat.version>
 	</properties>
-<!--
-	<scm>
-		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketTomcatEngine</connection>
-		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketTomcatEngine</developerConnection>
-	</scm>
--->
 	<build>
 		<plugins>
 			<plugin>

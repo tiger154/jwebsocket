@@ -17,12 +17,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<org.eclipse.jetty.version>8.1.0.RC5</org.eclipse.jetty.version>
 	</properties>
-<!--
-	<scm>
-		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJettyEngine</connection>
-		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJettyEngine</developerConnection>
-	</scm>
--->
 	<build>
 		<plugins>
 			<plugin>
