@@ -142,12 +142,32 @@ public class MailPlugIn extends TokenPlugIn {
       }
    }
 
+   @Override
+   public Token invoke(WebSocketConnector aConnector, Token aToken) {
+      String lType = aToken.getType();
+      String lNS = aToken.getNS();
+
+      TokenServer lServer = getServer();
+      Token lResponse = createResponse(aToken);
+
+      if (lType != null && getNamespace().equals(lNS)) {
+         if (lType.equals("sendMail")) {
+            mService.sendMail(aConnector, aToken, lResponse, lServer, NS_MAIL);
+            return lResponse;
+         } else if (lType.equals("createMail")) {
+            mService.createMail(aToken, lResponse);
+            return lResponse;
+         }
+      }
+      return null;
+   }
+
    private void sendMail(WebSocketConnector aConnector, Token aToken) {
       TokenServer lServer = getServer();
       Token lResponse = createResponse(aToken);
-      
+
       mService.sendMail(aConnector, aToken, lResponse, lServer, NS_MAIL);
-      
+
       // send response to requester
       lServer.sendToken(aConnector, lResponse);
    }
@@ -175,9 +195,9 @@ public class MailPlugIn extends TokenPlugIn {
    private void addAttachment(WebSocketConnector aConnector, Token aToken) {
       TokenServer lServer = getServer();
       Token lResponse = createResponse(aToken);
-      
+
       mService.addAttachment(aConnector, aToken, lResponse, getServer(), NS_MAIL);
-		
+
       // send response to requester
       lServer.sendToken(aConnector, lResponse);
    }
@@ -185,9 +205,9 @@ public class MailPlugIn extends TokenPlugIn {
    private void removeAttachment(WebSocketConnector aConnector, Token aToken) {
       TokenServer lServer = getServer();
       Token lResponse = createResponse(aToken);
-      
+
       mService.removeAttachment(aToken, lResponse);
-      
+
       // send response to requester
       lServer.sendToken(aConnector, lResponse);
    }
@@ -195,9 +215,9 @@ public class MailPlugIn extends TokenPlugIn {
    private void moveMail(WebSocketConnector aConnector, Token aToken) {
       TokenServer lServer = getServer();
       Token lResponse = createResponse(aToken);
-      
+
       mService.moveMail(aToken, lResponse);
-      
+
       // send response to requester
       lServer.sendToken(aConnector, lResponse);
    }
@@ -205,9 +225,9 @@ public class MailPlugIn extends TokenPlugIn {
    private void getMail(WebSocketConnector aConnector, Token aToken) {
       TokenServer lServer = getServer();
       Token lResponse = createResponse(aToken);
-      
+
       mService.getMail(aToken, lResponse);
-      
+
       // send response to requester
       lServer.sendToken(aConnector, lResponse);
    }
@@ -215,9 +235,9 @@ public class MailPlugIn extends TokenPlugIn {
    private void getUserMails(WebSocketConnector aConnector, Token aToken) {
       TokenServer lServer = getServer();
       Token lResponse = createResponse(aToken);
-      
+
       mService.getUserMails(aToken, lResponse);
-      
+
       // send response to requester
       lServer.sendToken(aConnector, lResponse);
    }
