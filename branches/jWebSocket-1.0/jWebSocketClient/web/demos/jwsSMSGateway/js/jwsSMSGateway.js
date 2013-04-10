@@ -73,7 +73,7 @@ $.widget( "jws.SMSGateway", {
 			}
 		};
 
-		$("#demo_b\n\ox").auth(lCallbacks);
+		$("#demo_box").auth(lCallbacks);
 	},
 			
 	getCaptcha: function() {
