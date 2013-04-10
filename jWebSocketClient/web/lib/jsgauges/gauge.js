@@ -308,7 +308,7 @@ function Gauge( canvas, options ) {
 
         // value text
         valueText = formatValue( value, decimals ) + that.settings.unitsLabel;
-        fontSize = this.radius / 5;
+        fontSize = this.radius / 6;
         styleText( this.c2d, fontSize.toFixed(0) + 'px sans-serif');
         metrics = measureText( this.c2d, valueText );
         if (value < min || value > max) { // Outside min/max ranges?
@@ -482,8 +482,8 @@ Gauge.prototype.draw = function() {
     drawCtx.width = drawCtx.c2d.canvas.width;
     drawCtx.height = drawCtx.c2d.canvas.height;
     drawCtx.radius = Math.min( drawCtx.width / 2 - 4, drawCtx.height / 2 - 4 );
-    drawCtx.innerRadius = drawCtx.radius * 0.7;
-    drawCtx.outerRadius = drawCtx.radius * 0.9;
+    drawCtx.innerRadius = drawCtx.radius * 0.79;
+    drawCtx.outerRadius = drawCtx.radius * 0.93;
     drawCtx.centerX = drawCtx.radius + 4;
     drawCtx.centerY = drawCtx.radius + 4 + ( drawCtx.radius -
                                             drawCtx.radius * Math.sin( drawCtx.startDeg ) ) / 2;

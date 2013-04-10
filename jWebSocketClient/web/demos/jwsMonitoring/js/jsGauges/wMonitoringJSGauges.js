@@ -74,43 +74,61 @@ $.widget("jws.monitoring", {
 	},
 	initGauges: function() {
 		w.monitoring.eCpuGauge.gauge({
+			majorTickLabel: true,
 			min: 0,
 			max: 100,
 			label: 'CPU',
-			unitsLabel: ' %',
+			unitsLabel: '%',
 			greenFrom: 60,
 			greenTo: 70,
 			yellowFrom: 70,
 			yellowTo: 85,
 			redFrom: 85,
-			redTo: 100
+			redTo: 100,
+			colorOfPointerStroke: 'rgba(0, 0, 0, 0)',
+			colorOfPointerFill: 'rgba(0, 0, 0, 0.7)',
+			colorOfCenterCircleFill: 'rgba(125, 160, 125, 1)',
+			colorOfCenterCircleStroke: 'rgba(0, 0, 0, 0)',
+			colorOfFill: [ '#111', '#ccc', '#ddd', '#fcfcfc' ]
 		});
 		
 		w.monitoring.eMemGauge.gauge({
+			majorTickLabel: true,
 			min: 0,
 			max: 100,
 			label: 'RAM',
-			unitsLabel: ' %',
+			unitsLabel: '%',
 			greenFrom: 60,
 			greenTo: 70,
 			yellowFrom: 70,
 			yellowTo: 85,
 			redFrom: 85,
-			redTo: 100
+			redTo: 100,
+			colorOfPointerStroke: 'rgba(0, 0, 0, 0)',
+			colorOfPointerFill: 'rgba(0, 0, 0, 0.7)',
+			colorOfCenterCircleFill: 'rgba(125, 160, 125, 1)',
+			colorOfCenterCircleStroke: 'rgba(0, 0, 0, 0)',
+			colorOfFill: [ '#111', '#ccc', '#ddd', '#fcfcfc' ]
 		});
 		
 		w.monitoring.eHddGauge.gauge({
+			majorTickLabel: true,
 			min: 0,
 			max: 100,
-			label: 'waiting info...',
-			unitsLabel: ' GB',
+			label: 'HDD',
+			unitsLabel: 'GB',
 			greenFrom: 60,
 			greenTo: 70,
 			yellowFrom: 70,
 			yellowTo: 85,
 			redFrom: 85,
-			redTo: 100
-		})//.gauge('setValue', 0);
+			redTo: 100,
+			colorOfPointerStroke: 'rgba(0, 0, 0, 0)',
+			colorOfPointerFill: 'rgba(0, 0, 0, 0.7)',
+			colorOfCenterCircleFill: 'rgba(125, 160, 125, 1)',
+			colorOfCenterCircleStroke: 'rgba(0, 0, 0, 0)',
+			colorOfFill: [ '#111', '#ccc', '#ddd', '#fcfcfc' ]
+		})
 	},
 	// Dynamically update the gauge at runtime
 	updateGauge: function(aToken) {
@@ -127,16 +145,22 @@ $.widget("jws.monitoring", {
 		if( lTotal != w.monitoring.mTotalHddSpace ) {
 			w.monitoring.mTotalHddSpace = lTotal;
 			w.monitoring.eHddGauge.gauge({
+				majorTickLabel: true,
 				min: 0,
 				max: lTotal,
 				label: 'HDD',
-				unitsLabel: ' GB',
+				unitsLabel: 'GB',
 				greenFrom: parseInt( lTotal - lTotal * 0.6),
 				greenTo: parseInt(lTotal - lTotal * 0.3),
 				yellowFrom:parseInt(lTotal - lTotal * 0.3),
 				yellowTo: parseInt(lTotal - lTotal * 0.2),
 				redFrom: parseInt(lTotal - lTotal * 0.2),
-				redTo: parseInt(lTotal - lTotal * 0.1)
+				redTo: parseInt(lTotal - lTotal * 0.1),
+				colorOfPointerStroke: 'rgba(0, 0, 0, 0)',
+				colorOfPointerFill: 'rgba(0, 0, 0, 0.7)',
+				colorOfCenterCircleFill: 'rgba(125, 160, 125, 1)',
+				colorOfCenterCircleStroke: 'rgba(0, 0, 0, 0)',
+				colorOfFill: [ '#111', '#ccc', '#ddd', '#fcfcfc' ]
 			});
 		}
 		w.monitoring.eHddGauge.gauge('setValue', IUsed );
