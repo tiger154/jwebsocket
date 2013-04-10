@@ -46,6 +46,16 @@
 
 		<!-- JQUERY MOBILE JS LIBRARY -->
 		<script type="text/javascript" src="../../../../lib/jQuery/jquery.mobile-v1.0b1.js"></script>
+
+		<!--[if IE 7]>
+			<style>
+				.ui-btn-icon-notext{width: 20px !important;height: 20px !important;
+					float: left;}.center_count{margin-left: 2px;float: left;}
+				.footer ul li{float: left;width: 49.9% !important;margin: 0 !important;
+					padding: 0 !important;}input[type="text"] {background: #f4f4f4;
+				}
+			</style>
+		<![endif]-->
 	</head>
 	<body>
 		<!-- MAIN PAGE       -->
@@ -58,7 +68,7 @@
 				<div class="client_status offline">disconnected</div><div class="line"></div>
 				<div class="client_id">Client-ID: - </div>
 			</div>
-
+		
             <div data-role="content" id="users_list">
 				<ul data-role="listview" data-inset="true" 
 					data-theme="c" data-dividertheme="a" id="list">
@@ -80,7 +90,7 @@
 					<div data-role="controlgroup" data-type="horizontal" data-position="inline">
 						<a id="btn_first" data-role="button" data-icon="back" data-iconpos="notext" data-theme="a" title="First"></a>
 						<a id="btn_prev" data-role="button" data-icon="arrow-l" data-iconpos="notext" data-theme="a" title="Previous"></a>
-						<div data-role="button" data-theme="c" style="margin-left: 2px;">
+						<div data-role="button" data-theme="c" class="center_count">
 							<div class="ui-block-a" id="page_counter">
 								<div>Page&nbsp;</div>
 								<div class="current_page">0</div> 
