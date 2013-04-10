@@ -145,17 +145,21 @@ label{
 }
 
 #radioDiv {
-    float: left;
-	width: 75%;
-	padding-left: 94px;
+    float: right;
+	width: 100%;
+	/*padding-left: 94px;*/
+	margin-bottom: 5px;
 }
 
 #sms_actions{
-	float: left;
+	margin: 5px 0 5px 0;
+	float: right;
+	width: 80%;
 }
 
 #basic,#gold, #direct, #sms_actions label, #smsType {
-    margin-top: 12px; 
+    padding-top: 3px !ie7; 
+    margin-top: 0; 
 }
 
 #send_button{
@@ -166,6 +170,7 @@ label{
 	font-size: 11px;
 	margin-top: 5px;
 	color: #606060;
+	float: right;
 }
 
 #character_counter div{
@@ -174,6 +179,7 @@ label{
 
 #character_counter .count{
 	padding-right: 3px;
+	float: right;
 }
 
 .error{
