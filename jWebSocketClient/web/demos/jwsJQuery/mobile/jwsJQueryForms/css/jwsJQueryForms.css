@@ -104,4 +104,7 @@
 #new_users{
 	cursor: pointer;
 }
+.ui-content{
+	padding-top: 25px !ie7;
+}
 /* ------------- END JQUERY MOBILE --------------- */

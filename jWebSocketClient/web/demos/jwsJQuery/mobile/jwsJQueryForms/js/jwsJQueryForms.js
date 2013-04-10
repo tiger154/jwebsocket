@@ -26,7 +26,8 @@ w = { };
 $.widget( "jws.pager", {
 	_init: function( ) {
 		// ------------- VARIABLES -------------
-		this.mPageSize	= 3; 
+		// Number of elements per page
+		this.mPageSize	= 4; 
 		this.mCurrPage	= 1;
 		this.mMaxPages	= 0;
 		
@@ -98,6 +99,12 @@ $.widget( "jws.pager", {
 				w.pager.eCurrPage.text( aToken.currentpage + 1 );
 				w.pager.mCurrPage = aToken.currentpage + 1;
 				$( w.pager ).trigger( "pageChange", aToken );
+				// sometimes in IE7 the text is not correctly shown and if you 
+				// click in the document or press any key this problem is solved ;)
+				if( jws.isIE_LE7() ) {
+					$(document).click();
+					$(document).click();
+				}
 			}
 		};
 		
@@ -138,7 +145,7 @@ $.widget( "jws.forms", {
 	_init: function( ) {
 		// ------------- VARIABLES -------------
 		this.NS = jws.NS_BASE + ".plugins.jquerydemo";
-		this.NS_SYSTEM	= "org.jwebsocket.plugins.system";
+		this.NS_SYSTEM	= jws.NS_BASE + ".plugins.system";
 		this.mCountNewUsers	= 0;
 		
 		// ------------- DOM ELEMENTS -------------

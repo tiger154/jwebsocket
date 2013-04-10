@@ -37,3 +37,6 @@
 #footer a{
 	color: white !important;
 }
+.ui-content{
+	padding-top: 25px !ie7;
+}
