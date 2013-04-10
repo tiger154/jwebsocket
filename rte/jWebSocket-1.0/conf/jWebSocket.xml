@@ -134,7 +134,6 @@
 				<setting key="writer_timeout">1000</setting>
 			</settings>		
 		</engine>
-
 	</engines>
 
 	<!-- The <engineDefaults> section is stored here only for convenience!
@@ -445,7 +444,7 @@
 			</domains>
 			<!-- default session timeout (minutes) -->
 			<timeout>1</timeout>
-
+		
 			<!-- context and servlet settings, these settings are applied only
 				 in embedded mode. In standard web app mode the context is specified 
 				 by the context.xml of the web-app and the servlet is specified 
@@ -1579,7 +1578,7 @@
 			</server-assignments>
 		</plugin>
       
-      <!-- user-admin plug-in -->
+      <!-- user-admin plug-in 
 		<plugin>
 			<name>org.jwebsocket.enterprise.plugins.useradmin.UserAdminPlugIn</name>
 			<id>jws.useradmin</id>
@@ -1587,7 +1586,6 @@
 			<jars>
 				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketUserAdminPlugInEE-1.0.jar</jar>
 			</jars>
-			<!-- plug-in specific settings -->
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/UserAdminPlugIn/useradmin.xml</setting>
 			</settings>
@@ -1595,7 +1593,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</plugin>
-
+		-->
 		
 		<!-- Reporting plug-in -->
 		<plugin>
