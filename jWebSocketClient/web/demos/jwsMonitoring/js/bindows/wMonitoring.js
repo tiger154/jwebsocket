@@ -23,10 +23,11 @@
 $.widget("jws.monitoring", {
 	_init: function( ) {
 		this.NS = jws.NS_BASE + ".plugins.monitoring";
-		this.mMemGauge = bindows.loadGaugeIntoDiv("gauges/g_memoryRam_memorySwap.xml", "memDiv");
-		this.mCPUGauge = bindows.loadGaugeIntoDiv("gauges/g_cpu.xml", "cpuDiv");
-		this.mHDDGauge = bindows.loadGaugeIntoDiv("gauges/g_hdd.xml", "hddDiv");
-
+		this.TT_REGISTER = "register";
+		this.TT_INFO = "computerInfo";
+		this.mMemGauge = bindows.loadGaugeIntoDiv("js/bindows/gauges/g_memoryRam_memorySwap.xml", "memDiv");
+		this.mCPUGauge = bindows.loadGaugeIntoDiv("js/bindows/gauges/g_cpu.xml", "cpuDiv");
+		this.mHDDGauge = bindows.loadGaugeIntoDiv("js/bindows/gauges/g_hdd.xml", "hddDiv");
 		w.monitoring = this;
 		w.monitoring.doWebSocketConnection( );
 	},
@@ -38,8 +39,8 @@ $.widget("jws.monitoring", {
 				// Registering to the monitoring stream
 				var lRegisterToken = {
 					ns: w.monitoring.NS,
-					type: "register",
-					interest: "computerInfo"
+					type: w.monitoring.TT_REGISTER,
+					interest: w.monitoring.TT_INFO
 				};
 				// Sending the register token
 				mWSC.sendToken(lRegisterToken);
@@ -48,7 +49,8 @@ $.widget("jws.monitoring", {
 				w.monitoring.resetGauges();
 			},
 			OnMessage: function(aEvent, aToken) {
-				if (w.monitoring.NS === aToken.ns && "computerInfo" === aToken.type) {
+				if (w.monitoring.NS === aToken.ns && 
+					w.monitoring.TT_INFO === aToken.type) {
 					w.monitoring.updateGauge(aToken);
 				}
 				var lDate = "";
@@ -56,14 +58,14 @@ $.widget("jws.monitoring", {
 					lDate = jws.tools.ISO2Date(aToken.date_val);
 				}
 				log("<font style='color:#888'>jWebSocket '" + aToken.type +
-						"' token received, full message: '" + aEvent.data + "' " +
-						lDate + "</font>");
+					"' token received, full message: '" + aEvent.data + "' " +
+					lDate + "</font>");
 			}
 		};
 		// this widget will be accessible from the global variable w.auth
 		$("#demo_box").auth(lCallbacks);
 	},
-// Dynamically update the gauge at runtime
+	// Dynamically update the gauge at runtime
 	updateGauge: function(aToken) {
 		//cpu
 		var IValue = parseInt(aToken.consumeCPU);
@@ -89,7 +91,7 @@ $.widget("jws.monitoring", {
 		w.monitoring.mHDDGauge.needle.setValue(IUsed);
 		w.monitoring.mHDDGauge.maxValue.setEndValue(parseInt(aToken.totalHddSpace));
 	},
-//Reset gauges when the server is disconnect
+	//Reset gauges when the server is disconnect
 	resetGauges: function() {
 		w.monitoring.mCPUGauge.needle.setValue("0");
 		w.monitoring.mCPUGauge.label.setText("0");
