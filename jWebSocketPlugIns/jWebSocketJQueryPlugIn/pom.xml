@@ -17,12 +17,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.JQuery.outputEncoding>UTF-8</project.JQuery.outputEncoding>
 	</properties>
-<!--
-	<scm>
-		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJQueryPlugIn</connection>
-		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketJQueryPlugIn</developerConnection>
-	</scm>
--->
 	<build>
 		<plugins>
 			<plugin>

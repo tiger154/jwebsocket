@@ -17,12 +17,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<org.glassfish.grizzly.version>2.2.5</org.glassfish.grizzly.version>
 	</properties>
-<!--
-	<scm>
-		<connection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketGrizzlyEngine</connection>
-		<developerConnection>scm:svn:https://jwebsocket.googlecode.com/svn/trunk/jWebSocketGrizzlyEngine</developerConnection>
-	</scm>
--->
 	<build>
 		<plugins>
 			<plugin>
