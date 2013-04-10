@@ -6,6 +6,10 @@
 	color: #969696;
 }
 
+#functional_box{
+	width: 100% !important;
+}
+
 #functional_box_header{
     color: #414141;
     font-family: fantasy;
@@ -98,7 +102,7 @@
 }
 
 #functional_box_content .form{
-	width: 22%;
+	width: 65%;
 	height: auto;
 	margin-bottom: 10px;
 }
@@ -125,7 +129,7 @@
 
 #functional_box_content .text{
 	float: left;
-	width: 20%;
+	width: 30%;
 	height: auto;
 	padding: 5px;
 }
@@ -134,17 +138,14 @@
 	width: 40%;
 }
 
-.complex_object_btn{
-    padding-bottom: 10px;
-    float: left;
-}
-
 #button_container{
     margin-top: 8px;
 }
 
 .tab_element{
 	display: none;
+	width: 43%;
+	float: left;
 }
 
 .is_public{
@@ -153,7 +154,7 @@
 }
 
 .public_cb{
-	width: 65px;
+	width: 42%;
 	padding-top: 5px;
 	float: left;
 }
