@@ -4,12 +4,12 @@
 	<bean id="org.jwebsocket.plugins.scripting.settings" class="org.jwebsocket.plugins.scripting.Settings">
 		<property name="javascript">
 			<map>
-				<entry key="demo1" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/demo1.js"/>
+				<entry key="demo1" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripts/js/demo1.js"/>
 			</map>
 		</property>
-		<property name="javascript">
+		<property name="apps">
 			<map>
-				<entry key="demo" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/demo1.js"/>
+				<entry key="demo" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripts/js/demo1.js"/>
 			</map>
 		</property>
 	</bean>
