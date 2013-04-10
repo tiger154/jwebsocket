@@ -48,72 +48,72 @@ public class SMSPlugIn extends TokenPlugIn {
 	private static Settings mSettings;
 	private ISMSProvider mProvider;
 
-	/**
-	 *
-	 * @param aConfiguration
-	 */
-	public SMSPlugIn(PluginConfiguration aConfiguration) {
-		super(aConfiguration);
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Instantiating SMS plug-in...");
-		}
-		this.setNamespace(NS_SMS);
+   /**
+    *
+    * @param aConfiguration
+    */
+   public SMSPlugIn(PluginConfiguration aConfiguration) {
+      super(aConfiguration);
+      if (mLog.isDebugEnabled()) {
+         mLog.debug("Instantiating SMS plug-in...");
+      }
+      this.setNamespace(NS_SMS);
 
-		try {
-			mBeanFactory = getConfigBeanFactory();
-			if (null == mBeanFactory) {
-				mLog.error("No or invalid spring configuration for SMS plug-in, some features may not be available.");
-			} else {
-				mBeanFactory = getConfigBeanFactory();
-				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.sms.settings");
-				if (mLog.isInfoEnabled()) {
-					mLog.info("SMS plug-in successfully instantiated.");
-				}
-			}
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SMS plug-in"));
-		}
+      try {
+         mBeanFactory = getConfigBeanFactory();
+         if (null == mBeanFactory) {
+            mLog.error("No or invalid spring configuration for SMS plug-in, some features may not be available.");
+         } else {
+            mBeanFactory = getConfigBeanFactory();
+            mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.sms.settings");
+            if (mLog.isInfoEnabled()) {
+               mLog.info("SMS plug-in successfully instantiated.");
+            }
+         }
+      } catch (Exception lEx) {
+         mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SMS plug-in"));
+      }
 
-		if (null != mSettings) {
-			// just for developers convenience
-			mProvider = mSettings.getProvider();
-		}
-	}
+      if (null != mSettings) {
+         // just for developers convenience
+         mProvider = mSettings.getProvider();
+      }
+   }
 
-	@Override
-	public String getVersion() {
-		return VERSION;
-	}
+   @Override
+   public String getVersion() {
+      return VERSION;
+   }
 
-	@Override
-	public String getLabel() {
-		return LABEL;
-	}
+   @Override
+   public String getLabel() {
+      return LABEL;
+   }
 
-	@Override
-	public String getDescription() {
-		return DESCRIPTION;
-	}
+   @Override
+   public String getDescription() {
+      return DESCRIPTION;
+   }
 
-	@Override
-	public String getVendor() {
-		return VENDOR;
-	}
+   @Override
+   public String getVendor() {
+      return VENDOR;
+   }
 
-	@Override
-	public String getCopyright() {
-		return COPYRIGHT;
-	}
+   @Override
+   public String getCopyright() {
+      return COPYRIGHT;
+   }
 
-	@Override
-	public String getLicense() {
-		return LICENSE;
-	}
+   @Override
+   public String getLicense() {
+      return LICENSE;
+   }
 
-	@Override
-	public String getNamespace() {
-		return NS_SMS;
-	}
+   @Override
+   public String getNamespace() {
+      return NS_SMS;
+   }
 
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
