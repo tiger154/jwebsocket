@@ -36,27 +36,25 @@
         <!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsSessionManagement.css"/>
-		<link rel="stylesheet" href="css/jwsSessionManagement.css" type="text/css">
+		
+		<!-- JQUERY DEPENDENCIES -->
+		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+		<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
+		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
+		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
 
-			<!-- JQUERY DEPENDENCIES -->
-			<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
-			<script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
-			<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
-			<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+		<!--  PUBLIC WIDGETS   -->
+		<script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
+		<script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
 
-			<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
-			<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+		<!--  PRIVATE WIDGETS  -->
+		<script type="text/javascript" src='js/wSessionManagement.js'></script>
 
-			<!--  PUBLIC WIDGETS   -->
-			<script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
-			<script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
-
-			<!--  PRIVATE WIDGETS  -->
-			<script type="text/javascript" src='js/wSessionManagement.js'></script>
-
-			<!--  MAIN JAVASCRIPT FILE   -->
-			<script type="text/javascript" src='js/init.js'></script>
+		<!--  MAIN JAVASCRIPT FILE   -->
+		<script type="text/javascript" src='js/init.js'></script>
 
     </head>
     <body>
@@ -280,7 +278,7 @@
 										Get Many</div>
 								</div>
 							</div>
-							<div>
+							<div id="key_list">
 								<div class="client_name">
 									<b class="box">List of keys for client Id:</b>
 									<div class="id">-</div>
