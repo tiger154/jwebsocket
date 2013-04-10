@@ -258,6 +258,24 @@ var jws = {
 		}
 		return lURL;
 	},
+	
+	//:m:*:getWebAppURL
+	//:d:en:Returns the WebSocket server URL for Web Apps (Tomcat, Grizzly, Jetty, etc...)
+	//:a:en::aId:String:id of the HTML element to be returned.
+	//:a:en::aContext:String:Context path of the Web App. The value is optional, default: self.location.pathname
+	//:a:en::aServlet:String:Servlet name of the jWebSocket app. The value is optional, default: jws.JWS_SERVER_SERVLET
+	//:r:*:::String:WebSocket server URL consisting of schema://host:port/context/servlet
+	getWebAppURL: function(aContext, aServlet){
+		var lContext = aContext || self.location.pathname;
+		var lServlet = aServlet || jws.JWS_SERVER_SERVLET;
+		return jws.getServerURL(
+					"https" === self.location.protocol ? "wss" : "ws",
+					self.location.hostname,
+					self.location.port,
+					lContext,
+					lServlet
+					);
+	},
 
 	//:m:*:getDefaultServerURL
 	//:d:en:Returns the default URL to the un-secured jWebSocket Server. This is a convenience _
