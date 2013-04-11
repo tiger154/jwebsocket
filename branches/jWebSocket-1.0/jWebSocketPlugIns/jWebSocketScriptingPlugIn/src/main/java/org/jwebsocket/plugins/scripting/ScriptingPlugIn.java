@@ -18,8 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.scripting;
 
+import org.jwebsocket.plugins.scripting.app.JavaScriptApp;
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -31,24 +32,22 @@ import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
-import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.Assert;
 
 /**
- *
  * Refer to
  * http://docs.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html
  * http://download.java.net/jdk8/docs/technotes/guides/scripting/programmer_guide/index.html
  *
  * @author aschulze
+ * @author kyberneees
  */
-public class ScriptingPlugIn extends TokenPlugIn {
+public class ScriptingPlugIn extends ActionPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	/**
@@ -68,7 +67,7 @@ public class ScriptingPlugIn extends TokenPlugIn {
 	 */
 	public static ScriptEngine mJavaScript = null;
 	private Map<String, ScriptEngine> mApps = new FastMap<String, ScriptEngine>().shared();
-	
+	private Map<String, JavaScriptApp> mAppsContext = new FastMap<String, JavaScriptApp>().shared();
 	/**
 	 *
 	 */
@@ -93,7 +92,7 @@ public class ScriptingPlugIn extends TokenPlugIn {
 
 		mEngine = new ScriptEngineManager();
 		mJavaScript = mEngine.getEngineByExtension("js");
-		
+
 		try {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
@@ -103,10 +102,13 @@ public class ScriptingPlugIn extends TokenPlugIn {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.scripting.settings");
 
 				// initializing apps
-				for (String lApp : mSettings.getApps().keySet()){
+				for (String lApp : mSettings.getApps().keySet()) {
+					if (mLog.isInfoEnabled()) {
+						mLog.info("Scripting plug-in successfully instantiated.");
+					}
 					loadApp(lApp, mSettings.getApps().get(lApp));
 				}
-				
+
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Scripting plug-in successfully instantiated.");
 				}
@@ -152,210 +154,54 @@ public class ScriptingPlugIn extends TokenPlugIn {
 		return NS_Scripting;
 	}
 
-	/*
-	 @Override
-	 public synchronized void engineStarted(WebSocketEngine aEngine) {
-	 }
-
-	 @Override
-	 public synchronized void engineStopped(WebSocketEngine aEngine) {
-	 }
-	 */
-	@Override
-	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-		String lType = aToken.getType();
-		String lNS = aToken.getNS();
-
-		if (lType != null && getNamespace().equals(lNS)) {
-			if (lType.equals("invokeJavaScript")) {
-				invokeJavaScript(aConnector, aToken);
-			} else if (lType.equals("executeJavaScript")) {
-				executeJavaScript(aConnector, aToken);
-			}
-		}
-	}
-
-	/* example for a static method which can be accessed from a script */
-	/**
-	 *
-	 * @return
-	 */
-	public static Map getScriptingPlugInInfo() {
-		FastMap<String, String> lInfo = new FastMap<String, String>();
-		lInfo.put("version", VERSION);
-		lInfo.put("vendor", VENDOR);
-		return lInfo;
-	}
-
-	/**
-	 *
-	 * @param aConnectorId
-	 * @param aToken
-	 */
-	public void sendToken(String aConnectorId, Object[] aToken) {
-		TokenServer lServer = getServer();
-		Token lToken = TokenFactory.createToken();
-		FastMap<String, Object> lArgs = new FastMap<String, Object>();
-		for (int lIdx = 0; lIdx < aToken.length; lIdx++) {
-			lArgs.put("f" + lIdx, aToken[lIdx]);
-		}
-		lToken.setMap(lArgs);
-		WebSocketConnector lConnector = lServer.getConnector(aConnectorId);
-		if (null != lConnector) {
-			lServer.sendToken(lConnector, lToken);
-		}
-	}
-
-	/**
-	 * internally invoke a java script file
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 */
-	private Token mInvokeJavaScript(WebSocketConnector aConnector, Token aToken) {
-		TokenServer lServer = getServer();
-
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Invoking JavaScript...");
-		}
-
-		// instantiate response token
-		Token lResponse = lServer.createResponse(aToken);
-
-		String lJavaScript = aToken.getString("javaScript");
-		String lFunction = aToken.getString("function");
-		List lArgs = aToken.getList("args");
-
-		Invocable lScript;
-		try {
-			mJavaScript.eval(lJavaScript);
-			mJavaScript.put("server", this);
-			lScript = (Invocable) mJavaScript;
-			Object lRes = lScript.invokeFunction(lFunction, lArgs.toArray());
-			lResponse.getMap().put("result", lRes);
-			if (mLog.isInfoEnabled()) {
-				mLog.info("Parsing successful.");
-			}
-			return lResponse;
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "invoking function..."));
-			return lServer.createErrorToken(aToken, -1, lEx.getMessage());
-		}
-	}
-
 	public void loadApp(String aApp, String aFilePath) throws Exception {
-		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFilePath)));
-		mApps.put(aApp, mEngine.getEngineByName("javascript"));
-		
-		// loading the app script
-		mApps.get(aApp).eval(lFile);
+		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFilePath) + "/App.js"));
+		ScriptEngine lScript = mEngine.getEngineByName("javascript");
+		mApps.put(aApp, lScript);
+		mAppsContext.put(aApp, new JavaScriptApp(this.getServer(), aApp, aFilePath, lScript));
+
+		lScript.put("app", mAppsContext.get(aApp));
+		lScript.eval(lFile);
 	}
 
-	protected void invokeJavaScript(WebSocketConnector aConnector, Token aToken) {
-		TokenServer lServer = getServer();
-		String lMsg;
+	public void loadAppAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		String aApp = aToken.getString("app");
+		Assert.notNull(aApp, "The 'app' argument cannot be null!");
+		Assert.isTrue(mSettings.getApps().containsKey(aApp), "The target application '" + aApp + "' does not exists!");
 
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing 'invokeJavaScript'...");
-		}
+		// loading the app (will destroy if exists)
+		loadApp(aApp, mSettings.getApps().get(aApp));
 
-		// check if user is allowed to run 'load' command
-		/*
-		 if (!hasAuthority(aConnector, NS_Scripting + ".run")) {
-		 if (mLog.isDebugEnabled()) {
-		 mLog.debug("Returning 'Access denied'...");
-		 }
-		 lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
-		 return;
-		 }
-		 */
-
-		// instantiate response token
-		Token lResponse = lServer.createResponse(aToken);
-
-		String lAlias = aToken.getString("alias");
-		String lFunction = aToken.getString("function");
-		String lJavaScript =
-				"function main() {"
-				+ "server.sendToken('" + aConnector.getId() + "', ['arg1','arg2'] );"
-				+ "var a = org.jwebsocket.plugins.scripting.ScriptingPlugIn.getScriptingPlugInInfo();"
-				+ "return a;"
-				+ "}";
-
-		if (null == lFunction) {
-			lMsg = "No function passed in scripting call.";
-			if (mLog.isDebugEnabled()) {
-				mLog.debug(lMsg);
-			}
-			lServer.sendErrorToken(aConnector, lResponse, -1, lMsg);
-			return;
-		}
-		List lArgs = aToken.getList("args");
-
-		Token aCall = TokenFactory.createToken();
-		aCall.setString("javaScript", lJavaScript);
-		aCall.setString("function", lFunction);
-		aCall.setList("args", lArgs);
-
-		lResponse = mInvokeJavaScript(aConnector, aCall);
-		lServer.sendToken(aConnector, lResponse);
+		sendToken(aConnector, createResponse(aToken));
 	}
 
-	/**
-	 * Executes a JavaScript file on the server.
-	 * @param aConnector
-	 * @param aToken
-	 */
-	protected void executeJavaScript(WebSocketConnector aConnector, Token aToken) {
-		TokenServer lServer = getServer();
-		String lMsg;
+	public void callJsMethodAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		String aApp = aToken.getString("app");
+		String aObjectId = aToken.getString("objectId");
+		String aMethod = aToken.getString("method");
+		Object[] aArgs = aToken.getList("args", new ArrayList()).toArray();
+		Object lResult = callJsMethod(aApp, aObjectId, aMethod, aArgs);
 
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing 'executeJavaScript'...");
-		}
+		Token lResponse = createResponse(aToken);
+		lResponse.getMap().put("result", lResult);
 
-		// check if user is allowed to run 'load' command
-		/*
-		 if (!hasAuthority(aConnector, NS_Scripting + ".run")) {
-		 if (mLog.isDebugEnabled()) {
-		 mLog.debug("Returning 'Access denied'...");
-		 }
-		 lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
-		 return;
-		 }
-		 */
+		sendToken(aConnector, lResponse);
+	}
 
-		// instantiate response token
-		Token lResponse = lServer.createResponse(aToken);
+	public Object callJsMethod(String aApp, String aObjectId, String aMethod, Object[] aArgs) throws Exception {
+		Assert.notNull(aApp, "The 'app' argument cannot be null!");
+		Assert.notNull(aObjectId, "The 'objectId' argument cannot be null!");
+		Assert.notNull(aMethod, "The 'method' argument cannot be null!");
 
-		String lFunction = aToken.getString("function");
-		if (null == lFunction) {
-			lMsg = "No function passed in scripting call.";
-			if (mLog.isDebugEnabled()) {
-				mLog.debug(lMsg);
-			}
-			lServer.sendErrorToken(aConnector, lResponse, -1, lMsg);
-			return;
-		}
+		ScriptEngine lApp = mApps.get(aApp);
+		Assert.notNull(lApp, "The target app does not exists!");
 
-		String lJavaScript = aToken.getString("javascript");
-		if (null == lJavaScript) {
-			lMsg = "No javascript passed in scripting call.";
-			if (mLog.isDebugEnabled()) {
-				mLog.debug(lMsg);
-			}
-			lServer.sendErrorToken(aConnector, lResponse, -1, lMsg);
-			return;
-		}
+		Assert.isTrue(mAppsContext.get(aApp).isPublished(aObjectId), "The target object '" + aObjectId + "' is not yet published!");
+		Object lObject = mAppsContext.get(aApp).getPublished(aObjectId);
 
-		List lArgs = aToken.getList("args");
+		Invocable lScript = (Invocable) lApp;
+		Object lRes = lScript.invokeMethod(lObject, aMethod, aArgs);
 
-		Token aCall = TokenFactory.createToken();
-		aCall.setString("javaScript", lJavaScript);
-		aCall.setString("function", lFunction);
-		aCall.setList("args", lArgs);
-
-		lResponse = mInvokeJavaScript(aConnector, aCall);
-		lServer.sendToken(aConnector, lResponse);
+		return lRes;
 	}
 }
