@@ -28,10 +28,6 @@
     background: url(images/btn_prev_n.png) 1px no-repeat;
 }
 
-.btn_center .prev, .btn_center .next{
-	position: static !important !ie7;
-}
-
 .btn_center .next{
 	position: inherit !important;
 	float: left;
