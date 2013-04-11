@@ -2,14 +2,9 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
 	<bean id="org.jwebsocket.plugins.scripting.settings" class="org.jwebsocket.plugins.scripting.Settings">
-		<property name="javascript">
-			<map>
-				<entry key="demo1" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripts/js/demo1.js"/>
-			</map>
-		</property>
 		<property name="apps">
 			<map>
-				<entry key="demo" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripts/js/demo1.js"/>
+				<entry key="demo1" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripts/js/demoApp/"/>
 			</map>
 		</property>
 	</bean>
