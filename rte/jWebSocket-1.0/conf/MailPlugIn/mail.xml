@@ -50,8 +50,8 @@
 		<!-- the folders are automatically created on demand -->
 		<property name="mailRoot" value="${JWEBSOCKET_HOME}conf/MailPlugIn/mails/{username}/"/>
 		<!-- configure the path to the rar executables 
-			 in case you want to autocreate mails for multivolume attachments 
-			 of the same size  -->
+		in case you want to autocreate mails for multivolume attachments 
+		of the same size  -->
 		<property name="rarPath" value="/Applications/rar/rar"/>
 	</bean>
 
