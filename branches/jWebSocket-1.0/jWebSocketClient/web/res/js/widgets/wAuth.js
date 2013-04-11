@@ -278,8 +278,8 @@ $.widget( "jws.auth", {
 		var lUsername;
 		var lPassword;
 		if ( AUTO_USER_AND_PASSWORD ) {
-			lUsername = aUser || jws.GUEST_USER_LOGINNAME;
-			lPassword = aPassword || jws.GUEST_USER_LOGINNAME;
+			lUsername = aUser || jws.DEMO_ROOT_LOGINNAME;
+			lPassword = aPassword || jws.DEMO_ROOT_PASSWORD;
 		} else {
 			lUsername = w.auth.eUsername.val( );
 			lPassword = w.auth.ePassword.val( );
