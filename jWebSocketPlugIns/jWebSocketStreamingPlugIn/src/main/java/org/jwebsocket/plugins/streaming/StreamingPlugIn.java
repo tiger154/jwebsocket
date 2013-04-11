@@ -73,9 +73,13 @@ public class StreamingPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating streaming plug-in...");
 		}
+
 		// specify default name space for streaming plugin
 		this.setNamespace(NS_STREAMING);
 
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Streaming plug-in successfully instantiated.");
+		}
 	}
 
 	@Override
@@ -324,8 +328,8 @@ public class StreamingPlugIn extends TokenPlugIn {
 		for (BaseStream lStream : mStreams.values()) {
 			try {
 				lStream.unregisterConnector(aConnector);
-			} catch (Exception ex) {
-				mLog.error(ex.getClass().getSimpleName() + " on stopping conncector: " + ex.getMessage());
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping conncector"));
 			}
 		}
 	}
