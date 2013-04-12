@@ -378,7 +378,7 @@ public class TokenPlugIn extends BasePlugIn {
 		if (null == lSpringConfig || lSpringConfig.isEmpty()) {
 			return null;
 		}
-		JWebSocketBeanFactory.load(lSpringConfig, getClass().getClassLoader());
+		JWebSocketBeanFactory.load(aNamespace, lSpringConfig, getClass().getClassLoader());
 		return JWebSocketBeanFactory.getInstance(aNamespace);
 	}
 
