@@ -98,7 +98,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for scripting plug-in, some features may not be available.");
 			} else {
-				mBeanFactory = getConfigBeanFactory();
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.scripting.settings");
 
 				// initializing apps

@@ -86,7 +86,6 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for external process plug-in, some features may not be available.");
 			} else {
-				mBeanFactory = getConfigBeanFactory();
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.extprocess.settings");
 				// replace all alias values with environment variables
 				Map<String, String> lAllowedProgs = mSettings.getAllowedProgs();

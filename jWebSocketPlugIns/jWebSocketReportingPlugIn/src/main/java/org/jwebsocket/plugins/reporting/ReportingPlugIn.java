@@ -80,7 +80,6 @@ public class ReportingPlugIn extends TokenPlugIn {
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for reporting plug-in, some features may not be available.");
 			} else {
-				mBeanFactory = getConfigBeanFactory();
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.reporting.settings");
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Reporting plug-in successfully instantiated.");
