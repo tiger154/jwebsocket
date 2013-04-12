@@ -24,17 +24,14 @@
 //:d:en:This client-side plug-in provides the API to access the features of the _
 //:d:en:Scripting plug-in on the jWebSocket server.
 jws.ScriptingPlugIn = {
-
 	//:const:*:NS:String:org.jwebsocket.plugins.scripting (jws.NS_BASE + ".plugins.scripting")
 	//:d:en:Namespace for the [tt]ScriptingPlugIn[/tt] class.
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.scripting",
-	
 	//:const:*:JWS_NS:String:scripting
 	//:d:en:Namespace within the jWebSocketClient instance.
 	// if namespace changed update the applications accordingly!
 	JWS_NS: "scripting",
-
 	//:m:*:processToken
 	//:d:en:Processes an incoming token from the server side scripting plug-in and _
 	//:d:en:checks if certains events have to be fired. _
@@ -43,51 +40,41 @@ jws.ScriptingPlugIn = {
 	//:d:en:method is not called by the application directly.
 	//:a:en::aToken:Object:Token to be processed by the plug-in in the plug-in chain.
 	//:r:*:::void:none
-	processToken: function( aToken ) {
+	processToken: function(aToken) {
 		// check if namespace matches
-		if( aToken.ns === jws.ScriptingPlugIn.NS ) {
-			// here you can handle incomimng tokens from the server
-			// directy in the plug-in if desired.
-			/*
-			if( "selectSQL" === aToken.reqType ) {
-				if( this.OnScriptingRowSet ) {
-					this.OnScriptingRowSet( aToken );
-				}
-			}
-			*/
+		if (aToken.ns === jws.ScriptingPlugIn.NS) {
+
 		}
 	},
-
-	//:m:*:invokeJavaScript
-	//:d:en:Pending...
-	//:a:en::aQuery:String:Single SQL query string to be executed by the server side Scripting plug-in.
-	//:a:en::aOptions:Object:Optional arguments, please refer to the [tt]sendToken[/tt] method of the [tt]jWebSocketTokenClient[/tt] class for details.
-	//:r:*:::void:none
-	invokeJavaScript: function( aAlias, aFunction, aArgs, aOptions ) {
+	callJsMethod: function(aApp, aObjectId, aMethod, aArgs, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 === lRes.code ) {
+		if (0 === lRes.code) {
 			var lToken = {
 				ns: jws.ScriptingPlugIn.NS,
-				type: "invokeJavaScript",
-				alias: aAlias,
-				function: aFunction,
+				type: "callJsMethod",
+				method: aMethod,
+				objectId: aObjectId,
+				app: aApp,
 				args: aArgs
 			};
-			this.sendToken( lToken, aOptions );
+			this.sendToken(lToken, aOptions);
 		}
 		return lRes;
 	},
-
-	setScriptingCallbacks: function( aListeners ) {
-		if( !aListeners ) {
-			aListeners = {};
+	reloadJsApp: function(aApp, aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.ScriptingPlugIn.NS,
+				type: "loadApp",
+				app: aApp
+			};
+			this.sendToken(lToken, aOptions);
 		}
-		if( aListeners.OnScriptingMsg !== undefined ) {
-			this.OnScriptingMsg = aListeners.OnScriptingMsg;
-		}
+		return lRes;
 	}
 
 };
 
 // add the JWebSocket Scripting PlugIn into the TokenClient class
-jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ScriptingPlugIn );
+jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.ScriptingPlugIn);

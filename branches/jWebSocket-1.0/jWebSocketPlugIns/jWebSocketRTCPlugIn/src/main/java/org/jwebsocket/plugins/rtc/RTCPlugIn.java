@@ -74,9 +74,7 @@ public class RTCPlugIn extends TokenPlugIn {
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for RTC plug-in, some features may not be available.");
 			} else {
-				mBeanFactory = getConfigBeanFactory();
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.rtc.settings");
-
 
 
 				if (mLog.isInfoEnabled()) {
