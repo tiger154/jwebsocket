@@ -93,9 +93,9 @@ img{
 }
 
 .fullscreen_btn{
-	position:absolute;
+	position: absolute;
 	right: 5px;
-	bottom: 5px;
+	bottom: 48px;
 	width: 16px;
 	height: 16px;
 	cursor: pointer;
@@ -111,12 +111,16 @@ img{
 }
 
 #presenter .btn_bar{
-	height: 48px;
+	height: 40px;
+}
+
+#viewer .btn_bar{
+	height: 40px;
 }
 
 #new_viewer_window .button{
-	margin: -8px 10px 10px 0;
-	float:right;
+	float: right;
+	margin: 5px 5px 0 0;
 }
 #new_viewer_window .button .btn_center{
 	padding-top: 3px;

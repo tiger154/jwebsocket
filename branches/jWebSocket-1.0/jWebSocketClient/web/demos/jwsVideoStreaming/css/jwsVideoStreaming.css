@@ -31,10 +31,15 @@
 iframe{
 	border: none;
 	width: 49%;
-	height: 380px;
+	height: 100%;
 	float: left;
 	margin-left: 0;
 	margin-right: 5px;
+}
+
+#iframe{
+	height: 355px;
+	margin-bottom: 10px;
 }
 
 #iframes.target{
