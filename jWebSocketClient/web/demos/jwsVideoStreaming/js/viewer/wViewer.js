@@ -28,7 +28,7 @@ $.widget( "jws.viewer", {
 		// ------ DOM ELEMENTS --------
 		this.ePresenters = this.element.find( "#presenters" );
 		this.eViewers = this.element.find( "#viewers" );
-		this.eVideo = this.element.find( "#slide" );
+		this.eVideo = this.element.find( "#slide_viewer" );
 		this.eContainer = $( ".container" );
 		this.eBtnFullScreen = this.element.find( "#fullscreen_btn_viewer" );
 		this.eFullScreenArea = this.element.find( "#fullscreen" );
@@ -46,7 +46,6 @@ $.widget( "jws.viewer", {
 		this.mPresentersList = { };
 		this.mClientId = "";
 		this.mLoaded = false;
-		this.mFilename = "compressed.txt";
 
 		w.viewer = this;
 		w.viewer.registerEvents();
@@ -67,8 +66,8 @@ $.widget( "jws.viewer", {
 			var lHeight = $( window ).height() - (w.viewer.mIsFS ? 0 : 130);
 			console.log( lHeight );
 			w.viewer.eVideo.css( {
-				height: lHeight,
-				width: $( window ).width()
+				height: lHeight + 15,
+				width: $( window ).width() - 3
 			} );
 		} );
 		$( document ).keydown( w.viewer.keydown );
@@ -157,11 +156,9 @@ $.widget( "jws.viewer", {
 	playStream: function( aStream ) {
 		if ( aStream ) {
 			streams.push( jws.tools.unzip( aStream, true ) );
-//			if ( !w.viewer.mLoaded ) {
 			w.viewer.eVideo.get( 0 ).src = streams[streams.length - 1];
 			w.viewer.eVideo.get( 0 ).play();
 			w.viewer.mLoaded = true;
-//			}
 		}
 	},
 	updateUsers: function( aData ) {

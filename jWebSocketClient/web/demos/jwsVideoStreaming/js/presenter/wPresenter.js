@@ -29,7 +29,7 @@ $.widget( "jws.vplayer", {
 		this.eBtnFullScreen = this.element.find( "#fullscreen_btn_presenter" );
 		this.ePresenters = this.element.find( "#presenters" );
 		this.eViewers = this.element.find( "#viewers" );
-		this.eVideo = this.element.find( "#slide" );
+		this.eVideo = this.element.find( "#slide_presenter" );
 		this.eFullScreenArea = this.element.find( "#fullscreen" );
 		this.eStatusbarArea = this.element.find( "#demo_box_statusbar" );
 		this.eFullToolbarArea = this.element.find( "#toolbar" );
@@ -45,7 +45,6 @@ $.widget( "jws.vplayer", {
 		this.mClientId = "";
 		this.mIsFS = false;
 		this.mInterval = null;
-		this.mFilename = "compressed.txt";
 		this.mPresentersList = { };
 		w.vplayer = this;
 		w.vplayer.registerEvents();
@@ -61,23 +60,23 @@ $.widget( "jws.vplayer", {
 
 		w.vplayer.eBtnFullScreen.click( w.vplayer.toggleFullScreen );
 		w.vplayer.eBtnFullScreen.fadeTo( 400, 0.4 );
-		w.vplayer.eFullToolbarArea.mouseover( function() {
-			clearInterval( w.vplayer.mInterval );
-		} );
+//		w.vplayer.eFullToolbarArea.mouseover( function() {
+//			clearInterval( w.vplayer.mInterval );
+//		} );
 		w.vplayer.eVideo.bind( {
-			mousemove: function( ) {
-				if ( w.vplayer.mIsFS ) {
-					w.vplayer.eFullToolbarArea.stop( true, true ).show( 300 );
-					w.vplayer.eStatusbarArea.stop( true, true ).show( 300 );
-					w.vplayer.eBtnFullScreen.fadeTo( 100, 0.8 );
-					clearInterval( w.vplayer.mInterval );
-					w.vplayer.mInterval = setInterval( function() {
-						w.vplayer.eFullToolbarArea.stop( true, true ).hide( 800 );
-						w.vplayer.eStatusbarArea.stop( true, true ).hide( 800 );
-						w.vplayer.eBtnFullScreen.fadeTo( 100, 0.3 );
-					}, 4000 );
-				}
-			},
+//			mousemove: function( ) {
+//				if ( w.vplayer.mIsFS ) {
+//					w.vplayer.eFullToolbarArea.stop( true, true ).show( 300 );
+//					w.vplayer.eStatusbarArea.stop( true, true ).show( 300 );
+//					w.vplayer.eBtnFullScreen.fadeTo( 100, 0.8 );
+//					clearInterval( w.vplayer.mInterval );
+//					w.vplayer.mInterval = setInterval( function() {
+//						w.vplayer.eFullToolbarArea.stop( true, true ).hide( 800 );
+//						w.vplayer.eStatusbarArea.stop( true, true ).hide( 800 );
+//						w.vplayer.eBtnFullScreen.fadeTo( 100, 0.3 );
+//					}, 4000 );
+//				}
+//			},
 			mouseover: function() {
 				w.vplayer.eBtnFullScreen.fadeTo( 100, 0.8 );
 
@@ -130,31 +129,31 @@ $.widget( "jws.vplayer", {
 		if ( aToken.type === "response" && aToken.reqType === "login" ) {
 			mWSC.sessionPut( "presenter", aToken.sourceId, true );
 			mWSC.channelSubscribe( w.vplayer.mChannelId,
-					w.vplayer.mChannelAccessKey, {
-				OnSuccess: function() {
-					w.vplayer.authenticateChannel();
-				}
-			} );
+				w.vplayer.mChannelAccessKey, {
+					OnSuccess: function() {
+						w.vplayer.authenticateChannel();
+					}
+				} );
 		}
 		if ( aToken.ns === w.vplayer.NS_CHANNELS ) {
 			if ( mLog.isDebugEnabled ) {
 				log( " <b>" + w.vplayer.TITLE + " new message received: </b>" +
-						JSON.stringify( aToken ) );
+					JSON.stringify( aToken ) );
 			}
 			// When the channel authorizes the user to publish on it
 			if ( aToken.reqType === "authorize" ) {
 				if ( aToken.code === 0 ) {
 					var lData = {
 						value: "presenter_" + mWSC.getUsername() + "@" +
-								w.vplayer.mClientId
+						w.vplayer.mClientId
 					};
 					// We send a notification trough the channel to inform about
 					// a new presenter online
 					w.vplayer.publish( w.vplayer.TT_USER_REGISTER, lData );
 				}
-				// When information is published in the channel the data is sent
-				// in a map inside the token and the type of the token comes in 
-				// the key "data"
+			// When information is published in the channel the data is sent
+			// in a map inside the token and the type of the token comes in 
+			// the key "data"
 			} else if ( aToken.type === "data" ) {
 				switch ( aToken.data ) {
 					// Whenever a new user goes subscribed on the channel
@@ -171,13 +170,15 @@ $.widget( "jws.vplayer", {
 	},
 	startStreaming: function() {
 		navigator.getUserMedia = navigator.getUserMedia ||
-				navigator.webkitGetUserMedia ||
-				navigator.mozGetUserMedia ||
-				navigator.msGetUserMedia;
+		navigator.webkitGetUserMedia ||
+		navigator.mozGetUserMedia ||
+		navigator.msGetUserMedia;
 		;
 		window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
-		navigator.getUserMedia( { video: true }, function( aStream ) {
+		navigator.getUserMedia( {
+			video: true
+		}, function( aStream ) {
 			var lVideo = w.vplayer.eVideo.get( 0 );
 
 			lVideo.src = (window.URL && window.URL.createObjectURL( aStream )) || aStream;
@@ -236,7 +237,7 @@ $.widget( "jws.vplayer", {
 
 				var lData = {
 					viewers: lIsViewer ? w.vplayer.mViewers + 1 :
-							w.vplayer.mViewers
+					w.vplayer.mViewers
 				};
 
 				if ( lIsPresenter ) {
@@ -249,29 +250,40 @@ $.widget( "jws.vplayer", {
 					// request for the clients from the server
 					if ( w.vplayer.mPresenters === 1 ) {
 						mWSC.channelGetSubscribers( w.vplayer.mChannelId,
-								w.vplayer.mChannelAccessKey, {
-							OnSuccess: function( aToken ) {
-								var lViewers = aToken.subscribers.length -
-										w.vplayer.mPresenters;
-								lData.viewers = lViewers > 0 ? lViewers :
-										w.vplayer.mViewers;
-								if ( lViewers + w.vplayer.mPresenters ===
-										aToken.subscribers.length ) {
+							w.vplayer.mChannelAccessKey, {
+								OnSuccess: function( aToken ) {
+									var lViewers = aToken.subscribers.length -
+									w.vplayer.mPresenters;
+									lData.viewers = lViewers > 0 ? lViewers :
+									w.vplayer.mViewers;
+								
 									// The presenter will only be able to publish 
 									// information when there are not more 
 									// presenters in the conference and his 
 									// information is correct
 									w.vplayer.publish( w.vplayer.TT_SEND, lData );
 								}
-							}
-						} );
+							} );
 					} else {
 						w.vplayer.publish( w.vplayer.TT_SEND, lData );
 					}
 				} else if ( lIsViewer ) {
 					lData.presenters = w.vplayer.mPresenters;
 					lData.presentersList = w.vplayer.mPresentersList;
-					w.vplayer.publish( w.vplayer.TT_SEND, lData );
+					mWSC.channelGetSubscribers( w.vplayer.mChannelId,
+							w.vplayer.mChannelAccessKey, {
+						OnSuccess: function( aToken ) {
+							var lViewers = aToken.subscribers.length -
+									w.vplayer.mPresenters;
+							lData.viewers = lViewers > 0 ? lViewers :
+									w.vplayer.mViewers;
+							// The presenter will only be able to publish 
+							// information when there are not more 
+							// presenters in the conference and his
+							// information is correct
+							w.vplayer.publish( w.vplayer.TT_SEND, lData );
+						}
+					} );
 				}
 			}
 		} );
@@ -291,19 +303,19 @@ $.widget( "jws.vplayer", {
 		// use access key and secret key for this channel to authenticate
 		// required to publish data only
 		mWSC.channelAuth( w.vplayer.mChannelId,
-				w.vplayer.mChannelAccessKey, w.vplayer.mChannelSecretKey, {
-			// When the channel authorizes the user to publish data start streaming
-			OnSuccess: function( ) {
-				w.vplayer.startStreaming();
-			}
-		} );
+			w.vplayer.mChannelAccessKey, w.vplayer.mChannelSecretKey, {
+				// When the channel authorizes the user to publish data start streaming
+				OnSuccess: function( ) {
+					w.vplayer.startStreaming();
+				}
+			} );
 	},
 	publish: function( aType, aData ) {
 		mWSC.channelPublish( w.vplayer.mChannelId, aType, aData );
 	},
 	isFullScreen: function() {
 		return  (document.fullScreen && document.fullScreen != null) ||
-				(document.mozFullScreen || document.webkitIsFullScreen);
+		(document.mozFullScreen || document.webkitIsFullScreen);
 	},
 	toggleFullScreen: function() {
 		if ( w.vplayer.isFullScreen() ) {
@@ -318,12 +330,12 @@ $.widget( "jws.vplayer", {
 	exitFullScreen: function( aElement ) {
 		// Exit full-screen mode, supported by Firefox 9 || + or Chrome 15 || +
 		var lNativeMethod = aElement.cancelFullScreen ||
-				aElement.webkitCancelFullScreen ||
-				aElement.mozCancelFullScreen ||
-				aElement.exitFullscreen;
+		aElement.webkitCancelFullScreen ||
+		aElement.mozCancelFullScreen ||
+		aElement.exitFullscreen;
 		if ( lNativeMethod ) {
 			lNativeMethod.call( aElement );
-			// Support for IE old versions
+		// Support for IE old versions
 		} else if ( typeof window.ActiveXObject !== "undefined" ) {
 			var lAXScript = new ActiveXObject( "WScript.Shell" );
 			if ( lAXScript !== null ) {
@@ -334,9 +346,9 @@ $.widget( "jws.vplayer", {
 	initFullScreen: function( aElement ) {
 		// Full-screen mode, supported by Firefox 9 || + or Chrome 15 || +
 		var lNativeMethod = aElement.requestFullScreen ||
-				aElement.webkitRequestFullScreen ||
-				aElement.mozRequestFullScreen ||
-				aElement.msRequestFullScreen;
+		aElement.webkitRequestFullScreen ||
+		aElement.mozRequestFullScreen ||
+		aElement.msRequestFullScreen;
 
 		if ( lNativeMethod ) {
 			lNativeMethod.call( aElement );
