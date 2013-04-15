@@ -140,8 +140,13 @@ public class TomcatEngine extends BaseEngine {
 
 			final Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
 			// configuring the app context
+			// TODO: see bug: https://jwebsocket.atlassian.net/browse/JWSCE-9
+			/*
 			lCtx.setConfigFile(new URL(JWebSocketConfig.
-					expandEnvAndJWebSocketVars("file://${JWEBSOCKET_HOME}conf/TomcatEngine/conf/context.xml")));
+				expandEnvAndJWebSocketVars("file://${JWEBSOCKET_HOME}conf/TomcatEngine/conf/context.xml")));
+			 */
+			lCtx.setConfigFile(new URL(Tools.expandEnvVarsAndProps(
+					"file:///${JWEBSOCKET_HOME}conf/TomcatEngine/conf/context.xml")));
 			lCtx.setDocBase(JWebSocketConfig.getJWebSocketHome() + "web/");
 			lCtx.addLifecycleListener(new ContextLifecycleListener());
 
