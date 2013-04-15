@@ -192,4 +192,12 @@ public class JavaScriptApp {
 			sendToken(aConnector, aToken);
 		}
 	}
+
+	public Map newThreadSafeMap() {
+		return new FastMap().shared();
+	}
+
+	public Collection newThreadSafeCollection() {
+		return new FastList().shared();
+	}
 }
