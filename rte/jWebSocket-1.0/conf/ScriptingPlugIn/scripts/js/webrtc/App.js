@@ -1,7 +1,7 @@
 var lNS = "org.jwebsocket.plugins.webrtc";
 
 // application clients container
-var lClients = new javolution.util.FastMap();
+var lClients = App.newThreadSafeMap();
 
 // processing connector stopped event
 App.on("connectorStopped", function(aConnector) {
