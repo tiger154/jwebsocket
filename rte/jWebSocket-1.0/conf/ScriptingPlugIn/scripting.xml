@@ -5,6 +5,7 @@
 		<property name="apps">
 			<map>
 				<entry key="demo1" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripts/js/demoApp/"/>
+				<entry key="webrtc" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripts/js/webrtc/"/>
 			</map>
 		</property>
 	</bean>
