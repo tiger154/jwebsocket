@@ -1,16 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2010 Innotrade GmbH
+//	jWebSocket - BaseWebSocketClient (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.java;
 
@@ -45,7 +49,8 @@ import org.jwebsocket.util.Tools;
 /**
  * Base {@code WebSocket} implementation based on
  * http://weberknecht.googlecode.com by Roderick Baier. This uses thread model
- * for handling WebSocket connection which is defined by the <tt>WebSocket</tt>
+ * for handling WebSocket connection which is defined by the
+ * <tt>WebSocket</tt>
  * protocol specification. {@linkplain http://www.whatwg.org/specs/web-socket-protocol/}
  * {@linkplain http://www.w3.org/TR/websockets/}
  *
@@ -65,9 +70,13 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 */
 	private URI mURI = null;
 	/**
-	 * list of the listeners registered
+	 * list of the registered listeners
 	 */
 	private List<WebSocketClientListener> mListeners = new FastList<WebSocketClientListener>();
+	/**
+	 * list of the registered filters
+	 */
+	private List<WebSocketClientFilter> mFilters = new FastList<WebSocketClientFilter>();
 	/**
 	 * TCP socket
 	 */
@@ -87,6 +96,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 	protected volatile WebSocketStatus mStatus = WebSocketStatus.CLOSED;
 	private List<WebSocketSubProtocol> mSubprotocols;
 	private WebSocketSubProtocol mNegotiatedSubProtocol;
+	private int mPingInterval = 20000;
+	/**
+	 *
+	 */
+	public static String EVENT_OPENING = "opening";
 	/**
 	 *
 	 */
@@ -140,6 +154,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 	public BaseWebSocketClient() {
 	}
 
+	/**
+	 *
+	 * @param aStatus
+	 * @throws Exception
+	 */
 	public void setStatus(WebSocketStatus aStatus) throws Exception {
 		if (aStatus.equals(WebSocketStatus.AUTHENTICATED)) {
 			this.mStatus = aStatus;
@@ -154,8 +173,25 @@ public class BaseWebSocketClient implements WebSocketClient {
 		return mMaxFrameSize;
 	}
 
+	@Override
+	public void addFilter(WebSocketClientFilter aFilter) {
+		mFilters.add(aFilter);
+	}
+
+	@Override
+	public void removeFilter(WebSocketClientFilter aFilter) {
+		mFilters.add(aFilter);
+	}
+
+	@Override
+	public List<WebSocketClientFilter> getFilters() {
+		return Collections.unmodifiableList(mFilters);
+	}
+
 	/**
 	 * Constructor including reliability options
+	 *
+	 * @param aReliabilityOptions
 	 */
 	public BaseWebSocketClient(ReliabilityOptions aReliabilityOptions) {
 		mReliabilityOptions = aReliabilityOptions;
@@ -228,7 +264,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 *
 	 * @param aVersion
 	 * @param aURI
-	 * @throws WebSocketException
 	 */
 	public void open(int aVersion, String aURI) {
 		String lSubProtocols = generateSubProtocolsHeaderValue();
@@ -240,7 +275,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * @param aVersion
 	 * @param aURI
 	 * @param aSubProtocols
-	 * @throws WebSocketException
 	 */
 	public void open(int aVersion, String aURI, String aSubProtocols) {
 		try {
@@ -302,7 +336,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			}
 
 			// parse negotiated sub protocol
-			String lProtocol = (String)mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
+			String lProtocol = (String) mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
 			if (lProtocol != null) {
 				mNegotiatedSubProtocol = new WebSocketSubProtocol(lProtocol, mEncoding);
 			} else {
@@ -317,6 +351,23 @@ public class BaseWebSocketClient implements WebSocketClient {
 			mReceiver.start();
 			// now set official status, may listeners ask for that
 			mStatus = WebSocketStatus.OPEN;
+
+			// notifying logic "opening" listeners notification
+			// we consider that a client has finally openned when 
+			// the "max frame size" handshake has completed 
+			final WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_OPENING, null);
+			for (final WebSocketClientListener lListener : getListeners()) {
+				mListenersExecutor.submit(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							lListener.processOpening(lEvent);
+						} catch (Exception lEx) {
+							// nothing, soppose to be catched internally
+						}
+					}
+				});
+			}
 
 			// reset close reason to be specified by next reason
 			mCloseReason = null;
@@ -390,11 +441,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 							System.currentTimeMillis(),
 							lFragmentationId,
 							new InFragmentationListenerSender() {
-								@Override
-								public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
-									lSender.sendPacketInTransaction(aDataPacket, aListener);
-								}
-							}));
+						@Override
+						public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+							lSender.sendPacketInTransaction(aDataPacket, aListener);
+						}
+					}));
 					return;
 				}
 
@@ -495,6 +546,14 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 */
 	@Override
 	public void send(WebSocketPacket aDataPacket) throws WebSocketException {
+		try {
+			for (WebSocketClientFilter lFilter : mFilters) {
+				lFilter.filterPacketOut(aDataPacket);
+			}
+		} catch (Exception lEx) {
+			throw new WebSocketException("Outbound filtering process exception!", lEx);
+		}
+
 		synchronized (mWriteLock) {
 			if (isHixie()) {
 				sendInternal(aDataPacket.getByteArray());
@@ -739,7 +798,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 					}
 				}
 			});
-
 		}
 	}
 
@@ -828,6 +886,14 @@ public class BaseWebSocketClient implements WebSocketClient {
 			aPacket.setString(mFragments.remove(Fragmentation.PACKET_FRAGMENT_PREFIX + lKey) + lFragmentContent);
 		}
 
+		try {
+			for (WebSocketClientFilter lFilter : mFilters) {
+				lFilter.filterPacketIn(aPacket);
+			}
+		} catch (Exception lEx) {
+			return;
+		}
+
 		// finally notify the listeners
 		for (final WebSocketClientListener lListener : getListeners()) {
 			final WebSocketPacket lPacket = aPacket;
@@ -882,6 +948,21 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 */
 	public Headers getHeaders() {
 		return mHeaders;
+	}
+
+	/**
+	 * @return the ping interval
+	 */
+	public int getPingInterval() {
+		return mPingInterval;
+	}
+
+	/**
+	 *
+	 * @param aPingInterval
+	 */
+	public void setPingInterval(int aPingInterval) {
+		mPingInterval = aPingInterval;
 	}
 
 	class ReOpener implements Runnable {
@@ -1016,9 +1097,10 @@ public class BaseWebSocketClient implements WebSocketClient {
 			if (isHixie()) {
 				processHixie();
 			} else {
-                                sendPing();
+				// initiating the ping thread for this connection
+				sendPing();
 				processHybi();
-                          
+
 			}
 
 			// set status AFTER close frame was sent, otherwise sending
@@ -1106,8 +1188,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 			while (mIsRunning) {
 				try {
 					WebSocketPacket lPacket = WebSocketProtocolAbstraction.protocolToRawPacket(mVersion, mIS);
-					lFrameType = (lPacket != null ? lPacket.getFrameType() : WebSocketFrameType.INVALID);                    
-                                        if (null == lFrameType) {
+					lFrameType = (lPacket != null ? lPacket.getFrameType() : WebSocketFrameType.INVALID);
+					if (null == lFrameType) {
 						if (mIsRunning) {
 							setCloseReason("Connection broken");
 						} else {
@@ -1124,8 +1206,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 						WebSocketPacket lPong = new RawPacket(
 								WebSocketFrameType.PONG, "");
 						send(lPong);
-					} else if (WebSocketFrameType.PONG == lFrameType) {             
-                                                sendPing();
+					} else if (WebSocketFrameType.PONG == lFrameType) {
+						// TODO: need to process connection management here!
 					} else if (WebSocketFrameType.TEXT == lFrameType) {
 						lWSCE = new WebSocketTokenClientEvent(mClient, null, null);
 						notifyPacket(lWSCE, lPacket);
@@ -1136,12 +1218,12 @@ public class BaseWebSocketClient implements WebSocketClient {
 				}
 			}
 		}
-                
-                private void sendPing(){
-                       SendPing lSendPing=new SendPing();
-                       lSendPing.start();
-                }
-                
+
+		private void sendPing() {
+			SendPing lSendPing = new SendPing();
+			lSendPing.start();
+		}
+
 		public void quit() {
 			// ensure that reader loops are not continued
 			mIsRunning = false;
@@ -1155,19 +1237,22 @@ public class BaseWebSocketClient implements WebSocketClient {
 		public boolean isRunning() {
 			return mIsRunning;
 		}
-                
-                class SendPing extends Thread{
-                    
-                        @Override
-                        public void run(){
-                                try{
-                                        Thread.currentThread().setName("jWebSocket-Client " + getId());
-                                        Thread.sleep(10000);
-                                        WebSocketPacket lPing = new RawPacket(WebSocketFrameType.PING, "Hello");
-                                        send(lPing);
-                                } catch(Exception lEx){
-                                }     
-                        }
-                }
+
+		class SendPing extends Thread {
+
+			@Override
+			public void run() {
+				try {
+					Thread.currentThread().setName("jWebSocket-Client " + getId());
+					// TODO: Don't we need a loop here?
+					Thread.sleep(getPingInterval());
+					WebSocketPacket lPing = new RawPacket(WebSocketFrameType.PING, "Hello");
+					send(lPing);
+				} catch (Exception lEx) {
+				}
+			}
+			
+			// TODO: What about shutting down the thread on application termination?
+		}
 	}
 }

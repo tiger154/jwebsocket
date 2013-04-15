@@ -1,16 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Copyright (c) 2010 Innotrade GmbH
+//	jWebSocket - BaseTokenClient (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.token;
 
@@ -39,7 +43,6 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.token.WebSocketResponseTokenListener;
 import org.jwebsocket.util.Fragmentation;
-import org.jwebsocket.util.MapAppender;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -187,7 +190,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * WebSocketClient listener implementation that receives the data packet and creates
+	 * WebSocketClient listener implementation that receives the data packet and
+	 * creates
 	 * <tt>token</tt> objects
 	 *
 	 * @author aschulze
@@ -208,7 +212,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 			lHeaders.setString("jwsType", "Java");
 			lHeaders.setString("jwsVersion", "1.0");
 			lHeaders.setList(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY, mEncodingFormats);
-			
+
 			try {
 				sendToken(lHeaders);
 			} catch (Exception lEx) {
@@ -226,8 +230,9 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		}
 
 		/**
-		 * {@inheritDoc} This callback method is invoked by jWebSocket client after the data is
-		 * received from low-level <tt>WebSocket</tt> connection. This method then generates the
+		 * {@inheritDoc} This callback method is invoked by jWebSocket client
+		 * after the data is received from low-level <tt>WebSocket</tt>
+		 * connection. This method then generates the
 		 * <tt>token</tt> objects using the data packets.
 		 */
 		@Override
@@ -877,7 +882,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves a list of public entries stored in the server-side session storage of many clients.
+	 * Retrieves a list of public entries stored in the server-side session
+	 * storage of many clients.
 	 *
 	 * @param aClients
 	 * @param aKeys
@@ -890,7 +896,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves a list of public entries stored in the server-side session storage of many clients.
+	 * Retrieves a list of public entries stored in the server-side session
+	 * storage of many clients.
 	 *
 	 * @param aClients
 	 * @param aKeys
@@ -909,8 +916,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves all the entries stored in the server-side session storage of a given client. A
-	 * client can only get the public entries from others.
+	 * Retrieves all the entries stored in the server-side session storage of a
+	 * given client. A client can only get the public entries from others.
 	 *
 	 * @param aClientId
 	 * @param aPublic
@@ -929,8 +936,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves all the entries stored in the server-side session storage of a given client. A
-	 * client can only get the public entries from others.
+	 * Retrieves all the entries stored in the server-side session storage of a
+	 * given client. A client can only get the public entries from others.
 	 *
 	 * @param aClientId
 	 * @param aPublic
@@ -943,8 +950,9 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves the list of entry keys stored in the server-side session storage of a given client.
-	 * A client can only get the public entries from others.
+	 * Retrieves the list of entry keys stored in the server-side session
+	 * storage of a given client. A client can only get the public entries from
+	 * others.
 	 *
 	 * @param aClientId
 	 * @param aPublic
@@ -963,8 +971,9 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Retrieves the list of entry keys stored in the server-side session storage of a given client.
-	 * A client can only get the public entries from others.
+	 * Retrieves the list of entry keys stored in the server-side session
+	 * storage of a given client. A client can only get the public entries from
+	 * others.
 	 *
 	 * @param aClientId
 	 * @param aPublic
@@ -1044,8 +1053,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Indicates if the client server-side session storage contains a custom entry given the entry
-	 * key.
+	 * Indicates if the client server-side session storage contains a custom
+	 * entry given the entry key.
 	 *
 	 * @param aClientId
 	 * @param aKey
@@ -1066,8 +1075,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 * Indicates if the client server-side session storage contains a custom entry given the entry
-	 * key.
+	 * Indicates if the client server-side session storage contains a custom
+	 * entry given the entry key.
 	 *
 	 * @param aClientId
 	 * @param aKey
