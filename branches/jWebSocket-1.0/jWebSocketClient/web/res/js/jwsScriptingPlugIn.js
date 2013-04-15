@@ -32,20 +32,6 @@ jws.ScriptingPlugIn = {
 	//:d:en:Namespace within the jWebSocketClient instance.
 	// if namespace changed update the applications accordingly!
 	JWS_NS: "scripting",
-	//:m:*:processToken
-	//:d:en:Processes an incoming token from the server side scripting plug-in and _
-	//:d:en:checks if certains events have to be fired. _
-	//:d:en:If e.g. the request type was [tt]selectSQL[/tt] and data is _
-	//:d:en:returned the [tt]OnScriptingRowSet[/tt] event is fired. Normally this _
-	//:d:en:method is not called by the application directly.
-	//:a:en::aToken:Object:Token to be processed by the plug-in in the plug-in chain.
-	//:r:*:::void:none
-	processToken: function(aToken) {
-		// check if namespace matches
-		if (aToken.ns === jws.ScriptingPlugIn.NS) {
-
-		}
-	},
 	callJsMethod: function(aApp, aObjectId, aMethod, aArgs, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
@@ -66,10 +52,21 @@ jws.ScriptingPlugIn = {
 		if (0 === lRes.code) {
 			var lToken = {
 				ns: jws.ScriptingPlugIn.NS,
-				type: "loadApp",
+				type: "reloadApp",
 				app: aApp
 			};
 			this.sendToken(lToken, aOptions);
+		}
+		return lRes;
+	},
+	sendJsToken: function(aApp, aToken, aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code && aToken) {
+			aToken.app = aApp;
+			aToken.ns = jws.ScriptingPlugIn.NS;
+			aToken.type = "token";
+
+			this.sendToken(aToken, aOptions);
 		}
 		return lRes;
 	}
