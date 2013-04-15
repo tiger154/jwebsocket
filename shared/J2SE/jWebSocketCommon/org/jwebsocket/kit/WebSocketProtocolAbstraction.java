@@ -2,7 +2,7 @@
 //	jWebSocket - WebSocketProtocolAbstraction (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//      Alexander Schulze, Germany (NRW)
+//  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -146,8 +146,8 @@ public class WebSocketProtocolAbstraction {
 	 * @param aVersion
 	 * @param aDataPacket
 	 * @return
-	 */        
-        public static byte[] rawToProtocolPacket(int aVersion, WebSocketPacket aDataPacket) {
+	 */
+	public static byte[] rawToProtocolPacket(int aVersion, WebSocketPacket aDataPacket) {
 
 		byte[] lBuff = new byte[2]; // resulting packet will have at least 2 bytes
 		WebSocketFrameType lFrameType = aDataPacket.getFrameType();
@@ -159,11 +159,11 @@ public class WebSocketProtocolAbstraction {
 		// Determine fragmentation
 		// 0x80 means it's the final frame, the RSV bits are not yet set
 		if (aDataPacket.isFragment()) {
-			lBuff[0] = (byte) (lTargetType );
+			lBuff[0] = (byte) (lTargetType);
 		} else {
 			lBuff[0] = (byte) (lTargetType | 0x80);
 		}
-                
+
 		int lPayloadLen = aDataPacket.getByteArray().length;
 
 		// Here, the spec allows payload length with up to 64-bit integer
@@ -179,7 +179,7 @@ public class WebSocketProtocolAbstraction {
 		// Therefore, we never set target payload length greater than signed 32-bit number
 		// (Integer.MAX_VALUE).
 		if (lPayloadLen < 126) {
-			lBuff[1] = (byte) (lPayloadLen| 0x80); // just write the payload length
+			lBuff[1] = (byte) (lPayloadLen | 0x80); // just write the payload length
 		} else if (lPayloadLen >= 126 && lPayloadLen < 0xFFFF) {
 			// first write 126 (meaning, there will follow two bytes for actual length)
 			lBuff[1] = (byte) (126 | 0x80);
@@ -189,7 +189,7 @@ public class WebSocketProtocolAbstraction {
 			lBuff[lSize + 1] = (byte) (lPayloadLen & 0xFF);
 		} else if (lPayloadLen >= 0xFFFF) {
 			// first write 127 (meaning, there will follow eight bytes for actual length)
-			lBuff[1] = (byte)(127 | 0x80);
+			lBuff[1] = (byte) (127 | 0x80);
 			long lLen = (long) lPayloadLen;
 			int lSize = lBuff.length;
 			lBuff = copyOf(lBuff, lSize + 8);
@@ -202,39 +202,40 @@ public class WebSocketProtocolAbstraction {
 			lBuff[lSize + 6] = (byte) (lLen >>> 8);
 			lBuff[lSize + 7] = (byte) lLen;
 		}
-                
-                int lSize = lBuff.length;
-                lBuff = copyOf(lBuff,lSize+ 4);  
-                lSize = lBuff.length-1;
-                
-                //Add masking key to data frame, The masking key is a 32-bit value chosen at random.
-                //The masking does not affect the length of the payload data
-                for (int i = 0; i < 4; i++) {
-                lBuff[lSize--]=getByteRandom();
-                }
-                 
-                byte[] lMask = new byte[4];
-                System.arraycopy(lBuff, lBuff.length-4, lMask, 0, 4);
-                
-                //To masked data is use the follow algorithm 
-                byte[] lBuffData = new byte[aDataPacket.getByteArray().length];
-                System.arraycopy(aDataPacket.getByteArray(), 0, lBuffData, 0, lBuffData.length);
-                byte[] lMaskedData = new byte[lBuffData.length];
-                int lPos=0;
-                for (int i = 0; i < lBuffData.length; i++) {
-                    lMaskedData[i] = (byte)(lBuffData[i] ^ lMask[lPos]);
-                    if(lPos==3)
-                        lPos=0;
-                    else
-                        lPos++;
-                }
-                
-		lBuff = copyOf(lBuff, lBuff.length+lMaskedData.length);
-                System.arraycopy(lMaskedData, 0, lBuff, lBuff.length-lMaskedData.length, lMaskedData.length);
-	
-                return lBuff;           
+
+		int lSize = lBuff.length;
+		lBuff = copyOf(lBuff, lSize + 4);
+		lSize = lBuff.length - 1;
+
+		//Add masking key to data frame, The masking key is a 32-bit value chosen at random.
+		//The masking does not affect the length of the payload data
+		for (int i = 0; i < 4; i++) {
+			lBuff[lSize--] = getByteRandom();
+		}
+
+		byte[] lMask = new byte[4];
+		System.arraycopy(lBuff, lBuff.length - 4, lMask, 0, 4);
+
+		//To masked data is use the follow algorithm 
+		byte[] lBuffData = new byte[aDataPacket.getByteArray().length];
+		System.arraycopy(aDataPacket.getByteArray(), 0, lBuffData, 0, lBuffData.length);
+		byte[] lMaskedData = new byte[lBuffData.length];
+		int lPos = 0;
+		for (int i = 0; i < lBuffData.length; i++) {
+			lMaskedData[i] = (byte) (lBuffData[i] ^ lMask[lPos]);
+			if (lPos == 3) {
+				lPos = 0;
+			} else {
+				lPos++;
+			}
+		}
+
+		lBuff = copyOf(lBuff, lBuff.length + lMaskedData.length);
+		System.arraycopy(lMaskedData, 0, lBuff, lBuff.length - lMaskedData.length, lMaskedData.length);
+
+		return lBuff;
 	}
-        
+
 	/**
 	 *
 	 * @param aIS
@@ -336,7 +337,7 @@ public class WebSocketProtocolAbstraction {
 			}
 		}
 
-		WebSocketPacket lRes = new RawPacket(lFrameType, aBuff.toByteArray());  
+		WebSocketPacket lRes = new RawPacket(lFrameType, aBuff.toByteArray());
 		return lRes;
 	}
 
@@ -445,13 +446,13 @@ public class WebSocketProtocolAbstraction {
 		System.arraycopy(aOriginal, 0, lCopy, 0, Math.min(aOriginal.length, aNewLength));
 		return lCopy;
 	}
-        
-        private static byte getByteRandom(){
-            Random lRan=new Random();
-            byte lByte;
-            do {                
-                lByte= (byte)lRan.nextInt(255);
-            } while (lByte<0);
-            return lByte;
-        }
+
+	private static byte getByteRandom() {
+		Random lRan = new Random();
+		byte lByte;
+		do {
+			lByte = (byte) lRan.nextInt(255);
+		} while (lByte < 0);
+		return lByte;
+	}
 }
