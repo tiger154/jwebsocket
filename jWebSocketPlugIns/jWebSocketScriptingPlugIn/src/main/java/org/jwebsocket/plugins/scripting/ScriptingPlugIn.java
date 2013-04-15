@@ -21,6 +21,7 @@ package org.jwebsocket.plugins.scripting;
 import org.jwebsocket.plugins.scripting.app.JavaScriptApp;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -30,10 +31,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
+import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
@@ -53,7 +58,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	/**
 	 * Namespace for scripting plug-in.
 	 */
-	public static final String NS_Scripting =
+	public static final String NS =
 			JWebSocketServerConstants.NS_BASE + ".plugins.scripting";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
@@ -65,7 +70,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	/**
 	 *
 	 */
-	public static ScriptEngine mJavaScript = null;
 	private Map<String, ScriptEngine> mApps = new FastMap<String, ScriptEngine>().shared();
 	private Map<String, JavaScriptApp> mAppsContext = new FastMap<String, JavaScriptApp>().shared();
 	/**
@@ -88,10 +92,9 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			mLog.debug("Instantiating Scripting plug-in...");
 		}
 		// specify default name space for file system plugin
-		this.setNamespace(NS_Scripting);
+		this.setNamespace(NS);
 
 		mEngine = new ScriptEngineManager();
-		mJavaScript = mEngine.getEngineByExtension("js");
 
 		try {
 			mBeanFactory = getConfigBeanFactory();
@@ -150,26 +153,132 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 	@Override
 	public String getNamespace() {
-		return NS_Scripting;
+		return NS;
 	}
 
+	/**
+	 * Loads a JavaScript application
+	 *
+	 * @param aApp The app name
+	 * @param aFilePath The app home path
+	 * @throws Exception
+	 */
 	public void loadApp(String aApp, String aFilePath) throws Exception {
 		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFilePath) + "/App.js"));
-		ScriptEngine lScript = mEngine.getEngineByName("javascript");
-		mApps.put(aApp, lScript);
-		mAppsContext.put(aApp, new JavaScriptApp(this.getServer(), aApp, aFilePath, lScript));
+		ScriptEngine lScriptApp = mEngine.getEngineByName("javascript");
+		mApps.put(aApp, lScriptApp);
+		mAppsContext.put(aApp, new JavaScriptApp(this, aApp, aFilePath, lScriptApp));
 
-		lScript.put("app", mAppsContext.get(aApp));
-		lScript.eval(lFile);
+		// creating application services
+		lScriptApp.put("App", mAppsContext.get(aApp));
+		lScriptApp.eval(lFile);
 	}
 
-	public void loadAppAction(WebSocketConnector aConnector, Token aToken) throws Exception {
-		String aApp = aToken.getString("app");
-		Assert.notNull(aApp, "The 'app' argument cannot be null!");
-		Assert.isTrue(mSettings.getApps().containsKey(aApp), "The target application '" + aApp + "' does not exists!");
+	@Override
+	public void engineStarted(WebSocketEngine aEngine) {
+		super.engineStarted(aEngine);
+
+		List<Object> aArgs = new ArrayList();
+		aArgs.add(aEngine);
+
+		for (JavaScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(JavaScriptApp.EVENT_ENGINE_STARTED, aArgs.toArray());
+		}
+	}
+
+	@Override
+	public void engineStopped(WebSocketEngine aEngine) {
+		List<Object> aArgs = new ArrayList();
+		aArgs.add(aEngine);
+
+		for (JavaScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(JavaScriptApp.EVENT_ENGINE_STOPPED, aArgs.toArray());
+		}
+	}
+
+	@Override
+	public void processLogon(WebSocketConnector aConnector) {
+		List<Object> aArgs = new ArrayList();
+		aArgs.add(aConnector);
+
+		for (JavaScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(JavaScriptApp.EVENT_LOGON, aArgs.toArray());
+		}
+	}
+
+	@Override
+	public void processLogoff(WebSocketConnector aConnector) {
+		List<Object> aArgs = new ArrayList();
+		aArgs.add(aConnector);
+
+		for (JavaScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(JavaScriptApp.EVENT_LOGOFF, aArgs.toArray());
+		}
+	}
+
+	@Override
+	public void connectorStarted(WebSocketConnector aConnector) {
+		List<Object> aArgs = new ArrayList();
+		aArgs.add(aConnector);
+
+		for (JavaScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(JavaScriptApp.EVENT_CONNECTOR_STARTED, aArgs.toArray());
+		}
+	}
+
+	@Override
+	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+		List<Object> aArgs = new ArrayList();
+		aArgs.add(aCloseReason);
+		aArgs.add(aConnector);
+
+		for (JavaScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(JavaScriptApp.EVENT_CONNECTOR_STOPPED, aArgs.toArray());
+		}
+	}
+
+	@Override
+	public void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession) {
+		List<Object> aArgs = new ArrayList();
+		aArgs.add(aSession);
+		aArgs.add(aConnector);
+
+		for (JavaScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(JavaScriptApp.EVENT_SESSION_STARTED, aArgs.toArray());
+		}
+	}
+
+	@Override
+	public void sessionStopped(WebSocketSession aSession) {
+		List<Object> aArgs = new ArrayList();
+		aArgs.add(aSession);
+
+		for (JavaScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(JavaScriptApp.EVENT_SESSION_STOPPED, aArgs.toArray());
+		}
+	}
+
+	public void tokenAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		String lApp = aToken.getString("app");
+		Assert.notNull(lApp, "The 'app' argument cannot be null!");
+		Assert.isTrue(mSettings.getApps().containsKey(lApp), "The target application '" + lApp + "' does not exists!");
+
+		List<Object> aArgs = new ArrayList();
+		aArgs.add(aToken.getMap());
+		aArgs.add(aConnector);
+
+		mAppsContext.get(lApp).notifyEvent(JavaScriptApp.EVENT_FILTER_IN, aArgs.toArray());
+		mAppsContext.get(lApp).notifyEvent(JavaScriptApp.EVENT_TOKEN, aArgs.toArray());
+	}
+
+	@Role(name = NS + ".reloadApp")
+	public void reloadAppAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		String lApp = aToken.getString("app");
+		Assert.notNull(lApp, "The 'app' argument cannot be null!");
+		Assert.isTrue(mSettings.getApps().containsKey(lApp), "The target application '" + lApp + "' does not exists!");
 
 		// loading the app (will destroy if exists)
-		loadApp(aApp, mSettings.getApps().get(aApp));
+		loadApp(lApp, mSettings.getApps().get(lApp));
 
 		sendToken(aConnector, createResponse(aToken));
 	}
@@ -178,8 +287,9 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		String aApp = aToken.getString("app");
 		String aObjectId = aToken.getString("objectId");
 		String aMethod = aToken.getString("method");
-		Object[] aArgs = aToken.getList("args", new ArrayList()).toArray();
-		Object lResult = callJsMethod(aApp, aObjectId, aMethod, aArgs);
+		List<Object> aArgs = aToken.getList("args", new ArrayList());
+		aArgs.add(aConnector);
+		Object lResult = callJsMethod(aApp, aObjectId, aMethod, aArgs.toArray());
 
 		Token lResponse = createResponse(aToken);
 		lResponse.getMap().put("result", lResult);
@@ -187,6 +297,13 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 * Calls an application object(exported) method
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	public Object callJsMethod(String aApp, String aObjectId, String aMethod, Object[] aArgs) throws Exception {
 		Assert.notNull(aApp, "The 'app' argument cannot be null!");
 		Assert.notNull(aObjectId, "The 'objectId' argument cannot be null!");
