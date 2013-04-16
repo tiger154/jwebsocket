@@ -211,6 +211,7 @@
 					if (isRTCPeerConnection) {
 						peerConn.createOffer(setLocalAndSendMessage, null, mediaConstraints);
 					} else {
+						
 						var offer = peerConn.createOffer(mediaConstraints);
 						peerConn.setLocalDescription(peerConn.SDP_OFFER, offer);
 						sendMessage({type: 'offer', sdp: offer.toSdp()});
@@ -224,7 +225,7 @@
 
 			function processSignalingMessage(message) {
 				var msg = JSON.parse(message);
-
+				alert(message);
 				if (msg.type === 'offer') {
 
 					if (!started && localStream) {
