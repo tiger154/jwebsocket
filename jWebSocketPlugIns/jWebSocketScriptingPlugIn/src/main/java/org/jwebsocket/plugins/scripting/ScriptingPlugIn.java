@@ -229,8 +229,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
 		List<Object> aArgs = new ArrayList();
-		aArgs.add(aCloseReason);
 		aArgs.add(aConnector);
+		aArgs.add(aCloseReason);
 
 		for (JavaScriptApp lApp : mAppsContext.values()) {
 			lApp.notifyEvent(JavaScriptApp.EVENT_CONNECTOR_STOPPED, aArgs.toArray());
@@ -240,8 +240,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	@Override
 	public void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession) {
 		List<Object> aArgs = new ArrayList();
-		aArgs.add(aSession);
 		aArgs.add(aConnector);
+		
 
 		for (JavaScriptApp lApp : mAppsContext.values()) {
 			lApp.notifyEvent(JavaScriptApp.EVENT_SESSION_STARTED, aArgs.toArray());
@@ -264,8 +264,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		Assert.isTrue(mSettings.getApps().containsKey(lApp), "The target application '" + lApp + "' does not exists!");
 
 		List<Object> aArgs = new ArrayList();
-		aArgs.add(aToken.getMap());
 		aArgs.add(aConnector);
+		aArgs.add(aToken.getMap());
 
 		mAppsContext.get(lApp).notifyEvent(JavaScriptApp.EVENT_FILTER_IN, aArgs.toArray());
 		mAppsContext.get(lApp).notifyEvent(JavaScriptApp.EVENT_TOKEN, aArgs.toArray());

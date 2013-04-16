@@ -133,7 +133,7 @@ public class JavaScriptApp {
 	}
 
 	public void sendTokenFragmented(WebSocketConnector aConnector, Map aMap, Integer aFragmentSize) {
-		notifyEvent(JavaScriptApp.EVENT_FILTER_OUT, new Object[]{aMap});
+		notifyEvent(JavaScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
 		if (!aMap.containsKey("reqType")) {
 			aMap.put("ns", ScriptingPlugIn.NS);
 			aMap.put("app", mAppName);
@@ -160,6 +160,12 @@ public class JavaScriptApp {
 	public void requireAuthority(WebSocketConnector aConnector, String aAuthority) throws Exception {
 		if (!mServer.hasAuthority(aConnector, aAuthority)) {
 			throw new Exception("Not authorized. Missing required '" + aAuthority + "' authority!");
+		}
+	}
+
+	public void on(Collection<String> aEvents, Function aFn) {
+		for (String lEventName : aEvents) {
+			on(lEventName, aFn);
 		}
 	}
 
