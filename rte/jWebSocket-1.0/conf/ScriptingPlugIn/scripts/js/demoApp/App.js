@@ -12,7 +12,7 @@ App.on("filterIn", function(aToken) {
 	App.getLogger().debug("Calling filter in: " + aToken.toString());
 });
 
-App.on("token", function(aToken, aConnector) {
+App.on("token", function(aConnector, aToken) {
 	var lResponse = App.createResponse(aToken);
 	lResponse.put("required", true);
 	lResponse.put("name", aToken.get("name"));

@@ -4,11 +4,7 @@ var lNS = "org.jwebsocket.plugins.webrtc";
 var lClients = App.newThreadSafeMap();
 
 // processing connector stopped event
-App.on("connectorStopped", function(aConnector) {
-	lUnregister(aConnector);
-});
-
-App.on("logoff", function(aConnector) {
+App.on(["connectorStopped", "logoff"], function(aConnector) {
 	lUnregister(aConnector);
 });
 
