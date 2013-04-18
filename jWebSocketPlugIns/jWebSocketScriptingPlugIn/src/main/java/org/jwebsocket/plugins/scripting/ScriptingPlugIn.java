@@ -77,7 +77,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 */
 	protected ApplicationContext mBeanFactory;
 	/**
-	 * Configuration settings for the scripting plug-in. Controlled by Spring configuration.
+	 * Configuration settings for the scripting plug-in. Controlled by Spring
+	 * configuration.
 	 */
 	protected Settings mSettings;
 
@@ -241,7 +242,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	public void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession) {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
-		
+
 
 		for (JavaScriptApp lApp : mAppsContext.values()) {
 			lApp.notifyEvent(JavaScriptApp.EVENT_SESSION_STARTED, aArgs.toArray());
@@ -258,6 +259,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	public void tokenAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lApp = aToken.getString("app");
 		Assert.notNull(lApp, "The 'app' argument cannot be null!");
@@ -271,6 +278,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		mAppsContext.get(lApp).notifyEvent(JavaScriptApp.EVENT_TOKEN, aArgs.toArray());
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS + ".reloadApp")
 	public void reloadAppAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lApp = aToken.getString("app");
@@ -283,6 +296,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		sendToken(aConnector, createResponse(aToken));
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	public void callJsMethodAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String aApp = aToken.getString("app");
 		String aObjectId = aToken.getString("objectId");
@@ -300,8 +319,11 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	/**
 	 * Calls an application object(exported) method
 	 *
-	 * @param aConnector
-	 * @param aToken
+	 * @param aApp
+	 * @param aObjectId
+	 * @param aMethod
+	 * @param aArgs
+	 * @return
 	 * @throws Exception
 	 */
 	public Object callJsMethod(String aApp, String aObjectId, String aMethod, Object[] aArgs) throws Exception {
