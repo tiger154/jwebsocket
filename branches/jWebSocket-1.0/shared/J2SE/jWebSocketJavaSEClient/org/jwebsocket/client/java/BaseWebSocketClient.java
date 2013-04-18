@@ -518,7 +518,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 						mNegotiatedSubProtocol.getEncoding()));
 				sendInternal(
 						WebSocketProtocolAbstraction.rawToProtocolPacket(
-						mVersion, lPacket));
+						mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
 			}
 		}
 	}
@@ -558,7 +558,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 			if (isHixie()) {
 				sendInternal(aDataPacket.getByteArray());
 			} else {
-				sendInternal(WebSocketProtocolAbstraction.rawToProtocolPacket(mVersion, aDataPacket));
+				sendInternal(WebSocketProtocolAbstraction.rawToProtocolPacket(
+						mVersion, aDataPacket, WebSocketProtocolAbstraction.MASKED));
 			}
 		}
 	}
@@ -1251,7 +1252,6 @@ public class BaseWebSocketClient implements WebSocketClient {
 				} catch (Exception lEx) {
 				}
 			}
-			
 			// TODO: What about shutting down the thread on application termination?
 		}
 	}

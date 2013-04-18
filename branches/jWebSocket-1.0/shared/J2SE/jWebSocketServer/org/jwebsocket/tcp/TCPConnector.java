@@ -302,7 +302,8 @@ public class TCPConnector extends BaseConnector {
 	// TODO: implement fragmentation for packet sending
 	private void sendHybi(int aVersion, WebSocketPacket aDataPacket) throws IOException {
 		// exception handling is done in sendPacket method
-		byte[] lPacket = WebSocketProtocolAbstraction.rawToProtocolPacket(aVersion, aDataPacket);
+		byte[] lPacket = WebSocketProtocolAbstraction.rawToProtocolPacket(
+				aVersion, aDataPacket, WebSocketProtocolAbstraction.UNMASKED);
 		mOut.write(lPacket);
 		mOut.flush();
 	}

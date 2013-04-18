@@ -97,7 +97,8 @@ public class NioTcpConnector extends BaseConnector {
 			System.arraycopy(aPacket.getByteArray(), 0, lProtocolPacket, 1, aPacket.getByteArray().length);
 			lProtocolPacket[lProtocolPacket.length - 1] = (byte) 0xFF;
 		} else {
-			lProtocolPacket = WebSocketProtocolAbstraction.rawToProtocolPacket(getVersion(), aPacket);
+			lProtocolPacket = WebSocketProtocolAbstraction.rawToProtocolPacket(
+					getVersion(), aPacket, WebSocketProtocolAbstraction.UNMASKED);
 		}
 
 		DataFuture lFuture = new DataFuture(this, ByteBuffer.wrap(lProtocolPacket));
