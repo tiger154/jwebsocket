@@ -33,10 +33,10 @@ import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.ScriptableObject;
 import org.springframework.util.Assert;
-import sun.org.mozilla.javascript.Context;
-import sun.org.mozilla.javascript.Function;
-import sun.org.mozilla.javascript.ScriptableObject;
 
 /**
  * The object acts as the "app" global object in the JavaScript application
