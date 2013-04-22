@@ -18,7 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.scripting;
 
-import org.jwebsocket.plugins.scripting.app.JavaScriptApp;
+import org.jwebsocket.plugins.scripting.app.BaseScriptApp;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +39,7 @@ import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.plugins.annotations.Role;
+import org.jwebsocket.plugins.scripting.app.js.JavaScriptApp;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
@@ -66,19 +67,18 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket Scripting Plug-in - Community Edition";
-	private static ScriptEngineManager mEngine = new ScriptEngineManager();
+	private static ScriptEngineManager mEngineManager = new ScriptEngineManager();
 	/**
 	 *
 	 */
 	private Map<String, ScriptEngine> mApps = new FastMap<String, ScriptEngine>().shared();
-	private Map<String, JavaScriptApp> mAppsContext = new FastMap<String, JavaScriptApp>().shared();
+	private Map<String, BaseScriptApp> mAppsContext = new FastMap<String, BaseScriptApp>().shared();
 	/**
 	 *
 	 */
 	protected ApplicationContext mBeanFactory;
 	/**
-	 * Configuration settings for the scripting plug-in. Controlled by Spring
-	 * configuration.
+	 * Configuration settings for the scripting plug-in. Controlled by Spring configuration.
 	 */
 	protected Settings mSettings;
 
@@ -95,10 +95,9 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		// specify default name space for file system plugin
 		this.setNamespace(NS);
 
-		mEngine = new ScriptEngineManager();
-
+		mEngineManager = new ScriptEngineManager();
 		try {
-			mBeanFactory = getConfigBeanFactory();
+			mBeanFactory = getConfigBeanFactory(NS);
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for scripting plug-in, some features may not be available.");
 			} else {
@@ -106,9 +105,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 				// initializing apps
 				for (String lApp : mSettings.getApps().keySet()) {
-					if (mLog.isInfoEnabled()) {
-						mLog.info("Scripting plug-in successfully instantiated.");
-					}
 					loadApp(lApp, mSettings.getApps().get(lApp));
 				}
 
@@ -164,15 +160,29 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * @param aFilePath The app home path
 	 * @throws Exception
 	 */
-	public void loadApp(String aApp, String aFilePath) throws Exception {
-		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFilePath) + "/App.js"));
-		ScriptEngine lScriptApp = mEngine.getEngineByName("javascript");
-		mApps.put(aApp, lScriptApp);
-		mAppsContext.put(aApp, new JavaScriptApp(this, aApp, aFilePath, lScriptApp));
+	public final void loadApp(String aApp, String aFilePath) throws Exception {
+		String[] lAppNameExt = aApp.split(":");
+		String lApp = lAppNameExt[0];
+		String lExt = (lAppNameExt.length == 2) ? lAppNameExt[1] : "js";
+
+		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFilePath) + "/App." + lExt));
+		ScriptEngine lScriptApp = mEngineManager.getEngineByExtension(lExt);
+		mApps.put(lApp, lScriptApp);
+
+		if ("js".equals(lExt)) {
+			mAppsContext.put(lApp, new JavaScriptApp(this, lApp, aFilePath, lScriptApp));
+		} else {
+			throw new UnsupportedOperationException("The extension '" + lExt + "' is not supported for script applications!");
+		}
 
 		// creating application services
-		lScriptApp.put("App", mAppsContext.get(aApp));
+		lScriptApp.put("App", mAppsContext.get(lApp));
+		// loading app
 		lScriptApp.eval(lFile);
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug(lApp + "(" + lExt + ") application loaded successfully!");
+		}
 	}
 
 	@Override
@@ -182,8 +192,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aEngine);
 
-		for (JavaScriptApp lApp : mAppsContext.values()) {
-			lApp.notifyEvent(JavaScriptApp.EVENT_ENGINE_STARTED, aArgs.toArray());
+		for (BaseScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(BaseScriptApp.EVENT_ENGINE_STARTED, aArgs.toArray());
 		}
 	}
 
@@ -192,8 +202,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aEngine);
 
-		for (JavaScriptApp lApp : mAppsContext.values()) {
-			lApp.notifyEvent(JavaScriptApp.EVENT_ENGINE_STOPPED, aArgs.toArray());
+		for (BaseScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(BaseScriptApp.EVENT_ENGINE_STOPPED, aArgs.toArray());
 		}
 	}
 
@@ -202,8 +212,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
 
-		for (JavaScriptApp lApp : mAppsContext.values()) {
-			lApp.notifyEvent(JavaScriptApp.EVENT_LOGON, aArgs.toArray());
+		for (BaseScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(BaseScriptApp.EVENT_LOGON, aArgs.toArray());
 		}
 	}
 
@@ -212,8 +222,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
 
-		for (JavaScriptApp lApp : mAppsContext.values()) {
-			lApp.notifyEvent(JavaScriptApp.EVENT_LOGOFF, aArgs.toArray());
+		for (BaseScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(BaseScriptApp.EVENT_LOGOFF, aArgs.toArray());
 		}
 	}
 
@@ -222,8 +232,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
 
-		for (JavaScriptApp lApp : mAppsContext.values()) {
-			lApp.notifyEvent(JavaScriptApp.EVENT_CONNECTOR_STARTED, aArgs.toArray());
+		for (BaseScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(BaseScriptApp.EVENT_CONNECTOR_STARTED, aArgs.toArray());
 		}
 	}
 
@@ -233,8 +243,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		aArgs.add(aConnector);
 		aArgs.add(aCloseReason);
 
-		for (JavaScriptApp lApp : mAppsContext.values()) {
-			lApp.notifyEvent(JavaScriptApp.EVENT_CONNECTOR_STOPPED, aArgs.toArray());
+		for (BaseScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(BaseScriptApp.EVENT_CONNECTOR_STOPPED, aArgs.toArray());
 		}
 	}
 
@@ -244,8 +254,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		aArgs.add(aConnector);
 
 
-		for (JavaScriptApp lApp : mAppsContext.values()) {
-			lApp.notifyEvent(JavaScriptApp.EVENT_SESSION_STARTED, aArgs.toArray());
+		for (BaseScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(BaseScriptApp.EVENT_SESSION_STARTED, aArgs.toArray());
 		}
 	}
 
@@ -254,17 +264,11 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aSession);
 
-		for (JavaScriptApp lApp : mAppsContext.values()) {
-			lApp.notifyEvent(JavaScriptApp.EVENT_SESSION_STOPPED, aArgs.toArray());
+		for (BaseScriptApp lApp : mAppsContext.values()) {
+			lApp.notifyEvent(BaseScriptApp.EVENT_SESSION_STOPPED, aArgs.toArray());
 		}
 	}
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @throws Exception
-	 */
 	public void tokenAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lApp = aToken.getString("app");
 		Assert.notNull(lApp, "The 'app' argument cannot be null!");
@@ -274,16 +278,10 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		aArgs.add(aConnector);
 		aArgs.add(aToken.getMap());
 
-		mAppsContext.get(lApp).notifyEvent(JavaScriptApp.EVENT_FILTER_IN, aArgs.toArray());
-		mAppsContext.get(lApp).notifyEvent(JavaScriptApp.EVENT_TOKEN, aArgs.toArray());
+		mAppsContext.get(lApp).notifyEvent(BaseScriptApp.EVENT_FILTER_IN, aArgs.toArray());
+		mAppsContext.get(lApp).notifyEvent(BaseScriptApp.EVENT_TOKEN, aArgs.toArray());
 	}
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @throws Exception
-	 */
 	@Role(name = NS + ".reloadApp")
 	public void reloadAppAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lApp = aToken.getString("app");
@@ -296,13 +294,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		sendToken(aConnector, createResponse(aToken));
 	}
 
-	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @throws Exception
-	 */
-	public void callJsMethodAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+	public void callMethodAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String aApp = aToken.getString("app");
 		String aObjectId = aToken.getString("objectId");
 		String aMethod = aToken.getString("method");
@@ -317,7 +309,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Calls an application object(exported) method
+	 * Calls an application object(published) method
 	 *
 	 * @param aApp
 	 * @param aObjectId
