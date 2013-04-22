@@ -25,12 +25,12 @@ import org.apache.log4j.Logger;
  *
  * @author kyberneees
  */
-public class JavaScriptLogger {
+public class ScriptAppLogger {
 
 	private Logger mLog;
 	private String mAppName;
 
-	public JavaScriptLogger(Logger aLog, String aAppName) {
+	public ScriptAppLogger(Logger aLog, String aAppName) {
 		mLog = aLog;
 		mAppName = aAppName;
 	}
