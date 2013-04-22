@@ -1,12 +1,9 @@
+
 // importing App script
 App.importScript("${APP_HOME}/lib/myAppLib.js");
 
 importClass(org.apache.commons.io.FileUtils);
 importClass(java.io.File);
-
-var Object = {
-	sayHello: sayHello
-};
 
 App.on("filterIn", function(aToken) {
 	App.getLogger().debug("Calling filter in: " + aToken.toString());
@@ -17,7 +14,25 @@ App.on("token", function(aConnector, aToken) {
 	lResponse.put("required", true);
 	lResponse.put("name", aToken.get("name"));
 
+	// normal send
 	App.sendToken(aConnector, lResponse);
+	// fragmented send
+	App.sendToken(aConnector, lResponse, 10);
+	// akcnowledge send
+	App.sendToken(aConnector, lResponse, {
+		getTimeout: function() {
+			return 1000;
+		},
+		OnTimeout: function() {
+			App.getLogger().debug("Token delivery timeout!");
+		},
+		OnSuccess: function() {
+			App.getLogger().debug("Token delivery success!");
+		},
+		OnFailure: function() {
+			App.getLogger().debug("Token delivery failure!");
+		}
+	});
 });
 
 App.on("filterOut", function(aToken) {
@@ -45,10 +60,14 @@ var getVersion = function() {
 	return java.lang.System.getProperty("java.version");
 };
 
+var lObject = {
+	version: getVersion
+};
+
 // publish App object to be accessed from the client
 App.publish("Main", {
 	read: read,
-	version: getVersion,
-	sayHello: Object.sayHello,
-	fn: lFn
+	version: lObject.version,
+	fn: lFn,
+	sayHello: sayHello
 });
