@@ -56,7 +56,7 @@ public class RoleConfigHandler implements ConfigHandler {
 				String elementName = streamReader.getLocalName();
 				if (elementName.equals(ID)) {
 					streamReader.next();
-					id = streamReader.getText();
+					id = streamReader.getText().replace(" ", "");
 				} else if (elementName.equals(DESCRIPTION)) {
 					streamReader.next();
 					description = streamReader.getText();
@@ -93,7 +93,7 @@ public class RoleConfigHandler implements ConfigHandler {
 				String elementName = streamReader.getLocalName();
 				if (elementName.equals(ELEMENT_RIGHT)) {
 					streamReader.next();
-					String right = streamReader.getText();
+					String right = streamReader.getText().replace(" ", "");
 					rights.add(right);
 				}
 			}
