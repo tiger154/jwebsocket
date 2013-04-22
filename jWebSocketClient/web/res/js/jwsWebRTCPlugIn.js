@@ -41,25 +41,25 @@ jws.WebRTC = function WebRTC(aWSC, aAppName) {
 };
 
 jws.WebRTC.prototype.connect = function(aUser, aOffer, aOptions) {
-	this.WSC.callJsMethod(this.appName, "Main", "connect", [aUser, aOffer], aOptions);
+	this.WSC.callScriptMethod(this.appName, "Main", "connect", [aUser, aOffer], aOptions);
 };
 
 jws.WebRTC.prototype.disconnect = function(aUser, aOptions) {
-	this.WSC.callJsMethod(this.appName, "Main", "disconnect", [aUser], aOptions);
+	this.WSC.callScriptMethod(this.appName, "Main", "disconnect", [aUser], aOptions);
 };
 
 jws.WebRTC.prototype.register = function(aOptions) {
-	this.WSC.callJsMethod(this.appName, "Main", "register", [], aOptions);
+	this.WSC.callScriptMethod(this.appName, "Main", "register", [], aOptions);
 };
 
 jws.WebRTC.prototype.unregister = function(aOptions) {
-	this.WSC.callJsMethod(this.appName, "Main", "unregister", [], aOptions);
+	this.WSC.callScriptMethod(this.appName, "Main", "unregister", [], aOptions);
 };
 
 jws.WebRTC.prototype.getClients = function(aOptions) {
-	this.WSC.callJsMethod(this.appName, "Main", "getClients", [], aOptions);
+	this.WSC.callScriptMethod(this.appName, "Main", "getClients", [], aOptions);
 };
 
 jws.WebRTC.prototype.accept = function(aUser, aAnswer, aOptions) {
-	this.WSC.callJsMethod(this.appName, "Main", "accept", [aUser, aAnswer], aOptions);
+	this.WSC.callScriptMethod(this.appName, "Main", "accept", [aUser, aAnswer], aOptions);
 };
