@@ -90,7 +90,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	private static final String TT_LOGIN = "login";
 	private static final String TT_LOGOUT = "logout";
 	// new spring based auth
-	private static final String TT_LOGON = "logon";
+	public static final String TT_LOGON = "logon";
 	private static final String TT_LOGOFF = "logoff";
 	private static final String TT_GET_AUTHORITIES = "getAuthorities";
 	private static final String TT_CLOSE = "close";
