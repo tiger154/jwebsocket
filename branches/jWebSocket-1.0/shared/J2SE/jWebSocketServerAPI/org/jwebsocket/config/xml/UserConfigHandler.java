@@ -63,7 +63,7 @@ public class UserConfigHandler implements ConfigHandler {
 				String elementName = aStreamReader.getLocalName();
 				if (elementName.equals(LOGIN_NAME)) {
 					aStreamReader.next();
-					lLoginname = aStreamReader.getText();
+					lLoginname = aStreamReader.getText().replace(" ", "");
 				} else if (elementName.equals(UUID)) {
 					aStreamReader.next();
 					lUUID = aStreamReader.getText();
@@ -119,7 +119,7 @@ public class UserConfigHandler implements ConfigHandler {
 				String lElementName = aStreamReader.getLocalName();
 				if (lElementName.equals(ELEMENT_ROLE)) {
 					aStreamReader.next();
-					String role = aStreamReader.getText();
+					String role = aStreamReader.getText().replace(" ", "");
 					lRoles.add(role);
 				}
 			}

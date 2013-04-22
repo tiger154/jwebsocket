@@ -51,10 +51,10 @@ public class RightConfigHandler implements ConfigHandler {
 				String elementName = streamReader.getLocalName();
 				if (elementName.equals(ID)) {
 					streamReader.next();
-					id = streamReader.getText();
+					id = streamReader.getText().replace(" ", "");
 				} else if (elementName.equals(NAMESPACE)) {
 					streamReader.next();
-					namespace = streamReader.getText();
+					namespace = streamReader.getText().replace(" ", "");
 				} else if (elementName.equals(DESCRIPTION)) {
 					streamReader.next();
 					description = streamReader.getText();
