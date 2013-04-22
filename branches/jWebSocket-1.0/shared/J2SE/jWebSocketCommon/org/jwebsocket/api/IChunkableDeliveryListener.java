@@ -30,7 +30,7 @@ public interface IChunkableDeliveryListener extends IPacketDeliveryListener {
 	 * Is fired if a chunk is delivered successfully.
 	 *
 	 *
-	 * @param aToken
+	 * @param aChunk
 	 */
-	void OnChunkDelivered(Token aToken);
+	void OnChunkDelivered(Token aChunk);
 }
