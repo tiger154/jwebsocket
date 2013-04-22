@@ -74,7 +74,7 @@ public class ScriptingPlugIn extends BaseClientTokenPlugIn {
 	}
 
 	/**
-	 * Sends a token to script application.
+	 * Sends a token to an script application.
 	 *
 	 * @param aApp The application name
 	 * @param aToken The token to be sent
