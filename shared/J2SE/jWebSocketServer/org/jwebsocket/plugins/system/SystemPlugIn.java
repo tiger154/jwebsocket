@@ -1093,6 +1093,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		} catch (Exception ex) {
 			String lMsg = ex.getClass().getSimpleName() + ": " + ex.getMessage();
 			Token lResponse = getServer().createErrorToken(aToken, -1, lMsg);
+         lResponse.setString("username", lUsername);
 			sendToken(aConnector, aConnector, lResponse);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug(lMsg);
