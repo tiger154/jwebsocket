@@ -32,12 +32,21 @@ jws.ScriptingPlugIn = {
 	//:d:en:Namespace within the jWebSocketClient instance.
 	// if namespace changed update the applications accordingly!
 	JWS_NS: "scripting",
-	callJsMethod: function(aApp, aObjectId, aMethod, aArgs, aOptions) {
+			
+	//:m:*:callScriptMethod
+	//:d:en:Calls an script application published object method. 
+	//:a:en::aApp:String:The script application name
+	//:a:en::aObjectId:String:The published object identifier
+	//:a:en::aMethod:String:The method name
+	//:a:en::aArgs:Array:The method calling arguments
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	callScriptMethod: function(aApp, aObjectId, aMethod, aArgs, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
 			var lToken = {
 				ns: jws.ScriptingPlugIn.NS,
-				type: "callJsMethod",
+				type: "callMethod",
 				method: aMethod,
 				objectId: aObjectId,
 				app: aApp,
@@ -47,7 +56,13 @@ jws.ScriptingPlugIn = {
 		}
 		return lRes;
 	},
-	reloadJsApp: function(aApp, aOptions) {
+			
+	//:m:*:reloadScriptApp
+	//:d:en:Reloads an script application in runtime.
+	//:a:en::aApp:String:The script application name
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	reloadScriptApp: function(aApp, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
 			var lToken = {
@@ -59,7 +74,14 @@ jws.ScriptingPlugIn = {
 		}
 		return lRes;
 	},
-	sendJsToken: function(aApp, aToken, aOptions) {
+			
+	//:m:*:sendScriptToken
+	//:d:en:Sends a token to an script application.
+	//:a:en::aApp:String:The script application name
+	//:a:en::aToken:Object:The token to be sent
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none		
+	sendScriptToken: function(aApp, aToken, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code && aToken) {
 			aToken.app = aApp;
