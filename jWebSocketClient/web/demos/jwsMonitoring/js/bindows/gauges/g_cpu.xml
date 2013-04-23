@@ -3,14 +3,14 @@
 <Gauge2 coordWidth="1000" coordHeight="1000" left="0" top="0" bottom="0" right="0">
    
     <!-- Label background -->
-    <Gauge2RectangularBorder centerX="570" centerY="505" width="160" height="70" stroke="#FBFBFB" strokeWidth="12" arcSize="30">
+    <Gauge2RectangularBorder centerX="570" centerY="505" width="230" height="70" stroke="#FBFBFB" strokeWidth="12" arcSize="30">
         <Gauge2RectangularBorder.Filler>
             <Gauge2LinearGradientFiller color1="#000000" color2="#000000" angle="0"/>
         </Gauge2RectangularBorder.Filler>
     </Gauge2RectangularBorder>
 
     <!-- Labels -->
-    <Gauge2Label text="CPU" font="arial 46 bold" foreColor="#367CBB" x="425" y="503"/>
+    <Gauge2Label text="CPU" font="arial 46 bold" foreColor="#367CBB" x="380" y="503"/>
     <Gauge2Label id="label" text="0" font="45 bold" foreColor="#FBFBFB" y="503" x="570"/>
     
     <!-- Range -->
