@@ -24,11 +24,25 @@
 	float: left;
 	font-size: 11px;
 }
+.choices {
+	width: 46%;
+	padding-bottom: 8px;
+	margin-left: 5px;
+}
+
+.choices .choice_label, .choices .radio_button{
+	float: left;
+	margin-top: 7px;
+	margin-left: 3px;
+}
+
+.choices .choice_label {
+	
+}
 
 .buttons{
 	width: 105px;
 	margin: 5px 0 0 12px;
-	padding: 5px 0 0 4px;
 }
 
 .buttons .button .btn_center{

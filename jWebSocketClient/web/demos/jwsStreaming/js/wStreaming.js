@@ -25,7 +25,6 @@ $.widget( "jws.streaming", {
 		// DOM Elements
 		this.eBtnRegister = this.element.find( "#register_btn" );
 		this.eBtnUnregister = this.element.find( "#unregister_btn" );
-		this.eChbKeepAlive = this.element.find( "#schkKeepAlive" );
 
 		w.streaming = this;
 		w.streaming.doWebSocketConnection( );
@@ -56,7 +55,6 @@ $.widget( "jws.streaming", {
 	},
 	registerEvents: function( ) {
 		//BUTTON EVENTS
-		w.streaming.eChbKeepAlive.click( w.streaming.toogleKeepAlive );
 		w.streaming.eBtnUnregister.click( w.streaming.unregisterStream );
 		w.streaming.eBtnRegister.click( w.streaming.registerStream );
 	},
@@ -84,15 +82,6 @@ $.widget( "jws.streaming", {
 		else {
 			jwsDialog( "Sorry, you are not connected to the server, you can't" +
 					" execute this action", "jWebSocket Error", true, "error" );
-		}
-	},
-	toogleKeepAlive: function( ) {
-		if ( w.streaming.eChbKeepAlive.get( 0 ).checked ) {
-			mWSC.startKeepAlive( {
-				interval: 30000
-			} );
-		} else {
-			mWSC.stopKeepAlive( );
 		}
 	}
 } );
