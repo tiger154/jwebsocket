@@ -29,13 +29,21 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
         <title>jWebSocket Streaming Demo</title>
-
+		
 		<!-- JQUERY STYLES -->
 		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
 
 		<!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsStreaming.css"/>
+		<!--[if IE ]>
+			<style type="text/css">
+				.radio_button{
+					margin-top: 3px !important;
+				}
+			</style>
+		<![endif]-->
+		
 
 		<!-- JQUERY DEPENDENCIES -->
 		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
@@ -110,15 +118,22 @@
                     <!--    MESSAGE_BOX      -->
                     <div id="message_box" class="box">
 						<div class="choices">
-							<input type="radio" name="streaming" value="monitorStream" 
-								   checked="checked" class="radio_button"/>
-							<label class="choice_label">Monitor Stream</label>
-							<input type="radio" name="streaming" value="timeStream" 
-								   class="radio_button"/>
-							<label class="choice_label">Time Stream</label>
-							<input type="radio" name="streaming" value="stressStream" 
-								   class="radio_button"/>
-							<label class="choice_label">Stress Stream</label>
+							<div>
+								<input type="radio" name="streaming" value="monitorStream" 
+									   checked="checked" class="radio_button"/>
+								<label class="choice_label">Monitor Stream</label>
+							</div>
+							<div>
+								<input type="radio" name="streaming" value="timeStream" 
+									   class="radio_button"/>
+								<label class="choice_label">Time Stream</label>
+							</div>
+							<div>
+								<input type="radio" name="streaming" value="stressStream" 
+									   class="radio_button"/>
+								<label class="choice_label">Stress Stream</label>
+							</div>
+
 						</div>
 						<div class="buttons">
 							<div id="register_btn" class="button"

@@ -8,7 +8,7 @@
 }
 
 .description_box p{
-    margin-left: 3px; 
+    margin-left: 3px;
 }
 
 #message_box{
@@ -24,8 +24,9 @@
 	float: left;
 	font-size: 11px;
 }
+
 .choices {
-	width: 46%;
+	width: 120px;
 	padding-bottom: 8px;
 	margin-left: 5px;
 }
@@ -36,8 +37,9 @@
 	margin-left: 3px;
 }
 
-.choices .choice_label {
-	
+.choices div{
+	width: 100%;
+	float: left;
 }
 
 .buttons{
