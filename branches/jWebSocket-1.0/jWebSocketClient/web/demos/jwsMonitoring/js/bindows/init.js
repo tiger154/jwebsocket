@@ -23,7 +23,7 @@ function init() {
 	});
 
 	$("#log_box").log({
-		maxLogLines: 200,
+		maxLogLines: 500,
 		linesToDelete: 20
 	});
 	

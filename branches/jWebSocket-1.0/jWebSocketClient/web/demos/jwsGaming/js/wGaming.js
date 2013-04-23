@@ -235,7 +235,6 @@ $.widget( "jws.gaming", {
 		var lPlusMinus = (w.gaming.getRandomNumber( 2 ) >= 1 ) ? "+" : "-",
 		lNextX = w.gaming.getRandomNumber( aSpeed + 30 ),
 		lNextY = w.gaming.getRandomNumber( aSpeed + 10 );
-		console.log(lPlusMinus);
 		if( lPlusMinus == "+" ) {
 			w.gaming.mPlayer.loc_x += lNextX;
 			w.gaming.mPlayer.loc_y += lNextY;
