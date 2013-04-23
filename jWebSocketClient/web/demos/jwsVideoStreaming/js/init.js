@@ -12,7 +12,7 @@ function init(  ) {
 	// @linesToDelete: quantity of lines that will be deleted from 
 	// the log window each time the log exceeds the maxLogLines
 	$( "#log_box" ).log({
-		maxLogLines: 200, 
+		maxLogLines: 500, 
 		linesToDelete: 20
 	});
 	// Setting the styles to the buttons, avoiding to fill the HTML code 

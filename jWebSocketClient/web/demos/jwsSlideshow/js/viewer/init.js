@@ -26,7 +26,7 @@ function init( ) {
 	if ($(top.document).find("#log_box").get(0)) {
 		mLog.isDebugEnabled = true;
 		$(top.document).find("#log_box").log({
-			maxLogLines: 200,
+			maxLogLines: 500,
 			linesToDelete: 20,
 			embededIframe: true
 		});
