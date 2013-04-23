@@ -2,21 +2,21 @@
 <Gauge2 coordWidth="1000" coordHeight="1000" left="0" top="0" bottom="0" right="0">
    
     <!-- Label background -->
-    <Gauge2RectangularBorder centerX="665" centerY="380" width="170" height="80" stroke="#FBFBFB" strokeWidth="12" arcSize="30">
+    <Gauge2RectangularBorder centerX="665" centerY="380" width="230" height="80" stroke="#FBFBFB" strokeWidth="12" arcSize="30">
         <Gauge2RectangularBorder.Filler>
             <Gauge2LinearGradientFiller color1="#000000" color2="#000000" angle="0"/>
         </Gauge2RectangularBorder.Filler>
     </Gauge2RectangularBorder>
-    <Gauge2RectangularBorder centerX="665" centerY="480" width="170" height="80" stroke="#FBFBFB" strokeWidth="12" arcSize="30">
+    <Gauge2RectangularBorder centerX="665" centerY="480" width="230" height="80" stroke="#FBFBFB" strokeWidth="12" arcSize="30">
         <Gauge2RectangularBorder.Filler>
             <Gauge2LinearGradientFiller color1="#000000" color2="#000000" angle="0"/>
         </Gauge2RectangularBorder.Filler>
     </Gauge2RectangularBorder>
 
 	<!-- Label -->
-    <Gauge2Label id="label3" text="HDD Capacity" font="arial 46 bold" foreColor="#CD6766" y="370" x="415"/>
+    <Gauge2Label id="label3" text="HDD Capacity" font="arial 46 bold" foreColor="#CD6766" y="370" x="385"/>
     <Gauge2Label id="label1" text="0" font="40 bold" foreColor="#FBFBFB" x="665" y="378" anchorHorizontal="center" anchorVertical="center"/>
-    <Gauge2Label id="label4" text="Used Space" font="arial 46 bold" foreColor="#70BF7B" y="472" x="435"/>
+    <Gauge2Label id="label4" text="Used Space" font="arial 46 bold" foreColor="#70BF7B" y="472" x="385"/>
 	<Gauge2Label id="label2" text="0" font="40 bold" foreColor="#FBFBFB" x="665" y="478" anchorHorizontal="center" anchorVertical="center"/>
 
 	<!-- Range -->
