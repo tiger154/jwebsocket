@@ -7,6 +7,7 @@ $.widget( "jws.log", {
 		w.log.scrollLocked = false;
 		w.log.eLog = w.log.element.find( "#log_box_content" );
 		w.log.eBtnHide = w.log.element.find( '#show_hide_log' );
+		w.log.mMaxLogLines = w.log.options.maxLogLines || 500;
 		this.registerEvents( );
 	},
 	registerEvents: function( ) {
@@ -66,8 +67,8 @@ function log( aString ) {
 	var lScrollHeight = w.log.eLog.get( 0 ).scrollHeight;
 	w.log.eLog.get( 0 ).style.height = lScrollHeight;
 	var numberOfLines = Math.floor( lScrollHeight / lLineHeight );
-
-	if ( numberOfLines >= w.log.options.maxLogLines ) {
+	
+	if ( numberOfLines >= w.log.mMaxLogLines ) {
 		var lSplitted = w.log.eLog.html( ).split( "<br>" );
 		var lHtml = "";
 		$( lSplitted ).each( function( aIndex, aElement ) {
