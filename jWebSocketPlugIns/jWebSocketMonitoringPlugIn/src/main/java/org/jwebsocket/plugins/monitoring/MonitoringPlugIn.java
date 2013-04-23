@@ -215,7 +215,10 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector,
 			CloseReason aCloseReason) {
-		mConnectedUsers--;
+		if( mConnectedUsers > 0 ) {
+			mConnectedUsers--;
+		}
+		
 		if (mClients.contains(aConnector)) {
 			mClients.remove(aConnector);
 		}
