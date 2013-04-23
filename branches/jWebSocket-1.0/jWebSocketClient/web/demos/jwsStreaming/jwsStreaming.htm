@@ -98,13 +98,12 @@
 
 					<!--       DESCRIPTION       -->
 					<div class="description_box">
-						<p>This demo shows how to easily register at a jWebSocket data feed (stream).
-							<br/><br/>
-							This example is based on the org.jwebsocket.streaming package which simply 
-							sends a tokens in a certain interval to the client. If you are not sure 
-							whether your favorite browser supports WebSockets please refer to our 
-							jWebSocket <a href="http://jwebsocket.org/documentation/jwebsocket-cross-browser-compatibility">
-								Cross-Browser Compatibility</a> page.
+						<p>This demo shows how to easily register at the jWebSocket 
+							streaming plug-in and consume its various data feeds. This example 
+							is based on the <b>org.jwebsocket.streaming</b> package which sends 
+							tokens in certain intervals to the client. 
+							As a developer you can easily add new real-time streams. 
+							Of course, you can combine many streams at a time. Check it out...
 						</p>
 					</div>
 
@@ -113,15 +112,13 @@
 						<div class="choices">
 							<input type="radio" name="streaming" value="monitorStream" 
 								   checked="checked" class="radio_button"/>
-							<label>Monitor Stream</label><br/>
+							<label class="choice_label">Monitor Stream</label>
 							<input type="radio" name="streaming" value="timeStream" 
 								   class="radio_button"/>
-							<label>Time Stream</label><br/>
+							<label class="choice_label">Time Stream</label>
 							<input type="radio" name="streaming" value="stressStream" 
 								   class="radio_button"/>
-							<label>Stress Stream</label><br/><br/>
-							<input id="schkKeepAlive" type="checkbox" value="off">
-								Keep-Alive</input>
+							<label class="choice_label">Stress Stream</label>
 						</div>
 						<div class="buttons">
 							<div id="register_btn" class="button"
