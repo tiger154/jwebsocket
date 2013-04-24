@@ -834,7 +834,12 @@
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>getSubscribers</id>
-			<description>Allows to retrieve the list of scubscribers of a certain channel</description>
+			<description>Allows to retrieve the list of subscribers of a certain channel</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.channels</ns>
+			<id>getPublishers</id>
+			<description>Allows to retrieve the list of publishers from a certain channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
@@ -1062,6 +1067,7 @@
 				<right>org.jwebsocket.plugins.channels.publish</right>
 				<right>org.jwebsocket.plugins.channels.getChannels</right>
 				<right>org.jwebsocket.plugins.channels.getSubscribers</right>
+				<right>org.jwebsocket.plugins.channels.getPublishers</right>
 				<right>org.jwebsocket.plugins.channels.getSubscriptions</right>
 				<right>org.jwebsocket.plugins.channels.getChannels</right>
 				<right>org.jwebsocket.plugins.channels.createChannel</right>
