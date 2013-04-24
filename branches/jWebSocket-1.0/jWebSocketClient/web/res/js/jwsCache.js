@@ -60,30 +60,35 @@ function Cache(maxSize, debug, storage) {
 Cache.BasicCacheStorage = function() {
   this.items_ = {};
   this.count_ = 0;
-}
+};
+
 Cache.BasicCacheStorage.prototype.get = function(key) {
   return this.items_[key];
-}
+};
+
 Cache.BasicCacheStorage.prototype.set = function(key, value) {
   if (typeof this.get(key) === "undefined")
     this.count_++;
   this.items_[key] = value;
-}
+};
+
 Cache.BasicCacheStorage.prototype.size = function(key, value) {
   return this.count_;
-}
+};
+
 Cache.BasicCacheStorage.prototype.remove = function(key) {
   var item = this.get(key);
   if (typeof item !== "undefined")
     this.count_--;
   delete this.items_[key];
   return item;
-}
+};
+
 Cache.BasicCacheStorage.prototype.keys = function() {
   var ret = [], p;
   for (p in this.items_) ret.push(p);
   return ret;
-}
+};
 
 /**
 * Local Storage based persistant cache storage backend.
@@ -103,31 +108,36 @@ Cache.LocalStorageCacheStorage = function(namespace) {
   this.prefix_ = 'cache-storage.' + (namespace || 'default') + '.';
   // Regexp String Escaping from http://simonwillison.net/2006/Jan/20/escape/#p-6
   var escapedPrefix = this.prefix_.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-  this.regexp_ = new RegExp('^' + escapedPrefix)
-}
+  this.regexp_ = new RegExp('^' + escapedPrefix);
+};
+
 Cache.LocalStorageCacheStorage.prototype.get = function(key) {
   var item = window.localStorage[this.prefix_ + key];
   if (item) return JSON.parse(item);
   return null;
-}
+};
+
 Cache.LocalStorageCacheStorage.prototype.set = function(key, value) {
   window.localStorage[this.prefix_ + key] = JSON.stringify(value);
-}
+};
+
 Cache.LocalStorageCacheStorage.prototype.size = function(key, value) {
   return this.keys().length;
-}
+};
+		
 Cache.LocalStorageCacheStorage.prototype.remove = function(key) {
   var item = this.get(key);
   delete window.localStorage[this.prefix_ + key];
   return item;
-}
+};
+
 Cache.LocalStorageCacheStorage.prototype.keys = function() {
   var ret = [], p;
   for (p in window.localStorage) {
     if (p.match(this.regexp_)) ret.push(p.replace(this.prefix_, ''));
   };
   return ret;
-}
+};
 
 /**
 * Retrieves an item from the cache.
@@ -139,7 +149,7 @@ Cache.prototype.getItem = function(key) {
   // retrieve the item from the cache
   var item = this.storage_.get(key);
 
-  if (item != null) {
+  if (item !== null) {
     if (!this.isExpired_(item)) {
       // if the item is not expired
       // update its last accessed date
@@ -155,10 +165,10 @@ Cache.prototype.getItem = function(key) {
   var returnVal = item ? item.value : null;
   if (returnVal) {
     this.stats_['hits']++;
-    this.log_('Cache HIT for key ' + key)
+    this.log_('Cache HIT for key ' + key);
   } else {
     this.stats_['misses']++;
-    this.log_('Cache MISS for key ' + key)
+    this.log_('Cache MISS for key ' + key);
   }
   return returnVal;
 };
@@ -205,7 +215,7 @@ Cache._CacheItem = function(k, v, o) {
 Cache.prototype.setItem = function(key, value, options) {
 
   // add a new cache item to the cache
-  if (this.storage_.get(key) != null) {
+  if (this.storage_.get(key) !== null) {
     this.removeItem(key);
   }
   this.addItem_(new Cache._CacheItem(key, value, options));
@@ -226,7 +236,7 @@ Cache.prototype.setItem = function(key, value, options) {
 */
 Cache.prototype.clear = function() {
   // loop through each item in the cache and remove it
-  var keys = this.storage_.keys()
+  var keys = this.storage_.keys();
   for (var i = 0; i < keys.length; i++) {
     this.removeItem(keys[i]);
   }
@@ -247,7 +257,7 @@ Cache.prototype.getStats = function() {
 */
 Cache.prototype.toHtmlString = function() {
   var returnStr = this.size() + " item(s) in cache<br /><ul>";
-  var keys = this.storage_.keys()
+  var keys = this.storage_.keys();
   for (var i = 0; i < keys.length; i++) {
     var item = this.storage_.get(keys[i]);
     returnStr = returnStr + "<li>" + item.key.toString() + " = " +
@@ -265,7 +275,7 @@ Cache.prototype.toHtmlString = function() {
 Cache.prototype.resize = function(newMaxSize) {
   this.log_('Resizing Cache from ' + this.maxSize_ + ' to ' + newMaxSize);
   // Set new size before purging so we know how many items to purge
-  var oldMaxSize = this.maxSize_
+  var oldMaxSize = this.maxSize_;
   this.maxSize_ = newMaxSize;
 
   if (newMaxSize > 0 && (oldMaxSize < 0 || newMaxSize < oldMaxSize)) {
@@ -276,7 +286,7 @@ Cache.prototype.resize = function(newMaxSize) {
   }
   // else if newMaxSize >= maxSize nothing to do
   this.log_('Resizing done');
-}
+};
 
 /**
 * Removes expired items from the cache.
@@ -302,7 +312,7 @@ Cache.prototype.purge_ = function() {
   if (tmparray.length > purgeSize) {
     // sort this array based on cache priority and the last accessed date
     tmparray = tmparray.sort(function(a, b) {
-      if (a.options.priority != b.options.priority) {
+      if (a.options.priority !== b.options.priority) {
         return b.options.priority - a.options.priority;
       } else {
         return b.lastAccessed - a.lastAccessed;
@@ -359,8 +369,7 @@ Cache.prototype.removeItem = function(key) {
 
 Cache.prototype.size = function() {
   return this.storage_.size();
-}
-
+};
 
 /**
 * @param {Object} item A cache item.

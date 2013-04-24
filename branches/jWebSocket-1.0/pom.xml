@@ -17,14 +17,6 @@
 		<module>jWebSocketJavaSEClient</module>
 		<module>jWebSocketSamples</module>
 		
-		<module>jWebSocketEngines/jWebSocketTomcatEngine</module>
-		<!-- Jetty needs to be updated to be updated to latest version-->
-		<!-- <module>jWebSocketEngines/jWebSocketJettyEngine</module> -->
-		<!-- Grizzly/Glassfish needs to be updated to latest version -->
-		<!-- <module>jWebSocketEngines/jWebSocketGrizzlyEngine</module> -->
-		<!-- Netty is not yet supported -->
-		<!-- <module>jWebSocketEngines/jWebSocketNettyEngine</module> -->
-		
 		<module>jWebSocketPlugIns/jWebSocketChatPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketSenchaPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketJQueryPlugIn</module>

@@ -73,7 +73,6 @@
 		</plugins>
 	</build>
 
-
 	<!--  define all the dependencies here -->
 	<dependencies>
 		<dependency>
