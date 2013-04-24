@@ -1,7 +1,8 @@
 //  ---------------------------------------------------------------------------
 //  jWebSocket - Events Plug-in  (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Alexander Schulze, Germany (NRW)
 //  Author: Rolando Santamaria Maso
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");

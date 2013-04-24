@@ -107,6 +107,7 @@ if not exist "%tempdir%\bin" md "%tempdir%\bin"
 
 rem Start batches and scripts
 xcopy %bin%jWebSocketServer.bat %tempdir%bin\ /s /i /y
+xcopy %bin%jWebSocketServerLocal.bat %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketServer.sh %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketServer_Ubuntu.sh %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketServer.command %tempdir%bin\ /s /i /y
@@ -211,6 +212,7 @@ xcopy %conf%ReportingPlugIn\*.xml %tempdir%conf\ReportingPlugIn\ /s /i /y
 xcopy %conf%Resources\*.xml %tempdir%conf\Resources\ /s /i /y
 xcopy %conf%RTCPlugIn\*.xml %tempdir%conf\RTCPlugIn\ /s /i /y
 xcopy %conf%ScriptingPlugIn\*.xml %tempdir%conf\ScriptingPlugIn\ /s /i /y
+xcopy %conf%ScriptingPlugIn\scripts\*.js %tempdir%conf\ScriptingPlugIn\scripts\ /s /i /y
 xcopy %conf%SMSPlugIn\*.xml %tempdir%conf\SMSPlugIn\ /s /i /y
 xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
 xcopy %conf%TwitterPlugIn\*.xml %tempdir%conf\TwitterPlugIn\ /s /i /y
@@ -253,6 +255,9 @@ rem spring config files (from v1.0)
 rem goto end
 
 :tomcatbundle
+
+rem ignore this for now
+goto winexe
 
 set tcver=7.0.27
 set dest=%down%tomcat-jwebsocket-bundle-%tcver%.zip
@@ -339,11 +344,11 @@ rem goto end
 
 :appserver
 
-set dest=%down%jWebSocketAppServer-%ver%.zip
-if exist "%dest%" del "%dest%"
-7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketAppServer-%ver%.war"
-7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketSamples-%ver%.jar"
-7z u -mx9 -r -tzip "%dest%" "%depl%ReadMe_AppServer.txt"
+rem set dest=%down%jWebSocketAppServer-%ver%.zip
+rem if exist "%dest%" del "%dest%"
+rem 7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketAppServer-%ver%.war"
+rem 7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketSamples-%ver%.jar"
+rem 7z u -mx9 -r -tzip "%dest%" "%depl%ReadMe_AppServer.txt"
 
 set dest=%down%jWebSocketAppSrvDemo-%ver%.zip
 if exist "%dest%" del "%dest%"
@@ -388,7 +393,7 @@ rem goto end
 set dest=%down%jWebSocket-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketAndroidDemo-%JWEBSOCKET_VER%.zip"
-7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketAppServer-%JWEBSOCKET_VER%.zip"
+rem 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketAppServer-%JWEBSOCKET_VER%.zip"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketAppSrvDemo-%JWEBSOCKET_VER%.zip"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketClient-%JWEBSOCKET_VER%.zip"
 rem 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketFullSources-%JWEBSOCKET_VER%.zip"

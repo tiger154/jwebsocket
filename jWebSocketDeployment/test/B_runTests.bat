@@ -37,11 +37,19 @@ md %testroot%
 md %logroot%
 echo Starting install test suite... > %logfile%
 
-if "%CHROME_APP%"=="" set CHROME_APP="C:\Users\aschulze\AppData\Local\Google\Chrome\Application\chrome.exe"
-if "%FIREFOX_APP%"=="" set FIREFOX_APP="C:\Program Files (x86)\Mozilla Firefox 4\firefox.exe"
-if "%OPERA_APP%"=="" set OPERA_APP="C:\Program Files (x86)\Opera 11.00 beta\opera.exe"
-if "%SAFARI_APP%"=="" set SAFARI_APP="C:\Program Files (x86)\Safari\safari.exe"
-if "%IEXPLORER_APP%"=="" set IEXPLORER_APP="C:\Program Files\Internet Explorer\iexplore.exe"
+if "%CHROME_APP%"=="" ( set CHROME_APP="C:\Users\aschulze\AppData\Local\Google\Chrome\Application\chrome.exe" ) else ( set CHROME_APP="%CHROME_APP%" )
+if "%FIREFOX_APP%"=="" ( set FIREFOX_APP="C:\Program Files (x86)\Mozilla Firefox 4\firefox.exe" ) else ( set FIREFOX_APP="%FIREFOX_APP%" )
+if "%OPERA_APP%"=="" ( set OPERA_APP="C:\Program Files (x86)\Opera 11.00 beta\opera.exe" ) else ( set OPERA_APP="%OPERA_APP%" )
+if "%SAFARI_APP%"=="" ( set SAFARI_APP="C:\Program Files (x86)\Safari\safari.exe" ) else ( set SAFARI_APP="%SAFARI_APP%" )
+if "%IEXPLORER_APP%"=="" ( set IEXPLORER_APP="C:\Program Files\Internet Explorer\iexplore.exe" ) else ( set IEXPLORER_APP="%IEXPLORER_APP%" )
+
+echo Chrome: %CHROME_APP%
+echo Firefox: %FIREFOX_APP%
+echo Opera: %OPERA_APP%
+echo Safari: %SAFARI_APP%
+echo IExplorer: %IEXPLORER_APP%
+
+pause
 
 set TEST_URL=http://localhost/jwcDev/test/runTests.htm
 
