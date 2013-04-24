@@ -36,6 +36,7 @@ jws.ChannelPlugIn = {
 	CREATE_CHANNEL: "createChannel",
 	REMOVE_CHANNEL: "removeChannel",
 	GET_SUBSCRIBERS: "getSubscribers",
+	GET_PUBLISHERS: "getPublishers",
 	GET_SUBSCRIPTIONS: "getSubscriptions",
 	AUTHORIZE: "authorize",
 	PUBLISH: "publish",
@@ -325,6 +326,24 @@ jws.ChannelPlugIn = {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.GET_SUBSCRIBERS,
+				channel: aChannel,
+				accessKey: aAccessKey
+			}, aOptions );
+		}
+		return lRes;
+	},
+	
+	//:m:*:channelGetPublishers
+	//:d:en:Returns all the publishers authenticated in a certain channel
+	//:a:en::aChannel:String:The id of the server side data channel.
+	//:a:en::aAccessKey:String:Access Key for the channel (required for private channels, optional for public channels).
+	//:r:*:::void:none
+	channelGetPublishers: function( aChannel, aAccessKey, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 == lRes.code ) {
+			this.sendToken({
+				ns: jws.ChannelPlugIn.NS,
+				type: jws.ChannelPlugIn.GET_PUBLISHERS,
 				channel: aChannel,
 				accessKey: aAccessKey
 			}, aOptions );
