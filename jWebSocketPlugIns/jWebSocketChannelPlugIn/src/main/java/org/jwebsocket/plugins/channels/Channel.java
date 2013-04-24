@@ -192,6 +192,7 @@ public final class Channel implements ChannelLifeCycle {
 					Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
 					lEvent.setString("name", "subscription");
 					lEvent.setString("subscriber", aConnector.getId());
+					lEvent.setBoolean("isPublisher",  aChannel.getPublishers().contains(aConnector.getId()));
 					lEvent.setString("user", aConnector.getUsername());
 					lEvent.setString("channelName", aChannel.getName());
 					lEvent.setString("channelId", aChannel.getId());
@@ -207,6 +208,7 @@ public final class Channel implements ChannelLifeCycle {
 					Token lEvent = TokenFactory.createToken(ChannelPlugIn.NS_CHANNELS, BaseToken.TT_EVENT);
 					lEvent.setString("name", "unsubscription");
 					lEvent.setString("subscriber", aConnector.getId());
+					lEvent.setBoolean("isPublisher", aChannel.getPublishers().contains(aConnector.getId()));
 					lEvent.setString("channelName", aChannel.getName());
 					lEvent.setString("channelId", aChannel.getId());
 					lEvent.setString("state", aChannel.getState().name());

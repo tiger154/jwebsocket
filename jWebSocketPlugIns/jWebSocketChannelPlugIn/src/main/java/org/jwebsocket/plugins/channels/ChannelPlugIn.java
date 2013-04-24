@@ -337,7 +337,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 				+ lChannelId + "'!");
 
 		Channel lChannel = mChannelManager.getChannel(lChannelId);
-		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exists!");
+		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
 
 		// this removes the subscriber id from the channel
 		lChannel.unsubscribe(lSubscriber.getId(), aConnector);
@@ -402,7 +402,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		Assert.notNull(lSecretKey, "The 'secret key' argument can't be null!");
 
 		Channel lChannel = mChannelManager.getChannel(lChannelId);
-		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exists!");
+		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
 
 		Publisher lPublisher = null;
 
@@ -437,7 +437,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		Assert.isTrue(lChannelId != null && !EMPTY_STRING.equals(lChannelId), "No or invalid channel id passed!");
 
 		Channel lChannel = mChannelManager.getChannel(lChannelId);
-		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exists!");
+		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
 
 		// check if the channel is started
 		Assert.isTrue(lChannel.getState().equals(ChannelState.STARTED),
@@ -574,7 +574,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 
 		// check if channel already exists
 		Channel lChannel = mChannelManager.getChannel(lChannelId);
-		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exists!");
+		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
 
 
 		// check if it is a system channel which definitely cannot be removed
@@ -629,7 +629,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		String lAccessKey = aToken.getString(ACCESSKEY);
 
 		Channel lChannel = mChannelManager.getChannel(lChannelId);
-		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exists!");
+		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
 
 		String lChannelAccessKey = lChannel.getAccessKey();
 		Assert.isTrue((lChannelAccessKey == null ? lAccessKey == null : lChannelAccessKey.equals(lAccessKey)),
@@ -652,6 +652,42 @@ public class ChannelPlugIn extends ActionPlugIn {
 		// return channel id for client's convenience
 		lResponseToken.setString("channel", lChannelId);
 		lResponseToken.setList("subscribers", lSubscribers);
+
+		// send the response
+		sendToken(aConnector, aConnector, lResponseToken);
+	}
+	
+	@Role(name = NS_CHANNELS + ".getPublishers")
+	public void getPublishersAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		String lChannelId = aToken.getString(CHANNEL);
+		Assert.isTrue(lChannelId != null && !EMPTY_STRING.equals(lChannelId), "No or invalid channel id passed!");
+
+		String lAccessKey = aToken.getString(ACCESSKEY);
+
+		Channel lChannel = mChannelManager.getChannel(lChannelId);
+		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
+
+		String lChannelAccessKey = lChannel.getAccessKey();
+		Assert.isTrue((lChannelAccessKey == null ? lAccessKey == null : lChannelAccessKey.equals(lAccessKey)),
+				"Invalid channel '" + lChannelId + "' access key!");
+
+		List<String> lChannelPublishers = lChannel.getPublishers();
+		List<Map> lPublishers = new FastList<Map>();
+		if (null != lChannelPublishers) {
+			for (String lPublisher : lChannelPublishers) {
+				//TODO: Some subscribers remain in the list after connector disconnected
+				if (getConnector(lPublisher) != null) {
+					Map<String, Object> lItem = new HashMap<String, Object>();
+					lItem.put("id", lPublisher);
+					lItem.put("user", getConnector(lPublisher).getUsername());
+					lPublishers.add(lItem);
+				}
+			}
+		}
+		Token lResponseToken = createResponse(aToken);
+		// return channel id for client's convenience
+		lResponseToken.setString("channel", lChannelId);
+		lResponseToken.setList("publishers", lPublishers);
 
 		// send the response
 		sendToken(aConnector, aConnector, lResponseToken);
@@ -690,7 +726,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 
 		Publisher lPublisher = mChannelManager.getPublisher(aConnector.getId());
 		Channel lChannel = mChannelManager.getChannel(lChannelId);
-		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exists!");
+		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
 
 		Assert.isTrue(lPublisher.inChannel(lChannelId), "Access denied! Client not autorized on channel '"
 				+ lChannelId + "'");
@@ -708,7 +744,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 
 		Publisher lPublisher = mChannelManager.getPublisher(aConnector.getId());
 		Channel lChannel = mChannelManager.getChannel(lChannelId);
-		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exists!");
+		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
 
 		Assert.isTrue(lPublisher.inChannel(lChannelId), "Access denied! Client not autorized on channel '"
 				+ lChannelId + "'");
