@@ -18,18 +18,22 @@ function init( ) {
 		lBtn.html('<div class="btn_left"/>' + '<div class="btn_center">' +
 				lBtn.html( ) + '</div>' + '<div class="' + lRightClass + '"></div>');
 	});
-	// Options
-	// @maxLogLines: maximum number of lines that will be logged
-	// @linesToDelete: quantity of lines that will be deleted from 
-	// the log window each time the log exceeds the maxLogLines
-	// the log window will log only if the parent exists
-	if ($(top.document).find("#log_box").get(0)) {
-		mLog.isDebugEnabled = true;
-		$(top.document).find("#log_box").log({
-			maxLogLines: 500,
-			linesToDelete: 20,
-			embededIframe: true
-		});
+	var lIframe = $( parent.document );
+	if( parent.document != self.document ) {
+		var eLogBox = lIframe.find("#log_box");
+		if ( eLogBox.get( 0 ) ) {
+			mLog.isDebugEnabled = true;
+			// Options
+			// @maxLogLines: maximum number of lines that will be logged
+			// @linesToDelete: quantity of lines that will be deleted from 
+			// the log window each time the log exceeds the maxLogLines
+			// the log window will log only if the parent exists
+			eLogBox.log({
+				maxLogLines: 500,
+				linesToDelete: 20,
+				embededIframe: true
+			});
+		}
 	}
 	//starting the widget viewer
 	$(".container").viewer( );
