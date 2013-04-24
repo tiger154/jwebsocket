@@ -165,7 +165,13 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		String lApp = lAppNameExt[0];
 		String lExt = (lAppNameExt.length == 2) ? lAppNameExt[1] : "js";
 
-		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFilePath) + "/App." + lExt));
+		File lMain = new File(Tools.expandEnvVarsAndProps(aFilePath) + "/App." + lExt);
+		if (!lMain.exists()) {
+			mLog.error("Unable to load '" + lApp + "' application. The file '" + lMain + "' does not exists!");
+			return;
+		}
+
+		String lFile = FileUtils.readFileToString(lMain);
 		ScriptEngine lScriptApp = mEngineManager.getEngineByExtension(lExt);
 		mApps.put(lApp, lScriptApp);
 
