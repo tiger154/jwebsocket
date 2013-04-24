@@ -4,8 +4,8 @@
 	<bean id="org.jwebsocket.plugins.scripting.settings" class="org.jwebsocket.plugins.scripting.Settings">
 		<property name="apps">
 			<map>
-				<entry key="demo1" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripts/js/demoApp/"/>
-				<entry key="webrtc" value="${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripts/js/webrtc/"/>
+				<entry key="demo1" value="${JWEBSOCKET_HOME}apps/js/demoApp/"/>
+				<entry key="webrtc" value="${JWEBSOCKET_HOME}apps/js/webrtc/"/>
 			</map>
 		</property>
 	</bean>
