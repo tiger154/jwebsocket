@@ -181,8 +181,9 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			throw new UnsupportedOperationException("The extension '" + lExt + "' is not supported for script applications!");
 		}
 
-		// creating application services
 		lScriptApp.put("App", mAppsContext.get(lApp));
+		lScriptApp.put("logger", mAppsContext.get(lApp).getLogger());
+
 		// loading app
 		lScriptApp.eval(lFile);
 
@@ -306,7 +307,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		String aMethod = aToken.getString("method");
 		List<Object> aArgs = aToken.getList("args", new ArrayList());
 		aArgs.add(aConnector);
-		Object lResult = callJsMethod(aApp, aObjectId, aMethod, aArgs.toArray());
+		Object lResult = callMethod(aApp, aObjectId, aMethod, aArgs.toArray());
 
 		Token lResponse = createResponse(aToken);
 		lResponse.getMap().put("result", lResult);
@@ -324,7 +325,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * @return
 	 * @throws Exception
 	 */
-	public Object callJsMethod(String aApp, String aObjectId, String aMethod, Object[] aArgs) throws Exception {
+	public Object callMethod(String aApp, String aObjectId, String aMethod, Object[] aArgs) throws Exception {
 		Assert.notNull(aApp, "The 'app' argument cannot be null!");
 		Assert.notNull(aObjectId, "The 'objectId' argument cannot be null!");
 		Assert.notNull(aMethod, "The 'method' argument cannot be null!");
