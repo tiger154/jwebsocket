@@ -90,13 +90,14 @@
 	</appender>	
 	
 	<!-- special treatment for all logging activities of the spring-framework -->
+	<!--
 	<logger name="org.springframework" additivity="false">
-		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
 		<level value="WARN"/>
-		<!-- Select one of the above declared appenders -->
 		<appender-ref ref="developmentLog"/>
 	</logger>
+	-->
 
+	<!-- special treatment for all logging activities of the jWebSocket framework -->
 	<logger name="org.jwebsocket" additivity="false">
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
 		<level value="DEBUG"/>
@@ -105,8 +106,8 @@
 	</logger>
 
 	<root>
-		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
-		<priority value="INFO" />
+		<!-- default level: TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
+		<priority value="WARN" />
 		<!-- select one of the above declared appenders -->
 
 		<!-- for automated tests: -->

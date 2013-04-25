@@ -467,12 +467,11 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * @deprecated 
-	 * @param aConnector
+	 * @deprecated @param aConnector
 	 * @param aChunkable
 	 */
 	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable) {
-		
+
 		sendChunkable(aConnector, aChunkable, new IChunkableDeliveryListener() {
 			@Override
 			public void OnChunkDelivered(Token aToken) {
@@ -584,7 +583,7 @@ public class TokenServer extends BaseServer {
 					}
 				}
 			} else {
-				mLog.warn("Connector not supposed to handle tokens.");
+				mLog.warn("Connector " + aConnectorId + " not supposed to handle tokens.");
 			}
 		} else {
 			mLog.warn("Target connector '" + aConnectorId + "' not found.");

@@ -1576,316 +1576,316 @@
 
 					Default value is "static"
 
-             					Required user authorities for the ItemStorage plug-in:
-             					- org.jwebsocket.plugins.itemstorage.write_collection
-             					- org.jwebsocket.plugins.itemstorage.read_collection
-             					- org.jwebsocket.plugins.itemstorage.write_item
-             					- org.jwebsocket.plugins.itemstorage.read_item
-             					- org.jwebsocket.plugins.itemstorage.read_definition
-        				-->
-            <!-- <setting key="authentication_method">static</setting> -->
-            <!-- The fragment size attribute is used on the fragmentation of outgoing messages -->
-            <setting key="fragmentSize">2000</setting>
-         </settings>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
+						Required user authorities for the ItemStorage plug-in:
+						- org.jwebsocket.plugins.itemstorage.write_collection
+						- org.jwebsocket.plugins.itemstorage.read_collection
+						- org.jwebsocket.plugins.itemstorage.write_item
+						- org.jwebsocket.plugins.itemstorage.read_item
+						- org.jwebsocket.plugins.itemstorage.read_definition
+				-->
+				<!-- <setting key="authentication_method">static</setting> -->
+				<!-- The fragment size attribute is used on the fragmentation of outgoing messages -->
+				<setting key="fragmentSize">2000</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
       
-      <!-- user-admin plug-in 
-      <plugin>
-         <name>org.jwebsocket.enterprise.plugins.useradmin.UserAdminPlugIn</name>
-         <id>jws.useradmin</id>
-         <ns>org.jwebsocket.enterprise.plugins.useradmin</ns>
-         <jars>
-            <jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketUserAdminPlugInEE-1.0.jar</jar>
-         </jars>-->
-          <!--plug-in specific settings-->
-         <!--<settings>
-            <setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/UserAdminPlugIn/useradmin.xml</setting>
-            <setting key="authentication_method">spring</setting>
-         </settings>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>-->
+		<!-- user-admin plug-in 
+	 <plugin>
+		<name>org.jwebsocket.enterprise.plugins.useradmin.UserAdminPlugIn</name>
+		<id>jws.useradmin</id>
+		<ns>org.jwebsocket.enterprise.plugins.useradmin</ns>
+		<jars>
+		   <jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketUserAdminPlugInEE-1.0.jar</jar>
+		</jars>-->
+		<!--plug-in specific settings-->
+		<!--<settings>
+			  <setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/UserAdminPlugIn/useradmin.xml</setting>
+			  <setting key="authentication_method">spring</setting>
+		   </settings>
+		   <server-assignments>
+			  <server-assignment>ts0</server-assignment>
+		   </server-assignments>
+		</plugin>-->
 		
-      <!-- Reporting plug-in -->
-      <plugin>
-         <name>org.jwebsocket.plugins.reporting.ReportingPlugIn</name>
-         <id>jws.reporting</id>
-         <ns>org.jwebsocket.plugins.reporting</ns>
-         <!-- use the bundle here, this includes the jasper libraries -->
-         <jar>jWebSocketReportingPlugIn-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-         <settings>
-            <!-- folder where the report specs are located -->
-            <setting key="spring_config">${JWEBSOCKET_HOME}conf/ReportingPlugIn/reporting.xml</setting>
-         </settings>
-      </plugin>
+		<!-- Reporting plug-in -->
+		<plugin>
+			<name>org.jwebsocket.plugins.reporting.ReportingPlugIn</name>
+			<id>jws.reporting</id>
+			<ns>org.jwebsocket.plugins.reporting</ns>
+			<!-- use the bundle here, this includes the jasper libraries -->
+			<jar>jWebSocketReportingPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<!-- folder where the report specs are located -->
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ReportingPlugIn/reporting.xml</setting>
+			</settings>
+		</plugin>
 		
-      <!-- Monitoring plugin -->
-      <!--
-    		<plugin>
-         			<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
-         			<id>MonitoringPlugIn</id>
-         			<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
-         			<server-assignments>
-           				<server-assignment>ts0</server-assignment>
-         			</server-assignments>
-    		</plugin>
-    		-->
-
-      <!-- API disclosure plugin -->
-      <plugin>
-         <name>org.jwebsocket.plugins.api.APIPlugIn</name>
-         <id>jws.api</id>
-         <ns>org.jwebsocket.plugins.api</ns>
-         <jar>jWebSocketAPIPlugIn-1.0.jar</jar>
-         <settings>
-            <setting key="spring_config">${JWEBSOCKET_HOME}conf/APIPlugIn/api.xml</setting>
-         </settings>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
-
-      <!-- performance tests plugin -->
-      <plugin>
-         <name>org.jwebsocket.plugins.test.PerfTestPlugIn</name>
-         <id>jws.test</id>
-         <ns>org.jwebsocket.plugins.test</ns>
-         <jar>jWebSocketTestPlugIn-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
-
-      <!-- benchmark plugin -->
-      <plugin>
-         <name>org.jwebsocket.plugins.benchmark.BenchmarkPlugIn</name>
-         <id>jws.benchmark</id>
-         <ns>org.jwebsocket.plugins.benchmark</ns>
-         <jar>jWebSocketBenchmarkPlugIn-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
-
-      <!-- automated tests plugin -->
-      <plugin>
-         <name>org.jwebsocket.plugins.test.AutomTestPlugIn</name>
-         <id>jws.test</id>
-         <ns>org.jwebsocket.plugins.test</ns>
-         <jar>jWebSocketTestPlugIn-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
-		
-      <!-- Sencha Demo plugin -->
-      <plugin>
-         <name>org.jwebsocket.plugins.extjs.SenchaDemoPlugIn</name>
-         <id>SenchaDemoPlugIn</id>
-         <jar>jWebSocketSenchaPlugIn-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
-		
-      <!-- jQuery Mobile Form plugin -->
-      <plugin>
-         <name>org.jwebsocket.plugins.jquery.JQueryDemoPlugIn</name>
-         <id>jWebSocketJQueryPlugIn</id>
-         <jar>jWebSocketJQueryPlugIn-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
-		
-      <!-- jWeSocket Ping-Pong Game Plug-in -->
-      <!--
-    		<plugin>
-         			<name>org.jwebsocket.gaming.pingpong.plugin.PingPongPlugIn</name>
-         			<id>jWebSocketPingPongGame</id>
-         			<jar>jWebSocketPingPongGame-1.0.jar</jar>
-         			<server-assignments>
-           				<server-assignment>ts0</server-assignment>
-         			</server-assignments>
-         			<settings>
-           				<setting key="sHeight">286</setting>
-           				<setting key="sWidth">464</setting>
-           				<setting key="dbHost">127.0.0.1</setting>
-           				<setting key="dbPort">27017</setting>
-           				<setting key="dbDay">30</setting>
-           				<setting key="dbTime">1</setting>
-         			</settings>
-    		</plugin>
-    		-->
-		
-      <!-- External processes plug-in, e.g. to call perl or other server side scripts -->
-      <plugin>
-         <name>org.jwebsocket.plugins.extprocess.ExtProcessPlugIn</name>
-         <id>jWebSocketExtProcessPlugIn</id>
-         <jar>jWebSocketExtProcessPlugIn-1.0.jar</jar>
-         <settings>
-            <setting key="spring_config">${JWEBSOCKET_HOME}conf/ExtProcessPlugIn/extprocess.xml</setting>
-         </settings>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
-		
-      <!-- Scripting plug-in, e.g. to call JavaScript on the server side -->
+		<!-- Monitoring plugin -->
 		<!--
-      <plugin>
-         <name>org.jwebsocket.plugins.scripting.ScriptingPlugIn</name>
-         <id>jWebSocketScriptingPlugIn</id>
-         <jar>jWebSocketScriptingPlugIn-1.0.jar</jar>
-         <settings>
-            <setting key="spring_config">${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripting.xml</setting>
-         </settings>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
+		<plugin>
+				<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
+				<id>MonitoringPlugIn</id>
+				<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
+				<server-assignments>
+					<server-assignment>ts0</server-assignment>
+				</server-assignments>
+		</plugin>
+		-->
+
+		<!-- API disclosure plugin -->
+		<plugin>
+			<name>org.jwebsocket.plugins.api.APIPlugIn</name>
+			<id>jws.api</id>
+			<ns>org.jwebsocket.plugins.api</ns>
+			<jar>jWebSocketAPIPlugIn-1.0.jar</jar>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/APIPlugIn/api.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+
+		<!-- performance tests plugin -->
+		<plugin>
+			<name>org.jwebsocket.plugins.test.PerfTestPlugIn</name>
+			<id>jws.test</id>
+			<ns>org.jwebsocket.plugins.test</ns>
+			<jar>jWebSocketTestPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+
+		<!-- benchmark plugin -->
+		<plugin>
+			<name>org.jwebsocket.plugins.benchmark.BenchmarkPlugIn</name>
+			<id>jws.benchmark</id>
+			<ns>org.jwebsocket.plugins.benchmark</ns>
+			<jar>jWebSocketBenchmarkPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+
+		<!-- automated tests plugin -->
+		<plugin>
+			<name>org.jwebsocket.plugins.test.AutomTestPlugIn</name>
+			<id>jws.test</id>
+			<ns>org.jwebsocket.plugins.test</ns>
+			<jar>jWebSocketTestPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		
+		<!-- Sencha Demo plugin -->
+		<plugin>
+			<name>org.jwebsocket.plugins.extjs.SenchaDemoPlugIn</name>
+			<id>SenchaDemoPlugIn</id>
+			<jar>jWebSocketSenchaPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		
+		<!-- jQuery Mobile Form plugin -->
+		<plugin>
+			<name>org.jwebsocket.plugins.jquery.JQueryDemoPlugIn</name>
+			<id>jWebSocketJQueryPlugIn</id>
+			<jar>jWebSocketJQueryPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		
+		<!-- jWeSocket Ping-Pong Game Plug-in -->
+		<!--
+		<plugin>
+				<name>org.jwebsocket.gaming.pingpong.plugin.PingPongPlugIn</name>
+				<id>jWebSocketPingPongGame</id>
+				<jar>jWebSocketPingPongGame-1.0.jar</jar>
+				<server-assignments>
+					<server-assignment>ts0</server-assignment>
+				</server-assignments>
+				<settings>
+					<setting key="sHeight">286</setting>
+					<setting key="sWidth">464</setting>
+					<setting key="dbHost">127.0.0.1</setting>
+					<setting key="dbPort">27017</setting>
+					<setting key="dbDay">30</setting>
+					<setting key="dbTime">1</setting>
+				</settings>
+		</plugin>
 		-->
 		
-      <!-- RTC plug-in -->
-      <plugin>
-         <name>org.jwebsocket.plugins.rtc.RTCPlugIn</name>
-         <id>jWebSocketRTCPlugIn</id>
-         <jar>jWebSocketRTCPlugIn-1.0.jar</jar>
-         <settings>
-            <setting key="spring_config">${JWEBSOCKET_HOME}conf/RTCPlugIn/rtc.xml</setting>
-         </settings>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
+		<!-- External processes plug-in, e.g. to call perl or other server side scripts -->
+		<plugin>
+			<name>org.jwebsocket.plugins.extprocess.ExtProcessPlugIn</name>
+			<id>jWebSocketExtProcessPlugIn</id>
+			<jar>jWebSocketExtProcessPlugIn-1.0.jar</jar>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ExtProcessPlugIn/extprocess.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
 		
-	<!--
-      <plugin>
-         <name>org.jwebsocket.plugins.events.EventsPlugIn</name>
-         <ns>test</ns>
-         <id>jws.events.test</id>
-         <jar>jWebSocketEventsPlugIn-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </plugin>
-	  -->
+		<!-- Scripting plug-in, e.g. to call JavaScript on the server side -->
+		<!--
+	  <plugin>
+		 <name>org.jwebsocket.plugins.scripting.ScriptingPlugIn</name>
+		 <id>jWebSocketScriptingPlugIn</id>
+		 <jar>jWebSocketScriptingPlugIn-1.0.jar</jar>
+		 <settings>
+			<setting key="spring_config">${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripting.xml</setting>
+		 </settings>
+		 <server-assignments>
+			<server-assignment>ts0</server-assignment>
+		 </server-assignments>
+	  </plugin>
+		-->
 		
-      <!-- Sample for Java Card -->
-      <!--
-    		<plugin>
-         			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
-         			<ns>jc</ns>
-         			<id>jws.jcdemo</id>
-         			<jar>jWebSocketSamples-1.0.jar</jar>
-         			<server-assignments>
-           				<server-assignment>ts0</server-assignment>
-         			</server-assignments>
-    		</plugin>
-    		-->
+		<!-- RTC plug-in -->
+		<plugin>
+			<name>org.jwebsocket.plugins.rtc.RTCPlugIn</name>
+			<id>jWebSocketRTCPlugIn</id>
+			<jar>jWebSocketRTCPlugIn-1.0.jar</jar>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/RTCPlugIn/rtc.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
 		
-      <!-- Arduino Remote Control Plug-in -->
-      <!-- 
-         			This plug-in requires Arduino hardware to be connected and configured.
-         			This plug-in requires the rxtx lib to be loaded in the libraries section!.
-    		-->
-      <!--
-    		<plugin>
-         			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
-         			<ns>rc</ns>
-         			<id>jws.rcdemo</id>
-         			<jar>jWebSocketArduinoPlugIn-1.0.jar</jar>
-         			<server-assignments>
-           				<server-assignment>ts0</server-assignment>
-         			</server-assignments>
-         			<settings>
-           				<setting key="jars">jWebSocketArduinoPlugIn-1.0.jar</setting>
-         			</settings>
-    		</plugin>
-    		-->
+		<!--
+		<plugin>
+		   <name>org.jwebsocket.plugins.events.EventsPlugIn</name>
+		   <ns>test</ns>
+		   <id>jws.events.test</id>
+		   <jar>jWebSocketEventsPlugIn-1.0.jar</jar>
+		   <server-assignments>
+			  <server-assignment>ts0</server-assignment>
+		   </server-assignments>
+		</plugin>
+		-->
+		
+		<!-- Sample for Java Card -->
+		<!--
+		<plugin>
+				<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
+				<ns>jc</ns>
+				<id>jws.jcdemo</id>
+				<jar>jWebSocketSamples-1.0.jar</jar>
+				<server-assignments>
+					<server-assignment>ts0</server-assignment>
+				</server-assignments>
+		</plugin>
+		-->
+		
+		<!-- Arduino Remote Control Plug-in -->
+		<!-- 
+				This plug-in requires Arduino hardware to be connected and configured.
+				This plug-in requires the rxtx lib to be loaded in the libraries section!.
+		-->
+		<!--
+		<plugin>
+				<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
+				<ns>rc</ns>
+				<id>jws.rcdemo</id>
+				<jar>jWebSocketArduinoPlugIn-1.0.jar</jar>
+				<server-assignments>
+					<server-assignment>ts0</server-assignment>
+				</server-assignments>
+				<settings>
+					<setting key="jars">jWebSocketArduinoPlugIn-1.0.jar</setting>
+				</settings>
+		</plugin>
+		-->
 
-      <!-- JMX Plug-in 
-    		<plugin>
-         			<name>org.jwebsocket.plugins.jmx.JMXPlugIn</name>
-         			<ns>org.jwebsocket.plugins.jmx</ns>
-         			<id>jws.jmx</id>
-         			<jar>jWebSocketJMXPlugIn-1.0.jar</jar>
-         			<server-assignments>
-           				<server-assignment>ts0</server-assignment>
-         			</server-assignments>
-         			<settings>
-           				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JMXPlugIn/jmxPluginConfig.xml</setting>
-           				<setting key="beans_config">JMXPlugIn/PluginsConfigFiles/</setting>
-           				<setting key="http_user">admin</setting>
-           				<setting key="http_password">jmxadmin</setting>
-         			</settings>
-    		</plugin>
-    		-->
-   </plugins>
+		<!-- JMX Plug-in 
+		<plugin>
+				<name>org.jwebsocket.plugins.jmx.JMXPlugIn</name>
+				<ns>org.jwebsocket.plugins.jmx</ns>
+				<id>jws.jmx</id>
+				<jar>jWebSocketJMXPlugIn-1.0.jar</jar>
+				<server-assignments>
+					<server-assignment>ts0</server-assignment>
+				</server-assignments>
+				<settings>
+					<setting key="spring_config">${JWEBSOCKET_HOME}conf/JMXPlugIn/jmxPluginConfig.xml</setting>
+					<setting key="beans_config">JMXPlugIn/PluginsConfigFiles/</setting>
+					<setting key="http_user">admin</setting>
+					<setting key="http_password">jmxadmin</setting>
+				</settings>
+		</plugin>
+		-->
+	</plugins>
     
-   <!-- filters to be instantiated for jWebSocket -->
-   <filters>
+	<!-- filters to be instantiated for jWebSocket -->
+	<filters>
         
-      <filter>
-         <name>org.jwebsocket.filters.system.SystemFilter</name>
-         <id>jws.sampleFilter</id>
-         <ns>org.jwebsocket.filters.system</ns>
-         <jar>jWebSocketServer-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </filter>
+		<filter>
+			<name>org.jwebsocket.filters.system.SystemFilter</name>
+			<id>jws.sampleFilter</id>
+			<ns>org.jwebsocket.filters.system</ns>
+			<jar>jWebSocketServer-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</filter>
 
-      <!-- Attention! This filter requires the Statistics Plug-in to be installed -->
-      <filter>
-         <name>org.jwebsocket.plugins.statistics.StatisticsFilter</name>
-         <id>jws.statisticsFilter</id>
-         <ns>org.jwebsocket.plugins.statistics</ns>
-         <jar>jWebSocketStatisticsPlugIn-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </filter>
+		<!-- Attention! This filter requires the Statistics Plug-in to be installed -->
+		<filter>
+			<name>org.jwebsocket.plugins.statistics.StatisticsFilter</name>
+			<id>jws.statisticsFilter</id>
+			<ns>org.jwebsocket.plugins.statistics</ns>
+			<jar>jWebSocketStatisticsPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</filter>
 		
-      <filter>
-         <name>org.jwebsocket.filters.custom.CustomTokenFilter</name>
-         <id>jws.userFilter</id>
-         <ns>org.jwebsocket.filters.custom</ns>
-         <jar>jWebSocketServer-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </filter>
+		<filter>
+			<name>org.jwebsocket.filters.custom.CustomTokenFilter</name>
+			<id>jws.userFilter</id>
+			<ns>org.jwebsocket.filters.custom</ns>
+			<jar>jWebSocketServer-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</filter>
         
-      <filter>
-         <name>org.jwebsocket.filters.sample.SampleFilter</name>
-         <id>jws.sampleFilter</id>
-         <ns>org.jwebsocket.filters.sample</ns>
-         <jar>jWebSocketSamples-1.0.jar</jar>
-         <server-assignments>
-            <server-assignment>ts0</server-assignment>
-         </server-assignments>
-      </filter>
+		<filter>
+			<name>org.jwebsocket.filters.sample.SampleFilter</name>
+			<id>jws.sampleFilter</id>
+			<ns>org.jwebsocket.filters.sample</ns>
+			<jar>jWebSocketSamples-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</filter>
 		
-      <!-- this filter is required to capture all events for the monitoring plug-in -->
-      <!--
-    		<filter>
-         			<name>org.jwebsocket.filters.monitoring.MonitoringFilter</name>
-         			<id>jws.monitoringFilter</id>
-         			<ns>org.jwebsocket.plugins.monitoring</ns>
-         			<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
-         			<server-assignments>
-              				<server-assignment>ts0</server-assignment>
-         			</server-assignments>
-    		</filter>
-      -->
-   </filters>
+		<!-- this filter is required to capture all events for the monitoring plug-in -->
+		<!--
+			  <filter>
+					  <name>org.jwebsocket.filters.monitoring.MonitoringFilter</name>
+					  <id>jws.monitoringFilter</id>
+					  <ns>org.jwebsocket.plugins.monitoring</ns>
+					  <jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
+					  <server-assignments>
+							  <server-assignment>ts0</server-assignment>
+					  </server-assignments>
+			  </filter>
+		-->
+	</filters>
 
 </jWebSocket>
