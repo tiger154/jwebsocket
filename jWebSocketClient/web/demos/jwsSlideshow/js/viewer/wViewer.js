@@ -38,14 +38,13 @@ $.widget( "jws.viewer", {
 		// ------ VARIABLES --------
 		this.mCurrSlide = 1;
 		this.mOldSlide = 0;
-		this.mPresenters = 0;
 		this.mViewers = 0;
+		this.mPresenters = 0;
 		this.mChannelId = "jWebSocketSlideShowDemo";
 		this.mChannelAccessKey = "5l1d35h0w";
 		this.TT_SEND = "send";
 		this.TT_SLIDE = "slide";
 		this.mIsFS = false;
-		this.mPresentersList = {};
 		this.mClientId = "";
 
 		w.viewer = this;
@@ -85,6 +84,13 @@ $.widget( "jws.viewer", {
 				w.viewer.eStatusbarArea.show( );
 			}
 		} );
+		// When closing the window notify the other clients about who is 
+		// leaving the conference room
+		$( window ).bind( {
+			'beforeunload': function() {
+				mWSC.channelUnsubscribe( w.viewer.mChannelId );
+			}
+		} );
 		w.viewer.eBtnNewViewer.click( w.viewer.openViewerWindow );
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
@@ -96,17 +102,14 @@ $.widget( "jws.viewer", {
 				// Registering the callbacks for the channels
 				mWSC.setChannelCallbacks({
 					// When any unsubscription arrives from the server
+					OnChannelSubscription: w.viewer.onChannelSubscription,
 					OnChannelUnsubscription: w.viewer.onChannelUnsubscription
 				} );
 				w.viewer.mClientId = aToken.sourceId;
 			},
 			OnLogon: function( aToken ) {
-				mWSC.sessionPut( "viewer", aToken.sourceId, true, {
-					OnSuccess: function( aToken ) {
-						mWSC.channelSubscribe( w.viewer.mChannelId,
-							w.viewer.mChannelAccessKey );
-					}
-				} );
+				mWSC.channelSubscribe( w.viewer.mChannelId,
+					w.viewer.mChannelAccessKey );
 			}
 		};
 		w.viewer.eContainer.auth( lCallbacks );
@@ -126,50 +129,67 @@ $.widget( "jws.viewer", {
 				switch ( aToken.data ) {
 					case w.viewer.TT_SLIDE:
 						// Pass the current slide
-						w.viewer.goTo( aToken.map.slide );
-						break;
-					case w.viewer.TT_SEND:
-						w.viewer.updateUsers( aToken.map );
+						w.viewer.updateData( aToken.map );
 						break;
 				}
 			}
 		}
 	},
 	goTo: function( aSlide ) {
-		if ( w.viewer.mOldSlide !== aSlide ) {
+		if ( aSlide != w.viewer.mCurrSlide ) {
 			w.viewer.eSlide.attr( "src", "slides/Slide" +
 				jws.tools.zerofill( aSlide, 4 ) + ".gif" );
-			w.viewer.mOldSlide = aSlide;
+			w.viewer.mCurrSlide = aSlide;
 		}
 	},
-	updateUsers: function( aData ) {
-		aData = aData || {};
-		aData.currslide && w.viewer.goTo( aData.currslide );
-		w.viewer.mCurrSlide = aData.currslide || w.viewer.mCurrSlide;
-		w.viewer.mOldSlide = aData.oldslide || w.viewer.mOldSlide;
-		w.viewer.mViewers = aData.viewers || w.viewer.mViewers;
-		w.viewer.eViewers.text( w.viewer.mViewers );
-		// copying the presenters elements to our list
-		for ( var lIdx in aData.presentersList ) {
-			w.viewer.mPresentersList[lIdx] = aData.presentersList[lIdx];
+	updateData: function( aData ) {
+		aData = aData || { };
+
+		if( aData.slide ) {
+			w.viewer.goTo( aData.slide );
 		}
-		var lCounter = 0;
-		// Counting how many presenters we have
-		for ( var lIdx in w.viewer.mPresentersList ) {
-			lCounter++;
+		
+		if ( aData.viewers != undefined && w.viewer.mViewers != aData.viewers ) {
+			w.viewer.mViewers = aData.viewers || w.viewer.mViewers;
+			w.viewer.eViewers.text( w.viewer.mViewers );
 		}
-		w.viewer.mPresenters = lCounter;
-		w.viewer.ePresenters.text( w.viewer.mPresenters );
+	
+		if ( aData.presenters != undefined && w.viewer.mPresenters != aData.presenters ) {
+			w.viewer.mPresenters = aData.presenters || w.viewer.mPresenters;
+			w.viewer.ePresenters.text( w.viewer.mPresenters );
+		}
+		console.log( aData );
+	},
+	onChannelSubscription: function( aToken ) {
+		mWSC.channelGetPublishers(
+			w.viewer.mChannelId,
+			w.viewer.mChannelAccessKey, {
+				OnSuccess: function( aToken ) {
+					if( aToken.publishers.length <= 0 ) {
+						// we set the publishers number here
+						var lData = { };
+						lData.presenters = aToken.publishers.length ;
+						mWSC.channelGetSubscribers( w.viewer.mChannelId,
+							w.viewer.mChannelAccessKey, {
+								OnSuccess: function( aToken ) {
+									lData.viewers = 
+									aToken.subscribers.length - lData.presenters;
+									w.viewer.updateData( lData );
+								// and we set the subscribers here
+								}
+							});
+					} // else wait till the publisher send us the data
+				}
+			});
 	},
 	onChannelUnsubscription: function( aToken ) {
-		var lUnsubscriber = aToken.subscriber;
-		if ( w.viewer.mPresentersList[lUnsubscriber] ) {
-			delete w.viewer.mPresentersList[lUnsubscriber];
-			w.viewer.mPresenters > 0 && w.viewer.mPresenters--;
-		} else {
-			w.viewer.mViewers > 0 && w.viewer.mViewers--;
+		var lData = {};
+		if( aToken.isPublisher && w.viewer.mPresenters > 0 ) {
+			lData.presenters = w.viewer.mPresenters - 1;
+		} else if( !aToken.isPublisher && w.viewer.mViewers > 0 ) {
+			lData.viewers = w.viewer.mViewers - 1;
 		}
-		w.viewer.updateUsers( );
+		w.viewer.updateData( lData );
 	},
 	toggleFullScreen: function( ) {
 		if ( w.viewer.isFullScreen( ) ) {
@@ -209,8 +229,6 @@ $.widget( "jws.viewer", {
 		aElement.msRequestFullScreen;
 
 		if ( lNativeMethod ) {
-			console.log( "native" );
-			console.log( aElement );
 			lNativeMethod.call( aElement );
 		} else if ( typeof window.ActiveXObject !== "undefined" ) { // Older IE.
 			var lAXScript = new ActiveXObject( "WScript.Shell" );
