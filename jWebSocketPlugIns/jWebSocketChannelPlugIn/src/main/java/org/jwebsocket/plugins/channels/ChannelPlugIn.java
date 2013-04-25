@@ -414,8 +414,8 @@ public class ChannelPlugIn extends ActionPlugIn {
 
 			lPublisher.addChannel(lChannelId);
 		} else {
-			throw new Exception("Authorization failed for channel '"
-					+ lChannelId + "'!");
+			throw new Exception("Authentication failed for channel '"
+					+ lChannelId + "', wrong credentials, please check your Secret or Access Key and try again!");
 		}
 
 		// add the publisher to the channel
@@ -669,7 +669,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 
 		String lChannelAccessKey = lChannel.getAccessKey();
 		Assert.isTrue((lChannelAccessKey == null ? lAccessKey == null : lChannelAccessKey.equals(lAccessKey)),
-				"Invalid channel '" + lChannelId + "' access key!");
+				"Invalid channel access key for channel '" + lChannelId + "'!");
 
 		List<String> lChannelPublishers = lChannel.getPublishers();
 		List<Map> lPublishers = new FastList<Map>();
