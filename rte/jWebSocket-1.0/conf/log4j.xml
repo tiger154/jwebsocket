@@ -100,7 +100,7 @@
 	<!-- special treatment for all logging activities of the jWebSocket framework -->
 	<logger name="org.jwebsocket" additivity="false">
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 
-		<level value="DEBUG"/>
+		<level value="info"/>
 		<!--  select one of the above declared appenders -->
 		<appender-ref ref="developmentLog"/>
 	</logger>

@@ -385,7 +385,9 @@ public class TokenServer extends BaseServer {
 				aListener.OnFailure(new Exception("The token has been rejected by the filters!!"));
 			}
 		} else {
-			aListener.OnFailure(new Exception("The target connector does not support tokens!"));
+			aListener.OnFailure(new Exception("Target connector '" 
+					+ aTarget.getId() 
+					+ "' does not support tokens!"));
 		}
 	}
 
@@ -583,7 +585,8 @@ public class TokenServer extends BaseServer {
 					}
 				}
 			} else {
-				mLog.warn("Connector " + aConnectorId + " not supposed to handle tokens.");
+				mLog.warn("Target connector '" + aConnectorId 
+						+ "' does not support tokens.");
 			}
 		} else {
 			mLog.warn("Target connector '" + aConnectorId + "' not found.");
@@ -615,7 +618,8 @@ public class TokenServer extends BaseServer {
 				}
 			}
 		} else {
-			mLog.warn("Connector not supposed to handle tokens.");
+			mLog.warn("Target connector '" + aTarget.getId() 
+					+ "' does not support tokens.");
 		}
 		return null;
 	}

@@ -115,7 +115,8 @@ public class TCPConnector extends BaseConnector {
 			lNodeStr = "";
 		}
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Starting " + mLogInfo + " connector" + lNodeStr + " on port "
+			mLog.debug("Starting " + mLogInfo + " connector" + lNodeStr + " '" 
+					+ getId() + "' on port "
 					+ lPort + " with timeout "
 					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
 		}
@@ -123,7 +124,8 @@ public class TCPConnector extends BaseConnector {
 		super.startConnector();
 
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Started " + mLogInfo + " connector" + lNodeStr + " on port "
+			mLog.info("Started " + mLogInfo + " connector" + lNodeStr + " '" 
+					+ getId() + "' on port "
 					+ lPort + " with timeout "
 					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
 		}
@@ -179,7 +181,8 @@ public class TCPConnector extends BaseConnector {
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Stopping " + mLogInfo
-					+ " connector (" + aCloseReason.name() + ")...");
+					+ " connector '" 
+					+ getId() + "' (" + aCloseReason.name() + ")...");
 		}
 		mCloseReason = aCloseReason;
 		synchronized (getWriteLock()) {
@@ -203,7 +206,8 @@ public class TCPConnector extends BaseConnector {
 
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Stopped " + mLogInfo
-					+ " connector (" + mCloseReason
+					+ " connector '" 
+					+ getId() + "' (" + mCloseReason
 					+ ") on port " + mClientSocket.getPort() + ".");
 		}
 
@@ -316,7 +320,7 @@ public class TCPConnector extends BaseConnector {
 
 		ByteArrayOutputStream lBAOS = new ByteArrayOutputStream(4096);
 		byte[] lBuff = new byte[4096];
-		int lRead = 0, lTotal = 0;
+		int lRead, lTotal = 0;
 		long lStart = System.currentTimeMillis();
 		do {
 			lRead = lIn.read(lBuff, 0, lBuff.length);

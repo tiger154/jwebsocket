@@ -218,6 +218,9 @@ xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
 xcopy %conf%TwitterPlugIn\*.xml %tempdir%conf\TwitterPlugIn\ /s /i /y
 xcopy %conf%XMPPPlugIn\*.xml %tempdir%conf\XMPPPlugIn\ /s /i /y
 
+rem copy special conf settings for Tomcat engine (from v1.0)
+xcopy %conf%TomcatEngine\*.xml %tempdir%conf\TomcatEngine\ /s /i /y
+
 rem copy jWebSocket JavaScript apps (from v1.0)
 xcopy %apps%*.js %tempdir%apps\ /s /i /y
 
