@@ -6,7 +6,7 @@ importClass(org.apache.commons.io.FileUtils);
 importClass(java.io.File);
 
 App.on("filterIn", function(aToken) {
-	App.getLogger().debug("Calling filter in: " + aToken.toString());
+	App.logger.debug("Calling filter in: " + aToken.toString());
 });
 
 App.on("token", function(aConnector, aToken) {
@@ -24,31 +24,31 @@ App.on("token", function(aConnector, aToken) {
 			return 1000;
 		},
 		OnTimeout: function() {
-			App.getLogger().debug("Token delivery timeout!");
+			App.logger.debug("Token delivery timeout!");
 		},
 		OnSuccess: function() {
-			App.getLogger().debug("Token delivery success!");
+			App.logger.debug("Token delivery success!");
 		},
 		OnFailure: function() {
-			App.getLogger().debug("Token delivery failure!");
+			App.logger.debug("Token delivery failure!");
 		}
 	});
 });
 
 App.on("filterOut", function(aToken) {
-	App.getLogger().debug("Calling filter out: " + aToken.toString());
+	App.logger.debug("Calling filter out: " + aToken.toString());
 });
 
 App.on("connectorStarted", function(aConnector) {
-	App.getLogger().debug("New client started: " + aConnector.getId());
+	App.logger.debug("New client started: " + aConnector.getId());
 });
 
 App.on("connectorStopped", function(aConnector) {
-	App.getLogger().debug("Client stopped: " + aConnector.getId());
+	App.logger.debug("Client stopped: " + aConnector.getId());
 });
 
 var lFn = function(aConnector) {
-	App.getLogger().debug("Processing lFn...");
+	App.logger.debug("Processing lFn...");
 	App.requireAuthority(aConnector, "admin");
 };
 
@@ -68,6 +68,6 @@ var lObject = {
 App.publish("Main", {
 	read: read,
 	version: lObject.version,
-	fn: lFn,
-	sayHello: sayHello
+	fn: lFn
+	//sayHello: sayHello
 });
