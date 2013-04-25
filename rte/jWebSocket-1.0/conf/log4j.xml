@@ -89,28 +89,6 @@
 		</layout>
 	</appender>	
 	
-	<!--
-	<appender name="adminLog" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="${JWEBSOCKET_HOME}logs/adminLog.log" />
-		<param name="MaxFileSize" value="60KB"/>
-		<param name="threshold" value="info"/>
-		<param name="append" value="true" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d{yyyy-MM-dd | HH:mm:ss} %m%n" />
-		</layout>
-	</appender>
-	
-	<appender name="jmxLog" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="${JWEBSOCKET_HOME}logs/jmxLog.log" />
-		<param name="MaxFileSize" value="60KB"/>
-		<param name="threshold" value="DEBUG"/>
-		<param name="append" value="true" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p - %C{1}: %m%n" />
-		</layout>
-	</appender>
-	-->
-
 	<!-- special treatment for all logging activities of the spring-framework -->
 	<logger name="org.springframework" additivity="false">
 		<!-- TRACE, DEBUG, INFO, WARN, ERROR or FATAL --> 

@@ -967,6 +967,14 @@
 				<right>org.jwebsocket.plugins.channels.stop</right>
 				<right>org.jwebsocket.plugins.channels.suspend</right>
 				<right>org.jwebsocket.plugins.channels.resume</right>
+				<right>org.jwebsocket.plugins.channels.subscribe</right>
+				<right>org.jwebsocket.plugins.channels.publish</right>
+				<right>org.jwebsocket.plugins.channels.getChannels</right>
+				<right>org.jwebsocket.plugins.channels.getSubscribers</right>
+				<right>org.jwebsocket.plugins.channels.getSubscriptions	</right>
+				<right>org.jwebsocket.plugins.channels.createChannel</right>
+				<right>org.jwebsocket.plugins.channels.removeChannel</right>
+				<right>org.jwebsocket.plugins.channels.manageSystemChannels</right>
 
 				<!-- itemstorage rights -->
 				<right>org.jwebsocket.plugins.itemstorage.write_collection</right>
@@ -1605,7 +1613,7 @@
       <!-- Reporting plug-in -->
       <plugin>
          <name>org.jwebsocket.plugins.reporting.ReportingPlugIn</name>
-         <id>jws.test</id>
+         <id>jws.reporting</id>
          <ns>org.jwebsocket.plugins.reporting</ns>
          <!-- use the bundle here, this includes the jasper libraries -->
          <jar>jWebSocketReportingPlugIn-1.0.jar</jar>
@@ -1731,6 +1739,7 @@
       </plugin>
 		
       <!-- Scripting plug-in, e.g. to call JavaScript on the server side -->
+		<!--
       <plugin>
          <name>org.jwebsocket.plugins.scripting.ScriptingPlugIn</name>
          <id>jWebSocketScriptingPlugIn</id>
@@ -1742,6 +1751,7 @@
             <server-assignment>ts0</server-assignment>
          </server-assignments>
       </plugin>
+		-->
 		
       <!-- RTC plug-in -->
       <plugin>
@@ -1756,6 +1766,7 @@
          </server-assignments>
       </plugin>
 		
+	<!--
       <plugin>
          <name>org.jwebsocket.plugins.events.EventsPlugIn</name>
          <ns>test</ns>
@@ -1765,6 +1776,7 @@
             <server-assignment>ts0</server-assignment>
          </server-assignments>
       </plugin>
+	  -->
 		
       <!-- Sample for Java Card -->
       <!--

@@ -21,6 +21,7 @@ set src=..\
 set rte=..\..\..\rte\jWebSocket-%ver%\
 set bin=%rte%bin\
 set conf=%rte%conf\
+set apps=%rte%apps\
 set database=%rte%database\
 set libs=%rte%libs\
 set logs=%rte%logs\
@@ -212,11 +213,13 @@ xcopy %conf%ReportingPlugIn\*.xml %tempdir%conf\ReportingPlugIn\ /s /i /y
 xcopy %conf%Resources\*.xml %tempdir%conf\Resources\ /s /i /y
 xcopy %conf%RTCPlugIn\*.xml %tempdir%conf\RTCPlugIn\ /s /i /y
 xcopy %conf%ScriptingPlugIn\*.xml %tempdir%conf\ScriptingPlugIn\ /s /i /y
-xcopy %conf%ScriptingPlugIn\scripts\*.js %tempdir%conf\ScriptingPlugIn\scripts\ /s /i /y
 xcopy %conf%SMSPlugIn\*.xml %tempdir%conf\SMSPlugIn\ /s /i /y
 xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
 xcopy %conf%TwitterPlugIn\*.xml %tempdir%conf\TwitterPlugIn\ /s /i /y
 xcopy %conf%XMPPPlugIn\*.xml %tempdir%conf\XMPPPlugIn\ /s /i /y
+
+rem copy jWebSocket JavaScript apps (from v1.0)
+xcopy %apps%*.js %tempdir%apps\ /s /i /y
 
 rem log4j config files (from v1.0)
 xcopy %conf%log4j.xml %tempdir%conf\ /s /i /y
