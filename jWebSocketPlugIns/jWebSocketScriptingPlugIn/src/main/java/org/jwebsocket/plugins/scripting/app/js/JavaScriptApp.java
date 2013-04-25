@@ -62,7 +62,7 @@ public class JavaScriptApp extends BaseScriptApp {
 					// using javascript function caller
 					((Invocable) getScriptApp()).invokeFunction("__fnCallerHook__", new Object[]{lListener, aArgs});
 				} catch (Exception lEx) {
-					mLog.error(Logging.getSimpleExceptionMessage(lEx, "calling event listener..."));
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "calling event listener"));
 				}
 			}
 		}
