@@ -68,20 +68,25 @@ public class TomcatConnector extends BaseConnector implements IEmbeddedAuthentic
 	@Override
 	public void startConnector() {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Starting Tomcat connector at port " + getRemotePort() + "...");
+			mLog.debug("Starting Tomcat connector '" + getId() + "' at port " + getRemotePort() + "...");
 		}
 		mIsRunning = true;
 
 		super.startConnector();
+		
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Tomcat connector '" + getId() + "' at port " + getRemotePort() + " started.");
+		}
 	}
 
 	@Override
 	public void stopConnector(CloseReason aCloseReason) {
 		if (mIsRunning) {
+			int lRemotePort = getRemotePort();
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Stopping Tomcat connector ("
+				mLog.debug("Stopping Tomcat connector '" + getId() + "' ("
 						+ aCloseReason.name() + ") at port "
-						+ getRemotePort() + "...");
+						+ lRemotePort + "...");
 			}
 			super.stopConnector(aCloseReason);
 			try {
@@ -91,7 +96,7 @@ public class TomcatConnector extends BaseConnector implements IEmbeddedAuthentic
 			mCloseReason = aCloseReason;
 			mIsRunning = false;
 			if (mLog.isInfoEnabled()) {
-				mLog.info("Tomcat connector stopped!");
+				mLog.info("Tomcat connector '" + getId() + "' at port " + lRemotePort + " stopped.");
 			}
 		}
 	}

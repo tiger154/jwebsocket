@@ -501,7 +501,7 @@ public class TCPEngine extends BaseEngine {
 						} else {
 							// registering connector
 							getConnectors().put(lConnector.getId(), lConnector);
-							// initting connector
+							// initiating connector
 							((TCPConnector) lConnector).init();
 						}
 					} catch (Exception lEx) {
