@@ -54,6 +54,7 @@ $.widget( "jws.channels", {
 		this.CLS_OFF				= "bullet_off";
 		this.CLS_HOVER				= "hover";
 		this.CLS_STRIPE				= "gray";
+		this.CLS_GRAY_INPUT			= "gray_input";
 		
 		// ------------- TEXT FIELDS -------------
 		// Text field elements
@@ -118,8 +119,8 @@ $.widget( "jws.channels", {
 					OnChannelUnsubscription: w.channels.onChannelUnsubscription,
 					// When any subscription arrives from the server
 					OnChannelSubscription: w.channels.onChannelSubscription
-				    // OnChannelStarted: null,
-				    // OnChannelStopped: null
+				// OnChannelStarted: null,
+				// OnChannelStopped: null
 				});
 			},
 			OnWelcome: function( aEvent ) { },
@@ -455,15 +456,25 @@ $.widget( "jws.channels", {
 		$( w.channels.eTables ).animate({
 			"width": "100%"
 		});
+		// Sorting the channels by name
+		var lLength = aEvent.channels.length, lAux, lIdx, lIdx1;
+		for( lIdx = 0; lIdx < lLength; lIdx++ ) {
+			for( lIdx1 = lIdx + 1; lIdx1 < lLength; lIdx1++ ) {
+				if( w.channels.compareTo( aEvent.channels[lIdx].name, 
+					aEvent.channels[lIdx1].name ) > 0 ) {
+					lAux = aEvent.channels[lIdx];
+					aEvent.channels[lIdx] = aEvent.channels[lIdx1];
+					aEvent.channels[lIdx1] = lAux;
+				}
+			}
+		}
 		// Put all channels in the table
-		for( var lIdx = 0, lCnt = aEvent.channels.length; lIdx < lCnt; lIdx++ ) {
+		for( lIdx = 0, lCnt = aEvent.channels.length; lIdx < lCnt; lIdx++ ) {
 			w.channels.addChannelToTable( aEvent.channels[ lIdx ], 
 				w.channels.eChannelsTable );
 			w.channels.mChannelsList[ aEvent.channels[ lIdx ].id ] = 
 			aEvent.channels[ lIdx ];
 		}
-		
-		
 	},
 	
 	/**
@@ -530,36 +541,39 @@ $.widget( "jws.channels", {
 		w.channels.eTxtChannelId.bind({
 			"click focus": function( ) {
 				if( $( this ).val( ) == w.channels.MSG_CHANNELID ) {
-					$( this ).val( "" );
+					$( this ).val( "" ).attr( "class", "" );
 				}
 			},
 			"blur": function( ) {
 				if( $( this ).val( ) == "" ) {
-					$( this ).val( w.channels.MSG_CHANNELID );
+					$( this ).val( w.channels.MSG_CHANNELID ).attr( "class", 
+						w.channels.CLS_GRAY_INPUT );
 				}
 			}
 		});
 		w.channels.eTxtChannelName.bind({
 			"click focus": function( ) {
 				if( $( this ).val( ) == w.channels.MSG_CHANNELNAME ) {
-					$( this ).val( "" );
+					$( this ).val( "" ).attr( "class", "" );
 				}
 			},
 			"blur": function( ) {
 				if( $( this ).val( ) == "" ) {
-					$( this ).val( w.channels.MSG_CHANNELNAME );
+					$( this ).val( w.channels.MSG_CHANNELNAME ).attr( "class", 
+						w.channels.CLS_GRAY_INPUT );
 				}
 			}
 		});
 		w.channels.eTxtMessage.bind({
 			"click focus": function( ) {
 				if( $( this ).val( ) == w.channels.MSG_PUBLISHMESSAGE ) {
-					$( this ).val( "" );
+					$( this ).val( "" ).attr( "class", "" );
 				}
 			},
 			"blur": function( ) {
 				if( $( this ).val( ) == "" ) {
-					$( this ).val( w.channels.MSG_PUBLISHMESSAGE );
+					$( this ).val( w.channels.MSG_PUBLISHMESSAGE ).attr( "class", 
+						w.channels.CLS_GRAY_INPUT );
 				}
 			}
 		});
@@ -876,6 +890,12 @@ $.widget( "jws.channels", {
 		$( w.channels.eTables ).animate({
 			"width": "100%"
 		});
+	},
+	
+	compareTo: function( aStr1, aStr2 ) {
+		if (aStr1.toString() < aStr2.toString()) return -1;
+		if (aStr1.toString() > aStr2.toString()) return 1;
+		return 0;
 	},
 	
 	destroy: function( ) {
