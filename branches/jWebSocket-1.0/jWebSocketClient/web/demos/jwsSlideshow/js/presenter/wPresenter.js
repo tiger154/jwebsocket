@@ -103,13 +103,6 @@ $.widget( "jws.presenter", {
 				}
 			}
 		});
-		// When closing the window notify the other clients about who is 
-		// leaving the conference room
-		$( window ).bind( {
-			'beforeunload': function( ) {
-				mWSC.channelUnsubscribe( w.presenter.mChannelId );
-			}
-		});
 			
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
