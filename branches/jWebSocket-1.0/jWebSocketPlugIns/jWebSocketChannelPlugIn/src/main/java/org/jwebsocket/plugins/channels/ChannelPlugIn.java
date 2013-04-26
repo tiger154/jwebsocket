@@ -141,17 +141,18 @@ public class ChannelPlugIn extends ActionPlugIn {
 	/**
 	 * channel plug-in handshake protocol operation values
 	 */
-	private static final String AUTHORIZE = "authorize";
-	private static final String PUBLISH = "publish";
-	private static final String STOP_CHANNEL = "stop";
-	private static final String START_CHANNEL = "start";
-	private static final String SUBSCRIBE = "subscribe";
-	private static final String UNSUBSCRIBE = "unsubscribe";
-	private static final String GET_CHANNELS = "getChannels";
-	private static final String CREATE_CHANNEL = "createChannel";
-	private static final String REMOVE_CHANNEL = "removeChannel";
-	private static final String GET_SUBSCRIBERS = "getSubscribers";
-	private static final String GET_SUBSCRIPTIONS = "getSubscriptions";
+	private static final String TT_AUTHORIZE = "authorize";
+	private static final String TT_PUBLISH = "publish";
+	private static final String TT_STOP_CHANNEL = "stop";
+	private static final String TT_START_CHANNEL = "start";
+	private static final String TT_SUBSCRIBE = "subscribe";
+	private static final String TT_UNSUBSCRIBE = "unsubscribe";
+	private static final String TT_GET_CHANNELS = "getChannels";
+	private static final String TT_CREATE_CHANNEL = "createChannel";
+	private static final String TT_REMOVE_CHANNEL = "removeChannel";
+	private static final String TT_GET_SUBSCRIBERS = "getSubscribers";
+	private static final String TT_GET_PUBLISHERS = "getPublishers";
+	private static final String TT_GET_SUBSCRIPTIONS = "getSubscriptions";
 	/**
 	 * channel plug-in handshake protocol parameters
 	 */
@@ -279,7 +280,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 	 * @param aConnector the connector for this client
 	 * @param aToken the request token object
 	 */
-	@Role(name = NS_CHANNELS + ".subscribe")
+	@Role(name = NS_CHANNELS + "." + TT_SUBSCRIBE)
 	public void subscribeAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
 		String lAccessKey = aToken.getString(ACCESSKEY);
@@ -326,7 +327,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 	 * @param aConnector the connector associated with the subscriber
 	 * @param aToken the token object
 	 */
-	@Role(name = NS_CHANNELS + ".subscribe")
+	@Role(name = NS_CHANNELS + "." + TT_UNSUBSCRIBE)
 	public void unsubscribeAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
 		// check for valid channel id
@@ -357,7 +358,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 	 * @param aConnector the connector for this client
 	 * @param aToken the request token object
 	 */
-	@Role(name = NS_CHANNELS + ".getChannels")
+	@Role(name = NS_CHANNELS + "." + TT_GET_CHANNELS)
 	public void getChannelsAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		// TODO: Here we probably have to introduce restrictions
 		// not all clients should be allowed to retreive system channels
@@ -391,6 +392,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 	 * @param aToken the token received from the publisher client
 	 * @param aChannelId the channel id
 	 */
+	@Role(name = NS_CHANNELS + "." + TT_AUTHORIZE)
 	public void authorizeAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
 		Assert.isTrue(lChannelId != null && !EMPTY_STRING.equals(lChannelId), "No or invalid channel id passed!");
@@ -431,7 +433,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
-	@Role(name = NS_CHANNELS + ".publish")
+	@Role(name = NS_CHANNELS + "." + TT_PUBLISH)
 	public void publishAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
 		Assert.isTrue(lChannelId != null && !EMPTY_STRING.equals(lChannelId), "No or invalid channel id passed!");
@@ -471,7 +473,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		lChannel.broadcastToken(lToken);
 	}
 
-	@Role(name = NS_CHANNELS + ".createChannel")
+	@Role(name = NS_CHANNELS + "." + TT_CREATE_CHANNEL)
 	public void createChannelAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		// get arguments from request
 		String lChannelId = aToken.getString(CHANNEL);
@@ -543,7 +545,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 			lChannelCreated.setBoolean("isSystem", lIsSystem);
 			lChannelCreated.setString("state", lChannel.getState().name());
 			lChannelCreated.setString("user", lOwner);
-			
+
 			broadcastToken(aConnector, lChannelCreated,
 					new BroadcastOptions(BroadcastOptions.SENDER_INCLUDED, BroadcastOptions.RESPONSE_IGNORED));
 		}
@@ -557,7 +559,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
-	@Role(name = NS_CHANNELS + ".removeChannel")
+	@Role(name = NS_CHANNELS + "." + TT_REMOVE_CHANNEL)
 	public void removeChannelAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		Token lResponseToken = createResponse(aToken);
 
@@ -599,7 +601,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 				|| (lSecretKey != null && lSecretKey.equals(lChannelSecretKey));
 
 		// check if both access key an secret key match
-		Assert.isTrue(lAccessKeyMatch && lSecretKeyMatch, "Invalid or non-mtaching "
+		Assert.isTrue(lAccessKeyMatch && lSecretKeyMatch, "Invalid or non-matching "
 				+ "access key or secret key to remove channel '" + lChannelId + "'.");
 
 		mChannelManager.removeChannel(lChannel);
@@ -621,7 +623,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
-	@Role(name = NS_CHANNELS + ".getSubscribers")
+	@Role(name = NS_CHANNELS + "." + TT_GET_SUBSCRIBERS)
 	public void getSubscribersAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
 		Assert.isTrue(lChannelId != null && !EMPTY_STRING.equals(lChannelId), "No or invalid channel id passed!");
@@ -633,7 +635,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 
 		String lChannelAccessKey = lChannel.getAccessKey();
 		Assert.isTrue((lChannelAccessKey == null ? lAccessKey == null : lChannelAccessKey.equals(lAccessKey)),
-				"Invalid channel '" + lChannelId + "' access key!");
+				"Invalid channel access key for '" + lChannelId + "'");
 
 		List<String> lChannelSubscribers = lChannel.getSubscribers();
 		List<Map> lSubscribers = new FastList<Map>();
@@ -656,8 +658,8 @@ public class ChannelPlugIn extends ActionPlugIn {
 		// send the response
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
-	
-	@Role(name = NS_CHANNELS + ".getPublishers")
+
+	@Role(name = NS_CHANNELS + "." + TT_GET_PUBLISHERS)
 	public void getPublishersAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
 		Assert.isTrue(lChannelId != null && !EMPTY_STRING.equals(lChannelId), "No or invalid channel id passed!");
@@ -693,7 +695,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
-	@Role(name = NS_CHANNELS + ".getSubscriptions")
+	@Role(name = NS_CHANNELS + "." + TT_GET_SUBSCRIPTIONS)
 	public void getSubscriptionsAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		Subscriber lSubscriber = mChannelManager.getSubscriber(aConnector.getId());
 		List<Map> lSubscriptions = new FastList<Map>();
@@ -719,7 +721,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
-	@Role(name = NS_CHANNELS + ".stop")
+	@Role(name = NS_CHANNELS + "." + TT_STOP_CHANNEL)
 	public void stopChannelAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
 		Assert.isTrue(lChannelId != null && !EMPTY_STRING.equals(lChannelId), "No or invalid channel id passed!");
@@ -737,7 +739,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, createResponse(aToken));
 	}
 
-	@Role(name = NS_CHANNELS + ".start")
+	@Role(name = NS_CHANNELS + "." + TT_START_CHANNEL)
 	public void startChannelAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
 		Assert.isTrue(lChannelId != null && !EMPTY_STRING.equals(lChannelId), "No or invalid channel id passed!");
