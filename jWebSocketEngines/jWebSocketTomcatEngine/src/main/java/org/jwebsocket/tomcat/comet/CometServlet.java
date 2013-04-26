@@ -110,8 +110,10 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 				mLog.debug("Servlet successfully initialized.");
 			}
 		} else {
-			throw new ServletException("Request received during the jWebSocket server startup process. "
-					+ "Request cannot be processed!");
+			String lErrMsg = "Request received during the jWebSocket server startup process. "
+					+ "Request cannot be processed!";
+			log(lErrMsg);
+			throw new ServletException(lErrMsg);
 		}
 	}
 
@@ -225,9 +227,8 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	}
 
 	/**
-	 * if the connection message is received for the first time, answer with the
-	 * open ready state else just update the ready state or close the
-	 * connection.
+	 * if the connection message is received for the first time, answer with the open ready state
+	 * else just update the ready state or close the connection.
 	 *
 	 * @param aSubProt
 	 * @param aState
