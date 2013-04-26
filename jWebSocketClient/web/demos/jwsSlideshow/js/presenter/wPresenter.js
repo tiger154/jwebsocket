@@ -248,9 +248,7 @@ $.widget( "jws.presenter", {
 										if( w.presenter.mCurrSlide > 0 ) {
 											mWSC.sendText( lToken.subscriber, {
 												action: w.presenter.TT_SLIDE,
-												slide: w.presenter.mCurrSlide,
-												viewers: lData.viewers,
-												presenters: lData.presenters
+												slide: w.presenter.mCurrSlide
 											});
 										}
 									}
