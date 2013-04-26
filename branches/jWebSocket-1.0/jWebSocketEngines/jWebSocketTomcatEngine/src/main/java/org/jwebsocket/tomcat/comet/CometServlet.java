@@ -110,7 +110,8 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 				mLog.debug("Servlet successfully initialized.");
 			}
 		} else {
-			throw new ServletException("The jWebSocket server is not started!");
+			throw new ServletException("Request received during the jWebSocket server startup process. "
+					+ "Request cannot be processed!");
 		}
 	}
 
