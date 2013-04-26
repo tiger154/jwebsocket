@@ -823,6 +823,11 @@
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
+			<id>authorize</id>
+			<description>Send an authorization request to the server to be allowed to publish in the channel</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>publish</id>
 			<description>Allows to publish to a channel</description>
 		</right>
@@ -968,6 +973,7 @@
 				<right>org.jwebsocket.plugins.channels.suspend</right>
 				<right>org.jwebsocket.plugins.channels.resume</right>
 				<right>org.jwebsocket.plugins.channels.subscribe</right>
+				<right>org.jwebsocket.plugins.channels.authorize</right>
 				<right>org.jwebsocket.plugins.channels.publish</right>
 				<right>org.jwebsocket.plugins.channels.getChannels</right>
 				<right>org.jwebsocket.plugins.channels.getSubscribers</right>
@@ -1072,6 +1078,7 @@
 				<!-- Channel rights -->
 				<right>org.jwebsocket.plugins.channels.subscribe</right>
 
+				<right>org.jwebsocket.plugins.channels.authorize</right>
 				<right>org.jwebsocket.plugins.channels.publish</right>
 				<right>org.jwebsocket.plugins.channels.getChannels</right>
 				<right>org.jwebsocket.plugins.channels.getSubscribers</right>
@@ -1627,16 +1634,14 @@
 		</plugin>
 		
 		<!-- Monitoring plugin -->
-		<!--
-		<plugin>
-				<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
-				<id>MonitoringPlugIn</id>
-				<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
-				<server-assignments>
-					<server-assignment>ts0</server-assignment>
-				</server-assignments>
-		</plugin>
-		-->
+<!--		<plugin>
+			<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
+			<id>MonitoringPlugIn</id>
+			<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>-->
 
 		<!-- API disclosure plugin -->
 		<plugin>
@@ -1875,17 +1880,15 @@
 		</filter>
 		
 		<!-- this filter is required to capture all events for the monitoring plug-in -->
-		<!--
-			  <filter>
-					  <name>org.jwebsocket.filters.monitoring.MonitoringFilter</name>
-					  <id>jws.monitoringFilter</id>
-					  <ns>org.jwebsocket.plugins.monitoring</ns>
-					  <jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
-					  <server-assignments>
-							  <server-assignment>ts0</server-assignment>
-					  </server-assignments>
-			  </filter>
-		-->
+<!--		<filter>
+			<name>org.jwebsocket.filters.monitoring.MonitoringFilter</name>
+			<id>jws.monitoringFilter</id>
+			<ns>org.jwebsocket.plugins.monitoring</ns>
+			<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</filter>-->
 	</filters>
 
 </jWebSocket>
