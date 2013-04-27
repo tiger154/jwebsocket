@@ -327,8 +327,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 						if( mInformationRunning ) {
 							getServer().sendToken(aConnector, getUserInfoToToken());
 						}
-						Token lToken = getUserInfoToToken();
-						
 					}
 					if (!mClients.contains(aConnector)) {
 						mClients.add(aConnector);
