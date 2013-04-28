@@ -146,7 +146,7 @@ $.widget( "jws.auth", {
 					w.auth.options.OnOpen( aEvent, aToken );
 				}
 				if ( mLog.isDebugEnabled ) {
-					log( "<font color='red'>jWebSocket connection established.</font>" );
+					log( "<font color='green'>jWebSocket connection established.</font>" );
 				}
 
 				w.auth.eConnectButton.hide( );
@@ -178,7 +178,7 @@ $.widget( "jws.auth", {
 					w.auth.options.OnWelcome( aToken );
 				}
 				if ( mLog.isDebugEnabled ) {
-					log( "<font color='red'>jWebSocket Welcome received.</font>" );
+					log( "<font color='green'>jWebSocket Welcome received.</font>" );
 					if ( aToken.sourceId ) {
 						w.auth.eClientId.text( "Client-ID: " + aToken.sourceId );
 					}
@@ -219,7 +219,7 @@ $.widget( "jws.auth", {
 					w.auth.options.OnGoodBye( aEvent );
 				}
 				if ( mLog.isDebugEnabled ) {
-					log( "<font color='red'>jWebSocket GoodBye received.</font>" );
+					log( "<font color='green'>jWebSocket GoodBye received.</font>" );
 				}
 			},
 			// OnMessage callback
@@ -241,9 +241,9 @@ $.widget( "jws.auth", {
 					}
 
 					if ( mLog.isDebugEnabled ) {
-						log( "<font color='red'>jWebSocket '" + aToken.type
-								+ "' token received, full message: '" + aEvent.data + "' "
-								+ lDate + "</font>" );
+						log( "<font color='green'>jWebSocket '" + aToken.type
+								+ "' token received, full message: </font>'" + aEvent.data + "' "
+								+ lDate );
 					}
 				}
 			},
@@ -365,7 +365,7 @@ $.widget( "jws.auth", {
 			}
 		}
 	},
-	auth: function( ) {
+	auth: function( ) {red
 		if ( mWSC ) {
 			if ( mLog.isDebugEnabled ) {
 				log( "Authenticating..." );
