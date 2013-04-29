@@ -1751,18 +1751,19 @@
 		</plugin>
 		
 		<!-- Scripting plug-in, e.g. to call JavaScript on the server side -->
+		<!-- will be released in jWebSocket 1.1 -->
 		<!--
-	  <plugin>
-		 <name>org.jwebsocket.plugins.scripting.ScriptingPlugIn</name>
-		 <id>jWebSocketScriptingPlugIn</id>
-		 <jar>jWebSocketScriptingPlugIn-1.0.jar</jar>
-		 <settings>
-			<setting key="spring_config">${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripting.xml</setting>
-		 </settings>
-		 <server-assignments>
-			<server-assignment>ts0</server-assignment>
-		 </server-assignments>
-	  </plugin>
+		<plugin>
+			<name>org.jwebsocket.plugins.scripting.ScriptingPlugIn</name>
+			<id>jWebSocketScriptingPlugIn</id>
+			<jar>jWebSocketScriptingPlugIn-1.0.jar</jar>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripting.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
 		-->
 		
 		<!-- RTC plug-in -->
@@ -1887,6 +1888,7 @@
 		</filter>
 		
 		<!--this filter enabled the timeout of authentication mechanism for the UserAdmin plugIn -->
+		<!--
 		<filter>
 			<name>org.jwebsocket.enterprise.plugins.useradmin.AuthenticationFilter</name>
 			<id>jws.authenticationFilter</id>
@@ -1899,7 +1901,8 @@
 				<setting key="pass_failures_allowed">3</setting>
 			</settings>
 		</filter>
-
+		-->
+		
 		<!-- this filter is required to capture all events for the monitoring plug-in -->
 		<!--		<filter>
 			<name>org.jwebsocket.filters.monitoring.MonitoringFilter</name>
