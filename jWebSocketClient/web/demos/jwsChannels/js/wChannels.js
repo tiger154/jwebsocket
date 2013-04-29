@@ -112,7 +112,7 @@ $.widget( "jws.channels", {
 			OnOpen: function( aEvent ) {
 				// Registering the callbacks for the channels
 				mWSC.setChannelCallbacks( {
-					OnChannelCreated: w.channels.onChannelCreated,
+//					OnChannelCreated: w.channels.onChannelCreated,
 					OnChannelRemoved: w.channels.onChannelRemoved,
 					OnChannelsReceived: w.channels.onChannelsReceived,
 					OnChannelUnsubscription: w.channels.onChannelUnsubscription,
@@ -126,6 +126,13 @@ $.widget( "jws.channels", {
 			},
 			OnLogon: function( aToken ) {
 				w.channels.getChannels( );
+				w.channels.eChannelsAreaResizable.animate( {
+					"height": 160,
+					"max-height": 160
+				} );
+				$( w.channels.eTables ).animate( {
+					"width": "100%"
+				} );
 			},
 			OnLogoff: function( aToken ) {
 				w.channels.destroy( );
@@ -228,7 +235,10 @@ $.widget( "jws.channels", {
 							isPrivate: lIsPrivate,
 							isSystem: lIsSystem,
 							accessKey: lAccessKey,
-							secretKey: lSecretKey
+							secretKey: lSecretKey,
+							OnSuccess: function( aToken ) {
+								w.channels.onChannelCreated( aToken );
+							}
 						} );
 				log( mWSC.resultToString( lRes ) );
 			}
@@ -324,7 +334,7 @@ $.widget( "jws.channels", {
 			jwsDialog( w.channels.MSG_NOTCONNECTED, "jWebSocket error", true,
 					"error" );
 		}
-},
+	},
 	/**
 	 * Try to authenticate against the channel to publish data
 	 **/
@@ -436,15 +446,9 @@ $.widget( "jws.channels", {
 		w.channels.switchChannelsArea( );
 	},
 	onChannelsReceived: function( aEvent ) {
-		w.channels.destroy( );
+		w.channels.clearChannelTable();
 		w.channels.mChannelsList = { };
-		w.channels.eChannelsAreaResizable.animate( {
-			"height": 160,
-			"max-height": 160
-		} );
-		$( w.channels.eTables ).animate( {
-			"width": "100%"
-		} );
+
 		// Sorting the channels by name
 		var lLength = aEvent.channels.length, lAux, lIdx, lIdx1;
 		for ( lIdx = 0; lIdx < lLength; lIdx++ ) {
