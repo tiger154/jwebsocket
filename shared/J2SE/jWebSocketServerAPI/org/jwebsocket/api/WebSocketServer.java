@@ -27,12 +27,11 @@ import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.kit.WebSocketSession;
 
 /**
- * Specifies the API of the jWebSocket server core and its capabilities. Each
- * server can be bound to one or multiple engines. Each engine can drive or more
- * servers above. The servers usually are not supposed to directly implement any
- * business logic - except for very small or special non token based
- * applications. For applications it is recommended to implement them in
- * plug-ins based on the token server.
+ * Specifies the API of the jWebSocket server core and its capabilities. Each server can be bound to
+ * one or multiple engines. Each engine can drive or more servers above. The servers usually are not
+ * supposed to directly implement any business logic - except for very small or special non token
+ * based applications. For applications it is recommended to implement them in plug-ins based on the
+ * token server.
  *
  * @author aschulze
  * @version $Id: WebSocketServer.java 625 2010-07-06 17:33:33Z fivefeetfurther $
@@ -40,9 +39,9 @@ import org.jwebsocket.kit.WebSocketSession;
 public interface WebSocketServer {
 
 	/**
-	 * Called when a WebSocketSession is created. Future enterprise applications
-	 * will use this event instead of "connectorStarted", because the second
-	 * does not guarantee a session storage creation.
+	 * Called when a WebSocketSession is created. Future enterprise applications will use this event
+	 * instead of "connectorStarted", because the second does not guarantee a session storage
+	 * creation.
 	 *
 	 * @param aConnector
 	 * @param aSession
@@ -50,10 +49,9 @@ public interface WebSocketServer {
 	void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession);
 
 	/**
-	 * Called when a WebSocketSession expired. This event represents the real
-	 * client disconnection. The "connectorStopped" event should happen multiple
-	 * times, but the session is kept. When a session is stopped (expired) it
-	 * means: A client is finally disconnected.
+	 * Called when a WebSocketSession expired. This event represents the real client disconnection.
+	 * The "connectorStopped" event should happen multiple times, but the session is kept. When a
+	 * session is stopped (expired) it means: A client is finally disconnected.
 	 *
 	 * @param aSession
 	 */
@@ -69,8 +67,7 @@ public interface WebSocketServer {
 	/**
 	 * States if at least one of the engines is still running.
 	 *
-	 * @return Boolean state if at least one of the underlying engines is still
-	 * running.
+	 * @return Boolean state if at least one of the underlying engines is still running.
 	 */
 	boolean isAlive();
 
@@ -163,10 +160,9 @@ public interface WebSocketServer {
 			IPacketDeliveryListener aListener);
 
 	/**
-	 * Sends the data packet asynchronously to the output channel through the
-	 * given target connector. This is a asynchronous output process which
-	 * returns the future object to check the status and control the output
-	 * operation.
+	 * Sends the data packet asynchronously to the output channel through the given target
+	 * connector. This is a asynchronous output process which returns the future object to check the
+	 * status and control the output operation.
 	 *
 	 * @param aConnector the target connector to use for the packet output
 	 * @param aDataPacket the data packet
@@ -185,9 +181,9 @@ public interface WebSocketServer {
 			BroadcastOptions aBroadcastOptions);
 
 	/**
-	 * Returns the unique ID of the server. Because the jWebSocket model
-	 * supports multiple servers based on one or more engines (drivers) each
-	 * server has its own ID so that it can be addressed properly.
+	 * Returns the unique ID of the server. Because the jWebSocket model supports multiple servers
+	 * based on one or more engines (drivers) each server has its own ID so that it can be addressed
+	 * properly.
 	 *
 	 * @return String Unique ID of the Server.
 	 */
@@ -305,12 +301,12 @@ public interface WebSocketServer {
 	WebSocketConnector getNode(String aNodeId);
 
 	/**
-	 * 
+	 *
 	 * @param aUsername
-	 * @return 
+	 * @return
 	 */
 	WebSocketConnector getConnectorByUsername(String aUsername);
-	
+
 	/**
 	 *
 	 * @param aEngine
@@ -324,6 +320,12 @@ public interface WebSocketServer {
 	 * @return
 	 */
 	Map<String, WebSocketConnector> selectConnectors(Map<String, Object> aFilter);
+
+	/**
+	 *
+	 * @return
+	 */
+	Map<String, WebSocketConnector> selectTokenConnectors();
 
 	/**
 	 *

@@ -39,10 +39,9 @@ import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
 
 /**
- * Provides the basic implementation of the jWebSocket connectors. The
- * {@code BaseConnector} is supposed to be used as ancestor for the connector
- * implementations like e.g. the {@code TCPConnector} or the
- * {@code TomcatConnector }.
+ * Provides the basic implementation of the jWebSocket connectors. The {@code BaseConnector} is
+ * supposed to be used as ancestor for the connector implementations like e.g. the
+ * {@code TCPConnector} or the {@code TomcatConnector }.
  *
  * @author aschulze
  * @author kyberneees
@@ -82,8 +81,7 @@ public class BaseConnector implements WebSocketConnector {
 	 */
 	private WebSocketEngine mEngine = null;
 	/**
-	 * Backup of the original request header and it's fields. TODO: maybe
-	 * obsolete for the future
+	 * Backup of the original request header and it's fields. TODO: maybe obsolete for the future
 	 */
 	private RequestHeader mHeader = null;
 	/**
@@ -137,8 +135,8 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	/**
-	 * Returns the current status for the connector. Please refer to the
-	 * WebSocketConnectorStatus enumeration.
+	 * Returns the current status for the connector. Please refer to the WebSocketConnectorStatus
+	 * enumeration.
 	 *
 	 * @return
 	 */
@@ -148,8 +146,8 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	/**
-	 * Sets the current status for the connector. Please refer to the
-	 * WebSocketConnectorStatus enumeration.
+	 * Sets the current status for the connector. Please refer to the WebSocketConnectorStatus
+	 * enumeration.
 	 *
 	 * @param aStatus
 	 */
@@ -175,6 +173,24 @@ public class BaseConnector implements WebSocketConnector {
 	public Object getReadLock() {
 		return mReadLock;
 	}
+
+	@Override
+	public Boolean supportTokens() {
+		if (null == mSupportTokens) {
+			String lFormat = mHeader.getFormat();
+			if ((lFormat != null)
+					&& (lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_JSON)
+					|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_XML)
+					|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_CSV))) {
+				mSupportTokens = true;
+			} else {
+				mSupportTokens = false;
+			}
+		}
+
+		return mSupportTokens;
+	}
+	private Boolean mSupportTokens = null;
 
 	@Override
 	public void processPacket(WebSocketPacket aDataPacket) {

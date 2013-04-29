@@ -29,7 +29,6 @@ import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.*;
 import org.jwebsocket.async.IOFuture;
-import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.filter.TokenFilterChain;
 import org.jwebsocket.kit.*;
@@ -55,7 +54,6 @@ public class TokenServer extends BaseServer {
 	/**
 	 *
 	 */
-	public static final String VAR_IS_TOKENSERVER = NS_TOKENSERVER + ".isTS";
 	private volatile boolean mIsAlive = false;
 	private static ExecutorService mCachedThreadPool;
 	private final static int TIME_OUT_TERMINATION_THREAD = 10;
@@ -160,14 +158,7 @@ public class TokenServer extends BaseServer {
 	 */
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
-		String lFormat = aConnector.getHeader().getFormat();
-		if ((lFormat != null)
-				&& (lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_JSON)
-				|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_XML)
-				|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_CSV))) {
-
-			aConnector.setBoolean(VAR_IS_TOKENSERVER, true);
-
+		if (aConnector.supportTokens()) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Processing connector '" + aConnector.getId() + "' started...");
 			}
@@ -182,7 +173,7 @@ public class TokenServer extends BaseServer {
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
 		// notify plugins that a connector has stopped,
 		// i.e. a client was disconnected.
-		if (aConnector.getBool(VAR_IS_TOKENSERVER)) {
+		if (aConnector.supportTokens()) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Processing connector '"
 						+ aConnector.getId() + "' stopped...");
@@ -255,7 +246,7 @@ public class TokenServer extends BaseServer {
 	public void processPacket(WebSocketEngine aEngine,
 			final WebSocketConnector aConnector, WebSocketPacket aDataPacket) {
 		// is the data packet supposed to be interpreted as token?
-		if (aConnector.getBool(VAR_IS_TOKENSERVER)) {
+		if (aConnector.supportTokens()) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Processing packet as token...");
 			}
@@ -368,7 +359,7 @@ public class TokenServer extends BaseServer {
 		Assert.notNull(aToken, "The token argument cannot be null!");
 		Assert.notNull(aListener, "The listener argument cannot be null!");
 
-		if (aTarget.getBool(VAR_IS_TOKENSERVER)) {
+		if (aTarget.supportTokens()) {
 			// before sending the token push it through filter chain
 			FilterResponse lFilterResponse = getFilterChain().processTokenOut(null, aTarget, aToken);
 			if (!lFilterResponse.isRejected()) {
@@ -385,8 +376,8 @@ public class TokenServer extends BaseServer {
 				aListener.OnFailure(new Exception("The token has been rejected by the filters!!"));
 			}
 		} else {
-			aListener.OnFailure(new Exception("Target connector '" 
-					+ aTarget.getId() 
+			aListener.OnFailure(new Exception("Target connector '"
+					+ aTarget.getId()
 					+ "' does not support tokens!"));
 		}
 	}
@@ -568,7 +559,7 @@ public class TokenServer extends BaseServer {
 		// TODO: return meaningful result here.
 		WebSocketConnector lTargetConnector = getConnector(aEngineId, aConnectorId);
 		if (lTargetConnector != null) {
-			if (lTargetConnector.getBool(VAR_IS_TOKENSERVER)) {
+			if (lTargetConnector.supportTokens()) {
 				// before sending the token push it through filter chain
 				FilterResponse lFilterResponse = getFilterChain().processTokenOut(null, lTargetConnector, aToken);
 				// only forward the token to the plug-in chain
@@ -585,7 +576,7 @@ public class TokenServer extends BaseServer {
 					}
 				}
 			} else {
-				mLog.warn("Target connector '" + aConnectorId 
+				mLog.warn("Target connector '" + aConnectorId
 						+ "' does not support tokens.");
 			}
 		} else {
@@ -598,7 +589,7 @@ public class TokenServer extends BaseServer {
 		if (null == aTarget) {
 			mLog.error("Trying to send token to removed or closed connector: "
 					+ Logging.getTokenStr(aToken));
-		} else if (aTarget.getBool(VAR_IS_TOKENSERVER)) {
+		} else if (aTarget.supportTokens()) {
 			// before sending the token push it through filter chain
 			FilterResponse lFilterResponse = getFilterChain().processTokenOut(
 					aSource, aTarget, aToken);
@@ -618,7 +609,7 @@ public class TokenServer extends BaseServer {
 				}
 			}
 		} else {
-			mLog.warn("Target connector '" + aTarget.getId() 
+			mLog.warn("Target connector '" + aTarget.getId()
 					+ "' does not support tokens.");
 		}
 		return null;
@@ -635,8 +626,8 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * Broadcasts the passed token to all token based connectors of the
-	 * underlying engines that belong to the specified group.
+	 * Broadcasts the passed token to all token based connectors of the underlying engines that
+	 * belong to the specified group.
 	 *
 	 * @param aToken - token to broadcast
 	 */
@@ -652,8 +643,8 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * Broadcasts the passed token to all token based connectors of the
-	 * underlying engines that belong to the specified filter and its name.
+	 * Broadcasts the passed token to all token based connectors of the underlying engines that
+	 * belong to the specified filter and its name.
 	 *
 	 * @param aToken
 	 * @param aFilterID
@@ -671,8 +662,8 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * Broadcasts the passed token to all token based connectors of the
-	 * underlying engines that belong to the specified filters.
+	 * Broadcasts the passed token to all token based connectors of the underlying engines that
+	 * belong to the specified filters.
 	 *
 	 * @param aToken
 	 * @param aFilter
@@ -687,14 +678,16 @@ public class TokenServer extends BaseServer {
 		FilterResponse lFilterResponse = getFilterChain().processTokenOut(
 				null, null, aToken);
 
-		aFilter.put(VAR_IS_TOKENSERVER, true);
-
 		// converting the token within the loop is removed in this method!
 		WebSocketPacket lPacket;
 		// lPackets maps protocol formats to appropriate converted packets:
 		FastMap<String, WebSocketPacket> lPackets = new FastMap<String, WebSocketPacket>();
 		String lFormat;
 		for (WebSocketConnector lConnector : selectConnectors(aFilter).values()) {
+			if (!lConnector.supportTokens()) {
+				continue;
+			}
+
 			lFormat = lConnector.getHeader().getFormat();
 			lPacket = lPackets.get(lFormat);
 			// if there is no packet for this protocol format already, make one and
@@ -708,8 +701,7 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * Broadcasts the passed token to all token based connectors of the
-	 * underlying engines.
+	 * Broadcasts the passed token to all token based connectors of the underlying engines.
 	 *
 	 * @param aToken
 	 */
@@ -722,15 +714,12 @@ public class TokenServer extends BaseServer {
 		FilterResponse lFilterResponse = getFilterChain().processTokenOut(
 				null, null, aToken);
 
-		FastMap<String, Object> lFilter = new FastMap<String, Object>();
-		lFilter.put(VAR_IS_TOKENSERVER, true);
-
 		// converting the token within the loop is removed in this method!
 		WebSocketPacket lPacket;
 		// lPackets maps protocol formats to appropriate converted packets:
 		FastMap<String, WebSocketPacket> lPackets = new FastMap<String, WebSocketPacket>();
 		String lFormat;
-		for (WebSocketConnector lConnector : selectConnectors(lFilter).values()) {
+		for (WebSocketConnector lConnector : selectTokenConnectors().values()) {
 			lFormat = lConnector.getHeader().getFormat();
 			lPacket = lPackets.get(lFormat);
 			// if there is no packet for this protocol format already, make one and
@@ -757,9 +746,6 @@ public class TokenServer extends BaseServer {
 		// before sending the token push it through filter chain
 		FilterResponse lFilterResponse = getFilterChain().processTokenOut(aSource, null, aToken);
 
-		Map<String, Object> lFilter = new FastMap<String, Object>();
-		lFilter.put(VAR_IS_TOKENSERVER, true);
-
 		// converting the token within the loop is removed in this method!
 		WebSocketPacket lPacket;
 		// optimization: lPackets maps protocol formats to appropriate converted packets:
@@ -767,7 +753,7 @@ public class TokenServer extends BaseServer {
 		Map<String, WebSocketPacket> lPackets = new FastMap<String, WebSocketPacket>();
 		String lFormat;
 		// interate through all connectors of all engines
-		for (WebSocketConnector lConnector : selectConnectors(lFilter).values()) {
+		for (WebSocketConnector lConnector : selectTokenConnectors().values()) {
 			if (!aSource.equals(lConnector) /*
 					 * && WebSocketConnectorStatus.UP.equals(lConnector.getStatus())
 					 */) {
@@ -793,10 +779,9 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * iterates through all connectors of all engines and sends the token to
-	 * each connector. The token format is considered for each connection
-	 * individually so that the application can broadcast a token to all kinds
-	 * of clients.
+	 * iterates through all connectors of all engines and sends the token to each connector. The
+	 * token format is considered for each connection individually so that the application can
+	 * broadcast a token to all kinds of clients.
 	 *
 	 * @param aSource
 	 * @param aToken
@@ -810,15 +795,12 @@ public class TokenServer extends BaseServer {
 		// before sending the token push it through filter chain
 		FilterResponse lFilterResponse = getFilterChain().processTokenOut(aSource, null, aToken);
 
-		Map<String, Object> lFilter = new FastMap<String, Object>();
-		lFilter.put(VAR_IS_TOKENSERVER, true);
-
 		// converting the token within the loop is removed in this method!
 		WebSocketPacket lPacket;
 		// lPackets maps protocol formats to appropriate converted packets:
 		Map<String, WebSocketPacket> lPackets = new FastMap<String, WebSocketPacket>();
 		String lFormat;
-		for (WebSocketConnector lConnector : selectConnectors(lFilter).values()) {
+		for (WebSocketConnector lConnector : selectTokenConnectors().values()) {
 			if (!aSource.equals(lConnector) || aBroadcastOptions.isSenderIncluded()) {
 				lFormat = lConnector.getHeader().getFormat();
 				lPacket = lPackets.get(lFormat);
