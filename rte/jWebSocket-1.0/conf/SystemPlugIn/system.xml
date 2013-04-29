@@ -144,11 +144,11 @@
    </bean>	
    
    <!-- ####### UserAdmin authentication ####### -->
-   <bean id="userAdminAuthProvider" class="org.jwebsocket.enterprise.plugins.useradmin.auth.UserAdminAuthenticationProvider">
-      <!-- here we configure MD5 encryption of the passwords --> 
+   <!--<bean id="userAdminAuthProvider" class="org.jwebsocket.enterprise.plugins.useradmin.auth.UserAdminAuthenticationProvider">
+      here we configure MD5 encryption of the passwords --> 
       <!-- Remark the following line to use plain text passwords, NOT RECOMMENDED! --> 
       <!--<property name="passwordEncoder" ref="authPasswordEncoderMD5"/>-->
-   </bean>
+   <!--</bean>-->
    
    <!-- ####### optional caching with ehcache ####### -->
 	
@@ -189,8 +189,8 @@
 				<!-- Select here the authentication provider -->
 				<!-- <ref local="ldapAuthProvider"/> -->
 				<!--<ref local="jdbcAuthProvider"/> -->
-				<!--<ref local="staticAuthProvider"/>-->
-            <ref local="userAdminAuthProvider" />
+				<ref local="staticAuthProvider"/>
+            <!--<ref local="userAdminAuthProvider" />-->
 			</list>
 		</property>
 	</bean>
