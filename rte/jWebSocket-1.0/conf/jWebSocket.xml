@@ -818,8 +818,13 @@
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
-			<id>subscribe</id>
+			<id>unsubscribe</id>
 			<description>Allows to subscribe to and unsubscribe from a channel</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.channels</ns>
+			<id>subscribe</id>
+			<description>Allows to subscribe to and subscribe to a channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
@@ -973,6 +978,7 @@
 				<right>org.jwebsocket.plugins.channels.suspend</right>
 				<right>org.jwebsocket.plugins.channels.resume</right>
 				<right>org.jwebsocket.plugins.channels.subscribe</right>
+				<right>org.jwebsocket.plugins.channels.unsubscribe</right>
 				<right>org.jwebsocket.plugins.channels.authorize</right>
 				<right>org.jwebsocket.plugins.channels.publish</right>
 				<right>org.jwebsocket.plugins.channels.getChannels</right>
@@ -1077,6 +1083,7 @@
 
 				<!-- Channel rights -->
 				<right>org.jwebsocket.plugins.channels.subscribe</right>
+				<right>org.jwebsocket.plugins.channels.unsubscribe</right>
 
 				<right>org.jwebsocket.plugins.channels.authorize</right>
 				<right>org.jwebsocket.plugins.channels.publish</right>
