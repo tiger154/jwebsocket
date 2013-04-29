@@ -348,7 +348,7 @@ public class AdminPlugIn extends TokenPlugIn {
 				lResultItem.put("usid", lConnector.getSession().getSessionId());
 				lResultItem.put("unid", lConnector.getNodeId());
 				lResultItem.put("username", lConnector.getUsername());
-				lResultItem.put("isToken", lConnector.getBoolean(TokenServer.VAR_IS_TOKENSERVER));
+				lResultItem.put("isToken", lConnector.supportTokens());
 				lResultList.add(lResultItem);
 			}
 			lResponse.setList("connections", lResultList);

@@ -118,7 +118,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		this.setNamespace(NS_FILESYSTEM);
 
 		try {
-			mBeanFactory = getConfigBeanFactory();
+			mBeanFactory = getConfigBeanFactory(NS_FILESYSTEM);
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for filesystem plug-in, some features may not be available.");
 			} else {
@@ -195,9 +195,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
-		String lNS = aToken.getNS();
 
-		if (lType != null && getNamespace().equals(lNS)) {
+		if (lType != null) {
 			if (lType.equals("save")) {
 				save(aConnector, aToken);
 			} else if (lType.equals("load")) {
@@ -661,8 +660,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Returns TRUE if a file path is inside of a given base path, FALSE
-	 * otherwise
+	 * Returns TRUE if a file path is inside of a given base path, FALSE otherwise
 	 *
 	 * @param aFile
 	 * @param aBasePath

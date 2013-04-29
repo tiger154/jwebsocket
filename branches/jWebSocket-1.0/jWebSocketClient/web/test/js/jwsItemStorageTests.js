@@ -583,7 +583,7 @@ jws.tests.ItemStorage = {
 				);
 
 			runs( function() {
-				expect( lResponse.data.length ).toEqual( aExpectedSize );
+				expect( lResponse.data.length >= aExpectedSize ).toEqual( true );
 			});
 		});
 	},
