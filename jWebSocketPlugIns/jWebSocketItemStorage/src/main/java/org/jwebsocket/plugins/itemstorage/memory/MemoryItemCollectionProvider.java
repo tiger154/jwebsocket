@@ -37,8 +37,13 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 			return getCollection(aName);
 		}
 
-		return new ItemCollection(System.currentTimeMillis(), getItemStorageProvider()
+		Assert.isTrue(aName.matches(ItemCollection.COLLECTION_NAME_REGEXP),
+				"The storage name is invalid!");
+		ItemCollection lCollection = new ItemCollection(System.currentTimeMillis(), getItemStorageProvider()
 				.getItemStorage(aName, aItemType), new MemoryClientCollection(), new MemoryClientCollection());
+		saveCollection(lCollection);
+
+		return lCollection;
 	}
 
 	@Override

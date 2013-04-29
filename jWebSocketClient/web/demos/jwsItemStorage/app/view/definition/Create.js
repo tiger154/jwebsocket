@@ -65,8 +65,7 @@ Ext.define('IS.view.definition.Create', {
 				xtype: 'textfield',
 				name : 'itemType',
 				fieldLabel: 'Type name',
-				maskRe: /^[a-zA-Z0-9]/,
-				regex: /^[a-zA-Z]+([a-zA-Z0-9]+)*/,
+				regex: /^[a-zA-Z0-9]+([.]([a-zA-Z])+)*/,
 				allowBlank: false,
 				tooltip: 'The type name attribute should be unique and it acts as the definition identifier. It is like a database entity name.'
 			}, {

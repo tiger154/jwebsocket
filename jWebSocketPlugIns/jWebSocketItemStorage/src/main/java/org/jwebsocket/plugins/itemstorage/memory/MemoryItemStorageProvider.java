@@ -23,8 +23,7 @@ public class MemoryItemStorageProvider implements IItemStorageProvider {
 
 	@Override
 	public IItemStorage getItemStorage(String aName, String aType) throws Exception {
-		Assert.isTrue(aName.matches(ItemCollection.COLLECTION_NAME_REGEXP),
-				"The storage name cannot be null!");
+		Assert.notNull(aName, "The storage name cannot be null!");
 		Assert.notNull(aType, "The storage type cannot be null!");
 
 		boolean lIsNew = false;

@@ -19,8 +19,8 @@ public class ItemDefinition implements IItemDefinition {
 	public static final String ATTR_PK = "pk_attr";
 	public static final String ATTR_ATTR_TYPES = "attr_types";
 	private Map<String, Object> mData = new FastMap<String, Object>().shared();
-	public static final String ITEM_TYPE_REGEXP = "^[a-zA-Z]+([a-zA-Z0-9]+)*";
-	public static final String ATTR_NAME_REGEXP = ITEM_TYPE_REGEXP;
+	public static final String ITEM_TYPE_REGEXP = "^[a-zA-Z0-9]+([.]([a-zA-Z])+)*";
+	public static final String ATTR_NAME_REGEXP = "^[a-zA-Z]+([a-zA-Z0-9]+)*";
 
 	public ItemDefinition() {
 		// setting attribute types map to avoid possible 

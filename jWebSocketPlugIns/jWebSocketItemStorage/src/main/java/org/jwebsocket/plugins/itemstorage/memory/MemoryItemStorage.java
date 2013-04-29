@@ -1,13 +1,13 @@
 package org.jwebsocket.plugins.itemstorage.memory;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-import javolution.util.FastSet;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
 import org.jwebsocket.plugins.itemstorage.api.IItemDefinition;
 import org.jwebsocket.plugins.itemstorage.api.IItemFactory;
@@ -42,14 +42,14 @@ public class MemoryItemStorage extends BaseItemStorage {
 	}
 
 	public static Map<String, FastList> getContainer() {
-		if (null == mContainer){
+		if (null == mContainer) {
 			mContainer = new FastMap<String, FastList>().shared();
 		}
 		return mContainer;
 	}
-	
+
 	public static Map<String, String> getTypes() {
-		if (null == mTypes){
+		if (null == mTypes) {
 			mTypes = new FastMap<String, String>().shared();
 		}
 		return mTypes;
@@ -57,13 +57,13 @@ public class MemoryItemStorage extends BaseItemStorage {
 
 	@Override
 	public Set<String> getPKs() throws Exception {
-		FastSet<String> lPKs = new FastSet<String>();
+		HashSet<String> lSet = new HashSet<String>();
 		for (Iterator<IItem> lIt = mData.iterator(); lIt.hasNext();) {
 			IItem lItem = lIt.next();
-			lPKs.add(lItem.getPK());
+			lSet.add(lItem.getPK());
 		}
 
-		return lPKs;
+		return lSet;
 	}
 
 	@Override
@@ -103,13 +103,19 @@ public class MemoryItemStorage extends BaseItemStorage {
 
 	@Override
 	public List<IItem> list(int aOffset, int aLength) throws Exception {
+		List<IItem> lList = new LinkedList<IItem>();
+
 		Assert.notNull(aOffset, "The offset argument cannot be null!");
 		Assert.notNull(aLength, "The length argument cannot be null!");
 		Assert.isTrue(aOffset >= 0 && aOffset <= size(),
 				"Index out of bound!");
+
+		// breaking if the collection is empty
+		if (0 == size()) {
+			return lList;
+		}
 		Assert.isTrue(aLength > 0, "Invalid length value. Expected: length > 0!");
 
-		FastList<IItem> lList = new FastList<IItem>();
 		try {
 			while (aLength > 0) {
 				lList.add(mData.get(aOffset++));
@@ -137,6 +143,8 @@ public class MemoryItemStorage extends BaseItemStorage {
 	@Override
 	public List<IItem> find(String aAttribute, Object aValue, int aOffset, int aLength) throws Exception {
 		IItemDefinition lDef = mItemFactory.getDefinition(mType);
+		List<IItem> lList = new LinkedList<IItem>();
+
 		Assert.isTrue(lDef.containsAttribute(aAttribute),
 				"The atribute '" + aAttribute + "' does not exists on item of type '" + mType + "'!");
 
@@ -144,10 +152,14 @@ public class MemoryItemStorage extends BaseItemStorage {
 		Assert.notNull(aLength, "The length argument cannot be null!");
 		Assert.isTrue(aOffset >= 0 && aOffset <= size(),
 				"Index out of bound!");
+
+		// breaking if the collection is empty
+		if (0 == size()) {
+			return lList;
+		}
 		Assert.isTrue(aLength > 0, "Invalid length value. Expected: length > 0!");
 
 		int lIndex = 0;
-		List<IItem> lFound = new FastList<IItem>();
 		try {
 			while (aLength > 0) {
 				boolean lMatch = false;
@@ -164,13 +176,13 @@ public class MemoryItemStorage extends BaseItemStorage {
 					if (lAttrValue.toString().matches((String) aValue)) {
 						lMatch = true;
 					}
-				} else if (lAttrValue.equals(aValue)) {
+				} else if (aValue.equals(lAttrValue)) {
 					// if objects use equals
 					lMatch = true;
 				}
 
 				if (lMatch) {
-					lFound.add(mData.get(lIndex));
+					lList.add(mData.get(lIndex));
 					aLength--;
 				}
 
@@ -180,7 +192,7 @@ public class MemoryItemStorage extends BaseItemStorage {
 			// this exception is expected ;)
 		}
 
-		return lFound;
+		return lList;
 	}
 
 	@Override
@@ -208,7 +220,7 @@ public class MemoryItemStorage extends BaseItemStorage {
 					if (lAttrValue.toString().matches((String) aValue)) {
 						lMatch = true;
 					}
-				} else if (lAttrValue.equals(aValue)) {
+				} else if (aValue.equals(lAttrValue)) {
 					// if objects use equals
 					lMatch = true;
 				}
