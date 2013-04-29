@@ -1196,7 +1196,7 @@
 			<name>org.jwebsocket.plugins.system.SystemPlugIn</name>
 			<ns>org.jwebsocket.plugins.system</ns>
 			<id>jws.system</id>
-         <jar>jWebSocketServer-1.0.jar</jar>
+            <jar>jWebSocketServer-1.0.jar</jar>
 			<!-- plug-in specific settings -->
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/SystemPlugIn/system.xml</setting>
@@ -1641,7 +1641,7 @@
 		</plugin>
 		
 		<!-- Monitoring plugin -->
-<!--		<plugin>
+		<!--		<plugin>
 			<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
 			<id>MonitoringPlugIn</id>
 			<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>
@@ -1886,8 +1886,22 @@
 			</server-assignments>
 		</filter>
 		
+		<!--this filter enabled the timeout of authentication mechanism for the UserAdmin plugIn -->
+		<filter>
+			<name>org.jwebsocket.enterprise.plugins.useradmin.AuthenticationFilter</name>
+			<id>jws.authenticationFilter</id>
+			<ns>org.jwebsocket.enterprise.plugins.useradmin</ns>
+			<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketUserAdminPlugInEE-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="pass_failures_allowed">3</setting>
+			</settings>
+		</filter>
+
 		<!-- this filter is required to capture all events for the monitoring plug-in -->
-<!--		<filter>
+		<!--		<filter>
 			<name>org.jwebsocket.filters.monitoring.MonitoringFilter</name>
 			<id>jws.monitoringFilter</id>
 			<ns>org.jwebsocket.plugins.monitoring</ns>
