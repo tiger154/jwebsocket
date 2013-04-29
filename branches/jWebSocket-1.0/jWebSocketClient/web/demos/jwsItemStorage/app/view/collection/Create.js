@@ -15,8 +15,7 @@ Ext.define('IS.view.collection.Create', {
 				xtype: 'textfield',
 				name : 'collectionName',
 				fieldLabel: 'Name',
-				maskRe: /^[a-zA-Z0-9_-]/,
-				regex: /^[a-zA-Z0-9]+(.[_a-zA-Z0-9-]+)*/,
+				regex: /^[a-zA-Z0-9]+([.]([a-zA-Z])+)*/,
 				allowBlank: false,
 				tooltip: 'The collection name attribute should be unique and it acts as the collection identifier.'
 			}, {

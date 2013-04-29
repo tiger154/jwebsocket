@@ -26,8 +26,6 @@ Ext.define('IS.view.collection.Edit', {
 				xtype: 'textfield',
 				name : 'collectionName',
 				fieldLabel: 'Name',
-				maskRe: /^[a-zA-Z0-9_-]/,
-				regex: /^[a-zA-Z0-9]+(.[_a-zA-Z0-9-]+)*/,
 				allowBlank: false,
 				disabled: true,
 				tooltip: 'The collection name attribute should be unique and it acts as the collection identifier.'
@@ -35,8 +33,6 @@ Ext.define('IS.view.collection.Edit', {
 				xtype: 'textfield',
 				name : 'type',
 				fieldLabel: 'Item type',
-				maskRe: /^[a-zA-Z0-9]/,
-				regex: /^[a-zA-Z]+([a-zA-Z0-9]+)*/,
 				allowBlank: false,
 				disabled: true,
 				tooltip: 'The item type collection attribute, refers the definition(class) of the items that the collection will hold. Example: contact.'

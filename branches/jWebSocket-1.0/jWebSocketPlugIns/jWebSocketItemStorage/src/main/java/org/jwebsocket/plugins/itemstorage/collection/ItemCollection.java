@@ -30,7 +30,7 @@ public class ItemCollection implements IItemCollection {
 	public static final String ATTR_OWNER = "owner";
 	public static final String ATTR_CAPACITY = "capacity";
 	public static final String ATTR_CAPPED = "capped";
-	public static final String COLLECTION_NAME_REGEXP = "^[a-zA-Z0-9]+(.[_a-zA-Z0-9-]+)*";
+	public static final String COLLECTION_NAME_REGEXP = "^[a-zA-Z0-9]+([.]([a-zA-Z])+)*";
 	public static final Integer MAX_PASSWORD_SIZE = 100;
 	private IClientCollection mSubscribers;
 	private IClientCollection mPublishers;

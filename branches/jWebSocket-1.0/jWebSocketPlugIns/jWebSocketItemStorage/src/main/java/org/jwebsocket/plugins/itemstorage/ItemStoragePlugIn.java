@@ -438,7 +438,6 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 		Assert.isTrue(!mCollectionProvider.collectionExists(lCollectionName),
 				"A collection with the same name already exists!");
-
 		IItemCollection lCollection = mCollectionProvider.getCollection(lCollectionName, lType);
 		lCollection.setAccessPassword(lAccessPassword);
 		lCollection.setSecretPassword(lSecretPassword);

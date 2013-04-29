@@ -42,11 +42,6 @@ public class ActionPlugIn extends TokenPlugIn {
 	 */
 	public ActionPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
-
-		// give a success message to the administrator
-		if (mLog.isInfoEnabled()) {
-			mLog.info(this.getClass().getSimpleName() + " plug-in successfully instantiated.");
-		}
 	}
 
 	@Override
