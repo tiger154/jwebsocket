@@ -54,7 +54,7 @@ jws.tests.Channels = {
 
 	// this spec tests the unsubscribe method of the Channels plug-in
 	testUnsubscribe: function( aChannelName ) {
-		var lSpec = this.NS + ": Unsubscribe (publicA)";
+		var lSpec = this.NS + ": unsubscribe (" + aChannelName + ")";
 		
 		it( lSpec, function () {
 			var lResponse = {};
