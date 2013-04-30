@@ -64,6 +64,9 @@
 				<entry key="channel:jWebSocketVideoStreamingDemo">
 					<value>{state:"STARTED",owner:"root",name:"Video Streaming Demo" ,isPrivate:false,isSystem:true, access_key:"stream",secret_key:"5tr34m53cr3t!",token_server:"ts0"}</value>
 				</entry>
+				<entry key="channel:jWebSocketSharedCanvasDemo">
+					<value>{state:"STARTED",owner:"root",name:"Shared Canvas Demo" ,isPrivate:false,isSystem:true, access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
+				</entry>
 			</map>
 		</constructor-arg>	
 		<constructor-arg ref="storageProvider"/>
