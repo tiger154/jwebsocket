@@ -71,12 +71,26 @@ public class TomcatServlet extends WebSocketServlet {
 				mLog.debug("Servlet successfully initialized.");
 			}
 		} else {
-			String lErrMsg = "Request received during the jWebSocket server startup process. "
-					+ "Request cannot be processed!";
+			if (!mServerStartupTimeoutConsumed) {
+				try {
+					// waiting 3 seconds for the server startup
+					log("The request has been paused because the jWebSocket server is not started."
+							+ " Waiting for 3 seconds the jWebSocket server startup...");
+					Thread.sleep(3000);
+				} catch (Exception lEx) {
+					throw new ServletException(lEx);
+				}
+				mServerStartupTimeoutConsumed = true;
+				init();
+			}
+
+			String lErrMsg = "The jWebSocket server startup is taking too long or has failed. "
+					+ "Request cannot be processed in this moment!";
 			log(lErrMsg);
 			throw new ServletException(lErrMsg);
 		}
 	}
+	boolean mServerStartupTimeoutConsumed = false;
 
 	/**
 	 *
