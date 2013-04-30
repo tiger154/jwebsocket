@@ -36,13 +36,15 @@
 		<!-- JQUERY DEPENDENCIES -->
 		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
 		<script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
 		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
 		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
-		<script type="text/javascript" src="../../lib/jQuery/jws-plugin-1.0.js"></script>
-		
+		<script type="text/javascript" src="../../res/js/jwsChannelPlugIn.js"></script>
+		<script type="text/javascript" src="../../res/js/widgets/wAuth.js"></script>
+
 		<script type="text/javascript" src="js/jwsCanvasPlugIn.js"></script>
-		
+
 		<!--  PRIVATE WIDGETS  -->
 		<script type="text/javascript" src='js/wSwitcher.js'></script>
 		<script type="text/javascript" src='js/wImage.js'></script>
@@ -51,7 +53,7 @@
 		<!--  MAIN JAVASCRIPT FILE   -->
 		<script type="text/javascript" src='js/init.js'></script>
 	</head>
-	<body onunload="w.switcher.exitPage">
+	<body>
 		<div id="clients">
 			<div class="header">
 				<div id="tabs_shared_color">
@@ -65,15 +67,15 @@
 			<div id="paint_area">
 				<div class="desc_text">Choose a color to paint on the canvas.</div>
 				<div id="color_fields">
-					<div id="color_blue"     class="color_blue">        </div>
-					<div id="color_green"    class="color_green">       </div>
-					<div id="color_red"      class="color_red">         </div>
-					<div id="color_yellow"   class="color_yellow">      </div>
-					<div id="color_orange"   class="color_orange">      </div>
-					<div id="color_darkblue" class="color_darkblue">    </div>
-					<div id="color_purple"   class="color_purple">      </div>
-					<div id="color_gray"     class="color_gray">        </div>
-					<div id="color_black"    class="color_black">       </div>
+					<div id="color_blue"></div>
+					<div id="color_green"></div>
+					<div id="color_red"></div>
+					<div id="color_yellow"></div>
+					<div id="color_orange"></div>
+					<div id="color_darkblue"></div>
+					<div id="color_purple"></div>
+					<div id="color_gray"></div>
+					<div id="color_black"></div>
 				</div>				
 				<canvas id="paint_canvas" width="320" height="170"></canvas>
 				<div class="buttons_container">
@@ -95,7 +97,9 @@
 				</div>
 				<canvas id="image_canvas" width="320" height="170"></canvas>
 				<div class="buttons_container">
-					<div id="clear_image" class="button">Clear</div>
+					<div id="clear_image" class="button" title="Clear all canvas and history">Clear</div>
+					<div id="undo" class="button" title="Undo in history"><div class="undo"></div></div>
+					<div id="redo" class="button" title="Redo in history"><div class="redo"></div></div>
 				</div>
 			</div>
 		</div>
