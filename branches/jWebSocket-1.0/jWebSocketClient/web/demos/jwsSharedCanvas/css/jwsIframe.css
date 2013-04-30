@@ -5,8 +5,30 @@
 }
 
 .buttons_container{
+	margin: auto;
+	width: 20%;
+}
+#image_area .buttons_container{
+	width: 40%;
+}
+
+#image_area .buttons_container .button#redo .btn_center, #image_area .buttons_container .button#undo .btn_center{
+	padding-left: 0px;
+	padding-right: 3px;
+}
+
+#image_area .buttons_container .button#redo .btn_center .redo{
 	float: left;
-	padding: 5px 0 0 145px;
+	width: 12px;
+	height: 18px;
+	background: url(images/redo.png) no-repeat;
+}
+
+#image_area .buttons_container .button#undo .btn_center .undo{
+	float: left;
+	width: 12px;
+	height: 18px;
+	background: url(images/undo.png) no-repeat;
 }
 
 /* STATUSBAR */

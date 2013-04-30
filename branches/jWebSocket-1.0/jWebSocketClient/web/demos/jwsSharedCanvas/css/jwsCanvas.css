@@ -24,7 +24,7 @@
 iframe{
 	border: none;
 	width: 330px;
-	height: 300px;
+	height: 330px;
 	float: left;
 	margin-left: 10px;
 }
@@ -32,4 +32,9 @@ iframe{
 #iframes.target{
 	float: left;
 	width: 200px;
+}
+
+#demo_box_footer{
+	margin-top: -15px;
+	padding-bottom: 10px;
 }
