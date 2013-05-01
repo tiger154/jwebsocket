@@ -72,7 +72,7 @@ $.widget( "jws.gaming", {
 	registerEvents: function() {
 		$( document ).keydown( w.gaming.processKeyDown );
 		// Registering mousemove of the playground
-		$( w.gaming.ePlayGround ).mousemove( w.gaming.playGroundMouseMove );
+		//		$( w.gaming.ePlayGround ).mousemove( w.gaming.playGroundMouseMove );
 		w.gaming.eMoveRandom.click(function(aCheck, aState){
 			if( $(this).get(0).checked ) {
 				w.gaming.startMovingRandom();
@@ -173,20 +173,6 @@ $.widget( "jws.gaming", {
 	publish: function( aData, aMessage ) {
 		mWSC.channelPublish( w.gaming.mChannelId, aMessage || "jws-gaming", aData );
 	},
-	playGroundMouseMove: function() {
-		var lClient = $( '.ui-draggable-dragging' );
-		// If the element is been dragged
-		if ( lClient.get( 0 ) ) {
-			var lTop = lClient.css( "top" );
-			var lLeft = lClient.css( "left" );
-			w.gaming.mPlayer.loc_x = parseInt( lLeft.substr( 0, lLeft.length - 1 ) );
-			w.gaming.mPlayer.loc_y = parseInt( lTop.substr( 0, lTop.length - 1 ) );
-
-			w.gaming.notifyMovement( w.gaming.mAuthenticatedUser,
-				w.gaming.mPlayer.loc_x,
-				w.gaming.mPlayer.loc_y );
-		}
-	},
 	startMovingRandom: function() {
 		// return if not (yet) connected
 		if ( !mWSC.isLoggedIn() ) {
@@ -235,6 +221,7 @@ $.widget( "jws.gaming", {
 		var lPlusMinus = (w.gaming.getRandomNumber( 2 ) >= 1 ) ? "+" : "-",
 		lNextX = w.gaming.getRandomNumber( aSpeed + 30 ),
 		lNextY = w.gaming.getRandomNumber( aSpeed + 10 );
+		
 		if( lPlusMinus == "+" ) {
 			w.gaming.mPlayer.loc_x += lNextX;
 			w.gaming.mPlayer.loc_y += lNextY;
@@ -245,6 +232,25 @@ $.widget( "jws.gaming", {
 			if( w.gaming.mPlayer.loc_y - lNextY > 0 ) {
 				w.gaming.mPlayer.loc_y -= lNextY;
 			}
+		}
+		
+		var lPlaygroundWidth = w.gaming.ePlayGround.width() - 80;
+		var lPlaygroundHeight = w.gaming.ePlayGround.height() - 60;
+		if( w.gaming.mPlayer.loc_y <= 0 ){
+			w.gaming.mPlayer.loc_y = 1;
+			return false;
+		}
+		if( w.gaming.mPlayer.loc_y > lPlaygroundHeight ) {
+			w.gaming.mPlayer.loc_y = lPlaygroundHeight;
+			return false;
+		}
+		if( w.gaming.mPlayer.loc_x <= 0 ){
+			w.gaming.mPlayer.loc_x = 1;
+			return false;
+		}
+		if( w.gaming.mPlayer.loc_x > lPlaygroundWidth ) {
+			w.gaming.mPlayer.loc_x = lPlaygroundWidth;
+			return false;
 		}
 
 		w.gaming.notifyMovement( w.gaming.mAuthenticatedUser,
@@ -326,6 +332,25 @@ $.widget( "jws.gaming", {
 			default:
 				return;
 		}
+		var lPlaygroundWidth = w.gaming.ePlayGround.width() - 70;
+		var lPlaygroundHeight = w.gaming.ePlayGround.height() - 50;
+		if( w.gaming.mPlayer.loc_y <= 0 ){
+			w.gaming.mPlayer.loc_y = 1;
+			return false;
+		}
+		if( w.gaming.mPlayer.loc_y > lPlaygroundHeight ) {
+			w.gaming.mPlayer.loc_y = lPlaygroundHeight;
+			return false;
+		}
+		if( w.gaming.mPlayer.loc_x <= 0 ){
+			w.gaming.mPlayer.loc_x = 1;
+			return false;
+		}
+		if( w.gaming.mPlayer.loc_x > lPlaygroundWidth ) {
+			w.gaming.mPlayer.loc_x = lPlaygroundWidth;
+			return false;
+		}
+		
 		w.gaming.notifyMovement( w.gaming.mAuthenticatedUser,
 			w.gaming.mPlayer.loc_x,
 			w.gaming.mPlayer.loc_y );
@@ -366,7 +391,54 @@ $.widget( "jws.gaming", {
 			} );
 
 			// jQuery-ui method, enables dragging an element
-			lPlayer.draggable();
+			lPlayer.draggable({
+				drag: function(event, ui) {
+					var lClient = $( '.ui-draggable-dragging' );
+					// If the element is been dragged
+					if ( lClient.get( 0 ) ) {
+						var lTop = lClient.css( "top" );
+						var lLeft = lClient.css( "left" );
+						
+						w.gaming.mPlayer.loc_x = parseInt( lLeft.substr( 0, lLeft.length - 1 ) );
+						w.gaming.mPlayer.loc_y = parseInt( lTop.substr( 0, lTop.length - 1 ) );
+						if( w.gaming.mPlayer.loc_y <= 0 ) {
+							w.gaming.mPlayer.loc_y = 1;
+							lClient.css({
+								top: "1px"
+							});
+							return false;
+						} 
+						if( w.gaming.mPlayer.loc_x <= 0 ) {
+							w.gaming.mPlayer.loc_x = 1;
+							lClient.css({
+								left: "1px"
+							});
+							return false;
+						}
+						var lPlaygroundWidth = w.gaming.ePlayGround.width() - lClient.width() - 30;
+						var lPlaygroundHeight = w.gaming.ePlayGround.height() - lClient.height() - 45;
+						
+						if(w.gaming.mPlayer.loc_y > lPlaygroundHeight ) {
+							w.gaming.mPlayer.loc_y = lPlaygroundHeight;
+							lClient.css({
+								top: lPlaygroundHeight+ "px"
+							});
+							return false;
+						}
+						
+						if(w.gaming.mPlayer.loc_x > lPlaygroundWidth ) {
+							w.gaming.mPlayer.loc_y = lPlaygroundWidth;
+							lClient.css({
+								left: lPlaygroundWidth+ "px"
+							});
+							return false;
+						}
+						w.gaming.notifyMovement( w.gaming.mAuthenticatedUser,
+							lLeft,
+							lTop );
+					}
+				}
+			});
 
 			// Add the user in a random location in the playGround
 			w.gaming.ePlayGround.append( lPlayer );
@@ -379,6 +451,7 @@ $.widget( "jws.gaming", {
 			w.gaming.eTotalGreen.text( parseInt( w.gaming.eTotalGreen.text() ) + 1 );
 		}
 	},
+
 	notifyMovement: function( aClientId, aX, aY ) {
 		if ( mWSC.isConnected() ) {
 			var lData = {
@@ -416,12 +489,12 @@ $.widget( "jws.gaming", {
 
 					var lWidth = w.gaming.mOnlineClients[ aClientId ].get( 0 ).width;
 					lWidth = (lWidth) ? lWidth.substr( 0, lWidth.length ) : 65;
-
-					w.gaming.ePlayGround.scrollTop( eval( aY + lHeight ) -
-						w.gaming.ePlayGround.get( 0 ).clientHeight );
-
-					w.gaming.ePlayGround.scrollLeft( eval( aX + lWidth ) -
-						w.gaming.ePlayGround.get( 0 ).clientWidth );
+				
+				//				w.gaming.ePlayGround.scrollTop( eval( aY + lHeight ) -
+				//					w.gaming.ePlayGround.get( 0 ).clientHeight );
+				//
+				//				w.gaming.ePlayGround.scrollLeft( eval( aX + lWidth ) -
+				//					w.gaming.ePlayGround.get( 0 ).clientWidth );
 				}
 			} );
 		}

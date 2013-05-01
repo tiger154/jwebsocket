@@ -74,10 +74,10 @@
 }
 
 .player{
-	width: 65px;
+	width: 50px;
 	position: absolute;
-	padding: 59px 0 0 0;
-	font-size: 9px;
+	padding: 40px 0 0 0;
+	font-size: 7pt;
 	text-align: center;
 	height: 20px;
 }
