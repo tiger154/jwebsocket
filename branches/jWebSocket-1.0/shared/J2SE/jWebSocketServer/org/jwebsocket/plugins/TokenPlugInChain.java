@@ -108,7 +108,7 @@ public class TokenPlugInChain extends BasePlugInChain {
 								+ ((TokenPlugIn) lPlugIn).getNamespace() + "') "
 								+ lEx.getClass().getSimpleName() + ": "
 								+ lEx.getMessage()
-								+ ", token: " + aToken.toString());
+								+ ", token: " + aToken.getLogString());
 					}
 					if (lPlugInResponse.isChainAborted()) {
 						break;
