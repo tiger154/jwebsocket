@@ -85,10 +85,12 @@
 .green_player{
     background: url(images/green.png) no-repeat 10px 0;
 	cursor: pointer;
+	z-index: 1;
 }
 
 .red_player{
     background: url(images/red.png) no-repeat 10px 0;
+	z-index: 0;
 }
 
 #amount_of_players{
