@@ -109,6 +109,7 @@ public class ActionPlugIn extends TokenPlugIn {
 						+ " class...");
 			}
 			Token lResponse = getServer().createErrorToken(aToken, -1, lExMsg);
+			lResponse.setString("exception", lExClass);
 			sendToken(aConnector, lResponse);
 		}
 	}
