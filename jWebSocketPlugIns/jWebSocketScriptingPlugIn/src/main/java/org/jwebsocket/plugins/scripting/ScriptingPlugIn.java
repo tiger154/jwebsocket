@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javolution.util.FastMap;
@@ -56,11 +55,7 @@ import org.springframework.util.Assert;
 public class ScriptingPlugIn extends ActionPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
-	/**
-	 * Namespace for scripting plug-in.
-	 */
-	public static final String NS =
-			JWebSocketServerConstants.NS_BASE + ".plugins.scripting";
+	public static final String NS = JWebSocketServerConstants.NS_BASE + ".plugins.scripting";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket ScriptingPlugIn";
@@ -71,8 +66,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	/**
 	 *
 	 */
-	private Map<String, ScriptEngine> mApps = new FastMap<String, ScriptEngine>().shared();
-	private Map<String, BaseScriptApp> mAppsContext = new FastMap<String, BaseScriptApp>().shared();
+	private Map<String, BaseScriptApp> mApps = new FastMap<String, BaseScriptApp>().shared();
 	/**
 	 *
 	 */
@@ -156,8 +150,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	/**
 	 * Loads a JavaScript application
 	 *
-	 * @param aApp The app name
-	 * @param aFilePath The app home path
+	 * @param aApp The application name
+	 * @param aFilePath The application home path
 	 * @throws Exception
 	 */
 	public final void loadApp(String aApp, String aFilePath) throws Exception {
@@ -165,27 +159,31 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		String lApp = lAppNameExt[0];
 		String lExt = (lAppNameExt.length == 2) ? lAppNameExt[1] : "js";
 
-		File lMain = new File(Tools.expandEnvVarsAndProps(aFilePath) + "/App." + lExt);
-		if (!lMain.exists()) {
-			mLog.error("Unable to load '" + lApp + "' application. The file '" + lMain + "' does not exists!");
+		File lBootstrap = new File(Tools.expandEnvVarsAndProps(aFilePath) + "/App." + lExt);
+		if (!lBootstrap.exists()) {
+			mLog.error("Unable to load '" + lApp + "' application. The bootstrap file '" + lBootstrap + "' does not exists!");
 			return;
 		}
 
-		String lFile = FileUtils.readFileToString(lMain);
-		ScriptEngine lScriptApp = mEngineManager.getEngineByExtension(lExt);
-		mApps.put(lApp, lScriptApp);
+		ScriptEngine lScriptApp;
+		if ("js".equals(lExt)) {
+			// making "nashorn" the default engine for JavaScript
+			lScriptApp = mEngineManager.getEngineByName("nashorn");
+			if (null == lScriptApp) {
+				lScriptApp = mEngineManager.getEngineByExtension(lExt);
+			}
+		} else {
+			lScriptApp = mEngineManager.getEngineByExtension(lExt);
+		}
 
 		if ("js".equals(lExt)) {
-			mAppsContext.put(lApp, new JavaScriptApp(this, lApp, aFilePath, lScriptApp));
+			mApps.put(lApp, new JavaScriptApp(this, lApp, aFilePath, lScriptApp));
 		} else {
 			throw new UnsupportedOperationException("The extension '" + lExt + "' is not supported for script applications!");
 		}
 
-		lScriptApp.put("App", mAppsContext.get(lApp));
-		lScriptApp.put("logger", mAppsContext.get(lApp).getLogger());
-
 		// loading app
-		lScriptApp.eval(lFile);
+		lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(lApp + "(" + lExt + ") application loaded successfully!");
@@ -199,7 +197,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aEngine);
 
-		for (BaseScriptApp lApp : mAppsContext.values()) {
+		for (BaseScriptApp lApp : mApps.values()) {
 			lApp.notifyEvent(BaseScriptApp.EVENT_ENGINE_STARTED, aArgs.toArray());
 		}
 	}
@@ -209,7 +207,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aEngine);
 
-		for (BaseScriptApp lApp : mAppsContext.values()) {
+		for (BaseScriptApp lApp : mApps.values()) {
 			lApp.notifyEvent(BaseScriptApp.EVENT_ENGINE_STOPPED, aArgs.toArray());
 		}
 	}
@@ -219,7 +217,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
 
-		for (BaseScriptApp lApp : mAppsContext.values()) {
+		for (BaseScriptApp lApp : mApps.values()) {
 			lApp.notifyEvent(BaseScriptApp.EVENT_LOGON, aArgs.toArray());
 		}
 	}
@@ -229,7 +227,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
 
-		for (BaseScriptApp lApp : mAppsContext.values()) {
+		for (BaseScriptApp lApp : mApps.values()) {
 			lApp.notifyEvent(BaseScriptApp.EVENT_LOGOFF, aArgs.toArray());
 		}
 	}
@@ -239,7 +237,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
 
-		for (BaseScriptApp lApp : mAppsContext.values()) {
+		for (BaseScriptApp lApp : mApps.values()) {
 			lApp.notifyEvent(BaseScriptApp.EVENT_CONNECTOR_STARTED, aArgs.toArray());
 		}
 	}
@@ -250,7 +248,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		aArgs.add(aConnector);
 		aArgs.add(aCloseReason);
 
-		for (BaseScriptApp lApp : mAppsContext.values()) {
+		for (BaseScriptApp lApp : mApps.values()) {
 			lApp.notifyEvent(BaseScriptApp.EVENT_CONNECTOR_STOPPED, aArgs.toArray());
 		}
 	}
@@ -261,7 +259,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		aArgs.add(aConnector);
 
 
-		for (BaseScriptApp lApp : mAppsContext.values()) {
+		for (BaseScriptApp lApp : mApps.values()) {
 			lApp.notifyEvent(BaseScriptApp.EVENT_SESSION_STARTED, aArgs.toArray());
 		}
 	}
@@ -271,7 +269,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aSession);
 
-		for (BaseScriptApp lApp : mAppsContext.values()) {
+		for (BaseScriptApp lApp : mApps.values()) {
 			lApp.notifyEvent(BaseScriptApp.EVENT_SESSION_STOPPED, aArgs.toArray());
 		}
 	}
@@ -285,8 +283,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		aArgs.add(aConnector);
 		aArgs.add(aToken.getMap());
 
-		mAppsContext.get(lApp).notifyEvent(BaseScriptApp.EVENT_FILTER_IN, aArgs.toArray());
-		mAppsContext.get(lApp).notifyEvent(BaseScriptApp.EVENT_TOKEN, aArgs.toArray());
+		mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_FILTER_IN, aArgs.toArray());
+		mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_TOKEN, aArgs.toArray());
 	}
 
 	@Role(name = NS + ".reloadApp")
@@ -307,10 +305,13 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		String aMethod = aToken.getString("method");
 		List<Object> aArgs = aToken.getList("args", new ArrayList());
 		aArgs.add(aConnector);
+		long lStartTime = System.currentTimeMillis();
 		Object lResult = callMethod(aApp, aObjectId, aMethod, aArgs.toArray());
+		long lEndTime = System.currentTimeMillis();
 
 		Token lResponse = createResponse(aToken);
 		lResponse.getMap().put("result", lResult);
+		lResponse.getMap().put("processingTime", lEndTime - lStartTime);
 
 		sendToken(aConnector, lResponse);
 	}
@@ -330,15 +331,10 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		Assert.notNull(aObjectId, "The 'objectId' argument cannot be null!");
 		Assert.notNull(aMethod, "The 'method' argument cannot be null!");
 
-		ScriptEngine lApp = mApps.get(aApp);
+		BaseScriptApp lApp = mApps.get(aApp);
 		Assert.notNull(lApp, "The target app does not exists!");
 
-		Assert.isTrue(mAppsContext.get(aApp).isPublished(aObjectId), "The target object '" + aObjectId + "' is not yet published!");
-		Object lObject = mAppsContext.get(aApp).getPublished(aObjectId);
-
-		Invocable lScript = (Invocable) lApp;
-		Object lRes = lScript.invokeMethod(lObject, aMethod, aArgs);
-
+		Object lRes = lApp.callMethod(aObjectId, aMethod, aArgs);
 		return lRes;
 	}
 }

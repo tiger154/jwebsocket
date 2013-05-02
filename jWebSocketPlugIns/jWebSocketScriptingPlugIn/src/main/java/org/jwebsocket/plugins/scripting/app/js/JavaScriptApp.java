@@ -18,12 +18,16 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.scripting.app.js;
 
+import java.io.File;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
 import org.jwebsocket.plugins.scripting.app.BaseScriptApp;
+import org.springframework.util.Assert;
 
 /**
  * The object acts as the "app" global object in the JavaScript application
@@ -33,22 +37,22 @@ import org.jwebsocket.plugins.scripting.app.BaseScriptApp;
 public class JavaScriptApp extends BaseScriptApp {
 
 	private Logger mLog = Logging.getLogger();
+	private final Object mApp;
 
 	public JavaScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp) {
 		super(aServer, aAppName, aAppPath, aScriptApp);
 
 		try {
-			// setting function caller hook. DO NOT REMOVE!
-			getScriptApp().eval(""
-					+ "function __fnCallerHook__(aFn, aArgs){"
-					+ "var lArgs = new Array();"
-					+ "for (var i = 0; i < aArgs.length; i++){"
-					+ "lArgs.push(aArgs[i]);"
-					+ "}"
-					+ "aFn.apply(App, lArgs);"
-					+ "};");
+			File lAppTemplate = new File(JWebSocketConfig.getConfigFolder("ScriptingPlugIn/js/AppTemplate.js"));
+			if (!lAppTemplate.exists()) {
+				throw new RuntimeException("The JavaScript application template does not exists in expected location: "
+						+ lAppTemplate.getPath() + "!");
+			}
+			// loading app
+			aScriptApp.eval(FileUtils.readFileToString(lAppTemplate));
+			mApp = aScriptApp.get("App");
 		} catch (Exception lEx) {
-			// never happens
+			throw new RuntimeException(lEx);
 		}
 	}
 
@@ -56,15 +60,21 @@ public class JavaScriptApp extends BaseScriptApp {
 	public void notifyEvent(String aEventName, Object[] aArgs) {
 		mLog.debug("Notifying '" + aEventName + "' event in '" + getName() + "' js app...");
 
-		if (getCallbacks().containsKey(aEventName)) {
-			for (Object lListener : getCallbacks().get(aEventName)) {
-				try {
-					// using javascript function caller
-					((Invocable) getScriptApp()).invokeFunction("__fnCallerHook__", new Object[]{lListener, aArgs});
-				} catch (Exception lEx) {
-					mLog.error(Logging.getSimpleExceptionMessage(lEx, "calling event listener"));
-				}
-			}
+		try {
+			((Invocable) getScriptApp()).invokeMethod(mApp, "notifyEvent", new Object[]{aEventName, aArgs});
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying '" + aEventName + "' event"));
 		}
+	}
+
+	@Override
+	public Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception {
+		Invocable lInvocable = (Invocable) getScriptApp();
+		Boolean lExists = (Boolean) lInvocable.invokeMethod(mApp, "isPublished", new Object[]{aObjectId});
+		Assert.isTrue(lExists, "The object with id ' " + aObjectId + "' is not published!");
+
+		Object lObject = lInvocable.invokeMethod(mApp, "getPublished", new Object[]{aObjectId});
+
+		return lInvocable.invokeMethod(lObject, aMethod, aArgs);
 	}
 }
