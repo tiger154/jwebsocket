@@ -48,11 +48,17 @@ public abstract class BaseToken implements Token {
 	 *
 	 */
 	public static final String CODE = "code";
-	private static FastMap<String, String> mExclFromLogs = null;
+	private static final FastMap<String, String> mExclFromLogs;
 
 	static {
 		mExclFromLogs = new FastMap<String, String>();
 		mExclFromLogs.put("password", "*******");
+		mExclFromLogs.put("secretPassword", "*******");
+		mExclFromLogs.put("accessPassword", "*******");
+		mExclFromLogs.put("newSecretPassword", "*******");
+		mExclFromLogs.put("secretKey", "*******");
+		mExclFromLogs.put("accessKey", "*******");
+		mExclFromLogs.put("newSecretKey", "*******");
 	}
 
 	@Override
