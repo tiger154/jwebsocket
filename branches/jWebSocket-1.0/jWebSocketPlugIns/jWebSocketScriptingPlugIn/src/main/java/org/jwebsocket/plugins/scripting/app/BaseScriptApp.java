@@ -80,6 +80,9 @@ abstract public class BaseScriptApp {
 		mAppPath = aAppPath;
 		mScriptApp = aScriptApp;
 		mLogger = new ScriptAppLogger(mLog, aAppName);
+
+		// registering global "AppUtils" resource
+		aScriptApp.put("AppUtils", this);
 	}
 
 	abstract public void notifyEvent(String aEventName, Object[] aArgs);
@@ -199,7 +202,7 @@ abstract public class BaseScriptApp {
 	}
 
 	public Collection<WebSocketConnector> getAllConnectors() {
-		return mServer.getServer().getAllConnectors().values();
+		return mServer.getServer().selectTokenConnectors().values();
 	}
 
 	public boolean hasAuthority(WebSocketConnector aConnector, String aAuthority) {
@@ -255,4 +258,6 @@ abstract public class BaseScriptApp {
 	public Collection newThreadSafeCollection() {
 		return new FastList().shared();
 	}
+
+	public abstract Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception;
 }
