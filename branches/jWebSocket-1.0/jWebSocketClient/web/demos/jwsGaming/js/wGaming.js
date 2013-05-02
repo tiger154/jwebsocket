@@ -434,8 +434,8 @@ $.widget( "jws.gaming", {
 							return false;
 						}
 						w.gaming.notifyMovement( w.gaming.mAuthenticatedUser,
-							lLeft,
-							lTop );
+							w.gaming.mPlayer.loc_x,
+							w.gaming.mPlayer.loc_y );
 					}
 				}
 			});
