@@ -10,14 +10,14 @@ App.on(["connectorStopped", "logoff"], function(aConnector) {
 
 // register a new app client 
 var lRegister = function(aConnector) {
-	App.logger.debug("Processing register...");
+	App.getLogger().debug("Processing register...");
 
 	// client require "webrtc" role
 	App.requireAuthority(aConnector, lNS + ".register");
 	// registering the client
 	lClients.put(aConnector.getUsername(), aConnector);
 
-	App.broadcast(lClients.getValues(), {
+	App.broadcast(lClients.values(), {
 		type: "event",
 		name: "register",
 		user: aConnector.getUsername()
@@ -26,38 +26,38 @@ var lRegister = function(aConnector) {
 
 // unregister an app client
 var lUnregister = function(aConnector) {
-	App.logger.debug("Processing unregister...");
-	
+	App.getLogger().debug("Processing unregister...");
+
 	var lUsername = aConnector.getUsername();
-	if (null === lUsername){
+	if (null === lUsername) {
 		// client not logged on
 		return;
 	}
-	
+
 	if (lClients.containsKey(aConnector.getUsername())) {
 		// removing the client
 		lClients.remove(aConnector.getUsername());
-	}
 
-	App.broadcast(lClients.getValues(), {
-		type: "event",
-		name: "unregister",
-		user: aConnector.getUsername()
-	});
+		App.broadcast(lClients.values(), {
+			type: "event",
+			name: "unregister",
+			user: aConnector.getUsername()
+		});
+	}
 };
 
 var lGetAppClients = function() {
-	App.logger.debug("Processing get app clients...");
+	App.getLogger().debug("Processing get app clients...");
 
-	return lClients.keySet();
+	return lClients.keySet().toArray();
 };
 
 // process client command to start a WebRTC session with a target client
 var lConnect = function(aTargetUser, aOffer, aConnector) {
-	App.logger.debug("Processing connect...");
+	App.getLogger().debug("Processing connect...");
 
-	App.assertTrue(lClients.constainKey(aConnector.getUsername()), "The client should register first!");
-	App.assertTrue(lClients.constainKey(aTargetUser), "The target client does not exists!");
+	App.assertTrue(lClients.containsKey(aConnector.getUsername()), "The client should register first!");
+	App.assertTrue(lClients.containsKey(aTargetUser), "The target client does not exists!");
 
 	// sending offer
 	App.sendToken(lClients.get(aTargetUser), {
@@ -69,10 +69,10 @@ var lConnect = function(aTargetUser, aOffer, aConnector) {
 
 // process client answer on client WebRTC session request
 var lAcceptConnect = function(aTargetUser, aAnswer, aConnector) {
-	App.logger.debug("Processing accept connect...");
+	App.getLogger().debug("Processing accept connect...");
 
-	App.assertTrue(lClients.constainKey(aConnector.getUsername()), "The client should register first!");
-	App.assertTrue(lClients.constainKey(aTargetUser), "The target client does not exists!");
+	App.assertTrue(lClients.containsKey(aConnector.getUsername()), "The client should register first!");
+	App.assertTrue(lClients.containsKey(aTargetUser), "The target client does not exists!");
 
 	// sending accept
 	App.sendToken(lClients[aTargetUser], {
@@ -84,10 +84,10 @@ var lAcceptConnect = function(aTargetUser, aAnswer, aConnector) {
 
 // stop a previous started WebRTC session with a client
 var lDisconnect = function(aTargetUser, aConnector) {
-	App.logger.debug("Processing disconnect...");
+	App.getLogger().debug("Processing disconnect...");
 
-	App.assertTrue(lClients.constainKey(aConnector.getUsername()), "The client should register first!");
-	App.assertTrue(lClients.constainKey(aTargetUser), "The target client does not exists!");
+	App.assertTrue(lClients.containsKey(aConnector.getUsername()), "The client should register first!");
+	App.assertTrue(lClients.containsKey(aTargetUser), "The target client does not exists!");
 
 	App.sendToken(lClients.get(aTargetUser), {
 		type: "disconnect",
