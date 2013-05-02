@@ -206,7 +206,7 @@ $.widget( "jws.chat", {
 	},
 	sendMessage: function( ) {
 		if( mWSC.isConnected( ) ) {
-			if( w.chat.mOnlineClients.length > 0 ) {
+//			if( w.chat.mOnlineClients.length > 0 ) {
 				var lMessage = w.auth.cleanHTML( w.chat.eMessageBox.val( ) );
 				if( lMessage &&  w.chat.MSG_TYPE_YOUR_MSG != lMessage ) {
 					if( w.chat.mIsPublicActive ) {
@@ -217,10 +217,10 @@ $.widget( "jws.chat", {
 					}
 				}
 				w.chat.eMessageBox.val( "" ).focus( );
-			} else {
-				jwsDialog( w.chat.MSG_NOT_CONNECTED_USERS, 
-					"No users online", true, "alert" );
-			}
+//			} else {
+//				jwsDialog( w.chat.MSG_NOT_CONNECTED_USERS, 
+//					"No users online", true, "alert" );
+//			}
 		} else {
 			jwsDialog( w.chat.MSG_NOT_CONNECTED_JWS, "Not connected", true, 
 				"alert" );
