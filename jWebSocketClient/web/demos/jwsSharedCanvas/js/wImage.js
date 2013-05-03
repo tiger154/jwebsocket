@@ -30,7 +30,7 @@ $.widget( "jws.image", {
 		this.eBtnRedo = this.element.find( "#redo" );
 		this.eCanvas = document.getElementById( "image_canvas" );
 		this.eContext = this.eCanvas.getContext( "2d" );
-
+		this.mActiveImage = 1;
 		this.mCanvasWidth = this.eCanvas.width;
 		this.mCanvasHeight = this.eCanvas.height;
 
@@ -64,7 +64,6 @@ $.widget( "jws.image", {
 	},
 	mouseDownLsnr: function( aEvent ) {
 		aEvent.preventDefault( );
-		//		mWSC.events.preventDefault( aEvent );
 		if ( mWSC.isConnected( ) ) {
 			w.img.isCreatingImage = true;
 
