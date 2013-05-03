@@ -6,10 +6,10 @@
 
 .buttons_container{
 	margin: auto;
-	width: 20%;
+	width: 25%;
 }
 #image_area .buttons_container{
-	width: 40%;
+	width: 45%;
 }
 
 #image_area .buttons_container .button#redo .btn_center, #image_area .buttons_container .button#undo .btn_center{
