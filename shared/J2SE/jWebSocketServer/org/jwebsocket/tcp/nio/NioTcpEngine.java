@@ -31,9 +31,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.engines.BaseEngine;
@@ -45,23 +47,21 @@ import org.jwebsocket.tcp.nio.ssl.NioSSLHandler;
 import org.jwebsocket.util.Tools;
 
 /**
- * <p> Tcp engine that uses java non-blocking io api to bind to listening port
- * and handle incoming/outgoing packets. There's one 'selector' thread that is
- * responsible only for handling socket operations. Therefore, every packet that
- * should be sent will be firstly queued into concurrent queue, which is
- * continuously processed by selector thread. Since the queue is concurrent,
- * there's no blocking and a call to send method will return immediately. </p>
- * <p> All packets that are received from remote clients are processed in
- * separate worker threads. This way it's possible to handle many clients
- * simultaneously with just a few threads. Add more worker threads to handle
- * more clients. </p> <p> Before making any changes to this source, note this:
- * it is highly advisable to read from (or write to) a socket only in selector
- * thread. Ignoring this advice may result in strange consequences (threads
- * locking or spinning, depending on actual scenario). </p>
+ * <p> Tcp engine that uses java non-blocking io api to bind to listening port and handle
+ * incoming/outgoing packets. There's one 'selector' thread that is responsible only for handling
+ * socket operations. Therefore, every packet that should be sent will be firstly queued into
+ * concurrent queue, which is continuously processed by selector thread. Since the queue is
+ * concurrent, there's no blocking and a call to send method will return immediately. </p> <p> All
+ * packets that are received from remote clients are processed in separate worker threads. This way
+ * it's possible to handle many clients simultaneously with just a few threads. Add more worker
+ * threads to handle more clients. </p> <p> Before making any changes to this source, note this: it
+ * is highly advisable to read from (or write to) a socket only in selector thread. Ignoring this
+ * advice may result in strange consequences (threads locking or spinning, depending on actual
+ * scenario). </p>
  *
  * @author jang
- * @author kyberneees (bug fixes, session identifier cookie support, SSL and
- * performance improvements)
+ * @author kyberneees (bug fixes, session identifier cookie support, SSL and performance
+ * improvements)
  */
 public class NioTcpEngine extends BaseEngine {
 
@@ -89,6 +89,7 @@ public class NioTcpEngine extends BaseEngine {
 	private final DelayedPacketsQueue mDelayedPacketsQueue = new DelayedPacketsQueue();
 	private SSLContext mSSLContext;
 	private int mNumWorkers = DEFAULT_NUM_WORKERS;
+	private Map<String, NioTcpConnector> mBeforeHandshareConnectors = new FastMap<String, NioTcpConnector>().shared();
 
 	/**
 	 *
@@ -205,7 +206,7 @@ public class NioTcpEngine extends BaseEngine {
 	public void send(String aConnectorId, DataFuture aFuture) {
 		try {
 			if (mPendingWrites.containsKey(aConnectorId)) {
-				NioTcpConnector lConnector = (NioTcpConnector) getConnectors().get(aConnectorId);
+				NioTcpConnector lConnector = getConnector(aConnectorId);
 				if (lConnector.isSSL()) {
 					lConnector.getSSLHandler().send(aFuture.getData());
 				} else {
@@ -248,8 +249,8 @@ public class NioTcpEngine extends BaseEngine {
 	}
 
 	/**
-	 * Socket operations are permitted only via this thread. Strange behavior
-	 * will occur if anything is done to the socket outside of this thread.
+	 * Socket operations are permitted only via this thread. Strange behavior will occur if anything
+	 * is done to the socket outside of this thread.
 	 */
 	private class SelectorThread implements Runnable {
 
@@ -378,7 +379,7 @@ public class NioTcpEngine extends BaseEngine {
 						this, lSocketChannel.socket().getInetAddress(),
 						lSocketPort);
 
-				getConnectors().put(lConnector.getId(), lConnector);
+				mBeforeHandshareConnectors.put(lConnector.getId(), lConnector);
 				mPendingWrites.put(lConnector.getId(), new ConcurrentLinkedQueue<DataFuture>());
 				mConnectorToChannelMap.put(lConnector.getId(), lSocketChannel);
 				mChannelToConnectorMap.put(lSocketChannel, lConnector.getId());
@@ -428,7 +429,7 @@ public class NioTcpEngine extends BaseEngine {
 		if (lNumRead > 0 && mChannelToConnectorMap.containsKey(lSocketChannel)) {
 			String lConnectorId = mChannelToConnectorMap.get(lSocketChannel);
 			final ReadBean lBean = new ReadBean(lConnectorId, Arrays.copyOf(mReadBuffer.array(), lNumRead));
-			final NioTcpConnector lConnector = (NioTcpConnector) getConnectors().get(lBean.getConnectorId());
+			final NioTcpConnector lConnector = getConnector(lBean.getConnectorId());
 
 			if (lSocketChannel.socket().getLocalPort() == getConfiguration().getSSLPort()) {
 				mDelayedPacketsQueue.addDelayedPacket(new IDelayedSSLPacketNotifier() {
@@ -458,6 +459,14 @@ public class NioTcpEngine extends BaseEngine {
 		}
 	}
 
+	private NioTcpConnector getConnector(String aId) {
+		if (mBeforeHandshareConnectors.containsKey(aId)) {
+			return mBeforeHandshareConnectors.get(aId);
+		} else {
+			return (NioTcpConnector) getConnectors().get(aId);
+		}
+	}
+
 	private void clientDisconnect(SelectionKey aKey) throws IOException {
 		clientDisconnect(aKey, CloseReason.CLIENT);
 	}
@@ -476,11 +485,12 @@ public class NioTcpEngine extends BaseEngine {
 			mPendingWrites.remove(lId);
 			mConnectorToChannelMap.remove(lId);
 
-			WebSocketConnector lConnector = getConnectors().get(lId);
+			WebSocketConnector lConnector = getConnector(lId);
 			if (mDelayedPacketsQueue.getDelayedPackets().containsKey((NioTcpConnector) lConnector)) {
 				mDelayedPacketsQueue.getDelayedPackets().remove((NioTcpConnector) lConnector);
 			}
 
+			lConnector.setStatus(WebSocketConnectorStatus.DOWN);
 			lConnector.stopConnector(aReason);
 		}
 	}
@@ -588,6 +598,12 @@ public class NioTcpEngine extends BaseEngine {
 					}
 					aConnector.wsHandshakeValidated();
 					aConnector.setHeader(lReqHeader);
+					aConnector.setStatus(WebSocketConnectorStatus.UP);
+					// registering the connector
+					getConnectors().put(aConnector.getId(), aConnector);
+					// removing from the temporal map
+					mBeforeHandshareConnectors.remove(aConnector.getId());
+					// finally starting the connector
 					aConnector.startConnector();
 				}
 			}

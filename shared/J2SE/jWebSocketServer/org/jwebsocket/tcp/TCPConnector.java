@@ -495,6 +495,9 @@ public class TCPConnector extends BaseConnector {
 			mConnector.getSession().setSessionId(mConnector.getHeader().
 					getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
 
+			
+			// registering connector
+			getEngine().addConnector(mConnector);
 			// start connector
 			mConnector.startConnector();
 

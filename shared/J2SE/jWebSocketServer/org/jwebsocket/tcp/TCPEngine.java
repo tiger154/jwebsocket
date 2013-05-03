@@ -499,8 +499,6 @@ public class TCPEngine extends BaseEngine {
 
 							continue;
 						} else {
-							// registering connector
-							getConnectors().put(lConnector.getId(), lConnector);
 							// initiating connector
 							((TCPConnector) lConnector).init();
 						}
