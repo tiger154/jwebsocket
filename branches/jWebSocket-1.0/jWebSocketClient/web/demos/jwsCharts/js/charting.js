@@ -915,11 +915,11 @@ function initDemo( ) {
 							highlight: false,
 							tips: {
 								trackMouse: true,
-								width: 140,
+								width: 180,
 								height: 28,
 								renderer: function( storeItem, item ) {
 									this.setTitle( storeItem.get( 'name' ) + ': '
-											+ storeItem.get( 'data' ) + ' %' );
+											+ storeItem.get( 'data' ) + " packets" );
 								}
 							},
 							label: {
