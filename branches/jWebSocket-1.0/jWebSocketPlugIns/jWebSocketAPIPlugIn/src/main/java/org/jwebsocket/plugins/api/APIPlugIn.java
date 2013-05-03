@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPlugIn;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
@@ -41,6 +42,15 @@ import org.springframework.beans.factory.BeanFactory;
 public class APIPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	public static final String NS_API =
+			JWebSocketServerConstants.NS_BASE + ".plugins.api";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket APIPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket API Plug-in - Community Edition";
+	
 	private String GET_SERVER_API = "getServerAPI";
 	private String GET_PLUGIN_API = "getPlugInAPI";
 	private String GET_PLUGIN_IDS = "getPlugInIds";
@@ -78,10 +88,39 @@ public class APIPlugIn extends TokenPlugIn {
 	}
 
 	@Override
-	public String getNamespace() {
-		return NS_INTERFACE;
+	public String getVersion() {
+		return VERSION;
 	}
-	
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
+
+	@Override
+	public String getNamespace() {
+		return NS_API;
+	}
 
 	/**
 	 *
