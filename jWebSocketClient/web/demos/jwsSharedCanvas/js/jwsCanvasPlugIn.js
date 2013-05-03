@@ -78,7 +78,7 @@ jws.CanvasPlugIn = {
 				jws.CanvasPlugIn.authenticateChannel( {
 					OnSuccess: function( ) {
 						mWSC.channelSubscribe( jws.CanvasPlugIn.mChannelId,
-								jws.CanvasPlugIn.mChannelAccessKey );
+							jws.CanvasPlugIn.mChannelAccessKey );
 					}
 				} );
 			}
@@ -88,10 +88,10 @@ jws.CanvasPlugIn = {
 		w.auth.logon( );
 	},
 	onChannelSubscription: function( aToken ) {
-//		console.log( "subscribed" + aToken.subscriber );
+	//		console.log( "subscribed" + aToken.subscriber );
 	},
 	onChannelUnsubscription: function( aToken ) {
-//		console.log( "unsubscribed" + aToken.subscriber );
+	//		console.log( "unsubscribed" + aToken.subscriber );
 	},
 	publish: function( aType, aData ) {
 		if ( typeof aData === "undefined" ) {
@@ -106,8 +106,8 @@ jws.CanvasPlugIn = {
 		// use access key and secret key for this channel to authenticate
 		// required to publish data only
 		mWSC.channelAuth( jws.CanvasPlugIn.mChannelId,
-				jws.CanvasPlugIn.mChannelAccessKey,
-				jws.CanvasPlugIn.mChannelSecretKey, aOptions );
+			jws.CanvasPlugIn.mChannelAccessKey,
+			jws.CanvasPlugIn.mChannelSecretKey, aOptions );
 	},
 	processToken: function( aToken ) {
 		if ( aToken.ns === jws.CanvasPlugIn.NS_CHANNELS ) {
@@ -135,16 +135,16 @@ jws.CanvasPlugIn = {
 							break;
 						case jws.CanvasPlugIn.TT_LINE:
 							this.doLine( aToken.map.id, aToken.map.x1, aToken.map.y1,
-									aToken.map.x2, aToken.map.y2, {
-								color: aToken.map.color
-							} );
+								aToken.map.x2, aToken.map.y2, {
+									color: aToken.map.color
+								} );
 							break;
-							// ----------------------------------------------
-							//		LISTENERS FOR THE IMAGE AREA
-							// ----------------------------------------------
+						// ----------------------------------------------
+						//		LISTENERS FOR THE IMAGE AREA
+						// ----------------------------------------------
 						case jws.CanvasPlugIn.TT_IMG_BEGIN_IMAGE:
 							this.doCanvasBeginImage( aToken.map.canvasId, aToken.publisher, aToken.map.x1, aToken.map.y1,
-									aToken.map.width, aToken.map.height, aToken.map.selectedImg );
+								aToken.map.width, aToken.map.height, aToken.map.selectedImg );
 							break;
 						case jws.CanvasPlugIn.TT_IMG_MOVE_TO:
 							this.doImageResize( aToken.map.canvasId, aToken.publisher, aToken.map.x2, aToken.map.y2 );
@@ -341,7 +341,7 @@ jws.CanvasPlugIn = {
 		var lCanvas = this.fCanvas[ aId ];
 		if ( lCanvas != null ) {
 			var lSrc = "../../res/img/image" + aSelectedImg + ".jpg",
-					lImage = new Image();
+			lImage = new Image();
 			lImage.setAttribute( "src", lSrc );
 			if ( typeof this.mClientsImages[aPublisher] === "undefined" ) {
 				this.mClientsImages[aPublisher] = {
@@ -439,7 +439,7 @@ jws.CanvasPlugIn = {
 		if ( lCanvas != null ) {
 			var lContext = lCanvas.ctx;
 			lContext.clearRect( 0, 0, lCanvas.fDOMElem.getAttribute( "width" ),
-					lCanvas.fDOMElem.getAttribute( "height" ) );
+				lCanvas.fDOMElem.getAttribute( "height" ) );
 			var lEnd = aHistoryStep >= 0 ? aHistoryStep : this.mHistory.length;
 			for ( var lIdx = 0; lIdx < lEnd; lIdx++ ) {
 				this.doRedraw( this.mHistory[lIdx], lContext );
@@ -447,11 +447,7 @@ jws.CanvasPlugIn = {
 		}
 	},
 	doRedraw: function( aImage, aContext ) {
-		aContext.save();
-		aContext.translate( aImage.mWidth, aImage.mHeight );
-		aContext.drawImage( aImage.getCanvas(), 0 - aImage.mWidth,
-				0 - aImage.mHeight );
-		aContext.restore();
+		aContext.drawImage( aImage.getCanvas(), 0, 0 );
 	}
 }
 
@@ -466,14 +462,17 @@ function ImageLayer( aId, aImg, aX1, aY1, aWidth, aHeight ) {
 	this.mInnerContext = this.mInnerCanvas.getContext( '2d' );
 	this.mInnerCanvas.width = this.mWidth;
 	this.mInnerCanvas.height = this.mHeight;
-
+	
 	this.getId = function( ) {
 		return this.mId;
 	}
 
 	this.redrawImg = function( ) {
-		this.mInnerContext.clearRect( this.mX1, this.mY1, this.mWidth, this.mHeight );
-		this.mInnerContext.drawImage( this.mImage, this.mX1, this.mY1, this.mWidth, this.mHeight );
+		this.mInnerContext.save();
+		this.mInnerContext.clearRect( 0, 0, this.mWidth, this.mHeight );
+		this.mInnerContext.translate(this.mX1, this.mY1);
+		this.mInnerContext.drawImage( this.mImage, 0, 0, this.mWidth - this.mX1, this.mHeight - this.mY1 );
+		this.mInnerContext.restore();
 	}
 
 	this.getCanvas = function( ) {
@@ -486,7 +485,8 @@ function ImageLayer( aId, aImg, aX1, aY1, aWidth, aHeight ) {
 		this.mHeight = aHeight;
 		this.mInnerCanvas.width = aWidth;
 		this.mInnerCanvas.height = aHeight;
-
+		this.mImage.setAttribute("width", aWidth);
+		this.mImage.setAttribute("height", aHeight);
 		this.redrawImg();
 	}
 
@@ -575,7 +575,7 @@ if ( jws.isIE ) {
 			},
 			init_: function( b ) {
 				b.namespaces.g_vml_ ||
-						b.namespaces.add( "g_vml_", "urn:schemas-microsoft-com:vml", "#default#VML" );
+				b.namespaces.add( "g_vml_", "urn:schemas-microsoft-com:vml", "#default#VML" );
 				b.namespaces.g_o_ || b.namespaces.add( "g_o_", "urn:schemas-microsoft-com:office:office", "#default#VML" );
 				if ( !b.styleSheets.ex_canvas_ ) {
 					var a = b.createStyleSheet();
@@ -645,7 +645,7 @@ if ( jws.isIE ) {
 					for ( ; g < 3; g++ )
 						h += b[d][g] * a[g][f];
 					c[d][f] =
-							h
+					h
 				}
 			}
 			return c
@@ -671,7 +671,7 @@ if ( jws.isIE ) {
 			b = String( b );
 			if ( b.substring( 0, 3 ) == "rgb" ) {
 				var d = b.indexOf( "(", 3 ), f = b.indexOf( ")", d +
-						1 ), h = b.substring( d + 1, f ).split( "," );
+					1 ), h = b.substring( d + 1, f ).split( "," );
 				a = "#";
 				var g = 0;
 				for ( ; g < 3; g++ )
@@ -768,7 +768,7 @@ if ( jws.isIE ) {
 		i.quadraticCurveTo = function( b, a, c, d ) {
 			var f = this.getCoords_( b, a ), h = this.getCoords_( c, d ), g = {
 				x: this.currentX_ +
-						0.6666666666666666 * (f.x - this.currentX_),
+				0.6666666666666666 * (f.x - this.currentX_),
 				y: this.currentY_ + 0.6666666666666666 * (f.y - this.currentY_)
 			};
 
@@ -798,7 +798,7 @@ if ( jws.isIE ) {
 
 		i.rect = function( b, a, c, d ) {
 			this.moveTo( b,
-					a );
+				a );
 			this.lineTo( b + c, a );
 			this.lineTo( b + c, a + d );
 			this.lineTo( b, a + d );
@@ -830,7 +830,7 @@ if ( jws.isIE ) {
 		};
 
 		i.createLinearGradient = function( b,
-				a, c, d ) {
+			a, c, d ) {
 			var f = new D( "gradient" );
 			f.x0_ = b;
 			f.y0_ = a;
@@ -864,7 +864,7 @@ if ( jws.isIE ) {
 				l = d = n;
 				e = f = o
 			} else if ( arguments.length ==
-					5 ) {
+				5 ) {
 				a = arguments[1];
 				c = arguments[2];
 				d = arguments[3];
@@ -888,7 +888,7 @@ if ( jws.isIE ) {
 			if ( this.m_[0][0] != 1 || this.m_[0][1] ) {
 				var E = [ ];
 				E.push( "M11=",
-						this.m_[0][0], ",", "M12=", this.m_[1][0], ",", "M21=", this.m_[0][1], ",", "M22=", this.m_[1][1], ",", "Dx=", j( q.x / k ), ",", "Dy=", j( q.y / k ), "" );
+					this.m_[0][0], ",", "M12=", this.m_[1][0], ",", "M21=", this.m_[0][1], ",", "M22=", this.m_[1][1], ",", "Dx=", j( q.x / k ), ",", "Dy=", j( q.y / k ), "" );
 				var p = q, z = this.getCoords_( a + d, c ), w = this.getCoords_( a, c + f ), x = this.getCoords_( a + d, c + f );
 				p.x = s.max( p.x, z.x, w.x, x.x );
 				p.y = s.max( p.y, z.y, w.y, x.y );
@@ -896,14 +896,14 @@ if ( jws.isIE ) {
 			} else
 				t.push( "top:", j( q.y / k ), "px;left:", j( q.x / k ), "px;" );
 			t.push( ' ">', '<g_vml_:image src="', b.src,
-					'"', ' style="width:', k * d, "px;", " height:", k * f, 'px;"', ' cropleft="', h / n, '"', ' croptop="', g / o, '"', ' cropright="', (n - h - l) / n, '"', ' cropbottom="', (o - g - e) / o, '"', " />", "</g_vml_:group>" );
+				'"', ' style="width:', k * d, "px;", " height:", k * f, 'px;"', ' cropleft="', h / n, '"', ' croptop="', g / o, '"', ' cropright="', (n - h - l) / n, '"', ' cropbottom="', (o - g - e) / o, '"', " />", "</g_vml_:group>" );
 			this.element_.insertAdjacentHTML( "BeforeEnd", t.join( "" ) )
 		};
 
 		i.stroke = function( b ) {
 			var a = [ ], c = P( b ? this.fillStyle : this.strokeStyle ), d = c.color, f = c.alpha * this.globalAlpha;
 			a.push( "<g_vml_:shape", ' filled="', !!b, '"', ' style="position:absolute;width:', 10, "px;height:", 10, 'px;"', ' coordorigin="0 0" coordsize="', k * 10, " ", k * 10, '"', ' stroked="',
-					!b, '"', ' path="' );
+				!b, '"', ' path="' );
 			var h = {
 				x: null,
 				y: null
@@ -930,7 +930,7 @@ if ( jws.isIE ) {
 					case "at":
 					case "wa":
 						a.push( " ", e.type, " ", j( e.x - this.arcScaleX_ * e.radius ), ",", j( e.y - this.arcScaleY_ * e.radius ),
-								" ", j( e.x + this.arcScaleX_ * e.radius ), ",", j( e.y + this.arcScaleY_ * e.radius ), " ", j( e.xStart ), ",", j( e.yStart ), " ", j( e.xEnd ), ",", j( e.yEnd ) );
+							" ", j( e.x + this.arcScaleX_ * e.radius ), ",", j( e.y + this.arcScaleY_ * e.radius ), " ", j( e.xStart ), ",", j( e.yStart ), " ", j( e.xEnd ), ",", j( e.yEnd ) );
 						break
 				}
 				if ( e ) {
@@ -953,7 +953,7 @@ if ( jws.isIE ) {
 					}, o = 0, q = 1;
 					if ( m.type_ == "gradient" ) {
 						var t = m.x1_ / this.arcScaleX_, E = m.y1_ / this.arcScaleY_, p = this.getCoords_( m.x0_ / this.arcScaleX_, m.y0_ / this.arcScaleY_ ),
-								z = this.getCoords_( t, E );
+						z = this.getCoords_( t, E );
 						r = Math.atan2( z.x - p.x, z.y - p.y ) * 180 / Math.PI;
 						if ( r < 0 )
 							r += 360;
@@ -980,7 +980,7 @@ if ( jws.isIE ) {
 					for ( ; l < J; l++ ) {
 						var T = u[l];
 						S.push( T.offset * q +
-								o + " " + T.color )
+							o + " " + T.color )
 					}
 					a.push( '<g_vml_:fill type="', m.type_, '"', ' method="none" focus="100%"', ' color="', da, '"', ' color2="', ea, '"', ' colors="', S.join( "," ), '"', ' opacity="', ga, '"', ' g_o_:opacity2="', fa, '"', ' angle="', r, '"', ' focusposition="', n.x, ",", n.y, '" />' )
 				} else
@@ -990,7 +990,7 @@ if ( jws.isIE ) {
 				if ( K < 1 )
 					f *= K;
 				a.push( "<g_vml_:stroke", ' opacity="', f, '"', ' joinstyle="', this.lineJoin, '"', ' miterlimit="', this.miterLimit, '"', ' endcap="', aa( this.lineCap ),
-						'"', ' weight="', K, 'px"', ' color="', d, '" />' )
+					'"', ' weight="', K, 'px"', ' color="', d, '" />' )
 			}
 			a.push( "</g_vml_:shape>" );
 			this.element_.insertAdjacentHTML( "beforeEnd", a.join( "" ) )
@@ -1025,7 +1025,7 @@ if ( jws.isIE ) {
 
 		i.restore = function() {
 			O( this.aStack_.pop(),
-					this );
+				this );
 			this.m_ = this.mStack_.pop()
 		};
 
@@ -1059,7 +1059,7 @@ if ( jws.isIE ) {
 			this.arcScaleX_ *= b;
 			this.arcScaleY_ *= a;
 			A( this, y( [ [ b, 0, 0 ], [ 0, a,
-					0 ], [ 0, 0, 1 ] ], this.m_ ), true )
+				0 ], [ 0, 0, 1 ] ], this.m_ ), true )
 		};
 
 		i.transform = function( b, a, c, d, f, h ) {
@@ -1097,7 +1097,7 @@ if ( jws.isIE ) {
 		function U() {
 		}
 		G_vmlCanvasManager =
-				M;
+		M;
 		CanvasRenderingContext2D = H;
 		CanvasGradient = D;
 		CanvasPattern = U
