@@ -260,7 +260,7 @@ function initDemo( ) {
 				var lUsePlugins = new Array( );
 				var lPluginsInUse = aToken.usePlugins;
 				if ( lPluginsInUse.length === 0 ) {
-					Ext.MessageBox.alert( 'No information for this item',
+					lCbDataToSelect.markInvalid( 'No information for this item',
 							'Sorry, the information for the Plug-ins is not ' +
 							'available at this moment please, try later' );
 				} else {
