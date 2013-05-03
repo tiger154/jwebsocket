@@ -2283,7 +2283,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			//:todo:en:here we could think about establishing the connection
 			// but this would required to pass all args for open!
 			} else {
-				abortReconnect();
+				this.abortReconnect();
 			}	
 		}
 	},
