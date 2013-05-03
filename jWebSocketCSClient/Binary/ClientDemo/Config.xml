@@ -35,8 +35,8 @@
   <websocket>
     <default_max_frame_sixe value= "1048840" />
 	<default_open_timeout value="5000" />
-	<default_ping_timeout value="1000" />
-	<default_ping_delay value="1000" />
+	<default_ping_timeout value="5000" />
+	<default_ping_delay value="5000" />
   </websocket>
   
   
