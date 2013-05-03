@@ -194,7 +194,6 @@ $.widget( "jws.auth", {
 				}
 				w.auth.eLogonArea.hide( );
 				w.auth.eLogoffArea.fadeIn( 300 );
-				console.log(aToken);
 				w.auth.eUserInfoName.text( aToken.username );
 				w.auth.mUsername = aToken.username;
 				w.auth.eClientStatus.attr( "class", "authenticated" ).text( "authenticated" );
