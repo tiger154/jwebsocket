@@ -365,7 +365,7 @@ $.widget( "jws.auth", {
 			}
 		}
 	},
-	auth: function( ) {red
+	auth: function( ) {
 		if ( mWSC ) {
 			if ( mLog.isDebugEnabled ) {
 				log( "Authenticating..." );
