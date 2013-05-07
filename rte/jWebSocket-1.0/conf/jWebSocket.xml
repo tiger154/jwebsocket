@@ -445,14 +445,12 @@
 			<!-- default session timeout (minutes) -->
 			<timeout>1</timeout>
 		
-			<!-- context and servlet settings, these settings are applied only
-				 in embedded mode. In standard web app mode the context is specified 
-				 by the context.xml of the web-app and the servlet is specified 
-				 in the web.xml of the web-app. -->
-			<!-- Tomcat provides a WebSocket Servlet, set the context path here -->
+			<!-- The default jWebSocket server web-app context. The context can be configured 
+			through the files:
+			- ${JWEBSOCKET_HOME}/conf/TomcatEngine/conf/context.xml 
+			- ${JWEBSOCKET_HOME}/conf/TomcatEngine/conf/web.xml 
+			-->
 			<context>/jWebSocket</context>
-			<!-- Tomcat provides a WebSocket Servlet, set the servlet path here -->
-			<servlet>/jWebSocket</servlet>
 			<!--
 				maximum size of the data packet that the engine will read,
 				if the frame size is larger than this the connection will be closed.
@@ -903,6 +901,13 @@
 			<id>read_definition</id>
 			<description>Allows to access item definitions (list)</description>
 		</right>
+		
+		<!-- Scripting rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.scripting</ns>
+			<id>reloadApp</id>
+			<description>Allows to reload JavaScript apps</description>
+		</right>
 	</rights>
 
 	<!-- jWebSocket roles -->
@@ -996,6 +1001,8 @@
 				<right>org.jwebsocket.plugins.itemstorage.write_definition</right>
 				<right>org.jwebsocket.plugins.itemstorage.read_definition</right>
 
+				<!-- scripting rights -->
+				<right>org.jwebsocket.plugins.scripting.reloadApp</right>
 			</rights>
 		</role>
 		<role>
@@ -1765,6 +1772,19 @@
 			</server-assignments>
 		</plugin>
 		-->
+		
+		<plugin>
+			<name>org.jwebsocket.plugins.scripting.ScriptingPlugIn</name>
+			<id>jWebSocketScriptingPlugIn</id>
+			<jar>jWebSocketScriptingPlugIn-1.0.jar</jar>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripting.xml</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		
 		
 		<!-- RTC plug-in -->
 		<plugin>
