@@ -181,12 +181,10 @@ public class TomcatWrapper extends MessageInbound {
 
 			return;
 		}
-
 		mConnector = new TomcatConnector(mEngine, mRequest, aOutbound);
 		mConnector.setSSL(mIsSecure);
 		mConnector.getSession().setSessionId(mSession.getId());
 		mConnector.getSession().setStorage(new HttpSessionStorage(mSession));
-
 		mConnector.setHeader(mHeader);
 		mConnector.setSubprot(mHeader.getSubProtocol());
 		mConnector.setRemotePort(mRemotePort);
