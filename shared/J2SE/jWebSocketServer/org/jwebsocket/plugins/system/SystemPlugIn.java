@@ -61,12 +61,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * implements the jWebSocket system tokens like login, logout, send, broadcast
- * etc...
+ * implements the jWebSocket system tokens like login, logout, send, broadcast etc...
  *
  * @author aschulze
- * @author kybernees {Support for client-side session management and Spring
- * authentication}
+ * @author kybernees {Support for client-side session management and Spring authentication}
  */
 public class SystemPlugIn extends TokenPlugIn {
 
@@ -936,9 +934,9 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * simply waits for a certain amount of time and does not perform any _
-	 * operation. This feature is used for debugging and simulation purposes _
-	 * only and is not related to any business logic.
+	 * simply waits for a certain amount of time and does not perform any _ operation. This feature
+	 * is used for debugging and simulation purposes _ only and is not related to any business
+	 * logic.
 	 *
 	 * @param aToken
 	 */
@@ -1031,8 +1029,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * allocates a "non-interruptable" communication channel between two
-	 * clients.
+	 * allocates a "non-interruptable" communication channel between two clients.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -1047,8 +1044,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * deallocates a "non-interruptable" communication channel between two
-	 * clients.
+	 * deallocates a "non-interruptable" communication channel between two clients.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -1063,8 +1059,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Logon a user given the username and password by using the Spring Security
-	 * module
+	 * Logon a user given the username and password by using the Spring Security module
 	 *
 	 * @param aConnector
 	 * @param aToken The token with the username and password
@@ -1093,7 +1088,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		} catch (Exception ex) {
 			String lMsg = ex.getClass().getSimpleName() + ": " + ex.getMessage();
 			Token lResponse = getServer().createErrorToken(aToken, -1, lMsg);
-         lResponse.setString("username", lUsername);
+			lResponse.setString("username", lUsername);
 			sendToken(aConnector, aConnector, lResponse);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug(lMsg);
@@ -1105,13 +1100,13 @@ public class SystemPlugIn extends TokenPlugIn {
 			mLog.debug("Authentication Successfully. Updating the user session...");
 		}
 		// Getting the session
-		Map<String, Object> lSessionParms = aConnector.getSession().getStorage();
+		Map<String, Object> lSession = aConnector.getSession().getStorage();
 
 		// Setting the is_authenticated flag
-		lSessionParms.put(IS_AUTHENTICATED, lAuthResult.isAuthenticated());
+		lSession.put(IS_AUTHENTICATED, lAuthResult.isAuthenticated());
 
 		// Setting the username
-		lSessionParms.put(USERNAME, lUsername);
+		lSession.put(USERNAME, lUsername);
 		aConnector.setUsername(lUsername);
 
 		// Setting the uuid
@@ -1122,7 +1117,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		} else {
 			lUUID = lUsername;
 		}
-		lSessionParms.put(UUID, lUUID);
+		lSession.put(UUID, lUUID);
 
 		// Setting the authorities
 		String lAuthorities = "";
@@ -1130,7 +1125,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			lAuthorities = lAuthorities.concat(lGA.getAuthority() + " ");
 		}
 		// Storing the user authorities as a string to avoid serialization problems
-		lSessionParms.put(AUTHORITIES, lAuthorities);
+		lSession.put(AUTHORITIES, lAuthorities);
 
 		// Creating the response
 		Token response = createResponse(aToken);
