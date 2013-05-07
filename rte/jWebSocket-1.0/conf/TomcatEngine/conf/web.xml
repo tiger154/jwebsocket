@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <display-name>jWebSocket Tomcat Engine</display-name>
+    <listener>
+        <description>Context listener used to start and stop the jWebSocket application server.</description>
+        <listener-class>org.jwebsocket.tomcat.ContextListener</listener-class>
+    </listener>
+    <listener>
+        <description>Session management listener</description>
+        <listener-class>org.jwebsocket.tomcat.listener.SessionListener</listener-class>
+    </listener>
+    <servlet>
+        <servlet-name>jWebSocket</servlet-name>
+        <servlet-class>org.jwebsocket.tomcat.TomcatServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>jWebSocketComet</servlet-name>
+        <servlet-class>org.jwebsocket.tomcat.comet.CometServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jWebSocket</servlet-name>
+        <url-pattern>/jWebSocket</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>jWebSocketComet</servlet-name>
+        <url-pattern>/jWebSocketComet</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+			30
+		</session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+</web-app>
