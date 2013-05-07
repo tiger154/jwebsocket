@@ -18,10 +18,11 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.tomcat;
 
-import java.net.URL;
+import java.io.File;
 import java.util.Map;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
@@ -31,7 +32,6 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.tomcat.listener.ContextLifecycleListener;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -96,8 +96,7 @@ public class TomcatEngine extends BaseEngine {
 				mLog.debug("Instantiating embedded Tomcat server"
 						+ " at port " + lPort
 						+ ", ssl-port " + lSSLPort
-						+ ", context: '" + lContext
-						+ "', servlet: '" + lServlet + "'...");
+						+ ", context: '" + lContext + "'...");
 			}
 
 			mTomcat = new Tomcat();
@@ -139,23 +138,19 @@ public class TomcatEngine extends BaseEngine {
 			mTomcat.getService().addConnector(lSSLConnector);
 
 			final Context lCtx = mTomcat.addWebapp(lContext, mDocumentRoot);
-			// configuring the app context
-			// TODO: see bug: https://jwebsocket.atlassian.net/browse/JWSCE-9
-			/*
-			 lCtx.setConfigFile(new URL(JWebSocketConfig.
-				 expandEnvAndJWebSocketVars("file://${JWEBSOCKET_HOME}conf/TomcatEngine/conf/context.xml")));
-			 */
-			lCtx.setConfigFile(new URL(Tools.expandEnvVarsAndProps(
-					"file:///${JWEBSOCKET_HOME}conf/TomcatEngine/conf/context.xml")));
-			lCtx.setDocBase(JWebSocketConfig.getJWebSocketHome() + "web/");
-			lCtx.addLifecycleListener(new ContextLifecycleListener());
 
-			// registering WebSocket and Comet servlets
-			Tomcat.addServlet(lCtx, "jWebSocketServlet", "org.jwebsocket.tomcat.TomcatServlet");
-			lCtx.addServletMapping(lServlet, "jWebSocketServlet");
+			String lContextConfig = JWebSocketConfig.getConfigFolder("TomcatEngine/conf/context.xml");
+			if (null != lContextConfig) {
+				lCtx.setConfigFile(new File(lContextConfig).toURI().toURL());
+			}
 
-			Tomcat.addServlet(lCtx, "jWebSocketCometServlet", "org.jwebsocket.tomcat.comet.CometServlet");
-			lCtx.addServletMapping(lServlet + "Comet", "jWebSocketCometServlet");
+			// handling the global web.xml
+			String lWebXML = JWebSocketConfig.getConfigFolder("TomcatEngine/conf/web.xml");
+			if (null != lWebXML) {
+				ContextConfig lContextListener = new ContextConfig();
+				lCtx.addLifecycleListener(lContextListener);
+				lContextListener.setDefaultWebXml(lWebXML);
+			}
 
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Starting embedded Tomcat Server '"
@@ -165,7 +160,7 @@ public class TomcatEngine extends BaseEngine {
 			mTomcat.start();
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
-					+ "Instantiating Embedded Tomcat Server '"
+					+ " instantiating Embedded Tomcat Server '"
 					+ mTomcatVersion + "': "
 					+ lEx.getMessage());
 		}
