@@ -130,7 +130,8 @@ namespace WebSocket.org.jwebsocket.protocol.kit
                     {
                         char[] c = { WebSocketMessage.TWO_POINT2 };
                         string[] lKeyVal = lLine.Split(c, 2);
-                        mRequestFields.Add(lKeyVal[0].Trim(), lKeyVal[1].Trim());
+                        if (lKeyVal.Length == 2)
+                            mRequestFields.Add(lKeyVal[0].Trim(), lKeyVal[1].Trim());
                     }
                     else
                         mFirstLineRequest = lLine;

@@ -21,6 +21,8 @@ using System.Linq;
 using System.Text;
 using WebSocket.org.jwebsocket.token.api;
 using WebSocket.org.jwebsocket.common;
+using WebSocket.org.jwebsocket.token.processor;
+using JSON;
 
 namespace WebSocket.org.jwebsocket.token
 {
@@ -34,7 +36,6 @@ namespace WebSocket.org.jwebsocket.token
     {
         private Dictionary<string, object> mData = null;
         private bool mBinary = false;
-
 
         public Token()
         {
@@ -80,7 +81,7 @@ namespace WebSocket.org.jwebsocket.token
 
         public string GetString(string aKey)
         {
-            string lResult = null;
+            string lResult = String.Empty;
             try
             {
                 lResult = (string)Get(aKey);
@@ -199,7 +200,7 @@ namespace WebSocket.org.jwebsocket.token
             List<object> lResult = null;
             try
             {
-                lResult = (List<object>)Get(aKey);
+                lResult = JSONTokenProcessor.JSonArrayToList(JSONTokenProcessor.JsonStringToJsonArray(Get(aKey).ToString()));
             }
             catch (Exception lEx)
             {
@@ -212,7 +213,7 @@ namespace WebSocket.org.jwebsocket.token
         {
             try
             {
-                mData.Add(aKey, aList);
+                mData.Add(aKey,aList);
             }
             catch (Exception lEx)
             {
@@ -237,7 +238,7 @@ namespace WebSocket.org.jwebsocket.token
             IToken lResult = null;
             try
             {
-                lResult = (IToken)Get(aKey);
+                lResult = JSONTokenProcessor.JsonStringToToken(Get(aKey).ToString());
             }
             catch (Exception lEx)
             {
@@ -256,7 +257,7 @@ namespace WebSocket.org.jwebsocket.token
             Dictionary<string, object> lResult = null;
             try
             {
-                lResult = (Dictionary<string, object>)Get(aKey);
+                lResult = JSONTokenProcessor.JSonObjectToDictionary((JsonObject)Get(aKey));
             }
             catch (Exception lEx)
             {

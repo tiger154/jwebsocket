@@ -45,10 +45,12 @@ namespace WebSocket.org.jwebsocket.token.processor
             {
                 Dictionary<string, object> lDictionary = aToken.GetDictionary();
                 JsonObject lJson = new JsonObject();
+
                 foreach (KeyValuePair<string, object> item in lDictionary)
                 {
-                    lJson.Add(item.Key, item.Value);
+                    lJson.Add(item.Key, ConvertObjectToJsonObject(item.Value));
                 }
+                Console.WriteLine(lJson.ToString());
                 return new WebSocketPacket(lJson.ToString());
             }
             catch (Exception lEx)
@@ -198,6 +200,14 @@ namespace WebSocket.org.jwebsocket.token.processor
                     return DictionaryToJsonObject((Dictionary<string, object>)aObject);
                 else if (aObject is object[])
                     return ObjectListToJsonArray((object[])aObject);
+                else if (aObject is String)
+                    return (string)aObject;
+                else if (aObject is Double)
+                    return (double)aObject;
+                else if (aObject is Boolean)
+                    return (bool)aObject;
+                else if (aObject is int)
+                    return (int)aObject;
                 else
                     return aObject;
             }
@@ -247,5 +257,27 @@ namespace WebSocket.org.jwebsocket.token.processor
             }
         }
 
+        public static JsonArray JsonStringToJsonArray(string aJsonString)
+        {
+            try
+            {
+                JsonArray lJsonArray = new JsonArray();
+
+                aJsonString = aJsonString.Remove(0,1);
+                aJsonString = aJsonString.Remove(aJsonString.Length - 1,1);
+                object[] lList = aJsonString.Split(',');
+                for (int i = 0; i < lList.Length; i++)
+                {
+                    lJsonArray.Add(lList[i]);
+                }
+                return lJsonArray;
+            }
+            catch (Exception lEx)
+            {
+                if (mLog.IsErrorEnabled)
+                    mLog.Error(lEx.Source + WebSocketMessage.SEPARATOR + lEx.Message);
+                return null;
+            }
+        }
     }
 }
