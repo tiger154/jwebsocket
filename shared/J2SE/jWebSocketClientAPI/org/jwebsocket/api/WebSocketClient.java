@@ -19,6 +19,7 @@
 package org.jwebsocket.api;
 
 import java.util.List;
+import org.jwebsocket.kit.IsAlreadyConnectedException;
 import org.jwebsocket.kit.WebSocketEncoding;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.kit.WebSocketSubProtocol;
@@ -41,9 +42,9 @@ public interface WebSocketClient {
 	 * Opens the jWebSocket connection
 	 *
 	 * @param aURL the websocket connection url
-	 * @throws WebSocketException if therre's an
+	 * @throws IsAlreadyConnectedException if the connection is opened and the client try to connect again.
 	 */
-	void open(String aURL) throws WebSocketException;
+	void open(String aURL) throws IsAlreadyConnectedException ;
 
 	/**
 	 * Adds a new filter
