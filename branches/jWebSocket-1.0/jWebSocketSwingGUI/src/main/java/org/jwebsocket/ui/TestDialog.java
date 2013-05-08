@@ -39,6 +39,7 @@ import org.jwebsocket.api.WebSocketStatus;
 import org.jwebsocket.client.java.ReliabilityOptions;
 import org.jwebsocket.client.token.BaseTokenClient;
 import org.jwebsocket.config.JWebSocketClientConstants;
+import org.jwebsocket.kit.IsAlreadyConnectedException;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.plugins.rpc.SampleRPCObject;
 import org.jwebsocket.tests.StressTests;
@@ -1022,7 +1023,11 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	}//GEN-LAST:event_btnUploadActionPerformed
 
 	private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnConnectActionPerformed
-		mClient.open(13, txfURL.getText());
+		try{
+			mClient.open(13, txfURL.getText());
+		}catch(IsAlreadyConnectedException ex){
+			mLog(ex.getMessage() + "\n");
+		}   
 	}// GEN-LAST:event_btnConnectActionPerformed
 
 	private void btnDisconnectActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnDisconnectActionPerformed

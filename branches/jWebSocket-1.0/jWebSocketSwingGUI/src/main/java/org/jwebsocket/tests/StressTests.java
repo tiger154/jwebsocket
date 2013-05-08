@@ -23,6 +23,7 @@ import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.client.token.BaseTokenClient;
+import org.jwebsocket.kit.IsAlreadyConnectedException;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -78,7 +79,11 @@ public class StressTests implements WebSocketClientTokenListener {
 			lClient = mClients[lIdx];
 			lClient.setParam("idx", lIdx);
 			lClient.addTokenClientListener(this);
-			lClient.open(PROT_VER, aURL);
+			try{
+				lClient.open(PROT_VER, aURL);
+			}catch(IsAlreadyConnectedException lEx){
+				mLog("Exception: " + lEx.getMessage());
+			}
 		}
 	}
 
