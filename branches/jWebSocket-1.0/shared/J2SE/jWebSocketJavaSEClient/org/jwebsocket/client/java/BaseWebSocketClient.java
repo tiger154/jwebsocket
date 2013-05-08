@@ -235,7 +235,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * @param aURI
 	 */
 	@Override
-	public void open(String aURI) throws WebSocketException {
+	public void open(String aURI) throws IsAlreadyConnectedException{
 		open(JWebSocketCommonConstants.WS_VERSION_DEFAULT, aURI);
 	}
 
@@ -265,7 +265,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * @param aVersion
 	 * @param aURI
 	 */
-	public void open(int aVersion, String aURI) {
+	public void open(int aVersion, String aURI) throws IsAlreadyConnectedException{
 		String lSubProtocols = generateSubProtocolsHeaderValue();
 		open(aVersion, aURI, lSubProtocols);
 	}
@@ -276,102 +276,109 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * @param aURI
 	 * @param aSubProtocols
 	 */
-	public void open(int aVersion, String aURI, String aSubProtocols) {
+	public void open(int aVersion, String aURI, String aSubProtocols) throws IsAlreadyConnectedException {
 		try {
-			mAbortReconnect();
+		        if(!isConnected()){
+				mAbortReconnect();
+	
+				// set default close reason in case 
+				// connection could not be established.
+				mCloseReason = "Connection could not be established.";
 
-			// set default close reason in case 
-			// connection could not be established.
-			mCloseReason = "Connection could not be established.";
-
-			mVersion = aVersion;
-			mURI = new URI(aURI);
-			// the WebSocket Handshake here generates the initial client side Handshake only
-			WebSocketHandshake lHandshake = new WebSocketHandshake(mVersion, mURI, aSubProtocols);
-			// close current socket if still connected 
-			// to avoid open connections on server
-			if (mSocket != null && mSocket.isConnected()) {
-				mSocket.close();
-			}
-			mSocket = createSocket();
-			// don't gather packages here, reduce latency
-			mSocket.setTcpNoDelay(true);
-			mIn = mSocket.getInputStream();
-			mOut = mSocket.getOutputStream();
-
-			// pass session cookie, if already was set for this client instance
-			byte[] lBA;
-			List<HttpCookie> lTempCookies = new ArrayList();
-			if (!mCookies.isEmpty()) {
-				for (HttpCookie lCookie : mCookies) {
-					if (HttpCookie.isValid(mURI, lCookie)) {
-						// Cookie is valid
-						lTempCookies.add(lCookie);
-					}
+				mVersion = aVersion;
+				mURI = new URI(aURI);
+				// the WebSocket Handshake here generates the initial client side Handshake only
+				WebSocketHandshake lHandshake = new WebSocketHandshake(mVersion, mURI, aSubProtocols);
+				// close current socket if still connected 
+				// to avoid open connections on server
+				if (mSocket != null && mSocket.isConnected()) {
+					mSocket.close();
 				}
-			}
+				mSocket = createSocket();
+				// don't gather packages here, reduce latency
+				mSocket.setTcpNoDelay(true);
+				mIn = mSocket.getInputStream();
+				mOut = mSocket.getOutputStream();
 
-			lBA = lHandshake.generateC2SRequest(lTempCookies);
-			mOut.write(lBA);
-
-			mStatus = WebSocketStatus.CONNECTING;
-
-			mHeaders = new Headers();
-			try {
-				mHeaders.readFromStream(aVersion, mIn);
-			} catch (Exception lEx) {
-				// ignore exception here, will be processed afterwards
-			}
-
-			// registering new cookies from the server response
-			List<String> lResponseCookies = (List) mHeaders.getField(Headers.SET_COOKIE);
-			mCookies.addAll(HttpCookie.parse(mURI, lResponseCookies));
-
-			if (!mHeaders.isValid()) {
-				WebSocketClientEvent lEvent =
-						new WebSocketBaseClientEvent(this, EVENT_CLOSE, "Handshake rejected.");
-				notifyClosed(lEvent);
-				mCheckReconnect(lEvent);
-				return;
-			}
-
-			// parse negotiated sub protocol
-			String lProtocol = (String) mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
-			if (lProtocol != null) {
-				mNegotiatedSubProtocol = new WebSocketSubProtocol(lProtocol, mEncoding);
-			} else {
-				// just default to 'jwebsocket.org.json' and 'text'
-				mNegotiatedSubProtocol = new WebSocketSubProtocol(
-						JWebSocketCommonConstants.WS_SUBPROT_DEFAULT,
-						JWebSocketCommonConstants.WS_ENCODING_DEFAULT);
-			}
-			// create new thread to receive the data from the new client
-			mReceiver = new WebSocketReceiver(this, mIn);
-			// and start the receiver thread for the port
-			mReceiver.start();
-			// now set official status, may listeners ask for that
-			mStatus = WebSocketStatus.OPEN;
-
-			// notifying logic "opening" listeners notification
-			// we consider that a client has finally openned when 
-			// the "max frame size" handshake has completed 
-			final WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_OPENING, null);
-			for (final WebSocketClientListener lListener : getListeners()) {
-				mListenersExecutor.submit(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							lListener.processOpening(lEvent);
-						} catch (Exception lEx) {
-							// nothing, soppose to be catched internally
+				// pass session cookie, if already was set for this client instance
+				byte[] lBA;
+				List<HttpCookie> lTempCookies = new ArrayList();
+				if (!mCookies.isEmpty()) {
+					for (HttpCookie lCookie : mCookies) {
+						if (HttpCookie.isValid(mURI, lCookie)) {
+							// Cookie is valid
+							lTempCookies.add(lCookie);
 						}
 					}
-				});
-			}
+				}
 
-			// reset close reason to be specified by next reason
-			mCloseReason = null;
-		} catch (Exception lEx) {
+				lBA = lHandshake.generateC2SRequest(lTempCookies);
+				mOut.write(lBA);
+
+				mStatus = WebSocketStatus.CONNECTING;
+
+				mHeaders = new Headers();
+				try {
+					mHeaders.readFromStream(aVersion, mIn);
+				} catch (Exception lEx) {
+					// ignore exception here, will be processed afterwards
+				}
+
+				// registering new cookies from the server response
+				List<String> lResponseCookies = (List) mHeaders.getField(Headers.SET_COOKIE);
+				mCookies.addAll(HttpCookie.parse(mURI, lResponseCookies));
+
+				if (!mHeaders.isValid()) {
+					WebSocketClientEvent lEvent =
+							new WebSocketBaseClientEvent(this, EVENT_CLOSE, "Handshake rejected.");
+					notifyClosed(lEvent);
+					mCheckReconnect(lEvent);
+					return;
+				}
+
+				// parse negotiated sub protocol
+				String lProtocol = (String) mHeaders.getField(Headers.SEC_WEBSOCKET_PROTOCOL);
+				if (lProtocol != null) {
+					mNegotiatedSubProtocol = new WebSocketSubProtocol(lProtocol, mEncoding);
+				} else {
+					// just default to 'jwebsocket.org.json' and 'text'
+					mNegotiatedSubProtocol = new WebSocketSubProtocol(
+							JWebSocketCommonConstants.WS_SUBPROT_DEFAULT,
+							JWebSocketCommonConstants.WS_ENCODING_DEFAULT);
+				}
+				// create new thread to receive the data from the new client
+				mReceiver = new WebSocketReceiver(this, mIn);
+				// and start the receiver thread for the port
+				mReceiver.start();
+				// now set official status, may listeners ask for that
+				mStatus = WebSocketStatus.OPEN;
+
+				// notifying logic "opening" listeners notification
+				// we consider that a client has finally openned when 
+				// the "max frame size" handshake has completed 
+				final WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_OPENING, null);
+				for (final WebSocketClientListener lListener : getListeners()) {
+					mListenersExecutor.submit(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								lListener.processOpening(lEvent);
+							} catch (Exception lEx) {
+							// nothing, soppose to be catched internally
+							}
+						}
+					});
+				}
+
+				// reset close reason to be specified by next reason
+				mCloseReason = null;
+			}else{
+				throw new IsAlreadyConnectedException("The Client is already connected");
+			}
+			
+		}catch(IsAlreadyConnectedException lex){ 
+			throw new IsAlreadyConnectedException(lex.getMessage());
+		}catch (Exception lEx) {
 			WebSocketClientEvent lEvent =
 					new WebSocketBaseClientEvent(this, EVENT_CLOSE, mCloseReason);
 			notifyClosed(lEvent);
@@ -1121,7 +1128,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			try {
 				// shutdown methods are not implemented for SSL sockets
 				if (!(mSocket instanceof SSLSocket)) {
-					if (!mSocket.isOutputShutdown()) {
+					if (!mSocket.isOutputShutdown()) { 
 						mSocket.shutdownOutput();
 					}
 				}
