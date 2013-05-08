@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.jwebsocket.client.java.BaseWebSocketClient;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.kit.IsAlreadyConnectedException;
 import org.jwebsocket.kit.WebSocketException;
 
 /**
@@ -47,7 +48,7 @@ public class CGIClient extends BaseWebSocketClient {
 	}
 
 	@Override
-	public void open(String aURL) throws WebSocketException {
+	public void open(String aURL) throws IsAlreadyConnectedException{
 		// establish connection to WebSocket Network
 		super.open(aURL);
 
