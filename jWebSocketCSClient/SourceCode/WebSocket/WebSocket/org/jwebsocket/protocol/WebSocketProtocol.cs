@@ -80,6 +80,8 @@ namespace WebSocket.org.jwebsocket.protocol
         private object mWriteLock = new object();
         private bool mIsRunning = false;
         private static readonly ILog mLog = LogManager.GetLogger(typeof(WebSocketProtocol).Name);
+        private Thread mPing = null;
+        private Thread mReconnect = null;
 
         #endregion
 
@@ -465,6 +467,7 @@ namespace WebSocket.org.jwebsocket.protocol
                 try
                 {
                     lPacket = WebSocketProtocolAbstraction.protocolToRawPacket(mNetStream);
+                    Console.WriteLine(lPacket.GetString());
                     lFrameType = (lPacket != null ? lPacket.FrameType : WebSocketFrameType.INVALID);
 
                     if (lFrameType.Equals(null))
@@ -645,8 +648,8 @@ namespace WebSocket.org.jwebsocket.protocol
 
         private void Ping()
         {
-            Thread lPing = new Thread(new ThreadStart(SendPings));
-            lPing.Start();
+            mPing = new Thread(new ThreadStart(SendPings));
+            mPing.Start();
         }
 
         private void SendPings()
@@ -657,7 +660,8 @@ namespace WebSocket.org.jwebsocket.protocol
             try
             {
                 Thread.Sleep(WebSocketConstants.DEFAULT_PING_DELAY);
-                WebSocketTimeout.CallWithTimeout(SendPacket, WebSocketConstants.DEFAULT_PING_TIMEOUT, lPacketPing);
+                if (IsRunning)
+                    WebSocketTimeout.CallWithTimeout(SendPacket, WebSocketConstants.DEFAULT_PING_TIMEOUT, lPacketPing);
             }
             catch (Exception lEx)
             {
@@ -784,8 +788,8 @@ namespace WebSocket.org.jwebsocket.protocol
                     if (mLog.IsDebugEnabled)
                         mLog.Debug(WebSocketMessage.CHECKING_RECONNECT);
                     mStatus = WebSocketStatus.RECONNECTING;
-                    Thread lReconnect = new Thread(new ThreadStart(Reconnet));
-                    lReconnect.Start();
+                    mReconnect = new Thread(new ThreadStart(Reconnet));
+                    mReconnect.Start();
                 }
             }
         }
