@@ -142,9 +142,13 @@ public class JWebSocketBeanFactory {
 			}
 		}
 
-		// destroying global application context
 		try {
-			mGlobalContext.refresh();
+		mGlobalContext.refresh();
+		} catch (Exception lEx){
+			// fails if running embedded in a Web app
+		}
+		try {
+			// destroying global application context
 			mGlobalContext.destroy();
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "destroying global bean factory..."));

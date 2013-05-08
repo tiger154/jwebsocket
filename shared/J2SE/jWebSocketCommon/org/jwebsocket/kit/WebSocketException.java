@@ -19,8 +19,8 @@
 package org.jwebsocket.kit;
 
 /**
- * Exception class to represent jWebSocketServer related exception, extended by
- * unique IDs to identify issue
+ * Exception class to represent jWebSocketServer related exception, extended by unique IDs to
+ * identify issue
  *
  * @author Puran Singh, Alexander Schulze
  *
@@ -30,46 +30,55 @@ public class WebSocketException extends Exception {
 	WebSocketExceptionType mExceptionType = WebSocketExceptionType.UNDEFINED;
 
 	/**
-	 * creates the exception with given message
+	 * Creates the exception with a given exception message
 	 *
-	 * @param aError the error message
+	 * @param aMessage the error message
 	 */
-	public WebSocketException(String aError) {
-		super(aError);
+	public WebSocketException(String aMessage) {
+		super(aMessage);
+	}
+
+	/**
+	 * Creates the exception with a given cause
+	 *
+	 * @param aCause
+	 */
+	public WebSocketException(Throwable aCause) {
+		super(aCause);
 	}
 
 	/**
 	 *
-	 * @param aError
+	 * @param aMessage
 	 * @param aExceptionType
 	 */
-	public WebSocketException(String aError,
+	public WebSocketException(String aMessage,
 			WebSocketExceptionType aExceptionType) {
-		super(aError);
+		super(aMessage);
 		mExceptionType = aExceptionType;
 	}
 
 	/**
 	 * creates the exception with given message
 	 *
-	 * @param aError the error message
+	 * @param aMessage the error message
 	 * @param aThrowable the cause
 	 * @param aExceptionType
 	 */
-	public WebSocketException(String aError,
+	public WebSocketException(String aMessage,
 			WebSocketExceptionType aExceptionType, Throwable aThrowable) {
-		super(aError, aThrowable);
+		super(aMessage, aThrowable);
 		mExceptionType = aExceptionType;
 	}
 
 	/**
 	 * creates the exception with given message
 	 *
-	 * @param aError the error message
+	 * @param aMessage the error message
 	 * @param throwable the cause
 	 */
-	public WebSocketException(String aError, Throwable throwable) {
-		super(aError, throwable);
+	public WebSocketException(String aMessage, Throwable throwable) {
+		super(aMessage, throwable);
 	}
 	private static final long serialVersionUID = 1L;
 }

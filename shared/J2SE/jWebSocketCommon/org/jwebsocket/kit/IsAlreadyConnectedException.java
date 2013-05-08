@@ -22,19 +22,17 @@ package org.jwebsocket.kit;
  *
  * @author rbetancourt
  */
-public class IsAlreadyConnectedException extends Exception{
-    
-    
-    
-	public IsAlreadyConnectedException(String error){
-		super(error);
+public class IsAlreadyConnectedException extends WebSocketException {
+
+	public IsAlreadyConnectedException(String aMessage) {
+		super(aMessage);
 	}
-    
-	public IsAlreadyConnectedException(Throwable throwable){
-		super(throwable);
+
+	public IsAlreadyConnectedException(Throwable aCause) {
+		super(aCause);
 	}
-    
-	public IsAlreadyConnectedException(String error, Throwable throwable){
-		super(error, throwable);
+
+	public IsAlreadyConnectedException(String aMessage, Throwable aCause) {
+		super(aMessage, aCause);
 	}
 }
