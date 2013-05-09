@@ -130,6 +130,15 @@ var App = (function() {
 					lIt.next().apply(this, lArgs);
 				}
 			}
+		},
+		getAppBeanFactory: function(){
+			return AppUtils.getAppBeanFactory();
+		},
+		getBeanFactory: function(aNamespace){
+			return AppUtils.getBeanFactory(aNamespace);
+		},
+		loadToAppBeanFactory: function(aFile){
+			AppUtils.loadToAppBeanFactory(aFile);
 		}
 	};
 })();
