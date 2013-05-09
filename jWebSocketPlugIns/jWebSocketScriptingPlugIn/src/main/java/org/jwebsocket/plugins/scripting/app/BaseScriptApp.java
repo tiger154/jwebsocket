@@ -34,9 +34,11 @@ import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.Assert;
 
 /**
@@ -260,4 +262,23 @@ abstract public class BaseScriptApp {
 	}
 
 	public abstract Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception;
+
+	public GenericApplicationContext getBeanFactory(String aNamespace) {
+		if (null == aNamespace) {
+			return JWebSocketBeanFactory.getInstance();
+		} else {
+			return JWebSocketBeanFactory.getInstance(aNamespace);
+		}
+	}
+
+	public GenericApplicationContext getAppBeanFactory() {
+		return getBeanFactory(mServer.getNamespace() + ":" + getName());
+	}
+
+	public void loadToAppBeanFactory(String aFile) throws Exception {
+		aFile = aFile.replace("${APP_HOME}", mAppPath);
+		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFile)));
+
+		JWebSocketBeanFactory.load(mServer.getNamespace() + ":" + getName(), aFile, getClass().getClassLoader());
+	}
 }
