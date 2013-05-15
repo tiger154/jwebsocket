@@ -80,7 +80,6 @@
 	-->
 	<!-- jWebSocket engine configuration -->
 	<engines>
-		<!-- TCP Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.tcp.TCPEngine</name>
 			<id>tcp0</id>
@@ -1606,7 +1605,7 @@
 				-->
 				<!-- <setting key="authentication_method">static</setting> -->
 				<!-- The fragment size attribute is used on the fragmentation of outgoing messages -->
-				<setting key="fragmentSize">2000</setting>
+				<setting key="fragmentSize">10000</setting>
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
