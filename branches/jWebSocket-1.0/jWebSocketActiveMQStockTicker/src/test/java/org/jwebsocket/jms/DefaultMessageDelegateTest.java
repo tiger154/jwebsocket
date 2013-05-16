@@ -1,3 +1,21 @@
+//  ---------------------------------------------------------------------------
+//  jWebSocket - DefaultMessageDelegateTest (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.jms;
 
 import javax.jms.ConnectionFactory;
@@ -17,22 +35,19 @@ import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@ContextConfiguration(locations = { "classpath:JMSPlugIn.xml" })
+@ContextConfiguration(locations = {"classpath:JMSPlugIn.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DefaultMessageDelegateTest {
 
 	private Logger mLog = Logging.getLogger(getClass());
-
 	@Autowired
 	ConnectionFactory mConnectionFactory;
-
 	@Autowired
 	Queue mQueue;
 
 	// @Autowired
 	// DefaultMessageListenerContainer cont;
 	//
-
 	@Test
 	public void testReceptionOfJmsMessages() {
 		Assert.assertNotNull(mConnectionFactory);
@@ -52,8 +67,9 @@ public class DefaultMessageDelegateTest {
 		lSender.setDefaultDestination(mQueue);
 		lSender.setPubSubDomain(false);
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 10; i++) {
 			lSender.convertAndSend("test string message");
+		}
 
 		try {
 			Thread.sleep(10000);
