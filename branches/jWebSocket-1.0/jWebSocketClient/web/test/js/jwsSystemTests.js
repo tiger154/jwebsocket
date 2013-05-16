@@ -259,7 +259,7 @@ jws.tests.System = {
 					return lResponse != null;
 				},
 				lSpec,
-				1000
+				3000
 				);
 		
 			runs( function() {
@@ -287,7 +287,7 @@ jws.tests.System = {
 					return lResponse != null;
 				},
 				lSpec,
-				1000
+				3000
 				);
 		
 			runs( function() {
@@ -347,7 +347,7 @@ jws.tests.System = {
 					return lResponse != null;
 				},
 				lSpec,
-				1000
+				2000
 				);
 		
 			runs( function() {
@@ -412,7 +412,7 @@ jws.tests.System = {
 					return lResponse != null;
 				},
 				lSpec,
-				1000
+				3000
 				);
 		
 			runs( function() {
@@ -443,7 +443,7 @@ jws.tests.System = {
 					return lResponse != null;
 				},
 				lSpec,
-				1000
+				3000
 				);
 		
 			runs( function() {
