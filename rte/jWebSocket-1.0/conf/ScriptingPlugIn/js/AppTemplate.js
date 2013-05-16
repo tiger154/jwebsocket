@@ -103,9 +103,9 @@ var App = (function() {
 		on: function(aEventName, aFn) {
 			if (Object.prototype.toString.call(aEventName) === '[object Array]') {
 				var $this = this;
-				aEventName.forEach(function(aItem) {
-					$this.on(aItem, aFn);
-				});
+				for (var lIndex = 0; lIndex < aEventName.length; lIndex++) {
+					$this.on(aEventName[lIndex], aFn);
+				}
 				return;
 			}
 			if (!mListeners.containsKey(aEventName)) {
