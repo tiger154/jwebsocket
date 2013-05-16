@@ -227,7 +227,7 @@
 
 				if(jws.browserSupportsWebSockets()){
 					lWSC = new jws.jWebSocketJSONClient();
-					lWSC.setHandleMessageCallbacks({
+					lWSC.setJMSCallbacks({
 						OnHandleJmsText : onHandleJmsText,
 						OnHandleJmsTextMessage : onHandleJmsTextMessage,
 						OnHandleJmsMap : onHandleJmsMap,
