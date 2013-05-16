@@ -127,6 +127,8 @@ function runFullTestSuite(aArgs) {
 	jasmine.DEFAULT_UPDATE_INTERVAL = 5;
 	
 	var lIncreaseTimeoutFactors = {
+		generic: 3,
+		generic_debug: 5,
 		normal: 1,
 		slow: 3,
 		very_slow: 5,
