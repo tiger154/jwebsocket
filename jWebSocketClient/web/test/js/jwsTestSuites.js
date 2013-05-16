@@ -65,7 +65,7 @@ function runEventsSuite() {
 	//run Events tests
 	jws.myConn = new jws.jWebSocketJSONClient();
 	jws.myConn.open(jws.JWS_SERVER_URL, {
-	// jws.myConn.open("wss://localhost:9797/jWebSocket/jWebSocket", {
+		// jws.myConn.open("wss://localhost:9797/jWebSocket/jWebSocket", {
 		OnWelcome: function (){
 			console.log("Welcome received...");
 			//Initializing events in the client... 
@@ -125,6 +125,17 @@ function runFullTestSuite(aArgs) {
 	 */
 	var lIntv = jasmine.DEFAULT_UPDATE_INTERVAL;
 	jasmine.DEFAULT_UPDATE_INTERVAL = 5;
+	
+	var lIncreaseTimeoutFactors = {
+		normal: 1,
+		slow: 3,
+		very_slow: 5,
+		fast: 0.7,
+		ultra_fast: 0.3,
+		fastest: 0.08
+	};
+	jasmine.INCREASE_TIMEOUT_FACTOR = lIncreaseTimeoutFactors[aArgs.__speed] || 1;
+
    
 	describe( "jWebSocket Test Suite", function () {
 		
