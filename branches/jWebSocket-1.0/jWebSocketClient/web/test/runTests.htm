@@ -132,6 +132,16 @@
 							<option value="performance">Performance</option>
 							<option value="ee">Enterprise Edition</option>
 						</select>
+						&nbsp;Speed:<select id="speed">
+							<option value="slow">Generic</option>
+							<option value="very_slow">Generic [log_mode=debug]</option>
+							<option value="normal">Normal</option>
+							<option value="slow">Slow</option>
+							<option value="very_slow">Very slow</option>
+							<option value="fast">Fast</option>
+							<option value="ultra_fast">Ultra fast</option>
+							<option value="fastest">Fastest</option>
+						</select>
 						<p id="tests">
 							<label><input id="openConns" type="checkbox" disabled checked="checked"> Open connections for admin and guest</label>
 							<br>
@@ -194,13 +204,14 @@
 			</table>
 		</div>
 		<script type="text/javascript">
-			
 			var lCheckboxes = $('#tests').find('input[type=checkbox]');
 			$.each(lCheckboxes,  function(aIndex, aItem){
 				if ($(aItem).prop('id').substr(-2) == 'EE'){
 					$(aItem).prop('checked', false);
 				}
 			});
+			
+			var lComboSpeed = $('#speed');
 			
 			var lCombo = $('#test_set');
 			lCombo.bind('change', function(aValue) {
@@ -251,6 +262,7 @@
 			function run( aCall ) {
 				if ( "runFullTestSuite" == aCall.action ){
 					aCall.set = $('#test_set').val();
+					aCall.speed = $('#speed').val();
 					aCall.args = {
 						openConns: true,
 						streamingPlugIn: (jws.$("streamingPlugIn").checked)? true : false,
@@ -265,7 +277,8 @@
 						load: (jws.$("load").checked)? true : false,
 						closeConns: true,
 						ioc: (jws.$("ioc").checked)? true : false,
-						events: (jws.$("events").checked)? true : false
+						events: (jws.$("events").checked)? true : false,
+						__speed: $('#speed').val()
 					};
 				}
 				location.href = getURL() + "?" + JSON.stringify(aCall);
@@ -279,6 +292,9 @@
 			
 			if (request['set']){
 				lCombo.val(request['set'])
+			}
+			if (request['speed']){
+				lComboSpeed.val(request['speed'])
 			}
 			if( request && request["action"] ) {
 				if ("runFullTestSuite" == request["action"] && !request["args"]){

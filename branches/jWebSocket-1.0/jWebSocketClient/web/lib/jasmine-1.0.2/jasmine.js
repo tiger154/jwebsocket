@@ -31,6 +31,12 @@ jasmine.DEFAULT_UPDATE_INTERVAL = 250;
  */
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 
+/**
+ * Default factor to increase the wait for timeout. Extension for jWebSocket tests 
+ * in slow machines
+ */
+jasmine.INCREASE_TIMEOUT_FACTOR = 1;
+
 jasmine.getGlobal = function() {
   function getGlobal() {
     return this;
@@ -512,7 +518,8 @@ var waits = function(timeout) {
  * @param {Number} optional_timeout
  */
 var waitsFor = function(latchFunction, optional_timeoutMessage, optional_timeout) {
-  jasmine.getEnv().currentSpec.waitsFor.apply(jasmine.getEnv().currentSpec, arguments);
+	optional_timeout = optional_timeout * jasmine.INCREASE_TIMEOUT_FACTOR;
+	jasmine.getEnv().currentSpec.waitsFor.apply(jasmine.getEnv().currentSpec, arguments);
 };
 
 /**
