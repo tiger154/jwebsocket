@@ -39,8 +39,8 @@ jws.ChannelPlugIn = {
 	GET_SUBSCRIPTIONS: "getSubscriptions",
 	AUTHORIZE: "authorize",
 	PUBLISH: "publish",
-	STOP: "stop",
-	START: "start",
+	STOP: "stopChannel",
+	START: "startChannel",
 	processToken: function(aToken) {
 		// check if namespace matches
 		if (aToken.ns == jws.ChannelPlugIn.NS) {
