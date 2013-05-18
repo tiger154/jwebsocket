@@ -1772,19 +1772,6 @@
 		</plugin>
 		-->
 		
-		<plugin>
-			<name>org.jwebsocket.plugins.scripting.ScriptingPlugIn</name>
-			<id>jWebSocketScriptingPlugIn</id>
-			<jar>jWebSocketScriptingPlugIn-1.0.jar</jar>
-			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ScriptingPlugIn/scripting.xml</setting>
-			</settings>
-			<server-assignments>
-				<server-assignment>ts0</server-assignment>
-			</server-assignments>
-		</plugin>
-		
-		
 		<!-- RTC plug-in -->
 		<plugin>
 			<name>org.jwebsocket.plugins.rtc.RTCPlugIn</name>
@@ -1813,13 +1800,13 @@
 		<!-- Sample for Java Card -->
 		<!--
 		<plugin>
-				<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
-				<ns>jc</ns>
-				<id>jws.jcdemo</id>
-				<jar>jWebSocketSamples-1.0.jar</jar>
-				<server-assignments>
-					<server-assignment>ts0</server-assignment>
-				</server-assignments>
+			<name>org.jwebsocket.plugins.events.EventsPlugIn</name>
+			<ns>jc</ns>
+			<id>jws.jcdemo</id>
+			<jar>jWebSocketSamples-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
 		</plugin>
 		-->
 		
