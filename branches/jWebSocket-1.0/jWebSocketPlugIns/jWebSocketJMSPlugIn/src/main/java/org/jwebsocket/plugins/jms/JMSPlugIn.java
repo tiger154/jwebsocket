@@ -64,7 +64,7 @@ public class JMSPlugIn extends TokenPlugIn {
 
 		this.setNamespace(NS_JMS);
 		try {
-			ApplicationContext lBeanFactory = getConfigBeanFactory();
+			ApplicationContext lBeanFactory = getConfigBeanFactory(NS_JMS);
 			mJmsManager = JmsManager.getInstance(aConfiguration.getSettings(),
 					lBeanFactory);
 		} catch (Exception lEx) {
@@ -115,13 +115,6 @@ public class JMSPlugIn extends TokenPlugIn {
 	/**
 	 * {@inheritDoc}
 	 */
-	/*
-	 * @Override public void connectorStarted(WebSocketConnector aConnector) {
-	 * super.connectorStarted(aConnector); }
-	 */
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
 		if (null != mJmsManager) {
@@ -154,9 +147,8 @@ public class JMSPlugIn extends TokenPlugIn {
 	 */
 	public void processToken(WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
-		String lNS = aToken.getNS();
 
-		if (lType == null || !getNamespace().equals(lNS)) {
+		if (lType == null) {
 			return;
 		}
 
