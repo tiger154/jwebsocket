@@ -21,7 +21,6 @@ package org.jwebsocket.plugins.jms;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -29,9 +28,7 @@ import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
-
 import javolution.util.FastSet;
-
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
