@@ -47,11 +47,9 @@ import org.jwebsocket.util.HttpCookie;
 import org.jwebsocket.util.Tools;
 
 /**
- * Base {@code WebSocket} implementation based on
- * http://weberknecht.googlecode.com by Roderick Baier. This uses thread model
- * for handling WebSocket connection which is defined by the
- * <tt>WebSocket</tt>
- * protocol specification. {@linkplain http://www.whatwg.org/specs/web-socket-protocol/}
+ * Base {@code WebSocket} implementation based on http://weberknecht.googlecode.com by Roderick
+ * Baier. This uses thread model for handling WebSocket connection which is defined by the
+ * <tt>WebSocket</tt> protocol specification. {@linkplain http://www.whatwg.org/specs/web-socket-protocol/}
  * {@linkplain http://www.w3.org/TR/websockets/}
  *
  * @author Roderick Baier
@@ -235,13 +233,13 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * @param aURI
 	 */
 	@Override
-	public void open(String aURI) throws IsAlreadyConnectedException{
+	public void open(String aURI) throws IsAlreadyConnectedException {
 		open(JWebSocketCommonConstants.WS_VERSION_DEFAULT, aURI);
 	}
 
 	/**
-	 * Make a sub protocol string for Sec-WebSocket-Protocol header. The result
-	 * is something like this:
+	 * Make a sub protocol string for Sec-WebSocket-Protocol header. The result is something like
+	 * this:
 	 * <pre>
 	 * org.jwebsocket.json org.websocket.text org.jwebsocket.binary
 	 * </pre>
@@ -265,7 +263,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * @param aVersion
 	 * @param aURI
 	 */
-	public void open(int aVersion, String aURI) throws IsAlreadyConnectedException{
+	public void open(int aVersion, String aURI) throws IsAlreadyConnectedException {
 		String lSubProtocols = generateSubProtocolsHeaderValue();
 		open(aVersion, aURI, lSubProtocols);
 	}
@@ -278,9 +276,9 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 */
 	public void open(int aVersion, String aURI, String aSubProtocols) throws IsAlreadyConnectedException {
 		try {
-		        if(!isConnected()){
+			if (!isConnected()) {
 				mAbortReconnect();
-	
+
 				// set default close reason in case 
 				// connection could not be established.
 				mCloseReason = "Connection could not be established.";
@@ -364,7 +362,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 							try {
 								lListener.processOpening(lEvent);
 							} catch (Exception lEx) {
-							// nothing, soppose to be catched internally
+								// nothing, soppose to be catched internally
 							}
 						}
 					});
@@ -372,13 +370,13 @@ public class BaseWebSocketClient implements WebSocketClient {
 
 				// reset close reason to be specified by next reason
 				mCloseReason = null;
-			}else{
+			} else {
 				throw new IsAlreadyConnectedException("The Client is already connected");
 			}
-			
-		}catch(IsAlreadyConnectedException lex){ 
+
+		} catch (IsAlreadyConnectedException lex) {
 			throw new IsAlreadyConnectedException(lex.getMessage());
-		}catch (Exception lEx) {
+		} catch (Exception lEx) {
 			WebSocketClientEvent lEvent =
 					new WebSocketBaseClientEvent(this, EVENT_CLOSE, mCloseReason);
 			notifyClosed(lEvent);
@@ -448,11 +446,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 							System.currentTimeMillis(),
 							lFragmentationId,
 							new InFragmentationListenerSender() {
-						@Override
-						public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
-							lSender.sendPacketInTransaction(aDataPacket, aListener);
-						}
-					}));
+								@Override
+								public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+									lSender.sendPacketInTransaction(aDataPacket, aListener);
+								}
+							}));
 					return;
 				}
 
@@ -1089,6 +1087,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 		private WebSocketClient mClient = null;
 		private InputStream mIS = null;
 		private volatile boolean mIsRunning = false;
+		private PingSenderTask mPingSender = new PingSenderTask();
 
 		public WebSocketReceiver(WebSocketClient aClient, InputStream aInput) {
 			mClient = aClient;
@@ -1106,9 +1105,9 @@ public class BaseWebSocketClient implements WebSocketClient {
 				processHixie();
 			} else {
 				// initiating the ping thread for this connection
-				sendPing();
+				mPingSender = new PingSenderTask();
+				Tools.getTimer().scheduleAtFixedRate(mPingSender, getPingInterval(), getPingInterval());
 				processHybi();
-
 			}
 
 			// set status AFTER close frame was sent, otherwise sending
@@ -1128,7 +1127,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			try {
 				// shutdown methods are not implemented for SSL sockets
 				if (!(mSocket instanceof SSLSocket)) {
-					if (!mSocket.isOutputShutdown()) { 
+					if (!mSocket.isOutputShutdown()) {
 						mSocket.shutdownOutput();
 					}
 				}
@@ -1153,6 +1152,9 @@ public class BaseWebSocketClient implements WebSocketClient {
 			notifyClosed(lEvent);
 
 			quit();
+
+			mPingSender.cancel();
+
 
 			if (!CR_CLIENT.equals(mCloseReason)) {
 				mCheckReconnect(lEvent);
@@ -1211,11 +1213,9 @@ public class BaseWebSocketClient implements WebSocketClient {
 						mIsRunning = false;
 						setCloseReason("Server closed connection");
 					} else if (WebSocketFrameType.PING == lFrameType) {
-						WebSocketPacket lPong = new RawPacket(
-								WebSocketFrameType.PONG, "");
-						send(lPong);
+						sendPong(new RawPacket(WebSocketFrameType.PONG, ""));
 					} else if (WebSocketFrameType.PONG == lFrameType) {
-						// TODO: need to process connection management here!
+						mStatus = WebSocketStatus.OPEN;
 					} else if (WebSocketFrameType.TEXT == lFrameType) {
 						lWSCE = new WebSocketTokenClientEvent(mClient, null, null);
 						notifyPacket(lWSCE, lPacket);
@@ -1227,9 +1227,9 @@ public class BaseWebSocketClient implements WebSocketClient {
 			}
 		}
 
-		private void sendPing() {
-			SendPing lSendPing = new SendPing();
-			lSendPing.start();
+		private void sendPong(WebSocketPacket aDataPacket) throws WebSocketException {
+			sendInternal(WebSocketProtocolAbstraction.rawToProtocolPacket(
+					mVersion, aDataPacket, WebSocketProtocolAbstraction.MASKED));
 		}
 
 		public void quit() {
@@ -1246,20 +1246,22 @@ public class BaseWebSocketClient implements WebSocketClient {
 			return mIsRunning;
 		}
 
-		class SendPing extends Thread {
+		class PingSenderTask extends TimerTask {
 
 			@Override
 			public void run() {
-				try {
-					Thread.currentThread().setName("jWebSocket-Client " + getId());
-					// TODO: Don't we need a loop here?
-					Thread.sleep(getPingInterval());
-					WebSocketPacket lPing = new RawPacket(WebSocketFrameType.PING, "Hello");
-					send(lPing);
-				} catch (Exception lEx) {
+				while (isAlive()) {
+					try {
+						Thread.currentThread().setName("jWebSocket-Client " + getId() + " PingPong processor");
+						Thread.sleep(getPingInterval());
+
+						WebSocketPacket lPing = new RawPacket(WebSocketFrameType.PING, "Hello");
+						sendInternal(WebSocketProtocolAbstraction.rawToProtocolPacket(
+								mVersion, lPing, WebSocketProtocolAbstraction.MASKED));
+					} catch (Exception lEx) {
+					}
 				}
 			}
-			// TODO: What about shutting down the thread on application termination?
 		}
 	}
 }

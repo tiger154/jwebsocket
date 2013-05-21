@@ -20,13 +20,14 @@ import org.jwebsocket.util.Tools;
 public class StressTest {
 
 	public static int connections = 0;
-	public static int concurrentConnections = 3000;
+	public static int concurrentConnections = 75;
 
 	public static void main(String[] args) {
 		final List<BaseTokenClient> lClients = new ArrayList();
 		try {
 			for (int i = 0; i < concurrentConnections; i++) {
 				final BaseTokenClient lClient = new BaseTokenClient();
+				lClient.setPingInterval(5000);
 				lClient.addListener(new WebSocketClientListener() {
 					@Override
 					public void processOpening(WebSocketClientEvent aEvent) {
