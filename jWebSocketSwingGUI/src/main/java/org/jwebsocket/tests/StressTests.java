@@ -36,7 +36,6 @@ public class StressTests implements WebSocketClientTokenListener {
 
 	private int MAX_CONNS = 200;
 	private BaseTokenClient[] mClients = new BaseTokenClient[MAX_CONNS];
-	private int PROT_VER = 8;
 	private volatile int mFinished = 0;
 
 	/**
@@ -79,9 +78,9 @@ public class StressTests implements WebSocketClientTokenListener {
 			lClient = mClients[lIdx];
 			lClient.setParam("idx", lIdx);
 			lClient.addTokenClientListener(this);
-			try{
-				lClient.open(PROT_VER, aURL);
-			}catch(IsAlreadyConnectedException lEx){
+			try {
+				lClient.open(aURL);
+			} catch (Exception lEx) {
 				mLog("Exception: " + lEx.getMessage());
 			}
 		}
