@@ -460,7 +460,7 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * @deprecated @param aConnector
+	 * @param aConnector 
 	 * @param aChunkable
 	 */
 	public void sendChunkable(WebSocketConnector aConnector, IChunkable aChunkable) {
