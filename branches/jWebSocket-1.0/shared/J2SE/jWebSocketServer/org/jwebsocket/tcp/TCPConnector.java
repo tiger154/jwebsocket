@@ -43,6 +43,7 @@ import org.jwebsocket.util.Tools;
  *
  * @author aschulze
  * @author jang
+ * @author kyberneees
  */
 public class TCPConnector extends BaseConnector {
 

@@ -40,8 +40,8 @@ import org.jwebsocket.tcp.nio.NioTcpEngine;
 import org.jwebsocket.tcp.nio.Util;
 
 /**
- * Implementation of the jWebSocket TCP engine. The TCP engine provide a Java
- * Socket implementation of the WebSocket protocol. It contains the handshake
+ * Implementation of the jWebSocket TCP engine. The TCP engine provide a Java Socket implementation
+ * of the WebSocket protocol. It contains the handshake
  *
  * @author aschulze
  * @author jang
@@ -69,8 +69,11 @@ public class TCPEngine extends BaseEngine {
 	 *
 	 */
 	public static String WRITER_TIMEOUT_CONFIG_KEY = "writer_timeout";
+	public static String TCP_NODELAY_CONFIG_KEY = "tcpNoDelay";
+	public static Boolean DEFAULT_TCP_NODELAY = true;
 	private int mNumWorkers = DEFAULT_NUM_WORKERS;
 	private int mWriterTimeout = DEFAULT_WRITER_TIMEOUT;
+	private boolean mTcpNoDelay = DEFAULT_TCP_NODELAY;
 
 	/**
 	 *
@@ -131,6 +134,22 @@ public class TCPEngine extends BaseEngine {
 			} catch (Exception lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx,
 						"setting '" + WRITER_TIMEOUT_CONFIG_KEY + "' configuration"));
+			}
+		}
+
+		if (getConfiguration().getSettings().containsKey(TCP_NODELAY_CONFIG_KEY)) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Setting '" + TCP_NODELAY_CONFIG_KEY + "' configuration "
+						+ "from engine configuration...");
+			}
+			try {
+				mTcpNoDelay = Boolean.parseBoolean(getConfiguration().
+						getSettings().
+						get(TCP_NODELAY_CONFIG_KEY).
+						toString());
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx,
+						"setting '" + TCP_NODELAY_CONFIG_KEY + "' configuration"));
 			}
 		}
 	}
@@ -396,8 +415,7 @@ public class TCPEngine extends BaseEngine {
 		private ServerSocket mServer = null;
 
 		/**
-		 * Creates the server socket listener for new incoming socket
-		 * connections.
+		 * Creates the server socket listener for new incoming socket connections.
 		 *
 		 * @param aEngine
 		 */
@@ -474,6 +492,8 @@ public class TCPEngine extends BaseEngine {
 
 					try {
 						WebSocketConnector lConnector = new TCPConnector(mEngine, lClientSocket);
+						// setting the TcpNoDelay property
+						lClientSocket.setTcpNoDelay(mTcpNoDelay);
 
 						// Check for maximum connections reached strategies
 						if (lReject) {
