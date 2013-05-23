@@ -399,9 +399,10 @@ public class NioTcpEngine extends BaseEngine {
 							getConfiguration().getMaxFramesize()));
 				}
 
-				mLog.info("NIO" + ((lConnector.isSSL()) ? "(SSL)" : "(plain)")
-						+ " client started. Address: " + lConnector.getRemoteHost()
-						+ "@" + lConnector.getRemotePort());
+				if (mLog.isInfoEnabled()) {
+					mLog.info("NIO" + ((lConnector.isSSL()) ? "(SSL)" : "(plain)")
+							+ " client '" + lConnector.getId() + "' started!");
+				}
 			}
 		} catch (IOException e) {
 			mLog.warn("Could not start new client connection!");
@@ -492,6 +493,11 @@ public class NioTcpEngine extends BaseEngine {
 
 			lConnector.setStatus(WebSocketConnectorStatus.DOWN);
 			lConnector.stopConnector(aReason);
+
+			if (mLog.isInfoEnabled()) {
+				mLog.info("NIO" + ((lConnector.isSSL()) ? "(SSL)" : "(plain)")
+						+ " client '" + lConnector.getId() + "' stopped!");
+			}
 		}
 	}
 
