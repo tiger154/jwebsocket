@@ -115,7 +115,7 @@ public class TCPConnector extends BaseConnector {
 			lNodeStr = "";
 		}
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Starting " + mLogInfo + " connector" + lNodeStr + " '" 
+			mLog.debug("Starting " + mLogInfo + " connector" + lNodeStr + " '"
 					+ getId() + "' on port "
 					+ lPort + " with timeout "
 					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
@@ -124,7 +124,7 @@ public class TCPConnector extends BaseConnector {
 		super.startConnector();
 
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Started " + mLogInfo + " connector" + lNodeStr + " '" 
+			mLog.info("Started " + mLogInfo + " connector" + lNodeStr + " '"
 					+ getId() + "' on port "
 					+ lPort + " with timeout "
 					+ (lTimeout > 0 ? lTimeout + "ms" : "infinite") + "");
@@ -181,7 +181,7 @@ public class TCPConnector extends BaseConnector {
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Stopping " + mLogInfo
-					+ " connector '" 
+					+ " connector '"
 					+ getId() + "' (" + aCloseReason.name() + ")...");
 		}
 		mCloseReason = aCloseReason;
@@ -206,7 +206,7 @@ public class TCPConnector extends BaseConnector {
 
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Stopped " + mLogInfo
-					+ " connector '" 
+					+ " connector '"
 					+ getId() + "' (" + mCloseReason
 					+ ") on port " + mClientSocket.getPort() + ".");
 		}
@@ -340,7 +340,7 @@ public class TCPConnector extends BaseConnector {
 			}
 		} while (System.currentTimeMillis() - lStart < CONNECT_TIMEOUT);
 		if (lTotal <= 0) {
-			mLog.warn("Connection "
+			mLog.warn(mLogInfo + " connection "
 					+ aClientSocket.getInetAddress() + ":"
 					+ aClientSocket.getPort()
 					+ " did not detect initial handshake (total bytes read: " + lTotal + ").");
@@ -377,7 +377,7 @@ public class TCPConnector extends BaseConnector {
 		byte[] lBA = WebSocketHandshake.generateS2CResponse(lReqMap);
 		if (lBA == null) {
 			if (mLog.isDebugEnabled()) {
-				mLog.warn("TCPEngine detected illegal handshake.");
+				mLog.warn(mLogInfo + " connector detected illegal handshake.");
 			}
 			return null;
 		}
@@ -452,7 +452,7 @@ public class TCPConnector extends BaseConnector {
 				RequestHeader lHeader = processHandshake(mClientSocket);
 				if (lHeader != null) {
 					setHeader(lHeader);
-					int lSessionTimeout = lHeader.getTimeout(getEngine().getSessionTimeout());
+					int lSessionTimeout = lHeader.getTimeout(getEngine().getConfiguration().getTimeout());
 					if (lSessionTimeout > 0) {
 						mClientSocket.setSoTimeout(lSessionTimeout);
 					}
@@ -468,7 +468,7 @@ public class TCPConnector extends BaseConnector {
 					}
 					lOk = true;
 				} else {
-					mLog.error("Client not accepted on port "
+					mLog.error(lLogInfo + " client not accepted on port "
 							+ mClientSocket.getPort()
 							+ " due to handshake issues");
 				}
@@ -483,7 +483,7 @@ public class TCPConnector extends BaseConnector {
 					return;
 				}
 			} catch (Exception lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "closing socket"));
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "closing " + lLogInfo + " socket"));
 				return;
 			}
 
@@ -495,7 +495,7 @@ public class TCPConnector extends BaseConnector {
 			mConnector.getSession().setSessionId(mConnector.getHeader().
 					getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
 
-			
+
 			// registering connector
 			getEngine().addConnector(mConnector);
 			// start connector
@@ -572,7 +572,7 @@ public class TCPConnector extends BaseConnector {
 					WebSocketPacket lPacket = WebSocketProtocolAbstraction.protocolToRawPacket(aVersion, mIn);
 					if (lPacket == null) {
 						if (mLog.isDebugEnabled()) {
-							mLog.debug("Processing client 'disconnect' from " + lFrom + "...");
+							mLog.debug("Processing " + mLogInfo + " client 'disconnect' from " + lFrom + "...");
 						}
 						mCloseReason = CloseReason.CLIENT;
 						setStatus(WebSocketConnectorStatus.DOWN);
@@ -581,7 +581,7 @@ public class TCPConnector extends BaseConnector {
 							mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, lPacket.size()));
 						} else {
 							if (mLog.isDebugEnabled()) {
-								mLog.debug("Processing 'text' frame from " + lFrom + "...");
+								mLog.debug("Processing 'text' frame (" + mLogInfo + ") from " + lFrom + "...");
 							}
 							mConnector.processPacket(lPacket);
 						}
@@ -591,14 +591,14 @@ public class TCPConnector extends BaseConnector {
 						}
 					} else if (WebSocketFrameType.PING.equals(lPacket.getFrameType())) {
 						if (mLog.isDebugEnabled()) {
-							mLog.debug("Processing 'ping' frame from " + lFrom + "...");
+							mLog.debug("Processing 'ping' frame (" + mLogInfo + ") from " + lFrom + "...");
 						}
 						WebSocketPacket lPong = new RawPacket("");
 						lPong.setFrameType(WebSocketFrameType.PONG);
 						sendPacket(lPong);
 					} else if (WebSocketFrameType.CLOSE.equals(lPacket.getFrameType())) {
 						if (mLog.isDebugEnabled()) {
-							mLog.debug("Processing 'close' frame from " + lFrom + "...");
+							mLog.debug("Processing 'close' frame (" + mLogInfo + ") from " + lFrom + "...");
 						}
 						mCloseReason = CloseReason.CLIENT;
 						setStatus(WebSocketConnectorStatus.DOWN);
@@ -610,17 +610,17 @@ public class TCPConnector extends BaseConnector {
 						sendPacket(lClose);
 						// the streams are closed in the run method
 					} else {
-						mLog.error("Unknown frame type '" + lPacket.getFrameType() + "', ignoring frame.");
+						mLog.error("Unknown frame type '" + lPacket.getFrameType() + "' (" + mLogInfo + "), ignoring frame.");
 					}
 				} catch (SocketTimeoutException lEx) {
 					if (mLog.isDebugEnabled()) {
-						mLog.error(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + "): " + lEx.getMessage());
+						mLog.error(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + ", " + mLogInfo + "): " + lEx.getMessage());
 					}
 					mCloseReason = CloseReason.TIMEOUT;
 					setStatus(WebSocketConnectorStatus.DOWN);
 				} catch (Exception lEx) {
 					if (mLog.isDebugEnabled() && WebSocketConnectorStatus.UP == getStatus()) {
-						mLog.error(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + "): " + lEx.getMessage());
+						mLog.error(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + ", " + mLogInfo + "): " + lEx.getMessage());
 					}
 					mCloseReason = CloseReason.SERVER;
 					setStatus(WebSocketConnectorStatus.DOWN);
