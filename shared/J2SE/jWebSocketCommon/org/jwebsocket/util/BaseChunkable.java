@@ -25,7 +25,7 @@ import org.jwebsocket.api.IChunkable;
  *
  * @author kyberneees
  */
-abstract class BaseChunkable implements IChunkable {
+abstract public class BaseChunkable implements IChunkable {
 
 	private String mNS;
 	private String mType;
