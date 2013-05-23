@@ -50,7 +50,7 @@ public class TCPConnector extends BaseConnector {
 	private InputStream mIn = null;
 	private OutputStream mOut = null;
 	private Socket mClientSocket = null;
-	private static final int CONNECT_TIMEOUT = 5000;
+	private static final int CONNECT_TIMEOUT = 5000 * 2;
 	/**
 	 *
 	 */
@@ -470,7 +470,10 @@ public class TCPConnector extends BaseConnector {
 				} else {
 					mLog.error(lLogInfo + " client not accepted on port "
 							+ mClientSocket.getPort()
-							+ " due to handshake issues");
+							+ " due to handshake issues. "
+							+ "Probably the client supported WebSocket protocol is not updated,"
+							+ "the SSL handshake could not be established or"
+							+ "the connection has been closed unexpectedly!");
 				}
 			} catch (Exception lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "executing handshake"));
