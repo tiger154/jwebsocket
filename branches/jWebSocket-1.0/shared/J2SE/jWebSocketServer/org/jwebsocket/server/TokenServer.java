@@ -512,6 +512,8 @@ public class TokenServer extends BaseServer {
 			lCurrentChunk.setChunk(true);
 			if (!lChunksIterator.hasNext()) {
 				lCurrentChunk.setLastChunk(true);
+			} else {
+				lCurrentChunk.setLastChunk(false);
 			}
 
 			// sending chunks
