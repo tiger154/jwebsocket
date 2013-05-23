@@ -21,6 +21,8 @@ package org.jwebsocket.tcp.nio;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.SocketOption;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.channels.spi.SelectorProvider;
@@ -90,7 +92,10 @@ public class NioTcpEngine extends BaseEngine {
 	private SSLContext mSSLContext;
 	private int mNumWorkers = DEFAULT_NUM_WORKERS;
 	private Map<String, NioTcpConnector> mBeforeHandshareConnectors = new FastMap<String, NioTcpConnector>().shared();
-
+	private boolean mTcpNoDelay = DEFAULT_TCP_NODELAY;
+	public static Boolean DEFAULT_TCP_NODELAY = true;
+	public static String TCP_NODELAY_CONFIG_KEY = "tcpNoDelay";
+	
 	/**
 	 *
 	 * @return
@@ -105,6 +110,22 @@ public class NioTcpEngine extends BaseEngine {
 	 */
 	public NioTcpEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
+		
+		if (getConfiguration().getSettings().containsKey(TCP_NODELAY_CONFIG_KEY)) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Setting '" + TCP_NODELAY_CONFIG_KEY + "' configuration "
+						+ "from engine configuration...");
+			}
+			try {
+				mTcpNoDelay = Boolean.parseBoolean(getConfiguration().
+						getSettings().
+						get(TCP_NODELAY_CONFIG_KEY).
+						toString());
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx,
+						"setting '" + TCP_NODELAY_CONFIG_KEY + "' configuration"));
+			}
+		}
 	}
 
 	@Override
@@ -118,6 +139,7 @@ public class NioTcpEngine extends BaseEngine {
 			mSSLSelector = SelectorProvider.provider().openSelector();
 
 			mPlainServer = Util.createServerSocketChannel(getConfiguration().getPort());
+			mPlainServer.setOption(StandardSocketOptions.TCP_NODELAY, mTcpNoDelay);
 			mPlainServer.register(mPlainSelector, SelectionKey.OP_ACCEPT);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Non-SSL server running at port: " + getConfiguration().getPort() + "...");
@@ -131,6 +153,7 @@ public class NioTcpEngine extends BaseEngine {
 					mLog.debug("SSLContext created with key-store: " + getConfiguration().getKeyStore() + "...");
 				}
 				mSSLServer = Util.createServerSocketChannel(getConfiguration().getSSLPort());
+				mSSLServer.setOption(StandardSocketOptions.TCP_NODELAY, mTcpNoDelay);
 				mSSLServer.register(mSSLSelector, SelectionKey.OP_ACCEPT);
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("SSL server running at port: " + getConfiguration().getSSLPort() + "...");
