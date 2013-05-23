@@ -80,6 +80,7 @@
 	-->
 	<!-- jWebSocket engine configuration -->
 	<engines>
+		<!-- TCP Engine Configuration -->
 		<engine>
 			<name>org.jwebsocket.tcp.TCPEngine</name>
 			<id>tcp0</id>
@@ -131,6 +132,9 @@
 				<setting key="workers">50</setting>
 				<!-- NIO output writer mechanism writes timeout -->
 				<setting key="writer_timeout">1000</setting>
+				<!-- Set socket TcpNoDelay property value
+				more detalis: http://www.rgagnon.com/javadetails/java-0294.html -->
+				<setting key="tcpNoDelay">true</setting>
 			</settings>		
 		</engine>
 	</engines>
@@ -192,6 +196,9 @@
 				<setting key="workers">50</setting>
 				<!-- NIO output writer mechanism writes timeout -->
 				<setting key="writer_timeout">1000</setting>
+				<!-- Set socket TcpNoDelay property value
+				more detalis: http://www.rgagnon.com/javadetails/java-0294.html -->
+				<setting key="tcpNoDelay">false</setting>
 			</settings>		
 		</engine>
 
@@ -237,6 +244,9 @@
 			<maxconnections>10000</maxconnections>
 			<settings>
 				<setting key="workers">500</setting>
+				<!-- Set socket channel TcpNoDelay property value
+				more detalis: http://www.rgagnon.com/javadetails/java-0294.html -->
+				<setting key="tcpNoDelay">true</setting>
 			</settings>			
 		</engine>
 
