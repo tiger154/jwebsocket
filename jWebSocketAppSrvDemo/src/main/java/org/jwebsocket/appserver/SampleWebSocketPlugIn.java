@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - SampleHttpServlet (Community Edition, CE)
+//	jWebSocket - SampleWebSocketPlugIn (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -20,15 +20,23 @@ package org.jwebsocket.appserver;
 
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.token.Token;
 
 /**
  * Sample jWebSocket plug-in
  *
- * @author kyberneees
+ * @author kyberneees, aschulze
  */
 public class SampleWebSocketPlugIn extends ActionPlugIn {
+
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket SampleWebSocketPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket SampleWebSocketPlugIn - Community Edition";
 
 	public SampleWebSocketPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -42,5 +50,35 @@ public class SampleWebSocketPlugIn extends ActionPlugIn {
 		lResponse.setString("data", "Hello '" + lName + "', from a jWebSocket plug-in ;)");
 
 		sendToken(aConnector, lResponse);
+	}
+
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
+
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
+
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
+
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
+
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
+
+	@Override
+	public String getLicense() {
+		return LICENSE;
 	}
 }
