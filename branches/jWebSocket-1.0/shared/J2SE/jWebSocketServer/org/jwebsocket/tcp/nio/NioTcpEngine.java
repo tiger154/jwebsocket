@@ -21,8 +21,6 @@ package org.jwebsocket.tcp.nio;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.SocketOption;
-import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.channels.spi.SelectorProvider;
@@ -47,6 +45,7 @@ import org.jwebsocket.tcp.EngineUtils;
 import org.jwebsocket.tcp.nio.ssl.IDelayedSSLPacketNotifier;
 import org.jwebsocket.tcp.nio.ssl.NioSSLHandler;
 import org.jwebsocket.util.Tools;
+import sun.nio.ch.SocketAdaptor;
 
 /**
  * <p> Tcp engine that uses java non-blocking io api to bind to listening port and handle
@@ -139,7 +138,6 @@ public class NioTcpEngine extends BaseEngine {
 			mSSLSelector = SelectorProvider.provider().openSelector();
 
 			mPlainServer = Util.createServerSocketChannel(getConfiguration().getPort());
-			mPlainServer.setOption(StandardSocketOptions.TCP_NODELAY, mTcpNoDelay);
 			mPlainServer.register(mPlainSelector, SelectionKey.OP_ACCEPT);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Non-SSL server running at port: " + getConfiguration().getPort() + "...");
@@ -153,7 +151,6 @@ public class NioTcpEngine extends BaseEngine {
 					mLog.debug("SSLContext created with key-store: " + getConfiguration().getKeyStore() + "...");
 				}
 				mSSLServer = Util.createServerSocketChannel(getConfiguration().getSSLPort());
-				mSSLServer.setOption(StandardSocketOptions.TCP_NODELAY, mTcpNoDelay);
 				mSSLServer.register(mSSLSelector, SelectionKey.OP_ACCEPT);
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("SSL server running at port: " + getConfiguration().getSSLPort() + "...");
@@ -392,6 +389,7 @@ public class NioTcpEngine extends BaseEngine {
 						+ ") not accepted due to max connections reached. Connection closed!");
 			} else {
 				SocketChannel lSocketChannel = ((ServerSocketChannel) aKey.channel()).accept();
+				lSocketChannel.socket().setTcpNoDelay(mTcpNoDelay);
 				lSocketChannel.configureBlocking(false);
 				lSocketChannel.register(aSelector, SelectionKey.OP_READ);
 
