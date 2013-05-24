@@ -116,7 +116,6 @@ xcopy %bin%jWebSocketAdmin.bat %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAdmin.sh %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAdmin_Ubuntu.sh %tempdir%bin\ /s /i /y
 xcopy %bin%jWebSocketAdmin.command %tempdir%bin\ /s /i /y
-xcopy %bin%jWebSocketAMQStockTicker.bat %tempdir%bin\ /s /i /y
 
 rem Database driver and other required external libs
 xcopy %libs%mysql-connector-java-5.1.16.jar %tempdir%libs\ /s /i /y
@@ -274,16 +273,12 @@ rem goto end
 
 :winexe
 
-rem --- jWebSocket Windows executable (32bit)
-set dest=%down%jWebSocketServer32-%ver%.zip
+rem --- jWebSocket Windows Executable
+set dest=%down%jWebSocketServer-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketServer32.exe"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketAdmin32.exe"
 7z u -mx9 -tzip "%dest%" "%depl%ReadMe_Server32.txt"
-
-rem --- jWebSocket Windows executable (64bit)
-set dest=%down%jWebSocketServer64-%ver%.zip
-if exist "%dest%" del "%dest%"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketServer64.exe"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketAdmin64.exe"
 7z u -mx9 -tzip "%dest%" "%depl%ReadMe_Server64.txt"
@@ -293,34 +288,31 @@ rem goto end
 
 :winservice
 
-rem --- jWebSocket Windows service  (32bit)
-set dest=%down%jWebSocketService32-%ver%.zip
+rem --- jWebSocket Windows Service
+set dest=%down%jWebSocketService-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketService32.exe"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketInstallService32.bat"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketUninstallService32.bat"
 7z u -mx9 -tzip "%dest%" "%depl%ReadMe_Service32.txt"
-
-rem ---  jWebSocket Windows service (64bit)
-set dest=%down%jWebSocketService64-%ver%.zip
-if exist "%dest%" del "%dest%"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketService64.exe"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketInstallService64.bat"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketUninstallService64.bat"
 7z u -mx9 -tzip "%dest%" "%depl%ReadMe_Service64.txt"
 
-rem ---  jWebSocket Apache MQ Stock Ticker service (32bit)
-set dest=%down%jWebSocketAMQStockTickerService32-%ver%.zip
+rem goto end
+
+
+:jms_stock_ticker
+
+rem ---  jWebSocket JMS/ApacheMQ Stock Ticker 
+set dest=%down%jWebSocketJMSStockTicker-%ver%.zip
 if exist "%dest%" del "%dest%"
-7z u -mx9 -tzip "%dest%" "%bin%jWebSocketAMQStockTickerService32.exe"
+7z u -mx9 -tzip "%dest%" "%bin%jWebSocketAMQStockTicker.bat"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketAMQStockTickerService32.exe"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketInstallAMQStockTickerService32.bat"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketUninstallAMQStockTickerService32.bat"
 7z u -mx9 -tzip "%dest%" "%depl%ReadMe_AMQStockTickerService32.txt"
-
-rem ---  jWebSocket Apache MQ Stock Ticker service (64bit)
-set dest=%down%jWebSocketAMQStockTickerService64-%ver%.zip
-if exist "%dest%" del "%dest%"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketAMQStockTickerService64.exe"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketInstallAMQStockTickerService64.bat"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketUninstallAMQStockTickerService64.bat"

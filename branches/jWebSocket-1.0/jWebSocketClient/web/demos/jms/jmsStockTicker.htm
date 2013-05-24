@@ -57,46 +57,43 @@
 				log("Login to " + jws.getDefaultServerURL() + " ...");
 				try {
 					var lRes = lWSC.logon(
-					jws.getDefaultServerURL(),
-					jws.GUEST_USER_LOGINNAME,
-					jws.GUEST_USER_PASSWORD,
-					{
-						// OnOpen callback
-						OnOpen : function(aEvent) {
-							log("<font style='color:#888'>jWebSocket connection established.</font>");
-							jws.$("simgStatus").src = "../../images/connected.png";
-						},
+							jws.getDefaultServerURL(),
+							jws.GUEST_USER_LOGINNAME,
+							jws.GUEST_USER_PASSWORD,
+							{
+								// OnOpen callback
+								OnOpen: function(aEvent) {
+									log("<font style='color:#888'>jWebSocket connection established.</font>");
+									jws.$("simgStatus").src = "../../images/connected.png";
+								},
+								OnWelcome: function() {
+									//getChannels();
+								},
+								// OnMessage callback
+								OnMessage: function(aEvent) {
+									/*
+									 log("<font style='color:#888'>jWebSocket message received: '"
+									 + aEvent.data + "'</font>");
+									 */
+									if (lWSC.isLoggedIn()) {
+										jws.$("simgStatus").src = "../../images/authenticated.png";
+									} else {
+										jws.$("simgStatus").src = "../../images/connected.png";
+									}
+									jws.$("slblClientId").innerHTML = "&nbsp;Client&#x2011;Id:&nbsp;"
+											+ lWSC.getId()
+											+ "&nbsp;"
+											+ (jws.browserSupportsNativeWebSockets ? "(native)"
+											: "(flashbridge)");
+								},
+								// OnClose callback
+								OnClose: function(aEvent) {
+									log("<font style='color:#888'>jWebSocket connection closed.</font>");
+									jws.$("simgStatus").src = "../../images/disconnected.png";
+									jws.$("slblClientId").innerHTML = "&nbsp;Client&#x2011;Id:&nbsp;-";
+								}
 
-						OnWelcome : function() {
-							//getChannels();
-						},
-
-						// OnMessage callback
-						OnMessage : function(aEvent) {
-							/*
-							log("<font style='color:#888'>jWebSocket message received: '"
-								+ aEvent.data + "'</font>");
-							*/
-							if (lWSC.isLoggedIn()) {
-								jws.$("simgStatus").src = "../../images/authenticated.png";
-							} else {
-								jws.$("simgStatus").src = "../../images/connected.png";
-							}
-							jws.$("slblClientId").innerHTML = "&nbsp;Client&#x2011;Id:&nbsp;"
-								+ lWSC.getId()
-								+ "&nbsp;"
-								+ (jws.browserSupportsNativeWebSockets ? "(native)"
-							: "(flashbridge)");
-						},
-
-						// OnClose callback
-						OnClose : function(aEvent) {
-							log("<font style='color:#888'>jWebSocket connection closed.</font>");
-							jws.$("simgStatus").src = "../../images/disconnected.png";
-							jws.$("slblClientId").innerHTML = "&nbsp;Client&#x2011;Id:&nbsp;-";
-						}
-
-					});
+							});
 				} catch (ex) {
 					log("Exception: " + ex.message);
 				}
@@ -108,7 +105,7 @@
 					lWSC.stopKeepAlive();
 					log("Disconnecting...");
 					var lRes = lWSC.close({
-						timeout : 3000
+						timeout: 3000
 					});
 					log(lWSC.resultToString(lRes));
 				}
@@ -117,47 +114,47 @@
 			function listen() {
 				log("Listen...");
 				lWSC.listenJms(getConnectionFactoryName(), getDestinationName(),
-				isPubSubDomain());
+						isPubSubDomain());
 			}
 
 			function unlisten() {
 				log("Unlisten...");
 				lWSC.unlistenJms(getConnectionFactoryName(), getDestinationName(),
-				isPubSubDomain());
-			}	
-	
+						isPubSubDomain());
+			}
+
 
 			function onHandleJmsTextMessage(aEvent) {
 				/*var msg = aEvent.msgPayLoad;
-				log("text message received:");
-				log(msg + " with the following JMS headers: " + getJmsHeadersToString(aEvent));*/
+				 log("text message received:");
+				 log(msg + " with the following JMS headers: " + getJmsHeadersToString(aEvent));*/
 			}
 
 			function onHandleJmsMap(aEvent) {
 				/*var msg = aEvent.msgPayLoad;
-				log("map received:");
-				log(msg);*/
+				 log("map received:");
+				 log(msg);*/
 			}
 
 			function onHandleJmsMapMessage(aEvent) {
 				/*var msg = aEvent.msgPayLoad;
-				log("map message received:");
-				log(msg + " with the following JMS headers: " + getJmsHeadersToString(aEvent));*/
+				 log("map message received:");
+				 log(msg + " with the following JMS headers: " + getJmsHeadersToString(aEvent));*/
 			}
-	
+
 			function getConnectionFactoryName() {
 				return jws.$("stxfConnectionFactoryName").value;
 			}
-	
+
 			function getDestinationName() {
 				return jws.$("stxfDestinationName").value;
 			}
-	
+
 			function isPubSubDomain() {
 				return jws.$("stxfPubSubDomain").checked;
 			}
-	
-    
+
+
 			var connection = null;
 			var stockRowIndexes = {};
 
@@ -169,8 +166,8 @@
 				// extract the stock data fields
 				var fields = body.split(':');
 				var company = fields[0];
-				var ticker  = fields[1];
-				var price   = fields[2];
+				var ticker = fields[1];
+				var price = fields[2];
 
 				// lookup the table row
 				var stockRowIndex = stockRowIndexes[ticker];
@@ -180,7 +177,7 @@
 				if (stockRow === undefined) {
 					var stockRowIndex = stockTable.rows.length;
 					stockRow = stockTable.insertRow(stockRowIndex);
-					for (var cell=0; cell < 5; cell++) {
+					for (var cell = 0; cell < 5; cell++) {
 						stockRow.insertCell(cell);
 					}
 					stockRow.cells[0].className = 'company';
@@ -194,8 +191,8 @@
 				// detect price change
 				var oldPrice = Number(stockRow.cells[2].innerHTML);
 				var oldChange = Number(stockRow.cells[3].innerHTML);
-				var change = ((oldPrice != 0) ? (price - oldPrice) : 0).toFixed(2);
-				var percent = ((oldPrice != 0) ? (change / oldPrice * 100) : 0).toFixed(1);
+				var change = ((oldPrice !== 0) ? (price - oldPrice) : 0).toFixed(2);
+				var percent = ((oldPrice !== 0) ? (change / oldPrice * 100) : 0).toFixed(1);
 
 				// update the table row cell data
 				stockRow.cells[0].innerHTML = company;
@@ -205,9 +202,9 @@
 				stockRow.cells[4].innerHTML = percent;
 
 				// update the table row cell styles
-				var oldSign = (oldChange != 0) ? oldChange / Math.abs(oldChange) : 0;
-				var sign = (change != 0) ? change / Math.abs(change) : 0;
-				if (sign != oldSign) {
+				var oldSign = (oldChange !== 0) ? oldChange / Math.abs(oldChange) : 0;
+				var sign = (change !== 0) ? change / Math.abs(change) : 0;
+				if (sign !== oldSign) {
 					switch (sign) {
 						case 1:
 							stockRow.cells[3].className = 'upChange';
@@ -220,18 +217,18 @@
 					}
 				}
 			}
-    
+
 			function initPage() {
 				eLog = jws.$("sdivChat");
 				eMessage = jws.$("stxfMsg");
 
-				if(jws.browserSupportsWebSockets()){
+				if (jws.browserSupportsWebSockets()) {
 					lWSC = new jws.jWebSocketJSONClient();
 					lWSC.setJMSCallbacks({
-						OnHandleJmsText : onHandleJmsText,
-						OnHandleJmsTextMessage : onHandleJmsTextMessage,
-						OnHandleJmsMap : onHandleJmsMap,
-						OnHandleJmsMapMessage : onHandleJmsMapMessage
+						OnHandleJmsText: onHandleJmsText,
+						OnHandleJmsTextMessage: onHandleJmsTextMessage,
+						OnHandleJmsMap: onHandleJmsMap,
+						OnHandleJmsMapMessage: onHandleJmsMapMessage
 					});
 				} else {
 					var lMsg = jws.MSG_WS_NOT_SUPPORTED;
@@ -260,8 +257,9 @@
 		<table class="tblHeader" width="100%" cellspacing="0" cellpadding="0">
 			<tr>
 				<td class="tdHeader" width="">jWebSocket JMS Stock Ticker Demo</td>
-				<td class="tdHeader" width="1%"><img id="simgStatus"
-													 src="../../images/disconnected.png" align="right" /></td>
+				<td class="tdHeader" width="1%">
+					<img id="simgStatus" src="../../images/disconnected.png" align="right" />
+				</td>
 				<td class="tdHeader" width="1%"><span id="slblClientId">&nbsp;Client&#x2011;Id:&nbsp;-</span>
 				</td>
 			</tr>
@@ -306,50 +304,55 @@
 														title="Logs you out and disconnects from the jWebSocket server.">
 					</td>
 					<td class="stdDlg" width="5">&nbsp;ConnectionFactory Name:</td>
-					<td width="70"><input class="stxfDlg"
-										  id="stxfConnectionFactoryName" type="text" readonly="true"
-										  value="connectionFactory" style="width: 99%"
-										  title="Name of the ConnectionFactory for creating JMS connections.">
+					<td width="70">
+						<input class="stxfDlg"
+							   id="stxfConnectionFactoryName" type="text" readonly="readonly"
+							   value="connectionFactory" style="width: 99%"
+							   title="Name of the ConnectionFactory for creating JMS connections.">
 					</td>
 
 				</tr>
 				<tr class="strDlg">
-					<td width=""><input class="sbtnDlg" id="sbtnListen"
-										type="button" value="Listen" onclick="listen();"
-										title="Listen to a JMS destination."></td>
-					<td class="stdDlg" width="5"><input class="sbtnDlg"
-														id="sbtnClear" type="button" value="Clear Log"
-														onclick="clearLog();"
-														title="Clears the result and event log above.">
+					<td width="">
+						<input class="sbtnDlg" id="sbtnListen"
+							   type="button" value="Listen" onclick="listen();"
+							   title="Listen to a JMS destination.">
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg"
+							   id="sbtnClear" type="button" value="Clear Log"
+							   onclick="clearLog();"
+							   title="Clears the result and event log above.">
 					</td>
 					<td class="stdDlg" width="5">&nbsp;Destination Name:</td>
 
-					<td width="70"><input class="stxfDlg" id="stxfDestinationName"
-										  type="text" value="stockTopic" style="width: 99%" readonly="true"
-										  title="Enter the name of a JMS destination.">
+					<td width="70">
+						<input class="stxfDlg" id="stxfDestinationName"
+							   type="text" value="stockTopic" style="width: 99%" readonly="readonly"
+							   title="Enter the name of a JMS destination.">
 					</td>
 				</tr>
 				<tr class="strDlg">
-					<td width=""><input class="sbtnDlg" id="sbtUnlisten"
-										type="button" value="Unlisten" onclick="unlisten();"
-										title="Unlisten from a JMS destination." />
+					<td width="">
+						<input class="sbtnDlg" id="sbtUnlisten"
+							   type="button" value="Unlisten" onclick="unlisten();"
+							   title="Unlisten from a JMS destination." />
 					</td>
 					<td width=""><!-- input class="sbtnDlg" id="sbtnSendText"
 						type="button" value="Send Text" onclick="sendText();"
 						title="Send text"-->
 					</td>
 					<td class="stdDlg" width="5">&nbsp;Topic:</td>
-					<td width="70"><input class="stxfDlg" id="stxfPubSubDomain"
-										  type="checkbox" title="isPubSubDomain" disabled="true" value="true" checked="true" readonly="true"/>
+					<td width="70">
+						<input class="stxfDlg" id="stxfPubSubDomain"
+							   type="checkbox" title="isPubSubDomain" disabled="disabled"
+							   value="true" checked="checked" readonly="readonly"/>
 					</td>
 				</tr>
 				<tr class="strDlg">
 					<td width="">
 					</td>
 				</tr>
-
-
-
 			</table>
 		</div>
 

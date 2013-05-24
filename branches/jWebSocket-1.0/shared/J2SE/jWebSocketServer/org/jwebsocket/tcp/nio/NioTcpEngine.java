@@ -45,7 +45,6 @@ import org.jwebsocket.tcp.EngineUtils;
 import org.jwebsocket.tcp.nio.ssl.IDelayedSSLPacketNotifier;
 import org.jwebsocket.tcp.nio.ssl.NioSSLHandler;
 import org.jwebsocket.util.Tools;
-import sun.nio.ch.SocketAdaptor;
 
 /**
  * <p> Tcp engine that uses java non-blocking io api to bind to listening port and handle
