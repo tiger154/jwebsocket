@@ -42,7 +42,7 @@
 //:d:en:an ExtJS class.
 Ext.define( 'Ext.jws.Client', {
 	extend: 'Ext.util.Observable',
-//	requires: [ 'Ext.form.Basic' ],
+	alternateClassName: 'Ext.jws',
 	singleton: true,
 	fTokenClient: undefined,
 	constructor: function( aConfig ) {
@@ -99,7 +99,9 @@ Ext.define( 'Ext.jws.Client', {
 				this.fTokenClient = aTokenClient;
 			}
 			else {
-				this.fTokenClient = new jws.jWebSocketJSONClient();
+				if ( !this.fTokenClient ) {
+					this.fTokenClient = new jws.jWebSocketJSONClient();
+				}
 			}
 
 			// If user pass a custom timeout, then the jWebSocket Client will 
@@ -107,48 +109,49 @@ Ext.define( 'Ext.jws.Client', {
 			if ( aTimeout ) {
 				this.setDefaultTimeOut( aTimeout );
 			}
-
-			// Binding the jWebSocketTokenClient callbacks and firing events 
-			// within the Ext.jws class when messages arrive from the server
-			this.fTokenClient.open( lUrl, {
-				OnOpen: function( aToken ) {
-					// Executing the init method of the class to override the 
-					// prototype of load and submit methods of the Ext.form class
-					self.init();
-					var lMsg = "jWebSocket connection opened";
-					self.fireEvent( 'open', aToken );
-					if ( Ext.Logger ) {
-						Ext.Logger.log( lMsg );
-					} else {
-						Ext.log( lMsg );
+			if ( typeof this.fTokenClient.isConnected === "function" && !this.fTokenClient.isConnected() ) {
+				// Binding the jWebSocketTokenClient callbacks and firing events 
+				// within the Ext.jws class when messages arrive from the server
+				this.fTokenClient.open( lUrl, {
+					OnOpen: function( aToken ) {
+						// Executing the init method of the class to override the 
+						// prototype of load and submit methods of the Ext.form class
+						self.init();
+						var lMsg = "jWebSocket connection opened";
+						self.fireEvent( 'open', aToken );
+						if ( Ext.Logger ) {
+							Ext.Logger.log( lMsg );
+						} else {
+							Ext.log( lMsg );
+						}
+					},
+					OnWelcome: function( aToken ) {
+						self.fireEvent( 'welcome', aToken );
+					},
+					OnClose: function( aToken ) {
+						var lMsg = "jWebSocket connection closed, please " +
+								"check that your jWebSocket server is running";
+						if ( Ext.Logger ) {
+							Ext.Logger.warn( lMsg );
+						} else {
+							Ext.log( lMsg );
+						}
+						self.fireEvent( 'close', aToken );
+					},
+					OnTimeout: function() {
+						self.fireEvent( 'timeout' );
+					},
+					OnLogon: function( aToken ) {
+						self.fireEvent( 'logon', aToken );
+					},
+					OnLogoff: function( aToken ) {
+						self.fireEvent( 'logoff', aToken );
+					},
+					OnMessage: function( aToken ) {
+						self.fireEvent( 'message', aToken );
 					}
-				},
-				OnWelcome: function( aToken ) {
-					self.fireEvent( 'welcome', aToken );
-				},
-				OnClose: function( aToken ) {
-					var lMsg = "jWebSocket connection closed, please " +
-							"check that your jWebSocket server is running";
-					if ( Ext.Logger ) {
-						Ext.Logger.warn( lMsg );
-					} else {
-						Ext.log( lMsg );
-					}
-					self.fireEvent( 'close', aToken );
-				},
-				OnTimeout: function() {
-					self.fireEvent( 'timeout' );
-				},
-				OnLogon: function( aToken ) {
-					self.fireEvent( 'logon', aToken );
-				},
-				OnLogoff: function( aToken ) {
-					self.fireEvent( 'logoff', aToken );
-				},
-				OnMessage: function( aToken ) {
-					self.fireEvent( 'message', aToken );
-				}
-			} );
+				} );
+			}
 		}
 		else {
 			var lMsg = jws.MSG_WS_NOT_SUPPORTED;

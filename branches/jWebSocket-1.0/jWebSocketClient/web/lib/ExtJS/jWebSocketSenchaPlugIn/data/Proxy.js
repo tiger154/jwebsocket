@@ -55,7 +55,7 @@ Ext.define( 'Ext.jws.data.Proxy', {
 			rootProperty: 'data',
 			totalProperty: 'totalCount'
 		},
-		autoOpen: true
+		autoOpen: false
 	},
 	//:m:*:constructor
 	//:d:en:Creates the Ext.jws.data.Proxy, throws an error if namespace is not given
@@ -73,19 +73,18 @@ Ext.define( 'Ext.jws.data.Proxy', {
 			}
 		}
 		this.callParent( [ aConfig ] );
-		var lFtokenClient = Ext.jws.Client.getConnection() || { };
-
+		var lFtokenClient = Ext.jws.getConnection() || { };
 		if ( typeof lFtokenClient.isConnected === "undefined" && this.config.autoOpen ) {
 			var lMsg = "The connection is being opened by the proxy, if you " +
 					"don't want to let the proxy open the connection itself " +
 					"you can open your own connection by invoking " +
-					"Ext.jws.Client.open() in your main app";
+					"Ext.jws.open() in your main app";
 			if ( Ext.Logger ) {
 				Ext.Logger.warn( lMsg );
 			} else {
 				Ext.log( lMsg );
 			}
-			Ext.jws.Client.open();
+			Ext.jws.open();
 		}
 	},
 	//:m:*:doRequest
@@ -106,7 +105,7 @@ Ext.define( 'Ext.jws.data.Proxy', {
 			}
 
 			var lToken = aSelf.setupDataForRequest( lRequest );
-			Ext.jws.Client.send( lToken.ns, lToken.type, lToken.data, {
+			Ext.jws.send( lToken.ns, lToken.type, lToken.data, {
 				success: function( aToken ) {
 					var lText = Ext.encode( aToken );
 					var lResponse = { request: lRequest,
@@ -135,11 +134,11 @@ Ext.define( 'Ext.jws.data.Proxy', {
 				}
 			}, aScope );
 		}
-		var lFtokenClient = Ext.jws.Client.getConnection() || { };
+		var lFtokenClient = Ext.jws.getConnection() || { };
 		if ( typeof lFtokenClient.isConnected !== "undefined" ) {
 			lExecutionScope( aOperation, aCallback, aScope, self );
 		} else {
-			Ext.jws.Client.addListener( "open", function() {
+			Ext.jws.addListener( "open", function() {
 				lExecutionScope( aOperation, aCallback, aScope, self );
 			} );
 		}
