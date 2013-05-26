@@ -42,7 +42,7 @@
 //:d:en:an ExtJS class.
 Ext.define( 'Ext.jws.Client', {
 	extend: 'Ext.util.Observable',
-	alternateClassName: 'Ext.jws',
+	alternateClassName: 'Ext.jwsClient',
 	singleton: true,
 	fTokenClient: undefined,
 	constructor: function( aConfig ) {
@@ -254,7 +254,18 @@ Ext.define( 'Ext.jws.Client', {
 	//:a:en::::none
 	//:r:*::void:none
 	close: function() {
-		this.fTokenClient.close();
-		this.fireEvent( 'close' );
+		try {
+			var lRes = this.fTokenClient.close( {
+				timeout: 3000
+			} );
+
+			if ( lRes.code != 0 ) {
+				console.log( lRes.msg );
+			} else {
+				this.fireEvent( 'close' );
+			}
+		} catch ( aException ) {
+			jws.console.log( aException );
+		}
 	}
 } );
