@@ -19,6 +19,10 @@
     background-image: url(images/delete.png) !important;
 }
 
+.icon-reset {
+    background-image: url(images/reset.png) !important;
+}
+
 .x-ie6 .icon-user {
     background-image: url(images/user.gif) !important;
 }
