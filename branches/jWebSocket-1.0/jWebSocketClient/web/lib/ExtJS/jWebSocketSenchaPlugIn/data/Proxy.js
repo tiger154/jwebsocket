@@ -68,8 +68,10 @@ Ext.define( 'Ext.jws.data.Proxy', {
 					"a namespace, jws proxy requires a namespace";
 			if ( Ext.Logger ) {
 				Ext.Logger.error( lMsg );
-			} else {
+			} else if ( Ext.error ) {
 				Ext.error.raise( lMsg );
+			} else {
+				jws.console.log( lMsg );
 			}
 		}
 		this.callParent( [ aConfig ] );
@@ -82,7 +84,7 @@ Ext.define( 'Ext.jws.data.Proxy', {
 			if ( Ext.Logger ) {
 				Ext.Logger.warn( lMsg );
 			} else {
-				Ext.log( lMsg );
+				jws.console.log( lMsg );
 			}
 			Ext.jws.Client.open();
 		}
