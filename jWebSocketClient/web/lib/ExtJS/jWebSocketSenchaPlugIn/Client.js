@@ -122,7 +122,7 @@ Ext.define( 'Ext.jws.Client', {
 						if ( Ext.Logger ) {
 							Ext.Logger.log( lMsg );
 						} else {
-							Ext.log( lMsg );
+							jws.console.log( lMsg );
 						}
 					},
 					OnWelcome: function( aToken ) {
@@ -134,7 +134,7 @@ Ext.define( 'Ext.jws.Client', {
 						if ( Ext.Logger ) {
 							Ext.Logger.warn( lMsg );
 						} else {
-							Ext.log( lMsg );
+							jws.console.log( lMsg );
 						}
 						self.fireEvent( 'close', aToken );
 					},
@@ -260,7 +260,7 @@ Ext.define( 'Ext.jws.Client', {
 			} );
 
 			if ( lRes.code != 0 ) {
-				console.log( lRes.msg );
+				jws.console.log( lRes.msg );
 			} else {
 				this.fireEvent( 'close' );
 			}
