@@ -93,7 +93,7 @@ public class NioTcpEngine extends BaseEngine {
 	private boolean mTcpNoDelay = DEFAULT_TCP_NODELAY;
 	public static Boolean DEFAULT_TCP_NODELAY = true;
 	public static String TCP_NODELAY_CONFIG_KEY = "tcpNoDelay";
-	
+
 	/**
 	 *
 	 * @return
@@ -108,7 +108,7 @@ public class NioTcpEngine extends BaseEngine {
 	 */
 	public NioTcpEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
-		
+
 		if (getConfiguration().getSettings().containsKey(TCP_NODELAY_CONFIG_KEY)) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Setting '" + TCP_NODELAY_CONFIG_KEY + "' configuration "
@@ -595,6 +595,10 @@ public class NioTcpEngine extends BaseEngine {
 						clientDisconnect(aConnector, CloseReason.SERVER_REDIRECT_CONNECTION);
 					}
 				} else {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Parsing handshake request: " + new String(aBean.getData()).replace("\r\n", "\\n"));
+					}
+
 					Map lReqMap = WebSocketHandshake.parseC2SRequest(aBean.getData(), false);
 
 					EngineUtils.parseCookies(lReqMap);
@@ -603,9 +607,11 @@ public class NioTcpEngine extends BaseEngine {
 						((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, Tools.getMD5(UUID.randomUUID().toString()));
 					}
 
-					byte[] lResponse = WebSocketHandshake.generateS2CResponse(lReqMap);
 					RequestHeader lReqHeader = EngineUtils.validateC2SRequest(
 							getConfiguration().getDomains(), lReqMap, mLog);
+
+					byte[] lResponse = WebSocketHandshake.generateS2CResponse(lReqMap);
+
 					if (lResponse == null || lReqHeader == null) {
 						if (mLog.isDebugEnabled()) {
 							mLog.warn("TCP-Engine detected illegal handshake.");
@@ -618,6 +624,11 @@ public class NioTcpEngine extends BaseEngine {
 					aConnector.getSession().setSessionId(lReqHeader.getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
 
 					send(aConnector.getId(), new DataFuture(aConnector, ByteBuffer.wrap(lResponse)));
+
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Flushing handshake response: " + new String(lResponse).replace("\r\n", "\\n"));
+					}
+
 					int lTimeout = lReqHeader.getTimeout(getSessionTimeout());
 					if (lTimeout > 0) {
 						mConnectorToChannelMap.get(aBean.getConnectorId()).socket().setSoTimeout(lTimeout);
