@@ -18,11 +18,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.extjs.Util;
 
+import org.jwebsocket.api.ITokenizable;
+import org.jwebsocket.token.Token;
+
 /**
  *
  * @author Osvaldo Aguilar Lauzurique, Alexander Rojas Hernandez
  */
-public class User {
+public class User implements ITokenizable {
 
 	private Integer mId;
 	private String mName;
@@ -99,5 +102,18 @@ public class User {
 	 */
 	public void setAge(Integer aAge) {
 		this.mAge = aAge;
+	}
+
+	@Override
+	public void writeToToken(Token aToken) {
+		aToken.setInteger("id", mId);
+		aToken.setString("name", mName);
+		aToken.setString("email", mEmail);
+		aToken.setInteger("age", mAge);
+	}
+
+	@Override
+	public void readFromToken(Token aToken) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
