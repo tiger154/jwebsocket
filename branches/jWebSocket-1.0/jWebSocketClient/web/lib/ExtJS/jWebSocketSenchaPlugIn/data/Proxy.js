@@ -183,11 +183,17 @@ Ext.define( 'Ext.jws.data.Proxy', {
 			default:
 				break;
 		}
-
+		var lIsEmpty = function( aObject ) {
+			for ( var lIdx in aObject ) {
+				return false;
+			}
+			return true;
+		}
+		lData = !lIsEmpty( lData ) ? lData : lParams || null;
 		return  {
 			ns: lNS,
 			type: lTokenType,
-			data: lData || lParams || null
+			data: lData
 		};
 	},
 	setException: function( aOperation, aResponse ) {
