@@ -355,13 +355,6 @@ public class SystemPlugIn extends TokenPlugIn {
 			}
 		}
 
-		// notify session started
-		WebSocketSession lSession = aConnector.getSession();
-		if (null != lSession.getStorage() && null == lSession.getCreatedAt()) {
-			lSession.setCreatedAt();
-			startSession(aConnector, aConnector.getSession());
-		}
-
 		if (ALLOW_ANONYMOUS_LOGIN && null == aConnector.getUsername()) {
 			setUsername(aConnector, ANONYMOUS_USER);
 		}
@@ -371,6 +364,13 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// if new connector is active broadcast this event to then network
 		broadcastConnectEvent(aConnector);
+		
+		// notify session started
+		WebSocketSession lSession = aConnector.getSession();
+		if (null != lSession.getStorage() && null == lSession.getCreatedAt()) {
+			lSession.setCreatedAt();
+			startSession(aConnector, aConnector.getSession());
+		}
 	}
 
 	@Override
