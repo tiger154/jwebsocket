@@ -62,7 +62,7 @@ Ext.define( 'Ext.jws.data.Proxy', {
 	//:a:en::aConfig:Object:The proxy configuration, this parameter is required.
 	//:r:*::void:none
 	constructor: function( aConfig ) {
-		config = aConfig || { };
+		aConfig = aConfig || { };
 		if ( typeof aConfig.ns === "undefined" ) {
 			var lMsg = "To instantiate a jWebSocket proxy is required " +
 					"a namespace, jws proxy requires a namespace";
