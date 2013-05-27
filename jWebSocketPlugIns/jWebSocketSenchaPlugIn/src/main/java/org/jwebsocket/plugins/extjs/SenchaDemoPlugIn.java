@@ -36,7 +36,7 @@ import org.jwebsocket.token.TokenFactory;
 
 /**
  *
- * @author Osvaldo Aguilar Lauzurique, Alexander Rojas Hernandez
+ * @author Osvaldo Aguilar Lauzurique, (oaguilar, La Habana), Alexander Rojas Hernandez (arojas, Pinar del Rio), Victor Antonio Barzana Crespo (vbarzana, Münster Westfalen)
  *
  */
 public class SenchaDemoPlugIn extends TokenPlugIn {
@@ -111,6 +111,8 @@ public class SenchaDemoPlugIn extends TokenPlugIn {
 				proccessDestroy(aResponse, aConnector, aToken);
 			} else if (aToken.getType().equals("update")) {
 				proccessUpdate(aResponse, aConnector, aToken);
+			} else if (aToken.getType().equals("reset")) {
+				proccessReset(aResponse, aConnector, aToken);
 			}
 
 		}
@@ -169,40 +171,41 @@ public class SenchaDemoPlugIn extends TokenPlugIn {
 
 	private void proccessRead(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 
-		Token result = createResponse(aToken);
-		FastList<User> data = new FastList<User>();
-		Integer id = null;
+		Token lResult = createResponse(aToken);
+		FastList<Token> lResultList = new FastList<Token>();
+		Integer lId = aToken.getInteger("id");
 
-		try {
-			id = Integer.parseInt(aToken.getString("id"));
-		} catch (Exception exp) {
-		}
-
-		if (id != null) {
-			User customer = mUsers.getCustomer(id);
-			data.add(customer);
-
-		} else {
-
-			Integer start = aToken.getInteger("start");
-			Integer limit = aToken.getInteger("limit");
-			List<User> lSubList =
-					mUsers.getSubList(start, start + limit);
-			FastList<Token> lList = new FastList<Token>();
-			for (User lCustomer : lSubList) {
+		if (lId != null) {
+			User lCustomer = mUsers.getCustomer(lId);
+			if (lCustomer != null) {
 				Token lTk = TokenFactory.createToken();
-				lTk.setInteger("id", lCustomer.getId());
-				lTk.setString("name", lCustomer.getName());
-				lTk.setString("email", lCustomer.getEmail());
-				lTk.setInteger("age", lCustomer.getAge());
-				lList.add(lTk);
+				lCustomer.writeToToken(lTk);
+				lResultList.add(lTk);
+			} else {
+				lResult.setString("msg", "The user with id: " + lId + " does not exist in the server");
+				lResult.setCode(-1);
 			}
-			result.setList("data", lList);
+		} else {
+			Integer lStart = aToken.getInteger("start");
+			Integer lLimit = aToken.getInteger("limit");
+			List<User> lUsersList;
+			if(lStart != null && lLimit != null ) {
+				lUsersList = mUsers.getSubList(lStart, lStart + lLimit);
+			} else {
+				lUsersList = mUsers.getCustomers();
+			}
 
-			result.setInteger("code", 0);
-			result.setInteger("totalCount", mUsers.getSize());
+			for (User lCustomer : lUsersList) {
+				Token lTk = TokenFactory.createToken();
+				lCustomer.writeToToken(lTk);
+				lResultList.add(lTk);
+			}
+			lResult.setInteger("totalCount", mUsers.getSize());
 		}
-		getServer().sendToken(aConnector, result);
+		
+		lResult.setList("data", lResultList);
+		
+		getServer().sendToken(aConnector, lResult);
 
 	}
 
@@ -253,29 +256,27 @@ public class SenchaDemoPlugIn extends TokenPlugIn {
 			age = Integer.parseInt(aToken.getString("age"));
 		}
 
-		User customer = mUsers.getCustomer(id);
+		User lCustomer = mUsers.getCustomer(id);
 
-		if (customer == null) {
+		if (lCustomer == null) {
 			result.setInteger("code", -1);
 			msg = "there is no customer with id " + id + " and name " + name;
 		} else {
-			customer.setEmail(email);
-			customer.setName(name);
-			customer.setAge(age);
+			lCustomer.setEmail(email);
+			lCustomer.setName(name);
+			lCustomer.setAge(age);
 
 			msg = "User with id: " + id + " updated correctly";
 
 			FastList<User> data = new FastList<User>();
-			data.add(customer);
+			data.add(lCustomer);
 			result.setList("data", data);
-
-
 		}
 
 		result.setString("message", msg);
 		getServer().sendToken(aConnector, result);
 
-		if (customer != null) {
+		if (lCustomer != null) {
 			notifyAllConectors("notifyUpdate", msg);
 		}
 	}
@@ -302,5 +303,11 @@ public class SenchaDemoPlugIn extends TokenPlugIn {
 
 		String msg = "delete success customer with id: " + id;
 		notifyAllConectors("notifyDestroy", msg);
+	}
+	
+	private void proccessReset(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+		mUsers = new Users();
+		String msg = "All the changes have been restored by " + aConnector.getId() + "@" + aConnector.getUsername();
+		notifyAllConectors("notifyReset", msg);
 	}
 }
