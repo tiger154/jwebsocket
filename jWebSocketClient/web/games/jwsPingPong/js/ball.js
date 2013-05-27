@@ -21,35 +21,35 @@
  * @author armando
  */
 $.widget( "jws.ball", {
-    _init: function(  ) {
-        w.ball        = this; 
-		
-		w.ball.eBall   = w.ball.element.find( '#ball' );
-        w.ball.eBall.hide(  );
-	    w.ball.onMessage(  );
-    }, 
-    onMessage: function(  ) {
-     
-        $.jws.bind( NS + ':ball', function( aEvt, aToken ) {
-            w.ball.updateBall( aToken.width, aToken.height );           
-        } ); 
-        $.jws.bind( NS + ':moveball', function( aEvt, aToken ) {
-           w.ball.moveBall( aToken.posX,aToken.posY );           
-        } );
-        $.jws.bind( NS + ':sound', function( aEvt, aToken ) {
-            $( "#sound" )[0].play(  );
-        } );
-    },
-    updateBall: function( aWidth, aHeight ) {
-        w.ball.eBall.css( { 
-            'width': aWidth + 2 +'px', 
-            'height': aHeight +3 +'px'                        
-        } );        
-    },
-    moveBall: function( posX,posY ) {
-       w.ball.eBall.css( { 
-            'left' :posX+'px', 
-            'top' :posY+'px'                        
-        } );   
-    }
+	_init: function(  ) {
+		w.ball = this;
+
+		w.ball.eBall = w.ball.element.find( '#ball' );
+		w.ball.eBall.hide(  );
+		w.ball.onMessage(  );
+	},
+	onMessage: function(  ) {
+
+		$.jws.bind( NS + ':ball', function( aEvt, aToken ) {
+			w.ball.updateBall( aToken.width, aToken.height );
+		} );
+		$.jws.bind( NS + ':moveball', function( aEvt, aToken ) {
+			w.ball.moveBall( aToken.posX, aToken.posY );
+		} );
+		$.jws.bind( NS + ':sound', function( aEvt, aToken ) {
+			$( "#sound" )[0].play(  );
+		} );
+	},
+	updateBall: function( aWidth, aHeight ) {
+		w.ball.eBall.css( {
+			'width': aWidth + 2 + 'px',
+			'height': aHeight + 3 + 'px'
+		} );
+	},
+	moveBall: function( posX, posY ) {
+		w.ball.eBall.css( {
+			'left': posX + 'px',
+			'top': posY + 'px'
+		} );
+	}
 } );

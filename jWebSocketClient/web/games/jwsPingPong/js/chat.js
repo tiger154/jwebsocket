@@ -21,109 +21,107 @@
  * @author armando
  */
 $.widget( "jws.chat", {
-	_init:function(  ) {
-		
-		w.chat=this;
-		
-		w.chat.eChat			   = w.chat.element.find( '#chat' )       
-		w.chat.eScenarioChat	   = w.chat.element.find( '#scenario_chat' )       
-		w.chat.eWindow			   = w.chat.element.find( "#chat_text" );
-		w.chat.eArea			   = w.chat.element.find( "#messages_area" );
-		w.chat.eMinimized		   = w.chat.element.find( "#minimized" )
-		w.chat.eMinimizeChatText   = w.chat.element.find( "#minimize_chat_text" );
-		w.chat.eBallTimeout		   = 0;
-		
-		w.chat.hidden			   = true;		
-		w.chat.minimized		   = false;
-						
-		w.chat.registerEvents(  );
+	_init: function(  ) {
+
+		w.chat = this;
+
+		w.chat.eChat = w.chat.element.find( '#chat' )
+		w.chat.eScenarioChat = w.chat.element.find( '#scenario_chat' )
+		w.chat.eWindow = w.chat.element.find( "#chat_text" );
+		w.chat.eArea = w.chat.element.find( "#messages_area" );
+		w.chat.eMinimized = w.chat.element.find( "#minimized" )
+		w.chat.eMinimizeChatText = w.chat.element.find( "#minimize_chat_text" );
+		w.chat.eBallTimeout = 0;
+
+		w.chat.hidden = true;
+		w.chat.minimized = false;
+
+		w.chat.registerEvents( );
 		w.chat.onMessage(  );
-		w.chat.eWindow.hide(  );
-		w.chat.eScenarioChat.hide(  );
-	}, 
-    
-	registerEvents:function(  ) {
-		w.chat.eChat.bind( 'focus',function(  ) {
+		w.chat.eMinimized.hide( );
+		w.chat.eWindow.hide( );
+		w.chat.eScenarioChat.hide( );
+	},
+	registerEvents: function(  ) {
+		w.chat.eChat.bind( 'focus', function(  ) {
 			w.chat.messageOnClick(  );
 		} );
-		w.chat.eChat.bind( 'blur',function(  ) {
+		w.chat.eChat.bind( 'blur', function(  ) {
 			w.chat.messageOnBlur(  );
 		} );
-		
+
 		w.chat.eChat.keypress( function( aEvt ) {
-			if( aEvt.charCode == 13 || aEvt.keyCode == 13 ) {
+			if ( aEvt.charCode == 13 || aEvt.keyCode == 13 ) {
 				w.chat.broadcastMessage( $( this ).val(  ) );
 				$( this ).val( "" );
-				if( w.chat.hidden ) {
+				if ( w.chat.hidden ) {
 					w.chat.eWindow.fadeIn( 150 );
 					w.chat.hidden = false;
 				}
-				else if( w.chat.minimized ) {
+				else if ( w.chat.minimized ) {
 					w.chat.restore(  );
 				}
 			}
 		} );
-		w.chat.eMinimizeChatText.click( function(  ) {
-			w.chat.minimize(  );
-		} );
-	},    
+		w.chat.eMinimizeChatText.click( w.chat.minimize );
+		w.chat.eMinimized.click( w.chat.restore );
+	},
 	minimize: function(  ) {
-		w.chat.eWindow.slideUp(  );
-		var elem = $( "<div id='minimized'>Back to chat</div>" ).click( function(  ) {
-			w.chat.restore(  );
-		} );
-		eObjArea.prepend( elem );
+		w.chat.eWindow.stop().slideUp(  );
+		w.chat.eMinimized.show( );
+//		var elem = $( "<div id='minimized'>Back to chat</div>" ).click( function(  ) {
+//			w.chat.restore(  );
+//		} );
+//		if ( typeof w.chat.element.find( "#minimized" ).get( 0 ) === "undefined" ) {
+//			eObjArea.prepend( elem );
+//		}
 		w.chat.minimized = true;
 	},
-	restore: function(  ) {
-		w.chat.eWindow.slideDown(  );
-		w.chat.eMinimized.fadeOut( function(  ) {
-			$( this ).remove(  );
-		} );
+	restore: function( ) {
+		w.chat.eWindow.stop( ).slideDown( );
+		w.chat.eMinimized.hide( );
 		w.chat.minimized = false;
 	},
-	addText: function( text, user, username ) {
-		if( user=="0" ) {
-			var $O_p   = $( "<div><p class='sms'><label id='user_name_a'>"+username+": "+"</label>"+text+"</p></div>" );
-		}else{
-			$O_p   = $( "<div><p class='sms'><label id='user_name_b'>"+username+": "+"</label>"+text+"</p></div>" );
-		}
-		w.chat.eArea.append( $O_p );       
+	addText: function( aText, aUser, aUsername ) {
+		var lClass = (aUser !== "0") ? "user_name_a" : "user_name_b";
+
+		var lHtml = $( "<div><p class='sms'><label class='" + lClass + "'>" +
+				aUsername + ": " + "</label>" + aText + "</p></div>" );
+
+		w.chat.eArea.append( lHtml );
 		w.chat.eArea.scrollTop( w.chat.eArea.get( 0 ).scrollHeight - w.chat.eArea.get( 0 ).clientHeight );
-		w.chat.eMinimized.fadeOut( function(  ) {
-			$( this ).remove(  );
-		} );
+		w.chat.eMinimized.fadeOut( );
 	},
 	broadcastMessage: function( text ) {
 		var lArgs = {
 			text: text
 		};
-		$.jws.submit( NS,"sms", lArgs );
+		$.jws.submit( NS, "sms", lArgs );
 	},
 	onMessage: function(  ) {
 		$.jws.bind( NS + ':sms', function( aEvt, aToken ) {
-			if( w.chat.hidden ) {
+			if ( w.chat.hidden ) {
 				w.chat.eWindow.fadeIn( 150 );
 				w.chat.hidden = false;
 			}
-			else if( w.chat.minimized ) {
+			else if ( w.chat.minimized ) {
 				w.chat.restore(  );
 			}
-			w.chat.addText( aToken.text,aToken.user,aToken.username );
-			if(  w.chat.eBallTimeout ) clearTimeout(  w.chat.eBallTimeout );
-			w.chat.eBallTimeout = setTimeout( 'w.chat.minimize()', 5000 );           
+			w.chat.addText( aToken.text, aToken.user, aToken.username );
+			clearTimeout( w.chat.eBallTimeout );
+			w.chat.eBallTimeout = setTimeout( 'w.chat.minimize()', 5000 );
 		} );
-        
+
 	},
-	messageOnBlur:function(  ) {		
-		if( w.chat.eChat.val(  ) == "" ) {
+	messageOnBlur: function(  ) {
+		if ( w.chat.eChat.val(  ) == "" ) {
 			w.chat.eChat.val( "Type your message..." ).css( 'color', 'graytext' );
 		}
-			
+
 	},
-	messageOnClick: function(  ) {       
-		if(  w.chat.eChat.val(  ) == "Type your message..." ) {
+	messageOnClick: function(  ) {
+		if ( w.chat.eChat.val(  ) == "Type your message..." ) {
 			w.chat.eChat.val( "" ).css( 'color', 'black' );
-		} 
+		}
 	}
 } );

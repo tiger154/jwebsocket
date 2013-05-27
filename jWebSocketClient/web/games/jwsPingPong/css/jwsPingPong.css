@@ -20,7 +20,7 @@ p{
 }
 
 #main_content{
-	height: 405px;
+	height: 370px;
 	float: left;
 	/*width: 100%;*/
 	-webkit-border-radius: 6px;
@@ -38,6 +38,7 @@ p{
 #no_users {
 	font-size: 12px;
 	color: graytext;
+	padding-left: 5px;
 }
 
 /* head */
@@ -45,7 +46,6 @@ p{
 #register_area{
 	float: left;
 	width: 480px;
-	margin-left: 45px;
 }
 #register_form{
     float:left;
@@ -113,13 +113,13 @@ p{
 /* Scenario */
 /*---------------------------------------------------------------------------*/
 #scenario_header{
-    height: 35px;
+    height: 30px;
     font-size: 15pt;
     font-weight: bold;
     font-family: "Verdana";
     color: #b2b2b2;
-    padding-left: 17px;
-	padding-top: 15px;
+    padding-left: 10px;
+	padding-top: 10px;
 }
 #scenario_header_left{
     float: left;
@@ -130,18 +130,28 @@ p{
     padding-right: 30px;
 }
 #scenario_chat{
-	float: left;
-	margin-left: 220px;
+	width: 300px;
+	margin: auto;
 	height: 35px;
-    font-size: 15pt;
     font-weight: bold;
     font-family: "Verdana";
     padding-left: 5px;
-	padding-top: 5px;
 	text-align: center;
 }
+
+#scenario_chat .chat_text{
+	margin-top: 3px;
+	float: left;
+	font-size: 10pt;
+	padding-top: 3px;
+}
+
 #chat {
-	width: 280px;
+	margin-top: 3px;
+	width: 150px;
+	float: left;
+	margin-left: 10px;
+	padding-left: 5px;
 
 }
 /* Ranking */
@@ -149,7 +159,7 @@ p{
 #ranking{
     float:left;
 	margin-left: 5px;
-    height: 280px;
+    height: 277px;
     width: 104px;
     background: #FFFFFF;
     padding: 3px;
@@ -179,14 +189,14 @@ p{
 	margin-top: 3px;
 }
 /*---------------------------------------------------------------------------*/
-/* Estadio */
+/* board */
 /*---------------------------------------------------------------------------*/
 #board{
 	position: relative;
     float:left;
     background: transparent url(images/scenario.png) no-repeat;
-    height: 286px;
-    width: 464px;
+    height: 284px;
+    width: 460px;
 	margin-left: 5px;
 }
 #obj_area{
@@ -202,8 +212,8 @@ p{
     float:left;
 	margin-left: 5px;
 	margin-right: 5px;
-    height: 235px;
-    width: 100px;
+    height: 237px;
+    width: 110px;
     background: #FFFFFF;
     overflow: auto;
     font-size: 11pt;
@@ -232,7 +242,7 @@ p{
     float:left;
     margin-left: 5px;
     margin-top: 5px;
-    font-size: 11pt;
+    font-size: 10pt;
     font-family: "Verdana" !important;
     text-transform: uppercase;
 }
@@ -338,8 +348,8 @@ input.enabled{
 }
 #chat_text{
     position: absolute;
-    margin-top: 90px;
-    margin-left: 125px;
+    margin-top: 50px;
+    margin-left: 110px;
     border:  1px solid gray;
     resize: both;
     width: 240px;
@@ -353,12 +363,17 @@ input.enabled{
     max-height: 180px;
 }
 
+#messages_area{
+	overflow: auto;
+}
+
 #minimized{
     position: absolute;
     width: 110px;
     height: 20px; 
-    left: 195px;
+	margin-left: 37%;
     top: 5px;
+	font-size: 10pt;
     cursor: pointer;
     background: transparent url(images/chat_box.png);
 	text-align: center;
@@ -389,17 +404,19 @@ input.enabled{
 }
 /*---------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*/
-#user_name_a{
+.user_name_a{
     color:gold;
     padding: 0px;
     margin: 0px;
     font-weight: bold;
+	float: left;
 }
-#user_name_b{
+.user_name_b{
     color:chartreuse;
     padding: 0px;
     margin: 0px;
     font-weight: bold;
+	float: left;
 }
 /*---------------------------------------------------------------------------*/
 #ball{
