@@ -34,13 +34,15 @@ set libsEE=%homeEE%libs\
 set depl=..\jWebSocketDeployment\jWebSocket\
 set down=..\..\..\downloads\jWebSocket-%ver%\
 
-rem goto android_demo
+rem goto appserver
+
 
 :cleanup
 echo removing obsolete development logfile from packages...
 del %logs%*.log
 echo cleaning up temporary work files...
 del /p /s %src%*.?.nblh~
+
 
 :clone
 echo cloning jWebSocket.ks KeyStore to Jetty Project /conf folder
@@ -60,13 +62,14 @@ if exist %dest% del %dest%
 rem Source Code Modules
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketActiveMQStockTicker" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAndroid" -xr!target -xr!.svn -xr!build -xr!bin -xr!.DS_Store
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAppServer" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAppSrvDemo" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketWebAppDemo" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketBlackBerry" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketClient" -xr!target -xr!devguide -xr!quickguide -xr!javadocs -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketClientAPI" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketCommon" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketCSClient" -xr!.svn -xr!Client.exe -xr!ClientLibrary.dll -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketEngines" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketDeployment" -xr!.svn -xr!*.tmp* -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJavaME" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJavaMEClient" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
@@ -258,6 +261,7 @@ rem spring config files (from v1.0)
 
 rem goto end
 
+
 :tomcatbundle
 
 rem ignore this for now
@@ -270,6 +274,7 @@ if exist "%dest%" del "%dest%"
 7z u -mx9 -r -tzip "%dest%" "%depl%ReadMe_TomcatBundle.txt"
 
 rem goto end
+
 
 :winexe
 
@@ -341,17 +346,26 @@ rem goto end
 
 :appserver
 
-rem set dest=%down%jWebSocketAppServer-%ver%.zip
-rem if exist "%dest%" del "%dest%"
-rem 7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketAppServer-%ver%.war"
-rem 7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketSamples-%ver%.jar"
-rem 7z u -mx9 -r -tzip "%dest%" "%depl%ReadMe_AppServer.txt"
+set base=..\..\..\..\
+set sc=jWebSocketDev\branches\jWebSocket-%ver%\
+set dest=jWebSocketDev\downloads\jWebSocket-%ver%\jWebSocketWebAppDemo-%ver%.zip
+if exist %dest% del %dest%
+pushd %base%
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketWebAppDemo" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+popd
+
+rem goto end
 
 set dest=%down%jWebSocketAppSrvDemo-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketAppSrvDemo-%ver%.war"
-7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketSamples-%ver%.jar"
+rem 7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketSamples-%ver%.jar"
 7z u -mx9 -r -tzip "%dest%" "%depl%ReadMe_AppSrvDemo.txt"
+
+set dest=%down%jWebSocketTomcatEngine-%ver%.zip
+if exist "%dest%" del "%dest%"
+7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketTomcatEngine-%ver%.jar"
+7z u -mx9 -r -tzip "%dest%" "%depl%ReadMe_TomcatEngine.txt"
 
 set dest=%down%jWebSocketJetty-%ver%.zip
 if exist "%dest%" del "%dest%"
@@ -390,7 +404,7 @@ rem goto end
 set dest=%down%jWebSocket-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketAndroidDemo-%JWEBSOCKET_VER%.zip"
-rem 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketAppServer-%JWEBSOCKET_VER%.zip"
+7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketWebAppDemo-%JWEBSOCKET_VER%.zip"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketAppSrvDemo-%JWEBSOCKET_VER%.zip"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketClient-%JWEBSOCKET_VER%.zip"
 rem 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketFullSources-%JWEBSOCKET_VER%.zip"

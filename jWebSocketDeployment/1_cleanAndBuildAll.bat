@@ -37,8 +37,15 @@ del /p /s *.?.nblh~
 
 call mvn clean install
 
+rem jWebSocketWebAppDemo
+cd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketWebAppDemo
+call ant
+
 rem restore current dir
 popd 
+
+rem copy newly created libs to Tomcat's lib folder
+call libs2tomcat.bat %1
 
 rem cd jWebSocketDeployment
 
