@@ -43,7 +43,7 @@ $.widget( "jws.stage", {
 	onMessage: function(  ) {
 		//Creating the scenario
 		$.jws.bind( NS + ':stage', function( aEvt, aToken ) {
-			eStage.initStage( aToken.width, aToken.height, aToken.gameBorder );
+			eStage.initStage( aToken.width, aToken.height );
 		} );
 		$.jws.bind( NS + ':gameover', function( aEvt, aToken ) { 
 			eStage.gameOver( aToken.gameover, aToken.message );           
@@ -62,10 +62,10 @@ $.widget( "jws.stage", {
 			dialog( "Ping Pong Game", aToken.username + ' has left the game', true );
 		} );
 	},
-	initStage:function( aWidth, aHeight, aGameBorder ) {
+	initStage:function( aWidth, aHeight ) {
 		eBoard.css( {
-			'width': aWidth - aGameBorder * 2 + 'px', 
-			'height': aHeight- aGameBorder * 2 + 'px'
+			'width': aWidth + 'px',
+			'height': aHeight + 'px'
 		} );
 	},
 	gameOver: function( aGameOver, aMessage ) {
@@ -94,8 +94,6 @@ $.widget( "jws.stage", {
 		}
 		closeDialog(  );
 		eSendPause.html( "" );
-		eMessagesArea.html( "" );
-		w.chat.minimize(  );
 	},
 	counter:function( aCounter ) {
 		if( aCounter == 0 ) {

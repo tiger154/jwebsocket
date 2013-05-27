@@ -29,7 +29,7 @@ $.widget( "jws.menu", {
 		w.menu.mIsSoundActive		= true;
 		
 		w.menu.eSendPpause			= w.menu.element.find( '#send_pause' );
-		w.menu.eSound   			= w.menu.element.find( '#sound' );
+		w.menu.eSound   			= w.menu.element.find( '#sound_btn' );
 		w.menu.eHelp				= w.menu.element.find( '#help' );
 		w.menu.eNewGame			    = w.menu.element.find( '#new_game' );
 		w.menu.ePause				= w.menu.element.find( '#pause' );
@@ -82,6 +82,8 @@ $.widget( "jws.menu", {
 		w.menu.eSound.mouseout( function(  ) {
 			if(  w.menu.mIsSoundActive  ) {
 				$( this ).attr( "class", "button onmouseout" );
+			} else {
+				$( this ).attr( "class", "button onmousedown" );
 			}
 		} );
 	},

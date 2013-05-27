@@ -48,7 +48,9 @@ $.widget( "jws.connected", {
 			}
 			if( aToken.available && aToken.playing ) {
 				if( aToken.available.length == 0 && ( aToken.playing.length == 0 ) ) {
-					w.conn.element.append( $( "<div id='no_users'>No users online, please wait for someone!</div>" ) );
+					if( typeof w.conn.element.find("#no_users").get(0) === "undefined" ) {
+						w.conn.element.append( $( "<div id='no_users'>No users online, please wait for someone!</div>" ) );
+					}
 				}
 				else{
 					w.conn.element.find( "#no_users" ).remove(  );
