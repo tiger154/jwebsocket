@@ -66,9 +66,8 @@ public class TCPConnector extends BaseConnector {
 	private TimeoutOutputStreamNIOWriter mOutputStreamNIOSender;
 
 	/**
-	 * creates a new TCP connector for the passed engine using the passed client
-	 * socket. Usually connectors are instantiated by their engine only, not by
-	 * the application.
+	 * creates a new TCP connector for the passed engine using the passed client socket. Usually
+	 * connectors are instantiated by their engine only, not by the application.
 	 *
 	 * @param aEngine
 	 * @param aClientSocket
@@ -349,9 +348,6 @@ public class TCPConnector extends BaseConnector {
 		}
 		byte[] lReq = lBAOS.toByteArray();
 
-		/*
-		 * please keep comment for debugging purposes!
-		 */
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Parsing handshake request: " + new String(lReq).replace("\r\n", "\\n"));
 		}
@@ -369,7 +365,7 @@ public class TCPConnector extends BaseConnector {
 
 		RequestHeader lHeader = EngineUtils.validateC2SRequest(
 				getEngine().getConfiguration().getDomains(), lReqMap, mLog);
-		if (lHeader == null) {
+		if (null == lHeader) {
 			return null;
 		}
 
@@ -383,12 +379,8 @@ public class TCPConnector extends BaseConnector {
 			return null;
 		}
 
-		/*
-		 * please keep comment for debugging purposes!
-		 */
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Flushing handshake response: " + new String(lBA).replace("\r\n", "\\n"));
-			// mLog.debug("Flushing initial WebSocket handshake...");
 		}
 
 		lOut.write(lBA);

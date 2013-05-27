@@ -78,7 +78,8 @@ public class EngineUtils {
 
 		boolean lAccepted = isOriginValid(aReqMap.get("origin").toString(), aDomains);
 		if (!lAccepted) {
-			aLogger.error("Client origin '" + aReqMap.get("origin") + "' does not match allowed domains!");
+			aLogger.error("Client origin '" + aReqMap.get("origin") + "' does not match allowed domains."
+					+ "Please check for your active engine <domains> section in jWebSocket.xml!");
 			return null;
 		}
 
