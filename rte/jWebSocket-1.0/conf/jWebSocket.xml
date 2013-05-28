@@ -47,6 +47,11 @@
 			<url>${JWEBSOCKET_HOME}libs/ojdbc14-10.2.0.4.jar</url>
 			<description>Oracle JDBC Driver 10.2.0.4 ro access Oracle SQL Databases from jWebSocket</description>
 		</library>
+		<library>
+			<id>SQLLiteDriver</id>
+			<url>${JWEBSOCKET_HOME}libs/sqlite-jdbc-3.7.2.jar</url>
+			<description>SQLLite JDBC driver to access SQLLite databases from jWebSocket and its plug-ins</description>
+		</library>
 		-->
 		<library>
 			<id>MySQLJDBCDriver</id>
@@ -54,9 +59,9 @@
 			<description>MySQL JDBC driver to access MySQL databases from jWebSocket and its plug-ins</description>
 		</library>
 		<library>
-			<id>SQLLiteDriver</id>
-			<url>${JWEBSOCKET_HOME}libs/sqlite-jdbc-3.7.2.jar</url>
-			<description>SQLLite JDBC driver to access SQLLite databases from jWebSocket and its plug-ins</description>
+			<id>DerbyDriver</id>
+			<url>${JWEBSOCKET_HOME}libs/derby-10.10.1.1.jar</url>
+			<description>Derby JDBC driver to access Derby databases from jWebSocket and its plug-ins</description>
 		</library>
 	</libraries>
 
