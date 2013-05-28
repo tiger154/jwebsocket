@@ -464,8 +464,8 @@ public class TCPConnector extends BaseConnector {
 					mLog.error(lLogInfo + " client not accepted on port "
 							+ mClientSocket.getPort()
 							+ " due to handshake issues. "
-							+ "Probably the client supported WebSocket protocol is not updated,"
-							+ "the SSL handshake could not be established or"
+							+ "Probably the client supported WebSocket protocol is not updated, "
+							+ "the SSL handshake could not be established or "
 							+ "the connection has been closed unexpectedly!");
 				}
 			} catch (Exception lEx) {
