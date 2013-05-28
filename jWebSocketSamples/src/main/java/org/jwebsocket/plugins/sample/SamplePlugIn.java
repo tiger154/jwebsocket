@@ -23,6 +23,7 @@ import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
@@ -43,11 +44,11 @@ public class SamplePlugIn extends TokenPlugIn {
 	// if namespace changed update client plug-in accordingly!
 	private final static String NS_SAMPLE = JWebSocketServerConstants.NS_BASE + ".plugins.samples";
 	private final static String VERSION = "1.0.0";
-	private final static String VENDOR = "Your company or personal name";
-	private final static String LABEL = "Your plug-in name";
-	private final static String COPYRIGHT = "(C) Copyright <year> your company or personal name";
-	private final static String LICENSE = "Your selected license";
-	private final static String DESCRIPTION = "The detailed description of your plug-in.";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket SamplePlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket SamplePlugIn - Community Edition";
 	private final static String SAMPLE_VAR = NS_SAMPLE + ".started";
 
 	/**
