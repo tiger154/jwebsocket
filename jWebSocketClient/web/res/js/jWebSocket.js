@@ -2941,8 +2941,8 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 
 		// TODO: Remove this temporary hack with final release 1.0
 		// TODO: this was required to ensure upward compatibility from 0.10 to 0.11
-		var lNS = aToken.ns;
-		if ( null !== lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
+		var lNS = aToken['ns'];
+		if ( undefined != lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
 			aToken.ns = "org.jwebsocket" + lNS.substring( 15 );
 		} else if( null === lNS ) {
 			aToken.ns = "org.jwebsocket.plugins.system";

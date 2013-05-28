@@ -40,7 +40,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileSave( lFilename, lData, {
+			jws.Tests.getAdminTestConn().fileSave( lFilename, lData, {
 				encode: true,
 				scope: aScope,
 				OnResponse: function( aToken ) {
@@ -73,7 +73,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileSaveByChunks( lFilename, lData, lIsChunk, {
+			jws.Tests.getAdminTestConn().fileSaveByChunks( lFilename, lData, lIsChunk, {
 				encode: true,
 				scope: aScope,
 				OnResponse: function( aToken ) {
@@ -103,7 +103,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 			
-			jws.Tests.getAdminConn().fileRename( aFilename, aNewFilename, aScope, {
+			jws.Tests.getAdminTestConn().fileRename( aFilename, aNewFilename, aScope, {
 				OnResponse: function(aToken){
 					lResponse = aToken;
 				}
@@ -130,12 +130,12 @@ jws.tests.enterprise.FileSystem = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().setFileSystemCallbacks({
+			jws.Tests.getAdminTestConn().setFileSystemCallbacks({
 				OnFileReceived: function(aToken){
 					lResponse = aToken;
 				}
 			});
-			jws.Tests.getAdminConn().fileSend( jws.Tests.getAdminConn().getId(), aFilename, aData, {
+			jws.Tests.getAdminTestConn().fileSend( jws.Tests.getAdminTestConn().getId(), aFilename, aData, {
 				encoding: "base64"
 			});
 
@@ -164,7 +164,7 @@ jws.tests.enterprise.FileSystem = {
 			var lChunkPosition = 0;
 			var lOK = true;
 			
-			jws.Tests.getAdminConn().setEnterpriseFileSystemCallbacks({
+			jws.Tests.getAdminTestConn().setEnterpriseFileSystemCallbacks({
 				OnChunkReceived: function(aToken){
 					if (!(lChunks[lChunkPosition++] == aToken.data)){
 						lOK = false;
@@ -173,7 +173,7 @@ jws.tests.enterprise.FileSystem = {
 			});
 			for (var lIndex = 0; lIndex < aDataArray.length; lIndex++ ){
 				var lIsLast = (lIndex + 1 == aDataArray.length);
-				jws.Tests.getAdminConn().fileSendByChunks( jws.Tests.getAdminConn().getId(), 
+				jws.Tests.getAdminTestConn().fileSendByChunks( jws.Tests.getAdminTestConn().getId(), 
 					aFilename, aDataArray[lIndex], lIsLast, {
 						encoding: "base64"
 					});
@@ -202,7 +202,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileGetFilelist( aAlias, aFilemasks, {
+			jws.Tests.getAdminTestConn().fileGetFilelist( aAlias, aFilemasks, {
 				recursive: aRecursive,
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
@@ -240,7 +240,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileLoad( lFilename, aAlias, {
+			jws.Tests.getAdminTestConn().fileLoad( lFilename, aAlias, {
 				decode: true,
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
@@ -269,7 +269,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fsStartObserve({
+			jws.Tests.getAdminTestConn().fsStartObserve({
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -297,7 +297,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fsStopObserve({
+			jws.Tests.getAdminTestConn().fsStopObserve({
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -327,7 +327,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileLoadByChunks( lFilename, aAlias, aOffset, aLength ,{
+			jws.Tests.getAdminTestConn().fileLoadByChunks( lFilename, aAlias, aOffset, aLength ,{
 				decode: true,
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
@@ -355,7 +355,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileDelete( aFilename, aForce, {
+			jws.Tests.getAdminTestConn().fileDelete( aFilename, aForce, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -383,7 +383,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().directoryDelete( aDirectory, {
+			jws.Tests.getAdminTestConn().directoryDelete( aDirectory, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -413,7 +413,7 @@ jws.tests.enterprise.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileExists( lFilename, lAlias, {
+			jws.Tests.getAdminTestConn().fileExists( lFilename, lAlias, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}

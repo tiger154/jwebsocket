@@ -28,7 +28,7 @@ jws.tests.Streaming = {
 		it( lSpec, function () {
 
 			var lResponse = {};
-			jws.Tests.getAdminConn().registerStream( 
+			jws.Tests.getAdminTestConn().registerStream( 
 				aStreamId,
 				{	OnResponse: function( aToken ) {
 						lResponse = aToken;
@@ -58,7 +58,7 @@ jws.tests.Streaming = {
 		it( lSpec, function () {
 
 			var lResponse = {};
-			jws.Tests.getAdminConn().unregisterStream( 
+			jws.Tests.getAdminTestConn().unregisterStream( 
 				aStreamId,
 				{	OnResponse: function( aToken ) {
 						lResponse = aToken;

@@ -141,7 +141,12 @@
 							<option value="fast">Fast</option>
 							<option value="ultra_fast">Ultra fast</option>
 							<option value="fastest">Fastest</option>
+						</select><br>
+						&nbsp;TLS:<select id="tls_set">
+							<option value="ws">Unsecure (ws)</option>
+							<option value="wss">Secure (wss)</option>
 						</select>
+						
 						<p id="tests">
 							<label><input id="openConns" type="checkbox" disabled checked="checked"> Open connections for admin and guest</label>
 							<br>
@@ -263,6 +268,7 @@
 				if ( "runFullTestSuite" == aCall.action ){
 					aCall.set = $('#test_set').val();
 					aCall.speed = $('#speed').val();
+					aCall.tls = $('#tls_set').val();
 					aCall.args = {
 						openConns: true,
 						streamingPlugIn: (jws.$("streamingPlugIn").checked)? true : false,
@@ -295,6 +301,9 @@
 			}
 			if (request['speed']){
 				lComboSpeed.val(request['speed'])
+			}
+			if (request['tls']){
+				$('#tls_set').val(request['tls'])
 			}
 			if( request && request["action"] ) {
 				if ("runFullTestSuite" == request["action"] && !request["args"]){

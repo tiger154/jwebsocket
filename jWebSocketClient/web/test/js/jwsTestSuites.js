@@ -142,7 +142,7 @@ function runFullTestSuite(aArgs) {
 	describe( "jWebSocket Test Suite", function () {
 		
 		if (aArgs.openConns){
-			var lTestSSL = false;
+			var lTestSSL = $('#tls_set').val() == 'wss';
 			// open connections for admin and guest
 			jws.Tests.testOpenSharedAdminConn();
 			jws.Tests.testOpenSharedGuestConn();

@@ -74,9 +74,9 @@ jws.tests.Load = {
 			var lToken = {
 				ns: jws.NS_SYSTEM,
 				type: "send",
-				targetId: jws.Tests.getAdminConn().getId(),
-				sourceId: jws.Tests.getAdminConn().getId(),
-				sender: jws.Tests.getAdminConn().getUsername(),
+				targetId: jws.Tests.getAdminTestConn().getId(),
+				sourceId: jws.Tests.getAdminTestConn().getId(),
+				sender: jws.Tests.getAdminTestConn().getUsername(),
 				data: lMsg
 			};
 
@@ -87,8 +87,8 @@ jws.tests.Load = {
 				}
 			};
 
-			jws.Tests.getAdminConn().addListener( lListener );
-			jws.Tests.getAdminConn().sendToken( lToken );
+			jws.Tests.getAdminTestConn().addListener( lListener );
+			jws.Tests.getAdminTestConn().sendToken( lToken );
 
 			waitsFor(
 				function() {
@@ -100,7 +100,7 @@ jws.tests.Load = {
 
 			runs( function() {
 				expect( lResponse.data ).toEqual( lMsg );
-				jws.Tests.getAdminConn().removeListener( lListener );
+				jws.Tests.getAdminTestConn().removeListener( lListener );
 			});
 
 		});

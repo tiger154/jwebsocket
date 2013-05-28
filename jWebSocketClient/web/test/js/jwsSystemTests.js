@@ -105,9 +105,9 @@ jws.tests.System = {
 			var lToken = {
 				ns: jws.NS_SYSTEM,
 				type: "send",
-				targetId: jws.Tests.getAdminConn().getId(),
-				sourceId: jws.Tests.getAdminConn().getId(),
-				sender: jws.Tests.getAdminConn().getUsername(),
+				targetId: jws.Tests.getAdminTestConn().getId(),
+				sourceId: jws.Tests.getAdminTestConn().getId(),
+				sender: jws.Tests.getAdminTestConn().getUsername(),
 				data: lMsg
 			};
 
@@ -118,8 +118,8 @@ jws.tests.System = {
 				}
 			};
 
-			jws.Tests.getAdminConn().addListener( lListener );
-			jws.Tests.getAdminConn().sendToken( lToken );
+			jws.Tests.getAdminTestConn().addListener( lListener );
+			jws.Tests.getAdminTestConn().sendToken( lToken );
 
 			waitsFor(
 				function() {
@@ -131,7 +131,7 @@ jws.tests.System = {
 
 			runs( function() {
 				expect( lResponse.data ).toEqual( lMsg );
-				jws.Tests.getAdminConn().removeListener( lListener );
+				jws.Tests.getAdminTestConn().removeListener( lListener );
 			});
 
 		});
@@ -196,7 +196,7 @@ jws.tests.System = {
 			var lResponse = {};
 			var lExpectTimeout = aServerDelay > aClientTimeout;
 			var lTimeoutFired = false;
-			jws.Tests.getAdminConn().testTimeout( 
+			jws.Tests.getAdminTestConn().testTimeout( 
 				aServerDelay,
 				{
 					OnResponse: function( aToken ) {
@@ -240,14 +240,14 @@ jws.tests.System = {
 		
 			waitsFor(
 				function() {
-					return jws.Tests.getAdminConn() != null;
+					return jws.Tests.getAdminTestConn() != null;
 				},
 				this.NS + ": waiting for admin connection",
 				1000
 				);
 
 			runs(function () {
-				jws.Tests.getAdminConn().sessionPut(aKey, aValue, aPublic, {
+				jws.Tests.getAdminTestConn().sessionPut(aKey, aValue, aPublic, {
 					OnResponse: function(aResponse){
 						lResponse = aResponse;
 					} 
@@ -274,7 +274,7 @@ jws.tests.System = {
 			var lResponse = null;
 		
 			runs(function () {
-				jws.Tests.getAdminConn().sessionGet(jws.Tests.getAdminConn().getId(), 
+				jws.Tests.getAdminTestConn().sessionGet(jws.Tests.getAdminTestConn().getId(), 
 					aKey, aPublic, {
 						OnResponse: function(aResponse){
 							lResponse = aResponse;
@@ -304,7 +304,7 @@ jws.tests.System = {
 			var lResponse = null;
 		
 			runs(function () {
-				jws.Tests.getAdminConn().sessionHas(jws.Tests.getAdminConn().getId(), 
+				jws.Tests.getAdminTestConn().sessionHas(jws.Tests.getAdminTestConn().getId(), 
 					aKey, aPublic, {
 						OnResponse: function(aResponse){
 							lResponse = aResponse;
@@ -334,7 +334,7 @@ jws.tests.System = {
 			var lResponse = null;
 		
 			runs(function () {
-				jws.Tests.getAdminConn().sessionKeys(jws.Tests.getAdminConn().getId(), 
+				jws.Tests.getAdminTestConn().sessionKeys(jws.Tests.getAdminTestConn().getId(), 
 					aPublic, {
 						OnResponse: function(aResponse){
 							lResponse = aResponse;
@@ -368,7 +368,7 @@ jws.tests.System = {
 			var lResponse = null;
 		
 			runs(function () {
-				jws.Tests.getAdminConn().sessionRemove(aKey, aPublic, {
+				jws.Tests.getAdminTestConn().sessionRemove(aKey, aPublic, {
 					OnResponse: function(aResponse){
 						lResponse = aResponse;
 					} 
@@ -399,7 +399,7 @@ jws.tests.System = {
 			var lResponse = null;
 		
 			runs(function () {
-				jws.Tests.getAdminConn().sessionGetAll(jws.Tests.getAdminConn().getId(), 
+				jws.Tests.getAdminTestConn().sessionGetAll(jws.Tests.getAdminTestConn().getId(), 
 					aPublic, {
 						OnResponse: function(aResponse){
 							lResponse = aResponse;
@@ -428,9 +428,9 @@ jws.tests.System = {
 		var lSpec = this.NS + ": getting multiple public session entries for a given collection of clients"
 		it( lSpec, function () {
 			var lResponse = null;
-			var lClients = [jws.Tests.getAdminConn().getId()];
+			var lClients = [jws.Tests.getAdminTestConn().getId()];
 			runs(function () {
-				jws.Tests.getAdminConn().sessionGetMany(lClients, 
+				jws.Tests.getAdminTestConn().sessionGetMany(lClients, 
 					aKeys, {
 						OnResponse: function(aResponse){
 							lResponse = aResponse;
@@ -448,7 +448,7 @@ jws.tests.System = {
 		
 			runs( function() {
 				var lExpected = {};
-				lExpected[jws.Tests.getAdminConn().getId()] = aExpectedResult;
+				lExpected[jws.Tests.getAdminTestConn().getId()] = aExpectedResult;
 				expect( lResponse.code ).toEqual( 0 );
 				for (var i = 0; i < lClients.length; i++) {
 					for (var j = 0; j < aKeys.length; j++) {
