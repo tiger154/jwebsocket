@@ -7,7 +7,8 @@
 	<!-- ORMLite (JDBC) Storage -->
 	<bean id="databaseUrl" class="org.jwebsocket.util.Tools"
 		  factory-method="expandEnvVarsAndProps">
-		<constructor-arg index="0" value="jdbc:sqlite:${JWEBSOCKET_HOME}database/channels.db" />
+		<!--<constructor-arg index="0" value="jdbc:sqlite:${JWEBSOCKET_HOME}database/channels.db" />-->
+		<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/channels;create=true" />
 	</bean>
 
 	<bean id="connectionSource"
@@ -15,6 +16,9 @@
 		<property name="url" ref="databaseUrl" />
 		<property name="username" value="" />
 		<property name="password" value="" />
+		<property name="databaseType">
+			<bean class="com.j256.ormlite.db.DerbyEmbeddedDatabaseType" />
+		</property>
 	</bean>
 
 	<bean id="entriesDao" class="com.j256.ormlite.spring.DaoFactory"
