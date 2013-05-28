@@ -225,7 +225,6 @@
 
 			function processSignalingMessage(message) {
 				var msg = JSON.parse(message);
-				alert(message);
 				if (msg.type === 'offer') {
 
 					if (!started && localStream) {

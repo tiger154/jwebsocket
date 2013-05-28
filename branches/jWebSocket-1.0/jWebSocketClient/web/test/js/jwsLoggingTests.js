@@ -47,9 +47,9 @@ jws.tests.Logging = {
 				"app_version": jws.VERSION,
 				"app_module": "test automation",
 				"app_dialog": "full tests",
-				"user_name": jws.Tests.getAdminConn().getUsername(),
+				"user_name": jws.Tests.getAdminTestConn().getUsername(),
 				"data_size": jws.tests.Logging.MESSAGE.length,
-				"url": jws.Tests.getAdminConn().getURL(),
+				"url": jws.Tests.getAdminTestConn().getURL(),
 				"message": jws.tests.Logging.MESSAGE,
 				"browser": jws.getBrowserName(),
 				"browser_version": jws.getBrowserVersionString(),
@@ -83,7 +83,7 @@ jws.tests.Logging = {
 					+ jws.tools.zerofill( lNow.getUTCSeconds(), 2 ) + "."
 					+ jws.tools.zerofill( lNow.getUTCMilliseconds(), 3 )
 			};
-			jws.Tests.getAdminConn().loggingEvent( jws.tests.Logging.TABLE, lData, {
+			jws.Tests.getAdminTestConn().loggingEvent( jws.tests.Logging.TABLE, lData, {
 				primaryKey: jws.tests.Logging.PRIMARY_KEY,
 				sequence: jws.tests.Logging.SEQUENCE,
 				OnResponse: function( aToken ) {
@@ -115,7 +115,7 @@ jws.tests.Logging = {
 
 			var lResponse = {};
 			var lDone = false;
-			jws.Tests.getAdminConn().loggingGetEvents( jws.tests.Logging.TABLE, {
+			jws.Tests.getAdminTestConn().loggingGetEvents( jws.tests.Logging.TABLE, {
 				primaryKey: jws.tests.Logging.PRIMARY_KEY,
 				fromKey: jws.tests.Logging.mLogId,
 				toKey: jws.tests.Logging.mLogId,

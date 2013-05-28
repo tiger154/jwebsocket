@@ -36,7 +36,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// perform the native create table...
-			jws.Tests.getAdminConn().jdbcExecSQL(
+			jws.Tests.getAdminTestConn().jdbcExecSQL(
 				"create table " + jws.tests.JDBC.TEST_TABLE + " (id int, text varchar(80))",
 				{	OnResponse: function( aToken ) {
 						lResponse = aToken;
@@ -72,7 +72,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// perform the native drop table...
-			jws.Tests.getAdminConn().jdbcExecSQL(
+			jws.Tests.getAdminTestConn().jdbcExecSQL(
 				"drop table " + jws.tests.JDBC.TEST_TABLE,
 				{	OnResponse: function( aToken ) {
 						lResponse = aToken;
@@ -108,7 +108,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// perform the native select...
-			jws.Tests.getAdminConn().jdbcQuerySQL(
+			jws.Tests.getAdminTestConn().jdbcQuerySQL(
 				"select * from " + jws.tests.JDBC.TEST_TABLE,
 				{	OnResponse: function( aToken ) {
 						lResponse = aToken;
@@ -144,7 +144,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// perform the native insert...
-			jws.Tests.getAdminConn().jdbcUpdateSQL(
+			jws.Tests.getAdminTestConn().jdbcUpdateSQL(
 				"insert into " 
 					+ jws.tests.JDBC.TEST_TABLE 
 					+ " (id, text) values (1, '" 
@@ -183,7 +183,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// perform the native update...
-			jws.Tests.getAdminConn().jdbcUpdateSQL(
+			jws.Tests.getAdminTestConn().jdbcUpdateSQL(
 				"update " 
 				+ jws.tests.JDBC.TEST_TABLE 
 				+ " set text = '" + jws.tests.JDBC.TEST_STRING_2 + "'"
@@ -222,7 +222,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// perform the native delete...
-			jws.Tests.getAdminConn().jdbcUpdateSQL(
+			jws.Tests.getAdminTestConn().jdbcUpdateSQL(
 				"delete from " 
 				+ jws.tests.JDBC.TEST_TABLE 
 				+ " where id = 1",
@@ -261,7 +261,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// perform the abstract select command...
-			jws.Tests.getAdminConn().jdbcSelect(
+			jws.Tests.getAdminTestConn().jdbcSelect(
 				{	tables: [ jws.tests.JDBC.TEST_TABLE ],
 					fields: [ "id", "text" ],
 					where: "id=1"
@@ -301,7 +301,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// perform the abstract insert command
-			jws.Tests.getAdminConn().jdbcInsert(
+			jws.Tests.getAdminTestConn().jdbcInsert(
 				{	table: jws.tests.JDBC.TEST_TABLE ,
 					fields: [ "id", "text" ],
 					values: [ 1, jws.tests.JDBC.TEST_STRING_1 ]
@@ -340,7 +340,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// perform the abstract update command
-			jws.Tests.getAdminConn().jdbcUpdate(
+			jws.Tests.getAdminTestConn().jdbcUpdate(
 				{	table: jws.tests.JDBC.TEST_TABLE ,
 					fields: [ "text" ],
 					values: [ jws.tests.JDBC.TEST_STRING_2 ],
@@ -380,7 +380,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// perform the abstract delete command
-			jws.Tests.getAdminConn().jdbcDelete(
+			jws.Tests.getAdminTestConn().jdbcDelete(
 				{	table: jws.tests.JDBC.TEST_TABLE,
 					where: "id=1"
 				},
@@ -418,7 +418,7 @@ jws.tests.JDBC = {
 			var lResponse = {};
 
 			// try to get 3 new primary keys...
-			jws.Tests.getAdminConn().jdbcGetPrimaryKeys(
+			jws.Tests.getAdminTestConn().jdbcGetPrimaryKeys(
 				"sq_pk_system_log",
 				{	count: 3,
 					OnResponse: function( aToken ) {

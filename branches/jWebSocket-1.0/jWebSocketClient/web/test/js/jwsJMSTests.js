@@ -28,7 +28,7 @@ jws.tests.JMS = {
 		it( lSpec, function () {
 
 			var lResponse = {};
-			jws.Tests.getAdminConn().listenJms( 
+			jws.Tests.getAdminTestConn().listenJms( 
 				"connectionFactory",	// aConnectionFactoryName, 
 				"testQueue",			// aDestinationName, 
 				false,					// aPubSubDomain,
@@ -60,7 +60,7 @@ jws.tests.JMS = {
 		it( lSpec, function () {
 
 			var lResponse = {};
-			jws.Tests.getAdminConn().unlistenJms( 
+			jws.Tests.getAdminTestConn().unlistenJms( 
 				"connectionFactory",	// aConnectionFactoryName, 
 				"testQueue",			// aDestinationName, 
 				false,					// aPubSubDomain,

@@ -79,6 +79,10 @@ jws.Tests = {
 	getTestConns: function() {
 		return this.mTestConns;
 	},
+	
+	getAdminTestConn: function(){
+		return ($('#tls_set').val() == 'ws') ? this.getAdminConn() : this.getAdminConnSSL();
+	},
 
 	// this spec tries to open a connection to be shared across multiple tests
 	testOpenSharedAdminConn: function() {

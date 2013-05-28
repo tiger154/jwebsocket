@@ -33,13 +33,13 @@ jws.tests.ItemStorage = {
 
 			var lResponse = null;
 			
-			jws.Tests.getAdminConn().setConfiguration(jws.ItemStoragePlugIn.NS, {
+			jws.Tests.getAdminTestConn().setConfiguration(jws.ItemStoragePlugIn.NS, {
 				events: {
 					itemUpdateOnly: true
 				}
 			});
 			
-			jws.Tests.getAdminConn().createCollection( aCollectionName, aItemType, 
+			jws.Tests.getAdminTestConn().createCollection( aCollectionName, aItemType, 
 				aSecretPwd, aAccessPwd,  aIsPrivate, {
 					capacity: aCapacity,
 					OnResponse: function( aToken ) {
@@ -69,7 +69,7 @@ jws.tests.ItemStorage = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().removeCollection( aCollectionName, aSecretPwd, {
+			jws.Tests.getAdminTestConn().removeCollection( aCollectionName, aSecretPwd, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -96,7 +96,7 @@ jws.tests.ItemStorage = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().existsCollection( aCollectionName, {
+			jws.Tests.getAdminTestConn().existsCollection( aCollectionName, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -125,12 +125,12 @@ jws.tests.ItemStorage = {
 			var lResponse = null;
 			var lEvent = null;
 			
-			jws.Tests.getAdminConn().setItemStorageCallbacks({
+			jws.Tests.getAdminTestConn().setItemStorageCallbacks({
 				OnCollectionSubscription: function (aToken){
 					lEvent = aToken;
 				}
 			});
-			jws.Tests.getAdminConn().subscribeCollection(aCollectionName, aAccessPwd, {
+			jws.Tests.getAdminTestConn().subscribeCollection(aCollectionName, aAccessPwd, {
 				OnResponse: function( aToken ) {
 					if (-1 == aToken.code){
 						lEvent = false;
@@ -159,7 +159,7 @@ jws.tests.ItemStorage = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().unsubscribeCollection(aCollectionName, {
+			jws.Tests.getAdminTestConn().unsubscribeCollection(aCollectionName, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -188,12 +188,12 @@ jws.tests.ItemStorage = {
 			var lResponse = null;
 			var lEvent = null;
 			
-			jws.Tests.getAdminConn().setItemStorageCallbacks({
+			jws.Tests.getAdminTestConn().setItemStorageCallbacks({
 				OnCollectionAuthorization: function (aToken){
 					lEvent = aToken;
 				}
 			});
-			jws.Tests.getAdminConn().authorizeCollection( aCollectionName, aSecretPwd, {
+			jws.Tests.getAdminTestConn().authorizeCollection( aCollectionName, aSecretPwd, {
 				OnResponse: function( aToken ) {
 					if (-1 == aToken.code){
 						lEvent = false;
@@ -225,12 +225,12 @@ jws.tests.ItemStorage = {
 			var lResponse = null;
 			var lEvent = null;
 			
-			jws.Tests.getAdminConn().setItemStorageCallbacks({
+			jws.Tests.getAdminTestConn().setItemStorageCallbacks({
 				OnCollectionCleaned: function (aToken){
 					lEvent = aToken;
 				}
 			});
-			jws.Tests.getAdminConn().clearCollection( aCollectionName, aSecretPwd, {
+			jws.Tests.getAdminTestConn().clearCollection( aCollectionName, aSecretPwd, {
 				OnResponse: function( aToken ) {
 					if (-1 == aToken.code){
 						lEvent = false;
@@ -262,7 +262,7 @@ jws.tests.ItemStorage = {
 
 			var lResponse = null;
 			
-			jws.Tests.getAdminConn().editCollection(aCollectionName, aSecretPwd, {
+			jws.Tests.getAdminTestConn().editCollection(aCollectionName, aSecretPwd, {
 				newSecretPassword: aNewSecretPwd,
 				accessPassword: aAccessPwd,
 				isPrivate: aIsPrivate,
@@ -294,12 +294,12 @@ jws.tests.ItemStorage = {
 			var lResponse = null;
 			var lEvent = null;
 			
-			jws.Tests.getAdminConn().setItemStorageCallbacks({
+			jws.Tests.getAdminTestConn().setItemStorageCallbacks({
 				OnCollectionRestarted: function (aToken){
 					lEvent = aToken;
 				}
 			});
-			jws.Tests.getAdminConn().restartCollection(aCollectionName, aSecretPwd, {
+			jws.Tests.getAdminTestConn().restartCollection(aCollectionName, aSecretPwd, {
 				OnResponse: function( aToken ) {
 					if (-1 == aToken.code){
 						lEvent = false;
@@ -329,7 +329,7 @@ jws.tests.ItemStorage = {
 
 			var lResponse = null;
 			
-			jws.Tests.getAdminConn().getCollectionNames( aUserOnly, {
+			jws.Tests.getAdminTestConn().getCollectionNames( aUserOnly, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -359,7 +359,7 @@ jws.tests.ItemStorage = {
 
 			var lResponse = null;
 			
-			jws.Tests.getAdminConn().findCollection( aCollectionName, {
+			jws.Tests.getAdminTestConn().findCollection( aCollectionName, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -387,13 +387,13 @@ jws.tests.ItemStorage = {
 			var lResponse = null;
 			var lEvent = null;
 			
-			jws.Tests.getAdminConn().setItemStorageCallbacks({
+			jws.Tests.getAdminTestConn().setItemStorageCallbacks({
 				OnItemSaved: function (aToken){
 					lEvent = aToken;
 				}
 			});
 			
-			jws.Tests.getAdminConn().saveItem(aCollectionName, aItem, {
+			jws.Tests.getAdminTestConn().saveItem(aCollectionName, aItem, {
 				OnResponse: function( aToken ) {
 					if (0 != aToken.code){
 						lEvent = false;
@@ -424,13 +424,13 @@ jws.tests.ItemStorage = {
 			var lResponse = null;
 			var lEvent = null;
 			
-			jws.Tests.getAdminConn().setItemStorageCallbacks({
+			jws.Tests.getAdminTestConn().setItemStorageCallbacks({
 				OnItemRemoved: function (aToken){
 					lEvent = aToken;
 				}
 			});
 			
-			jws.Tests.getAdminConn().removeItem(aCollectionName, aPK, {
+			jws.Tests.getAdminTestConn().removeItem(aCollectionName, aPK, {
 				OnResponse: function( aToken ) {
 					if (0 != aToken.code){
 						lEvent = false;
@@ -459,7 +459,7 @@ jws.tests.ItemStorage = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().findItemByPK(aCollectionName, aPK, {
+			jws.Tests.getAdminTestConn().findItemByPK(aCollectionName, aPK, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -488,7 +488,7 @@ jws.tests.ItemStorage = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().existsItem(aCollectionName, aPK, {
+			jws.Tests.getAdminTestConn().existsItem(aCollectionName, aPK, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -515,7 +515,7 @@ jws.tests.ItemStorage = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().findItemDefinition(aItemType, {
+			jws.Tests.getAdminTestConn().findItemDefinition(aItemType, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -542,7 +542,7 @@ jws.tests.ItemStorage = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().existsItemDefinition(aItemType, {
+			jws.Tests.getAdminTestConn().existsItemDefinition(aItemType, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -568,7 +568,7 @@ jws.tests.ItemStorage = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().listItemDefinitions({
+			jws.Tests.getAdminTestConn().listItemDefinitions({
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -595,7 +595,7 @@ jws.tests.ItemStorage = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().listItems(aCollectionName, {
+			jws.Tests.getAdminTestConn().listItems(aCollectionName, {
 				offset: aOffset,
 				length: aLength,
 				OnResponse: function( aToken ) {

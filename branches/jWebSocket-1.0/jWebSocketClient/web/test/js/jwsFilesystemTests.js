@@ -35,7 +35,7 @@ jws.tests.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileSave( lFilename, lData, {
+			jws.Tests.getAdminTestConn().fileSave( lFilename, lData, {
 				encode: true,
 				encoding: 'zipBase64',
 				scope: aScope,
@@ -65,12 +65,12 @@ jws.tests.FileSystem = {
 		it( lSpec, function () {
 
 			var lResponse = null;
-			jws.Tests.getAdminConn().setFileSystemCallbacks({
+			jws.Tests.getAdminTestConn().setFileSystemCallbacks({
 				OnFileReceived: function(aToken){
 					lResponse = aToken;
 				}
 			});
-			jws.Tests.getAdminConn().fileSend( jws.Tests.getAdminConn().getId(), aFilename, aData, {
+			jws.Tests.getAdminTestConn().fileSend( jws.Tests.getAdminTestConn().getId(), aFilename, aData, {
 				encoding: "base64"
 			});
 
@@ -98,7 +98,7 @@ jws.tests.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileGetFilelist( aAlias, aFilemasks, {
+			jws.Tests.getAdminTestConn().fileGetFilelist( aAlias, aFilemasks, {
 				recursive: aRecursive,
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
@@ -136,7 +136,7 @@ jws.tests.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileLoad( lFilename, aAlias, {
+			jws.Tests.getAdminTestConn().fileLoad( lFilename, aAlias, {
 				decode: true,
 				encoding: 'zipBase64',
 				OnResponse: function( aToken ) {
@@ -166,7 +166,7 @@ jws.tests.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileDelete( aFilename, aForce, {
+			jws.Tests.getAdminTestConn().fileDelete( aFilename, aForce, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
@@ -196,7 +196,7 @@ jws.tests.FileSystem = {
 
 			var lResponse = null;
 
-			jws.Tests.getAdminConn().fileExists( lFilename, lAlias, {
+			jws.Tests.getAdminTestConn().fileExists( lFilename, lAlias, {
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}

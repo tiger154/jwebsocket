@@ -26,7 +26,7 @@ jws.tests.Channels = {
 
 		it(lSpec, function() {
 			var lResponse = {};
-			jws.Tests.getAdminConn().channelSubscribe(
+			jws.Tests.getAdminTestConn().channelSubscribe(
 					aChannelName,
 					aAccessKey,
 					{
@@ -55,7 +55,7 @@ jws.tests.Channels = {
 
 		it(lSpec, function() {
 			var lResponse = {};
-			jws.Tests.getAdminConn().channelUnsubscribe(
+			jws.Tests.getAdminTestConn().channelUnsubscribe(
 					aChannelName,
 					{
 						OnResponse: function(aToken) {
@@ -86,7 +86,7 @@ jws.tests.Channels = {
 		it(lSpec, function() {
 
 			var lResponse = {};
-			jws.Tests.getAdminConn().channelCreate(
+			jws.Tests.getAdminTestConn().channelCreate(
 					aChannelId,
 					aChannelName,
 					{
@@ -125,7 +125,7 @@ jws.tests.Channels = {
 			aOptions.OnResponse = function(aToken) {
 				lResponse = aToken;
 			};
-			jws.Tests.getAdminConn().channelModify(
+			jws.Tests.getAdminTestConn().channelModify(
 					aChannelId,
 					aSecretKey,
 					aOptions
@@ -153,7 +153,7 @@ jws.tests.Channels = {
 		it(lSpec, function() {
 
 			var lResponse = {};
-			jws.Tests.getAdminConn().channelAuth(
+			jws.Tests.getAdminTestConn().channelAuth(
 					aChannelId,
 					aAccessKey,
 					aSecretKey,
@@ -189,7 +189,7 @@ jws.tests.Channels = {
 			var lEvent = null;
 
 			if (0 == aExpectedReturnCode) {
-				jws.Tests.getAdminConn().setChannelCallbacks({
+				jws.Tests.getAdminTestConn().setChannelCallbacks({
 					OnChannelBroadcast: function(aEvent) {
 						lEvent = aEvent;
 					}
@@ -197,7 +197,7 @@ jws.tests.Channels = {
 			} else {
 				lEvent = true;
 			}
-			jws.Tests.getAdminConn().channelPublish(
+			jws.Tests.getAdminTestConn().channelPublish(
 					aChannelId,
 					aData,
 					null,
@@ -232,7 +232,7 @@ jws.tests.Channels = {
 		it(lSpec, function() {
 
 			var lResponse = {};
-			jws.Tests.getAdminConn().channelGetSubscriptions(
+			jws.Tests.getAdminTestConn().channelGetSubscriptions(
 					{
 						OnResponse: function(aToken) {
 							lResponse = aToken;
@@ -279,7 +279,7 @@ jws.tests.Channels = {
 		it(lSpec, function() {
 
 			var lResponse = {};
-			jws.Tests.getAdminConn().channelGetIds(
+			jws.Tests.getAdminTestConn().channelGetIds(
 					{
 						OnResponse: function(aToken) {
 							lResponse = aToken;
@@ -514,7 +514,7 @@ jws.tests.Channels = {
 		it(lSpec, function() {
 
 			var lResponse = {};
-			jws.Tests.getAdminConn().channelRemove(
+			jws.Tests.getAdminTestConn().channelRemove(
 					aChannelId,
 					{
 						accessKey: aAccessKey,

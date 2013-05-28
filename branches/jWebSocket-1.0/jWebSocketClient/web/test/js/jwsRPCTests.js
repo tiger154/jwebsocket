@@ -39,7 +39,7 @@ jws.tests.RPC = {
 			var lMD5 = jws.tools.calcMD5( jws.tests.RPC.TEST_STRING );
 
 			// perform the Remote Procedure Call...
-			jws.Tests.getAdminConn().rpc(
+			jws.Tests.getAdminTestConn().rpc(
 				// pass class, method and argument for server java method:
 				lClassName,
 				lMethodName,
