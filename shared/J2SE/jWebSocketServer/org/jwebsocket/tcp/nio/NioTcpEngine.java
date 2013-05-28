@@ -600,6 +600,13 @@ public class NioTcpEngine extends BaseEngine {
 					}
 
 					Map lReqMap = WebSocketHandshake.parseC2SRequest(aBean.getData(), false);
+					if (null == lReqMap) {
+						mLog.error("Client not accepted on port " + aConnector.getRemotePort()
+								+ " due to handshake issues. "
+								+ "Probably the client supported WebSocket protocol is not updated!");
+						// disconnect the client
+						clientDisconnect(aConnector);
+					}
 
 					EngineUtils.parseCookies(lReqMap);
 					//Setting the session identifier cookie if not present previously
@@ -613,9 +620,12 @@ public class NioTcpEngine extends BaseEngine {
 					byte[] lResponse = WebSocketHandshake.generateS2CResponse(lReqMap);
 
 					if (lResponse == null || lReqHeader == null) {
-						if (mLog.isDebugEnabled()) {
-							mLog.warn("TCP-Engine detected illegal handshake.");
-						}
+						mLog.error("Client not accepted on port "
+								+ aConnector.getRemotePort()
+								+ " due to handshake issues. "
+								+ "Probably the client supported WebSocket protocol is not updated, "
+								+ "the SSL handshake could not be established or "
+								+ "the connection has been closed unexpectedly!");
 						// disconnect the client
 						clientDisconnect(aConnector);
 					}
