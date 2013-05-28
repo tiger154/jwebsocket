@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.storage.ormlite;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -32,7 +33,7 @@ public class EntryEntity {
 	private Long id;
 	@DatabaseField(columnName = FIELD_KEY)
 	private String key;
-	@DatabaseField(columnName = FIELD_VALUE)
+	@DatabaseField(columnName = FIELD_VALUE, dataType= DataType.LONG_STRING)
 	private String value;
 	@DatabaseField(index = true, columnName = FIELD_STORAGE_NAME)
 	private String storageName;
