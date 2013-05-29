@@ -13,7 +13,7 @@ var lRegister = function(aConnector) {
 	App.getLogger().debug("Processing register...");
 
 	// client require "webrtc" role
-	App.requireAuthority(aConnector, lNS + ".register");
+	//App.requireAuthority(aConnector, lNS + ".register");
 	// registering the client
 	lClients.put(aConnector.getUsername(), aConnector);
 
@@ -45,6 +45,15 @@ var lUnregister = function(aConnector) {
 		});
 	}
 };
+
+var lBroadcast = function(aName, aData, aConnector){
+	App.broadcast(lClients.values(), {
+		type: "broadcast",
+		name: aName,
+		data: aData,
+		user: aConnector.getUsername()
+	});
+}
 
 var lGetAppClients = function() {
 	App.getLogger().debug("Processing get app clients...");
@@ -95,6 +104,19 @@ var lDisconnect = function(aTargetUser, aConnector) {
 	});
 };
 
+var sendText = function(aTargetUser, aText, aConnector){
+	App.getLogger().debug("Processing sendText...");
+
+	App.assertTrue(lClients.containsKey(aConnector.getUsername()), "The client should register first!");
+	App.assertTrue(lClients.containsKey(aTargetUser), "The target client does not exists!");
+
+	App.sendToken(lClients.get(aTargetUser), {
+		type: "text",
+		user: aConnector.getUsername(),
+		text: aText
+	});
+};
+
 // export application API
 App.publish("Main", {
 	register: lRegister,
@@ -102,5 +124,7 @@ App.publish("Main", {
 	connect: lConnect,
 	accept: lAcceptConnect,
 	disconnect: lDisconnect,
-	getClients: lGetAppClients
+	getClients: lGetAppClients,
+	sendText: sendText,
+	broadcast: lBroadcast
 });
