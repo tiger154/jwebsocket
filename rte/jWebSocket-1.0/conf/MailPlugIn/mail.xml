@@ -7,21 +7,17 @@
 		<constructor-arg value="mailstore"/>
 	</bean>
 
-	<!-- you can also use a MongoDB database connection -->
-	<bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
-	</bean>
-	
-	<!-- MongoDB Storage provider (here for the mails) -->
+	<!-- MongoDB Storage provider (here for the mails) 
 	<bean id="mailMongoDBStorage" class="org.jwebsocket.storage.mongodb.MongoDBStorageProvider" factory-method="getInstance" >
-		<!-- connection -->
-		<constructor-arg ref="mongodbConnection0" />
-		<!-- database name -->
+		<constructor-arg>
+			<bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
+			</bean>
+		</constructor-arg>
 		<constructor-arg value="storages" />
-		<!-- collection name -->
 		<constructor-arg value="mailstore"/>
-		<!-- storage name -->
 		<constructor-arg value="mailstore"/>
 	</bean>
+	-->
 
 	<!-- settings  for the mail plug-in -->
 	<bean id="org.jwebsocket.plugins.mail.settings" class="org.jwebsocket.plugins.mail.Settings">
