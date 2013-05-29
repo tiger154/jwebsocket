@@ -38,7 +38,7 @@ public class MailPlugIn extends TokenPlugIn {
 
    private static Logger mLog = Logging.getLogger();
    // if namespace changed update client plug-in accordingly!
-   private static final String NS_MAIL =
+   public static final String NS =
            JWebSocketServerConstants.NS_BASE + ".plugins.mail";
    private final static String VERSION = "1.0.0";
    private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
@@ -61,10 +61,10 @@ public class MailPlugIn extends TokenPlugIn {
          mLog.debug("Instantiating Mail plug-in...");
       }
       // specify default name space for admin plugin
-      this.setNamespace(NS_MAIL);
+      this.setNamespace(NS);
 
       try {
-         mBeanFactory = getConfigBeanFactory();
+         mBeanFactory = getConfigBeanFactory(NS);
          if (null == mBeanFactory) {
             mLog.error("No or invalid spring configuration for mail plug-in, some features may not be available.");
          } else {
@@ -114,7 +114,7 @@ public class MailPlugIn extends TokenPlugIn {
 
    @Override
    public String getNamespace() {
-      return NS_MAIL;
+      return NS;
    }
 
    @Override
@@ -151,7 +151,7 @@ public class MailPlugIn extends TokenPlugIn {
 
       if (lType != null && getNamespace().equals(lNS)) {
          if (lType.equals("sendMail")) {
-            mService.sendMail(aConnector, aToken, lResponse, lServer, NS_MAIL);
+            mService.sendMail(aConnector, aToken, lResponse, lServer, NS);
             return lResponse;
          } else if (lType.equals("createMail")) {
             mService.createMail(aToken, lResponse);
@@ -165,7 +165,7 @@ public class MailPlugIn extends TokenPlugIn {
       TokenServer lServer = getServer();
       Token lResponse = createResponse(aToken);
 
-      mService.sendMail(aConnector, aToken, lResponse, lServer, NS_MAIL);
+      mService.sendMail(aConnector, aToken, lResponse, lServer, NS);
 
       // send response to requester
       lServer.sendToken(aConnector, lResponse);
@@ -195,7 +195,7 @@ public class MailPlugIn extends TokenPlugIn {
       TokenServer lServer = getServer();
       Token lResponse = createResponse(aToken);
 
-      mService.addAttachment(aConnector, aToken, lResponse, getServer(), NS_MAIL);
+      mService.addAttachment(aConnector, aToken, lResponse, getServer(), NS);
 
       // send response to requester
       lServer.sendToken(aConnector, lResponse);
