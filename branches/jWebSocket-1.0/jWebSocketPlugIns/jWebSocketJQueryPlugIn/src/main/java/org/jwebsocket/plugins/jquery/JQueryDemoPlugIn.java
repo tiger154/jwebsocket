@@ -113,6 +113,8 @@ public class JQueryDemoPlugIn extends TokenPlugIn {
 				createUser(aConnector, aToken);
 			} else if ("delete".equals(aToken.getType())) {
 				deleteUser(aConnector, aToken);
+			} else if ("reset".equals(aToken.getType())) {
+				resetList(aConnector, aToken);
 			} else if ("getall".equals(aToken.getType())) {
 				getUsers(aConnector, aToken);
 			} else if ("getpage".equals(aToken.getType())) {
@@ -182,6 +184,16 @@ public class JQueryDemoPlugIn extends TokenPlugIn {
 		getServer().sendToken(aConnector, lResult);
 	}
 
+	private void resetList(WebSocketConnector aConnector, Token aToken) {
+		//CREATING A RESPONSE TOKEN FOR SENDING THE LIST TO A PRIOR REQUEST
+		Token lResult = TokenFactory.createToken(getNamespace(), "resetNotification");
+		createUsers();
+		String lMsg = "All the changes have been restored by "
+				+ aConnector.getId() + "@" + aConnector.getUsername();
+		lResult.setString("msg", lMsg);
+		broadcast(lResult);
+	}
+
 	private void getPage(WebSocketConnector aConnector, Token aToken) {
 		//CREATING A RESPONSE TOKEN FOR SENDING THE LIST TO A PRIOR REQUEST
 		Token lResult = createResponse(aToken);
@@ -213,7 +225,9 @@ public class JQueryDemoPlugIn extends TokenPlugIn {
 	}
 
 	private void register(WebSocketConnector aConnector) {
-		mClients.add(aConnector);
+		if (!mClients.contains(aConnector)) {
+			mClients.add(aConnector);
+		}
 	}
 
 	private void unregister(WebSocketConnector aConnector) {
@@ -221,12 +235,38 @@ public class JQueryDemoPlugIn extends TokenPlugIn {
 	}
 
 	private void createUsers() {
+		mUsers.getSource().clear();
+		mUsers.getSource().add(new User("arojas", "arojash@uci.cu", "Alexander", "Rojas"));
 		mUsers.getSource().add(new User("aschulze", "a.schulze@jwebsocket.org", "Alexander", "Schulze"));
-		mUsers.getSource().add(new User("rsantamaria", "rsantamaria@jwebsocket.org", "Rolando", "Santamaria"));
-		mUsers.getSource().add(new User("vbarzana", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
+		mUsers.getSource().add(new User("anuradha", "galianuradha@gmail.com", "Anuradha", ""));
+		mUsers.getSource().add(new User("alsimon", "alsimon@uci.cu", "Armando", "Simon"));
+		mUsers.getSource().add(new User("cfeyt", "cfeyt@uci.cu", "Carlos", "Feyt"));
+		mUsers.getSource().add(new User("ckcespedes", "ckcespedes@uci.cu", "Carlos", "Karen Céspedes"));
+		mUsers.getSource().add(new User("dmederos", "dmederos@hab.uci.cu", "Daimi", "Mederos Llanes"));
+		mUsers.getSource().add(new User("dnoa", "dnoa@uci.cu", "Dariel", "Noa Graverán"));
+		mUsers.getSource().add(new User("ebouzach", "ebourzach@uci.cu", "Eduardo", "Bouzach"));
+		mUsers.getSource().add(new User("johannes", "johannes.schoenborn@gmail.com", "Johannes", "Schoenborn"));
+		mUsers.getSource().add(new User("johannes", "j.smutny@gmail.com", "Johannes", "Smutny"));
+		mUsers.getSource().add(new User("lzaila", "lzaila@hab.uci.cu", "Lester", "Alfonso Zaila"));
+		mUsers.getSource().add(new User("lperez", "lperez@hab.uci.cu", "Lisdey", "Pérez"));
+		mUsers.getSource().add(new User("mlopez", "mlopez@hab.uci.cu", "Merly", "López Barroso"));
+		mUsers.getSource().add(new User("magonzalez", "magonzalez@hab.uci.cu", "Marcos Antonio", "Gonzalez Huerta"));
+		mUsers.getSource().add(new User("mrodriguez", "mrodriguez@hab.uci.cu", "Marta", "Rodríguez Freire"));
+		mUsers.getSource().add(new User("memaranon", "memaranon@hab.uci.cu", "Mayra Eva", "Maranon"));
+		mUsers.getSource().add(new User("omiranda", "omiranda@uci.cu", "Orlando", "Miranda"));
+		mUsers.getSource().add(new User("oaguilar", "oaguilar@uci.cu", "Osvaldo", "Aguilar Lauzurique"));
+		mUsers.getSource().add(new User("Prashant", "prashantkhanal@gmail.com", "Prashant", ""));
+		mUsers.getSource().add(new User("puran", "mailtopuran@gmail.com", "Puran", "Singh"));
 		mUsers.getSource().add(new User("predrag", "stojadinovicp@gmail.com", "Predrag", "Stojadinovic"));
-		mUsers.getSource().add(new User("puran", "p.singh@jwebsocket.org", "Puran", "Singh"));
-		mUsers.getSource().add(new User("quentin", "quentin.ambard@gmail.com", "Quentin", "Ambard"));
+		mUsers.getSource().add(new User("Quentin", "quentin.ambard@gmail.com", "Quentin", "Ambard"));
+		mUsers.getSource().add(new User("Rebecca", "r.schulze@jwebsocket.org", "Rebecca", "Schulze"));
+		mUsers.getSource().add(new User("rbetancourt", "rbetancourt@hab.uci.cu", "Rolando", "Betancourt"));
+		mUsers.getSource().add(new User("rsantamaria", "rsantamaria@jwebsocket.org", "Rolando", "Santamaria"));
+		mUsers.getSource().add(new User("rpujol", "rgpujol@hab.uci.cu", "Roylandi", "Pujol"));
+		mUsers.getSource().add(new User("Unni", "unnivm@gmail.com", "Unni", ""));
+		mUsers.getSource().add(new User("vbarzana", "vbarzana@jwebsocket.org", "Victor Antonio", "Barzana Crespo"));
+		mUsers.getSource().add(new User("yvigil", "yvigil@hab.uci.cu", "Yamila", "Vigil Regalado"));
+		mUsers.getSource().add(new User("ynunez", "ynbosh@hab.uci.cu", "Yasmani", "Nunez"));
 	}
 
 	private void broadcast(Token aToken) {
@@ -237,8 +277,6 @@ public class JQueryDemoPlugIn extends TokenPlugIn {
 
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
-		if (mClients.contains(aConnector)) {
-			mClients.remove(aConnector);
-		}
+		mClients.remove(aConnector);
 	}
 }
