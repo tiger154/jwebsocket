@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class Users {
 
-	private LinkedList<User> mCustomers;
+	private LinkedList<User> mUsers;
 	private Integer mCount;
 
 	/**
@@ -35,7 +35,7 @@ public class Users {
 	 */
 	public Users() {
 		mCount = 0;
-		mCustomers = new LinkedList<User>();
+		mUsers = new LinkedList<User>();
 		try {
 			add(new User(mCount, "Alexander", "arojash@uci.cu", 24));
 			add(new User(mCount, "Alexander", "a.schulze@jwebsocket.org", 40));
@@ -80,13 +80,13 @@ public class Users {
 	 * @param aCustomer
 	 * @throws Exception
 	 */
-	public void add(User aCustomer) throws Exception {
-		for (User lCustomer : mCustomers) {
+	public final void add(User aCustomer) throws Exception {
+		for (User lCustomer : mUsers) {
 			if (lCustomer.getEmail().equals(aCustomer.getEmail())) {
 				throw new Exception("customer duplicated");
 			}
 		}
-		mCustomers.add(aCustomer);
+		mUsers.add(aCustomer);
 		mCount++;
 	}
 
@@ -95,7 +95,7 @@ public class Users {
 	 * @return
 	 */
 	public LinkedList<User> getCustomers() {
-		return mCustomers;
+		return mUsers;
 	}
 
 	/**
@@ -105,11 +105,11 @@ public class Users {
 	 * @return
 	 */
 	public List<User> getSubList(int aStart, int aLimit) {
-		if (aLimit > mCustomers.size()) {
-			aLimit -= aLimit - mCustomers.size();
+		if (aLimit > mUsers.size()) {
+			aLimit -= aLimit - mUsers.size();
 		}
 
-		return mCustomers.subList(aStart, aLimit);
+		return mUsers.subList(aStart, aLimit);
 
 	}
 
@@ -118,7 +118,7 @@ public class Users {
 	 * @return
 	 */
 	public Integer getSize() {
-		return mCustomers.size();
+		return mUsers.size();
 	}
 
 	/**
@@ -128,14 +128,14 @@ public class Users {
 	 */
 	public User getCustomer(Integer aId) {
 		User lCustomer = null;
-		for (User lCustDef : mCustomers) {
+		for (User lCustDef : mUsers) {
 			if (lCustDef.getId().equals(aId)) {
 				return lCustDef;
 			}
 		}
 		return lCustomer;
 	}
-	
+
 	/**
 	 *
 	 * @param aCount
@@ -158,7 +158,7 @@ public class Users {
 	 * @return
 	 */
 	public boolean findCustomer(Integer aId) {
-		for (User lCustDef : mCustomers) {
+		for (User lCustDef : mUsers) {
 			if (lCustDef.getId().equals(aId)) {
 				return true;
 			}
@@ -172,9 +172,9 @@ public class Users {
 	 * @return
 	 */
 	public boolean deleteCustomer(Integer aId) {
-		for (User lCustDef : mCustomers) {
+		for (User lCustDef : mUsers) {
 			if (lCustDef.getId().equals(aId)) {
-				mCustomers.remove(lCustDef);
+				mUsers.remove(lCustDef);
 				return true;
 			}
 		}
