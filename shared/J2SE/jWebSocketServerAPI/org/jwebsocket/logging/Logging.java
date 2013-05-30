@@ -19,11 +19,11 @@
 package org.jwebsocket.logging;
 
 import java.util.List;
+import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.xml.LoggingConfig;
 import org.jwebsocket.token.Token;
-import javolution.util.FastList;
 
 /**
  * Provides the common used jWebSocket logging support based on Apache's log4j.
