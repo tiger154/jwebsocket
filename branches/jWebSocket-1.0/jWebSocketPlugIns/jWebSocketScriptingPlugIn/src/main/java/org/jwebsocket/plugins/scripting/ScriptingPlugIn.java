@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.scripting;
 
-import org.jwebsocket.plugins.scripting.app.BaseScriptApp;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +37,7 @@ import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.plugins.annotations.Role;
+import org.jwebsocket.plugins.scripting.app.BaseScriptApp;
 import org.jwebsocket.plugins.scripting.app.js.JavaScriptApp;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.Tools;
