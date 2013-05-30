@@ -40,37 +40,37 @@
 //:ancestor:*:Ext.util.Observable
 //:d:en:Implementation of the [tt]jWebSocketTokenClient[/tt] class inside _
 //:d:en:an ExtJS class.
-Ext.define( 'Ext.jws.Client', {
+Ext.define('Ext.jws.Client', {
 	extend: 'Ext.util.Observable',
 	alternateClassName: 'Ext.jwsClient',
 	singleton: true,
 	fTokenClient: undefined,
-	constructor: function( aConfig ) {
+	constructor: function(aConfig) {
 		// Call our superclass constructor to complete construction process.
-		this.superclass.constructor.call( this, aConfig );
+		this.superclass.constructor.call(this, aConfig);
 	},
 	//:m:*:init
 	//:d:en:This method allows overriding the submit and load methods of the _
 	//:d:en:Ext.form prototype and is executed when the connection is opened.
 	//:a:en::aConfig:Object:The default configuration.
 	//:r:*:::void:none
-	init: function( aConfig ) {
-		if ( Ext.form.Basic ) {
+	init: function(aConfig) {
+		if (Ext.form.Basic) {
 			//:m:*:Ext.form.submit
 			//:d:en:Override the submit method in the prototype of the class Ext.form
 			//:a:en::aOptions:Object:The default submit options.
 			//:r:*::Ext.form.doAction:function:The function to be executed when submit method of the form is called.
-			Ext.form.Basic.prototype.submit = function( aOptions ) {
-				return this.doAction( this.standardSubmit ? 'standardsubmit' :
+			Ext.form.Basic.prototype.submit = function(aOptions) {
+				return this.doAction(this.standardSubmit ? 'standardsubmit' :
 						this.api ? 'directsubmit' : this.jwsSubmit ? 'jwssubmit' :
-						'submit', aOptions );
+						'submit', aOptions);
 			}
 			//:m:*:Ext.form.load
 			//:d:en:Override the load method in the prototype of the class Ext.form
 			//:a:en::aOptions:Object:The default load options.
 			//:r:*::Ext.form.doAction:function:The function to be executed when load method of the form is called.
-			Ext.form.Basic.prototype.load = function( aOptions ) {
-				return this.doAction( this.api ? 'directload' : this.jwsSubmit ? 'jwsload' : 'load', aOptions );
+			Ext.form.Basic.prototype.load = function(aOptions) {
+				return this.doAction(this.api ? 'directload' : this.jwsSubmit ? 'jwsload' : 'load', aOptions);
 			}
 		}
 	},
@@ -83,11 +83,11 @@ Ext.define( 'Ext.jws.Client', {
 	//:a:en::aTokenClient:jWebSocketTokenClient:Any TokenClient (JSON, XML, CSV). This field is optional, default is jWebSocketJSONClient.
 	//:a:en::aTimeout:Integer:The timeout number in miliseconds to wait for the server response when opening the connection. This field is optional.
 	//:r:*:::void:none
-	open: function( aURL, aTokenClient, aTimeout ) {
+	open: function(aURL, aTokenClient, aTimeout) {
 		// Keeping the scope in a variable to be used when the websocket 
 		// events of the jWebSocket TokenClient will be executed 
 		var self = this;
-		if ( jws.browserSupportsWebSockets() ) {
+		if (jws.browserSupportsWebSockets()) {
 			// In case that not given URL gets the default URL to the 
 			// jWebSocket Server. The schema ws/wss is automatically selected 
 			// by the http/https schema. The default URL is generally composed
@@ -95,67 +95,67 @@ Ext.define( 'Ext.jws.Client', {
 			// Ex: ws://jwebsocket.org:9797/jWebSocket/jWebSocket
 			var lUrl = aURL || jws.getAutoServerURL();
 
-			if ( aTokenClient ) {
+			if (aTokenClient) {
 				this.fTokenClient = aTokenClient;
 			}
 			else {
-				if ( !this.fTokenClient ) {
+				if (!this.fTokenClient) {
 					this.fTokenClient = new jws.jWebSocketJSONClient();
 				}
 			}
 
 			// If user pass a custom timeout, then the jWebSocket Client will 
 			// take care of that by calling the function setDefaultTimeOut
-			if ( aTimeout ) {
-				this.setDefaultTimeOut( aTimeout );
+			if (aTimeout) {
+				this.setDefaultTimeOut(aTimeout);
 			}
-			if ( typeof this.fTokenClient.isConnected === "function" && !this.fTokenClient.isConnected() ) {
+			if (typeof this.fTokenClient.isConnected === "function" && !this.fTokenClient.isConnected()) {
 				// Binding the jWebSocketTokenClient callbacks and firing events 
 				// within the Ext.jws class when messages arrive from the server
-				this.fTokenClient.open( lUrl, {
-					OnOpen: function( aToken ) {
+				this.fTokenClient.open(lUrl, {
+					OnOpen: function(aToken) {
 						// Executing the init method of the class to override the 
 						// prototype of load and submit methods of the Ext.form class
 						self.init();
 						var lMsg = "jWebSocket connection opened";
-						self.fireEvent( 'open', aToken );
-						if ( Ext.Logger ) {
-							Ext.Logger.log( lMsg );
+						self.fireEvent('open', aToken);
+						if (Ext.Logger) {
+							Ext.Logger.log(lMsg);
 						} else {
-							jws.console.log( lMsg );
+							jws.console.log(lMsg);
 						}
 					},
-					OnWelcome: function( aToken ) {
-						self.fireEvent( 'welcome', aToken );
+					OnWelcome: function(aToken) {
+						self.fireEvent('welcome', aToken);
 					},
-					OnClose: function( aToken ) {
+					OnClose: function(aToken) {
 						var lMsg = "jWebSocket connection closed, please " +
 								"check that your jWebSocket server is running";
-						if ( Ext.Logger ) {
-							Ext.Logger.warn( lMsg );
+						if (Ext.Logger) {
+							Ext.Logger.warn(lMsg);
 						} else {
-							jws.console.log( lMsg );
+							jws.console.log(lMsg);
 						}
-						self.fireEvent( 'close', aToken );
+						self.fireEvent('close', aToken);
 					},
 					OnTimeout: function() {
-						self.fireEvent( 'timeout' );
+						self.fireEvent('timeout');
 					},
-					OnLogon: function( aToken ) {
-						self.fireEvent( 'logon', aToken );
+					OnLogon: function(aToken) {
+						self.fireEvent('logon', aToken);
 					},
-					OnLogoff: function( aToken ) {
-						self.fireEvent( 'logoff', aToken );
+					OnLogoff: function(aToken) {
+						self.fireEvent('logoff', aToken);
 					},
-					OnMessage: function( aToken ) {
-						self.fireEvent( 'message', aToken );
+					OnMessage: function(aToken) {
+						self.fireEvent('message', aToken);
 					}
-				} );
+				});
 			}
 		}
 		else {
 			var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-			Ext.Error.raise( lMsg );
+			Ext.Error.raise(lMsg);
 		}
 	},
 	//:m:*:getConnection
@@ -174,22 +174,22 @@ Ext.define( 'Ext.jws.Client', {
 	//:a:en::aCallbacks:Object:An object with the functions to be executed if the server responds.
 	//:a:en::aScope:Object:The scope from which the message was sent, when the server responds the callback functions will execute within this scope.
 	//:r:*:::void:none
-	send: function( aNS, aType, aArgs, aCallbacks, aScope ) {
+	send: function(aNS, aType, aArgs, aCallbacks, aScope) {
 
 		var lScope = aScope;
-		var lToken = { };
-		if ( aArgs ) {
-			lToken = Ext.clone( aArgs );
+		var lToken = {};
+		if (aArgs) {
+			lToken = Ext.clone(aArgs);
 		}
 		lToken.ns = aNS;
 		lToken.type = aType;
 
-		this.fireEvent( 'beforesend', lToken );
+		this.fireEvent('beforesend', lToken);
 
-		this.fTokenClient.sendToken( lToken, {
+		this.fTokenClient.sendToken(lToken, {
 			// This callback will be fired when the server returns a response 
 			// message
-			OnResponse: function( aToken ) {
+			OnResponse: function(aToken) {
 				// The code of the token received from the server defines if 
 				// the sent message had a successful impact on the server or if 
 				// any failure happened while sending or in the server side
@@ -197,33 +197,33 @@ Ext.define( 'Ext.jws.Client', {
 				// Note: jWebSocket client also specifies OnSuccess, OnFailure 
 				// callbacks that are executed when the new message comes as a 
 				// response to a previous message
-				if ( aToken.code < 0 ) {
-					if ( 'function' == typeof aCallbacks['failure'] ) {
-						if ( aScope == undefined ) {
-							return aCallbacks.failure( aToken );
+				if (aToken.code < 0) {
+					if ('function' == typeof aCallbacks['failure']) {
+						if (aScope == undefined) {
+							return aCallbacks.failure(aToken);
 						}
-						aCallbacks.failure.call( lScope, aToken );
+						aCallbacks.failure.call(lScope, aToken);
 					}
 				} else {
-					if ( 'function' == typeof aCallbacks['success'] ) {
-						if ( aScope == undefined ) {
-							return aCallbacks.success( aToken );
+					if ('function' == typeof aCallbacks['success']) {
+						if (aScope == undefined) {
+							return aCallbacks.success(aToken);
 						}
-						aCallbacks.success.call( lScope, aToken );
+						aCallbacks.success.call(lScope, aToken);
 					}
 				}
 			},
 			// Fired when the server doesn't reach the server while sending the 
 			// message in the defined timeout
-			OnTimeOut: function( aToken ) {
-				if ( 'function' == typeof aCallbacks['timeout'] ) {
-					if ( aScope == undefined ) {
-						return aCallbacks.timeout( aToken );
+			OnTimeOut: function(aToken) {
+				if ('function' == typeof aCallbacks['timeout']) {
+					if (aScope == undefined) {
+						return aCallbacks.timeout(aToken);
 					}
-					aCallbacks.timeout.call( lScope, aToken );
+					aCallbacks.timeout.call(lScope, aToken);
 				}
 			}
-		} );
+		});
 	},
 	//:m:*:addPlugIn
 	//:d:en:Adds a PlugIn with a processToken method to the jWebSocketTokenClient. _
@@ -231,8 +231,8 @@ Ext.define( 'Ext.jws.Client', {
 	//:d:en:executing all their processToken methods with the incoming message as parameter.
 	//:a:en::aPlugIn:Object:An Object with a processToken method to be executed whenever a message comes from the server.
 	//:r:*::void:none
-	addPlugIn: function( aPlugIn ) {
-		this.fTokenClient.addPlugIn( aPlugIn );
+	addPlugIn: function(aPlugIn) {
+		this.fTokenClient.addPlugIn(aPlugIn);
 	},
 	//:m:*:setDefaultTimeOut
 	//:d:en:jWebSocket Client defines a constant with the default timeout. This _
@@ -240,8 +240,8 @@ Ext.define( 'Ext.jws.Client', {
 	//:d:en:all the jWebSocket Server responses, the default timeout is 3000
 	//:a:en::aTimeout:Integer:The time to wait for every response from the server without firing the timeout event
 	//:r:*::void:none
-	setDefaultTimeOut: function( aTimeout ) {
-		if ( this.fTokenClient ) {
+	setDefaultTimeOut: function(aTimeout) {
+		if (this.fTokenClient) {
 			this.fTokenClient.DEF_RESP_TIMEOUT = aTimeout;
 		}
 		else {
@@ -255,17 +255,17 @@ Ext.define( 'Ext.jws.Client', {
 	//:r:*::void:none
 	close: function() {
 		try {
-			var lRes = this.fTokenClient.close( {
+			var lRes = this.fTokenClient.close({
 				timeout: 3000
-			} );
+			});
 
-			if ( lRes.code != 0 ) {
-				jws.console.log( lRes.msg );
+			if (lRes.code != 0) {
+				jws.console.log(lRes.msg);
 			} else {
-				this.fireEvent( 'close' );
+				this.fireEvent('close');
 			}
-		} catch ( aException ) {
-			jws.console.log( aException );
+		} catch (aException) {
+			jws.console.log(aException);
 		}
 	}
-} );
+});
