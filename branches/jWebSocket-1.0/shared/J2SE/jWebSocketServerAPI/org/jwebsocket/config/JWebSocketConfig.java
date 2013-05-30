@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.ServletContext;
 import javolution.util.FastMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -41,8 +40,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.util.Tools;
 
 /**
- * Represents the jWebSocket configuration. This class is immutable and should
- * not be overridden.
+ * Represents the jWebSocket configuration. This class is immutable and should not be overridden.
  *
  * @author Marcos Antonio González Huerta (markos0886, UCI)
  * @author puran
@@ -317,7 +315,6 @@ public class JWebSocketConfig implements Config {
 	 * @param aArgs
 	 */
 	public static void initForConsoleApp(String[] aArgs) {
-		mIsWebApp = false;
 		if (aArgs != null && aArgs.length > 0) {
 			for (int lIdx = 0; lIdx < aArgs.length; lIdx++) {
 				// is there one more argument beyond the current one?
@@ -370,54 +367,9 @@ public class JWebSocketConfig implements Config {
 	 *
 	 * @param aContext
 	 */
-	public static void initForWebApp(ServletContext aContext) {
-		boolean lDebug = true;
-		if (lDebug) {
-			System.out.println("jWebSocket: Initializing web application...");
-		}
+	public static void initForWebApp(String[] aArgs) {
 		mIsWebApp = true;
-		try {
-			// get base folder of unpacked war file
-			String lLog4JPath = aContext.getRealPath("/");
-			// add a trailing slash if required
-			String lFileSep = "/";
-			if (!lLog4JPath.endsWith(lFileSep)) {
-				lLog4JPath += lFileSep;
-			}
-			// this path must match the pom.xml
-			lLog4JPath += "WEB-INF/classes/conf/log4j.xml";
-			if (lDebug) {
-				System.out.println("jWebSocket: Loading log4j config from " + lLog4JPath);
-			}
-			// load the log4j xml config file
-			DOMConfigurator.configure(lLog4JPath);
-			mLog = Logger.getLogger(JWebSocketConfig.class);
-			if (lDebug) {
-				System.out.println("jWebSocket: logger instantiated: " + mLog);
-			}
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("WebApp-Mode: Logs successfully configured by '" + lLog4JPath + "'.");
-			}
-		} catch (Exception lEx) {
-			System.out.println(lEx.getClass().getSimpleName() + " configuring logs: " + lEx.getMessage());
-		}
-
-		mJWebSocketHome = findJWebSocketHome();
-
-		if (null == mConfigPath) {
-			mConfigPath = mJWebSocketHome
-					+ "conf/" + JWebSocketServerConstants.JWEBSOCKET_XML;
-		}
-		if (null == mBootstrapPath) {
-			mBootstrapPath = mJWebSocketHome
-					+ "conf/Resources/" + JWebSocketServerConstants.BOOTSTRAP_XML;
-		}
-		if (mLog.isDebugEnabled()) {
-			mLog.debug(JWebSocketServerConstants.JWEBSOCKET_HOME + ": "
-					+ mJWebSocketHome);
-			mLog.debug("Config: " + mConfigPath);
-			mLog.debug("Bootstrap: " + mBootstrapPath);
-		}
+		initForConsoleApp(aArgs);
 	}
 
 	/**
