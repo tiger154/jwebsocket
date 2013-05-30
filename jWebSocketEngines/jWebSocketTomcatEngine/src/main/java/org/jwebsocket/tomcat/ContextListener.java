@@ -58,7 +58,7 @@ public class ContextListener implements ServletContextListener {
 			JWebSocketFactory.printCopyrightToConsole();
 
 			// check if home, config or bootstrap path are passed by context params
-			JWebSocketConfig.initForConsoleApp(ServletUtils.extractStartupArguments(lContext));
+			JWebSocketConfig.initForWebApp(ServletUtils.extractStartupArguments(lContext));
 
 			// getting the tomcat class loader
 			JWebSocketJarClassLoader lLoader = new JWebSocketJarClassLoader();
