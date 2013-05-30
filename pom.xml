@@ -184,11 +184,13 @@
 		</repository>
 
 		<!-- NetBeans repository -->
+		<!--
 		<repository>
 			<id>netbeans</id>
 			<name>NetBeans Repository</name>
 			<url>http://bits.netbeans.org/maven2</url>
 		</repository>
+		-->
 		
 		<!-- use jWebSocket repository as final fallback -->
 		<repository>
