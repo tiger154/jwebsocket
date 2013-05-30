@@ -27,8 +27,9 @@ import org.jwebsocket.kit.WebSocketSession;
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
-public interface WebSocketPlugIn {
+public interface WebSocketPlugIn extends ISystemLifecycle{
 
 	/**
 	 * returns the id of the plug-in.

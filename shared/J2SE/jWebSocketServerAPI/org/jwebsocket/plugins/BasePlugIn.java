@@ -453,4 +453,20 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	public String getLicense() {
 		return PLUGIN_CUSTOM_LICENSE;
 	}
+
+	@Override
+	public void systemStarting() throws Exception {
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+	}
+
+	@Override
+	public void systemStopping() throws Exception {
+	}
+
+	@Override
+	public void systemStopped() throws Exception {
+	}
 }

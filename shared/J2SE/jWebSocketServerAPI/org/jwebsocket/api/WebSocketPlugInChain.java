@@ -32,8 +32,9 @@ import org.jwebsocket.kit.WebSocketSession;
  *
  * @author aschulze
  * @author Marcos Antonio González Huerta (markos0886, UCI)
+ * @author kyberneees
  */
-public interface WebSocketPlugInChain {
+public interface WebSocketPlugInChain extends ISystemLifecycle {
 
 	/**
 	 * is called by the server when the engine has been started. Usually the

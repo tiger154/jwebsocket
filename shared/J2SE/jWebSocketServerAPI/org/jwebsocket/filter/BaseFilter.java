@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.filter;
 
-import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketFilter;
@@ -26,6 +25,7 @@ import org.jwebsocket.api.WebSocketFilterChain;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.xml.FilterConfig;
+import org.jwebsocket.kit.FilterResponse;
 
 /**
  *
@@ -144,5 +144,21 @@ public class BaseFilter implements WebSocketFilter {
 	@Override
 	public void setVersion(String aVersion) {
 		mVersion = aVersion;
+	}
+	
+	@Override
+	public void systemStarting() throws Exception {
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+	}
+
+	@Override
+	public void systemStopping() throws Exception {
+	}
+
+	@Override
+	public void systemStopped() throws Exception {
 	}
 }

@@ -23,8 +23,9 @@ import org.jwebsocket.kit.FilterResponse;
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
-public interface WebSocketFilter {
+public interface WebSocketFilter extends ISystemLifecycle {
 
 	/**
 	 *

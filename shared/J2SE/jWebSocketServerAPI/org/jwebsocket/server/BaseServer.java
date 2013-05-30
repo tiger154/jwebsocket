@@ -387,9 +387,8 @@ public class BaseServer implements WebSocketServer {
 	}
 
 	/**
-	 * Returns the connector identified by it's connector-username or
-	 * <tt>null</tt> if no connector with that username could be found. This method iterates through
-	 * all embedded engines.
+	 * Returns the connector identified by it's connector-username or <tt>null</tt> if no connector
+	 * with that username could be found. This method iterates through all embedded engines.
 	 *
 	 * @param aUsername username of the connector to be returned.
 	 * @return WebSocketConnector with the given username or <tt>null</tt> if not found.
@@ -579,5 +578,29 @@ public class BaseServer implements WebSocketServer {
 	@Override
 	public ServerConfiguration getServerConfiguration() {
 		return mConfiguration;
+	}
+
+	@Override
+	public void systemStarting() throws Exception {
+		getPlugInChain().systemStarting();
+		getFilterChain().systemStarting();
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+		getPlugInChain().systemStarted();
+		getFilterChain().systemStarted();
+	}
+
+	@Override
+	public void systemStopping() throws Exception {
+		getPlugInChain().systemStopping();
+		getFilterChain().systemStopping();
+	}
+
+	@Override
+	public void systemStopped() throws Exception {
+		getPlugInChain().systemStopped();
+		getFilterChain().systemStopped();
 	}
 }

@@ -29,9 +29,8 @@ import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 
 /**
- * Implements the basic chain of plug-ins which is triggered by a server when
- * data packets are received. Each data packet is pushed through the chain and
- * can be processed by the plug-ins.
+ * Implements the basic chain of plug-ins which is triggered by a server when data packets are
+ * received. Each data packet is pushed through the chain and can be processed by the plug-ins.
  *
  * @author aschulze
  * @author Marcos Antonio González Huerta (markos0886, UCI)
@@ -293,5 +292,73 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 	public void addPlugIn(Integer aPosition, WebSocketPlugIn aPlugIn) {
 		mPlugins.add(aPosition, aPlugIn);
 		aPlugIn.setPlugInChain(this);
+	}
+
+	@Override
+	public void systemStarting() throws Exception {
+		if (mPlugins.isEmpty()){
+			return;
+		}
+		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
+			try {
+				lPlugIn.systemStarting();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStarting' event at plug-in '"
+						+ lPlugIn.getId() + "': "
+						+ lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+		if (mPlugins.isEmpty()){
+			return;
+		}
+		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
+			try {
+				lPlugIn.systemStarted();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStarted' event at plug-in '"
+						+ lPlugIn.getId() + "': "
+						+ lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public void systemStopping() throws Exception {
+		if (mPlugins.isEmpty()){
+			return;
+		}
+		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
+			try {
+				lPlugIn.systemStopping();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStopping' event at plug-in '"
+						+ lPlugIn.getId() + "': "
+						+ lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public void systemStopped() throws Exception {
+		if (mPlugins.isEmpty()){
+			return;
+		}
+		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
+			try {
+				lPlugIn.systemStopped();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStopped' event at plug-in '"
+						+ lPlugIn.getId() + "': "
+						+ lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage());
+			}
+		}
 	}
 }

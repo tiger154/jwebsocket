@@ -26,13 +26,13 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 
 /**
- * Provides the basic implementation of the jWebSocket engines. The
- * {@code BaseEngine} is supposed to be used as ancestor for the engine
- * implementations like e.g. the {@code TCPEngine} or the {@code NettyEngine}.
+ * Provides the basic implementation of the jWebSocket engines. The {@code BaseEngine} is supposed
+ * to be used as ancestor for the engine implementations like e.g. the {@code TCPEngine} or the
+ * {@code NettyEngine}.
  *
  * @author aschulze
  */
-public class BaseEngine implements WebSocketEngine {
+public abstract class BaseEngine implements WebSocketEngine {
 
 	private final Map<String, WebSocketServer> mServers =
 			new FastMap<String, WebSocketServer>().shared();
@@ -228,5 +228,21 @@ public class BaseEngine implements WebSocketEngine {
 				+ " cannot be processed!"
 				+ " Supported packet size: " + aConnector.getMaxFrameSize()
 				+ ", received: " + aPacketSize;
+	}
+
+	@Override
+	public void systemStarting() throws Exception {
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+	}
+
+	@Override
+	public void systemStopping() throws Exception {
+	}
+
+	@Override
+	public void systemStopped() throws Exception {
 	}
 }
