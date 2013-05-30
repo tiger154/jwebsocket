@@ -107,7 +107,7 @@ public class JWebSocketFactory {
 
 		boolean lDebug = true;
 		if (lDebug) {
-			Logger lLogger = mLog.getRootLogger();
+			Logger lLogger = Logger.getRootLogger();
 			String lAppenderStr = "";
 			Enumeration lAppenders = lLogger.getAllAppenders();
 			while (lAppenders.hasMoreElements()) {
@@ -273,10 +273,10 @@ public class JWebSocketFactory {
 				notifyStarted();
 			} else {
 				notifyStopping();
-				
+
 				// if engine couldn't be started due to whatever reasons...
 				JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
-				
+
 				notifyStopped();
 			}
 		} catch (WebSocketException lEx) {
@@ -312,7 +312,7 @@ public class JWebSocketFactory {
 		// set instance status to not accept any new incoming connections
 		JWebSocketInstance.setStatus(JWebSocketInstance.STOPPING);
 		notifyStopping();
-		
+
 		if (mLog != null && mLog.isDebugEnabled()) {
 			mLog.debug("Stopping jWebSocket Sub System...");
 		}
@@ -377,9 +377,9 @@ public class JWebSocketFactory {
 
 		// set instance status
 		JWebSocketInstance.setStatus(JWebSocketInstance.STOPPED);
-		
+
 		notifyStopped();
-		
+
 		if (null != mLog && mLog.isInfoEnabled()) {
 			mLog.info("jWebSocket Server Sub System stopped.");
 		}
