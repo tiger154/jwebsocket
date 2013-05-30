@@ -2,15 +2,15 @@
  *
  * @author Osvaldo Aguilar Lauzurique, Alexander Rojas Hernández
  */
-Ext.Loader.setConfig( {
+Ext.Loader.setConfig({
 	enabled: true,
 	// Don't set to true, it's easier to use the debugger option to disable caching
 	disableCaching: false,
 	paths: {
 		'Ext.jws': '../../lib/ExtJS/jWebSocketSenchaPlugIn/'
 	}
-} );
-Ext.require( [
+});
+Ext.require([
 	'Ext.data.*',
 	'Ext.grid.*',
 	'Ext.form.*',
@@ -18,11 +18,11 @@ Ext.require( [
 	'Ext.jws.data.Proxy',
 	'Ext.jws.form.action.Load',
 	'Ext.jws.form.action.Submit'
-] );
+]);
 
-Ext.define( 'User', {
+Ext.define('User', {
 	extend: 'Ext.data.Model',
-	fields: [ {
+	fields: [{
 			name: 'id',
 			type: 'int',
 			useNull: true
@@ -32,13 +32,14 @@ Ext.define( 'User', {
 			name: 'age',
 			type: 'int',
 			useNull: true
-		} ]
-} );
+		}]
+});
 
 NS_EXTJS_DEMO = jws.NS_BASE + '.plugins.sencha';
 // Type of tokens
 TT_OPEN = 'open';
 TT_CLOSE = 'close';
+TT_REGISTER = 'register';
 TT_CREATE = 'create';
 TT_READ = 'read';
 TT_UPDATE = 'update';
@@ -56,16 +57,21 @@ TEXT_CLIENT_ID = "Client-ID: ";
 CLS_AUTH = "authenticated";
 CLS_OFFLINE = "offline";
 
-Ext.onReady( function() {
+Ext.onReady(function() {
 	// DOM elements
-	var eDisconnectMessage = Ext.get( "not_connected" ),
-			eBtnDisconnect = Ext.get( "disconnect_button" ),
-			eBtnConnect = Ext.get( "connect_button" ),
-			eClient = document.getElementById( "client_status" );
-	eClientId = document.getElementById( "client_id" );
-	eWebSocketType = document.getElementById( "websocket_type" );
+	var eDisconnectMessage = Ext.get("not_connected"),
+			eBtnDisconnect = Ext.get("disconnect_button"),
+			eBtnConnect = Ext.get("connect_button"),
+			eClient = document.getElementById("client_status");
+	eClientId = document.getElementById("client_id");
+	eWebSocketType = document.getElementById("websocket_type");
 
-	Ext.jwsClient.on( TT_OPEN, function() {
+	Ext.jwsClient.on(TT_OPEN, function() {
+		// Registering to the Sencha demo to receive notifications 
+		// from the server when other clients create, update or remove 
+		// users from the server users list
+		Ext.jwsClient.send(NS_EXTJS_DEMO, TT_REGISTER);
+		
 		eClient.innerHTML = TEXT_CONNECTED;
 		eClient.className = CLS_AUTH;
 
@@ -73,9 +79,9 @@ Ext.onReady( function() {
 		eBtnConnect.hide();
 		eDisconnectMessage.hide();
 		initDemo();
-	} );
+	});
 
-	Ext.jwsClient.on( TT_CLOSE, function() {
+	Ext.jwsClient.on(TT_CLOSE, function() {
 		eClient.innerHTML = TEXT_DISCONNECTED;
 		eClient.className = CLS_OFFLINE;
 		eDisconnectMessage.show();
@@ -84,17 +90,17 @@ Ext.onReady( function() {
 		exitDemo();
 		eWebSocketType.innerHTML = TEXT_WEBSOCKET + "-";
 		eClientId.innerHTML = TEXT_CLIENT_ID + "- ";
-	} );
+	});
 
 	eBtnDisconnect.hide();
-	eBtnConnect.on( "click", function() {
+	eBtnConnect.on("click", function() {
 		Ext.jwsClient.open();
-	} );
+	});
 
-	eBtnDisconnect.on( "click", function() {
+	eBtnDisconnect.on("click", function() {
 		Ext.jwsClient.close();
-	} );
-} );
+	});
+});
 
 function initDemo() {
 	Ext.tip.QuickTipManager.init();
@@ -113,21 +119,21 @@ function initDemo() {
 		}
 	};
 
-	var lJWSProxy = new Ext.jws.data.Proxy( lProxyCfg );
+	var lJWSProxy = new Ext.jws.data.Proxy(lProxyCfg);
 
-	var lStore = new Ext.data.Store( {
+	var lStore = new Ext.data.Store({
 //		autoSync: true,
 		autoLoad: true,
 		pageSize: 10,
 		model: 'User',
 		proxy: lJWSProxy,
 		listeners: {
-			write: function( aStore, aOperation ) {
+			write: function(aStore, aOperation) {
 				var lRecord = aOperation.getRecords()[0],
-						lName = Ext.String.capitalize( aOperation.action ),
+						lName = Ext.String.capitalize(aOperation.action),
 						lText;
 
-				if ( lName == TT_DESTROY ) {
+				if (lName == TT_DESTROY) {
 					lRecord = aOperation.records[0];
 					lText = 'Destroyed';
 				} else {
@@ -136,43 +142,43 @@ function initDemo() {
 
 
 				var lForm = lFormPanel.getForm();
-				if ( aOperation.action != TT_DESTROY ) {
-					lForm.loadRecord( lRecord );
+				if (aOperation.action != TT_DESTROY) {
+					lForm.loadRecord(lRecord);
 
-					Ext.getCmp( 'submit_button' ).setText( 'Update User' );
+					Ext.getCmp('submit_button').setText('Update User');
 				}
 
-				var lMessage = Ext.String.format( "{0} user: {1}", lText, lRecord.getId() );
-				log( 0, lMessage );
+				var lMessage = Ext.String.format("{0} user: {1}", lText, lRecord.getId());
+				log(0, lMessage);
 			}
 		}
-	} );
+	});
 
-	var lRowEditor = Ext.create( 'Ext.grid.plugin.RowEditing', {
+	var lRowEditor = Ext.create('Ext.grid.plugin.RowEditing', {
 		listeners: {
-			edit: function( aEdit ) {
-				if ( aEdit.record.data ) {
-					if ( aEdit.record.data.email && aEdit.record.data.name ) {
+			edit: function(aEdit) {
+				if (aEdit.record.data) {
+					if (aEdit.record.data.email && aEdit.record.data.name) {
 						aEdit.store.save();
 					}
 				}
 			}
 		}
-	} );
+	});
 
 	// create Vtype for vtype:'num'
 	var lNumTest = /^[0-9]+$/;
-	Ext.apply( Ext.form.field.VTypes, {
-		num: function( aVal, aField ) {
-			return lNumTest.test( aVal );
+	Ext.apply(Ext.form.field.VTypes, {
+		num: function(aVal, aField) {
+			return lNumTest.test(aVal);
 		},
 		// vtype Text property: The error text to display when the validation function returns false
 		numText: 'Not a valid number.  Must be only numbers".'
-	} );
+	});
 
 
 	//=====form============
-	var lFormPanel = Ext.create( 'Ext.form.Panel', {
+	var lFormPanel = Ext.create('Ext.form.Panel', {
 		frame: false,
 		jwsSubmit: true,
 		bodyPadding: 10,
@@ -182,7 +188,7 @@ function initDemo() {
 		fieldDefaults: {
 			msgTarget: 'side'
 		},
-		items: [ {
+		items: [{
 				xtype: 'hidden',
 				name: 'id',
 				id: 'id'
@@ -219,10 +225,10 @@ function initDemo() {
 				width: 120,
 				handler: function() {
 
-					var lForm = this.up( 'form' ).getForm();
+					var lForm = this.up('form').getForm();
 
 					var lAction = null;
-					if ( lForm.findField( 'id' ).getValue() != "" ) {
+					if (lForm.findField('id').getValue() != "") {
 						lAction = {
 							ns: NS_EXTJS_DEMO,
 							tokentype: TT_UPDATE,
@@ -236,27 +242,27 @@ function initDemo() {
 							tokentype: TT_CREATE
 						}
 					}
-					lAction.failure = function( aForm, aAction ) {
-						if ( aAction == 'undefined' ) {
+					lAction.failure = function(aForm, aAction) {
+						if (aAction == 'undefined') {
 							var message = "Please you have errors in the form";
-							log( -1, message );
+							log(-1, message);
 						} else {
-							log( -1, aAction.response.message );
+							log(-1, aAction.response.message);
 
 						}
 					}
 
-					lAction.success = function( aForm, aAction ) {
-						Ext.getCmp( 'submit_button' ).setText( 'Add User' );
+					lAction.success = function(aForm, aAction) {
+						Ext.getCmp('submit_button').setText('Add User');
 						aForm.reset();
-						log( aAction.response.code, aAction.response.message );
+						log(aAction.response.code, aAction.response.message);
 					}
 
-					if ( lForm.isValid() )
-						lForm.submit( lAction );
+					if (lForm.isValid())
+						lForm.submit(lAction);
 					else {
 						var lMessage = "Please you have errors in the form";
-						log( -1, lMessage );
+						log(-1, lMessage);
 					}
 				}
 			},
@@ -265,19 +271,19 @@ function initDemo() {
 				text: 'Reset',
 				width: 120,
 				handler: function() {
-					var lForm = this.up( 'form' ).getForm();
-					Ext.getCmp( 'submit_button' ).setText( 'Add User' );
+					var lForm = this.up('form').getForm();
+					Ext.getCmp('submit_button').setText('Add User');
 					lForm.reset();
 				}
-			} ]
-	} );
+			}]
+	});
 
 	//=====gridPanel=======
-	var lGridPanel = Ext.create( 'Ext.grid.Panel', {
+	var lGridPanel = Ext.create('Ext.grid.Panel', {
 		store: lStore,
 		border: false,
 		frame: false,
-		plugins: [ lRowEditor ],
+		plugins: [lRowEditor],
 		width: '100%',
 		height: '100%',
 		mLastSelected: -1,
@@ -285,7 +291,7 @@ function initDemo() {
 			loadMask: false
 		},
 		iconCls: 'icon-user',
-		columns: [ {
+		columns: [{
 				text: 'ID',
 				width: 45,
 				sortable: true,
@@ -321,9 +327,9 @@ function initDemo() {
 					vtype: 'num',
 					allowBlank: false
 				}
-			} ],
+			}],
 		listeners: {
-			select: function( aView, aRecord ) {
+			select: function(aView, aRecord) {
 				lGridPanel.mLastSelected = aRecord.index;
 				var lForm = lFormPanel.getForm(),
 						lAction = {
@@ -345,26 +351,26 @@ function initDemo() {
 				// example how the jWebSocket implementation for the load 
 				// action works, this could simply be changed by a 
 				// lForm.loadRecord(aRecord.index)
-				lForm.load( lAction );
+				lForm.load(lAction);
 
 
-				Ext.getCmp( 'submit_button' ).setText( 'Update User' );
+				Ext.getCmp('submit_button').setText('Update User');
 			}
 		},
-		dockedItems: [ {
+		dockedItems: [{
 				xtype: 'toolbar',
-				items: [ {
+				items: [{
 						text: 'Add',
 						iconCls: 'icon-add',
-						handler: function( aAction ) {
+						handler: function(aAction) {
 							var lPhantoms = lStore.getNewRecords();
-							Ext.Array.each( lPhantoms, function( el ) {
-								lStore.remove( el );
-							} );
+							Ext.Array.each(lPhantoms, function(el) {
+								lStore.remove(el);
+							});
 
-							lStore.insert( 0, new User() );
+							lStore.insert(0, new User());
 
-							lRowEditor.startEdit( 0, 0 );
+							lRowEditor.startEdit(0, 0);
 						}
 					}, '-', {
 						itemId: 'delete',
@@ -374,11 +380,11 @@ function initDemo() {
 						handler: function() {
 
 							var lSelection = lGridPanel.getView().getSelectionModel().getSelection()[0];
-							if ( lSelection ) {
+							if (lSelection) {
 								var lId = lSelection.data.id;
-								var lForm = Ext.getCmp( 'formPanelCreate' ).getForm();
+								var lForm = Ext.getCmp('formPanelCreate').getForm();
 								lForm.reset();
-								lStore.remove( lSelection );
+								lStore.remove(lSelection);
 								lStore.save();
 							}
 						}
@@ -388,47 +394,47 @@ function initDemo() {
 						iconCls: 'icon-reset',
 						disabled: false,
 						handler: function() {
-							Ext.jwsClient.send( NS_EXTJS_DEMO, TT_RESET );
+							Ext.jwsClient.send(NS_EXTJS_DEMO, TT_RESET);
 							var lSelection = lGridPanel.getView().getSelectionModel().getSelection()[0];
-							if ( lSelection ) {
+							if (lSelection) {
 								var lId = lSelection.data.id;
-								var lForm = Ext.getCmp( 'formPanelCreate' ).getForm();
+								var lForm = Ext.getCmp('formPanelCreate').getForm();
 								lForm.reset();
 							}
 						}
-					} ]
-			} ],
-		bbar: Ext.create( 'Ext.PagingToolbar', {
+					}]
+			}],
+		bbar: Ext.create('Ext.PagingToolbar', {
 			store: lStore,
 			displayInfo: true,
 			displayMsg: 'Users {0} - {1} of {2}',
 			emptyMsg: "No rows to display"
-		} )
-	} );
-	lGridPanel.getSelectionModel().on( 'selectionchange', function( aSelModel, aSelections ) {
-		lGridPanel.down( '#delete' ).setDisabled( aSelections.length === 0 );
-	} );
-	lGridPanel.getView().on( 'beforeitemkeydown', function( aView, aRecord, aItem, aIdx, aEvent ) {
-		if ( aEvent.keyCode == 13 )
-			lFormPanel.loadRecord( aRecord );
+		})
+	});
+	lGridPanel.getSelectionModel().on('selectionchange', function(aSelModel, aSelections) {
+		lGridPanel.down('#delete').setDisabled(aSelections.length === 0);
+	});
+	lGridPanel.getView().on('beforeitemkeydown', function(aView, aRecord, aItem, aIdx, aEvent) {
+		if (aEvent.keyCode == 13)
+			lFormPanel.loadRecord(aRecord);
 
-	} );
-	function log( aType, aMsg ) {
-		var lBody = Ext.get( 'console' );
-		if ( aType == 0 ) {
-			lBody.update( '<i>Last action</i><br> \n\
-                <b style=color:green> Message: </b> ' + aMsg );
-		} else if ( aType == -1 ) {
-			lBody.update( '<i>Last action</i><br>\n\
-                <b style=color:red> Message: </b> ' + aMsg );
+	});
+	function log(aType, aMsg) {
+		var lBody = Ext.get('console');
+		if (aType == 0) {
+			lBody.update('<i>Last action</i><br> \n\
+                <b style=color:green> Message: </b> ' + aMsg);
+		} else if (aType == -1) {
+			lBody.update('<i>Last action</i><br>\n\
+                <b style=color:red> Message: </b> ' + aMsg);
 		}
 	}
 
-	var lTabPanel = Ext.create( 'Ext.tab.Panel', {
+	var lTabPanel = Ext.create('Ext.tab.Panel', {
 		width: 280,
 		height: 180,
 		activeTab: 0,
-		items: [ {
+		items: [{
 				title: 'Output Messages',
 				id: 'message',
 				bodyStyle: 'padding:5px;',
@@ -436,10 +442,10 @@ function initDemo() {
 			}, {
 				title: 'About',
 				contentEl: 'contact'
-			} ]
-	} );
+			}]
+	});
 
-	Ext.create( 'Ext.window.Window', {
+	Ext.create('Ext.window.Window', {
 		title: 'ExtJS form jWebSocket demo',
 		x: 10,
 		id: "formDemo",
@@ -449,10 +455,10 @@ function initDemo() {
 		closable: false,
 		layout: 'fit',
 		width: 290,
-		items: [ lFormPanel ]
-	} ).show();
+		items: [lFormPanel]
+	}).show();
 
-	Ext.create( 'Ext.window.Window', {
+	Ext.create('Ext.window.Window', {
 		title: 'ExtJS Grid jWebSocket demo',
 		layout: 'fit',
 		id: "gridDemo",
@@ -464,10 +470,10 @@ function initDemo() {
 		resizable: false,
 		draggable: false,
 		closable: false,
-		items: [ lGridPanel ]
-	} ).show();
+		items: [lGridPanel]
+	}).show();
 
-	Ext.create( 'Ext.window.Window', {
+	Ext.create('Ext.window.Window', {
 		title: 'Console jWebSocket demo',
 		x: 10,
 		y: 270,
@@ -477,43 +483,43 @@ function initDemo() {
 		resizable: false,
 		draggable: false,
 		layout: 'fit',
-		items: [ lTabPanel ]
-	} ).show();
+		items: [lTabPanel]
+	}).show();
 
-	var lPlugIn = { };
-	lPlugIn.processToken = function( aToken ) {
-		if ( aToken.ns === NS_EXTJS_DEMO ) {
-			if ( aToken.type == TT_NOTIFY_CREATE || aToken.type == TT_NOTIFY_UPDATE
-					|| aToken.type == TT_NOTIFY_DESTROY 
-				|| aToken.type == TT_NOTIFY_RESET ) {
-				log( 0, aToken.message );
-				var lOptions = { };
-				if ( aToken.type == TT_NOTIFY_UPDATE ) {
+	var lPlugIn = {};
+	lPlugIn.processToken = function(aToken) {
+		if (aToken.ns === NS_EXTJS_DEMO) {
+			if (aToken.type == TT_NOTIFY_CREATE || aToken.type == TT_NOTIFY_UPDATE
+					|| aToken.type == TT_NOTIFY_DESTROY
+					|| aToken.type == TT_NOTIFY_RESET) {
+				log(0, aToken.message);
+				var lOptions = {};
+				if (aToken.type == TT_NOTIFY_UPDATE) {
 					lOptions = {
 						callback: function() {
-							lGridPanel.getSelectionModel().select( lGridPanel.mLastSelected );
+							lGridPanel.getSelectionModel().select(lGridPanel.mLastSelected);
 						}
 					}
 				}
-				lStore.load( lOptions );
+				lStore.load(lOptions);
 			}
 		}
-		if ( aToken.type == "welcome" ) {
+		if (aToken.type == "welcome") {
 			eClientId.innerHTML = TEXT_CLIENT_ID + aToken.sourceId;
 			eWebSocketType.innerHTML = TEXT_WEBSOCKET + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)");
 		}
 	}
-	Ext.jwsClient.addPlugIn( lPlugIn );
+	Ext.jwsClient.addPlugIn(lPlugIn);
 }
 
 function exitDemo() {
-	var lWindowForm = Ext.WindowManager.get( "formDemo" );
-	var lWindowGrid = Ext.WindowManager.get( "gridDemo" );
-	var lWindowConsole = Ext.WindowManager.get( "consoleDemo" );
-	if ( lWindowForm != undefined )
+	var lWindowForm = Ext.WindowManager.get("formDemo");
+	var lWindowGrid = Ext.WindowManager.get("gridDemo");
+	var lWindowConsole = Ext.WindowManager.get("consoleDemo");
+	if (lWindowForm != undefined)
 		lWindowForm.close();
-	if ( lWindowGrid != undefined )
+	if (lWindowGrid != undefined)
 		lWindowGrid.close();
-	if ( lWindowConsole != undefined )
+	if (lWindowConsole != undefined)
 		lWindowConsole.close();
 }
