@@ -804,7 +804,8 @@ public class TokenServer extends BaseServer {
 		String lFormat;
 		for (WebSocketConnector lConnector : selectTokenConnectors().values()) {
 			if (!aSource.equals(lConnector) || aBroadcastOptions.isSenderIncluded()) {
-				lFormat = lConnector.getHeader().getFormat();
+				RequestHeader lHeader = lConnector.getHeader();
+				lFormat = lHeader.getFormat();
 				lPacket = lPackets.get(lFormat);
 				// if there is no packet for this protocol format already, make one and
 				// store it in the map

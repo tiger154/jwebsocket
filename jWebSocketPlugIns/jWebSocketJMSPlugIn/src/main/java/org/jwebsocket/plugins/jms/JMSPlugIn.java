@@ -22,26 +22,36 @@ package org.jwebsocket.plugins.jms;
  *
  * @author Johannes Smutny, Alexander Schulze
  */
+import java.util.List;
+import javolution.util.FastList;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.config.xml.EngineConfig;
+import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.plugins.jms.bridge.JMSEngine;
+import org.jwebsocket.plugins.jms.bridge.JMSListener;
 import org.jwebsocket.plugins.jms.util.ActionJms;
 import org.jwebsocket.plugins.jms.util.FieldJms;
 import org.jwebsocket.plugins.jms.util.RightJms;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 public class JMSPlugIn extends TokenPlugIn {
 
-	private Logger mLog = Logging.getLogger();
+	private static Logger mLog = Logging.getLogger();
 	private static final String NS_JMS =
 			JWebSocketServerConstants.NS_BASE + ".plugins.jms";
 	private final static String VERSION = "1.0.0";
@@ -51,6 +61,9 @@ public class JMSPlugIn extends TokenPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket JMSPlugIn - Community Edition";
 	private JmsManager mJmsManager = null;
+	private DefaultMessageListenerContainer mBridgeListenerCont = null;
+	private JmsTemplate mJMSTemplate = null;
+	private JMSEngine mJMSEngine = null;
 
 	/**
 	 *
@@ -67,6 +80,49 @@ public class JMSPlugIn extends TokenPlugIn {
 			ApplicationContext lBeanFactory = getConfigBeanFactory(NS_JMS);
 			mJmsManager = JmsManager.getInstance(aConfiguration.getSettings(),
 					lBeanFactory);
+
+			mJMSTemplate = new JmsTemplate();
+			ActiveMQConnectionFactory lConnectionFactory = new ActiveMQConnectionFactory(
+					"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false");
+			mJMSTemplate.setConnectionFactory(lConnectionFactory);
+			mJMSTemplate.setDefaultDestinationName("org.jwebsocket.jms.bridge");
+			mJMSTemplate.setDeliveryPersistent(false);
+			mJMSTemplate.setPubSubDomain(true);
+			mJMSTemplate.setSessionTransacted(false);
+
+			List<String> lDomains = new FastList<String>();
+			lDomains.add("*");
+			EngineConfig lEngineCfg = new EngineConfig(
+					"jms0", // id
+					"JMSEngine", // name 
+					"-", // jar
+					0, // port
+					0, // ssl port
+					"-", // keystore
+					"-", // keystore pw
+					"-", // context
+					"-", // servlet
+					0, // timeout
+					65536, // max frame size
+					lDomains, // domains
+					1000, // max connections
+					"-", // max connection stretegy
+					null // settings
+					);
+			mJMSEngine = new JMSEngine(lEngineCfg);
+			JWebSocketFactory.getEngines().put(lEngineCfg.getId(), mJMSEngine);
+			List<WebSocketServer> lServers = JWebSocketFactory.getServers();
+			for (WebSocketServer lServer : lServers) {
+				lServer.addEngine(mJMSEngine);
+			}
+
+			mBridgeListenerCont =
+					(DefaultMessageListenerContainer) lBeanFactory.getBean("jmsBridgeListenerContainer");
+			JMSListener lListener = (JMSListener) mBridgeListenerCont.getMessageListener();
+			lListener.setJMSTemplate(mJMSTemplate);
+			lListener.setEngine(mJMSEngine);
+			mBridgeListenerCont.start();
+
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " instantiation: " + lEx.getMessage());
@@ -126,6 +182,9 @@ public class JMSPlugIn extends TokenPlugIn {
 	public void engineStopped(WebSocketEngine aEngine) {
 		if (null != mJmsManager) {
 			mJmsManager.shutDownListeners();
+		}
+		if (null != mBridgeListenerCont) {
+			mBridgeListenerCont.shutdown();
 		}
 	}
 
