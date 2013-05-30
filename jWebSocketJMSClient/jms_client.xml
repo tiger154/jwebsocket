@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:amq="http://activemq.apache.org/schema/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd 
+		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- JMS ConnectionFactory to use -->
+	<bean id="amqFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://0.0.0.0:61616" />
+		<property name="useAsyncSend" value="true" />
+	</bean>
+
+	<bean id="connectionFactory"
+		  class="org.springframework.jms.connection.SingleConnectionFactory">
+		<property name="targetConnectionFactory" ref="amqFactory" />
+	</bean>
+
+	<bean id="jmsBridgeListener" class="org.jwebsocket.jms.client.JMSClientListener"/>
+
+	<bean id="jmsBridgeTopic" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="org.jwebsocket.jms.bridge"/>
+	</bean>
+	
+	<!-- and this is the message listener container -->
+	<bean id="jmsBridgeListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory"/>
+		<property name="destination" ref="jmsBridgeTopic"/>
+		<property name="messageListener" ref="jmsBridgeListener" />
+	</bean>
+	
+</beans>
