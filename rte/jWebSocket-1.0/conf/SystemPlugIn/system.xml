@@ -193,6 +193,7 @@
 				<!--<ref local="userAdminAuthProvider" />-->
 			</list>
 		</property>
+		<property name="eraseCredentialsAfterAuthentication" value="false" />
 	</bean>
 
 	<!-- ####### Setting up the global CacheManager ####### -->
