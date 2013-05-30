@@ -55,11 +55,6 @@
 	<!--  define all the dependencies here -->
 	<dependencies>
 		<dependency>
-			<groupId>org.jboss.netty</groupId>
-			<artifactId>netty</artifactId>
-			<version>3.2.4.Final</version>
-		</dependency>
-		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketCommon</artifactId>
 			<version>${project.version}</version>
