@@ -54,7 +54,6 @@ import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Fragmentation;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -127,7 +126,6 @@ public class SystemPlugIn extends TokenPlugIn {
 	private static boolean ALLOW_ANONYMOUS_LOGIN = false;
 	private static String ALLOW_AUTO_ANONYMOUS_KEY = "allowAutoAnonymous";
 	private static boolean ALLOW_AUTO_ANONYMOUS = false;
-	private AuthenticationProvider mAuthProv;
 	private ProviderManager mAuthProvMgr;
 	private ISessionManager mSessionManager;
 	/**
@@ -179,9 +177,6 @@ public class SystemPlugIn extends TokenPlugIn {
 				mLog.error("No or invalid spring configuration for system plug-in, some features may not be available.");
 			} else {
 				mAuthProvMgr = (ProviderManager) mBeanFactory.getBean(BEAN_AUTHENTICATION_MANAGER);
-				List<AuthenticationProvider> lProviders = mAuthProvMgr.getProviders();
-				mAuthProv = lProviders.get(0);
-
 				// sessionManager bean is not used in embedded mode and should not
 				// be declared in this case
 				if (mBeanFactory.containsBean(BEAN_SESSION_MANAGER)) {
@@ -198,6 +193,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	public ProviderManager getAuthProvMgr() {
+		return mAuthProvMgr;
+	}
+	
 	@Override
 	public String getVersion() {
 		return VERSION;
@@ -231,22 +230,6 @@ public class SystemPlugIn extends TokenPlugIn {
 	@Override
 	public String getNamespace() {
 		return NS_SYSTEM;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public AuthenticationProvider getAuthProvider() {
-		return mAuthProv;
-	}
-
-	/**
-	 *
-	 * @param aAuthMgr
-	 */
-	public void setAuthManager(AuthenticationProvider aAuthMgr) {
-		mAuthProv = aAuthMgr;
 	}
 
 	private void settings() {
@@ -1083,8 +1066,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		Authentication lAuthRequest = new UsernamePasswordAuthenticationToken(lUsername, lPassword);
 		Authentication lAuthResult;
 		try {
-			AuthenticationProvider lAuthProvider = getAuthProvider();
-			lAuthResult = lAuthProvider.authenticate(lAuthRequest);
+			lAuthResult = getAuthProvMgr().authenticate(lAuthRequest);
 		} catch (Exception ex) {
 			String lMsg = ex.getClass().getSimpleName() + ": " + ex.getMessage();
 			Token lResponse = getServer().createErrorToken(aToken, -1, lMsg);
