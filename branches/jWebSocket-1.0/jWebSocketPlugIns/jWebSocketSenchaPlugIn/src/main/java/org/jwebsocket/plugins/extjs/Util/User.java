@@ -116,4 +116,9 @@ public class User implements ITokenizable {
 	public void readFromToken(Token aToken) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	@Override
+	public String toString() {
+		return "Name: " + mName + ", Email: " + mEmail + ", Age: " + mAge;
+	}
 }
