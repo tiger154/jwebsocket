@@ -32,8 +32,9 @@ import org.jwebsocket.kit.WebSocketException;
  * @author Alexander Schulze
  * @author Puran Singh
  * @version $Id: WebSocketEngine.java 2010-03-03
+ * @author kyberneees
  */
-public interface WebSocketEngine {
+public interface WebSocketEngine extends ISystemLifecycle {
 
 	/**
 	 * Returns the unique id of the engine. Because the jWebSocket model

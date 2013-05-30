@@ -35,8 +35,9 @@ import org.jwebsocket.kit.WebSocketSession;
  *
  * @author aschulze
  * @version $Id: WebSocketServer.java 625 2010-07-06 17:33:33Z fivefeetfurther $
+ * @author kyberneees
  */
-public interface WebSocketServer {
+public interface WebSocketServer extends ISystemLifecycle {
 
 	/**
 	 * Called when a WebSocketSession is created. Future enterprise applications will use this event

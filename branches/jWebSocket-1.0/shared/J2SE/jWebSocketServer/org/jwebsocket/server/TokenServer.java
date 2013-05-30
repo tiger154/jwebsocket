@@ -70,7 +70,7 @@ public class TokenServer extends BaseServer {
 		super(aServerConfig);
 		mPlugInChain = new TokenPlugInChain(this);
 		mFilterChain = new TokenFilterChain(this);
-		mFilterChain = new TokenFilterChain(this);
+		
 
 		mCorePoolSize = aServerConfig.getThreadPoolConfig().getCorePoolSize();
 		mMaximumPoolSize = aServerConfig.getThreadPoolConfig().getMaximumPoolSize();

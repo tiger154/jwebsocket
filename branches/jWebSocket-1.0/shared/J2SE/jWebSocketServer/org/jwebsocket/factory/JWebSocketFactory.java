@@ -55,8 +55,8 @@ public class JWebSocketFactory {
 
 	/**
 	 *
-	 * @return The class loader used to load the system resources like
-	 * libraries, engines, plug-ins, ...
+	 * @return The class loader used to load the system resources like libraries, engines, plug-ins,
+	 * ...
 	 */
 	public static JWebSocketJarClassLoader getClassLoader() {
 		return mClassLoader;
@@ -222,22 +222,21 @@ public class JWebSocketFactory {
 							+ lServer.getId() + "'.");
 				}
 			}
+
+			notifyStarting();
+
 			boolean lEngineStarted = false;
-			// first start the engine
-
-
-			if (mLog.isDebugEnabled()) {
-				String lEnginesStr = "";
-				for (WebSocketEngine lEngine : mEngines.values()) {
-					lEnginesStr += lEngine.getId() + ", ";
-				}
-				if (lEnginesStr.length() > 0) {
-					lEnginesStr = lEnginesStr.substring(0, lEnginesStr.length() - 2);
-				}
-				mLog.debug("Starting engine(s) '" + lEnginesStr + "'...");
-			}
-
+			// first start the engines
 			for (WebSocketEngine lEngine : mEngines.values()) {
+				if (mLog.isDebugEnabled()) {
+					String lEnginesStr = "";
+					lEnginesStr += lEngine.getId() + ", ";
+					if (lEnginesStr.length() > 0) {
+						lEnginesStr = lEnginesStr.substring(0, lEnginesStr.length() - 2);
+					}
+					mLog.debug("Starting engine(s) '" + lEnginesStr + "'...");
+				}
+
 				try {
 					lEngine.startEngine();
 					lEngineStarted = true;
@@ -270,9 +269,15 @@ public class JWebSocketFactory {
 
 				// if everything went fine...
 				JWebSocketInstance.setStatus(JWebSocketInstance.STARTED);
+
+				notifyStarted();
 			} else {
+				notifyStopping();
+				
 				// if engine couldn't be started due to whatever reasons...
 				JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
+				
+				notifyStopped();
 			}
 		} catch (WebSocketException lEx) {
 			if (mLog.isDebugEnabled()) {
@@ -304,10 +309,10 @@ public class JWebSocketFactory {
 	 *
 	 */
 	public static void stop() {
-
 		// set instance status to not accept any new incoming connections
 		JWebSocketInstance.setStatus(JWebSocketInstance.STOPPING);
-
+		notifyStopping();
+		
 		if (mLog != null && mLog.isDebugEnabled()) {
 			mLog.debug("Stopping jWebSocket Sub System...");
 		}
@@ -362,10 +367,6 @@ public class JWebSocketFactory {
 		// stopping EhCache manager
 		EhCacheManager.getInstance().shutdown();
 
-		if (null != mLog && mLog.isInfoEnabled()) {
-			mLog.info("jWebSocket Server Sub System stopped.");
-		}
-
 		Logging.exitLogs();
 
 		// stop the shared utility timer
@@ -376,6 +377,12 @@ public class JWebSocketFactory {
 
 		// set instance status
 		JWebSocketInstance.setStatus(JWebSocketInstance.STOPPED);
+		
+		notifyStopped();
+		
+		if (null != mLog && mLog.isInfoEnabled()) {
+			mLog.info("jWebSocket Server Sub System stopped.");
+		}
 	}
 
 	/**
@@ -428,8 +435,8 @@ public class JWebSocketFactory {
 	}
 
 	/**
-	 * Returns the server identified by it's id or <tt>null</tt> if no server
-	 * with that id could be found in the factory.
+	 * Returns the server identified by it's id or <tt>null</tt> if no server with that id could be
+	 * found in the factory.
 	 *
 	 * @param aId id of the server to be returned.
 	 * @return WebSocketServer with the given id or <tt>null</tt> if not found.
@@ -454,5 +461,93 @@ public class JWebSocketFactory {
 			mTokenServer = (TokenServer) getServer("ts0");
 		}
 		return mTokenServer;
+	}
+
+	private static void notifyStarted() {
+		for (WebSocketEngine lEngine : mEngines.values()) {
+			try {
+				lEngine.systemStarted();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStarted' event at '" + lEngine.getId()
+						+ "' engine failed (" + lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage() + ").");
+			}
+		}
+
+		for (WebSocketServer lServer : mServers) {
+			try {
+				lServer.systemStarted();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStarted' event at '" + lServer.getId()
+						+ "' server failed (" + lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage() + ").");
+			}
+		}
+	}
+
+	private static void notifyStarting() {
+		for (WebSocketEngine lEngine : mEngines.values()) {
+			try {
+				lEngine.systemStarting();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStarting' event at '" + lEngine.getId()
+						+ "' engine failed (" + lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage() + ").");
+			}
+		}
+
+		for (WebSocketServer lServer : mServers) {
+			try {
+				lServer.systemStarting();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStarting' event at '" + lServer.getId()
+						+ "' server failed (" + lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage() + ").");
+			}
+		}
+	}
+
+	private static void notifyStopping() {
+		for (WebSocketEngine lEngine : mEngines.values()) {
+			try {
+				lEngine.systemStopping();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStopping' event at '" + lEngine.getId()
+						+ "' engine failed (" + lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage() + ").");
+			}
+		}
+
+		for (WebSocketServer lServer : mServers) {
+			try {
+				lServer.systemStopping();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStopping' event at '" + lServer.getId()
+						+ "' server failed (" + lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage() + ").");
+			}
+		}
+	}
+
+	private static void notifyStopped() {
+		for (WebSocketEngine lEngine : mEngines.values()) {
+			try {
+				lEngine.systemStopped();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStopped' event at '" + lEngine.getId()
+						+ "' engine failed (" + lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage() + ").");
+			}
+		}
+
+		for (WebSocketServer lServer : mServers) {
+			try {
+				lServer.systemStopped();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStopped' event at '" + lServer.getId()
+						+ "' server failed (" + lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage() + ").");
+			}
+		}
 	}
 }

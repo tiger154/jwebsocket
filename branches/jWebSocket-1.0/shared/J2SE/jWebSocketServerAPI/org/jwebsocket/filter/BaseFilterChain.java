@@ -20,8 +20,10 @@ package org.jwebsocket.filter;
 
 import java.util.List;
 import javolution.util.FastList;
+import org.apache.log4j.Logger;
 import org.jwebsocket.api.*;
 import org.jwebsocket.kit.FilterResponse;
+import org.jwebsocket.logging.Logging;
 
 /**
  *
@@ -32,6 +34,7 @@ public class BaseFilterChain implements WebSocketFilterChain {
 
 	private List<WebSocketFilter> mFilters = new FastList<WebSocketFilter>();
 	private WebSocketServer mServer = null;
+	private static Logger mLog = Logging.getLogger();
 
 	/**
 	 *
@@ -143,5 +146,73 @@ public class BaseFilterChain implements WebSocketFilterChain {
 	public void addFilter(Integer aPosition, WebSocketFilter aFilter) {
 		mFilters.add(aPosition, aFilter);
 		aFilter.setFilterChain(this);
+	}
+
+	@Override
+	public void systemStarting() throws Exception {
+		if (mFilters.isEmpty()) {
+			return;
+		}
+		for (WebSocketFilter lFilter : getFilters()) {
+			try {
+				lFilter.systemStarting();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStarting' event at filter '"
+						+ lFilter.getId() + "': "
+						+ lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+		if (mFilters.isEmpty()) {
+			return;
+		}
+		for (WebSocketFilter lFilter : getFilters()) {
+			try {
+				lFilter.systemStarted();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStarted' event at filter '"
+						+ lFilter.getId() + "': "
+						+ lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public void systemStopping() throws Exception {
+		if (mFilters.isEmpty()) {
+			return;
+		}
+		for (WebSocketFilter lFilter : getFilters()) {
+			try {
+				lFilter.systemStopping();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStopping' event at filter '"
+						+ lFilter.getId() + "': "
+						+ lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public void systemStopped() throws Exception {
+		if (mFilters.isEmpty()) {
+			return;
+		}
+		for (WebSocketFilter lFilter : getFilters()) {
+			try {
+				lFilter.systemStopped();
+			} catch (Exception lEx) {
+				mLog.error("Notifying 'systemStopped' event at filter '"
+						+ lFilter.getId() + "': "
+						+ lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage());
+			}
+		}
 	}
 }
