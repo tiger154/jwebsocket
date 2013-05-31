@@ -92,11 +92,11 @@ jws.FileSystemPlugIn = {
 	//:r:*:::void:none
 	fileGetFilelist: function( aAlias, aFilemasks, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lRecursive = false;
 
 			if( aOptions ) {
-				if( aOptions.recursive != undefined ) {
+				if( aOptions.recursive !== undefined ) {
 					lRecursive = aOptions.recursive;
 				}
 			}
@@ -124,15 +124,15 @@ jws.FileSystemPlugIn = {
 		var lNotify = false;
 		var lRes = this.checkConnected();
 		if( aOptions ) {
-			if( aOptions.scope != undefined ) {
+			if( aOptions.scope !== undefined ) {
 				lScope = aOptions.scope;
 			}
-			if( aOptions.notify != undefined ) {
+			if( aOptions.notify !== undefined ) {
 				// notify only is the scope is public
-				lNotify = (jws.SCOPE_PUBLIC == lScope) && aOptions.notify;
+				lNotify = (jws.SCOPE_PUBLIC === lScope) && aOptions.notify;
 			}
 		}	
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "delete",
@@ -154,7 +154,7 @@ jws.FileSystemPlugIn = {
 	//:r:*:::void:none
 	fileExists: function( aFilename, aAlias, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "exists",
@@ -205,21 +205,21 @@ jws.FileSystemPlugIn = {
 			} else {
 				lType = "save";
 			}
-			if( aOptions.scope != undefined ) {
+			if( aOptions.scope !== undefined ) {
 				lScope = aOptions.scope;
 			}
-			if( aOptions.encode != undefined ) {
+			if( aOptions.encode !== undefined ) {
 				lEncode = aOptions.encode;
 			}
-			if( aOptions.encoding != undefined ) {
+			if( aOptions.encoding !== undefined ) {
 				lEncoding = aOptions.encoding;
 			}
-			if( aOptions.encode != undefined ) {
+			if( aOptions.encode !== undefined ) {
 				lEncode = aOptions.encode;
 			}
-			if( aOptions.notify != undefined ) {
+			if( aOptions.notify !== undefined ) {
 				// notify only is the scope is public
-				lNotify = (jws.SCOPE_PUBLIC == lScope) && aOptions.notify;
+				lNotify = (jws.SCOPE_PUBLIC === lScope) && aOptions.notify;
 			}
 		}
 		if( !lType ) {
@@ -227,7 +227,7 @@ jws.FileSystemPlugIn = {
 			lRes.msg = "No save/append option passed.";
 			return lRes;
 		}
-		var lEnc = {}
+		var lEnc = {};
 		if( lEncode ) {
 			lEnc.data = lEncoding;
 		}
@@ -306,16 +306,16 @@ jws.FileSystemPlugIn = {
 		if( aOptions ) {
 			lEncoding = aOptions["encoding"] || "base64";
 			
-			if( aOptions.isNode != undefined ) {
+			if( aOptions.isNode !== undefined ) {
 				lIsNode = aOptions.isNode;
 			}
-			if( aOptions.encode != undefined ) {
+			if( aOptions.encode !== undefined ) {
 				lEncode = aOptions.encode;
 			}
 		}
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
-			var lEnc = {}
+		if( 0 === lRes.code ) {
+			var lEnc = {};
 			if( lEncode ) {
 				lEnc.data = lEncoding;
 			}
@@ -421,7 +421,7 @@ jws.FileSystemPlugIn = {
 			};
 		}
 		// check if the browser already supports the HTML5 File API
-		if( undefined == window.FileReader ) {
+		if( undefined === window.FileReader ) {
 			return {
 				code: -1,
 				msg: "Your browser does not yet support the HTML5 File API."
@@ -444,7 +444,7 @@ jws.FileSystemPlugIn = {
 			};
 		}
 		for( var lIdx = 0, lCnt = lFileList.length; lIdx < lCnt; lIdx++ ) {
-			var lFile = lFileList[ lIdx ]
+			var lFile = lFileList[ lIdx ];
 			var lReader = new FileReader();
 			var lThis = this;
 
@@ -473,7 +473,7 @@ jws.FileSystemPlugIn = {
 					if( aOptions.OnSuccess ) {
 						aOptions.OnSuccess( lToken );
 					}
-				}
+				};
 			})( lFile );
 
 			// if any error appears fire OnLocalFileError event
@@ -499,7 +499,7 @@ jws.FileSystemPlugIn = {
 					if( aOptions.OnFailure ) {
 						aOptions.OnFailure( lToken );
 					}
-				}
+				};
 			})( lFile );
 
 			// and finally read the file(s)
@@ -569,8 +569,8 @@ jws.FileSystemPlugIn = {
 			this.OnLocalFileError = aListeners.OnLocalFileError;
 		}
 	}
-
-}
+	
+};
 
 // add the jWebSocket FileSystem PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.FileSystemPlugIn );
