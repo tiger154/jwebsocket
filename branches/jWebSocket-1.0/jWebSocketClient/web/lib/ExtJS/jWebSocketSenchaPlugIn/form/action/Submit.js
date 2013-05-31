@@ -26,7 +26,9 @@
 // ## :#d:en:inside the class Ext.jws and fires WebSocket events inside it.
 
 /**
- * @author Osvaldo Aguilar Lauzurique, (oaguilar, La Habana), Alexander Rojas Hernandez (arojas, Pinar del Rio), Victor Antonio Barzana Crespo (vbarzana, Münster Westfalen)
+ * @author Osvaldo Aguilar Lauzurique, (oaguilar, La Habana), 
+ * Alexander Rojas Hernandez (arojas, Pinar del Rio), 
+ * Victor Antonio Barzana Crespo (vbarzana, Münster Westfalen)
  **/
 
 //	---------------------------------------------------------------------------
@@ -39,7 +41,7 @@
 //:ancestor:*:Ext.form.action.Submit
 //:d:en:Implementation of the default submit action of the form but using _
 //:d:en:jWebSocketClient to submit the data
-Ext.define( 'Ext.jws.form.action.Submit', {
+Ext.define('Ext.jws.form.action.Submit', {
 	extend: 'Ext.form.action.Submit',
 	alternateClassName: 'Ext.jws.form.Action.Submit',
 	alias: 'formaction.jwssubmit',
@@ -53,16 +55,16 @@ Ext.define( 'Ext.jws.form.action.Submit', {
 	//:a:en::aConfig:Object:The proxy configuration, this parameter is required.
 	//:r:*::void:none
 	constructor: function( ) {
-		var self = this;
+		var lSelf = this;
 
-		self.callParent( arguments );
+		lSelf.callParent(arguments);
 
-		if ( typeof self.ns === "undefined" ) {
-			Ext.Error.raise( "You must specify a namespace (ns) value!" );
+		if (typeof lSelf.ns === "undefined") {
+			Ext.Error.raise("You must specify a namespace (ns) value!");
 		}
 
-		if ( typeof self.tokentype === "undefined" ) {
-			Ext.Error.raise( "You must specify a token type (tokentype) value!" );
+		if (typeof lSelf.tokentype === "undefined") {
+			Ext.Error.raise("You must specify a token type (tokentype) value!");
 		}
 	},
 	//:m:*:getNS
@@ -87,13 +89,13 @@ Ext.define( 'Ext.jws.form.action.Submit', {
 	//:r:*::void:none
 	doSubmit: function() {
 		var lFormEl,
-				jwsOptions = Ext.apply( {
+				jwsOptions = Ext.apply({
 			ns: this.getNS(),
 			tokentype: this.getTokenType()
-		} );
+		});
 		var lCallbacks = this.createCallback();
 
-		if ( this.form.hasUpload() ) {
+		if (this.form.hasUpload()) {
 			lFormEl = jwsOptions.form = this.buildForm();
 			jwsOptions.isUpload = true;
 
@@ -101,9 +103,10 @@ Ext.define( 'Ext.jws.form.action.Submit', {
 			jwsOptions.params = this.getParams();
 		}
 
-		Ext.jws.Client.send( jwsOptions.ns, jwsOptions.tokentype, jwsOptions.params, lCallbacks, this );
-		if ( lFormEl ) {
-			Ext.removeNode( lFormEl );
+		Ext.jws.Client.send(jwsOptions.ns, jwsOptions.tokentype,
+				jwsOptions.params, lCallbacks, this);
+		if (lFormEl) {
+			Ext.removeNode(lFormEl);
 		}
 	},
 	//:m:*:processResponse
@@ -111,12 +114,12 @@ Ext.define( 'Ext.jws.form.action.Submit', {
 	//:d:en:or failure callback depending on the results
 	//:a:en::aResponse:Object:The response returned by the server
 	//:r:*:fResult:Object:The response ready for the user
-	processResponse: function( aResponse ) {
+	processResponse: function(aResponse) {
 		this.fResponse = aResponse;
-		if ( !aResponse.responseText && !aResponse.responseXML && !aResponse.type ) {
+		if (!aResponse.responseText && !aResponse.responseXML && !aResponse.type) {
 			return true;
 		}
-		return (this.fResult = this.handleResponse( aResponse ));
+		return (this.fResult = this.handleResponse(aResponse));
 	},
 	//:m:*:handleResponse
 	//:d:en:Internal method to change the incoming jWebSocket server resopnse _
@@ -125,12 +128,12 @@ Ext.define( 'Ext.jws.form.action.Submit', {
 	//:d:en:or false, in other case the response will be success
 	//:a:en::aResponse:Object:The response returned by the server
 	//:r:*:fResult:Object:The response modified and ready for the client
-	handleResponse: function( aResponse ) {
-		if ( aResponse ) {
+	handleResponse: function(aResponse) {
+		if (aResponse) {
 			var lRecords = aResponse.data;
-			var lData = [ ], lLength = lRecords.length;
-			if ( lRecords ) {
-				for ( var lIdx = 0, lLength; lIdx < lLength; lIdx++ ) {
+			var lData = [], lLength = lRecords.length;
+			if (lRecords) {
+				for (var lIdx = 0, lLength; lIdx < lLength; lIdx++) {
 					lData[lIdx] = lRecords[lIdx];
 				}
 			}
@@ -140,7 +143,6 @@ Ext.define( 'Ext.jws.form.action.Submit', {
 				data: lData.length < 1 ? null : lData
 			};
 		}
-		return Ext.decode( aResponse.data );
+		return Ext.decode(aResponse.data);
 	}
-
-} );
+});
