@@ -25,7 +25,7 @@
 
 //	---------------------------------------------------------------------------
 //  This class constains the jWebSocket implementation of the 
-//  [tt]Ext.form.action.Submit[/tt] class
+//  [tt]Ext.form.Panel[/tt] class
 //	---------------------------------------------------------------------------
 
 //:package:*:Ext.jws.form
@@ -38,6 +38,8 @@ Ext.define('Ext.jws.form.Panel', {
 	override: 'Ext.form.Panel',
 	requires: ['Ext.jws.Client'],
 	alternateClassName: 'Ext.jwsFormPanel',
+	ns: undefined,
+	tokentype: undefined,
 	submit: function(aOptions) {
 		var lThis = this,
 				lForm = lThis.element.dom || {},
@@ -76,37 +78,37 @@ Ext.define('Ext.jws.form.Panel', {
 			return lThis.fireAction('beforesubmit', [lThis, lFormValues, aOptions], 'doBeforeSubmit');
 		}
 	},
-	doJWebSocketRequest: function(aMe, aFormValues, aOptions) {
-		var lDoRequest = function(aMe, aFormValues, aOptions) {
-			var lData = Ext.apply( Ext.apply({}, aMe.getBaseParams() || {}),
+	doJWebSocketRequest: function(aForm, aFormValues, aOptions) {
+		var lDoRequest = function(aForm, aFormValues, aOptions) {
+			var lData = Ext.apply( Ext.apply({}, aForm.getBaseParams() || {}),
 					aOptions.params || {},
 					aFormValues );
 			var lCallbacks = {
 				success: function(aToken) {
 					if (Ext.isFunction(aOptions.success)) {
 						var lResponse = aToken;
-						aOptions.success.call(aOptions.scope || aMe, aMe, lResponse, Ext.encode(aToken));
+						aOptions.success.call(aOptions.scope || aForm, aForm, lResponse, Ext.encode(aToken));
 					}
-					aMe.fireEvent('submit', aMe, lResponse);
+					aForm.fireEvent('submit', aForm, lResponse);
 				},
 				failure: function(aToken) {
 					if (Ext.isFunction(aOptions.failure)) {
 						var lResponse = aToken;
-						aOptions.failure.call(aOptions.scope || aMe, aMe, lResponse, Ext.encode(aToken));
+						aOptions.failure.call(aOptions.scope || aForm, aForm, lResponse, Ext.encode(aToken));
 					}
-					aMe.fireEvent('exception', aMe, lResponse);
+					aForm.fireEvent('exception', aForm, lResponse);
 				}
 			};
 
-			Ext.jws.Client.send(aOptions.ns, aOptions.tokentype, lData, lCallbacks, aMe);
+			Ext.jws.Client.send(aOptions.ns, aOptions.tokentype, lData, lCallbacks, aForm);
 		};
 		// If the user forgot to open the connection
 		var lConnection = Ext.jws.Client.getConnection();
 		if (lConnection && lConnection.isConnected()) {
-			lDoRequest(aMe, aFormValues, aOptions);
+			lDoRequest(aForm, aFormValues, aOptions);
 		} else {
 			Ext.jws.Client.on('open', function() {
-				lDoRequest(aMe, aFormValues, aOptions);
+				lDoRequest(aForm, aFormValues, aOptions);
 			});
 			Ext.jws.Client.open();
 		}
