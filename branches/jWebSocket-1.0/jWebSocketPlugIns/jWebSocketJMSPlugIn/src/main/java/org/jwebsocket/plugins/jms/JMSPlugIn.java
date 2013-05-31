@@ -85,7 +85,7 @@ public class JMSPlugIn extends TokenPlugIn {
 			ActiveMQConnectionFactory lConnectionFactory = new ActiveMQConnectionFactory(
 					"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false");
 			mJMSTemplate.setConnectionFactory(lConnectionFactory);
-			mJMSTemplate.setDefaultDestinationName("org.jwebsocket.jms.bridge");
+			mJMSTemplate.setDefaultDestinationName("org.jwebsocket.jws2jms");
 			mJMSTemplate.setDeliveryPersistent(false);
 			mJMSTemplate.setPubSubDomain(true);
 			mJMSTemplate.setSessionTransacted(false);
@@ -117,7 +117,7 @@ public class JMSPlugIn extends TokenPlugIn {
 			}
 
 			mBridgeListenerCont =
-					(DefaultMessageListenerContainer) lBeanFactory.getBean("jmsBridgeListenerContainer");
+					(DefaultMessageListenerContainer) lBeanFactory.getBean("jms2jwsListenerContainer");
 			JMSListener lListener = (JMSListener) mBridgeListenerCont.getMessageListener();
 			lListener.setJMSTemplate(mJMSTemplate);
 			lListener.setEngine(mJMSEngine);

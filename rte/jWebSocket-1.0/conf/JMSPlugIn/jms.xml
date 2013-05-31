@@ -32,22 +32,22 @@
 	<amq:topic id="testTopic" physicalName="test.topic" />
 	<amq:topic id="stockTopic" physicalName="stock.topic" />
 
-	<amq:topic id="org.jwebsocket.jms.bridge" physicalName="org.jwebsocket.jms.bridge" />
+	<!-- the jWebSocket-to-JMS topic -->
+	<amq:topic id="jws2jmsTopic" physicalName="org.jwebsocket.jws2jms" />
+	<!-- the JMS-to-jWebSocket topic -->
+	<amq:topic id="jms2jwsTopic" physicalName="org.jwebsocket.jms2jws" />
 	
 	<!-- this is the JMS Bridge Listener -->
-	<bean id="jmsBridgeListener" class="org.jwebsocket.plugins.jms.bridge.JMSListener">
-		<!-- <property name="pubSubDomain" value="true" /> -->
+	<bean id="jms2jwsListener" class="org.jwebsocket.plugins.jms.bridge.JMSListener" />
+	<!-- this is the MQ topic to receive messages from the JMS system -->
+	<bean id="jms2jwsDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="org.jwebsocket.jms2jws"/>
 	</bean>
-
-	<bean id="jmsBridgeTopic" class="org.apache.activemq.command.ActiveMQTopic">
-		<constructor-arg value="org.jwebsocket.jms.bridge"/>
-	</bean>
-	
 	<!-- and this is the message listener container -->
-	<bean id="jmsBridgeListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+	<bean id="jms2jwsListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
 		<property name="connectionFactory" ref="connectionFactory"/>
-		<property name="destination" ref="jmsBridgeTopic"/>
-		<property name="messageListener" ref="jmsBridgeListener" />
+		<property name="destination" ref="jms2jwsDestination"/>
+		<property name="messageListener" ref="jms2jwsListener" />
 	</bean>
 	
 </beans>

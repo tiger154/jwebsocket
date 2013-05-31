@@ -78,7 +78,6 @@ public class JMSListener implements MessageListener {
 					mConnector.processPacket(lPacket);
 				}
 			}
-
 		} catch (JMSException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "getting JMS text message"));
 		}
