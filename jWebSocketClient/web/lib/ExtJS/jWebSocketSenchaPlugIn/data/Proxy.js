@@ -19,12 +19,6 @@
 //  ---------------------------------------------------------------------------
 //	</JasobNoObfs>
 
-// ## :#file:*:jWebSocketSenchaPlugIn.js
-// ## :#d:en:Allows including jWebSocket Client in ExtJS/Sencha Touch Applications. _
-// ## :#d:en:Gives to ExtJS users a new WebSocket based Ext.data.Proxy and also _
-// ## :#d:en:includes the jWebSocket JavaScript Client transparently for the user _ 
-// ## :#d:en:inside the class Ext.jws.Client and fires WebSocket events inside it.
-
 /**
  * @author Osvaldo Aguilar Lauzurique, (oaguilar, La Habana), Alexander Rojas Hernandez (arojas, Pinar del Rio), Victor Antonio Barzana Crespo (vbarzana, Münster Westfalen)
  **/
@@ -37,10 +31,12 @@
 //:package:*:Ext.jws.data
 //:class:*:Ext.jws.data.Proxy
 //:ancestor:*:Ext.data.proxy.Server
-//:d:en:Implementation of an ExtJS proxy using the jWebSocket connection
-
+//:d:en:Implementation of an ExtJS/Sencha Touch proxy using a jWebSocket _
+//:d:en:connection, in case that the connection with the server is not open _
+//:d:en:the proxy opens the connection itself.
 Ext.define( 'Ext.jws.data.Proxy', {
 	extend: 'Ext.data.proxy.Server',
+	requires: ['Ext.jws.Client'],
 	alias: 'proxy.jws',
 	alternateClassName: 'Ext.jws.JWebSocketProxy',
 	config: {

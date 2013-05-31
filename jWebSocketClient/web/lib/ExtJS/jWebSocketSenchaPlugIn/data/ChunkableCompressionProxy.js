@@ -19,12 +19,6 @@
 //  ---------------------------------------------------------------------------
 //	</JasobNoObfs>
 
-// ## :#file:*:jwsExtJSPlugIn.js
-// ## :#d:en:Allows including jWebSocket Client in ExtJS/Sencha Touch Applications. _
-// ## :#d:en:Gives to ExtJS users a new WebSocket based Ext.data.Proxy and also _
-// ## :#d:en:includes the jWebSocket JavaScript Client transparently for the user _ 
-// ## :#d:en:inside the class Ext.jws and fires WebSocket events inside it.
-
 /**
  * @author Osvaldo Aguilar Lauzurique, (oaguilar, La Habana), Alexander Rojas Hernandez (arojas, Pinar del Rio), Victor Antonio Barzana Crespo (vbarzana, Münster Westfalen)
  **/

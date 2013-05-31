@@ -19,12 +19,6 @@
 //  ---------------------------------------------------------------------------
 //	</JasobNoObfs>
 
-// ## :#file:*:jwsExtJSPlugIn.js
-// ## :#d:en:Allows including jWebSocket Client in ExtJS/Sencha Touch Applications. _
-// ## :#d:en:Gives to ExtJS users a new WebSocket based Ext.data.Proxy and also _
-// ## :#d:en:includes the jWebSocket JavaScript Client transparently for the user _ 
-// ## :#d:en:inside the class Ext.jws and fires WebSocket events inside it.
-
 /**
  * @author Osvaldo Aguilar Lauzurique, (oaguilar, La Habana), 
  * Alexander Rojas Hernandez (arojas, Pinar del Rio), 
@@ -44,7 +38,7 @@
 //:d:en:This class representsis a proxy for the underlying BasicForm's load call
 Ext.define( 'Ext.jws.form.action.Load', {
 	extend: 'Ext.form.action.Load',
-	requires: [ 'Ext.direct.Manager' ],
+	requires: [ 'Ext.direct.Manager', 'Ext.jws.Client' ],
 	alternateClassName: 'Ext.jws.form.action.Load',
 	alias: 'formaction.jwsload',
 	type: 'jwsload',
