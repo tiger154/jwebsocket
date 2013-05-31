@@ -1,5 +1,42 @@
+//	<JasobNoObfs>
+//  ---------------------------------------------------------------------------
+//  jWebSocket - Sencha ExtJS PlugIn (Community Edition, CE)
+//  ---------------------------------------------------------------------------
+//  Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//  ---------------------------------------------------------------------------
+//	</JasobNoObfs>
+
+/**
+ * @author Victor Antonio Barzana Crespo (vbarzana, Münster Westfalen)
+ **/
+
+//	---------------------------------------------------------------------------
+//  This class constains the jWebSocket implementation of the 
+//  [tt]Ext.form.action.Submit[/tt] class
+//	---------------------------------------------------------------------------
+
+//:package:*:Ext.jws.form
+//:class:*:Ext.jws.form.Panel
+//:ancestor:*:Ext.form.Panel
+//:d:en:Implementation of the default submit action of the form but using _
+//:d:en:jWebSocketClient to submit the data, this class can only be used in _
+//:d:en:Sencha Touch Forms.
 Ext.define('Ext.jws.form.Panel', {
 	override: 'Ext.form.Panel',
+	requires: ['Ext.jws.Client'],
 	alternateClassName: 'Ext.jwsFormPanel',
 	submit: function(aOptions) {
 		var lThis = this,
@@ -44,7 +81,6 @@ Ext.define('Ext.jws.form.Panel', {
 			var lData = Ext.apply( Ext.apply({}, aMe.getBaseParams() || {}),
 					aOptions.params || {},
 					aFormValues );
-			console.log(lData);
 			var lCallbacks = {
 				success: function(aToken) {
 					if (Ext.isFunction(aOptions.success)) {
