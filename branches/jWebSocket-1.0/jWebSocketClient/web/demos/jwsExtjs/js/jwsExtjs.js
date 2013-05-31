@@ -71,7 +71,7 @@ Ext.onReady(function() {
 		// from the server when other clients create, update or remove 
 		// users from the server users list
 		Ext.jwsClient.send(NS_EXTJS_DEMO, TT_REGISTER);
-		
+
 		eClient.innerHTML = TEXT_CONNECTED;
 		eClient.className = CLS_AUTH;
 
@@ -337,14 +337,16 @@ function initDemo() {
 					tokentype: TT_READ,
 					params: {
 						id: lGridPanel.mLastSelected
-					}
+					},
 					// Optional
-					//	success: function( aToken ) {
-					//		console.log( "success" );
-					//	},
-					//	failure: function( aToken ) {
-					//		console.log( "failure" );
-					//	}
+//					success: function(aForm, aToken) {
+//						console.log("success");
+//						console.log(aToken);
+//					},
+//					failure: function(aForm, aToken) {
+//						console.log("failure");
+//						console.log(aToken);
+//					}
 				};
 
 				// This action in this case is not necessary but is a real 
