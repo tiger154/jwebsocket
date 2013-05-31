@@ -26,7 +26,9 @@
 // ## :#d:en:inside the class Ext.jws and fires WebSocket events inside it.
 
 /**
- * @author Osvaldo Aguilar Lauzurique, (oaguilar, La Habana), Alexander Rojas Hernandez (arojas, Pinar del Rio), Victor Antonio Barzana Crespo (vbarzana, Münster Westfalen)
+ * @author Osvaldo Aguilar Lauzurique, (oaguilar, La Habana), 
+ * Alexander Rojas Hernandez (arojas, Pinar del Rio), 
+ * Victor Antonio Barzana Crespo (vbarzana, Münster Westfalen)
  **/
 
 //	---------------------------------------------------------------------------
@@ -55,14 +57,14 @@ Ext.define( 'Ext.jws.form.action.Load', {
 	//:a:en::aConfig:Object:The proxy configuration, this parameter is required.
 	//:r:*::void:none
 	constructor: function( ) {
-		var self = this;
-		self.callParent( arguments );
+		var lSelf = this;
+		lSelf.callParent( arguments );
 
-		if ( typeof self.ns === "undefined" ) {
+		if ( typeof lSelf.ns === "undefined" ) {
 			Ext.Error.raise( "You must specify a namespace (ns) value!" );
 		}
 
-		if ( typeof self.tokentype === "undefined" ) {
+		if ( typeof lSelf.tokentype === "undefined" ) {
 			Ext.Error.raise( "You must specify a token type (tokentype) value!" );
 		}
 	},
