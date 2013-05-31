@@ -52,8 +52,6 @@ public class JMSConnector extends BaseConnector {
 		return "JMS.TOP1.1";
 	}
 	
-	
-
 	@Override
 	public Boolean supportTokens() {
 		return true;

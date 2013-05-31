@@ -22,10 +22,11 @@ package org.jwebsocket.jms.client;
  *
  * @author Alexander Schulze
  */
+import javax.jms.QueueConnectionFactory;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
@@ -43,15 +44,15 @@ public class JMSClient implements Runnable {
 		ActiveMQConnectionFactory lConnectionFactory = new ActiveMQConnectionFactory(
 				"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false");
 		mJMSTemplate.setConnectionFactory(lConnectionFactory);
-		mJMSTemplate.setDefaultDestinationName("org.jwebsocket.jms.bridge");
+		mJMSTemplate.setDefaultDestinationName("org.jwebsocket.jms2jws");
 		mJMSTemplate.setDeliveryPersistent(false);
 		mJMSTemplate.setPubSubDomain(true);
 		mJMSTemplate.setSessionTransacted(false);
 
-		Resource lFSRes = new FileSystemResource("jms_client.xml");
-		XmlBeanFactory lBeanFactory = new XmlBeanFactory(lFSRes);
+		FileSystemXmlApplicationContext lFileCtx =
+				new FileSystemXmlApplicationContext("jms_client.xml");
 		mBridgeListenerCont =
-				(DefaultMessageListenerContainer) lBeanFactory.getBean("jmsBridgeListenerContainer");
+				(DefaultMessageListenerContainer) lFileCtx.getBean("jws2jmsListenerContainer");
 		JMSClientListener lListener = (JMSClientListener) mBridgeListenerCont.getMessageListener();
 		lListener.setJmsTemplate(mJMSTemplate);
 		mBridgeListenerCont.start();
@@ -59,12 +60,12 @@ public class JMSClient implements Runnable {
 
 	@Override
 	public void run() {
+		System.out.println("Connecting JMS client...");
 		mSendConnect();
-		System.out.println("JMS client started.");
 
+		System.out.println("Sending JMS broadcasts...");
 		try {
 			while (true) {
-				// mSendDummy();
 				Thread.sleep(2000L);
 				mBroadcast();
 			}
@@ -78,20 +79,14 @@ public class JMSClient implements Runnable {
 	}
 
 	private void mSendConnect() {
-		String lPacket = "{\"ns\":\"org.jwebsocket.jms.bridge\",\"type\":\"connect\",\"timestamp\":" + System.currentTimeMillis() + ",\"data\":\"test\"}";
-		System.out.println("Sending packet " + lPacket);
-		mJMSTemplate.convertAndSend(lPacket);
+		String lJSON = "{\"ns\":\"org.jwebsocket.jms.bridge\",\"type\":\"connect\"}";
+		System.out.println("Sending connect " + lJSON + "...");
+		mJMSTemplate.convertAndSend(lJSON);
 	}
-	
-	private void mSendDummy() {
-		String lPacket = "{\"ns\":\"org.jwebsocket.jms.bridge\",\"type\":\"dummy\",\"timestamp\":" + System.currentTimeMillis() + ",\"data\":\"test\"}";
-		System.out.println("Sending packet " + lPacket);
-		mJMSTemplate.convertAndSend(lPacket);
-	}
-	
+
 	private void mBroadcast() {
 		String lPacket = "{\"ns\":\"org.jwebsocket.plugins.system\",\"type\":\"broadcast\",\"timestamp\":" + System.currentTimeMillis() + ",\"data\":\"test\"}";
-		System.out.println("Sending packet " + lPacket);
+		System.out.println("Sending broadcast " + lPacket);
 		mJMSTemplate.convertAndSend(lPacket);
 	}
 }

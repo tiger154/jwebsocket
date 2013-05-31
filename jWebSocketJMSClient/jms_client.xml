@@ -19,17 +19,17 @@
 		<property name="targetConnectionFactory" ref="amqFactory" />
 	</bean>
 
-	<bean id="jmsBridgeListener" class="org.jwebsocket.jms.client.JMSClientListener"/>
+	<bean id="jws2jmsListener" class="org.jwebsocket.jms.client.JMSClientListener"/>
 
-	<bean id="jmsBridgeTopic" class="org.apache.activemq.command.ActiveMQTopic">
-		<constructor-arg value="org.jwebsocket.jms.bridge"/>
+	<bean id="jws2jmsDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="org.jwebsocket.jws2jms"/>
 	</bean>
 	
 	<!-- and this is the message listener container -->
-	<bean id="jmsBridgeListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+	<bean id="jws2jmsListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
 		<property name="connectionFactory" ref="connectionFactory"/>
-		<property name="destination" ref="jmsBridgeTopic"/>
-		<property name="messageListener" ref="jmsBridgeListener" />
+		<property name="destination" ref="jws2jmsDestination"/>
+		<property name="messageListener" ref="jws2jmsListener" />
 	</bean>
 	
 </beans>
