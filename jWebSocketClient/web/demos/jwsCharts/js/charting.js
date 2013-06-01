@@ -1,4 +1,16 @@
-Ext.require( [ 'Ext.data.*', 'Ext.chart.*' ] );
+Ext.Loader.setConfig( {
+	enabled: true,
+	// Don't set to true, it's easier to use the debugger option to disable caching
+	disableCaching: false,
+	paths: {
+		'Ext.jws': '../../lib/ExtJS/jWebSocketSenchaPlugIn/'
+	}
+} );
+Ext.require( [
+	'Ext.data.*',
+	'Ext.chart.*',
+	'Ext.jws.Client'
+] );
 Ext.BLANK_IMAGE_URL = 's.gif';
 
 Ext.require( [
@@ -35,12 +47,12 @@ function registerTo( aInterest, aData ) {
 
 		aData.interest = aInterest;
 
-		Ext.jws.send( NS_MONITORING, TT_REGISTER, aData );
+		Ext.jwsClient.send( NS_MONITORING, TT_REGISTER, aData );
 	}
 }
 
 function unregister( ) {
-	Ext.jws.send( NS_MONITORING, TT_UNREGISTER );
+	Ext.jwsClient.send( NS_MONITORING, TT_UNREGISTER );
 }
 
 Ext.onReady( function( ) {
@@ -85,13 +97,13 @@ Ext.onReady( function( ) {
 	lWebSocketType.dom.innerHTML = "WebSocket: " +
 			(jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)");
 
-	Ext.jws.open( jws.getAutoServerURL() );
+	Ext.jwsClient.open( jws.getAutoServerURL() );
 
-	Ext.jws.on( 'open', function( ) {
+	Ext.jwsClient.on( 'open', function( ) {
 		registerTo( TT_COMPUTER_INFO );
 	} );
 
-	Ext.jws.on( 'close', function( ) {
+	Ext.jwsClient.on( 'close', function( ) {
 		lClientId.dom.innerHTML = "Client-ID: - ";
 		lClientStatus.dom.innerHTML = "disconnected";
 		lClientStatus.dom.className = "offline";
@@ -284,7 +296,7 @@ function initDemo( ) {
 			}
 		}
 	}
-	Ext.jws.addPlugIn( lPlugin );
+	Ext.jwsClient.addPlugIn( lPlugin );
 
 	//**************** graphical representations*****************
 
