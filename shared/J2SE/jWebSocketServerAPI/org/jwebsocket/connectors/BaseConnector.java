@@ -2,7 +2,7 @@
 //	jWebSocket - Base Connector Implementation (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import org.springframework.util.Assert;
  *
  * @author aschulze
  * @author kyberneees
+ * @author rbetancourt
  */
 public class BaseConnector implements WebSocketConnector {
 
@@ -194,78 +195,81 @@ public class BaseConnector implements WebSocketConnector {
 
 	@Override
 	public void processPacket(WebSocketPacket aDataPacket) {
-		// processing packet delivery acknowledge from the client
-		//MAX_INTEGER_TO_STRING_SIZE + PREFIX_SIZE
-		if (aDataPacket.size() <= (10 + Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length())) {
-			String lContent = aDataPacket.getString();
-			if (lContent.startsWith(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX)) {
-				try {
-					// getting the delivered packet id
-					Integer lPID = Integer.parseInt(lContent.replace(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, ""));
+		
+		if(!WebSocketFrameType.BINARY.equals(aDataPacket.getFrameType())){
+			// processing packet delivery acknowledge from the client
+			//MAX_INTEGER_TO_STRING_SIZE + PREFIX_SIZE
+			if (aDataPacket.size() <= (10 + Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length())) {
+				String lContent = aDataPacket.getString();
+				if (lContent.startsWith(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX)) {
+					try {
+						// getting the delivered packet id
+						Integer lPID = Integer.parseInt(lContent.replace(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, ""));
 
-					synchronized (mPacketDeliveryListenersLock) {
-						if (mPacketDeliveryListeners.containsKey(lPID)) {
-							// canceling timeout timer task
-							mPacketDeliveryTimerTasks.remove(lPID).cancel();
-							// calling the success callback on the delivery listener
-							mPacketDeliveryListeners.remove(lPID).OnSuccess();
+						synchronized (mPacketDeliveryListenersLock) {
+							if (mPacketDeliveryListeners.containsKey(lPID)) {
+								// canceling timeout timer task
+								mPacketDeliveryTimerTasks.remove(lPID).cancel();
+								// calling the success callback on the delivery listener
+								mPacketDeliveryListeners.remove(lPID).OnSuccess();
+							}
 						}
+					} catch (NumberFormatException lEx) {
 					}
+					// do not process the packet because it is a delivery acknowledge
+					return;
+				}
+			}
+
+			// shared temp vars
+			String lData = aDataPacket.getString();
+			int lPos;
+			String lPID;
+
+			// supporting packet delivery acknowledge to the client
+			lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
+
+			if (lPos >= 0 && lPos <= 10) {
+				try {
+					Integer lPacketId = Integer.parseInt(lData.substring(0, lPos));
+					aDataPacket.setString(lData.substring(lPos + 1));
+
+					// sending acknowledge packet
+					sendPacket(new RawPacket(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPacketId.toString()));
 				} catch (NumberFormatException lEx) {
 				}
-				// do not process the packet because it is a delivery acknowledge
+			}
+
+			// supporting fragmentation
+			lData = aDataPacket.getString();
+			String lFragmentContent;
+			Map<String, Object> lStorage;
+			if (lData.startsWith(Fragmentation.PACKET_FRAGMENT_PREFIX)) {
+				lStorage = getSession().getStorage();
+				lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
+				lPID = lData.substring(0, lPos);
+				lFragmentContent = lData.substring(lPos + 1);
+
+				// storing the packet fragment
+				// lPID = PACKET_FRAGMENT_PREFIX + FRAGMENTATION_ID
+				if (!lStorage.containsKey(lPID)) {
+					lStorage.put(lPID, lFragmentContent);
+				} else {
+					lStorage.put(lPID, lStorage.get(lPID) + lFragmentContent);
+				}
+
+				// do not process fragment packets
 				return;
+			} else if (lData.startsWith(Fragmentation.PACKET_LAST_FRAGMENT_PREFIX)) {
+				lStorage = getSession().getStorage();
+				lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
+				lPID = lData.substring(Fragmentation.PACKET_LAST_FRAGMENT_PREFIX.length(), lPos);
+				lFragmentContent = lData.substring(lPos + 1);
+
+				// getting the complete packet content
+				// lPID = PACKET_FRAGMENT_PREFIX + FRAGMENTATION_ID
+				aDataPacket.setString(lStorage.remove(Fragmentation.PACKET_FRAGMENT_PREFIX + lPID) + lFragmentContent);
 			}
-		}
-
-		// shared temp vars
-		String lData = aDataPacket.getString();
-		int lPos;
-		String lPID;
-
-		// supporting packet delivery acknowledge to the client
-		lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
-
-		if (lPos >= 0 && lPos <= 10) {
-			try {
-				Integer lPacketId = Integer.parseInt(lData.substring(0, lPos));
-				aDataPacket.setString(lData.substring(lPos + 1));
-
-				// sending acknowledge packet
-				sendPacket(new RawPacket(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPacketId.toString()));
-			} catch (NumberFormatException lEx) {
-			}
-		}
-
-		// supporting fragmentation
-		lData = aDataPacket.getString();
-		String lFragmentContent;
-		Map<String, Object> lStorage;
-		if (lData.startsWith(Fragmentation.PACKET_FRAGMENT_PREFIX)) {
-			lStorage = getSession().getStorage();
-			lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
-			lPID = lData.substring(0, lPos);
-			lFragmentContent = lData.substring(lPos + 1);
-
-			// storing the packet fragment
-			// lPID = PACKET_FRAGMENT_PREFIX + FRAGMENTATION_ID
-			if (!lStorage.containsKey(lPID)) {
-				lStorage.put(lPID, lFragmentContent);
-			} else {
-				lStorage.put(lPID, lStorage.get(lPID) + lFragmentContent);
-			}
-
-			// do not process fragment packets
-			return;
-		} else if (lData.startsWith(Fragmentation.PACKET_LAST_FRAGMENT_PREFIX)) {
-			lStorage = getSession().getStorage();
-			lPos = lData.indexOf(Fragmentation.PACKET_ID_DELIMETER);
-			lPID = lData.substring(Fragmentation.PACKET_LAST_FRAGMENT_PREFIX.length(), lPos);
-			lFragmentContent = lData.substring(lPos + 1);
-
-			// getting the complete packet content
-			// lPID = PACKET_FRAGMENT_PREFIX + FRAGMENTATION_ID
-			aDataPacket.setString(lStorage.remove(Fragmentation.PACKET_FRAGMENT_PREFIX + lPID) + lFragmentContent);
 		}
 
 		// notifying engine

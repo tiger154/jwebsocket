@@ -2,7 +2,7 @@
 //	jWebSocket - BaseWebSocketClient (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -518,9 +518,23 @@ public class BaseWebSocketClient implements WebSocketClient {
 				sendInternal(aData);
 			} else {
 				WebSocketPacket lPacket = new RawPacket(aData);
-				lPacket.setFrameType(
-						WebSocketProtocolAbstraction.encodingToFrameType(
-						mNegotiatedSubProtocol.getEncoding()));
+				
+				sendInternal(
+						WebSocketProtocolAbstraction.rawToProtocolPacket(
+						mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
+			}
+		}
+	}
+	
+	@Override
+	public void send(byte[] aData, WebSocketFrameType aFrameType) throws WebSocketException {
+		synchronized (mWriteLock) {
+			if (isHixie()) {
+				sendInternal(aData);
+			} else {
+				WebSocketPacket lPacket = new RawPacket(aData);
+				lPacket.setFrameType(aFrameType);
+						
 				sendInternal(
 						WebSocketProtocolAbstraction.rawToProtocolPacket(
 						mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
@@ -1216,7 +1230,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 						sendPong(new RawPacket(WebSocketFrameType.PONG, ""));
 					} else if (WebSocketFrameType.PONG == lFrameType) {
 						mStatus = WebSocketStatus.OPEN;
-					} else if (WebSocketFrameType.TEXT == lFrameType) {
+					} else if (WebSocketFrameType.TEXT == lFrameType 
+							|| WebSocketFrameType.BINARY == lFrameType) {
 						lWSCE = new WebSocketTokenClientEvent(mClient, null, null);
 						notifyPacket(lWSCE, lPacket);
 					}

@@ -1,8 +1,8 @@
-//  ---------------------------------------------------------------------------
-//  jWebSocket - WebSocketClient (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	jWebSocket - WebSocketClient (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.List;
 import org.jwebsocket.kit.IsAlreadyConnectedException;
 import org.jwebsocket.kit.WebSocketEncoding;
 import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.kit.WebSocketSubProtocol;
 
 /**
@@ -34,6 +35,7 @@ import org.jwebsocket.kit.WebSocketSubProtocol;
  * @author aschulze
  * @author puran
  * @author kyberneees
+ * @author rbetancourt
  * @version $Id: WebSocketClient.java 701 2010-07-18 17:53:06Z mailtopuran@gmail.com $
  */
 public interface WebSocketClient {
@@ -74,6 +76,15 @@ public interface WebSocketClient {
 	 * @throws WebSocketException if exception occurs while sending the data
 	 */
 	void send(byte[] aData) throws WebSocketException;
+	
+	/**
+	 * Send the given byte data to the server
+	 *
+	 * @param aData the byte data
+	 * @param aFrameType specify frame type
+	 * @throws WebSocketException if exception occurs while sending the data
+	 */
+	void send(byte[] aData, WebSocketFrameType aFrameType) throws WebSocketException;
 
 	/**
 	 * Sends the data to the jWebSocket server, data has to be UTF-8 encoded.
