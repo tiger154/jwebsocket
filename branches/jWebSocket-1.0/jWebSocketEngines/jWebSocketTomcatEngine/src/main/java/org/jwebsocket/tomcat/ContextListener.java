@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// jWebSocket - ContextListener (Community Edition, CE)
+//  jWebSocket - ContextListener (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)

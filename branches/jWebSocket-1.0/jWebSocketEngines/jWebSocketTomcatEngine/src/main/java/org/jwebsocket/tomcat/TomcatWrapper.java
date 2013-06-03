@@ -2,7 +2,7 @@
 //	jWebSocket - Tomcat WebSocket Servlet Wrapper (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
+import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 
@@ -226,6 +227,7 @@ public class TomcatWrapper extends MessageInbound {
 		if (null != mConnector) {
 			// TODO: implement binary Tomcat messages!
 			WebSocketPacket lDataPacket = new RawPacket(aMessage.array());
+			lDataPacket.setFrameType(WebSocketFrameType.BINARY);
 			mConnector.processPacket(lDataPacket);
 		}
 	}
