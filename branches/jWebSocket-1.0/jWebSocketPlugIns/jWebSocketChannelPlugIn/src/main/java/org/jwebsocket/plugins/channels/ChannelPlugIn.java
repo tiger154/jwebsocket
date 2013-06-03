@@ -50,8 +50,7 @@ import org.springframework.util.Assert;
  *
  ************************ PUBLISHER OPERATION***********************************
  *
- * Token Type : <tt>publisher</tt> Namespace :
- * <tt>org.jwebsocket.plugins.channel</tt>
+ * Token Type : <tt>publisher</tt> Namespace : <tt>org.jwebsocket.plugins.channel</tt>
  *
  * Token Key : <tt>event</tt> Token Value : <tt>[authorize][publish][stop]</tt>
  *
@@ -72,9 +71,8 @@ import org.springframework.util.Assert;
  * user</tt>
  *
  * <tt>publish</tt>: publish event means publisher client has been authorized and ready to publish
- * the data. Data is received from the token string of key
- * <tt>data</tt>. If the channel registered is not started then it is started when publish command
- * is received for the first time.
+ * the data. Data is received from the token string of key <tt>data</tt>. If the channel registered
+ * is not started then it is started when publish command is received for the first time.
  *
  * <tt>Token Request Includes:</tt>
  *
@@ -87,25 +85,23 @@ import org.springframework.util.Assert;
  *
  ************************ SUBSCRIBER OPERATION *****************************************
  *
- * Token Type : <tt>subscriber</tt> Namespace :
- * <tt>org.jwebsocket.plugins.channel</tt>
+ * Token Type : <tt>subscriber</tt> Namespace : <tt>org.jwebsocket.plugins.channel</tt>
  *
- * Token Key : <tt>operation</tt> Token Value :
- * <tt>[subscribe][unsubscribe]</tt>
+ * Token Key : <tt>operation</tt> Token Value : <tt>[subscribe][unsubscribe]</tt>
  *
  * <tt>subscribe</tt> subscribe event is to register the client as a subscriber for the passed in
  * channel and accessKey if the channel is private and needs accessKey for subscription
  *
- * <tt>Token Request Includes:</tt> Token Key : <tt>channel<tt> Token Value :
- * <tt>channel id to publish the data</tt>
+ * <tt>Token Request Includes:</tt> Token Key : <tt>channel<tt> Token Value : <tt>channel id to
+ * publish the data</tt>
  *
  * Token Key : <tt>accessKey<tt> Token Value : <tt>accessKey value required for subscription</tt>
  *
  * <tt>unsubscribe</tt> removes the client from the channel so no data will be broadcasted to the
  * unsuscribed clients.
  *
- * <tt>Token Request Includes:</tt> Token Key : <tt>channel<tt> Token Value :
- * <tt>channel id to unsubscribe</tt>
+ * <tt>Token Request Includes:</tt> Token Key : <tt>channel<tt> Token Value : <tt>channel id to
+ * unsubscribe</tt>
  *
  * @author puran, aschulze, kyberneees
  * @version $Id: ChannelPlugIn.java 1603 2011-02-28 16:48:50Z fivefeetfurther $
@@ -293,7 +289,6 @@ public class ChannelPlugIn extends ActionPlugIn {
 				"Invalid given channel access key!");
 
 		Subscriber lSubscriber = mChannelManager.getSubscriber(aConnector.getId());
-
 
 		Assert.isTrue(!lSubscriber.inChannel(lChannelId), "Client already subscribed to channel '"
 				+ lChannelId + "'!");
@@ -506,7 +501,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		}
 
 		mChannelManager.storeChannel(lChannel);
-		
+
 		sendToken(aConnector, createResponse(aToken));
 	}
 
