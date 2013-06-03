@@ -50,4 +50,19 @@
 		<property name="messageListener" ref="jms2jwsListener" />
 	</bean>
 	
+	<!-- this is the JMS Advisory Listener for the jws2jms topic -->
+	<bean id="advisoryListener" class="org.jwebsocket.plugins.jms.bridge.JMSAdvisoryListener" />
+	<!-- this is the MQ topic to receive messages from the JMS system -->
+	<bean id="advisoryDestination" class="org.apache.activemq.command.ActiveMQTopic">
+		<constructor-arg value="ActiveMQ.Advisory.Consumer.Topic.org.jwebsocket.jws2jms"/>
+		<!-- <constructor-arg value="ActiveMQ.Advisory.Connection"/> -->
+		
+	</bean>
+	<!-- and this is the message listener container -->
+	<bean id="advisoryListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory"/>
+		<property name="destination" ref="advisoryDestination"/>
+		<property name="messageListener" ref="advisoryListener" />
+	</bean>
+
 </beans>
