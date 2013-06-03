@@ -184,6 +184,9 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 		// loading app
 		lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
+		
+		// notifying app loaded event
+		mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_APP_LOADED, new Object[0]);
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(lApp + "(" + lExt + ") application loaded successfully!");
@@ -197,19 +200,17 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aEngine);
 
-		for (BaseScriptApp lApp : mApps.values()) {
-			lApp.notifyEvent(BaseScriptApp.EVENT_ENGINE_STARTED, aArgs.toArray());
-		}
+		notifyToApps(BaseScriptApp.EVENT_ENGINE_STARTED, aArgs.toArray());
 	}
 
 	@Override
 	public void engineStopped(WebSocketEngine aEngine) {
+		super.engineStopped(aEngine);
+
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aEngine);
 
-		for (BaseScriptApp lApp : mApps.values()) {
-			lApp.notifyEvent(BaseScriptApp.EVENT_ENGINE_STOPPED, aArgs.toArray());
-		}
+		notifyToApps(BaseScriptApp.EVENT_ENGINE_STOPPED, aArgs.toArray());
 	}
 
 	@Override
@@ -217,8 +218,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
 
+		notifyToApps(BaseScriptApp.EVENT_LOGON, aArgs.toArray());
+	}
+
+	void notifyToApps(String aEventName, Object[] aArgs) {
 		for (BaseScriptApp lApp : mApps.values()) {
-			lApp.notifyEvent(BaseScriptApp.EVENT_LOGON, aArgs.toArray());
+			lApp.notifyEvent(aEventName, aArgs);
 		}
 	}
 
@@ -227,9 +232,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
 
-		for (BaseScriptApp lApp : mApps.values()) {
-			lApp.notifyEvent(BaseScriptApp.EVENT_LOGOFF, aArgs.toArray());
-		}
+		notifyToApps(BaseScriptApp.EVENT_LOGOFF, aArgs.toArray());
 	}
 
 	@Override
@@ -237,9 +240,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
 
-		for (BaseScriptApp lApp : mApps.values()) {
-			lApp.notifyEvent(BaseScriptApp.EVENT_CONNECTOR_STARTED, aArgs.toArray());
-		}
+		notifyToApps(BaseScriptApp.EVENT_CONNECTOR_STARTED, aArgs.toArray());
 	}
 
 	@Override
@@ -248,9 +249,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		aArgs.add(aConnector);
 		aArgs.add(aCloseReason);
 
-		for (BaseScriptApp lApp : mApps.values()) {
-			lApp.notifyEvent(BaseScriptApp.EVENT_CONNECTOR_STOPPED, aArgs.toArray());
-		}
+		notifyToApps(BaseScriptApp.EVENT_CONNECTOR_STOPPED, aArgs.toArray());
 	}
 
 	@Override
@@ -258,10 +257,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aConnector);
 
-
-		for (BaseScriptApp lApp : mApps.values()) {
-			lApp.notifyEvent(BaseScriptApp.EVENT_SESSION_STARTED, aArgs.toArray());
-		}
+		notifyToApps(BaseScriptApp.EVENT_SESSION_STARTED, aArgs.toArray());
 	}
 
 	@Override
@@ -269,9 +265,27 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		List<Object> aArgs = new ArrayList();
 		aArgs.add(aSession);
 
-		for (BaseScriptApp lApp : mApps.values()) {
-			lApp.notifyEvent(BaseScriptApp.EVENT_SESSION_STOPPED, aArgs.toArray());
-		}
+		notifyToApps(BaseScriptApp.EVENT_SESSION_STOPPED, aArgs.toArray());
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+		notifyToApps(BaseScriptApp.EVENT_SYSTEM_STARTED, new Object[0]);
+	}
+
+	@Override
+	public void systemStarting() throws Exception {
+		notifyToApps(BaseScriptApp.EVENT_SYSTEM_STARTING, new Object[0]);
+	}
+
+	@Override
+	public void systemStopped() throws Exception {
+		notifyToApps(BaseScriptApp.EVENT_SYSTEM_STOPPED, new Object[0]);
+	}
+
+	@Override
+	public void systemStopping() throws Exception {
+		notifyToApps(BaseScriptApp.EVENT_SYSTEM_STOPPING, new Object[0]);
 	}
 
 	public void tokenAction(WebSocketConnector aConnector, Token aToken) throws Exception {
@@ -292,6 +306,11 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		String lApp = aToken.getString("app");
 		Assert.notNull(lApp, "The 'app' argument cannot be null!");
 		Assert.isTrue(mSettings.getApps().containsKey(lApp), "The target application '" + lApp + "' does not exists!");
+
+		BaseScriptApp lScript = mApps.get(lApp);
+		if (null != lScript) {
+			lScript.notifyEvent(BaseScriptApp.EVENT_BEFORE_APP_RELOAD, new Object[]{aConnector});
+		}
 
 		// loading the app (will destroy if exists)
 		loadApp(lApp, mSettings.getApps().get(lApp));
