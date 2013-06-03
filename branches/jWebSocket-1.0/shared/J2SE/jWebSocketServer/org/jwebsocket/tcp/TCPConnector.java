@@ -2,7 +2,7 @@
 //	jWebSocket - TCP Connector (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import org.jwebsocket.util.Tools;
  * @author aschulze
  * @author jang
  * @author kyberneees
+ * @author rbetancourt
  */
 public class TCPConnector extends BaseConnector {
 
@@ -572,12 +573,13 @@ public class TCPConnector extends BaseConnector {
 						}
 						mCloseReason = CloseReason.CLIENT;
 						setStatus(WebSocketConnectorStatus.DOWN);
-					} else if (WebSocketFrameType.TEXT.equals(lPacket.getFrameType())) {
+					} else if (WebSocketFrameType.TEXT.equals(lPacket.getFrameType())
+							|| WebSocketFrameType.BINARY.equals(lPacket.getFrameType())) {
 						if (lPacket.size() > getMaxFrameSize()) {
 							mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, lPacket.size()));
 						} else {
 							if (mLog.isDebugEnabled()) {
-								mLog.debug("Processing 'text' frame (" + mLogInfo + ") from " + lFrom + "...");
+								mLog.debug("Processing '"+lPacket.getFrameType().toString().toLowerCase()+"' frame (" + mLogInfo + ") from " + lFrom + "...");
 							}
 							mConnector.processPacket(lPacket);
 						}

@@ -30,6 +30,7 @@ import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketPlugInChain;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketCommonConstants;
