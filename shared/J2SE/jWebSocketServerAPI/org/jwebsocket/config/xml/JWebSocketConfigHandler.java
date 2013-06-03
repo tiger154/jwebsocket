@@ -21,6 +21,7 @@ package org.jwebsocket.config.xml;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.stream.XMLStreamException;
@@ -39,14 +40,12 @@ import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.kit.WebSocketRuntimeException;
 
 /**
- * Handler class that handles the <tt>jWebSocket.xml</tt> configuration. This
- * class starts from the root and delegates the handler to specific config
- * handler, to read the whole config file.
+ * Handler class that handles the <tt>jWebSocket.xml</tt> configuration. This class starts from the
+ * root and delegates the handler to specific config handler, to read the whole config file.
  *
  * @author puran
  * @author Marcos Antonio González Huerta (markos0886, UCI)
- * @version $Id: JWebSocketConfigHandler.java 596 2010-06-22 17:09:54Z
- * fivefeetfurther $
+ * @version $Id: JWebSocketConfigHandler.java 596 2010-06-22 17:09:54Z fivefeetfurther $
  */
 @SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class JWebSocketConfigHandler implements ConfigHandler {
@@ -88,6 +87,8 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	private static final String ELEMENT_ROLE = "role";
 	private static final String ELEMENT_USERS = "users";
 	private static final String ELEMENT_USER = "user";
+	protected static final String ELEMENT_PROPERTIES = "properties";
+	protected static final String ELEMENT_PROPERTY = "property";
 	/**
 	 *
 	 */
@@ -108,6 +109,7 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		handlerContext.put("filter", new FilterConfigHandler());
 		handlerContext.put("log4j", new LoggingConfigHandler());
 		handlerContext.put("threadPool", new ThreadPoolConfigHandler());
+		handlerContext.put("property", new PropertyConfigHandler());
 	}
 
 	/**
@@ -160,6 +162,9 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 					} else if (lElementName.equals(ELEMENT_USERS)) {
 						List<UserConfig> lUsers = handleUsers(aStreamReader);
 						lConfigBuilder = lConfigBuilder.setUsers(lUsers);
+					} else if (lElementName.equals(ELEMENT_PROPERTIES)) {
+						Map<String, String> lProps = handleProperties(aStreamReader);
+						JWebSocketConfig.getProperties().putAll(lProps);
 					} else {
 						// ignore
 					}
@@ -748,5 +753,33 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 		}
 
 		return lSettings;
+	}
+
+	private Map<String, String> handleProperties(XMLStreamReader aStreamReader) throws XMLStreamException {
+		String lElementName = aStreamReader.getLocalName();
+		Map<String, String> lProps = new HashMap<String, String>();
+
+		if (!lElementName.equals(ELEMENT_PROPERTY)) {
+			return lProps;
+		}
+
+		while (aStreamReader.hasNext()) {
+			aStreamReader.next();
+			if (aStreamReader.isStartElement()) {
+				lElementName = aStreamReader.getLocalName();
+				if (lElementName.equals(ELEMENT_PROPERTY)) {
+					PropertyConfig lProp =
+							(PropertyConfig) handlerContext.get(lElementName).processConfig(aStreamReader);
+					lProps.put(lProp.getName(), lProp.getValue());
+				}
+			}
+			if (aStreamReader.isEndElement()) {
+				lElementName = aStreamReader.getLocalName();
+				if (lElementName.equals(ELEMENT_PROPERTY)) {
+					break;
+				}
+			}
+		}
+		return lProps;
 	}
 }
