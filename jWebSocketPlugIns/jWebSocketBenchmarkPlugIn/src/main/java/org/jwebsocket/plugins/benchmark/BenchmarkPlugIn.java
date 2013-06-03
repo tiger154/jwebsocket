@@ -103,7 +103,7 @@ public class BenchmarkPlugIn extends TokenPlugIn {
 		if (getNamespace().equals(aToken.getNS())) {
 			if (S2C_PERFORMANCE.equals(aToken.getType())) {
 				testS2CPerformance(aConnector, aToken);
-			}
+			} 
 		}
 	}
 

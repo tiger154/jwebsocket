@@ -67,6 +67,12 @@ abstract public class BaseScriptApp {
 	public final static String EVENT_TOKEN = "token";
 	public final static String EVENT_FILTER_IN = "filterIn";
 	public final static String EVENT_FILTER_OUT = "filterOut";
+	public final static String EVENT_SYSTEM_STARTING = "systemStarting";
+	public final static String EVENT_SYSTEM_STARTED = "systemStarted";
+	public final static String EVENT_SYSTEM_STOPPING = "systemStopping";
+	public final static String EVENT_SYSTEM_STOPPED = "systemStopped";
+	public final static String EVENT_BEFORE_APP_RELOAD = "beforeAppReload";
+	public final static String EVENT_APP_LOADED = "appLoaded";
 
 	protected ScriptEngine getScriptApp() {
 		return mScriptApp;
