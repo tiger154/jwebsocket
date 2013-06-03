@@ -22,18 +22,25 @@ package org.jwebsocket.jms.client;
  *
  * @author Alexander Schulze
  */
-import javax.jms.QueueConnectionFactory;
-import javax.naming.Context;
-import javax.naming.InitialContext;
+import java.util.UUID;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.Session;
+import javax.jms.Topic;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 public class JMSClient implements Runnable {
 
 	private JmsTemplate mJMSTemplate;
 	private DefaultMessageListenerContainer mBridgeListenerCont = null;
+	private String mCorrelationID = UUID.randomUUID().toString();
+	private JMSClientSender mSender = null;
+	private ActiveMQConnectionFactory mConnectionFactory;
 
 	public static void main(String[] aArgs) {
 		new JMSClient().run();
@@ -41,52 +48,75 @@ public class JMSClient implements Runnable {
 
 	public JMSClient() {
 		mJMSTemplate = new JmsTemplate();
-		ActiveMQConnectionFactory lConnectionFactory = new ActiveMQConnectionFactory(
+		mConnectionFactory = new ActiveMQConnectionFactory(
 				"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false");
-		mJMSTemplate.setConnectionFactory(lConnectionFactory);
+		mJMSTemplate.setConnectionFactory(mConnectionFactory);
 		mJMSTemplate.setDefaultDestinationName("org.jwebsocket.jms2jws");
 		mJMSTemplate.setDeliveryPersistent(false);
 		mJMSTemplate.setPubSubDomain(true);
 		mJMSTemplate.setSessionTransacted(false);
 
-		FileSystemXmlApplicationContext lFileCtx =
-				new FileSystemXmlApplicationContext("jms_client.xml");
-		mBridgeListenerCont =
-				(DefaultMessageListenerContainer) lFileCtx.getBean("jws2jmsListenerContainer");
-		JMSClientListener lListener = (JMSClientListener) mBridgeListenerCont.getMessageListener();
-		lListener.setJmsTemplate(mJMSTemplate);
-		mBridgeListenerCont.start();
+		mSender = new JMSClientSender(mJMSTemplate, mCorrelationID);
+
+
+		/*
+		 FileSystemXmlApplicationContext lFileCtx =
+		 new FileSystemXmlApplicationContext("jms_client.xml");
+		 mBridgeListenerCont =
+		 (DefaultMessageListenerContainer) lFileCtx.getBean("jws2jmsListenerContainer");
+		 JMSClientListener lListener = (JMSClientListener) mBridgeListenerCont.getMessageListener();
+		 lListener.setSender(mSender);
+		 mBridgeListenerCont.start();
+		 */
+		
+		try {
+			Connection lConnection = mConnectionFactory.createConnection();
+			Session lSession = lConnection.createSession(false,
+					Session.AUTO_ACKNOWLEDGE);
+			Topic lTopic = lSession.createTopic("org.jwebsocket.jws2jms");
+			MessageConsumer lConsumer = lSession.createConsumer(lTopic, "JMSCorrelationID = '" + mCorrelationID + "'");
+			JMSClientListener lListener = new JMSClientListener();
+			lListener.setSender(mSender);
+			lConsumer.setMessageListener(lListener);
+			lConnection.start();
+		} catch (JMSException exp) {
+		}
+
 	}
 
 	@Override
 	public void run() {
-		System.out.println("Connecting JMS client...");
-		mSendConnect();
-
-		System.out.println("Sending JMS broadcasts...");
+		System.out.println("Connected, id: " + mCorrelationID);
 		try {
-			while (true) {
+			int lIdx = 0;
+			while (lIdx < 2000) {
 				Thread.sleep(2000L);
+				lIdx++;
 				mBroadcast();
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
+		System.out.println("Disconnecting JMS client...");
 		if (null != mBridgeListenerCont) {
-			mBridgeListenerCont.stop();
+			mBridgeListenerCont.shutdown();
 		}
 
-	}
-
-	private void mSendConnect() {
-		String lJSON = "{\"ns\":\"org.jwebsocket.jms.bridge\",\"type\":\"connect\"}";
-		System.out.println("Sending connect " + lJSON + "...");
-		mJMSTemplate.convertAndSend(lJSON);
+		System.out.println("Disconnected JMS client.");
+		System.out.println("Terminating app.");
 	}
 
 	private void mBroadcast() {
-		String lPacket = "{\"ns\":\"org.jwebsocket.plugins.system\",\"type\":\"broadcast\",\"timestamp\":" + System.currentTimeMillis() + ",\"data\":\"test\"}";
-		System.out.println("Sending broadcast " + lPacket);
-		mJMSTemplate.convertAndSend(lPacket);
+		final String lJSON = "{\"ns\":\"org.jwebsocket.plugins.system\",\"type\":\"broadcast\",\"timestamp\":" + System.currentTimeMillis() + ",\"data\":\"test\"}";
+		System.out.println("Sending broadcast " + lJSON);
+		mJMSTemplate.send(new MessageCreator() {
+			@Override
+			public Message createMessage(Session aSession) throws JMSException {
+				Message lMsg = aSession.createTextMessage(lJSON);
+				lMsg.setJMSCorrelationID(mCorrelationID);
+				return lMsg;
+			}
+		});
 	}
 }

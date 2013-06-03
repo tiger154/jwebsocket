@@ -1,7 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//  ---------------------------------------------------------------------------
+//  jWebSocket - JMSClientListener (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.jms.client;
 
 import javax.jms.JMSException;
@@ -10,7 +24,6 @@ import javax.jms.MessageListener;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
-import org.springframework.jms.core.JmsTemplate;
 
 /**
  *
@@ -18,8 +31,8 @@ import org.springframework.jms.core.JmsTemplate;
  */
 class JMSClientListener implements MessageListener {
 
-	private JmsTemplate mJmsTemplate = null;
-
+	private JMSClientSender mSender = null;
+	
 	@Override
 	public void onMessage(Message aMsg) {
 		ActiveMQTextMessage lMQMsg = (ActiveMQTextMessage) aMsg;
@@ -34,22 +47,27 @@ class JMSClientListener implements MessageListener {
 			String lMsg = lToken.getString("msg", "[no error message provided]");
 			Integer lCode = lToken.getInteger("code", -1);
 
+			// System.out.println("###### " + lJSON);
+
 			// the server accepted the new JMS client, so login now...
 			if ("org.jwebsocket.jms.bridge".equals(lNS)) {
-				if ("accepted".equals(lType)) {
+				if ("welcome".equals(lType)) {
 					System.out.println("Connection successful, logging-in...");
-					mJmsTemplate.convertAndSend(
+					// mSender.setCorrelationId(lToken.getString("correlationId"));
+					mSender.send(
 							"{\"ns\":\"org.jwebsocket.plugins.system\""
 							+ ", \"type\":\"login\""
 							+ ", \"username\":\"root\""
 							+ ", \"password\":\"root\"}");
+				} else {
+					System.out.println("Unknown JMS command: " + lJSON);
 				}
 				// the server login was successful, so upload the file now...
 			} else if ("org.jwebsocket.plugins.system".equals(lNS)) {
 				if ("login".equals(lReqType)) {
 					if (0 == lCode) {
 						System.out.println("Log-in-successful, uploading file...");
-						mJmsTemplate.convertAndSend(
+						mSender.send(
 								"{\"ns\": \"org.jwebsocket.plugins.filesystem\""
 								+ ", \"type\": \"save\""
 								+ ", \"scope\": \"private\""
@@ -61,6 +79,10 @@ class JMSClientListener implements MessageListener {
 					} else {
 						System.out.println("Log-in failure: " + lMsg);
 					}
+				} else if ("broadcast".equals(lType)) {
+					System.out.println("Received braodcast: " + lJSON);
+				} else {
+					System.out.println("Unknown system command: " + lJSON);
 				}
 			} else if ("org.jwebsocket.plugins.filesystem".equals(lNS)) {
 				if ("save".equals(lReqType)) {
@@ -69,6 +91,8 @@ class JMSClientListener implements MessageListener {
 					} else {
 						System.out.println("File upload failure: " + lMsg);
 					}
+				} else {
+					System.out.println("Unknown filesystem command: " + lJSON);
 				}
 			} else {
 				System.out.println("Received (but ignored): " + lJSON);
@@ -79,16 +103,17 @@ class JMSClientListener implements MessageListener {
 	}
 
 	/**
-	 * @return the mJmsTemplate
+	 * @return the mSender
 	 */
-	public JmsTemplate getJmsTemplate() {
-		return mJmsTemplate;
+	public JMSClientSender getSender() {
+		return mSender;
 	}
 
 	/**
-	 * @param mJmsTemplate the mJmsTemplate to set
+	 * @param mSender the mSender to set
 	 */
-	public void setJmsTemplate(JmsTemplate aJmsTemplate) {
-		mJmsTemplate = aJmsTemplate;
+	public void setSender(JMSClientSender mSender) {
+		this.mSender = mSender;
 	}
+
 }

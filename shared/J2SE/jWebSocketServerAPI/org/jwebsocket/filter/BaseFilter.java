@@ -43,7 +43,7 @@ public class BaseFilter implements WebSocketFilter {
 	 * @param aConfiguration
 	 */
 	public BaseFilter(FilterConfiguration aConfiguration) {
-		this.mConfiguration = aConfiguration;
+		mConfiguration = aConfiguration;
 	}
 
 	/**
@@ -60,11 +60,14 @@ public class BaseFilter implements WebSocketFilter {
 	}
 
 	@Override
-	public void processPacketIn(FilterResponse aResponse, WebSocketConnector aConnector, WebSocketPacket aPacket) {
+	public void processPacketIn(FilterResponse aResponse,
+			WebSocketConnector aConnector, WebSocketPacket aPacket) {
 	}
 
 	@Override
-	public void processPacketOut(FilterResponse aResponse, WebSocketConnector aSource, WebSocketConnector aTarget, WebSocketPacket aPacket) {
+	public void processPacketOut(FilterResponse aResponse,
+			WebSocketConnector aSource, WebSocketConnector aTarget,
+			WebSocketPacket aPacket) {
 	}
 
 	/**
@@ -145,7 +148,7 @@ public class BaseFilter implements WebSocketFilter {
 	public void setVersion(String aVersion) {
 		mVersion = aVersion;
 	}
-	
+
 	@Override
 	public void systemStarting() throws Exception {
 	}

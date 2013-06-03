@@ -22,6 +22,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import org.apache.activemq.command.ActiveMQTextMessage;
+import org.apache.activemq.command.DataStructure;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPacket;
@@ -40,7 +41,6 @@ public class JMSListener implements MessageListener {
 	private static Logger mLog = Logging.getLogger();
 	JmsTemplate mJMSTemplate = null;
 	private JMSEngine mEngine = null;
-	WebSocketConnector mConnector = null;
 
 	public JmsTemplate getJMSTemplate() {
 		return mJMSTemplate;
@@ -55,27 +55,36 @@ public class JMSListener implements MessageListener {
 		ActiveMQTextMessage lMsg = (ActiveMQTextMessage) aMsg;
 		try {
 			String lJSON = lMsg.getText();
+			String lCorrelationId = lMsg.getJMSCorrelationID();
+			DataStructure lDS = lMsg.getDataStructure();
+			// String lConnectionId = 
 			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
 			String lNS = lToken.getNS();
 			String lType = lToken.getType();
 			if ("org.jwebsocket.jms.bridge".equals(lNS)) {
+				/*
 				if ("connect".equals(lType)) {
 					if (mEngine.getConnectors().size() <= 0) {
-						mConnector = new JMSConnector(mEngine, mJMSTemplate);
+						mConnector = new JMSConnector(mEngine, mJMSTemplate, "-");
 						mEngine.addConnector(mConnector);
 					}
 					if (mLog.isInfoEnabled()) {
-						mLog.info("Registered new JMS client.");
+						mLog.info("Registered new JMS client (Id = '" + lCorrelationId + "').");
 					}
 					String lPacket = "{\"ns\":\"org.jwebsocket.jms.bridge\",\"type\":\"accepted\"}";
 					mJMSTemplate.convertAndSend(lPacket);
 				} else {
 					mLog.warn("JMS bridge command '" + lType + "' ignored!");
 				}
+				*/
+				mLog.warn("JMS bridge command '" + lType + "' ignored!");
 			} else {
-				if (null != mConnector) {
+				// here the incoming packets from the JMS bridge are processed
+				mLog.info("Processing JMS packet: " + lJSON);
+				WebSocketConnector lConnector = mEngine.getConnectors().get(lCorrelationId);
+				if (null != lConnector) {
 					WebSocketPacket lPacket = new RawPacket(lJSON);
-					mConnector.processPacket(lPacket);
+					lConnector.processPacket(lPacket);
 				}
 			}
 		} catch (JMSException lEx) {

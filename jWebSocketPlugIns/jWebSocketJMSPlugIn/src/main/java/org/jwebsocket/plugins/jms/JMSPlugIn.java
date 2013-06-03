@@ -38,6 +38,7 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.plugins.jms.bridge.JMSAdvisoryListener;
 import org.jwebsocket.plugins.jms.bridge.JMSEngine;
 import org.jwebsocket.plugins.jms.bridge.JMSListener;
 import org.jwebsocket.plugins.jms.util.ActionJms;
@@ -61,7 +62,8 @@ public class JMSPlugIn extends TokenPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket JMSPlugIn - Community Edition";
 	private JmsManager mJmsManager = null;
-	private DefaultMessageListenerContainer mBridgeListenerCont = null;
+	private DefaultMessageListenerContainer mJms2JwsListenerCont = null;
+	private DefaultMessageListenerContainer mAdvisoryListenerCont = null;
 	private JmsTemplate mJMSTemplate = null;
 	private JMSEngine mJMSEngine = null;
 
@@ -110,19 +112,30 @@ public class JMSPlugIn extends TokenPlugIn {
 					null // settings
 					);
 			mJMSEngine = new JMSEngine(lEngineCfg);
-			JWebSocketFactory.getEngines().put(lEngineCfg.getId(), mJMSEngine);
+
+			JWebSocketFactory.getEngines()
+					.put(lEngineCfg.getId(), mJMSEngine);
 			List<WebSocketServer> lServers = JWebSocketFactory.getServers();
 			for (WebSocketServer lServer : lServers) {
 				lServer.addEngine(mJMSEngine);
 			}
-
-			mBridgeListenerCont =
+			mJms2JwsListenerCont =
 					(DefaultMessageListenerContainer) lBeanFactory.getBean("jms2jwsListenerContainer");
-			JMSListener lListener = (JMSListener) mBridgeListenerCont.getMessageListener();
+			JMSListener lListener = (JMSListener) mJms2JwsListenerCont.getMessageListener();
 			lListener.setJMSTemplate(mJMSTemplate);
 			lListener.setEngine(mJMSEngine);
-			mBridgeListenerCont.start();
 
+			// start the listener for all messages from the JMS system
+			mJms2JwsListenerCont.start();
+
+			// Advisory listener
+			mAdvisoryListenerCont =
+					(DefaultMessageListenerContainer) lBeanFactory.getBean("advisoryListenerContainer");
+			JMSAdvisoryListener lAdvisoryListener = 
+					(JMSAdvisoryListener) mAdvisoryListenerCont.getMessageListener();
+			lAdvisoryListener.setJMSTemplate(mJMSTemplate);
+			lAdvisoryListener.setEngine(mJMSEngine);
+			mAdvisoryListenerCont.start();
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " instantiation: " + lEx.getMessage());
@@ -183,8 +196,8 @@ public class JMSPlugIn extends TokenPlugIn {
 		if (null != mJmsManager) {
 			mJmsManager.shutDownListeners();
 		}
-		if (null != mBridgeListenerCont) {
-			mBridgeListenerCont.shutdown();
+		if (null != mJms2JwsListenerCont) {
+			mJms2JwsListenerCont.shutdown();
 		}
 	}
 
@@ -428,6 +441,8 @@ public class JMSPlugIn extends TokenPlugIn {
 	private ActionInput createActionInput(WebSocketConnector aConnector, Token aToken, String aPositiveMsg,
 			RightJms... aRights) {
 		return new ActionInput(aConnector, aToken, aPositiveMsg, aRights);
+
+
 	}
 
 	class ActionInput {
