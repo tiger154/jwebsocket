@@ -66,6 +66,7 @@ public class JWebSocketConfig implements Config {
 	private static String mBootstrapPath = null;
 	private static String mJWebSocketHome = null;
 	private static boolean mIsWebApp = false;
+	private static Map<String, String> mProperties = new FastMap().shared();
 
 	/**
 	 *
@@ -108,6 +109,15 @@ public class JWebSocketConfig implements Config {
 			return DEFAULT_NODE_ID;
 		}
 		return mNodeId;
+	}
+
+	/**
+	 * Get the system properties
+	 * 
+	 * @return 
+	 */
+	public static Map<String, String> getProperties() {
+		return mProperties;
 	}
 
 	/**
