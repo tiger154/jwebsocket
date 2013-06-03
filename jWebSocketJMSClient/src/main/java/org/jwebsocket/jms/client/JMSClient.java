@@ -58,7 +58,6 @@ public class JMSClient implements Runnable {
 
 		mSender = new JMSClientSender(mJMSTemplate, mCorrelationID);
 
-
 		/*
 		 FileSystemXmlApplicationContext lFileCtx =
 		 new FileSystemXmlApplicationContext("jms_client.xml");

@@ -51,7 +51,7 @@ public class JMSAdvisoryListener implements MessageListener {
 	@Override
 	public void onMessage(Message aMessage) {
 
-		mLog.info("#### " + aMessage);
+		mLog.info(">>>> " + aMessage);
 
 		if (aMessage instanceof ActiveMQMessage) {
 			try {
@@ -64,16 +64,20 @@ public class JMSAdvisoryListener implements MessageListener {
 					ConsumerInfo lConsumer = (ConsumerInfo) lMessage.getDataStructure();
 					String lConnectionId = lConsumer.getConsumerId().getConnectionId();
 					String lCorrelationId = lConsumer.getSelector();
-					int lStart = lCorrelationId.indexOf("'");
-					int lEnd = lCorrelationId.indexOf("'", lStart + 1);
-					lCorrelationId = lCorrelationId.substring(lStart + 1, lEnd);
+					if (null == lCorrelationId) {
+						lCorrelationId = lConnectionId;
+					} else {
+						int lStart = lCorrelationId.indexOf("'");
+						int lEnd = lCorrelationId.indexOf("'", lStart + 1);
+						lCorrelationId = lCorrelationId.substring(lStart + 1, lEnd);
+					}	
 
 					mCorrelations.put(lConnectionId, lCorrelationId);
 					WebSocketConnector lConnector = new JMSConnector(mEngine, mJMSTemplate, lCorrelationId, lCorrelationId);
 					mEngine.addConnector(lConnector);
 
 					mLog.info("JMS client connected, connector '"
-							+ lConnectionId + "' added to JMSEngine.");
+							+ lConnectionId + "' added to JMSEngine, correlation-id: '" + lCorrelationId + "'.");
 					Token lToken = TokenFactory.createToken("org.jwebsocket.jms.bridge", "welcome");
 					lConnector.sendPacket(JSONProcessor.tokenToPacket(lToken));
 
@@ -93,7 +97,7 @@ public class JMSAdvisoryListener implements MessageListener {
 							mEngine.removeConnector(lConnector);
 							mLog.info("JMS client disconnected, "
 									+ "Connector '" + lConnectionId
-									+ "' removed from JMSEngine.");
+									+ "' removed from JMSEngine, correlation-id: '" + lCorrelationId + "'.");
 						} else {
 							mLog.error("Connector '" + lConnectionId + "' could not be removed from JMSEngine!");
 						}
