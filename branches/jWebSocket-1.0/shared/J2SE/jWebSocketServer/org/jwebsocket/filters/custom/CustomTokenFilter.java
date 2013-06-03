@@ -36,10 +36,10 @@ public class CustomTokenFilter extends TokenFilter {
 
 	/**
 	 *
-	 * @param configuration
+	 * @param aConfiguration
 	 */
-	public CustomTokenFilter(FilterConfiguration configuration) {
-		super(configuration);
+	public CustomTokenFilter(FilterConfiguration aConfiguration) {
+		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating custom token filter...");
 		}
@@ -52,7 +52,8 @@ public class CustomTokenFilter extends TokenFilter {
 	 * @param aToken
 	 */
 	@Override
-	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+	public void processTokenIn(FilterResponse aResponse,
+			WebSocketConnector aConnector, Token aToken) {
 	}
 
 	/**
@@ -63,6 +64,8 @@ public class CustomTokenFilter extends TokenFilter {
 	 * @param aToken
 	 */
 	@Override
-	public void processTokenOut(FilterResponse aResponse, WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
+	public void processTokenOut(FilterResponse aResponse,
+			WebSocketConnector aSource, WebSocketConnector aTarget,
+			Token aToken) {
 	}
 }

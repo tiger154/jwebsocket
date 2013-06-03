@@ -70,7 +70,8 @@ public class SystemFilter extends TokenFilter {
 	 * @param aToken
 	 */
 	@Override
-	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+	public void processTokenIn(FilterResponse aResponse,
+			WebSocketConnector aConnector, Token aToken) {
 		if (mLog.isDebugEnabled()) {
 			String lOut = aToken.getLogString();
 			mLog.debug("Filtering incoming token from "
@@ -116,7 +117,9 @@ public class SystemFilter extends TokenFilter {
 	 * @param aToken
 	 */
 	@Override
-	public void processTokenOut(FilterResponse aResponse, WebSocketConnector aSource, WebSocketConnector aTarget, Token aToken) {
+	public void processTokenOut(FilterResponse aResponse,
+			WebSocketConnector aSource, WebSocketConnector aTarget,
+			Token aToken) {
 		if (mLog.isDebugEnabled()) {
 			String lOut = aToken.getLogString();
 			mLog.debug("Filtering outgoing token from "
@@ -136,18 +139,23 @@ public class SystemFilter extends TokenFilter {
 				String lFormat = lEnc.get(lAttr);
 				String lValue = aToken.getString(lAttr);
 
-				List lUserEncodingFormats = (List) aTarget.getVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
+				List lUserEncodingFormats = (List) aTarget.getVar(
+						JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
 				try {
 					if (!lUserEncodingFormats.contains(lFormat)) {
-						mLog.error("Invalid encoding format '" + lFormat + "' received (not supported). Message rejected!");
+						mLog.error("Invalid encoding format '"
+								+ lFormat
+								+ "' received (not supported). Message rejected!");
 						aResponse.rejectMessage();
 					} else if ("base64".equals(lFormat)) {
 						aToken.setString(lAttr, Tools.base64Encode(lValue.getBytes()));
 					} else if ("zipBase64".equals(lFormat)) {
-						aToken.setString(lAttr, new String(Tools.zip(lValue.getBytes(), Tools.ENC_BASE64), "UTF-8"));
+						aToken.setString(lAttr, new String(Tools.zip(
+								lValue.getBytes(), Tools.ENC_BASE64), "UTF-8"));
 					}
 				} catch (Exception lEx) {
-					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to encode '" + lAttr + "' value to '"
+					mLog.error(Logging.getSimpleExceptionMessage(lEx,
+							"trying to encode '" + lAttr + "' value to '"
 							+ lFormat + "' format..."));
 					aResponse.rejectMessage();
 				}
