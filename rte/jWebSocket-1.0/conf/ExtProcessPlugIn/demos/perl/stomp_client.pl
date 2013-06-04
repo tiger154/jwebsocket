@@ -1,3 +1,22 @@
+#	---------------------------------------------------------------------------
+#	jWebSocket - Perl STOMP Client (Community Edition, CE)
+#	---------------------------------------------------------------------------
+#	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+#	Alexander Schulze, Germany (NRW)
+#
+#	Licensed under the Apache License, Version 2.0 (the "License");
+#	you may not use this file except in compliance with the License.
+#	You may obtain a copy of the License at
+#
+#	http://www.apache.org/licenses/LICENSE-2.0
+#
+#	Unless required by applicable law or agreed to in writing, software
+#	distributed under the License is distributed on an "AS IS" BASIS,
+#	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#	See the License for the specific language governing permissions and
+#	limitations under the License.
+#	---------------------------------------------------------------------------
+
 # use strict;
 use warnings;
 use Net::STOMP::Client;
@@ -74,19 +93,18 @@ sub processMesage ($$) {
 		# it can be success or failure
 		} elsif( $lReceived->{'ns'} eq "org.jwebsocket.plugins.system" ) {
 			# check login response
-			if( $lReceived->{'reqType'} eq "login" ) {
+			if( defined $lReceived->{'reqType'} 
+					&& $lReceived->{'reqType'} eq "login" ) {
 				# check if login was successful
 				if( $lReceived->{'code'} eq 0 ) {
-					printf( "Uploading file to jWebSocket server...\n" );
+					# process successful authentication
+					# $lAnswerProcessed = 1;
 					$lToBeSent = {
-						"ns" => "org.jwebsocket.plugins.filesystem",
-						"type" => "save",
-						"scope" => "private",
-						"encoding" => "save",
-						"encode" => JSON::false,
-						"notify" => JSON::false,
-						"data" => "This is a test file uploaded by the Perl STOMP client.",
-						"filename" => "test.txt",
+						"ns" => "org.jwebsocket.plugins.system",
+						"type" => "send",
+						"targetId" => "org.jwebsocket.perl.server",
+						"message" => "This is a test message",
+						"json" => "{\"ns\":\"org.jwebsocket.perl\", \"type\":\"demo\", \"data\":\"demo\"}",
 					};
 				}
 			}

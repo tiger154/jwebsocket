@@ -417,11 +417,21 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		lEvent.setString("filename", lFilename);
 		lEvent.setString("sourceId", aConnector.getId());
 
-		if (lNotify && lScope.equals(JWebSocketCommonConstants.SCOPE_PUBLIC)) {
-			lServer.broadcastToken(lEvent);
-		} else {
-			// notify always the requester
-			lServer.sendToken(aConnector, lEvent);
+		/*
+		 if (lNotify && lScope.equals(JWebSocketCommonConstants.SCOPE_PUBLIC)) {
+		 lServer.broadcastToken(lEvent);
+		 } else {
+		 // notify always the requester
+		 lServer.sendToken(aConnector, lEvent);
+		 }
+		 */
+		if (lNotify) {
+			if (lScope.equals(JWebSocketCommonConstants.SCOPE_PUBLIC)) {
+				lServer.broadcastToken(lEvent);
+			} else {
+				// notify requester if desired
+				lServer.sendToken(aConnector, lEvent);
+			}
 		}
 	}
 
@@ -660,7 +670,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Returns TRUE if a file path is inside of a given base path, FALSE otherwise
+	 * Returns TRUE if a file path is inside of a given base path, FALSE
+	 * otherwise
 	 *
 	 * @param aFile
 	 * @param aBasePath

@@ -1,3 +1,22 @@
+#	---------------------------------------------------------------------------
+#	jWebSocket - Perl STOMP Server (Community Edition, CE)
+#	---------------------------------------------------------------------------
+#	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+#	Alexander Schulze, Germany (NRW)
+#
+#	Licensed under the Apache License, Version 2.0 (the "License");
+#	you may not use this file except in compliance with the License.
+#	You may obtain a copy of the License at
+#
+#	http://www.apache.org/licenses/LICENSE-2.0
+#
+#	Unless required by applicable law or agreed to in writing, software
+#	distributed under the License is distributed on an "AS IS" BASIS,
+#	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#	See the License for the specific language governing permissions and
+#	limitations under the License.
+#	---------------------------------------------------------------------------
+
 # use strict;
 use warnings;
 use Net::STOMP::Client;
@@ -16,7 +35,7 @@ $flag_exit = 0;
 $stomp = Net::STOMP::Client->new(uri => "stomp://127.0.0.1:61613");
 
 # the unique client id (the message selector)
-$correlationId = $stomp->uuid();
+$correlationId = "org.jwebsocket.perl.server";
 $sid = $stomp->uuid();
 
 # connect to message broker
@@ -53,15 +72,18 @@ sub processMesage ($$) {
 		# generate a token from the received JSON string
 		$lReceived = from_json( $lJSON );
 		# nice debug output to console, comment if not desired for production
-		print Dumper($lReceived);
+		# print Dumper($lReceived);
 
 		$lToBeSent = NULL;
 		$lAnswerProcessed = NULL;
+		$lShutdown = NULL;
 		# when the JMS client connects to the topic 
 		# the jWebSocket subsystem send a welcome message.
 		# this is used to send the authentication against jWebSocket
 		if( $lReceived->{'ns'} eq "org.jwebsocket.jms.bridge" ) {
 			if( $lReceived->{'type'} eq "welcome" ) {
+				# authenticate against jWebSocket to utilize jWeSocket 
+				# services also from this Perl server.
 				printf( "Authenticating against jWebSocket server...\n" );
 				$lToBeSent = {
 					"ns" => "org.jwebsocket.plugins.system",
@@ -74,38 +96,81 @@ sub processMesage ($$) {
 		# it can be success or failure
 		} elsif( $lReceived->{'ns'} eq "org.jwebsocket.plugins.system" ) {
 			# check login response
-			if( $lReceived->{'reqType'} eq "login" ) {
+			if( defined $lReceived->{'reqType'}
+					&& $lReceived->{'reqType'} eq "login" ) {
 				# check if login was successful
 				if( $lReceived->{'code'} eq 0 ) {
-					printf( "Uploading file to jWebSocket server...\n" );
-					$lToBeSent = {
-						"ns" => "org.jwebsocket.plugins.filesystem",
-						"type" => "save",
-						"scope" => "private",
-						"encoding" => "save",
-						"encode" => JSON::false,
-						"notify" => JSON::false,
-						"data" => "This is a test file uploaded by the Perl STOMP client.",
-						"filename" => "test.txt",
-					};
+					# we are successfully authenticated against jWebSocket
+					$lAnswerProcessed = 1;
 				}
-			}
-		# process responses from the jWebSocket file system
-		} elsif( $lReceived->{'ns'} eq "org.jwebsocket.plugins.filesystem" ) {
-			# check login response
-			if( defined $lReceived->{'reqType'} 
-					&& $lReceived->{'reqType'} eq "save" ) {
-				$lAnswerProcessed = 1;
-				if( $lReceived->{'code'} eq 0 ) {
-					printf( "File was uploaded successfully.\n" );
-				} else {
-					printf( "File could not be uploaded: %s\n", $lReceived->{'msg'} );
-				}
+			} elsif( defined $lReceived->{'type'} 
+					&& $lReceived->{'type'} eq "send" ) {
+				# check if we have a JSON field inside the message
+				if( defined $lReceived->{'data'} ) {
+					# process successful authentication
+					$lAnswerProcessed = 1;
+					printf( "Received JSON '%s' from '%s'.\n"
+						, $lReceived->{'data'}
+						, $lReceived->{'sourceId'} );
+					
+					$ns = $lReceived->{'ns'};
+					$utid = $lReceived->{'utid'};
+					$sourceId = $lReceived->{'sourceId'};
+					$lJSON = $lReceived->{'data'};
+					$lReceived = from_json( $lJSON );
 
-				# right now, in this little POC 
-				# we can stop the console application here
-				$flag_exit = 1;
+					if( $lReceived->{'type'} eq "shutdown" ) {
+						printf( "Shutting down Perl STOMP server...\n" );
+						# TODO: implement authorization for shutdown here!
+						# {"ns":"org.jwebsocket.perl","type":"shutdown"}
+						$lToBeSent = {
+							"ns" => "org.jwebsocket.perl",
+							"type" => "response",
+							"reqType" => "shutdown",
+							"code" => 0,
+							"msg" => "ok",
+						};
+						$lShutdown = 1;
+					} elsif( $lReceived->{'type'} eq "ping" ) {
+						printf( "Pinging STOMP server...\n" );
+						# sending answer to ping request (useful e.g. for watchdog)
+						$lToBeSent = {
+							"ns" => $ns,
+							"type" => "send",
+							# "reqType" => "send",
+							"sourceId" => $correlationId,
+							"targetId" => $sourceId,
+							"code" => 0,
+							"msg" => "ok",
+							"utid" => $utid,
+						};
+					}
+				}
 			}
+		# process message targeted to this Perl server	
+		} elsif( $lReceived->{'ns'} eq "org.jwebsocket.perl" ) {
+			if( $lReceived->{'type'} eq "login" ) {
+				printf( "Authenticating against Perl STOMP server...\n" );
+				# TODO: implement proper authentication here!
+				# 
+				$lToBeSent = {
+					"ns" => "org.jwebsocket.perl",
+					"type" => "response",
+					"reqType" => "login",
+					"code" => 0,
+					"msg" => "ok",
+				};
+			} elsif( $lReceived->{'type'} eq "ping" ) {
+				printf( "Pinging STOMP server...\n" );
+				# sending answer to ping request (useful e.g. for watchdog)
+				$lToBeSent = {
+					"ns" => "org.jwebsocket.perl",
+					"type" => "response",
+					"reqType" => "ping",
+					"code" => 0,
+					"msg" => "ok",
+				};
+			} 
 		}
 
 		# check if something has to be sent or 
@@ -117,7 +182,7 @@ sub processMesage ($$) {
 		} else {
 			$lJSON = to_json( $lToBeSent );
 			printf( "Sending token %s\n", $lJSON );
-			print Dumper($lToBeSent);
+			# print Dumper($lToBeSent);
 			$stomp->send(
 				# we send to the jms->jws destination
 				destination => $publish_destination,
@@ -127,6 +192,11 @@ sub processMesage ($$) {
 				# don't miss the correlation id to identify the publisher!
 				"correlation-id" => $correlationId,
 			);
+
+			# check if we need to shutdown server
+			if( !( $lShutdown eq NULL ) ) {
+				$flag_exit = 1;
+			}
 		}
 	} else {
 		## we received a frame different from "message"
@@ -135,18 +205,6 @@ sub processMesage ($$) {
 
 	return( $frame );
 }
-
-# asynchronous message processing (recommended for UI applications)
-
-#$stomp->message_callback( sub {
-#	my($self, $frame) = @_;
-#	printf("asynchronously received message id %s\n%s\n", 
-#		$frame->header("message-id"), $frame->body);
-#	# check if the program shall be terminated (by sending "quit")
-#	$flag_exit = 1 if $frame->body =~ /quit/i;
-#	return($self);
-#});
-
 
 # this is the listener to the jWebSocket-2-JMS topic
 $stomp->subscribe(
