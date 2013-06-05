@@ -79,31 +79,33 @@ public class SystemFilter extends TokenFilter {
 					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut) + "...");
 		}
 
-		// processing decoding
-		Map<String, String> lEnc = aToken.getMap("enc");
-		if (null != lEnc && !lEnc.isEmpty()) {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Processing decoding...");
-			}
-			for (Iterator<String> lIt = lEnc.keySet().iterator(); lIt.hasNext();) {
-				String lAttr = lIt.next();
-				String lFormat = lEnc.get(lAttr);
-				String lValue = aToken.getString(lAttr);
+		if (!aConnector.isInternal()) {
+			// processing decoding
+			Map<String, String> lEnc = aToken.getMap("enc");
+			if (null != lEnc && !lEnc.isEmpty()) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Processing decoding...");
+				}
+				for (Iterator<String> lIt = lEnc.keySet().iterator(); lIt.hasNext();) {
+					String lAttr = lIt.next();
+					String lFormat = lEnc.get(lAttr);
+					String lValue = aToken.getString(lAttr);
 
-				List lUserEncodingFormats = (List) aConnector.getVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
-				try {
-					if (!lUserEncodingFormats.contains(lFormat)) {
-						mLog.error("Invalid encoding format '" + lFormat + "' received. Message rejected!");
+					List lUserEncodingFormats = (List) aConnector.getVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
+					try {
+						if (!lUserEncodingFormats.contains(lFormat)) {
+							mLog.error("Invalid encoding format '" + lFormat + "' received. Message rejected!");
+							aResponse.rejectMessage();
+						} else if ("base64".equals(lFormat)) {
+							aToken.setString(lAttr, new String(Tools.base64Decode(lValue), "UTF-8"));
+						} else if ("zipBase64".equals(lFormat)) {
+							aToken.setString(lAttr, new String(Tools.unzip(lValue.getBytes(), Tools.ENC_BASE64), "UTF-8"));
+						}
+					} catch (Exception lEx) {
+						mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to decode '" + lAttr + "' value in '"
+								+ lFormat + "' format..."));
 						aResponse.rejectMessage();
-					} else if ("base64".equals(lFormat)) {
-						aToken.setString(lAttr, new String(Tools.base64Decode(lValue), "UTF-8"));
-					} else if ("zipBase64".equals(lFormat)) {
-						aToken.setString(lAttr, new String(Tools.unzip(lValue.getBytes(), Tools.ENC_BASE64), "UTF-8"));
 					}
-				} catch (Exception lEx) {
-					mLog.error(Logging.getSimpleExceptionMessage(lEx, "trying to decode '" + lAttr + "' value in '"
-							+ lFormat + "' format..."));
-					aResponse.rejectMessage();
 				}
 			}
 		}
@@ -128,36 +130,38 @@ public class SystemFilter extends TokenFilter {
 					+ " (" + lOut.length() + "b): " + Logging.getTokenStr(lOut) + "...");
 		}
 
-		// processing encoding
-		Map<String, String> lEnc = aToken.getMap("enc");
-		if (null != lEnc && !lEnc.isEmpty()) {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Processing encoding...");
-			}
-			for (Iterator<String> lIt = lEnc.keySet().iterator(); lIt.hasNext();) {
-				String lAttr = lIt.next();
-				String lFormat = lEnc.get(lAttr);
-				String lValue = aToken.getString(lAttr);
+		if (null != aTarget && !aTarget.isInternal()) {
+			// processing encoding
+			Map<String, String> lEnc = aToken.getMap("enc");
+			if (null != lEnc && !lEnc.isEmpty()) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Processing encoding...");
+				}
+				for (Iterator<String> lIt = lEnc.keySet().iterator(); lIt.hasNext();) {
+					String lAttr = lIt.next();
+					String lFormat = lEnc.get(lAttr);
+					String lValue = aToken.getString(lAttr);
 
-				List lUserEncodingFormats = (List) aTarget.getVar(
-						JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
-				try {
-					if (!lUserEncodingFormats.contains(lFormat)) {
-						mLog.error("Invalid encoding format '"
-								+ lFormat
-								+ "' received (not supported). Message rejected!");
+					List lUserEncodingFormats = (List) aTarget.getVar(
+							JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
+					try {
+						if (!lUserEncodingFormats.contains(lFormat)) {
+							mLog.error("Invalid encoding format '"
+									+ lFormat
+									+ "' received (not supported). Message rejected!");
+							aResponse.rejectMessage();
+						} else if ("base64".equals(lFormat)) {
+							aToken.setString(lAttr, Tools.base64Encode(lValue.getBytes()));
+						} else if ("zipBase64".equals(lFormat)) {
+							aToken.setString(lAttr, new String(Tools.zip(
+									lValue.getBytes(), Tools.ENC_BASE64), "UTF-8"));
+						}
+					} catch (Exception lEx) {
+						mLog.error(Logging.getSimpleExceptionMessage(lEx,
+								"trying to encode '" + lAttr + "' value to '"
+								+ lFormat + "' format..."));
 						aResponse.rejectMessage();
-					} else if ("base64".equals(lFormat)) {
-						aToken.setString(lAttr, Tools.base64Encode(lValue.getBytes()));
-					} else if ("zipBase64".equals(lFormat)) {
-						aToken.setString(lAttr, new String(Tools.zip(
-								lValue.getBytes(), Tools.ENC_BASE64), "UTF-8"));
 					}
-				} catch (Exception lEx) {
-					mLog.error(Logging.getSimpleExceptionMessage(lEx,
-							"trying to encode '" + lAttr + "' value to '"
-							+ lFormat + "' format..."));
-					aResponse.rejectMessage();
 				}
 			}
 		}
