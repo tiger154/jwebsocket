@@ -24,7 +24,7 @@ package org.jwebsocket.token;
  */
 public class BaseTokenResponseListener implements WebSocketResponseTokenListener {
 
-	private long mTimeout = 0;
+	private long mTimeout = 5000;
 
 	/**
 	 *
