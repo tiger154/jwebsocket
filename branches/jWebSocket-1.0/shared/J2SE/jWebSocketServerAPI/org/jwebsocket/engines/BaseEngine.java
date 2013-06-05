@@ -240,6 +240,15 @@ public abstract class BaseEngine implements WebSocketEngine {
 
 	@Override
 	public void systemStopping() throws Exception {
+		try {
+			// notify all connectors in engine
+			for (final WebSocketConnector lConnector : mConnectors.values()) {
+				if (lConnector.isInternal()) {
+					lConnector.stopConnector(CloseReason.SERVER);
+				}
+			}
+		} catch (Exception ex) {
+		}
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public interface ISystemLifecycle {
 	void systemStarted() throws Exception;
 
 	/**
-	 * Called when the jWebSocket server system is going to be shutdown.
+	 * Called when the jWebSocket server system is going to be stopped.
 	 *
 	 * @throws Exception
 	 */

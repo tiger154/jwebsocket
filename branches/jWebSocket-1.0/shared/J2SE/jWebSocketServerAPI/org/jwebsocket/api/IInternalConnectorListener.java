@@ -1,8 +1,8 @@
-//  ---------------------------------------------------------------------------
-//  jWebSocket - FailureReason (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	jWebSocket - IInternalConnectorListener (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -16,32 +16,47 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.rrpc;
+package org.jwebsocket.api;
+
+import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.token.Token;
 
 /**
  *
  * @author kyberneees
  */
-public enum FailureReason {
+public interface IInternalConnectorListener {
 
 	/**
+	 * Called when a data packet is received from the server
 	 *
+	 * @param aPacket
 	 */
-	CONNECTOR_STOPPED,
+	void processPacket(WebSocketPacket aPacket);
+
 	/**
+	 * Called when a token is received from the server
 	 *
+	 * @param aToken
 	 */
-	REMOTE_PROCEDURE_NOT_EXISTS,
+	void processToken(Token aToken);
+
 	/**
+	 * Called when the welcome token is received from the server
 	 *
+	 * @param aToken
 	 */
-	INVALID_RESPONSE,
+	void processWelcome(Token aToken);
+
 	/**
+	 * Called when the connection has been closed.
 	 *
+	 * @param aReason
 	 */
-	TIMEOUT,
+	void processClosed(CloseReason aReason);
+
 	/**
-	 *
+	 * Called when the connection has been opened.
 	 */
-	SERVER_SHUTDOWN
+	void processOpened();
 }

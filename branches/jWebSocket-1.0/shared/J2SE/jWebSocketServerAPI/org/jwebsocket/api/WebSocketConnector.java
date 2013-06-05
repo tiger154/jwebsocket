@@ -406,5 +406,11 @@ public interface WebSocketConnector {
 	 *
 	 * @return TRUE if the client support tokens receiving, FALSE otherwise
 	 */
-	Boolean supportTokens();
+	boolean supportTokens();
+
+	/**
+	 *
+	 * @return TRUE if the client represents a server internal connector instance.
+	 */
+	boolean isInternal();
 }
