@@ -24,12 +24,14 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.IInternalConnectorListener;
 import org.jwebsocket.api.ISessionManager;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketPlugInChain;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketCommonConstants;
@@ -46,9 +48,11 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.TokenPlugInChain;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.security.User;
+import org.jwebsocket.server.InternalClient;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.session.SessionManager;
 import org.jwebsocket.token.BaseToken;
+import org.jwebsocket.token.BaseTokenResponseListener;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Fragmentation;
@@ -196,7 +200,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	public ProviderManager getAuthProvMgr() {
 		return mAuthProvMgr;
 	}
-	
+
 	@Override
 	public String getVersion() {
 		return VERSION;
@@ -347,7 +351,7 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// if new connector is active broadcast this event to then network
 		broadcastConnectEvent(aConnector);
-		
+
 		// notify session started
 		WebSocketSession lSession = aConnector.getSession();
 		if (null != lSession.getStorage() && null == lSession.getCreatedAt()) {
