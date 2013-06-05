@@ -278,13 +278,17 @@ abstract public class BaseScriptApp {
 	}
 
 	public GenericApplicationContext getAppBeanFactory() {
-		return getBeanFactory(mServer.getNamespace() + ":" + getName());
+		return getBeanFactory(getBeanFactoryNamespace());
 	}
 
 	public void loadToAppBeanFactory(String aFile) throws Exception {
 		aFile = aFile.replace("${APP_HOME}", mAppPath);
 		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFile)));
 
-		JWebSocketBeanFactory.load(mServer.getNamespace() + ":" + getName(), aFile, getClass().getClassLoader());
+		JWebSocketBeanFactory.load(getBeanFactoryNamespace(), aFile, getClass().getClassLoader());
+	}
+
+	protected String getBeanFactoryNamespace() {
+		return mServer.getNamespace() + ":" + getName();
 	}
 }
