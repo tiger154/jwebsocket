@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicLong;
 import javolution.util.FastMap;
 import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.InFragmentationListenerSender;
@@ -99,8 +100,6 @@ public class BaseConnector implements WebSocketConnector {
 	 * Variables for the packet delivery mechanism
 	 */
 	private static Map<Integer, IPacketDeliveryListener> mPacketDeliveryListeners = new FastMap<Integer, IPacketDeliveryListener>().shared();
-	private static Map<Integer, TimerTask> mPacketDeliveryTimerTasks = new FastMap<Integer, TimerTask>().shared();
-	private final Object mPacketDeliveryListenersLock = new Object();
 
 	/**
 	 *
@@ -176,7 +175,7 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	@Override
-	public Boolean supportTokens() {
+	public boolean supportTokens() {
 		if (null == mSupportTokens) {
 			String lFormat = mHeader.getFormat();
 			if ((lFormat != null)
@@ -195,8 +194,13 @@ public class BaseConnector implements WebSocketConnector {
 
 	@Override
 	public void processPacket(WebSocketPacket aDataPacket) {
-		
-		if(!WebSocketFrameType.BINARY.equals(aDataPacket.getFrameType())){
+		// if the connector is internal, deliver packet directly
+		if (this.isInternal()) {
+			((InternalConnector) this).handleIncomingPacket(aDataPacket);
+			return;
+		}
+
+		if (!WebSocketFrameType.BINARY.equals(aDataPacket.getFrameType())) {
 			// processing packet delivery acknowledge from the client
 			//MAX_INTEGER_TO_STRING_SIZE + PREFIX_SIZE
 			if (aDataPacket.size() <= (10 + Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length())) {
@@ -205,14 +209,9 @@ public class BaseConnector implements WebSocketConnector {
 					try {
 						// getting the delivered packet id
 						Integer lPID = Integer.parseInt(lContent.replace(Fragmentation.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, ""));
-
-						synchronized (mPacketDeliveryListenersLock) {
-							if (mPacketDeliveryListeners.containsKey(lPID)) {
-								// canceling timeout timer task
-								mPacketDeliveryTimerTasks.remove(lPID).cancel();
-								// calling the success callback on the delivery listener
-								mPacketDeliveryListeners.remove(lPID).OnSuccess();
-							}
+						IPacketDeliveryListener lListener = mPacketDeliveryListeners.remove(lPID);
+						if (null != lListener) {
+							lListener.OnSuccess();
 						}
 					} catch (NumberFormatException lEx) {
 					}
@@ -304,6 +303,14 @@ public class BaseConnector implements WebSocketConnector {
 	@Override
 	public void sendPacketInTransaction(final WebSocketPacket aDataPacket,
 			Integer aFragmentSize, final IPacketDeliveryListener aListener) {
+
+		// if the connector is internal, deliver the packet directly
+		if (isInternal()) {
+			((InternalConnector) this).handleIncomingPacket(aDataPacket);
+			aListener.OnSuccess();
+			return;
+		}
+
 		// getting packet identifier
 		final Integer lPacketId = Fragmentation.generateUID();
 
@@ -354,11 +361,11 @@ public class BaseConnector implements WebSocketConnector {
 							System.currentTimeMillis(),
 							lFragmentationId,
 							new InFragmentationListenerSender() {
-						@Override
-						public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
-							lSender.sendPacketInTransaction(aDataPacket, aListener);
-						}
-					}));
+								@Override
+								public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+									lSender.sendPacketInTransaction(aDataPacket, aListener);
+								}
+							}));
 					return;
 				}
 
@@ -371,47 +378,34 @@ public class BaseConnector implements WebSocketConnector {
 
 				// setting the new packet content
 				aDataPacket.setByteArray(lBuffer.array());
-				lBuffer = null;
 
 				// saving the delivery listener
 				mPacketDeliveryListeners.put(lPacketId, aListener);
-
-				// setting the timer task for timeout support
-				TimerTask lTT = new TimerTask() {
-					@Override
-					public void run() {
-						synchronized (mPacketDeliveryListenersLock) {
-							if (mPacketDeliveryListeners.containsKey(lPacketId)) {
-								// cleaning expired data and calling timeout
-								mPacketDeliveryTimerTasks.remove(lPacketId);
-								mPacketDeliveryListeners.remove(lPacketId).OnTimeout();
-							}
-						}
-					}
-				};
-
-				// saving the timer task reference
-				mPacketDeliveryTimerTasks.put(lPacketId, lTT);
 
 				// sending the packet to the client
 				sendPacket(aDataPacket);
 
 				// schedule the timer task
 				try {
-					Tools.getTimer().schedule(lTT, aListener.getTimeout());
+					Tools.getTimer().schedule(new TimerTask() {
+						@Override
+						public void run() {
+							Tools.getThreadPool().submit(new Runnable() {
+								@Override
+								public void run() {
+									IPacketDeliveryListener lListener = mPacketDeliveryListeners.remove(lPacketId);
+									if (null != lListener) {
+										lListener.OnTimeout();
+									}
+								}
+							});
+						}
+					}, aListener.getTimeout());
 				} catch (IllegalStateException lEx) {
 					// nothing, task was cancelled
 				}
 			} catch (Exception lEx) {
-				synchronized (mPacketDeliveryListenersLock) {
-					if (mPacketDeliveryListeners.containsKey(lPacketId)) {
-						// cleaning expired data and calling OnFailure 
-						if (mPacketDeliveryTimerTasks.containsKey(lPacketId)) {
-							mPacketDeliveryTimerTasks.remove(lPacketId).cancel();
-						}
-						mPacketDeliveryListeners.remove(lPacketId);
-					}
-				}
+				mPacketDeliveryListeners.remove(lPacketId);
 				aListener.OnFailure(lEx);
 			}
 		} else {
@@ -524,19 +518,18 @@ public class BaseConnector implements WebSocketConnector {
 		return null;
 	}
 	private String mUniqueId = null;
-	private static Integer mCounter = 0;
+	private static AtomicLong mCounter = new AtomicLong(0);
 
 	@Override
 	public String getId() {
-		synchronized (mCounter) {
-			if (null == mUniqueId) {
-				String lNodeId = JWebSocketConfig.getConfig().getNodeId();
-				mUniqueId = ((lNodeId != null && lNodeId.length() > 0) ? lNodeId + "." : "")
-						+ String.valueOf(getRemotePort())
-						+ "." + mCounter++;
-			}
-			return mUniqueId;
+		if (null == mUniqueId) {
+			mCounter.compareAndSet(Long.MAX_VALUE, 0);
+			String lNodeId = JWebSocketConfig.getConfig().getNodeId();
+			mUniqueId = ((lNodeId != null && lNodeId.length() > 0) ? lNodeId + "." : "")
+					+ String.valueOf(getRemotePort())
+					+ "." + mCounter.incrementAndGet();
 		}
+		return mUniqueId;
 	}
 
 	@Override
@@ -600,6 +593,11 @@ public class BaseConnector implements WebSocketConnector {
 	public boolean isLocal() {
 		// TODO: This has to be updated for the cluster approach
 		return true;
+	}
+
+	@Override
+	public boolean isInternal() {
+		return false;
 	}
 
 	@Override
