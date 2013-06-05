@@ -56,11 +56,6 @@ public class JMSConnector extends BaseConnector {
 	public String getId() {
 		return mConnectionId;
 	}
-	
-	@Override
-	public Boolean supportTokens() {
-		return true;
-	}
 
 	@Override
 	public void sendPacket(final WebSocketPacket aDataPacket) {
