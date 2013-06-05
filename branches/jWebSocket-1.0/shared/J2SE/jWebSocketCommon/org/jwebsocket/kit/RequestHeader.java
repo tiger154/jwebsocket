@@ -31,7 +31,7 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
  * @author jang
  * @version $Id: RequestHeader.java 596 2010-06-22 17:09:54Z fivefeetfurther $
  */
-public final class RequestHeader {
+public class RequestHeader {
 
 	private Map<String, Object> mFields = new FastMap<String, Object>();
 	/**
