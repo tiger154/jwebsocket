@@ -143,13 +143,6 @@
 			where loginname = ?"/>
 	</bean>	
    
-	<!-- ####### UserAdmin authentication ####### -->
-	<!--<bean id="userAdminAuthProvider" class="org.jwebsocket.enterprise.plugins.useradmin.auth.UserAdminAuthenticationProvider">
- here we configure MD5 encryption of the passwords --> 
-	<!-- Remark the following line to use plain text passwords, NOT RECOMMENDED! --> 
-	<!--<property name="passwordEncoder" ref="authPasswordEncoderMD5"/>-->
-	<!--</bean>-->
-   
 	<!-- ####### optional caching with ehcache ####### -->
 	
 	<bean id="authUserCache" class="org.springframework.security.core.userdetails.cache.EhCacheBasedUserCache">	
@@ -190,7 +183,6 @@
 				<!-- <ref local="ldapAuthProvider"/> -->
 				<!--<ref local="jdbcAuthProvider"/> -->
 				<ref local="staticAuthProvider"/>
-				<!--<ref local="userAdminAuthProvider" />-->
 			</list>
 		</property>
 		<property name="eraseCredentialsAfterAuthentication" value="false" />
