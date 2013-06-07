@@ -18,6 +18,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.cluster;
 
+import java.util.UUID;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.Topic;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -28,6 +36,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -45,6 +54,14 @@ public class ClusterPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket ClusterPlugIn - Community Edition";
+	// private JmsTemplate mJMSTemplate = null;
+	// private DefaultMessageListenerContainer mJms2JwsListenerCont = null;
+	// private DefaultMessageListenerContainer mAdvisoryListenerCont = null;
+	private ActiveMQConnectionFactory mConnectionFactory;
+	private ClusterSender mSender;
+	private String mCorrelationID = UUID.randomUUID().toString();
+	private static ApplicationContext mBeanFactory;
+	private static Settings mSettings;
 
 	/**
 	 *
@@ -55,13 +72,53 @@ public class ClusterPlugIn extends TokenPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating cluster plug-in...");
 		}
-		// specify default name space for admin plugin
+
+		// specify default name space for cluster plugin
 		this.setNamespace(NS_CLUSTER);
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Cluster plug-in successfully instantiated.");
+
+		try {
+			mBeanFactory = getConfigBeanFactory();
+			if (null == mBeanFactory) {
+				mLog.error("No or invalid spring configuration for cluster plug-in, some features may not be available.");
+			} else {
+				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.cluster.settings");
+				if (mLog.isInfoEnabled()) {
+					mLog.info("Cluster plug-in successfully instantiated.");
+				}
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating cluster plug-in"));
+		}
+		if (null != mSettings) {
+			mConnectionFactory = new ActiveMQConnectionFactory(
+					mSettings.getBrokerURI());
+			try {
+				Connection lConnection = mConnectionFactory.createConnection();
+				Session lSession = lConnection.createSession(false,
+						Session.AUTO_ACKNOWLEDGE);
+
+				// create listener 
+				Topic lSubTopic = lSession.createTopic("org.jwebsocket.cluster.sub");
+				MessageConsumer lConsumer = lSession.createConsumer(lSubTopic, "JMSCorrelationID = '" + mCorrelationID + "'");
+				ClusterListener lListener = new ClusterListener();
+				lListener.setSender(mSender);
+				lConsumer.setMessageListener(lListener);
+
+				// create sender
+				Topic lPubTopic = lSession.createTopic("org.jwebsocket.cluster.pub");
+				MessageProducer lProducer = lSession.createProducer(lPubTopic);
+				// lProducer.
+
+				lConnection.start();
+			} catch (JMSException exp) {
+			}
+
+			if (mLog.isInfoEnabled()) {
+				mLog.info("Cluster plug-in successfully instantiated.");
+			}
 		}
 	}
-	
+
 	@Override
 	public String getVersion() {
 		return VERSION;
