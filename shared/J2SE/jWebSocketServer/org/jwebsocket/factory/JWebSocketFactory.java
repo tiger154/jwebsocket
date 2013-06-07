@@ -127,6 +127,19 @@ public class JWebSocketFactory {
 
 		JWebSocketInstance.setStatus(JWebSocketInstance.STARTING);
 
+		// loading jwebsocket server policies
+		try {
+			System.setProperty("java.security.policy", JWebSocketConfig.getConfigFolder("jwebsocket.policy"));
+			System.setSecurityManager(new SecurityManager());
+			
+			if (mLog.isInfoEnabled()) {
+				mLog.info("jWebSocket server security policies successfully loaded.");
+			}
+		} catch (Exception lEx) {
+			mLog.error("Error loading jWebSocket server security policies...", lEx);
+			return;
+		}
+
 		// start the shared utility timer
 		Tools.startUtilityTimer();
 
