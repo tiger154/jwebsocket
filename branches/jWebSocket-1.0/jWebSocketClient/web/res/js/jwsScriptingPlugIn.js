@@ -74,6 +74,23 @@ jws.ScriptingPlugIn = {
 		}
 		return lRes;
 	},
+	//:m:*:getScriptAppVersion
+	//:d:en:Gets the version of an script application
+	//:a:en::aApp:String:The script application name
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	getScriptAppVersion: function(aApp, aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.ScriptingPlugIn.NS,
+				type: 'getVersion',
+				app: aApp
+			};
+			this.sendToken(lToken, aOptions);
+		}
+		return lRes;
+	},
 			
 	//:m:*:sendScriptToken
 	//:d:en:Sends a token to an script application.
