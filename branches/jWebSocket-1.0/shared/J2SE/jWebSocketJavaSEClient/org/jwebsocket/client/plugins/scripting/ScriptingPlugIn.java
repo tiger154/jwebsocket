@@ -88,4 +88,18 @@ public class ScriptingPlugIn extends BaseClientTokenPlugIn {
 
 		getTokenClient().sendToken(aToken, aListener);
 	}
+
+	/**
+	 * Gets the target script application version.
+	 *
+	 * @param aApp
+	 * @param aListener
+	 * @throws WebSocketException
+	 */
+	public void getVersion(String aApp, WebSocketResponseTokenListener aListener) throws WebSocketException {
+		Token lRequest = TokenFactory.createToken(getNS(), "getVersion");
+		lRequest.setString("app", aApp);
+
+		getTokenClient().sendToken(lRequest, aListener);
+	}
 }
