@@ -29,8 +29,20 @@ var App = (function() {
 
 		return lMap;
 	};
+	
+	var mStorage = AppUtils.newThreadSafeMap();
+	var mVersion = '1.0.0';
 
 	return {
+		getVersion: function(){
+			return mVersion;
+		}, 
+		getStorage: function(){
+			return mStorage;
+		},
+		setVersion: function(aVersion){
+			mVersion = aVersion;
+		},
 		getName: function() {
 			return AppUtils.getName();
 		},
