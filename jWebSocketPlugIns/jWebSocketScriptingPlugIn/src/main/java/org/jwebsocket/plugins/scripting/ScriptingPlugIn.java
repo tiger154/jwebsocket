@@ -184,7 +184,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 		// loading app
 		lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
-		
+
 		// notifying app loaded event
 		mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_APP_LOADED, new Object[0]);
 
@@ -331,6 +331,17 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		Token lResponse = createResponse(aToken);
 		lResponse.getMap().put("result", lResult);
 		lResponse.getMap().put("processingTime", lEndTime - lStartTime);
+
+		sendToken(aConnector, lResponse);
+	}
+
+	public void getVersionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		String aApp = aToken.getString("app");
+		BaseScriptApp lApp = mApps.get(aApp);
+		Assert.notNull(lApp, "The target app does not exists!");
+
+		Token lResponse = createResponse(aToken);
+		lResponse.setString("version", lApp.getVersion());
 
 		sendToken(aConnector, lResponse);
 	}

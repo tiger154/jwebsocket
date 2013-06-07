@@ -77,4 +77,12 @@ public class JavaScriptApp extends BaseScriptApp {
 
 		return lInvocable.invokeMethod(lObject, aMethod, aArgs);
 	}
+
+	@Override
+	public String getVersion() throws Exception {
+		Invocable lInvocable = (Invocable) getScriptApp();
+		String lVersion = (String) lInvocable.invokeMethod(mApp, "getVersion", new Object[0]);
+
+		return lVersion;
+	}
 }
