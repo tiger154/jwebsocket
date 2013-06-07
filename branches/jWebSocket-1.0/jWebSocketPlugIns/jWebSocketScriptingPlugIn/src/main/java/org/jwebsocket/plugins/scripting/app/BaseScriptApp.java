@@ -291,4 +291,6 @@ abstract public class BaseScriptApp {
 	protected String getBeanFactoryNamespace() {
 		return mServer.getNamespace() + ":" + getName();
 	}
+
+	public abstract String getVersion() throws Exception;
 }
