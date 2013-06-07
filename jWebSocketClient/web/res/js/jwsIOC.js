@@ -639,7 +639,7 @@ jws.ioc.ServiceContainerBuilder.prototype._parseArguments = function(aArguments)
 	} else {
 		lArgs = {}
 	
-		for (lKey in aArguments){
+		for (var lKey in aArguments){
 			lArgs[lKey] = this._parseArguments(aArguments[lKey]);
 		}
 	}
