@@ -1371,7 +1371,9 @@
 		</plugin>
 		-->
 		
-		<!-- plug-in to put multiple WebSocket Servers together to a cluster -->
+		<!-- plug-in to put multiple WebSocket Servers together to a cluster 
+			requires a message broker like Apache ActiveMQ as cluster backbone
+		-->
 		<plugin>
 			<name>org.jwebsocket.plugins.cluster.ClusterPlugIn</name>
 			<id>jws.cluster</id>
@@ -1381,8 +1383,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<!-- specify plug-in settings -->
-				<setting key="key">value</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ClusterPlugIn/cluster.xml</setting>
 			</settings>
 		</plugin>
 

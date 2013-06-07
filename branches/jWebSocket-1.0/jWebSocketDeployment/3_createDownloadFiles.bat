@@ -124,6 +124,7 @@ rem Database driver and other required external libs
 xcopy %libs%mysql-connector-java-5.1.16.jar %tempdir%libs\ /s /i /y
 xcopy %libs%sqlite-jdbc-3.7.2.jar %tempdir%libs\ /s /i /y
 xcopy %libs%kahadb-5.5.0.jar %tempdir%libs\ /s /i /y
+xcopy %libs%derby-10.10.1.1.jar %tempdir%libs\ /s /i /y
 
 rem jWebSocket engines
 xcopy %libs%jWebSocketJettyEngine-%ver%.jar %tempdir%libs\ /s /i /y
@@ -139,6 +140,7 @@ xcopy %libs%jWebSocketAPIPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketArduinoPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketBenchmarkPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketChannelPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketClusterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketChatPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketClusterPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketEventsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
@@ -199,6 +201,7 @@ xcopy %conf%ehcache.xml %tempdir%conf\ /s /i /y
 xcopy %conf%AdminPlugIn\*.xml %tempdir%conf\AdminPlugIn\ /s /i /y
 xcopy %conf%APIPlugIn\*.xml %tempdir%conf\APIPlugIn\ /s /i /y
 xcopy %conf%ChannelPlugIn\*.xml %tempdir%conf\ChannelPlugIn\ /s /i /y
+xcopy %conf%ClusterPlugIn\*.xml %tempdir%conf\ClusterPlugIn\ /s /i /y
 xcopy %conf%EventsPlugIn\*.xml %tempdir%conf\EventsPlugIn\ /s /i /y
 xcopy %conf%FileSystemPlugIn\*.xml %tempdir%conf\FileSystemPlugIn\ /s /i /y
 xcopy %conf%ExtProcessPlugIn\*.xml %tempdir%conf\ExtProcessPlugIn\ /s /i /y
@@ -229,7 +232,7 @@ rem log4j config files (from v1.0)
 xcopy %conf%log4j.xml %tempdir%conf\ /s /i /y
 
 rem copy jWebSocket database (from v1.0)
-xcopy %database%jWebSocket.db %tempdir%database\ /s /i /y
+rem xcopy %database%jWebSocket.db %tempdir%database\ /s /i /y
 xcopy %database%readme.txt %tempdir%database\ /s /i /y
 
 rem web folder

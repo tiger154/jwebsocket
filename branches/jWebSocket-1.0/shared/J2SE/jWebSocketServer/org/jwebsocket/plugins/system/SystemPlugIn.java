@@ -64,10 +64,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * implements the jWebSocket system tokens like login, logout, send, broadcast etc...
+ * implements the jWebSocket system tokens like login, logout, send, broadcast
+ * etc...
  *
  * @author aschulze
- * @author kybernees {Support for client-side session management and Spring authentication}
+ * @author kybernees {Support for client-side session management and Spring
+ * authentication}
  */
 public class SystemPlugIn extends TokenPlugIn {
 
@@ -736,6 +738,8 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		WebSocketConnector lTargetConnector;
 		String lTargetId = aToken.getString("unid");
+		Boolean lIsResponseRequested =
+				aToken.getBoolean("responseRequested", true);
 		String lTargetType;
 		if (lTargetId != null) {
 			lTargetConnector = getNode(lTargetId);
@@ -760,7 +764,13 @@ public class SystemPlugIn extends TokenPlugIn {
 
 			aToken.setString("sourceId", aConnector.getId());
 			sendToken(aConnector, lTargetConnector, aToken);
+			// if a response is requested, not explicitely suppressed, send it
+			if (lIsResponseRequested) {
+				aToken.remove("responseRequested");
+				sendToken(aConnector, aConnector, lResponse);
+			}
 		} else {
+			// respond with error message (target connector not found)
 			String lMsg = "No target connector with "
 					+ lTargetType + " '"
 					+ lTargetId + "' found.";
@@ -828,8 +838,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		 */
 		aToken.setString("sourceId", aConnector.getId());
 		// keep senderIncluded beging false as default, apps rely on this!
-		Boolean lIsSenderIncluded = aToken.getBoolean("senderIncluded", false);
-		Boolean lIsResponseRequested = aToken.getBoolean("responseRequested", true);
+		Boolean lIsSenderIncluded =
+				aToken.getBoolean("senderIncluded", false);
+		Boolean lIsResponseRequested =
+				aToken.getBoolean("responseRequested", true);
 
 		// remove further non target related fields
 		aToken.remove("senderIncluded");
@@ -853,8 +865,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		int lTimeout = aToken.getInteger("timeout", 0);
 
 		Boolean lNoGoodBye = aToken.getBoolean("noGoodBye", false);
-		Boolean lNoLogoutBroadcast = aToken.getBoolean("noLogoutBroadcast", false);
-		Boolean lNoDisconnectBroadcast = aToken.getBoolean("noDisconnectBroadcast", false);
+		Boolean lNoLogoutBroadcast =
+				aToken.getBoolean("noLogoutBroadcast", false);
+		Boolean lNoDisconnectBroadcast =
+				aToken.getBoolean("noDisconnectBroadcast", false);
 
 		// only send a good bye message if timeout is > 0 and not to be noed
 		if (lTimeout > 0 && !lNoGoodBye) {
@@ -869,7 +883,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		removeUsername(aConnector);
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Closing client " + (lTimeout > 0 ? "with timeout " + lTimeout + "ms" : "immediately") + "...");
+			mLog.debug("Closing client "
+					+ (lTimeout > 0
+					? "with timeout " + lTimeout + "ms"
+					: "immediately") + "...");
 		}
 
 		// don't send a response here! We're about to close the connection!
@@ -921,9 +938,9 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * simply waits for a certain amount of time and does not perform any _ operation. This feature
-	 * is used for debugging and simulation purposes _ only and is not related to any business
-	 * logic.
+	 * simply waits for a certain amount of time and does not perform any _
+	 * operation. This feature is used for debugging and simulation purposes _
+	 * only and is not related to any business logic.
 	 *
 	 * @param aToken
 	 */
@@ -1016,7 +1033,8 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * allocates a "non-interruptable" communication channel between two clients.
+	 * allocates a "non-interruptable" communication channel between two
+	 * clients.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -1031,7 +1049,8 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * deallocates a "non-interruptable" communication channel between two clients.
+	 * deallocates a "non-interruptable" communication channel between two
+	 * clients.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -1046,7 +1065,8 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Logon a user given the username and password by using the Spring Security module
+	 * Logon a user given the username and password by using the Spring Security
+	 * module
 	 *
 	 * @param aConnector
 	 * @param aToken The token with the username and password

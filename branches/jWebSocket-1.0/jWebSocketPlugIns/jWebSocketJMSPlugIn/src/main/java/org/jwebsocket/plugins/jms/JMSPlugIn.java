@@ -86,6 +86,14 @@ public class JMSPlugIn extends TokenPlugIn {
 			mJMSTemplate = new JmsTemplate();
 			ActiveMQConnectionFactory lConnectionFactory = new ActiveMQConnectionFactory(
 					"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false");
+			/*
+			 lConnectionFactory.setExceptionListener(new ExceptionListener() {
+			 @Override
+			 public void onException(JMSException jmse) {
+			 mLog.error(Logging.getSimpleExceptionMessage(jmse, "connecting to JMS broker"));
+			 }
+			 });
+			 */
 			mJMSTemplate.setConnectionFactory(lConnectionFactory);
 			mJMSTemplate.setDefaultDestinationName("org.jwebsocket.jws2jms");
 			mJMSTemplate.setDeliveryPersistent(false);
@@ -126,12 +134,30 @@ public class JMSPlugIn extends TokenPlugIn {
 			lListener.setEngine(mJMSEngine);
 
 			// start the listener for all messages from the JMS system
+			/*
+			mJms2JwsListenerCont.setErrorHandler(new ErrorHandler() {
+				@Override
+				public void handleError(Throwable aThrowable) {
+					mLog.error(aThrowable.getClass().getSimpleName() + " listening to JMS broker.");
+				}
+			});
+			mJms2JwsListenerCont.setExceptionListener(new ExceptionListener() {
+				@Override
+				public void onException(JMSException jmse) {
+					mLog.error(Logging.getSimpleExceptionMessage(jmse, "listening to JMS broker"));
+				}
+			});
+			*/
 			mJms2JwsListenerCont.start();
+
+			if (true) {
+				return;
+			}
 
 			// Advisory listener
 			mAdvisoryListenerCont =
 					(DefaultMessageListenerContainer) lBeanFactory.getBean("advisoryListenerContainer");
-			JMSAdvisoryListener lAdvisoryListener = 
+			JMSAdvisoryListener lAdvisoryListener =
 					(JMSAdvisoryListener) mAdvisoryListenerCont.getMessageListener();
 			lAdvisoryListener.setJMSTemplate(mJMSTemplate);
 			lAdvisoryListener.setEngine(mJMSEngine);

@@ -36,208 +36,208 @@ import org.springframework.context.ApplicationContext;
  */
 public class MailPlugIn extends TokenPlugIn {
 
-   private static Logger mLog = Logging.getLogger();
-   // if namespace changed update client plug-in accordingly!
-   public static final String NS =
-           JWebSocketServerConstants.NS_BASE + ".plugins.mail";
-   private final static String VERSION = "1.0.0";
-   private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
-   private final static String LABEL = "jWebSocket MailPlugIn";
-   private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
-   private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
-   private final static String DESCRIPTION = "jWebSocket MailPlugIn - Community Edition";
-   private static MailStore mMailStore = null;
-   private static ApplicationContext mBeanFactory;
-   private static Settings mSettings;
-   private static MailPlugInService mService;
+	private static Logger mLog = Logging.getLogger();
+	// if namespace changed update client plug-in accordingly!
+	public static final String NS =
+			JWebSocketServerConstants.NS_BASE + ".plugins.mail";
+	private final static String VERSION = "1.0.0";
+	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
+	private final static String LABEL = "jWebSocket MailPlugIn";
+	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
+	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
+	private final static String DESCRIPTION = "jWebSocket MailPlugIn - Community Edition";
+	private static MailStore mMailStore = null;
+	private static ApplicationContext mBeanFactory;
+	private static Settings mSettings;
+	private static MailPlugInService mService;
 
-   /**
-    *
-    * @param aConfiguration
-    */
-   public MailPlugIn(PluginConfiguration aConfiguration) {
-      super(aConfiguration);
-      if (mLog.isDebugEnabled()) {
-         mLog.debug("Instantiating Mail plug-in...");
-      }
-      // specify default name space for admin plugin
-      this.setNamespace(NS);
+	/**
+	 *
+	 * @param aConfiguration
+	 */
+	public MailPlugIn(PluginConfiguration aConfiguration) {
+		super(aConfiguration);
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Instantiating Mail plug-in...");
+		}
+		// specify default name space for admin plugin
+		this.setNamespace(NS);
 
-      try {
-         mBeanFactory = getConfigBeanFactory(NS);
-         if (null == mBeanFactory) {
-            mLog.error("No or invalid spring configuration for mail plug-in, some features may not be available.");
-         } else {
-            mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.mail.settings");
-            mService = new MailPlugInService(mSettings);
-            if (mLog.isInfoEnabled()) {
-               mLog.info("Mail plug-in successfully instantiated"
-                       + ", SMTP: " + mSettings.getSmtpHost() + ":" + mSettings.getSmtpPort()
-                       + ", POP3: " + mSettings.getPop3Host() + ":" + mSettings.getPop3Port()
-                       + ".");
-            }
-         }
-      } catch (Exception lEx) {
-         mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating mail plug-in"));
-      }
-   }
+		try {
+			mBeanFactory = getConfigBeanFactory(NS);
+			if (null == mBeanFactory) {
+				mLog.error("No or invalid spring configuration for mail plug-in, some features may not be available.");
+			} else {
+				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.mail.settings");
+				mService = new MailPlugInService(mSettings);
+				if (mLog.isInfoEnabled()) {
+					mLog.info("Mail plug-in successfully instantiated"
+							+ ", SMTP: " + mSettings.getSmtpHost() + ":" + mSettings.getSmtpPort()
+							+ ", POP3: " + mSettings.getPop3Host() + ":" + mSettings.getPop3Port()
+							+ ".");
+				}
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating mail plug-in"));
+		}
+	}
 
-   @Override
-   public String getVersion() {
-      return VERSION;
-   }
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
 
-   @Override
-   public String getLabel() {
-      return LABEL;
-   }
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
 
-   @Override
-   public String getDescription() {
-      return DESCRIPTION;
-   }
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
 
-   @Override
-   public String getVendor() {
-      return VENDOR;
-   }
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
 
-   @Override
-   public String getCopyright() {
-      return COPYRIGHT;
-   }
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
 
-   @Override
-   public String getLicense() {
-      return LICENSE;
-   }
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
 
-   @Override
-   public String getNamespace() {
-      return NS;
-   }
+	@Override
+	public String getNamespace() {
+		return NS;
+	}
 
-   @Override
-   public void processToken(PlugInResponse aResponse,
-           WebSocketConnector aConnector, Token aToken) {
-      String lType = aToken.getType();
-      String lNS = aToken.getNS();
+	@Override
+	public void processToken(PlugInResponse aResponse,
+			WebSocketConnector aConnector, Token aToken) {
+		String lType = aToken.getType();
+		String lNS = aToken.getNS();
 
-      if (lType != null && getNamespace().equals(lNS)) {
-         // select from database
-         if (lType.equals("sendMail")) {
-            sendMail(aConnector, aToken);
-         } else if (lType.equals("createMail")) {
-            createMail(aConnector, aToken);
-         } else if (lType.equals("dropMail")) {
-            dropMail(aConnector, aToken);
-         } else if (lType.equals("addAttachment")) {
-            addAttachment(aConnector, aToken);
-         } else if (lType.equals("removeAttachment")) {
-            removeAttachment(aConnector, aToken);
-         } else if (lType.equals("moveMail")) {
-            moveMail(aConnector, aToken);
-         }
-      }
-   }
+		if (lType != null && getNamespace().equals(lNS)) {
+			// select from database
+			if (lType.equals("sendMail")) {
+				sendMail(aConnector, aToken);
+			} else if (lType.equals("createMail")) {
+				createMail(aConnector, aToken);
+			} else if (lType.equals("dropMail")) {
+				dropMail(aConnector, aToken);
+			} else if (lType.equals("addAttachment")) {
+				addAttachment(aConnector, aToken);
+			} else if (lType.equals("removeAttachment")) {
+				removeAttachment(aConnector, aToken);
+			} else if (lType.equals("moveMail")) {
+				moveMail(aConnector, aToken);
+			}
+		}
+	}
 
-   @Override
-   public Token invoke(WebSocketConnector aConnector, Token aToken) {
-      String lType = aToken.getType();
-      String lNS = aToken.getNS();
+	@Override
+	public Token invoke(WebSocketConnector aConnector, Token aToken) {
+		String lType = aToken.getType();
+		String lNS = aToken.getNS();
 
-      TokenServer lServer = getServer();
-      Token lResponse = createResponse(aToken);
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
 
-      if (lType != null && getNamespace().equals(lNS)) {
-         if (lType.equals("sendMail")) {
-            mService.sendMail(aConnector, aToken, lResponse, lServer, NS);
-            return lResponse;
-         } else if (lType.equals("createMail")) {
-            mService.createMail(aToken, lResponse);
-            return lResponse;
-         }
-      }
-      return null;
-   }
+		if (lType != null && getNamespace().equals(lNS)) {
+			if (lType.equals("sendMail")) {
+				mService.sendMail(aConnector, aToken, lResponse, lServer, NS);
+				return lResponse;
+			} else if (lType.equals("createMail")) {
+				mService.createMail(aToken, lResponse);
+				return lResponse;
+			}
+		}
+		return null;
+	}
 
-   private void sendMail(WebSocketConnector aConnector, Token aToken) {
-      TokenServer lServer = getServer();
-      Token lResponse = createResponse(aToken);
+	private void sendMail(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
 
-      mService.sendMail(aConnector, aToken, lResponse, lServer, NS);
+		mService.sendMail(aConnector, aToken, lResponse, lServer, NS);
 
-      // send response to requester
-      lServer.sendToken(aConnector, lResponse);
-   }
+		// send response to requester
+		lServer.sendToken(aConnector, lResponse);
+	}
 
-   private void createMail(WebSocketConnector aConnector, Token aToken) {
-      TokenServer lServer = getServer();
-      Token lResponse = createResponse(aToken);
+	private void createMail(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
 
-      mService.createMail(aToken, lResponse);
+		mService.createMail(aToken, lResponse);
 
-      // send response to requester
-      lServer.sendToken(aConnector, lResponse);
-   }
+		// send response to requester
+		lServer.sendToken(aConnector, lResponse);
+	}
 
-   private void dropMail(WebSocketConnector aConnector, Token aToken) {
-      TokenServer lServer = getServer();
-      Token lResponse = createResponse(aToken);
+	private void dropMail(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
 
-      mService.dropMail(aToken, lResponse);
+		mService.dropMail(aToken, lResponse);
 
-      // send response to requester
-      lServer.sendToken(aConnector, lResponse);
-   }
+		// send response to requester
+		lServer.sendToken(aConnector, lResponse);
+	}
 
-   private void addAttachment(WebSocketConnector aConnector, Token aToken) {
-      TokenServer lServer = getServer();
-      Token lResponse = createResponse(aToken);
+	private void addAttachment(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
 
-      mService.addAttachment(aConnector, aToken, lResponse, getServer(), NS);
+		mService.addAttachment(aConnector, aToken, lResponse, getServer(), NS);
 
-      // send response to requester
-      lServer.sendToken(aConnector, lResponse);
-   }
+		// send response to requester
+		lServer.sendToken(aConnector, lResponse);
+	}
 
-   private void removeAttachment(WebSocketConnector aConnector, Token aToken) {
-      TokenServer lServer = getServer();
-      Token lResponse = createResponse(aToken);
+	private void removeAttachment(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
 
-      mService.removeAttachment(aToken, lResponse);
+		mService.removeAttachment(aToken, lResponse);
 
-      // send response to requester
-      lServer.sendToken(aConnector, lResponse);
-   }
+		// send response to requester
+		lServer.sendToken(aConnector, lResponse);
+	}
 
-   private void moveMail(WebSocketConnector aConnector, Token aToken) {
-      TokenServer lServer = getServer();
-      Token lResponse = createResponse(aToken);
+	private void moveMail(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
 
-      mService.moveMail(aToken, lResponse);
+		mService.moveMail(aToken, lResponse);
 
-      // send response to requester
-      lServer.sendToken(aConnector, lResponse);
-   }
+		// send response to requester
+		lServer.sendToken(aConnector, lResponse);
+	}
 
-   private void getMail(WebSocketConnector aConnector, Token aToken) {
-      TokenServer lServer = getServer();
-      Token lResponse = createResponse(aToken);
+	private void getMail(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
 
-      mService.getMail(aToken, lResponse);
+		mService.getMail(aToken, lResponse);
 
-      // send response to requester
-      lServer.sendToken(aConnector, lResponse);
-   }
+		// send response to requester
+		lServer.sendToken(aConnector, lResponse);
+	}
 
-   private void getUserMails(WebSocketConnector aConnector, Token aToken) {
-      TokenServer lServer = getServer();
-      Token lResponse = createResponse(aToken);
+	private void getUserMails(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
 
-      mService.getUserMails(aToken, lResponse);
+		mService.getUserMails(aToken, lResponse);
 
-      // send response to requester
-      lServer.sendToken(aConnector, lResponse);
-   }
+		// send response to requester
+		lServer.sendToken(aConnector, lResponse);
+	}
 }
