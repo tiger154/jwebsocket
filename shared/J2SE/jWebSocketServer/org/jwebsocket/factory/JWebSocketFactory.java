@@ -55,8 +55,8 @@ public class JWebSocketFactory {
 
 	/**
 	 *
-	 * @return The class loader used to load the system resources like libraries, engines, plug-ins,
-	 * ...
+	 * @return The class loader used to load the system resources like
+	 * libraries, engines, plug-ins, ...
 	 */
 	public static JWebSocketJarClassLoader getClassLoader() {
 		return mClassLoader;
@@ -128,16 +128,24 @@ public class JWebSocketFactory {
 		JWebSocketInstance.setStatus(JWebSocketInstance.STARTING);
 
 		// loading jwebsocket server policies
-		try {
-			System.setProperty("java.security.policy", JWebSocketConfig.getConfigFolder("jwebsocket.policy"));
-			System.setSecurityManager(new SecurityManager());
-			
-			if (mLog.isInfoEnabled()) {
-				mLog.info("jWebSocket server security policies successfully loaded.");
+		String lPolicyFile = JWebSocketConfig.getConfigFolder("jWebSocket.policy");
+		if (null != lPolicyFile) {
+			try {
+				System.setProperty("java.security.policy", lPolicyFile);
+				System.setSecurityManager(new SecurityManager());
+
+				if (mLog.isInfoEnabled()) {
+					mLog.info("jWebSocket server security policies successfully loaded.");
+				}
+			} catch (Exception lEx) {
+				mLog.error("Error loading jWebSocket server security policies...", lEx);
+				return;
 			}
-		} catch (Exception lEx) {
-			mLog.error("Error loading jWebSocket server security policies...", lEx);
-			return;
+		} else {
+			if (mLog.isInfoEnabled()) {
+				mLog.warn("jWebSocket server policy not located at $JWEBSOCKET_HOME/conf/jWebSocket.policy! "
+						+ "Running without security restrictions...");
+			}
 		}
 
 		// start the shared utility timer
@@ -448,8 +456,8 @@ public class JWebSocketFactory {
 	}
 
 	/**
-	 * Returns the server identified by it's id or <tt>null</tt> if no server with that id could be
-	 * found in the factory.
+	 * Returns the server identified by it's id or <tt>null</tt> if no server
+	 * with that id could be found in the factory.
 	 *
 	 * @param aId id of the server to be returned.
 	 * @return WebSocketServer with the given id or <tt>null</tt> if not found.
