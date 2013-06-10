@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Settings for Mail Plug-in (Community Edition, CE)
+//	jWebSocket - Settings for Cluster Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -29,64 +29,64 @@ public class Settings {
 
 	private String mNodeId = UUID.randomUUID().toString();
 	private String mBrokerURI = null;
-	private String mPubTopic = null;
-	private String mSubTopic = null;
+	private String mClusterTopic = null;
+	private String mAdvisoryTopic = null;
 	private List<String> mClusterNodes = null;
 
 	/**
-	 * @return the mNodeId
+	 * @return the NodeId
 	 */
 	public String getNodeId() {
 		return mNodeId;
 	}
 
 	/**
-	 * @param mNodeId the mNodeId to set
+	 * @param aNodeId the NodeId to set
 	 */
-	public void setNodeId(String mNodeId) {
-		this.mNodeId = mNodeId;
+	public void setNodeId(String aNodeId) {
+		this.mNodeId = aNodeId;
 	}
 
 	/**
-	 * @return the mBrokerURI
+	 * @return the BrokerURI
 	 */
 	public String getBrokerURI() {
 		return mBrokerURI;
 	}
 
 	/**
-	 * @param mBrokerURI the mBrokerURI to set
+	 * @param mBrokerURI the BrokerURI to set
 	 */
 	public void setBrokerURI(String mBrokerURI) {
 		this.mBrokerURI = mBrokerURI;
 	}
 
 	/**
-	 * @return the mPubTopic
+	 * @return the ClusterTopic
 	 */
-	public String getPubTopic() {
-		return mPubTopic;
+	public String getClusterTopic() {
+		return mClusterTopic;
 	}
 
 	/**
-	 * @param mPubTopic the mPubTopic to set
+	 * @param aClusterTopic the ClusterTopic to set
 	 */
-	public void setPubTopic(String mPubTopic) {
-		this.mPubTopic = mPubTopic;
+	public void setClusterTopic(String aClusterTopic) {
+		this.mClusterTopic = aClusterTopic;
 	}
 
 	/**
-	 * @return the mSubTopic
+	 * @return the AdvisoryTopic
 	 */
-	public String getSubTopic() {
-		return mSubTopic;
+	public String getAdvisoryTopic() {
+		return mAdvisoryTopic;
 	}
 
 	/**
-	 * @param mSubTopic the mSubTopic to set
+	 * @param aAdvisoryTopic the AdvisoryTopic to set
 	 */
-	public void setSubTopic(String mSubTopic) {
-		this.mSubTopic = mSubTopic;
+	public void setAdvisoryTopic(String aAdvisoryTopic) {
+		this.mAdvisoryTopic = aAdvisoryTopic;
 	}
 
 	/**
@@ -97,9 +97,9 @@ public class Settings {
 	}
 
 	/**
-	 * @param mClusterNodes the mClusterNodes to set
+	 * @param aClusterNodes the ClusterNodes to set
 	 */
-	public void setClusterNodes(List<String> mClusterNodes) {
-		this.mClusterNodes = mClusterNodes;
+	public void setClusterNodes(List<String> aClusterNodes) {
+		this.mClusterNodes = aClusterNodes;
 	}
 }

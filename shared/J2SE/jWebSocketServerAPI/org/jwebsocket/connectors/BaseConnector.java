@@ -99,7 +99,8 @@ public class BaseConnector implements WebSocketConnector {
 	/**
 	 * Variables for the packet delivery mechanism
 	 */
-	private static Map<Integer, IPacketDeliveryListener> mPacketDeliveryListeners = new FastMap<Integer, IPacketDeliveryListener>().shared();
+	private static Map<Integer, IPacketDeliveryListener> mPacketDeliveryListeners =
+			new FastMap<Integer, IPacketDeliveryListener>().shared();
 
 	/**
 	 *
