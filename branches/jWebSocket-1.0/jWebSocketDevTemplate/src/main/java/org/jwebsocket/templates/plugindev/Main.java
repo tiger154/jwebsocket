@@ -1,17 +1,20 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Sample Main Class to create your own jWebSocket Plug-Ins
-//	Copyright (c) 2011 Alexander Schulze, Innotrade GmbH
+//	jWebSocket Main Class for Plug-in Development (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	This program is free software; you can redistribute it and/or modify it
-//	under the terms of the GNU Lesser General Public License as published by the
-//	Free Software Foundation; either version 3 of the License, or (at your
-//	option) any later version.
-//	This program is distributed in the hope that it will be useful, but WITHOUT
-//	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-//	FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for
-//	more details.
-//	You should have received a copy of the GNU Lesser General Public License along
-//	with this program; if not, see <http://www.gnu.org/licenses/lgpl.html>.
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
 //	---------------------------------------------------------------------------
 package org.jwebsocket.templates.plugindev;
 
@@ -49,23 +52,16 @@ public class Main {
 				lServers.add(lServer.getId());
 				// and add the sample listener to the server's listener chain
 				PluginConfiguration lPlugInConfig = new PluginConfig(
-						// id, needs to be unique
-						"tld.domain.myplugin",
-						// name, just for info
-						"MyPlugIn",
-						// package
-						"org.jwebsocket.plugins.myplugin",
-						// name of the jar file
-						"jWebSocketDevTemplate.jar",
-						// namespace
-						"org.jwebsocket.plugins.myplugin",
-						// list of servers to be bound to
-						lServers,
-						// settings, if interpreted by plug-in
-						null,
-						// enabled?
-						true);
-
+						"tld.domain.myplugin", // id, needs to be unique
+						"MyPlugIn", // name, just for info
+						"org.jwebsocket.plugins.myplugin", // package
+						"jWebSocketDevTemplate.jar", // name of the jar file
+						null, // jars
+						"org.jwebsocket.plugins.myplugin", // namespace
+						lServers, // list of servers to be bound to
+						null, // settings, if interpreted by plug-in
+						true // enabled?
+						);
 				lServer.getPlugInChain().addPlugIn(new MyPlugIn(lPlugInConfig));
 			}
 			// run server until shut down request

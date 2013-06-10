@@ -6,7 +6,6 @@ echo.
 if "%1"=="/y" goto dontAsk1
 pause
 :dontAsk1
-rem copy "%JWEBSOCKET_HOME%\libs\jWebSocketServer-Bundle-1.0.jar" "%CATALINA_HOME%\lib"
 copy "%JWEBSOCKET_HOME%\libs\jWebSocketServer-Bundle-%JWEBSOCKET_VER%.jar" "%CATALINA_HOME%\lib"
 copy "%JWEBSOCKET_HOME%\libs\jWebSocketTomcatEngine-%JWEBSOCKET_VER%.jar" "%CATALINA_HOME%\lib"
 if "%1"=="/y" goto dontAsk2

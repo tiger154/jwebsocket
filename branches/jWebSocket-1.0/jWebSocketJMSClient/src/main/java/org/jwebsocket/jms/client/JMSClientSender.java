@@ -20,9 +20,8 @@ package org.jwebsocket.jms.client;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageProducer;
 import javax.jms.Session;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 
 /**
  *
@@ -30,16 +29,19 @@ import org.springframework.jms.core.MessageCreator;
  */
 public class JMSClientSender {
 
-	private final JmsTemplate mJmsTemplate;
-	private String mCorrelationId;
+	private final MessageProducer mProducer;
+	private final Session mSession;
+	private final String mCorrelationId;
 
 	/**
 	 *
-	 * @param aJmsTemplate
+	 * @param aProducer
 	 * @param aCorrelationId
 	 */
-	public JMSClientSender(JmsTemplate aJmsTemplate, String aCorrelationId) {
-		mJmsTemplate = aJmsTemplate;
+	public JMSClientSender(Session aSession, MessageProducer aProducer,
+			String aCorrelationId) {
+		mSession = aSession;
+		mProducer = aProducer;
 		mCorrelationId = aCorrelationId;
 	}
 
@@ -49,21 +51,21 @@ public class JMSClientSender {
 	 */
 	public void send(final String aJSON) {
 		System.out.println("Sending JSON " + aJSON + "...");
-		mJmsTemplate.send(new MessageCreator() {
-			@Override
-			public Message createMessage(Session aSession) throws JMSException {
-				Message lMsg = aSession.createTextMessage(aJSON);
-				lMsg.setJMSCorrelationID(mCorrelationId);
-				return lMsg;
-			}
-		});
+		Message lMsg;
+		try {
+			lMsg = mSession.createTextMessage(aJSON);
+			lMsg.setJMSCorrelationID(mCorrelationId);
+			mProducer.send(lMsg);
+		} catch (JMSException lEx) {
+			System.out.println(lEx.getClass().getSimpleName() + " sending message.");
+		}
 	}
 
 	/**
 	 * @return the mJmsTemplate
 	 */
-	public JmsTemplate getJmsTemplate() {
-		return mJmsTemplate;
+	public MessageProducer getProducer() {
+		return mProducer;
 	}
 
 	/**
@@ -72,5 +74,4 @@ public class JMSClientSender {
 	public String getCorrelationId() {
 		return mCorrelationId;
 	}
-
 }

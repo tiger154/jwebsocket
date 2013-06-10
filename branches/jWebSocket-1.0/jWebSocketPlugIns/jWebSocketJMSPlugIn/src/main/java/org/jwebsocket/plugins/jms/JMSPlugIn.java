@@ -135,24 +135,20 @@ public class JMSPlugIn extends TokenPlugIn {
 
 			// start the listener for all messages from the JMS system
 			/*
-			mJms2JwsListenerCont.setErrorHandler(new ErrorHandler() {
-				@Override
-				public void handleError(Throwable aThrowable) {
-					mLog.error(aThrowable.getClass().getSimpleName() + " listening to JMS broker.");
-				}
-			});
-			mJms2JwsListenerCont.setExceptionListener(new ExceptionListener() {
-				@Override
-				public void onException(JMSException jmse) {
-					mLog.error(Logging.getSimpleExceptionMessage(jmse, "listening to JMS broker"));
-				}
-			});
-			*/
+			 mJms2JwsListenerCont.setErrorHandler(new ErrorHandler() {
+			 @Override
+			 public void handleError(Throwable aThrowable) {
+			 mLog.error(aThrowable.getClass().getSimpleName() + " listening to JMS broker.");
+			 }
+			 });
+			 mJms2JwsListenerCont.setExceptionListener(new ExceptionListener() {
+			 @Override
+			 public void onException(JMSException jmse) {
+			 mLog.error(Logging.getSimpleExceptionMessage(jmse, "listening to JMS broker"));
+			 }
+			 });
+			 */
 			mJms2JwsListenerCont.start();
-
-			if (true) {
-				return;
-			}
 
 			// Advisory listener
 			mAdvisoryListenerCont =
@@ -222,8 +218,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		if (null != mJmsManager) {
 			mJmsManager.shutDownListeners();
 		}
+		// shutdown JMS bridge listener
 		if (null != mJms2JwsListenerCont) {
 			mJms2JwsListenerCont.shutdown();
+		}
+		// shutdown advisory listener
+		if (null != mAdvisoryListenerCont) {
+			mAdvisoryListenerCont.shutdown();
 		}
 	}
 

@@ -56,7 +56,6 @@
 	<bean id="advisoryDestination" class="org.apache.activemq.command.ActiveMQTopic">
 		<constructor-arg value="ActiveMQ.Advisory.Consumer.Topic.org.jwebsocket.jws2jms"/>
 		<!-- <constructor-arg value="ActiveMQ.Advisory.Connection"/> -->
-		
 	</bean>
 	<!-- and this is the message listener container -->
 	<bean id="advisoryListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
