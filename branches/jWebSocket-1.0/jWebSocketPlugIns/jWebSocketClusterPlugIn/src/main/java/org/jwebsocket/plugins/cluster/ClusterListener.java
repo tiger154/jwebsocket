@@ -35,73 +35,60 @@ class ClusterListener implements MessageListener {
 
 	private static Logger mLog = Logging.getLogger();
 	private ClusterSender mSender = null;
-	
+
+	public ClusterListener(ClusterSender aClusterSender) {
+		mSender = aClusterSender;
+	}
+
 	@Override
 	public void onMessage(Message aMsg) {
+
 		ActiveMQTextMessage lMQMsg = (ActiveMQTextMessage) aMsg;
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Message received: '" + aMsg + "'.");
+		}
+
 		try {
 			String lJSON = lMQMsg.getText();
 			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
 			// fields for requests
 			String lNS = lToken.getNS();
 			String lType = lToken.getType();
-			// fields for responses
-			String lReqType = lToken.getString("reqType", "");
-			String lMsg = lToken.getString("msg", "[no error message provided]");
-			Integer lCode = lToken.getInteger("code", -1);
 
-			// System.out.println("###### " + lJSON);
-
-			// the server accepted the new JMS client, so login now...
-			if ("org.jwebsocket.jms.bridge".equals(lNS)) {
-				if ("welcome".equals(lType)) {
-					System.out.println("Connection successful, logging-in...");
-					// mSender.setCorrelationId(lToken.getString("correlationId"));
+			// processing org.jwebsocket.cluster messages...
+			if ("ojc".equals(lNS)) {
+				// a register request from a new node...
+				if ("register".equals(lType)) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("New node registering...");
+					}
 					mSender.send(
-							"{\"ns\":\"org.jwebsocket.plugins.system\""
-							+ ", \"type\":\"login\""
-							+ ", \"username\":\"root\""
-							+ ", \"password\":\"root\"}");
-				} else {
-					System.out.println("Unknown JMS command: " + lJSON);
-				}
-				// the server login was successful, so upload the file now...
-			} else if ("org.jwebsocket.plugins.system".equals(lNS)) {
-				if ("login".equals(lReqType)) {
-					if (0 == lCode) {
-						System.out.println("Log-in-successful, uploading file...");
-						mSender.send(
-								"{\"ns\": \"org.jwebsocket.plugins.filesystem\""
-								+ ", \"type\": \"save\""
-								+ ", \"scope\": \"private\""
-								+ ", \"encoding\": \"save\""
-								+ ", \"encode\": false"
-								+ ", \"notify\": false"
-								+ ", \"data\": \"This is just another test content\""
-								+ ", \"filename\": \"test.txt\"}");
-					} else {
-						System.out.println("Log-in failure: " + lMsg);
+							"{\"ns\":\"ojc\""
+							+ ",\"type\":\"welcome\""
+							+ ",\"sourceId\":\"" + mSender.getNodeId() + "\""
+							+ ",\"clientIds\":[]}");
+					ClusterService.addEngine(lToken.getString("sourceId"), lToken.getString("sourceId"));
+				} else if ("welcome".equals(lType)) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Processing cluster node's welcome...");
 					}
-				} else if ("broadcast".equals(lType)) {
-					System.out.println("Received braodcast: " + lJSON);
-				} else {
-					System.out.println("Unknown system command: " + lJSON);
-				}
-			} else if ("org.jwebsocket.plugins.filesystem".equals(lNS)) {
-				if ("save".equals(lReqType)) {
-					if (0 == lCode) {
-						System.out.println("File upload successful, continuing process...");
-					} else {
-						System.out.println("File upload failure: " + lMsg);
+				} else if ("connected".equals(lType)) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Processing cluster node's client connect...");
+					}
+				} else if ("disconnected".equals(lType)) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Processing cluster node's client disconnect...");
 					}
 				} else {
-					System.out.println("Unknown filesystem command: " + lJSON);
+					mLog.warn("Unknown cluster command: " + lJSON);
 				}
 			} else {
-				System.out.println("Received (but ignored): " + lJSON);
+				mLog.warn("Received (but ignored): " + lJSON);
 			}
 		} catch (JMSException lEx) {
-			System.out.println("Exception: " + lEx.getMessage());
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "receiving cluster message"));
 		}
 	}
 
@@ -115,8 +102,7 @@ class ClusterListener implements MessageListener {
 	/**
 	 * @param mSender the mSender to set
 	 */
-	public void setSender(ClusterSender mSender) {
-		this.mSender = mSender;
+	public void setSender(ClusterSender aSender) {
+		mSender = aSender;
 	}
-
 }

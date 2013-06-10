@@ -39,7 +39,7 @@ public class ClusterEngine extends BaseEngine {
 
 	public ClusterEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
-		mLog.info("JMS Engine successfully instantiated.");
+		mLog.info("Cluster engine successfully instantiated.");
 	}
 
 	@Override

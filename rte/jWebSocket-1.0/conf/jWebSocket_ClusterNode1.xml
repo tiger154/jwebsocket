@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Document   : jWebSocket.xml
+	Created on : June 9th, 2013
+	Author     : aschulze
+	Description: Minumim Configuration for the jWebSocketCluster
+-->
+
+<!-- jWebSocket server configuration -->
+<jWebSocket>
+	<!--
+		define the protocol, default protocol if not specified is 'json'
+		possible values are [json|xml|csv]
+	-->
+	<protocol>json</protocol>
+
+	<!--
+		the unique ID of this instance within a jWebSocket cluster
+		can be left empty to run just a single stand-alone server
+		Preparation for pending cluster-plug-in
+	-->
+	<node_id>01</node_id>
+
+	<libraries>
+		<library>
+			<id>DerbyDriver</id>
+			<url>${JWEBSOCKET_HOME}libs/derby-10.10.1.1.jar</url>
+			<description>Derby JDBC driver to access Derby databases from jWebSocket and its plug-ins</description>
+		</library>
+	</libraries>
+
+	<!-- jWebSocket logging configuration -->
+	<logging>
+		<log4j>
+			<!-- automatic reload of log config options in ms (0 for none, minimum 5000ms) -->
+			<autoreload>20000</autoreload>
+			<!-- In the log file (not for the C/S-transmission) tokens exceeding 
+			the here configured maximum log length will be automatically cut
+			(use 0 to log the tokens in full size, default: 512 characters) -->
+			<max_log_token_length>512</max_log_token_length>
+		</log4j>
+	</logging>
+
+	<!-- jWebSocket engine configuration -->
+	<engines>
+		<!-- TCP Engine Configuration -->
+		<engine>
+			<name>org.jwebsocket.tcp.TCPEngine</name>
+			<id>tcp0</id>
+			<jar>jWebSocketTCPEngine-1.0.jar</jar>
+			<port>8787</port>
+			<sslport>9797</sslport>
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<password>jWebSocket</password>
+			<domains>
+				<domain>*</domain>
+			</domains>
+			<timeout>0</timeout>
+			<maxframesize>1048840</maxframesize>
+			<maxconnections>10000</maxconnections>
+			<onmaxconnections>reject</onmaxconnections>
+			<settings>
+				<setting key="workers">50</setting>
+				<setting key="writer_timeout">1000</setting>
+				<setting key="tcpNoDelay">true</setting>
+			</settings>		
+		</engine>
+	</engines>
+
+	<!-- server types to be instantiated for jWebSocket -->
+	<servers>
+		<server>
+			<name>org.jwebsocket.server.TokenServer</name>
+			<id>ts0</id>
+			<jar>jWebSocketTokenServer-1.0.jar</jar>
+			<threadPool>
+				<corePoolSize>10</corePoolSize>
+				<maximumPoolSize>100</maximumPoolSize>
+				<keepAliveTime>60</keepAliveTime>
+				<blockingQueueSize>1000</blockingQueueSize>
+			</threadPool>
+		</server>
+	</servers>
+
+	<!-- jWebSocket global rights -->
+	<rights>
+		<!-- configuration of system plug-in specific rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.system</ns>
+			<id>broadcast</id>
+			<description>Allow to broadcast message to all other clients.</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.system</ns>
+			<id>send</id>
+			<description>Allow to send message to a single target client.</description>
+		</right>
+	</rights>
+
+	<!-- jWebSocket roles -->
+	<roles>
+		<role>
+			<id>Administrator</id>
+			<description>Administrators</description>
+			<rights>
+				<right>org.jwebsocket.plugins.system.broadcast</right>
+				<right>org.jwebsocket.plugins.system.send</right>
+			</rights>
+		</role>
+		<role>
+			<id>User</id>
+			<description>Registered and authenticated users.</description>
+			<rights>
+				<right>org.jwebsocket.plugins.system.broadcast</right>
+				<right>org.jwebsocket.plugins.system.send</right>
+			</rights>
+		</role>
+		<role>
+			<id>Guest</id>
+			<description>Anonymous users (not registered)</description>
+			<rights>
+				<right>org.jwebsocket.plugins.system.broadcast</right>
+				<right>org.jwebsocket.plugins.system.send</right>
+			</rights>
+
+		</role>
+        
+	</roles>
+
+	<!-- jWebSocket users -->
+	<users>
+        
+		<user>
+			<uuid>000-000-001-2011-07-14-11-32-40-223</uuid>
+			<loginname>guest</loginname>
+			<firstname>jWebSocket Guest User</firstname>
+			<lastname>(Guest Role)</lastname>
+			<password>guest</password>
+			<description>jWebSocket Guest User</description>
+			<status>1</status>
+			<roles>
+				<role>Guest</role>
+			</roles>
+		</user>
+        
+		<user>
+			<uuid>000-000-002-2011-07-14-11-33-20-493</uuid>
+			<loginname>user</loginname>
+			<firstname>jWebSocket Authenticated User</firstname>
+			<lastname>(User Role)</lastname>
+			<password>user</password>
+			<description>jWebSocket Standard User</description>
+			<status>1</status>
+			<roles>
+				<role>Guest</role>
+				<role>User</role>
+			</roles>
+		</user>
+        
+		<user>
+			<uuid>000-000-003-2011-07-14-11-34-17-189</uuid>
+			<loginname>root</loginname>
+			<firstname>jWebSocket Root User</firstname>
+			<lastname>(Administrator Role)</lastname>
+			<password>root</password>
+			<description>jWebSocket Root User</description>
+			<status>1</status>
+			<roles>
+				<role>Guest</role>
+				<role>User</role>
+				<role>Administrator</role>
+			</roles>
+		</user>
+        
+		<user>
+			<uuid>000-000-004-2013-03-11-12-27-34-384</uuid>
+			<loginname>demo</loginname>
+			<firstname>jWebSocket Demo User</firstname>
+			<lastname>(Demo Role)</lastname>
+			<password>demo</password>
+			<description>jWebSocket Demo User</description>
+			<status>1</status>
+			<roles>
+				<role>Guest</role>
+				<role>User</role>
+				<role>Administrator</role>
+			</roles>
+		</user>
+        
+		<user>
+			<uuid>000-000-004-2011-07-14-11-35-54-871</uuid>
+			<loginname>anonymous</loginname>
+			<firstname>jWebSocket Anonymous User</firstname>
+			<lastname>(Roles to be specified!)</lastname>
+			<password></password>
+			<description>jWebSocket Anonymous User (Specify if anonymous logins should be supported at all in System Plug-in)</description>
+			<status>1</status>
+			<roles>
+				<role>Guest</role>
+			</roles>
+		</user>
+        
+	</users>
+
+	<!-- plug-ins to be instantiated for jWebSocket -->
+	<plugins>
+		<!-- the system plug-in, do not remove, mandatory for basic WebsScket communication operations -->
+		<plugin>
+			<name>org.jwebsocket.plugins.system.SystemPlugIn</name>
+			<ns>org.jwebsocket.plugins.system</ns>
+			<id>jws.system</id>
+			<jar>jWebSocketServer-1.0.jar</jar>
+			<!-- plug-in specific settings -->
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/SystemPlugIn/system.xml</setting>
+				
+				<!-- specify whether open, close, login, logout events should 
+				be broadcasted per default. To suppress these broadcasts
+				per events turn settings "on" here and optionally suppress
+				them per client command. -->
+				<setting key="broadcastOpenEvent">true</setting>
+				<setting key="broadcastCloseEvent">true</setting>
+				<setting key="broadcastLoginEvent">true</setting>
+				<setting key="broadcastLogoutEvent">true</setting>
+				<setting key="allowAnonymousLogin">true</setting>
+				<!-- this is the user name used for anonymous logins,
+				all anonymous users that just connect will get this user 
+				name and all roles and rights assigned to this user.
+				Hence, be careful with the roles and rights you assign to 
+				this user when you set allowAnonymousLogin to true -->
+				<setting key="anonymousLoginName">anonymous</setting>
+				<setting key="loginNameCaseInsensitive">true</setting>
+				<!-- if this flag is set to true all unknown users automatically 
+				are anonymous users. This means they required the optional 
+				anonymous password and they get the roles and rights from 
+				the anonymous user. -->
+				<setting key="allowAutoAnonymous">true</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+
+		<!-- plug-in to put multiple WebSocket Servers together to a cluster 
+			requires a message broker like Apache ActiveMQ as cluster backbone
+		-->
+		<plugin>
+			<name>org.jwebsocket.plugins.cluster.ClusterPlugIn</name>
+			<id>jws.cluster</id>
+			<ns>org.jwebsocket.plugins.cluster</ns>
+			<jar>jWebSocketClusterPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ClusterPlugIn/cluster_node1.xml</setting>
+			</settings>
+		</plugin>
+	</plugins>
+    
+	<!-- filters to be instantiated for jWebSocket -->
+	<filters>
+	</filters>
+
+</jWebSocket>

@@ -18,13 +18,15 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.cluster;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageProducer;
 import javax.jms.Session;
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
+import org.jwebsocket.packetProcessors.JSONProcessor;
+import org.jwebsocket.token.Token;
 
 /**
  *
@@ -33,17 +35,22 @@ import org.springframework.jms.core.MessageCreator;
 public class ClusterSender {
 
 	private static Logger mLog = Logging.getLogger();
-	private final JmsTemplate mJmsTemplate;
-	private String mCorrelationId;
+	private final MessageProducer mProducer;
+	private String mNodeId;
+	private Session mSession;
+	private Destination mDestination;
 
 	/**
 	 *
 	 * @param aJmsTemplate
-	 * @param aCorrelationId
+	 * @param aNodeId
 	 */
-	public ClusterSender(JmsTemplate aJmsTemplate, String aCorrelationId) {
-		mJmsTemplate = aJmsTemplate;
-		mCorrelationId = aCorrelationId;
+	public ClusterSender(Session aSession, MessageProducer aProducer,
+			Destination aDestination, String aNodeId) {
+		mSession = aSession;
+		mProducer = aProducer;
+		mDestination = aDestination;
+		mNodeId = aNodeId;
 	}
 
 	/**
@@ -51,29 +58,28 @@ public class ClusterSender {
 	 * @param aJSON
 	 */
 	public void send(final String aJSON) {
-		System.out.println("Sending JSON " + aJSON + "...");
-		mJmsTemplate.send(new MessageCreator() {
-			@Override
-			public Message createMessage(Session aSession) throws JMSException {
-				Message lMsg = aSession.createTextMessage(aJSON);
-				lMsg.setJMSCorrelationID(mCorrelationId);
-				return lMsg;
-			}
-		});
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Sending JSON '" + aJSON + "'...");
+		}
+		try {
+			Message lMsg = mSession.createTextMessage(aJSON);
+			lMsg.setJMSDestination(mDestination);
+			lMsg.setJMSCorrelationID(mNodeId);
+			mProducer.send(lMsg);
+		} catch (JMSException lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "sending JSON"));
+		}
+	}
+
+	public void sendToken(final Token aToken) {
+		String lJSON = JSONProcessor.tokenToPacket(aToken).getUTF8();
+		send(lJSON);
 	}
 
 	/**
-	 * @return the mJmsTemplate
+	 * @return the Nodeid
 	 */
-	public JmsTemplate getJmsTemplate() {
-		return mJmsTemplate;
+	public String getNodeId() {
+		return mNodeId;
 	}
-
-	/**
-	 * @return the mCorrelationId
-	 */
-	public String getCorrelationId() {
-		return mCorrelationId;
-	}
-
 }

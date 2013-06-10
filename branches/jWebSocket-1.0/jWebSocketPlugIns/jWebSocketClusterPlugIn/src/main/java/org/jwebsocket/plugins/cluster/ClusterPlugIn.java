@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.cluster;
 
-import java.util.UUID;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
@@ -31,11 +30,13 @@ import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -54,12 +55,10 @@ public class ClusterPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket ClusterPlugIn - Community Edition";
-	// private JmsTemplate mJMSTemplate = null;
-	// private DefaultMessageListenerContainer mJms2JwsListenerCont = null;
-	// private DefaultMessageListenerContainer mAdvisoryListenerCont = null;
 	private ActiveMQConnectionFactory mConnectionFactory;
-	private ClusterSender mSender;
-	private String mCorrelationID = UUID.randomUUID().toString();
+	private Topic mClusterTopic;
+	private Topic mAdvisoryTopic;
+	private ClusterSender mClusterSender;
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 
@@ -96,25 +95,45 @@ public class ClusterPlugIn extends TokenPlugIn {
 				Connection lConnection = mConnectionFactory.createConnection();
 				Session lSession = lConnection.createSession(false,
 						Session.AUTO_ACKNOWLEDGE);
-
-				// create listener 
-				Topic lSubTopic = lSession.createTopic("org.jwebsocket.cluster.sub");
-				MessageConsumer lConsumer = lSession.createConsumer(lSubTopic, "JMSCorrelationID = '" + mCorrelationID + "'");
-				ClusterListener lListener = new ClusterListener();
-				lListener.setSender(mSender);
-				lConsumer.setMessageListener(lListener);
-
-				// create sender
-				Topic lPubTopic = lSession.createTopic("org.jwebsocket.cluster.pub");
-				MessageProducer lProducer = lSession.createProducer(lPubTopic);
-				// lProducer.
-
+				// connect to message broker
 				lConnection.start();
-			} catch (JMSException exp) {
-			}
 
-			if (mLog.isInfoEnabled()) {
-				mLog.info("Cluster plug-in successfully instantiated.");
+				String lNodeId = mSettings.getNodeId();
+
+				mClusterTopic = lSession.createTopic(mSettings.getClusterTopic());
+				mAdvisoryTopic = lSession.createTopic(mSettings.getAdvisoryTopic());
+
+				// create advisory consumer
+				// used to listen to the advisory messages from ActiveMQ
+				MessageConsumer lAdvisoryConsumer = lSession.createConsumer(mAdvisoryTopic);
+				ClusterAdvisoryListener lAdvisoryListener = new ClusterAdvisoryListener();
+				lAdvisoryConsumer.setMessageListener(lAdvisoryListener);
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Cluster advisory listener successfully allocated.");
+				}
+
+				// create producer
+				// used to send the messages to the other nodes
+				MessageProducer lProducer = lSession.createProducer(mClusterTopic);
+				mClusterSender = new ClusterSender(lSession, lProducer, mClusterTopic, lNodeId);
+
+				// create message consumer
+				// used to listen to the messages from the other cluster nodes
+				String lSelector = "JMSCorrelationID = '" + lNodeId + "'";
+				MessageConsumer lConsumer = lSession.createConsumer(mClusterTopic, lSelector);
+				ClusterListener lListener = new ClusterListener(mClusterSender);
+				lConsumer.setMessageListener(lListener);
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Cluster listener successfully allocated.");
+				}
+
+				// broadcast status request from other nodes
+				Token lToken = TokenFactory.createToken("ojc", "register");
+				lToken.setString("sourceId", lNodeId);
+				mClusterSender.sendToken(lToken);
+
+			} catch (JMSException lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating cluster plug-in"));
 			}
 		}
 	}
@@ -152,6 +171,26 @@ public class ClusterPlugIn extends TokenPlugIn {
 	@Override
 	public String getNamespace() {
 		return NS_CLUSTER;
+	}
+
+	@Override
+	public void connectorStarted(WebSocketConnector aConnector) {
+		// a new client connected to this node
+		// so inform the other nodes about this event
+		mClusterSender.send(
+				"{\"ns\":\"ojc\""
+				+ ",\"type\":\"connected\""
+				+ ",\"sourceId\":\"" + mSettings.getNodeId() + "\""
+				+ ",\"clientIds\":[]}");
+	}
+
+	@Override
+	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+		mClusterSender.send(
+				"{\"ns\":\"ojc\""
+				+ ",\"type\":\"disconnected\""
+				+ ",\"sourceId\":\"" + mSettings.getNodeId() + "\""
+				+ ",\"clientIds\":[]}");
 	}
 
 	@Override

@@ -5,8 +5,8 @@
 	<bean id="org.jwebsocket.plugins.cluster.settings" class="org.jwebsocket.plugins.cluster.Settings">
 		<!-- use this broker, e.g. failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100 -->
 		<property name="brokerURI" value=""/>
-		<property name="subTopic" value=""/>
-		<property name="pubTopic" value=""/>
+		<property name="clusterTopic" value="org.jwebsocket.cluster"/>
+		<property name="advisoryTopic" value="org.jwebsocket.cluster"/>
 		<!-- use id for this node in the cluster -->
 		<property name="nodeId" value="n1"/>
 		<!-- add these nodes to the cluster -->
