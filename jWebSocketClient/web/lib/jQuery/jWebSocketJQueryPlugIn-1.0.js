@@ -208,7 +208,7 @@
 			if (lRes.code !== 0) {
 				jws.console.log(lRes.msg);
 			} else {
-				$.jws.trigger('close', aToken);
+				$.jws.trigger('close', lRes);
 			}
 		} catch (aException) {
 			jws.console.log(aException);
