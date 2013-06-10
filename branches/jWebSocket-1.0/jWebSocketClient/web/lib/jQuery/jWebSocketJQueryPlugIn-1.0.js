@@ -200,7 +200,19 @@
 	//:a:en::::none
 	//:r:*::void:none
 	$.jws.close = function() {
-		this.fTokenClient.close();
+		try {
+			var lRes = this.fTokenClient.close({
+				timeout: jws.DEF_RESP_TIMEOUT
+			});
+
+			if (lRes.code !== 0) {
+				jws.console.log(lRes.msg);
+			} else {
+				$.jws.trigger('close', aToken);
+			}
+		} catch (aException) {
+			jws.console.log(aException);
+		}
 	};
 
 	//:m:*:setTokenClient
