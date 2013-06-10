@@ -197,28 +197,28 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	public void engineStarted(WebSocketEngine aEngine) {
 		super.engineStarted(aEngine);
 
-		List<Object> aArgs = new ArrayList();
-		aArgs.add(aEngine);
+		List<Object> lArgs = new ArrayList();
+		lArgs.add(aEngine);
 
-		notifyToApps(BaseScriptApp.EVENT_ENGINE_STARTED, aArgs.toArray());
+		notifyToApps(BaseScriptApp.EVENT_ENGINE_STARTED, lArgs.toArray());
 	}
 
 	@Override
 	public void engineStopped(WebSocketEngine aEngine) {
 		super.engineStopped(aEngine);
 
-		List<Object> aArgs = new ArrayList();
-		aArgs.add(aEngine);
+		List<Object> lArgs = new ArrayList();
+		lArgs.add(aEngine);
 
-		notifyToApps(BaseScriptApp.EVENT_ENGINE_STOPPED, aArgs.toArray());
+		notifyToApps(BaseScriptApp.EVENT_ENGINE_STOPPED, lArgs.toArray());
 	}
 
 	@Override
 	public void processLogon(WebSocketConnector aConnector) {
-		List<Object> aArgs = new ArrayList();
-		aArgs.add(aConnector);
+		List<Object> lArgs = new ArrayList();
+		lArgs.add(aConnector);
 
-		notifyToApps(BaseScriptApp.EVENT_LOGON, aArgs.toArray());
+		notifyToApps(BaseScriptApp.EVENT_LOGON, lArgs.toArray());
 	}
 
 	void notifyToApps(String aEventName, Object[] aArgs) {
@@ -229,43 +229,43 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 	@Override
 	public void processLogoff(WebSocketConnector aConnector) {
-		List<Object> aArgs = new ArrayList();
-		aArgs.add(aConnector);
+		List<Object> lArgs = new ArrayList();
+		lArgs.add(aConnector);
 
-		notifyToApps(BaseScriptApp.EVENT_LOGOFF, aArgs.toArray());
+		notifyToApps(BaseScriptApp.EVENT_LOGOFF, lArgs.toArray());
 	}
 
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
-		List<Object> aArgs = new ArrayList();
-		aArgs.add(aConnector);
+		List<Object> lArgs = new ArrayList();
+		lArgs.add(aConnector);
 
-		notifyToApps(BaseScriptApp.EVENT_CONNECTOR_STARTED, aArgs.toArray());
+		notifyToApps(BaseScriptApp.EVENT_CONNECTOR_STARTED, lArgs.toArray());
 	}
 
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
-		List<Object> aArgs = new ArrayList();
-		aArgs.add(aConnector);
-		aArgs.add(aCloseReason);
+		List<Object> lArgs = new ArrayList();
+		lArgs.add(aConnector);
+		lArgs.add(aCloseReason);
 
-		notifyToApps(BaseScriptApp.EVENT_CONNECTOR_STOPPED, aArgs.toArray());
+		notifyToApps(BaseScriptApp.EVENT_CONNECTOR_STOPPED, lArgs.toArray());
 	}
 
 	@Override
 	public void sessionStarted(WebSocketConnector aConnector, WebSocketSession aSession) {
-		List<Object> aArgs = new ArrayList();
-		aArgs.add(aConnector);
+		List<Object> lArgs = new ArrayList();
+		lArgs.add(aConnector);
 
-		notifyToApps(BaseScriptApp.EVENT_SESSION_STARTED, aArgs.toArray());
+		notifyToApps(BaseScriptApp.EVENT_SESSION_STARTED, lArgs.toArray());
 	}
 
 	@Override
 	public void sessionStopped(WebSocketSession aSession) {
-		List<Object> aArgs = new ArrayList();
-		aArgs.add(aSession);
+		List<Object> lArgs = new ArrayList();
+		lArgs.add(aSession);
 
-		notifyToApps(BaseScriptApp.EVENT_SESSION_STOPPED, aArgs.toArray());
+		notifyToApps(BaseScriptApp.EVENT_SESSION_STOPPED, lArgs.toArray());
 	}
 
 	@Override
@@ -293,12 +293,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		Assert.notNull(lApp, "The 'app' argument cannot be null!");
 		Assert.isTrue(mSettings.getApps().containsKey(lApp), "The target application '" + lApp + "' does not exists!");
 
-		List<Object> aArgs = new ArrayList();
-		aArgs.add(aConnector);
-		aArgs.add(aToken.getMap());
+		List<Object> lArgs = new ArrayList();
+		lArgs.add(aConnector);
+		lArgs.add(aToken.getMap());
 
-		mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_FILTER_IN, aArgs.toArray());
-		mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_TOKEN, aArgs.toArray());
+		mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_FILTER_IN, lArgs.toArray());
+		mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_TOKEN, lArgs.toArray());
 	}
 
 	@Role(name = NS + ".reloadApp")
@@ -319,29 +319,41 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	public void callMethodAction(WebSocketConnector aConnector, Token aToken) throws Exception {
-		String aApp = aToken.getString("app");
-		String aObjectId = aToken.getString("objectId");
-		String aMethod = aToken.getString("method");
-		List<Object> aArgs = aToken.getList("args", new ArrayList());
-		aArgs.add(aConnector);
+		String lApp = aToken.getString("app");
+		String lObjectId = aToken.getString("objectId");
+		String lMethod = aToken.getString("method");
+
+		List<Object> lArgs = aToken.getList("args", new ArrayList());
+		lArgs.add(aConnector);
+
+		Assert.notNull(lApp, "The 'app' argument cannot be null!");
+		Assert.isTrue(mSettings.getApps().containsKey(lApp), "The target application '" + lApp + "' does not exists!");
+		BaseScriptApp lScript = mApps.get(lApp);
+
+		// notify filter in
+		lScript.notifyEvent(BaseScriptApp.EVENT_FILTER_IN, new Object[]{aConnector, aToken});
+
 		long lStartTime = System.currentTimeMillis();
-		Object lResult = callMethod(aApp, aObjectId, aMethod, aArgs.toArray());
+		Object lResult = callMethod(lApp, lObjectId, lMethod, lArgs.toArray());
 		long lEndTime = System.currentTimeMillis();
 
 		Token lResponse = createResponse(aToken);
 		lResponse.getMap().put("result", lResult);
 		lResponse.getMap().put("processingTime", lEndTime - lStartTime);
 
+		// notify filter out
+		lScript.notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, lResponse});
+
 		sendToken(aConnector, lResponse);
 	}
 
 	public void getVersionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
-		String aApp = aToken.getString("app");
-		BaseScriptApp lApp = mApps.get(aApp);
-		Assert.notNull(lApp, "The target app does not exists!");
+		String lApp = aToken.getString("app");
+		BaseScriptApp lScriptApp = mApps.get(lApp);
+		Assert.notNull(lScriptApp, "The target app does not exists!");
 
 		Token lResponse = createResponse(aToken);
-		lResponse.setString("version", lApp.getVersion());
+		lResponse.setString("version", lScriptApp.getVersion());
 
 		sendToken(aConnector, lResponse);
 	}
