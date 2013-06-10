@@ -177,20 +177,24 @@ public class ClusterPlugIn extends TokenPlugIn {
 	public void connectorStarted(WebSocketConnector aConnector) {
 		// a new client connected to this node
 		// so inform the other nodes about this event
-		mClusterSender.send(
-				"{\"ns\":\"ojc\""
-				+ ",\"type\":\"connected\""
-				+ ",\"sourceId\":\"" + mSettings.getNodeId() + "\""
-				+ ",\"clientIds\":[]}");
+		if (null != mClusterSender) {
+			mClusterSender.send(
+					"{\"ns\":\"ojc\""
+					+ ",\"type\":\"connected\""
+					+ ",\"sourceId\":\"" + mSettings.getNodeId() + "\""
+					+ ",\"clientIds\":[]}");
+		}
 	}
 
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
-		mClusterSender.send(
-				"{\"ns\":\"ojc\""
-				+ ",\"type\":\"disconnected\""
-				+ ",\"sourceId\":\"" + mSettings.getNodeId() + "\""
-				+ ",\"clientIds\":[]}");
+		if (null != mClusterSender) {
+			mClusterSender.send(
+					"{\"ns\":\"ojc\""
+					+ ",\"type\":\"disconnected\""
+					+ ",\"sourceId\":\"" + mSettings.getNodeId() + "\""
+					+ ",\"clientIds\":[]}");
+		}
 	}
 
 	@Override

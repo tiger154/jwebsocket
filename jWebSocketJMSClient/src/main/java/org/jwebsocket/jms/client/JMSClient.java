@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - JMSClient (Community Edition, CE)
+//  jWebSocket - JMS Client (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -25,97 +25,84 @@ package org.jwebsocket.jms.client;
 import java.util.UUID;
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.Topic;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
-public class JMSClient implements Runnable {
+public class JMSClient {
 
-	private JmsTemplate mJMSTemplate;
-	private DefaultMessageListenerContainer mBridgeListenerCont = null;
 	private String mCorrelationID = UUID.randomUUID().toString();
 	private JMSClientSender mSender = null;
 	private ActiveMQConnectionFactory mConnectionFactory;
+	private boolean mShutDown = false;
+	private Connection mConnection;
+
+	public JMSClient(String aBrokerURI, String aConsumerTopic,
+			String aProducerTopic) {
+		mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
+		try {
+			mConnection = mConnectionFactory.createConnection();
+			Session lSession = mConnection.createSession(false,
+					Session.AUTO_ACKNOWLEDGE);
+			mConnection.start();
+
+			Topic lProducerTopic = lSession.createTopic(aProducerTopic);
+			MessageProducer lProducer = lSession.createProducer(lProducerTopic);
+			mSender = new JMSClientSender(lSession, lProducer, mCorrelationID);
+
+			Topic lConsumerTopic = lSession.createTopic(aConsumerTopic);
+			MessageConsumer lConsumer = lSession.createConsumer(
+					lConsumerTopic,
+					"JMSCorrelationID = '" + mCorrelationID + "'");
+			JMSClientListener lListener = new JMSClientListener(mSender);
+			lConsumer.setMessageListener(lListener);
+			mSender.send("{\"ns\":\"org.jwebsocket.jms.bridge\""
+					+ ",\"type\":\"register\""
+					+ ",\"sourceId\":\"" + mCorrelationID + "\""
+					+ "}");
+		} catch (JMSException lEx) {
+			System.out.println(lEx.getClass().getSimpleName() 
+					+ "on connecting JMS client.");
+		}
+	}
+
+	public boolean isShutDown() {
+		return mShutDown;
+	}
+
+	public void shutDown() {
+		// clean the garbage
+		if (null != mConnection) {
+			try {
+				mConnection.stop();
+			} catch (JMSException lEx) {
+			}
+		}
+		// to end potential console loops
+		mShutDown = true;
+	}
 
 	public static void main(String[] aArgs) {
-		new JMSClient().run();
-	}
+		// instantiate JMS client
+		JMSClient lJMSClient = new JMSClient(
+				"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false",
+				"org.jwebsocket.jws2jms", // consumer topic
+				"org.jwebsocket.jms2jws" // producer topic
+				);
 
-	public JMSClient() {
-		mJMSTemplate = new JmsTemplate();
-		mConnectionFactory = new ActiveMQConnectionFactory(
-				"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false");
-		mJMSTemplate.setConnectionFactory(mConnectionFactory);
-		mJMSTemplate.setDefaultDestinationName("org.jwebsocket.jms2jws");
-		mJMSTemplate.setDeliveryPersistent(false);
-		mJMSTemplate.setPubSubDomain(true);
-		mJMSTemplate.setSessionTransacted(false);
-
-		mSender = new JMSClientSender(mJMSTemplate, mCorrelationID);
-
-		/*
-		 FileSystemXmlApplicationContext lFileCtx =
-		 new FileSystemXmlApplicationContext("jms_client.xml");
-		 mBridgeListenerCont =
-		 (DefaultMessageListenerContainer) lFileCtx.getBean("jws2jmsListenerContainer");
-		 JMSClientListener lListener = (JMSClientListener) mBridgeListenerCont.getMessageListener();
-		 lListener.setSender(mSender);
-		 mBridgeListenerCont.start();
-		 */
-		
+		// this is a console app 
+		// so wait in a thread loop until the client get shut down
 		try {
-			Connection lConnection = mConnectionFactory.createConnection();
-			Session lSession = lConnection.createSession(false,
-					Session.AUTO_ACKNOWLEDGE);
-			Topic lTopic = lSession.createTopic("org.jwebsocket.jws2jms");
-			MessageConsumer lConsumer = lSession.createConsumer(lTopic, "JMSCorrelationID = '" + mCorrelationID + "'");
-			JMSClientListener lListener = new JMSClientListener();
-			lListener.setSender(mSender);
-			lConsumer.setMessageListener(lListener);
-			lConnection.start();
-		} catch (JMSException exp) {
-		}
-
-	}
-
-	@Override
-	public void run() {
-		System.out.println("Connected, id: " + mCorrelationID);
-		try {
-			int lIdx = 0;
-			while (lIdx < 2000) {
-				Thread.sleep(2000L);
-				lIdx++;
-				mBroadcast();
+			while (!lJMSClient.isShutDown()) {
+				Thread.sleep(1000);
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		} catch (InterruptedException lEx) {
 		}
 
 		System.out.println("Disconnecting JMS client...");
-		if (null != mBridgeListenerCont) {
-			mBridgeListenerCont.shutdown();
-		}
-
+		lJMSClient.shutDown();
 		System.out.println("Disconnected JMS client.");
-		System.out.println("Terminating app.");
-	}
-
-	private void mBroadcast() {
-		final String lJSON = "{\"ns\":\"org.jwebsocket.plugins.system\",\"type\":\"broadcast\",\"timestamp\":" + System.currentTimeMillis() + ",\"data\":\"test\"}";
-		System.out.println("Sending broadcast " + lJSON);
-		mJMSTemplate.send(new MessageCreator() {
-			@Override
-			public Message createMessage(Session aSession) throws JMSException {
-				Message lMsg = aSession.createTextMessage(lJSON);
-				lMsg.setJMSCorrelationID(mCorrelationID);
-				return lMsg;
-			}
-		});
 	}
 }

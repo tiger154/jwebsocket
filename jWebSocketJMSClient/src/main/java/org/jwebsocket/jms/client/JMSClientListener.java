@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - JMSClientListener (Community Edition, CE)
+//  jWebSocket - JMS Client Listener (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -32,10 +32,15 @@ import org.jwebsocket.token.Token;
 class JMSClientListener implements MessageListener {
 
 	private JMSClientSender mSender = null;
+
+	public JMSClientListener(JMSClientSender aSender) {
+		mSender = aSender;
+	}
 	
 	@Override
 	public void onMessage(Message aMsg) {
 		ActiveMQTextMessage lMQMsg = (ActiveMQTextMessage) aMsg;
+		System.out.println("###### " + aMsg);
 		try {
 			String lJSON = lMQMsg.getText();
 			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
@@ -80,7 +85,7 @@ class JMSClientListener implements MessageListener {
 						System.out.println("Log-in failure: " + lMsg);
 					}
 				} else if ("broadcast".equals(lType)) {
-					System.out.println("Received braodcast: " + lJSON);
+					System.out.println("Received broadcast: " + lJSON);
 				} else {
 					System.out.println("Unknown system command: " + lJSON);
 				}
@@ -100,20 +105,6 @@ class JMSClientListener implements MessageListener {
 		} catch (JMSException lEx) {
 			System.out.println("Exception: " + lEx.getMessage());
 		}
-	}
-
-	/**
-	 * @return the mSender
-	 */
-	public JMSClientSender getSender() {
-		return mSender;
-	}
-
-	/**
-	 * @param mSender the mSender to set
-	 */
-	public void setSender(JMSClientSender mSender) {
-		this.mSender = mSender;
 	}
 
 }

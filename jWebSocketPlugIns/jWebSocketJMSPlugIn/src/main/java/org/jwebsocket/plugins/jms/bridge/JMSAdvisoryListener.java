@@ -45,7 +45,6 @@ public class JMSAdvisoryListener implements MessageListener {
 	private static Logger mLog = Logging.getLogger();
 	private JMSEngine mEngine = null;
 	private JmsTemplate mJMSTemplate = null;
-	private int mRemotePort = 1;
 	private Map<String, String> mCorrelations = new FastMap<String, String>();
 
 	@Override
@@ -70,15 +69,20 @@ public class JMSAdvisoryListener implements MessageListener {
 						int lStart = lCorrelationId.indexOf("'");
 						int lEnd = lCorrelationId.indexOf("'", lStart + 1);
 						lCorrelationId = lCorrelationId.substring(lStart + 1, lEnd);
-					}	
+					}
 
 					mCorrelations.put(lConnectionId, lCorrelationId);
-					WebSocketConnector lConnector = new JMSConnector(mEngine, mJMSTemplate, lCorrelationId, lCorrelationId);
+					WebSocketConnector lConnector = new JMSConnector(mEngine,
+							mJMSTemplate, lCorrelationId, lCorrelationId);
 					mEngine.addConnector(lConnector);
 
 					mLog.info("JMS client connected, connector '"
-							+ lConnectionId + "' added to JMSEngine, correlation-id: '" + lCorrelationId + "'.");
-					Token lToken = TokenFactory.createToken("org.jwebsocket.jms.bridge", "welcome");
+							+ lConnectionId 
+							+ "' added to JMSEngine, correlation-id: '" 
+							+ lCorrelationId + "'.");
+					Token lToken = TokenFactory.createToken(
+							"org.jwebsocket.jms.bridge",
+							"welcome");
 					lConnector.sendPacket(JSONProcessor.tokenToPacket(lToken));
 
 				} else if (lDataStructure instanceof RemoveInfo) {

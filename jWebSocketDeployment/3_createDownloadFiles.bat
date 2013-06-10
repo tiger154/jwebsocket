@@ -1,4 +1,8 @@
 @echo off
+echo -------------------------------------------------------------------------
+echo jWebSocket Packager 
+echo (C) Copyright 2013 Innotrade GmbH
+echo -------------------------------------------------------------------------
 
 if "%JWEBSOCKET_HOME%"=="" goto error
 if "%JWEBSOCKET_VER%"=="" goto error
@@ -34,11 +38,13 @@ set libsEE=%homeEE%libs\
 set depl=..\jWebSocketDeployment\jWebSocket\
 set down=..\..\..\downloads\jWebSocket-%ver%\
 
-rem goto appserver
+rem goto server
 
 
 :cleanup
-echo removing obsolete development logfile from packages...
+echo -------------------------------------------------------------------------
+echo Removing obsolete development logfile from packages...
+echo -------------------------------------------------------------------------
 del %logs%*.log
 echo cleaning up temporary work files...
 del /p /s %src%*.?.nblh~
@@ -49,8 +55,9 @@ echo cloning jWebSocket.ks KeyStore to Jetty Project /conf folder
 copy "%conf%/jWebSocket.ks" "%src%jWebSocketJetty/conf"
 
 
-rem --- jWebSocket full sources
-
+echo -------------------------------------------------------------------------
+echo Packaging full sources...
+echo -------------------------------------------------------------------------
 set base=..\..\..\..\
 set sc=jWebSocketDev\branches\jWebSocket-%ver%\
 set rt=jWebSocketDev\rte\jWebSocket-%ver%\
@@ -63,14 +70,13 @@ rem Source Code Modules
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketActiveMQStockTicker" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAndroid" -xr!target -xr!.svn -xr!build -xr!bin -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketAppSrvDemo" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketWebAppDemo" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketBlackBerry" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketClient" -xr!target -xr!devguide -xr!quickguide -xr!javadocs -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketClientAPI" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketCommon" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketCSClient" -xr!.svn -xr!Client.exe -xr!ClientLibrary.dll -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketDevTemplate" -xr!.svn -xr!*.tmp* -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketEngines" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
-7z u -mx9 -tzip "%dest%" "%sc%jWebSocketDeployment" -xr!.svn -xr!*.tmp* -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJavaME" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJavaMEClient" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketJavaSEClient" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
@@ -81,6 +87,7 @@ rem Source Code Modules
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketServer" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketServerAPI" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 7z u -mx9 -tzip "%dest%" "%sc%jWebSocketSwingGUI" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
+7z u -mx9 -tzip "%dest%" "%sc%jWebSocketWebAppDemo" -xr!target -xr!.svn -xr!dist -xr!build -xr!.DS_Store
 
 rem Shared, Demo, Data and Vendor Modules
 7z u -mx9 -tzip "%dest%" "%sc%arduino" -xr!.svn -xr!.DS_Store
@@ -92,7 +99,8 @@ rem Maven Control files
 7z u -mx9 -tzip "%dest%" "%sc%pom.xml
 
 rem Run Time Modules
-7z u -mx9 -tzip "%dest%" "%rt%" -xr!.svn -xr!*.tmp* -xr!*.jasper* -xr!*.war -xr!cache -xr!logs -xr!mails -xr!temp -xr!jWebSocketServer-Bundle-%ver%.jar -xr!jWebSocketReportingPlugIn-Bundle.jar
+7z u -mx9 -tzip "%dest%" "%rt%" -xr!.svn -xr!*.tmp* -xr!*.jasper* -xr!*.war -xr!cache -xr!logs -xr!mails -xr!temp -xr!database -xr!jWebSocketServer-Bundle-%ver%.jar -xr!jWebSocketReportingPlugIn-Bundle.jar
+7z u -mx9 -tzip "%dest%" "%rt%"database/readme.txt
 popd
 
 rem goto end
@@ -100,7 +108,9 @@ rem goto end
 
 :server
 
-rem ---  jWebSocket Server 
+echo -------------------------------------------------------------------------
+echo Packaging server.zip...
+echo -------------------------------------------------------------------------
 set tempDir=%down%jWebSocket-%ver%\
 set dest=%down%jWebSocketServer-%ver%.zip
 if exist %dest% del %dest%
@@ -181,7 +191,6 @@ rem enterprise editions
 xcopy %libsEE%jWebSocketFileSystemPlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libsEE%jWebSocketItemStoragePlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
 
-
 rem jWebSocket config and keystore files (from v1.0) for SSL
 xcopy %conf%jWebSocket.xml %tempdir%conf\ /s /i /y
 rem jWebSocket development config file
@@ -192,6 +201,7 @@ xcopy %conf%jWebSocket.key %tempdir%conf\ /s /i /y
 xcopy %conf%jWebSocket.csr %tempdir%conf\ /s /i /y
 xcopy %conf%jWebSocket.crt %tempdir%conf\ /s /i /y
 xcopy %conf%jWebSocket.pkcs12 %tempdir%conf\ /s /i /y
+xcopy %conf%jWebSocket.policy %tempdir%conf\ /s /i /y
 xcopy %conf%openssl.cnf %tempdir%conf\ /s /i /y
 xcopy %conf%createKeyStore.bat %tempdir%conf\ /s /i /y
 xcopy %conf%createSelfSignedCert.bat %tempdir%conf\ /s /i /y
@@ -250,6 +260,9 @@ rem goto end
 
 :serverbundle
 
+echo -------------------------------------------------------------------------
+echo Packaging server_bundle...
+echo -------------------------------------------------------------------------
 set dest=%down%jWebSocketServer-Bundle-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketServer-Bundle-%ver%.jar"
@@ -265,24 +278,12 @@ rem spring config files (from v1.0)
 rem goto end
 
 
-:tomcatbundle
-
-rem ignore this for now
-goto winexe
-
-set tcver=7.0.27
-set dest=%down%tomcat-jwebsocket-bundle-%tcver%.zip
-if exist "%dest%" del "%dest%"
-7z u -mx9 -r -tzip "%dest%" "%libs%tomcat-jwebsocket-bundle-%tcver%.jar"
-7z u -mx9 -r -tzip "%dest%" "%depl%ReadMe_TomcatBundle.txt"
-
-rem goto end
-
-
 :winexe
 
-rem --- jWebSocket Windows Executable
-set dest=%down%jWebSocketServer-%ver%.zip
+echo -------------------------------------------------------------------------
+echo Packaging Windows Executables and Services...
+echo -------------------------------------------------------------------------
+set dest=%down%jWebSocketWindows-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketServer32.exe"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketAdmin32.exe"
@@ -291,14 +292,6 @@ if exist "%dest%" del "%dest%"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketAdmin64.exe"
 7z u -mx9 -tzip "%dest%" "%depl%ReadMe_Server64.txt"
 
-rem goto end
-
-
-:winservice
-
-rem --- jWebSocket Windows Service
-set dest=%down%jWebSocketService-%ver%.zip
-if exist "%dest%" del "%dest%"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketService32.exe"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketInstallService32.bat"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketUninstallService32.bat"
@@ -313,8 +306,10 @@ rem goto end
 
 :jms_stock_ticker
 
-rem ---  jWebSocket JMS/ApacheMQ Stock Ticker 
-set dest=%down%jWebSocketJMSStockTicker-%ver%.zip
+echo -------------------------------------------------------------------------
+echo Packaging AMQ Stock Ticker...
+echo -------------------------------------------------------------------------
+set dest=%down%jWebSocketAMQStockTicker-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketAMQStockTicker.bat"
 7z u -mx9 -tzip "%dest%" "%bin%jWebSocketAMQStockTickerService32.exe"
@@ -331,7 +326,9 @@ rem goto end
 
 :client
 
-rem --- jWebSocket Client (website as zip archive)
+echo -------------------------------------------------------------------------
+echo Packaging jWebSocket Client...
+echo -------------------------------------------------------------------------
 echo on
 pushd ..\jWebSocketClient
 move web jWebSocketClient-%ver%
@@ -381,6 +378,9 @@ rem goto end
 
 :proxy
 
+echo -------------------------------------------------------------------------
+echo Packaging Proxy...
+echo -------------------------------------------------------------------------
 set dest=%down%jWebSocketProxy-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -r -tzip "%dest%" "%libs%jWebSocketProxy-%ver%.jar"
@@ -391,6 +391,9 @@ rem goto end
 
 :android_demo
 
+echo -------------------------------------------------------------------------
+echo Packaging Android Demo...
+echo -------------------------------------------------------------------------
 set android_base=..\jWebSocketAndroid\
 set android_demo=%android_base%jWebSocketAndroidDemo\
 set dest=%down%jWebSocketAndroidDemo-%ver%.zip
@@ -404,6 +407,9 @@ rem goto end
 
 :package
 
+echo -------------------------------------------------------------------------
+echo Packaging complete package...
+echo -------------------------------------------------------------------------
 set dest=%down%jWebSocket-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -r -tzip "%dest%" "%down%jWebSocketAndroidDemo-%JWEBSOCKET_VER%.zip"
