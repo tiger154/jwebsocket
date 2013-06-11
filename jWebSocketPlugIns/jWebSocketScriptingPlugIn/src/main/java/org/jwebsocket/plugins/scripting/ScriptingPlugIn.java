@@ -19,7 +19,6 @@
 package org.jwebsocket.plugins.scripting;
 
 import java.io.File;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.scripting.app.BaseScriptApp;
 import org.jwebsocket.plugins.scripting.app.js.JavaScriptApp;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 

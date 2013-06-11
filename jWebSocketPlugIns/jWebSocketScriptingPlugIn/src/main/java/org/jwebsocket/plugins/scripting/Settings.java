@@ -33,32 +33,54 @@ import org.springframework.util.Assert;
  */
 public class Settings {
 
-    File mAppsDirectory;
+    // applications directory 
+    private File mAppsDirectory;
 
+    /**
+     * Gets the map representation <app name, app absolute path> of the apps
+     * directory.
+     *
+     * @return
+     */
     public Map<String, String> getApps() {
         Map<String, String> lApps = new HashMap<String, String>();
         File[] lFiles = mAppsDirectory.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
-        for (File lF : lFiles){
+        for (File lF : lFiles) {
             lApps.put(lF.getName(), lF.getAbsolutePath());
         }
-        
+
         return lApps;
     }
     private String mAppsDirectoryPath;
 
+    /**
+     * Gets the applications directory path.
+     *
+     * @return
+     */
     public String getAppsDirectory() {
         return mAppsDirectoryPath;
     }
 
+    /**
+     * Sets the applications directory path.
+     *
+     * @param mAppsDirectoryPath
+     */
     public void setAppsDirectory(String mAppsDirectoryPath) {
         this.mAppsDirectoryPath = mAppsDirectoryPath;
     }
 
+    /**
+     * Initialize apps directory checkings.
+     *
+     * @throws Exception
+     */
     public void initialize() throws Exception {
         File lDirectory = new File(Tools.expandEnvVarsAndProps(mAppsDirectoryPath));
         Assert.isTrue(lDirectory.isDirectory(), "The applications directory path does not exists!"
-                + " Please check directory path and permissions.");
-        Assert.isTrue(lDirectory.canWrite(), "The ScriptingPlugIn requires WRITE permissions in the applications directory!");
+                + " Please check directory path or access permissions.");
+        Assert.isTrue(lDirectory.canWrite(), "The Scripting plug-in requires WRITE permissions in the applications directory!");
 
         mAppsDirectory = lDirectory;
     }
