@@ -18,8 +18,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.scripting;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.util.HashMap;
 import java.util.Map;
-import javolution.util.FastMap;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.jwebsocket.util.Tools;
+import org.springframework.util.Assert;
 
 /**
  *
@@ -28,28 +33,33 @@ import javolution.util.FastMap;
  */
 public class Settings {
 
-	private Map<String, String> mJavaScript = new FastMap<String, String>().shared();
-	private Map<String, String> mApps = new FastMap<String, String>().shared();
+    File mAppsDirectory;
 
-	public Map<String, String> getApps() {
-		return mApps;
-	}
+    public Map<String, String> getApps() {
+        Map<String, String> lApps = new HashMap<String, String>();
+        File[] lFiles = mAppsDirectory.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
+        for (File lF : lFiles){
+            lApps.put(lF.getName(), lF.getAbsolutePath());
+        }
+        
+        return lApps;
+    }
+    private String mAppsDirectoryPath;
 
-	public void setApps(Map<String, String> aMaps) {
-		mApps.putAll(aMaps);
-	}
+    public String getAppsDirectory() {
+        return mAppsDirectoryPath;
+    }
 
-	/**
-	 * @return the aliases
-	 */
-	public Map getJavascript() {
-		return mJavaScript;
-	}
+    public void setAppsDirectory(String mAppsDirectoryPath) {
+        this.mAppsDirectoryPath = mAppsDirectoryPath;
+    }
 
-	/**
-	 * @param aJavaScripts
-	 */
-	public void setJavascript(Map aJavaScripts) {
-		mJavaScript.putAll(aJavaScripts);
-	}
+    public void initialize() throws Exception {
+        File lDirectory = new File(Tools.expandEnvVarsAndProps(mAppsDirectoryPath));
+        Assert.isTrue(lDirectory.isDirectory(), "The applications directory path does not exists!"
+                + " Please check directory path and permissions.");
+        Assert.isTrue(lDirectory.canWrite(), "The ScriptingPlugIn requires WRITE permissions in the applications directory!");
+
+        mAppsDirectory = lDirectory;
+    }
 }
