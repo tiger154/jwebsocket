@@ -104,7 +104,7 @@ var lDisconnect = function(aTargetUser, aConnector) {
 	});
 };
 
-var sendText = function(aTargetUser, aText, aConnector){
+var lSendText = function(aTargetUser, aText, aConnector){
 	App.getLogger().debug("Processing sendText...");
 
 	App.assertTrue(lClients.containsKey(aConnector.getUsername()), "The client should register first!");
@@ -125,6 +125,6 @@ App.publish("Main", {
 	accept: lAcceptConnect,
 	disconnect: lDisconnect,
 	getClients: lGetAppClients,
-	sendText: sendText,
+	sendText: lSendText,
 	broadcast: lBroadcast
 });
