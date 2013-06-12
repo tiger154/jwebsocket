@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
-	<bean id="org.jwebsocket.plugins.scripting.settings" class="org.jwebsocket.plugins.scripting.Settings">
-		<property name="apps">
-			<map>
-				<entry key="demo1" value="${JWEBSOCKET_HOME}apps/js/demoApp/"/>
-				<entry key="webrtc" value="${JWEBSOCKET_HOME}apps/js/webrtc/"/>
-			</map>
-		</property>
-	</bean>
+    <bean id="org.jwebsocket.plugins.scripting.settings" class="org.jwebsocket.plugins.scripting.Settings"
+          init-method="initialize">
+        <property name="appsDirectory" value="${JWEBSOCKET_HOME}/apps/js" />
+    </bean>
 </beans>
