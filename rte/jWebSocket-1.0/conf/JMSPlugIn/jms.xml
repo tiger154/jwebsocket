@@ -28,9 +28,11 @@
 	<amq:transportConnector uri="tcp://localhost:61616" /> </amq:transportConnectors> 
 	</amq:broker> <amq:connectionFactory id="connectionFactory" brokerURL="vm://localhost?broker.persistent=false" 
 	useAsyncSend="true" / -->
+	<!--
 	<amq:queue id="testQueue" physicalName="test.queue" />
 	<amq:topic id="testTopic" physicalName="test.topic" />
 	<amq:topic id="stockTopic" physicalName="stock.topic" />
+	-->
 
 	<!-- the jWebSocket-to-JMS topic -->
 	<amq:topic id="jws2jmsTopic" physicalName="org.jwebsocket.jws2jms" />

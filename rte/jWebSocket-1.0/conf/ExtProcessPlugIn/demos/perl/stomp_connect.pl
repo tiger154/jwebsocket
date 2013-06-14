@@ -13,7 +13,8 @@ $publish_destination = "/topic/org.jwebsocket.jms2jws";
 $flag_exit = 0;
 
 # create STOMP client
-$stomp = Net::STOMP::Client->new(uri => "stomp://127.0.0.1:61613");
+# $stomp = Net::STOMP::Client->new(uri => "stomp://127.0.0.1:61613");
+$stomp = Net::STOMP::Client->new(uri => "stomp://172.20.116.68:61613");
 
 # the unique client id (the message selector)
 $correlationId = $stomp->uuid();
@@ -82,11 +83,13 @@ sub processMesage ($$) {
 						"ns" => "org.jwebsocket.plugins.filesystem",
 						"type" => "save",
 						"scope" => "private",
-						"encoding" => "save",
+						"encoding" => "base64",
 						"encode" => JSON::false,
 						"notify" => JSON::false,
-						"data" => "This is a test file uploaded by the Perl STOMP client.",
-						"filename" => "test.txt",
+						# if to be sent as plain text set encoding to empty string
+						# "data" => "This is a test file uploaded by the Perl STOMP client.",
+						"data" => "VGhpcyBpcyBhIHRlc3QgZmlsZSB1cGxvYWRlZCBieSB0aGUgUGVybCBTVE9NUCBjbGllbnQu",
+						"filename" => "test2.txt",
 					};
 				}
 			}

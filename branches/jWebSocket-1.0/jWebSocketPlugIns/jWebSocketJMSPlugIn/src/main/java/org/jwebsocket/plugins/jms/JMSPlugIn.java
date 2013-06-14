@@ -23,8 +23,15 @@ package org.jwebsocket.plugins.jms;
  * @author Johannes Smutny, Alexander Schulze
  */
 import java.util.List;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.Topic;
 import javolution.util.FastList;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -83,9 +90,52 @@ public class JMSPlugIn extends TokenPlugIn {
 			mJmsManager = JmsManager.getInstance(aConfiguration.getSettings(),
 					lBeanFactory);
 
+			String aBrokerURI =
+					"failover:(tcp://0.0.0.0:61616,tcp://172.20.116.68)?initialReconnectDelay=100&randomize=false";
+
+			Connection mConnection;
+			String mNodeId = "4711";
+			String aProducerTopic = "org.jwebsocket.jws2jms";
+			String aConsumerTopic = "org.jwebsocket.jms2jws";
+
+			// ActiveMQTopic lTopic = new ActiveMQTopic();
+			// lTopic.
+			
+			ActiveMQConnectionFactory mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
+			try {
+				mConnection = mConnectionFactory.createConnection();
+				mConnection.start();
+
+				Session lSession = mConnection.createSession(false,
+						Session.AUTO_ACKNOWLEDGE);
+
+				Topic lProducerTopic = lSession.createTopic(aProducerTopic);
+				MessageProducer lProducer = lSession.createProducer(lProducerTopic);
+				// mSender = new JMSClientSender(lSession, lProducer, mNodeId);
+
+				Topic lConsumerTopic = lSession.createTopic(aConsumerTopic);
+
+				MessageConsumer lConsumer = lSession.createConsumer(
+						lConsumerTopic,
+						"JMSCorrelationID = '" + mNodeId + "'");
+				//mListener = new JMSClientListener(mSender);
+				//lConsumer.setMessageListener(mListener);
+				//mSender.sendText("{\"ns\":\"org.jwebsocket.jms.bridge\""
+				//		+ ",\"type\":\"register\""
+				//		+ ",\"sourceId\":\"" + mNodeId + "\""
+				//		+ "}");
+
+				mConnection.stop();
+			} catch (JMSException lEx) {
+				System.out.println(lEx.getClass().getSimpleName()
+						+ " on connecting JMS client.");
+			}
+
 			mJMSTemplate = new JmsTemplate();
 			ActiveMQConnectionFactory lConnectionFactory = new ActiveMQConnectionFactory(
-					"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false");
+					"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false"
+					// "tcp://172.20.116.68:61616"
+					);
 			/*
 			 lConnectionFactory.setExceptionListener(new ExceptionListener() {
 			 @Override
@@ -103,8 +153,8 @@ public class JMSPlugIn extends TokenPlugIn {
 			List<String> lDomains = new FastList<String>();
 			lDomains.add("*");
 			EngineConfig lEngineCfg = new EngineConfig(
-					"jms0", // id
-					"JMSEngine", // name 
+					"jwsjmsgw0", // id
+					"jWebSocket JMSGateway", // name 
 					"-", // jar
 					0, // port
 					0, // ssl port

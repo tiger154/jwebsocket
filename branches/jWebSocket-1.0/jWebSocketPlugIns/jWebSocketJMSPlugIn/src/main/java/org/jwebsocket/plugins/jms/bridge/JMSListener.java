@@ -54,6 +54,7 @@ public class JMSListener implements MessageListener {
 	public void onMessage(Message aMsg) {
 		String lJSON = null;
 		String lCorrelationId = null;
+		
 		try {
 			if (aMsg instanceof ActiveMQTextMessage) {
 				ActiveMQTextMessage lTextMsg = (ActiveMQTextMessage) aMsg;
@@ -68,6 +69,8 @@ public class JMSListener implements MessageListener {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx,
 					"getting " + aMsg.getClass().getSimpleName() + " message"));
 		}
+		// TODO: and what happens if none of the above types?
+		
 		try {
 			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
 			String lNS = lToken.getNS();
@@ -93,7 +96,10 @@ public class JMSListener implements MessageListener {
 				// here the incoming packets from the JMS bridge are processed
 				WebSocketConnector lConnector = null;
 				if (null != lCorrelationId) {
-					mLog.info("Processing JMS packet from '" + lCorrelationId + "': " + lJSON);
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Processing JMS packet from '" + lCorrelationId + "' [content supressed]...");
+						// don't log JSON text packet here, it could contain sensitive data!
+					}
 					Map<String, WebSocketConnector> lConnectors = mEngine.getConnectors();
 					if (null != lConnectors) {
 						lConnector = lConnectors.get(lCorrelationId);
