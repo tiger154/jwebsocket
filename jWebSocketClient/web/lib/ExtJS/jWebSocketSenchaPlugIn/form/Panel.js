@@ -59,6 +59,7 @@ Ext.define('Ext.jws.form.Panel', {
 
 		lFormValues = lThis.getValues(lThis.getStandardSubmit() || !aOptions.submitDisabled);
 		if (lThis.jwsSubmit) {
+			lFormValues = Ext.apply(lThis.getValues(), lThis.getRecord().data);
 			var lNamespace = aOptions.ns || lThis.ns,
 					lTokenType = aOptions.tokentype || lThis.tokentype;
 			if (!lNamespace || !lTokenType) {
@@ -80,9 +81,9 @@ Ext.define('Ext.jws.form.Panel', {
 	},
 	doJWebSocketRequest: function(aForm, aFormValues, aOptions) {
 		var lDoRequest = function(aForm, aFormValues, aOptions) {
-			var lData = Ext.apply( Ext.apply({}, aForm.getBaseParams() || {}),
+			var lData = Ext.apply(Ext.apply({}, aForm.getBaseParams() || {}),
 					aOptions.params || {},
-					aFormValues );
+					aFormValues);
 			var lCallbacks = {
 				success: function(aToken) {
 					if (Ext.isFunction(aOptions.success)) {
