@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - IJMSMessageListener interface (Community Edition, CE)
+//  jWebSocket - JMS BaseMessageListener (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -25,60 +25,81 @@ import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
 /**
- * Interface for listeners to incoming messages.
+ * Base implementation of the IJMSMessageListener interface for convenience.
  *
  * @author Alexander Schulze
  */
-public interface IJMSMessageListener {
+public class JMSBaseMessageListener implements IJMSMessageListener {
 
-	/**
-	 * Returns the reference to the assigned sender object to easily answer
-	 * messages.
-	 *
-	 * @return
+	private JMSClientSender mSender;
+
+	/*
+	 public JMSBaseMessageListener(JMSClientSender aSender) {
+	 mSender = aSender;
+	 }
 	 */
-	JMSClientSender getSender();
+	/**
+	 *
+	 * @param aText
+	 */
+	public void sendText(String aText) {
+		mSender.sendText(aText);
+	}
 
 	/**
-	 * Sets the sender object to easily answer messages.
+	 *
+	 * @param aMessage
+	 */
+	@Override
+	public void onMessage(Message aMessage) {
+	}
+
+	/**
+	 *
+	 * @param aMessage
+	 */
+	@Override
+	public void onBytesMessage(BytesMessage aMessage) {
+	}
+
+	/**
+	 *
+	 * @param aMessage
+	 */
+	@Override
+	public void onTextMessage(TextMessage aMessage) {
+	}
+
+	/**
+	 *
+	 * @param aMessage
+	 */
+	@Override
+	public void onMapMessage(MapMessage aMessage) {
+	}
+
+	/**
+	 *
+	 * @param aMessage
+	 */
+	@Override
+	public void onObjectMessage(ObjectMessage aMessage) {
+	}
+
+	/**
+	 * @return the mSender
+	 */
+	@Override
+	public JMSClientSender getSender() {
+		return mSender;
+	}
+
+	/**
 	 *
 	 * @param aSender
 	 */
-	void setSender(JMSClientSender aSender);
-
-	/**
-	 * Listener for unclassified incoming messages, here the type of the message
-	 * is not yet parsed
-	 *
-	 * @param aMessage
-	 */
-	void onMessage(Message aMessage);
-
-	/**
-	 * Listener for incoming byte messages.
-	 *
-	 * @param aMessage
-	 */
-	void onBytesMessage(BytesMessage aMessage);
-
-	/**
-	 * Listener for incoming text messages.
-	 *
-	 * @param aMessage
-	 */
-	void onTextMessage(TextMessage aMessage);
-
-	/**
-	 * Listener for incoming map messages.
-	 *
-	 * @param aMessage
-	 */
-	void onMapMessage(MapMessage aMessage);
-
-	/**
-	 * Listener for incoming object messages.
-	 *
-	 * @param aMessage
-	 */
-	void onObjectMessage(ObjectMessage aMessage);
+	@Override
+	public void setSender(JMSClientSender aSender) {
+		mSender = aSender;
+	}
 }

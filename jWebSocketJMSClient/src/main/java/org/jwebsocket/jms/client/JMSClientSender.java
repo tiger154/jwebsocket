@@ -22,42 +22,45 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import org.apache.log4j.Logger;
 
 /**
  *
- * @author alexanderschulze
+ * @author Alexander Schulze
  */
 public class JMSClientSender {
 
+	static final Logger mLog = Logger.getLogger(JMSClientSender.class);
 	private final MessageProducer mProducer;
 	private final Session mSession;
-	private final String mCorrelationId;
+	private final String mNodeId;
 
 	/**
 	 *
+	 * @param aSession
 	 * @param aProducer
-	 * @param aCorrelationId
+	 * @param aNodeId
 	 */
 	public JMSClientSender(Session aSession, MessageProducer aProducer,
-			String aCorrelationId) {
+			String aNodeId) {
 		mSession = aSession;
 		mProducer = aProducer;
-		mCorrelationId = aCorrelationId;
+		mNodeId = aNodeId;
 	}
 
 	/**
 	 *
-	 * @param aJSON
+	 * @param aText
 	 */
-	public void send(final String aJSON) {
-		System.out.println("Sending JSON " + aJSON + "...");
+	public void sendText(final String aText) {
+		mLog.info("Sending text: " + aText + "...");
 		Message lMsg;
 		try {
-			lMsg = mSession.createTextMessage(aJSON);
-			lMsg.setJMSCorrelationID(mCorrelationId);
+			lMsg = mSession.createTextMessage(aText);
+			lMsg.setJMSCorrelationID(mNodeId);
 			mProducer.send(lMsg);
 		} catch (JMSException lEx) {
-			System.out.println(lEx.getClass().getSimpleName() + " sending message.");
+			mLog.error(lEx.getClass().getSimpleName() + " sending message.");
 		}
 	}
 
@@ -72,6 +75,6 @@ public class JMSClientSender {
 	 * @return the mCorrelationId
 	 */
 	public String getCorrelationId() {
-		return mCorrelationId;
+		return mNodeId;
 	}
 }

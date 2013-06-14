@@ -18,93 +18,88 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms.client;
 
-import javax.jms.JMSException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import javax.jms.BytesMessage;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import org.apache.activemq.command.ActiveMQTextMessage;
-import org.jwebsocket.packetProcessors.JSONProcessor;
-import org.jwebsocket.token.Token;
+import javax.jms.ObjectMessage;
+import javax.jms.TextMessage;
 
 /**
+ * Manages one or multiple listeners to a certain JMS Gateway connection.
  *
- * @author alexanderschulze
+ * @author Alexander Schulze
  */
 class JMSClientListener implements MessageListener {
 
-	private JMSClientSender mSender = null;
+	private List<IJMSMessageListener> mMessageListeners = new ArrayList();
+	private final ExecutorService mExecutor;
 
-	public JMSClientListener(JMSClientSender aSender) {
-		mSender = aSender;
+	public JMSClientListener(int aThreadPoolSize) {
+		mExecutor = Executors.newFixedThreadPool(aThreadPoolSize);
 	}
-	
-	@Override
-	public void onMessage(Message aMsg) {
-		ActiveMQTextMessage lMQMsg = (ActiveMQTextMessage) aMsg;
-		System.out.println("###### " + aMsg);
-		try {
-			String lJSON = lMQMsg.getText();
-			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
-			// fields for requests
-			String lNS = lToken.getNS();
-			String lType = lToken.getType();
-			// fields for responses
-			String lReqType = lToken.getString("reqType", "");
-			String lMsg = lToken.getString("msg", "[no error message provided]");
-			Integer lCode = lToken.getInteger("code", -1);
 
-			// System.out.println("###### " + lJSON);
+	public void addMessageListener(IJMSMessageListener aListener) {
+		mMessageListeners.add(aListener);
+	}
 
-			// the server accepted the new JMS client, so login now...
-			if ("org.jwebsocket.jms.bridge".equals(lNS)) {
-				if ("welcome".equals(lType)) {
-					System.out.println("Connection successful, logging-in...");
-					// mSender.setCorrelationId(lToken.getString("correlationId"));
-					mSender.send(
-							"{\"ns\":\"org.jwebsocket.plugins.system\""
-							+ ", \"type\":\"login\""
-							+ ", \"username\":\"root\""
-							+ ", \"password\":\"root\"}");
-				} else {
-					System.out.println("Unknown JMS command: " + lJSON);
-				}
-				// the server login was successful, so upload the file now...
-			} else if ("org.jwebsocket.plugins.system".equals(lNS)) {
-				if ("login".equals(lReqType)) {
-					if (0 == lCode) {
-						System.out.println("Log-in-successful, uploading file...");
-						mSender.send(
-								"{\"ns\": \"org.jwebsocket.plugins.filesystem\""
-								+ ", \"type\": \"save\""
-								+ ", \"scope\": \"private\""
-								+ ", \"encoding\": \"save\""
-								+ ", \"encode\": false"
-								+ ", \"notify\": false"
-								+ ", \"data\": \"This is just another test content\""
-								+ ", \"filename\": \"test.txt\"}");
-					} else {
-						System.out.println("Log-in failure: " + lMsg);
-					}
-				} else if ("broadcast".equals(lType)) {
-					System.out.println("Received broadcast: " + lJSON);
-				} else {
-					System.out.println("Unknown system command: " + lJSON);
-				}
-			} else if ("org.jwebsocket.plugins.filesystem".equals(lNS)) {
-				if ("save".equals(lReqType)) {
-					if (0 == lCode) {
-						System.out.println("File upload successful, continuing process...");
-					} else {
-						System.out.println("File upload failure: " + lMsg);
-					}
-				} else {
-					System.out.println("Unknown filesystem command: " + lJSON);
-				}
-			} else {
-				System.out.println("Received (but ignored): " + lJSON);
+	public void removeMessageListener(IJMSMessageListener aListener) {
+		mMessageListeners.remove(aListener);
+	}
+
+	private void processMessage(final Message aMsg) {
+		// a message has been received from the JMS Gateway
+		// select the correct type of the message and 
+		// call the corresponding listeners
+		if (aMsg instanceof TextMessage) {
+			TextMessage lTextMsg = (TextMessage) aMsg;
+			for (IJMSMessageListener lListener : mMessageListeners) {
+				lListener.onTextMessage(lTextMsg);
 			}
-		} catch (JMSException lEx) {
-			System.out.println("Exception: " + lEx.getMessage());
+		} else if (aMsg instanceof MapMessage) {
+			MapMessage lMapMsg = (MapMessage) aMsg;
+			for (IJMSMessageListener lListener : mMessageListeners) {
+				lListener.onMapMessage(lMapMsg);
+			}
+		} else if (aMsg instanceof BytesMessage) {
+			BytesMessage lMapMsg = (BytesMessage) aMsg;
+			for (IJMSMessageListener lListener : mMessageListeners) {
+				lListener.onBytesMessage(lMapMsg);
+			}
+		} else if (aMsg instanceof ObjectMessage) {
+			ObjectMessage lMapMsg = (ObjectMessage) aMsg;
+			for (IJMSMessageListener lListener : mMessageListeners) {
+				lListener.onObjectMessage(lMapMsg);
+			}
 		}
 	}
 
+	@Override
+	public void onMessage(final Message aMsg) {
+
+		// if only a single threaded message processing is required
+		// processMessage(aMsg);
+		
+		mExecutor.submit(new Runnable() {
+			@Override
+			public void run() {
+				processMessage(aMsg);
+			}
+		});
+	}
+
+	public void shutdown() {
+		mExecutor.shutdownNow();
+		try {
+			mExecutor.awaitTermination(2000, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException ex) {
+			// TODO: Process exception properly
+		}
+		// mExecutor.isShutdown();
+	}
 }
