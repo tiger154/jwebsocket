@@ -245,7 +245,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lBaseDir = mSettings.getAliasPath(aAlias);
 		lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir);
 
-		if (aAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
+		if (null != lBaseDir && aAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
 			lBaseDir = lBaseDir.replace("{username}", aConnector.getUsername());
 		}
 
