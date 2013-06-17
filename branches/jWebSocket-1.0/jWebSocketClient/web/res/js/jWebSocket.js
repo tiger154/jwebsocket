@@ -1802,6 +1802,16 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				};
 
 				this.fConn.onmessage = function( aEvent ) {
+                    // supporting binary frames at this level
+                    if (aEvent.data instanceof Blob || aEvent.data instanceof ArrayBuffer ){
+                        if( aOptions.OnMessage ) {
+							aOptions.OnMessage( aEvent, lValue, lThis );
+						}
+                        return; 
+                    }
+                    
+                    // IF NOT BINARY FRAME
+                    
 					// utility variable
 					var lPos, lPID;
 					
