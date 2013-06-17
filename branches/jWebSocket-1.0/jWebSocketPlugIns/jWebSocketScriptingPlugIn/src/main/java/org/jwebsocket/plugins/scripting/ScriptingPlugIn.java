@@ -19,13 +19,21 @@
 package org.jwebsocket.plugins.scripting;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import javax.activation.MimetypesFileTypeMap;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javolution.util.FastMap;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -33,13 +41,17 @@ import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.kit.RawPacket;
+import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
-import org.jwebsocket.plugins.annotations.Role;
+import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.scripting.app.BaseScriptApp;
 import org.jwebsocket.plugins.scripting.app.js.JavaScriptApp;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -99,7 +111,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
                 // initializing apps
                 Map<String, String> lApps = mSettings.getApps();
                 for (String lApp : lApps.keySet()) {
-                    loadApp(lApp, lApps.get(lApp));
+                    loadApp(lApp, lApps.get(lApp), false);
                 }
 
                 if (mLog.isInfoEnabled()) {
@@ -154,43 +166,72 @@ public class ScriptingPlugIn extends ActionPlugIn {
      * @param aAppDirPath The application home path
      * @throws Exception
      */
-    public final void loadApp(String aApp, String aAppDirPath) throws Exception {
-        String[] lAppNameExt = aApp.split(":");
-        String lApp = lAppNameExt[0];
+    public final boolean loadApp(String aApp, String aAppDirPath, boolean aHotLoad) throws Exception {
+        // notifying before app reload event here
+        BaseScriptApp lScript = mApps.get(aApp);
+        if (null != lScript) {
+            lScript.notifyEvent(BaseScriptApp.EVENT_BEFORE_APP_RELOAD, new Object[]{aHotLoad});
+        }
+
+        // parsing app name to get the extension if present. default: js
+        String[] lAppNameExt = aApp.split(".");
         String lExt = (lAppNameExt.length == 2) ? lAppNameExt[1] : "js";
 
+        // validating bootstrap file
         File lBootstrap = new File(aAppDirPath + "/App." + lExt);
-        if (!lBootstrap.exists()) {
-            mLog.error("Unable to load '" + lApp + "' application. The bootstrap file '" + lBootstrap + "' does not exists!");
-            return;
+        if (!lBootstrap.exists() || !lBootstrap.canRead()) {
+            mLog.error("Unable to load '" + aApp + "' application. The bootstrap file '" + lBootstrap + "' does not exists!");
+            return false;
         }
 
-        ScriptEngine lScriptApp;
-        if ("js".equals(lExt)) {
-            // making "nashorn" the default engine for JavaScript
-            lScriptApp = mEngineManager.getEngineByName("nashorn");
-            if (null == lScriptApp) {
-                lScriptApp = mEngineManager.getEngineByExtension(lExt);
+        // support hot app load
+        if (aHotLoad && mApps.containsKey(aApp)) {
+            try {
+                // loading app
+                mApps.get(aApp).getEngine().eval(FileUtils.readFileToString(lBootstrap));
+            } catch (ScriptException lEx) {
+                mLog.error("Script applicaton '" + aApp + "' failed to start: " + lEx.getMessage());
+                mApps.remove(aApp);
+                return false;
             }
         } else {
-            lScriptApp = mEngineManager.getEngineByExtension(lExt);
-        }
+            ScriptEngine lScriptApp;
+            if ("js".equals(lExt)) {
+                // making "nashorn" the default engine for JavaScript
+                lScriptApp = mEngineManager.getEngineByName("nashorn");
+                if (null == lScriptApp) {
+                    lScriptApp = mEngineManager.getEngineByExtension(lExt);
+                }
+            } else {
+                lScriptApp = mEngineManager.getEngineByExtension(lExt);
+            }
 
-        if ("js".equals(lExt)) {
-            mApps.put(lApp, new JavaScriptApp(this, lApp, aAppDirPath, lScriptApp));
-        } else {
-            throw new UnsupportedOperationException("The extension '" + lExt + "' is not supported for script applications!");
-        }
+            // crating the high level script app instance
+            if ("js".equals(lExt)) {
+                mApps.put(aApp, new JavaScriptApp(this, aApp, aAppDirPath, lScriptApp));
+            } else {
+                mLog.error("The extension '" + lExt + "' is not currently supported!");
+                return false;
+            }
 
-        // loading app
-        lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
+            try {
+                // evaluating app content
+                lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
+            } catch (ScriptException lEx) {
+                mLog.error("Script applicaton '" + aApp + "' failed to start: " + lEx.getMessage());
+                mApps.remove(aApp);
+                return false;
+            }
+        }
 
         // notifying app loaded event
-        mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_APP_LOADED, new Object[0]);
+        mApps.get(aApp).notifyEvent(BaseScriptApp.EVENT_APP_LOADED, new Object[0]);
 
         if (mLog.isDebugEnabled()) {
-            mLog.debug(lApp + "(" + lExt + ") application loaded successfully!");
+            mLog.debug(aApp + "(" + lExt + ") application loaded successfully!");
         }
+
+        return true;
     }
 
     @Override
@@ -288,6 +329,13 @@ public class ScriptingPlugIn extends ActionPlugIn {
         notifyToApps(BaseScriptApp.EVENT_SYSTEM_STOPPING, new Object[0]);
     }
 
+    /**
+     * Capture and redirect tokens to target apps.
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
     public void tokenAction(WebSocketConnector aConnector, Token aToken) throws Exception {
         String lApp = aToken.getString("app");
         Assert.notNull(lApp, "The 'app' argument cannot be null!");
@@ -301,23 +349,66 @@ public class ScriptingPlugIn extends ActionPlugIn {
         mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_TOKEN, lArgs.toArray());
     }
 
-    @Role(name = NS + ".reloadApp")
+    /**
+     * List the client authorized script apps.
+     *
+     * @param aConnector
+     * @param aToken
+     */
+    public void listAppsAction(WebSocketConnector aConnector, Token aToken) {
+        Iterator<String> lAppNames = mApps.keySet().iterator();
+        Map<String, Map> lResult = new HashMap<String, Map>();
+
+        while (lAppNames.hasNext()) {
+            String lName = lAppNames.next();
+            if (hasAuthority(aConnector, NS + ".deploy.*")
+                    || hasAuthority(aConnector, NS + ".deploy." + lName)) {
+                lResult.put(lName, new HashMap());
+                // getting app details
+                File lAppDirectory = new File(mApps.get(lName).getPath());
+                lResult.get(lName).put("lastModified", lAppDirectory.lastModified());
+                lResult.get(lName).put("size", FileUtils.sizeOf(lAppDirectory));
+            }
+        }
+        Token lResponse = createResponse(aToken);
+        lResponse.setMap("data", lResult);
+
+        sendToken(aConnector, lResponse);
+    }
+
+    /**
+     * Reloads a deployed script application.
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
     public void reloadAppAction(WebSocketConnector aConnector, Token aToken) throws Exception {
         String lApp = aToken.getString("app");
-        Assert.notNull(lApp, "The 'app' argument cannot be null!");
-        Assert.isTrue(mApps.containsKey(lApp), "The target application '" + lApp + "' does not exists!");
+        boolean lHotReload = aToken.getBoolean("hotReload", true);
 
-        BaseScriptApp lScript = mApps.get(lApp);
-        if (null != lScript) {
-            lScript.notifyEvent(BaseScriptApp.EVENT_BEFORE_APP_RELOAD, new Object[]{aConnector});
+        Assert.notNull(lApp, "The 'app' argument cannot be null!");
+        Assert.isTrue(mSettings.getApps().containsKey(lApp), "The target application '" + lApp + "' does not exists!");
+
+        if (!hasAuthority(aConnector, NS + ".reloadApp.*")
+                && !hasAuthority(aConnector, NS + ".reloadApp." + lApp)) {
+            sendToken(aConnector, createAccessDenied(aToken));
+            return;
         }
 
         // loading the app (will destroy if exists)
-        loadApp(lApp, mSettings.getApps().get(lApp));
+        loadApp(lApp, mSettings.getApps().get(lApp), lHotReload);
 
         sendToken(aConnector, createResponse(aToken));
     }
 
+    /**
+     * Calls a custom method on a publish application object.
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
     public void callMethodAction(WebSocketConnector aConnector, Token aToken) throws Exception {
         String lApp = aToken.getString("app");
         String lObjectId = aToken.getString("objectId");
@@ -347,6 +438,13 @@ public class ScriptingPlugIn extends ActionPlugIn {
         sendToken(aConnector, lResponse);
     }
 
+    /**
+     * Gets a target application version.
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
     public void getVersionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
         String lApp = aToken.getString("app");
         BaseScriptApp lScriptApp = mApps.get(lApp);
@@ -378,5 +476,117 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
         Object lRes = lApp.callMethod(aObjectId, aMethod, aArgs);
         return lRes;
+    }
+
+    /**
+     * Deploys an application
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
+    public void deployAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+        // getting calling arguments
+        String lAppFile = aToken.getString("appFile");
+        boolean lDeleteAfterDeploy = aToken.getBoolean("deleteAfterDeploy", false);
+        boolean lHotDeploy = aToken.getBoolean("hotDeploy", false);
+
+        // getting the FSP instance
+        TokenPlugIn lFSP = (TokenPlugIn) getPlugInChain().getPlugIn("jws.filesystem");
+        Assert.notNull(lFSP, "FileSystem plug-in is not running!");
+
+        // creating invoke request for FSP
+        Token lCommand = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE + ".plugins.filesystem", "getAliasPath");
+        lCommand.setString("alias", "privateDir");
+        Token lResult = lFSP.invoke(aConnector, lCommand);
+        Assert.notNull(lResult, "Unable to communicate with the FileSystem plug-in "
+                + "to retrieve the client private directory!");
+
+        // locating the app zip file
+        File lAppZipFile = new File(lResult.getString("aliasPath") + File.separator + lAppFile);
+        Assert.isTrue(lAppZipFile.exists(), "The target application file '" + lAppFile + "' does not exists"
+                + " on the user file-system scope!");
+
+        // validating MIME type
+        String lFileType = new MimetypesFileTypeMap().getContentType(lAppZipFile);
+        Assert.isTrue("application/zip, application/octet-stream".contains(lFileType),
+                "The file format is not valid! Expecting a ZIP compressed directory.");
+
+        // umcompressing in TEMP folder
+        File lTempDir = new File(FileUtils.getTempDirectory().getCanonicalPath()
+                + File.separator
+                + UUID.randomUUID().toString()
+                + File.separator);
+
+        try {
+            Tools.unzip(lAppZipFile, lTempDir);
+            if (lDeleteAfterDeploy) {
+                lAppZipFile.delete();
+            }
+        } catch (IOException lEx) {
+            throw new Exception("Unable to uncompress zip file: " + lEx.getMessage());
+        }
+
+        // validating structure
+        File[] lTempAppDirContent = lTempDir.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
+        Assert.isTrue(1 == lTempAppDirContent.length && lTempAppDirContent[0].isDirectory(),
+                "Compressed application has invalid directory structure! "
+                + "Expecting a single root folder.");
+
+        // copying application content to apps directory
+        File lAppDir = new File(mSettings.getAppsDirectory() + File.separator
+                + lTempAppDirContent[0].getName());
+        FileUtils.copyDirectory(lTempAppDirContent[0], lAppDir);
+        FileUtils.deleteDirectory(lTempDir);
+
+        // getting the application name
+        String lApp = lAppDir.getName();
+        
+        // checking security
+        if (!hasAuthority(aConnector, NS + ".deploy.*")
+                && !hasAuthority(aConnector, NS + ".deploy." + lApp)) {
+            sendToken(aConnector, createAccessDenied(aToken));
+            return;
+        }
+
+        // loading the script app
+        loadApp(lApp, lAppDir.getAbsolutePath(), lHotDeploy);
+
+        // finally send acknowledge response
+        sendToken(aConnector, createResponse(aToken));
+    }
+
+    /**
+     * Undeploys an application
+     *
+     * @param aConnector
+     * @param aToken
+     * @throws Exception
+     */
+    public void undeployAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+        // getting calling events
+        String lApp = aToken.getString("app");
+        Assert.notNull(lApp, "The 'app' argument cannot be null!");
+
+        // validating
+        BaseScriptApp lScriptApp = mApps.get(lApp);
+        Assert.notNull(lScriptApp, "The target app does not exists!");
+
+        // checking security
+        if (!hasAuthority(aConnector, NS + ".deploy.*")
+                && !hasAuthority(aConnector, NS + ".deploy." + lApp)) {
+            sendToken(aConnector, createAccessDenied(aToken));
+            return;
+        }
+        
+        // notifying event before undeploy
+        lScriptApp.notifyEvent(BaseScriptApp.EVENT_UNDEPLOYING, new Object[0]);
+
+        // deleting app
+        mApps.remove(lApp);
+        FileUtils.deleteDirectory(new File(lScriptApp.getPath()));
+
+        // acknowledge response for the client
+        sendToken(aConnector, createResponse(aToken));
     }
 }

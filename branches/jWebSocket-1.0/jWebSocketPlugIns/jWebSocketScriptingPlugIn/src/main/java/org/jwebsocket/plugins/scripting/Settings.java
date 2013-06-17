@@ -65,10 +65,10 @@ public class Settings {
     /**
      * Sets the applications directory path.
      *
-     * @param mAppsDirectoryPath
+     * @param aAppsDirectoryPath
      */
-    public void setAppsDirectory(String mAppsDirectoryPath) {
-        this.mAppsDirectoryPath = mAppsDirectoryPath;
+    public void setAppsDirectory(String aAppsDirectoryPath) {
+        this.mAppsDirectoryPath = Tools.expandEnvVarsAndProps(aAppsDirectoryPath);
     }
 
     /**
@@ -77,7 +77,7 @@ public class Settings {
      * @throws Exception
      */
     public void initialize() throws Exception {
-        File lDirectory = new File(Tools.expandEnvVarsAndProps(mAppsDirectoryPath));
+        File lDirectory = new File(mAppsDirectoryPath);
         Assert.isTrue(lDirectory.isDirectory(), "The applications directory path does not exists!"
                 + " Please check directory path or access permissions.");
         Assert.isTrue(lDirectory.canWrite(), "The Scripting plug-in requires WRITE permissions in the applications directory!");
