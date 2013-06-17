@@ -246,6 +246,8 @@ public class MemoryItemStorage extends BaseItemStorage {
 
 	@Override
 	public void initialize() throws Exception {
+        super.initialize();
+        
 		if (!getContainer().containsKey(mName) || null == getContainer().get(mName)) {
 			getContainer().put(mName, new FastList<IItem>());
 			getTypes().put(mName, mType);
