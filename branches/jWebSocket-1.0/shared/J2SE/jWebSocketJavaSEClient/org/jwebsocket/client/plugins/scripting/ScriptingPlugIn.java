@@ -30,76 +30,91 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
  */
 public class ScriptingPlugIn extends BaseClientTokenPlugIn {
 
-	public ScriptingPlugIn(WebSocketTokenClient aClient) {
-		super(aClient, JWebSocketClientConstants.NS_SCRIPTING);
-	}
+    public ScriptingPlugIn(WebSocketTokenClient aClient) {
+        super(aClient, JWebSocketClientConstants.NS_SCRIPTING);
+    }
 
-	public ScriptingPlugIn(WebSocketTokenClient aClient, String aNS) {
-		super(aClient, aNS);
-	}
+    public ScriptingPlugIn(WebSocketTokenClient aClient, String aNS) {
+        super(aClient, aNS);
+    }
 
-	/**
-	 * Calls an application published object method.
-	 *
-	 * @param aApp The application name
-	 * @param aObjectId The application published object identifier
-	 * @param aMethod The method name
-	 * @param aArgs The method arguments
-	 * @param aListener The response listener.
-	 * @throws WebSocketException
-	 */
-	public void callMethod(String aApp, String aObjectId, String aMethod, List<Object> aArgs,
-			WebSocketResponseTokenListener aListener) throws WebSocketException {
-		Token lRequest = TokenFactory.createToken(getNS(), "callMethod");
-		lRequest.setString("app", aApp);
-		lRequest.setString("method", aMethod);
-		lRequest.setString("objectId", aObjectId);
-		lRequest.setList("args", aArgs);
+    /**
+     * Calls an application published object method.
+     *
+     * @param aApp The application name
+     * @param aObjectId The application published object identifier
+     * @param aMethod The method name
+     * @param aArgs The method arguments
+     * @param aListener The response listener.
+     * @throws WebSocketException
+     */
+    public void callMethod(String aApp, String aObjectId, String aMethod, List<Object> aArgs,
+            WebSocketResponseTokenListener aListener) throws WebSocketException {
+        Token lRequest = TokenFactory.createToken(getNS(), "callMethod");
+        lRequest.setString("app", aApp);
+        lRequest.setString("method", aMethod);
+        lRequest.setString("objectId", aObjectId);
+        lRequest.setList("args", aArgs);
 
-		getTokenClient().sendToken(lRequest, aListener);
-	}
+        getTokenClient().sendToken(lRequest, aListener);
+    }
 
-	/**
-	 * Reloads an script application in runtime.
-	 *
-	 * @param aApp The application name
-	 * @param aListener The response listener
-	 * @throws WebSocketException
-	 */
-	public void reloadApp(String aApp, WebSocketResponseTokenListener aListener) throws WebSocketException {
-		Token lRequest = TokenFactory.createToken(getNS(), "reloadApp");
-		lRequest.setString("app", aApp);
+    /**
+     * Reloads an script application in runtime.
+     *
+     * @param aApp The application name
+     * @param aHotReload If TRUE, the script app is reloaded without to destroy
+     * the app context. Default TRUE
+     * @param aListener The response listener
+     * @throws WebSocketException
+     */
+    public void reloadApp(String aApp, Boolean aHotReload, WebSocketResponseTokenListener aListener) throws WebSocketException {
+        Token lRequest = TokenFactory.createToken(getNS(), "reloadApp");
+        lRequest.setString("app", aApp);
+        lRequest.setBoolean("hotReload", aHotReload);
 
-		getTokenClient().sendToken(lRequest, aListener);
-	}
+        getTokenClient().sendToken(lRequest, aListener);
+    }
 
-	/**
-	 * Sends a token to an script application.
-	 *
-	 * @param aApp The application name
-	 * @param aToken The token to be sent
-	 * @param aListener The response listener
-	 * @throws WebSocketException
-	 */
-	public void sendToken(String aApp, Token aToken, WebSocketResponseTokenListener aListener) throws WebSocketException {
-		aToken.setNS(getNS());
-		aToken.setType("token");
-		aToken.setString("app", aApp);
+    /**
+     * Sends a token to an script application.
+     *
+     * @param aApp The application name
+     * @param aToken The token to be sent
+     * @param aListener The response listener
+     * @throws WebSocketException
+     */
+    public void sendToken(String aApp, Token aToken, WebSocketResponseTokenListener aListener) throws WebSocketException {
+        aToken.setNS(getNS());
+        aToken.setType("token");
+        aToken.setString("app", aApp);
 
-		getTokenClient().sendToken(aToken, aListener);
-	}
+        getTokenClient().sendToken(aToken, aListener);
+    }
 
-	/**
-	 * Gets the target script application version.
-	 *
-	 * @param aApp
-	 * @param aListener
-	 * @throws WebSocketException
-	 */
-	public void getVersion(String aApp, WebSocketResponseTokenListener aListener) throws WebSocketException {
-		Token lRequest = TokenFactory.createToken(getNS(), "getVersion");
-		lRequest.setString("app", aApp);
+    /**
+     * Gets the target script application version.
+     *
+     * @param aApp The application name
+     * @param aListener
+     * @throws WebSocketException
+     */
+    public void getVersion(String aApp, WebSocketResponseTokenListener aListener) throws WebSocketException {
+        Token lRequest = TokenFactory.createToken(getNS(), "getVersion");
+        lRequest.setString("app", aApp);
 
-		getTokenClient().sendToken(lRequest, aListener);
-	}
+        getTokenClient().sendToken(lRequest, aListener);
+    }
+
+    /**
+     * List script apps.
+     *
+     * @param aListener
+     * @throws WebSocketException
+     */
+    public void listApps(WebSocketResponseTokenListener aListener) throws WebSocketException {
+        Token lRequest = TokenFactory.createToken(getNS(), "listApps");
+
+        getTokenClient().sendToken(lRequest, aListener);
+    }
 }
