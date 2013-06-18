@@ -296,4 +296,6 @@ abstract public class BaseScriptApp {
     }
 
     public abstract String getVersion() throws Exception;
+    
+    public abstract String getDescription() throws Exception;
 }

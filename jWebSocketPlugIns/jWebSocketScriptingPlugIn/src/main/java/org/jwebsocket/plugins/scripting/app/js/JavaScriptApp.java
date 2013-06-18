@@ -85,4 +85,12 @@ public class JavaScriptApp extends BaseScriptApp {
 
 		return lVersion;
 	}
+    
+	@Override
+	public String getDescription() throws Exception {
+		Invocable lInvocable = (Invocable) getScriptApp();
+		String lVersion = (String) lInvocable.invokeMethod(mApp, "getDescription", new Object[0]);
+
+		return lVersion;
+	}
 }

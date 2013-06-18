@@ -41,8 +41,6 @@ import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.kit.RawPacket;
-import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
@@ -364,10 +362,18 @@ public class ScriptingPlugIn extends ActionPlugIn {
             if (hasAuthority(aConnector, NS + ".deploy.*")
                     || hasAuthority(aConnector, NS + ".deploy." + lName)) {
                 lResult.put(lName, new HashMap());
+                // locally caching object
+                BaseScriptApp lScript = mApps.get(lName);
                 // getting app details
-                File lAppDirectory = new File(mApps.get(lName).getPath());
+                File lAppDirectory = new File(lScript.getPath());
                 lResult.get(lName).put("lastModified", lAppDirectory.lastModified());
                 lResult.get(lName).put("size", FileUtils.sizeOf(lAppDirectory));
+                try {
+                    lResult.get(lName).put("description", lScript.getDescription());
+                    lResult.get(lName).put("version", lScript.getVersion());
+                } catch (Exception lEx) {
+                    mLog.error(Logging.getSimpleExceptionMessage(lEx, "retrieving application info"));
+                }
             }
         }
         Token lResponse = createResponse(aToken);
@@ -541,7 +547,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
         // getting the application name
         String lApp = lAppDir.getName();
-        
+
         // checking security
         if (!hasAuthority(aConnector, NS + ".deploy.*")
                 && !hasAuthority(aConnector, NS + ".deploy." + lApp)) {
@@ -578,7 +584,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
             sendToken(aConnector, createAccessDenied(aToken));
             return;
         }
-        
+
         // notifying event before undeploy
         lScriptApp.notifyEvent(BaseScriptApp.EVENT_UNDEPLOYING, new Object[0]);
 
