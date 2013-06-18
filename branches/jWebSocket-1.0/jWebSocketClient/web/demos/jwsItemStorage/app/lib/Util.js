@@ -93,7 +93,7 @@ Ext.define('IS.lib.Util', {
 			aField.inputType = aDefinition['input_type'];
 		}
 		if (undefined != aDefinition['reg_exp']){
-			aField.regex = aDefinition['reg_exp'];
+			aField.regex = new RegExp(aDefinition['reg_exp']);
 		}
 		if (aDefinition['mail']){
 			aField.regex = this.mailRegex;
