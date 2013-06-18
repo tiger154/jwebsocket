@@ -339,11 +339,16 @@ public class ScriptingPlugIn extends ActionPlugIn {
         Assert.notNull(lApp, "The 'app' argument cannot be null!");
         Assert.isTrue(mApps.containsKey(lApp), "The target application '" + lApp + "' does not exists!");
 
+		// creating a new token
+		Map lToken = aToken.getMap("token", new HashMap());
+		lToken.put("utid", aToken.getInteger("utid"));
+		
+		// creating arguments
         List<Object> lArgs = new ArrayList();
         lArgs.add(aConnector);
-        lArgs.add(aToken.getMap());
+        lArgs.add(lToken);
 
-        mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_FILTER_IN, lArgs.toArray());
+        mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_FILTER_IN, new Object[]{lToken, aConnector});
         mApps.get(lApp).notifyEvent(BaseScriptApp.EVENT_TOKEN, lArgs.toArray());
     }
 
