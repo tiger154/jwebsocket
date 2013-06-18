@@ -144,15 +144,12 @@ abstract public class BaseScriptApp {
 
     public void sendToken(WebSocketConnector aConnector, Map aMap, Integer aFragmentSize) {
         // outbound filtering
-        notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
-
-        Token lToken = TokenFactory.createToken();
-        lToken.setMap(aMap);
+        notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
 
         if (null != aFragmentSize) {
-            mServer.sendTokenFragmented(aConnector, lToken, aFragmentSize);
+            mServer.sendTokenFragmented(aConnector, toToken(aMap), aFragmentSize);
         } else {
-            mServer.sendToken(aConnector, lToken);
+            mServer.sendToken(aConnector, toToken(aMap));
         }
     }
 
@@ -162,7 +159,7 @@ abstract public class BaseScriptApp {
 
     public void sendToken(WebSocketConnector aConnector, Map aMap, Object aListener) {
         // outbound filtering
-        notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
+        notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
 
         mServer.sendTokenInTransaction(aConnector, toToken(aMap),
                 (IPacketDeliveryListener) cast(aListener, IPacketDeliveryListener.class));
@@ -170,7 +167,7 @@ abstract public class BaseScriptApp {
 
     public void sendToken(WebSocketConnector aConnector, Map aMap, Integer aFragmentSize, Object aListener) {
         // outbound filtering
-        notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
+        notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
 
         mServer.sendTokenInTransaction(aConnector, toToken(aMap), aFragmentSize,
                 (IPacketDeliveryListener) cast(aListener, IPacketDeliveryListener.class));
