@@ -358,21 +358,17 @@ public class ItemStoragePlugIn extends ActionPlugIn {
         } catch (Exception lEx) {
         }
     }
-    
-    @Override
-    public void engineStarted(WebSocketEngine aEngine) {
-        if (JWebSocketFactory.getEngines().size() == 1) {
-            ItemStorageEventManager.startThreadPool();
-        }
-    }
-    
-    @Override
-    public void engineStopped(WebSocketEngine aEngine) {
-        if (JWebSocketFactory.getEngines().size() == 1) {
-            ItemStorageEventManager.stopThreadPool();
-        }
-    }
-    
+
+	@Override
+	public void systemStarted() throws Exception {
+		 ItemStorageEventManager.startThreadPool();
+	}
+
+	@Override
+	public void systemStopping() throws Exception {
+		 ItemStorageEventManager.stopThreadPool();
+	}
+	
     @Override
     public void processLogoff(WebSocketConnector aConnector) {
         unsubscribeFromAll(aConnector);
