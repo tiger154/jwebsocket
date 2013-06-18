@@ -103,11 +103,12 @@ jws.ScriptingPlugIn = {
     sendScriptToken: function(aApp, aToken, aOptions) {
         var lRes = this.checkConnected();
         if (0 === lRes.code && aToken) {
-            aToken.app = aApp;
-            aToken.ns = jws.ScriptingPlugIn.NS;
-            aToken.type = 'token';
-
-            this.sendToken(aToken, aOptions);
+            this.sendToken({
+				app: aApp,
+				ns: jws.ScriptingPlugIn.NS,
+				type: 'token',
+				token: aToken
+			}, aOptions);
         }
         return lRes;
     },
