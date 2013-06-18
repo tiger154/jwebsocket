@@ -1,5 +1,6 @@
 // importing App script
 App.importScript('${APP_HOME}/lib/myAppLib.js');
+App.setDescription('Demo application with JavaScript at the server-side.');
 
 var FileUtils = Packages.org.apache.commons.io.FileUtils;
 var File = Packages.java.io.File;
@@ -15,7 +16,7 @@ App.on('token', function(aConnector, aToken) {
 
     // normal send
     App.sendToken(aConnector, lResponse);
-    // fragmented send
+	// fragmented send
     App.sendToken(aConnector, lResponse, 10);
     // akcnowledge send
     App.sendToken(aConnector, lResponse, {
