@@ -14,99 +14,96 @@ import org.jwebsocket.plugins.itemstorage.item.ItemDefinition;
 import org.springframework.util.Assert;
 
 /**
- * This utility class wraps collection operations that are supposed to be called out of the
- * WebSocket API
+ * This utility class wraps collection operations that are supposed to be called
+ * out of the WebSocket API
  *
  * @author kyberneees
  */
 public class ItemCollectionUtils {
 
-	public static Set<String> restartCollection(IItemCollectionProvider aProvider, IItemCollection aCollection) throws Exception {
-		Set<String> lAffectedClients = aCollection.restart();
-		ItemStorageEventManager.onCollectionRestarted(aCollection.getName(), lAffectedClients);
+    public static Set<String> restartCollection(IItemCollectionProvider aProvider, IItemCollection aCollection) throws Exception {
+        Set<String> lAffectedClients = aCollection.restart();
+        ItemStorageEventManager.onCollectionRestarted(aCollection.getName(), lAffectedClients);
 
-		return lAffectedClients;
-	}
+        return lAffectedClients;
+    }
 
-	public void saveCollections(List<IItemCollection> aCollections, IItemCollectionProvider aProvider) throws Exception {
-		for (IItemCollection lCollection : aCollections) {
-			aProvider.saveCollection(lCollection);
-		}
-	}
+    public void saveCollections(List<IItemCollection> aCollections, IItemCollectionProvider aProvider) throws Exception {
+        for (IItemCollection lCollection : aCollections) {
+            aProvider.saveCollection(lCollection);
+        }
+    }
 
-	public static void subscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber) throws Exception {
-		aCollection.getSubcribers().add(aSubscriber);
-		ItemStorageEventManager.onSubscription(aCollection.getName(), aSubscriber);
-	}
+    public static void subscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber) throws Exception {
+        aCollection.getSubcribers().add(aSubscriber);
+        ItemStorageEventManager.onSubscription(aCollection.getName(), aSubscriber);
+    }
 
-	public static void unsubscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber, String aUser) throws Exception {
-		aCollection.getSubcribers().remove(aSubscriber);
-		ItemStorageEventManager.onUnsubscription(aCollection.getName(), aSubscriber, aUser);
-	}
+    public static void unsubscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber, String aUser) throws Exception {
+        aCollection.getSubcribers().remove(aSubscriber);
+        ItemStorageEventManager.onUnsubscription(aCollection.getName(), aSubscriber, aUser);
+    }
 
-	public static void authorizeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aPublisher) throws Exception {
-		aCollection.getPublishers().add(aPublisher);
-		ItemStorageEventManager.onAuthorization(aCollection.getName(), aPublisher);
-	}
+    public static void authorizeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aPublisher) throws Exception {
+        aCollection.getPublishers().add(aPublisher);
+        ItemStorageEventManager.onAuthorization(aCollection.getName(), aPublisher);
+    }
 
-	public static IItem saveItem(String aUser, IItemFactory aItemFactory, IItemCollection aCollection, Map<String, Object> aData) throws Exception {
-		// getting the item definition
-		IItemDefinition lDef = aItemFactory.getDefinition(aCollection.getItemStorage().getItemType());
+    public static IItem saveItem(String aUser, IItemFactory aItemFactory, IItemCollection aCollection, Map<String, Object> aData) throws Exception {
+        // getting the item definition
+        IItemDefinition lDef = aItemFactory.getDefinition(aCollection.getItemStorage().getItemType());
 
-		// required to change the primary key value of an item
-		String lTargetPK = (String) aData.remove(ItemDefinition.ATTR_INTERNAL_TARGET_PK);
-		String lPK = (String) aData.get(lDef.getPrimaryKeyAttribute());
-		if (null == lTargetPK) {
-			// target PK is the PK
-			lTargetPK = lPK;
-		}
+        // required to change the primary key value of an item
+        String lTargetPK = (String) aData.remove(ItemDefinition.ATTR_INTERNAL_TARGET_PK);
+        if (null == lTargetPK) {
+            // target PK is the PK
+            lTargetPK = (String) aData.get(lDef.getPrimaryKeyAttribute());
+        }
 
-		IItem lItem = null;
-		boolean lIsNew = false;
+        IItem lItem = null;
+        boolean lIsNew = false;
 
-		if (null != lTargetPK) {
-			lItem = aCollection.getItemStorage().findByPK(lTargetPK);
-		}
-		if (null == lItem) {
-			lIsNew = true;
-			lItem = aItemFactory.getItemPrototype(lDef.getType());
-		} else {
-			Assert.isTrue(lTargetPK.equals(lPK), "An item with primary key '" + lPK + "' already exists!");
-		}
+        if (null != lTargetPK) {
+            lItem = aCollection.getItemStorage().findByPK(lTargetPK);
+        }
+        if (null == lItem) {
+            lIsNew = true;
+            lItem = aItemFactory.getItemPrototype(lDef.getType());
+        }
 
-		// adjusting JSON types (special support for JavaScript)
-		Item.adjustJSONTypes(aData, lItem.getDefinition());
+        // adjusting JSON types (special support for JavaScript)
+        Item.adjustJSONTypes(aData, lItem.getDefinition());
 
-		// setting the data on the item
-		lItem.setAll(aData);
+        // setting the data on the item
+        lItem.setAll(aData);
 
-		// saving
-		if (null != lTargetPK) {
-			aCollection.getItemStorage().save(lTargetPK, lItem);
-		} else {
-			aCollection.getItemStorage().save(lItem);
-		}
+        // saving
+        if (null != lTargetPK) {
+            aCollection.getItemStorage().save(lTargetPK, lItem);
+        } else {
+            aCollection.getItemStorage().save(lItem);
+        }
 
-		// getting item updates
-		if (lIsNew) {
-			lItem.setUpdate(lItem.getAttributes());
-		} else {
-			lItem.setUpdate(aData);
-		}
+        // getting item updates
+        if (lIsNew) {
+            lItem.setUpdate(lItem.getAttributes());
+        } else {
+            lItem.setUpdate(aData);
+        }
 
-		// notifying event
-		ItemStorageEventManager.onItemSaved(aUser, lItem, aCollection);
+        // notifying event
+        ItemStorageEventManager.onItemSaved(aUser, lItem, aCollection);
 
-		return lItem;
-	}
+        return lItem;
+    }
 
-	public static IItem removeItem(String aUser, IItemCollection aCollection, String aItemPK) throws Exception {
-		IItem lItem = aCollection.getItemStorage().findByPK(aItemPK);
-		Assert.notNull(lItem, "Item not found!");
+    public static IItem removeItem(String aUser, IItemCollection aCollection, String aItemPK) throws Exception {
+        IItem lItem = aCollection.getItemStorage().findByPK(aItemPK);
+        Assert.notNull(lItem, "Item not found!");
 
-		aCollection.getItemStorage().remove(aItemPK);
-		ItemStorageEventManager.onItemRemoved(aUser, lItem, aCollection);
+        aCollection.getItemStorage().remove(aItemPK);
+        ItemStorageEventManager.onItemRemoved(aUser, lItem, aCollection);
 
-		return lItem;
-	}
+        return lItem;
+    }
 }
