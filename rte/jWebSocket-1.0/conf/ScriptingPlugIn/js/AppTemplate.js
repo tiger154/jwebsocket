@@ -22,6 +22,9 @@ var App = (function() {
     var mListeners = AppUtils.newThreadSafeMap();
     var mAPI = AppUtils.newThreadSafeMap();
     var toMap = function(aObject) {
+		if (aObject instanceof Packages.java.util.Map){
+			return aObject;
+		}
         var lMap = new Packages.java.util.HashMap();
         for (var lAttr in aObject) {
             lMap.put(lAttr, aObject[lAttr]);
