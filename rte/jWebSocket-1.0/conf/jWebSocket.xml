@@ -506,6 +506,11 @@
 				<!--  size of the blocking queue. Connection will be refused if the queue is full and the poolsize is equals to the maximumPoolSize -->
 				<blockingQueueSize>1000</blockingQueueSize>
 			</threadPool>
+			
+			<settings>
+				<setting key="supressed_log_fields">password,secretPassword, accessPassword ,newSecretPassword,secretKey,accessKey,newSecretKey</setting>
+				<setting key="supressed_log_fields_value">***???***</setting>
+			</settings>
 		</server>
 		<server>
 			<name>org.jwebsocket.server.CustomServer</name>
