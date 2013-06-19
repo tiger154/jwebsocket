@@ -2,7 +2,7 @@
 //	jWebSocket BaseToken (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.jwebsocket.token;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastMap;
+import org.jwebsocket.kit.WebSocketRuntimeException;
 
 /**
  *
@@ -48,18 +49,25 @@ public abstract class BaseToken implements Token {
 	 *
 	 */
 	public static final String CODE = "code";
-	private static final FastMap<String, String> mExclFromLogs;
+	/**
+	 *
+	 */
+	private static FastMap<String, String> mExclFromLogs;
 
+	/**
+	 *
+	 */
 	static {
 		mExclFromLogs = new FastMap<String, String>();
-		mExclFromLogs.put("password", "*******");
-		mExclFromLogs.put("secretPassword", "*******");
-		mExclFromLogs.put("accessPassword", "*******");
-		mExclFromLogs.put("newSecretPassword", "*******");
-		mExclFromLogs.put("secretKey", "*******");
-		mExclFromLogs.put("accessKey", "*******");
-		mExclFromLogs.put("newSecretKey", "*******");
 	}
+	/**
+	 *
+	 */
+	private static final String SUPRESSED_LOG_FIELDS = "supressed_log_fields";
+	/**
+	 *
+	 */
+	private static final String SUPRESSED_LOG_FIELDS_VALUE = "supressed_log_fields_value";
 
 	@Override
 	public Integer getCode() {
@@ -152,7 +160,8 @@ public abstract class BaseToken implements Token {
 	/**
 	 * Returns the name space of the token. If you have the same token type
 	 * interpreted by multiple different plug-ins the name space allows to
-	 * uniquely address a certain plug-in. Each plug-in has its own name space.
+	 * uniquely address a certain plug-in. Each plug-in has its own name
+	 * space.
 	 *
 	 * @return the name space.
 	 */
@@ -164,7 +173,8 @@ public abstract class BaseToken implements Token {
 	/**
 	 * Sets the name space of the token. If you have the same token type
 	 * interpreted by multiple different plug-ins the namespace allows to
-	 * uniquely address a certain plug-in. Each plug-in has its own namespace.
+	 * uniquely address a certain plug-in. Each plug-in has its own
+	 * namespace.
 	 *
 	 * @param aNS the namespace to be set for the token.
 	 */
@@ -175,5 +185,17 @@ public abstract class BaseToken implements Token {
 
 	public String getExclLogField(String aKey) {
 		return mExclFromLogs.get(aKey);
+	}
+
+	public static void setExclLogField(Map<String, Object> aSettings) {
+		String[] lkeys = aSettings.get(SUPRESSED_LOG_FIELDS).toString().split(",");
+		String lValue = aSettings.get(SUPRESSED_LOG_FIELDS_VALUE).toString();
+
+		for (int i = 0; i < lkeys.length; i++) {
+			try {
+				mExclFromLogs.put(lkeys[i].trim(), lValue);
+			} catch (Exception lEx) {
+			}
+		}
 	}
 }

@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import javolution.util.FastMap;
 import org.jwebsocket.api.IPacketDeliveryListener;
@@ -40,8 +41,9 @@ import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
 
 /**
- * Provides the basic implementation of the jWebSocket connectors. The {@code BaseConnector} is
- * supposed to be used as ancestor for the connector implementations like e.g. the
+ * Provides the basic implementation of the jWebSocket connectors. The {@code BaseConnector}
+ * is supposed to be used as ancestor for the connector implementations like
+ * e.g. the
  * {@code TCPConnector} or the {@code TomcatConnector }.
  *
  * @author aschulze
@@ -83,13 +85,18 @@ public class BaseConnector implements WebSocketConnector {
 	 */
 	private WebSocketEngine mEngine = null;
 	/**
-	 * Backup of the original request header and it's fields. TODO: maybe obsolete for the future
+	 * Backup of the original request header and it's fields. TODO: maybe
+	 * obsolete for the future
 	 */
 	private RequestHeader mHeader = null;
 	/**
 	 * Session object for the WebSocket connection.
 	 */
 	private final WebSocketSession mSession = new WebSocketSession();
+	/*
+	 *
+	 */
+	private final String SESSION_UID = "session_uid";
 	/**
 	 * Shared Variables container for this connector.
 	 */
@@ -100,7 +107,7 @@ public class BaseConnector implements WebSocketConnector {
 	 * Variables for the packet delivery mechanism
 	 */
 	private static Map<Integer, IPacketDeliveryListener> mPacketDeliveryListeners =
-			new FastMap<Integer, IPacketDeliveryListener>().shared();
+		new FastMap<Integer, IPacketDeliveryListener>().shared();
 
 	/**
 	 *
@@ -136,8 +143,8 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	/**
-	 * Returns the current status for the connector. Please refer to the WebSocketConnectorStatus
-	 * enumeration.
+	 * Returns the current status for the connector. Please refer to the
+	 * WebSocketConnectorStatus enumeration.
 	 *
 	 * @return
 	 */
@@ -147,8 +154,8 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	/**
-	 * Sets the current status for the connector. Please refer to the WebSocketConnectorStatus
-	 * enumeration.
+	 * Sets the current status for the connector. Please refer to the
+	 * WebSocketConnectorStatus enumeration.
 	 *
 	 * @param aStatus
 	 */
@@ -180,9 +187,9 @@ public class BaseConnector implements WebSocketConnector {
 		if (null == mSupportTokens) {
 			String lFormat = mHeader.getFormat();
 			if ((lFormat != null)
-					&& (lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_JSON)
-					|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_XML)
-					|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_CSV))) {
+				&& (lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_JSON)
+				|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_XML)
+				|| lFormat.equals(JWebSocketCommonConstants.WS_FORMAT_CSV))) {
 				mSupportTokens = true;
 			} else {
 				mSupportTokens = false;
@@ -281,18 +288,16 @@ public class BaseConnector implements WebSocketConnector {
 	@Override
 	public void processPing(WebSocketPacket aDataPacket) {
 		/*
-		 if (mEngine != null) {
-		 mEngine.processPing(this, aDataPacket);
-		 }
+		 * if (mEngine != null) { mEngine.processPing(this,
+		 * aDataPacket); }
 		 */
 	}
 
 	@Override
 	public void processPong(WebSocketPacket aDataPacket) {
 		/*
-		 if (mEngine != null) {
-		 mEngine.processPong(this, aDataPacket);
-		 }
+		 * if (mEngine != null) { mEngine.processPong(this,
+		 * aDataPacket); }
 		 */
 	}
 
@@ -303,7 +308,7 @@ public class BaseConnector implements WebSocketConnector {
 
 	@Override
 	public void sendPacketInTransaction(final WebSocketPacket aDataPacket,
-			Integer aFragmentSize, final IPacketDeliveryListener aListener) {
+		Integer aFragmentSize, final IPacketDeliveryListener aListener) {
 
 		// if the connector is internal, deliver the packet directly
 		if (isInternal()) {
@@ -317,18 +322,18 @@ public class BaseConnector implements WebSocketConnector {
 
 		// ommiting control frames
 		if (WebSocketFrameType.BINARY.equals(aDataPacket.getFrameType())
-				|| WebSocketFrameType.TEXT.equals(aDataPacket.getFrameType())) {
+			|| WebSocketFrameType.TEXT.equals(aDataPacket.getFrameType())) {
 
 			String lPacketPrefix = lPacketId.toString() + Fragmentation.PACKET_ID_DELIMETER;
 
 			try {
 				Assert.isTrue(lPacketPrefix.length() + aDataPacket.size() <= getMaxFrameSize(),
-						"The packet size exceeds the max frame size supported by the client! "
-						+ "Consider that the packet has been prefixed with " + lPacketPrefix.length()
-						+ " bytes for transaction.");
+					"The packet size exceeds the max frame size supported by the client! "
+					+ "Consider that the packet has been prefixed with " + lPacketPrefix.length()
+					+ " bytes for transaction.");
 
 				Assert.isTrue(aFragmentSize > 0 && aFragmentSize <= getMaxFrameSize(), "Invalid 'fragment size' argument! "
-						+ "Expected: fragment_size > 0 && fragment_size <= MAX_FRAME_SIZE");
+					+ "Expected: fragment_size > 0 && fragment_size <= MAX_FRAME_SIZE");
 
 				// processing fragmentation
 				if (aFragmentSize < aDataPacket.size() && aFragmentSize < getMaxFrameSize()) {
@@ -340,33 +345,34 @@ public class BaseConnector implements WebSocketConnector {
 
 					// creating a special packet for fragmentation
 					WebSocketPacket lPacketFragmented = Fragmentation.createFragmentedPacket(
-							Arrays.copyOfRange(aDataPacket.getByteArray(), 0, aFragmentSize),
-							lFragmentationId, lIsLast);
+						Arrays.copyOfRange(aDataPacket.getByteArray(), 0, aFragmentSize),
+						lFragmentationId, lIsLast);
 
 					// checking the new packet size
 					Assert.isTrue(lPacketFragmented.size() + lPacketPrefix.length() <= getMaxFrameSize(),
-							"The packet size exceeds the max frame size supported by the client! "
-							+ "Consider that the packet has been prefixed with "
-							+ (lPacketFragmented.size() + lPacketPrefix.length() - aDataPacket.size())
-							+ " bytes for fragmented transaction.");
+						"The packet size exceeds the max frame size supported by the client! "
+						+ "Consider that the packet has been prefixed with "
+						+ (lPacketFragmented.size() + lPacketPrefix.length() - aDataPacket.size())
+						+ " bytes for fragmented transaction.");
 
 					// process fragmentation
 					final BaseConnector lSender = this;
 					sendPacketInTransaction(
-							lPacketFragmented,
-							// passing special listener for fragmentation
-							Fragmentation.createListener(
-							aDataPacket,
-							aFragmentSize,
-							aListener,
-							System.currentTimeMillis(),
-							lFragmentationId,
-							new InFragmentationListenerSender() {
-								@Override
-								public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
-									lSender.sendPacketInTransaction(aDataPacket, aListener);
-								}
-							}));
+						lPacketFragmented,
+						// passing special listener for fragmentation
+						Fragmentation.createListener(
+						aDataPacket,
+						aFragmentSize,
+						aListener,
+						System.currentTimeMillis(),
+						lFragmentationId,
+						new InFragmentationListenerSender() {
+
+							@Override
+							public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+								lSender.sendPacketInTransaction(aDataPacket, aListener);
+							}
+						}));
 					return;
 				}
 
@@ -389,9 +395,11 @@ public class BaseConnector implements WebSocketConnector {
 				// schedule the timer task
 				try {
 					Tools.getTimer().schedule(new TimerTask() {
+
 						@Override
 						public void run() {
 							Tools.getThreadPool().submit(new Runnable() {
+
 								@Override
 								public void run() {
 									IPacketDeliveryListener lListener = mPacketDeliveryListeners.remove(lPacketId);
@@ -527,8 +535,8 @@ public class BaseConnector implements WebSocketConnector {
 			mCounter.compareAndSet(Long.MAX_VALUE, 0);
 			String lNodeId = JWebSocketConfig.getConfig().getNodeId();
 			mUniqueId = ((lNodeId != null && lNodeId.length() > 0) ? lNodeId + "." : "")
-					+ String.valueOf(getRemotePort())
-					+ "." + mCounter.incrementAndGet();
+				+ String.valueOf(getRemotePort())
+				+ "." + mCounter.incrementAndGet();
 		}
 		return mUniqueId;
 	}
@@ -657,6 +665,18 @@ public class BaseConnector implements WebSocketConnector {
 	 */
 	protected void checkBeforeSend(WebSocketPacket aPacket) throws Exception {
 		Assert.isTrue(getMaxFrameSize() >= aPacket.size(),
-				"The packet size exceeds the connector supported 'max frame size' value!");
+			"The packet size exceeds the connector supported 'max frame size' value!");
+	}
+
+	@Override
+	public String getSessionUID() {
+		if (getSession().getStorage().containsKey(SESSION_UID)) {
+			return getSession().getStorage().get(SESSION_UID).toString();
+
+		} else {
+			String lUUID = UUID.randomUUID().toString();
+			getSession().getStorage().put(SESSION_UID, lUUID);
+			return lUUID;
+		}
 	}
 }
