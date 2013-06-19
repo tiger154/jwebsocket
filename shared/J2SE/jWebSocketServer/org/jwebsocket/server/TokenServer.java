@@ -37,6 +37,7 @@ import org.jwebsocket.listener.WebSocketServerTokenEvent;
 import org.jwebsocket.listener.WebSocketServerTokenListener;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugInChain;
+import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Fragmentation;
@@ -78,6 +79,8 @@ public class TokenServer extends BaseServer {
 		mMaximumPoolSize = aServerConfig.getThreadPoolConfig().getMaximumPoolSize();
 		mKeepAliveTime = aServerConfig.getThreadPoolConfig().getKeepAliveTime();
 		mBlockingQueueSize = aServerConfig.getThreadPoolConfig().getBlockingQueueSize();
+		
+		BaseToken.setExclLogField(aServerConfig.getSettings());
 	}
 
 	@Override
