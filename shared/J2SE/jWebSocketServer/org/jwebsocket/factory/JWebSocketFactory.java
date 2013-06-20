@@ -27,6 +27,7 @@ import org.jwebsocket.api.*;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.engines.ServletUtils;
 import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
@@ -127,27 +128,28 @@ public class JWebSocketFactory {
 
 		JWebSocketInstance.setStatus(JWebSocketInstance.STARTING);
 
-		// loading jwebsocket server policies
-		String lPolicyFile = JWebSocketConfig.getConfigFolder("jWebSocket.policy");
-		if (null != lPolicyFile) {
-			try {
-				System.setProperty("java.security.policy", lPolicyFile);
-				System.setSecurityManager(new SecurityManager());
+		// loading jwebsocket server policies if running out of a Web App
+		if (!System.getProperties().containsKey(ServletUtils.WEB_APP_HOME_PROP_KEY)) {
+			String lPolicyFile = JWebSocketConfig.getConfigFolder("jWebSocket.policy");
+			if (null != lPolicyFile) {
+				try {
+					System.setProperty("java.security.policy", lPolicyFile);
+					System.setSecurityManager(new SecurityManager());
 
-				if (mLog.isInfoEnabled()) {
-					mLog.info("jWebSocket server security policies successfully loaded.");
+					if (mLog.isInfoEnabled()) {
+						mLog.info("jWebSocket server security policies successfully loaded.");
+					}
+				} catch (Exception lEx) {
+					mLog.error("Error loading jWebSocket server security policies...", lEx);
+					return;
 				}
-			} catch (Exception lEx) {
-				mLog.error("Error loading jWebSocket server security policies...", lEx);
-				return;
-			}
-		} else {
-			if (mLog.isInfoEnabled()) {
-				mLog.warn("jWebSocket server policy not located at $JWEBSOCKET_HOME/conf/jWebSocket.policy! "
-						+ "Running without security restrictions...");
+			} else {
+				if (mLog.isInfoEnabled()) {
+					mLog.warn("jWebSocket server policy not located at $JWEBSOCKET_HOME/conf/jWebSocket.policy! "
+							+ "Running without security restrictions...");
+				}
 			}
 		}
-
 		// start the shared utility timer
 		Tools.startUtilityTimer();
 

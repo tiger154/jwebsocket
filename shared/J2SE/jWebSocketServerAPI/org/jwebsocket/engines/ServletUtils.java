@@ -31,9 +31,14 @@ public class ServletUtils {
 	 * The servlet engine configuration parameter name
 	 */
 	public static final String SERVLET_ENGINE_CONFIG_KEY = "jws_engine";
+	/**
+	 * The servlet engine configuration parameter name
+	 */
+	public static final String WEB_APP_HOME_PROP_KEY = "WEB_APP_HOME";
 
 	/**
-	 * Extract the jWebSocket startup arguments from a servlet-context init-parameters
+	 * Extract the jWebSocket startup arguments from a servlet-context
+	 * init-parameters
 	 *
 	 * @param aContext
 	 * @return
@@ -46,18 +51,15 @@ public class ServletUtils {
 		String lHome = aContext.getInitParameter(CONTEXT_HOME_PARAMETER);
 		int lIndex = 0;
 		if (null != lConfig) {
-			lConfig = lConfig.replace("${WEB_APP_HOME}", aContext.getRealPath("") + "/");
 			lInitArgs[lIndex++] = "-config";
 			lInitArgs[lIndex++] = lConfig;
 		}
 		if (null != lBootstrap) {
-			lBootstrap = lBootstrap.replace("${WEB_APP_HOME}", aContext.getRealPath("") + "/");
 			lInitArgs[lIndex++] = "-bootstrap";
 			lInitArgs[lIndex++] = lBootstrap;
 		}
 		if (null != lHome) {
-			lHome = lHome.replace("${WEB_APP_HOME}", aContext.getRealPath("") + "/");
-			lInitArgs[lIndex++] = "-home ";
+			lInitArgs[lIndex++] = "-home";
 			lInitArgs[lIndex++] = lHome;
 		}
 
