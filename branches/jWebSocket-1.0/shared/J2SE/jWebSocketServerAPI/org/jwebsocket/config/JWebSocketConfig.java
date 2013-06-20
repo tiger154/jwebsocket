@@ -40,7 +40,8 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.util.Tools;
 
 /**
- * Represents the jWebSocket configuration. This class is immutable and should not be overridden.
+ * Represents the jWebSocket configuration. This class is immutable and should
+ * not be overridden.
  *
  * @author Marcos Antonio González Huerta (markos0886, UCI)
  * @author puran
@@ -113,8 +114,8 @@ public class JWebSocketConfig implements Config {
 
 	/**
 	 * Get the system properties
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public static Map<String, String> getProperties() {
 		return mProperties;
@@ -325,17 +326,17 @@ public class JWebSocketConfig implements Config {
 	 * @param aArgs
 	 */
 	public static void initForConsoleApp(String[] aArgs) {
+		System.out.println(aArgs);
 		if (aArgs != null && aArgs.length > 0) {
 			for (int lIdx = 0; lIdx < aArgs.length; lIdx++) {
 				// is there one more argument beyond the current one?
 				if (lIdx < aArgs.length - 1) {
 					if ("-config".equals(aArgs[lIdx])) {
-						mConfigPath = aArgs[lIdx + 1];
+						mConfigPath = Tools.expandEnvVarsAndProps(aArgs[lIdx + 1]);
 					} else if ("-bootstrap".equals(aArgs[lIdx])) {
-						mBootstrapPath = aArgs[lIdx + 1];
+						mBootstrapPath = Tools.expandEnvVarsAndProps(aArgs[lIdx + 1]);
 					} else if ("-home".equals(aArgs[lIdx])) {
-						mJWebSocketHome = aArgs[lIdx + 1];
-						mJWebSocketHome = Tools.expandEnvVarsAndProps(mJWebSocketHome);
+						mJWebSocketHome = Tools.expandEnvVarsAndProps(aArgs[lIdx + 1]);
 						// check trailing backslash
 						adjustJWebSocketHome();
 						System.setProperty(

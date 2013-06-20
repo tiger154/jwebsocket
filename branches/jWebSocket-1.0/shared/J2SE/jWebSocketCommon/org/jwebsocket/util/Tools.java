@@ -456,7 +456,7 @@ public class Tools {
      * @return
      */
     public static String expandEnvVarsAndProps(String aString) {
-        Map<String, String> lVarsMap = new FastMap<String, String>(System.getenv());
+        Map<String, String> lVarsMap = new FastMap<String, String>();
         Properties lProps = System.getProperties();
         for (Entry lEntry : lProps.entrySet()) {
             Object lKey = lEntry.getKey();
@@ -467,6 +467,8 @@ public class Tools {
                 lVarsMap.put((String) lKey, (String) lValue);
             }
         }
+		lVarsMap.putAll(System.getenv());
+		
         return expandVars(aString, lVarsMap, EXPAND_CASE_INSENSITIVE);
     }
 
