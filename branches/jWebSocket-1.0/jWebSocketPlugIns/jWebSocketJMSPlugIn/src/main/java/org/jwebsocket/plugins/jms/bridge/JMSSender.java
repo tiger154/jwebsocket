@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - JMSClientSender (Community Edition, CE)
+//  jWebSocket - JMS Sender (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -16,7 +16,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.jms.client;
+package org.jwebsocket.plugins.jms.bridge;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -28,9 +28,9 @@ import org.apache.log4j.Logger;
  *
  * @author Alexander Schulze
  */
-public class JMSClientSender {
+public class JMSSender {
 
-	static final Logger mLog = Logger.getLogger(JMSClientSender.class);
+	static final Logger mLog = Logger.getLogger(JMSSender.class);
 	private final MessageProducer mProducer;
 	private final Session mSession;
 	private final String mEndPointId;
@@ -39,31 +39,33 @@ public class JMSClientSender {
 	 *
 	 * @param aSession
 	 * @param aProducer
-	 * @param aNodeId
+	 * @param aEndPointId
 	 */
-	public JMSClientSender(Session aSession, MessageProducer aProducer,
-			String aNodeId) {
+	public JMSSender(Session aSession, MessageProducer aProducer,
+			String aEndPointId) {
 		mSession = aSession;
 		mProducer = aProducer;
-		mEndPointId = aNodeId;
+		mEndPointId = aEndPointId;
 	}
 
 	/**
 	 *
+	 * @param aTargetId
 	 * @param aText
 	 */
-	public void sendText(String aTargetId, final String aText) {
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Sending text: " 
-					+ "[content suppressed]"
+	public void sendText(final String aTargetId, final String aText) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Sending text: "
+					+ "[content suppressed, length="
+					+ (null != aText ? aText.length() : "0") + " bytes]"
 					// + aText 
 					+ "...");
 		}
 		Message lMsg;
 		try {
 			lMsg = mSession.createTextMessage(aText);
-			lMsg.setStringProperty("targetId", aTargetId);
 			lMsg.setStringProperty("sourceId", mEndPointId);
+			lMsg.setStringProperty("targetId", aTargetId);
 			mProducer.send(lMsg);
 		} catch (JMSException lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " sending message.");
@@ -71,16 +73,16 @@ public class JMSClientSender {
 	}
 
 	/**
-	 * @return the mJmsTemplate
+	 * @return the Producer
 	 */
 	public MessageProducer getProducer() {
 		return mProducer;
 	}
 
 	/**
-	 * @return the mCorrelationId
+	 * @return the EndPointId (source id of this JMS gateway!)
 	 */
-	public String getCorrelationId() {
+	public String getEndPointId() {
 		return mEndPointId;
 	}
 }

@@ -23,7 +23,7 @@
 		-->
 		<meta http-equiv="Content-Language" content="en">
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-		<title>jWebSocket STOMP Demo</title>
+		<title>jWebSocket STOMP over WebSockets Demo</title>
 		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
 
 		<script src="../../lib/stomp/stomp.js" type="text/javascript"></script>
@@ -31,7 +31,12 @@
 		<script type="text/javascript" language="JavaScript">
 
 			var eLog = null;
-			var eReconnect = null;
+			var	eMessage;
+			var eTargetId;
+			var mClient = null;
+			var mEndPointId = jws.tools.createUUID();
+			var mJMSGatewayId = "org.jwebsocket.jms.aschulze-dt";
+			var mGatewayTopic = "/topic/org.jwebsocket.jms.gateway";
 
 			function log(aString) {
 				eLog.innerHTML +=
@@ -46,58 +51,114 @@
 				eLog.scrollTop = 0;
 			}
 
-			var lClient = null;
-			var mClientId = null;
-
 			function connect() {
 				// http://jmesnil.net/stomp-websocket/doc/
 				
 				var lURL = "ws://localhost:61614/stomp";
+				
 				log("Connecting to " + lURL + " ...");
-				lClient = Stomp.client(lURL);
+				mClient = Stomp.client(lURL);
 
 				var lConnectCallback = function() {
 					log("Connected!");
 					
-					mClientId = lClient.subscribe("/queue/test", function( aMessage ) {
-						log("Received: " + aMessage );
-					});
-					
+					mEndPointId = mClient.subscribe(
+						// the JMS gateway topic
+						mGatewayTopic,  
+						// callback
+						function( aMessage ) {
+							log("Received: " + aMessage.body );
+							try {
+								var lToken = JSON.parse( aMessage.body );
+								if( "org.jwebsocket.jms.gateway" === lToken.ns ) {
+									if( "welcome" === lToken.type ) {
+										sendToken({
+											ns: "org.jwebsocket.plugins.system",
+											type: "login",
+											username: "root",
+											password: "root"
+										});
+									}	
+								}
+							} catch( aEx ) {
+								log("Could not parse message '" 
+									+ aMessage.body + "'.");
+							}
+						}, {
+							// headers	
+							id: mEndPointId,
+							selector: "targetId='" + mEndPointId + "'"
+						}
+					);
 				};
 				
 				var lErrorCallback = function() {
 					log("Error on connection!");
 				};
 
-
-				lClient.connect("", "", lConnectCallback, lErrorCallback);
+				mClient.connect(
+					"", // username
+					"", // username 
+					lConnectCallback, // on successful connection
+					lErrorCallback // on error
+				);
+			}
+			
+			function sendToken( aToken ) {
+				var lJSON = JSON.stringify( aToken );
+				mClient.send(
+					mGatewayTopic, 
+					{	sourceId: mEndPointId,
+						targetId: mJMSGatewayId
+					},
+					lJSON
+				);
 			}
 
-			function send() {
+			function broadcast() {
 				var lMsg = eMessage.value;
-				log("Sending '" + lMsg + "', waiting for answer...");
-				lClient.send("/queue/test", { priority: 9 }, "Hello, STOMP" );		
+				log("Broadcasting '" + lMsg + "', waiting for answer...");
+				sendToken({
+					ns: "org.jwebsocket.plugins.system",
+					type: "broadcast",
+					sourceId: mEndPointId,
+					sender: null,
+					pool: null,
+					data: lMsg,
+					senderIncluded: false,
+					responseRequested: true
+				});		
 			}
 
 			function disconnect() {
-				if (lClient) {
-					log("Disconnecting...");
-					lClient.disconnect();
-					log("Disconnected");
+				if( mClient ) {
+					log( "Disconnecting..." );
+					mClient.disconnect();
+					log( "Disconnected" );
 				} else {
-					log("Not connected");
+					log( "Not connected" );
 				}
 			}
 
 			function login() {
 				if (lWSC) {
-					log("Logging in...");
+					log( "Logging in..." );
+					mClient.send(
+						mGatewayTopic, 
+						{ priority: 4 }, 
+						"Hello, STOMP"
+					);
 				}
 			}
 
 			function logout() {
 				if (lWSC) {
 					log("Logging out...");
+					mClient.send(
+						mGatewayTopic, 
+						{ priority: 4 }, 
+						"Hello, STOMP"
+					);
 				}
 			}
 
@@ -119,51 +180,10 @@
 				}
 			}
 
-			function toggleReconnect() {
-				if (lWSC) {
-					var lReconnect = eReconnect.checked;
-					log("Turning auto-reconnect " + (lReconnect ? "on" : "off"));
-					lWSC.setReliabilityOptions(lReconnect ? jws.RO_ON : jws.RO_OFF);
-				}
-			}
-
-			function showReliabilityOptions() {
-				if (lWSC) {
-					var lOptions = lWSC.getReliabilityOptions();
-					var lQueue = lWSC.getOutQueue();
-					log("Reliability Options: "
-							+ (lQueue ? lQueue.length : "no") + " items in queue"
-							+ ", auto-reconnect: " + lOptions.autoReconnect
-							+ ", reconnectDelay: " + lOptions.reconnectDelay
-							+ ", queueItemLimit: " + lOptions.queueItemLimit
-							+ ", queueSizeLimit: " + lOptions.queueSizeLimit
-							);
-
-				}
-			}
-
-			function thread() {
-				log("Starting method as thread...");
-				var lRes = jws.runAsThread({
-					method: function(aOut) {
-						return("This method was called in a WebWorker thread and returned: " + aOut);
-					},
-					args: ["This was the passed argument"],
-					OnMessage: function(aToken) {
-						var lData = aToken.data;
-						log("Result: " + lData);
-					},
-					OnError: function(aToken) {
-						log("Error: " + aToken.message);
-					}
-				});
-				log(lRes.msg);
-			}
-
 			function initPage() {
 				eLog = jws.$("sdivLog");
-				eReconnect = jws.$("schkReconnect");
 				eMessage = jws.$("stxfMsg");
+				eTargetId = jws.$("stxfTargetId");
 				if (window.WebSocket) {
 
 				} else {
@@ -172,6 +192,8 @@
 					jws.$("sbtnDisconnect").setAttribute("disabled", "disabled");
 					jws.$("sbtnClear").setAttribute("disabled", "disabled");
 					jws.$("stxfMsg").setAttribute("disabled", "disabled");
+					jws.$("stxfTargetId").setAttribute("disabled", "disabled");
+					jws.$("stxfBroadcast").setAttribute("disabled", "disabled");
 					jws.$("sbtnSend").setAttribute("disabled", "disabled");
 
 					var lMsg = jws.MSG_WS_NOT_SUPPORTED;
@@ -191,26 +213,16 @@
 		onload="initPage();"
 		onunload="exitPage();"
 		>
-		<!--	remarked temporarily due to chrome 5 browser bug
-		<script type="text/javascript">
-			var lFrameElem = this.frameElement;
-			if( !lFrameElem ) {
-				location.replace( "../../index.htm?page=demos/fundamentals/fundamentals.htm" );
-			}
-		</script>
-		-->
 		<table class="tblHeader" width="100%" cellspacing="0" cellpadding="0">
 			<tr>
-				<td class="tdHeader" width="">jWebSocket STOMP via WebSockets Demo</td>
+				<td class="tdHeader" width="">jWebSocket JMS Gateway - STOMP over WebSockets Demo</td>
 				<td class="tdHeader" width="1%"><img id="simgStatus" src="../../images/disconnected.png" align="right"/></td>
 				<td class="tdHeader" width="1%"><span id="slblClientId">&nbsp;Client&#x2011;Id:&nbsp;-</span></td>
 			</tr>
 		</table>
 
-		<p>This demo shows how to easily set up a minimum JSON communication via WebSockets between a jWebSocket client and a jWebSocket server.
-			If you are not sure whether your favorite browser supports WebSockets please refer 
-			to our <a target="_top" href="http://jwebsocket.org/jws_for_all.htm">jWebSocket Cross-Browser
-				Compatibility</a> page.</p>
+		<p>This demo shows how to easily set up a jWebSocket JMS Gateway client, 
+			which communicates via STOMP over WebSockets with the jWebSocket subsystem.</p>
 		<div id="sdivLog" class="sdivContainer"
 			 style="position:relative; height:300px; overflow:auto;">
 		</div>
@@ -233,7 +245,7 @@
 						<input class="stxfDlg" id="stxfMsg" type="text" value="Please type your message here!" style="width:100%">
 					</td>
 					<td class="stdDlg" width="5">
-						<input class="sbtnDlg" id="sbtnSend" type="button" value="Send" onclick="send();">
+						<input class="sbtnDlg" id="sbtnBroadcast" type="button" value="Broadcast" onclick="broadcast();">
 					</td>
 				</tr>
 				<tr class="strDlg">
@@ -246,17 +258,16 @@
 							   title="Logs you out and disconnects from the jWebSocket server.">
 					</td>
 					<td class="stdDlg" width="5">
-						<input class="sbtnDlg" id="sbtnReliability" type="button" value="Conn.Opt." onclick="showReliabilityOptions();"
-							   title="Returns the current connection reliability options." >
+						&nbsp;
 					</td>
-					<td class="stdDlg" width="5" >Auto-Reconnect</td>
+					<td class="stdDlg" width="5" >						
+						TargetId
+					</td>
 					<td class="stdDlg" width="">
-						<input class="sbtnDlg" id="schkReconnect" type="checkbox" value="off" onclick="toggleReconnect();"
-							   title="Toggle the auto-reconnect status.">
+						<input class="stxfDlg" id="stxfTargetId" type="text" value="Please type your target id here!" style="width:100%">
 					</td>
 					<td class="stdDlg" width="5">
-						<input class="sbtnDlg" id="sbtnLogout" type="button" value="Thread" onclick="thread();"
-							   title="Runs the echo operation as a thread." >
+						<input class="sbtnDlg" id="sbtnSend" type="button" value="Send" onclick="send();">
 					</td>
 				</tr>
 				<tr class="strDlg">
@@ -275,6 +286,5 @@
 				</tr>
 			</table>
 		</div>
-
 	</body>
 </html>

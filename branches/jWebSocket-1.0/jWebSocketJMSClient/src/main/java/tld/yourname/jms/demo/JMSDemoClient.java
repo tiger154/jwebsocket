@@ -1,5 +1,5 @@
 //  ---------------------------------------------------------------------------
-//  jWebSocket - JMS Demo Client (Community Edition, CE)
+//  jWebSocket - JMS Gateway Demo Client (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -56,38 +56,41 @@ public class JMSDemoClient {
 		PropertyConfigurator.configure(lProps);
 
 		String lBrokerURL = "failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false";
-		String lConsumerTopic = "org.jwebsocket.jws2jms";
-		String lProducerTopic = "org.jwebsocket.jms2jws";
-		String lNodeId = UUID.randomUUID().toString();
+		// here we are a JMS node so we get requests from jWebSocket via on jws2jms
+		String lRequestTopic = "org.jwebsocket.jws2jms";
+		// here we are a JMS node so we send responses to jWebSocket via on jms2jws
+		String lResponseTopic = "org.jwebsocket.jms2jws";
+		String lEndPointId = UUID.randomUUID().toString();
 
 		// tcp://172.20.116.68:61616 org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
-		mLog.info("JMS Gateway Demo Client");
+		// failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
+		mLog.info("jWebSocket JMS Gateway Demo Client");
 
 		if (null != aArgs && aArgs.length >= 3) {
 			lBrokerURL = aArgs[0];
-			lConsumerTopic = aArgs[1];
-			lProducerTopic = aArgs[2];
+			lRequestTopic = aArgs[1];
+			lResponseTopic = aArgs[2];
 			if (aArgs.length >= 4) {
-				lNodeId = aArgs[3];
+				lEndPointId = aArgs[3];
 			}
 			mLog.info("Using: "
 					+ lBrokerURL + ", "
-					+ lConsumerTopic + ", "
-					+ lProducerTopic + ", "
-					+ lNodeId);
+					+ lRequestTopic + ", "
+					+ lResponseTopic + ", "
+					+ lEndPointId);
 		} else {
 			mLog.info("Usage: java -jar jWebSocketActiveMQClientBundle-<ver>.jar URL consumer-topic producer-topic [node-id]");
-			mLog.info("Example: java -jar jWebSocketActiveMQClientBundle-1.0.jar tcp://172.20.116.68:61616 " + lConsumerTopic + " " + lProducerTopic + " [your node id]");
+			mLog.info("Example: java -jar jWebSocketActiveMQClientBundle-1.0.jar tcp://172.20.116.68:61616 " + lRequestTopic + " " + lResponseTopic + " [your node id]");
 			System.exit(1);
 		}
 
 		// instantiate a new jWebSocket JMS Gateway Client
 		JMSClient lJMSClient = new JMSClient(
 				lBrokerURL,
-				lConsumerTopic, // consumer topic
-				lProducerTopic, // producer topic
-				lNodeId, // unique node id
-				5 // thread pool size, message being processed concurrently
+				lRequestTopic, // consumer topic
+				lResponseTopic, // producer topic
+				lEndPointId, // unique node id
+				5 // thread pool size, messages being processed concurrently
 				);
 
 		// add a listener to listen in coming messages

@@ -34,23 +34,19 @@ import org.jwebsocket.token.Token;
 public class JMSDemoMessageListener extends JMSBaseMessageListener {
 
 	static final Logger mLog = Logger.getLogger(JMSDemoMessageListener.class);
-	private JMSClient mJMSClient;
-	
-	// TODO: For demo purposes this demo still logs all messages in plain text
-	// TODO: this needs to be replaced by secured token logging in production!
 
-	/**
-	 *
-	 * @param aJMSClient
-	 */
 	public JMSDemoMessageListener(JMSClient aJMSClient) {
-		mJMSClient = aJMSClient;
+		super(aJMSClient);
 	}
 
 	@Override
 	public void onTextMessage(TextMessage aMessage) {
 		try {
-			mLog.info("Received text: " + aMessage.getText());
+			String lSourceId = aMessage.getStringProperty("sourceId");
+			if (mLog.isInfoEnabled()) {
+				mLog.info("Received text from '" + lSourceId
+						+ "': " + aMessage.getText());
+			}
 			String lJSON = aMessage.getText();
 			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
 			// fields for requests
@@ -64,22 +60,26 @@ public class JMSDemoMessageListener extends JMSBaseMessageListener {
 			// the server accepted the new JMS client, so login now...
 			if ("org.jwebsocket.jms.bridge".equals(lNS)) {
 				if ("welcome".equals(lType)) {
-					mLog.info("Connection successful, logging-in...");
+					if (mLog.isInfoEnabled()) {
+						mLog.info("Connection successful, logging-in...");
+					}
 					// mSender.setCorrelationId(lToken.getString("correlationId"));
-					sendText(
+					sendText(lSourceId,
 							"{\"ns\":\"org.jwebsocket.plugins.system\""
 							+ ", \"type\":\"login\""
 							+ ", \"username\":\"root\""
 							+ ", \"password\":\"root\"}");
 				} else {
-					mLog.info("Unknown JMS command: " + lJSON);
+					mLog.warn("Unknown JMS command: " + lJSON);
 				}
 				// the server login was successful, so upload the file now...
 			} else if ("org.jwebsocket.plugins.system".equals(lNS)) {
 				if ("login".equals(lReqType)) {
 					if (0 == lCode) {
-						mLog.info("Log-in successful, uploading file...");
-						sendText(
+						if (mLog.isInfoEnabled()) {
+							mLog.info("Log-in successful, uploading file...");
+						}
+						sendText(lSourceId,
 								"{\"ns\": \"org.jwebsocket.plugins.filesystem\""
 								+ ", \"type\": \"save\""
 								+ ", \"scope\": \"private\""
@@ -89,29 +89,33 @@ public class JMSDemoMessageListener extends JMSBaseMessageListener {
 								+ ", \"data\": \"This is just another test content\""
 								+ ", \"filename\": \"test.txt\"}");
 					} else {
-						mLog.info("Log-in failure: " + lMsg);
+						mLog.error("Log-in failure: " + lMsg);
 					}
 				} else if ("broadcast".equals(lType)) {
-					mLog.info("Processing broadcast: " + lJSON);
+					if (mLog.isInfoEnabled()) {
+						mLog.info("Processing broadcast: " + lJSON);
+					}
 				} else {
-					mLog.info("Received unknown system command: " + lJSON);
+					mLog.warn("Received unknown system command: " + lJSON);
 				}
 			} else if ("org.jwebsocket.plugins.filesystem".equals(lNS)) {
 				if ("save".equals(lReqType)) {
 					if (0 == lCode) {
-						mLog.info("File upload successful, shutting down...");
-						// mJMSClient.shutdown();
+						if (mLog.isInfoEnabled()) {
+							mLog.info("File upload successful, shutting down...");
+						}
+						getJMSClient().shutdown();
 					} else {
-						mLog.info("File upload failure: " + lMsg);
+						mLog.error("File upload failure: " + lMsg);
 					}
 				} else {
-					mLog.info("Received unknown filesystem command: " + lJSON);
+					mLog.warn("Received unknown filesystem command: " + lJSON);
 				}
 			} else {
-				mLog.info("Received (but ignored): " + lJSON);
+				mLog.warn("Received (but ignored): " + lJSON);
 			}
 		} catch (JMSException lEx) {
-			mLog.info(lEx.getClass().getSimpleName()
+			mLog.error(lEx.getClass().getSimpleName()
 					+ " on getting text message.");
 		}
 	}

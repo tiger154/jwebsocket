@@ -4,20 +4,19 @@ use Net::STOMP::Client;
 use JSON;
 use Data::Dumper;
 
-# the listen topic of the message broker
-$subscribe_destination = "/topic/org.jwebsocket.jws2jms";
-# the send topic of the message broker
-$publish_destination = "/topic/org.jwebsocket.jms2jws";
+# the gateway topic of the message broker
+$destination = "/topic/org.jwebsocket.jms.gateway";
 
 # exit flag for the message receiver loop
 $flag_exit = 0;
 
 # create STOMP client
-# $stomp = Net::STOMP::Client->new(uri => "stomp://127.0.0.1:61613");
-$stomp = Net::STOMP::Client->new(uri => "stomp://172.20.116.68:61613");
+# $stomp = Net::STOMP::Client->new(uri => "stomp://rsouza-dt2:61613");
+# $stomp = Net::STOMP::Client->new(uri => "stomp://localhost:61613");
+$stomp = Net::STOMP::Client->new(uri => "stomp://127.0.0.1:61613");
 
 # the unique client id (the message selector)
-$correlationId = $stomp->uuid();
+$endPointId = $stomp->uuid();
 $sid = $stomp->uuid();
 
 # connect to message broker
@@ -34,7 +33,7 @@ printf( "Connected to broker %s (IP %s), port %d\n",
 printf( "Speaking STOMP %s with server %s\n",
     $stomp->version(), $stomp->server() || "UNKNOWN" );
 printf( "Session %s started\n", $stomp->session() );
-printf( "Correlation-ID: %s, Session-ID: %s\n", $correlationId, $sid );
+printf( "EndPoint-ID: %s, Session-ID: %s\n", $endPointId, $sid );
 
 # this is the incoming message callback handler
 sub processMesage ($$) {
@@ -43,10 +42,15 @@ sub processMesage ($$) {
 
 	# extract the STOMP command from the frame
 	if ($cmd eq "MESSAGE") {
-		printf("Sychronously received: %s\n", 
+
+		# or debug purposes
+		# print Dumper($frame);
+		my $sourceId = $frame->header("sourceId");
+		printf("Sychronously received from %s: %s\n", 
 			# here you can access header data too, if required
 			# $frame->header("message-id"), 
-			$frame->body
+			$sourceId,
+			$frame->body,
 		);
 
 		# get the JSON from the message
@@ -61,7 +65,7 @@ sub processMesage ($$) {
 		# when the JMS client connects to the topic 
 		# the jWebSocket subsystem send a welcome message.
 		# this is used to send the authentication against jWebSocket
-		if( $lReceived->{'ns'} eq "org.jwebsocket.jms.bridge" ) {
+		if( $lReceived->{'ns'} eq "org.jwebsocket.jms.gateway" ) {
 			if( $lReceived->{'type'} eq "welcome" ) {
 				printf( "Authenticating against jWebSocket server...\n" );
 				$lToBeSent = {
@@ -79,6 +83,7 @@ sub processMesage ($$) {
 				# check if login was successful
 				if( $lReceived->{'code'} eq 0 ) {
 					printf( "Uploading file to jWebSocket server...\n" );
+
 					$lToBeSent = {
 						"ns" => "org.jwebsocket.plugins.filesystem",
 						"type" => "save",
@@ -91,6 +96,12 @@ sub processMesage ($$) {
 						"data" => "VGhpcyBpcyBhIHRlc3QgZmlsZSB1cGxvYWRlZCBieSB0aGUgUGVybCBTVE9NUCBjbGllbnQu",
 						"filename" => "test2.txt",
 					};
+
+					#$lToBeSent = {
+					#	"ns" => "org.jwebsocket.plugins.jdbc",
+					#	"type" => "getNextSeqVal",
+					#	"sequence" => "sq_pk_system_log",
+					#};
 				}
 			}
 		# process responses from the jWebSocket file system
@@ -119,16 +130,18 @@ sub processMesage ($$) {
 			}
 		} else {
 			$lJSON = to_json( $lToBeSent );
-			printf( "Sending token %s\n", $lJSON );
+			printf( "Sending token to %s: %s\n", $sourceId, $lJSON );
 			print Dumper($lToBeSent);
 			$stomp->send(
 				# we send to the jms->jws destination
-				destination => $publish_destination,
+				destination => $destination,
 				# the JSON as message body
 				body => $lJSON,
 
-				# don't miss the correlation id to identify the publisher!
-				"correlation-id" => $correlationId,
+				# don't miss the end point id to identify the publisher!
+				"sourceId" => $endPointId,
+				# and add the target id
+				"targetId" => $sourceId,
 			);
 		}
 	} else {
@@ -154,9 +167,9 @@ sub processMesage ($$) {
 # this is the listener to the jWebSocket-2-JMS topic
 $stomp->subscribe(
 	# we listen to the jws->jms topic
-	destination => $subscribe_destination,
-	# and use our correlation id to select the messages for this node
-	selector => "JMSCorrelationID='" . $correlationId . "'",
+	destination => $destination,
+	# and use our end point id to select the messages for this node
+	selector => "targetId='" . $endPointId . "'",
 );
 
 # synchronous message processing (recommended for console applications)
@@ -169,6 +182,8 @@ while (0 == $flag_exit) {
 }
 
 # un-subscribe from topic and...
-$stomp->unsubscribe();
+$stomp->unsubscribe(
+	destination => $destination
+);
 # disconnect from the message broker
 $stomp->disconnect();

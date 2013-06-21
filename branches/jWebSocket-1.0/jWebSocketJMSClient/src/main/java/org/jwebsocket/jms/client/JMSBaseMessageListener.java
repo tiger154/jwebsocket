@@ -32,6 +32,15 @@ import javax.jms.TextMessage;
 public class JMSBaseMessageListener implements IJMSMessageListener {
 
 	private JMSClientSender mSender;
+	private JMSClient mJMSClient;
+
+	/**
+	 *
+	 * @param aJMSClient
+	 */
+	public JMSBaseMessageListener(JMSClient aJMSClient) {
+		mJMSClient = aJMSClient;
+	}
 
 	/*
 	 public JMSBaseMessageListener(JMSClientSender aSender) {
@@ -42,8 +51,8 @@ public class JMSBaseMessageListener implements IJMSMessageListener {
 	 *
 	 * @param aText
 	 */
-	public void sendText(String aText) {
-		mSender.sendText(aText);
+	public void sendText(String aTargetId, String aText) {
+		mSender.sendText(aTargetId, aText);
 	}
 
 	/**
@@ -101,5 +110,13 @@ public class JMSBaseMessageListener implements IJMSMessageListener {
 	@Override
 	public void setSender(JMSClientSender aSender) {
 		mSender = aSender;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public JMSClient getJMSClient() {
+		return mJMSClient;
 	}
 }

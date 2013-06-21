@@ -31,7 +31,6 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import javolution.util.FastList;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -48,14 +47,13 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.jms.bridge.JMSAdvisoryListener;
 import org.jwebsocket.plugins.jms.bridge.JMSEngine;
 import org.jwebsocket.plugins.jms.bridge.JMSListener;
+import org.jwebsocket.plugins.jms.bridge.JMSSender;
 import org.jwebsocket.plugins.jms.util.ActionJms;
 import org.jwebsocket.plugins.jms.util.FieldJms;
 import org.jwebsocket.plugins.jms.util.RightJms;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 public class JMSPlugIn extends TokenPlugIn {
 
@@ -69,10 +67,15 @@ public class JMSPlugIn extends TokenPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket JMSPlugIn - Community Edition";
 	private JmsManager mJmsManager = null;
-	private DefaultMessageListenerContainer mJms2JwsListenerCont = null;
-	private DefaultMessageListenerContainer mAdvisoryListenerCont = null;
-	private JmsTemplate mJMSTemplate = null;
 	private JMSEngine mJMSEngine = null;
+	private ActiveMQConnectionFactory mConnectionFactory;
+	private Connection mConnection;
+	private Session mSession;
+	private MessageConsumer mConsumer;
+	private JMSSender mSender;
+	private JMSListener mListener;
+	private MessageConsumer mAdvisoryConsumer;
+	private Settings mSettings;
 
 	/**
 	 *
@@ -89,66 +92,7 @@ public class JMSPlugIn extends TokenPlugIn {
 			ApplicationContext lBeanFactory = getConfigBeanFactory(NS_JMS);
 			mJmsManager = JmsManager.getInstance(aConfiguration.getSettings(),
 					lBeanFactory);
-
-			String aBrokerURI =
-					"failover:(tcp://0.0.0.0:61616,tcp://172.20.116.68)?initialReconnectDelay=100&randomize=false";
-
-			Connection mConnection;
-			String mNodeId = "4711";
-			String aProducerTopic = "org.jwebsocket.jws2jms";
-			String aConsumerTopic = "org.jwebsocket.jms2jws";
-
-			// ActiveMQTopic lTopic = new ActiveMQTopic();
-			// lTopic.
-			
-			ActiveMQConnectionFactory mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
-			try {
-				mConnection = mConnectionFactory.createConnection();
-				mConnection.start();
-
-				Session lSession = mConnection.createSession(false,
-						Session.AUTO_ACKNOWLEDGE);
-
-				Topic lProducerTopic = lSession.createTopic(aProducerTopic);
-				MessageProducer lProducer = lSession.createProducer(lProducerTopic);
-				// mSender = new JMSClientSender(lSession, lProducer, mNodeId);
-
-				Topic lConsumerTopic = lSession.createTopic(aConsumerTopic);
-
-				MessageConsumer lConsumer = lSession.createConsumer(
-						lConsumerTopic,
-						"JMSCorrelationID = '" + mNodeId + "'");
-				//mListener = new JMSClientListener(mSender);
-				//lConsumer.setMessageListener(mListener);
-				//mSender.sendText("{\"ns\":\"org.jwebsocket.jms.bridge\""
-				//		+ ",\"type\":\"register\""
-				//		+ ",\"sourceId\":\"" + mNodeId + "\""
-				//		+ "}");
-
-				mConnection.stop();
-			} catch (JMSException lEx) {
-				System.out.println(lEx.getClass().getSimpleName()
-						+ " on connecting JMS client.");
-			}
-
-			mJMSTemplate = new JmsTemplate();
-			ActiveMQConnectionFactory lConnectionFactory = new ActiveMQConnectionFactory(
-					"failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false"
-					// "tcp://172.20.116.68:61616"
-					);
-			/*
-			 lConnectionFactory.setExceptionListener(new ExceptionListener() {
-			 @Override
-			 public void onException(JMSException jmse) {
-			 mLog.error(Logging.getSimpleExceptionMessage(jmse, "connecting to JMS broker"));
-			 }
-			 });
-			 */
-			mJMSTemplate.setConnectionFactory(lConnectionFactory);
-			mJMSTemplate.setDefaultDestinationName("org.jwebsocket.jws2jms");
-			mJMSTemplate.setDeliveryPersistent(false);
-			mJMSTemplate.setPubSubDomain(true);
-			mJMSTemplate.setSessionTransacted(false);
+			mSettings = (Settings) lBeanFactory.getBean("org.jwebsocket.plugins.jms.settings");
 
 			List<String> lDomains = new FastList<String>();
 			lDomains.add("*");
@@ -177,37 +121,51 @@ public class JMSPlugIn extends TokenPlugIn {
 			for (WebSocketServer lServer : lServers) {
 				lServer.addEngine(mJMSEngine);
 			}
-			mJms2JwsListenerCont =
-					(DefaultMessageListenerContainer) lBeanFactory.getBean("jms2jwsListenerContainer");
-			JMSListener lListener = (JMSListener) mJms2JwsListenerCont.getMessageListener();
-			lListener.setJMSTemplate(mJMSTemplate);
-			lListener.setEngine(mJMSEngine);
-
-			// start the listener for all messages from the JMS system
-			/*
-			 mJms2JwsListenerCont.setErrorHandler(new ErrorHandler() {
-			 @Override
-			 public void handleError(Throwable aThrowable) {
-			 mLog.error(aThrowable.getClass().getSimpleName() + " listening to JMS broker.");
-			 }
-			 });
-			 mJms2JwsListenerCont.setExceptionListener(new ExceptionListener() {
-			 @Override
-			 public void onException(JMSException jmse) {
-			 mLog.error(Logging.getSimpleExceptionMessage(jmse, "listening to JMS broker"));
-			 }
-			 });
-			 */
-			mJms2JwsListenerCont.start();
 
 			// Advisory listener
-			mAdvisoryListenerCont =
-					(DefaultMessageListenerContainer) lBeanFactory.getBean("advisoryListenerContainer");
-			JMSAdvisoryListener lAdvisoryListener =
-					(JMSAdvisoryListener) mAdvisoryListenerCont.getMessageListener();
-			lAdvisoryListener.setJMSTemplate(mJMSTemplate);
-			lAdvisoryListener.setEngine(mJMSEngine);
-			mAdvisoryListenerCont.start();
+			// setting up the JMS Gateway
+			String aBrokerURI =	mSettings.getBrokerURI();
+			String mEndPointId = mSettings.getEndPointId();
+			String lRequestTopicId = mSettings.getGatewayTopic();
+			String lResponseTopicId = mSettings.getGatewayTopic();
+			String lAdvisoryTopicId = mSettings.getAdvisoryTopic();
+
+			mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
+			try {
+				mConnection = mConnectionFactory.createConnection();
+				mConnection.start();
+
+				mSession = mConnection.createSession(false,
+						Session.AUTO_ACKNOWLEDGE);
+
+				Topic lRequestTopic = mSession.createTopic(lRequestTopicId);
+				MessageProducer lProducer = mSession.createProducer(lRequestTopic);
+				mSender = new JMSSender(mSession, lProducer, mEndPointId);
+
+				Topic lResponseTopic = mSession.createTopic(lResponseTopicId);
+				mConsumer = mSession.createConsumer(
+						lResponseTopic,
+						"targetId='" + mEndPointId + "'");
+				mListener = new JMSListener(mJMSEngine, mSender);
+				mConsumer.setMessageListener(mListener);
+
+				//mSender.sendText("{\"ns\":\"org.jwebsocket.jms.bridge\""
+				//		+ ",\"type\":\"register\""
+				//		+ ",\"sourceId\":\"" + mNodeId + "\""
+				//		+ "}");
+
+				// create the listener to the advisory topic
+				Topic lAdvisoryTopic = mSession.createTopic(lAdvisoryTopicId);
+				mAdvisoryConsumer = mSession.createConsumer(lAdvisoryTopic);
+				JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener();
+				mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
+				lAdvisoryListener.setSender(mSender);
+				lAdvisoryListener.setEngine(mJMSEngine);
+
+			} catch (JMSException lEx) {
+				System.out.println(lEx.getClass().getSimpleName()
+						+ " on connecting JMS client.");
+			}
 		} catch (Exception lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " instantiation: " + lEx.getMessage());
@@ -269,12 +227,34 @@ public class JMSPlugIn extends TokenPlugIn {
 			mJmsManager.shutDownListeners();
 		}
 		// shutdown JMS bridge listener
-		if (null != mJms2JwsListenerCont) {
-			mJms2JwsListenerCont.shutdown();
+		/*
+		 if (null != mJms2JwsListenerCont) {
+		 mJms2JwsListenerCont.shutdown();
+		 }
+		 */
+		// shutdown message listener
+		if (null != mConsumer) {
+			try {
+				mConsumer.close();
+			} catch (JMSException lEX) {
+			}
 		}
 		// shutdown advisory listener
-		if (null != mAdvisoryListenerCont) {
-			mAdvisoryListenerCont.shutdown();
+		if (null != mAdvisoryConsumer) {
+			try {
+				mAdvisoryConsumer.close();
+			} catch (JMSException lEX) {
+			}
+		}
+		if (null != mConnection) {
+			try {
+				mConnection.stop();
+			} catch (JMSException lEX) {
+			}
+			try {
+				mConnection.close();
+			} catch (JMSException lEX) {
+			}
 		}
 	}
 
