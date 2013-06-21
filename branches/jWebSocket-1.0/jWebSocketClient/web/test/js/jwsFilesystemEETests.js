@@ -327,7 +327,6 @@ jws.tests.enterprise.FileSystem = {
 			var lResponse = null;
 
 			jws.Tests.getAdminTestConn().fileLoadByChunks( lFilename, aAlias, aOffset, aLength ,{
-				decode: true,
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
