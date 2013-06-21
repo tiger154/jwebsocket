@@ -1379,6 +1379,7 @@
 		<!-- plug-in to put multiple WebSocket Servers together to a cluster 
 			requires a message broker like Apache ActiveMQ as cluster backbone
 		-->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.cluster.ClusterPlugIn</name>
 			<id>jws.cluster</id>
@@ -1391,7 +1392,8 @@
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ClusterPlugIn/cluster.xml</setting>
 			</settings>
 		</plugin>
-
+		-->
+		
 		<!-- plug-in to track statistic data about the server usage -->
 		<!-- Attention! This plug-in requires the statistics filter setting -->
 		<plugin>
@@ -1430,10 +1432,12 @@
 			</server-assignments>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JMSPlugIn/jms.xml</setting>
+				<!--
 				<setting key="connectionFactory:1" type="json">{name:"connectionFactory"}</setting>
 				<setting key="destination:1" type="json">{name:"testQueue",pubSubDomain:false,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 				<setting key="destination:2" type="json">{name:"testTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
+				-->
 			</settings>
 		</plugin>
 		
@@ -1560,9 +1564,6 @@
 					 - org.jwebsocket.plugins.filesystem.observe
 				-->
 				<!-- <setting key="authentication_method">spring</setting> -->
-				<setting key="alias:privateDir">${JWEBSOCKET_HOME}filesystem/private/{username}/</setting>
-				<setting key="alias:publicDir">${JWEBSOCKET_HOME}filesystem/public/</setting>
-				<setting key="alias:webRoot">http://localhost/public/</setting>
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
@@ -1633,23 +1634,22 @@
 			</server-assignments>
 		</plugin>
       
-		<!-- user-admin plug-in 
-	 <plugin>
-		<name>org.jwebsocket.enterprise.plugins.useradmin.UserAdminPlugIn</name>
-		<id>jws.useradmin</id>
-		<ns>org.jwebsocket.enterprise.plugins.useradmin</ns>
-		<jars>
-		   <jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketUserAdminPlugInEE-1.0.jar</jar>
-		</jars>-->
-		<!--plug-in specific settings-->
-		<!--<settings>
-			  <setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/UserAdminPlugIn/useradmin.xml</setting>
-			  <setting key="authentication_method">spring</setting>
-		   </settings>
-		   <server-assignments>
-			  <server-assignment>ts0</server-assignment>
-		   </server-assignments>
-		</plugin>-->
+		<!-- user-admin plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.useradmin.UserAdminPlugIn</name>
+			<id>jws.useradmin</id>
+			<ns>org.jwebsocket.enterprise.plugins.useradmin</ns>
+			<jars>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketUserAdminPlugInEE-1.0.jar</jar>
+			</jars>-->
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/UserAdminPlugIn/useradmin.xml</setting>
+				<setting key="authentication_method">spring</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
 		
 		<!-- Reporting plug-in -->
 		<plugin>
@@ -1915,7 +1915,6 @@
 		</filter>
 		
 		<!--this filter enabled the timeout of authentication mechanism for the UserAdmin plugIn -->
-		<!--
 		<filter>
 			<name>org.jwebsocket.enterprise.plugins.useradmin.AuthenticationFilter</name>
 			<id>jws.authenticationFilter</id>
@@ -1928,7 +1927,6 @@
 				<setting key="pass_failures_allowed">3</setting>
 			</settings>
 		</filter>
-		-->
 		
 		<!-- this filter is required to capture all events for the monitoring plug-in -->
 		<!--		<filter>
