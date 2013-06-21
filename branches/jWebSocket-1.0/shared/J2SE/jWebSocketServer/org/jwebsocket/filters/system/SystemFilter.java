@@ -140,7 +140,7 @@ public class SystemFilter extends TokenFilter {
 				for (Iterator<String> lIt = lEnc.keySet().iterator(); lIt.hasNext();) {
 					String lAttr = lIt.next();
 					String lFormat = lEnc.get(lAttr);
-					String lValue = aToken.getString(lAttr);
+					Object lValue = aToken.getObject(lAttr);
 
 					List lUserEncodingFormats = (List) aTarget.getVar(
 							JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
@@ -151,10 +151,19 @@ public class SystemFilter extends TokenFilter {
 									+ "' received (not supported). Message rejected!");
 							aResponse.rejectMessage();
 						} else if ("base64".equals(lFormat)) {
-							aToken.setString(lAttr, Tools.base64Encode(lValue.getBytes()));
+							if (lValue instanceof byte[]) {
+								aToken.setString(lAttr, Tools.base64Encode((byte[])lValue));
+							} else {
+								aToken.setString(lAttr, Tools.base64Encode(((String)lValue).getBytes()));
+							}
 						} else if ("zipBase64".equals(lFormat)) {
-							aToken.setString(lAttr, new String(Tools.zip(
-									lValue.getBytes(), Tools.ENC_BASE64), "UTF-8"));
+							if (lValue instanceof byte[]) {
+								aToken.setString(lAttr, new String(Tools.zip(
+									(byte[])lValue, Tools.ENC_BASE64), "UTF-8"));
+							} else {
+								aToken.setString(lAttr, new String(Tools.zip(
+									((String)lValue).getBytes(), Tools.ENC_BASE64), "UTF-8"));
+							}
 						}
 					} catch (Exception lEx) {
 						mLog.error(Logging.getSimpleExceptionMessage(lEx,
