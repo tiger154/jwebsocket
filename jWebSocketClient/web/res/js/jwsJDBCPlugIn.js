@@ -40,10 +40,10 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	processToken: function( aToken ) {
 		// check if namespace matches
-		if( aToken.ns == jws.JDBCPlugIn.NS ) {
+		if( aToken.ns === jws.JDBCPlugIn.NS ) {
 			// here you can handle incomimng tokens from the server
 			// directy in the plug-in if desired.
-			if( "selectSQL" == aToken.reqType ) {
+			if( "selectSQL" === aToken.reqType ) {
 				if( this.OnJDBCRowSet ) {
 					this.OnJDBCRowSet( aToken );
 				}
@@ -59,7 +59,7 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcQuerySQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "querySQL",
@@ -79,7 +79,7 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcQueryScript: function( aScript, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "querySQL",
@@ -100,7 +100,7 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcUpdateSQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "updateSQL",
@@ -122,7 +122,7 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcUpdateScript: function( aScript, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "updateSQL",
@@ -142,7 +142,7 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcExecSQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "execSQL",
@@ -161,7 +161,7 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcSelect: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lTables = aQuery.tables;
 			if( lTables && !lTables.length ) {
 				lTables = [ lTables ];
@@ -196,7 +196,7 @@ jws.JDBCPlugIn = {
 
 	jdbcUpdate: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "update",
@@ -212,7 +212,7 @@ jws.JDBCPlugIn = {
 
 	jdbcInsert: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "insert",
@@ -227,7 +227,7 @@ jws.JDBCPlugIn = {
 
 	jdbcDelete: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "delete",
@@ -241,10 +241,10 @@ jws.JDBCPlugIn = {
 	
 	jdbcGetPrimaryKeys: function( aSequence, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lCount = 1;
 			if( aOptions ) {
-				if( aOptions.count != undefined ) {
+				if( aOptions.count !== undefined ) {
 					lCount = aOptions.count;
 				}
 			}
@@ -266,12 +266,9 @@ jws.JDBCPlugIn = {
 		if( aListeners.OnJDBCRowSet !== undefined ) {
 			this.OnJDBCRowSet = aListeners.OnJDBCRowSet;
 		}
-		if( aListeners.OnJDBCResult !== undefined ) {
-			this.OnJDBCResult = aListeners.OnJDBCResult;
-		}
 	}
 
-}
+};
 
 // add the JWebSocket JDBC PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.JDBCPlugIn );
