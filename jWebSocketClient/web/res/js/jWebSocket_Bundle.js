@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC0 (build 30424)
+	//:const:*:VERSION:String:1.0 RC2 (build 30613)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC0 (build 30424)",
+	VERSION: "1.0 RC2 (build 30613)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -2283,7 +2283,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			//:todo:en:here we could think about establishing the connection
 			// but this would required to pass all args for open!
 			} else {
-				abortReconnect();
+				this.abortReconnect();
 			}	
 		}
 	},
@@ -2941,8 +2941,8 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 
 		// TODO: Remove this temporary hack with final release 1.0
 		// TODO: this was required to ensure upward compatibility from 0.10 to 0.11
-		var lNS = aToken.ns;
-		if ( null !== lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
+		var lNS = aToken['ns'];
+		if ( undefined != lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
 			aToken.ns = "org.jwebsocket" + lNS.substring( 15 );
 		} else if( null === lNS ) {
 			aToken.ns = "org.jwebsocket.plugins.system";
@@ -5877,74 +5877,72 @@ if( jws.isIE ) {
 //:d:en:plug-in provides the methods to subscribe and unsubscribe at certain _
 //:d:en:channel sn the server.
 jws.ChannelPlugIn = {
-
 	//:const:*:NS:String:org.jwebsocket.plugins.channels (jws.NS_BASE + ".plugins.channels")
 	//:d:en:Namespace for the [tt]ChannelPlugIn[/tt] class.
 	// if namespace changes update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.channels",
-
 	SUBSCRIBE: "subscribe",
 	UNSUBSCRIBE: "unsubscribe",
 	GET_CHANNELS: "getChannels",
 	CREATE_CHANNEL: "createChannel",
+	MODIFY_CHANNEL: "modifyChannel",
 	REMOVE_CHANNEL: "removeChannel",
 	GET_SUBSCRIBERS: "getSubscribers",
+	GET_PUBLISHERS: "getPublishers",
 	GET_SUBSCRIPTIONS: "getSubscriptions",
 	AUTHORIZE: "authorize",
 	PUBLISH: "publish",
-	STOP: "stop",
-	START: "start",
-
-	processToken: function( aToken ) {
+	STOP: "stopChannel",
+	START: "startChannel",
+	processToken: function(aToken) {
 		// check if namespace matches
-		if( aToken.ns == jws.ChannelPlugIn.NS ) {
+		if (aToken.ns == jws.ChannelPlugIn.NS) {
 			// here you can handle incoming tokens from the server
 			// directy in the plug-in if desired.
-			if( "event" == aToken.type ) {
-				if( "channelCreated" == aToken.name ) {
-					if( this.fOnChannelCreated ) {
-						this.fOnChannelCreated( aToken );
+			if ("event" == aToken.type) {
+				if ("channelCreated" == aToken.name) {
+					if (this.fOnChannelCreated) {
+						this.fOnChannelCreated(aToken);
 					}
-				} else if( "channelRemoved" == aToken.name ) {
-					if( this.fOnChannelRemoved ) {
-						this.fOnChannelRemoved( aToken );
+				} else if ("channelRemoved" == aToken.name) {
+					if (this.fOnChannelRemoved) {
+						this.fOnChannelRemoved(aToken);
 					}
-				} else if( "channelStarted" == aToken.name ) {
-					if( this.fOnChannelStarted ) {
-						this.fOnChannelStarted( aToken );
+				} else if ("channelStarted" == aToken.name) {
+					if (this.fOnChannelStarted) {
+						this.fOnChannelStarted(aToken);
 					}
-				} else if( "channelStopped" == aToken.name ) {
-					if( this.fOnChannelStopped ) {
-						this.fOnChannelStopped( aToken );
+				} else if ("channelStopped" == aToken.name) {
+					if (this.fOnChannelStopped) {
+						this.fOnChannelStopped(aToken);
 					}
-				} else if( "subscription" == aToken.name ) {
-					if( this.fOnChannelSubscription ) {
-						this.fOnChannelSubscription( aToken );
+				} else if ("subscription" == aToken.name) {
+					if (this.fOnChannelSubscription) {
+						this.fOnChannelSubscription(aToken);
 					}
-				} else if( "unsubscription" == aToken.name ) {
-					if( this.fOnChannelUnsubscription ) {
-						this.fOnChannelUnsubscription( aToken );
+				} else if ("unsubscription" == aToken.name) {
+					if (this.fOnChannelUnsubscription) {
+						this.fOnChannelUnsubscription(aToken);
 					}
-				} 
-			} else if( "getChannels" == aToken.reqType ) {
-				if( this.fOnChannelsReceived ) {
-					this.fOnChannelsReceived( aToken );
 				}
-			} else if ( "data" == aToken.type ) {
-				if( this.fOnChannelBroadcast ) {
-					this.fOnChannelBroadcast( aToken );
+			} else if ("getChannels" == aToken.reqType) {
+				if (this.fOnChannelsReceived) {
+					this.fOnChannelsReceived(aToken);
 				}
-			} else if( aToken.type == "response" && 
-					this.CREATE_CHANNEL == aToken.reqType && aToken.isPrivate ) {
+			} else if ("data" == aToken.type) {
+				if (this.fOnChannelBroadcast) {
+					this.fOnChannelBroadcast(aToken);
+				}
+			} else if (aToken.type == "response" &&
+					this.CREATE_CHANNEL == aToken.reqType && aToken.isPrivate) {
 				// When a private channel is created the callback 
 				// OnChannelCreated is fired to the user
-				if( this.fOnChannelCreated ) {
-						this.fOnChannelCreated( aToken );
+				if (this.fOnChannelCreated) {
+					this.fOnChannelCreated(aToken);
 				}
 			}
 		}
 	},
-
 	//:m:*:channelSubscribe
 	//:d:en:Registers the client at the given channel on the server. _
 	//:d:en:After this operation the client obtains all messages on this _
@@ -5954,57 +5952,54 @@ jws.ChannelPlugIn = {
 	//:d:en:or less time until you get the first token from the channel.
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:r:*:::void:none
-	channelSubscribe: function( aChannel, aAccessKey, aOptions ) {
+	channelSubscribe: function(aChannel, aAccessKey, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.SUBSCRIBE,
 				channel: aChannel,
 				accessKey: aAccessKey
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-
 	//:m:*:channelUnsubscribe
 	//:d:en:Unsubscribes the client from the given channel on the server.
 	//:d:en:From this point in time the client does not receive any messages _
 	//:d:en:on this channel anymore.
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:r:*:::void:none
-	channelUnsubscribe: function( aChannel, aOptions ) {
+	channelUnsubscribe: function(aChannel, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.UNSUBSCRIBE,
 				channel: aChannel
-			}, aOptions );
+			}, aOptions);
 		}
-		return lRes ;
+		return lRes;
 	},
-
 	//:m:*:channelAuth
 	//:d:en:Authenticates the client at a certain channel to publish messages.
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:a:en::aAccessKey:String:Access key configured for the channel.
 	//:a:en::aSecretKey:String:Secret key configured for the channel.
 	//:r:*:::void:none
-	channelAuth: function( aChannel, aAccessKey, aSecretKey, aOptions ) {
+	channelAuth: function(aChannel, aAccessKey, aSecretKey, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.AUTHORIZE,
 				channel: aChannel,
 				accessKey: aAccessKey,
 				secretKey: aSecretKey
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-
 	//:m:*:channelPublish
 	//:d:en:Sends a string message to the given channel on the server.
 	//:d:en:The client needs to be authenticated against the server and the
@@ -6013,19 +6008,18 @@ jws.ChannelPlugIn = {
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:a:en::aData:String:String (text) to be sent to the server side data channel.
 	//:r:*:::void:none
-	channelPublishString: function( aChannel, aString, aOptions ) {
+	channelPublishString: function(aChannel, aString, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.PUBLISH,
 				channel: aChannel,
 				data: aString
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-
 	//:m:*:channelPublish
 	//:d:en:Sends a combined string (id) and map message to the given channel _
 	//:d:en:on the server. The id can be used to identify the map type/content.
@@ -6035,20 +6029,19 @@ jws.ChannelPlugIn = {
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:a:en::aData:String:String (text) to be sent to the server side data channel.
 	//:r:*:::void:none
-	channelPublish: function( aChannel, aData, aMap, aOptions ) {
+	channelPublish: function(aChannel, aData, aMap, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.PUBLISH,
 				channel: aChannel,
 				data: aData,
 				map: aMap
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-
 	//:m:*:channelPublishMap
 	//:d:en:Sends a map message to the given channel on the server.
 	//:d:en:The client needs to be authenticated against the server and the
@@ -6057,19 +6050,62 @@ jws.ChannelPlugIn = {
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:a:en::aMap:Map:Data object to be sent to the server side data channel.
 	//:r:*:::void:none
-	channelPublishMap: function( aChannel, aMap, aOptions ) {
+	channelPublishMap: function(aChannel, aMap, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.PUBLISH,
 				channel: aChannel,
 				map: aMap
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
+	//:m:*:channelModify
+	//:d:en:Modify an existing channel properties.
+	//:d:en:The client needs to be authenticated against the server.
+	//:a:en::aId:String:The channel identifier.
+	//:a:en::aSecretKey:String:The channel secret key.
+	//:a:en::aOptions.name:String:The new channel name property value.
+	//:a:en::aOptions.newSecretKey:String:The new channel secretKey property value.
+	//:a:en::aOptions.accessKey:String:The new channel accessKey property value.
+	//:a:en::aOptions.owner:String:The new channel owner property value.
+	//:a:en::aOptions.isPrivate:Boolean:The new channel isPrivate property value.
+	//:a:en::aOptions.isSystem:Boolean:The new channel isSystem property value.
+	channelModify: function(aId, aSecretKey, aOptions) {
+		var lRes = this.checkConnected();
+		if (0 == lRes.code) {
+			var lToken = {
+				ns: jws.ChannelPlugIn.NS,
+				type: jws.ChannelPlugIn.MODIFY_CHANNEL,
+				channel: aId,
+				secretKey: aSecretKey
+			};
 
+			if (aOptions["name"]) {
+				lToken.name = aOptions.name;
+			}
+			if (aOptions["newSecretKey"]) {
+				lToken.newSecretKey = aOptions.newSecretKey;
+			}
+			if (aOptions["accessKey"]) {
+				lToken.accessKey = aOptions.accessKey;
+			}
+			if (aOptions["owner"]) {
+				lToken.owner = aOptions.owner;
+			}
+			if (undefined != aOptions["isPrivate"]) {
+				lToken.isPrivate = aOptions.isPrivate;
+			}
+			if (undefined != aOptions["isSystem"]) {
+				lToken.isSystem = aOptions.isSystem;
+			}
+
+			this.sendToken(lToken, aOptions);
+		}
+		return lRes;
+	},
 	//:m:*:channelCreate
 	//:d:en:Creates a new channel on the server. If a channel with the given _
 	//:d:en:channel-id already exists the create channel request is rejected. _
@@ -6079,32 +6115,32 @@ jws.ChannelPlugIn = {
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:a:en::aName:String:The name (human readably) of the channel.
 	//:r:*:::void:none
-	channelCreate: function( aId, aName, aOptions ) {
+	channelCreate: function(aId, aName, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			var lIsPrivate = false;
 			var lIsSystem = false;
 			var lAccessKey = null;
 			var lSecretKey = null;
 			var lOwner = null;
 			var lPassword = null;
-			if( aOptions ) {
-				if( aOptions.isPrivate != undefined ) {
+			if (aOptions) {
+				if (aOptions.isPrivate != undefined) {
 					lIsPrivate = aOptions.isPrivate;
 				}
-				if( aOptions.isSystem != undefined ) {
+				if (aOptions.isSystem != undefined) {
 					lIsSystem = aOptions.isSystem;
 				}
-				if( aOptions.accessKey != undefined ) {
+				if (aOptions.accessKey != undefined) {
 					lAccessKey = aOptions.accessKey;
 				}
-				if( aOptions.secretKey != undefined ) {
+				if (aOptions.secretKey != undefined) {
 					lSecretKey = aOptions.secretKey;
 				}
-				if( aOptions.owner != undefined ) {
+				if (aOptions.owner != undefined) {
 					lOwner = aOptions.owner;
 				}
-				if( aOptions.password != undefined ) {
+				if (aOptions.password != undefined) {
 					lPassword = aOptions.password;
 				}
 			}
@@ -6119,11 +6155,10 @@ jws.ChannelPlugIn = {
 				secretKey: lSecretKey,
 				owner: lOwner,
 				password: lPassword
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-
 	//:m:*:channelRemove
 	//:d:en:Removes a (non-system) channel on the server. Only the owner of _
 	//:d:en:channel can remove a channel. If a accessKey/secretKey pair is _
@@ -6131,24 +6166,24 @@ jws.ChannelPlugIn = {
 	//:d:en:the remove request is rejected.
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:r:*:::void:none
-	channelRemove: function( aId, aOptions ) {
+	channelRemove: function(aId, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			var lAccessKey = null;
 			var lSecretKey = null;
 			var lOwner = null;
 			var lPassword = null;
-			if( aOptions ) {
-				if( aOptions.accessKey != undefined ) {
+			if (aOptions) {
+				if (aOptions.accessKey != undefined) {
 					lAccessKey = aOptions.accessKey;
 				}
-				if( aOptions.secretKey != undefined ) {
+				if (aOptions.secretKey != undefined) {
 					lSecretKey = aOptions.secretKey;
 				}
-				if( aOptions.owner != undefined ) {
+				if (aOptions.owner != undefined) {
 					lOwner = aOptions.owner;
 				}
-				if( aOptions.password != undefined ) {
+				if (aOptions.password != undefined) {
 					lPassword = aOptions.password;
 				}
 			}
@@ -6160,11 +6195,10 @@ jws.ChannelPlugIn = {
 				secretKey: lSecretKey,
 				owner: lOwner,
 				password: lPassword
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-
 	//:m:*:channelGetSubscribers
 	//:d:en:Returns all channels to which the current client currently has
 	//:d:en:subscribed to. This also includes private channels. The owners of
@@ -6172,83 +6206,95 @@ jws.ChannelPlugIn = {
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:a:en::aAccessKey:String:Access Key for the channel (required for private channels, optional for public channels).
 	//:r:*:::void:none
-	channelGetSubscribers: function( aChannel, aAccessKey, aOptions ) {
+	channelGetSubscribers: function(aChannel, aAccessKey, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.GET_SUBSCRIBERS,
 				channel: aChannel,
 				accessKey: aAccessKey
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-
+	//:m:*:channelGetPublishers
+	//:d:en:Returns all the publishers authenticated in a certain channel
+	//:a:en::aChannel:String:The id of the server side data channel.
+	//:a:en::aAccessKey:String:Access Key for the channel (required for private channels, optional for public channels).
+	//:r:*:::void:none
+	channelGetPublishers: function(aChannel, aAccessKey, aOptions) {
+		var lRes = this.checkConnected();
+		if (0 == lRes.code) {
+			this.sendToken({
+				ns: jws.ChannelPlugIn.NS,
+				type: jws.ChannelPlugIn.GET_PUBLISHERS,
+				channel: aChannel,
+				accessKey: aAccessKey
+			}, aOptions);
+		}
+		return lRes;
+	},
 	//:m:*:channelGetSubscriptions
 	//:d:en:Returns all channels to which the current client currently has
 	//:d:en:subscribed to. This also includes private channels. The owners of
 	//:d:en:the channels are not returned due to security reasons.
 	//:a:en:::none
 	//:r:*:::void:none
-	channelGetSubscriptions: function( aOptions ) {
+	channelGetSubscriptions: function(aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.GET_SUBSCRIPTIONS
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-
 	//:m:*:channelGetIds
 	//:d:en:Tries to obtain all ids of the public channels
 	//:a:en:::none
 	//:r:*:::void:none
-	channelGetIds: function( aOptions ) {
+	channelGetIds: function(aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				type: jws.ChannelPlugIn.GET_CHANNELS
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-	
 	//:m:*:channelStop
 	//:d:en:Stop a channel given the channel identifier
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:r:*:::void:none
-	channelStop: function( aChannel, aOptions ) {
+	channelStop: function(aChannel, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				channel: aChannel,
 				type: jws.ChannelPlugIn.STOP
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-	
 	//:m:*:channelStart
 	//:d:en:Start a channel given the channel identifier
 	//:a:en::aChannel:String:The id of the server side data channel.
 	//:r:*:::void:none
-	channelStart: function( aChannel, aOptions ) {
+	channelStart: function(aChannel, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			this.sendToken({
 				ns: jws.ChannelPlugIn.NS,
 				channel: aChannel,
 				type: jws.ChannelPlugIn.START
-			}, aOptions );
+			}, aOptions);
 		}
 		return lRes;
 	},
-
 	//:m:*:setChannelCallbacks
 	//:d:en:Set the channels lifecycle callbacks
 	//:a:en::aListeners:Object:JSONObject containing the channels lifecycle callbacks
@@ -6261,32 +6307,32 @@ jws.ChannelPlugIn = {
 	//:a:en::aListeners.OnChannelUnsubscription:Function:Called when a channel receives an unsubscription
 	//:a:en::aListeners.OnChannelBroadcast:Function:Called when a channel broadcast data because of a publication
 	//:r:*:::void:none
-	setChannelCallbacks: function( aListeners ) {
-		if( !aListeners ) {
+	setChannelCallbacks: function(aListeners) {
+		if (!aListeners) {
 			aListeners = {};
 		}
-		if( aListeners.OnChannelCreated !== undefined ) {
+		if (aListeners.OnChannelCreated !== undefined) {
 			this.fOnChannelCreated = aListeners.OnChannelCreated;
 		}
-		if( aListeners.OnChannelsReceived !== undefined ) {
+		if (aListeners.OnChannelsReceived !== undefined) {
 			this.fOnChannelsReceived = aListeners.OnChannelsReceived;
 		}
-		if( aListeners.OnChannelRemoved !== undefined ) {
+		if (aListeners.OnChannelRemoved !== undefined) {
 			this.fOnChannelRemoved = aListeners.OnChannelRemoved;
 		}
-		if( aListeners.OnChannelStarted !== undefined ) {
+		if (aListeners.OnChannelStarted !== undefined) {
 			this.fOnChannelStarted = aListeners.OnChannelStarted;
 		}
-		if( aListeners.OnChannelStopped !== undefined ) {
+		if (aListeners.OnChannelStopped !== undefined) {
 			this.fOnChannelStopped = aListeners.OnChannelStopped;
 		}
-		if( aListeners.OnChannelSubscription !== undefined ) {
+		if (aListeners.OnChannelSubscription !== undefined) {
 			this.fOnChannelSubscription = aListeners.OnChannelSubscription;
 		}
-		if( aListeners.OnChannelUnsubscription !== undefined ) {
+		if (aListeners.OnChannelUnsubscription !== undefined) {
 			this.fOnChannelUnsubscription = aListeners.OnChannelUnsubscription;
 		}
-		if( aListeners.OnChannelBroadcast !== undefined ) {
+		if (aListeners.OnChannelBroadcast !== undefined) {
 			this.fOnChannelBroadcast = aListeners.OnChannelBroadcast;
 		}
 	}
@@ -6294,7 +6340,7 @@ jws.ChannelPlugIn = {
 };
 
 // add the ChannelPlugIn into the jWebSocketTokenClient class
-jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ChannelPlugIn );
+jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.ChannelPlugIn);
 //	---------------------------------------------------------------------------
 //	jWebSocket Canvas Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
@@ -6912,14 +6958,14 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ClientGamingPlugIn );
 //	Alexander Schulze, Germany (NRW)
 //  Author: Rolando Santamaria Maso
 //
-//	Licensed under the Apache License, Version 2.0 (the "License");
+//	Licensed under the Apache License, Version 2.0 (the 'License');
 //	you may not use this file except in compliance with the License.
 //	You may obtain a copy of the License at
 //
 //	http://www.apache.org/licenses/LICENSE-2.0
 //
 //	Unless required by applicable law or agreed to in writing, software
-//	distributed under the License is distributed on an "AS IS" BASIS,
+//	distributed under the License is distributed on an 'AS IS' BASIS,
 //	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
@@ -6930,9 +6976,9 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ClientGamingPlugIn );
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.EventsCallbacksHandler[/tt] class. _
 //:d:en:This class handle request callbacks on the events plug-in
-jws.oop.declareClass( "jws", "EventsCallbacksHandler", null, {
+jws.oop.declareClass( 'jws', 'EventsCallbacksHandler', null, {
 	OnTimeout: function(aRawRequest, aArgs){
-		if (undefined != aArgs.meta["OnTimeout"] && "function" == typeof(aArgs.meta["OnTimeout"])){
+		if (undefined != aArgs.meta['OnTimeout'] && 'function' == typeof(aArgs.meta['OnTimeout'])){
 			aArgs.meta.OnTimeout(aRawRequest);
 		}
 	}
@@ -6953,7 +6999,7 @@ jws.oop.declareClass( "jws", "EventsCallbacksHandler", null, {
 				{
 					switch (err)
 					{
-						case "stop_filter_chain":
+						case 'stop_filter_chain':
 							return;
 							break;
 						default:
@@ -6988,12 +7034,12 @@ jws.oop.declareClass( "jws", "EventsCallbacksHandler", null, {
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.EventsNotifier[/tt] class. _
 //:d:en:This class handle raw events notifications to/from the server side.
-jws.oop.declareClass( "jws", "EventsNotifier", null, {
-	ID: ""
+jws.oop.declareClass( 'jws', 'EventsNotifier', null, {
+	ID: ''
 	,
 	jwsClient: {}
 	,
-	NS: ""
+	NS: ''
 	,
 	filterChain: []
 	,
@@ -7009,7 +7055,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 		
 		//Initializing each filters
 		for (var lIndex = 0, lEnd = this.filterChain.length; lIndex < lEnd; lIndex++){
-			if (this.filterChain[lIndex]["initialize"]){
+			if (this.filterChain[lIndex]['initialize']){
 				this.filterChain[lIndex].initialize(this);
 			}
 		}
@@ -7054,7 +7100,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 					}
 					catch(err) {
 						switch (err) {
-							case "stop_filter_chain":
+							case 'stop_filter_chain':
 								return;
 								break;
 							default:
@@ -7068,25 +7114,25 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 			this.jwsClient.sendToken(lToken, lRequest);
 		}
 		else
-			jws.console.error( "client:not_connected" );
+			jws.console.error( 'client:not_connected' );
 	}
 	,
 	//:m:*:processToken
 	//:d:en:Processes an incoming token. Used to support S2C events notifications. _
-	//:d:en:Use the "event_name" and "plugin_id" information to execute _
+	//:d:en:Use the 'event_name' and 'plugin_id' information to execute _
 	//:d:en:a targered method in a plug-in.
 	//:a:en::aToken:Object:Token to be processed
 	//:r:*:::void:none
 	processToken: function (aToken) {
-		if ((this.NS == aToken.ns && "auth.logon" == aToken.reqType && 0 == aToken.code)){
+		if ((this.NS == aToken.ns && 'auth.logon' == aToken.reqType && 0 == aToken.code)){
 			this.user.principal = aToken.username;
 			this.user.uuid = aToken.uuid;
 			this.user.roles = aToken.roles;
 		}
-		else if ((this.NS == aToken.ns && "auth.logoff" == aToken.reqType && 0 == aToken.code)){
+		else if ((this.NS == aToken.ns && 'auth.logoff' == aToken.reqType && 0 == aToken.code)){
 			this.user.clear();
 		} 
-		else if (this.NS == aToken.ns && "s2c.en" == aToken.type){
+		else if (this.NS == aToken.ns && 's2c.en' == aToken.type){
 			var lMethod = aToken._e;
 			var lPlugIn = aToken._p;
 
@@ -7098,7 +7144,7 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 				//Sending response back to the server if the event notification
 				//has a callback
 				if (aToken.hc){
-					this.notify("s2c.r", {
+					this.notify('s2c.r', {
 						args: {
 							_rid: aToken.uid,
 							_r: lRes,
@@ -7108,13 +7154,13 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 				}
 			}
 			else {
-				//Sending the "not supported" event notification
-				this.notify("s2c.ens", {
+				//Sending the 'not supported' event notification
+				this.notify('s2c.ens', {
 					args: {
 						_rid: aToken.uid
 					}
 				});
-				jws.console.error( "s2c_event_support_not_found for: " + lMethod );
+				jws.console.error( 's2c_event_support_not_found for: ' + lMethod );
 			}
 		}
 	}
@@ -7126,11 +7172,11 @@ jws.oop.declareClass( "jws", "EventsNotifier", null, {
 //:d:en:Implementation of the [tt]jws.EventsPlugInGenerator[/tt] class. _
 //:d:en:This class handle the generation of server plug-ins as _
 //:d:en:Javascript objects.
-jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
+jws.oop.declareClass( 'jws', 'EventsPlugInGenerator', null, {
 
 	//:m:*:generate
 	//:d:en:Processes an incoming token. Used to support S2C events notifications. _
-	//:a:en::aPlugInId:String:Remote plug-in "id" to generate in the client.
+	//:a:en::aPlugInId:String:Remote plug-in 'id' to generate in the client.
 	//:a:en::aNotifier:jws.EventsNotifier:The event notifier used to connect with the server.
 	//:a:en::aCallbacks:Function:This callback is called when the plug-in has been generated successfully.
 	//:a:en::aCallbacks:Object:Contains the OnSuccess and OnFailure callbacks
@@ -7139,7 +7185,7 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 		var lPlugIn = new jws.EventsPlugIn();
 		lPlugIn.notifier = aNotifier;
 
-		aNotifier.notify("plugin.getapi", {
+		aNotifier.notify('plugin.getapi', {
 			args: {
 				plugin_id: aPlugInId
 			}
@@ -7154,25 +7200,25 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 
 				//Generating the plugin methods
 				for (method in aResponseEvent.api){
-					eval("this.plugIn." + method + "=function(aOptions){if (undefined == aOptions){aOptions = {};};var eventName=this.plugInAPI."+method+".type; aOptions.eventDefinition=this.plugInAPI."+ method + "; aOptions.timeout = this.plugInAPI."+method+".timeout; this.notifier.notify(eventName, aOptions);}")
+					eval('this.plugIn.' + method + '=function(aOptions){if (undefined == aOptions){aOptions = {};};var eventName=this.plugInAPI.'+method+'.type; aOptions.eventDefinition=this.plugInAPI.'+ method + '; aOptions.timeout = this.plugInAPI.'+method+'.timeout; this.notifier.notify(eventName, aOptions);}')
 				}
 
 				//Registering the plugin in the notifier
 				this.plugIn.notifier.plugIns[this.plugIn.id] = this.plugIn;
 
 				//Plugin is generated successfully
-				if ("function" == typeof(this.callbacks)){
+				if ('function' == typeof(this.callbacks)){
 					this.callbacks(this.plugIn);
-				} else if ("function" == typeof( this.callbacks["OnSuccess"] )){
+				} else if ('function' == typeof( this.callbacks['OnSuccess'] )){
 					this.callbacks.OnSuccess(this.plugIn);
 				}
 			}
 			,
 			OnFailure: function(aResponseEvent){
-				if ("function" == typeof( this.callbacks["OnFailure"] )){
+				if ('function' == typeof( this.callbacks['OnFailure'] )){
 					this.callbacks.OnFailure(this.plugIn);
 				} else {
-					jws.console.error("Failure generating plug-in: " + aResponseEvent.msg );
+					jws.console.error('Failure generating plug-in: ' + aResponseEvent.msg );
 				}
 			}	
 		});
@@ -7187,8 +7233,8 @@ jws.oop.declareClass( "jws", "EventsPlugInGenerator", null, {
 //:d:en:Implementation of the [tt]jws.EventsPlugIn[/tt] class. _
 //:d:en:This class represents an abstract client plug-in. The methods are _
 //:d:en:generated in runtime.
-jws.oop.declareClass( "jws", "EventsPlugIn", null, {
-	id: ""
+jws.oop.declareClass( 'jws', 'EventsPlugIn', null, {
+	id: ''
 	,
 	notifier: {}
 	,
@@ -7202,10 +7248,10 @@ jws.oop.declareClass( "jws", "EventsPlugIn", null, {
 //:class:*:jws.AppUser
 //:ancestor:*:-
 //:d:en:Application user instance.
-jws.oop.declareClass( "jws", "AppUser", null, {
-	principal: ""
+jws.oop.declareClass( 'jws', 'AppUser', null, {
+	principal: ''
 	,
-	uuid: ""
+	uuid: ''
 	,
 	roles: []
 	,
@@ -7213,9 +7259,9 @@ jws.oop.declareClass( "jws", "AppUser", null, {
 	//:d:en:Clear the user instance
 	//:r:*:::void:none
 	clear: function (){
-		this.principal = "";
+		this.principal = '';
 		this.roles = [];
-		this.uuid = "";
+		this.uuid = '';
 	}
 	,
 	//:m:*:isAuthenticated
@@ -7247,8 +7293,8 @@ jws.oop.declareClass( "jws", "AppUser", null, {
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.EventsBaseFilter[/tt] class. _
 //:d:en:This class represents an abstract client filter.
-jws.oop.declareClass( "jws", "EventsBaseFilter", null, {
-	id: ""
+jws.oop.declareClass( 'jws', 'EventsBaseFilter', null, {
+	id: ''
 	,
 	
 	//:m:*:initialize
@@ -7279,8 +7325,8 @@ jws.oop.declareClass( "jws", "EventsBaseFilter", null, {
 //:d:en:Implementation of the [tt]jws.SecurityFilter[/tt] class. _
 //:d:en:This class handle the security for every C2S event notification _
 //:d:en:in the client, using the server side security configuration.
-jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
-	id: "security"
+jws.oop.declareClass( 'jws', 'SecurityFilter', jws.EventsBaseFilter, {
+	id: 'security'
 	,
 	user: null
 	,
@@ -7318,11 +7364,11 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 				if (aRequest.OnResponse){
 					aRequest.OnResponse({
 						code: -2,
-						msg: "User is not authenticated yet. Login first!"
+						msg: 'User is not authenticated yet. Login first!'
 					}, aRequest.args);
 				}
 				this.OnNotAuthorized(aToken);
-				throw "stop_filter_chain";
+				throw 'stop_filter_chain';
 			}
 
 			//Checking if the user have the allowed roles
@@ -7331,8 +7377,8 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 				for (var k = 0; k < lUsers.length; k++){
 					lU = lUsers[k];
 					
-					if ("all" != lU){
-						lExclusion = (lU.substring(0,1) == "!") ? true : false;
+					if ('all' != lU){
+						lExclusion = (lU.substring(0,1) == '!') ? true : false;
 						lU = (lExclusion) ? lU.substring(1) : lU;
 
 						if (lU == this.user.principal){
@@ -7353,11 +7399,11 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 				if (!lUserAuthorized && lUserMatch || 0 == lRoles.length){
 					aRequest.OnResponse({
 						code: -2,
-						msg: "Not autorized to notify this event. USER restrictions: " + lUsers.toString()
+						msg: 'Not autorized to notify this event. USER restrictions: ' + lUsers.toString()
 					}, aRequest.args);
 					
 					this.OnNotAuthorized(aToken);
-					throw "stop_filter_chain";
+					throw 'stop_filter_chain';
 				}
 			}
 
@@ -7367,8 +7413,8 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 					for (var j = 0; j < this.user.roles.length; j++){
 						lR = lRoles[i];
 					
-						if ("all" != lR){
-							lExclusion = (lR.substring(0,1) == "!") ? true : false;
+						if ('all' != lR){
+							lExclusion = (lR.substring(0,1) == '!') ? true : false;
 							lR = (lExclusion) ? lR.substring(1) : lR;
 
 							if (lR == this.user.roles[j]){
@@ -7394,24 +7440,24 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 					if (aRequest.OnResponse){
 						aRequest.OnResponse({
 							code: -2,
-							msg: "Not autorized to notify this event. ROLE restrictions: " + lRoles.toString()
+							msg: 'Not autorized to notify this event. ROLE restrictions: ' + lRoles.toString()
 						}, aRequest.args);
 					}
 					this.OnNotAuthorized(aToken);
-					throw "stop_filter_chain";
+					throw 'stop_filter_chain';
 				}
 			}
 		}
 	}
 	,
 	//:m:*:OnNotAuthorized
-	//:d:en:This method is called when a "not authorized" event notification _
+	//:d:en:This method is called when a 'not authorized' event notification _
 	//:d:en:is detected. Allows to define a global behiavor for this kind _
 	//:d:en:of exception.
-	//:a:en::aToken:Object:The "not authorized" token to be processed.
+	//:a:en::aToken:Object:The 'not authorized' token to be processed.
 	//:r:*:::void:none
 	OnNotAuthorized: function(aToken){
-		jws.console.error( "not_authorized" );
+		jws.console.error( 'not_authorized' );
 	}
 });
 
@@ -7421,8 +7467,8 @@ jws.oop.declareClass( "jws", "SecurityFilter", jws.EventsBaseFilter, {
 //:d:en:Implementation of the [tt]jws.CacheFilter[/tt] class. _
 //:d:en:This class handle the cache for every C2S event notification _
 //:d:en:in the client, using the server side cache configuration.
-jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
-	id: "cache"
+jws.oop.declareClass( 'jws', 'CacheFilter', jws.EventsBaseFilter, {
+	id: 'cache'
 	,
 	cache:{}
 	,
@@ -7433,7 +7479,7 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 		this.user = aNotifier.user;
 		
 		// notifying to the server that cache is enabled in the client
-		aNotifier.notify("clientcacheaspect.setstatus", {
+		aNotifier.notify('clientcacheaspect.setstatus', {
 			args: {
 				enabled: true
 			}
@@ -7480,7 +7526,7 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 					aRequest.OnResponse(lCachedResponseEvent, aRequest.args);
 				}
 				
-				throw "stop_filter_chain";
+				throw 'stop_filter_chain';
 			}
 		}
 	}
@@ -7516,8 +7562,8 @@ jws.oop.declareClass( "jws", "CacheFilter", jws.EventsBaseFilter, {
 //:ancestor:*:jws.EventsBaseFilter
 //:d:en:Implementation of the [tt]jws.ValidatorFilter[/tt] class. _
 //:d:en:This class handle the validation for every argument in the request.
-jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
-	id: "validator"
+jws.oop.declareClass( 'jws', 'ValidatorFilter', jws.EventsBaseFilter, {
+	id: 'validator'
 	,
 	
 	//:m:*:beforeCall
@@ -7534,29 +7580,29 @@ jws.oop.declareClass( "jws", "ValidatorFilter", jws.EventsBaseFilter, {
 				if (aRequest.OnResponse){
 					aRequest.OnResponse({
 						code: -4,
-						msg: "Argument '"+lArguments[i].name+"' is required!"
+						msg: 'Argument \''+lArguments[i].name+'\' is required!'
 					}, aRequest.args);
 				}
-				throw "stop_filter_chain";
+				throw 'stop_filter_chain';
 			}else if (aToken.hasOwnProperty(lArguments[i].name)){
 				var lRequiredType = lArguments[i].type;
 				var lArgumentType = jws.tools.getType(aToken[lArguments[i].name]);
 				
 				//Supporting the numberic types domain
-				if ("number" == lRequiredType && ("integer" == lArgumentType || "double" == lArgumentType)){
+				if ('number' == lRequiredType && ('integer' == lArgumentType || 'double' == lArgumentType)){
 					return;
 				}
-				if ("double" == lRequiredType && ("integer" == lArgumentType)){
+				if ('double' == lRequiredType && ('integer' == lArgumentType)){
 					return;
 				}
 				if (lRequiredType != lArgumentType){
 					if (aRequest.OnResponse){
 						aRequest.OnResponse({
 							code: -4,
-							msg: "Argument '"+lArguments[i].name+"' has invalid type. Required type is: '"+lRequiredType+"'!"
+							msg: 'Argument \''+lArguments[i].name+'\' has invalid type. Required type is: \''+lRequiredType+'\'!'
 						}, aRequest.args);
 					}
-					throw "stop_filter_chain";
+					throw 'stop_filter_chain';
 				}
 			}
 		}
@@ -7741,11 +7787,11 @@ jws.FileSystemPlugIn = {
 	//:r:*:::void:none
 	fileGetFilelist: function( aAlias, aFilemasks, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lRecursive = false;
 
 			if( aOptions ) {
-				if( aOptions.recursive != undefined ) {
+				if( aOptions.recursive !== undefined ) {
 					lRecursive = aOptions.recursive;
 				}
 			}
@@ -7773,15 +7819,15 @@ jws.FileSystemPlugIn = {
 		var lNotify = false;
 		var lRes = this.checkConnected();
 		if( aOptions ) {
-			if( aOptions.scope != undefined ) {
+			if( aOptions.scope !== undefined ) {
 				lScope = aOptions.scope;
 			}
-			if( aOptions.notify != undefined ) {
+			if( aOptions.notify !== undefined ) {
 				// notify only is the scope is public
-				lNotify = (jws.SCOPE_PUBLIC == lScope) && aOptions.notify;
+				lNotify = (jws.SCOPE_PUBLIC === lScope) && aOptions.notify;
 			}
 		}	
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "delete",
@@ -7803,7 +7849,7 @@ jws.FileSystemPlugIn = {
 	//:r:*:::void:none
 	fileExists: function( aFilename, aAlias, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "exists",
@@ -7854,21 +7900,21 @@ jws.FileSystemPlugIn = {
 			} else {
 				lType = "save";
 			}
-			if( aOptions.scope != undefined ) {
+			if( aOptions.scope !== undefined ) {
 				lScope = aOptions.scope;
 			}
-			if( aOptions.encode != undefined ) {
+			if( aOptions.encode !== undefined ) {
 				lEncode = aOptions.encode;
 			}
-			if( aOptions.encoding != undefined ) {
+			if( aOptions.encoding !== undefined ) {
 				lEncoding = aOptions.encoding;
 			}
-			if( aOptions.encode != undefined ) {
+			if( aOptions.encode !== undefined ) {
 				lEncode = aOptions.encode;
 			}
-			if( aOptions.notify != undefined ) {
+			if( aOptions.notify !== undefined ) {
 				// notify only is the scope is public
-				lNotify = (jws.SCOPE_PUBLIC == lScope) && aOptions.notify;
+				lNotify = (jws.SCOPE_PUBLIC === lScope) && aOptions.notify;
 			}
 		}
 		if( !lType ) {
@@ -7876,7 +7922,7 @@ jws.FileSystemPlugIn = {
 			lRes.msg = "No save/append option passed.";
 			return lRes;
 		}
-		var lEnc = {}
+		var lEnc = {};
 		if( lEncode ) {
 			lEnc.data = lEncoding;
 		}
@@ -7884,13 +7930,13 @@ jws.FileSystemPlugIn = {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: lType,
+				enc: lEnc,
 				scope: lScope,
 				encoding: lEncoding,
 				encode: lEncode,
 				notify: lNotify,
 				data: aData,
-				filename: aFilename,
-				enc: lEnc
+				filename: aFilename
 			};
 			this.sendToken( lToken,	aOptions );
 		} else {
@@ -7955,16 +8001,16 @@ jws.FileSystemPlugIn = {
 		if( aOptions ) {
 			lEncoding = aOptions["encoding"] || "base64";
 			
-			if( aOptions.isNode != undefined ) {
+			if( aOptions.isNode !== undefined ) {
 				lIsNode = aOptions.isNode;
 			}
-			if( aOptions.encode != undefined ) {
+			if( aOptions.encode !== undefined ) {
 				lEncode = aOptions.encode;
 			}
 		}
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
-			var lEnc = {}
+		if( 0 === lRes.code ) {
+			var lEnc = {};
 			if( lEncode ) {
 				lEnc.data = lEncoding;
 			}
@@ -8070,7 +8116,7 @@ jws.FileSystemPlugIn = {
 			};
 		}
 		// check if the browser already supports the HTML5 File API
-		if( undefined == window.FileReader ) {
+		if( undefined === window.FileReader ) {
 			return {
 				code: -1,
 				msg: "Your browser does not yet support the HTML5 File API."
@@ -8093,7 +8139,7 @@ jws.FileSystemPlugIn = {
 			};
 		}
 		for( var lIdx = 0, lCnt = lFileList.length; lIdx < lCnt; lIdx++ ) {
-			var lFile = lFileList[ lIdx ]
+			var lFile = lFileList[ lIdx ];
 			var lReader = new FileReader();
 			var lThis = this;
 
@@ -8122,7 +8168,7 @@ jws.FileSystemPlugIn = {
 					if( aOptions.OnSuccess ) {
 						aOptions.OnSuccess( lToken );
 					}
-				}
+				};
 			})( lFile );
 
 			// if any error appears fire OnLocalFileError event
@@ -8148,7 +8194,7 @@ jws.FileSystemPlugIn = {
 					if( aOptions.OnFailure ) {
 						aOptions.OnFailure( lToken );
 					}
-				}
+				};
 			})( lFile );
 
 			// and finally read the file(s)
@@ -8218,8 +8264,8 @@ jws.FileSystemPlugIn = {
 			this.OnLocalFileError = aListeners.OnLocalFileError;
 		}
 	}
-
-}
+	
+};
 
 // add the jWebSocket FileSystem PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.FileSystemPlugIn );
@@ -8864,7 +8910,7 @@ jws.ioc.ServiceContainerBuilder.prototype._parseArguments = function(aArguments)
 	} else {
 		lArgs = {}
 	
-		for (lKey in aArguments){
+		for (var lKey in aArguments){
 			lArgs[lKey] = this._parseArguments(aArguments[lKey]);
 		}
 	}
@@ -9832,152 +9878,141 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.JDBCPlugIn );
 //:d:en:plug-in provides the methods to subscribe and unsubscribe at certain _
 //:d:en:channel on the server.
 jws.JMSPlugIn = {
-
 	// :const:*:NS:String:org.jwebsocket.plugins.channels (jws.NS_BASE +
 	// ".plugins.jms")
 	// :d:en:Namespace for the [tt]ChannelPlugIn[/tt] class.
 	// if namespace changes update server plug-in accordingly!
-	NS : jws.NS_BASE + ".plugins.jms",
-
-	SEND_TEXT : "sendJmsText",
-	SEND_TEXT_MESSAGE : "sendJmsTextMessage",
-	SEND_MAP : "sendJmsMap",
-	SEND_MAP_MESSAGE : "sendJmsMapMessage",
-	LISTEN : "listenJms",
-	LISTEN_MESSAGE : "listenJmsMessage",
-	UNLISTEN : "unlistenJms",
-
-	listenJms : function(aConnectionFactoryName, aDestinationName, 
-		aPubSubDomain, aOptions) {
+	NS: jws.NS_BASE + ".plugins.jms",
+	SEND_TEXT: "sendJmsText",
+	SEND_TEXT_MESSAGE: "sendJmsTextMessage",
+	SEND_MAP: "sendJmsMap",
+	SEND_MAP_MESSAGE: "sendJmsMapMessage",
+	LISTEN: "listenJms",
+	LISTEN_MESSAGE: "listenJmsMessage",
+	UNLISTEN: "unlistenJms",
+	listenJms: function(aConnectionFactoryName, aDestinationName,
+			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
-		if (0 == lRes.code) {
+		if (0 === lRes.code) {
 			this.sendToken({
-				ns : jws.JMSPlugIn.NS,
-				type : jws.JMSPlugIn.LISTEN,
-				connectionFactoryName : aConnectionFactoryName,
-				destinationName : aDestinationName,
-				pubSubDomain : aPubSubDomain
-			}, aOptions );
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.LISTEN,
+				connectionFactoryName: aConnectionFactoryName,
+				destinationName: aDestinationName,
+				pubSubDomain: aPubSubDomain
+			}, aOptions);
 		}
 		return lRes;
 	},
-
-	listenJmsMessage : function(aConnectionFactoryName, aDestinationName,
-		aPubSubDomain, aOptions) {
+	listenJmsMessage: function(aConnectionFactoryName, aDestinationName,
+			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
-		if (0 == lRes.code) {
+		if (0 === lRes.code) {
 			this.sendToken({
-				ns : jws.JMSPlugIn.NS,
-				type : jws.JMSPlugIn.LISTEN_MESSAGE,
-				connectionFactoryName : aConnectionFactoryName,
-				destinationName : aDestinationName,
-				pubSubDomain : aPubSubDomain
-			}, aOptions );
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.LISTEN_MESSAGE,
+				connectionFactoryName: aConnectionFactoryName,
+				destinationName: aDestinationName,
+				pubSubDomain: aPubSubDomain
+			}, aOptions);
 		}
 		return lRes;
 	},
-
-	unlistenJms : function(aConnectionFactoryName, aDestinationName,
-		aPubSubDomain, aOptions) {
+	unlistenJms: function(aConnectionFactoryName, aDestinationName,
+			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
-		if (0 == lRes.code) {
+		if (0 === lRes.code) {
 			this.sendToken({
-				ns : jws.JMSPlugIn.NS,
-				type : jws.JMSPlugIn.UNLISTEN,
-				connectionFactoryName : aConnectionFactoryName,
-				destinationName : aDestinationName,
-				pubSubDomain : aPubSubDomain
-			}, aOptions );
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.UNLISTEN,
+				connectionFactoryName: aConnectionFactoryName,
+				destinationName: aDestinationName,
+				pubSubDomain: aPubSubDomain
+			}, aOptions);
 		}
 		return lRes;
 	},
-	
-
-	sendJmsText : function(aConnectionFactoryName, aDestinationName,
-		aPubSubDomain, aText, aOptions ) {
+	sendJmsText: function(aConnectionFactoryName, aDestinationName,
+			aPubSubDomain, aText, aOptions) {
 		var lRes = this.checkConnected();
-		if (0 == lRes.code) {
+		if (0 === lRes.code) {
 			this.sendToken({
-				ns : jws.JMSPlugIn.NS,
-				type : jws.JMSPlugIn.SEND_TEXT,
-				connectionFactoryName : aConnectionFactoryName,
-				destinationName : aDestinationName,
-				pubSubDomain : aPubSubDomain,
-				msgPayLoad : aText
-			}, aOptions );
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.SEND_TEXT,
+				connectionFactoryName: aConnectionFactoryName,
+				destinationName: aDestinationName,
+				pubSubDomain: aPubSubDomain,
+				msgPayLoad: aText
+			}, aOptions);
 		}
 		return lRes;
 	},
-
-	sendJmsTextMessage : function(aConnectionFactoryName, aDestinationName,
-		aPubSubDomain, aText, aJmsHeaderProperties, aOptions ) {
+	sendJmsTextMessage: function(aConnectionFactoryName, aDestinationName,
+			aPubSubDomain, aText, aJmsHeaderProperties, aOptions) {
 		var lRes = this.checkConnected();
-		if (0 == lRes.code) {
+		if (0 === lRes.code) {
 			this.sendToken({
-				ns : jws.JMSPlugIn.NS,
-				type : jws.JMSPlugIn.SEND_TEXT_MESSAGE,
-				connectionFactoryName : aConnectionFactoryName,
-				destinationName : aDestinationName,
-				pubSubDomain : aPubSubDomain,
-				msgPayLoad : aText,
-				jmsHeaderProperties : aJmsHeaderProperties
-			}, aOptions );
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.SEND_TEXT_MESSAGE,
+				connectionFactoryName: aConnectionFactoryName,
+				destinationName: aDestinationName,
+				pubSubDomain: aPubSubDomain,
+				msgPayLoad: aText,
+				jmsHeaderProperties: aJmsHeaderProperties
+			}, aOptions);
 		}
 		return lRes;
 	},
-
-	sendJmsMap : function(aConnectionFactoryName, aDestinationName,
-		aPubSubDomain, aMap, aOptions ) {
+	sendJmsMap: function(aConnectionFactoryName, aDestinationName,
+			aPubSubDomain, aMap, aOptions) {
 		var lRes = this.checkConnected();
-		if (0 == lRes.code) {
+		if (0 === lRes.code) {
 			this.sendToken({
-				ns : jws.JMSPlugIn.NS,
-				type : jws.JMSPlugIn.SEND_MAP,
-				connectionFactoryName : aConnectionFactoryName,
-				destinationName : aDestinationName,
-				pubSubDomain : aPubSubDomain,
-				msgPayLoad : aMap
-			}, aOptions );
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.SEND_MAP,
+				connectionFactoryName: aConnectionFactoryName,
+				destinationName: aDestinationName,
+				pubSubDomain: aPubSubDomain,
+				msgPayLoad: aMap
+			}, aOptions);
 		}
 		return lRes;
 	},
-	
-	sendJmsMapMessage : function(aConnectionFactoryName, aDestinationName,
-		aPubSubDomain, aMap, aJmsHeaderProperties, aOptions ) {
+	sendJmsMapMessage: function(aConnectionFactoryName, aDestinationName,
+			aPubSubDomain, aMap, aJmsHeaderProperties, aOptions) {
 		var lRes = this.checkConnected();
-		if (0 == lRes.code) {
+		if (0 === lRes.code) {
 			this.sendToken({
-				ns : jws.JMSPlugIn.NS,
-				type : jws.JMSPlugIn.SEND_MAP_MESSAGE,
-				connectionFactoryName : aConnectionFactoryName,
-				destinationName : aDestinationName,
-				pubSubDomain : aPubSubDomain,
-				msgPayLoad : aMap,
-				jmsHeaderProperties : aJmsHeaderProperties
-			}, aOptions );
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.SEND_MAP_MESSAGE,
+				connectionFactoryName: aConnectionFactoryName,
+				destinationName: aDestinationName,
+				pubSubDomain: aPubSubDomain,
+				msgPayLoad: aMap,
+				jmsHeaderProperties: aJmsHeaderProperties
+			}, aOptions);
 		}
 		return lRes;
 	},
-
-	processToken : function(aToken) {
+	processToken: function(aToken) {
 		// check if namespace matches
-		if (aToken.ns == jws.JMSPlugIn.NS) {
+		if (aToken.ns === jws.JMSPlugIn.NS) {
 			// here you can handle incoming tokens from the server
 			// directy in the plug-in if desired.
-			if ("event" == aToken.type) {
-				if ("handleJmsText" == aToken.name) {
+			if ("event" === aToken.type) {
+				if ("handleJmsText" === aToken.name) {
 					if (this.OnHandleJmsText) {
 						this.OnHandleJmsText(aToken);
 					}
-				} else if ("handleJmsTextMessage" == aToken.name) {
+				} else if ("handleJmsTextMessage" === aToken.name) {
 					if (this.OnHandleJmsTextMessage) {
 						this.OnHandleJmsTextMessage(aToken);
 					}
-				} else if ("handleJmsMap" == aToken.name) {
+				} else if ("handleJmsMap" === aToken.name) {
 					if (this.OnHandleJmsMap) {
 						this.OnHandleJmsMap(aToken);
 					}
-				} else if ("handleJmsMapMessage" == aToken.name) {
+				} else if ("handleJmsMapMessage" === aToken.name) {
 					if (this.OnHandleJmsMapMessage) {
 						this.OnHandleJmsMapMessage(aToken);
 					}
@@ -9985,8 +10020,7 @@ jws.JMSPlugIn = {
 			}
 		}
 	},
-
-	setJMSCallbacks : function(aListeners) {
+	setJMSCallbacks: function(aListeners) {
 		if (!aListeners) {
 			aListeners = {};
 		}
@@ -10911,14 +10945,14 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SamplesPlugIn );
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
-//	Licensed under the Apache License, Version 2.0 (the "License");
+//	Licensed under the Apache License, Version 2.0 (the 'License');
 //	you may not use this file except in compliance with the License.
 //	You may obtain a copy of the License at
 //
 //	http://www.apache.org/licenses/LICENSE-2.0
 //
 //	Unless required by applicable law or agreed to in writing, software
-//	distributed under the License is distributed on an "AS IS" BASIS,
+//	distributed under the License is distributed on an 'AS IS' BASIS,
 //	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
@@ -10931,14 +10965,14 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SamplesPlugIn );
 //:d:en:This client-side plug-in provides the API to access the features of the _
 //:d:en:Scripting plug-in on the jWebSocket server.
 jws.ScriptingPlugIn = {
-	//:const:*:NS:String:org.jwebsocket.plugins.scripting (jws.NS_BASE + ".plugins.scripting")
+	//:const:*:NS:String:org.jwebsocket.plugins.scripting (jws.NS_BASE + '.plugins.scripting')
 	//:d:en:Namespace for the [tt]ScriptingPlugIn[/tt] class.
 	// if namespace is changed update server plug-in accordingly!
-	NS: jws.NS_BASE + ".plugins.scripting",
+	NS: jws.NS_BASE + '.plugins.scripting',
 	//:const:*:JWS_NS:String:scripting
 	//:d:en:Namespace within the jWebSocketClient instance.
 	// if namespace changed update the applications accordingly!
-	JWS_NS: "scripting",
+	JWS_NS: 'scripting',
 			
 	//:m:*:callScriptMethod
 	//:d:en:Calls an script application published object method. 
@@ -10953,7 +10987,7 @@ jws.ScriptingPlugIn = {
 		if (0 === lRes.code) {
 			var lToken = {
 				ns: jws.ScriptingPlugIn.NS,
-				type: "callMethod",
+				type: 'callMethod',
 				method: aMethod,
 				objectId: aObjectId,
 				app: aApp,
@@ -10974,7 +11008,24 @@ jws.ScriptingPlugIn = {
 		if (0 === lRes.code) {
 			var lToken = {
 				ns: jws.ScriptingPlugIn.NS,
-				type: "reloadApp",
+				type: 'reloadApp',
+				app: aApp
+			};
+			this.sendToken(lToken, aOptions);
+		}
+		return lRes;
+	},
+	//:m:*:getScriptAppVersion
+	//:d:en:Gets the version of an script application
+	//:a:en::aApp:String:The script application name
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	getScriptAppVersion: function(aApp, aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.ScriptingPlugIn.NS,
+				type: 'getVersion',
 				app: aApp
 			};
 			this.sendToken(lToken, aOptions);
@@ -10993,7 +11044,7 @@ jws.ScriptingPlugIn = {
 		if (0 === lRes.code && aToken) {
 			aToken.app = aApp;
 			aToken.ns = jws.ScriptingPlugIn.NS;
-			aToken.type = "token";
+			aToken.type = 'token';
 
 			this.sendToken(aToken, aOptions);
 		}
