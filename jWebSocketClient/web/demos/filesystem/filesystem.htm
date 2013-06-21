@@ -6,7 +6,7 @@
 		<!-- Comment needs to be BELOW this meta tag! -->
 		<!--
 		//	****************************************************************************
-		//	jWebSocket FileSystem Demo (Community Edition, CE)
+		//	jWebSocket Filesystem Demo (Community Edition, CE)
 		//	****************************************************************************
 		//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 		//  Alexander Schulze, Germany (NRW)
@@ -24,7 +24,6 @@
 		//	limitations under the License.
 		//	****************************************************************************
 		-->
-		<meta http-equiv="Content-Language" content="en">
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 		<title>jWebSocket FileSystem Demo</title>
 		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
@@ -34,24 +33,44 @@
 		<!-- this one imports the client side file system plug-in -->
 		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
 
-		<script type="text/javascript" language="JavaScript">
-			
+		<script type="text/javascript">
+
 			var eData = null;
 			var mFileName = "test.txt";
 			var mAlias = "publicDir";
+
+			function usePrivate() {
+				return ePrivate.checked;
+			}
 			
+			function getSelectedScope() {
+				return ( 
+					usePrivate()
+					? jws.SCOPE_PRIVATE
+					: jws.SCOPE_PUBLIC 
+				);
+			}
+
+			function getSelectedAlias() {
+				return ( 
+					usePrivate()
+					? jws.FileSystemPlugIn.ALIAS_PRIVATE
+					: jws.FileSystemPlugIn.ALIAS_PUBLIC
+				);
+			}
+
 			function loadFile() {
 				log( "Loading a file from the server via WebSockets..." );
 				// call the getTime method of the client side plug-in
 				var lRes = lWSC.fileLoad(
-					mFileName,
-					mAlias,
-					{	scope: jws.SCOPE_PUBLIC
-					}
+						mFileName,
+						getSelectedAlias(),
+						{	encoding: ""
+						}
 				);
 				// log error only, on success don't confuse the user
-				if( lRes.code != 0 ) {
-					log( lWSC.resultToString( lRes ) );
+				if(0 !== lRes.code) {
+					log(lWSC.resultToString(lRes));
 				}
 			}
 
@@ -59,83 +78,86 @@
 				log( "Saving a file from the server via WebSockets..." );
 				// call the getTime method of the client side plug-in
 				var lRes = lWSC.fileSave(
-					mFileName,
-					eData.value,
-					{	scope: jws.SCOPE_PUBLIC
-					}
+						mFileName,
+						eData.value,
+						{	scope: getSelectedScope(),
+							encode: false
+						}
 				);
 				// log error only, on success don't confuse the user
-				if( lRes.code != 0 ) {
-					log( lWSC.resultToString( lRes ) );
+				if(0 !== lRes.code ) {
+					log(lWSC.resultToString(lRes));
 				}
 			}
-			
+
 			function appendFile() {
 				log( "Appending a file from the server via WebSockets..." );
 				// call the getTime method of the client side plug-in
 				var lRes = lWSC.fileAppend(
-					mFileName,
-					eData.value,
-					{	scope: jws.SCOPE_PUBLIC
-					}
+						mFileName,
+						eData.value,
+						{ scope: getSelectedScope()
+						}
 				);
 				// log error only, on success don't confuse the user
-				if( lRes.code != 0 ) {
-					log( lWSC.resultToString( lRes ) );
-				}
-			}
-			
-			function deleteFile() {
-				log( "Deleting a file from the server via WebSockets..." );
-				// call the getTime method of the client side plug-in
-				var lRes = lWSC.fileDelete(
-					mFileName,
-					true, // force delete
-					{	scope: jws.SCOPE_PUBLIC
-					}
-				);
-				// log error only, on success don't confuse the user
-				if( lRes.code != 0 ) {
-					log( lWSC.resultToString( lRes ) );
-				}
-			}
-		
-			function getFilelist() {
-				log( "Retrieving file list from the server via WebSockets..." );
-				// call the getFilelist method of the client side plug-in
-				var lRes = lWSC.fileGetFilelist(
-					"publicDir", [ "*.*" ],
-					{	recursive: true
-					}
-				);
-				// log error only, on success don't confuse the user
-				if( lRes.code != 0 ) {
-					log( lWSC.resultToString( lRes ) );
+				if( 0 !== lRes.code ) {
+					log(lWSC.resultToString(lRes));
 				}
 			}
 
-			function onFileLoadedObs( aToken ) {
+			function deleteFile() {
+				log("Deleting a file from the server via WebSockets...");
+				// call the getTime method of the client side plug-in
+				var lRes = lWSC.fileDelete(
+						mFileName,
+						true, // force delete
+						{ scope: getSelectedScope()
+						}
+				);
+				// log error only, on success don't confuse the user
+				if( 0 !== lRes.code ) {
+					log(lWSC.resultToString(lRes));
+				}
+			}
+
+			function getFilelist() {
+				log("Retrieving file list from the server via WebSockets...");
+				// call the getFilelist method of the client side plug-in
+				var lRes = lWSC.fileGetFilelist(
+						"publicDir", ["*.*"],
+						{ recursive: true
+						}
+				);
+				// log error only, on success don't confuse the user
+				if( 0 !== lRes.code ) {
+					log(lWSC.resultToString(lRes));
+				}
+			}
+
+			function onFileLoadedObs(aToken) {
 				log( "Loaded file: " + aToken.filename + ", content: " + aToken.data );
 				eData.value = aToken.data;
 			}
 
-			function onFileDeletedObs( aToken ) {
-				log( "Deleted file: " + aToken.filename );
+			function onFileDeletedObs(aToken) {
+				log("Deleted file: " + aToken.filename);
 				eData.value = aToken.data;
 			}
 
-			function onFileErrorObs( aToken ) {
-				error( "Error loading file: " + aToken.msg );
+			function onFileErrorObs(aToken) {
+				error("Error loading file: " + aToken.msg);
 			}
 
-			function onFileSavedObs( aToken ) {
+			function onFileSavedObs(aToken) {
 				var lFilename = aToken.filename;
-				log( "File " + lFilename + " has been stored on server.");
+				log("File " + lFilename + " has been stored on server.");
 			}
 
 			function initPage() {
-				eData = jws.$( "stxfData" );
-				
+				ePrivate = jws.$("schkPrivate");
+				eFilename = jws.$("stxFilename");
+				eData = jws.$("stxfData");
+
 				lWSC.setFileSystemCallbacks({
 					OnFileLoaded: onFileLoadedObs,
 					OnFileSaved: onFileSavedObs,
@@ -159,7 +181,7 @@
 			jws.DemoPlugIn.buildDemoPage({
 				title: "FileSystem",
 				header: "jWebSocket FileSystem Demo",
-				description: "This demo shows how to remote file systems via jWebSocket."
+				description: "This demo shows how to securely access and share remote file systems via jWebSocket."
 			});
 			processInitPage();
 		</script>
@@ -189,9 +211,23 @@
 					</td>
 				</tr>
 				<tr class="strDlg">
+					<td class="stdDlg" width="5">Private</td>
+					<td class="stdDlg" width="" colspan="4" align="left">
+						<input class="schkDlg" id="schkPrivate" type="checkbox" value="" style="text-align: left"
+							   title="Check if you want to access your private file area (not accessible by other users)">
+					</td>
+				</tr>
+				<tr class="strDlg">
+					<td class="stdDlg" width="5">Filename</td>
+					<td class="stdDlg" width="" colspan="4">
+						<input class="stxfDlg" id="stxfFilename" type="text" value="test.txt" style="width:99%"
+							   title="Type here the name of file which you intend to save, load, check for existance etc.">
+					</td>
+				</tr>
+				<tr class="strDlg">
 					<td class="stdDlg" width="5">Data</td>
 					<td class="stdDlg" width="" colspan="4">
-						<input class="stxfDlg" id="stxfData" type="text" value="Your Data" style="width:99%"
+						<input class="stxfDlg" id="stxfData" type="text" value="Your File Content" style="width:99%"
 							   title="Data to be saved in a file or appended to a file.">
 					</td>
 				</tr>
