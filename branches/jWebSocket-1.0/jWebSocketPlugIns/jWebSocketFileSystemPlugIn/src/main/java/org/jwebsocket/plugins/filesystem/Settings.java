@@ -51,7 +51,7 @@ public class Settings {
 	 * @return
 	 */
 	public String getAliasPath(String aAliasName) {
-		return mAliases.get(aAliasName);
+		return JWebSocketConfig.expandEnvAndJWebSocketVars(mAliases.get(aAliasName));
 	}
 
 	/**

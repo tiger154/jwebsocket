@@ -21,6 +21,7 @@ package org.jwebsocket.plugins.filesystem;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ThreadFactory;
+import javax.activation.MimetypesFileTypeMap;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.io.FileUtils;
@@ -233,9 +234,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 */
 	public String getAliasPath(WebSocketConnector aConnector, String aAlias) {
 		String lBaseDir = mSettings.getAliasPath(aAlias);
-		lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir);
-
+		
 		if (null != lBaseDir && aAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
+			lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir);
 			lBaseDir = lBaseDir.replace("{username}", aConnector.getUsername());
 		}
 
@@ -512,19 +513,24 @@ public class FileSystemPlugIn extends TokenPlugIn {
 						+ "' does not exist in the given alias!");
 				return;
 			}
-
 			lBA = FileUtils.readFileToByteArray(lFile);
-			if (lBA != null && lBA.length > 0) {
+			
+			// populating the response data field according to the file type
+			String lFileType = new MimetypesFileTypeMap().getContentType(lFile);
+			if (lFileType.contains("text/")){
 				lData = new String(lBA);
+				lResponse.setString("data", lData);
+			} else {
+				lResponse.getMap().put("data", lBA);
+				lResponse.setBoolean("__binaryData", Boolean.TRUE);
 			}
-			lResponse.setString("data", lData);
 		} catch (Exception lEx) {
 			lResponse.setInteger("code", -1);
 			lMsg = lEx.getClass().getSimpleName() + " on load: " + lEx.getMessage();
 			lResponse.setString("msg", lMsg);
 			mLog.error(lMsg);
 		}
-
+		
 		// send response to requester
 		String lEncoding = aToken.getString("encoding", "base64");
 		lResponse.setMap("enc", new MapAppender().append("data", lEncoding).getMap());
