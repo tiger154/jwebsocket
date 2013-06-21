@@ -1460,7 +1460,23 @@ jws.tools = {
 			}
 		}
 		return lConstructor;
-	}
+	}, 
+	
+	createUUID: function() {
+		// please refer to http://www.ietf.org/rfc/rfc4122.txt
+		var lSegments = [];
+		var lHexDigits = "0123456789abcdef";
+		for (var lIdx = 0; lIdx < 36; lIdx++) {
+			lSegments[lIdx] = lHexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+		}
+		lSegments[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+		lSegments[19] = lHexDigits.substr((lSegments[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+		lSegments[8] = lSegments[13] = lSegments[18] = lSegments[23] = "-";
+
+		var lUUID= lSegments.join("");
+		return lUUID;
+	}	
+	
 };
 
 if( !jws.browserSupportsNativeWebSockets ) {
