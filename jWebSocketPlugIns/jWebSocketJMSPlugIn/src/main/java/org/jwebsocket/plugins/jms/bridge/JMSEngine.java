@@ -26,8 +26,10 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.logging.Logging;
 
 /**
+ * JMS Engine implementation to treat JMS endpoints in the same way like
+ * jWebSocket clients
  *
- * @author alexanderschulze
+ * @author Alexander Schulze
  */
 // http://docs.oracle.com/javaee/1.3/jms/tutorial/1_3_1-fcs/doc/jms_tutorialTOC.html
 public class JMSEngine extends BaseEngine {
@@ -37,27 +39,31 @@ public class JMSEngine extends BaseEngine {
 	public JMSEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Instantiating JMS Engine...");
+			mLog.debug("Instantiating JMSEngine...");
 		}
 		// ...
 		if (mLog.isInfoEnabled()) {
-			mLog.info("JMS Engine successfully instantiated.");
+			mLog.info("JMSEngine successfully instantiated.");
 		}
 	}
 
 	@Override
-	public void processPacket(WebSocketConnector aConnector, WebSocketPacket aDataPacket) {
+	public void processPacket(WebSocketConnector aConnector,
+			WebSocketPacket aDataPacket) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing packet: " + "[content supressed]" /* + aDataPacket.getString() */);
+			mLog.debug("Processing packet: "
+					+ "[content supressed]" /* + aDataPacket.getString() */);
 			// be careful with sensitive data packets in logs!
 		}
 		super.processPacket(aConnector, aDataPacket);
 	}
 
 	@Override
-	public void sendPacket(WebSocketConnector aConnector, WebSocketPacket aDataPacket) {
+	public void sendPacket(WebSocketConnector aConnector,
+			WebSocketPacket aDataPacket) {
 		if (mLog.isDebugEnabled()) {
-			mLog.debug("Sending packet: " + "[content supressed]" /* + aDataPacket.getString() */);
+			mLog.debug("Sending packet: "
+					+ "[content supressed]" /* + aDataPacket.getString() */);
 			// be careful with sensitive data packets in logs!
 		}
 	}

@@ -34,7 +34,6 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.springframework.jms.core.JmsTemplate;
 
 /**
  *
@@ -44,13 +43,15 @@ public class JMSAdvisoryListener implements MessageListener {
 
 	private static Logger mLog = Logging.getLogger();
 	private JMSEngine mEngine = null;
-	private JmsTemplate mJMSTemplate = null;
-	private Map<String, String> mCorrelations = new FastMap<String, String>();
+	private JMSSender mJMSSender = null;
+	private Map<String, String> mEndPoints = new FastMap<String, String>();
 
 	@Override
 	public void onMessage(Message aMessage) {
 
-		mLog.info(">>>> " + aMessage);
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Received Advisory Message: " + aMessage);
+		}
 
 		if (aMessage instanceof ActiveMQMessage) {
 			try {
@@ -62,48 +63,64 @@ public class JMSAdvisoryListener implements MessageListener {
 				} else if (lDataStructure instanceof ConsumerInfo) {
 					ConsumerInfo lConsumer = (ConsumerInfo) lMessage.getDataStructure();
 					String lConnectionId = lConsumer.getConsumerId().getConnectionId();
-					String lCorrelationId = lConsumer.getSelector();
-					if (null == lCorrelationId) {
-						lCorrelationId = lConnectionId;
+					String lEndPointId = lConsumer.getSelector();
+					if (null == lEndPointId) {
+						lEndPointId = lConnectionId;
 					} else {
-						int lStart = lCorrelationId.indexOf("'");
-						int lEnd = lCorrelationId.indexOf("'", lStart + 1);
-						lCorrelationId = lCorrelationId.substring(lStart + 1, lEnd);
+						int lStart = lEndPointId.indexOf("'");
+						int lEnd = lEndPointId.indexOf("'", lStart + 1);
+						lEndPointId = lEndPointId.substring(lStart + 1, lEnd);
 					}
 
-					mCorrelations.put(lConnectionId, lCorrelationId);
-					WebSocketConnector lConnector = new JMSConnector(mEngine,
-							mJMSTemplate, lCorrelationId, lCorrelationId);
-					mEngine.addConnector(lConnector);
+					// add connector if not event from the gateway itself.
+					if (null != lEndPointId) {
+						if (lEndPointId.equals(mJMSSender.getEndPointId())) {
+							if (mLog.isInfoEnabled()) {
+								mLog.info("JMS Gateway successfully connected to broker.");
+							}
+						} else {
+							mEndPoints.put(lConnectionId, lEndPointId);
+							WebSocketConnector lConnector = new JMSConnector(mEngine,
+									mJMSSender, lConnectionId, lEndPointId);
+							mEngine.addConnector(lConnector);
 
-					mLog.info("JMS client connected, connector '"
-							+ lConnectionId 
-							+ "' added to JMSEngine, correlation-id: '" 
-							+ lCorrelationId + "'.");
-					Token lToken = TokenFactory.createToken(
-							"org.jwebsocket.jms.bridge",
-							"welcome");
-					lConnector.sendPacket(JSONProcessor.tokenToPacket(lToken));
-
+							if (mLog.isInfoEnabled()) {
+								mLog.info("JMS client connected"
+										+ ", connector '" + lEndPointId
+										+ "' added to JMSEngine"
+										+ ", connection-id: '"
+										+ lConnectionId + "'.");
+							}
+							Token lToken = TokenFactory.createToken(
+									"org.jwebsocket.jms.gateway",
+									"welcome");
+							lConnector.sendPacket(JSONProcessor.tokenToPacket(lToken));
+						}
+					}
 				} else if (lDataStructure instanceof RemoveInfo) {
 					RemoveInfo lRemove = (RemoveInfo) lMessage.getDataStructure();
 
 					DataStructure lDS = lRemove.getObjectId();
 					if (lDS instanceof ConsumerId) {
 						String lConnectionId = ((ConsumerId) lDS).getConnectionId();
-						String lCorrelationId = mCorrelations.get(lConnectionId);
+						String lEndPointId = mEndPoints.get(lConnectionId);
 						WebSocketConnector lConnector = null;
-						if (null != lCorrelationId) {
-							lConnector = mEngine.getConnectors().get(lCorrelationId);
-							mCorrelations.remove(lConnectionId);
+						if (null != lEndPointId) {
+							lConnector = mEngine.getConnectors().get(lEndPointId);
+							mEndPoints.remove(lConnectionId);
 						}
 						if (null != lConnector) {
 							mEngine.removeConnector(lConnector);
-							mLog.info("JMS client disconnected, "
-									+ "Connector '" + lConnectionId
-									+ "' removed from JMSEngine, correlation-id: '" + lCorrelationId + "'.");
+							if (mLog.isInfoEnabled()) {
+								mLog.info("JMS client disconnected"
+										+ ", connector '" + lEndPointId
+										+ "' removed from JMSEngine"
+										+ ", connection-id: '"
+										+ lConnectionId + "'.");
+							}
 						} else {
-							mLog.error("Connector '" + lConnectionId + "' could not be removed from JMSEngine!");
+							mLog.error("Connector '" + lConnectionId
+									+ "' could not be removed from JMSEngine!");
 						}
 					} else {
 						mLog.warn("Unknown remove message: " + aMessage);
@@ -133,16 +150,16 @@ public class JMSAdvisoryListener implements MessageListener {
 	}
 
 	/**
-	 * @return the mJMSTemplate
+	 * @return the JMSSender
 	 */
-	public JmsTemplate getJMSTemplate() {
-		return mJMSTemplate;
+	public JMSSender getSender() {
+		return mJMSSender;
 	}
 
 	/**
-	 * @param aJMSTemplate the mJMSTemplate to set
+	 * @param aJMSSender the mJMSSender to set
 	 */
-	public void setJMSTemplate(JmsTemplate aJMSTemplate) {
-		mJMSTemplate = aJMSTemplate;
+	public void setSender(JMSSender aJMSSender) {
+		mJMSSender = aJMSSender;
 	}
 }

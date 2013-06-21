@@ -18,55 +18,51 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.bridge;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.RequestHeader;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 
 /**
+ * JMS Gateway Connector, the WebSocket Connector Pendant
  *
- * @author alexanderschulze
+ * @author Alexander Schulze
  */
 public class JMSConnector extends BaseConnector {
 
-	JmsTemplate mJmsTemplate = null;
-	private String mConnectionId = "-";
-	private String mCorrelationId = "-";
+	JMSSender mJMSSender = null;
+	private String mTargetId = "-";
+	private String mRemoteHost = "-";
 
-	public JMSConnector(WebSocketEngine aEngine, JmsTemplate aJMSTemplate,
-			String aConnectionId, String aCorrelationId) {
+	/**
+	 *
+	 * @param aEngine
+	 * @param aJMSSender
+	 * @param aTargetId
+	 */
+	public JMSConnector(WebSocketEngine aEngine, JMSSender aJMSSender,
+			String aRemoteHost, String aTargetId) {
 		super(aEngine);
 
-		mJmsTemplate = aJMSTemplate;
-		
+		mJMSSender = aJMSSender;
+
 		RequestHeader lHeader = new RequestHeader();
 		lHeader.put(RequestHeader.WS_PROTOCOL, "org.jwebsocket.json");
 		setHeader(lHeader);
-		
-		mConnectionId = aConnectionId;
-		mCorrelationId = aCorrelationId;
+
+		mRemoteHost = aRemoteHost;
+		mTargetId = aTargetId;
 	}
 
 	@Override
 	public String getId() {
-		return mConnectionId;
+		return mTargetId;
 	}
 
 	@Override
 	public void sendPacket(final WebSocketPacket aDataPacket) {
-		mJmsTemplate.send(new MessageCreator() {
-			@Override
-			public Message createMessage(Session aSession) throws JMSException {
-				Message lMsg = aSession.createTextMessage(aDataPacket.getUTF8());
-				lMsg.setJMSCorrelationID(mCorrelationId);
-				return lMsg;
-			}
-		});
-			
+		mJMSSender.sendText(mTargetId, aDataPacket.getUTF8());
 	}
 }

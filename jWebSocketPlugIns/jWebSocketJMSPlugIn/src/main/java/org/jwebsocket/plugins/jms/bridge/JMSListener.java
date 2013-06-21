@@ -30,82 +30,90 @@ import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
-import org.springframework.jms.core.JmsTemplate;
 
 /**
+ * JMS Gateway Message listener
  *
- * @author alexanderschulze
+ * @author Alexander Schulze
  */
 public class JMSListener implements MessageListener {
 
 	private static Logger mLog = Logging.getLogger();
-	JmsTemplate mJMSTemplate = null;
+	private JMSSender mJMSSender = null;
 	private JMSEngine mEngine = null;
 
-	public JmsTemplate getJMSTemplate() {
-		return mJMSTemplate;
+	public JMSListener(JMSEngine aEngine, JMSSender aJMSSender) {
+		mEngine = aEngine;
+		mJMSSender = aJMSSender;
 	}
 
-	public void setJMSTemplate(JmsTemplate aJMSTemplate) {
-		mJMSTemplate = aJMSTemplate;
+	public JMSSender getJMSSender() {
+		return mJMSSender;
 	}
 
 	@Override
 	public void onMessage(Message aMsg) {
 		String lJSON = null;
-		String lCorrelationId = null;
-		
+		String lSourceId = null;
+
 		try {
 			if (aMsg instanceof ActiveMQTextMessage) {
 				ActiveMQTextMessage lTextMsg = (ActiveMQTextMessage) aMsg;
 				lJSON = lTextMsg.getText();
-				lCorrelationId = lTextMsg.getJMSCorrelationID();
+				lSourceId = (String) lTextMsg.getProperty("sourceId");
 			} else if (aMsg instanceof ActiveMQBytesMessage) {
 				ActiveMQBytesMessage lBytesMsg = (ActiveMQBytesMessage) aMsg;
 				lJSON = new String(lBytesMsg.getContent().getData(), "UTF-8");
-				lCorrelationId = lBytesMsg.getJMSCorrelationID();
+				lSourceId = (String) lBytesMsg.getProperty("sourceId");
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx,
 					"getting " + aMsg.getClass().getSimpleName() + " message"));
 		}
 		// TODO: and what happens if none of the above types?
-		
+
 		try {
 			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
 			String lNS = lToken.getNS();
 			String lType = lToken.getType();
-			if ("org.jwebsocket.jms.bridge".equals(lNS)) {
+			if ("org.jwebsocket.jms.gateway".equals(lNS)) {
 				/*
 				 if ("connect".equals(lType)) {
 				 if (mEngine.getConnectors().size() <= 0) {
-				 mConnector = new JMSConnector(mEngine, mJMSTemplate, "-");
+				 mConnector = new JMSConnector(mEngine, mJMSSender, "-");
 				 mEngine.addConnector(mConnector);
 				 }
 				 if (mLog.isInfoEnabled()) {
 				 mLog.info("Registered new JMS client (Id = '" + lCorrelationId + "').");
 				 }
 				 String lPacket = "{\"ns\":\"org.jwebsocket.jms.bridge\",\"type\":\"accepted\"}";
-				 mJMSTemplate.convertAndSend(lPacket);
+				 mJMSSender.convertAndSend(lPacket);
 				 } else {
 				 mLog.warn("JMS bridge command '" + lType + "' ignored!");
 				 }
 				 */
-				mLog.warn("JMS bridge command '" + lType + "' ignored!");
+				mLog.warn("JMS Gateway command '" + lType + "' ignored!");
 			} else {
 				// here the incoming packets from the JMS bridge are processed
 				WebSocketConnector lConnector = null;
-				if (null != lCorrelationId) {
+				if (null != lSourceId) {
 					if (mLog.isDebugEnabled()) {
-						mLog.debug("Processing JMS packet from '" + lCorrelationId + "' [content supressed]...");
+						mLog.debug("Processing JMS packet from '"
+								+ lSourceId
+								+ "' [content suppressed, length="
+								+ (null != lJSON ? lJSON.length() : "0")
+								+ " bytes]...");
 						// don't log JSON text packet here, it could contain sensitive data!
 					}
 					Map<String, WebSocketConnector> lConnectors = mEngine.getConnectors();
 					if (null != lConnectors) {
-						lConnector = lConnectors.get(lCorrelationId);
+						lConnector = lConnectors.get(lSourceId);
+						if (null == lConnector) {
+							mLog.warn("No connector with Endpoint Id '" + lSourceId + "'.");
+						}
 					}
 				} else {
-					mLog.warn("Processing JMS packet with out valid correlation ID.");
+					mLog.warn("Processing JMS packet with out source-id.");
 				}
 				if (null != lConnector) {
 					WebSocketPacket lPacket = new RawPacket(lJSON);
@@ -122,12 +130,5 @@ public class JMSListener implements MessageListener {
 	 */
 	public JMSEngine getEngine() {
 		return mEngine;
-	}
-
-	/**
-	 * @param aEngine the mEngine to set
-	 */
-	public void setEngine(JMSEngine aEngine) {
-		mEngine = aEngine;
 	}
 }
