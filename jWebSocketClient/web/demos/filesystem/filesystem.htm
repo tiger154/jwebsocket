@@ -36,7 +36,7 @@
 		<script type="text/javascript">
 
 			var eData = null;
-			var mFileName = "test.txt";
+			var eFilename = null;
 			var mAlias = "publicDir";
 
 			function usePrivate() {
@@ -63,7 +63,7 @@
 				log( "Loading a file from the server via WebSockets..." );
 				// call the getTime method of the client side plug-in
 				var lRes = lWSC.fileLoad(
-						mFileName,
+						eFilename.value,
 						getSelectedAlias(),
 						{	encoding: ""
 						}
@@ -78,10 +78,11 @@
 				log( "Saving a file from the server via WebSockets..." );
 				// call the getTime method of the client side plug-in
 				var lRes = lWSC.fileSave(
-						mFileName,
+						eFilename.value,
 						eData.value,
 						{	scope: getSelectedScope(),
-							encode: false
+							encode: false,
+							encoding: "plain"
 						}
 				);
 				// log error only, on success don't confuse the user
@@ -94,7 +95,7 @@
 				log( "Appending a file from the server via WebSockets..." );
 				// call the getTime method of the client side plug-in
 				var lRes = lWSC.fileAppend(
-						mFileName,
+						eFilename.value,
 						eData.value,
 						{ scope: getSelectedScope()
 						}
@@ -109,7 +110,7 @@
 				log("Deleting a file from the server via WebSockets...");
 				// call the getTime method of the client side plug-in
 				var lRes = lWSC.fileDelete(
-						mFileName,
+						eFilename.value,
 						true, // force delete
 						{ scope: getSelectedScope()
 						}
@@ -155,7 +156,7 @@
 
 			function initPage() {
 				ePrivate = jws.$("schkPrivate");
-				eFilename = jws.$("stxFilename");
+				eFilename = jws.$("stxfFilename");
 				eData = jws.$("stxfData");
 
 				lWSC.setFileSystemCallbacks({
