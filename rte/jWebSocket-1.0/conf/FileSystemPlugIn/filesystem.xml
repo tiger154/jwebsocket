@@ -10,7 +10,12 @@
 					<key><value>reportRoot</value></key>
 					<value>${JWEBSOCKET_HOME}conf/ReportingPlugIn/reports</value>
 				</entry>                
+
+				<entry key="privateDir" value="${JWEBSOCKET_HOME}filesystem/private/{username}/" />
+				<entry key="publicDir" value="${JWEBSOCKET_HOME}filesystem/public/" />
+				<entry key="webRoot" value="http://localhost/public/" />
 			</map>
 		</property>
 	</bean>
+	
 </beans>

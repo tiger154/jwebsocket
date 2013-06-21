@@ -123,16 +123,6 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				mLog.error("No or invalid spring configuration for filesystem plug-in, some features may not be available.");
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.filesystem.settings");
-
-				// setting core aliases (private, public and webRoot)
-				String lPrivateAlias = getString("alias:" + PRIVATE_ALIAS_DIR_KEY, PRIVATE_ALIAS_DIR_DEF);
-				String lPublicAlias = getString("alias:" + PUBLIC_ALIAS_DIR_KEY, PUBLIC_ALIAS_DIR_DEF);
-				String lWebRootAlias = getString("alias:" + ALIAS_WEB_ROOT_KEY, ALIAS_WEB_ROOT_DEF);
-
-				mSettings.getAliases().put(PRIVATE_ALIAS_DIR_KEY, lPrivateAlias);
-				mSettings.getAliases().put(PUBLIC_ALIAS_DIR_KEY, lPublicAlias);
-				mSettings.getAliases().put(ALIAS_WEB_ROOT_KEY, lWebRootAlias);
-
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Filesystem plug-in successfully instantiated.");
 				}

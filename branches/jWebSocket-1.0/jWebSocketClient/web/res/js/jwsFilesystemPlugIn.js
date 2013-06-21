@@ -175,14 +175,22 @@ jws.FileSystemPlugIn = {
 	//:r:*:::void:none
 	fileLoad: function( aFilename, aAlias, aOptions ) {
 		var lRes = this.createDefaultResult();
+		var lEncoding = "base64";
+		if( aOptions ) {
+			if( aOptions.encoding !== undefined ) {
+				lEncoding = aOptions.encoding;
+			}
+		}	
 		if( this.isConnected() ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "load",
 				alias: aAlias,
-				filename: aFilename,
-				encoding: aOptions['encoding']
+				filename: aFilename
 			};
+			if( lEncoding ) {
+				lToken.encoding = lEncoding;
+			}
 			this.sendToken( lToken,	aOptions );
 		} else {
 			lRes.code = -1;
@@ -235,13 +243,13 @@ jws.FileSystemPlugIn = {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: lType,
+				enc: lEnc,
 				scope: lScope,
 				encoding: lEncoding,
 				encode: lEncode,
 				notify: lNotify,
 				data: aData,
-				filename: aFilename,
-				enc: lEnc
+				filename: aFilename
 			};
 			this.sendToken( lToken,	aOptions );
 		} else {
