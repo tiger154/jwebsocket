@@ -241,7 +241,6 @@ jws.tests.enterprise.FileSystem = {
 			var lResponse = null;
 
 			jws.Tests.getAdminTestConn().fileLoad( lFilename, aAlias, {
-				decode: true,
 				OnResponse: function( aToken ) {
 					lResponse = aToken;
 				}
