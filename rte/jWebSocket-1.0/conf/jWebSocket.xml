@@ -1443,15 +1443,14 @@
 			</server-assignments>
 			<settings>
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JMSPlugIn/jms.xml</setting>
-				<!--
 				<setting key="connectionFactory:1" type="json">{name:"connectionFactory"}</setting>
 				<setting key="destination:1" type="json">{name:"testQueue",pubSubDomain:false,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 				<setting key="destination:2" type="json">{name:"testTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
-				-->
 			</settings>
 		</plugin>
-		 -->
+		-->
+
 		<!-- plug-in to support server side logging for clients -->
 		<!-- THIS PLUG-IN REQUIRES THE JDBC PLUG-IN! -->
 		<!-- LOAD JDBC PLUG-IN BEFORE THE LOGGING-PLUG-IN! -->
