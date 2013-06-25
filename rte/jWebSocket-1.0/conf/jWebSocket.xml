@@ -77,6 +77,13 @@
 		</log4j>
 	</logging>
 
+	<!-- Set system properties here -->
+	<properties>
+		<!--
+		<property name="env" value="prod" />
+		-->
+	</properties>
+
 	<!--
 		 Engines used for jWebSocket. CAUTION!
 		 Up to version 1.0 beta 7 only the first engine was loaded.
@@ -139,7 +146,7 @@
 				<setting key="writer_timeout">1000</setting>
 				<!-- Set socket TcpNoDelay property value
 				more detalis: http://www.rgagnon.com/javadetails/java-0294.html -->
-				<setting key="tcpNoDelay">true</setting>
+				<setting key="tcpNoDelay">false</setting>
 			</settings>		
 		</engine>
 	</engines>
@@ -517,6 +524,10 @@
 			<id>cs0</id>
 			<jar>jWebSocketCustomServer-1.0.jar</jar>
 		</server>
+		<settings>
+			<setting key="supressed_log_fields" value="password,newPassword,secretPassword,accessPassword"></setting>
+			<setting key="supressed_log_fields_value" value="*****"></setting>
+		</settings>
 	</servers>
 
 	<!-- jWebSocket global rights -->
@@ -1421,7 +1432,7 @@
 			</settings>
 		</plugin>
 
-		<!-- plug-in for messaging via JMS -->
+		<!-- plug-in for messaging via JMS
 		<plugin>
 			<name>org.jwebsocket.plugins.jms.JMSPlugIn</name>
 			<id>jws.jms</id>
@@ -1440,7 +1451,7 @@
 				-->
 			</settings>
 		</plugin>
-		
+		 -->
 		<!-- plug-in to support server side logging for clients -->
 		<!-- THIS PLUG-IN REQUIRES THE JDBC PLUG-IN! -->
 		<!-- LOAD JDBC PLUG-IN BEFORE THE LOGGING-PLUG-IN! -->
@@ -1600,7 +1611,7 @@
 		<!-- ItemStorage plug-in -->
 		<plugin>
 			<!-- <name>org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn</name> -->
-			<!-- to use the enterprise edition of jWebSocketFileSystemPlugIn replace the above line by the following one -->
+			<!-- to use the enterprise edition of jWebSocketItemStoragePlugIn replace the above line by the following one -->
 			<name>org.jwebsocket.enterprise.plugins.itemstorage.ItemStoragePlugIn</name>
 			<id>jws.itemstorage</id>
 			<ns>org.jwebsocket.plugins.itemstorage</ns>
@@ -1875,7 +1886,7 @@
         
 		<filter>
 			<name>org.jwebsocket.filters.system.SystemFilter</name>
-			<id>jws.sampleFilter</id>
+			<id>jws.systemFilter</id>
 			<ns>org.jwebsocket.filters.system</ns>
 			<jar>jWebSocketServer-1.0.jar</jar>
 			<server-assignments>
