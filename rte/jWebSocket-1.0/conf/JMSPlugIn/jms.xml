@@ -42,9 +42,4 @@
 		<property name="endPointId" value="org.jwebsocket.jms.aschulze-dt"/>
 	</bean>
 
-	<!-- the jWebSocket-to-JMS topic -->
-	<amq:topic id="jws2jmsTopic" physicalName="org.jwebsocket.jws2jms" />
-	<!-- the JMS-to-jWebSocket topic -->
-	<amq:topic id="jms2jwsTopic" physicalName="org.jwebsocket.jms2jws" />
-	
 </beans>
