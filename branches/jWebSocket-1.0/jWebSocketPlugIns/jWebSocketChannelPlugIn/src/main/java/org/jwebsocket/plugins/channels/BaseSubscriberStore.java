@@ -39,7 +39,7 @@ public class BaseSubscriberStore implements SubscriberStore {
 	/**
 	 * default constructor
 	 *
-	 * @param aStorage
+	 * @param aStorageProvider
 	 */
 	public BaseSubscriberStore(IStorageProvider aStorageProvider) {
 		mStorageProdiver = aStorageProvider;

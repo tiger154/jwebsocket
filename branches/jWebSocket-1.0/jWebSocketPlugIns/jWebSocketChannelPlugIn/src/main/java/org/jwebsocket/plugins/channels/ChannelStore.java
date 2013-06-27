@@ -34,6 +34,7 @@ public interface ChannelStore {
 	 *
 	 * @param id the channel id
 	 * @return the channel object
+	 * @throws Exception
 	 */
 	Channel getChannel(String id) throws Exception;
 
@@ -41,6 +42,7 @@ public interface ChannelStore {
 	 * Returns all channels from the data store
 	 *
 	 * @return the channel object
+	 * @throws Exception
 	 */
 	Map<String, Channel> getChannels() throws Exception;
 

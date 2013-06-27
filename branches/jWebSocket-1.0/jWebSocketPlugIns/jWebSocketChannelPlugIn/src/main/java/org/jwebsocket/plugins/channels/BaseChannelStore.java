@@ -93,6 +93,7 @@ public class BaseChannelStore implements ChannelStore {
 	/**
 	 *
 	 * @param aStorage
+	 * @param aStorageProvider
 	 */
 	public BaseChannelStore(IBasicStorage aStorage, IStorageProvider aStorageProvider) {
 		mStorage = aStorage;
@@ -103,6 +104,7 @@ public class BaseChannelStore implements ChannelStore {
 	 * {@inheritDoc}
 	 *
 	 * @param aId
+	 * @throws Exception
 	 */
 	@Override
 	public Channel getChannel(String aId) throws Exception {

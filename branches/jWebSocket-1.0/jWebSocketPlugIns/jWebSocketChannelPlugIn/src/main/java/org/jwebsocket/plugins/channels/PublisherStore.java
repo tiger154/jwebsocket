@@ -31,6 +31,7 @@ public interface PublisherStore {
 	 *
 	 * @param aId the publisher id to fetch
 	 * @return the publisher object
+	 * @throws Exception
 	 */
 	Publisher getPublisher(String aId) throws Exception;
 
@@ -39,6 +40,7 @@ public interface PublisherStore {
 	 *
 	 *
 	 * @param aId
+	 * @throws Exception
 	 */
 	void removePublisher(String aId) throws Exception;
 }

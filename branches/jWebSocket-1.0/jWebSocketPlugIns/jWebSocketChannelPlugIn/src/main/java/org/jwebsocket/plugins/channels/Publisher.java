@@ -38,6 +38,7 @@ public class Publisher {
 	/**
 	 *
 	 * @param aId
+	 * @param aStorage
 	 */
 	public Publisher(String aId, IBasicStorage<String, Object> aStorage) {
 		mPublisherId = aId;
@@ -70,6 +71,11 @@ public class Publisher {
 		return lList;
 	}
 
+	/**
+	 *
+	 * @param aChannel
+	 * @return
+	 */
 	public Boolean inChannel(String aChannel) {
 		return mStorage.containsKey(aChannel);
 	}
