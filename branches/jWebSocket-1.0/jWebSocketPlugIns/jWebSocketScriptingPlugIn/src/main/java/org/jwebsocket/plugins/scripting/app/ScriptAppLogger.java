@@ -30,27 +30,48 @@ public class ScriptAppLogger {
 	private Logger mLog;
 	private String mAppName;
 
+	/**
+	 *
+	 * @param aLog
+	 * @param aAppName
+	 */
 	public ScriptAppLogger(Logger aLog, String aAppName) {
 		mLog = aLog;
 		mAppName = aAppName;
 	}
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	public void debug(String aMessage) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("(" + mAppName + ") " + aMessage);
 		}
 	}
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	public void trace(String aMessage) {
 		if (mLog.isTraceEnabled()) {
 			mLog.trace("(" + mAppName + ") " + aMessage);
 		}
 	}
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	public void error(String aMessage) {
 		mLog.error("(" + mAppName + ") " + aMessage);
 	}
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	public void warn(String aMessage) {
 		if (mLog.isDebugEnabled()) {
 			mLog.warn("(" + mAppName + ") " + aMessage);

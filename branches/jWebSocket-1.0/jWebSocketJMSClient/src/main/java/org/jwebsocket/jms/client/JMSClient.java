@@ -60,6 +60,7 @@ public class JMSClient {
 	 * @param aRequestTopic
 	 * @param aResponseTopic
 	 * @param aEndPointId
+	 * @param aThreadPoolSize
 	 */
 	public JMSClient(String aBrokerURI, String aRequestTopic,
 			String aResponseTopic, String aEndPointId, int aThreadPoolSize) {

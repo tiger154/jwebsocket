@@ -86,6 +86,11 @@ public class BaseClientTokenPlugIn implements WebSocketClientTokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aClient
+	 * @param aNS
+	 */
 	public BaseClientTokenPlugIn(WebSocketTokenClient aClient, String aNS) {
 		mListener = new TokenListener(this);
 		mClient = aClient;

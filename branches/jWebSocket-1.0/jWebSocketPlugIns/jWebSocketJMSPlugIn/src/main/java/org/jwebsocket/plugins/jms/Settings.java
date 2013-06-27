@@ -81,7 +81,7 @@ public class Settings {
 	}
 
 	/**
-	 * @param mGatewayTopic the mGatewayTopic to set
+	 * @param aGatewayTopic
 	 */
 	public void setGatewayTopic(String aGatewayTopic) {
 		mGatewayTopic = aGatewayTopic;

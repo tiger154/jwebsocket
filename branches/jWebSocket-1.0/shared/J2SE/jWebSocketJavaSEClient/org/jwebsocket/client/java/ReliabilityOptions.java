@@ -26,6 +26,14 @@ public class ReliabilityOptions {
 	private int mQueueItemLimit = -1;
 	private int mQueueSizeLimit = -1;
 
+	/**
+	 *
+	 * @param aAutoReconnect
+	 * @param aReconnectDelay
+	 * @param aReconnectTimeout
+	 * @param aQueueItemLimit
+	 * @param aQueueSizeLimit
+	 */
 	public ReliabilityOptions(boolean aAutoReconnect, long aReconnectDelay,
 			long aReconnectTimeout, int aQueueItemLimit, int aQueueSizeLimit) {
 		mAutoReconnect = aAutoReconnect;

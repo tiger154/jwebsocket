@@ -36,6 +36,10 @@ public class JMSEngine extends BaseEngine {
 
 	private static Logger mLog = Logging.getLogger();
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public JMSEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {

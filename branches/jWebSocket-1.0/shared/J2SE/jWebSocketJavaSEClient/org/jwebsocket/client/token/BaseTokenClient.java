@@ -366,6 +366,10 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		return mUsername;
 	}
 
+	/**
+	 *
+	 * @param aUsername
+	 */
 	public void setUsername(String aUsername) {
 		this.mUsername = aUsername;
 	}

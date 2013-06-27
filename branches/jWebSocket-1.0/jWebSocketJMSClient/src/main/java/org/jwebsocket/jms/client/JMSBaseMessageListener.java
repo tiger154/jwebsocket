@@ -49,6 +49,7 @@ public class JMSBaseMessageListener implements IJMSMessageListener {
 	 */
 	/**
 	 *
+	 * @param aTargetId
 	 * @param aText
 	 */
 	public void sendText(String aTargetId, String aText) {

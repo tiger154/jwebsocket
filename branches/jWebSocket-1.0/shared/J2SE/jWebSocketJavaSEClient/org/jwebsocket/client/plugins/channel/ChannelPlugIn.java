@@ -30,10 +30,19 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
  */
 public class ChannelPlugIn extends BaseClientTokenPlugIn {
 
+	/**
+	 *
+	 * @param aClient
+	 * @param aNS
+	 */
 	public ChannelPlugIn(WebSocketTokenClient aClient, String aNS) {
 		super(aClient, aNS);
 	}
 
+	/**
+	 *
+	 * @param aClient
+	 */
 	public ChannelPlugIn(WebSocketTokenClient aClient) {
 		super(aClient, JWebSocketClientConstants.NS_CHANNELS);
 	}

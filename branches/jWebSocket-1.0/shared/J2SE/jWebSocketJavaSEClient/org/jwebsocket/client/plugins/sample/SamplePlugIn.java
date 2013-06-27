@@ -27,8 +27,15 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class SamplePlugIn extends BaseClientTokenPlugIn {
 
+	/**
+	 *
+	 */
 	public static final String NS_SAMPLES = "org.jwebsocket.plugins.samples";
 
+	/**
+	 *
+	 * @param aClient
+	 */
 	public SamplePlugIn(BaseTokenClient aClient) {
 		super(aClient, NS_SAMPLES);
 	}
@@ -50,6 +57,10 @@ public class SamplePlugIn extends BaseClientTokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @throws WebSocketException
+	 */
 	public void getRandom() throws WebSocketException {
 		Token lToken = TokenFactory.createToken(NS_SAMPLES, "getRandom");
 		getTokenClient().sendToken(lToken);

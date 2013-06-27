@@ -38,10 +38,14 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.Tools;
 
+/**
+ *
+ * @author aschulze
+ */
 public class JCaptchaPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
-	private static final String NS_JCAPTCHA = 
+	private static final String NS_JCAPTCHA =
 			JWebSocketServerConstants.NS_BASE + ".plugins.jcaptcha";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
@@ -51,6 +55,10 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 	private final static String DESCRIPTION = "jWebSocket JCaptchaPlugIn - Community Edition";
 	private String mImgType = null;
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public JCaptchaPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
@@ -131,6 +139,11 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @param aConnector
+	 */
 	public void generateCaptcha(Token aToken, WebSocketConnector aConnector) {
 		ByteArrayOutputStream lImgOutputStream = new ByteArrayOutputStream();
 		byte[] lCaptchaBytes;

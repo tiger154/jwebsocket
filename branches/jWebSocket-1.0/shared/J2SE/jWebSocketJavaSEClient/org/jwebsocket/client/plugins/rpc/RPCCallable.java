@@ -30,5 +30,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface RPCCallable {
 
+	/**
+	 *
+	 * @return
+	 */
 	boolean C2CAuthorized() default false;
 }

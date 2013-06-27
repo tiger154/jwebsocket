@@ -19,19 +19,21 @@ import org.jwebsocket.token.Token;
 
 /**
  * Interface for shared objects in the SharedObjects Plug-In of jWebSocket
+ *
  * @author aschulze
  */
 public interface ISharedObject {
 
 	/**
-	 * initializes the object with its default data. The initialization is 
-	 * intentionally done in a separate method and not directly in the 
-	 * constructor to allow a "reset-to-default" if desired. Hence, you 
-	 * shouldn't put any instantiation code here but initialization code 
-	 * only. This method is called by the createObject method of the 
-	 * SharedObjects plug-in. The userId specifies the owner of the 
-	 * sharedObject, this can be either a certain client or the server. 
-	 * The owner as well as the server have special access rights to the object.
+	 * initializes the object with its default data. The initialization is
+	 * intentionally done in a separate method and not directly in the
+	 * constructor to allow a "reset-to-default" if desired. Hence, you
+	 * shouldn't put any instantiation code here but initialization code only.
+	 * This method is called by the createObject method of the SharedObjects
+	 * plug-in. The userId specifies the owner of the sharedObject, this can be
+	 * either a certain client or the server. The owner as well as the server
+	 * have special access rights to the object.
+	 *
 	 * @param aUserId
 	 */
 	void init(String aUserId);
@@ -40,14 +42,16 @@ public interface ISharedObject {
 	 * returns the simple class name of the Shared Object instance. It is not
 	 * supported to hold multiple Shared Objects with the same id on the server,
 	 * even if they have different classes.
+	 *
 	 * @return
 	 */
 	String getClassName();
 
 	/**
-	 * returns a token with the entire object or the requested part of it in
-	 * its data field. This method is called by the readObject method of the
+	 * returns a token with the entire object or the requested part of it in its
+	 * data field. This method is called by the readObject method of the
 	 * SharedObject plug-in.
+	 *
 	 * @param aSubId
 	 * @return
 	 */
@@ -57,6 +61,7 @@ public interface ISharedObject {
 	 * updates the entire object or the requested part of it utilizing the data
 	 * field of the passed token. This method is called by the writeObject
 	 * method of the SharedObject plug-in.
+	 *
 	 * @param aSubId
 	 * @param aToken
 	 */
@@ -64,30 +69,31 @@ public interface ISharedObject {
 
 	/**
 	 * allows to call a certain method of the Token and to return a token with
-	 * its result values if such. The token specifies all details (method:
-	 * name of the method to call, args: array of arguments to the method as
-	 * array of objects with the following fields {type: type of arguments,
-	 * value: value of argument}).
-	 * This is the a powerful function to implement arbitrary additional
-	 * proprietary functionality for particular Shared Objects and provide
-	 * them via the API to the client.
+	 * its result values if such. The token specifies all details (method: name
+	 * of the method to call, args: array of arguments to the method as array of
+	 * objects with the following fields {type: type of arguments, value: value
+	 * of argument}). This is the a powerful function to implement arbitrary
+	 * additional proprietary functionality for particular Shared Objects and
+	 * provide them via the API to the client.
+	 *
 	 * @param aToken
+	 * @return
 	 */
 	Token invoke(Token aToken);
 
 	/**
-	 * cleans up the object before it is destroyed. This method is called by
-	 * the destroyObject method of the SharedObjects plug-in.
+	 * cleans up the object before it is destroyed. This method is called by the
+	 * destroyObject method of the SharedObjects plug-in.
 	 */
 	void cleanup();
 
 	/**
 	 * locks the object for a certain user, nobody else than this user can
-	 * access the object after that neither read nor write. If other clients
-	 * try to access a locked object an corresponding error token is returned.
-	 * The object gets automatically unlocked when the user logs off. The
-	 * jWebSocket library provides the SecurityFactory class to maintain the
-	 * locks.
+	 * access the object after that neither read nor write. If other clients try
+	 * to access a locked object an corresponding error token is returned. The
+	 * object gets automatically unlocked when the user logs off. The jWebSocket
+	 * library provides the SecurityFactory class to maintain the locks.
+	 *
 	 * @param aSubId
 	 * @param aUserId
 	 */
@@ -102,6 +108,7 @@ public interface ISharedObject {
 	 * sent to keep the clients consistent. However, if changes have been
 	 * applied during the lock phase the object should broadcast these changes
 	 * in its unlock method.
+	 *
 	 * @param aSubId
 	 * @param aUserId
 	 */
@@ -111,6 +118,7 @@ public interface ISharedObject {
 	 * grants a certain right a certain or to all users to access the object
 	 * (read, write, init, destroy). The jWebSocket library provides the
 	 * SecurityFactory class to maintain the access rights to the objects.
+	 *
 	 * @param aSubId
 	 * @param aUserId
 	 * @param aRight
@@ -121,6 +129,7 @@ public interface ISharedObject {
 	 * revokes a certain right from a certain or from all users to access the
 	 * object (read, write, init, destroy). The jWebSocket library provides the
 	 * SecurityFactory class to maintain the access rights to the objects.
+	 *
 	 * @param aSubId
 	 * @param aUserId
 	 * @param aRight
@@ -128,17 +137,19 @@ public interface ISharedObject {
 	void revoke(String aSubId, String aUserId, int aRight);
 
 	/**
-	 * registers a certain client at the broadcast list for this object, so
-	 * that the client gets notified on changes to this object, provided that
-	 * he has read access.
+	 * registers a certain client at the broadcast list for this object, so that
+	 * the client gets notified on changes to this object, provided that he has
+	 * read access.
+	 *
 	 * @param aUserId
 	 * @param aClientId
 	 */
 	void registerClient(String aUserId, String aClientId);
 
 	/**
-	 * unregisters a certain client from the broadcast list for this object,
-	 * so that the client gets not notified on changes to this object anymore.
+	 * unregisters a certain client from the broadcast list for this object, so
+	 * that the client gets not notified on changes to this object anymore.
+	 *
 	 * @param aUserId
 	 * @param aClientId
 	 */

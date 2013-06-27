@@ -18,8 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.bridge;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.connectors.BaseConnector;
@@ -40,6 +38,7 @@ public class JMSConnector extends BaseConnector {
 	 *
 	 * @param aEngine
 	 * @param aJMSSender
+	 * @param aRemoteHost
 	 * @param aTargetId
 	 */
 	public JMSConnector(WebSocketEngine aEngine, JMSSender aJMSSender,

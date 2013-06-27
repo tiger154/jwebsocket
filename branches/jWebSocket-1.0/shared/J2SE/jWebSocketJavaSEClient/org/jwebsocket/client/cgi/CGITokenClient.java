@@ -40,11 +40,14 @@ public class CGITokenClient extends BaseTokenClient {
 
 	/**
 	 *
-	 * @param aListener
 	 */
 	public CGITokenClient() {
 	}
 
+	/**
+	 *
+	 * @param aReliabilityOptions
+	 */
 	public CGITokenClient(ReliabilityOptions aReliabilityOptions) {
 		super(aReliabilityOptions);
 	}

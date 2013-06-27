@@ -46,6 +46,10 @@ public class JMSAdvisoryListener implements MessageListener {
 	private JMSSender mJMSSender = null;
 	private Map<String, String> mEndPoints = new FastMap<String, String>();
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	@Override
 	public void onMessage(Message aMessage) {
 

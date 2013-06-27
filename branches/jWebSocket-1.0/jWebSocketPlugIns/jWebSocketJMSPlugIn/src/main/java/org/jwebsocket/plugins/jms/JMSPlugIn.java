@@ -55,6 +55,10 @@ import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
 
+/**
+ *
+ * @author aschulze
+ */
 public class JMSPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();

@@ -50,11 +50,12 @@ public class JMSClientSender {
 
 	/**
 	 *
+	 * @param aTargetId
 	 * @param aText
 	 */
 	public void sendText(String aTargetId, final String aText) {
 		if (mLog.isInfoEnabled()) {
-			mLog.info("Sending text: " 
+			mLog.info("Sending text: "
 					+ "[content suppressed]"
 					// + aText 
 					+ "...");

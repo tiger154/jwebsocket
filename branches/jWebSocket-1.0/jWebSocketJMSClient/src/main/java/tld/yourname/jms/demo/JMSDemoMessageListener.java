@@ -35,6 +35,10 @@ public class JMSDemoMessageListener extends JMSBaseMessageListener {
 
 	static final Logger mLog = Logger.getLogger(JMSDemoMessageListener.class);
 
+	/**
+	 *
+	 * @param aJMSClient
+	 */
 	public JMSDemoMessageListener(JMSClient aJMSClient) {
 		super(aJMSClient);
 	}

@@ -29,12 +29,24 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
  */
 public class ItemStoragePlugIn extends BaseClientTokenPlugIn {
 
+	/**
+	 *
+	 */
 	public static String DEFAULT_NS = JWebSocketClientConstants.NS_BASE + ".plugins.itemstorage";
 
+	/**
+	 *
+	 * @param aClient
+	 * @param aNS
+	 */
 	public ItemStoragePlugIn(WebSocketTokenClient aClient, String aNS) {
 		super(aClient, aNS);
 	}
 
+	/**
+	 *
+	 * @param aClient
+	 */
 	public ItemStoragePlugIn(WebSocketTokenClient aClient) {
 		super(aClient, DEFAULT_NS);
 	}

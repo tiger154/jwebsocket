@@ -48,251 +48,498 @@ import org.springframework.util.Assert;
  */
 abstract public class BaseScriptApp {
 
-    private ScriptingPlugIn mServer;
-    private String mAppName;
-    private String mAppPath;
-    private ScriptEngine mScriptApp;
-    private Map<String, List<Object>> mCallbacks = new FastMap<String, List<Object>>().shared();
-    private ScriptAppLogger mLogger;
-    private Logger mLog = Logging.getLogger();
-    private Map<String, Object> mApi = new FastMap<String, Object>().shared();
-    public final static String EVENT_CONNECTOR_STARTED = "connectorStarted";
-    public final static String EVENT_CONNECTOR_STOPPED = "connectorStopped";
-    public final static String EVENT_ENGINE_STARTED = "engineStarted";
-    public final static String EVENT_ENGINE_STOPPED = "engineStopped";
-    public final static String EVENT_SESSION_STARTED = "sessionStarted";
-    public final static String EVENT_SESSION_STOPPED = "sessionStopped";
-    public final static String EVENT_LOGON = "logon";
-    public final static String EVENT_LOGOFF = "logoff";
-    public final static String EVENT_TOKEN = "token";
-    public final static String EVENT_FILTER_IN = "filterIn";
-    public final static String EVENT_FILTER_OUT = "filterOut";
-    public final static String EVENT_SYSTEM_STARTING = "systemStarting";
-    public final static String EVENT_SYSTEM_STARTED = "systemStarted";
-    public final static String EVENT_SYSTEM_STOPPING = "systemStopping";
-    public final static String EVENT_SYSTEM_STOPPED = "systemStopped";
-    public final static String EVENT_BEFORE_APP_RELOAD = "beforeAppReload";
-    public final static String EVENT_APP_LOADED = "appLoaded";
-    public final static String EVENT_UNDEPLOYING = "undeploying";
+	private ScriptingPlugIn mServer;
+	private String mAppName;
+	private String mAppPath;
+	private ScriptEngine mScriptApp;
+	private Map<String, List<Object>> mCallbacks = new FastMap<String, List<Object>>().shared();
+	private ScriptAppLogger mLogger;
+	private Logger mLog = Logging.getLogger();
+	private Map<String, Object> mApi = new FastMap<String, Object>().shared();
+	/**
+	 *
+	 */
+	public final static String EVENT_CONNECTOR_STARTED = "connectorStarted";
+	/**
+	 *
+	 */
+	public final static String EVENT_CONNECTOR_STOPPED = "connectorStopped";
+	/**
+	 *
+	 */
+	public final static String EVENT_ENGINE_STARTED = "engineStarted";
+	/**
+	 *
+	 */
+	public final static String EVENT_ENGINE_STOPPED = "engineStopped";
+	/**
+	 *
+	 */
+	public final static String EVENT_SESSION_STARTED = "sessionStarted";
+	/**
+	 *
+	 */
+	public final static String EVENT_SESSION_STOPPED = "sessionStopped";
+	/**
+	 *
+	 */
+	public final static String EVENT_LOGON = "logon";
+	/**
+	 *
+	 */
+	public final static String EVENT_LOGOFF = "logoff";
+	/**
+	 *
+	 */
+	public final static String EVENT_TOKEN = "token";
+	/**
+	 *
+	 */
+	public final static String EVENT_FILTER_IN = "filterIn";
+	/**
+	 *
+	 */
+	public final static String EVENT_FILTER_OUT = "filterOut";
+	/**
+	 *
+	 */
+	public final static String EVENT_SYSTEM_STARTING = "systemStarting";
+	/**
+	 *
+	 */
+	public final static String EVENT_SYSTEM_STARTED = "systemStarted";
+	/**
+	 *
+	 */
+	public final static String EVENT_SYSTEM_STOPPING = "systemStopping";
+	/**
+	 *
+	 */
+	public final static String EVENT_SYSTEM_STOPPED = "systemStopped";
+	/**
+	 *
+	 */
+	public final static String EVENT_BEFORE_APP_RELOAD = "beforeAppReload";
+	/**
+	 *
+	 */
+	public final static String EVENT_APP_LOADED = "appLoaded";
+	/**
+	 *
+	 */
+	public final static String EVENT_UNDEPLOYING = "undeploying";
 
-    protected ScriptEngine getScriptApp() {
-        return mScriptApp;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	protected ScriptEngine getScriptApp() {
+		return mScriptApp;
+	}
 
-    protected Map<String, List<Object>> getCallbacks() {
-        return mCallbacks;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	protected Map<String, List<Object>> getCallbacks() {
+		return mCallbacks;
+	}
 
-    public BaseScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp) {
-        mServer = aServer;
-        mAppName = aAppName;
-        mAppPath = aAppPath;
-        mScriptApp = aScriptApp;
-        mLogger = new ScriptAppLogger(mLog, aAppName);
+	/**
+	 *
+	 * @param aServer
+	 * @param aAppName
+	 * @param aAppPath
+	 * @param aScriptApp
+	 */
+	public BaseScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp) {
+		mServer = aServer;
+		mAppName = aAppName;
+		mAppPath = aAppPath;
+		mScriptApp = aScriptApp;
+		mLogger = new ScriptAppLogger(mLog, aAppName);
 
-        // registering global "AppUtils" resource
-        aScriptApp.put("AppUtils", this);
-    }
+		// registering global "AppUtils" resource
+		aScriptApp.put("AppUtils", this);
+	}
 
-    public ScriptEngine getEngine() {
-        return mScriptApp;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public ScriptEngine getEngine() {
+		return mScriptApp;
+	}
 
-    abstract public void notifyEvent(String aEventName, Object[] aArgs);
+	/**
+	 *
+	 * @param aEventName
+	 * @param aArgs
+	 */
+	abstract public void notifyEvent(String aEventName, Object[] aArgs);
 
-    public String getName() {
-        return mAppName;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public String getName() {
+		return mAppName;
+	}
 
-    public void publish(String aObjectId, Object aObject) {
-        mApi.put(aObjectId, aObject);
-    }
+	/**
+	 *
+	 * @param aObjectId
+	 * @param aObject
+	 */
+	public void publish(String aObjectId, Object aObject) {
+		mApi.put(aObjectId, aObject);
+	}
 
-    public void unpublish(String aObjectId) {
-        mApi.remove(aObjectId);
-    }
+	/**
+	 *
+	 * @param aObjectId
+	 */
+	public void unpublish(String aObjectId) {
+		mApi.remove(aObjectId);
+	}
 
-    public boolean isPublished(String aObjectId) {
-        return mApi.containsKey(aObjectId);
-    }
+	/**
+	 *
+	 * @param aObjectId
+	 * @return
+	 */
+	public boolean isPublished(String aObjectId) {
+		return mApi.containsKey(aObjectId);
+	}
 
-    public Object getPublished(String aObjectId) {
-        return mApi.get(aObjectId);
-    }
+	/**
+	 *
+	 * @param aObjectId
+	 * @return
+	 */
+	public Object getPublished(String aObjectId) {
+		return mApi.get(aObjectId);
+	}
 
-    public String getPath() {
-        return mAppPath;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public String getPath() {
+		return mAppPath;
+	}
 
-    public ScriptAppLogger getLogger() {
-        return mLogger;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public ScriptAppLogger getLogger() {
+		return mLogger;
+	}
 
-    public void assertTrue(Boolean aBoolean, String aMessage) {
-        Assert.isTrue(aBoolean, aMessage);
-    }
+	/**
+	 *
+	 * @param aBoolean
+	 * @param aMessage
+	 */
+	public void assertTrue(Boolean aBoolean, String aMessage) {
+		Assert.isTrue(aBoolean, aMessage);
+	}
 
-    public void assertNotNull(Object aObject, String aMessage) {
-        Assert.notNull(aObject, aMessage);
-    }
+	/**
+	 *
+	 * @param aObject
+	 * @param aMessage
+	 */
+	public void assertNotNull(Object aObject, String aMessage) {
+		Assert.notNull(aObject, aMessage);
+	}
 
-    public void importScript(String aFile) throws Exception {
-        aFile = aFile.replace("${APP_HOME}", mAppPath);
-        String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFile)));
-        mScriptApp.eval(lFile);
-    }
+	/**
+	 *
+	 * @param aFile
+	 * @throws Exception
+	 */
+	public void importScript(String aFile) throws Exception {
+		aFile = aFile.replace("${APP_HOME}", mAppPath);
+		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFile)));
+		mScriptApp.eval(lFile);
+	}
 
-    public void sendToken(WebSocketConnector aConnector, Map aMap, Integer aFragmentSize) {
-        // outbound filtering
-        notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
+	/**
+	 *
+	 * @param aConnector
+	 * @param aMap
+	 * @param aFragmentSize
+	 */
+	public void sendToken(WebSocketConnector aConnector, Map aMap, Integer aFragmentSize) {
+		// outbound filtering
+		notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
 
-        if (null != aFragmentSize) {
-            mServer.sendTokenFragmented(aConnector, toToken(aMap), aFragmentSize);
-        } else {
-            mServer.sendToken(aConnector, toToken(aMap));
-        }
-    }
+		if (null != aFragmentSize) {
+			mServer.sendTokenFragmented(aConnector, toToken(aMap), aFragmentSize);
+		} else {
+			mServer.sendToken(aConnector, toToken(aMap));
+		}
+	}
 
-    public void sendToken(WebSocketConnector aConnector, Map aMap) {
-        sendToken(aConnector, aMap, null);
-    }
+	/**
+	 *
+	 * @param aConnector
+	 * @param aMap
+	 */
+	public void sendToken(WebSocketConnector aConnector, Map aMap) {
+		sendToken(aConnector, aMap, null);
+	}
 
-    public void sendToken(WebSocketConnector aConnector, Map aMap, Object aListener) {
-        // outbound filtering
-        notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
+	/**
+	 *
+	 * @param aConnector
+	 * @param aMap
+	 * @param aListener
+	 */
+	public void sendToken(WebSocketConnector aConnector, Map aMap, Object aListener) {
+		// outbound filtering
+		notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
 
-        mServer.sendTokenInTransaction(aConnector, toToken(aMap),
-                (IPacketDeliveryListener) cast(aListener, IPacketDeliveryListener.class));
-    }
+		mServer.sendTokenInTransaction(aConnector, toToken(aMap),
+				(IPacketDeliveryListener) cast(aListener, IPacketDeliveryListener.class));
+	}
 
-    public void sendToken(WebSocketConnector aConnector, Map aMap, Integer aFragmentSize, Object aListener) {
-        // outbound filtering
-        notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
+	/**
+	 *
+	 * @param aConnector
+	 * @param aMap
+	 * @param aFragmentSize
+	 * @param aListener
+	 */
+	public void sendToken(WebSocketConnector aConnector, Map aMap, Integer aFragmentSize, Object aListener) {
+		// outbound filtering
+		notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
 
-        mServer.sendTokenInTransaction(aConnector, toToken(aMap), aFragmentSize,
-                (IPacketDeliveryListener) cast(aListener, IPacketDeliveryListener.class));
-    }
+		mServer.sendTokenInTransaction(aConnector, toToken(aMap), aFragmentSize,
+				(IPacketDeliveryListener) cast(aListener, IPacketDeliveryListener.class));
+	}
 
-    public void sendChunkable(WebSocketConnector aConnector, Object aChunkable) {
-        // IChunkable objects cannot be filtered in this level
-        // notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
+	/**
+	 *
+	 * @param aConnector
+	 * @param aChunkable
+	 */
+	public void sendChunkable(WebSocketConnector aConnector, Object aChunkable) {
+		// IChunkable objects cannot be filtered in this level
+		// notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
 
-        mServer.sendChunkable(aConnector, (IChunkable) cast(aChunkable, IChunkable.class));
-    }
+		mServer.sendChunkable(aConnector, (IChunkable) cast(aChunkable, IChunkable.class));
+	}
 
-    public void sendChunkable(WebSocketConnector aConnector, Object aChunkable, Object aListener) {
-        // IChunkable objects cannot be filtered in this level
-        // notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
+	/**
+	 *
+	 * @param aConnector
+	 * @param aChunkable
+	 * @param aListener
+	 */
+	public void sendChunkable(WebSocketConnector aConnector, Object aChunkable, Object aListener) {
+		// IChunkable objects cannot be filtered in this level
+		// notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
 
-        mServer.sendChunkable(aConnector, (IChunkable) cast(aChunkable, IChunkable.class),
-                (IChunkableDeliveryListener) cast(aListener, IChunkableDeliveryListener.class));
-    }
+		mServer.sendChunkable(aConnector, (IChunkable) cast(aChunkable, IChunkable.class),
+				(IChunkableDeliveryListener) cast(aListener, IChunkableDeliveryListener.class));
+	}
 
-    /**
-     * Cast JavaScript context objects into Java objects
-     *
-     * @param aObject
-     * @param aClass
-     * @return
-     */
-    protected Object cast(Object aObject, Class aClass) {
-        if (aObject.getClass().equals(aClass)) {
-            return aObject;
-        }
+	/**
+	 * Cast JavaScript context objects into Java objects
+	 *
+	 * @param aObject
+	 * @param aClass
+	 * @return
+	 */
+	protected Object cast(Object aObject, Class aClass) {
+		if (aObject.getClass().equals(aClass)) {
+			return aObject;
+		}
 
-        try {
-            // trying to cast first
-            return aClass.cast(aObject);
-        } catch (Exception lEx) {
-        }
+		try {
+			// trying to cast first
+			return aClass.cast(aObject);
+		} catch (Exception lEx) {
+		}
 
-        // extracting interface
-        return ((Invocable) mScriptApp)
-                .getInterface(aObject, aClass);
-    }
+		// extracting interface
+		return ((Invocable) mScriptApp)
+				.getInterface(aObject, aClass);
+	}
 
-    public Collection<WebSocketConnector> getAllConnectors() {
-        return mServer.getServer().selectTokenConnectors().values();
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Collection<WebSocketConnector> getAllConnectors() {
+		return mServer.getServer().selectTokenConnectors().values();
+	}
 
-    public boolean hasAuthority(WebSocketConnector aConnector, String aAuthority) {
-        return mServer.hasAuthority(aConnector, aAuthority);
-    }
+	/**
+	 *
+	 * @param aConnector
+	 * @param aAuthority
+	 * @return
+	 */
+	public boolean hasAuthority(WebSocketConnector aConnector, String aAuthority) {
+		return mServer.hasAuthority(aConnector, aAuthority);
+	}
 
-    public void requireAuthority(WebSocketConnector aConnector, String aAuthority) throws Exception {
-        if (!mServer.hasAuthority(aConnector, aAuthority)) {
-            throw new Exception("Not authorized. Missing required '" + aAuthority + "' authority!");
-        }
-    }
+	/**
+	 *
+	 * @param aConnector
+	 * @param aAuthority
+	 * @throws Exception
+	 */
+	public void requireAuthority(WebSocketConnector aConnector, String aAuthority) throws Exception {
+		if (!mServer.hasAuthority(aConnector, aAuthority)) {
+			throw new Exception("Not authorized. Missing required '" + aAuthority + "' authority!");
+		}
+	}
 
-    public void on(Collection<String> aEvents, Object aFn) {
-        for (String lEventName : aEvents) {
-            on(lEventName, aFn);
-        }
-    }
+	/**
+	 *
+	 * @param aEvents
+	 * @param aFn
+	 */
+	public void on(Collection<String> aEvents, Object aFn) {
+		for (String lEventName : aEvents) {
+			on(lEventName, aFn);
+		}
+	}
 
-    public void on(String aEventName, Object aFn) {
-        if (!mCallbacks.containsKey(aEventName)) {
-            mCallbacks.put(aEventName, new FastList<Object>());
-        }
-        mCallbacks.get(aEventName).add(aFn);
-    }
+	/**
+	 *
+	 * @param aEventName
+	 * @param aFn
+	 */
+	public void on(String aEventName, Object aFn) {
+		if (!mCallbacks.containsKey(aEventName)) {
+			mCallbacks.put(aEventName, new FastList<Object>());
+		}
+		mCallbacks.get(aEventName).add(aFn);
+	}
 
-    public void un(String aEventName, Object aFn) {
-        if (mCallbacks.containsKey(aEventName)) {
-            mCallbacks.get(aEventName).remove(aFn);
-        }
-    }
+	/**
+	 *
+	 * @param aEventName
+	 * @param aFn
+	 */
+	public void un(String aEventName, Object aFn) {
+		if (mCallbacks.containsKey(aEventName)) {
+			mCallbacks.get(aEventName).remove(aFn);
+		}
+	}
 
-    protected Token toToken(Map aMap) {
-        Token lToken = TokenFactory.createToken();
-        lToken.setMap(aMap);
+	/**
+	 *
+	 * @param aMap
+	 * @return
+	 */
+	protected Token toToken(Map aMap) {
+		Token lToken = TokenFactory.createToken();
+		lToken.setMap(aMap);
 
-        return lToken;
-    }
+		return lToken;
+	}
 
-    public Map createResponse(Map aInToken) {
-        return mServer.createResponse(toToken(aInToken)).getMap();
-    }
+	/**
+	 *
+	 * @param aInToken
+	 * @return
+	 */
+	public Map createResponse(Map aInToken) {
+		return mServer.createResponse(toToken(aInToken)).getMap();
+	}
 
-    public void broadcast(Collection<WebSocketConnector> aConnectors, Map aToken) {
-        for (WebSocketConnector aConnector : aConnectors) {
-            sendToken(aConnector, aToken);
-        }
-    }
+	/**
+	 *
+	 * @param aConnectors
+	 * @param aToken
+	 */
+	public void broadcast(Collection<WebSocketConnector> aConnectors, Map aToken) {
+		for (WebSocketConnector aConnector : aConnectors) {
+			sendToken(aConnector, aToken);
+		}
+	}
 
-    public Map newThreadSafeMap() {
-        return new FastMap().shared();
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Map newThreadSafeMap() {
+		return new FastMap().shared();
+	}
 
-    public Collection newThreadSafeCollection() {
-        return new FastList().shared();
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public Collection newThreadSafeCollection() {
+		return new FastList().shared();
+	}
 
-    public abstract Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception;
+	/**
+	 *
+	 * @param aObjectId
+	 * @param aMethod
+	 * @param aArgs
+	 * @return
+	 * @throws Exception
+	 */
+	public abstract Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception;
 
-    public GenericApplicationContext getBeanFactory(String aNamespace) {
-        if (null == aNamespace) {
-            return JWebSocketBeanFactory.getInstance();
-        } else {
-            return JWebSocketBeanFactory.getInstance(aNamespace);
-        }
-    }
+	/**
+	 *
+	 * @param aNamespace
+	 * @return
+	 */
+	public GenericApplicationContext getBeanFactory(String aNamespace) {
+		if (null == aNamespace) {
+			return JWebSocketBeanFactory.getInstance();
+		} else {
+			return JWebSocketBeanFactory.getInstance(aNamespace);
+		}
+	}
 
-    public GenericApplicationContext getAppBeanFactory() {
-        return getBeanFactory(getBeanFactoryNamespace());
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public GenericApplicationContext getAppBeanFactory() {
+		return getBeanFactory(getBeanFactoryNamespace());
+	}
 
-    public void loadToAppBeanFactory(String aFile) throws Exception {
-        aFile = aFile.replace("${APP_HOME}", mAppPath);
-        JWebSocketBeanFactory.load(getBeanFactoryNamespace(), aFile, getClass().getClassLoader());
-    }
+	/**
+	 *
+	 * @param aFile
+	 * @throws Exception
+	 */
+	public void loadToAppBeanFactory(String aFile) throws Exception {
+		aFile = aFile.replace("${APP_HOME}", mAppPath);
+		JWebSocketBeanFactory.load(getBeanFactoryNamespace(), aFile, getClass().getClassLoader());
+	}
 
-    protected String getBeanFactoryNamespace() {
-        return mServer.getNamespace() + ":" + getName();
-    }
+	/**
+	 *
+	 * @return
+	 */
+	protected String getBeanFactoryNamespace() {
+		return mServer.getNamespace() + ":" + getName();
+	}
 
-    public abstract String getVersion() throws Exception;
-    
-    public abstract String getDescription() throws Exception;
+	/**
+	 *
+	 * @return @throws Exception
+	 */
+	public abstract String getVersion() throws Exception;
+
+	/**
+	 *
+	 * @return @throws Exception
+	 */
+	public abstract String getDescription() throws Exception;
 }

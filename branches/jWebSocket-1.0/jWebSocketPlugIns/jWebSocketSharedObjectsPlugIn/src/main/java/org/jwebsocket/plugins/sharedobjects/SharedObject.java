@@ -24,10 +24,22 @@ import java.util.Date;
  */
 public class SharedObject {
 
+	/**
+	 *
+	 */
 	public static int MODE_READ_WRITE = 0;
+	/**
+	 *
+	 */
 	public static int MODE_READ_ONLY = 1;
 
+	/**
+	 *
+	 */
 	public static int LOCK_STATE_RELEASED = 0;
+	/**
+	 *
+	 */
 	public static int LOCK_STATE_LOCKED = 1;
 
 	private Object object = null;

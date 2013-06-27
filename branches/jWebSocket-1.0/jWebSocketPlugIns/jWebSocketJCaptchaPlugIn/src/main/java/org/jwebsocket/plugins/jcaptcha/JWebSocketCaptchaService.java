@@ -25,10 +25,18 @@ package org.jwebsocket.plugins.jcaptcha;
 import com.octo.captcha.service.image.DefaultManageableImageCaptchaService;
 import com.octo.captcha.service.image.ImageCaptchaService;
 
+/**
+ *
+ * @author aschulze
+ */
 public class JWebSocketCaptchaService {
 
 	private static ImageCaptchaService mInstance = null;
 
+	/**
+	 *
+	 * @return
+	 */
 	public static ImageCaptchaService getInstance() {
 		if (null == mInstance) {
 			mInstance = new DefaultManageableImageCaptchaService();

@@ -30,10 +30,19 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
  */
 public class ScriptingPlugIn extends BaseClientTokenPlugIn {
 
+	/**
+	 *
+	 * @param aClient
+	 */
 	public ScriptingPlugIn(WebSocketTokenClient aClient) {
 		super(aClient, JWebSocketClientConstants.NS_SCRIPTING);
 	}
 
+	/**
+	 *
+	 * @param aClient
+	 * @param aNS
+	 */
 	public ScriptingPlugIn(WebSocketTokenClient aClient, String aNS) {
 		super(aClient, aNS);
 	}

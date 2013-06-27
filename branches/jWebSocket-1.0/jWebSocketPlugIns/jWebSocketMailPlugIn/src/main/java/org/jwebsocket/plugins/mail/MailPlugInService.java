@@ -58,9 +58,16 @@ public class MailPlugInService {
 	private static MailStore mMailStore = null;
 	private static Settings mSettings;
 
+	/**
+	 *
+	 */
 	public MailPlugInService() {
 	}
 
+	/**
+	 *
+	 * @param aSettings
+	 */
 	public MailPlugInService(Settings aSettings) {
 		mSettings = aSettings;
 		BaseStorage lStorage = mSettings.getStorage();
@@ -71,10 +78,18 @@ public class MailPlugInService {
 		mMailStore = new MailStore(lStorage);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static Settings getSettings() {
 		return mSettings;
 	}
 
+	/**
+	 *
+	 * @param aSettings
+	 */
 	public static void setSettings(Settings aSettings) {
 		MailPlugInService.mSettings = aSettings;
 		if (null == mMailStore) {
@@ -87,6 +102,11 @@ public class MailPlugInService {
 		}
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @param aResponse
+	 */
 	public void createMail(Token aToken, Token aResponse) {
 		Token lMailToken = TokenFactory.createToken();
 
@@ -121,6 +141,14 @@ public class MailPlugInService {
 		aResponse.setString("id", lId);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @param aResponse
+	 * @param aServer
+	 * @param aPlugInNS
+	 */
 	public void sendMail(WebSocketConnector aConnector, Token aToken, Token aResponse, TokenServer aServer, String aPlugInNS) {
 		String lId = aToken.getString("id");
 		String lMsg;
@@ -168,6 +196,11 @@ public class MailPlugInService {
 		}
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @param aResponse
+	 */
 	public void dropMail(Token aToken, Token aResponse) {
 		String lId = aToken.getString("id");
 		if (null == lId) {
@@ -180,6 +213,14 @@ public class MailPlugInService {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @param aResponse
+	 * @param aServer
+	 * @param aPlugInNS
+	 */
 	public void addAttachment(WebSocketConnector aConnector, Token aToken, Token aResponse, TokenServer aServer, String aPlugInNS) {
 		String lId = aToken.getString("id");
 		String lFilename = aToken.getString("filename");
@@ -257,15 +298,35 @@ public class MailPlugInService {
 		}
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @param aResponse
+	 */
 	public void removeAttachment(Token aToken, Token aResponse) {
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @param aResponse
+	 */
 	public void moveMail(Token aToken, Token aResponse) {
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @param aResponse
+	 */
 	public void getMail(Token aToken, Token aResponse) {
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @param aResponse
+	 */
 	public void getUserMails(Token aToken, Token aResponse) {
 	}
 
@@ -441,6 +502,11 @@ public class MailPlugInService {
 		return lRes;
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @return
+	 */
 	public Token sendMail(Token aToken) {
 		String lFrom = aToken.getString("from", "[unknown]");
 		String lTo = aToken.getString("to");

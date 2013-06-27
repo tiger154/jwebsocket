@@ -29,6 +29,11 @@ public class SharedLists {
 
 	private Map<String, FastList> mLists = new FastMap<String, FastList>();
 
+	/**
+	 *
+	 * @param aResponse
+	 * @param aId
+	 */
 	public void create(Token aResponse, String aId) {
 		FastList lList = mLists.get(aId);
 		if (lList != null) {
@@ -36,6 +41,11 @@ public class SharedLists {
 		}
 	}
 
+	/**
+	 *
+	 * @param aResponse
+	 * @param aId
+	 */
 	public void clear(Token aResponse, String aId) {
 		List lList = mLists.get(aId);
 		if (lList != null) {
@@ -43,6 +53,13 @@ public class SharedLists {
 		}
 	}
 
+	/**
+	 *
+	 * @param aResponse
+	 * @param aId
+	 * @param aIndex
+	 * @return
+	 */
 	public Object get(Token aResponse, String aId, int aIndex) {
 		List lList = mLists.get(aId);
 		if (lList != null) {
@@ -51,6 +68,12 @@ public class SharedLists {
 		return null;
 	}
 
+	/**
+	 *
+	 * @param aResponse
+	 * @param aId
+	 * @param aObject
+	 */
 	public void add(Token aResponse, String aId, Object aObject) {
 		List lList = mLists.get(aId);
 		if (lList != null) {
@@ -58,6 +81,12 @@ public class SharedLists {
 		}
 	}
 
+	/**
+	 *
+	 * @param aResponse
+	 * @param aId
+	 * @param aIndex
+	 */
 	public void remove(Token aResponse, String aId, int aIndex) {
 		List lList = mLists.get(aId);
 		if (lList != null) {
@@ -65,6 +94,11 @@ public class SharedLists {
 		}
 	}
 
+	/**
+	 *
+	 * @param aResponse
+	 * @param aId
+	 */
 	public void destroy(Token aResponse, String aId) {
 		mLists.remove(aId);
 	}

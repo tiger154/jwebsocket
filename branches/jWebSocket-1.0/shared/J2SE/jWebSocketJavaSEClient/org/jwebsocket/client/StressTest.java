@@ -19,9 +19,19 @@ import org.jwebsocket.util.Tools;
  */
 public class StressTest {
 
+	/**
+	 *
+	 */
 	public static int connections = 0;
+	/**
+	 *
+	 */
 	public static int concurrentConnections = 75;
 
+	/**
+	 *
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		final List<BaseTokenClient> lClients = new ArrayList();
 		try {

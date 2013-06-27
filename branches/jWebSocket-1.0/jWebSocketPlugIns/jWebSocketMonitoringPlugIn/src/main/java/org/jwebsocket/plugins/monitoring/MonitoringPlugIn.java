@@ -46,6 +46,9 @@ import org.jwebsocket.token.TokenFactory;
 public class MonitoringPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	/**
+	 *
+	 */
 	public final static String NS_MONITORING =
 			JWebSocketServerConstants.NS_BASE + ".plugins.monitoring";
 	private final static String VERSION = "1.0.0";
@@ -324,7 +327,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 					} else if (TT_PLUGINS_INFO.equals(lInterest)) {
 						broadcastPluginsInfo(aConnector);
 					} else if (TT_USER_INFO.equals(lInterest)) {
-						if( mInformationRunning ) {
+						if (mInformationRunning) {
 							getServer().sendToken(aConnector, getUserInfoToToken());
 						}
 					}
@@ -451,7 +454,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 
 	/**
 	 *
-	 * @return
+	 * @return @throws SigarException
 	 */
 	public Token computerInfoToToken() throws SigarException {
 		Token lToken = TokenFactory.createToken(getNamespace(), TT_PC_INFO);
