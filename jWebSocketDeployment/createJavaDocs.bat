@@ -17,24 +17,26 @@ pause
 rem set log=..\jWebSocketDeployment\createJavaDocs.log
 set log=con
 
-cd /d ..\jWebSocketCommon
-call mvn generate-sources javadoc:javadoc >> %log%
-cd /d ..\jWebSocketServerAPI
-call mvn generate-sources javadoc:javadoc >> %log%
-cd /d ..\jWebSocketServer
-call mvn generate-sources javadoc:javadoc >> %log%
-cd /d ..\jWebSocketSamples
-call mvn generate-sources javadoc:javadoc >> %log%
 cd /d ..\jWebSocketClientAPI
+call mvn generate-sources javadoc:javadoc >> %log%
+cd /d ..\jWebSocketCommon
 call mvn generate-sources javadoc:javadoc >> %log%
 cd /d ..\jWebSocketJavaSEClient
 call mvn generate-sources javadoc:javadoc >> %log%
+cd /d ..\jWebSocketServer
+call mvn generate-sources javadoc:javadoc >> %log%
+cd /d ..\jWebSocketServerAPI
+call mvn generate-sources javadoc:javadoc >> %log%
 
+
+
+
+cd /d ..\jWebSocketSamples
+call mvn generate-sources javadoc:javadoc >> %log%
 cd /d ..\jWebSocketAppServer
 call mvn generate-sources javadoc:javadoc >> %log%
 cd /d ..\jWebSocketAppSrvDemo
 call mvn generate-sources javadoc:javadoc >> %log%
-
 cd /d ..\jWebSocketSwingGUI
 call mvn generate-sources javadoc:javadoc >> %log%
 

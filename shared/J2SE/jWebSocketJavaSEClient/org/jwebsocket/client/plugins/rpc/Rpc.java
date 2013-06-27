@@ -29,19 +29,38 @@ public class Rpc extends AbstractRpc {
 
 	private static BaseTokenClient mDefaultBaseTokenClient;
 
+	/**
+	 *
+	 * @param aBaseTokenClient
+	 */
 	public static void setDefaultBaseTokenClient(BaseTokenClient aBaseTokenClient) {
 		mDefaultBaseTokenClient = aBaseTokenClient;
 	}
 	private BaseTokenClient mBaseTokenClient;
 
+	/**
+	 *
+	 * @param aClassname
+	 * @param aMethod
+	 */
 	public Rpc(String aClassname, String aMethod) {
 		super(aClassname, aMethod);
 	}
 
+	/**
+	 *
+	 * @param aClassname
+	 * @param aMethod
+	 * @param aSpawnTread
+	 */
 	public Rpc(String aClassname, String aMethod, boolean aSpawnTread) {
 		super(aClassname, aMethod, aSpawnTread);
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 */
 	public Rpc(Token aToken) {
 		super(aToken);
 	}
@@ -51,6 +70,7 @@ public class Rpc extends AbstractRpc {
 	 *
 	 * @param aBaseTokenClient the baseTokenClient that will be used to make the
 	 * call.
+	 * @return
 	 */
 	public AbstractRpc using(BaseTokenClient aBaseTokenClient) {
 		mBaseTokenClient = aBaseTokenClient;
