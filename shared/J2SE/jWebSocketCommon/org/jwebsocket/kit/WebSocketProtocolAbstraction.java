@@ -59,7 +59,13 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 public class WebSocketProtocolAbstraction {
 	// web socket protocol packet types
 
+	/**
+	 *
+	 */
 	public final static boolean MASKED = true;
+	/**
+	 *
+	 */
 	public final static boolean UNMASKED = false;
 
 	/**
@@ -148,6 +154,7 @@ public class WebSocketProtocolAbstraction {
 	 *
 	 * @param aVersion
 	 * @param aDataPacket
+	 * @param aMasked
 	 * @return
 	 */
 	public static byte[] rawToProtocolPacket(int aVersion, WebSocketPacket aDataPacket, boolean aMasked) {
