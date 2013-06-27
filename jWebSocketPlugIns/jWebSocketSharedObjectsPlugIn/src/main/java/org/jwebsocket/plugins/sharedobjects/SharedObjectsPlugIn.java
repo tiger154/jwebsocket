@@ -57,10 +57,17 @@ public class SharedObjectsPlugIn extends TokenPlugIn {
 			new String[]{"number", "string", "boolean", "object",
 		"set", "list", "map", "table"}));
 
+	/**
+	 *
+	 */
 	public SharedObjectsPlugIn() {
 		this(null);
 	}
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public SharedObjectsPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		// specify default name space

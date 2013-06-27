@@ -21,6 +21,10 @@ import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.plugins.rpc.CommonRpcPlugin;
 import org.jwebsocket.token.Token;
 
+/**
+ *
+ * @author aschulze
+ */
 public class RpcListener implements WebSocketClientTokenListener {
 //  private BaseTokenClient mBaseTokenClient;
 //  

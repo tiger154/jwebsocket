@@ -29,6 +29,10 @@ import org.jwebsocket.plugins.jms.infra.MessageConsumerRegistry;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 
+/**
+ *
+ * @author aschulze
+ */
 public class JmsListenerContainer extends DefaultMessageListenerContainer {
 
 	private MessageConsumerRegistry mMessageConsumerRegistry;

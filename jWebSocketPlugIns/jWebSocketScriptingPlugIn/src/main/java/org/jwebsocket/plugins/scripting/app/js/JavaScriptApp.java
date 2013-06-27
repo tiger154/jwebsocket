@@ -39,6 +39,13 @@ public class JavaScriptApp extends BaseScriptApp {
 	private Logger mLog = Logging.getLogger();
 	private final Object mApp;
 
+	/**
+	 *
+	 * @param aServer
+	 * @param aAppName
+	 * @param aAppPath
+	 * @param aScriptApp
+	 */
 	public JavaScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp) {
 		super(aServer, aAppName, aAppPath, aScriptApp);
 
@@ -56,6 +63,11 @@ public class JavaScriptApp extends BaseScriptApp {
 		}
 	}
 
+	/**
+	 *
+	 * @param aEventName
+	 * @param aArgs
+	 */
 	@Override
 	public void notifyEvent(String aEventName, Object[] aArgs) {
 		mLog.debug("Notifying '" + aEventName + "' event in '" + getName() + "' js app...");
@@ -67,6 +79,14 @@ public class JavaScriptApp extends BaseScriptApp {
 		}
 	}
 
+	/**
+	 *
+	 * @param aObjectId
+	 * @param aMethod
+	 * @param aArgs
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception {
 		Invocable lInvocable = (Invocable) getScriptApp();
@@ -78,6 +98,10 @@ public class JavaScriptApp extends BaseScriptApp {
 		return lInvocable.invokeMethod(lObject, aMethod, aArgs);
 	}
 
+	/**
+	 *
+	 * @return @throws Exception
+	 */
 	@Override
 	public String getVersion() throws Exception {
 		Invocable lInvocable = (Invocable) getScriptApp();
@@ -85,7 +109,11 @@ public class JavaScriptApp extends BaseScriptApp {
 
 		return lVersion;
 	}
-    
+
+	/**
+	 *
+	 * @return @throws Exception
+	 */
 	@Override
 	public String getDescription() throws Exception {
 		Invocable lInvocable = (Invocable) getScriptApp();

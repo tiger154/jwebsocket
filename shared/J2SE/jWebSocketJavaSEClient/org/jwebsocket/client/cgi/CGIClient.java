@@ -40,7 +40,6 @@ public class CGIClient extends BaseWebSocketClient {
 
 	/**
 	 *
-	 * @param aListener
 	 */
 	public CGIClient() {
 		// assign listener

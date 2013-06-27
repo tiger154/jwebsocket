@@ -29,22 +29,47 @@ public class SharedObjects {
 	private static Logger log = Logging.getLogger(SharedObjects.class);
 	private FastMap<String, Object> objects = new FastMap<String, Object>();
 
+	/**
+	 *
+	 * @param aKey
+	 * @param aObject
+	 * @return
+	 */
 	public Object put(String aKey, Object aObject) {
 		return objects.put(aKey, aObject);
 	}
 
+	/**
+	 *
+	 * @param aKey
+	 * @return
+	 */
 	public Object remove(String aKey) {
 		return objects.remove(aKey);
 	}
 
+	/**
+	 *
+	 * @param aKey
+	 * @return
+	 */
 	public Object get(String aKey) {
 		return objects.get(aKey);
 	}
 
+	/**
+	 *
+	 * @param aKey
+	 * @return
+	 */
 	public boolean contains(String aKey) {
 		return objects.containsKey(aKey);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Set<String>getKeys() {
 		return objects.keySet();
 	}

@@ -38,11 +38,21 @@ public class SampleWebSocketPlugIn extends ActionPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket SampleWebSocketPlugIn - Community Edition";
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public SampleWebSocketPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		setNamespace(aConfiguration.getNamespace());
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aRequest
+	 * @throws Exception
+	 */
 	public void sayHelloAction(WebSocketConnector aConnector, Token aRequest) throws Exception {
 		String lName = aRequest.getString("name");
 
@@ -52,31 +62,55 @@ public class SampleWebSocketPlugIn extends ActionPlugIn {
 		sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String getVersion() {
 		return VERSION;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String getLabel() {
 		return LABEL;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String getDescription() {
 		return DESCRIPTION;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String getVendor() {
 		return VENDOR;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String getCopyright() {
 		return COPYRIGHT;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String getLicense() {
 		return LICENSE;

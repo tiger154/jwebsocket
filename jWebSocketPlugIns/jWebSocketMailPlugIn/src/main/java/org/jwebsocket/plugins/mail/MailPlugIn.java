@@ -38,6 +38,9 @@ public class MailPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
+	/**
+	 *
+	 */
 	public static final String NS =
 			JWebSocketServerConstants.NS_BASE + ".plugins.mail";
 	private final static String VERSION = "1.0.0";

@@ -32,6 +32,13 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class SampleHttpServlet extends HttpServlet {
 
+	/**
+	 *
+	 * @param aRequest
+	 * @param aResponse
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	@Override
 	protected void doGet(HttpServletRequest aRequest, HttpServletResponse aResponse)
 			throws ServletException, IOException {

@@ -20,6 +20,13 @@ package org.jwebsocket.plugins.proxy;
  * @author alexanderschulze
  */
 public enum ProxyTargets {
+
+	/**
+	 *
+	 */
 	WEBSOCKET,
+	/**
+	 *
+	 */
 	HTTP
 }

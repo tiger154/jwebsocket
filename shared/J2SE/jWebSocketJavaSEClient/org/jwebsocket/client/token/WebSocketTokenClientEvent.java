@@ -23,6 +23,12 @@ import org.jwebsocket.api.WebSocketClient;
  */
 public class WebSocketTokenClientEvent extends WebSocketBaseClientEvent {
 
+	/**
+	 *
+	 * @param aClient
+	 * @param aName
+	 * @param aData
+	 */
 	public WebSocketTokenClientEvent(WebSocketClient aClient, String aName, String aData) {
 		super(aClient, aName, aData);
 	}

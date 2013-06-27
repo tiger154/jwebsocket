@@ -15,10 +15,18 @@ public class SharedCanvas extends BaseSharedObject {
 
 	private List mCmds = new FastList();
 
+	/**
+	 *
+	 * @param aCmd
+	 */
 	public void addCmd(String aCmd) {
 		 mCmds.add(aCmd);
 	}
 
+	/**
+	 *
+	 * @param aIndex
+	 */
 	public void removeCmd(int aIndex) {
 		 mCmds.remove(aIndex);
 	}

@@ -53,6 +53,9 @@ import org.jwebsocket.token.TokenFactory;
 public class SenchaDemoPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	/**
+	 *
+	 */
 	public static final String NS_SENCHA_DEMO =
 			JWebSocketServerConstants.NS_BASE + ".plugins.sencha";
 	private final static String VERSION = "1.0.0";

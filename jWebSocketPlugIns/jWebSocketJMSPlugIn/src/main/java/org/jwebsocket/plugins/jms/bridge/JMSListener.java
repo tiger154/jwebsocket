@@ -42,15 +42,28 @@ public class JMSListener implements MessageListener {
 	private JMSSender mJMSSender = null;
 	private JMSEngine mEngine = null;
 
+	/**
+	 *
+	 * @param aEngine
+	 * @param aJMSSender
+	 */
 	public JMSListener(JMSEngine aEngine, JMSSender aJMSSender) {
 		mEngine = aEngine;
 		mJMSSender = aJMSSender;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public JMSSender getJMSSender() {
 		return mJMSSender;
 	}
 
+	/**
+	 *
+	 * @param aMsg
+	 */
 	@Override
 	public void onMessage(Message aMsg) {
 		String lJSON = null;

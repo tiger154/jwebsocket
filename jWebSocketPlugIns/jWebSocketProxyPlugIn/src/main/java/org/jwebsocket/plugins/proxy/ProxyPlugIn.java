@@ -51,6 +51,11 @@ public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket ProxyPlugIn - Community Edition";
 
+	/**
+	 *
+	 * @param aConfiguration
+	 * @throws IOException
+	 */
 	public ProxyPlugIn(PluginConfiguration aConfiguration) throws IOException {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
@@ -123,6 +128,11 @@ public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 		return NS_PROXY;
 	}
 
+	/**
+	 *
+	 * @param aServer
+	 * @param aInClient
+	 */
 	@Override
 	public void onAccept(ServerChannel aServer, ClientChannel aInClient) {
 		if (mLog.isInfoEnabled()) {
@@ -166,6 +176,11 @@ public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 		}
 	}
 
+	/**
+	 *
+	 * @param aServer
+	 * @param aException
+	 */
 	@Override
 	public void onAcceptFailure(ServerChannel aServer, IOException aException) {
 		mLog.error("onAcceptFailure: "
