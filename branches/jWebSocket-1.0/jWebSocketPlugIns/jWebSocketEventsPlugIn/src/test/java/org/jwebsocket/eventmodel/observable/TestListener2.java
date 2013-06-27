@@ -28,6 +28,11 @@ public class TestListener2 implements IListener {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(TestEvent aEvent, ResponseEvent aResponseEvent) {
 		aResponseEvent.getArgs().setString("listener", TestListener2.class.toString());
 	}

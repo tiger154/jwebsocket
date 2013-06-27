@@ -27,6 +27,11 @@ import org.jwebsocket.api.IBasicStorage;
  */
 public class Subscriber extends Publisher {
 
+	/**
+	 *
+	 * @param aId
+	 * @param aStorage
+	 */
 	public Subscriber(String aId, IBasicStorage<String, Object> aStorage) {
 		super(aId, aStorage);
 	}

@@ -47,6 +47,9 @@ public class ClusterPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
+	/**
+	 *
+	 */
 	public static final String NS_CLUSTER =
 			JWebSocketServerConstants.NS_BASE + ".plugins.cluster";
 	private final static String VERSION = "1.0.0";

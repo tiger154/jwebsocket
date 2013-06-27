@@ -42,6 +42,10 @@ public class ClusterAdvisoryListener implements MessageListener {
 
 	private static Logger mLog = Logging.getLogger();
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	@Override
 	public void onMessage(Message aMessage) {
 
