@@ -42,6 +42,9 @@ import org.springframework.beans.factory.BeanFactory;
 public class APIPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	/**
+	 *
+	 */
 	public static final String NS_API =
 			JWebSocketServerConstants.NS_BASE + ".plugins.api";
 	private final static String VERSION = "1.0.0";
@@ -50,7 +53,6 @@ public class APIPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket API Plug-in - Community Edition";
-	
 	private String GET_SERVER_API = "getServerAPI";
 	private String GET_PLUGIN_API = "getPlugInAPI";
 	private String GET_PLUGIN_IDS = "getPlugInIds";
