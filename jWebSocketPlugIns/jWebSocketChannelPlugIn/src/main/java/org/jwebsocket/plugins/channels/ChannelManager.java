@@ -79,11 +79,29 @@ public class ChannelManager implements IInitializable {
 	 */
 	private final IStorageProvider mStorageProvider;
 	private boolean mAllowCreateSystemChannels = false;
+	/**
+	 *
+	 */
 	public static final String PLUGIN_STORAGES_PREFIX = "jws.channel.";
+	/**
+	 *
+	 */
 	public static final String CHANNELS_STORAGE = PLUGIN_STORAGES_PREFIX + "channels";
+	/**
+	 *
+	 */
 	public static final String CHANNEL_PUBLISHERS_STORAGE_PREFIX = PLUGIN_STORAGES_PREFIX + "channel.pub.";
+	/**
+	 *
+	 */
 	public static final String CHANNEL_SUBSCRIBERS_STORAGE_PREFIX = PLUGIN_STORAGES_PREFIX + "channel.sub.";
+	/**
+	 *
+	 */
 	public static final String PUBLISHERS_STORAGE_PREFIX = PLUGIN_STORAGES_PREFIX + "pub.";
+	/**
+	 *
+	 */
 	public static final String SUBSCRIBER_STORAGE_PREFIX = PLUGIN_STORAGES_PREFIX + "sub.";
 	private final Map mSettings;
 
@@ -198,10 +216,14 @@ public class ChannelManager implements IInitializable {
 		mSettings = aSettings;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public IStorageProvider getStorageProvider() {
 		return mStorageProvider;
 	}
-	
+
 	/**
 	 * Returns the channel registered in the jWebSocket system based on channel
 	 * id it does a various lookup and then if it doesn't find anywhere from the
@@ -210,6 +232,7 @@ public class ChannelManager implements IInitializable {
 	 *
 	 * @param aChannelId
 	 * @return channel object, null if not found
+	 * @throws Exception
 	 */
 	public Channel getChannel(String aChannelId) throws Exception {
 		return mChannelStore.getChannel(aChannelId);
@@ -219,20 +242,21 @@ public class ChannelManager implements IInitializable {
 	 *
 	 * @param aChannelId
 	 * @return
+	 * @throws Exception
 	 */
 	public Channel removeChannel(String aChannelId) throws Exception {
 		Channel lChannel = getChannel(aChannelId);
 		if (lChannel != null) {
-			for (String lPublisher : lChannel.getPublishers()){
+			for (String lPublisher : lChannel.getPublishers()) {
 				mPublisherStore.removePublisher(lPublisher);
 			}
-			for (String lSubscriber: lChannel.getSubscribers()){
+			for (String lSubscriber : lChannel.getSubscribers()) {
 				mSubscriberStore.removeSubscriber(lSubscriber);
 			}
-			
+
 			lChannel.clearPublishers();
 			lChannel.clearSubscribers();
-			
+
 			mChannelStore.removeChannel(aChannelId);
 		}
 		return lChannel;
@@ -242,6 +266,7 @@ public class ChannelManager implements IInitializable {
 	 *
 	 * @param aChannel
 	 * @return
+	 * @throws Exception
 	 */
 	public Channel removeChannel(Channel aChannel) throws Exception {
 		if (aChannel != null) {
@@ -265,6 +290,7 @@ public class ChannelManager implements IInitializable {
 	 *
 	 * @param aSubscriberId the subscriber id
 	 * @return the subscriber object
+	 * @throws Exception
 	 */
 	public Subscriber getSubscriber(String aSubscriberId) throws Exception {
 		return mSubscriberStore.getSubscriber(aSubscriberId);
@@ -274,6 +300,7 @@ public class ChannelManager implements IInitializable {
 	 * Removes the given subscriber information from channel store
 	 *
 	 * @param aSubscriber the subscriber object
+	 * @throws Exception
 	 */
 	public void removeSubscriber(Subscriber aSubscriber) throws Exception {
 		mSubscriberStore.removeSubscriber(aSubscriber.getId());
@@ -284,6 +311,7 @@ public class ChannelManager implements IInitializable {
 	 *
 	 * @param aPublisherId the publisher id
 	 * @return the publisher object
+	 * @throws Exception
 	 */
 	public Publisher getPublisher(String aPublisherId) throws Exception {
 		return mPublisherStore.getPublisher(aPublisherId);
@@ -293,6 +321,7 @@ public class ChannelManager implements IInitializable {
 	 * Removes the publisher from the channel store permanently
 	 *
 	 * @param aPublisher the publisher to remove
+	 * @throws Exception
 	 */
 	public void removePublisher(Publisher aPublisher) throws Exception {
 		mPublisherStore.removePublisher(aPublisher.getId());
@@ -332,6 +361,7 @@ public class ChannelManager implements IInitializable {
 
 	/**
 	 * @return the channels
+	 * @throws Exception
 	 */
 	public Map<String, Channel> getChannels() throws Exception {
 		return mChannelStore.getChannels();

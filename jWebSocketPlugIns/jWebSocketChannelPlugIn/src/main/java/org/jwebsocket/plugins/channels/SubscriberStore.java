@@ -30,6 +30,7 @@ public interface SubscriberStore {
 	 *
 	 * @param id the subscriber id to fetch
 	 * @return the subscriber object
+	 * @throws Exception
 	 */
 	Subscriber getSubscriber(String id) throws Exception;
 
@@ -38,6 +39,7 @@ public interface SubscriberStore {
 	 *
 	 *
 	 * @param id
+	 * @throws Exception
 	 */
 	void removeSubscriber(String id) throws Exception;
 }

@@ -42,66 +42,79 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 /**
- * Token based implementation of the channel plugin. It's based on a publisher/subscriber model
- * where channels can be either used to publish the data by one or more registered publishers and
- * subscribed by multiple subscribers. The operation of channel is best handled by channel
- * sub-protocol that has to be followed by clients to publish data to the channel or subscribe for
- * receiving the data from the channels.
+ * Token based implementation of the channel plugin. It's based on a
+ * publisher/subscriber model where channels can be either used to publish the
+ * data by one or more registered publishers and subscribed by multiple
+ * subscribers. The operation of channel is best handled by channel sub-protocol
+ * that has to be followed by clients to publish data to the channel or
+ * subscribe for receiving the data from the channels.
  *
- ************************ PUBLISHER OPERATION***********************************
+ ************************ PUBLISHER
+ * OPERATION***********************************
  *
- * Token Type : <tt>publisher</tt> Namespace : <tt>org.jwebsocket.plugins.channel</tt>
+ * Token Type : <tt>publisher</tt> Namespace :
+ * <tt>org.jwebsocket.plugins.channel</tt>
  *
  * Token Key : <tt>event</tt> Token Value : <tt>[authorize][publish][stop]</tt>
  *
- * <tt>authorize</tt> event command is used for authorization of client before publishing a data to
- * the channel, publisher client has to authorize itself using <tt>secretKey</tt>,
- * <tt>accessKey</tt> and <tt>login</tt> which is registered in the jWebSocket server system via
- * configuration file or from other jWebSocket components.
+ * <tt>authorize</tt> event command is used for authorization of client before
+ * publishing a data to the channel, publisher client has to authorize itself
+ * using <tt>secretKey</tt>,
+ * <tt>accessKey</tt> and <tt>login</tt> which is registered in the jWebSocket
+ * server system via configuration file or from other jWebSocket components.
  *
  * <tt>Token Request Includes:</tt>
  *
- * Token Key : <tt>channel<tt> Token Value : <tt>channel id to authorize for</tt>
+ * Token Key : <tt>channel<tt> Token Value : <tt>channel id to authorize
+ * for</tt>
  *
  * Token Key : <tt>secretKey<tt> Token Value : <tt>value of the secret key</tt>
  *
  * Token Key : <tt>accessKey<tt> Token Value : <tt>value of the access key</tt>
  *
- * Token Key : <tt>login<tt> Token Value : <tt>login name or id of the jWebSocket registered
- * user</tt>
+ * Token Key : <tt>login<tt> Token Value : <tt>login name or id of the
+ * jWebSocket registered user</tt>
  *
- * <tt>publish</tt>: publish event means publisher client has been authorized and ready to publish
- * the data. Data is received from the token string of key <tt>data</tt>. If the channel registered
- * is not started then it is started when publish command is received for the first time.
+ * <tt>publish</tt>: publish event means publisher client has been authorized
+ * and ready to publish the data. Data is received from the token string of key
+ * <tt>data</tt>. If the channel registered is not started then it is started
+ * when publish command is received for the first time.
  *
  * <tt>Token Request Includes:</tt>
  *
- * Token Key : <tt>channel<tt> Token Value : <tt>channel id to publish the data</tt>
+ * Token Key : <tt>channel<tt> Token Value : <tt>channel id to publish the
+ * data</tt>
  *
- * Token Key : <tt>data<tt> Token Value : <tt>data to publish to the channel</tt>
+ * Token Key : <tt>data<tt> Token Value : <tt>data to publish to the
+ * channel</tt>
  *
- * <tt>stop</tt>: stop event means proper shutdown of channel and no more data will be received from
- * the publisher.
+ * <tt>stop</tt>: stop event means proper shutdown of channel and no more data
+ * will be received from the publisher.
  *
- ************************ SUBSCRIBER OPERATION *****************************************
+ ************************ SUBSCRIBER OPERATION
+ * *****************************************
  *
- * Token Type : <tt>subscriber</tt> Namespace : <tt>org.jwebsocket.plugins.channel</tt>
+ * Token Type : <tt>subscriber</tt> Namespace :
+ * <tt>org.jwebsocket.plugins.channel</tt>
  *
- * Token Key : <tt>operation</tt> Token Value : <tt>[subscribe][unsubscribe]</tt>
+ * Token Key : <tt>operation</tt> Token Value :
+ * <tt>[subscribe][unsubscribe]</tt>
  *
- * <tt>subscribe</tt> subscribe event is to register the client as a subscriber for the passed in
- * channel and accessKey if the channel is private and needs accessKey for subscription
+ * <tt>subscribe</tt> subscribe event is to register the client as a subscriber
+ * for the passed in channel and accessKey if the channel is private and needs
+ * accessKey for subscription
  *
- * <tt>Token Request Includes:</tt> Token Key : <tt>channel<tt> Token Value : <tt>channel id to
- * publish the data</tt>
+ * <tt>Token Request Includes:</tt> Token Key : <tt>channel<tt> Token Value :
+ * <tt>channel id to publish the data</tt>
  *
- * Token Key : <tt>accessKey<tt> Token Value : <tt>accessKey value required for subscription</tt>
+ * Token Key : <tt>accessKey<tt> Token Value : <tt>accessKey value required for
+ * subscription</tt>
  *
- * <tt>unsubscribe</tt> removes the client from the channel so no data will be broadcasted to the
- * unsuscribed clients.
+ * <tt>unsubscribe</tt> removes the client from the channel so no data will be
+ * broadcasted to the unsuscribed clients.
  *
- * <tt>Token Request Includes:</tt> Token Key : <tt>channel<tt> Token Value : <tt>channel id to
- * unsubscribe</tt>
+ * <tt>Token Request Includes:</tt> Token Key : <tt>channel<tt> Token Value :
+ * <tt>channel id to unsubscribe</tt>
  *
  * @author puran, aschulze, kyberneees
  * @version $Id: ChannelPlugIn.java 1603 2011-02-28 16:48:50Z fivefeetfurther $
@@ -266,6 +279,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 	 *
 	 * @param aConnector the connector for this client
 	 * @param aToken the request token object
+	 * @throws Exception
 	 */
 	@Role(name = NS_CHANNELS + "." + TT_SUBSCRIBE)
 	public void subscribeAction(WebSocketConnector aConnector, Token aToken) throws Exception {
@@ -306,11 +320,13 @@ public class ChannelPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Method for subscribers to unsubscribe from the channel. If the unsubscribe operation is
-	 * successful it sends the unsubscriber - ok response to the client.
+	 * Method for subscribers to unsubscribe from the channel. If the
+	 * unsubscribe operation is successful it sends the unsubscriber - ok
+	 * response to the client.
 	 *
 	 * @param aConnector the connector associated with the subscriber
 	 * @param aToken the token object
+	 * @throws Exception
 	 */
 	@Role(name = NS_CHANNELS + "." + TT_UNSUBSCRIBE)
 	public void unsubscribeAction(WebSocketConnector aConnector, Token aToken) throws Exception {
@@ -342,6 +358,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 	 *
 	 * @param aConnector the connector for this client
 	 * @param aToken the request token object
+	 * @throws Exception
 	 */
 	@Role(name = NS_CHANNELS + "." + TT_GET_CHANNELS)
 	public void getChannelsAction(WebSocketConnector aConnector, Token aToken) throws Exception {
@@ -375,7 +392,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 	 *
 	 * @param aConnector the connector associated with the publisher
 	 * @param aToken the token received from the publisher client
-	 * @param aChannelId the channel id
+	 * @throws Exception
 	 */
 	@Role(name = NS_CHANNELS + "." + TT_AUTHORIZE)
 	public void authorizeAction(WebSocketConnector aConnector, Token aToken) throws Exception {
@@ -418,6 +435,12 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS_CHANNELS + "." + TT_PUBLISH)
 	public void publishAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
@@ -458,6 +481,12 @@ public class ChannelPlugIn extends ActionPlugIn {
 		lChannel.broadcastToken(lToken);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS_CHANNELS + "." + TT_CREATE_CHANNEL)
 	public void modifyChannelAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
@@ -505,6 +534,12 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, createResponse(aToken));
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS_CHANNELS + "." + TT_CREATE_CHANNEL)
 	public void createChannelAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		// get arguments from request
@@ -591,6 +626,12 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS_CHANNELS + "." + TT_REMOVE_CHANNEL)
 	public void removeChannelAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		Token lResponseToken = createResponse(aToken);
@@ -655,6 +696,12 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS_CHANNELS + "." + TT_GET_SUBSCRIBERS)
 	public void getSubscribersAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
@@ -691,6 +738,12 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS_CHANNELS + "." + TT_GET_PUBLISHERS)
 	public void getPublishersAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
@@ -727,6 +780,12 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS_CHANNELS + "." + TT_GET_SUBSCRIPTIONS)
 	public void getSubscriptionsAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		Subscriber lSubscriber = mChannelManager.getSubscriber(aConnector.getId());
@@ -753,6 +812,12 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS_CHANNELS + "." + TT_STOP_CHANNEL)
 	public void stopChannelAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);
@@ -771,6 +836,12 @@ public class ChannelPlugIn extends ActionPlugIn {
 		sendToken(aConnector, aConnector, createResponse(aToken));
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS_CHANNELS + "." + TT_START_CHANNEL)
 	public void startChannelAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lChannelId = aToken.getString(CHANNEL);

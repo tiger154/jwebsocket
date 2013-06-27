@@ -37,7 +37,7 @@ public class BasePublisherStore implements PublisherStore {
 	/**
 	 * default constructor
 	 *
-	 * @param aStorage
+	 * @param aStorageProvider
 	 */
 	public BasePublisherStore(IStorageProvider aStorageProvider) {
 		mStorageProdiver = aStorageProvider;
@@ -47,6 +47,7 @@ public class BasePublisherStore implements PublisherStore {
 	 * {@inheritDoc}
 	 *
 	 * @param aId
+	 * @throws Exception
 	 */
 	@Override
 	public Publisher getPublisher(String aId) throws Exception {

@@ -38,29 +38,30 @@ import org.jwebsocket.util.Tools;
 /**
  * Channel class represents the data channel which is used by the
  * <tt>Publisher</tt> to publish the data and the number of <tt>Subscriber</tt>
- * 's can subscribe to the given channel to receive the data stream through the channel as soon as
- * it is available to the channel via publisher.
+ * 's can subscribe to the given channel to receive the data stream through the
+ * channel as soon as it is available to the channel via publisher.
  *
  * Channel can be of 3 types:
  *
- * 1. System Channel - The channels which are and can only be initialized and started by the
- * jWebSocket components and are used by it for providing system level information are called system
- * channel. Examples can be
+ * 1. System Channel - The channels which are and can only be initialized and
+ * started by the jWebSocket components and are used by it for providing system
+ * level information are called system channel. Examples can be
  * <tt>LoggerChannel</tt> for streaming server logs to the client,
  * <tt>AdminChannel<tt> to stream the admin level read only information etc..
  *
- * 2. Private Channel - These are the channels that can be registered, initialized and started by
- * user at configuration time using
- * <tt>jWebSocket.xml</tt> or runtime. But to subscribe to this channel the user or client should
- * have valid <tt>api_key</tt> or rights.
+ * 2. Private Channel - These are the channels that can be registered,
+ * initialized and started by user at configuration time using
+ * <tt>jWebSocket.xml</tt> or runtime. But to subscribe to this channel the user
+ * or client should have valid <tt>api_key</tt> or rights.
  *
- * 3. Public Channel - Same as private channel except anyone can subscribe to this channel without
- * the use of <tt>access_key</tt> or irrespective of the roles and rights.
+ * 3. Public Channel - Same as private channel except anyone can subscribe to
+ * this channel without the use of <tt>access_key</tt> or irrespective of the
+ * roles and rights.
  *
- * Also <tt>FastList</tt> has been used for the list of subscribers, publishers and channel
- * listeners for the concurrent access. Although it is expensive but considering the fact that
- * number of traversal for broadcasting data or callback on listeners on events would be more than
- * insertion and removal.
+ * Also <tt>FastList</tt> has been used for the list of subscribers, publishers
+ * and channel listeners for the concurrent access. Although it is expensive but
+ * considering the fact that number of traversal for broadcasting data or
+ * callback on listeners on events would be more than insertion and removal.
  *
  * @author puran, aschulze
  * @version $Id: Channel.java 1592 2011-02-20 00:49:48Z fivefeetfurther $
@@ -131,6 +132,8 @@ public final class Channel implements ChannelLifeCycle {
 	 * @param aSecretKey
 	 * @param aState
 	 * @param aServer
+	 * @param aSubscribers
+	 * @param aPublishers
 	 */
 	public Channel(String aId, String aName,
 			boolean aIsPrivate, boolean aIsSystem,
@@ -267,8 +270,8 @@ public final class Channel implements ChannelLifeCycle {
 	}
 
 	/**
-	 * returns if the channel is a private channel. Private channels are not listed by getChannel
-	 * requests and require an access-key.
+	 * returns if the channel is a private channel. Private channels are not
+	 * listed by getChannel requests and require an access-key.
 	 *
 	 * @return
 	 */
@@ -276,12 +279,17 @@ public final class Channel implements ChannelLifeCycle {
 		return mIsPrivate;
 	}
 
+	/**
+	 *
+	 * @param aIsPrivate
+	 */
 	public void setPrivate(boolean aIsPrivate) {
 		this.mIsPrivate = aIsPrivate;
 	}
 
 	/**
-	 * returns if the channel is a system channel. System channels cannot be removed from clients.
+	 * returns if the channel is a system channel. System channels cannot be
+	 * removed from clients.
 	 *
 	 * @return the systemChannel
 	 */
@@ -289,6 +297,10 @@ public final class Channel implements ChannelLifeCycle {
 		return mIsSystem;
 	}
 
+	/**
+	 *
+	 * @param aIsSystem
+	 */
 	public void setSystem(boolean aIsSystem) {
 		this.mIsSystem = aIsSystem;
 	}
@@ -354,10 +366,16 @@ public final class Channel implements ChannelLifeCycle {
 		mPublishers.put(aPublisher, true);
 	}
 
+	/**
+	 *
+	 */
 	public void clearPublishers() {
 		mPublishers.clear();
 	}
 
+	/**
+	 *
+	 */
 	public void clearSubscribers() {
 		mSubscribers.clear();
 	}
@@ -401,7 +419,7 @@ public final class Channel implements ChannelLifeCycle {
 	 * Unsubscribe from this channel, and updates the channel store information
 	 *
 	 * @param aSubscriber the subscriber to unsubscribe
-	 * @param aSubscriber the connector to unsubscribe
+	 * @param aConnector
 	 */
 	public void unsubscribe(String aSubscriber, WebSocketConnector aConnector) {
 		if (mSubscribers.containsKey(aSubscriber)) {
@@ -426,8 +444,9 @@ public final class Channel implements ChannelLifeCycle {
 	}
 
 	/**
-	 * Sends the data to the given subscriber. Note that this send operation will block the current
-	 * thread until the send operation is complete. for asynchronous send operation use
+	 * Sends the data to the given subscriber. Note that this send operation
+	 * will block the current thread until the send operation is complete. for
+	 * asynchronous send operation use
 	 * <tt>sendAsync</tt> method.
 	 *
 	 * @param aToken the token data to send
@@ -451,9 +470,9 @@ public final class Channel implements ChannelLifeCycle {
 	}
 
 	/**
-	 * broadcasts data to the subscribers asynchronously. It performs the concurrent broadcast to
-	 * all the subscribers and wait for the all the broadcast task to complete only for 1 second
-	 * maximum.
+	 * broadcasts data to the subscribers asynchronously. It performs the
+	 * concurrent broadcast to all the subscribers and wait for the all the
+	 * broadcast task to complete only for 1 second maximum.
 	 *
 	 * @param aToken the token data for the subscribers
 	 */
@@ -657,6 +676,10 @@ public final class Channel implements ChannelLifeCycle {
 		return mAuthenticated;
 	}
 
+	/**
+	 *
+	 * @param aName
+	 */
 	public void setName(String aName) {
 		this.mName = aName;
 	}
