@@ -52,6 +52,10 @@ public class InternalClient {
 		return ++CURRENT_TOKEN_UID;
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 */
 	public InternalClient(InternalConnector aConnector) {
 		mConnector = aConnector;
 
@@ -90,34 +94,65 @@ public class InternalClient {
 		});
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getId() {
 		return mConnector.getId();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getUsername() {
 		return mConnector.getUsername();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public InternalConnector getConnector() {
 		return mConnector;
 	}
 
+	/**
+	 *
+	 */
 	public InternalClient() {
 		this(new InternalConnector(JWebSocketFactory.getEngine()));
 	}
 
+	/**
+	 *
+	 */
 	public void open() {
 		mConnector.startConnector();
 	}
 
+	/**
+	 *
+	 * @param aPacket
+	 */
 	public void sendPacket(WebSocketPacket aPacket) {
 		mConnector.getEngine().processPacket(mConnector, aPacket);
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 */
 	public void sendToken(Token aToken) {
 		sendToken(aToken, null);
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 * @param aResponseListener
+	 */
 	public void sendToken(Token aToken, WebSocketResponseTokenListener aResponseListener) {
 		setUTID(aToken);
 
@@ -139,14 +174,25 @@ public class InternalClient {
 		aToken.setInteger("utid", getUTID());
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public void addListener(IInternalConnectorListener aListener) {
 		mConnector.addListener(aListener);
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public void removeListener(IInternalConnectorListener aListener) {
 		mConnector.removeListener(aListener);
 	}
 
+	/**
+	 *
+	 */
 	public void close() {
 		mConnector.stopConnector(CloseReason.CLIENT);
 	}

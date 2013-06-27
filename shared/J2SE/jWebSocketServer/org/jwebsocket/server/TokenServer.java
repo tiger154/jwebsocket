@@ -79,7 +79,7 @@ public class TokenServer extends BaseServer {
 		mMaximumPoolSize = aServerConfig.getThreadPoolConfig().getMaximumPoolSize();
 		mKeepAliveTime = aServerConfig.getThreadPoolConfig().getKeepAliveTime();
 		mBlockingQueueSize = aServerConfig.getThreadPoolConfig().getBlockingQueueSize();
-		
+
 		BaseToken.setExclLogField(aServerConfig.getSettings());
 	}
 
@@ -229,6 +229,11 @@ public class TokenServer extends BaseServer {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void processToken(WebSocketConnector aConnector, Token aToken) {
 		// before forwarding the token to the plug-ins push it through filter
 		// chain
@@ -647,8 +652,8 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * Broadcasts the passed token to all token based connectors of the underlying engines that
-	 * belong to the specified group.
+	 * Broadcasts the passed token to all token based connectors of the
+	 * underlying engines that belong to the specified group.
 	 *
 	 * @param aToken - token to broadcast
 	 */
@@ -664,8 +669,8 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * Broadcasts the passed token to all token based connectors of the underlying engines that
-	 * belong to the specified filter and its name.
+	 * Broadcasts the passed token to all token based connectors of the
+	 * underlying engines that belong to the specified filter and its name.
 	 *
 	 * @param aToken
 	 * @param aFilterID
@@ -683,8 +688,8 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * Broadcasts the passed token to all token based connectors of the underlying engines that
-	 * belong to the specified filters.
+	 * Broadcasts the passed token to all token based connectors of the
+	 * underlying engines that belong to the specified filters.
 	 *
 	 * @param aToken
 	 * @param aFilter
@@ -722,7 +727,8 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * Broadcasts the passed token to all token based connectors of the underlying engines.
+	 * Broadcasts the passed token to all token based connectors of the
+	 * underlying engines.
 	 *
 	 * @param aToken
 	 */
@@ -801,9 +807,10 @@ public class TokenServer extends BaseServer {
 	}
 
 	/**
-	 * iterates through all connectors of all engines and sends the token to each connector. The
-	 * token format is considered for each connection individually so that the application can
-	 * broadcast a token to all kinds of clients.
+	 * iterates through all connectors of all engines and sends the token to
+	 * each connector. The token format is considered for each connection
+	 * individually so that the application can broadcast a token to all kinds
+	 * of clients.
 	 *
 	 * @param aSource
 	 * @param aToken

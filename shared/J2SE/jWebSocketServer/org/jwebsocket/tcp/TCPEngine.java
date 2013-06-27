@@ -40,8 +40,8 @@ import org.jwebsocket.tcp.nio.NioTcpEngine;
 import org.jwebsocket.tcp.nio.Util;
 
 /**
- * Implementation of the jWebSocket TCP engine. The TCP engine provide a Java Socket implementation
- * of the WebSocket protocol. It contains the handshake
+ * Implementation of the jWebSocket TCP engine. The TCP engine provide a Java
+ * Socket implementation of the WebSocket protocol. It contains the handshake
  *
  * @author aschulze
  * @author jang
@@ -69,7 +69,13 @@ public class TCPEngine extends BaseEngine {
 	 *
 	 */
 	public static String WRITER_TIMEOUT_CONFIG_KEY = "writer_timeout";
+	/**
+	 *
+	 */
 	public static String TCP_NODELAY_CONFIG_KEY = "tcpNoDelay";
+	/**
+	 *
+	 */
 	public static Boolean DEFAULT_TCP_NODELAY = true;
 	private int mNumWorkers = DEFAULT_NUM_WORKERS;
 	private int mWriterTimeout = DEFAULT_WRITER_TIMEOUT;
@@ -415,7 +421,8 @@ public class TCPEngine extends BaseEngine {
 		private ServerSocket mServer = null;
 
 		/**
-		 * Creates the server socket listener for new incoming socket connections.
+		 * Creates the server socket listener for new incoming socket
+		 * connections.
 		 *
 		 * @param aEngine
 		 */

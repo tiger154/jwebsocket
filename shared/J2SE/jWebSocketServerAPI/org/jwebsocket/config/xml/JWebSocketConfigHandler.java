@@ -87,7 +87,13 @@ public class JWebSocketConfigHandler implements ConfigHandler {
 	private static final String ELEMENT_ROLE = "role";
 	private static final String ELEMENT_USERS = "users";
 	private static final String ELEMENT_USER = "user";
+	/**
+	 *
+	 */
 	protected static final String ELEMENT_PROPERTIES = "properties";
+	/**
+	 *
+	 */
 	protected static final String ELEMENT_PROPERTY = "property";
 	/**
 	 *

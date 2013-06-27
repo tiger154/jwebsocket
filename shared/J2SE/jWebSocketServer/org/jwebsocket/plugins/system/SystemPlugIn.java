@@ -24,14 +24,12 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.IInternalConnectorListener;
 import org.jwebsocket.api.ISessionManager;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
-import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketPlugInChain;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketCommonConstants;
@@ -48,11 +46,9 @@ import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.TokenPlugInChain;
 import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.security.User;
-import org.jwebsocket.server.InternalClient;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.session.SessionManager;
 import org.jwebsocket.token.BaseToken;
-import org.jwebsocket.token.BaseTokenResponseListener;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Fragmentation;
@@ -75,6 +71,9 @@ public class SystemPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	// specify name space for system plug-in
+	/**
+	 *
+	 */
 	public static final String NS_SYSTEM = JWebSocketServerConstants.NS_BASE + ".plugins.system";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
@@ -93,6 +92,9 @@ public class SystemPlugIn extends TokenPlugIn {
 	private static final String TT_LOGIN = "login";
 	private static final String TT_LOGOUT = "logout";
 	// new spring based auth
+	/**
+	 *
+	 */
 	public static final String TT_LOGON = "logon";
 	private static final String TT_LOGOFF = "logoff";
 	private static final String TT_GET_AUTHORITIES = "getAuthorities";
@@ -199,6 +201,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public ProviderManager getAuthProvMgr() {
 		return mAuthProvMgr;
 	}

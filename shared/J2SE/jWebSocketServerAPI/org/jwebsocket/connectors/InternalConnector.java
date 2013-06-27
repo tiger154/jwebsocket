@@ -49,6 +49,10 @@ public class InternalConnector extends BaseConnector {
 		}
 	};
 
+	/**
+	 *
+	 * @param aEngine
+	 */
 	public InternalConnector(WebSocketEngine aEngine) {
 		super(aEngine);
 	}
@@ -142,6 +146,10 @@ public class InternalConnector extends BaseConnector {
 		throw new UnsupportedOperationException("Not supported on InternalConnector implementation!");
 	}
 
+	/**
+	 *
+	 * @param aPacket
+	 */
 	public void handleIncomingPacket(WebSocketPacket aPacket) {
 		Iterator<IInternalConnectorListener> lIt = mListeners.iterator();
 		// notifying welcome event
@@ -150,6 +158,10 @@ public class InternalConnector extends BaseConnector {
 		}
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 */
 	public void handleIncomingToken(Token aToken) {
 		Iterator<IInternalConnectorListener> lIt = mListeners.iterator();
 		if ((JWebSocketServerConstants.NS_BASE + ".plugins.system").equals(aToken.getNS())
@@ -166,10 +178,18 @@ public class InternalConnector extends BaseConnector {
 		}
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public void addListener(IInternalConnectorListener aListener) {
 		mListeners.add(aListener);
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public void removeListener(IInternalConnectorListener aListener) {
 		mListeners.remove(aListener);
 	}

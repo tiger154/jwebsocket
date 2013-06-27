@@ -48,6 +48,10 @@ public class SystemFilter extends TokenFilter {
 		mSupportedEncodings.add("zipBase64");
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static List<String> getSupportedEncodings() {
 		return mSupportedEncodings;
 	}
@@ -152,17 +156,17 @@ public class SystemFilter extends TokenFilter {
 							aResponse.rejectMessage();
 						} else if ("base64".equals(lFormat)) {
 							if (lValue instanceof byte[]) {
-								aToken.setString(lAttr, Tools.base64Encode((byte[])lValue));
+								aToken.setString(lAttr, Tools.base64Encode((byte[]) lValue));
 							} else {
-								aToken.setString(lAttr, Tools.base64Encode(((String)lValue).getBytes()));
+								aToken.setString(lAttr, Tools.base64Encode(((String) lValue).getBytes()));
 							}
 						} else if ("zipBase64".equals(lFormat)) {
 							if (lValue instanceof byte[]) {
 								aToken.setString(lAttr, new String(Tools.zip(
-									(byte[])lValue, Tools.ENC_BASE64), "UTF-8"));
+										(byte[]) lValue, Tools.ENC_BASE64), "UTF-8"));
 							} else {
 								aToken.setString(lAttr, new String(Tools.zip(
-									((String)lValue).getBytes(), Tools.ENC_BASE64), "UTF-8"));
+										((String) lValue).getBytes(), Tools.ENC_BASE64), "UTF-8"));
 							}
 						}
 					} catch (Exception lEx) {

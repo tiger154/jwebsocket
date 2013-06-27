@@ -24,14 +24,27 @@ package org.jwebsocket.kit;
  */
 public class IsAlreadyConnectedException extends WebSocketException {
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	public IsAlreadyConnectedException(String aMessage) {
 		super(aMessage);
 	}
 
+	/**
+	 *
+	 * @param aCause
+	 */
 	public IsAlreadyConnectedException(Throwable aCause) {
 		super(aCause);
 	}
 
+	/**
+	 *
+	 * @param aMessage
+	 * @param aCause
+	 */
 	public IsAlreadyConnectedException(String aMessage, Throwable aCause) {
 		super(aMessage, aCause);
 	}
