@@ -17,6 +17,12 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
+//:package:*:jws
+//:class:*:jws.FileSystemPlugIn
+//:ancestor:*:-
+//:d:en:Implementation of the [tt]jws.FileSystemPlugIn[/tt] class.
+//:d:en:This client-side plug-in provides the API to access the features of the _
+//:d:en:FileSystemPlugIn on the jWebSocket server.
 jws.FileSystemPlugIn = {
 
 	// namespace for filesystem plugin
