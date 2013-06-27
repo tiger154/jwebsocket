@@ -31,15 +31,36 @@ import org.jwebsocket.util.Tools;
  */
 public class FileSystemPlugIn extends BaseClientTokenPlugIn {
 
+	/**
+	 *
+	 */
 	public static final String ALIAS_PRIVATE = "privateDir";
+	/**
+	 *
+	 */
 	public static final String ALIAS_PUBLIC = "publicDir";
+	/**
+	 *
+	 */
 	public static final String SCOPE_PRIVATE = "private";
+	/**
+	 *
+	 */
 	public static final String SCOPE_PUBLIC = "public";
 
+	/**
+	 *
+	 * @param aClient
+	 */
 	public FileSystemPlugIn(WebSocketTokenClient aClient) {
 		super(aClient, JWebSocketClientConstants.NS_FILESYSTEM);
 	}
 
+	/**
+	 *
+	 * @param aClient
+	 * @param aNS
+	 */
 	public FileSystemPlugIn(WebSocketTokenClient aClient, String aNS) {
 		super(aClient, aNS);
 	}
@@ -149,6 +170,7 @@ public class FileSystemPlugIn extends BaseClientTokenPlugIn {
 	 * @param aData The file content. Is Base64 encoded automatically for
 	 * transmission.
 	 * @param aScope The scope value. <tt>Allowed values: [private, public]</tt>
+	 * @param aNotify
 	 * @param aListener The response listener.
 	 * @throws WebSocketException
 	 */

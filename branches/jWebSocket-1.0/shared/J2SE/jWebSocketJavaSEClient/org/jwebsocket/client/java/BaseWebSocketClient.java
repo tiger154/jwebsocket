@@ -47,8 +47,9 @@ import org.jwebsocket.util.HttpCookie;
 import org.jwebsocket.util.Tools;
 
 /**
- * Base {@code WebSocket} implementation based on http://weberknecht.googlecode.com by Roderick
- * Baier. This uses thread model for handling WebSocket connection which is defined by the
+ * Base {@code WebSocket} implementation based on
+ * http://weberknecht.googlecode.com by Roderick Baier. This uses thread model
+ * for handling WebSocket connection which is defined by the
  * <tt>WebSocket</tt> protocol specification. {@linkplain http://www.whatwg.org/specs/web-socket-protocol/}
  * {@linkplain http://www.w3.org/TR/websockets/}
  *
@@ -238,8 +239,8 @@ public class BaseWebSocketClient implements WebSocketClient {
 	}
 
 	/**
-	 * Make a sub protocol string for Sec-WebSocket-Protocol header. The result is something like
-	 * this:
+	 * Make a sub protocol string for Sec-WebSocket-Protocol header. The result
+	 * is something like this:
 	 * <pre>
 	 * org.jwebsocket.json org.websocket.text org.jwebsocket.binary
 	 * </pre>
@@ -262,6 +263,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 *
 	 * @param aVersion
 	 * @param aURI
+	 * @throws IsAlreadyConnectedException
 	 */
 	public void open(int aVersion, String aURI) throws IsAlreadyConnectedException {
 		String lSubProtocols = generateSubProtocolsHeaderValue();
@@ -273,6 +275,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 	 * @param aVersion
 	 * @param aURI
 	 * @param aSubProtocols
+	 * @throws IsAlreadyConnectedException
 	 */
 	public void open(int aVersion, String aURI, String aSubProtocols) throws IsAlreadyConnectedException {
 		try {
@@ -446,11 +449,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 							System.currentTimeMillis(),
 							lFragmentationId,
 							new InFragmentationListenerSender() {
-								@Override
-								public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
-									lSender.sendPacketInTransaction(aDataPacket, aListener);
-								}
-							}));
+						@Override
+						public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+							lSender.sendPacketInTransaction(aDataPacket, aListener);
+						}
+					}));
 					return;
 				}
 
@@ -518,14 +521,14 @@ public class BaseWebSocketClient implements WebSocketClient {
 				sendInternal(aData);
 			} else {
 				WebSocketPacket lPacket = new RawPacket(aData);
-				
+
 				sendInternal(
 						WebSocketProtocolAbstraction.rawToProtocolPacket(
 						mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
 			}
 		}
 	}
-	
+
 	@Override
 	public void send(byte[] aData, WebSocketFrameType aFrameType) throws WebSocketException {
 		synchronized (mWriteLock) {
@@ -534,7 +537,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 			} else {
 				WebSocketPacket lPacket = new RawPacket(aData);
 				lPacket.setFrameType(aFrameType);
-						
+
 				sendInternal(
 						WebSocketProtocolAbstraction.rawToProtocolPacket(
 						mVersion, lPacket, WebSocketProtocolAbstraction.MASKED));
@@ -1230,7 +1233,7 @@ public class BaseWebSocketClient implements WebSocketClient {
 						sendPong(new RawPacket(WebSocketFrameType.PONG, ""));
 					} else if (WebSocketFrameType.PONG == lFrameType) {
 						mStatus = WebSocketStatus.OPEN;
-					} else if (WebSocketFrameType.TEXT == lFrameType 
+					} else if (WebSocketFrameType.TEXT == lFrameType
 							|| WebSocketFrameType.BINARY == lFrameType) {
 						lWSCE = new WebSocketTokenClientEvent(mClient, null, null);
 						notifyPacket(lWSCE, lPacket);

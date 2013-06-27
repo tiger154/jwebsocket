@@ -25,10 +25,18 @@ import org.jwebsocket.plugins.rpc.MethodMatcher;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
+/**
+ *
+ * @author aschulze
+ */
 public class RPCPlugin {
 
 	private static boolean annotationAllowed = true;
 
+	/**
+	 *
+	 * @param aAnnotationAllowedValue
+	 */
 	public static void setAnnotationAllowed(boolean aAnnotationAllowedValue) {
 		annotationAllowed = aAnnotationAllowedValue;
 	}
@@ -75,6 +83,8 @@ public class RPCPlugin {
 	 * @param aClassName
 	 * @param aMethodName
 	 * @param aArgs
+	 * @param aSourceId
+	 * @return
 	 */
 	public static Token processRrpc(String aClassName, String aMethodName, List aArgs, String aSourceId) {
 		boolean lRrpcFromServer = CommonRpcPlugin.SERVER_ID.equals(aSourceId);
