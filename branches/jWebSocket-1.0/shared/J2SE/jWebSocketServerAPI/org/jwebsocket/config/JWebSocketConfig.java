@@ -376,7 +376,7 @@ public class JWebSocketConfig implements Config {
 	/**
 	 *
 	 *
-	 * @param aContext
+	 * @param aArgs
 	 */
 	public static void initForWebApp(String[] aArgs) {
 		mIsWebApp = true;
