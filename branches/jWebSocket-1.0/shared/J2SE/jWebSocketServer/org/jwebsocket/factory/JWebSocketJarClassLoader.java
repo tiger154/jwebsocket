@@ -24,8 +24,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * ClassLoader that loads the classes from the jars. Engine, Servers, Plugins all configured via
- * jWebSocket.xml file is loaded using this class.
+ * ClassLoader that loads the classes from the jars. Engine, Servers, Plugins
+ * all configured via jWebSocket.xml file is loaded using this class.
  *
  * @author puran
  * @author kyberneees
@@ -35,6 +35,10 @@ public class JWebSocketJarClassLoader {
 
 	private URLClassLoader mClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 
+	/**
+	 *
+	 * @param mClassLoader
+	 */
 	public void setClassLoader(URLClassLoader mClassLoader) {
 		this.mClassLoader = mClassLoader;
 	}

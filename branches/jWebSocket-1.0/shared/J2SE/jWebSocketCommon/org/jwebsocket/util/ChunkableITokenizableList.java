@@ -50,6 +50,10 @@ public class ChunkableITokenizableList extends BaseChunkable {
 		mMaxSerializedItemSize = aMaxSerializedItemSize;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public List<ITokenizable> getList() {
 		return mList;
 	}

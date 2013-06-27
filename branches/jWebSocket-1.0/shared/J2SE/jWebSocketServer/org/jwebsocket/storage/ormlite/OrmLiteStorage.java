@@ -42,6 +42,11 @@ public class OrmLiteStorage extends BaseStorage<String, Object> {
 	private String mName;
 	Logger mLog = Logging.getLogger();
 
+	/**
+	 *
+	 * @param aName
+	 * @param aEntries
+	 */
 	public OrmLiteStorage(String aName, Dao<EntryEntity, String> aEntries) {
 		mEntries = aEntries;
 		mName = aName;

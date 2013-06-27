@@ -50,6 +50,9 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket FlashBridgePlugIn - Community Edition";
+	/**
+	 *
+	 */
 	public final static String NS_FLASH_BRIDGE = JWebSocketServerConstants.NS_BASE + ".plugins.flashbridge";
 	private ServerSocket mServerSocket = null;
 	private int mListenerPort = 843;

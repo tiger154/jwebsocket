@@ -33,6 +33,10 @@ public class OrmLiteStorageProvider implements IStorageProvider, IInitializable 
 
 	private Dao<EntryEntity, String> mEntries;
 
+	/**
+	 *
+	 * @param aEntries
+	 */
 	public OrmLiteStorageProvider(Dao<EntryEntity, String> aEntries) {
 		Assert.notNull(aEntries, "The 'entries', argument cannot be null!");
 		this.mEntries = aEntries;

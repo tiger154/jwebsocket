@@ -30,15 +30,28 @@ public final class PropertyConfig implements Config {
 
 	private String mName, mValue;
 
+	/**
+	 *
+	 * @param mName
+	 * @param mValue
+	 */
 	public PropertyConfig(String mName, String mValue) {
 		this.mName = mName;
 		this.mValue = mValue;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getName() {
 		return mName;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getValue() {
 		return mValue;
 	}

@@ -180,10 +180,19 @@ public abstract class BaseToken implements Token {
 		setString("ns", aNS);
 	}
 
+	/**
+	 *
+	 * @param aKey
+	 * @return
+	 */
 	public String getExclLogField(String aKey) {
 		return mExclFromLogs.get(aKey);
 	}
 
+	/**
+	 *
+	 * @param aSettings
+	 */
 	public static void setExclLogField(Map<String, Object> aSettings) {
 		String[] lKeys = new String[]{"password", "secretPassword", "accessPassword", "newPassword"};
 		String lValue = "*****";

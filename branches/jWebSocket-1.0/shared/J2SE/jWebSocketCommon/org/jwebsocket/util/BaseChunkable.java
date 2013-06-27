@@ -33,10 +33,19 @@ abstract public class BaseChunkable implements IChunkable {
 	private Integer mMaxFrameSize = -1;
 	private Long mUCID = new Long(0);
 
+	/**
+	 *
+	 * @return
+	 */
 	public Long getUniqueChunkId() {
 		return mUCID++;
 	}
 
+	/**
+	 *
+	 * @param aNS
+	 * @param aType
+	 */
 	public BaseChunkable(String aNS, String aType) {
 		mNS = aNS;
 		mType = aType;

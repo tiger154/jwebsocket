@@ -47,21 +47,23 @@ import org.jwebsocket.tcp.nio.ssl.NioSSLHandler;
 import org.jwebsocket.util.Tools;
 
 /**
- * <p> Tcp engine that uses java non-blocking io api to bind to listening port and handle
- * incoming/outgoing packets. There's one 'selector' thread that is responsible only for handling
- * socket operations. Therefore, every packet that should be sent will be firstly queued into
- * concurrent queue, which is continuously processed by selector thread. Since the queue is
- * concurrent, there's no blocking and a call to send method will return immediately. </p> <p> All
- * packets that are received from remote clients are processed in separate worker threads. This way
- * it's possible to handle many clients simultaneously with just a few threads. Add more worker
- * threads to handle more clients. </p> <p> Before making any changes to this source, note this: it
- * is highly advisable to read from (or write to) a socket only in selector thread. Ignoring this
- * advice may result in strange consequences (threads locking or spinning, depending on actual
- * scenario). </p>
+ * <p> Tcp engine that uses java non-blocking io api to bind to listening port
+ * and handle incoming/outgoing packets. There's one 'selector' thread that is
+ * responsible only for handling socket operations. Therefore, every packet that
+ * should be sent will be firstly queued into concurrent queue, which is
+ * continuously processed by selector thread. Since the queue is concurrent,
+ * there's no blocking and a call to send method will return immediately. </p>
+ * <p> All packets that are received from remote clients are processed in
+ * separate worker threads. This way it's possible to handle many clients
+ * simultaneously with just a few threads. Add more worker threads to handle
+ * more clients. </p> <p> Before making any changes to this source, note this:
+ * it is highly advisable to read from (or write to) a socket only in selector
+ * thread. Ignoring this advice may result in strange consequences (threads
+ * locking or spinning, depending on actual scenario). </p>
  *
  * @author jang
- * @author kyberneees (bug fixes, session identifier cookie support, SSL and performance
- * improvements)
+ * @author kyberneees (bug fixes, session identifier cookie support, SSL and
+ * performance improvements)
  */
 public class NioTcpEngine extends BaseEngine {
 
@@ -91,7 +93,13 @@ public class NioTcpEngine extends BaseEngine {
 	private int mNumWorkers = DEFAULT_NUM_WORKERS;
 	private Map<String, NioTcpConnector> mBeforeHandshareConnectors = new FastMap<String, NioTcpConnector>().shared();
 	private boolean mTcpNoDelay = DEFAULT_TCP_NODELAY;
+	/**
+	 *
+	 */
 	public static Boolean DEFAULT_TCP_NODELAY = true;
+	/**
+	 *
+	 */
 	public static String TCP_NODELAY_CONFIG_KEY = "tcpNoDelay";
 
 	/**
@@ -268,8 +276,8 @@ public class NioTcpEngine extends BaseEngine {
 	}
 
 	/**
-	 * Socket operations are permitted only via this thread. Strange behavior will occur if anything
-	 * is done to the socket outside of this thread.
+	 * Socket operations are permitted only via this thread. Strange behavior
+	 * will occur if anything is done to the socket outside of this thread.
 	 */
 	private class SelectorThread implements Runnable {
 
