@@ -42,8 +42,10 @@ public class ClusterSender {
 
 	/**
 	 *
-	 * @param aJmsTemplate
+	 * @param aSession
+	 * @param aProducer
 	 * @param aNodeId
+	 * @param aDestination
 	 */
 	public ClusterSender(Session aSession, MessageProducer aProducer,
 			Destination aDestination, String aNodeId) {
@@ -71,6 +73,10 @@ public class ClusterSender {
 		}
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 */
 	public void sendToken(final Token aToken) {
 		String lJSON = JSONProcessor.tokenToPacket(aToken).getUTF8();
 		send(lJSON);

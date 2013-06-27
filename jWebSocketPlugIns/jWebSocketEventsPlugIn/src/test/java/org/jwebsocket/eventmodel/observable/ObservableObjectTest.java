@@ -29,11 +29,16 @@ import org.jwebsocket.eventmodel.api.IListener;
  */
 public class ObservableObjectTest {
 
+	/**
+	 *
+	 */
 	public ObservableObjectTest() {
 	}
 
 	/**
 	 * Test of on method, of class ObservableObject.
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	public void testOn_Class_IListener() throws Exception {
@@ -50,6 +55,8 @@ public class ObservableObjectTest {
 
 	/**
 	 * Test of on method, of class ObservableObject.
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	public void testOn_Collection_IListener() throws Exception {
@@ -160,6 +167,8 @@ public class ObservableObjectTest {
 
 	/**
 	 * Test of notify method, of class ObservableObject.
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	public void testNotify() throws Exception {
@@ -189,6 +198,8 @@ public class ObservableObjectTest {
 
 	/**
 	 * Test of notifyUntil method, of class ObservableObject.
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	public void testNotifyUntil() throws Exception {
@@ -207,6 +218,8 @@ public class ObservableObjectTest {
 
 	/**
 	 * Test of hasListeners method, of class ObservableObject.
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	public void testHasListeners() throws Exception {
@@ -221,6 +234,8 @@ public class ObservableObjectTest {
 
 	/**
 	 * Test of hasListener method, of class ObservableObject.
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	public void testHasListener() throws Exception {
@@ -240,6 +255,8 @@ public class ObservableObjectTest {
 
 	/**
 	 * Test of purgeListeners method, of class ObservableObject.
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	public void testPurgeListeners() throws Exception {
@@ -260,6 +277,8 @@ public class ObservableObjectTest {
 
 	/**
 	 * Test of purgeEvents method, of class ObservableObject.
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	public void testPurgeEvents() throws Exception {
@@ -293,6 +312,9 @@ public class ObservableObjectTest {
 		assertTrue(instance.hasEvent(TestEvent2.class));
 	}
 
+	/**
+	 *
+	 */
 	public class ObservableObjectImpl extends ObservableObject {
 	}
 }

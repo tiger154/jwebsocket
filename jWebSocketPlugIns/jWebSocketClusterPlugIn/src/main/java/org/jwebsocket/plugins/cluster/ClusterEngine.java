@@ -37,6 +37,10 @@ public class ClusterEngine extends BaseEngine {
 
 	private static Logger mLog = Logging.getLogger();
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public ClusterEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
 		mLog.info("Cluster engine successfully instantiated.");

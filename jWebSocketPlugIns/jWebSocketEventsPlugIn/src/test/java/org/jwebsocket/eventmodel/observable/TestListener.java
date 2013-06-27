@@ -27,6 +27,11 @@ public class TestListener implements IListener {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(TestEvent aEvent, ResponseEvent aResponseEvent) {
 		aResponseEvent.getArgs().setString("from", TestEvent.class.toString());
 		aResponseEvent.getArgs().setString("thread", ThreadLocalContainer.getContainer().get());
@@ -35,6 +40,11 @@ public class TestListener implements IListener {
 		aEvent.setProcessed(true);
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 * @param aResponseEvent
+	 */
 	public void processEvent(TestEvent2 aEvent, ResponseEvent aResponseEvent) {
 		aResponseEvent.getArgs().setString("from2", TestEvent2.class.toString());
 	}

@@ -35,6 +35,11 @@ public class ClusterService {
 
 	private static Logger mLog = Logging.getLogger();
 
+	/**
+	 *
+	 * @param aEngineId
+	 * @param aEngineName
+	 */
 	public static void addEngine(String aEngineId, String aEngineName) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Adding engine: " + aEngineId);
@@ -69,6 +74,10 @@ public class ClusterService {
 		}
 	}
 
+	/**
+	 *
+	 * @param aEngineId
+	 */
 	public static void removeEngine(String aEngineId) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Removing engine '" + aEngineId + "'...");

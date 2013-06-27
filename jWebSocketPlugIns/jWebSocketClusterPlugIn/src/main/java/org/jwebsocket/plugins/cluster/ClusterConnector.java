@@ -38,6 +38,13 @@ public class ClusterConnector extends BaseConnector {
 	private String mConnectionId = "-";
 	private String mCorrelationId = "-";
 
+	/**
+	 *
+	 * @param aEngine
+	 * @param aJMSTemplate
+	 * @param aConnectionId
+	 * @param aCorrelationId
+	 */
 	public ClusterConnector(WebSocketEngine aEngine, JmsTemplate aJMSTemplate,
 			String aConnectionId, String aCorrelationId) {
 		super(aEngine);
