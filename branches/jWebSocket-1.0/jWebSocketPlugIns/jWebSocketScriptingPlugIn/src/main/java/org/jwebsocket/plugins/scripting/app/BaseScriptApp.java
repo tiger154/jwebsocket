@@ -354,7 +354,7 @@ abstract public class BaseScriptApp {
 	 * @param aClass
 	 * @return
 	 */
-	protected Object cast(Object aObject, Class aClass) {
+	public Object cast(Object aObject, Class aClass) {
 		if (aObject.getClass().equals(aClass)) {
 			return aObject;
 		}
@@ -507,6 +507,25 @@ abstract public class BaseScriptApp {
 
 	/**
 	 *
+	 * @param aBeanId
+	 * @return
+	 */
+	public Object getBean(String aBeanId) {
+		return getBean(aBeanId, null);
+	}
+
+	/**
+	 *
+	 * @param aBeanId
+	 * @param aNamespace
+	 * @return
+	 */
+	public Object getBean(String aBeanId, String aNamespace) {
+		return getBeanFactory(aNamespace).getBean(aBeanId);
+	}
+
+	/**
+	 *
 	 * @return
 	 */
 	public GenericApplicationContext getAppBeanFactory() {
@@ -533,13 +552,15 @@ abstract public class BaseScriptApp {
 
 	/**
 	 *
-	 * @return @throws Exception
+	 * @return
+	 * @throws Exception
 	 */
 	public abstract String getVersion() throws Exception;
 
 	/**
 	 *
-	 * @return @throws Exception
+	 * @return
+	 * @throws Exception
 	 */
 	public abstract String getDescription() throws Exception;
 }
