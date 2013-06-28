@@ -165,8 +165,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 *
 	 * @param aApp The application name
 	 * @param aAppDirPath The application home path
-	 * @param aHotLoad
-	 * @return
+	 * @param aHotLoad 
+	 * @return 
 	 * @throws Exception
 	 */
 	public final boolean loadApp(String aApp, String aAppDirPath, boolean aHotLoad) throws Exception {
