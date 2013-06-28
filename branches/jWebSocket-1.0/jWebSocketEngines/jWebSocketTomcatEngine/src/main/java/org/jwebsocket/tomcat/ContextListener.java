@@ -51,6 +51,9 @@ public class ContextListener implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent aContextEvent) {
 		final ServletContext lContext = aContextEvent.getServletContext();
+		
+		// setting the WEB_APP_HOME property
+		System.setProperty(ServletUtils.WEB_APP_HOME_PROP_KEY, lContext.getRealPath("") + "/");
 
 		if (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()) {
 			lContext.log("Starting jWebSocket application server...");
