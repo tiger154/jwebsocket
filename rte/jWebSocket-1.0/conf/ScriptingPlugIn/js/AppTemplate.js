@@ -38,113 +38,17 @@ var App = (function() {
 	var mVersion = '1.0.0';
 	var mDescription = '';
 
-	var mJMSManager = null;
-	
 	return {
 		getJMSManager: function(aUseTransaction, aConn){
-			if (null == mJMSManager){
-				// creating and starting connection
-				var mConn = aConn || AppUtils.getBean('jmsConnection');
-				// creating the JMS session
-				var mSession = mConn.createSession(aUseTransaction || false, 1);
-				// listeners Map
-				var mListeners = {};
-				// producers Map
-				var mProducers = {};
-				// utility counter
-				var lCounter = 0;
-				
-				mJMSManager = {
-					getSession: function(){
-						return mSession;
-					},
-					commit: function(){
-						mSession.commit();
-					},
-					close: function(){
-						mConn.close();
-					},
-					getConnection: function(){
-						return mConn;
-					},
-					getDestination: function(aDestination){
-						var lPrefix = aDestination.substr(0, 8);
-						var lDest;
-						if ('queue://' == lPrefix){
-							lDest = mSession.createQueue(aDestination.substr(8));
-						} else if ('topic://' == lPrefix){
-							lDest = mSession.createTopic(aDestination.substr(8));
-						} else {
-							throw new Error('Expecting a valid destination schema. Please use "queue://" or "topic://" as ' + 
-								'destination prefix!')
-						}
-						
-						return lDest;
-					},
-					subscribe: function(aDestination, aCallback, aSelector){
-						var lListener;
-						var lDest;
-						
-						// generating subscription id
-						var lSubscriptionId = lCounter ++;
-						// getting destination
-						lDest = this.getDestination(aDestination);
-						// creating consumer
-						if (lDest instanceof Packages.javax.jms.Topic){
-							if (null != aSelector){
-								lListener = mSession.createDurableSubscriber(lDest, App.getName() + lSubscriptionId, aSelector, false);
-							} else {
-								lListener = mSession.createDurableSubscriber(lDest, App.getName() + lSubscriptionId);
-							}
-						} else {
-							if (null != aSelector){
-								lListener = mSession.createConsumer(lDest, aSelector);
-							} else {
-								lListener = mSession.createConsumer(lDest);
-							}
-						}
-						// registrating consumer callback
-						var lCallback = aCallback || function(){};
-						lListener.setMessageListener(new Packages.javax.jms.MessageListener(){
-							onMessage: function(aMessage){
-								lCallback(aMessage);
-							}
-						});
-						
-						// storing consumer
-						mListeners[lSubscriptionId] = lListener;
-						// returning subscription id
-						return lSubscriptionId;
-					},
-					send: function(aDestination, aMessage){
-						var lMessage = aMessage;
-						if ("string" == typeof(lMessage)){
-							lMessage = mSession.createTextMessage(aMessage);
-						}
-						
-						// checking producer
-						if (undefined == mProducers[aDestination]){
-							mProducers[aDestination] = mSession.createProducer(this.getDestination(aDestination));
-						}
-						// sending
-						mProducers[aDestination].send(lMessage);
-					},
-					unsubscribe: function(aSubscriptionId){
-						if (mListeners[aSubscriptionId]){
-							// closing consumer
-							mListeners[aSubscriptionId].close();
-							// if consumer is a topic subscriber, unsubscribe
-							if (mListeners[aSubscriptionId] instanceof Packages.javax.jms.TopicSubscriber){
-								mSession.unsubscribe(App.getName() + aSubscriptionId);
-							}
-							// removing local object copy
-							delete mListeners[aSubscriptionId];
-						}
-					}
-				};
+			var lJMSManager;
+			if (undefined !== aUseTransaction && undefined != aConn){
+				lJMSManager = AppUtils.getJMSManager(aUseTransaction, aConn);
+			} else if (undefined !== aUseTransaction){
+				lJMSManager = AppUtils.getJMSManager(aUseTransaction);
 			}
+			lJMSManager = AppUtils.getJMSManager();
 			
-			return mJMSManager;
+			return lJMSManager;
 		},
 		getDescription: function(){
 			return mDescription;  
