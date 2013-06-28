@@ -51,6 +51,7 @@
 		<module>jWebSocketPlugIns/jWebSocketTestPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketClusterPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketLoadBalancerPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketValidatorPlugIn</module>
 		<module>jWebSocketPlugIns/JWebSocketPingPongGame</module>
 		<module>jWebSocketPlugIns/jWebSocketItemStorage</module>
 		<module>jWebSocketPlugIns/jWebSocketScriptingPlugIn</module>
