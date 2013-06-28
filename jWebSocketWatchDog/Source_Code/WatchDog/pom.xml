@@ -10,8 +10,6 @@
     <module>watchdogserver</module>
     <module>watchdogclient</module>
     <module>watchdogcommon</module>
-    <module>tokenTests</module>
-    <module>CRUD1</module>
   </modules>
   <build>
 	<plugins>  
