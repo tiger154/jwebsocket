@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import javax.jms.Connection;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javolution.util.FastList;
@@ -553,14 +554,39 @@ abstract public class BaseScriptApp {
 	/**
 	 *
 	 * @return
-	 * @throws Exception
+	 */
+	public JMSManager getJMSManager() {
+		return new JMSManager(this);
+	}
+
+	/**
+	 *
+	 * @param aUseTransaction
+	 * @return
+	 */
+	public JMSManager getJMSManager(boolean aUseTransaction) {
+		return new JMSManager(this, aUseTransaction);
+	}
+
+	/**
+	 *
+	 * @param aUseTransaction
+	 * @param aConn
+	 * @return
+	 */
+	public JMSManager getJMSManager(boolean aUseTransaction, Connection aConn) {
+		return new JMSManager(this, aUseTransaction, aConn);
+	}
+
+	/**
+	 *
+	 * @return @throws Exception
 	 */
 	public abstract String getVersion() throws Exception;
 
 	/**
 	 *
-	 * @return
-	 * @throws Exception
+	 * @return @throws Exception
 	 */
 	public abstract String getDescription() throws Exception;
 }
