@@ -61,7 +61,12 @@
 		<property name="execStoredProcSQL" value="call ${procname}(${args})"/>
 	</bean>
 
-	<!-- select here between MySQL or Oracle or any further JDBC source (alternatively, not commonly) -->
-	<alias name="mySQLNativeAccess" alias="nativeAccess"/>
-	<!-- <alias name="oracleNativeAccess" alias="nativeAccess"/> -->
+	<bean id="settings" class="org.jwebsocket.plugins.jdbc.Settings">
+		<property name="connections">
+			<map>
+				<entry key="default" value-ref="mySQLNativeAccess"/>
+			</map>
+		</property>
+	</bean>
+	
 </beans>
