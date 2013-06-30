@@ -2,7 +2,7 @@
 //	jWebSocket - jWebSocket JDBC Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed updateSQL client plug-in accordingly!
 	private static final String NS_JDBC =
-			JWebSocketServerConstants.NS_BASE + ".plugins.jdbc";
+		JWebSocketServerConstants.NS_BASE + ".plugins.jdbc";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JDBCPlugIn";
@@ -63,12 +63,8 @@ public class JDBCPlugIn extends TokenPlugIn {
 	private IBasicStorage mCache = null;
 	private int mConnValTimeout = 300;
 	private static ApplicationContext mBeanFactory;
-	private static NativeAccess mNativeAccess;
-	private static String mSelectSequenceSQL = null;
-	private static String mExecFunctionSQL = null;
-	private static String mExecStoredProcSQL = null;
+	private static Settings mSettings;
 
-	// TODO: Check all methods: If mNativeAccess is not set return error!
 	/**
 	 *
 	 * @param aConfiguration
@@ -84,13 +80,8 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		try {
 			mBeanFactory = getConfigBeanFactory();
-
-			mNativeAccess = (NativeAccess) mBeanFactory.getBean("nativeAccess");
-			if (null != mNativeAccess) {
-				mSelectSequenceSQL = mNativeAccess.getSelectSequenceSQL();
-				mExecFunctionSQL = mNativeAccess.getExecFunctionSQL();
-				mExecStoredProcSQL = mNativeAccess.getExecStoredProcSQL();
-				// give a success message to the administrator
+			mSettings = (Settings) mBeanFactory.getBean("settings");
+			if (null != mSettings) {
 				if (mLog.isInfoEnabled()) {
 					mLog.info("JDBC plug-in successfully instantiated.");
 				}
@@ -196,10 +187,27 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 	/**
 	 *
+	 * @param aToken
 	 * @return
 	 */
-	public DataSource getNativeDataSource() {
-		return mNativeAccess.getDataSource();
+	public NativeAccess getNativeAccess(Token aToken) {
+		//connection's alias
+		String lAlias = aToken.getString("alias");
+
+		if (lAlias == null) {
+			return mSettings.getNativeAccess();
+		} else {
+			return mSettings.getNativeAccess(lAlias);
+		}
+	}
+
+	/**
+	 *
+	 * @param aToken
+	 * @return
+	 */
+	public DataSource getNativeDataSource(Token aToken) {
+		return getNativeAccess(aToken).getDataSource();
 	}
 
 	/**
@@ -251,9 +259,9 @@ public class JDBCPlugIn extends TokenPlugIn {
 	private Token mCheckDataSource(Token aToken) {
 		TokenServer lServer = getServer();
 		Token lResToken;
-		if (null == mNativeAccess) {
+		if (null == getNativeAccess(aToken)) {
 			lResToken = lServer.createErrorToken(aToken,
-					-1, "No database connection available.");
+				-1, "No database connection available.");
 		} else {
 			lResToken = lServer.createResponse(aToken);
 		}
@@ -289,7 +297,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		if (lScript != null) {
 			for (String lSQLn : lScript) {
-				lSQLResponse = mNativeAccess.query(lSQLn);
+				lSQLResponse = getNativeAccess(aToken).query(lSQLn);
 				Map<String, Object> lResultSet = new FastMap<String, Object>();
 				lResultSet.put("colcount", lSQLResponse.getInteger("colcount", -1));
 				lResultSet.put("rowcount", lSQLResponse.getInteger("rowcount", -1));
@@ -299,7 +307,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			}
 		}
 		if (lSQL != null) {
-			lSQLResponse = mNativeAccess.query(lSQL);
+			lSQLResponse = getNativeAccess(aToken).query(lSQL);
 			Integer lCode = lSQLResponse.getInteger("code");
 			if (0 == lCode) {
 				lResToken.setInteger("colcount", lSQLResponse.getInteger("colcount", -1));
@@ -323,14 +331,15 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		String lSequence = aToken.getString("sequence");
 		Integer lCount = aToken.getInteger("count", 1);
+
 		if (lSequence != null) {
 			Map<String, String> lVars = new FastMap<String, String>();
 			lVars.put("sequence", lSequence);
 			List<Integer> lValues = new FastList<Integer>();
 			String lErrMsg = null;
 			for (int lValIdx = 0; lValIdx < lCount; lValIdx++) {
-				String lQuery = Tools.expandVars(mSelectSequenceSQL, lVars, Tools.EXPAND_CASE_SENSITIVE);
-				Token lPKToken = mNativeAccess.query(lQuery);
+				String lQuery = Tools.expandVars(getNativeAccess(aToken).getSelectSequenceSQL(), lVars, Tools.EXPAND_CASE_SENSITIVE);
+				Token lPKToken = getNativeAccess(aToken).query(lQuery);
 				if (0 == lPKToken.getInteger("code")) {
 					Number lNextSeqVal = null;
 					List lRows = lPKToken.getList("data");
@@ -393,7 +402,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		// first execute SQL script if such passed
 		if (lScript != null) {
 			for (String lSQLn : lScript) {
-				lSQLResult = mNativeAccess.update(lSQLn);
+				lSQLResult = getNativeAccess(aToken).update(lSQLn);
 				if (lSQLResult.getInteger("code", 0) != 0) {
 					lResToken.setInteger("code", -1);
 					lResToken.setString("msg", "Update error. Please refer to 'details' field.");
@@ -404,7 +413,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 		// then execute single SQL if such passed
 		if (lSQL != null) {
-			lSQLResult = mNativeAccess.update(lSQL);
+			lSQLResult = getNativeAccess(aToken).update(lSQL);
 			if (lSQLResult.getInteger("code", 0) != 0) {
 				lResToken.setInteger("code", -1);
 				lResToken.setString("msg", "Update error. Please refer to 'details' field.");
@@ -443,7 +452,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		// load SQL string
 		String lSQL = aToken.getString("sql");
-		Token lExecToken = mNativeAccess.exec(lSQL);
+		Token lExecToken = getNativeAccess(aToken).exec(lSQL);
 		lServer.setResponseFields(aToken, lExecToken);
 		return lExecToken;
 	}
@@ -558,14 +567,14 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		if (lTables == null || lTables.size() <= 0) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"No tables passed for JDBC select."));
+				lServer.createErrorToken(aToken, -1,
+				"No tables passed for JDBC select."));
 			return;
 		}
 		if (lFields == null || lFields.size() <= 0) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"No fields passed for JDBC select."));
+				lServer.createErrorToken(aToken, -1,
+				"No fields passed for JDBC select."));
 			return;
 		}
 
@@ -582,10 +591,10 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		// build SQL string
 		String lSQL =
-				"select "
-				+ lFieldsStr
-				+ " from "
-				+ lTablesStr;
+			"select "
+			+ lFieldsStr
+			+ " from "
+			+ lTablesStr;
 
 		// add where condition
 		if (lWhere != null && lWhere.length() > 0) {
@@ -630,26 +639,26 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		if (lTable == null || lTable.length() <= 0) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"No table passed for JDBC update."));
+				lServer.createErrorToken(aToken, -1,
+				"No table passed for JDBC update."));
 			return;
 		}
 		if (lFields == null || lFields.size() <= 0) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"No fields passed for JDBC update."));
+				lServer.createErrorToken(aToken, -1,
+				"No fields passed for JDBC update."));
 			return;
 		}
 		if (lValues == null || lValues.size() <= 0) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"No values passed for JDBC update."));
+				lServer.createErrorToken(aToken, -1,
+				"No values passed for JDBC update."));
 			return;
 		}
 		if (lFields.size() != lValues.size()) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"Number of values doe not match number of fields in JDBC update."));
+				lServer.createErrorToken(aToken, -1,
+				"Number of values doe not match number of fields in JDBC update."));
 			return;
 		}
 
@@ -668,12 +677,12 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		String lSQL = "update"
-				+ " " + lTable
-				+ " set"
-				+ " " + lSetStr.toString();
+			+ " " + lTable
+			+ " set"
+			+ " " + lSetStr.toString();
 		if (lWhere != null) {
 			lSQL += " where"
-					+ " " + lWhere;
+				+ " " + lWhere;
 		}
 
 		Token lUpdateToken = TokenFactory.createToken();
@@ -712,34 +721,34 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		if (lTable == null || lTable.length() <= 0) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"No table passed for JDBC insert."));
+				lServer.createErrorToken(aToken, -1,
+				"No table passed for JDBC insert."));
 			return;
 		}
 		if (lFields == null || lFields.size() <= 0) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"No fields passed for JDBC insert."));
+				lServer.createErrorToken(aToken, -1,
+				"No fields passed for JDBC insert."));
 			return;
 		}
 		if (lValues == null || lValues.size() <= 0) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"No values passed for JDBC insert."));
+				lServer.createErrorToken(aToken, -1,
+				"No values passed for JDBC insert."));
 			return;
 		}
 		if (lFields.size() != lValues.size()) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"Number of values doe not match number of fields in JDBC insert."));
+				lServer.createErrorToken(aToken, -1,
+				"Number of values doe not match number of fields in JDBC insert."));
 			return;
 		}
 
 		String lSQL = "insert into"
-				+ " " + lTable
-				+ " (" + lFieldsStr + ")"
-				+ " values"
-				+ " (" + lValuesStr + ")";
+			+ " " + lTable
+			+ " (" + lFieldsStr + ")"
+			+ " values"
+			+ " (" + lValuesStr + ")";
 
 		Token lInsertToken = TokenFactory.createToken();
 		lInsertToken.setString("sql", lSQL);
@@ -773,16 +782,16 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		if (lTable == null || lTable.length() <= 0) {
 			lServer.sendToken(aConnector,
-					lServer.createErrorToken(aToken, -1,
-					"No table passed for JDBC delete."));
+				lServer.createErrorToken(aToken, -1,
+				"No table passed for JDBC delete."));
 			return;
 		}
 
 		String lSQL = "delete from"
-				+ " " + lTable;
+			+ " " + lTable;
 		if (lWhere != null) {
 			lSQL += " where"
-					+ " " + lWhere;
+				+ " " + lWhere;
 		}
 
 		Token lInsertToken = TokenFactory.createToken();
@@ -1030,7 +1039,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		Connection lConn = null;
 		try {
-			DataSource lDataSource = getNativeDataSource();
+			DataSource lDataSource = getNativeDataSource(aToken);
 			Map lConnInfo = new FastMap();
 
 			lConn = lDataSource.getConnection();
@@ -1043,13 +1052,15 @@ public class JDBCPlugIn extends TokenPlugIn {
 			lConnInfo.put("minorJdbcVersion", meta.getJDBCMinorVersion());
 			/*
 			 * System.out.println("Server name: " +
-			 * meta.getDatabaseProductName()); System.out.println("Server
-			 * version: " + meta.getDatabaseProductVersion());
-			 * System.out.println("Driver name: " + meta.getDriverName());
-			 * System.out.println("Driver version: " + meta.getDriverVersion());
+			 * meta.getDatabaseProductName());
+			 * System.out.println("Server version: " +
+			 * meta.getDatabaseProductVersion());
+			 * System.out.println("Driver name: " +
+			 * meta.getDriverName()); System.out.println("Driver
+			 * version: " + meta.getDriverVersion());
 			 * System.out.println("JDBC major version: " +
-			 * meta.getJDBCMajorVersion()); System.out.println("JDBC minor
-			 * version: " + meta.getJDBCMinorVersion());
+			 * meta.getJDBCMajorVersion()); System.out.println("JDBC
+			 * minor version: " + meta.getJDBCMinorVersion());
 			 */
 			lResponse.setMap("currentConnection", lConnInfo);
 		} catch (Exception lEx) {
