@@ -60,15 +60,14 @@ jws.JDBCPlugIn = {
 	jdbcQuerySQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			var lAlias = null;
-			if( aOptions.alias !== undefined ) {
-				lAlias = aOptions.alias;
-			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "querySQL",
 				sql: aQuery,
-				alias: lAlias
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken, aOptions );
 		}
@@ -85,15 +84,14 @@ jws.JDBCPlugIn = {
 	jdbcQueryScript: function( aScript, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			var lAlias = null;
-			if( aOptions.alias !== undefined ) {
-				lAlias = aOptions.alias;
-			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "querySQL",
 				script: aScript,
-				alias: lAlias
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken, aOptions );
 		}
@@ -111,15 +109,14 @@ jws.JDBCPlugIn = {
 	jdbcUpdateSQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			var lAlias = null;
-			if( aOptions.alias !== undefined ) {
-				lAlias = aOptions.alias;
-			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "updateSQL",
 				sql: aQuery,
-				alias: lAlias
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -138,15 +135,14 @@ jws.JDBCPlugIn = {
 	jdbcUpdateScript: function( aScript, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			var lAlias = null;
-			if( aOptions.alias !== undefined ) {
-				lAlias = aOptions.alias;
-			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "updateSQL",
 				script: aScript,
-				alias: lAlias
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -163,15 +159,14 @@ jws.JDBCPlugIn = {
 	jdbcExecSQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			var lAlias = null;
-			if( aOptions.alias !== undefined ) {
-				lAlias = aOptions.alias;
-			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "execSQL",
 				sql: aQuery,
-				alias: lAlias
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -203,10 +198,9 @@ jws.JDBCPlugIn = {
 			if( lOrders && !lOrders.length ) {
 				lOrders = [ lOrders ];
 			}
-			var lAlias = null;
-			if( aOptions.alias !== undefined ) {
-				lAlias = aOptions.alias;
-			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "select",
@@ -217,7 +211,7 @@ jws.JDBCPlugIn = {
 				where: aQuery.where,
 				group: aQuery.group,
 				having: aQuery.having,
-				alias: lAlias
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -227,10 +221,9 @@ jws.JDBCPlugIn = {
 	jdbcUpdate: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			var lAlias = null;
-			if( aOptions.alias !== undefined ) {
-				lAlias = aOptions.alias;
-			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "update",
@@ -238,7 +231,7 @@ jws.JDBCPlugIn = {
 				fields: aQuery.fields,
 				values: aQuery.values,
 				where: aQuery.where,
-				alias: lAlias
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -248,17 +241,16 @@ jws.JDBCPlugIn = {
 	jdbcInsert: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			var lAlias = null;
-			if( aOptions.alias !== undefined ) {
-				lAlias = aOptions.alias;
-			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "insert",
 				table: aQuery.table,
 				fields: aQuery.fields,
 				values: aQuery.values,
-				alias: lAlias
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -268,16 +260,15 @@ jws.JDBCPlugIn = {
 	jdbcDelete: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			var lAlias = null;
-			if( aOptions.alias !== undefined ) {
-				lAlias = aOptions.alias;
-			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "delete",
 				table: aQuery.table,
 				where: aQuery.where,
-				alias: lAlias
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -293,16 +284,15 @@ jws.JDBCPlugIn = {
 					lCount = aOptions.count;
 				}
 			}
-			var lAlias = null;
-			if( aOptions.alias !== undefined ) {
-				lAlias = aOptions.alias;
-			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "getNextSeqVal",
 				sequence: aSequence,
 				count: lCount,
-				alias: lAlias
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}

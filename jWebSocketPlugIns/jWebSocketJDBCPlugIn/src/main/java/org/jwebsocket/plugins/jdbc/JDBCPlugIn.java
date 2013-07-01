@@ -53,7 +53,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 	private static Logger mLog = Logging.getLogger();
 	// if namespace changed updateSQL client plug-in accordingly!
 	private static final String NS_JDBC =
-		JWebSocketServerConstants.NS_BASE + ".plugins.jdbc";
+			JWebSocketServerConstants.NS_BASE + ".plugins.jdbc";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JDBCPlugIn";
@@ -194,7 +194,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		//connection's alias
 		String lAlias = aToken.getString("alias");
 
-		if (lAlias == null) {
+		if (null == lAlias) {
 			return mSettings.getNativeAccess();
 		} else {
 			return mSettings.getNativeAccess(lAlias);
@@ -260,8 +260,10 @@ public class JDBCPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		Token lResToken;
 		if (null == getNativeAccess(aToken)) {
+			String lAlias = aToken.getString("alias");
 			lResToken = lServer.createErrorToken(aToken,
-				-1, "No database connection available.");
+					-1, "No database connection for alias '"
+					+ (null == lAlias ? "default" : lAlias) + "' available.");
 		} else {
 			lResToken = lServer.createResponse(aToken);
 		}
@@ -278,16 +280,20 @@ public class JDBCPlugIn extends TokenPlugIn {
 		if (0 != lResToken.getInteger("code")) {
 			return lResToken;
 		}
+
 		// load SQL query string
 		String lSQL = aToken.getString("sql");
+		String lAlias = aToken.getString("alias");
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Processing 'query' for alias '"
+					+ (null == lAlias ? "default" : lAlias) + "'...");
+		}
+
 		// load SQL script
 		List<String> lScript = aToken.getList("script");
 		// load expiration, default is no cache (expiration = 0)
 		Integer lExpiration = aToken.getInteger("expiration", 0);
-
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Processing 'query'...");
-		}
 
 		Token lSQLResponse;
 		List<String> lDetails = new FastList<String>();
@@ -567,14 +573,14 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		if (lTables == null || lTables.size() <= 0) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"No tables passed for JDBC select."));
+					lServer.createErrorToken(aToken, -1,
+					"No tables passed for JDBC select."));
 			return;
 		}
 		if (lFields == null || lFields.size() <= 0) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"No fields passed for JDBC select."));
+					lServer.createErrorToken(aToken, -1,
+					"No fields passed for JDBC select."));
 			return;
 		}
 
@@ -591,10 +597,10 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		// build SQL string
 		String lSQL =
-			"select "
-			+ lFieldsStr
-			+ " from "
-			+ lTablesStr;
+				"select "
+				+ lFieldsStr
+				+ " from "
+				+ lTablesStr;
 
 		// add where condition
 		if (lWhere != null && lWhere.length() > 0) {
@@ -639,26 +645,26 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		if (lTable == null || lTable.length() <= 0) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"No table passed for JDBC update."));
+					lServer.createErrorToken(aToken, -1,
+					"No table passed for JDBC update."));
 			return;
 		}
 		if (lFields == null || lFields.size() <= 0) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"No fields passed for JDBC update."));
+					lServer.createErrorToken(aToken, -1,
+					"No fields passed for JDBC update."));
 			return;
 		}
 		if (lValues == null || lValues.size() <= 0) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"No values passed for JDBC update."));
+					lServer.createErrorToken(aToken, -1,
+					"No values passed for JDBC update."));
 			return;
 		}
 		if (lFields.size() != lValues.size()) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"Number of values doe not match number of fields in JDBC update."));
+					lServer.createErrorToken(aToken, -1,
+					"Number of values doe not match number of fields in JDBC update."));
 			return;
 		}
 
@@ -677,12 +683,12 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		String lSQL = "update"
-			+ " " + lTable
-			+ " set"
-			+ " " + lSetStr.toString();
+				+ " " + lTable
+				+ " set"
+				+ " " + lSetStr.toString();
 		if (lWhere != null) {
 			lSQL += " where"
-				+ " " + lWhere;
+					+ " " + lWhere;
 		}
 
 		Token lUpdateToken = TokenFactory.createToken();
@@ -721,34 +727,34 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		if (lTable == null || lTable.length() <= 0) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"No table passed for JDBC insert."));
+					lServer.createErrorToken(aToken, -1,
+					"No table passed for JDBC insert."));
 			return;
 		}
 		if (lFields == null || lFields.size() <= 0) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"No fields passed for JDBC insert."));
+					lServer.createErrorToken(aToken, -1,
+					"No fields passed for JDBC insert."));
 			return;
 		}
 		if (lValues == null || lValues.size() <= 0) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"No values passed for JDBC insert."));
+					lServer.createErrorToken(aToken, -1,
+					"No values passed for JDBC insert."));
 			return;
 		}
 		if (lFields.size() != lValues.size()) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"Number of values doe not match number of fields in JDBC insert."));
+					lServer.createErrorToken(aToken, -1,
+					"Number of values doe not match number of fields in JDBC insert."));
 			return;
 		}
 
 		String lSQL = "insert into"
-			+ " " + lTable
-			+ " (" + lFieldsStr + ")"
-			+ " values"
-			+ " (" + lValuesStr + ")";
+				+ " " + lTable
+				+ " (" + lFieldsStr + ")"
+				+ " values"
+				+ " (" + lValuesStr + ")";
 
 		Token lInsertToken = TokenFactory.createToken();
 		lInsertToken.setString("sql", lSQL);
@@ -782,16 +788,16 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		if (lTable == null || lTable.length() <= 0) {
 			lServer.sendToken(aConnector,
-				lServer.createErrorToken(aToken, -1,
-				"No table passed for JDBC delete."));
+					lServer.createErrorToken(aToken, -1,
+					"No table passed for JDBC delete."));
 			return;
 		}
 
 		String lSQL = "delete from"
-			+ " " + lTable;
+				+ " " + lTable;
 		if (lWhere != null) {
 			lSQL += " where"
-				+ " " + lWhere;
+					+ " " + lWhere;
 		}
 
 		Token lInsertToken = TokenFactory.createToken();

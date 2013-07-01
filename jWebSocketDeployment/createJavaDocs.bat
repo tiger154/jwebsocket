@@ -115,9 +115,9 @@ echo ------------------------------------------------------------------------
 cd /d ..\..\jWebSocketPlugins\jWebSocketAdminPlugIn
 call mvn generate-sources javadoc:javadoc >> %log%
 echo ------------------------------------------------------------------------
-echo jjWebSocketAPIPlugIn
+echo jWebSocketAPIPlugIn
 echo ------------------------------------------------------------------------
-cd /d ..\jjWebSocketAPIPlugIn
+cd /d ..\jWebSocketAPIPlugIn
 call mvn generate-sources javadoc:javadoc >> %log%
 echo ------------------------------------------------------------------------
 echo jWebSocketArduinoPlugIn
