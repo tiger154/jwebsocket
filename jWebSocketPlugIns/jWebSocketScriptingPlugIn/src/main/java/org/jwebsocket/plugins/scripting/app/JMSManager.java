@@ -51,7 +51,8 @@ public class JMSManager {
 	}
 
 	public JMSManager(BaseScriptApp aScriptApp, boolean aUseTransaction) {
-		this(aScriptApp, aUseTransaction, (Connection) JWebSocketBeanFactory.getInstance().getBean("jmsConnection"));
+		this(aScriptApp, aUseTransaction, (Connection) JWebSocketBeanFactory
+				.getInstance().getBean("jmsConnection"));
 	}
 
 	public JMSManager(BaseScriptApp aScriptApp, boolean aUseTransaction, Connection aConn) {
@@ -138,6 +139,20 @@ public class JMSManager {
 	}
 
 	/**
+	 * Subscribe to a target destination
+	 *
+	 * @param aDestination
+	 * @param aCallback
+	 * @return
+	 * @throws JMSException
+	 * @throws Exception
+	 */
+	public String subscribe(String aDestination, Object aCallback,
+			boolean aDurableSubscription) throws JMSException, Exception {
+		return subscribe(aDestination, aCallback, null, aDurableSubscription);
+	}
+
+	/**
 	 * Subscribe to a target destination using a message selector
 	 *
 	 * @param aDestination
@@ -147,17 +162,39 @@ public class JMSManager {
 	 * @throws JMSException
 	 * @throws Exception
 	 */
-	public String subscribe(String aDestination, Object aCallback, String aSelector) throws JMSException, Exception {
+	public String subscribe(String aDestination, Object aCallback,
+			String aSelector) throws JMSException, Exception {
+		return subscribe(aDestination, aCallback, aSelector, false);
+	}
+
+	/**
+	 * Subscribe to a target destination using a message selector
+	 *
+	 * @param aDestination
+	 * @param aCallback
+	 * @param aSelector
+	 * @return
+	 * @throws JMSException
+	 * @throws Exception
+	 */
+	public String subscribe(String aDestination, Object aCallback, String aSelector,
+			boolean aDurableSubscription) throws JMSException, Exception {
 		MessageConsumer lListener;
 		Destination lDest = getDestination(aDestination);
 
 		String lSubscriptionId = UUID.randomUUID().toString();
 
-		if (lDest instanceof Topic) {
-			if (null != aSelector) {
-				lListener = mSession.createDurableSubscriber((Topic) lDest, lSubscriptionId, aSelector, false);
+		if (aDurableSubscription) {
+			if (lDest instanceof Topic) {
+				if (null != aSelector) {
+					lListener = mSession.createDurableSubscriber((Topic) lDest,
+							lSubscriptionId, aSelector, false);
+				} else {
+					lListener = mSession.createDurableSubscriber((Topic) lDest,
+							lSubscriptionId);
+				}
 			} else {
-				lListener = mSession.createDurableSubscriber((Topic) lDest, lSubscriptionId);
+				throw new Exception("Cannot create durable subscriptions on queues!");
 			}
 		} else {
 			if (null != aSelector) {
@@ -168,7 +205,8 @@ public class JMSManager {
 		}
 
 		// registrating consumer callback
-		lListener.setMessageListener((MessageListener) mScriptApp.cast(aCallback, MessageListener.class));
+		lListener.setMessageListener((MessageListener) mScriptApp.cast(aCallback,
+				MessageListener.class));
 
 		// storing consumer
 		mListeners.put(lSubscriptionId, lListener);
