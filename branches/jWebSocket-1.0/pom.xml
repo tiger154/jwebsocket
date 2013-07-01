@@ -16,6 +16,7 @@
 		<module>jWebSocketServerAPI</module>
 		<module>jWebSocketClientAPI</module>
 		<module>jWebSocketServer</module>
+		<module>jWebSocketWatchDogClient</module>
 		<module>jWebSocketJavaSEClient</module>
 		<module>jWebSocketSamples</module>
 		
