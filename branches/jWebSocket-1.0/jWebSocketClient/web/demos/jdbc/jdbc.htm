@@ -36,11 +36,13 @@
 		<script type="text/javascript" language="JavaScript">
 			
 			var eQuery = null;
+			var eAlias = null;
 			
 			function querySQL() {
 				log( "Running native SQL query..." );
 				if( lWSC.isConnected() ) {
 					lWSC.jdbcQuerySQL( eQuery.value, {
+						alias: eAlias.value,
 						OnResponse: function( aToken ) {
 							// log("Reports " + JSON.stringify( aToken ) );
 						}
@@ -76,6 +78,7 @@
 			
 			function initPage() {
 				eQuery = jws.$( "stxfSQL" );
+				eAlias = jws.$( "stxfAlias" );
 				
 				lWSC.setJDBCCallbacks({
 					OnJDBCRowSet: handleJDBCRowSet,
@@ -106,15 +109,27 @@
 		<div class="sdivContainer">
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
 				<tr class="strDlg">
-					<td class="stdDlg" width="5">
+					<td class="stdDlg" width="5">Alias
+					</td>
+					<td class="stdDlg" width="">
+						<input class="stxfDlg" id="stxfAlias" type="text" value="default" style="width:99%"
+							   title="The alias of a database connection in case you specified multiple ones.">
+					</td>
+				</tr>
+				<tr class="strDlg">
+					<td class="stdDlg" width="5">Query
+					</td>
+					<td class="stdDlg" width="">
 						<input class="stxfDlg" id="stxfSQL" type="text" value="select * from system_log" style="width:99%"
 							   title="The SQL query for select or update, insert, delete commands.">
 					</td>
 				</tr>
 				<tr class="strDlg">
-					<td>
+					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnQuerySQL" type="button" value="Query SQL" onclick="querySQL();"
 							   title="Queries the database with a native SQL query.">
+					</td>
+					<td class="stdDlg" width="">
 						<input class="sbtnDlg" id="sbtnUpdateSQL" type="button" value="Update SQL" onclick="updateSQL();"
 							   title="Updates the database with a native SQL query.">
 						<input class="sbtnDlg" id="sbtnGetPKs" type="button" value="Get PKs" onclick="getPrimaryKeys();"

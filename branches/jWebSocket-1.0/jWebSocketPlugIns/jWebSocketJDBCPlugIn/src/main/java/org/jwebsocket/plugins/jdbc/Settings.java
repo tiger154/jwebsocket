@@ -1,3 +1,6 @@
+//	---------------------------------------------------------------------------
+//	jWebSocket - Settings for JDBC Plug-In (Community Edition, CE)
+//	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //	Alexander Schulze, Germany (NRW)
 //
@@ -35,7 +38,7 @@ public class Settings {
 	}
 
 	/**
-	 * @param mConnections the mConnections to set
+	 * @param aConnections
 	 */
 	public void setConnections(Map<String, NativeAccess> aConnections) {
 		this.mConnections = aConnections;

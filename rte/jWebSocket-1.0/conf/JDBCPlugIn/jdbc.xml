@@ -3,7 +3,7 @@
 <beans>
 	
 	<!-- the MySQL DataSource (parameterized for configuration via a PropertyPlaceHolderConfigurer)  -->
-	<bean id="mysqlDataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+	<bean id="mysqlDataSource_jwsSys" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
 		<!-- the JDBC driver class for MySQL -->
 		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
 		<!-- the URL to the MySQL server -->
@@ -27,6 +27,31 @@
 		<property name="maxActive" value="2"/>
 	</bean>
 	
+	<!-- the MySQL DataSource (parameterized for configuration via a PropertyPlaceHolderConfigurer)  -->
+	<bean id="mysqlDataSource_jwsDemo" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+		<!-- the JDBC driver class for MySQL -->
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<!-- the URL to the MySQL server -->
+		<property name="url" value="jdbc:mysql://localhost:3306/jwebsocket"/>
+		<!-- database user and password for this connection -->
+		<property name="username" value="jwsDemo"/>
+		<!-- password, please ensure that the location of this 
+		JDBC config file is properly secured in your network! -->
+		<property name="password" value="demo_password"/>
+		<!-- Timeout in seconds before connection validation queries fail. -->
+		<property name="validationQueryTimeout" value="5"/>
+		<!-- The maximum number of milliseconds that the pool will wait 
+		(when there are no available connections) for a connection to be 
+		returned before throwing an exception, or <= 0 to wait indefinitely. -->
+		<property name="maxWait" value="3000"/>
+		<!-- The initial number of connections that are created 
+		when the pool is started. -->
+		<property name="initialSize" value="2"/>
+		<!-- The maximum number of active connections that can be allocated 
+		from this pool at the same time, or negative for no limit. --> 
+		<property name="maxActive" value="2"/>
+	</bean>
+	
 	<!-- the Oracle DataSource (parameterized for configuration via a PropertyPlaceHolderConfigurer) -->
 	<bean id="oracleDataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
@@ -35,10 +60,23 @@
 		<property name="password" value="password"/>
 	</bean>
 
-	<bean id="mySQLNativeAccess" class="org.jwebsocket.plugins.jdbc.NativeAccess">
+	<bean id="mySQLNativeAccess_jwsSys" class="org.jwebsocket.plugins.jdbc.NativeAccess">
 		<!-- here you can select which datasource to use 
 		for the native JDBC access component (field "ref") -->
-		<property name="dataSource" ref="mysqlDataSource"/>
+		<property name="dataSource" ref="mysqlDataSource_jwsSys"/>
+		
+		<!-- MySQL command to retrieve a sequence value -->
+		<property name="selectSequenceSQL" value="select getSequence('${sequence}')"/>
+		<!-- MySQL command to call a function -->
+		<property name="execFunctionSQL" value="select ${funcname}(${args})"/>
+		<!-- MySQL command to execute a stored procedure -->
+		<property name="execStoredProcSQL" value="call ${procname}(${args})"/>
+	</bean>
+
+	<bean id="mySQLNativeAccess_jwsDemo" class="org.jwebsocket.plugins.jdbc.NativeAccess">
+		<!-- here you can select which datasource to use 
+		for the native JDBC access component (field "ref") -->
+		<property name="dataSource" ref="mysqlDataSource_jwsDemo"/>
 		
 		<!-- MySQL command to retrieve a sequence value -->
 		<property name="selectSequenceSQL" value="select getSequence('${sequence}')"/>
@@ -64,7 +102,8 @@
 	<bean id="settings" class="org.jwebsocket.plugins.jdbc.Settings">
 		<property name="connections">
 			<map>
-				<entry key="default" value-ref="mySQLNativeAccess"/>
+				<entry key="default" value-ref="mySQLNativeAccess_jwsSys"/>
+				<entry key="jwsDemo" value-ref="mySQLNativeAccess_jwsDemo"/>
 			</map>
 		</property>
 	</bean>
