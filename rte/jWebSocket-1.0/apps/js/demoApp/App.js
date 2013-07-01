@@ -74,9 +74,20 @@ var JMS = App.getJMSManager();
 App.publish('JMSManager', {
 	test: function(aMessage){
 		JMS.send('queue://test.queue', aMessage);
+		JMS.send('topic://test.topic', aMessage);
+	},
+	shutdown: function(){
+		JMS.shutdown();
 	}
-})
+});
 
-JMS.subscribe('queue://test.queue', function(aMsg){
-	App.getLogger().debug(aMsg.getText());
+JMS.subscribe('queue://test.queue', {
+	onMessage: function(aMsg){
+		App.getLogger().debug("queue: " + aMsg.getText());
+	}
+});
+JMS.subscribe('topic://test.topic', {
+	onMessage: function(aMsg){
+		App.getLogger().debug("topic: " + aMsg.getText());
+	}
 });
