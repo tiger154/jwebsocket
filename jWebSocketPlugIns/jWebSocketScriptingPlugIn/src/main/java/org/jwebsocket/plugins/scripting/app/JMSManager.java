@@ -259,6 +259,12 @@ public class JMSManager {
 		}
 	}
 
+	/**
+	 * Shutdown the manager instance. Close JMS message producers, consumers and
+	 * session.
+	 *
+	 * @throws Exception
+	 */
 	public void shutdown() throws Exception {
 		for (String lId : mListeners.keySet()) {
 			unsubscribe(lId);
