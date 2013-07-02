@@ -234,7 +234,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 */
 	public String getAliasPath(WebSocketConnector aConnector, String aAlias) {
 		String lBaseDir = mSettings.getAliasPath(aAlias);
-		
+
 		if (null != lBaseDir && aAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
 			lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir);
 			lBaseDir = lBaseDir.replace("{username}", aConnector.getUsername());
@@ -514,10 +514,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				return;
 			}
 			lBA = FileUtils.readFileToByteArray(lFile);
-			
+
 			// populating the response data field according to the file type
 			String lFileType = new MimetypesFileTypeMap().getContentType(lFile);
-			if (lFileType.contains("text/")){
+			if (lFileType.contains("text/")) {
 				lData = new String(lBA);
 				lResponse.setString("data", lData);
 			} else {
@@ -530,7 +530,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			lResponse.setString("msg", lMsg);
 			mLog.error(lMsg);
 		}
-		
+
 		// send response to requester
 		String lEncoding = aToken.getString("encoding", "base64");
 		lResponse.setMap("enc", new MapAppender().append("data", lEncoding).getMap());
@@ -614,17 +614,36 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lAlias = aToken.getString("alias");
 		boolean lRecursive = aToken.getBoolean("recursive", false);
 		List lFilemasks = aToken.getList("filemasks");
+		String lSubPath = aToken.getString("path", null);
 
 		Object lObject;
-		String lFolder;
+		String lBaseDir;
 		Token lToken = TokenFactory.createToken();
 
 		lObject = mSettings.getAliasPath(lAlias);
 		if (lObject != null) {
-			lFolder = (String) lObject;
-			lFolder = JWebSocketConfig.expandEnvAndJWebSocketVars(lFolder).
+			lBaseDir = (String) lObject;
+			lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir).
 					replace("{username}", aUsername);
-			File lDir = new File(lFolder);
+
+			File lDir;
+			if (null != lSubPath) {
+				lDir = new File(lBaseDir + File.separator + lSubPath);
+			} else {
+				lDir = new File(lBaseDir + File.separator);
+			}
+
+			if (!isPathInFS(lDir, lBaseDir)) {
+				lToken.setInteger("code", -1);
+				lToken.setString("msg", "The path '" + lSubPath + "' is out of the file-system location!");
+
+				return lToken;
+			} else if (!(lDir.exists() && lDir.isDirectory())) {
+				lToken.setInteger("code", -1);
+				lToken.setString("msg", "The path '" + lSubPath + "' is not directory on target '" + lAlias + "' alias!");
+
+				return lToken;
+			}
 			// IOFileFilter lFileFilter = FileFilterUtils.nameFileFilter(lFilemask);
 			String[] lFilemaskArray = new String[lFilemasks.size()];
 			int lIdx = 0;
@@ -637,19 +656,25 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			if (lRecursive) {
 				lDirFilter = FileFilterUtils.directoryFileFilter();
 			}
-			Collection<File> lFiles = FileUtils.listFiles(lDir, lFileFilter, lDirFilter);
+			Collection<File> lFiles = FileUtils.listFilesAndDirs(lDir, lFileFilter, lDirFilter);
 			List lFileList = new FastList<Map>();
+			File lBasePath = new File(lBaseDir);
+			
 			for (File lFile : lFiles) {
+				if (lFile == lDir) {
+					continue;
+				}
 				Map lFileData = new FastMap< String, Object>();
-				String lName = lFile.getName();
-				lFileData.put("filename", lName);
+				String lFilename = lFile.getAbsolutePath().replace(lBasePath.getAbsolutePath() + File.separator, "");
+				
+				lFileData.put("filename", lFilename);
 				lFileData.put("size", lFile.length());
 				lFileData.put("modified", Tools.DateToISO8601(new Date(lFile.lastModified())));
 				lFileData.put("hidden", lFile.isHidden());
 				lFileData.put("canRead", lFile.canRead());
 				lFileData.put("canWrite", lFile.canWrite());
 				if (lAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
-					lFileData.put("url", getString(ALIAS_WEB_ROOT_KEY, ALIAS_WEB_ROOT_DEF) + lName);
+					lFileData.put("url", getString(ALIAS_WEB_ROOT_KEY, ALIAS_WEB_ROOT_DEF) + lFilename);
 				}
 
 				lFileList.add(lFileData);
@@ -675,7 +700,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 */
 	protected boolean isPathInFS(File aFile, String aBasePath) {
 		try {
-			String lCanonicalPath = FilenameUtils.separatorsToSystem(aFile.getCanonicalPath());
+			String lCanonicalPath = FilenameUtils.separatorsToSystem(aFile.getCanonicalPath()) + File.separator;
 			String lBasePath = FilenameUtils.separatorsToSystem(aBasePath);
 			if (SystemUtils.IS_OS_WINDOWS) {
 				if (!StringUtils.startsWithIgnoreCase(lCanonicalPath, lBasePath)) {
