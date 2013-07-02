@@ -48,7 +48,7 @@ jws.FileSystemPlugIn = {
 
 	processToken: function( aToken ) {
 		// check if namespace matches
-		if( aToken.ns === jws.FileSystemPlugIn.NS ) {
+		if ( aToken.ns === jws.FileSystemPlugIn.NS ) {
 			// here you can handle incomimng tokens from the server
 			// directy in the plug-in if desired.
 			if( "load" === aToken.reqType ) {
@@ -94,6 +94,7 @@ jws.FileSystemPlugIn = {
 	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
 	//:a:en::aFilemasks:Array:The filtering filemasks. <tt>Example: ["txt"]</tt>
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:a:en::aOptions.path:String:Restrict file list to target sub-path
 	//:a:en::aOptions.recursive:Boolean:Recursive file listing flag. Default value is FALSE
 	//:r:*:::void:none
 	fileGetFilelist: function( aAlias, aFilemasks, aOptions ) {
@@ -105,14 +106,19 @@ jws.FileSystemPlugIn = {
 				if( aOptions.recursive !== undefined ) {
 					lRecursive = aOptions.recursive;
 				}
+			} else {
+				aOptions = {};
 			}
+			
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "getFilelist",
 				alias: aAlias,
 				recursive: lRecursive,
-				filemasks: aFilemasks
+				filemasks: aFilemasks,
+				path: aOptions['path'] || null
 			};
+		
 			this.sendToken( lToken,	aOptions );
 		}	
 		return lRes;
