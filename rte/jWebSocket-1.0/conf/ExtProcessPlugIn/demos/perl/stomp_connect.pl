@@ -5,7 +5,7 @@ use JSON;
 use Data::Dumper;
 
 # the gateway topic of the message broker
-$destination = "/topic/org.jwebsocket.jms.gateway";
+$jms_gateway = "/topic/org.jwebsocket.jms.gateway";
 
 # exit flag for the message receiver loop
 $flag_exit = 0;
@@ -133,8 +133,8 @@ sub processMesage ($$) {
 			printf( "Sending token to %s: %s\n", $sourceId, $lJSON );
 			print Dumper($lToBeSent);
 			$stomp->send(
-				# we send to the jms->jws destination
-				destination => $destination,
+				# we send to the JMS gateway destination
+				destination => $jms_gateway,
 				# the JSON as message body
 				body => $lJSON,
 
@@ -166,8 +166,8 @@ sub processMesage ($$) {
 
 # this is the listener to the jWebSocket-2-JMS topic
 $stomp->subscribe(
-	# we listen to the jws->jms topic
-	destination => $destination,
+	# we listen to the JMS gateway topic
+	destination => $jms_gateway,
 	# and use our end point id to select the messages for this node
 	selector => "targetId='" . $endPointId . "'",
 );
@@ -183,7 +183,7 @@ while (0 == $flag_exit) {
 
 # un-subscribe from topic and...
 $stomp->unsubscribe(
-	destination => $destination
+	destination => $jms_gateway
 );
 # disconnect from the message broker
 $stomp->disconnect();

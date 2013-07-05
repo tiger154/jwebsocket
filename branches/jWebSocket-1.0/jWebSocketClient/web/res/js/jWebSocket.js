@@ -408,6 +408,20 @@ var jws = {
 			window.Worker !== null && window.Worker !== undefined
 			);
 	})(),
+			
+	getOptions: function( aOptions, aDefaults ) {
+		// check that options are not empty
+		aOptions = ( aOptions ? aOptions : {} );
+		// take over default values if not specified for options
+		if( aDefaults ) {
+			for( var lKey in aDefaults ) {
+				if( !aOptions[ lKey ] ) {
+					aOptions[ lKey ] = aDefaults[ lKey ];
+				}
+			}
+		}
+		return aOptions;
+	},
 
 	//:m:*:loadScript
 	//:d:en:loads a script from a URL dynamically at run-time

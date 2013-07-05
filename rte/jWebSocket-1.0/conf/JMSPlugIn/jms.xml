@@ -31,6 +31,7 @@
 	<amq:queue id="testQueue" physicalName="test.queue" />
 	<amq:topic id="testTopic" physicalName="test.topic" />
 	<amq:topic id="stockTopic" physicalName="stock.topic" />
+	
 	<amq:topic id="jmsGateway" physicalName="org.jwebsocket.jms.gateway" />
 
 	<!-- settings for the JMSGateway -->
@@ -39,7 +40,7 @@
 		<property name="gatewayTopic" value="org.jwebsocket.jms.gateway"/>
 		<property name="advisoryTopic" value="ActiveMQ.Advisory.Consumer.Topic.org.jwebsocket.jms.gateway"/>
 		<!-- use id for this node in the cluster -->
-		<property name="endPointId" value="org.jwebsocket.jms.aschulze-dt"/>
+		<property name="endPointId" value="org.jwebsocket.jms.gateway"/>
 	</bean>
 
 </beans>

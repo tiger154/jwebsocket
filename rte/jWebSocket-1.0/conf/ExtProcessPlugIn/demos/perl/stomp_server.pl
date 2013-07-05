@@ -23,10 +23,8 @@ use Net::STOMP::Client;
 use JSON;
 use Data::Dumper;
 
-# the listen topic of the message broker
-$subscribe_destination = "/topic/org.jwebsocket.jws2jms";
-# the send topic of the message broker
-$publish_destination = "/topic/org.jwebsocket.jms2jws";
+# the listen JMS Gateway topic of the message broker
+$jms_gateway = "/topic/org.jwebsocket.jms.gateway";
 
 # exit flag for the message receiver loop
 $flag_exit = 0;
@@ -61,10 +59,14 @@ sub processMesage ($$) {
 
 	# extract the STOMP command from the frame
 	if ($cmd eq "MESSAGE") {
-		printf("Sychronously received: %s\n", 
+		# or debug purposes
+		# print Dumper($frame);
+		my $sourceId = $frame->header("sourceId");
+		printf("Sychronously received from %s: %s\n", 
 			# here you can access header data too, if required
 			# $frame->header("message-id"), 
-			$frame->body
+			$sourceId,
+			$frame->body,
 		);
 
 		# get the JSON from the message
@@ -72,7 +74,7 @@ sub processMesage ($$) {
 		# generate a token from the received JSON string
 		$lReceived = from_json( $lJSON );
 		# nice debug output to console, comment if not desired for production
-		# print Dumper($lReceived);
+		print Dumper($lReceived);
 
 		$lToBeSent = NULL;
 		$lAnswerProcessed = NULL;
@@ -81,7 +83,7 @@ sub processMesage ($$) {
 		# when the JMS client connects to the topic 
 		# the jWebSocket subsystem send a welcome message.
 		# this is used to send the authentication against jWebSocket
-		if( $lReceived->{'ns'} eq "org.jwebsocket.jms.bridge" ) {
+		if( $lReceived->{'ns'} eq "org.jwebsocket.jms.gateway" ) {
 			if( $lReceived->{'type'} eq "welcome" ) {
 				# authenticate against jWebSocket to utilize jWeSocket 
 				# services also from this Perl server.
@@ -186,7 +188,7 @@ sub processMesage ($$) {
 			# print Dumper($lToBeSent);
 			$stomp->send(
 				# we send to the jms->jws destination
-				destination => $publish_destination,
+				destination => $jms_gateway,
 				# the JSON as message body
 				body => $lJSON,
 
@@ -211,8 +213,8 @@ sub processMesage ($$) {
 
 # this is the listener to the jWebSocket-2-JMS topic
 $stomp->subscribe(
-	# we listen to the jws->jms topic
-	destination => $subscribe_destination,
+	# we listen to the JMS Gateway topic
+	destination => $jms_gateway,
 	# and use our end point id to select the messages for this node
 	selector => "targetId='" . $endPointId . "'",
 );
@@ -228,7 +230,7 @@ while (0 == $flag_exit) {
 
 # un-subscribe from topic and...
 $stomp->unsubscribe(
-	destination => $subscribe_destination,
+	destination => $jms_gateway,
 );
 # disconnect from the message broker
 $stomp->disconnect();

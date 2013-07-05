@@ -44,10 +44,10 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.plugins.jms.bridge.JMSAdvisoryListener;
-import org.jwebsocket.plugins.jms.bridge.JMSEngine;
-import org.jwebsocket.plugins.jms.bridge.JMSListener;
-import org.jwebsocket.plugins.jms.bridge.JMSSender;
+import org.jwebsocket.plugins.jms.gateway.JMSAdvisoryListener;
+import org.jwebsocket.plugins.jms.gateway.JMSEngine;
+import org.jwebsocket.plugins.jms.gateway.JMSListener;
+import org.jwebsocket.plugins.jms.gateway.JMSSender;
 import org.jwebsocket.plugins.jms.util.ActionJms;
 import org.jwebsocket.plugins.jms.util.FieldJms;
 import org.jwebsocket.plugins.jms.util.RightJms;
@@ -101,7 +101,7 @@ public class JMSPlugIn extends TokenPlugIn {
 			List<String> lDomains = new FastList<String>();
 			lDomains.add("*");
 			EngineConfig lEngineCfg = new EngineConfig(
-					"jwsjmsgw0", // id
+					"jmsgw0", // id
 					"jWebSocket JMSGateway", // name 
 					"-", // jar
 					0, // port
@@ -130,33 +130,31 @@ public class JMSPlugIn extends TokenPlugIn {
 			// setting up the JMS Gateway
 			String aBrokerURI = mSettings.getBrokerURI();
 			String mEndPointId = mSettings.getEndPointId();
-			String lRequestTopicId = mSettings.getGatewayTopic();
-			String lResponseTopicId = mSettings.getGatewayTopic();
+			String lGatewayTopicId = mSettings.getGatewayTopic();
 			String lAdvisoryTopicId = mSettings.getAdvisoryTopic();
 
 			mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
 			try {
 				mConnection = mConnectionFactory.createConnection();
+				// setting the clientID is required for durable subscribers
+				// mConnection.setClientID(mEndPointId);
 				mConnection.start();
 
 				mSession = mConnection.createSession(false,
 						Session.AUTO_ACKNOWLEDGE);
 
-				Topic lRequestTopic = mSession.createTopic(lRequestTopicId);
-				MessageProducer lProducer = mSession.createProducer(lRequestTopic);
+				Topic lGatewayTopic = mSession.createTopic(lGatewayTopicId);
+				MessageProducer lProducer = mSession.createProducer(lGatewayTopic);
 				mSender = new JMSSender(mSession, lProducer, mEndPointId);
 
-				Topic lResponseTopic = mSession.createTopic(lResponseTopicId);
-				mConsumer = mSession.createConsumer(
-						lResponseTopic,
+				// we use a durable subscriber here to allow a restart 
+				// of the jWebSocket server instance.
+				mConsumer = // mSession.createDurableSubscriber(
+						mSession.createConsumer(
+						lGatewayTopic,
 						"targetId='" + mEndPointId + "'");
 				mListener = new JMSListener(mJMSEngine, mSender);
 				mConsumer.setMessageListener(mListener);
-
-				//mSender.sendText("{\"ns\":\"org.jwebsocket.jms.bridge\""
-				//		+ ",\"type\":\"register\""
-				//		+ ",\"sourceId\":\"" + mNodeId + "\""
-				//		+ "}");
 
 				// create the listener to the advisory topic
 				Topic lAdvisoryTopic = mSession.createTopic(lAdvisoryTopicId);
@@ -167,12 +165,12 @@ public class JMSPlugIn extends TokenPlugIn {
 				lAdvisoryListener.setEngine(mJMSEngine);
 
 			} catch (JMSException lEx) {
-				System.out.println(lEx.getClass().getSimpleName()
-						+ " on connecting JMS client.");
+				mLog.error(Logging.getSimpleExceptionMessage(lEx,
+						"connecting JMS client."));
 			}
 		} catch (Exception lEx) {
-			mLog.error(lEx.getClass().getSimpleName()
-					+ " instantiation: " + lEx.getMessage());
+			mLog.error(Logging.getSimpleExceptionMessage(lEx,
+					"instantiating JMS client."));
 		}
 		// give a success message to the administrator
 		if (mLog.isInfoEnabled()) {
@@ -357,11 +355,11 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"Text successfully sent", RightJms.SEND, RightJms.SEND_AND_LISTEN),
 				new ActionCommand() {
-					@Override
-					void execute(ActionInput aInput) throws Exception {
-						mJmsManager.sendText(aInput);
-					}
-				});
+			@Override
+			void execute(ActionInput aInput) throws Exception {
+				mJmsManager.sendText(aInput);
+			}
+		});
 	}
 
 	private void sendTextMessage(WebSocketConnector aConnector, Token aToken) {

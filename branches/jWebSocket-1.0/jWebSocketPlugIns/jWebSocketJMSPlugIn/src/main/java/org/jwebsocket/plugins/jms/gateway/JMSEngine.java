@@ -16,7 +16,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.plugins.jms.bridge;
+package org.jwebsocket.plugins.jms.gateway;
 
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
