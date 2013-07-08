@@ -43,7 +43,9 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.Assert;
 
 /**
- * Class suppose to be extended by concrete script applications types.
+ * The class represents the global "App" object into script applications.
+ * Contains abstract methods to be extended by concrete implementations for
+ * custom languages like JavaScript or Groovy.
  *
  * @author kyberneees
  */
@@ -58,79 +60,101 @@ abstract public class BaseScriptApp {
 	private Logger mLog = Logging.getLogger();
 	private Map<String, Object> mApi = new FastMap<String, Object>().shared();
 	/**
-	 *
+	 * String value for the "Connector Started" event. The event is fired when a
+	 * client started a connection with the server.
 	 */
 	public final static String EVENT_CONNECTOR_STARTED = "connectorStarted";
 	/**
-	 *
+	 * String value for the "Connector Stopped" event. The event is fired when a
+	 * client stopped a connection with the server.
 	 */
 	public final static String EVENT_CONNECTOR_STOPPED = "connectorStopped";
 	/**
-	 *
+	 * String value for the "Engine Started" event. The event is fired when a
+	 * jWebSocket engine has started.
 	 */
 	public final static String EVENT_ENGINE_STARTED = "engineStarted";
 	/**
-	 *
+	 * String value for the "Engine Stopped" event. The event is fired when a
+	 * jWebSocket engine has stopped.
 	 */
 	public final static String EVENT_ENGINE_STOPPED = "engineStopped";
 	/**
-	 *
+	 * String value for the "Session Started" event. The event is fired when a
+	 * new client session is created on the server.
 	 */
 	public final static String EVENT_SESSION_STARTED = "sessionStarted";
 	/**
-	 *
+	 * String value for the "Session Stopped" event. The event is fired when an
+	 * existing client session is stopped(destroyed) on the server.
 	 */
 	public final static String EVENT_SESSION_STOPPED = "sessionStopped";
 	/**
-	 *
+	 * String value for the "Logon" event. The event is fired when a client
+	 * logon.
 	 */
 	public final static String EVENT_LOGON = "logon";
 	/**
-	 *
+	 * String value for the "Logoff" event. The event is fired when a client
+	 * logoff.
 	 */
 	public final static String EVENT_LOGOFF = "logoff";
 	/**
-	 *
+	 * String value for the "Token" event. The event is fired when a token is
+	 * received from the client to the script application.
 	 */
 	public final static String EVENT_TOKEN = "token";
 	/**
-	 *
+	 * String value for the "Filter In" event. The event is fired before client
+	 * tokens arrive to the application controller layer. It is designed to
+	 * allow pre-filtering.
 	 */
 	public final static String EVENT_FILTER_IN = "filterIn";
 	/**
-	 *
+	 * String value for the "Filter Out" event. The event is fired before
+	 * application tokens are sent to the client. It is designed to allow
+	 * post-filtering.
 	 */
 	public final static String EVENT_FILTER_OUT = "filterOut";
 	/**
-	 *
+	 * String value for the "System Starting" event. The event is fired when the
+	 * jWebSocket server system is starting.
 	 */
 	public final static String EVENT_SYSTEM_STARTING = "systemStarting";
 	/**
-	 *
+	 * String value for the "System Started" event. The event is fired when the
+	 * jWebSocket server system has started.
 	 */
 	public final static String EVENT_SYSTEM_STARTED = "systemStarted";
 	/**
-	 *
+	 * String value for the "System Started" event. The event is fired when the
+	 * jWebSocket server system is stopping.
 	 */
 	public final static String EVENT_SYSTEM_STOPPING = "systemStopping";
 	/**
-	 *
+	 * String value for the "System Started" event. The event is fired when the
+	 * jWebSocket server system has stopped.
 	 */
 	public final static String EVENT_SYSTEM_STOPPED = "systemStopped";
 	/**
-	 *
+	 * String value for the "Before App Reload" event. The event is fired before
+	 * reaload an script application. Allows to applications to perform
+	 * operations before to be reloaded.
 	 */
 	public final static String EVENT_BEFORE_APP_RELOAD = "beforeAppReload";
 	/**
-	 *
+	 * String value for the "App Loaded" event. The event is fired when an
+	 * script app has been successfully loaded.
 	 */
 	public final static String EVENT_APP_LOADED = "appLoaded";
 	/**
-	 *
+	 * String value for the "Undeploying" event. The event is fired when an
+	 * script app is going to be undeployed.
 	 */
 	public final static String EVENT_UNDEPLOYING = "undeploying";
 
 	/**
+	 * Gets the ScriptEngine instance associated to the script application.
 	 *
 	 * @return
 	 */
@@ -139,6 +163,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets the script application events callbacks collection.
 	 *
 	 * @return
 	 */
@@ -147,11 +172,13 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Constructor
 	 *
-	 * @param aServer
-	 * @param aAppName
-	 * @param aAppPath
-	 * @param aScriptApp
+	 * @param aServer The ScriptingPlugIn reference that allows to script
+	 * applications to get access to the TokenServer instance.
+	 * @param aAppName The application name (unique value)
+	 * @param aAppPath The application directory path
+	 * @param aScriptApp The scripting engine that runs the application
 	 */
 	public BaseScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp) {
 		mServer = aServer;
@@ -165,6 +192,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets the ScriptEngine instance associated to the script application.
 	 *
 	 * @return
 	 */
@@ -173,13 +201,15 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Notifyes an event into the script application.
 	 *
-	 * @param aEventName
-	 * @param aArgs
+	 * @param aEventName The event name
+	 * @param aArgs The event arguments
 	 */
 	abstract public void notifyEvent(String aEventName, Object[] aArgs);
 
 	/**
+	 * Gets the application name
 	 *
 	 * @return
 	 */
@@ -188,15 +218,17 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Publish and object to be accesed from the client.
 	 *
-	 * @param aObjectId
-	 * @param aObject
+	 * @param aObjectId The object identifier
+	 * @param aObject The object to be published
 	 */
 	public void publish(String aObjectId, Object aObject) {
 		mApi.put(aObjectId, aObject);
 	}
 
 	/**
+	 * Unpublish an object giving it identifier.
 	 *
 	 * @param aObjectId
 	 */
@@ -205,6 +237,8 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Returns TRUE if an object with the giving object identifier is published,
+	 * FALSE otherwise.
 	 *
 	 * @param aObjectId
 	 * @return
@@ -214,6 +248,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets a published object giving the object identifier.
 	 *
 	 * @param aObjectId
 	 * @return
@@ -223,6 +258,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets the script application root directory path.
 	 *
 	 * @return
 	 */
@@ -231,6 +267,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets the script application logger.
 	 *
 	 * @return
 	 */
@@ -239,26 +276,32 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Raises an exception with the given message if the boolean expression is
+	 * FALSE.
 	 *
-	 * @param aBoolean
-	 * @param aMessage
+	 * @param aExpression Boolean expression
+	 * @param aMessage The exception message
 	 */
-	public void assertTrue(Boolean aBoolean, String aMessage) {
-		Assert.isTrue(aBoolean, aMessage);
+	public void assertTrue(Boolean aExpression, String aMessage) {
+		Assert.isTrue(aExpression, aMessage);
 	}
 
 	/**
+	 * Raises an exception with the given message if the Object argument is
+	 * NULL.
 	 *
-	 * @param aObject
-	 * @param aMessage
+	 * @param aObject The object
+	 * @param aMessage The exception message.
 	 */
 	public void assertNotNull(Object aObject, String aMessage) {
 		Assert.notNull(aObject, aMessage);
 	}
 
 	/**
+	 * Imports a JavaScript file into the application.
 	 *
-	 * @param aFile
+	 * @param aFile The JavaScript file path. The string "${APP_HOME}" is
+	 * replaced by the application root directory path.
 	 * @throws Exception
 	 */
 	public void importScript(String aFile) throws Exception {
@@ -268,10 +311,12 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Sends a token to a given connector.
 	 *
-	 * @param aConnector
-	 * @param aMap
-	 * @param aFragmentSize
+	 * @param aConnector The connector
+	 * @param aMap The Map representation of the Token
+	 * @param aFragmentSize The fragment size used to fragment the token. If
+	 * value is null, the token is not fragmented.
 	 */
 	public void sendToken(WebSocketConnector aConnector, Map aMap, Integer aFragmentSize) {
 		// outbound filtering
@@ -285,19 +330,21 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Sends a token to a given connector.
 	 *
-	 * @param aConnector
-	 * @param aMap
+	 * @param aConnector The connector
+	 * @param aMap The Map representation of the Token
 	 */
 	public void sendToken(WebSocketConnector aConnector, Map aMap) {
 		sendToken(aConnector, aMap, null);
 	}
 
 	/**
+	 * Sends a token to a given connector with acknowledge callbacks.
 	 *
-	 * @param aConnector
-	 * @param aMap
-	 * @param aListener
+	 * @param aConnector The connector
+	 * @param aMap The Map representation of the Token
+	 * @param aListener The IPacketDeliveryListener implementation callback.
 	 */
 	public void sendToken(WebSocketConnector aConnector, Map aMap, Object aListener) {
 		// outbound filtering
@@ -308,11 +355,12 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Sends a fragmented token to a given connector with acknowledge callbacks.
 	 *
-	 * @param aConnector
-	 * @param aMap
-	 * @param aFragmentSize
-	 * @param aListener
+	 * @param aConnector The connector
+	 * @param aMap The Map representation of the Token
+	 * @param aFragmentSize The fragmentation size
+	 * @param aListener The IPacketDeliveryListener implementation callback.
 	 */
 	public void sendToken(WebSocketConnector aConnector, Map aMap, Integer aFragmentSize, Object aListener) {
 		// outbound filtering
@@ -323,9 +371,10 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Sends a chunkable object to a given connector with acknowledge callbacks.
 	 *
-	 * @param aConnector
-	 * @param aChunkable
+	 * @param aConnector The connector
+	 * @param aChunkable The IChunkable implementation object
 	 */
 	public void sendChunkable(WebSocketConnector aConnector, Object aChunkable) {
 		// IChunkable objects cannot be filtered in this level
@@ -335,10 +384,11 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Sends a chunkable object to a given connector with acknowledge callbacks.
 	 *
-	 * @param aConnector
-	 * @param aChunkable
-	 * @param aListener
+	 * @param aConnector The connector
+	 * @param aChunkable The IChunkable implementation object
+	 * @param aListener The IChunkableDeliveryListener implementation callback.
 	 */
 	public void sendChunkable(WebSocketConnector aConnector, Object aChunkable, Object aListener) {
 		// IChunkable objects cannot be filtered in this level
@@ -351,8 +401,8 @@ abstract public class BaseScriptApp {
 	/**
 	 * Cast JavaScript context objects into Java objects
 	 *
-	 * @param aObject
-	 * @param aClass
+	 * @param aObject The object to be casted
+	 * @param aClass The casting object class
 	 * @return
 	 */
 	public Object cast(Object aObject, Class aClass) {
@@ -372,6 +422,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets all server connectors (clients).
 	 *
 	 * @return
 	 */
@@ -380,9 +431,11 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Returns TRUE if the given connector has the given authority, FALSE
+	 * otherwise.
 	 *
-	 * @param aConnector
-	 * @param aAuthority
+	 * @param aConnector The connector
+	 * @param aAuthority The authority
 	 * @return
 	 */
 	public boolean hasAuthority(WebSocketConnector aConnector, String aAuthority) {
@@ -390,9 +443,10 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Raises an exception if the client does not have the given authority.
 	 *
-	 * @param aConnector
-	 * @param aAuthority
+	 * @param aConnector The connector
+	 * @param aAuthority The authority
 	 * @throws Exception
 	 */
 	public void requireAuthority(WebSocketConnector aConnector, String aAuthority) throws Exception {
@@ -402,9 +456,10 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Registers a callback for a collection of events.
 	 *
-	 * @param aEvents
-	 * @param aFn
+	 * @param aEvents The collection of events
+	 * @param aFn The callback
 	 */
 	public void on(Collection<String> aEvents, Object aFn) {
 		for (String lEventName : aEvents) {
@@ -413,9 +468,10 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Registers a callback for a certain event.
 	 *
-	 * @param aEventName
-	 * @param aFn
+	 * @param aEventName The event name
+	 * @param aFn The callback
 	 */
 	public void on(String aEventName, Object aFn) {
 		if (!mCallbacks.containsKey(aEventName)) {
@@ -425,9 +481,10 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Unregister a callback for a certain event.
 	 *
-	 * @param aEventName
-	 * @param aFn
+	 * @param aEventName The event name
+	 * @param aFn The callback object
 	 */
 	public void un(String aEventName, Object aFn) {
 		if (mCallbacks.containsKey(aEventName)) {
@@ -436,8 +493,9 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Creates a Token object from a Map instance.
 	 *
-	 * @param aMap
+	 * @param aMap The Map instance
 	 * @return
 	 */
 	protected Token toToken(Map aMap) {
@@ -448,18 +506,21 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Creates a response Token from a received Token.
 	 *
-	 * @param aInToken
-	 * @return
+	 * @param aInToken The incoming Token.
+	 * @return The response Token
 	 */
 	public Map createResponse(Map aInToken) {
+
 		return mServer.createResponse(toToken(aInToken)).getMap();
 	}
 
 	/**
+	 * Broadcast a Token to a given collection of connectors.
 	 *
-	 * @param aConnectors
-	 * @param aToken
+	 * @param aConnectors The collection of connectors
+	 * @param aToken The Token to be broascasted
 	 */
 	public void broadcast(Collection<WebSocketConnector> aConnectors, Map aToken) {
 		for (WebSocketConnector aConnector : aConnectors) {
@@ -468,32 +529,40 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Creates a new instance of a thread-safe Map.
 	 *
-	 * @return
+	 * @return The thread-safe Map instance.
 	 */
 	public Map newThreadSafeMap() {
 		return new FastMap().shared();
 	}
 
 	/**
+	 * Creates a new instance of a thread-safe Collection.
 	 *
-	 * @return
+	 * @return The thread-safe collection instance.
 	 */
 	public Collection newThreadSafeCollection() {
 		return new FastList().shared();
 	}
 
 	/**
+	 * Calls a method on an application published object.
 	 *
-	 * @param aObjectId
-	 * @param aMethod
-	 * @param aArgs
-	 * @return
+	 * @param aObjectId The published object identifier.
+	 * @param aMethod The method to be called.
+	 * @param aArgs The method calling arguments.
+	 * @return The result of the method execution.
 	 * @throws Exception
 	 */
 	public abstract Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception;
 
 	/**
+	 * Gets the Spring bean factory instance associated to the given namespace.
+	 * If 'namespace' argument is null, then the system core bean factory is
+	 * returned. The system core bean factory is the parent of name-spaced bean
+	 * factories, so system core beans are visible for every namespaced bean
+	 * factory.
 	 *
 	 * @param aNamespace
 	 * @return
@@ -507,8 +576,9 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets a bean from the system-core bean factory.
 	 *
-	 * @param aBeanId
+	 * @param aBeanId The bean identifier
 	 * @return
 	 */
 	public Object getBean(String aBeanId) {
@@ -516,9 +586,20 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets a bean from the application bean factory.
 	 *
 	 * @param aBeanId
-	 * @param aNamespace
+	 * @return
+	 */
+	public Object getAppBean(String aBeanId) {
+		return getAppBeanFactory().getBean(aBeanId);
+	}
+
+	/**
+	 * Gets a bean from a target bean factory.
+	 *
+	 * @param aBeanId The bean identifier
+	 * @param aNamespace The target bean factory namespace
 	 * @return
 	 */
 	public Object getBean(String aBeanId, String aNamespace) {
@@ -526,6 +607,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets the application bean factory.
 	 *
 	 * @return
 	 */
@@ -534,6 +616,8 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Loads an Spring IOC XML configuration file into the script application
+	 * bean factory.
 	 *
 	 * @param aFile
 	 * @throws Exception
@@ -552,6 +636,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets a JMS Manager instance using default configuration.
 	 *
 	 * @return
 	 */
@@ -560,8 +645,10 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets a JMS Manager instance indicating transaction support setting.
 	 *
-	 * @param aUseTransaction
+	 * @param aUseTransaction If TRUE, JMS session instance will support
+	 * transactions.
 	 * @return
 	 */
 	public JMSManager getJMSManager(boolean aUseTransaction) {
@@ -569,9 +656,12 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets a JMS Manager instance indicating transaction support setting and
+	 * passing the JMS connection instance.
 	 *
-	 * @param aUseTransaction
-	 * @param aConn
+	 * @param aUseTransaction If TRUE, JMS session instance will support
+	 * transactions.
+	 * @param aConn The JMS connection instance to be used.
 	 * @return
 	 */
 	public JMSManager getJMSManager(boolean aUseTransaction, Connection aConn) {
@@ -579,14 +669,18 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets the application version.
 	 *
-	 * @return @throws Exception
+	 * @return
+	 * @throws Exception
 	 */
 	public abstract String getVersion() throws Exception;
 
 	/**
+	 * Gets the application description.
 	 *
-	 * @return @throws Exception
+	 * @return
+	 * @throws Exception
 	 */
 	public abstract String getDescription() throws Exception;
 }

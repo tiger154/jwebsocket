@@ -21,7 +21,7 @@ package org.jwebsocket.plugins.scripting.app;
 import org.apache.log4j.Logger;
 
 /**
- * The JavaScript application logger
+ * The JavaScript application logger abstraction class.
  *
  * @author kyberneees
  */
@@ -31,9 +31,10 @@ public class ScriptAppLogger {
 	private String mAppName;
 
 	/**
+	 * Constructor
 	 *
-	 * @param aLog
-	 * @param aAppName
+	 * @param aLog The logger instance
+	 * @param aAppName The unique application name
 	 */
 	public ScriptAppLogger(Logger aLog, String aAppName) {
 		mLog = aLog;
@@ -41,6 +42,7 @@ public class ScriptAppLogger {
 	}
 
 	/**
+	 * Append a debug message to the log target
 	 *
 	 * @param aMessage
 	 */
@@ -51,6 +53,7 @@ public class ScriptAppLogger {
 	}
 
 	/**
+	 * Append a message to the log target
 	 *
 	 * @param aMessage
 	 */
@@ -61,6 +64,7 @@ public class ScriptAppLogger {
 	}
 
 	/**
+	 * Append an error message to the log target
 	 *
 	 * @param aMessage
 	 */
@@ -69,6 +73,7 @@ public class ScriptAppLogger {
 	}
 
 	/**
+	 * Append a warning message to the log target
 	 *
 	 * @param aMessage
 	 */
