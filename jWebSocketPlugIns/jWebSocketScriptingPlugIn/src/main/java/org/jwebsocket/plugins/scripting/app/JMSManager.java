@@ -31,6 +31,7 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
 import javolution.util.FastMap;
+import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 
 /**
@@ -52,7 +53,7 @@ public class JMSManager {
 
 	public JMSManager(BaseScriptApp aScriptApp, boolean aUseTransaction) {
 		this(aScriptApp, aUseTransaction, (Connection) JWebSocketBeanFactory
-				.getInstance().getBean("jmsConnection"));
+				.getInstance(ScriptingPlugIn.NS).getBean("jmsConnection"));
 	}
 
 	public JMSManager(BaseScriptApp aScriptApp, boolean aUseTransaction, Connection aConn) {

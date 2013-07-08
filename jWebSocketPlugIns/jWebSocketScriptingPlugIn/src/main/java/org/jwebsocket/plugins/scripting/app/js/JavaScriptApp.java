@@ -30,7 +30,9 @@ import org.jwebsocket.plugins.scripting.app.BaseScriptApp;
 import org.springframework.util.Assert;
 
 /**
- * The object acts as the "app" global object in the JavaScript application
+ * The class represents the "App" global object in the JavaScript application.
+ * Contains specific JavaScript implementation for abstract methods of the
+ * BaseScriptApp class.
  *
  * @author kyberneees
  */
@@ -40,11 +42,13 @@ public class JavaScriptApp extends BaseScriptApp {
 	private final Object mApp;
 
 	/**
+	 * Constructor
 	 *
-	 * @param aServer
-	 * @param aAppName
-	 * @param aAppPath
-	 * @param aScriptApp
+	 * @param aServer The ScriptingPlugIn reference that allows to script
+	 * applications to get access to the TokenServer instance.
+	 * @param aAppName The application name (unique value)
+	 * @param aAppPath The application directory path
+	 * @param aScriptApp The scripting engine that runs the application
 	 */
 	public JavaScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp) {
 		super(aServer, aAppName, aAppPath, aScriptApp);
@@ -64,9 +68,7 @@ public class JavaScriptApp extends BaseScriptApp {
 	}
 
 	/**
-	 *
-	 * @param aEventName
-	 * @param aArgs
+	 * {@inheritDoc }
 	 */
 	@Override
 	public void notifyEvent(String aEventName, Object[] aArgs) {
@@ -80,12 +82,7 @@ public class JavaScriptApp extends BaseScriptApp {
 	}
 
 	/**
-	 *
-	 * @param aObjectId
-	 * @param aMethod
-	 * @param aArgs
-	 * @return
-	 * @throws Exception
+	 * {@inheritDoc }
 	 */
 	@Override
 	public Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception {
@@ -99,8 +96,7 @@ public class JavaScriptApp extends BaseScriptApp {
 	}
 
 	/**
-	 *
-	 * @return @throws Exception
+	 * {@inheritDoc }
 	 */
 	@Override
 	public String getVersion() throws Exception {
@@ -111,8 +107,7 @@ public class JavaScriptApp extends BaseScriptApp {
 	}
 
 	/**
-	 *
-	 * @return @throws Exception
+	 * {@inheritDoc }
 	 */
 	@Override
 	public String getDescription() throws Exception {
