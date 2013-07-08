@@ -71,7 +71,7 @@
                         <configuration>
                             <classifier>Bundle</classifier>
                             <finalName>jWebSocketWatchDogClient-Bundle</finalName>
-                            <outputDirectory>../../../libs</outputDirectory>
+							<outputDirectory>../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
                             <archive>
                                 <manifest>
                                     <mainClass>org.jwebsocket.watchdog.App</mainClass>
