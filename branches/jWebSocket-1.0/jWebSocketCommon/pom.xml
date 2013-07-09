@@ -127,6 +127,13 @@
 			<artifactId>commons-compress</artifactId>
 			<version>1.5</version>
 		</dependency>
+		<!-- Required for message queuing in the server as well as in the client -->
+		<dependency> 
+			<groupId>org.apache.activemq</groupId> 
+			<artifactId>activemq-core</artifactId> 
+			<version>5.7.0</version> 
+		</dependency>
+		
 	</dependencies>
 
 	<!-- define repositories once required -->

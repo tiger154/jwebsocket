@@ -22,6 +22,7 @@
 				<include>org.netbeans.external:json-2</include>
 				<include>commons-codec:commons-codec</include>
 				<include>org.apache.commons:commons-compress</include>
+				<include>org.apache.activemq:activemq-core</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>

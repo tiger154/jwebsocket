@@ -66,11 +66,11 @@ cd /d %dlroot%jWebSocket-%ver%
 7z x jWebSocketAMQStockTickerService32-%ver%.zip -o"%testroot%"\jWebSocket-%ver%\bin >> %logfile%
 7z x jWebSocketAMQStockTickerService64-%ver%.zip -o"%testroot%"\jWebSocket-%ver%\bin >> %logfile%
 
-set JWEBSOCKET_HOME=%testroot%jWebSocket-%ver%
+set JWEBSOCKET_HOME=%testroot%jWebSocket-%ver%\
 
 echo ----------------------------------------------------------------------------
 echo Please check if all Server files have been extracted properly to
-echo JWEBSOCKET_HOME: %JWEBSOCKET_HOME% 
+echo JWEBSOCKET_HOME: %JWEBSOCKET_HOME%
 echo and also check %logfile%
 echo ----------------------------------------------------------------------------
 pause
