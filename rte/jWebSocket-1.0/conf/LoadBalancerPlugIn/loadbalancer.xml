@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
+<beans>
+	<!-- Endpoint definitions for Cluster 1 -->
+	<bean id="service1endPoint1" class="org.jwebsocket.plugins.loadbalancer.ClusterEndPoint">
+		<!-- add further settings for this endpoint here once required -->
+	</bean>
+	
+	<bean id="service1endPoint2" class="org.jwebsocket.plugins.loadbalancer.ClusterEndPoint">
+		<!-- add further settings for this endpoint here once required -->
+	</bean>
+	
+	<!-- Endpoint definitions for Cluster 2 -->
+	<bean id="service2endPoint1" class="org.jwebsocket.plugins.loadbalancer.ClusterEndPoint">
+		<!-- add further settings for this endpoint here once required -->
+	</bean>
+	
+	<bean id="service2endPoint2" class="org.jwebsocket.plugins.loadbalancer.ClusterEndPoint">
+		<!-- add further settings for this endpoint here once required -->
+	</bean>
+	
+	<!-- Service Cluster 1 definition -->
+	<bean id="service1cluster" class="org.jwebsocket.plugins.loadbalancer.Cluster">
+		<property name="endpoints">
+			<set>
+				<ref bean="service1endPoint1"/>
+				<ref bean="service1endPoint2"/>
+			</set>
+		</property>
+	</bean>
+	
+	<!-- Service Cluster 2 definition -->
+	<bean id="service2cluster" class="org.jwebsocket.plugins.loadbalancer.Cluster">
+		<property name="endpoints">
+			<set>
+				<ref bean="service2endPoint1"/>
+				<ref bean="service2endPoint2"/>
+			</set>
+		</property>
+	</bean>
+	
+	<!-- Service Cluster alias/instance assignment -->
+	<bean id="org.jwebsocket.plugins.loadbalancer.settings" class="org.jwebsocket.plugins.loadbalancer.Settings">
+		<property name="clusters">
+			<map>
+				<!-- "service1" is the name of the first balanced service -->
+				<entry key="service1" >
+					<ref bean="service1cluster" />
+				</entry>
+				<!-- "service2" is the name of the first balanced service -->
+				<entry key="service2" >
+					<ref bean="service2cluster" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+</beans>

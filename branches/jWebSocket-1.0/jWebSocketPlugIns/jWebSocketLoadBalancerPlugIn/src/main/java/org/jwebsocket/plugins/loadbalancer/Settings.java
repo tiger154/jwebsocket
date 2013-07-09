@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - Settings for External Process Plug-in (Community Edition, CE)
+//	jWebSocket - Settings for Load Balancer Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -27,19 +27,20 @@ import javolution.util.FastMap;
  */
 public class Settings {
 
-	private Map<String, String> mAllowedProgs = new FastMap<String, String>();
+	// list of (service) clusters
+	private Map<String, Cluster> mClusters = new FastMap<String, Cluster>();
 
 	/**
-	 * @return the aliases
+	 * @return the clusters
 	 */
-	public Map<String, String> getAllowedProgs() {
-		return mAllowedProgs;
+	public Map<String, Cluster> getClusters() {
+		return mClusters;
 	}
 
 	/**
-	 * @param aAllowedProgs the aliases to set
+	 * @param aClusters
 	 */
-	public void setAllowedProgs(Map aAllowedProgs) {
-		mAllowedProgs = aAllowedProgs;
+	public void setClusters(Map aClusters) {
+		mClusters = aClusters;
 	}
 }

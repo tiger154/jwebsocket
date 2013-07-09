@@ -18,8 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
-import java.util.Map;
-import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -30,7 +28,6 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -79,11 +76,6 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 						+ "balancer plug-in, some features may not be available.");
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.loadbalancer.settings");
-				// replace all alias values with environment variables
-				Map<String, String> lAllowedProgs = mSettings.getAllowedProgs();
-				for (Entry<String, String> lEntry : lAllowedProgs.entrySet()) {
-					lEntry.setValue(Tools.expandEnvVarsAndProps(lEntry.getValue()));
-				}
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Load balancer plug-in successfully instantiated.");
 				}
@@ -136,8 +128,10 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		String lNS = aToken.getNS();
 
 		if (lType != null && getNamespace().equals(lNS)) {
-			if (lType.equals("call")) {
-				call(aConnector, aToken);
+			if (lType.equals("getClusterEndPointsInfo")) {
+				getClusterEndPointsInfo(aConnector, aToken);
+			} else if (lType.equals("getStickyRoutes")) {
+				getStickyRoutes(aConnector, aToken);
 			}
 		}
 	}
@@ -164,7 +158,13 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		return null;
 	}
 
-	private void call(WebSocketConnector aConnector, Token aToken) {
+	private void getClusterEndPointsInfo(WebSocketConnector aConnector, Token aToken) {
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
+		lServer.sendToken(aConnector, lResponse);
+	}
+
+	private void getStickyRoutes(WebSocketConnector aConnector, Token aToken) {
 		TokenServer lServer = getServer();
 		Token lResponse = createResponse(aToken);
 		lServer.sendToken(aConnector, lResponse);

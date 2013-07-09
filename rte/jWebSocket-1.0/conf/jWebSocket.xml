@@ -515,8 +515,8 @@
 			</threadPool>
 			
 			<settings>
-				<setting key="supressed_log_fields">password,secretPassword, accessPassword ,newSecretPassword,secretKey,accessKey,newSecretKey</setting>
-				<setting key="supressed_log_fields_value">***???***</setting>
+				<setting key="supressed_log_fields">password,secretPassword,accessPassword,newSecretPassword,secretKey,accessKey,newSecretKey</setting>
+				<setting key="supressed_log_fields_value">******</setting>
 			</settings>
 		</server>
 		<server>
@@ -526,7 +526,7 @@
 		</server>
 		<settings>
 			<setting key="supressed_log_fields" value="password,newPassword,secretPassword,accessPassword"></setting>
-			<setting key="supressed_log_fields_value" value="*****"></setting>
+			<setting key="supressed_log_fields_value" value="******"></setting>
 		</settings>
 	</servers>
 
@@ -1432,7 +1432,7 @@
 			</settings>
 		</plugin>
 
-		<!-- plug-in for messaging via JMS
+		<!-- plug-in for messaging via JMS -->
 		<plugin>
 			<name>org.jwebsocket.plugins.jms.JMSPlugIn</name>
 			<id>jws.jms</id>
@@ -1449,7 +1449,20 @@
 				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 			</settings>
 		</plugin>
-		-->
+
+		<!-- jWebSocket Load Balancer plug-in -->
+		<plugin>
+			<name>org.jwebsocket.plugins.loadbalancer.LoadBalancerPlugIn</name>
+			<id>jws.lb</id>
+			<ns>org.jWebSocket.plugins.loadbalancer</ns>
+			<jar>jWebSocketLoadBalancerPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/LoadBalancerPlugIn/loadbalancer.xml</setting>
+			</settings>
+		</plugin>
 
 		<!-- plug-in to support server side logging for clients -->
 		<!-- THIS PLUG-IN REQUIRES THE JDBC PLUG-IN! -->
