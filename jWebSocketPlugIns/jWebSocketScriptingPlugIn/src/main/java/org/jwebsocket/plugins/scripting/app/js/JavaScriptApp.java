@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.scripting.app.js;
 
 import java.io.File;
+import java.security.PrivilegedAction;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import org.apache.commons.io.FileUtils;
@@ -26,7 +27,10 @@ import org.apache.log4j.Logger;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
+import org.jwebsocket.plugins.scripting.Settings;
 import org.jwebsocket.plugins.scripting.app.BaseScriptApp;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
 
 /**
@@ -71,28 +75,56 @@ public class JavaScriptApp extends BaseScriptApp {
 	 * {@inheritDoc }
 	 */
 	@Override
-	public void notifyEvent(String aEventName, Object[] aArgs) {
+	public void notifyEvent(final String aEventName, final Object[] aArgs) {
 		mLog.debug("Notifying '" + aEventName + "' event in '" + getName() + "' js app...");
+		Settings lSettings = (Settings) JWebSocketBeanFactory.getInstance(ScriptingPlugIn.NS)
+				.getBean("org.jwebsocket.plugins.scripting.settings");
 
-		try {
-			((Invocable) getScriptApp()).invokeMethod(mApp, "notifyEvent", new Object[]{aEventName, aArgs});
-		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying '" + aEventName + "' event"));
-		}
+		// notifying event into security sandbox
+		Tools.doPrivileged(lSettings.getAppPermissions(getName()),
+				new PrivilegedAction<Object>() {
+					@Override
+					public Object run() {
+						try {
+							// notifying event
+							((Invocable) getScriptApp()).invokeMethod(mApp, "notifyEvent", new Object[]{aEventName, aArgs});
+							return true;
+						} catch (Exception lEx) {
+							mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying '" + aEventName + "' event"));
+							return false;
+						}
+					}
+				});
 	}
 
 	/**
 	 * {@inheritDoc }
 	 */
 	@Override
-	public Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception {
-		Invocable lInvocable = (Invocable) getScriptApp();
+	public Object callMethod(final String aObjectId, final String aMethod, final Object[] aArgs) throws Exception {
+		final Invocable lInvocable = (Invocable) getScriptApp();
 		Boolean lExists = (Boolean) lInvocable.invokeMethod(mApp, "isPublished", new Object[]{aObjectId});
 		Assert.isTrue(lExists, "The object with id ' " + aObjectId + "' is not published!");
 
-		Object lObject = lInvocable.invokeMethod(mApp, "getPublished", new Object[]{aObjectId});
+		final Object lObject = lInvocable.invokeMethod(mApp, "getPublished", new Object[]{aObjectId});
 
-		return lInvocable.invokeMethod(lObject, aMethod, aArgs);
+		// getting scripting plugin settings
+		Settings lSettings = (Settings) JWebSocketBeanFactory.getInstance(ScriptingPlugIn.NS)
+				.getBean("org.jwebsocket.plugins.scripting.settings");
+
+		// calling method into a security sandbox
+		return Tools.doPrivileged(lSettings.getAppPermissions(getName()),
+				new PrivilegedAction<Object>() {
+					@Override
+					public Object run() {
+						// invoking method
+						try {
+							return lInvocable.invokeMethod(lObject, aMethod, aArgs);
+						} catch (Exception lEx) {
+							throw new RuntimeException(lEx);
+						}
+					}
+				});
 	}
 
 	/**
