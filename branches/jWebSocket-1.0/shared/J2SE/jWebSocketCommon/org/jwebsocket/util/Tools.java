@@ -24,10 +24,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.HttpCookie;
 import java.net.URI;
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.CodeSource;
 import java.security.MessageDigest;
+import java.security.Permission;
+import java.security.PermissionCollection;
+import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
+import java.security.cert.Certificate;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1015,5 +1024,55 @@ public class Tools {
 
 		lZIS.closeEntry();
 		lZIS.close();
+	}
+
+	/**
+	 * Parse a string valid representation of a Java security permission.
+	 * Example:
+	 * <code>permission java.util.PropertyPermission "java.util.logging.config.class", "read"</code>
+	 *
+	 * @param aPermission
+	 * @return
+	 */
+	public static Permission stringToPermission(String aPermission) {
+		try {
+			String[] lTempArray = aPermission.replace("\"", "").split(" ", 3);
+			String lClassName = lTempArray[1];
+			String lName = null, lActions = null;
+
+			if (lTempArray.length > 2) {
+				lTempArray = lTempArray[2].split(",", 2);
+
+				lName = lTempArray[0];
+				if (lTempArray.length > 1) {
+					lActions = lTempArray[1];
+				}
+			}
+
+			Class lClazz = Class.forName(lClassName);
+			Constructor<Permission> lConstructor = lClazz.getConstructor(String.class, String.class);
+			if (null != lConstructor) {
+				return lConstructor.newInstance(new Object[]{lName, lActions});
+
+			}
+		} catch (Exception lEx) {
+		}
+
+		return null;
+	}
+
+	/**
+	 * Executes a privileged action in sandbox.
+	 *
+	 * @param aPermissions The security permissions.
+	 * @param aAction The action to execute/
+	 * @return
+	 */
+	public static Object doPrivileged(PermissionCollection aPermissions, PrivilegedAction aAction) {
+		ProtectionDomain lProtectionDomain = new ProtectionDomain(
+				new CodeSource(null, (Certificate[]) null), aPermissions);
+		AccessControlContext lSecurityContext = new AccessControlContext(new ProtectionDomain[]{lProtectionDomain});
+
+		return AccessController.doPrivileged(aAction, lSecurityContext);
 	}
 }
