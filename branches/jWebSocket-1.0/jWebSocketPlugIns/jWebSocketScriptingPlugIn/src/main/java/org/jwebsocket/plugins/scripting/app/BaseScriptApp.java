@@ -306,7 +306,7 @@ abstract public class BaseScriptApp {
 	 */
 	public void importScript(String aFile) throws Exception {
 		aFile = aFile.replace("${APP_HOME}", mAppPath);
-		String lFile = FileUtils.readFileToString(new File(Tools.expandEnvVarsAndProps(aFile)));
+		String lFile = FileUtils.readFileToString(new File(aFile));
 		mScriptApp.eval(lFile);
 	}
 
