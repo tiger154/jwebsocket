@@ -51,7 +51,7 @@ import org.springframework.util.Assert;
  */
 abstract public class BaseScriptApp {
 
-	private ScriptingPlugIn mServer;
+	protected ScriptingPlugIn mServer;
 	private String mAppName;
 	private String mAppPath;
 	private ScriptEngine mScriptApp;

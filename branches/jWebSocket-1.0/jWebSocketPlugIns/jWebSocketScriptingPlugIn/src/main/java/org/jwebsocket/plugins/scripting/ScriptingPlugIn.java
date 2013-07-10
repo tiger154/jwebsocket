@@ -21,6 +21,7 @@ package org.jwebsocket.plugins.scripting;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -109,6 +110,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				mLog.error("No or invalid spring configuration for scripting plug-in, some features may not be available.");
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.scripting.settings");
+
+				// initializing JMS connection at this level if present
+				if (mBeanFactory.containsBean("jmsConnection")) {
+					mBeanFactory.getBean("jmsConnection");
+				}
+
 				// initializing apps
 				Map<String, String> lApps = mSettings.getApps();
 				for (String lApp : lApps.keySet()) {
@@ -165,11 +172,11 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 *
 	 * @param aApp The application name
 	 * @param aAppDirPath The application home path
-	 * @param aHotLoad 
-	 * @return 
+	 * @param aHotLoad
+	 * @return
 	 * @throws Exception
 	 */
-	public final boolean loadApp(String aApp, String aAppDirPath, boolean aHotLoad) throws Exception {
+	public final boolean loadApp(final String aApp, String aAppDirPath, boolean aHotLoad) throws Exception {
 		// notifying before app reload event here
 		BaseScriptApp lScript = mApps.get(aApp);
 		if (null != lScript) {
@@ -181,7 +188,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		String lExt = (lAppNameExt.length == 2) ? lAppNameExt[1] : "js";
 
 		// validating bootstrap file
-		File lBootstrap = new File(aAppDirPath + "/App." + lExt);
+		final File lBootstrap = new File(aAppDirPath + "/App." + lExt);
 		if (!lBootstrap.exists() || !lBootstrap.canRead()) {
 			mLog.error("Unable to load '" + aApp + "' application. The bootstrap file '" + lBootstrap + "' does not exists!");
 			return false;
@@ -198,11 +205,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				return false;
 			}
 		} else {
-			ScriptEngine lScriptApp;
+			final ScriptEngine lScriptApp;
 			if ("js".equals(lExt)) {
 				// making "nashorn" the default engine for JavaScript
-				lScriptApp = mEngineManager.getEngineByName("nashorn");
-				if (null == lScriptApp) {
+				if (null != mEngineManager.getEngineByName("nashorn")) {
+					lScriptApp = mEngineManager.getEngineByName("nashorn");
+				} else {
 					lScriptApp = mEngineManager.getEngineByExtension(lExt);
 				}
 			} else {
@@ -217,12 +225,24 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				return false;
 			}
 
-			try {
-				// evaluating app content
-				lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
-			} catch (ScriptException lEx) {
-				mLog.error("Script applicaton '" + aApp + "' failed to start: " + lEx.getMessage());
-				mApps.remove(aApp);
+			// loading application into security sandbox
+			Boolean lResult = (Boolean) Tools.doPrivileged(mSettings.getAppPermissions(aApp),
+					new PrivilegedAction<Boolean>() {
+						@Override
+						public Boolean run() {
+							try {
+								// evaluating app content
+								lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
+								return true;
+							} catch (Exception lEx) {
+								mLog.error("Script applicaton '" + aApp + "' failed to start: " + lEx.getMessage());
+								mApps.remove(aApp);
+								return false;
+							}
+						}
+					});
+
+			if (!lResult) {
 				return false;
 			}
 		}
