@@ -4,6 +4,24 @@
 	<bean id="org.jwebsocket.plugins.scripting.settings" class="org.jwebsocket.plugins.scripting.Settings"
 		  init-method="initialize">
 		<property name="appsDirectory" value="${JWEBSOCKET_HOME}/apps/js" />
+		<property name="globalSecurityPermissions">
+			<list>
+				<value>permission java.io.FilePermission "${APP_HOME}\-", "read,write"</value>
+				<value>permission java.util.PropertyPermission "*", "read,write"</value>
+				<value>permission java.lang.RuntimePermission" "getenv.*"</value>
+			</list>
+		</property>
+		<!--
+		<property name="appsSecurityPermissions">
+			<map>
+				<entry key="yourAppName">
+					<list>
+						<value>permission java.security.AllPermission</value>
+					</list>
+				</entry>
+			</map>
+		</property>
+		-->
 	</bean>
 
 	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
@@ -20,7 +38,7 @@
 		-->
 	</bean>
 	<bean id="jmsConnection" factory-bean="jmsConnectionFactory" factory-method="createConnection" 
-			  init-method="start">
+		  init-method="start">
 		<property name="clientID" value="jws_server_shared_conn_01" />
 	</bean>
 
