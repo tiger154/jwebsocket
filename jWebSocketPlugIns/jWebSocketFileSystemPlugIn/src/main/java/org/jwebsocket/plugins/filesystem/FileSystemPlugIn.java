@@ -53,6 +53,9 @@ import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 
 /**
+ * The FileSystemPlugIn class is a plug-in implementation for the jWebSocket
+ * framework to provide support for the basics “file uploads management”
+ * operations in WebSocket applications.
  *
  * @author aschulze
  * @author kyberneees
@@ -61,7 +64,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	/**
-	 *
+	 * Namespace for the FSP
 	 */
 	public static final String NS_FILESYSTEM =
 			JWebSocketServerConstants.NS_BASE + ".plugins.filesystem";
@@ -72,36 +75,36 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket FileSystemPlugIn - Community Edition";
 	/**
-	 *
+	 * Private alias directory settings map key.
 	 */
 	public static final String PRIVATE_ALIAS_DIR_KEY = "privateDir";
 	/**
-	 *
+	 * Public alias directory settings map key.
 	 */
 	public static final String PUBLIC_ALIAS_DIR_KEY = "publicDir";
 	/**
-	 *
+	 * Web root alias settings map key.
 	 */
 	public static final String ALIAS_WEB_ROOT_KEY = "webRoot";
 	/**
-	 *
+	 * Private alias directory default value.
 	 */
 	public static final String PRIVATE_ALIAS_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/private/{username}/";
 	/**
-	 *
+	 * Public alias directory default value.
 	 */
 	public static final String PUBLIC_ALIAS_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/public/";
 	/**
-	 *
+	 * Web root alias default value.
 	 */
 	public static final String ALIAS_WEB_ROOT_DEF = "http://localhost/public/";
 	private FileAlterationMonitor mFileSystemMonitor = null;
 	/**
-	 *
+	 * FSP bean factory cached instance.
 	 */
 	protected ApplicationContext mBeanFactory;
 	/**
-	 *
+	 * FSP settings instance.
 	 */
 	protected Settings mSettings;
 
@@ -227,9 +230,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
+	 * Gets the directory path for a given alias.
 	 *
-	 * @param aConnector
-	 * @param aAlias
+	 * @param aConnector The requester connector.
+	 * @param aAlias The alias value.
 	 * @return
 	 */
 	public String getAliasPath(WebSocketConnector aConnector, String aAlias) {
@@ -244,7 +248,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Indicates if a file exists in a given alias
+	 * Indicates if a file exists in a given alias.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -302,7 +306,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * saves or appends a file, depending on the aToken.append (Boolean) arg
+	 * Saves or appends a file, dependes of the aToken.append (Boolean) arg.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -408,14 +412,6 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		lEvent.setString("filename", lFilename);
 		lEvent.setString("sourceId", aConnector.getId());
 
-		/*
-		 if (lNotify && lScope.equals(JWebSocketCommonConstants.SCOPE_PUBLIC)) {
-		 lServer.broadcastToken(lEvent);
-		 } else {
-		 // notify always the requester
-		 lServer.sendToken(aConnector, lEvent);
-		 }
-		 */
 		if (lNotify) {
 			if (lScope.equals(JWebSocketCommonConstants.SCOPE_PUBLIC)) {
 				lServer.broadcastToken(lEvent);
@@ -427,7 +423,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * saves a file
+	 * Saves a file into a given scope.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -438,7 +434,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * appends a file
+	 * Appends a file into a given scope.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -461,7 +457,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * load a file
+	 * Load a file from a given alias.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -539,7 +535,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * send a file from one client to another client
+	 * Sends a file from one client to another client.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -604,8 +600,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
+	 * Gets the file list from a given alias an optionally from a sub path.
 	 *
-	 * @param aUsername
+	 * @param aUsername The requester client username.
 	 * @param aToken
 	 * @return
 	 */
@@ -659,14 +656,14 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			Collection<File> lFiles = FileUtils.listFilesAndDirs(lDir, lFileFilter, lDirFilter);
 			List lFileList = new FastList<Map>();
 			File lBasePath = new File(lBaseDir);
-			
+
 			for (File lFile : lFiles) {
 				if (lFile == lDir) {
 					continue;
 				}
 				Map lFileData = new FastMap< String, Object>();
 				String lFilename = lFile.getAbsolutePath().replace(lBasePath.getAbsolutePath() + File.separator, "");
-				
+
 				lFileData.put("filename", lFilename);
 				lFileData.put("size", lFile.length());
 				lFileData.put("modified", Tools.DateToISO8601(new Date(lFile.lastModified())));
@@ -718,7 +715,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Delete a file
+	 * Deletes a file on a target scope.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -804,7 +801,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Gets the file list for a given alias
+	 * Gets the file list for a given alias.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -832,6 +829,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		lServer.sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 * Internal file-system listener.
+	 */
 	class ChangeListener implements FileAlterationListener {
 
 		// Directory changed Event.
@@ -905,8 +905,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
+	 * Starts the aliases file-system monitor.
 	 *
-	 * @param aInterval
+	 * @param aInterval Changes checks interval value.
 	 */
 	public void startAliasesMonitor(int aInterval) {
 		if (null == mFileSystemMonitor) {
@@ -942,7 +943,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 *
+	 * Stops the aliases file-system monitor.
 	 */
 	public void stopAliasesMonitor() {
 		if (null != mFileSystemMonitor) {
@@ -958,6 +959,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	/**
+	 * Gets the file-system listener instance.
 	 *
 	 * @return
 	 */
