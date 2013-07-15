@@ -30,12 +30,17 @@ import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
 
 /**
+ * Allows to clients and internal applications send SMS text messages to mobile
+ * phones through WebSocket protocol.
  *
  * @author mayra, aschulze
  */
 public class SMSPlugIn extends TokenPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
+	/**
+	 *
+	 */
 	private static final String NS_SMS =
 			JWebSocketServerConstants.NS_BASE + ".plugins.sms";
 	private final static String VERSION = "1.0.0";
@@ -44,76 +49,83 @@ public class SMSPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket SMSPlugIn - Community Edition";
+	/**
+	 * PlugIn dependencies
+	 */
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 	private ISMSProvider mProvider;
 
-   /**
-    *
-    * @param aConfiguration
-    */
-   public SMSPlugIn(PluginConfiguration aConfiguration) {
-      super(aConfiguration);
-      if (mLog.isDebugEnabled()) {
-         mLog.debug("Instantiating SMS plug-in...");
-      }
-      this.setNamespace(NS_SMS);
+	/**
+	 * Constructor with plug-in configuration
+	 *
+	 * @param aConfiguration the plug-in configuration for this PlugIn
+	 */
+	public SMSPlugIn(PluginConfiguration aConfiguration) {
+		super(aConfiguration);
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Instantiating SMS plug-in...");
+		}
+		this.setNamespace(NS_SMS);
 
-      try {
-         mBeanFactory = getConfigBeanFactory();
-         if (null == mBeanFactory) {
-            mLog.error("No or invalid spring configuration for SMS plug-in, some features may not be available.");
-         } else {
-            mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.sms.settings");
-            if (mLog.isInfoEnabled()) {
-               mLog.info("SMS plug-in successfully instantiated.");
-            }
-         }
-      } catch (Exception lEx) {
-         mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SMS plug-in"));
-      }
+		try {
+			mBeanFactory = getConfigBeanFactory();
+			if (null == mBeanFactory) {
+				mLog.error("No or invalid spring configuration for SMS plug-in, some features may not be available.");
+			} else {
+				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.sms.settings");
+				if (mLog.isInfoEnabled()) {
+					mLog.info("SMS plug-in successfully instantiated.");
+				}
+			}
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SMS plug-in"));
+		}
 
-      if (null != mSettings) {
-         // just for developers convenience
-         mProvider = mSettings.getProvider();
-      }
-   }
+		if (null != mSettings) {
+			// just for developers convenience
+			mProvider = mSettings.getProvider();
+		}
+	}
 
-   @Override
-   public String getVersion() {
-      return VERSION;
-   }
+	@Override
+	public String getVersion() {
+		return VERSION;
+	}
 
-   @Override
-   public String getLabel() {
-      return LABEL;
-   }
+	@Override
+	public String getLabel() {
+		return LABEL;
+	}
 
-   @Override
-   public String getDescription() {
-      return DESCRIPTION;
-   }
+	@Override
+	public String getDescription() {
+		return DESCRIPTION;
+	}
 
-   @Override
-   public String getVendor() {
-      return VENDOR;
-   }
+	@Override
+	public String getVendor() {
+		return VENDOR;
+	}
 
-   @Override
-   public String getCopyright() {
-      return COPYRIGHT;
-   }
+	@Override
+	public String getCopyright() {
+		return COPYRIGHT;
+	}
 
-   @Override
-   public String getLicense() {
-      return LICENSE;
-   }
+	@Override
+	public String getLicense() {
+		return LICENSE;
+	}
 
-   @Override
-   public String getNamespace() {
-      return NS_SMS;
-   }
+	@Override
+	public String getNamespace() {
+		return NS_SMS;
+	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		if (aToken.getNS().equals(getNamespace())) {
@@ -127,6 +139,9 @@ public class SMSPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Token invoke(WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
@@ -141,10 +156,28 @@ public class SMSPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
-	 * @return
+	 * Allows to send a SMS through a defined provider. Returns a map with the 
+	 * response code from the SMS provider. This method allows to others 
+	 * plug-ins send SMS text messages through the
+	 * {@link invoke(WebSocketConnector, Token)} method.
+	 * 
+	 * @param aConnector the client connector
+	 * @param aToken the request token object that should contain the followings 
+	 *				 attributes:
+	 *				 <p>
+	 *				 <ul>
+	 *				 <li>
+	 *					message: SMS message text
+	 *				 </li>
+	 *				 <li>
+	 *					to: Receiver of SMS
+	 *				 </li>
+	 *				 <li>
+	 *					from: Source identifier
+	 *				 </li>
+	 *				 </ul>
+	 *				 </p>
+	 * @return a map with the response code from the SMS provider 
 	 */
 	private Token send(WebSocketConnector aConnector, Token aToken) {
 		Token lRes = mProvider.sendSms(aToken);
@@ -156,9 +189,12 @@ public class SMSPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 *
-	 * @param aConnector
-	 * @param aToken
+	 * Sends to the client connector that request it a map with the response 
+	 * code from the SMS provider. This method use the 
+	 * {@link send(WebSocketConnector, Token)} method to send the text message.
+	 * 
+	 * @param aConnector the client connector
+	 * @param aToken the request token object
 	 */
 	private void sendSMS(WebSocketConnector aConnector, Token aToken) {
 		Token lRes = send(aConnector, aToken);

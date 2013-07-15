@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.sms;
 
 /**
+ * Define the plug-in settings.
  *
  * @author aschulze
  */
@@ -27,18 +28,18 @@ public class Settings {
 	private ISMSProvider mProvider;
 
 	/**
+	 * Returns the SMS provider instance defined.
 	 *
-	 *
-	 * @return
+	 * @return the SMS provider
 	 */
 	public ISMSProvider getProvider() {
 		return mProvider;
 	}
 
 	/**
+	 * Sets the SMS provider instance to use.
 	 *
-	 *
-	 * @param aProvider
+	 * @param aProvider an instance of the SMS provider
 	 */
 	public void setProvider(ISMSProvider aProvider) {
 		mProvider = aProvider;
