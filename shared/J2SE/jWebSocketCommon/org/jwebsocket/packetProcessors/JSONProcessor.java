@@ -191,6 +191,7 @@ public class JSONProcessor {
 	}
 
 	/**
+	 * Escapes a string value for JSON compatibility.
 	 *
 	 * @param aValue
 	 * @return
