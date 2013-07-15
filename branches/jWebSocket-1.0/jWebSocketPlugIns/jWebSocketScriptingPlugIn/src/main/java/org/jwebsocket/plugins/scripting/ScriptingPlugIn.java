@@ -176,7 +176,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * @return
 	 * @throws Exception
 	 */
-	public final boolean loadApp(final String aApp, String aAppDirPath, boolean aHotLoad) throws Exception {
+	private boolean loadApp(final String aApp, String aAppDirPath, boolean aHotLoad) throws Exception {
 		// notifying before app reload event here
 		BaseScriptApp lScript = mApps.get(aApp);
 		if (null != lScript) {
