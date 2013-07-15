@@ -326,7 +326,6 @@ public class JWebSocketConfig implements Config {
 	 * @param aArgs
 	 */
 	public static void initForConsoleApp(String[] aArgs) {
-		System.out.println(aArgs);
 		if (aArgs != null && aArgs.length > 0) {
 			for (int lIdx = 0; lIdx < aArgs.length; lIdx++) {
 				// is there one more argument beyond the current one?
