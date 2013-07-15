@@ -30,7 +30,9 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
 /**
- *
+ * Provides the base implementation to send SMS text message through the 
+ * &quot;smstrade.de&quot; provider.
+ * 
  * @author mayra, aschulze
  */
 public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
@@ -49,10 +51,11 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	private String mKey = "";
 
 	/**
-	 *
-	 * @param aMessageId
-	 * @param aCount
-	 * @param aDlr
+	 * Constructor of the &quot;smstrade&quot; provider with given parameters.
+	 * 
+	 * @param aMessageId activation of the return of the message ID.
+	 * @param aCount activation of the return of number of SMS.
+	 * @param aDlr activation of the receiving of a delivery report for this SMS.
 	 */
 	public ProviderSmstrade(String aMessageId, String aCount, String aDlr) {
 		mMessageId = aMessageId;
@@ -61,7 +64,7 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	}
 
 	/**
-	 *
+	 * Constructor of the &quot;smstrade&quot; provider with default parameters.
 	 */
 	public ProviderSmstrade() {
 		mMessageId = "1";
@@ -70,14 +73,18 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	}
 
 	/**
-	 * @return the Key
+	 * Returns the personal identification code.
+	 * 
+	 * @return the personal identification code.
 	 */
 	public String getKey() {
 		return mKey;
 	}
 
 	/**
-	 * @param aKey
+	 * Sets the value of the personal identification code.
+	 * 
+	 * @param aKey the personal identification code
 	 */
 	public void setKey(String aKey) {
 		mKey = aKey;
@@ -112,9 +119,24 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	}
 
 	/**
-	 *
-	 * @param aToken
-	 * @return
+	 * Allows to send a SMS through the &quot;smstrade&quot; provider.
+	 * 
+	 * @param aToken the request token object that should contain the followings 
+	 *				 attributes:
+	 *				 <p>
+	 *				 <ul>
+	 *				 <li>
+	 *					message: SMS message text
+	 *				 </li>
+	 *				 <li>
+	 *					to: Receiver of SMS
+	 *				 </li>
+	 *				 <li>
+	 *					from: Source identifier
+	 *				 </li>
+	 *				 </ul>
+	 *				 </p>
+	 * @return a map with the response code from the &quot;smstrade&quot; provider
 	 */
 	@Override
 	public Token sendSms(Token aToken) {
@@ -208,9 +230,7 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	}
 
 	/**
-	 *
-	 * @param aToken
-	 * @return
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Token longerSms(Token aToken) {
@@ -218,9 +238,7 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	}
 
 	/**
-	 *
-	 * @param aToken
-	 * @return
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Token gsmSms(Token aToken) {
@@ -228,9 +246,7 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	}
 
 	/**
-	 *
-	 * @param aToken
-	 * @return
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Token bulkSms(Token aToken) {
@@ -238,152 +254,228 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	}
 
 	/**
-	 * @return the debug
+	 * Returns <code>0</code> if the debug mode is deactivate or returns 
+	 * <code>1</code> if is active.
+	 * 
+	 * @return the code of debug mode
 	 */
 	public String getDebug() {
 		return mDebug;
 	}
 
 	/**
-	 * @param aDebug the debug to set
+	 * Sets the value of the debugging mode attribute.
+	 * 
+	 * @param aDebug the debug code to set
 	 */
 	public void setDebug(String aDebug) {
 		this.mDebug = aDebug;
 	}
 
 	/**
-	 * @return the cost
+	 * Returns <code>0</code> if the return of sending costs is deactivate or 
+	 * returns <code>1</code> if is active.
+	 * 
+	 * @return the code of the output of sending cost
 	 */
 	public String getCost() {
 		return mCost;
 	}
 
 	/**
-	 * @return the messagge_id
+	 * Returns <code>0</code> if the return of the message ID is deactivate or 
+	 * returns <code>1</code> if is active.
+	 * 
+	 * @return the code of the output of message ID
 	 */
 	public String getMessaggeId() {
 		return mMessageId;
 	}
 
 	/**
-	 * @return the count
+	 * Returns <code>0</code> if the return of the number of SMS is deactivate 
+	 * or returns <code>1</code> if is active.
+	 * 
+	 * @return the code of the output of count SMS
 	 */
 	public String getCount() {
 		return mCount;
 	}
 
 	/**
-	 * @return the dlr
+	 * Returns <code>0</code> if receiving a delivery report for the SMS is 
+	 * deactivate or returns <code>1</code> if is active.
+	 * 
+	 * @return the code of the delivery reports
 	 */
 	public String getDlr() {
 		return mDlr;
 	}
 
 	/**
-	 *
-	 * @return
+	 * Returns the &quot;smstrade&quot; reference for the SMS messages.
+	 * 
+	 * @return the &quot;smstrade&quot; message reference
 	 */
 	public String getRef() {
 		return mRef;
 	}
 
 	/**
-	 *
-	 * @return
+	 * Returns <code>0</code> if longer SMS for more than 160 characters is 
+	 * deactivate or returns <code>1</code> if is active.
+	 * 
+	 * @return the code of the longer SMS activation
 	 */
 	public String getConcatSms() {
 		return mConcatSms;
 	}
 
 	/**
-	 *
-	 * @return
+	 * Returns the &quot;smstrade&quot; route used to send the SMS text messages.
+	 * 
+	 * @return the SMS route
 	 */
 	public String getRoute() {
 		return mRoute;
 	}
 
 	/**
-	 *
-	 * @return
+	 * Returns a UNIX timestamp that represents the time-delayed to send a SMS.
+	 * 
+	 * @return the date when will be sent the SMS
 	 */
 	public String getSendDate() {
 		return mSendDate;
 	}
 
 	/**
-	 *
-	 * @return
+	 * Returns the type of SMS message that will be send. The existing messages
+	 * type are:
+	 *	<p>
+	 *	<ul>
+	 *	<li>
+	 *		flash
+	 *	</li>
+	 *	<li>
+	 *		binary: Data messages with binary content for instance logos, 
+	 *				picture messages, ringtones.
+	 *	</li>
+	 *	<li>
+	 *		unicode: Unicode messages are required for other alphabets like 
+	 *				 Arabic, Hebrew, Cyrillic and Latin with other special 
+	 *				 characters)
+	 *	</li>
+	 *	<li>
+	 *		voice: The SMS is converted into a spoken message by a computer and 
+	 *			   read out on the telephone.
+	 *	</li>
+	 *	</ul>
+	 *	</p>
+	 * 
+	 * @return the message type
 	 */
 	public String getMessageType() {
 		return mMessageType;
 	}
 
 	/**
-	 *
-	 * @param aCost
+	 * Sets the value of the return of sending costs attribute.
+	 * 
+	 * @param aCost the cost code to set
 	 */
 	public void setCost(String aCost) {
 		this.mCost = aCost;
 	}
 
 	/**
-	 *
-	 * @param aMessaggeId
+	 * Sets the value of the return of message ID attribute.
+	 * 
+	 * @param aMessaggeId the message ID code to set
 	 */
 	public void setMessaggeId(String aMessaggeId) {
 		this.mMessageId = aMessaggeId;
 	}
 
 	/**
-	 * @param aCount the count to set
+	 * Sets the value of the return of number of SMS attribute.
+	 * 
+	 * @param aCount the count code to set
 	 */
 	public void setCount(String aCount) {
 		this.mCount = aCount;
 	}
 
 	/**
-	 * @param aDlr the dlr to set
+	 * Sets the value of the receiving a delivery report for the SMS attribute.
+	 * 
+	 * @param aDlr the dlr code to set
 	 */
 	public void setDlr(String aDlr) {
 		this.mDlr = aDlr;
 	}
 
 	/**
-	 *
-	 * @param aRef
+	 * Sets the value of the &quot;smstrade&quot; reference for the SMS messages.
+	 * 
+	 * @param aRef the &quot;smstrade&quot; messages reference value to set
 	 */
 	public void setRef(String aRef) {
 		this.mRef = aRef;
 	}
 
 	/**
-	 *
-	 * @param aConcatSms
+	 * Sets the value of longer SMS attribute.
+	 * 
+	 * @param aConcatSms the concat code to set
 	 */
 	public void setConcatSms(String aConcatSms) {
 		this.mConcatSms = aConcatSms;
 	}
 
 	/**
-	 *
-	 * @param aRoute
+	 * Sets the value of the &quot;smstrade&quot; route to send the messages.
+	 * 
+	 * @param aRoute the &quot;smstrade&quot; route to set
 	 */
 	public void setRoute(String aRoute) {
 		this.mRoute = aRoute;
 	}
 
 	/**
-	 *
-	 * @param aSendDate
+	 * Sets the value of the time-delayed when the messages will be send.
+	 * 
+	 * @param aSendDate the sent date value to set
 	 */
 	public void setSendDate(String aSendDate) {
 		this.mSendDate = aSendDate;
 	}
 
 	/**
-	 *
-	 * @param aMessageType
+	 * Sets the value of the type of message that will be send. The allowed types
+	 * are:
+	 *	<p>
+	 *	<ul>
+	 *	<li>
+	 *		flash
+	 *	</li>
+	 *	<li>
+	 *		binary: Data messages with binary content for instance logos, 
+	 *				picture messages, ringtones.
+	 *	</li>
+	 *	<li>
+	 *		unicode: Unicode messages are required for other alphabets like 
+	 *				 Arabic, Hebrew, Cyrillic and Latin with other special 
+	 *				 characters)
+	 *	</li>
+	 *	<li>
+	 *		voice: The SMS is converted into a spoken message by a computer and 
+	 *			   read out on the telephone.
+	 *	</li>
+	 *	</ul>
+	 *	</p>
+	 * 
+	 * @param aMessageType the message type to set
 	 */
 	public void setMessageType(String aMessageType) {
 		this.mMessageType = aMessageType;

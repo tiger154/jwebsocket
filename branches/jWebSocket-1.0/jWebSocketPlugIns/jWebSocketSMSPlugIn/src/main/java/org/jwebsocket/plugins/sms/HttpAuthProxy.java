@@ -22,7 +22,8 @@ import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 
 /**
- *
+ * Allows to define the parameters needed to set the http proxy authentication.
+ * 
  * @author mayra
  */
 public class HttpAuthProxy extends Authenticator {
@@ -30,9 +31,10 @@ public class HttpAuthProxy extends Authenticator {
 	private String user, password;
 
 	/**
-	 *
-	 * @param user
-	 * @param password
+	 * Constructor with the http proxy authentication parameters. 
+	 * 
+	 * @param user the username to authenticate
+	 * @param password the password to authenticate
 	 */
 	public HttpAuthProxy(String user, String password) {
 		this.user = user;
@@ -40,8 +42,9 @@ public class HttpAuthProxy extends Authenticator {
 	}
 
 	/**
-	 *
-	 * @return
+	 * Returns an object with the http proxy authentication parameters needed.
+	 * 
+	 * @return an object with the parameters to authenticate
 	 */
 	protected PasswordAuthentication setAuthentication() {
 		return new PasswordAuthentication("usser", "password".toCharArray());
