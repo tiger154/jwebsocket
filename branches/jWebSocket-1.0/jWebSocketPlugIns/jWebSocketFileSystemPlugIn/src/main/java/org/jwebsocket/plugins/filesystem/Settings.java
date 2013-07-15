@@ -23,6 +23,7 @@ import javolution.util.FastMap;
 import org.jwebsocket.config.JWebSocketConfig;
 
 /**
+ * FileSystemPlugIn(FSP) configurator class
  *
  * @author aschulze
  * @author kyberneees
@@ -32,6 +33,9 @@ public class Settings {
 	private Map<String, String> mAliases = new FastMap<String, String>();
 
 	/**
+	 * Gets the FSP aliases information (Map). Includes alias name and alias
+	 * directory path.
+	 *
 	 * @return the aliases
 	 */
 	public Map getAliases() {
@@ -39,6 +43,8 @@ public class Settings {
 	}
 
 	/**
+	 * Sets the FSP aliases information.
+	 *
 	 * @param aAliases the aliases to set
 	 */
 	public void setAliases(Map aAliases) {
@@ -46,6 +52,7 @@ public class Settings {
 	}
 
 	/**
+	 * Gets the directory path of a given alias name.
 	 *
 	 * @param aAliasName
 	 * @return
@@ -55,6 +62,7 @@ public class Settings {
 	}
 
 	/**
+	 * Gets the alias name of a given directory path.
 	 *
 	 * @param aPath
 	 * @return
@@ -71,6 +79,8 @@ public class Settings {
 	}
 
 	/**
+	 * Gets the directory path of a given alias allowing to pass a default value
+	 * if data is not present.
 	 *
 	 * @param aAliasName
 	 * @param aDefaultValue
