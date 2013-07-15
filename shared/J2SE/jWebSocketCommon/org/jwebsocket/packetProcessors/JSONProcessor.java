@@ -297,8 +297,8 @@ public class JSONProcessor {
 			return objectListToJSONArray((Object[]) aObject);
 		} else if (aObject instanceof Map) {
 			return mapToJSONObject((Map<?, ?>) aObject);
-		} else if (aObject instanceof WebSocketPacket) {
-			return aObject.toString();
+		} else if (aObject instanceof WebSocketPacket || aObject instanceof String) {
+			return escapeForJSON((String)aObject);
 		} else {
 			return aObject;
 		}
