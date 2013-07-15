@@ -25,5 +25,22 @@ Ext.define('IS.view.definition.List' ,{
 	}],
 	viewConfig: {
 		loadMask: false
+	},
+	listeners: {
+		render: function(aGrid) {
+			aGrid.getView().on('render', function(aView) {
+				aView.tip = Ext.create('Ext.tip.ToolTip', {
+					target: aView.el,
+					delegate: aView.itemSelector,
+					trackMouse: true,
+					renderTo: Ext.getBody(),
+					listeners: {
+						beforeshow: function updateTipBody(tip) {
+							tip.update('<b>Type:</b> ' + aView.getRecord(tip.triggerElement).get('type'));
+						}
+					}
+				});
+			});
+		}
 	}
 });
