@@ -90,6 +90,13 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 		mKey = aKey;
 	}
 
+	/**
+	 * Defines a specific message for each response code retrieved for the 
+	 * smstrade provider.
+	 * 
+	 * @param aCode the response code.
+	 * @return the response code traduced to a friendly message.
+	 */
 	private String getErrorMessage(String aCode) {
 		String lRes = "undefined, please refer to manual.";
 		if ("10".equals(aCode)) {
@@ -355,7 +362,7 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	 *	<p>
 	 *	<ul>
 	 *	<li>
-	 *		flash
+	 *		flash: Messages with media content.
 	 *	</li>
 	 *	<li>
 	 *		binary: Data messages with binary content for instance logos, 
@@ -457,7 +464,7 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 	 *	<p>
 	 *	<ul>
 	 *	<li>
-	 *		flash
+	 *		flash: Messages with media content.
 	 *	</li>
 	 *	<li>
 	 *		binary: Data messages with binary content for instance logos, 

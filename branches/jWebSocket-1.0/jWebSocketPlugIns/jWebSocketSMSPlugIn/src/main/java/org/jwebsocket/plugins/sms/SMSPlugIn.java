@@ -57,7 +57,7 @@ public class SMSPlugIn extends TokenPlugIn {
 	private ISMSProvider mProvider;
 
 	/**
-	 * Constructor with plug-in configuration
+	 * Constructor with plug-in configuration.
 	 *
 	 * @param aConfiguration the plug-in configuration for this PlugIn
 	 */
