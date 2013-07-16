@@ -113,7 +113,7 @@ $.widget( "jws.connected", {
 		var args = {
 			username:username
 		};
-		$.jws.submit( NS, 'sendrequest', args );
+		$.jws.send( NS, 'sendrequest', args );
 	},//ha aceptado o no la solicitud
 	has_accepted_request: function( accepted, username ) {
               
@@ -121,6 +121,6 @@ $.widget( "jws.connected", {
 			username: username,
 			accepted: accepted
 		};
-		$.jws.submit( NS, 'submitsequest', args );        
+		$.jws.send( NS, 'submitsequest', args );        
 	}        
 } );

@@ -61,7 +61,7 @@ $( document ).bind({
 			// Every when a new message comes from the server, jQuery plug-in
 			// fires an event with the structure "namespace:tokentype"
 			$.jws.bind( w.mobile.NS_SYSTEM + ":welcome", function( aEvt, aToken ) {
-				$.jws.submit( w.mobile.NS_SYSTEM, "login", {
+				$.jws.send( w.mobile.NS_SYSTEM, "login", {
 					username: jws.GUEST_USER_LOGINNAME,
 					password: jws.GUEST_USER_PASSWORD
 				}, {
@@ -75,7 +75,7 @@ $( document ).bind({
 		
 			$.jws.bind( w.mobile.NS_SYSTEM + ":response", function( aEvt, aToken ) {
 				if( "login" == aToken.reqType && 0 == aToken.code ) {
-					$.jws.submit( w.mobile.NS_STREAMING_PLUGIN, "register",
+					$.jws.send( w.mobile.NS_STREAMING_PLUGIN, "register",
 					{
 						stream: "timeStream"
 					});

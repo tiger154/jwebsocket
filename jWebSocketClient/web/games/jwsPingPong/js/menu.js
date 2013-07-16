@@ -88,16 +88,16 @@ $.widget( "jws.menu", {
 		} );
 	},
 	newGame: function(  ) {
-		$.jws.submit( NS,'sendnewgame' );       
+		$.jws.send( NS,'sendnewgame' );       
 	},
 	pause: function(  ) {
-		$.jws.submit( NS,'pause' );
+		$.jws.send( NS,'pause' );
 	},
 	endGame: function(  ) {
-		$.jws.submit( NS,'endgame' );
+		$.jws.send( NS,'endgame' );
 	},
 	Sound: function(  ) {
-		$.jws.submit( NS,'sound' );
+		$.jws.send( NS,'sound' );
 		if(  w.menu.mIsSoundActive  ) {
 			w.menu.mIsSoundActive = false;
 			w.menu.eSound.find( "#audio_on_off" ).attr( "class", "audio_off" );
@@ -116,7 +116,7 @@ $.widget( "jws.menu", {
 				var args={
 					newgame: false
 				}; 
-				$.jws.submit( NS,'newgame',args );
+				$.jws.send( NS,'newgame',args );
 			}
 		}, {
 			id: "buttonYes",
@@ -125,7 +125,7 @@ $.widget( "jws.menu", {
 				var args={
 					newgame:true
 				}; 
-				$.jws.submit( NS,'newgame',args );
+				$.jws.send( NS,'newgame',args );
 			}
 		}];
 		dialog( "Ping Pong Game", 'You received a New Game request.<b> Would you like to proceed?</b>', true, null, lButtons );

@@ -32,7 +32,7 @@ $.widget( "jws.stage", {
 		eBoard			= $eStage.find( '#board' );
 		eCounter		= $eStage.find( '#counter' );
 		
-		$.jws.submit( NS,'stage' );
+		$.jws.send( NS,'stage' );
 		
 		eStage.onMessage(  );
 		eObjArea.hide(  );
