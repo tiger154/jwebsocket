@@ -887,8 +887,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 		Map<String, Object> lData = aToken.getMap(ATTR_ITEM);
 		Assert.notNull(lData, "The item argument is missing!");
 
-		IItem lSaved = ItemCollectionUtils.saveItem(aConnector.getUsername(),
-				mItemFactory, lCollection, lData);
+		IItem lSaved = ItemCollectionUtils.saveItem(aConnector.getUsername(), lCollection, lData);
 
 		Token lResponse = createResponse(aToken);
 		lResponse.setString(ATTR_ITEM_PK, lSaved.getPK());
