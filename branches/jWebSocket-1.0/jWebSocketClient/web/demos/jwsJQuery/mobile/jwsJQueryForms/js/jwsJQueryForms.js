@@ -105,7 +105,7 @@ $.widget( "jws.pager", {
 			}
 		};
 
-		$.jws.submit( w.forms.NS, "getpage", lArgs, lCallbacks );
+		$.jws.send( w.forms.NS, "getpage", lArgs, lCallbacks );
 
 	},
 	nextPage: function( ) {
@@ -175,7 +175,7 @@ $.widget( "jws.forms", {
 			"close": w.forms.onClose
 		} );
 		w.forms.eBtnReset.click( function() {
-			$.jws.submit( w.forms.NS, "reset" );
+			$.jws.send( w.forms.NS, "reset" );
 		} );
 
 		w.forms.eNewUsersCounter.hide( );
@@ -189,16 +189,16 @@ $.widget( "jws.forms", {
 	registerToDemo: function( ) {
 		// Sending a register token to register in the broadcasting 
 		// clients list of the demo
-		$.jws.submit( w.forms.NS, "register" );
+		$.jws.send( w.forms.NS, "register" );
 	},
 	unregisterFromDemo: function( ) {
-		$.jws.submit( w.forms.NS, "unregister" );
+		$.jws.send( w.forms.NS, "unregister" );
 	},
 	login: function( aToken ) {
 		w.forms.eClientId.text( "Client-ID: " + aToken.sourceId );
 		w.forms.eClientStatus.attr( "class",
 				"client_status online" ).text( "connected" );
-		$.jws.submit( w.forms.NS_SYSTEM, "login", {
+		$.jws.send( w.forms.NS_SYSTEM, "login", {
 			username: jws.GUEST_USER_LOGINNAME,
 			password: jws.GUEST_USER_PASSWORD
 		}, {
@@ -279,7 +279,7 @@ $.widget( "jws.forms", {
 		var lArgs = {
 			username: aUsername
 		};
-		$.jws.submit( w.forms.NS, "delete", lArgs );
+		$.jws.send( w.forms.NS, "delete", lArgs );
 	},
 	userDeleted: function( aEvent, aToken ) {
 		// better to ask again for the updated page
@@ -357,7 +357,7 @@ $.widget( "jws.createUser", {
 		// if the user is created correctly a Token 
 		// with the new user will be sent to all connectors, 
 		// check the w.forms.userCreated
-		$.jws.submit( w.forms.NS, "create", lArgs );
+		$.jws.send( w.forms.NS, "create", lArgs );
 		$.mobile.changePage( "#mainPage" );
 		// Load the last page where the user was added
 		w.forms.userCounterClick( );

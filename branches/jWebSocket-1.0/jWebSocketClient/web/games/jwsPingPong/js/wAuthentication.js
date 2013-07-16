@@ -176,7 +176,7 @@ $.widget("jws.authentication", {
 			w.auth.messageOnBlur(  );
 		}
 		else {
-			$.jws.submit(NS, 'usser', lArgs);
+			$.jws.send(NS, 'usser', lArgs);
 		}
 	},
 	messageOnBlur: function(  ) {
@@ -233,7 +233,7 @@ $.widget("jws.authentication", {
 		$.jws.open(  );
 	},
 	disconnect: function(  ) {
-		$.jws.submit(NS, 'logoff');
+		$.jws.send(NS, 'logoff');
 	},
 	showLoggedWindow: function(username) {
 		w.auth.eLogonArea.hide(  );
@@ -284,7 +284,7 @@ $.widget("jws.authentication", {
 			w.auth.messageOnBlur(  );
 
 		} else {
-			$.jws.submit(NS, 'createaccount', args);
+			$.jws.send(NS, 'createaccount', args);
 		}
 
 	}

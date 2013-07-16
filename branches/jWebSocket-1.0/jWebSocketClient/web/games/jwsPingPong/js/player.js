@@ -44,7 +44,7 @@ $.widget( "jws.player",  {
 			e: parseInt( aKeyNumber ), 
 			v: aIdentifier
 		};            
-		$.jws.submit( NS, 'moveplayer',  lArgs );
+		$.jws.send( NS, 'moveplayer',  lArgs );
 	}, 
 	
 	//all incoming messages from the server

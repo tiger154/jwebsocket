@@ -102,7 +102,7 @@ $.widget( "jws.RemoteShell",{
 				password: w.rShell.ePassword.val()
 			};
 			
-			$.jws.submit( w.rShell.mNS, "register", aArgs );
+			$.jws.send( w.rShell.mNS, "register", aArgs );
 			w.rShell.mIsShellConnected = true;
 			$( "#user_info_name" ).text( $( ".user" ).val() );
 			w.rShell.mHistoryCount = 0;
@@ -113,7 +113,7 @@ $.widget( "jws.RemoteShell",{
 	},
 	
 	closeSSHConnection: function(){
-		$.jws.submit( w.rShell.mNS, "disconnect" );
+		$.jws.send( w.rShell.mNS, "disconnect" );
 		w.rShell.eConsole.val( "" );
 		w.rShell.eBtnDisconnect.fadeOut( 500,function(){
 			w.rShell.eLogin.fadeIn( 500 );
@@ -137,7 +137,7 @@ $.widget( "jws.RemoteShell",{
 			var lArgs = {
 				command:line
 			};
-			$.jws.submit( w.rShell.mNS, "exec_command", lArgs );
+			$.jws.send( w.rShell.mNS, "exec_command", lArgs );
 		}
 		else if ( aEvt.which === 38 ){//up arrow
 			//console.log( eHistoryCount );

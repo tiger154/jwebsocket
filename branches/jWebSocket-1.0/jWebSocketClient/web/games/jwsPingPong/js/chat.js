@@ -96,7 +96,7 @@ $.widget( "jws.chat", {
 		var lArgs = {
 			text: text
 		};
-		$.jws.submit( NS, "sms", lArgs );
+		$.jws.send( NS, "sms", lArgs );
 	},
 	onMessage: function(  ) {
 		$.jws.bind( NS + ':sms', function( aEvt, aToken ) {

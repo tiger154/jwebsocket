@@ -99,7 +99,7 @@
 		}
 	};
 
-	//:m:*:submit
+	//:m:*:send
 	//:d:en:Sends data to the jWebSocket server
 	//:a:en::aNS:String:The namespace of the application in the server that will process the message, required.
 	//:a:en::aType:String:The token type to be sent to the server with which it will process the message, required.
@@ -107,7 +107,7 @@
 	//:a:en::aCallbacks:Object:An object with the functions (success, failure, timeout) to be executed if the server responds, not required.
 	//:a:en::aOptions:Object:The jWebSocket default send options, not required.
 	//:r:*:::void:none
-	$.jws.submit = function(aNs, aType, aArgs, aCallbacks, aOptions) {
+	$.jws.send = function(aNs, aType, aArgs, aCallbacks, aOptions) {
 		if (aNs && aType) {
 			var lToken = {};
 			if (aArgs) {
