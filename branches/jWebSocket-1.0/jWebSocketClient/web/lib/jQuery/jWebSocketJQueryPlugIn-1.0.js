@@ -196,7 +196,7 @@
 
 	//:m:*:close
 	//:d:en:Closes the connection with the jWebSocket Server and fires the _
-	//:d:en:close event within the Ext.jws namespace.
+	//:d:en:close event within the $.jws namespace.
 	//:a:en::::none
 	//:r:*::void:none
 	$.jws.close = function() {
