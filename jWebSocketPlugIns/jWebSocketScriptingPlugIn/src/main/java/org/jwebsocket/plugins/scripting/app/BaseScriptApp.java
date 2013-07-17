@@ -35,10 +35,11 @@ import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
+import org.jwebsocket.server.InternalClient;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.token.BaseTokenResponseListener;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.util.Tools;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.Assert;
 
@@ -498,7 +499,7 @@ abstract public class BaseScriptApp {
 	 * @param aMap The Map instance
 	 * @return
 	 */
-	protected Token toToken(Map aMap) {
+	public Token toToken(Map aMap) {
 		Token lToken = TokenFactory.createToken();
 		lToken.setMap(aMap);
 
