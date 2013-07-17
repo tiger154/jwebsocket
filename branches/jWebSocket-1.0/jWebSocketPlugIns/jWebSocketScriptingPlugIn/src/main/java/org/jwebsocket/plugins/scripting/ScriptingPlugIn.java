@@ -66,7 +66,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	/**
-	 *
+	 * The ScriptingPlugIn namespace.
 	 */
 	public static final String NS = JWebSocketServerConstants.NS_BASE + ".plugins.scripting";
 	private final static String VERSION = "1.0.0";
@@ -77,11 +77,11 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	private final static String DESCRIPTION = "jWebSocket Scripting Plug-in - Community Edition";
 	private static ScriptEngineManager mEngineManager = new ScriptEngineManager();
 	/**
-	 *
+	 * The running applications container.
 	 */
 	private Map<String, BaseScriptApp> mApps = new FastMap<String, BaseScriptApp>().shared();
 	/**
-	 *
+	 * ScriptingPlugIn local bean factory instance.
 	 */
 	protected ApplicationContext mBeanFactory;
 	/**
@@ -91,6 +91,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	protected Settings mSettings;
 
 	/**
+	 * Constructor.
 	 *
 	 * @param aConfiguration
 	 * @throws Exception
@@ -168,7 +169,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Loads a JavaScript application
+	 * Loads an script application.
 	 *
 	 * @param aApp The application name
 	 * @param aAppDirPath The application home path
