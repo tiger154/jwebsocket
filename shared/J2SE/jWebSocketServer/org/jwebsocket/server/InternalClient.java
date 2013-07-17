@@ -28,7 +28,9 @@ import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.connectors.InternalConnector;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.plugins.system.SystemPlugIn;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.token.WebSocketResponseTokenListener;
 import org.jwebsocket.util.Tools;
 
@@ -215,5 +217,31 @@ public class InternalClient {
 				});
 			}
 		}, aListener.getTimeout());
+	}
+
+	/**
+	 * Logon in the jWebSocket server.
+	 *
+	 * @param aUsername The username value.
+	 * @param aPassword The password value.
+	 * @param aListener The response listener.
+	 */
+	public void logon(String aUsername, String aPassword, WebSocketResponseTokenListener aListener) {
+		Token lToken = TokenFactory.createToken(SystemPlugIn.NS_SYSTEM, "logon");
+		lToken.setString("username", aUsername);
+		lToken.setString("password", aPassword);
+
+		sendToken(lToken, aListener);
+	}
+
+	/**
+	 * Logoff in the jWebSocket server.
+	 *
+	 * @param aListener
+	 */
+	public void logoff(WebSocketResponseTokenListener aListener) {
+		Token lToken = TokenFactory.createToken(SystemPlugIn.NS_SYSTEM, "logoff");
+
+		sendToken(lToken, aListener);
 	}
 }
