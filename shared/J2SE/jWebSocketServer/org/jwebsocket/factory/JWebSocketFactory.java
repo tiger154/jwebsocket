@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.factory;
 
+import java.security.Security;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,6 @@ import org.jwebsocket.api.*;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
-import org.jwebsocket.engines.ServletUtils;
 import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
@@ -91,12 +91,26 @@ public class JWebSocketFactory {
 		start(null, null);
 	}
 
+	private static void securePackages() {
+		// securing core packages 
+		Security.setProperty("package.access",
+				"org.jwebsocket.console,"
+				+ "org.jwebsocket.security,"
+				+ "org.jwebsocket.factory,"
+				+ "org.jwebsocket.config,"
+				+ "org.jwebsocket.server,"
+				+ "org.jwebsocket.spring,"
+				+ "org.jwebsocket.instance,"
+				+ "java.security");
+	}
+
 	/**
 	 *
 	 * @param aConfigPath
 	 * @param aBootstrapPath
 	 */
 	public static void start(String aConfigPath, String aBootstrapPath) {
+		securePackages();
 
 		mLog = Logging.getLogger();
 		if (null == aConfigPath) {
@@ -129,7 +143,18 @@ public class JWebSocketFactory {
 		JWebSocketInstance.setStatus(JWebSocketInstance.STARTING);
 
 		// loading jwebsocket server policies if running out of a Web App
-		if (!System.getProperties().containsKey(ServletUtils.WEB_APP_HOME_PROP_KEY)) {
+		if (!JWebSocketConfig.isWebApp()) {
+			// registering shutdownHook
+			Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+				@Override
+				public void run() {
+					if (JWebSocketInstance.STARTED == JWebSocketInstance.getStatus()) {
+						JWebSocketFactory.stop();
+					}
+				}
+			}));
+
+			// loading policies
 			String lPolicyFile = JWebSocketConfig.getConfigFolder("jWebSocket.policy");
 			if (null != lPolicyFile) {
 				try {

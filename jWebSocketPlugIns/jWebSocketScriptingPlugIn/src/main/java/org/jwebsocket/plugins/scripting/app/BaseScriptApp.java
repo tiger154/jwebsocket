@@ -35,12 +35,13 @@ import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
-import org.jwebsocket.server.InternalClient;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
-import org.jwebsocket.token.BaseTokenResponseListener;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.util.Assert;
 
 /**
@@ -60,6 +61,7 @@ abstract public class BaseScriptApp {
 	private ScriptAppLogger mLogger;
 	private Logger mLog = Logging.getLogger();
 	private Map<String, Object> mApi = new FastMap<String, Object>().shared();
+	private GenericApplicationContext mBeanFactory = new GenericApplicationContext(new DefaultListableBeanFactory());
 	/**
 	 * String value for the "Connector Started" event. The event is fired when a
 	 * client started a connection with the server.
@@ -568,7 +570,7 @@ abstract public class BaseScriptApp {
 	 * @param aNamespace
 	 * @return
 	 */
-	public GenericApplicationContext getBeanFactory(String aNamespace) {
+	private GenericApplicationContext getBeanFactory(String aNamespace) {
 		if (null == aNamespace) {
 			return JWebSocketBeanFactory.getInstance();
 		} else {
@@ -593,7 +595,7 @@ abstract public class BaseScriptApp {
 	 * @return
 	 */
 	public Object getAppBean(String aBeanId) {
-		return getAppBeanFactory().getBean(aBeanId);
+		return mBeanFactory.getBean(aBeanId);
 	}
 
 	/**
@@ -604,6 +606,13 @@ abstract public class BaseScriptApp {
 	 * @return
 	 */
 	public Object getBean(String aBeanId, String aNamespace) {
+		String lBeanPath = (null != aNamespace)
+				? aNamespace + ":" + aBeanId
+				: aBeanId;
+
+		// checking permission for bean access
+		mServer.checkWhiteListedBean(mAppName, lBeanPath);
+
 		return getBeanFactory(aNamespace).getBean(aBeanId);
 	}
 
@@ -613,7 +622,7 @@ abstract public class BaseScriptApp {
 	 * @return
 	 */
 	public GenericApplicationContext getAppBeanFactory() {
-		return getBeanFactory(getBeanFactoryNamespace());
+		return mBeanFactory;
 	}
 
 	/**
@@ -624,16 +633,15 @@ abstract public class BaseScriptApp {
 	 * @throws Exception
 	 */
 	public void loadToAppBeanFactory(String aFile) throws Exception {
+		// beans definitions file
 		aFile = aFile.replace("${APP_HOME}", mAppPath);
-		JWebSocketBeanFactory.load(getBeanFactoryNamespace(), aFile, getClass().getClassLoader());
-	}
 
-	/**
-	 *
-	 * @return
-	 */
-	protected String getBeanFactoryNamespace() {
-		return mServer.getNamespace() + ":" + getName();
+		// creating the XML definitions reader
+		XmlBeanDefinitionReader lXmlReader = new XmlBeanDefinitionReader(mBeanFactory);
+		lXmlReader.setBeanClassLoader(getClass().getClassLoader());
+
+		// loading XML definitions file into app bean factory
+		lXmlReader.loadBeanDefinitions(new FileSystemResource(aFile));
 	}
 
 	/**
@@ -684,4 +692,25 @@ abstract public class BaseScriptApp {
 	 * @throws Exception
 	 */
 	public abstract String getDescription() throws Exception;
+
+	/**
+	 * Gets system property. May require sandbox permission.
+	 *
+	 * @param aPropertyName
+	 * @return
+	 */
+	public String getSystemProperty(String aPropertyName) {
+		return System.getProperty(aPropertyName);
+	}
+
+	/**
+	 * Sets a system property. May require sandbox permission.
+	 *
+	 * @param aPropertyName
+	 * @param aValue
+	 * @return
+	 */
+	public String setSystemProperty(String aPropertyName, String aValue) {
+		return System.setProperty(aPropertyName, aValue);
+	}
 }

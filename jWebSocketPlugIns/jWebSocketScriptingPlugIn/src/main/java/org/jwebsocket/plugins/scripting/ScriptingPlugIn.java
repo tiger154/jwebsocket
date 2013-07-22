@@ -21,6 +21,7 @@ package org.jwebsocket.plugins.scripting;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.security.AccessControlException;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import javolution.util.FastMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
@@ -47,6 +49,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.scripting.app.BaseScriptApp;
+import org.jwebsocket.plugins.scripting.app.Manifest;
 import org.jwebsocket.plugins.scripting.app.js.JavaScriptApp;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -117,12 +120,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 					mBeanFactory.getBean("jmsConnection");
 				}
 
-				// initializing apps
-				Map<String, String> lApps = mSettings.getApps();
-				for (String lApp : lApps.keySet()) {
-					loadApp(lApp, lApps.get(lApp), false);
-				}
-
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Scripting plug-in successfully instantiated.");
 				}
@@ -131,6 +128,21 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating scripting plug-in"));
 			throw lEx;
 		}
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+		// initializing apps
+		Map<String, String> lApps = mSettings.getApps();
+		for (String lApp : lApps.keySet()) {
+			try {
+				loadApp(lApp, lApps.get(lApp), false);
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "loading '" + lApp + "' application"));
+			}
+		}
+
+		notifyToApps(BaseScriptApp.EVENT_SYSTEM_STARTED, new Object[0]);
 	}
 
 	@Override
@@ -184,14 +196,39 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			lScript.notifyEvent(BaseScriptApp.EVENT_BEFORE_APP_RELOAD, new Object[]{aHotLoad});
 		}
 
-		// parsing app name to get the extension if present. default: js
-		String[] lAppNameExt = aApp.split(".");
-		String lExt = (lAppNameExt.length == 2) ? lAppNameExt[1] : "js";
+		// parsing app manifest
+		File lManifestFile = new File(aAppDirPath + "/manifest.json");
+		if (!lManifestFile.exists() || !lManifestFile.canRead()) {
+			mLog.error("Unable to load '" + aApp + "' application. The manifest file '"
+					+ lManifestFile.getPath() + "' does not exists!");
+			return false;
+		}
+		// parsing app manifest file
+		ObjectMapper lMapper = new ObjectMapper();
+		Map<String, Object> lTree = lMapper.readValue(lManifestFile, Map.class);
+		Token lManifestJSON = TokenFactory.createToken();
+		lManifestJSON.setMap(lTree);
+
+		// getting script language extension
+		String lExt = lManifestJSON.getString(Manifest.LANGUAGE_EXT, "js");
+
+		// checking jWebSocket version 
+		Manifest.checkJwsVersion(lManifestJSON.getString(Manifest.JWEBSOCKET_VERSION, "1.0"));
+
+		// checking jWebSocket plug-ins dependencies
+		Manifest.checkJwsDependencies(lManifestJSON.getList(
+				Manifest.JWEBSOCKET_PLUGINS_DEPENDENCIES, new ArrayList<String>()));
+
+		// checking sandbox permissions dependency
+		Manifest.checkPermissions(lManifestJSON.getList(Manifest.PERMISSIONS,
+				new ArrayList()),
+				mSettings.getAppPermissions(aApp), aAppDirPath);
 
 		// validating bootstrap file
 		final File lBootstrap = new File(aAppDirPath + "/App." + lExt);
 		if (!lBootstrap.exists() || !lBootstrap.canRead()) {
-			mLog.error("Unable to load '" + aApp + "' application. The bootstrap file '" + lBootstrap + "' does not exists!");
+			mLog.error("Unable to load '" + aApp + "' application. The bootstrap file '"
+					+ lBootstrap + "' does not exists!");
 			return false;
 		}
 
@@ -334,11 +371,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	@Override
-	public void systemStarted() throws Exception {
-		notifyToApps(BaseScriptApp.EVENT_SYSTEM_STARTED, new Object[0]);
-	}
-
-	@Override
 	public void systemStarting() throws Exception {
 		notifyToApps(BaseScriptApp.EVENT_SYSTEM_STARTING, new Object[0]);
 	}
@@ -389,19 +421,30 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		Map<String, Map> lResult = new HashMap<String, Map>();
 
 		while (lAppNames.hasNext()) {
-			String lName = lAppNames.next();
+			String lAppName = lAppNames.next();
 			if (hasAuthority(aConnector, NS + ".deploy.*")
-					|| hasAuthority(aConnector, NS + ".deploy." + lName)) {
-				lResult.put(lName, new HashMap());
+					|| hasAuthority(aConnector, NS + ".deploy." + lAppName)) {
+				lResult.put(lAppName, new HashMap());
 				// locally caching object
-				BaseScriptApp lScript = mApps.get(lName);
+				BaseScriptApp lApp = mApps.get(lAppName);
 				// getting app details
-				File lAppDirectory = new File(lScript.getPath());
-				lResult.get(lName).put("lastModified", lAppDirectory.lastModified());
-				lResult.get(lName).put("size", FileUtils.sizeOf(lAppDirectory));
+				File lAppDirectory = new File(lApp.getPath());
+				lResult.get(lAppName).put("lastModified", lAppDirectory.lastModified());
+				lResult.get(lAppName).put("size", FileUtils.sizeOf(lAppDirectory));
+				lResult.get(lAppName).put("whiteListedBeans", mSettings.getAppWhiteListedBeans(lAppName));
+
+				// getting app security permissions
+				List<String> lPermissions = new ArrayList<String>();
+				lPermissions.addAll(mSettings.getGlobalSecurityPermissions());
+				if (mSettings.getAppsSecurityPermissions().containsKey(lAppName)) {
+					lPermissions.addAll(mSettings.getAppsSecurityPermissions().get(lAppName));
+				}
+				lResult.get(lAppName).put("permissions", lPermissions);
+
+				// getting description and version
 				try {
-					lResult.get(lName).put("description", lScript.getDescription());
-					lResult.get(lName).put("version", lScript.getVersion());
+					lResult.get(lAppName).put("description", lApp.getDescription());
+					lResult.get(lAppName).put("version", lApp.getVersion());
 				} catch (Exception lEx) {
 					mLog.error(Logging.getSimpleExceptionMessage(lEx, "retrieving application info"));
 				}
@@ -549,7 +592,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		Assert.isTrue("application/zip, application/octet-stream".contains(lFileType),
 				"The file format is not valid! Expecting a ZIP compressed directory.");
 
-		// umcompressing in TEMP folder
+		// umcompressing in TEMP unique folder
 		File lTempDir = new File(FileUtils.getTempDirectory().getCanonicalPath()
 				+ File.separator
 				+ UUID.randomUUID().toString()
@@ -573,6 +616,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		// copying application content to apps directory
 		File lAppDir = new File(mSettings.getAppsDirectory() + File.separator
 				+ lTempAppDirContent[0].getName());
+
 		FileUtils.copyDirectory(lTempAppDirContent[0], lAppDir);
 		FileUtils.deleteDirectory(lTempDir);
 
@@ -591,6 +635,40 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 		// finally send acknowledge response
 		sendToken(aConnector, createResponse(aToken));
+	}
+
+	/**
+	 * Gets a target application manifest content.
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
+	public void getManifestAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		// getting calling events
+		String lApp = aToken.getString("app");
+		Assert.notNull(lApp, "The 'app' argument cannot be null!");
+
+		// validating
+		BaseScriptApp lScriptApp = mApps.get(lApp);
+		Assert.notNull(lScriptApp, "The target app does not exists!");
+
+		// checking security
+		if (!hasAuthority(aConnector, NS + ".deploy.*")
+				&& !hasAuthority(aConnector, NS + ".deploy." + lApp)) {
+			sendToken(aConnector, createAccessDenied(aToken));
+			return;
+		}
+
+		// parsing app manifest
+		File lManifestFile = new File(lScriptApp.getPath() + "/manifest.json");
+		ObjectMapper lMapper = new ObjectMapper();
+		Map<String, Object> lContent = lMapper.readValue(lManifestFile, Map.class);
+
+		Token lResponse = createResponse(aToken);
+		lResponse.setMap("data", lContent);
+
+		sendToken(aConnector, lResponse);
 	}
 
 	/**
@@ -625,5 +703,36 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 		// acknowledge response for the client
 		sendToken(aConnector, createResponse(aToken));
+	}
+
+	/**
+	 * Checks if an app has access to a target bean.
+	 *
+	 * @param aAppName The app name
+	 * @param aBeanPath The bean path
+	 */
+	public void checkWhiteListedBean(String aAppName, String aBeanPath) {
+		Iterator<String> lIt = mSettings.getAppWhiteListedBeans(aAppName).iterator();
+		while (lIt.hasNext()) {
+			String lWLB = lIt.next();
+			// basic checks
+			if (lWLB.equals(aBeanPath) || lWLB.equals("*:*")) {
+				return;
+			}
+
+			// complex checks
+			String[] lParts = aBeanPath.split(":");
+			String lNS = lParts[0];
+
+			if ("".equals(lNS) && lWLB.equals("*:*")) {
+				return;
+			}
+			if (lWLB.equals(lNS + ":*")) {
+				return;
+			}
+		}
+
+		throw new AccessControlException("The '" + aBeanPath + "' bean access "
+				+ "is not allowed in '" + aAppName + "' app!");
 	}
 }

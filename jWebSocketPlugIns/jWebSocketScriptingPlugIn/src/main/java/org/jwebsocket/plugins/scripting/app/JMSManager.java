@@ -41,7 +41,6 @@ import org.jwebsocket.spring.JWebSocketBeanFactory;
  */
 public class JMSManager {
 
-	private Connection mConn;
 	private Session mSession;
 	private Map<String, MessageConsumer> mListeners = new FastMap<String, MessageConsumer>().shared();
 	private Map<String, MessageProducer> mProducers = new FastMap<String, MessageProducer>().shared();
@@ -59,8 +58,7 @@ public class JMSManager {
 	public JMSManager(BaseScriptApp aScriptApp, boolean aUseTransaction, Connection aConn) {
 		try {
 			mScriptApp = aScriptApp;
-			mConn = aConn;
-			mSession = mConn.createSession(aUseTransaction, Session.AUTO_ACKNOWLEDGE);
+			mSession = aConn.createSession(aUseTransaction, Session.AUTO_ACKNOWLEDGE);
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx);
 		}
@@ -73,15 +71,6 @@ public class JMSManager {
 	 */
 	public Session getSession() {
 		return mSession;
-	}
-
-	/**
-	 * Gets the JMS Connection instance
-	 *
-	 * @return
-	 */
-	public Connection getConnection() {
-		return mConn;
 	}
 
 	/**
