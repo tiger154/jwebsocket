@@ -219,8 +219,7 @@ public class JWebSocketConfig implements Config {
 		}
 
 		adjustJWebSocketHome();
-		System.setProperty(
-				JWebSocketServerConstants.JWEBSOCKET_HOME, mJWebSocketHome);
+		System.setProperty(JWebSocketServerConstants.JWEBSOCKET_HOME, mJWebSocketHome);
 
 		return mJWebSocketHome;
 	}

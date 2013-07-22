@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.security.Permission;
 import java.security.Permissions;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -48,13 +49,25 @@ public class Settings {
 	 */
 	private List<String> mGlobalSecurityPermissions = new LinkedList<String>();
 	/**
+	 * Global white listed beans
+	 */
+	private List<String> mGlobalWhiteListedBeans = new LinkedList<String>();
+	/**
 	 * Applications security permissions
 	 */
 	private Map<String, List<String>> mAppsSecurityPermissions = new LinkedHashMap<String, List<String>>();
 	/**
+	 * Applications while listed beans
+	 */
+	private Map<String, List<String>> mAppsWhiteListedBeans = new LinkedHashMap<String, List<String>>();
+	/**
 	 * Local apps permissions store for performance
 	 */
 	private Map<String, Permissions> mCachedPermissions = new FastMap<String, Permissions>().shared();
+	/**
+	 * Local apps white listed beans
+	 */
+	private Map<String, List<String>> mCachedWhiteListedBeans = new FastMap<String, List<String>>().shared();
 
 	/**
 	 * Gets the map representation <app name, app absolute path> of the apps
@@ -138,6 +151,47 @@ public class Settings {
 	}
 
 	/**
+	 * Gets the apps white listed beans.
+	 *
+	 * @return
+	 */
+	public Map<String, List<String>> getAppsWhiteListedBeans() {
+		return mAppsWhiteListedBeans;
+	}
+
+	/**
+	 * Sets apps white listed beans. Global white listed beans are always
+	 * considered.
+	 *
+	 * @param aAppsWhiteListedBeans
+	 */
+	public void setAppsWhiteListedBeans(Map<String, List<String>> aAppsWhiteListedBeans) {
+		if (null != aAppsWhiteListedBeans) {
+			mAppsWhiteListedBeans.putAll(aAppsWhiteListedBeans);
+		}
+	}
+
+	/**
+	 * Gets global white listed beans.
+	 *
+	 * @return
+	 */
+	public List<String> getGlobalWhiteListedBeans() {
+		return mGlobalWhiteListedBeans;
+	}
+
+	/**
+	 * Sets the global white listed beans.
+	 *
+	 * @param aGlobalWhiteListedBeans
+	 */
+	public void setGlobalWhiteListedBeans(List<String> aGlobalWhiteListedBeans) {
+		if (null != aGlobalWhiteListedBeans) {
+			mGlobalWhiteListedBeans.addAll(aGlobalWhiteListedBeans);
+		}
+	}
+
+	/**
 	 * Gets apps security permissions Map
 	 *
 	 * @return
@@ -187,5 +241,31 @@ public class Settings {
 		mCachedPermissions.put(aAppName, lPerms);
 
 		return lPerms;
+	}
+
+	/**
+	 * Gets application white listed beans.
+	 *
+	 * @param aAppName
+	 * @return
+	 */
+	public List<String> getAppWhiteListedBeans(String aAppName) {
+		if (mCachedWhiteListedBeans.containsKey(aAppName)) {
+			return mCachedWhiteListedBeans.get(aAppName);
+		}
+
+		List lWhiteList = new ArrayList();
+
+		// adding global beans
+		lWhiteList.addAll(mGlobalWhiteListedBeans);
+		// adding app specific beans
+		if (mAppsWhiteListedBeans.containsKey(aAppName)) {
+			lWhiteList.addAll(mAppsWhiteListedBeans.get(aAppName));
+		}
+
+		// caching white listed beans
+		mCachedWhiteListedBeans.put(aAppName, lWhiteList);
+
+		return lWhiteList;
 	}
 }

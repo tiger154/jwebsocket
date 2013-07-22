@@ -1068,7 +1068,7 @@ public class Tools {
 	 * @param aAction The action to execute/
 	 * @return
 	 */
-	public static Object doPrivileged(PermissionCollection aPermissions, PrivilegedAction aAction) {
+	public static Object doPrivileged(PermissionCollection aPermissions, PrivilegedAction aAction) {	
 		ProtectionDomain lProtectionDomain = new ProtectionDomain(
 				new CodeSource(null, (Certificate[]) null), aPermissions);
 		AccessControlContext lSecurityContext = new AccessControlContext(new ProtectionDomain[]{lProtectionDomain});

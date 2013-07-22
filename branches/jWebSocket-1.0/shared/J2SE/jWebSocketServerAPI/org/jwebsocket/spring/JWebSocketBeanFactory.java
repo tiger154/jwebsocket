@@ -29,10 +29,12 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.util.Assert;
 
 /**
- * This is required to load the bootstrap.xml config file. It provides a shared beanFactory for all
- * plug-ins and this allows inter-dependencies between the plug-ins and core components.
+ * This is required to load the bootstrap.xml config file. It provides a shared
+ * beanFactory for all plug-ins and this allows inter-dependencies between the
+ * plug-ins and core components.
  *
  * @author alexanderschulze
  * @author kyberneees
@@ -64,6 +66,8 @@ public class JWebSocketBeanFactory {
 	 * @return
 	 */
 	public static GenericApplicationContext getInstance(String aNamespace) {
+		Assert.notNull(aNamespace, "The 'namespace' argument cannot be null!");
+
 		if (!mContextMap.containsKey(aNamespace)) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Creating namespaced bean factory '" + aNamespace + "'...");
@@ -143,8 +147,8 @@ public class JWebSocketBeanFactory {
 		}
 
 		try {
-		mGlobalContext.refresh();
-		} catch (Exception lEx){
+			mGlobalContext.refresh();
+		} catch (Exception lEx) {
 			// fails if running embedded in a Web app
 		}
 		try {
