@@ -21,9 +21,10 @@
 var App = (function() {
 	var mListeners = AppUtils.newThreadSafeMap();
 	var mAPI = AppUtils.newThreadSafeMap();
+	var mPackages = Packages; // saving packages reference
 	var toMap = function(aObject) {
-		var lMap = new Packages.java.util.HashMap();
-		if (aObject instanceof Packages.java.util.Map){
+		var lMap = new App.getClass('java.util.HashMap')();
+		if (aObject instanceof App.getClass('java.util.Map')){
 			lMap = aObject;
 		} else {
 			for (var lAttr in aObject) {
@@ -168,17 +169,74 @@ var App = (function() {
 		getAppBeanFactory: function(){
 			return AppUtils.getAppBeanFactory();
 		},
-		getBeanFactory: function(aNamespace){
-			return AppUtils.getBeanFactory(aNamespace);
-		},
 		loadToAppBeanFactory: function(aFile){
 			AppUtils.loadToAppBeanFactory(aFile);
 		},
 		getBean: function(aBeanId, aNamespace){
+			if (undefined == aNamespace){
+				return AppUtils.getBean(aBeanId);
+			}
 			return AppUtils.getBean(aBeanId, aNamespace);
+		},
+		getAppBean: function(aBeanId){
+			return AppUtils.getAppBean(aBeanId);
+		},
+		getSystemProperty: function(aPropertyName){
+			return AppUtils.getSystemProperty(aPropertyName);
+		},
+		setSystemProperty: function(aPropertyName, aValue){
+			return AppUtils.setSystemProperty(aPropertyName, aValue);
+		},
+		getClass: function(aClassName){
+			var lPackages = aClassName.split('.');
+			var lPackage = mPackages;
+			
+			for (var lIndex = 0; lIndex < lPackages.length - 1; lIndex++){
+				lPackage = lPackage[lPackages[lIndex]];
+				
+				if (null == lPackage) return null;
+			}
+			
+			// getting class
+			return lPackage[lPackages[lPackages.length - 1]];
 		}
 	};
 })();
 
+// shortcut for apps ClassLoader
+Class = function(aClassName){
+	return App.getClass(aClassName);
+};
 
+/**
+ * jWebSocket JavaScript plug-ins bridge
+ */
+/*
+var jws = {
+	oop : {
+		addPlugIn: function(a, aPlugIn){
+			// getting server instance
+			var lServer = App.getServer();
+			
+			// storing the plugin for future incoming token notifications.
+			lServer.listeners.push(aPlugIn);
+			
+			// prototyping server instance.
+			for (var lField in aPlugIn){
+				if( !lServer.prototype[ lField ] ) {
+					lServer.prototype[ lField ] = aPlugIn[ lField ];
+				}
+			}
+		}
+	}
+}
+*/
 
+// blocking direct access to classes 
+// required for sandboxing purposes
+java = undefined;
+com = undefined;
+Packages = undefined;
+importPackage = undefined;
+importClass = undefined;
+JavaImporter = undefined;
