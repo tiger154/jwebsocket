@@ -2,8 +2,8 @@
 App.importScript('${APP_HOME}/lib/myAppLib.js');
 App.setDescription('Demo application with JavaScript at the server-side.');
 
-var FileUtils = Packages.org.apache.commons.io.FileUtils;
-var File = Packages.java.io.File;
+var FileUtils = Class('org.apache.commons.io.FileUtils');
+var File = Class('java.io.File');
 
 App.on('filterIn', function(aToken) {
 	App.getLogger().debug('Calling filter in: ' + aToken.toString());
@@ -16,8 +16,15 @@ App.on('token', function(aConnector, aToken) {
 
 	// normal send
 	App.sendToken(aConnector, lResponse);
+	
+	// normal send
+	App.sendToken(aConnector, {
+		another: 'token'
+	});
+	
 	// fragmented send
 	App.sendToken(aConnector, lResponse, 10);
+	
 	// akcnowledge send
 	App.sendToken(aConnector, lResponse, {
 		getTimeout: function() {
@@ -58,7 +65,7 @@ var lRead = function(aFile) {
 
 var lObject = {
 	version: function() {
-		return java.lang.System.getProperty('java.version');
+		return App.getSystemProperty('java.version');
 	}
 };
 
