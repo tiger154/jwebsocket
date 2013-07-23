@@ -19,7 +19,6 @@
 package org.jwebsocket.client.plugins;
 
 import org.jwebsocket.client.token.BaseTokenClient;
-import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
@@ -51,7 +50,7 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 		if (aInToken != null) {
 			lTokenId = aInToken.getInteger("utid", -1);
 			lType = aInToken.getString("type");
-			lNS = JWebSocketServerConstants.NS_BASE + ".plugins.loadbalancer";
+			lNS = "org.jwebsocket.plugins.loadbalancer";
 			lSourceID = aInToken.getString("sourceId");
 		}
 		aOutToken.setType("response");
