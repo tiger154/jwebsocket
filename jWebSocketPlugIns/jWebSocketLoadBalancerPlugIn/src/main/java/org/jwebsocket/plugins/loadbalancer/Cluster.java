@@ -2,7 +2,7 @@
 //	jWebSocket Load Balancer Cluster (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
-import java.util.Set;
-import javolution.util.FastSet;
+import java.util.List;
+import javolution.util.FastList;
+import org.jwebsocket.api.WebSocketConnector;
 
 /**
  * Manages the list of end points per cluster.
@@ -28,19 +29,148 @@ import javolution.util.FastSet;
  */
 public class Cluster {
 
-	private Set<ClusterEndPoint> mEndpoints = new FastSet<ClusterEndPoint>();
+	private List<ClusterEndPoint> mEndpoints = new FastList<ClusterEndPoint>();
+	private int mStaticEntries;
+	private int mEndPointPosition = 0;
 
 	/**
 	 * @return the mEndpoints
 	 */
-	public Set<ClusterEndPoint> getEndpoints() {
+	public List<ClusterEndPoint> getEndpoints() {
 		return mEndpoints;
 	}
 
 	/**
 	 * @param mEndpoints the mEndpoints to set
 	 */
-	public void setEndpoints(Set<ClusterEndPoint> aEndpoints) {
+	public void setEndpoints(List<ClusterEndPoint> aEndpoints) {
 		mEndpoints = aEndpoints;
+	}
+
+	/**
+	 * @return the mStaticEntries
+	 */
+	public int getStaticEntries() {
+		return mStaticEntries;
+	}
+
+	/**
+	 * @param mStaticEntries the mStaticEntries to set
+	 */
+	public void setStaticEntries(int aStaticEntries) {
+		this.mStaticEntries = aStaticEntries;
+	}
+
+	public boolean addEndpoints(WebSocketConnector aConnector) {
+		if (!isAlreadyExist(aConnector.getId())) {
+			for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
+				if (mEndpoints.get(lPos).getConnector() == null) {
+					mEndpoints.get(lPos).setConnector(aConnector);
+					mEndpoints.get(lPos).setStatus(EndPointStatus.ONLINE);
+					return true;
+				}
+			}
+			ClusterEndPoint lEndpoint = new ClusterEndPoint();
+			lEndpoint.setConnector(aConnector);
+			lEndpoint.setStatus(EndPointStatus.ONLINE);
+			return mEndpoints.add(lEndpoint);
+		} else {
+			return false;
+		}
+	}
+
+	private boolean isAlreadyExist(String aConnectorID) {
+		if (mEndpoints.isEmpty()) {
+			return false;
+		} else {
+			for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
+				if (mEndpoints.get(lPos).getConnector() != null) {
+					if (mEndpoints.get(lPos).getConnector().getId().equals(aConnectorID)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
+
+	public ClusterEndPoint getOptimumEndpoint() {
+		if (!mEndpoints.isEmpty()) {
+			mEndPointPosition = (mEndPointPosition + 1 < mEndpoints.size()
+				? mEndPointPosition + 1 : 0);
+			return (availableEndpoint(mEndPointPosition)
+				? mEndpoints.get(mEndPointPosition) : getOptimumEndpoint());
+		} else {
+			return null;
+		}
+	}
+
+	public boolean availableEndpoint(int lPos) {
+		if (mEndpoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
+			//mEndpoints.get(lPos).increaseConnections();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public List<String> getStickyId() {
+		List<String> lIDs = new FastList<String>();
+		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
+			if (mEndpoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
+				lIDs.add(mEndpoints.get(lPos).getServiceID());
+			}
+		}
+		return lIDs;
+	}
+
+	public boolean removeEndpoint(int aEndpointPosition) {
+		if (aEndpointPosition != -1) {
+			if (aEndpointPosition < mStaticEntries) {
+				ClusterEndPoint lEndpoint = mEndpoints.get(aEndpointPosition);
+				lEndpoint.setConnector(null);
+				lEndpoint.setStatus(EndPointStatus.OFFLINE);
+				lEndpoint.setConnections(0);
+				return true;
+			} else {
+				mEndpoints.remove(aEndpointPosition);
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	public int getPosition(String aEndpointId) {
+		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
+			if (mEndpoints.get(lPos).getServiceID().equals(aEndpointId)) {
+				return lPos;
+			}
+		}
+		return -1;
+	}
+
+	public List<EndPointStatus> getEndpointsStatus() {
+		List<EndPointStatus> lEndPointStatus = new FastList<EndPointStatus>();
+		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
+			lEndPointStatus.add(mEndpoints.get(lPos).getStatus());
+		}
+		return lEndPointStatus;
+	}
+
+	public List<String> getEndpointsId() {
+		List<String> lEndPointsId = new FastList<String>();
+		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
+			lEndPointsId.add(mEndpoints.get(lPos).getServiceID());
+		}
+		return lEndPointsId;
+	}
+
+	public List<Integer> getEndpointsConnections() {
+		List<Integer> lEndpointsConnections = new FastList<Integer>();
+		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
+			lEndpointsConnections.add(mEndpoints.get(lPos).getConnections());
+		}
+		return lEndpointsConnections;
 	}
 }

@@ -2,7 +2,7 @@
 //	jWebSocket Load Balancer Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -18,6 +18,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
+import java.util.List;
+import java.util.Map;
+import javolution.util.FastList;
+import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -47,6 +51,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket Load Balancer Plug-in - Community Edition";
+	private int mChooseCluster = 1;
 	/**
 	 *
 	 */
@@ -55,6 +60,10 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	 *
 	 */
 	protected Settings mSettings;
+	/**
+	 *
+	 */
+	protected Map<String, Cluster> mClusters;
 
 	/**
 	 *
@@ -73,16 +82,21 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for load "
-						+ "balancer plug-in, some features may not be available.");
+					+ "balancer plug-in, some features may not be available.");
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.loadbalancer.settings");
-				if (mLog.isInfoEnabled()) {
-					mLog.info("Load balancer plug-in successfully instantiated.");
+				if (null != mSettings) {
+					mClusters = mSettings.getClusters();
+					if (mLog.isInfoEnabled()) {
+						mLog.info("Load balancer plug-in successfully instantiated.");
+					}
+				} else {
+					mLog.error("Don't was loaded settings correctly");
 				}
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx,
-					"instantiating load balancer plug-in"));
+				"instantiating load balancer plug-in"));
 			throw lEx;
 		}
 	}
@@ -126,12 +140,26 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
 		String lNS = aToken.getNS();
+		boolean _lb = aToken.getBoolean("_lb", Boolean.FALSE);
+		String lSourceID = aToken.getString("sourceId");
 
-		if (lType != null && getNamespace().equals(lNS)) {
-			if (lType.equals("getClusterEndPointsInfo")) {
-				getClusterEndPointsInfo(aConnector, aToken);
-			} else if (lType.equals("getStickyRoutes")) {
-				getStickyRoutes(aConnector, aToken);
+		if (lType != null && lNS != null) {
+			if (_lb) {
+				sendToService(aConnector, aToken);
+			} else if (lSourceID != null && lType.equals("response")) {
+				responseToClient(aToken);
+			} else if (lNS.equals(getNamespace())) {
+				if (lType.equals("getClusterEndPointsInfo")) {
+					getClusterEndPointsInfo(aConnector, aToken);
+				} else if (lType.equals("getStickyRoutes")) {
+					getStickyRoutes(aConnector, aToken);
+				} else if (lType.equals("registerServiceEndPoint")) {
+					registerServiceEndPoint(aConnector, aToken);
+				} else if (lType.equals("deregisterServiceEndPoint")) {
+					deregisterServiceEndPoint(aConnector, aToken);
+				} else if (lType.equals("shutdownEndpoint")) {
+					shutdownEndpoint(aConnector, aToken);
+				}
 			}
 		}
 	}
@@ -142,31 +170,123 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		String lNS = aToken.getNS();
 
 		if (lType != null && getNamespace().equals(lNS)) {
-			/*
-			 if (lType.equals("getFilelist")) {
-			 return getFilelist(aConnector.getUsername(), aToken);
-			 } else if (lType.equals("getAliasPath")) {
-			 String lTargetAlias = aToken.getString("alias");
-			 Token lToken = TokenFactory.createToken();
-			 lToken.setString("aliasPath", getAliasPath(aConnector, lTargetAlias));
-
-			 return lToken;
-			 }
-			 */
 		}
 
 		return null;
 	}
 
 	private void getClusterEndPointsInfo(WebSocketConnector aConnector, Token aToken) {
+		List<Map<String, Object>> lInfo = new FastList<Map<String, Object>>();
+		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
+			Cluster lCluster = lEntry.getValue();
+			Map<String, Object> lInfoCluster = new FastMap<String, Object>();
+			lInfoCluster.put("clusterAlias", lEntry.getKey());
+			lInfoCluster.put("epCount", lCluster.getEndpoints().size());
+			lInfoCluster.put("endpoints", lCluster.getEndpoints());
+			lInfoCluster.put("epStatus", lCluster.getEndpointsStatus());
+			lInfoCluster.put("epId", lCluster.getEndpointsId());
+			lInfoCluster.put("epConnections", lCluster.getEndpointsConnections());
+			lInfo.add(lInfoCluster);
+		}
 		TokenServer lServer = getServer();
 		Token lResponse = createResponse(aToken);
+		lResponse.setList("info", lInfo);
 		lServer.sendToken(aConnector, lResponse);
 	}
 
 	private void getStickyRoutes(WebSocketConnector aConnector, Token aToken) {
+		List<Map<String, String>> lStickyRoutes = new FastList<Map<String, String>>();
+		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
+			List<String> lIDs = lEntry.getValue().getStickyId();
+			for (int lPos = 0; lPos < lIDs.size(); lPos++) {
+				Map<String, String> lInfoCluster = new FastMap<String, String>();
+				lInfoCluster.put("clusterAlias", lEntry.getKey());
+				lInfoCluster.put("serviceId", lIDs.get(lPos));
+				lStickyRoutes.add(lInfoCluster);
+			}
+		}
 		TokenServer lServer = getServer();
 		Token lResponse = createResponse(aToken);
+		lResponse.setList("routes", lStickyRoutes);
 		lServer.sendToken(aConnector, lResponse);
+	}
+
+	private void registerServiceEndPoint(WebSocketConnector aConnector, Token aToken) {
+		String lAlias = aToken.getString("clusterAlias");
+		String lMsg = null;
+		int lCode = -1;
+		if (getCluster(lAlias) != null) {
+			if (getCluster(lAlias).addEndpoints(aConnector)) {
+				lCode = 0;
+				lMsg = "New service endpoint with ID: myService_" + aConnector.getId()
+					+ ", was create satisfactorily in the cluster " + lAlias;
+			} else {
+				lMsg = "The service endpoints with ID: myService_" + aConnector.getId()
+					+ ", already exist in the cluster";
+			}
+		} else {
+			lMsg = "The cluster " + lAlias + " don't exist";
+		}
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
+		lResponse.setInteger("code", lCode);
+		lResponse.setString("msg", lMsg);
+		lServer.sendToken(aConnector, lResponse);
+	}
+
+	private void deregisterServiceEndPoint(WebSocketConnector aConnector, Token aToken) {
+		String lEndpointId = aToken.getString("endpointId");
+		String lMsg = "The Endpoint don't was removed because don't found its ID";
+		int lCode = -1;
+		if (lEndpointId != null) {
+			for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
+				String lClusterAlias = lEntry.getKey();
+				Cluster lCluster = lEntry.getValue();
+				int lPosition = lCluster.getPosition(lEndpointId);
+				if (lPosition != -1) {
+					if (lCluster.removeEndpoint(lPosition)) {
+						lCode = 0;
+						lMsg = "The Endpoint with ID: " + lEndpointId
+							+ " was removed from the cluster " + lClusterAlias + " successfully";
+					}
+				}
+			}
+		} else {
+			lMsg = "The Endpoint ID is null";
+		}
+		TokenServer lServer = getServer();
+		Token lResponse = createResponse(aToken);
+		lResponse.setInteger("code", lCode);
+		lResponse.setString("msg", lMsg);
+		lServer.sendToken(aConnector, lResponse);
+	}
+
+	private void shutdownEndpoint(WebSocketConnector aConnector, Token aToken) {
+		//TODO
+	}
+
+	private void sendToService(WebSocketConnector aConnector, Token aToken) {
+		aToken.setString("sourceId", aConnector.getId());
+		ClusterEndPoint lEndpoint = getOptimumServiceEndpoint();
+		lEndpoint.increaseConnections();
+		getServer().sendToken(lEndpoint.getConnector(), aToken);
+	}
+
+	private void responseToClient(Token aToken) {
+		getServer().sendToken(getSourceConnector(aToken.getString("sourceId")), aToken);
+	}
+
+	private ClusterEndPoint getOptimumServiceEndpoint() {
+		mChooseCluster = (mChooseCluster + 1 <= mClusters.size()
+			? mChooseCluster + 1 : 1);
+		return getCluster("service" + mChooseCluster).getOptimumEndpoint();
+	}
+
+	private Cluster getCluster(String aAlias) {
+		return mClusters.get(aAlias);
+	}
+
+	private WebSocketConnector getSourceConnector(String aSourceID) {
+		return getServer().getConnector(aSourceID);
 	}
 }

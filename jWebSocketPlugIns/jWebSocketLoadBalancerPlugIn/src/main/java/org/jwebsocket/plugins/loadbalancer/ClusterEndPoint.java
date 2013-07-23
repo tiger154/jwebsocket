@@ -2,7 +2,7 @@
 //	jWebSocket Load Balancer ClusterEndPoint (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//      Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ public class ClusterEndPoint {
 
 	private EndPointStatus mStatus = EndPointStatus.OFFLINE;
 	private WebSocketConnector mConnector = null;
+	private int mConnections = 0;
 
 	/**
 	 * @return the mStatus
@@ -56,5 +57,36 @@ public class ClusterEndPoint {
 	 */
 	public void setConnector(WebSocketConnector aConnector) {
 		this.mConnector = aConnector;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public String getServiceID() {
+		return (mConnector != null ? "myService_" + mConnector.getId() : null);
+	}
+
+	/**
+	 *
+	 */
+	public void increaseConnections() {
+		mConnections++;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public int getConnections() {
+		return mConnections;
+	}
+
+	/**
+	 *
+	 * @param aConnections
+	 */
+	public void setConnections(int aConnections) {
+		this.mConnections = aConnections;
 	}
 }
