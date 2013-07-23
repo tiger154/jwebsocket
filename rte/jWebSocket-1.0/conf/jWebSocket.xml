@@ -1961,6 +1961,17 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</filter>-->
+		
+		<filter>
+			<name>org.jwebsocket.plugins.loadbalancer.LoadBalancerFilter</name>
+			<id>jws.loadBalancerFilter</id>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<jar>jWebSocketLoadBalancerPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</filter>
+		
 	</filters>
 
 </jWebSocket>
