@@ -213,7 +213,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		String lExt = lManifestJSON.getString(Manifest.LANGUAGE_EXT, "js");
 
 		// checking jWebSocket version 
-		Manifest.checkJwsVersion(lManifestJSON.getString(Manifest.JWEBSOCKET_VERSION, "1.0"));
+		Manifest.checkJwsVersion(lManifestJSON.getString(Manifest.JWEBSOCKET_VERSION, "1.0.0"));
 
 		// checking jWebSocket plug-ins dependencies
 		Manifest.checkJwsDependencies(lManifestJSON.getList(

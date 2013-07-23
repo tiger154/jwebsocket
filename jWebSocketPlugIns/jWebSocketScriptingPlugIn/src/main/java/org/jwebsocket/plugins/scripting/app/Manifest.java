@@ -23,6 +23,8 @@ import java.security.AccessController;
 import java.security.Permissions;
 import java.security.PrivilegedAction;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
+import org.jwebsocket.api.WebSocketPlugIn;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.util.Tools;
@@ -48,7 +50,7 @@ public class Manifest {
 	 * @throws Exception
 	 */
 	public static void checkJwsVersion(String aVersion) throws Exception {
-		Assert.isTrue(JWebSocketServerConstants.VERSION_STR.startsWith(aVersion),
+		Assert.isTrue(Tools.compareVersions(JWebSocketServerConstants.VERSION_STR, aVersion) >= 0,
 				"Unable to load application. jWebSocket version requirement '" + aVersion + "' not satisfied!");
 	}
 
@@ -60,8 +62,16 @@ public class Manifest {
 	 */
 	public static void checkJwsDependencies(List<String> aPlugIns) throws Exception {
 		for (String lPlugInId : aPlugIns) {
-			Assert.notNull(JWebSocketFactory.getTokenServer().getPlugInById(lPlugInId),
-					"Unable to load application. jWebSocket dependency plug-in '" + lPlugInId + "' not satisfied!");
+			String[] lIdVersion = StringUtils.split(lPlugInId, ":");
+			WebSocketPlugIn lPlugIn = JWebSocketFactory.getTokenServer().getPlugInById(lIdVersion[0]);
+			Assert.notNull(lPlugIn,
+					"Unable to load application. jWebSocket dependency plug-in '" + lPlugInId + "' not found!");
+
+			if (lIdVersion.length == 2) {
+				Assert.isTrue(Tools.compareVersions(lPlugIn.getVersion(), lIdVersion[1]) >= 0,
+						"Unable to load application. jWebSocket plug-in '" + lPlugInId
+						+ "' was found, but version number dependency not satisfied!");
+			}
 		}
 	}
 

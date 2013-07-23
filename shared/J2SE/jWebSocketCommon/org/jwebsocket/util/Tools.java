@@ -58,6 +58,9 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.springframework.util.Assert;
 
 /**
  * Provides some convenience methods to support the web socket development.
@@ -479,6 +482,62 @@ public class Tools {
 		lVarsMap.putAll(System.getenv());
 
 		return expandVars(aString, lVarsMap, EXPAND_CASE_INSENSITIVE);
+	}
+
+	/**
+	 * Compare 2 'Mayor.Minor.Fix' codified versions. Where Mayor, Minor, Fix
+	 * values require to be non-negative integer values.
+	 *
+	 * @param aVersion1
+	 * @param aVersion2
+	 * @return Return 1 if 'version1', 0 if equals and -1 if lower.
+	 */
+	public static Integer compareVersions(String aVersion1, String aVersion2) {
+		Assert.isTrue(null != aVersion1 && !aVersion1.isEmpty(), "The argument 'version1' cannot be null or empty!");
+		Assert.isTrue(null != aVersion2 && !aVersion2.isEmpty(), "The argument 'version2' cannot be null or empty!");
+
+		aVersion1 = aVersion1.split(" ")[0];
+		aVersion2 = aVersion2.split(" ")[0];
+		String[] lVNumbers1 = StringUtils.split(aVersion1, ".");
+		String[] lVNumbers2 = StringUtils.split(aVersion2, ".");
+
+		Assert.isTrue(lVNumbers1.length >= 3, "The argument 'version1' has"
+				+ " invalid jWebSocket version codification! "
+				+ "Expecting: 'Mayor.Minor.Fix'");
+		Assert.isTrue(lVNumbers2.length >= 3, "The argument 'version2' has "
+				+ "invalid jWebSocket version codification! "
+				+ "Expecting: 'Mayor.Minor.Fix'");
+
+		String lErrorMsg = "The argument 'version1' has invalid value. "
+				+ "Expecting non-negative integer values!";
+		Integer lMayor1 = Integer.parseInt(lVNumbers1[0]);
+		Assert.isTrue(lMayor1 >= 0, lErrorMsg);
+		Integer lMinor1 = Integer.parseInt(lVNumbers1[1]);
+		Assert.isTrue(lMinor1 >= 0, lErrorMsg);
+		Integer lFix1 = Integer.parseInt(lVNumbers1[2]);
+		Assert.isTrue(lFix1 >= 0, lErrorMsg);
+
+		lErrorMsg = "The argument 'version2' has invalid value. "
+				+ "Expecting non-negative integer values!";
+		Integer lMayor2 = Integer.parseInt(lVNumbers2[0]);
+		Assert.isTrue(lMayor2 >= 0, lErrorMsg);
+		Integer lMinor2 = Integer.parseInt(lVNumbers2[1]);
+		Assert.isTrue(lMinor2 >= 0, lErrorMsg);
+		Integer lFix2 = Integer.parseInt(lVNumbers2[2]);
+		Assert.isTrue(lFix2 >= 0, lErrorMsg);
+
+		int lCMayor = lMayor1.compareTo(lMayor2);
+		int lCMinor = lMinor1.compareTo(lMinor2);
+		int lCFix = lFix1.compareTo(lFix2);
+
+		if (lCMayor != 0) {
+			return lCMayor;
+		}
+		if (lCMinor != 0) {
+			return lCMinor;
+		}
+
+		return lCFix;
 	}
 
 	/**
@@ -1068,7 +1127,7 @@ public class Tools {
 	 * @param aAction The action to execute/
 	 * @return
 	 */
-	public static Object doPrivileged(PermissionCollection aPermissions, PrivilegedAction aAction) {	
+	public static Object doPrivileged(PermissionCollection aPermissions, PrivilegedAction aAction) {
 		ProtectionDomain lProtectionDomain = new ProtectionDomain(
 				new CodeSource(null, (Certificate[]) null), aPermissions);
 		AccessControlContext lSecurityContext = new AccessControlContext(new ProtectionDomain[]{lProtectionDomain});
