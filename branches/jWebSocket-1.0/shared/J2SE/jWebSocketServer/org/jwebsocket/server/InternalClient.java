@@ -180,8 +180,10 @@ public class InternalClient {
 	 *
 	 * @param aListener
 	 */
-	public void addListener(IInternalConnectorListener aListener) {
+	public IInternalConnectorListener addListener(IInternalConnectorListener aListener) {
 		mConnector.addListener(aListener);
+		
+		return aListener;
 	}
 
 	/**
