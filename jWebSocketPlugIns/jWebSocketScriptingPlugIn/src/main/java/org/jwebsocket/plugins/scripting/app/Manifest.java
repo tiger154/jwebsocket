@@ -25,8 +25,8 @@ import java.security.PrivilegedAction;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.jwebsocket.api.WebSocketPlugIn;
-import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
 
@@ -50,7 +50,7 @@ public class Manifest {
 	 * @throws Exception
 	 */
 	public static void checkJwsVersion(String aVersion) throws Exception {
-		Assert.isTrue(Tools.compareVersions(JWebSocketServerConstants.VERSION_STR, aVersion) >= 0,
+		Assert.isTrue(JWebSocketInstance.isVersionCompatible(aVersion),
 				"Unable to load application. jWebSocket version requirement '" + aVersion + "' not satisfied!");
 	}
 
@@ -68,7 +68,7 @@ public class Manifest {
 					"Unable to load application. jWebSocket dependency plug-in '" + lPlugInId + "' not found!");
 
 			if (lIdVersion.length == 2) {
-				Assert.isTrue(Tools.compareVersions(lPlugIn.getVersion(), lIdVersion[1]) >= 0,
+				Assert.isTrue(lPlugIn.isVersionCompatible(lIdVersion[1]),
 						"Unable to load application. jWebSocket plug-in '" + lPlugInId
 						+ "' was found, but version number dependency not satisfied!");
 			}

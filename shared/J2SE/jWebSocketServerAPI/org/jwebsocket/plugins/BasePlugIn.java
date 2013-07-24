@@ -26,6 +26,7 @@ import org.jwebsocket.config.xml.PluginConfig;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.kit.WebSocketSession;
+import org.jwebsocket.util.Tools;
 
 /**
  * Abstract implementation of WebSocketPlugin
@@ -468,5 +469,10 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 
 	@Override
 	public void systemStopped() throws Exception {
+	}
+
+	@Override
+	public boolean isVersionCompatible(String aVersion) {
+		return Tools.compareVersions(getVersion(), aVersion) == 0;
 	}
 }

@@ -18,6 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.instance;
 
+import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.util.Tools;
+
 /**
  *
  * @author aschulze
@@ -59,5 +62,16 @@ public class JWebSocketInstance {
 	 */
 	public static void setStatus(int aStatus) {
 		mStatus = aStatus;
+	}
+
+	/**
+	 * Returns TRUE if the given jWebSocket server version is compatible, FALSE
+	 * otherwise.
+	 *
+	 * @param aVersion
+	 * @return
+	 */
+	public static boolean isVersionCompatible(String aVersion) {
+		return Tools.compareVersions(JWebSocketServerConstants.VERSION_STR, aVersion) == 0;
 	}
 }

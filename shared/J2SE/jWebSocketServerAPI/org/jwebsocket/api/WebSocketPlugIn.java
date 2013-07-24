@@ -29,7 +29,7 @@ import org.jwebsocket.kit.WebSocketSession;
  * @author aschulze
  * @author kyberneees
  */
-public interface WebSocketPlugIn extends ISystemLifecycle{
+public interface WebSocketPlugIn extends ISystemLifecycle {
 
 	/**
 	 * returns the id of the plug-in.
@@ -86,7 +86,7 @@ public interface WebSocketPlugIn extends ISystemLifecycle{
 	 * @return
 	 */
 	String getLicense();
-	
+
 	/**
 	 * returns the Namespace of the plug-in.
 	 *
@@ -254,4 +254,13 @@ public interface WebSocketPlugIn extends ISystemLifecycle{
 	 * @return
 	 */
 	Map<String, Object> getSettings();
+
+	/**
+	 * Returns TRUE if the given plug-in version is compatible, FALSE
+	 * otherwise.
+	 *
+	 * @param aVersion
+	 * @return
+	 */
+	boolean isVersionCompatible(String aVersion);
 }
