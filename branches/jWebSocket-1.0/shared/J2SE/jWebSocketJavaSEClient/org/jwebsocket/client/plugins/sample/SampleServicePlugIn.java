@@ -35,7 +35,7 @@ public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_SAMPLESERVICE = "org.jwebsocket.plugins.sampleservice";
+	public static final String NS_SAMPLESERVICE = "org.jwebsocket.plugins.sampleservice1";
 
 	/**
 	 *
