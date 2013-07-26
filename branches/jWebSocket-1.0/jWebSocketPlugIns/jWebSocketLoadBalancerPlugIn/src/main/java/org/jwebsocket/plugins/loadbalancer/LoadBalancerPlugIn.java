@@ -51,7 +51,6 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket Load Balancer Plug-in - Community Edition";
-	private int mChooseCluster = 1;
 	/**
 	 *
 	 */
@@ -181,11 +180,12 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			Cluster lCluster = lEntry.getValue();
 			Map<String, Object> lInfoCluster = new FastMap<String, Object>();
 			lInfoCluster.put("clusterAlias", lEntry.getKey());
+			lInfoCluster.put("clusterNS", lCluster.getClusterNamespace());
 			lInfoCluster.put("epCount", lCluster.getEndpoints().size());
 			lInfoCluster.put("endpoints", lCluster.getEndpoints());
 			lInfoCluster.put("epStatus", lCluster.getEndpointsStatus());
 			lInfoCluster.put("epId", lCluster.getEndpointsId());
-			lInfoCluster.put("epConnections", lCluster.getEndpointsConnections());
+			lInfoCluster.put("epRequests", lCluster.getEndpointsRequests());
 			lInfo.add(lInfoCluster);
 		}
 		TokenServer lServer = getServer();
@@ -267,19 +267,34 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 
 	private void sendToService(WebSocketConnector aConnector, Token aToken) {
 		aToken.setString("sourceId", aConnector.getId());
-		ClusterEndPoint lEndpoint = getOptimumServiceEndpoint();
-		lEndpoint.increaseConnections();
-		getServer().sendToken(lEndpoint.getConnector(), aToken);
+		ClusterEndPoint lEndpoint = getOptimumServiceEndpoint(aToken);
+		if (null != lEndpoint) {
+			lEndpoint.increaseRequests();
+			getServer().sendToken(lEndpoint.getConnector(), aToken);
+		} else {
+			String lMsg = "There is not a service available with the namespace " + aToken.getNS();
+			int lCode = -1;
+			TokenServer lServer = getServer();
+			Token lResponse = createResponse(aToken);
+			lResponse.setInteger("code", lCode);
+			lResponse.setString("msg", lMsg);
+			lServer.sendToken(aConnector, lResponse);
+
+		}
 	}
 
 	private void responseToClient(Token aToken) {
 		getServer().sendToken(getSourceConnector(aToken.getString("sourceId")), aToken);
 	}
 
-	private ClusterEndPoint getOptimumServiceEndpoint() {
-		mChooseCluster = (mChooseCluster + 1 <= mClusters.size()
-			? mChooseCluster + 1 : 1);
-		return getCluster("service" + mChooseCluster).getOptimumEndpoint();
+	private ClusterEndPoint getOptimumServiceEndpoint(Token aToken) {
+		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
+			Cluster lValue = lEntry.getValue();
+			if (lValue.getClusterNamespace().equals(aToken.getNS())) {
+				return lValue.getOptimumEndpoint();
+			}
+		}
+		return null;
 	}
 
 	private Cluster getCluster(String aAlias) {

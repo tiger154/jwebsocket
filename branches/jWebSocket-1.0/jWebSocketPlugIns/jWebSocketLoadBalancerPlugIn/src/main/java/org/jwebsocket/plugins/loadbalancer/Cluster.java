@@ -30,6 +30,7 @@ import org.jwebsocket.api.WebSocketConnector;
 public class Cluster {
 
 	private List<ClusterEndPoint> mEndpoints = new FastList<ClusterEndPoint>();
+	private String mClusterNamespace;
 	private int mStaticEntries;
 	private int mEndPointPosition = 0;
 
@@ -95,7 +96,7 @@ public class Cluster {
 	}
 
 	public ClusterEndPoint getOptimumEndpoint() {
-		if (!mEndpoints.isEmpty()) {
+		if (!mEndpoints.isEmpty() && containsAvailableEndpoint()) {
 			mEndPointPosition = (mEndPointPosition + 1 < mEndpoints.size()
 				? mEndPointPosition + 1 : 0);
 			return (availableEndpoint(mEndPointPosition)
@@ -105,9 +106,17 @@ public class Cluster {
 		}
 	}
 
-	public boolean availableEndpoint(int lPos) {
+	private boolean containsAvailableEndpoint() {
+		for (int lPos = 0; lPos < 10; lPos++) {
+			if (availableEndpoint(lPos)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean availableEndpoint(int lPos) {
 		if (mEndpoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
-			//mEndpoints.get(lPos).increaseConnections();
 			return true;
 		} else {
 			return false;
@@ -130,7 +139,7 @@ public class Cluster {
 				ClusterEndPoint lEndpoint = mEndpoints.get(aEndpointPosition);
 				lEndpoint.setConnector(null);
 				lEndpoint.setStatus(EndPointStatus.OFFLINE);
-				lEndpoint.setConnections(0);
+				lEndpoint.setRequests(0);
 				return true;
 			} else {
 				mEndpoints.remove(aEndpointPosition);
@@ -166,11 +175,25 @@ public class Cluster {
 		return lEndPointsId;
 	}
 
-	public List<Integer> getEndpointsConnections() {
-		List<Integer> lEndpointsConnections = new FastList<Integer>();
+	public List<Integer> getEndpointsRequests() {
+		List<Integer> lEndpointsRequests = new FastList<Integer>();
 		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
-			lEndpointsConnections.add(mEndpoints.get(lPos).getConnections());
+			lEndpointsRequests.add(mEndpoints.get(lPos).getRequests());
 		}
-		return lEndpointsConnections;
+		return lEndpointsRequests;
+	}
+
+	/**
+	 * @return the mClusterNamespace
+	 */
+	public String getClusterNamespace() {
+		return mClusterNamespace;
+	}
+
+	/**
+	 * @param mClusterNamespace the mClusterNamespace to set
+	 */
+	public void setClusterNamespace(String aClusterNamespace) {
+		this.mClusterNamespace = aClusterNamespace;
 	}
 }

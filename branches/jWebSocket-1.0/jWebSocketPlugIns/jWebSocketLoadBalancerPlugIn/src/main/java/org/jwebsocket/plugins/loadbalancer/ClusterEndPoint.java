@@ -29,7 +29,7 @@ public class ClusterEndPoint {
 
 	private EndPointStatus mStatus = EndPointStatus.OFFLINE;
 	private WebSocketConnector mConnector = null;
-	private int mConnections = 0;
+	private int mRequests = 0;
 
 	/**
 	 * @return the mStatus
@@ -70,23 +70,23 @@ public class ClusterEndPoint {
 	/**
 	 *
 	 */
-	public void increaseConnections() {
-		mConnections++;
+	public void increaseRequests() {
+		mRequests++;
 	}
 
 	/**
 	 *
 	 * @return
 	 */
-	public int getConnections() {
-		return mConnections;
+	public int getRequests() {
+		return mRequests;
 	}
 
 	/**
 	 *
-	 * @param aConnections
+	 * @param aRequests
 	 */
-	public void setConnections(int aConnections) {
-		this.mConnections = aConnections;
+	public void setRequests(int aRequests) {
+		this.mRequests = aRequests;
 	}
 }
