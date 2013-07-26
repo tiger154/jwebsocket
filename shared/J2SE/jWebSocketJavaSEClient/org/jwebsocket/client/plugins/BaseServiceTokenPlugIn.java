@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket Load Balancer Cluster (Community Edition, CE)
+//	jWebSocket BaseServiceTokenPlugIn (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)

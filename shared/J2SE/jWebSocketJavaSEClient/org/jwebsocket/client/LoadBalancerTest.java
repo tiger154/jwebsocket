@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket Load Balancer Cluster (Community Edition, CE)
+//	jWebSocket Load Balancer Test (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)
@@ -109,7 +109,7 @@ public class LoadBalancerTest {
 				});
 
 				lClient.open("ws://localhost:8787/jWebSocket/jWebSocket");
-				Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.sampleservice", "echo");
+				Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.sampleservice1", "echo");
 				lToken.setBoolean("_lb", true);
 				lToken.setString("data", "load balancer test");
 				lClient.sendToken(lToken);
