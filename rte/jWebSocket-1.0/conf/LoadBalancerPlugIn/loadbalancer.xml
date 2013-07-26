@@ -28,6 +28,7 @@
 			</list>
 		</property>
 		<property name="staticEntries" value="2"/>
+		<property name="clusterNamespace" value="org.jwebsocket.plugins.sampleservice1"/>
 	</bean>
 	
 	<!-- Service Cluster 2 definition -->
@@ -39,6 +40,7 @@
 			</list>
 		</property>
 		<property name="staticEntries" value="2"/>
+		<property name="clusterNamespace" value="org.jwebsocket.plugins.sampleservice2"/>
 	</bean>
 	
 	<!-- Service Cluster alias/instance assignment -->
@@ -49,7 +51,7 @@
 				<entry key="service1" >
 					<ref bean="service1cluster" />
 				</entry>
-				<!-- "service2" is the name of the first balanced service -->
+				<!-- "service2" is the name of the second balanced service -->
 				<entry key="service2" >
 					<ref bean="service2cluster" />
 				</entry>
