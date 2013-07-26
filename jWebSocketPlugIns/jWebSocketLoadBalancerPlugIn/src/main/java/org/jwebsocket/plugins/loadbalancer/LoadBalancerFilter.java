@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket Load Balancer Plug-in (Community Edition, CE)
+//	jWebSocket Load Balancer Filter (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)
