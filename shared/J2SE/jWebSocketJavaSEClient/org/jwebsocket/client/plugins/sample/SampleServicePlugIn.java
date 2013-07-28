@@ -50,7 +50,7 @@ public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 		// get the type of the token
 		// the type can be associated with a "command"
 		String lType = aToken.getType();
-		
+
 		if (aToken.getType().equals("response")) {
 			System.out.println(aToken.toString());
 		}
@@ -64,7 +64,17 @@ public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 			// according to the name space of the plug-in
 			if (lType.equals("echo")) {
 				echo(aToken);
+			}else if(lType.equals("shutdown")){
+				shutdown();
 			}
+		}
+	}
+
+	private void shutdown() {
+		try {
+			getTokenClient().close();
+		} catch (WebSocketException ex) {
+			Logger.getLogger(SampleServicePlugIn.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
