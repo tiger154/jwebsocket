@@ -938,6 +938,24 @@
 			<id>reloadApp</id>
 			<description>Allows to reload JavaScript apps</description>
 		</right>
+		
+		<!-- Load Balancer rights >
+		<right>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<id>registerServiceEndPoint</id>
+			<description>Allows to register a new service endpoint</description>	
+		<right>
+		<right>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<id>deregisterServiceEndPoint</id>
+			<description>Allows to deregister a service endpoint</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<id>shutdownEndpoint</id>
+			<description>Allows to shutdown a service endpoint</description>
+		</right-->
+		
 	</rights>
 
 	<!-- jWebSocket roles -->
@@ -1033,6 +1051,12 @@
 
 				<!-- scripting rights -->
 				<right>org.jwebsocket.plugins.scripting.reloadApp</right>
+				
+				<!-- Load balancer rights >
+				<right>org.jwebsocket.plugins.loadbalancer.registerServiceEndPoint</right>
+				<right>org.jwebsocket.plugins.loadbalancer.deregisterServiceEndPoint</right>
+				<right>org.jwebsocket.plugins.loadbalancer.shutdownEndpoint</right-->
+				
 			</rights>
 		</role>
 		<role>
