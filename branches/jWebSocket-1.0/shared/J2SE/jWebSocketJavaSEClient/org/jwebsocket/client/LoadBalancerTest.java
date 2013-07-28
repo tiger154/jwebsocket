@@ -37,9 +37,10 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class LoadBalancerTest {
 
-	private static int mCurrentServices = 5;
-	private static int mCurrentConnections = 60;
+	private static int mCurrentServices = 4;
+	private static int mCurrentConnections = 12;
 	private static String mEndpointId = null;
+	private static String mClusterAlias = null;
 
 	public static void main(String[] args) throws IsAlreadyConnectedException, WebSocketException {
 		final List<BaseTokenClient> lServices = new ArrayList();
@@ -129,6 +130,7 @@ public class LoadBalancerTest {
 						List<Map<String, String>> lStickyRoutes = aToken.getList("routes");
 						Map<String, String> lEntry = lStickyRoutes.get(0);
 						mEndpointId = lStickyRoutes.get(0).get("serviceId");
+						mClusterAlias = lStickyRoutes.get(0).get("clusterAlias");
 					}
 				}
 
@@ -163,13 +165,20 @@ public class LoadBalancerTest {
 			Thread.sleep(50);
 
 			Token lTokenDeregister = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "deregisterServiceEndPoint");
-			lTokenDeregister.setString("endpointId", mEndpointId);
-			lClient.sendToken(lTokenDeregister);
+			lTokenDeregister.setString("epId", mEndpointId);
+			lTokenDeregister.setString("clusterAlias", mClusterAlias);
+			//lClient.sendToken(lTokenDeregister);
 			Thread.sleep(50);
 
 			lClient.sendToken(lTokenInfo);
-			Thread.sleep(50);
-
+			Thread.sleep(10000);
+			
+			Token lTokenShutdown = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "shutdownEndpoint");
+			lTokenShutdown.setString("epId", mEndpointId);
+			lTokenShutdown.setString("clusterAlias", mClusterAlias);
+			System.out.println(mEndpointId);
+			lClient.sendToken(lTokenShutdown);
+			
 		} catch (Exception lEx) {
 		}
 	}
