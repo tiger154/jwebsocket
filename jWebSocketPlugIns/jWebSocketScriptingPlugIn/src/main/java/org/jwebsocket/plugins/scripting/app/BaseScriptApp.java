@@ -36,6 +36,7 @@ import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
+import org.jwebsocket.plugins.scripting.app.js.JavaScriptApp;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -207,6 +208,13 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Returns the Script App programming language extension.
+	 *
+	 * @return
+	 */
+	abstract public String getScriptLanguageExt();
+
+	/**
 	 * Gets the ScriptEngine instance associated to the script application.
 	 *
 	 * @return
@@ -325,7 +333,13 @@ abstract public class BaseScriptApp {
 	 */
 	public void importScript(String aFile) throws Exception {
 		aFile = aFile.replace("${APP_HOME}", mAppPath);
-		String lFile = FileUtils.readFileToString(new File(aFile));
+		aFile = aFile.replace("${EXT}", mPlugIn.getExtensionsDirectoryPath()
+				+ File.separator + getScriptLanguageExt() + File.separator);
+		
+		// add the script extension (example: .js)
+		String lFile = FileUtils.readFileToString(new File(aFile + "." + getScriptLanguageExt()));
+
+		// evaluate target file content
 		mScriptApp.eval(lFile);
 	}
 

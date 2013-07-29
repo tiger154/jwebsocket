@@ -190,6 +190,10 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		return mSettings.getAppPermissions(aAppName);
 	}
 
+	public String getExtensionsDirectoryPath() {
+		return mSettings.getExtensionsDirectory();
+	}
+
 	/**
 	 * Loads an script application.
 	 *
