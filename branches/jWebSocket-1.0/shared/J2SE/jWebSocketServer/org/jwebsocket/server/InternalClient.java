@@ -20,14 +20,19 @@ package org.jwebsocket.server;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
 import javolution.util.FastMap;
+import org.apache.log4j.Logger;
 import org.jwebsocket.api.IInternalConnectorListener;
+import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.connectors.InternalConnector;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.system.SystemPlugIn;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -41,10 +46,13 @@ import org.jwebsocket.util.Tools;
  */
 public class InternalClient {
 
+	private Logger mLog = Logging.getLogger();
 	private final InternalConnector mConnector;
 	private static Map<Integer, WebSocketResponseTokenListener> mResponseListenersQueue =
 			new FastMap<Integer, WebSocketResponseTokenListener>().shared();
 	static int CURRENT_TOKEN_UID = 0;
+	private final ExecutorService mThreadPool;
+	private final Timer mTimer;
 
 	static int getUTID() {
 		if (Integer.MAX_VALUE == CURRENT_TOKEN_UID) {
@@ -55,11 +63,14 @@ public class InternalClient {
 	}
 
 	/**
+	 * Constructor
 	 *
 	 * @param aConnector
 	 */
 	public InternalClient(InternalConnector aConnector) {
 		mConnector = aConnector;
+		mThreadPool = Tools.getThreadPool();
+		mTimer = Tools.getTimer();
 
 		mConnector.addListener(new IInternalConnectorListener() {
 			@Override
@@ -70,14 +81,18 @@ public class InternalClient {
 			public void processToken(Token aToken) {
 				Integer lUTID = aToken.getInteger("utid");
 				if (null != lUTID) {
-					WebSocketResponseTokenListener lListener = mResponseListenersQueue.remove(lUTID);
-					if (null != lListener) {
-						lListener.OnResponse(aToken);
-						if (0 == aToken.getCode()) {
-							lListener.OnSuccess(aToken);
-						} else {
-							lListener.OnFailure(aToken);
+					try {
+						WebSocketResponseTokenListener lListener = mResponseListenersQueue.remove(lUTID);
+						if (null != lListener) {
+							lListener.OnResponse(aToken);
+							if (0 == aToken.getCode()) {
+								lListener.OnSuccess(aToken);
+							} else {
+								lListener.OnFailure(aToken);
+							}
 						}
+					} catch (Exception lEx) {
+						mLog.error("processing response listener callback", lEx);
 					}
 				}
 			}
@@ -97,6 +112,16 @@ public class InternalClient {
 	}
 
 	/**
+	 * Returns TRUE if the client is connected, FALSE otherwise.
+	 *
+	 * @return
+	 */
+	public boolean isConnected() {
+		return WebSocketConnectorStatus.UP.equals(mConnector.getStatus());
+	}
+
+	/**
+	 * Gets the client connector identifier.
 	 *
 	 * @return
 	 */
@@ -105,6 +130,7 @@ public class InternalClient {
 	}
 
 	/**
+	 * Gets the client username if logon.
 	 *
 	 * @return
 	 */
@@ -113,6 +139,7 @@ public class InternalClient {
 	}
 
 	/**
+	 * Gets the client connector instance.
 	 *
 	 * @return
 	 */
@@ -121,28 +148,35 @@ public class InternalClient {
 	}
 
 	/**
-	 *
+	 * Constructor.
 	 */
 	public InternalClient() {
 		this(new InternalConnector(JWebSocketFactory.getEngine()));
 	}
 
 	/**
-	 *
+	 * Opens the client connection.
 	 */
 	public void open() {
 		mConnector.startConnector();
 	}
 
 	/**
+	 * Sends a packet to the server.
 	 *
 	 * @param aPacket
 	 */
-	public void sendPacket(WebSocketPacket aPacket) {
-		mConnector.getEngine().processPacket(mConnector, aPacket);
+	public void sendPacket(final WebSocketPacket aPacket) {
+		mThreadPool.submit(new Runnable() {
+			@Override
+			public void run() {
+				mConnector.getEngine().processPacket(mConnector, aPacket);
+			}
+		});
 	}
 
 	/**
+	 * Sends a token to the server.
 	 *
 	 * @param aToken
 	 */
@@ -151,24 +185,30 @@ public class InternalClient {
 	}
 
 	/**
+	 * Sends a token to the server allowing to pass response listener callbacks.
 	 *
 	 * @param aToken
 	 * @param aResponseListener
 	 */
-	public void sendToken(Token aToken, WebSocketResponseTokenListener aResponseListener) {
+	public void sendToken(final Token aToken, WebSocketResponseTokenListener aResponseListener) {
 		setUTID(aToken);
 
 		if (null != aResponseListener) {
 			processResponseListener(aToken, aResponseListener);
 		}
 
-		Iterator<WebSocketServer> lServers = JWebSocketFactory.getServers().iterator();
-		while (lServers.hasNext()) {
-			WebSocketServer lServer = lServers.next();
-			if (lServer instanceof TokenServer) {
-				((TokenServer) lServer).processToken(mConnector, aToken);
+		mThreadPool.submit(new Runnable() {
+			@Override
+			public void run() {
+				Iterator<WebSocketServer> lServers = JWebSocketFactory.getServers().iterator();
+				while (lServers.hasNext()) {
+					WebSocketServer lServer = lServers.next();
+					if (lServer instanceof TokenServer) {
+						((TokenServer) lServer).processToken(mConnector, aToken);
+					}
+				}
 			}
-		}
+		});
 	}
 
 	private void setUTID(Token aToken) {
@@ -177,16 +217,18 @@ public class InternalClient {
 	}
 
 	/**
+	 * Adds a listener to the server client connection instance.
 	 *
 	 * @param aListener
 	 */
 	public IInternalConnectorListener addListener(IInternalConnectorListener aListener) {
 		mConnector.addListener(aListener);
-		
+
 		return aListener;
 	}
 
 	/**
+	 * Removes a server client listener.
 	 *
 	 * @param aListener
 	 */
@@ -195,7 +237,7 @@ public class InternalClient {
 	}
 
 	/**
-	 *
+	 * Closes the client connection.
 	 */
 	public void close() {
 		mConnector.stopConnector(CloseReason.CLIENT);
@@ -205,15 +247,19 @@ public class InternalClient {
 		mResponseListenersQueue.put(aToken.getInteger("utid"), aListener);
 
 		final Integer lUTID = aToken.getInteger("utid");
-		Tools.getTimer().schedule(new TimerTask() {
+		mTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				Tools.getThreadPool().submit(new Runnable() {
+				mThreadPool.submit(new Runnable() {
 					@Override
 					public void run() {
 						WebSocketResponseTokenListener lListener = mResponseListenersQueue.remove(lUTID);
 						if (null != lListener) {
-							lListener.OnTimeout(aToken);
+							try {
+								lListener.OnTimeout(aToken);
+							} catch (Exception lEx) {
+								mLog.error("processing response listener callback", lEx);
+							}
 						}
 					}
 				});

@@ -22,7 +22,9 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 import javolution.util.FastList;
+import org.apache.log4j.Logger;
 import org.jwebsocket.api.IInternalConnectorListener;
 import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
@@ -32,6 +34,7 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RequestHeader;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.util.Tools;
 
@@ -41,6 +44,8 @@ import org.jwebsocket.util.Tools;
  */
 public class InternalConnector extends BaseConnector {
 
+	private ExecutorService mThreadPool;
+	private Logger mLog = Logging.getLogger();
 	private Collection<IInternalConnectorListener> mListeners = new FastList<IInternalConnectorListener>().shared();
 	static RequestHeader mHeader = new RequestHeader() {
 		@Override
@@ -55,6 +60,7 @@ public class InternalConnector extends BaseConnector {
 	 */
 	public InternalConnector(WebSocketEngine aEngine) {
 		super(aEngine);
+		mThreadPool = Tools.getThreadPool();
 	}
 
 	@Override
@@ -84,7 +90,17 @@ public class InternalConnector extends BaseConnector {
 		// notifying open event
 		Iterator<IInternalConnectorListener> lIt = mListeners.iterator();
 		while (lIt.hasNext()) {
-			lIt.next().processOpened();
+			final IInternalConnectorListener lListener = lIt.next();
+			mThreadPool.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						lListener.processOpened();
+					} catch (Exception lEx) {
+						mLog.error("notifying 'processOpened' event to listeners", lEx);
+					}
+				}
+			});
 		}
 
 		// notifying connector started
@@ -94,14 +110,24 @@ public class InternalConnector extends BaseConnector {
 	}
 
 	@Override
-	public void stopConnector(CloseReason aCloseReason) {
+	public void stopConnector(final CloseReason aCloseReason) {
 		setStatus(WebSocketConnectorStatus.DOWN);
 		getEngine().removeConnector(this);
 
 		// notifying close event
 		Iterator<IInternalConnectorListener> lIt = mListeners.iterator();
 		while (lIt.hasNext()) {
-			lIt.next().processClosed(aCloseReason);
+			final IInternalConnectorListener lListener = lIt.next();
+			mThreadPool.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						lListener.processClosed(aCloseReason);
+					} catch (Exception lEx) {
+						mLog.error("notifying 'processClosed' event to listeners", lEx);
+					}
+				}
+			});
 		}
 
 		super.stopConnector(aCloseReason);
@@ -150,11 +176,20 @@ public class InternalConnector extends BaseConnector {
 	 *
 	 * @param aPacket
 	 */
-	public void handleIncomingPacket(WebSocketPacket aPacket) {
+	public void handleIncomingPacket(final WebSocketPacket aPacket) {
 		Iterator<IInternalConnectorListener> lIt = mListeners.iterator();
-		// notifying welcome event
 		while (lIt.hasNext()) {
-			lIt.next().processPacket(aPacket);
+			final IInternalConnectorListener lListener = lIt.next();
+			mThreadPool.submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						lListener.processPacket(aPacket);
+					} catch (Exception lEx) {
+						mLog.error("notifying 'processPacket' event to listeners", lEx);
+					}
+				}
+			});
 		}
 	}
 
@@ -162,18 +197,36 @@ public class InternalConnector extends BaseConnector {
 	 *
 	 * @param aToken
 	 */
-	public void handleIncomingToken(Token aToken) {
+	public void handleIncomingToken(final Token aToken) {
 		Iterator<IInternalConnectorListener> lIt = mListeners.iterator();
 		if ((JWebSocketServerConstants.NS_BASE + ".plugins.system").equals(aToken.getNS())
 				&& "welcome".equals(aToken.getType())) {
-			// notifying welcome event
 			while (lIt.hasNext()) {
-				lIt.next().processWelcome(aToken);
+				final IInternalConnectorListener lListener = lIt.next();
+				mThreadPool.submit(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							lListener.processWelcome(aToken);
+						} catch (Exception lEx) {
+							mLog.error("notifying 'processWelcome' event to listeners", lEx);
+						}
+					}
+				});
 			}
 		} else {
-			// notifying processToken event
 			while (lIt.hasNext()) {
-				lIt.next().processToken(aToken);
+				final IInternalConnectorListener lListener = lIt.next();
+				mThreadPool.submit(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							lListener.processToken(aToken);
+						} catch (Exception lEx) {
+							mLog.error("notifying 'processToken' event to listeners", lEx);
+						}
+					}
+				});
 			}
 		}
 	}

@@ -57,11 +57,10 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse,
-		WebSocketConnector aConnector, Token aToken) {
-
+			WebSocketConnector aConnector, Token aToken) {
 		if (aToken.getBoolean("_lb", Boolean.FALSE)) {
 			mLoadBalancerPlugIn = (mLoadBalancerPlugIn == null
-				? (TokenPlugIn) getServer().getPlugInById(LOADBALANCER_ID) : mLoadBalancerPlugIn);
+					? (TokenPlugIn) getServer().getPlugInById(LOADBALANCER_ID) : mLoadBalancerPlugIn);
 			mLoadBalancerPlugIn.processToken(new PlugInResponse(), aConnector, aToken);
 		}
 	}
@@ -75,7 +74,7 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenOut(FilterResponse aResponse,
-		WebSocketConnector aSource, WebSocketConnector aTarget,
-		Token aToken) {
+			WebSocketConnector aSource, WebSocketConnector aTarget,
+			Token aToken) {
 	}
 }

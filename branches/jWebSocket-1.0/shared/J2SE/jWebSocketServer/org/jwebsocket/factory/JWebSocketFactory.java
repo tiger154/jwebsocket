@@ -98,7 +98,6 @@ public class JWebSocketFactory {
 				+ "org.jwebsocket.security,"
 				+ "org.jwebsocket.factory,"
 				+ "org.jwebsocket.config,"
-				+ "org.jwebsocket.server,"
 				+ "org.jwebsocket.spring,"
 				+ "org.jwebsocket.instance,"
 				+ "java.security");

@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.scripting.app;
 
 import java.io.File;
+import java.security.Permissions;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ import org.springframework.util.Assert;
  */
 abstract public class BaseScriptApp {
 
-	protected ScriptingPlugIn mServer;
+	protected ScriptingPlugIn mPlugIn;
 	private String mAppName;
 	private String mAppPath;
 	private ScriptEngine mScriptApp;
@@ -62,6 +63,7 @@ abstract public class BaseScriptApp {
 	private Logger mLog = Logging.getLogger();
 	private Map<String, Object> mApi = new FastMap<String, Object>().shared();
 	private GenericApplicationContext mBeanFactory = new GenericApplicationContext(new DefaultListableBeanFactory());
+	private final ServerClient mServerClient;
 	/**
 	 * String value for the "Connector Started" event. The event is fired when a
 	 * client started a connection with the server.
@@ -175,20 +177,30 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets the script app server internal client instance.
+	 *
+	 * @return
+	 */
+	public ServerClient getServerClient() {
+		return mServerClient;
+	}
+
+	/**
 	 * Constructor
 	 *
-	 * @param aServer The ScriptingPlugIn reference that allows to script
+	 * @param aPlugIn The ScriptingPlugIn reference that allows to script
 	 * applications to get access to the TokenServer instance.
 	 * @param aAppName The application name (unique value)
 	 * @param aAppPath The application directory path
 	 * @param aScriptApp The scripting engine that runs the application
 	 */
-	public BaseScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp) {
-		mServer = aServer;
+	public BaseScriptApp(ScriptingPlugIn aPlugIn, String aAppName, String aAppPath, ScriptEngine aScriptApp) {
+		mPlugIn = aPlugIn;
 		mAppName = aAppName;
 		mAppPath = aAppPath;
 		mScriptApp = aScriptApp;
 		mLogger = new ScriptAppLogger(mLog, aAppName);
+		mServerClient = new ServerClient(this);
 
 		// registering global "AppUtils" resource
 		aScriptApp.put("AppUtils", this);
@@ -201,6 +213,10 @@ abstract public class BaseScriptApp {
 	 */
 	public ScriptEngine getEngine() {
 		return mScriptApp;
+	}
+
+	public Permissions getPermissions() {
+		return mPlugIn.getAppPermissions(mAppName);
 	}
 
 	/**
@@ -326,9 +342,9 @@ abstract public class BaseScriptApp {
 		notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
 
 		if (null != aFragmentSize) {
-			mServer.sendTokenFragmented(aConnector, toToken(aMap), aFragmentSize);
+			mPlugIn.sendTokenFragmented(aConnector, toToken(aMap), aFragmentSize);
 		} else {
-			mServer.sendToken(aConnector, toToken(aMap));
+			mPlugIn.sendToken(aConnector, toToken(aMap));
 		}
 	}
 
@@ -353,7 +369,7 @@ abstract public class BaseScriptApp {
 		// outbound filtering
 		notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
 
-		mServer.sendTokenInTransaction(aConnector, toToken(aMap),
+		mPlugIn.sendTokenInTransaction(aConnector, toToken(aMap),
 				(IPacketDeliveryListener) cast(aListener, IPacketDeliveryListener.class));
 	}
 
@@ -369,7 +385,7 @@ abstract public class BaseScriptApp {
 		// outbound filtering
 		notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aMap, aConnector});
 
-		mServer.sendTokenInTransaction(aConnector, toToken(aMap), aFragmentSize,
+		mPlugIn.sendTokenInTransaction(aConnector, toToken(aMap), aFragmentSize,
 				(IPacketDeliveryListener) cast(aListener, IPacketDeliveryListener.class));
 	}
 
@@ -383,7 +399,7 @@ abstract public class BaseScriptApp {
 		// IChunkable objects cannot be filtered in this level
 		// notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
 
-		mServer.sendChunkable(aConnector, (IChunkable) cast(aChunkable, IChunkable.class));
+		mPlugIn.sendChunkable(aConnector, (IChunkable) cast(aChunkable, IChunkable.class));
 	}
 
 	/**
@@ -397,7 +413,7 @@ abstract public class BaseScriptApp {
 		// IChunkable objects cannot be filtered in this level
 		// notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{aConnector, aMap});
 
-		mServer.sendChunkable(aConnector, (IChunkable) cast(aChunkable, IChunkable.class),
+		mPlugIn.sendChunkable(aConnector, (IChunkable) cast(aChunkable, IChunkable.class),
 				(IChunkableDeliveryListener) cast(aListener, IChunkableDeliveryListener.class));
 	}
 
@@ -430,7 +446,7 @@ abstract public class BaseScriptApp {
 	 * @return
 	 */
 	public Collection<WebSocketConnector> getAllConnectors() {
-		return mServer.getServer().selectTokenConnectors().values();
+		return mPlugIn.getServer().selectTokenConnectors().values();
 	}
 
 	/**
@@ -442,7 +458,7 @@ abstract public class BaseScriptApp {
 	 * @return
 	 */
 	public boolean hasAuthority(WebSocketConnector aConnector, String aAuthority) {
-		return mServer.hasAuthority(aConnector, aAuthority);
+		return mPlugIn.hasAuthority(aConnector, aAuthority);
 	}
 
 	/**
@@ -453,7 +469,7 @@ abstract public class BaseScriptApp {
 	 * @throws Exception
 	 */
 	public void requireAuthority(WebSocketConnector aConnector, String aAuthority) throws Exception {
-		if (!mServer.hasAuthority(aConnector, aAuthority)) {
+		if (!mPlugIn.hasAuthority(aConnector, aAuthority)) {
 			throw new Exception("Not authorized. Missing required '" + aAuthority + "' authority!");
 		}
 	}
@@ -502,10 +518,7 @@ abstract public class BaseScriptApp {
 	 * @return
 	 */
 	public Token toToken(Map aMap) {
-		Token lToken = TokenFactory.createToken();
-		lToken.setMap(aMap);
-
-		return lToken;
+		return TokenFactory.createToken(aMap);
 	}
 
 	/**
@@ -516,7 +529,7 @@ abstract public class BaseScriptApp {
 	 */
 	public Map createResponse(Map aInToken) {
 
-		return mServer.createResponse(toToken(aInToken)).getMap();
+		return mPlugIn.createResponse(toToken(aInToken)).getMap();
 	}
 
 	/**
@@ -611,7 +624,7 @@ abstract public class BaseScriptApp {
 				: aBeanId;
 
 		// checking permission for bean access
-		mServer.checkWhiteListedBean(mAppName, lBeanPath);
+		mPlugIn.checkWhiteListedBean(mAppName, lBeanPath);
 
 		return getBeanFactory(aNamespace).getBean(aBeanId);
 	}

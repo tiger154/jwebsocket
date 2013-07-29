@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.token;
 
+import java.util.Map;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.packetProcessors.CSVProcessor;
@@ -37,6 +38,13 @@ public class TokenFactory {
 	 */
 	public static Token createToken() {
 		return new MapToken();
+	}
+
+	public static Token createToken(Map aMap) {
+		Token lToken = createToken();
+		lToken.setMap(aMap);
+
+		return lToken;
 	}
 
 	/**
