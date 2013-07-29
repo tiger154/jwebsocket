@@ -358,10 +358,10 @@ var App = (function() {
 				
 				mServerClient.addListener({
 					processToken: function(aToken){
-						for (var lIndex in this.listeners){
-							var lPlugIn = this.listeners[lIndex];
-							if (lPlugIn && lPlugIn['processToken']){
-								lPlugIn['processToken'](toNativeObject(aToken));
+						for (var lIndex in mServerClient.listeners){
+							var lListener = mServerClient.listeners[lIndex];
+							if (lListener){
+								lListener.call(mServerClient, toNativeObject(aToken));
 							}
 						}
 					}
@@ -387,8 +387,8 @@ Class = function(aClassName){
  * jWebSocket JavaScript plug-ins bridge
  */
 var jws = {
-	NS_BASE: "org.jwebsocket",
-	NS_SYSTEM: "org.jwebsocket.plugins.system",
+	NS_BASE: 'org.jwebsocket',
+	NS_SYSTEM: 'org.jwebsocket.plugins.system',
 	
 	oop : {
 		addPlugIn: function(a, aPlugIn){
@@ -396,16 +396,18 @@ var jws = {
 			var lServer = App.getServerClient();
 			
 			// storing the plugin for future incoming token notifications.
-			App.assertTrue(null != aPlugIn['NS'], 
+			App.assertTrue(undefined != aPlugIn.NS, 
 				'The given plug-in class has invalid NS property value!')
 				
-			// registering the plugin
-			lServer.listeners[aPlugIn['NS']] = aPlugIn;
+			// registering the plugin listener
+			if (typeof (aPlugIn['processToken']) == 'function'){
+				lServer.listeners[aPlugIn.NS] = aPlugIn['processToken'];
+			}
 			
 			// prototyping server instance.
 			for (var lField in aPlugIn){
-				if( !lServer.prototype[ lField ] ) {
-					lServer.prototype[ lField ] = aPlugIn[ lField ];
+				if( !lServer[ lField ] ) {
+					lServer[ lField ] = aPlugIn[ lField ];
 				}
 			}
 		}

@@ -4,9 +4,11 @@
 	<bean id="org.jwebsocket.plugins.scripting.settings" class="org.jwebsocket.plugins.scripting.Settings"
 		  init-method="initialize">
 		<property name="appsDirectory" value="${JWEBSOCKET_HOME}/apps/js" />
+		<property name="extensionsDirectory" value="${JWEBSOCKET_HOME}/conf/ScriptingPlugIn/extensions" />
 		<property name="globalSecurityPermissions">
 			<list>
-				<value>permission java.io.FilePermission "${APP_HOME}\-", "read,write,delete"</value>
+				<value>permission java.io.FilePermission "${APP_HOME}/-", "read,write,delete"</value>
+				<value>permission java.io.FilePermission "${JWEBSOCKET_HOME}/conf/ScriptingPlugIn/extensions/-", "read"</value>
 				<value>permission java.util.PropertyPermission "org.apache.activemq.UseDedicatedTaskRunner", "read"</value>
 			</list>
 		</property>
