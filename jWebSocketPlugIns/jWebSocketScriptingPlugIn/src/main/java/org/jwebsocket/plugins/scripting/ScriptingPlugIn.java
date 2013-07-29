@@ -20,8 +20,10 @@ package org.jwebsocket.plugins.scripting;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.AccessControlException;
+import java.security.Permissions;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,8 +118,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.scripting.settings");
 
 				// initializing JMS connection at this level if present
-				if (mBeanFactory.containsBean("jmsConnection")) {
-					mBeanFactory.getBean("jmsConnection");
+				try {
+					if (mBeanFactory.containsBean("jmsConnection")) {
+						mBeanFactory.getBean("jmsConnection");
+					}
+				} catch (Exception lEx) {
+					mLog.error("Unable to load default JMS connection. Resource will not be able on Script Apps!");
 				}
 
 				if (mLog.isInfoEnabled()) {
@@ -180,6 +186,10 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		return NS;
 	}
 
+	public Permissions getAppPermissions(String aAppName) {
+		return mSettings.getAppPermissions(aAppName);
+	}
+
 	/**
 	 * Loads an script application.
 	 *
@@ -189,7 +199,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * @return
 	 * @throws Exception
 	 */
-	private boolean loadApp(final String aApp, String aAppDirPath, boolean aHotLoad) throws Exception {
+	private void loadApp(final String aApp, String aAppDirPath, boolean aHotLoad) throws Exception {
 		// notifying before app reload event here
 		BaseScriptApp lScript = mApps.get(aApp);
 		if (null != lScript) {
@@ -199,9 +209,10 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		// parsing app manifest
 		File lManifestFile = new File(aAppDirPath + "/manifest.json");
 		if (!lManifestFile.exists() || !lManifestFile.canRead()) {
-			mLog.error("Unable to load '" + aApp + "' application. The manifest file '"
-					+ lManifestFile.getPath() + "' does not exists!");
-			return false;
+			String lMsg = "Unable to load '" + aApp + "' application. The manifest file '"
+					+ lManifestFile.getPath() + "' does not exists!";
+			mLog.error(lMsg);
+			throw new FileNotFoundException(lMsg);
 		}
 		// parsing app manifest file
 		ObjectMapper lMapper = new ObjectMapper();
@@ -227,9 +238,10 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		// validating bootstrap file
 		final File lBootstrap = new File(aAppDirPath + "/App." + lExt);
 		if (!lBootstrap.exists() || !lBootstrap.canRead()) {
-			mLog.error("Unable to load '" + aApp + "' application. The bootstrap file '"
-					+ lBootstrap + "' does not exists!");
-			return false;
+			String lMsg = "Unable to load '" + aApp + "' application. The bootstrap file '"
+					+ lBootstrap + "' does not exists!";
+			mLog.error(lMsg);
+			throw new FileNotFoundException(lMsg);
 		}
 
 		// support hot app load
@@ -240,7 +252,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			} catch (ScriptException lEx) {
 				mLog.error("Script applicaton '" + aApp + "' failed to start: " + lEx.getMessage());
 				mApps.remove(aApp);
-				return false;
+				throw new ScriptException(lEx.getMessage());
 			}
 		} else {
 			final ScriptEngine lScriptApp;
@@ -259,12 +271,13 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			if ("js".equals(lExt)) {
 				mApps.put(aApp, new JavaScriptApp(this, aApp, aAppDirPath, lScriptApp));
 			} else {
-				mLog.error("The extension '" + lExt + "' is not currently supported!");
-				return false;
+				String lMsg = "The extension '" + lExt + "' is not currently supported!";
+				mLog.error(lMsg);
+				throw new Exception(lMsg);
 			}
 
 			// loading application into security sandbox
-			Boolean lResult = (Boolean) Tools.doPrivileged(mSettings.getAppPermissions(aApp),
+			Tools.doPrivileged(mSettings.getAppPermissions(aApp),
 					new PrivilegedAction<Boolean>() {
 						@Override
 						public Boolean run() {
@@ -275,14 +288,10 @@ public class ScriptingPlugIn extends ActionPlugIn {
 							} catch (Exception lEx) {
 								mLog.error("Script applicaton '" + aApp + "' failed to start: " + lEx.getMessage());
 								mApps.remove(aApp);
-								return false;
+								throw new RuntimeException(lEx);
 							}
 						}
 					});
-
-			if (!lResult) {
-				return false;
-			}
 		}
 
 		// notifying app loaded event
@@ -291,8 +300,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(aApp + "(" + lExt + ") application loaded successfully!");
 		}
-
-		return true;
 	}
 
 	@Override

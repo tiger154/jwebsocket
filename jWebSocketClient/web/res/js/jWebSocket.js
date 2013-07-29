@@ -39,7 +39,7 @@ var jws = {
 
 	//:const:*:VERSION:String:1.0 RC2 (build 30613)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC2 (build 30613)",
+	VERSION: "1.0.0 RC2 (build 30613)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -2796,7 +2796,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		if( !this.isOpened() ) {
 			lRes.code = -1;
 			lRes.localeKey = "jws.jsc.res.notConnected";
-			lRes.msg = "Not connected.";
+			lRes.msg = "Not connected!";
 		}
 		return lRes;
 	},

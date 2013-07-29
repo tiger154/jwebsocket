@@ -36,6 +36,7 @@ import org.jwebsocket.kit.*;
 import org.jwebsocket.listener.WebSocketServerTokenEvent;
 import org.jwebsocket.listener.WebSocketServerTokenListener;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.plugins.TokenPlugInChain;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
@@ -382,7 +383,11 @@ public class TokenServer extends BaseServer {
 							+ "' to '" + aTarget + "'...");
 				}
 				if (aTarget.isInternal()) {
-					((InternalConnector) aTarget).handleIncomingToken(aToken);
+					// tokenize before pass the token to the internal client in order 
+					// to break object references
+					Token lToken = JSONProcessor.packetToToken(JSONProcessor.tokenToPacket(aToken));
+					// adressing the token to the internal client
+					((InternalConnector) aTarget).handleIncomingToken(lToken);
 					aListener.OnSuccess();
 				} else {
 					super.sendPacketInTransaction(

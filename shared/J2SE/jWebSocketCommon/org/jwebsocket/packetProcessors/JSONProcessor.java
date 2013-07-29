@@ -156,6 +156,21 @@ public class JSONProcessor {
 	}
 
 	/**
+	 * Gets the JSON string representation of a given object.
+	 *
+	 * @param aObject
+	 * @return The JSON string
+	 */
+	public static String objectToJSONString(Object aObject) {
+		StringBuffer lBuffer = new StringBuffer();
+		objectToJSONString(aObject, lBuffer);
+
+		return lBuffer.toString();
+	}
+
+	/**
+	 * Gets the JSON string representation of a given object. The string value
+	 * is copied into the StringBuffer instance.
 	 *
 	 * @param aObject
 	 * @param aBuffer
@@ -298,7 +313,7 @@ public class JSONProcessor {
 		} else if (aObject instanceof Map) {
 			return mapToJSONObject((Map<?, ?>) aObject);
 		} else if (aObject instanceof WebSocketPacket || aObject instanceof String) {
-			return escapeForJSON((String)aObject);
+			return escapeForJSON((String) aObject);
 		} else {
 			return aObject;
 		}

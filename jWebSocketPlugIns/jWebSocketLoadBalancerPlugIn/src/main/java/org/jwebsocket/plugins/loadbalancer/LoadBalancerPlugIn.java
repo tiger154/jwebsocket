@@ -82,7 +82,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for load "
-					+ "balancer plug-in, some features may not be available.");
+						+ "balancer plug-in, some features may not be available.");
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.loadbalancer.settings");
 				if (null != mSettings) {
@@ -96,7 +96,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx,
-				"instantiating load balancer plug-in"));
+					"instantiating load balancer plug-in"));
 			throw lEx;
 		}
 	}
@@ -249,7 +249,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 					+ ", was create satisfactorily in the cluster " + lClusterAlias;
 			} else {
 				lMsg = "The service endpoints with ID: myService_" + aConnector.getId()
-					+ ", already exist in the cluster";
+						+ ", already exist in the cluster";
 			}
 		} else {
 			lMsg = "The cluster " + lClusterAlias + " don't exist";
