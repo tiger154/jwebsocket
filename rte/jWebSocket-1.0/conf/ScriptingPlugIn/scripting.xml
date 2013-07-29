@@ -7,8 +7,7 @@
 		<property name="globalSecurityPermissions">
 			<list>
 				<value>permission java.io.FilePermission "${APP_HOME}\-", "read,write,delete"</value>
-				<value>permission java.util.PropertyPermission "*", "read"</value>
-				<value>permission java.net.SocketPermission "*:*", "connect,resolve"</value>
+				<value>permission java.util.PropertyPermission "org.apache.activemq.UseDedicatedTaskRunner", "read"</value>
 			</list>
 		</property>
 		<!--

@@ -19,25 +19,60 @@
 
 // @author kyberneees
 var App = (function() {
+	// app listeners container
 	var mListeners = AppUtils.newThreadSafeMap();
+	// app public objects (controllers) container
 	var mAPI = AppUtils.newThreadSafeMap();
-	var mPackages = Packages; // saving packages reference
-	var toMap = function(aObject) {
-		var lMap = new App.getClass('java.util.HashMap')();
-		if (aObject instanceof App.getClass('java.util.Map')){
-			lMap = aObject;
+	// Packages object reference
+	var mPackages = Packages; 
+	
+	// function to convert a JavaScript native object to a Java Map instance
+	var toMap = function(aNativeObject) {
+		var lMap = new Packages.java.util.HashMap();
+		if (aNativeObject instanceof Packages.java.util.Map){
+			lMap = aNativeObject;
 		} else {
-			for (var lAttr in aObject) {
-				lMap.put(lAttr, aObject[lAttr]);
+			for (var lAttr in aNativeObject) {
+				lMap.put(lAttr, aNativeObject[lAttr]);
 			}
 		}
 		
 		return lMap;
 	};
 	
+	// function to convert a Java Token object to a JavaScript native object instance
+	var toNativeObject = function(aObject){
+		var lNative, lIt;
+		if (aObject instanceof Packages.java.util.Map){
+			lNative = {};
+			lIt = aObject.keySet().iterator();
+			while (lIt.hasNext()){
+				var lProp = lIt.next();
+				lNative[lProp] = toNativeObject(aObject.get(lProp));
+			}
+			
+			return lNative;
+		} else if (aObject instanceof Packages.java.util.List){
+			lNative = [];
+			lIt = aObject.iterator();
+			while (lIt.hasNext()){
+				lNative.push(toNativeObject(lIt.next()));
+			}
+			
+			return lNative;
+		}
+		
+		return aObject;
+	}
+	
+	// app utility storage
 	var mStorage = AppUtils.newThreadSafeMap();
+	// app version
 	var mVersion = '1.0.0';
+	// app description
 	var mDescription = '';
+	// app server client instance
+	var mServerClient;
 
 	return {
 		getJMSManager: function(aUseTransaction, aConn){
@@ -108,11 +143,9 @@ var App = (function() {
 			}
 		},
 		sendChunkable: function(aConnector, aChunkable, aListener) {
-			if (!aListener) {
-				AppUtils.sendChunkable(aConnector, aChunkable);
-			} else {
-				AppUtils.sendChunkable(aConnector, aChunkable, aListener);
-			}
+			(!aListener)
+			? AppUtils.sendChunkable(aConnector, aChunkable)
+			: AppUtils.sendChunkable(aConnector, aChunkable, aListener);
 		},
 		getAllConnectors: function() {
 			return AppUtils.getAllConnectors();
@@ -137,14 +170,13 @@ var App = (function() {
 		},
 		on: function(aEventName, aFn) {
 			if (Object.prototype.toString.call(aEventName) === '[object Array]') {
-				var $this = this;
 				for (var lIndex = 0; lIndex < aEventName.length; lIndex++) {
-					$this.on(aEventName[lIndex], aFn);
+					App.on(aEventName[lIndex], aFn);
 				}
 				return;
 			}
 			if (!mListeners.containsKey(aEventName)) {
-				mListeners.put(aEventName, this.newThreadSafeCollection());
+				mListeners.put(aEventName, App.newThreadSafeCollection());
 			}
 			mListeners.get(aEventName).add(aFn);
 		},
@@ -173,10 +205,9 @@ var App = (function() {
 			AppUtils.loadToAppBeanFactory(aFile);
 		},
 		getBean: function(aBeanId, aNamespace){
-			if (undefined == aNamespace){
-				return AppUtils.getBean(aBeanId);
-			}
-			return AppUtils.getBean(aBeanId, aNamespace);
+			return (undefined == aNamespace)
+			? AppUtils.getBean(aBeanId)
+			: AppUtils.getBean(aBeanId, aNamespace);
 		},
 		getAppBean: function(aBeanId){
 			return AppUtils.getAppBean(aBeanId);
@@ -190,20 +221,164 @@ var App = (function() {
 		getClass: function(aClassName){
 			var lPackages = aClassName.split('.');
 			var lPackage = mPackages;
-			
 			for (var lIndex = 0; lIndex < lPackages.length - 1; lIndex++){
 				lPackage = lPackage[lPackages[lIndex]];
-				
-				if (null == lPackage) return null;
+				if (!lPackage) return null;
 			}
 			
 			// getting class
 			return lPackage[lPackages[lPackages.length - 1]];
+		},
+		setModule: function(aName, aModule){
+			App.getStorage().put('module.' + aName, aModule);
+			return aModule;
+		},
+		getModule: function(aName){
+			return App.getStorage().get('module.' + aName);
+		},
+		hasModule: function(aName){
+			return App.getStorage().containsKey('module.' + aName);
+		},
+		removeModule: function(aName){
+			return App.getStorage().remove('module.' + aName);
+		},
+		getServerClient: function(){
+			if (!mServerClient){
+				// get internal client instance
+				var lClient = AppUtils.getServerClient();
+				
+				// return JavaScript wrapper
+				mServerClient = {
+					NS_SYSTEM: 'org.jwebsocket.plugins.system',
+					listeners: {},
+					getConnection: function(){
+						return lClient;
+					},
+					sendToken: function(aToken, aCallbacks){
+						if (null == aCallbacks){
+							aCallbacks = {};
+						}
+						return lClient.sendToken(toMap(aToken), {
+							getTimeout: function(){
+								if (aCallbacks['getTimeout']){
+									return aCallbacks['getTimeout']();
+								}
+								return 5000;
+							},
+							setTimeout: function(aTimeout){},
+							OnTimeout: function(aToken){
+								if (aCallbacks['OnTimeout']){
+									aCallbacks['OnTimeout'](toNativeObject(aToken.getMap()));
+								}
+							},
+							OnResponse: function(aResponse){
+								if (aCallbacks['OnResponse']){
+									aCallbacks['OnResponse'](toNativeObject(aResponse.getMap()));
+								}
+							},
+							OnSuccess: function(aResponse){
+								if (aCallbacks['OnSuccess']){
+									aCallbacks['OnSuccess'](toNativeObject(aResponse.getMap()));
+								}
+							},
+							OnFailure: function(aResponse){
+								if (aCallbacks['OnFailure']){
+									aCallbacks['OnFailure'](toNativeObject(aResponse.getMap()));
+								}
+							}
+						});
+					},
+					open: function(){
+						lClient.open();
+					}, 
+					isConnected: function(){
+						return lClient.isConnected();
+					},
+					addListener: function(aListener){
+						return lClient.addListener({
+							processPacket: function(aPacket){
+								if (aListener['processPacket']){
+									aListener['processPacket'](aPacket);
+								}
+							},
+							processToken: function(aToken){
+								if (aListener['processToken']){
+									aListener['processToken'](toNativeObject(aToken.getMap()));
+								}
+							},
+							processClosed: function(aReason){
+								if (aListener['processClosed']){
+									aListener['processClosed'](aReason);
+								}
+							},
+							processWelcome: function(aToken){
+								if (aListener['processWelcome']){
+									aListener['processWelcome'](toNativeObject(aToken.getMap()));
+								}
+							},
+							processOpened: function(){
+								if (aListener['processOpened']){
+									aListener['processOpened']();
+								}
+							}
+						});
+					},
+					logon: function(aUsername, aPassword, aCallbacks){
+						this.sendToken({
+							ns: this.NS_SYSTEM,
+							type: 'logon',
+							username: aUsername,
+							password: aPassword
+						}, aCallbacks);
+					},
+					logoff: function(aCallbacks){
+						this.sendToken({
+							ns: this.NS_SYSTEM,
+							type: 'logoff'
+						}, aCallbacks);
+					},
+					removeListener: function(aListener){
+						lClient.removeListener(aListener);
+					},	
+					close: function(){
+						lClient.close();
+					},
+					checkConnected: function() {
+						var lRes = {
+							code: 0,
+							msg: 'Ok'
+						};
+						if(!this.isConnected()) {
+							lRes.code = -1;
+							lRes.msg = 'Not connected!';
+						}
+						return lRes;
+					}
+				}
+				
+				mServerClient.addListener({
+					processToken: function(aToken){
+						for (var lIndex in this.listeners){
+							var lPlugIn = this.listeners[lIndex];
+							if (lPlugIn && lPlugIn['processToken']){
+								lPlugIn['processToken'](toNativeObject(aToken));
+							}
+						}
+					}
+				});
+				App.on('beforeAppReload', function(aHotLoad){
+					if (false == aHotLoad){
+						mServerClient.close();
+					}
+				});
+			}
+			
+			return mServerClient;
 		}
 	};
 })();
 
-// shortcut for apps ClassLoader
+// alias of App.getClass method
 Class = function(aClassName){
 	return App.getClass(aClassName);
 };
@@ -211,15 +386,21 @@ Class = function(aClassName){
 /**
  * jWebSocket JavaScript plug-ins bridge
  */
-/*
 var jws = {
+	NS_BASE: "org.jwebsocket",
+	NS_SYSTEM: "org.jwebsocket.plugins.system",
+	
 	oop : {
 		addPlugIn: function(a, aPlugIn){
 			// getting server instance
-			var lServer = App.getServer();
+			var lServer = App.getServerClient();
 			
 			// storing the plugin for future incoming token notifications.
-			lServer.listeners.push(aPlugIn);
+			App.assertTrue(null != aPlugIn['NS'], 
+				'The given plug-in class has invalid NS property value!')
+				
+			// registering the plugin
+			lServer.listeners[aPlugIn['NS']] = aPlugIn;
 			
 			// prototyping server instance.
 			for (var lField in aPlugIn){
@@ -230,13 +411,3 @@ var jws = {
 		}
 	}
 }
-*/
-
-// blocking direct access to classes 
-// required for sandboxing purposes
-java = undefined;
-com = undefined;
-Packages = undefined;
-importPackage = undefined;
-importClass = undefined;
-JavaImporter = undefined;
