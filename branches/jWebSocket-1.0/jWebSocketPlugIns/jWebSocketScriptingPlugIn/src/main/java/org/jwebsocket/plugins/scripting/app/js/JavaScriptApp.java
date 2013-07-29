@@ -97,6 +97,11 @@ public class JavaScriptApp extends BaseScriptApp {
 				});
 	}
 
+	@Override
+	public String getScriptLanguageExt() {
+		return "js";
+	}
+
 	/**
 	 * {@inheritDoc }
 	 */

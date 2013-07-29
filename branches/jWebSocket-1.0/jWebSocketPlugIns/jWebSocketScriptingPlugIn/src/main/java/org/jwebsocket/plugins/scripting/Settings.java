@@ -41,9 +41,13 @@ import org.springframework.util.Assert;
 public class Settings {
 
 	/**
-	 * Applications directory path
+	 * Applications directory file
 	 */
 	private File mAppsDirectory;
+	/**
+	 * Extensions directory file
+	 */
+	private File mExtensionsDirectory;
 	/**
 	 * Global security permissions
 	 */
@@ -68,6 +72,14 @@ public class Settings {
 	 * Local apps white listed beans
 	 */
 	private Map<String, List<String>> mCachedWhiteListedBeans = new FastMap<String, List<String>>().shared();
+	/**
+	 * Script apps directory path
+	 */
+	private String mAppsDirectoryPath;
+	/**
+	 * Script apps shared extensions directory path
+	 */
+	private String mExtensionsDirectoryPath;
 
 	/**
 	 * Gets the map representation <app name, app absolute path> of the apps
@@ -84,7 +96,6 @@ public class Settings {
 
 		return lApps;
 	}
-	private String mAppsDirectoryPath;
 
 	/**
 	 * Gets the applications directory path.
@@ -105,17 +116,42 @@ public class Settings {
 	}
 
 	/**
+	 * Sets the script apps shared extensions directory path.
+	 *
+	 * @param aExtensionsDirectoryPath
+	 */
+	public void setExtensionsDirectory(String aExtensionsDirectoryPath) {
+		mExtensionsDirectoryPath = Tools.expandEnvVarsAndProps(aExtensionsDirectoryPath);
+	}
+
+	/**
+	 * Gets the script apps shared extensions directory path.
+	 *
+	 * @return
+	 */
+	public String getExtensionsDirectory() {
+		return mExtensionsDirectoryPath;
+	}
+
+	/**
 	 * Initialize apps directory checkings.
 	 *
 	 * @throws Exception
 	 */
 	public void initialize() throws Exception {
-		File lDirectory = new File(mAppsDirectoryPath);
-		Assert.isTrue(lDirectory.isDirectory(), "The applications directory path does not exists!"
+		File lAppsDirectory = new File(mAppsDirectoryPath);
+		Assert.isTrue(lAppsDirectory.isDirectory(), "The applications directory path does not exists!"
 				+ " Please check directory path or access permissions.");
-		Assert.isTrue(lDirectory.canWrite(), "The Scripting plug-in requires WRITE permissions in the applications directory!");
+		Assert.isTrue(lAppsDirectory.canWrite(), "The Scripting plug-in requires "
+				+ "WRITE permissions into the applications directory!");
+		mAppsDirectory = lAppsDirectory;
 
-		mAppsDirectory = lDirectory;
+		File lExtensionsDirectory = new File(mExtensionsDirectoryPath);
+		Assert.isTrue(lExtensionsDirectory.isDirectory(), "The extensions directory path does not exists!"
+				+ " Please check directory path or access permissions.");
+		Assert.isTrue(lExtensionsDirectory.canRead(), "The Scripting plug-in requires "
+				+ "READ permissions into the extensions directory!");
+		mExtensionsDirectory = lExtensionsDirectory;
 	}
 
 	/**
