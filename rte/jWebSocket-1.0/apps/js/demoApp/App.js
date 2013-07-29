@@ -1,5 +1,5 @@
 // importing App script
-App.importScript('${APP_HOME}/lib/myAppLib.js');
+App.importScript('${APP_HOME}/lib/myAppLib');
 App.setDescription('Demo application with JavaScript at the server-side.');
 
 var FileUtils = Class('org.apache.commons.io.FileUtils');
