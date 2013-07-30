@@ -15,18 +15,8 @@ server.addListener({
 })
 server.open();
 
-App.setModule('clock', {
-	getTime: function(){
-		return new Date().getTime();
-	}
-});
-
-lClock = App.getModule('clock');
 
 App.publish('Main', {
-	time: function(){
-		return lClock.getTime();
-	},
 	list: function(aConnector){
 		server.listItems('Contacts', {
 			OnSuccess: function(aResponse){
@@ -36,3 +26,11 @@ App.publish('Main', {
 	}
 });
 
+
+App.setModule('clock', {
+	getTime: function(){
+		return new Date().getTime();
+	}
+});
+
+lClock = App.getModule('clock');
