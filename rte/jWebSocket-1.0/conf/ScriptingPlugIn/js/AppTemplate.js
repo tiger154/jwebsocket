@@ -157,7 +157,7 @@ var App = (function() {
 			AppUtils.requireAuthority(aConnector, aAuthority);
 		},
 		createResponse: function(aInToken) {
-			return AppUtils.createResponse(aInToken);
+			return toNativeObject(AppUtils.createResponse(toMap(aInToken)));
 		},
 		broadcast: function(aConnectors, aToken) {
 			AppUtils.broadcast(aConnectors, toMap(aToken));
@@ -189,9 +189,9 @@ var App = (function() {
 			if (mListeners.containsKey(aEventName)) {
 				var lArgs = new Array();
 				for (var lIndex = 0; lIndex < aArgs.length; lIndex++) {
-					lArgs.push(aArgs[lIndex]);
+					lArgs.push(toNativeObject(aArgs[lIndex]));
 				}
-
+				
 				var lIt = mListeners.get(aEventName).iterator();
 				while (lIt.hasNext()) {
 					lIt.next().apply(this, lArgs);
