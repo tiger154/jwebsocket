@@ -71,6 +71,7 @@ App.on('connectorStopped', function(aConnector) {
 // publishing to client public object (controllers)
 App.publish('Main', {
 	sayHello: function(aName){
+		// see: lib/myAppLib.js
 		return sayHello(aName);
 	}
 });
