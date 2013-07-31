@@ -33,7 +33,7 @@ jws.ScriptingPlugIn = {
 	// if namespace changed update the applications accordingly!
 	JWS_NS: 'scripting',
 			
-	//:m:*:callScriptMethod
+	//:m:*:callScriptAppMethod
 	//:d:en:Calls an script application published object method. 
 	//:a:en::aApp:String:The script application name
 	//:a:en::aObjectId:String:The published object identifier
@@ -41,7 +41,7 @@ jws.ScriptingPlugIn = {
 	//:a:en::aArgs:Array:The method calling arguments
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
-	callScriptMethod: function(aApp, aObjectId, aMethod, aArgs, aOptions) {
+	callScriptAppMethod: function(aApp, aObjectId, aMethod, aArgs, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
 			var lToken = {
@@ -100,7 +100,7 @@ jws.ScriptingPlugIn = {
 	//:a:en::aToken:Object:The token to be sent
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none		
-	sendScriptToken: function(aApp, aToken, aOptions) {
+	sendScriptAppToken: function(aApp, aToken, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code && aToken) {
 			this.sendToken({
