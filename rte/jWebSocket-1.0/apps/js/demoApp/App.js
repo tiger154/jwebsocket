@@ -1,31 +1,42 @@
-// importing App script
+/**
+ * JavaScript Script App demo for testing and learning purposes
+ * 
+ * See: https://jwebsocket.org/documentation/Plug-Ins/Scripting-Plug-In/Developer-Guide 
+ * for more details
+ */
+
+// importing app scripts
 App.importScript('${APP_HOME}/lib/myAppLib');
+
+// setting app description
 App.setDescription('Demo application with JavaScript at the server-side.');
 
+// importing Java classes
 var FileUtils = Class('org.apache.commons.io.FileUtils');
 var File = Class('java.io.File');
 
+// registering on app event for filter in tokens
 App.on('filterIn', function(aToken) {
 	App.getLogger().debug('Calling filter in: ' + aToken.toString());
 });
 
+// registering on app event to process tokens 
 App.on('token', function(aConnector, aToken) {
 	var lResponse = App.createResponse(aToken);
-	lResponse.put('required', true);
-	lResponse.put('name', aToken.get('name'));
+	lResponse.name = aToken['name'];
 
-	// normal send
+	// normal token send (response)
 	App.sendToken(aConnector, lResponse);
 	
-	// normal send
+	// normal token send (custom token)
 	App.sendToken(aConnector, {
 		another: 'token'
 	});
 	
-	// fragmented send
+	// fragmented token send
 	App.sendToken(aConnector, lResponse, 10);
 	
-	// akcnowledge send
+	// akcnowledge token send
 	App.sendToken(aConnector, lResponse, {
 		getTimeout: function() {
 			return 1000;
@@ -42,41 +53,31 @@ App.on('token', function(aConnector, aToken) {
 	});
 });
 
+// registering on app event for filter out tokens
 App.on('filterOut', function(aToken) {
 	App.getLogger().debug('Calling filter out: ' + aToken.toString());
 });
 
+// registering on app event to process new connections
 App.on('connectorStarted', function(aConnector) {
 	App.getLogger().debug('New client started: ' + aConnector.getId());
 });
 
+// registering on app event to process stopped connections
 App.on('connectorStopped', function(aConnector) {
 	App.getLogger().debug('Client stopped: ' + aConnector.getId());
 });
 
-var lFn = function(aConnector) {
-	App.getLogger().debug('Processing lFn...');
-	App.requireAuthority(aConnector, 'admin');
-};
-
-var lRead = function(aFile) {
-	return FileUtils.readFileToString(new File(aFile));
-};
-
-var lObject = {
-	version: function() {
-		return App.getSystemProperty('java.version');
-	}
-};
-
-// publish App object to be accessed from the client
+// publishing to client public object (controllers)
 App.publish('Main', {
-	read: lRead,
-	version: lObject.version,
-	fn: lFn,
-	sayHello: sayHello
+	sayHello: function(aName){
+		return 'Hello ' + aName + ' from server side script app!';
+	}
 });
 
+// Example using the JMS built-in client
+// See: https://jwebsocket.org/documentation/Plug-Ins/Scripting-Plug-In/Developer-Guide/jms-integration
+// -------------------------------------
 //var JMS = App.getJMSManager();
 //App.publish('JMSManager', {
 //	test: function(aMessage){

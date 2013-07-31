@@ -23,6 +23,9 @@ App.publish('Main', {
 				App.sendToken(aConnector, aResponse);
 			}
 		});
+	},
+	test: function(){
+		return 'Response from test method on Main object ;)';
 	}
 });
 

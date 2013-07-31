@@ -3,5 +3,5 @@
 	"jws_version": "1.0.0",
 	"jws_dependencies": ["jws.system"],
 	"permissions": ["permission java.io.FilePermission \"${APP_HOME}\\-\", \"read,write,delete\""],
-	"author": "jWebSocket Dev Team 2013"
+	"author": "Rolando SM <rsantamaria@jwebsocket.org> 2013"
 }
