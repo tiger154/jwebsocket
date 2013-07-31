@@ -35,7 +35,7 @@ public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_SAMPLESERVICE = "org.jwebsocket.plugins.sampleservice1";
+	public static final String NS_SAMPLESERVICE = "org.jwebsocket.plugins.sample";
 
 	/**
 	 *
@@ -50,14 +50,9 @@ public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 		// get the type of the token
 		// the type can be associated with a "command"
 		String lType = aToken.getType();
-
-		if (aToken.getType().equals("response")) {
-			System.out.println(aToken.toString());
-		}
 		// get the namespace of the token
 		// each plug-in should have its own unique namespace
 		String lNS = aToken.getNS();
-
 		// check if token has a type and a matching namespace
 		if (lType != null && lNS != null && lNS.equals(NS_SAMPLESERVICE)) {
 			// here you can interpret incoming tokens from the server
