@@ -111,7 +111,6 @@ public class LoadBalancerTest {
 
 				lClient.open("ws://localhost:8787/jWebSocket/jWebSocket");
 				Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.sampleservice1", "echo");
-				lToken.setBoolean("_lb", true);
 				lToken.setString("data", "load balancer test");
 				lClient.sendToken(lToken);
 
