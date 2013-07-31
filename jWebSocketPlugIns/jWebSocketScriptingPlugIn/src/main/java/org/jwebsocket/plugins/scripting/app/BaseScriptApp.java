@@ -542,7 +542,6 @@ abstract public class BaseScriptApp {
 	 * @return The response Token
 	 */
 	public Map createResponse(Map aInToken) {
-
 		return mPlugIn.createResponse(toToken(aInToken)).getMap();
 	}
 
