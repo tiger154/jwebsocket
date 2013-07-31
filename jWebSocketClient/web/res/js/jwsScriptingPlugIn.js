@@ -28,10 +28,6 @@ jws.ScriptingPlugIn = {
 	//:d:en:Namespace for the [tt]ScriptingPlugIn[/tt] class.
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + '.plugins.scripting',
-	//:const:*:JWS_NS:String:scripting
-	//:d:en:Namespace within the jWebSocketClient instance.
-	// if namespace changed update the applications accordingly!
-	JWS_NS: 'scripting',
 			
 	//:m:*:callScriptAppMethod
 	//:d:en:Calls an script application published object method. 
