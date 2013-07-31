@@ -29,6 +29,8 @@ public class Settings {
 
 	// list of (service) clusters
 	private Map<String, Cluster> mClusters = new FastMap<String, Cluster>();
+	private long mShutdownTimeout = 0;
+	private long mMessageTimeout=0;
 
 	/**
 	 * @return the clusters
@@ -42,5 +44,33 @@ public class Settings {
 	 */
 	public void setClusters(Map aClusters) {
 		mClusters = aClusters;
+	}
+
+	/**
+	 * @return the mShutdownTimeout
+	 */
+	public long getShutdownTimeout() {
+		return mShutdownTimeout;
+	}
+
+	/**
+	 * @param mShutdownTimeout the mShutdownTimeout to set
+	 */
+	public void setShutdownTimeout(long aShutdownTimeout) {
+		this.mShutdownTimeout = aShutdownTimeout;
+	}
+
+	/**
+	 * @return the mMessageTimeout
+	 */
+	public long getMessageTimeout() {
+		return mMessageTimeout;
+	}
+
+	/**
+	 * @param mMessageTimeout the mMessageTimeout to set
+	 */
+	public void setMessageTimeout(long aMessageTimeout) {
+		this.mMessageTimeout = aMessageTimeout;
 	}
 }

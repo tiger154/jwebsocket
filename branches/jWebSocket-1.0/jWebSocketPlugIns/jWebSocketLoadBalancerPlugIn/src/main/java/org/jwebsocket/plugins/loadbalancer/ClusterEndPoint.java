@@ -24,6 +24,7 @@ import org.jwebsocket.api.WebSocketConnector;
  * Specifies one single endpoint of a certain cluster.
  *
  * @author aschulze
+ * @author rbetancourt
  */
 public class ClusterEndPoint {
 
