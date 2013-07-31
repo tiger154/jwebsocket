@@ -26,11 +26,12 @@ import org.jwebsocket.api.WebSocketConnector;
  * Manages the list of end points per cluster.
  *
  * @author aschulze
+ * @author rbetancourt
  */
 public class Cluster {
 
 	private List<ClusterEndPoint> mEndpoints = new FastList<ClusterEndPoint>();
-	private String mClusterNamespace;
+	private String mNamespace;
 	private int mStaticEntries;
 	private int mEndPointPosition = 0;
 
@@ -65,7 +66,7 @@ public class Cluster {
 	public boolean addEndpoints(WebSocketConnector aConnector) {
 		if (!isAlreadyExist(aConnector.getId())) {
 			for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
-				if (mEndpoints.get(lPos).getConnector() == null) {
+				if (mEndpoints.get(lPos).getStatus().equals(EndPointStatus.OFFLINE)) {
 					mEndpoints.get(lPos).setConnector(aConnector);
 					mEndpoints.get(lPos).setStatus(EndPointStatus.ONLINE);
 					return true;
@@ -80,7 +81,7 @@ public class Cluster {
 		}
 	}
 
-	private boolean isAlreadyExist(String aConnectorID) {
+	public boolean isAlreadyExist(String aConnectorID) {
 		if (mEndpoints.isEmpty()) {
 			return false;
 		} else {
@@ -184,16 +185,16 @@ public class Cluster {
 	}
 
 	/**
-	 * @return the mClusterNamespace
+	 * @return the mNamespace
 	 */
-	public String getClusterNamespace() {
-		return mClusterNamespace;
+	public String getNamespace() {
+		return mNamespace;
 	}
 
 	/**
-	 * @param mClusterNamespace the mClusterNamespace to set
+	 * @param mNamespace the mNamespace to set
 	 */
-	public void setClusterNamespace(String aClusterNamespace) {
-		this.mClusterNamespace = aClusterNamespace;
+	public void setNamespace(String aNamespace) {
+		this.mNamespace = aNamespace;
 	}
 }

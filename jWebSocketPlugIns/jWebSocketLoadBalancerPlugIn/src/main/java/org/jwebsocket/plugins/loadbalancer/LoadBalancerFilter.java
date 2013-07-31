@@ -1,4 +1,4 @@
-//	---------------------------------------------------------------------------
+//      ---------------------------------------------------------------------------
 //	jWebSocket Load Balancer Filter (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
@@ -57,8 +57,13 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse,
+<<<<<<< .mine
+		WebSocketConnector aConnector, Token aToken) {
+		if (LoadBalancerPlugIn.containsNamespace(aToken.getNS())) {
+=======
 			WebSocketConnector aConnector, Token aToken) {
 		if (aToken.getBoolean("_lb", Boolean.FALSE)) {
+>>>>>>> .r1485
 			mLoadBalancerPlugIn = (mLoadBalancerPlugIn == null
 					? (TokenPlugIn) getServer().getPlugInById(LOADBALANCER_ID) : mLoadBalancerPlugIn);
 			mLoadBalancerPlugIn.processToken(new PlugInResponse(), aConnector, aToken);
