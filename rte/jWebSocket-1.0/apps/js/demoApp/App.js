@@ -71,7 +71,7 @@ App.on('connectorStopped', function(aConnector) {
 // publishing to client public object (controllers)
 App.publish('Main', {
 	sayHello: function(aName){
-		return 'Hello ' + aName + ' from server side script app!';
+		return sayHello(aName);
 	}
 });
 
