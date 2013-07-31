@@ -79,6 +79,7 @@ public class ItemCollectionUtils {
 		if (null == lTargetPK) {
 			// target PK is the PK
 			lTargetPK = (String) aData.get(lDef.getPrimaryKeyAttribute());
+			Assert.notNull(lTargetPK, "The item PK argument is missing!");
 		}
 
 		IItem lItem = null;
@@ -100,6 +101,18 @@ public class ItemCollectionUtils {
 
 		// saving
 		if (null != lTargetPK) {
+			// the client tries to modify an existing item
+			// if the received item data has no PK value present, set the targetPK as PK
+			if (null == lItem.getPK()) {
+				lItem.set(lDef.getPrimaryKeyAttribute(), lTargetPK);
+			}
+			// check if the item data comes with a new PK value
+			if (!lTargetPK.equals(lItem.getPK())) {
+				// ensure that tne new PK value is not being used
+				// architecturally is not bad, but logically is wrong
+				Assert.isTrue(!aCollection.getItemStorage().exists(lItem.getPK()),
+						"Can't change the item PK. The new item PK value is in use!");
+			}
 			aCollection.getItemStorage().save(lTargetPK, lItem);
 		} else {
 			aCollection.getItemStorage().save(lItem);
