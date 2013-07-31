@@ -430,11 +430,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	public void listAppsAction(WebSocketConnector aConnector, Token aToken) {
 		Iterator<String> lAppNames = mApps.keySet().iterator();
 		Map<String, Map> lResult = new HashMap<String, Map>();
+		boolean lUserOnly = aToken.getBoolean("userOnly", false);
 
 		while (lAppNames.hasNext()) {
 			String lAppName = lAppNames.next();
-			if (hasAuthority(aConnector, NS + ".deploy.*")
-					|| hasAuthority(aConnector, NS + ".deploy." + lAppName)) {
+			if (!lUserOnly || (lUserOnly && hasAuthority(aConnector, NS + ".deploy.*")
+					|| hasAuthority(aConnector, NS + ".deploy." + lAppName))) {
 				lResult.put(lAppName, new HashMap());
 				// locally caching object
 				BaseScriptApp lApp = mApps.get(lAppName);
