@@ -302,6 +302,17 @@ input[type="button"].sbtnDlg {
 	background-color: #81a0b5;
 	width: 100px;
 }
+input[type="button"].sbtnDlgBig {
+	font-size: 10pt;
+	font-family: inherit;
+	border: 1px solid #808080;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	margin: 1px;
+	color: white;
+	background-color: #81a0b5;
+	width: 200px;
+}
 input[type="button"].sbtnDlg:hover {
 	margin: 1px;
 	background-color: #006bb5;
