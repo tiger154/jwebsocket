@@ -25,7 +25,6 @@ import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.token.Token;
 
 /**
@@ -36,7 +35,7 @@ public class LoadBalancerFilter extends TokenFilter {
 
 	private static Logger mLog = Logging.getLogger();
 	private String LOADBALANCER_ID = "jws.lb";
-	private TokenPlugIn mLoadBalancerPlugIn;
+	private LoadBalancerPlugIn mLoadBalancerPlugIn;
 
 	/**
 	 *
@@ -57,10 +56,11 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse,
-		WebSocketConnector aConnector, Token aToken) {
-		if (LoadBalancerPlugIn.containsNamespace(aToken.getNS())) {
-			mLoadBalancerPlugIn = (mLoadBalancerPlugIn == null
-				? (TokenPlugIn) getServer().getPlugInById(LOADBALANCER_ID) : mLoadBalancerPlugIn);
+			WebSocketConnector aConnector, Token aToken) {
+		mLoadBalancerPlugIn = (mLoadBalancerPlugIn == null
+				? (LoadBalancerPlugIn) getServer().getPlugInById(LOADBALANCER_ID) : mLoadBalancerPlugIn);
+
+		if (mLoadBalancerPlugIn.supportsNamespace(aToken.getNS())) {
 			mLoadBalancerPlugIn.processToken(new PlugInResponse(), aConnector, aToken);
 		}
 	}
@@ -74,7 +74,7 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenOut(FilterResponse aResponse,
-		WebSocketConnector aSource, WebSocketConnector aTarget,
-		Token aToken) {
+			WebSocketConnector aSource, WebSocketConnector aTarget,
+			Token aToken) {
 	}
 }
