@@ -21,7 +21,7 @@
 	
 	<!-- Service Cluster 1 definition -->
 	<bean id="service1cluster" class="org.jwebsocket.plugins.loadbalancer.Cluster">
-		<property name="endpoints">
+		<property name="endPoints">
 			<list>
 				<ref bean="service1endPoint1"/>
 				<ref bean="service1endPoint2"/>
@@ -33,7 +33,7 @@
 	
 	<!-- Service Cluster 2 definition -->
 	<bean id="service2cluster" class="org.jwebsocket.plugins.loadbalancer.Cluster">
-		<property name="endpoints">
+		<property name="endPoints">
 			<list>
 				<ref bean="service2endPoint1"/>
 				<ref bean="service2endPoint2"/>
