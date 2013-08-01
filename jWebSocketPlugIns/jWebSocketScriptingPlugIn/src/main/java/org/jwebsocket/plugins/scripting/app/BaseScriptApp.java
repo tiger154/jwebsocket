@@ -36,7 +36,6 @@ import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
-import org.jwebsocket.plugins.scripting.app.js.JavaScriptApp;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
