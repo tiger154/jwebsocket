@@ -64,7 +64,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	protected static Map<String, Cluster> mClusters;
+	protected Map<String, Cluster> mClusters;
 	/**
 	 *
 	 */
@@ -167,7 +167,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			} else if (lType.equals("deregisterServiceEndPoint")) {
 				deregisterServiceEndPoint(aConnector, aToken);
 			} else if (lType.equals("shutdownEndpoint")) {
-				shutdownEndpoint(aConnector, aToken);
+				shutdownEndPoint(aConnector, aToken);
 			} else if (lType.equals("response")) {
 				responseToClient(aToken);
 			} else {
@@ -183,7 +183,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			String lServiceId = "myService_" + aConnector.getId();
 			int lServicePosition = lCluster.getPosition(lServiceId);
 			if (lServicePosition != -1) {
-				lCluster.removeEndpoint(lServicePosition);
+				lCluster.removeEndPoint(lServicePosition);
 				String lMsg = "The service " + lServiceId + " in the cluster "
 					+ lEntry.getKey() + " was disconnected by the " + aCloseReason;
 				if (mLog.isDebugEnabled()) {
@@ -216,9 +216,9 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			lInfoCluster.put("clusterNS", lCluster.getNamespace());
 			lInfoCluster.put("epCount", lCluster.getEndpoints().size());
 			lInfoCluster.put("endpoints", lCluster.getEndpoints());
-			lInfoCluster.put("epStatus", lCluster.getEndpointsStatus());
-			lInfoCluster.put("epId", lCluster.getEndpointsId());
-			lInfoCluster.put("epRequests", lCluster.getEndpointsRequests());
+			lInfoCluster.put("epStatus", lCluster.getEndPointsStatus());
+			lInfoCluster.put("epId", lCluster.getEndPointsId());
+			lInfoCluster.put("epRequests", lCluster.getEndPointsRequests());
 			lInfo.add(lInfoCluster);
 		}
 		TokenServer lServer = getServer();
@@ -256,12 +256,12 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		}
 
 		if (getCluster(lClusterAlias) != null) {
-			if (getCluster(lClusterAlias).addEndpoints(aConnector)) {
+			if (getCluster(lClusterAlias).addEndPoints(aConnector)) {
 				lCode = 0;
 				lMsg = "New service endpoint with ID: myService_" + aConnector.getId()
-					+ ", was create satisfactorily in the cluster " + lClusterAlias;
+					+ ", was create successfully in the cluster " + lClusterAlias;
 			} else {
-				lMsg = "The service endpoints with ID: myService_" + aConnector.getId()
+				lMsg = "The service endpoint with ID: myService_" + aConnector.getId()
 					+ ", already exist in the cluster";
 			}
 		} else {
@@ -275,7 +275,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	}
 
 	private void deregisterServiceEndPoint(WebSocketConnector aConnector, Token aToken) {
-		String lEndpointId = aToken.getString("epId");
+		String lEndPointId = aToken.getString("epId");
 		String lClusterAlias = aToken.getString("clusterAlias");
 		String lMsg = "null";
 		int lCode = -1;
@@ -286,19 +286,19 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			//return;
 		}
 
-		if (null != lEndpointId && null != lClusterAlias) {
+		if (null != lEndPointId && null != lClusterAlias) {
 			Cluster lCluster = getCluster(lClusterAlias);
-			int lEndpointPosition = lCluster.getPosition(lEndpointId);
+			int lEndpointPosition = lCluster.getPosition(lEndPointId);
 			if (lEndpointPosition != -1) {
 
-				if (lCluster.removeEndpoint(lEndpointPosition)) {
+				if (lCluster.removeEndPoint(lEndpointPosition)) {
 					lCode = 0;
-					lMsg = "The Endpoint with ID: " + lEndpointId
+					lMsg = "The endpoint with ID: " + lEndPointId
 						+ " was removed from the cluster " + lClusterAlias + " successfully";
 				}
 			}
 		} else {
-			lMsg = "The Endpoint don't was removed because don't found its ID or cluster alias";
+			lMsg = "The given endpoint id does not exists on target cluster!";
 		}
 
 		Token lResponse = createResponse(aToken);
@@ -307,24 +307,24 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		lServer.sendToken(aConnector, lResponse);
 	}
 
-	private void shutdownEndpoint(WebSocketConnector aConnector, Token aToken) {
-		String lEndpointId = aToken.getString("epId");
+	private void shutdownEndPoint(WebSocketConnector aConnector, Token aToken) {
+		String lEndPointId = aToken.getString("epId");
 		String lClusterAlias = aToken.getString("clusterAlias");
 		TokenServer lServer = getServer();
 
-		if (!hasAuthority(aConnector, NS_LOADBALANCER + ".shutdownEndpoint")) {
+		if (!hasAuthority(aConnector, NS_LOADBALANCER + ".shutdownEndPoint")) {
 			//lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			//return;
 		}
 
-		if (null != lEndpointId && null != lClusterAlias) {
+		if (null != lEndPointId && null != lClusterAlias) {
 			aToken.setNS(getCluster(lClusterAlias).getNamespace());
 			aToken.setType("shutdown");
-			lServer.sendToken(getSourceConnector(lEndpointId.split("_")[1]), aToken);
+			lServer.sendToken(getSourceConnector(lEndPointId.split("_")[1]), aToken);
 			Tools.getTimer().schedule(new ShutdownTimeout(aConnector, aToken), mShutdownTimeout);
 		} else {
 			Token lResponse = createResponse(aToken);
-			lResponse.setString("msg", "The endpoint ID or cluster alias are null");
+			lResponse.setString("msg", "The endpoint ID or cluster alias has invalid value!");
 			lResponse.setInteger("code", -1);
 			lServer.sendToken(aConnector, lResponse);
 		}
@@ -335,10 +335,10 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		String lNS = aToken.getNS();
 		String lConnectorId = aConnector.getId();
 		TokenServer lServer = getServer();
-		ClusterEndPoint lEndpoint = getOptimumServiceEndpoint(lNS);
-		if (null != lEndpoint) {
-			lEndpoint.increaseRequests();
-			lServer.sendToken(lEndpoint.getConnector(), aToken);
+		ClusterEndPoint lEndPoint = getOptimumServiceEndPoint(lNS);
+		if (null != lEndPoint) {
+			lEndPoint.increaseRequests();
+			lServer.sendToken(lEndPoint.getConnector(), aToken);
 			MessageTimeout lMessageTimeout = new MessageTimeout(aConnector, aToken);
 			Tools.getTimer().schedule(lMessageTimeout, mMessageTimeout);
 			try {
@@ -348,7 +348,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 				mProcessMessage.put(lConnectorId, lMessageTimeout);
 			}
 		} else {
-			String lMsg = "There is not a service available with the namespace " + lNS;
+			String lMsg = "No service available on namespace: " + lNS;
 			Token lResponse = createResponse(aToken);
 			lResponse.setInteger("code", -1);
 			lResponse.setString("msg", lMsg);
@@ -362,11 +362,11 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		getServer().sendToken(getSourceConnector(lSourceId), aToken);
 	}
 
-	private ClusterEndPoint getOptimumServiceEndpoint(String aNamespace) {
+	private ClusterEndPoint getOptimumServiceEndPoint(String aNamespace) {
 		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
 			Cluster lValue = lEntry.getValue();
 			if (lValue.getNamespace().equals(aNamespace)) {
-				return lValue.getOptimumEndpoint();
+				return lValue.getOptimumEndPoint();
 			}
 		}
 		return null;
@@ -380,7 +380,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		return getServer().getConnector(aSourceId);
 	}
 
-	public static boolean containsNamespace(String aNamespace) {
+	public boolean supportsNamespace(String aNamespace) {
 		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
 			if (lEntry.getValue().getNamespace().equals(aNamespace)) {
 				return true;
@@ -401,7 +401,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 
 		@Override
 		public void run() {
-			if (getCluster(mToken.getString("clusterAlias")).isAlreadyExist(mToken.getString("epId"))) {
+			if (getCluster(mToken.getString("clusterAlias")).endPointExists(mToken.getString("epId"))) {
 				deregisterServiceEndPoint(mConnector, mToken);
 			}
 		}

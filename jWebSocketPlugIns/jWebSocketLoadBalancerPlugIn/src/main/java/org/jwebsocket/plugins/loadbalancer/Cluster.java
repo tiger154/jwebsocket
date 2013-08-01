@@ -30,7 +30,7 @@ import org.jwebsocket.api.WebSocketConnector;
  */
 public class Cluster {
 
-	private List<ClusterEndPoint> mEndpoints = new FastList<ClusterEndPoint>();
+	private List<ClusterEndPoint> mEndPoints = new FastList<ClusterEndPoint>();
 	private String mNamespace;
 	private int mStaticEntries;
 	private int mEndPointPosition = 0;
@@ -39,14 +39,15 @@ public class Cluster {
 	 * @return the mEndpoints
 	 */
 	public List<ClusterEndPoint> getEndpoints() {
-		return mEndpoints;
+		return mEndPoints;
 	}
 
 	/**
-	 * @param mEndpoints the mEndpoints to set
+	 *
+	 * @param aEndPoints
 	 */
-	public void setEndpoints(List<ClusterEndPoint> aEndpoints) {
-		mEndpoints = aEndpoints;
+	public void setEndPoints(List<ClusterEndPoint> aEndPoints) {
+		mEndPoints = aEndPoints;
 	}
 
 	/**
@@ -63,31 +64,31 @@ public class Cluster {
 		this.mStaticEntries = aStaticEntries;
 	}
 
-	public boolean addEndpoints(WebSocketConnector aConnector) {
-		if (!isAlreadyExist(aConnector.getId())) {
-			for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
-				if (mEndpoints.get(lPos).getStatus().equals(EndPointStatus.OFFLINE)) {
-					mEndpoints.get(lPos).setConnector(aConnector);
-					mEndpoints.get(lPos).setStatus(EndPointStatus.ONLINE);
+	public boolean addEndPoints(WebSocketConnector aConnector) {
+		if (!endPointExists(aConnector.getId())) {
+			for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+				if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.OFFLINE)) {
+					mEndPoints.get(lPos).setConnector(aConnector);
+					mEndPoints.get(lPos).setStatus(EndPointStatus.ONLINE);
 					return true;
 				}
 			}
-			ClusterEndPoint lEndpoint = new ClusterEndPoint();
-			lEndpoint.setConnector(aConnector);
-			lEndpoint.setStatus(EndPointStatus.ONLINE);
-			return mEndpoints.add(lEndpoint);
+			ClusterEndPoint lEndPoint = new ClusterEndPoint();
+			lEndPoint.setConnector(aConnector);
+			lEndPoint.setStatus(EndPointStatus.ONLINE);
+			return mEndPoints.add(lEndPoint);
 		} else {
 			return false;
 		}
 	}
 
-	public boolean isAlreadyExist(String aConnectorID) {
-		if (mEndpoints.isEmpty()) {
+	public boolean endPointExists(String aConnectorID) {
+		if (mEndPoints.isEmpty()) {
 			return false;
 		} else {
-			for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
-				if (mEndpoints.get(lPos).getConnector() != null) {
-					if (mEndpoints.get(lPos).getConnector().getId().equals(aConnectorID)) {
+			for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+				if (mEndPoints.get(lPos).getConnector() != null) {
+					if (mEndPoints.get(lPos).getConnector().getId().equals(aConnectorID)) {
 						return true;
 					}
 				}
@@ -96,28 +97,28 @@ public class Cluster {
 		}
 	}
 
-	public ClusterEndPoint getOptimumEndpoint() {
-		if (!mEndpoints.isEmpty() && containsAvailableEndpoint()) {
-			mEndPointPosition = (mEndPointPosition + 1 < mEndpoints.size()
+	public ClusterEndPoint getOptimumEndPoint() {
+		if (!mEndPoints.isEmpty() && availableEndPoint()) {
+			mEndPointPosition = (mEndPointPosition + 1 < mEndPoints.size()
 					? mEndPointPosition + 1 : 0);
-			return (availableEndpoint(mEndPointPosition)
-					? mEndpoints.get(mEndPointPosition) : getOptimumEndpoint());
+			return (availableEndPoint(mEndPointPosition)
+					? mEndPoints.get(mEndPointPosition) : getOptimumEndPoint());
 		} else {
 			return null;
 		}
 	}
 
-	private boolean containsAvailableEndpoint() {
+	private boolean availableEndPoint() {
 		for (int lPos = 0; lPos < 10; lPos++) {
-			if (availableEndpoint(lPos)) {
+			if (availableEndPoint(lPos)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private boolean availableEndpoint(int lPos) {
-		if (mEndpoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
+	private boolean availableEndPoint(int lPos) {
+		if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
 			return true;
 		} else {
 			return false;
@@ -126,24 +127,24 @@ public class Cluster {
 
 	public List<String> getStickyId() {
 		List<String> lIDs = new FastList<String>();
-		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
-			if (mEndpoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
-				lIDs.add(mEndpoints.get(lPos).getServiceID());
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
+				lIDs.add(mEndPoints.get(lPos).getServiceID());
 			}
 		}
 		return lIDs;
 	}
 
-	public boolean removeEndpoint(int aEndpointPosition) {
-		if (aEndpointPosition != -1) {
-			if (aEndpointPosition < mStaticEntries) {
-				ClusterEndPoint lEndpoint = mEndpoints.get(aEndpointPosition);
-				lEndpoint.setConnector(null);
-				lEndpoint.setStatus(EndPointStatus.OFFLINE);
-				lEndpoint.setRequests(0);
+	public boolean removeEndPoint(int aEndPointPosition) {
+		if (aEndPointPosition != -1) {
+			if (aEndPointPosition < mStaticEntries) {
+				ClusterEndPoint lEndPoint = mEndPoints.get(aEndPointPosition);
+				lEndPoint.setConnector(null);
+				lEndPoint.setStatus(EndPointStatus.OFFLINE);
+				lEndPoint.setRequests(0);
 				return true;
 			} else {
-				mEndpoints.remove(aEndpointPosition);
+				mEndPoints.remove(aEndPointPosition);
 				return true;
 			}
 		} else {
@@ -151,37 +152,37 @@ public class Cluster {
 		}
 	}
 
-	public int getPosition(String aEndpointId) {
-		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
-			if (mEndpoints.get(lPos).getServiceID().equals(aEndpointId)) {
+	public int getPosition(String aEndPointId) {
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			if (mEndPoints.get(lPos).getServiceID().equals(aEndPointId)) {
 				return lPos;
 			}
 		}
 		return -1;
 	}
 
-	public List<EndPointStatus> getEndpointsStatus() {
+	public List<EndPointStatus> getEndPointsStatus() {
 		List<EndPointStatus> lEndPointStatus = new FastList<EndPointStatus>();
-		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
-			lEndPointStatus.add(mEndpoints.get(lPos).getStatus());
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			lEndPointStatus.add(mEndPoints.get(lPos).getStatus());
 		}
 		return lEndPointStatus;
 	}
 
-	public List<String> getEndpointsId() {
+	public List<String> getEndPointsId() {
 		List<String> lEndPointsId = new FastList<String>();
-		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
-			lEndPointsId.add(mEndpoints.get(lPos).getServiceID());
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			lEndPointsId.add(mEndPoints.get(lPos).getServiceID());
 		}
 		return lEndPointsId;
 	}
 
-	public List<Integer> getEndpointsRequests() {
-		List<Integer> lEndpointsRequests = new FastList<Integer>();
-		for (int lPos = 0; lPos < mEndpoints.size(); lPos++) {
-			lEndpointsRequests.add(mEndpoints.get(lPos).getRequests());
+	public List<Integer> getEndPointsRequests() {
+		List<Integer> lEndPointsRequests = new FastList<Integer>();
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			lEndPointsRequests.add(mEndPoints.get(lPos).getRequests());
 		}
-		return lEndpointsRequests;
+		return lEndPointsRequests;
 	}
 
 	/**
