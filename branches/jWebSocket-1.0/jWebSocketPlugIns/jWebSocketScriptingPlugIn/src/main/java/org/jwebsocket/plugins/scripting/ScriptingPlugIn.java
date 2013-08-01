@@ -140,11 +140,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	public void systemStarted() throws Exception {
 		// initializing apps
 		Map<String, String> lApps = mSettings.getApps();
-		for (String lApp : lApps.keySet()) {
+		for (String lAppName : lApps.keySet()) {
 			try {
-				loadApp(lApp, lApps.get(lApp), false);
+				execAppBeforeLoadChecks(lAppName, lApps.get(lAppName));
+				loadApp(lAppName, lApps.get(lAppName), false);
 			} catch (Exception lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "loading '" + lApp + "' application"));
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "loading '" + lAppName + "' application"));
 			}
 		}
 
@@ -194,26 +195,11 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		return mSettings.getExtensionsDirectory();
 	}
 
-	/**
-	 * Loads an script application.
-	 *
-	 * @param aApp The application name
-	 * @param aAppDirPath The application home path
-	 * @param aHotLoad
-	 * @return
-	 * @throws Exception
-	 */
-	private void loadApp(final String aApp, String aAppDirPath, boolean aHotLoad) throws Exception {
-		// notifying before app reload event here
-		BaseScriptApp lScript = mApps.get(aApp);
-		if (null != lScript) {
-			lScript.notifyEvent(BaseScriptApp.EVENT_BEFORE_APP_RELOAD, new Object[]{aHotLoad});
-		}
-
+	private void execAppBeforeLoadChecks(final String aAppName, String aAppDirPath) throws Exception {
 		// parsing app manifest
 		File lManifestFile = new File(aAppDirPath + "/manifest.json");
 		if (!lManifestFile.exists() || !lManifestFile.canRead()) {
-			String lMsg = "Unable to load '" + aApp + "' application. The manifest file '"
+			String lMsg = "Unable to load '" + aAppName + "' application. The manifest file '"
 					+ lManifestFile.getPath() + "' does not exists!";
 			mLog.error(lMsg);
 			throw new FileNotFoundException(lMsg);
@@ -237,25 +223,102 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		// checking sandbox permissions dependency
 		Manifest.checkPermissions(lManifestJSON.getList(Manifest.PERMISSIONS,
 				new ArrayList()),
-				mSettings.getAppPermissions(aApp), aAppDirPath);
+				mSettings.getAppPermissions(aAppName), aAppDirPath);
 
 		// validating bootstrap file
 		final File lBootstrap = new File(aAppDirPath + "/App." + lExt);
 		if (!lBootstrap.exists() || !lBootstrap.canRead()) {
-			String lMsg = "Unable to load '" + aApp + "' application. The bootstrap file '"
+			String lMsg = "Unable to load '" + aAppName + "' application. The bootstrap file '"
 					+ lBootstrap + "' does not exists!";
 			mLog.error(lMsg);
 			throw new FileNotFoundException(lMsg);
 		}
 
+
+		final ScriptEngine lScriptApp;
+		final BaseScriptApp lApp;
+		if ("js".equals(lExt)) {
+			// making "nashorn" the default engine for JavaScript
+			if (null != mEngineManager.getEngineByName("nashorn")) {
+				lScriptApp = mEngineManager.getEngineByName("nashorn");
+			} else {
+				lScriptApp = mEngineManager.getEngineByExtension(lExt);
+			}
+		} else {
+			lScriptApp = mEngineManager.getEngineByExtension(lExt);
+		}
+
+
+		// crating the high level script app instance
+		if ("js".equals(lExt)) {
+			lApp = new JavaScriptApp(this, aAppName, aAppDirPath, lScriptApp);
+		} else {
+			String lMsg = "The extension '" + lExt + "' is not currently supported!";
+			mLog.error(lMsg);
+			throw new Exception(lMsg);
+		}
+
+		// loading application into security sandbox
+		Tools.doPrivileged(mSettings.getAppPermissions(aAppName),
+				new PrivilegedAction<Object>() {
+					@Override
+					public Object run() {
+						try {
+							// evaluating app content
+							lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
+							return null;
+						} catch (Exception lEx) {
+							String lMsg = "Script applicaton '" + aAppName + "' failed the 'before-load' checks: " + lEx.getMessage();
+							mLog.info(lMsg);
+							throw new RuntimeException(lMsg);
+						}
+					}
+				});
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug(aAppName + "(" + lExt + ") application passed the 'before-load' checks successfully!");
+		}
+	}
+
+	/**
+	 * Loads an script application.
+	 *
+	 * @param aAppName The application name
+	 * @param aAppDirPath The application home path
+	 * @param aHotLoad
+	 * @return
+	 * @throws Exception
+	 */
+	private void loadApp(final String aAppName, String aAppDirPath, boolean aHotLoad) throws Exception {
+		// notifying before app reload event here
+		BaseScriptApp lScript = mApps.get(aAppName);
+		if (null != lScript) {
+			lScript.notifyEvent(BaseScriptApp.EVENT_BEFORE_APP_RELOAD, new Object[]{aHotLoad});
+		}
+
+		// parsing app manifest
+		File lManifestFile = new File(aAppDirPath + "/manifest.json");
+
+		// parsing app manifest file
+		ObjectMapper lMapper = new ObjectMapper();
+		Map<String, Object> lTree = lMapper.readValue(lManifestFile, Map.class);
+		Token lManifestJSON = TokenFactory.createToken();
+		lManifestJSON.setMap(lTree);
+
+		// getting script language extension
+		String lExt = lManifestJSON.getString(Manifest.LANGUAGE_EXT, "js");
+
+		// validating bootstrap file
+		final File lBootstrap = new File(aAppDirPath + "/App." + lExt);
+
 		// support hot app load
-		if (aHotLoad && mApps.containsKey(aApp)) {
+		if (aHotLoad && mApps.containsKey(aAppName)) {
 			try {
 				// loading app
-				mApps.get(aApp).getEngine().eval(FileUtils.readFileToString(lBootstrap));
+				mApps.get(aAppName).getEngine().eval(FileUtils.readFileToString(lBootstrap));
 			} catch (ScriptException lEx) {
-				mLog.error("Script applicaton '" + aApp + "' failed to start: " + lEx.getMessage());
-				mApps.remove(aApp);
+				mLog.error("Script applicaton '" + aAppName + "' failed to start: " + lEx.getMessage());
+				mApps.remove(aAppName);
 				throw new ScriptException(lEx.getMessage());
 			}
 		} else {
@@ -273,7 +336,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 			// crating the high level script app instance
 			if ("js".equals(lExt)) {
-				mApps.put(aApp, new JavaScriptApp(this, aApp, aAppDirPath, lScriptApp));
+				mApps.put(aAppName, new JavaScriptApp(this, aAppName, aAppDirPath, lScriptApp));
 			} else {
 				String lMsg = "The extension '" + lExt + "' is not currently supported!";
 				mLog.error(lMsg);
@@ -281,17 +344,17 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			}
 
 			// loading application into security sandbox
-			Tools.doPrivileged(mSettings.getAppPermissions(aApp),
-					new PrivilegedAction<Boolean>() {
+			Tools.doPrivileged(mSettings.getAppPermissions(aAppName),
+					new PrivilegedAction<Object>() {
 						@Override
-						public Boolean run() {
+						public Object run() {
 							try {
 								// evaluating app content
 								lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
-								return true;
+								return null;
 							} catch (Exception lEx) {
-								mLog.error("Script applicaton '" + aApp + "' failed to start: " + lEx.getMessage());
-								mApps.remove(aApp);
+								mLog.error("Script applicaton '" + aAppName + "' failed to start: " + lEx.getMessage());
+								mApps.remove(aAppName);
 								throw new RuntimeException(lEx);
 							}
 						}
@@ -299,10 +362,10 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		}
 
 		// notifying app loaded event
-		mApps.get(aApp).notifyEvent(BaseScriptApp.EVENT_APP_LOADED, new Object[0]);
+		mApps.get(aAppName).notifyEvent(BaseScriptApp.EVENT_APP_LOADED, new Object[0]);
 
 		if (mLog.isDebugEnabled()) {
-			mLog.debug(aApp + "(" + lExt + ") application loaded successfully!");
+			mLog.debug(aAppName + "(" + lExt + ") application loaded successfully!");
 		}
 	}
 
@@ -476,20 +539,22 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * @throws Exception
 	 */
 	public void reloadAppAction(WebSocketConnector aConnector, Token aToken) throws Exception {
-		String lApp = aToken.getString("app");
+		String lAppName = aToken.getString("app");
 		boolean lHotReload = aToken.getBoolean("hotReload", true);
 
-		Assert.notNull(lApp, "The 'app' argument cannot be null!");
-		Assert.isTrue(mSettings.getApps().containsKey(lApp), "The target application '" + lApp + "' does not exists!");
+		Assert.notNull(lAppName, "The 'app' argument cannot be null!");
+		Assert.isTrue(mSettings.getApps().containsKey(lAppName), "The target application '" + lAppName + "' does not exists!");
 
 		if (!hasAuthority(aConnector, NS + ".reloadApp.*")
-				&& !hasAuthority(aConnector, NS + ".reloadApp." + lApp)) {
+				&& !hasAuthority(aConnector, NS + ".reloadApp." + lAppName)) {
 			sendToken(aConnector, createAccessDenied(aToken));
 			return;
 		}
 
-		// loading the app (will destroy if exists)
-		loadApp(lApp, mSettings.getApps().get(lApp), lHotReload);
+		// loading the app
+		String lAppPath = mSettings.getApps().get(lAppName);
+		execAppBeforeLoadChecks(lAppName, lAppPath);
+		loadApp(lAppName, lAppPath, lHotReload);
 
 		sendToken(aConnector, createResponse(aToken));
 	}
@@ -625,6 +690,9 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				"Compressed application has invalid directory structure! "
 				+ "Expecting a single root folder.");
 
+		// executing before-load checks
+		execAppBeforeLoadChecks(lTempAppDirContent[0].getName(), lTempAppDirContent[0].getPath());
+
 		// copying application content to apps directory
 		File lAppDir = new File(mSettings.getAppsDirectory() + File.separator
 				+ lTempAppDirContent[0].getName());
@@ -691,7 +759,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * @throws Exception
 	 */
 	public void undeployAction(WebSocketConnector aConnector, Token aToken) throws Exception {
-		// getting calling events
+		// getting calling arguments
 		String lApp = aToken.getString("app");
 		Assert.notNull(lApp, "The 'app' argument cannot be null!");
 
