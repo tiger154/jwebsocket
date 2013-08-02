@@ -46,6 +46,11 @@ public class JMSAdvisoryListener implements MessageListener {
 	private JMSSender mJMSSender = null;
 	private Map<String, String> mEndPoints = new FastMap<String, String>();
 
+	public JMSAdvisoryListener(JMSEngine aEngine, JMSSender aJMSSender) {
+		mEngine = aEngine;
+		mJMSSender = aJMSSender;
+	}
+
 	/**
 	 *
 	 * @param aMessage
@@ -53,18 +58,20 @@ public class JMSAdvisoryListener implements MessageListener {
 	@Override
 	public void onMessage(Message aMessage) {
 
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Received Advisory Message: " + aMessage);
-		}
-
 		if (aMessage instanceof ActiveMQMessage) {
 			try {
 				ActiveMQMessage lMessage = (ActiveMQMessage) aMessage;
 				Object lDataStructure = lMessage.getDataStructure();
 				if (lDataStructure instanceof ProducerInfo) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Received producer info: " + aMessage);
+					}
 					ProducerInfo lProd = (ProducerInfo) lMessage.getDataStructure();
 					mLog.info(lProd);
 				} else if (lDataStructure instanceof ConsumerInfo) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Received consumer info: " + aMessage);
+					}
 					ConsumerInfo lConsumer = (ConsumerInfo) lMessage.getDataStructure();
 					String lConnectionId = lConsumer.getConsumerId().getConnectionId();
 					String lEndPointId = lConsumer.getSelector();
@@ -86,6 +93,9 @@ public class JMSAdvisoryListener implements MessageListener {
 							mEndPoints.put(lConnectionId, lEndPointId);
 							WebSocketConnector lConnector = new JMSConnector(mEngine,
 									mJMSSender, lConnectionId, lEndPointId);
+							if (mLog.isDebugEnabled()) {
+								mLog.debug("Adding connector to engine...");
+							}
 							mEngine.addConnector(lConnector);
 
 							if (mLog.isInfoEnabled()) {
@@ -102,6 +112,9 @@ public class JMSAdvisoryListener implements MessageListener {
 						}
 					}
 				} else if (lDataStructure instanceof RemoveInfo) {
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Received remove info: " + aMessage);
+					}
 					RemoveInfo lRemove = (RemoveInfo) lMessage.getDataStructure();
 
 					DataStructure lDS = lRemove.getObjectId();
@@ -147,23 +160,9 @@ public class JMSAdvisoryListener implements MessageListener {
 	}
 
 	/**
-	 * @param aEngine the mJMSEngine to set
-	 */
-	public void setEngine(JMSEngine aEngine) {
-		mEngine = aEngine;
-	}
-
-	/**
 	 * @return the JMSSender
 	 */
 	public JMSSender getSender() {
 		return mJMSSender;
-	}
-
-	/**
-	 * @param aJMSSender the mJMSSender to set
-	 */
-	public void setSender(JMSSender aJMSSender) {
-		mJMSSender = aJMSSender;
 	}
 }

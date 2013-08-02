@@ -30,6 +30,7 @@ import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
+import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.api.WebSocketPlugInChain;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketCommonConstants;
@@ -40,8 +41,10 @@ import org.jwebsocket.filters.system.SystemFilter;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
+import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.TokenPlugInChain;
 import org.jwebsocket.security.SecurityFactory;
@@ -743,6 +746,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		Token lResponse = createResponse(aToken);
 
 		WebSocketConnector lTargetConnector;
+		String lAction = aToken.getString("action");
 		String lTargetId = aToken.getString("unid");
 		Boolean lIsResponseRequested =
 				aToken.getBoolean("responseRequested", true);
@@ -762,14 +766,21 @@ public class SystemPlugIn extends TokenPlugIn {
 		 */
 		if (lTargetConnector != null) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Processing 'send' (username='"
+				mLog.debug("Processing 'send'"
+						+ (null == lAction ? "" : ", action='" + lAction + "'")
+						+ " (username='"
 						+ getUsername(aConnector)
 						+ "') from '" + aConnector
 						+ "' to " + lTargetId + "...");
 			}
-
-			aToken.setString("sourceId", aConnector.getId());
-			sendToken(aConnector, lTargetConnector, aToken);
+			if ("forward.json".equals(lAction)) {
+				WebSocketPacket lPacket = new RawPacket(aToken.getString("data"));
+				Token lToken = JSONProcessor.packetToToken(lPacket);
+				sendToken(aConnector, lTargetConnector, lToken);
+			} else {
+				aToken.setString("sourceId", aConnector.getId());
+				sendToken(aConnector, lTargetConnector, aToken);
+			}
 			// if a response is requested, not explicitely suppressed, send it
 			if (lIsResponseRequested) {
 				aToken.remove("responseRequested");

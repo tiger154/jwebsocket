@@ -95,30 +95,26 @@ jws.FileSystemPlugIn = {
 	//:a:en::aFilemasks:Array:The filtering filemasks. <tt>Example: ["txt"]</tt>
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:a:en::aOptions.path:String:Restrict file list to target sub-path
-	//:a:en::aOptions.recursive:Boolean:Recursive file listing flag. Default value is FALSE
+	//:a:en::aOptions.recursive:Boolean:Recursive file listing flag. Default value is <tt>FALSE</tt>.
+	//:a:en::aOptions.recursive:Boolean:Include directory entries in file list. Default value is <tt>FALSE</tt>.
 	//:r:*:::void:none
 	fileGetFilelist: function( aAlias, aFilemasks, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			var lRecursive = false;
-
-			if( aOptions ) {
-				if( aOptions.recursive !== undefined ) {
-					lRecursive = aOptions.recursive;
-				}
-			} else {
-				aOptions = {};
-			}
-			
+			aOptions = jws.getOptions( aOptions, {
+				path: null,
+				recursive: false,
+				includeDirs: false
+			});
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "getFilelist",
 				alias: aAlias,
-				recursive: lRecursive,
+				recursive: aOptions.recursive,
+				includeDirs: aOptions.includeDirs,
 				filemasks: aFilemasks,
-				path: aOptions['path'] || null
+				path: aOptions.path
 			};
-		
 			this.sendToken( lToken,	aOptions );
 		}	
 		return lRes;

@@ -24,7 +24,6 @@
 				
 				<include>log4j:log4j</include>
 				<include>org.jdom:jdom</include>
-				<include>commons-io:commons-io</include>
 
 				<include>org.springframework:spring-aop</include>
 				<include>org.springframework:spring-asm</include>

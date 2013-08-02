@@ -54,8 +54,8 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * The FileSystemPlugIn class is a plug-in implementation for the jWebSocket
- * framework to provide support for the basics “file uploads management”
- * operations in WebSocket applications.
+ * framework to provide support for the basic file system management operations
+ * in WebSocket applications.
  *
  * @author aschulze
  * @author kyberneees
@@ -89,11 +89,13 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	/**
 	 * Private alias directory default value.
 	 */
-	public static final String PRIVATE_ALIAS_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/private/{username}/";
+	public static final String PRIVATE_ALIAS_DIR_DEF = "${"
+			+ JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/private/{username}/";
 	/**
 	 * Public alias directory default value.
 	 */
-	public static final String PUBLIC_ALIAS_DIR_DEF = "${" + JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/public/";
+	public static final String PUBLIC_ALIAS_DIR_DEF = "${"
+			+ JWebSocketServerConstants.JWEBSOCKET_HOME + "}/filesystem/public/";
 	/**
 	 * Web root alias default value.
 	 */
@@ -132,7 +134,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				}
 			}
 		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating filesystem plug-in"));
+			mLog.error(Logging.getSimpleExceptionMessage(lEx,
+					"instantiating filesystem plug-in"));
 			throw lEx;
 		}
 	}
@@ -187,7 +190,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	}
 
 	@Override
-	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+	public void processToken(PlugInResponse aResponse,
+			WebSocketConnector aConnector, Token aToken) {
 		String lType = aToken.getType();
 
 		if (lType != null) {
@@ -220,7 +224,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			} else if (lType.equals("getAliasPath")) {
 				String lTargetAlias = aToken.getString("alias");
 				Token lToken = TokenFactory.createToken();
-				lToken.setString("aliasPath", getAliasPath(aConnector, lTargetAlias));
+				lToken.setString("aliasPath",
+						getAliasPath(aConnector, lTargetAlias));
 
 				return lToken;
 			}
@@ -273,6 +278,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lFilename = aToken.getString("filename", null);
 		if (null == lFilename) {
 			sendErrorToken(aConnector, aToken, -1, "Missing filename argument!");
+			return;
 		}
 
 		// getting alias
@@ -281,7 +287,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		if (lBaseDir != null) {
 			lFile = new File(lBaseDir + "/" + lFilename);
 		} else {
-			sendErrorToken(aConnector, aToken, -1, "The given alias '" + lAlias + "' does not exists!");
+			sendErrorToken(aConnector, aToken, -1,
+					"The given alias '" + lAlias + "' does not exist!");
+			return;
 		}
 
 		Token lResponse = createResponse(aToken);
@@ -293,20 +301,20 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			}
 		} catch (Exception lEx) {
 			lResponse.setInteger("code", -1);
-			String lMsg = lEx.getClass().getSimpleName() + " on exists: " + lEx.getMessage();
+			String lMsg = lEx.getClass().getSimpleName() + " on exists: "
+					+ lEx.getMessage();
 			lResponse.setString("msg", lMsg);
 			mLog.error(lMsg);
 		}
 
 		// file exists?
 		boolean lExists = lFile.exists();
-
 		lResponse.setBoolean("exists", lExists);
 		lServer.sendToken(aConnector, lResponse);
 	}
 
 	/**
-	 * Saves or appends a file, dependes of the aToken.append (Boolean) arg.
+	 * Saves or appends a file, depends of the aToken.append (Boolean) arg.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -321,7 +329,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// check if user is allowed to run 'save' or 'append' command
-		if (!hasAuthority(aConnector, NS_FILESYSTEM + "." + (lAppend ? "append" : "save"))) {
+		if (!hasAuthority(aConnector, NS_FILESYSTEM
+				+ "." + (lAppend ? "append" : "save"))) {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Returning 'Access denied'...");
 			}
@@ -354,7 +363,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		Boolean lNotify = aToken.getBoolean("notify", false);
 		String lData = aToken.getString("data", null);
 		if (null == lData) {
-			sendErrorToken(aConnector, aToken, -1, "Argument 'data' contains null value!");
+			sendErrorToken(aConnector, aToken, -1,
+					"Argument 'data' contains null value!");
 			return;
 		}
 
@@ -482,7 +492,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		// obtain required parameters for file load operation
 		String lFilename = aToken.getString("filename");
 		String lAlias = aToken.getString("alias", PRIVATE_ALIAS_DIR_KEY);
-		String lData = "";
+		String lData;
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
@@ -610,6 +620,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		String lAlias = aToken.getString("alias");
 		boolean lRecursive = aToken.getBoolean("recursive", false);
+		boolean lIncludeDirs = aToken.getBoolean("includeDirs", false);
 		List lFilemasks = aToken.getList("filemasks");
 		String lSubPath = aToken.getString("path", null);
 
@@ -632,12 +643,14 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 			if (!isPathInFS(lDir, lBaseDir)) {
 				lToken.setInteger("code", -1);
-				lToken.setString("msg", "The path '" + lSubPath + "' is out of the file-system location!");
+				lToken.setString("msg", "The path '" + lSubPath
+						+ "' is out of the file-system location!");
 
 				return lToken;
 			} else if (!(lDir.exists() && lDir.isDirectory())) {
 				lToken.setInteger("code", -1);
-				lToken.setString("msg", "The path '" + lSubPath + "' is not directory on target '" + lAlias + "' alias!");
+				lToken.setString("msg", "The path '" + lSubPath
+						+ "' is not directory on target '" + lAlias + "' alias!");
 
 				return lToken;
 			}
@@ -658,22 +671,30 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			File lBasePath = new File(lBaseDir);
 
 			for (File lFile : lFiles) {
-				if (lFile == lDir) {
+				if (lFile == lDir
+						// we don't want directories to be returned
+						// except explicitely requested
+						|| (!lIncludeDirs && lFile.isDirectory())) {
 					continue;
 				}
 				Map lFileData = new FastMap< String, Object>();
-				String lFilename = lFile.getAbsolutePath().replace(lBasePath.getAbsolutePath() + File.separator, "");
+				String lFilename = lFile.getAbsolutePath()
+						.replace(lBasePath.getAbsolutePath() + File.separator, "");
 
-				lFileData.put("filename", lFilename);
+				lFileData.put("filename",
+						// we always return the path in unix/url/java format
+						FilenameUtils.separatorsToUnix(lFilename));
 				lFileData.put("size", lFile.length());
 				lFileData.put("modified", Tools.DateToISO8601(new Date(lFile.lastModified())));
 				lFileData.put("hidden", lFile.isHidden());
 				lFileData.put("canRead", lFile.canRead());
 				lFileData.put("canWrite", lFile.canWrite());
+				lFileData.put("directory", lFile.isDirectory());
 				if (lAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
-					lFileData.put("url", getString(ALIAS_WEB_ROOT_KEY, ALIAS_WEB_ROOT_DEF) + lFilename);
+					lFileData.put("url", getString(ALIAS_WEB_ROOT_KEY, ALIAS_WEB_ROOT_DEF)
+							// in URLs we only want forward slashes
+							+ FilenameUtils.separatorsToUnix(lFilename));
 				}
-
 				lFileList.add(lFileData);
 			}
 			lToken.setList("files", lFileList);
@@ -681,7 +702,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			lToken.setString("msg", "ok");
 		} else {
 			lToken.setInteger("code", -1);
-			lToken.setString("msg", "No alias '" + lAlias + "' defined for filesystem plug-in");
+			lToken.setString("msg", "No alias '" + lAlias
+					+ "' defined for filesystem plug-in");
 		}
 
 		return lToken;
@@ -697,7 +719,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 */
 	protected boolean isPathInFS(File aFile, String aBasePath) {
 		try {
-			String lCanonicalPath = FilenameUtils.separatorsToSystem(aFile.getCanonicalPath()) + File.separator;
+			String lCanonicalPath = FilenameUtils
+					.separatorsToSystem(aFile.getCanonicalPath()) + File.separator;
 			String lBasePath = FilenameUtils.separatorsToSystem(aBasePath);
 			if (SystemUtils.IS_OS_WINDOWS) {
 				if (!StringUtils.startsWithIgnoreCase(lCanonicalPath, lBasePath)) {
@@ -768,7 +791,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			}
 
 			if (null == lFilename || !lFile.exists()) {
-				sendErrorToken(aConnector, aToken, -1, "The given filename '" + lFilename + "' is invalid or does not exist!");
+				sendErrorToken(aConnector, aToken, -1, "The given filename '"
+						+ lFilename + "' is invalid or does not exist!");
 				return;
 			}
 
@@ -780,7 +804,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				}
 			}
 		} catch (Exception lEx) {
-			sendErrorToken(aConnector, aToken, -1, "File '" + lFilename + "' could not be deleted!");
+			sendErrorToken(aConnector, aToken, -1, "File '" + lFilename
+					+ "' could not be deleted!");
 			return;
 		}
 
@@ -838,7 +863,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		@Override
 		public void onDirectoryChange(File aDirectory) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Directory '" + aDirectory.getName() + "' has been changed.");
+				mLog.debug("Directory '" + aDirectory.getName()
+						+ "' has been changed.");
 			}
 		}
 
@@ -846,7 +872,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		@Override
 		public void onDirectoryCreate(File aDirectory) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Directory '" + aDirectory.getName() + "' has been created.");
+				mLog.debug("Directory '" + aDirectory.getName()
+						+ "' has been created.");
 			}
 		}
 
@@ -854,7 +881,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		@Override
 		public void onDirectoryDelete(File aDirectory) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Directory '" + aDirectory.getName() + "' has been deleted.");
+				mLog.debug("Directory '" + aDirectory.getName()
+						+ "' has been deleted.");
 			}
 		}
 
@@ -862,7 +890,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		@Override
 		public void onFileChange(File aFile) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("File '" + aFile.getPath() + "' has been changed.");
+				mLog.debug("File '" + aFile.getPath()
+						+ "' has been changed.");
 			}
 		}
 
@@ -870,7 +899,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		@Override
 		public void onFileCreate(File aFile) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("File '" + aFile.getPath() + "' has been created.");
+				mLog.debug("File '" + aFile.getPath()
+						+ "' has been created.");
 			}
 		}
 
@@ -878,7 +908,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		@Override
 		public void onFileDelete(File aFile) {
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("File '" + aFile.getPath() + "' has been deleted.");
+				mLog.debug("File '" + aFile.getPath()
+						+ "' has been deleted.");
 			}
 		}
 
@@ -899,7 +930,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		@Override
 		public Thread newThread(Runnable aRunnable) {
-			Thread lThread = new Thread(aRunnable, "jWebSocket FileSystemPlugIn file-system monitor");
+			Thread lThread = new Thread(aRunnable,
+					"jWebSocket FileSystemPlugIn file-system monitor");
 			return lThread;
 		}
 	}
@@ -923,12 +955,14 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			FileAlterationListener lFileSystemListener = getFileSystemListener();
 			Set lAliases = mSettings.getAliases().keySet();
 			for (Object lAlias : lAliases) {
-				if (lAlias.equals(PRIVATE_ALIAS_DIR_KEY) || lAlias.equals(ALIAS_WEB_ROOT_KEY)) {
+				if (lAlias.equals(PRIVATE_ALIAS_DIR_KEY)
+						|| lAlias.equals(ALIAS_WEB_ROOT_KEY)) {
 					continue;
 				}
 				// registering file-system listener
 				FileAlterationObserver lObserver = new FileAlterationObserver(
-						JWebSocketConfig.expandEnvAndJWebSocketVars(mSettings.getAliasPath(lAlias.toString())),
+						JWebSocketConfig.expandEnvAndJWebSocketVars(
+						mSettings.getAliasPath(lAlias.toString())),
 						lFileFilter);
 				lObserver.addListener(lFileSystemListener);
 				mFileSystemMonitor.addObserver(lObserver);
@@ -938,7 +972,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			// starting file-system monitor...
 			mFileSystemMonitor.start();
 		} catch (Exception lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "starting directory monitor..."));
+			mLog.error(Logging.getSimpleExceptionMessage(lEx,
+					"starting directory monitor..."));
 		}
 	}
 
@@ -953,7 +988,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				}
 				mFileSystemMonitor.stop();
 			} catch (Exception lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping directory monitor..."));
+				mLog.error(Logging.getSimpleExceptionMessage(lEx,
+						"stopping directory monitor..."));
 			}
 		}
 	}

@@ -27,6 +27,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
+							<mainClass>tld.yourname.jms.client.JMSClient</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

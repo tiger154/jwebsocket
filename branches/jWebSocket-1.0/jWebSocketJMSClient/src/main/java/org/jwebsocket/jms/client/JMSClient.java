@@ -38,6 +38,15 @@ import org.apache.log4j.Logger;
  */
 public class JMSClient {
 
+	/**
+	 * 
+	 *
+	 */
+	public static boolean TEMPORARY = false;
+	/**
+	 *
+	 */
+	public static boolean DURABLE = true;
 	static final Logger mLog = Logger.getLogger(JMSClient.class);
 	// the JMS connection factory
 	private ActiveMQConnectionFactory mConnectionFactory;
@@ -57,13 +66,13 @@ public class JMSClient {
 	/**
 	 *
 	 * @param aBrokerURI
-	 * @param aRequestTopic
-	 * @param aResponseTopic
+	 * @param aGatewayTopic
 	 * @param aEndPointId
 	 * @param aThreadPoolSize
+	 * @param aDurable  
 	 */
-	public JMSClient(String aBrokerURI, String aRequestTopic,
-			String aResponseTopic, String aEndPointId, int aThreadPoolSize) {
+	public JMSClient(String aBrokerURI, String aGatewayTopic,
+			String aEndPointId, int aThreadPoolSize, boolean aDurable) {
 		// instantiate connection factory for ActiveMQ broker
 		mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
 		try {
@@ -71,35 +80,31 @@ public class JMSClient {
 			mEndPointId = aEndPointId;
 			// create the connection object
 			mConnection = mConnectionFactory.createConnection();
+			mConnection.setClientID(aEndPointId);
 			// create a session for this connection
 			mSession = mConnection.createSession(false,
 					Session.AUTO_ACKNOWLEDGE);
 			// establish the connection
 			mConnection.start();
 
-			// create a producer for the given output topic (JMS destination)
-			Topic lProducerTopic = mSession.createTopic(aResponseTopic);
-			MessageProducer lProducer = mSession.createProducer(lProducerTopic);
+			// create a producer for the given gateway topic (JMS destination)
+			Topic lGatewayTopic = mSession.createTopic(aGatewayTopic);
+			MessageProducer lProducer = mSession.createProducer(lGatewayTopic);
 			mSender = new JMSClientSender(mSession, lProducer, mEndPointId);
 
-			// create a consumer for the given input topic (JMS destination)
-			Topic lConsumerTopic = mSession.createTopic(aRequestTopic);
+			// create a consumer for the given gateway topic (JMS destination)
 			// use endPointId to listen on a certain target address only
-			MessageConsumer lConsumer = mSession.createConsumer(
-					lConsumerTopic,
-					"targetId='" + mEndPointId + "'");
+			String lSelector = "targetId='" + mEndPointId + "'";
+			MessageConsumer lConsumer;
+			if (aDurable) {
+				lConsumer = mSession.createDurableSubscriber(lGatewayTopic, lSelector);
+			} else {
+				lConsumer = mSession.createConsumer(lGatewayTopic, lSelector);
+			}
 			// create a listener and pass the sender to easily answer requests
 			mListener = new JMSClientListener(aThreadPoolSize);
 			// pass the listener to the JMS consumer object
 			lConsumer.setMessageListener(mListener);
-
-			/* 
-			 // send in initial register message if required
-			 mSender.sendText("{\"ns\":\"org.jwebsocket.jms.bridge\""
-			 + ",\"type\":\"register\""
-			 + ",\"sourceId\":\"" + mNodeId + "\""
-			 + "}");
-			 */
 		} catch (JMSException lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " on connecting JMS client: "

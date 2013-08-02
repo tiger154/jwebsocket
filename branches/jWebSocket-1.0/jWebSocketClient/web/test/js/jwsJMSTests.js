@@ -40,7 +40,7 @@ jws.tests.JMS = {
 
 			waitsFor(
 				function() {
-					return( lResponse.code == 0 );
+					return( 0 === lResponse.code );
 				},
 				lSpec,
 				3000
@@ -72,7 +72,7 @@ jws.tests.JMS = {
 
 			waitsFor(
 				function() {
-					return( lResponse.code == 0 );
+					return( 0 === lResponse.code );
 				},
 				lSpec,
 				3000
@@ -97,5 +97,4 @@ jws.tests.JMS = {
 		});
 	}	
 
-}
-
+};

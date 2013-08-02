@@ -23,6 +23,8 @@ import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
+import org.jwebsocket.packetProcessors.JSONProcessor;
+import org.jwebsocket.token.Token;
 
 /**
  * Base implementation of the IJMSMessageListener interface for convenience.
@@ -52,6 +54,15 @@ public class JMSEndPointMessageListener implements IJMSMessageListener {
 		mSender.sendText(aTargetId, aText);
 	}
 
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aToken
+	 */
+	public void sendToken(String aTargetId, Token aToken) {
+		mSender.sendText(aTargetId, JSONProcessor.tokenToPacket(aToken).getUTF8());
+	}
+	
 	/**
 	 *
 	 * @param aTargetId

@@ -57,8 +57,7 @@ public class JMSEndPointSender {
 	public void sendText(String aTargetId, String aCorrelationID, final String aText) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Sending text: "
-					+ "[content suppressed]"
-					// + aText 
+					+ "[content suppressed, length: " + aText.length() + " bytes]"
 					+ "...");
 		}
 		Message lMsg;

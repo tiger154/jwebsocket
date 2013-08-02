@@ -18,11 +18,23 @@
 //	---------------------------------------------------------------------------
 package tld.yourname.jms.client;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jwebsocket.jms.endpoint.JMSEndPoint;
+import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
+import org.jwebsocket.jms.endpoint.JWSEndPointSender;
+import org.jwebsocket.jms.endpoint.JWSMessageListener;
+import org.jwebsocket.packetProcessors.JSONProcessor;
+import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
+import javolution.util.FastMap;
 
 /**
  * JMS Gateway Demo Client
@@ -60,6 +72,7 @@ public class JMSClient {
 		String lGatewayTopic = "org.jwebsocket.jms.gateway"; // topic name of JMS Gateway
 		String lGatewayId = "org.jwebsocket.jms.gateway"; // endpoint id of JMS Gateway
 		String lEndPointId = UUID.randomUUID().toString();
+		final String lServiceId = "JMSServer"; // endpoint id of JMS Service Demo
 
 		// tcp://172.20.116.68:61616 org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		// failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
@@ -70,7 +83,7 @@ public class JMSClient {
 			lGatewayTopic = aArgs[1];
 			lGatewayId = aArgs[2];
 			if (aArgs.length >= 4) {
-				lEndPointId = aArgs[3];
+				// lEndPointId = aArgs[3];
 			}
 			mLog.info("Using: "
 					+ lBrokerURL + ", "
@@ -84,7 +97,7 @@ public class JMSClient {
 		}
 
 		// instantiate a new jWebSocket JMS Gateway Client
-		JMSEndPoint lJMSClient = new JMSEndPoint(
+		JMSEndPoint lJMSEndPoint = new JMSEndPoint(
 				lBrokerURL,
 				lGatewayTopic, // gateway topic
 				lGatewayId, // gateway endpoint id
@@ -92,14 +105,152 @@ public class JMSClient {
 				5, // thread pool size, messages being processed concurrently
 				JMSEndPoint.TEMPORARY // temporary (for clients)
 				);
+		// instantiate a high level JWSEndPointMessageListener
+		JWSEndPointMessageListener lListener = new JWSEndPointMessageListener(lJMSEndPoint);
+		// instantiate a high level JWSEndPointSender
+		final JWSEndPointSender lSender = new JWSEndPointSender(lJMSEndPoint);
+
+		// on welcome message from jWebSocket, authenticate against jWebSocket
+		lListener.onRequest("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
+			@Override
+			public void processToken(String aSourceId, Token aToken) {
+				mLog.info("Received 'welcome', authenticating against jWebSocket...");
+				// create a login token...
+				Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.system", "login");
+				lToken.setString("username", "root");
+				lToken.setString("password", "root");
+				// and send it to the gateway (which is was the source of the message)
+				sendToken(aSourceId, lToken);
+			}
+		});
+
+		// process response of the JMS Gateway login...
+		lListener.onResponse("org.jwebsocket.plugins.system", "login",
+				new JWSMessageListener(lSender) {
+			@Override
+			public void processToken(String aSourceId, Token aToken) {
+				int lCode = aToken.getInteger("code", -1);
+				if (0 == lCode) {
+					if (mLog.isInfoEnabled()) {
+						mLog.info("Authentication against jWebSocket JMS Gateway successful.");
+					}
+				} else {
+					mLog.error("Authentication against jWebSocket JMS Gateway failed!");
+				}
+
+				// now to try to get some data from the service...
+				Map lArgs = new FastMap<String, Object>();
+				lArgs.put("username", "test");
+				lArgs.put("password", "test");
+				lArgs.put("action", "CREATE");
+				// send the payload to the target (here the JMS demo service)
+				// lSender.forwardPayload("aschulze-dt", "org.jwebsocket.jms.demo",
+				//		"forwardPayload", "4711", lArgs, null);
+				// send the payload to the target (here the JMS demo service)
+				lSender.sendPayload("HQDVPTAS110", "com.ptc.windchill",
+						"getLibraryPart", lArgs, "{}");
+			}
+		});
+
+		// on welcome message from jWebSocket, authenticate against jWebSocket
+		// lListener.onResponse("org.jwebsocket.jms.demo", "forwardPayload",
+		// 		new JWSMessageListener(lSender) {
+		lListener.onResponse("com.ptc.windchill", "getLibraryPart",
+				new JWSMessageListener(lSender) {
+			@Override
+			public void processToken(String aSourceId, Token aToken) {
+				mLog.info("Received 'forwardPayload'.");
+				if (true) {
+					return;
+				}
+				// String lBase64Encoded = lToken.getString("fileAsBase64");
+				String lPayload = aToken.getString("payload");
+				// specify the target file
+				File lFile = new File("getLibraryPart.json");
+				try {
+					// take the zipped version of the file... 
+					byte[] lBA = lPayload.getBytes("UTF-8");
+					// and save it to the hard disk
+					FileUtils.writeByteArrayToFile(lFile, lBA);
+				} catch (Exception lEx) {
+					mLog.error("File " + lFile.getAbsolutePath() + " could not be saved!");
+				}
+			}
+		});
+
+		// process response of the get data response...
+		lListener.onResponse("tld.yourname.jms", "getData",
+				new JWSMessageListener(lSender) {
+			@Override
+			public void processToken(String aSourceId, Token aToken) {
+				int lCode = aToken.getInteger("code", -1);
+				if (0 == lCode) {
+					if (mLog.isInfoEnabled()) {
+						mLog.info("Data transfer successful.");
+					}
+				} else {
+					mLog.error("Data transfer failed!");
+				}
+
+				// reading a file using Apache Commons IO into a byte array
+				File lFile = new File("Apache License 2.0.txt");
+				byte[] lBA = null;
+				try {
+					lBA = FileUtils.readFileToByteArray(lFile);
+				} catch (IOException lEx) {
+					mLog.error("Demo file " + lFile.getAbsolutePath() + " could not be loaded!");
+				}
+
+				// if the file could properly being read...
+				if (null != lBA) {
+					// base64 encode it w/o any compression
+					String lBase64Encoded = Tools.base64Encode(lBA);
+
+					// or compress it as an zip archive
+					String lBase64Zipped = null;
+					try {
+						lBase64Zipped = Tools.base64Encode(Tools.zip(lBA, false));
+					} catch (Exception lEx) {
+						mLog.error("File could not be compressed: " + lEx.getMessage());
+					}
+
+					Token lToken = TokenFactory.createToken();
+					// put base64 encoded only version into message
+					lToken.setString("fileAsBase64", lBase64Encoded);
+					// and the zipped version as well (for demo purposes)
+					lToken.setString("fileAsZip", lBase64Zipped);
+
+					// generate the payload as JSON
+					String lPayload = JSONProcessor.tokenToPacket(lToken).getUTF8();
+					// add some optional arguments to be passed to the target
+					Map lArgs = new FastMap<String, Object>();
+					lArgs.put("arg1", "value1");
+					lArgs.put("arg2", "value2");
+
+					// send the payload to the target (here the JMS demo service)
+					lSender.sendPayload("JMSServer", "tld.yourname.jms",
+							"transferFile", lArgs, lPayload);
+				}
+
+				// and shut down the client
+				mLog.info("Gracefully shutting down...");
+				lSender.getEndPoint().shutdown();
+			}
+		});
+
+		// add a high level listener to listen in coming messages
+		lJMSEndPoint.addListener(lListener);
+
+		// start the endpoint all all listener have been assigned
+		lJMSEndPoint.start();
 
 		// add a listener to listen in coming messages
-		lJMSClient.addListener(new JMSClientMessageListener(lJMSClient));
+		// lJMSClient.addListener(new JMSClientMessageListener(lJMSClient));
 
 		// this is a console app demo
 		// so wait in a thread loop until the client get shut down
 		try {
-			while (!lJMSClient.isShutdown()) {
+			while (!lJMSEndPoint.isShutdown()) {
 				Thread.sleep(1000);
 			}
 		} catch (InterruptedException lEx) {
@@ -107,11 +258,11 @@ public class JMSClient {
 		}
 
 		// check if JMS client has already been shutdown by logic
-		if (!lJMSClient.isShutdown()) {
+		if (!lJMSEndPoint.isShutdown()) {
 			// if not yet done...
 			mLog.info("Shutting down JMS Client Endpoint...");
 			// shut the client properly down
-			lJMSClient.shutdown();
+			lJMSEndPoint.shutdown();
 		}
 		// and show final status message in the console
 		mLog.info("JMS Client Endpoint properly shutdown.");

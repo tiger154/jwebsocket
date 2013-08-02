@@ -16,7 +16,7 @@
 		<module>jWebSocketServerAPI</module>
 		<module>jWebSocketClientAPI</module>
 		<module>jWebSocketServer</module>
-		<module>jWebSocketWatchDogClient</module>
+		<!-- <module>jWebSocketWatchDogClient</module> -->
 		<module>jWebSocketJavaSEClient</module>
 		<module>jWebSocketSamples</module>
 		
@@ -59,17 +59,10 @@
 		<module>jWebSocketSwingGUI</module>
 		<module>jWebSocketProxy</module>
 		<module>jWebSocketAppSrvDemo</module>
-		<!--
-		<module>jWebSocketJetty</module>
-		-->
-		
-		<!-- <module>jWebSocketGlassFish</module> -->
-		<!-- <module>jWebSocketGlassFishDemo</module> -->
-		<!--<module>jWebSocketTomcatDemo</module>-->
 	</modules>
 	
 	<properties>
-		<!-- Keep this, since NetBeans 7.x replase ${vars} according to the maven project properties-->
+		<!-- Keep this, since NetBeans 7.x replaces ${vars} according to the maven project properties-->
 		<project.conf>${JWEBSOCKET_HOME}conf</project.conf>
 		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -149,7 +142,6 @@
 	</dependencies>
 
 	<repositories>
-		
 		<!-- maven repository 2 -->
 		<repository>
 			<id>maven-central-repo2</id>
@@ -186,6 +178,5 @@
 		</repository>
 		
 	</repositories>
-	
 
 </project>
