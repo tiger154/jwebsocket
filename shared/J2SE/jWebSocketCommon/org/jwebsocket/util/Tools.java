@@ -806,8 +806,10 @@ public class Tools {
 	 *
 	 */
 	public static void startUtilityThreadPool() {
-		AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
-				+ "org.jwebsocket.tools.threadpool\", \"write\""));
+		if (System.getProperties().contains("JWEBSOCKET_HOME")) {
+			AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
+					+ "org.jwebsocket.tools.threadpool\", \"write\""));
+		}
 
 		if (null == mThreadPool) {
 			mThreadPool = Executors.newFixedThreadPool(20, new ThreadFactory() {
@@ -823,8 +825,10 @@ public class Tools {
 	 *
 	 */
 	public static void stopUtilityThreadPool() {
-		AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
-				+ "org.jwebsocket.tools.threadpool\", \"write\""));
+		if (System.getProperties().contains("JWEBSOCKET_HOME")) {
+			AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
+					+ "org.jwebsocket.tools.threadpool\", \"write\""));
+		}
 
 		if (null != mThreadPool && !mThreadPool.isShutdown()) {
 			mThreadPool.shutdownNow();
@@ -836,8 +840,10 @@ public class Tools {
 	 * @return
 	 */
 	public static ExecutorService getThreadPool() {
-		AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
-				+ "org.jwebsocket.tools.threadpool\", \"write\""));
+		if (System.getProperties().contains("JWEBSOCKET_HOME")) {
+			AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
+					+ "org.jwebsocket.tools.threadpool\", \"write\""));
+		}
 
 		if (null == mThreadPool) {
 			startUtilityThreadPool();
@@ -851,8 +857,10 @@ public class Tools {
 	 * expired tasks every 5 minute.
 	 */
 	public static void startUtilityTimer() {
-		AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
-				+ "org.jwebsocket.tools.timer\", \"write\""));
+		if (System.getProperties().contains("JWEBSOCKET_HOME")) {
+			AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
+					+ "org.jwebsocket.tools.timer\", \"write\""));
+		}
 
 		if (null == mTimer) {
 			mTimer = new Timer("jWebSocket Utility Timer");
@@ -871,8 +879,10 @@ public class Tools {
 	 * Stops the jWebSocket utility time.
 	 */
 	public static void stopUtilityTimer() {
-		AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
-				+ "org.jwebsocket.tools.timer\", \"write\""));
+		if (System.getProperties().contains("JWEBSOCKET_HOME")) {
+			AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
+					+ "org.jwebsocket.tools.timer\", \"write\""));
+		}
 
 		if (null != mTimer) {
 			mTimer.cancel();
@@ -885,8 +895,10 @@ public class Tools {
 	 * @return A jWebSocket shared utility timer
 	 */
 	public static Timer getTimer() {
-		AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
-				+ "org.jwebsocket.tools.timer\", \"write\""));
+		if (System.getProperties().contains("JWEBSOCKET_HOME")) {
+			AccessController.checkPermission(stringToPermission("permission java.util.PropertyPermission \""
+					+ "org.jwebsocket.tools.timer\", \"write\""));
+		}
 
 		if (null == mTimer) {
 			startUtilityTimer();
