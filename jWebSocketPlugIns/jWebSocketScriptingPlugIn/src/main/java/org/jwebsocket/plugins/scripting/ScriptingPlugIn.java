@@ -187,20 +187,19 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		return NS;
 	}
 
-	public Permissions getAppPermissions(String aAppName) {
-		return mSettings.getAppPermissions(aAppName);
+	public Permissions getAppPermissions(String aAppName, String aAppPath) {
+		return mSettings.getAppPermissions(aAppName, aAppPath);
 	}
 
 	public String getExtensionsDirectoryPath() {
 		return mSettings.getExtensionsDirectory();
 	}
 
-	private void execAppBeforeLoadChecks(final String aAppName, String aAppDirPath) throws Exception {
+	private void execAppBeforeLoadChecks(final String aAppName, String aAppPath) throws Exception {
 		// parsing app manifest
-		File lManifestFile = new File(aAppDirPath + "/manifest.json");
+		File lManifestFile = new File(aAppPath + "/manifest.json");
 		if (!lManifestFile.exists() || !lManifestFile.canRead()) {
-			String lMsg = "Unable to load '" + aAppName + "' application. The manifest file '"
-					+ lManifestFile.getPath() + "' does not exists!";
+			String lMsg = "Unable to load '" + aAppName + "' application. Manifest file no found!";
 			mLog.error(lMsg);
 			throw new FileNotFoundException(lMsg);
 		}
@@ -223,13 +222,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		// checking sandbox permissions dependency
 		Manifest.checkPermissions(lManifestJSON.getList(Manifest.PERMISSIONS,
 				new ArrayList()),
-				mSettings.getAppPermissions(aAppName), aAppDirPath);
+				mSettings.getAppPermissions(aAppName, aAppPath), aAppPath);
 
 		// validating bootstrap file
-		final File lBootstrap = new File(aAppDirPath + "/App." + lExt);
+		final File lBootstrap = new File(aAppPath + "/App." + lExt);
 		if (!lBootstrap.exists() || !lBootstrap.canRead()) {
-			String lMsg = "Unable to load '" + aAppName + "' application. The bootstrap file '"
-					+ lBootstrap + "' does not exists!";
+			String lMsg = "Unable to load '" + aAppName + "' application. Bootstrap file not found!";
 			mLog.error(lMsg);
 			throw new FileNotFoundException(lMsg);
 		}
@@ -249,9 +247,9 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		}
 
 
-		// crating the high level script app instance
+		// creating the high level script app instance
 		if ("js".equals(lExt)) {
-			lApp = new JavaScriptApp(this, aAppName, aAppDirPath, lScriptApp);
+			lApp = new JavaScriptApp(this, aAppName, aAppPath, lScriptApp);
 		} else {
 			String lMsg = "The extension '" + lExt + "' is not currently supported!";
 			mLog.error(lMsg);
@@ -259,7 +257,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		}
 
 		// loading application into security sandbox
-		Tools.doPrivileged(mSettings.getAppPermissions(aAppName),
+		Tools.doPrivileged(mSettings.getAppPermissions(aAppName, aAppPath),
 				new PrivilegedAction<Object>() {
 					@Override
 					public Object run() {
@@ -268,7 +266,9 @@ public class ScriptingPlugIn extends ActionPlugIn {
 							lScriptApp.eval(FileUtils.readFileToString(lBootstrap));
 							return null;
 						} catch (Exception lEx) {
-							String lMsg = "Script applicaton '" + aAppName + "' failed the 'before-load' checks: " + lEx.getMessage();
+							String lAction = (mApps.containsKey(aAppName)) ? "reloaded" : "loaded";
+							String lMsg = "Script applicaton '" + aAppName + "' not " + lAction
+									+ " because it failed the 'before-load' checks: " + lEx.getMessage();
 							mLog.info(lMsg);
 							throw new RuntimeException(lMsg);
 						}
@@ -284,12 +284,12 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * Loads an script application.
 	 *
 	 * @param aAppName The application name
-	 * @param aAppDirPath The application home path
+	 * @param aAppPath The application home path
 	 * @param aHotLoad
 	 * @return
 	 * @throws Exception
 	 */
-	private void loadApp(final String aAppName, String aAppDirPath, boolean aHotLoad) throws Exception {
+	private void loadApp(final String aAppName, String aAppPath, boolean aHotLoad) throws Exception {
 		// notifying before app reload event here
 		BaseScriptApp lScript = mApps.get(aAppName);
 		if (null != lScript) {
@@ -297,7 +297,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		}
 
 		// parsing app manifest
-		File lManifestFile = new File(aAppDirPath + "/manifest.json");
+		File lManifestFile = new File(aAppPath + "/manifest.json");
 
 		// parsing app manifest file
 		ObjectMapper lMapper = new ObjectMapper();
@@ -309,7 +309,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		String lExt = lManifestJSON.getString(Manifest.LANGUAGE_EXT, "js");
 
 		// validating bootstrap file
-		final File lBootstrap = new File(aAppDirPath + "/App." + lExt);
+		final File lBootstrap = new File(aAppPath + "/App." + lExt);
 
 		// support hot app load
 		if (aHotLoad && mApps.containsKey(aAppName)) {
@@ -336,7 +336,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 			// crating the high level script app instance
 			if ("js".equals(lExt)) {
-				mApps.put(aAppName, new JavaScriptApp(this, aAppName, aAppDirPath, lScriptApp));
+				mApps.put(aAppName, new JavaScriptApp(this, aAppName, aAppPath, lScriptApp));
 			} else {
 				String lMsg = "The extension '" + lExt + "' is not currently supported!";
 				mLog.error(lMsg);
@@ -344,7 +344,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			}
 
 			// loading application into security sandbox
-			Tools.doPrivileged(mSettings.getAppPermissions(aAppName),
+			Tools.doPrivileged(mSettings.getAppPermissions(aAppName, aAppPath),
 					new PrivilegedAction<Object>() {
 						@Override
 						public Object run() {
@@ -494,12 +494,18 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		Iterator<String> lAppNames = mApps.keySet().iterator();
 		Map<String, Map> lResult = new HashMap<String, Map>();
 		boolean lUserOnly = aToken.getBoolean("userOnly", false);
+		boolean lNamesOnly = aToken.getBoolean("namesOnly", false);
 
 		while (lAppNames.hasNext()) {
 			String lAppName = lAppNames.next();
 			if (!lUserOnly || (lUserOnly && hasAuthority(aConnector, NS + ".deploy.*")
 					|| hasAuthority(aConnector, NS + ".deploy." + lAppName))) {
 				lResult.put(lAppName, new HashMap());
+
+				if (lNamesOnly) {
+					continue;
+				}
+				
 				// locally caching object
 				BaseScriptApp lApp = mApps.get(lAppName);
 				// getting app details

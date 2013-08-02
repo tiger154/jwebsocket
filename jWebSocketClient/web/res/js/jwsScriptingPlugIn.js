@@ -134,14 +134,23 @@ jws.ScriptingPlugIn = {
     
 	//:m:*:listScriptApps
 	//:d:en:List script apps
+	//:a:en::aOptions.userOnly:Boolean:If TRUE, only the active user apps are listed, FALSE will list all apps. Default: FALSE
+	//:a:en::aOptions.namesOnly:Boolean:If TRUE, only the names value is retrieved per app, FALSE will include more app data. Default: TRUE
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
 	listScriptApps: function(aOptions) {
+		if (!aOptions) aOptions = {};
+		
+		var lUserOnly = aOptions.userOnly || false;
+		var lNamesOnly = aOptions.namesOnly || true;
+		
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
 			var lToken = {
 				ns: jws.ScriptingPlugIn.NS,
-				type: 'listApps'
+				type: 'listApps',
+				userOnly: lUserOnly,
+				namesOnly: lNamesOnly
 			};
             
 			this.sendToken(lToken, aOptions);

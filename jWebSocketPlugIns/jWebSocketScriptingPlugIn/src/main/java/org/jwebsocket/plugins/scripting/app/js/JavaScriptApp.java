@@ -81,7 +81,7 @@ public class JavaScriptApp extends BaseScriptApp {
 				.getBean("org.jwebsocket.plugins.scripting.settings");
 
 		// notifying event into security sandbox
-		Tools.doPrivileged(lSettings.getAppPermissions(getName()),
+		Tools.doPrivileged(lSettings.getAppPermissions(getName(), getPath()),
 				new PrivilegedAction<Object>() {
 					@Override
 					public Object run() {
@@ -118,7 +118,7 @@ public class JavaScriptApp extends BaseScriptApp {
 				.getBean("org.jwebsocket.plugins.scripting.settings");
 
 		// calling method into a security sandbox
-		return Tools.doPrivileged(lSettings.getAppPermissions(getName()),
+		return Tools.doPrivileged(lSettings.getAppPermissions(getName(), getPath()),
 				new PrivilegedAction<Object>() {
 					@Override
 					public Object run() {

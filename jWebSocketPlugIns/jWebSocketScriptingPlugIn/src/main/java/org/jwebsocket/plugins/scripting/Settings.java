@@ -45,10 +45,6 @@ public class Settings {
 	 */
 	private File mAppsDirectory;
 	/**
-	 * Extensions directory file
-	 */
-	private File mExtensionsDirectory;
-	/**
 	 * Global security permissions
 	 */
 	private List<String> mGlobalSecurityPermissions = new LinkedList<String>();
@@ -151,7 +147,6 @@ public class Settings {
 				+ " Please check directory path or access permissions.");
 		Assert.isTrue(lExtensionsDirectory.canRead(), "The Scripting plug-in requires "
 				+ "READ permissions into the extensions directory!");
-		mExtensionsDirectory = lExtensionsDirectory;
 	}
 
 	/**
@@ -242,11 +237,7 @@ public class Settings {
 	 * @param aAppName
 	 * @return
 	 */
-	public Permissions getAppPermissions(String aAppName) {
-		if (mCachedPermissions.containsKey(aAppName)) {
-			return mCachedPermissions.get(aAppName);
-		}
-
+	public Permissions getAppPermissions(String aAppName, String aAppPath) {
 		Permissions lPerms = new Permissions();
 		Permission lPermission;
 		Map<String, String> lAppsFolder = getApps();
@@ -254,7 +245,7 @@ public class Settings {
 		// processing global permissions
 		for (String lStrPerm : getGlobalSecurityPermissions()) {
 			lPermission = Tools.stringToPermission(Tools.expandEnvVarsAndProps(
-					lStrPerm.replace("${APP_HOME}", lAppsFolder.get(aAppName))));
+					lStrPerm.replace("${APP_HOME}", aAppPath)));
 
 			if (null != lPermission) {
 				lPerms.add(lPermission);
@@ -265,16 +256,13 @@ public class Settings {
 		if (getAppsSecurityPermissions().containsKey(aAppName)) {
 			for (String lStrPerm : getAppsSecurityPermissions().get(aAppName)) {
 				lPermission = Tools.stringToPermission(Tools.expandEnvVarsAndProps(
-						lStrPerm.replace("${APP_HOME}", lAppsFolder.get(aAppName))));
+						lStrPerm.replace("${APP_HOME}", aAppPath)));
 
 				if (null != lPermission) {
 					lPerms.add(lPermission);
 				}
 			}
 		}
-
-		// caching permissions
-		mCachedPermissions.put(aAppName, lPerms);
 
 		return lPerms;
 	}
