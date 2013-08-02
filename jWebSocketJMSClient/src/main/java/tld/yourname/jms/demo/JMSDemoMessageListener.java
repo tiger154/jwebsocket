@@ -27,7 +27,8 @@ import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 
 /**
- * JMS Gateway Demo Listener
+ * JMS Gateway Demo Listener This is a simple state machine, which
+ * asynchronously processes incoming messages and answers them.
  *
  * @author Alexander Schulze
  */
@@ -62,7 +63,7 @@ public class JMSDemoMessageListener extends JMSBaseMessageListener {
 			Integer lCode = lToken.getInteger("code", -1);
 
 			// the server accepted the new JMS client, so login now...
-			if ("org.jwebsocket.jms.bridge".equals(lNS)) {
+			if ("org.jwebsocket.jms.gateway".equals(lNS)) {
 				if ("welcome".equals(lType)) {
 					if (mLog.isInfoEnabled()) {
 						mLog.info("Connection successful, logging-in...");

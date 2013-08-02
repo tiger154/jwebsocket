@@ -33,8 +33,8 @@ jws.tests.System = {
 			// open a separate control connection
 			lConn.logon( jws.getDefaultServerURL(), "guest", "guest", {
 				OnToken: function ( aToken ) {
-					if( "org.jwebsocket.plugins.system" == aToken.ns
-						&& "login" == aToken.reqType) {
+					if( "org.jwebsocket.plugins.system" === aToken.ns
+						&& "login" === aToken.reqType) {
 						lResponse = aToken;
 					}
 				}
@@ -42,7 +42,7 @@ jws.tests.System = {
 
 			waitsFor(
 				function() {
-					return( lResponse.code != undefined );
+					return( lResponse.code !== undefined );
 				},
 				lSpec,
 				1500
@@ -68,8 +68,8 @@ jws.tests.System = {
 			// open a separate control connection
 			lConn.logon( jws.getDefaultServerURL(), "InVaLiD", "iNvAlId", {
 				OnToken: function ( aToken ) {
-					if( "org.jwebsocket.plugins.system" == aToken.ns
-						&& "login" == aToken.reqType) {
+					if( "org.jwebsocket.plugins.system" === aToken.ns
+						&& "login" === aToken.reqType) {
 						lResponse = aToken;
 					}
 				}
@@ -77,7 +77,7 @@ jws.tests.System = {
 
 			waitsFor(
 				function() {
-					return( lResponse.code != undefined );
+					return( lResponse.code !== undefined );
 				},
 				lSpec,
 				1500
@@ -112,8 +112,8 @@ jws.tests.System = {
 			};
 
 			var lListener = function( aToken ) {
-				if( "org.jwebsocket.plugins.system" == aToken.ns
-					&& "send" == aToken.type) {
+				if( "org.jwebsocket.plugins.system" === aToken.ns
+					&& "send" === aToken.type) {
 					lResponse = aToken;
 				}
 			};
@@ -123,7 +123,7 @@ jws.tests.System = {
 
 			waitsFor(
 				function() {
-					return( lResponse.data == lMsg );
+					return( lResponse.data === lMsg );
 				},
 				lSpec,
 				1500
@@ -160,7 +160,7 @@ jws.tests.System = {
 				OnOpen: function ( aToken ) {
 					// prevent screwing up result 
 					// if timeout has been fired before
-					if( lStatus == jws.CONNECTING ) {
+					if( lStatus === jws.CONNECTING ) {
 						lStatus = jws.OPEN;
 					}
 				},
@@ -172,7 +172,7 @@ jws.tests.System = {
 
 			waitsFor(
 				function() {
-					return( lStatus != jws.CONNECTING );
+					return( lStatus !== jws.CONNECTING );
 				},
 				lSpec,
 				aOpenTimeout + 500
@@ -215,7 +215,7 @@ jws.tests.System = {
 					if( lExpectTimeout ) {
 						return( lTimeoutFired === true );
 					} else {
-						return( lResponse.code == 0 );
+						return( lResponse.code === 0 );
 					}	
 				},
 				lSpec,
@@ -234,13 +234,13 @@ jws.tests.System = {
 	},
 	
 	testSessionPut: function(aKey, aValue, aPublic){
-		var lSpec = this.NS + ": putting data on the server session of the client" 
+		var lSpec = this.NS + ": putting data on the server session of the client";
 		it( lSpec, function () {
 			var lResponse = null;
 		
 			waitsFor(
 				function() {
-					return jws.Tests.getAdminTestConn() != null;
+					return jws.Tests.getAdminTestConn() !== null;
 				},
 				this.NS + ": waiting for admin connection",
 				1000
@@ -252,11 +252,11 @@ jws.tests.System = {
 						lResponse = aResponse;
 					} 
 				});
-			})
+			});
 		
 			waitsFor(
 				function() {
-					return lResponse != null;
+					return( lResponse !== null );
 				},
 				lSpec,
 				3000
@@ -269,7 +269,7 @@ jws.tests.System = {
 	},
 
 	testSessionGet: function(aKey, aPublic, aExpectedValue){
-		var lSpec = this.NS + ": getting data from the server session of a given client"
+		var lSpec = this.NS + ": getting data from the server session of a given client";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -280,11 +280,11 @@ jws.tests.System = {
 							lResponse = aResponse;
 						} 
 					});
-			})
+			});
 		
 			waitsFor(
 				function() {
-					return lResponse != null;
+					return( lResponse !== null );
 				},
 				lSpec,
 				3000
@@ -299,7 +299,7 @@ jws.tests.System = {
 	},
 	
 	testSessionHas: function(aKey, aPublic, aExpectedValue){
-		var lSpec = this.NS + ": checking if the server session of a given client has a given entry"
+		var lSpec = this.NS + ": checking if the server session of a given client has a given entry";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -310,11 +310,11 @@ jws.tests.System = {
 							lResponse = aResponse;
 						} 
 					});
-			})
+			});
 		
 			waitsFor(
 				function() {
-					return lResponse != null;
+					return( lResponse !== null );
 				},
 				lSpec,
 				1000
@@ -329,7 +329,7 @@ jws.tests.System = {
 	},
 	
 	testSessionKeys: function(aPublic, aExpectedValue){
-		var lSpec = this.NS + ": getting the server session keys of a given client"
+		var lSpec = this.NS + ": getting the server session keys of a given client";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -340,11 +340,11 @@ jws.tests.System = {
 							lResponse = aResponse;
 						} 
 					});
-			})
+			});
 		
 			waitsFor(
 				function() {
-					return lResponse != null;
+					return( lResponse !== null );
 				},
 				lSpec,
 				2000
@@ -363,7 +363,7 @@ jws.tests.System = {
 	},
 	
 	testSessionRemove: function(aKey, aPublic, aExpectedCode){
-		var lSpec = this.NS + ": removing server session entry"
+		var lSpec = this.NS + ": removing server session entry";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -373,11 +373,11 @@ jws.tests.System = {
 						lResponse = aResponse;
 					} 
 				});
-			})
+			});
 		
 			waitsFor(
 				function() {
-					return lResponse != null;
+					return( lResponse !== null );
 				},
 				lSpec,
 				1000
@@ -385,16 +385,16 @@ jws.tests.System = {
 		
 			runs( function() {
 				expect( lResponse.code ).toEqual( aExpectedCode );
-				if (0 == aExpectedCode){
+				if (0 === aExpectedCode){
 					expect( lResponse.data.key ).toEqual( (aPublic) ? "public::" + aKey : aKey );
-					expect( lResponse.data.value != null ).toEqual( true );
+					expect( lResponse.data.value !== null ).toEqual( true );
 				}
 			});
 		});
 	},
 	
 	testSessionGetAll: function(aPublic, aExpectedResult){
-		var lSpec = this.NS + ": getting the server session keys of a given client"
+		var lSpec = this.NS + ": getting the server session keys of a given client";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -405,11 +405,11 @@ jws.tests.System = {
 							lResponse = aResponse;
 						} 
 					});
-			})
+			});
 		
 			waitsFor(
 				function() {
-					return lResponse != null;
+					return lResponse !== null;
 				},
 				lSpec,
 				3000
@@ -425,7 +425,7 @@ jws.tests.System = {
 	},
 	
 	testSessionGetMany: function(aKeys, aExpectedResult){
-		var lSpec = this.NS + ": getting multiple public session entries for a given collection of clients"
+		var lSpec = this.NS + ": getting multiple public session entries for a given collection of clients";
 		it( lSpec, function () {
 			var lResponse = null;
 			var lClients = [jws.Tests.getAdminTestConn().getId()];
@@ -436,11 +436,11 @@ jws.tests.System = {
 							lResponse = aResponse;
 						} 
 					});
-			})
+			});
 		
 			waitsFor(
 				function() {
-					return lResponse != null;
+					return( lResponse !== null );
 				},
 				lSpec,
 				3000
@@ -510,5 +510,5 @@ jws.tests.System = {
 		});
 	}	
 
-}
+};
 

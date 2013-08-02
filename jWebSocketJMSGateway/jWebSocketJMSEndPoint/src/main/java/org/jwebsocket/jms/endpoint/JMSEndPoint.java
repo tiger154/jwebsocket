@@ -23,6 +23,7 @@ package org.jwebsocket.jms.endpoint;
  *
  * @author Alexander Schulze
  */
+import java.util.logging.Level;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
@@ -54,6 +55,8 @@ public class JMSEndPoint {
 	private Connection mConnection;
 	// session to create topics, producers and consumers
 	private Session mSession;
+	//
+	private MessageProducer mProducer;
 	// id to address the jWebSocket JMS Gateway
 	private String mGatewayId;
 	// id to address a certain node on the JMS topic
@@ -90,13 +93,11 @@ public class JMSEndPoint {
 			// create a session for this connection
 			mSession = mConnection.createSession(false,
 					Session.AUTO_ACKNOWLEDGE);
-			// establish the connection
-			mConnection.start();
 
 			// create a producer for the given gateway topic (JMS destination)
 			Topic lGatewayTopic = mSession.createTopic(aGatewayTopic);
-			MessageProducer lProducer = mSession.createProducer(lGatewayTopic);
-			mSender = new JMSEndPointSender(mSession, lProducer, mEndPointId);
+			mProducer = mSession.createProducer(lGatewayTopic);
+			mSender = new JMSEndPointSender(mSession, mProducer, mEndPointId);
 
 			// create a consumer for the given gateway topic (JMS destination)
 			// use endPointId to listen on a certain target address only
@@ -111,6 +112,9 @@ public class JMSEndPoint {
 			mListener = new JMSEndPointListener(aThreadPoolSize);
 			// pass the listener to the JMS consumer object
 			lConsumer.setMessageListener(mListener);
+			
+			// establish the connection
+			// mConnection.start();
 		} catch (JMSException lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " on connecting JMS client: "
@@ -118,6 +122,17 @@ public class JMSEndPoint {
 		}
 	}
 
+	public void start() {
+		try {
+			// establish the connection
+			mConnection.start();
+		} catch (JMSException lEx) {
+			mLog.error(lEx.getClass().getSimpleName()
+					+ " on connecting JMS client: "
+					+ lEx.getMessage());
+		}
+	}
+	
 	/**
 	 * Adds a new listener to the JMS Gateway Client.
 	 *
@@ -191,6 +206,20 @@ public class JMSEndPoint {
 	 */
 	public String getGatewayId() {
 		return mGatewayId;
+	}
+
+	/**
+	 * @return the Session
+	 */
+	public Session getSession() {
+		return mSession;
+	}
+
+	/**
+	 * @return the Producer
+	 */
+	public MessageProducer getProducer() {
+		return mProducer;
 	}
 
 }

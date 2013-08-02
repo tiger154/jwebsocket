@@ -46,7 +46,7 @@ jws.tests.FileSystem = {
 
 			waitsFor(
 				function() {
-					return( null != lResponse );
+					return( null !== lResponse );
 				},
 				lSpec,
 				3000
@@ -76,7 +76,7 @@ jws.tests.FileSystem = {
 
 			waitsFor(
 				function() {
-					return( null != lResponse );
+					return( null !== lResponse );
 				},
 				lSpec,
 				3000
@@ -107,7 +107,7 @@ jws.tests.FileSystem = {
 
 			waitsFor(
 				function() {
-					return( null != lResponse );
+					return( null !== lResponse );
 				},
 				lSpec,
 				3000
@@ -122,7 +122,7 @@ jws.tests.FileSystem = {
 				});
 					
 				expect( lObtainedKeys.sort() ).toEqual( aExpectedList.sort() );
-			})
+			});
 
 		});
 	},
@@ -146,7 +146,7 @@ jws.tests.FileSystem = {
 
 			waitsFor(
 				function() {
-					return( null != lResponse );
+					return( null !== lResponse );
 				},
 				lSpec,
 				3000
@@ -174,7 +174,7 @@ jws.tests.FileSystem = {
 
 			waitsFor(
 				function() {
-					return( null != lResponse );
+					return( null !== lResponse );
 				},
 				lSpec,
 				3000
@@ -204,11 +204,11 @@ jws.tests.FileSystem = {
 
 			waitsFor(
 				function() {
-					return( null != lResponse );
+					return( null !== lResponse );
 				},
 				lSpec,
 				3000
-				);
+			);
 
 			runs( function() {
 				expect( lResponse.code ).toEqual( 0 );

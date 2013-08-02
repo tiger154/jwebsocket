@@ -127,6 +127,12 @@
 			<artifactId>commons-compress</artifactId>
 			<version>1.5</version>
 		</dependency>
+		<!-- Required for any server or client side file management -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
 		<!-- Required for message queuing in the server as well as in the client -->
 		<dependency> 
 			<groupId>org.apache.activemq</groupId> 

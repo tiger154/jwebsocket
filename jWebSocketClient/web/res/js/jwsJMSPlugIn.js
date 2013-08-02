@@ -38,6 +38,7 @@ jws.JMSPlugIn = {
 	LISTEN: "listenJms",
 	LISTEN_MESSAGE: "listenJmsMessage",
 	UNLISTEN: "unlistenJms",
+	
 	listenJms: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
@@ -52,6 +53,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	listenJmsMessage: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
@@ -66,6 +68,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	unlistenJms: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
@@ -95,6 +98,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	sendJmsTextMessage: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aText, aJmsHeaderProperties, aOptions) {
 		var lRes = this.checkConnected();
@@ -111,6 +115,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	sendJmsMap: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aMap, aOptions) {
 		var lRes = this.checkConnected();
@@ -126,6 +131,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	sendJmsMapMessage: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aMap, aJmsHeaderProperties, aOptions) {
 		var lRes = this.checkConnected();
@@ -142,6 +148,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	processToken: function(aToken) {
 		// check if namespace matches
 		if (aToken.ns === jws.JMSPlugIn.NS) {
@@ -168,6 +175,7 @@ jws.JMSPlugIn = {
 			}
 		}
 	},
+			
 	setJMSCallbacks: function(aListeners) {
 		if (!aListeners) {
 			aListeners = {};

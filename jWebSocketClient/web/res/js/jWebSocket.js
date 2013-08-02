@@ -1833,7 +1833,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 
 				this.fConn.onmessage = function( aEvent ) {
                     // supporting binary frames at this level
-                    if (aEvent.data instanceof Blob || aEvent.data instanceof ArrayBuffer ){
+                    if( aEvent.data instanceof Blob
+							|| aEvent.data instanceof ArrayBuffer ) {
                         if( aOptions.OnMessage ) {
 							aOptions.OnMessage( aEvent, lValue, lThis );
 						}
@@ -2080,8 +2081,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				// call filter chain
 				if( this.fFilters ) {
 					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-						if ( "function" === typeof this.fFilters[ lIdx ]["filterStreamOut"] ){
-							this.fFilters[ lIdx ]["filterStreamOut"]( aData );
+						if ( "function" === typeof this.fFilters[ lIdx ][ "filterStreamOut" ] ){
+							this.fFilters[ lIdx ][ "filterStreamOut" ]( aData );
 						}
 					}
 				}
@@ -2666,7 +2667,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				for( var lAttr in lEnc ) {
 					var lFormat = lEnc[ lAttr ];
 					var lValue = aToken[ lAttr ];
-					if (aToken['__binaryData'] && 'data' == lAttr){
+					if( aToken[ "__binaryData" ] && "data" === lAttr){
 						continue;
 					}
 					if( 0 > self.fEncodingFormats.lastIndexOf( lFormat ) ) {
@@ -2985,7 +2986,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		// TODO: Remove this temporary hack with final release 1.0
 		// TODO: this was required to ensure upward compatibility from 0.10 to 0.11
 		var lNS = aToken['ns'];
-		if ( undefined != lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
+		if ( undefined !== lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
 			aToken.ns = "org.jwebsocket" + lNS.substring( 15 );
 		} else if( null === lNS ) {
 			aToken.ns = "org.jwebsocket.plugins.system";
@@ -3144,7 +3145,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				// call filter chain
 				if( this.fFilters ) {
 					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-						if ( "function" === typeof this.fFilters[ lIdx ]["filterTokenOut"] ) {
+						if ( "function" === typeof this.fFilters[ lIdx ][ "filterTokenOut" ] ) {
 							this.fFilters[ lIdx ][ "filterTokenOut" ]( aToken );
 						}
 					}
@@ -4358,7 +4359,44 @@ jws.SystemClientPlugIn = {
 			keys: aKeys,
 			connectionStorage: aOptions.connectionStorage || false
 		}, aOptions);
-	}
+	},
+			
+	//:m:*:forwardJSON
+	//:d:en:Sends a JSON message to a JMS target
+	//:a:en::aTarget:String:The Endpoint-Id of the target
+	//:a:en::aNS:String:The namespace of the message
+	//:a:en::aType:String:The type of the message
+	//:a:en::aArgs:Object:A map of additional key/value pairs
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	forwardJSON: function(aTarget, aNS, aType, aArgs, aJSON, aOptions ) {
+		var lToken = {
+			ns: aNS,
+			type: aType,
+			sourceId: this.fClientId,
+			utid: this.getNextTokenId(),
+			payload: aJSON
+		};
+		if( aArgs ) {
+			for( var lField in aArgs ) {
+				if( undefined === lToken[ lField ] ) {
+					lToken[ lField ] = aArgs[ lField ];
+				}	
+			}
+		}
+		// put the JSON payload into an envelope to forward to the target
+		var lEnvelope = {
+			ns: "org.jwebsocket.plugins.system",
+			type: "send",
+			sourceId: this.fClientId,
+			targetId: aTarget,
+			action: "forward.json",
+			responseRequested: false, // we expect a response from the target
+			data: JSON.stringify( lToken )
+		};
+		this.sendToken( lEnvelope, aOptions );
+	}	
+
 };
 
 // add the JWebSocket SystemClient PlugIn into the BaseClient class

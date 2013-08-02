@@ -29,9 +29,9 @@ import org.jwebsocket.jms.client.JMSClient;
  *
  * @author Alexander Schulze
  */
-public class JMSDemoClient {
+public class JMSDemoServer {
 
-	static final Logger mLog = Logger.getLogger(JMSDemoClient.class);
+	static final Logger mLog = Logger.getLogger(JMSDemoServer.class);
 
 	/**
 	 *
@@ -62,7 +62,7 @@ public class JMSDemoClient {
 
 		// tcp://172.20.116.68:61616 org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		// failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
-		mLog.info("jWebSocket JMS Gateway Demo Client");
+		mLog.info("jWebSocket JMS Gateway Server Endpoint");
 
 		if (null != aArgs && aArgs.length >= 3) {
 			lBrokerURL = aArgs[0];
@@ -105,11 +105,11 @@ public class JMSDemoClient {
 		// check if JMS client has already been shutdown by logic
 		if (!lJMSClient.isShutdown()) {
 			// if not yet done...
-			mLog.info("Shutting down JMS client...");
+			mLog.info("Shutting down JMS Server Endpoint...");
 			// shut the client properly down
 			lJMSClient.shutdown();
 		}
 		// and show final status message in the console
-		mLog.info("JMS node properly shutdown.");
+		mLog.info("JMS Server Endpoint properly shutdown.");
 	}
 }

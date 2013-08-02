@@ -159,10 +159,8 @@ public class JMSPlugIn extends TokenPlugIn {
 				// create the listener to the advisory topic
 				Topic lAdvisoryTopic = mSession.createTopic(lAdvisoryTopicId);
 				mAdvisoryConsumer = mSession.createConsumer(lAdvisoryTopic);
-				JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener();
+				JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(mJMSEngine, mSender);
 				mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
-				lAdvisoryListener.setSender(mSender);
-				lAdvisoryListener.setEngine(mJMSEngine);
 
 			} catch (JMSException lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx,
