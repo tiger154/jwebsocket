@@ -223,7 +223,7 @@ abstract public class BaseScriptApp {
 	}
 
 	public Permissions getPermissions() {
-		return mPlugIn.getAppPermissions(mAppName);
+		return mPlugIn.getAppPermissions(mAppName, mAppPath);
 	}
 
 	/**

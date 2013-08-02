@@ -80,7 +80,6 @@ public class LoadBalancerTest {
 			for (int lPos = 0; lPos < mCurrentConnections; lPos++) {
 				final BaseTokenClient lClient = new BaseTokenClient();
 				lClient.addTokenClientListener(new WebSocketClientTokenListener() {
-
 					@Override
 					public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 						if (aToken.getType().equals("response")) {
@@ -121,7 +120,6 @@ public class LoadBalancerTest {
 			//Test getStickyRoutes, getClusterEndPointsInfo and deregisterServiceEndPoint
 			final BaseTokenClient lClient = new BaseTokenClient();
 			lClient.addTokenClientListener(new WebSocketClientTokenListener() {
-
 				@Override
 				public void processToken(WebSocketClientEvent aEvent, Token aToken) {
 					System.out.println(aToken.toString());
@@ -171,13 +169,13 @@ public class LoadBalancerTest {
 
 			lClient.sendToken(lTokenInfo);
 			Thread.sleep(10000);
-			
+
 			Token lTokenShutdown = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "shutdownEndpoint");
 			lTokenShutdown.setString("epId", mEndpointId);
 			lTokenShutdown.setString("clusterAlias", mClusterAlias);
 			System.out.println(mEndpointId);
 			lClient.sendToken(lTokenShutdown);
-			
+
 		} catch (Exception lEx) {
 		}
 	}

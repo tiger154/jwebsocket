@@ -372,6 +372,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		Boolean lEncode = aToken.getBoolean("encode", false);
 		byte[] lBA;
 		if (!lEncode && "base64".equals(lEncoding)) {
+			// supporting HTML5 readAsDataURL method
 			int lIdx = lData.indexOf(',');
 			if (lIdx >= 0) {
 				lData = lData.substring(lIdx + 1);

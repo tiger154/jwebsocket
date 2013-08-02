@@ -449,11 +449,11 @@ public class BaseWebSocketClient implements WebSocketClient {
 							System.currentTimeMillis(),
 							lFragmentationId,
 							new InFragmentationListenerSender() {
-						@Override
-						public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
-							lSender.sendPacketInTransaction(aDataPacket, aListener);
-						}
-					}));
+								@Override
+								public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+									lSender.sendPacketInTransaction(aDataPacket, aListener);
+								}
+							}));
 					return;
 				}
 

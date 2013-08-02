@@ -116,13 +116,20 @@ public class ScriptingPlugIn extends BaseClientTokenPlugIn {
 	}
 
 	/**
-	 * List script apps.
+	 * List server side script apps
 	 *
+	 * @param aUserOnly If TRUE, only the active user apps are listed, FALSE
+	 * will list all apps.
+	 * @param aNamesOnly If TRUE, only the names value is retrieved per app,
+	 * FALSE will include more app data.
 	 * @param aListener
 	 * @throws WebSocketException
 	 */
-	public void listApps(WebSocketResponseTokenListener aListener) throws WebSocketException {
+	public void listApps(boolean aUserOnly, boolean aNamesOnly,
+			WebSocketResponseTokenListener aListener) throws WebSocketException {
 		Token lRequest = TokenFactory.createToken(getNS(), "listApps");
+		lRequest.setBoolean("userOnly", aUserOnly);
+		lRequest.setBoolean("namesOnly", aNamesOnly);
 
 		getTokenClient().sendToken(lRequest, aListener);
 	}
