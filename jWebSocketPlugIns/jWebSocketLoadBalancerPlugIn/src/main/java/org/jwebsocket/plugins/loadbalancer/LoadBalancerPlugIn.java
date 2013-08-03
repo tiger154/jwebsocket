@@ -76,7 +76,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	protected Map<String, MessageTimeout> mProcessMessage;
+	protected Map<String, TimerTask> mProcessMessage;
 
 	/**
 	 *
@@ -102,7 +102,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 					mClusters = mSettings.getClusters();
 					mShutdownTimeout = mSettings.getShutdownTimeout();
 					mMessageTimeout = mSettings.getMessageTimeout();
-					mProcessMessage = new FastMap<String, MessageTimeout>();
+					mProcessMessage = new FastMap<String, TimerTask>();
 					if (mLog.isInfoEnabled()) {
 						mLog.info("Load balancer plug-in successfully instantiated.");
 					}
@@ -321,7 +321,18 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			aToken.setNS(getCluster(lClusterAlias).getNamespace());
 			aToken.setType("shutdown");
 			lServer.sendToken(getSourceConnector(lEndPointId.split("_")[1]), aToken);
-			Tools.getTimer().schedule(new ShutdownTimeout(aConnector, aToken), mShutdownTimeout);
+
+			final WebSocketConnector lConnector = aConnector;
+			final Token lToken = aToken;
+			Tools.getTimer().schedule(new TimerTask() {
+
+				@Override
+				public void run() {
+					if (getCluster(lToken.getString("clusterAlias")).endPointExists(lToken.getString("epId"))) {
+						deregisterServiceEndPoint(lConnector, lToken);
+					}
+				}
+			}, mShutdownTimeout);
 		} else {
 			Token lResponse = createResponse(aToken);
 			lResponse.setString("msg", "The endpoint ID or cluster alias has invalid value!");
@@ -339,8 +350,18 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		if (null != lEndPoint) {
 			lEndPoint.increaseRequests();
 			lServer.sendToken(lEndPoint.getConnector(), aToken);
-			MessageTimeout lMessageTimeout = new MessageTimeout(aConnector, aToken);
+
+			final WebSocketConnector lConnector = aConnector;
+			final Token lToken = aToken;
+			TimerTask lMessageTimeout = new TimerTask() {
+
+				@Override
+				public void run() {
+					sendToService(lConnector, lToken);
+				}
+			};
 			Tools.getTimer().schedule(lMessageTimeout, mMessageTimeout);
+
 			try {
 				mProcessMessage.put(lConnectorId, lMessageTimeout);
 			} catch (Exception lEx) {
@@ -387,39 +408,5 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			}
 		}
 		return false;
-	}
-
-	final class ShutdownTimeout extends TimerTask {
-
-		private WebSocketConnector mConnector;
-		private Token mToken;
-
-		public ShutdownTimeout(WebSocketConnector aConnector, Token aToken) {
-			this.mConnector = aConnector;
-			this.mToken = aToken;
-		}
-
-		@Override
-		public void run() {
-			if (getCluster(mToken.getString("clusterAlias")).endPointExists(mToken.getString("epId"))) {
-				deregisterServiceEndPoint(mConnector, mToken);
-			}
-		}
-	}
-
-	final class MessageTimeout extends TimerTask {
-
-		private WebSocketConnector mConnector;
-		private Token mToken;
-
-		public MessageTimeout(WebSocketConnector aConnector, Token aToken) {
-			this.mConnector = aConnector;
-			this.mToken = aToken;
-		}
-
-		@Override
-		public void run() {
-			sendToService(mConnector, mToken);
-		}
 	}
 }
