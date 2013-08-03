@@ -34,7 +34,7 @@ import org.jwebsocket.token.Token;
 public class LoadBalancerFilter extends TokenFilter {
 
 	private static Logger mLog = Logging.getLogger();
-	private String LOADBALANCER_ID = "jws.lb";
+	private String LOADBALANCER_ID = null;
 	private LoadBalancerPlugIn mLoadBalancerPlugIn;
 
 	/**
@@ -43,6 +43,7 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	public LoadBalancerFilter(FilterConfiguration aConfiguration) {
 		super(aConfiguration);
+		LOADBALANCER_ID = getFilterConfiguration().getSettings().get("load_balancer_id");
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating load balancer filter...");
 		}
@@ -56,9 +57,9 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse,
-			WebSocketConnector aConnector, Token aToken) {
+		WebSocketConnector aConnector, Token aToken) {
 		mLoadBalancerPlugIn = (mLoadBalancerPlugIn == null
-				? (LoadBalancerPlugIn) getServer().getPlugInById(LOADBALANCER_ID) : mLoadBalancerPlugIn);
+			? (LoadBalancerPlugIn) getServer().getPlugInById(LOADBALANCER_ID) : mLoadBalancerPlugIn);
 
 		if (mLoadBalancerPlugIn.supportsNamespace(aToken.getNS())) {
 			mLoadBalancerPlugIn.processToken(new PlugInResponse(), aConnector, aToken);
@@ -74,7 +75,7 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenOut(FilterResponse aResponse,
-			WebSocketConnector aSource, WebSocketConnector aTarget,
-			Token aToken) {
+		WebSocketConnector aSource, WebSocketConnector aTarget,
+		Token aToken) {
 	}
 }
