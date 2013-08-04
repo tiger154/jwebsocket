@@ -1463,7 +1463,7 @@
 		</plugin>
 
 		<!-- plug-in for messaging via JMS -->
-		<plugin>
+		<!--plugin>
 			<name>org.jwebsocket.plugins.jms.JMSPlugIn</name>
 			<id>jws.jms</id>
 			<ns>org.jWebSocket.plugins.jms</ns>
@@ -1478,7 +1478,7 @@
 				<setting key="destination:2" type="json">{name:"testTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 			</settings>
-		</plugin>
+		</plugin-->
 
 		<!-- jWebSocket Load Balancer plug-in -->
 		<plugin>
@@ -2000,6 +2000,9 @@
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
+			<settings>
+				<setting key="load_balancer_id">jws.lb</setting>
+			</settings>
 		</filter>
 		
 	</filters>

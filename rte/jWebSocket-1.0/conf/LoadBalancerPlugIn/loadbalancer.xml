@@ -28,7 +28,7 @@
 			</list>
 		</property>
 		<property name="staticEntries" value="2"/>
-		<property name="Namespace" value="org.jwebsocket.plugins.sampleservice1"/>
+		<property name="Namespace" value="org.jwebsocket.plugins.sample"/>
 	</bean>
 	
 	<!-- Service Cluster 2 definition -->
@@ -40,7 +40,7 @@
 			</list>
 		</property>
 		<property name="staticEntries" value="2"/>
-		<property name="Namespace" value="org.jwebsocket.plugins.sampleservice2"/>
+		<property name="Namespace" value="org.jwebsocket.plugins.sample2"/>
 	</bean>
 	
 	<!-- Service Cluster alias/instance assignment -->
