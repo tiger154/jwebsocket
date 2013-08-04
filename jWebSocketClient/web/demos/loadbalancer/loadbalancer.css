@@ -1,0 +1,31 @@
+#sbtnEndPointInfo{
+	width: 120px;
+}
+
+#sbtnStickyRoutes{
+	width: 120px;
+}
+
+#sbtnRegisterServiceEndPoint{
+	width: 200px;
+}
+
+#sbtnDeregisterServiceEndPoint{
+	width: 200px;
+}
+
+#sbtnShutdownEndpoint{
+	width: 150px;
+}
+
+#stdDlg{
+	width: 100px;
+}
+
+#stdSelect{
+	width: 100px;
+}
+
+#sbtnSum{
+	width: 80px;
+}
