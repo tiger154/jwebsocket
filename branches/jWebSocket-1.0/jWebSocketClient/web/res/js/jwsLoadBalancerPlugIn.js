@@ -35,7 +35,6 @@ jws.LoadBalancerPlugIn = {
 		if( aToken.ns == jws.LoadBalancerPlugIn.NS ) {
 			// here you can handle incoming tokens from the server
 			// directy in the plug-in if desired.
-			console.log('tito');
 		}
 	},
 	
@@ -68,7 +67,8 @@ jws.LoadBalancerPlugIn = {
 		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
-				type: "registerServiceEndPoint"
+				type: "registerServiceEndPoint",
+				clusterAlias: aOptions.clusterAlias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -103,19 +103,22 @@ jws.LoadBalancerPlugIn = {
 		return lRes;
 	},
 	
-	createResponse: function ( aToken ) {
-		return{
-			code: 0,
-			msg: "Ok",
-			utid: aToken.utid
-			ns: jws.LoadBalancerPlugIn.NS,
-			type: "response",
-			sourceId: aToken.sourceId
-		};
+	sendSum: function ( aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 === lRes.code ) {
+			var lToken = {
+				ns: jws.LoadBalancerService.NS,
+				type: "sum",
+				val1: aOptions.val1,
+				val2: aOptions.val2
+			};
+			this.sendToken( lToken,	aOptions );
+		}
+		return lRes;
 	}
 };
 
-// add the JWebSocket JDBC PlugIn into the TokenClient class
+// add the JWebSocket Load Balancer PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.LoadBalancerPlugIn );	
 	
 	
