@@ -234,7 +234,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			for (int lPos = 0; lPos < lIDs.size(); lPos++) {
 				Map<String, String> lInfoCluster = new FastMap<String, String>();
 				lInfoCluster.put("clusterAlias", lEntry.getKey());
-				lInfoCluster.put("serviceId", lIDs.get(lPos));
+				lInfoCluster.put("epId", lIDs.get(lPos));
 				lStickyRoutes.add(lInfoCluster);
 			}
 		}
