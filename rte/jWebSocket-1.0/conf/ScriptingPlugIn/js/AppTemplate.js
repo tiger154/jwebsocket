@@ -25,7 +25,7 @@ var App = (function() {
 	var mAPI = AppUtils.newThreadSafeMap();
 	// Packages object reference
 	var mPackages = Packages; 
-	
+
 	// function to convert a JavaScript native object to a Java Map instance
 	var toMap = function(aNativeObject) {
 		var lMap = new Packages.java.util.HashMap();
@@ -98,11 +98,27 @@ var App = (function() {
 		getStorage: function(){
 			return mStorage;
 		},
+		set: function(aAttrName, aValue){
+			mStorage.put(aAttrName, aValue);
+			
+			return aValue;
+		},
+		get: function(aAttrName, aDefaultValue){
+			var lValue = mStorage.get(aAttrName);
+			if (null == lValue){
+				lValue = aDefaultValue;
+			}
+			
+			return lValue;
+		},
 		setVersion: function(aVersion){
 			mVersion = aVersion;
 		},
 		getName: function() {
 			return AppUtils.getName();
+		},
+		loadJar: function(aFile){
+			return AppUtils.loadJar(aFile);
 		},
 		getPath: function() {
 			return AppUtils.getPath();
