@@ -57,7 +57,8 @@ public class SampleWebSocketPlugIn extends ActionPlugIn {
 		String lName = aRequest.getString("name");
 
 		Token lResponse = createResponse(aRequest);
-		lResponse.setString("data", "Hello '" + lName + "', from a jWebSocket plug-in ;)");
+		lResponse.setString("data", "Hello '" + lName + "', from a jWebSocket plug-in ;) \n"
+				+ "HOME: " + System.getProperty("JWEBSOCKET_HOME"));
 
 		sendToken(aConnector, lResponse);
 	}

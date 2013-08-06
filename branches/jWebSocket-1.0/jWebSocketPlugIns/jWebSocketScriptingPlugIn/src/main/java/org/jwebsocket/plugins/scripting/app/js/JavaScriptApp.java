@@ -19,12 +19,14 @@
 package org.jwebsocket.plugins.scripting.app.js;
 
 import java.io.File;
+import java.net.URLClassLoader;
 import java.security.PrivilegedAction;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.factory.LocalLoader;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
 import org.jwebsocket.plugins.scripting.Settings;
@@ -53,9 +55,10 @@ public class JavaScriptApp extends BaseScriptApp {
 	 * @param aAppName The application name (unique value)
 	 * @param aAppPath The application directory path
 	 * @param aScriptApp The scripting engine that runs the application
+	 * @param aLoader  The application class loader
 	 */
-	public JavaScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp) {
-		super(aServer, aAppName, aAppPath, aScriptApp);
+	public JavaScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp, LocalLoader aLoader) {
+		super(aServer, aAppName, aAppPath, aScriptApp, aLoader);
 
 		try {
 			File lAppTemplate = new File(JWebSocketConfig.getConfigFolder("ScriptingPlugIn/js/AppTemplate.js"));
