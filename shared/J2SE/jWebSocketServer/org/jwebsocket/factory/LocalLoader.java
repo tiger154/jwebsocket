@@ -21,6 +21,7 @@ package org.jwebsocket.factory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
 import org.xeustechnologies.jcl.ClasspathResources;
@@ -40,6 +41,7 @@ public class LocalLoader extends ClassLoader {
 	protected final ClasspathResources mClasspathResources;
 	private char mClassNameReplacementChar;
 	private URLClassLoader mParent;
+	private ArrayList<String> mLoaderJars = new ArrayList<String>();
 
 	/**
 	 *
@@ -67,11 +69,18 @@ public class LocalLoader extends ClassLoader {
 	}
 
 	/**
+	 * Loads a Jar
 	 *
 	 * @param aJarFile
+	 * @return TRUE if the jar has beeen loaded, FALSE otherwise
 	 */
-	public void loadJar(String aJarFile) {
+	public boolean loadJar(String aJarFile) {
+		if (mLoaderJars.contains(aJarFile)) {
+			return false;
+		}
 		mClasspathResources.loadJar(aJarFile);
+		mLoaderJars.add(aJarFile);
+		return true;
 	}
 
 	@Override

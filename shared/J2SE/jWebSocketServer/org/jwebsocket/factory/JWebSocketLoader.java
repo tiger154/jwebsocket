@@ -45,7 +45,6 @@ import org.jwebsocket.util.Tools;
 public final class JWebSocketLoader {
 
 	private static Logger mLog = Logging.getLogger();
-	;
 	private JWebSocketConfigHandler mConfigHandler = new JWebSocketConfigHandler();
 
 	/**

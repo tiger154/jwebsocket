@@ -353,11 +353,11 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"Text successfully sent", RightJms.SEND, RightJms.SEND_AND_LISTEN),
 				new ActionCommand() {
-			@Override
-			void execute(ActionInput aInput) throws Exception {
-				mJmsManager.sendText(aInput);
-			}
-		});
+					@Override
+					void execute(ActionInput aInput) throws Exception {
+						mJmsManager.sendText(aInput);
+					}
+				});
 	}
 
 	private void sendTextMessage(WebSocketConnector aConnector, Token aToken) {

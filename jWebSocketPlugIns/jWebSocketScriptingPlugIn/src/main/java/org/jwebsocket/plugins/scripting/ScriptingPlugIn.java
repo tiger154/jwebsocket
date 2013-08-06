@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.security.AccessControlException;
 import java.security.Permissions;
 import java.security.PrivilegedAction;
@@ -45,6 +46,7 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.factory.LocalLoader;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
@@ -80,7 +82,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket Scripting Plug-in - Community Edition";
-	private static ScriptEngineManager mEngineManager = new ScriptEngineManager();
 	/**
 	 * The running applications container.
 	 */
@@ -109,7 +110,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		// specify default name space for file system plugin
 		this.setNamespace(NS);
 
-		mEngineManager = new ScriptEngineManager();
 		try {
 			mBeanFactory = getConfigBeanFactory(NS);
 			if (null == mBeanFactory) {
@@ -233,23 +233,25 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		}
 
 
+		LocalLoader lClassLoader = new LocalLoader((URLClassLoader) ClassLoader.getSystemClassLoader());
+		ScriptEngineManager lManager = new ScriptEngineManager(lClassLoader);
+
 		final ScriptEngine lScriptApp;
 		final BaseScriptApp lApp;
 		if ("js".equals(lExt)) {
 			// making "nashorn" the default engine for JavaScript
-			if (null != mEngineManager.getEngineByName("nashorn")) {
-				lScriptApp = mEngineManager.getEngineByName("nashorn");
+			if (null != lManager.getEngineByName("nashorn")) {
+				lScriptApp = lManager.getEngineByName("nashorn");
 			} else {
-				lScriptApp = mEngineManager.getEngineByExtension(lExt);
+				lScriptApp = lManager.getEngineByExtension(lExt);
 			}
 		} else {
-			lScriptApp = mEngineManager.getEngineByExtension(lExt);
+			lScriptApp = lManager.getEngineByExtension(lExt);
 		}
-
 
 		// creating the high level script app instance
 		if ("js".equals(lExt)) {
-			lApp = new JavaScriptApp(this, aAppName, aAppPath, lScriptApp);
+			lApp = new JavaScriptApp(this, aAppName, aAppPath, lScriptApp, lClassLoader);
 		} else {
 			String lMsg = "The extension '" + lExt + "' is not currently supported!";
 			mLog.error(lMsg);
@@ -322,21 +324,24 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				throw new ScriptException(lEx.getMessage());
 			}
 		} else {
+			LocalLoader lClassLoader = new LocalLoader((URLClassLoader) ClassLoader.getSystemClassLoader());
+			ScriptEngineManager lManager = new ScriptEngineManager(lClassLoader);
+
 			final ScriptEngine lScriptApp;
 			if ("js".equals(lExt)) {
 				// making "nashorn" the default engine for JavaScript
-				if (null != mEngineManager.getEngineByName("nashorn")) {
-					lScriptApp = mEngineManager.getEngineByName("nashorn");
+				if (null != lManager.getEngineByName("nashorn")) {
+					lScriptApp = lManager.getEngineByName("nashorn");
 				} else {
-					lScriptApp = mEngineManager.getEngineByExtension(lExt);
+					lScriptApp = lManager.getEngineByExtension(lExt);
 				}
 			} else {
-				lScriptApp = mEngineManager.getEngineByExtension(lExt);
+				lScriptApp = lManager.getEngineByExtension(lExt);
 			}
 
 			// crating the high level script app instance
 			if ("js".equals(lExt)) {
-				mApps.put(aAppName, new JavaScriptApp(this, aAppName, aAppPath, lScriptApp));
+				mApps.put(aAppName, new JavaScriptApp(this, aAppName, aAppPath, lScriptApp, lClassLoader));
 			} else {
 				String lMsg = "The extension '" + lExt + "' is not currently supported!";
 				mLog.error(lMsg);
@@ -362,7 +367,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		}
 
 		// notifying app loaded event
-		mApps.get(aAppName).notifyEvent(BaseScriptApp.EVENT_APP_LOADED, new Object[0]);
+		mApps.get(aAppName).notifyEvent(BaseScriptApp.EVENT_APP_LOADED, new Object[]{aHotLoad});
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(aAppName + "(" + lExt + ") application loaded successfully!");
@@ -505,7 +510,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				if (lNamesOnly) {
 					continue;
 				}
-				
+
 				// locally caching object
 				BaseScriptApp lApp = mApps.get(lAppName);
 				// getting app details

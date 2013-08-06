@@ -28,12 +28,15 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javolution.util.FastList;
 import javolution.util.FastMap;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IChunkable;
 import org.jwebsocket.api.IChunkableDeliveryListener;
 import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.factory.LocalLoader;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
@@ -42,7 +45,7 @@ import org.jwebsocket.token.TokenFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.util.Assert;
 
 /**
@@ -64,6 +67,8 @@ abstract public class BaseScriptApp {
 	private Map<String, Object> mApi = new FastMap<String, Object>().shared();
 	private GenericApplicationContext mBeanFactory = new GenericApplicationContext(new DefaultListableBeanFactory());
 	private final ServerClient mServerClient;
+	private LocalLoader mClassLoader;
+	private String mJWSHome;
 	/**
 	 * String value for the "Connector Started" event. The event is fired when a
 	 * client started a connection with the server.
@@ -194,16 +199,19 @@ abstract public class BaseScriptApp {
 	 * @param aAppPath The application directory path
 	 * @param aScriptApp The scripting engine that runs the application
 	 */
-	public BaseScriptApp(ScriptingPlugIn aPlugIn, String aAppName, String aAppPath, ScriptEngine aScriptApp) {
+	public BaseScriptApp(ScriptingPlugIn aPlugIn, String aAppName, String aAppPath, ScriptEngine aScriptApp, LocalLoader aClassLoader) {
 		mPlugIn = aPlugIn;
 		mAppName = aAppName;
 		mAppPath = aAppPath;
 		mScriptApp = aScriptApp;
 		mLogger = new ScriptAppLogger(mLog, aAppName);
 		mServerClient = new ServerClient(this);
+		mClassLoader = aClassLoader;
 
 		// registering global "AppUtils" resource
 		aScriptApp.put("AppUtils", this);
+
+		mJWSHome = JWebSocketConfig.getJWebSocketHome();
 	}
 
 	/**
@@ -241,6 +249,20 @@ abstract public class BaseScriptApp {
 	 */
 	public String getName() {
 		return mAppName;
+	}
+
+	/**
+	 * Loads a Jar into the script app class loader
+	 *
+	 * @param aJarFile
+	 * @return TRUE if the jar has beeen loaded, FALSE otherwise
+	 */
+	public boolean loadJar(String aFile) throws Exception {
+		aFile = aFile.replace("${APP_HOME}", mAppPath);
+		aFile = aFile.replace("${EXT}", mPlugIn.getExtensionsDirectoryPath()
+				+ File.separator);
+
+		return mClassLoader.loadJar(aFile);
 	}
 
 	/**
@@ -334,7 +356,7 @@ abstract public class BaseScriptApp {
 		aFile = aFile.replace("${APP_HOME}", mAppPath);
 		aFile = aFile.replace("${EXT}", mPlugIn.getExtensionsDirectoryPath()
 				+ File.separator + getScriptLanguageExt() + File.separator);
-		
+
 		// add the script extension (example: .js)
 		String lFile = FileUtils.readFileToString(new File(aFile + "." + getScriptLanguageExt()));
 
@@ -663,10 +685,15 @@ abstract public class BaseScriptApp {
 
 		// creating the XML definitions reader
 		XmlBeanDefinitionReader lXmlReader = new XmlBeanDefinitionReader(mBeanFactory);
-		lXmlReader.setBeanClassLoader(getClass().getClassLoader());
+		lXmlReader.setBeanClassLoader(mClassLoader);
+
+		// path for dtd and xsd files location
+		String lBeansDef = FileUtils.readFileToString(new File(aFile));
+		lBeansDef = lBeansDef.replace("${JWEBSOCKET_HOME}", mJWSHome);
+		lBeansDef = lBeansDef.replace("${APP_HOME}", mAppPath);
 
 		// loading XML definitions file into app bean factory
-		lXmlReader.loadBeanDefinitions(new FileSystemResource(aFile));
+		lXmlReader.loadBeanDefinitions(new ByteArrayResource(lBeansDef.getBytes()));
 	}
 
 	/**
