@@ -36,7 +36,7 @@ App.on('appLoaded', function(){
 	
 		// fragmented token send
 		App.sendToken(aConnector, lResponse, 10);
-	
+
 		// akcnowledge token send
 		App.sendToken(aConnector, lResponse, {
 			getTimeout: function() {

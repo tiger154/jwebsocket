@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans SYSTEM "${JWEBSOCKET_HOME}/conf/spring-beans.dtd">
+<beans>  
+	<bean id="person" class="test.Person">
+
+	</bean>
+</beans>

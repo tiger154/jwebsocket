@@ -1,7 +1,12 @@
 App.importScript('${EXT}/jwsItemStoragePlugIn');
 App.importScript('${EXT}/jwsItemStoragePlugInEE_min');
+App.loadJar('${APP_HOME}/StaticTest.jar');
 
-App.on('appLoaded', function(){
+App.on('appLoaded', function(aHotLoad){
+	if (false == aHotLoad){
+		App.loadToAppBeanFactory('${APP_HOME}/beans.xml');
+	}
+	
 	logger = App.getLogger();
 	server = App.getServerClient();
 	server.addListener({
@@ -41,6 +46,10 @@ App.on('appLoaded', function(){
 		},
 		time: function(){
 			return lClock.getTime();
+		},
+		name: function(){
+			var lPerson = App.getAppBean('person');
+			return lPerson.getName();
 		}
 	});
 });
