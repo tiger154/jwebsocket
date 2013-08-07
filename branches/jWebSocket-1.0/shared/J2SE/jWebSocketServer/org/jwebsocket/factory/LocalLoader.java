@@ -41,7 +41,7 @@ public class LocalLoader extends ClassLoader {
 	protected final ClasspathResources mClasspathResources;
 	private char mClassNameReplacementChar;
 	private URLClassLoader mParent;
-	private ArrayList<String> mLoaderJars = new ArrayList<String>();
+	private ArrayList<String> mLoadedJars = new ArrayList<String>();
 
 	/**
 	 *
@@ -75,11 +75,11 @@ public class LocalLoader extends ClassLoader {
 	 * @return TRUE if the jar has beeen loaded, FALSE otherwise
 	 */
 	public boolean loadJar(String aJarFile) {
-		if (mLoaderJars.contains(aJarFile)) {
+		if (mLoadedJars.contains(aJarFile)) {
 			return false;
 		}
 		mClasspathResources.loadJar(aJarFile);
-		mLoaderJars.add(aJarFile);
+		mLoadedJars.add(aJarFile);
 		return true;
 	}
 
