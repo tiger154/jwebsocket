@@ -4421,7 +4421,7 @@ jws.oop.declareClass( "jws", "jWebSocketJSONClient", jws.jWebSocketTokenClient, 
 	//:a:en::aToken:Token:The token (an JavaScript Object) to be converted into an JSON stream.
 	//:r:*:::String:The resulting JSON stream.
 	tokenToStream: function( aToken ) {
-		aToken.utid = jws.CUR_TOKEN_ID;
+		aToken.utid = aToken.utid || jws.CUR_TOKEN_ID;
 		var lJSON = JSON.stringify( aToken );
 		return( lJSON );
 	},

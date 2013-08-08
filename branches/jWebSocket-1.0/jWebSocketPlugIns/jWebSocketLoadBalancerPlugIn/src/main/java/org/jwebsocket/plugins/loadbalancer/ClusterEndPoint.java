@@ -18,19 +18,33 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
+import java.util.UUID;
+import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.token.Token;
 
 /**
  * Specifies one single endpoint of a certain cluster.
  *
  * @author aschulze
  * @author rbetancourt
+ * @author kyberneees
  */
-public class ClusterEndPoint {
+public class ClusterEndPoint implements ITokenizable {
 
 	private EndPointStatus mStatus = EndPointStatus.OFFLINE;
-	private WebSocketConnector mConnector = null;
-	private int mRequests = 0;
+	private WebSocketConnector mConnector;
+	private long mRequests = 0;
+	private final String mServiceId;
+
+	public ClusterEndPoint() {
+		mServiceId = UUID.randomUUID().toString();
+	}
+
+	public ClusterEndPoint(WebSocketConnector aConnector) {
+		this();
+		mConnector = aConnector;
+	}
 
 	/**
 	 * @return the mStatus
@@ -64,8 +78,8 @@ public class ClusterEndPoint {
 	 *
 	 * @return
 	 */
-	public String getServiceID() {
-		return (mConnector != null ? "myService_" + mConnector.getId() : null);
+	public String getServiceId() {
+		return mServiceId;
 	}
 
 	/**
@@ -79,7 +93,7 @@ public class ClusterEndPoint {
 	 *
 	 * @return
 	 */
-	public int getRequests() {
+	public long getRequests() {
 		return mRequests;
 	}
 
@@ -89,5 +103,16 @@ public class ClusterEndPoint {
 	 */
 	public void setRequests(int aRequests) {
 		this.mRequests = aRequests;
+	}
+
+	@Override
+	public void writeToToken(Token aToken) {
+		aToken.setString("id", getServiceId());
+		aToken.setString("status", getStatus().name());
+		aToken.setLong("requests", getRequests());
+	}
+
+	@Override
+	public void readFromToken(Token aToken) {
 	}
 }

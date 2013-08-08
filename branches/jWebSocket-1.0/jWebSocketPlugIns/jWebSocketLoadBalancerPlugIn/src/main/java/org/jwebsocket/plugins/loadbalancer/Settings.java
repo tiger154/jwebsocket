@@ -24,13 +24,14 @@ import javolution.util.FastMap;
 /**
  *
  * @author aschulze
+ * @author kyberneees
  */
 public class Settings {
 
 	// list of (service) clusters
 	private Map<String, Cluster> mClusters = new FastMap<String, Cluster>();
-	private long mShutdownTimeout = 0;
-	private long mMessageTimeout=0;
+	// default message delivery timeout
+	private long mMessageTimeout = 5000;
 
 	/**
 	 * @return the clusters
@@ -44,20 +45,6 @@ public class Settings {
 	 */
 	public void setClusters(Map aClusters) {
 		mClusters = aClusters;
-	}
-
-	/**
-	 * @return the mShutdownTimeout
-	 */
-	public long getShutdownTimeout() {
-		return mShutdownTimeout;
-	}
-
-	/**
-	 * @param mShutdownTimeout the mShutdownTimeout to set
-	 */
-	public void setShutdownTimeout(long aShutdownTimeout) {
-		this.mShutdownTimeout = aShutdownTimeout;
 	}
 
 	/**
