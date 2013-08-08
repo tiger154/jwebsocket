@@ -328,7 +328,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 					int lDeregistered = 0;
 					Iterator<Cluster> lIt = mClusters.values().iterator();
 					while (lIt.hasNext()) {
-						lDeregistered = lIt.next().removeEndPointsByConnector(aConnector);
+						lDeregistered =+ lIt.next().removeEndPointsByConnector(aConnector);
 					}
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Remote client not received a message on required '"
