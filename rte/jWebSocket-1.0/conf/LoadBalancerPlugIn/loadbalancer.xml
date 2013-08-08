@@ -28,7 +28,7 @@
 			</list>
 		</property>
 		<property name="staticEntries" value="2"/>
-		<property name="namespace" value="org.jwebsocket.plugins.samplesum"/>
+		<property name="namespace" value="org.jwebsocket.plugins.sample"/>
 	</bean>
 	
 	<!-- Service Cluster 2 definition -->
@@ -40,7 +40,7 @@
 			</list>
 		</property>
 		<property name="staticEntries" value="2"/>
-		<property name="namespace" value="org.jwebsocket.plugins.samplemul"/>
+		<property name="namespace" value="org.jwebsocket.plugins.sample2"/>
 	</bean>
 	
 	<!-- Service Cluster alias/instance assignment -->
@@ -57,7 +57,6 @@
 				</entry>
 			</map>
 		</property>
-		<property name="shutdownTimeout" value="3000" />
 		<property name="messageTimeout" value="3000" />
 	</bean>
 	

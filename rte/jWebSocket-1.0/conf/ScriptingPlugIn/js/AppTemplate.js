@@ -40,7 +40,8 @@ var App = (function() {
 		return lMap;
 	};
 	
-	// function to convert a Java Token object to a JavaScript native object instance
+	// function to convert a Java object to a JavaScript native object
+	// maps, lists and booleans supported
 	var toNativeObject = function(aObject){
 		var lNative, lIt;
 		if (aObject instanceof Packages.java.util.Map){
@@ -60,6 +61,8 @@ var App = (function() {
 			}
 			
 			return lNative;
+		} else if (aObject instanceof Packages.java.lang.Boolean){
+			lNative = true == aObject;
 		}
 		
 		return aObject;

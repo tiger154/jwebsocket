@@ -900,38 +900,6 @@
 			<description>Allows to manage (create and remove) system channels from clients</description>
 		</right>
 
-		<!-- ItemStorage rights -->
-		<right>
-			<ns>org.jwebsocket.plugins.itemstorage</ns>
-			<id>write_collection</id>
-			<description>Allows to admin item collections (create, remove, clear, changeConfig)</description>
-		</right>
-		<right>
-			<ns>org.jwebsocket.plugins.itemstorage</ns>
-			<id>read_collection</id>
-			<description>Allows to access item collections (list, getInfo, subscribe, authorize)</description>
-		</right>
-		<right>
-			<ns>org.jwebsocket.plugins.itemstorage</ns>
-			<id>write_item</id>
-			<description>Allows to admin collection items (save, remove)</description>
-		</right>
-		<right>
-			<ns>org.jwebsocket.plugins.itemstorage</ns>
-			<id>read_item</id>
-			<description>Allows to access collection items (find, list)</description>
-		</right>
-		<right>
-			<ns>org.jwebsocket.plugins.itemstorage</ns>
-			<id>write_definition</id>
-			<description>Allows to admin item definitions (register, remove)</description>
-		</right>
-		<right>
-			<ns>org.jwebsocket.plugins.itemstorage</ns>
-			<id>read_definition</id>
-			<description>Allows to access item definitions (list)</description>
-		</right>
-		
 		<!-- Scripting rights -->
 		<right>
 			<ns>org.jwebsocket.plugins.scripting</ns>
@@ -944,22 +912,22 @@
 			<description>Allows to deploy script apps in runtime</description>
 		</right>
 		
-		<!-- Load Balancer rights >
+		<!-- Load Balancer rights -->
 		<right>
 			<ns>org.jwebsocket.plugins.loadbalancer</ns>
-			<id>registerServiceEndPoint</id>
-			<description>Allows to register a new service endpoint</description>	
-		<right>
-		<right>
-			<ns>org.jwebsocket.plugins.loadbalancer</ns>
-			<id>deregisterServiceEndPoint</id>
-			<description>Allows to deregister a service endpoint</description>
+			<id>clustersInfo</id>
+			<description>Allows to get clusters information</description>	
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.loadbalancer</ns>
-			<id>shutdownEndpoint</id>
+			<id>registerServiceEndPoint</id>
+			<description>Allows to register a service endpoints</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<id>shutdownEndPoint</id>
 			<description>Allows to shutdown a service endpoint</description>
-		</right-->
+		</right>
 		
 	</rights>
 
@@ -1058,10 +1026,11 @@
 				<right>org.jwebsocket.plugins.scripting.reloadApp.*</right>
 				<right>org.jwebsocket.plugins.scripting.deploy.*</right>
 				
-				<!-- Load balancer rights >
+				<!-- Load balancer rights -->
+				<right>org.jwebsocket.plugins.loadbalancer.clustersInfo</right>
 				<right>org.jwebsocket.plugins.loadbalancer.registerServiceEndPoint</right>
 				<right>org.jwebsocket.plugins.loadbalancer.deregisterServiceEndPoint</right>
-				<right>org.jwebsocket.plugins.loadbalancer.shutdownEndpoint</right-->
+				<right>org.jwebsocket.plugins.loadbalancer.shutdownEndPoint</right>
 				
 			</rights>
 		</role>
@@ -1462,8 +1431,8 @@
 			</settings>
 		</plugin>
 
-		<!-- plug-in for messaging via JMS -->
-		<!--plugin>
+		<!-- plug-in for messaging via JMS
+	      <plugin>
 			<name>org.jwebsocket.plugins.jms.JMSPlugIn</name>
 			<id>jws.jms</id>
 			<ns>org.jWebSocket.plugins.jms</ns>
@@ -1478,8 +1447,8 @@
 				<setting key="destination:2" type="json">{name:"testTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 			</settings>
-		</plugin-->
-
+		</plugin>
+		 -->
 		<!-- jWebSocket Load Balancer plug-in -->
 		<plugin>
 			<name>org.jwebsocket.plugins.loadbalancer.LoadBalancerPlugIn</name>
@@ -2001,7 +1970,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 			<settings>
-				<setting key="load_balancer_id">jws.lb</setting>
+				<setting key="loadbalancer_plugin">jws.lb</setting>
 			</settings>
 		</filter>
 		
