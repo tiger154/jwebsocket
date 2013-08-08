@@ -60,7 +60,6 @@ public class LoadBalancerFilter extends TokenFilter {
 		WebSocketConnector aConnector, Token aToken) {
 		mLoadBalancerPlugIn = (mLoadBalancerPlugIn == null
 			? (LoadBalancerPlugIn) getServer().getPlugInById(LOADBALANCER_ID) : mLoadBalancerPlugIn);
-
 		if (mLoadBalancerPlugIn.supportsNamespace(aToken.getNS())) {
 			mLoadBalancerPlugIn.processToken(new PlugInResponse(), aConnector, aToken);
 		}
