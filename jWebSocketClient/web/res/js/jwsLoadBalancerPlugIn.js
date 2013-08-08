@@ -30,112 +30,84 @@ jws.LoadBalancerPlugIn = {
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.loadbalancer",
 	
-	processToken: function( aToken ) {
-		// check if namespace matches
-		if( aToken.ns == jws.LoadBalancerPlugIn.NS ) {
-			// here you can handle incoming tokens from the server
-			// directy in the plug-in if desired.
-			var lMsg = aToken.msg;
-			if(lMsg != "ok"){
-				log(lMsg);
-			}	
-		}
-	},
-	
-	clusterEndPointsInfo: function ( aOptions ) {
-		var lRes = this.checkConnected();
-			if( 0 === lRes.code ) {
-			var lToken = {
-				ns: jws.LoadBalancerPlugIn.NS,
-				type: "getClusterEndPointsInfo"
-			};
-			this.sendToken( lToken,	aOptions );
-		}
-		return lRes;
-	},
-	
-	stickyRoutes: function ( aOptions ) {
+	lbClustersInfo: function ( aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
-				type: "getStickyRoutes"
+				type: "clustersInfo"
 			};
 			this.sendToken( lToken,	aOptions );
 		}
 		return lRes;
 	},
 	
-	registerServiceEndPoint: function ( aOptions ) {
+	lbStickyRoutes: function ( aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 === lRes.code ) {
+			var lToken = {
+				ns: jws.LoadBalancerPlugIn.NS,
+				type: "stickyRoutes"
+			};
+			this.sendToken( lToken,	aOptions );
+		}
+		return lRes;
+	},
+	
+	lbRegisterServiceEndPoint: function (aClusterAlias, aPassword, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
 				type: "registerServiceEndPoint",
-				clusterAlias: aOptions.clusterAlias
+				clusterAlias: aClusterAlias,
+				password: aPassword
 			};
 			this.sendToken( lToken,	aOptions );
 		}
 		return lRes;
 	},
 	
-	deregisterServiceEndPoint: function ( aOptions ) {
+	lbDeregisterServiceEndPoint: function ( aClusterAlias, aEndPointId, aPassword, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
 				type: "deregisterServiceEndPoint",
-				epId: aOptions.epId,
-				clusterAlias: aOptions.clusterAlias
+				endPointId: aEndPointId,
+				clusterAlias: aClusterAlias,
+				password: aPassword
 			};
 			this.sendToken( lToken,	aOptions );
 		}
 		return lRes;
 	},
 	
-	shutdownEndpoint: function ( aOptions ) {
+	lbShutdownEndPoint: function ( aClusterAlias, aEndPointId, aPassword, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
-				type: "shutdownEndpoint",
-				epId: aOptions.epId,
-				clusterAlias: aOptions.clusterAlias
+				type: "shutdownServiceEndPoint",
+				endPointId: aEndPointId,
+				clusterAlias: aClusterAlias,
+				password: aPassword
 			};
 			this.sendToken( lToken,	aOptions );
 		}
 		return lRes;
 	},
-	
-	sendSum: function ( aOptions ) {
-		var lRes = this.checkConnected();
-		if( 0 === lRes.code ) {
-			var lToken = {
-				ns: jws.LoadBalancerServiceSum.NS,
-				type: "sum",
-				val1: aOptions.val1,
-				val2: aOptions.val2
-			};
-			this.sendToken( lToken,	aOptions );
+	lbCreateResponse: function(aToken){
+		var lResponse =  {
+			ns: jws.LoadBalancerPlugIn.NS,
+			type: 'response',
+			utid: aToken.utid,
+			sourceId: aToken.sourceId,
+			reqType: aToken.type
 		}
-		return lRes;
-	},
-	
-	sendMul: function ( aOptions ) {
-		var lRes = this.checkConnected();
-		if( 0 === lRes.code ) {
-			var lToken = {
-				ns: jws.LoadBalancerServiceMul.NS,
-				type: "mul",
-				val1: aOptions.val1,
-				val2: aOptions.val2
-			};
-			this.sendToken( lToken,	aOptions );
-		}
-		return lRes;
+		
+		return lResponse;
 	}
-	
-	
 };
 
 // add the JWebSocket Load Balancer PlugIn into the TokenClient class

@@ -22,25 +22,27 @@ import java.util.*;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
-import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.plugins.TokenPlugIn;
-import org.jwebsocket.server.TokenServer;
+import org.jwebsocket.plugins.ActionPlugIn;
+import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.token.Token;
-import org.jwebsocket.util.Tools;
+import org.jwebsocket.token.TokenFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.Assert;
 
 /**
  *
  * @author aschulze
  * @author rbetancourt
+ * @author kyberneees
  */
-public class LoadBalancerPlugIn extends TokenPlugIn {
+public class LoadBalancerPlugIn extends ActionPlugIn {
 
 	private static Logger mLog = Logging.getLogger();
 	/**
@@ -72,11 +74,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	protected long mMessageTimeout;
-	/**
-	 *
-	 */
-	protected Map<String, TimerTask> mProcessMessage;
+	protected long mMessageDeliveryTimeout;
 
 	/**
 	 *
@@ -95,14 +93,12 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for load "
-					+ "balancer plug-in, some features may not be available.");
+						+ "balancer plug-in, some features may not be available.");
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.loadbalancer.settings");
 				if (null != mSettings) {
 					mClusters = mSettings.getClusters();
-					mShutdownTimeout = mSettings.getShutdownTimeout();
-					mMessageTimeout = mSettings.getMessageTimeout();
-					mProcessMessage = new FastMap<String, TimerTask>();
+					mMessageDeliveryTimeout = mSettings.getMessageTimeout();
 					if (mLog.isInfoEnabled()) {
 						mLog.info("Load balancer plug-in successfully instantiated.");
 					}
@@ -112,7 +108,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx,
-				"instantiating load balancer plug-in"));
+					"instantiating load balancer plug-in"));
 			throw lEx;
 		}
 	}
@@ -153,238 +149,224 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	}
 
 	@Override
-	public void processToken(PlugInResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-		String lType = aToken.getType();
-		String lNS = aToken.getNS();
-
-		if (lType != null && lNS != null) {
-			if (lType.equals("getClusterEndPointsInfo")) {
-				getClusterEndPointsInfo(aConnector, aToken);
-			} else if (lType.equals("getStickyRoutes")) {
-				getStickyRoutes(aConnector, aToken);
-			} else if (lType.equals("registerServiceEndPoint")) {
-				registerServiceEndPoint(aConnector, aToken);
-			} else if (lType.equals("deregisterServiceEndPoint")) {
-				deregisterServiceEndPoint(aConnector, aToken);
-			} else if (lType.equals("shutdownEndpoint")) {
-				shutdownEndPoint(aConnector, aToken);
-			} else if (lType.equals("response")) {
-				responseToClient(aToken);
-			} else {
-				sendToService(aConnector, aToken);
-			}
-		}
-	}
-
-	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
-		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
-			Cluster lCluster = lEntry.getValue();
-			String lServiceId = "myService_" + aConnector.getId();
-			int lServicePosition = lCluster.getPosition(lServiceId);
-			if (lServicePosition != -1) {
-				lCluster.removeEndPoint(lServicePosition);
-				String lMsg = "The service " + lServiceId + " in the cluster "
-					+ lEntry.getKey() + " was disconnected by the " + aCloseReason;
-				if (mLog.isDebugEnabled()) {
-					mLog.debug(lMsg);
-				}
-				//TODO
-				//Send notification
-				//return;
-			}
+		Iterator<Cluster> lIt = mClusters.values().iterator();
+
+		int lRemoved = 0;
+		while (lIt.hasNext()) {
+			lRemoved += lIt.next().removeEndPointsByConnector(aConnector);
+		}
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug(lRemoved + " services where removed due to client '" + aConnector.getId()
+					+ "' disconnection. Reason: " + aCloseReason);
 		}
 	}
 
-	@Override
-	public Token invoke(WebSocketConnector aConnector, Token aToken) {
-		String lType = aToken.getType();
-		String lNS = aToken.getNS();
+	@Role(name = NS_LOADBALANCER + ".clustersInfo")
+	public void clustersInfoAction(WebSocketConnector aConnector, Token aToken) {
+		String lClusterAlias = aToken.getString("clusterAlias");
 
-		if (lType != null && getNamespace().equals(lNS)) {
-		}
-
-		return null;
-	}
-
-	private void getClusterEndPointsInfo(WebSocketConnector aConnector, Token aToken) {
 		List<Map<String, Object>> lInfo = new FastList<Map<String, Object>>();
 		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
 			Cluster lCluster = lEntry.getValue();
-			Map<String, Object> lInfoCluster = new FastMap<String, Object>();
-			lInfoCluster.put("clusterAlias", lEntry.getKey());
-			lInfoCluster.put("clusterNS", lCluster.getNamespace());
-			lInfoCluster.put("epCount", lCluster.getEndpoints().size());
-			//lInfoCluster.put("endpoints", lCluster.getEndpoints());
-			lInfoCluster.put("epStatus", lCluster.getEndPointsStatus());
-			lInfoCluster.put("epId", lCluster.getEndPointsId());
-			lInfoCluster.put("epRequests", lCluster.getEndPointsRequests());
-			lInfo.add(lInfoCluster);
+
+			if (null == lClusterAlias || lEntry.getKey().matches(lClusterAlias)) {
+				Map<String, Object> lInfoCluster = new HashMap<String, Object>();
+				lInfoCluster.put("clusterAlias", lEntry.getKey());
+				lInfoCluster.put("clusterNS", lCluster.getNamespace());
+				lInfoCluster.put("endPointsCount", lCluster.getEndPoints().size());
+				lInfoCluster.put("endPoints", lCluster.getEndPoints());
+				lInfoCluster.put("requests", lCluster.getTotalEndPointsRequests());
+				lInfo.add(lInfoCluster);
+			}
 		}
-		TokenServer lServer = getServer();
+
 		Token lResponse = createResponse(aToken);
-		lResponse.setList("info", lInfo);
-		lServer.sendToken(aConnector, lResponse);
+		lResponse.setList("data", lInfo);
+		sendToken(aConnector, lResponse);
 	}
 
-	private void getStickyRoutes(WebSocketConnector aConnector, Token aToken) {
+	@Role(name = NS_LOADBALANCER + ".clustersInfo")
+	public void stickyRoutesAction(WebSocketConnector aConnector, Token aToken) {
 		List<Map<String, String>> lStickyRoutes = new FastList<Map<String, String>>();
 		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
 			List<String> lIDs = lEntry.getValue().getStickyId();
 			for (int lPos = 0; lPos < lIDs.size(); lPos++) {
 				Map<String, String> lInfoCluster = new FastMap<String, String>();
 				lInfoCluster.put("clusterAlias", lEntry.getKey());
-				lInfoCluster.put("epId", lIDs.get(lPos));
+				lInfoCluster.put("endPointId", lIDs.get(lPos));
 				lStickyRoutes.add(lInfoCluster);
 			}
 		}
-		TokenServer lServer = getServer();
+
 		Token lResponse = createResponse(aToken);
-		lResponse.setList("routes", lStickyRoutes);
-		lServer.sendToken(aConnector, lResponse);
+		lResponse.setList("data", lStickyRoutes);
+		sendToken(aConnector, lResponse);
 	}
 
-	private void registerServiceEndPoint(WebSocketConnector aConnector, Token aToken) {
+	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
+	public void registerServiceEndPointAction(WebSocketConnector aConnector, Token aToken) {
 		String lClusterAlias = aToken.getString("clusterAlias");
-		String lMsg = null;
-		int lCode = -1;
-		TokenServer lServer = getServer();
+		String lPassword = aToken.getString("password");
 		
-		if (!hasAuthority(aConnector, NS_LOADBALANCER + ".registerServiceEndPoint")) {
-			//lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
-			//return;
-		}
+		Assert.isTrue(mClusters.containsKey(lClusterAlias), "The target cluster does not exists!");
 
-		if (getCluster(lClusterAlias) != null) {
-			if (getCluster(lClusterAlias).addEndPoints(aConnector)) {
-				lCode = 0;
-				lMsg = "New service endpoint with ID: myService_" + aConnector.getId()
-					+ ", was create successfully in the cluster " + lClusterAlias;
-			} else {
-				lMsg = "The service endpoint with ID: myService_" + aConnector.getId()
-					+ ", already exist in the cluster";
-			}
-		} else {
-			lMsg = "The cluster " + lClusterAlias + " don't exist";
+		Cluster lCluster = getClusterByAlias(lClusterAlias);
+		// checking password
+		if (null != lCluster.getPassword()) {
+			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
 		}
 
 		Token lResponse = createResponse(aToken);
-		lResponse.setInteger("code", lCode);
-		lResponse.setString("msg", lMsg);
-		lServer.sendToken(aConnector, lResponse);
+		ClusterEndPoint lEndPoint = lCluster.registerEndPoint(aConnector);
+		lResponse.setString("endPointId", lEndPoint.getServiceId());
+
+		sendToken(aConnector, lResponse);
 	}
 
-	private void deregisterServiceEndPoint(WebSocketConnector aConnector, Token aToken) {
-		
-		String lEndPointId = aToken.getString("epId");
+	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
+	public void deregisterServiceEndPointAction(WebSocketConnector aConnector, Token aToken) {
+		String lEndPointId = aToken.getString("endPointId");
 		String lClusterAlias = aToken.getString("clusterAlias");
-		String lMsg = "null";
-		int lCode = -1;
-		TokenServer lServer = getServer();
+		String lPassword = aToken.getString("password");
 
-		if (!hasAuthority(aConnector, NS_LOADBALANCER + ".deregisterServiceEndPoint")) {
-			//lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
-			//return;
+		Assert.notNull(lClusterAlias, "The argument 'clusterAlias' cannot be null!");
+		Assert.notNull(lEndPointId, "The argument 'endPointId' cannot be null!");
+		Assert.isTrue(mClusters.containsKey(lClusterAlias), "The target cluster does not exists!");
+
+		final Cluster lCluster = getClusterByAlias(lClusterAlias);
+		// checking password
+		if (null != lCluster.getPassword()) {
+			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
 		}
 
-		if (null != lEndPointId && null != lClusterAlias) {
-			Cluster lCluster = getCluster(lClusterAlias);
-			int lEndpointPosition = lCluster.getPosition(lEndPointId);
-			if (lEndpointPosition != -1) {
+		final int lEndPointPosition = lCluster.getEndPointPosition(lEndPointId);
+		Assert.isTrue(lEndPointPosition >= 0, "The target endpoint does not exists!");
 
-				if (lCluster.removeEndPoint(lEndpointPosition)) {
-					lCode = 0;
-					lMsg = "The endpoint with ID: " + lEndPointId
-						+ " was removed from the cluster " + lClusterAlias + " successfully";
-				}
-			}
-		} else {
-			lMsg = "The given endpoint id does not exists on target cluster!";
-		}
+		// getting endpoint instance
+		ClusterEndPoint lEndPoint = lCluster.getEndPointByPosition(lEndPointPosition);
 
-		Token lResponse = createResponse(aToken);
-		lResponse.setInteger("code", lCode);
-		lResponse.setString("msg", lMsg);
-		lServer.sendToken(aConnector, lResponse);
+		Assert.isTrue(lEndPoint.getStatus().equals(EndPointStatus.ONLINE),
+				"The target endpoint is not ONLINE and can't be deregistered!");
+
+		Token lEvent = TokenFactory.createToken(NS_LOADBALANCER, "event");
+		lEvent.setString("user", aConnector.getUsername());
+		lEvent.setString("name", "serviceEndPointDeregistered");
+		lEvent.setString("endPointId", lEndPoint.getServiceId());
+
+		// sending event to endpoint connector
+		sendToken(lEndPoint.getConnector(), lEvent);
+
+		// removing endpoint
+		lCluster.removeEndPoint(lEndPointPosition);
+
+		// acknowledge for the requester
+		sendToken(aConnector, createResponse(aToken));
 	}
 
-	private void shutdownEndPoint(WebSocketConnector aConnector, Token aToken) {
-		
-		String lEndPointId = aToken.getString("epId");
+	@Role(name = NS_LOADBALANCER + ".shutdownEndPoint")
+	public void shutdownServiceEndPointAction(final WebSocketConnector aConnector, final Token aToken) {
+		String lEndPointId = aToken.getString("endPointId");
 		String lClusterAlias = aToken.getString("clusterAlias");
-		TokenServer lServer = getServer();
+		String lPassword = aToken.getString("password");
 
-		if (!hasAuthority(aConnector, NS_LOADBALANCER + ".shutdownEndPoint")) {
-			//lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
-			//return;
+		Assert.notNull(lClusterAlias, "The argument 'clusterAlias' cannot be null!");
+		Assert.notNull(lEndPointId, "The argument 'endPointId' cannot be null!");
+		Assert.isTrue(mClusters.containsKey(lClusterAlias), "The target cluster does not exists!");
+
+		final Cluster lCluster = getClusterByAlias(lClusterAlias);
+		// checking password
+		if (null != lCluster.getPassword()) {
+			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
 		}
 
-		if (null != lEndPointId && null != lClusterAlias) {
-			aToken.setNS(getCluster(lClusterAlias).getNamespace());
-			aToken.setType("shutdown");
-			
-			System.out.println("mi token pa shutdown *** "+aToken);
-			
-			lServer.sendToken(getSourceConnector(lEndPointId.split("_")[1]), aToken);
+		final int lEndPointPosition = lCluster.getEndPointPosition(lEndPointId);
+		Assert.isTrue(lEndPointPosition >= 0, "The target endpoint does not exists!");
 
-			final WebSocketConnector lConnector = aConnector;
-			final Token lToken = aToken;
-			Tools.getTimer().schedule(new TimerTask() {
-				@Override
-				public void run() {
-					if (getCluster(lToken.getString("clusterAlias")).endPointExists(lToken.getString("epId"))) {
-						deregisterServiceEndPoint(lConnector, lToken);
-					}
-				}
-			}, mShutdownTimeout);
-		} else {
-			Token lResponse = createResponse(aToken);
-			lResponse.setString("msg", "The endpoint ID or cluster alias has invalid value!");
-			lResponse.setInteger("code", -1);
-			lServer.sendToken(aConnector, lResponse);
-		}
+		// getting endpoint instance
+		ClusterEndPoint lEndPoint = lCluster.getEndPointByPosition(lEndPointPosition);
+		Assert.isTrue(lEndPoint.getStatus().equals(EndPointStatus.ONLINE),
+				"The target endpoint is not ONLINE and can't be shutdown!");
+
+		Token lEvent = TokenFactory.createToken(NS_LOADBALANCER, "event");
+		lEvent.setString("user", aConnector.getUsername());
+		lEvent.setString("name", "shutdownServiceEndPoint");
+		lEvent.setString("endPointId", lEndPoint.getServiceId());
+
+		// sending event to endpoint connector
+		sendToken(lEndPoint.getConnector(), lEvent);
+
+		// removing endpoint
+		lCluster.removeEndPoint(lEndPointPosition);
+
+		// acknowledge for the requester
+		sendToken(aConnector, createResponse(aToken));
 	}
 
-	private void sendToService(WebSocketConnector aConnector, Token aToken) {
+	public void sendToService(final WebSocketConnector aConnector, final Token aToken) {
 		aToken.setString("sourceId", aConnector.getId());
-		String lNS = aToken.getNS();
-		String lConnectorId = aConnector.getId();
-		TokenServer lServer = getServer();
-		ClusterEndPoint lEndPoint = getOptimumServiceEndPoint(lNS);
-		if (null != lEndPoint) {
-			lEndPoint.increaseRequests();
-			lServer.sendToken(lEndPoint.getConnector(), aToken);
 
-			final WebSocketConnector lConnector = aConnector;
-			final Token lToken = aToken;
-			TimerTask lMessageTimeout = new TimerTask() {
+		String lNS = aToken.getNS();
+
+		final ClusterEndPoint lEndPoint = getOptimumServiceEndPoint(lNS);
+		if (null != lEndPoint) {
+			final WebSocketConnector lConnector = lEndPoint.getConnector();
+			if (null == lConnector.getVar("utids")) {
+				lConnector.setVar("utids", new FastList<Integer>());
+			}
+
+			sendTokenInTransaction(lConnector, aToken, new IPacketDeliveryListener() {
+				@Override
+				public long getTimeout() {
+					return mMessageDeliveryTimeout;
+				}
 
 				@Override
-				public void run() {
-					sendToService(lConnector, lToken);
-				}
-			};
-			Tools.getTimer().schedule(lMessageTimeout, mMessageTimeout);
+				public void OnTimeout() {
+					// deregister target connector services because a possible connection bottleneck or node shutdown
+					int lDeregistered = 0;
+					Iterator<Cluster> lIt = mClusters.values().iterator();
+					while (lIt.hasNext()) {
+						lDeregistered = lIt.next().removeEndPointsByConnector(aConnector);
+					}
+					if (mLog.isDebugEnabled()) {
+						mLog.debug("Remote client not received a message on required '"
+								+ mMessageDeliveryTimeout + "'time! " + lDeregistered
+								+ " client services were deregistered!");
+					}
 
-			try {
-				mProcessMessage.put(lConnectorId, lMessageTimeout);
-			} catch (Exception lEx) {
-				mProcessMessage.remove(lConnectorId).cancel();
-				mProcessMessage.put(lConnectorId, lMessageTimeout);
-			}
+					// call again
+					sendToService(aConnector, aToken);
+				}
+
+				@Override
+				public void OnSuccess() {
+					lEndPoint.increaseRequests();
+					// allowing the endpoint to answer the request
+					((List<Integer>) lConnector.getVar("utids")).add(aToken.getInteger("utid"));
+				}
+
+				@Override
+				public void OnFailure(Exception lEx) {
+					Token lToken = createResponse(aToken);
+					lToken.setCode(-1);
+					lToken.setString("msg", lEx.getMessage());
+				}
+			});
 		} else {
-			String lMsg = "No service available on namespace: " + lNS;
-			Token lResponse = createResponse(aToken);
-			lResponse.setInteger("code", -1);
-			lResponse.setString("msg", lMsg);
-			lServer.sendToken(aConnector, lResponse);
+			sendErrorToken(aConnector, aToken, -1, "No service available on cluster to process the resquest!");
 		}
 	}
 
-	private void responseToClient(Token aToken) {
-		String lSourceId = aToken.getString("sourceId");
-		mProcessMessage.remove(lSourceId).cancel();
-		getServer().sendToken(getSourceConnector(lSourceId), aToken);
+	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
+	public void responseAction(WebSocketConnector aConnector, Token aToken) {
+		if (((List<Integer>) aConnector.getVar("utids")).remove(aToken.getInteger("utid", -1))) {
+			String lSourceId = aToken.getString("sourceId");
+			sendToken(getSourceConnector(lSourceId), aToken);
+		} else {
+			mLog.warn("Remote client '" + aConnector.getId() + "' attempting to inject invalid response!");
+		}
 	}
 
 	private ClusterEndPoint getOptimumServiceEndPoint(String aNamespace) {
@@ -397,8 +379,20 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		return null;
 	}
 
-	private Cluster getCluster(String aAlias) {
+	private Cluster getClusterByAlias(String aAlias) {
 		return mClusters.get(aAlias);
+	}
+
+	private Cluster getClusterByNS(String aNS) {
+		Iterator<Cluster> lIt = mClusters.values().iterator();
+		while (lIt.hasNext()) {
+			Cluster lCluster = lIt.next();
+			if (lCluster.getNamespace().equals(aNS)) {
+				return lCluster;
+			}
+		}
+
+		return null;
 	}
 
 	private WebSocketConnector getSourceConnector(String aSourceId) {

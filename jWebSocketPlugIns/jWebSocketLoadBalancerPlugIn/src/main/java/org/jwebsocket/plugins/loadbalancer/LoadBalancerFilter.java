@@ -23,18 +23,19 @@ import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.filter.TokenFilter;
 import org.jwebsocket.kit.FilterResponse;
-import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.token.Token;
+import org.springframework.util.Assert;
 
 /**
  *
  * @author rbetancourt
+ * @author kyberneees
  */
 public class LoadBalancerFilter extends TokenFilter {
 
 	private static Logger mLog = Logging.getLogger();
-	private String LOADBALANCER_ID = null;
+	private String mLoadBalancerPlugInId;
 	private LoadBalancerPlugIn mLoadBalancerPlugIn;
 
 	/**
@@ -43,10 +44,9 @@ public class LoadBalancerFilter extends TokenFilter {
 	 */
 	public LoadBalancerFilter(FilterConfiguration aConfiguration) {
 		super(aConfiguration);
-		LOADBALANCER_ID = getFilterConfiguration().getSettings().get("load_balancer_id");
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Instantiating load balancer filter...");
-		}
+		mLoadBalancerPlugInId = getFilterConfiguration().getSettings().get("loadbalancer_plugin");
+		Assert.notNull(mLoadBalancerPlugInId, "Missing LoadBalancerFilter 'loadbalancer_plugin' "
+				+ "setting!");
 	}
 
 	/**
@@ -56,25 +56,28 @@ public class LoadBalancerFilter extends TokenFilter {
 	 * @param aToken
 	 */
 	@Override
-	public void processTokenIn(FilterResponse aResponse,
-		WebSocketConnector aConnector, Token aToken) {
-		mLoadBalancerPlugIn = (mLoadBalancerPlugIn == null
-			? (LoadBalancerPlugIn) getServer().getPlugInById(LOADBALANCER_ID) : mLoadBalancerPlugIn);
+	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
 		if (mLoadBalancerPlugIn.supportsNamespace(aToken.getNS())) {
-			mLoadBalancerPlugIn.processToken(new PlugInResponse(), aConnector, aToken);
+			// redirect token
+			if (null != aToken.getInteger("utid", null)) {
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Redirecting incoming token to the load balancer plug-in...");
+				}
+				mLoadBalancerPlugIn.sendToService(aConnector, aToken);
+				// stops token propagation
+				aResponse.rejectMessage();
+			}
 		}
 	}
 
-	/**
-	 *
-	 * @param aResponse
-	 * @param aSource
-	 * @param aTarget
-	 * @param aToken
-	 */
 	@Override
-	public void processTokenOut(FilterResponse aResponse,
-		WebSocketConnector aSource, WebSocketConnector aTarget,
-		Token aToken) {
+	public void systemStarted() throws Exception {
+		mLoadBalancerPlugIn = (LoadBalancerPlugIn) getServer().getPlugInById(mLoadBalancerPlugInId);
+		Assert.notNull(mLoadBalancerPlugIn, "Unable to start the LoadBalancerFilter because "
+				+ "the LoadBalancer plug-in '" + mLoadBalancerPlugInId + "' was not found!");
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Filter started successfully!");
+		}
 	}
 }
