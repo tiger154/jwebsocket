@@ -35,6 +35,10 @@ jws.LoadBalancerPlugIn = {
 		if( aToken.ns == jws.LoadBalancerPlugIn.NS ) {
 			// here you can handle incoming tokens from the server
 			// directy in the plug-in if desired.
+			var lMsg = aToken.msg;
+			if(lMsg != "ok"){
+				log(lMsg);
+			}	
 		}
 	},
 	
@@ -107,7 +111,7 @@ jws.LoadBalancerPlugIn = {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
 			var lToken = {
-				ns: jws.LoadBalancerService.NS,
+				ns: jws.LoadBalancerServiceSum.NS,
 				type: "sum",
 				val1: aOptions.val1,
 				val2: aOptions.val2
@@ -115,7 +119,23 @@ jws.LoadBalancerPlugIn = {
 			this.sendToken( lToken,	aOptions );
 		}
 		return lRes;
+	},
+	
+	sendMul: function ( aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 === lRes.code ) {
+			var lToken = {
+				ns: jws.LoadBalancerServiceMul.NS,
+				type: "mul",
+				val1: aOptions.val1,
+				val2: aOptions.val2
+			};
+			this.sendToken( lToken,	aOptions );
+		}
+		return lRes;
 	}
+	
+	
 };
 
 // add the JWebSocket Load Balancer PlugIn into the TokenClient class

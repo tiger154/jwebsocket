@@ -33,20 +33,28 @@
 		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
 		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
 		<script src="../../res/js/jwsLoadBalancerPlugIn.js" type="text/javascript"></script>
-		<script src="../../res/js/jwsLoadBalancerService.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsLoadBalancerServiceSum.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsLoadBalancerServiceMul.js" type="text/javascript"></script>
 		
 
 		<script type="text/javascript" language="JavaScript">
 		
-			var myConnections = new Array();
-			var mCount=0;
-		
+			jws.myConnections = new Array();
+			var mySticky = null;
+			var mCount2 = 0;
+            var mCount1 = 1;
+			
+			function addConn( aConn ){
+				jws.myConnections[jws.myConnections.length] = aConn;	
+			}
+			
 			function endPointInfo(){
-				log("Runing cluster endpoint info");
+				log(" ");
+				log("Running cluster endpoint info");
 				if( lWSC.isConnected() ) {
 					lWSC.clusterEndPointsInfo( {
 						OnResponse: function( aToken ) {
-						   log(aToken);
+						
 						}
 					});
 				} else {
@@ -55,11 +63,13 @@
 			}
 		
 			function stickyRoutes() {
+				log(" ");
 				log("Runing sticky routes");
 				if( lWSC.isConnected() ) {
 					lWSC.stickyRoutes( {
 						OnResponse: function( aToken ) {
-							log(aToken);
+							mySticky = aToken;
+							loadSelect( );
 						}
 					});
 				} else {
@@ -68,6 +78,10 @@
 			}
 			
 			function shutdownEndpoint(){
+				log(" ");
+				log("This functionality is not available at this moment.");
+				/*
+				log(" ");
 				log("Runing shutdown endpoint");
 				if( lWSC.isConnected() ) {
 					var lEpId = jws.$( "stxfEpId" ).value;
@@ -82,10 +96,12 @@
 				} else {
 					log( "Not connected." );
 				}
+				*/
 			}
 			
 			function registerServiceEndPoint(){
-				log("Runing register service endpoint");
+				log(" ");
+				log("Running register service endpoint");
 				var lClusterAlias = jws.$( "stxfAlias1" ).value;
 				jws.myConn = new jws.jWebSocketJSONClient();
 				jws.myConn.open("ws://localhost:8787/jWebSocket/jWebSocket", {
@@ -93,15 +109,19 @@
 						jws.myConn.registerServiceEndPoint( {
 							clusterAlias : lClusterAlias,
 							OnResponse: function( aToken ) {
-								log(aToken);
+
 							}
 						});		
 					},	
 				});					
-				myConnections[mCount++]=jws.myConn;
+				addConn(jws.myConn);
 			}	
 				
 			function deregisterServiceEndPoint() {
+				log(" ");
+				log("This functionality is not available at this moment.");
+				/*
+				log(" ");
 				log("Runing deregister service endpoint");
 				if( lWSC.isConnected() ) {
 					var lEpId = jws.$( "stxfEpId" ).value;
@@ -116,9 +136,11 @@
 				} else {
 					log( "Not connected." );
 				}
+				*/
 			}
 			
 			function sum (){
+				log(" ");
 				log("Runing sum values");
 				if( lWSC.isConnected() ) {
 					var lVal1 = jws.$( "stxVal1" ).value;
@@ -127,7 +149,7 @@
 						val1: lVal1,
 						val2 : lVal2,
 						OnResponse: function( aToken ) {
-							log(aToken);
+							
 						}
 					});
 				} else {
@@ -135,8 +157,68 @@
 				}
 			}
 			
-			function initPage() {
+			function mul (){
+				log(" ");
+				log("Runing mul values");
+				if( lWSC.isConnected() ) {
+					var lVal1 = jws.$( "stxVal1" ).value;
+					var lVal2 = jws.$( "stxVal2" ).value;
+					lWSC.sendMul( {
+						val1: lVal1,
+						val2 : lVal2,
+						OnResponse: function( aToken ) {
+							
+						}
+					});
+				} else {
+					log( "Not connected." );
+				}
+			}
+			
+			function loadService( aCluster ) {
+				jws.myConn = new jws.jWebSocketJSONClient();
+				jws.myConn.open("ws://localhost:8787/jWebSocket/jWebSocket", {
+					OnOpen: function (){
+						jws.myConn.registerServiceEndPoint( {
+							clusterAlias : aCluster,
+							OnResponse: function( aToken ) {
+							    addConn(jws.myConn);
+								if(mCount1 < 2) {
+									mCount1++;
+									loadService( "service1" );
+								} else if(mCount2 < 2) {
+									mCount2++;
+									loadService( "service2" );
+								}
+							}
+						});		
+					},	
+				});		
+			}
 				
+			function loadSelect( ){
+				 if( lWSC.isConnected() ) {
+					if(mySticky == null){
+						log( "Press Sticky Routes Button" );
+					} else {
+						lRoutes = mySticky.routes;
+						lService = document.getElementById("stxfAlias2");
+						lSelect = document.getElementById("stxfEpId");
+						lOptionPos = 0;
+						
+						for(var lPos=0; lPos<lRoutes.length ;lPos++){
+							if(lRoutes[lPos].clusterAlias == lService.value){
+								lSelect.options[lOptionPos++] = new Option(lRoutes[lPos].epId);
+							}
+						} 
+					}
+				} else {
+					log( "Not connected." );
+				}
+			}
+			
+			function initPage() {
+				loadService( "service1" );
 			}
 
 			function exitPage() {
@@ -146,9 +228,8 @@
 		</script>
 	</head>
 
-	<body>
-		onload="initPage();"
-		onunload="exitPage();"
+	<body onload="initPage();" onunload="exitPage();">
+		
 		
 		<script type="text/javascript">
 			jws.DemoPlugIn.buildDemoPage({
@@ -206,8 +287,9 @@
 					<td class="stdDlg" id="stdDlg" width="30">EndPoint Id
 					</td>
 					<td class="stdDlg" width="100">
-						<input class="stxfDlg" id="stxfEpId" type="text" value="" style="width:99%"
-							   title="The SQL query for select or update, insert, delete commands.">
+						<select name="cluster" id="stxfEpId" onclick="loadSelect();">
+							<option value="">Select epId</option>
+						</select>
 					</td>
 					<td class="stdDlg" width="42%">
 						<input class="sbtnDlg" id="sbtnShutdownEndpoint" type="button" value="Shutdown EndPoints" onclick="shutdownEndpoint();"
@@ -229,8 +311,18 @@
 					<td class="stdDlg" id="stdDlg" width="5">First value
 					</td>
 					<td class="stdDlg" width="100">
-						<input class="stxfDlg" id="stxVal1" type="text" value="" style="width:99%"
-							   title="First value.">
+						<select name="cluster" id="stxVal1">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+						</select>
 					</td>
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnSum" type="button" value="Sum" onclick="sum();"
@@ -241,8 +333,22 @@
 					<td class="stdDlg" id="stdDlg" width="30">Second value
 					</td>
 					<td class="stdDlg" width="100">
-						<input class="stxfDlg" id="stxVal2" type="text" value="" style="width:99%"
-							   title="Second value.">
+						<select name="cluster" id="stxVal2">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10</option>
+						</select>
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnMul" type="button" value="Mul" onclick="mul();"
+							   title="To mul two values.">
 					</td>
 				</tr>
 				
