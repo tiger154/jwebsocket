@@ -215,7 +215,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 			lInfoCluster.put("clusterAlias", lEntry.getKey());
 			lInfoCluster.put("clusterNS", lCluster.getNamespace());
 			lInfoCluster.put("epCount", lCluster.getEndpoints().size());
-			lInfoCluster.put("endpoints", lCluster.getEndpoints());
+			//lInfoCluster.put("endpoints", lCluster.getEndpoints());
 			lInfoCluster.put("epStatus", lCluster.getEndPointsStatus());
 			lInfoCluster.put("epId", lCluster.getEndPointsId());
 			lInfoCluster.put("epRequests", lCluster.getEndPointsRequests());
@@ -249,7 +249,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		String lMsg = null;
 		int lCode = -1;
 		TokenServer lServer = getServer();
-
+		
 		if (!hasAuthority(aConnector, NS_LOADBALANCER + ".registerServiceEndPoint")) {
 			//lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			//return;
@@ -275,6 +275,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	}
 
 	private void deregisterServiceEndPoint(WebSocketConnector aConnector, Token aToken) {
+		
 		String lEndPointId = aToken.getString("epId");
 		String lClusterAlias = aToken.getString("clusterAlias");
 		String lMsg = "null";
@@ -308,6 +309,7 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 	}
 
 	private void shutdownEndPoint(WebSocketConnector aConnector, Token aToken) {
+		
 		String lEndPointId = aToken.getString("epId");
 		String lClusterAlias = aToken.getString("clusterAlias");
 		TokenServer lServer = getServer();
@@ -320,12 +322,14 @@ public class LoadBalancerPlugIn extends TokenPlugIn {
 		if (null != lEndPointId && null != lClusterAlias) {
 			aToken.setNS(getCluster(lClusterAlias).getNamespace());
 			aToken.setType("shutdown");
+			
+			System.out.println("mi token pa shutdown *** "+aToken);
+			
 			lServer.sendToken(getSourceConnector(lEndPointId.split("_")[1]), aToken);
 
 			final WebSocketConnector lConnector = aConnector;
 			final Token lToken = aToken;
 			Tools.getTimer().schedule(new TimerTask() {
-
 				@Override
 				public void run() {
 					if (getCluster(lToken.getString("clusterAlias")).endPointExists(lToken.getString("epId"))) {
