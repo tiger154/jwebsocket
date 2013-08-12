@@ -41,7 +41,7 @@
 						data: "This is the JSON payload to be sent to the target"
 					};
 					lWSC.forwardJSON(
-						"JMSServer", // target
+						eEPID.value, // target
 						"org.jwebsocket.svcep.demo", // name space
 						"demo1", // type
 						// optional additional arguments
@@ -49,7 +49,7 @@
 							arg2: "value2"
 						},
 						// the actual payload
-						lToken,
+						JSON.stringify( lToken ),
 						// the (optional) response listeners
 						{	OnSuccess: function( aToken ) {
 								log("Success: " + JSON.stringify( aToken ) );
@@ -66,7 +66,7 @@
 			
 			function initPage() {
 				eArgs = jws.$( "stxfArgs" );
-				
+				eEPID = jws.$( "stxfEPID" );
 			}
 
 			function exitPage() {
@@ -91,6 +91,16 @@
 
 		<div class="sdivContainer">
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
+				<tr class="strDlg">
+					<td class="stdDlg" width="5">
+						Endpoint ID
+					</td>
+					<td class="stdDlg" width="">
+						<input class="stxfDlg" id="stxfEPID" type="text" value="JMSServer" style="width:99%"
+							   title="The id of the target endpoint.">
+					</td>
+					
+				</tr>
 				<tr class="strDlg">
 					<td class="stdDlg" width="5">
 						<select class="sselDlg" id="sselAlias" value="" style="width:99%"

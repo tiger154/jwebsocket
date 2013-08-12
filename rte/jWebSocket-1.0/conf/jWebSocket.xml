@@ -925,6 +925,11 @@
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<id>deregisterServiceEndPoint</id>
+			<description>Allows to deregister a service endpoints</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
 			<id>shutdownEndPoint</id>
 			<description>Allows to shutdown a service endpoint</description>
 		</right>
@@ -1030,7 +1035,7 @@
 				<right>org.jwebsocket.plugins.loadbalancer.clustersInfo</right>
 				<right>org.jwebsocket.plugins.loadbalancer.registerServiceEndPoint</right>
 				<right>org.jwebsocket.plugins.loadbalancer.deregisterServiceEndPoint</right>
-				<right>org.jwebsocket.plugins.loadbalancer.shutdownEndPoint</right>
+				<right>org.jwebsocket.plugins.loadbalancer.shutdownEndpoint</right>
 				
 			</rights>
 		</role>
@@ -1431,8 +1436,8 @@
 			</settings>
 		</plugin>
 
-		<!-- plug-in for messaging via JMS
-	      <plugin>
+		<!-- plug-in for messaging via JMS -->
+		<plugin>
 			<name>org.jwebsocket.plugins.jms.JMSPlugIn</name>
 			<id>jws.jms</id>
 			<ns>org.jWebSocket.plugins.jms</ns>
@@ -1448,7 +1453,7 @@
 				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 			</settings>
 		</plugin>
-		 -->
+
 		<!-- jWebSocket Load Balancer plug-in -->
 		<plugin>
 			<name>org.jwebsocket.plugins.loadbalancer.LoadBalancerPlugIn</name>
