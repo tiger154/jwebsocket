@@ -138,16 +138,16 @@ public class JMSServer {
 		lListener.onRequest("org.jwebsocket.svcep.demo", "demo1", new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
+				String lPayload = aToken.getString("payload");
 				if (mLog.isInfoEnabled()) {
-					mLog.info("Processing 'demo1!.");
+					mLog.info("Processing 'demo1 with Payload '" + lPayload + "'");
 				}
 				Map<String, Object> lAdditionalResults = new FastMap<String, Object>();
 				lAdditionalResults.put("arg1", "value1");
 				lAdditionalResults.put("arg2", "value2");
 				lSender.respondPayload(
 						aToken.getString("sourceId"),
-						aToken.getNS(), aToken.getType(),
-						aToken.getInteger("utid"),
+						aToken,
 						0, // return code
 						"Ok", // return message
 						lAdditionalResults, // here you can add additional results beside the payload

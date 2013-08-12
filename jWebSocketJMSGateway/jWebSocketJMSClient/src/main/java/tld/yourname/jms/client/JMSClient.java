@@ -138,10 +138,16 @@ public class JMSClient {
 					mLog.error("Authentication against jWebSocket JMS Gateway failed!");
 				}
 
-				// now to try to get some data from the service...
 				Map lArgs = new FastMap<String, Object>();
-				lArgs.put("username", "test");
-				lArgs.put("password", "test");
+				lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
+						"demo1", lArgs, "{}");
+				
+				if( true ) return;
+				
+				// now to try to get some data from the service...
+				lArgs = new FastMap<String, Object>();
+				lArgs.put("username", "anyUsername");
+				lArgs.put("password", "anyPassword");
 				lArgs.put("action", "CREATE");
 				// send the payload to the target (here the JMS demo service)
 				// lSender.forwardPayload("aschulze-dt", "org.jwebsocket.jms.demo",
