@@ -18,7 +18,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
@@ -70,10 +73,6 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	/**
 	 *
 	 */
-	protected long mShutdownTimeout;
-	/**
-	 *
-	 */
 	protected long mMessageDeliveryTimeout;
 
 	/**
@@ -93,7 +92,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for load "
-						+ "balancer plug-in, some features may not be available.");
+					+ "balancer plug-in, some features may not be available.");
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.loadbalancer.settings");
 				if (null != mSettings) {
@@ -108,7 +107,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx,
-					"instantiating load balancer plug-in"));
+				"instantiating load balancer plug-in"));
 			throw lEx;
 		}
 	}
@@ -159,27 +158,22 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(lRemoved + " services where removed due to client '" + aConnector.getId()
-					+ "' disconnection. Reason: " + aCloseReason);
+				+ "' disconnection. Reason: " + aCloseReason);
 		}
 	}
 
 	@Role(name = NS_LOADBALANCER + ".clustersInfo")
 	public void clustersInfoAction(WebSocketConnector aConnector, Token aToken) {
-		String lClusterAlias = aToken.getString("clusterAlias");
-
 		List<Map<String, Object>> lInfo = new FastList<Map<String, Object>>();
 		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
 			Cluster lCluster = lEntry.getValue();
-
-			if (null == lClusterAlias || lEntry.getKey().matches(lClusterAlias)) {
-				Map<String, Object> lInfoCluster = new HashMap<String, Object>();
-				lInfoCluster.put("clusterAlias", lEntry.getKey());
-				lInfoCluster.put("clusterNS", lCluster.getNamespace());
-				lInfoCluster.put("endPointsCount", lCluster.getEndPoints().size());
-				lInfoCluster.put("endPoints", lCluster.getEndPoints());
-				lInfoCluster.put("requests", lCluster.getTotalEndPointsRequests());
-				lInfo.add(lInfoCluster);
-			}
+			Map<String, Object> lInfoCluster = new HashMap<String, Object>();
+			lInfoCluster.put("clusterAlias", lEntry.getKey());
+			lInfoCluster.put("clusterNS", lCluster.getNamespace());
+			lInfoCluster.put("endPointsCount", lCluster.getEndPoints().size());
+			lInfoCluster.put("endPoints", lCluster.getEndPoints());
+			lInfoCluster.put("requests", lCluster.getTotalEndPointsRequests());
+			lInfo.add(lInfoCluster);
 		}
 
 		Token lResponse = createResponse(aToken);
@@ -209,7 +203,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	public void registerServiceEndPointAction(WebSocketConnector aConnector, Token aToken) {
 		String lClusterAlias = aToken.getString("clusterAlias");
 		String lPassword = aToken.getString("password");
-		
+
 		Assert.isTrue(mClusters.containsKey(lClusterAlias), "The target cluster does not exists!");
 
 		Cluster lCluster = getClusterByAlias(lClusterAlias);
@@ -248,7 +242,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		ClusterEndPoint lEndPoint = lCluster.getEndPointByPosition(lEndPointPosition);
 
 		Assert.isTrue(lEndPoint.getStatus().equals(EndPointStatus.ONLINE),
-				"The target endpoint is not ONLINE and can't be deregistered!");
+			"The target endpoint is not ONLINE and can't be deregistered!");
 
 		Token lEvent = TokenFactory.createToken(NS_LOADBALANCER, "event");
 		lEvent.setString("user", aConnector.getUsername());
@@ -287,7 +281,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		// getting endpoint instance
 		ClusterEndPoint lEndPoint = lCluster.getEndPointByPosition(lEndPointPosition);
 		Assert.isTrue(lEndPoint.getStatus().equals(EndPointStatus.ONLINE),
-				"The target endpoint is not ONLINE and can't be shutdown!");
+			"The target endpoint is not ONLINE and can't be shutdown!");
 
 		Token lEvent = TokenFactory.createToken(NS_LOADBALANCER, "event");
 		lEvent.setString("user", aConnector.getUsername());
@@ -317,6 +311,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 			}
 
 			sendTokenInTransaction(lConnector, aToken, new IPacketDeliveryListener() {
+
 				@Override
 				public long getTimeout() {
 					return mMessageDeliveryTimeout;
@@ -328,12 +323,12 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 					int lDeregistered = 0;
 					Iterator<Cluster> lIt = mClusters.values().iterator();
 					while (lIt.hasNext()) {
-						lDeregistered =+ lIt.next().removeEndPointsByConnector(aConnector);
+						lDeregistered = +lIt.next().removeEndPointsByConnector(aConnector);
 					}
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Remote client not received a message on required '"
-								+ mMessageDeliveryTimeout + "'time! " + lDeregistered
-								+ " client services were deregistered!");
+							+ mMessageDeliveryTimeout + "'time! " + lDeregistered
+							+ " client services were deregistered!");
 					}
 
 					// call again
@@ -381,18 +376,6 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 	private Cluster getClusterByAlias(String aAlias) {
 		return mClusters.get(aAlias);
-	}
-
-	private Cluster getClusterByNS(String aNS) {
-		Iterator<Cluster> lIt = mClusters.values().iterator();
-		while (lIt.hasNext()) {
-			Cluster lCluster = lIt.next();
-			if (lCluster.getNamespace().equals(aNS)) {
-				return lCluster;
-			}
-		}
-
-		return null;
 	}
 
 	private WebSocketConnector getSourceConnector(String aSourceId) {
