@@ -11,7 +11,7 @@
 }
 
 #sbtnDeregisterServiceEndPoint{
-	width: 200px;
+	width: 220px;
 }
 
 #sbtnShutdownEndpoint{
@@ -20,6 +20,10 @@
 
 #stdDlg{
 	width: 100px;
+}
+
+#stdDlgx{
+	width: 30px;
 }
 
 #stdSelect{
@@ -33,3 +37,9 @@
 #sbtnMul{
 	width: 80px;
 }
+
+#stxPass{
+	width: 80px;
+}
+
+

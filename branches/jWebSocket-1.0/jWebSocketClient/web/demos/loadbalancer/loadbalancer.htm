@@ -38,39 +38,32 @@
 		<script type="text/javascript" language="JavaScript">
 		
 			var myConnections = new Array();
-			var mCount=0;
-			var testNS = 'org.jwebsocket.plugins.sample';
+			var mRoutes = new Array();
+			var mPassword= null ;
+			var testSumNS = 'org.jwebsocket.plugins.samplesum';
+			var testMulNS = 'org.jwebsocket.plugins.samplemul';
+			
+			function addConn( aConn ){
+				myConnections[myConnections.length] = aConn;	
+			}
 		
 			function clustersInfo(){
+				log(" ");
 				log("Getting clusters info...");
 				if( lWSC.isConnected() ) {
-					lWSC.lbClustersInfo({
-						OnResponse: function( aToken ) {
-							log(aToken);
-						}
-					});
+					lWSC.lbClustersInfo();
 				} else {
 					log( "Not connected." );
 				}
 			}
 		
 			function stickyRoutes() {
+				log(" ");
 				log("Getting LB sticky routes...");
 				if( lWSC.isConnected() ) {
-					lWSC.lbStickyRoutes();
-				} else {
-					log( "Not connected." );
-				}
-			}
-			
-			function shutdownEndPoint(){
-				log("Shutting down endpoint...");
-				if( lWSC.isConnected() ) {
-					var lEpId = jws.$( "stxfEpId" ).value;
-					var lClusterAlias = jws.$( "stxfAlias1" ).value;
-					lWSC.lbShutdownEndPoint(lClusterAlias, lEpId, {
+					lWSC.lbStickyRoutes({
 						OnResponse: function( aToken ) {
-							log(aToken);
+							mRoutes = aToken.data;
 						}
 					});
 				} else {
@@ -85,16 +78,26 @@
 				var lServiceEndPoint = new jws.jWebSocketJSONClient();
 				lServiceEndPoint.open("ws://localhost:8787/jWebSocket/jWebSocket", {
 					OnWelcome: function (){
-						lServiceEndPoint.lbRegisterServiceEndPoint(lClusterAlias);
+						var lPassword = jws.$( "stxPass" ).value;
+						lServiceEndPoint.lbRegisterServiceEndPoint( lPassword, {
+								clusterAlias: lClusterAlias
+							});
 						lServiceEndPoint.addPlugIn({
 							processToken: function(aToken){
-								if (aToken.ns == testNS){
+								if (aToken.ns == testSumNS){
 									if ('sumXY' == aToken.type){
 										var lResponse = lServiceEndPoint.lbCreateResponse(aToken);
 										lResponse.data = parseFloat(aToken.x) + parseFloat(aToken.y);
 										
 										lServiceEndPoint.sendToken(lResponse);
-									}
+									} 
+								} else if (aToken.ns == testMulNS){
+									if ('mulXY' == aToken.type){
+										var lResponse = lServiceEndPoint.lbCreateResponse(aToken);
+										lResponse.data = parseFloat(aToken.x) * parseFloat(aToken.y);
+										
+										lServiceEndPoint.sendToken(lResponse);
+									} 
 								}
 							}
 						});
@@ -103,27 +106,50 @@
 						log('Message "' + aMessage.data + '" received on endpoint: ' + lServiceEndPoint.getId());
 					}
 				});					
-				myConnections[mCount++]=lServiceEndPoint;
+				addConn( lServiceEndPoint );
 			}	
 				
 			function deregisterServiceEndPoint() {
+				log(" ");
 				log("Runing deregister service endpoint");
 				if( lWSC.isConnected() ) {
 					var lEndPointId = jws.$( "stxfEpId" ).value;
 					var lClusterAlias = jws.$( "stxfAlias1" ).value;
-					lWSC.lbDeregisterServiceEndPoint( lClusterAlias, lEndPointId);
+					var lPassword = jws.$( "stxPass" ).value;
+					lWSC.lbDeregisterServiceEndPoint( lPassword, {
+							endPointId: lEndPointId,
+							clusterAlias: lClusterAlias
+						});
+				} else {
+					log( "Not connected." );
+				}
+			}
+			
+			function shutdownEndPoint(){
+				log(" ");
+				log("Shutting down endpoint...");
+				if( lWSC.isConnected() ) {
+					var lEndPointId = jws.$( "stxfEpId" ).value;
+					var lClusterAlias = jws.$( "stxfAlias1" ).value;
+					var lPassword = jws.$( "stxPass" ).value;
+					emptySelect("stxfEpId");
+					lWSC.lbShutdownEndPoint( lPassword, {
+						clusterAlias: lClusterAlias,
+						endPointId: lEndPointId
+					});
 				} else {
 					log( "Not connected." );
 				}
 			}
 			
 			function sumXY (){
+				log(" ");
 				log("Sending sumXY command to the server...");
 				if( lWSC.isConnected() ) {
 					var lVal1 = jws.$( "stxVal1" ).value;
 					var lVal2 = jws.$( "stxVal2" ).value;
 					lWSC.sendToken( {
-						ns: testNS,
+						ns: testSumNS,
 						type: 'sumXY',
 						x : lVal1,
 						y : lVal2
@@ -133,19 +159,54 @@
 				}
 			}
 			
-			function initPage() {
-				loadService( "service1" );
+			function mulXY (){
+				log(" ");
+				log("Sending mulXY command to the server...");
+				if( lWSC.isConnected() ) {
+					var lVal1 = jws.$( "stxVal1" ).value;
+					var lVal2 = jws.$( "stxVal2" ).value;
+					lWSC.sendToken( {
+						ns: testMulNS,
+						type: 'mulXY',
+						x : lVal1,
+						y : lVal2
+					});
+				} else {
+					log( "Not connected." );
+				}
 			}
+			
+			function loadSelect( ){
+				stickyRoutes();
+				var lRoutes = new Array();
+				if( lWSC.isConnected() ) {
+					lService = document.getElementById("stxfAlias1");
+					lSelect = document.getElementById("stxfEpId"); 
 
-			function exitPage() {
-				
+					var lOptionPos = 0;
+					for(var lPos=0; lPos<mRoutes.length ;lPos++){
+						if(mRoutes[lPos].clusterAlias == lService.value){
+							lSelect.options[lOptionPos++] = new Option(mRoutes[lPos].endPointId);
+						}
+					}
+						
+				} else {
+					log( "Not connected." );
+				}
 			}
+			
+			function emptySelect(objID){  
+				while(jws.$(objID).childNodes[0]){  
+					jws.$(objID).removeChild(jws.$(objID).childNodes[0]);  
+				}  
+				lSelect = document.getElementById("stxfEpId"); 
+				lSelect.options[0] = new Option("Select endpoint Id to shutdown from service");
+			}  
 
 		</script>
 	</head>
 
-	<body onload="initPage();" onunload="exitPage();">
-
+	<body>
 
 		<script type="text/javascript">
 			jws.DemoPlugIn.buildDemoPage({
@@ -160,13 +221,18 @@
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
 
 				<tr class="strDlg">
-					<td class="stdDlg" id="stdDlg" width="5">Cluster Alias
+					<td class="stdDlg" id="stdDlg" width="5">Cluster Alias:
 					</td>
 					<td class="stdDlg" id="stdSelect">
 						<select name="cluster" id="stxfAlias1">
 							<option value="service1">service1</option>
 							<option value="service2">service2</option>
 						</select>
+					</td>
+					<td class="stdDlg" id="stdDlg" width="5">Password:
+					</td>
+					<td class="stdDlg" id="stdSelect">
+						<input type="password" id="stxPass" value="admin">
 					</td>
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnRegisterServiceEndPoint" type="button" value="Register Service EndPoint" onclick="registerServiceEndPoint();"
@@ -187,16 +253,14 @@
 
 		<div class="sdivContainer">
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
-
+			
 				<tr class="strDlg">
-
-				</tr>
-
-				<tr class="strDlg">
-					<td class="stdDlg" id="stdDlg" width="30">EndPoint Id
+					<td class="stdDlg" id="stdDlg" width="30">EndPoint Id:
 					</td>
 					<td class="stdDlg" width="100">
-						<input name="endpoints" id="stxfEpId">
+						<select name="cluster" id="stxfEpId" onfocus="loadSelect();">
+							<option value="service1">Select endpoint Id to shutdown from service</option>
+						</select>
 					</td>
 					<td class="stdDlg">
 						<input class="sbtnDlg" id="sbtnShutdownEndpoint" type="button" value="Shutdown EndPoint" onclick="shutdownEndPoint();"
@@ -215,7 +279,7 @@
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
 
 				<tr class="strDlg">
-					<td class="stdDlg" id="stdDlg">X
+					<td class="stdDlg" id="stdDlgx">X:
 					</td>
 					<td class="stdDlg">
 						<select name="cluster" id="stxVal1">
@@ -231,7 +295,8 @@
 							<option value="10">10</option>
 						</select>
 					</td>
-					<td class="stdDlg" id="stdDlg">Y:
+					<td class="stdDlg" id="stdDlgx">
+					&nbsp;&nbsp;&nbsp;&nbsp;Y:
 					</td>
 					<td class="stdDlg">
 						<select name="cluster" id="stxVal2">
@@ -245,11 +310,13 @@
 							<option value="8">8</option>
 							<option value="9">9</option>
 							<option value="10">10</option>
-						</select>
+						</select>&nbsp;&nbsp;&nbsp;&nbsp;
 					</td>
 					<td class="stdDlg">
 						<input class="sbtnDlg" id="sbtnSum" type="button" value="Sum X,Y" onclick="sumXY();"
 							   title="Click to sum x,y.">
+						<input class="sbtnDlg" id="sbtnMul" type="button" value="Mul X,Y" onclick="mulXY();"
+							   title="Click to mul x,y.">
 					</td>
 				</tr>
 			</table>

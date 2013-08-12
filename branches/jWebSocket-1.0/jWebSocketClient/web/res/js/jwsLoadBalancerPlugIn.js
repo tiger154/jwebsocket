@@ -54,13 +54,19 @@ jws.LoadBalancerPlugIn = {
 		return lRes;
 	},
 	
-	lbRegisterServiceEndPoint: function (aClusterAlias, aPassword, aOptions ) {
+	lbRegisterServiceEndPoint: function ( aPassword, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				clusterAlias: null
+			});
+			if(aPassword == undefined){
+				aPassword = null;
+			}
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
 				type: "registerServiceEndPoint",
-				clusterAlias: aClusterAlias,
+				clusterAlias: aOptions.clusterAlias,
 				password: aPassword
 			};
 			this.sendToken( lToken,	aOptions );
@@ -68,14 +74,23 @@ jws.LoadBalancerPlugIn = {
 		return lRes;
 	},
 	
-	lbDeregisterServiceEndPoint: function ( aClusterAlias, aEndPointId, aPassword, aOptions ) {
+	lbDeregisterServiceEndPoint: function ( aPassword, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				clusterAlias: null
+			});
+			aOptions = jws.getOptions( aOptions, {
+				endPointId: null
+			});
+			if(aPassword == undefined ) {
+				aPassword = null;
+			}
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
 				type: "deregisterServiceEndPoint",
-				endPointId: aEndPointId,
-				clusterAlias: aClusterAlias,
+				endPointId: aOptions.endPointId,
+				clusterAlias: aOptions.clusterAlias,
 				password: aPassword
 			};
 			this.sendToken( lToken,	aOptions );
@@ -83,20 +98,30 @@ jws.LoadBalancerPlugIn = {
 		return lRes;
 	},
 	
-	lbShutdownEndPoint: function ( aClusterAlias, aEndPointId, aPassword, aOptions ) {
+	lbShutdownEndPoint: function ( aPassword, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				clusterAlias: null
+			});
+			aOptions = jws.getOptions( aOptions, {
+				endPointId: null
+			});
+			if(aPassword == undefined ) {
+				aPassword = null;
+			}
 			var lToken = {
 				ns: jws.LoadBalancerPlugIn.NS,
 				type: "shutdownServiceEndPoint",
-				endPointId: aEndPointId,
-				clusterAlias: aClusterAlias,
+				endPointId: aOptions.endPointId,
+				clusterAlias: aOptions.clusterAlias,
 				password: aPassword
 			};
 			this.sendToken( lToken,	aOptions );
 		}
 		return lRes;
 	},
+	
 	lbCreateResponse: function(aToken){
 		var lResponse =  {
 			ns: jws.LoadBalancerPlugIn.NS,

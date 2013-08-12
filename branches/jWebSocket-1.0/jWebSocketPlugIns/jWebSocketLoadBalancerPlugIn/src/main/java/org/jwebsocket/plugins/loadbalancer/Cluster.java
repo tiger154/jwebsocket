@@ -110,9 +110,9 @@ public class Cluster {
 	public ClusterEndPoint getOptimumEndPoint() {
 		if (!mEndPoints.isEmpty() && availableEndPoint()) {
 			mEndPointPosition = (mEndPointPosition + 1 < mEndPoints.size()
-					? mEndPointPosition + 1 : 0);
+				? mEndPointPosition + 1 : 0);
 			return (availableEndPoint(mEndPointPosition)
-					? mEndPoints.get(mEndPointPosition) : getOptimumEndPoint());
+				? mEndPoints.get(mEndPointPosition) : getOptimumEndPoint());
 		} else {
 			return null;
 		}
