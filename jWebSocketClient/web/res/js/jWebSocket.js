@@ -1833,9 +1833,10 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 
 				this.fConn.onmessage = function( aEvent ) {
                     // supporting binary frames at this level
-                    if( "undefined" !== typeof Blob && aEvent.data instanceof Blob
-							||  "undefined" !== typeof ArrayBuffer && 
-							aEvent.data instanceof ArrayBuffer ) {
+                    if( ( "undefined" !== typeof Blob && 
+							aEvent.data instanceof Blob ) ||
+							( "undefined" !== typeof ArrayBuffer && 
+							aEvent.data instanceof ArrayBuffer )) {
                         if( aOptions.OnMessage ) {
 							aOptions.OnMessage( aEvent, lValue, lThis );
 						}
