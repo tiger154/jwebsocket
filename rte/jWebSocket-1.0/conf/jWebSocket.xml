@@ -1035,7 +1035,7 @@
 				<right>org.jwebsocket.plugins.loadbalancer.clustersInfo</right>
 				<right>org.jwebsocket.plugins.loadbalancer.registerServiceEndPoint</right>
 				<right>org.jwebsocket.plugins.loadbalancer.deregisterServiceEndPoint</right>
-				<right>org.jwebsocket.plugins.loadbalancer.shutdownEndpoint</right>
+				<right>org.jwebsocket.plugins.loadbalancer.shutdownEndPoint</right>
 				
 			</rights>
 		</role>
