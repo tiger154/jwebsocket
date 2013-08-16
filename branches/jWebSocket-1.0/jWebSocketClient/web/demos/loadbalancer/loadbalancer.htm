@@ -39,7 +39,7 @@
 		
 			var myConnections = new Array();
 			var mRoutes = new Array();
-			var mPassword= null ;
+			var mPassword = null ;
 			var testSumNS = 'org.jwebsocket.plugins.samplesum';
 			var testMulNS = 'org.jwebsocket.plugins.samplemul';
 			
@@ -64,6 +64,16 @@
 					lWSC.lbStickyRoutes({
 						OnResponse: function( aToken ) {
 							mRoutes = aToken.data;
+							emptySelect("stxfEpId");
+							lService = document.getElementById("stxfAlias1");
+							lSelect = document.getElementById("stxfEpId"); 
+							emptySelect("stxfEpId");
+							var lOptionPos = 0;
+							for(var lPos=0; lPos < mRoutes.length ;lPos++){
+								if(mRoutes[lPos].clusterAlias == lService.value){
+									lSelect.options[lOptionPos++] = new Option(mRoutes[lPos].endPointId);
+								}
+							}
 						}
 					});
 				} else {
@@ -132,7 +142,6 @@
 					var lEndPointId = jws.$( "stxfEpId" ).value;
 					var lClusterAlias = jws.$( "stxfAlias1" ).value;
 					var lPassword = jws.$( "stxPass" ).value;
-					emptySelect("stxfEpId");
 					lWSC.lbShutdownEndPoint( lPassword, {
 						clusterAlias: lClusterAlias,
 						endPointId: lEndPointId
@@ -176,23 +185,8 @@
 				}
 			}
 			
-			function loadSelect( ){
+			function loadSelect( ){	
 				stickyRoutes();
-				var lRoutes = new Array();
-				if( lWSC.isConnected() ) {
-					lService = document.getElementById("stxfAlias1");
-					lSelect = document.getElementById("stxfEpId"); 
-
-					var lOptionPos = 0;
-					for(var lPos=0; lPos<mRoutes.length ;lPos++){
-						if(mRoutes[lPos].clusterAlias == lService.value){
-							lSelect.options[lOptionPos++] = new Option(mRoutes[lPos].endPointId);
-						}
-					}
-						
-				} else {
-					log( "Not connected." );
-				}
 			}
 			
 			function emptySelect(objID){  
@@ -200,7 +194,7 @@
 					jws.$(objID).removeChild(jws.$(objID).childNodes[0]);  
 				}  
 				lSelect = document.getElementById("stxfEpId"); 
-				lSelect.options[0] = new Option("Select endpoint Id to shutdown from service");
+				lSelect.options[0] = new Option("Select endpoint Id to shutdown or deregister");
 			}  
 
 		</script>
@@ -224,7 +218,7 @@
 					<td class="stdDlg" id="stdDlg" width="5">Cluster Alias:
 					</td>
 					<td class="stdDlg" id="stdSelect">
-						<select name="cluster" id="stxfAlias1">
+						<select name="cluster" id="stxfAlias1" selected="service1">
 							<option value="service1">service1</option>
 							<option value="service2">service2</option>
 						</select>
@@ -258,8 +252,8 @@
 					<td class="stdDlg" id="stdDlg" width="30">EndPoint Id:
 					</td>
 					<td class="stdDlg" width="100">
-						<select name="cluster" id="stxfEpId" onfocus="loadSelect();">
-							<option value="service1">Select endpoint Id to shutdown from service</option>
+						<select name="cluster" id="stxfEpId" onclick="loadSelect();">
+							<option value="service1">Select endpoint Id to shutdown or deregister</option>
 						</select>
 					</td>
 					<td class="stdDlg">

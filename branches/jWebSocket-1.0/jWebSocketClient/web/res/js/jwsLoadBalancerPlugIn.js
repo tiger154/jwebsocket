@@ -30,6 +30,10 @@ jws.LoadBalancerPlugIn = {
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.loadbalancer",
 	
+	//:m:*:lbClustersInfo
+	//:d:en:Gets a list (of maps) with the information about all clusters.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	lbClustersInfo: function ( aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
@@ -42,6 +46,10 @@ jws.LoadBalancerPlugIn = {
 		return lRes;
 	},
 	
+	//:m:*:lbStickyRoutes
+	//:d:en:Gets a list of all sticky routes managed by the load balancer.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	lbStickyRoutes: function ( aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
@@ -54,6 +62,11 @@ jws.LoadBalancerPlugIn = {
 		return lRes;
 	},
 	
+	//:m:*:lbRegisterServiceEndPoint
+	//:d:en:Registers a new service endpoint in specific cluster.
+	//:a:en::aPassword:String:Password to verify privileges.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	lbRegisterServiceEndPoint: function ( aPassword, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
@@ -74,6 +87,11 @@ jws.LoadBalancerPlugIn = {
 		return lRes;
 	},
 	
+	//:m:*:lbDeregisterServiceEndPoint
+	//:d:en:De-registers a connected service endpoint.
+	//:a:en::aPassword:String:Password to verify privileges.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	lbDeregisterServiceEndPoint: function ( aPassword, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
@@ -98,6 +116,11 @@ jws.LoadBalancerPlugIn = {
 		return lRes;
 	},
 	
+	//:m:*:lbShutdownEndPoint
+	//:d:en:Should send a message to the referenced endpoint to gracefully shutdown.
+	//:a:en::aPassword:String:Password to verify privileges.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	lbShutdownEndPoint: function ( aPassword, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
@@ -122,6 +145,10 @@ jws.LoadBalancerPlugIn = {
 		return lRes;
 	},
 	
+	//:m:*:lbCreateResponse
+	//:d:en:Create token response with all necessary data to send to remote client.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
 	lbCreateResponse: function(aToken){
 		var lResponse =  {
 			ns: jws.LoadBalancerPlugIn.NS,
