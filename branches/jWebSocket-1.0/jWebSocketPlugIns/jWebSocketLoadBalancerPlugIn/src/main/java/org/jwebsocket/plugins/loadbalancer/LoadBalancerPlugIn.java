@@ -40,6 +40,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
 /**
+ * Provides all functionalities to load balancer for create, remove and manage
+ * services endpoints.
  *
  * @author aschulze
  * @author rbetancourt
@@ -162,6 +164,14 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		}
 	}
 
+	/**
+	 * Sends a list (of maps) with the in-formation about all clusters (e.g.
+	 * per cluster: cluster-alias, number of end-points, list of endpoints
+	 * in this cluster, status per endpoint etc.)
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	@Role(name = NS_LOADBALANCER + ".clustersInfo")
 	public void clustersInfoAction(WebSocketConnector aConnector, Token aToken) {
 		List<Map<String, Object>> lInfo = new FastList<Map<String, Object>>();
@@ -181,6 +191,13 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 * Sends a list of all sticky routes man-aged by the load balancer,
+	 * consisting of cluster-alias, client endpoint-id, service endpoint-id.
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	@Role(name = NS_LOADBALANCER + ".clustersInfo")
 	public void stickyRoutesAction(WebSocketConnector aConnector, Token aToken) {
 		List<Map<String, String>> lStickyRoutes = new FastList<Map<String, String>>();
@@ -199,6 +216,16 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 * Registers a new service endpoint which is not yet specified in the
+	 * load balancer configuration file.In case an endpoint id is passed
+	 * which already exists in the load balancer configuration the request
+	 * is rejected. In case a valid new endpoint is to be registered the
+	 * internal table gets appended accordingly.
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
 	public void registerServiceEndPointAction(WebSocketConnector aConnector, Token aToken) {
 		String lClusterAlias = aToken.getString("clusterAlias");
@@ -219,6 +246,17 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 * De-registers an connected service endpoint. In case the endpoint is
+	 * part of the load balancer configuration the internal entry in the
+	 * table of end-points gets tagged as "de-registered". In case the
+	 * endpoint was a dynamically added one the item in the internal table
+	 * shall be removed.This method can be also used by an administration
+	 * too to restart a certain endpoint after an update.
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
 	public void deregisterServiceEndPointAction(WebSocketConnector aConnector, Token aToken) {
 		String lEndPointId = aToken.getString("endPointId");
@@ -259,6 +297,18 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		sendToken(aConnector, createResponse(aToken));
 	}
 
+	/**
+	 * Should send a message to the referenced endpoint to gracefully
+	 * shutdown. A graceful shutdown should include a clean de-registering
+	 * from the load balancer plug-in. Since it can be not guaranteed that
+	 * the target endpoint processes the shutdown request properly, this
+	 * method shall come with a timeout, such as when this is exceeded the
+	 * endpoint is automatically registered to be shut down manually by the
+	 * administrator.
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	@Role(name = NS_LOADBALANCER + ".shutdownEndPoint")
 	public void shutdownServiceEndPointAction(final WebSocketConnector aConnector, final Token aToken) {
 		String lEndPointId = aToken.getString("endPointId");
@@ -298,6 +348,13 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		sendToken(aConnector, createResponse(aToken));
 	}
 
+	/**
+	 * Sends client requests to the appropriate service. If occurs any error
+	 * or timeout, repeats the operation.
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void sendToService(final WebSocketConnector aConnector, final Token aToken) {
 		aToken.setString("sourceId", aConnector.getId());
 
@@ -354,6 +411,12 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		}
 	}
 
+	/**
+	 * Sends response to appropriate remote client.
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	@Role(name = NS_LOADBALANCER + ".registerServiceEndPoint")
 	public void responseAction(WebSocketConnector aConnector, Token aToken) {
 		if (((List<Integer>) aConnector.getVar("utids")).remove(aToken.getInteger("utid", -1))) {
@@ -364,6 +427,11 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aNamespace Cluster name space.
+	 * @return the optimum service.
+	 */
 	private ClusterEndPoint getOptimumServiceEndPoint(String aNamespace) {
 		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
 			Cluster lValue = lEntry.getValue();
@@ -374,14 +442,30 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		return null;
 	}
 
+	/**
+	 *
+	 * @param aAlias Cluster alias.
+	 * @return an specified cluster
+	 */
 	private Cluster getClusterByAlias(String aAlias) {
 		return mClusters.get(aAlias);
 	}
 
+	/**
+	 *
+	 * @param aSourceId Source client connector
+	 * @return an specified connector.
+	 */
 	private WebSocketConnector getSourceConnector(String aSourceId) {
 		return getServer().getConnector(aSourceId);
 	}
 
+	/**
+	 *
+	 * @param aNamespace Incoming token's name space
+	 * @return <code>true</code> if any cluster supports the incoming name space ;
+	 * <code>false</code> otherwise
+	 */
 	public boolean supportsNamespace(String aNamespace) {
 		for (Map.Entry<String, Cluster> lEntry : mClusters.entrySet()) {
 			if (lEntry.getValue().getNamespace().equals(aNamespace)) {

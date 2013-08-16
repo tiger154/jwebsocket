@@ -50,6 +50,8 @@ public class LoadBalancerFilter extends TokenFilter {
 	}
 
 	/**
+	 * Allow that the incoming tokens with name space equals to cluster name space 
+	 * can be processed by load balancer plugIn.
 	 *
 	 * @param aResponse
 	 * @param aConnector

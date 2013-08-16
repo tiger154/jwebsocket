@@ -38,16 +38,25 @@ public class Cluster {
 	private int mEndPointPosition = 0;
 	private String mPassword;
 
+	/**
+	 *
+	 * @return cluster password.
+	 */
 	public String getPassword() {
 		return mPassword;
 	}
 
+	/**
+	 *
+	 * @param aPassword the password to set.
+	 */
 	public void setPassword(String aPassword) {
 		mPassword = aPassword;
 	}
 
 	/**
-	 * @return the mEndpoints
+	 *
+	 * @return a list of endpoints.
 	 */
 	public List<ClusterEndPoint> getEndPoints() {
 		return mEndPoints;
@@ -62,19 +71,25 @@ public class Cluster {
 	}
 
 	/**
-	 * @return the mStaticEntries
+	 * @return the static entries
 	 */
 	public int getStaticEntries() {
 		return mStaticEntries;
 	}
 
 	/**
-	 * @param mStaticEntries the mStaticEntries to set
+	 * @param mStaticEntries the static entries to set
 	 */
 	public void setStaticEntries(int aStaticEntries) {
 		this.mStaticEntries = aStaticEntries;
 	}
 
+	/**
+	 * Register a new cluster endpoint.
+	 *
+	 * @param aConnector
+	 * @return the cluster endpoint added.
+	 */
 	public ClusterEndPoint registerEndPoint(WebSocketConnector aConnector) {
 		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
 			if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.OFFLINE)) {
@@ -92,6 +107,12 @@ public class Cluster {
 		return lEndPoint;
 	}
 
+	/**
+	 *
+	 * @param aServiceId Service Id.
+	 * @return <code>true</code> if endpoint list contains aServiceId;
+	 * <code>false</code> otherwise.
+	 */
 	public boolean endPointExists(String aServiceId) {
 		if (mEndPoints.isEmpty()) {
 			return false;
@@ -107,6 +128,10 @@ public class Cluster {
 		}
 	}
 
+	/**
+	 *
+	 * @return optimum cluster endpoint.
+	 */
 	public ClusterEndPoint getOptimumEndPoint() {
 		if (!mEndPoints.isEmpty() && availableEndPoint()) {
 			mEndPointPosition = (mEndPointPosition + 1 < mEndPoints.size()
@@ -118,8 +143,13 @@ public class Cluster {
 		}
 	}
 
+	/**
+	 *
+	 * @return <code>true</code> if any cluster endpoint have status online;
+	 * <code>false</code> otherwise.
+	 */
 	private boolean availableEndPoint() {
-		for (int lPos = 0; lPos < 10; lPos++) {
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
 			if (availableEndPoint(lPos)) {
 				return true;
 			}
@@ -127,6 +157,12 @@ public class Cluster {
 		return false;
 	}
 
+	/**
+	 *
+	 * @param lPos position in cluster endpoint list.
+	 * @return <code>true</code> if any cluster endpoint have status online;
+	 * <code>false</code> otherwise.
+	 */
 	private boolean availableEndPoint(int lPos) {
 		if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
 			return true;
@@ -135,6 +171,10 @@ public class Cluster {
 		}
 	}
 
+	/**
+	 *
+	 * @return a list with all sticky id.
+	 */
 	public List<String> getStickyId() {
 		List<String> lIDs = new FastList<String>();
 		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
@@ -145,6 +185,12 @@ public class Cluster {
 		return lIDs;
 	}
 
+	/**
+	 *
+	 * @param aEndPointPosition
+	 * @return <code>true</code> if the cluster endpoint was removed successfully;
+	 * <code>false</code> otherwise.
+	 */
 	public boolean removeEndPoint(int aEndPointPosition) {
 		if (aEndPointPosition != -1) {
 			if (aEndPointPosition < mStaticEntries) {
@@ -162,6 +208,11 @@ public class Cluster {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @return the count of cluster endpoints removed.
+	 */
 	public int removeEndPointsByConnector(WebSocketConnector aConnector) {
 		int lCount = 0;
 		Iterator<ClusterEndPoint> lIt = mEndPoints.iterator();
@@ -176,6 +227,11 @@ public class Cluster {
 		return lCount;
 	}
 
+	/**
+	 *
+	 * @param aEndPointId
+	 * @return the position where the endpoint id coincides.
+	 */
 	public int getEndPointPosition(String aEndPointId) {
 		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
 			if (mEndPoints.get(lPos).getServiceId().equals(aEndPointId)) {
@@ -185,6 +241,10 @@ public class Cluster {
 		return -1;
 	}
 
+	/**
+	 *
+	 * @return a list with all endpoints id.
+	 */
 	public List<String> getEndPointsId() {
 		List<String> lEndPointsId = new FastList<String>();
 		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
@@ -193,24 +253,33 @@ public class Cluster {
 		return lEndPointsId;
 	}
 
+	/**
+	 *
+	 * @param aPosition
+	 * @return an specific cluster endpoint by the position given.
+	 */
 	public ClusterEndPoint getEndPointByPosition(int aPosition) {
 		return mEndPoints.get(aPosition);
 	}
 
 	/**
-	 * @return the mNamespace
+	 * @return the cluster name space
 	 */
 	public String getNamespace() {
 		return mNamespace;
 	}
 
 	/**
-	 * @param mNamespace the mNamespace to set
+	 * @param mNamespace the name space to set
 	 */
 	public void setNamespace(String aNamespace) {
 		this.mNamespace = aNamespace;
 	}
 
+	/**
+	 *
+	 * @return total of endpoints requests. 
+	 */
 	public long getTotalEndPointsRequests() {
 		long lRequests = 0;
 		Iterator<ClusterEndPoint> lIt = mEndPoints.iterator();
