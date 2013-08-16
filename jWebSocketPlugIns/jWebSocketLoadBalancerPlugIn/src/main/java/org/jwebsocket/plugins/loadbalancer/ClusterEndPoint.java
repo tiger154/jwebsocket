@@ -47,28 +47,28 @@ public class ClusterEndPoint implements ITokenizable {
 	}
 
 	/**
-	 * @return the mStatus
+	 * @return the status.
 	 */
 	public EndPointStatus getStatus() {
 		return mStatus;
 	}
 
 	/**
-	 * @param aStatus the mStatus to set
+	 * @param aStatus the status to set.
 	 */
 	public void setStatus(EndPointStatus aStatus) {
 		mStatus = aStatus;
 	}
 
 	/**
-	 * @return the mConnector
+	 * @return the cluster endpoint connector.
 	 */
 	public WebSocketConnector getConnector() {
 		return mConnector;
 	}
 
 	/**
-	 * @param aConnector the mConnector to set
+	 * @param aConnector the connector to set.
 	 */
 	public void setConnector(WebSocketConnector aConnector) {
 		this.mConnector = aConnector;
@@ -76,14 +76,14 @@ public class ClusterEndPoint implements ITokenizable {
 
 	/**
 	 *
-	 * @return
+	 * @return the cluster endpoint id.
 	 */
 	public String getServiceId() {
 		return mServiceId;
 	}
 
 	/**
-	 *
+	 * Increase requests for this cluster endpoint.
 	 */
 	public void increaseRequests() {
 		mRequests++;
@@ -91,7 +91,7 @@ public class ClusterEndPoint implements ITokenizable {
 
 	/**
 	 *
-	 * @return
+	 * @return cluster endpoint requests.
 	 */
 	public long getRequests() {
 		return mRequests;
@@ -99,7 +99,7 @@ public class ClusterEndPoint implements ITokenizable {
 
 	/**
 	 *
-	 * @param aRequests
+	 * @param aRequests the requests to set.
 	 */
 	public void setRequests(int aRequests) {
 		this.mRequests = aRequests;
