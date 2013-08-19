@@ -575,6 +575,20 @@ public class TokenServer extends BaseServer {
 		return sendTokenData(aSource, aTarget, aToken, true);
 	}
 
+	public void sendToken(String aConnectorId, Token aToken) {
+		Iterator<WebSocketEngine> lIt = getEngines().values().iterator();
+		while (lIt.hasNext()) {
+			WebSocketConnector lConnector = lIt.next().getConnectorById(aConnectorId);
+
+			if (null != lConnector) {
+				sendToken(lConnector, aToken);
+				return;
+			}
+		}
+
+		mLog.warn("Target connector '" + aConnectorId + "' was not found.");
+	}
+
 	/**
 	 *
 	 * @param aEngineId
@@ -606,7 +620,7 @@ public class TokenServer extends BaseServer {
 						+ "' does not support tokens.");
 			}
 		} else {
-			mLog.warn("Target connector '" + aConnectorId + "' not found.");
+			mLog.warn("Target connector '" + aConnectorId + "' was not found.");
 		}
 	}
 
