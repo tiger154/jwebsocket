@@ -96,7 +96,7 @@ public class JMSConnector extends BaseConnector {
 
 	@Override
 	public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
-		throw new UnsupportedOperationException("Not supported operation on JMS connectors!");
+		throw new UnsupportedOperationException("Not supported operation on JMS connectors!"); 
 	}
 
 	@Override
