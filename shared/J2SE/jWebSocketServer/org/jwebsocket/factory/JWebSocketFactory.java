@@ -228,12 +228,12 @@ public class JWebSocketFactory {
 				mLog.debug("Initializing servers...");
 			}
 			mServers = lInitializer.initializeServers();
-			Map<String, List<WebSocketPlugIn>> lPluginMap =
-					lInitializer.initializePlugins();
-
+			
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Initializing plugins...");
 			}
+			Map<String, List<WebSocketPlugIn>> lPluginMap =
+					lInitializer.initializePlugins();
 
 			for (WebSocketServer lServer : mServers) {
 				for (WebSocketEngine lEngine : mEngines.values()) {

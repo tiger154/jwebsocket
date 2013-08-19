@@ -24,6 +24,7 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.ISessionManager;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
@@ -336,6 +337,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		while (lServers.hasNext()) {
 			lServers.next().sessionStopped(aSession);
 		}
+	}
+
+	public ISessionManager getSessionManager() {
+		return mSessionManager;
 	}
 
 	@Override
