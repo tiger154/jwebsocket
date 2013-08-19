@@ -672,7 +672,6 @@ public class BaseConnector implements WebSocketConnector {
 	public String getSessionUID() {
 		if (getSession().getStorage().containsKey(SESSION_UID)) {
 			return getSession().getStorage().get(SESSION_UID).toString();
-
 		} else {
 			String lUUID = UUID.randomUUID().toString();
 			getSession().getStorage().put(SESSION_UID, lUUID);

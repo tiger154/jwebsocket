@@ -26,9 +26,9 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 
 /**
- * Provides the basic implementation of the jWebSocket engines. The {@code BaseEngine} is supposed
- * to be used as ancestor for the engine implementations like e.g. the {@code TCPEngine} or the
- * {@code NettyEngine}.
+ * Provides the basic implementation of the jWebSocket engines. The
+ * {@code BaseEngine} is supposed to be used as ancestor for the engine
+ * implementations like e.g. the {@code TCPEngine} or the {@code NettyEngine}.
  *
  * @author aschulze
  */
@@ -59,6 +59,11 @@ public abstract class BaseEngine implements WebSocketEngine {
 		// this method will be overridden by engine implementations.
 		// The implementation will notify server that the engine has started
 		// Don't do this here: engineStarted();
+	}
+
+	@Override
+	public WebSocketConnector getConnectorById(String aConnectorId) {
+		return getConnectors().get(aConnectorId);
 	}
 
 	@Override

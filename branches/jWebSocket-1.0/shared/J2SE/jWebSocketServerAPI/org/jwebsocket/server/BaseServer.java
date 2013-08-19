@@ -475,7 +475,7 @@ public class BaseServer implements WebSocketServer {
 	public WebSocketConnector getConnector(String aEngine, String aId) {
 		WebSocketEngine lEngine = mEngines.get(aEngine);
 		if (lEngine != null) {
-			return lEngine.getConnectors().get(aId);
+			return lEngine.getConnectorById(aId);
 		}
 		return null;
 	}

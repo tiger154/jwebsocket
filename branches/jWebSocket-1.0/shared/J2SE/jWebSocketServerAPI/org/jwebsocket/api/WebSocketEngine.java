@@ -38,8 +38,8 @@ public interface WebSocketEngine extends ISystemLifecycle {
 
 	/**
 	 * Returns the unique id of the engine. Because the jWebSocket model
-	 * supports multiple engines as a kind of drivers for the servers on top
-	 * of it each engine has its own Id so that it can be addressed properly.
+	 * supports multiple engines as a kind of drivers for the servers on top of
+	 * it each engine has its own Id so that it can be addressed properly.
 	 *
 	 * @return String
 	 */
@@ -65,16 +65,16 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	void stopEngine(CloseReason aCloseReason) throws WebSocketException;
 
 	/**
-	 * Is called after the web socket engine has been started sucessfully.
-	 * Here usually the engine notifies the server(s) above that the engine
-	 * is started.
+	 * Is called after the web socket engine has been started sucessfully. Here
+	 * usually the engine notifies the server(s) above that the engine is
+	 * started.
 	 */
 	void engineStarted();
 
 	/**
 	 * Is called after the web socket engine has (been) stopped sucessfully.
-	 * Here usually the engine notifies the server(s) above that the engine
-	 * has stopped.
+	 * Here usually the engine notifies the server(s) above that the engine has
+	 * stopped.
 	 */
 	public void engineStopped();
 
@@ -96,9 +96,9 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason);
 
 	/**
-	 * Returns the Map of clients connected to this engine. Please consider
-	 * that a server can support multiple engines. This method only returns
-	 * the clients of this engine.
+	 * Returns the Map of clients connected to this engine. Please consider that
+	 * a server can support multiple engines. This method only returns the
+	 * clients of this engine.
 	 *
 	 * @return the connector clients
 	 */
@@ -109,9 +109,18 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	 * {@code null} if there's no client connector to the port passed.
 	 *
 	 * @param aRemotePort the remote TCP port searched for.
-	 * @return WebSocketConnector that matches the given remote port or {@code null} if no connector matches the remote port.
+	 * @return WebSocketConnector that matches the given remote port or
+	 * {@code null} if no connector matches the remote port.
 	 */
 	WebSocketConnector getConnectorByRemotePort(int aRemotePort);
+
+	/**
+	 * Returns the TCP connector identified by its id
+	 *
+	 * @param aConnectorId the target connector id
+	 * @return WebSocketConnector that matches the given connector id.
+	 */
+	WebSocketConnector getConnectorById(String aConnectorId);
 
 	/**
 	 * Returns {@code true} if the engine is running or {@code false} otherwise.
@@ -151,8 +160,8 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	void broadcastPacket(WebSocketConnector aSource, WebSocketPacket aDataPacket);
 
 	/**
-	 * Adds a certain connector to the engine. This usually has not to be
-	 * done by the application but by the engine implementations only.
+	 * Adds a certain connector to the engine. This usually has not to be done
+	 * by the application but by the engine implementations only.
 	 *
 	 * @param aConnector
 	 */
@@ -176,9 +185,9 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	Map<String, WebSocketServer> getServers();
 
 	/**
-	 * Registers a server at the engine so that the engine is able to notify
-	 * the server in case of new connections and incoming data packets from
-	 * a connector. This method is not supposed to be called directly from the
+	 * Registers a server at the engine so that the engine is able to notify the
+	 * server in case of new connections and incoming data packets from a
+	 * connector. This method is not supposed to be called directly from the
 	 * application.
 	 *
 	 * @param aServer
@@ -186,9 +195,9 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	void addServer(WebSocketServer aServer);
 
 	/**
-	 * Unregisters a server from the engine so that the engine won't notify
-	 * the server in case of new connections or incoming data packets from
-	 * a connector. This method is not supposed to be called directly from the
+	 * Unregisters a server from the engine so that the engine won't notify the
+	 * server in case of new connections or incoming data packets from a
+	 * connector. This method is not supposed to be called directly from the
 	 * application.
 	 *
 	 * @param aServer
@@ -196,46 +205,45 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	void removeServer(WebSocketServer aServer);
 
 	/**
-	 * This method might be removed in future, instead use <tt>getConfiguration()</tt>
-	 * to get the engine configuration.
+	 * This method might be removed in future, instead use
+	 * <tt>getConfiguration()</tt> to get the engine configuration.
 	 *
 	 * Returns the default session timeout for this engine. The session timeout
 	 * is applied if no specific session timeout per connector is passed.
 	 * Basically each connector can optionally use his own session timeout.
 	 *
 	 * @return int The default session timeout in milliseconds.
-	 * 
-	 * @deprecated 
+	 *
+	 * @deprecated
 	 */
 	@Deprecated
 	int getSessionTimeout();
 
 	/**
-	 * This method might be removed in future, instead use <tt>getConfiguration()</tt>
-	 * to get the engine configuration.
+	 * This method might be removed in future, instead use
+	 * <tt>getConfiguration()</tt> to get the engine configuration.
 	 *
-	 * Sets the default session timeout for this engine. The session timeout
-	 * is applied if no specific session timeout per connector is passed.
-	 * Basically each connector can optionally use his own session timeout.
+	 * Sets the default session timeout for this engine. The session timeout is
+	 * applied if no specific session timeout per connector is passed. Basically
+	 * each connector can optionally use his own session timeout.
 	 *
 	 * @param aSessionTimeout The default session timeout in milliseconds.
-	 * 
-	 * @deprecated 
+	 *
+	 * @deprecated
 	 */
 	@Deprecated
 	void setSessionTimeout(int aSessionTimeout);
 
 	/**
-	 * This method might be removed in future, instead use <tt>getConfiguration()</tt>
-	 * to get the engine configuration.
+	 * This method might be removed in future, instead use
+	 * <tt>getConfiguration()</tt> to get the engine configuration.
 	 *
-	 * Returns the maximum frame size in bytes, If the client
-	 * sends a frame size larger than this maximum value, the socket connection
-	 * will be closed.
+	 * Returns the maximum frame size in bytes, If the client sends a frame size
+	 * larger than this maximum value, the socket connection will be closed.
 	 *
 	 * @return the max frame size value
-	 * 
-	 * @deprecated 
+	 *
+	 * @deprecated
 	 */
 	@Deprecated
 	int getMaxFrameSize();
@@ -247,12 +255,13 @@ public interface WebSocketEngine extends ISystemLifecycle {
 
 	/**
 	 * Returns the configuration for the engine.
+	 *
 	 * @return the engine configuration object
 	 */
 	EngineConfiguration getConfiguration();
-	
+
 	/**
-	 * 
+	 *
 	 * @return The maximun number of connections allowed by this engine
 	 */
 	Integer getMaxConnections();
