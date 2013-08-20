@@ -1,0 +1,90 @@
+#demo_box{
+	width: 718px;
+}
+
+.description_box{
+    float: left;
+    width: 75%;
+}
+
+.description_box p{
+    margin-left: 3px;
+}
+
+#message_box{
+	background: #E4E4E4;
+	width: 23%;
+	border: 1px solid #C8C8C8;
+	float: right;
+	margin-top: 20px;
+}
+
+.buttons{
+	margin: auto;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	width: 135px;
+	height: 55px;
+	font-size: 11px;
+}
+
+.buttons .button .btn_center{
+	width: 100px;
+}
+
+#filelist{
+	height: 100px;
+	max-height: 160px;
+	background: #e4e4e4;
+	border: 1px solid #c8c8c8;
+	border-top: none;
+	border-bottom: none;
+	overflow: auto;
+	float: left;
+	width: 100%;
+	border-radius: 6px 6px 0px 0px;
+	-webkit-border-radius: 6px 6px 0px 0px;
+	-moz-border-radius: 6px 6px 0px 0px;
+}
+
+#filelist table{
+	background: #FFFFFF;
+	font-family: "Verdana";
+	font-size: 12px;
+	width: 100%;
+}
+
+#filelist table thead tr{
+	background: #82abd7;
+	padding: 5px;
+	height: 20px;
+	color: white;
+    font-family: "Verdana";
+    font-size: 11px;
+    font-weight: bold;
+
+}
+#filelist table tr td{
+	padding-left: 5px;
+	height: 20px;
+	border-left: 1px solid #e4e4e4;
+	font-size: 8pt !important;
+}
+#filelist table thead tr td.first{
+	border-radius: 6px 0 0px 0px;
+	-webkit-border-radius: 6px 0 0px 0px;
+	-moz-border-radius: 6px 0 0px 0px;
+}
+#filelist table thead tr td.last{
+	border-radius: 0 6px 0px 0px;
+	-webkit-border-radius: 0 6px 0px 0px;
+	-moz-border-radius: 0 6px 0px 0px;
+}
+
+#filelist table thead tr:hover{
+	background: #82abd7 !important;
+}
+
+#filelist tr:hover{
+	background: #baccff;
+}
