@@ -4,9 +4,11 @@
  */
 package org.jwebsocket.jms.api;
 
+import java.util.Map;
 import javax.jms.MessageProducer;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.jms.JMSConnector;
 import org.jwebsocket.jms.JMSEngine;
 
 /**
@@ -15,17 +17,19 @@ import org.jwebsocket.jms.JMSEngine;
  */
 public interface IConnectorsManager extends IInitializable {
 
-	WebSocketConnector addConnector(String aSessionId, String aIpAddress, String aReplyDestination) throws Exception;
+	JMSConnector addConnector(String aSessionId, String aIpAddress, String aReplyDest) throws Exception;
 
 	boolean sessionExists(String aSessionId) throws Exception;
 
-	WebSocketConnector getConnector(String aSessionId) throws Exception;
+	JMSConnector getConnector(String aSessionId) throws Exception;
 
 	void removeConnector(String aSessionId) throws Exception;
 
 	void setReplyProducer(MessageProducer aReplyProducer);
 	
 	void setEngine(JMSEngine aEngine);
+	
+	Map<String, WebSocketConnector> getConnectors() throws Exception;
 			
 	/**
 	 * Sets a connector status. 0 == online, 1 = offline

@@ -20,17 +20,16 @@ package org.jwebsocket.jms.mongodb;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import javax.jms.MessageProducer;
-import org.jwebsocket.api.ISessionManager;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.activemq.command.ActiveMQTempQueue;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.jms.Attributes;
+import org.jwebsocket.jms.BaseConnectorsManager;
 import org.jwebsocket.jms.ConnectorStatus;
 import org.jwebsocket.jms.JMSConnector;
-import org.jwebsocket.jms.JMSEngine;
-import org.jwebsocket.jms.api.IConnectorsManager;
-import org.jwebsocket.plugins.system.SystemPlugIn;
 import org.springframework.util.Assert;
 
 /**
@@ -38,40 +37,27 @@ import org.springframework.util.Assert;
  *
  * @author kyberneees
  */
-public class MongoDBConnectorsManager implements IConnectorsManager {
+public class MongoDBConnectorsManager extends BaseConnectorsManager {
 
 	private DBCollection mCollection;
-	private ISessionManager mSessionManager;
-	private MessageProducer mReplyProducer;
-	private JMSEngine mEngine;
 
 	public MongoDBConnectorsManager() {
 	}
 
 	@Override
-	public void setReplyProducer(MessageProducer aReplyProducer) {
-		mReplyProducer = aReplyProducer;
-	}
-
-	@Override
-	public void setEngine(JMSEngine aEngine) {
-		mEngine = aEngine;
-	}
-
-	@Override
-	public WebSocketConnector addConnector(String aSessionId, String aIpAddress, String aReplyDestination) throws Exception {
+	public JMSConnector addConnector(String aSessionId, String aIpAddress, String aReplyDest) throws Exception {
 		if (!sessionExists(aSessionId)) {
 			mCollection.save(new BasicDBObject()
 					.append(Attributes.IP_ADDRESS, aIpAddress)
 					.append(Attributes.SESSION_ID, aSessionId)
-					.append(Attributes.REPLY_DESTINATION, aReplyDestination)
+					.append(Attributes.REPLY_DESTINATION, aReplyDest)
 					.append(Attributes.STATUS, ConnectorStatus.ONLINE));
 		} else {
 			mCollection.update(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId),
 					new BasicDBObject()
 					.append("$set", new BasicDBObject()
-					.append(Attributes.STATUS, ConnectorStatus.ONLINE)
-					.append(Attributes.REPLY_DESTINATION, aReplyDestination)));
+					.append(Attributes.REPLY_DESTINATION, aReplyDest)
+					.append(Attributes.STATUS, ConnectorStatus.ONLINE)));
 		}
 		return getConnector(aSessionId);
 	}
@@ -83,28 +69,38 @@ public class MongoDBConnectorsManager implements IConnectorsManager {
 				.append(Attributes.SESSION_ID, aSessionId));
 	}
 
-	@Override
-	public WebSocketConnector getConnector(String aSessionId) throws Exception {
-		if (sessionExists(aSessionId)) {
-			return null;
-		}
+	private JMSConnector toConnector(DBObject aRecord) throws Exception {
+		String lSessionId = (String) aRecord.get(Attributes.SESSION_ID);
 
-		DBObject lRecord = mCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId));
-		JMSConnector lConnector = new JMSConnector(mEngine, mReplyProducer,
-				(String) lRecord.get(Attributes.REPLY_DESTINATION),
-				(String) lRecord.get(Attributes.IP_ADDRESS),
-				(String) lRecord.get(Attributes.SESSION_ID));
+		JMSConnector lConnector = new JMSConnector(getEngine(), getReplyProducer(),
+				(String) aRecord.get(Attributes.IP_ADDRESS),
+				(String) aRecord.get(Attributes.SESSION_ID),
+				new ActiveMQTempQueue(
+				(String) aRecord.get(Attributes.REPLY_DESTINATION)));
 
-		lConnector.getSession().setSessionId(aSessionId);
-		lConnector.getSession().setStorage(mSessionManager.getSession(aSessionId));
+		lConnector.getSession().setSessionId(lSessionId);
+		lConnector.getSession().setStorage(getSessionManager().getSession(lSessionId));
 
 		return lConnector;
 	}
 
 	@Override
+	public JMSConnector getConnector(String aSessionId) throws Exception {
+		if (!sessionExists(aSessionId)) {
+			return null;
+		}
+
+		// getting the connector entry on database
+		DBObject lRecord = mCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId));
+
+		// creating connector from database entry
+		return toConnector(lRecord);
+	}
+
+	@Override
 	public void removeConnector(String aSessionId) throws Exception {
 		mCollection.remove(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId));
-		mSessionManager.getSession(aSessionId).clear();
+		getSessionManager().getSession(aSessionId).clear();
 	}
 
 	public void setCollection(DBCollection aCollection) {
@@ -125,21 +121,23 @@ public class MongoDBConnectorsManager implements IConnectorsManager {
 	}
 
 	@Override
-	public void initialize() throws Exception {
-		SystemPlugIn lPlugIn = (SystemPlugIn) JWebSocketFactory.getTokenServer()
-				.getPlugInById("jws.system");
-		mSessionManager = lPlugIn.getSessionManager();
+	public Map<String, WebSocketConnector> getConnectors() throws Exception {
+		DBCursor lCursor = mCollection.find(new BasicDBObject().append(Attributes.STATUS, ConnectorStatus.ONLINE));
 
-		Assert.notNull(mSessionManager, "The system plug-in 'sessionManager' is not properly configured!");
-		Assert.notNull(mEngine, "The 'engine' reference cannot be null!");
-		Assert.notNull(mReplyProducer, "The 'reply-producer' reference cannot be null!");
+		Map<String, WebSocketConnector> lConnectors = new HashMap<String, WebSocketConnector>();
+		while (lCursor.hasNext()) {
+			WebSocketConnector lConnector = toConnector(lCursor.next());
+			lConnectors.put(lConnector.getId(), lConnector);
+		}
 
-		mCollection.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1),
-				new BasicDBObject().append("unique", true));
+		return lConnectors;
 	}
 
 	@Override
-	public void shutdown() throws Exception {
-		mReplyProducer.close();
+	public void initialize() throws Exception {
+		super.initialize();
+
+		mCollection.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1),
+				new BasicDBObject().append("unique", true));
 	}
 }

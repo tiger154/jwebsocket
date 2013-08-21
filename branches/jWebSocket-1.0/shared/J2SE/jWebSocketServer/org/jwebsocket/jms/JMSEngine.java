@@ -18,11 +18,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms;
 
+import java.util.Map;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Session;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
+import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.jms.api.IConnectorsManager;
@@ -74,6 +76,35 @@ public class JMSEngine extends BaseEngine {
 		return mSession;
 	}
 
+	@Override
+	public void addConnector(WebSocketConnector aConnector) {
+		super.addConnector(aConnector);
+		// @TODO: Keeping connectors in memory will fail on the JWebSocket distributed cluster
+		// We need to introduce a new JMS client here.
+		//throw new UnsupportedOperationException("Not supported operation on JMS Engine!");
+	}
+
+	@Override
+	public Map<String, WebSocketConnector> getConnectors() {
+		// temporal patch to support InternalClient instances
+		Map<String, WebSocketConnector> lConnectors = super.getConnectors();
+		try {
+			lConnectors.putAll(mConnectorsManager.getConnectors());
+			return lConnectors;
+		} catch (Exception lEx) {
+			throw new RuntimeException(lEx);
+		}
+	}
+
+	@Override
+	public WebSocketConnector getConnectorById(String aConnectorId) {
+		try {
+			return mConnectorsManager.getConnector(aConnectorId);
+		} catch (Exception lEx) {
+			throw new RuntimeException(lEx);
+		}
+	}
+
 	public IConnectorsManager getConnectorsManager() {
 		return mConnectorsManager;
 	}
@@ -100,8 +131,6 @@ public class JMSEngine extends BaseEngine {
 			// producer will take the destination on send operation
 			// @see: http://activemq.apache.org/how-should-i-implement-request-response-with-jms.html
 			mConnectorsManager.setReplyProducer(mSession.createProducer(null));
-			mConnectorsManager.initialize();
-
 			// creating message listener
 			mMessageListener = new JMSMessageListener(this);
 			mMessageListener.initialize();
@@ -111,6 +140,7 @@ public class JMSEngine extends BaseEngine {
 					(INodesManager) mBeanFactory.getBean("nodesManager"));
 			mLB.initialize();
 		} catch (Exception lEx) {
+			lEx.printStackTrace();
 			throw new WebSocketException(lEx);
 		}
 
@@ -118,6 +148,14 @@ public class JMSEngine extends BaseEngine {
 			mLog.info("JmsEngine successfully started! Listenning on topic: '"
 					+ mDestination + "'...");
 		}
+	}
+
+	@Override
+	public void systemStarted() throws Exception {
+		super.systemStarted();
+
+		// initializing connectors manager
+		mConnectorsManager.initialize();
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package org.jwebsocket.jms;
 
+import java.net.Inet4Address;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
@@ -10,7 +11,6 @@ import javax.jms.TextMessage;
 import javax.jms.Topic;
 import org.apache.activemq.advisory.AdvisorySupport;
 import org.apache.activemq.command.ActiveMQMessage;
-import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.command.ConsumerId;
 import org.apache.activemq.command.DataStructure;
@@ -63,7 +63,11 @@ public class JMSLoadBalancer implements IInitializable {
 			@Override
 			public void onMessage(Message aMessage) {
 				try {
-					ActiveMQTextMessage lMessage = (ActiveMQTextMessage) aMessage;
+					if (mLog.isDebugEnabled()) {
+						mLog.info("Processing client message...");
+					}
+
+					ActiveMQMessage lMessage = (ActiveMQMessage) aMessage;
 					MessageType lType = MessageType.valueOf(aMessage.getStringProperty(Attributes.MESSAGE_TYPE));
 					String lSessionId = String.valueOf(lMessage.getProducerId().getSessionId());
 					// prefixing the session id to avoid conflicts if the session id is re-used 
@@ -71,6 +75,9 @@ public class JMSLoadBalancer implements IInitializable {
 
 					// getting optimum node id
 					String lNodeId = mNodesManager.getOptimumNode();
+					if (mLog.isDebugEnabled()) {
+						mLog.info("Node '" + lNodeId + "' selected as optimum from (" + mNodesManager.count() + ") nodes...");
+					}
 
 					if (null == lNodeId) {
 						return;
@@ -78,6 +85,9 @@ public class JMSLoadBalancer implements IInitializable {
 
 					switch (lType) {
 						case CONNECTION: {
+							if (mLog.isDebugEnabled()) {
+								mLog.info("Processing message(CONNECTION) from client...");
+							}
 							// payload
 							Message lRequest = mSession.createMessage();
 							// type
@@ -94,9 +104,13 @@ public class JMSLoadBalancer implements IInitializable {
 							mNodesMessagesProducer.send(lRequest);
 
 							mNodesManager.increaseRequests(lNodeId);
+							break;
 						}
 						case MESSAGE: {
-							TextMessage lRequest = mSession.createTextMessage(lMessage.getText());
+							if (mLog.isDebugEnabled()) {
+								mLog.info("Processing message(MESSAGE) from client...");
+							}
+							TextMessage lRequest = mSession.createTextMessage(lMessage.getStringProperty(Attributes.DATA));
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
 							lRequest.setStringProperty(Attributes.SESSION_ID, lSessionId);
 
@@ -105,8 +119,12 @@ public class JMSLoadBalancer implements IInitializable {
 							mNodesMessagesProducer.send(lRequest);
 
 							mNodesManager.increaseRequests(lNodeId);
+							break;
 						}
 						case DISCONNECTION: {
+							if (mLog.isDebugEnabled()) {
+								mLog.info("Processing message(DISCONNECTION) from client...");
+							}
 							Message lRequest = mSession.createMessage();
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
 							lRequest.setStringProperty(Attributes.SESSION_ID, lSessionId);
@@ -116,6 +134,7 @@ public class JMSLoadBalancer implements IInitializable {
 							mNodesMessagesProducer.send(lRequest);
 
 							mNodesManager.increaseRequests(lNodeId);
+							break;
 						}
 					}
 				} catch (Exception ex) {
@@ -196,9 +215,11 @@ public class JMSLoadBalancer implements IInitializable {
 						if (lDS instanceof ConsumerId) {
 							// getting the session id
 							String lSessionId = String.valueOf(((ConsumerId) lDS).getSessionId());
-
 							// setting the node status to offline
-							mNodesManager.setStatus(mNodesManager.getNodeId(lSessionId), NodeStatus.OFFLINE);
+							String lNodeId = mNodesManager.getNodeId(lSessionId);
+							if (null != lNodeId) {
+								mNodesManager.setStatus(lNodeId, NodeStatus.OFFLINE);
+							}
 						}
 					}
 				} catch (Exception ex) {
@@ -210,6 +231,16 @@ public class JMSLoadBalancer implements IInitializable {
 		if (mLog.isDebugEnabled()) {
 			mLog.info("Load balancer successfully initialized!");
 		}
+
+
+		String lNodeSessionId = mSession.toString();
+		int lEnd = lNodeSessionId.indexOf(',');
+		lNodeSessionId = lNodeSessionId.substring(20, lEnd);
+
+		// registering node
+		mNodesManager.register(lNodeSessionId, mNodeId, mNodesManager.getNodeDescription(),
+				Inet4Address.getLocalHost().getHostAddress(),
+				Tools.getCpuUsage());
 	}
 
 	@Override

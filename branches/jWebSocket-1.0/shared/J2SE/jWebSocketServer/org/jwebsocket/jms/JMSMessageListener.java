@@ -23,8 +23,8 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
+import org.apache.activemq.command.ActiveMQDestination;
 import org.jwebsocket.api.IInitializable;
-import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.jms.api.IConnectorsManager;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
@@ -59,18 +59,19 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					lConnManager.addConnector(
 							lSessionId,
 							aMessage.getStringProperty(Attributes.IP_ADDRESS),
-							aMessage.getJMSReplyTo().toString());
+							((ActiveMQDestination) aMessage.getJMSReplyTo()).getPhysicalName());
 
 					// getting the connector instance
-					WebSocketConnector lConnector = lConnManager.getConnector(lSessionId);
+					JMSConnector lConnector = lConnManager.getConnector(lSessionId);
 					// start connector
 					lConnector.startConnector();
+					break;
 				}
 				case MESSAGE: {
 					String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
 					if (lConnManager.sessionExists(lSessionId)) {
 						// getting the connector
-						WebSocketConnector lConnector = lConnManager.getConnector(lSessionId);
+						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
 						// getting the packet content
 						TextMessage lMessage = (TextMessage) aMessage;
 						// notifying process packet
@@ -78,18 +79,20 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					} else {
 						// message is discarded, client does not exists
 					}
+					break;
 				}
 				case DISCONNECTION: {
 					String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
 					if (lConnManager.sessionExists(lSessionId)) {
 						// getting the connector
-						WebSocketConnector lConnector = lConnManager.getConnector(lSessionId);
+						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
 						// stopping the connector
 						lConnector.stopConnector(CloseReason.CLIENT);
 
 						// setting status to offline
 						lConnManager.setStatus(lSessionId, ConnectorStatus.OFFLINE);
 					}
+					break;
 				}
 				case SESSION_STOPPED: {
 					String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
@@ -100,6 +103,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 						// removing from index and destroying session
 						lConnManager.removeConnector(lSessionId);
 					}
+					break;
 				}
 			}
 		} catch (Exception lEx) {
@@ -112,7 +116,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 
 		// creating message consumer
 		mConsumer = mEngine.getSession().createConsumer(lEngineTopic,
-				"NODE=='" + mEngine.getNodeId() + "'");
+				Attributes.NODE + " = '" + mEngine.getNodeId() + "'");
 
 		// registering listener
 		final MessageListener lListener = this;

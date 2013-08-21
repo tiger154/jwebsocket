@@ -19,9 +19,9 @@
 package org.jwebsocket.jms;
 
 import java.net.InetAddress;
+import javax.jms.Destination;
 import javax.jms.MessageProducer;
 import javax.jms.TextMessage;
-import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IPacketDeliveryListener;
@@ -42,7 +42,7 @@ public class JMSConnector extends BaseConnector {
 	private final String mSessionId;
 	private final String mRemoteHost;
 	private final MessageProducer mReplyProducer;
-	private final String mReplyDestination;
+	private final Destination mReplyDestination;
 	private Logger mLog = Logging.getLogger();
 
 	/**
@@ -52,8 +52,8 @@ public class JMSConnector extends BaseConnector {
 	 * @param aRemoteHost
 	 * @param aSessionId
 	 */
-	public JMSConnector(WebSocketEngine aEngine, MessageProducer aReplyProducer, String aReplyDestination,
-			String aRemoteHost, String aSessionId) {
+	public JMSConnector(WebSocketEngine aEngine, MessageProducer aReplyProducer,
+			String aRemoteHost, String aSessionId, Destination aReplyDest) {
 		super(aEngine);
 
 		RequestHeader lHeader = new RequestHeader();
@@ -63,7 +63,7 @@ public class JMSConnector extends BaseConnector {
 		mReplyProducer = aReplyProducer;
 		mRemoteHost = aRemoteHost;
 		mSessionId = aSessionId;
-		mReplyDestination = aReplyDestination;
+		mReplyDestination = aReplyDest;
 	}
 
 	@Override
@@ -86,9 +86,7 @@ public class JMSConnector extends BaseConnector {
 			TextMessage lMessage = new ActiveMQTextMessage();
 			lMessage.setText(aDataPacket.getString());
 
-			mReplyProducer.send(ActiveMQDestination.createDestination(mReplyDestination,
-					ActiveMQDestination.TEMP_QUEUE_TYPE),
-					lMessage);
+			mReplyProducer.send(mReplyDestination, lMessage);
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "sending packet to '" + getId() + "' connector"));
 		}
@@ -96,7 +94,7 @@ public class JMSConnector extends BaseConnector {
 
 	@Override
 	public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
-		throw new UnsupportedOperationException("Not supported operation on JMS connectors!"); 
+		throw new UnsupportedOperationException("Not supported operation on JMS connectors!");
 	}
 
 	@Override
