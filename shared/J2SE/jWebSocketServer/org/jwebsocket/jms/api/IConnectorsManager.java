@@ -26,15 +26,23 @@ public interface IConnectorsManager extends IInitializable {
 	void removeConnector(String aSessionId) throws Exception;
 
 	void setReplyProducer(MessageProducer aReplyProducer);
-	
+
 	void setEngine(JMSEngine aEngine);
-	
+
 	Map<String, WebSocketConnector> getConnectors() throws Exception;
-			
+
 	/**
 	 * Sets a connector status. 0 == online, 1 = offline
 	 *
 	 * @param aStatus
 	 */
 	void setStatus(String aSessionId, int aStatus) throws Exception;
+
+	/**
+	 * Gets the client session id by its reply destination
+	 *
+	 * @param aReplyDest
+	 * @return
+	 */
+	public String getSessionByReplyDest(String aReplyDest);
 }

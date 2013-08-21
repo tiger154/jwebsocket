@@ -45,8 +45,20 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
+	public String getSessionByReplyDest(String aReplyDest) {
+		DBObject lRecord = mCollection.findOne(new BasicDBObject()
+				.append(Attributes.STATUS, ConnectorStatus.ONLINE)
+				.append(Attributes.REPLY_DESTINATION, aReplyDest));
+
+		if (null != lRecord) {
+			return (String) lRecord.get(Attributes.SESSION_ID);
+		}
+		return null;
+	}
+
+	@Override
 	public JMSConnector addConnector(String aSessionId, String aIpAddress, String aReplyDest) throws Exception {
-		if (!sessionExists(aSessionId)) {
+		if (null == mCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId))) {
 			mCollection.save(new BasicDBObject()
 					.append(Attributes.IP_ADDRESS, aIpAddress)
 					.append(Attributes.SESSION_ID, aSessionId)
@@ -79,7 +91,8 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 				(String) aRecord.get(Attributes.REPLY_DESTINATION)));
 
 		lConnector.getSession().setSessionId(lSessionId);
-		lConnector.getSession().setStorage(getSessionManager().getSession(lSessionId));
+		lConnector.getSession().setStorage(getSessionManager().getStorageProvider()
+				.getStorage(lSessionId));
 
 		return lConnector;
 	}

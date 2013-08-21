@@ -63,7 +63,6 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 
 					// getting the connector instance
 					JMSConnector lConnector = lConnManager.getConnector(lSessionId);
-					// start connector
 					lConnector.startConnector();
 					break;
 				}
@@ -82,15 +81,23 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					break;
 				}
 				case DISCONNECTION: {
-					String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
+					// supporting LB disconnection advisory support
+					String lReplyDest = aMessage.getStringProperty(Attributes.REPLY_DESTINATION);
+					String lSessionId;
+					if (null != lReplyDest) {
+						lSessionId = lConnManager.getSessionByReplyDest(lReplyDest);
+					} else {
+						lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
+					}
 					if (lConnManager.sessionExists(lSessionId)) {
 						// getting the connector
 						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
 						// stopping the connector
 						lConnector.stopConnector(CloseReason.CLIENT);
 
-						// setting status to offline
-						lConnManager.setStatus(lSessionId, ConnectorStatus.OFFLINE);
+						// removing connector from database
+						lConnManager.removeConnector(lSessionId);
+						
 					}
 					break;
 				}

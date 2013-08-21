@@ -1,6 +1,7 @@
 package org.jwebsocket.jms;
 
 import java.net.Inet4Address;
+import java.util.TimerTask;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
@@ -14,6 +15,7 @@ import org.apache.activemq.command.ActiveMQMessage;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.command.ConsumerId;
 import org.apache.activemq.command.DataStructure;
+import org.apache.activemq.command.DestinationInfo;
 import org.apache.activemq.command.RemoveInfo;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IInitializable;
@@ -69,7 +71,7 @@ public class JMSLoadBalancer implements IInitializable {
 
 					ActiveMQMessage lMessage = (ActiveMQMessage) aMessage;
 					MessageType lType = MessageType.valueOf(aMessage.getStringProperty(Attributes.MESSAGE_TYPE));
-					String lSessionId = String.valueOf(lMessage.getProducerId().getSessionId());
+					String lSessionId = String.valueOf(lMessage.getProducerId().getParentId());
 					// prefixing the session id to avoid conflicts if the session id is re-used 
 					lSessionId = Tools.getMD5(mDestination + lSessionId);
 
@@ -144,57 +146,37 @@ public class JMSLoadBalancer implements IInitializable {
 		});
 
 		// client connections listener 
-		ActiveMQTopic lAdvisoryClientsQueue = AdvisorySupport.getProducerAdvisoryTopic(lClientsQueue);
-		mClientsConnectionAdvisor = mSession.createConsumer(lAdvisoryClientsQueue);
+		// @note: the algorithm works because each client require to generate a unique
+		// reply destination per connection
+		mClientsConnectionAdvisor = mSession.createConsumer(mSession
+				.createTopic("ActiveMQ.Advisory.TempQueue"));
 		mClientsConnectionAdvisor.setMessageListener(new MessageListener() {
 			@Override
 			public void onMessage(Message aMessage) {
 				try {
 					ActiveMQMessage lMessage = (ActiveMQMessage) aMessage;
 					Object lDataStructure = lMessage.getDataStructure();
-					if (lDataStructure instanceof RemoveInfo) {
-						RemoveInfo lCommand = (RemoveInfo) lDataStructure;
-						DataStructure lDS = lCommand.getObjectId();
 
-						// getting optimum node id
+					if (lDataStructure instanceof DestinationInfo) {
 						String lNodeId = mNodesManager.getOptimumNode();
 
-						if (lCommand.isProducerRemove()) {
-							if (lDS instanceof ConsumerId) {
-								// getting the session id
-								String lSessionId = String.valueOf(((ConsumerId) lDS).getSessionId());
-								lSessionId = Tools.getMD5(mDestination + lSessionId);
+						DestinationInfo lCommand = (DestinationInfo) lDataStructure;
+						if (DestinationInfo.REMOVE_OPERATION_TYPE == lCommand.getOperationType()) {
+							// getting the session id
+							String lReplyDest = lCommand.getDestination().getPhysicalName();
+							Message lRequest = mSession.createMessage();
+							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.DISCONNECTION.name());
+							lRequest.setStringProperty(Attributes.REPLY_DESTINATION, lReplyDest);
 
-								Message lRequest = mSession.createMessage();
-								lRequest.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.DISCONNECTION.name());
-								lRequest.setStringProperty(Attributes.SESSION_ID, lSessionId);
+							// redirecting message to optimum node
+							lRequest.setStringProperty(Attributes.NODE, lNodeId);
+							mNodesMessagesProducer.send(lRequest);
 
-								// redirecting message to optimum node
-								lRequest.setStringProperty(Attributes.NODE, lNodeId);
-								mNodesMessagesProducer.send(lRequest);
-
-								mNodesManager.increaseRequests(lNodeId);
-							}
-						} else if (lCommand.isSessionRemove()) {
-							if (lDS instanceof ConsumerId) {
-								// getting the session id
-								String lSessionId = String.valueOf(((ConsumerId) lDS).getSessionId());
-								lSessionId = Tools.getMD5(mDestination + lSessionId);
-
-								Message lRequest = mSession.createMessage();
-								lRequest.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.SESSION_STOPPED.name());
-								lRequest.setStringProperty(Attributes.SESSION_ID, lSessionId);
-
-								// redirecting message to optimum node
-								lRequest.setStringProperty(Attributes.NODE, lNodeId);
-								mNodesMessagesProducer.send(lRequest);
-
-								mNodesManager.increaseRequests(lNodeId);
-							}
+							mNodesManager.increaseRequests(lNodeId);
 						}
 					}
 				} catch (Exception ex) {
-					mLog.error(Logging.getSimpleExceptionMessage(ex, "processing client connection event"));
+					mLog.error(Logging.getSimpleExceptionMessage(ex, "processing client connection events"));
 				}
 			}
 		});
@@ -241,6 +223,24 @@ public class JMSLoadBalancer implements IInitializable {
 		mNodesManager.register(lNodeSessionId, mNodeId, mNodesManager.getNodeDescription(),
 				Inet4Address.getLocalHost().getHostAddress(),
 				Tools.getCpuUsage());
+
+		// registering node CPU usage updater
+		Tools.getTimer().scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				Tools.getThreadPool().submit(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							mNodesManager.updateCPU(mNodeId, Tools.getCpuUsage());
+						} catch (Exception lEx) {
+							mLog.error(Logging.getSimpleExceptionMessage(lEx,
+									"updating node '" + mNodeId + "' CPU usage"));
+						}
+					}
+				});
+			}
+		}, 0, 3000);
 	}
 
 	@Override
