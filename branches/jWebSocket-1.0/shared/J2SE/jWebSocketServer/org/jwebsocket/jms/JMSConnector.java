@@ -72,6 +72,11 @@ public class JMSConnector extends BaseConnector {
 	}
 
 	@Override
+	public boolean isLocal() {
+		return false;
+	}
+
+	@Override
 	public InetAddress getRemoteHost() {
 		try {
 			return InetAddress.getByName(mRemoteHost);
