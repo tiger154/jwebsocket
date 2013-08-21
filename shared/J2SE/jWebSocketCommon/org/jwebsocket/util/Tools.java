@@ -59,6 +59,8 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hyperic.sigar.CpuPerc;
+import org.hyperic.sigar.Sigar;
 import org.springframework.util.Assert;
 
 /**
@@ -147,6 +149,20 @@ public class Tools {
 			System.out.println("getMD5: " + ex.getMessage());
 		}
 		return null;
+	}
+
+	/**
+	 * Gets the global CPU usage percent
+	 *
+	 * @return
+	 * @throws Exception
+	 */
+	public static double getCpuUsage() throws Exception {
+		Sigar mSigar = new Sigar();
+		CpuPerc lCPU = mSigar.getCpuPerc();
+		double lIdle = lCPU.getIdle();
+
+		return 100 - (lIdle * 100);
 	}
 
 	/**
