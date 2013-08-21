@@ -12,4 +12,9 @@ public class Attributes {
 	public static final String NODE = "NODE";
 	public static final String REPLY_DESTINATION = "REPLY_TO";
 	public static final String STATUS = "STATUS";
+	public static final String DESCRIPTION = "DESCRIPTION";
+	public static final String CPU = "CPU";
+	public static final String REQUESTS = "REQUESTS";
+	public static final String DATA = "DATA";
+	
 }

@@ -575,6 +575,12 @@ public class TokenServer extends BaseServer {
 		return sendTokenData(aSource, aTarget, aToken, true);
 	}
 
+	/**
+	 * Sends a token to a connector
+	 *
+	 * @param aConnectorId The target connector id
+	 * @param aToken The token to be sent
+	 */
 	public void sendToken(String aConnectorId, Token aToken) {
 		Iterator<WebSocketEngine> lIt = getEngines().values().iterator();
 		while (lIt.hasNext()) {

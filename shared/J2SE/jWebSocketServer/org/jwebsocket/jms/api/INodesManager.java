@@ -34,10 +34,10 @@ public interface INodesManager extends IInitializable {
 	 * Sets the jWebSocket node status.
 	 *
 	 * @param aNodeId
-	 * @param aMode 0 = ready, 1 = paused (does not accept new requests), 2 =
+	 * @param aStatus 0 = ready, 1 = paused (does not accept new requests), 2 =
 	 * offline
 	 */
-	void setStatus(String aNodeId, int aMode) throws Exception;
+	void setStatus(String aNodeId, int aStatus) throws Exception;
 
 	/**
 	 * Gets the optimum node name.
@@ -54,11 +54,42 @@ public interface INodesManager extends IInitializable {
 	void increaseRequests(String aNodeId) throws Exception;
 
 	/**
-	 * Gets the node name by its session ID
+	 * Gets the node name by its session identifier
 	 *
-	 * @param aSessionID
+	 * @param aSessionId
 	 * @return
 	 * @throws Exception
 	 */
-	String getNodeId(String aSessionID) throws Exception;
+	String getNodeId(String aSessionId) throws Exception;
+
+	/**
+	 * Returns TRUE if exists a node that matches the given node id, FALSE
+	 * otherwise
+	 *
+	 * @param aNodeId
+	 * @return
+	 * @throws Exception
+	 */
+	boolean exists(String aNodeId) throws Exception;
+
+	/**
+	 * Sets the active node description
+	 *
+	 * @param aNodeDescription
+	 */
+	void setNodeDescription(String aNodeDescription);
+
+	/**
+	 * Gets the node description
+	 *
+	 * @return
+	 */
+	String getNodeDescription();
+
+	/**
+	 * Gets the available nodes number
+	 *
+	 * @return
+	 */
+	long count();
 }
