@@ -100,7 +100,7 @@ public class BaseConnector implements WebSocketConnector {
 	/**
 	 * Shared Variables container for this connector.
 	 */
-	private final Map<String, Object> mCustomVars = new FastMap<String, Object>();
+	protected Map<String, Object> mCustomVars = new FastMap<String, Object>();
 	private final Object mWriteLock = new Object();
 	private final Object mReadLock = new Object();
 	/**

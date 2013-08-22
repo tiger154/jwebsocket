@@ -192,7 +192,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 				// leaving port empty needs to be allowed eg. for Jetty
 				// when using underlying WebSocket Servlets
 				&& (mPort == null || (mPort >= 0 && mPort < 65536))
-				&& (mSSLPort == null
+				&& (mSSLPort == null 
 				|| (mSSLPort >= 0 && mSSLPort < 65536
 				&& mKeyStore != null && mKeyStore.length() > 0
 				&& mKeyStorePassword != null && mKeyStorePassword.length() > 0))
