@@ -112,7 +112,6 @@ public class InternalConnector extends BaseConnector {
 	@Override
 	public void stopConnector(final CloseReason aCloseReason) {
 		setStatus(WebSocketConnectorStatus.DOWN);
-		getEngine().removeConnector(this);
 
 		// notifying close event
 		Iterator<IInternalConnectorListener> lIt = mListeners.iterator();
