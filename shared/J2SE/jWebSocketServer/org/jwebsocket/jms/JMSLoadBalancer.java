@@ -240,7 +240,7 @@ public class JMSLoadBalancer implements IInitializable {
 					}
 				});
 			}
-		}, 0, 3000);
+		}, 1500, 1500);
 	}
 
 	@Override

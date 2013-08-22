@@ -19,16 +19,22 @@
 package org.jwebsocket.jms;
 
 import java.net.InetAddress;
+import java.util.Map;
 import javax.jms.Destination;
 import javax.jms.MessageProducer;
 import javax.jms.TextMessage;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IPacketDeliveryListener;
+import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.connectors.BaseConnector;
+import org.jwebsocket.kit.CloseReason;
+import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
+import org.jwebsocket.kit.WebSocketFrameType;
+import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 import org.jwebsocket.logging.Logging;
 
 /**
@@ -66,6 +72,10 @@ public class JMSConnector extends BaseConnector {
 		mReplyDestination = aReplyDest;
 	}
 
+	public void setCustomVarsContainer(Map<String, Object> aMap) {
+		mCustomVars = aMap;
+	}
+
 	@Override
 	public String getId() {
 		return mSessionId;
@@ -74,6 +84,17 @@ public class JMSConnector extends BaseConnector {
 	@Override
 	public boolean isLocal() {
 		return false;
+	}
+
+	@Override
+	public void stopConnector(CloseReason aCloseReason) {
+		setStatus(WebSocketConnectorStatus.DOWN);
+		
+		if (!aCloseReason.equals(CloseReason.CLIENT)) {
+			sendPacket(new RawPacket(WebSocketFrameType.CLOSE,
+					WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name())));
+		}
+		super.stopConnector(aCloseReason);
 	}
 
 	@Override

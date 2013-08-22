@@ -71,6 +71,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					if (lConnManager.sessionExists(lSessionId)) {
 						// getting the connector
 						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
+						lConnector.stopConnector(CloseReason.SERVER);
 						// getting the packet content
 						TextMessage lMessage = (TextMessage) aMessage;
 						// notifying process packet
@@ -94,10 +95,6 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
 						// stopping the connector
 						lConnector.stopConnector(CloseReason.CLIENT);
-
-						// removing connector from database
-						lConnManager.removeConnector(lSessionId);
-						
 					}
 					break;
 				}

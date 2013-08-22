@@ -25,6 +25,7 @@ import com.mongodb.DBObject;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.activemq.command.ActiveMQTempQueue;
+import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.jms.Attributes;
 import org.jwebsocket.jms.BaseConnectorsManager;
@@ -90,9 +91,13 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 				new ActiveMQTempQueue(
 				(String) aRecord.get(Attributes.REPLY_DESTINATION)));
 
+		// setting the session storage
+		IBasicStorage<String, Object> lSessionStorage = getSessionManager().getStorageProvider()
+				.getStorage(lSessionId);
 		lConnector.getSession().setSessionId(lSessionId);
-		lConnector.getSession().setStorage(getSessionManager().getStorageProvider()
-				.getStorage(lSessionId));
+		lConnector.getSession().setStorage(lSessionStorage);
+		// using the session storage as connector custom vars container
+		lConnector.setCustomVarsContainer(lSessionStorage);
 
 		return lConnector;
 	}

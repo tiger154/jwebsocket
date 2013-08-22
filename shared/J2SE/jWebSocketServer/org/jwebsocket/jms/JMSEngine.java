@@ -29,10 +29,13 @@ import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.jms.api.IConnectorsManager;
 import org.jwebsocket.jms.api.INodesManager;
+import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.Assert;
 
 /**
  *
@@ -55,7 +58,10 @@ public class JMSEngine extends BaseEngine {
 		super(aConfiguration);
 
 		// getting engine bean factory
-		JWebSocketBeanFactory.load(NS, JWebSocketConfig.getConfigFolder("JMSEngine/jms.xml"),
+		String lSpringConfig = (String) getConfiguration().getSettings().get("spring_config");
+		Assert.notNull(lSpringConfig, "Missing 'spring_config' configuration setting!");
+
+		JWebSocketBeanFactory.load(NS, Tools.expandEnvVarsAndProps(lSpringConfig),
 				getClass().getClassLoader());
 		mBeanFactory = JWebSocketBeanFactory.getInstance(NS);
 
@@ -77,14 +83,6 @@ public class JMSEngine extends BaseEngine {
 	}
 
 	@Override
-	public void addConnector(WebSocketConnector aConnector) {
-		super.addConnector(aConnector);
-		// @TODO: Keeping connectors in memory will fail on the JWebSocket distributed cluster
-		// We need to introduce a new JMS client here.
-		//throw new UnsupportedOperationException("Not supported operation on JMS Engine!");
-	}
-
-	@Override
 	public Map<String, WebSocketConnector> getConnectors() {
 		// temporal patch to support InternalClient instances
 		Map<String, WebSocketConnector> lConnectors = super.getConnectors();
@@ -94,6 +92,18 @@ public class JMSEngine extends BaseEngine {
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx);
 		}
+	}
+
+	@Override
+	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+		try {
+			// removing connector from database
+			mConnectorsManager.removeConnector(aConnector.getSession().getSessionId());
+		} catch (Exception lEx) {
+			mLog.error(Logging.getSimpleExceptionMessage(lEx, "removing connector data from database"));
+		}
+
+		super.connectorStopped(aConnector, aCloseReason);
 	}
 
 	@Override

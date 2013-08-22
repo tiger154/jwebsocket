@@ -24,7 +24,6 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.ISessionManager;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
 import org.jwebsocket.api.PluginConfiguration;
@@ -37,6 +36,7 @@ import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.connectors.BaseConnector;
+import org.jwebsocket.connectors.InternalConnector;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.filters.system.SystemFilter;
 import org.jwebsocket.kit.BroadcastOptions;
@@ -366,7 +366,9 @@ public class SystemPlugIn extends TokenPlugIn {
 		sendWelcome(aConnector);
 
 		// if new connector is active broadcast this event to then network
-		broadcastConnectEvent(aConnector);
+		if (false == aConnector instanceof InternalConnector) {
+			broadcastConnectEvent(aConnector);
+		}
 
 		// notify session started
 		WebSocketSession lSession = aConnector.getSession();
@@ -388,7 +390,9 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 
 		// notify other clients that client disconnected
-		broadcastDisconnectEvent(aConnector);
+		if (false == aConnector instanceof InternalConnector) {
+			broadcastDisconnectEvent(aConnector);
+		}
 	}
 
 	private String getGroup(WebSocketConnector aConnector) {
