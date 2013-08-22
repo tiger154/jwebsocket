@@ -150,7 +150,6 @@ public class JMSEngine extends BaseEngine {
 					(INodesManager) mBeanFactory.getBean("nodesManager"));
 			mLB.initialize();
 		} catch (Exception lEx) {
-			lEx.printStackTrace();
 			throw new WebSocketException(lEx);
 		}
 
