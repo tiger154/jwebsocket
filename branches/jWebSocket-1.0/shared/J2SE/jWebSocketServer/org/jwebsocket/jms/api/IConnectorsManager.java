@@ -4,8 +4,8 @@
  */
 package org.jwebsocket.jms.api;
 
+import java.util.List;
 import java.util.Map;
-import javax.jms.MessageProducer;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.jms.JMSConnector;
@@ -17,7 +17,7 @@ import org.jwebsocket.jms.JMSEngine;
  */
 public interface IConnectorsManager extends IInitializable {
 
-	JMSConnector addConnector(String aSessionId, String aIpAddress, String aReplyDest) throws Exception;
+	JMSConnector addConnector(String aSessionId, String aIpAddress, String aConnectionId) throws Exception;
 
 	boolean sessionExists(String aSessionId) throws Exception;
 
@@ -25,11 +25,11 @@ public interface IConnectorsManager extends IInitializable {
 
 	void removeConnector(String aSessionId) throws Exception;
 
-	void setReplyProducer(MessageProducer aReplyProducer);
-
 	void setEngine(JMSEngine aEngine);
 
 	Map<String, WebSocketConnector> getConnectors() throws Exception;
+
+	List<String> getSessionsByConnectionId(String aConnectionId) throws Exception;
 
 	/**
 	 * Sets a connector status. 0 == online, 1 = offline
@@ -37,12 +37,4 @@ public interface IConnectorsManager extends IInitializable {
 	 * @param aStatus
 	 */
 	void setStatus(String aSessionId, int aStatus) throws Exception;
-
-	/**
-	 * Gets the client session id by its reply destination
-	 *
-	 * @param aReplyDest
-	 * @return
-	 */
-	public String getSessionByReplyDest(String aReplyDest);
 }

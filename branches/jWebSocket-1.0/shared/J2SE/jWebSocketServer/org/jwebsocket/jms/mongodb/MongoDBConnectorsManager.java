@@ -23,8 +23,9 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import org.apache.activemq.command.ActiveMQTempQueue;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.jms.Attributes;
@@ -46,30 +47,18 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
-	public String getSessionByReplyDest(String aReplyDest) {
-		DBObject lRecord = mCollection.findOne(new BasicDBObject()
-				.append(Attributes.STATUS, ConnectorStatus.ONLINE)
-				.append(Attributes.REPLY_DESTINATION, aReplyDest));
-
-		if (null != lRecord) {
-			return (String) lRecord.get(Attributes.SESSION_ID);
-		}
-		return null;
-	}
-
-	@Override
-	public JMSConnector addConnector(String aSessionId, String aIpAddress, String aReplyDest) throws Exception {
+	public JMSConnector addConnector(String aSessionId, String aIpAddress, String aConnectionId) throws Exception {
 		if (null == mCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId))) {
 			mCollection.save(new BasicDBObject()
 					.append(Attributes.IP_ADDRESS, aIpAddress)
 					.append(Attributes.SESSION_ID, aSessionId)
-					.append(Attributes.REPLY_DESTINATION, aReplyDest)
+					.append(Attributes.CONNECTION_ID, aConnectionId)
 					.append(Attributes.STATUS, ConnectorStatus.ONLINE));
 		} else {
 			mCollection.update(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId),
 					new BasicDBObject()
 					.append("$set", new BasicDBObject()
-					.append(Attributes.REPLY_DESTINATION, aReplyDest)
+					.append(Attributes.CONNECTION_ID, aConnectionId)
 					.append(Attributes.STATUS, ConnectorStatus.ONLINE)));
 		}
 		return getConnector(aSessionId);
@@ -85,11 +74,10 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	private JMSConnector toConnector(DBObject aRecord) throws Exception {
 		String lSessionId = (String) aRecord.get(Attributes.SESSION_ID);
 
-		JMSConnector lConnector = new JMSConnector(getEngine(), getReplyProducer(),
+		JMSConnector lConnector = new JMSConnector(getEngine(),
 				(String) aRecord.get(Attributes.IP_ADDRESS),
 				(String) aRecord.get(Attributes.SESSION_ID),
-				new ActiveMQTempQueue(
-				(String) aRecord.get(Attributes.REPLY_DESTINATION)));
+				(String) aRecord.get(Attributes.CONNECTION_ID));
 
 		// setting the session storage
 		IBasicStorage<String, Object> lSessionStorage = getSessionManager().getStorageProvider()
@@ -152,9 +140,21 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
+	public List<String> getSessionsByConnectionId(String aConnectionId) throws Exception {
+		List<String> lList = new LinkedList<String>();
+		DBCursor lCursor = mCollection.find(new BasicDBObject().append(Attributes.CONNECTION_ID, aConnectionId));
+		while (lCursor.hasNext()) {
+			lList.add((String) lCursor.next().get(Attributes.SESSION_ID));
+		}
+
+		return lList;
+	}
+
+	@Override
 	public void initialize() throws Exception {
 		super.initialize();
 
+		mCollection.ensureIndex(new BasicDBObject().append(Attributes.CONNECTION_ID, 1));
 		mCollection.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1),
 				new BasicDBObject().append("unique", true));
 	}

@@ -29,7 +29,7 @@ import org.jwebsocket.util.Tools;
  */
 public class JMSLoadBalancer implements IInitializable {
 
-	private final String mDestination;
+	private final String mServerDestination;
 	private final Session mSession;
 	private final INodesManager mNodesManager;
 	private MessageConsumer mClientsMessagesConsumer;
@@ -40,7 +40,7 @@ public class JMSLoadBalancer implements IInitializable {
 	private final String mNodeId;
 
 	public JMSLoadBalancer(String aNodeId, String aDestination, Session aSession, INodesManager aNodesManager) {
-		mDestination = aDestination;
+		mServerDestination = aDestination;
 		mSession = aSession;
 		mNodesManager = aNodesManager;
 		mNodeId = aNodeId;
@@ -53,9 +53,9 @@ public class JMSLoadBalancer implements IInitializable {
 		}
 
 		// clients queue
-		Queue lClientsQueue = mSession.createQueue(mDestination);
+		Queue lClientsQueue = mSession.createQueue(mServerDestination);
 		// nodes topic
-		Topic lNodesTopic = mSession.createTopic(mDestination);
+		Topic lNodesTopic = mSession.createTopic(mServerDestination);
 
 		mClientsMessagesConsumer = mSession.createConsumer(lClientsQueue);
 		mNodesMessagesProducer = mSession.createProducer(lNodesTopic);
@@ -73,7 +73,7 @@ public class JMSLoadBalancer implements IInitializable {
 					MessageType lType = MessageType.valueOf(aMessage.getStringProperty(Attributes.MESSAGE_TYPE));
 					String lSessionId = String.valueOf(lMessage.getProducerId().getParentId());
 					// prefixing the session id to avoid conflicts if the session id is re-used 
-					lSessionId = Tools.getMD5(mDestination + lSessionId);
+					lSessionId = Tools.getMD5(mServerDestination + lSessionId);
 
 					// getting optimum node id
 					String lNodeId = mNodesManager.getOptimumNode();
@@ -103,8 +103,11 @@ public class JMSLoadBalancer implements IInitializable {
 
 							// redirecting message to optimum node
 							lRequest.setStringProperty(Attributes.NODE, lNodeId);
-							mNodesMessagesProducer.send(lRequest);
+							// setting the connection id
+							lRequest.setStringProperty(Attributes.CONNECTION_ID, lMessage.getConnection()
+									.getConnectionInfo().getConnectionId().getValue());
 
+							mNodesMessagesProducer.send(lRequest);
 							mNodesManager.increaseRequests(lNodeId);
 							break;
 						}
@@ -138,6 +141,23 @@ public class JMSLoadBalancer implements IInitializable {
 							mNodesManager.increaseRequests(lNodeId);
 							break;
 						}
+						case ACK: {
+							if (mLog.isDebugEnabled()) {
+								mLog.info("Processing message(ACK) from client...");
+							}
+							String lMsgId = lMessage.getStringProperty(Attributes.MESSAGE_ID);
+							if (null != lMsgId) {
+								// getting the id of the node that sents the origin message
+								lNodeId = mNodesManager.getNodeIdByAckMessageId(lMsgId);
+
+								// redirecting acknowledge
+								Message lRequest = mSession.createMessage();
+								lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
+								lRequest.setStringProperty(Attributes.NODE, lNodeId);
+								lRequest.setStringProperty(Attributes.MESSAGE_ID, lMsgId);
+								break;
+							}
+						}
 					}
 				} catch (Exception ex) {
 					mLog.error(Logging.getSimpleExceptionMessage(ex, "processing client message"));
@@ -163,10 +183,10 @@ public class JMSLoadBalancer implements IInitializable {
 						DestinationInfo lCommand = (DestinationInfo) lDataStructure;
 						if (DestinationInfo.REMOVE_OPERATION_TYPE == lCommand.getOperationType()) {
 							// getting the session id
-							String lReplyDest = lCommand.getDestination().getPhysicalName();
 							Message lRequest = mSession.createMessage();
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.DISCONNECTION.name());
-							lRequest.setStringProperty(Attributes.REPLY_DESTINATION, lReplyDest);
+							lRequest.setStringProperty(Attributes.CONNECTION_ID, lMessage.getConnection()
+									.getConnectionInfo().getConnectionId().getValue());
 
 							// redirecting message to optimum node
 							lRequest.setStringProperty(Attributes.NODE, lNodeId);
@@ -214,7 +234,6 @@ public class JMSLoadBalancer implements IInitializable {
 			mLog.info("Load balancer successfully initialized!");
 		}
 
-
 		String lNodeSessionId = mSession.toString();
 		int lEnd = lNodeSessionId.indexOf(',');
 		lNodeSessionId = lNodeSessionId.substring(20, lEnd);
@@ -257,6 +276,11 @@ public class JMSLoadBalancer implements IInitializable {
 
 		// setting status to offline
 		mNodesManager.setStatus(mNodeId, NodeStatus.OFFLINE);
+
+		// removing acks
+		mNodesManager.clearAcks(mNodeId);
+
+		// shutting down nodes manager
 		mNodesManager.shutdown();
 
 		if (mLog.isDebugEnabled()) {

@@ -15,22 +15,23 @@ import org.springframework.util.Assert;
  */
 public class MongoDBNodesManager implements INodesManager {
 
-	private DBCollection mCollection;
+	private DBCollection mNodesCollection;
+	private DBCollection mAcksCollection;
 	private String mNodeDescription;
 
 	public DBCollection getCollection() {
-		return mCollection;
+		return mNodesCollection;
 	}
 
 	public void setCollection(DBCollection aCollection) {
-		mCollection = aCollection;
+		mNodesCollection = aCollection;
 	}
 
 	@Override
 	public void register(String aSessionId, String aNodeId, String aDescription,
 			String aIpAddress, double aCpuUsage) throws Exception {
 		if (exists(aNodeId)) {
-			mCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId),
+			mNodesCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId),
 					new BasicDBObject()
 					.append("$set", new BasicDBObject()
 					.append(Attributes.SESSION_ID, aSessionId)
@@ -39,7 +40,7 @@ public class MongoDBNodesManager implements INodesManager {
 					.append(Attributes.STATUS, NodeStatus.ONLINE)
 					.append(Attributes.CPU, aCpuUsage)));
 		} else {
-			mCollection.save(new BasicDBObject()
+			mNodesCollection.save(new BasicDBObject()
 					.append(Attributes.NODE, aNodeId)
 					.append(Attributes.SESSION_ID, aSessionId)
 					.append(Attributes.DESCRIPTION, aDescription)
@@ -51,14 +52,14 @@ public class MongoDBNodesManager implements INodesManager {
 
 	@Override
 	public boolean exists(String aNodeId) throws Exception {
-		return null != mCollection.findOne(new BasicDBObject().append(Attributes.NODE, aNodeId));
+		return null != mNodesCollection.findOne(new BasicDBObject().append(Attributes.NODE, aNodeId));
 	}
 
 	@Override
 	public void updateCPU(String aNodeId, double aCpuUsage) throws Exception {
 		Assert.isTrue(exists(aNodeId), "The target node does not exists!");
 
-		mCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId), new BasicDBObject()
+		mNodesCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId), new BasicDBObject()
 				.append("$set", new BasicDBObject()
 				.append(Attributes.CPU, aCpuUsage)));
 	}
@@ -67,14 +68,14 @@ public class MongoDBNodesManager implements INodesManager {
 	public void setStatus(String aNodeId, int aStatus) throws Exception {
 		Assert.isTrue(exists(aNodeId), "The target node does not exists!");
 
-		mCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId), new BasicDBObject()
+		mNodesCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId), new BasicDBObject()
 				.append("$set", new BasicDBObject()
 				.append(Attributes.STATUS, aStatus)));
 	}
 
 	@Override
 	public String getOptimumNode() throws Exception {
-		DBCursor lCursor = mCollection.find(new BasicDBObject().append(Attributes.STATUS, NodeStatus.ONLINE))
+		DBCursor lCursor = mNodesCollection.find(new BasicDBObject().append(Attributes.STATUS, NodeStatus.ONLINE))
 				.sort(new BasicDBObject().append(Attributes.CPU, 1)
 				.append(Attributes.REQUESTS, 1)).limit(1);
 
@@ -90,14 +91,14 @@ public class MongoDBNodesManager implements INodesManager {
 	public void increaseRequests(String aNodeId) throws Exception {
 		Assert.isTrue(exists(aNodeId), "The target node does not exists!");
 
-		mCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId), new BasicDBObject()
+		mNodesCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId), new BasicDBObject()
 				.append("$inc", new BasicDBObject()
 				.append(Attributes.REQUESTS, 1)));
 	}
 
 	@Override
 	public String getNodeId(String aSessionId) throws Exception {
-		DBObject lRecord = mCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId));
+		DBObject lRecord = mNodesCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId));
 		if (null != lRecord) {
 			return (String) lRecord.get(Attributes.NODE);
 		}
@@ -108,14 +109,17 @@ public class MongoDBNodesManager implements INodesManager {
 	@Override
 	public void initialize() throws Exception {
 		// creating index for CPU and REQUESTS fields for sorting
-		mCollection.ensureIndex(new BasicDBObject().append(Attributes.CPU, 1).append(Attributes.REQUESTS, 1));
+		mNodesCollection.ensureIndex(new BasicDBObject().append(Attributes.CPU, 1).append(Attributes.REQUESTS, 1));
 
 		// setting SESSION_ID as primary key
-		mCollection.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1),
+		mNodesCollection.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1),
+				new BasicDBObject().append("unique", true));
+		// message id as primary key
+		mAcksCollection.ensureIndex(new BasicDBObject().append(Attributes.MESSAGE_ID, 1),
 				new BasicDBObject().append("unique", true));
 
 		// setting NODE id as primary key
-		mCollection.ensureIndex(new BasicDBObject().append(Attributes.NODE, 1),
+		mNodesCollection.ensureIndex(new BasicDBObject().append(Attributes.NODE, 1),
 				new BasicDBObject().append("unique", true));
 	}
 
@@ -135,6 +139,30 @@ public class MongoDBNodesManager implements INodesManager {
 
 	@Override
 	public long count() {
-		return mCollection.count(new BasicDBObject().append(Attributes.STATUS, NodeStatus.ONLINE));
+		return mNodesCollection.count(new BasicDBObject().append(Attributes.STATUS, NodeStatus.ONLINE));
+	}
+
+	@Override
+	public String getNodeIdByAckMessageId(String lMsgId) throws Exception {
+		DBObject lRecord = mAcksCollection.findOne(new BasicDBObject().append(Attributes.MESSAGE_ID, lMsgId));
+		String lNodeId = null;
+		if (null != lRecord) {
+			lNodeId = (String) lRecord.get(Attributes.MESSAGE_ID);
+			mAcksCollection.remove(lRecord);
+		}
+
+		return lNodeId;
+	}
+
+	@Override
+	public void registerAckMessageId(String aNodeId, String aMsgId) throws Exception {
+		mAcksCollection.save(new BasicDBObject()
+				.append(Attributes.NODE, aNodeId)
+				.append(Attributes.MESSAGE_ID, aMsgId));
+	}
+
+	@Override
+	public void clearAcks(String aNodeId) throws Exception {
+		mAcksCollection.remove(new BasicDBObject().append(Attributes.NODE, aNodeId));
 	}
 }
