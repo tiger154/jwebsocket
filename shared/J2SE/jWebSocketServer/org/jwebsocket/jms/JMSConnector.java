@@ -20,9 +20,8 @@ package org.jwebsocket.jms;
 
 import java.net.InetAddress;
 import java.util.Map;
-import javax.jms.Destination;
+import javax.jms.InvalidDestinationException;
 import javax.jms.MessageProducer;
-import javax.jms.TextMessage;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IPacketDeliveryListener;
@@ -48,28 +47,29 @@ public class JMSConnector extends BaseConnector {
 	private final String mSessionId;
 	private final String mRemoteHost;
 	private final MessageProducer mReplyProducer;
-	private final Destination mReplyDestination;
+	private final String mConnectionId;
 	private Logger mLog = Logging.getLogger();
 
 	/**
+	 * jWebSocket connector implementation for JMS connections
 	 *
 	 * @param aEngine
 	 * @param aJMSSender
 	 * @param aRemoteHost
 	 * @param aSessionId
 	 */
-	public JMSConnector(WebSocketEngine aEngine, MessageProducer aReplyProducer,
-			String aRemoteHost, String aSessionId, Destination aReplyDest) {
+	public JMSConnector(WebSocketEngine aEngine,
+			String aRemoteHost, String aSessionId, String aConnectionId) {
 		super(aEngine);
 
 		RequestHeader lHeader = new RequestHeader();
 		lHeader.put(RequestHeader.WS_PROTOCOL, "org.jwebsocket.json");
 		setHeader(lHeader);
 
-		mReplyProducer = aReplyProducer;
+		mReplyProducer = ((JMSEngine) aEngine).getReplyProducer();
 		mRemoteHost = aRemoteHost;
 		mSessionId = aSessionId;
-		mReplyDestination = aReplyDest;
+		mConnectionId = aConnectionId;
 	}
 
 	public void setCustomVarsContainer(Map<String, Object> aMap) {
@@ -89,7 +89,7 @@ public class JMSConnector extends BaseConnector {
 	@Override
 	public void stopConnector(CloseReason aCloseReason) {
 		setStatus(WebSocketConnectorStatus.DOWN);
-		
+
 		if (!aCloseReason.equals(CloseReason.CLIENT)) {
 			sendPacket(new RawPacket(WebSocketFrameType.CLOSE,
 					WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name())));
@@ -109,10 +109,20 @@ public class JMSConnector extends BaseConnector {
 	@Override
 	public void sendPacket(final WebSocketPacket aDataPacket) {
 		try {
-			TextMessage lMessage = new ActiveMQTextMessage();
+			ActiveMQTextMessage lMessage = new ActiveMQTextMessage();
 			lMessage.setText(aDataPacket.getString());
-
-			mReplyProducer.send(mReplyDestination, lMessage);
+			// securing the reply to owner connector
+			lMessage.setStringProperty(Attributes.CONNECTION_ID, mConnectionId);
+			mReplyProducer.send(lMessage);
+		} catch (InvalidDestinationException lEx) {
+			// exception could happen if there is only one node and it gets incorrectly closed
+			// connectors information could remains on database
+			// what we do here is to keep clean the connectors database
+			try {
+				((JMSEngine) getEngine()).getConnectorsManager().removeConnector(getSession().getSessionId());
+			} catch (Exception lEx2) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "cleaning connectors database"));
+			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "sending packet to '" + getId() + "' connector"));
 		}

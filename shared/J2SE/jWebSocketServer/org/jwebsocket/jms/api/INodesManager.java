@@ -92,4 +92,29 @@ public interface INodesManager extends IInitializable {
 	 * @return
 	 */
 	long count();
+
+	/**
+	 * Gets the node id by sent message's id
+	 *
+	 * @param lMsgId
+	 * @return
+	 */
+	public String getNodeIdByAckMessageId(String lMsgId) throws Exception;
+
+	/**
+	 * Registers an acknowledge message id.
+	 *
+	 * @param aNodeId
+	 * @param aMsgId
+	 * @throws Exception
+	 */
+	void registerAckMessageId(String aNodeId, String aMsgId) throws Exception;
+
+	/**
+	 * Clear node existing acknowledge message ids
+	 *
+	 * @param aNodeId
+	 * @throws Exception
+	 */
+	void clearAcks(String aNodeId) throws Exception;
 }

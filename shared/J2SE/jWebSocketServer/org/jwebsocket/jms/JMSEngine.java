@@ -21,6 +21,7 @@ package org.jwebsocket.jms;
 import java.util.Map;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.MessageProducer;
 import javax.jms.Session;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
@@ -51,6 +52,7 @@ public class JMSEngine extends BaseEngine {
 	private Session mSession;
 	private JMSMessageListener mMessageListener;
 	private IConnectorsManager mConnectorsManager;
+	private MessageProducer mReplyProducer;
 	private String mNodeId = JWebSocketConfig.getConfig().getNodeId();
 	private JMSLoadBalancer mLB;
 
@@ -134,13 +136,12 @@ public class JMSEngine extends BaseEngine {
 			// creating the session
 			mSession = mConnection.createSession(false,
 					Session.AUTO_ACKNOWLEDGE);
+			// setting the global reply producer
+			mReplyProducer = mSession.createProducer(mSession.createTopic(mDestination));
 
 			// initializing connectors manager
 			mConnectorsManager = (IConnectorsManager) mBeanFactory.getBean("connectorsManager");
 			mConnectorsManager.setEngine(this);
-			// producer will take the destination on send operation
-			// @see: http://activemq.apache.org/how-should-i-implement-request-response-with-jms.html
-			mConnectorsManager.setReplyProducer(mSession.createProducer(null));
 			// creating message listener
 			mMessageListener = new JMSMessageListener(this);
 			mMessageListener.initialize();
@@ -157,6 +158,10 @@ public class JMSEngine extends BaseEngine {
 			mLog.info("JmsEngine successfully started! Listenning on topic: '"
 					+ mDestination + "'...");
 		}
+	}
+
+	public MessageProducer getReplyProducer() {
+		return mReplyProducer;
 	}
 
 	@Override

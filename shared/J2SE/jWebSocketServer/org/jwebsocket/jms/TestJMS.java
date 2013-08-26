@@ -1,8 +1,8 @@
 package org.jwebsocket.jms;
 
-import com.mongodb.Mongo;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.activemq.broker.BrokerService;
 
 /**
  *
@@ -12,8 +12,7 @@ public class TestJMS {
 
 	public static void main(String[] args) {
 		try {
-			Mongo mongo = new Mongo("localhost");
-			
+			BrokerService broker = new BrokerService();
 		} catch (Exception ex) {
 			Logger.getLogger(TestJMS.class.getName()).log(Level.SEVERE, null, ex);
 		}

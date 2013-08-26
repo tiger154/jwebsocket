@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms;
 
+import java.util.List;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
@@ -56,14 +57,16 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					// session id is MD5 value for security
 					String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
 					// storing the connector
-					lConnManager.addConnector(
-							lSessionId,
-							aMessage.getStringProperty(Attributes.IP_ADDRESS),
-							((ActiveMQDestination) aMessage.getJMSReplyTo()).getPhysicalName());
+					if (!lConnManager.sessionExists(lSessionId)) {
+						lConnManager.addConnector(
+								lSessionId,
+								aMessage.getStringProperty(Attributes.IP_ADDRESS),
+								((ActiveMQDestination) aMessage.getJMSReplyTo()).getPhysicalName());
 
-					// getting the connector instance
-					JMSConnector lConnector = lConnManager.getConnector(lSessionId);
-					lConnector.startConnector();
+						// getting the connector instance
+						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
+						lConnector.startConnector();
+					}
 					break;
 				}
 				case MESSAGE: {
@@ -71,7 +74,6 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					if (lConnManager.sessionExists(lSessionId)) {
 						// getting the connector
 						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
-						lConnector.stopConnector(CloseReason.SERVER);
 						// getting the packet content
 						TextMessage lMessage = (TextMessage) aMessage;
 						// notifying process packet
@@ -83,18 +85,28 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 				}
 				case DISCONNECTION: {
 					// supporting LB disconnection advisory support
-					String lReplyDest = aMessage.getStringProperty(Attributes.REPLY_DESTINATION);
-					String lSessionId;
-					if (null != lReplyDest) {
-						lSessionId = lConnManager.getSessionByReplyDest(lReplyDest);
+					String lConnectionId = aMessage.getStringProperty(Attributes.CONNECTION_ID);
+					if (null != lConnectionId) {
+						List<String> lSessionIds;
+						lSessionIds = lConnManager.getSessionsByConnectionId(lConnectionId);
+						if (!lSessionIds.isEmpty()) {
+							for (String lSessionId : lSessionIds) {
+								if (lConnManager.sessionExists(lSessionId)) {
+									// getting the connector
+									JMSConnector lConnector = lConnManager.getConnector(lSessionId);
+									// stopping the connector
+									lConnector.stopConnector(CloseReason.CLIENT);
+								}
+							}
+						}
 					} else {
-						lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
-					}
-					if (lConnManager.sessionExists(lSessionId)) {
-						// getting the connector
-						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
-						// stopping the connector
-						lConnector.stopConnector(CloseReason.CLIENT);
+						String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
+						if (lConnManager.sessionExists(lSessionId)) {
+							// getting the connector
+							JMSConnector lConnector = lConnManager.getConnector(lSessionId);
+							// stopping the connector
+							lConnector.stopConnector(CloseReason.CLIENT);
+						}
 					}
 					break;
 				}
@@ -108,6 +120,8 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 						lConnManager.removeConnector(lSessionId);
 					}
 					break;
+				}
+				case ACK: {
 				}
 			}
 		} catch (Exception lEx) {
