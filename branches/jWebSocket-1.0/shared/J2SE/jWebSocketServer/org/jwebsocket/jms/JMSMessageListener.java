@@ -61,7 +61,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 						lConnManager.addConnector(
 								lSessionId,
 								aMessage.getStringProperty(Attributes.IP_ADDRESS),
-								((ActiveMQDestination) aMessage.getJMSReplyTo()).getPhysicalName());
+								aMessage.getStringProperty(Attributes.CONNECTION_ID));
 
 						// getting the connector instance
 						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
@@ -130,11 +130,11 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 
 	@Override
 	public void initialize() throws Exception {
-		Topic lEngineTopic = mEngine.getSession().createTopic(mEngine.getDestination());
+		Topic lEngineTopic = mEngine.getSession().createTopic(mEngine.getDestination() + "_nodes");
 
 		// creating message consumer
 		mConsumer = mEngine.getSession().createConsumer(lEngineTopic,
-				Attributes.NODE + " = '" + mEngine.getNodeId() + "'");
+				Attributes.NODE_ID + " = '" + mEngine.getNodeId() + "'");
 
 		// registering listener
 		final MessageListener lListener = this;

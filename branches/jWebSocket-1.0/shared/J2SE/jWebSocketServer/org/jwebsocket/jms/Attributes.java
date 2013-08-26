@@ -6,15 +6,15 @@ package org.jwebsocket.jms;
  */
 public class Attributes {
 
-	public static final String SESSION_ID = "SID";
-	public static final String IP_ADDRESS = "IP";
-	public static final String MESSAGE_TYPE = "TYPE";
-	public static final String NODE = "NODE";
-	public static final String CONNECTION_ID = "CONNECTION_ID";
-	public static final String STATUS = "STATUS";
-	public static final String DESCRIPTION = "DESCRIPTION";
-	public static final String CPU = "CPU";
-	public static final String REQUESTS = "REQUESTS";
-	public static final String DATA = "DATA";
-	public static final String MESSAGE_ID = "MSG_ID";
+	public static final String SESSION_ID = "sessionId";
+	public static final String IP_ADDRESS = "ipAddress";
+	public static final String MESSAGE_TYPE = "msgType";
+	public static final String NODE_ID = "nodeId";
+	public static final String CONNECTION_ID = "connectionId";
+	public static final String STATUS = "status";
+	public static final String DESCRIPTION = "description";
+	public static final String CPU = "cpu";
+	public static final String REQUESTS = "requests";
+	public static final String DATA = "data";
+	public static final String MESSAGE_ID = "messageId";
 }
