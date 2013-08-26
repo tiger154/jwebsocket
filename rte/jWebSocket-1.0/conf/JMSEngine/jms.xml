@@ -18,6 +18,12 @@
 	<bean id="amqFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
 		<property name="brokerURL" value="tcp://0.0.0.0:61616" />
 		<property name="useAsyncSend" value="true" />
+		<property name="userName">
+			<value>jws_cloud1</value>
+		</property>
+		<property name="password">
+			<value>password</value>
+		</property>
 	</bean>
 	<bean id="connectionFactory"
 		  class="org.springframework.jms.connection.SingleConnectionFactory">
