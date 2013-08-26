@@ -31,7 +31,7 @@ public class MongoDBNodesManager implements INodesManager {
 	public void register(String aSessionId, String aNodeId, String aDescription,
 			String aIpAddress, double aCpuUsage) throws Exception {
 		if (exists(aNodeId)) {
-			mNodesCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId),
+			mNodesCollection.update(new BasicDBObject().append(Attributes.NODE_ID, aNodeId),
 					new BasicDBObject()
 					.append("$set", new BasicDBObject()
 					.append(Attributes.SESSION_ID, aSessionId)
@@ -41,7 +41,7 @@ public class MongoDBNodesManager implements INodesManager {
 					.append(Attributes.CPU, aCpuUsage)));
 		} else {
 			mNodesCollection.save(new BasicDBObject()
-					.append(Attributes.NODE, aNodeId)
+					.append(Attributes.NODE_ID, aNodeId)
 					.append(Attributes.SESSION_ID, aSessionId)
 					.append(Attributes.DESCRIPTION, aDescription)
 					.append(Attributes.IP_ADDRESS, aIpAddress)
@@ -52,14 +52,14 @@ public class MongoDBNodesManager implements INodesManager {
 
 	@Override
 	public boolean exists(String aNodeId) throws Exception {
-		return null != mNodesCollection.findOne(new BasicDBObject().append(Attributes.NODE, aNodeId));
+		return null != mNodesCollection.findOne(new BasicDBObject().append(Attributes.NODE_ID, aNodeId));
 	}
 
 	@Override
 	public void updateCPU(String aNodeId, double aCpuUsage) throws Exception {
 		Assert.isTrue(exists(aNodeId), "The target node does not exists!");
 
-		mNodesCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId), new BasicDBObject()
+		mNodesCollection.update(new BasicDBObject().append(Attributes.NODE_ID, aNodeId), new BasicDBObject()
 				.append("$set", new BasicDBObject()
 				.append(Attributes.CPU, aCpuUsage)));
 	}
@@ -68,7 +68,7 @@ public class MongoDBNodesManager implements INodesManager {
 	public void setStatus(String aNodeId, int aStatus) throws Exception {
 		Assert.isTrue(exists(aNodeId), "The target node does not exists!");
 
-		mNodesCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId), new BasicDBObject()
+		mNodesCollection.update(new BasicDBObject().append(Attributes.NODE_ID, aNodeId), new BasicDBObject()
 				.append("$set", new BasicDBObject()
 				.append(Attributes.STATUS, aStatus)));
 	}
@@ -81,7 +81,7 @@ public class MongoDBNodesManager implements INodesManager {
 
 		String lNodeId = null;
 		if (lCursor.hasNext()) {
-			lNodeId = (String) lCursor.next().get(Attributes.NODE);
+			lNodeId = (String) lCursor.next().get(Attributes.NODE_ID);
 		}
 
 		return lNodeId;
@@ -91,7 +91,7 @@ public class MongoDBNodesManager implements INodesManager {
 	public void increaseRequests(String aNodeId) throws Exception {
 		Assert.isTrue(exists(aNodeId), "The target node does not exists!");
 
-		mNodesCollection.update(new BasicDBObject().append(Attributes.NODE, aNodeId), new BasicDBObject()
+		mNodesCollection.update(new BasicDBObject().append(Attributes.NODE_ID, aNodeId), new BasicDBObject()
 				.append("$inc", new BasicDBObject()
 				.append(Attributes.REQUESTS, 1)));
 	}
@@ -100,7 +100,7 @@ public class MongoDBNodesManager implements INodesManager {
 	public String getNodeId(String aSessionId) throws Exception {
 		DBObject lRecord = mNodesCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId));
 		if (null != lRecord) {
-			return (String) lRecord.get(Attributes.NODE);
+			return (String) lRecord.get(Attributes.NODE_ID);
 		}
 
 		return null;
@@ -119,7 +119,7 @@ public class MongoDBNodesManager implements INodesManager {
 				new BasicDBObject().append("unique", true));
 
 		// setting NODE id as primary key
-		mNodesCollection.ensureIndex(new BasicDBObject().append(Attributes.NODE, 1),
+		mNodesCollection.ensureIndex(new BasicDBObject().append(Attributes.NODE_ID, 1),
 				new BasicDBObject().append("unique", true));
 	}
 
@@ -157,12 +157,12 @@ public class MongoDBNodesManager implements INodesManager {
 	@Override
 	public void registerAckMessageId(String aNodeId, String aMsgId) throws Exception {
 		mAcksCollection.save(new BasicDBObject()
-				.append(Attributes.NODE, aNodeId)
+				.append(Attributes.NODE_ID, aNodeId)
 				.append(Attributes.MESSAGE_ID, aMsgId));
 	}
 
 	@Override
 	public void clearAcks(String aNodeId) throws Exception {
-		mAcksCollection.remove(new BasicDBObject().append(Attributes.NODE, aNodeId));
+		mAcksCollection.remove(new BasicDBObject().append(Attributes.NODE_ID, aNodeId));
 	}
 }

@@ -113,6 +113,7 @@ public class JMSConnector extends BaseConnector {
 			lMessage.setText(aDataPacket.getString());
 			// securing the reply to owner connector
 			lMessage.setStringProperty(Attributes.CONNECTION_ID, mConnectionId);
+		
 			mReplyProducer.send(lMessage);
 		} catch (InvalidDestinationException lEx) {
 			// exception could happen if there is only one node and it gets incorrectly closed

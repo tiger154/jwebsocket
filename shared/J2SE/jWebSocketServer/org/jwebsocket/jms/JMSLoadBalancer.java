@@ -6,7 +6,6 @@ import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
-import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
@@ -53,11 +52,11 @@ public class JMSLoadBalancer implements IInitializable {
 		}
 
 		// clients queue
-		Queue lClientsQueue = mSession.createQueue(mServerDestination);
+		Topic lClientsTopic = mSession.createTopic(mServerDestination);
 		// nodes topic
-		Topic lNodesTopic = mSession.createTopic(mServerDestination);
+		Topic lNodesTopic = mSession.createTopic(mServerDestination + "_nodes");
 
-		mClientsMessagesConsumer = mSession.createConsumer(lClientsQueue);
+		mClientsMessagesConsumer = mSession.createConsumer(lClientsTopic);
 		mNodesMessagesProducer = mSession.createProducer(lNodesTopic);
 
 		// client messages listener
@@ -95,17 +94,13 @@ public class JMSLoadBalancer implements IInitializable {
 							// type
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
 							// ip address
-							lRequest.setStringProperty(Attributes.IP_ADDRESS, lMessage.getConnection().getConnectionInfo().getClientIp());
+							lRequest.setStringProperty(Attributes.IP_ADDRESS, "-1");
 							// session id
 							lRequest.setStringProperty(Attributes.SESSION_ID, lSessionId);
-							// response queue
-							lRequest.setJMSReplyTo(lMessage.getJMSReplyTo());
-
-							// redirecting message to optimum node
-							lRequest.setStringProperty(Attributes.NODE, lNodeId);
+							// setting the worker node selected by the LB
+							lRequest.setStringProperty(Attributes.NODE_ID, lNodeId);
 							// setting the connection id
-							lRequest.setStringProperty(Attributes.CONNECTION_ID, lMessage.getConnection()
-									.getConnectionInfo().getConnectionId().getValue());
+							lRequest.setStringProperty(Attributes.CONNECTION_ID, lMessage.getProducerId().getConnectionId());
 
 							mNodesMessagesProducer.send(lRequest);
 							mNodesManager.increaseRequests(lNodeId);
@@ -120,7 +115,7 @@ public class JMSLoadBalancer implements IInitializable {
 							lRequest.setStringProperty(Attributes.SESSION_ID, lSessionId);
 
 							// redirecting message to optimum node
-							lRequest.setStringProperty(Attributes.NODE, lNodeId);
+							lRequest.setStringProperty(Attributes.NODE_ID, lNodeId);
 							mNodesMessagesProducer.send(lRequest);
 
 							mNodesManager.increaseRequests(lNodeId);
@@ -135,7 +130,7 @@ public class JMSLoadBalancer implements IInitializable {
 							lRequest.setStringProperty(Attributes.SESSION_ID, lSessionId);
 
 							// redirecting message to optimum node
-							lRequest.setStringProperty(Attributes.NODE, lNodeId);
+							lRequest.setStringProperty(Attributes.NODE_ID, lNodeId);
 							mNodesMessagesProducer.send(lRequest);
 
 							mNodesManager.increaseRequests(lNodeId);
@@ -153,7 +148,7 @@ public class JMSLoadBalancer implements IInitializable {
 								// redirecting acknowledge
 								Message lRequest = mSession.createMessage();
 								lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
-								lRequest.setStringProperty(Attributes.NODE, lNodeId);
+								lRequest.setStringProperty(Attributes.NODE_ID, lNodeId);
 								lRequest.setStringProperty(Attributes.MESSAGE_ID, lMsgId);
 								break;
 							}
@@ -189,7 +184,7 @@ public class JMSLoadBalancer implements IInitializable {
 									.getConnectionInfo().getConnectionId().getValue());
 
 							// redirecting message to optimum node
-							lRequest.setStringProperty(Attributes.NODE, lNodeId);
+							lRequest.setStringProperty(Attributes.NODE_ID, lNodeId);
 							mNodesMessagesProducer.send(lRequest);
 
 							mNodesManager.increaseRequests(lNodeId);
