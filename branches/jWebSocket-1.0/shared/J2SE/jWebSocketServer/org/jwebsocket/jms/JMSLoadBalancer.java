@@ -11,10 +11,8 @@ import javax.jms.TextMessage;
 import javax.jms.Topic;
 import org.apache.activemq.advisory.AdvisorySupport;
 import org.apache.activemq.command.ActiveMQMessage;
-import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.command.ConsumerId;
 import org.apache.activemq.command.DataStructure;
-import org.apache.activemq.command.DestinationInfo;
 import org.apache.activemq.command.RemoveInfo;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IInitializable;
@@ -56,7 +54,7 @@ public class JMSLoadBalancer implements IInitializable {
 		// nodes topic
 		Topic lNodesTopic = mSession.createTopic(mServerDestination + "_nodes");
 
-		mClientsMessagesConsumer = mSession.createConsumer(lClientsTopic);
+		mClientsMessagesConsumer = mSession.createConsumer(lClientsTopic, Attributes.MESSAGE_TYPE + " IS NOT NULL");
 		mNodesMessagesProducer = mSession.createProducer(lNodesTopic);
 
 		// client messages listener
@@ -64,14 +62,21 @@ public class JMSLoadBalancer implements IInitializable {
 			@Override
 			public void onMessage(Message aMessage) {
 				try {
+					if (!mNodesManager.getSynchronizer().getLoadBalancerTurn(aMessage.getJMSMessageID())) {
+						// LB not turn to work
+						return;
+					}
+
 					if (mLog.isDebugEnabled()) {
 						mLog.info("Processing client message...");
 					}
 
 					ActiveMQMessage lMessage = (ActiveMQMessage) aMessage;
+					// getting the message type property
 					MessageType lType = MessageType.valueOf(aMessage.getStringProperty(Attributes.MESSAGE_TYPE));
+					// generating the session id
 					String lSessionId = String.valueOf(lMessage.getProducerId().getParentId());
-					// prefixing the session id to avoid conflicts if the session id is re-used 
+					// prefixing the session id to avoid conflicts
 					lSessionId = Tools.getMD5(mServerDestination + lSessionId);
 
 					// getting optimum node id
@@ -93,12 +98,12 @@ public class JMSLoadBalancer implements IInitializable {
 							Message lRequest = mSession.createMessage();
 							// type
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
-							// ip address
-							lRequest.setStringProperty(Attributes.IP_ADDRESS, "-1");
 							// session id
 							lRequest.setStringProperty(Attributes.SESSION_ID, lSessionId);
 							// setting the worker node selected by the LB
 							lRequest.setStringProperty(Attributes.NODE_ID, lNodeId);
+							// reply selector key
+							lRequest.setStringProperty(Attributes.REPLY_SELECTOR, lMessage.getStringProperty(Attributes.REPLY_SELECTOR));
 							// setting the connection id
 							lRequest.setStringProperty(Attributes.CONNECTION_ID, lMessage.getProducerId().getConnectionId());
 
@@ -163,25 +168,29 @@ public class JMSLoadBalancer implements IInitializable {
 		// client connections listener 
 		// @note: the algorithm works because each client require to generate a unique
 		// reply destination per connection
-		mClientsConnectionAdvisor = mSession.createConsumer(mSession
-				.createTopic("ActiveMQ.Advisory.TempQueue"));
+		mClientsConnectionAdvisor = mSession.createConsumer(AdvisorySupport.getConsumerAdvisoryTopic(lClientsTopic));
 		mClientsConnectionAdvisor.setMessageListener(new MessageListener() {
 			@Override
 			public void onMessage(Message aMessage) {
 				try {
+					if (!mNodesManager.getSynchronizer().getLoadBalancerTurn(aMessage.getJMSMessageID())) {
+						// LB not turn to work
+						return;
+					}
+					
 					ActiveMQMessage lMessage = (ActiveMQMessage) aMessage;
 					Object lDataStructure = lMessage.getDataStructure();
 
-					if (lDataStructure instanceof DestinationInfo) {
-						String lNodeId = mNodesManager.getOptimumNode();
+					if (lDataStructure instanceof RemoveInfo) {
+						RemoveInfo lCommand = (RemoveInfo) lDataStructure;
+						DataStructure lDS = lCommand.getObjectId();
 
-						DestinationInfo lCommand = (DestinationInfo) lDataStructure;
-						if (DestinationInfo.REMOVE_OPERATION_TYPE == lCommand.getOperationType()) {
-							// getting the session id
+						if (lDS instanceof ConsumerId) {
+							String lNodeId = mNodesManager.getOptimumNode();
+
 							Message lRequest = mSession.createMessage();
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.DISCONNECTION.name());
-							lRequest.setStringProperty(Attributes.CONNECTION_ID, lMessage.getConnection()
-									.getConnectionInfo().getConnectionId().getValue());
+							lRequest.setStringProperty(Attributes.CONNECTION_ID, ((ConsumerId) lDS).getConnectionId());
 
 							// redirecting message to optimum node
 							lRequest.setStringProperty(Attributes.NODE_ID, lNodeId);
@@ -197,12 +206,16 @@ public class JMSLoadBalancer implements IInitializable {
 		});
 
 		// nodes connection listener
-		ActiveMQTopic lAdvisoryNodesTopic = AdvisorySupport.getProducerAdvisoryTopic(lNodesTopic);
-		mNodesConnectionAdvisor = mSession.createConsumer(lAdvisoryNodesTopic);
+		mNodesConnectionAdvisor = mSession.createConsumer(AdvisorySupport.getConsumerAdvisoryTopic(lNodesTopic));
 		mNodesConnectionAdvisor.setMessageListener(new MessageListener() {
 			@Override
 			public void onMessage(Message aMessage) {
 				try {
+					if (!mNodesManager.getSynchronizer().getLoadBalancerTurn(aMessage.getJMSMessageID())) {
+						// LB not turn to work
+						return;
+					}
+					
 					ActiveMQMessage lMessage = (ActiveMQMessage) aMessage;
 					Object lDataStructure = lMessage.getDataStructure();
 					if (lDataStructure instanceof RemoveInfo) {

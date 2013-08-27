@@ -18,13 +18,15 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms.api;
 
+import org.jwebsocket.api.IInitializable;
+
 /**
  * Load balancer instances require to be synchronized in order to allow only one
  * load balancer instance to process client messages.
  *
  * @author kyberneees
  */
-public interface ILoadBalancerSynchronizer {
+public interface ILoadBalancerSynchronizer extends IInitializable {
 
 	/**
 	 * Returns TRUE if the calling load balancer is allowed to process the
