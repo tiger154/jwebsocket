@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms;
 
-import java.net.InetAddress;
 import java.util.Map;
 import javax.jms.InvalidDestinationException;
 import javax.jms.MessageProducer;
@@ -45,9 +44,9 @@ import org.jwebsocket.logging.Logging;
 public class JMSConnector extends BaseConnector {
 
 	private final String mSessionId;
-	private final String mRemoteHost;
 	private final MessageProducer mReplyProducer;
 	private final String mConnectionId;
+	private final String mReplySelector;
 	private Logger mLog = Logging.getLogger();
 
 	/**
@@ -58,16 +57,15 @@ public class JMSConnector extends BaseConnector {
 	 * @param aRemoteHost
 	 * @param aSessionId
 	 */
-	public JMSConnector(WebSocketEngine aEngine,
-			String aRemoteHost, String aSessionId, String aConnectionId) {
+	public JMSConnector(WebSocketEngine aEngine, String aSessionId, String aReplySelector, String aConnectionId) {
 		super(aEngine);
 
 		RequestHeader lHeader = new RequestHeader();
 		lHeader.put(RequestHeader.WS_PROTOCOL, "org.jwebsocket.json");
 		setHeader(lHeader);
 
+		mReplySelector = aReplySelector;
 		mReplyProducer = ((JMSEngine) aEngine).getReplyProducer();
-		mRemoteHost = aRemoteHost;
 		mSessionId = aSessionId;
 		mConnectionId = aConnectionId;
 	}
@@ -98,21 +96,13 @@ public class JMSConnector extends BaseConnector {
 	}
 
 	@Override
-	public InetAddress getRemoteHost() {
-		try {
-			return InetAddress.getByName(mRemoteHost);
-		} catch (Exception lEx) {
-			return null;
-		}
-	}
-
-	@Override
 	public void sendPacket(final WebSocketPacket aDataPacket) {
 		try {
 			ActiveMQTextMessage lMessage = new ActiveMQTextMessage();
 			lMessage.setText(aDataPacket.getString());
 			// securing the reply to owner connector
 			lMessage.setStringProperty(Attributes.CONNECTION_ID, mConnectionId);
+			lMessage.setStringProperty(Attributes.REPLY_SELECTOR, mReplySelector);
 		
 			mReplyProducer.send(lMessage);
 		} catch (InvalidDestinationException lEx) {

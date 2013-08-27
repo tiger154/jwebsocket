@@ -17,4 +17,5 @@ public class Attributes {
 	public static final String REQUESTS = "requests";
 	public static final String DATA = "data";
 	public static final String MESSAGE_ID = "messageId";
+	public static final String REPLY_SELECTOR = "replySelector";
 }

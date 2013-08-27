@@ -47,20 +47,19 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
-	public JMSConnector addConnector(String aSessionId, String aIpAddress, String aConnectionId) throws Exception {
+	public JMSConnector addConnector(String aSessionId, String aConnectionId, String aReplySelector) throws Exception {
+		Assert.notNull(aSessionId);
+		Assert.notNull(aConnectionId);
+		Assert.notNull(aReplySelector);
+
 		if (null == mCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId))) {
 			mCollection.save(new BasicDBObject()
-					.append(Attributes.IP_ADDRESS, aIpAddress)
 					.append(Attributes.SESSION_ID, aSessionId)
 					.append(Attributes.CONNECTION_ID, aConnectionId)
+					.append(Attributes.REPLY_SELECTOR, aReplySelector)
 					.append(Attributes.STATUS, ConnectorStatus.ONLINE));
-		} else {
-			mCollection.update(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId),
-					new BasicDBObject()
-					.append("$set", new BasicDBObject()
-					.append(Attributes.CONNECTION_ID, aConnectionId)
-					.append(Attributes.STATUS, ConnectorStatus.ONLINE)));
 		}
+
 		return getConnector(aSessionId);
 	}
 
@@ -75,8 +74,8 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 		String lSessionId = (String) aRecord.get(Attributes.SESSION_ID);
 
 		JMSConnector lConnector = new JMSConnector(getEngine(),
-				(String) aRecord.get(Attributes.IP_ADDRESS),
 				(String) aRecord.get(Attributes.SESSION_ID),
+				(String) aRecord.get(Attributes.REPLY_SELECTOR),
 				(String) aRecord.get(Attributes.CONNECTION_ID));
 
 		// setting the session storage
@@ -106,7 +105,6 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	@Override
 	public void removeConnector(String aSessionId) throws Exception {
 		mCollection.remove(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId));
-		getSessionManager().getSession(aSessionId).clear();
 	}
 
 	public void setCollection(DBCollection aCollection) {

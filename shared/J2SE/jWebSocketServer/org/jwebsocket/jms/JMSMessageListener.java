@@ -24,12 +24,10 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
-import org.apache.activemq.command.ActiveMQDestination;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.jms.api.IConnectorsManager;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
-import org.jwebsocket.plugins.system.SystemPlugIn;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -60,8 +58,8 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					if (!lConnManager.sessionExists(lSessionId)) {
 						lConnManager.addConnector(
 								lSessionId,
-								aMessage.getStringProperty(Attributes.IP_ADDRESS),
-								aMessage.getStringProperty(Attributes.CONNECTION_ID));
+								aMessage.getStringProperty(Attributes.CONNECTION_ID),
+								aMessage.getStringProperty(Attributes.REPLY_SELECTOR));
 
 						// getting the connector instance
 						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
@@ -84,7 +82,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					break;
 				}
 				case DISCONNECTION: {
-					// supporting LB disconnection advisory support
+					// supporting LB clients disconnection advisory support
 					String lConnectionId = aMessage.getStringProperty(Attributes.CONNECTION_ID);
 					if (null != lConnectionId) {
 						List<String> lSessionIds;
@@ -100,6 +98,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 							}
 						}
 					} else {
+						// client sent DISCONNECTION command
 						String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
 						if (lConnManager.sessionExists(lSessionId)) {
 							// getting the connector
@@ -107,17 +106,6 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 							// stopping the connector
 							lConnector.stopConnector(CloseReason.CLIENT);
 						}
-					}
-					break;
-				}
-				case SESSION_STOPPED: {
-					String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
-					if (lConnManager.sessionExists(lSessionId)) {
-						SystemPlugIn.stopSession(mEngine.getConnectorsManager()
-								.getConnector(lSessionId).getSession());
-
-						// removing from index and destroying session
-						lConnManager.removeConnector(lSessionId);
 					}
 					break;
 				}

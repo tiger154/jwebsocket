@@ -17,7 +17,7 @@ import org.jwebsocket.jms.JMSEngine;
  */
 public interface IConnectorsManager extends IInitializable {
 
-	JMSConnector addConnector(String aSessionId, String aIpAddress, String aConnectionId) throws Exception;
+	JMSConnector addConnector(String aSessionId, String aConnectionId, String aReplySelector) throws Exception;
 
 	boolean sessionExists(String aSessionId) throws Exception;
 

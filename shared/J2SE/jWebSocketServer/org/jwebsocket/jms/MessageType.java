@@ -13,6 +13,5 @@ public enum MessageType {
 	CONNECTION,
 	MESSAGE,
 	DISCONNECTION,
-	SESSION_STOPPED,
 	ACK,
 }

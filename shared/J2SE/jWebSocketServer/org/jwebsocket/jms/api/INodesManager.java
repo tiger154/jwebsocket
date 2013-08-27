@@ -117,4 +117,11 @@ public interface INodesManager extends IInitializable {
 	 * @throws Exception
 	 */
 	void clearAcks(String aNodeId) throws Exception;
+
+	/**
+	 * Gets the nodes synchronizer.
+	 *
+	 * @return
+	 */
+	ILoadBalancerSynchronizer getSynchronizer();
 }
