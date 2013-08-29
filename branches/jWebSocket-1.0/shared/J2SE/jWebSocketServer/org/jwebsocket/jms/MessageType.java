@@ -12,6 +12,5 @@ public enum MessageType {
 
 	CONNECTION,
 	MESSAGE,
-	DISCONNECTION,
-	ACK,
+	DISCONNECTION
 }

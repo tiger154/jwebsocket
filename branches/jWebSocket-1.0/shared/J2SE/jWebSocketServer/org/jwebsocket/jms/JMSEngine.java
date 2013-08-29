@@ -51,6 +51,7 @@ public class JMSEngine extends BaseEngine {
 	private Connection mConnection;
 	private Session mSession;
 	private JMSMessageListener mMessageListener;
+	private JMSMessageAcknowledgeListener mMessageAcknowledgeListener;
 	private IConnectorsManager mConnectorsManager;
 	private MessageProducer mReplyProducer;
 	private String mNodeId = JWebSocketConfig.getConfig().getNodeId();
@@ -145,6 +146,9 @@ public class JMSEngine extends BaseEngine {
 			// creating message listener
 			mMessageListener = new JMSMessageListener(this);
 			mMessageListener.initialize();
+			// creating message acknowledge listener
+			mMessageAcknowledgeListener = new JMSMessageAcknowledgeListener(this);
+			mMessageAcknowledgeListener.initialize();
 
 			// creating the load balancer
 			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSession,
@@ -182,6 +186,8 @@ public class JMSEngine extends BaseEngine {
 		mLB.shutdown();
 		// stopping node message listener
 		mMessageListener.shutdown();
+		// stopping node message acknowledge listener
+		mMessageAcknowledgeListener.shutdown();
 		// stopping connectors manager
 		mConnectorsManager.shutdown();
 		// closing the JMS session
