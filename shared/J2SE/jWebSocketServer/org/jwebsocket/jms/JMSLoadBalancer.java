@@ -141,23 +141,6 @@ public class JMSLoadBalancer implements IInitializable {
 							mNodesManager.increaseRequests(lNodeId);
 							break;
 						}
-						case ACK: {
-							if (mLog.isDebugEnabled()) {
-								mLog.info("Processing message(ACK) from client...");
-							}
-							String lMsgId = lMessage.getStringProperty(Attributes.MESSAGE_ID);
-							if (null != lMsgId) {
-								// getting the id of the node that sents the origin message
-								lNodeId = mNodesManager.getNodeIdByAckMessageId(lMsgId);
-
-								// redirecting acknowledge
-								Message lRequest = mSession.createMessage();
-								lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
-								lRequest.setStringProperty(Attributes.NODE_ID, lNodeId);
-								lRequest.setStringProperty(Attributes.MESSAGE_ID, lMsgId);
-								break;
-							}
-						}
 					}
 				} catch (Exception ex) {
 					mLog.error(Logging.getSimpleExceptionMessage(ex, "processing client message"));
