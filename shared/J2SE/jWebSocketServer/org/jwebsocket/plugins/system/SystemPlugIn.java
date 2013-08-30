@@ -55,7 +55,7 @@ import org.jwebsocket.session.SessionManager;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.util.Fragmentation;
+import org.jwebsocket.util.MessagingControl;
 import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.ProviderManager;
@@ -501,7 +501,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		lWelcome.setList("engines", lEngines);
 
 		lWelcome.setString("sourceId", aConnector.getId());
-		lWelcome.setInteger(Fragmentation.ARG_MAX_FRAME_SIZE, aConnector.getMaxFrameSize());
+		lWelcome.setInteger(MessagingControl.PROPERTY_MAX_FRAME_SIZE, aConnector.getMaxFrameSize());
 		// if a unique node id is specified for the client include that
 		String lNodeId = aConnector.getNodeId();
 		if (lNodeId != null) {

@@ -42,7 +42,6 @@ import org.jwebsocket.token.PendingResponseQueueItem;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.token.WebSocketResponseTokenListener;
-import org.jwebsocket.util.Fragmentation;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -716,7 +715,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 			IChunkableDeliveryListener aDeliveryListener) {
 		try {
 			if (0 > aChunkable.getMaxFrameSize()) {
-				aChunkable.setMaxFrameSize(getMaxFrameSize() - Fragmentation.PACKET_TRANSACTION_MAX_BYTES_PREFIXED);
+				aChunkable.setMaxFrameSize(getMaxFrameSize());
 			}
 			Iterator<Token> lChunksIterator = aChunkable.getChunksIterator();
 			if (!lChunksIterator.hasNext()) {

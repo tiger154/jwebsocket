@@ -41,7 +41,6 @@ import org.jwebsocket.plugins.TokenPlugInChain;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.util.Fragmentation;
 import org.springframework.util.Assert;
 
 /**
@@ -523,7 +522,7 @@ public class TokenServer extends BaseServer {
 			IChunkableDeliveryListener aListener) {
 		try {
 			if (0 > aChunkable.getMaxFrameSize()) {
-				aChunkable.setMaxFrameSize(aConnector.getMaxFrameSize() - Fragmentation.PACKET_TRANSACTION_MAX_BYTES_PREFIXED);
+				aChunkable.setMaxFrameSize(aConnector.getMaxFrameSize());
 			}
 			Iterator<Token> lChunksIterator = aChunkable.getChunksIterator();
 			Assert.isTrue(lChunksIterator.hasNext(), "The chunks iterator is empty. No data to send!");

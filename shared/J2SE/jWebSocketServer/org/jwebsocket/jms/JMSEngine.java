@@ -153,7 +153,6 @@ public class JMSEngine extends BaseEngine {
 			// creating the load balancer
 			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSession,
 					(INodesManager) mBeanFactory.getBean("nodesManager"));
-			mLB.initialize();
 		} catch (Exception lEx) {
 			throw new WebSocketException(lEx);
 		}
@@ -174,6 +173,8 @@ public class JMSEngine extends BaseEngine {
 
 		// initializing connectors manager
 		mConnectorsManager.initialize();
+		// initializing load balancer once the plugins and filters are started
+		mLB.initialize();
 	}
 
 	@Override

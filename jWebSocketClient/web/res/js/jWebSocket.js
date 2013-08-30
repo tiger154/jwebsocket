@@ -210,25 +210,6 @@ var jws = {
 	//:d:en:Root user password is "root" (if not changed on the server).
 	//:d:en:FOR DEMO AND DEBUG PURPOSES ONLY! NEVER SAVE PRODUCTION ROOT CREDENTIALS HERE!
 	DEMO_ROOT_PASSWORD: "root",
-	//:const:*:PACKET_DELIVERY_ACKNOWLEDGE_PREFIX:String:pda
-	//:d:en:Prefix for delivery acknowledge packets
-	PACKET_DELIVERY_ACKNOWLEDGE_PREFIX : "pda",
-	//:const:*:PACKET_ID_DELIMETER:String:,
-	//:d:en:Packet identifier delimeter
-	PACKET_ID_DELIMETER: ",",
-	//:const:*:PACKET_FRAGMENT_PREFIX:String:FRAGMENT
-	//:d:en:Prefix used to sign fragmented packets
-	PACKET_FRAGMENT_PREFIX: "FRAGMENT",
-	//:const:*:PACKET_LAST_FRAGMENT_PREFIX:String:LFRAGMENT
-	//:d:en:Prefix used to sign the last fragment on a packet fragmentation
-	PACKET_LAST_FRAGMENT_PREFIX: "LFRAGMENT",
-	//:const:*:MAX_FRAME_SIZE_FREFIX:String:maxframesize
-	//:d:en:Prefix used on the max frame size handshake 
-	MAX_FRAME_SIZE_FREFIX: "maxframesize",
-	//:const:*:PACKET_TRANSACTION_MAX_BYTES_PREFIXED:Integer:31
-	//:d:en:Maximum number of bytes that can be prefixed during a packet transaction
-	PACKET_TRANSACTION_MAX_BYTES_PREFIXED: 31,
-	
 	
 	//:m:*:$
 	//:d:en:Convenience replacement for [tt]document.getElementById()[/tt]. _
@@ -1845,97 +1826,85 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
                     
                     // IF NOT BINARY FRAME
                     
-					// utility variable
-					var lPos, lPID;
-					
-					// supporting the max frame size handshake
-					if( undefined === lThis.fMaxFrameSize ) {
-						lPos = aEvent.data.indexOf( jws.MAX_FRAME_SIZE_FREFIX );
-						if( 0 === lPos ) {
-							lThis.fMaxFrameSize = parseInt( aEvent.data.substr( jws.MAX_FRAME_SIZE_FREFIX.length ) );
-							jws.events.stopEvent( aEvent );
-							if( jws.console.isDebugEnabled() ) {
-								jws.console.debug( "Maximum frame size for connection is: " + lThis.fMaxFrameSize );
-							}
-							
-							// The end of the "max frame size" handshake indicates that the connection is finally opened
-							lValue = lThis.processOpened( aEvent );
-							// give application change to handle event
-							if( aOptions.OnOpen ) {
-								aOptions.OnOpen( aEvent, lValue, lThis );
-							}
-							// process outgoing queue
-							lThis.processQueue();
-							
-							return;
-						}
-					} else if (aEvent.data.length > this.fMaxFrameSize){
-							jws.events.stopEvent( aEvent );
-						jws.console.warn( "Data packet discarded. The packet size " + 
-							"exceeds the max frame size supported by the client!" );
-						return;
-					}
-					
+					// processing control messages
 					var lPacket = aEvent.data;
-					
-					// processing packet delivery acknowledge from the server
-					if ( 0 === lPacket.indexOf(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX) ){
-						if ( lPacket.length <= (10 + jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length) ){
-							lPID = parseInt( lPacket.replace(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, "") );
-							clearTimeout( lThis.fPacketDeliveryTimerTasks[ lPID ] );
+					try {
+						var lMessage = JSON.parse(lPacket);
+						
+						if (lMessage['i$WrappedMsg']){
+							// process control message
+							if ('message' == lMessage.type){
+								var lMsgId = lMessage.msgId;
+								
+								if (lMessage.isAckRequired){
+									// send delivery acknowledge to the server
+									lThis.sendStream(JSON.stringify({
+										'i$WrappedMsg': true,
+										name: 'ack',
+										data: lMsgId,
+										type: 'info'
+									}));
+								}
+								
+								if (lMessage.isFragment){
+									// processing fragmentation
+									if( undefined === lThis.fInFragments[ lMessage.fragmentationId ] ){
+										lThis.fInFragments[ lMessage.fragmentationId ] = lMessage.data;
+									} else {
+										lThis.fInFragments[ lMessage.fragmentationId ] += lMessage.data;
+									}
+									
+									if (lMessage.isLastFragment){
+										// getting the complete packet content
+										lPacket = lThis.fInFragments[ lMessage.fragmentationId ];
+										// removing packet data from the fragments storage 
+										delete lThis.fInFragments[ lMessage.fragmentationId ];
+									} else {
+										return;
+									}
+								} else {
+									// using wrapped message data
+									lPacket = lMessage.data;
+								}
+							} else if ('info' == lMessage.type){
+								if ('ack' == lMessage.name){
+									// processing packet delivery acknowledge from the server
+									clearTimeout( lThis.fPacketDeliveryTimerTasks[ lMessage.data ] );
 							
-							if ( lThis.fPacketDeliveryListeners[ lPID ] ){
-								// cleaning expired data and calling success
-								lThis.fPacketDeliveryListeners[ lPID ].OnSuccess();
-								delete lThis.fPacketDeliveryListeners[ lPID ];
-								delete lThis.fPacketDeliveryTimerTasks[ lPID ];
+									if ( lThis.fPacketDeliveryListeners[ lMessage.data ] ){
+										// cleaning expired data and calling success
+										lThis.fPacketDeliveryListeners[ lMessage.data ].OnSuccess();
+										delete lThis.fPacketDeliveryListeners[ lMessage.data ];
+										delete lThis.fPacketDeliveryTimerTasks[ lMessage.data ];
+									}
+									
+									return;
+								} else if ('maxFrameSize' == lMessage.name){
+									// setting max frame size
+									lThis.fMaxFrameSize = lMessage.data;
+									// stopping event
+									jws.events.stopEvent( aEvent );
+									
+									if( jws.console.isDebugEnabled() ) {
+										jws.console.debug( "Maximum frame size for connection is: " + lThis.fMaxFrameSize );
+									}
+
+									// The end of the "max frame size" handshake indicates that the connection is finally opened
+									lValue = lThis.processOpened( aEvent );
+									// give application change to handle event
+									if( aOptions.OnOpen ) {
+										aOptions.OnOpen( aEvent, lValue, lThis );
+									}
+									
+									// process outgoing queue
+									lThis.processQueue();
+
+									return;
+								}
 							}
 						}
-						
-						return;
-					}
-					
-					// supporting packet delivery acknowledge to the server
-					lPos = aEvent.data.indexOf( jws.PACKET_ID_DELIMETER );
-					if ( lPos >=0 && lPos < 10 && false === isNaN( aEvent.data.substr( 0, lPos ) ) ) {
-						lPID = aEvent.data.substr( 0, lPos );
-						// send packet delivery acknowledge
-						lThis.sendStream( jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPID );
-						if( jws.console.isDebugEnabled() ) {
-							jws.console.debug( "PDA sent for packet with id: " + lPID );
-						}
-						
-						// generating the new packet
-						lPacket = lPacket.substr( lPos + 1 );
-						
-						// supporting fragmentation
-						var lFragmentContent;
-						if ( 0 === lPacket.indexOf( jws.PACKET_FRAGMENT_PREFIX ) ) {
-							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
-							lPID = lPacket.substr( jws.PACKET_FRAGMENT_PREFIX.length, 
-								lPos - jws.PACKET_FRAGMENT_PREFIX.length );
-							lFragmentContent = lPacket.substr( lPos + 1 );
-							// storing the packet fragment
-							if( undefined === lThis.fInFragments[ lPID ] ){
-								lThis.fInFragments[ lPID ] = lFragmentContent;
-							} else {
-								lThis.fInFragments[ lPID ] += lFragmentContent;
-							}
-							
-							// do not process packet fragments
-							return;
-						} else if ( 0 === lPacket.indexOf( jws.PACKET_LAST_FRAGMENT_PREFIX ) ) {
-							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
-							lPID = lPacket.substr( jws.PACKET_LAST_FRAGMENT_PREFIX.length, 
-								lPos - jws.PACKET_LAST_FRAGMENT_PREFIX.length );
-							lFragmentContent = lPacket.substr( lPos + 1 );
-							// storing the packet fragment
-							lThis.fInFragments[ lPID ] += lFragmentContent;
-							// getting the complete packet content
-							lPacket = lThis.fInFragments[ lPID ];
-							// removing packet data from the fragments storage 
-							delete lThis.fInFragments[ lPID ];
-						}
+					} catch (lError){
+						// allowing proprietary implementations
 					}
 					
 					if( jws.console.isDebugEnabled() ) {
@@ -2117,7 +2086,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aFragmentSize:Integer:The size of the packet fragments if fragmentation is required. Default value is connection max frame size value.
 	//:r:*:::void:none
 	sendStreamInTransaction: function ( aData, aListener, aFragmentSize){
-		var lPID = jws.tools.getUniqueInteger();
+		var lMsgId = "" + jws.tools.getUniqueInteger();
 		var lThis = this;
 		
 		try {
@@ -2147,39 +2116,30 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				throw new Error("Missing 'OnFailure' method on argument 'listener'!");
 			}
 			
-			// generating packet prefix
-			var lPacketPrefix = lPID + jws.PACKET_ID_DELIMETER;
-		
 			// processing fragmentation
 			if ( aFragmentSize < this.fMaxFrameSize && aFragmentSize < aData.length ){
 				
 				// first fragment is never the last
 				var lIsLast = false; 
 				// fragmentation id, allows multiplexing
-				var lFragmentationId = jws.tools.getUniqueInteger();
-				// prefix the packet for fragmentation
-				var lFragmentedPacket = jws.PACKET_FRAGMENT_PREFIX 
-				+ lFragmentationId 
-				+ jws.PACKET_ID_DELIMETER 
-				+ aData.substr( 0, aFragmentSize );
+				var lFragmentationId = "" + jws.tools.getUniqueInteger();
+				// getting the fragment content
+				var lFragment = aData.substr( 0, aFragmentSize );
 				
-				if ( lFragmentedPacket.length + lPacketPrefix.length > this.fMaxFrameSize ){
-					throw new Error( "The packet size exceeds the max frame size supported by the client! "
-						+ "Consider that the packet has been prefixed with "
-						+ ( lFragmentedPacket.length + lPacketPrefix.length - aData.length )
-						+ " bytes for fragmented transaction.");
-				}
-				
-				this.sendStreamInTransaction ( lFragmentedPacket, {
-					fOriginPacket: aData,
-					fOriginFragmentSize: aFragmentSize,
-					fOriginListener: aListener,
+				// sending packet
+				this.sendMessage ( {
+					isFragment: true,
+					fragmentationId: lFragmentationId,
+					type: 'message',
+					isLastFragment: lIsLast,
+					data: lFragment,
+					msgId: lMsgId
+				}, {
 					fSentTime: new Date().getTime(),
-					fFragmentationId: lFragmentationId,
 					fBytesSent: 0,
 					
 					getTimeout: function (){
-						var lTimeout = this.fSentTime + this.fOriginListener.getTimeout() - new Date().getTime();
+						var lTimeout = this.fSentTime + aListener.getTimeout() - new Date().getTime();
 						if (lTimeout < 0) {
 							lTimeout = 0;
 						}
@@ -2188,67 +2148,87 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					}, 
 					
 					OnTimeout: function (){
-						this.fOriginListener.OnTimeout();
+						aListener.OnTimeout();
 					},
 					
 					OnSuccess: function (){
 						// updating bytes sent
-						this.fBytesSent += this.fOriginFragmentSize;
-						if ( this.fBytesSent >= this.fOriginPacket.length ) {
+						this.fBytesSent += aFragmentSize;
+						if ( this.fBytesSent >= aData.length ) {
 							// calling success if the packet was transmitted complete
-							this.fOriginListener.OnSuccess();
+							aListener.OnSuccess();
 						} else {
 							// prepare to sent a next fragment
-							var lLength = ( this.fOriginFragmentSize + this.fBytesSent <= this.fOriginPacket.length )
-							? this.fOriginFragmentSize : this.fOriginPacket.length - this.fBytesSent;
+							var lLength = ( aFragmentSize + this.fBytesSent <= aData.length )
+							? aFragmentSize : aData.length - this.fBytesSent;
 
-							var lNextFragment = this.fOriginPacket.substr( this.fBytesSent, lLength );
-							var lIsLast = ( lLength + this.fBytesSent === this.fOriginPacket.length ) ? true : false;
+							var lNextFragment = aData.substr( this.fBytesSent, lLength );
+							var lIsLast = ( lLength + this.fBytesSent === aData.length ) ? true : false;
 					
-							// prefixing next fragment
-							lNextFragment = ( ( lIsLast ) ? jws.PACKET_LAST_FRAGMENT_PREFIX : jws.PACKET_FRAGMENT_PREFIX )
-							+ this.fFragmentationId 
-							+ jws.PACKET_ID_DELIMETER 
-							+ lNextFragment;
-						
 							// send fragment
-							lThis.sendStreamInTransaction(lNextFragment, this);
+							lThis.sendMessage({
+								isFragment: true,
+								fragmentationId: lFragmentationId,
+								type: 'message',
+								isLastFragment: lIsLast,
+								data: lNextFragment,
+								msgId: "" + jws.tools.getUniqueInteger()
+							}, this);
 						}
 					},
 					
 					OnFailure: function ( lEx ){
-						this.fOriginListener.OnFailure( lEx ); 
+						aListener.OnFailure( lEx ); 
 					}
 				});
 				
 				// REQUIRED
 				return;
 			}
-		
-			// prefixing the packet
-			aData = lPacketPrefix + aData;
-			// saving the listener
-			this.fPacketDeliveryListeners[ lPID ] = aListener;
-		
+			
+			this.sendMessage({
+				type: 'message',
+				data: aData,
+				msgId: lMsgId
+			}, aListener);
+			
+		}catch ( lEx ){
+			aListener.OnFailure ( lEx );
+		}
+	},
+	
+	sendMessage: function(aMessage, aListener){
+		try {
+			var lThis = this;
+			if (null != aListener){
+				aMessage.isAckRequired = true;
+				aMessage['i$WrappedMsg'] = true;
+
+				var lMsgId = aMessage.msgId;
+
+				// saving the listener
+				this.fPacketDeliveryListeners[ lMsgId ] = aListener;
+
+				// setting the timer task for OnTimeout support
+				var lTT = setTimeout(function(){
+					if ( lThis.fPacketDeliveryListeners[ lMsgId ] ){
+						// cleaning expired data and calling timeout
+						lThis.fPacketDeliveryListeners[ lMsgId ].OnTimeout();
+						delete lThis.fPacketDeliveryListeners[ lMsgId ];
+						delete lThis.fPacketDeliveryTimerTasks[ lMsgId ];
+					}
+				}, 
+				aListener.getTimeout());
+				this.fPacketDeliveryTimerTasks[ lMsgId ] = lTT; 
+			}
+
 			// sending the packet
-			this.sendStream( aData );
-		
-			// setting the timer task for OnTimeout support
-			var lTT = setTimeout(function(){
-				if ( lThis.fPacketDeliveryListeners[ lPID ] ){
-					// cleaning expired data and calling timeout
-					lThis.fPacketDeliveryListeners[ lPID ].OnTimeout();
-					delete lThis.fPacketDeliveryListeners[ lPID ];
-					delete lThis.fPacketDeliveryTimerTasks[ lPID ];
-				}
-			}, 
-			aListener.getTimeout());
-			this.fPacketDeliveryTimerTasks[ lPID ] = lTT; 
+			this.sendStream( JSON.stringify(aMessage) );
 		}catch ( lEx ){
 			// cleaning expired data and calling OnFailure
-			delete this.fPacketDeliveryListeners[ lPID ];
-			clearTimeout( this.fPacketDeliveryTimerTasks[ lPID ] );
-			delete this.fPacketDeliveryTimerTasks[ lPID ];
+			delete this.fPacketDeliveryListeners[ lMsgId ];
+			clearTimeout( this.fPacketDeliveryTimerTasks[ lMsgId ] );
+			delete this.fPacketDeliveryTimerTasks[ lMsgId ];
 			aListener.OnFailure ( lEx );
 		}
 	},
