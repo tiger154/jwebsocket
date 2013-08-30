@@ -505,8 +505,14 @@ public class JWebSocketFactory {
 	 */
 	public static TokenServer getTokenServer() {
 		if (mTokenServer == null) {
-			mTokenServer = (TokenServer) getServer("ts0");
+			for (WebSocketServer lServer : mServers){
+				if (lServer instanceof TokenServer){
+					mTokenServer = (TokenServer)lServer;
+					break;
+				}
+			}
 		}
+		
 		return mTokenServer;
 	}
 
