@@ -58,5 +58,18 @@
 			</bean>
 		</property>
 		<property name="nodeDescription" ref="nodeDescription"></property>
+		<property name="synchronizer">
+			<bean class="org.jwebsocket.jms.mongodb.MongoBDLoadBalancerSynchronizer" init-method="initialize">
+				<property name="collection">
+					<bean factory-bean="jws_lb_db" factory-method="getCollection">
+						<constructor-arg>
+							<bean factory-bean="destination" factory-method="concat">
+								<constructor-arg value="_synchronizer"/>
+							</bean>
+						</constructor-arg>
+					</bean>
+				</property>
+			</bean>
+		</property>
 	</bean>
 </beans>
