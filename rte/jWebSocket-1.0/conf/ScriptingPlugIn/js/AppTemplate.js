@@ -120,6 +120,9 @@ var App = (function() {
 		getName: function() {
 			return AppUtils.getName();
 		},
+		getNodeId: function(){
+			return AppUtils.getNodeId();
+		},
 		loadJar: function(aFile){
 			return AppUtils.loadJar(aFile);
 		},
@@ -178,8 +181,12 @@ var App = (function() {
 		createResponse: function(aInToken) {
 			return toNativeObject(AppUtils.createResponse(toMap(aInToken)));
 		},
-		broadcast: function(aConnectors, aToken) {
-			AppUtils.broadcast(aConnectors, toMap(aToken));
+		broadcast: function(aArg1, aArg2) {
+			if (null != aArg2){
+				AppUtils.broadcast(aArg1, toMap(aArg2));
+			} else {
+				AppUtils.broadcast(toMap(aArg1));
+			}
 		},
 		newThreadSafeMap: function() {
 			return AppUtils.newThreadSafeMap();

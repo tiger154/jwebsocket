@@ -2,7 +2,7 @@
 <jWebSocket>
 	<installation>prod</installation>
 	<protocol>json</protocol>
-	<node_id>01</node_id>
+	<node_id>03</node_id>
 	
 	<libraries>
 		<library>
@@ -53,7 +53,7 @@
 		<server>
 			<name>org.jwebsocket.jms.JMSServer</name>
 			<id>ts0</id>
-			<jar>jWebSocketServer-1.0.jar</jar>
+			<jar>jWebSocketTokenServer-1.0.jar</jar>
 			<threadPool>
 				<corePoolSize>10</corePoolSize>
 				<maximumPoolSize>100</maximumPoolSize>
