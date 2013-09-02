@@ -1,5 +1,5 @@
-App.importScript('${EXT}/jwsItemStoragePlugIn');
-App.importScript('${EXT}/jwsItemStoragePlugInEE_min');
+//App.importScript('${EXT}/jwsItemStoragePlugIn');
+//App.importScript('${EXT}/jwsItemStoragePlugInEE_min');
 App.loadJar('${APP_HOME}/StaticTest.jar');
 
 App.on('appLoaded', function(aHotLoad){
@@ -7,19 +7,19 @@ App.on('appLoaded', function(aHotLoad){
 		App.loadToAppBeanFactory('${APP_HOME}/beans.xml');
 	}
 	
-	logger = App.getLogger();
-	server = App.getServerClient();
-	server.addListener({
-		processWelcome: function(){
-			server.subscribeCollection('Contacts', 'secret');
-			server.setItemStorageCallbacks({
-				OnItemSaved: function(aEvent){
-					logger.debug(aEvent.name);
-				}
-			});
-		}
-	})
-	server.open();
+//	logger = App.getLogger();
+//	server = App.getServerClient();
+//	server.addListener({
+//		processWelcome: function(){
+//			server.subscribeCollection('Contacts', 'secret');
+//			server.setItemStorageCallbacks({
+//				OnItemSaved: function(aEvent){
+//					logger.debug(aEvent.name);
+//				}
+//			});
+//		}
+//	})
+//	server.open();
 
 	App.setModule('clock', {
 		getTime: function(){
