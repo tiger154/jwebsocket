@@ -20,6 +20,7 @@ package org.jwebsocket.jms.mongodb;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.WriteConcern;
 import org.jwebsocket.jms.Attributes;
 import org.jwebsocket.jms.api.ILoadBalancerSynchronizer;
 
@@ -43,7 +44,7 @@ public class MongoBDLoadBalancerSynchronizer implements ILoadBalancerSynchronize
 	@Override
 	public boolean getLoadBalancerTurn(String aMessageId) {
 		try {
-			mCollection.insert(new BasicDBObject().append(Attributes.MESSAGE_ID, aMessageId));
+			mCollection.insert(new BasicDBObject().append(Attributes.MESSAGE_ID, aMessageId), WriteConcern.SAFE);
 			return true;
 		} catch (Exception lEx) {
 			return false;

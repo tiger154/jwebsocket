@@ -17,7 +17,6 @@ import org.springframework.util.Assert;
 public class MongoDBNodesManager implements INodesManager {
 
 	private DBCollection mNodesCollection;
-	private DBCollection mAcksCollection;
 	private String mNodeDescription;
 	private ILoadBalancerSynchronizer mSynchronizer;
 
@@ -48,7 +47,7 @@ public class MongoDBNodesManager implements INodesManager {
 					.append(Attributes.SESSION_ID, aSessionId)
 					.append(Attributes.DESCRIPTION, aDescription)
 					.append(Attributes.IP_ADDRESS, aIpAddress)
-					.append(Attributes.STATUS, NodeStatus.ONLINE)
+					.append(Attributes.STATUS, NodeStatus.UP)
 					.append(Attributes.CPU, aCpuUsage)));
 		} else {
 			mNodesCollection.save(new BasicDBObject()
@@ -56,7 +55,7 @@ public class MongoDBNodesManager implements INodesManager {
 					.append(Attributes.SESSION_ID, aSessionId)
 					.append(Attributes.DESCRIPTION, aDescription)
 					.append(Attributes.IP_ADDRESS, aIpAddress)
-					.append(Attributes.STATUS, NodeStatus.ONLINE)
+					.append(Attributes.STATUS, NodeStatus.UP)
 					.append(Attributes.CPU, aCpuUsage));
 		}
 	}
@@ -86,7 +85,7 @@ public class MongoDBNodesManager implements INodesManager {
 
 	@Override
 	public String getOptimumNode() throws Exception {
-		DBCursor lCursor = mNodesCollection.find(new BasicDBObject().append(Attributes.STATUS, NodeStatus.ONLINE))
+		DBCursor lCursor = mNodesCollection.find(new BasicDBObject().append(Attributes.STATUS, NodeStatus.UP))
 				.sort(new BasicDBObject().append(Attributes.CPU, 1)
 				.append(Attributes.REQUESTS, 1)).limit(1);
 
@@ -125,9 +124,6 @@ public class MongoDBNodesManager implements INodesManager {
 		// setting SESSION_ID as primary key
 		mNodesCollection.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1),
 				new BasicDBObject().append("unique", true));
-		// message id as primary key
-		mAcksCollection.ensureIndex(new BasicDBObject().append(Attributes.MESSAGE_ID, 1),
-				new BasicDBObject().append("unique", true));
 
 		// setting NODE id as primary key
 		mNodesCollection.ensureIndex(new BasicDBObject().append(Attributes.NODE_ID, 1),
@@ -150,30 +146,6 @@ public class MongoDBNodesManager implements INodesManager {
 
 	@Override
 	public long count() {
-		return mNodesCollection.count(new BasicDBObject().append(Attributes.STATUS, NodeStatus.ONLINE));
-	}
-
-	@Override
-	public String getNodeIdByAckMessageId(String lMsgId) throws Exception {
-		DBObject lRecord = mAcksCollection.findOne(new BasicDBObject().append(Attributes.MESSAGE_ID, lMsgId));
-		String lNodeId = null;
-		if (null != lRecord) {
-			lNodeId = (String) lRecord.get(Attributes.MESSAGE_ID);
-			mAcksCollection.remove(lRecord);
-		}
-
-		return lNodeId;
-	}
-
-	@Override
-	public void registerAckMessageId(String aNodeId, String aMsgId) throws Exception {
-		mAcksCollection.save(new BasicDBObject()
-				.append(Attributes.NODE_ID, aNodeId)
-				.append(Attributes.MESSAGE_ID, aMsgId));
-	}
-
-	@Override
-	public void clearAcks(String aNodeId) throws Exception {
-		mAcksCollection.remove(new BasicDBObject().append(Attributes.NODE_ID, aNodeId));
+		return mNodesCollection.count(new BasicDBObject().append(Attributes.STATUS, NodeStatus.UP));
 	}
 }

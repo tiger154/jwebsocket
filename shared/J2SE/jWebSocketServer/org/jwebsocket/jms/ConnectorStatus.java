@@ -6,6 +6,6 @@ package org.jwebsocket.jms;
  */
 public class ConnectorStatus {
 
-	public static int ONLINE = 0;
-	public static int OFFLINE = 1;
+	public static int UP = 0;
+	public static int DOWN = 1;
 }

@@ -18,11 +18,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms;
 
+import java.util.Iterator;
 import java.util.Map;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -51,7 +53,6 @@ public class JMSEngine extends BaseEngine {
 	private Connection mConnection;
 	private Session mSession;
 	private JMSMessageListener mMessageListener;
-	private JMSMessageAcknowledgeListener mMessageAcknowledgeListener;
 	private IConnectorsManager mConnectorsManager;
 	private MessageProducer mReplyProducer;
 	private String mNodeId = JWebSocketConfig.getConfig().getNodeId();
@@ -146,13 +147,24 @@ public class JMSEngine extends BaseEngine {
 			// creating message listener
 			mMessageListener = new JMSMessageListener(this);
 			mMessageListener.initialize();
-			// creating message acknowledge listener
-			mMessageAcknowledgeListener = new JMSMessageAcknowledgeListener(this);
-			mMessageAcknowledgeListener.initialize();
-
 			// creating the load balancer
+			final INodesManager lNodesManager = (INodesManager) mBeanFactory.getBean("nodesManager");
 			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSession,
-					(INodesManager) mBeanFactory.getBean("nodesManager"));
+					(INodesManager) mBeanFactory.getBean("nodesManager")) {
+				@Override
+				public void shutdown() throws Exception {
+					// close clients if all nodes are down
+					if (lNodesManager.count() == 1) {
+						Iterator<WebSocketConnector> lIt = getConnectors().values().iterator();
+						while (lIt.hasNext()) {
+							lIt.next().stopConnector(CloseReason.SHUTDOWN);
+						}
+					}
+
+					// shutdown load balancer
+					super.shutdown();
+				}
+			};
 		} catch (Exception lEx) {
 			throw new WebSocketException(lEx);
 		}
@@ -161,6 +173,10 @@ public class JMSEngine extends BaseEngine {
 			mLog.info("JmsEngine successfully started! Listenning on topic: '"
 					+ mDestination + "'...");
 		}
+	}
+
+	@Override
+	public void stopEngine(CloseReason aCloseReason) throws WebSocketException {
 	}
 
 	public MessageProducer getReplyProducer() {
@@ -187,8 +203,6 @@ public class JMSEngine extends BaseEngine {
 		mLB.shutdown();
 		// stopping node message listener
 		mMessageListener.shutdown();
-		// stopping node message acknowledge listener
-		mMessageAcknowledgeListener.shutdown();
 		// stopping connectors manager
 		mConnectorsManager.shutdown();
 		// closing the JMS session
