@@ -764,6 +764,13 @@ public class TokenServer extends BaseServer {
 		// before sending the token push it through filter chain
 		FilterResponse lFilterResponse = getFilterChain().processTokenOut(
 				null, null, aToken);
+		if (lFilterResponse.isRejected()) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Broadcasting token '" + aToken + " rejected by filters...");
+			}
+			return;
+		}
+		
 
 		// converting the token within the loop is removed in this method!
 		WebSocketPacket lPacket;
@@ -796,6 +803,12 @@ public class TokenServer extends BaseServer {
 
 		// before sending the token push it through filter chain
 		FilterResponse lFilterResponse = getFilterChain().processTokenOut(aSource, null, aToken);
+		if (lFilterResponse.isRejected()) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Broadcasting token '" + aToken + " rejected by filters...");
+			}
+			return;
+		}
 
 		// converting the token within the loop is removed in this method!
 		WebSocketPacket lPacket;
