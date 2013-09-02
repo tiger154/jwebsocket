@@ -305,10 +305,9 @@ public class TokenPlugIn extends BasePlugIn {
 	 * @param aToken
 	 */
 	public void broadcastToken(WebSocketConnector aSource, Token aToken) {
-		TokenServer lServer = getServer();
-		Assert.notNull(lServer, "Token server reference cannot be null!");
+		Assert.notNull(getServer(), "Token server reference cannot be null!");
 
-		lServer.broadcastToken(aSource, aToken);
+		getServer().broadcastToken(aSource, aToken);
 	}
 
 	/**

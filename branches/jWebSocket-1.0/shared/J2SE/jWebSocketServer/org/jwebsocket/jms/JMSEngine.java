@@ -22,12 +22,14 @@ import java.util.Iterator;
 import java.util.Map;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.jms.api.IConnectorsManager;
@@ -191,6 +193,19 @@ public class JMSEngine extends BaseEngine {
 		mConnectorsManager.initialize();
 		// initializing load balancer once the plugins and filters are started
 		mLB.initialize();
+	}
+
+	@Override
+	public void broadcastPacket(WebSocketConnector aSource, WebSocketPacket aDataPacket) {
+		try {
+			ActiveMQTextMessage lMessage = new ActiveMQTextMessage();
+			lMessage.setBooleanProperty(Attributes.IP_BROADCAST, true);
+			lMessage.setText(aDataPacket.getString());
+
+			mReplyProducer.send(lMessage);
+		} catch (JMSException ex) {
+			mLog.error(Logging.getSimpleExceptionMessage(ex, "broadcasting packet"));
+		}
 	}
 
 	@Override
