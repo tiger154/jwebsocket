@@ -11,14 +11,14 @@ public interface INodesManager extends IInitializable {
 	/**
 	 * Register a new jWebSocket node.
 	 *
-	 * @param aSessionID The JMS session id
+	 * @param aConnectionId The JMS connection id
 	 * @param aNodeId The node id
 	 * @param aDescription The node description
 	 * @param aIpAddress The node ip-address
 	 * @param aCpuUsage The node CPU usage
 	 * @throws Exception
 	 */
-	void register(String aSessionID, String aNodeId, String aDescription,
+	void register(String aConnectionId, String aNodeId, String aDescription,
 			String aIpAddress, double aCpuUsage) throws Exception;
 
 	/**
@@ -54,13 +54,13 @@ public interface INodesManager extends IInitializable {
 	void increaseRequests(String aNodeId) throws Exception;
 
 	/**
-	 * Gets the node name by its session identifier
+	 * Gets the node name by its connection identifier
 	 *
-	 * @param aSessionId
+	 * @param aConnectionId
 	 * @return
 	 * @throws Exception
 	 */
-	String getNodeId(String aSessionId) throws Exception;
+	String getNodeId(String aConnectionId) throws Exception;
 
 	/**
 	 * Returns TRUE if exists a node that matches the given node id, FALSE
@@ -92,31 +92,6 @@ public interface INodesManager extends IInitializable {
 	 * @return
 	 */
 	long count();
-
-	/**
-	 * Gets the node id by sent message's id
-	 *
-	 * @param lMsgId
-	 * @return
-	 */
-	public String getNodeIdByAckMessageId(String lMsgId) throws Exception;
-
-	/**
-	 * Registers an acknowledge message id.
-	 *
-	 * @param aNodeId
-	 * @param aMsgId
-	 * @throws Exception
-	 */
-	void registerAckMessageId(String aNodeId, String aMsgId) throws Exception;
-
-	/**
-	 * Clear node existing acknowledge message ids
-	 *
-	 * @param aNodeId
-	 * @throws Exception
-	 */
-	void clearAcks(String aNodeId) throws Exception;
 
 	/**
 	 * Gets the nodes synchronizer.

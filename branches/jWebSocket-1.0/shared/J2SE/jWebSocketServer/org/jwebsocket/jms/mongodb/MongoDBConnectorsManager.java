@@ -57,7 +57,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 					.append(Attributes.SESSION_ID, aSessionId)
 					.append(Attributes.CONNECTION_ID, aConnectionId)
 					.append(Attributes.REPLY_SELECTOR, aReplySelector)
-					.append(Attributes.STATUS, ConnectorStatus.ONLINE));
+					.append(Attributes.STATUS, ConnectorStatus.UP));
 		}
 
 		return getConnector(aSessionId);
@@ -66,7 +66,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	@Override
 	public boolean sessionExists(String aSessionId) throws Exception {
 		return null != mCollection.findOne(new BasicDBObject()
-				.append(Attributes.STATUS, ConnectorStatus.ONLINE)
+				.append(Attributes.STATUS, ConnectorStatus.UP)
 				.append(Attributes.SESSION_ID, aSessionId));
 	}
 
@@ -126,7 +126,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 
 	@Override
 	public Map<String, WebSocketConnector> getConnectors() throws Exception {
-		DBCursor lCursor = mCollection.find(new BasicDBObject().append(Attributes.STATUS, ConnectorStatus.ONLINE));
+		DBCursor lCursor = mCollection.find(new BasicDBObject().append(Attributes.STATUS, ConnectorStatus.UP));
 
 		Map<String, WebSocketConnector> lConnectors = new HashMap<String, WebSocketConnector>();
 		while (lCursor.hasNext()) {
