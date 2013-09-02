@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket Comet PlugIn (Community Edition, CE)
+//	jWebSocket XHRWebSocket class (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -76,7 +76,7 @@
 		}
         
 		XHRWebSocket.prototype.close = function(){
-			if (this.readyState == this.readyStateValues.CONNECTING)
+			if (this.readyState == this.readyStateValues.CLOSING)
 				throw "The websocket connection is closing";
 			else if (this.readyState == this.readyStateValues.CLOSED)
 				throw "The websocket connection is already closed";

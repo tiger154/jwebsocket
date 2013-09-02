@@ -1739,14 +1739,19 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aURL:String:URL to the jWebSocket Server
 	//:a:en::aOptions:Object:Optional arguments, see below...
 	//:a:en:aOptions:OnOpen:function:Callback when connection was successfully established.
+	//:a:en:aOptions:wsClass:function:Custom implementation for the HTML5 WebSocket class. Optional
 	//:r:*:::void:none
 	open: function( aURL, aOptions ) {
 		if( !aOptions ) {
 			aOptions = {};
 		}
+		
+		// getting the WebSocket class
+		var lWsClass = aOptions['wsClass'] || self.WebSocket;
+		
 		// if browser natively supports WebSockets...
 		// otherwise flash bridge may have embedded WebSocket class
-		if( self.WebSocket ) {
+		if( lWsClass ) {
 
 			if( !this.fConn || this.fConn.readyState > 2 ) {
 				var lThis = this;
@@ -1785,7 +1790,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				}
 
 				// create a new web socket instance
-				this.fConn = new WebSocket( aURL, lSubProt );
+				this.fConn = new lWsClass( aURL, lSubProt );
 				// save URL and sub prot for optional re-connect
 				this.fURL = aURL; 
 				this.fSubProt = lSubProt;
