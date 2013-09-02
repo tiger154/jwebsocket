@@ -28,7 +28,6 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javolution.util.FastList;
 import javolution.util.FastMap;
-import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.IChunkable;
@@ -69,6 +68,7 @@ abstract public class BaseScriptApp {
 	private final ServerClient mServerClient;
 	private LocalLoader mClassLoader;
 	private String mJWSHome;
+	private String mNodeId;
 	/**
 	 * String value for the "Connector Started" event. The event is fired when a
 	 * client started a connection with the server.
@@ -173,6 +173,15 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Gets the jWebSocket server node id
+	 *
+	 * @return
+	 */
+	public String getNodeId() {
+		return mNodeId;
+	}
+
+	/**
 	 * Gets the script application events callbacks collection.
 	 *
 	 * @return
@@ -207,6 +216,7 @@ abstract public class BaseScriptApp {
 		mLogger = new ScriptAppLogger(mLog, aAppName);
 		mServerClient = new ServerClient(this);
 		mClassLoader = aClassLoader;
+		mNodeId = JWebSocketConfig.getConfig().getNodeId();
 
 		// registering global "AppUtils" resource
 		aScriptApp.put("AppUtils", this);

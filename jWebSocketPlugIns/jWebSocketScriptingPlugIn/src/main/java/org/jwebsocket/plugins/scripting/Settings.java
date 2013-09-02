@@ -61,10 +61,6 @@ public class Settings {
 	 */
 	private Map<String, List<String>> mAppsWhiteListedBeans = new LinkedHashMap<String, List<String>>();
 	/**
-	 * Local apps permissions store for performance
-	 */
-	private Map<String, Permissions> mCachedPermissions = new FastMap<String, Permissions>().shared();
-	/**
 	 * Local apps white listed beans
 	 */
 	private Map<String, List<String>> mCachedWhiteListedBeans = new FastMap<String, List<String>>().shared();
@@ -240,7 +236,6 @@ public class Settings {
 	public Permissions getAppPermissions(String aAppName, String aAppPath) {
 		Permissions lPerms = new Permissions();
 		Permission lPermission;
-		Map<String, String> lAppsFolder = getApps();
 
 		// processing global permissions
 		for (String lStrPerm : getGlobalSecurityPermissions()) {

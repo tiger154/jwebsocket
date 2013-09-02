@@ -19,7 +19,6 @@
 package org.jwebsocket.plugins.scripting.app.js;
 
 import java.io.File;
-import java.net.URLClassLoader;
 import java.security.PrivilegedAction;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
