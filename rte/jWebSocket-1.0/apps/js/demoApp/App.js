@@ -74,6 +74,11 @@ App.on('appLoaded', function(){
 		sayHello: function(aName){
 			// see: lib/myAppLib.js
 			return sayHello(aName);
+		},
+		broadcast: function(aMessage){
+			App.broadcast({
+				message: aMessage
+			});
 		}
 	});
 
