@@ -181,7 +181,7 @@
 								});
 							}
 						}, {
-							selector: "replySelector='" + lReplySelector + "'"
+							selector: "replySelector='" + lReplySelector + "' OR isBroadcast=true"
 						});
 						
 					self.stomp.send(self.destination, {

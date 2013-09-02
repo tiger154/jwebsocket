@@ -587,6 +587,16 @@ abstract public class BaseScriptApp {
 			sendToken(aConnector, aToken);
 		}
 	}
+	
+	/**
+	 * Broadcast a Token to a given collection of connectors.
+	 *
+	 * @param aConnectors The collection of connectors
+	 * @param aToken The Token to be broascasted
+	 */
+	public void broadcast(Map aToken) {
+		mPlugIn.broadcastToken(null, toToken(aToken));
+	}
 
 	/**
 	 * Creates a new instance of a thread-safe Map.

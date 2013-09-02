@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.server;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -248,6 +249,14 @@ public class BaseServer implements WebSocketServer {
 					sendPacket(lConnector, aDataPacket);
 				}
 			}
+		}
+	}
+
+	@Override
+	public void broadcastPacket(WebSocketConnector aSource, WebSocketPacket aDataPacket) {
+		Collection<WebSocketEngine> lEngines = getEngines().values();
+		for (WebSocketEngine lEngine : lEngines) {
+			lEngine.broadcastPacket(aSource, aDataPacket);
 		}
 	}
 
