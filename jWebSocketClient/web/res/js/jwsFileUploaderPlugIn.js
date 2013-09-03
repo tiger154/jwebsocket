@@ -33,42 +33,64 @@ jws.FileUploaderPlugIn = {
 	STATUS_UPLOADED: 2,
 	queue: [],
 	browseButton: {},
+	userBrowseButton: {},
 	isFlashFileReader: function() {
-		return false;
+		return window.FileReader && window.FileReader.isFlashFallback ? true : false;
 	},
 	init: function(aConfig) {
 		aConfig = aConfig || {};
 		// The upload button is required, we will render a transparent button 
 		// over the upload button
 		if (aConfig.browseButtonId) {
-			if (aConfig.browseButtonId) {
-				var lUserBrowseBtn = document.getElementById(aConfig.browseButtonId),
-						lUploadBtn = document.createElement('input');
-				lUploadBtn.setAttribute('type', 'file');
-				lUploadBtn.setAttribute('style', 'visibility:hidden;');
-				var lMe = this;
-				lUploadBtn.onchange = function(aFiles){
-					lMe.onFileSelected(aFiles);
-				};
-				lUserBrowseBtn.appendChild(lUploadBtn);
-				lUserBrowseBtn.onclick = function() {
-					lUploadBtn.click();
-				};
-				this.lUploadBtn = lUploadBtn;
-			}
-		}
+			var lUserBrowseBtn = document.getElementById(aConfig.browseButtonId),
+				lBrowseButton = document.createElement('input');
+			lBrowseButton.setAttribute('type', 'file');
+			lBrowseButton.setAttribute('multiple', 'true');
+			lBrowseButton.style.cssText = 'visibility:hidden !important;display: none !important;';
+			var lMe = this;
+			lBrowseButton.onchange = function(aEvt) {
+				lMe.onFileSelected(aEvt);
+			};
+			lUserBrowseBtn.appendChild(lBrowseButton);
+			lUserBrowseBtn.onclick = function() {
+				lMe.browse();
+			};
+			this.browseButton = lBrowseButton;
 
+			$(lUserBrowseBtn).fileReader({
+				filereader: 'js/FileReader/src/filereader.swf',
+				debugMode: true,
+				multiple: true,
+				callback: function() {
+					console.log("Flash HTML5 File API fallback is ready");
+				}
+			});
+
+			$(lUserBrowseBtn).on('change', function(aEvt) {
+				lMe.onFileSelected(aEvt);
+			});
+		}
 	},
 	browse: function() {
 		// Invoke the browse method without clicking the browse field
-		if (this.isFlashFileReader()) {
-//			console.log(this.browseButton);
-//			this.browseButton.click();
+		if (!this.isFlashFileReader()) {
+			this.browseButton.click();
 		}
 	},
-	onFileSelected: function(aFiles) {
+	onFileSelected: function(aEvt) {
+		var lFile = {};
 		//TODO: check if the files are folders, upload nested folders
-		console.log(aFiles);
+		for (var i = 0; i < aEvt.target.files.length; i++) {
+			lFile = aEvt.target.files[i];
+			var lReader = new FileReader();
+			lReader.onload = function(aReference) {
+				console.log("File: " + lFile.name + " read successfully");
+				console.log(aReference);
+			};
+			console.log(aEvt.target.files[i].name, aEvt.target.files[i].type, aEvt.target.files[i].size, aEvt.target.files[i].lastModifiedDate);
+			console.log("Proceeding to read it: ");
+			lReader.readAsDataURL(aEvt.target.files[i]);
+		}
 	},
 	startUpload: function() {
 

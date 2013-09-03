@@ -40,7 +40,7 @@
         <link rel="stylesheet" type="text/css" href="css/jwsFileUploader.css"/>
 
 		<!-- JQUERY DEPENDENCIES -->
-		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/jquery-1.10.2.min.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
 		<!--<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>-->
 		<!--  jQuery Tooltip -->
@@ -52,20 +52,22 @@
 		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
 		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugInEE_min.js"></script>
 		<script type="text/javascript" src="../../res/js/jwsFileUploaderPlugIn.js"></script>
+		<!-- FLASH FALLBACK FOR THE HTML5 FILE API -->
+        <script type="text/javascript" src='js/FileReader/FileReader.js'></script>
 
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
-
-        <!--  MAIN JAVASCRIPT FILE   -->
-        <script type="text/javascript" src='js/init.js'></script>
 		
+        <!--  MAIN JAVASCRIPT FILE   -->
+        <script type="text/javascript" src='js/wFileUploaderDemo.js'></script>
+        <script type="text/javascript" src='js/init.js'></script>
     </head>
     <body>
         <div id="demo_box">
             <!--       DEMO_HEADER       -->
             <div id="demo_box_header">
-                <h1>jWebSocket Streaming Demo</h1>
+                <h1>jWebSocket File Uploader Demo</h1>
                 <div id="demo_box_header_login">
                     <div id="logoff_area">
                         <div id="user_info">
@@ -131,6 +133,10 @@
 							<tbody>
 								<tr>
 									<td>file 1.txt</td>
+									<td>0%</td>
+								</tr>
+								<tr>
+									<td>file 2.doc</td>
 									<td>0%</td>
 								</tr>
 							</tbody>
