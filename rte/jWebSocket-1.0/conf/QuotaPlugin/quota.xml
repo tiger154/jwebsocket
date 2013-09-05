@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
+<beans>
+	
+	<bean id="quotaMongoStorage" class="org.jwebsocket.plugins.quota.storage.StorageQuotaMongo">
+		
+		<property name="host">
+			<value>localhost</value>
+		</property>
+		
+		<property name="port">
+			<value>27017</value>
+		</property>
+		
+		<property name="databaseName">
+			<value>quotaPlugin</value>
+		</property>
+		
+		<property name="user">
+			<value>adminmongo</value>
+		</property>
+		
+		<property name="password">
+			<value>adminmongo..</value>
+		</property>
+		
+	</bean>
+	
+	<bean id="quotaCountDown" class="org.jwebsocket.plugins.quota.definitions.QuotaCountdown">
+		<property name="storage" ref="quotaMongoStorage" />
+		<property name="quotaType">
+			<value>CountDown</value>
+		</property>
+		<property name="defaultReduceValue">
+			<value>1</value>
+		</property>
+		<property name="defaultIncreaseValue"> 
+			<value>1</value>
+		</property>		
+	</bean>
+	
+	
+	<bean id="quotaProvider" class="org.jwebsocket.plugins.quota.utils.QuotaProvider">	
+		<constructor-arg>
+			<!-- In this place the administrator must especifie all the active Quota  -->
+			<map>
+				<entry key="CountDown" value-ref="quotaCountDown" />
+			</map>	
+		</constructor-arg>
+	</bean>
+	
+	
+</beans>

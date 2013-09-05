@@ -933,7 +933,27 @@
 			<id>shutdownEndPoint</id>
 			<description>Allows to shutdown a service endpoint</description>
 		</right>
-		
+		<!-- QuotaPlugin rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.quota</ns>
+			<id>quota_create</id>
+			<description>Allows to root to register a Quota instance</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.quota</ns>
+			<id>quota_remove</id>
+			<description>Allows to root to unregister a Quota instance</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.quota</ns>
+			<id>quota_query</id>
+			<description>Allows to jwebsocket logon users, and admin to consult quotas</description>
+		</right>
+	    <right>
+			<ns>org.jwebsocket.plugins.quota</ns>
+			<id>quota_update</id>
+			<description>Allows to jwebsocket admin users to update quotas</description>
+		</right>
 	</rights>
 
 	<!-- jWebSocket roles -->
@@ -1037,6 +1057,11 @@
 				<right>org.jwebsocket.plugins.loadbalancer.deregisterServiceEndPoint</right>
 				<right>org.jwebsocket.plugins.loadbalancer.shutdownEndPoint</right>
 				
+				<!-- Quota rights -->
+				<right>org.jwebsocket.plugins.quota.quota_create</right>
+				<right>org.jwebsocket.plugins.quota.quota_remove</right>
+				<right>org.jwebsocket.plugins.quota.quota_query</right>
+				<right>org.jwebsocket.plugins.quota.quota_update</right>
 			</rights>
 		</role>
 		<role>
@@ -1071,6 +1096,9 @@
 				<right>org.jwebsocket.plugins.filesystem.send</right>
 				<right>org.jwebsocket.plugins.filesystem.getFilelist</right>
 				<right>org.jwebsocket.plugins.filesystem.observe</right>
+				
+				<!-- Quota rights -->
+				<right>org.jwebsocket.plugins.quota.quota_query</right>
 			</rights>
 		</role>
 		<role>
@@ -1503,6 +1531,20 @@
 			</settings>
 		</plugin>
 
+		<!-- plug-in to perform basic calculations -->
+		<plugin>
+			<name>cu.desoft.calc.CalcPlugIn</name>
+			<id>jws.calc</id>
+			<ns>org.jwebsocket.plugins.calc</ns>
+			<jar>myJar.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/CalcPlugIn/calc.xml</setting>
+			</settings>
+		</plugin>
+
 		<!-- plug-in to generate and validate Captchas -->
 		<plugin>
 			<name>org.jwebsocket.plugins.jcaptcha.JCaptchaPlugIn</name>
@@ -1676,6 +1718,20 @@
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
+		</plugin>
+		
+		<!-- quota plug-in -->
+		<plugin>
+			<name>org.jwebsocket.plugins.quota.QuotaPlugin</name>
+			<id>jws.quota</id>
+			<ns>org.jwebsocket.plugins.quota</ns>
+			<jar>jWebSocketQuotaPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/QuotaPlugin/quota.xml</setting>
+			</settings>
 		</plugin>
 		
 		<!-- Reporting plug-in -->
@@ -1929,6 +1985,16 @@
 			</server-assignments>
 		</filter>
         
+		<filter>
+			<name>org.jwebsocket.plugins.quota.QuotaFilter</name>
+			<id>jws.quotaFilter</id>
+			<ns>org.jwebsocket.quota.filter</ns>
+			<jar>jWebSocketQuotaPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</filter>
+		
 		<filter>
 			<name>org.jwebsocket.filters.sample.SampleFilter</name>
 			<id>jws.sampleFilter</id>
