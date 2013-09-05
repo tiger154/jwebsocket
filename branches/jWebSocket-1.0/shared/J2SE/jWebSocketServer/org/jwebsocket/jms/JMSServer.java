@@ -39,9 +39,24 @@ import org.jwebsocket.token.Token;
 public class JMSServer extends TokenServer {
 
 	private static Logger mLog = Logging.getLogger(JMSServer.class);
+	private JMSMessageHub mMessageHub;
 
 	public JMSServer(ServerConfiguration aServerConfig) {
 		super(aServerConfig);
+	}
+
+	@Override
+	public void engineStarted(WebSocketEngine aEngine) {
+//		if (null == mMessageHub && aEngine instanceof JMSEngine) {
+//			mMessageHub = new JMSMessageHub((JMSEngine) aEngine);
+//			try {
+//				mMessageHub.initialize();
+//			} catch (Exception lEx) {
+//				mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing message hub"));
+//			}
+//		}
+
+		super.engineStarted(aEngine);
 	}
 
 	@Override
@@ -81,5 +96,17 @@ public class JMSServer extends TokenServer {
 	@Override
 	public void broadcastToken(WebSocketConnector aSource, Token aToken, BroadcastOptions aBroadcastOptions) {
 		throw new UnsupportedOperationException("'Broadcast options' not supported on JMSServer!");
+	}
+
+	@Override
+	public void systemStopping() throws Exception {
+		super.systemStopping();
+
+		// shutdown message hub
+		mMessageHub.shutdown();
+	}
+
+	public JMSMessageHub getMessageHub() {
+		return mMessageHub;
 	}
 }

@@ -11,6 +11,7 @@ public class Attributes {
 	public static final String IP_BROADCAST = "isBroadcast";
 	public static final String MESSAGE_TYPE = "msgType";
 	public static final String NODE_ID = "nodeId";
+	public static final String NAMESPACE = "ns";
 	public static final String CONNECTION_ID = "connectionId";
 	public static final String STATUS = "status";
 	public static final String DESCRIPTION = "description";
