@@ -47,14 +47,14 @@ public class JMSServer extends TokenServer {
 
 	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
-//		if (null == mMessageHub && aEngine instanceof JMSEngine) {
-//			mMessageHub = new JMSMessageHub((JMSEngine) aEngine);
-//			try {
-//				mMessageHub.initialize();
-//			} catch (Exception lEx) {
-//				mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing message hub"));
-//			}
-//		}
+		if (null == mMessageHub && aEngine instanceof JMSEngine) {
+			mMessageHub = new JMSMessageHub((JMSEngine) aEngine);
+			try {
+				mMessageHub.initialize();
+			} catch (Exception lEx) {
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing message hub"));
+			}
+		}
 
 		super.engineStarted(aEngine);
 	}
