@@ -55,14 +55,22 @@ public class JMSMessageHub implements IInitializable {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Initializing message hub...");
 		}
-		
+
 		Destination lDestination = mEngine.getSession().createTopic(mEngine.getDestination() + "_messagehub");
-		mConsumer = mEngine.getSession().createConsumer(lDestination, Attributes.NAMESPACE + " NOT NULL");
+		mConsumer = mEngine.getSession().createConsumer(lDestination, Attributes.NAMESPACE + "IS NOT NULL");
 		mConsumer.setMessageListener(new MessageListener() {
 			@Override
 			public void onMessage(Message aMessage) {
 				try {
 					String lNS = aMessage.getStringProperty(Attributes.NAMESPACE);
+					String lNodeId = aMessage.getStringProperty(Attributes.NODE_ID);
+					Boolean lSenderIncluded = aMessage.getBooleanProperty(Attributes.SENDER_INCLUDED);
+
+					// sender does not wants to receive the messaege
+					if (mEngine.getNodeId().equals(lNodeId) && !lSenderIncluded) {
+						return;
+					}
+
 					if (mListeners.containsKey(lNS)) {
 						Iterator<MessageListener> lIt = mListeners.get(lNS).iterator();
 						while (lIt.hasNext()) {
@@ -90,10 +98,10 @@ public class JMSMessageHub implements IInitializable {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Shutting down message hub...");
 		}
-		
+
 		mConsumer.close();
 		mProducer.close();
-		
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Message hub successfully terminated!");
 		}
@@ -142,6 +150,7 @@ public class JMSMessageHub implements IInitializable {
 	public MapMessage buildMessage(String aNS, String aMsgType) throws Exception {
 		MapMessage lMessage = mEngine.getSession().createMapMessage();
 		lMessage.setString(Attributes.NAMESPACE, aNS);
+		lMessage.setString(Attributes.NODE_ID, mEngine.getNodeId());
 		lMessage.setString(Attributes.MESSAGE_TYPE, aMsgType);
 
 		return lMessage;
@@ -154,6 +163,21 @@ public class JMSMessageHub implements IInitializable {
 	 * @throws Exception
 	 */
 	public void send(Message aMessage) throws Exception {
+		send(aMessage, false);
+	}
+
+	/**
+	 * Sends a message through the message hub.
+	 *
+	 * @param aMessage
+	 * @throws Exception
+	 */
+	public void send(Message aMessage, boolean aSenderIncluded) throws Exception {
+		aMessage.setBooleanProperty(Attributes.SENDER_INCLUDED, aSenderIncluded);
+		if (mLog.isDebugEnabled()) {
+			mLog.info("Sending message '" + aMessage.toString() + "' to cluster mesage hub...");
+		}
+
 		mProducer.send(aMessage);
 	}
 }
