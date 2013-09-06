@@ -170,15 +170,19 @@ public class JMSEngine extends BaseEngine {
 		} catch (Exception lEx) {
 			throw new WebSocketException(lEx);
 		}
+		
+		// notifying servers
+		super.engineStarted();
 
 		if (mLog.isDebugEnabled()) {
-			mLog.info("JmsEngine successfully started! Listenning on topic: '"
+			mLog.info("Engine successfully started! Listenning on topic: '"
 					+ mDestination + "'...");
 		}
 	}
 
 	@Override
 	public void stopEngine(CloseReason aCloseReason) throws WebSocketException {
+		super.engineStopped();
 	}
 
 	public MessageProducer getReplyProducer() {

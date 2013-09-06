@@ -20,4 +20,5 @@ public class Attributes {
 	public static final String DATA = "data";
 	public static final String MESSAGE_ID = "msgId";
 	public static final String REPLY_SELECTOR = "replySelector";
+	public static final String SENDER_INCLUDED = "senderIncluded";
 }
