@@ -57,7 +57,7 @@ public class JMSMessageHub implements IInitializable {
 		}
 
 		Destination lDestination = mEngine.getSession().createTopic(mEngine.getDestination() + "_messagehub");
-		mConsumer = mEngine.getSession().createConsumer(lDestination, Attributes.NAMESPACE + "IS NOT NULL");
+		mConsumer = mEngine.getSession().createConsumer(lDestination, Attributes.NAMESPACE + " IS NOT NULL");
 		mConsumer.setMessageListener(new MessageListener() {
 			@Override
 			public void onMessage(Message aMessage) {
@@ -72,6 +72,9 @@ public class JMSMessageHub implements IInitializable {
 					}
 
 					if (mListeners.containsKey(lNS)) {
+						if (mLog.isDebugEnabled()) {
+							mLog.debug("Notifying message(ns: " + lNS + ", senderNodeId: " + lNodeId + ") listeners...");
+						}
 						Iterator<MessageListener> lIt = mListeners.get(lNS).iterator();
 						while (lIt.hasNext()) {
 							try {
@@ -82,6 +85,7 @@ public class JMSMessageHub implements IInitializable {
 						}
 					}
 				} catch (Exception lEx) {
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "processing message"));
 				}
 			}
 		});
@@ -149,9 +153,9 @@ public class JMSMessageHub implements IInitializable {
 	 */
 	public MapMessage buildMessage(String aNS, String aMsgType) throws Exception {
 		MapMessage lMessage = mEngine.getSession().createMapMessage();
-		lMessage.setString(Attributes.NAMESPACE, aNS);
-		lMessage.setString(Attributes.NODE_ID, mEngine.getNodeId());
-		lMessage.setString(Attributes.MESSAGE_TYPE, aMsgType);
+		lMessage.setStringProperty(Attributes.NAMESPACE, aNS);
+		lMessage.setStringProperty(Attributes.NODE_ID, mEngine.getNodeId());
+		lMessage.setStringProperty(Attributes.MESSAGE_TYPE, aMsgType);
 
 		return lMessage;
 	}

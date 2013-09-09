@@ -112,7 +112,14 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 	 */
 	@Override
 	public V get(Object aKey) {
-		return (V) mCollection.findOne(new BasicDBObject().append("ns", mName).append("k", aKey)).get("v");
+		DBObject lRecord = mCollection.findOne(new BasicDBObject()
+				.append("ns", mName).append("k", aKey));
+
+		if (null != lRecord) {
+			return (V) lRecord.get("v");
+		}
+
+		return null;
 	}
 
 	@Override

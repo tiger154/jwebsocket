@@ -143,7 +143,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	/**
 	 * Spring authentication session indexes
 	 */
-	public static final String USERNAME = "$username";
+	public static final String USERNAME = BaseConnector.VAR_USERNAME;
 	/**
 	 *
 	 */
