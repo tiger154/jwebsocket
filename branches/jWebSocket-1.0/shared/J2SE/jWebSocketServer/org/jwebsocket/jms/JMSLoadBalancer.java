@@ -77,7 +77,7 @@ public class JMSLoadBalancer implements IInitializable {
 					// getting the message type property
 					MessageType lType = MessageType.valueOf(aMessage.getStringProperty(Attributes.MESSAGE_TYPE));
 					// generating the session id
-					String lSessionId = String.valueOf(lMessage.getProducerId().getParentId());
+					String lSessionId = String.valueOf(lMessage.getProducerId().getConnectionId());
 					// prefixing the session id to avoid conflicts
 					lSessionId = Tools.getMD5(mServerDestination + lSessionId);
 
