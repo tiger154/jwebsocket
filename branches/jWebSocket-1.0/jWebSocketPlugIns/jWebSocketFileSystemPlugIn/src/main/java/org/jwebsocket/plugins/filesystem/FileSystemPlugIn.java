@@ -531,6 +531,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				lResponse.getMap().put("data", lBA);
 				lResponse.setBoolean("__binaryData", Boolean.TRUE);
 			}
+			// setting the file MIME type
+			lResponse.setString("mime", lFileType);
 		} catch (Exception lEx) {
 			lResponse.setInteger("code", -1);
 			lMsg = lEx.getClass().getSimpleName() + " on load: " + lEx.getMessage();
@@ -670,7 +672,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			Collection<File> lFiles = FileUtils.listFilesAndDirs(lDir, lFileFilter, lDirFilter);
 			List lFileList = new FastList<Map>();
 			File lBasePath = new File(lBaseDir);
-
+			MimetypesFileTypeMap lMimesMap = new MimetypesFileTypeMap();
 			for (File lFile : lFiles) {
 				if (lFile == lDir
 						// we don't want directories to be returned
@@ -691,6 +693,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				lFileData.put("canRead", lFile.canRead());
 				lFileData.put("canWrite", lFile.canWrite());
 				lFileData.put("directory", lFile.isDirectory());
+				lFileData.put("mime", lMimesMap.getContentType(lFile));
 				if (lAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
 					lFileData.put("url", getString(ALIAS_WEB_ROOT_KEY, ALIAS_WEB_ROOT_DEF)
 							// in URLs we only want forward slashes
