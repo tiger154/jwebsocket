@@ -89,6 +89,7 @@ public class TimeoutOutputStreamNIOWriter {
 			mTimer.cancel();
 			mTimer.purge();
 		}
+		mTimer = null;
 	}
 
 	/**
