@@ -849,6 +849,7 @@ public class Tools {
 		if (null != mThreadPool && !mThreadPool.isShutdown()) {
 			mThreadPool.shutdownNow();
 		}
+		mThreadPool = null;
 	}
 
 	/**
@@ -904,6 +905,8 @@ public class Tools {
 			mTimer.cancel();
 			mTimer.purge();
 		}
+
+		mTimer = null;
 	}
 
 	/**
