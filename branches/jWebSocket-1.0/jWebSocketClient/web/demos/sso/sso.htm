@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<!-- If Google's chrome frame installed, use it! -->
+		<!-- Comment needs to be BELOW this meta tag! -->
+		<!--
+		//	****************************************************************************
+		//	jWebSocket SSO Demo (Community Edition, CE)
+		//	****************************************************************************
+		//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+		//  Alexander Schulze, Germany (NRW)
+		//
+		//	Licensed under the Apache License, Version 2.0 (the "License");
+		//	you may not use this file except in compliance with the License.
+		//	You may obtain a copy of the License at
+		//
+		//	http://www.apache.org/licenses/LICENSE-2.0
+		//
+		//	Unless required by applicable law or agreed to in writing, software
+		//	distributed under the License is distributed on an "AS IS" BASIS,
+		//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		//	See the License for the specific language governing permissions and
+		//	limitations under the License.
+		//	****************************************************************************
+		-->
+		<meta http-equiv="Content-Language" content="en">
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+		<title>jWebSocket SSO Demo</title>
+		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
+
+		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsSSOPlugIn.js" type="text/javascript"></script>
+
+		<script type="text/javascript" language="JavaScript">
+			
+			function handleExtProcessMsg( aToken ) {
+			}
+			
+			function authDirect() {
+				log( "Calling direct auth..." );
+				lWSC.ssoAuthDirect( eUsername.value, ePassword.value, {
+					OnResponse: function( aToken ) {
+						log("JSON: " + aToken.text );
+					}
+				});
+			}
+
+			function getUser() {
+				log( "Calling get user..." );
+				lWSC.ssoGetUser({
+					OnResponse: function( aToken ) {
+						log("JSON: " + aToken.text );
+					}
+				});
+			}
+
+			function refreshAccessToken() {
+				log( "Refreshing access token..." );
+				lWSC.ssoRefreshAccessToken({
+					OnResponse: function( aToken ) {
+						log("JSON: " + aToken.text );
+					}
+				});
+			}
+			
+			function loadOAuthData() {
+				log( "Loading OAuth data..." );
+				lWSC.ssoLoadOAuthData({
+					OnResponse: function( aToken ) {
+						log( "Loaded: " + JSON.stringify( aToken ) );
+					}
+				});
+			}
+			
+			function saveOAuthData() {
+				log( "Saving OAuth data..." );
+				lWSC.ssoSaveOAuthData({
+					OnResponse: function( aToken ) {
+						log( "Saved: " + JSON.stringify( aToken ) );
+					}
+				});
+			}
+
+			function initPage() {
+				eArgs = jws.$( "stxfArgs" );
+				
+				// lWSC.ssoSetHost( "https://hqdvpngpoc01.nvidia.com/as/token.oauth2" );
+				lWSC.ssoSetHost( "https://localhost/as/token.oauth2" );
+				lWSC.ssoSetSecret( "2Federate" );
+				
+//				lWSC.setExtProcessCallbacks({
+//					OnExtProcessMsg: handleExtProcessMsg
+//				});
+			}
+
+			function exitPage() {
+				// processExitPage();
+			}
+
+		</script>
+	</head>
+
+	<body
+		onload="initPage();"
+		onunload="exitPage();"
+		>
+		<script type="text/javascript">
+			jws.DemoPlugIn.buildDemoPage({
+				title: "External Process",
+				header: "jWebSocket SSO Demo",
+				description: "This demo shows how to access SSO environments with jWebSocket."
+			});
+			processInitPage();
+		</script>
+
+		<div class="sdivContainer">
+			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
+				<tr class="strDlg">
+					<td colspan="2" width="">
+						<input class="sbtnDlg" id="sbtnAuthDirect" type="button" value="Auth directly" onclick="authDirect();"
+							   title="Authenticates directly.">
+						<input class="sbtnDlg" id="sbtnGetUser" type="button" value="Get User" onclick="getUser();"
+							   title="Gets the users from the access token, if exists already.">
+						<input class="sbtnDlg" id="sbtnRefreshAccessToken" type="button" value="Refresh" onclick="refreshAccessToken();"
+							   title="Refreshes the access token using the refresh token, if exists already.">
+						<input class="sbtnDlg" id="sbtnSaveOAuthData" type="button" value="Save Cookie" onclick="saveOAuthData();"
+							   title="Saves the relevant OAuth data in a cookie.">
+						<input class="sbtnDlg" id="sbtnLoadOAuthData" type="button" value="Load Cookie" onclick="loadOAuthData();"
+							   title="Loads the relevant OAuth data from a cookie.">
+					</td>
+				</tr>
+			</table>
+		</div>
+
+	</body>
+</html>

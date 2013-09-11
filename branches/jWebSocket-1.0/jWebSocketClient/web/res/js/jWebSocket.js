@@ -4643,9 +4643,8 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 // supporting String to ByteArray conversion
 String.prototype.getBytes = function () {
   var lBytes = [];
-  for (var lIndex = 0; lIndex < this.length; ++lIndex) {
-    lBytes.push(this.charCodeAt(lIndex));
+  for( var lIndex = 0; lIndex < this.length; ++lIndex ) {
+    lBytes.push( this.charCodeAt( lIndex ) );
   }
-  
   return lBytes;
 };
