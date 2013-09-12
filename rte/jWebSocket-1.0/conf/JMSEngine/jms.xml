@@ -52,7 +52,7 @@
 		</property>
 		<property name="nodeDescription" ref="nodeDescription"></property>
 		<property name="synchronizer">
-			<bean class="org.jwebsocket.jms.mongodb.MongoBDLoadBalancerSynchronizer" init-method="initialize">
+			<bean class="org.jwebsocket.jms.mongodb.MongoBDClusterSynchronizer" init-method="initialize">
 				<property name="collection">
 					<bean factory-bean="jws_lb_db" factory-method="getCollection">
 						<constructor-arg>
