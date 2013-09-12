@@ -21,6 +21,7 @@ package org.jwebsocket.jms;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.jms.Destination;
 import javax.jms.MapMessage;
 import javax.jms.Message;
@@ -154,6 +155,7 @@ public class JMSMessageHub implements IInitializable {
 	public MapMessage buildMessage(String aNS, String aMsgType) throws Exception {
 		MapMessage lMessage = mEngine.getSession().createMapMessage();
 		lMessage.setStringProperty(Attributes.NAMESPACE, aNS);
+		lMessage.setStringProperty(Attributes.MESSAGE_ID, UUID.randomUUID().toString());
 		lMessage.setStringProperty(Attributes.NODE_ID, mEngine.getNodeId());
 		lMessage.setStringProperty(Attributes.MESSAGE_TYPE, aMsgType);
 
