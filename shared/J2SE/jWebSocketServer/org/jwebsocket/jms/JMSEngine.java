@@ -59,6 +59,7 @@ public class JMSEngine extends BaseEngine {
 	private MessageProducer mReplyProducer;
 	private String mNodeId = JWebSocketConfig.getConfig().getNodeId();
 	private JMSLoadBalancer mLB;
+	private INodesManager mNodesManager;
 
 	public JMSEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -86,6 +87,10 @@ public class JMSEngine extends BaseEngine {
 
 	public Session getSession() {
 		return mSession;
+	}
+
+	public INodesManager getNodesManager() {
+		return mNodesManager;
 	}
 
 	@Override
@@ -150,9 +155,10 @@ public class JMSEngine extends BaseEngine {
 			mMessageListener = new JMSMessageListener(this);
 			mMessageListener.initialize();
 			// creating the load balancer
+			mNodesManager = (INodesManager) mBeanFactory.getBean("nodesManager");
+
 			final INodesManager lNodesManager = (INodesManager) mBeanFactory.getBean("nodesManager");
-			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSession,
-					(INodesManager) mBeanFactory.getBean("nodesManager")) {
+			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSession, mNodesManager) {
 				@Override
 				public void shutdown() throws Exception {
 					// close clients if all nodes are down
@@ -170,7 +176,7 @@ public class JMSEngine extends BaseEngine {
 		} catch (Exception lEx) {
 			throw new WebSocketException(lEx);
 		}
-		
+
 		// notifying servers
 		super.engineStarted();
 

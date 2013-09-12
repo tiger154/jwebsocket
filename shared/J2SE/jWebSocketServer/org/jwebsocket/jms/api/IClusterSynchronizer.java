@@ -26,15 +26,15 @@ import org.jwebsocket.api.IInitializable;
  *
  * @author kyberneees
  */
-public interface ILoadBalancerSynchronizer extends IInitializable {
+public interface IClusterSynchronizer extends IInitializable {
 
 	/**
-	 * Returns TRUE if the calling load balancer is allowed to process the
-	 * client message, FALSE otherwise. Multiples LB's instances are subscribed
-	 * to messages, but only one should be able to process it.
+	 * Returns TRUE if the calling node is allowed to process a message, FALSE
+	 * otherwise. Multiples nodes can request permission to process a message,
+	 * but only one should gets granted.
 	 *
-	 * @param aMessageId The client message id
+	 * @param aMessageId A custom message id
 	 * @return
 	 */
-	boolean getLoadBalancerTurn(String aMessageId);
+	boolean getWorkerTurn(String aMessageId);
 }

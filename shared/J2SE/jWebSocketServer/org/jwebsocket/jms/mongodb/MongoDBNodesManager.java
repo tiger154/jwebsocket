@@ -6,7 +6,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import org.jwebsocket.jms.Attributes;
 import org.jwebsocket.jms.NodeStatus;
-import org.jwebsocket.jms.api.ILoadBalancerSynchronizer;
+import org.jwebsocket.jms.api.IClusterSynchronizer;
 import org.jwebsocket.jms.api.INodesManager;
 import org.springframework.util.Assert;
 
@@ -18,14 +18,14 @@ public class MongoDBNodesManager implements INodesManager {
 
 	private DBCollection mNodesCollection;
 	private String mNodeDescription;
-	private ILoadBalancerSynchronizer mSynchronizer;
+	private IClusterSynchronizer mSynchronizer;
 
 	@Override
-	public ILoadBalancerSynchronizer getSynchronizer() {
+	public IClusterSynchronizer getSynchronizer() {
 		return mSynchronizer;
 	}
 
-	public void setSynchronizer(ILoadBalancerSynchronizer aSynchronizer) {
+	public void setSynchronizer(IClusterSynchronizer aSynchronizer) {
 		mSynchronizer = aSynchronizer;
 	}
 
