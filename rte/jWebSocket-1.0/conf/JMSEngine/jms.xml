@@ -26,8 +26,11 @@
 	<bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
 		<constructor-arg value="localhost"/>
 	</bean>
-	<bean id="jws_lb_db" factory-bean="mongodbConnection0" factory-method="getDB">
+	<bean id="jws_lb_db" class="org.jwebsocket.storage.mongodb.MongoDBUtils" factory-method="getDB">
+		<constructor-arg ref="mongodbConnection0"/>
 		<constructor-arg value="jws_lb"/>
+		<!--<constructor-arg value="user"/>
+		<constructor-arg value="pass"/>-->
 	</bean>
 	<bean id="connectorsManager" class="org.jwebsocket.jms.mongodb.MongoDBConnectorsManager">
 		<property name="collection">
