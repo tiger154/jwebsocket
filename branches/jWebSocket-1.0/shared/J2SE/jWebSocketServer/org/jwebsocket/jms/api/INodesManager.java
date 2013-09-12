@@ -98,5 +98,5 @@ public interface INodesManager extends IInitializable {
 	 *
 	 * @return
 	 */
-	ILoadBalancerSynchronizer getSynchronizer();
+	IClusterSynchronizer getSynchronizer();
 }

@@ -22,14 +22,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.WriteConcern;
 import org.jwebsocket.jms.Attributes;
-import org.jwebsocket.jms.api.ILoadBalancerSynchronizer;
+import org.jwebsocket.jms.api.IClusterSynchronizer;
 
 /**
  * Implementation based on MongoDB primary key duplication restriction exception
  *
  * @author kyberneees
  */
-public class MongoBDLoadBalancerSynchronizer implements ILoadBalancerSynchronizer {
+public class MongoBDClusterSynchronizer implements IClusterSynchronizer {
 
 	private DBCollection mCollection;
 
@@ -42,7 +42,7 @@ public class MongoBDLoadBalancerSynchronizer implements ILoadBalancerSynchronize
 	}
 
 	@Override
-	public boolean getLoadBalancerTurn(String aMessageId) {
+	public boolean getWorkerTurn(String aMessageId) {
 		try {
 			mCollection.insert(new BasicDBObject().append(Attributes.MESSAGE_ID, aMessageId), WriteConcern.SAFE);
 			return true;

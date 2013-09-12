@@ -55,7 +55,10 @@ public class JMSLoadBalancer implements IInitializable {
 		// nodes topic
 		Topic lNodesTopic = mSession.createTopic(mServerDestination + "_nodes");
 
-		mClientsMessagesConsumer = mSession.createConsumer(lClientsTopic, Attributes.MESSAGE_TYPE + " IS NOT NULL");
+		mClientsMessagesConsumer = mSession.createConsumer(lClientsTopic,
+				Attributes.MESSAGE_TYPE + " IS NOT NULL"
+				+ " AND "
+				+ Attributes.MESSAGE_ID + " IS NOT NULL");
 		mNodesMessagesProducer = mSession.createProducer(lNodesTopic);
 
 		// client messages listener
@@ -64,7 +67,7 @@ public class JMSLoadBalancer implements IInitializable {
 			public void onMessage(Message aMessage) {
 				try {
 					String lMsgId = aMessage.getStringProperty(Attributes.MESSAGE_ID);
-					if (null == lMsgId || !mNodesManager.getSynchronizer().getLoadBalancerTurn(lMsgId)) {
+					if (null == lMsgId || !mNodesManager.getSynchronizer().getWorkerTurn(lMsgId)) {
 						// LB not turn to work
 						return;
 					}
@@ -186,7 +189,7 @@ public class JMSLoadBalancer implements IInitializable {
 
 						if (lDS instanceof ConsumerId) {
 							String lConnectionId = ((ConsumerId) lDS).getConnectionId();
-							if (!mNodesManager.getSynchronizer().getLoadBalancerTurn(lConnectionId)) {
+							if (!mNodesManager.getSynchronizer().getWorkerTurn(lConnectionId)) {
 								// LB not turn to work
 								return;
 							}
@@ -225,7 +228,7 @@ public class JMSLoadBalancer implements IInitializable {
 						if (lDS instanceof ConsumerId) {
 							// getting the connection id
 							String lConnectionId = String.valueOf(((ConsumerId) lDS).getConnectionId());
-							if (!mNodesManager.getSynchronizer().getLoadBalancerTurn(lConnectionId)) {
+							if (!mNodesManager.getSynchronizer().getWorkerTurn(lConnectionId)) {
 								// LB not turn to work
 								return;
 							}
@@ -247,7 +250,7 @@ public class JMSLoadBalancer implements IInitializable {
 			mLog.info("Load balancer successfully initialized!");
 		}
 
-		String lConnectionId = ((ActiveMQSession)mSession).getConnection().getConnectionInfo().getConnectionId().getValue();
+		String lConnectionId = ((ActiveMQSession) mSession).getConnection().getConnectionInfo().getConnectionId().getValue();
 		// registering node
 		mNodesManager.register(lConnectionId, mNodeId, mNodesManager.getNodeDescription(),
 				Inet4Address.getLocalHost().getHostAddress(),

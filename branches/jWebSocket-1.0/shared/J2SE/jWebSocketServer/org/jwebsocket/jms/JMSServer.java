@@ -24,6 +24,7 @@ import org.jwebsocket.api.ServerConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.jms.api.IClusterSynchronizer;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.FilterResponse;
 import org.jwebsocket.logging.Logging;
@@ -40,6 +41,7 @@ public class JMSServer extends TokenServer {
 
 	private static Logger mLog = Logging.getLogger(JMSServer.class);
 	private JMSMessageHub mMessageHub = null;
+	private IClusterSynchronizer mSynchronizer = null;
 
 	public JMSServer(ServerConfiguration aServerConfig) {
 		super(aServerConfig);
@@ -47,8 +49,10 @@ public class JMSServer extends TokenServer {
 
 	@Override
 	public void engineStarted(WebSocketEngine aEngine) {
-		if (null == mMessageHub && aEngine instanceof JMSEngine) {
-			mMessageHub = new JMSMessageHub((JMSEngine) aEngine);
+		if (aEngine instanceof JMSEngine) {
+			JMSEngine lEngine = (JMSEngine) aEngine;
+			mMessageHub = new JMSMessageHub(lEngine);
+			mSynchronizer = lEngine.getNodesManager().getSynchronizer();
 			try {
 				mMessageHub.initialize();
 			} catch (Exception lEx) {
@@ -57,6 +61,10 @@ public class JMSServer extends TokenServer {
 		}
 
 		super.engineStarted(aEngine);
+	}
+
+	public IClusterSynchronizer getSynchronizer() {
+		return mSynchronizer;
 	}
 
 	@Override
