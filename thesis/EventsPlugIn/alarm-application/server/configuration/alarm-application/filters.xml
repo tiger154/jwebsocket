@@ -25,8 +25,9 @@
 		<property name="id" value="cache" />
 		<property name="cacheStorageProvider">
 			<!--
-			<bean class="org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageProvider">
-				<property name="con" ref="MongoDBConnection0" />
+			<bean class="org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageProvider"
+				init-method="initialize" destroy-method="shutdown">
+				<property name="connection" ref="MongoDBConnection0" />
 				<property name="databaseName" value="cache" />
 				<property name="collectionName" value="cache_filter_entries" />
 			</bean>
