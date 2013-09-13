@@ -2,12 +2,15 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
 	<bean id="destination" class="java.lang.String">
+		<!-- the cluster topic name for client2server communication	-->
 		<constructor-arg value="jws_cloud1"/>
 	</bean>
 	<bean id="nodeDescription" class="java.lang.String">
+		<!-- the current cluster node description for administrative description -->
 		<constructor-arg value="jWebSocket Server Node"/>
 	</bean>
 
+	<!-- the JMSEngine ActiveMQ connection factory	-->
 	<bean id="amqFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
 		<property name="brokerURL" value="tcp://0.0.0.0:61616" />
 		<property name="useAsyncSend" value="true" />
@@ -23,15 +26,20 @@
 		<property name="targetConnectionFactory" ref="amqFactory" />
 	</bean>
 
+	<!-- the MongoDB server connection instance -->
 	<bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
 		<constructor-arg value="localhost"/>
 	</bean>
+
+	<!-- the MongoDB database instance to store the load balancer data -->
 	<bean id="jws_lb_db" class="org.jwebsocket.storage.mongodb.MongoDBUtils" factory-method="getDB">
 		<constructor-arg ref="mongodbConnection0"/>
 		<constructor-arg value="jws_lb"/>
 		<!--<constructor-arg value="user"/>
 		<constructor-arg value="pass"/>-->
 	</bean>
+
+	<!-- the cluster 'connectorsManager' instance for client connections management -->
 	<bean id="connectorsManager" class="org.jwebsocket.jms.mongodb.MongoDBConnectorsManager">
 		<property name="collection">
 			<bean factory-bean="jws_lb_db" factory-method="getCollection">
@@ -43,6 +51,8 @@
 			</bean>
 		</property>
 	</bean>
+	
+	<!-- the cluster 'nodesManager' instance for server nodes management -->
 	<bean id="nodesManager" class="org.jwebsocket.jms.mongodb.MongoDBNodesManager">
 		<property name="collection">
 			<bean factory-bean="jws_lb_db" factory-method="getCollection">
@@ -54,6 +64,7 @@
 			</bean>
 		</property>
 		<property name="nodeDescription" ref="nodeDescription"></property>
+		<!-- the cluster 'synchronizer' instance for cluster workers synchronization -->
 		<property name="synchronizer">
 			<bean class="org.jwebsocket.jms.mongodb.MongoBDClusterSynchronizer" init-method="initialize">
 				<property name="collection">
