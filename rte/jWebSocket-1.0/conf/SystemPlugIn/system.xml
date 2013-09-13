@@ -200,18 +200,18 @@
 	
 	<!-- EhCache session 
 	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
-   			init-method="initialize" destroy-method="shutdown">
- 		<property name="storageProvider" ref="storageProviderEhCache"/>
- 		<property name="reconnectionManager">
-   			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
-   			init-method="initialize" destroy-method="shutdown">
-   				<property name="cacheStorageName" value="__reconnection_index_ns__" />
-   				<property name="sessionExpirationTime" value="60" />
-   				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
-   				<property name="storageProvider" ref="storageProviderEhCache" />
-   				<property name="cacheStorageProvider" ref="cacheStorageProviderEhCache" />
-   			</bean>
- 		</property>
+			init-method="initialize" destroy-method="shutdown">
+		<property name="storageProvider" ref="storageProviderEhCache"/>
+		<property name="reconnectionManager">
+			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
+			init-method="initialize" destroy-method="shutdown">
+				<property name="cacheStorageName" value="__reconnection_index_ns__" />
+				<property name="sessionExpirationTime" value="60" />
+				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
+				<property name="storageProvider" ref="storageProviderEhCache" />
+				<property name="cacheStorageProvider" ref="cacheStorageProviderEhCache" />
+			</bean>
+		</property>
 	</bean>
 	-->
 	
@@ -224,11 +224,11 @@
 
 	<!-- RAM Memory session -->
 	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
-		 init-method="initialize" destroy-method="shutdown">
+		  init-method="initialize" destroy-method="shutdown">
 		<property name="storageProvider" ref="storageProviderMemory"/>
 		<property name="reconnectionManager">
 			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
-			   init-method="initialize" destroy-method="shutdown">
+				  init-method="initialize" destroy-method="shutdown">
 				<property name="cacheStorageName" value="__reconnection_index_ns__" />
 				<property name="sessionExpirationTime" value="60" />
 				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
@@ -236,43 +236,42 @@
 				<property name="cacheStorageProvider" ref="cacheStorageProviderMemory"/>
 			</bean>
 		</property>
-	</bean>
+	</bean> 
 	
 	<!-- MongoDB Database connection-->
-	<!--   <bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
-	</bean>-->
+	<bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
+	</bean>
 	
 	<!-- MongoDB Storage provider (here for the sessions) -->
-	<!--   <bean id="storageProviderMongoDB" class="org.jwebsocket.storage.mongodb.MongoDBStorageProvider">
-    <property name="con" ref="mongodbConnection0" />
-    <property name="databaseName" value="storages" />
-    <property name="collectionName" value="__storages_collection__" />
-	</bean>-->
+	<bean id="storageProviderMongoDB" class="org.jwebsocket.storage.mongodb.MongoDBStorageProvider"
+		  init-method="initialize" destroy-method="shutdown">
+		<property name="connection" ref="mongodbConnection0" />
+		<property name="databaseName" value="storages" />
+		<property name="collectionName" value="__storages_collection__" />
+	</bean>
 	
 	<!-- MongoDB Cache Storage provider (here for the sessions) -->
-	<!--   
-	<bean id="cacheStorageProviderMongoDB" class="org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageProvider">
-    <property name="con" ref="mongodbConnection0" />
-    <property name="databaseName" value="cache_storages" />
-    <property name="collectionName" value="__cache_storages_collection__" />
-	</bean>-->
+	<bean id="cacheStorageProviderMongoDB" class="org.jwebsocket.cachestorage.mongodb.MongoDBCacheStorageProvider"
+		  init-method="initialize" destroy-method="shutdown">
+		<property name="connection" ref="mongodbConnection0" />
+		<property name="databaseName" value="cache_storages" />
+		<property name="collectionName" value="__cache_storages_collection__" />
+	</bean>
 	
 	<!-- MongoDB session 
 	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
-   			init-method="initialize" destroy-method="shutdown">
- 		<property name="storageProvider" ref="storageProviderMongoDB"/>
- 		<property name="reconnectionManager">
-   			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
-   			init-method="initialize" destroy-method="shutdown">
-   				<property name="cacheStorageName" value="__reconnection_index_ns__" />
-   				<property name="sessionExpirationTime" value="60" />
-   				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
-   				<property name="storageProvider" ref="storageProviderMongoDB" />
-   				<property name="cacheStorageProvider" ref="cacheStorageProviderMongoDB" />
-   			</bean>
- 		</property>
+		  init-method="initialize" destroy-method="shutdown">
+		<property name="storageProvider" ref="storageProviderMongoDB"/>
+		<property name="reconnectionManager">
+			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
+				  init-method="initialize" destroy-method="shutdown">
+				<property name="cacheStorageName" value="__reconnection_index_ns__" />
+				<property name="sessionExpirationTime" value="60" />
+				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
+				<property name="storageProvider" ref="storageProviderMongoDB" />
+				<property name="cacheStorageProvider" ref="cacheStorageProviderMongoDB" />
+			</bean>
+		</property>
 	</bean>
 	-->
-	
-
 </beans>
