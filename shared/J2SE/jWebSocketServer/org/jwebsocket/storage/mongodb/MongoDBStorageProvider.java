@@ -50,19 +50,21 @@ public class MongoDBStorageProvider extends MongoDBStorageBuilder implements ISt
 
 	/**
 	 *
-	 * @param aCon
-	 * @param aDBName
+	 * @param aConnection
+	 * @param aDatabaseName
 	 * @param aStorageName
 	 * @param aCollectionName
 	 * @return
 	 * @throws Exception
 	 */
-	public static IBasicStorage getInstance(Mongo aCon, String aDBName,
+	public static IBasicStorage getInstance(Mongo aConnection, String aDatabaseName,
 			String aCollectionName, String aStorageName) throws Exception {
 		MongoDBStorageBuilder lBuilder = new MongoDBStorageBuilder();
-		lBuilder.setCon(aCon);
-		lBuilder.setDatabaseName(aDBName);
+		lBuilder.setConnection(aConnection);
+		lBuilder.setDatabaseName(aDatabaseName);
 		lBuilder.setCollectionName(aCollectionName);
+		lBuilder.initialize();
+
 		return lBuilder.getStorage(MongoDBStorageBuilder.V2, aStorageName);
 	}
 }

@@ -23,17 +23,20 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
 import org.jwebsocket.api.IBasicStorage;
+import org.jwebsocket.api.IInitializable;
+import org.springframework.util.Assert;
 
 /**
  * Create MongoDBStorage instances
  *
  * @author kyberneees
  */
-public class MongoDBStorageBuilder {
+public class MongoDBStorageBuilder implements IInitializable {
 
-	private Mongo mCon;
+	private Mongo mConnection;
 	private String mDatabaseName;
 	private String mCollectionName;
+	private String mUsername, mPassword;
 	/**
 	 *
 	 */
@@ -45,20 +48,36 @@ public class MongoDBStorageBuilder {
 	private DBCollection mCollection = null;
 	private DB mDatabase = null;
 
-	/**
-	 *
-	 * @return The Mongo database connection
-	 */
-	public Mongo getCon() {
-		return mCon;
+	public String getUsername() {
+		return mUsername;
+	}
+
+	public void setUsername(String aUsername) {
+		this.mUsername = aUsername;
+	}
+
+	public String getPassword() {
+		return mPassword;
+	}
+
+	public void setPassword(String aPassword) {
+		mPassword = aPassword;
 	}
 
 	/**
 	 *
-	 * @param aCon The Mongo database connection to set
+	 * @return The Mongo database connection
 	 */
-	public void setCon(Mongo aCon) {
-		this.mCon = aCon;
+	public Mongo getConnection() {
+		return mConnection;
+	}
+
+	/**
+	 *
+	 * @param aConnection The Mongo database connection to set
+	 */
+	public void setConnection(Mongo aConnection) {
+		mConnection = aConnection;
 	}
 
 	/**
@@ -106,10 +125,7 @@ public class MongoDBStorageBuilder {
 	 * @param aDatabaseName the databaseName to set
 	 */
 	public void setDatabaseName(String aDatabaseName) {
-		this.mDatabaseName = aDatabaseName;
-
-		//Getting the temporal database instance to improve performance
-		mDatabase = mCon.getDB(aDatabaseName);
+		mDatabaseName = aDatabaseName;
 	}
 
 	/**
@@ -124,9 +140,28 @@ public class MongoDBStorageBuilder {
 	 * version 2
 	 */
 	public void setCollectionName(String aCollectionName) {
-		this.mCollectionName = aCollectionName;
+		mCollectionName = aCollectionName;
+	}
+
+	@Override
+	public void initialize() throws Exception {
+		Assert.notNull(mConnection, "The 'connection' property cannot be null!");
+		Assert.notNull(mDatabaseName, "The 'databaseName' property cannot be null!");
+		Assert.notNull(mCollectionName, "The 'collectionName' property cannot be null!");
+
+		//Getting the temporal database instance to improve performance
+		mDatabase = mConnection.getDB(mDatabaseName);
+		if (null != mUsername) {
+			// authenticating on database
+			Assert.isTrue(mDatabase.authenticate(mUsername, mPassword.toCharArray()),
+					"Invalid credentials!");
+		}
 
 		//Getting the temporal collection instance to improve performance
-		mCollection = mCon.getDB(mDatabaseName).getCollection(aCollectionName);
+		mCollection = mDatabase.getCollection(mCollectionName);
+	}
+
+	@Override
+	public void shutdown() throws Exception {
 	}
 }
