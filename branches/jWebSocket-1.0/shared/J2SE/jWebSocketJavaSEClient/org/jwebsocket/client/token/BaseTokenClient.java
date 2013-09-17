@@ -28,12 +28,13 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.codec.binary.Base64;
 import org.jwebsocket.api.*;
-import org.jwebsocket.client.java.BaseWebSocketClient;
-import org.jwebsocket.client.java.ReliabilityOptions;
+import org.jwebsocket.client.java.JWebSocketWSClient;
 import org.jwebsocket.config.JWebSocketClientConstants;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.ReliabilityOptions;
 import org.jwebsocket.kit.WebSocketEncoding;
 import org.jwebsocket.kit.WebSocketException;
+import org.jwebsocket.kit.WebSocketFrameType;
 import org.jwebsocket.kit.WebSocketSubProtocol;
 import org.jwebsocket.packetProcessors.CSVProcessor;
 import org.jwebsocket.packetProcessors.JSONProcessor;
@@ -45,7 +46,7 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
 import org.jwebsocket.util.Tools;
 
 /**
- * Token based implementation of {@code JWebSocketClient}
+ * Token based implementation of {@code WebSocketClient}
  *
  * @author aschulze
  * @author puran
@@ -53,7 +54,8 @@ import org.jwebsocket.util.Tools;
  * @author kyberneees
  * @version $Id:$
  */
-public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTokenClient {
+@Deprecated
+public class BaseTokenClient implements WebSocketTokenClient {
 
 	/**
 	 * base name space for jWebSocket
@@ -85,12 +87,15 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	private final ScheduledThreadPoolExecutor mResponseQueueExecutor =
 			new ScheduledThreadPoolExecutor(1);
 	private List<String> mEncodingFormats = new FastList<String>();
+	private WebSocketClient mClient;
 
-	/**
-	 * Default constructormListe
-	 */
+	
+	public BaseTokenClient(WebSocketClient aClient) {
+		this(JWebSocketCommonConstants.WS_SUBPROT_DEFAULT, JWebSocketCommonConstants.WS_ENCODING_DEFAULT, aClient);
+	}
+	
 	public BaseTokenClient() {
-		this(JWebSocketCommonConstants.WS_SUBPROT_DEFAULT, JWebSocketCommonConstants.WS_ENCODING_DEFAULT);
+		this(new JWebSocketWSClient());
 	}
 
 	/**
@@ -102,13 +107,19 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		setReliabilityOptions(aReliabilityOptions);
 	}
 
+	public BaseTokenClient(String aSubProt, WebSocketEncoding aEncoding){
+		this(aSubProt, aEncoding, new JWebSocketWSClient());
+	}
+	
 	/**
 	 *
 	 * @param aSubProt
 	 * @param aEncoding
 	 */
-	public BaseTokenClient(String aSubProt, WebSocketEncoding aEncoding) {
+	public BaseTokenClient(String aSubProt, WebSocketEncoding aEncoding, WebSocketClient aClient) {
 		mSubProt = new WebSocketSubProtocol(aSubProt, aEncoding);
+		mClient = aClient;
+		
 		addSubProtocol(mSubProt);
 		addListener(new TokenClientListener());
 
@@ -170,16 +181,6 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 	}
 
 	/**
-	 *
-	 * @param aSubProt
-	 */
-	public BaseTokenClient(WebSocketSubProtocol aSubProt) {
-		mSubProt = aSubProt;
-		addSubProtocol(mSubProt);
-		addListener(new TokenClientListener());
-	}
-
-	/**
 	 * Returns the client encoding formats
 	 *
 	 * @return
@@ -188,10 +189,144 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		return Collections.unmodifiableList(mEncodingFormats);
 	}
 
+	@Override
+	public void setReliabilityOptions(ReliabilityOptions aReliabilityOptions) {
+		mClient.setReliabilityOptions(aReliabilityOptions);
+	}
+
+	@Override
+	public ReliabilityOptions getReliabilityOptions() {
+		return mClient.getReliabilityOptions();
+	}
+
+	@Override
+	public void setStatus(WebSocketStatus aStatus) {
+		mClient.setStatus(aStatus);
+	}
+
+	@Override
+	public void open(String aURL) throws WebSocketException {
+		mClient.open(aURL);
+	}
+
+	@Override
+	public void addFilter(WebSocketClientFilter aFilter) {
+		mClient.addFilter(aFilter);
+	}
+
+	@Override
+	public void removeFilter(WebSocketClientFilter aFilter) {
+		mClient.removeFilter(aFilter);
+	}
+
+	@Override
+	public List<WebSocketClientFilter> getFilters() {
+		return mClient.getFilters();
+	}
+
+	@Override
+	public void send(byte[] aData) throws WebSocketException {
+		mClient.send(aData);
+	}
+
+	@Override
+	public void send(byte[] aData, WebSocketFrameType aFrameType) throws WebSocketException {
+		mClient.send(aData, aFrameType);
+	}
+
+	@Override
+	public void send(String aData, String aEncoding) throws WebSocketException {
+		mClient.send(aData, aEncoding);
+	}
+
+	@Override
+	public void send(WebSocketPacket aPacket) throws WebSocketException {
+		mClient.send(aPacket);
+	}
+
+	@Override
+	public boolean isConnected() {
+		return mClient.isConnected();
+	}
+
+	@Override
+	public WebSocketStatus getStatus() {
+		return mClient.getStatus();
+	}
+
+	@Override
+	public void notifyOpened(WebSocketClientEvent aEvent) {
+		mClient.notifyOpened(aEvent);
+	}
+
+	@Override
+	public void notifyPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
+		mClient.notifyPacket(aEvent, aPacket);
+	}
+
+	@Override
+	public void notifyClosed(WebSocketClientEvent aEvent) {
+		mClient.notifyClosed(aEvent);
+	}
+
+	@Override
+	public void notifyReconnecting(WebSocketClientEvent aEvent) {
+		mClient.notifyReconnecting(aEvent);
+	}
+
+	@Override
+	public void addListener(WebSocketClientListener aListener) {
+		mClient.addListener(aListener);
+	}
+
+	@Override
+	public void removeListener(WebSocketClientListener aListener) {
+		mClient.removeListener(aListener);
+	}
+
+	@Override
+	public List<WebSocketClientListener> getListeners() {
+		return mClient.getListeners();
+	}
+
+	@Override
+	public void addSubProtocol(WebSocketSubProtocol aSubProt) {
+		mClient.addSubProtocol(aSubProt);
+	}
+
+	@Override
+	public String getNegotiatedSubProtocol() {
+		return mClient.getNegotiatedSubProtocol();
+	}
+
+	@Override
+	public WebSocketEncoding getNegotiatedEncoding() {
+		return mClient.getNegotiatedEncoding();
+	}
+
+	@Override
+	public void setVersion(int aVersion) {
+		mClient.setVersion(aVersion);
+	}
+
+	@Override
+	public Integer getMaxFrameSize() {
+		return mClient.getMaxFrameSize();
+	}
+
+	@Override
+	public void sendPacketInTransaction(WebSocketPacket aDataPacket, Integer aFragmentSize, IPacketDeliveryListener aListener) {
+		mClient.sendPacketInTransaction(aDataPacket, aFragmentSize, aListener);
+	}
+
+	@Override
+	public void sendPacketInTransaction(WebSocketPacket aDataPacket, IPacketDeliveryListener aListener) {
+		mClient.sendPacketInTransaction(aDataPacket, aListener);
+	}
+
 	/**
 	 * WebSocketClient listener implementation that receives the data packet and
-	 * creates
-	 * <tt>token</tt> objects
+	 * creates <tt>token</tt> objects
 	 *
 	 * @author aschulze
 	 */
@@ -231,8 +366,8 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		/**
 		 * {@inheritDoc} This callback method is invoked by jWebSocket client
 		 * after the data is received from low-level <tt>WebSocket</tt>
-		 * connection. This method then generates the
-		 * <tt>token</tt> objects using the data packets.
+		 * connection. This method then generates the <tt>token</tt> objects
+		 * using the data packets.
 		 */
 		@Override
 		public void processPacket(WebSocketClientEvent aEvent, WebSocketPacket aPacket) {
@@ -260,7 +395,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 					String lUsername = lToken.getString("username");
 					if (null != lUsername && !lUsername.equals("anonymous")) {
 						mUsername = lUsername;
-						mStatus = WebSocketStatus.AUTHENTICATED;
+						setStatus(WebSocketStatus.AUTHENTICATED);
 					}
 
 					// synchronizing the c2s encoding formats
@@ -278,9 +413,9 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 			if (lReqType != null) {
 				if (LOGIN.equals(lReqType) || SPRING_LOGON.equals(lReqType)) {
 					mUsername = lToken.getString("username");
-					mStatus = WebSocketStatus.AUTHENTICATED;
+					setStatus(WebSocketStatus.AUTHENTICATED);
 				} else if (LOGOUT.equals(lReqType) || SPRING_LOGOFF.equals(lReqType)) {
-					mStatus = WebSocketStatus.OPEN;
+					setStatus(WebSocketStatus.OPEN);
 					mUsername = null;
 				}
 			}
@@ -342,17 +477,21 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 
 	@Override
 	public void addTokenClientListener(WebSocketClientTokenListener aTokenListener) {
-		super.addListener(aTokenListener);
+		addListener(aTokenListener);
 	}
 
 	@Override
 	public void removeTokenClientListener(WebSocketClientTokenListener aTokenListener) {
-		super.removeListener(aTokenListener);
+		removeListener(aTokenListener);
 	}
 
 	@Override
 	public void close() {
-		super.close();
+		try {
+			mClient.close();
+		} catch (Exception lEx) {
+			throw new RuntimeException(lEx);
+		}
 		mUsername = null;
 		mClientId = null;
 	}
@@ -440,7 +579,7 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 		}
 
 		__setUTID(aToken);
-		super.send(tokenToPacket(aToken));
+		send(tokenToPacket(aToken));
 	}
 
 	private class ResponseTimeoutTimer implements Runnable {
@@ -1142,5 +1281,40 @@ public class BaseTokenClient extends BaseWebSocketClient implements WebSocketTok
 				this.sessionPut(aNS + "." + lKey, aConfiguration.get(lKey), false, null);
 			}
 		}
+	}
+
+	@Override
+	public void setPingInterval(int aInterval) {
+		mClient.setPingInterval(aInterval);
+	}
+
+	@Override
+	public int getPingInterval() {
+		return mClient.getPingInterval();
+	}
+
+	@Override
+	public Object getParam(String aKey, Object aDefault) {
+		return mClient.getParam(aKey, aDefault);
+	}
+
+	@Override
+	public Object getParam(String aKey) {
+		return mClient.getParam(aKey);
+	}
+
+	@Override
+	public void setParam(String aKey, Object aValue) {
+		mClient.setParam(aKey, aValue);
+	}
+
+	@Override
+	public void open(int aVersion, String aURI) throws WebSocketException {
+		mClient.open(aVersion, aURI);
+	}
+
+	@Override
+	public void open(int aVersion, String aURI, String aSubProtocols) throws WebSocketException {
+		mClient.open(aVersion, aURI, aSubProtocols);
 	}
 }
