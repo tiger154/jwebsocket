@@ -22,8 +22,8 @@ import java.util.Date;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.client.token.BaseTokenClient;
-import org.jwebsocket.kit.IsAlreadyConnectedException;
+import org.jwebsocket.client.java.JWebSocketJMSClient;
+import org.jwebsocket.client.token.JWebSocketTokenClient;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -35,7 +35,7 @@ import org.jwebsocket.token.TokenFactory;
 public class StressTests implements WebSocketClientTokenListener {
 
 	private int MAX_CONNS = 200;
-	private BaseTokenClient[] mClients = new BaseTokenClient[MAX_CONNS];
+	private JWebSocketTokenClient[] mClients = new JWebSocketTokenClient[MAX_CONNS];
 	private volatile int mFinished = 0;
 
 	/**
@@ -70,11 +70,15 @@ public class StressTests implements WebSocketClientTokenListener {
 	 *
 	 * @param aURL
 	 */
-	public void init(String aURL) {
-		BaseTokenClient lClient;
+	public void init(String aURL, boolean aJMSCluster, String aClusterName) {
+		JWebSocketTokenClient lClient;
 		for (int lIdx = 0; lIdx < MAX_CONNS; lIdx++) {
 			mLog("Opening client #" + lIdx + " on thread: " + Thread.currentThread().hashCode() + "...");
-			mClients[lIdx] = new BaseTokenClient();
+			if (!aJMSCluster) {
+				mClients[lIdx] = new JWebSocketTokenClient();
+			} else {
+				mClients[lIdx] = new JWebSocketTokenClient(new JWebSocketJMSClient(aClusterName));
+			}
 			lClient = mClients[lIdx];
 			lClient.setParam("idx", lIdx);
 			lClient.addTokenClientListener(this);
@@ -90,7 +94,7 @@ public class StressTests implements WebSocketClientTokenListener {
 	 * Closes all test connections to the server.
 	 */
 	public void exit() {
-		BaseTokenClient lClient;
+		JWebSocketTokenClient lClient;
 		for (int lIdx = 0; lIdx < mFinished; lIdx++) {
 			lClient = mClients[lIdx];
 			lClient.removeTokenClientListener(this);
@@ -108,8 +112,8 @@ public class StressTests implements WebSocketClientTokenListener {
 	 *
 	 * @param aURL
 	 */
-	public void runStressTest(String aURL) {
-		init(aURL);
+	public void runStressTest(String aURL, boolean aJMSCluster, String aClusterName) {
+		init(aURL, aJMSCluster, aClusterName);
 		long lTimeout = 5000 * MAX_CONNS;
 		long lStart = new Date().getTime();
 		while (new Date().getTime() - lStart < lTimeout && mFinished < MAX_CONNS) {
@@ -124,7 +128,7 @@ public class StressTests implements WebSocketClientTokenListener {
 
 	@Override
 	public void processToken(WebSocketClientEvent aEvent, Token aToken) {
-		BaseTokenClient lClient = (BaseTokenClient) aEvent.getClient();
+		JWebSocketTokenClient lClient = (JWebSocketTokenClient) aEvent.getClient();
 
 		String lNS = aToken.getNS();
 		String lType = aToken.getType();
