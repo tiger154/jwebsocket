@@ -21,9 +21,12 @@
 
 (function() {
 
-	STOMPWebSocket = function(aUrl, aSubprotocol) {
+	STOMPWebSocket = function(aUrl, aSubprotocol, aUsername, aPassword) {
 		var self              = this;
 		var lUrlParts = aUrl.split('/'); 
+		var mUsername = aUsername;
+		var mPassword = aPassword;
+		
 		self.url              = lUrlParts[0] + "//" + lUrlParts[2] + '/stomp';
 		self.destination	  = '/topic/' + lUrlParts[3];
 		self.subPrcol         = aSubprotocol;
@@ -156,8 +159,8 @@
 			self.stomp = Stomp.client(self.url);
 			self.stomp.debug = function(){};
 			self.stomp.connect(
-				'', // @TODO username
-				'', // @TODO password
+				mUsername,
+				mPassword,
 				function(){
 					var lReplySelector = jws.tools.createUUID();
 					self.stomp.subscribe(
