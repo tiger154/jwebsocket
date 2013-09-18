@@ -45,26 +45,30 @@ public class AMQMessageAuthorizationFilter implements MessageAuthorizationPolicy
 	@Override
 	public boolean isAllowedToConsume(ConnectionContext aContext, final Message aMessage) {
 		try {
+			String lMessageDest = aMessage.getDestination().getQualifiedName();
 			// excluding messages target to other destinations
-			if (!mTargetDestinations.contains(aMessage.getDestination().getQualifiedName())) {
-				return true;
-			}
-			
-			if (aContext.getConnectionId().getValue().equals((String) aMessage.getProperty("connectionId"))) {
-				aMessage.removeProperty("connectionId");
-				// allow if the consumer connection id matches the message target connection id
-				return true;
-			} else if (Boolean.TRUE.equals(aMessage.getProperty("isBroadcast"))) {
-				// allow multiple subscribers to process broadcasted messages
-				return true;
-			} else if (aMessage.getDestination().getPhysicalName().equals(aContext.getUserName())) {
-				// allow if the username matches the message destination 
-				// (required for server side processing nodes)
-				return true;
+			for (String lSecureDest : mTargetDestinations) {
+				if (lSecureDest.matches(lMessageDest)) {
+					if (aContext.getConnectionId().getValue().equals((String) aMessage.getProperty("connectionId"))) {
+						aMessage.removeProperty("connectionId");
+						aMessage.removeProperty("replySelector");
+						// allow if the consumer connection id matches the message target connection id
+						return true;
+					} else if (Boolean.TRUE.equals(aMessage.getProperty("isBroadcast"))) {
+						// allow multiple subscribers to process broadcasted messages
+						return true;
+					} else if (aMessage.getDestination().getPhysicalName().equals(aContext.getUserName())) {
+						// allow if the username matches the message destination 
+						// (required for server side processing nodes)
+						return true;
+					}
+
+					return false;
+				}
 			}
 		} catch (Exception lEx) {
 		}
 
-		return false;
+		return true;
 	}
 }
