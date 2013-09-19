@@ -70,7 +70,7 @@ public class JMSConnector extends BaseConnector {
 	public void setCustomVarsContainer(Map<String, Object> aMap) {
 		mCustomVars = aMap;
 	}
-
+	
 	@Override
 	public void setUsername(String aUsername) {
 		setString(SystemPlugIn.USERNAME, aUsername);

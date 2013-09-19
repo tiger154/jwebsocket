@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - ConnectorsManager (Community Edition, CE)
+//	jWebSocket - MongoDBConnectorsManager (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -71,17 +71,17 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	private JMSConnector toConnector(DBObject aRecord) throws Exception {
-		String lSessionId = (String) aRecord.get(Attributes.SESSION_ID);
-
+		String lReplySelector = (String) aRecord.get(Attributes.REPLY_SELECTOR);
+		
 		JMSConnector lConnector = new JMSConnector(getEngine(),
 				(String) aRecord.get(Attributes.SESSION_ID),
-				(String) aRecord.get(Attributes.REPLY_SELECTOR),
+				lReplySelector,
 				(String) aRecord.get(Attributes.CONNECTION_ID));
 
 		// setting the session storage
 		IBasicStorage<String, Object> lSessionStorage = getSessionManager().getStorageProvider()
-				.getStorage(lSessionId);
-		lConnector.getSession().setSessionId(lSessionId);
+				.getStorage(lReplySelector);
+		lConnector.getSession().setSessionId(lReplySelector);
 		lConnector.getSession().setStorage(lSessionStorage);
 		// using the session storage as connector custom vars container
 		lConnector.setCustomVarsContainer(lSessionStorage);
