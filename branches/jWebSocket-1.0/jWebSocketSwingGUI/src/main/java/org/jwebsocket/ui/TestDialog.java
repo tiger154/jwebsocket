@@ -1093,6 +1093,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 				mClient.open(13, txfURL.getText());
 			} else {
 				mClient = new JWebSocketTokenClient(new JWebSocketJMSClient(txfClusterName.getText()));
+				mClient.setReliabilityOptions(mReliabilityOptions);
 				mClient.addListener(this);
 				mClient.open(txfURL.getText());
 			}
