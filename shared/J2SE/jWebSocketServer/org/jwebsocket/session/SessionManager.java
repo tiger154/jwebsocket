@@ -111,15 +111,18 @@ public class SessionManager implements ISessionManager {
 
 			return lStorage;
 		} else {
-			// avoid security holes 
-			mReconnectionManager.getReconnectionIndex().remove(aSessionId);
-			// recovered session, require to be removed from the trash
-			mReconnectionManager.getSessionIdsTrash().remove(aSessionId);
-
+			recoverSessionId(aSessionId);
 			IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(aSessionId);
 
 			return lStorage;
 		}
+	}
+
+	private void recoverSessionId(String aSessionId) {
+		// remove the session id from the reconnection index (avoid security holes) 
+		mReconnectionManager.getReconnectionIndex().remove(aSessionId);
+		// recovered session, require to be removed from the trash
+		mReconnectionManager.getSessionIdsTrash().remove(aSessionId);
 	}
 
 	/**
@@ -154,7 +157,14 @@ public class SessionManager implements ISessionManager {
 			lStorage = (Map<String, Object>) getSession(aConnector.getSession().getSessionId());
 			aConnector.getSession().setStorage(lStorage);
 		} else {
+			// getting the previous assigned session storage instance
 			lStorage = aConnector.getSession().getStorage();
+			// getting the session id
+			String lSessionId = aConnector.getSession().getSessionId();
+
+			// REQUIRED FOR CLUSTERING SESSION RECOVERY SUPPORT
+			// ------------------------------------------------
+			recoverSessionId(lSessionId);
 		}
 
 		// setting the username
