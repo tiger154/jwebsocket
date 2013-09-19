@@ -25,8 +25,6 @@ import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
@@ -59,10 +57,6 @@ import org.jwebsocket.util.Tools;
 public class BaseWebSocketClient extends BaseClient {
 
 	/**
-	 * WebSocket connection URI
-	 */
-	private URI mURI = null;
-	/**
 	 * TCP socket
 	 */
 	private Socket mSocket = null;
@@ -84,9 +78,6 @@ public class BaseWebSocketClient extends BaseClient {
 	private WebSocketEncoding mEncoding = WebSocketEncoding.TEXT;
 	private final Object mWriteLock = new Object();
 	private String mCloseReason = null;
-	private ScheduledFuture mReconnectorTask = null;
-	private Boolean mIsReconnecting = false;
-	private final Object mReconnectLock = new Object();
 	private Headers mHeaders = null;
 	private Set<HttpCookie> mCookies = new FastSet<HttpCookie>();
 
@@ -142,6 +133,7 @@ public class BaseWebSocketClient extends BaseClient {
 	 * @param aURI
 	 * @throws IsAlreadyConnectedException
 	 */
+	@Override
 	public void open(int aVersion, String aURI) throws IsAlreadyConnectedException {
 		String lSubProtocols = generateSubProtocolsHeaderValue();
 		open(aVersion, aURI, lSubProtocols);
@@ -154,10 +146,11 @@ public class BaseWebSocketClient extends BaseClient {
 	 * @param aSubProtocols
 	 * @throws IsAlreadyConnectedException
 	 */
+	@Override
 	public void open(int aVersion, String aURI, String aSubProtocols) throws IsAlreadyConnectedException {
 		try {
 			if (!isConnected()) {
-				mAbortReconnect();
+				abortReconnect();
 
 				// set default close reason in case 
 				// connection could not be established.
@@ -210,7 +203,7 @@ public class BaseWebSocketClient extends BaseClient {
 					WebSocketClientEvent lEvent =
 							new WebSocketBaseClientEvent(this, EVENT_CLOSE, "Handshake rejected.");
 					notifyClosed(lEvent);
-					mCheckReconnect(lEvent);
+					checkReconnect(lEvent);
 					return;
 				}
 
@@ -258,7 +251,7 @@ public class BaseWebSocketClient extends BaseClient {
 			WebSocketClientEvent lEvent =
 					new WebSocketBaseClientEvent(this, EVENT_CLOSE, mCloseReason);
 			notifyClosed(lEvent);
-			mCheckReconnect(lEvent);
+			checkReconnect(lEvent);
 		}
 	}
 
@@ -377,7 +370,7 @@ public class BaseWebSocketClient extends BaseClient {
 	public synchronized void close() {
 		// on an explicit close operation ...
 		// cancel all potential re-connection tasks.
-		mAbortReconnect();
+		abortReconnect();
 		if (null != mReceiver) {
 			mReceiver.quit();
 		}
@@ -517,70 +510,7 @@ public class BaseWebSocketClient extends BaseClient {
 		return mHeaders;
 	}
 
-	class ReOpener implements Runnable {
-
-		private WebSocketClientEvent mEvent;
-
-		public ReOpener(WebSocketClientEvent aEvent) {
-			mEvent = aEvent;
-		}
-
-		@Override
-		public void run() {
-			mIsReconnecting = false;
-			notifyReconnecting(mEvent);
-			try {
-				open(mURI.toString());
-				// did we configure reliability options?
-				/*
-				 * if (mReliabilityOptions != null &&
-				 * mReliabilityOptions.getReconnectDelay() > 0) {
-				 * mExecutor.schedule( new ReOpener(aEvent),
-				 * mReliabilityOptions.getReconnectDelay(),
-				 * TimeUnit.MILLISECONDS); }
-				 */
-			} catch (Exception lEx) {
-				WebSocketClientEvent lEvent =
-						new WebSocketBaseClientEvent(mEvent.getClient(), EVENT_CLOSE,
-						lEx.getClass().getSimpleName() + ": "
-						+ lEx.getMessage());
-				notifyClosed(lEvent);
-			}
-		}
-	}
-
-	private void mAbortReconnect() {
-		synchronized (mReconnectLock) {
-			// cancel running re-connect task
-			if (null != mReconnectorTask) {
-				mReconnectorTask.cancel(true);
-			}
-			// reset internal re-connection flag
-			mIsReconnecting = false;
-			mReconnectorTask = null;
-			// clean up all potentially old references to inactive tasks
-			getExecutor().purge();
-		}
-	}
-
-	private void mCheckReconnect(WebSocketClientEvent aEvent) {
-		synchronized (mReconnectLock) {
-			// first, purge all potentially old references to other tasks
-			getExecutor().purge();
-			// did we configure reliability options?
-			// and is there now re-connection task already active?
-			if (getReliabilityOptions() != null
-					&& getReliabilityOptions().getReconnectDelay() > 0
-					&& !mIsReconnecting) {
-				// schedule a re-connect action after the re-connect delay
-				mIsReconnecting = true;
-				mReconnectorTask = getExecutor().schedule(
-						new ReOpener(aEvent),
-						getReliabilityOptions().getReconnectDelay(),
-						TimeUnit.MILLISECONDS);
-			}
-		}
-	}
+	
 
 	@Override
 	public void addSubProtocol(WebSocketSubProtocol aSubProt) {
@@ -679,7 +609,7 @@ public class BaseWebSocketClient extends BaseClient {
 
 
 			if (!CR_CLIENT.equals(mCloseReason)) {
-				mCheckReconnect(lEvent);
+				checkReconnect(lEvent);
 			}
 		}
 

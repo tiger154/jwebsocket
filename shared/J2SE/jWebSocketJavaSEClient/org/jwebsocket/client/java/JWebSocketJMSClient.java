@@ -18,7 +18,9 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.java;
 
+import java.net.URI;
 import java.util.UUID;
+import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -62,6 +64,7 @@ public class JWebSocketJMSClient extends BaseClient {
 	private String mUsername, mPassword, mClusterName;
 	private MessageConsumer mConsumer;
 	private MessageProducer mProducer;
+	private String mReplySelector = UUID.randomUUID().toString();
 
 	public JWebSocketJMSClient(String aClusterName, String aUsername, String aPassword) {
 		Assert.notNull(aClusterName, "The 'cluster name' argument cannot be null!'");
@@ -77,11 +80,12 @@ public class JWebSocketJMSClient extends BaseClient {
 
 	@Override
 	public void open(String aURL) throws WebSocketException {
-		if (null != mConnection && mConnection.isStarted()) {
+		if (isConnected()) {
 			throw new IsAlreadyConnectedException("JMS connection already started!");
 		}
 
 		try {
+			mURI = new URI(aURL);
 			setStatus(WebSocketStatus.CONNECTING);
 			ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(aURL);
 			if (null != mUsername) {
@@ -89,11 +93,23 @@ public class JWebSocketJMSClient extends BaseClient {
 			} else {
 				mConnection = (ActiveMQConnection) factory.createConnection();
 			}
+
+			mConnection.setExceptionListener(new ExceptionListener() {
+				@Override
+				public void onException(JMSException lEx) {
+					// capturing connection exceptions
+					try {
+						close(CloseReason.BROKEN);
+					} catch (Exception lEx2) {
+						throw new RuntimeException(lEx2);
+					}
+				}
+			});
 			mSession = (ActiveMQSession) mConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
 			Topic lClusterTopic = mSession.createTopic(mClusterName);
-			String lReplySelector = UUID.randomUUID().toString();
-			mConsumer = mSession.createConsumer(lClusterTopic, "replySelector='" + lReplySelector
+
+			mConsumer = mSession.createConsumer(lClusterTopic, "replySelector='" + mReplySelector
 					+ "' OR isBroadcast=true");
 			mProducer = mSession.createProducer(lClusterTopic);
 			final WebSocketClient lClient = this;
@@ -122,7 +138,7 @@ public class JWebSocketJMSClient extends BaseClient {
 
 			// sending CONNECTION message
 			Message lMessage = createMessage(MessageType.CONNECTION, null);
-			lMessage.setStringProperty(Attributes.REPLY_SELECTOR, lReplySelector);
+			lMessage.setStringProperty(Attributes.REPLY_SELECTOR, mReplySelector);
 			mProducer.send(lMessage);
 
 			// notifying logic "opening" listeners notification
@@ -157,7 +173,7 @@ public class JWebSocketJMSClient extends BaseClient {
 
 	@Override
 	public boolean isConnected() {
-		return mConnection.isStarted();
+		return mConnection != null && mConnection.isStarted();
 	}
 
 	@Override
@@ -212,13 +228,20 @@ public class JWebSocketJMSClient extends BaseClient {
 	void close(CloseReason aCloseReason) throws WebSocketException {
 		try {
 			setStatus(WebSocketStatus.CLOSING);
-			mConsumer.close();
-			mProducer.close();
-			mSession.close();
-			mConnection.close();
+			try {
+				mConsumer.close();
+				mProducer.close();
+				mSession.close();
+				mConnection.close();
+			} catch (Exception lEx) {
+				// don't catch
+			}
 			setStatus(WebSocketStatus.CLOSED);
 
-			notifyClosed(new WebSocketBaseClientEvent(this, EVENT_CLOSE, aCloseReason.name()));
+			// notifying close event
+			WebSocketBaseClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_CLOSE, aCloseReason.name());
+			notifyClosed(lEvent);
+			checkReconnect(lEvent);
 		} catch (Exception lEx) {
 			throw new WebSocketException(lEx);
 		}

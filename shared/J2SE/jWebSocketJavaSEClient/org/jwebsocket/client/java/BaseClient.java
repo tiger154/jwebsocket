@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.java;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -26,7 +27,9 @@ import java.util.Map;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.jwebsocket.api.IPacketDeliveryListener;
@@ -61,7 +64,13 @@ public abstract class BaseClient implements WebSocketClient {
 	protected int mVersion = JWebSocketCommonConstants.WS_VERSION_DEFAULT;
 	private ReliabilityOptions mReliabilityOptions = null;
 	private int mPingInterval = 20000;
-	
+	private ScheduledFuture mReconnectorTask = null;
+	private Boolean mIsReconnecting = false;
+	private final Object mReconnectLock = new Object();
+	/**
+	 * Connection URI
+	 */
+	protected URI mURI = null;
 	/**
 	 * list of the registered listeners
 	 */
@@ -97,7 +106,7 @@ public abstract class BaseClient implements WebSocketClient {
 	public void setPingInterval(int aInterval) {
 		mPingInterval = aInterval;
 	}
-	
+
 	/**
 	 * @return the mReliabilityOptions
 	 */
@@ -107,11 +116,11 @@ public abstract class BaseClient implements WebSocketClient {
 	}
 
 	/**
-	 * @param mReliabilityOptions the mReliabilityOptions to set
+	 * @param aReliabilityOptions the ReliabilityOptions to set
 	 */
 	@Override
-	public void setReliabilityOptions(ReliabilityOptions mReliabilityOptions) {
-		this.mReliabilityOptions = mReliabilityOptions;
+	public void setReliabilityOptions(ReliabilityOptions aReliabilityOptions) {
+		this.mReliabilityOptions = aReliabilityOptions;
 	}
 
 	@Override
@@ -119,8 +128,8 @@ public abstract class BaseClient implements WebSocketClient {
 		return mMaxFrameSize;
 	}
 
-	protected void setMaxFrameSize(Integer mMaxFrameSize) {
-		this.mMaxFrameSize = mMaxFrameSize;
+	protected void setMaxFrameSize(Integer aMaxFrameSize) {
+		this.mMaxFrameSize = aMaxFrameSize;
 	}
 
 	protected Map<String, String> getFragments() {
@@ -169,7 +178,7 @@ public abstract class BaseClient implements WebSocketClient {
 	public void setParam(String aKey, Object aValue) {
 		mParams.put(aKey, aValue);
 	}
-	
+
 	@Override
 	public void setVersion(int aVersion) {
 		mVersion = aVersion;
@@ -408,7 +417,7 @@ public abstract class BaseClient implements WebSocketClient {
 			throw new WebSocketException("Outbound filtering process exception!", lEx);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -427,7 +436,7 @@ public abstract class BaseClient implements WebSocketClient {
 			});
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -525,7 +534,7 @@ public abstract class BaseClient implements WebSocketClient {
 			});
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -561,6 +570,63 @@ public abstract class BaseClient implements WebSocketClient {
 					}
 				}
 			});
+		}
+	}
+
+	class ReOpener implements Runnable {
+
+		private WebSocketClientEvent mEvent;
+
+		public ReOpener(WebSocketClientEvent aEvent) {
+			mEvent = aEvent;
+		}
+
+		@Override
+		public void run() {
+			mIsReconnecting = false;
+			notifyReconnecting(mEvent);
+			try {
+				open(mURI.toString());
+			} catch (Exception lEx) {
+				WebSocketClientEvent lEvent =
+						new WebSocketBaseClientEvent(mEvent.getClient(), EVENT_CLOSE,
+						lEx.getClass().getSimpleName() + ": "
+						+ lEx.getMessage());
+				notifyClosed(lEvent);
+			}
+		}
+	}
+
+	protected void abortReconnect() {
+		synchronized (mReconnectLock) {
+			// cancel running re-connect task
+			if (null != mReconnectorTask) {
+				mReconnectorTask.cancel(true);
+			}
+			// reset internal re-connection flag
+			mIsReconnecting = false;
+			mReconnectorTask = null;
+			// clean up all potentially old references to inactive tasks
+			getExecutor().purge();
+		}
+	}
+
+	protected void checkReconnect(WebSocketClientEvent aEvent) {
+		synchronized (mReconnectLock) {
+			// first, purge all potentially old references to other tasks
+			getExecutor().purge();
+			// did we configure reliability options?
+			// and is there now re-connection task already active?
+			if (getReliabilityOptions() != null
+					&& getReliabilityOptions().getReconnectDelay() > 0
+					&& !mIsReconnecting) {
+				// schedule a re-connect action after the re-connect delay
+				mIsReconnecting = true;
+				mReconnectorTask = getExecutor().schedule(
+						new ReOpener(aEvent),
+						getReliabilityOptions().getReconnectDelay(),
+						TimeUnit.MILLISECONDS);
+			}
 		}
 	}
 }
