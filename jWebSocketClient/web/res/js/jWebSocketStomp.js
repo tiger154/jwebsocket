@@ -26,6 +26,8 @@
 		var lUrlParts = aUrl.split('/'); 
 		var mUsername = aUsername;
 		var mPassword = aPassword;
+		var mReplySelector = jws.tools.createUUID();
+		var mReconnectionAttempts = 0;
 		
 		self.url              = lUrlParts[0] + "//" + lUrlParts[2] + '/stomp';
 		self.destination	  = '/topic/' + lUrlParts[3];
@@ -118,7 +120,6 @@
 
 			self.dispatchEvent(lEvent);
 		}
-        
     
 		var createSimpleEvent = function(lType) {
 			if (document.createEvent && window.Event) {
@@ -134,7 +135,6 @@
 				};
 			}
 		};
-        
     
 		var createMessageEvent = function(aType, aData) {
 			if (document.createEvent && window.MessageEvent && !window.opera) {
@@ -142,7 +142,6 @@
 				lEvent.initMessageEvent('message', false, false, aData, null, null, window, null);
 				return lEvent;
 			} else {
-				// IE and Opera, the latter one truncates the data parameter after any 0x00 bytes.
 				return {
 					type: aType, 
 					data: aData, 
@@ -162,7 +161,6 @@
 				mUsername,
 				mPassword,
 				function(){
-					var lReplySelector = jws.tools.createUUID();
 					self.stomp.subscribe(
 						// the target connection destination
 						self.destination,  
@@ -184,21 +182,37 @@
 								});
 							}
 						}, {
-							selector: "replySelector='" + lReplySelector + "' OR isBroadcast=true"
+							selector: "replySelector='" + mReplySelector + "' OR isBroadcast=true"
 						});
 						
 					self.stomp.send(self.destination, {
 						msgType: 'CONNECTION', 
-						replySelector: lReplySelector,
+						replySelector: mReplySelector,
 						msgId: jws.tools.createUUID()
 					});
 					
 					self.readyState = self.readyStateValues.OPEN;
-					handleEvent({
-						type:'open'
-					}); 
+					// notify 'open' if not from reconnection
+					if (0 == mReconnectionAttempts){
+						handleEvent({
+							type:'open'
+						}); 
+					}
+					mReconnectionAttempts = 0;
 				},
 				function(){
+					if (self.readyState == self.readyStateValues.OPEN){
+						self.readyState = self.readyStateValues.CONNECTING;
+						// perform reconnection
+						if (mReconnectionAttempts < 5){
+							mReconnectionAttempts++;
+							setTimeout(function(){
+								self.open();
+							}, mReconnectionAttempts * 100);
+							
+							return;
+						}
+					}
 					self.readyState = self.readyStateValues.CLOSED;
 					handleEvent({
 						type:'close'
