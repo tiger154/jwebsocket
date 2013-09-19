@@ -25,10 +25,9 @@ import org.jwebsocket.api.IBasicCacheStorage;
 import org.jwebsocket.storage.BaseStorage;
 
 /**
- * This class uses MongoDB servers to persist the information.
- * <br>
- * Each cache storage represents a database collection. Please see for MongoDB
- * collections number limit.
+ * This class uses MongoDB servers to persist the information. <br> Each cache
+ * storage represents a database collection. Please see for MongoDB collections
+ * number limit.
  *
  * @param <K>
  * @param <V>
@@ -212,10 +211,12 @@ public class MongoDBCacheStorageV1<K, V> extends BaseStorage<K, V> implements IB
 	@Override
 	public V remove(Object aKey) {
 		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("k", aKey));
-		mCollection.remove(lRecord);
 
-		if (lRecord != null && isValid(lRecord)) {
-			return (V) lRecord.get("v");
+		if (lRecord != null) {
+			mCollection.remove(lRecord);
+			if (isValid(lRecord)) {
+				return (V) lRecord.get("v");
+			}
 		}
 
 		return null;
