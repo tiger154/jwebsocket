@@ -19,7 +19,6 @@
 package org.jwebsocket.client.token;
 
 import org.jwebsocket.api.WebSocketClient;
-import org.jwebsocket.client.token.BaseTokenClient;
 import org.jwebsocket.config.ReliabilityOptions;
 import org.jwebsocket.kit.WebSocketEncoding;
 
