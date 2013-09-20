@@ -32,6 +32,7 @@ function init( ) {
 		maxLogLines: 500,
 		linesToDelete: 20
 	});
+	
 	$("#demo_box").fileUploaderDemo();
 //
 //	// Each widget uses the same authentication mechanism, please refer

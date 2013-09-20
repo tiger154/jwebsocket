@@ -1,126 +1,152 @@
-(function($) {
-	var readyCallbacks = $.Callbacks('once unique memory'),
-		inputsCount = 0,
-		currentTarget = null;
-
-	// if native FileReader support, then dont add the polyfill and make the plugin do nothing
-	if (window.FileReader) {
-		$.fn.fileReader = function() {
-			return this;
+//There is a memory leak with IE and swfObject and this is the patch ;)
+if (jws.isIExplorer() && jws.getBrowserVersion() <= 9) {
+	function fixOutOfMemoryError() {
+		__flash_unloadHandler = function() {
 		};
-		return;
+		__flash_savedUnloadHandler = function() {
+		};
 	}
+	window.attachEvent("onbeforeunload", fixOutOfMemoryError);
+}
+// If the FileReader object is defined then we don't use our PlugIn
+if (window.FileReader) {
+	FlashFileReader = function() {
+		return this;
+	};
+} else {
+	FlashFileReader = function(aOptions) {
+		this.defaults = {
+			inputs: [],
+			id: 'fileReaderSWFObject', // ID for the created swf object container,
+			multiple: null,
+			accept: null,
+			label: null,
+			extensions: null,
+			filereader: 'files/filereader.swf', // The path to the filereader swf file
+			expressInstall: null, // The path to the express install swf file
+			debugMode: false,
+			callback: false // Callback function when Filereader is ready
+		};
+		aOptions = extend(this.defaults, aOptions);
 
-	/**
-	 * JQuery Plugin
-	 */
-	$.fn.fileReader = function(aOptions) {
-		aOptions = $.extend($.fn.fileReader.defaults, aOptions);
+		this.readyCallbacks = [];
+		this.lInputsCount = 0;
+		this.currentTarget = 0;
 
-		var self = this;
-		readyCallbacks.add(function() {
-			return lMain(self, aOptions);
+		var lScope = this;
+		this.readyCallbacks.push(function() {
+			return lScope.initInputs(aOptions);
 		});
-		if ($.isFunction(aOptions.callback))
-			readyCallbacks.add(aOptions.callback);
+		if ("function" === typeof aOptions.callback) {
+			this.readyCallbacks.push(aOptions.callback);
+		}
 
 		if (!FileAPIProxy.ready) {
-			FileAPIProxy.init(aOptions);
+			FileAPIProxy.init(aOptions, this);
 		}
 		return this;
 	};
 
-	$.fn.fileReader.defaults = {
-		id: 'fileReaderSWFObject', // ID for the created swf object container,
-		multiple: null,
-		accept: null,
-		label: null,
-		extensions: null,
-		filereader: 'files/filereader.swf', // The path to the filereader swf file
-		expressInstall: null, // The path to the express install swf file
-		debugMode: false,
-		callback: false // Callback function when Filereader is ready
-	};
-
-	/**
-	 * Adds an input to the flash filesystem
-	 */
-	var lMain = function(aEl, aOptions) {
-		return aEl.each(function(aIdx, aInput) {
-			aInput = $(aInput);
-			var id = aInput.attr('id');
-			if (!id) {
-				id = 'flashFileInput' + inputsCount;
-				aInput.attr('id', id);
-				inputsCount++;
+	FlashFileReader.prototype.initInputs = function(aOptions) {
+		console.log("initializing Flash FileAPI inside the inputs: " +
+				aOptions.inputs.join(","));
+		for (var lIdx = 0; lIdx < aOptions.inputs.length; lIdx++) {
+//			var aInput = document.getElementById(aConfig.browseButtonId)
+			var lInput = $("#" + aOptions.inputs[lIdx]);
+			var lId = lInput.attr('id');
+			if (!lId) {
+				lId = 'flashFileInput' + this.lInputsCount;
+				lInput.attr('id', lId);
+				this.lInputsCount++;
 			}
-			aOptions.multiple = !!(aOptions.multiple === null ? aInput.attr('multiple') : aOptions.multiple);
-			aOptions.accept = aOptions.accept === null ? aInput.attr('accept') : aOptions.accept;
+			aOptions.multiple = !!(aOptions.multiple === null ? lInput.attr('multiple') : aOptions.multiple);
+			aOptions.accept = aOptions.accept === null ? lInput.attr('accept') : aOptions.accept;
 
-			FileAPIProxy.inputs[id] = aInput;
-			FileAPIProxy.swfObject.add(id, aOptions.multiple, aOptions.accept, aOptions.label, aOptions.extensions);
+			FileAPIProxy.inputs[lId] = lInput;
+			FileAPIProxy.swfObject.add(lId, aOptions.multiple, aOptions.accept, aOptions.label, aOptions.extensions);
 
-			aInput.css('z-index', 0)
-				.mouseover(function(e) {
-				if (id !== currentTarget) {
+			lInput.css('z-index', 0)
+					.mouseover(function(e) {
+				if (lId !== this.currentTarget) {
 					e = e || window.event;
-					currentTarget = id;
-					FileAPIProxy.swfObject.mouseover(id);
+					this.currentTarget = lId;
+					FileAPIProxy.swfObject.mouseover(lId);
 					FileAPIProxy.container
-						.height(aInput.height())
-						.width(aInput.width())
-						.css(aInput.offset());
+							.height(lInput.height())
+							.width(lInput.width())
+							.css(lInput.offset());
 				}
 			})
-				.click(function(aEvt) {
+					.click(function(aEvt) {
 				aEvt.preventDefault();
 				aEvt.stopPropagation();
 				aEvt.stopImmediatePropagation();
 				return false;
 			});
-		});
+		}
 	};
+
 
 	/**
 	 * Flash FileReader Proxy
 	 */
 	window.FileAPIProxy = {
 		ready: false,
-		init: function(o) {
-			var self = this;
-			this.debugMode = o.debugMode;
-			this.container = $('<div>').attr('id', o.id)
-				.wrap('<div>')
-				.parent()
-				.css({
+		init: function(aObject, aFlashFileReader) {
+			var lMe = this;
+			this.debugMode = aObject.debugMode;
+			this.container = $('<div>').attr('id', aObject.id)
+					.wrap('<div>')
+					.parent()
+					.css({
 				position: 'fixed',
-				// top:'0px',
+//				 top:'0px',
 				width: '1px',
 				height: '1px',
 				display: 'inline-block',
 				background: 'transparent',
 				'z-index': 99999
-			})
-				// Hands over mouse events to original input for css styles
-				.on('mouseover mouseout mousedown mouseup', function(evt) {
-				if (currentTarget)
-					$('#' + currentTarget).trigger(evt.type);
-			})
-				.appendTo('body');
-
-			swfobject.embedSWF(o.filereader, o.id, '100%', '100%', '10', o.expressInstall, {debugMode: o.debugMode ? true : ''}, {'wmode': 'transparent', 'allowScriptAccess': 'sameDomain'}, {}, function(e) {
-				self.swfObject = e.ref;
-				$(self.swfObject)
-					.css({
-					display: 'block',
-					outline: 0
-				})
-					.attr('tabindex', 0);
-				if (self.ready) {
-					readyCallbacks.fire();
+			}).on('mouseover mouseout mousedown mouseup', function(aEvt) {
+				if (aFlashFileReader.currentTarget) {
+					$('#' + aFlashFileReader.currentTarget).trigger(aEvt.type);
 				}
-				self.ready = e.success && typeof e.ref.add === "function";
-			});
+			}).appendTo('body');
+
+			swfobject.embedSWF(aObject.filereader, aObject.id, '100%', '100%', '10',
+					aObject.expressInstall, {
+				debugMode: aObject.debugMode ? true : '',
+				chunked: aObject.chunked,
+				chunkSize: aObject.chunkSize
+			},
+			{'wmode': 'transparent', 'allowScriptAccess': 'sameDomain'}, {},
+					function(aEvent) {
+						lMe.swfObject = aEvent.ref;
+						$(lMe.swfObject)
+								.css({
+							display: 'block',
+							outline: 0
+						})
+								.attr('tabindex', 0);
+						if (aEvent.success) {
+							lMe.ready = aEvent.success && typeof aEvent.ref.add === "function";
+							var lReadyCBs = function() {
+								for (var lIdx = 0; lIdx < aFlashFileReader.readyCallbacks.length; lIdx++) {
+									aFlashFileReader.readyCallbacks[lIdx](aEvent);
+								}
+							};
+							if (lMe.ready) {
+								lReadyCBs();
+							} else {
+								// The first load, sometimes the external interface
+								// requires an extra time to be totally ready, 
+								// so that javascript can identify the callbacks 
+								// registered in the External Interface, this can be 10 ms
+								setTimeout(function() {
+									lReadyCBs();
+								}, 10);
+							}
+						}
+					});
 		},
 		swfObject: null,
 		container: null,
@@ -129,43 +155,48 @@
 		// Readers Registry
 		readers: {},
 		// Receives FileInput events
-		onFileInputEvent: function(evt) {
-			if (this.debugMode)
-				console.info('FileInput Event ', evt.type, evt);
-			if (evt.target in this.inputs) {
-				var el = this.inputs[evt.target];
-				evt.target = el[0];
-				if (evt.type === 'change') {
-					evt.files = new FileList(evt.files);
-					evt.target = {files: evt.files};
+		onFileInputEvent: function(aEvt) {
+			if (aEvt.target in this.inputs) {
+//				var lElement = document.getElementById(aEvt.target);
+				var aElement = this.inputs[aEvt.target];
+//				aEvt.target = aElement[0];
+				if (aEvt.type === 'change') {
+					aEvt.files = new FileList(aEvt.files);
+					aEvt.target = {files: aEvt.files};
 				}
-				el.trigger(evt);
+//				var evt;
+//				if ("createEvent" in document) {
+//					evt = document.createEvent("HTMLEvents");
+//					evt.initEvent("change", true, false);
+//					lElement.dispatchEvent(evt);
+//				}
+//				else {
+//					evt = document.createEventObject();
+//					lElement.fireEvent("onchange", evt);
+//				}
+				aElement.trigger(aEvt);
+				aElement = null;
 			}
-			window.focus();
+			aEvt.files = null;
+			aEvt.target = null;
+			//window.focus();
+			aEvt = null;
 		},
 		// Receives FileReader ProgressEvents
-		onFileReaderEvent: function(evt) {
+		onFileReaderEvent: function(aEvt) {
 			if (this.debugMode)
-				console.info('FileReader Event ', evt.type, evt, evt.target in this.readers);
-			if (evt.target in this.readers) {
-				var reader = this.readers[evt.target];
-				evt.target = reader;
-				reader._handleFlashEvent.call(reader, evt);
+				console.info('FileReader Event ', aEvt.type, aEvt, aEvt.target in this.readers);
+			if (aEvt.target in this.readers) {
+				aEvt.target = this.readers[aEvt.target];
+				aEvt.target._handleFlashEvent.call(aEvt.target, aEvt);
 			}
+			aEvt = null;
+			delete aEvt;
 		},
 		// Receives flash FileReader Error Events
-		onFileReaderError: function(error) {
-			if (this.debugMode)
-				console.log(error);
-		},
-		onSWFReady: function() {
-			this.container.css({position: 'absolute'});
-			this.ready = typeof this.swfObject.add === "function";
-			if (this.ready) {
-				readyCallbacks.fire();
-			}
-
-			return true;
+		onFileReaderError: function(aError) {
+//			if (this.debugMode)
+			console.error(aError);
 		}
 	};
 
@@ -196,13 +227,13 @@
 		this.onloadend = null;
 
 		// Event Listeners handling using JQuery Callbacks
-		this._callbacks = {
-			loadstart: $.Callbacks("unique"),
-			progress: $.Callbacks("unique"),
-			abort: $.Callbacks("unique"),
-			error: $.Callbacks("unique"),
-			load: $.Callbacks("unique"),
-			loadend: $.Callbacks("unique")
+		this._listeners = {
+			loadstart: null, //$.Callbacks("unique"),
+			progress: null, //$.Callbacks("unique"),
+			abort: null, //$.Callbacks("unique"),
+			error: null, //$.Callbacks("unique"),
+			load: null, //$.Callbacks("unique"),
+			loadend: null //$.Callbacks("unique")
 		};
 
 		// Custom properties
@@ -211,20 +242,29 @@
 
 	window.FileReader.prototype = {
 		// async read methods
-		readAsBinaryString: function(file) {
-			this._start(file);
-			FileAPIProxy.swfObject.read(file.input, file.name, 'readAsBinaryString');
+		readAsBinaryString: function(aBlob) {
+			this._start(aBlob);
+			FileAPIProxy.swfObject.read(aBlob.input, aBlob.name, 'readAsBinaryString');
+			aBlob = null;
 		},
-		readAsText: function(file, encoding) {
-			this._start(file);
-			FileAPIProxy.swfObject.read(file.input, file.name, 'readAsText');
+		readAsText: function(aBlob, aEncoding) {
+			this._start(aBlob);
+			FileAPIProxy.swfObject.read(aBlob.input, aBlob.name, 'readAsText');
+			aBlob = aEncoding = null;
 		},
-		readAsDataURL: function(file) {
-			this._start(file);
-			FileAPIProxy.swfObject.read(file.input, file.name, 'readAsDataURL');
+		readAsDataURL: function(aBlob) {
+			this._start(aBlob);
+			var lIsBlob = true;
+			if (aBlob instanceof File) {
+				lIsBlob = false;
+			}
+			setTimeout(function() {
+				FileAPIProxy.swfObject.read(aBlob.input, aBlob.name, 'readAsDataURL', lIsBlob);
+				aBlob = lIsBlob = null;
+			}, 0);
 		},
-		readAsArrayBuffer: function(file) {
-			throw("Whoops FileReader.readAsArrayBuffer is unimplemented");
+		readAsArrayBuffer: function(aBlob) {
+			throw("Whoops FileReader.readAsArrayBuffer is not implemented yet");
 		},
 		abort: function() {
 			this.result = null;
@@ -233,50 +273,87 @@
 			FileAPIProxy.swfObject.abort(this._id);
 		},
 		// Event Target interface
-		addEventListener: function(type, listener) {
-			if (type in this._callbacks)
-				this._callbacks[type].add(listener);
+		addEventListener: function(aType, aListener) {
+			if (aType in this._listeners) {
+				this._listeners[aType].add(aListener);
+			}
 		},
-		removeEventListener: function(type, listener) {
-			if (type in this._callbacks)
-				this._callbacks[type].remove(listener);
+		removeEventListener: function(aType, aListener) {
+			if (aType in this._listeners)
+				this._listeners[aType].remove(aListener);
 		},
-		dispatchEvent: function(event) {
-			event.target = this;
-			if (event.type in this._callbacks) {
-				var fn = this['on' + event.type];
-				if ($.isFunction(fn))
-					fn(event);
-				this._callbacks[event.type].fire(event);
+		dispatchEvent: function(aEvent) {
+			aEvent.target = this;
+			if (aEvent.type in this._listeners) {
+				var lType = 'on' + aEvent.type;
+				if (typeof this[lType] === "function") {
+					this[lType](aEvent);
+				}
+				aEvent.target = null;
+				aEvent = lType = null;
+				//this._listeners[aEvent.type].fire(aEvent);
 			}
 			return true;
 		},
-		// Custom private methods
-
 		// Registers FileReader instance for flash callbacks
-		_register: function(file) {
-			this._id = file.input + '.' + file.name;
+		_register: function(aFile) {
+			this._id = aFile.input + '.' + aFile.name;
 			FileAPIProxy.readers[this._id] = this;
 		},
-		_start: function(file) {
-			this._register(file);
-			if (this.readyState === this.LOADING)
+		_start: function(aFile) {
+			this._register(aFile);
+			if (this.readyState === this.LOADING) {
 				throw {
 					type: 'InvalidStateError',
 					code: 11,
 					message: 'The object is in an invalid state.'};
+			}
 		},
-		_handleFlashEvent: function(evt) {
-			switch (evt.type) {
+		_handleFlashEvent: function(aEvt) {
+			switch (aEvt.type) {
 				case 'loadstart':
 					this.readyState = this.LOADING;
 					break;
 				case 'loadend':
 					this.readyState = this.DONE;
 					break;
+				case 'loadbigfile':
+					this.tempResult = this.tempResult || {};
+					var lStreamSplit = aEvt.stream.split("|"),
+							lStreamType = lStreamSplit[0],
+							lStreamId = parseInt(lStreamSplit[1]);
+
+					this.tempResult[lStreamType] = this.tempResult[lStreamType] || [];
+					this.tempResult[lStreamType][lStreamId] = aEvt.result;
+					this.streams = this.streams || {};
+					this.streams[lStreamType] = this.LOADING;
+
+					if (aEvt.isLast) {
+						this.streams = this.streams || {};
+						this.streams[lStreamType] = this.DONE;
+					}
+					lStreamSplit = lStreamId = lStreamType = null;
+					break;
 				case 'load':
 					this.readyState = this.DONE;
-					this.result = FileAPIProxy.swfObject.result(this._id);
+					this.result = aEvt.result;
+					// If the file was previously loaded in chunks we need to 
+					// gather the streams together in only one
+					if (this.streams) {
+						this.result = "";
+						for (var lStreamType in this.streams) {
+							if (this.streams[lStreamType] === this.DONE) {
+								for (var lIdx1 in this.tempResult[lStreamType]) {
+									this.result += this.tempResult[lStreamType][lIdx1];
+								}
+								delete this.tempResult[lStreamType];
+								delete this.streams[lStreamType];
+								break;
+							}
+						}
+					}
+					aEvt.result = null;
+					delete aEvt.result;
 					break;
 				case 'error':
 					this.result = null;
@@ -285,20 +362,119 @@
 						message: 'The File cannot be read!'
 					};
 			}
-			this.dispatchEvent(new FileReaderEvent(evt));
+			var lScope = this;
+			setTimeout(function() {
+				var lEvent = new FileReaderEvent(aEvt);
+				lScope.dispatchEvent(lEvent);
+				// Removing references for IE
+				for (var lIdx in lEvent) {
+					lEvent[lIdx] = null;
+					delete lEvent[lIdx];
+				}
+				for (var lIdx in aEvt) {
+					aEvt[lIdx] = null;
+					delete aEvt[lIdx];
+				}
+				lEvent = aEvt = lScope = null;
+			}, 0);
 		}
 	};
+
+	/*
+	 * HTML5 Blob API definition
+	 * This interface represents immutable raw data. It provides a method to 
+	 * slice data objects between ranges of bytes into further chunks of raw 
+	 * data. It also provides an attribute representing the size of the chunk 
+	 * of data. The File interface inherits from this interface.
+	 */
+
+	jws.oop.declareClass('window', 'Blob', null, {
+		size: undefined,
+		type: undefined,
+		/* If invoked with zero parameters, return a new Blob object consisting 
+		 * of 0 bytes, with size set to 0, and with type set to the empty string.
+		 * Otherwise, the constructor is invoked with a blobParts sequence. Let a be that sequence.
+		 * Let bytes be an empty sequence of bytes.
+		 */
+		create: function(aBlobParts, aBlobPropertyBag) {
+			if (arguments.length === 0) {
+				aBlobParts = {};
+			} else if (typeof aBlobParts === 'string') {
+				aBlobParts = {data: aBlobParts};
+			}
+
+			this.size = aBlobParts.size || 0;
+			this.type = aBlobParts.type || '';
+			this.data = aBlobParts.data || '';
+			aBlobParts = aBlobPropertyBag = null;
+			return this;
+		},
+		/*
+		 * 
+		 * @param {type} start The optional start parameter is a value for the 
+		 * start point of a slice call, and must be treated as a byte-order position,
+		 * with the zeroth position representing the first byte.
+		 * @param {type} end
+		 * @param {type} contentType
+		 * @returns {undefined}
+		 */
+		slice: function(aStart, aEnd, aContentType) {
+			var lBlob = new Blob({
+				size: aEnd - aStart,
+				type: aContentType
+			});
+			lBlob.name = this.name; // We need to keep in the blob the reference of which filename and input it belongs to
+			lBlob.input = this.input;
+
+			// Saying to Flash that the next time it will read will be from this blob
+			FileAPIProxy.swfObject.slice(lBlob.input, lBlob.name, aStart, aEnd, aContentType);
+			aStart = aEnd = aContentType = null;
+			return lBlob;
+		},
+		close: function() {
+			var lScope = this;
+			setTimeout(function() {
+				FileAPIProxy.swfObject.close(lScope.input, lScope.name);
+				lScope = null;
+			}, 0);
+		}
+	});
+
+	/*
+	 * HTML5 File API definition
+	 */
+	jws.oop.declareClass('window', 'File', Blob, {
+		create: function(aFile) {
+			aFile = aFile || {};
+			for (var lIdx in aFile) {
+				this[lIdx] = aFile[lIdx];
+			}
+			this.name = aFile.name || "";
+			this.lastModifiedDate = aFile.lastModifiedDate || new Date();
+			arguments.callee.inherited.call(this, aFile);
+		}});
+
+
+
+	function extend(aDestination, aSource) {
+		for (var lKey in aSource) {
+			if (aSource.hasOwnProperty(lKey)) {
+				aDestination[lKey] = (aSource[lKey] && aSource[lKey] !== false) ? aSource[lKey] : aDestination[lKey];
+			}
+		}
+		return aDestination;
+	}
 
 	/**
 	 * FileReader ProgressEvent implenting Event interface
 	 */
-	FileReaderEvent = function(e) {
-		this.initEvent(e);
+	FileReaderEvent = function(aEvt) {
+		this.initEvent(aEvt);
 	};
 
 	FileReaderEvent.prototype = {
-		initEvent: function(event) {
-			$.extend(this, {
+		initEvent: function(aEvent) {
+			extend(this, extend(aEvent, {
 				type: null,
 				target: null,
 				currentTarget: null,
@@ -308,7 +484,8 @@
 				defaultPrevented: false,
 				isTrusted: false,
 				timeStamp: new Date().getTime()
-			}, event);
+			}));
+			aEvt = null;
 		},
 		stopPropagation: function() {
 		},
@@ -321,23 +498,22 @@
 	/**
 	 * FileList interface (Object with item function)
 	 */
-	FileList = function(array) {
-		if (array) {
-			for (var i = 0; i < array.length; i++) {
-				this[i] = array[i];
+	FileList = function(aFiles) {
+		if (aFiles) {
+			for (var lIdx = 0; lIdx < aFiles.length; lIdx++) {
+				this[lIdx] = new File(aFiles[lIdx]);
 			}
-			this.length = array.length;
+			this.length = aFiles.length;
 		} else {
 			this.length = 0;
 		}
 	};
 
 	FileList.prototype = {
-		item: function(index) {
-			if (index in this)
-				return this[index];
+		item: function(aIdx) {
+			if (aIdx in this)
+				return this[aIdx];
 			return null;
 		}
 	};
-
-})(jQuery);
+}
