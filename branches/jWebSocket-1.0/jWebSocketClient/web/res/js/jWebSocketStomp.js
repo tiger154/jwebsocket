@@ -22,35 +22,36 @@
 (function() {
 
 	STOMPWebSocket = function(aUrl, aSubprotocol, aUsername, aPassword) {
-		var self              = this;
-		var lUrlParts = aUrl.split('/'); 
+		var self = this;
+		var lUrlParts = aUrl.split('/');
 		var mUsername = aUsername;
 		var mPassword = aPassword;
 		var mReplySelector = jws.tools.createUUID();
 		var mReconnectionAttempts = 0;
-		
-		self.url              = lUrlParts[0] + "//" + lUrlParts[2] + '/stomp';
-		self.destination	  = '/topic/' + lUrlParts[3];
-		self.subPrcol         = aSubprotocol;
+
+		self.url = lUrlParts[0] + "//" + lUrlParts[2] + '/stomp';
+		self.destination = '/topic/' + lUrlParts[3];
+		self.subPrcol = aSubprotocol;
 		self.readyStateValues = {
-			CONNECTING:0, 
-			OPEN:1, 
-			CLOSING:2, 
-			CLOSED:3
-		}
-        
+			CONNECTING: 0,
+			OPEN: 1,
+			CLOSING: 2,
+			CLOSED: 3
+		};
+
 		self.readyState = self.readyStateValues.CONNECTING;
 		var mEvents = {};
-        
-		STOMPWebSocket.prototype.addEventListener = function(aType, aListener){
-			if (!(aType in mEvents)){
+
+		STOMPWebSocket.prototype.addEventListener = function(aType, aListener) {
+			if (!(aType in mEvents)) {
 				mEvents[aType] = [];
 			}
 			mEvents[aType].push(aListener);
 		};
-        
+
 		STOMPWebSocket.prototype.removeEventListener = function(aType, aListener, aUseCapture) {
-			if (!(aType in mEvents)) return;
+			if (!(aType in mEvents))
+				return;
 			var lEvents = mEvents[aType];
 			for (var lIndex = lEvents.length - 1; lIndex >= 0; --lIndex) {
 				if (lEvents[lIndex] === aListener) {
@@ -58,8 +59,8 @@
 					break;
 				}
 			}
-		}
-        
+		};
+
 		STOMPWebSocket.prototype.dispatchEvent = function(aEvent) {
 			var lEvents = mEvents[aEvent.type] || [];
 			for (var lIndex = 0; lIndex < lEvents.length; ++lIndex) {
@@ -69,73 +70,72 @@
 			if (lHandler) {
 				lHandler(aEvent);
 			}
-		}
-        
-		STOMPWebSocket.prototype.send = function(aData){
+		};
+
+		STOMPWebSocket.prototype.send = function(aData) {
 			try {
 				// supporting message delivery acknowledge on a LB scenario
 				var lMessage = JSON.parse(aData);
-				if (typeof(lMessage) == 'object' && lMessage['i$WrappedMsg']){
-					if ('info' == lMessage.type && 'ack' == lMessage.name){
+				if (typeof(lMessage) === 'object' && lMessage['i$WrappedMsg']) {
+					if ('info' === lMessage.type && 'ack' === lMessage.name) {
 						self.stomp.send(self.destination, {
 							msgType: 'ACK',
 							msgId: jws.tools.createUUID(),
 							nodeId: lMessage.data.split('-')[0],
 							data: aData
 						});
-						
+
 						return;
 					}
 				}
-			} catch (lError){
-			// ommit it, not JSON format
+			} catch (lError) {
+				// ommit it, not JSON format
 			}
-			
+
 			self.stomp.send(self.destination, {
-				msgType: 'MESSAGE', 
+				msgType: 'MESSAGE',
 				data: aData,
 				msgId: jws.tools.createUUID()
-			})
-		}
-        
-		STOMPWebSocket.prototype.close = function(){
+			});
+		};
+
+		STOMPWebSocket.prototype.close = function() {
 			self.readyState = self.readyStateValues.CLOSING;
-			self.stomp.disconnect(function(){
+			self.stomp.disconnect(function() {
 				self.readyState = self.readyStateValues.CLOSED;
 				handleEvent({
 					type: 'close'
 				});
 			});
-		}    
-    
-		var handleEvent = function(aEvent){
+		};
+
+		var handleEvent = function(aEvent) {
 			var lEvent;
-			if ( aEvent.type == 'close' || aEvent.type == 'open' || aEvent.type == 'error') {
+			if (aEvent.type === 'close' || aEvent.type === 'open' || aEvent.type === 'error') {
 				lEvent = createSimpleEvent(aEvent.type);
-			} else if (aEvent.type == 'message') {
+			} else if (aEvent.type === 'message') {
 				lEvent = createMessageEvent('message', aEvent.data);
 			} else {
 				throw 'Unknown event type: ' + aEvent.type;
 			}
-
 			self.dispatchEvent(lEvent);
-		}
-    
+		};
+
 		var createSimpleEvent = function(lType) {
 			if (document.createEvent && window.Event) {
 				var lEvent = document.createEvent('Event');
 				lEvent.initEvent(lType, false, false);
-				
+
 				return lEvent;
 			} else {
 				return {
-					type: lType, 
-					bubbles: false, 
+					type: lType,
+					bubbles: false,
 					cancelable: false
 				};
 			}
 		};
-    
+
 		var createMessageEvent = function(aType, aData) {
 			if (document.createEvent && window.MessageEvent && !window.opera) {
 				var lEvent = document.createEvent('MessageEvent');
@@ -143,84 +143,85 @@
 				return lEvent;
 			} else {
 				return {
-					type: aType, 
-					data: aData, 
-					bubbles: false, 
+					type: aType,
+					data: aData,
+					bubbles: false,
 					cancelable: false
 				};
 			}
 		};
-       
-		STOMPWebSocket.prototype.open = function(){
-			if (self.readyState == self.readyStateValues.OPEN)
+
+		STOMPWebSocket.prototype.open = function() {
+			if (self.readyState === self.readyStateValues.OPEN)
 				throw new Error('Already connected!');
-			
+
 			self.stomp = Stomp.client(self.url);
-			self.stomp.debug = function(){};
+			self.stomp.debug = function() {
+			};
 			self.stomp.connect(
-				mUsername,
-				mPassword,
-				function(){
-					self.stomp.subscribe(
-						// the target connection destination
-						self.destination,  
-						// callback
-						function( aMessage ) {
-							if ('DISCONNECTION' == aMessage.headers['msgType']){
-								self.readyState = self.readyStateValues.CLOSING;
-								self.stomp.disconnect(function(){
-									self.readyState = self.readyStateValues.CLOSED;
+					mUsername,
+					mPassword,
+					function() {
+						self.stomp.subscribe(
+								// the target connection destination
+								self.destination,
+								// callback
+										function(aMessage) {
+											if ('DISCONNECTION' === aMessage.headers['msgType']) {
+												self.readyState = self.readyStateValues.CLOSING;
+												self.stomp.disconnect(function() {
+													self.readyState = self.readyStateValues.CLOSED;
+													handleEvent({
+														type: 'close',
+														data: aMessage.data
+													});
+												});
+											} else {
+												handleEvent({
+													type: 'message',
+													data: aMessage.body
+												});
+											}
+										}, {
+									selector: "replySelector='" + mReplySelector + "' OR isBroadcast=true"
+								});
+
+								self.stomp.send(self.destination, {
+									msgType: 'CONNECTION',
+									replySelector: mReplySelector,
+									msgId: jws.tools.createUUID()
+								});
+
+								self.readyState = self.readyStateValues.OPEN;
+								// notify 'open' if not from reconnection
+								if (0 === mReconnectionAttempts) {
 									handleEvent({
-										type: 'close',
-										data: aMessage.data
+										type: 'open'
 									});
-								});
-							} else {
-								handleEvent({
-									type: 'message',
-									data: aMessage.body
-								});
-							}
-						}, {
-							selector: "replySelector='" + mReplySelector + "' OR isBroadcast=true"
-						});
-						
-					self.stomp.send(self.destination, {
-						msgType: 'CONNECTION', 
-						replySelector: mReplySelector,
-						msgId: jws.tools.createUUID()
-					});
-					
-					self.readyState = self.readyStateValues.OPEN;
-					// notify 'open' if not from reconnection
-					if (0 == mReconnectionAttempts){
-						handleEvent({
-							type:'open'
-						}); 
-					}
-					mReconnectionAttempts = 0;
-				},
-				function(){
-					if (self.readyState == self.readyStateValues.OPEN){
-						self.readyState = self.readyStateValues.CONNECTING;
-						// perform reconnection
-						if (mReconnectionAttempts < 5){
-							mReconnectionAttempts++;
-							setTimeout(function(){
-								self.open();
-							}, mReconnectionAttempts * 100);
+								}
+								mReconnectionAttempts = 0;
+							},
 							
-							return;
-						}
-					}
-					self.readyState = self.readyStateValues.CLOSED;
-					handleEvent({
-						type:'close'
-					});
-				});
-		}
-               
+							function() {
+								if (self.readyState === self.readyStateValues.OPEN) {
+									self.readyState = self.readyStateValues.CONNECTING;
+									// perform reconnection
+									if (mReconnectionAttempts < 5) {
+										mReconnectionAttempts++;
+										setTimeout(function() {
+											self.open();
+										}, mReconnectionAttempts * 100);
+
+										return;
+									}
+								}
+								self.readyState = self.readyStateValues.CLOSED;
+								handleEvent({
+									type: 'close'
+								});
+							});
+				};
 		this.open();
-	}
+	};
 })();
 
