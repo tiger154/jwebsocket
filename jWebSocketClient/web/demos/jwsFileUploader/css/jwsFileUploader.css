@@ -33,15 +33,14 @@
 }
 
 #filelist{
-	height: 100px;
-	max-height: 160px;
+	max-height: 400px;
 	background: #e4e4e4;
 	border: 1px solid #c8c8c8;
 	border-top: none;
 	border-bottom: none;
-	overflow: auto;
 	float: left;
 	width: 100%;
+	overflow: auto;
 	border-radius: 6px 6px 0px 0px;
 	-webkit-border-radius: 6px 6px 0px 0px;
 	-moz-border-radius: 6px 6px 0px 0px;
@@ -91,4 +90,11 @@
 
 #filelist tr:hover{
 	background: #baccff;
+}
+
+.delete_file{
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	background: url(images/cancel.gif) center center no-repeat;
 }
