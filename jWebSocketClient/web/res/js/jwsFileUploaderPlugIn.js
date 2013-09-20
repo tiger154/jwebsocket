@@ -43,29 +43,29 @@ jws.FileUploaderPlugIn = {
 		// over the upload button
 		if (aConfig.browseButtonId) {
 			var lUserBrowseBtn = document.getElementById(aConfig.browseButtonId),
-				lBrowseButton = document.createElement('input');
+					lBrowseButton = document.createElement('input');
 			lBrowseButton.setAttribute('type', 'file');
 			lBrowseButton.setAttribute('multiple', 'true');
 			lBrowseButton.style.cssText = 'visibility:hidden !important;display: none !important;';
 			var lMe = this;
-			lBrowseButton.onchange = function(aEvt) {
-				lMe.onFileSelected(aEvt);
-			};
 			lUserBrowseBtn.appendChild(lBrowseButton);
 			lUserBrowseBtn.onclick = function() {
 				lMe.browse();
 			};
 			this.browseButton = lBrowseButton;
 
-			$(lUserBrowseBtn).fileReader({
+			var lFlashFileReader = new FlashFileReader({
+				inputs: [aConfig.browseButtonId],
 				filereader: 'js/FileReader/src/filereader.swf',
-				debugMode: true,
+				expressInstall: "js/FileReader/swfobject/expressInstall.swf",
+				debugMode: false,
 				multiple: true,
 				callback: function() {
 					console.log("Flash HTML5 File API fallback is ready");
 				}
 			});
 
+			// TODO: remove jQuery dependency
 			$(lUserBrowseBtn).on('change', function(aEvt) {
 				lMe.onFileSelected(aEvt);
 			});
@@ -78,22 +78,139 @@ jws.FileUploaderPlugIn = {
 		}
 	},
 	onFileSelected: function(aEvt) {
-		var lFile = {};
-		//TODO: check if the files are folders, upload nested folders
-		for (var i = 0; i < aEvt.target.files.length; i++) {
-			lFile = aEvt.target.files[i];
-			var lReader = new FileReader();
-			lReader.onload = function(aReference) {
-				console.log("File: " + lFile.name + " read successfully");
-				console.log(aReference);
+		//TODO: check if the files are folders, upload nested folder
+		var lCancel = false;
+		if ("function" === typeof this.OnFileSelected) {
+			lCancel = this.OnFileSelected(aEvt.target.files);
+		}
+		if (!lCancel) {
+			var lQueueContains = function(aQueue, aFile) {
+				for (var lIdx1 = 0; lIdx1 < aQueue.length; lIdx1++) {
+					if (aQueue[lIdx1].getName() === aFile.name) {
+						return lIdx1;
+					}
+				}
+				return -1;
 			};
-			console.log(aEvt.target.files[i].name, aEvt.target.files[i].type, aEvt.target.files[i].size, aEvt.target.files[i].lastModifiedDate);
-			console.log("Proceeding to read it: ");
-			lReader.readAsDataURL(aEvt.target.files[i]);
+			for (var lIdx = 0; lIdx < aEvt.target.files.length; lIdx++) {
+				if (-1 === lQueueContains(this.queue, aEvt.target.files[lIdx])) {
+					var lUploadItem = new jws.UploadItem(aEvt.target.files[lIdx]);
+					this.queue.push(lUploadItem);
+				}
+			}
 		}
 	},
-	startUpload: function() {
+	uploadFileInChunks: function(lFile) {
+		if (!lFile) {
+			return;
+		}
 
+		var lChunkSize = 25000,
+				lChunks = Math.ceil(lFile.size / lChunkSize),
+				lChunk = 0,
+				lMe = this,
+				lReader = new FileReader(),
+				lTotalBytes = lFile.size,
+				lBytesSent = 0,
+				lBytesRead = 0,
+				lChunkId = 0;
+
+//			aItem.setUploading( );
+//			aItem.setMaxChunks(lChunks);
+//			jws.setEnterpriseFileSystemCallbacks({
+//				OnFileSaved: function(aToken) {
+//					jws.console.log("File " + aToken.filename + " has been uploaded successfully to the server.");
+//					lMe.onUploadSuccess(aToken, aItem);
+//				}
+//			});
+
+		var lSave = function(aEvt) {
+			var lIsLast = lBytesRead >= lTotalBytes;
+			var lData = aEvt.target.result;
+			var lChunkContent = lData.substr(lData.indexOf("base64,") + 7);
+			Ext.jws.getConnection( ).fileSaveByChunks(lFile.name, lChunkContent, lIsLast, {
+				encoding: "base64",
+				encode: false,
+				scope: jws.SCOPE_PRIVATE,
+				OnSuccess: function(aEvent) {
+					lBytesSent += lChunkSize;
+					lChunk++;
+
+					if (!lIsLast) {
+						var lBlob = lFile.slice(lBytesSent, lBytesSent + lChunkSize);
+						lReader.readAsDataURL(lBlob);
+						lChunkId++;
+					}
+				},
+				OnFailure: function(aEvent) {
+					Ext.Msg.show({
+						title: 'Upload failed',
+						msg: "Sorry, your upload process failed on " +
+								lBytesRead / lChunkSize + " chunk!" +
+								" With the message: \"" + aEvent.msg + "\"",
+						buttons: Ext.Msg.OK,
+						fn: function( ) {
+						},
+						icon: Ext.MessageBox.ERROR
+					});
+					lMe.onUploadFailure(aEvent, aItem);
+					jws.console.log("Upload process failed on " + lBytesRead / lChunkSize + " chunk!");
+					jws.console.log(aEvent);
+				}
+			});
+		};
+
+		lReader.onload = function(aEvt) {
+			lMe.onUploadProgress(aEvt, aItem, lChunk);
+			lBytesRead += lChunkSize;
+			lSave(aEvt);
+		};
+
+		var lBlob = lFile.slice(lBytesSent, lChunkSize);
+		lReader.readAsDataURL(lBlob);
+	},
+	uploadCompleteFile: function(aUploadItem) {
+		var lReader = new FileReader();
+		var lScope = this;
+		lReader.onload = function(aReference) {
+			console.log("File completely loaded with the following info, bytes loaded: " + aReference.loaded + ", length: " + aReference.target.result.length);
+			var lResult = aReference.target.result;
+//			lScope.setEnterpriseFileSystemCallbacks({
+//				OnFileSaved: function(aToken) {
+//					console.log("File " + aToken.filename + " has been uploaded successfully to the server.");
+////					lMe.onUploadSuccess(aToken, aItem);
+//				}
+//			});
+			var lContent = lResult.substr(lResult.indexOf("base64,") + 7);
+
+			lScope.fileSave(aUploadItem.getName(), lContent, {
+				encoding: "base64",
+				encode: false,
+				scope: jws.SCOPE_PUBLIC,
+				OnSuccess: function(aEvent) {
+					console.log("success received");
+				}});
+		};
+		lReader.readAsDataURL(aUploadItem.getFile());
+	},
+	startUpload: function() {
+//		if (jws.isConnected()) {
+		// TODO: add event uploadstarted
+		for (var lIdx = 0; lIdx < this.queue.length; lIdx++) {
+			var lItem = this.queue[lIdx];
+			if (lItem.getStatus() === this.STATUS_READY) {
+				// If the item will be uploaded in chunks or not
+				if (lItem.getChunked()) {
+					this.uploadFileInChunks(lItem);
+				} else {
+					this.uploadCompleteFile(lItem);
+				}
+			}
+		}
+//		} else {
+//			jws.console.error("Upload failed: You are not connected to " +
+//					"jWebSocket Server, please check if your server is running.");
+//		}
 	},
 	clearUploadedFiles: function() {
 
@@ -107,52 +224,15 @@ jws.FileUploaderPlugIn = {
 	resumeUpload: function() {
 
 	},
-	processToken: function(aToken) {
-		// check if namespace matches
-		if (aToken.ns === jws.FileSystemPlugIn.NS) {
-			// here you can handle incomimng tokens from the server
-			// directy in the plug-in if desired.
-			if ("load" === aToken.reqType) {
-				if (0 === aToken.code) {
-					if (this.OnFileLoaded) {
-						this.OnFileLoaded(aToken);
-					}
-				} else {
-					if (this.OnFileError) {
-						this.OnFileError(aToken);
-					}
-				}
-			} else if ("send" === aToken.reqType) {
-				if (0 === aToken.code) {
-					if (this.OnFileSent) {
-						this.OnFileSent(aToken);
-					}
-				} else {
-					if (this.OnFileError) {
-						this.OnFileError(aToken);
-					}
-				}
-			} else if ("event" === aToken.type) {
-				if ("filesaved" === aToken.name) {
-					if (this.OnFileSaved) {
-						this.OnFileSaved(aToken);
-					}
-				} else if ("filereceived" === aToken.name) {
-					if (this.OnFileReceived) {
-						this.OnFileReceived(aToken);
-					}
-				} else if ("filedeleted" === aToken.name) {
-					if (this.OnFileDeleted) {
-						this.OnFileDeleted(aToken);
-					}
-				}
-			}
-		}
-	},
+	
 	setFileUploaderCallbacks: function(aListeners) {
 		if (!aListeners) {
 			aListeners = {};
 		}
+		if (aListeners.OnFileSelected !== undefined) {
+			this.OnFileSelected = aListeners.OnFileSelected;
+		}
+
 		if (aListeners.OnFileLoaded !== undefined) {
 			this.OnFileLoaded = aListeners.OnFileLoaded;
 		}
@@ -199,13 +279,25 @@ jws.FileUploaderPlugIn = {
 			this.OnFSFileChanged = aListeners.OnFSFileChanged;
 		}
 	}
-
 };
-//jws.oop.declareClass(aNamespace, aClassname, aAncestor, aFields)
+
+// add the jWebSocket FileSystem PlugIn into the TokenClient class
+jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.FileUploaderPlugIn);
+
 jws.oop.declareClass('jws', 'UploadItem', null, {
 	status: jws.FileUploaderPlugIn.STATUS_READY,
 	progress: 0,
 	file: null,
+	isChunked: null,
+	create: function(aFile) {
+		this.name = aFile.name;
+		this.file = aFile;
+		this.progress = 0;
+		this.isChunked = false;
+	},
+	getName: function() {
+		return this.name;
+	},
 	setFile: function(aFile) {
 		this.file = aFile;
 	},
@@ -221,6 +313,20 @@ jws.oop.declareClass('jws', 'UploadItem', null, {
 	setProgress: function(aProgress) {
 		this.progress = aProgress;
 	},
+	/*
+	 * Indicates wether the item will be uploaded in chunks or not
+	 * @return isChunked:Boolean
+	 */
+	getChunked: function() {
+		return this.isChunked;
+	},
+	/*
+	 * Tells to the uploader that the item will be uploaded in chunks
+	 * @return isChunked:Boolean
+	 */
+	setChunked: function(aChunked) {
+		this.isChunked = aChunked;
+	},
 	getProgress: function() {
 		return this.progress;
 	},
@@ -231,6 +337,3 @@ jws.oop.declareClass('jws', 'UploadItem', null, {
 		return this.status;
 	}
 });
-
-// add the jWebSocket FileSystem PlugIn into the TokenClient class
-jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.FileUploaderPlugIn);
