@@ -82,6 +82,15 @@
 					}
 				});
 			}
+			
+			function getSMSessionCookie() {
+				log( "Getting SiteMinder Session Cookie..." );
+				lWSC.ssoGetSMSessionCookie({
+					OnResponse: function( aToken ) {
+						log( "Cookie: " + JSON.stringify( aToken ) );
+					}
+				});
+			}
 
 			function initPage() {
 				eArgs = jws.$( "stxfArgs" );
@@ -89,6 +98,7 @@
 				// lWSC.ssoSetHost( "https://hqdvpngpoc01.nvidia.com/as/token.oauth2" );
 				lWSC.ssoSetHost( "https://localhost/as/token.oauth2" );
 				lWSC.ssoSetSecret( "2Federate" );
+				lWSC.ssoSetAppURL( "https://hqdvalsap01.nvidia.com/sso/index.html" );
 				
 //				lWSC.setExtProcessCallbacks({
 //					OnExtProcessMsg: handleExtProcessMsg
@@ -129,6 +139,8 @@
 							   title="Saves the relevant OAuth data in a cookie.">
 						<input class="sbtnDlg" id="sbtnLoadOAuthData" type="button" value="Load Cookie" onclick="loadOAuthData();"
 							   title="Loads the relevant OAuth data from a cookie.">
+						<input class="sbtnDlg" id="sbtnGetSMSessionCookie" type="button" value="Get SM-Session" onclick="getSMSessionCookie();"
+							   title="Tries to obtain the SiteMinder session cookie.">
 					</td>
 				</tr>
 			</table>
