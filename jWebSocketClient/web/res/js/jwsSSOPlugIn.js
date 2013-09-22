@@ -17,19 +17,29 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
+// this plug-in is based on: 
+// http://tools.ietf.org/html/rfc6749 - The OAuth 2.0 Authorization Framework
+// http://tools.ietf.org/html/rfc6750 - The OAuth 2.0 Authorization Framework: Bearer Token Usage
+// http://oauth.net/2/ - OAuth 2.0
+
 jws.SSOPlugIn = {
 
 	// namespace for SSO plugin
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.sso",
 	BASE_URL: null,
+	APP_URL: null,
 	CLIENT_SECRET: null,
-	COOKIE_NAME: "JWSSSO",
+	JWS_SSO_COOKIE: "JWSSSO",
+	SMSESSION_COOKIE: "SMSESSION",
+	
+	XHR_ASYNCHRONOUS: true,
+	XHR_SYNCHRONOUS: false,
 
 	processToken: function( aToken ) {
 		// check if namespace matches
 		if( aToken.ns === jws.SSOPlugIn.NS ) {
-			// here you can handle incomimng tokens from the server
+			// here you can handle incoming tokens from the server
 			// directy in the plug-in if desired.
 //			if( "requestServerTime" == aToken.reqType ) {
 //				// this is just for demo purposes
@@ -44,18 +54,19 @@ jws.SSOPlugIn = {
 
 	mGetXHR: function( ) {
 		var lXHR;
-		
+
+		// try to get XMLHttpRequest object from the browser
 		if( window.XMLHttpRequest ) { // Mozilla, Safari, ...
 			lXHR = new XMLHttpRequest();
 			if( lXHR.overrideMimeType ) 
-				lXHR.overrideMimeType( 'text/xml' );
+				lXHR.overrideMimeType( "text/xml" );
 		}
 		else { // IE
 			try {
 				lXHR = new ActiveXObject( "Msxml2.XMLHTTP" );
 			} catch ( lEx ) {
 			}
-			if ( typeof httpRequest === 'undefined' ) {
+			if ( typeof httpRequest === "undefined" ) {
 				try {
 					lXHR = new ActiveXObject( "Microsoft.XMLHTTP" );
 				} catch( lEx ) {
@@ -70,37 +81,54 @@ jws.SSOPlugIn = {
 	},
 
 	ssoSetHost: function( aURL ) {
+		// just set the base_url property
 		jws.SSOPlugIn.BASE_URL = aURL;
 	},
 
+	ssoSetAppURL: function( aURL ) {
+		// just set the application property to get the SM session cookie
+		jws.SSOPlugIn.APP_URL = aURL;
+	},
+
 	ssoSetSecret: function( aSecret ) {
+		// just set the client_secret property
 		jws.SSOPlugIn.CLIENT_SECRET = aSecret;
 	},
 
 	ssoLoadOAuthData: function( aOptions ) {
 		var lCookie = document.cookie;
+		// all cookies in the browser are split by semicolons and a space
 		var lCookies = lCookie.split( "; " );
+		// if cookie(s) found...
 		if( lCookies ) {
+			// iterate through them to find the SSO JWS_SSO_COOKIE
+			// as well as the SMSESSION cookie as far as exist
+			if( !this.sso ) {
+				this.sso = { };
+			}
 			for( var lIdx in lCookies ) {
 				var lKeyVal = lCookies[ lIdx ].split( "=" );
 				if( lKeyVal && lKeyVal.length && lKeyVal.length >= 2 ) {
 					var lKey = lKeyVal[ 0 ];
 					var lValue = lKeyVal[ 1 ];
-					if( jws.SSOPlugIn.COOKIE_NAME === lKey ) {
+					if( jws.SSOPlugIn.JWS_SSO_COOKIE === lKey ) {
+						// TODO: process exception
 						var lJSON = JSON.parse( lValue );
+						// the cookie contains both the access and refresh token 
+						this.sso.refreshToken = lJSON.refreshToken;
+						this.sso.accessToken = lJSON.accessToken;
+						
 						if( aOptions.OnResponse ) {
-							if( !this.sso ) {
-								this.sso = { };
-							}
-							this.sso.refreshToken = lJSON.refreshToken;
-							this.sso.accessToken = lJSON.accessToken;
+							// prepare success event to be fired
 							var lToken = {};
 							lToken.refreshToken = lJSON.refreshToken;
 							lToken.accessToken = lJSON.accessToken;
 							aOptions.OnResponse( lToken );
 							break;
 						}
-					}	
+					} else if( jws.SSOPlugIn.SMSESSION_COOKIE === lKey ) {
+						this.sso.smsession = lValue;
+					}
 				}	
 			}
 		}	
@@ -117,10 +145,9 @@ jws.SSOPlugIn = {
 			lCookie.refreshToken = this.sso.refreshToken;
 			lCookie.accessToken = this.sso.accessToken;
 			var lExpires = new Date();
-			debugger;
 			lExpires.setTime( new Date().getTime() + 86400 * 1000 );
 			var lExpValue = lExpires.toGMTString();
-			document.cookie = jws.SSOPlugIn.COOKIE_NAME 
+			document.cookie = jws.SSOPlugIn.JWS_SSO_COOKIE 
 					+ "=" + JSON.stringify( lCookie ) 
 					+ "; expires=" + lExpValue;
 			if( aOptions.OnResponse ) {
@@ -130,11 +157,14 @@ jws.SSOPlugIn = {
 	},
 
 	ssoAuthDirect: function( aUsername, aPassword, aOptions ) {
+		// get browser's XHR object
 		var lXHR = jws.SSOPlugIn.mGetXHR();
 		
-		lXHR.open( "POST", jws.SSOPlugIn.BASE_URL, true );
+		lXHR.open( "POST", jws.SSOPlugIn.BASE_URL, jws.SSOPlugIn.XHR_ASYNCHRONOUS );
 		lXHR.setRequestHeader( "Content-Type", "application/x-www-form-urlencoded;" );
 
+		// save instance of WebSocket client to
+		// save OAuth data (access and refresh tokens)
 		var lInstance = this;
 		lXHR.onreadystatechange = function(){
 			if( lXHR.readyState >= 4 
@@ -158,6 +188,9 @@ jws.SSOPlugIn = {
 			}
 		};
 		
+		// set POST body according to OAuth settings 
+		// for direct authentication, also refer to 
+		// http://tools.ietf.org/html/rfc6750
 		var lPostBody = 
 				"client_id=ro_client"
 				+ "&grant_type=password"
@@ -168,11 +201,14 @@ jws.SSOPlugIn = {
 	},
 
 	ssoGetUser: function( aOptions ) {
+		// get browser's XHR object
 		var lXHR = jws.SSOPlugIn.mGetXHR();
 		
-		lXHR.open( "POST", jws.SSOPlugIn.BASE_URL, true );
+		lXHR.open( "POST", jws.SSOPlugIn.BASE_URL, jws.SSOPlugIn.XHR_ASYNCHRONOUS );
 		lXHR.setRequestHeader( "Content-Type", "application/x-www-form-urlencoded;" );
 
+		// save instance of WebSocket client to
+		// save OAuth data (username and organization tokens)
 		var lInstance = this;
 		lXHR.onreadystatechange = function(){
 			if( lXHR.readyState >= 4 
@@ -197,6 +233,8 @@ jws.SSOPlugIn = {
 			}
 		};
 		
+		// set POST body according to OAuth settings 
+		// to obtain user name and organziation from access_token
 		var lPostBody = 
 				"client_id=rs_client"
 				+ "&client_secret=" + jws.SSOPlugIn.CLIENT_SECRET
@@ -207,11 +245,14 @@ jws.SSOPlugIn = {
 	},
 
 	ssoRefreshAccessToken: function( aOptions ) {
+		// get browser's XHR object
 		var lXHR = jws.SSOPlugIn.mGetXHR();
 		
-		lXHR.open( "POST", jws.SSOPlugIn.BASE_URL, true );
+		lXHR.open( "POST", jws.SSOPlugIn.BASE_URL, jws.SSOPlugIn.XHR_ASYNCHRONOUS );
 		lXHR.setRequestHeader( "Content-Type", "application/x-www-form-urlencoded;" );
 
+		// save instance of WebSocket client to
+		// obtain OAuth data (get refresh token and set new access token)
 		var lInstance = this;
 		lXHR.onreadystatechange = function(){
 			if( lXHR.readyState >= 4 
@@ -234,6 +275,8 @@ jws.SSOPlugIn = {
 			}
 		};
 
+		// set POST body according to OAuth settings 
+		// to obtain new access token based on saved refresh token
 		var lPostBody = 
 				"client_id=ro_client"
 				+ "&grant_type=" + "refresh_token"
@@ -242,16 +285,55 @@ jws.SSOPlugIn = {
 		lXHR.send( lPostBody );
 	},
 
+	ssoGetSMSessionCookie: function( aOptions ) {
+
+debugger;
+
+		// get browser's XHR object
+		var lXHR = jws.SSOPlugIn.mGetXHR();
+		lXHR.open( "GET", jws.SSOPlugIn.APP_URL, jws.SSOPlugIn.XHR_ASYNCHRONOUS );
+		lXHR.setRequestHeader( "Content-Type", "application/x-www-form-urlencoded;" );
+
+		// save instance of WebSocket client to
+		// obtain OAuth data (get refresh token and set new access token)
+		var lInstance = this;
+		lXHR.onreadystatechange = function(){
+			debugger;  
+			if( lXHR.readyState >= 4 ) {
+				debugger;  
+					// && lXHR.status === 200 ) {
+			}
+		};
+
+		// set POST body according to OAuth settings 
+		// to obtain new access token based on saved refresh token
+		var lPostBody = "";
+		lXHR.send( lPostBody );
+
+		var lSMSessionCookie;
+		if( this.sso ) {
+			lSMSessionCookie = this.sso.smsession;
+		}
+		if( aOptions && lSMSessionCookie ) {
+			if( aOptions.OnResponse ) {
+				aOptions.OnResponse({
+					smsession: lSMSessionCookie
+				});
+			}
+		}
+		return lSMSessionCookie;
+	},
+
 	setSamplesCallbacks: function( aListeners ) {
 		if( !aListeners ) {
 			aListeners = {};
 		}
-		if( aListeners.OnSamplesServerTime !== undefined ) {
-			this.OnSamplesServerTime = aListeners.OnSamplesServerTime;
-		}
+//		if( aListeners.OnSamplesServerTime !== undefined ) {
+//			this.OnSamplesServerTime = aListeners.OnSamplesServerTime;
+//		}
 	}
 
 };
 
-// add the JWebSocket Samples PlugIn into the TokenClient class
+// add the JWebSocket SSO PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SSOPlugIn );
