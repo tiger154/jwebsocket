@@ -303,6 +303,13 @@
 			<artifactId>ormlite-jdbc</artifactId>
 			<version>4.43</version>
 		</dependency>
+		<!--
+		<dependency>
+			<groupId>org.krakenapps</groupId>
+			<artifactId>kraken-pcap</artifactId>
+			<version>1.3.0</version>
+		</dependency>
+		-->
 	</dependencies>
 
 	<!-- define repositories -->
@@ -339,6 +346,13 @@
 			<name>Jasper Repository</name>
 			<url>http://jasperreports.sourceforge.net/maven2</url>
 		</repository>
-		
+		<!-- once we want to add a TCP surveillance -->
+		<!--
+		<repository>
+			<id>Kraken-Repo</id>
+			<name>Kraken Repository</name>
+			<url>http://download.krakenapps.org</url>
+		</repository>
+		-->
 	</repositories>
 </project>

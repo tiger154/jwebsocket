@@ -237,8 +237,7 @@
 			<groupId>org.apache.xbean</groupId> 
 			<artifactId>xbean-spring-v2c</artifactId> 
 			<version>${org.apache.xbean.version}</version> 
-		</dependency>		
-	
+		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketCommon</artifactId>
