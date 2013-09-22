@@ -21,6 +21,7 @@ package org.jwebsocket.tcp;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.UUID;
@@ -37,6 +38,8 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.util.Tools;
+// import org.krakenapps.pcap.decoder.ethernet.MacAddress;
+// import org.krakenapps.pcap.util.Arping;
 
 /**
  * Implementation of the jWebSocket TCP socket connector.
@@ -67,8 +70,9 @@ public class TCPConnector extends BaseConnector {
 	private TimeoutOutputStreamNIOWriter mOutputStreamNIOSender;
 
 	/**
-	 * creates a new TCP connector for the passed engine using the passed client socket. Usually
-	 * connectors are instantiated by their engine only, not by the application.
+	 * creates a new TCP connector for the passed engine using the passed client
+	 * socket. Usually connectors are instantiated by their engine only, not by
+	 * the application.
 	 *
 	 * @param aEngine
 	 * @param aClientSocket
@@ -108,7 +112,43 @@ public class TCPConnector extends BaseConnector {
 			lPort = mClientSocket.getPort();
 			lTimeout = mClientSocket.getSoTimeout();
 		} catch (Exception lEx) {
+			mLog.warn(Logging.getSimpleExceptionMessage(lEx,
+					"getting client's socket port and default timeout."));
 		}
+
+		/*
+		InetAddress lAddr = mClientSocket.getInetAddress();
+		mLog.debug(
+				"InetAddress: HostAddress: " + lAddr.getHostAddress()
+				+ ", HostName: " + lAddr.getHostName()
+				+ ", CanonicalHostName: " + lAddr.getCanonicalHostName());
+		SocketAddress lRemoteSocketAddr = mClientSocket.getRemoteSocketAddress();
+		mLog.debug(
+				"RemoteSocketAddress: " + lRemoteSocketAddr.toString());
+
+		try {
+			InetAddress lTest = InetAddress.getByName(lAddr.getHostAddress());
+			String lHostName = lTest.getHostName();
+			mLog.debug(
+					"Hostname: " + lHostName);
+		} catch (Exception lEx) {
+			mLog.warn(Logging.getSimpleExceptionMessage(lEx,
+					"Obtaining remote host name"));
+		}
+
+		String lIP4 = lAddr.getHostAddress();
+		MacAddress lMAC;
+		try {
+			lMAC = Arping.query(InetAddress.getByName(lIP4), 2000);
+			// lMAC = Arping.query(lAddr, 2000);
+			// lMAC = Arping.query(lAddr., 2000);
+			mLog.debug("Client (IP: " + lIP4 + ") connected from MAC: " + lMAC.toString());
+		} catch (Exception lEx) {
+			mLog.warn(Logging.getSimpleExceptionMessage(lEx,
+					"obtaining client's MAC address (IP: " + lIP4 + ")."));
+		}
+		*/
+		
 		String lNodeStr = getNodeId();
 		if (lNodeStr != null) {
 			lNodeStr = " (unid: " + lNodeStr + ")";
@@ -579,7 +619,7 @@ public class TCPConnector extends BaseConnector {
 							mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(mConnector, lPacket.size()));
 						} else {
 							if (mLog.isDebugEnabled()) {
-								mLog.debug("Processing '"+lPacket.getFrameType().toString().toLowerCase()+"' frame (" + mLogInfo + ") from " + lFrom + "...");
+								mLog.debug("Processing '" + lPacket.getFrameType().toString().toLowerCase() + "' frame (" + mLogInfo + ") from " + lFrom + "...");
 							}
 							mConnector.processPacket(lPacket);
 						}

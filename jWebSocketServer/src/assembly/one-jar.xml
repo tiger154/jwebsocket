@@ -82,6 +82,9 @@
 				
 				<include>com.j256.ormlite:ormlite-jdbc</include>
 				<include>com.j256.ormlite:ormlite-core</include>
+				<!--
+				<include>org.krakenapps:kraken-pcap</include>
+				-->
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>
