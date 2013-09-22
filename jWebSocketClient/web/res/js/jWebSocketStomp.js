@@ -23,14 +23,14 @@
 
 	STOMPWebSocket = function(aUrl, aSubprotocol, aUsername, aPassword) {
 		var self = this;
-		var lUrlParts = aUrl.split('/');
+		var lUrlParts = aUrl.split("/");
 		var mUsername = aUsername;
 		var mPassword = aPassword;
 		var mReplySelector = jws.tools.createUUID();
 		var mReconnectionAttempts = 0;
 
-		self.url = lUrlParts[0] + "//" + lUrlParts[2] + '/stomp';
-		self.destination = '/topic/' + lUrlParts[3];
+		self.url = lUrlParts[0] + "//" + lUrlParts[2] + "/stomp";
+		self.destination = "/topic/" + lUrlParts[3];
 		self.subPrcol = aSubprotocol;
 		self.readyStateValues = {
 			CONNECTING: 0,
@@ -66,7 +66,7 @@
 			for (var lIndex = 0; lIndex < lEvents.length; ++lIndex) {
 				lEvents[lIndex](aEvent);
 			}
-			var lHandler = self['on' + aEvent.type];
+			var lHandler = self["on" + aEvent.type];
 			if (lHandler) {
 				lHandler(aEvent);
 			}
@@ -76,12 +76,12 @@
 			try {
 				// supporting message delivery acknowledge on a LB scenario
 				var lMessage = JSON.parse(aData);
-				if (typeof(lMessage) === 'object' && lMessage['i$WrappedMsg']) {
-					if ('info' === lMessage.type && 'ack' === lMessage.name) {
+				if (typeof(lMessage) === "object" && lMessage["i$WrappedMsg"]) {
+					if ("info" === lMessage.type && "ack" === lMessage.name) {
 						self.stomp.send(self.destination, {
-							msgType: 'ACK',
+							msgType: "ACK",
 							msgId: jws.tools.createUUID(),
-							nodeId: lMessage.data.split('-')[0],
+							nodeId: lMessage.data.split("-")[0],
 							data: aData
 						});
 
@@ -93,7 +93,7 @@
 			}
 
 			self.stomp.send(self.destination, {
-				msgType: 'MESSAGE',
+				msgType: "MESSAGE",
 				data: aData,
 				msgId: jws.tools.createUUID()
 			});
@@ -104,26 +104,28 @@
 			self.stomp.disconnect(function() {
 				self.readyState = self.readyStateValues.CLOSED;
 				handleEvent({
-					type: 'close'
+					type: "close"
 				});
 			});
 		};
 
 		var handleEvent = function(aEvent) {
 			var lEvent;
-			if (aEvent.type === 'close' || aEvent.type === 'open' || aEvent.type === 'error') {
+			if (aEvent.type === "close"
+					|| aEvent.type === "open"
+					|| aEvent.type === "error") {
 				lEvent = createSimpleEvent(aEvent.type);
-			} else if (aEvent.type === 'message') {
-				lEvent = createMessageEvent('message', aEvent.data);
+			} else if (aEvent.type === "message") {
+				lEvent = createMessageEvent("message", aEvent.data);
 			} else {
-				throw 'Unknown event type: ' + aEvent.type;
+				throw "Unknown event type: " + aEvent.type;
 			}
 			self.dispatchEvent(lEvent);
 		};
 
 		var createSimpleEvent = function(lType) {
 			if (document.createEvent && window.Event) {
-				var lEvent = document.createEvent('Event');
+				var lEvent = document.createEvent("Event");
 				lEvent.initEvent(lType, false, false);
 
 				return lEvent;
@@ -138,8 +140,8 @@
 
 		var createMessageEvent = function(aType, aData) {
 			if (document.createEvent && window.MessageEvent && !window.opera) {
-				var lEvent = document.createEvent('MessageEvent');
-				lEvent.initMessageEvent('message', false, false, aData, null, null, window, null);
+				var lEvent = document.createEvent("MessageEvent");
+				lEvent.initMessageEvent("message", false, false, aData, null, null, window, null);
 				return lEvent;
 			} else {
 				return {
@@ -153,7 +155,7 @@
 
 		STOMPWebSocket.prototype.open = function() {
 			if (self.readyState === self.readyStateValues.OPEN)
-				throw new Error('Already connected!');
+				throw new Error("Already connected!");
 
 			self.stomp = Stomp.client(self.url);
 			self.stomp.debug = function() {
@@ -167,18 +169,18 @@
 								self.destination,
 								// callback
 										function(aMessage) {
-											if ('DISCONNECTION' === aMessage.headers['msgType']) {
+											if ("DISCONNECTION" === aMessage.headers["msgType"]) {
 												self.readyState = self.readyStateValues.CLOSING;
 												self.stomp.disconnect(function() {
 													self.readyState = self.readyStateValues.CLOSED;
 													handleEvent({
-														type: 'close',
+														type: "close",
 														data: aMessage.data
 													});
 												});
 											} else {
 												handleEvent({
-													type: 'message',
+													type: "message",
 													data: aMessage.body
 												});
 											}
@@ -187,7 +189,7 @@
 								});
 
 								self.stomp.send(self.destination, {
-									msgType: 'CONNECTION',
+									msgType: "CONNECTION",
 									replySelector: mReplySelector,
 									msgId: jws.tools.createUUID()
 								});
@@ -196,12 +198,11 @@
 								// notify 'open' if not from reconnection
 								if (0 === mReconnectionAttempts) {
 									handleEvent({
-										type: 'open'
+										type: "open"
 									});
 								}
 								mReconnectionAttempts = 0;
 							},
-							
 							function() {
 								if (self.readyState === self.readyStateValues.OPEN) {
 									self.readyState = self.readyStateValues.CONNECTING;
@@ -217,7 +218,7 @@
 								}
 								self.readyState = self.readyStateValues.CLOSED;
 								handleEvent({
-									type: 'close'
+									type: "close"
 								});
 							});
 				};
