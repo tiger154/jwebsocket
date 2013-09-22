@@ -17,6 +17,11 @@
 #	limitations under the License.
 #	---------------------------------------------------------------------------
 
+# this code is based on: 
+# http://tools.ietf.org/html/rfc6749 - The OAuth 2.0 Authorization Framework
+# http://tools.ietf.org/html/rfc6750 - The OAuth 2.0 Authorization Framework: Bearer Token Usage
+# http://oauth.net/2/ - OAuth 2.0
+
 use Data::Dumper;
 use LWP::UserAgent;
 use HTTP::Request::Common;

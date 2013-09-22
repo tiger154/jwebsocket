@@ -23,6 +23,8 @@ use Net::STOMP::Client;
 use JSON;
 use Data::Dumper;
 
+print( "Welcome to the jWebSocket Perl STOMP Client Demo\n" );
+
 # the JMS gateway topic of the message broker
 $jms_gateway = "/topic/org.jwebsocket.jms.gateway";
 
@@ -30,7 +32,11 @@ $jms_gateway = "/topic/org.jwebsocket.jms.gateway";
 $flag_exit = 0;
 
 # create STOMP client
-$stomp = Net::STOMP::Client->new(uri => "stomp://hqdvalsap01:61613");
+# my $brokerURI = "stomp://172.20.100.125:61613";
+my $brokerURI = "stomp://hqqaalsap02:61613";
+# my $brokerURI = "stomp://hqdvalsap01:61613";
+printf( "Connecting to %s...\n", $brokerURI );
+$stomp = Net::STOMP::Client->new(uri => $brokerURI);
 
 # the unique client id (the message selector)
 my $user_name = $ENV{USERNAME};
@@ -44,6 +50,7 @@ $stomp->connect(
 	# 'login' => "username",
 	# 'passcode' => "password",
 );
+printf( "Connected to %s.\n", $brokerURI );
 
 # get and display some information about the connection
 $peer = $stomp->peer();
