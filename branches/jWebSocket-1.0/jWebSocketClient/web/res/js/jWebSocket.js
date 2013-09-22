@@ -22,7 +22,7 @@
 // ## :#file:*:jWebSocket.js
 // ## :#d:en:Implements the jWebSocket Web Client.
 
-// Firefox temporarily used MozWebSocket (why??), anyway, consider this here.
+// Firefox temporarily used a "MozWebSocket" class, we consider this here.
 // Since the browserSupportNativeWebSocket method evaluates the existance of
 // the window.WebSocket class, this abstraction needs to be done on the very top.
 // please do not move this lines down.
@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC2 (build 30613)
+	//:const:*:VERSION:String:1.0 RC2 (build 30920)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC2 (build 30613)",
+	VERSION: "1.0.0 RC2 (build 30920)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -2205,9 +2205,9 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	sendMessage: function(aMessage, aListener){
 		try {
 			var lThis = this;
-			if (null != aListener){
+			if( null !== aListener ) {
 				aMessage.isAckRequired = true;
-				aMessage['i$WrappedMsg'] = true;
+				aMessage[ 'i$WrappedMsg' ] = true;
 
 				var lMsgId = aMessage.msgId;
 
@@ -2229,7 +2229,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 
 			// sending the packet
 			this.sendStream( JSON.stringify(aMessage) );
-		}catch ( lEx ){
+		} catch( lEx ) {
 			// cleaning expired data and calling OnFailure
 			delete this.fPacketDeliveryListeners[ lMsgId ];
 			clearTimeout( this.fPacketDeliveryTimerTasks[ lMsgId ] );
