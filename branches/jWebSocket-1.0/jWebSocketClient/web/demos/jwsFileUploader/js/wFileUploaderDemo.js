@@ -32,8 +32,7 @@ $.widget("jws.fileUploaderDemo", {
 		w.fileUploader.registerEvents( );
 	},
 	registerEvents: function( ) {
-		w.fileUploader.eBtnUpload.click(function(){
-			console.log("yes")
+		w.fileUploader.eBtnUpload.click(function() {
 			mWSC.startUpload();
 		});
 		// For more information, check the file ../../res/js/widget/wAuth.js
@@ -50,9 +49,11 @@ $.widget("jws.fileUploaderDemo", {
 					drop_area: 'drop_files_area'
 				});
 
-				mWSC.setFileUploaderCallbacks({
+				mWSC.addUploaderListeners({
 					OnFileSelected: w.fileUploader.onFileSelected,
 					OnUploadStarted: w.fileUploader.onUploadStarted,
+					OnUploadComplete: w.fileUploader.onUploadComplete,
+					OnUploadProgress: w.fileUploader.onUploadProgress,
 					OnFileSaved: w.fileUploader.onFileUploaded
 				});
 			}
@@ -62,20 +63,22 @@ $.widget("jws.fileUploaderDemo", {
 	startUpload: function() {
 		mWSC.startUpload();
 	},
-	onFileSelected: function(aFiles) {
+	onFileSelected: function(aEvent, aFiles) {
 		for (var lIdx = 0; lIdx < aFiles.length; lIdx++) {
 			w.fileUploader.addFileToTable(aFiles[lIdx]);
 //			w.fileUploader.updateProgress(aFiles[lIdx].name, 100);
 		}
 	},
-			
-	onFileUploaded: function(aToken) {
-		console.log(aToken);
-		console.log("File uploaded: " + aToken.filename + ", with progress: " );
-		w.fileUploader.updateProgress(aToken.filename, 100);
+	onFileUploaded: function(aEvent, aItem) {
+		w.fileUploader.updateProgress(aItem.getName(), aItem.getProgress());
 	},
-	onUploadProgress: function(aFile, aProgress) {
-		console.log("upload progress in file: " + aFile.name + ", with progress: " + aProgress);
+	onUploadComplete: function(aEvent, aData) {
+		console.log("Upload completed");
+	},
+	onUploadProgress: function(aEvent, aProgressData) {
+		var lItem = aProgressData.item;
+		w.fileUploader.updateProgress(lItem.getName(), lItem.getProgress());
+		console.log("upload progress in file: " + lItem.getName() + ", with progress: " + aProgressData.progress);
 	},
 	onUploadStarted: function(aFiles) {
 		console.log("upload started successfully");
@@ -94,8 +97,11 @@ $.widget("jws.fileUploaderDemo", {
 		var lTr = $("<tr id='" + lId + "'></tr>"),
 				lNameCell = $("<td>" + aFile.name + "</td>"),
 				lPercentCell = $("<td class='progress'>0%</td>"),
-				lInputCell = $('<td><input type="checkbox" ' +
-				'checked="true"></input></td>'),
+				lInputCell = $('<td></td>').append($('<input type="checkbox" ' +
+				'checked></input>').change(function() {
+			var lFile = mWSC.getFile(aFile.name);
+			lFile && lFile.setChunked($(this).prop("checked"));
+		})),
 				lDeleteAction = $('<td/>').append(
 				$('<div class="delete_file"></div>').click(function() {
 			$(this).parent().parent().remove();
