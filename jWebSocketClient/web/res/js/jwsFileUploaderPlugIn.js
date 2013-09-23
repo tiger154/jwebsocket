@@ -31,7 +31,15 @@ jws.FileUploaderPlugIn = {
 	STATUS_READY: 0,
 	STATUS_UPLOADING: 1,
 	STATUS_UPLOADED: 2,
+	TT_FILE_SELECTED: "OnFileSelected",
+	TT_FILE_UPLOADED: "OnFileSaved",
+	TT_UPLOAD_STARTED: "OnUploadStarted",
+	TT_UPLOAD_STOPPED: "OnUploadStopped",
+	TT_UPLOAD_PROGRESS: "OnUploadProgress",
+	TT_UPLOAD_COMPLETE: "OnUploadComplete",
+	TT_UPLOAD_ERROR: "OnUploadError",
 	queue: [],
+	listeners: {},
 	browseButton: {},
 	userBrowseButton: {},
 	isFlashFileReader: function() {
@@ -69,6 +77,19 @@ jws.FileUploaderPlugIn = {
 			$(lUserBrowseBtn).on('change', function(aEvt) {
 				lMe.onFileSelected(aEvt);
 			});
+			lMe.setFileSystemCallbacks({
+				OnFileSaved: function(aToken) {
+					console.log("File " + aToken.filename + " has been uploaded successfully to the server.");
+					var lUploadedItem = this.getFile(aToken.filename);
+					if (lUploadedItem) {
+						lUploadedItem.setProgress(100);
+						lUploadedItem.setUploadedBytes(lUploadedItem.getFile().size);
+						lUploadedItem.setStatus(this.STATUS_UPLOADED);
+					}
+					lMe.fireUploaderEvent(lMe.TT_FILE_UPLOADED, lUploadedItem);
+					// Fire event "upload successful"
+				}
+			});
 		}
 	},
 	browse: function() {
@@ -78,96 +99,88 @@ jws.FileUploaderPlugIn = {
 		}
 	},
 	onFileSelected: function(aEvt) {
-		//TODO: check if the files are folders, upload nested folder
-		var lCancel = false;
-		if ("function" === typeof this.OnFileSelected) {
-			lCancel = this.OnFileSelected(aEvt.target.files);
-		}
-		if (!lCancel) {
-			var lQueueContains = function(aQueue, aFile) {
-				for (var lIdx1 = 0; lIdx1 < aQueue.length; lIdx1++) {
-					if (aQueue[lIdx1].getName() === aFile.name) {
-						return lIdx1;
-					}
+		this.fireUploaderEvent(this.TT_FILE_SELECTED, aEvt.target.files);
+
+		var lQueueContains = function(aQueue, aFile) {
+			for (var lIdx1 = 0; lIdx1 < aQueue.length; lIdx1++) {
+				if (aQueue[lIdx1].getName() === aFile.name) {
+					return lIdx1;
 				}
-				return -1;
-			};
-			for (var lIdx = 0; lIdx < aEvt.target.files.length; lIdx++) {
-				if (-1 === lQueueContains(this.queue, aEvt.target.files[lIdx])) {
-					var lUploadItem = new jws.UploadItem(aEvt.target.files[lIdx]);
-					this.queue.push(lUploadItem);
-				}
+			}
+			return -1;
+		};
+		for (var lIdx = 0; lIdx < aEvt.target.files.length; lIdx++) {
+			if (-1 === lQueueContains(this.queue, aEvt.target.files[lIdx])) {
+				var lUploadItem = new jws.UploadItem(aEvt.target.files[lIdx]);
+				this.queue.push(lUploadItem);
 			}
 		}
 	},
-	uploadFileInChunks: function(lFile) {
-		if (!lFile) {
+	uploadFileInChunks: function(aUploadItem) {
+		if (!aUploadItem) {
 			return;
 		}
-
-		var lChunkSize = 25000,
-				lChunks = Math.ceil(lFile.size / lChunkSize),
-				lChunk = 0,
+		var lFile = aUploadItem.getFile();
+		var lChunkSize = 250000,
+				lCurrentChunk = 0,
 				lMe = this,
 				lReader = new FileReader(),
 				lTotalBytes = lFile.size,
 				lBytesSent = 0,
 				lBytesRead = 0,
 				lChunkId = 0;
+		aUploadItem.setChunkSize(lChunkSize);
+		if (aUploadItem.getStatus() === this.STATUS_READY) {
+			aUploadItem.setStatus(this.STATUS_UPLOADING);
 
-//			aItem.setUploading( );
-//			aItem.setMaxChunks(lChunks);
-//			jws.setEnterpriseFileSystemCallbacks({
-//				OnFileSaved: function(aToken) {
-//					jws.console.log("File " + aToken.filename + " has been uploaded successfully to the server.");
-//					lMe.onUploadSuccess(aToken, aItem);
-//				}
-//			});
+			// was here
+			var lSave = function(aEvt) {
+				aUploadItem.setUploadedBytes(lBytesRead);
+				var lIsLast = lBytesRead >= lTotalBytes;
+				var lData = aEvt.target.result;
+				var lChunkContent = lData.substr(lData.indexOf("base64,") + 7);
+				lMe.fileSaveByChunks(lFile.name, lChunkContent, lIsLast, {
+					encoding: "base64",
+					encode: false,
+					scope: jws.SCOPE_PRIVATE,
+					OnSuccess: function(aEvent) {
+						aUploadItem.setUploadedBytes(lBytesSent);
+						lMe.fireUploaderEvent(lMe.TT_UPLOAD_PROGRESS, {
+							item: aUploadItem,
+							progress: aUploadItem.getProgress()
+						});
+						lBytesSent += lChunkSize;
+						lCurrentChunk++;
 
-		var lSave = function(aEvt) {
-			var lIsLast = lBytesRead >= lTotalBytes;
-			var lData = aEvt.target.result;
-			var lChunkContent = lData.substr(lData.indexOf("base64,") + 7);
-			Ext.jws.getConnection( ).fileSaveByChunks(lFile.name, lChunkContent, lIsLast, {
-				encoding: "base64",
-				encode: false,
-				scope: jws.SCOPE_PRIVATE,
-				OnSuccess: function(aEvent) {
-					lBytesSent += lChunkSize;
-					lChunk++;
-
-					if (!lIsLast) {
-						var lBlob = lFile.slice(lBytesSent, lBytesSent + lChunkSize);
-						lReader.readAsDataURL(lBlob);
-						lChunkId++;
-					}
-				},
-				OnFailure: function(aEvent) {
-					Ext.Msg.show({
-						title: 'Upload failed',
-						msg: "Sorry, your upload process failed on " +
+						if (!lIsLast) {
+							var lBlob = lFile.slice(lBytesSent, lBytesSent + lChunkSize);
+							lReader.readAsDataURL(lBlob);
+							lChunkId++;
+						}
+					},
+					OnFailure: function(aEvent) {
+						var lMsg = "Upload failed, sorry your upload process failed on " +
 								lBytesRead / lChunkSize + " chunk!" +
-								" With the message: \"" + aEvent.msg + "\"",
-						buttons: Ext.Msg.OK,
-						fn: function( ) {
-						},
-						icon: Ext.MessageBox.ERROR
-					});
-					lMe.onUploadFailure(aEvent, aItem);
-					jws.console.log("Upload process failed on " + lBytesRead / lChunkSize + " chunk!");
-					jws.console.log(aEvent);
-				}
-			});
-		};
+								" With the message: \"" + aEvent.msg + "\"";
+						lMe.fireUploaderEvent(lMe.TT_UPLOAD_ERROR, {
+							item: aUploadItem,
+							msg: lMsg,
+							errorEvt: aEvent
+						});
+						jws.console.log("Upload process failed on " + lBytesRead / lChunkSize + " chunk!");
+						jws.console.log(aEvent);
+					}
+				});
+			};
 
-		lReader.onload = function(aEvt) {
-			lMe.onUploadProgress(aEvt, aItem, lChunk);
-			lBytesRead += lChunkSize;
-			lSave(aEvt);
-		};
+			lReader.onload = function(aEvt) {
+				lBytesRead += lChunkSize;
+				lSave(aEvt);
+			};
 
-		var lBlob = lFile.slice(lBytesSent, lChunkSize);
-		lReader.readAsDataURL(lBlob);
+			var lBlob = lFile.slice(lBytesSent, lChunkSize);
+			lReader.readAsDataURL(lBlob);
+		}
 	},
 	uploadCompleteFile: function(aUploadItem) {
 		var lReader = new FileReader();
@@ -195,7 +208,7 @@ jws.FileUploaderPlugIn = {
 	},
 	startUpload: function() {
 //		if (jws.isConnected()) {
-		// TODO: add event uploadstarted
+		this.fireUploaderEvent(this.TT_UPLOAD_STARTED);
 		for (var lIdx = 0; lIdx < this.queue.length; lIdx++) {
 			var lItem = this.queue[lIdx];
 			if (lItem.getStatus() === this.STATUS_READY) {
@@ -212,6 +225,55 @@ jws.FileUploaderPlugIn = {
 //					"jWebSocket Server, please check if your server is running.");
 //		}
 	},
+	addUploaderListener: function(aType, aListener) {
+		if (typeof this.listeners[aType] === "undefined") {
+			this.listeners[aType] = [];
+		}
+		this.listeners[aType].push(aListener);
+	},
+	addUploaderListeners: function(aListeners) {
+		for (var lIdx in aListeners) {
+			this.addUploaderListener(lIdx, aListeners[lIdx]);
+		}
+	},
+	fireUploaderEvent: function(aEvent, aData) {
+		if (typeof aEvent === "string") {
+			aEvent = {type: aEvent};
+		}
+		if (!aEvent.target) {
+			aEvent.target = this;
+		}
+
+		if (!aEvent.type) {  //falsy
+			throw new Error("Event object missing 'type' property.");
+		}
+
+		if (this.listeners[aEvent.type] instanceof Array) {
+			var listeners = this.listeners[aEvent.type];
+			for (var lIdx = 0, len = listeners.length; lIdx < len; lIdx++) {
+				listeners[lIdx].call(this, aEvent, aData);
+			}
+		}
+	},
+	removeUploaderListener: function(aEvent, aListener) {
+		if (this.listeners[aEvent] instanceof Array) {
+			var listeners = this.listeners[aEvent];
+			for (var lIdx = 0, len = listeners.length; lIdx < len; lIdx++) {
+				if (listeners[lIdx] === aListener) {
+					listeners.splice(lIdx, 1);
+					break;
+				}
+			}
+		}
+	},
+	getFile: function(aFilename) {
+		for (var lIdx = 0; lIdx < this.queue.length; lIdx++) {
+			if (this.queue[lIdx].getName() === aFilename) {
+				return this.queue[lIdx];
+			}
+		}
+		return null;
+	},
 	clearUploadedFiles: function() {
 
 	},
@@ -224,7 +286,6 @@ jws.FileUploaderPlugIn = {
 	resumeUpload: function() {
 
 	},
-	
 	setFileUploaderCallbacks: function(aListeners) {
 		if (!aListeners) {
 			aListeners = {};
@@ -232,7 +293,6 @@ jws.FileUploaderPlugIn = {
 		if (aListeners.OnFileSelected !== undefined) {
 			this.OnFileSelected = aListeners.OnFileSelected;
 		}
-
 		if (aListeners.OnFileLoaded !== undefined) {
 			this.OnFileLoaded = aListeners.OnFileLoaded;
 		}
@@ -293,7 +353,19 @@ jws.oop.declareClass('jws', 'UploadItem', null, {
 		this.name = aFile.name;
 		this.file = aFile;
 		this.progress = 0;
-		this.isChunked = false;
+		this.isChunked = true;
+	},
+	setChunkSize: function(aChunkSize) {
+		this.chunkSize = aChunkSize;
+	},
+	setUploadedBytes: function(aBytes) {
+		this.uploadedBytes = aBytes;
+	},
+	getChunkSize: function() {
+		return this.chunkSize;
+	},
+	getUploadedBytes: function(aBytes) {
+		return this.uploadedBytes;
 	},
 	getName: function() {
 		return this.name;
@@ -328,7 +400,7 @@ jws.oop.declareClass('jws', 'UploadItem', null, {
 		this.isChunked = aChunked;
 	},
 	getProgress: function() {
-		return this.progress;
+		return this.progress = parseInt(this.uploadedBytes * 100 / this.getFile().size);
 	},
 	setStatus: function(aStatus) {
 		this.status = aStatus;
