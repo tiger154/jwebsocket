@@ -27,26 +27,37 @@ $.widget("jws.fileUploaderDemo", {
 		this.eBtnUpload = this.element.find("#start_upload");
 		this.eMainContainer = $("#demo_box");
 		this.eTableContainer = this.element.find("#filelist table");
+		this.eChunkInput = this.element.find("#chunkSize input");
 
 		w.fileUploader = this;
 		w.fileUploader.registerEvents( );
 	},
 	registerEvents: function( ) {
+		w.fileUploader.eChunkInput.attr('disabled', true);
+		w.fileUploader.eChunkInput.change(function() {
+			mWSC.setChunkSize($(this).val());
+		});
+
 		w.fileUploader.eBtnUpload.click(function() {
 			mWSC.startUpload();
 		});
+
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
 			OnMessage: function(aEvent, aToken) {
 				w.fileUploader.processToken(aEvent, aToken);
 			},
 			OnOpen: function() {
-				mWSC.init({
+				w.fileUploader.eChunkInput.attr('disabled', false);
+				// Note: This is the only thing you need to do if you want to 
+				// configure the jWebSocket Uploader PlugIn
+				mWSC.initUploaderPlugIn({
 					// we just need to pass the id of the button that will upload the files
 					browseButtonId: 'select_file',
 					// TODO: support also the following property "drop_area" only for 
 					// browsers that support drag and drop
-					drop_area: 'drop_files_area'
+					drop_area: 'drop_files_area',
+					chunkSize: parseInt(w.fileUploader.eChunkInput.val())
 				});
 
 				mWSC.addUploaderListeners({
@@ -54,8 +65,14 @@ $.widget("jws.fileUploaderDemo", {
 					OnUploadStarted: w.fileUploader.onUploadStarted,
 					OnUploadComplete: w.fileUploader.onUploadComplete,
 					OnUploadProgress: w.fileUploader.onUploadProgress,
-					OnFileSaved: w.fileUploader.onFileUploaded
+					OnFileSaved: w.fileUploader.onFileUploaded,
+					OnUploadError: w.fileUploader.onFileUploadError,
+					OnError: w.fileUploader.onError,
+					OnFileDeleted: w.fileUploader.onFileDeleted
 				});
+			},
+			OnClose: function() {
+				w.fileUploader.eChunkInput.attr('disabled', true);
 			}
 		};
 		w.fileUploader.eMainContainer.auth(lCallbacks);
@@ -65,12 +82,44 @@ $.widget("jws.fileUploaderDemo", {
 	},
 	onFileSelected: function(aEvent, aFiles) {
 		for (var lIdx = 0; lIdx < aFiles.length; lIdx++) {
-			w.fileUploader.addFileToTable(aFiles[lIdx]);
+			var lExists = false;
+			for (var lFileIdx = 0; lFileIdx < mWSC.queue.length; lFileIdx++) {
+				if (aFiles[lIdx].name === mWSC.queue[lFileIdx].getName()) {
+					lExists = true;
+					break;
+				}
+			}
+			if (!lExists) {
+				w.fileUploader.addFileToTable(aFiles[lIdx]);
+			}
 //			w.fileUploader.updateProgress(aFiles[lIdx].name, 100);
 		}
 	},
+	onFileDeleted: function(aEvent, aData) {
+		w.fileUploader.removeFileFromTable(aData.item.getName());
+	},
 	onFileUploaded: function(aEvent, aItem) {
 		w.fileUploader.updateProgress(aItem.getName(), aItem.getProgress());
+		w.fileUploader.updateStatus(aItem.getName(), aItem.getStatus());
+	},
+	onFileUploadError: function(aEvent, aItem) {
+		console.log(aItem);
+		w.fileUploader.updateStatus(aItem.getName(), aItem.getStatus());
+	},
+	onError: function(aEvent, aErrorData) {
+		var lItem = aErrorData.item;
+		w.fileUploader.updateStatus(lItem.getName(), lItem.getStatus());
+		jwsDialog(aErrorData.msg + "Do you want to remove this file from the list?",
+				"Error detected", true, 'error', null, [{
+				text: 'yes',
+				aFunction: function() {
+					w.fileUploader.removeFileFromTable(lItem.getName());
+				}
+			}, {
+				text: 'no',
+				aFunction: function() {
+				}
+			}]);
 	},
 	onUploadComplete: function(aEvent, aData) {
 		console.log("Upload completed");
@@ -78,13 +127,14 @@ $.widget("jws.fileUploaderDemo", {
 	onUploadProgress: function(aEvent, aProgressData) {
 		var lItem = aProgressData.item;
 		w.fileUploader.updateProgress(lItem.getName(), lItem.getProgress());
-		console.log("upload progress in file: " + lItem.getName() + ", with progress: " + aProgressData.progress);
+		w.fileUploader.updateStatus(lItem.getName(), lItem.getStatus());
+		jws.console.log("Upload progress in file: " + lItem.getName() + ", with progress: " + aProgressData.progress);
 	},
 	onUploadStarted: function(aFiles) {
-		console.log("upload started successfully");
+		jws.console.log("Upload started successfully");
 	},
 	onUploadStopped: function(aEvt) {
-		console.log("upload has stopped");
+		jws.console.log("upload has stopped");
 	},
 	onUploadPaused: function(aEvt) {
 		console.log("upload paused successfully");
@@ -102,12 +152,33 @@ $.widget("jws.fileUploaderDemo", {
 			var lFile = mWSC.getFile(aFile.name);
 			lFile && lFile.setChunked($(this).prop("checked"));
 		})),
-				lDeleteAction = $('<td/>').append(
-				$('<div class="delete_file"></div>').click(function() {
-			$(this).parent().parent().remove();
+				lActions = $('<td/>').append(
+				$('<div class="pauseUpload" title="Pause upload"></div>').click(function() {
+			w.fileUploader.toggleUpload($(this), aFile.name);
+		})).append(
+				$('<div class="delete_file" title="Delete file"></div>').click(function() {
+			mWSC.removeFile(aFile.name);
 		}));
 		this.eTableContainer.append(lTr.append(lNameCell).append(lPercentCell)
-				.append(lInputCell).append(lDeleteAction));
+				.append(lInputCell).append(lActions));
+	},
+	removeFileFromTable: function(aFilename) {
+		var lId = aFilename.split(".").join("_"),
+				lRow = this.eTableContainer.find("#" + lId);
+		if (lRow) {
+			lRow.remove();
+		}
+	},
+	toggleUpload: function(aDomObj, aFilename) {
+		var lFile = mWSC.getFile(aFilename);
+		// If the upload is paused we resume it, otherwise we pause
+		if (lFile.getStatus() === mWSC.STATUS_PAUSED) {
+			aDomObj.attr('class', 'pauseUpload');
+			mWSC.resumeUpload(aFilename);
+		} else {
+			aDomObj.attr('class', 'resumeUpload');
+			mWSC.pauseUpload(aFilename);
+		}
 	},
 	updateProgress: function(aFilename, aProgress) {
 		var lId = aFilename.split(".").join("_");
@@ -119,7 +190,48 @@ $.widget("jws.fileUploaderDemo", {
 			}
 		}
 	},
-	processToken: function(aEvent, aToken) {
+	updateStatus: function(aFilename, aStatus) {
+		var lId = aFilename.split(".").join("_"),
+				lFileRow = $('#' + lId);
+		if (lFileRow && lFileRow.context) {
+
+			switch (aStatus) {
+				//	STATUS_READY: 0,
+				case 0:
+					lFileRow.attr('class', 'status_ready');
+					break;
+					//	STATUS_UPLOADING: 1,
+				case 1:
+					lFileRow.find('.pauseUpload').show();
+					lFileRow.find('.resumeUpload').show();
+					lFileRow.attr('class', 'status_uploading');
+					break;
+					//	STATUS_UPLOADED: 2,
+				case 2:
+					lFileRow.find('.pauseUpload').hide();
+					lFileRow.find('.resumeUpload').hide();
+					lFileRow.attr('class', 'status_uploaded');
+					break;
+					//	STATUS_ERROR: 3,
+				case 3:
+					lFileRow.find('.pauseUpload').hide();
+					lFileRow.find('.resumeUpload').hide();
+					lFileRow.attr('class', 'status_error');
+					break;
+					//	STATUS_PAUSED: 4,
+				case 4:
+					lFileRow.attr('class', 'status_paused');
+					break;
+					//	STATUS_CANCELED: 5,
+				case 5:
+					lFileRow.attr('class', 'status_ready');
+					break;
+				default:
+					break;
+			}
+		}
+	},
+	processToken: function(aToken) {
 
 	}
 });

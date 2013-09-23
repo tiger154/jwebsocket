@@ -33,21 +33,22 @@
         <title>jWebSocket File Uploader Demo</title>
 
 		<!-- JQUERY STYLES -->
-		<!--<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>-->
+		<link rel="stylesheet" href="../../lib/jQuery/jquery-ui/blue-theme/jquery-ui.css" type="text/css"/>
 
 		<!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsFileUploader.css"/>
 
 		<!-- JQUERY DEPENDENCIES -->
-		<script type="text/javascript" src='../../lib/jQuery/jquery-1.10.2.min.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
-
+		<!--[if lte IE 9]>
 		<script type="text/javascript" src='js/FileReader/swfobject/swfobject.js'></script>
-
+		-->
 
         <!-- JWEBSOCKET CLIENT JAVASCRIPT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+        <script type="text/javascript" src="../../res/js/widgets/dialogs.js"></script>
 
 		<!-- this one imports the client side jWebSocketUploaderPlugIn -->
 		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
@@ -82,8 +83,8 @@
                         <div id="login_form">
                             <label class="first">Username</label>
                             <label class="second">Password</label>
-                            <input type="text" id="user_text" value="guest"/>
-                            <input type="password" id="user_password" value="guest"/>
+                            <input type="text" id="user_text" value="root"/>
+                            <input type="password" id="user_password" value="root"/>
                         </div>
                         <div id="login_button" class="button">Login</div>
                     </div>
@@ -111,14 +112,17 @@
 							This PlugIn also brings a complete HTML 5 File API 
 							independency, so, now you will be able to select files, 
 							split them and do whatever you want with them by 
-							using the jWebSocket Flash File API fallback. 
-							Check it out yourself...
+							using the jWebSocket Flash File API fallback.
+							Note: To enable upload by chunks you need to have 
+							the environment variable JWEBSOCKET_EE_HOME and the 
+							library libs/jWebSocketFileSystemPlugInEE-1.0.jar
 						</p>
 					</div>
 
                     <!--    MESSAGE_BOX      -->
                     <div id="message_box" class="box">
 						<div class="buttons">
+							<div id="chunkSize">Chunk size: <input type="text" value="500000"></input></div>
 							<div id="select_file" class="button"
 								 title="Uploads a file to the server">
 								Select files</div>
@@ -134,12 +138,12 @@
 								<tr>
 									<td class="first" width="60%">Filename</td>
 									<td>Progress</td>
-									<td>Upload chunked</td>
+									<td>Chunked?</td>
 									<td class="last">Actions</td>
 								</tr>
 							</thead>
 							<tbody>
-<!--								<tr>
+<!--							<tr>
 									<td>file 1.txt</td>
 									<td>0%</td>
 									<td><input type="checkbox" checked="true"></input></td>

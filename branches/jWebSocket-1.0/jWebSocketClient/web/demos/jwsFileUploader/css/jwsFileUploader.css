@@ -13,18 +13,29 @@
 
 #message_box{
 	background: #E4E4E4;
-	width: 23%;
+	width: 24%;
 	border: 1px solid #C8C8C8;
 	float: right;
 	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+#chunkSize{
+	float: left;
+}
+
+#chunkSize input{
+	padding-left: 5px;
+	width: 60px;
+	margin-bottom: 4px;
 }
 
 .buttons{
+	float: left;
 	margin: auto;
-	margin-top: 5px;
-	margin-bottom: 5px;
-	width: 135px;
-	height: 55px;
+	padding: 5px 5px 5px 15px;
+	width: 98%;
+	height: 90px;
 	font-size: 11px;
 }
 
@@ -52,6 +63,7 @@
 	font-size: 12px;
 	width: 100%;
 }
+
 
 #filelist table tbody tr td{
 	border-top: 1px solid #efefef;
@@ -84,6 +96,25 @@
 	-moz-border-radius: 0 6px 0px 0px;
 }
 
+#filelist table tr.status_ready{
+	background: white;
+}
+
+#filelist table tr.status_uploading{
+	background: #fcfde0;
+}
+
+#filelist table tr.status_uploaded{
+	background: #f1fff1;
+}
+
+#filelist table tr.status_error{
+	background: white;
+	color: red;
+	font-weight: bold;
+	border: 1px dotted red;
+}
+
 #filelist table thead tr:hover{
 	background: #82abd7 !important;
 }
@@ -93,8 +124,26 @@
 }
 
 .delete_file{
+	float: left;
 	width: 20px;
 	height: 20px;
 	cursor: pointer;
 	background: url(images/cancel.gif) center center no-repeat;
+}
+
+.pauseUpload{
+	display: none;
+	float: left;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	background: url(images/pause.png) center center no-repeat;
+}
+
+.resumeUpload{
+	float: left;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	background: url(images/play.png) center center no-repeat;
 }
