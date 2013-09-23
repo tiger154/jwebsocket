@@ -6,8 +6,8 @@ echo "(C) Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), He
 
 if [ -z "$JWEBSOCKET_HOME" ]; then
    echo "JWEBSOCKET_HOME is not set, setting to the path of a dir above current"
-   export JWEBSOCKET_HOME="$PWD"
+   export JWEBSOCKET_HOME="$PWD/"
    echo $JWEBSOCKET_HOME
 fi
 
-java -jar ../libs/jWebSocketServer-1.0.jar $1 $2 $3 $4 $5 $6 $7 $8 $9
+java -jar ../libs/jWebSocketServer-Bundle-1.0.jar $1 $2 $3 $4 $5 $6 $7 $8 $9
