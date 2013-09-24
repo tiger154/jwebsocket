@@ -138,7 +138,9 @@ public class BaseTokenClient implements WebSocketTokenClient {
 				for (String lAttr : lEnc.keySet()) {
 					String lFormat = lEnc.get(lAttr);
 					String lValue = aToken.getString(lAttr);
-
+					if (aToken.getBoolean("__binaryData")){
+						continue;
+					}
 					if (!mEncodingFormats.contains(lFormat)) {
 						throw new Exception("Invalid encoding format '" + lFormat + "' received (not supported). Token cannot be received!");
 					} else if ("base64".equals(lFormat)) {
