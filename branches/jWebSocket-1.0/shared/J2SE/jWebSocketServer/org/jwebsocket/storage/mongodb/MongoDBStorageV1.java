@@ -174,9 +174,9 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 			V lValue = get(aKey);
 			mCollection.remove(new BasicDBObject().append("k", aKey));
 			return lValue;
-		} else {
-			throw new IndexOutOfBoundsException();
 		}
+
+		return null;
 	}
 
 	/**
