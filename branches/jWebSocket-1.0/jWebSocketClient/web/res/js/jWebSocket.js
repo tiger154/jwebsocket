@@ -1230,6 +1230,27 @@ jws.tools = {
 		return lRes;
 	},
 	
+	//:m:*:parseQuery
+	//:d:en:Parse the given URL query into a JSON object in key/value pairs. 
+	//:a:en::aURL:String:The URL to parse
+	//:r:*:::Object:JSON object containing query attributes and it values.
+	parseQuery: function(aURL){
+		var lMap = {};
+		
+		var lUrlParts = aURL.split("?");
+		if (lUrlParts.length == 1){
+			return lMap;
+		}
+		
+		var lQueryParts = lUrlParts[1].split(",");
+		for (var lIndex in lQueryParts){
+			var lArray = lQueryParts[lIndex].split("=");
+			lMap[lArray[0]] = lArray[1];
+		}
+		
+		return lMap;
+	},
+	
 	//:m:*:calcMD5
 	//:d:en:Generates an MD5 hash for the given UTF-8 input String
 	//:a:en::aUTF8:String:UTF-8 String to generate the MD5 hash for.
