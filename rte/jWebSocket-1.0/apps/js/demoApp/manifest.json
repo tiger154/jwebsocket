@@ -3,7 +3,7 @@
 	"jws_version": "1.0.0",
 	"jws_dependencies": ["jws.system"],
 	"permissions": [
-		"permission java.io.FilePermission \"${APP_HOME}\\-\", \"read,write,delete\""
+		"permission java.io.FilePermission \"${APP_HOME}/-\", \"read,write,delete\""
 	],
 	"author": "Rolando SM <rsantamaria@jwebsocket.org> 2013"
 }
