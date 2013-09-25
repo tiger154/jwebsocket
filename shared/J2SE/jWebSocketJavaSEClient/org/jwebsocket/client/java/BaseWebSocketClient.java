@@ -225,6 +225,7 @@ public class BaseWebSocketClient extends BaseClient {
 				// notifying logic "opening" listeners notification
 				// we consider that a client has finally openned when 
 				// the "max frame size" handshake has completed 
+				mStatus = WebSocketStatus.OPEN;
 				final WebSocketClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_OPENING, null);
 				for (final WebSocketClientListener lListener : getListeners()) {
 					getListenersExecutor().submit(new Runnable() {

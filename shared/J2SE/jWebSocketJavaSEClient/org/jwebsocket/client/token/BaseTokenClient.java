@@ -138,7 +138,7 @@ public class BaseTokenClient implements WebSocketTokenClient {
 				for (String lAttr : lEnc.keySet()) {
 					String lFormat = lEnc.get(lAttr);
 					String lValue = aToken.getString(lAttr);
-					if (aToken.getBoolean("__binaryData")){
+					if (aToken.getBoolean("__binaryData") && "data".equals(lAttr)){
 						continue;
 					}
 					if (!mEncodingFormats.contains(lFormat)) {
