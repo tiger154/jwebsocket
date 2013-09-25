@@ -94,6 +94,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 									JMSConnector lConnector = lConnManager.getConnector(lSessionId);
 									// stopping the connector
 									lConnector.stopConnector(CloseReason.CLIENT);
+									lConnManager.removeConnector(lSessionId);
 								}
 							}
 						}
@@ -105,6 +106,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 							JMSConnector lConnector = lConnManager.getConnector(lSessionId);
 							// stopping the connector
 							lConnector.stopConnector(CloseReason.CLIENT);
+							lConnManager.removeConnector(lSessionId);
 						}
 					}
 					break;
