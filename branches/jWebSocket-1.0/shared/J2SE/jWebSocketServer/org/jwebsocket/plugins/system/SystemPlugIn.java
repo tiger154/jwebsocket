@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.ISessionManager;
 import org.jwebsocket.api.IUserUniqueIdentifierContainer;
@@ -346,7 +347,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
 		// setting connector encodingFormats container
-		aConnector.setVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY, new FastList<String>());
+		aConnector.setVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY, "");
 
 		// Setting the session only if a session manager is defined,
 		// ommitting if the session storage was previously setted (embedded mode)
@@ -1017,8 +1018,10 @@ public class SystemPlugIn extends TokenPlugIn {
 			lEncodingFormats.addAll(lUserFormats);
 		}
 
-		((List) aConnector.getVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY)).addAll(
-				CollectionUtils.intersection(lEncodingFormats, SystemFilter.getSupportedEncodings()));
+		// getting the string format of the user supported encodings
+		String lEncFormats = StringUtils.join(CollectionUtils
+				.intersection(lEncodingFormats, SystemFilter.getSupportedEncodings()), ",");
+		aConnector.setVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY, lEncFormats);
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'getHeaders' from connector '"
