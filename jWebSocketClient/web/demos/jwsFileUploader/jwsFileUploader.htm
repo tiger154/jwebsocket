@@ -42,9 +42,8 @@
 		<!-- JQUERY DEPENDENCIES -->
 		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
-		<!--[if lte IE 9]>
+		
 		<script type="text/javascript" src='js/FileReader/swfobject/swfobject.js'></script>
-		-->
 
         <!-- JWEBSOCKET CLIENT JAVASCRIPT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
@@ -122,14 +121,18 @@
                     <!--    MESSAGE_BOX      -->
                     <div id="message_box" class="box">
 						<div class="buttons">
-							<div id="chunkSize">Chunk size: <input type="text" value="500000"></input></div>
 							<div id="select_file" class="button"
 								 title="Uploads a file to the server">
 								Select files</div>
-
 							<div id="start_upload" class="button"
 								 title="Starts the upload to the jWebSocket server">
 								Start upload</div>
+							<div id="options">Upload Options:</div>
+							<div id="chunkSize">Chunk size: <input type="text" value="500000"></input></div>
+							<div id="scope">Scope:
+								<input type="radio" name="scope" value="private">Private</input>
+								<input type="radio" name="scope" value="public" checked="true">Public</input>
+							</div>
 						</div>
 					</div>
 					<div id="filelist">
@@ -143,18 +146,18 @@
 								</tr>
 							</thead>
 							<tbody>
-<!--							<tr>
-									<td>file 1.txt</td>
-									<td>0%</td>
-									<td><input type="checkbox" checked="true"></input></td>
-									<td><div class="delete_file"></div></td>
-								</tr>
-								<tr>
-									<td>file 2.doc</td>
-									<td>0%</td>
-									<td><input type="checkbox" checked="true"></input></td>
-									<td><div class="delete_file"></div></td>
-								</tr>-->
+								<!--							<tr>
+																	<td>file 1.txt</td>
+																	<td>0%</td>
+																	<td><input type="checkbox" checked="true"></input></td>
+																	<td><div class="delete_file"></div></td>
+																</tr>
+																<tr>
+																	<td>file 2.doc</td>
+																	<td>0%</td>
+																	<td><input type="checkbox" checked="true"></input></td>
+																	<td><div class="delete_file"></div></td>
+																</tr>-->
 							</tbody>
 						</table>
 					</div>

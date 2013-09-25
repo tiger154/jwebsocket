@@ -44,9 +44,12 @@ jws.FileUploaderPlugIn = {
 	TT_UPLOAD_CANCELED: "OnUploadCanceled",
 	TT_UPLOAD_ERROR: "OnUploadError",
 	TT_ERROR: "OnError",
+	TT_INFO: "InfoMessage",
+	TT_ERROR_DELETING_FILE: "FileDeleteError",
 	queue: [],
 	chunkSize: 500000,
 	defaultScope: jws.SCOPE_PUBLIC,
+	isUploading: false,
 	listeners: {},
 	browseButton: {},
 	userBrowseButton: {},
@@ -76,10 +79,17 @@ jws.FileUploaderPlugIn = {
 				inputs: [aConfig.browseButtonId],
 				filereader: 'js/FileReader/src/filereader.swf',
 				expressInstall: "js/FileReader/swfobject/expressInstall.swf",
-				debugMode: false,
-				multiple: true,
+				debugMode: typeof aConfig.debugMode !== "undefined" ?
+						aConfig.debugMode : false,
+				multiple: typeof aConfig.multiple !== "undefined" ?
+						aConfig.multiple : true,
 				callback: function() {
-					console.log("Flash HTML5 File API fallback is ready");
+					var lMsg = "Note: As your browser does not support FileReader " +
+							"from HTML5 to read files, the Flash Fallback mechanism " +
+							"switched automatically, please consider updating " +
+							"your browser later, thanks!";
+					alert(lMsg);
+					jws.console.log(lMsg);
 				}
 			});
 
@@ -87,31 +97,14 @@ jws.FileUploaderPlugIn = {
 			this.defaultScope = aConfig.defaultScope || this.defaultScope;
 
 			// TODO: remove jQuery dependency
-			$(lUserBrowseBtn).on('change', function(aEvt) {
+			lUserBrowseBtn.onchange = function(aEvt) {
 				lMe.onFileSelected(aEvt);
-			});
+			};
 			lMe.setFileSystemCallbacks({
 				OnFileSaved: function(aToken) {
-					console.log("File " + aToken.filename + " has been uploaded successfully to the server.");
-					var lUploadedItem = this.getFile(aToken.filename);
-					if (lUploadedItem) {
-						lUploadedItem.setProgress(100);
-						lUploadedItem.setUploadedBytes(lUploadedItem.getFile().size);
-						lUploadedItem.setStatus(this.STATUS_UPLOADED);
-					}
-					lMe.fireUploaderEvent(lMe.TT_FILE_UPLOADED, lUploadedItem);
-					var lSuccessCount = 0;
-					for (var lIdx = 0; lIdx < lMe.queue.length; lIdx++) {
-						if (lMe.queue[lIdx].getStatus() === lMe.STATUS_UPLOADED) {
-							lSuccessCount++;
-						}
-					}
-					if (lSuccessCount === lMe.queue.length) {
-						lMe.fireUploaderEvent(lMe.TT_UPLOAD_COMPLETE);
-					}
+					lMe.onFileSaved(aToken.filename);
 				},
 				OnFileDeleted: function(aToken) {
-					console.log(aToken);
 					lMe.fireUploaderEvent(lMe.TT_FILE_DELETED, {
 						item: lMe.getFile(aToken.filename),
 						token: aToken
@@ -120,9 +113,32 @@ jws.FileUploaderPlugIn = {
 			});
 		}
 	},
+	onFileSaved: function(aFilename) {
+		//console.log("File " + aToken.filename + " has been uploaded successfully to the server.");
+		var lUploadedItem = this.getFile(aFilename);
+		if (lUploadedItem) {
+			lUploadedItem.setProgress(100);
+			lUploadedItem.setUploadedBytes(lUploadedItem.getFile().size);
+			lUploadedItem.setStatus(this.STATUS_UPLOADED);
+		}
+		this.fireUploaderEvent(this.TT_FILE_UPLOADED, lUploadedItem);
+		// clearing for IE
+		lUploadedItem = null;
+		var lSuccessCount = 0;
+		for (var lIdx = 0; lIdx < this.queue.length; lIdx++) {
+			if (this.queue[lIdx].getStatus() === this.STATUS_UPLOADED) {
+				lSuccessCount++;
+			}
+		}
+		if (lSuccessCount === this.queue.length) {
+			this.fireUploaderEvent(this.TT_UPLOAD_COMPLETE);
+			this.isUploading = false;
+		}
+	},
 	browse: function() {
 		// Invoke the browse method without clicking the browse field
 		if (!this.isFlashFileReader()) {
+			this.browseButton.value = "";
 			this.browseButton.click();
 		}
 	},
@@ -148,26 +164,29 @@ jws.FileUploaderPlugIn = {
 		if (!aUploadItem) {
 			return;
 		}
-		aUploadItem.setChunkSize(lChunkSize);
-		var lFile = aUploadItem.getFile(),
-				lChunkSize = this.chunkSize,
-				lMe = this,
-				lReader = new FileReader(),
-				lTotalBytes = lFile.size,
-				lBytesSent = 0,
-				lBytesRead = 0;
-
-		if (aResume) {
-			lBytesSent = aUploadItem.getUploadedBytes();
-			lBytesRead = aUploadItem.getUploadedBytes();
-		}
-
-		if (aUploadItem.getStatus() === this.STATUS_READY) {
+		if (aUploadItem.getStatus() === this.STATUS_READY ||
+				aUploadItem.getStatus() === this.STATUS_ERROR) {
 			aUploadItem.setStatus(this.STATUS_UPLOADING);
+			var lFile = aUploadItem.getFile(),
+					lChunkSize = this.chunkSize,
+					lMe = this,
+					lReader = new FileReader(),
+					lTotalBytes = lFile.size,
+					lBytesSent = 0,
+					lBytesRead = 0;
+			aUploadItem.setChunkSize(lChunkSize);
+
+			if (aResume) {
+				lBytesSent = aUploadItem.getUploadedBytes();
+				lBytesRead = aUploadItem.getUploadedBytes();
+			}
+
+
 			var lSave = function(aEvt) {
 				if (lMe.isConnected()) {
 					// We check if the upload is not paused
-					if (aUploadItem.getStatus() === lMe.STATUS_UPLOADING) {
+					if (aUploadItem.getStatus() === lMe.STATUS_UPLOADING ||
+							aUploadItem.getStatus() === lMe.STATUS_ERROR) {
 						aUploadItem.setUploadedBytes(lBytesRead);
 						var lIsLast = lBytesRead >= lTotalBytes,
 								lData = aEvt.target.result,
@@ -221,7 +240,6 @@ jws.FileUploaderPlugIn = {
 				lBytesRead += lChunkSize;
 				lSave(aEvt);
 			};
-
 			var lBlob = lFile.slice(lBytesSent, lChunkSize);
 			lReader.readAsDataURL(lBlob);
 		}
@@ -231,19 +249,20 @@ jws.FileUploaderPlugIn = {
 		var lMe = this;
 		lReader.onload = function(aEvent) {
 			if (lMe.isConnected()) {
-				if (aUploadItem.getStatus() === lMe.STATUS_UPLOADING) {
+				if (aUploadItem.getStatus() !== lMe.STATUS_UPLOADED) {
+					aUploadItem.setStatus(lMe.STATUS_UPLOADING);
 					jws.console.log("File completely loaded with the following info, " +
 							"bytes loaded: " + aEvent.loaded + ", length: " +
 							aEvent.target.result.length);
 					var lResult = aEvent.target.result,
 							lContent = lResult.substr(lResult.indexOf("base64,") + 7);
-
 					lMe.fileSave(aUploadItem.getName(), lContent, {
 						encoding: "base64",
 						encode: false,
 						scope: lMe.defaultScope,
-						OnSuccess: function(aEvent) {
+						OnSuccess: function(aToken) {
 							// File saved correctly
+							lMe.onFileSaved(aUploadItem.getName());
 						}, OnFailure: function(aEvent) {
 							var lMsg = "Upload failed, sorry your upload process " +
 									"failed on file: " + aUploadItem.getName() + " With the message: \"" + aEvent.msg + "\"";
@@ -270,14 +289,12 @@ jws.FileUploaderPlugIn = {
 	startUpload: function() {
 		this.fireUploaderEvent(this.TT_UPLOAD_STARTED);
 		for (var lIdx = 0; lIdx < this.queue.length; lIdx++) {
-			var lItem = this.queue[lIdx];
-			if (lItem.getStatus() === this.STATUS_READY) {
-				// If the item will be uploaded in chunks or not
-				if (lItem.getChunked()) {
-					this.uploadFileInChunks(lItem);
-				} else {
-					this.uploadCompleteFile(lItem);
-				}
+			this.isUploading = true;
+			// If the item will be uploaded in chunks or not
+			if (this.queue[lIdx].getChunked()) {
+				this.uploadFileInChunks(this.queue[lIdx]);
+			} else {
+				this.uploadCompleteFile(this.queue[lIdx]);
 			}
 		}
 	},
@@ -305,6 +322,7 @@ jws.FileUploaderPlugIn = {
 						" The server returned the following error: " + aToken.msg;
 
 				lMe.fireUploaderEvent(lMe.TT_ERROR, {
+					type: lMe.TT_ERROR_DELETING_FILE,
 					item: lMe.getFile(aFilename),
 					msg: lMsg
 				});
@@ -371,6 +389,17 @@ jws.FileUploaderPlugIn = {
 	},
 	setChunkSize: function(aChunkSize) {
 		this.chunkSize = aChunkSize || this.chunkSize;
+	},
+	setUploadScope: function(aScope) {
+		if (this.isUploading) {
+			this.fireUploaderEvent(this.TT_ERROR, {
+				type: this.TT_INFO,
+				msg: "You can only change the scope when the upload is " +
+						"complete, please try again later."
+			});
+			return;
+		}
+		this.defaultScope = aScope;
 	},
 	cancelUpload: function(aFilename) {
 		var lFile = this.getFile(aFilename);

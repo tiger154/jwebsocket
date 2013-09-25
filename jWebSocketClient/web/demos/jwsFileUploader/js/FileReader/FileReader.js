@@ -14,78 +14,6 @@ if (window.FileReader) {
 		return this;
 	};
 } else {
-	FlashFileReader = function(aOptions) {
-		this.defaults = {
-			inputs: [],
-			id: 'fileReaderSWFObject', // ID for the created swf object container,
-			multiple: null,
-			accept: null,
-			label: null,
-			extensions: null,
-			filereader: 'files/filereader.swf', // The path to the filereader swf file
-			expressInstall: null, // The path to the express install swf file
-			debugMode: false,
-			callback: false // Callback function when Filereader is ready
-		};
-		aOptions = extend(this.defaults, aOptions);
-
-		this.readyCallbacks = [];
-		this.lInputsCount = 0;
-		this.currentTarget = 0;
-
-		var lScope = this;
-		this.readyCallbacks.push(function() {
-			return lScope.initInputs(aOptions);
-		});
-		if ("function" === typeof aOptions.callback) {
-			this.readyCallbacks.push(aOptions.callback);
-		}
-
-		if (!FileAPIProxy.ready) {
-			FileAPIProxy.init(aOptions, this);
-		}
-		return this;
-	};
-
-	FlashFileReader.prototype.initInputs = function(aOptions) {
-		console.log("initializing Flash FileAPI inside the inputs: " +
-				aOptions.inputs.join(","));
-		for (var lIdx = 0; lIdx < aOptions.inputs.length; lIdx++) {
-//			var aInput = document.getElementById(aConfig.browseButtonId)
-			var lInput = $("#" + aOptions.inputs[lIdx]);
-			var lId = lInput.attr('id');
-			if (!lId) {
-				lId = 'flashFileInput' + this.lInputsCount;
-				lInput.attr('id', lId);
-				this.lInputsCount++;
-			}
-			aOptions.multiple = !!(aOptions.multiple === null ? lInput.attr('multiple') : aOptions.multiple);
-			aOptions.accept = aOptions.accept === null ? lInput.attr('accept') : aOptions.accept;
-
-			FileAPIProxy.inputs[lId] = lInput;
-			FileAPIProxy.swfObject.add(lId, aOptions.multiple, aOptions.accept, aOptions.label, aOptions.extensions);
-
-			lInput.css('z-index', 0)
-					.mouseover(function(e) {
-				if (lId !== this.currentTarget) {
-					e = e || window.event;
-					this.currentTarget = lId;
-					FileAPIProxy.swfObject.mouseover(lId);
-					FileAPIProxy.container
-							.height(lInput.height())
-							.width(lInput.width())
-							.css(lInput.offset());
-				}
-			})
-					.click(function(aEvt) {
-				aEvt.preventDefault();
-				aEvt.stopPropagation();
-				aEvt.stopImmediatePropagation();
-				return false;
-			});
-		}
-	};
-
 
 	/**
 	 * Flash FileReader Proxy
@@ -143,10 +71,11 @@ if (window.FileReader) {
 								// registered in the External Interface, this can be 10 ms
 								setTimeout(function() {
 									lReadyCBs();
-								}, 10);
+								}, 1000);
 							}
 						}
 					});
+
 		},
 		swfObject: null,
 		container: null,
@@ -196,7 +125,7 @@ if (window.FileReader) {
 		// Receives flash FileReader Error Events
 		onFileReaderError: function(aError) {
 //			if (this.debugMode)
-			console.error(aError);
+			jws.console.error(aError);
 		}
 	};
 
@@ -204,7 +133,7 @@ if (window.FileReader) {
 	/**
 	 * Add FileReader to the window object
 	 */
-	window.FileReader = function() {
+	window.FileReader = FileReader = function() {
 		// states
 		this.EMPTY = 0;
 		this.LOADING = 1;
@@ -514,6 +443,78 @@ if (window.FileReader) {
 			if (aIdx in this)
 				return this[aIdx];
 			return null;
+		}
+	};
+	FlashFileReader = function(aOptions) {
+		this.defaults = {
+			inputs: [],
+			id: 'fileReaderSWFObject', // ID for the created swf object container,
+			multiple: null,
+			accept: null,
+			label: null,
+			extensions: null,
+			filereader: 'files/filereader.swf', // The path to the filereader swf file
+			expressInstall: null, // The path to the express install swf file
+			debugMode: false,
+			callback: false // Callback function when Filereader is ready
+		};
+		aOptions = extend(this.defaults, aOptions);
+		
+		this.readyCallbacks = [];
+		this.lInputsCount = 0;
+		this.currentTarget = 0;
+
+		var lMe = this;
+		this.readyCallbacks.push(function() {
+			return lMe.initInputs(aOptions);
+		});
+		if ("function" === typeof aOptions.callback) {
+			lMe.readyCallbacks.push(aOptions.callback);
+		}
+
+		if (!FileAPIProxy.ready) {
+			FileAPIProxy.init(aOptions, this);
+		}
+		return this;
+	};
+
+	FlashFileReader.prototype.initInputs = function(aOptions) {
+		jws.console.log("initializing Flash FileAPI inside the inputs: " +
+				aOptions.inputs.join(","));
+		
+		for (var lIdx = 0; lIdx < aOptions.inputs.length; lIdx++) {
+//			var aInput = document.getElementById(aConfig.browseButtonId)
+			var lInput = $("#" + aOptions.inputs[lIdx]);
+			var lId = lInput.attr('id');
+			if (!lId) {
+				lId = 'flashFileInput' + this.lInputsCount;
+				lInput.attr('id', lId);
+				this.lInputsCount++;
+			}
+			aOptions.multiple = !!(aOptions.multiple === null ? lInput.attr('multiple') : aOptions.multiple);
+			aOptions.accept = aOptions.accept === null ? lInput.attr('accept') : aOptions.accept;
+
+			FileAPIProxy.inputs[lId] = lInput;
+			console.log(FileAPIProxy.swfObject.add);
+			FileAPIProxy.swfObject.add(lId, aOptions.multiple, aOptions.accept, aOptions.label, aOptions.extensions);
+			lInput.css('z-index', 0)
+					.mouseover(function(e) {
+				if (lId !== this.currentTarget) {
+					e = e || window.event;
+					this.currentTarget = lId;
+					FileAPIProxy.swfObject.mouseover(lId);
+					FileAPIProxy.container
+							.height(lInput.height())
+							.width(lInput.width())
+							.css(lInput.offset());
+				}
+			})
+					.click(function(aEvt) {
+				aEvt.preventDefault();
+				aEvt.stopPropagation();
+				aEvt.stopImmediatePropagation();
+				return false;
+			});
 		}
 	};
 }
