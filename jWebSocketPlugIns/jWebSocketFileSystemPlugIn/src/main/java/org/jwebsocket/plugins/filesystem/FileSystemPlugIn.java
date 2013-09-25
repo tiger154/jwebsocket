@@ -41,6 +41,7 @@ import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
@@ -109,6 +110,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 * FSP settings instance.
 	 */
 	protected Settings mSettings;
+	protected Map<String, List<String>> mConnectorsFiles;
 
 	/**
 	 *
@@ -117,6 +119,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 */
 	public FileSystemPlugIn(PluginConfiguration aConfiguration) throws Exception {
 		super(aConfiguration);
+		mConnectorsFiles = new FastMap<String, List<String>>().shared();
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating FileSystem plug-in...");
 		}
@@ -392,6 +395,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			}
 
 			checkForSave(aConnector, lFile, lBA);
+			checkFileInUse(aConnector, lFullPath, false);
 			// prevent two threads at a time writing to the same file
 			synchronized (this) {
 				// force create folder if not yet exists
@@ -405,7 +409,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			}
 		} catch (Exception lEx) {
 			lResponse.setInteger("code", -1);
-			lMsg = lEx.getClass().getSimpleName() + " on save: " + lEx.getMessage();
+			lMsg = lEx.getClass().getSimpleName() + " while saving file: "
+					+ lFilename + ". " + lEx.getMessage();
 			lResponse.setString("msg", lMsg);
 			mLog.error(lMsg);
 		}
@@ -741,6 +746,59 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		return true;
 	}
 
+	@Override
+	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
+		mConnectorsFiles.remove(aConnector.getId());
+		super.connectorStopped(aConnector, aCloseReason);
+	}
+
+	protected void checkFileInUse(WebSocketConnector aConnector, String aFilePath, boolean aDeleting) throws Exception {
+		if (null != aFilePath) {
+			String lFilePath = aFilePath.toLowerCase();
+			if (!aDeleting) {
+				// Add the file in the list for avoiding concurrency over this file
+				List<String> lList = mConnectorsFiles.get(aConnector.getId());
+				if (null == lList) {
+					lList = new FastList<String>();
+				}
+				if (!lList.contains(aFilePath)) {
+					lList.add(aFilePath);
+				}
+				mConnectorsFiles.put(aConnector.getId(), lList);
+			}
+			for (Map.Entry<String, List<String>> lEntry : mConnectorsFiles.entrySet()) {
+				String lConnectorId = lEntry.getKey();
+				List<String> lFileList = lEntry.getValue();
+				boolean lContains = false;
+				Integer lAmount = 0;
+				for (String lPath : lFileList) {
+					if (lPath.toLowerCase().equals(lFilePath)) {
+						lContains = true;
+						lAmount++;
+					}
+				}
+				if (lContains) {
+
+					if (!aDeleting && lConnectorId.equals(aConnector.getId())) {
+						if (lAmount > 1) {
+							throw new Exception("You are trying to upload the same file "
+									+ "twice, please validate the uppercase in the file name.");
+						}
+					}
+					if (!lConnectorId.equals(aConnector.getId())) {
+						List<String> lList = mConnectorsFiles.get(aConnector.getId());
+						if (lList != null) {
+							// always remove the dependency from the list
+							lList.remove(aFilePath);
+						}
+						throw new Exception("This file is already in use by: "
+								+ lConnectorId + "@" + getConnector(lConnectorId).getUsername());
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Deletes a file on a target scope.
 	 *
@@ -786,8 +844,15 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		String lFilePath = lBaseDir + lFilename;
 		File lFile = new File(lFilePath);
+		// Remove the file from the list in case that it exitsts there
+		// so the users can upload files with the same name and path
+		List<String> lFileList = mConnectorsFiles.get(aConnector.getId());
 
 		try {
+			if (null != lFileList) {
+				checkFileInUse(aConnector, lFilePath, true);
+				lFileList.remove(lFilePath);
+			}
 			if (!isPathInFS(lFile, lBaseDir)) {
 				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
 						+ "' is out of the file-system location!");
@@ -807,9 +872,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 					throw new Exception("File could not be deleted quietly!");
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (Exception aEx) {
 			sendErrorToken(aConnector, aToken, -1, "File '" + lFilename
-					+ "' could not be deleted!");
+					+ "' could not be deleted. " + aEx.getMessage());
 			return;
 		}
 
