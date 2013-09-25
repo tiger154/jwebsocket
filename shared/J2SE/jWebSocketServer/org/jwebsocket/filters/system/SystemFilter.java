@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.FilterConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -95,7 +96,9 @@ public class SystemFilter extends TokenFilter {
 					String lFormat = lEnc.get(lAttr);
 					String lValue = aToken.getString(lAttr);
 
-					List lUserEncodingFormats = (List) aConnector.getVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
+					String[] lFormats = StringUtils.split((String) aConnector
+							.getVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY), ",");
+					List lUserEncodingFormats = (List) Tools.parseStringArrayToList(lFormats);
 					try {
 						if (!lUserEncodingFormats.contains(lFormat)) {
 							mLog.error("Invalid encoding format '" + lFormat + "' received. Message rejected!");
@@ -146,8 +149,9 @@ public class SystemFilter extends TokenFilter {
 					String lFormat = lEnc.get(lAttr);
 					Object lValue = aToken.getObject(lAttr);
 
-					List lUserEncodingFormats = (List) aTarget.getVar(
-							JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY);
+					String[] lFormats = StringUtils.split((String) aTarget
+							.getVar(JWebSocketCommonConstants.ENCODING_FORMATS_VAR_KEY), ",");
+					List lUserEncodingFormats = (List) Tools.parseStringArrayToList(lFormats);
 					try {
 						if (!lUserEncodingFormats.contains(lFormat)) {
 							mLog.error("Invalid encoding format '"
