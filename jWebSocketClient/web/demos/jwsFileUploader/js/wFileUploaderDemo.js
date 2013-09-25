@@ -63,7 +63,7 @@ $.widget("jws.fileUploaderDemo", {
 
 
 				// Note: This is the only thing you need to do if you want to 
-				// configure the jWebSocket Uploader PlugIn
+				// configure the jWebSocket File Uploader PlugIn
 				mWSC.initUploaderPlugIn({
 					// we just need to pass the id of the button that will upload the files
 					browseButtonId: 'select_file',
