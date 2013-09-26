@@ -182,23 +182,40 @@ jws.FileSystemPlugIn = {
 	//:a:en::aOptions.encoding:String:Indicates the encoding format used by the server to encode the file content. Default: base64.
 	//:r:*:::void:none
 	fileLoad: function( aFilename, aAlias, aOptions ) {
-		var lRes = this.createDefaultResult();
-		var lEncoding = "base64";
-		if( aOptions ) {
-			if( aOptions.encoding !== undefined ) {
-				lEncoding = aOptions.encoding;
-			}
-		}	
-		if( this.isConnected() ) {
+		var lRes = this.createDefaultResult( );
+		
+		aOptions = jws.getOptions( aOptions, {
+			encoding: "base64",
+			decode: false
+		});
+		
+		if( this.isConnected( ) ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "load",
 				alias: aAlias,
-				filename: aFilename
+				filename: aFilename,
+				decode: aOptions.decode,
+				encoding: aOptions.encoding
 			};
-			if( lEncoding ) {
-				lToken.encoding = lEncoding;
-			}
+			
+			var lOnSuccess = aOptions.OnSuccess;
+			aOptions.OnSuccess = function( aToken ) {
+				if( "function" === typeof lOnSuccess ) {
+					if( lToken.decode ) {
+						switch( lToken.encoding ) {
+							case "base64":
+								aToken.data = Base64.decode( aToken.data );
+								break;
+							case "zipBase64":
+								aToken.data = jws.tools.unzip( aToken.data, true );
+								break;
+						}
+					}
+					lOnSuccess( aToken );
+				}
+			};
+			
 			this.sendToken( lToken,	aOptions );
 		} else {
 			lRes.code = -1;
