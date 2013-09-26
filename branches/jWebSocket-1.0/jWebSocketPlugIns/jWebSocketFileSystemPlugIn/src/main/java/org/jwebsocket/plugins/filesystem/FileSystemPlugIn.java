@@ -678,6 +678,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			List lFileList = new FastList<Map>();
 			File lBasePath = new File(lBaseDir);
 			MimetypesFileTypeMap lMimesMap = new MimetypesFileTypeMap();
+			int lSeparator = -1;
+			String lRelativePath = "";
 			for (File lFile : lFiles) {
 				if (lFile == lDir
 						// we don't want directories to be returned
@@ -688,10 +690,18 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				Map lFileData = new FastMap< String, Object>();
 				String lFilename = lFile.getAbsolutePath()
 						.replace(lBasePath.getAbsolutePath() + File.separator, "");
-
-				lFileData.put("filename",
-						// we always return the path in unix/url/java format
-						FilenameUtils.separatorsToUnix(lFilename));
+				// we always return the path in unix/url/java format
+				String lUnixPath = FilenameUtils.separatorsToUnix(lFilename);
+				lSeparator = lUnixPath.lastIndexOf("/");
+				if (lSeparator != -1) {
+					lFilename = lUnixPath.substring(lSeparator + 1);
+					lRelativePath = lUnixPath.substring(0, lSeparator + 1);
+				} else {
+					lRelativePath = "";
+				}
+				
+				lFileData.put("relativePath", lRelativePath);
+				lFileData.put("filename", lFilename);
 				lFileData.put("size", lFile.length());
 				lFileData.put("modified", Tools.DateToISO8601(new Date(lFile.lastModified())));
 				lFileData.put("hidden", lFile.isHidden());
