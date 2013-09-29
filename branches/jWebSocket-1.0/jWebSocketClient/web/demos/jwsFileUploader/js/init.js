@@ -23,6 +23,24 @@ function init( ) {
 		lBtn.html('<div class="btn_left"/>' + '<div class="btn_center">' +
 			lBtn.html( ) + '</div>' + '<div class="' + lRightClass + '"></div>');
 	});
+	
+	//configuring tooltip
+	$( "[title]" ).tooltip({
+		position: "bottom center", 
+		onShow: function( ) {
+			var lTip = this.getTip( );
+			var lTop = ( "<div class='top'></div>" );
+			var lMiddle = $( "<div class='middle'></div>" ).text( lTip.text( ) );
+			var lBottom = ( "<div class='bottom'></div>" );
+			lTip.html( "" ).append( lTop ).append( lMiddle ).append( lBottom );
+			this.getTrigger( ).mouseout( function( ) {
+				lTip.hide( ).hide( );
+			});
+			this.getTrigger( ).mousemove( function( ) {
+				lTip.show( );
+			});
+		}
+	});
 
 	// Initializing the log widget to allow logging in the logs area
 	// @maxLogLines: maximum number of lines that will be logged

@@ -106,6 +106,7 @@ jws.FileSystemPlugIn = {
 				recursive: false,
 				includeDirs: false
 			});
+			// TODO: convert aFilemasks into an array automatically
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "getFilelist",
@@ -128,27 +129,25 @@ jws.FileSystemPlugIn = {
 	//:a:en:aOptions:scope:String:"private" or "public"
 	//:r:*:::void:none
 	fileDelete: function( aFilename, aForce, aOptions ) {
-		var lScope = jws.SCOPE_PRIVATE;
-		var lNotify = false;
-		var lRes = this.checkConnected();
-		if( aOptions ) {
-			if( aOptions.scope !== undefined ) {
-				lScope = aOptions.scope;
-			}
-			if( aOptions.notify !== undefined ) {
-				// notify only is the scope is public
-				lNotify = (jws.SCOPE_PUBLIC === lScope) && aOptions.notify;
-			}
-		}	
+		aOptions = jws.getOptions( aOptions, {
+			scope: jws.SCOPE_PRIVATE,
+			notify: false
+		});
+		
+		var lRes = this.checkConnected( );
+		
 		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "delete",
 				filename: aFilename,
 				force: aForce,
-				notify: lNotify,
-				scope: lScope
+				notify: ( jws.SCOPE_PUBLIC === aOptions.scope ) && aOptions.notify,
+				scope: aOptions.scope
 			};
+			if( "undefined" !== typeof aOptions.alias ) {
+				lToken.alias = aOptions.alias;
+			}
 			this.sendToken( lToken,	aOptions );
 		}	
 		return lRes;
@@ -227,55 +226,44 @@ jws.FileSystemPlugIn = {
 
 	mFileWrite: function( aFilename, aData, aOptions ) {
 		var lRes = this.createDefaultResult();
-		var lEncoding = "base64";
-		var lEncode = true;
-		var lNotify = false;
-		var lScope = jws.SCOPE_PRIVATE;
+		aOptions = jws.getOptions( aOptions, {
+			encoding: "base64",
+			encode: true,
+			notify: false,
+			scope: jws.SCOPE_PRIVATE
+		});
 		var lType = null;
-		if( aOptions ) {
-			if( aOptions.append  ) {
-				lType = "append";
-			} else {
-				lType = "save";
-			}
-			if( aOptions.scope !== undefined ) {
-				lScope = aOptions.scope;
-			}
-			if( aOptions.encode !== undefined ) {
-				lEncode = aOptions.encode;
-			}
-			if( aOptions.encoding !== undefined ) {
-				lEncoding = aOptions.encoding;
-			}
-			if( aOptions.encode !== undefined ) {
-				lEncode = aOptions.encode;
-			}
-			if( aOptions.notify !== undefined ) {
-				// notify only is the scope is public
-				lNotify = (jws.SCOPE_PUBLIC === lScope) && aOptions.notify;
-			}
+		if( aOptions.append  ) {
+			lType = "append";
+		} else {
+			lType = "save";
 		}
+			
 		if( !lType ) {
 			lRes.code = -1;
 			lRes.msg = "No save/append option passed.";
 			return lRes;
 		}
 		var lEnc = {};
-		if( lEncode ) {
-			lEnc.data = lEncoding;
+		if( aOptions.encode ) {
+			lEnc.data = aOptions.encoding;
 		}
 		if( this.isConnected() ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: lType,
 				enc: lEnc,
-				scope: lScope,
-				encoding: lEncoding,
-				encode: lEncode,
-				notify: lNotify,
+				scope: aOptions.scope,
+				encoding: aOptions.encoding,
+				encode: aOptions.encode,
+				// notify only is the scope is public
+				notify: (jws.SCOPE_PUBLIC === aOptions.scope) && aOptions.notify,
 				data: aData,
 				filename: aFilename
 			};
+			if(aOptions.alias){
+				lToken.alias = aOptions.alias;
+			}
 			this.sendToken( lToken,	aOptions );
 		} else {
 			lRes.code = -1;

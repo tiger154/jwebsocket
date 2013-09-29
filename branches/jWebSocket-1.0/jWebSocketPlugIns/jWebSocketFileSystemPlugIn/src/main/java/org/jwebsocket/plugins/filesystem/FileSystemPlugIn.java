@@ -340,6 +340,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			lServer.sendToken(aConnector, lServer.createAccessDenied(aToken));
 			return;
 		}
+		String lAlias = aToken.getString("alias", PUBLIC_ALIAS_DIR_KEY);
 
 		// instantiate response token
 		Token lResponse = lServer.createResponse(aToken);
@@ -353,7 +354,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		if (JWebSocketCommonConstants.SCOPE_PRIVATE.equals(lScope)) {
 			lBaseDir = getAliasPath(aConnector, PRIVATE_ALIAS_DIR_KEY);
 		} else if (JWebSocketCommonConstants.SCOPE_PUBLIC.equals(lScope)) {
-			lBaseDir = getAliasPath(aConnector, PUBLIC_ALIAS_DIR_KEY);
+			lBaseDir = getAliasPath(aConnector, lAlias);
 		} else {
 			lMsg = "invalid scope";
 			if (mLog.isDebugEnabled()) {
@@ -631,7 +632,9 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		boolean lIncludeDirs = aToken.getBoolean("includeDirs", false);
 		List lFilemasks = aToken.getList("filemasks");
 		String lSubPath = aToken.getString("path", null);
-
+		if(lFilemasks == null){
+			lFilemasks = new FastList<String>();
+		}
 		Object lObject;
 		String lBaseDir;
 		Token lToken = TokenFactory.createToken();
@@ -839,10 +842,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		// scope may be "private" or "public"
 		String lBaseDir;
+		String lAlias = aToken.getString("alias", PUBLIC_ALIAS_DIR_KEY);
 		if (JWebSocketCommonConstants.SCOPE_PRIVATE.equals(lScope)) {
 			lBaseDir = getAliasPath(aConnector, PRIVATE_ALIAS_DIR_KEY);
 		} else if (JWebSocketCommonConstants.SCOPE_PUBLIC.equals(lScope)) {
-			lBaseDir = getAliasPath(aConnector, PUBLIC_ALIAS_DIR_KEY);
+			lBaseDir = getAliasPath(aConnector, lAlias);
 		} else {
 			lMsg = "invalid scope";
 			if (mLog.isDebugEnabled()) {

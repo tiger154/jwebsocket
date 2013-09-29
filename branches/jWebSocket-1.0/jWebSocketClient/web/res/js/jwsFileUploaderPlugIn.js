@@ -49,6 +49,7 @@ jws.FileUploaderPlugIn = {
 	queue: [],
 	chunkSize: 500000,
 	defaultScope: jws.SCOPE_PUBLIC,
+	defaultAlias: jws.ALIAS_PUBLIC,
 	isUploading: false,
 	listeners: {},
 	browseButton: {},
@@ -95,6 +96,7 @@ jws.FileUploaderPlugIn = {
 
 			this.chunkSize = aConfig.chunkSize || this.chunkSize;
 			this.defaultScope = aConfig.defaultScope || this.defaultScope;
+			this.defaultAlias = aConfig.defaultAlias || this.defaultAlias;
 
 			// TODO: remove jQuery dependency
 			lUserBrowseBtn.onchange = function(aEvt) {
@@ -195,12 +197,12 @@ jws.FileUploaderPlugIn = {
 							encoding: "base64",
 							encode: false,
 							scope: lMe.defaultScope,
+							alias: lMe.defaultAlias,
 							OnSuccess: function(aEvent) {
 								aUploadItem.setUploadedBytes(lBytesSent);
-//								aUploadItem.setStatus(this.STATUS_UPLOADING);
 								lMe.fireUploaderEvent(lMe.TT_UPLOAD_PROGRESS, {
 									item: aUploadItem,
-									progress: aUploadItem.getProgress()
+									progress: aUploadItem.getProgress( )
 								});
 								lBytesSent += lChunkSize;
 
@@ -260,6 +262,7 @@ jws.FileUploaderPlugIn = {
 						encoding: "base64",
 						encode: false,
 						scope: lMe.defaultScope,
+						alias: lMe.defaultAlias,
 						OnSuccess: function(aToken) {
 							// File saved correctly
 							lMe.onFileSaved(aUploadItem.getName());
@@ -400,6 +403,24 @@ jws.FileUploaderPlugIn = {
 			return;
 		}
 		this.defaultScope = aScope;
+	},
+	setUploadAlias: function(aAlias) {
+		if (this.isUploading) {
+			this.fireUploaderEvent(this.TT_ERROR, {
+				type: this.TT_INFO,
+				msg: "You can only change the alias when the upload is " +
+						"complete, please try again later."
+			});
+			return;
+		}
+		if(!aAlias){
+			this.fireUploaderEvent(this.TT_ERROR, {
+				type: this.TT_INFO,
+				msg: "Please provide an alias, this field is required"
+			});
+			return;
+		}
+		this.defaultAlias = aAlias;
 	},
 	cancelUpload: function(aFilename) {
 		var lFile = this.getFile(aFilename);
