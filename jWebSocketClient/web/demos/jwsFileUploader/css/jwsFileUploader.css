@@ -11,13 +11,76 @@
     margin-left: 3px;
 }
 
-#message_box{
+.options_box{
 	background: #E4E4E4;
-	width: 27%;
 	border: 1px solid #C8C8C8;
-	float: right;
 	margin-top: 20px;
+	margin-bottom: 5px;
+	float: left;
+	-webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+}
+
+#file_tree {
+	word-wrap: break-word;
+	font-size: 8pt;
+	padding: 5px 0 10px 5px;
+	font-weight: bold;
+	background: white;
+	width: 99%;
+	min-height: 50px;
+	float: left;
+	-webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
 	margin-bottom: 10px;
+}
+
+#file_tree .folder{
+	margin: 5px;
+	float: left;
+	min-width: 32px;
+	min-height: 32px;
+	height: 40px;
+	width: auto;
+	max-width: 60px;
+	padding-top: 33px;
+	font-weight: normal;
+	text-align: center;
+	background: url(images/folder.png) top center no-repeat;
+	cursor: pointer;
+	display: inline;
+}
+#file_tree .file{
+	display: inline;
+	float: left;
+	margin: 5px;
+	min-width: 32px;
+	min-height: 32px;
+	height: 40px;
+	max-width: 60px;
+	padding-top: 33px;
+	font-weight: normal;
+	text-align: center;
+	background: url(images/file.png) top center no-repeat;
+	cursor: pointer;
+}
+
+#upload_options{
+	width: 28%;
+	float: right;
+	padding-right: 5px;
+}
+
+#buttons_area{
+	width: 98%;
+	padding: 5px;
+}
+
+#buttons_area .centered{
+	margin: auto;
+	width: 70%;
 }
 
 #scope{
@@ -26,22 +89,24 @@
 	margin-bottom: 5px;
 }
 
-#chunkSize{
-	margin-top: 5px;
+#chunkSize, #alias, #filemask{
 	float: left;
+	width: 100%;
 }
 
 #options{
 	margin-top: 5px;
+	margin-bottom: 5px;
 	float: left;
 	width: 100%;
 	font-weight: bold;
 	margin-top: 10px;
 }
 
-#chunkSize input{
+#chunkSize input, #alias input, #filemask input{
+	float: right;
 	padding-left: 5px;
-	width: 60px;
+	width: 50%;
 	margin-bottom: 4px;
 }
 
@@ -49,7 +114,7 @@
 	float: left;
 	margin: auto;
 	padding: 5px 5px 5px 15px;
-	width: 98%;
+	width: 90%;
 	font-size: 11px;
 }
 

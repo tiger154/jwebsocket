@@ -42,12 +42,15 @@
 		<!-- JQUERY DEPENDENCIES -->
 		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
         <script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
-		
+
 		<script type="text/javascript" src='js/FileReader/swfobject/swfobject.js'></script>
 
         <!-- JWEBSOCKET CLIENT JAVASCRIPT LIBRARIES -->
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
         <script type="text/javascript" src="../../res/js/widgets/dialogs.js"></script>
+
+		<!--  jQuery Tooltip -->
+		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
 
 		<!-- this one imports the client side jWebSocketUploaderPlugIn -->
 		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
@@ -119,21 +122,40 @@
 					</div>
 
                     <!--    MESSAGE_BOX      -->
-                    <div id="message_box" class="box">
+                    <div id="upload_options" class="options_box">
 						<div class="buttons">
-							<div id="select_file" class="button"
-								 title="Uploads a file to the server">
-								Select files</div>
-							<div id="start_upload" class="button"
-								 title="Starts the upload to the jWebSocket server">
-								Start upload</div>
 							<div id="options">Upload Options:</div>
 							<div id="chunkSize">Chunk size: <input type="text" value="500000"></input></div>
+							<div id="alias">Alias: 
+								<input type="text" value="publicDir" title="The folder in the server side where you will upload your data, by default the files will be uploaded to the public folder, but you can change this alias to privateDir or any other existing in the server side"></input></div>
+							<div id="filemask">Filemask: <input type="text" value="*.*" title="This value is used to filter the list of files that you want to get from the server. To see the results, please change your mask and see what happens"></input></div>
 							<div id="scope">Scope:
 								<input type="radio" name="scope" value="private">Private</input>
 								<input type="radio" name="scope" value="public" checked="true">Public</input>
 							</div>
 						</div>
+					</div>
+					<div id="buttons_area" class="options_box">
+						<div class="centered">
+							<div id="select_file" class="button"
+								 title="Select a file to be uploaded">
+								Attach files</div>
+							<div id="start_upload" class="button"
+								 title="Starts the upload to the jWebSocket server">
+								Start upload</div>
+							<div id="get_file_list" class="button"
+								 title="Gets a list of files from the server">
+								Get File List</div>
+							<div id="download" class="button"
+								 title="Downloads a file from the server">
+								Download file</div>
+						</div>
+					</div>
+
+					<div id="file_tree">
+						<!-- <div class="folder">asdkfljaskdf lj asdfklj asdf</div>
+							<div class="file">Rolando.txt</div>
+							<div class="file">Victor.txt</div>-->
 					</div>
 					<div id="filelist">
 						<table cellpadding="0" cellspacing="0">
@@ -146,18 +168,18 @@
 								</tr>
 							</thead>
 							<tbody>
-								<!--							<tr>
-																	<td>file 1.txt</td>
-																	<td>0%</td>
-																	<td><input type="checkbox" checked="true"></input></td>
-																	<td><div class="delete_file"></div></td>
-																</tr>
-																<tr>
-																	<td>file 2.doc</td>
-																	<td>0%</td>
-																	<td><input type="checkbox" checked="true"></input></td>
-																	<td><div class="delete_file"></div></td>
-																</tr>-->
+								<!-- <tr>
+									<td>file 1.txt</td>
+									<td>0%</td>
+									<td><input type="checkbox" checked="true"></input></td>
+									<td><div class="delete_file"></div></td>
+								</tr>
+								<tr>
+									<td>file 2.doc</td>
+									<td>0%</td>
+									<td><input type="checkbox" checked="true"></input></td>
+									<td><div class="delete_file"></div></td>
+								</tr>-->
 							</tbody>
 						</table>
 					</div>
