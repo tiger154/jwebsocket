@@ -23,8 +23,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import org.jwebsocket.api.IBasicStorage;
 import org.jwebsocket.api.WebSocketConnector;
@@ -47,36 +45,35 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
-	public JMSConnector addConnector(String aSessionId, String aConnectionId, String aReplySelector) throws Exception {
-		Assert.notNull(aSessionId);
+	public JMSConnector add(String aConnectionId, String aConsumerId, String aReplySelector) throws Exception {
 		Assert.notNull(aConnectionId);
 		Assert.notNull(aReplySelector);
 
-		if (null == mCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId))) {
+		if (null == mCollection.findOne(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId))) {
 			mCollection.save(new BasicDBObject()
-					.append(Attributes.SESSION_ID, aSessionId)
 					.append(Attributes.CONNECTION_ID, aConnectionId)
+					.append(Attributes.CONSUMER_ID, aConsumerId)
 					.append(Attributes.REPLY_SELECTOR, aReplySelector)
 					.append(Attributes.STATUS, ConnectorStatus.UP));
 		}
 
-		return getConnector(aSessionId);
+		return get(aConnectionId);
 	}
 
 	@Override
-	public boolean sessionExists(String aSessionId) throws Exception {
+	public boolean exists(String aReplySelector) throws Exception {
 		return null != mCollection.findOne(new BasicDBObject()
 				.append(Attributes.STATUS, ConnectorStatus.UP)
-				.append(Attributes.SESSION_ID, aSessionId));
+				.append(Attributes.REPLY_SELECTOR, aReplySelector));
 	}
 
 	private JMSConnector toConnector(DBObject aRecord) throws Exception {
 		String lReplySelector = (String) aRecord.get(Attributes.REPLY_SELECTOR);
-		
+
 		JMSConnector lConnector = new JMSConnector(getEngine(),
-				(String) aRecord.get(Attributes.SESSION_ID),
 				lReplySelector,
-				(String) aRecord.get(Attributes.CONNECTION_ID));
+				(String) aRecord.get(Attributes.CONNECTION_ID),
+				(String) aRecord.get(Attributes.CONSUMER_ID));
 
 		// setting the session storage
 		IBasicStorage<String, Object> lSessionStorage = getSessionManager().getStorageProvider()
@@ -90,21 +87,21 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
-	public JMSConnector getConnector(String aSessionId) throws Exception {
-		if (!sessionExists(aSessionId)) {
+	public JMSConnector get(String aReplySelector) throws Exception {
+		if (!exists(aReplySelector)) {
 			return null;
 		}
 
 		// getting the connector entry on database
-		DBObject lRecord = mCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId));
+		DBObject lRecord = mCollection.findOne(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector));
 
 		// creating connector from database entry
 		return toConnector(lRecord);
 	}
 
 	@Override
-	public void removeConnector(String aSessionId) throws Exception {
-		mCollection.remove(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId));
+	public void remove(String aConsumerId) throws Exception {
+		mCollection.remove(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
 	}
 
 	public void setCollection(DBCollection aCollection) {
@@ -116,16 +113,16 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
-	public void setStatus(String aSessionId, int aStatus) throws Exception {
-		Assert.isTrue(sessionExists(aSessionId), "The given session was not found!");
-		mCollection.update(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId),
+	public void setStatus(String aReplySelector, int aStatus) throws Exception {
+		Assert.isTrue(exists(aReplySelector), "The given 'replySelector' was not found!");
+		mCollection.update(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector),
 				new BasicDBObject()
 				.append("$set", new BasicDBObject()
 				.append(Attributes.STATUS, aStatus)));
 	}
 
 	@Override
-	public Map<String, WebSocketConnector> getConnectors() throws Exception {
+	public Map<String, WebSocketConnector> getAll() throws Exception {
 		DBCursor lCursor = mCollection.find(new BasicDBObject().append(Attributes.STATUS, ConnectorStatus.UP));
 
 		Map<String, WebSocketConnector> lConnectors = new HashMap<String, WebSocketConnector>();
@@ -138,22 +135,21 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	}
 
 	@Override
-	public List<String> getSessionsByConnectionId(String aConnectionId) throws Exception {
-		List<String> lList = new LinkedList<String>();
-		DBCursor lCursor = mCollection.find(new BasicDBObject().append(Attributes.CONNECTION_ID, aConnectionId));
-		while (lCursor.hasNext()) {
-			lList.add((String) lCursor.next().get(Attributes.SESSION_ID));
-		}
+	public String getReplySelectorByConsumerId(String aConsumerId) throws Exception {
+		DBCursor lCursor = mCollection.find(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
 
-		return lList;
+		if (lCursor.hasNext()) {
+			return lCursor.next().get(Attributes.REPLY_SELECTOR).toString();
+		}
+		return null;
 	}
 
 	@Override
 	public void initialize() throws Exception {
 		super.initialize();
 
-		mCollection.ensureIndex(new BasicDBObject().append(Attributes.CONNECTION_ID, 1));
-		mCollection.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1),
+		mCollection.ensureIndex(new BasicDBObject().append(Attributes.CONSUMER_ID, 1));
+		mCollection.ensureIndex(new BasicDBObject().append(Attributes.REPLY_SELECTOR, 1),
 				new BasicDBObject().append("unique", true));
 	}
 }

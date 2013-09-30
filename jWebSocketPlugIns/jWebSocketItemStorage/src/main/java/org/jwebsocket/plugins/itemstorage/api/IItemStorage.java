@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.itemstorage.api;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.jwebsocket.api.IInitializable;
 
@@ -141,6 +142,31 @@ public interface IItemStorage extends IInitializable {
 	List<IItem> find(String aAttribute, Object aValue, int aOffset, int aLength) throws Exception;
 
 	/**
+	 * Find all the items that matches the key/value search criteria
+	 *
+	 * @param aAttribute
+	 * @param aValue
+	 * @param aOrderBy
+	 * @param aOffset
+	 * @param aLength
+	 * @return
+	 * @throws Exception
+	 */
+	List<IItem> find(String aAttribute, Object aValue, Map<String, Boolean> aOrderBy, int aOffset, int aLength) throws Exception;
+
+	/**
+	 * Find all the items that matches the keys/values search criteria
+	 * 
+	 * @param aAttrsValues
+	 * @param aOrderBy
+	 * @param aOffset
+	 * @param aLength
+	 * @return
+	 * @throws Exception 
+	 */
+	List<IItem> find(Map<String, Object> aAttrsValues, Map<String, Boolean> aOrderBy, int aOffset, int aLength) throws Exception;
+
+	/**
 	 * Remove all the items of the storage
 	 *
 	 * @throws Exception
@@ -152,7 +178,7 @@ public interface IItemStorage extends IInitializable {
 	 * @return The number of stored items
 	 */
 	Integer size() throws Exception;
-	
+
 	/**
 	 *
 	 * @return The number of stored items that matches the criteria

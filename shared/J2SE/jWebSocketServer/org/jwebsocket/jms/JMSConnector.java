@@ -40,8 +40,8 @@ import org.jwebsocket.plugins.system.SystemPlugIn;
  */
 public class JMSConnector extends BaseConnector {
 
-	private final String mSessionId;
 	private final MessageProducer mReplyProducer;
+	private final String mConsumerId;
 	private final String mConnectionId;
 	private final String mReplySelector;
 	private Logger mLog = Logging.getLogger();
@@ -54,7 +54,7 @@ public class JMSConnector extends BaseConnector {
 	 * @param aRemoteHost
 	 * @param aSessionId
 	 */
-	public JMSConnector(WebSocketEngine aEngine, String aSessionId, String aReplySelector, String aConnectionId) {
+	public JMSConnector(WebSocketEngine aEngine, String aReplySelector, String aConnectionId, String aConsumerId) {
 		super(aEngine);
 
 		RequestHeader lHeader = new RequestHeader();
@@ -63,14 +63,14 @@ public class JMSConnector extends BaseConnector {
 
 		mReplySelector = aReplySelector;
 		mReplyProducer = ((JMSEngine) aEngine).getReplyProducer();
-		mSessionId = aSessionId;
 		mConnectionId = aConnectionId;
+		mConsumerId = aConsumerId;
 	}
 
 	public void setCustomVarsContainer(Map<String, Object> aMap) {
 		mCustomVars = aMap;
 	}
-	
+
 	@Override
 	public void setUsername(String aUsername) {
 		setString(SystemPlugIn.USERNAME, aUsername);
@@ -83,7 +83,7 @@ public class JMSConnector extends BaseConnector {
 
 	@Override
 	public String getId() {
-		return mSessionId;
+		return mConsumerId;
 	}
 
 	@Override

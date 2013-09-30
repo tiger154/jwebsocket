@@ -99,4 +99,18 @@ public interface INodesManager extends IInitializable {
 	 * @return
 	 */
 	IClusterSynchronizer getSynchronizer();
+
+	/**
+	 * Gets the IConsumerAdviceTempStorage instance.
+	 *
+	 * @return
+	 */
+	IConsumerAdviceTempStorage getConsumerAdviceTempStorage();
+
+	/**
+	 * Sets the IConsumerAdviceTempStorage instance.
+	 *
+	 * @param aConsumerAdviceTempStorage
+	 */
+	void setConsumerAdviceTempStorage(IConsumerAdviceTempStorage aConsumerAdviceTempStorage);
 }

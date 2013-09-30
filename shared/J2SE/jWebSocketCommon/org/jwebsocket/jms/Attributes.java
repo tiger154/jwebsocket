@@ -13,6 +13,7 @@ public class Attributes {
 	public static final String NODE_ID = "nodeId";
 	public static final String NAMESPACE = "ns";
 	public static final String CONNECTION_ID = "connectionId";
+	public static final String CONSUMER_ID = "consumerId";
 	public static final String STATUS = "status";
 	public static final String DESCRIPTION = "description";
 	public static final String CPU = "cpu";

@@ -128,6 +128,25 @@
 					}
 				}
 			}
+			
+			function sum(){
+				lWSC.sendToken({
+					ns: 'org.jwebsocket.plugins.calc',
+					type: 'sum',
+					a: parseFloat(jws.$('argA').value),
+					b: parseFloat(jws.$('argB').value)
+				}, {
+					OnSuccess: function(aResponse){
+						alert('La respuseta es: ' + aResponse.result);
+					},
+					OnFailure: function(aError){
+						
+					},
+					OnResponse: function(aResponse){
+						
+					}
+				});
+			}
 
 			function login() {
 				if( lWSC ) {
@@ -337,15 +356,15 @@
 					</td>
 					<td class="stdDlg" width="" >
 						Debug<input class="sbtnDlg" id="srbtDebug" type="radio" value="debug" name="g1" checked="checked" onclick="switchLevel();"
-							   title="Sets the log level to 'debug'." >
+									title="Sets the log level to 'debug'." >
 						| Info<input class="sbtnDlg" id="srbtInfo" type="radio" value="info" name="g1" onclick="switchLevel();"
-							   title="Sets the log level to 'info'." >
+									 title="Sets the log level to 'info'." >
 						| Warn<input class="sbtnDlg" id="srbtWarn" type="radio" value="warn" name="g1" onclick="switchLevel();"
-							   title="Sets the log level to 'warn'." >
+									 title="Sets the log level to 'warn'." >
 						| Error<input class="sbtnDlg" id="srbtError" type="radio" value="error" name="g1" onclick="switchLevel();"
-							   title="Sets the log level to 'error'." >
+									  title="Sets the log level to 'error'." >
 						| Fatal<input class="sbtnDlg" id="srbtFatal" type="radio" value="fatal" name="g1" onclick="switchLevel();"
-							   title="Sets the log level to 'fatal'." >
+									  title="Sets the log level to 'fatal'." >
 					</td>
 					<td class="stdDlg" width="5">
 						&nbsp;
@@ -353,6 +372,17 @@
 					<td class="stdDlg" width="5">
 						<input class="sbtnDlg" id="sbtnEvent" type="button" value="Get Events" onclick="getLogEvents();"
 							   title="Gets all logs." >
+					</td>
+				</tr>
+				<tr>
+					<td class="stdDlg" width="">
+						<input class="stxfDlg" id="argB" type="text" value="" style="width:100%">
+					</td>
+					<td class="stdDlg" width="">
+						<input class="stxfDlg" id="argA" type="text" value="" style="width:100%">
+					</td>
+					<td class="stdDlg" width="5">
+						<input class="sbtnDlg" id="sbtnSend" type="button" value="Sum" onclick="sum();">
 					</td>
 				</tr>
 			</table>

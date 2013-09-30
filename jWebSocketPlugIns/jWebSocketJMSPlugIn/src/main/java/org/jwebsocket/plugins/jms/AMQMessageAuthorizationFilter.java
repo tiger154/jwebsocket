@@ -49,7 +49,9 @@ public class AMQMessageAuthorizationFilter implements MessageAuthorizationPolicy
 			// excluding messages target to other destinations
 			for (String lSecureDest : mTargetDestinations) {
 				if (lSecureDest.matches(lMessageDest)) {
-					if (aContext.getConnectionId().getValue().equals((String) aMessage.getProperty("connectionId"))) {
+					if (aContext.isNetworkConnection()) {
+						return true;
+					} else if (aContext.getConnectionId().getValue().equals((String) aMessage.getProperty("connectionId"))) {
 						aMessage.removeProperty("connectionId");
 						aMessage.removeProperty("replySelector");
 						// allow if the consumer connection id matches the message target connection id

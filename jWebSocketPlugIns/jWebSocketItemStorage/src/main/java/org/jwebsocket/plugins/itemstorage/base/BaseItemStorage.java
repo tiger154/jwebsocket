@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.itemstorage.base;
 
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang.math.RandomUtils;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
 import org.jwebsocket.plugins.itemstorage.api.IItemFactory;
@@ -83,6 +84,16 @@ abstract public class BaseItemStorage implements IItemStorage {
 		return find(aAttribute, aValue, 0, size());
 	}
 
+	@Override
+	public List<IItem> find(String aAttribute, Object aValue, Map<String, Boolean> aOrderBy, int aOffset, int aLength) throws Exception {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public List<IItem> find(Map<String, Object> aAttrsValues, Map<String, Boolean> aOrderBy, int aOffset, int aLength) throws Exception {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+	
 	@Override
 	public IItemFactory getItemFactory() {
 		return mItemFactory;

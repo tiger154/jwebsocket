@@ -19,6 +19,7 @@
 package org.jwebsocket.jms;
 
 import java.util.Collection;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.ServerConfiguration;
 import org.jwebsocket.api.WebSocketConnector;

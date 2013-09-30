@@ -18,7 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms;
 
-import java.util.List;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
@@ -52,26 +51,25 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 
 			switch (lType) {
 				case CONNECTION: {
-					// session id is MD5 value for security
-					String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
+					String lReplySelector = aMessage.getStringProperty(Attributes.REPLY_SELECTOR);
 					// storing the connector
-					if (!lConnManager.sessionExists(lSessionId)) {
-						lConnManager.addConnector(
-								lSessionId,
+					if (!lConnManager.exists(lReplySelector)) {
+						lConnManager.add(
 								aMessage.getStringProperty(Attributes.CONNECTION_ID),
+								aMessage.getStringProperty(Attributes.CONSUMER_ID),
 								aMessage.getStringProperty(Attributes.REPLY_SELECTOR));
 
 						// getting the connector instance
-						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
+						JMSConnector lConnector = lConnManager.get(lReplySelector);
 						lConnector.startConnector();
 					}
 					break;
 				}
 				case MESSAGE: {
-					String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
-					if (lConnManager.sessionExists(lSessionId)) {
+					String lReplySelector = aMessage.getStringProperty(Attributes.REPLY_SELECTOR);
+					if (lConnManager.exists(lReplySelector)) {
 						// getting the connector
-						JMSConnector lConnector = lConnManager.getConnector(lSessionId);
+						JMSConnector lConnector = lConnManager.get(lReplySelector);
 						// getting the packet content
 						TextMessage lMessage = (TextMessage) aMessage;
 						// notifying process packet
@@ -82,33 +80,23 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 					break;
 				}
 				case DISCONNECTION: {
-					// supporting LB clients disconnection advisory support
-					String lConnectionId = aMessage.getStringProperty(Attributes.CONNECTION_ID);
-					if (null != lConnectionId) {
-						List<String> lSessionIds;
-						lSessionIds = lConnManager.getSessionsByConnectionId(lConnectionId);
-						if (!lSessionIds.isEmpty()) {
-							for (String lSessionId : lSessionIds) {
-								if (lConnManager.sessionExists(lSessionId)) {
-									// getting the connector
-									JMSConnector lConnector = lConnManager.getConnector(lSessionId);
-									// stopping the connector
-									lConnector.stopConnector(CloseReason.CLIENT);
-									lConnManager.removeConnector(lSessionId);
-								}
-							}
-						}
+					String lConsumerId = aMessage.getStringProperty(Attributes.CONSUMER_ID);
+					String lReplySelector;
+					if (null != lConsumerId) {
+						// supporting LB clients disconnection advisory support
+						lReplySelector = lConnManager.getReplySelectorByConsumerId(lConsumerId);
 					} else {
 						// client sent DISCONNECTION command
-						String lSessionId = aMessage.getStringProperty(Attributes.SESSION_ID);
-						if (lConnManager.sessionExists(lSessionId)) {
-							// getting the connector
-							JMSConnector lConnector = lConnManager.getConnector(lSessionId);
-							// stopping the connector
-							lConnector.stopConnector(CloseReason.CLIENT);
-							lConnManager.removeConnector(lSessionId);
-						}
+						lReplySelector = aMessage.getStringProperty(Attributes.REPLY_SELECTOR);
 					}
+					
+					if (null != lReplySelector && lConnManager.exists(lReplySelector)) {
+						// getting the connector
+						JMSConnector lConnector = lConnManager.get(lReplySelector);
+						// stopping the connector
+						lConnector.stopConnector(CloseReason.CLIENT);
+					}
+
 					break;
 				}
 			}

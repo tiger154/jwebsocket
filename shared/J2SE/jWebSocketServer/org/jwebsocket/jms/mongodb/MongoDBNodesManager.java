@@ -7,6 +7,7 @@ import com.mongodb.DBObject;
 import org.jwebsocket.jms.Attributes;
 import org.jwebsocket.jms.NodeStatus;
 import org.jwebsocket.jms.api.IClusterSynchronizer;
+import org.jwebsocket.jms.api.IConsumerAdviceTempStorage;
 import org.jwebsocket.jms.api.INodesManager;
 import org.springframework.util.Assert;
 
@@ -19,6 +20,17 @@ public class MongoDBNodesManager implements INodesManager {
 	private DBCollection mNodesCollection;
 	private String mNodeDescription;
 	private IClusterSynchronizer mSynchronizer;
+	private IConsumerAdviceTempStorage mConsumerAdviceTempStorage;
+
+	@Override
+	public IConsumerAdviceTempStorage getConsumerAdviceTempStorage() {
+		return mConsumerAdviceTempStorage;
+	}
+
+	@Override
+	public void setConsumerAdviceTempStorage(IConsumerAdviceTempStorage aConsumerAdviceTempStorage) {
+		mConsumerAdviceTempStorage = aConsumerAdviceTempStorage;
+	}
 
 	@Override
 	public IClusterSynchronizer getSynchronizer() {
