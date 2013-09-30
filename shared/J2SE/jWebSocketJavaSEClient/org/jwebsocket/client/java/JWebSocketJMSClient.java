@@ -241,7 +241,9 @@ public class JWebSocketJMSClient extends BaseClient {
 			// notifying close event
 			WebSocketBaseClientEvent lEvent = new WebSocketBaseClientEvent(this, EVENT_CLOSE, aCloseReason.name());
 			notifyClosed(lEvent);
-			checkReconnect(lEvent);
+			if (CloseReason.BROKEN.equals(aCloseReason)) {
+				checkReconnect(lEvent);
+			}
 		} catch (Exception lEx) {
 			throw new WebSocketException(lEx);
 		}
