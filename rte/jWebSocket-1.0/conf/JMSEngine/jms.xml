@@ -11,8 +11,8 @@
 	</bean>
 
 	<!-- the JMSEngine ActiveMQ connection factory	-->
-	<bean id="amqFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="tcp://0.0.0.0:61616" />
+	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://localhost:61616" />
 		<property name="useAsyncSend" value="true" />
 		<property name="userName">
 			<value>jws_cloud1</value>
@@ -20,10 +20,6 @@
 		<property name="password">
 			<value>password</value>
 		</property>
-	</bean>
-	<bean id="connectionFactory"
-		  class="org.springframework.jms.connection.SingleConnectionFactory">
-		<property name="targetConnectionFactory" ref="amqFactory" />
 	</bean>
 
 	<!-- the MongoDB server connection instance -->
@@ -66,7 +62,7 @@
 		<property name="nodeDescription" ref="nodeDescription"></property>
 		<!-- the cluster 'synchronizer' instance for cluster workers synchronization -->
 		<property name="synchronizer">
-			<bean class="org.jwebsocket.jms.mongodb.MongoBDClusterSynchronizer" init-method="initialize">
+			<bean class="org.jwebsocket.jms.mongodb.MongoDBClusterSynchronizer" init-method="initialize">
 				<property name="collection">
 					<bean factory-bean="jws_lb_db" factory-method="getCollection">
 						<constructor-arg>
@@ -78,5 +74,19 @@
 				</property>
 			</bean>
 		</property>
+		<property name="consumerAdviceTempStorage">
+			<bean class="org.jwebsocket.jms.mongodb.MongoDBConsumerAdviceTempStorage" init-method="initialize">
+				<property name="collection">
+					<bean factory-bean="jws_lb_db" factory-method="getCollection">
+						<constructor-arg>
+							<bean factory-bean="destination" factory-method="concat">
+								<constructor-arg value="_consumertempstorage"/>
+							</bean>
+						</constructor-arg>
+					</bean>
+				</property>
+			</bean>
+		</property>
+		
 	</bean>
 </beans>
