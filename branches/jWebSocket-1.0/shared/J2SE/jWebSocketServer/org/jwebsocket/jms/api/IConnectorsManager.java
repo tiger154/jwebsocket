@@ -4,7 +4,6 @@
  */
 package org.jwebsocket.jms.api;
 
-import java.util.List;
 import java.util.Map;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.WebSocketConnector;
@@ -17,24 +16,24 @@ import org.jwebsocket.jms.JMSEngine;
  */
 public interface IConnectorsManager extends IInitializable {
 
-	JMSConnector addConnector(String aSessionId, String aConnectionId, String aReplySelector) throws Exception;
+	JMSConnector add(String aConnectionId, String aConsumerId, String aReplySelector) throws Exception;
 
-	boolean sessionExists(String aSessionId) throws Exception;
+	boolean exists(String aReplySelector) throws Exception;
 
-	JMSConnector getConnector(String aSessionId) throws Exception;
+	JMSConnector get(String aReplySelector) throws Exception;
 
-	void removeConnector(String aSessionId) throws Exception;
+	void remove(String aConsumerId) throws Exception;
 
 	void setEngine(JMSEngine aEngine);
 
-	Map<String, WebSocketConnector> getConnectors() throws Exception;
+	Map<String, WebSocketConnector> getAll() throws Exception;
 
-	List<String> getSessionsByConnectionId(String aConnectionId) throws Exception;
+	String getReplySelectorByConsumerId(String aConsumerId) throws Exception;
 
 	/**
 	 * Sets a connector status. 0 == online, 1 = offline
 	 *
-	 * @param aStatus
+	 * @param aReplySelector
 	 */
-	void setStatus(String aSessionId, int aStatus) throws Exception;
+	void setStatus(String aReplySelector, int aStatus) throws Exception;
 }

@@ -29,7 +29,7 @@ import org.jwebsocket.jms.api.IClusterSynchronizer;
  *
  * @author kyberneees
  */
-public class MongoBDClusterSynchronizer implements IClusterSynchronizer {
+public class MongoDBClusterSynchronizer implements IClusterSynchronizer {
 
 	private DBCollection mCollection;
 

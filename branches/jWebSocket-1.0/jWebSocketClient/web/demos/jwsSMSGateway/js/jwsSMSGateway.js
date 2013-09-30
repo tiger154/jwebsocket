@@ -44,10 +44,10 @@ $.widget( "jws.SMSGateway", {
 		this.mCount = 0;
 		this.mTXT_CAPTCHA = "Type the words here...";
 		this.mMSG_CAPTCHA_ERROR = "Error found in the Captcha, the server will" +
-				" send you other captcha, please try again!";
+		" send you other captcha, please try again!";
 		this.mMSG_ERROR = "The following error has been encoutered: ";
 		this.mMSG_SMS_SENT = "Congratulations!, you have sent a free SMS" +
-				" using jWebSocket Framework";
+		" using jWebSocket Framework";
 
 		w.SMSGateway = this;
 
@@ -150,7 +150,7 @@ $.widget( "jws.SMSGateway", {
 						},
 						OnFailure: function(aToken) {
 							jwsDialog(w.SMSGateway.mMSG_ERROR + aToken.msg,
-									"Error sending the SMS", true);
+								"Error sending the SMS", true);
 						}
 					};
 					mWSC.sendToken(lSMSToken, lCallbacks);
@@ -162,14 +162,14 @@ $.widget( "jws.SMSGateway", {
 					}, 100);
 
 					log("<b style='color:red;'>Wrong captcha validation, " +
-							"try another captcha</b>");
+						"try another captcha</b>");
 					var lGetNewCaptcha = function() {
 						w.SMSGateway.getCaptcha();
 						w.SMSGateway.eTextCaptcha.val("").focus();
 					};
 					//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
 					jwsDialog(w.SMSGateway.mMSG_CAPTCHA_ERROR, "Captcha error",
-							true, "alert", lGetNewCaptcha);
+						true, "alert", lGetNewCaptcha);
 				}
 			};
 			mWSC.sendToken(lToken, lOptions);
@@ -193,10 +193,17 @@ $.widget( "jws.SMSGateway", {
 		w.SMSGateway.countCharacters();
 		if (w.SMSGateway.mCount >= w.SMSGateway.MAX_COUNT) {
 			w.SMSGateway.eInputSMS.val(w.SMSGateway.eInputSMS.val( ).substr(
-					0, w.SMSGateway.MAX_COUNT));
+				0, w.SMSGateway.MAX_COUNT));
 			w.SMSGateway.eCCounterArea.attr("class", "error");
 		} else {
 			w.SMSGateway.eCCounterArea.attr("class", "");
 		}
+	}
+});
+
+lWSC.fileLoad('test.rar', jws.FileSystemPlugIn.ALIAS_PUBLIC, {
+	encoding: false, 
+	OnSuccess: function(aResponse){
+		window.open('data:' + aResponse.mime + ';' + (aResponse['__binaryData']? 'base64' : 'plain') + ',' + aResponse.data, '_blank');
 	}
 });

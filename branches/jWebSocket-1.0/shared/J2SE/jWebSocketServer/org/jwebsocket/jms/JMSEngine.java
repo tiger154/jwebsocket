@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.jms.Connection;
@@ -53,7 +54,7 @@ public class JMSEngine extends BaseEngine {
 	private final String NS = "org.jwebsocket.jms.engine";
 	private ApplicationContext mBeanFactory;
 	private Connection mConnection;
-	private Session mSession;
+	private Session mSession, mSession2;
 	private JMSMessageListener mMessageListener;
 	private IConnectorsManager mConnectorsManager;
 	private MessageProducer mReplyProducer;
@@ -96,9 +97,11 @@ public class JMSEngine extends BaseEngine {
 	@Override
 	public Map<String, WebSocketConnector> getConnectors() {
 		// temporal patch to support InternalClient instances
-		Map<String, WebSocketConnector> lConnectors = super.getConnectors();
+		Map<String, WebSocketConnector> lConnectors = new HashMap<String, WebSocketConnector>();
+		lConnectors.putAll(super.getConnectors());
+		
 		try {
-			lConnectors.putAll(mConnectorsManager.getConnectors());
+			lConnectors.putAll(mConnectorsManager.getAll());
 			return lConnectors;
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx);
@@ -109,7 +112,7 @@ public class JMSEngine extends BaseEngine {
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
 		try {
 			// removing connector from database
-			mConnectorsManager.removeConnector(aConnector.getSession().getSessionId());
+			mConnectorsManager.remove(aConnector.getId());
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "removing connector data from database"));
 		}
@@ -120,7 +123,7 @@ public class JMSEngine extends BaseEngine {
 	@Override
 	public WebSocketConnector getConnectorById(String aConnectorId) {
 		try {
-			return mConnectorsManager.getConnector(aConnectorId);
+			return mConnectorsManager.get(aConnectorId);
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx);
 		}
@@ -145,6 +148,8 @@ public class JMSEngine extends BaseEngine {
 			// creating the session
 			mSession = mConnection.createSession(false,
 					Session.AUTO_ACKNOWLEDGE);
+			mSession2 = mConnection.createSession(false,
+					Session.AUTO_ACKNOWLEDGE);
 			// setting the global reply producer
 			mReplyProducer = mSession.createProducer(mSession.createTopic(mDestination));
 
@@ -158,7 +163,7 @@ public class JMSEngine extends BaseEngine {
 			mNodesManager = (INodesManager) mBeanFactory.getBean("nodesManager");
 
 			final INodesManager lNodesManager = (INodesManager) mBeanFactory.getBean("nodesManager");
-			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSession, mNodesManager) {
+			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSession, mSession2, mNodesManager) {
 				@Override
 				public void shutdown() throws Exception {
 					// close clients if all nodes are down
@@ -232,6 +237,7 @@ public class JMSEngine extends BaseEngine {
 		mConnectorsManager.shutdown();
 		// closing the JMS session
 		mSession.close();
+		mSession2.close();
 		// closing the JMS connection
 		mConnection.close();
 

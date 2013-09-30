@@ -29,7 +29,7 @@
 		var mReplySelector = jws.tools.createUUID();
 		var mReconnectionAttempts = 0;
 		var lQuery = jws.tools.parseQuery(aUrl);
-		console.log(lQuery);
+
 		self.url = lUrlParts[0];
 		self.destination = "/topic/" + lQuery["cluster"];
 		self.subPrcol = aSubprotocol;
@@ -83,19 +83,21 @@
 							msgType: "ACK",
 							msgId: jws.tools.createUUID(),
 							nodeId: lMessage.data.split("-")[0],
-							data: aData
+							data: aData,
+							replySelector: mReplySelector
 						});
 
 						return;
 					}
 				}
 			} catch (lError) {
-				// ommit it, not JSON format
+			// ommit it, not JSON format
 			}
 
 			self.stomp.send(self.destination, {
 				msgType: "MESSAGE",
 				data: aData,
+				replySelector: mReplySelector,
 				msgId: jws.tools.createUUID()
 			});
 		};
@@ -113,8 +115,8 @@
 		var handleEvent = function(aEvent) {
 			var lEvent;
 			if (aEvent.type === "close"
-					|| aEvent.type === "open"
-					|| aEvent.type === "error") {
+				|| aEvent.type === "open"
+				|| aEvent.type === "error") {
 				lEvent = createSimpleEvent(aEvent.type);
 			} else if (aEvent.type === "message") {
 				lEvent = createMessageEvent("message", aEvent.data);
@@ -161,68 +163,69 @@
 			self.stomp = Stomp.client(self.url);
 			self.stomp.debug = function() {
 			};
-			self.stomp.connect(
-					mUsername,
-					mPassword,
-					function() {
-						self.stomp.subscribe(
-								// the target connection destination
-								self.destination,
-								// callback
-										function(aMessage) {
-											if ("DISCONNECTION" === aMessage.headers["msgType"]) {
-												self.readyState = self.readyStateValues.CLOSING;
-												self.stomp.disconnect(function() {
-													self.readyState = self.readyStateValues.CLOSED;
-													handleEvent({
-														type: "close",
-														data: aMessage.data
-													});
-												});
-											} else {
-												handleEvent({
-													type: "message",
-													data: aMessage.body
-												});
-											}
-										}, {
-									selector: "replySelector='" + mReplySelector + "' OR isBroadcast=true"
-								});
-
-								self.stomp.send(self.destination, {
-									msgType: "CONNECTION",
-									replySelector: mReplySelector,
-									msgId: jws.tools.createUUID()
-								});
-
-								self.readyState = self.readyStateValues.OPEN;
-								// notify 'open' if not from reconnection
-								if (0 === mReconnectionAttempts) {
-									handleEvent({
-										type: "open"
-									});
-								}
-								mReconnectionAttempts = 0;
-							},
-							function() {
-								if (self.readyState === self.readyStateValues.OPEN) {
-									self.readyState = self.readyStateValues.CONNECTING;
-									// perform reconnection
-									if (mReconnectionAttempts < 5) {
-										mReconnectionAttempts++;
-										setTimeout(function() {
-											self.open();
-										}, mReconnectionAttempts * 100);
-
-										return;
-									}
-								}
+			self.stomp.connect({
+				login: mUsername,
+				passcode: mPassword
+			},
+			function() {
+				self.stomp.subscribe(
+					// the target connection destination
+					self.destination,
+					// callback
+					function(aMessage) {
+						if ("DISCONNECTION" === aMessage.headers["msgType"]) {
+							self.readyState = self.readyStateValues.CLOSING;
+							self.stomp.disconnect(function() {
 								self.readyState = self.readyStateValues.CLOSED;
 								handleEvent({
-									type: "close"
+									type: "close",
+									data: aMessage.data
 								});
 							});
-				};
+						} else {
+							handleEvent({
+								type: "message",
+								data: aMessage.body
+							});
+						}
+					}, {
+						selector: "replySelector='" + mReplySelector + "' OR isBroadcast=true"
+					});
+
+				self.stomp.send(self.destination, {
+					msgType: "CONNECTION",
+					replySelector: mReplySelector,
+					msgId: jws.tools.createUUID()
+				});
+
+				self.readyState = self.readyStateValues.OPEN;
+				// notify 'open' if not from reconnection
+				if (0 === mReconnectionAttempts) {
+					handleEvent({
+						type: "open"
+					});
+				}
+				mReconnectionAttempts = 0;
+			},
+			function() {
+				if (self.readyState === self.readyStateValues.OPEN) {
+					self.readyState = self.readyStateValues.CONNECTING;
+					// perform reconnection
+					if (mReconnectionAttempts < 5) {
+						mReconnectionAttempts++;
+						setTimeout(function() {
+							self.open();
+						}, mReconnectionAttempts * 100);
+
+						return;
+					}
+				}
+				self.readyState = self.readyStateValues.CLOSED;
+				handleEvent({
+					type: "close"
+				});
+			});
+		};
 		this.open();
 	};
 })();

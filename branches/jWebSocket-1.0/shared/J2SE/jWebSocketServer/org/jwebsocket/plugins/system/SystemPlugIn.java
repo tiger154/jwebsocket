@@ -40,6 +40,7 @@ import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.connectors.InternalConnector;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.filters.system.SystemFilter;
+import org.jwebsocket.jms.JMSServer;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
@@ -475,7 +476,11 @@ public class SystemPlugIn extends TokenPlugIn {
 			if (lNodeId != null) {
 				lEvent.setString("unid", lNodeId);
 			}
-			lEvent.setInteger("clientCount", getConnectorCount());
+			if (false == getServer() instanceof JMSServer) {
+				// exclude if running in a cluster, since the connectors data 
+				// stored in database
+				lEvent.setInteger("clientCount", getConnectorCount());
+			}
 
 			// broadcast to all except source
 			broadcastEvent(aConnector, lEvent);
@@ -558,7 +563,11 @@ public class SystemPlugIn extends TokenPlugIn {
 			Token lEvent = TokenFactory.createToken(NS_SYSTEM, BaseToken.TT_EVENT);
 			lEvent.setString("name", "login");
 			lEvent.setString("username", getUsername(aConnector));
-			lEvent.setInteger("clientCount", getConnectorCount());
+			if (false == getServer() instanceof JMSServer) {
+				// exclude if running in a cluster, since the connectors data 
+				// stored in database
+				lEvent.setInteger("clientCount", getConnectorCount());
+			}
 			lEvent.setString("sourceId", aConnector.getId());
 			// if a unique node id is specified for the client include that
 			String lNodeId = aConnector.getNodeId();
@@ -593,7 +602,11 @@ public class SystemPlugIn extends TokenPlugIn {
 			Token lEvent = TokenFactory.createToken(NS_SYSTEM, BaseToken.TT_EVENT);
 			lEvent.setString("name", "logout");
 			lEvent.setString("username", getUsername(aConnector));
-			lEvent.setInteger("clientCount", getConnectorCount());
+			if (false == getServer() instanceof JMSServer) {
+				// exclude if running in a cluster, since the connectors data 
+				// stored in database
+				lEvent.setInteger("clientCount", getConnectorCount());
+			}
 			lEvent.setString("sourceId", aConnector.getId());
 			// if a unique node id is specified for the client include that
 			String lNodeId = aConnector.getNodeId();
