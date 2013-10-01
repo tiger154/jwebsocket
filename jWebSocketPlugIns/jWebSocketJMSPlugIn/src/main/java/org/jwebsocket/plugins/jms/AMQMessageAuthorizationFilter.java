@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.activemq.broker.ConnectionContext;
@@ -46,8 +47,8 @@ public class AMQMessageAuthorizationFilter implements MessageAuthorizationPolicy
 	public boolean isAllowedToConsume(ConnectionContext aContext, final Message aMessage) {
 		try {
 			String lMessageDest = aMessage.getDestination().getQualifiedName();
-			// excluding messages target to other destinations
-			for (String lSecureDest : mTargetDestinations) {
+			for (Iterator<String> lIt = mTargetDestinations.iterator(); lIt.hasNext();) {
+				String lSecureDest = lIt.next();
 				if (lSecureDest.matches(lMessageDest)) {
 					if (aContext.isNetworkConnection()) {
 						return true;
