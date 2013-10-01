@@ -74,6 +74,27 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 				}
 			} else if ("event".equals(lType)) {
 			} else {
+				// check for "ping" request with in the gateway's name space
+				if ("org.jwebsocket.jms.gateway".equals(lNS)) {
+					if ("ping".equals(lType)) {
+						if (mLog.isInfoEnabled()) {
+							mLog.info("Responding to ping from '" + lSourceId + "'...");
+							getSender().sendText(lToken.getString("sourceId"),
+									"{\"ns\":\"org.jwebsocket.jms.gateway\","
+									+ "\"type\":\"response\",\"reqType\":\"ping\","
+									+ "\"code\":0,\"msg\":\"pong\"}");
+						}
+					} else if ("identify".equals(lType)) {
+						if (mLog.isInfoEnabled()) {
+							mLog.info("Responding to identify from '" + lSourceId + "'...");
+							getSender().sendText(lToken.getString("sourceId"),
+									"{\"ns\":\"org.jwebsocket.jms.gateway\","
+									+ "\"type\":\"response\",\"reqType\":\"identify\","
+									+ "\"code\":0,\"msg\":\"ok\"," 
+									+ "\"endpointId\":\"" + getJMSEndPoint().getEndPointId() + "\"}");
+						}
+					}
+				}
 				IJWSMessageListener lListener = mRequestListeners.get(lNS + "." + lType);
 				if (null != lListener) {
 					lListener.processToken(lSourceId, lToken);

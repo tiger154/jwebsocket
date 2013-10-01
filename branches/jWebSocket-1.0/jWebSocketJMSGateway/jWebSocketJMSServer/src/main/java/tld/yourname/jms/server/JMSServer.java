@@ -31,6 +31,7 @@ import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
 import org.jwebsocket.jms.endpoint.JWSEndPointSender;
 import org.jwebsocket.jms.endpoint.JWSMessageListener;
 import org.jwebsocket.packetProcessors.JSONProcessor;
+import org.jwebsocket.sso.OAuth;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
@@ -107,6 +108,11 @@ public class JMSServer {
 		JWSEndPointMessageListener lListener = new JWSEndPointMessageListener(lJMSEndPoint);
 		final JWSEndPointSender lSender = new JWSEndPointSender(lJMSEndPoint);
 
+		// integrate OAuth library
+		final OAuth lOAuth = new OAuth(
+				"https://hqdvpngpoc01.nvidia.com/as/token.oauth2", "2Federate");
+		// lOAuth.setBaseURL("https://localhost/as/token.oauth2");
+
 		// on welcome message from jWebSocket, authenticate against jWebSocket
 		lListener.onRequest("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
 			@Override
@@ -133,6 +139,31 @@ public class JMSServer {
 				}
 			}
 		});
+
+		// on response of the login...
+		lListener.onRequest("org.jwebsocket.svcep.demo", "sso1", new JWSMessageListener(lSender) {
+			@Override
+			public void processToken(String aSourceId, Token aToken) {
+				String lPayload = aToken.getString("payload");
+				if (mLog.isInfoEnabled()) {
+					mLog.info("Processing 'sso1 with Payload'" + lPayload + "'");
+				}
+
+				String lAccessToken = aToken.getString("accessToken");
+				String lUsername = lOAuth.getUser(lAccessToken);
+
+				Map<String, Object> lAdditionalResults = new FastMap<String, Object>();
+				lAdditionalResults.put("username", lUsername);
+				lSender.respondPayload(
+						aToken.getString("sourceId"),
+						aToken,
+						0, // return code
+						"Ok", // return message
+						lAdditionalResults, // here you can add additional results beside the payload
+						"{ payload: \"This is any payload.\" }");
+			}
+		});
+
 
 		// on response of the login...
 		lListener.onRequest("org.jwebsocket.svcep.demo", "demo1", new JWSMessageListener(lSender) {

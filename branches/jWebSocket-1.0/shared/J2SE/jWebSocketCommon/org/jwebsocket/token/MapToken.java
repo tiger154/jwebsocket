@@ -88,7 +88,9 @@ public class MapToken extends BaseToken implements Token {
 	 */
 	@Override
 	public void setMap(Map aMap) {
-		mData = aMap;
+		if (null != aMap) {
+			mData = aMap;
+		}
 	}
 
 	/**

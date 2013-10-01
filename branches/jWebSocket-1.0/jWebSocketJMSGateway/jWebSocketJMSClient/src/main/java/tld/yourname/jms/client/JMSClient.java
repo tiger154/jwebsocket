@@ -35,6 +35,7 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
 import javolution.util.FastMap;
+import org.jwebsocket.sso.OAuth;
 
 /**
  * JMS Gateway Demo Client
@@ -67,12 +68,12 @@ public class JMSClient {
 		lProps.setProperty("log4j.appender.console.threshold", "INFO");
 		PropertyConfigurator.configure(lProps);
 
-		String lBrokerURL = "failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false";
+		// String lBrokerURL = "failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false";
+		String lBrokerURL = "tcp://hqdvalsap01:61616";
 		// the name of the JMD Gateway topic
 		String lGatewayTopic = "org.jwebsocket.jms.gateway"; // topic name of JMS Gateway
 		String lGatewayId = "org.jwebsocket.jms.gateway"; // endpoint id of JMS Gateway
 		String lEndPointId = UUID.randomUUID().toString();
-		final String lServiceId = "JMSServer"; // endpoint id of JMS Service Demo
 
 		// tcp://172.20.116.68:61616 org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		// failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
@@ -92,7 +93,7 @@ public class JMSClient {
 					+ lEndPointId);
 		} else {
 			mLog.info("Usage: java -jar jWebSocketJMSClientBundle-<ver>.jar URL gateway-topic gateway-id [node-id]");
-			mLog.info("Example: java -jar jWebSocketJMSClientBundle-1.0.jar tcp://172.20.116.68:61616 " + lGatewayTopic + " " + lGatewayId + " [your node id]");
+			mLog.info("Example: java -jar jWebSocketJMSClientBundle-1.0.jar tcp://hostname:61616 " + lGatewayTopic + " " + lGatewayId + " [your node id]");
 			System.exit(1);
 		}
 
@@ -110,25 +111,85 @@ public class JMSClient {
 		// instantiate a high level JWSEndPointSender
 		final JWSEndPointSender lSender = new JWSEndPointSender(lJMSEndPoint);
 
+		// integrate OAuth library
+		final OAuth lOAuth = new OAuth("https://hqdvpngpoc01.nvidia.com/as/token.oauth2", "2Federate");
+		// lOAuth.setBaseURL("https://localhost/as/token.oauth2");
+		lOAuth.authDirect("aschulze@nvidia.com", "Yami#2812");
+
 		// on welcome message from jWebSocket, authenticate against jWebSocket
 		lListener.onRequest("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
-				mLog.info("Received 'welcome', authenticating against jWebSocket...");
-				// create a login token...
-				Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.system", "login");
-				lToken.setString("username", "root");
-				lToken.setString("password", "root");
-				// and send it to the gateway (which is was the source of the message)
-				sendToken(aSourceId, lToken);
+				mLog.info("Received 'welcome' from '" + aSourceId + ".");
+				if ("org.jwebsocket.jms.gateway".equals(aSourceId)) {
+					// create a login token...
+					mLog.info("Authenticating against jWebSocket...");
+					Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.system", "login");
+					lToken.setString("username", "root");
+					lToken.setString("password", "root");
+					// and send it to the gateway (which is was the source of the message)
+					sendToken(aSourceId, lToken);
+				}
 			}
 		});
+
+		// process response of the JMS Gateway login...
+//		lListener.onResponse("org.jwebsocket.plugins.system", "login",
+//				new JWSMessageListener(lSender) {
+//			@Override
+//			public void processToken(String aSourceId, Token aToken) {
+//				int lCode = aToken.getInteger("code", -1);
+//				if (0 == lCode) {
+//					if (mLog.isInfoEnabled()) {
+//						mLog.info("Authentication against jWebSocket JMS Gateway successful.");
+//					}
+//				} else {
+//					mLog.error("Authentication against jWebSocket JMS Gateway failed!");
+//				}
+//
+//				Map lArgs = new FastMap<String, Object>();
+//				/*
+//				 lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
+//				 "demo1", lArgs, "{}");
+//				 */
+//				/*
+//				lArgs.put("accessToken", lOAuth.getAccessToken());
+//				lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
+//						"sso1", lArgs, "{}");
+//				*/
+//				// Token lToken = TokenFactory.createToken("com.ptc.windchill", "createBOM");
+//				// lToken.setString("username", "rsouza");
+//				// lToken.setString("password", "...");
+//				// lToken.setString("payload", "{}");
+//				// sendToken("hqdvptas134", lToken);
+//				
+//				lSender.sendPayload("hqdvptas134", "com.ptc.windchill",
+//					"createBOM", lArgs, "{}");
+//				
+//				if (true) {
+//					return;
+//				}
+//
+//				// now to try to get some data from the service...
+//				lArgs = new FastMap<String, Object>();
+//				lArgs.put("username", "anyUsername");
+//				lArgs.put("password", "anyPassword");
+//				lArgs.put("action", "CREATE");
+//				// send the payload to the target (here the JMS demo service)
+//				// lSender.forwardPayload("aschulze-dt", "org.jwebsocket.jms.demo",
+//				//		"forwardPayload", "4711", lArgs, null);
+//				// send the payload to the target (here the JMS demo service)
+//				lSender.sendPayload("HQDVPTAS110", "com.ptc.windchill",
+//						"getLibraryPart", lArgs, "{}");
+//			}
+//		});
 
 		// process response of the JMS Gateway login...
 		lListener.onResponse("org.jwebsocket.plugins.system", "login",
 				new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
+				
 				int lCode = aToken.getInteger("code", -1);
 				if (0 == lCode) {
 					if (mLog.isInfoEnabled()) {
@@ -138,12 +199,35 @@ public class JMSClient {
 					mLog.error("Authentication against jWebSocket JMS Gateway failed!");
 				}
 
+				// lSender.ping("server-aschulze-dt");
+				lSender.getIdentification("*");
+				if (true) {
+					return;
+				}
+
 				Map lArgs = new FastMap<String, Object>();
-				lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
-						"demo1", lArgs, "{}");
-				
-				if( true ) return;
-				
+				// lSender.sendPayload("wcslv01.dev.nvdia.com", "com.ptc.windchill",
+				//	"getNewPartRequest", lArgs, "{}"); // getLibraryPart, getManufacturerPart "wcslv01.dev.nvidia.com"
+				mLog.info("Sending getLibraryPart");
+				lSender.sendPayload("hqdvptas134", "com.ptc.windchill",
+					"getLibraryPart", lArgs, "{}");
+				/*
+				 lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
+				 "demo1", lArgs, "{}");
+				 */
+				 /*
+				lArgs.put("accessToken", lOAuth.getAccessToken());
+				lSender.sendPayload("server-aschulze-dt", "org.jwebsocket.svcep.demo",
+						"sso1", lArgs, "{}");
+				*/ 
+				/*
+				 lSender.sendPayload("hqdvptas138", "com.ptc.windchill",
+				 "createBOM", lArgs, "{}");
+				 */
+				if (true) {
+					return;
+				}
+
 				// now to try to get some data from the service...
 				lArgs = new FastMap<String, Object>();
 				lArgs.put("username", "anyUsername");
@@ -155,6 +239,20 @@ public class JMSClient {
 				// send the payload to the target (here the JMS demo service)
 				lSender.sendPayload("HQDVPTAS110", "com.ptc.windchill",
 						"getLibraryPart", lArgs, "{}");
+			}
+		});
+
+		// process response of the JMS Gateway login...
+		lListener.onResponse("org.jwebsocket.svcep.demo", "sso1",
+				new JWSMessageListener(lSender) {
+			@Override
+			public void processToken(String aSourceId, Token aToken) {
+				int lCode = aToken.getInteger("code", -1);
+				if (0 == lCode) {
+					if (mLog.isInfoEnabled()) {
+						mLog.info("Username was detected by server: '" + aToken.getString("username") + "'");
+					}
+				}
 			}
 		});
 

@@ -80,6 +80,10 @@ public class JMSPlugIn extends TokenPlugIn {
 	private JMSListener mListener;
 	private MessageConsumer mAdvisoryConsumer;
 	private Settings mSettings;
+	private String mBrokerURI;
+	private String mEndPointId;
+	private String mGatewayTopicId;
+	private String mAdvisoryTopicId;
 
 	/**
 	 *
@@ -128,12 +132,12 @@ public class JMSPlugIn extends TokenPlugIn {
 
 			// Advisory listener
 			// setting up the JMS Gateway
-			String aBrokerURI = mSettings.getBrokerURI();
-			String mEndPointId = mSettings.getEndPointId();
-			String lGatewayTopicId = mSettings.getGatewayTopic();
-			String lAdvisoryTopicId = mSettings.getAdvisoryTopic();
+			mBrokerURI = mSettings.getBrokerURI();
+			mEndPointId = mSettings.getEndPointId();
+			mGatewayTopicId = mSettings.getGatewayTopic();
+			mAdvisoryTopicId = mSettings.getAdvisoryTopic();
 
-			mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
+			mConnectionFactory = new ActiveMQConnectionFactory(mBrokerURI);
 			try {
 				mConnection = mConnectionFactory.createConnection();
 				// setting the clientID is required for durable subscribers
@@ -143,7 +147,7 @@ public class JMSPlugIn extends TokenPlugIn {
 				mSession = mConnection.createSession(false,
 						Session.AUTO_ACKNOWLEDGE);
 
-				Topic lGatewayTopic = mSession.createTopic(lGatewayTopicId);
+				Topic lGatewayTopic = mSession.createTopic(mGatewayTopicId);
 				MessageProducer lProducer = mSession.createProducer(lGatewayTopic);
 				mSender = new JMSSender(mSession, lProducer, mEndPointId);
 
@@ -152,14 +156,16 @@ public class JMSPlugIn extends TokenPlugIn {
 				mConsumer = // mSession.createDurableSubscriber(
 						mSession.createConsumer(
 						lGatewayTopic,
-						"targetId='" + mEndPointId + "'");
+						"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')"
+						);
 				mListener = new JMSListener(mJMSEngine, mSender);
 				mConsumer.setMessageListener(mListener);
 
 				// create the listener to the advisory topic
-				Topic lAdvisoryTopic = mSession.createTopic(lAdvisoryTopicId);
+				Topic lAdvisoryTopic = mSession.createTopic(mAdvisoryTopicId);
 				mAdvisoryConsumer = mSession.createConsumer(lAdvisoryTopic);
-				JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(mJMSEngine, mSender);
+				JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
+						mJMSEngine, mSender);
 				mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
 
 			} catch (JMSException lEx) {
@@ -172,7 +178,7 @@ public class JMSPlugIn extends TokenPlugIn {
 		}
 		// give a success message to the administrator
 		if (mLog.isInfoEnabled()) {
-			mLog.info("JMS plug-in successfully instantiated.");
+			mLog.info("JMS plug-in successfully instantiated, JMS Gateway endpoint id: '" + mEndPointId + "'.");
 		}
 	}
 

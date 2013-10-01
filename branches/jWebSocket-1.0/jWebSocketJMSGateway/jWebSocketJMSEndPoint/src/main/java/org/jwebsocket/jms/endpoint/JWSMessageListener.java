@@ -45,7 +45,7 @@ public class JWSMessageListener implements IJWSMessageListener {
 
 	@Override
 	public void processToken(String aSourceId, Token aToken) {
-		// tp be overridden by the actual listener implementation
+		// to be overridden by the actual listener implementation
 	}
 
 	@Override

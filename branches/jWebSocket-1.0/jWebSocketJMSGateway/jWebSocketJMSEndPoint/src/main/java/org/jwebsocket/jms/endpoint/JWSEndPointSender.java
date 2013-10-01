@@ -171,7 +171,9 @@ public class JWSEndPointSender extends JMSEndPointSender {
 
 		Token lEnvelope = TokenFactory.createToken(
 				"org.jwebsocket.plugins.system", "send");
+		// the sourceId of this message is the endpoint id of this instance
 		lEnvelope.setString("sourceId", mEndPoint.getEndPointId());
+		// the target id is the endpoint id of the target (websocket or MQ)
 		lEnvelope.setString("targetId", aTargetId);
 
 		lEnvelope.setString("action", "forward.json");
@@ -179,7 +181,11 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		lEnvelope.setString("data", JSONProcessor.tokenToPacket(lResponse).getUTF8());
 
 		// send the message in the envelope to the jWebSocket gateway
-		sendToken(mEndPoint.getGatewayId(), lEnvelope);
+		String lTargetId = aRequest.getString("gatewayId");
+		if (null == lTargetId) {
+			lTargetId = mEndPoint.getGatewayId();
+		}
+		sendToken(lTargetId, lEnvelope);
 	}
 
 	/**
@@ -188,4 +194,30 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	public JMSEndPoint getEndPoint() {
 		return mEndPoint;
 	}
+
+	public void ping(String aTargetId) {
+		mUTID++;
+		sendPayload(aTargetId,
+				"org.jwebsocket.jms.gateway", // name space
+				"ping", // type
+				mUTID, // utid
+				null, // origin id
+				null, // args
+				null // payload
+				);
+	}
+
+	public void getIdentification(String aTargetId) {
+		mUTID++;
+		sendPayload(aTargetId,
+				"org.jwebsocket.jms.gateway", // name space
+				"identify", // type
+				mUTID, // utid
+				null, // origin id
+				null, // args
+				null // payload
+				);
+	}
+	
+	
 }
