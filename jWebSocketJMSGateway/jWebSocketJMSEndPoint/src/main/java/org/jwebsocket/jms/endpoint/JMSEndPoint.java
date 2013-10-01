@@ -23,7 +23,6 @@ package org.jwebsocket.jms.endpoint;
  *
  * @author Alexander Schulze
  */
-import java.util.logging.Level;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
@@ -101,7 +100,7 @@ public class JMSEndPoint {
 
 			// create a consumer for the given gateway topic (JMS destination)
 			// use endPointId to listen on a certain target address only
-			String lSelector = "targetId='" + mEndPointId + "'";
+			String lSelector = "targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')";
 			MessageConsumer lConsumer;
 			if (aDurable) {
 				lConsumer = mSession.createDurableSubscriber(lGatewayTopic, lSelector);

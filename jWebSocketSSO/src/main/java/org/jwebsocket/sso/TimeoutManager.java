@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket OAuth demo for Java (Community Edition, CE)
+//	jWebSocket SSO timeout manager for Java (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -18,20 +18,29 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.sso;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
+ *
  * @author aschulze
  */
-public class App {
+public class TimeoutManager {
 
-	public static void main(String[] args) {
-		OAuth lOAuth = new OAuth();
-		// lOAuth.setBaseURL("https://localhost/as/token.oauth2");
-		lOAuth.setBaseURL("https://hqdvpngpoc01.nvidia.com/as/token.oauth");
-		lOAuth.setClientSecret("2Federate");
-		System.out.println("JSON Direct Authentication: " + lOAuth.authDirect("aschulze@nvidia.com", "Yami#2812"));
-		System.out.println("JSON User from Access Token: " + lOAuth.getUser());
-		System.out.println("JSON Refresh Access Token: " + lOAuth.refreshAccessToken());
-		System.out.println("Username from OAuth Object: " + lOAuth.getUsername());
-		
+	static final Timer mTimer = new Timer();
+
+	/**
+	 *
+	 */
+	public TimeoutManager() {
+	}
+
+	/**
+	 *
+	 * @param aTask
+	 * @param aTimeout
+	 */
+	public void addTimerTask(TimerTask aTask, long aTimeout) {
+		mTimer.schedule(aTask, aTimeout);
 	}
 }

@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket OAuth demo for Java (Community Edition, CE)
+//	jWebSocket OAuth implementation for Java (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -16,22 +16,19 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
+//	this plug-in is based on: 
+//	http://tools.ietf.org/html/rfc6749 - The OAuth 2.0 Authorization Framework
+//	http://tools.ietf.org/html/rfc6750 - The OAuth 2.0 Authorization Framework: Bearer Token Usage
+//	http://oauth.net/2/ - OAuth 2.0
+//	---------------------------------------------------------------------------
 package org.jwebsocket.sso;
 
 /**
+ *
  * @author aschulze
  */
-public class App {
+public class SSOException extends Exception {
 
-	public static void main(String[] args) {
-		OAuth lOAuth = new OAuth();
-		// lOAuth.setBaseURL("https://localhost/as/token.oauth2");
-		lOAuth.setBaseURL("https://hqdvpngpoc01.nvidia.com/as/token.oauth");
-		lOAuth.setClientSecret("2Federate");
-		System.out.println("JSON Direct Authentication: " + lOAuth.authDirect("aschulze@nvidia.com", "Yami#2812"));
-		System.out.println("JSON User from Access Token: " + lOAuth.getUser());
-		System.out.println("JSON Refresh Access Token: " + lOAuth.refreshAccessToken());
-		System.out.println("Username from OAuth Object: " + lOAuth.getUsername());
-		
-	}
+	
+	
 }

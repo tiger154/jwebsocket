@@ -53,6 +53,8 @@ public class JMSConnector extends BaseConnector {
 
 		mRemoteHost = aRemoteHost;
 		mTargetId = aTargetId;
+		
+		setVar("$gatewayId", mJMSSender.getEndPointId());
 	}
 
 	@Override

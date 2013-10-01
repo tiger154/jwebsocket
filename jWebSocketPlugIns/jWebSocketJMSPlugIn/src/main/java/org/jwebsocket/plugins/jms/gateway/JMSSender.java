@@ -64,7 +64,9 @@ public class JMSSender {
 		Message lMsg;
 		try {
 			lMsg = mSession.createTextMessage(aText);
+			// source of message to the MQ is the gateway id
 			lMsg.setStringProperty("sourceId", mEndPointId);
+			// target is the endpoint id of the MQ target endpoint
 			lMsg.setStringProperty("targetId", aTargetId);
 			mProducer.send(lMsg);
 		} catch (JMSException lEx) {

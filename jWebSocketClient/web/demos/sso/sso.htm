@@ -41,8 +41,14 @@
 			function authDirect() {
 				log( "Calling direct auth..." );
 				lWSC.ssoAuthDirect( eUsername.value, ePassword.value, {
-					OnResponse: function( aToken ) {
-						log("JSON: " + aToken.text );
+					OnSuccess: function( aToken ) {
+						log("Success: " + JSON.stringify( aToken ) );
+					},
+					OnFailure: function( aToken ) {
+						log("Failure: " + JSON.stringify( aToken ) );
+					},
+					OnTimeout: function( aToken ) {
+						log("Timeout: " + JSON.stringify( aToken ) );
 					}
 				});
 			}
@@ -50,8 +56,14 @@
 			function getUser() {
 				log( "Calling get user..." );
 				lWSC.ssoGetUser({
-					OnResponse: function( aToken ) {
-						log("JSON: " + aToken.text );
+					OnSuccess: function( aToken ) {
+						log("Success: " + JSON.stringify( aToken ) );
+					},
+					OnFailure: function( aToken ) {
+						log("Failure: " + JSON.stringify( aToken ) );
+					},
+					OnTimeout: function( aToken ) {
+						log("Timeout: " + JSON.stringify( aToken ) );
 					}
 				});
 			}
@@ -59,8 +71,14 @@
 			function refreshAccessToken() {
 				log( "Refreshing access token..." );
 				lWSC.ssoRefreshAccessToken({
-					OnResponse: function( aToken ) {
-						log("JSON: " + aToken.text );
+					OnSuccess: function( aToken ) {
+						log("Success: " + JSON.stringify( aToken ) );
+					},
+					OnFailure: function( aToken ) {
+						log("Failure: " + JSON.stringify( aToken ) );
+					},
+					OnTimeout: function( aToken ) {
+						log("Timeout: " + JSON.stringify( aToken ) );
 					}
 				});
 			}
@@ -68,8 +86,11 @@
 			function loadOAuthData() {
 				log( "Loading OAuth data..." );
 				lWSC.ssoLoadOAuthData({
-					OnResponse: function( aToken ) {
-						log( "Loaded: " + JSON.stringify( aToken ) );
+					OnSuccess: function( aToken ) {
+						log("Success: " + JSON.stringify( aToken ) );
+					},
+					OnFailure: function( aToken ) {
+						log("Failure: " + JSON.stringify( aToken ) );
 					}
 				});
 			}
@@ -77,17 +98,46 @@
 			function saveOAuthData() {
 				log( "Saving OAuth data..." );
 				lWSC.ssoSaveOAuthData({
-					OnResponse: function( aToken ) {
-						log( "Saved: " + JSON.stringify( aToken ) );
+					OnSuccess: function( aToken ) {
+						log("Success: " + JSON.stringify( aToken ) );
+					},
+					OnFailure: function( aToken ) {
+						log("Failure: " + JSON.stringify( aToken ) );
 					}
 				});
 			}
 			
 			function getSMSessionCookie() {
-				log( "Getting SiteMinder Session Cookie..." );
+				log( "Getting all document cookies (including potential SSO cookies from Web server agent)..." );
 				lWSC.ssoGetSMSessionCookie({
-					OnResponse: function( aToken ) {
+					OnSuccess: function( aToken ) {
 						log( "Cookie: " + JSON.stringify( aToken ) );
+					},
+					OnFailure: function( aToken ) {
+						log("Failure: " + JSON.stringify( aToken ) );
+					}
+				});
+			}
+
+			function sendJMSRequest() {
+				log( "Sending JMS request..." );
+				lWSC.forwardJSON(
+					// "hqdvptas134", 
+					// "com.ptc.windchill",
+					// "createBOM", 
+					"server-aschulze-dt", // target
+					"org.jwebsocket.svcep.demo", //	aNS, 
+					"sso1", //	aType, 
+					{
+						accessToken: lWSC.ssoGetAccessToken()
+					}, //	aArgs, 
+					"{}",	//	aJSON payload, 
+					{
+					OnSuccess: function( aToken ) {
+						log( "Success: " + JSON.stringify( aToken ) );
+					},
+					OnFailure: function( aToken ) {
+						log("Failure: " + JSON.stringify( aToken ) );
 					}
 				});
 			}
@@ -95,8 +145,12 @@
 			function initPage() {
 				eArgs = jws.$( "stxfArgs" );
 				
+				jws.console.setActive( true );
+				jws.console.setLevel( jws.console.DEBUG );
 				// lWSC.ssoSetHost( "https://hqdvpngpoc01.nvidia.com/as/token.oauth2" );
+				// lWSC.ssoSetDefaultTimeout(100);
 				lWSC.ssoSetHost( "https://localhost/as/token.oauth2" );
+				// lWSC.ssoSetHost( "https://alsius.dev.nvidia.com/as/token.oauth2" );
 				lWSC.ssoSetSecret( "2Federate" );
 				lWSC.ssoSetAppURL( "https://hqdvalsap01.nvidia.com/sso/index.html" );
 				
@@ -119,12 +173,13 @@
 		<script type="text/javascript">
 			jws.DemoPlugIn.buildDemoPage({
 				title: "External Process",
-				header: "jWebSocket SSO Demo",
-				description: "This demo shows how to access SSO environments with jWebSocket."
+				header: "Alsius SSO Test",
+				description: "This test shows how to access SSO environments via jWebSocket."
 			});
 			processInitPage();
 		</script>
 
+		
 		<div class="sdivContainer">
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
 				<tr class="strDlg">
@@ -139,8 +194,10 @@
 							   title="Saves the relevant OAuth data in a cookie.">
 						<input class="sbtnDlg" id="sbtnLoadOAuthData" type="button" value="Load Cookie" onclick="loadOAuthData();"
 							   title="Loads the relevant OAuth data from a cookie.">
-						<input class="sbtnDlg" id="sbtnGetSMSessionCookie" type="button" value="Get SM-Session" onclick="getSMSessionCookie();"
+						<input class="sbtnDlg" id="sbtnGetSMSessionCookie" type="button" value="Cookies" onclick="getSMSessionCookie();"
 							   title="Tries to obtain the SiteMinder session cookie.">
+						<input class="sbtnDlg" id="sbtnSendRequest" type="button" value="JMS Request" onclick="sendJMSRequest();"
+							   title="Send a request using the access token to the JMS demo server.">
 					</td>
 				</tr>
 			</table>

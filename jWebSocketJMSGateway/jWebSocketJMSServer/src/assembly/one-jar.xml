@@ -18,6 +18,7 @@
 				<include>org.apache.activemq:activemq-all</include>
 				<include>org.jwebsocket:jWebSocketCommon</include>
 				<include>org.jwebsocket:jWebSocketJMSEndPoint</include>
+				<include>org.jwebsocket:jWebSocketSSO</include>
 				<include>javolution:javolution</include>
 				<include>org.codehaus.jackson:jackson-core-asl</include>
 				<include>org.codehaus.jackson:jackson-mapper-asl</include>

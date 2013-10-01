@@ -90,22 +90,25 @@ public class JMSListener implements MessageListener {
 			String lNS = lToken.getNS();
 			String lType = lToken.getType();
 			if ("org.jwebsocket.jms.gateway".equals(lNS)) {
-				/*
-				 if ("connect".equals(lType)) {
-				 if (mEngine.getConnectors().size() <= 0) {
-				 mConnector = new JMSConnector(mEngine, mJMSSender, "-");
-				 mEngine.addConnector(mConnector);
-				 }
-				 if (mLog.isInfoEnabled()) {
-				 mLog.info("Registered new JMS client (Id = '" + lCorrelationId + "').");
-				 }
-				 String lPacket = "{\"ns\":\"org.jwebsocket.jms.bridge\",\"type\":\"accepted\"}";
-				 mJMSSender.convertAndSend(lPacket);
-				 } else {
-				 mLog.warn("JMS bridge command '" + lType + "' ignored!");
-				 }
-				 */
-				mLog.warn("JMS Gateway command '" + lType + "' ignored!");
+				if ("ping".equals(lType)) {
+					if (mLog.isInfoEnabled()) {
+						mLog.info("Responding to ping from '" + lSourceId + "'...");
+						mJMSSender.sendText(lToken.getString("sourceId"),
+								"{\"ns\":\"org.jwebsocket.jms.gateway\","
+								+ "\"type\":\"response\",\"reqType\":\"ping\","
+								+ "\"code\":0,\"msg\":\"pong\"}");
+					}
+				} else if ("identify".equals(lType)) {
+					if (mLog.isInfoEnabled()) {
+						mLog.info("Responding to identify from '" + lSourceId + "'...");
+						mJMSSender.sendText(lToken.getString("sourceId"),
+								"{\"ns\":\"org.jwebsocket.jms.gateway\","
+								+ "\"type\":\"response\",\"reqType\":\"identify\","
+								+ "\"code\":0,\"msg\":\"ok\","
+								+ "\"endpointId\":\"" + mJMSSender.getEndPointId() + "\"}");
+					}
+				} else
+					mLog.warn("JMS Gateway command '" + lType + "' ignored!");
 			} else {
 				// here the incoming packets from the JMS bridge are processed
 				WebSocketConnector lConnector = null;

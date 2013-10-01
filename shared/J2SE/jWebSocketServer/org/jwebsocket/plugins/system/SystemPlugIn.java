@@ -799,6 +799,10 @@ public class SystemPlugIn extends TokenPlugIn {
 			if ("forward.json".equals(lAction)) {
 				WebSocketPacket lPacket = new RawPacket(aToken.getString("data"));
 				Token lToken = JSONProcessor.packetToToken(lPacket);
+				String lGatewayId = lTargetConnector.getString("$gatewayId");
+				if (null != lGatewayId) {
+					lToken.setString("gatewayId", lGatewayId);
+				}
 				sendToken(aConnector, lTargetConnector, lToken);
 			} else {
 				aToken.setString("sourceId", aConnector.getId());
