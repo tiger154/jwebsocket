@@ -43,6 +43,7 @@ import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.plugins.jms.gateway.JMSAdvisoryListener;
 import org.jwebsocket.plugins.jms.gateway.JMSEngine;
@@ -53,6 +54,7 @@ import org.jwebsocket.plugins.jms.util.FieldJms;
 import org.jwebsocket.plugins.jms.util.RightJms;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -156,8 +158,7 @@ public class JMSPlugIn extends TokenPlugIn {
 				mConsumer = // mSession.createDurableSubscriber(
 						mSession.createConsumer(
 						lGatewayTopic,
-						"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')"
-						);
+						"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
 				mListener = new JMSListener(mJMSEngine, mSender);
 				mConsumer.setMessageListener(mListener);
 
@@ -308,6 +309,8 @@ public class JMSPlugIn extends TokenPlugIn {
 				break;
 			case UNLISTEN:
 				unlisten(aConnector, aToken);
+			case IDENTIFY:
+				identify(aConnector, aToken);
 		}
 	}
 
@@ -359,11 +362,11 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"Text successfully sent", RightJms.SEND, RightJms.SEND_AND_LISTEN),
 				new ActionCommand() {
-					@Override
-					void execute(ActionInput aInput) throws Exception {
-						mJmsManager.sendText(aInput);
-					}
-				});
+			@Override
+			void execute(ActionInput aInput) throws Exception {
+				mJmsManager.sendText(aInput);
+			}
+		});
 	}
 
 	private void sendTextMessage(WebSocketConnector aConnector, Token aToken) {
@@ -533,5 +536,15 @@ public class JMSPlugIn extends TokenPlugIn {
 	private abstract class ActionCommand {
 
 		abstract void execute(ActionInput aInput) throws Exception;
+	}
+
+	private void identify(WebSocketConnector aConnector, Token aToken) {
+		String lTargetId = aToken.getString("targetId");
+		String lUTID = aToken.getString("utid");
+		Token lToken = TokenFactory.createToken("org.jwebsocket.jms.gateway", "identify");
+		lToken.setString("sourceId", aConnector.getId());
+		lToken.setString("gatewayId", mEndPointId);
+		lToken.setString("utid", lUTID);
+		mSender.sendText(lTargetId, JSONProcessor.tokenToPacket(lToken).getUTF8());
 	}
 }

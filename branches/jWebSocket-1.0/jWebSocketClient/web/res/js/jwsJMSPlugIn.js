@@ -42,6 +42,7 @@ jws.JMSPlugIn = {
 	LISTEN: "listenJms",
 	LISTEN_MESSAGE: "listenJmsMessage",
 	UNLISTEN: "unlistenJms",
+	IDENTIFY: "identify",
 
 	jmsPing: function( aTargetId, aOptions ) {
 		var lRes = this.checkConnected();
@@ -62,6 +63,16 @@ jws.JMSPlugIn = {
 	jmsIdentify: function( aTargetId, aOptions ) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
+			this.sendToken({
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.IDENTIFY,
+				targetId: aTargetId
+			}, aOptions);
+		}
+		return lRes;
+/*		
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
 			this.forwardJSON(
 				aTargetId,
 				jws.JMSPlugIn.NS_JMS_GATEWAY,
@@ -72,6 +83,7 @@ jws.JMSPlugIn = {
 			);	
 		}
 		return lRes;
+*/		
 	},
 			
 	jmsEcho: function( aTargetId, aPayload, aOptions ) {
