@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.gateway;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -90,25 +92,73 @@ public class JMSListener implements MessageListener {
 			String lNS = lToken.getNS();
 			String lType = lToken.getType();
 			if ("org.jwebsocket.jms.gateway".equals(lNS)) {
+				String lHostname, lCanonicalHostName, lIPAddress;
+				try {
+					lIPAddress = InetAddress.getLocalHost().getHostAddress();
+				} catch (UnknownHostException ex) {
+					lIPAddress = null;
+				}
+				try {
+					lHostname = InetAddress.getLocalHost().getHostName();
+				} catch (UnknownHostException ex) {
+					lHostname = null;
+				}
+				try {
+					lCanonicalHostName = InetAddress.getLocalHost().getCanonicalHostName();
+				} catch (UnknownHostException ex) {
+					lCanonicalHostName = null;
+				}
 				if ("ping".equals(lType)) {
+					String lGatewayId = lToken.getString("gatewayId");
 					if (mLog.isInfoEnabled()) {
-						mLog.info("Responding to ping from '" + lSourceId + "'...");
-						mJMSSender.sendText(lToken.getString("sourceId"),
-								"{\"ns\":\"org.jwebsocket.jms.gateway\","
-								+ "\"type\":\"response\",\"reqType\":\"ping\","
-								+ "\"code\":0,\"msg\":\"pong\"}");
+						mLog.info("Responding to ping from '" + lSourceId
+								+ " " + (null != lGatewayId ? "via" + lGatewayId : "directly")
+								+ "'...");
+					}
+					String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
+							+ ",\"type\":\"response\",\"reqType\":\"ping\""
+							+ ",\"code\":0,\"msg\":\"pong\",\"utid\":" + lToken.getInteger("utid")
+							+ ",\"sourceId\":\"" + mJMSSender.getEndPointId() + "\""
+							+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+							+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
+							+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
+							+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
+							+ "}";
+					if (null != lGatewayId) {
+						mJMSSender.sendText(lGatewayId,
+								"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
+								+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
+								+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
+								+ "\"data\": \"" + lData.replace("\"", "\\\"") + "\"}");
+					} else {
+						mJMSSender.sendText(lToken.getString("sourceId"), lData);
 					}
 				} else if ("identify".equals(lType)) {
+					String lGatewayId = lToken.getString("gatewayId");
 					if (mLog.isInfoEnabled()) {
-						mLog.info("Responding to identify from '" + lSourceId + "'...");
-						mJMSSender.sendText(lToken.getString("sourceId"),
-								"{\"ns\":\"org.jwebsocket.jms.gateway\","
-								+ "\"type\":\"response\",\"reqType\":\"identify\","
-								+ "\"code\":0,\"msg\":\"ok\","
-								+ "\"endpointId\":\"" + mJMSSender.getEndPointId() + "\"}");
+						mLog.info("Responding to identify from '" + lSourceId
+								+ " " + (null != lGatewayId ? "via" + lGatewayId : "directly")
+								+ "'...");
 					}
-				} else
-					mLog.warn("JMS Gateway command '" + lType + "' ignored!");
+					String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
+							+ ",\"type\":\"response\",\"reqType\":\"identify\""
+							+ ",\"code\":0,\"msg\":\"ok\",\"utid\":" + lToken.getInteger("utid")
+							+ ",\"sourceId\":\"" + mJMSSender.getEndPointId() + "\""
+							+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+							+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
+							+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
+							+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
+							+ "}";
+					if (null != lGatewayId) {
+						mJMSSender.sendText(lGatewayId,
+								"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
+								+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
+								+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
+								+ "\"data\": \"" + lData.replace("\"", "\\\"") + "\"}");
+					} else {
+						mJMSSender.sendText(lToken.getString("sourceId"), lData);
+					}
+				}
 			} else {
 				// here the incoming packets from the JMS bridge are processed
 				WebSocketConnector lConnector = null;

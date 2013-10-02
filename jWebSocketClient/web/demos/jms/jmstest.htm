@@ -31,6 +31,7 @@
 
 		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
 		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsJMSPlugIn.js" type="text/javascript"></script>
 
 		<script type="text/javascript" language="JavaScript">
 			
@@ -40,11 +41,11 @@
 					// "hqdvptas134", 
 					// "com.ptc.windchill",
 					// "createBOM", 
-					"server-aschulze-dt", // target
+					eTargetId.value, // target
 					"org.jwebsocket.svcep.demo", //	aNS, 
 					"sso1", //	aType, 
 					{
-						accessToken: lWSC.ssoGetAccessToken()
+						accessToken: "invalidToken"
 					}, //	aArgs, 
 					"{}",	//	aJSON payload, 
 					{
@@ -57,21 +58,37 @@
 				});
 			}
 
+			function jmsPing() {
+				lWSC.jmsPing( eTargetId.value, {
+					OnSuccess: function( aToken ) {
+						log( "Success: " + JSON.stringify( aToken ) );
+					},
+					OnFailure: function( aToken ) {
+						log("Failure: " + JSON.stringify( aToken ) );
+					}
+				});
+			}
+
+			function jmsIdentify() {
+				lWSC.jmsIdentify( eTargetId.value, {
+					OnSuccess: function( aToken ) {
+						log( "Success: " + JSON.stringify( aToken ) );
+					},
+					OnFailure: function( aToken ) {
+						log("Failure: " + JSON.stringify( aToken ) );
+					}
+				});
+			}
+
 			function initPage() {
 				eArgs = jws.$( "stxfArgs" );
+				eNS = jws.$( "stxfNS" );
+				eType = jws.$( "stxfType" );
+				eGatewayId = jws.$( "stxfGatewayId" );
+				eTargetId = jws.$( "stxfTargetId" );
 				
 				jws.console.setActive( true );
 				jws.console.setLevel( jws.console.DEBUG );
-				// lWSC.ssoSetHost( "https://hqdvpngpoc01.nvidia.com/as/token.oauth2" );
-				// lWSC.ssoSetDefaultTimeout(100);
-				lWSC.ssoSetHost( "https://localhost/as/token.oauth2" );
-				// lWSC.ssoSetHost( "https://alsius.dev.nvidia.com/as/token.oauth2" );
-				lWSC.ssoSetSecret( "2Federate" );
-				lWSC.ssoSetAppURL( "https://hqdvalsap01.nvidia.com/sso/index.html" );
-				
-//				lWSC.setExtProcessCallbacks({
-//					OnExtProcessMsg: handleExtProcessMsg
-//				});
 			}
 
 			function exitPage() {
@@ -98,23 +115,39 @@
 		<div class="sdivContainer">
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
 				<tr class="strDlg">
+					<td class="stdDlg" width="5">Gateway&#8209;Id
+					</td>
+					<td class="stdDlg" width="">
+						<input class="stxfDlg" id="stxfGatewayId" type="text" value="org.jwebsocket.jms.gateway" style="width:99%"
+							   title="The ID of the JMS gateway.">
+					</td>
+					<td class="stdDlg" width="5">Target&#8209;Id
+					</td>
+					<td class="stdDlg" width="">
+						<input class="stxfDlg" id="stxfTargetId" type="text" value="jWebSocketJMSService" style="width:99%"
+							   title="The endpoint id of the JMS target.">
+					</td>
+				</tr>
+				<tr class="strDlg">
 					<td class="stdDlg" width="5">Namespace
 					</td>
 					<td class="stdDlg" width="">
-						<input class="stxfDlg" id="stxfNS" type="text" value="default" style="width:99%"
-							   title="The alias of a database connection in case you specified multiple ones.">
+						<input class="stxfDlg" id="stxfNS" type="text" value="org.jwebsocket.jms.gateway" style="width:99%"
+							   title="The namespace of the reuqest to the server.">
 					</td>
-				</tr>
-				<tr class="strDlg">
-					<td class="stdDlg" width="5">Query
+					<td class="stdDlg" width="5">Type
 					</td>
 					<td class="stdDlg" width="">
-						<input class="stxfDlg" id="stxfSQL" type="text" value="select * from system_log" style="width:99%"
-							   title="The SQL query for select or update, insert, delete commands.">
+						<input class="stxfDlg" id="stxfSQL" type="text" value="ping" style="width:99%"
+							   title="The type of the command to the JMS server.">
 					</td>
 				</tr>
 				<tr class="strDlg">
-					<td colspan="2" width="">
+					<td colspan="4" width="">
+						<input class="sbtnDlg" id="sbtnPing" type="button" value="Ping" onclick="jmsPing();"
+							   title="Pings a certain JMS endpoint.">
+						<input class="sbtnDlg" id="sbtnIdentify" type="button" value="identify" onclick="jmsIdentify();"
+							   title="Requests a certain endpoint to identify.">
 						<input class="sbtnDlg" id="sbtnSendRequest" type="button" value="JMS Request" onclick="sendJMSRequest();"
 							   title="Send a request using the access token to the JMS demo server.">
 					</td>
