@@ -123,8 +123,8 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 						String lGatewayId = lToken.getString("gatewayId");
 						if (mLog.isInfoEnabled()) {
 							mLog.info("Responding to identify from '" + lSourceId
-									+ " " + (null != lGatewayId ? "via" + lGatewayId : "directly")
-									+ "'...");
+									+ "' " + (null != lGatewayId ? "via" + lGatewayId : "directly")
+									+ "...");
 						}
 						String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
 								+ ",\"type\":\"response\",\"reqType\":\"identify\""
@@ -140,7 +140,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 									"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
 									+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
 									+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
-									+ "\"data\": \"" + lData.replace("\"", "\\\"") + "\"}");
+									+ "\"data\":\"" + lData.replace("\"", "\\\"") + "\"}");
 						} else {
 							getSender().sendText(lToken.getString("sourceId"), lData);
 						}

@@ -52,7 +52,11 @@ public enum ActionJms {
 	/**
 	 *
 	 */
-	SEND_MAP_MESSAGE("sendJmsMapMessage");
+	SEND_MAP_MESSAGE("sendJmsMapMessage"),
+	/**
+	 *
+	 */
+	IDENTIFY("identify");
 	private String mValue;
 
 	private ActionJms(String value) {
