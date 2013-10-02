@@ -32,6 +32,7 @@ jws.JMSPlugIn = {
 	// if namespace changes update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.jms",
 	NS_JMS_GATEWAY: "org.jwebsocket.jms.gateway",
+	NS_JMS_DEMO: "org.jwebsocket.jms.demo",
 	JMS_GATEWAY_ID: "org.jwebsocket.jms.gateway",
 	JMS_GATEWAY_TOPIC: "org.jwebsocket.jms.gateway",
 	SEND_TEXT: "sendJmsText",
@@ -67,6 +68,21 @@ jws.JMSPlugIn = {
 				"identify",
 				{},
 				"",
+				aOptions
+			);	
+		}
+		return lRes;
+	},
+			
+	jmsEcho: function( aTargetId, aPayload, aOptions ) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			this.forwardJSON(
+				aTargetId,
+				jws.JMSPlugIn.NS_JMS_DEMO,
+				"echo",
+				{},
+				aPayload,
 				aOptions
 			);	
 		}
