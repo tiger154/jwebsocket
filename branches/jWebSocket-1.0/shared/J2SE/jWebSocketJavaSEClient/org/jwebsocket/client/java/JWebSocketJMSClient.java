@@ -167,6 +167,7 @@ public class JWebSocketJMSClient extends BaseClient {
 		lMessage.setStringProperty(Attributes.MESSAGE_TYPE, aMessageType.name());
 		lMessage.setStringProperty(Attributes.DATA, aData);
 		lMessage.setStringProperty(Attributes.MESSAGE_ID, UUID.randomUUID().toString());
+		lMessage.setStringProperty(Attributes.REPLY_SELECTOR, mReplySelector);
 
 		return lMessage;
 	}
