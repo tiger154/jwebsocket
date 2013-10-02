@@ -106,7 +106,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 								+ ",\"code\":0,\"msg\":\"pong\",\"utid\":" + lToken.getInteger("utid")
 								+ ",\"sourceId\":\"" + getSender().getEndPointId() + "\""
 								+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
-								+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
+								+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
 								+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
 								+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
 								+ "}";
@@ -131,7 +131,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 								+ ",\"code\":0,\"msg\":\"ok\",\"utid\":" + lToken.getInteger("utid")
 								+ ",\"sourceId\":\"" + getSender().getEndPointId() + "\""
 								+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
-								+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
+								+ (null != lCanonicalHostName ? ",\"canonicalHostname\":\"" + lCanonicalHostName + "\"" : "")
 								+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
 								+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
 								+ "}";

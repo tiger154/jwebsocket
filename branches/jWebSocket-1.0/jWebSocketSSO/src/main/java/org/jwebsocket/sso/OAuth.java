@@ -48,6 +48,8 @@ public class OAuth {
 	private String mAccessToken = null;
 	private String mUsername = null;
 	private long mDefaultTimeout = 10000;
+	private int mReturnCode = 0;
+	private String mReturnMsg = "Ok";
 
 	/**
 	 *
@@ -126,7 +128,9 @@ public class OAuth {
 			lSSLContext = SSLContext.getInstance("TLS");
 			lSSLContext.init(null, lTrustManager, new java.security.SecureRandom());
 		} catch (Exception lEx) {
-			return "{\"code\":-1; \"msg\":\"" + lEx.getClass().getSimpleName() + "\"}";
+			mReturnCode = -1;
+			mReturnMsg = lEx.getClass().getSimpleName() + " initializing SSL connection to OAuth host.";
+			return "{\"code\":-1, \"msg\":\"" + lEx.getClass().getSimpleName() + "\"}";
 		}
 
 		try {
@@ -158,7 +162,7 @@ public class OAuth {
 				}
 			}, aTimeout);
 
-			// get ready to read the response from the cgi script 
+			// get ready to read the response from the server 
 			DataInputStream lIS = new DataInputStream(lConn.getInputStream());
 			// read in each character until end-of-stream is detected 
 			StringBuilder lSB = new StringBuilder();
@@ -169,7 +173,9 @@ public class OAuth {
 			lIS.close();
 
 		} catch (Exception lEx) {
-			return "{\"code\":-1; \"msg\":\"" + lEx.getClass().getSimpleName() + "\"}";
+			mReturnCode = -1;
+			mReturnMsg = lEx.getClass().getSimpleName() + " requesting OAuth host.";
+			return "{\"code\":-1, \"msg\":\"" + lEx.getClass().getSimpleName() + "\"}";
 		}
 		return lJSON;
 	}
@@ -247,7 +253,9 @@ public class OAuth {
 			mRefreshToken = (String) lJSON.get("refresh_token");
 			return lJSONString;
 		} catch (Exception lEx) {
-			return "{\"code\":-1; \"msg\":\""
+			mReturnCode = -1;
+			mReturnMsg = lEx.getClass().getSimpleName() + " authenticating directly against OAuth host.";
+			return "{\"code\":-1, \"msg\":\""
 					+ lEx.getClass().getSimpleName() + "\"}";
 		}
 	}
@@ -270,7 +278,17 @@ public class OAuth {
 	 * @return
 	 */
 	public String getUser(String aClientSecret, String aAccessToken, long aTimeout) {
+		if (null == aClientSecret) {
+			return "{\"code\":-1, \"msg\":\"No client secret passed\"}";
+		}
+		if (null == aAccessToken) {
+			return "{\"code\":-1, \"msg\":\"No access token passed\"}";
+		}
+		if (aTimeout < 0) {
+			return "{\"code\":-1, \"msg\":\"Invalid negative timeout passed\"}";
+		}
 		String lPostBody;
+		mUsername = null;
 		try {
 			lPostBody =
 					"client_id=rs_client"
@@ -282,10 +300,14 @@ public class OAuth {
 			ObjectMapper lMapper = new ObjectMapper();
 			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class);
 			Map<String, Object> lAccessToken = (Map) lJSON.get("access_token");
-			mUsername = (String) lAccessToken.get("username");
+			if (null != lAccessToken) {
+				mUsername = (String) lAccessToken.get("username");
+			}
 			return lJSONString;
 		} catch (Exception lEx) {
-			return "{\"code\":-1; \"msg\":\""
+			mReturnCode = -1;
+			mReturnMsg = lEx.getClass().getSimpleName() + " validating acceess token to obtain user name from OAuth host.";
+			return "{\"code\":-1, \"msg\":\""
 					+ lEx.getClass().getSimpleName() + "\"}";
 		}
 	}
@@ -346,7 +368,9 @@ public class OAuth {
 			mAccessToken = (String) lJSON.get("access_token");
 			return lJSONString;
 		} catch (Exception lEx) {
-			return "{\"code\":-1; \"msg\":\""
+			mReturnCode = -1;
+			mReturnMsg = lEx.getClass().getSimpleName() + " refreshing acceess token from OAuth host.";
+			return "{\"code\":-1, \"msg\":\""
 					+ lEx.getClass().getSimpleName() + "\"}";
 		}
 	}
@@ -380,5 +404,19 @@ public class OAuth {
 	 */
 	public void setDefaultTimeout(long aDefaultTimeout) {
 		this.mDefaultTimeout = aDefaultTimeout;
+	}
+
+	/**
+	 * @return the mReturnCode
+	 */
+	public int getReturnCode() {
+		return mReturnCode;
+	}
+
+	/**
+	 * @return the mReturnMsg
+	 */
+	public String getReturnMsg() {
+		return mReturnMsg;
 	}
 }

@@ -4403,8 +4403,8 @@ jws.SystemClientPlugIn = {
 			data: JSON.stringify( lToken )
 		};
 		this.sendToken( lEnvelope, aOptions );
-	}	
-
+	},
+			
 };
 
 // add the JWebSocket SystemClient PlugIn into the BaseClient class
