@@ -31,6 +31,9 @@ jws.JMSPlugIn = {
 	// :d:en:Namespace for the [tt]ChannelPlugIn[/tt] class.
 	// if namespace changes update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.jms",
+	NS_JMS_GATEWAY: "org.jwebsocket.jms.gateway",
+	JMS_GATEWAY_ID: "org.jwebsocket.jms.gateway",
+	JMS_GATEWAY_TOPIC: "org.jwebsocket.jms.gateway",
 	SEND_TEXT: "sendJmsText",
 	SEND_TEXT_MESSAGE: "sendJmsTextMessage",
 	SEND_MAP: "sendJmsMap",
@@ -38,7 +41,38 @@ jws.JMSPlugIn = {
 	LISTEN: "listenJms",
 	LISTEN_MESSAGE: "listenJmsMessage",
 	UNLISTEN: "unlistenJms",
-	
+
+	jmsPing: function( aTargetId, aOptions ) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			// aTarget, aNS, aType, aArgs, aJSON, aOptions
+			this.forwardJSON(
+				aTargetId,
+				jws.JMSPlugIn.NS_JMS_GATEWAY,
+				"ping",
+				{},
+				"",
+				aOptions
+			);
+		}
+		return lRes;
+	},
+			
+	jmsIdentify: function( aTargetId, aOptions ) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			this.forwardJSON(
+				aTargetId,
+				jws.JMSPlugIn.NS_JMS_GATEWAY,
+				"identify",
+				{},
+				"",
+				aOptions
+			);	
+		}
+		return lRes;
+	},
+			
 	listenJms: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();

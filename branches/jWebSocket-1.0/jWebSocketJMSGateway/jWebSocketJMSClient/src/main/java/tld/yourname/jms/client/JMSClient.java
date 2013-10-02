@@ -117,7 +117,7 @@ public class JMSClient {
 		lOAuth.authDirect("aschulze@nvidia.com", "Yami#2812");
 
 		// on welcome message from jWebSocket, authenticate against jWebSocket
-		lListener.onRequest("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
+		lListener.addRequestListener("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
 				mLog.info("Received 'welcome' from '" + aSourceId + ".");
@@ -134,7 +134,7 @@ public class JMSClient {
 		});
 
 		// process response of the JMS Gateway login...
-//		lListener.onResponse("org.jwebsocket.plugins.system", "login",
+//		lListener.addResponseListener("org.jwebsocket.plugins.system", "login",
 //				new JWSMessageListener(lSender) {
 //			@Override
 //			public void processToken(String aSourceId, Token aToken) {
@@ -185,7 +185,7 @@ public class JMSClient {
 //		});
 
 		// process response of the JMS Gateway login...
-		lListener.onResponse("org.jwebsocket.plugins.system", "login",
+		lListener.addResponseListener("org.jwebsocket.plugins.system", "login",
 				new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
@@ -243,7 +243,7 @@ public class JMSClient {
 		});
 
 		// process response of the JMS Gateway login...
-		lListener.onResponse("org.jwebsocket.svcep.demo", "sso1",
+		lListener.addResponseListener("org.jwebsocket.svcep.demo", "sso1",
 				new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
@@ -257,9 +257,9 @@ public class JMSClient {
 		});
 
 		// on welcome message from jWebSocket, authenticate against jWebSocket
-		// lListener.onResponse("org.jwebsocket.jms.demo", "forwardPayload",
+		// lListener.addResponseListener("org.jwebsocket.jms.demo", "forwardPayload",
 		// 		new JWSMessageListener(lSender) {
-		lListener.onResponse("com.ptc.windchill", "getLibraryPart",
+		lListener.addResponseListener("com.ptc.windchill", "getLibraryPart",
 				new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
@@ -283,7 +283,7 @@ public class JMSClient {
 		});
 
 		// process response of the get data response...
-		lListener.onResponse("tld.yourname.jms", "getData",
+		lListener.addResponseListener("tld.yourname.jms", "getData",
 				new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {

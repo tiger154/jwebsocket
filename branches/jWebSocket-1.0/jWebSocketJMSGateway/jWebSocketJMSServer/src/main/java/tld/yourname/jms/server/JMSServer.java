@@ -114,7 +114,7 @@ public class JMSServer {
 		// lOAuth.setBaseURL("https://localhost/as/token.oauth2");
 
 		// on welcome message from jWebSocket, authenticate against jWebSocket
-		lListener.onRequest("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
+		lListener.addRequestListener("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
 				mLog.info("Received 'welcome', authenticating against jWebSocket...");
@@ -126,7 +126,7 @@ public class JMSServer {
 		});
 
 		// on response of the login...
-		lListener.onResponse("org.jwebsocket.plugins.system", "login", new JWSMessageListener(lSender) {
+		lListener.addResponseListener("org.jwebsocket.plugins.system", "login", new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
 				int lCode = aToken.getInteger("code", -1);
@@ -141,7 +141,7 @@ public class JMSServer {
 		});
 
 		// on response of the login...
-		lListener.onRequest("org.jwebsocket.svcep.demo", "sso1", new JWSMessageListener(lSender) {
+		lListener.addRequestListener("org.jwebsocket.svcep.demo", "sso1", new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
 				String lPayload = aToken.getString("payload");
@@ -166,7 +166,7 @@ public class JMSServer {
 
 
 		// on response of the login...
-		lListener.onRequest("org.jwebsocket.svcep.demo", "demo1", new JWSMessageListener(lSender) {
+		lListener.addRequestListener("org.jwebsocket.svcep.demo", "demo1", new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
 				String lPayload = aToken.getString("payload");
@@ -186,7 +186,7 @@ public class JMSServer {
 			}
 		});
 
-		lListener.onRequest("tld.yourname.jms", "transferFile", new JWSMessageListener(lSender) {
+		lListener.addRequestListener("tld.yourname.jms", "transferFile", new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
 				// here you can get the additional arguments
@@ -215,7 +215,7 @@ public class JMSServer {
 			}
 		});
 
-		lListener.onRequest("org.jwebsocket.jms.demo", "forwardPayload", new JWSMessageListener(lSender) {
+		lListener.addRequestListener("org.jwebsocket.jms.demo", "forwardPayload", new JWSMessageListener(lSender) {
 			@Override
 			// aSourceId here is the JMS endpoint id of the requester
 			public void processToken(String aSourceId, Token aToken) {
@@ -231,7 +231,7 @@ public class JMSServer {
 			}
 		});
 
-		lListener.onRequest("com.ptc.windchill", "createNPR", new JWSMessageListener(lSender) {
+		lListener.addRequestListener("com.ptc.windchill", "createNPR", new JWSMessageListener(lSender) {
 			@Override
 			// aSourceId here is the JMS endpoint id of the requester
 			public void processToken(String aSourceId, Token aToken) {
@@ -255,7 +255,7 @@ public class JMSServer {
 		});
 
 		// add a high level listener to listen in coming messages
-		lListener.onRequest("tld.yourname.jms", "getData", new JWSMessageListener(lSender) {
+		lListener.addRequestListener("tld.yourname.jms", "getData", new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
 				mLog.info("Received 'getData'...");

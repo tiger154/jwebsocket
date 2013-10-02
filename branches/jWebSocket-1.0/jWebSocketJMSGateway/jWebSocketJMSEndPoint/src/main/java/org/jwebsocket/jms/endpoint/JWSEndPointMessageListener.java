@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jms.endpoint;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
@@ -76,22 +78,71 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 			} else {
 				// check for "ping" request with in the gateway's name space
 				if ("org.jwebsocket.jms.gateway".equals(lNS)) {
+					String lHostname, lCanonicalHostName, lIPAddress;
+					try {
+						lIPAddress = InetAddress.getLocalHost().getHostAddress();
+					} catch (UnknownHostException ex) {
+						lIPAddress = null;
+					}
+					try {
+						lHostname = InetAddress.getLocalHost().getHostName();
+					} catch (UnknownHostException ex) {
+						lHostname = null;
+					}
+					try {
+						lCanonicalHostName = InetAddress.getLocalHost().getCanonicalHostName();
+					} catch (UnknownHostException ex) {
+						lCanonicalHostName = null;
+					}
 					if ("ping".equals(lType)) {
+						String lGatewayId = lToken.getString("gatewayId");
 						if (mLog.isInfoEnabled()) {
-							mLog.info("Responding to ping from '" + lSourceId + "'...");
-							getSender().sendText(lToken.getString("sourceId"),
-									"{\"ns\":\"org.jwebsocket.jms.gateway\","
-									+ "\"type\":\"response\",\"reqType\":\"ping\","
-									+ "\"code\":0,\"msg\":\"pong\"}");
+							mLog.info("Responding to ping from '" + lSourceId
+									+ " " + (null != lGatewayId ? "via" + lGatewayId : "directly")
+									+ "'...");
+						}
+						String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
+								+ ",\"type\":\"response\",\"reqType\":\"ping\""
+								+ ",\"code\":0,\"msg\":\"pong\",\"utid\":" + lToken.getInteger("utid")
+								+ ",\"sourceId\":\"" + getSender().getEndPointId() + "\""
+								+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+								+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
+								+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
+								+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
+								+ "}";
+						if (null != lGatewayId) {
+							getSender().sendText(lGatewayId,
+									"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
+									+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
+									+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
+									+ "\"data\": \"" + lData.replace("\"", "\\\"") + "\"}");
+						} else {
+							getSender().sendText(lToken.getString("sourceId"), lData);
 						}
 					} else if ("identify".equals(lType)) {
+						String lGatewayId = lToken.getString("gatewayId");
 						if (mLog.isInfoEnabled()) {
-							mLog.info("Responding to identify from '" + lSourceId + "'...");
-							getSender().sendText(lToken.getString("sourceId"),
-									"{\"ns\":\"org.jwebsocket.jms.gateway\","
-									+ "\"type\":\"response\",\"reqType\":\"identify\","
-									+ "\"code\":0,\"msg\":\"ok\"," 
-									+ "\"endpointId\":\"" + getJMSEndPoint().getEndPointId() + "\"}");
+							mLog.info("Responding to identify from '" + lSourceId
+									+ " " + (null != lGatewayId ? "via" + lGatewayId : "directly")
+									+ "'...");
+						}
+						String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
+								+ ",\"type\":\"response\",\"reqType\":\"identify\""
+								+ ",\"code\":0,\"msg\":\"ok\",\"utid\":" + lToken.getInteger("utid")
+								+ ",\"sourceId\":\"" + getSender().getEndPointId() + "\""
+								+ (null != lHostname ? ",\"hostname\":\"" + lHostname + "\"" : "")
+								+ (null != lCanonicalHostName ? ",\"canonicalHostName\":\"" + lCanonicalHostName + "\"" : "")
+								+ (null != lIPAddress ? ",\"ip\":\"" + lIPAddress + "\"" : "")
+								+ (null != lGatewayId ? ",\"gatewayId\":\"" + lGatewayId + "\"" : "")
+								+ "}";
+						if (null != lGatewayId) {
+							getSender().sendText(lGatewayId,
+									"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
+									+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
+									+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
+									+ "\"data\": \"" + lData.replace("\"", "\\\"") + "\"}");
+						} else {
+							getSender().sendText(lToken.getString("sourceId"), lData);
 						}
 					}
 				}
@@ -112,9 +163,12 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	 * @param aNS
 	 * @param aType
 	 * @param aListener
+	 * 
+	 * @deprecated 
 	 */
+	@Deprecated
 	public void onRequest(String aNS, String aType, IJWSMessageListener aListener) {
-		mRequestListeners.put(aNS + "." + aType, aListener);
+		addRequestListener(aNS, aType, aListener);
 	}
 
 	/**
@@ -123,8 +177,41 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	 * @param aType
 	 * @param aListener
 	 */
-	public void unRequest(String aNS, String aType, IJWSMessageListener aListener) {
-		mRequestListeners.remove(aNS + "." + aType);
+	public void addRequestListener(String aNS, String aType, IJWSMessageListener aListener) {
+		mRequestListeners.put(aNS + "." + aType, aListener);
+	}
+
+	/**
+	 *
+	 * @param aNS
+	 * @param aType
+	 * @return
+	 */
+	public IJWSMessageListener removeRequestListener(String aNS, String aType) {
+		return mRequestListeners.remove(aNS + "." + aType);
+	}
+
+	/**
+	 *
+	 * @param aNS
+	 * @param aType
+	 * @return
+	 */
+	public boolean hasRequestListener(String aNS, String aType) {
+		return mRequestListeners.containsKey(aNS + "." + aType);
+	}
+
+	/**
+	 *
+	 * @param aNS
+	 * @param aReqType
+	 * @param aListener
+	 * 
+	 * @deprecated 
+	 */
+	@Deprecated
+	public void onResponse(String aNS, String aReqType, IJWSMessageListener aListener) {
+		addResponseListener(aNS, aReqType, aListener);
 	}
 
 	/**
@@ -133,7 +220,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	 * @param aReqType
 	 * @param aListener
 	 */
-	public void onResponse(String aNS, String aReqType, IJWSMessageListener aListener) {
+	public void addResponseListener(String aNS, String aReqType, IJWSMessageListener aListener) {
 		mResponseListeners.put(aNS + "." + aReqType, aListener);
 	}
 
@@ -141,9 +228,19 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	 *
 	 * @param aNS
 	 * @param aReqType
-	 * @param aListener
+	 * @return
 	 */
-	public void unResponse(String aNS, String aReqType, IJWSMessageListener aListener) {
-		mResponseListeners.remove(aNS + "." + aReqType);
+	public IJWSMessageListener removeResponseListener(String aNS, String aReqType) {
+		return mResponseListeners.remove(aNS + "." + aReqType);
+	}
+
+	/**
+	 *
+	 * @param aNS
+	 * @param aReqType
+	 * @return
+	 */
+	public boolean hasResponseListener(String aNS, String aReqType) {
+		return mResponseListeners.containsKey(aNS + "." + aReqType);
 	}
 }
