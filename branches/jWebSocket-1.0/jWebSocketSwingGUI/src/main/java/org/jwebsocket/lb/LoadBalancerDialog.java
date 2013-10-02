@@ -82,10 +82,10 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jpPassword = new javax.swing.JPasswordField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("jWebSocket Load Balancer Demo");
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/Synapso16x16.png")));
-        setName("");
+        setName(""); // NOI18N
 
         jbMulXY.setLabel("Mul");
         jbMulXY.setPreferredSize(new java.awt.Dimension(60, 20));
