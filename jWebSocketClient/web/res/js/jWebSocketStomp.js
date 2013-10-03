@@ -23,14 +23,13 @@
 
 	STOMPWebSocket = function(aUrl, aSubprotocol, aUsername, aPassword) {
 		var self = this;
-		var lUrlParts = aUrl.split("?");
 		var mUsername = aUsername;
 		var mPassword = aPassword;
 		var mReplySelector = jws.tools.createUUID();
 		var mReconnectionAttempts = 0;
 		var lQuery = jws.tools.parseQuery(aUrl);
 
-		self.url = lUrlParts[0];
+		self.url = aUrl.split("?")[0];
 		self.destination = "/topic/" + lQuery["cluster"];
 		self.subPrcol = aSubprotocol;
 		self.readyStateValues = {
