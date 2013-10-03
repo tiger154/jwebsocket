@@ -50,13 +50,13 @@ public class MongoDBNodesManager implements INodesManager {
 	}
 
 	@Override
-	public void register(String aSessionId, String aNodeId, String aDescription,
+	public void register(String aConsumerId, String aNodeId, String aDescription,
 			String aIpAddress, double aCpuUsage) throws Exception {
 		if (exists(aNodeId)) {
 			mNodesCollection.update(new BasicDBObject().append(Attributes.NODE_ID, aNodeId),
 					new BasicDBObject()
 					.append("$set", new BasicDBObject()
-					.append(Attributes.SESSION_ID, aSessionId)
+					.append(Attributes.CONSUMER_ID, aConsumerId)
 					.append(Attributes.DESCRIPTION, aDescription)
 					.append(Attributes.IP_ADDRESS, aIpAddress)
 					.append(Attributes.STATUS, NodeStatus.UP)
@@ -64,7 +64,7 @@ public class MongoDBNodesManager implements INodesManager {
 		} else {
 			mNodesCollection.save(new BasicDBObject()
 					.append(Attributes.NODE_ID, aNodeId)
-					.append(Attributes.SESSION_ID, aSessionId)
+					.append(Attributes.CONSUMER_ID, aConsumerId)
 					.append(Attributes.DESCRIPTION, aDescription)
 					.append(Attributes.IP_ADDRESS, aIpAddress)
 					.append(Attributes.STATUS, NodeStatus.UP)
@@ -119,8 +119,8 @@ public class MongoDBNodesManager implements INodesManager {
 	}
 
 	@Override
-	public String getNodeId(String aSessionId) throws Exception {
-		DBObject lRecord = mNodesCollection.findOne(new BasicDBObject().append(Attributes.SESSION_ID, aSessionId));
+	public String getNodeId(String aConsumerId) throws Exception {
+		DBObject lRecord = mNodesCollection.findOne(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
 		if (null != lRecord) {
 			return (String) lRecord.get(Attributes.NODE_ID);
 		}
@@ -133,8 +133,8 @@ public class MongoDBNodesManager implements INodesManager {
 		// creating index for CPU and REQUESTS fields for sorting
 		mNodesCollection.ensureIndex(new BasicDBObject().append(Attributes.CPU, 1).append(Attributes.REQUESTS, 1));
 
-		// setting SESSION_ID as primary key
-		mNodesCollection.ensureIndex(new BasicDBObject().append(Attributes.SESSION_ID, 1),
+		// setting 'CONSUMER_ID' as primary key
+		mNodesCollection.ensureIndex(new BasicDBObject().append(Attributes.CONSUMER_ID, 1),
 				new BasicDBObject().append("unique", true));
 
 		// setting NODE id as primary key

@@ -11,14 +11,14 @@ public interface INodesManager extends IInitializable {
 	/**
 	 * Register a new jWebSocket node.
 	 *
-	 * @param aConnectionId The JMS connection id
+	 * @param aConsumerId The consumer id
 	 * @param aNodeId The node id
 	 * @param aDescription The node description
 	 * @param aIpAddress The node ip-address
 	 * @param aCpuUsage The node CPU usage
 	 * @throws Exception
 	 */
-	void register(String aConnectionId, String aNodeId, String aDescription,
+	void register(String aConsumerId, String aNodeId, String aDescription,
 			String aIpAddress, double aCpuUsage) throws Exception;
 
 	/**
@@ -54,13 +54,13 @@ public interface INodesManager extends IInitializable {
 	void increaseRequests(String aNodeId) throws Exception;
 
 	/**
-	 * Gets the node name by its connection identifier
+	 * Gets the node name by its consumer identifier
 	 *
-	 * @param aConnectionId
+	 * @param aConsumerId
 	 * @return
 	 * @throws Exception
 	 */
-	String getNodeId(String aConnectionId) throws Exception;
+	String getNodeId(String aConsumerId) throws Exception;
 
 	/**
 	 * Returns TRUE if exists a node that matches the given node id, FALSE

@@ -14,38 +14,22 @@ import java.util.Map;
 public interface IConsumerAdviceTempStorage {
 
 	/**
-	 * Stores the replySelector/connectionId values into a Map like structure
+	 * Gets and removes the consumer identifier given a correlationId value.
+	 * Removes the record once retrieved.
 	 *
-	 * @param aReplySelector
-	 * @param aConnectionId
-	 * @throws Exception
-	 */
-	void put(String aReplySelector, String aConnectionId, String aConsumerId) throws Exception;
-
-	/**
-	 * Gets and removes the consumer identifier given a replySelector value.
-	 * Returns NULL if value is not found.
-	 *
-	 * @param aReplySelector
+	 * @param aCorrelationId
 	 * @return
 	 * @throws Exception
 	 */
-	String getConsumerId(String aReplySelector) throws Exception;
+	String getConsumerId(String aCorrelationId) throws Exception;
 
 	/**
-	 * Gets a Map with consumerId, connectionId and replySelector data.
+	 * Gets a Map with consumerId, connectionId, destination and correlationId data.
+	 * Removes the record once retrieved.
 	 *
-	 * @param aReplySelector
+	 * @param aCorrelationId
 	 * @return
 	 * @throws Exception
 	 */
-	Map<String, String> getData(String aReplySelector) throws Exception;
-
-	/**
-	 * Remove data associated to a given consumer identifier.
-	 *
-	 * @param aConsumerId
-	 * @throws Exception
-	 */
-	void remove(String aConsumerId) throws Exception;
+	Map<String, String> getData(String aCorrelationId) throws Exception;
 }
