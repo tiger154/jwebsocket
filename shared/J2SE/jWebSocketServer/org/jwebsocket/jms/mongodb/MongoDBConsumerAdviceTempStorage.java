@@ -7,7 +7,6 @@ package org.jwebsocket.jms.mongodb;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.WriteConcern;
 import java.util.Map;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.jms.Attributes;
@@ -23,32 +22,24 @@ public class MongoDBConsumerAdviceTempStorage implements IConsumerAdviceTempStor
 	private DBCollection mCollection;
 
 	@Override
-	public void put(String aReplySelector, String aConnectionId, String aConsumerId) throws Exception {
-		mCollection.update(new BasicDBObject()
-				.append(Attributes.REPLY_SELECTOR, aReplySelector),
-				new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector)
-				.append(Attributes.CONNECTION_ID, aConnectionId)
-				.append(Attributes.CONSUMER_ID, aConsumerId),
-				true, false, WriteConcern.SAFE);
-	}
-
-	@Override
-	public String getConsumerId(String aReplySelector) throws Exception {
-		DBObject lRecord = mCollection.findOne(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector));
+	public String getConsumerId(String aCorrelationId) throws Exception {
+		DBObject lRecord = mCollection.findOne(new BasicDBObject().append(Attributes.CORRELATION_ID, aCorrelationId));
 		if (null == lRecord) {
 			return null;
 		}
-		mCollection.remove(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector));
+		mCollection.remove(lRecord);
 
 		return lRecord.get(Attributes.CONSUMER_ID).toString();
 	}
 
 	@Override
-	public Map<String, String> getData(String aReplySelector) throws Exception {
-		DBObject lRecord = mCollection.findOne(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector));
+	public Map<String, String> getData(String aCorrelationId) throws Exception {
+		DBObject lRecord = mCollection.findOne(new BasicDBObject().append(Attributes.CORRELATION_ID, aCorrelationId));
 		if (null == lRecord) {
 			return null;
 		}
+		mCollection.remove(lRecord);
+		
 		return lRecord.toMap();
 	}
 
@@ -65,7 +56,7 @@ public class MongoDBConsumerAdviceTempStorage implements IConsumerAdviceTempStor
 		Assert.notNull(mCollection, "The 'collection' argument cannot be null!");
 
 		mCollection.ensureIndex(new BasicDBObject()
-				.append(Attributes.REPLY_SELECTOR, 1)
+				.append(Attributes.CORRELATION_ID, 1)
 				.append(Attributes.CONSUMER_ID, 1),
 				new BasicDBObject().append("unique", true));
 
@@ -79,10 +70,5 @@ public class MongoDBConsumerAdviceTempStorage implements IConsumerAdviceTempStor
 
 	@Override
 	public void shutdown() throws Exception {
-	}
-
-	@Override
-	public void remove(String aConsumerId) throws Exception {
-		mCollection.remove(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
 	}
 }

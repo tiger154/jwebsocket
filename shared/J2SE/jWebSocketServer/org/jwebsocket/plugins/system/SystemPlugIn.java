@@ -448,7 +448,11 @@ public class SystemPlugIn extends TokenPlugIn {
 			if (lNodeId != null) {
 				lEvent.setString("unid", lNodeId);
 			}
-			lEvent.setInteger("clientCount", getConnectorCount());
+			if (false == getServer() instanceof JMSServer) {
+				// exclude if running in a cluster, since the connectors data 
+				// stored in database
+				lEvent.setInteger("clientCount", getConnectorCount());
+			}
 
 			// broadcast to all except source
 			broadcastEvent(aConnector, lEvent);
