@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms;
 
+import com.mongodb.Mongo;
 import java.util.List;
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerPlugin;
@@ -29,11 +30,11 @@ import org.apache.activemq.broker.BrokerPlugin;
 public class AMQClusterPlugIn implements BrokerPlugin {
 
 	private List<String> mTargetDestinations;
-	private String username, password;
+	private Mongo mMongo;
 
 	@Override
 	public Broker installPlugin(Broker broker) throws Exception {
-		return new AMQClusterFilter(broker, mTargetDestinations, username, password);
+		return new AMQClusterFilter(broker, mTargetDestinations, mMongo);
 	}
 
 	public List<String> getTargetDestinations() {
@@ -44,19 +45,11 @@ public class AMQClusterPlugIn implements BrokerPlugin {
 		mTargetDestinations = aTargetDestinations;
 	}
 
-	public String getUsername() {
-		return username;
+	public Mongo getMongo() {
+		return mMongo;
 	}
 
-	public void setUsername(String aUsername) {
-		this.username = aUsername;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String aPassword) {
-		this.password = aPassword;
+	public void setMongo(Mongo aMongo) {
+		this.mMongo = aMongo;
 	}
 }

@@ -18,15 +18,12 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.jms.Connection;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerFilter;
 import org.apache.activemq.broker.ConnectionContext;
@@ -40,46 +37,59 @@ import org.apache.activemq.command.ConsumerInfo;
 public class AMQClusterFilter extends BrokerFilter {
 
 	private List<String> mTargetDestinations;
-	private Connection mConnection;
-	private Session mSession;
-	private MessageProducer mProducer;
+	private Mongo mMongo;
+	public final static String COLLECTION_NAME = "consumerinfo_temp_storage";
 
-	public AMQClusterFilter(Broker aBroker, List<String> aTargetDestinations, String aUsername, String aPassword) {
+	public AMQClusterFilter(Broker aBroker, List<String> aTargetDestinations, Mongo aMongo) {
 		super(aBroker);
 		mTargetDestinations = aTargetDestinations;
-	}
 
-	@Override
-	public void brokerServiceStarted() {
-		super.brokerServiceStarted();
-
-		try {
-			ActiveMQConnectionFactory lFactory = new ActiveMQConnectionFactory(getVmConnectorURI());
-			mConnection = lFactory.createConnection();
-			mConnection.start();
-			mSession = mConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-			mProducer = mSession.createProducer(null);
-		} catch (JMSException ex) {
-			Logger.getLogger(AMQClusterFilter.class.getName()).log(Level.SEVERE, null, ex);
+		if (null == aMongo) {
+			throw new RuntimeException("MongoDB connection can't be null!");
 		}
+		mMongo = aMongo;
 	}
 
 	@Override
 	public Subscription addConsumer(ConnectionContext aContext, ConsumerInfo aInfo) throws Exception {
 		String lDest = aInfo.getDestination().getQualifiedName();
+
 		String lSelector = aInfo.getSelector();
-		if (null != lDest && null != lSelector) {
+		if (null == lSelector) {
+			// do not process
+			return super.addConsumer(aContext, aInfo);
+		}
+		int lAPos = lSelector.indexOf("'");
+		if (-1 == lAPos) {
+			// do not process
+			return super.addConsumer(aContext, aInfo);
+		}
+
+		int lBPos = lSelector.indexOf("'", lAPos + 1);
+
+		// the correlation id identifies a consumer
+		String lCorrelationId = lSelector.substring(lAPos + 1, lBPos);
+		if (null != lDest) {
 			for (String lClusterDest : mTargetDestinations) {
 				if (lClusterDest.matches(lDest)) {
-					Message lConsumerInfoMsg = mSession.createMessage();
+					String lDatabaseName = aInfo.getDestination().getPhysicalName();
+					if (lDatabaseName.endsWith("_nodes")) {
+						// the database name match the C2S topic name
+						lDatabaseName = lDatabaseName.substring(0, lDatabaseName.length() - 6);
+					}
 
-					// sending consumer info advice directly to the nodes topic
-					lConsumerInfoMsg.setStringProperty("msgType", "CONSUMER_INFO");
-					lConsumerInfoMsg.setStringProperty("selector", lSelector);
-					lConsumerInfoMsg.setStringProperty("connectionId", aInfo.getConsumerId().getConnectionId());
-					lConsumerInfoMsg.setStringProperty("consumerId", aInfo.getConsumerId().toString());
-					
-					mProducer.send(mSession.createTopic(aInfo.getDestination().getPhysicalName() + "_nodes"), lConsumerInfoMsg);
+					// getting the mongo db collection
+					DB lDatabase = mMongo.getDB(lDatabaseName);
+					DBCollection lCollection = lDatabase.getCollection(COLLECTION_NAME);
+					DBObject lRecord = new BasicDBObject();
+					lRecord.put("correlationId", lCorrelationId);
+					lRecord.put("destination", lDest);
+					lRecord.put("connectionId", aInfo.getConsumerId().getConnectionId());
+					lRecord.put("consumerId", aInfo.getConsumerId().toString());
+					// saving record
+					lCollection.update(new BasicDBObject()
+							.append("correlationId", lCorrelationId),
+							lRecord, true, false);
 				}
 			}
 		}
