@@ -12,7 +12,7 @@
 
 	<!-- the JMSEngine ActiveMQ connection factory	-->
 	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="tcp://localhost:61616" />
+		<property name="brokerURL" value="failover:(tcp://192.168.56.2:61616,tcp://192.168.56.3:61616,tcp://192.168.56.4:61616)" />
 		<property name="useAsyncSend" value="true" />
 		<property name="userName">
 			<value>jws_cloud1</value>
@@ -24,13 +24,13 @@
 
 	<!-- the MongoDB server connection instance -->
 	<bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
-		<constructor-arg value="localhost"/>
+		<constructor-arg value="192.168.56.1"/>
 	</bean>
 
 	<!-- the MongoDB database instance to store the load balancer data -->
 	<bean id="jws_lb_db" class="org.jwebsocket.storage.mongodb.MongoDBUtils" factory-method="getDB">
 		<constructor-arg ref="mongodbConnection0"/>
-		<constructor-arg value="jws_lb"/>
+		<constructor-arg ref="destination"/>
 		<!--<constructor-arg value="user"/>
 		<constructor-arg value="pass"/>-->
 	</bean>
@@ -39,11 +39,7 @@
 	<bean id="connectorsManager" class="org.jwebsocket.jms.mongodb.MongoDBConnectorsManager">
 		<property name="collection">
 			<bean factory-bean="jws_lb_db" factory-method="getCollection">
-				<constructor-arg>
-					<bean factory-bean="destination" factory-method="concat">
-						<constructor-arg value="_connectors"/>
-					</bean>
-				</constructor-arg>
+				<constructor-arg value="connectors"/>
 			</bean>
 		</property>
 	</bean>
@@ -52,11 +48,7 @@
 	<bean id="nodesManager" class="org.jwebsocket.jms.mongodb.MongoDBNodesManager">
 		<property name="collection">
 			<bean factory-bean="jws_lb_db" factory-method="getCollection">
-				<constructor-arg>
-					<bean factory-bean="destination" factory-method="concat">
-						<constructor-arg value="_nodes"/>
-					</bean>
-				</constructor-arg>
+				<constructor-arg value="nodes"/>
 			</bean>
 		</property>
 		<property name="nodeDescription" ref="nodeDescription"></property>
@@ -65,11 +57,7 @@
 			<bean class="org.jwebsocket.jms.mongodb.MongoDBClusterSynchronizer" init-method="initialize">
 				<property name="collection">
 					<bean factory-bean="jws_lb_db" factory-method="getCollection">
-						<constructor-arg>
-							<bean factory-bean="destination" factory-method="concat">
-								<constructor-arg value="_synchronizer"/>
-							</bean>
-						</constructor-arg>
+						<constructor-arg value="synchronizer"/>
 					</bean>
 				</property>
 			</bean>
@@ -78,11 +66,7 @@
 			<bean class="org.jwebsocket.jms.mongodb.MongoDBConsumerAdviceTempStorage" init-method="initialize">
 				<property name="collection">
 					<bean factory-bean="jws_lb_db" factory-method="getCollection">
-						<constructor-arg>
-							<bean factory-bean="destination" factory-method="concat">
-								<constructor-arg value="_consumertempstorage"/>
-							</bean>
-						</constructor-arg>
+						<constructor-arg value="consumerinfo_temp_storage" />
 					</bean>
 				</property>
 			</bean>
