@@ -24,6 +24,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import java.util.List;
+import java.util.Map;
+import javolution.util.FastMap;
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerFilter;
 import org.apache.activemq.broker.ConnectionContext;
@@ -31,6 +33,8 @@ import org.apache.activemq.broker.region.Subscription;
 import org.apache.activemq.command.ConsumerInfo;
 
 /**
+ * Store consumer connection data into a MongoDB database collection, to be used
+ * by the jWebSocket Cluster Load Balancer component.
  *
  * @author kyberneees
  */
@@ -38,11 +42,17 @@ public class AMQClusterFilter extends BrokerFilter {
 
 	private List<String> mTargetDestinations;
 	private Mongo mMongo;
+	private String mUsername, mPassword;
 	public final static String COLLECTION_NAME = "consumerinfo_temp_storage";
+	public Map<String, DBCollection> mCachedCollections;
 
-	public AMQClusterFilter(Broker aBroker, List<String> aTargetDestinations, Mongo aMongo) {
+	public AMQClusterFilter(Broker aBroker, List<String> aTargetDestinations, Mongo aMongo,
+			String aUsername, String aPassword) {
 		super(aBroker);
+		mCachedCollections = new FastMap<String, DBCollection>().shared();
 		mTargetDestinations = aTargetDestinations;
+		mUsername = aUsername;
+		mPassword = aPassword;
 
 		if (null == aMongo) {
 			throw new RuntimeException("MongoDB connection can't be null!");
@@ -77,10 +87,18 @@ public class AMQClusterFilter extends BrokerFilter {
 						// the database name match the C2S topic name
 						lDatabaseName = lDatabaseName.substring(0, lDatabaseName.length() - 6);
 					}
-
-					// getting the mongo db collection
-					DB lDatabase = mMongo.getDB(lDatabaseName);
-					DBCollection lCollection = lDatabase.getCollection(COLLECTION_NAME);
+					if (!mCachedCollections.containsKey(lDatabaseName)) {
+						// getting the mongo db collection
+						DB lDatabase = mMongo.getDB(lDatabaseName);
+						// authenticating if required
+						if (mUsername != null && mPassword != null) {
+							lDatabase.authenticate(mUsername, mPassword.toCharArray());
+						}
+						// caching collection instance
+						mCachedCollections.put(lDatabaseName, lDatabase.getCollection(COLLECTION_NAME));
+					}
+					// getting cached collection instance
+					DBCollection lCollection = mCachedCollections.get(lDatabaseName);
 					DBObject lRecord = new BasicDBObject();
 					lRecord.put("correlationId", lCorrelationId);
 					lRecord.put("destination", lDest);
