@@ -140,145 +140,9 @@ public class JMSClientDialog extends javax.swing.JFrame {
 				} else {
 					log("Authentication against jWebSocket JMS Gateway failed!");
 				}
-
-				// lSender.ping("server-aschulze-dt");
-//				getIdentification();
-				if (true) {
-					return;
-				}
-
-				Map lArgs = new FastMap<String, Object>();
-				// lSender.sendPayload("wcslv01.dev.nvdia.com", "com.ptc.windchill",
-				//	"getNewPartRequest", lArgs, "{}"); // getLibraryPart, getManufacturerPart "wcslv01.dev.nvidia.com"
-				log("Sending getLibraryPart");
-				mSender.sendPayload("hqdvptas134", "com.ptc.windchill",
-						"getLibraryPart", lArgs, "{}");
-				/*
-				 lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
-				 "demo1", lArgs, "{}");
-				 */
-				/*
-				 lArgs.put("accessToken", lOAuth.getAccessToken());
-				 lSender.sendPayload("server-aschulze-dt", "org.jwebsocket.svcep.demo",
-				 "sso1", lArgs, "{}");
-				 */
-				/*
-				 lSender.sendPayload("hqdvptas138", "com.ptc.windchill",
-				 "createBOM", lArgs, "{}");
-				 */
-				if (true) {
-					return;
-				}
-
-				// now to try to get some data from the service...
-				lArgs = new FastMap<String, Object>();
-				lArgs.put(TT_USERNAME, "anyUsername");
-				lArgs.put(TT_PASSWORD, "anyPassword");
-				lArgs.put("action", "CREATE");
-				// send the payload to the target (here the JMS demo service)
-				// lSender.forwardPayload("aschulze-dt", "org.jwebsocket.jms.demo",
-				//		"forwardPayload", "4711", lArgs, null);
-				// send the payload to the target (here the JMS demo service)
-				mSender.sendPayload("HQDVPTAS110", "com.ptc.windchill",
-						"getLibraryPart", lArgs, "{}");
 			}
 		});
 
-		// process response of the JMS Gateway login...
-		mListener.addResponseListener("org.jwebsocket.svcep.demo", "sso1",
-				new JWSMessageListener(mSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				int lCode = aToken.getInteger("code", -1);
-				if (0 == lCode) {
-					log("Username was detected by server: '" + aToken.getString(TT_USERNAME) + "'");
-				}
-			}
-		});
-
-		// on welcome message from jWebSocket, authenticate against jWebSocket
-		// lListener.addResponseListener("org.jwebsocket.jms.demo", "forwardPayload",
-		// 		new JWSMessageListener(lSender) {
-		mListener.addResponseListener("com.ptc.windchill", "getLibraryPart",
-				new JWSMessageListener(mSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				log("Received 'forwardPayload'.");
-				if (true) {
-					return;
-				}
-				// String lBase64Encoded = lToken.getString("fileAsBase64");
-				String lPayload = aToken.getString("payload");
-				// specify the target file
-				File lFile = new File("getLibraryPart.json");
-				try {
-					// take the zipped version of the file... 
-					byte[] lBA = lPayload.getBytes("UTF-8");
-					// and save it to the hard disk
-					FileUtils.writeByteArrayToFile(lFile, lBA);
-				} catch (Exception lEx) {
-					log("File " + lFile.getAbsolutePath() + " could not be saved!");
-				}
-			}
-		});
-
-		// process response of the get data response...
-		mListener.addResponseListener("tld.yourname.jms", "getData",
-				new JWSMessageListener(mSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				int lCode = aToken.getInteger("code", -1);
-				if (0 == lCode) {
-					log("Data transfer successful.");
-				} else {
-					log("Data transfer failed!");
-				}
-
-				// reading a file using Apache Commons IO into a byte array
-				File lFile = new File("Apache License 2.0.txt");
-				byte[] lBA = null;
-				try {
-					lBA = FileUtils.readFileToByteArray(lFile);
-				} catch (IOException lEx) {
-					log("Demo file " + lFile.getAbsolutePath() + " could not be loaded!");
-				}
-
-				// if the file could properly being read...
-				if (null != lBA) {
-					// base64 encode it w/o any compression
-					String lBase64Encoded = Tools.base64Encode(lBA);
-
-					// or compress it as an zip archive
-					String lBase64Zipped = null;
-					try {
-						lBase64Zipped = Tools.base64Encode(Tools.zip(lBA, false));
-					} catch (Exception lEx) {
-						log("File could not be compressed: " + lEx.getMessage());
-					}
-
-					Token lToken = TokenFactory.createToken();
-					// put base64 encoded only version into message
-					lToken.setString("fileAsBase64", lBase64Encoded);
-					// and the zipped version as well (for demo purposes)
-					lToken.setString("fileAsZip", lBase64Zipped);
-
-					// generate the payload as JSON
-					String lPayload = JSONProcessor.tokenToPacket(lToken).getUTF8();
-					// add some optional arguments to be passed to the target
-					Map lArgs = new FastMap<String, Object>();
-					lArgs.put("arg1", "value1");
-					lArgs.put("arg2", "value2");
-
-					// send the payload to the target (here the JMS demo service)
-					mSender.sendPayload("JMSServer", "tld.yourname.jms",
-							"transferFile", lArgs, lPayload);
-				}
-
-				// and shut down the client
-				log("Gracefully shutting down...");
-				mSender.getEndPoint().shutdown();
-			}
-		});
 		// add a high level listener to listen in coming messages
 		mJMSEndPoint.addListener(mListener);
 		mEndpointThreadRunner = new Thread(new Runnable() {
@@ -315,7 +179,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		} catch (InterruptedException aException) {
 			log(aException.getMessage());
 		}
-		if (!mJMSEndPoint.isShutdown()) {
+		if (mJMSEndPoint != null && !mJMSEndPoint.isShutdown()) {
 			// if not yet done...
 			log("Shutting down JMS Client Endpoint...");
 			// shut the client properly down

@@ -26,10 +26,20 @@ package org.jwebsocket.ui;
 
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javolution.util.FastList;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -69,6 +79,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	private ImageIcon mIcoAuthenticated = null;
 	private ReliabilityOptions mReliabilityOptions = null;
 	private List<Map<String, String>> mRoutes = new FastList<Map<String, String>>();
+	private JMSClientDialog mJMSClient;
 
 	/**
 	 * Creates new form TestDialog
@@ -226,6 +237,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         chkJMSClient = new javax.swing.JCheckBox();
         txfClusterName = new javax.swing.JTextField();
         jcbWrap = new javax.swing.JCheckBox();
+        btnSaveLog = new javax.swing.JButton();
         mnbMain = new javax.swing.JMenuBar();
         pmnFile = new javax.swing.JMenu();
         mniExit = new javax.swing.JMenuItem();
@@ -260,7 +272,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 19;
         gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 234;
+        gridBagConstraints.ipadx = 200;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         getContentPane().add(lblTitle, gridBagConstraints);
@@ -277,11 +289,11 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
-        gridBagConstraints.gridy = 29;
+        gridBagConstraints.gridy = 28;
         gridBagConstraints.gridwidth = 12;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(11, 10, 0, 0);
         getContentPane().add(bntSend, gridBagConstraints);
 
         txaLog.setEditable(false);
@@ -294,10 +306,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 7;
-        gridBagConstraints.gridheight = 23;
+        gridBagConstraints.gridheight = 22;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.ipadx = 356;
-        gridBagConstraints.ipady = 262;
+        gridBagConstraints.ipadx = 322;
+        gridBagConstraints.ipady = 256;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -316,11 +328,11 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
-        gridBagConstraints.gridy = 27;
+        gridBagConstraints.gridy = 26;
         gridBagConstraints.gridwidth = 12;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(9, 10, 0, 0);
         getContentPane().add(btnClearLog, gridBagConstraints);
 
         txfMessage.setText("Message");
@@ -328,11 +340,11 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         txfMessage.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
-        gridBagConstraints.gridy = 29;
+        gridBagConstraints.gridy = 28;
         gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 81;
+        gridBagConstraints.ipadx = 47;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(11, 5, 0, 0);
         getContentPane().add(txfMessage, gridBagConstraints);
 
         btnConnect.setText("Connect");
@@ -366,9 +378,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 8);
         getContentPane().add(btnDisconnect, gridBagConstraints);
 
         btnSend.setText("Send");
@@ -402,9 +415,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
         gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 8);
         getContentPane().add(btnBroadcast, gridBagConstraints);
 
         btnPing.setText("Ping");
@@ -438,9 +452,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
         gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 8);
         getContentPane().add(btnShutdown, gridBagConstraints);
 
         btnLogin.setText("Login");
@@ -474,36 +489,37 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
         gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 8);
         getContentPane().add(btnLogout, gridBagConstraints);
 
         txfTarget.setMinimumSize(new java.awt.Dimension(100, 20));
         txfTarget.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 29;
+        gridBagConstraints.gridy = 28;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(11, 5, 0, 0);
         getContentPane().add(txfTarget, gridBagConstraints);
 
         lblTarget.setText("Target");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 29;
+        gridBagConstraints.gridy = 28;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(14, 5, 0, 0);
         getContentPane().add(lblTarget, gridBagConstraints);
 
         lblMessage.setText("Message");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 29;
+        gridBagConstraints.gridy = 28;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(14, 10, 0, 0);
         getContentPane().add(lblMessage, gridBagConstraints);
 
         lblStatus.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -513,8 +529,9 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 68, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(13, 68, 0, 8);
         getContentPane().add(lblStatus, gridBagConstraints);
 
         btnGetSessions.setToolTipText("Lists all currently active sessions on the server (admin feature).");
@@ -530,9 +547,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
         gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(7, 10, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(7, 10, 0, 8);
         getContentPane().add(btnGetSessions, gridBagConstraints);
 
         btnGetUserRights.setText("Rights");
@@ -548,9 +566,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
         gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 8);
         getContentPane().add(btnGetUserRights, gridBagConstraints);
 
         btnGetUserRoles.setText("Roles");
@@ -574,7 +593,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         lblURL.setText("URL");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 25;
+        gridBagConstraints.gridy = 24;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(13, 5, 0, 0);
         getContentPane().add(lblURL, gridBagConstraints);
@@ -584,10 +603,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         txfURL.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 25;
+        gridBagConstraints.gridy = 24;
         gridBagConstraints.gridwidth = 4;
         gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 336;
+        gridBagConstraints.ipadx = 302;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
         getContentPane().add(txfURL, gridBagConstraints);
@@ -613,19 +632,19 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         lblUsername.setText("User");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 27;
+        gridBagConstraints.gridy = 26;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(12, 5, 0, 0);
         getContentPane().add(lblUsername, gridBagConstraints);
 
         lblPassword.setText("Password");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 27;
+        gridBagConstraints.gridy = 26;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(13, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(12, 10, 0, 0);
         getContentPane().add(lblPassword, gridBagConstraints);
 
         txfUser.setText("root");
@@ -633,10 +652,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         txfUser.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 27;
+        gridBagConstraints.gridy = 26;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(9, 5, 0, 0);
         getContentPane().add(txfUser, gridBagConstraints);
 
         pwfPassword.setText("root");
@@ -644,11 +663,11 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         pwfPassword.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
-        gridBagConstraints.gridy = 27;
+        gridBagConstraints.gridy = 26;
         gridBagConstraints.gridheight = 2;
-        gridBagConstraints.ipadx = 81;
+        gridBagConstraints.ipadx = 47;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(9, 5, 0, 0);
         getContentPane().add(pwfPassword, gridBagConstraints);
 
         btnTimeout.setText("Timeout");
@@ -664,9 +683,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
         gridBagConstraints.gridy = 15;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(8, 10, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(8, 10, 0, 8);
         getContentPane().add(btnTimeout, gridBagConstraints);
 
         txfTimeout.setText("1000");
@@ -783,10 +803,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
-        gridBagConstraints.gridy = 27;
+        gridBagConstraints.gridy = 26;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(9, 8, 0, 0);
         getContentPane().add(btnStressTest, gridBagConstraints);
 
         btnDebugOut.setLabel("Debug Out");
@@ -800,10 +820,11 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
-        gridBagConstraints.gridy = 29;
+        gridBagConstraints.gridy = 28;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 5, 5);
+        gridBagConstraints.insets = new java.awt.Insets(11, 10, 0, 8);
         getContentPane().add(btnDebugOut, gridBagConstraints);
 
         btnGC.setText("Garb.Coll.");
@@ -817,10 +838,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 19;
-        gridBagConstraints.gridy = 29;
+        gridBagConstraints.gridy = 28;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(11, 10, 0, 0);
         getContentPane().add(btnGC, gridBagConstraints);
 
         lblFilename.setText("Filename");
@@ -844,9 +865,10 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 20;
         gridBagConstraints.gridy = 18;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 8);
         getContentPane().add(btnUpload, gridBagConstraints);
 
         txfFilename.setToolTipText("<html>Type the name for the file to be uploaded here.</html>");
@@ -856,11 +878,11 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 19;
         gridBagConstraints.gridy = 21;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.ipadx = 110;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(4, 10, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(4, 10, 0, 8);
         getContentPane().add(txfFilename, gridBagConstraints);
 
         chkJMSClient.setText("Cluster(JMS)");
@@ -868,7 +890,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         chkJMSClient.setBorder(null);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 7;
-        gridBagConstraints.gridy = 25;
+        gridBagConstraints.gridy = 24;
         gridBagConstraints.gridwidth = 11;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(12, 20, 0, 0);
@@ -881,7 +903,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         txfClusterName.setPreferredSize(new java.awt.Dimension(100, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 19;
-        gridBagConstraints.gridy = 25;
+        gridBagConstraints.gridy = 24;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
@@ -900,6 +922,24 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(32, 18, 0, 0);
         getContentPane().add(jcbWrap, gridBagConstraints);
+
+        btnSaveLog.setText("Save Logs");
+        btnSaveLog.setToolTipText("Clears the log window.");
+        btnSaveLog.setMaximumSize(new java.awt.Dimension(100, 20));
+        btnSaveLog.setMinimumSize(new java.awt.Dimension(100, 20));
+        btnSaveLog.setPreferredSize(new java.awt.Dimension(100, 20));
+        btnSaveLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveLogActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 19;
+        gridBagConstraints.gridy = 26;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(9, 10, 0, 0);
+        getContentPane().add(btnSaveLog, gridBagConstraints);
 
         pmnFile.setText("File");
 
@@ -1190,15 +1230,52 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	}//GEN-LAST:event_mniViewActionPerformed
 
     private void jmiViewJMSCLientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiViewJMSCLientActionPerformed
-		JMSClientDialog lJMSClient = new JMSClientDialog(txaLog);
-		lJMSClient.setLocation(this.getLocation().x + txaLog.getWidth() + 20,
+		mJMSClient = new JMSClientDialog(txaLog);
+		mJMSClient.setLocation(this.getLocation().x + txaLog.getWidth() + 20,
 				this.getLocation().y + 100);
-		lJMSClient.setVisible(true);
+
+		mJMSClient.setVisible(true);
     }//GEN-LAST:event_jmiViewJMSCLientActionPerformed
 
     private void jcbWrapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbWrapActionPerformed
-        txaLog.setLineWrap(jcbWrap.isSelected());
+		txaLog.setLineWrap(jcbWrap.isSelected());
     }//GEN-LAST:event_jcbWrapActionPerformed
+	public void saveLogs(String aDefaultFilename) {
+		if (aDefaultFilename == null || aDefaultFilename.equals("")) {
+			aDefaultFilename = "jWebSocketTests_"
+					+ new SimpleDateFormat("YYYY-MM-dd").format(new Date()) + ".log";
+		}
+		JFileChooser lChooser = new JFileChooser();
+		FileNameExtensionFilter lFilter = new FileNameExtensionFilter(
+				"*.log files", "log");
+		lChooser.setFileFilter(lFilter);
+		lChooser.setSelectedFile(new File(aDefaultFilename));
+		int lReturnVal = lChooser.showSaveDialog(this);
+		if (lReturnVal == JFileChooser.APPROVE_OPTION) {
+			FileWriter lWriter = null;
+			try {
+				File lFile = lChooser.getSelectedFile();
+				lWriter = new FileWriter(lFile);
+				lWriter.write(txaLog.getText());
+			} catch (IOException ex) {
+				Logger.getLogger(TestDialog.class.getName()).log(Level.SEVERE, null, ex);
+			} finally {
+				try {
+					lWriter.close();
+				} catch (IOException ex) {
+					Logger.getLogger(TestDialog.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+		}
+	}
+    private void btnSaveLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveLogActionPerformed
+		if (mJMSClient != null) {
+			saveLogs("jWebSocketJMSClientTests_"
+					+ new SimpleDateFormat("YYYY-MM-dd").format(new Date()) + ".log");
+		} else {
+			saveLogs(null);
+		}
+    }//GEN-LAST:event_btnSaveLogActionPerformed
 
 	private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnConnectActionPerformed
 		try {
@@ -1310,6 +1387,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnPing;
     private javax.swing.JButton btnRPC;
+    private javax.swing.JButton btnSaveLog;
     private javax.swing.JButton btnSend;
     private javax.swing.JButton btnShutdown;
     private javax.swing.JButton btnStressTest;
