@@ -4,6 +4,7 @@
  */
 package org.jwebsocket.JMSClient;
 
+import java.util.Date;
 import java.util.Map;
 import javolution.util.FastMap;
 import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
@@ -20,6 +21,12 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 	private JWSEndPointSender mSender;
 	private JWSEndPointMessageListener mListener;
 	private JMSClientDialog mParentDialog;
+	private int mLoop = 0;
+	private int mTotalIterations = 0;
+	private long mStart;
+	private long mTotalTime;
+	private long mElapsedTime;
+	private long[] mAverage;
 
 	/**
 	 * Creates new form SendPayloadDialog
@@ -33,6 +40,7 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 		mSender = aSender;
 		mParentDialog = aParentDialog;
 		mListener = aListener;
+		mAverage = new long[0];
 	}
 
 	private void sendPayload() {
@@ -55,8 +63,13 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 		} catch (Exception e) {
 			mParentDialog.log("There was an error while parsing the arguments, "
 					+ "please check that you are entering the entries separated by comma");
+			return;
 		}
-
+		if (jcbRepeat.isSelected()) {
+			mParentDialog.log("-----------------------------------------------------");
+			mParentDialog.log("STARTED LOAD TEST ITERATION: "
+					+ (mTotalIterations - mLoop));
+		}
 		String lPayload = jtPayload.getText();
 		mParentDialog.log("Sending payload:\" "
 				+ "Target ID: " + lTargetId
@@ -66,13 +79,47 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 				+ ", Payload: " + lPayload
 				+ "\"");
 
-		mListener.addResponseListener(lNS, lType, new JWSMessageListener(mSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				mParentDialog.log("Received '" + lType + "' from '" + aSourceId + ".");
-				mParentDialog.log(aToken.toString());
-			}
-		});
+		if (!mListener.hasResponseListener(lNS, lType)) {
+			mListener.addResponseListener(lNS, lType, new JWSMessageListener(mSender) {
+				@Override
+				public void processToken(String aSourceId, Token aToken) {
+					mParentDialog.log("Received '" + lType + "' from '" + aSourceId + ".");
+					mParentDialog.log(aToken.toString());
+					if (jcbRepeat.isSelected()) {
+						mAverage[mTotalIterations - mLoop] = (System.currentTimeMillis() - mStart);
+						mParentDialog.log("FINISHED ITERATION: "
+								+ (mTotalIterations - mLoop)
+								+ ", with: " + ((System.currentTimeMillis() - mStart)) + " miliseconds");
+
+					}
+					if (mLoop > 0) {
+						mLoop--;
+						sendPayload();
+					} else {
+						if (jcbRepeat.isSelected()) {
+							mParentDialog.log("--------------------------------------------------------");
+							mParentDialog.log("                 TOTAL TEST RESULTS");
+							mParentDialog.log("  Miliseconds per iteration:            ");
+							mParentDialog.log("--------------------------------------------------------");
+							long lSum = 0;
+							for (int lIdx = 0; lIdx < mAverage.length; lIdx++) {
+								lSum += mAverage[lIdx];
+								mParentDialog.log("Iteration " + lIdx + ": " + " ----------------- " + mAverage[lIdx] + " ms");
+							}
+							mTotalTime = (System.currentTimeMillis() - mElapsedTime) / 1000;
+							mParentDialog.log("--------------------------------------------------------");
+							mParentDialog.log("AVERAGE: " + lSum / mAverage.length + " ms");
+							mParentDialog.log("TOTAL TIME: " + mTotalTime + " seconds to send "
+									+ mTotalIterations + jtType.getText()
+									+ " operations to target: " + jtTargetId.getText());
+							mParentDialog.log("--------------------------------------------------------");
+						}
+						mTotalIterations = 0;
+					}
+				}
+			});
+		}
+		mStart = System.currentTimeMillis();
 		mSender.sendPayload(lTargetId, lNS, lType, lArgs, lPayload);
 	}
 
@@ -99,6 +146,8 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
         jtArgs = new javax.swing.JTextArea();
         jbSend = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jcbRepeat = new javax.swing.JCheckBox();
+        jtfRepeatTest = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Send payload to a specified target");
@@ -113,7 +162,7 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 
         jLabel6.setText("Payload");
 
-        jtTargetId.setText("org.jwebsocket.svcep.demo");
+        jtTargetId.setText("wcslv02.dev.nvidia.com");
 
         jtTopic.setText("com.ptc.windchill");
 
@@ -143,6 +192,16 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
             }
         });
 
+        jcbRepeat.setText("Repeat Test");
+        jcbRepeat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jcbRepeatActionPerformed(evt);
+            }
+        });
+
+        jtfRepeatTest.setText("5");
+        jtfRepeatTest.setEnabled(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -170,11 +229,18 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
                         .addComponent(jtTargetId, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(29, 29, 29))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jbSend)
-                .addGap(18, 18, 18)
-                .addComponent(jButton2)
-                .addGap(162, 162, 162))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(111, 111, 111)
+                        .addComponent(jcbRepeat)
+                        .addGap(18, 18, 18)
+                        .addComponent(jtfRepeatTest))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jbSend)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton2)))
+                .addGap(167, 167, 167))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -201,9 +267,13 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jcbRepeat)
+                    .addComponent(jtfRepeatTest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbSend)
                     .addComponent(jButton2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(19, 19, 19))
         );
 
         pack();
@@ -214,8 +284,26 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jbSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSendActionPerformed
+		if (jcbRepeat.isSelected()) {
+			try {
+				mLoop = Integer.parseInt(jtfRepeatTest.getText());
+				mTotalIterations = mLoop;
+				mAverage = new long[mTotalIterations + 1];
+				mElapsedTime = System.currentTimeMillis();
+			} catch (Exception aException) {
+				mParentDialog.log(aException.getMessage());
+			}
+		}
 		this.sendPayload();
     }//GEN-LAST:event_jbSendActionPerformed
+
+    private void jcbRepeatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbRepeatActionPerformed
+		if (jcbRepeat.isSelected()) {
+			jtfRepeatTest.setEnabled(true);
+		} else {
+			jtfRepeatTest.setEnabled(false);
+		}
+    }//GEN-LAST:event_jcbRepeatActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -261,10 +349,12 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton jbSend;
+    private javax.swing.JCheckBox jcbRepeat;
     private javax.swing.JTextArea jtArgs;
     private javax.swing.JTextArea jtPayload;
     private javax.swing.JTextField jtTargetId;
     private javax.swing.JTextField jtTopic;
     private javax.swing.JTextField jtType;
+    private javax.swing.JTextField jtfRepeatTest;
     // End of variables declaration//GEN-END:variables
 }
