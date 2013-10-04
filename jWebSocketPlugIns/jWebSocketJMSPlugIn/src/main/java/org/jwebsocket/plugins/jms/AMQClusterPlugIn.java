@@ -31,10 +31,11 @@ public class AMQClusterPlugIn implements BrokerPlugin {
 
 	private List<String> mTargetDestinations;
 	private Mongo mMongo;
+	private String mUsername, mPassword;
 
 	@Override
 	public Broker installPlugin(Broker broker) throws Exception {
-		return new AMQClusterFilter(broker, mTargetDestinations, mMongo);
+		return new AMQClusterFilter(broker, mTargetDestinations, mMongo, mUsername, mPassword);
 	}
 
 	public List<String> getTargetDestinations() {
@@ -51,5 +52,21 @@ public class AMQClusterPlugIn implements BrokerPlugin {
 
 	public void setMongo(Mongo aMongo) {
 		this.mMongo = aMongo;
+	}
+
+	public String getUsername() {
+		return mUsername;
+	}
+
+	public void setUsername(String aUsername) {
+		this.mUsername = aUsername;
+	}
+
+	public String getPassword() {
+		return mPassword;
+	}
+
+	public void setPassword(String aPassword) {
+		this.mPassword = aPassword;
 	}
 }
