@@ -15,6 +15,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
 	</properties>
 	<build>
 		<!-- use shared directory here, to share code across various platforms -->
@@ -84,6 +85,11 @@
 	<!--  define all the dependencies here -->
 	<dependencies>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.fusesource</groupId>
 			<artifactId>sigar</artifactId>
 			<version>1.6.4</version>
@@ -141,8 +147,8 @@
 		<!-- Required for message queuing in the server as well as in the client -->
 		<dependency> 
 			<groupId>org.apache.activemq</groupId> 
-			<artifactId>activemq-core</artifactId> 
-			<version>5.7.0</version> 
+			<artifactId>activemq-all</artifactId> 
+			<version>5.8.0</version> 
 		</dependency>
 		
 	</dependencies>

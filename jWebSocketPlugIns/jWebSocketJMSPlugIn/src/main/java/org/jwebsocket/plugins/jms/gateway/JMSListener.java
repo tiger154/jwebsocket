@@ -88,6 +88,9 @@ public class JMSListener implements MessageListener {
 		// TODO: and what happens if none of the above types?
 
 		try {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("JMS Gateway incoming message :'" + lJSON + "'");
+			}
 			Token lToken = JSONProcessor.JSONStringToToken(lJSON);
 			String lNS = lToken.getNS();
 			String lType = lToken.getType();
@@ -111,9 +114,9 @@ public class JMSListener implements MessageListener {
 				if ("ping".equals(lType)) {
 					String lGatewayId = lToken.getString("gatewayId");
 					if (mLog.isInfoEnabled()) {
-						mLog.info("Responding to ping from '" + lSourceId
-								+ " " + (null != lGatewayId ? "via" + lGatewayId : "directly")
-								+ "'...");
+						mLog.info("Responding to ping from '" + lSourceId + "'"
+								+ " " + (null != lGatewayId ? "via '" + lGatewayId + "'" : "directly")
+								+ "...");
 					}
 					String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
 							+ ",\"type\":\"response\",\"reqType\":\"ping\""
@@ -129,16 +132,16 @@ public class JMSListener implements MessageListener {
 								"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
 								+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
 								+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
-								+ "\"data\": \"" + lData.replace("\"", "\\\"") + "\"}");
+								+ "\"data\":\"" + lData.replace("\"", "\\\"") + "\"}");
 					} else {
 						mJMSSender.sendText(lToken.getString("sourceId"), lData);
 					}
 				} else if ("identify".equals(lType)) {
 					String lGatewayId = lToken.getString("gatewayId");
 					if (mLog.isInfoEnabled()) {
-						mLog.info("Responding to identify from '" + lSourceId
-								+ " " + (null != lGatewayId ? "via" + lGatewayId : "directly")
-								+ "'...");
+						mLog.info("Responding to identify from '" + lSourceId + "'"
+								+ " " + (null != lGatewayId ? "via '" + lGatewayId + "'" : "directly")
+								+ "...");
 					}
 					String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
 							+ ",\"type\":\"response\",\"reqType\":\"identify\""
@@ -154,7 +157,7 @@ public class JMSListener implements MessageListener {
 								"{\"ns\":\"org.jwebsocket.plugins.system\",\"action\":\"forward.json\","
 								+ "\"type\":\"send\",\"sourceId\":\"" + lToken.getString("targetId") + "\","
 								+ "\"targetId\":\"" + lToken.getString("sourceId") + "\",\"responseRequested\":false,"
-								+ "\"data\": \"" + lData.replace("\"", "\\\"") + "\"}");
+								+ "\"data\":\"" + lData.replace("\"", "\\\"") + "\"}");
 					} else {
 						mJMSSender.sendText(lToken.getString("sourceId"), lData);
 					}

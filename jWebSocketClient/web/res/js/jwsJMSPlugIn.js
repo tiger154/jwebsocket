@@ -42,22 +42,73 @@ jws.JMSPlugIn = {
 	LISTEN: "listenJms",
 	LISTEN_MESSAGE: "listenJmsMessage",
 	UNLISTEN: "unlistenJms",
+	PING: "ping",
 	IDENTIFY: "identify",
 
+	processToken: function(aToken) {
+		// check if namespace matches
+		if( aToken.ns === jws.JMSPlugIn.NS_JMS_GATEWAY ) {
+			if ("response" === aToken.type) {
+				if ("ping" === aToken.reqType) {
+					if (this.OnPing) {
+						this.OnPing(aToken);
+					}
+				} else if ("identify" === aToken.reqType) {
+					if (this.OnIdentify) {
+						this.OnIdentify(aToken);
+					}
+				}
+			} 
+		} else if( aToken.ns === jws.JMSPlugIn.NS ) {
+			// here you can handle incoming tokens from the server
+			// directy in the plug-in if desired.
+			if ("event" === aToken.type) {
+				if ("handleJmsText" === aToken.name) {
+					if (this.OnHandleJmsText) {
+						this.OnHandleJmsText(aToken);
+					}
+				} else if ("handleJmsTextMessage" === aToken.name) {
+					if (this.OnHandleJmsTextMessage) {
+						this.OnHandleJmsTextMessage(aToken);
+					}
+				} else if ("handleJmsMap" === aToken.name) {
+					if (this.OnHandleJmsMap) {
+						this.OnHandleJmsMap(aToken);
+					}
+				} else if ("handleJmsMapMessage" === aToken.name) {
+					if (this.OnHandleJmsMapMessage) {
+						this.OnHandleJmsMapMessage(aToken);
+					}
+				}
+			}
+		}
+	},
+			
 	jmsPing: function( aTargetId, aOptions ) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			this.sendToken({
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.PING,
+				targetId: aTargetId
+			}, aOptions);
+		}
+		return lRes;
+/*		
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
 			// aTarget, aNS, aType, aArgs, aJSON, aOptions
 			this.forwardJSON(
 				aTargetId,
 				jws.JMSPlugIn.NS_JMS_GATEWAY,
-				"ping",
+				jws.JMSPlugIn.PING,
 				{},
 				"",
 				aOptions
 			);
 		}
 		return lRes;
+*/		
 	},
 			
 	jmsIdentify: function( aTargetId, aOptions ) {
@@ -70,20 +121,6 @@ jws.JMSPlugIn = {
 			}, aOptions);
 		}
 		return lRes;
-/*		
-		var lRes = this.checkConnected();
-		if (0 === lRes.code) {
-			this.forwardJSON(
-				aTargetId,
-				jws.JMSPlugIn.NS_JMS_GATEWAY,
-				"identify",
-				{},
-				"",
-				aOptions
-			);	
-		}
-		return lRes;
-*/		
 	},
 			
 	jmsEcho: function( aTargetId, aPayload, aOptions ) {
@@ -211,33 +248,6 @@ jws.JMSPlugIn = {
 		return lRes;
 	},
 			
-	processToken: function(aToken) {
-		// check if namespace matches
-		if (aToken.ns === jws.JMSPlugIn.NS) {
-			// here you can handle incoming tokens from the server
-			// directy in the plug-in if desired.
-			if ("event" === aToken.type) {
-				if ("handleJmsText" === aToken.name) {
-					if (this.OnHandleJmsText) {
-						this.OnHandleJmsText(aToken);
-					}
-				} else if ("handleJmsTextMessage" === aToken.name) {
-					if (this.OnHandleJmsTextMessage) {
-						this.OnHandleJmsTextMessage(aToken);
-					}
-				} else if ("handleJmsMap" === aToken.name) {
-					if (this.OnHandleJmsMap) {
-						this.OnHandleJmsMap(aToken);
-					}
-				} else if ("handleJmsMapMessage" === aToken.name) {
-					if (this.OnHandleJmsMapMessage) {
-						this.OnHandleJmsMapMessage(aToken);
-					}
-				}
-			}
-		}
-	},
-			
 	setJMSCallbacks: function(aListeners) {
 		if (!aListeners) {
 			aListeners = {};
@@ -253,6 +263,12 @@ jws.JMSPlugIn = {
 		}
 		if (aListeners.OnHandleJmsMapMessage !== undefined) {
 			this.OnHandleJmsMapMessage = aListeners.OnHandleJmsMapMessage;
+		}
+		if (aListeners.OnPing !== undefined) {
+			this.OnPing = aListeners.OnPing;
+		}
+		if (aListeners.OnIdentify !== undefined) {
+			this.OnIdentify = aListeners.OnIdentify;
 		}
 	}
 

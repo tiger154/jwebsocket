@@ -4378,7 +4378,7 @@ jws.SystemClientPlugIn = {
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
 	forwardJSON: function(aTarget, aNS, aType, aArgs, aJSON, aOptions ) {
-		var lToken = {
+		var lData = {
 			ns: aNS,
 			type: aType,
 			sourceId: this.fClientId,
@@ -4387,23 +4387,23 @@ jws.SystemClientPlugIn = {
 		};
 		if( aArgs ) {
 			for( var lField in aArgs ) {
-				if( undefined === lToken[ lField ] ) {
-					lToken[ lField ] = aArgs[ lField ];
+				if( undefined === lData[ lField ] ) {
+					lData[ lField ] = aArgs[ lField ];
 				}	
 			}
 		}
 		// put the JSON payload into an envelope to forward to the target
-		var lEnvelope = {
+		var lToken = {
 			ns: "org.jwebsocket.plugins.system",
 			type: "send",
 			sourceId: this.fClientId,
 			targetId: aTarget,
 			action: "forward.json",
 			responseRequested: false, // we expect a response from the target
-			data: JSON.stringify( lToken )
+			data: JSON.stringify( lData )
 		};
-		this.sendToken( lEnvelope, aOptions );
-	},
+		this.sendToken( lToken, aOptions );
+	}
 			
 };
 
