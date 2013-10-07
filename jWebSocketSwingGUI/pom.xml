@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>jWebSocket-Parent</artifactId>
 		<groupId>org.jwebsocket</groupId>
@@ -84,25 +84,11 @@
 			<artifactId>jWebSocketJMSEndPoint</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-	 <dependency>
-	  <groupId>unknown.binary</groupId>
-	  <artifactId>AbsoluteLayout</artifactId>
-	  <version>SNAPSHOT</version>
-	 </dependency>
-	 <dependency>
-	  <groupId>org.jwebsocket</groupId>
-	  <artifactId>jWebSocketSSO</artifactId>
-	  <version>1.0</version>
-	  <type>jar</type>
-	 </dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketSSO</artifactId>
+			<version>1.0</version>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
-
-	<!--  define repositories -->
-	<repositories>
-	 <repository>
-	  <id>unknown-jars-temp-repo</id>
-	  <name>A temporary repository created by NetBeans for libraries and jars it could not identify. Please replace the dependencies in this repository with correct ones and delete this repository.</name>
-	  <url>file:${project.basedir}/lib</url>
-	 </repository>
-	</repositories>
 </project>
