@@ -1,15 +1,34 @@
+//	---------------------------------------------------------------------------
+//	jWebSocket - INodesManager interface (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.jms.api;
 
 import org.jwebsocket.api.IInitializable;
 
 /**
+ * Component for nodes status management
  *
  * @author kyberneees
  */
 public interface INodesManager extends IInitializable {
 
 	/**
-	 * Register a new jWebSocket node.
+	 * Register a new jWebSocket server node.
 	 *
 	 * @param aConsumerId The consumer id
 	 * @param aNodeId The node id
@@ -22,7 +41,7 @@ public interface INodesManager extends IInitializable {
 			String aIpAddress, double aCpuUsage) throws Exception;
 
 	/**
-	 * Update jWebSocket node CPU usage.
+	 * Update a jWebSocket server node CPU usage.
 	 *
 	 * @param aNodeId
 	 * @param aCpuUsage
@@ -31,7 +50,7 @@ public interface INodesManager extends IInitializable {
 	void updateCPU(String aNodeId, double aCpuUsage) throws Exception;
 
 	/**
-	 * Sets the jWebSocket node status.
+	 * Sets the a jWebSocket server node status.
 	 *
 	 * @param aNodeId
 	 * @param aStatus 0 = ready, 1 = paused (does not accept new requests), 2 =
@@ -40,21 +59,21 @@ public interface INodesManager extends IInitializable {
 	void setStatus(String aNodeId, int aStatus) throws Exception;
 
 	/**
-	 * Gets the optimum node name.
+	 * Gets the optimum jWebSocket server node name.
 	 *
 	 * @return
 	 */
 	String getOptimumNode() throws Exception;
 
 	/**
-	 * Increases the redirected requestes number on target node.
+	 * Increases a jWebSocket server node number of processed requests.
 	 *
 	 * @param aNodeId
 	 */
 	void increaseRequests(String aNodeId) throws Exception;
 
 	/**
-	 * Gets the node name by its consumer identifier
+	 * Gets the jWebSocket server node name by its consumer identifier.
 	 *
 	 * @param aConsumerId
 	 * @return
@@ -63,8 +82,8 @@ public interface INodesManager extends IInitializable {
 	String getNodeId(String aConsumerId) throws Exception;
 
 	/**
-	 * Returns TRUE if exists a node that matches the given node id, FALSE
-	 * otherwise
+	 * Returns TRUE if exists a jWebSocket server node id, matches the given
+	 * node id, FALSE otherwise
 	 *
 	 * @param aNodeId
 	 * @return
@@ -73,28 +92,28 @@ public interface INodesManager extends IInitializable {
 	boolean exists(String aNodeId) throws Exception;
 
 	/**
-	 * Sets the active node description
+	 * Sets the jWebSocket server node description.
 	 *
 	 * @param aNodeDescription
 	 */
 	void setNodeDescription(String aNodeDescription);
 
 	/**
-	 * Gets the node description
+	 * Gets tje jWebSocket server node description.
 	 *
 	 * @return
 	 */
 	String getNodeDescription();
 
 	/**
-	 * Gets the available nodes number
+	 * Gets the available jWebSocket server nodes count.
 	 *
 	 * @return
 	 */
 	long count();
 
 	/**
-	 * Gets the nodes synchronizer.
+	 * Gets the jWebSocket server nodes synchronizer.
 	 *
 	 * @return
 	 */
