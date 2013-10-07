@@ -1,20 +1,36 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+//	---------------------------------------------------------------------------
+//	jWebSocket - IConsumerAdviceTempStorage interface (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//  Alexander Schulze, Germany (NRW)
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
 package org.jwebsocket.jms.api;
 
 import java.util.Map;
 
 /**
- * Component created to support AMQ clusters conduit-subscriptions.
+ * Stores the JMS ConsumerInfo event related data into a distributed database,
+ * to be used by the jWebSocket Cluster Load Balancers during the connector
+ * starting process.
  *
  * @author kyberneees
  */
 public interface IConsumerAdviceTempStorage {
 
 	/**
-	 * Gets and removes the consumer identifier given a correlationId value.
+	 * Gets and removes the JMS consumer id given a custom correlationId.
 	 * Removes the record once retrieved.
 	 *
 	 * @param aCorrelationId
@@ -24,8 +40,8 @@ public interface IConsumerAdviceTempStorage {
 	String getConsumerId(String aCorrelationId) throws Exception;
 
 	/**
-	 * Gets a Map with consumerId, connectionId, destination and correlationId data.
-	 * Removes the record once retrieved.
+	 * Gets a Map with consumerId, connectionId, destination and correlationId
+	 * data. Removes the record once retrieved.
 	 *
 	 * @param aCorrelationId
 	 * @return

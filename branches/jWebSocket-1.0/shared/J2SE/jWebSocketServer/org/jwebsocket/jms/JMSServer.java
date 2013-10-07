@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - JMS Server (Community Edition, CE)
+//	jWebSocket - JMSServer (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)
@@ -19,7 +19,6 @@
 package org.jwebsocket.jms;
 
 import java.util.Collection;
-import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.ServerConfiguration;
 import org.jwebsocket.api.WebSocketConnector;

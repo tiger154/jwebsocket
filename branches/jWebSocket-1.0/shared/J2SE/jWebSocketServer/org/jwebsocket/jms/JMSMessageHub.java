@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - JMS Cluster Message Hub (Community Edition, CE)
+//	jWebSocket - JMSMessageHub (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //      Alexander Schulze, Germany (NRW)

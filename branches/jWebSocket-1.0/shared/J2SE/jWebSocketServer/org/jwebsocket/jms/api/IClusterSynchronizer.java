@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - ILoadBalancerSynchronizer interface (Community Edition, CE)
+//	jWebSocket - IClusterSynchronizer interface (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -30,7 +30,7 @@ public interface IClusterSynchronizer extends IInitializable {
 
 	/**
 	 * Returns TRUE if the calling node is allowed to process a message, FALSE
-	 * otherwise. Multiples nodes can request permission to process a message,
+	 * otherwise. Multiples nodes can request permission to process the same message,
 	 * but only one should gets granted.
 	 *
 	 * @param aMessageId A custom message id

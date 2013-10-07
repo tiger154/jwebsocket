@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - MongoBDLoadBalancerSynchronizer (Community Edition, CE)
+//	jWebSocket - MongoDBClusterSynchronizer (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)

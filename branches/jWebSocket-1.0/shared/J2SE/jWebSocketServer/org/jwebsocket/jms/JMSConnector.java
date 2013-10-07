@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - JMS Connector (Community Edition, CE)
+//	jWebSocket - JMSConnector (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)

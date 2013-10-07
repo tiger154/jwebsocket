@@ -33,7 +33,7 @@ import org.jwebsocket.jms.JMSConnector;
 import org.springframework.util.Assert;
 
 /**
- * Database based connectors manager.
+ * MongoDB based implementation of connectors manager component.
  *
  * @author kyberneees
  */
