@@ -309,8 +309,12 @@ public class JMSPlugIn extends TokenPlugIn {
 				break;
 			case UNLISTEN:
 				unlisten(aConnector, aToken);
+				break;
 			case IDENTIFY:
 				identify(aConnector, aToken);
+				break;
+			case PING:
+				ping(aConnector, aToken);
 		}
 	}
 
@@ -536,6 +540,16 @@ public class JMSPlugIn extends TokenPlugIn {
 	private abstract class ActionCommand {
 
 		abstract void execute(ActionInput aInput) throws Exception;
+	}
+
+	private void ping(WebSocketConnector aConnector, Token aToken) {
+		String lTargetId = aToken.getString("targetId");
+		String lUTID = aToken.getString("utid");
+		Token lToken = TokenFactory.createToken("org.jwebsocket.jms.gateway", "ping");
+		lToken.setString("sourceId", aConnector.getId());
+		lToken.setString("gatewayId", mEndPointId);
+		lToken.setString("utid", lUTID);
+		mSender.sendText(lTargetId, JSONProcessor.tokenToPacket(lToken).getUTF8());
 	}
 
 	private void identify(WebSocketConnector aConnector, Token aToken) {

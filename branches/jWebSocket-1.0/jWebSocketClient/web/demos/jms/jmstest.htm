@@ -141,6 +141,15 @@
 				eTargetId = jws.$( "stxfTargetId" );
 				eAccessToken = jws.$( "stxfAccessToken" );
 				
+				lWSC.setJMSCallbacks({
+					OnPing: function( aToken ) {
+						log("<b>Pong from: " + aToken.sourceId + "</b>");
+					},
+					OnIdentify: function( aToken ) {
+						log("<b>Identity from: " + aToken.sourceId + ", " + aToken.hostname + ", " + aToken.ip + "</b>");
+					}
+				});
+				
 				jws.console.setActive( true );
 				jws.console.setLevel( jws.console.DEBUG );
 			}

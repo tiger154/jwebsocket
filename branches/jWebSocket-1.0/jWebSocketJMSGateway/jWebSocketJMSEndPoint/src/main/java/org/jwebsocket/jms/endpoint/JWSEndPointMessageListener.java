@@ -97,9 +97,9 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 					if ("ping".equals(lType)) {
 						String lGatewayId = lToken.getString("gatewayId");
 						if (mLog.isInfoEnabled()) {
-							mLog.info("Responding to ping from '" + lSourceId
-									+ " " + (null != lGatewayId ? "via" + lGatewayId : "directly")
-									+ "'...");
+							mLog.info("Responding to ping from '" + lSourceId + "'"
+									+ " " + (null != lGatewayId ? "via '" + lGatewayId + "'" : "directly")
+									+ "...");
 						}
 						String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""
 								+ ",\"type\":\"response\",\"reqType\":\"ping\""
@@ -122,8 +122,8 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 					} else if ("identify".equals(lType)) {
 						String lGatewayId = lToken.getString("gatewayId");
 						if (mLog.isInfoEnabled()) {
-							mLog.info("Responding to identify from '" + lSourceId
-									+ "' " + (null != lGatewayId ? "via" + lGatewayId : "directly")
+							mLog.info("Responding to identify from '" + lSourceId + "'"
+									+ " " + (null != lGatewayId ? "via '" + lGatewayId + "'" : "directly")
 									+ "...");
 						}
 						String lData = "{\"ns\":\"org.jwebsocket.jms.gateway\""

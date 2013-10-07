@@ -765,15 +765,19 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	private void send(WebSocketConnector aConnector, Token aToken) {
-		// check if user is allowed to run 'send' command
-		if (!hasAuthority(aConnector, NS_SYSTEM + ".send")) {
-			sendToken(aConnector, aConnector, createAccessDenied(aToken));
-			return;
+		String lAction = aToken.getString("action");
+
+		if (!"forward.json".equals(lAction)) {
+			// check if user is allowed to run 'send' command
+			if (!hasAuthority(aConnector, NS_SYSTEM + ".send")) {
+				sendToken(aConnector, aConnector, createAccessDenied(aToken));
+				return;
+			}
 		}
+
 		Token lResponse = createResponse(aToken);
 
 		WebSocketConnector lTargetConnector;
-		String lAction = aToken.getString("action");
 		String lTargetId = aToken.getString("unid");
 		Boolean lIsResponseRequested =
 				aToken.getBoolean("responseRequested", true);

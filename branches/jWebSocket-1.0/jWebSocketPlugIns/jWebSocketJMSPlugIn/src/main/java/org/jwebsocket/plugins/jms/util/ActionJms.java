@@ -43,8 +43,7 @@ public enum ActionJms {
 	/**
 	 *
 	 */
-	SEND_TEXT_MESSAGE(
-	"sendJmsTextMessage"),
+	SEND_TEXT_MESSAGE("sendJmsTextMessage"),
 	/**
 	 *
 	 */
@@ -56,7 +55,11 @@ public enum ActionJms {
 	/**
 	 *
 	 */
-	IDENTIFY("identify");
+	IDENTIFY("identify"),
+	/**
+	 *
+	 */
+	PING("ping");
 	private String mValue;
 
 	private ActionJms(String value) {
