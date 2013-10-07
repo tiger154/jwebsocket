@@ -6,21 +6,18 @@ package org.jwebsocket.JMSClient;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Map;
+import java.util.Properties;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
-import javolution.util.FastMap;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.jwebsocket.jms.endpoint.JMSEndPoint;
 import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
 import org.jwebsocket.jms.endpoint.JWSEndPointSender;
 import org.jwebsocket.jms.endpoint.JWSMessageListener;
-import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -47,6 +44,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
 	private String TT_PING = "ping";
 	private String TT_IDENTIFY = "identify";
 	private final String NS_SYSTEM = "org.jwebsocket.plugins.system";
+	private Properties mProperties;
 
 	/**
 	 * Creates new form JMSClientDialog
@@ -58,10 +56,48 @@ public class JMSClientDialog extends javax.swing.JFrame {
 	public JMSClientDialog(JTextArea aField) {
 		initComponents();
 		mLog = aField;
-
+		loadPropertyFile();
 		// tcp://172.20.116.68:61616 org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		// failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		log("jWebSocket JMS Gateway Demo Client initialized");
+	}
+
+	private void loadPropertyFile() {
+		mProperties = new Properties();
+		String lHomeEnv = System.getenv("JWEBSOCKET_HOME");
+
+		if (lHomeEnv != null) {
+			try {
+				lHomeEnv = FilenameUtils.separatorsToUnix(lHomeEnv);
+				log("Loading properties file");
+				// loading a properties file with the default data for the JMSSendPayloadDialog
+				mProperties.load(new FileInputStream(lHomeEnv + "conf/jWebSocketSwingGUI/JMSClientDialog.properties"));
+				if (!mProperties.isEmpty()) {
+					String lTopic = mProperties.getProperty("topic");
+					String lBrokerURL = mProperties.getProperty("brokerURL");
+					String lGatewayId = mProperties.getProperty("gatewayID");
+					String lEndpointId = mProperties.getProperty("endpointID");
+					if (lTopic != null) {
+						jtfTopic.setText(lTopic.trim());
+					}
+					if (lBrokerURL != null) {
+						jtfBrokerURL.setText(lBrokerURL.trim());
+					}
+					if (lGatewayId != null) {
+						jtfGatewayID.setText(lGatewayId.trim());
+					}
+					if (lEndpointId != null) {
+						jtfEndpointID.setText(lEndpointId.trim());
+					}
+				}
+
+			} catch (IOException lException) {
+				log(lException.getMessage());
+			}
+		}
+	}
+	public Properties getProperties(){
+		return this.mProperties;
 	}
 
 	private void initializeEndpoint() {

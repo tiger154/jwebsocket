@@ -4,8 +4,8 @@
  */
 package org.jwebsocket.JMSClient;
 
-import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 import javolution.util.FastMap;
 import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
 import org.jwebsocket.jms.endpoint.JWSEndPointSender;
@@ -41,6 +41,34 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 		mParentDialog = aParentDialog;
 		mListener = aListener;
 		mAverage = new long[0];
+		extractProperties();
+	}
+
+	private void extractProperties() {
+		Properties lProperties = mParentDialog.getProperties();
+		if (!lProperties.isEmpty()) {
+			String lTargetId = lProperties.getProperty("targetID");
+			String lTopic = lProperties.getProperty("gatewayTopic");
+			String lType = lProperties.getProperty("type");
+			String lArguments = lProperties.getProperty("arguments");
+			String lPayload = lProperties.getProperty("payload");
+
+			if (lTargetId != null) {
+				jtTargetId.setText(lTargetId);
+			}
+			if (lTopic != null) {
+				jtTopic.setText(lTopic);
+			}
+			if (lType != null) {
+				jtType.setText(lType);
+			}
+			if (lArguments != null) {
+				jtArgs.setText(lArguments);
+			}
+			if (lPayload != null) {
+				jtPayload.setText(lPayload);
+			}
+		}
 	}
 
 	private void sendPayload() {
@@ -151,6 +179,11 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Send payload to a specified target");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                onWindowClosed(evt);
+            }
+        });
 
         jLabel1.setText("Target ID");
 
@@ -304,6 +337,15 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 			jtfRepeatTest.setEnabled(false);
 		}
     }//GEN-LAST:event_jcbRepeatActionPerformed
+
+    private void onWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_onWindowClosed
+		String lNS = jtTopic.getText();
+		final String lType = jtType.getText();
+		if (mListener.hasResponseListener(lNS, lType)) {
+			mParentDialog.log("Removing response listener: " + lType + " from: " + lNS);
+			mListener.removeResponseListener(lNS, lType);
+		}
+    }//GEN-LAST:event_onWindowClosed
 
 	/**
 	 * @param args the command line arguments
