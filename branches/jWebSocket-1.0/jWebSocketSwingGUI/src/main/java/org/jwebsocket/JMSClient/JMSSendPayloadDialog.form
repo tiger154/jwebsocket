@@ -145,19 +145,10 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jtTargetId">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="wcslv02.dev.nvidia.com"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jtTopic">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="com.ptc.windchill"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jtType">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="getLibraryPart"/>
-      </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
       <AuxValues>

@@ -57,8 +57,7 @@
 		</plugins>
 	</build>
 
-	<!--  define all the dependencies here -->
-	<dependencies>
+    <dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -86,9 +85,14 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketJMSServer</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
 			<artifactId>jWebSocketSSO</artifactId>
 			<version>1.0</version>
 			<type>jar</type>
 		</dependency>
-	</dependencies>
+    </dependencies>
 </project>
