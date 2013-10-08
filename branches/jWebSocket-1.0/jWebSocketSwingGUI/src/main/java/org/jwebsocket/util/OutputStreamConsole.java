@@ -7,11 +7,11 @@ import javax.swing.text.BadLocationException;
 /*
  * @author vbarzanacres
  */
-public class Console extends OutputStream {
+public class OutputStreamConsole extends OutputStream {
 
 	private JTextArea mOutput;
 
-	public Console(JTextArea output) {
+	public OutputStreamConsole(JTextArea output) {
 		this.mOutput = output;
 	}
 

@@ -209,7 +209,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		try {
 			if (mIsThreadRunning) {
 				mEndpointThreadRunner.join(2000);
-				mEndpointThreadRunner.stop();
+				mEndpointThreadRunner.interrupt();
 				mIsThreadRunning = false;
 			}
 		} catch (InterruptedException aException) {
@@ -263,7 +263,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		jbSendPayload.setEnabled(false);
 	}
 
-	public void log(String aMessage) {
+	public final void log(String aMessage) {
 		System.out.println(aMessage);
 	}
 
@@ -531,6 +531,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
 
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				new JMSClientDialog().setVisible(true);
 			}

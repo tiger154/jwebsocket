@@ -36,8 +36,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -46,7 +44,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jwebsocket.JMSClient.JMSClientDialog;
-import org.jwebsocket.util.Console;
+import org.jwebsocket.util.OutputStreamConsole;
 import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.api.WebSocketClientTokenListener;
 import org.jwebsocket.api.WebSocketPacket;
@@ -86,6 +84,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	private JMSClientDialog mJMSClient;
 	private boolean mJMSServerIsRunning = false;
 	private Thread mJMSServerThread;
+	private Thread mStressTestsThread;
 	private Properties mJMSServerProperties;
 
 	/**
@@ -108,7 +107,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 
 	private void initializeLogs() {
 		PrintStream lPrintStream;
-		Console lConsole = new Console(txaLog);
+		OutputStreamConsole lConsole = new OutputStreamConsole(txaLog);
 		lPrintStream = new PrintStream(lConsole);
 		System.setOut(lPrintStream);
 		System.setErr(lPrintStream);
@@ -278,7 +277,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
         setTitle("jWebSocket Fundamental Demo");
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/Synapso16x16.png")));
         setMinimumSize(new java.awt.Dimension(640, 490));
-        setPreferredSize(new java.awt.Dimension(797, 700));
+        setPreferredSize(new java.awt.Dimension(830, 700));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -1228,13 +1227,14 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 	}
 
 	private void btnStressTestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStressTestActionPerformed
-		new Thread("jWebSocketStressTests") {
+		mStressTestsThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				StressTests lTests = new StressTests(new MyLogListener());
 				lTests.runStressTest(txfURL.getText(), chkJMSClient.isSelected(), txfClusterName.getText());
 			}
-		}.start();
+		}, "jWebSocketStressTests");
+		mStressTestsThread.start();
 	}//GEN-LAST:event_btnStressTestActionPerformed
 
 	private void btnDebugOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDebugOutActionPerformed
@@ -1320,13 +1320,15 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 				File lFile = lChooser.getSelectedFile();
 				lWriter = new FileWriter(lFile);
 				lWriter.write(txaLog.getText());
-			} catch (IOException ex) {
-				Logger.getLogger(TestDialog.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IOException aException) {
+				mLog(aException.getMessage());
 			} finally {
 				try {
-					lWriter.close();
-				} catch (IOException ex) {
-					Logger.getLogger(TestDialog.class.getName()).log(Level.SEVERE, null, ex);
+					if (lWriter != null) {
+						lWriter.close();
+					}
+				} catch (IOException aIoException) {
+					mLog(aIoException.getMessage());
 				}
 			}
 		}
@@ -1385,7 +1387,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 							lBrokerURL = "tcp://127.0.0.1:61616?connectionTimeout=3000",
 							lGatewayId = "org.jwebsocket.jms.gateway",
 							lEndpointId = "jWebSocketJMSDemoServer";
-					if(mJMSServerProperties == null){
+					if (mJMSServerProperties == null) {
 						loadPropertyFile();
 					}
 					if (mJMSServerProperties != null && !mJMSServerProperties.isEmpty()) {
@@ -1415,7 +1417,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 					// this is a console app demo
 					// so wait in a thread loop until the client get shut down
 					try {
-						while (!lEndpoint.isShutdown()) {
+						while (mJMSServerIsRunning) {
 							Thread.sleep(1000);
 						}
 					} catch (InterruptedException lEx) {
@@ -1444,7 +1446,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 		mJMSServerIsRunning = false;
 		try {
 			mJMSServerThread.join(2000);
-			mJMSServerThread.stop();
+			mJMSServerThread.interrupt();
 		} catch (InterruptedException aException) {
 			mLog(aException.getMessage());
 		}
