@@ -44,13 +44,13 @@ import org.jwebsocket.util.Tools;
 public class JMSServer {
 
 	static final Logger mLog = Logger.getLogger(JMSServer.class);
+	private JMSEndPoint lJMSEndPoint;
 
 	/**
 	 *
 	 * @param aArgs
 	 */
-	public static void main(String[] aArgs) {
-
+	public JMSEndPoint start(String[] aArgs) {
 		// set up log4j logging
 		// later this should be read from a shared log4j properties or xml file!
 		Properties lProps = new Properties();
@@ -99,7 +99,7 @@ public class JMSServer {
 		}
 
 		// instantiate a new jWebSocket JMS Gateway Client
-		JMSEndPoint lJMSEndPoint = new JMSEndPoint(
+		lJMSEndPoint = new JMSEndPoint(
 				lBrokerURL,
 				lGatewayTopic, // gateway topic
 				lGatewayId, // gateway endpoint id
@@ -239,15 +239,30 @@ public class JMSServer {
 
 		// start the endpoint all all listener have been assigned
 		lJMSEndPoint.start();
+		return lJMSEndPoint;
+	}
 
+	public void shutdown() {
+		if (lJMSEndPoint != null) {
+			lJMSEndPoint.shutdown();
+		}
+	}
+
+	public JMSEndPoint getJMSEndPoint() {
+		return lJMSEndPoint;
+	}
+
+	public static void main(String[] aArgs) {
+		JMSServer lJMSServer = new JMSServer();
+		lJMSServer.start(aArgs);
 		// add a primitive listener to listen in coming messages
 		// this one is deprecated, only left for reference purposes!
 		// lJMSClient.addListener(new JMSServerMessageListener(lJMSClient));
 		// this is a console app demo
 		// so wait in a thread loop until the client get shut down
-
+		JMSEndPoint lEndpoint = lJMSServer.getJMSEndPoint();
 		try {
-			while (!lJMSEndPoint.isShutdown()) {
+			while (!lEndpoint.isShutdown()) {
 				Thread.sleep(1000);
 			}
 		} catch (InterruptedException lEx) {
@@ -255,11 +270,11 @@ public class JMSServer {
 		}
 
 		// check if JMS client has already been shutdown by logic
-		if (!lJMSEndPoint.isShutdown()) {
+		if (!lEndpoint.isShutdown()) {
 			// if not yet done...
 			mLog.info("Shutting down JMS Server Endpoint...");
 			// shut the client properly down
-			lJMSEndPoint.shutdown();
+			lEndpoint.shutdown();
 		}
 		// and show final status message in the console
 

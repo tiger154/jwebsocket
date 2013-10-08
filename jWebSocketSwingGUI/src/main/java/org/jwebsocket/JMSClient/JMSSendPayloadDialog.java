@@ -138,7 +138,7 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 							mParentDialog.log("--------------------------------------------------------");
 							mParentDialog.log("AVERAGE: " + lSum / mAverage.length + " ms");
 							mParentDialog.log("TOTAL TIME: " + mTotalTime + " seconds to send "
-									+ mTotalIterations + jtType.getText()
+									+ mTotalIterations + " " + jtType.getText()
 									+ " operations to target: " + jtTargetId.getText());
 							mParentDialog.log("--------------------------------------------------------");
 						}
@@ -194,12 +194,6 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
         jLabel5.setText("Arguments");
 
         jLabel6.setText("Payload");
-
-        jtTargetId.setText("wcslv02.dev.nvidia.com");
-
-        jtTopic.setText("com.ptc.windchill");
-
-        jtType.setText("getLibraryPart");
 
         jtPayload.setColumns(20);
         jtPayload.setRows(5);

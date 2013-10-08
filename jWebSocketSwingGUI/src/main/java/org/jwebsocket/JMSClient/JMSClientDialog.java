@@ -96,7 +96,8 @@ public class JMSClientDialog extends javax.swing.JFrame {
 			}
 		}
 	}
-	public Properties getProperties(){
+
+	public Properties getProperties() {
 		return this.mProperties;
 	}
 
@@ -169,7 +170,6 @@ public class JMSClientDialog extends javax.swing.JFrame {
 				new JWSMessageListener(mSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
-
 				int lCode = aToken.getInteger("code", -1);
 				if (0 == lCode) {
 					log("Authentication against jWebSocket JMS Gateway successful.");
@@ -199,7 +199,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
 				}
 				shutdownEndpoint();
 			}
-		});
+		}, "jWebSocketJMSClient");
 		mIsThreadRunning = true;
 		// start the endpoint all all listener have been assigned
 		mEndpointThreadRunner.start();
@@ -264,28 +264,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
 	}
 
 	public void log(String aMessage) {
-		synchronized (mLog) {
-			int lMAX = 1000;
-			int lLineCount = mLog.getLineCount();
-			if (lLineCount > lMAX) {
-				String lText = mLog.getText();
-				int lIdx = 0;
-				int lCnt = lLineCount;
-				while (lIdx < lText.length() && lCnt > lMAX) {
-					if (lText.charAt(lIdx) == '\n') {
-						lCnt--;
-					}
-					lIdx++;
-				}
-				mLog.replaceRange("", 0, lIdx);
-			}
-			if (null != aMessage) {
-				mLog.append(aMessage + '\n');
-			} else {
-				mLog.setText("");
-			}
-			mLog.setCaretPosition(mLog.getText().length());
-		}
+		System.out.println(aMessage);
 	}
 
 	/**
@@ -332,22 +311,18 @@ public class JMSClientDialog extends javax.swing.JFrame {
 
         jLabel4.setText("Endpoint ID");
 
-        jtfTopic.setText("org.jwebsocket.jms.gateway");
         jtfTopic.setToolTipText("");
         jtfTopic.setMinimumSize(null);
         jtfTopic.setPreferredSize(new java.awt.Dimension(200, 20));
 
-        jtfBrokerURL.setText("tcp://hqdvalsap01:61616");
         jtfBrokerURL.setToolTipText("");
         jtfBrokerURL.setMinimumSize(null);
         jtfBrokerURL.setPreferredSize(new java.awt.Dimension(200, 20));
 
-        jtfGatewayID.setText("org.jwebsocket.jms.gateway");
         jtfGatewayID.setToolTipText("");
         jtfGatewayID.setMinimumSize(null);
         jtfGatewayID.setPreferredSize(new java.awt.Dimension(200, 20));
 
-        jtfEndpointID.setText("vbarzanacres-dt");
         jtfEndpointID.setMinimumSize(null);
         jtfEndpointID.setPreferredSize(new java.awt.Dimension(200, 20));
 
