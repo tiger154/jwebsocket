@@ -100,6 +100,11 @@ abstract public class BaseItemStorage implements IItemStorage {
 	}
 
 	@Override
+	public Integer size(Map<String, Object> aAttrsValues) throws Exception {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+	
+	@Override
 	public void initialize() throws Exception {
 		Assert.isTrue(mItemFactory.supportsType(getItemType()), "Item type not supported!");
 	}

@@ -79,7 +79,6 @@ public class ItemCollectionUtils {
 		if (null == lTargetPK) {
 			// target PK is the PK
 			lTargetPK = (String) aData.get(lDef.getPrimaryKeyAttribute());
-			Assert.notNull(lTargetPK, "The item PK argument is missing!");
 		}
 
 		IItem lItem = null;
