@@ -58,8 +58,8 @@
 		<module>jWebSocketSwingGUI</module>
 		<module>jWebSocketProxy</module>
 		<module>jWebSocketAppSrvDemo</module>
-    <module>jWebSocketSSO</module>
-  </modules>
+		<module>jWebSocketSSO</module>
+	</modules>
 	
 	<properties>
 		<!-- Keep this, since NetBeans 7.x replaces ${vars} according to the maven project properties-->
