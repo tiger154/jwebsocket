@@ -370,6 +370,7 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				new JMSSendPayloadDialog().setVisible(true);
 			}
