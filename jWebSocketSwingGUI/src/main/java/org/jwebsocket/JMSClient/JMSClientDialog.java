@@ -275,6 +275,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
 	@SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -294,37 +295,92 @@ public class JMSClientDialog extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("JMS Client Test");
         setAlwaysOnTop(true);
-        setMinimumSize(null);
-        setPreferredSize(new java.awt.Dimension(580, 270));
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
                 onWindowClosed(evt);
             }
         });
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         jLabel1.setText("Topic");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(28, 31, 0, 0);
+        getContentPane().add(jLabel1, gridBagConstraints);
 
         jLabel2.setText("BrokerURL");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(22, 31, 0, 0);
+        getContentPane().add(jLabel2, gridBagConstraints);
 
         jLabel3.setText("Gateway ID");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(24, 31, 0, 0);
+        getContentPane().add(jLabel3, gridBagConstraints);
 
         jLabel4.setText("Endpoint ID");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(24, 31, 0, 0);
+        getContentPane().add(jLabel4, gridBagConstraints);
 
         jtfTopic.setToolTipText("");
         jtfTopic.setMinimumSize(null);
-        jtfTopic.setPreferredSize(new java.awt.Dimension(200, 20));
+        jtfTopic.setPreferredSize(new java.awt.Dimension(450, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(22, 29, 0, 0);
+        getContentPane().add(jtfTopic, gridBagConstraints);
 
         jtfBrokerURL.setToolTipText("");
         jtfBrokerURL.setMinimumSize(null);
-        jtfBrokerURL.setPreferredSize(new java.awt.Dimension(200, 20));
+        jtfBrokerURL.setPreferredSize(new java.awt.Dimension(450, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(16, 29, 0, 0);
+        getContentPane().add(jtfBrokerURL, gridBagConstraints);
 
         jtfGatewayID.setToolTipText("");
         jtfGatewayID.setMinimumSize(null);
-        jtfGatewayID.setPreferredSize(new java.awt.Dimension(200, 20));
+        jtfGatewayID.setPreferredSize(new java.awt.Dimension(450, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(18, 29, 0, 0);
+        getContentPane().add(jtfGatewayID, gridBagConstraints);
 
         jtfEndpointID.setMinimumSize(null);
-        jtfEndpointID.setPreferredSize(new java.awt.Dimension(200, 20));
+        jtfEndpointID.setPreferredSize(new java.awt.Dimension(450, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(18, 29, 0, 0);
+        getContentPane().add(jtfEndpointID, gridBagConstraints);
 
         jbOpen.setText("Open");
         jbOpen.addActionListener(new java.awt.event.ActionListener() {
@@ -332,6 +388,14 @@ public class JMSClientDialog extends javax.swing.JFrame {
                 jbOpenActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.ipadx = 22;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(38, 18, 11, 0);
+        getContentPane().add(jbOpen, gridBagConstraints);
 
         jbShutdown.setText("Shutdown");
         jbShutdown.setEnabled(false);
@@ -340,6 +404,12 @@ public class JMSClientDialog extends javax.swing.JFrame {
                 jbShutdownActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 5;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(38, 6, 11, 0);
+        getContentPane().add(jbShutdown, gridBagConstraints);
 
         jbPing.setText("Ping");
         jbPing.setEnabled(false);
@@ -348,6 +418,13 @@ public class JMSClientDialog extends javax.swing.JFrame {
                 jbPingActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 4;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.ipadx = 28;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(38, 6, 11, 0);
+        getContentPane().add(jbPing, gridBagConstraints);
 
         jbIdentify.setText("Identify");
         jbIdentify.setEnabled(false);
@@ -356,9 +433,23 @@ public class JMSClientDialog extends javax.swing.JFrame {
                 jbIdentifyActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 7;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.ipadx = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(38, 6, 11, 0);
+        getContentPane().add(jbIdentify, gridBagConstraints);
 
         jbSSO.setText("SSO");
         jbSSO.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 6;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.ipadx = 28;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(38, 6, 11, 0);
+        getContentPane().add(jbSSO, gridBagConstraints);
 
         jbSendPayload.setText("Send Payload");
         jbSendPayload.setEnabled(false);
@@ -367,73 +458,12 @@ public class JMSClientDialog extends javax.swing.JFrame {
                 jbSendPayloadActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(31, 31, 31)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jtfEndpointID, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jtfTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jtfGatewayID, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jtfBrokerURL, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(31, 31, 31))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jbOpen, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbShutdown)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbPing, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbIdentify, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbSSO, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jbSendPayload)
-                .addGap(0, 19, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(22, 22, 22)
-                        .addComponent(jLabel2)
-                        .addGap(24, 24, 24)
-                        .addComponent(jLabel3)
-                        .addGap(24, 24, 24)
-                        .addComponent(jLabel4))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jtfTopic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(16, 16, 16)
-                        .addComponent(jtfBrokerURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jtfGatewayID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jtfEndpointID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(38, 38, 38)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jbOpen)
-                    .addComponent(jbShutdown)
-                    .addComponent(jbPing)
-                    .addComponent(jbIdentify)
-                    .addComponent(jbSSO)
-                    .addComponent(jbSendPayload))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 8;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(38, 6, 11, 19);
+        getContentPane().add(jbSendPayload, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -447,7 +477,8 @@ public class JMSClientDialog extends javax.swing.JFrame {
     }//GEN-LAST:event_jbShutdownActionPerformed
 
     private void jbPingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbPingActionPerformed
-		String lEndpointId = JOptionPane.showInputDialog("Please provide the ID of the endpoint you want to ping");
+		String lEndpointId = JOptionPane.showInputDialog(this,
+				"Please provide the ID of the endpoint you want to ping", "Ping an Endpoint", JOptionPane.QUESTION_MESSAGE);
 		if (null != lEndpointId && !lEndpointId.trim().equals("")) {
 			this.pingEndpoint(lEndpointId);
 		}
@@ -462,44 +493,44 @@ public class JMSClientDialog extends javax.swing.JFrame {
     }//GEN-LAST:event_onWindowClosed
 
     private void jbSendPayloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSendPayloadActionPerformed
-		JMSSendPayloadDialog lPayloadDialog = new JMSSendPayloadDialog(this, mSender, mListener);
-		lPayloadDialog.setLocation(this.getLocation().x,
-				this.getLocation().y);
-		lPayloadDialog.setAlwaysOnTop(true);
-		lPayloadDialog.setVisible(true);
-		final JMSClientDialog lMe = this;
-		lMe.setVisible(false);
-		lPayloadDialog.addWindowListener(new WindowListener() {
-			@Override
-			public void windowOpened(WindowEvent e) {
-			}
+        JMSSendPayloadDialog lPayloadDialog = new JMSSendPayloadDialog(this, mSender, mListener);
+        lPayloadDialog.setLocation(this.getLocation().x,
+            this.getLocation().y);
+        lPayloadDialog.setAlwaysOnTop(true);
+        lPayloadDialog.setVisible(true);
+        final JMSClientDialog lMe = this;
+        lMe.setVisible(false);
+        lPayloadDialog.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
 
-			@Override
-			public void windowClosing(WindowEvent e) {
-			}
+            @Override
+            public void windowClosing(WindowEvent e) {
+            }
 
-			@Override
-			public void windowClosed(WindowEvent e) {
-				lMe.setVisible(true);
-				lMe.setAlwaysOnTop(true);
-			}
+            @Override
+            public void windowClosed(WindowEvent e) {
+                lMe.setVisible(true);
+                lMe.setAlwaysOnTop(true);
+            }
 
-			@Override
-			public void windowIconified(WindowEvent e) {
-			}
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
 
-			@Override
-			public void windowDeiconified(WindowEvent e) {
-			}
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
 
-			@Override
-			public void windowActivated(WindowEvent e) {
-			}
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
 
-			@Override
-			public void windowDeactivated(WindowEvent e) {
-			}
-		});
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
     }//GEN-LAST:event_jbSendPayloadActionPerformed
 
 	/**
