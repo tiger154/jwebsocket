@@ -267,8 +267,8 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 		// checking sandbox permissions dependency
 		Manifest.checkPermissions(lManifestJSON.getList(Manifest.PERMISSIONS,
-				new ArrayList()),
-				mSettings.getAppPermissions(aAppName, aAppPath), aAppPath);
+				new ArrayList()), mSettings.getAppPermissions(aAppName, aAppPath), 
+				aAppPath);
 
 		// validating bootstrap file
 		final File lBootstrap = new File(aAppPath + "/App." + lExt);
