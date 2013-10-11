@@ -17,7 +17,7 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
-App.on('appLoaded', function(aHotLoad){
+App.on('appLoaded', function(){
 	// setting the app description
 	App.setDescription('Basic Calendar application to get the server-side date/time');
 	
