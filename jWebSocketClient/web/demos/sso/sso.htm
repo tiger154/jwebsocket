@@ -40,7 +40,9 @@
 			
 			function authDirect() {
 				log( "Calling direct auth..." );
+				// authenticate against OAuth/SSO server directly
 				lWSC.ssoAuthDirect( eUsername.value, ePassword.value, {
+					timeout: 20000, // timeout in milliseconds
 					OnSuccess: function( aToken ) {
 						log("Success: " + JSON.stringify( aToken ) );
 					},
@@ -54,8 +56,10 @@
 			}
 
 			function getUser() {
+				// validate an access token and get the user name
 				log( "Calling get user..." );
 				lWSC.ssoGetUser({
+					timeout: 20000, // timeout in milliseconds
 					OnSuccess: function( aToken ) {
 						log("Success: " + JSON.stringify( aToken ) );
 					},
@@ -69,8 +73,10 @@
 			}
 
 			function refreshAccessToken() {
+				// refreshing an access token after its expiration
 				log( "Refreshing access token..." );
 				lWSC.ssoRefreshAccessToken({
+					timeout: 20000, // timeout in milliseconds
 					OnSuccess: function( aToken ) {
 						log("Success: " + JSON.stringify( aToken ) );
 					},
@@ -196,8 +202,10 @@
 							   title="Loads the relevant OAuth data from a cookie.">
 						<input class="sbtnDlg" id="sbtnGetSMSessionCookie" type="button" value="Cookies" onclick="getSMSessionCookie();"
 							   title="Tries to obtain the SiteMinder session cookie.">
+						<!--
 						<input class="sbtnDlg" id="sbtnSendRequest" type="button" value="JMS Request" onclick="sendJMSRequest();"
 							   title="Send a request using the access token to the JMS demo server.">
+						-->
 					</td>
 				</tr>
 			</table>

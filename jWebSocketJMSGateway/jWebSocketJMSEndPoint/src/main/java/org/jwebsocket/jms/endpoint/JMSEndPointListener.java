@@ -67,9 +67,9 @@ class JMSEndPointListener implements MessageListener {
 				lListener.onMapMessage(lMapMsg);
 			}
 		} else if (aMsg instanceof BytesMessage) {
-			BytesMessage lMapMsg = (BytesMessage) aMsg;
+			BytesMessage lByteMsg = (BytesMessage) aMsg;
 			for (IJMSMessageListener lListener : mMessageListeners) {
-				lListener.onBytesMessage(lMapMsg);
+				lListener.onBytesMessage(lByteMsg);
 			}
 		} else if (aMsg instanceof ObjectMessage) {
 			ObjectMessage lMapMsg = (ObjectMessage) aMsg;

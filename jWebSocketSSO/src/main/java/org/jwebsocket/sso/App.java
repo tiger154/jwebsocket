@@ -26,7 +26,7 @@ public class App {
 	public static void main(String[] args) {
 		OAuth lOAuth = new OAuth();
 		// lOAuth.setBaseURL("https://localhost/as/token.oauth2");
-		lOAuth.setBaseURL("https://hqdvpngpoc01.nvidia.com/as/token.oauth");
+		lOAuth.setBaseURL("https://hqdvpngpoc01.nvidia.com/as/token.oauth2");
 		lOAuth.setClientSecret("2Federate");
 		System.out.println("JSON Direct Authentication: " + lOAuth.authDirect("aschulze@nvidia.com", "Yami#2812"));
 		System.out.println("JSON User from Access Token: " + lOAuth.getUser());
