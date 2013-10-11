@@ -4,7 +4,8 @@
 	"jws_dependencies": ["jws.system"],
 	"permissions": [
 		"permission java.io.FilePermission \"${APP_HOME}/-\", \"read,write,delete\"",
-		"permission java.net.SocketPermission \"localhost\", \"resolve,connect\""
+		"permission java.net.SocketPermission \"localhost\", \"resolve,connect\"",
+		"permission javax.management.MBeanPermission \"*\", \"registerMBean\""
 	],
 	"author": "Rolando SM <rsantamaria@jwebsocket.org> 09/10/2013"
 }
