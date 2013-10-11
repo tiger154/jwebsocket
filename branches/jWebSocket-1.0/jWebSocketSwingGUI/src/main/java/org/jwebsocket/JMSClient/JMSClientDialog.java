@@ -127,6 +127,14 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		// instantiate a high level JWSEndPointSender
 		mSender = new JWSEndPointSender(mJMSEndPoint);
 
+		mListener.addMessageListener(new JWSMessageListener(mSender) {
+			@Override
+			public void processToken(String aSourceId, Token aToken) {
+				log("Received JSON message from '" + aSourceId
+						+ "': " + aToken.toString());
+			}
+		});
+
 		// on welcome message from jWebSocket, authenticate against jWebSocket
 		mListener.addRequestListener(mGatewayId, TT_WELCOME, new JWSMessageListener(mSender) {
 			@Override

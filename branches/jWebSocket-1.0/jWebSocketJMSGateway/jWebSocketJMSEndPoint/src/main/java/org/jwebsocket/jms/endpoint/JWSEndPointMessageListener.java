@@ -20,10 +20,15 @@ package org.jwebsocket.jms.endpoint;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import javax.jms.BytesMessage;
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.TextMessage;
 import javolution.util.FastMap;
+import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
@@ -37,6 +42,7 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	static final Logger mLog = Logger.getLogger(JWSEndPointMessageListener.class);
 	Map<String, IJWSMessageListener> mRequestListeners = new FastMap<String, IJWSMessageListener>();
 	Map<String, IJWSMessageListener> mResponseListeners = new FastMap<String, IJWSMessageListener>();
+	List<IJWSMessageListener> mMessageListeners = new FastList<IJWSMessageListener>();
 
 	/**
 	 *
@@ -47,14 +53,48 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	}
 
 	@Override
+	public void onBytesMessage(BytesMessage aMessage) {
+		try {
+			String lSourceId = aMessage.getStringProperty("sourceId");
+			int lLen = (int) aMessage.getBodyLength();
+			byte[] lBA = new byte[lLen];
+			aMessage.readBytes(lBA, lLen);
+			String lText = new String(lBA);
+			if (mLog.isInfoEnabled()) {
+				mLog.info("Received bytes from '" + lSourceId
+						+ "': " + lText);
+			}
+			processText(aMessage, lText);
+		} catch (JMSException lEx) {
+			mLog.error(lEx.getClass().getSimpleName()
+					+ " on getting bytes message.");
+		}
+	}
+
+	@Override
 	public void onTextMessage(TextMessage aMessage) {
 		try {
 			String lSourceId = aMessage.getStringProperty("sourceId");
+			String lText = aMessage.getText();
 			if (mLog.isInfoEnabled()) {
-				mLog.info("Received text from '" + lSourceId
-						+ "': " + aMessage.getText());
+				mLog.info("Received bytes from '" + lSourceId
+						+ "': " + lText);
 			}
-			String lPayload = aMessage.getText();
+			processText(aMessage, lText);
+		} catch (JMSException lEx) {
+			mLog.error(lEx.getClass().getSimpleName()
+					+ " on getting text message.");
+		}
+	}
+
+	private void processText(Message aMessage, String aText) {
+		try {
+			String lSourceId = aMessage.getStringProperty("sourceId");
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Processing text from '" + lSourceId
+						+ "': " + aText);
+			}
+			String lPayload = aText;
 			Token lToken = JSONProcessor.JSONStringToToken(lPayload);
 
 			// fields for requests
@@ -146,7 +186,17 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 						}
 					}
 				}
-				IJWSMessageListener lListener = mRequestListeners.get(lNS + "." + lType);
+				IJWSMessageListener lListener;
+				Iterator<IJWSMessageListener> lIterator = mMessageListeners.iterator();
+				while (lIterator.hasNext()) {
+					lListener = lIterator.next();
+					try {
+						lListener.processToken(lSourceId, lToken);
+					} catch (Exception lEx) {
+						mLog.error(lEx.getClass().getSimpleName() + " processing message.");
+					}
+				}
+				lListener = mRequestListeners.get(lNS + "." + lType);
 				if (null != lListener) {
 					lListener.processToken(lSourceId, lToken);
 				}
@@ -163,8 +213,8 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	 * @param aNS
 	 * @param aType
 	 * @param aListener
-	 * 
-	 * @deprecated 
+	 *
+	 * @deprecated
 	 */
 	@Deprecated
 	public void onRequest(String aNS, String aType, IJWSMessageListener aListener) {
@@ -206,8 +256,8 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	 * @param aNS
 	 * @param aReqType
 	 * @param aListener
-	 * 
-	 * @deprecated 
+	 *
+	 * @deprecated
 	 */
 	@Deprecated
 	public void onResponse(String aNS, String aReqType, IJWSMessageListener aListener) {
@@ -242,5 +292,9 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 	 */
 	public boolean hasResponseListener(String aNS, String aReqType) {
 		return mResponseListeners.containsKey(aNS + "." + aReqType);
+	}
+
+	public void addMessageListener(IJWSMessageListener aListener) {
+		mMessageListeners.add(aListener);
 	}
 }
