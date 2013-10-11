@@ -1,0 +1,10 @@
+{
+	"language_ext": "js",
+	"jws_version": "1.0.0",
+	"jws_dependencies": ["jws.system"],
+	"permissions": [
+		"permission java.io.FilePermission \"${APP_HOME}/-\", \"read,write,delete\"",
+		"permission java.net.SocketPermission \"localhost\", \"resolve,connect\""
+	],
+	"author": "Rolando SM <rsantamaria@jwebsocket.org> 09/10/2013"
+}
