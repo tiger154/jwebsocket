@@ -1073,7 +1073,8 @@ public class SystemPlugIn extends TokenPlugIn {
 			FastMap lFilter = new FastMap();
 			lFilter.put(BaseConnector.VAR_USERNAME, ".*");
 			List<String> listOut = new FastList<String>();
-			for (WebSocketConnector lConnector : getServer().selectConnectors(lFilter).values()) {
+			for (WebSocketConnector lConnector : (Collection<WebSocketConnector>) getServer()
+					.selectConnectors(lFilter).values()) {
 				listOut.add(getUsername(lConnector) + "@" + lConnector.getId());
 			}
 			lResponse.setList("clients", listOut);
