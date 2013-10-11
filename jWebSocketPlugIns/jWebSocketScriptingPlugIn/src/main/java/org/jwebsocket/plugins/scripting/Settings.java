@@ -240,7 +240,9 @@ public class Settings {
 		// processing global permissions
 		for (String lStrPerm : getGlobalSecurityPermissions()) {
 			lPermission = Tools.stringToPermission(Tools.expandEnvVarsAndProps(
-					lStrPerm.replace("${APP_HOME}", aAppPath)));
+					lStrPerm
+					.replace("${APP_HOME}", aAppPath)
+					.replace("${EXT}", mExtensionsDirectoryPath)));
 
 			if (null != lPermission) {
 				lPerms.add(lPermission);
@@ -251,7 +253,9 @@ public class Settings {
 		if (getAppsSecurityPermissions().containsKey(aAppName)) {
 			for (String lStrPerm : getAppsSecurityPermissions().get(aAppName)) {
 				lPermission = Tools.stringToPermission(Tools.expandEnvVarsAndProps(
-						lStrPerm.replace("${APP_HOME}", aAppPath)));
+						lStrPerm
+						.replace("${APP_HOME}", aAppPath)
+						.replace("${EXT}", mExtensionsDirectoryPath)));
 
 				if (null != lPermission) {
 					lPerms.add(lPermission);

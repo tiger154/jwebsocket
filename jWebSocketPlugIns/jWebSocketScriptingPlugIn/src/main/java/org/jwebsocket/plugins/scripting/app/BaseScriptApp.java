@@ -396,6 +396,18 @@ abstract public class BaseScriptApp {
 	/**
 	 * Sends a token to a given connector.
 	 *
+	 * @param aConnector The connector id
+	 * @param aMap The Map representation of the Token
+	 * @param aFragmentSize The fragment size used to fragment the token. If
+	 * value is null, the token is not fragmented.
+	 */
+	public void sendToken(String aConnectorId, Map aMap, Integer aFragmentSize) {
+		sendToken(mPlugIn.getServer().getConnector(aConnectorId), aMap, aFragmentSize);
+	}
+
+	/**
+	 * Sends a token to a given connector.
+	 *
 	 * @param aConnector The connector
 	 * @param aMap The Map representation of the Token
 	 */
@@ -419,6 +431,17 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
+	 * Sends a token to a given connector with acknowledge callbacks.
+	 *
+	 * @param aConnector The connector id
+	 * @param aMap The Map representation of the Token
+	 * @param aListener The IPacketDeliveryListener implementation callback.
+	 */
+	public void sendToken(String aConnectorId, Map aMap, Object aListener) {
+		sendToken(mPlugIn.getServer().getConnector(aConnectorId), aMap, aListener);
+	}
+
+	/**
 	 * Sends a fragmented token to a given connector with acknowledge callbacks.
 	 *
 	 * @param aConnector The connector
@@ -432,6 +455,49 @@ abstract public class BaseScriptApp {
 
 		mPlugIn.sendTokenInTransaction(aConnector, toToken(aMap), aFragmentSize,
 				(IPacketDeliveryListener) cast(aListener, IPacketDeliveryListener.class));
+	}
+
+	/**
+	 * Sends a fragmented token to a given connector with acknowledge callbacks.
+	 *
+	 * @param aConnector The connector id
+	 * @param aMap The Map representation of the Token
+	 * @param aFragmentSize The fragmentation size
+	 * @param aListener The IPacketDeliveryListener implementation callback.
+	 */
+	public void sendToken(String aConnectorId, Map aMap, Integer aFragmentSize, Object aListener) {
+		sendToken(mPlugIn.getServer().getConnector(aConnectorId), aMap, aFragmentSize, aListener);
+	}
+
+	/**
+	 * Sends a token to a given connector.
+	 *
+	 * @param aConnector The connector id
+	 * @param aMap The Map representation of the Token
+	 */
+	public void sendToken(String aConnectorId, Map aMap) {
+		sendToken(mPlugIn.getServer().getConnector(aConnectorId), aMap);
+	}
+
+	/**
+	 * Sends a chunkable object to a given connector with acknowledge callbacks.
+	 *
+	 * @param aConnector The connector id
+	 * @param aChunkable The IChunkable implementation object
+	 */
+	public void sendChunkable(String aConnectorId, Object aChunkable) {
+		sendChunkable(mPlugIn.getServer().getConnector(aConnectorId), aChunkable);
+	}
+	
+	/**
+	 * Sends a chunkable object to a given connector with acknowledge callbacks.
+	 *
+	 * @param aConnector The connector id
+	 * @param aChunkable The IChunkable implementation object
+	 * @param aListener The IChunkableDeliveryListener implementation callback.
+	 */
+	public void sendChunkable(String aConnectorId, Object aChunkable, Object aListener) {
+		sendChunkable(mPlugIn.getServer().getConnector(aConnectorId), aChunkable, aListener);
 	}
 
 	/**
@@ -587,7 +653,7 @@ abstract public class BaseScriptApp {
 			sendToken(aConnector, aToken);
 		}
 	}
-	
+
 	/**
 	 * Broadcast a Token to a given collection of connectors.
 	 *

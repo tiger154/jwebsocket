@@ -82,7 +82,8 @@ public class Manifest {
 	 * @param aGrantedPerms
 	 * @throws Exception
 	 */
-	public static void checkPermissions(List<String> aPerms, Permissions aGrantedPerms, final String aAppDirPath) throws Exception {
+	public static void checkPermissions(List<String> aPerms, Permissions aGrantedPerms,
+			String aAppDirPath) throws Exception {
 		for (String lPerm : aPerms) {
 			final String lExpandedPerm = Tools.expandEnvVarsAndProps(lPerm.replace("${APP_HOME}", aAppDirPath));
 			try {

@@ -1178,8 +1178,8 @@ public class Tools {
 	public static Object doPrivileged(PermissionCollection aPermissions, PrivilegedAction aAction) {
 		ProtectionDomain lProtectionDomain = new ProtectionDomain(
 				new CodeSource(null, (Certificate[]) null), aPermissions);
-		AccessControlContext lSecurityContext = new AccessControlContext(new ProtectionDomain[]{lProtectionDomain});
+		AccessControlContext lSecureContext = new AccessControlContext(new ProtectionDomain[]{lProtectionDomain});
 
-		return AccessController.doPrivileged(aAction, lSecurityContext);
+		return AccessController.doPrivileged(aAction, lSecureContext);
 	}
 }

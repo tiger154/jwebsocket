@@ -74,7 +74,7 @@ public class AMQClusterFilter extends BrokerFilter {
 			// do not process
 			return super.addConsumer(aContext, aInfo);
 		}
-
+		
 		int lBPos = lSelector.indexOf("'", lAPos + 1);
 
 		// the correlation id identifies a consumer

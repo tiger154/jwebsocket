@@ -439,7 +439,7 @@ public class BaseServer implements WebSocketServer {
 	@Override
 	public WebSocketConnector getConnector(String aId) {
 		for (WebSocketEngine lEngine : mEngines.values()) {
-			WebSocketConnector lConnector = lEngine.getConnectors().get(aId);
+			WebSocketConnector lConnector = lEngine.getConnectorById(aId);
 			if (lConnector != null) {
 				return lConnector;
 			}
