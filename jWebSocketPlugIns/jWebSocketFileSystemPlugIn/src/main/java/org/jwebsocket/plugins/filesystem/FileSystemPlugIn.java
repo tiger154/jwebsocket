@@ -408,14 +408,15 @@ public class FileSystemPlugIn extends TokenPlugIn {
 					FileUtils.writeStringToFile(lFile, lData, "UTF-8", lAppend);
 				}
 			}
+			removeFileInUse(aConnector, lFullPath);
 		} catch (Exception lEx) {
+			removeFileInUse(aConnector, lFullPath);
 			lResponse.setInteger("code", -1);
 			lMsg = lEx.getClass().getSimpleName() + " while saving file: "
 					+ lFilename + ". " + lEx.getMessage();
 			lResponse.setString("msg", lMsg);
 			mLog.error(lMsg);
 		}
-
 		// send response to requester
 		lServer.sendToken(aConnector, lResponse);
 
@@ -632,7 +633,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		boolean lIncludeDirs = aToken.getBoolean("includeDirs", false);
 		List lFilemasks = aToken.getList("filemasks");
 		String lSubPath = aToken.getString("path", null);
-		if(lFilemasks == null){
+		if (lFilemasks == null) {
 			lFilemasks = new FastList<String>();
 		}
 		Object lObject;
@@ -702,7 +703,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				} else {
 					lRelativePath = "";
 				}
-				
+
 				lFileData.put("relativePath", lRelativePath);
 				lFileData.put("filename", lFilename);
 				lFileData.put("size", lFile.length());
@@ -808,6 +809,16 @@ public class FileSystemPlugIn extends TokenPlugIn {
 								+ lConnectorId + "@" + getConnector(lConnectorId).getUsername());
 					}
 				}
+			}
+		}
+	}
+
+	protected void removeFileInUse(WebSocketConnector aConnector, String aFilePath) {
+		if (null != aFilePath) {
+			// Add the file in the list for avoiding concurrency over this file
+			List<String> lList = mConnectorsFiles.get(aConnector.getId());
+			if (lList != null && lList.contains(aFilePath)) {
+				lList.remove(aFilePath);
 			}
 		}
 	}
