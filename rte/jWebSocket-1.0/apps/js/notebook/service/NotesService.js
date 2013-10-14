@@ -20,12 +20,12 @@ NotesService = {
 	initialize: function(){
 		this.mongo = new Packages.com.mongodb.MongoClient('localhost');
 		this.database = this.mongo.getDB('notebook_db');
-		this.collection = this.database.getCollection('notes');
+		this.notes = this.database.getCollection('notes');
 		
 		App.getLogger().debug('NotesService: Initialized successfully!');
 	},
 	add: function(aUser, aTitle, aBody){
-		this.collection.insert(MongoDBUtils.toDBObject({
+		this.notes.insert(MongoDBUtils.toDBObject({
 			user: aUser,
 			title: aTitle,
 			body: aBody,
@@ -34,7 +34,7 @@ NotesService = {
 		}));
 	},
 	edit: function(aUser, aNoteId, aTitle, aBody){
-		this.collection.update(MongoDBUtils.toDBObject({
+		this.notes.update(MongoDBUtils.toDBObject({
 			_id: MongoDBUtils.toId(aNoteId),
 			user: aUser
 		}), MongoDBUtils.toDBObject({
@@ -46,19 +46,14 @@ NotesService = {
 		}));
 	},
 	list: function(aUser, aOffset, aLength){
-		var lCursor = this.collection.find(MongoDBUtils.toDBObject({
+		var lCursor = this.notes.find(MongoDBUtils.toDBObject({
 			user: aUser
 		})).skip(aOffset).limit(aLength);
 		
-		var lNotes = []
-		while (lCursor.hasNext()){
-			lNotes.push(lCursor.next().toMap());
-		}
-		
-		return lNotes;
+		return MongoDBUtils.toArray(lCursor);
 	}, 
 	remove: function(aUser, aNoteId){
-		this.collection.remove(MongoDBUtils.toDBObject({
+		this.notes.remove(MongoDBUtils.toDBObject({
 			_id: MongoDBUtils.toId(aNoteId),
 			user: aUser
 		}));
