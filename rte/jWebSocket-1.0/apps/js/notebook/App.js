@@ -27,10 +27,16 @@ App.on('appLoaded', function(){
 	
 	NotesService.initialize();
 	
+	App.on('filterIn', function(aToken, aConnector){
+		if ('callMethod' == aToken.type && 'Notes' == aToken.objectId){
+			// clients require to be authenticated first
+			// in order to use the Notes controller actions
+			App.assertNotNull(aConnector.getUsername(), 'Authenticate first!')
+		}
+	});
+	
 	App.publish('Notes', {
 		add: function(aTitle, aBody, aConnector){
-			App.requireAuthority(aConnector, NS + ".add");
-			
 			App.assertTrue('string' == typeof aTitle, 'The "title" argument cannot be null!');
 			App.assertTrue('string' == typeof aBody, 'The "body" argument cannot be null!');
 			
@@ -38,8 +44,6 @@ App.on('appLoaded', function(){
 			NotesService.add(lUsername, aTitle, aBody);
 		},
 		list: function(aOffset, aLength, aConnector){
-			App.requireAuthority(aConnector, NS + ".list");
-			
 			App.assertTrue('number' == typeof aOffset, 'The "offset" argument cannot be null!');
 			App.assertTrue('number' == typeof aLength, 'The "length" argument cannot be null!');
 			
@@ -47,8 +51,6 @@ App.on('appLoaded', function(){
 			return NotesService.list(lUsername, aOffset, aLength);
 		},
 		edit: function(aNoteId, aTitle, aBody, aConnector){
-			App.requireAuthority(aConnector, NS + ".edit");
-			
 			App.assertTrue('string' == typeof aNoteId, 'The "noteId" argument cannot be null!');
 			App.assertTrue('string' == typeof aTitle, 'The "title" argument cannot be null!');
 			App.assertTrue('string' == typeof aBody, 'The "body" argument cannot be null!');
@@ -57,8 +59,6 @@ App.on('appLoaded', function(){
 			return NotesService.edit(lUsername, aNoteId, aTitle, aBody);
 		},
 		remove: function(aNoteId, aConnector){
-			App.requireAuthority(aConnector, NS + ".remove");
-			
 			App.assertTrue('string' == typeof aNoteId, 'The "noteId" argument cannot be null!');
 				
 			var lUsername = aConnector.getUsername();
