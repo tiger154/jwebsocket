@@ -48,13 +48,20 @@ NotesService = {
 	list: function(aUser, aOffset, aLength){
 		var lCursor = this.notes.find(MongoDBUtils.toDBObject({
 			user: aUser
-		})).skip(aOffset).limit(aLength);
+		})).skip(aOffset).limit(aLength).sort(MongoDBUtils.toDBObject({
+			created_at: true
+		}));
 		
 		return MongoDBUtils.toArray(lCursor);
 	}, 
 	remove: function(aUser, aNoteId){
 		this.notes.remove(MongoDBUtils.toDBObject({
 			_id: MongoDBUtils.toId(aNoteId),
+			user: aUser
+		}));
+	},
+	count: function(aUser){
+		return this.notes.count(MongoDBUtils.toDBObject({
 			user: aUser
 		}));
 	},

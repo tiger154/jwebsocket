@@ -28,10 +28,11 @@ App.on('appLoaded', function(){
 	NotesService.initialize();
 	
 	App.on('filterIn', function(aToken, aConnector){
-		if ('callMethod' == aToken.type && 'Notes' == aToken.objectId){
+		App.getLogger().debug(aToken.toString());
+		if ('callMethod' == aToken.getString('type') && 'Notes' == aToken.getString('objectId')){
 			// clients require to be authenticated first
 			// in order to use the Notes controller actions
-			App.assertNotNull(aConnector.getUsername(), 'Authenticate first!')
+			App.assertTrue('anonymous' != aConnector.getUsername(), 'Authenticate first!');
 		}
 	});
 	
@@ -48,7 +49,10 @@ App.on('appLoaded', function(){
 			App.assertTrue('number' == typeof aLength, 'The "length" argument cannot be null!');
 			
 			var lUsername = aConnector.getUsername();
-			return NotesService.list(lUsername, aOffset, aLength);
+			return {
+				data: NotesService.list(lUsername, aOffset, aLength),
+				total: NotesService.count(lUsername) 
+			}
 		},
 		edit: function(aNoteId, aTitle, aBody, aConnector){
 			App.assertTrue('string' == typeof aNoteId, 'The "noteId" argument cannot be null!');
