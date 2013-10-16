@@ -26,7 +26,7 @@ if (!App.getStorage().containsKey('clients')){
 var NS = "org.jwebsocket.plugins.scripting.simplechat";
 
 // getting the clients collection
-var lClients = App.getStorage().get('clients');
+var mClients = App.getStorage().get('clients');
 
 App.on('appLoaded', function(){
 	// setting the app description
@@ -36,14 +36,14 @@ App.on('appLoaded', function(){
 		register: function(aConnector){
 			App.requireAuthority(aConnector, NS + ".register");
 			
-			lClients.put(aConnector.getUsername(), aConnector);
+			mClients.put(aConnector.getUsername(), aConnector);
 		},
 		broadcast: function(aMessage, aConnector){
 			App.assertTrue('string' == typeof aMessage, 'The "message" argument cannot be null!');
-			App.assertTrue(lClients.containsKey(aConnector.getUsername()), 
+			App.assertTrue(mClients.containsKey(aConnector.getUsername()), 
 				"Client not registered yet!");
 			
-			App.broadcast(lClients.getValues(), {
+			App.broadcast(mClients.getValues(), {
 				message: aMessage,
 				sender: null
 			});
@@ -51,10 +51,10 @@ App.on('appLoaded', function(){
 		sendPrivate: function(aTarget, aMessage, aConnector){
 			App.assertTrue('string' == typeof aTarget, 'The "target" argument cannot be null!');
 			App.assertTrue('string' == typeof aMessage, 'The "message" argument cannot be null!');
-			App.assertTrue(lClients.containsKey(aConnector.getUsername()), 
+			App.assertTrue(mClients.containsKey(aConnector.getUsername()), 
 				"Client not registered yet!");
 			
-			var lTarget = lClients.get(aTarget);
+			var lTarget = mClients.get(aTarget);
 			App.assertTrue(null != lTarget, 'The target client does not exists!');
 			
 			App.sendToken(lTarget, {
@@ -63,7 +63,18 @@ App.on('appLoaded', function(){
 			});
 		},
 		unregister: function(aConnector){
-			lClients.remove(aConnector.getUsername());
+			mClients.remove(aConnector.getUsername());
+		}
+	});
+	
+	App.on(['connectorStopped', 'logoff'], function (aConnector){
+		if (mClients.containsKey(aConnector.getUsername())){
+			mClients.remove(aConnector.getUsername());
+			
+			App.broadcast(mClients.getValues(), {
+				message: 'The user: "' + aConnector.getUsername() + '", has stopped!',
+				sender: null
+			});
 		}
 	});
 });
