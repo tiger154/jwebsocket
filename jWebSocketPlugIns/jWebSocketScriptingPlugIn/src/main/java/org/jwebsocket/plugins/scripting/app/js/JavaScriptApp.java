@@ -92,8 +92,8 @@ public class JavaScriptApp extends BaseScriptApp {
 							((Invocable) getScriptApp()).invokeMethod(mApp, "notifyEvent", new Object[]{aEventName, aArgs});
 							return true;
 						} catch (Exception lEx) {
-							mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying '" + aEventName + "' event"));
-							return false;
+							mLog.debug(Logging.getSimpleExceptionMessage(lEx, "notifying '" + aEventName + "' event"));
+							throw new RuntimeException(lEx.getMessage());
 						}
 					}
 				});
