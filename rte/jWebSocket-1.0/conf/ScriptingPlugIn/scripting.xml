@@ -13,17 +13,18 @@
 				<value>permission java.util.PropertyPermission "org.apache.activemq.UseDedicatedTaskRunner", "read"</value>
 			</list>
 		</property>
-		<!--
+		
 		<property name="appsSecurityPermissions">
 			<map>
-				<entry key="yourAppName">
+				<entry key="notebook">
 					<list>
-						<value>permission java.security.AllPermission</value>
+						<value>permission java.net.SocketPermission "localhost", "resolve,connect"</value>
+						<value>permission javax.management.MBeanPermission "*", "registerMBean"</value>
 					</list>
 				</entry>
 			</map>
 		</property>
-		-->
+	
 		<property name="globalWhiteListedBeans">
 			<list>
 				<!--				
