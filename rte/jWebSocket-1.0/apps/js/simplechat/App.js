@@ -35,17 +35,24 @@ App.on('appLoaded', function(){
 	App.publish('Chat', {
 		register: function(aConnector){
 			App.requireAuthority(aConnector, NS + ".register");
-			
 			mClients.put(aConnector.getUsername(), aConnector);
+			
+			App.broadcast(mClients.values(), {
+				type: 'event',
+				name: 'connection',
+				user: aConnector.getUsername()
+			});
 		},
 		broadcast: function(aMessage, aConnector){
 			App.assertTrue('string' == typeof aMessage, 'The "message" argument cannot be null!');
 			App.assertTrue(mClients.containsKey(aConnector.getUsername()), 
 				"Client not registered yet!");
 			
-			App.broadcast(mClients.getValues(), {
+			App.broadcast(mClients.values(), {
+				type: 'event',
+				name: 'pubmessage',
 				message: aMessage,
-				sender: null
+				user: aConnector.getUsername()
 			});
 		},
 		sendPrivate: function(aTarget, aMessage, aConnector){
@@ -58,23 +65,29 @@ App.on('appLoaded', function(){
 			App.assertTrue(null != lTarget, 'The target client does not exists!');
 			
 			App.sendToken(lTarget, {
+				type: 'event',
+				name: 'privmessage',
 				message: aMessage,
-				sender: aConnector.getUsername()
+				user: aConnector.getUsername()
 			});
 		},
 		unregister: function(aConnector){
-			mClients.remove(aConnector.getUsername());
+			if (mClients.containsKey(aConnector.getUsername())){
+				mClients.remove(aConnector.getUsername());
+			
+				App.broadcast(mClients.values(), {
+					type: 'event',
+					name: 'disconnection',
+					user: aConnector.getUsername()
+				});
+			}
+		},
+		getUsers: function(){
+			return mClients.keySet().toArray();
 		}
 	});
 	
 	App.on(['connectorStopped', 'logoff'], function (aConnector){
-		if (mClients.containsKey(aConnector.getUsername())){
-			mClients.remove(aConnector.getUsername());
-			
-			App.broadcast(mClients.getValues(), {
-				message: 'The user: "' + aConnector.getUsername() + '", has stopped!',
-				sender: null
-			});
-		}
+		App.getPublished('Chat').unregister(aConnector);
 	});
 });
