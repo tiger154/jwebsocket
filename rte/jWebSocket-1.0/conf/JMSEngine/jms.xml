@@ -23,7 +23,7 @@
 	</bean>
 
 	<!-- the MongoDB server connection instance -->
-	<bean id="mongodbConnection0" class="com.mongodb.Mongo" destroy-method="close">
+	<bean id="mongodbConnection0" class="com.mongodb.MongoClient" destroy-method="close">
 		<constructor-arg value="192.168.56.1"/>
 	</bean>
 
