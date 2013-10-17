@@ -32,27 +32,25 @@
 				return str.replace(new RegExp(find, 'g'), replace);
 			};
 			
+			lUsers = [];
+			
 			var lClient  = new jws.jWebSocketJSONClient();
 			lClient.open(jws.JWS_SERVER_URL, {
 				OnWelcome: function(){
 					lClient.addPlugIn({
 						processToken: function(aToken){
 							if ('event' == aToken.type){
-								var lIndex = lUsers.indexOf(aToken.user);
 								if ('connection' == aToken.name){
-									if (-1 == lIndex){
-										lUsers.push(aToken.user);
-										renderUsers();
+									lUsers.push(aToken.user);
+									renderUsers();
 										
-										log('# user "' + aToken.user + '" connected!');
-									}
+									log('# user "' + aToken.user + '" connected!');
 								} else if ('disconnection' == aToken.name){
-									if (-1 < lIndex){
-										lUsers.pop(lIndex);
-										renderUsers();
+									var lIndex = lUsers.indexOf(aToken.user);
+									lUsers.splice(lIndex, 1);
+									renderUsers();
 										
-										log('# user "' + aToken.user + '" disconnected!');
-									}
+									log('# user "' + aToken.user + '" disconnected!');
 								} else if ('pubmessage' == aToken.name){
 									log('public: ' + aToken.user + ', ' + aToken.message);
 								} else if ('privmessage' == aToken.name){
@@ -66,9 +64,6 @@
 					alert('Connection to the server has been closed!');
 				}
 			});
-			
-			
-			lUsers = [];
 			
 			list = function(){
 				lClient.callScriptAppMethod('simplechat', 'Chat', 'getUsers', [], {
