@@ -29,21 +29,61 @@
 
 	<engines>
 		
-		<!-- JMS Engine Configuration -->
+		<!-- TCP Engine Configuration -->
 		<engine>
-			<name>org.jwebsocket.jms.JMSEngine</name>
-			<id>jms0</id>
-			<jar>jWebSocketServer-1.0.jar</jar>
-			<port>0</port>
-			<sslport>0</sslport>
-			<keystore>NA</keystore>
-			<password>NA</password>
-			<maxframesize>1048840</maxframesize>
+			<name>org.jwebsocket.tcp.TCPEngine</name>
+			<id>tcp0</id>
+			<jar>jWebSocketTCPEngine-1.0.jar</jar>
+			<port>8787</port>
+			<sslport>9797</sslport>
+			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
+			<!-- CAUTION! -->
+			<!-- not all browsers automatically accept self-signed certificates -->
+			<!-- please follow instructions on the jWebSocket.org website, how
+			     to trust self-signed certificates for the various browsers or
+				 how to import signed private key/certificate bundles into the keystore -->
+
+			<!-- these domains are accepted by the engine listening on the above mentioned port -->
+			<!-- you optionally can add asterisks as wild cards -->
 			<domains>
-				<domain>NA</domain>
+				<domain>*</domain>
+				<!-- limit allowed domains here -->
+				<!--
+				<domain>http*://jwebsocket.org</domain>
+				<domain>http*://jwebsocket.com</domain>
+				<domain>http*://*.jwebsocket.org</domain>
+				<domain>http*://*.jwebsocket.com</domain>
+				<domain>http*://10.10.*</domain>
+				<domain>http*://10.21.*</domain>
+				<domain>http*://192.168.*</domain>
+				<domain>http*://localhost*</domain>
+				-->
 			</domains>
+			<!-- default session timeout 1h, max timeout currently 1 hour -->
+			<timeout>0</timeout>
+			<!--
+				maximum size of the data packet that the engine will read,
+				if the frame size is larger than this the connection will be closed.
+			-->
+			<maxframesize>1048840</maxframesize>
+			
+			<!-- maximun number of connections allowed by this engine -->
+			<maxconnections>10000</maxconnections>
+			
+			<!-- on max connections reached strategy -->
+			<!-- wait, close, reject, redirect --> 
+			<onmaxconnections>reject</onmaxconnections>
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JMSEngine/jms.xml</setting>
+				<!-- NIO output writer mechanism thread pool size -->
+				<setting key="workers">50</setting>
+				<!-- NIO output writer mechanism writes timeout -->
+				<setting key="writer_timeout">1000</setting>
+				<!-- Set socket TcpNoDelay property value
+				more detalis: http://www.rgagnon.com/javadetails/java-0294.html -->
+				<setting key="tcpNoDelay">false</setting>
 			</settings>		
 		</engine>
 	</engines>
@@ -51,18 +91,28 @@
 	<!-- server types to be instantiated for jWebSocket -->
 	<servers>
 		<server>
-			<name>org.jwebsocket.jms.JMSServer</name>
+			<name>org.jwebsocket.server.TokenServer</name>
 			<id>ts0</id>
-			<jar>jWebSocketServer-1.0.jar</jar>
+			<jar>jWebSocketTokenServer-1.0.jar</jar>
+			<!-- define the thread pool properties. Thread are spawned when Token's spawnThread value is true 
+			 Queue sizes and maximum pool sizes may be traded off for each other: Using large queues and small pools minimizes CPU usage, OS resources, and context-switching overhead, but can lead to artificially low throughput. 
+			 If tasks frequently block (for example if they are I/O bound), a system may be able to schedule time for more threads than you otherwise allow. 
+			 Use of small queues generally requires larger pool sizes, which keeps CPUs busier but may encounter unacceptable scheduling overhead, which also decreases throughput.
+			 -->
 			<threadPool>
+				<!--  number of thread that are "waiting" even if the queue is empty  -->
 				<corePoolSize>10</corePoolSize>
+				<!--  number maximum of thread that can be running at the same time -->
 				<maximumPoolSize>100</maximumPoolSize>
+				<!--  time before the desctruction of "free" threads (seconds) -->
 				<keepAliveTime>60</keepAliveTime>
+				<!--  size of the blocking queue. Connection will be refused if the queue is full and the poolsize is equals to the maximumPoolSize -->
 				<blockingQueueSize>1000</blockingQueueSize>
 			</threadPool>
+			
 			<settings>
-				<setting key="supressed_log_fields">password,newPassword,secretPassword,accessPassword</setting>
-				<setting key="supressed_log_fields_value">*****</setting>
+				<setting key="supressed_log_fields">password,secretPassword,accessPassword,newSecretPassword,secretKey,accessKey,newSecretKey</setting>
+				<setting key="supressed_log_fields_value">******</setting>
 			</settings>
 		</server>
 	</servers>
@@ -156,6 +206,12 @@
 			<ns>org.jwebsocket.plugins.scripting</ns>
 			<id>deploy.*</id>
 			<description>Allows to deploy script apps in runtime</description>
+		</right>
+		<!-- simplechat script app demo rights-->
+		<right>
+			<ns>org.jwebsocket.plugins.scripting.simplechat</ns>
+			<id>register</id>
+			<description>Allows to register in the simplechat script app</description>
 		</right>
 		<!-- configuration of jms plug-in specific rights -->
 		<right>
@@ -292,6 +348,7 @@
 				
 				<right>org.jwebsocket.plugins.scripting.reloadApp.*</right>
 				<right>org.jwebsocket.plugins.scripting.deploy.*</right>
+				<right>org.jwebsocket.plugins.scripting.simplechat.register</right>
 
 				<!-- Channel rights -->
 				<right>org.jwebsocket.plugins.channels.subscribe</right>
@@ -356,6 +413,7 @@
 
 				<right>org.jwebsocket.plugins.scripting.reloadApp.*</right>
 				<right>org.jwebsocket.plugins.scripting.deploy.*</right>
+				<right>org.jwebsocket.plugins.scripting.simplechat.register</right>
 
 				<!-- filesystem rights -->
 				<right>org.jwebsocket.plugins.filesystem.load</right>
