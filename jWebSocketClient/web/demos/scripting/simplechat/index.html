@@ -131,10 +131,12 @@
 			}
 			
 			logout = function(){
+				clearConsole();
 				lClient.logout();
 				jws.$('loginbox').hidden = null;
 				jws.$('mainbox').hidden = 'hidden';
 				jws.$('username').focus();
+				
 			}
 			
 			sendMessage = function(){
