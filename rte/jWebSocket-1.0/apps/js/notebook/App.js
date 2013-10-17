@@ -16,8 +16,6 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-var NS = "org.jwebsocket.plugins.scripting.notebook";
-
 App.importScript('${EXT}/MongoDBUtils');
 App.importScript('${APP_HOME}/service/NotesService');
 
