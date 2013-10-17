@@ -65,6 +65,10 @@ public class Settings {
 	 */
 	private Map<String, List<String>> mCachedWhiteListedBeans = new FastMap<String, List<String>>().shared();
 	/**
+	 * Cached permissions
+	 */
+	private Map<String, Permissions> mCachedAppPermissions = new FastMap<String, Permissions>().shared();
+	/**
 	 * Script apps directory path
 	 */
 	private String mAppsDirectoryPath;
@@ -234,6 +238,10 @@ public class Settings {
 	 * @return
 	 */
 	public Permissions getAppPermissions(String aAppName, String aAppPath) {
+		if (mCachedAppPermissions.containsKey(aAppName)) {
+			return mCachedAppPermissions.get(aAppName);
+		}
+
 		Permissions lPerms = new Permissions();
 		Permission lPermission;
 
@@ -262,6 +270,8 @@ public class Settings {
 				}
 			}
 		}
+
+		mCachedAppPermissions.put(aAppName, lPerms);
 
 		return lPerms;
 	}

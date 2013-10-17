@@ -54,7 +54,7 @@ public class JavaScriptApp extends BaseScriptApp {
 	 * @param aAppName The application name (unique value)
 	 * @param aAppPath The application directory path
 	 * @param aScriptApp The scripting engine that runs the application
-	 * @param aLoader  The application class loader
+	 * @param aLoader The application class loader
 	 */
 	public JavaScriptApp(ScriptingPlugIn aServer, String aAppName, String aAppPath, ScriptEngine aScriptApp, LocalLoader aLoader) {
 		super(aServer, aAppName, aAppPath, aScriptApp, aLoader);
@@ -92,8 +92,15 @@ public class JavaScriptApp extends BaseScriptApp {
 							((Invocable) getScriptApp()).invokeMethod(mApp, "notifyEvent", new Object[]{aEventName, aArgs});
 							return true;
 						} catch (Exception lEx) {
-							mLog.debug(Logging.getSimpleExceptionMessage(lEx, "notifying '" + aEventName + "' event"));
-							throw new RuntimeException(lEx.getMessage());
+							if (BaseScriptApp.EVENT_FILTER_IN.equals(aEventName)) {
+								if (mLog.isDebugEnabled()) {
+									mLog.debug(Logging.getSimpleExceptionMessage(lEx, "notifying '" + aEventName + "' event"));
+								}
+								throw new RuntimeException(lEx.getMessage());
+							} else {
+								mLog.error(Logging.getSimpleExceptionMessage(lEx, "notifying '" + aEventName + "' event"));
+								return false;
+							}
 						}
 					}
 				});
