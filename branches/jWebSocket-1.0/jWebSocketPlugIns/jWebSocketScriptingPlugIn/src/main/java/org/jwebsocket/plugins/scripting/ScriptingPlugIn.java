@@ -267,7 +267,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 		// checking sandbox permissions dependency
 		Manifest.checkPermissions(lManifestJSON.getList(Manifest.PERMISSIONS,
-				new ArrayList()), mSettings.getAppPermissions(aAppName, aAppPath), 
+				new ArrayList()), mSettings.getAppPermissions(aAppName, aAppPath),
 				aAppPath);
 
 		// validating bootstrap file
@@ -612,7 +612,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		String lAppPath = mSettings.getApps().get(lAppName);
 		execAppBeforeLoadChecks(lAppName, lAppPath);
 		loadApp(lAppName, lAppPath, lHotReload);
-		
+
 		// broadcasting event to other ScriptingPlugIn nodes
 		if (getServer() instanceof JMSServer) {
 			JMSMessageHub lMessageHub = ((JMSServer) getServer()).getMessageHub();
@@ -780,7 +780,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 
 		// loading the script app
 		loadApp(lAppName, lAppDir.getAbsolutePath(), lHotDeploy);
-		
+
 		// broadcasting event to other ScriptingPlugIn nodes
 		if (getServer() instanceof JMSServer) {
 			JMSMessageHub lMessageHub = ((JMSServer) getServer()).getMessageHub();
@@ -788,7 +788,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			MapMessage lMessage = lMessageHub.buildMessage(NS, ClusterMessageTypes.LOAD_APP.name());
 			lMessage.setStringProperty("appName", lAppName);
 			lMessage.setBooleanProperty("hotLoad", lHotDeploy);
-			
+
 			// sending the message
 			lMessageHub.send(lMessage);
 		}
@@ -870,7 +870,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			// sending the message
 			lMessageHub.send(lMessage);
 		}
-		
+
 		// acknowledge response for the client
 		sendToken(aConnector, createResponse(aToken));
 	}
