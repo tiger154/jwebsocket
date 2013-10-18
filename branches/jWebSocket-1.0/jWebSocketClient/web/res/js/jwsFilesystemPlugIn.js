@@ -180,15 +180,15 @@ jws.FileSystemPlugIn = {
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:a:en::aOptions.encoding:String:Indicates the encoding format used by the server to encode the file content. Default: base64.
 	//:r:*:::void:none
-	fileLoad: function( aFilename, aAlias, aOptions ) {
+	fileLoad: function(aFilename, aAlias, aOptions) {
 		var lRes = this.createDefaultResult( );
-		
-		aOptions = jws.getOptions( aOptions, {
+
+		aOptions = jws.getOptions(aOptions, {
 			encoding: "base64",
 			decode: false
 		});
-		
-		if( this.isConnected( ) ) {
+
+		if (this.isConnected( )) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "load",
@@ -197,25 +197,34 @@ jws.FileSystemPlugIn = {
 				decode: aOptions.decode,
 				encoding: aOptions.encoding
 			};
-			
+
 			var lOnSuccess = aOptions.OnSuccess;
-			aOptions.OnSuccess = function( aToken ) {
-				if( "function" === typeof lOnSuccess ) {
-					if( lToken.decode ) {
-						switch( lToken.encoding ) {
+			aOptions.OnSuccess = function(aToken, aArguments) {
+				if ("function" === typeof lOnSuccess) {
+					if (lToken.decode && aToken.mime !== "text/plain") {
+						switch (lToken.encoding) {
 							case "base64":
-								aToken.data = Base64.decode( aToken.data );
+								if (aToken.__binaryData) {
+									aToken.data = decodeURIComponent(escape(atob(aToken.data)));
+								} else {
+									aToken.data = Base64.decode(aToken.data);
+								}
 								break;
 							case "zipBase64":
-								aToken.data = jws.tools.unzip( aToken.data, true );
+								if (aToken.__binaryData) {
+									aToken.data = jws.tools.unzip(decodeURIComponent(escape(atob(aToken.data))));
+								} else {
+									aToken.data = jws.tools.unzip(aToken.data, true);
+								}
 								break;
 						}
 					}
-					lOnSuccess( aToken );
+					console.log(aToken);
+					lOnSuccess(aToken, aArguments);
 				}
 			};
-			
-			this.sendToken( lToken,	aOptions );
+
+			this.sendToken(lToken, aOptions);
 		} else {
 			lRes.code = -1;
 			lRes.localeKey = "jws.jsc.res.notConnected";
