@@ -219,7 +219,6 @@ jws.FileSystemPlugIn = {
 								break;
 						}
 					}
-					console.log(aToken);
 					lOnSuccess(aToken, aArguments);
 				}
 			};
