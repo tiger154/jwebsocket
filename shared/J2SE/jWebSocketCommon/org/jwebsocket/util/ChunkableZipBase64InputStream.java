@@ -32,7 +32,7 @@ import org.jwebsocket.token.TokenFactory;
  * @author kyberneees, aschulze
  */
 public class ChunkableZipBase64InputStream extends BaseChunkable {
-	
+
 	private InputStream mIS;
 
 	/**
@@ -43,7 +43,7 @@ public class ChunkableZipBase64InputStream extends BaseChunkable {
 	 */
 	public ChunkableZipBase64InputStream(String aNS, String aType, InputStream aData) {
 		super(aNS, aType);
-		
+
 		try {
 			byte[] lData = new byte[aData.available()];
 			aData.read(lData, 0, aData.available());
@@ -62,7 +62,7 @@ public class ChunkableZipBase64InputStream extends BaseChunkable {
 	 */
 	public ChunkableZipBase64InputStream(String aNS, String aType, byte[] aData) {
 		super(aNS, aType);
-		
+
 		try {
 			byte[] lData = Tools.zip(aData, Tools.ENC_BASE64);
 			mIS = new ByteArrayInputStream(lData);
@@ -79,7 +79,7 @@ public class ChunkableZipBase64InputStream extends BaseChunkable {
 	 */
 	public ChunkableZipBase64InputStream(String aNS, String aType, String aData) {
 		super(aNS, aType);
-		
+
 		try {
 			byte[] lData = Tools.zip(aData.getBytes("UTF-8"), Tools.ENC_BASE64);
 			mIS = new ByteArrayInputStream(lData);
@@ -90,15 +90,27 @@ public class ChunkableZipBase64InputStream extends BaseChunkable {
 
 	/**
 	 *
+	 * @param aNS
+	 * @param aType
+	 * @param aData a ByteArrayInputStream with the data already zipped and base64 encoded
+	 */
+	public ChunkableZipBase64InputStream(String aNS, String aType, ByteArrayInputStream aData) {
+		super(aNS, aType);
+
+		mIS = aData;
+	}
+
+	/**
+	 *
 	 * @return
 	 */
 	public InputStream getIS() {
 		return mIS;
 	}
-	
+
 	@Override
 	public Iterator<Token> getChunksIterator() {
-		
+
 		return new Iterator<Token>() {
 			@Override
 			public boolean hasNext() {
@@ -108,29 +120,29 @@ public class ChunkableZipBase64InputStream extends BaseChunkable {
 					return false;
 				}
 			}
-			
+
 			@Override
 			public Token next() {
 				try {
 					int lLength = (mIS.available() > getFragmentSize()) ? getFragmentSize() : mIS.available();
 					Token lChunk = TokenFactory.createToken();
 					lChunk.setChunkType("stream" + getUniqueChunkId());
-					
+
 					byte[] lBA = new byte[lLength];
 					mIS.read(lBA, 0, lLength);
-					
+
 					String lData = new String(lBA);
-					
+
 					// do not encode this chunk again, the complete packet is already encoded
 					// lChunk.setMap("enc", new MapAppender().append("data", "plain").getMap());
 					lChunk.setString("data", lData);
-					
+
 					return lChunk;
 				} catch (Exception lEx) {
 					return null;
 				}
 			}
-			
+
 			@Override
 			public void remove() {
 				throw new UnsupportedOperationException("Not supported on InputStream objects!");
