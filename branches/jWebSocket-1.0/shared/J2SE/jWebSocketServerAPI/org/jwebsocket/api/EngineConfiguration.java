@@ -128,4 +128,11 @@ public interface EngineConfiguration extends Configuration {
 	 * @return the settings
 	 */
 	Map<String, Object> getSettings();
+
+	/**
+	 * Gets the engine socket server hostname
+	 *
+	 * @return
+	 */
+	String getHostname();
 }

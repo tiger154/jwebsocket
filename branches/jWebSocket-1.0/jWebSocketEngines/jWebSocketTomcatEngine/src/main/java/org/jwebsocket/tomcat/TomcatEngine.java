@@ -100,6 +100,11 @@ public class TomcatEngine extends BaseEngine {
 			}
 
 			mTomcat = new Tomcat();
+			// setting the socket server hostname
+			String lHostname = getConfiguration().getHostname();
+			if (null != lHostname) {
+				mTomcat.setHostname(lHostname);
+			}
 			mTomcatVersion = mTomcat.getServer().getInfo();
 			mTomcat.setPort(lPort);
 			mTomcat.setBaseDir(JWebSocketConfig.getConfigFolder("TomcatEngine"));

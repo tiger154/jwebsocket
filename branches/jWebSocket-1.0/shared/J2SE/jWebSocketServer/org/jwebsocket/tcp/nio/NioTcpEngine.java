@@ -144,7 +144,8 @@ public class NioTcpEngine extends BaseEngine {
 			mPlainSelector = SelectorProvider.provider().openSelector();
 			mSSLSelector = SelectorProvider.provider().openSelector();
 
-			mPlainServer = Util.createServerSocketChannel(getConfiguration().getPort());
+			mPlainServer = Util.createServerSocketChannel(getConfiguration().getPort(),
+					getConfiguration().getHostname());
 			mPlainServer.register(mPlainSelector, SelectionKey.OP_ACCEPT);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Non-SSL server running at port: " + getConfiguration().getPort() + "...");
@@ -157,7 +158,8 @@ public class NioTcpEngine extends BaseEngine {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("SSLContext created with key-store: " + getConfiguration().getKeyStore() + "...");
 				}
-				mSSLServer = Util.createServerSocketChannel(getConfiguration().getSSLPort());
+				mSSLServer = Util.createServerSocketChannel(getConfiguration().getSSLPort(),
+						getConfiguration().getHostname());
 				mSSLServer.register(mSSLSelector, SelectionKey.OP_ACCEPT);
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("SSL server running at port: " + getConfiguration().getSSLPort() + "...");

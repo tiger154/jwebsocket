@@ -21,6 +21,7 @@ package org.jwebsocket.tcp.nio;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.channels.ServerSocketChannel;
@@ -79,11 +80,15 @@ public class Util {
 	 * @return The ServerSocketChannel instance
 	 * @throws IOException
 	 */
-	public static ServerSocketChannel createServerSocketChannel(int aPort) throws IOException {
+	public static ServerSocketChannel createServerSocketChannel(int aPort, String aHostname) throws IOException {
 		ServerSocketChannel lServer = ServerSocketChannel.open();
 		lServer.configureBlocking(false);
-		lServer.socket().bind(new InetSocketAddress(aPort));
-
+		
+		if (null == aHostname){
+			lServer.socket().bind(new InetSocketAddress(aPort));
+		} else {
+			lServer.socket().bind(new InetSocketAddress(InetAddress.getByName(aHostname), aPort));
+		}
 		return lServer;
 	}
 }

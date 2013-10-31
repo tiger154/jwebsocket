@@ -45,6 +45,7 @@ public class EngineConfigHandler implements ConfigHandler {
 	private static final String CONTEXT = "context";
 	private static final String SERVLET = "servlet";
 	private static final String PORT = "port";
+	private static final String HOSTNAME = "hostname";
 	private static final String SSL_PORT = "sslport";
 	private static final String KEYSTORE = "keystore";
 	private static final String KEYSTORE_PASSWORD = "password";
@@ -64,6 +65,7 @@ public class EngineConfigHandler implements ConfigHandler {
 	public Config processConfig(XMLStreamReader aStreamReader)
 			throws XMLStreamException {
 		String lId = "", lName = "", lJar = "", lContext = "", lServlet = "",
+				lHostname = null,
 				lKeyStore = JWebSocketServerConstants.JWEBSOCKET_KEYSTORE,
 				lKeyStorePassword = JWebSocketServerConstants.JWEBSOCKET_KS_DEF_PWD,
 				lOnMaxConnectionsStrategy = JWebSocketServerConstants.DEFAULT_ON_MAX_CONNECTIONS_STRATEGY;
@@ -103,6 +105,9 @@ public class EngineConfigHandler implements ConfigHandler {
 				} else if (lElementName.equals(KEYSTORE_PASSWORD)) {
 					aStreamReader.next();
 					lKeyStorePassword = aStreamReader.getText();
+				} else if (lElementName.equals(HOSTNAME)) {
+					aStreamReader.next();
+					lHostname = aStreamReader.getText();
 				} else if (lElementName.equals(TIMEOUT)) {
 					aStreamReader.next();
 					lTimeout = Integer.parseInt(aStreamReader.getText());
@@ -131,7 +136,7 @@ public class EngineConfigHandler implements ConfigHandler {
 			}
 		}
 		return new EngineConfig(lId, lName, lJar,
-				lPort, lSSLPort, lKeyStore, lKeyStorePassword,
+				lPort, lSSLPort, lHostname, lKeyStore, lKeyStorePassword,
 				lContext, lServlet,
 				lTimeout, lFramesize, lDomains, lMaxConnections,
 				lOnMaxConnectionsStrategy,

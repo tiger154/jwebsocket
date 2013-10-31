@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.jetty;
 
+import java.net.InetSocketAddress;
 import java.util.Date;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
@@ -88,7 +89,14 @@ public class JettyEngine extends BaseEngine {
 						+ "', servlet: '" + lServlet + "'...");
 			}
 
-			mJettyServer = new Server(lPort);
+			// setting the socket server hostname
+			String lHostname = getConfiguration().getHostname();
+			if (null != lHostname) {
+				mJettyServer = new Server(InetSocketAddress.createUnresolved(lHostname, lPort));
+			} else {
+				mJettyServer = new Server(lPort);
+			}
+			
 			/*
 			 * SessionIdManager mSessionIdManager = new HashSessionIdManager();
 			 * ((HashSessionIdManager)mSessionIdManager).start();

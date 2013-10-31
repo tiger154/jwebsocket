@@ -38,6 +38,10 @@ public final class JWebSocketServerConstants {
 	 */
 	public static final String DEFAULT_INSTALLATION = "prod";
 	/**
+	 * Constant for default server hostname
+	 */
+	public static final String DEFAULT_HOSTNAME = "localhost";
+	/**
 	 * Constant for JWEBSOCKET_HOME environment variable
 	 */
 	public static final String JWEBSOCKET_HOME = "JWEBSOCKET_HOME";
