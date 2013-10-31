@@ -81,6 +81,7 @@ public class JWebSocketSubSystemSample {
 				"-", // jar, needs to be in classpath, i.e. embedded in .jar'/manifest
 				JWebSocketCommonConstants.DEFAULT_PORT, // unsecured nonssl-port
 				JWebSocketCommonConstants.DEFAULT_SSLPORT, // secured ssl-port
+				JWebSocketServerConstants.DEFAULT_HOSTNAME, // default hostname
 				JWebSocketServerConstants.JWEBSOCKET_KEYSTORE, // default keystore file
 				JWebSocketServerConstants.JWEBSOCKET_KS_DEF_PWD, // default keystore file password
 				JWebSocketCommonConstants.JWEBSOCKET_DEF_CONTEXT, // context if such

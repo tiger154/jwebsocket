@@ -96,7 +96,13 @@ public class GrizzlyEngine extends BaseEngine {
 						+ "', servlet: '" + lEngineApp + "'...");
 			}
 
-			mGrizzlyServer = WebSocketServer.createServer(mGrizzlyPort);
+			// setting the socket server hostname
+			String lHostname = getConfiguration().getHostname();
+			if (null != lHostname) {
+				mGrizzlyServer = WebSocketServer.createServer(lHostname, mGrizzlyPort);
+			} else {
+				mGrizzlyServer = WebSocketServer.createServer(mGrizzlyPort);
+			}
 			mGrizzlyServer.register("jWebSocketEngine", new GrizzlyWebSocketApplication(this));
 
 			// Create encrypted (SSL) server socket for wss:// protocol

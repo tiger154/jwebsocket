@@ -39,6 +39,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	private final String mContext;
 	private final String mServlet;
 	private final Integer mPort;
+	private final String mHostname;
 	private final Integer mSSLPort;
 	private final String mKeyStore;
 	private final String mKeyStorePassword;
@@ -70,7 +71,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	 * @param aOnMaxConnectionsStrategy
 	 */
 	public EngineConfig(String aId, String aName, String aJar, Integer aPort,
-			Integer aSSLPort, String aKeyStore, String aKeyStorePassword,
+			Integer aSSLPort, String aHostname, String aKeyStore, String aKeyStorePassword,
 			String aContext, String aServlet, int aTimeout,
 			int aMaxFrameSize, List<String> aDomains, Integer aMaxConnections,
 			String aOnMaxConnectionsStrategy, Map<String, Object> aSettigns) {
@@ -79,6 +80,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 		this.mJar = aJar;
 		this.mContext = aContext;
 		this.mServlet = aServlet;
+		this.mHostname = aHostname;
 		this.mPort = aPort;
 		this.mSSLPort = aSSLPort;
 		this.mKeyStore = aKeyStore;
@@ -115,6 +117,11 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	@Override
 	public String getJar() {
 		return mJar;
+	}
+
+	@Override
+	public String getHostname() {
+		return mHostname;
 	}
 
 	/**

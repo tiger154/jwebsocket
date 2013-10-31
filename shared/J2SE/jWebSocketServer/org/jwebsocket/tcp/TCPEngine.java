@@ -19,6 +19,7 @@
 package org.jwebsocket.tcp;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
@@ -55,6 +56,7 @@ public class TCPEngine extends BaseEngine {
 	private int mTCPListenerPort = JWebSocketCommonConstants.DEFAULT_PORT;
 	private int mSSLListenerPort = JWebSocketCommonConstants.DEFAULT_SSLPORT;
 	private int mSessionTimeout = JWebSocketCommonConstants.DEFAULT_TIMEOUT;
+	private String mHostname;
 	private String mKeyStore = JWebSocketServerConstants.JWEBSOCKET_KEYSTORE;
 	private String mKeyStorePassword = JWebSocketServerConstants.JWEBSOCKET_KS_DEF_PWD;
 	private boolean mIsRunning = false;
@@ -108,6 +110,7 @@ public class TCPEngine extends BaseEngine {
 		mSessionTimeout = aConfiguration.getTimeout();
 		mKeyStore = aConfiguration.getKeyStore();
 		mKeyStorePassword = aConfiguration.getKeyStorePassword();
+		mHostname = aConfiguration.getHostname();
 
 		// settings for the OutputStreamNIOWriter mechanism
 		if (getConfiguration().getSettings().containsKey(NUM_WORKERS_CONFIG_KEY)) {
@@ -177,7 +180,11 @@ public class TCPEngine extends BaseEngine {
 					+ "...");
 		}
 		try {
-			mTCPServerSocket = new ServerSocket(mTCPListenerPort);
+			if (null != mHostname) {
+				mTCPServerSocket = new ServerSocket(mTCPListenerPort, 0, InetAddress.getByName(mHostname));
+			} else {
+				mTCPServerSocket = new ServerSocket(mTCPListenerPort, 0);
+			}
 
 			EngineListener lListener = new EngineListener(this, mTCPServerSocket);
 			mTCPEngineThread = new Thread(lListener);

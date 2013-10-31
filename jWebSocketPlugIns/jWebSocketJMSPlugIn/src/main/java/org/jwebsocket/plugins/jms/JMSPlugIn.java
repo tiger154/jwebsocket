@@ -112,6 +112,7 @@ public class JMSPlugIn extends TokenPlugIn {
 					"-", // jar
 					0, // port
 					0, // ssl port
+					JWebSocketServerConstants.DEFAULT_HOSTNAME,
 					"-", // keystore
 					"-", // keystore pw
 					"-", // context
