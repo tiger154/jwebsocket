@@ -21,7 +21,7 @@ App.importScript('${APP_HOME}/service/NotesService');
 
 App.on('appLoaded', function(){
 	// setting the app description
-	App.setDescription('Basic Notebook application for notes management')
+	App.setDescription('Basic Notebook application for notes management');
 	
 	NotesService.initialize();
 	
@@ -50,7 +50,7 @@ App.on('appLoaded', function(){
 			return {
 				data: NotesService.list(lUsername, aOffset, aLength),
 				total: NotesService.count(lUsername) 
-			}
+			};
 		},
 		edit: function(aNoteId, aTitle, aBody, aConnector){
 			App.assertTrue('string' == typeof aNoteId, 'The "noteId" argument cannot be null!');
@@ -66,7 +66,7 @@ App.on('appLoaded', function(){
 			var lUsername = aConnector.getUsername();
 			return NotesService.remove(lUsername, aNoteId);
 		}
-	})
+	});
 });
 
 App.on('beforeAppReload', function(){
