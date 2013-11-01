@@ -47,8 +47,8 @@ import org.jwebsocket.util.Tools;
  */
 public class JMSLoadBalancer implements IInitializable {
 
-	private final String mServerDestination;
-	private final Session mSession, mSession2;
+	private final String mServerDestination, mHostname;
+	private final Session mClientsSession, mServerSession;
 	private final INodesManager mNodesManager;
 	private MessageConsumer mClientsMessagesConsumer;
 	private MessageConsumer mClientsConnectionAdvisor;
@@ -57,13 +57,14 @@ public class JMSLoadBalancer implements IInitializable {
 	private Logger mLog = Logging.getLogger();
 	private final String mNodeId;
 
-	public JMSLoadBalancer(String aNodeId, String aDestination, Session aSession,
-			Session aSession2, INodesManager aNodesManager) {
+	public JMSLoadBalancer(String aNodeId, String aDestination, Session aClientSession,
+			Session aNodeSession, INodesManager aNodesManager, String aHostname) {
 		mServerDestination = aDestination;
-		mSession = aSession;
-		mSession2 = aSession2;
+		mClientsSession = aClientSession;
+		mServerSession = aNodeSession;
 		mNodesManager = aNodesManager;
 		mNodeId = aNodeId;
+		mHostname = aHostname;
 	}
 
 	@Override
@@ -75,13 +76,13 @@ public class JMSLoadBalancer implements IInitializable {
 		mNodesManager.initialize();
 
 		// clients topic
-		final Topic lClientsTopic = mSession.createTopic(mServerDestination);
+		final Topic lClientsTopic = mClientsSession.createTopic(mServerDestination);
 		// nodes topic
-		final Topic lNodesTopic = mSession.createTopic(mServerDestination + "_nodes");
+		final Topic lNodesTopic = mClientsSession.createTopic(mServerDestination + "_nodes");
 
-		mClientsMessagesConsumer = mSession.createConsumer(lClientsTopic,
+		mClientsMessagesConsumer = mClientsSession.createConsumer(lClientsTopic,
 				Attributes.MESSAGE_TYPE + " IS NOT NULL" + " AND " + Attributes.MESSAGE_ID + " IS NOT NULL");
-		mNodesMessagesProducer = mSession2.createProducer(lNodesTopic);
+		mNodesMessagesProducer = mServerSession.createProducer(lNodesTopic);
 
 		// client messages listener
 		mClientsMessagesConsumer.setMessageListener(new MessageListener() {
@@ -123,7 +124,7 @@ public class JMSLoadBalancer implements IInitializable {
 								mLog.info("Processing message(CONNECTION) from client...");
 							}
 							// payload
-							Message lRequest = mSession.createMessage();
+							Message lRequest = mClientsSession.createMessage();
 							// type
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
 							// setting the worker node selected by the LB
@@ -144,7 +145,7 @@ public class JMSLoadBalancer implements IInitializable {
 							if (mLog.isDebugEnabled()) {
 								mLog.info("Processing message(MESSAGE) from client...");
 							}
-							TextMessage lRequest = mSession.createTextMessage(aMessage.getStringProperty(Attributes.DATA));
+							TextMessage lRequest = mClientsSession.createTextMessage(aMessage.getStringProperty(Attributes.DATA));
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
 							lRequest.setStringProperty(Attributes.REPLY_SELECTOR, lReplySelector);
 
@@ -159,7 +160,7 @@ public class JMSLoadBalancer implements IInitializable {
 							if (mLog.isDebugEnabled()) {
 								mLog.info("Processing message(ACK) from client...");
 							}
-							TextMessage lRequest = mSession.createTextMessage(aMessage.getStringProperty(Attributes.DATA));
+							TextMessage lRequest = mClientsSession.createTextMessage(aMessage.getStringProperty(Attributes.DATA));
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.MESSAGE.name());
 							lRequest.setStringProperty(Attributes.REPLY_SELECTOR, lReplySelector);
 
@@ -174,7 +175,7 @@ public class JMSLoadBalancer implements IInitializable {
 							if (mLog.isDebugEnabled()) {
 								mLog.info("Processing message(DISCONNECTION) from client...");
 							}
-							Message lRequest = mSession.createMessage();
+							Message lRequest = mClientsSession.createMessage();
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, lType.name());
 							lRequest.setStringProperty(Attributes.REPLY_SELECTOR, lReplySelector);
 
@@ -192,7 +193,7 @@ public class JMSLoadBalancer implements IInitializable {
 			}
 		});
 
-		mClientsConnectionAdvisor = mSession2.createConsumer(AdvisorySupport.getConsumerAdvisoryTopic(lClientsTopic));
+		mClientsConnectionAdvisor = mServerSession.createConsumer(AdvisorySupport.getConsumerAdvisoryTopic(lClientsTopic));
 		mClientsConnectionAdvisor.setMessageListener(new MessageListener() {
 			@Override
 			public void onMessage(Message aMessage) {
@@ -212,7 +213,7 @@ public class JMSLoadBalancer implements IInitializable {
 							}
 
 							String lNodeId = mNodesManager.getOptimumNode();
-							Message lRequest = mSession.createMessage();
+							Message lRequest = mClientsSession.createMessage();
 							lRequest.setStringProperty(Attributes.MESSAGE_TYPE, MessageType.DISCONNECTION.name());
 							lRequest.setStringProperty(Attributes.CONSUMER_ID, Tools.getMD5(lConsumerId));
 
@@ -230,7 +231,7 @@ public class JMSLoadBalancer implements IInitializable {
 		});
 
 		// nodes connection listener
-		mNodesConnectionAdvisor = mSession2.createConsumer(AdvisorySupport.getConsumerAdvisoryTopic(lNodesTopic));
+		mNodesConnectionAdvisor = mServerSession.createConsumer(AdvisorySupport.getConsumerAdvisoryTopic(lNodesTopic));
 		mNodesConnectionAdvisor.setMessageListener(new MessageListener() {
 			@Override
 			public void onMessage(Message aMessage) {
@@ -290,9 +291,10 @@ public class JMSLoadBalancer implements IInitializable {
 	private void register() throws Exception {
 		Map<String, String> lConsumerData = mNodesManager.getConsumerAdviceTempStorage().getData(mNodeId);
 		// registering node
+		
 		mNodesManager.register(lConsumerData.get(Attributes.CONSUMER_ID),
 				mNodeId, mNodesManager.getNodeDescription(),
-				InetAddress.getLocalHost().getHostAddress(),
+				InetAddress.getByName(mHostname).getHostAddress(),
 				Tools.getCpuUsage());
 
 		// registering node CPU usage updater
