@@ -50,7 +50,7 @@ import org.springframework.util.Assert;
  */
 public class JMSEngine extends BaseEngine {
 
-	private final Logger mLog = Logging.getLogger();
+	private final static Logger mLog = Logging.getLogger();
 	private String mDestination;
 	private final String NS = "org.jwebsocket.jms.engine";
 	private final ApplicationContext mBeanFactory;

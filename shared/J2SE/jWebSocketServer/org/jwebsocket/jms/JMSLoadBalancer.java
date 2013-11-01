@@ -54,7 +54,7 @@ public class JMSLoadBalancer implements IInitializable {
 	private MessageConsumer mClientsConnectionAdvisor;
 	private MessageConsumer mNodesConnectionAdvisor;
 	private MessageProducer mNodesMessagesProducer;
-	private final Logger mLog = Logging.getLogger();
+	private final static Logger mLog = Logging.getLogger();
 	private final String mNodeId;
 
 	public JMSLoadBalancer(String aNodeId, String aDestination, Session aClientSession,
