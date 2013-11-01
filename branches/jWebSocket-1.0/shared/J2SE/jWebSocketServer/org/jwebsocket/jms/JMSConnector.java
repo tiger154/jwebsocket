@@ -44,7 +44,7 @@ public class JMSConnector extends BaseConnector {
 	private final String mConsumerId;
 	private final String mConnectionId;
 	private final String mReplySelector;
-	private final Logger mLog = Logging.getLogger();
+	private final static Logger mLog = Logging.getLogger();
 
 	/**
 	 * jWebSocket connector implementation for JMS connections 

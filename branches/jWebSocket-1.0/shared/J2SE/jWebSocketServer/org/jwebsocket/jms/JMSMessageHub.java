@@ -41,7 +41,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class JMSMessageHub implements IInitializable {
 
-	private final Logger mLog = Logging.getLogger();
+	private final static Logger mLog = Logging.getLogger();
 	private final Map<String, List<MessageListener>> mListeners = new FastMap<String, List<MessageListener>>().shared();
 	private MessageConsumer mConsumer;
 	private MessageProducer mProducer;
