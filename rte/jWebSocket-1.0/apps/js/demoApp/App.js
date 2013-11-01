@@ -13,8 +13,8 @@ App.on('appLoaded', function(){
 	App.setDescription('Demo application with JavaScript at the server-side.');
 
 	// importing Java classes
-	var FileUtils = Class('org.apache.commons.io.FileUtils');
-	var File = Class('java.io.File');
+	var FileUtils = Packages.org.apache.commons.io.FileUtils;
+	var File = Packages.java.io.File;
 
 	// registering on app event for filter in tokens
 	App.on('filterIn', function(aToken) {

@@ -3,7 +3,7 @@
 App.loadJar('${APP_HOME}/StaticTest.jar');
 
 App.on('appLoaded', function(aHotLoad){
-	if (false == aHotLoad){
+	if (false === aHotLoad){
 		App.loadToAppBeanFactory('${APP_HOME}/beans.xml');
 	}
 	
@@ -42,7 +42,7 @@ App.on('appLoaded', function(aHotLoad){
 		},
 		sandbox: function(){
 			// should fire a security exception
-			Class('org.jwebsocket.util.Tools').getTimer();
+			Packages.org.jwebsocket.util.Tools.getTimer();
 		},
 		time: function(){
 			return lClock.getTime();
