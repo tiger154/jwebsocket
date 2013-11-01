@@ -50,16 +50,16 @@ import org.springframework.util.Assert;
  */
 public class JMSEngine extends BaseEngine {
 
-	private static Logger mLog = Logging.getLogger();
+	private final Logger mLog = Logging.getLogger();
 	private String mDestination;
 	private final String NS = "org.jwebsocket.jms.engine";
-	private ApplicationContext mBeanFactory;
+	private final ApplicationContext mBeanFactory;
 	private Connection mConnection;
 	private Session mSessionForClients, mSessionForServer;
 	private JMSMessageListener mMessageListener;
 	private IConnectorsManager mConnectorsManager;
 	private MessageProducer mReplyProducer;
-	private String mNodeId = JWebSocketConfig.getConfig().getNodeId();
+	private final String mNodeId = JWebSocketConfig.getConfig().getNodeId();
 	private JMSLoadBalancer mLB;
 	private INodesManager mNodesManager;
 

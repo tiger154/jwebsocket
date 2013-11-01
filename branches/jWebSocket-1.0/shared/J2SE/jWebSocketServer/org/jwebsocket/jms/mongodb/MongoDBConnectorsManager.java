@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  */
 public class MongoDBConnectorsManager extends BaseConnectorsManager {
 
-	private DBCollection mCollection;
+	private DBCollection mConnectors;
 
 	public MongoDBConnectorsManager() {
 	}
@@ -49,8 +49,8 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 		Assert.notNull(aConnectionId);
 		Assert.notNull(aReplySelector);
 
-		if (null == mCollection.findOne(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId))) {
-			mCollection.save(new BasicDBObject()
+		if (null == mConnectors.findOne(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId))) {
+			mConnectors.save(new BasicDBObject()
 					.append(Attributes.CONNECTION_ID, aConnectionId)
 					.append(Attributes.CONSUMER_ID, aConsumerId)
 					.append(Attributes.REPLY_SELECTOR, aReplySelector)
@@ -62,7 +62,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 
 	@Override
 	public boolean exists(String aReplySelector) throws Exception {
-		return null != mCollection.findOne(new BasicDBObject()
+		return null != mConnectors.findOne(new BasicDBObject()
 				.append(Attributes.STATUS, ConnectorStatus.UP)
 				.append(Attributes.REPLY_SELECTOR, aReplySelector));
 	}
@@ -93,7 +93,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 		}
 
 		// getting the connector entry on database
-		DBObject lRecord = mCollection.findOne(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector));
+		DBObject lRecord = mConnectors.findOne(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector));
 
 		// creating connector from database entry
 		return toConnector(lRecord);
@@ -101,21 +101,21 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 
 	@Override
 	public void remove(String aConsumerId) throws Exception {
-		mCollection.remove(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
+		mConnectors.remove(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
 	}
 
 	public void setCollection(DBCollection aCollection) {
-		mCollection = aCollection;
+		mConnectors = aCollection;
 	}
 
 	public DBCollection getCollection() {
-		return mCollection;
+		return mConnectors;
 	}
 
 	@Override
 	public void setStatus(String aReplySelector, int aStatus) throws Exception {
 		Assert.isTrue(exists(aReplySelector), "The given 'replySelector' was not found!");
-		mCollection.update(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector),
+		mConnectors.update(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector),
 				new BasicDBObject()
 				.append("$set", new BasicDBObject()
 				.append(Attributes.STATUS, aStatus)));
@@ -123,7 +123,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 
 	@Override
 	public Map<String, WebSocketConnector> getAll() throws Exception {
-		DBCursor lCursor = mCollection.find(new BasicDBObject().append(Attributes.STATUS, ConnectorStatus.UP));
+		DBCursor lCursor = mConnectors.find(new BasicDBObject().append(Attributes.STATUS, ConnectorStatus.UP));
 
 		Map<String, WebSocketConnector> lConnectors = new HashMap<String, WebSocketConnector>();
 		while (lCursor.hasNext()) {
@@ -136,7 +136,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 
 	@Override
 	public String getReplySelectorByConsumerId(String aConsumerId) throws Exception {
-		DBCursor lCursor = mCollection.find(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
+		DBCursor lCursor = mConnectors.find(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
 
 		if (lCursor.hasNext()) {
 			return lCursor.next().get(Attributes.REPLY_SELECTOR).toString();
@@ -148,8 +148,8 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 	public void initialize() throws Exception {
 		super.initialize();
 
-		mCollection.ensureIndex(new BasicDBObject().append(Attributes.CONSUMER_ID, 1));
-		mCollection.ensureIndex(new BasicDBObject().append(Attributes.REPLY_SELECTOR, 1),
+		mConnectors.ensureIndex(new BasicDBObject().append(Attributes.CONSUMER_ID, 1));
+		mConnectors.ensureIndex(new BasicDBObject().append(Attributes.REPLY_SELECTOR, 1),
 				new BasicDBObject().append("unique", true));
 	}
 }

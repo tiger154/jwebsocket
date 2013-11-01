@@ -36,7 +36,7 @@ import org.jwebsocket.util.Tools;
  */
 public class JMSMessageListener implements MessageListener, IInitializable {
 
-	private JMSEngine mEngine;
+	private final JMSEngine mEngine;
 	private MessageConsumer mConsumer;
 
 	public JMSMessageListener(JMSEngine aEngine) {
