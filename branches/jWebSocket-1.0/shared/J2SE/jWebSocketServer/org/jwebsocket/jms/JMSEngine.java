@@ -32,6 +32,7 @@ import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.jms.api.IConnectorsManager;
 import org.jwebsocket.jms.api.INodesManager;
@@ -54,7 +55,7 @@ public class JMSEngine extends BaseEngine {
 	private final String NS = "org.jwebsocket.jms.engine";
 	private ApplicationContext mBeanFactory;
 	private Connection mConnection;
-	private Session mSession, mSession2;
+	private Session mSessionForClients, mSessionForServer;
 	private JMSMessageListener mMessageListener;
 	private IConnectorsManager mConnectorsManager;
 	private MessageProducer mReplyProducer;
@@ -87,7 +88,7 @@ public class JMSEngine extends BaseEngine {
 	}
 
 	public Session getSession() {
-		return mSession;
+		return mSessionForClients;
 	}
 
 	public INodesManager getNodesManager() {
@@ -99,7 +100,7 @@ public class JMSEngine extends BaseEngine {
 		// temporal patch to support InternalClient instances
 		Map<String, WebSocketConnector> lConnectors = new HashMap<String, WebSocketConnector>();
 		lConnectors.putAll(super.getConnectors());
-		
+
 		try {
 			lConnectors.putAll(mConnectorsManager.getAll());
 			return lConnectors;
@@ -145,13 +146,13 @@ public class JMSEngine extends BaseEngine {
 
 			// starting the connection
 			mConnection.start();
-			// creating the session
-			mSession = mConnection.createSession(false,
+			// creating the sessions
+			mSessionForClients = mConnection.createSession(false,
 					Session.AUTO_ACKNOWLEDGE);
-			mSession2 = mConnection.createSession(false,
+			mSessionForServer = mConnection.createSession(false,
 					Session.AUTO_ACKNOWLEDGE);
 			// setting the global reply producer
-			mReplyProducer = mSession.createProducer(mSession.createTopic(mDestination));
+			mReplyProducer = mSessionForClients.createProducer(mSessionForClients.createTopic(mDestination));
 
 			// initializing connectors manager
 			mConnectorsManager = (IConnectorsManager) mBeanFactory.getBean("connectorsManager");
@@ -159,11 +160,17 @@ public class JMSEngine extends BaseEngine {
 			// creating message listener
 			mMessageListener = new JMSMessageListener(this);
 			mMessageListener.initialize();
+			
 			// creating the load balancer
 			mNodesManager = (INodesManager) mBeanFactory.getBean("nodesManager");
 
 			final INodesManager lNodesManager = (INodesManager) mBeanFactory.getBean("nodesManager");
-			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSession, mSession2, mNodesManager) {
+			// getting the hostname
+			String lHostname = getConfiguration().getHostname();
+			if (null == lHostname) {
+				lHostname = JWebSocketServerConstants.DEFAULT_HOSTNAME;
+			}
+			mLB = new JMSLoadBalancer(mNodeId, mDestination, mSessionForClients, mSessionForServer, mNodesManager, lHostname) {
 				@Override
 				public void shutdown() throws Exception {
 					// close clients if all nodes are down
@@ -236,8 +243,8 @@ public class JMSEngine extends BaseEngine {
 		// stopping connectors manager
 		mConnectorsManager.shutdown();
 		// closing the JMS session
-		mSession.close();
-		mSession2.close();
+		mSessionForClients.close();
+		mSessionForServer.close();
 		// closing the JMS connection
 		mConnection.close();
 
