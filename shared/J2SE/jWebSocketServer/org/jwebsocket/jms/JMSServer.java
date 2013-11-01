@@ -39,7 +39,7 @@ import org.jwebsocket.token.Token;
  */
 public class JMSServer extends TokenServer {
 
-	private static Logger mLog = Logging.getLogger(JMSServer.class);
+	private final Logger mLog = Logging.getLogger(JMSServer.class);
 	private JMSMessageHub mMessageHub = null;
 	private IClusterSynchronizer mSynchronizer = null;
 

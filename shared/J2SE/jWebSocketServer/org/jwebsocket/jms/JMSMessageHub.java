@@ -41,11 +41,11 @@ import org.jwebsocket.logging.Logging;
  */
 public class JMSMessageHub implements IInitializable {
 
-	private Logger mLog = Logging.getLogger();
-	private Map<String, List<MessageListener>> mListeners = new FastMap<String, List<MessageListener>>().shared();
+	private final Logger mLog = Logging.getLogger();
+	private final Map<String, List<MessageListener>> mListeners = new FastMap<String, List<MessageListener>>().shared();
 	private MessageConsumer mConsumer;
 	private MessageProducer mProducer;
-	private JMSEngine mEngine;
+	private final JMSEngine mEngine;
 
 	public JMSMessageHub(JMSEngine aEngine) {
 		mEngine = aEngine;

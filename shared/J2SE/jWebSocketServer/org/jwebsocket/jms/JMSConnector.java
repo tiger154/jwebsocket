@@ -44,15 +44,15 @@ public class JMSConnector extends BaseConnector {
 	private final String mConsumerId;
 	private final String mConnectionId;
 	private final String mReplySelector;
-	private Logger mLog = Logging.getLogger();
+	private final Logger mLog = Logging.getLogger();
 
 	/**
-	 * jWebSocket connector implementation for JMS connections
-	 *
+	 * jWebSocket connector implementation for JMS connections 
+	 * 
 	 * @param aEngine
-	 * @param aJMSSender
-	 * @param aRemoteHost
-	 * @param aSessionId
+	 * @param aReplySelector
+	 * @param aConnectionId
+	 * @param aConsumerId 
 	 */
 	public JMSConnector(WebSocketEngine aEngine, String aReplySelector, String aConnectionId, String aConsumerId) {
 		super(aEngine);
