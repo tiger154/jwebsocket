@@ -244,17 +244,6 @@ var App = (function() {
 		setSystemProperty: function(aPropertyName, aValue){
 			return AppUtils.setSystemProperty(aPropertyName, aValue);
 		},
-		getClass: function(aClassName){
-			var lPackages = aClassName.split('.');
-			var lPackage = mPackages;
-			for (var lIndex = 0; lIndex < lPackages.length - 1; lIndex++){
-				lPackage = lPackage[lPackages[lIndex]];
-				if (!lPackage) return null;
-			}
-			
-			// getting class
-			return lPackage[lPackages[lPackages.length - 1]];
-		},
 		setModule: function(aName, aModule){
 			App.getStorage().put('module.' + aName, aModule);
 			return aModule;
@@ -403,11 +392,6 @@ var App = (function() {
 		}
 	};
 })();
-
-// alias of App.getClass method
-Class = function(aClassName){
-	return App.getClass(aClassName);
-};
 
 /**
  * jWebSocket JavaScript plug-ins bridge
