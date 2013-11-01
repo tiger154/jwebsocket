@@ -78,7 +78,7 @@ import org.springframework.util.Assert;
  */
 public class ScriptingPlugIn extends ActionPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 * The ScriptingPlugIn namespace.
 	 */
