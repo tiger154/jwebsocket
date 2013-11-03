@@ -112,9 +112,9 @@ public class JMSClient {
 		final JWSEndPointSender lSender = new JWSEndPointSender(lJMSEndPoint);
 
 		// integrate OAuth library
-		final OAuth lOAuth = new OAuth("https://hqdvpngpoc01.nvidia.com/as/token.oauth2", "2Federate");
+		// final OAuth lOAuth = new OAuth("https://hqdvpngpoc01.nvidia.com/as/token.oauth2", "2Federate");
 		// lOAuth.setBaseURL("https://localhost/as/token.oauth2");
-		lOAuth.authDirect("aschulze@nvidia.com", "Yami#2812");
+		// lOAuth.authDirect("aschulze@nvidia.com", "Yami#2812");
 
 		// on welcome message from jWebSocket, authenticate against jWebSocket
 		lListener.addRequestListener("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
@@ -189,7 +189,7 @@ public class JMSClient {
 				new JWSMessageListener(lSender) {
 			@Override
 			public void processToken(String aSourceId, Token aToken) {
-				
+
 				int lCode = aToken.getInteger("code", -1);
 				if (0 == lCode) {
 					if (mLog.isInfoEnabled()) {
@@ -199,27 +199,39 @@ public class JMSClient {
 					mLog.error("Authentication against jWebSocket JMS Gateway failed!");
 				}
 
+				Map lArgs = new FastMap<String, Object>();
+				lArgs.put("echo", "This is the echo message");
+
 				// lSender.ping("server-aschulze-dt");
-				lSender.getIdentification("*");
+				// lSender.getIdentification("*");
+				lSender.sendPayload(
+						"org.jwebsocket.jms.gateway", // target id
+						"org.jwebsocket.plugins.jmsdemo", // ns
+						"echo", // type
+						lArgs, "any additional payload if required");
+				/*
+				Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.jmsdemo", "echo");
+				lToken.setString("echo", "This is the echo message");
+				lSender.sendToken("org.jwebsocket.jms.gateway", lToken);
+				*/
 				if (true) {
 					return;
 				}
 
-				Map lArgs = new FastMap<String, Object>();
 				// lSender.sendPayload("wcslv01.dev.nvdia.com", "com.ptc.windchill",
 				//	"getNewPartRequest", lArgs, "{}"); // getLibraryPart, getManufacturerPart "wcslv01.dev.nvidia.com"
 				mLog.info("Sending getLibraryPart");
 				lSender.sendPayload("hqdvptas134", "com.ptc.windchill",
-					"getLibraryPart", lArgs, "{}");
+						"getLibraryPart", lArgs, "{}");
 				/*
 				 lSender.sendPayload("aschulze-dt", "org.jwebsocket.svcep.demo",
 				 "demo1", lArgs, "{}");
 				 */
-				 /*
-				lArgs.put("accessToken", lOAuth.getAccessToken());
-				lSender.sendPayload("server-aschulze-dt", "org.jwebsocket.svcep.demo",
-						"sso1", lArgs, "{}");
-				*/ 
+				/*
+				 lArgs.put("accessToken", lOAuth.getAccessToken());
+				 lSender.sendPayload("server-aschulze-dt", "org.jwebsocket.svcep.demo",
+				 "sso1", lArgs, "{}");
+				 */
 				/*
 				 lSender.sendPayload("hqdvptas138", "com.ptc.windchill",
 				 "createBOM", lArgs, "{}");
@@ -239,6 +251,15 @@ public class JMSClient {
 				// send the payload to the target (here the JMS demo service)
 				lSender.sendPayload("HQDVPTAS110", "com.ptc.windchill",
 						"getLibraryPart", lArgs, "{}");
+			}
+		});
+
+		// process response echo request to the JMS demo plug-in...
+		lListener.addResponseListener("org.jwebsocket.plugins.jmsdemo", "echo",
+				new JWSMessageListener(lSender) {
+			@Override
+			public void processToken(String aSourceId, Token aToken) {
+				mLog.info("Response to 'echo' received: " + aToken.toString());
 			}
 		});
 
