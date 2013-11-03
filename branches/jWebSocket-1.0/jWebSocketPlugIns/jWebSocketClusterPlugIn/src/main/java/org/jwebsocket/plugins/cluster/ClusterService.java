@@ -52,6 +52,8 @@ public class ClusterService {
 				"-", // jar
 				0, // port
 				0, // ssl port
+				// TODO: replace by intended valid id or correct hostname!
+				"hostnamee", // hostname
 				"-", // keystore
 				"-", // keystore pw
 				"-", // context
