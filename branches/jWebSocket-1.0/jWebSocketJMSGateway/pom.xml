@@ -18,6 +18,8 @@
 		<module>jWebSocketJMSClient</module>
 		<!-- jWebSocket JMS Server -->
 		<module>jWebSocketJMSServer</module>
+		<!-- jWebSocket JMS Demo Plug.in -->
+		<module>jWebSocketJMSDemoPlugIn</module>
 	</modules>
 	
 	<properties>
