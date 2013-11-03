@@ -1,4 +1,3 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
@@ -95,13 +94,15 @@
 			<version>1.6.4</version>
 		</dependency>
 		<!-- Spring 2.0 m5 exclusion -->
+		<!--
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring</artifactId>
 			<version>2.0-m5</version>
-			<!--  Keep this! Required to force use of higher version of Spring (3.x)!  -->
+			< ! - -  Keep this! Required to force use of higher version of Spring (3.x)!  - - >
 			<scope>provided</scope>
 		</dependency>
+		-->
 		<!-- javolution -->
 		<dependency>
 			<groupId>javolution</groupId>
