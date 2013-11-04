@@ -30,7 +30,7 @@ var mClients = App.getStorage().get('clients');
 
 App.on('appLoaded', function(){
 	// setting the app description
-	App.setDescription('Basic Chat application with public and private chats')
+	App.setDescription('Basic Chat application with public and private chats');
 	
 	App.publish('Chat', {
 		register: function(aConnector){
