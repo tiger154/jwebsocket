@@ -1,7 +1,7 @@
 <!--
-//	---------------------------------------------------------------------------
+//	***************************************************************************
 //	jWebSocket Calendar script app demo (Community Edition, CE)
-//	---------------------------------------------------------------------------
+//	***************************************************************************
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
@@ -16,14 +16,14 @@
 //	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
-//	---------------------------------------------------------------------------
+//	***************************************************************************
 -->
 <!DOCTYPE html>
 <html>
 	<head>
 		<title>Chat Script App demo</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+		<link rel="stylesheet" type="text/css" href="../../../res/css/jwebsocket.css">
 		<script src="../../../res/js/jWebSocket.js" type="text/javascript"></script>
 		<script src="../../../res/js/jwsScriptingPlugIn.js" type="text/javascript"></script>
 		<script type="text/javascript">
@@ -39,21 +39,21 @@
 				OnWelcome: function(){
 					lClient.addPlugIn({
 						processToken: function(aToken){
-							if ('event' == aToken.type){
+							if ('event' === aToken.type){
 								if ('connection' == aToken.name){
 									lUsers.push(aToken.user);
 									renderUsers();
 										
 									log('# user "' + aToken.user + '" connected!');
-								} else if ('disconnection' == aToken.name){
+								} else if ('disconnection' === aToken.name){
 									var lIndex = lUsers.indexOf(aToken.user);
 									lUsers.splice(lIndex, 1);
 									renderUsers();
 										
 									log('# user "' + aToken.user + '" disconnected!');
-								} else if ('pubmessage' == aToken.name){
+								} else if ('pubmessage' === aToken.name){
 									log('public: ' + aToken.user + ', ' + aToken.message);
-								} else if ('privmessage' == aToken.name){
+								} else if ('privmessage' === aToken.name){
 									log('private from ' + aToken.user + ', ' + aToken.message);
 								}
 							}
@@ -75,7 +75,7 @@
 						renderUsers();
 					}
 				});
-			}
+			};
 			
 			printTpl = function(aTplStr, aVars){
 				for (var lVar in aVars){
@@ -83,7 +83,7 @@
 				}
 				
 				return aTplStr;
-			}
+			};
 			
 			log = function(aMessage){
 				var lDate = new Date();
@@ -93,7 +93,7 @@
 					+ ' ' + aMessage;
 				
 				jws.$('messageconsole').appendChild(e);
-			}
+			};
 			
 			renderUsers = function(){
 				jws.$('statsbox').innerHTML = '';
@@ -105,7 +105,7 @@
 				e.innerHTML = lHtml;
 					
 				jws.$('statsbox').appendChild(e);
-			}
+			};
 			
 			login = function(){
 				lClient.login(jws.$('username').value, jws.$('password').value, {
@@ -128,7 +128,7 @@
 						jws.$('username').focus();
 					}
 				});
-			}
+			};
 			
 			logout = function(){
 				clearConsole();
@@ -136,12 +136,11 @@
 				jws.$('loginbox').hidden = null;
 				jws.$('mainbox').hidden = 'hidden';
 				jws.$('username').focus();
-				
-			}
+			};
 			
 			sendMessage = function(){
 				var lMessage = jws.$('message').value;
-				if (lMessage.indexOf('@') == 0){
+				if (lMessage.indexOf('@') === 0){
 					var lTargetUser = lMessage.split(' ', 1)[0].substr(1);
 					if (lUsers.indexOf(lTargetUser) > -1){
 						lMessage = lMessage.substr(lMessage.indexOf(' '));
@@ -156,11 +155,11 @@
 				lClient.callScriptAppMethod('simplechat', 'Chat', 'broadcast', [lMessage]);
 				jws.$('message').value = '';
 				jws.$('message').focus();
-			}
+			};
 			
 			clearConsole = function(){
 				jws.$('messageconsole').innerHTML = '';
-			}
+			};
 		</script>
 	</head>
 	<body>

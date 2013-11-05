@@ -911,7 +911,12 @@
 			<id>deploy.*</id>
 			<description>Allows to deploy script apps in runtime</description>
 		</right>
-		
+		<right>
+			<ns>org.jwebsocket.plugins.scripting.simplechat</ns>
+			<id>register</id>
+			<description>Allows to register in the simplechat script app</description>
+		</right>
+	
 		<!-- Load Balancer rights -->
 		<right>
 			<ns>org.jwebsocket.plugins.loadbalancer</ns>
@@ -1050,6 +1055,7 @@
 				<!-- scripting rights -->
 				<right>org.jwebsocket.plugins.scripting.reloadApp.*</right>
 				<right>org.jwebsocket.plugins.scripting.deploy.*</right>
+				<right>org.jwebsocket.plugins.scripting.simplechat.register</right>
 				
 				<!-- Load balancer rights -->
 				<right>org.jwebsocket.plugins.loadbalancer.clustersInfo</right>
@@ -1099,6 +1105,11 @@
 				
 				<!-- Quota rights -->
 				<right>org.jwebsocket.plugins.quota.quota_query</right>
+
+				<!-- scripting rights -->
+				<right>org.jwebsocket.plugins.scripting.reloadApp.*</right>
+				<right>org.jwebsocket.plugins.scripting.deploy.*</right>
+				<right>org.jwebsocket.plugins.scripting.simplechat.register</right>
 			</rights>
 		</role>
 		<role>
@@ -1163,6 +1174,11 @@
 				<right>org.jwebsocket.plugins.channels.getChannels</right>
 				<right>org.jwebsocket.plugins.channels.createChannel</right>
 				<right>org.jwebsocket.plugins.channels.removeChannel</right>
+
+				<!-- scripting rights -->
+				<right>org.jwebsocket.plugins.scripting.reloadApp.*</right>
+				<right>org.jwebsocket.plugins.scripting.deploy.*</right>
+				<right>org.jwebsocket.plugins.scripting.simplechat.register</right>
 			</rights>
 
 		</role>
@@ -1274,10 +1290,10 @@
 					 be broadcasted per default. To suppress these broadcasts
 					 per events turn settings "on" here and optionally suppress
 					 them per client command. -->
-				<setting key="broadcastOpenEvent">true</setting>
-				<setting key="broadcastCloseEvent">true</setting>
-				<setting key="broadcastLoginEvent">true</setting>
-				<setting key="broadcastLogoutEvent">true</setting>
+				<setting key="broadcastOpenEvent">false</setting>
+				<setting key="broadcastCloseEvent">false</setting>
+				<setting key="broadcastLoginEvent">false</setting>
+				<setting key="broadcastLogoutEvent">false</setting>
 				<setting key="allowAnonymousLogin">true</setting>
 				<!-- this is the user name used for anonymous logins,
 					all anonymous users that just connect will get this user 
@@ -1602,9 +1618,9 @@
 
 		<!-- filesystem plug-in to access server files via WebSockets -->
 		<plugin>
-			<name>org.jwebsocket.plugins.filesystem.FileSystemPlugIn</name>
+			<!-- <name>org.jwebsocket.plugins.filesystem.FileSystemPlugIn</name> -->
 			<!-- to use the enterprise edition of jWebSocketFileSystemPlugIn replace the above line by the following one -->
-			<!-- <name>org.jwebsocket.enterprise.plugins.filesystem.FileSystemPlugIn</name> -->
+			<name>org.jwebsocket.enterprise.plugins.filesystem.FileSystemPlugIn</name>
 			<id>jws.filesystem</id>
 			<ns>org.jwebsocket.plugins.filesystem</ns>
 			<!-- to use the enterprise edition of jWebSocketFileSystemPlugIn add the following line -->
@@ -1614,7 +1630,7 @@
 			</jars>
 			<!-- plug-in specific settings -->
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}conf/FileSystemPlugIn/filesystem.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/FileSystemPlugIn/filesystem.xml</setting>
 				<!-- Authorization method 
 				     - spring: Uses the user Spring authentication to check for granted authorities 
 					 - static: Uses the user static (jWebSocket.xml users definition) authentication
@@ -1721,6 +1737,7 @@
 		</plugin>
 		
 		<!-- quota plug-in -->
+		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.quota.QuotaPlugin</name>
 			<id>jws.quota</id>
@@ -1733,6 +1750,7 @@
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/QuotaPlugin/quota.xml</setting>
 			</settings>
 		</plugin>
+		-->
 		
 		<!-- Reporting plug-in -->
 		<plugin>
@@ -1985,6 +2003,7 @@
 			</server-assignments>
 		</filter>
         
+		<!--
 		<filter>
 			<name>org.jwebsocket.plugins.quota.QuotaFilter</name>
 			<id>jws.quotaFilter</id>
@@ -1994,6 +2013,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</filter>
+		-->
 		
 		<filter>
 			<name>org.jwebsocket.filters.sample.SampleFilter</name>
