@@ -35,7 +35,8 @@ App.on('appLoaded', function(){
 	App.publish('Chat', {
 		register: function(aConnector){
 			App.requireAuthority(aConnector, NS + ".register");
-			App.assertTrue(!mClients.containsKey(aConnector.getUsername()), "The current user is already registered!");
+			App.assertTrue(!mClients.containsKey(aConnector.getUsername()), 
+				"The current user is already registered!");
 			mClients.put(aConnector.getUsername(), aConnector);
 			
 			App.broadcast(mClients.values(), {
