@@ -20,6 +20,8 @@
 					<list>
 						<value>permission java.net.SocketPermission "localhost", "resolve,connect"</value>
 						<value>permission javax.management.MBeanPermission "*", "registerMBean"</value>
+						<value>permission java.util.PropertyPermission "*", "read"</value>
+						<value>permission java.util.logging.LoggingPermission "control"</value>
 					</list>
 				</entry>
 			</map>
