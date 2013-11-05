@@ -23,7 +23,7 @@ MongoDBUtils = {
 	 * Converts an JSON object to DBObject
 	 */
 	toDBObject: function(aObject){
-		var lDBObject = new Class('com.mongodb.BasicDBObject')();
+		var lDBObject = new Packages.com.mongodb.BasicDBObject();
 		for (var lAttr in aObject){
 			lDBObject.append(lAttr, aObject[lAttr]);
 		}
