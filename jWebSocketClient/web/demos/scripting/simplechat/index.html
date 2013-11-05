@@ -114,7 +114,12 @@
 						jws.$('loginbox').hidden = 'hidden';
 						jws.$('mainbox').hidden = null;
 						
-						lClient.callScriptAppMethod('simplechat', 'Chat', 'register', []);
+						lClient.callScriptAppMethod('simplechat', 'Chat', 'register', [], {
+							OnFailure: function(aToken){
+								alert(aToken.msg);
+								logout();
+							}
+						});
 						list();
 						jws.$('message').focus();
 					},
