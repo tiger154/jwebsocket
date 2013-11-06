@@ -37,7 +37,7 @@ import org.jwebsocket.storage.BaseStorage;
 public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 
 	private String mName;
-	private DBCollection mCollection;
+	private final DBCollection mCollection;
 
 	/**
 	 * Create a new MongoDBStorage instance
