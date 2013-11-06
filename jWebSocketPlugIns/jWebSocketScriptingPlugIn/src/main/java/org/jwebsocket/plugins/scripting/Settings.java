@@ -87,7 +87,9 @@ public class Settings {
 		Map<String, String> lApps = new HashMap<String, String>();
 		File[] lFiles = mAppsDirectory.listFiles((FileFilter) FileFilterUtils.directoryFileFilter());
 		for (File lF : lFiles) {
-			lApps.put(lF.getName(), lF.getAbsolutePath());
+			if (!lF.getName().equals(".svn")) {
+				lApps.put(lF.getName(), lF.getAbsolutePath());
+			}
 		}
 
 		return lApps;
