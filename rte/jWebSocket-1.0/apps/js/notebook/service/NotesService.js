@@ -25,7 +25,7 @@ NotesService = {
 		App.getLogger().debug('NotesService: Initialized successfully!');
 	},
 	add: function(aUser, aTitle, aBody){
-		this.notes.insert(MongoDBUtils.toDBObject({
+		this.notes.save(MongoDBUtils.toDBObject({
 			user: aUser,
 			title: aTitle,
 			body: aBody,
