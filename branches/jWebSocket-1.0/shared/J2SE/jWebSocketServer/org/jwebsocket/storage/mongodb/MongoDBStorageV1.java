@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  */
 public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
-	private DB mDatabase;
+	private final DB mDatabase;
 	private String mName;
 	private DBCollection mCollection;
 
@@ -79,7 +79,7 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 	@Override
 	public void setName(String newName) throws Exception {
 		Assert.isTrue(null != mName, "The 'newName', argument cannot be null!");
-
+		
 		mDatabase.createCollection(newName, null);
 		DBCollection lNewCollection = mDatabase.getCollection(newName);
 
