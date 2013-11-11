@@ -20,6 +20,11 @@ public interface IQuota{
     */
    public String getType();
    
+   /**
+    * 
+    * @return 
+    */
+   public String getIdentifier();
    
    /**
     * specifies the storage engine for this quota.
@@ -43,7 +48,7 @@ public interface IQuota{
    * @param aUuid
    * @return 
    */
-   public long getQuota(String aInstance, String aNameSpace, String aInstanceType);
+   public long getQuota( String aInstance, String aNameSpace, String aInstanceType);
    
    /**
     * 
@@ -65,7 +70,7 @@ public interface IQuota{
     * @param aAmount
     * @return 
     */
-   public long reduceQuota(String aInstance, String aNameSpace, String aInstanceType,
+   public long reduceQuota( String aInstance, String aNameSpace, String aInstanceType,
            long aAmount);
    
    /**
@@ -93,7 +98,7 @@ public interface IQuota{
     * @param aAmount
     * @return 
     */
-   public long increaseQuota(String aInstance, String aNameSpace, 
+   public long increaseQuota( String aInstance, String aNameSpace, 
            String aInstanceType, long aAmount);
    
    
@@ -116,7 +121,7 @@ public interface IQuota{
     * @param aAmount
     * @return 
     */
-   public long setQuota(String aInstance, String aNameSpace, 
+   public long setQuota( String aInstance, String aNameSpace, 
            String aInstanceType, long aAmount);
    
    /**
@@ -159,9 +164,10 @@ public interface IQuota{
     * @param aUuid
     * @param aAmount
     * @param aInstanceType 
+    * @param aQuotaIdentifier 
     */
    public void register(String aInstance, String aNameSpace, String aUuid,
-           long aAmount, String aInstanceType) throws ExceptionQuotaAlreadyExist;
+           long aAmount, String aInstanceType,String aQuotaType, String aQuotaIdentifier) throws Exception;
    
    /**
     * unregisters an instance from the quota class, this is required to e.g. 
@@ -190,11 +196,10 @@ public interface IQuota{
     * 
     * @param aInstance
     * @param aNameSpace
-    * @param aUuid
-    * @param aAmount
     * @param aInstanceType 
     */
-   public void unregister(String aInstance , String aUuid, String aInstanceType)
+   public void unregister( String aInstance , 
+           String aNameSpace, String aInstanceType)
            throws ExceptionQuotaNotFound;
    
    /**
@@ -220,7 +225,7 @@ public interface IQuota{
     * @param aInstanceType
     * @return 
     */
-   public String getQuotaUuid( String aNamespace, String aInstance, 
+   public String getQuotaUuid(String aQuotaIdentifier, String aNamespace, String aInstance, 
            String aInstanceType);
    
 }
