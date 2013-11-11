@@ -25,7 +25,6 @@
 		<module>jWebSocketPlugIns/jWebSocketJDBCPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketRPCPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketRTCPlugIn</module>
-		<module>jWebSocketPlugIns/jWebSocketJMSPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketJMXPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketSMSPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketMailPlugIn</module>

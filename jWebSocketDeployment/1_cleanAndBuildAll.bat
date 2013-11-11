@@ -16,28 +16,42 @@ echo This will clean and build jWebSocket v%JWEBSOCKET_VER%. Are you sure?
 pause
 
 :dontAsk1
+echo -------------------------------------------------------------------------
+echo Building jWebSocket community edition ..
+echo -------------------------------------------------------------------------
 rem save current dir
 pushd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%
-rem cleanup temporary work files...
+echo cleaning up temporary work files...
 del /p /s *.?.nblh~
 call mvn clean install
 
-rem jWebSocket Engines
+echo -------------------------------------------------------------------------
+echo Building jWebSocket JMSGateway...
+echo -------------------------------------------------------------------------
+cd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketGateway
+call mvn clean install
+
+echo -------------------------------------------------------------------------
+echo Building jWebSocket Engines...
+echo -------------------------------------------------------------------------
 cd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketEngines
 call mvn clean install
 
-rem jWebSocketActiveMQStockTicker
+echo -------------------------------------------------------------------------
+echo Building jWebSocket Enterprise Edition...
+echo -------------------------------------------------------------------------
+cd %JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise
+call mvn clean install
+
+echo -------------------------------------------------------------------------
+echo Building jWebSocketActiveMQStockTicker...
+echo -------------------------------------------------------------------------
 cd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketActiveMQStockTicker
 call mvn clean install
 
-rem jWebSocket Enterprise Edition
-cd %JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise
-rem cleanup temporary work files...
-del /p /s *.?.nblh~
-
-call mvn clean install
-
-rem jWebSocketWebAppDemo
+echo -------------------------------------------------------------------------
+echo Building jWebSocketWebAppDemo...
+echo -------------------------------------------------------------------------
 cd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketWebAppDemo
 call ant
 
