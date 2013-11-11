@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.rpc;
 
+import java.util.Arrays;
 import java.util.List;
 import javolution.util.FastList;
 import org.jwebsocket.token.Token;
@@ -104,9 +105,7 @@ public abstract class AbstractRpc {
 	public AbstractRpc send(Object... aArg) {
 		if (aArg != null) {
 			mArg = new FastList();
-			for (int i = 0; i < aArg.length; i++) {
-				mArg.add(aArg[i]);
-			}
+			mArg.addAll(Arrays.asList(aArg));
 		}
 		return this;
 	}

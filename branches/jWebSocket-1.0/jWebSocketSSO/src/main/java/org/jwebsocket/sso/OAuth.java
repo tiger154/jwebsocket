@@ -25,8 +25,11 @@ package org.jwebsocket.sso;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -127,7 +130,13 @@ public class OAuth {
 			// Use this trustmanager to not reject unsigned certificates
 			lSSLContext = SSLContext.getInstance("TLS");
 			lSSLContext.init(null, lTrustManager, new java.security.SecureRandom());
-		} catch (Exception lEx) {
+		} catch (KeyManagementException lEx) {
+			// exceptions could be processed differently
+			mReturnCode = -1;
+			mReturnMsg = lEx.getClass().getSimpleName() + " initializing SSL connection to OAuth host.";
+			return "{\"code\":-1, \"msg\":\"" + lEx.getClass().getSimpleName() + "\"}";
+		} catch (NoSuchAlgorithmException lEx) {
+			// exceptions could be processed differently
 			mReturnCode = -1;
 			mReturnMsg = lEx.getClass().getSimpleName() + " initializing SSL connection to OAuth host.";
 			return "{\"code\":-1, \"msg\":\"" + lEx.getClass().getSimpleName() + "\"}";
@@ -172,7 +181,7 @@ public class OAuth {
 			lJSON = lSB.toString();
 			lIS.close();
 
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			mReturnCode = -1;
 			mReturnMsg = lEx.getClass().getSimpleName() + " requesting OAuth host.";
 			return "{\"code\":-1, \"msg\":\"" + lEx.getClass().getSimpleName() + "\"}";
@@ -252,7 +261,7 @@ public class OAuth {
 			mAccessToken = (String) lJSON.get("access_token");
 			mRefreshToken = (String) lJSON.get("refresh_token");
 			return lJSONString;
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			mReturnCode = -1;
 			mReturnMsg = lEx.getClass().getSimpleName() + " authenticating directly against OAuth host.";
 			return "{\"code\":-1, \"msg\":\""
@@ -304,7 +313,7 @@ public class OAuth {
 				mUsername = (String) lAccessToken.get("username");
 			}
 			return lJSONString;
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			mReturnCode = -1;
 			mReturnMsg = lEx.getClass().getSimpleName() + " validating acceess token to obtain user name from OAuth host.";
 			return "{\"code\":-1, \"msg\":\""
@@ -367,7 +376,7 @@ public class OAuth {
 			Map<String, Object> lJSON = lMapper.readValue(lJSONString, Map.class);
 			mAccessToken = (String) lJSON.get("access_token");
 			return lJSONString;
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			mReturnCode = -1;
 			mReturnMsg = lEx.getClass().getSimpleName() + " refreshing acceess token from OAuth host.";
 			return "{\"code\":-1, \"msg\":\""

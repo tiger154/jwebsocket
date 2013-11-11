@@ -20,7 +20,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- shared version number properties -->
-		<org.springframework.version>3.1.0.RELEASE</org.springframework.version>
+		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
 	</properties>
 
 	<build>
@@ -91,11 +91,9 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
 				<executions>
-					
 					<execution>
-						<id>bundle</id>
+						<id>Bundle</id>
 						<configuration>
-							<classifier>Bundle</classifier>
 							<finalName>jWebSocketServer-Bundle</finalName>
 							<outputDirectory>../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
 							<archive>
@@ -114,9 +112,8 @@
 					</execution>
 					
 					<execution>
-						<id>packaged</id>
+						<id>Packaged</id>
 						<configuration>
-							<classifier>Bundle</classifier>
 							<finalName>jWebSocketServer</finalName>
 							<outputDirectory>../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
 							<archive>

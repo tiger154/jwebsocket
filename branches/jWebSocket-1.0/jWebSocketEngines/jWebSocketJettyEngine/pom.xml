@@ -56,12 +56,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2.1</version>
+                <version>2.4</version>
                 <executions>
                     <execution>
                         <id>Bundle</id>
                         <configuration>
-                            <classifier>Bundle</classifier>
                             <finalName>jWebSocketJettyEngine</finalName>
                             <outputDirectory>../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
                             <descriptors>
