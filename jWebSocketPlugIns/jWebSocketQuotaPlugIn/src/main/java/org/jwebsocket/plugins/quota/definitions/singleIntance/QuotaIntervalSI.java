@@ -27,8 +27,6 @@ public class QuotaIntervalSI extends QuotaBaseInstance {
     @Override
     public FastMap<String, Object> writeToMap() {
         FastMap<String, Object> ltemMap = super.writeToMap(); 
-        ltemMap.put("resetDate", );
-        
         return ltemMap;
     }
     
