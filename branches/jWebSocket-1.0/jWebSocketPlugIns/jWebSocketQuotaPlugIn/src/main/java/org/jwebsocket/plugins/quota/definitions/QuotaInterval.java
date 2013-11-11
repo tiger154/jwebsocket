@@ -203,8 +203,7 @@ public class QuotaInterval extends BaseQuota {
         }
         
         public String toString(){
-        if(mIntervalType.Yearly==IntervalType.Yearly)
-        
+            return "Y";
         }
     }
 
