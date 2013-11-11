@@ -13,8 +13,12 @@ import java.util.Map;
  */
 public interface IQuotaProvider {
     
-    public IQuota getQuotaByType( String aType ) throws Exception;
+    public IQuota getQuotaByIdentifier( String aType ) throws Exception;
     
      public Map<String, IQuota> getActiveQuotas();
+     
+     public Map<String, IQuotaStorage> getActiveStorages();
+     
+     public String getIdentifier(int aPos);
     
 }

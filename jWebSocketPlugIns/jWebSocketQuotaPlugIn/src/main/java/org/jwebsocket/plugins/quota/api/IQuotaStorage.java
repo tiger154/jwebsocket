@@ -32,6 +32,8 @@ public interface IQuotaStorage {
 
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType);
 
+    public List<IQuotaSingleInstance> getQuotasByIdentifier(String aIdentifier);
+    
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs, String aInstance);
     
     public String getUuid(String aQuotaType, String aNs, String aInstance,
@@ -42,4 +44,5 @@ public interface IQuotaStorage {
     public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType, String aNs);
 
     public IQuotaSingleInstance getQuotaByUuid(String aUuid);
+    
 }

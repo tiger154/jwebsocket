@@ -52,19 +52,23 @@ public class QuotaFilter extends TokenFilter {
 		if (!SystemPlugIn.NS_SYSTEM.equals(lNS) || !isIgnoredUser(lUserName)) {
 			Map<String, IQuota> lQuotas = mQuotaProvider.getActiveQuotas();
 			Collection<IQuota> lQuotaList = (Collection<IQuota>) lQuotas.values();
-
+                        
+                        int lCont = 0;
 			for (Iterator<IQuota> lIt = lQuotaList.iterator(); lIt.hasNext();) {
 				IQuota lQuotaObj = lIt.next();
 				//TODO: get intance type by instance, now for test (User)
 				//check if the instance type is a User Group get the role 
 				//and use it to get the quota.
-				String lUuid = lQuotaObj.getQuotaUuid(lNS, lUserName, "User");
+                                
+                                //get uuid using quotaIndentifier
+                                String lIdentifier = lQuotaObj.getIdentifier();
+                                
+				String lUuid = lQuotaObj.getQuotaUuid( lIdentifier ,lNS, lUserName, "User");
 				long lQValue;
 				if (!lUuid.equals("not-found")) {
 
-
-					lQValue = lQuotaObj.reduceQuota(lUuid);
-
+					lQValue = lQuotaObj.reduceQuota( lUuid );
+                                        
 					if (lQValue == -1) {
 						Token lResponse = getServer().createResponse(aToken);
 						lResponse.setCode(-1);

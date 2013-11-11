@@ -4,6 +4,8 @@
  */
 package org.jwebsocket.plugins.quota.api;
 
+import com.mongodb.BasicDBObject;
+import javolution.util.FastMap;
 import org.jwebsocket.token.Token;
 
 /**
@@ -49,6 +51,10 @@ public interface IQuotaSingleInstance {
          * @return 
          */
 	public String getInstanceType();
+        
+        public String getQuotaIdentifier();
 
         public void writeToToken(Token lAuxToken);
+ 
+        public FastMap<String, Object> writeToMap();
 }

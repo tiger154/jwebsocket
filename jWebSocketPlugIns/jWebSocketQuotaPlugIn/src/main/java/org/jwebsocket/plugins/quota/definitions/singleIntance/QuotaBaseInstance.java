@@ -4,6 +4,7 @@
  */
 package org.jwebsocket.plugins.quota.definitions.singleIntance;
 
+import javolution.util.FastMap;
 import org.jwebsocket.api.ITokenizable;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import org.jwebsocket.token.Token;
@@ -20,6 +21,7 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
     String mNamesPace;
     String mQuotaType;
     String mInstanceType;
+    String mQuotaIdentifier;
 
     @Override
     public void writeToToken(Token aToken) {
@@ -29,6 +31,19 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         aToken.setLong("q_value", mValue );
         aToken.setString("q_type", mQuotaType );
         aToken.setString("q_instance_type", mInstanceType );
+        aToken.setString("q_identifier", mQuotaIdentifier );
+    }
+    
+    @Override
+    public FastMap<String, Object> writeToMap(){
+        FastMap<String, Object> lMap = new FastMap<String, Object>();
+        
+        lMap.put("uuid", mUuid);
+        lMap.put("ns", mNamesPace);
+        lMap.put("quotaType", mQuotaType );
+        lMap.put("quotaIdentifier", mQuotaIdentifier );
+        lMap.put("value", mValue );
+        return lMap;
     }
 
     @Override
@@ -69,15 +84,19 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         if ((this.mInstanceType == null) ? (other.mInstanceType != null) : !this.mInstanceType.equals(other.mInstanceType)) {
             return false;
         }
+        if ((this.mQuotaIdentifier == null) ? (other.mQuotaIdentifier != null) : !this.mQuotaIdentifier.equals(other.mQuotaIdentifier)) {
+            return false;
+        }
         return true;
     }
 
-    public QuotaBaseInstance(long aValue, String aInstance, String aUuid, String aNamesPace, String aQuotaType, String aInstanceType) {
+    public QuotaBaseInstance(long aValue, String aInstance, String aUuid, String aNamesPace, String aQuotaType,String aQuotaIdentifier, String aInstanceType) {
         this.mValue = aValue;
         this.mInstance = aInstance;
         this.mUuid = aUuid;
         this.mNamesPace = aNamesPace;
         this.mQuotaType = aQuotaType;
+        this.mQuotaIdentifier = aQuotaIdentifier;
         this.mInstanceType = aInstanceType;
     }
 
@@ -133,5 +152,10 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
     @Override
     public String getInstanceType() {
         return mInstanceType;
+    }
+
+    @Override
+    public String getQuotaIdentifier() {
+        return mQuotaIdentifier;
     }
 }
