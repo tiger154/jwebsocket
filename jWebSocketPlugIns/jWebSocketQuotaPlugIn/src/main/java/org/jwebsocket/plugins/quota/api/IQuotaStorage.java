@@ -8,6 +8,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import java.util.List;
+import java.util.Map;
 import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaNotFound;
 
 /**
@@ -44,5 +45,8 @@ public interface IQuotaStorage {
     public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType, String aNs);
 
     public IQuotaSingleInstance getQuotaByUuid(String aUuid);
+    
+    public Map<String, Object> getRawQuota(String aUuid,String ainstance);
+    
     
 }
