@@ -321,12 +321,12 @@ public class StorageQuotaMongo implements IQuotaStorage {
     }
 
     @Override
-    public boolean quotaExist(String aNameSpace, String aQuotaType,
+    public boolean quotaExist(String aNameSpace, String aIdentifier,
             String aInstance) {
 
         BasicDBObject lQuery = new BasicDBObject();
         lQuery.put("ns", aNameSpace);
-        lQuery.put("quotaType", aQuotaType);
+        lQuery.put("quotaIdentifier", aIdentifier);
 
         DBCursor lCur = mCollection.find(lQuery);
         if (lCur.hasNext()) {
@@ -426,6 +426,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return lQuota;
     }
 
+    @Override
     public Map<String, Object> getRawQuota(String aUuid, String aInstance) {
 
         BasicDBObject lObject = new BasicDBObject();
@@ -440,22 +441,5 @@ public class StorageQuotaMongo implements IQuotaStorage {
         lMap.put("instanceType", lQueryInstance.get("instanceType"));
         return lMap;
     }
-    /*private  getRInstance(DBObject aObjQuota) {
-     BasicDBObject lObject = new BasicDBObject();
-     lObject.put("uuidQuota", aObjQuota.get("uuid"));
-     DBObject lQuery = mCollectionInstance.findOne(lObject);
-     IQuotaSingleInstance lQuota = null;
-     if (!lQuery.isPartialObject()) {
-     lQuota = QuotaHelper.factorySingleInstance(
-     Long.parseLong(aObjQuota.get("value").toString()),
-     lQuery.get("instance").toString(),
-     lQuery.get("uuidQuota").toString(),
-     aObjQuota.get("ns").toString(),
-     aObjQuota.get("quotaType").toString(),
-     aObjQuota.get("quotaIdentifier").toString(),
-     lQuery.get("instanceType").toString());
-     }
-     return lQuota;
-
-     }*/
 }
+
