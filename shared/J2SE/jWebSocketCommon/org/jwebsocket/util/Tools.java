@@ -719,7 +719,7 @@ public class Tools {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Object invoke(Object aInstance, String aMethodName,
+	public static Object invoke(Object aInstance, String aMethodName, Class[] aClasses,
 			Object... aArgs) throws Exception {
 		if (aInstance == null) {
 			throw new Exception("No instance passed for call.");
@@ -727,14 +727,7 @@ public class Tools {
 		Class lClass = aInstance.getClass();
 		Object lRes;
 
-		Class[] lArgClasses = null;
-		if (aArgs != null) {
-			lArgClasses = new Class[aArgs.length];
-			for (int lIdx = 0; lIdx < lArgClasses.length; lIdx++) {
-				lArgClasses[lIdx] = aArgs[lIdx].getClass();
-			}
-		}
-		Method lMthd = lClass.getMethod(aMethodName, lArgClasses);
+		Method lMthd = lClass.getMethod(aMethodName, aClasses);
 		/*
 		 * if (lMthd == null) { throw new Exception("Method '" + aMethodName +
 		 * "' not found."); }
@@ -745,6 +738,27 @@ public class Tools {
 		lRes = lMthd.invoke(aInstance, aArgs);
 
 		return lRes;
+	}
+
+	/**
+	 *
+	 * @param aInstance
+	 * @param aMethodName
+	 * @param aArgs
+	 * @return
+	 * @throws Exception
+	 */
+	public static Object invoke(Object aInstance, String aMethodName,
+			Object... aArgs) throws Exception {
+		Class[] lArgClasses = null;
+		if (aArgs != null) {
+			lArgClasses = new Class[aArgs.length];
+			for (int lIdx = 0; lIdx < lArgClasses.length; lIdx++) {
+				lArgClasses[lIdx] = aArgs[lIdx].getClass();
+			}
+		}
+
+		return invoke(aInstance, aMethodName, lArgClasses, aArgs);
 	}
 	private static char[] BASE64_CHAR_MAP = new char[64];
 
@@ -1044,8 +1058,8 @@ public class Tools {
 	 */
 	public static byte[] zip(byte[] aBA, Boolean aBase64Encode) throws Exception {
 		ByteArrayOutputStream lBAOS = new ByteArrayOutputStream();
-		ArchiveOutputStream lAOS =
-				new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, lBAOS);
+		ArchiveOutputStream lAOS
+				= new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, lBAOS);
 		ZipArchiveEntry lZipEntry = new ZipArchiveEntry("temp.zip");
 		lZipEntry.setSize(aBA.length);
 		lAOS.putArchiveEntry(lZipEntry);
@@ -1106,8 +1120,8 @@ public class Tools {
 		}
 
 		//get the zip file content
-		ZipInputStream lZIS =
-				new ZipInputStream(new FileInputStream(aZipFile));
+		ZipInputStream lZIS
+				= new ZipInputStream(new FileInputStream(aZipFile));
 		//get the zipped file list entry
 		ZipEntry lZE = lZIS.getNextEntry();
 
