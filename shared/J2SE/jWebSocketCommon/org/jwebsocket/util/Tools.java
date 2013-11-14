@@ -728,10 +728,6 @@ public class Tools {
 		Object lRes;
 
 		Method lMthd = lClass.getMethod(aMethodName, aClasses);
-		/*
-		 * if (lMthd == null) { throw new Exception("Method '" + aMethodName +
-		 * "' not found."); }
-		 */
 		if (aArgs == null) {
 			aArgs = new Object[0];
 		}
