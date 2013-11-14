@@ -11,7 +11,6 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.quota.api.IQuota;
 import org.jwebsocket.plugins.quota.api.IQuotaStorage;
 import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaBaseInstance;
-import org.jwebsocket.plugins.quota.storage.StorageQuotaMongo;
 import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaAlreadyExist;
 import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaNotFound;
 
@@ -133,10 +132,10 @@ public abstract class BaseQuota implements IQuota {
     }
 
     @Override
-
     public void register(String aInstance, String aNameSpace,
             String aUuid, long aAmount, String aInstanceType, String aQuotaType, String aQuotaIdentifier)
             throws Exception {
+
         if (mQuotaStorage.quotaExist(aNameSpace, aQuotaIdentifier, aInstance)) {
             throw new ExceptionQuotaAlreadyExist(aUuid);
         }

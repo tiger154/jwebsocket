@@ -46,7 +46,6 @@ public interface IQuotaStorage {
 
     public IQuotaSingleInstance getQuotaByUuid(String aUuid);
     
-    public Map<String, Object> getRawQuota(String aUuid,String ainstance);
-    
+    public Map<String, Object> getRawQuota(String aUuid, String aInstance);
     
 }

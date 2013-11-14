@@ -441,5 +441,22 @@ public class StorageQuotaMongo implements IQuotaStorage {
         lMap.put("instanceType", lQueryInstance.get("instanceType"));
         return lMap;
     }
-}
+    /*private  getRInstance(DBObject aObjQuota) {
+     BasicDBObject lObject = new BasicDBObject();
+     lObject.put("uuidQuota", aObjQuota.get("uuid"));
+     DBObject lQuery = mCollectionInstance.findOne(lObject);
+     IQuotaSingleInstance lQuota = null;
+     if (!lQuery.isPartialObject()) {
+     lQuota = QuotaHelper.factorySingleInstance(
+     Long.parseLong(aObjQuota.get("value").toString()),
+     lQuery.get("instance").toString(),
+     lQuery.get("uuidQuota").toString(),
+     aObjQuota.get("ns").toString(),
+     aObjQuota.get("quotaType").toString(),
+     aObjQuota.get("quotaIdentifier").toString(),
+     lQuery.get("instanceType").toString());
+     }
+     return lQuota;
 
+     }*/
+}

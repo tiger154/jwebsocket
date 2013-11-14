@@ -6,6 +6,7 @@ package org.jwebsocket.plugins.quota.utils;
 
 import java.util.Calendar;
 
+
 /**
  *
  * @author dino
@@ -21,6 +22,7 @@ import java.util.Calendar;
             this.mStartDate = mStartDate;
             this.mEndDate = mEndDate;
             this.mIntervalType = mIntervalType;
+            this.mInterval = null;
         }
 
         public String getStartDate() {
