@@ -6,7 +6,8 @@ package org.jwebsocket.plugins.quota.definitions;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
-import org.jwebsocket.config.JWebSocketServerConstants;
+//TODO: ask rolando to use JWebSocketServerConstants
+//import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import static org.jwebsocket.plugins.quota.definitions.BaseQuota.mLog;
 import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaDiskSpaceSI;
@@ -18,7 +19,7 @@ import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaDiskSpaceSI;
 public class QuotaDiskSpace extends BaseQuota {
 
     public static final String JWS_HOME =
-            "/home/svn/ijwssvn/rte/jWebSocket-1.0/";
+            "/home/osvaldo/Public/svn/ijwssvn/rte/jWebSocket-1.0/";
     /**
      * Private directory.
      */

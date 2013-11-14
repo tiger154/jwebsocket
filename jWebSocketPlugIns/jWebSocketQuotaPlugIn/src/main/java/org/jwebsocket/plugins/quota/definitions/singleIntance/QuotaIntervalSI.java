@@ -6,6 +6,7 @@ package org.jwebsocket.plugins.quota.definitions.singleIntance;
 
 import javolution.util.FastMap;
 import org.jwebsocket.plugins.quota.definitions.QuotaInterval;
+import org.jwebsocket.plugins.quota.utils.Interval;
 
 /**
  *
@@ -13,9 +14,9 @@ import org.jwebsocket.plugins.quota.definitions.QuotaInterval;
  */
 public class QuotaIntervalSI extends QuotaBaseInstance {
     
-    private QuotaInterval.Interval mInterval;
+    private Interval mInterval;
     
-    public QuotaIntervalSI( QuotaInterval.Interval aInterval, long aValue, 
+    public QuotaIntervalSI(Interval aInterval, long aValue, 
             String aInstance, String aUuid, String aNamesPace, 
             String aQuotaType, String aQuotaIdentifier, String aInstanceType) {
         super(aValue, aInstance, aUuid, aNamesPace, aQuotaType, aQuotaIdentifier
@@ -27,6 +28,8 @@ public class QuotaIntervalSI extends QuotaBaseInstance {
     @Override
     public FastMap<String, Object> writeToMap() {
         FastMap<String, Object> ltemMap = super.writeToMap(); 
+        ltemMap.put("maxValue", mValue);
+        ltemMap.put("resetDate",mInterval.toResetDate());
         return ltemMap;
     }
     
