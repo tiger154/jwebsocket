@@ -144,8 +144,8 @@ public class StorageQuotaMongo implements IQuotaStorage {
         return aValue;
 
     }
-// to see use quotaType or QuotaIdentifier
 
+// to see use quotaType or QuotaIdentifier
     @Override
     public List<String> getAllQuotaUuid(String aQuotaType) {
 
@@ -219,10 +219,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
                     getListInstance(lObj, aInstance);
 
             lResult.addAll(lAux);
-            /*for (Iterator<IQuotaSingleInstance> lQuotaIt = lAux.iterator();
-             lQuotaIt.hasNext();) {
-             lResult.add(lQuotaIt.next());
-             }*/
+
         }
         return lResult;
     }
@@ -441,22 +438,15 @@ public class StorageQuotaMongo implements IQuotaStorage {
         lMap.put("instanceType", lQueryInstance.get("instanceType"));
         return lMap;
     }
-    /*private  getRInstance(DBObject aObjQuota) {
-     BasicDBObject lObject = new BasicDBObject();
-     lObject.put("uuidQuota", aObjQuota.get("uuid"));
-     DBObject lQuery = mCollectionInstance.findOne(lObject);
-     IQuotaSingleInstance lQuota = null;
-     if (!lQuery.isPartialObject()) {
-     lQuota = QuotaHelper.factorySingleInstance(
-     Long.parseLong(aObjQuota.get("value").toString()),
-     lQuery.get("instance").toString(),
-     lQuery.get("uuidQuota").toString(),
-     aObjQuota.get("ns").toString(),
-     aObjQuota.get("quotaType").toString(),
-     aObjQuota.get("quotaIdentifier").toString(),
-     lQuery.get("instanceType").toString());
-     }
-     return lQuota;
+    
+    // to see for change the method's name 
 
-     }*/
+    @Override
+    public void updateIntervalResetDate(String aUuid, String aResetDate) {
+        BasicDBObject lWhere = new BasicDBObject();
+        BasicDBObject lSetValue = new BasicDBObject();
+        lWhere.put("uuid", aUuid);
+        lSetValue.append("$set", new BasicDBObject().append("resetDate", aResetDate));
+        mCollection.update(lWhere, lSetValue);
+    }
 }

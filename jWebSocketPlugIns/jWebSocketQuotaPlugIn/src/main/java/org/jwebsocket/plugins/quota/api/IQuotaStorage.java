@@ -19,11 +19,15 @@ public interface IQuotaStorage {
 
     public void save(IQuotaSingleInstance aQuota);
 
-    public boolean save(String aUuid, String aInstance, String aInstanceType );
+    public boolean save(String aUuid, String aInstance, String aInstanceType);
 
     public void remove(String aInstance, String aUuid);
 
     public long update(String aUuid, Long aValue);
+
+    //to see for change the method's name 
+    
+    public void updateIntervalResetDate(String aUuid, String aResetDate);
 
     public boolean quotaExist(String aUuid);
 
@@ -34,18 +38,17 @@ public interface IQuotaStorage {
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType);
 
     public List<IQuotaSingleInstance> getQuotasByIdentifier(String aIdentifier);
-    
+
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs, String aInstance);
-    
+
     public String getUuid(String aQuotaType, String aNs, String aInstance,
-            String aInstanceType ) throws ExceptionQuotaNotFound;
+            String aInstanceType) throws ExceptionQuotaNotFound;
 
     public List<IQuotaSingleInstance> getQuotasByInstance(String aQuotaType, String aInstance);
 
     public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType, String aNs);
 
     public IQuotaSingleInstance getQuotaByUuid(String aUuid);
-    
+
     public Map<String, Object> getRawQuota(String aUuid, String aInstance);
-    
 }

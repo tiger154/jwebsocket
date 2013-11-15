@@ -4,12 +4,14 @@
  */
 package org.jwebsocket.plugins.quota.definitions;
 
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaIntervalSI;
+import org.jwebsocket.plugins.quota.storage.StorageQuotaMongo;
 import org.jwebsocket.plugins.quota.utils.Interval;
 import org.jwebsocket.plugins.quota.utils.IntervalType;
 import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaAlreadyExist;
@@ -47,7 +49,7 @@ public class QuotaInterval extends BaseQuota {
     @Override
     public long reduceQuota(String aUuid, long aAmount) {
 
-        if (CompareDates(Calendar.getInstance())) {
+        if (!CompareDates(Calendar.getInstance())) {
             return -1;
         }
         ResetQuota(aUuid);
@@ -106,6 +108,8 @@ public class QuotaInterval extends BaseQuota {
         }
         if (lToday.after(lDate)) {
             mQuotaStorage.update(aUuid, getMaxValue(aUuid));
+            //to see for change the method's name
+            mQuotaStorage.updateIntervalResetDate(aUuid, mInterval.toResetDate());
         }
 
 
