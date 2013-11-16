@@ -28,7 +28,9 @@ import org.jwebsocket.token.Token;
 import org.springframework.util.Assert;
 
 /**
- *
+ * Load balancer filter captures the packets and forwards them 
+ * to the load balancer plug-in.
+ * 
  * @author rbetancourt
  * @author kyberneees
  */
@@ -46,12 +48,12 @@ public class LoadBalancerFilter extends TokenFilter {
 		super(aConfiguration);
 		mLoadBalancerPlugInId = getFilterConfiguration().getSettings().get("loadbalancer_plugin");
 		Assert.notNull(mLoadBalancerPlugInId, "Missing LoadBalancerFilter 'loadbalancer_plugin' "
-				+ "setting!");
+			+ "setting!");
 	}
 
 	/**
-	 * Allow that the incoming tokens with name space equals to cluster name space 
-	 * can be processed by load balancer plugIn.
+	 * Allow that the incoming tokens with name space equals to cluster name
+	 * space can be processed by load balancer plugIn.
 	 *
 	 * @param aResponse
 	 * @param aConnector
@@ -66,6 +68,7 @@ public class LoadBalancerFilter extends TokenFilter {
 					mLog.debug("Redirecting incoming token to the load balancer plug-in...");
 				}
 				mLoadBalancerPlugIn.sendToService(aConnector, aToken);
+
 				// stops token propagation
 				aResponse.rejectMessage();
 			}
@@ -76,7 +79,7 @@ public class LoadBalancerFilter extends TokenFilter {
 	public void systemStarted() throws Exception {
 		mLoadBalancerPlugIn = (LoadBalancerPlugIn) getServer().getPlugInById(mLoadBalancerPlugInId);
 		Assert.notNull(mLoadBalancerPlugIn, "Unable to start the LoadBalancerFilter because "
-				+ "the LoadBalancer plug-in '" + mLoadBalancerPlugInId + "' was not found!");
+			+ "the LoadBalancer plug-in '" + mLoadBalancerPlugInId + "' was not found!");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Filter started successfully!");
