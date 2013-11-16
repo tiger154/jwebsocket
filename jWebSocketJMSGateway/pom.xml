@@ -19,7 +19,7 @@
 		<!-- jWebSocket JMS Server -->
 		<module>jWebSocketJMSServer</module>
 		<!-- jWebSocket JMS Plug-in -->
-		<module>..\jWebSocketPlugIns\jWebSocketJMSPlugIn</module>
+		<module>../jWebSocketPlugIns/jWebSocketJMSPlugIn</module>
 		<!-- jWebSocket JMS Demo Plug-in -->
 		<module>jWebSocketJMSDemoPlugIn</module>
 	</modules>
