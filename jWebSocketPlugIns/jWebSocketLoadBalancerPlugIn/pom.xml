@@ -64,12 +64,12 @@
 			<artifactId>jWebSocketServerAPI</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.jwebsocket</groupId>
-			<artifactId>jWebSocketServer</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		
+	 <dependency>
+	  <groupId>org.jwebsocket</groupId>
+	  <artifactId>jWebSocketServer</artifactId>
+	  <version>1.0</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 
 	<!--  define repositories -->

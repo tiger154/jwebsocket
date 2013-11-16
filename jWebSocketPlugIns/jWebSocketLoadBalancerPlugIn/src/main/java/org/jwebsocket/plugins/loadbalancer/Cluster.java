@@ -18,9 +18,12 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.loadbalancer;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javolution.util.FastList;
+import javolution.util.FastMap;
 import org.jwebsocket.api.WebSocketConnector;
 
 /**
@@ -32,30 +35,28 @@ import org.jwebsocket.api.WebSocketConnector;
  */
 public class Cluster {
 
+	/**
+	 * Endpoints list.
+	 */
 	private List<ClusterEndPoint> mEndPoints = new FastList<ClusterEndPoint>();
+	/**
+	 * Cluster name space.
+	 */
 	private String mNamespace;
+	/**
+	 * Amount of static entries.
+	 */
 	private int mStaticEntries;
-	private int mEndPointPosition = 0;
+	/**
+	 * Password required to add a new cluster endpoint.
+	 */
 	private String mPassword;
-
 	/**
-	 *
-	 * @return cluster password.
+	 * Cluster endpoint position used in load balancer algorithms.
 	 */
-	public String getPassword() {
-		return mPassword;
-	}
+	private int mEndPointPosition = -1;
 
 	/**
-	 *
-	 * @param aPassword the password to set.
-	 */
-	public void setPassword(String aPassword) {
-		mPassword = aPassword;
-	}
-
-	/**
-	 *
 	 * @return a list of endpoints.
 	 */
 	public List<ClusterEndPoint> getEndPoints() {
@@ -63,203 +64,10 @@ public class Cluster {
 	}
 
 	/**
-	 *
 	 * @param aEndPoints
 	 */
 	public void setEndPoints(List<ClusterEndPoint> aEndPoints) {
 		mEndPoints = aEndPoints;
-	}
-
-	/**
-	 * @return the static entries
-	 */
-	public int getStaticEntries() {
-		return mStaticEntries;
-	}
-
-	/**
-	 * @param mStaticEntries the static entries to set
-	 */
-	public void setStaticEntries(int aStaticEntries) {
-		this.mStaticEntries = aStaticEntries;
-	}
-
-	/**
-	 * Register a new cluster endpoint.
-	 *
-	 * @param aConnector
-	 * @return the cluster endpoint added.
-	 */
-	public ClusterEndPoint registerEndPoint(WebSocketConnector aConnector) {
-		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
-			if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.OFFLINE)) {
-				mEndPoints.get(lPos).setConnector(aConnector);
-				mEndPoints.get(lPos).setStatus(EndPointStatus.ONLINE);
-
-				return mEndPoints.get(lPos);
-			}
-		}
-
-		ClusterEndPoint lEndPoint = new ClusterEndPoint(aConnector);
-		lEndPoint.setStatus(EndPointStatus.ONLINE);
-		mEndPoints.add(lEndPoint);
-
-		return lEndPoint;
-	}
-
-	/**
-	 *
-	 * @param aServiceId Service Id.
-	 * @return <code>true</code> if endpoint list contains aServiceId;
-	 * <code>false</code> otherwise.
-	 */
-	public boolean endPointExists(String aServiceId) {
-		if (mEndPoints.isEmpty()) {
-			return false;
-		} else {
-			for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
-				if (mEndPoints.get(lPos).getConnector() != null) {
-					if (mEndPoints.get(lPos).getServiceId().equals(aServiceId)) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-	}
-
-	/**
-	 *
-	 * @return optimum cluster endpoint.
-	 */
-	public ClusterEndPoint getOptimumEndPoint() {
-		if (!mEndPoints.isEmpty() && availableEndPoint()) {
-			mEndPointPosition = (mEndPointPosition + 1 < mEndPoints.size()
-				? mEndPointPosition + 1 : 0);
-			return (availableEndPoint(mEndPointPosition)
-				? mEndPoints.get(mEndPointPosition) : getOptimumEndPoint());
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 *
-	 * @return <code>true</code> if any cluster endpoint have status online;
-	 * <code>false</code> otherwise.
-	 */
-	private boolean availableEndPoint() {
-		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
-			if (availableEndPoint(lPos)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 *
-	 * @param lPos position in cluster endpoint list.
-	 * @return <code>true</code> if any cluster endpoint have status online;
-	 * <code>false</code> otherwise.
-	 */
-	private boolean availableEndPoint(int lPos) {
-		if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 *
-	 * @return a list with all sticky id.
-	 */
-	public List<String> getStickyId() {
-		List<String> lIDs = new FastList<String>();
-		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
-			if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
-				lIDs.add(mEndPoints.get(lPos).getServiceId());
-			}
-		}
-		return lIDs;
-	}
-
-	/**
-	 *
-	 * @param aEndPointPosition
-	 * @return <code>true</code> if the cluster endpoint was removed successfully;
-	 * <code>false</code> otherwise.
-	 */
-	public boolean removeEndPoint(int aEndPointPosition) {
-		if (aEndPointPosition != -1) {
-			if (aEndPointPosition < mStaticEntries) {
-				ClusterEndPoint lEndPoint = mEndPoints.get(aEndPointPosition);
-				lEndPoint.setConnector(null);
-				lEndPoint.setStatus(EndPointStatus.OFFLINE);
-				lEndPoint.setRequests(0);
-				return true;
-			} else {
-				mEndPoints.remove(aEndPointPosition);
-				return true;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 *
-	 * @param aConnector
-	 * @return the count of cluster endpoints removed.
-	 */
-	public int removeEndPointsByConnector(WebSocketConnector aConnector) {
-		int lCount = 0;
-		Iterator<ClusterEndPoint> lIt = mEndPoints.iterator();
-		while (lIt.hasNext()) {
-			ClusterEndPoint lEndPoint = lIt.next();
-			if (aConnector.equals(lEndPoint.getConnector())) {
-				removeEndPoint(getEndPointPosition(lEndPoint.getServiceId()));
-				lCount++;
-			}
-		}
-
-		return lCount;
-	}
-
-	/**
-	 *
-	 * @param aEndPointId
-	 * @return the position where the endpoint id coincides.
-	 */
-	public int getEndPointPosition(String aEndPointId) {
-		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
-			if (mEndPoints.get(lPos).getServiceId().equals(aEndPointId)) {
-				return lPos;
-			}
-		}
-		return -1;
-	}
-
-	/**
-	 *
-	 * @return a list with all endpoints id.
-	 */
-	public List<String> getEndPointsId() {
-		List<String> lEndPointsId = new FastList<String>();
-		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
-			lEndPointsId.add(mEndPoints.get(lPos).getServiceId());
-		}
-		return lEndPointsId;
-	}
-
-	/**
-	 *
-	 * @param aPosition
-	 * @return an specific cluster endpoint by the position given.
-	 */
-	public ClusterEndPoint getEndPointByPosition(int aPosition) {
-		return mEndPoints.get(aPosition);
 	}
 
 	/**
@@ -277,16 +85,284 @@ public class Cluster {
 	}
 
 	/**
-	 *
-	 * @return total of endpoints requests. 
+	 * @return the static entries
 	 */
-	public long getTotalEndPointsRequests() {
+	public int getStaticEntries() {
+		return mStaticEntries;
+	}
+
+	/**
+	 * @param mStaticEntries the static entries to set
+	 */
+	public void setStaticEntries(int aStaticEntries) {
+		this.mStaticEntries = aStaticEntries;
+	}
+
+	/**
+	 * @return cluster password.
+	 */
+	public String getPassword() {
+		return mPassword;
+	}
+
+	/**
+	 * @param aPassword the password to set.
+	 */
+	public void setPassword(String aPassword) {
+		mPassword = aPassword;
+	}
+
+	/**
+	 * Registers a new cluster endpoint.
+	 *
+	 * @param aConnector cluster endpoint connector.
+	 * @return the cluster endpoint registered.
+	 */
+	public ClusterEndPoint registerEndPoint(WebSocketConnector aConnector) {
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+
+			// if there is any static cluster endpoint with offline status, 
+			// the connector is added and changed their status.   
+			if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.OFFLINE)) {
+				mEndPoints.get(lPos).setConnector(aConnector);
+				mEndPoints.get(lPos).setStatus(EndPointStatus.ONLINE);
+
+				return mEndPoints.get(lPos);
+			}
+		}
+
+		// but creates a new cluster endpoint with the connector. 
+		ClusterEndPoint lEndPoint = new ClusterEndPoint(aConnector);
+		lEndPoint.setStatus(EndPointStatus.ONLINE);
+		mEndPoints.add(lEndPoint);
+
+		return lEndPoint;
+	}
+
+	/**
+	 * Removes the specific cluster endpoint from endpoints list.
+	 *
+	 * @param aClusterEndPoint endpoint to be removed.
+	 * @return the cluster endpoint removed.
+	 */
+	public ClusterEndPoint removeEndPoint(ClusterEndPoint aClusterEndPoint) {
+		int lEndPointPosition = mEndPoints.indexOf(aClusterEndPoint);
+
+		// if the cluster endpoint to be removed is a static entries,
+		// to change their status to offline.
+		if (lEndPointPosition < mStaticEntries) {
+			aClusterEndPoint.setConnector(null);
+			aClusterEndPoint.setStatus(EndPointStatus.OFFLINE);
+			aClusterEndPoint.setRequests(0);
+			return aClusterEndPoint;
+		} else {
+
+			//but remove the cluster endpoint from the list.
+			return mEndPoints.remove(lEndPointPosition);
+		}
+	}
+
+	/**
+	 * Removes a cluster endpoint by a specific connector.
+	 *
+	 * @param aConnector connector to find the correct cluster endpoint.
+	 * @return the count of cluster endpoints removed.
+	 */
+	public int removeEndPointsByConnector(WebSocketConnector aConnector) {
+		int lCount = 0;
+		Iterator<ClusterEndPoint> lIt = mEndPoints.iterator();
+		while (lIt.hasNext()) {
+			ClusterEndPoint lEndPoint = lIt.next();
+
+			// if the argument is equal to cluster endpoint connector, remove it.
+			if (aConnector.equals(lEndPoint.getConnector())) {
+				removeEndPoint(lEndPoint);
+				lCount++;
+			}
+		}
+		return lCount;
+	}
+
+	/**
+	 * Gets information about this cluster.
+	 *
+	 * @param aAlias alias from this cluster.
+	 * @return a map with information about this cluster.
+	 */
+	public Map<String, Object> getInfo(String aAlias) {
+		Map<String, Object> lInfoCluster = new HashMap<String, Object>();
+		lInfoCluster.put("clusterAlias", aAlias);
+		lInfoCluster.put("clusterNS", getNamespace());
+		lInfoCluster.put("endPointsCount", getEndPoints().size());
+		lInfoCluster.put("endPoints", getEndPoints());
+		lInfoCluster.put("requests", getTotalEndPointsRequests());
+		return lInfoCluster;
+	}
+
+	/**
+	 * Gets all sticky routes in this cluster. A sticky routes is a cluster
+	 * endpoint with status online.
+	 *
+	 * @param aAlias alias from this cluster.
+	 * @param aStickyRoutes sticky routes list.
+	 */
+	public void getStickyRoutes(String aAlias, List<Map<String, String>> aStickyRoutes) {
+		Map<String, String> lInfoCluster;
+		List<String> lIDs = getStickyId();
+		for (int lPos = 0; lPos < lIDs.size(); lPos++) {
+			lInfoCluster = new FastMap<String, String>();
+			lInfoCluster.put("clusterAlias", aAlias);
+			lInfoCluster.put("endPointId", lIDs.get(lPos));
+			aStickyRoutes.add(lInfoCluster);
+		}
+	}
+
+	/**
+	 * Gets a balanced cluster endpoint using the round robin algorithm.
+	 *
+	 * @return optimum cluster endpoint or
+	 * <code>null</code> if endpoints list is empty.
+	 */
+	public ClusterEndPoint getRoundRobinEndPoint() {
+		if (availableEndPoint()) {
+			// determine the cluster endpoint position to be returned. 
+			mEndPointPosition = (mEndPointPosition + 1 < mEndPoints.size()
+				? mEndPointPosition + 1 : 0);
+			// if the cluster endpoint position is valid then return it,
+			// but repeat this method.
+			return (availableEndPoint(mEndPointPosition)
+				? mEndPoints.get(mEndPointPosition) : getRoundRobinEndPoint());
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Gets a balanced cluster endpoint using the least CPU usage algorithm.
+	 *
+	 * @return optimum cluster endpoint.
+	 */
+	public ClusterEndPoint getOptimumEndPoint() {
+		double lLeastCpuUsage = Double.MAX_VALUE;
+		int lEndPointPos = -1;
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			double lTempCpuUsage = mEndPoints.get(lPos).getCpuUsage();
+			Object lJwsType = mEndPoints.get(lPos).getConnector().getVar("jwsType");
+			// discard all javascript client because they can't get your cpu usage.
+			if (!lJwsType.toString().equals("javascript") && lTempCpuUsage < lLeastCpuUsage) {
+				lLeastCpuUsage = lTempCpuUsage;
+				lEndPointPos = lPos;
+			}
+		}
+		return (lEndPointPos == -1 ? null : mEndPoints.get(lEndPointPos));
+	}
+
+	/**
+	 * Gets a balanced cluster endpoint using both algorithms (round robin &
+	 * least CPU usage).
+	 *
+	 * @return optimum cluster endpoint.
+	 */
+	public ClusterEndPoint getOptimumRREndPoint() {
+		ClusterEndPoint lTempClusterEndPoint = getRoundRobinEndPoint();
+		Object lJwsType = lTempClusterEndPoint.getConnector().getVar("jwsType");
+
+		// if 'ClusterEndPoint' is javascript client executes round robin algorithm,
+		// but executes least CPU usage algorithm (with CPU usage).
+		if (lJwsType.toString().equals("javascript")) {
+			return lTempClusterEndPoint;
+		} else {
+			return getOptimumEndPoint();
+		}
+	}
+
+	/**
+	 * Refresh the CPU usage to a specific cluster endpoint by the connector
+	 * id.
+	 *
+	 * @param aConnectorId cluster endpoint connector.
+	 * @param aCpuUsage CPU usage.
+	 */
+	public void refreshCpuUsage(String aConnectorId, double aCpuUsage) {
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			ClusterEndPoint lTempEndPoint = mEndPoints.get(lPos);
+			if (lTempEndPoint.getStatus().equals(EndPointStatus.ONLINE)) {
+				if (lTempEndPoint.getConnector().getId().equals(aConnectorId)) {
+					lTempEndPoint.setCpuUsage(aCpuUsage);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Verify if endpoints list contains a cluster endpoint with a specific
+	 * id.
+	 *
+	 * @param aEndPointId endpoint id.
+	 * @return if the endpoints list contains the specified cluster endpoint
+	 * returns it, but returns
+	 * <code>null</code>
+	 */
+	public ClusterEndPoint containsEndPoint(String aEndPointId) {
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			ClusterEndPoint lClusterEndPoint = mEndPoints.get(lPos);
+			if (lClusterEndPoint.getServiceId().equals(aEndPointId)) {
+				return lClusterEndPoint;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return
+	 * <code>true</code> if any cluster endpoint have status online;
+	 * <code>false</code> otherwise.
+	 */
+	private boolean availableEndPoint() {
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			if (availableEndPoint(lPos)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param lPos position in cluster endpoint list.
+	 * @return
+	 * <code>true</code> if any cluster endpoint have status online;
+	 * <code>false</code> otherwise.
+	 */
+	private boolean availableEndPoint(int lPos) {
+		if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * @return a list with all sticky id.
+	 */
+	private List<String> getStickyId() {
+		List<String> lIDs = new FastList<String>();
+		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
+			if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
+				lIDs.add(mEndPoints.get(lPos).getServiceId());
+			}
+		}
+		return lIDs;
+	}
+
+	/**
+	 * @return total of endpoints requests.
+	 */
+	private long getTotalEndPointsRequests() {
 		long lRequests = 0;
 		Iterator<ClusterEndPoint> lIt = mEndPoints.iterator();
 		while (lIt.hasNext()) {
 			lRequests += lIt.next().getRequests();
 		}
-
 		return lRequests;
 	}
 }

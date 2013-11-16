@@ -32,12 +32,29 @@ import org.jwebsocket.token.Token;
  */
 public class ClusterEndPoint implements ITokenizable {
 
+	/**
+	 * Cluster endpoint status, initial value 'OFFLINE'.
+	 */
 	private EndPointStatus mStatus = EndPointStatus.OFFLINE;
+	/**
+	 * Cluster endpoint connector.
+	 */
 	private WebSocketConnector mConnector;
+	/**
+	 * Cluster endpoint requests, initial value '0'.
+	 */
 	private long mRequests = 0;
+	/**
+	 * Cluster endpoint id.
+	 */
 	private final String mServiceId;
+	/**
+	 * Cluster endpoint CPU usage, initial value '-1.0'.
+	 */
+	private double mCpuUsage = -1.0;
 
 	public ClusterEndPoint() {
+		// creates an unique service id. 
 		mServiceId = UUID.randomUUID().toString();
 	}
 
@@ -47,7 +64,7 @@ public class ClusterEndPoint implements ITokenizable {
 	}
 
 	/**
-	 * @return the status.
+	 * @return the cluster endpoint status.
 	 */
 	public EndPointStatus getStatus() {
 		return mStatus;
@@ -105,11 +122,28 @@ public class ClusterEndPoint implements ITokenizable {
 		this.mRequests = aRequests;
 	}
 
+	/**
+	 * @return the CPU usage.
+	 */
+	public double getCpuUsage() {
+		return mCpuUsage;
+	}
+
+	/**
+	 * @param aCpuUsage the CPU usage to set.
+	 */
+	public void setCpuUsage(double aCpuUsage) {
+		this.mCpuUsage = aCpuUsage;
+	}
+
 	@Override
 	public void writeToToken(Token aToken) {
 		aToken.setString("id", getServiceId());
 		aToken.setString("status", getStatus().name());
 		aToken.setLong("requests", getRequests());
+		if (getCpuUsage() != -1) {
+			aToken.setDouble("cpu", getCpuUsage());
+		}
 	}
 
 	@Override
