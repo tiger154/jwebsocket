@@ -18,11 +18,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.grizzly;
 
+import java.net.URI;
 import java.util.Date;
 import javax.net.ssl.SSLContext;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.grizzly.websockets.WebSocketAddOn;
 import org.glassfish.grizzly.websockets.WebSocketApplication;
@@ -139,31 +141,38 @@ public class GrizzlyEngine extends BaseEngine {
 					}
 					try {
 						String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
-						SSLContext lSSLContext = Util.createSSLContext(lKeyStorePath, mKeyStorePassword);
-
 						mGrizzlySSLServer = HttpServer.createSimpleServer(lDocumentRoot, mGrizzlySSLPort);
-
-//						mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
-//						mGrizzlySSLServer.getListener("grizzly").setSecure(true);
-
-						SSLEngineConfigurator lSSLEngineConfigurator = new SSLEngineConfigurator(lSSLContext, false, false, false);
-						lSSLEngineConfigurator.setEnabledProtocols(new String[]{"TLSv1", "SSLv3"});
-//						lSSLEngineConfigurator.setEnabledProtocols(new String[]{"TLS"});
-						lSSLEngineConfigurator.setProtocolConfigured(true);
-
-//						String[] lEnabledCipherSuites = {"SSL_RSA_WITH_RC4_128_SHA", "TLS_KRB5_WITH_RC4_128_SHA"};
-						//cipherSuites 	null means 'use SSLEngine's default.'
-//						lSSLEngineConfigurator.setEnabledCipherSuites(lEnabledCipherSuites);
-						lSSLEngineConfigurator.setCipherConfigured(true);
-						lSSLEngineConfigurator.setNeedClientAuth(false);
-						WebSocketAddOn lSSLWebSocketAddon = new WebSocketAddOn();
-						lSSLWebSocketAddon.setTimeoutInSeconds(mTimeout);
+                        SSLContextConfigurator sslContext = new SSLContextConfigurator();
+                        sslContext.setKeyStoreFile(lKeyStorePath);
+                        sslContext.setKeyStorePass(mKeyStorePassword);
+						SSLEngineConfigurator lEngineConfigurator = new SSLEngineConfigurator(sslContext, false, false, false);
+                        mGrizzlySSLServer.getListener("grizzly").setSSLEngineConfig(lEngineConfigurator);
+                        mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
 						
-						for (NetworkListener lListener : mGrizzlySSLServer.getListeners()) {
-							lListener.registerAddOn(lSSLWebSocketAddon);
-							lListener.setSecure(true);
-							lListener.setSSLEngineConfig(lSSLEngineConfigurator);
-						}
+//						SSLContext lSSLContext = Util.createSSLContext(lKeyStorePath, mKeyStorePassword);
+//
+//						mGrizzlySSLServer = HttpServer.createSimpleServer(lDocumentRoot, mGrizzlySSLPort);
+//
+////						mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
+////						mGrizzlySSLServer.getListener("grizzly").setSecure(true);
+//
+//						SSLEngineConfigurator lSSLEngineConfigurator = new SSLEngineConfigurator(lSSLContext, false, false, false);
+//						lSSLEngineConfigurator.setEnabledProtocols(new String[]{"TLSv1", "SSLv3"});
+//						lSSLEngineConfigurator.setProtocolConfigured(true);
+//
+////						String[] lEnabledCipherSuites = {"SSL_RSA_WITH_RC4_128_SHA", "TLS_KRB5_WITH_RC4_128_SHA"};
+//						//cipherSuites 	null means 'use SSLEngine's default.'
+////						lSSLEngineConfigurator.setEnabledCipherSuites(lEnabledCipherSuites);
+//						lSSLEngineConfigurator.setCipherConfigured(true);
+//						lSSLEngineConfigurator.setNeedClientAuth(false);
+//						WebSocketAddOn lSSLWebSocketAddon = new WebSocketAddOn();
+//						lSSLWebSocketAddon.setTimeoutInSeconds(mTimeout);
+//						
+//						for (NetworkListener lListener : mGrizzlySSLServer.getListeners()) {
+//							lListener.registerAddOn(lSSLWebSocketAddon);
+//							lListener.setSecure(true);
+//							lListener.setSSLEngineConfig(lSSLEngineConfigurator);
+//						}
 
 					} catch (Exception lEx) {
 						mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SSL engine"));
