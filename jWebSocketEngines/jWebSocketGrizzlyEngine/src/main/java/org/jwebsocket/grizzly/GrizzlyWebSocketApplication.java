@@ -62,6 +62,14 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		mConnectors = new FastMap<WebSocket, GrizzlyConnector>().shared();
 	}
 
+	@Override
+	public WebSocket createSocket(ProtocolHandler handler, HttpRequestPacket requestPacket, WebSocketListener... listeners) {
+		if (isApplicationRequest(requestPacket)) {
+			return super.createSocket(handler, requestPacket, listeners); //To change body of generated methods, choose Tools | Templates.
+		}
+		return null;
+	}
+
 	/**
 	 *
 	 * @param aHandshake
@@ -77,8 +85,8 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	 * @return
 	 */
 	@Override
-	public List<String> getSupportedExtensions() {
-		List<String> lExts = super.getSupportedExtensions();
+	public List<Extension> getSupportedExtensions() {
+		List<Extension> lExts = super.getSupportedExtensions();
 		return lExts;
 	}
 
@@ -204,11 +212,11 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	@Override
 	public void onMessage(WebSocket aWebSocket, String aData) {
 		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
-		if (aData.length() > lConnector.getMaxFrameSize()) {
-			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(lConnector, aData.length()));
-			return;
-		}
 		if (lConnector != null) {
+			if (aData.length() > lConnector.getMaxFrameSize()) {
+				mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(lConnector, aData.length()));
+				return;
+			}
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Processing (text) message from '" + lConnector.getId() + "' connector...");
 			}
@@ -224,11 +232,11 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	@Override
 	public void onMessage(WebSocket aWebSocket, byte[] aBytes) {
 		GrizzlyConnector lConnector = mConnectors.get(aWebSocket);
-		if (aBytes.length > lConnector.getMaxFrameSize()) {
-			mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(lConnector, aBytes.length));
-			return;
-		}
 		if (lConnector != null) {
+			if (aBytes.length > lConnector.getMaxFrameSize()) {
+				mLog.error(BaseEngine.getUnsupportedIncomingPacketSizeMsg(lConnector, aBytes.length));
+				return;
+			}
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Processing (binary) message from '" + lConnector.getId() + "' connector...");
 			}
