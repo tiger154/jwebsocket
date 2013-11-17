@@ -22,11 +22,11 @@ import java.util.Date;
 import javax.net.ssl.SSLContext;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.grizzly.websockets.WebSocketAddOn;
 import org.glassfish.grizzly.websockets.WebSocketApplication;
 import org.glassfish.grizzly.websockets.WebSocketEngine;
-import org.glassfish.grizzly.websockets.WebSocketServer;
 import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
@@ -52,7 +52,7 @@ public class GrizzlyEngine extends BaseEngine {
 	private final String DOCUMENT_ROOT_CONFIG_KEY = "document_root";
 	private Integer mSessionTimeout = 3000;
 	private boolean mIsRunning = false;
-	private WebSocketServer mGrizzlyServer = null;
+	private HttpServer mGrizzlyServer = null;
 	private HttpServer mGrizzlySSLServer;
 
 	/**
@@ -97,14 +97,24 @@ public class GrizzlyEngine extends BaseEngine {
 			}
 
 			// setting the socket server hostname
-			String lHostname = getConfiguration().getHostname();
-			if (null != lHostname) {
-				mGrizzlyServer = WebSocketServer.createServer(lHostname, mGrizzlyPort);
-			} else {
-				mGrizzlyServer = WebSocketServer.createServer(mGrizzlyPort);
+//			String lHostname = getConfiguration().getHostname();
+//			if (null != lHostname) {
+//				mGrizzlyServer = WebSocketServer.createServer(lHostname, mGrizzlyPort);
+//			} else {
+//				mGrizzlyServer = WebSocketServer.createServer(mGrizzlyPort);
+//			}
+//			mGrizzlyServer.register("jWebSocketEngine", new GrizzlyWebSocketApplication(this));
+			String lDocumentRoot = JWebSocketConfig.getJWebSocketHome() + "web/";
+			if (getConfiguration().getSettings().containsKey(DOCUMENT_ROOT_CONFIG_KEY)) {
+				lDocumentRoot = getConfiguration().getSettings().get(DOCUMENT_ROOT_CONFIG_KEY).toString();
 			}
-			mGrizzlyServer.register("jWebSocketEngine", new GrizzlyWebSocketApplication(this));
-
+			mGrizzlyServer = HttpServer.createSimpleServer(lDocumentRoot, mGrizzlyPort);
+			final WebSocketAddOn lWebSocketAddon = new WebSocketAddOn();
+			lWebSocketAddon.setTimeoutInSeconds(aConfiguration.getTimeout());
+			for (NetworkListener lListener : mGrizzlyServer.getListeners()) {
+				lListener.registerAddOn(lWebSocketAddon);
+			}
+			
 			// Create encrypted (SSL) server socket for wss:// protocol
 			if (mGrizzlySSLPort > 0) {
 				if (mLog.isDebugEnabled()) {
@@ -125,10 +135,6 @@ public class GrizzlyEngine extends BaseEngine {
 						String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
 						SSLContext lSSLContext = Util.createSSLContext(lKeyStorePath, mKeyStorePassword);
 
-						String lDocumentRoot = JWebSocketConfig.getJWebSocketHome() + "web/";
-						if (getConfiguration().getSettings().containsKey(DOCUMENT_ROOT_CONFIG_KEY)) {
-							lDocumentRoot = getConfiguration().getSettings().get(DOCUMENT_ROOT_CONFIG_KEY).toString();
-						}
 						mGrizzlySSLServer = HttpServer.createSimpleServer(lDocumentRoot, mGrizzlySSLPort);
 						mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
 						mGrizzlySSLServer.getListener("grizzly").setSecure(true);
@@ -152,14 +158,13 @@ public class GrizzlyEngine extends BaseEngine {
 					mLog.error("SSL engine could not be instantiated due to missing configuration,"
 							+ " please set sslport, keystore and password options.");
 				}
-
 			}
 
 			// The WebSocketApplication will control the incoming and
 			//outgoing flow, connection, listeners, etc...
-			WebSocketApplication lGrizzlyApplication = new GrizzlyWebSocketApplication(this);
+			final WebSocketApplication lGrizzlyApplication = new GrizzlyWebSocketApplication(this);
 			// Registering grizzly jWebSocket Wrapper Application into grizzly WebSocketEngine
-			WebSocketEngine.getEngine().register(lGrizzlyApplication);
+			WebSocketEngine.getEngine().register("/jWebSocket", "/jWebSocket", lGrizzlyApplication);
 
 		} catch (Exception lEx) {
 			mLog.error(lEx.getMessage());

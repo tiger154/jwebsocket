@@ -13,16 +13,15 @@
 		
 		<dependencySet>
 			<outputDirectory/>
+			<unpack>true</unpack>
 			<includes>
 				<include>${groupId}:${artifactId}</include>
-				<include>org.glassfish.grizzly:grizzly-core</include>
-				<include>org.glassfish.grizzly:grizzly-framework</include>
 				<include>org.glassfish.grizzly:grizzly-websockets</include>
 				<include>org.glassfish.grizzly:grizzly-websockets-server</include>
-				
+				<include>org.glassfish.grizzly:grizzly-http-server</include>
+				<include>org.glassfish.grizzly:grizzly-http-servlet</include>
 			</includes>
-			<unpack>true</unpack>
-		</dependencySet>		
+		</dependencySet>
 		
 	</dependencySets>
 </assembly>
