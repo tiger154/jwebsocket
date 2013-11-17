@@ -51,6 +51,7 @@ public class GrizzlyEngine extends BaseEngine {
 	private String mKeyStorePassword = JWebSocketServerConstants.JWEBSOCKET_KS_DEF_PWD;
 	private final String DOCUMENT_ROOT_CONFIG_KEY = "document_root";
 	private Integer mSessionTimeout = 3000;
+	private Integer mTimeout = 3000;
 	private boolean mIsRunning = false;
 	private HttpServer mGrizzlyServer = null;
 	private HttpServer mGrizzlySSLServer;
@@ -68,10 +69,15 @@ public class GrizzlyEngine extends BaseEngine {
 			mGrizzlySSLPort = aConfiguration.getSSLPort();
 			mKeyStore = aConfiguration.getKeyStore();
 			mKeyStorePassword = aConfiguration.getKeyStorePassword();
-
+			mTimeout = aConfiguration.getTimeout();
+			mSessionTimeout = aConfiguration.getTimeout();
+			
+			if(mTimeout.equals(0)){
+				mTimeout = 3000;
+				mSessionTimeout = 3000;
+			}
 			String lEngineContext = aConfiguration.getContext();
 			String lEngineApp = aConfiguration.getServlet();
-			mSessionTimeout = aConfiguration.getTimeout();
 
 			if (mGrizzlySSLPort == 0) {
 				mGrizzlySSLPort = JWebSocketCommonConstants.DEFAULT_SSLPORT;
@@ -110,11 +116,11 @@ public class GrizzlyEngine extends BaseEngine {
 			}
 			mGrizzlyServer = HttpServer.createSimpleServer(lDocumentRoot, mGrizzlyPort);
 			final WebSocketAddOn lWebSocketAddon = new WebSocketAddOn();
-			lWebSocketAddon.setTimeoutInSeconds(aConfiguration.getTimeout());
+			lWebSocketAddon.setTimeoutInSeconds(mTimeout);
 			for (NetworkListener lListener : mGrizzlyServer.getListeners()) {
 				lListener.registerAddOn(lWebSocketAddon);
 			}
-			
+
 			// Create encrypted (SSL) server socket for wss:// protocol
 			if (mGrizzlySSLPort > 0) {
 				if (mLog.isDebugEnabled()) {
@@ -136,20 +142,28 @@ public class GrizzlyEngine extends BaseEngine {
 						SSLContext lSSLContext = Util.createSSLContext(lKeyStorePath, mKeyStorePassword);
 
 						mGrizzlySSLServer = HttpServer.createSimpleServer(lDocumentRoot, mGrizzlySSLPort);
-						mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
-						mGrizzlySSLServer.getListener("grizzly").setSecure(true);
+
+//						mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
+//						mGrizzlySSLServer.getListener("grizzly").setSecure(true);
 
 						SSLEngineConfigurator lSSLEngineConfigurator = new SSLEngineConfigurator(lSSLContext, false, false, false);
 						lSSLEngineConfigurator.setEnabledProtocols(new String[]{"TLSv1", "SSLv3"});
+//						lSSLEngineConfigurator.setEnabledProtocols(new String[]{"TLS"});
 						lSSLEngineConfigurator.setProtocolConfigured(true);
 
-						String[] lEnabledCipherSuites = {"SSL_RSA_WITH_RC4_128_SHA", "TLS_KRB5_WITH_RC4_128_SHA"};
+//						String[] lEnabledCipherSuites = {"SSL_RSA_WITH_RC4_128_SHA", "TLS_KRB5_WITH_RC4_128_SHA"};
 						//cipherSuites 	null means 'use SSLEngine's default.'
-						lSSLEngineConfigurator.setEnabledCipherSuites(lEnabledCipherSuites);
+//						lSSLEngineConfigurator.setEnabledCipherSuites(lEnabledCipherSuites);
 						lSSLEngineConfigurator.setCipherConfigured(true);
-
-						mGrizzlySSLServer.getListener("grizzly").
-								setSSLEngineConfig(lSSLEngineConfigurator);
+						lSSLEngineConfigurator.setNeedClientAuth(false);
+						WebSocketAddOn lSSLWebSocketAddon = new WebSocketAddOn();
+						lSSLWebSocketAddon.setTimeoutInSeconds(mTimeout);
+						
+						for (NetworkListener lListener : mGrizzlySSLServer.getListeners()) {
+							lListener.registerAddOn(lSSLWebSocketAddon);
+							lListener.setSecure(true);
+							lListener.setSSLEngineConfig(lSSLEngineConfigurator);
+						}
 
 					} catch (Exception lEx) {
 						mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SSL engine"));
