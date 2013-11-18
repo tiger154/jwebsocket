@@ -21,34 +21,32 @@ import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaAlreadyExist;
  * @author Osvaldo Aguilar
  */
 public class QuotaInterval extends BaseQuota {
-
+    
     private Interval mInterval;
-    
-/**
- * 
- * @param aUuid
- * Get the quota's max value in database given the quota's uuid   
- * @return long
- */
-    
+
+    /**
+     *
+     * @param aUuid Get the quota's max value in database given the quota's uuid
+     * @return long
+     */
     public long getMaxValue(String aUuid) {
         IQuotaSingleInstance lquota = mQuotaStorage.getQuotaByUuid(aUuid);
         Map<String, Object> lMap = getStorage().getRawQuota(aUuid, lquota.getInstance());
         int lMaxValue = Integer.parseInt(lMap.get("maxValue").toString());
         return lMaxValue;
     }
-
+    
     public Interval getInterval() {
         return mInterval;
     }
-
+    
     public void setInterval(Interval mInterval) {
         this.mInterval = mInterval;
     }
-
+    
     @Override
     public long reduceQuota(String aUuid, long aAmount) {
-
+        
         if (!CompareDates(Calendar.getInstance())) {
             return -1;
         }
@@ -62,26 +60,28 @@ public class QuotaInterval extends BaseQuota {
             return -1;
         }
         return getStorage().update(aUuid, lValue - aAmount);
-
-    }
-
+        
+     }
+    
     @Override
-    public void register(String aInstance, String aNameSpace, String aUuid, long aAmount, String aInstanceType, String aQuotaType, String aQuotaIdentifier) throws ExceptionQuotaAlreadyExist {
-
+    public void register(String aInstance, String aNameSpace, String aUuid, long aAmount, 
+                String aInstanceType, String aQuotaType, String aQuotaIdentifier, 
+                String aActions) throws ExceptionQuotaAlreadyExist {
         try {
-            super.register(aInstance, aNameSpace, aUuid, aAmount, aInstanceType, aQuotaType, aQuotaIdentifier);
+            super.register(aInstance, aNameSpace, aUuid, aAmount, aInstanceType, aQuotaType, aQuotaIdentifier, aActions);
         } catch (Exception ex) {
             Logger.getLogger(QuotaInterval.class.getName()).log(Level.SEVERE, null, ex);
         }
         IQuotaSingleInstance lSingleQuota;
-        lSingleQuota = new QuotaIntervalSI(mInterval, aAmount, aInstance, aUuid, aNameSpace, aQuotaType, aQuotaIdentifier, aInstanceType);
+        lSingleQuota = new QuotaIntervalSI(mInterval, aAmount, aInstance, aUuid, aNameSpace, aQuotaType, 
+                aQuotaIdentifier, aInstanceType, aActions);
         mQuotaStorage.save(lSingleQuota);
     }
-    /**
-     * @param aUuid 
-     * reset the quota to max value if the actual date is after the quota's last end day 
-     */
 
+    /**
+     * @param aUuid reset the quota to max value if the actual date is after the
+     * quota's last end day
+     */
     private void ResetQuota(String aUuid) {
         Calendar lToday = Calendar.getInstance();
         Calendar lDate = Calendar.getInstance();
@@ -111,74 +111,72 @@ public class QuotaInterval extends BaseQuota {
             //to see for change the method's name
             mQuotaStorage.updateIntervalResetDate(aUuid, mInterval.toResetDate());
         }
-
-
+        
+        
     }
-
+    
     private boolean CompareDates(Calendar aDate) {
         if (getStartDay().before(aDate) && getEndDay().after(aDate)) {
             return true;
         }
         return false;
     }
-
+    
     private Calendar getStartDay() {
         Calendar lToday = Calendar.getInstance();
         Interval lAux = mInterval;
         while (lAux != null) {
             if (lAux.getIntervalType().equals(IntervalType.Yearly)) {
                 lToday.set(Calendar.MONTH, Integer.parseInt(lAux.getStartDate()));
-
+                
             }
-            if (lAux.getIntervalType().equals(IntervalType.Monthly) ){
+            if (lAux.getIntervalType().equals(IntervalType.Monthly)) {
                 lToday.set(Calendar.DAY_OF_MONTH, Integer.parseInt(lAux.getStartDate()));
-
+                
             }
             if (lAux.getIntervalType().equals(IntervalType.Weekly)) {
                 lToday.set(Calendar.DAY_OF_WEEK, Integer.parseInt(lAux.getStartDate()));
-
+                
             }
             if (lAux.getIntervalType().equals(IntervalType.Daily)) {
                 lToday.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lAux.getStartDate()));
-
+                
             }
             if (lAux.getIntervalType().equals(IntervalType.Hourly)) {
                 lToday.set(Calendar.MINUTE, Integer.parseInt(lAux.getStartDate()));
-
+                
             }
             lAux = lAux.getInterval();
         }
         return lToday;
     }
-
+    
     private Calendar getEndDay() {
         Calendar lToday = Calendar.getInstance();
         Interval lAux = mInterval;
         while (lAux != null) {
-            if (lAux.getIntervalType().equals(IntervalType.Yearly) ){
+            if (lAux.getIntervalType().equals(IntervalType.Yearly)) {
                 lToday.set(Calendar.MONTH, Integer.parseInt(lAux.getEndDate()));
-
+                
             }
             if (lAux.getIntervalType().equals(IntervalType.Monthly)) {
                 lToday.set(Calendar.DAY_OF_MONTH, Integer.parseInt(lAux.getEndDate()));
-
+                
             }
             if (lAux.getIntervalType().equals(IntervalType.Weekly)) {
                 lToday.set(Calendar.DAY_OF_WEEK, Integer.parseInt(lAux.getEndDate()));
-
+                
             }
             if (lAux.getIntervalType().equals(IntervalType.Daily)) {
                 lToday.set(Calendar.HOUR_OF_DAY, Integer.parseInt(lAux.getEndDate()));
-
+                
             }
-            if (lAux.getIntervalType().equals(IntervalType.Hourly) ){
+            if (lAux.getIntervalType().equals(IntervalType.Hourly)) {
                 lToday.set(Calendar.MINUTE, Integer.parseInt(lAux.getEndDate()));
-
+                
             }
             lAux = lAux.getInterval();
         }
         return lToday;
     }
-
-    
 }

@@ -87,6 +87,11 @@ public abstract class BaseQuota implements IQuota {
         return reduceQuota(lUuid, aAmount);
     }
 
+    @Override
+    public String getActions(String aUuid) {
+        String lActions = this.getStorage().getActions(aUuid);
+        return lActions;
+    }
     
 
     @Override
@@ -132,14 +137,18 @@ public abstract class BaseQuota implements IQuota {
     }
 
     @Override
-    public void register(String aInstance, String aNameSpace,
-            String aUuid, long aAmount, String aInstanceType, String aQuotaType, String aQuotaIdentifier)
+    public void register(String aInstance, String aNameSpace, String aUuid,
+        long aAmount, String aInstanceType, String aQuotaType, String aQuotaIdentifier, String aActions)
             throws Exception {
+        
+        
 
         if (mQuotaStorage.quotaExist(aNameSpace, aQuotaIdentifier, aInstance)) {
             throw new ExceptionQuotaAlreadyExist(aUuid);
         }
     }
+    
+    
 
     @Override
     public void unregister(String aInstance, String aUuid)

@@ -8,24 +8,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
-import javolution.util.FastMap;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.plugins.ActionPlugIn;
-import org.jwebsocket.token.Token;
-import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.quota.api.IQuota;
 import org.jwebsocket.plugins.quota.api.IQuotaProvider;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import org.jwebsocket.plugins.quota.api.IQuotaStorage;
 import org.jwebsocket.plugins.quota.utils.QuotaHelper;
 import org.jwebsocket.plugins.quota.utils.QuotaProvider;
-import org.jwebsocket.spring.JWebSocketBeanFactory;
-import org.jwebsocket.token.JSONToken;
-import org.jwebsocket.token.MapToken;
+import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.springframework.context.ApplicationContext;
 
@@ -33,65 +25,27 @@ import org.springframework.context.ApplicationContext;
  *
  * @author osvaldo
  */
-public class QuotaPlugin extends ActionPlugIn {
+public class QuotaServices {
 
     private static Logger mLog = Logging.getLogger();
-    public static final String NS =
-            JWebSocketServerConstants.NS_BASE + ".plugins.quota";
+    private String mNSPluging;
     private static ApplicationContext mSpringAppContext;
     private IQuotaProvider mQuotaProvider;
-    private QuotaHelper mQuotaHelper;
-    private QuotaServices mQuotaService;
 
-    @Override
-    public String getNamespace() {
-        return NS;
-    }
+    public QuotaServices(String mNSPluging, ApplicationContext aSpringAppContent) {
+        this.mNSPluging = mNSPluging;
 
-    public QuotaPlugin(PluginConfiguration aConfiguration) {
-        super(aConfiguration);
-        setNamespace(NS);
+        mSpringAppContext = aSpringAppContent;
 
-        if (mLog.isDebugEnabled()) {
-            mLog.debug("QuotaPlugin successfully instantiated!");
-        }
-
-        mSpringAppContext = getConfigBeanFactory();
         mQuotaProvider = (QuotaProvider) mSpringAppContext.getBean("quotaProv"
                 + "ider");
-
-        mQuotaService = new QuotaServices(getNamespace(), mSpringAppContext);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Token invoke(WebSocketConnector aConnector, Token aToken) {
-        String lType = aToken.getType();
-
-        if (lType.equals("registerQuota")) {
-            return mQuotaService.registerQuotaAction(aToken);
-        } else if (lType.equals("unregisterQuota")) {
-            return mQuotaService.unregisterQuotaAction(aToken);
-        } else if (lType.equals("query")) {
-            return mQuotaService.queryAction(aToken);
-        } else if (lType.equals("getQuota")) {
-            return mQuotaService.getQuotaAction(aToken);
-        } else if (lType.equals("getActivesQuota")) {
-            return mQuotaService.getActivesQuotaAction(aToken);
-        } else if (lType.equals("reduceQuota")) {
-            return mQuotaService.reduceQuotaAction(aToken);
-        } else if (lType.equals("setQuota")) {
-            return mQuotaService.setQuotaAction(aToken);
-        } else if (lType.equals("increaseQuota")) {
-            return mQuotaService.increaseQuotaAction(aToken);
-        }
-        return null;
+    public String getNamespace() {
+        return mNSPluging;
     }
 
-    @Role(name = NS + ".quota_create")
-    public void registerQuotaAction(WebSocketConnector aConnector, Token aToken) {
+    public Token registerQuotaAction(Token aToken) {
 
         try {
             boolean lHasUuid = aToken.getMap().containsKey("q_uuid");
@@ -119,25 +73,40 @@ public class QuotaPlugin extends ActionPlugIn {
                     lQuota.register(lInstance, lNS, lUuid, lValue,
                             lInstanceType, lQuotaType, lQuotaIdentifier, lQuotActions);
                     lResult.setString("message", "Quota created succesfully");
-                    getServer().sendToken(aConnector, lResult);
+                    lResult.setCode(0);
+                    
+                    return lResult;
                 } catch (Exception aException) {
-                    getServer().sendErrorToken(aConnector, aToken, -1,
-                            "Error creating the quota: " + aException.getMessage());
+                    return getErrorToken("Error creating the quota: " + aException.getMessage(),
+                            aToken);
                 }
             } else {
                 try {
                     lQuota.register(lUuid, lInstance, lInstanceType);
                     lResult.setString("message", "Quota created succesfully");
-                    getServer().sendToken(aConnector, lResult);
+                    lResult.setCode(0);
+                    
+                    return lResult;
                 } catch (Exception aException) {
-                    getServer().sendErrorToken(aConnector, aToken, -1,
-                            "Error creating the quota: " + aException.getMessage());
+                    return getErrorToken("Error creating the quota: " + aException.getMessage(),
+                            aToken);
                 }
             }
         } catch (Exception aException) {
             mLog.error("Error creating"
                     + "Quota" + aException.getMessage());
+            return getErrorToken("Error creating the quota: " + aException.getMessage(),
+                    aToken);
         }
+    }
+
+    private Token getErrorToken(String aMsg, Token aToken) {
+
+        Token lToken = TokenFactory.createToken(getNamespace(), aToken.getType());
+        lToken.setCode(-1);
+        lToken.setString("msg", aMsg);
+
+        return lToken;
     }
 
     private IQuota quotaByIdentifier(String aIdentifier) {
@@ -150,8 +119,7 @@ public class QuotaPlugin extends ActionPlugIn {
         return lQuota;
     }
 
-    @Role(name = NS + ".quota_remove")
-    public void unregisterQuotaAction(WebSocketConnector aConnector, Token aToken) {
+    public Token unregisterQuotaAction(Token aToken) {
         try {
 
             String lUuid = aToken.getString("q_uuid");
@@ -161,28 +129,39 @@ public class QuotaPlugin extends ActionPlugIn {
             IQuota lQuota;
             lQuota = quotaByIdentifier(lQuotaIdentifier);
 
-            Token lResult = createResponse(aToken);
+            Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
 
             try {
                 lQuota.unregister(lInstance, lUuid);
                 lResult.setString("message", "Quota removed succesfully");
-                getServer().sendToken(aConnector, lResult);
-
+                lResult.setCode(0);
+                return lResult;
             } catch (Exception aException) {
-                getServer().sendErrorToken(aConnector, aToken, -1,
-                        "Error removing the quota: " + aException.getMessage());
+                return getErrorToken("Error removing the quota: " + aException.getMessage(),
+                        aToken);
             }
         } catch (Exception aException) {
-            mLog.error("Error when unregister the quota"
+            mLog.error("Error unregistering the quota"
                     + aException.getMessage());
+            return getErrorToken("Error removing the quota: " + aException.getMessage(),
+                    aToken);
         }
 
     }
 
-    @Role(name = NS + ".quota_query")
-    public void queryAction(WebSocketConnector aConnector, Token aToken) {
+    private void addAllQSIList(FastList<IQuotaSingleInstance> aRefList,
+            FastList<IQuotaSingleInstance> aPartialList) {
+
+        for (Iterator<IQuotaSingleInstance> it = aPartialList.iterator(); it.hasNext();) {
+            IQuotaSingleInstance iQuotaSingleInstance = it.next();
+            aRefList.add(iQuotaSingleInstance);
+        }
+    }
+
+    public Token queryAction(Token aToken) {
         try {
-            Token lResult = createResponse(aToken);
+            Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
+
             FastList<Token> lResultList = new FastList<Token>();
 
             String lNS = aToken.getString("q_namespace").trim();
@@ -229,29 +208,20 @@ public class QuotaPlugin extends ActionPlugIn {
 
             lResult.setInteger("totalCount", lQinstanceList.size());
             lResult.setList("data", lResultList);
-
-            getServer().sendToken(aConnector, lResult);
+            lResult.setCode(0);
+            return lResult;
 
         } catch (Exception aExcep) {
-            getServer().sendErrorToken(aConnector, aToken, -1, "The following "
-                    + "error was captured in the server: " + aExcep.getMessage());
+            return getErrorToken("The following "
+                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
         }
 
     }
 
-    private void addAllQSIList(FastList<IQuotaSingleInstance> aRefList,
-            FastList<IQuotaSingleInstance> aPartialList) {
-
-        for (Iterator<IQuotaSingleInstance> it = aPartialList.iterator(); it.hasNext();) {
-            IQuotaSingleInstance iQuotaSingleInstance = it.next();
-            aRefList.add(iQuotaSingleInstance);
-        }
-    }
-
-    @Role(name = NS + ".quota_query")
-    public void getQuotaAction(WebSocketConnector aConnector, Token aToken) {
+    public Token getQuotaAction(Token aToken) {
         try {
-            Token lResult = createResponse(aToken);
+            Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
+
             String lUuid = aToken.getString("q_uuid").trim();
             String lQuotaIdentifier = aToken.getString("q_identifier").trim();
             IQuota lQuota;
@@ -260,20 +230,22 @@ public class QuotaPlugin extends ActionPlugIn {
 
             lResult.setLong("value", lValue);
             lResult.setBoolean("success", true);
-
-            getServer().sendToken(aConnector, lResult);
+            lResult.setCode(0);
+            
+            return lResult;
 
         } catch (Exception aExcep) {
-            getServer().sendErrorToken(aConnector, aToken, -1, "The following "
-                    + "error was captured in the server: " + aExcep.getMessage());
+
+            return getErrorToken("The following "
+                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
         }
 
     }
 
-    @Role(name = NS + ".quota_query")
-    public void getActivesQuotaAction(WebSocketConnector aConnector, Token aToken) {
+    public Token getActivesQuotaAction(Token aToken) {
         try {
-            Token lResult = createResponse(aToken);
+
+            Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
             FastList<Token> lResultList = new FastList<Token>();
 
             Object[] lActivesQuota = mQuotaProvider.getActiveQuotas().keySet().toArray();
@@ -285,28 +257,27 @@ public class QuotaPlugin extends ActionPlugIn {
             }
 
             lResult.setList("data", lResultList);
-            getServer().sendToken(aConnector, lResult);
+            lResult.setCode(0);
+            
+            return lResult;
 
         } catch (Exception aExcep) {
-            getServer().sendErrorToken(aConnector, aToken, -1, "The following "
-                    + "error was captured in the server: " + aExcep.getMessage());
+            return getErrorToken("The following "
+                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
         }
 
     }
 
-    @Role(name = NS + ".quota_update")
-    public void reduceQuotaAction(WebSocketConnector aConnector, Token aToken) {
+    public Token reduceQuotaAction(Token aToken) {
         try {
-            Token lResult = createResponse(aToken);
+            Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
             String lQuotaIdentifier = aToken.getString("q_identifier").trim();
             long lReduce = Long.parseLong(aToken.getString("q_value"));
-
             IQuota lQuota;
             lQuota = quotaByIdentifier(lQuotaIdentifier);
             long lValue;
 
             String lUuid = aToken.getString("q_uuid");
-
             if (null == lUuid  || lUuid.equals("")) {
                 String lNS = aToken.getString("q_namespace");
                 String lInstance = aToken.getString("q_instance");
@@ -315,22 +286,26 @@ public class QuotaPlugin extends ActionPlugIn {
             } else {
                 lValue = lQuota.reduceQuota(lUuid, lReduce);
             }
-
+            
+            if (lValue == -1){
+                return getErrorToken("Acces not allowed due to quota limmitation exceed", aToken);
+            }
+            
             lResult.setLong("value", lValue);
-
-            getServer().sendToken(aConnector, lResult);
+            lResult.setCode(0);
+            
+            return lResult;
 
         } catch (Exception aExcep) {
-            getServer().sendErrorToken(aConnector, aToken, -1, "The following "
-                    + "error was captured in the server: " + aExcep.getMessage());
+            return getErrorToken("The following "
+                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
         }
 
     }
 
-    @Role(name = NS + ".quota_update")
-    public void setQuotaAction(WebSocketConnector aConnector, Token aToken) {
+    public Token setQuotaAction(Token aToken) {
         try {
-            Token lResult = createResponse(aToken);
+            Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
             String lQuotaIdentifier = aToken.getString("q_identifier").trim();
             long lReduce = Long.parseLong(aToken.getString("q_value"));
 
@@ -348,21 +323,23 @@ public class QuotaPlugin extends ActionPlugIn {
             } else {
                 lValue = lQuota.setQuota(lUuid, lReduce);
             }
-            lResult.setLong("value", lValue);
 
-            getServer().sendToken(aConnector, lResult);
+            lResult.setLong("value", lValue);
+            lResult.setCode(0);
+            
+            return lResult;
 
         } catch (Exception aExcep) {
-            getServer().sendErrorToken(aConnector, aToken, -1, "The following "
-                    + "error was captured in the server: " + aExcep.getMessage());
+            return getErrorToken("The following "
+                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
         }
 
     }
 
-    @Role(name = NS + ".quota_update")
-    public void increaseQuotaAction(WebSocketConnector aConnector, Token aToken) {
+    public Token increaseQuotaAction(Token aToken) {
         try {
-            Token lResult = createResponse(aToken);
+            Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
+
             String lQuotaIdentifier = aToken.getString("q_identifier").trim();
             long lReduce = Long.parseLong(aToken.getString("q_value"));
 
@@ -381,11 +358,14 @@ public class QuotaPlugin extends ActionPlugIn {
                 lValue = lQuota.increaseQuota(lUuid, lReduce);
             }
             lResult.setLong("value", lValue);
-            getServer().sendToken(aConnector, lResult);
+            lResult.setCode(0);
+            
+            return lResult;
 
         } catch (Exception aExcep) {
-            getServer().sendErrorToken(aConnector, aToken, -1, "The following "
-                    + "error was captured in the server: " + aExcep.getMessage());
+
+            return getErrorToken("The following "
+                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
         }
 
     }

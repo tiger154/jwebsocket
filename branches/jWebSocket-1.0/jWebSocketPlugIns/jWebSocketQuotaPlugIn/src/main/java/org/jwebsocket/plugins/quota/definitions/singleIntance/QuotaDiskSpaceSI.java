@@ -28,8 +28,8 @@ public class QuotaDiskSpaceSI extends QuotaBaseInstance {
 
     public QuotaDiskSpaceSI(long aValue, String aInstance, String aUuid, 
             String aNamesPace, String aQuotaType, String aQuotaIdentifier, 
-            String aInstanceType) {
-        super(aValue, aInstance, aUuid, aNamesPace, aQuotaType, aQuotaIdentifier, aInstanceType);
+            String aInstanceType, String aActions) {
+        super(aValue, aInstance, aUuid, aNamesPace, aQuotaType, aQuotaIdentifier, aInstanceType, aActions);
     }
     
     

@@ -30,14 +30,16 @@ public class QuotaCountdown extends BaseQuota {
 
      
     @Override
-    public void register(String aInstance, String aNameSpace, String aUuid,
-            long aAmount, String aInstanceType, String aQuotaType,String aQuotaIdentifier)  throws Exception{
+    public void register(String aInstance, String aNameSpace, String aUuid, 
+        long aAmount, String aInstanceType, String aQuotaType, String aQuotaIdentifier,
+        String aActions)  throws Exception{
 
-        super.register(aInstance, aNameSpace, aUuid, aAmount, aInstanceType, aQuotaType, aQuotaIdentifier);
+        super.register(aInstance, aNameSpace, aUuid, aAmount, aInstanceType, 
+                aQuotaType, aQuotaIdentifier, aActions);
         
         IQuotaSingleInstance lSingleQuota;
-        lSingleQuota = new QuotaCountdownSI(aAmount, aInstance, aUuid, aNameSpace,aQuotaType, aQuotaIdentifier, aInstanceType);
+        lSingleQuota = new QuotaCountdownSI(aAmount, aInstance, aUuid, aNameSpace, aQuotaType,
+                aQuotaIdentifier, aInstanceType, aActions);
         mQuotaStorage.save(lSingleQuota);
-
     }
 }

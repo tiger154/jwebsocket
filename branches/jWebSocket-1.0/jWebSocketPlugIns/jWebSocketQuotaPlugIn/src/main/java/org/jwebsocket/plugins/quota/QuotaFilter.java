@@ -27,70 +27,73 @@ import org.jwebsocket.token.Token;
  */
 public class QuotaFilter extends TokenFilter {
 
-	private static Logger mLog = Logging.getLogger();
-	private IQuotaProvider mQuotaProvider;
+    private static Logger mLog = Logging.getLogger();
+    private IQuotaProvider mQuotaProvider;
 
-	public QuotaFilter(FilterConfiguration configuration) {
-		super(configuration);
+    public QuotaFilter(FilterConfiguration configuration) {
+        super(configuration);
 
-		mQuotaProvider = (QuotaProvider) JWebSocketBeanFactory.getInstance().getBean("quotaProvider");
+        mQuotaProvider = (QuotaProvider) JWebSocketBeanFactory.getInstance().getBean("quotaProvider");
 
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Filter successfully instantiated.");
-		}
-	}
+        if (mLog.isInfoEnabled()) {
+            mLog.info("Filter successfully instantiated.");
+        }
+    }
 
-	@Override
-	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-		super.processTokenIn(aResponse, aConnector, aToken); //To change body of generated methods, choose Tools | Templates.
+    @Override
+    public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
+        super.processTokenIn(aResponse, aConnector, aToken); //To change body of generated methods, choose Tools | Templates.
 
-		String lNS = aToken.getNS();
-		String lType = aToken.getType();
-		String lUserName = aConnector.getUsername();
+        String lNS = aToken.getNS();
+        String lType = aToken.getType();
+        String lUserName = aConnector.getUsername();
 
-		//Only proccess when the token not come for the SystemPlugin
-		if (!SystemPlugIn.NS_SYSTEM.equals(lNS) || !isIgnoredUser(lUserName)) {
-			Map<String, IQuota> lQuotas = mQuotaProvider.getActiveQuotas();
-			Collection<IQuota> lQuotaList = (Collection<IQuota>) lQuotas.values();
-                        
-                        int lCont = 0;
-			for (Iterator<IQuota> lIt = lQuotaList.iterator(); lIt.hasNext();) {
-				IQuota lQuotaObj = lIt.next();
-				//TODO: get intance type by instance, now for test (User)
-				//check if the instance type is a User Group get the role 
-				//and use it to get the quota.
-                                
-                                //get uuid using quotaIndentifier
-                                String lIdentifier = lQuotaObj.getIdentifier();
-                                
-				String lUuid = lQuotaObj.getQuotaUuid( lIdentifier ,lNS, lUserName, "User");
-				long lQValue;
-				if (!lUuid.equals("not-found")) {
+        //Only proccess when the token not come for the SystemPlugin
+        if (!SystemPlugIn.NS_SYSTEM.equals(lNS) || !isIgnoredUser(lUserName)) {
+            Map<String, IQuota> lQuotas = mQuotaProvider.getActiveQuotas();
 
-					lQValue = lQuotaObj.reduceQuota( lUuid );
-                                        
-					if (lQValue == -1) {
-						Token lResponse = getServer().createResponse(aToken);
-						lResponse.setCode(-1);
-						lResponse.setString("msg", "Acces not allowed due to quota limmitation exceed");
-						getServer().sendToken(aConnector, lResponse);
-						aResponse.rejectMessage();
+            for (Map.Entry<String, IQuota> entry : lQuotas.entrySet()) {
+                //The same of lQuotaObj.getIdentifier();
+                String lIdentifier = entry.getKey();
+                IQuota lQuotaObj = entry.getValue();
 
-						if (mLog.isDebugEnabled()) {
-							mLog.debug("Quota(" + lQuotaObj.getType() + ") limit exceeded for user: "
-									+ lUserName + ", on namespace:" + lNS + ". Access not allowed!");
-						}
+                String lUuid = lQuotaObj.getQuotaUuid(lIdentifier, lNS, lUserName, "User");
+                long lQValue;
 
-					}
-				}
-			}
-		}
-	}
+                if (!lUuid.equals("not-found")) {
 
-	private boolean isIgnoredUser(String aUser) {
-		if (QuotaHelper.ignoredUsers().indexOf(aUser) != -1) {
-			return true;
-		}
-		return false;
-	}
+                    String lActions = lQuotaObj.getActions(lUuid);
+
+                    if (!lActions.equals("*")) {
+                        if (lActions.indexOf(lType) == -1) {
+                            return;
+                        }
+                    }
+
+                    lQValue = lQuotaObj.reduceQuota(lUuid);
+
+                    if (lQValue == -1) {
+                        Token lResponse = getServer().createResponse(aToken);
+                        lResponse.setCode(-1);
+                        lResponse.setString("msg", "Acces not allowed due to quota limmitation exceed");
+                        getServer().sendToken(aConnector, lResponse);
+                        aResponse.rejectMessage();
+
+                        if (mLog.isDebugEnabled()) {
+                            mLog.debug("Quota(" + lQuotaObj.getType() + ") limit exceeded for user: "
+                                    + lUserName + ", on namespace:" + lNS + ". Access not allowed!");
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isIgnoredUser(String aUser) {
+        if (QuotaHelper.ignoredUsers().indexOf(aUser) != -1) {
+            return true;
+        }
+        return false;
+    }
 }

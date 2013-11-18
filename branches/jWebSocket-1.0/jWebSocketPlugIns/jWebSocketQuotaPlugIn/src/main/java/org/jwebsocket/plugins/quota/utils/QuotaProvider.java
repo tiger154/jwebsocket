@@ -17,6 +17,7 @@ public class QuotaProvider implements IQuotaProvider {
     
     Map<String, IQuota> mAvailableQuotaList;
     Map<String, IQuotaStorage> mAvailableStorage;
+    Map<String, IQuota> mUnavailableFilterQuotaList;
 
     public Map<String, IQuota> getAvailableQuotaList() {
         return mAvailableQuotaList;
