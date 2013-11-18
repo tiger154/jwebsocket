@@ -185,6 +185,21 @@
 				}
 			}
 			
+			function changeAlgorithm(){
+				log(" ");
+				log("Sending changeAlgorithm command to the server...");
+				if( lWSC.isConnected() ) {
+					var lVal =  parseInt(jws.$( "stxCha" ).value);
+					lWSC.sendToken( {
+						ns: 'org.jwebsocket.plugins.loadbalancer',
+						type: 'changeAlgorithm',
+						algorithm : lVal
+					});
+				} else {
+					log( "Not connected." );
+				}
+			}
+			
 			function loadSelect( ){	
 				stickyRoutes();
 			}
@@ -311,6 +326,24 @@
 							   title="Click to sum x,y.">
 						<input class="sbtnDlg" id="sbtnMul" type="button" value="Mul X,Y" onclick="mulXY();"
 							   title="Click to mul x,y.">
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div class="sdivContainer">
+			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
+				<tr class="strDlg">
+					<td>
+						Select type of algorithm:&nbsp;&nbsp;
+					   <select name="cluster" id="stxCha">
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+						</select>
+						&nbsp;&nbsp;
+						<input class="sbtnDlg" id="sbtnCha" type="button" value="Change Algorithm" onclick="changeAlgorithm();"
+							   title="Click to sum x,y.">
 					</td>
 				</tr>
 			</table>
