@@ -37,12 +37,12 @@ import org.springframework.context.ApplicationContext;
  */
 public class SMSPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 *
 	 */
-	private static final String NS_SMS =
-			JWebSocketServerConstants.NS_BASE + ".plugins.sms";
+	private static final String NS_SMS
+			= JWebSocketServerConstants.NS_BASE + ".plugins.sms";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket SMSPlugIn";
@@ -156,28 +156,28 @@ public class SMSPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Allows to send a SMS through a defined provider. Returns a map with the 
-	 * response code from the SMS provider. This method allows to others 
+	 * Allows to send a SMS through a defined provider. Returns a map with the
+	 * response code from the SMS provider. This method allows to others
 	 * plug-ins send SMS text messages through the
 	 * {@link invoke(WebSocketConnector, Token)} method.
-	 * 
+	 *
 	 * @param aConnector the client connector
-	 * @param aToken the request token object that should contain the followings 
-	 *				 attributes:
-	 *				 <p>
-	 *				 <ul>
-	 *				 <li>
-	 *					message: SMS message text
-	 *				 </li>
-	 *				 <li>
-	 *					to: Receiver of SMS
-	 *				 </li>
-	 *				 <li>
-	 *					from: Source identifier
-	 *				 </li>
-	 *				 </ul>
-	 *				 </p>
-	 * @return a map with the response code from the SMS provider 
+	 * @param aToken the request token object that should contain the followings
+	 * attributes:
+	 * <p>
+	 * <ul>
+	 * <li>
+	 * message: SMS message text
+	 * </li>
+	 * <li>
+	 * to: Receiver of SMS
+	 * </li>
+	 * <li>
+	 * from: Source identifier
+	 * </li>
+	 * </ul>
+	 * </p>
+	 * @return a map with the response code from the SMS provider
 	 */
 	private Token send(WebSocketConnector aConnector, Token aToken) {
 		Token lRes = mProvider.sendSms(aToken);
@@ -189,10 +189,10 @@ public class SMSPlugIn extends TokenPlugIn {
 	}
 
 	/**
-	 * Sends to the client connector that request it a map with the response 
-	 * code from the SMS provider. This method use the 
+	 * Sends to the client connector that request it a map with the response
+	 * code from the SMS provider. This method use the
 	 * {@link send(WebSocketConnector, Token)} method to send the text message.
-	 * 
+	 *
 	 * @param aConnector the client connector
 	 * @param aToken the request token object
 	 */

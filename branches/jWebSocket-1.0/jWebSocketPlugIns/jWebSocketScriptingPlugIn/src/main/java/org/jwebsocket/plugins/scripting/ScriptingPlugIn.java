@@ -278,7 +278,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			throw new FileNotFoundException(lMsg);
 		}
 
-
 		LocalLoader lClassLoader = new LocalLoader((URLClassLoader) ClassLoader.getSystemClassLoader());
 		ScriptEngineManager lManager = new ScriptEngineManager(lClassLoader);
 
@@ -316,7 +315,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 						} catch (Exception lEx) {
 							String lAction = (mApps.containsKey(aAppName)) ? "reloaded" : "loaded";
 							String lMsg = "Script applicaton '" + aAppName + "' not " + lAction
-									+ " because it failed the 'before-load' checks: " + lEx.getMessage();
+							+ " because it failed the 'before-load' checks: " + lEx.getMessage();
 							mLog.info(lMsg);
 							throw new RuntimeException(lMsg);
 						}

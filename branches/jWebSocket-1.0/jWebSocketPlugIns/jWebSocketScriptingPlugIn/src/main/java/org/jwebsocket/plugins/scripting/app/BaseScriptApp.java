@@ -488,7 +488,7 @@ abstract public class BaseScriptApp {
 	public void sendChunkable(String aConnectorId, Object aChunkable) {
 		sendChunkable(mPlugIn.getServer().getConnector(aConnectorId), aChunkable);
 	}
-	
+
 	/**
 	 * Sends a chunkable object to a given connector with acknowledge callbacks.
 	 *

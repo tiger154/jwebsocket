@@ -19,9 +19,9 @@
 package org.jwebsocket.plugins.sms;
 
 /**
- * Provides the base class for the SMS providers. Contains common methods for 
+ * Provides the base class for the SMS providers. Contains common methods for
  * the providers.
- * 
+ *
  * @author aschulze
  */
 public class BaseSMSProvider {
@@ -29,9 +29,9 @@ public class BaseSMSProvider {
 	/**
 	 * Allows to validate the format of a given phone number. Returns the phone
 	 * number in a correct format.
-	 * 
+	 *
 	 * @param aNumber a phone number to validate
-	 * @return a valid phone number 
+	 * @return a valid phone number
 	 */
 	public String trimPhoneNumber(String aNumber) {
 		StringBuilder lRes = new StringBuilder(aNumber.length());
