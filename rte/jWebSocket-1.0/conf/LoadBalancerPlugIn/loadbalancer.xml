@@ -59,7 +59,12 @@
 				</entry>
 			</map>
 		</property>
+		<!-- load balancer message delivery timeout -->
 		<property name="messageTimeout" value="3000" />
+		<!-- simple round robin method, "value=1"
+			 real load method, "value=2", this method analizes the CPU usage 
+			 both algorithms simultaneously-->
+		<property name="balancerAlgorithm" value="3" />
 	</bean>
 	
 </beans>
