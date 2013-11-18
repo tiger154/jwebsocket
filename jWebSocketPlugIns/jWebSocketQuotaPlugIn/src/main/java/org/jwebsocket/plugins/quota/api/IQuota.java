@@ -167,7 +167,17 @@ public interface IQuota{
     * @param aQuotaIdentifier 
     */
    public void register(String aInstance, String aNameSpace, String aUuid,
-           long aAmount, String aInstanceType,String aQuotaType, String aQuotaIdentifier) throws Exception;
+           long aAmount, String aInstanceType,String aQuotaType, 
+           String aQuotaIdentifier, String aActions ) throws Exception;
+   
+   /**
+    * Return an String value with the tokens or actions for the quota
+    * 
+    * @return 
+    */
+   public String getActions(String aUuid);
+   
+   
    
    /**
     * unregisters an instance from the quota class, this is required to e.g. 

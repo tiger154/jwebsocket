@@ -19,7 +19,7 @@ import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaDiskSpaceSI;
 public class QuotaDiskSpace extends BaseQuota {
 
     public static final String JWS_HOME =
-            "/home/osvaldo/Public/svn/ijwssvn/rte/jWebSocket-1.0/";
+            "/home/svn/ijwssvn/rte/jWebSocket-1.0/";
     /**
      * Private directory.
      */
@@ -57,8 +57,6 @@ public class QuotaDiskSpace extends BaseQuota {
         long lUsedSpace = 0;
         try {
             lUsedSpace = getDirectorySpace(lFolder);
-            mLog.debug("steep 2.1");
-            mLog.debug("lUsedSpace=" + lUsedSpace);
         } catch (Exception ex) {
             mLog.error(ex.getMessage());
         }
@@ -111,8 +109,8 @@ public class QuotaDiskSpace extends BaseQuota {
     }
 
     @Override
-    public void register(String aInstance, String aNameSpace, String aUuid,
-            long aAmount, String aInstanceType, String aQuotaType, String aQuotaIdentifier) throws Exception {
+    public void register(String aInstance, String aNameSpace, String aUuid, long aAmount,
+            String aInstanceType, String aQuotaType, String aQuotaIdentifier, String aActions) throws Exception {
 
         if (!aNameSpace.equals(PRIVATE_NAMESPACE) && !aNameSpace.equals(PUBLIC_NAMESPACE)) {
             throw new Exception("The quota diskspace just accept as namespace:("
@@ -120,10 +118,12 @@ public class QuotaDiskSpace extends BaseQuota {
                     + "namespace for a quotaDiskSpace");
         }
 
-        super.register(aInstance, aNameSpace, aUuid, aAmount, aInstanceType, aQuotaType, aQuotaIdentifier);
+        super.register(aInstance, aNameSpace, aUuid, aAmount, aInstanceType, aQuotaType, 
+                aQuotaIdentifier, aActions);
 
         IQuotaSingleInstance lSingleQuota;
-        lSingleQuota = new QuotaDiskSpaceSI(aAmount, aInstance, aUuid, aNameSpace, aQuotaType, aQuotaIdentifier, aInstanceType);
+        lSingleQuota = new QuotaDiskSpaceSI(aAmount, aInstance, aUuid, aNameSpace, aQuotaType, 
+                aQuotaIdentifier, aInstanceType, aActions);
         mQuotaStorage.save(lSingleQuota);
 
     }

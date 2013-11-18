@@ -23,14 +23,14 @@ public class QuotaHelper {
     }
 
     public static IQuotaSingleInstance factorySingleInstance(long aValue, String aInstance,
-            String aUuid, String aNamesPace, String aQuotaType, String aQuotaIdentifier, String aInstanceType) {
+            String aUuid, String aNamesPace, String aQuotaType, String aQuotaIdentifier, String aInstanceType, String aActions) {
 
         if (aQuotaType.equals("CountDown")) {
             return new QuotaCountdownSI(aValue, aInstance, aUuid,
-                    aNamesPace, aQuotaType, aQuotaIdentifier, aInstanceType);
+                    aNamesPace, aQuotaType, aQuotaIdentifier, aInstanceType, aActions);
         } else {
             return new QuotaBaseInstance(aValue, aInstance, aUuid, aNamesPace,
-                    aQuotaType,aQuotaIdentifier, aInstanceType);
+                    aQuotaType,aQuotaIdentifier, aInstanceType, aActions);
         }
 
     }

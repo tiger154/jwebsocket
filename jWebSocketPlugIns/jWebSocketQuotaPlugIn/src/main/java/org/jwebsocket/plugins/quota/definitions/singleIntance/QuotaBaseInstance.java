@@ -19,6 +19,7 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
     String mInstance;
     String mUuid;
     String mNamesPace;
+    String mActions;
     String mQuotaType;
     String mInstanceType;
     String mQuotaIdentifier;
@@ -33,6 +34,11 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         aToken.setString("q_instance_type", mInstanceType );
         aToken.setString("q_identifier", mQuotaIdentifier );
     }
+
+    @Override
+    public String getActions() {
+        return mActions;
+    }
     
     @Override
     public FastMap<String, Object> writeToMap(){
@@ -43,6 +49,7 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         lMap.put("quotaType", mQuotaType );
         lMap.put("quotaIdentifier", mQuotaIdentifier );
         lMap.put("value", mValue );
+        lMap.put("actions", mActions);
         return lMap;
     }
 
@@ -90,7 +97,8 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         return true;
     }
 
-    public QuotaBaseInstance(long aValue, String aInstance, String aUuid, String aNamesPace, String aQuotaType,String aQuotaIdentifier, String aInstanceType) {
+    public QuotaBaseInstance(long aValue, String aInstance, String aUuid, String aNamesPace,
+            String aQuotaType,String aQuotaIdentifier, String aInstanceType, String aActions) {
         this.mValue = aValue;
         this.mInstance = aInstance;
         this.mUuid = aUuid;
@@ -98,6 +106,7 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         this.mQuotaType = aQuotaType;
         this.mQuotaIdentifier = aQuotaIdentifier;
         this.mInstanceType = aInstanceType;
+        this.mActions = aActions;
     }
 
     public void setValue(long mValue) {

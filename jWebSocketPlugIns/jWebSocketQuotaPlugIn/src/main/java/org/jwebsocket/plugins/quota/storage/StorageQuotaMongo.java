@@ -145,7 +145,21 @@ public class StorageQuotaMongo implements IQuotaStorage {
 
     }
 
-// to see use quotaType or QuotaIdentifier
+    
+    @Override
+    public String getActions(String aUuid) {
+
+        String lAction = "*";
+        if (quotaExist(aUuid)) {
+            BasicDBObject lQuery = new BasicDBObject();
+            lQuery.put("uuid", aUuid);
+
+            DBObject lObj = mCollection.findOne(lQuery);
+            lAction = lObj.get("actions").toString();
+        }
+        return lAction;
+    }
+
     @Override
     public List<String> getAllQuotaUuid(String aQuotaType) {
 
@@ -163,7 +177,6 @@ public class StorageQuotaMongo implements IQuotaStorage {
 
     @Override
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType) {
-
 
         FastList<IQuotaSingleInstance> lResult =
                 new FastList<IQuotaSingleInstance>();
@@ -374,7 +387,8 @@ public class StorageQuotaMongo implements IQuotaStorage {
                     aObjQuota.get("ns").toString(),
                     aObjQuota.get("quotaType").toString(),
                     aObjQuota.get("quotaIdentifier").toString(),
-                    lObjInstance.get("instanceType").toString());
+                    lObjInstance.get("instanceType").toString(),
+                    aObjQuota.get("actions").toString());
             lResult.add(lQuota);
         }
 
@@ -398,7 +412,8 @@ public class StorageQuotaMongo implements IQuotaStorage {
                     aObjQuota.get("ns").toString(),
                     aObjQuota.get("quotaType").toString(),
                     aObjQuota.get("quotaIdentifier").toString(),
-                    lObjInstance.get("instanceType").toString());
+                    lObjInstance.get("instanceType").toString(),
+                    lObjInstance.get("actions").toString());
             lResult.add(lQuota);
         }
 
@@ -418,7 +433,8 @@ public class StorageQuotaMongo implements IQuotaStorage {
                     aObjQuota.get("ns").toString(),
                     aObjQuota.get("quotaType").toString(),
                     aObjQuota.get("quotaIdentifier").toString(),
-                    lQuery.get("instanceType").toString());
+                    lQuery.get("instanceType").toString(),
+                    aObjQuota.get("actions").toString());
         }
         return lQuota;
     }

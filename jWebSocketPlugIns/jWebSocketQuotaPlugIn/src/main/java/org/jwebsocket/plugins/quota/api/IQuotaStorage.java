@@ -30,6 +30,8 @@ public interface IQuotaStorage {
     public void updateIntervalResetDate(String aUuid, String aResetDate);
 
     public boolean quotaExist(String aUuid);
+    
+    public String getActions(String aUuid);
 
     public boolean quotaExist(String aNameSpace, String aQuotaType, String aInstance);
 

@@ -53,6 +53,8 @@ public interface IQuotaSingleInstance {
 	public String getInstanceType();
         
         public String getQuotaIdentifier();
+        
+        public String getActions();
 
         public void writeToToken(Token lAuxToken);
  

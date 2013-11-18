@@ -18,9 +18,9 @@ public class QuotaIntervalSI extends QuotaBaseInstance {
     
     public QuotaIntervalSI(Interval aInterval, long aValue, 
             String aInstance, String aUuid, String aNamesPace, 
-            String aQuotaType, String aQuotaIdentifier, String aInstanceType) {
+            String aQuotaType, String aQuotaIdentifier, String aInstanceType, String aActions) {
         super(aValue, aInstance, aUuid, aNamesPace, aQuotaType, aQuotaIdentifier
-             , aInstanceType);
+             , aInstanceType, aActions);
         this.mInterval=aInterval;
        
     }
