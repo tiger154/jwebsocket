@@ -17,12 +17,7 @@ package org.jwebsocket.client.plugins;
 
 import java.util.Iterator;
 import javolution.util.FastList;
-import org.jwebsocket.api.WebSocketClientEvent;
-import org.jwebsocket.api.WebSocketClientTokenListener;
-import org.jwebsocket.api.WebSocketClientTokenPlugIn;
-import org.jwebsocket.api.WebSocketClientTokenPlugInListener;
-import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.api.WebSocketTokenClient;
+import org.jwebsocket.api.*;
 import org.jwebsocket.token.Token;
 
 /**

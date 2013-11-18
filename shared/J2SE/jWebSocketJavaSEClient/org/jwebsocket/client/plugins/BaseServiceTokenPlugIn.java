@@ -18,9 +18,15 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.client.plugins;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.jwebsocket.api.WebSocketClientEvent;
 import org.jwebsocket.client.token.BaseTokenClient;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -28,21 +34,45 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 
+	private Timer mTimer;
+
 	/**
 	 *
 	 * @param aClient
 	 */
 	public BaseServiceTokenPlugIn(BaseTokenClient aClient, String aNS) {
 		super(aClient, aNS);
+		// UpdateCpuUsage();
 	}
 
+	@Override
+	public void processOpened(WebSocketClientEvent aEvent) {
+		super.processOpened(aEvent);
+		SendCpuUsage();
+	}
+
+	@Override
+	public void processClosed(WebSocketClientEvent aEvent) {
+		getTimer().cancel();
+	}
+
+	/**
+	 *
+	 * @param aInToken
+	 * @return
+	 */
 	public Token createResponse(Token aInToken) {
 		Token lResToken = TokenFactory.createToken();
 		setResponseFields(aInToken, lResToken);
 		return lResToken;
 	}
 
-	public void setResponseFields(Token aInToken, Token aOutToken) {
+	/**
+	 *
+	 * @param aInToken
+	 * @param aOutToken
+	 */
+	private void setResponseFields(Token aInToken, Token aOutToken) {
 		Integer lTokenId = null;
 		String lType = null;
 		String lNS = null;
@@ -71,5 +101,35 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 		if (lSourceID != null) {
 			aOutToken.setString("sourceId", lSourceID);
 		}
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	private Timer getTimer() {
+		return (mTimer == null ? new Timer("Send Cpu Usage") : mTimer);
+	}
+
+	/**
+	 *
+	 */
+	private void SendCpuUsage() {
+
+		getTimer().schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+
+				try {
+					Token lTokenCpuUsage = TokenFactory.createToken("org.jwebsocket.plugins.loadbalancer", "updateCpuUsage");
+					lTokenCpuUsage.setDouble("usage", Tools.getCpuUsage());
+					getTokenClient().sendToken(lTokenCpuUsage);
+				} catch (Exception lEx) {
+					Logger.getLogger(BaseServiceTokenPlugIn.class.getName()).log(Level.SEVERE, null,
+						lEx + " while the load balancer CPU usage was update");
+				}
+			}
+		}, 1500, 1500);
 	}
 }
