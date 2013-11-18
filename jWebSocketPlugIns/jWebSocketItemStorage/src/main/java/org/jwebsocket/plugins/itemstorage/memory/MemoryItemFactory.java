@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  */
 public class MemoryItemFactory implements IItemFactory {
 
-	private Map<String, IItemDefinition> mDefinitions = new FastMap<String, IItemDefinition>().shared();
+	private final Map<String, IItemDefinition> mDefinitions = new FastMap<String, IItemDefinition>().shared();
 
 	@Override
 	public IItem getItemPrototype(String aType) throws Exception {
