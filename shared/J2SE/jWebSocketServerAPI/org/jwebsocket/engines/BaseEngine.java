@@ -157,16 +157,19 @@ public abstract class BaseEngine implements WebSocketEngine {
 	}
 
 	@Override
+	@Deprecated
 	public int getSessionTimeout() {
 		return mSessionTimeout;
 	}
 
 	@Override
+	@Deprecated
 	public void setSessionTimeout(int aSessionTimeout) {
 		this.mSessionTimeout = aSessionTimeout;
 	}
 
 	@Override
+	@Deprecated
 	public int getMaxFrameSize() {
 		return mConfiguration.getMaxFramesize();
 	}

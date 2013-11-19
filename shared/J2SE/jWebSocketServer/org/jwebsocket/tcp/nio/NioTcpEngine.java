@@ -67,7 +67,7 @@ import org.jwebsocket.util.Tools;
  */
 public class NioTcpEngine extends BaseEngine {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 *
 	 */
@@ -263,7 +263,7 @@ public class NioTcpEngine extends BaseEngine {
 			try {
 				lChannel.close();
 				lChannel.socket().close();
-			} catch (Exception lEx) {
+			} catch (IOException lEx) {
 				//Ignore it. Channel has been closed previously!
 			}
 
@@ -338,7 +338,7 @@ public class NioTcpEngine extends BaseEngine {
 							}
 						}
 					}
-				} catch (Exception lEx) {
+				} catch (IOException lEx) {
 					// something happened during socket operation (select, read or write), just log it
 					mLog.error(Logging.getSimpleExceptionMessage(lEx, "Error during socket operation"));
 				}
@@ -509,7 +509,7 @@ public class NioTcpEngine extends BaseEngine {
 				aKey.cancel();
 				lChannel.socket().close();
 				lChannel.close();
-			} catch (Exception lEx) {
+			} catch (IOException lEx) {
 			}
 
 			String lId = mChannelToConnectorMap.remove(lChannel);
@@ -572,9 +572,13 @@ public class NioTcpEngine extends BaseEngine {
 
 					// release the connector for future reads
 					lConnector.releaseWorker();
-				} catch (Exception e) {
+				} catch (InterruptedException lEx) {
 					// uncaught exception during packet processing - kill the worker (todo: think about worker restart)
-					mLog.error("Unexpected exception during incoming packet processing", e);
+					mLog.error("Unexpected InterruptedException during incoming packet processing", lEx);
+					break;
+				} catch (IOException lEx) {
+					// uncaught exception during packet processing - kill the worker (todo: think about worker restart)
+					mLog.error("Unexpected IOException during incoming packet processing", lEx);
 					break;
 				}
 			}

@@ -38,7 +38,7 @@ public class Settings {
 	 *
 	 * @return the aliases
 	 */
-	public Map getAliases() {
+	public Map<String, String> getAliases() {
 		return mAliases;
 	}
 
@@ -47,7 +47,7 @@ public class Settings {
 	 *
 	 * @param aAliases the aliases to set
 	 */
-	public void setAliases(Map aAliases) {
+	public void setAliases(Map<String, String> aAliases) {
 		mAliases = aAliases;
 	}
 

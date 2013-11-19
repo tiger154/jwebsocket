@@ -39,8 +39,8 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 
 	private String mId;
 	private String mNs;
-	private Set<Argument> mIncomingArgsValidation = new FastSet();
-	private Set<Argument> mOutgoingArgsValidation = new FastSet();
+	private final Set<Argument> mIncomingArgsValidation = new FastSet<Argument>();
+	private final Set<Argument> mOutgoingArgsValidation = new FastSet<Argument>();
 	private boolean mResponseRequired = false;
 	private boolean mResponseToOwnerConnector = true;
 	private boolean mResponseAsync = false;
@@ -49,9 +49,9 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 	private boolean mNotificationConcurrent = false;
 	private int mCacheTime = 0;
 	private boolean mSecurityEnabled = false;
-	private Set<String> mRoles = new FastSet();
-	private Set<String> mUsers = new FastSet();
-	private Set<String> mIpAddresses = new FastSet();
+	private Set<String> mRoles = new FastSet<String>();
+	private final Set<String> mUsers = new FastSet<String>();
+	private final Set<String> mIpAddresses = new FastSet<String>();
 	private Validator mValidator;
 	private Integer mTimeout = 3000;
 
@@ -503,28 +503,28 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 		aToken.setInteger("cacheTime", getCacheTime());
 		aToken.setInteger("timeout", getTimeout());
 
-		FastList<String> lRoles = new FastList();
+		FastList<String> lRoles = new FastList<String>();
 		for (String r : getRoles()) {
 			lRoles.add(r);
 		}
 		aToken.setList("roles", lRoles);
 
-		FastList<String> lUsers = new FastList();
+		FastList<String> lUsers = new FastList<String>();
 		for (String u : getUsers()) {
 			lUsers.add(u);
 		}
 		aToken.setList("users", lUsers);
 
-		FastList<String> lIpAddresses = new FastList();
+		FastList<String> lIpAddresses = new FastList<String>();
 		for (String ip : getIpAddresses()) {
 			lIpAddresses.add(ip);
 		}
 		aToken.setList("ip_addresses", lIpAddresses);
 
-		FastList<Map> lIncomingArgs = new FastList();
-		Map lArg;
+		FastList<Map<String,Object>> lIncomingArgs = new FastList<Map<String,Object>>();
+		Map<String,Object> lArg;
 		for (Argument lArgument : getIncomingArgsValidation()) {
-			lArg = new FastMap();
+			lArg = new FastMap<String,Object>();
 			lArg.put("name", lArgument.getName());
 			lArg.put("type", lArgument.getType());
 			lArg.put("optional", lArgument.isOptional());
@@ -533,9 +533,9 @@ public class C2SEventDefinition implements IInitializable, IServerSecureComponen
 		}
 		aToken.setList("incomingArgsValidation", lIncomingArgs);
 
-		FastList<Map> lOutgoingArgs = new FastList();
+		FastList<Map<String,Object>> lOutgoingArgs = new FastList<Map<String,Object>>();
 		for (Argument a : getOutgoingArgsValidation()) {
-			lArg = new FastMap();
+			lArg = new FastMap<String,Object>();
 			lArg.put("name", a.getName());
 			lArg.put("type", a.getType());
 			lArg.put("optional", a.isOptional());

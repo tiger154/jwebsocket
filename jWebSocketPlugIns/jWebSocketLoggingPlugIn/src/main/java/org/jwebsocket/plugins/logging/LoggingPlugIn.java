@@ -33,6 +33,7 @@ import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -41,10 +42,10 @@ import org.springframework.context.ApplicationContext;
  */
 public class LoggingPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
-	private static final String NS_LOGGING =
-			JWebSocketServerConstants.NS_BASE + ".plugins.logging";
+	private static final String NS_LOGGING
+			= JWebSocketServerConstants.NS_BASE + ".plugins.logging";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket LoggingPlugIn";
@@ -52,7 +53,7 @@ public class LoggingPlugIn extends TokenPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket LoggingPlugIn - Community Edition";
 	private ILogger mLogger = null;
-	private Map<String, String> mListeners = new FastMap<String, String>();
+	// private final Map<String, String> mListeners = new FastMap<String, String>();
 	private Class JDBCTools = null;
 	private TokenPlugIn mJDBCPlugIn = null;
 	private static ApplicationContext mBeanFactory;
@@ -81,7 +82,7 @@ public class LoggingPlugIn extends TokenPlugIn {
 					mLog.info("Logging plug-in successfully instantiated.");
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (BeansException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating logging Plug-in"));
 		}
 	}
@@ -221,9 +222,9 @@ public class LoggingPlugIn extends TokenPlugIn {
 		Token lResponse = lServer.createResponse(aToken);
 
 		String lTable = aToken.getString("table");
-		List lFields = aToken.getList("fields");
-		List lValues = aToken.getList("values");
-		List lKeys = null;
+		List<Object> lFields = aToken.getList("fields");
+		List<Object> lValues = aToken.getList("values");
+		List<Object> lKeys;
 		Integer lKey = null;
 		String lPrimaryKey = aToken.getString("primaryKey");
 		String lSequence = aToken.getString("sequence");

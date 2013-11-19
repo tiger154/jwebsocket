@@ -64,8 +64,8 @@ public class JMXPlugInAuthenticator implements JMXAuthenticator {
 		}
 
 		// Perform authentication
-		String lUserName = (String) lCredentials[0];
-		String lPassword = (String) lCredentials[1];
+		String lUserName = lCredentials[0];
+		String lPassword = lCredentials[1];
 
 		// Load config file to perform authentication
 		JWebSocketBeanFactory.load(mConfigPath, getClass().getClassLoader());

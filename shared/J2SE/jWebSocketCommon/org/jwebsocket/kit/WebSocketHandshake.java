@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -88,13 +89,14 @@ public final class WebSocketHandshake {
 		aKey = aKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 		String lAccept = null;
 
-		MessageDigest md = null;
+		MessageDigest lMD;
 		try {
-			md = MessageDigest.getInstance("SHA-1");
+			lMD = MessageDigest.getInstance("SHA-1");
 			byte[] lBufSource = aKey.getBytes("UTF-8");
-			byte[] lBufTarget = md.digest(lBufSource);
+			byte[] lBufTarget = lMD.digest(lBufSource);
 			lAccept = Tools.base64Encode(lBufTarget);
-		} catch (Exception lEx) {
+		} catch (UnsupportedEncodingException lEx) {
+		} catch (NoSuchAlgorithmException lEx) {
 		}
 		return lAccept;
 	}
@@ -134,7 +136,7 @@ public final class WebSocketHandshake {
 	 * @param aIsSSL
 	 * @return
 	 */
-	public static Map parseC2SRequest(byte[] aReq, boolean aIsSSL) {
+	public static Map<String, Object> parseC2SRequest(byte[] aReq, boolean aIsSSL) {
 		String lHost;
 		String lOrigin;
 		String lLocation;
@@ -160,13 +162,13 @@ public final class WebSocketHandshake {
 		String lCacheControl = null;
 		String lCookies = null;
 
-		Map lRes = new HashMap();
+		Map<String, Object> lRes = new HashMap<String, Object>();
 
 		int lReqLen = aReq.length;
 		String lRequest = "";
 		try {
 			lRequest = new String(aReq, "US-ASCII");
-		} catch (Exception lEx) {
+		} catch (UnsupportedEncodingException lEx) {
 			// TODO: add exception handling
 		}
 
@@ -284,7 +286,6 @@ public final class WebSocketHandshake {
 		 * number (155712099 and 173347027). These two resulting numbers are
 		 * then used in the server handshake, as described below.
 		 */
-
 		lPos = lRequest.indexOf("Sec-WebSocket-Key1:");
 		if (lPos > 0) {
 			lPos += 20;
@@ -325,7 +326,6 @@ public final class WebSocketHandshake {
 		 * form a 128 bit string whose MD5 sum is then used by the server to
 		 * prove that it read the handshake.
 		 */
-
 		if (lSecNum1 != null && lSecNum2 != null) {
 
 			// log.debug("Sec-WebSocket-Key3:" + new String(secKey3, "UTF-8"));
@@ -355,14 +355,14 @@ public final class WebSocketHandshake {
 				l128Bit[8 - lCnt] = lTmp[lIdx];
 			}
 
-			lTmp = lSecKey3;
+			// lTmp = lSecKey3;
 			System.arraycopy(lSecKey3, 0, l128Bit, 8, 8);
 
 			// build md5 sum of this new 128 byte string
 			try {
 				MessageDigest lMD = MessageDigest.getInstance("MD5");
 				lSecKeyResp = lMD.digest(l128Bit);
-			} catch (Exception lEx) {
+			} catch (NoSuchAlgorithmException lEx) {
 				// log.error("getMD5: " + ex.getMessage());
 			}
 		}
@@ -389,7 +389,7 @@ public final class WebSocketHandshake {
 		lRes.put(RequestHeader.WS_PATH, lPath);
 		try {
 			String lQuery = new URL(lPath).getQuery();
-		} catch (Exception ex) {
+		} catch (MalformedURLException ex) {
 		}
 		lRes.put(RequestHeader.WS_HOST, lHost);
 		lRes.put(RequestHeader.WS_ORIGIN, lOrigin);
@@ -411,7 +411,7 @@ public final class WebSocketHandshake {
 		if (lDraft != null) {
 			try {
 				lVersion = Integer.parseInt(lDraft, 10);
-			} catch (Exception Ex) {
+			} catch (NumberFormatException Ex) {
 			}
 		}
 		if (lVersion == null) {
@@ -427,9 +427,9 @@ public final class WebSocketHandshake {
 		if (lDraft != null) {
 			lRes.put(RequestHeader.WS_DRAFT, lDraft);
 		}
-		if (lVersion != null) {
-			lRes.put(RequestHeader.WS_VERSION, lVersion);
-		}
+		// if (lVersion != null) {
+		lRes.put(RequestHeader.WS_VERSION, lVersion);
+		// }
 		if (lUserAgent != null) {
 			lRes.put(RequestHeader.USER_AGENT, lUserAgent);
 		}
@@ -447,7 +447,7 @@ public final class WebSocketHandshake {
 	 * @param aRequest
 	 * @return
 	 */
-	public static byte[] generateS2CResponse(Map aRequest) {
+	public static byte[] generateS2CResponse(Map<String, Object> aRequest) {
 		String lPolicyFileRequest = (String) aRequest.get("policy-file-request");
 		if (lPolicyFileRequest != null) {
 			byte[] lBA;
@@ -470,8 +470,8 @@ public final class WebSocketHandshake {
 		String lLocation = (String) aRequest.get(RequestHeader.WS_LOCATION);
 		String lSubProt = (String) aRequest.get(RequestHeader.WS_PROTOCOL);
 		String lPath = (String) aRequest.get(RequestHeader.WS_PATH);
-		String lRes =
-				// since IETF draft 76 "WebSocket Protocol" not "Web Socket Protocol"
+		String lRes
+				= // since IETF draft 76 "WebSocket Protocol" not "Web Socket Protocol"
 				// change implemented since v0.9.5.0701
 				(lSecKeyAccept == null
 				? "HTTP/1.1 101 Web" + (lIsSecure ? "" : " ") + "Socket Protocol Handshake\r\n" + "Upgrade: WebSocket\r\n" + "Connection: Upgrade\r\n"
@@ -512,7 +512,7 @@ public final class WebSocketHandshake {
 		byte[] lBuff = new byte[MAX_HEADER_SIZE];
 		boolean lContinue = true;
 		int lIdx = 0;
-		int lB1 = 0, lB2 = 0, lB3 = 0, lB4 = 0;
+		int lB1, lB2 = 0, lB3 = 0, lB4 = 0;
 		while (lContinue && lIdx < MAX_HEADER_SIZE) {
 			int lIn;
 			try {
@@ -550,12 +550,12 @@ public final class WebSocketHandshake {
 	 * @param aResp
 	 * @return
 	 */
-	public static Map parseS2CResponse(byte[] aResp) {
-		Map lRes = new HashMap();
-		String lResp = null;
+	public static Map<String, Object> parseS2CResponse(byte[] aResp) {
+		Map<String, Object> lRes = new HashMap<String, Object>();
+		String lResp;
 		try {
 			lResp = new String(aResp, "US-ASCII");
-		} catch (Exception lEx) {
+		} catch (UnsupportedEncodingException lEx) {
 			// TODO: add exception handling
 		}
 		return lRes;
@@ -577,8 +577,8 @@ public final class WebSocketHandshake {
 		}
 		byte[] lHandshakeBytes;
 
-		String lHandshake =
-				"GET " + lPath + " HTTP/1.1\r\n"
+		String lHandshake
+				= "GET " + lPath + " HTTP/1.1\r\n"
 				+ "Host: " + lHost + "\r\n"
 				+ "Upgrade: WebSocket\r\n"
 				+ "Connection: Upgrade\r\n"
@@ -601,16 +601,16 @@ public final class WebSocketHandshake {
 		}
 
 		if (WebSocketProtocolAbstraction.isHixieVersion(mVersion)) {
-			lHandshake +=
-					"Sec-WebSocket-Key1: " + mHixieKey1 + "\r\n"
+			lHandshake
+					+= "Sec-WebSocket-Key1: " + mHixieKey1 + "\r\n"
 					+ "Sec-WebSocket-Key2: " + mHixieKey2 + "\r\n"
 					+ "\r\n";
 			lHandshakeBytes = new byte[lHandshake.getBytes().length + 8];
 			System.arraycopy(lHandshake.getBytes(), 0, lHandshakeBytes, 0, lHandshake.getBytes().length);
 			System.arraycopy(mHixieKey3, 0, lHandshakeBytes, lHandshake.getBytes().length, 8);
 		} else {
-			lHandshake +=
-					"Sec-WebSocket-Key: " + mHybiKey + "\r\n";
+			lHandshake
+					+= "Sec-WebSocket-Key: " + mHybiKey + "\r\n";
 			// TODO: This needs to be fixed! mVersion never may be null!
 			if (mVersion != null) {
 				lHandshake += "Sec-WebSocket-Version: " + mVersion + "\r\n";

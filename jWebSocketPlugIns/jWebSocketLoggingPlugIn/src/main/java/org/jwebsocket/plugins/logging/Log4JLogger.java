@@ -29,7 +29,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class Log4JLogger extends BaseLogger implements ILogger {
 
-	private static Logger mLog = Logging.getLogger(Log4JLogger.class);
+	private static final Logger mLog = Logging.getLogger(Log4JLogger.class);
 
 	/**
 	 *

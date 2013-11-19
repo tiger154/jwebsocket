@@ -46,7 +46,7 @@ public final class ServerConfig implements Config, ServerConfiguration {
 	 * @param aJar
 	 * @param aSettings
 	 */
-	public ServerConfig(String aId, String aName, String aJar, Map aSettings) {
+	public ServerConfig(String aId, String aName, String aJar, Map<String, Object> aSettings) {
 		this(aId, aName, aJar, new ThreadPoolConfig(), aSettings);
 	}
 
@@ -59,7 +59,7 @@ public final class ServerConfig implements Config, ServerConfiguration {
 	 * @param aSettings
 	 */
 	public ServerConfig(String aId, String aName, String aJar, ThreadPoolConfig aThreadPoolConfig,
-			Map aSettings) {
+			Map<String, Object> aSettings) {
 		this.mId = aId;
 		this.mName = aName;
 		this.mJar = aJar;

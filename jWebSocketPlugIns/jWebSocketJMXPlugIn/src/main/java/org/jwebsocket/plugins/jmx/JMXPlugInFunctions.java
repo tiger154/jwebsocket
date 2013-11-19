@@ -43,7 +43,7 @@ import org.jwebsocket.token.Token;
 public class JMXPlugInFunctions {
 
 	private static CompositeData mInformationOfRunningServers;
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 * Default class constructor.
@@ -62,15 +62,15 @@ public class JMXPlugInFunctions {
 		CompositeData result = null;
 		try {
 			List<WebSocketServer> lAllServers = JWebSocketFactory.getServers();
-			Map lServers = new FastMap();
+			Map<String, Object> lServers = new FastMap<String, Object>();
 
 			for (int i = 0; i < lAllServers.size(); i++) {
-				List<WebSocketPlugIn> lAllPlugins =
-						lAllServers.get(i).getPlugInChain().getPlugIns();
-				Map lServerPlugins = new FastMap();
+				List<WebSocketPlugIn> lAllPlugins
+						= lAllServers.get(i).getPlugInChain().getPlugIns();
+				Map<String, Object> lServerPlugins = new FastMap<String, Object>();
 				if (!lAllPlugins.isEmpty()) {
 					for (int j = 1; j <= lAllPlugins.size(); j++) {
-						Map lPlugins = new FastMap();
+						Map<String, Object> lPlugins = new FastMap<String, Object>();
 						TokenPlugIn lValue = (TokenPlugIn) lAllPlugins.get(j - 1);
 						lPlugins.put("id", lValue.getId());
 						lPlugins.put("name", lValue.getName());
@@ -158,10 +158,10 @@ public class JMXPlugInFunctions {
 							+ "to any running jWebSocket Server.");
 				}
 			}
-		} catch (Exception ex) {
+		} catch (Exception lEx) {
 			mLog.error("JMXPlugInFunctions on invokePluginOperation: "
-					+ ex.getMessage());
-			throw new Exception(ex.getMessage());
+					+ lEx.getMessage());
+			throw new Exception(lEx.getMessage());
 		}
 
 	}
