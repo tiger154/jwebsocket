@@ -328,6 +328,11 @@
 			<url>http://repository.springsource.com/maven/bundles/release</url>
 		</repository>
 		<repository>
+			<id>fusesource</id>
+			<name>Fusesource repository</name>
+			<url>http://repo.fusesource.com/maven2</url>
+		</repository>
+		<repository>
 			<id>com.springsource.repository.bundles.external</id>
 			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
 			<url>http://repository.springsource.com/maven/bundles/external</url>
