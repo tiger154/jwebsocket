@@ -29,7 +29,7 @@ import org.jwebsocket.logging.Logging;
  */
 public abstract class AbstractRPCCallable {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 * Return an instance of the RpcCallableClass which extends this
@@ -52,7 +52,7 @@ public abstract class AbstractRPCCallable {
 	 * @return instance of the RPCCallable class
 	 */
 	public RPCCallable getInstanceOfRpcCallableClass(Object[] aListOfParameter, Class[] aListOfClass) {
-		RPCCallable lNewInstance = null;
+		RPCCallable lNewInstance;
 		//We get the class of the instance
 		Class lClass = this.getClass();
 		//Get the constructor of this class
@@ -62,10 +62,10 @@ public abstract class AbstractRPCCallable {
 			} else {
 				lNewInstance = (RPCCallable) lClass.getConstructor(aListOfClass).newInstance(aListOfParameter);
 			}
-		} catch (Exception e) {
+		} catch (Exception lEx) {
 			mLog.error("Can't build an instance of the RPCCallable class" + lClass.getName() + ". "
 					+ "classes: " + aListOfClass + " - parameters: " + aListOfParameter + "."
-					+ e.getMessage());
+					+ lEx.getMessage());
 			return null;
 		}
 		return lNewInstance;

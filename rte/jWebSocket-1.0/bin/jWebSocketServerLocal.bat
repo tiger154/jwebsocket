@@ -4,7 +4,7 @@ echo (C) Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Her
 echo.
 
 pushd ..
-set JWEBSOCKET_HOME=%cd%
+set JWEBSOCKET_HOME=%cd%\
 popd
 
 :start

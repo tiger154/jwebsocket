@@ -20,6 +20,7 @@ package org.jwebsocket.plugins.extprocess;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
@@ -96,7 +98,7 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 					mLog.info("External Process plug-in successfully instantiated.");
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (BeansException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating ExtProcess plug-in"));
 			throw lEx;
 		}
@@ -221,8 +223,7 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 		}
 		String[] lCmdTokens = StringUtils.tokenizeToStringArray(lCmdLine, " ", true, false);
 		List<String> lCmd = new ArrayList<String>();
-		for (int lCmdIdx = 0; lCmdIdx < lCmdTokens.length; lCmdIdx++) {
-			String lCmdToken = lCmdTokens[lCmdIdx];
+		for (String lCmdToken : lCmdTokens) {
 			for (int lArgIdx = 0; lArgIdx < lArgs.size(); lArgIdx++) {
 				lCmdToken = lCmdToken.replace("${" + (lArgIdx + 1) + "}", lArgs.get(lArgIdx).toString());
 			}
@@ -253,7 +254,7 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Sent '" + lStrBuf.toString().replace("\n", "\\n") + "'.");
 			}
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			lResponse.setInteger("code", -1);
 			String lMsg = Logging.getSimpleExceptionMessage(lEx, "calling external process");
 			lResponse.setString("msg", lMsg);

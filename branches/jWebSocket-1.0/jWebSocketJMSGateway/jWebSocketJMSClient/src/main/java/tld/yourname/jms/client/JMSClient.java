@@ -297,7 +297,7 @@ public class JMSClient {
 					byte[] lBA = lPayload.getBytes("UTF-8");
 					// and save it to the hard disk
 					FileUtils.writeByteArrayToFile(lFile, lBA);
-				} catch (Exception lEx) {
+				} catch (IOException lEx) {
 					mLog.error("File " + lFile.getAbsolutePath() + " could not be saved!");
 				}
 			}

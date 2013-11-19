@@ -35,15 +35,15 @@ public class MailStore {
 	/**
 	 * logger object
 	 */
-	private static Logger mLog = Logging.getLogger();
-	private static BaseStorage mStorage = null;
+	private static final Logger mLog = Logging.getLogger();
+	private static BaseStorage<String, String> mStorage = null;
 
 	/**
 	 * default constructor
 	 *
 	 * @param aStorage
 	 */
-	public MailStore(BaseStorage aStorage) {
+	public MailStore(BaseStorage<String, String> aStorage) {
 		mStorage = aStorage;
 	}
 
@@ -55,7 +55,7 @@ public class MailStore {
 	public Token getMail(String aId) {
 		Token lRes = null;
 		try {
-			String lStr = (String) mStorage.get(aId);
+			String lStr = mStorage.get(aId);
 			lRes = JSONProcessor.JSONStringToToken(lStr);
 		} catch (Exception lEx) {
 			String lMsg = lEx.getClass().getSimpleName()

@@ -43,10 +43,12 @@ public class JDBCTools {
 	 * @param aData
 	 * @return
 	 */
+	/*
 	public static String test(List aData) {
 		return aData.toString();
 	}
-
+	*/
+	
 	/**
 	 *
 	 * @param aClassName
@@ -191,8 +193,8 @@ public class JDBCTools {
 			if (null != lObj) {
 				if (lType.equals(WebSocketDataType.TEXT)) {
 					if (lObj.getClass().equals(javax.sql.rowset.serial.SerialClob.class)) {
-						javax.sql.rowset.serial.SerialClob lClob =
-								(javax.sql.rowset.serial.SerialClob) lObj;
+						javax.sql.rowset.serial.SerialClob lClob
+								= (javax.sql.rowset.serial.SerialClob) lObj;
 						// Caution! index for getSubString starts with 1!
 						lObj = lClob.getSubString(1, (int) lClob.length());
 					} else {
@@ -239,8 +241,8 @@ public class JDBCTools {
 		int lRowCount = 0;
 		int lColCount;
 		// TODO: should work with usual arrays as well!
-		List<Map> lColumns = new FastList<Map>();
-		List lData = new FastList();
+		List<Map<String, Object>> lColumns = new FastList<Map<String, Object>>();
+		List<Object> lData = new FastList<Object>();
 		// TODO: metadata should be optional to save bandwidth!
 		// generate the meta data for the response
 		SqlRowSetMetaData lMeta = aRowSet.getMetaData();
@@ -285,7 +287,7 @@ public class JDBCTools {
 	 * @param aFieldList
 	 * @return
 	 */
-	public static String fieldListToString(List aFieldList) {
+	public static String fieldListToString(List<String> aFieldList) {
 		StringBuilder lRes = new StringBuilder();
 		int lIdx = 0;
 		int lCnt = aFieldList.size();
@@ -304,8 +306,8 @@ public class JDBCTools {
 	 * @param aFieldList
 	 * @return
 	 */
-	public static String fieldListToString(FastList aFieldList) {
-		return fieldListToString((List) aFieldList);
+	public static String fieldListToString(FastList<String> aFieldList) {
+		return fieldListToString((List<String>) aFieldList);
 	}
 
 	/**
@@ -313,8 +315,8 @@ public class JDBCTools {
 	 * @param aFieldList
 	 * @return
 	 */
-	public static String fieldListToString(ArrayList aFieldList) {
-		return fieldListToString((List) aFieldList);
+	public static String fieldListToString(ArrayList<String> aFieldList) {
+		return fieldListToString((List<String>) aFieldList);
 	}
 
 	/**
@@ -338,7 +340,7 @@ public class JDBCTools {
 	 * @param aValueList
 	 * @return
 	 */
-	public static String valueListToString(List aValueList) {
+	public static String valueListToString(List<Object> aValueList) {
 		StringBuilder lRes = new StringBuilder();
 		int lIdx = 0;
 		int lCnt = aValueList.size();
@@ -357,8 +359,8 @@ public class JDBCTools {
 	 * @param aValueList
 	 * @return
 	 */
-	public static String valueListToString(FastList aValueList) {
-		return valueListToString((List) aValueList);
+	public static String valueListToString(FastList<Object> aValueList) {
+		return valueListToString((List<Object>) aValueList);
 	}
 
 	/**
@@ -366,7 +368,7 @@ public class JDBCTools {
 	 * @param aValueList
 	 * @return
 	 */
-	public static String valueListToString(ArrayList aValueList) {
-		return valueListToString((List) aValueList);
+	public static String valueListToString(ArrayList<Object> aValueList) {
+		return valueListToString((List<Object>) aValueList);
 	}
 }

@@ -49,6 +49,7 @@ public class JMSServer {
 	/**
 	 *
 	 * @param aArgs
+	 * @return
 	 */
 	public JMSEndPoint start(String[] aArgs) {
 		// set up log4j logging
@@ -106,7 +107,7 @@ public class JMSServer {
 				lEndPointId, // unique node id
 				5, // thread pool size, messages being processed concurrently
 				JMSEndPoint.TEMPORARY // durable (for servers) or temporary (for clients)
-				);
+		);
 
 		JWSEndPointMessageListener lListener = new JWSEndPointMessageListener(lJMSEndPoint);
 		final JWSEndPointSender lSender = new JWSEndPointSender(lJMSEndPoint);
@@ -164,75 +165,74 @@ public class JMSServer {
 			}
 		});
 
-
 		// on response of the login...
 		lListener.addRequestListener(
 				"org.jwebsocket.jms.demo", "echo", new JWSMessageListener(lSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				String lPayload = aToken.getString("payload");
-				if (mLog.isInfoEnabled()) {
-					mLog.info("Processing 'demo1 with Payload '" + lPayload + "'");
-				}
-				Map<String, Object> lAdditionalResults = new FastMap();
-				lAdditionalResults.putAll(aToken.getMap());
-				// lAdditionalResults.remove("sourceId");
-				lAdditionalResults.remove("payload");
-				lSender.respondPayload(
-						aToken.getString("sourceId"),
-						aToken,
-						0, // return code
-						"Ok", // return message
-						lAdditionalResults,
-						aToken.getString("payload"));
-			}
-		});
+					@Override
+					public void processToken(String aSourceId, Token aToken) {
+						String lPayload = aToken.getString("payload");
+						if (mLog.isInfoEnabled()) {
+							mLog.info("Processing 'demo1 with Payload '" + lPayload + "'");
+						}
+						Map<String, Object> lAdditionalResults = new FastMap();
+						lAdditionalResults.putAll(aToken.getMap());
+						// lAdditionalResults.remove("sourceId");
+						lAdditionalResults.remove("payload");
+						lSender.respondPayload(
+								aToken.getString("sourceId"),
+								aToken,
+								0, // return code
+								"Ok", // return message
+								lAdditionalResults,
+								aToken.getString("payload"));
+					}
+				});
 
 		lListener.addRequestListener(
 				"tld.yourname.jms", "transferFile", new JWSMessageListener(lSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				// here you can get the additional arguments
-				mLog.info("Received 'transferFile' with additional args"
-						+ " (arg1=" + aToken.getString("arg1")
-						+ " (arg2=" + aToken.getString("arg2") + ")...");
-				// here you get the payload from the requester
-				String lPayload = aToken.getString("payload");
-				// parse the JSON payload into a Token (for simpler processing)
-				Token lToken = JSONProcessor.JSONStringToToken(lPayload);
+					@Override
+					public void processToken(String aSourceId, Token aToken) {
+						// here you can get the additional arguments
+						mLog.info("Received 'transferFile' with additional args"
+								+ " (arg1=" + aToken.getString("arg1")
+								+ " (arg2=" + aToken.getString("arg2") + ")...");
+						// here you get the payload from the requester
+						String lPayload = aToken.getString("payload");
+						// parse the JSON payload into a Token (for simpler processing)
+						Token lToken = JSONProcessor.JSONStringToToken(lPayload);
 				// extract the base64 and compressed file contents into Strings 
-				// (it's a text message)
-				// String lBase64Encoded = lToken.getString("fileAsBase64");
-				String lBase64Zipped = lToken.getString("fileAsZip");
+						// (it's a text message)
+						// String lBase64Encoded = lToken.getString("fileAsBase64");
+						String lBase64Zipped = lToken.getString("fileAsZip");
 
-				// specify the target file
-				File lFile = new File("Apache License 2.0 (copy).txt");
-				try {
-					// take the zipped version of the file... 
-					byte[] lBA = Tools.unzip(lBase64Zipped.getBytes("UTF-8"), Boolean.TRUE);
-					// and save it to the hard disk
-					FileUtils.writeByteArrayToFile(lFile, lBA);
-				} catch (Exception lEx) {
-					mLog.error("Demo file " + lFile.getAbsolutePath() + " could not be saved!");
-				}
-			}
-		});
+						// specify the target file
+						File lFile = new File("Apache License 2.0 (copy).txt");
+						try {
+							// take the zipped version of the file... 
+							byte[] lBA = Tools.unzip(lBase64Zipped.getBytes("UTF-8"), Boolean.TRUE);
+							// and save it to the hard disk
+							FileUtils.writeByteArrayToFile(lFile, lBA);
+						} catch (Exception lEx) {
+							mLog.error("Demo file " + lFile.getAbsolutePath() + " could not be saved!");
+						}
+					}
+				});
 
 		// add a high level listener to listen in coming messages
 		lListener.addRequestListener(
 				"org.jwebsocket.jms.demo", "helloWorld", new JWSMessageListener(lSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				mLog.info("Received 'helloWorld'...");
-				lSender.respondPayload(
-						aToken.getString("sourceId"),
-						aToken,
-						0, // return code
-						"Ok", // return message
-						null, // here you can add additional results beside the payload
-						"Hello World!");
-			}
-		});
+					@Override
+					public void processToken(String aSourceId, Token aToken) {
+						mLog.info("Received 'helloWorld'...");
+						lSender.respondPayload(
+								aToken.getString("sourceId"),
+								aToken,
+								0, // return code
+								"Ok", // return message
+								null, // here you can add additional results beside the payload
+								"Hello World!");
+					}
+				});
 
 		// add a high level listener to listen in coming messages
 		lJMSEndPoint.addListener(lListener);
@@ -242,16 +242,28 @@ public class JMSServer {
 		return lJMSEndPoint;
 	}
 
+	/**
+	 *
+	 */
 	public void shutdown() {
 		if (lJMSEndPoint != null) {
 			lJMSEndPoint.shutdown();
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public JMSEndPoint getJMSEndPoint() {
 		return lJMSEndPoint;
 	}
 
+	/**
+	 *
+	 * @param aArgs
+	 */
+	@SuppressWarnings("SleepWhileInLoop")
 	public static void main(String[] aArgs) {
 		JMSServer lJMSServer = new JMSServer();
 		lJMSServer.start(aArgs);
