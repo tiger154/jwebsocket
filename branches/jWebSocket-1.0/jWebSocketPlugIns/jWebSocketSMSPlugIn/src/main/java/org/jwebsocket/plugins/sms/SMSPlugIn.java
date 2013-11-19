@@ -52,8 +52,10 @@ public class SMSPlugIn extends TokenPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket SMSPlugIn - Community Edition";
 	private final String QUOTA_PLUGIN_ID = "jws.quota";
+	private final String SMS_QUOTA_ID = "jws.quota.plugins.sms";
 	private final String TT_TOTAL_SMS = "total_sms";
 	private final String TT_SEND_SMS = "sendSMS";
+	private boolean mSMSQuotaCreated = false;
 	private long mTotalSMSQuota = 200;
 	private long mTotalUserQuota = 5;
 	private static ApplicationContext mBeanFactory;
@@ -133,18 +135,21 @@ public class SMSPlugIn extends TokenPlugIn {
 		super.systemStarted(); //To change body of generated methods, choose Tools | Templates.
 		// Getting the QuotaPlugIn
 		mQuotaPlugIn = (ActionPlugIn) getPlugInChain().getPlugIn(QUOTA_PLUGIN_ID);
-		createJWebSocketSMSQuota();
 	}
 
 	@Override
 	public void processLogon(WebSocketConnector aConnector) {
 		super.processLogon(aConnector);
-		long lUsedQuota = createUserQuota(aConnector);
-		Token lQuotaToken = TokenFactory.createToken(NS_SMS, TT_TOTAL_SMS);
-		if (lUsedQuota == -1) {
-			lUsedQuota = mTotalUserQuota;
+		if (!mSMSQuotaCreated) {
+			createJWebSocketSMSQuota(aConnector);
+			mSMSQuotaCreated = true;
 		}
-		lQuotaToken.setLong("usedQuota", lUsedQuota);
+		long lpendingQuota = createUserQuota(aConnector);
+		Token lQuotaToken = TokenFactory.createToken(NS_SMS, TT_TOTAL_SMS);
+		if (lpendingQuota == -1) {
+			lpendingQuota = mTotalUserQuota;
+		}
+		lQuotaToken.setLong("pendingQuota", lpendingQuota);
 		lQuotaToken.setLong("totalQuota", mTotalUserQuota);
 		getServer().sendToken(aConnector, lQuotaToken);
 	}
@@ -186,22 +191,22 @@ public class SMSPlugIn extends TokenPlugIn {
 		return -1;
 	}
 
-	private long createJWebSocketSMSQuota() {
+	private long createJWebSocketSMSQuota(WebSocketConnector aConnector) {
 		try {
 			Assert.notNull(mQuotaPlugIn, "Quota plug-in is not running!");
 
 			Token lTokenCreateQuota = TokenFactory.createToken(
-					JWebSocketServerConstants.NS_BASE + ".plugins.quota", "registerQuota");
+					mQuotaPlugIn.getNamespace(), "registerQuota");
 
-			lTokenCreateQuota.setString("q_type", "CountDown");
-			lTokenCreateQuota.setString("q_identifier", "CountDown");
 			lTokenCreateQuota.setString("q_value", String.valueOf(mTotalSMSQuota));
 			lTokenCreateQuota.setString("q_instance", "SMSPlugIn");
+			lTokenCreateQuota.setString("q_identifier", "CountDown");
+			lTokenCreateQuota.setString("q_uuid", SMS_QUOTA_ID);
 			lTokenCreateQuota.setString("q_instance_type", "Application");
 			lTokenCreateQuota.setString("q_namespace", getNamespace());
 			lTokenCreateQuota.setString("q_actions", "create");
 
-			Token lQuota = mQuotaPlugIn.invoke(null, lTokenCreateQuota);
+			Token lQuota = mQuotaPlugIn.invoke(aConnector, lTokenCreateQuota);
 			if (lQuota.getCode() != -1) {
 				return lQuota.getLong("value");
 			}
@@ -257,19 +262,19 @@ public class SMSPlugIn extends TokenPlugIn {
 		return -1;
 	}
 
-	private long countDownSMSPlugInQuota() {
+	private long countDownSMSPlugInQuota(WebSocketConnector aConnector) {
 		try {
 			Assert.notNull(mQuotaPlugIn, "Quota plug-in is not running!");
-
+			
 			Token lTokenDestroyQuota = TokenFactory.createToken(
 					JWebSocketServerConstants.NS_BASE + ".plugins.quota", "reduceQuota");
 			lTokenDestroyQuota.setString("q_identifier", "CountDown");
 			lTokenDestroyQuota.setString("q_value", "1");
 			lTokenDestroyQuota.setString("q_instance", "SMSPlugIn");
-			lTokenDestroyQuota.setString("q_instance_type", "Module");
+			lTokenDestroyQuota.setString("q_instance_type", "Application");
 			lTokenDestroyQuota.setString("q_namespace", getNamespace());
 
-			Token lToken = mQuotaPlugIn.invoke(null, lTokenDestroyQuota);
+			Token lToken = mQuotaPlugIn.invoke(aConnector, lTokenDestroyQuota);
 			if (lToken.getCode() != -1) {
 				return lToken.getLong("value");
 			}
@@ -284,15 +289,11 @@ public class SMSPlugIn extends TokenPlugIn {
 		try {
 			Assert.notNull(mQuotaPlugIn, "Quota plug-in is not running!");
 
-			Token lTokenDestroyQuota = TokenFactory.createToken(
-					JWebSocketServerConstants.NS_BASE + ".plugins.quota", "getQuota");
-			lTokenDestroyQuota.setString("q_identifier", "CountDown");
-			lTokenDestroyQuota.setString("q_uuid", "SMSPlugIn");
-			lTokenDestroyQuota.setString("q_instance", "SMSPlugIn");
-			lTokenDestroyQuota.setString("q_instance_type", "Module");
-			lTokenDestroyQuota.setString("q_namespace", getNamespace());
+			Token lTokenQuota = TokenFactory.createToken(mQuotaPlugIn.getNamespace(), "getQuota");
+			lTokenQuota.setString("q_identifier", "CountDown");
+			lTokenQuota.setString("q_uuid", SMS_QUOTA_ID);
 
-			Token lToken = mQuotaPlugIn.invoke(null, lTokenDestroyQuota);
+			Token lToken = mQuotaPlugIn.invoke(null, lTokenQuota);
 			if (lToken.getCode() != -1) {
 				return lToken.getLong("value");
 			}
@@ -306,29 +307,14 @@ public class SMSPlugIn extends TokenPlugIn {
 	private void destroyUserQuota(WebSocketConnector aConnector) {
 		Assert.notNull(mQuotaPlugIn, "Quota plug-in is not running!");
 
-		Token lTokenDestroyQuota = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE + ".plugins.quota", "reduceQuota");
+		Token lTokenDestroyQuota = TokenFactory.createToken(mQuotaPlugIn.getNamespace(), "destroyQuota");
 		lTokenDestroyQuota.setString("q_identifier", "CountDown");
-		lTokenDestroyQuota.setString("q_value", "1");
 		lTokenDestroyQuota.setString("q_instance", aConnector.getUsername());
 		lTokenDestroyQuota.setString("q_instance_type", "User");
 		lTokenDestroyQuota.setString("q_namespace", getNamespace());
+		lTokenDestroyQuota.setString("q_actions", "destroy");
 
 		Token lToken = mQuotaPlugIn.invoke(aConnector, lTokenDestroyQuota);
-
-
-//		if (lToken.getCode() == -1) {
-//			lResult.setInteger("code", -1);
-//			lResult.setBoolean("failure", true);
-//			lResult.setString("message",
-//					"An error has occurred, the user with id: "
-//					+ lUserId + " could not be deleted");
-//
-//			lResult.setInteger("totalCount", mUsers.getSize());
-//			getServer().sendToken(aConnector, lResult);
-//
-//			notifyAllConectors("notifyDestroy", "Acces not allowed due to quota limmitation exceed");
-//			return;
-//		}
 	}
 
 	/**
@@ -389,27 +375,32 @@ public class SMSPlugIn extends TokenPlugIn {
 	 * @param aToken the request token object
 	 */
 	private void sendSMS(WebSocketConnector aConnector, Token aToken) {
-		long lTotalQuota = querySMSPlugInQuota();
+		// This is not working, check with Osvaldo
+		// long lTotalQuota = querySMSPlugInQuota();
 		Token lRes;
 		lRes = createResponse(aToken);
-		if (lTotalQuota > 0) {
-			long lQuota = queryUserQuota(aConnector);
-			if (lQuota != -1) {
+
+		long lQuota = countDownUserQuota(aConnector);
+		if (lQuota != -1) {
+			mTotalSMSQuota = countDownSMSPlugInQuota(aConnector);
+			if (mTotalSMSQuota != -1) {
 				// Calling send action
 				lRes = send(aConnector, aToken);
 				// Check if the send action was successfull, then decrease the quotas
 				if (lRes.getCode() != -1) {
-					mTotalSMSQuota = countDownSMSPlugInQuota();
-					lQuota = countDownUserQuota(aConnector);
 				}
-				lRes.setLong("usedQuota", lQuota);
+				lRes.setLong("pendingQuota", lQuota);
+			} else {
+				lRes.setString("msg", "Sorry, there are not more SMS availables for the moment!");
+				lRes.setLong("pendingQuota", lQuota);
+				lRes.setCode(-1);
 			}
 		} else {
 			// Your quota exceeded, you can't send more sms
 			lRes.setString("msg", "Sorry, you have exceeded your quota!");
-			lRes.setInteger("usedQuota", 0);
+			lRes.setInteger("pendingQuota", 0);
 			lRes.setCode(-1);
-			destroyUserQuota(aConnector);
+//			destroyUserQuota(aConnector);
 		}
 		lRes.setLong("totalQuota", mTotalUserQuota);
 		sendToken(aConnector, aConnector, lRes);
