@@ -20,10 +20,9 @@
 /*
  * @author mayra, vbarzana, aschulze
  */
-$.widget( "jws.SMSGateway", {
-	
+$.widget("jws.SMSGateway", {
 	_init: function() {
-		
+
 		NS_SMS = jws.NS_BASE + ".plugins.sms";
 		NS_JCAPTCHA = jws.NS_BASE + ".plugins.jcaptcha";
 
@@ -40,14 +39,19 @@ $.widget( "jws.SMSGateway", {
 		this.eLoginArea = this.element.find('#login_area');
 		this.eCCounterArea = this.element.find('#character_counter');
 		this.eCCounter = this.element.find('#character_counter .count');
+		this.eSMSCounter = this.element.find('#sms_counter');
+		this.eSMSTotal = this.element.find('#sms_counter .sent');
+		this.eSMSUsed = this.element.find('#sms_counter .total');
 		this.MAX_COUNT = 160;
 		this.mCount = 0;
 		this.mTXT_CAPTCHA = "Type the words here...";
 		this.mMSG_CAPTCHA_ERROR = "Error found in the Captcha, the server will" +
-		" send you other captcha, please try again!";
+				" send you other captcha, please try again!";
 		this.mMSG_ERROR = "The following error has been encoutered: ";
 		this.mMSG_SMS_SENT = "Congratulations!, you have sent a free SMS" +
-		" using jWebSocket Framework";
+				" using jWebSocket Framework";
+		this.mMSG_SMS_SENT = "Unfortunately your quota has exceeded, please " +
+				"contact jWebSocket managers for more details.";
 
 		w.SMSGateway = this;
 
@@ -56,18 +60,27 @@ $.widget( "jws.SMSGateway", {
 		w.SMSGateway.doWebSocketConnection();
 		w.SMSGateway.registerEvents();
 	},
-			
 	doWebSocketConnection: function( ) {
 		// Each demo will configure its own callbacks to be passed to the login widget
 		// Default callbacks { OnOpen | OnClose | OnMessage | OnWelcome | OnGoodBye}
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
-			
 			OnWelcome: function(aEvent) {
 				// Ask for a new captcha image
 				w.SMSGateway.getCaptcha();
 			},
-					
+			OnMessage: function(aEvent, aToken) {
+				console.log(aToken);
+				if (aToken.ns === NS_SMS) {
+					if (aToken.type === "total_sms") {
+						w.SMSGateway.eSMSTotal.text(aToken.totalQuota);
+						w.SMSGateway.eSMSUsed.text(aToken.usedQuota);
+						if (aToken.totalQuota === aToken.usedQuota) {
+							w.SMSGateway.eSMSCounter.attr("class", "quota_exceeded");
+						}
+					}
+				}
+			},
 			OnClose: function(aEvent) {
 				w.SMSGateway.eImg.attr("src", "css/images/blank.png");
 			}
@@ -75,7 +88,6 @@ $.widget( "jws.SMSGateway", {
 
 		$("#demo_box").auth(lCallbacks);
 	},
-			
 	getCaptcha: function() {
 
 		var lToken = {
@@ -93,33 +105,30 @@ $.widget( "jws.SMSGateway", {
 				w.SMSGateway.eTextCaptcha.focus( );
 			}
 		};
-		
+
 		mWSC.sendToken(lToken, lCallbacks);
 	},
-			
 	registerEvents: function() {
 
 		w.SMSGateway.eBtnUpdate.click(function() {
 			w.SMSGateway.getCaptcha();
 		});
-		
+
 		w.SMSGateway.eTextCaptcha.bind({
-			
 			'click | focus': function( ) {
 				if ($(this).val() === w.SMSGateway.mTXT_CAPTCHA) {
 					$(this).val("");
 				}
 			},
-					
 			blur: function( ) {
 				if ($(this).val() === "") {
 					$(this).val(w.SMSGateway.mTXT_CAPTCHA);
 				}
 			}
 		});
-		
+
 		w.SMSGateway.eBtnSend.click(function() {
-			
+
 			var lToken = {
 				ns: NS_JCAPTCHA,
 				type: "validate",
@@ -127,11 +136,9 @@ $.widget( "jws.SMSGateway", {
 			};
 
 			var lOptions = {
-				
 				args: {
 					inputChars: w.SMSGateway.eTextCaptcha.val()
 				},
-				
 				OnSuccess: function(aToken) {
 					log("Success in the captcha validation...");
 					var lSMSToken = {
@@ -145,31 +152,39 @@ $.widget( "jws.SMSGateway", {
 					log("Sending SMS...");
 					var lCallbacks = {
 						OnSuccess: function(aToken) {
+							w.SMSGateway.eSMSTotal.text(aToken.totalQuota);
+							w.SMSGateway.eSMSUsed.text(aToken.usedQuota);
+							if (aToken.totalQuota === aToken.usedQuota) {
+								w.SMSGateway.eSMSCounter.attr("class", "quota_exceeded");
+							}
 							//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
-							jwsDialog(w.SMSGateway.mMSG_SMS_SENT, "SMS sent correctly");
+							jwsDialog(w.SMSGateway.mMSG_SMS_SENT + (aToken.totalQuota > 0 ?
+									" You can send " + aToken.totalQuota + " more message" +
+									(aToken.totalQuota > 0 ? 's' : '') : " You " +
+									"can't send more messages, thanks for using our services!"),
+									"SMS sent correctly");
 						},
 						OnFailure: function(aToken) {
 							jwsDialog(w.SMSGateway.mMSG_ERROR + aToken.msg,
-								"Error sending the SMS", true);
+									"Error sending the SMS", true);
 						}
 					};
 					mWSC.sendToken(lSMSToken, lCallbacks);
 				},
-						
 				OnFailure: function(aToken) {
 					$("#imgCaptcha").effect("shake", {
 						times: 3
 					}, 100);
 
 					log("<b style='color:red;'>Wrong captcha validation, " +
-						"try another captcha</b>");
+							"try another captcha</b>");
 					var lGetNewCaptcha = function() {
 						w.SMSGateway.getCaptcha();
 						w.SMSGateway.eTextCaptcha.val("").focus();
 					};
 					//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
 					jwsDialog(w.SMSGateway.mMSG_CAPTCHA_ERROR, "Captcha error",
-						true, "alert", lGetNewCaptcha);
+							true, "alert", lGetNewCaptcha);
 				}
 			};
 			mWSC.sendToken(lToken, lOptions);
@@ -179,7 +194,6 @@ $.widget( "jws.SMSGateway", {
 		w.SMSGateway.eInputSMS.keydown(w.SMSGateway.updateCounter);
 		w.SMSGateway.eInputSMS.keyup(w.SMSGateway.updateCounter);
 	},
-	
 	countCharacters: function( ) {
 		var lCount = w.SMSGateway.eInputSMS.val().length;
 		w.SMSGateway.mCount = lCount;
@@ -187,23 +201,15 @@ $.widget( "jws.SMSGateway", {
 		// Update the counter
 		w.SMSGateway.eCCounter.text(lValue > 0 ? lValue : 0);
 	},
-			
 	// Updates the counter when a key is pressed
 	updateCounter: function(aEvent) {
 		w.SMSGateway.countCharacters();
 		if (w.SMSGateway.mCount >= w.SMSGateway.MAX_COUNT) {
 			w.SMSGateway.eInputSMS.val(w.SMSGateway.eInputSMS.val( ).substr(
-				0, w.SMSGateway.MAX_COUNT));
+					0, w.SMSGateway.MAX_COUNT));
 			w.SMSGateway.eCCounterArea.attr("class", "error");
 		} else {
 			w.SMSGateway.eCCounterArea.attr("class", "");
 		}
-	}
-});
-
-lWSC.fileLoad('test.rar', jws.FileSystemPlugIn.ALIAS_PUBLIC, {
-	encoding: false, 
-	OnSuccess: function(aResponse){
-		window.open('data:' + aResponse.mime + ';' + (aResponse['__binaryData']? 'base64' : 'plain') + ',' + aResponse.data, '_blank');
 	}
 });

@@ -182,6 +182,30 @@ label{
 	float: right;
 }
 
+.messages_sent{
+	padding-left: 3px;
+}
+
+#sms_counter, .messages_sent{
+	font-size: 11px;
+	margin: 5px 0 5px 0;
+	color: #606060;
+	float: left;
+}
+
+#sms_counter div{
+	float: left;
+	margin-left: 5px;
+}
+
+#sms_counter .sent, #sms_counter .total{
+	font-weight: bold;
+}
+
+#sms_counter.quota_exceeded{
+	color: red;
+}
+
 .error{
 	color: #ff0000 !important;
 }
