@@ -145,21 +145,52 @@ jws.FileUploaderPlugIn = {
 		}
 	},
 	onFileSelected: function(aEvt) {
-		this.fireUploaderEvent(this.TT_FILE_SELECTED, aEvt.target.files);
+		
+		//TODO: check if the files are folders, upload nested folders
+		for (var i = 0; i < aEvt.target.files.length; i++) {
+			var lFile = aEvt.target.files[i];
+			var lReader = new FileReader();
+			lReader.file = aEvt.target.files[i];
 
-		var lQueueContains = function(aQueue, aFile) {
-			for (var lIdx1 = 0; lIdx1 < aQueue.length; lIdx1++) {
-				if (aQueue[lIdx1].getName() === aFile.name) {
-					return lIdx1;
+			var lChunkSize = 250000, lReadChunks = 0;
+			var lComplete = false;
+			lReader.onload = function(aReference) {
+				console.log(this.file.name + " loaded chunk: " + (!lComplete ? (lReadChunks / lChunkSize) : "LAST") + ", loaded: " +
+						aReference.loaded + ", length: " +
+						aReference.target.result.length);
+				lReadChunks += lChunkSize;
+				chunkNext(this.file);
+			};
+
+			var chunkNext = function(aFile) {
+				var lNextChunk = lReadChunks + lChunkSize;
+				var lBlob = null;
+				if (lNextChunk < aFile.size) {
+					if (lReadChunks <= lFile.size) {
+						lBlob = aFile.slice(lReadChunks, lNextChunk);
+						lReader.readAsDataURL(lBlob);
+					}
+				} else {
+					if (!lComplete) {
+						lComplete = true;
+						if (lReadChunks <= lFile.size) {
+							lBlob = aFile.slice(lReadChunks, aFile.size);
+							lReader.readAsDataURL(lBlob);
+						}
+					} else {
+						lReadChunks = 0;
+					}
 				}
-			}
-			return -1;
-		};
-		for (var lIdx = 0; lIdx < aEvt.target.files.length; lIdx++) {
-			if (-1 === lQueueContains(this.queue, aEvt.target.files[lIdx])) {
-				var lUploadItem = new jws.UploadItem(aEvt.target.files[lIdx]);
-				this.queue.push(lUploadItem);
-			}
+			};
+			var lBlob = lFile.slice(lReadChunks, lChunkSize);
+			lReader.readAsDataURL(lBlob);
+
+
+//			lReader.onload = function(aReference) {
+//				console.log("File completely loaded with the following info, bytes loaded: " + aReference.loaded + ", length: " + aReference.target.result.length);
+//			};
+//			lReader.readAsDataURL(lFile);
+
 		}
 	},
 	uploadFileInChunks: function(aUploadItem, aResume) {
@@ -521,3 +552,68 @@ jws.oop.declareClass('jws', 'UploadItem', null, {
 		return this.status;
 	}
 });
+
+// add the jWebSocket FileSystem PlugIn into the TokenClient class
+jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.FileUploaderPlugIn);
+
+debug = function(aMsg) {
+	if (jws.isIE) {
+		$('body').append($("<div style='float: right;right:20px;top:0; margin:5px; " +
+				"width: 40%; z-index: 999;font-size: 9pt;background: white;border: gray 2px solid;'>")
+				.html(debugObjIE(aMsg)).dblclick(function() {
+			$(this).remove();
+		}));
+	}
+	console.log(aMsg);
+};
+debugObjIE = function(aObject, aPadding) {
+	aPadding = aPadding || 4;
+	var lResult = "";
+	var lDiv = "<div style='padding-left: " + aPadding + "px;" +
+			(aPadding === 0 ? 'overflow-y: scroll;height: 400px;width: 96%;' : '') + "'>";
+	for (var lIdx in aObject) {
+		if (typeof aObject[lIdx] !== "function") {
+			lResult += "<b>" + lIdx + ": </b>";
+			if (isObject(aObject[lIdx]) || isArray(aObject[lIdx])) {
+				if (isArray(aObject[lIdx]) && aObject[lIdx].length === 0) {
+					lResult += "[]";
+				} else if (isObject(aObject[lIdx]) && isEmpty(aObject[lIdx])) {
+					lResult += "{}";
+				} else {
+					lResult += debugObjIE(aObject[lIdx], aPadding + 8);
+				}
+			} else {
+				lResult += ((aObject[lIdx].length > 500 ?
+						(aObject[lIdx].substr(0, 500) + "...(too long object)") :
+						(typeof aObject[lIdx] === "function" ? "[...]" : aObject[lIdx] || '""'))) +
+						"<font color='green'> [" + typeof aObject[lIdx] + "]</font>";
+			}
+			lResult += "<br/>";
+		}
+	}
+	return lResult ? lDiv + lResult + "</div>" : "";
+};
+isObject = function(aObj) {
+	if (typeof aObj === "object") {
+		for (var lIdx in aObj) {
+			if (aObj[lIdx]) {
+				return true;
+			}
+		}
+		return true;
+	}
+	return false;
+};
+isArray = function(aObj) {
+	return (aObj && typeof aObj.push === "function");
+};
+isEmpty = function(aObj) {
+	if (aObj === null || typeof aObj === "undefined") {
+		return true;
+	} else {
+		for (var lIdx in aObj) {
+			return false;
+		}
+		return true;
+	}
+};
