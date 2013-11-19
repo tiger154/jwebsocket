@@ -40,8 +40,8 @@ $.widget("jws.SMSGateway", {
 		this.eCCounterArea = this.element.find('#character_counter');
 		this.eCCounter = this.element.find('#character_counter .count');
 		this.eSMSCounter = this.element.find('#sms_counter');
-		this.eSMSTotal = this.element.find('#sms_counter .sent');
-		this.eSMSUsed = this.element.find('#sms_counter .total');
+		this.eSMSTotal = this.element.find('#sms_counter .total');
+		this.eSMSSent = this.element.find('#sms_counter .sent');
 		this.MAX_COUNT = 160;
 		this.mCount = 0;
 		this.mTXT_CAPTCHA = "Type the words here...";
@@ -74,10 +74,10 @@ $.widget("jws.SMSGateway", {
 				if (aToken.ns === NS_SMS) {
 					if (aToken.type === "total_sms") {
 						w.SMSGateway.eSMSTotal.text(aToken.totalQuota);
-						w.SMSGateway.eSMSUsed.text(aToken.usedQuota);
-						if (aToken.totalQuota === aToken.usedQuota) {
-							w.SMSGateway.eSMSCounter.attr("class", "quota_exceeded");
-						}
+							w.SMSGateway.eSMSSent.text(aToken.totalQuota - aToken.pendingQuota);
+							if (aToken.pendingQuota === 0) {
+								w.SMSGateway.eSMSCounter.attr("class", "quota_exceeded");
+							}
 					}
 				}
 			},
@@ -153,8 +153,8 @@ $.widget("jws.SMSGateway", {
 					var lCallbacks = {
 						OnSuccess: function(aToken) {
 							w.SMSGateway.eSMSTotal.text(aToken.totalQuota);
-							w.SMSGateway.eSMSUsed.text(aToken.usedQuota);
-							if (aToken.totalQuota === aToken.usedQuota) {
+							w.SMSGateway.eSMSSent.text(aToken.totalQuota - aToken.pendingQuota);
+							if (aToken.pendingQuota === 0) {
 								w.SMSGateway.eSMSCounter.attr("class", "quota_exceeded");
 							}
 							//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
