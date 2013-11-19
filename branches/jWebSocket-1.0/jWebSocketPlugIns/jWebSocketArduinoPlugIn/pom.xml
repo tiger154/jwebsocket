@@ -22,7 +22,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
+				<version>2.4</version>
 				<configuration>
 					<outputDirectory>../../../../rte/jWebSocket-${project.version}/libs</outputDirectory>
 					<archive>
@@ -35,7 +35,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
+				<version>2.9.1</version>
 				<configuration>
 					<reportOutputDirectory>${project.build.directory}/../../../javadocs/${project.name}</reportOutputDirectory> -->
 					<stylesheetfile>${project.build.directory}/../../../javadocs/stylesheet.css</stylesheetfile>
@@ -44,7 +44,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>3.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
