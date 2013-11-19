@@ -40,13 +40,13 @@ import org.jwebsocket.logging.Logging;
  */
 public class TomcatConnector extends BaseConnector implements IEmbeddedAuthentication {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private boolean mIsRunning = false;
 	private CloseReason mCloseReason = CloseReason.TIMEOUT;
-	private WsOutbound mOutbound;
+	private final WsOutbound mOutbound;
 	private InetAddress mRemoteHost;
 	private int mRemotePort;
-	private HttpServletRequest mRequest;
+	private final HttpServletRequest mRequest;
 
 	/**
 	 * creates a new TCP connector for the passed engine using the passed client
@@ -124,7 +124,7 @@ public class TomcatConnector extends BaseConnector implements IEmbeddedAuthentic
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Packet sent!");
 			}
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			// DO NOT NOTIFY. The connection with the client has been broken.
 			// mLog.error(lEx.getClass().getSimpleName() + " sending data packet: " + lEx.getMessage());
 		}

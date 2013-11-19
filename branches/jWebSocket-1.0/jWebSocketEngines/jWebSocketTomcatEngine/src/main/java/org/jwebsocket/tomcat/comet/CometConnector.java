@@ -51,16 +51,16 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 
 	private CometEvent mEvent;
 	private int mReadyState = 0;
-	private static Logger mLog = Logging.getLogger();
-	private int mRemotePort;
+	private static final Logger mLog = Logging.getLogger();
+	private final int mRemotePort;
 	private InetAddress mRemoteHost;
-	private CometServlet mServlet;
+	private final CometServlet mServlet;
 	private HttpServletRequest mRequest;
 	private TimerTask mCloseTask;
 
 	class CloseTimerTask extends TimerTask {
 
-		private CometConnector mConnector;
+		private final CometConnector mConnector;
 
 		public CloseTimerTask(CometConnector aConnector) {
 			mConnector = aConnector;
@@ -211,7 +211,6 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 				mEvent.close();
 			} catch (IOException lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping connector '" + getId() + "' ..."));
-			} catch (Exception lEx) {
 			}
 		}
 		// removing internal connector id
@@ -284,7 +283,8 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 			} else {
 				aEvent.close();
 			}
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
+			// TODO: process exception
 		}
 	}
 
@@ -299,7 +299,7 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 					sendPacketsInConnectionMessage(lPackets);
 					mEvent.close();
 					mEvent = null;
-				} catch (Exception lEx) {
+				} catch (IOException lEx) {
 					// DO NOT NOTIFY. The connection with the client has been broken.
 					// mLog.error(lEx.getClass().getSimpleName() + " sending data packet: " + lEx.getMessage());
 				}
