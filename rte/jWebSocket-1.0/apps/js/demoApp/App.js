@@ -79,6 +79,9 @@ App.on('appLoaded', function() {
 			App.broadcast({
 				message: aMessage
 			});
+		},
+		toList: function() {
+			return App.toList(["white", "black", "blue"]);
 		}
 	});
 
