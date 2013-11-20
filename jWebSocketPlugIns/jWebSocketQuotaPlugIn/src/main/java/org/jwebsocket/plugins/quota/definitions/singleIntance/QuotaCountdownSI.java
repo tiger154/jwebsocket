@@ -8,14 +8,11 @@ package org.jwebsocket.plugins.quota.definitions.singleIntance;
  *
  * @author osvaldo
  */
-public class QuotaCountdownSI extends QuotaBaseInstance{
+public class QuotaCountdownSI extends QuotaBaseInstance {
 
-    public QuotaCountdownSI(long aValue, String aInstance, String aUuid, String aNamesPace, 
-            String aQuotaType, String aQuotaIdentifier, String aInstanceType, String aActions) {
-        super(aValue, aInstance, aUuid, aNamesPace, aQuotaType, aQuotaIdentifier, aInstanceType, aActions);
-    }
+	public QuotaCountdownSI(long aValue, String aInstance, String aUuid, String aNamesPace,
+			String aQuotaType, String aQuotaIdentifier, String aInstanceType, String aActions) {
+		super(aValue, aInstance, aUuid, aNamesPace, aQuotaType, aQuotaIdentifier, aInstanceType, aActions);
+	}
 
-    
-    
-    
 }

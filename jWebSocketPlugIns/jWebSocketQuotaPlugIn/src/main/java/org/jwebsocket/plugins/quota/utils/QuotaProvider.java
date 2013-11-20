@@ -14,61 +14,58 @@ import org.jwebsocket.plugins.quota.api.IQuotaStorage;
  * @author osvaldo
  */
 public class QuotaProvider implements IQuotaProvider {
-    
-    Map<String, IQuota> mAvailableQuotaList;
-    Map<String, IQuotaStorage> mAvailableStorage;
-    Map<String, IQuota> mUnavailableFilterQuotaList;
 
-    public Map<String, IQuota> getAvailableQuotaList() {
-        return mAvailableQuotaList;
-    }
+	Map<String, IQuota> mAvailableQuotaList;
+	Map<String, IQuotaStorage> mAvailableStorage;
+	Map<String, IQuota> mUnavailableFilterQuotaList;
 
-    public Map<String, IQuotaStorage> getAvailableStorage() {
-        return mAvailableStorage;
-    }
-    
+	public Map<String, IQuota> getAvailableQuotaList() {
+		return mAvailableQuotaList;
+	}
 
-    public void setavailableQuotaList(Map<String, IQuota> mavailableQuotaList) {
-        this.mAvailableQuotaList = mavailableQuotaList;
-    }
+	public Map<String, IQuotaStorage> getAvailableStorage() {
+		return mAvailableStorage;
+	}
 
-    public QuotaProvider() {
-    }
+	public void setavailableQuotaList(Map<String, IQuota> mavailableQuotaList) {
+		this.mAvailableQuotaList = mavailableQuotaList;
+	}
 
-    public QuotaProvider(Map<String, IQuota> aAvailableQuotaList, 
-            Map<String, IQuotaStorage> aAvailableStorage ) {
-        
-        this.mAvailableQuotaList = aAvailableQuotaList;
-        this.mAvailableStorage = aAvailableStorage;
-    }
+	public QuotaProvider() {
+	}
 
-    @Override
-    public Map<String, IQuotaStorage> getActiveStorages() {
-        return getAvailableStorage();
-    }
-    
-    
+	public QuotaProvider(Map<String, IQuota> aAvailableQuotaList,
+			Map<String, IQuotaStorage> aAvailableStorage) {
 
-    @Override
-    public IQuota getQuotaByIdentifier(String aIdentifier) throws Exception{
-        
-        if (mAvailableQuotaList.containsKey( aIdentifier )){
-            return mAvailableQuotaList.get( aIdentifier );
-        }else{
-            throw new Exception("Quota with indentifier ("+aIdentifier+") not found");
-        }
-    }
+		this.mAvailableQuotaList = aAvailableQuotaList;
+		this.mAvailableStorage = aAvailableStorage;
+	}
 
-    @Override
-    public Map<String, IQuota> getActiveQuotas() {
-        return mAvailableQuotaList;
-    }
+	@Override
+	public Map<String, IQuotaStorage> getActiveStorages() {
+		return getAvailableStorage();
+	}
 
-    @Override
-    public String getIdentifier(int aPos) {
-        
-        String [] lValues  = (String[])mAvailableQuotaList.keySet().toArray();
-        return lValues[aPos];
-    }
-    
+	@Override
+	public IQuota getQuotaByIdentifier(String aIdentifier) throws Exception {
+
+		if (mAvailableQuotaList.containsKey(aIdentifier)) {
+			return mAvailableQuotaList.get(aIdentifier);
+		} else {
+			throw new Exception("Quota with indentifier (" + aIdentifier + ") not found");
+		}
+	}
+
+	@Override
+	public Map<String, IQuota> getActiveQuotas() {
+		return mAvailableQuotaList;
+	}
+
+	@Override
+	public String getIdentifier(int aPos) {
+
+		String[] lValues = (String[]) mAvailableQuotaList.keySet().toArray();
+		return lValues[aPos];
+	}
+
 }

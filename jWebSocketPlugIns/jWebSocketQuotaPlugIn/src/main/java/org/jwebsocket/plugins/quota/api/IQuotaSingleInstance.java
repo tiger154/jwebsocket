@@ -4,7 +4,6 @@
  */
 package org.jwebsocket.plugins.quota.api;
 
-import com.mongodb.BasicDBObject;
 import javolution.util.FastMap;
 import org.jwebsocket.token.Token;
 
@@ -13,50 +12,51 @@ import org.jwebsocket.token.Token;
  * @author osvaldo
  */
 public interface IQuotaSingleInstance {
-    
-        /**
-         * 
-         * @return the quota value
-         */
+
+	/**
+	 *
+	 * @return the quota value
+	 */
 	public long getvalue();
 
-        /**
-         *  Return the Instance owner of the quota
-         *  admin, administrator, sms-app, or x-module
-         * @return 
-         */
+	/**
+	 * Return the Instance owner of the quota admin, administrator, sms-app, or
+	 * x-module
+	 *
+	 * @return
+	 */
 	public String getInstance();
-        
-        /**
-         * 
-         * @return the quota unique ID 
-         */
+
+	/**
+	 *
+	 * @return the quota unique ID
+	 */
 	public String getUuid();
 
-        /**
-         * 
-         * @return the namespace of the feature that the quota is apply to
-         */
+	/**
+	 *
+	 * @return the namespace of the feature that the quota is apply to
+	 */
 	public String getNamespace();
 
-        /**
-         * 
-         * @return the quota type 
-         */
+	/**
+	 *
+	 * @return the quota type
+	 */
 	public String getQuotaType();
 
-        /**
-         * The type of the Instance 
-         * (e.g) user, gruop of users, app or module
-         * @return 
-         */
+	/**
+	 * The type of the Instance (e.g) user, gruop of users, app or module
+	 *
+	 * @return
+	 */
 	public String getInstanceType();
-        
-        public String getQuotaIdentifier();
-        
-        public String getActions();
 
-        public void writeToToken(Token lAuxToken);
- 
-        public FastMap<String, Object> writeToMap();
+	public String getQuotaIdentifier();
+
+	public String getActions();
+
+	public void writeToToken(Token lAuxToken);
+
+	public FastMap<String, Object> writeToMap();
 }
