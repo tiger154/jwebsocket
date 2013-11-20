@@ -1,5 +1,5 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket - JMSManager abstraction for Scripting Plug-in (Community Edition, CE)
+//	jWebSocket - JMSManager for messaging (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -16,13 +16,14 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-package org.jwebsocket.plugins.scripting.app;
+package org.jwebsocket.util;
 
 import java.util.Map;
 import java.util.UUID;
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
@@ -31,11 +32,10 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
 import javolution.util.FastMap;
-import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
-import org.jwebsocket.spring.JWebSocketBeanFactory;
+import org.jwebsocket.jms.Attributes;
 
 /**
- * JMS based messaging abstraction for Script applications
+ * JMS based message hub
  *
  * @author kyberneees
  */
@@ -44,20 +44,30 @@ public class JMSManager {
 	private Session mSession;
 	private Map<String, MessageConsumer> mListeners = new FastMap<String, MessageConsumer>().shared();
 	private Map<String, MessageProducer> mProducers = new FastMap<String, MessageProducer>().shared();
-	private BaseScriptApp mScriptApp;
+	private String mDefaultDestination;
 
-	public JMSManager(BaseScriptApp aScriptApp) {
-		this(aScriptApp, false);
+	public JMSManager(Connection aConn) {
+		this(false, aConn);
 	}
 
-	public JMSManager(BaseScriptApp aScriptApp, boolean aUseTransaction) {
-		this(aScriptApp, aUseTransaction, (Connection) JWebSocketBeanFactory
-				.getInstance(ScriptingPlugIn.NS).getBean("jmsConnection"));
+	public String getDefaultDestination() {
+		return mDefaultDestination;
 	}
 
-	public JMSManager(BaseScriptApp aScriptApp, boolean aUseTransaction, Connection aConn) {
+	public void setDefaultDestination(String aDefaultDestination) {
+		mDefaultDestination = aDefaultDestination;
+	}
+
+	public JMSManager(boolean aUserTransaction, Connection aConn) {
+		this(aUserTransaction, aConn, null);
+	}
+
+	public JMSManager(boolean aUseTransaction, Connection aConn, String aDefaultDestination) {
 		try {
-			mScriptApp = aScriptApp;
+			if (null == aDefaultDestination) {
+				aDefaultDestination = "topic://jwebsocket_messagehub";
+			}
+			mDefaultDestination = aDefaultDestination;
 			mSession = aConn.createSession(aUseTransaction, Session.AUTO_ACKNOWLEDGE);
 		} catch (Exception lEx) {
 			throw new RuntimeException(lEx);
@@ -99,7 +109,7 @@ public class JMSManager {
 	 * @throws JMSException
 	 * @throws Exception
 	 */
-	public Destination getDestination(String aDestination) throws JMSException, Exception {
+	private Destination getDestination(String aDestination) throws JMSException, Exception {
 		String lPrefix = aDestination.substring(0, 8);
 		Destination lDest;
 		if ("queue://".equals(lPrefix)) {
@@ -116,16 +126,32 @@ public class JMSManager {
 	}
 
 	/**
-	 * Subscribe to a target destination
+	 * Builds a new message instance.
 	 *
-	 * @param aDestination
+	 * @param aNS
+	 * @param aMsgType
+	 * @return
+	 * @throws Exception
+	 */
+	public MapMessage buildMessage(String aNS, String aMsgType) throws Exception {
+		MapMessage lMessage = mSession.createMapMessage();
+		lMessage.setStringProperty(Attributes.NAMESPACE, aNS);
+		lMessage.setStringProperty(Attributes.MESSAGE_ID, UUID.randomUUID().toString());
+		lMessage.setStringProperty(Attributes.MESSAGE_TYPE, aMsgType);
+
+		return lMessage;
+	}
+
+	/**
+	 * Subscribe to default destination
+	 *
 	 * @param aCallback
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception
 	 */
-	public String subscribe(String aDestination, Object aCallback) throws JMSException, Exception {
-		return subscribe(aDestination, aCallback, null);
+	public String subscribe(MessageListener aCallback) throws JMSException, Exception {
+		return subscribe(mDefaultDestination, aCallback, null);
 	}
 
 	/**
@@ -137,24 +163,49 @@ public class JMSManager {
 	 * @throws JMSException
 	 * @throws Exception
 	 */
-	public String subscribe(String aDestination, Object aCallback,
+	public String subscribe(String aDestination, MessageListener aCallback) throws JMSException, Exception {
+		return subscribe(aDestination, aCallback, null);
+	}
+
+	/**
+	 * Subscribe to a the default destination
+	 *
+	 * @param aCallback
+	 * @return
+	 * @throws JMSException
+	 * @throws Exception
+	 */
+	public String subscribe(MessageListener aCallback,
+			boolean aDurableSubscription) throws JMSException, Exception {
+		return subscribe(mDefaultDestination, aCallback, aDurableSubscription);
+	}
+
+	/**
+	 * Subscribe to a target destination
+	 *
+	 * @param aDestination
+	 * @param aCallback
+	 * @return
+	 * @throws JMSException
+	 * @throws Exception
+	 */
+	public String subscribe(String aDestination, MessageListener aCallback,
 			boolean aDurableSubscription) throws JMSException, Exception {
 		return subscribe(aDestination, aCallback, null, aDurableSubscription);
 	}
 
 	/**
-	 * Subscribe to a target destination using a message selector
+	 * Subscribe to the default destination using a message selector
 	 *
-	 * @param aDestination
 	 * @param aCallback
 	 * @param aSelector
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception
 	 */
-	public String subscribe(String aDestination, Object aCallback,
+	public String subscribe(MessageListener aCallback,
 			String aSelector) throws JMSException, Exception {
-		return subscribe(aDestination, aCallback, aSelector, false);
+		return subscribe(mDefaultDestination, aCallback, aSelector);
 	}
 
 	/**
@@ -167,7 +218,36 @@ public class JMSManager {
 	 * @throws JMSException
 	 * @throws Exception
 	 */
-	public String subscribe(String aDestination, Object aCallback, String aSelector,
+	public String subscribe(String aDestination, MessageListener aCallback,
+			String aSelector) throws JMSException, Exception {
+		return subscribe(aDestination, aCallback, aSelector, false);
+	}
+
+	/**
+	 * Subscribe to the default destination using a message selector
+	 *
+	 * @param aCallback
+	 * @param aSelector
+	 * @return
+	 * @throws JMSException
+	 * @throws Exception
+	 */
+	public String subscribe(MessageListener aCallback, String aSelector,
+			boolean aDurableSubscription) throws JMSException, Exception {
+		return subscribe(mDefaultDestination, aCallback, aSelector, aDurableSubscription);
+	}
+
+	/**
+	 * Subscribe to a target destination using a message selector
+	 *
+	 * @param aDestination
+	 * @param aCallback
+	 * @param aSelector
+	 * @return
+	 * @throws JMSException
+	 * @throws Exception
+	 */
+	public String subscribe(String aDestination, MessageListener aCallback, String aSelector,
 			boolean aDurableSubscription) throws JMSException, Exception {
 		MessageConsumer lListener;
 		Destination lDest = getDestination(aDestination);
@@ -195,14 +275,24 @@ public class JMSManager {
 		}
 
 		// registrating consumer callback
-		lListener.setMessageListener((MessageListener) mScriptApp.cast(aCallback,
-				MessageListener.class));
+		lListener.setMessageListener(aCallback);
 
 		// storing consumer
 		mListeners.put(lSubscriptionId, lListener);
 
 		// returning subscription id
 		return lSubscriptionId;
+	}
+
+	/**
+	 * Sends a message to the default destination
+	 *
+	 * @param aMessage
+	 * @throws JMSException
+	 * @throws Exception
+	 */
+	public void send(Object aMessage) throws JMSException, Exception {
+		send(mDefaultDestination, aMessage);
 	}
 
 	/**
@@ -215,10 +305,10 @@ public class JMSManager {
 	 */
 	public void send(String aDestination, Object aMessage) throws JMSException, Exception {
 		Message lMsg;
-		if (aMessage instanceof String) {
-			lMsg = mSession.createTextMessage((String) aMessage);
-		} else {
+		if (aMessage instanceof Message) {
 			lMsg = (Message) aMessage;
+		} else {
+			lMsg = mSession.createTextMessage(aMessage.toString());
 		}
 
 		// checking producer

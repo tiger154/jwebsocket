@@ -34,6 +34,7 @@ import org.jwebsocket.api.IChunkable;
 import org.jwebsocket.api.IChunkableDeliveryListener;
 import org.jwebsocket.api.IPacketDeliveryListener;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.LocalLoader;
 import org.jwebsocket.logging.Logging;
@@ -57,18 +58,18 @@ import org.springframework.util.Assert;
 abstract public class BaseScriptApp {
 
 	protected ScriptingPlugIn mPlugIn;
-	private String mAppName;
-	private String mAppPath;
-	private ScriptEngine mScriptApp;
-	private Map<String, List<Object>> mCallbacks = new FastMap<String, List<Object>>().shared();
-	private ScriptAppLogger mLogger;
-	private Logger mLog = Logging.getLogger();
-	private Map<String, Object> mApi = new FastMap<String, Object>().shared();
-	private GenericApplicationContext mBeanFactory = new GenericApplicationContext(new DefaultListableBeanFactory());
+	private final String mAppName;
+	private final String mAppPath;
+	private final ScriptEngine mScriptApp;
+	private final Map<String, List<Object>> mCallbacks = new FastMap<String, List<Object>>().shared();
+	private final ScriptAppLogger mLogger;
+	private final Logger mLog = Logging.getLogger();
+	private final Map<String, Object> mApi = new FastMap<String, Object>().shared();
+	private final GenericApplicationContext mBeanFactory = new GenericApplicationContext(new DefaultListableBeanFactory());
 	private final ServerClient mServerClient;
-	private LocalLoader mClassLoader;
-	private String mJWSHome;
-	private String mNodeId;
+	private final LocalLoader mClassLoader;
+	private final String mJWSHome;
+	private final String mNodeId;
 	/**
 	 * String value for the "Connector Started" event. The event is fired when a
 	 * client started a connection with the server.
@@ -245,7 +246,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Notifyes an event into the script application.
+	 * Notify an event into the script application.
 	 *
 	 * @param aEventName The event name
 	 * @param aArgs The event arguments
@@ -253,7 +254,7 @@ abstract public class BaseScriptApp {
 	abstract public void notifyEvent(String aEventName, Object[] aArgs);
 
 	/**
-	 * Gets the application name
+	 * Get the application name
 	 *
 	 * @return
 	 */
@@ -262,7 +263,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Loads a Jar into the script app class loader
+	 * Load a Jar into the script app class loader
 	 *
 	 * @param aJarFile
 	 * @return TRUE if the jar has beeen loaded, FALSE otherwise
@@ -295,7 +296,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Returns TRUE if an object with the giving object identifier is published,
+	 * Return TRUE if an object with the giving object identifier is published,
 	 * FALSE otherwise.
 	 *
 	 * @param aObjectId
@@ -306,7 +307,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Gets a published object giving the object identifier.
+	 * Get a published object giving the object identifier.
 	 *
 	 * @param aObjectId
 	 * @return
@@ -316,7 +317,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Gets the script application root directory path.
+	 * Get the script application root directory path.
 	 *
 	 * @return
 	 */
@@ -325,7 +326,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Gets the script application logger.
+	 * Get the script application logger.
 	 *
 	 * @return
 	 */
@@ -334,7 +335,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Raises an exception with the given message if the boolean expression is
+	 * Raise an exception with the given message if the boolean expression is
 	 * FALSE.
 	 *
 	 * @param aExpression Boolean expression
@@ -345,8 +346,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Raises an exception with the given message if the Object argument is
-	 * NULL.
+	 * Raise an exception with the given message if the Object argument is NULL.
 	 *
 	 * @param aObject The object
 	 * @param aMessage The exception message.
@@ -356,7 +356,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Imports a JavaScript file into the application.
+	 * Import a JavaScript file into the application.
 	 *
 	 * @param aFile The JavaScript file path. The string "${APP_HOME}" is
 	 * replaced by the application root directory path.
@@ -375,7 +375,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a token to a given connector.
+	 * Send a token to a given connector.
 	 *
 	 * @param aConnector The connector
 	 * @param aMap The Map representation of the Token
@@ -394,7 +394,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a token to a given connector.
+	 * Send a token to a given connector.
 	 *
 	 * @param aConnector The connector id
 	 * @param aMap The Map representation of the Token
@@ -406,7 +406,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a token to a given connector.
+	 * Send a token to a given connector.
 	 *
 	 * @param aConnector The connector
 	 * @param aMap The Map representation of the Token
@@ -416,7 +416,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a token to a given connector with acknowledge callbacks.
+	 * Send a token to a given connector with acknowledge callbacks.
 	 *
 	 * @param aConnector The connector
 	 * @param aMap The Map representation of the Token
@@ -431,7 +431,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a token to a given connector with acknowledge callbacks.
+	 * Send a token to a given connector with acknowledge callbacks.
 	 *
 	 * @param aConnector The connector id
 	 * @param aMap The Map representation of the Token
@@ -442,7 +442,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a fragmented token to a given connector with acknowledge callbacks.
+	 * Send a fragmented token to a given connector with acknowledge callbacks.
 	 *
 	 * @param aConnector The connector
 	 * @param aMap The Map representation of the Token
@@ -458,7 +458,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a fragmented token to a given connector with acknowledge callbacks.
+	 * Send a fragmented token to a given connector with acknowledge callbacks.
 	 *
 	 * @param aConnector The connector id
 	 * @param aMap The Map representation of the Token
@@ -470,7 +470,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a token to a given connector.
+	 * Send a token to a given connector.
 	 *
 	 * @param aConnector The connector id
 	 * @param aMap The Map representation of the Token
@@ -480,7 +480,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a chunkable object to a given connector with acknowledge callbacks.
+	 * Send a chunkable object to a given connector with acknowledge callbacks.
 	 *
 	 * @param aConnector The connector id
 	 * @param aChunkable The IChunkable implementation object
@@ -490,7 +490,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a chunkable object to a given connector with acknowledge callbacks.
+	 * Send a chunkable object to a given connector with acknowledge callbacks.
 	 *
 	 * @param aConnector The connector id
 	 * @param aChunkable The IChunkable implementation object
@@ -501,7 +501,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a chunkable object to a given connector with acknowledge callbacks.
+	 * Send a chunkable object to a given connector with acknowledge callbacks.
 	 *
 	 * @param aConnector The connector
 	 * @param aChunkable The IChunkable implementation object
@@ -514,7 +514,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sends a chunkable object to a given connector with acknowledge callbacks.
+	 * Send a chunkable object to a given connector with acknowledge callbacks.
 	 *
 	 * @param aConnector The connector
 	 * @param aChunkable The IChunkable implementation object
@@ -552,7 +552,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Gets all server connectors (clients).
+	 * Get all server connectors (clients).
 	 *
 	 * @return
 	 */
@@ -561,7 +561,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Returns TRUE if the given connector has the given authority, FALSE
+	 * Return TRUE if the given connector has the given authority, FALSE
 	 * otherwise.
 	 *
 	 * @param aConnector The connector
@@ -573,7 +573,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Raises an exception if the client does not have the given authority.
+	 * Raise an exception if the client does not have the given authority.
 	 *
 	 * @param aConnector The connector
 	 * @param aAuthority The authority
@@ -586,7 +586,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Registers a callback for a collection of events.
+	 * Register a callback for a collection of events.
 	 *
 	 * @param aEvents The collection of events
 	 * @param aFn The callback
@@ -598,7 +598,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Registers a callback for a certain event.
+	 * Register a callback for a certain event.
 	 *
 	 * @param aEventName The event name
 	 * @param aFn The callback
@@ -623,7 +623,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Creates a Token object from a Map instance.
+	 * Create a Token object from a Map instance.
 	 *
 	 * @param aMap The Map instance
 	 * @return
@@ -633,7 +633,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Creates a response Token from a received Token.
+	 * Create a response Token from a received Token.
 	 *
 	 * @param aInToken The incoming Token.
 	 * @return The response Token
@@ -665,7 +665,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Creates a new instance of a thread-safe Map.
+	 * Create a new instance of a thread-safe Map.
 	 *
 	 * @return The thread-safe Map instance.
 	 */
@@ -674,7 +674,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Creates a new instance of a thread-safe Collection.
+	 * Create a new instance of a thread-safe Collection.
 	 *
 	 * @return The thread-safe collection instance.
 	 */
@@ -683,7 +683,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Calls a method on an application published object.
+	 * Call a method on an application published object.
 	 *
 	 * @param aObjectId The published object identifier.
 	 * @param aMethod The method to be called.
@@ -694,7 +694,7 @@ abstract public class BaseScriptApp {
 	public abstract Object callMethod(String aObjectId, String aMethod, Object[] aArgs) throws Exception;
 
 	/**
-	 * Gets the Spring bean factory instance associated to the given namespace.
+	 * Get the Spring bean factory instance associated to the given namespace.
 	 * If 'namespace' argument is null, then the system core bean factory is
 	 * returned. The system core bean factory is the parent of name-spaced bean
 	 * factories, so system core beans are visible for every namespaced bean
@@ -712,7 +712,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Gets a bean from the system-core bean factory.
+	 * Get a bean from the system-core bean factory.
 	 *
 	 * @param aBeanId The bean identifier
 	 * @return
@@ -722,7 +722,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Gets a bean from the application bean factory.
+	 * Get a bean from the application bean factory.
 	 *
 	 * @param aBeanId
 	 * @return
@@ -732,7 +732,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Gets a bean from a target bean factory.
+	 * Get a bean from a target bean factory.
 	 *
 	 * @param aBeanId The bean identifier
 	 * @param aNamespace The target bean factory namespace
@@ -750,7 +750,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Gets the application bean factory.
+	 * Get the application bean factory.
 	 *
 	 * @return
 	 */
@@ -759,7 +759,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Loads an Spring IOC XML configuration file into the script application
+	 * Load an Spring IOC XML configuration file into the script application
 	 * bean factory.
 	 *
 	 * @param aFile
@@ -783,27 +783,33 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Gets a JMS Manager instance using default configuration.
+	 * Get a JMS Manager instance using default configuration.
 	 *
 	 * @return
 	 */
-	public JMSManager getJMSManager() {
-		return new JMSManager(this);
+	public JMSManagerAbstraction getJMSManager() {
+		JMSManagerAbstraction lAbstraction = new JMSManagerAbstraction(this);
+		lAbstraction.setDefaultDestination(mPlugIn.getServer().getJMSManager().getDefaultDestination());
+
+		return lAbstraction;
 	}
 
 	/**
-	 * Gets a JMS Manager instance indicating transaction support setting.
+	 * Get a JMS Manager instance indicating transaction support.
 	 *
 	 * @param aUseTransaction If TRUE, JMS session instance will support
 	 * transactions.
 	 * @return
 	 */
-	public JMSManager getJMSManager(boolean aUseTransaction) {
-		return new JMSManager(this, aUseTransaction);
+	public JMSManagerAbstraction getJMSManager(boolean aUseTransaction) {
+		JMSManagerAbstraction lAbstraction = new JMSManagerAbstraction(this, aUseTransaction);
+		lAbstraction.setDefaultDestination(mPlugIn.getServer().getJMSManager().getDefaultDestination());
+
+		return lAbstraction;
 	}
 
 	/**
-	 * Gets a JMS Manager instance indicating transaction support setting and
+	 * Get a JMS Manager instance indicating transaction support setting and
 	 * passing the JMS connection instance.
 	 *
 	 * @param aUseTransaction If TRUE, JMS session instance will support
@@ -811,12 +817,33 @@ abstract public class BaseScriptApp {
 	 * @param aConn The JMS connection instance to be used.
 	 * @return
 	 */
-	public JMSManager getJMSManager(boolean aUseTransaction, Connection aConn) {
-		return new JMSManager(this, aUseTransaction, aConn);
+	public JMSManagerAbstraction getJMSManager(boolean aUseTransaction, Connection aConn) {
+		JMSManagerAbstraction lAbstraction = new JMSManagerAbstraction(this, aUseTransaction, aConn);
+		lAbstraction.setDefaultDestination(mPlugIn.getServer().getJMSManager().getDefaultDestination());
+
+		return lAbstraction;
 	}
 
 	/**
-	 * Gets the application version.
+	 * Get a JMS Manager instance indicating transaction support setting and
+	 * passing the JMS connection instance.
+	 *
+	 * @param aUseTransaction If TRUE, JMS session instance will support
+	 * transactions.
+	 * @param aConn The JMS connection instance to be used.
+	 * @param aDefaultDestination The default destination
+	 * @return
+	 */
+	public JMSManagerAbstraction getJMSManager(boolean aUseTransaction, Connection aConn,
+			String aDefaultDestination) {
+		JMSManagerAbstraction lAbstraction = new JMSManagerAbstraction(this, aUseTransaction,
+				aConn, aDefaultDestination);
+
+		return lAbstraction;
+	}
+
+	/**
+	 * Get the application version.
 	 *
 	 * @return
 	 * @throws Exception
@@ -824,7 +851,7 @@ abstract public class BaseScriptApp {
 	public abstract String getVersion() throws Exception;
 
 	/**
-	 * Gets the application description.
+	 * Get the application description.
 	 *
 	 * @return
 	 * @throws Exception
@@ -832,7 +859,7 @@ abstract public class BaseScriptApp {
 	public abstract String getDescription() throws Exception;
 
 	/**
-	 * Gets system property. May require sandbox permission.
+	 * Get system property. May require sandbox permission.
 	 *
 	 * @param aPropertyName
 	 * @return
@@ -842,7 +869,7 @@ abstract public class BaseScriptApp {
 	}
 
 	/**
-	 * Sets a system property. May require sandbox permission.
+	 * Set a system property. May require sandbox permission.
 	 *
 	 * @param aPropertyName
 	 * @param aValue
@@ -850,5 +877,14 @@ abstract public class BaseScriptApp {
 	 */
 	public String setSystemProperty(String aPropertyName, String aValue) {
 		return System.setProperty(aPropertyName, aValue);
+	}
+
+	/**
+	 * Get the WebSocketServer instance that holds the scripting plug-in
+	 *
+	 * @return
+	 */
+	public WebSocketServer getWebSocketServer() {
+		return mPlugIn.getServer();
 	}
 }

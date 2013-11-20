@@ -37,7 +37,7 @@ import org.jwebsocket.plugins.itemstorage.collection.ItemCollection;
  */
 public class ItemStorageEventManager {
 
-	private static List<IItemStorageListener> mListeners = new FastList<IItemStorageListener>();
+	private static final List<IItemStorageListener> mListeners = new FastList<IItemStorageListener>();
 	private static ExecutorService mThreadPool = null;
 
 	public static boolean isThreadPoolUP() {
@@ -213,15 +213,13 @@ public class ItemStorageEventManager {
 	}
 
 	public static void onBeforeSaveItem(IItem aItem, IItemStorage aStorage) throws Exception {
-		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
-			IItemStorageListener lListener = lIt.next();
+		for (IItemStorageListener lListener : mListeners) {
 			lListener.onBeforeSaveItem(aItem, aStorage);
 		}
 	}
 
 	public static void onBeforeCreateCollection(ItemCollection aCollection) {
-		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
-			IItemStorageListener lListener = lIt.next();
+		for (IItemStorageListener lListener : mListeners) {
 			lListener.onBeforeCreateCollection(aCollection);
 		}
 	}

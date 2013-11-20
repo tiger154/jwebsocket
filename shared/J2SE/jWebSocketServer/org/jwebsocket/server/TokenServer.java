@@ -38,9 +38,11 @@ import org.jwebsocket.listener.WebSocketServerTokenListener;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.plugins.TokenPlugInChain;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.JMSManager;
 import org.springframework.util.Assert;
 
 /**
@@ -50,7 +52,7 @@ import org.springframework.util.Assert;
  */
 public class TokenServer extends BaseServer {
 
-	private static Logger mLog = Logging.getLogger(TokenServer.class);
+	private static final Logger mLog = Logging.getLogger(TokenServer.class);
 	// specify name space for token server
 	private static final String NS_TOKENSERVER = JWebSocketServerConstants.NS_BASE + ".tokenserver";
 	// specify shared connector variables
@@ -60,10 +62,10 @@ public class TokenServer extends BaseServer {
 	private volatile boolean mIsAlive = false;
 	private static ExecutorService mCachedThreadPool;
 	private final static int TIME_OUT_TERMINATION_THREAD = 10;
-	private int mCorePoolSize;
-	private int mMaximumPoolSize;
-	private int mKeepAliveTime;
-	private int mBlockingQueueSize;
+	private final int mCorePoolSize;
+	private final int mMaximumPoolSize;
+	private final int mKeepAliveTime;
+	private final int mBlockingQueueSize;
 
 	/**
 	 *
@@ -73,7 +75,6 @@ public class TokenServer extends BaseServer {
 		super(aServerConfig);
 		mPlugInChain = new TokenPlugInChain(this);
 		mFilterChain = new TokenFilterChain(this);
-
 
 		mCorePoolSize = aServerConfig.getThreadPoolConfig().getCorePoolSize();
 		mMaximumPoolSize = aServerConfig.getThreadPoolConfig().getMaximumPoolSize();
@@ -770,7 +771,6 @@ public class TokenServer extends BaseServer {
 			}
 			return;
 		}
-		
 
 		// converting the token within the loop is removed in this method!
 		WebSocketPacket lPacket;
@@ -1003,5 +1003,14 @@ public class TokenServer extends BaseServer {
 	@Override
 	public TokenFilterChain getFilterChain() {
 		return (TokenFilterChain) mFilterChain;
+	}
+
+	/**
+	 * Gets the global JMSManager
+	 *
+	 * @return
+	 */
+	public JMSManager getJMSManager() {
+		return (JMSManager) JWebSocketBeanFactory.getInstance().getBean("jmsManager");
 	}
 }

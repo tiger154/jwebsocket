@@ -83,6 +83,10 @@ public class JMSEngine extends BaseEngine {
 		return mNodeId;
 	}
 
+	public Connection getConnection() {
+		return mConnection;
+	}
+
 	public String getDestination() {
 		return mDestination;
 	}
