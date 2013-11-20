@@ -8,7 +8,7 @@
 // importing app scripts
 App.importScript('${APP_HOME}/lib/myAppLib');
 
-App.on('appLoaded', function(){
+App.on('appLoaded', function() {
 	// setting app description
 	App.setDescription('Demo application with JavaScript at the server-side.');
 
@@ -28,12 +28,12 @@ App.on('appLoaded', function(){
 
 		// normal token send (response)
 		App.sendToken(aConnector, lResponse);
-	
+
 		// normal token send (custom token)
 		App.sendToken(aConnector, {
 			another: 'token'
 		});
-	
+
 		// fragmented token send
 		App.sendToken(aConnector, lResponse, 10);
 
@@ -71,11 +71,11 @@ App.on('appLoaded', function(){
 
 	// publishing to client public object (controllers)
 	App.publish('Main', {
-		sayHello: function(aName){
+		sayHello: function(aName) {
 			// see: lib/myAppLib.js
 			return sayHello(aName);
 		},
-		broadcast: function(aMessage){
+		broadcast: function(aMessage) {
 			App.broadcast({
 				message: aMessage
 			});
@@ -85,25 +85,25 @@ App.on('appLoaded', function(){
 // Example using the JMS built-in client
 // See: https://jwebsocket.org/documentation/Plug-Ins/Scripting-Plug-In/Developer-Guide/jms-integration
 // -------------------------------------
-//var JMS = App.getJMSManager();
-//App.publish('JMSManager', {
-//	test: function(aMessage){
-//		JMS.send('queue://test.queue', aMessage);
-//		JMS.send('topic://test.topic', aMessage);
-//	},
-//	shutdown: function(){
-//		JMS.shutdown();
-//	}
-//});
+//	var JMS = App.getJMSManager();
+//	App.publish('JMSManager', {
+//		test: function(aMessage) {
+//			JMS.send('queue://test.queue', aMessage);
+//			JMS.send('topic://test.topic', aMessage);
+//		},
+//		shutdown: function() {
+//			JMS.shutdown();
+//		}
+//	});
 //
-//JMS.subscribe('queue://test.queue', {
-//	onMessage: function(aMsg){
-//		App.getLogger().debug("queue: " + aMsg.getText());
-//	}
-//});
-//JMS.subscribe('topic://test.topic', {
-//	onMessage: function(aMsg){
-//		App.getLogger().debug("topic: " + aMsg.getText());
-//	}
-//});
+//	JMS.subscribe('queue://test.queue', {
+//		onMessage: function(aMsg) {
+//			App.getLogger().debug("queue: " + aMsg.getText());
+//		}
+//	});
+//	JMS.subscribe('topic://test.topic', {
+//		onMessage: function(aMsg) {
+//			App.getLogger().debug("topic: " + aMsg.getText());
+//		}
+//	});
 });
