@@ -23,51 +23,58 @@ var App = (function() {
 	var mListeners = AppUtils.newThreadSafeMap();
 	// app public objects (controllers) container
 	var mAPI = AppUtils.newThreadSafeMap();
-	// Packages object reference
-	var mPackages = Packages; 
 
 	// function to convert a JavaScript native object to a Java Map instance
 	var toMap = function(aNativeObject) {
 		var lMap = new Packages.java.util.HashMap();
-		if (aNativeObject instanceof Packages.java.util.Map){
+		if (aNativeObject instanceof Packages.java.util.Map) {
 			lMap = aNativeObject;
 		} else {
 			for (var lAttr in aNativeObject) {
 				lMap.put(lAttr, aNativeObject[lAttr]);
 			}
 		}
-		
+
 		return lMap;
 	};
-	
+
+	var toList = function(aArray) {
+		var lList = new Packages.java.util.LinkedList();
+		for (var lIndex in aArray) {
+			lList.add(aArray[lIndex]);
+		}
+
+		return lList;
+	};
+
 	// function to convert a Java object to a JavaScript native object
 	// maps, lists and booleans supported
-	var toNativeObject = function(aObject){
+	var toNativeObject = function(aObject) {
 		var lNative, lIt;
-		if (aObject instanceof Packages.java.util.Map){
+		if (aObject instanceof Packages.java.util.Map) {
 			lNative = {};
 			lIt = aObject.keySet().iterator();
-			while (lIt.hasNext()){
+			while (lIt.hasNext()) {
 				var lProp = lIt.next();
 				lNative[lProp] = toNativeObject(aObject.get(lProp));
 			}
-			
+
 			return lNative;
-		} else if (aObject instanceof Packages.java.util.List){
+		} else if (aObject instanceof Packages.java.util.List) {
 			lNative = [];
 			lIt = aObject.iterator();
-			while (lIt.hasNext()){
+			while (lIt.hasNext()) {
 				lNative.push(toNativeObject(lIt.next()));
 			}
-			
+
 			return lNative;
-		} else if (aObject instanceof Packages.java.lang.Boolean){
+		} else if (aObject instanceof Packages.java.lang.Boolean) {
 			lNative = true == aObject;
 		}
-		
+
 		return aObject;
-	}
-	
+	};
+
 	// app utility storage
 	var mStorage = AppUtils.newThreadSafeMap();
 	// app version
@@ -78,52 +85,55 @@ var App = (function() {
 	var mServerClient;
 
 	return {
-		getJMSManager: function(aUseTransaction, aConn){
+		getJMSManager: function(aUseTransaction, aConn) {
 			var lJMSManager;
-			if (undefined !== aUseTransaction && undefined != aConn){
+			if (undefined !== aUseTransaction && undefined != aConn) {
 				lJMSManager = AppUtils.getJMSManager(aUseTransaction, aConn);
-			} else if (undefined !== aUseTransaction){
+			} else if (undefined !== aUseTransaction) {
 				lJMSManager = AppUtils.getJMSManager(aUseTransaction);
 			}
 			lJMSManager = AppUtils.getJMSManager();
-			
+
 			return lJMSManager;
 		},
-		getDescription: function(){
-			return mDescription;  
+		getDescription: function() {
+			return mDescription;
 		},
-		setDescription: function(aDescription){
+		getWebSocketServer: function() {
+			return AppUtils.getWebSocketServer();
+		},
+		setDescription: function(aDescription) {
 			mDescription = aDescription;
 		},
-		getVersion: function(){
+		getVersion: function() {
 			return mVersion;
-		}, 
-		getStorage: function(){
+		},
+		getStorage: function() {
 			return mStorage;
 		},
-		set: function(aAttrName, aValue){
+		set: function(aAttrName, aValue) {
 			mStorage.put(aAttrName, aValue);
-			
+
 			return aValue;
 		},
-		get: function(aAttrName, aDefaultValue){
+		get: function(aAttrName, aDefaultValue) {
 			var lValue = mStorage.get(aAttrName);
-			if (null == lValue){
+			if (null == lValue) {
 				lValue = aDefaultValue;
 			}
-			
+
 			return lValue;
 		},
-		setVersion: function(aVersion){
+		setVersion: function(aVersion) {
 			mVersion = aVersion;
 		},
 		getName: function() {
 			return AppUtils.getName();
 		},
-		getNodeId: function(){
+		getNodeId: function() {
 			return AppUtils.getNodeId();
 		},
-		loadJar: function(aFile){
+		loadJar: function(aFile) {
 			return AppUtils.loadJar(aFile);
 		},
 		getPath: function() {
@@ -166,8 +176,8 @@ var App = (function() {
 		},
 		sendChunkable: function(aConnector, aChunkable, aListener) {
 			(!aListener)
-			? AppUtils.sendChunkable(aConnector, aChunkable)
-			: AppUtils.sendChunkable(aConnector, aChunkable, aListener);
+					? AppUtils.sendChunkable(aConnector, aChunkable)
+					: AppUtils.sendChunkable(aConnector, aChunkable, aListener);
 		},
 		getAllConnectors: function() {
 			return AppUtils.getAllConnectors();
@@ -182,7 +192,7 @@ var App = (function() {
 			return toNativeObject(AppUtils.createResponse(toMap(aInToken)));
 		},
 		broadcast: function(aArg1, aArg2) {
-			if (null != aArg2){
+			if (null != aArg2) {
 				AppUtils.broadcast(aArg1, toMap(aArg2));
 			} else {
 				AppUtils.broadcast(toMap(aArg1));
@@ -217,128 +227,138 @@ var App = (function() {
 				for (var lIndex = 0; lIndex < aArgs.length; lIndex++) {
 					lArgs.push(toNativeObject(aArgs[lIndex]));
 				}
-				
+
 				var lIt = mListeners.get(aEventName).iterator();
 				while (lIt.hasNext()) {
 					lIt.next().apply(this, lArgs);
 				}
 			}
 		},
-		getAppBeanFactory: function(){
+		toMap: function(aJSONObject) {
+			return toMap(aJSONObject);
+		},
+		toJSON: function(aJavaObject) {
+			return toNativeObject(aJavaObject);
+		},
+		toList: function(aArray) {
+			return toList(aArray);
+		},
+		getAppBeanFactory: function() {
 			return AppUtils.getAppBeanFactory();
 		},
-		loadToAppBeanFactory: function(aFile){
+		loadToAppBeanFactory: function(aFile) {
 			AppUtils.loadToAppBeanFactory(aFile);
 		},
-		getBean: function(aBeanId, aNamespace){
+		getBean: function(aBeanId, aNamespace) {
 			return (undefined == aNamespace)
-			? AppUtils.getBean(aBeanId)
-			: AppUtils.getBean(aBeanId, aNamespace);
+					? AppUtils.getBean(aBeanId)
+					: AppUtils.getBean(aBeanId, aNamespace);
 		},
-		getAppBean: function(aBeanId){
+		getAppBean: function(aBeanId) {
 			return AppUtils.getAppBean(aBeanId);
 		},
-		getSystemProperty: function(aPropertyName){
+		getSystemProperty: function(aPropertyName) {
 			return AppUtils.getSystemProperty(aPropertyName);
 		},
-		setSystemProperty: function(aPropertyName, aValue){
+		setSystemProperty: function(aPropertyName, aValue) {
 			return AppUtils.setSystemProperty(aPropertyName, aValue);
 		},
-		setModule: function(aName, aModule){
+		setModule: function(aName, aModule) {
 			App.getStorage().put('module.' + aName, aModule);
 			return aModule;
 		},
-		getModule: function(aName){
+		getModule: function(aName) {
 			return App.getStorage().get('module.' + aName);
 		},
-		hasModule: function(aName){
+		hasModule: function(aName) {
 			return App.getStorage().containsKey('module.' + aName);
 		},
-		removeModule: function(aName){
+		removeModule: function(aName) {
 			return App.getStorage().remove('module.' + aName);
 		},
-		getServerClient: function(){
-			if (!mServerClient){
+		getServerClient: function() {
+			if (!mServerClient) {
 				// get internal client instance
 				var lClient = AppUtils.getServerClient();
-				
+
 				// return JavaScript wrapper
 				mServerClient = {
 					NS_SYSTEM: 'org.jwebsocket.plugins.system',
 					listeners: {},
-					getConnection: function(){
+					getConnection: function() {
 						return lClient;
 					},
-					sendToken: function(aToken, aCallbacks){
-						if (null == aCallbacks){
+					sendToken: function(aToken, aCallbacks) {
+						if (null == aCallbacks) {
 							aCallbacks = {};
 						}
 						return lClient.sendToken(toMap(aToken), {
-							getTimeout: function(){
-								if (aCallbacks['getTimeout']){
+							getTimeout: function() {
+								if (aCallbacks['getTimeout']) {
 									return aCallbacks['getTimeout']();
 								}
 								return 5000;
 							},
-							setTimeout: function(aTimeout){},
-							OnTimeout: function(aToken){
-								if (aCallbacks['OnTimeout']){
+							setTimeout: function(aTimeout) {
+							},
+							OnTimeout: function(aToken) {
+								if (aCallbacks['OnTimeout']) {
 									aCallbacks['OnTimeout'](toNativeObject(aToken.getMap()));
 								}
 							},
-							OnResponse: function(aResponse){
-								if (aCallbacks['OnResponse']){
+							OnResponse: function(aResponse) {
+								if (aCallbacks['OnResponse']) {
 									aCallbacks['OnResponse'](toNativeObject(aResponse.getMap()));
 								}
 							},
-							OnSuccess: function(aResponse){
-								if (aCallbacks['OnSuccess']){
+							OnSuccess: function(aResponse) {
+								if (aCallbacks['OnSuccess']) {
 									aCallbacks['OnSuccess'](toNativeObject(aResponse.getMap()));
 								}
 							},
-							OnFailure: function(aResponse){
-								if (aCallbacks['OnFailure']){
+							OnFailure: function(aResponse) {
+								if (aCallbacks['OnFailure']) {
 									aCallbacks['OnFailure'](toNativeObject(aResponse.getMap()));
 								}
 							}
 						});
 					},
-					open: function(){
+					open: function() {
 						lClient.open();
-					}, 
-					isConnected: function(){
+					},
+					isConnected: function() {
 						return lClient.isConnected();
 					},
-					addListener: function(aListener){
+					addListener: function(aListener) {
 						return lClient.addListener({
-							processPacket: function(aPacket){
-								if (aListener['processPacket']){
+							processPacket: function(aPacket) {
+								if (aListener['processPacket']) {
 									aListener['processPacket'](aPacket);
 								}
 							},
-							processToken: function(aToken){
-								if (aListener['processToken']){
+							processToken: function(aToken) {
+								if (aListener['processToken']) {
 									aListener['processToken'](toNativeObject(aToken.getMap()));
 								}
 							},
-							processClosed: function(aReason){
-								if (aListener['processClosed']){
+							processClosed: function(aReason) {
+								if (aListener['processClosed']) {
 									aListener['processClosed'](aReason);
 								}
 							},
-							processWelcome: function(aToken){
-								if (aListener['processWelcome']){
+							processWelcome: function(aToken) {
+								if (aListener['processWelcome']) {
 									aListener['processWelcome'](toNativeObject(aToken.getMap()));
 								}
 							},
-							processOpened: function(){
-								if (aListener['processOpened']){
+							processOpened: function() {
+								if (aListener['processOpened']) {
 									aListener['processOpened']();
 								}
 							}
 						});
 					},
-					logon: function(aUsername, aPassword, aCallbacks){
+					logon: function(aUsername, aPassword, aCallbacks) {
 						this.sendToken({
 							ns: this.NS_SYSTEM,
 							type: 'logon',
@@ -346,16 +366,16 @@ var App = (function() {
 							password: aPassword
 						}, aCallbacks);
 					},
-					logoff: function(aCallbacks){
+					logoff: function(aCallbacks) {
 						this.sendToken({
 							ns: this.NS_SYSTEM,
 							type: 'logoff'
 						}, aCallbacks);
 					},
-					removeListener: function(aListener){
+					removeListener: function(aListener) {
 						lClient.removeListener(aListener);
-					},	
-					close: function(){
+					},
+					close: function() {
 						lClient.close();
 					},
 					checkConnected: function() {
@@ -363,31 +383,31 @@ var App = (function() {
 							code: 0,
 							msg: 'Ok'
 						};
-						if(!this.isConnected()) {
+						if (!this.isConnected()) {
 							lRes.code = -1;
 							lRes.msg = 'Not connected!';
 						}
 						return lRes;
 					}
-				}
-				
+				};
+
 				mServerClient.addListener({
-					processToken: function(aToken){
-						for (var lIndex in mServerClient.listeners){
+					processToken: function(aToken) {
+						for (var lIndex in mServerClient.listeners) {
 							var lListener = mServerClient.listeners[lIndex];
-							if (lListener){
+							if (lListener) {
 								lListener.call(mServerClient, toNativeObject(aToken));
 							}
 						}
 					}
 				});
-				App.on('beforeAppReload', function(aHotLoad){
-					if (false == aHotLoad){
+				App.on('beforeAppReload', function(aHotLoad) {
+					if (false == aHotLoad) {
 						mServerClient.close();
 					}
 				});
 			}
-			
+
 			return mServerClient;
 		}
 	};
@@ -399,27 +419,26 @@ var App = (function() {
 var jws = {
 	NS_BASE: 'org.jwebsocket',
 	NS_SYSTEM: 'org.jwebsocket.plugins.system',
-	
-	oop : {
-		addPlugIn: function(a, aPlugIn){
+	oop: {
+		addPlugIn: function(a, aPlugIn) {
 			// getting server instance
 			var lServer = App.getServerClient();
-			
+
 			// storing the plugin for future incoming token notifications.
-			App.assertTrue(undefined != aPlugIn.NS, 
-				'The given plug-in class has invalid NS property value!')
-				
+			App.assertTrue(undefined != aPlugIn.NS,
+					'The given plug-in class has invalid NS property value!');
+
 			// registering the plugin listener
-			if (typeof (aPlugIn['processToken']) == 'function'){
+			if (typeof (aPlugIn['processToken']) == 'function') {
 				lServer.listeners[aPlugIn.NS] = aPlugIn['processToken'];
 			}
-			
+
 			// prototyping server instance.
-			for (var lField in aPlugIn){
-				if( !lServer[ lField ] ) {
+			for (var lField in aPlugIn) {
+				if (!lServer[ lField ]) {
 					lServer[ lField ] = aPlugIn[ lField ];
 				}
 			}
 		}
 	}
-}
+};

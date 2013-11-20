@@ -49,23 +49,4 @@
 		</property>
 		-->
 	</bean>
-
-	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL">
-			<value>tcp://localhost:61616</value>
-		</property>
-		<!--		
-		<property name="userName">
-			<value>admin</value>
-		</property>
-		<property name="password">
-			<value>admin</value>
-		</property>
-		-->
-	</bean>
-	<bean id="jmsConnection" factory-bean="jmsConnectionFactory" factory-method="createConnection" 
-		  init-method="start">
-		<property name="clientID" value="jws_server_shared_conn_01" />
-	</bean>
-
 </beans>
