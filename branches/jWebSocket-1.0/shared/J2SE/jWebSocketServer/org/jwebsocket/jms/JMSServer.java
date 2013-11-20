@@ -31,6 +31,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.JMSManager;
 
 /**
  * JMS Token server implementation.
@@ -40,7 +41,7 @@ import org.jwebsocket.token.Token;
 public class JMSServer extends TokenServer {
 
 	private final static Logger mLog = Logging.getLogger(JMSServer.class);
-	private JMSMessageHub mMessageHub = null;
+	private JMSManager mJMSManager = null;
 	private IClusterSynchronizer mSynchronizer = null;
 
 	public JMSServer(ServerConfiguration aServerConfig) {
@@ -51,13 +52,9 @@ public class JMSServer extends TokenServer {
 	public void engineStarted(WebSocketEngine aEngine) {
 		if (aEngine instanceof JMSEngine) {
 			JMSEngine lEngine = (JMSEngine) aEngine;
-			mMessageHub = new JMSMessageHub(lEngine);
+			mJMSManager = new JMSManager(false, lEngine.getConnection(), "topic://"
+					+ lEngine.getDestination() + "_messagehub");
 			mSynchronizer = lEngine.getNodesManager().getSynchronizer();
-			try {
-				mMessageHub.initialize();
-			} catch (Exception lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing message hub"));
-			}
 		}
 
 		super.engineStarted(aEngine);
@@ -111,10 +108,11 @@ public class JMSServer extends TokenServer {
 		super.systemStopping();
 
 		// shutdown message hub
-		mMessageHub.shutdown();
+		mJMSManager.shutdown();
 	}
 
-	public JMSMessageHub getMessageHub() {
-		return mMessageHub;
+	@Override
+	public JMSManager getJMSManager() {
+		return mJMSManager;
 	}
 }

@@ -57,7 +57,7 @@ public class SMSPlugIn extends TokenPlugIn {
 	private final String TT_SEND_SMS = "sendSMS";
 	private boolean mSMSQuotaCreated = false;
 	private long mTotalSMSQuota = 200;
-	private long mTotalUserQuota = 5;
+	private final long mTotalUserQuota = 5;
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 	private ISMSProvider mProvider;
