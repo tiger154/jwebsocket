@@ -21,6 +21,7 @@ package org.jwebsocket.token;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastMap;
+import org.jwebsocket.api.ITokenizable;
 
 /**
  *
@@ -116,7 +117,7 @@ public abstract class BaseToken implements Token {
 	@Override
 	public boolean setValidated(String aKey, Object aObj) {
 		boolean lRes = true;
-		if (aObj instanceof BaseTokenizable) {
+		if (aObj instanceof ITokenizable) {
 			Token lToken = TokenFactory.createToken();
 			((BaseTokenizable) aObj).writeToToken(lToken);
 			setToken(aKey, lToken);
