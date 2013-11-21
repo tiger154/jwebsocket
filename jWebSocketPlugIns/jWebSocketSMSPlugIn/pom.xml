@@ -58,7 +58,7 @@
 
 		<dependency>
 			<groupId>org.jwebsocket</groupId>
-			<artifactId>jWebSocketServer</artifactId>
+			<artifactId>jWebSocketItemStoragePlugIn</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		

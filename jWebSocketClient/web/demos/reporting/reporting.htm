@@ -31,146 +31,114 @@
 
 		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
 		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsFilesystemPlugIn.js" type="text/javascript"></script>
 		<script src="../../res/js/jwsReportingPlugIn.js" type="text/javascript"></script>
 
 		<script type="text/javascript" language="JavaScript">
-			
-			var
-				gReportParams = [];
-			
-			function getReports() {
-				log( "Retreiving list of reports via jWebSocket..." );
-				if( lWSC.isConnected() ) {
-					lWSC.reportingGetReports({
-						OnResponse: function( aToken ) {
-							// log("Reports " + JSON.stringify( aToken ) );
-						}
+
+			function testGetReports() {
+				log("Retreiving list of reports via jWebSocket...");
+				if (lWSC.isConnected()) {
+					lWSC.sendToken({
+						ns: "org.jwebsocket.plugins.testreporting",
+						type: "testGetReport"
 					});
 				} else {
-					log( "Not connected." );
+					log("Not connected.");
 				}
 			}
 
-			function getReportParams() {
-				var lReportId = eReportSel.value;
-				log( "Retreiving parameters for report '" + lReportId + "' via jWebSocket..." );
-				if( lWSC.isConnected() ) {
-					lWSC.reportingGetReportParams( lReportId, {
-						OnResponse: function( aToken ) {
-							// log("Reports " + JSON.stringify( aToken ) );
-						}
+			function testGenerateReport() {
+				log("Creating a report...");
+				if (lWSC.isConnected()) {
+					lWSC.sendToken({
+						ns: "org.jwebsocket.plugins.testreporting",
+						type: "testGenerateReport"
 					});
 				} else {
-					log( "Not connected." );
+					log("Not connected.");
+				}
+			}
+
+			function disableFields() {
+				if (eJDBConnection.checked) {
+					eFields.enabled = false;
+				}
+			}
+
+			function getReports() {
+				log("Retreiving list of reports via jWebSocket...");
+				if (lWSC.isConnected()) {
+					lWSC.reportingGetReports();
+				} else {
+					log("Not connected.");
 				}
 			}
 
 			function createReport() {
 				var lReportId = eReportSel.value;
-				log( "Creating Report..." );
-				
-				if( lWSC.isConnected() ) {
-					var lParams = [];
-					/*
-					for(var lIdx = 0, lCnt = gReportParams.length; lIdx < lCnt; lIdx++ ) {
-						var lParam = gReportParams[ lIdx ];
-						lParams.push({
-							name: lParam.name,
-							type: lParam.type,
-							value: lParam.elem.value
-						});
-					}
-					*/
-					lParams.push({ name: "aFrom", type: "datetime", value: "2011-05-20T13:04:00Z" });
-					lParams.push({ name: "aTo", type: "datetime", value: "2011-05-25T00:00:00Z" });
-					lWSC.reportingCreateReport(lReportId, lParams, {
-						OnResponse: function( aToken ) {
-							var lW = jws.$("sdivPdf").scrollWidth;
-							if( isNaN( lW ) || lW <= 10 ) {
-								lW = 400;
+				var lFormat = eFormatSel.value;
+				eval("var lParams =" + eParams.value);
+				var lFields = eval(eFields.value);
+
+				log("Creating Report...");
+
+				if (lWSC.isConnected()) {
+
+					lWSC.reportingGenerateReport(
+							lReportId,
+							lParams,
+							lFields,
+							{
+								useConection: eJDBConnection.checked,
+								outputType: lFormat
 							}
-							if( aToken.code == 0) {
-								jws.ReportingPlugIn.displayPDF( jws.$("sdivPdf"), aToken.url, lW, 300);
-								// window.open( aToken.url, "jWebSocket Report", "" );
-							} else {
-								log("Report creation error: " + aToken.msg );
-							}	
-						}
-					});
-				} else {
-					log( "Not connected." );
-				}
-			}
-
-			function handleReportAvail() {
-				// show pdf
-				log("Report is available");
-			}
-			
-			function handleReports( aToken ) {
-				// remove all existing reports in drop down box
-				while( eReportSel.options.length > 0 ) {
-					var lOption = eReportSel.options[ 0 ];
-					eReportSel.removeChild(lOption);
-				}
-				// add all reports from incoming token
-				for( var lIdx = 0, lCnt = aToken.reports.length; lIdx < lCnt; lIdx++ ) {
-					/*
-					var lOption = document.createElement("option");
-					lOption.value = aToken.reports[ lIdx ].reportname;
-					lOption.text = aToken.reports[ lIdx ].reportname;
-					*/
-					var lOption = new Option(
-						aToken.reports[ lIdx ].reportname,
-						aToken.reports[ lIdx ].reportname
 					);
-					eReportSel.options[ lIdx ] = lOption; // appendChild(lOption);
+				} else {
+					log("Not connected.");
 				}
 			}
-			
-			function handleReportParams( aToken ) {
-				// remove all existing reports in drop down box
-				
-				eFilterDiv.innerHTML = "";
-				gReportParams = [];
-				// analyze report params from incoming token
-				var lTable = document.createElement("table");
-				for( var lIdx = 0, lCnt = aToken.params.length; lIdx < lCnt; lIdx++ ) {
-					var lParam = aToken.params[ lIdx ];
-					var lDescr = lParam.description;
-					if( lDescr ) {
-						var lTR = document.createElement("tr");
-						var lTD1 = document.createElement("td");
-						var lTD2 = document.createElement("td");
-						var lLbl = document.createElement("span");
-						var lInp = document.createElement("input");
-						lInp.id = "param." + lParam.name;
 
-						gReportParams.push({
-							name: lParam.name,
-							type: lParam.type,
-							elem: lInp
-						});
-						
-						lTD1.appendChild(lLbl);
-						lTD2.appendChild(lInp);
-						lTR.appendChild(lTD1);
-						lTR.appendChild(lTD2);
-						lTable.appendChild(lTR);
+			function handleReportAvail(aToken) {
+				lWSC.fileLoad(aToken.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
+					OnSuccess: function(aToken) {
+						window.open("data:application/pdf;base64," + aToken.data, "_blank");
+					}
+				});
+			}
 
-						lLbl.innerHTML = lDescr;
-					}	
+			function handleReports(aToken) {
+				while (eReportSel.options.length > 0) {
+					eReportSel.removeChild();
 				}
-				eFilterDiv.appendChild(lTable);
+
+				var lReports = aToken.data;
+				for (i = 0; i < lReports.length; i++) {
+					eReportSel.appendChild(new Option(lReports[i], lReports[i]));
+				}
 			}
 
 			function initPage() {
-				eReportSel = jws.$( "sselReports" );
-				eFilterDiv = jws.$( "sdivFilter" );
+				// get reports
+				eReportSel = jws.$("sselReports");
+				// get formats
+				eFormatSel = jws.$("sselFormats");
+				// use JDBConnection
+				eJDBConnection = jws.$("chkJDBConnection");
+				eJDBConnection.checked = true;
+				// fields statements
+				eFields = jws.$("txaFields");
+				eFields.value = "[{name: 'Javier', lastName: 'Alejandro Puentes', age: 27, dni: 9898797987}]";
+
+				// params statements
+				eParams = jws.$("txaParams");
+				eParams.value = "{reportTitle: 'My Report'}";
+
+				eFormatSel.appendChild(new Option("PDF", "pdf"));
+				eFormatSel.appendChild(new Option("HTML", "html"));
 				lWSC.setReportingCallbacks({
-					OnReportAvail: handleReportAvail,
-					OnReports: handleReports,
-					OnReportParams: handleReportParams
+					OnReport: handleReportAvail,
+					OnReports: handleReports
 				});
 			}
 
@@ -195,36 +163,83 @@
 		</script>
 
 		<div class="sdivContainer">
-			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
-				<tr class="strDlg">
-					<td class="stdDlg" width="5">
-						<input class="sbtnDlg" id="sbtnGetReports" type="button" value="Get Reports" onclick="getReports();"
-							   title="Gets the list of avaliable reports.">
+			<table>
+				<tr>
+					<td>
+						<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
+							<tr class="strDlg">
+								<td class="stdDlg" width="5">
+									<input class="sbtnDlg" id="sbtnGetReports" type="button" value="Get Reports" onclick="getReports();"
+										   title="Gets the list of avaliable reports.">
+								</td>
+								<td class="stdDlg" width="5">
+									<select id="sselReports" title="Available Reports on the server." style="width:150px">
+									</select>
+								</td>
+								<td>
+									<label class="sbtnDlg" for ="sselFormats">Formats</label>
+								</td>
+								<td class="stdDlg" width="5">
+									<select id="sselFormats" title="Available Formats to export reports." style="width:150px">
+									</select>
+								</td>	
+								<td>
+									<input type="checkbox" class="stdDlg" id="chkJDBConnection" 
+										   title="on/off Use JDBConnection Plug-in" onclick="disableFields()"/> Use JDBConecction?
+								</td>
+							</tr>
+							<tr>					
+								<td>
+									<label class="sbtnDlg" for ="txaFields" title="Enter an array with JSON objects">Fields</label>
+								</td>
+								<td class="stdDlg" width="5">
+									<textarea class="sbtnDlg" id="txaFields" title="Enter an array with JSON objects"></textarea>
+								</td>					
+								<td>
+									<label class="sbtnDlg" for ="txaParams" title="Enter a JSON object">Params</label>
+								</td>
+								<td class="stdDlg" width="5">
+									<textarea class="sbtnDlg" id="txaParams" title="Enter a JSON object"></textarea>
+								</td>					
+							</tr>
+							<tr>
+								<td class="stdDlg" width="5">
+									<br>
+									<input class="sbtnDlg" id="sbtCreateReport" type="button" value="Create Report" onclick="createReport();"
+										   title="Creates the currently selected report using the given parameters.">
+								</td>
+							</tr>
+						</table>
 					</td>
-					<td class="stdDlg" width="5">
-						<select id="sselReports" title="Available Reports on the server." style="width:150px">
-						</select>
-					</td>
-					<td class="stdDlg" width="5">
-						<input class="sbtnDlg" id="sbtnGetReportParams" type="button" value="Get Params" onclick="getReportParams();"
-							   title="Gets the list of avaliable reports.">
-					</td>
-					<td class="stdDlg" width="5">
-						<input class="sbtnDlg" id="sbtCreateReport" type="button" value="Create Report" onclick="createReport();"
-							   title="Creates the currently selected report using the given parameters.">
+					<td>
+						<table>
+							<tr>
+								<td>
+									<p>Testing Reporting PlugIn</p>
+								</td>
+							</tr>
+							<tr>								
+								<td>
+									<input type="button" class="sbtnDlg" id="btnTestGetReports" value="Get Reports" onclick="testGetReports()"/>
+								</td>
+								<td>
+									<input type="button" class="sbtnDlg" id="btnTestGenReports" value="Create Report" onclick="testGenerateReport()"/>
+								</td>
+							</tr>
+						</table>
 					</td>
 				</tr>
 			</table>
 		</div>
-		
+
 		<div class="sdivContainer" id="sdivFilter">
-			
+
 		</div>
-		
+
 		<div class="sdivContainer" id="sdivPdf">
-			
+
 		</div>
-		
+
 
 	</body>
 </html>
