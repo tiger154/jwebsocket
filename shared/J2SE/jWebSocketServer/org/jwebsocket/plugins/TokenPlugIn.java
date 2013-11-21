@@ -439,4 +439,21 @@ public class TokenPlugIn extends BasePlugIn {
 
 		return lValue;
 	}
+
+	/**
+	 * Invoke a feature on a target plug-in by using the plug-in's 'invoke'
+	 * interface
+	 *
+	 * @param aPlugInId
+	 * @param aConnector
+	 * @param aToken
+	 * @return
+	 */
+	public Token invokePlugIn(String aPlugInId, WebSocketConnector aConnector, Token aToken) {
+		// getting the plug-in instance
+		TokenPlugIn lPlugIn = (TokenPlugIn) getPlugInChain().getPlugIn(aPlugInId);
+		Assert.notNull(lPlugIn, "The target plug-in is not running!");
+
+		return lPlugIn.invoke(aConnector, aToken);
+	}
 }
