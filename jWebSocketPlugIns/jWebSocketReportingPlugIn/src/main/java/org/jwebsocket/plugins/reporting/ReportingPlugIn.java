@@ -149,8 +149,8 @@ public class ReportingPlugIn extends ActionPlugIn {
 	public void systemStarted() throws Exception {
 		TokenPlugIn lJDBCPlugIn = (TokenPlugIn) getServer().getPlugInById("jws.jdbc");
 		Assert.notNull(lJDBCPlugIn, "The ReportingPlugin required JDBC plug-in enabled!");
-
 		Object lObject = Tools.invoke(lJDBCPlugIn, "getNativeDataSource");
+		
 		DataSource lDataSource = (DataSource) lObject;
 		// passing the JDBC plug-in connection instance to the JR service to re-use
 		mJasperReportService.setConnection(lDataSource.getConnection());
@@ -231,7 +231,7 @@ public class ReportingPlugIn extends ActionPlugIn {
 	@Role(name = NS_REPORTING + ".generateReport")
 	public void generateReportAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		Token lResponse = generateReport(aConnector, aToken);
-		
+
 		sendToken(aConnector, lResponse);
 	}
 
@@ -252,16 +252,13 @@ public class ReportingPlugIn extends ActionPlugIn {
 	}
 
 	String getUserHome(WebSocketConnector aConnector) {
-		// getting the FSP instance
-		TokenPlugIn lFSP = (TokenPlugIn) getPlugInChain().getPlugIn("jws.filesystem");
-		Assert.notNull(lFSP, "FileSystem plug-in is not running!");
-
 		// creating invoke request for FSP
 		Token lCommand = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE
 				+ ".plugins.filesystem", "getAliasPath");
 		lCommand.setString("alias", "privateDir");
+		
 		// getting the method execution result
-		Token lResult = lFSP.invoke(aConnector, lCommand);
+		Token lResult = invokePlugIn("jws.filesystem", aConnector, lCommand);
 		Assert.notNull(lResult, "Unable to communicate with the FileSystem plug-in "
 				+ "to retrieve the client private directory!");
 
