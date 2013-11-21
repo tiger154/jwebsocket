@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
-	<bean id="org.jwebsocket.plugins.reporting.settings" class="org.jwebsocket.plugins.reporting.Settings">
+    <bean id="org.jwebsocket.plugins.reporting.settings" class="org.jwebsocket.plugins.reporting.Settings">
 		<!-- The reportFolder specifies the folder of the Jasper Reports .jrxml files 
 			 this folder should not be accessible from the outside.
 		-->
@@ -11,16 +11,11 @@
 			 reports (.pdf files) to a browser. In this this folder needs exist 
 			 and to be  accessible by the web or application server.
 		-->
-		<property name="outputFolder" value="c:/svn/jWebSocketDev/branches/jWebSocket-1.0/jWebSocketClient/web/public/reports/"/>
-		<!-- the outputURL is the base URL the jWebSocketReportingPlugIn returns
-			 to the client.
-		-->
-		<property name="outputURL" value="http://localhost/jwcDev/public/reports/"/>
-		<!-- this is the pattern used to generate the resulting .pdfs report 
-			 file name. The filename is returned to the client in the response
-			 token.
-		-->
-		<property name="reportNamePattern" value="${reportname}_${timestamp}"/>
+		<property name="outputFolder" value="${USER_HOME}/reports/"/>
+	</bean>
+	
+	<bean id="jrService" class="org.jwebsocket.plugins.reporting.service.JasperReportService">
+		<property name="settings" ref="org.jwebsocket.plugins.reporting.settings" />
 	</bean>
 
 </beans>

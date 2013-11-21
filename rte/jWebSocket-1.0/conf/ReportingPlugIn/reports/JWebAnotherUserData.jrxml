@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JWebSocketUserList" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="username" class="java.lang.String"/>
+	<field name="firstname" class="java.lang.String"/>
+	<field name="lastname" class="java.lang.String"/>
+	<field name="telephone" class="java.lang.String"/>
+	<field name="mobile" class="java.lang.String"/>
+	<field name="fax" class="java.lang.String"/>
+	<field name="securityQuestion" class="java.lang.String"/>
+	<field name="myInterest" class="java.lang.String"/>
+	<field name="subsciptions" class="java.lang.String"/>
+	<field name="enabled" class="java.lang.Boolean"/>
+	<field name="active" class="java.lang.Boolean"/>
+	<field name="registrationDate" class="java.lang.Long"/>
+	<field name="activationDate" class="java.lang.Long"/>
+	<field name="lastActivityDate" class="java.lang.Long"/>
+	<field name="loginCount" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="103" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="0" width="138" height="58"/>
+				<imageExpression><![CDATA["C:\\Users\\javier alejandro\\Apps\\WORK\\JWS\\ijwssvn\\branches\\jWebSocket-1.0\\jWebSocketClient\\web\\images\\logo.gif"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="181" y="53" width="201" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="15" isBold="true" isStrikeThrough="false"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<text><![CDATA[Full User Data]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="86" width="555" height="1"/>
+			</line>
+		</band>
+	</title>
+	<detail>
+		<band height="312" splitType="Stretch">
+			<textField>
+				<reportElement x="168" y="47" width="387" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{telephone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="47" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Telephone]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="68" width="201" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{mobile}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="68" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mobile]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="89" width="201" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{fax}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="89" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fax]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="110" width="387" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{securityQuestion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="110" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Security Question]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="131" width="387" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{myInterest}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="131" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[My Interest]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="152" width="387" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{subsciptions}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="152" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Subsciptions]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="173" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{enabled}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="173" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Enabled]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="194" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{active}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="194" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Active]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="215" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{registrationDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="215" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Registration Date]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="236" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{activationDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="236" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Activation Date]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="257" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lastActivityDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="257" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Last Activity Date]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="278" width="42" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{loginCount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="278" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Login Count]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="17" y="4" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[User Name]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="4" width="100" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{username}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="26" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Full Name]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="168" y="26" width="201" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{firstname}.concat( $F{lastname} )]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="308" width="555" height="1"/>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="31" splitType="Stretch">
+			<textField>
+				<reportElement x="515" y="5" width="25" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>
