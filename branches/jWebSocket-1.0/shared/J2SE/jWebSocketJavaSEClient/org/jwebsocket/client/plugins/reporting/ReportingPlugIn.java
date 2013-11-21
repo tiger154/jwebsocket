@@ -56,6 +56,18 @@ public class ReportingPlugIn extends BaseClientTokenPlugIn {
 	}
 
 	/**
+	 * Upload a report template
+	 *
+	 * @param aListener
+	 */
+	public void uploadTemplate(String aTemplatePath, WebSocketResponseTokenListener aListener) throws Exception {
+		Token lRequest = TokenFactory.createToken(getNS(), "uploadTemplate");
+		lRequest.setString("templatePath", aTemplatePath);
+
+		getTokenClient().sendToken(lRequest, aListener);
+	}
+
+	/**
 	 * Generate a report
 	 *
 	 * @param aReportName
