@@ -44,7 +44,7 @@ import org.jwebsocket.util.Tools;
  */
 public class JCaptchaPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private static final String NS_JCAPTCHA =
 			JWebSocketServerConstants.NS_BASE + ".plugins.jcaptcha";
 	private final static String VERSION = "1.0.0";
@@ -160,7 +160,6 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 			BufferedImage lChallengeImage = JWebSocketCaptchaService.getInstance().getImageChallengeForID(lCaptchaId);
 
 			ImageIO.write(lChallengeImage, mImgType, lImgOutputStream);
-
 
 			lCaptchaBytes = lImgOutputStream.toByteArray();
 			// Write the image to the client.

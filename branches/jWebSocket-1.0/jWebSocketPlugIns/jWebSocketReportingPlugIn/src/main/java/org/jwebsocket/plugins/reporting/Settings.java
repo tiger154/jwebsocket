@@ -20,17 +20,14 @@ package org.jwebsocket.plugins.reporting;
 
 import org.apache.commons.io.FilenameUtils;
 import org.jwebsocket.config.JWebSocketConfig;
-
 /**
  *
  * @author aschulze
  */
 public class Settings {
 
-	private String mReportFolder = null;
-	private String mOutputFolder = null;
-	private String mOutputURL = null;
-	private String mReportNamePattern = null;
+	private String mReportFolder;
+	private String mOutputFolder;
 
 	/**
 	 * @return the mReportFolder
@@ -40,6 +37,7 @@ public class Settings {
 	}
 
 	/**
+	 *  Sets the report folder
 	 *
 	 * @param aReportFolder
 	 */
@@ -59,42 +57,11 @@ public class Settings {
 	}
 
 	/**
+	 *  Sets the output folder
 	 *
 	 * @param aOutputFolder
 	 */
 	public void setOutputFolder(String aOutputFolder) {
 		mOutputFolder = aOutputFolder;
-		mOutputFolder = FilenameUtils.separatorsToUnix(JWebSocketConfig.expandEnvAndJWebSocketVars(mOutputFolder));
-		if (!mOutputFolder.endsWith("/")) {
-			mOutputFolder += "/";
-		}
-	}
-
-	/**
-	 * @return the mOutputURL
-	 */
-	public String getOutputURL() {
-		return mOutputURL;
-	}
-
-	/**
-	 * @param mOutputURL the mOutputURL to set
-	 */
-	public void setOutputURL(String mOutputURL) {
-		this.mOutputURL = mOutputURL;
-	}
-
-	/**
-	 * @return the mReportNamePattern
-	 */
-	public String getReportNamePattern() {
-		return mReportNamePattern;
-	}
-
-	/**
-	 * @param mReportNamePattern the mReportNamePattern to set
-	 */
-	public void setReportNamePattern(String mReportNamePattern) {
-		this.mReportNamePattern = mReportNamePattern;
-	}
+	}	
 }

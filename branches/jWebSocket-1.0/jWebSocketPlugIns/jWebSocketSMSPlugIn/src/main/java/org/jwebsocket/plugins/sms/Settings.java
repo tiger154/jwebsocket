@@ -18,17 +18,23 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.sms;
 
+import org.jwebsocket.plugins.itemstorage.api.IItemDefinition;
+
 /**
- * Define the plug-in settings.
+ * Contains the SMS plug-in settings.
  *
  * @author aschulze
  */
 public class Settings {
 
 	private ISMSProvider mProvider;
+	private String mCollectionName,
+			mCollectionAccessPassword,
+			mCollectionSecretPassword;
+	private IItemDefinition mSMSItemDefinition;
 
 	/**
-	 * Returns the SMS provider instance defined.
+	 * Return the SMS provider instance defined.
 	 *
 	 * @return the SMS provider
 	 */
@@ -37,11 +43,93 @@ public class Settings {
 	}
 
 	/**
-	 * Sets the SMS provider instance to use.
+	 * Set the SMS provider instance to use.
 	 *
 	 * @param aProvider an instance of the SMS provider
 	 */
 	public void setProvider(ISMSProvider aProvider) {
 		mProvider = aProvider;
 	}
+
+	/**
+	 * Get the SMS storage collection name
+	 *
+	 * @return
+	 */
+	public String getCollectionName() {
+		return mCollectionName;
+	}
+
+	/**
+	 * Set the SMS storage collection name
+	 *
+	 * @param aCollectionName
+	 */
+	public void setCollectionName(String aCollectionName) {
+		mCollectionName = aCollectionName;
+	}
+
+	/**
+	 * Get the SMS storage collection access password
+	 *
+	 * @return
+	 */
+	public String getCollectionAccessPassword() {
+		return mCollectionAccessPassword;
+	}
+
+	/**
+	 * Set the SMS storage collection access password
+	 *
+	 * @param aCollectionAccessPassword
+	 */
+	public void setCollectionAccessPassword(String aCollectionAccessPassword) {
+		mCollectionAccessPassword = aCollectionAccessPassword;
+	}
+
+	/**
+	 * Get the SMS storage collection type
+	 *
+	 * @return
+	 */
+	public String getCollectionType() {
+		return getSMSItemDefinition().getType();
+	}
+
+	/**
+	 * Get the SMS storage collection secret password
+	 *
+	 * @return
+	 */
+	public String getCollectionSecretPassword() {
+		return mCollectionSecretPassword;
+	}
+
+	/**
+	 * Set the SMS storage collection secret password
+	 *
+	 * @param aCollectionSecretPassword
+	 */
+	public void setCollectionSecretPassword(String aCollectionSecretPassword) {
+		mCollectionSecretPassword = aCollectionSecretPassword;
+	}
+
+	/**
+	 * Get the SMS item definition for item storage
+	 *
+	 * @return
+	 */
+	public IItemDefinition getSMSItemDefinition() {
+		return mSMSItemDefinition;
+	}
+
+	/**
+	 * Set the SMS item definition for item storage
+	 *
+	 * @param aSMSItemDefinition
+	 */
+	public void setSMSItemDefinition(IItemDefinition aSMSItemDefinition) {
+		mSMSItemDefinition = aSMSItemDefinition;
+	}
+
 }
