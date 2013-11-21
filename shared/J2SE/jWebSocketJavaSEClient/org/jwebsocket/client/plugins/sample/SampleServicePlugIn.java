@@ -1,8 +1,8 @@
 //	---------------------------------------------------------------------------
-//	jWebSocket Load Balancer Cluster (Community Edition, CE)
+//	jWebSocket - SampleServicePlugIn (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//      Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ package org.jwebsocket.client.plugins.sample;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jwebsocket.api.WebSocketClientEvent;
+import org.jwebsocket.api.WebSocketTokenClient;
 import org.jwebsocket.client.plugins.BaseServiceTokenPlugIn;
-import org.jwebsocket.client.token.BaseTokenClient;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
 
@@ -41,7 +41,7 @@ public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 	 *
 	 * @param aClient
 	 */
-	public SampleServicePlugIn(BaseTokenClient aClient) {
+	public SampleServicePlugIn(WebSocketTokenClient aClient) {
 		super(aClient, NS_SAMPLESERVICE);
 	}
 

@@ -23,7 +23,7 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jwebsocket.api.WebSocketClientEvent;
-import org.jwebsocket.client.token.BaseTokenClient;
+import org.jwebsocket.api.WebSocketTokenClient;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
@@ -40,7 +40,7 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 	 *
 	 * @param aClient
 	 */
-	public BaseServiceTokenPlugIn(BaseTokenClient aClient, String aNS) {
+	public BaseServiceTokenPlugIn(WebSocketTokenClient aClient, String aNS) {
 		super(aClient, aNS);
 		// UpdateCpuUsage();
 	}
