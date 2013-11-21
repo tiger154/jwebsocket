@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins;
 
 import java.util.List;
+import javax.jms.MapMessage;
 import org.jwebsocket.api.IChunkable;
 import org.jwebsocket.api.IChunkableDeliveryListener;
 import org.jwebsocket.api.IEmbeddedAuthentication;
@@ -28,6 +29,7 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.ChangeType;
 import org.jwebsocket.kit.CloseReason;
@@ -37,6 +39,7 @@ import org.jwebsocket.security.SecurityFactory;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.JMSManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -455,5 +458,26 @@ public class TokenPlugIn extends BasePlugIn {
 		Assert.notNull(lPlugIn, "The target plug-in is not running!");
 
 		return lPlugIn.invoke(aConnector, aToken);
+	}
+
+	/**
+	 * Send a message through the server JMSManager instance that notifies that
+	 * a given incoming Token has been processed.
+	 *
+	 * @param aInToken The processed Token
+	 * @param aCode The processing result code
+	 */
+	public void notifyProcessed(Token aInToken, Integer aCode) throws Exception {
+		// getting the message hub
+		JMSManager lMessageHub = getServer().getJMSManager();
+
+		// creating the message to be sent
+		MapMessage lMsg = lMessageHub.buildMessage(JWebSocketServerConstants.NS_BASE + ".plugins", "tokenProcessed");
+		lMsg.setString("ns", aInToken.getNS());
+		lMsg.setString("type", aInToken.getType());
+		lMsg.setInt("code", aCode);
+
+		// sending the message
+		lMessageHub.send(lMsg);
 	}
 }
