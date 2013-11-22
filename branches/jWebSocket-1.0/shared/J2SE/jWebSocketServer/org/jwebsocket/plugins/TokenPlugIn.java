@@ -467,13 +467,14 @@ public class TokenPlugIn extends BasePlugIn {
 	 * @param aInToken The processed Token
 	 * @param aCode The processing result code
 	 */
-	public void notifyProcessed(Token aInToken, Integer aCode) throws Exception {
+	public void notifyProcessed(String aUsername, Token aInToken, Integer aCode) throws Exception {
 		// getting the message hub
 		JMSManager lMessageHub = getServer().getJMSManager();
 
 		// creating the message to be sent
 		MapMessage lMsg = lMessageHub.buildMessage(JWebSocketServerConstants.NS_BASE + ".plugins", "tokenProcessed");
 		lMsg.setString("ns", aInToken.getNS());
+		lMsg.setString("username", aUsername);
 		lMsg.setString("type", aInToken.getType());
 		lMsg.setInt("code", aCode);
 
