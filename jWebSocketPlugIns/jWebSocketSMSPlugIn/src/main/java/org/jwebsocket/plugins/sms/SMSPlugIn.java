@@ -28,6 +28,7 @@ import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn;
 import org.jwebsocket.plugins.itemstorage.api.IItemCollection;
+import org.jwebsocket.plugins.itemstorage.api.IItemDefinition;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.springframework.context.ApplicationContext;
@@ -98,6 +99,9 @@ public class SMSPlugIn extends ActionPlugIn {
 					+ "Some features may not be available!");
 			return;
 		}
+
+		// setting the SMS item definition
+		mSettings.setSMSItemDefinition((IItemDefinition) mBeanFactory.getBean("smsDefinition"));
 
 		// getting the SMS collection
 		mSMSCollection = ItemStorageUtils.initialize(mSettings);
@@ -203,6 +207,9 @@ public class SMSPlugIn extends ActionPlugIn {
 					lUser = aConnector.getUsername();
 				}
 				ItemStorageUtils.saveSMS(mSMSCollection, lUser, lMessage, lFrom, lTo, lState);
+
+				// notify processing
+				notifyProcessed(lUser, aToken, lRes.getCode());
 			} catch (Exception lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "saving SMS on itemstorage collection."
 						+ "Please check that ItemStorage plug-in is properly working"));
