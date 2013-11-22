@@ -20,6 +20,8 @@ package org.jwebsocket.plugins.reporting;
 
 import java.io.File;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
@@ -150,7 +152,7 @@ public class ReportingPlugIn extends ActionPlugIn {
 		TokenPlugIn lJDBCPlugIn = (TokenPlugIn) getServer().getPlugInById("jws.jdbc");
 		Assert.notNull(lJDBCPlugIn, "The ReportingPlugin required JDBC plug-in enabled!");
 		Object lObject = Tools.invoke(lJDBCPlugIn, "getNativeDataSource");
-		
+
 		DataSource lDataSource = (DataSource) lObject;
 		// passing the JDBC plug-in connection instance to the JR service to re-use
 		mJasperReportService.setConnection(lDataSource.getConnection());
@@ -195,9 +197,9 @@ public class ReportingPlugIn extends ActionPlugIn {
 		// getting the report name
 		String lReportName = aToken.getString("reportName");
 		// getting the report paramas
-		Map<String, Object> lReportParams = aToken.getMap("reportParams");
+		Map<String, Object> lReportParams = aToken.getMap("reportParams", new HashMap());
 		// getting the reports fields
-		List<Map<String, Object>> lReportFields = aToken.getList("reportFields");
+		List<Map<String, Object>> lReportFields = aToken.getList("reportFields", new ArrayList());
 		// checking JDBCplug-in is loaded
 		boolean lUseJDBC = aToken.getBoolean("useJDBCConnection", false);
 		Connection lConnection;
@@ -256,7 +258,7 @@ public class ReportingPlugIn extends ActionPlugIn {
 		Token lCommand = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE
 				+ ".plugins.filesystem", "getAliasPath");
 		lCommand.setString("alias", "privateDir");
-		
+
 		// getting the method execution result
 		Token lResult = invokePlugIn("jws.filesystem", aConnector, lCommand);
 		Assert.notNull(lResult, "Unable to communicate with the FileSystem plug-in "
