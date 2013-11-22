@@ -464,6 +464,7 @@ public class TokenPlugIn extends BasePlugIn {
 	 * Send a message through the server JMSManager instance that notifies that
 	 * a given incoming Token has been processed.
 	 *
+	 * @param aUsername The calling username
 	 * @param aInToken The processed Token
 	 * @param aCode The processing result code
 	 */
@@ -474,11 +475,29 @@ public class TokenPlugIn extends BasePlugIn {
 		// creating the message to be sent
 		MapMessage lMsg = lMessageHub.buildMessage(JWebSocketServerConstants.NS_BASE + ".plugins", "tokenProcessed");
 		lMsg.setString("ns", aInToken.getNS());
-		lMsg.setString("username", aUsername);
 		lMsg.setString("type", aInToken.getType());
+		lMsg.setString("username", aUsername);
 		lMsg.setInt("code", aCode);
 
 		// sending the message
 		lMessageHub.send(lMsg);
+
+		// listening the sent message 
+//		lMessageHub.subscribe(new MessageListener() {
+//			@Override
+//			public void onMessage(Message msg) {
+//				MapMessage lMessage = (MapMessage) msg;
+//
+//				try {
+//					String lUsername = lMessage.getString("username");
+//					String lNS = lMessage.getString("ns");
+//					String lType = lMessage.getString("type");
+//					
+//					// TODO: call your logic here
+//				} catch (Exception lEx) {
+//					// catch here
+//				}
+//			}
+//		}, "ns = 'org.jwebsocket.plugins' AND msgType='tokenProcessed'");
 	}
 }
