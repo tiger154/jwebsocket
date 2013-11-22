@@ -226,9 +226,13 @@ public class SMSPlugIn extends ActionPlugIn {
 		return lRes;
 	}
 
-	@Authenticated
+	@Role(name = NS + ".generateReport")
 	public void generateReportAction(WebSocketConnector aConnector, Token aToken) throws Exception {
-		String lUsername = aToken.getString("username");
+		String lUsername = aConnector.getUsername();
+		// supporting administrative audit
+		if (hasAuthority(aConnector, NS + ".auditReports")) {
+			lUsername = aToken.getString("username", lUsername);
+		}
 		List<IItem> lSMSList = mSMSCollection.getItemStorage().find("username", lUsername);
 
 		List<Map> lFields = new ArrayList<Map>(lSMSList.size());
