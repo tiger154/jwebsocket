@@ -50,10 +50,10 @@ import org.springframework.context.ApplicationContext;
  */
 public class JDBCPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	// if namespace changed updateSQL client plug-in accordingly!
-	private static final String NS_JDBC =
-			JWebSocketServerConstants.NS_BASE + ".plugins.jdbc";
+	private static final String NS_JDBC
+			= JWebSocketServerConstants.NS_BASE + ".plugins.jdbc";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JDBCPlugIn";
@@ -61,7 +61,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket JDBCPlugIn - Community Edition";
 	private IBasicStorage mCache = null;
-	private int mConnValTimeout = 300;
+	private final int mConnValTimeout = 300;
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 
@@ -208,6 +208,16 @@ public class JDBCPlugIn extends TokenPlugIn {
 	 */
 	public DataSource getNativeDataSource(Token aToken) {
 		return getNativeAccess(aToken).getDataSource();
+	}
+
+	/**
+	 * Get the default native data source
+	 *
+	 * @param aToken
+	 * @return
+	 */
+	public DataSource getNativeDataSource() {
+		return mSettings.getNativeAccess().getDataSource();
 	}
 
 	/**
@@ -574,13 +584,13 @@ public class JDBCPlugIn extends TokenPlugIn {
 		if (lTables == null || lTables.size() <= 0) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"No tables passed for JDBC select."));
+							"No tables passed for JDBC select."));
 			return;
 		}
 		if (lFields == null || lFields.size() <= 0) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"No fields passed for JDBC select."));
+							"No fields passed for JDBC select."));
 			return;
 		}
 
@@ -596,8 +606,8 @@ public class JDBCPlugIn extends TokenPlugIn {
 		Integer lExpiration = aToken.getInteger("expiration", 0);
 
 		// build SQL string
-		String lSQL =
-				"select "
+		String lSQL
+				= "select "
 				+ lFieldsStr
 				+ " from "
 				+ lTablesStr;
@@ -646,25 +656,25 @@ public class JDBCPlugIn extends TokenPlugIn {
 		if (lTable == null || lTable.length() <= 0) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"No table passed for JDBC update."));
+							"No table passed for JDBC update."));
 			return;
 		}
 		if (lFields == null || lFields.size() <= 0) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"No fields passed for JDBC update."));
+							"No fields passed for JDBC update."));
 			return;
 		}
 		if (lValues == null || lValues.size() <= 0) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"No values passed for JDBC update."));
+							"No values passed for JDBC update."));
 			return;
 		}
 		if (lFields.size() != lValues.size()) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"Number of values doe not match number of fields in JDBC update."));
+							"Number of values doe not match number of fields in JDBC update."));
 			return;
 		}
 
@@ -728,25 +738,25 @@ public class JDBCPlugIn extends TokenPlugIn {
 		if (lTable == null || lTable.length() <= 0) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"No table passed for JDBC insert."));
+							"No table passed for JDBC insert."));
 			return;
 		}
 		if (lFields == null || lFields.size() <= 0) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"No fields passed for JDBC insert."));
+							"No fields passed for JDBC insert."));
 			return;
 		}
 		if (lValues == null || lValues.size() <= 0) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"No values passed for JDBC insert."));
+							"No values passed for JDBC insert."));
 			return;
 		}
 		if (lFields.size() != lValues.size()) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"Number of values doe not match number of fields in JDBC insert."));
+							"Number of values doe not match number of fields in JDBC insert."));
 			return;
 		}
 
@@ -789,7 +799,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		if (lTable == null || lTable.length() <= 0) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(aToken, -1,
-					"No table passed for JDBC delete."));
+							"No table passed for JDBC delete."));
 			return;
 		}
 
@@ -822,7 +832,6 @@ public class JDBCPlugIn extends TokenPlugIn {
 				return lResponse;
 			}
 		}
-
 
 		// if to be cached, put it to cache
 		// don't save isCached flag
