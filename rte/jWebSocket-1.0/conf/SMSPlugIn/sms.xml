@@ -20,11 +20,10 @@
 		<property name="collectionName" value="org.jwebsocket.plugins.sms"/>
 		<property name="collectionAccessPassword" value="root"/>
 		<property name="collectionSecretPassword" value="root"/>
-		<property name="itemDefinition" ref="SMSItemDefinition" />
 	</bean>
 	
 	<!-- SMS item definition for item storage -->
-	<bean class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
+	<bean id="smsDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
 		<property name="type" value="org.jwebsocket.plugins.sms.SMS"/>
 		<property name="primaryKeyAttribute" value="id" />
 		<property name="attributeTypes">
