@@ -22,7 +22,24 @@
 		<property name="collectionSecretPassword" value="root"/>
 	</bean>
 	
-	<!-- SMS item definition for item storage -->
+	<!-- SMS item definition for item storage CE -->
+	<bean id="smsDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
+		<property name="type" value="contact" />
+		<property name="primaryKeyAttribute" value="username" />
+		<property name="attributeTypes">
+			<map>
+				<entry key="time" value="long"/>
+				<entry key="length" value="integer"/>
+				<entry key="message" value="string"/>
+				<entry key="from" value="string"/>
+				<entry key="to" value="string"/>
+				<entry key="user" value="string"/>
+				<entry key="state" value="string"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- SMS item definition for item storage EE 
 	<bean id="smsDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
 		<property name="type" value="org.jwebsocket.plugins.sms.SMS"/>
 		<property name="primaryKeyAttribute" value="id" />
@@ -103,4 +120,5 @@
 			</map>
 		</property>
 	</bean>
+	-->
 </beans>
