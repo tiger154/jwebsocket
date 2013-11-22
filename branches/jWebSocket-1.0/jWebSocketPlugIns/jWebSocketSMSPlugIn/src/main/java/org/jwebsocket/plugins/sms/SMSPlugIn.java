@@ -18,6 +18,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.sms;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -25,12 +29,15 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
+import org.jwebsocket.plugins.annotations.Authenticated;
 import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn;
+import org.jwebsocket.plugins.itemstorage.api.IItem;
 import org.jwebsocket.plugins.itemstorage.api.IItemCollection;
 import org.jwebsocket.plugins.itemstorage.api.IItemDefinition;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.token.TokenFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -219,8 +226,35 @@ public class SMSPlugIn extends ActionPlugIn {
 		return lRes;
 	}
 
-	public Token generateReport(Token aToken) {
-		return null;
+	@Authenticated
+	public void generateReportAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		String lUsername = aToken.getString("username");
+		List<IItem> lSMSList = mSMSCollection.getItemStorage().find("username", lUsername);
+
+		List<Map> lFields = new ArrayList<Map>(lSMSList.size());
+		for (IItem lSMS : lSMSList) {
+			Map lMap = new HashMap();
+			lSMS.toMap(lMap);
+			lFields.add(lMap);
+
+			// removing to not duplicate the RAM on big reports
+			lSMSList.remove(lSMS);
+		}
+
+		// creating request for reporting plugin
+		Token lRequest = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE
+				+ ".plugins.reporting", "generateReport");
+		lRequest.setString("reportName", "UserSMS");
+		lRequest.setList("reportFields", lFields);
+		lRequest.setString("reportOutputType", "pdf");
+
+		// creating the response
+		Token lResponse = createResponse(aToken);
+		// calling the reporting plug-in and filling the response token
+		lResponse.setString("path", invokePlugIn("jws.reporting", aConnector, lRequest).getString("path"));
+
+		// sending the response
+		sendToken(aConnector, lResponse);
 	}
 
 	/**
