@@ -437,12 +437,12 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	}
 
 	@Override
-	public void systemStarted() throws Exception {
+	public void systemStarting() throws Exception {
 		ItemStorageEventManager.startThreadPool();
 	}
 
 	@Override
-	public void systemStopping() throws Exception {
+	public void systemStopped() throws Exception {
 		ItemStorageEventManager.stopThreadPool();
 	}
 
