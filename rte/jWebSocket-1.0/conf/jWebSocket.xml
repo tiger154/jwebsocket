@@ -959,6 +959,22 @@
 			<id>quota_update</id>
 			<description>Allows to jwebsocket admin users to update quotas</description>
 		</right>
+		<!-- SMS plug-in rights-->
+		<right>
+			<ns>org.jwebsocket.plugins.sms</ns>
+			<id>sendSMS</id>
+			<description>Allows to jwebsocket  users to send SMS messages</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.sms</ns>
+			<id>generateReport</id>
+			<description>Allows to jwebsocket  users to generate their SMS usage report</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.sms</ns>
+			<id>auditReports</id>
+			<description>Allows to jwebsocket admin users to generate user's SMS report</description>
+		</right>
 		<!-- Reporting plug-in rights-->
 		<right>
 			<ns>org.jwebsocket.plugins.reporting</ns>
@@ -1089,6 +1105,11 @@
 				<right>org.jwebsocket.plugins.reporting.getReports</right>
 				<right>org.jwebsocket.plugins.reporting.generateReport</right>
 				<right>org.jwebsocket.plugins.reporting.uploadTemplate</right>
+				
+				<!-- SMS rights-->
+				<right>org.jwebsocket.plugins.sms.sendSMS</right>
+				<right>org.jwebsocket.plugins.sms.generateReport</right>
+				<right>org.jwebsocket.plugins.sms.auditReports</right>
 			</rights>
 		</role>
 		<role>
@@ -1707,16 +1728,15 @@
 		<plugin>
 			<!-- <name>org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn</name> -->
 			<!-- to use the enterprise edition of jWebSocketItemStoragePlugIn replace the above line by the following one -->
-			<name>org.jwebsocket.enterprise.plugins.itemstorage.ItemStoragePlugIn</name>
+			<name>org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn</name>
 			<id>jws.itemstorage</id>
 			<ns>org.jwebsocket.plugins.itemstorage</ns>
 			<jars>
 				<jar>${JWEBSOCKET_HOME}libs/jWebSocketItemStoragePlugIn-1.0.jar</jar>
-				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketItemStoragePlugInEE-1.0.jar</jar>
 			</jars>
 			<!-- plug-in specific settings -->
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/ItemStoragePlugIn/itemstorage.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ItemStoragePlugIn/itemstorage.xml</setting>
 				<!-- Authorization method
 					- spring: Uses the user Spring authentication to check for granted authorities
 					- static: Uses the user static (jWebSocket.xml users definition) authentication
