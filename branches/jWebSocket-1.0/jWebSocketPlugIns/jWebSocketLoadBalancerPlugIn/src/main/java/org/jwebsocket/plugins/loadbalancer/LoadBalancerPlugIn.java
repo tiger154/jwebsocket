@@ -48,7 +48,7 @@ import org.springframework.util.Assert;
  */
 public class LoadBalancerPlugIn extends ActionPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 *
 	 */
@@ -101,7 +101,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 			mBeanFactory = getConfigBeanFactory();
 			if (null == mBeanFactory) {
 				mLog.error("No or invalid spring configuration for load "
-					+ "balancer plug-in, some features may not be available.");
+						+ "balancer plug-in, some features may not be available.");
 			} else {
 				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.loadbalancer.settings");
 				if (null != mSettings) {
@@ -118,7 +118,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx,
-				"instantiating load balancer plug-in"));
+					"instantiating load balancer plug-in"));
 			throw lEx;
 		}
 	}
@@ -164,14 +164,14 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug(lRemoved + " services where removed due to client '" + aConnector.getId()
-				+ "' disconnection. Reason: " + aCloseReason);
+					+ "' disconnection. Reason: " + aCloseReason);
 		}
 	}
 
 	/**
-	 * Sends a list (of maps) with the in-formation about all clusters (e.g.
-	 * per cluster: cluster-alias, number of end-points, list of endpoints
-	 * in this cluster, status per endpoint etc.)
+	 * Sends a list (of maps) with the in-formation about all clusters (e.g. per
+	 * cluster: cluster-alias, number of end-points, list of endpoints in this
+	 * cluster, status per endpoint etc.)
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -185,6 +185,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		Token lResponse = createResponse(aToken);
 		lResponse.setList("data", lInfo);
+
 		sendToken(aConnector, lResponse);
 	}
 
@@ -204,15 +205,16 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		Token lResponse = createResponse(aToken);
 		lResponse.setList("data", lStickyRoutes);
+
 		sendToken(aConnector, lResponse);
 	}
 
 	/**
-	 * Registers a new service endpoint which is not yet specified in the
-	 * load balancer configuration file.In case an endpoint id is passed
-	 * which already exists in the load balancer configuration the request
-	 * is rejected. In case a valid new endpoint is to be registered the
-	 * internal table gets appended accordingly.
+	 * Registers a new service endpoint which is not yet specified in the load
+	 * balancer configuration file.In case an endpoint id is passed which
+	 * already exists in the load balancer configuration the request is
+	 * rejected. In case a valid new endpoint is to be registered the internal
+	 * table gets appended accordingly.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -238,12 +240,12 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * De-registers an connected service endpoint. In case the endpoint is
-	 * part of the load balancer configuration the internal entry in the
-	 * table of end-points gets tagged as "de-registered". In case the
-	 * endpoint was a dynamically added one the item in the internal table
-	 * shall be removed.This method can be also used by an administration
-	 * too to restart a certain endpoint after an update.
+	 * De-registers an connected service endpoint. In case the endpoint is part
+	 * of the load balancer configuration the internal entry in the table of
+	 * end-points gets tagged as "de-registered". In case the endpoint was a
+	 * dynamically added one the item in the internal table shall be
+	 * removed.This method can be also used by an administration too to restart
+	 * a certain endpoint after an update.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -269,7 +271,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		Assert.notNull(lClusterEndPoint, "The target endpoint does not exists!");
 		Assert.isTrue(lClusterEndPoint.getStatus().equals(EndPointStatus.ONLINE),
-			"The target endpoint is not ONLINE and can't be deregistered!");
+				"The target endpoint is not ONLINE and can't be deregistered!");
 
 		Token lEvent = TokenFactory.createToken(NS_LOADBALANCER, "event");
 		lEvent.setString("user", aConnector.getUsername());
@@ -287,13 +289,12 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Should send a message to the referenced endpoint to gracefully
-	 * shutdown. A graceful shutdown should include a clean de-registering
-	 * from the load balancer plug-in. Since it can be not guaranteed that
-	 * the target endpoint processes the shutdown request properly, this
-	 * method shall come with a timeout, such as when this is exceeded the
-	 * endpoint is automatically registered to be shut down manually by the
-	 * administrator.
+	 * Should send a message to the referenced endpoint to gracefully shutdown.
+	 * A graceful shutdown should include a clean de-registering from the load
+	 * balancer plug-in. Since it can be not guaranteed that the target endpoint
+	 * processes the shutdown request properly, this method shall come with a
+	 * timeout, such as when this is exceeded the endpoint is automatically
+	 * registered to be shut down manually by the administrator.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -319,7 +320,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		Assert.notNull(lClusterEndPoint, "The target endpoint does not exists!");
 		Assert.isTrue(lClusterEndPoint.getStatus().equals(EndPointStatus.ONLINE),
-			"The target endpoint is not ONLINE and can't be deregistered!");
+				"The target endpoint is not ONLINE and can't be deregistered!");
 
 		Token lEvent = TokenFactory.createToken(NS_LOADBALANCER, "event");
 		lEvent.setString("user", aConnector.getUsername());
@@ -358,8 +359,8 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Sends client requests to the appropriate service. If occurs any error
-	 * or timeout, repeats the operation.
+	 * Sends client requests to the appropriate service. If occurs any error or
+	 * timeout, repeats the operation.
 	 *
 	 * @param aConnector
 	 * @param aToken
@@ -392,8 +393,8 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Remote client not received a message on required '"
-							+ mMessageDeliveryTimeout + "'time! " + lDeregistered
-							+ " client services were deregistered!");
+								+ mMessageDeliveryTimeout + "'time! " + lDeregistered
+								+ " client services were deregistered!");
 					}
 
 					// call again.
@@ -451,9 +452,8 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 	/**
 	 * @param aNamespace Incoming token's name space
-	 * @return
-	 * <code>true</code> if any cluster supports the incoming name space ;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if any cluster supports the incoming name space
+	 * ; <code>false</code> otherwise
 	 */
 	public boolean supportsNamespace(String aNamespace) {
 		Iterator<Cluster> lCluster = mClusters.values().iterator();
@@ -486,7 +486,9 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	 * @return the current algorithm (1,2 or 3).
 	 */
 	private int getAlgorithm() {
-		Assert.isTrue(getBalancerAlgorithm() > 0 && getBalancerAlgorithm() < 4, "'" + getBalancerAlgorithm() + "' : is not a valid method!");
+		Assert.isTrue(getBalancerAlgorithm() > 0 && getBalancerAlgorithm() < 4,
+				"'" + getBalancerAlgorithm() + "' : is not a valid method!");
+
 		return getBalancerAlgorithm();
 	}
 
@@ -536,6 +538,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		while (lCluster.hasNext()) {
 			lRemoved += lCluster.next().removeEndPointsByConnector(aConnector);
 		}
+		
 		return lRemoved;
 	}
 

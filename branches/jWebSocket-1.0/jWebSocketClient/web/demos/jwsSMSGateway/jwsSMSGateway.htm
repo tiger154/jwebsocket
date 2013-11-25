@@ -45,6 +45,8 @@
 
 		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
 		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
+		<script type="text/javascript" src="../../res/js/jwsSMSPlugIn.js"></script>
+		<script type="text/javascript" src="../../res/js/jwsFilesystemPlugIn.js"></script>
 
 		<!--  PUBLIC WIDGETS   -->
 		<script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
@@ -112,12 +114,6 @@
                         <input type="text" id="captchaText" class="texts" value="Type the words here..."/>
                     </div>
                     <div id="messageDiv" class="contentDiv box">
-						<div class="messages_sent">Messages sent: </div>
-						<div id="sms_counter">
-							<div class="sent">0</div>
-							<div>from</div>
-							<div class="total">5</div>
-						</div>
 						<table width="100%">
 							<tr>
 								<td width="30%">Phone number</td>
@@ -156,6 +152,7 @@
 							</div>
                         </div>
 						<div id="send_button" class="button">Send</div>
+						<div id="report_button" class="button">Activity Report</div>
                     </div>
 					<!--       LOG BOX           -->
                     <div id="log_box" class="box">

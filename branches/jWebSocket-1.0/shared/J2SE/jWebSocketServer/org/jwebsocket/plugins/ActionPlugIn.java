@@ -34,7 +34,7 @@ import org.jwebsocket.token.Token;
  */
 public class ActionPlugIn extends TokenPlugIn {
 
-	private Logger mLog = Logging.getLogger();
+	private final Logger mLog = Logging.getLogger();
 
 	/**
 	 *

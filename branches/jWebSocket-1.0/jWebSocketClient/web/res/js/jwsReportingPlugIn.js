@@ -63,7 +63,6 @@ jws.ReportingPlugIn = {
 				reportOutputType: aOptions.outputType || "pdf",
 				useJDBCConnection: aOptions.useConection || false
 			};
-			console.log(lToken);
 			this.sendToken(lToken, aOptions);
 		}
 		return lRes;
@@ -102,7 +101,7 @@ jws.ReportingPlugIn = {
 			this.OnReports = aListeners.OnReports;
 		}
 		if (aListeners.OnFormats !== undefined) {
-			this.OnReports = aListeners.OnFormats;
+			this.OnFormats = aListeners.OnFormats;
 		}
 	}
 };

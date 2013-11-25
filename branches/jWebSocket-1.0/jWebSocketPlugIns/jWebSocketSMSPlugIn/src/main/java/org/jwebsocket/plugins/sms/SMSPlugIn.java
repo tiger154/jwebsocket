@@ -29,7 +29,6 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
-import org.jwebsocket.plugins.annotations.Authenticated;
 import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
@@ -233,22 +232,17 @@ public class SMSPlugIn extends ActionPlugIn {
 		if (hasAuthority(aConnector, NS + ".auditReports")) {
 			lUsername = aToken.getString("username", lUsername);
 		}
-		List<IItem> lSMSList = mSMSCollection.getItemStorage().find("username", lUsername);
+		List<IItem> lSMSList = mSMSCollection.getItemStorage().find("user", lUsername);
 
 		List<Map> lFields = new ArrayList<Map>(lSMSList.size());
 		for (IItem lSMS : lSMSList) {
-			Map lMap = new HashMap();
-			lSMS.toMap(lMap);
-			lFields.add(lMap);
-
-			// removing to not duplicate the RAM on big reports
-			lSMSList.remove(lSMS);
+			lFields.add(lSMS.getAttributes());
 		}
 
 		// creating request for reporting plugin
 		Token lRequest = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE
 				+ ".plugins.reporting", "generateReport");
-		lRequest.setString("reportName", "UserSMS");
+		lRequest.setString("reportName", "UserSMSReport");
 		lRequest.setList("reportFields", lFields);
 		lRequest.setString("reportOutputType", "pdf");
 

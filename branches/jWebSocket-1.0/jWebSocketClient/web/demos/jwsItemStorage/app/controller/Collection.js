@@ -107,7 +107,7 @@ Ext.define('IS.controller.Collection', {
 						self.__showCollectionTab(aCollectionName, aItemDefinition);
 						lView.close();
 					}
-				})
+				});
 			}
 		});
 		lView.showAt({
@@ -296,7 +296,7 @@ Ext.define('IS.controller.Collection', {
 					});
 					lView.showAt({
 						y: 100
-					})
+					});
 				}
 			},
 			'c_toolbar > button[iconCls=c_restart]': {
@@ -322,7 +322,7 @@ Ext.define('IS.controller.Collection', {
 					});
 					lView.showAt({
 						y: 100
-					})
+					});
 				}
 			},
 			'c_toolbar > button[iconCls=c_clear]': {
@@ -348,7 +348,7 @@ Ext.define('IS.controller.Collection', {
 					});
 					lView.showAt({
 						y: 100
-					})
+					});
 				}
 			},
 			'c_create button[action=create]': {
@@ -439,6 +439,6 @@ Ext.define('IS.controller.Collection', {
 					}
 				}
 			}
-		})
+		});
 	}
 });
