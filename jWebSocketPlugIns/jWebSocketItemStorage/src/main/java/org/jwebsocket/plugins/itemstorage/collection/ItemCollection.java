@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
 public class ItemCollection implements IItemCollection {
 
 	private IItemStorage mStorage;
-	private Map<String, Object> mData = new FastMap<String, Object>().shared();
+	private final Map<String, Object> mData = new FastMap<String, Object>().shared();
 	public static final String ATTR_ACCESS_PASSWORD = "accessPassword";
 	public static final String ATTR_SECRET_PASSWORD = "secretPassword";
 	public static final String ATTR_IS_SYSTEM = "system";
@@ -48,7 +48,7 @@ public class ItemCollection implements IItemCollection {
 	public static final String ATTR_OWNER = "owner";
 	public static final String ATTR_CAPACITY = "capacity";
 	public static final String ATTR_CAPPED = "capped";
-	public static final String COLLECTION_NAME_REGEXP = "^[a-zA-Z0-9]+([.]([a-zA-Z])+)*";
+	public static final String COLLECTION_NAME_REGEXP = "^[a-zA-Z0-9]+([-]([a-zA-Z])+)*";
 	public static final Integer MAX_PASSWORD_SIZE = 100;
 	private IClientCollection mSubscribers;
 	private IClientCollection mPublishers;
@@ -204,15 +204,6 @@ public class ItemCollection implements IItemCollection {
 
 	@Override
 	public void validate() throws Exception {
-		Assert.notNull(getAccessPassword(), "The access password argument cannot be null!");
-		Assert.isTrue(getAccessPassword().length() <= MAX_PASSWORD_SIZE, "The access password is too large. "
-				+ "Max length allowed: " + MAX_PASSWORD_SIZE + "!");
-
-		Assert.notNull(getSecretPassword(), "The secret password argument cannot be null!");
-		Assert.isTrue(getSecretPassword().length() <= MAX_PASSWORD_SIZE, "The secret password is too large. "
-				+ "Max length allowed: " + MAX_PASSWORD_SIZE + "!");
-
-		Assert.notNull(getOwner(), "The owner argument cannot be null!");
 	}
 
 	@Override

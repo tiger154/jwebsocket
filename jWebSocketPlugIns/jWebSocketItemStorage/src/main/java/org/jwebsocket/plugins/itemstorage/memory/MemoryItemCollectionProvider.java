@@ -36,8 +36,8 @@ import org.springframework.util.Assert;
  */
 public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 
-	private IItemStorageProvider mItemStorageProvider;
-	private static Map<String, IItemCollection> mCollections = new FastMap<String, IItemCollection>();
+	private final IItemStorageProvider mItemStorageProvider;
+	private static final Map<String, IItemCollection> mCollections = new FastMap<String, IItemCollection>();
 
 	public MemoryItemCollectionProvider(IItemStorageProvider aItemStorageProvider) {
 		mItemStorageProvider = aItemStorageProvider;
@@ -77,7 +77,6 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 
 	@Override
 	public synchronized void saveCollection(IItemCollection aCollection) throws Exception {
-		aCollection.validate();
 		boolean lNew = false;
 
 		// notify event

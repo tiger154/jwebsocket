@@ -60,13 +60,13 @@ Ext.define('IS.controller.Item', {
 				var lGrid = lCollectionTab.down('grid');
 				var lStore = lGrid.getStore();
 				var lDef = self.application.collection2def[aEvent.collectionName];
-				lStore.reload();
 				lStore.on('load', function(){
 					var lRowIndex = this.find('id', aEvent.item.attrs['id']); 
 					if (lRowIndex >= 0){
 						lGrid.getView().select(lRowIndex);
 					}
 				});
+				lStore.reload();
 			}
 		}, this);
 		this.application.on('itemRemoved', function(aEvent){
@@ -125,7 +125,7 @@ Ext.define('IS.controller.Item', {
 			},
 			'i_toolbar > button[iconCls=i_add]': {
 				click: function( aButton ){
-					var lCollectionName = aButton.findParentByType('tabpanel').getActiveTab().getId()
+					var lCollectionName = aButton.findParentByType('tabpanel').getActiveTab().getId();
 					
 					self.checkAuthorization(lCollectionName, function(){
 						var lDef = self.application.collection2def[lCollectionName];
@@ -138,7 +138,7 @@ Ext.define('IS.controller.Item', {
 			},
 			'i_toolbar > button[iconCls=find]': {
 				click: function( aButton ){
-					var lCollectionName = aButton.findParentByType('tabpanel').getActiveTab().getId()
+					var lCollectionName = aButton.findParentByType('tabpanel').getActiveTab().getId();
 					
 					var lDef = self.application.collection2def[lCollectionName];
 					
@@ -151,7 +151,7 @@ Ext.define('IS.controller.Item', {
 			'i_toolbar > button[iconCls=i_edit]': {
 				click: function( aButton ){
 					var lTab = aButton.findParentByType('tabpanel').getActiveTab();
-					var lCollectionName = lTab.getId()
+					var lCollectionName = lTab.getId();
 					var lRecord = self.getActiveItem(lTab);
 					
 					self.checkAuthorization(lCollectionName, function(){
@@ -166,7 +166,7 @@ Ext.define('IS.controller.Item', {
 			'i_toolbar > button[iconCls=i_details]': {
 				click: function( aButton ){
 					var lTab = aButton.findParentByType('tabpanel').getActiveTab();
-					var lCollectionName = lTab.getId()
+					var lCollectionName = lTab.getId();
 					var lRecord = self.getActiveItem(lTab);
 					
 					var lDef = self.application.collection2def[lCollectionName];
@@ -183,7 +183,7 @@ Ext.define('IS.controller.Item', {
 					}
 					
 					var lTab = aButton.findParentByType('tabpanel').getActiveTab();
-					var lCollectionName = lTab.getId()
+					var lCollectionName = lTab.getId();
 					var lRecord = self.getActiveItem(lTab);
 					var lDef = self.application.collection2def[lCollectionName];
 					self.checkAuthorization(lCollectionName, function(){
@@ -216,7 +216,7 @@ Ext.define('IS.controller.Item', {
 			'i_toolbar > button[iconCls=i_remove]': {
 				click: function( aButton ){
 					var lTab = aButton.findParentByType('tabpanel').getActiveTab();
-					var lCollectionName = lTab.getId()
+					var lCollectionName = lTab.getId();
 					var lRecord = self.getActiveItem(lTab);
 					var lDef = self.application.collection2def[lCollectionName];
 					
@@ -233,7 +233,7 @@ Ext.define('IS.controller.Item', {
 								var lArguments = {
 									collectionName: lCollectionName,
 									itemPK: lRecord.get(lDef.pk_attr)
-								}
+								};
 					
 								Ext.jws.send(jws.ItemStoragePlugIn.NS, 'removeItem', lArguments);
 							} 

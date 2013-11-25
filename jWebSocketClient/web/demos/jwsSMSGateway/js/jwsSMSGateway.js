@@ -33,15 +33,13 @@ $.widget("jws.SMSGateway", {
 		this.eJCaptcha = this.element.find("#jcaptcha");
 		this.eBtnUpdate = this.element.find("#update");
 		this.eBtnSend = this.element.find("#send_button");
+		this.eBtnReport = this.element.find("#report_button");
 		this.eRSMS = this.element.find("#rsms");
 		this.eBSMS = this.element.find("#bsms");
 		this.eImg = this.element.find('#img');
 		this.eLoginArea = this.element.find('#login_area');
 		this.eCCounterArea = this.element.find('#character_counter');
 		this.eCCounter = this.element.find('#character_counter .count');
-		this.eSMSCounter = this.element.find('#sms_counter');
-		this.eSMSTotal = this.element.find('#sms_counter .total');
-		this.eSMSSent = this.element.find('#sms_counter .sent');
 		this.MAX_COUNT = 160;
 		this.mCount = 0;
 		this.mTXT_CAPTCHA = "Type the words here...";
@@ -50,8 +48,6 @@ $.widget("jws.SMSGateway", {
 		this.mMSG_ERROR = "The following error has been encoutered: ";
 		this.mMSG_SMS_SENT = "Congratulations!, you have sent a free SMS" +
 				" using jWebSocket Framework";
-		this.mMSG_SMS_SENT = "Unfortunately your quota has exceeded, please " +
-				"contact jWebSocket managers for more details.";
 
 		w.SMSGateway = this;
 
@@ -68,18 +64,6 @@ $.widget("jws.SMSGateway", {
 			OnWelcome: function(aEvent) {
 				// Ask for a new captcha image
 				w.SMSGateway.getCaptcha();
-			},
-			OnMessage: function(aEvent, aToken) {
-				console.log(aToken);
-				if (aToken.ns === NS_SMS) {
-					if (aToken.type === "total_sms") {
-						w.SMSGateway.eSMSTotal.text(aToken.totalQuota);
-							w.SMSGateway.eSMSSent.text(aToken.totalQuota - aToken.pendingQuota);
-							if (aToken.pendingQuota === 0) {
-								w.SMSGateway.eSMSCounter.attr("class", "quota_exceeded");
-							}
-					}
-				}
 			},
 			OnClose: function(aEvent) {
 				w.SMSGateway.eImg.attr("src", "css/images/blank.png");
@@ -127,6 +111,20 @@ $.widget("jws.SMSGateway", {
 			}
 		});
 
+		w.SMSGateway.eBtnReport.click(function() {
+			mWSC.smsGenerateReport();
+		});
+
+		mWSC.setSMSCallbacks({
+			OnReport: function(aToken) {
+				mWSC.fileLoad(aToken.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
+					OnSuccess: function(aToken) {
+						window.open("data:application/pdf;base64," + aToken.data, "_blank");
+					}
+				});
+			}
+		});
+
 		w.SMSGateway.eBtnSend.click(function() {
 
 			var lToken = {
@@ -152,17 +150,8 @@ $.widget("jws.SMSGateway", {
 					log("Sending SMS...");
 					var lCallbacks = {
 						OnSuccess: function(aToken) {
-							w.SMSGateway.eSMSTotal.text(aToken.totalQuota);
-							w.SMSGateway.eSMSSent.text(aToken.totalQuota - aToken.pendingQuota);
-							if (aToken.pendingQuota === 0) {
-								w.SMSGateway.eSMSCounter.attr("class", "quota_exceeded");
-							}
 							//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
-							jwsDialog(w.SMSGateway.mMSG_SMS_SENT + (aToken.totalQuota > 0 ?
-									" You can send " + aToken.totalQuota + " more message" +
-									(aToken.totalQuota > 0 ? 's' : '') : " You " +
-									"can't send more messages, thanks for using our services!"),
-									"SMS sent correctly");
+							jwsDialog(w.SMSGateway.mMSG_SMS_SENT, "SMS sent correctly");
 						},
 						OnFailure: function(aToken) {
 							jwsDialog(w.SMSGateway.mMSG_ERROR + aToken.msg,

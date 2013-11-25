@@ -196,6 +196,7 @@ public class Cluster {
 		lInfoCluster.put("endPointsCount", getEndPoints().size());
 		lInfoCluster.put("endPoints", getEndPoints());
 		lInfoCluster.put("requests", getTotalEndPointsRequests());
+
 		return lInfoCluster;
 	}
 
@@ -220,18 +221,18 @@ public class Cluster {
 	/**
 	 * Gets a balanced cluster endpoint using the round robin algorithm.
 	 *
-	 * @return optimum cluster endpoint or
-	 * <code>null</code> if endpoints list is empty.
+	 * @return optimum cluster endpoint or <code>null</code> if endpoints list
+	 * is empty.
 	 */
 	public ClusterEndPoint getRoundRobinEndPoint() {
 		if (availableEndPoint()) {
 			// determine the cluster endpoint position to be returned. 
 			mEndPointPosition = (mEndPointPosition + 1 < mEndPoints.size()
-				? mEndPointPosition + 1 : 0);
+					? mEndPointPosition + 1 : 0);
 			// if the cluster endpoint position is valid then return it,
 			// but repeat this method.
 			return (availableEndPoint(mEndPointPosition)
-				? mEndPoints.get(mEndPointPosition) : getRoundRobinEndPoint());
+					? mEndPoints.get(mEndPointPosition) : getRoundRobinEndPoint());
 		} else {
 			return null;
 		}
@@ -277,8 +278,7 @@ public class Cluster {
 	}
 
 	/**
-	 * Refresh the CPU usage to a specific cluster endpoint by the connector
-	 * id.
+	 * Refresh the CPU usage to a specific cluster endpoint by the connector id.
 	 *
 	 * @param aConnectorId cluster endpoint connector.
 	 * @param aCpuUsage CPU usage.
@@ -295,13 +295,11 @@ public class Cluster {
 	}
 
 	/**
-	 * Verify if endpoints list contains a cluster endpoint with a specific
-	 * id.
+	 * Verify if endpoints list contains a cluster endpoint with a specific id.
 	 *
 	 * @param aEndPointId endpoint id.
 	 * @return if the endpoints list contains the specified cluster endpoint
-	 * returns it, but returns
-	 * <code>null</code>
+	 * returns it, but returns <code>null</code>
 	 */
 	public ClusterEndPoint containsEndPoint(String aEndPointId) {
 		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
@@ -314,8 +312,7 @@ public class Cluster {
 	}
 
 	/**
-	 * @return
-	 * <code>true</code> if any cluster endpoint have status online;
+	 * @return <code>true</code> if any cluster endpoint have status online;
 	 * <code>false</code> otherwise.
 	 */
 	private boolean availableEndPoint() {
@@ -329,16 +326,11 @@ public class Cluster {
 
 	/**
 	 * @param lPos position in cluster endpoint list.
-	 * @return
-	 * <code>true</code> if any cluster endpoint have status online;
+	 * @return <code>true</code> if any cluster endpoint have status online;
 	 * <code>false</code> otherwise.
 	 */
 	private boolean availableEndPoint(int lPos) {
-		if (mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE)) {
-			return true;
-		} else {
-			return false;
-		}
+		return mEndPoints.get(lPos).getStatus().equals(EndPointStatus.ONLINE);
 	}
 
 	/**
@@ -351,6 +343,7 @@ public class Cluster {
 				lIDs.add(mEndPoints.get(lPos).getServiceId());
 			}
 		}
+		
 		return lIDs;
 	}
 
@@ -363,6 +356,7 @@ public class Cluster {
 		while (lIt.hasNext()) {
 			lRequests += lIt.next().getRequests();
 		}
+		
 		return lRequests;
 	}
 }
