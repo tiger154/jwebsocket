@@ -154,91 +154,87 @@ public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 		lRes.setInteger("code", -1);
 		lRes.setString("msg", "undefined");
 
-		lRes.setInteger("code", 0);
+		// building data
+		String lFrom = aToken.getString("from");
+		String lTo = aToken.getString("to");
+		String lMessage = aToken.getString("message");
+		String lFromEnc = lFrom;
+		String lToEnc = lTo;
+		String lMessageEnc = lMessage;
+		String lState = aToken.getString("state");
+
+		// validate target phone number
+		lTo = trimPhoneNumber(lTo);
+
+		URL lURL;
+		URLConnection lConn = null;
+
+		BufferedReader lReader = null;
+
+		try {
+			lToEnc = URLEncoder.encode(lTo, "UTF-8");
+			lFromEnc = URLEncoder.encode(lFrom, "UTF-8");
+			lMessageEnc = URLEncoder.encode(lMessage, "UTF-8");
+		} catch (Exception lEx) {
+			mLog.error(lEx.getClass().getSimpleName() + " at parsing arguments: " + lEx.getMessage());
+		}
+
+		String lURLString = "http://gateway.smstrade.de/?key=" + getKey()
+				+ "&from=" + lFromEnc
+				+ "&to=" + lToEnc
+				+ "&message=" + lMessageEnc
+				+ "&route=" + lState
+				+ "&message_id=" + this.mMessageId;
+
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Establishing connection to SMS provider 'SMSTrade' (type: " + lState + ", from: " + lFrom + ", to: " + lTo + ", message: '" + lMessage + "')...");
+		}
+		try {
+			lURL = new URL(lURLString);
+			lConn = lURL.openConnection();
+		} catch (Exception lEx) {
+			mLog.error(lEx.getClass().getSimpleName() + " getting http connection: " + lEx.getMessage());
+		}
+
+		if (null == lConn) {
+			lRes.setString("msg", "Error in http connection to provider SMSTrade.");
+			return lRes;
+		}
+
+		// get Response
+		try {
+			lReader = new BufferedReader(
+					new InputStreamReader(
+							lConn.getInputStream()));
+		} catch (IOException lEx) {
+			mLog.error(lEx.getClass().getSimpleName() + " opening result: " + lEx.getMessage());
+		}
+
+		String lLine;
+		int lIdx = 0;
+		try {
+			while ((lLine = lReader.readLine()) != null) {
+				if (lIdx == 0) {
+					lRes.setString("provider_code", lLine);
+					if ("100".equals(lLine)) {
+						lRes.setInteger("code", 0);
+					}
+					lRes.setString("msg", getErrorMessage(lLine));
+				} else if (lIdx == 1) {
+					lRes.setString("messageId", lLine);
+				}
+				lIdx++;
+			}
+		} catch (IOException lEx) {
+			mLog.error(lEx.getClass().getSimpleName() + " reading result: " + lEx.getMessage());
+		}
+		try {
+			lReader.close();
+		} catch (IOException lEx) {
+			mLog.error(lEx.getClass().getSimpleName() + " closing reader: " + lEx.getMessage());
+		}
+
 		return lRes;
-		/*
-		 // building data
-		 String lFrom = aToken.getString("from");
-		 String lTo = aToken.getString("to");
-		 String lMessage = aToken.getString("message");
-		 String lFromEnc = lFrom;
-		 String lToEnc = lTo;
-		 String lMessageEnc = lMessage;
-		 String lState = aToken.getString("state");
-
-		 // validate target phone number
-		 lTo = trimPhoneNumber(lTo);
-
-		 URL lURL;
-		 URLConnection lConn = null;
-
-		 BufferedReader lReader = null;
-
-		 try {
-		 lToEnc = URLEncoder.encode(lTo, "UTF-8");
-		 lFromEnc = URLEncoder.encode(lFrom, "UTF-8");
-		 lMessageEnc = URLEncoder.encode(lMessage, "UTF-8");
-		 } catch (Exception lEx) {
-		 mLog.error(lEx.getClass().getSimpleName() + " at parsing arguments: " + lEx.getMessage());
-		 }
-
-		 String lURLString = "http://gateway.smstrade.de/?key=" + getKey()
-		 + "&from=" + lFromEnc
-		 + "&to=" + lToEnc
-		 + "&message=" + lMessageEnc
-		 + "&route=" + lState
-		 + "&message_id=" + this.mMessageId;
-
-		 if (mLog.isDebugEnabled()) {
-		 mLog.debug("Establishing connection to SMS provider 'SMSTrade' (type: " + lState + ", from: " + lFrom + ", to: " + lTo + ", message: '" + lMessage + "')...");
-		 }
-		 try {
-		 lURL = new URL(lURLString);
-		 lConn = lURL.openConnection();
-		 } catch (Exception lEx) {
-		 mLog.error(lEx.getClass().getSimpleName() + " getting http connection: " + lEx.getMessage());
-		 }
-
-		 if (null == lConn) {
-		 lRes.setString("msg", "Error in http connection to provider SMSTrade.");
-		 return lRes;
-		 }
-
-		 // get Response
-		 try {
-		 lReader = new BufferedReader(
-		 new InputStreamReader(
-		 lConn.getInputStream()));
-		 } catch (IOException lEx) {
-		 mLog.error(lEx.getClass().getSimpleName() + " opening result: " + lEx.getMessage());
-		 }
-
-		 String lLine;
-		 int lIdx = 0;
-		 try {
-		 while ((lLine = lReader.readLine()) != null) {
-		 if (lIdx == 0) {
-		 lRes.setString("provider_code", lLine);
-		 if ("100".equals(lLine)) {
-		 lRes.setInteger("code", 0);
-		 }
-		 lRes.setString("msg", getErrorMessage(lLine));
-		 } else if (lIdx == 1) {
-		 lRes.setString("messageId", lLine);
-		 }
-		 lIdx++;
-		 }
-		 } catch (IOException lEx) {
-		 mLog.error(lEx.getClass().getSimpleName() + " reading result: " + lEx.getMessage());
-		 }
-		 try {
-		 lReader.close();
-		 } catch (IOException lEx) {
-		 mLog.error(lEx.getClass().getSimpleName() + " closing reader: " + lEx.getMessage());
-		 }
-
-		 return lRes;
-		 */
 	}
 
 	/**
