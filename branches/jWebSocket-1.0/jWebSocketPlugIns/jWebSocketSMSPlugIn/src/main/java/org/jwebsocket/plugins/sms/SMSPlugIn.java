@@ -232,6 +232,7 @@ public class SMSPlugIn extends ActionPlugIn {
 			lUsername = aToken.getString("username", lUsername);
 		}
 		List<IItem> lSMSList = mSMSCollection.getItemStorage().find("user", lUsername);
+		Assert.isTrue(!lSMSList.isEmpty(), "No records available, report can't be generated!");
 
 		List<Map> lFields = new ArrayList<Map>(lSMSList.size());
 		for (IItem lSMS : lSMSList) {
