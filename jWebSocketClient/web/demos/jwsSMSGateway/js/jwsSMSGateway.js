@@ -25,7 +25,6 @@ $.widget("jws.SMSGateway", {
 
 		NS_SMS = jws.NS_BASE + ".plugins.sms";
 		NS_JCAPTCHA = jws.NS_BASE + ".plugins.jcaptcha";
-
 		this.ePhoneNumber = this.element.find("#phoneNumberInput");
 		this.eInputFrom = this.element.find("#fromInput");
 		this.eInputSMS = this.element.find("#smsInput");
@@ -48,15 +47,13 @@ $.widget("jws.SMSGateway", {
 		this.mMSG_ERROR = "The following error has been encoutered: ";
 		this.mMSG_SMS_SENT = "Congratulations!, you have sent a free SMS" +
 				" using jWebSocket Framework";
-
 		w.SMSGateway = this;
-
 		// Update the counter of characters for if any change in the html
 		w.SMSGateway.countCharacters();
 		w.SMSGateway.doWebSocketConnection();
 		w.SMSGateway.registerEvents();
 	},
-	doWebSocketConnection: function( ) {
+	doWebSocketConnection: function() {
 		// Each demo will configure its own callbacks to be passed to the login widget
 		// Default callbacks { OnOpen | OnClose | OnMessage | OnWelcome | OnGoodBye}
 		// For more information, check the file ../../res/js/widget/wAuth.js
@@ -69,52 +66,36 @@ $.widget("jws.SMSGateway", {
 				w.SMSGateway.eImg.attr("src", "css/images/blank.png");
 			}
 		};
-
 		$("#demo_box").auth(lCallbacks);
 	},
 	getCaptcha: function() {
-
-		var lToken = {
-			ns: NS_JCAPTCHA,
-			type: "getcaptcha",
-			args: {
-				imagetype: "jpg"
-			}
-		};
-
-		var lCallbacks = {
+		mWSC.captchaGenerate("jpg", {
 			OnSuccess: function(aToken) {
 				log("<b style='color:green;'>Getting a new captcha</b>");
 				w.SMSGateway.eImg.attr("src", "data:image/jpg;base64," + aToken.image);
-				w.SMSGateway.eTextCaptcha.focus( );
-			}
-		};
-
-		mWSC.sendToken(lToken, lCallbacks);
+				w.SMSGateway.eTextCaptcha.focus();
+			}});
 	},
 	registerEvents: function() {
 
 		w.SMSGateway.eBtnUpdate.click(function() {
 			w.SMSGateway.getCaptcha();
 		});
-
 		w.SMSGateway.eTextCaptcha.bind({
-			'click | focus': function( ) {
+			'click | focus': function() {
 				if ($(this).val() === w.SMSGateway.mTXT_CAPTCHA) {
 					$(this).val("");
 				}
 			},
-			blur: function( ) {
+			blur: function() {
 				if ($(this).val() === "") {
 					$(this).val(w.SMSGateway.mTXT_CAPTCHA);
 				}
 			}
 		});
-
 		w.SMSGateway.eBtnReport.click(function() {
 			mWSC.smsGenerateReport();
 		});
-
 		mWSC.setSMSCallbacks({
 			OnReport: function(aToken) {
 				mWSC.fileLoad(aToken.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
@@ -124,66 +105,40 @@ $.widget("jws.SMSGateway", {
 				});
 			}
 		});
-
 		w.SMSGateway.eBtnSend.click(function() {
-
-			var lToken = {
-				ns: NS_JCAPTCHA,
-				type: "validate",
-				inputChars: w.SMSGateway.eTextCaptcha.val()
+			var lSMSToken = {
+				ns: NS_SMS,
+				type: "sendSMS",
+				to: w.SMSGateway.ePhoneNumber.val(),
+				from: w.SMSGateway.eInputFrom.val(),
+				message: w.SMSGateway.eInputSMS.val(),
+				state: $('input[name=messageRadio]:checked').val(),
+				captcha: w.SMSGateway.eTextCaptcha.val()
 			};
-
-			var lOptions = {
-				args: {
-					inputChars: w.SMSGateway.eTextCaptcha.val()
-				},
+			log("Sending SMS...");
+			var lCallbacks = {
 				OnSuccess: function(aToken) {
-					log("Success in the captcha validation...");
-					var lSMSToken = {
-						ns: NS_SMS,
-						type: "sendSMS",
-						to: w.SMSGateway.ePhoneNumber.val(),
-						from: w.SMSGateway.eInputFrom.val(),
-						message: w.SMSGateway.eInputSMS.val(),
-						state: $('input[name=messageRadio]:checked').val()
-					};
-					log("Sending SMS...");
-					var lCallbacks = {
-						OnSuccess: function(aToken) {
-							//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
-							jwsDialog(w.SMSGateway.mMSG_SMS_SENT, "SMS sent correctly");
-						},
-						OnFailure: function(aToken) {
-							jwsDialog(w.SMSGateway.mMSG_ERROR + aToken.msg,
-									"Error sending the SMS", true);
-						}
-					};
-					mWSC.sendToken(lSMSToken, lCallbacks);
+					//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
+					jwsDialog(w.SMSGateway.mMSG_SMS_SENT, "SMS sent correctly");
 				},
 				OnFailure: function(aToken) {
-					$("#imgCaptcha").effect("shake", {
-						times: 3
-					}, 100);
-
-					log("<b style='color:red;'>Wrong captcha validation, " +
-							"try another captcha</b>");
-					var lGetNewCaptcha = function() {
-						w.SMSGateway.getCaptcha();
-						w.SMSGateway.eTextCaptcha.val("").focus();
-					};
-					//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
-					jwsDialog(w.SMSGateway.mMSG_CAPTCHA_ERROR, "Captcha error",
-							true, "alert", lGetNewCaptcha);
+					jwsDialog(w.SMSGateway.mMSG_ERROR + aToken.msg,
+							"Error sending the SMS", true, "alert", function() {
+								$("#imgCaptcha").effect("shake", {
+									times: 3
+								}, 100);
+								w.SMSGateway.getCaptcha();
+								w.SMSGateway.eTextCaptcha.val("").focus();
+							});
 				}
 			};
-			mWSC.sendToken(lToken, lOptions);
+			mWSC.sendToken(lSMSToken, lCallbacks);
 		});
-
 		// Handle keydown and keyup of the textarea to count the characters
 		w.SMSGateway.eInputSMS.keydown(w.SMSGateway.updateCounter);
 		w.SMSGateway.eInputSMS.keyup(w.SMSGateway.updateCounter);
 	},
-	countCharacters: function( ) {
+	countCharacters: function() {
 		var lCount = w.SMSGateway.eInputSMS.val().length;
 		w.SMSGateway.mCount = lCount;
 		var lValue = w.SMSGateway.MAX_COUNT - lCount;
@@ -194,7 +149,7 @@ $.widget("jws.SMSGateway", {
 	updateCounter: function(aEvent) {
 		w.SMSGateway.countCharacters();
 		if (w.SMSGateway.mCount >= w.SMSGateway.MAX_COUNT) {
-			w.SMSGateway.eInputSMS.val(w.SMSGateway.eInputSMS.val( ).substr(
+			w.SMSGateway.eInputSMS.val(w.SMSGateway.eInputSMS.val().substr(
 					0, w.SMSGateway.MAX_COUNT));
 			w.SMSGateway.eCCounterArea.attr("class", "error");
 		} else {

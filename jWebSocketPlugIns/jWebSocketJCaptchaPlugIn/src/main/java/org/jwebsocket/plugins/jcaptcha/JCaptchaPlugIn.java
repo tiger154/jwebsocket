@@ -20,7 +20,7 @@ package org.jwebsocket.plugins.jcaptcha;
 
 /**
  *
- * @author mayra, vbarzana, aschulze
+ * @author mayra, vbarzana, aschulze, kyberneees
  */
 import com.octo.captcha.service.CaptchaServiceException;
 import java.awt.image.BufferedImage;
@@ -45,8 +45,8 @@ import org.jwebsocket.util.Tools;
 public class JCaptchaPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
-	private static final String NS_JCAPTCHA =
-			JWebSocketServerConstants.NS_BASE + ".plugins.jcaptcha";
+	private static final String NS_JCAPTCHA
+			= JWebSocketServerConstants.NS_BASE + ".plugins.jcaptcha";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JCaptchaPlugIn";
@@ -111,10 +111,9 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 
 		if (aToken.getNS().equals(getNamespace())) {
 			if ("getcaptcha".equals(aToken.getType())) {
-
-				mImgType = aToken.getString("imagetype");
-				mImgType =
-						mImgType == null
+				mImgType = aToken.getString("imageType");
+				mImgType
+						= mImgType == null
 						? "png"
 						: mImgType.trim().toLowerCase();
 
@@ -125,18 +124,28 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 				}
 
 				generateCaptcha(aToken, aConnector);
-
-			} else if ("validate".equals(aToken.getType())) {
-				Token lResponse = createResponse(aToken);
-				if (validateCaptcha(aConnector.getSession().getSessionId(), aToken.getString("inputChars"))) {
-					lResponse.setString("msg", "Correct");
-				} else {
-					lResponse.setString("msg", "Wrong");
-					lResponse.setInteger("code", -1);
-				}
-				getServer().sendToken(aConnector, lResponse);
 			}
 		}
+	}
+
+	@Override
+	public Token invoke(WebSocketConnector aConnector, Token aToken) {
+		Token lResponse = createResponse(aToken);
+		lResponse.setInteger("code", -1);
+
+		if (NS_JCAPTCHA.equals(aToken.getNS())) {
+			if ("validate".equals(aToken.getType())) {
+				if (validateCaptcha(aConnector.getSession().getSessionId(), aToken.getString("inputChars"))) {
+					lResponse.setInteger("code", 0);
+				} else {
+					lResponse.setString("msg", "Invalid captcha!");
+				}
+			} else {
+				lResponse.setString("msg", "Operation not supported!");
+			}
+		}
+
+		return lResponse;
 	}
 
 	/**
@@ -153,7 +162,7 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 			String lCaptchaId = aConnector.getSession().getSessionId();
 
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("generating captcha for id: " + lCaptchaId);
+				mLog.debug("Generating captcha for id: " + lCaptchaId);
 			}
 			// Generate the captcha image.
 			// BufferedImage challengeImage = JWebSocketCaptchaService.getInstance().getImageChallengeForID(captchaId , aToken.getString("locale"));
@@ -164,20 +173,21 @@ public class JCaptchaPlugIn extends TokenPlugIn {
 			lCaptchaBytes = lImgOutputStream.toByteArray();
 			// Write the image to the client.
 			lResponse.setString("image", Tools.base64Encode(lCaptchaBytes));
-			getServer().sendToken(aConnector, lResponse);
 
+			getServer().sendToken(aConnector, lResponse);
 		} catch (IOException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "Error generating captcha!"));
 		}
 	}
 
-	private boolean validateCaptcha(String captchaId, String inputChars) {
-		boolean bValidated = false;
+	private boolean validateCaptcha(String aCaptchaId, String aInputChars) {
+		boolean lValidated = false;
 		try {
-			bValidated = JWebSocketCaptchaService.getInstance().validateResponseForID(captchaId, inputChars);
+			lValidated = JWebSocketCaptchaService.getInstance().validateResponseForID(aCaptchaId, aInputChars);
 		} catch (CaptchaServiceException lCSE) {
 			mLog.error(Logging.getSimpleExceptionMessage(lCSE, "validating captcha"));
 		}
-		return bValidated;
+
+		return lValidated;
 	}
 }
