@@ -9,14 +9,17 @@
 			lead to spam attacks and costs!
 	-->
 
-	<!-- this is the configuration for the provider "SMSTrade" -->
+	<!-- this is the configuration for the provider -->
+	<bean id="nullProvider" class="org.jwebsocket.plugins.sms.NullProvider">
+	</bean>
 	<bean id="providerSmstrade" class="org.jwebsocket.plugins.sms.ProviderSmstrade">
 		<property name="key" value="#your key at SMSTrade#"/>
 	</bean>
+	
 
 	<!-- general SMS plug-in settings -->
 	<bean id="org.jwebsocket.plugins.sms.settings" class="org.jwebsocket.plugins.sms.Settings">
-		<property name="provider" ref="providerSmstrade"/>
+		<property name="provider" ref="nullProvider"/>
 		<property name="collectionName" value="jws-plugins-sms"/>
 		<property name="collectionAccessPassword" value="root"/>
 		<property name="collectionSecretPassword" value="root"/>
