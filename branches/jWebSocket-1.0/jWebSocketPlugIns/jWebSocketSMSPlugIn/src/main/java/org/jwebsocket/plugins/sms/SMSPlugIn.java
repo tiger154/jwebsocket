@@ -263,8 +263,23 @@ public class SMSPlugIn extends ActionPlugIn {
 	 */
 	@Role(name = NS + ".sendSMS")
 	public void sendSMSAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		/**
+		 * VALIDATING CAPTCHA
+		 */
+		// validating captcha
+		String lCaptcha = aToken.getString("captcha");
+		// creating jcaptcha plug-in request for invocation
+		Token lRequest = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE + ".plugins.jcaptcha", "validate");
+		// setting the captcha value to validate
+		lRequest.setString("inputChars", lCaptcha);
+		// checking the result
+		Assert.isTrue(invokePlugIn("jws.jcaptcha", aConnector, lRequest).getCode() == 0,
+				"Invalid captcha!");
+
+		// calling sendSMS
 		Token lResponse = send(aConnector, aToken);
 
+		// sending back response
 		sendToken(aConnector, lResponse);
 	}
 
