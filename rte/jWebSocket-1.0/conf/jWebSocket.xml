@@ -1726,34 +1726,34 @@
 
 		<!-- ItemStorage plug-in -->
 		<plugin>
-			<!-- <name>org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn</name> -->
-			<!-- to use the enterprise edition of jWebSocketItemStoragePlugIn replace the above line by the following one -->
-			<name>org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn</name>
+			<name>org.jwebsocket.enterprise.plugins.itemstorage.ItemStoragePlugIn</name>
 			<id>jws.itemstorage</id>
 			<ns>org.jwebsocket.plugins.itemstorage</ns>
 			<jars>
 				<jar>${JWEBSOCKET_HOME}libs/jWebSocketItemStoragePlugIn-1.0.jar</jar>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketItemStoragePlugInEE-1.0.jar</jar>
 			</jars>
 			<!-- plug-in specific settings -->
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_HOME}conf/ItemStoragePlugIn/itemstorage.xml</setting>
-				<!-- Authorization method
-					- spring: Uses the user Spring authentication to check for granted authorities
-					- static: Uses the user static (jWebSocket.xml users definition) authentication
-					to check for granted authorities (rights)
-
-					Default value is "static"
-
-						Required user authorities for the ItemStorage plug-in:
-						- org.jwebsocket.plugins.itemstorage.write_collection
-						- org.jwebsocket.plugins.itemstorage.read_collection
-						- org.jwebsocket.plugins.itemstorage.write_item
-						- org.jwebsocket.plugins.itemstorage.read_item
-						- org.jwebsocket.plugins.itemstorage.read_definition
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/ItemStoragePlugIn/itemstorage.xml</setting>
+				<!-- Authorization method 
+				     - spring: Uses the user Spring authentication to check for granted authorities 
+					 - static: Uses the user static (jWebSocket.xml users definition) authentication
+					   to check for granted authorities (rights)
+					   
+					 Default value is "static"
+					   
+					 Required user authorities for the ItemStorage plug-in:
+					 - org.jwebsocket.plugins.itemstorage.write_collection
+					 - org.jwebsocket.plugins.itemstorage.read_collection
+					 - org.jwebsocket.plugins.itemstorage.write_item
+					 - org.jwebsocket.plugins.itemstorage.read_item
+					 - org.jwebsocket.plugins.itemstorage.write_definition
+					 - org.jwebsocket.plugins.itemstorage.read_definition
 				-->
-				<!-- <setting key="authentication_method">static</setting> -->
-				<!-- The fragment size attribute is used on the fragmentation of outgoing messages -->
-				<setting key="fragmentSize">10000</setting>
+				<setting key="authentication_method">static</setting>
+				<!-- The fragment size attribute is used on the fragmentation  of outgoing messages -->
+				<setting key="fragmentSize">2000</setting>
 			</settings>
 			<server-assignments>
 				<server-assignment>ts0</server-assignment>
