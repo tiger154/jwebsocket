@@ -46,14 +46,20 @@ public interface IQuota {
 	 * @param aUuid
 	 * @return
 	 */
-	public long getQuota(String aInstance, String aNameSpace, String aInstanceType);
+	public IQuotaSingleInstance getQuota(String aInstance, String aNameSpace, String aInstanceType);
+        
+        /**
+         * 
+         * @return 
+         */
+        public long getDefaultReduceValue(); 
 
 	/**
 	 *
 	 * @param aUuid
 	 * @return
 	 */
-	public long getQuota(String aUuid);
+	public IQuotaSingleInstance getQuota(String aUuid);
 
 	/**
 	 *

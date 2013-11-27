@@ -42,7 +42,7 @@ public class QuotaDiskSpace extends BaseQuota {
 	@Override
 	public long reduceQuota(String aInstance, String aNameSpace, String aInstanceType, long aAmount) {
 
-		long lQuota = getQuota(aInstance, aNameSpace, aInstanceType);
+		long lQuota = getQuota(aInstance, aNameSpace, aInstanceType).getvalue();
 		if (lQuota <= 0) {
 			return -1;
 		}
@@ -67,7 +67,7 @@ public class QuotaDiskSpace extends BaseQuota {
 	@Override
 	public long reduceQuota(String aUuid, long aAmount) {
 
-		long lQuota = getQuota(aUuid);
+		long lQuota = getQuota(aUuid).getvalue();
 
 		if (lQuota <= 0) {
 			return -1;

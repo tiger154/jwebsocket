@@ -49,7 +49,7 @@ public class QuotaInterval extends BaseQuota {
 			return -1;
 		}
 		ResetQuota(aUuid);
-		long lValue = getQuota(aUuid);
+		long lValue = getQuota(aUuid).getvalue();
 		if (lValue == 0) {
 			return -1;
 		}
