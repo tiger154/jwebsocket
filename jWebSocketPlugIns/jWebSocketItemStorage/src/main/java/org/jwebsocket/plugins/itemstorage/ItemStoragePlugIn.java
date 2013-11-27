@@ -81,13 +81,13 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	/**
 	 *
 	 */
-	public static final String ATTR_ACCESS_PASSWORD =
-			ItemCollection.ATTR_ACCESS_PASSWORD;
+	public static final String ATTR_ACCESS_PASSWORD
+			= ItemCollection.ATTR_ACCESS_PASSWORD;
 	/**
 	 *
 	 */
-	public static final String ATTR_SECRET_PASSWORD =
-			ItemCollection.ATTR_SECRET_PASSWORD;
+	public static final String ATTR_SECRET_PASSWORD
+			= ItemCollection.ATTR_SECRET_PASSWORD;
 	/**
 	 *
 	 */
@@ -123,8 +123,8 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_ITEM_STORAGE =
-			JWebSocketServerConstants.NS_BASE + ".plugins.itemstorage";
+	public static final String NS_ITEM_STORAGE
+			= JWebSocketServerConstants.NS_BASE + ".plugins.itemstorage";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket ItemStoragePlugIn";
@@ -210,6 +210,10 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 		// registering extension listeners
 		mBeanFactory.getBean(ListenersRegistrator.class).registerAll();
+
+		if (mLog.isInfoEnabled()) {
+			mLog.info("ItemStorage plug-in successfully instantiated.");
+		}
 
 		final IItemCollectionProvider lCollectionProvider = mCollectionProvider;
 		ItemStorageEventManager.addListener(new BaseListener() {
@@ -561,14 +565,12 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 				: lCollection.getSecretPassword().equals(lSecretPwd)),
 				"The given collection secret password is not correct!");
 
-
 		Integer lUsers = ItemCollectionUtils.restartCollection(mCollectionProvider, lCollection).size();
 
 		Map<String, Object> lLog = BaseLogsManager.createActionPrototype(
 				BaseLogsManager.ETYPE_COLLECTION,
 				lCollectionName, "restart", aConnector.getUsername(), lUsers + " users");
 		mLogsManager.logAction(lLog);
-
 
 		sendToken(aConnector, createResponse(aToken));
 	}

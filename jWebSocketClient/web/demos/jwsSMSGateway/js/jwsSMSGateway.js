@@ -120,6 +120,7 @@ $.widget("jws.SMSGateway", {
 				OnSuccess: function(aToken) {
 					//function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
 					jwsDialog(w.SMSGateway.mMSG_SMS_SENT, "SMS sent correctly");
+					w.SMSGateway.getCaptcha();
 				},
 				OnFailure: function(aToken) {
 					jwsDialog(w.SMSGateway.mMSG_ERROR + aToken.msg,
