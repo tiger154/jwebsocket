@@ -5,6 +5,7 @@
 package org.jwebsocket.plugins.quota.api;
 
 import javolution.util.FastMap;
+import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaChildSI;
 import org.jwebsocket.token.Token;
 
 /**
@@ -51,6 +52,10 @@ public interface IQuotaSingleInstance {
 	 * @return
 	 */
 	public String getInstanceType();
+        
+        public boolean addChildQuota(QuotaChildSI aChildQuota);
+        
+        public QuotaChildSI getChildQuota(String aInstance);
 
 	public String getQuotaIdentifier();
 

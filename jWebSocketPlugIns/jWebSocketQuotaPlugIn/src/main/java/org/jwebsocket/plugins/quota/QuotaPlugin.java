@@ -139,6 +139,7 @@ public class QuotaPlugin extends ActionPlugIn {
 
     @Role(name = NS + ".quota_update")
     public void setQuotaAction(WebSocketConnector aConnector, Token aToken) {
+        
         Token lResult = createResponse(aToken);
         Token lToken = mQuotaService.setQuotaAction(aToken);
         lResult.setLong("value", lToken.getLong("value"));

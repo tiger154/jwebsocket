@@ -6,7 +6,6 @@ package org.jwebsocket.plugins.quota.utils;
 
 import java.util.UUID;
 import javolution.util.FastList;
-import org.jwebsocket.plugins.quota.api.IQuota;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaBaseInstance;
 import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaCountdownSI;
@@ -22,8 +21,10 @@ public class QuotaHelper {
 		return Tools.getMD5(UUID.randomUUID().toString());
 	}
 
+        // to do with map
 	public static IQuotaSingleInstance factorySingleInstance(long aValue, String aInstance,
-			String aUuid, String aNamesPace, String aQuotaType, String aQuotaIdentifier, String aInstanceType, String aActions) {
+			String aUuid, String aNamesPace, String aQuotaType, String aQuotaIdentifier,
+                        String aInstanceType, String aActions ) {
 
 		if (aQuotaType.equals("CountDown")) {
 			return new QuotaCountdownSI(aValue, aInstance, aUuid,

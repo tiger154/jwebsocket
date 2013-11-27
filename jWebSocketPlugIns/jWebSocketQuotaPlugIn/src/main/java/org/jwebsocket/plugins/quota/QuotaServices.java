@@ -16,6 +16,7 @@ import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import org.jwebsocket.plugins.quota.api.IQuotaStorage;
 import org.jwebsocket.plugins.quota.utils.QuotaHelper;
 import org.jwebsocket.plugins.quota.utils.QuotaProvider;
+import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaAlreadyExist;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.springframework.context.ApplicationContext;
@@ -50,7 +51,6 @@ public class QuotaServices {
             if (lHasUuid) {
                 lUuid = aToken.getString("q_uuid");
             }
-
             String lNS = aToken.getString("q_namespace");
             String lInstance = aToken.getString("q_instance");
             String lInstanceType = aToken.getString("q_instance_type");
@@ -60,7 +60,7 @@ public class QuotaServices {
             Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
 
             IQuota lQuota = quotaByIdentifier(lQuotaIdentifier);
-
+            
             String lQuotaType = lQuota.getType();
 
             if (!lHasUuid) {
@@ -167,6 +167,8 @@ public class QuotaServices {
             String lQuotaIdentifier = null;
             lQuotaIdentifier = aToken.getString("q_identifier");
             FastList<IQuotaSingleInstance> lQinstanceList = new FastList<IQuotaSingleInstance>();
+            
+            
             if (lQuotaIdentifier != null) {
                 IQuota lQuota;
                 lQuota = quotaByIdentifier(lQuotaIdentifier);
@@ -227,11 +229,10 @@ public class QuotaServices {
                 String lNS = aToken.getString("q_namespace");
                 String lInstance = aToken.getString("q_instance");
                 String lInstanceType = aToken.getString("q_instance_type");
-                lValue = lQuota.getQuota(lInstance, lNS, lInstanceType);
+                lValue = lQuota.getQuota(lInstance, lNS, lInstanceType).getvalue();
             } else {
-                lValue = lQuota.getQuota(lUuid);
+                lValue = lQuota.getQuota(lUuid).getvalue();
             }
-
             lResult.setLong("value", lValue);
             lResult.setBoolean("success", true);
             lResult.setCode(0);
@@ -305,16 +306,16 @@ public class QuotaServices {
 
     }
 
+    
     public Token setQuotaAction(Token aToken) {
+        
         try {
             Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
-            String lQuotaIdentifier = aToken.getString("q_identifier").trim();
+            String lQuotaIdentifier = aToken.getString("q_identifier");
             long lReduce = Long.parseLong(aToken.getString("q_value"));
-
             IQuota lQuota;
             lQuota = quotaByIdentifier(lQuotaIdentifier);
             long lValue;
-
             String lUuid = aToken.getString("q_uuid");
 
             if (null == lUuid || lUuid.equals("")) {
@@ -322,10 +323,10 @@ public class QuotaServices {
                 String lInstance = aToken.getString("q_instance");
                 String lInstanceType = aToken.getString("q_instance_type");
                 lValue = lQuota.setQuota(lInstance, lNS, lInstanceType, lReduce);
+                
             } else {
                 lValue = lQuota.setQuota(lUuid, lReduce);
             }
-
             lResult.setLong("value", lValue);
             lResult.setCode(0);
 

@@ -10,10 +10,10 @@ package org.jwebsocket.plugins.quota.utils.exception;
  */
 public class ExceptionQuotaAlreadyExist extends Exception {
 
-	public static String MMESSAGE = "Quota already Exist";
+	public static String MMESSAGE = "Quota already exist";
 
 	public ExceptionQuotaAlreadyExist(String aUuid) {
-		super(MMESSAGE + " with id " + aUuid);
+		super(MMESSAGE + " with " + aUuid);
 	}
 
 }

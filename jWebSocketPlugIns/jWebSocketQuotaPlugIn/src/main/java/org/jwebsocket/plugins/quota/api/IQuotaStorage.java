@@ -6,6 +6,7 @@ package org.jwebsocket.plugins.quota.api;
 
 import java.util.List;
 import java.util.Map;
+import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaChildSI;
 import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaNotFound;
 
 /**
@@ -14,39 +15,46 @@ import org.jwebsocket.plugins.quota.utils.exception.ExceptionQuotaNotFound;
  */
 public interface IQuotaStorage {
 
-	public void save(IQuotaSingleInstance aQuota);
+    public boolean save(IQuotaSingleInstance aQuota);
 
-	public boolean save(String aUuid, String aInstance, String aInstanceType);
+    public boolean save(QuotaChildSI aQuota);
 
-	public void remove(String aInstance, String aUuid);
+    public void remove(String aInstance, String aUuid);
 
-	public long update(String aUuid, Long aValue);
+    public void remove(QuotaChildSI aQuotaChild);
 
-	//to see for change the method's name 
-	public void updateIntervalResetDate(String aUuid, String aResetDate);
+    public long update(String aUuid, Long aValue);
 
-	public boolean quotaExist(String aUuid);
+    public long update(QuotaChildSI aQuotaChild);
 
-	public String getActions(String aUuid);
+    //to see for change the method's name 
+    public void updateIntervalResetDate(String aUuid, String aResetDate);
 
-	public boolean quotaExist(String aNameSpace, String aQuotaType, String aInstance);
+    public boolean quotaExist(String aUuid);
 
-	public List<String> getAllQuotaUuid(String aQuotaType);
+    public boolean quotaExist(String aNameSpace, String aQuotaIdentifier, String aInstance);
 
-	public List<IQuotaSingleInstance> getQuotas(String aQuotaType);
+    public String getActions(String aUuid);
 
-	public List<IQuotaSingleInstance> getQuotasByIdentifier(String aIdentifier);
+    public List<String> getAllQuotaUuid(String aQuotaType);
 
-	public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs, String aInstance);
+    public List<IQuotaSingleInstance> getQuotas(String aQuotaType);
 
-	public String getUuid(String aQuotaType, String aNs, String aInstance,
-			String aInstanceType) throws ExceptionQuotaNotFound;
+    public List<IQuotaSingleInstance> getQuotasByIdentifier(String aIdentifier);
 
-	public List<IQuotaSingleInstance> getQuotasByInstance(String aQuotaType, String aInstance);
+    public List<IQuotaSingleInstance> getQuotasByIdentifierNSInstanceType(String aIdentifier,
+            String aNameSpace, String aInstanceType);
 
-	public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType, String aNs);
+    public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs, String aInstance);
 
-	public IQuotaSingleInstance getQuotaByUuid(String aUuid);
+    public String getUuid(String aQuotaIdentifier, String aNs, String aInstance,
+            String aInstanceType) throws ExceptionQuotaNotFound;
 
-	public Map<String, Object> getRawQuota(String aUuid, String aInstance);
+    public List<IQuotaSingleInstance> getQuotasByInstance(String aQuotaType, String aInstance);
+
+    public List<IQuotaSingleInstance> getQuotasByNs(String aQuotaType, String aNs);
+
+    public IQuotaSingleInstance getQuotaByUuid(String aUuid);
+
+    public Map<String, Object> getRawQuota(String aUuid, String aInstance);
 }
