@@ -110,12 +110,7 @@ public class QuotaPlugin extends ActionPlugIn {
 
     @Role(name = NS + ".quota_query")
     public void getQuotaAction(WebSocketConnector aConnector, Token aToken) {
-
-        Token lResult = createResponse(aToken);
-        Token lToken = mQuotaService.getQuotaAction(aToken);
-        lResult.setLong("value", lToken.getLong("value"));
-        lResult.setBoolean("success", lToken.getBoolean("success"));
-        lResult.setCode(lToken.getCode());
+        Token lResult = mQuotaService.getQuotaAction(aToken);
         getServer().sendToken(aConnector, lResult);
     }
 
