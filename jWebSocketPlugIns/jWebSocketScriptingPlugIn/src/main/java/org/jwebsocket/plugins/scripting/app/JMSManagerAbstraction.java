@@ -86,8 +86,8 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @throws Exception
 	 */
 	public String subscribe(Object aCallback,
-			boolean aDurableSubscription) throws JMSException, Exception {
-		return subscribe(getDefaultDestination(), aCallback, aDurableSubscription);
+			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
+		return subscribe(getDefaultDestination(), aCallback, aDurableSubscription, aSubscriptionId);
 	}
 
 	/**
@@ -100,8 +100,8 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @throws Exception
 	 */
 	public String subscribe(String aDestination, Object aCallback,
-			boolean aDurableSubscription) throws JMSException, Exception {
-		return subscribe(aDestination, aCallback, null, aDurableSubscription);
+			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
+		return subscribe(aDestination, aCallback, null, aDurableSubscription, aSubscriptionId);
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class JMSManagerAbstraction extends JMSManager {
 	 */
 	public String subscribe(String aDestination, Object aCallback,
 			String aSelector) throws JMSException, Exception {
-		return subscribe(aDestination, aCallback, aSelector, false);
+		return subscribe(aDestination, aCallback, aSelector, false, null);
 	}
 
 	/**
@@ -142,8 +142,9 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @throws Exception
 	 */
 	public String subscribe(Object aCallback, String aSelector,
-			boolean aDurableSubscription) throws JMSException, Exception {
-		return subscribe(getDefaultDestination(), aCallback, aSelector, aDurableSubscription);
+			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
+		return subscribe(getDefaultDestination(), aCallback, aSelector,
+				aDurableSubscription, aSubscriptionId);
 	}
 
 	/**
@@ -157,8 +158,8 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @throws Exception
 	 */
 	public String subscribe(String aDestination, Object aCallback, String aSelector,
-			boolean aDurableSubscription) throws JMSException, Exception {
+			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
 		return super.subscribe(aDestination, (MessageListener) mScriptApp.cast(aCallback,
-				MessageListener.class), aSelector, aDurableSubscription);
+				MessageListener.class), aSelector, aDurableSubscription, aSubscriptionId);
 	}
 }

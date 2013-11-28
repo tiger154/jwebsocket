@@ -116,7 +116,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		}
 		// specify default name space for file system plugin
 		this.setNamespace(NS);
-
+		
 		try {
 			mBeanFactory = getConfigBeanFactory(NS);
 			if (null == mBeanFactory) {

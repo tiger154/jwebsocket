@@ -37,6 +37,7 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketServer;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.LocalLoader;
+import org.jwebsocket.jms.JMSServer;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.scripting.ScriptingPlugIn;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
@@ -910,5 +911,14 @@ abstract public class BaseScriptApp {
 	 */
 	public Token invokePlugIn(String aPlugInId, WebSocketConnector aConnector, Token aToken) {
 		return mPlugIn.invokePlugIn(aPlugInId, aConnector, aToken);
+	}
+
+	/**
+	 * Return TRUE if the JWebSocket cluster is active, FALSE otherwise
+	 *
+	 * @return
+	 */
+	public boolean isClusterActive() {
+		return mPlugIn.getServer() instanceof JMSServer;
 	}
 }
