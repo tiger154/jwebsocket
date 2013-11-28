@@ -234,6 +234,9 @@ var App = (function() {
 				}
 			}
 		},
+		invokePlugIn: function(aPlugInId, aConnector, aToken) {
+			return AppUtils.invokePlugIn(aPlugInId, aConnector, toMap(aToken));
+		},
 		toMap: function(aJSONObject) {
 			return toMap(aJSONObject);
 		},
