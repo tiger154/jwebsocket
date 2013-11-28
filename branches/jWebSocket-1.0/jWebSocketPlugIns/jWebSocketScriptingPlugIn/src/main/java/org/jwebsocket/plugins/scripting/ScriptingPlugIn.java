@@ -144,6 +144,24 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	@Override
+	public Token invoke(WebSocketConnector aConnector, Token aToken) {
+		Token lResponse = createResponse(aToken);
+		lResponse.setCode(-1);
+
+		if (NS.equals(aToken.getNS())) {
+			if ("callMethod".equals(aToken.getType())) {
+				try {
+					return callMethod(aConnector, aToken);
+				} catch (Exception lEx) {
+					lResponse.setString("msg", lEx.getMessage());
+				}
+			}
+		}
+
+		return lResponse;
+	}
+
+	@Override
 	public void systemStarted() throws Exception {
 		// initializing apps
 		Map<String, String> lApps = mSettings.getApps();
@@ -630,13 +648,14 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Calls a custom method on a publish application object.
+	 * Calls a custom method on a public application object.
 	 *
 	 * @param aConnector
 	 * @param aToken
+	 * @return
 	 * @throws Exception
 	 */
-	public void callMethodAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+	private Token callMethod(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lApp = aToken.getString("app");
 		String lObjectId = aToken.getString("objectId");
 		String lMethod = aToken.getString("method");
@@ -662,7 +681,18 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		// notify filter out
 		lScript.notifyEvent(BaseScriptApp.EVENT_FILTER_OUT, new Object[]{lResponse, aConnector});
 
-		sendToken(aConnector, lResponse);
+		return lResponse;
+	}
+
+	/**
+	 * Calls a custom method on a public application object.
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
+	public void callMethodAction(WebSocketConnector aConnector, Token aToken) throws Exception {
+		sendToken(aConnector, callMethod(aConnector, aToken));
 	}
 
 	/**
@@ -684,7 +714,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * Calls an application object(published) method
+	 * Call a public application object method
 	 *
 	 * @param aApp
 	 * @param aObjectId
