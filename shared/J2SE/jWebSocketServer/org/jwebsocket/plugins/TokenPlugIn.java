@@ -456,6 +456,8 @@ public class TokenPlugIn extends BasePlugIn {
 		// getting the plug-in instance
 		TokenPlugIn lPlugIn = (TokenPlugIn) getPlugInChain().getPlugIn(aPlugInId);
 		Assert.notNull(lPlugIn, "The target plug-in is not running!");
+		// setting the tokan namespace if missing
+		aToken.setNS(lPlugIn.getNamespace());
 
 		return lPlugIn.invoke(aConnector, aToken);
 	}
@@ -474,10 +476,10 @@ public class TokenPlugIn extends BasePlugIn {
 
 		// creating the message to be sent
 		MapMessage lMsg = lMessageHub.buildMessage(JWebSocketServerConstants.NS_BASE + ".plugins", "tokenProcessed");
-		lMsg.setString("ns", aInToken.getNS());
-		lMsg.setString("type", aInToken.getType());
-		lMsg.setString("username", aUsername);
-		lMsg.setInt("code", aCode);
+		lMsg.setStringProperty("tokenNS", aInToken.getNS());
+		lMsg.setStringProperty("tokenType", aInToken.getType());
+		lMsg.setStringProperty("username", aUsername);
+		lMsg.setIntProperty("code", aCode);
 
 		// sending the message
 		lMessageHub.send(lMsg);
@@ -489,9 +491,9 @@ public class TokenPlugIn extends BasePlugIn {
 //				MapMessage lMessage = (MapMessage) msg;
 //
 //				try {
-//					String lUsername = lMessage.getString("username");
-//					String lNS = lMessage.getString("ns");
-//					String lType = lMessage.getString("type");
+//					String lUsername = lMessage.getStringProperty("username");
+//					String lNS = lMessage.getStringProperty("tokenNS");
+//					String lType = lMessage.getStringProperty("tokenType");
 //					
 //					// TODO: call your logic here
 //				} catch (Exception lEx) {
