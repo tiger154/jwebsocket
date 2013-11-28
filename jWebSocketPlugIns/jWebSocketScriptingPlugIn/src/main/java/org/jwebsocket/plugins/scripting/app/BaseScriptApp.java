@@ -887,4 +887,28 @@ abstract public class BaseScriptApp {
 	public WebSocketServer getWebSocketServer() {
 		return mPlugIn.getServer();
 	}
+
+	/**
+	 * Call invoke method on a target plug-in
+	 *
+	 * @param aPlugInId
+	 * @param aConnector
+	 * @param aToken
+	 * @return
+	 */
+	public Token invokePlugIn(String aPlugInId, WebSocketConnector aConnector, Map aToken) {
+		return mPlugIn.invokePlugIn(aPlugInId, aConnector, toToken(aToken));
+	}
+
+	/**
+	 * Call invoke method on a target plug-in
+	 *
+	 * @param aPlugInId
+	 * @param aConnector
+	 * @param aToken
+	 * @return
+	 */
+	public Token invokePlugIn(String aPlugInId, WebSocketConnector aConnector, Token aToken) {
+		return mPlugIn.invokePlugIn(aPlugInId, aConnector, aToken);
+	}
 }
