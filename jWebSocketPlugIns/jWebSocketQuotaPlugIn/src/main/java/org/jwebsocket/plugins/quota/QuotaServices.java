@@ -223,17 +223,24 @@ public class QuotaServices {
             String lQuotaIdentifier = aToken.getString("q_identifier").trim();
             IQuota lQuota;
             lQuota = quotaByIdentifier(lQuotaIdentifier);
-            long lValue;
             String lUuid = aToken.getString("q_uuid");
+            IQuotaSingleInstance lQuotaSingleInstance;
             if (null == lUuid || lUuid.equals("")) {
                 String lNS = aToken.getString("q_namespace");
                 String lInstance = aToken.getString("q_instance");
                 String lInstanceType = aToken.getString("q_instance_type");
-                lValue = lQuota.getQuota(lInstance, lNS, lInstanceType).getvalue();
+
+                lQuotaSingleInstance = lQuota.getQuota(lInstance, lNS, lInstanceType);
+
             } else {
-                lValue = lQuota.getQuota(lUuid).getvalue();
+                lQuotaSingleInstance = lQuota.getQuota(lUuid);
             }
-            lResult.setLong("value", lValue);
+            Token lAuxToken = TokenFactory.createToken();
+            lQuotaSingleInstance.writeToToken(lAuxToken);
+            
+            lResult.setLong("value", lQuotaSingleInstance.getvalue());
+            lResult.setToken("quota", lAuxToken);
+
             lResult.setBoolean("success", true);
             lResult.setCode(0);
 
