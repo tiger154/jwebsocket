@@ -171,13 +171,15 @@ public class JMSManager {
 	 * Subscribe to a the default destination
 	 *
 	 * @param aCallback
+	 * @param aDurableSubscription
+	 * @param aSubscriptionId
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception
 	 */
 	public String subscribe(MessageListener aCallback,
-			boolean aDurableSubscription) throws JMSException, Exception {
-		return subscribe(mDefaultDestination, aCallback, aDurableSubscription);
+			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
+		return subscribe(mDefaultDestination, aCallback, aDurableSubscription, aSubscriptionId);
 	}
 
 	/**
@@ -185,13 +187,15 @@ public class JMSManager {
 	 *
 	 * @param aDestination
 	 * @param aCallback
+	 * @param aDurableSubscription
+	 * @param aSubscriptionId
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception
 	 */
 	public String subscribe(String aDestination, MessageListener aCallback,
-			boolean aDurableSubscription) throws JMSException, Exception {
-		return subscribe(aDestination, aCallback, null, aDurableSubscription);
+			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
+		return subscribe(aDestination, aCallback, null, aDurableSubscription, null);
 	}
 
 	/**
@@ -220,7 +224,7 @@ public class JMSManager {
 	 */
 	public String subscribe(String aDestination, MessageListener aCallback,
 			String aSelector) throws JMSException, Exception {
-		return subscribe(aDestination, aCallback, aSelector, false);
+		return subscribe(aDestination, aCallback, aSelector, false, null);
 	}
 
 	/**
@@ -228,13 +232,15 @@ public class JMSManager {
 	 *
 	 * @param aCallback
 	 * @param aSelector
+	 * @param aDurableSubscription
+	 * @param aSubcriptionId
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception
 	 */
 	public String subscribe(MessageListener aCallback, String aSelector,
-			boolean aDurableSubscription) throws JMSException, Exception {
-		return subscribe(mDefaultDestination, aCallback, aSelector, aDurableSubscription);
+			boolean aDurableSubscription, String aSubscriptionId) throws JMSException, Exception {
+		return subscribe(mDefaultDestination, aCallback, aSelector, aDurableSubscription, aSubscriptionId);
 	}
 
 	/**
@@ -243,16 +249,21 @@ public class JMSManager {
 	 * @param aDestination
 	 * @param aCallback
 	 * @param aSelector
+	 * @param aDurableSubscription
+	 * @param aSubcriptionId
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception
 	 */
 	public String subscribe(String aDestination, MessageListener aCallback, String aSelector,
-			boolean aDurableSubscription) throws JMSException, Exception {
+			boolean aDurableSubscription, String aSubcriptionId) throws JMSException, Exception {
 		MessageConsumer lListener;
 		Destination lDest = getDestination(aDestination);
 
 		String lSubscriptionId = UUID.randomUUID().toString();
+		if (null != aSubcriptionId) {
+			lSubscriptionId = aSubcriptionId;
+		}
 
 		if (aDurableSubscription) {
 			if (lDest instanceof Topic) {

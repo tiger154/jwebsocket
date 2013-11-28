@@ -1170,7 +1170,8 @@ public class Tools {
 			Constructor<Permission> lConstructor = lClazz.getConstructor(String.class, String.class);
 			if (null != lConstructor) {
 				return lConstructor.newInstance(new Object[]{lName, lActions});
-
+			} else {
+				return (Permission) lClazz.newInstance();
 			}
 		} catch (Exception lEx) {
 		}
