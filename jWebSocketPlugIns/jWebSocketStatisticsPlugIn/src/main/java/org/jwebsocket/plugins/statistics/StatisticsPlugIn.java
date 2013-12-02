@@ -36,7 +36,7 @@ import org.jwebsocket.token.Token;
  */
 public class StatisticsPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/*
 	 private static String SMTP_HOST = null;
 	 private static final String SMTP_HOST_KEY = "smtp_host";
