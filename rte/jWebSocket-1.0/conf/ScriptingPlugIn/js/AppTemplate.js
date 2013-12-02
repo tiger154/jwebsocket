@@ -237,6 +237,9 @@ var App = (function() {
 		invokePlugIn: function(aPlugInId, aConnector, aToken) {
 			return AppUtils.invokePlugIn(aPlugInId, aConnector, toMap(aToken));
 		},
+		isClusterActive: function() {
+			return AppUtils.isClusterActive();
+		},
 		toMap: function(aJSONObject) {
 			return toMap(aJSONObject);
 		},
