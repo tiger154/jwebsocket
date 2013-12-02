@@ -357,12 +357,20 @@ public class JMSManager {
 	 * @throws Exception
 	 */
 	public void shutdown() throws Exception {
-		for (String lId : mListeners.keySet()) {
-			unsubscribe(lId);
-		}
 		for (String lDest : mProducers.keySet()) {
 			mProducers.remove(lDest).close();
 		}
 		mSession.close();
+	}
+
+	/**
+	 * Cancel all active subscriptions
+	 *
+	 * @throws JMSException
+	 */
+	public void unsubscribeAll() throws JMSException {
+		for (String lId : mListeners.keySet()) {
+			unsubscribe(lId);
+		}
 	}
 }
