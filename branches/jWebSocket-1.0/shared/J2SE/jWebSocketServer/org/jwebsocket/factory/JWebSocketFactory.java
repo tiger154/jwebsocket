@@ -287,7 +287,7 @@ public class JWebSocketFactory {
 				try {
 					lEngine.startEngine();
 					lEngineStarted = true;
-				} catch (Exception lEx) {
+				} catch (WebSocketException lEx) {
 					mLog.error("Starting engine '" + lEngine.getId()
 							+ "' failed (" + lEx.getClass().getSimpleName() + ": "
 							+ lEx.getMessage() + ").");
@@ -303,7 +303,7 @@ public class JWebSocketFactory {
 				for (WebSocketServer lServer : mServers) {
 					try {
 						lServer.startServer();
-					} catch (Exception lEx) {
+					} catch (WebSocketException lEx) {
 						mLog.error("Starting server '" + lServer.getId()
 								+ "' failed (" + lEx.getClass().getSimpleName()
 								+ ": " + lEx.getMessage() + ").");
@@ -340,6 +340,7 @@ public class JWebSocketFactory {
 	/**
 	 *
 	 */
+	@SuppressWarnings("SleepWhileInLoop")
 	public static void run() {
 		// remain here until shut down request
 		while (JWebSocketInstance.getStatus() != JWebSocketInstance.SHUTTING_DOWN) {
