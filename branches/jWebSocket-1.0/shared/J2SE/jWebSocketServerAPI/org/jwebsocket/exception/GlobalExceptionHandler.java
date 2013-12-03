@@ -27,7 +27,7 @@ public class GlobalExceptionHandler implements Thread.UncaughtExceptionHandler {
 	 */
 	public void handleException(Throwable aThrowable) {
 		try {
-			mLog.error(Logging.getSimpleExceptionMessage(aThrowable, "Uncaught Exception"));
+			mLog.error("Uncaught Exception: " + aThrowable.getMessage());
 		} catch (Throwable lThrowable) {
 			// don't let the exception get thrown out, will cause infinite looping!
 		}
