@@ -46,7 +46,8 @@ public class Logging {
 	 */
 	public final static int SINGLE_FILE = 2;
 	private static int mReloadDelay = 20000;
-	private static List mHiddenTokenFields = new FastList<String>();
+	private static final List<String> mHiddenTokenFields = new FastList<String>();
+
 	static {
 		mHiddenTokenFields.add("password");
 	}
@@ -113,6 +114,16 @@ public class Logging {
 
 	/**
 	 *
+	 * @param aThrowable
+	 * @return
+	 */
+	public static String getExceptionMessage(Throwable aThrowable) {
+		return aThrowable.getMessage()
+				+ (mIsStackTraceEnabled ? "\n" + getStackTraceAsString(aThrowable) : "");
+	}
+
+	/**
+	 *
 	 * @param aException
 	 * @return
 	 */
@@ -131,6 +142,18 @@ public class Logging {
 		return aException.getClass().getSimpleName()
 				+ " on " + aHint + ": "
 				+ getExceptionMessage(aException);
+	}
+
+	/**
+	 *
+	 * @param aThrowable
+	 * @param aHint
+	 * @return
+	 */
+	public static String getSimpleExceptionMessage(Throwable aThrowable, String aHint) {
+		return aThrowable.getClass().getSimpleName()
+				+ " on " + aHint + ": "
+				+ getExceptionMessage(aThrowable);
 	}
 
 	/**
