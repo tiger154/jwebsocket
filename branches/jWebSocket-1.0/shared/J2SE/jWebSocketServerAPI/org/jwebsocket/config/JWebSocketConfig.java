@@ -19,6 +19,7 @@
 package org.jwebsocket.config;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,7 +68,7 @@ public class JWebSocketConfig implements Config {
 	private static String mBootstrapPath = null;
 	private static String mJWebSocketHome = null;
 	private static boolean mIsWebApp = false;
-	private static Map<String, String> mProperties = new FastMap().shared();
+	private static Map<String, String> mProperties = new FastMap<String, String>().shared();
 
 	/**
 	 *
@@ -204,7 +205,7 @@ public class JWebSocketConfig implements Config {
 						} catch (Exception lEx) {
 							lFiles = null;
 						}
-						if (!lFiles.isEmpty()) {
+						if (lFiles != null && !lFiles.isEmpty()) {
 							lDir = new File(".");
 							mJWebSocketHome = FilenameUtils.normalize(lDir.getAbsolutePath());
 						}
@@ -325,6 +326,7 @@ public class JWebSocketConfig implements Config {
 	 * @param aArgs
 	 */
 	public static void initForConsoleApp(String[] aArgs) {
+		
 		if (aArgs != null && aArgs.length > 0) {
 			for (int lIdx = 0; lIdx < aArgs.length; lIdx++) {
 				// is there one more argument beyond the current one?
@@ -369,6 +371,9 @@ public class JWebSocketConfig implements Config {
 		} catch (Exception lEx) {
 			System.out.println(lEx.getClass().getSimpleName() + " configuring logs: " + lEx.getMessage());
 		}
+		
+		// register global exception handler
+		org.jwebsocket.exception.GlobalExceptionHandler.registerGlobalExceptionHandler();
 	}
 
 	/**
@@ -907,7 +912,7 @@ public class JWebSocketConfig implements Config {
 			} else {
 				lURL = new URL("file://" + aPath);
 			}
-		} catch (Exception lEx) {
+		} catch (MalformedURLException lEx) {
 			System.out.println(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 		}
 		return lURL;
