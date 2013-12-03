@@ -5,5 +5,5 @@
 	"permissions": [
 		"permission java.security.AllPermission"
 	],
-	"author": "Rolando SM<rsantamaria@jwebsocket.org> 28/11/2013"
+	"author": "Rolando SM <rsantamaria@jwebsocket.org> 28/11/2013"
 }
