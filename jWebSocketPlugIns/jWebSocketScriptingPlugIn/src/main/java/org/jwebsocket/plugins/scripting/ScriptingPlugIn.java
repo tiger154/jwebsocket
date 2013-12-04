@@ -109,7 +109,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * @param aConfiguration
 	 * @throws Exception
 	 */
-	public ScriptingPlugIn(PluginConfiguration aConfiguration) throws Exception {
+	public ScriptingPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating Scripting plug-in...");
@@ -139,7 +139,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 			}
 		} catch (Exception lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating scripting plug-in"));
-			throw lEx;
 		}
 	}
 
