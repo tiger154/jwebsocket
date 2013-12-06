@@ -396,7 +396,7 @@ var jws = {
 		// take over default values if not specified for options
 		if( aDefaults ) {
 			for( var lKey in aDefaults ) {
-				if( !aOptions[ lKey ] ) {
+				if( undefined === aOptions[ lKey ] ) {
 					aOptions[ lKey ] = aDefaults[ lKey ];
 				}
 			}

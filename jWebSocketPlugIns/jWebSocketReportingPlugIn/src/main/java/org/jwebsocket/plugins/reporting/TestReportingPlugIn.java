@@ -77,7 +77,7 @@ public class TestReportingPlugIn extends ActionPlugIn {
 				+ ".plugins.reporting", "generateReport");
 
 		// The report name
-		String lreportName = "JWebAnotherUserData";
+		String lreportName = "ExtendedUserData";
 
 		// The report paramas
 		Map<String, Object> lreportParams = new HashMap<String, Object>();
@@ -128,42 +128,6 @@ public class TestReportingPlugIn extends ActionPlugIn {
 		lUser.put("firstname", "Alexander");
 		lUser.put("lastname", "Schulze");
 		lUser.put("telephone", "234234234");
-		lUser.put("mobile", "234234234");
-		lUser.put("fax", "234234234");
-		lUser.put("securityQuestion", "Mention your favotite ice cream flavor");
-		lUser.put("myInterest", "Download bibliography");
-		lUser.put("subsciptions", "jWebSocket news");
-		lUser.put("enabled", true);
-		lUser.put("active", true);
-		lUser.put("registrationDate", new Long("1384837986066"));
-		lUser.put("activationDate", new Long("1384837986066"));
-		lUser.put("lastActivityDate", new Long("1384837986066"));
-		lUser.put("loginCount", 55);
-		lReportFields.add(lUser);
-
-		lUser = new HashMap<String, Object>();
-		lUser.put("username", "mcasanova");
-		lUser.put("firstname", "Madisleidys");
-		lUser.put("lastname", "Casanova");
-		lUser.put("telephone", "234234234");
-		lUser.put("mobile", "123123123");
-		lUser.put("fax", "234234234");
-		lUser.put("securityQuestion", "Mention your favotite ice cream flavor");
-		lUser.put("myInterest", "Download bibliography");
-		lUser.put("subsciptions", "jWebSocket news");
-		lUser.put("enabled", true);
-		lUser.put("active", true);
-		lUser.put("registrationDate", new Long("1384837986066"));
-		lUser.put("activationDate", new Long("1384837986066"));
-		lUser.put("lastActivityDate", new Long("1384837986066"));
-		lUser.put("loginCount", 55);
-		lReportFields.add(lUser);
-
-		lUser = new HashMap<String, Object>();
-		lUser.put("username", "aschulze");
-		lUser.put("firstname", "Alexander");
-		lUser.put("lastname", "Schulze");
-		lUser.put("telephone", "32234234");
 		lUser.put("mobile", "234234234");
 		lUser.put("fax", "234234234");
 		lUser.put("securityQuestion", "Mention your favotite ice cream flavor");

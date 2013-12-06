@@ -34,6 +34,7 @@ import org.apache.commons.io.FileUtils;
 import org.jwebsocket.plugins.reporting.Settings;
 import org.jwebsocket.plugins.reporting.api.IJasperReportService;
 import org.jwebsocket.plugins.reporting.api.ReportFormats;
+import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
 
 /**
@@ -43,7 +44,6 @@ import org.springframework.util.Assert;
 public class JasperReportService implements IJasperReportService {
 
 	private Settings mSettings;
-	private Connection mConnection;
 	private final Map<String, JasperReport> mCache = new FastMap<String, JasperReport>();
 
 	/**
@@ -64,26 +64,6 @@ public class JasperReportService implements IJasperReportService {
 	@Override
 	public void setSettings(Settings aSettings) {
 		this.mSettings = aSettings;
-	}
-
-	/**
-	 * Gets the Connection object
-	 *
-	 * @return
-	 */
-	@Override
-	public Connection getConnection() {
-		return mConnection;
-	}
-
-	/**
-	 * Sets the Connection object
-	 *
-	 * @param aConnection
-	 */
-	@Override
-	public void setConnection(Connection aConnection) {
-		this.mConnection = aConnection;
 	}
 
 	/**
@@ -137,8 +117,8 @@ public class JasperReportService implements IJasperReportService {
 	}
 
 	/**
-	 * Save the report in the desire format Generate an array of bytes to
-	 * transform the report in a base64String.
+	 * Save the report in the desire format. Generate an array of bytes to
+	 * transform the report in a base64 String.
 	 *
 	 * @param aUserHome
 	 * @param aReportName
@@ -167,21 +147,21 @@ public class JasperReportService implements IJasperReportService {
 			lJasperReport = JasperCompileManager.compileReport(lTemplatePath);
 			mCache.put(lTemplatePath, lJasperReport);
 		}
-		// creating a datasource using the specified fields
-		//Assert.notNull(aFields, "The 'fields' arguments cannot be null!");		
+		// JasperPrint Object
 		JasperPrint lJasperPrint;
 		if (null != aConnection) {
-			lJasperPrint = JasperFillManager.fillReport(lJasperReport, aParams, mConnection);
+			lJasperPrint = JasperFillManager.fillReport(lJasperReport, aParams, aConnection);
 		} else {
 			Assert.notNull(aFields, "The 'fields' arguments cannot be null!");
 			JRBeanCollectionDataSource lReportDataSource = new JRBeanCollectionDataSource(aFields);
-			// filling the report
 			lJasperPrint = JasperFillManager.fillReport(lJasperReport, aParams, lReportDataSource);
 		}
-
 		// getting the directory for the report 
 		String lOutputDir = mSettings.getOutputFolder().replace("${USER_HOME}", aUserHome);
 		FileUtils.forceMkdir(new File(lOutputDir));
+
+		// the final zip file path
+		String lFinalPath = "";
 
 		String lDestFile = lOutputDir
 				+ File.separator + aReportName;
@@ -189,15 +169,35 @@ public class JasperReportService implements IJasperReportService {
 		if (ReportFormats.PDF.equals(aFormat)) {
 			lDestFile = lDestFile + ".pdf";
 			JasperExportManager.exportReportToPdfFile(lJasperPrint, lDestFile);
+			lFinalPath = lDestFile;
 		} else if (ReportFormats.HTML.equals(aFormat)) {
 			lDestFile = lDestFile + ".html";
 			JasperExportManager.exportReportToHtmlFile(lJasperPrint, lDestFile);
-			//@TODO compress the HTML report into single ZIP file
+
+			// getting the 'report_name'.html page and the report_name_folder_files
+			File lFilesDirectory = new File(lDestFile + "_files");
+			File lFilePage = new File(lDestFile);
+
+			// moving resulting files to a unique directory to get zip
+			File lReportZipFolder = new File(lOutputDir + File.separator + aReportName);
+			FileUtils.forceMkdir(lReportZipFolder);
+			FileUtils.copyDirectoryToDirectory(lFilesDirectory, lReportZipFolder);
+			FileUtils.copyFileToDirectory(lFilePage, lReportZipFolder, true);
+
+			// deleting the resulting files of reporting
+			FileUtils.forceDelete(lFilesDirectory);
+			FileUtils.forceDelete(lFilePage);
+
+			// using the zip method of FileUtils
+			String[] lFiles = new String[]{lReportZipFolder.getPath()};
+			Tools.zip(lFiles, lOutputDir + File.separator + aReportName + ".zip");
+			FileUtils.deleteDirectory(lReportZipFolder);
+
+			lFinalPath = lOutputDir + aReportName + ".zip";
 		} else {
 			throw new Exception("The given format is not supported!");
 		}
-
-		return lDestFile.replace(aUserHome, "");
+		return lFinalPath.replace(aUserHome, "");
 	}
 
 	@Override

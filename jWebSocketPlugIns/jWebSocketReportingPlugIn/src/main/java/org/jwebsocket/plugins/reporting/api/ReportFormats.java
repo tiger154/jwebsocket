@@ -16,7 +16,6 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.reporting.api;
 
 /**
@@ -24,6 +23,7 @@ package org.jwebsocket.plugins.reporting.api;
  * @author javier alejandro
  */
 public class ReportFormats {
-    public static String PDF = "pdf";
-    public static String HTML = "html";
+
+	public static String PDF = "pdf";
+	public static String HTML = "html";
 }
