@@ -15,7 +15,7 @@
 		<band height="79" splitType="Stretch">
 			<image>
 				<reportElement x="0" y="0" width="138" height="58"/>
-				<imageExpression><![CDATA["C:\\Users\\javier alejandro\\Apps\\WORK\\JWS\\ijwssvn\\branches\\jWebSocket-1.0\\jWebSocketClient\\web\\images\\logo.gif"]]></imageExpression>
+				<imageExpression><![CDATA[System.getenv("JWEBSOCKET_HOME") + "//conf//ReportingPlugIn//reports//logo.jpg"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="168" y="47" width="201" height="20"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JWebSocketUserList" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e6729339-adf3-44d4-a9b9-4d83d5d32b75">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JWebSocketUserList" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.1"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -12,11 +12,11 @@
 	<title>
 		<band height="75" splitType="Stretch">
 			<image>
-				<reportElement uuid="9b264003-e94e-4fa3-a82f-5858cb4d02c4" x="0" y="0" width="138" height="58"/>
-				<imageExpression><![CDATA["C:\\Users\\javier alejandro\\Apps\\WORK\\JWS\\ijwssvn\\branches\\jWebSocket-1.0\\jWebSocketClient\\web\\images\\logo.gif"]]></imageExpression>
+				<reportElement x="0" y="0" width="138" height="58"/>
+				<imageExpression><![CDATA[System.getenv("JWEBSOCKET_HOME") + "//conf//ReportingPlugIn//reports//logo.jpg"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement uuid="8cc5fa7d-fe16-4a6a-a0b6-22f76425a565" x="168" y="46" width="201" height="20"/>
+				<reportElement x="168" y="46" width="201" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="15" isBold="true" isStrikeThrough="false"/>
 					<paragraph lineSpacing="1_1_2"/>
@@ -28,43 +28,43 @@
 	<detail>
 		<band height="424" splitType="Stretch">
 			<line>
-				<reportElement uuid="23e29bfe-7f66-4004-aa6a-3f9154b717aa" x="0" y="0" width="555" height="1"/>
+				<reportElement x="0" y="0" width="555" height="1"/>
 			</line>
 			<staticText>
-				<reportElement uuid="a8a50d61-cb41-4206-812a-faaf40d09709" x="16" y="16" width="100" height="20"/>
+				<reportElement x="16" y="16" width="100" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[user name]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="501eddce-8296-4b2e-894d-7c6e033b00c7" x="138" y="16" width="396" height="20"/>
+				<reportElement x="138" y="16" width="396" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="e0f4da85-37db-4c1a-ae7d-d1443ddf35ba" x="16" y="64" width="100" height="20"/>
+				<reportElement x="16" y="64" width="100" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[rol name]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="d808eec7-6adc-4582-9796-55b326f2ddfa" x="138" y="64" width="396" height="20"/>
+				<reportElement x="138" y="64" width="396" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="c50c768a-8b1d-4885-b0f0-dcedd14b4bd9" x="16" y="96" width="100" height="20"/>
+				<reportElement x="16" y="96" width="100" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[rol description]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="97a3f7df-369c-4d51-90fb-ea16f83358fa" x="138" y="96" width="396" height="20"/>
+				<reportElement x="138" y="96" width="396" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
@@ -73,12 +73,12 @@
 	<pageFooter>
 		<band height="39" splitType="Stretch">
 			<textField>
-				<reportElement uuid="3522eac7-9cc8-42c2-b546-4e076d0eb3b0" x="509" y="9" width="25" height="20"/>
+				<reportElement x="509" y="9" width="25" height="20"/>
 				<textElement/>
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement uuid="657e6224-4b6f-41c3-b59d-90f830a0c4f5" x="0" y="1" width="555" height="1"/>
+				<reportElement x="0" y="1" width="555" height="1"/>
 			</line>
 		</band>
 	</pageFooter>
