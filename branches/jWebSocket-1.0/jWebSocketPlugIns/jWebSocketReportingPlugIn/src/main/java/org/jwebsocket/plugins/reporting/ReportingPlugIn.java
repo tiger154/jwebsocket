@@ -54,7 +54,6 @@ public class ReportingPlugIn extends ActionPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket ReportingPlugin - Community Edition";
-
 	private static final Logger mLog = Logging.getLogger();
 	private static final String NS_REPORTING = JWebSocketServerConstants.NS_BASE + ".plugins.reporting";
 	private IJasperReportService mJasperReportService;
@@ -149,13 +148,6 @@ public class ReportingPlugIn extends ActionPlugIn {
 	 */
 	@Override
 	public void systemStarted() throws Exception {
-		TokenPlugIn lJDBCPlugIn = (TokenPlugIn) getServer().getPlugInById("jws.jdbc");
-		Assert.notNull(lJDBCPlugIn, "The ReportingPlugin required JDBC plug-in enabled!");
-		Object lObject = Tools.invoke(lJDBCPlugIn, "getNativeDataSource");
-
-		DataSource lDataSource = (DataSource) lObject;
-		// passing the JDBC plug-in connection instance to the JR service to re-use
-		mJasperReportService.setConnection(lDataSource.getConnection());
 	}
 
 	/**
@@ -168,7 +160,6 @@ public class ReportingPlugIn extends ActionPlugIn {
 	@Override
 	public Token invoke(WebSocketConnector aConnector, Token aToken) {
 		Token lResponse = createResponse(aToken);
-
 		try {
 			if (NS_REPORTING.equals(aToken.getNS())) {
 				if ("getReports".equals(aToken.getType())) {
@@ -202,11 +193,13 @@ public class ReportingPlugIn extends ActionPlugIn {
 		List<Map<String, Object>> lReportFields = aToken.getList("reportFields", new ArrayList());
 		// checking JDBCplug-in is loaded
 		boolean lUseJDBC = aToken.getBoolean("useJDBCConnection", false);
-		Connection lConnection;
+		String lConnectionAlias = aToken.getString("connectionAlias", "default");
+		// getting the connection object, only from S2S
+		Connection lConnection = (Connection) aToken.getObject("connection");
 		if (lUseJDBC) {
-			lConnection = mJasperReportService.getConnection();
-		} else {
-			lConnection = (Connection) aToken.getObject("connection");
+			if (null == lConnection) {
+				lConnection = getConnection(lConnectionAlias);
+			}
 		}
 		// getting the report format to export
 		String lReportFormat = aToken.getString("reportOutputType");
@@ -253,14 +246,23 @@ public class ReportingPlugIn extends ActionPlugIn {
 		sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 * Gets the user home directory
+	 *
+	 * @param aConnector
+	 * @return
+	 */
 	String getUserHome(WebSocketConnector aConnector) {
+		TokenPlugIn mFileSystem = (TokenPlugIn) getServer().getPlugInById("jws.filesystem");
+		Assert.notNull(mFileSystem, "The ReportingPlugIn required FileSystenPlugIn  enabled!");
+
 		// creating invoke request for FSP
-		Token lCommand = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE
+		Token lRequest = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE
 				+ ".plugins.filesystem", "getAliasPath");
-		lCommand.setString("alias", "privateDir");
+		lRequest.setString("alias", "privateDir");
 
 		// getting the method execution result
-		Token lResult = invokePlugIn("jws.filesystem", aConnector, lCommand);
+		Token lResult = mFileSystem.invoke(aConnector, lRequest);
 		Assert.notNull(lResult, "Unable to communicate with the FileSystem plug-in "
 				+ "to retrieve the client private directory!");
 
@@ -268,6 +270,26 @@ public class ReportingPlugIn extends ActionPlugIn {
 		String lUserHome = lResult.getString("aliasPath");
 
 		return lUserHome;
+	}
+
+	/**
+	 * Gets the JDBC connection
+	 *
+	 * @param aAlias
+	 * @return
+	 * @throws Exception
+	 */
+	public Connection getConnection(String aAlias) throws Exception {
+		TokenPlugIn lJDBCPlugIn = (TokenPlugIn) getServer().getPlugInById("jws.jdbc");
+		Assert.notNull(lJDBCPlugIn, "The ReportingPlugin required JDBC plug-in enabled!");
+
+		Token lRequest = TokenFactory.createToken();
+		lRequest.setString("alias", aAlias);
+
+		Object lObject = Tools.invoke(lJDBCPlugIn, "getNativeDataSource", new Class[]{Token.class}, lRequest);
+		DataSource lDataSource = (DataSource) lObject;
+
+		return lDataSource.getConnection();
 	}
 
 	/**
@@ -287,10 +309,9 @@ public class ReportingPlugIn extends ActionPlugIn {
 		File lTemplate = new File(lUserPath + File.separator + lTemplatePath);
 		Assert.isTrue(lTemplate.exists() && lTemplate.canWrite(), "The target file does not exists!");
 
-		// moving file to templates folder
-		FileUtils.moveFileToDirectory(lTemplate,
+		FileUtils.copyFileToDirectory(lTemplate,
 				new File(mJasperReportService.getSettings().getReportFolder()), true);
-
+		lTemplate.delete();
 		// sending default acknowledge response
 		sendToken(aConnector, createResponse(aToken));
 	}

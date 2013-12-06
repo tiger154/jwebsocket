@@ -20,6 +20,7 @@ package org.jwebsocket.plugins.reporting;
 
 import org.apache.commons.io.FilenameUtils;
 import org.jwebsocket.config.JWebSocketConfig;
+
 /**
  *
  * @author aschulze
@@ -37,7 +38,7 @@ public class Settings {
 	}
 
 	/**
-	 *  Sets the report folder
+	 * Sets the report folder
 	 *
 	 * @param aReportFolder
 	 */
@@ -57,11 +58,11 @@ public class Settings {
 	}
 
 	/**
-	 *  Sets the output folder
+	 * Sets the output folder
 	 *
 	 * @param aOutputFolder
 	 */
 	public void setOutputFolder(String aOutputFolder) {
 		mOutputFolder = aOutputFolder;
-	}	
+	}
 }

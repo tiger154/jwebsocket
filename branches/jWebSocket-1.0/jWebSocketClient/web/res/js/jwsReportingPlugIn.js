@@ -40,9 +40,9 @@ jws.ReportingPlugIn = {
 					this.OnReports(aToken);
 				}
 			}
-			else if ("getFormats" == aToken.reqType) {
-				if (this.OnFormats) {
-					this.OnFormats(aToken);
+			else if ("uploadTemplate" == aToken.reqType) {
+				if (this.OnUploadTemplate) {
+					this.OnUploadTemplate(aToken);
 				}
 			}
 		}
@@ -61,7 +61,8 @@ jws.ReportingPlugIn = {
 				reportFields: aFields,
 				reportParams: aParams,
 				reportOutputType: aOptions.outputType || "pdf",
-				useJDBCConnection: aOptions.useConection || false
+				useJDBCConnection: aOptions.useConection || false,
+				nameJDBCCOnnection:aOptions.nameConnection || ""
 			};
 			this.sendToken(lToken, aOptions);
 		}
@@ -100,8 +101,8 @@ jws.ReportingPlugIn = {
 		if (aListeners.OnReports !== undefined) {
 			this.OnReports = aListeners.OnReports;
 		}
-		if (aListeners.OnFormats !== undefined) {
-			this.OnFormats = aListeners.OnFormats;
+		if (aListeners.OnUploadTemplate !== undefined) {
+			this.OnUploadTemplate = aListeners.OnUploadTemplate;
 		}
 	}
 };

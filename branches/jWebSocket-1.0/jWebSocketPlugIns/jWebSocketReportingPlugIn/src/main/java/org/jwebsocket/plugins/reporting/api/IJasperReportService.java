@@ -16,7 +16,6 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-
 package org.jwebsocket.plugins.reporting.api;
 
 import java.sql.Connection;
@@ -36,7 +35,7 @@ public interface IJasperReportService extends IInitializable {
 	 *
 	 * @return
 	 */
-	List<String> getReportNames();	
+	List<String> getReportNames();
 
 	/**
 	 * Gets a report template path
@@ -48,7 +47,8 @@ public interface IJasperReportService extends IInitializable {
 	String getReportTemplatePath(String aReportName) throws Exception;
 
 	/**
-	 * Generates a report using a Map of parameters or a List of Fields or a Connection.
+	 * Generates a report using a Map of parameters or a List of Fields or a
+	 * Connection.
 	 *
 	 * @param aUserHome
 	 * @param aReportName
@@ -59,35 +59,21 @@ public interface IJasperReportService extends IInitializable {
 	 * @return
 	 * @throws Exception
 	 */
-	String generateReport(String aUserHome, String aReportName, 
+	String generateReport(String aUserHome, String aReportName,
 			Map<String, Object> aParams, List<Map<String, Object>> aFields,
-			Connection aConnection, String aFormat)throws Exception;
-	
+			Connection aConnection, String aFormat) throws Exception;
+
 	/**
-	 *  Gets a Settings object
-	 * 
-	 * @return 
+	 * Gets a Settings object
+	 *
+	 * @return
 	 */
 	Settings getSettings();
-	
+
 	/**
-	 *  Sets a Settings object
-	 *  
+	 * Sets a Settings object
+	 *
 	 * @param aSettings
 	 */
 	void setSettings(Settings aSettings);
-
-	/**
-	 *  Gets a Connection object
-	 * 
-	 * @return 
-	 */
-	Connection getConnection();
-	
-	/**
-	 *  Sets a Connection object
-	 *  
-	 * @param aConnection 
-	 */
-	void setConnection(Connection aConnection);	
 }

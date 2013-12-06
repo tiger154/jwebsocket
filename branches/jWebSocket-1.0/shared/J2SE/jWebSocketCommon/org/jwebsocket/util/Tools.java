@@ -50,6 +50,7 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.commons.codec.binary.Base64;
@@ -1095,6 +1096,56 @@ public class Tools {
 		lAIOS.close();
 
 		return lBAOS.toByteArray();
+	}
+
+	/**
+	 * Zip files
+	 *
+	 * @param aFilesPath The list of files to Zip
+	 * @param aOutputZipFile
+	 * @param lFolder
+	 * @throws IOException
+	 */
+	private static void zip(String[] aFilesPath, ZipOutputStream aOutputZipFile, String lFolder) throws IOException {
+		byte[] buffer = new byte[4096]; 
+		int bytesRead;
+		// output file
+		for (String lFilePath : aFilesPath) {
+			File lFile = new File(lFilePath);
+
+			if (!lFile.isDirectory()) {
+				FileInputStream in = new FileInputStream(lFile);
+
+				ZipEntry entry = new ZipEntry((lFolder.isEmpty()) ? lFile.getName() : lFolder + File.separator + lFile.getName());
+				aOutputZipFile.putNextEntry(entry);
+
+				while ((bytesRead = in.read(buffer)) != -1) {
+					aOutputZipFile.write(buffer, 0, bytesRead);
+				}
+				in.close();
+
+			} else {
+				String[] lSubFiles = lFile.list();
+				for (int lIndex = 0; lIndex < lSubFiles.length; lIndex++) {
+					lSubFiles[lIndex] = lFile.getPath() + File.separator + lSubFiles[lIndex];
+				}
+				zip(lSubFiles, aOutputZipFile, (lFolder.isEmpty())? lFile.getName() : lFolder + File.separator + lFile.getName());
+			}
+		}
+	}
+
+	/**
+	 * Zip files
+	 *
+	 * @param aFilesPath The list of files to Zip
+	 * @param aOutputZipFile
+	 * @throws IOException
+	 */
+	public static void zip(String[] aFilesPath, String aOutputZipFile) throws IOException {
+		ZipOutputStream lOut = new ZipOutputStream(new FileOutputStream(aOutputZipFile));
+		zip(aFilesPath, lOut, "");
+
+		lOut.close();
 	}
 
 	/**
