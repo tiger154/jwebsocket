@@ -29,7 +29,7 @@ import javolution.util.FastMap;
  */
 public class ChannelGroup {
 
-	private String mId = null;
+	private final String mId = null;
 	private Map<String, Channel> mChannels = null;
 
 	/**

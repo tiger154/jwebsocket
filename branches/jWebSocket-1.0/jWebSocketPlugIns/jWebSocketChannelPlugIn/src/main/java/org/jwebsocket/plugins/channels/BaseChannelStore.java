@@ -42,7 +42,7 @@ public class BaseChannelStore implements ChannelStore {
 	/**
 	 * logger object
 	 */
-	private static Logger logger = Logging.getLogger(BaseChannelStore.class);
+	private static final Logger logger = Logging.getLogger(BaseChannelStore.class);
 	/**
 	 *
 	 */
@@ -87,7 +87,7 @@ public class BaseChannelStore implements ChannelStore {
 	 *
 	 */
 	public static final String SERVER_ID = "token_server";
-	private final IBasicStorage mStorage;
+	private final IBasicStorage<String, Object> mStorage;
 	private final IStorageProvider mStorageProvider;
 
 	/**
@@ -95,7 +95,7 @@ public class BaseChannelStore implements ChannelStore {
 	 * @param aStorage
 	 * @param aStorageProvider
 	 */
-	public BaseChannelStore(IBasicStorage aStorage, IStorageProvider aStorageProvider) {
+	public BaseChannelStore(IBasicStorage<String, Object> aStorage, IStorageProvider aStorageProvider) {
 		mStorage = aStorage;
 		mStorageProvider = aStorageProvider;
 	}
@@ -199,8 +199,8 @@ public class BaseChannelStore implements ChannelStore {
 
 	@Override
 	public Map<String, Channel> getChannels() throws Exception {
-		Set lKeys = mStorage.keySet();
-		Map lRes = new FastMap<String, Channel>();
+		Set<String> lKeys = mStorage.keySet();
+		Map<String, Channel> lRes = new FastMap<String, Channel>();
 		if (lKeys != null) {
 			for (Object lKey : lKeys) {
 				Object lValue = mStorage.get((String) lKey);

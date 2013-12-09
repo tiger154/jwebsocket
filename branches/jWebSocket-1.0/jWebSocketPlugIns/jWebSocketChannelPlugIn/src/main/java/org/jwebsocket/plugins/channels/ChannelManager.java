@@ -21,6 +21,7 @@ package org.jwebsocket.plugins.channels;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.jwebsocket.api.IInitializable;
 import org.jwebsocket.api.IStorageProvider;
@@ -42,7 +43,7 @@ public class ChannelManager implements IInitializable {
 	/**
 	 * logger
 	 */
-	private static Logger mLog = Logging.getLogger(ChannelManager.class);
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 * id for the logger channel
 	 */
@@ -69,11 +70,11 @@ public class ChannelManager implements IInitializable {
 	/**
 	 * Logger channel that publish all the logs in jWebSocket system
 	 */
-	private static Channel mLoggerChannel = null;
+	private static final Channel mLoggerChannel = null;
 	/**
 	 * admin channel to monitor channel plug-in activity
 	 */
-	private static Channel mAdminChannel = null;
+	private static final Channel mAdminChannel = null;
 	/**
 	 * setting to check if new channel creation or registration is allowed
 	 */
@@ -103,7 +104,7 @@ public class ChannelManager implements IInitializable {
 	 *
 	 */
 	public static final String SUBSCRIBER_STORAGE_PREFIX = PLUGIN_STORAGES_PREFIX + "sub.";
-	private final Map mSettings;
+	private final Map<String, Object> mSettings;
 
 	@Override
 	public void initialize() throws Exception {
@@ -141,10 +142,14 @@ public class ChannelManager implements IInitializable {
 					try {
 						lJSON = new JSONObject((String) lObj);
 						lParseOk = true;
-					} catch (Exception Ex) {
+					} catch (JSONException Ex) {
+						// TODO: process exception here properly!
 					}
 				}
-				if (lParseOk) {
+				if (lJSON == null) {
+					mLog.error("JSON is 'null', settings for channel '"
+							+ lChannelId + "' could not be parsed properly.");
+				} else if (lParseOk) {
 
 					String lName = null;
 					String lAccessKey;
@@ -211,7 +216,8 @@ public class ChannelManager implements IInitializable {
 	public void shutdown() throws Exception {
 	}
 
-	private ChannelManager(Map aSettings, IStorageProvider aStorageProvider) {
+	private ChannelManager(Map<String, Object> aSettings,
+			IStorageProvider aStorageProvider) {
 		mStorageProvider = aStorageProvider;
 		mSettings = aSettings;
 	}
