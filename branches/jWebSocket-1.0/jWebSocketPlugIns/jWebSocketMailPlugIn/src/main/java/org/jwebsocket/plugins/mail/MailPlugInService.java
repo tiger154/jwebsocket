@@ -54,7 +54,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class MailPlugInService {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private static MailStore mMailStore = null;
 	private static Settings mSettings;
 
@@ -166,10 +166,10 @@ public class MailPlugInService {
 			return;
 		}
 
-		List<String> lVolumeIds = lMailToken.getList("volumeIds");
+		List<Object> lVolumeIds = lMailToken.getList("volumeIds");
 		if (null != lVolumeIds) {
-			for (String lVolumeId : lVolumeIds) {
-				Token lVolToken = mMailStore.getMail(lVolumeId);
+			for (Object lVolumeId : lVolumeIds) {
+				Token lVolToken = mMailStore.getMail((String) lVolumeId);
 				if (null != lVolToken) {
 					Token lSendMailToken = sendMail(lVolToken);
 					Token lEvent = TokenFactory.createToken(aPlugInNS, BaseToken.TT_EVENT);
@@ -279,9 +279,9 @@ public class MailPlugInService {
 					FileUtils.writeStringToFile(lFile, lData, "UTF-8");
 				}
 			}
-			List<String> lAttachments = lMailStoreToken.getList("attachments");
+			List<Object> lAttachments = lMailStoreToken.getList("attachments");
 			if (null == lAttachments) {
-				lAttachments = new FastList<String>();
+				lAttachments = new FastList<Object>();
 				lMailStoreToken.setList("attachments", lAttachments);
 			}
 			lAttachments.add(lFile.getAbsolutePath());
@@ -354,7 +354,7 @@ public class MailPlugInService {
 		Token lRes = TokenFactory.createToken();
 		Integer lVolumeSize = aToken.getInteger("volumeSize", -1);
 		String lArchiveName = aToken.getString("archiveName", "PackagedAttachments{partNo}.zip");
-		List<String> lAttachments = aMail.getList("attachments");
+		List<Object> lAttachments = aMail.getList("attachments");
 		int MIN_VOLUME_SIZE = 16348;
 		int BUFFER_SIZE = 65536;
 		if (lVolumeSize >= MIN_VOLUME_SIZE
@@ -375,8 +375,8 @@ public class MailPlugInService {
 				lCmdLine.add("-v" + lVolumeSize + "b"); // Assume Yes on all queries.
 				lCmdLine.add("a"); // add command
 				lCmdLine.add(aTargetFolder + "test.rar"); // target archive
-				for (String lAttachment : lAttachments) {
-					lCmdLine.add(lAttachment); // add files to compress
+				for (Object lAttachment : lAttachments) {
+					lCmdLine.add((String) lAttachment); // add files to compress
 				}
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Executing: " + lCmdLine.toString());
@@ -481,8 +481,6 @@ public class MailPlugInService {
 				 *
 				 * // Close the zip file lZipOut.close();
 				 */
-
-
 				/*
 				 * FileInputStream lFIS = new
 				 * FileInputStream(lArchiveAbsolutePath); // Read data from the
@@ -515,13 +513,13 @@ public class MailPlugInService {
 		String lSubject = aToken.getString("subject");
 		String lBody = aToken.getString("body");
 		Boolean lIsHTML = aToken.getBoolean("html", false);
-		List<String> lAttachedFiles = aToken.getList("attachments");
+		List<Object> lAttachedFiles = aToken.getList("attachments");
 		String lMsg;
 
 		// instantiate response token
 		Token lResponse = TokenFactory.createToken();
 
-		Map lMap = new FastMap();
+		Map<String, String> lMap = new FastMap<String, String>();
 
 		if (lFrom != null && lFrom.length() > 0) {
 			lMap.put("from", lFrom);
@@ -548,7 +546,7 @@ public class MailPlugInService {
 		if (lAttachedFiles != null) {
 			for (int lIdx = 0; lIdx < lAttachedFiles.size(); lIdx++) {
 				EmailAttachment lAttachment = new EmailAttachment();
-				lAttachment.setPath(lAttachedFiles.get(lIdx));
+				lAttachment.setPath((String) lAttachedFiles.get(lIdx));
 				lAttachment.setDisposition(EmailAttachment.ATTACHMENT);
 				// lAttachment.setDescription( "Picture of John" );
 				// lAttachment.setName( "John" );

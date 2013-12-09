@@ -46,7 +46,7 @@ import org.jwebsocket.tcp.nio.Util;
  */
 public class GrizzlyEngine extends BaseEngine {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private static Integer mGrizzlyPort = 80;
 	private static Integer mGrizzlySSLPort = 443;
 	private String mKeyStore = JWebSocketServerConstants.JWEBSOCKET_KEYSTORE;

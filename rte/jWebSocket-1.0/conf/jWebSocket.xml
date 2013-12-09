@@ -63,6 +63,21 @@
 			<url>${JWEBSOCKET_HOME}libs/derby-10.10.1.1.jar</url>
 			<description>Derby JDBC driver to access Derby databases from jWebSocket and its plug-ins</description>
 		</library>
+		<library>
+			<id>xbean-spring-common</id>
+			<url>${JWEBSOCKET_HOME}libs/xbean-spring-common-2.8.jar</url>
+			<description>xbean-spring-common-2.8.jar</description>
+		</library>
+		<library>
+			<id>xbean-spring-v2</id>
+			<url>${JWEBSOCKET_HOME}libs/xbean-spring-v2-2.8.jar</url>
+			<description>xbean-spring-v2-2.8.jar</description>
+		</library>
+		<library>
+			<id>xbean-spring-v2c</id>
+			<url>${JWEBSOCKET_HOME}libs/xbean-spring-v2c-2.8.jar</url>
+			<description>xbean-spring-v2c-2.8.jar</description>
+		</library>
 	</libraries>
 
 	<!-- jWebSocket logging configuration -->
@@ -1765,7 +1780,6 @@
 		</plugin>
 		
 		<!-- quota plug-in -->
-		<!--
 		<plugin>
 			<name>org.jwebsocket.plugins.quota.QuotaPlugin</name>
 			<id>jws.quota</id>
@@ -1778,7 +1792,6 @@
 				<setting key="spring_config">${JWEBSOCKET_HOME}conf/QuotaPlugin/quota.xml</setting>
 			</settings>
 		</plugin>
-		-->
 		
 		<!-- Reporting plug-in -->
 		<plugin>
@@ -1797,7 +1810,8 @@
 		</plugin>
 		
 		<!-- Monitoring plugin -->
-		<!--		<plugin>
+		<!--		
+		<plugin>
 			<name>org.jwebsocket.plugins.monitoring.MonitoringPlugIn</name>
 			<id>MonitoringPlugIn</id>
 			<jar>jWebSocketMonitoringPlugIn-1.0.jar</jar>

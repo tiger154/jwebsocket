@@ -33,7 +33,7 @@ import org.jwebsocket.token.Token;
  */
 class ClusterListener implements MessageListener {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private ClusterSender mSender = null;
 
 	public ClusterListener(ClusterSender aClusterSender) {

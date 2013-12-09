@@ -45,7 +45,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class ClusterPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	/**
 	 *

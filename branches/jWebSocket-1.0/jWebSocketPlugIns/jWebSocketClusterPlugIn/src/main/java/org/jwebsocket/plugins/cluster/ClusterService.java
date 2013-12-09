@@ -33,7 +33,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class ClusterService {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 *

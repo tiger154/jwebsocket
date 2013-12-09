@@ -34,7 +34,7 @@ import org.jwebsocket.token.Token;
  */
 public class ClusterSender {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private final MessageProducer mProducer;
 	private String mNodeId;
 	private Session mSession;

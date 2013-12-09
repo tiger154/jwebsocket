@@ -23,26 +23,53 @@ package org.jwebsocket.jms.endpoint;
  * @author aschulze
  */
 public class JWSRequest {
-	
-	public void request(String aUsername, String aPassword, 
-			String aFrom, String aTo, 
-			String aNS, String aType, 
+
+	/**
+	 *
+	 * @param aUsername
+	 * @param aPassword
+	 * @param aFrom
+	 * @param aTo
+	 * @param aNS
+	 * @param aType
+	 * @param aPayLoad
+	 */
+	public void request(String aUsername, String aPassword,
+			String aFrom, String aTo,
+			String aNS, String aType,
 			String aPayLoad) {
-		
-	}
-	
-	public void request(String aUsername,
-			String aFrom, String aTo, 
-			String aNS, String aType, 
-			String aPayLoad) {
-		
+
 	}
 
-	public void request(
-			String aFrom, String aTo, 
-			String aNS, String aType, 
+	/**
+	 *
+	 * @param aUsername
+	 * @param aFrom
+	 * @param aTo
+	 * @param aNS
+	 * @param aType
+	 * @param aPayLoad
+	 */
+	public void request(String aUsername,
+			String aFrom, String aTo,
+			String aNS, String aType,
 			String aPayLoad) {
-		
+
+	}
+
+	/**
+	 *
+	 * @param aFrom
+	 * @param aTo
+	 * @param aNS
+	 * @param aType
+	 * @param aPayLoad
+	 */
+	public void request(
+			String aFrom, String aTo,
+			String aNS, String aType,
+			String aPayLoad) {
+
 	}
 
 }

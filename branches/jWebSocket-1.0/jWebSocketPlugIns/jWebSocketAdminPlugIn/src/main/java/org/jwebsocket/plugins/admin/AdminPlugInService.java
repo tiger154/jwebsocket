@@ -70,7 +70,7 @@ import org.jwebsocket.util.DateHandler;
  */
 public class AdminPlugInService {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private static Integer mNumberOfDays = null;
 	private static String mNamespace;
 	private static String mPathLog = null;

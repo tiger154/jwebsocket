@@ -56,7 +56,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class XMPPPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_XMPP =
 			JWebSocketServerConstants.NS_BASE + ".plugins.xmpp";

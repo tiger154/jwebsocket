@@ -36,7 +36,7 @@ import org.springframework.security.authentication.BadCredentialsException;
  */
 public class ExceptionHandler implements IExceptionHandler {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private Set<IExceptionNotifier> mNotifiers = new FastSet<IExceptionNotifier>();
 
 	/**

@@ -30,8 +30,12 @@ import org.jwebsocket.token.Token;
 public class JWSMessageListener implements IJWSMessageListener {
 
 	static final Logger mLog = Logger.getLogger(JWSMessageListener.class);
-	private JWSEndPointSender mSender;
+	private final JWSEndPointSender mSender;
 
+	/**
+	 *
+	 * @param aSender
+	 */
 	public JWSMessageListener(JWSEndPointSender aSender) {
 		mSender = aSender;
 	}

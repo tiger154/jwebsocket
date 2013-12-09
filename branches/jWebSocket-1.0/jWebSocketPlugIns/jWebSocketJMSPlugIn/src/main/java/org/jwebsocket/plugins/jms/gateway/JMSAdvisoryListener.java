@@ -41,7 +41,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class JMSAdvisoryListener implements MessageListener {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private JMSEngine mEngine = null;
 	private JMSSender mJMSSender = null;
 	private Map<String, String> mEndPoints = new FastMap<String, String>();

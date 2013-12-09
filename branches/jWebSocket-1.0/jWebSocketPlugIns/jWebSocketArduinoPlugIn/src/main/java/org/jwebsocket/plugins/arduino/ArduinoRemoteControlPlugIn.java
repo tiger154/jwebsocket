@@ -45,7 +45,7 @@ import org.jwebsocket.plugins.arduino.util.LedsProgram;
  */
 public class ArduinoRemoteControlPlugIn extends EventModelPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private ArduinoConnection mArduinoConnection;
 	private String mPort;
 

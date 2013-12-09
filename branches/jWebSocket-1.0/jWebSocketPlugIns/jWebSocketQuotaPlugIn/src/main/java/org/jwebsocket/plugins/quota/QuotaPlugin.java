@@ -31,7 +31,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class QuotaPlugin extends ActionPlugIn {
 
-    private static Logger mLog = Logging.getLogger();
+    private static final Logger mLog = Logging.getLogger();
     public static final String NS = JWebSocketServerConstants.NS_BASE + ".plugins.quota";
     private static ApplicationContext mSpringAppContext;
     private IQuotaProvider mQuotaProvider;

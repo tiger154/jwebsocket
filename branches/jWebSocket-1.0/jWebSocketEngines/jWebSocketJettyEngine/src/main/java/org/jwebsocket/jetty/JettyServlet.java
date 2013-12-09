@@ -33,7 +33,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class JettyServlet extends WebSocketServlet {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 *

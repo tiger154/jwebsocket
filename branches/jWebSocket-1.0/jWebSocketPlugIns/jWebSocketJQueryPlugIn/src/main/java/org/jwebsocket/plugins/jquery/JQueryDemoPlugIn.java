@@ -39,7 +39,7 @@ import org.springframework.beans.support.PagedListHolder;
  */
 public class JQueryDemoPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 *
 	 */

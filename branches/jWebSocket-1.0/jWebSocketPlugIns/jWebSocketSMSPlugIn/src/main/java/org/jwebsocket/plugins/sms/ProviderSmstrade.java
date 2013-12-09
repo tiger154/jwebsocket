@@ -37,7 +37,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class ProviderSmstrade extends BaseSMSProvider implements ISMSProvider {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private String mDebug;
 	private String mCost;
 	private String mMessageId;

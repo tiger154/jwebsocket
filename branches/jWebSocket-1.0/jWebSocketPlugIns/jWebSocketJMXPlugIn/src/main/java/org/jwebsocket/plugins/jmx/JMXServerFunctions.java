@@ -42,7 +42,7 @@ import org.jwebsocket.plugins.jmx.util.JMXHandler;
  */
 public class JMXServerFunctions {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 * The class constructor.

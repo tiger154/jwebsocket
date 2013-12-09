@@ -52,7 +52,7 @@ import twitter4j.auth.RequestToken;
  */
 public class TwitterPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_TWITTER =
 			JWebSocketServerConstants.NS_BASE + ".plugins.twitter";

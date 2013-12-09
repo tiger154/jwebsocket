@@ -50,7 +50,7 @@ import org.springframework.util.StringUtils;
  */
 public class ExtProcessPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 *
 	 */
@@ -211,7 +211,7 @@ public class ExtProcessPlugIn extends TokenPlugIn {
 			lServer.sendToken(aConnector, lResponse);
 			return;
 		}
-		List<String> lArgs = aToken.getList("args");
+		List<?> lArgs = aToken.getList("args");
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Processing 'call'"

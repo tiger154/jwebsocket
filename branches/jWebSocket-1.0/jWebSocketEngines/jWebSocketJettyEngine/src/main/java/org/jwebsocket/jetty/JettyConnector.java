@@ -42,7 +42,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class JettyConnector extends BaseConnector {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private boolean mIsRunning = false;
 	private CloseReason mCloseReason = CloseReason.TIMEOUT;
 	private Connection mConnection;

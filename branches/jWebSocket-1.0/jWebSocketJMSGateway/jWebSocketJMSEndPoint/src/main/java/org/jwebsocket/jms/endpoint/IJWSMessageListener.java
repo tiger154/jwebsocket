@@ -31,7 +31,6 @@ public interface IJWSMessageListener {
 	 * @param aFrom
 	 * @param aTo
 	 * @param aNS
-	 * @param aFormat
 	 * @param aType
 	 * @param aArgs
 	 * @param aPayload
@@ -43,12 +42,14 @@ public interface IJWSMessageListener {
 
 	/**
 	 *
+	 * @param aSourceId
 	 * @param aToken
 	 */
 	void processToken(String aSourceId, Token aToken);
 
 	/**
 	 *
+	 * @param aSourceId
 	 * @param aToken
 	 */
 	void sendToken(String aSourceId, Token aToken);

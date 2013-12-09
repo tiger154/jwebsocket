@@ -36,7 +36,7 @@ import org.jwebsocket.util.Tools;
  */
 public class ProxyPlugIn extends TokenPlugIn implements ServerHandler {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	// specify token types processed by system plug-in
 	private Endpoint mInEndpoint, mHttpEndpoint, mWebSocketEndpoint;
 	private ServerChannel mServer;

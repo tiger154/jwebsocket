@@ -35,7 +35,7 @@ import org.jwebsocket.logging.Logging;
 
 public class ClusterEngine extends BaseEngine {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 *

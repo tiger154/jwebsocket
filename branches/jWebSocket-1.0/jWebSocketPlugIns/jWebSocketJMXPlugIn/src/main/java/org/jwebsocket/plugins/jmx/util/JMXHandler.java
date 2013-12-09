@@ -34,7 +34,7 @@ import org.jwebsocket.token.Token;
  */
 public class JMXHandler {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 * Determine if the data type of the values contained within the map is

@@ -92,16 +92,6 @@
 			<artifactId>sigar</artifactId>
 			<version>1.6.4</version>
 		</dependency>
-		<!-- Spring 2.0 m5 exclusion -->
-		<!--
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.0-m5</version>
-			< ! - -  Keep this! Required to force use of higher version of Spring (3.x)!  - - >
-			<scope>provided</scope>
-		</dependency>
-		-->
 		<!-- javolution -->
 		<dependency>
 			<groupId>javolution</groupId>

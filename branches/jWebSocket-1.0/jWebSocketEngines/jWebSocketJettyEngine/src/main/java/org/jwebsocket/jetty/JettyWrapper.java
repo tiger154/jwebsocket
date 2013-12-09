@@ -48,7 +48,7 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 public class JettyWrapper implements WebSocket,
 		OnTextMessage, OnBinaryMessage, OnFrame, OnControl {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private WebSocketConnector mConnector = null;
 	private WebSocketEngine mEngine = null;
 	private HttpServletRequest mRequest = null;

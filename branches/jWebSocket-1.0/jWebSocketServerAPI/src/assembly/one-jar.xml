@@ -22,6 +22,11 @@
 				<include>org.slf4j:slf4j-log4j12</include>
 				<!-- <include>org.slf4j:slf4j-simple</include> -->
 				
+				<include>javax.mail:mail</include>
+				<!--
+				<include>javax.activation:activation</include>
+				-->
+				
 				<include>log4j:log4j</include>
 				<include>org.jdom:jdom</include>
 
@@ -40,10 +45,11 @@
 				<include>org.springframework.security:spring-security-web</include>
 				<include>org.springframework:spring-tx</include>
 				<include>org.springframework:spring-web</include>
-
+				<!--
 				<include>org.apache.xbean:xbean-spring-common</include>
 				<include>org.apache.xbean:xbean-spring-v2</include>
 				<include>org.apache.xbean:xbean-spring-v2c</include>
+				-->
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>
