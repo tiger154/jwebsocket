@@ -165,6 +165,7 @@ public class PingpongMatch extends Match implements Runnable {
 
 	//mover la ball
 	@Override
+	@SuppressWarnings("SleepWhileInLoop")
 	public void run() {
 		try {
 			while (true) {

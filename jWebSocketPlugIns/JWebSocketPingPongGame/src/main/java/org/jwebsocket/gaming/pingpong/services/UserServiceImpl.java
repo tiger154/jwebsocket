@@ -32,8 +32,8 @@ import java.util.TimerTask;
  */
 public class UserServiceImpl extends TimerTask implements IUserService {
 
-	private DBCollection mCollection;
-	private int mRemoveExpiredUsersTime;
+	private final DBCollection mCollection;
+	private final int mRemoveExpiredUsersTime;
 
 	/**
 	 *

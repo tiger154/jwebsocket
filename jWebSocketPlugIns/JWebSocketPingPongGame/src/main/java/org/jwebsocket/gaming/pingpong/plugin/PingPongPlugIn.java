@@ -49,12 +49,12 @@ import org.jwebsocket.util.Tools;
  */
 public class PingPongPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger(PingPongPlugIn.class);
+	private static final Logger mLog = Logging.getLogger(PingPongPlugIn.class);
 	/**
 	 *
 	 */
-	public static final String NS_PINGPONG =
-			JWebSocketServerConstants.NS_BASE + ".plugins.pingpong";
+	public static final String NS_PINGPONG
+			= JWebSocketServerConstants.NS_BASE + ".plugins.pingpong";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket PingPongPlugIn";
@@ -98,12 +98,10 @@ public class PingPongPlugIn extends TokenPlugIn {
 				mLog.info("PingPong plug-in connected to MongoDB.");
 			}
 
-		} catch (Exception ex) {
-			if (mLog.isDebugEnabled()) {
-				mLog.error("There was an error during the connection: " + ex.getMessage());
-				mDatabaseError = true;
-				mDatabaseErrorMessage = "There was an error during the connection: " + ex.getMessage();
-			}
+		} catch (Exception lEx) {
+			mLog.error("There was an error during the connection: " + lEx.getMessage());
+			mDatabaseError = true;
+			mDatabaseErrorMessage = "There was an error during the connection: " + lEx.getMessage();
 		}
 	}
 
@@ -315,7 +313,6 @@ public class PingPongPlugIn extends TokenPlugIn {
 			getServer().sendToken(aConnector, lMessage);
 		}
 
-
 	}
 
 	//Registrar usuario
@@ -393,9 +390,9 @@ public class PingPongPlugIn extends TokenPlugIn {
 		if (lAccepted) {
 			mPingpongGame.addMatch(new PingpongMatch(this,
 					mPingpongGame.getPingpongStage(), new PingpongPlayer(
-					lUserName1, "playLeft", 0, mPingpongGame.getPingpongStage()),
+							lUserName1, "playLeft", 0, mPingpongGame.getPingpongStage()),
 					new PingpongPlayer(lUserName2, "playRight", 0,
-					mPingpongGame.getPingpongStage())));
+							mPingpongGame.getPingpongStage())));
 			PingpongMatch lPingpongMatch = mPingpongGame.getMatch(lUserName1);
 			playerUpdate(lPingpongMatch, "playLeftplayRight");
 			scoreUpdate(lPingpongMatch);
@@ -642,7 +639,6 @@ public class PingPongPlugIn extends TokenPlugIn {
 			PingpongPlayer lPingpongPlayer1 = aPingpongMatch.getPingpongPlayer(0);
 			PingpongPlayer lPingpongPlayer2 = aPingpongMatch.getPingpongPlayer(1);
 
-
 			WebSocketConnector lConnector = connectorUser(
 					lPingpongPlayer1.getPlayerName());
 			WebSocketConnector lConnector1 = connectorUser(
@@ -652,7 +648,7 @@ public class PingPongPlugIn extends TokenPlugIn {
 				lMessage.setInteger("width",
 						(int) lPingpongPlayer1.getDimension().getWidth());
 				lMessage.setInteger("Heigth",
-						(int) lPingpongPlayer1.getDimension().getHeight());
+						lPingpongPlayer1.getDimension().getHeight());
 
 				lMessage.setInteger("posX", lPingpongPlayer1.getPosition().getX());
 				lMessage.setInteger("posY", lPingpongPlayer1.getPosition().getY());
@@ -711,11 +707,9 @@ public class PingPongPlugIn extends TokenPlugIn {
 	public void scoreUpdate(PingpongMatch aPingpongMatch) {
 		try {
 			Token lMessage = TokenFactory.createToken(getNamespace(), "score");
+			int lScore1, lScore2;
 			String lUserName1 = aPingpongMatch.getPingpongPlayer(0).getPlayerName();
 			String lUserName2 = aPingpongMatch.getPingpongPlayer(1).getPlayerName();
-			int lScore1, lScore2;
-			lUserName1 = aPingpongMatch.getPingpongPlayer(0).getPlayerName();
-			lUserName2 = aPingpongMatch.getPingpongPlayer(1).getPlayerName();
 			lScore1 = aPingpongMatch.getPingpongPlayer(0).getPlayerScore();
 			lScore2 = aPingpongMatch.getPingpongPlayer(1).getPlayerScore();
 
@@ -757,7 +751,7 @@ public class PingPongPlugIn extends TokenPlugIn {
 			lMessage.setInteger("width",
 					(int) aPingpongMatch.getBall().getDimension().getWidth());
 			lMessage.setInteger("height",
-					(int) aPingpongMatch.getBall().getDimension().getHeight());
+					aPingpongMatch.getBall().getDimension().getHeight());
 
 			getServer().sendToken(connectorUser(lUserName1), lMessage);
 			getServer().sendToken(connectorUser(lUserName2), lMessage);
@@ -777,9 +771,9 @@ public class PingPongPlugIn extends TokenPlugIn {
 		try {
 			Token lMessage = TokenFactory.createToken(getNamespace(), "moveball");
 			lMessage.setInteger("posX",
-					(int) aPingpongMatch.getBall().getPosition().getX());
+					aPingpongMatch.getBall().getPosition().getX());
 			lMessage.setInteger("posY",
-					(int) aPingpongMatch.getBall().getPosition().getY());
+					aPingpongMatch.getBall().getPosition().getY());
 
 			String lUserName1 = aPingpongMatch.getPingpongPlayer(0).getPlayerName();
 			String lUserName2 = aPingpongMatch.getPingpongPlayer(1).getPlayerName();
@@ -840,10 +834,10 @@ public class PingPongPlugIn extends TokenPlugIn {
 
 			getServer().sendToken(
 					connectorUser(
-					aPingpongMatch.getPingpongPlayer(0).getPlayerName()), lMessage);
+							aPingpongMatch.getPingpongPlayer(0).getPlayerName()), lMessage);
 			getServer().sendToken(
 					connectorUser(
-					aPingpongMatch.getPingpongPlayer(1).getPlayerName()), lMessage);
+							aPingpongMatch.getPingpongPlayer(1).getPlayerName()), lMessage);
 
 		} catch (Exception ex) {
 			if (mLog.isDebugEnabled()) {
@@ -872,7 +866,6 @@ public class PingPongPlugIn extends TokenPlugIn {
 			if (lconector2.getBoolean("sound")) {
 				getServer().sendToken(lconector2, lMessage);
 			}
-
 
 		} catch (Exception ex) {
 			if (mLog.isDebugEnabled()) {
