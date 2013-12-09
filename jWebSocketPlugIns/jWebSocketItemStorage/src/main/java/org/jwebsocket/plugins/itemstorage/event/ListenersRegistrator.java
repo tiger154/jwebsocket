@@ -31,17 +31,27 @@ public class ListenersRegistrator {
 
 	private List<IItemStorageListener> mListeners = new FastList<IItemStorageListener>();
 
+	/**
+	 *
+	 * @return
+	 */
 	public List<IItemStorageListener> getListeners() {
 		return mListeners;
 	}
 
+	/**
+	 *
+	 * @param aListeners
+	 */
 	public void setListeners(List<IItemStorageListener> aListeners) {
 		mListeners = aListeners;
 	}
 
+	/**
+	 *
+	 */
 	public void registerAll() {
-		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
-			IItemStorageListener lListener = lIt.next();
+		for (IItemStorageListener lListener : mListeners) {
 			ItemStorageEventManager.addListener(lListener);
 		}
 	}

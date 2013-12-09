@@ -19,7 +19,6 @@
 package org.jwebsocket.plugins.itemstorage;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -355,9 +354,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 				Token lEvent = TokenFactory.createToken(NS_ITEM_STORAGE, "event");
 				lEvent.setString("name", lEventName);
 				lEvent.setString(ATTR_COLLECTION_NAME, aCollectionName);
-
-				for (Iterator<String> lIt = aAffectedClients.iterator(); lIt.hasNext();) {
-					String lClient = lIt.next();
+				for (String lClient : aAffectedClients) {
 					WebSocketConnector lConnector = getConnector(lClient);
 					if (null != lConnector) {
 						// checking per user events notification configuration
@@ -377,9 +374,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 				Token lEvent = TokenFactory.createToken(NS_ITEM_STORAGE, "event");
 				lEvent.setString("name", lEventName);
 				lEvent.setString(ATTR_COLLECTION_NAME, aCollectionName);
-
-				for (Iterator<String> lIt = aSubscribers.iterator(); lIt.hasNext();) {
-					String lClient = lIt.next();
+				for (String lClient : aSubscribers) {
 					WebSocketConnector lConnector = getConnector(lClient);
 					if (null != lConnector) {
 						// checking per user events notification configuration

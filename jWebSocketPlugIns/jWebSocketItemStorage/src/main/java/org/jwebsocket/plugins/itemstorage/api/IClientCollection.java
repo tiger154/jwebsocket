@@ -30,35 +30,41 @@ public interface IClientCollection {
 	 *
 	 * @param aUID
 	 * @return
+	 * @throws java.lang.Exception
 	 */
 	boolean contains(String aUID) throws Exception;
 
 	/**
 	 *
 	 * @param aUID
+	 * @throws java.lang.Exception
 	 */
 	void add(String aUID) throws Exception;
 
 	/**
 	 *
 	 * @param aUID
+	 * @throws java.lang.Exception
 	 */
 	void remove(String aUID) throws Exception;
 
 	/**
 	 *
 	 * @return
+	 * @throws java.lang.Exception
 	 */
 	List<String> getAll() throws Exception;
 
 	/**
 	 *
+	 * @throws java.lang.Exception
 	 */
 	void clear() throws Exception;
 
 	/**
 	 * 
 	 * @return 
+	 * @throws java.lang.Exception 
 	 */
 	int size() throws Exception;
 }

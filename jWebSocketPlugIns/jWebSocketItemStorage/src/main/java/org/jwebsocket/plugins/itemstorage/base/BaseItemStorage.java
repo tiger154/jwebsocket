@@ -32,10 +32,27 @@ import org.springframework.util.Assert;
  */
 abstract public class BaseItemStorage implements IItemStorage {
 
+	/**
+	 *
+	 */
 	protected String mName;
+
+	/**
+	 *
+	 */
 	protected String mType;
+
+	/**
+	 *
+	 */
 	protected IItemFactory mItemFactory;
 
+	/**
+	 *
+	 * @param aName
+	 * @param aType
+	 * @param aItemFactory
+	 */
 	public BaseItemStorage(String aName, String aType, IItemFactory aItemFactory) {
 		this.mName = aName;
 		this.mType = aType;

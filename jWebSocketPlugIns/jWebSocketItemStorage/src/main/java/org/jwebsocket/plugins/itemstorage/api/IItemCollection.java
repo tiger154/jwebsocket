@@ -150,6 +150,8 @@ public interface IItemCollection extends ITokenizable, IMappable {
 	/**
 	 * Restart a collection. When a collection is restarted all publishers and
 	 * subscribers are removed from the collection.
+	 * @return 
+	 * @throws java.lang.Exception 
 	 */
 	Set<String> restart() throws Exception;
 
@@ -173,6 +175,7 @@ public interface IItemCollection extends ITokenizable, IMappable {
 	 * be changed again.
 	 *
 	 * @param aCapacity
+	 * @throws java.lang.Exception
 	 */
 	void setCapacity(int aCapacity) throws Exception;
 }

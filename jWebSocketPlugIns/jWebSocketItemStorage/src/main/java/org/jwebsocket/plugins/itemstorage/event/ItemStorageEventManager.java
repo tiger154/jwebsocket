@@ -40,10 +40,17 @@ public class ItemStorageEventManager {
 	private static final List<IItemStorageListener> mListeners = new FastList<IItemStorageListener>();
 	private static ExecutorService mThreadPool = null;
 
+	/**
+	 *
+	 * @return
+	 */
 	public static boolean isThreadPoolUP() {
 		return null != mThreadPool && !mThreadPool.isShutdown();
 	}
 
+	/**
+	 *
+	 */
 	public static void startThreadPool() {
 		mThreadPool = Executors.newFixedThreadPool(10, new ThreadFactory() {
 			@Override
@@ -53,20 +60,37 @@ public class ItemStorageEventManager {
 		});
 	}
 
+	/**
+	 *
+	 */
 	public static void stopThreadPool() {
 		if (isThreadPoolUP()) {
 			mThreadPool.shutdownNow();
 		}
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public static void addListener(IItemStorageListener aListener) {
 		mListeners.add(aListener);
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public static void removeListener(IItemStorageListener aListener) {
 		mListeners.remove(aListener);
 	}
 
+	/**
+	 *
+	 * @param aUser
+	 * @param aItem
+	 * @param aItemCollection
+	 */
 	public static void onItemSaved(final String aUser, final IItem aItem, final IItemCollection aItemCollection) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -79,6 +103,11 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aItem
+	 * @param aItemStorage
+	 */
 	public static void onItemSaved(final IItem aItem, final IItemStorage aItemStorage) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -91,6 +120,11 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aItem
+	 * @param aItemStorage
+	 */
 	public static void onItemRemoved(final IItem aItem, final IItemStorage aItemStorage) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -103,6 +137,12 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aUser
+	 * @param aItem
+	 * @param aItemCollection
+	 */
 	public static void onItemRemoved(final String aUser, final IItem aItem, final IItemCollection aItemCollection) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -115,6 +155,10 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aItemStorage
+	 */
 	public static void onStorageCleaned(final IItemStorage aItemStorage) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -127,6 +171,10 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aItemStorage
+	 */
 	public static void onStorageCreated(final IItemStorage aItemStorage) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -139,6 +187,10 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aStorageName
+	 */
 	public static void onStorageRemoved(final String aStorageName) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -149,6 +201,11 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aCollectionName
+	 * @param aSubscriber
+	 */
 	public static void onSubscription(final String aCollectionName, final String aSubscriber) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -161,6 +218,12 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aCollectionName
+	 * @param aSubscriber
+	 * @param aUser
+	 */
 	public static void onUnsubscription(final String aCollectionName, final String aSubscriber, final String aUser) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -173,6 +236,11 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aCollectionName
+	 * @param aPublisher
+	 */
 	public static void onAuthorization(final String aCollectionName, final String aPublisher) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -185,6 +253,11 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aCollectionName
+	 * @param aAffectedClients
+	 */
 	public static void onCollectionRestarted(final String aCollectionName, final Set<String> aAffectedClients) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -197,6 +270,10 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aCollection
+	 */
 	public static void onCollectionSaved(final ItemCollection aCollection) {
 		for (Iterator<IItemStorageListener> lIt = mListeners.iterator(); lIt.hasNext();) {
 			final IItemStorageListener lListener = lIt.next();
@@ -212,12 +289,22 @@ public class ItemStorageEventManager {
 		}
 	}
 
+	/**
+	 *
+	 * @param aItem
+	 * @param aStorage
+	 * @throws Exception
+	 */
 	public static void onBeforeSaveItem(IItem aItem, IItemStorage aStorage) throws Exception {
 		for (IItemStorageListener lListener : mListeners) {
 			lListener.onBeforeSaveItem(aItem, aStorage);
 		}
 	}
 
+	/**
+	 *
+	 * @param aCollection
+	 */
 	public static void onBeforeCreateCollection(ItemCollection aCollection) {
 		for (IItemStorageListener lListener : mListeners) {
 			lListener.onBeforeCreateCollection(aCollection);

@@ -31,8 +31,12 @@ import org.springframework.util.Assert;
  */
 public class MemoryItemStorageProvider implements IItemStorageProvider {
 
-	private IItemFactory mItemFactory;
+	private final IItemFactory mItemFactory;
 
+	/**
+	 *
+	 * @param aItemFactory
+	 */
 	public MemoryItemStorageProvider(IItemFactory aItemFactory) {
 		mItemFactory = aItemFactory;
 		Assert.notNull(mItemFactory, "Item factory cannot be null!");

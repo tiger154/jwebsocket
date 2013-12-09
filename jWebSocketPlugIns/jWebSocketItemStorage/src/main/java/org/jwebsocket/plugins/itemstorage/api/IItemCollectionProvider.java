@@ -39,6 +39,7 @@ public interface IItemCollectionProvider extends IInitializable {
 	 * Get a collection by the given name
 	 *
 	 * @param aName
+	 * @param aItemType
 	 * @return
 	 * @throws Exception .
 	 */
@@ -72,25 +73,34 @@ public interface IItemCollectionProvider extends IInitializable {
 	/**
 	 *
 	 * @return A list containing the name of all existing collections
+	 * @throws java.lang.Exception
 	 */
 	List<String> collectionNames() throws Exception;;
 
 	/**
 	 *
+	 * @param aOffset
+	 * @param aLength
 	 * @return A list containing the name of all existing public collections
+	 * @throws java.lang.Exception
 	 */
 	List<String> collectionPublicNames(int aOffset, int aLength) throws Exception;;
 
 	/**
 	 *
 	 * @param aOwner
+	 * @param aOffset
+	 * @param aLength
 	 * @return A list containing the name of the given owner collections
+	 * @throws java.lang.Exception
 	 */
 	List<String> collectionNamesByOwner(String aOwner, int aOffset, int aLength) throws Exception;;
 
 	/**
 	 *
+	 * @param aCollectionName
 	 * @return TRUE if the collection exists, FALSE otherwise
+	 * @throws java.lang.Exception
 	 */
 	Boolean collectionExists(String aCollectionName) throws Exception;;
 
@@ -100,18 +110,22 @@ public interface IItemCollectionProvider extends IInitializable {
 	 *
 	 * @param aItemType
 	 * @return
+	 * @throws java.lang.Exception
 	 */
 	boolean isItemTypeInUse(String aItemType) throws Exception;;
 
 	/**
 	 *
 	 * @return The number of existing collections
+	 * @throws java.lang.Exception
 	 */
 	long size() throws Exception;;
 
 	/**
 	 *
+	 * @param aOwner
 	 * @return The number of existing collections
+	 * @throws java.lang.Exception
 	 */
 	long size(String aOwner) throws Exception;;
 }

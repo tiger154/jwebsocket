@@ -75,8 +75,7 @@ public class MemoryItemFactory implements IItemFactory {
 
 	@Override
 	public void setDefinitions(Set<IItemDefinition> aDefinitions) throws Exception {
-		for (Iterator<IItemDefinition> lIt = aDefinitions.iterator(); lIt.hasNext();) {
-			IItemDefinition lItem = lIt.next();
+		for (IItemDefinition lItem : aDefinitions) {
 			registerDefinition(lItem);
 		}
 	}

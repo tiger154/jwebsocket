@@ -49,6 +49,7 @@ public interface IItemFactory extends IInitializable {
 	 *
 	 * @param aType
 	 * @return
+	 * @throws java.lang.Exception
 	 */
 	IItemDefinition getDefinition(String aType) throws Exception;
 
@@ -56,6 +57,7 @@ public interface IItemFactory extends IInitializable {
 	 *
 	 * @param aType
 	 * @return TRUE if the item type exists, FALSE otherwise
+	 * @throws java.lang.Exception
 	 */
 	Boolean supportsType(String aType) throws Exception;
 
@@ -64,6 +66,7 @@ public interface IItemFactory extends IInitializable {
 	 * replaced.
 	 *
 	 * @param aDefinition
+	 * @throws java.lang.Exception
 	 */
 	void registerDefinition(IItemDefinition aDefinition) throws Exception;
 
@@ -72,6 +75,7 @@ public interface IItemFactory extends IInitializable {
 	 *
 	 * @param aType
 	 * @return
+	 * @throws java.lang.Exception
 	 */
 	IItemDefinition removeDefinition(String aType) throws Exception;
 
@@ -79,6 +83,7 @@ public interface IItemFactory extends IInitializable {
 	 * Register a list of item definitions
 	 *
 	 * @param aDefinitions
+	 * @throws java.lang.Exception
 	 */
 	void setDefinitions(Set<IItemDefinition> aDefinitions) throws Exception;
 
@@ -88,12 +93,14 @@ public interface IItemFactory extends IInitializable {
 	 * @param aOffset
 	 * @param aLength
 	 * @return
+	 * @throws java.lang.Exception
 	 */
 	List<IItemDefinition> listDefinitions(int aOffset, int aLength) throws Exception;
 
 	/**
 	 *
 	 * @return The number of existing item definitions
+	 * @throws java.lang.Exception
 	 */
 	int size() throws Exception;
 }

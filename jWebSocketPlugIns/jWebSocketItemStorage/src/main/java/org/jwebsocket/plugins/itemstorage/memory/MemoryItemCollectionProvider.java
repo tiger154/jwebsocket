@@ -39,6 +39,10 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 	private final IItemStorageProvider mItemStorageProvider;
 	private static final Map<String, IItemCollection> mCollections = new FastMap<String, IItemCollection>();
 
+	/**
+	 *
+	 * @param aItemStorageProvider
+	 */
 	public MemoryItemCollectionProvider(IItemStorageProvider aItemStorageProvider) {
 		mItemStorageProvider = aItemStorageProvider;
 		Assert.notNull(mItemStorageProvider, "Item storage provider cannot be null!");
@@ -100,8 +104,7 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 	@Override
 	public List<String> collectionPublicNames(int aOffset, int aLength) {
 		FastList<String> lNames = new FastList<String>();
-		for (Iterator<IItemCollection> lIt = mCollections.values().iterator(); lIt.hasNext();) {
-			IItemCollection lCollection = lIt.next();
+		for (IItemCollection lCollection : mCollections.values()) {
 			if (!lCollection.isPrivate()) {
 				if (0 == aOffset && aLength > 0) {
 					lNames.add(lCollection.getName());
@@ -122,8 +125,7 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 	@Override
 	public List<String> collectionNamesByOwner(String aOwner, int aOffset, int aLength) {
 		FastList<String> lNames = new FastList<String>();
-		for (Iterator<IItemCollection> lIt = mCollections.values().iterator(); lIt.hasNext();) {
-			IItemCollection lCollection = lIt.next();
+		for (IItemCollection lCollection : mCollections.values()) {
 			if (lCollection.getOwner().equals(aOwner)) {
 				if (0 == aOffset && aLength > 0) {
 					lNames.add(lCollection.getName());
@@ -156,39 +158,33 @@ public class MemoryItemCollectionProvider implements IItemCollectionProvider {
 
 	@Override
 	public boolean isItemTypeInUse(String aItemType) {
-		for (Iterator<IItemCollection> lIt = mCollections.values().iterator(); lIt.hasNext();) {
-			IItemCollection lCollection = lIt.next();
+		for (IItemCollection lCollection : mCollections.values()) {
 			if (lCollection.getItemStorage().getItemType().equals(aItemType)) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
 	@Override
 	public long size() {
 		long lSize = 0;
-		for (Iterator<IItemCollection> lIt = mCollections.values().iterator(); lIt.hasNext();) {
-			IItemCollection lCollection = lIt.next();
+		for (IItemCollection lCollection : mCollections.values()) {
 			if (!lCollection.isPrivate()) {
 				lSize++;
 			}
 		}
-
 		return lSize;
 	}
 
 	@Override
 	public long size(String aOwner) {
 		long lSize = 0;
-		for (Iterator<IItemCollection> lIt = mCollections.values().iterator(); lIt.hasNext();) {
-			IItemCollection lCollection = lIt.next();
+		for (IItemCollection lCollection : mCollections.values()) {
 			if (lCollection.getOwner().equals(aOwner)) {
 				lSize++;
 			}
 		}
-
 		return lSize;
 	}
 }

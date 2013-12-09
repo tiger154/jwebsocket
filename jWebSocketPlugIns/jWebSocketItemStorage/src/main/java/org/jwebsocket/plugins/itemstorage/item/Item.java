@@ -20,9 +20,7 @@ package org.jwebsocket.plugins.itemstorage.item;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import javolution.util.FastMap;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
@@ -36,14 +34,36 @@ import org.springframework.util.Assert;
  */
 public class Item implements IItem {
 
-	private Map<String, Object> mAttrs = new FastMap<String, Object>().shared();
-	public static final String ATTR_ATTRS = "attrs";
-	public static final String ATTR_TARGET_PK = "targetPK";
-	public static final String ATTR_PK = "pk";
-	public static final String ATTR_INTERNAL_ID = ItemDefinition.ATTR_UNIQUE_ID;
-	private IItemDefinition mDefinition;
-	private Map<String, Object> mUpdate = new FastMap<String, Object>().shared();
+	private final Map<String, Object> mAttrs
+			= new FastMap<String, Object>().shared();
 
+	/**
+	 *
+	 */
+	public static final String ATTR_ATTRS = "attrs";
+
+	/**
+	 *
+	 */
+	public static final String ATTR_TARGET_PK = "targetPK";
+
+	/**
+	 *
+	 */
+	public static final String ATTR_PK = "pk";
+
+	/**
+	 *
+	 */
+	public static final String ATTR_INTERNAL_ID = ItemDefinition.ATTR_UNIQUE_ID;
+	private final IItemDefinition mDefinition;
+	private final Map<String, Object> mUpdate
+			= new FastMap<String, Object>().shared();
+
+	/**
+	 *
+	 * @param aDefinition
+	 */
 	public Item(IItemDefinition aDefinition) {
 		Assert.notNull(aDefinition, "Item definition cannot be null!");
 		mDefinition = aDefinition;
@@ -71,8 +91,7 @@ public class Item implements IItem {
 
 	@Override
 	public IItem setAll(Map<String, Object> aMap) {
-		for (Iterator<Entry<String, Object>> lIt = aMap.entrySet().iterator(); lIt.hasNext();) {
-			Map.Entry<String, Object> lEntry = lIt.next();
+		for (Map.Entry<String, Object> lEntry : aMap.entrySet()) {
 			set(lEntry.getKey(), lEntry.getValue());
 		}
 
@@ -131,8 +150,7 @@ public class Item implements IItem {
 	 * @param aDef
 	 */
 	public static void adjustJSONTypes(Map<String, Object> aAttrs, IItemDefinition aDef) {
-		for (Iterator<String> lIt = aDef.getAttributeTypes().keySet().iterator(); lIt.hasNext();) {
-			String lKey = lIt.next();
+		for (String lKey : aDef.getAttributeTypes().keySet()) {
 			if (aDef.getAttributeTypes().get(lKey).startsWith("double")) {
 				if (aAttrs.get(lKey) instanceof Integer) {
 					aAttrs.put(lKey, ((Integer) aAttrs.get(lKey)).doubleValue());
