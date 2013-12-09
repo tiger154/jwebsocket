@@ -29,7 +29,6 @@ import org.jwebsocket.gaming.pingpong.events.Edge;
 import org.jwebsocket.gaming.pingpong.events.MovePlayer;
 import org.jwebsocket.gaming.pingpong.events.Score;
 import org.jwebsocket.gaming.pingpong.events.Sound;
-import org.jwebsocket.gaming.pingpong.objects.PingpongMatch;
 import org.jwebsocket.gaming.pingpong.plugin.PingPongPlugIn;
 import org.jwebsocket.eventmodel.api.IListener;
 import org.jwebsocket.eventmodel.observable.Event;
@@ -62,7 +61,7 @@ public class BallListener implements IListener {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(Edge aEvent, ResponseEvent aResponseEvent) {
-		mPlugIn.moveBall((PingpongMatch) aEvent.getPingpongMatch());
+		mPlugIn.moveBall(aEvent.getPingpongMatch());
 	}
 
 	/**
@@ -71,7 +70,7 @@ public class BallListener implements IListener {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(MoveBall aEvent, ResponseEvent aResponseEvent) {
-		mPlugIn.moveBall((PingpongMatch) aEvent.getPingpongMatch());
+		mPlugIn.moveBall(aEvent.getPingpongMatch());
 	}
 
 	/**
@@ -80,7 +79,7 @@ public class BallListener implements IListener {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(PlayerLeft aEvent, ResponseEvent aResponseEvent) {
-		mPlugIn.moveBall((PingpongMatch) aEvent.getPingpongMatch());
+		mPlugIn.moveBall(aEvent.getPingpongMatch());
 	}
 
 	/**
@@ -89,7 +88,7 @@ public class BallListener implements IListener {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(PlayerRight aEvent, ResponseEvent aResponseEvent) {
-		mPlugIn.moveBall((PingpongMatch) aEvent.getPingpongMatch());
+		mPlugIn.moveBall(aEvent.getPingpongMatch());
 	}
 
 	/**
@@ -98,7 +97,7 @@ public class BallListener implements IListener {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(Right aEvent, ResponseEvent aResponseEvent) {
-		mPlugIn.moveBall((PingpongMatch) aEvent.getPingpongMatch());
+		mPlugIn.moveBall(aEvent.getPingpongMatch());
 	}
 
 	/**
@@ -107,7 +106,7 @@ public class BallListener implements IListener {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(Left aEvent, ResponseEvent aResponseEvent) {
-		mPlugIn.moveBall((PingpongMatch) aEvent.getPingpongMatch());
+		mPlugIn.moveBall(aEvent.getPingpongMatch());
 	}
 
 	/**
@@ -125,7 +124,7 @@ public class BallListener implements IListener {
 	 * @param aResponseEvent
 	 */
 	public void processEvent(Score aEvent, ResponseEvent aResponseEvent) {
-		mPlugIn.scoreUpdate((PingpongMatch) aEvent.getPingpongMatch());
+		mPlugIn.scoreUpdate(aEvent.getPingpongMatch());
 	}
 
 	/**

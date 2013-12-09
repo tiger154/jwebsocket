@@ -38,7 +38,7 @@ public final class PingpongBall extends Ball {
 
 	private int mBallMoveX, mBallMoveY, mBallX, mBallY;
 	private int mBallSpeed;
-	private PingpongStage mPingpongStage;
+	private final PingpongStage mPingpongStage;
 
 	/**
 	 *

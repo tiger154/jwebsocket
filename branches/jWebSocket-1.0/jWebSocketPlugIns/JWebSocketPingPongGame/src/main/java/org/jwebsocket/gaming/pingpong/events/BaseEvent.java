@@ -27,14 +27,14 @@ import org.jwebsocket.eventmodel.observable.Event;
  */
 public abstract class BaseEvent extends Event {
 
-	private PingpongMatch mPingpongMatch;
+	private final PingpongMatch mPingpongMatch;
 
 	/**
 	 *
 	 * @param aPingpongMatch
 	 */
 	public BaseEvent(PingpongMatch aPingpongMatch) {
-		this.mPingpongMatch = aPingpongMatch;
+		mPingpongMatch = aPingpongMatch;
 	}
 
 	/**
@@ -42,6 +42,6 @@ public abstract class BaseEvent extends Event {
 	 * @return
 	 */
 	public PingpongMatch getPingpongMatch() {
-		return this.mPingpongMatch;
+		return mPingpongMatch;
 	}
 }

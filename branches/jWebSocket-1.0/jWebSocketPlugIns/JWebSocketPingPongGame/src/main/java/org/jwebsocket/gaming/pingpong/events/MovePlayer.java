@@ -35,7 +35,7 @@ public class MovePlayer extends BaseEvent {
 	 */
 	public MovePlayer(PingpongMatch aPingpongMatch, String aJoystick) {
 		super(aPingpongMatch);
-		this.mJoystick = aJoystick;
+		mJoystick = aJoystick;
 	}
 
 	/**
@@ -43,6 +43,6 @@ public class MovePlayer extends BaseEvent {
 	 * @return
 	 */
 	public String getJoystick() {
-		return this.mJoystick;
+		return mJoystick;
 	}
 }

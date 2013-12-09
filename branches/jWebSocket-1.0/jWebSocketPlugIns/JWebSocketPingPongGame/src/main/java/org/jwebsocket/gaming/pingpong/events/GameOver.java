@@ -35,7 +35,7 @@ public class GameOver extends BaseEvent {
 	 */
 	public GameOver(PingpongMatch aPingpongMatch, boolean aBool) {
 		super(aPingpongMatch);
-		this.mBool = aBool;
+		mBool = aBool;
 	}
 
 	/**
@@ -43,6 +43,6 @@ public class GameOver extends BaseEvent {
 	 * @return
 	 */
 	public boolean getBoolean() {
-		return this.mBool;
+		return mBool;
 	}
 }

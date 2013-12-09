@@ -15,22 +15,22 @@ import java.util.Date;
  */
 public class User implements IMongoDocument {
 
-	private String mUserName;
-	private String mPwdName;
-	private int mWins, mLost, mRanking;
+	private final String mUserName;
+	private final String mPwdName;
+	private final int mWins, mLost;
 
 	/**
 	 *
-	 * @param username
-	 * @param pwsname
+	 * @param aUsername
+	 * @param aPwsName
 	 * @param aWins
 	 * @param aLost
 	 */
-	public User(String username, String pwsname, int aWins, int aLost) {
-		this.mUserName = username;
-		this.mPwdName = pwsname;
-		this.mWins = aWins;
-		this.mLost = aLost;
+	public User(String aUsername, String aPwsName, int aWins, int aLost) {
+		mUserName = aUsername;
+		mPwdName = aPwsName;
+		mWins = aWins;
+		mLost = aLost;
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class User implements IMongoDocument {
 	 * @return
 	 */
 	public String getUserName() {
-		return this.mUserName;
+		return mUserName;
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class User implements IMongoDocument {
 	 * @return
 	 */
 	public String getPwdName() {
-		return this.mUserName;
+		return mUserName;
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class User implements IMongoDocument {
 	 * @return
 	 */
 	public int getWins() {
-		return this.mWins;
+		return mWins;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class User implements IMongoDocument {
 	 * @return
 	 */
 	public int getLost() {
-		return this.mLost;
+		return mLost;
 	}
 
 	@Override

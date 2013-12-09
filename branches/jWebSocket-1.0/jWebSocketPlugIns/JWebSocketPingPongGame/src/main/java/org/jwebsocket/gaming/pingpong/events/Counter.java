@@ -35,7 +35,7 @@ public class Counter extends BaseEvent {
 	 */
 	public Counter(PingpongMatch aPingpongMatch, int aCount) {
 		super(aPingpongMatch);
-		this.mCount = aCount;
+		mCount = aCount;
 	}
 
 	/**
@@ -43,6 +43,6 @@ public class Counter extends BaseEvent {
 	 * @return
 	 */
 	public int getCounter() {
-		return this.mCount;
+		return mCount;
 	}
 }
