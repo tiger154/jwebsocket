@@ -68,7 +68,7 @@ import org.jwebsocket.util.Tools;
  */
 public final class Channel implements ChannelLifeCycle {
 
-	private static Logger mLog = Logging.getLogger(Channel.class);
+	private static final Logger mLog = Logging.getLogger(Channel.class);
 	private String mId;
 	private String mName;
 	private boolean mIsPrivate;
@@ -77,12 +77,12 @@ public final class Channel implements ChannelLifeCycle {
 	private String mAccessKey;
 	private String mOwner;
 	private volatile boolean mAuthenticated = false;
-	private IBasicStorage<String, Object> mSubscribers;
-	private IBasicStorage<String, Object> mPublishers;
+	private final IBasicStorage<String, Object> mSubscribers;
+	private final IBasicStorage<String, Object> mPublishers;
 	private ChannelState mState = ChannelState.CREATED;
-	private List<ChannelListener> mChannelListeners;
-	private static Map<String, List<ChannelListener>> mListeners = new FastMap<String, List<ChannelListener>>().shared();
-	private TokenServer mServer;
+	private final List<ChannelListener> mChannelListeners;
+	private static final Map<String, List<ChannelListener>> mListeners = new FastMap<String, List<ChannelListener>>().shared();
+	private final TokenServer mServer;
 
 	/**
 	 *
@@ -105,10 +105,11 @@ public final class Channel implements ChannelLifeCycle {
 		 *
 		 */
 		CREATED(3);
-		private int value;
 
-		ChannelState(int value) {
-			this.value = value;
+		private final int mValue;
+
+		ChannelState(int aValue) {
+			mValue = aValue;
 		}
 
 		/**
@@ -116,7 +117,7 @@ public final class Channel implements ChannelLifeCycle {
 		 * @return
 		 */
 		public int getValue() {
-			return value;
+			return mValue;
 		}
 	}
 
@@ -142,15 +143,15 @@ public final class Channel implements ChannelLifeCycle {
 			IBasicStorage<String, Object> aSubscribers,
 			IBasicStorage<String, Object> aPublishers) {
 
-		this.mId = aId;
-		this.mName = aName;
-		this.mIsPrivate = aIsPrivate;
-		this.mIsSystem = aIsSystem;
-		this.mAccessKey = aAccessKey;
-		this.mSecretKey = aSecretKey;
-		this.mOwner = aOwner;
-		this.mState = aState;
-		this.mServer = aServer;
+		mId = aId;
+		mName = aName;
+		mIsPrivate = aIsPrivate;
+		mIsSystem = aIsSystem;
+		mAccessKey = aAccessKey;
+		mSecretKey = aSecretKey;
+		mOwner = aOwner;
+		mState = aState;
+		mServer = aServer;
 		mPublishers = aPublishers;
 		mSubscribers = aSubscribers;
 
@@ -553,7 +554,7 @@ public final class Channel implements ChannelLifeCycle {
 					+ "The channel '" + getName() + "' require to be in CREATED state!");
 		}
 
-		// setting the state value
+		// setting the state mValue
 		this.mState = ChannelState.INITIALIZED;
 
 		// listeners notification
@@ -623,7 +624,7 @@ public final class Channel implements ChannelLifeCycle {
 					+ ", only owner of the channel can stop");
 		}
 
-		// setting the new state value
+		// setting the new state mValue
 		mState = ChannelState.STOPPED;
 
 		// listeners notification

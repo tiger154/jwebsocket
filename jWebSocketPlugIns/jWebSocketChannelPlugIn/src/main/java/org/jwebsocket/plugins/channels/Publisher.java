@@ -32,8 +32,8 @@ import org.jwebsocket.factory.JWebSocketFactory;
  */
 public class Publisher {
 
-	private String mPublisherId;
-	private IBasicStorage<String, Object> mStorage;
+	private final String mPublisherId;
+	private final IBasicStorage<String, Object> mStorage;
 
 	/**
 	 *

@@ -28,27 +28,27 @@ public class ChannelLifeCycleException extends Exception {
 
 	/**
 	 *
-	 * @param error
+	 * @param aError
 	 */
-	public ChannelLifeCycleException(String error) {
-		super(error);
+	public ChannelLifeCycleException(String aError) {
+		super(aError);
 	}
 
 	/**
 	 *
-	 * @param error
+	 * @param aError
 	 */
-	public ChannelLifeCycleException(Throwable error) {
-		super(error);
+	public ChannelLifeCycleException(Throwable aError) {
+		super(aError);
 	}
 
 	/**
 	 *
-	 * @param error
-	 * @param throwable
+	 * @param aError
+	 * @param aThrowable
 	 */
-	public ChannelLifeCycleException(String error, Throwable throwable) {
-		super(error, throwable);
+	public ChannelLifeCycleException(String aError, Throwable aThrowable) {
+		super(aError, aThrowable);
 	}
 	private static final long serialVersionUID = 1L;
 }

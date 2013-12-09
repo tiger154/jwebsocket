@@ -19,7 +19,6 @@
 package org.jwebsocket.plugins.channels;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
@@ -38,6 +37,7 @@ import org.jwebsocket.plugins.channels.Channel.ChannelState;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -121,7 +121,7 @@ import org.springframework.util.Assert;
  */
 public class ChannelPlugIn extends ActionPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private ChannelManager mChannelManager = null;
 	/**
 	 *
@@ -186,7 +186,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 			if (mLog.isInfoEnabled()) {
 				mLog.info("Channel plug-in successfully instantiated.");
 			}
-		} catch (Exception lEx) {
+		} catch (BeansException lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " at Channel plug-in instantiation: " + lEx.getMessage());
 		}
 	}
@@ -243,8 +243,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		try {
 			// unsubscribe from the channel, if subscribed
 			Subscriber lSubscriber = mChannelManager.getSubscriber(aConnector.getId());
-			for (Iterator<String> lIt = lSubscriber.getChannels().iterator(); lIt.hasNext();) {
-				String lChannelId = lIt.next();
+			for (String lChannelId : lSubscriber.getChannels()) {
 				Channel lChannel = mChannelManager.getChannel(lChannelId);
 				if (lChannel != null) {
 					// remove subscriber from channel
@@ -259,8 +258,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 
 		try {
 			Publisher lPublisher = mChannelManager.getPublisher(aConnector.getId());
-			for (Iterator<String> lIt = lPublisher.getChannels().iterator(); lIt.hasNext();) {
-				String lChannelId = lIt.next();
+			for (String lChannelId : lPublisher.getChannels()) {
 				Channel lChannel = mChannelManager.getChannel(lChannelId);
 				if (lChannel != null) {
 					// remove publisher from channel
@@ -366,10 +364,10 @@ public class ChannelPlugIn extends ActionPlugIn {
 		// not all clients should be allowed to retreive system channels
 		Token lResponseToken = createResponse(aToken);
 
-		List lChannels = new FastList();
+		List<Map<String,Object>> lChannels = new FastList<Map<String,Object>>();
 		Map<String, Channel> lCMChannels = mChannelManager.getChannels();
 		for (Map.Entry<String, Channel> lEntry : lCMChannels.entrySet()) {
-			Map lItem = new FastMap();
+			Map<String,Object> lItem = new FastMap<String,Object>();
 			Channel lChannel = lEntry.getValue();
 			if (!lChannel.isPrivate() || lChannel.getOwner().equals(aConnector.getUsername())) {
 				lItem.put("id", lChannel.getId());
@@ -717,7 +715,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 				"Invalid channel access key for '" + lChannelId + "'");
 
 		List<String> lChannelSubscribers = lChannel.getSubscribers();
-		List<Map> lSubscribers = new FastList<Map>();
+		List<Map<String,Object>> lSubscribers = new FastList<Map<String,Object>>();
 		if (null != lChannelSubscribers) {
 			for (String lSubscriber : lChannelSubscribers) {
 				//TODO: Some subscribers remain in the list after connector disconnected
@@ -759,7 +757,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 				"Invalid channel access key for channel '" + lChannelId + "'!");
 
 		List<String> lChannelPublishers = lChannel.getPublishers();
-		List<Map> lPublishers = new FastList<Map>();
+		List<Map<String,Object>> lPublishers = new FastList<Map<String,Object>>();
 		if (null != lChannelPublishers) {
 			for (String lPublisher : lChannelPublishers) {
 				//TODO: Some subscribers remain in the list after connector disconnected
@@ -789,11 +787,11 @@ public class ChannelPlugIn extends ActionPlugIn {
 	@Role(name = NS_CHANNELS + "." + TT_GET_SUBSCRIPTIONS)
 	public void getSubscriptionsAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		Subscriber lSubscriber = mChannelManager.getSubscriber(aConnector.getId());
-		List<Map> lSubscriptions = new FastList<Map>();
+		List<Map<String,Object>> lSubscriptions = new FastList<Map<String,Object>>();
 
 		if (null != lSubscriber) {
 			for (String lChannelId : lSubscriber.getChannels()) {
-				Map lItem = new FastMap();
+				Map<String,Object> lItem = new FastMap<String,Object>();
 				Channel lChannel = mChannelManager.getChannel(lChannelId);
 				if (lChannel != null) {
 					lItem.put("id", lChannelId);

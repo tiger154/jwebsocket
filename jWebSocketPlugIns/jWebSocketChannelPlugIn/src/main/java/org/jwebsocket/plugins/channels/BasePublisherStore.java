@@ -30,7 +30,7 @@ import org.jwebsocket.logging.Logging;
 public class BasePublisherStore implements PublisherStore {
 
 	/* logger object */
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/* properties */
 	private final IStorageProvider mStorageProdiver;
 

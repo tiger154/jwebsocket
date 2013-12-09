@@ -32,7 +32,7 @@ public class BaseSubscriberStore implements SubscriberStore {
 	/**
 	 * logger object
 	 */
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/* properties */
 	private final IStorageProvider mStorageProdiver;
 
