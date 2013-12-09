@@ -74,7 +74,7 @@ public class EngineUtils {
 	 * @throws UnsupportedEncodingException
 	 */
 	public static RequestHeader validateC2SRequest(List<String> aDomains,
-			Map aReqMap, Logger aLogger) throws UnsupportedEncodingException {
+			Map<String, Object> aReqMap, Logger aLogger) throws UnsupportedEncodingException {
 
 		boolean lAccepted = isOriginValid(aReqMap.get("origin").toString(), aDomains);
 		if (!lAccepted) {
@@ -185,9 +185,9 @@ public class EngineUtils {
 	 *
 	 * @param aReqMap
 	 */
-	public static void parseCookies(Map aReqMap) {
+	public static void parseCookies(Map<String, Object> aReqMap) {
 		String lTempEntry[];
-		Map<String, String> lCookiesMap = new FastMap().shared();
+		Map<String, String> lCookiesMap = new FastMap<String, String>().shared();
 
 		if (aReqMap.containsKey(RequestHeader.WS_COOKIES)
 				&& null != aReqMap.get(RequestHeader.WS_COOKIES)) {
@@ -196,8 +196,8 @@ public class EngineUtils {
 				String lCookieStr = lCookieObj.toString();
 				if (lCookieStr.length() > 0) {
 					String[] lCookies = lCookieStr.split("; ");
-					for (int lIdx = 0; lIdx < lCookies.length; lIdx++) {
-						lTempEntry = lCookies[lIdx].split("=");
+					for (String lCookie : lCookies) {
+						lTempEntry = lCookie.split("=");
 						if (lTempEntry.length >= 2) {
 							lCookiesMap.put(lTempEntry[0], lTempEntry[1]);
 						}

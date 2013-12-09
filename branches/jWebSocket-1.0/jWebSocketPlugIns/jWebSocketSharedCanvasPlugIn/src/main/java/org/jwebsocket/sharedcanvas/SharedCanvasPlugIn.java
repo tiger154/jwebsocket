@@ -38,7 +38,7 @@ import org.jwebsocket.token.Token;
  */
 public class SharedCanvasPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 *
 	 */
@@ -50,7 +50,7 @@ public class SharedCanvasPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket SharedCanvas Plugin - Community Edition";
-	private Collection<WebSocketConnector> mClients;
+	private final Collection<WebSocketConnector> mClients;
 
 	/**
 	 *

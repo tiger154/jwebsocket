@@ -23,6 +23,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,25 +42,23 @@ public class ServerRequestListener implements WebSocketServerListener {
 
 	private Mongo mConnection;
 	private DBCollection mColl;
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 *
 	 */
 	public ServerRequestListener() {
-		String lVersion = "<unknown>";
-
 		try {
 			// suppress stack traces from mongo db to console
 			java.util.logging.Logger.getLogger("com.mongodb").setLevel(
 					java.util.logging.Level.OFF);
-			mConnection = new Mongo();
+			mConnection = new MongoClient();
 			DB lDB = mConnection.getDB("db_charting");
 			List<String> lDBNames = mConnection.getDatabaseNames();
 			if (mLog.isInfoEnabled()) {
 				mLog.info("Found databases: " + lDBNames.toString() + ".");
 			}
-			lVersion = mConnection.getVersion();
+			String lVersion = mConnection.getVersion();
 			mColl = lDB.getCollection("exchanges_server");
 
 			if (mLog.isInfoEnabled()) {

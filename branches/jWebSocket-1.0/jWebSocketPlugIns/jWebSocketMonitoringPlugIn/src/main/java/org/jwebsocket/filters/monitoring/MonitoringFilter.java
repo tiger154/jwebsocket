@@ -30,6 +30,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import java.net.UnknownHostException;
 
 /**
@@ -38,7 +39,7 @@ import java.net.UnknownHostException;
  */
 public class MonitoringFilter extends TokenFilter {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private Mongo mConnection;
 	private DBCollection mPluginCollection;
 
@@ -54,7 +55,7 @@ public class MonitoringFilter extends TokenFilter {
 		}
 
 		try {
-			mConnection = new Mongo();
+			mConnection = new MongoClient();
 			mPluginCollection = mConnection.getDB("db_charting").getCollection("use_plugins");
 		} catch (UnknownHostException ex) {
 			mLog.error(ex.getMessage());

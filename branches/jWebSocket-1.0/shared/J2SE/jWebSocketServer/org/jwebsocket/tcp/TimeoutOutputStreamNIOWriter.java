@@ -43,14 +43,14 @@ import org.jwebsocket.util.Tools;
  */
 public class TimeoutOutputStreamNIOWriter {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private final static int DEFAULT_TIME_OUT_TERMINATION_THREAD = 1000;
 	/**
 	 * Singleton Timer instance to control all timeout tasks
 	 */
 	private static int mTimeout = DEFAULT_TIME_OUT_TERMINATION_THREAD;
 	// can be set to "true" for heavy debugging purposes
-	private static boolean mIsDebug = false;
+	private static final boolean mIsDebug = false;
 	// the size of this executor service should be adjusted to the maximum
 	// of expected client send operations that concurrently might get 
 	// to a timeout case.
@@ -128,7 +128,7 @@ public class TimeoutOutputStreamNIOWriter {
 	 */
 	class SendOperation implements Runnable {
 
-		private WebSocketPacket mPacket;
+		private final WebSocketPacket mPacket;
 		private boolean mSent = false;
 
 		public InputStream getIn() {

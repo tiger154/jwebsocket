@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.streaming;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
@@ -36,11 +37,11 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class JDBCStream extends TokenStream {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private Boolean mIsRunning = false;
-	private DBPollingProcess mDbPollingProcess = null;
-	private Thread mDbPollingThread = null;
-	private Connection mConnection = null;
+	private final DBPollingProcess mDbPollingProcess = null;
+	private final Thread mDbPollingThread = null;
+	private final Connection mConnection = null;
 
 	/**
 	 *
@@ -59,7 +60,7 @@ public class JDBCStream extends TokenStream {
 	 * @param aTimeout
 	 */
 	@Override
-	public void startStream(long aTimeout) {
+	public final void startStream(long aTimeout) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Starting JDBC stream...");
 		}
@@ -104,7 +105,7 @@ public class JDBCStream extends TokenStream {
 				mConnection.close();
 				// mLog.debug("Connection closed.");
 			}
-		} catch (Exception lEx) {
+		} catch (SQLException lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 		}
 		/*
@@ -128,6 +129,7 @@ public class JDBCStream extends TokenStream {
 	private class DBPollingProcess implements Runnable {
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Running JDBC stream...");

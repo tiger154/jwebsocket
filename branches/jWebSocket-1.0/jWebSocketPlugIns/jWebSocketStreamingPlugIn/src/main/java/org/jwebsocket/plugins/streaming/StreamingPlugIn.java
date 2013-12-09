@@ -45,16 +45,17 @@ import org.jwebsocket.token.Token;
  */
 public class StreamingPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
-	private final static String NS_STREAMING =
-			JWebSocketServerConstants.NS_BASE + ".plugins.streaming";
+	private static final Logger mLog = Logging.getLogger();
+	private final static String NS_STREAMING
+			= JWebSocketServerConstants.NS_BASE + ".plugins.streaming";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket StreaminglugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket StreamingPlugIn - Community Edition";
-	private Map<String, BaseStream> mStreams = new FastMap<String, BaseStream>();
+	private final Map<String, BaseStream> mStreams
+			= new FastMap<String, BaseStream>();
 	private boolean mStreamsInitialized = false;
 	private TimeStream mTimeStream = null;
 	private MonitorStream mMonitorStream = null;

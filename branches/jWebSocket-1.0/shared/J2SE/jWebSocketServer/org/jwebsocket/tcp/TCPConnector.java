@@ -21,7 +21,7 @@ package org.jwebsocket.tcp;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.UUID;
@@ -51,7 +51,7 @@ import org.jwebsocket.util.Tools;
  */
 public class TCPConnector extends BaseConnector {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private InputStream mIn = null;
 	private OutputStream mOut = null;
 	private Socket mClientSocket = null;
@@ -87,7 +87,7 @@ public class TCPConnector extends BaseConnector {
 			mOut = mClientSocket.getOutputStream();
 
 			mOutputStreamNIOSender = new TimeoutOutputStreamNIOWriter(this, mIn, mOut);
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " instantiating "
 					+ getClass().getSimpleName() + ": "
@@ -111,44 +111,43 @@ public class TCPConnector extends BaseConnector {
 		try {
 			lPort = mClientSocket.getPort();
 			lTimeout = mClientSocket.getSoTimeout();
-		} catch (Exception lEx) {
+		} catch (SocketException lEx) {
 			mLog.warn(Logging.getSimpleExceptionMessage(lEx,
 					"getting client's socket port and default timeout."));
 		}
 
 		/*
-		InetAddress lAddr = mClientSocket.getInetAddress();
-		mLog.debug(
-				"InetAddress: HostAddress: " + lAddr.getHostAddress()
-				+ ", HostName: " + lAddr.getHostName()
-				+ ", CanonicalHostName: " + lAddr.getCanonicalHostName());
-		SocketAddress lRemoteSocketAddr = mClientSocket.getRemoteSocketAddress();
-		mLog.debug(
-				"RemoteSocketAddress: " + lRemoteSocketAddr.toString());
+		 InetAddress lAddr = mClientSocket.getInetAddress();
+		 mLog.debug(
+		 "InetAddress: HostAddress: " + lAddr.getHostAddress()
+		 + ", HostName: " + lAddr.getHostName()
+		 + ", CanonicalHostName: " + lAddr.getCanonicalHostName());
+		 SocketAddress lRemoteSocketAddr = mClientSocket.getRemoteSocketAddress();
+		 mLog.debug(
+		 "RemoteSocketAddress: " + lRemoteSocketAddr.toString());
 
-		try {
-			InetAddress lTest = InetAddress.getByName(lAddr.getHostAddress());
-			String lHostName = lTest.getHostName();
-			mLog.debug(
-					"Hostname: " + lHostName);
-		} catch (Exception lEx) {
-			mLog.warn(Logging.getSimpleExceptionMessage(lEx,
-					"Obtaining remote host name"));
-		}
+		 try {
+		 InetAddress lTest = InetAddress.getByName(lAddr.getHostAddress());
+		 String lHostName = lTest.getHostName();
+		 mLog.debug(
+		 "Hostname: " + lHostName);
+		 } catch (Exception lEx) {
+		 mLog.warn(Logging.getSimpleExceptionMessage(lEx,
+		 "Obtaining remote host name"));
+		 }
 
-		String lIP4 = lAddr.getHostAddress();
-		MacAddress lMAC;
-		try {
-			lMAC = Arping.query(InetAddress.getByName(lIP4), 2000);
-			// lMAC = Arping.query(lAddr, 2000);
-			// lMAC = Arping.query(lAddr., 2000);
-			mLog.debug("Client (IP: " + lIP4 + ") connected from MAC: " + lMAC.toString());
-		} catch (Exception lEx) {
-			mLog.warn(Logging.getSimpleExceptionMessage(lEx,
-					"obtaining client's MAC address (IP: " + lIP4 + ")."));
-		}
-		*/
-		
+		 String lIP4 = lAddr.getHostAddress();
+		 MacAddress lMAC;
+		 try {
+		 lMAC = Arping.query(InetAddress.getByName(lIP4), 2000);
+		 // lMAC = Arping.query(lAddr, 2000);
+		 // lMAC = Arping.query(lAddr., 2000);
+		 mLog.debug("Client (IP: " + lIP4 + ") connected from MAC: " + lMAC.toString());
+		 } catch (Exception lEx) {
+		 mLog.warn(Logging.getSimpleExceptionMessage(lEx,
+		 "obtaining client's MAC address (IP: " + lIP4 + ")."));
+		 }
+		 */
 		String lNodeStr = getNodeId();
 		if (lNodeStr != null) {
 			lNodeStr = " (unid: " + lNodeStr + ")";
@@ -267,13 +266,13 @@ public class TCPConnector extends BaseConnector {
 					mClientSocket.shutdownInput();
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "shutting down reader stream (" + getId() + ")"));
 		}
 		try {
 			// force input stream to close to terminate reader thread
 			mIn.close();
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "closing reader stream (" + getId() + ")"));
 		}
 	}
@@ -353,6 +352,7 @@ public class TCPConnector extends BaseConnector {
 		mOut.flush();
 	}
 
+	@SuppressWarnings("SleepWhileInLoop")
 	private RequestHeader processHandshake(Socket aClientSocket)
 			throws UnsupportedEncodingException, IOException {
 
@@ -392,16 +392,19 @@ public class TCPConnector extends BaseConnector {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Parsing handshake request: " + new String(lReq).replace("\r\n", "\\n"));
 		}
-		Map lReqMap = WebSocketHandshake.parseC2SRequest(
+		Map<String, Object> lReqMap = WebSocketHandshake.parseC2SRequest(
 				lReq, aClientSocket instanceof SSLSocket);
 		if (lReqMap == null) {
 			return null;
 		}
 
 		EngineUtils.parseCookies(lReqMap);
-		//Setting the session identifier cookie if not present previously
-		if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)) {
-			((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, Tools.getMD5(UUID.randomUUID().toString()));
+		// Setting the session identifier cookie if not present previously
+		if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES))
+				.containsKey(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)) {
+			((Map) lReqMap.get(RequestHeader.WS_COOKIES))
+					.put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME,
+							Tools.getMD5(UUID.randomUUID().toString()));
 		}
 
 		RequestHeader lHeader = EngineUtils.validateC2SRequest(
@@ -434,7 +437,6 @@ public class TCPConnector extends BaseConnector {
 					+ lFlashBridgeReq
 					+ "'), check for FlashBridge plug-in.");
 		}
-
 
 		// if we detected a flash policy-file-request return "null"
 		// (no websocket header detected)
@@ -509,7 +511,7 @@ public class TCPConnector extends BaseConnector {
 							+ "the SSL handshake could not be established or "
 							+ "the connection has been closed unexpectedly!");
 				}
-			} catch (Exception lEx) {
+			} catch (IOException lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "executing handshake"));
 			}
 			try {
@@ -519,7 +521,7 @@ public class TCPConnector extends BaseConnector {
 					mClientSocket.close();
 					return;
 				}
-			} catch (Exception lEx) {
+			} catch (IOException lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "closing " + lLogInfo + " socket"));
 				return;
 			}
@@ -531,7 +533,6 @@ public class TCPConnector extends BaseConnector {
 			//Setting the session identifier in the connector's WebSocketSession instance
 			mConnector.getSession().setSessionId(mConnector.getHeader().
 					getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
-
 
 			// registering connector
 			getEngine().addConnector(mConnector);
@@ -652,13 +653,13 @@ public class TCPConnector extends BaseConnector {
 					}
 				} catch (SocketTimeoutException lEx) {
 					if (mLog.isDebugEnabled()) {
-						mLog.error(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + ", " + mLogInfo + "): " + lEx.getMessage());
+						mLog.debug(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + ", " + mLogInfo + "): " + lEx.getMessage());
 					}
 					mCloseReason = CloseReason.TIMEOUT;
 					setStatus(WebSocketConnectorStatus.DOWN);
 				} catch (Exception lEx) {
 					if (mLog.isDebugEnabled() && WebSocketConnectorStatus.UP == getStatus()) {
-						mLog.error(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + ", " + mLogInfo + "): " + lEx.getMessage());
+						mLog.debug(lEx.getClass().getSimpleName() + " reading hybi (" + getId() + ", " + mLogInfo + "): " + lEx.getMessage());
 					}
 					mCloseReason = CloseReason.SERVER;
 					setStatus(WebSocketConnectorStatus.DOWN);
