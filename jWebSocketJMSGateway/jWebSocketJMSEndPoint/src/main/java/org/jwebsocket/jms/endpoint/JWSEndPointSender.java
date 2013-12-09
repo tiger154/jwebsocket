@@ -29,6 +29,8 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class JWSEndPointSender extends JMSEndPointSender {
 
+	// TODO: Introduce timeout management
+	
 	private JMSEndPoint mEndPoint = null;
 	private static int mUTID = 0;
 
