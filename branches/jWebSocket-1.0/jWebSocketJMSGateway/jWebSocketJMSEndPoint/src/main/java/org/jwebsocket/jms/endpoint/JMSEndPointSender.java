@@ -30,6 +30,9 @@ import org.apache.log4j.Logger;
  */
 public class JMSEndPointSender {
 
+	
+	// TODO: Introduce timeout management
+	
 	static final Logger mLog = Logger.getLogger(JMSEndPointSender.class);
 	private final MessageProducer mProducer;
 	private final Session mSession;
@@ -97,3 +100,4 @@ public class JMSEndPointSender {
 		return mEndPointId;
 	}
 }
+
