@@ -40,7 +40,7 @@ import org.jwebsocket.token.Token;
  */
 public class TokenStream extends BaseStream {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private TokenServer mServer = null;
 
 	/**

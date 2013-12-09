@@ -42,8 +42,9 @@ import org.jwebsocket.server.BaseServer;
  */
 public class BaseStream implements WebSocketStream {
 
-	private static Logger mLog = Logging.getLogger();
-	private List<WebSocketConnector> mConnectors = new FastList<WebSocketConnector>();
+	private static final Logger mLog = Logging.getLogger();
+	private final List<WebSocketConnector> mConnectors
+			= new FastList<WebSocketConnector>();
 	private boolean mIsRunning = false;
 	private String mStreamID = null;
 	private final List<Object> mQueue = new FastList<Object>();
@@ -89,7 +90,7 @@ public class BaseStream implements WebSocketStream {
 		}
 		try {
 			mQueueThread.join(aTimeout);
-		} catch (Exception lEx) {
+		} catch (InterruptedException lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 		}
 		if (mLog.isDebugEnabled()) {

@@ -20,6 +20,7 @@ package org.jwebsocket.plugins.monitoring;
 
 import com.mongodb.*;
 import java.io.File;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -45,19 +46,20 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class MonitoringPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 *
 	 */
-	public final static String NS_MONITORING =
-			JWebSocketServerConstants.NS_BASE + ".plugins.monitoring";
+	public final static String NS_MONITORING
+			= JWebSocketServerConstants.NS_BASE + ".plugins.monitoring";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket MonitoringPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket MonitoringPlugIn - Community Edition";
-	private static Collection<WebSocketConnector> mClients = new FastList<WebSocketConnector>();
+	private static final Collection<WebSocketConnector> mClients
+			= new FastList<WebSocketConnector>();
 	private static Thread mInformationThread;
 	private static Thread mServerExchangeInfoThread;
 	private static Thread mUserInfoThread;
@@ -72,12 +74,13 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	private NetStat mNetwork;
 	private boolean mIsActive = false;
 	private boolean mUserInfoRunning = false;
-	private SimpleDateFormat mFormat;
+	private final SimpleDateFormat mFormat;
 	private DBCollection mDBColl;
 	private DBCollection mUsePlugInsColl;
 	private static int mConnectedUsers = 0;
 	private static int mTimeCounter = 0;
-	private static FastList<Integer> mConnectedUsersList = new FastList<Integer>(60);
+	private static final FastList<Integer> mConnectedUsersList 
+			= new FastList<Integer>(60);
 	private final static String TT_REGISTER = "register";
 	private final static String TT_UNREGISTER = "unregister";
 	private final static String TT_SERVER_XCHG_INFO = "serverXchgInfo";
@@ -135,19 +138,15 @@ public class MonitoringPlugIn extends TokenPlugIn {
 
 		mDBColl = null;
 		try {
-			Mongo lMongo = new Mongo();
-			if (null != lMongo) {
-				DB lDB = lMongo.getDB(DB_NAME);
-				if (null != lDB) {
-					mDBColl = lDB.getCollection(DB_COL_EXCHANGES);
-					mUsePlugInsColl = lDB.getCollection(DB_COL_PLUGINS_USAGE);
-				} else {
-					mLog.error("Mongo db_charting collection could not be obtained.");
-				}
+			Mongo lMongo = new MongoClient();
+			DB lDB = lMongo.getDB(DB_NAME);
+			if (null != lDB) {
+				mDBColl = lDB.getCollection(DB_COL_EXCHANGES);
+				mUsePlugInsColl = lDB.getCollection(DB_COL_PLUGINS_USAGE);
 			} else {
-				mLog.error("Mongo DB instance could not be created.");
+				mLog.error("Mongo db_charting collection could not be obtained.");
 			}
-		} catch (Exception lEx) {
+		} catch (UnknownHostException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing MongoDB connection"));
 		}
 		if (null == mDBColl) {
@@ -347,6 +346,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	class getInfo implements Runnable {
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 			mSigar = new Sigar();
 			Token lPCInfoToken = null;
@@ -354,9 +354,9 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				try {
 					gatherComputerInfo();
 					lPCInfoToken = computerInfoToToken();
-				} catch (Exception e) {
+				} catch (SigarException lEx) {
+					// TODO: process exception properly!
 				}
-
 
 				for (WebSocketConnector lConnector : mClients) {
 
@@ -383,16 +383,14 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	class getUserInfo implements Runnable {
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 
 			while (mUserInfoRunning) {
 				mConnectedUsersList.add(mTimeCounter, mConnectedUsers);
 				Token lToken = getUserInfoToToken();
-				String lInterest = "";
 				for (WebSocketConnector lConnector : mClients) {
-
-					lInterest = lConnector.getString(INTEREST);
-
+					String lInterest = lConnector.getString(INTEREST);
 					if (TT_USER_INFO.equals(lInterest)) {
 						getServer().sendToken(lConnector, lToken);
 					}
@@ -413,6 +411,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	class getServerExchangeInfo implements Runnable {
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 			while (mInformationRunning) {
 				for (WebSocketConnector lConnector : mClients) {
@@ -471,9 +470,8 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				/ mMemory[2]));
 
 		FastList<String> lList = new FastList<String>();
-
-		for (int i = 0; i < mCPUPercent.length; i++) {
-			lList.add(String.valueOf(CpuPerc.format(mCPUPercent[i].getUser())));
+		for (CpuPerc lCPUPercent : mCPUPercent) {
+			lList.add(String.valueOf(CpuPerc.format(lCPUPercent.getUser())));
 		}
 		//CPU Information
 		lToken.setList(CPU_USAGE, lList);
@@ -536,7 +534,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 
 			token.setMap(EXCHANGES, lRecord.toMap());
 
-
 		} catch (Exception ex) {
 			mLog.error(ex.getMessage());
 		}
@@ -561,11 +558,10 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			DBCursor lCursor = mDBColl.find();
 
 			boolean lFlag = false;
-			String lDate = null;
 			Integer lTotal = 0;
 			while (lCursor.hasNext()) {
 				DBObject lDocument = lCursor.next();
-				lDate = (String) lDocument.get(DATE);
+				String lDate = (String) lDocument.get(DATE);
 				if (lDate.startsWith(lMonth)) {
 
 					String lDay = lDate.substring(3, 5);
@@ -610,11 +606,10 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			DBCursor lCursor = mDBColl.find();
 
 			boolean m = false;
-			String lDate = null;
 			Integer lTotal = 0;
 			while (lCursor.hasNext()) {
 				DBObject lDocument = lCursor.next();
-				lDate = (String) lDocument.get(DATE);
+				String lDate = (String) lDocument.get(DATE);
 				if (lDate.endsWith(lYear)) {
 					for (int lMonth = 1; lMonth < 13; lMonth++) {
 
@@ -671,9 +666,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	 */
 	public void broadcastPluginsInfo(WebSocketConnector aConnector) {
 		Token lToken = TokenFactory.createToken(getNamespace(), TT_PLUGINS_INFO);
-		String lNamespace = lToken.getNS();
-		FastList<Map> lList = new FastList<Map>();
-
+		FastList<Map<String, Object>> lList = new FastList<Map<String, Object>>();
 		try {
 			DBCursor lCursor = mUsePlugInsColl.find();
 			DBObject lDocument;
@@ -698,7 +691,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 * @return @throws SigarException
-	 * @throws SigarException
 	 */
 	public int[] gatherMemInfo() throws SigarException {
 		int lMem[] = new int[4];

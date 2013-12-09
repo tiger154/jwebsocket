@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Date;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
@@ -50,7 +51,7 @@ import org.jwebsocket.tcp.nio.Util;
  */
 public class TCPEngine extends BaseEngine {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private ServerSocket mTCPServerSocket = null;
 	private SSLServerSocket mSSLServerSocket = null;
 	private int mTCPListenerPort = JWebSocketCommonConstants.DEFAULT_PORT;
@@ -64,9 +65,9 @@ public class TCPEngine extends BaseEngine {
 	private Thread mTCPEngineThread = null;
 	private Thread mSSLEngineThread = null;
 	// variables for the OutputStreamNIOWriter mechanism
-	private static int DEFAULT_NUM_WORKERS = NioTcpEngine.DEFAULT_NUM_WORKERS;
-	private static int DEFAULT_WRITER_TIMEOUT = 3000; // increase the time for slow networks
-	private static String NUM_WORKERS_CONFIG_KEY = NioTcpEngine.NUM_WORKERS_CONFIG_KEY;
+	private static final int DEFAULT_NUM_WORKERS = NioTcpEngine.DEFAULT_NUM_WORKERS;
+	private static final int DEFAULT_WRITER_TIMEOUT = 3000; // increase the time for slow networks
+	private static final String NUM_WORKERS_CONFIG_KEY = NioTcpEngine.NUM_WORKERS_CONFIG_KEY;
 	/**
 	 *
 	 */
@@ -123,7 +124,7 @@ public class TCPEngine extends BaseEngine {
 						getSettings().
 						get(NUM_WORKERS_CONFIG_KEY).
 						toString());
-			} catch (Exception lEx) {
+			} catch (NumberFormatException lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx,
 						"setting '" + NUM_WORKERS_CONFIG_KEY + "' configuration"));
 			}
@@ -140,7 +141,7 @@ public class TCPEngine extends BaseEngine {
 						getSettings().
 						get(WRITER_TIMEOUT_CONFIG_KEY).
 						toString());
-			} catch (Exception lEx) {
+			} catch (NumberFormatException lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx,
 						"setting '" + WRITER_TIMEOUT_CONFIG_KEY + "' configuration"));
 			}
@@ -205,7 +206,6 @@ public class TCPEngine extends BaseEngine {
 		}
 
 		// tutorial see: http://javaboutique.internet.com/tutorials/jkey/index.html
-
 		// create encrypted (SSL) server socket for wss:// protocol
 		if (mSSLListenerPort > 0) {
 			// create unencrypted server socket for ws:// protocol
@@ -261,6 +261,7 @@ public class TCPEngine extends BaseEngine {
 	}
 
 	@Override
+	@SuppressWarnings("SleepWhileInLoop")
 	public void stopEngine(CloseReason aCloseReason)
 			throws WebSocketException {
 		if (mLog.isDebugEnabled()) {
@@ -288,7 +289,7 @@ public class TCPEngine extends BaseEngine {
 				mLog.warn("Stopping TCP engine '" + getId()
 						+ "': no server socket or server socket closed.");
 			}
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " on stopping TCP engine '" + getId()
 					+ "': " + lEx.getMessage());
@@ -311,7 +312,7 @@ public class TCPEngine extends BaseEngine {
 				mLog.warn("Stopping SSL engine '" + getId()
 						+ "': no server socket or server socket closed.");
 			}
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " on stopping SSL engine '" + getId()
 					+ "': " + lEx.getMessage());
@@ -322,7 +323,7 @@ public class TCPEngine extends BaseEngine {
 			try {
 				// TODO: Make this timeout configurable one day
 				mTCPEngineThread.join(10000);
-			} catch (Exception lEx) {
+			} catch (InterruptedException lEx) {
 				mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 			}
 			if (mLog.isDebugEnabled()) {
@@ -344,7 +345,7 @@ public class TCPEngine extends BaseEngine {
 			try {
 				// TODO: Make this timeout configurable one day
 				mSSLEngineThread.join(10000);
-			} catch (Exception lEx) {
+			} catch (InterruptedException lEx) {
 				mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 			}
 			if (mLog.isDebugEnabled()) {
@@ -373,7 +374,7 @@ public class TCPEngine extends BaseEngine {
 					&& new Date().getTime() - lStarted < 10000) {
 				Thread.sleep(250);
 			}
-		} catch (Exception lEx) {
+		} catch (InterruptedException lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 		}
 		if (mLog.isDebugEnabled()) {
@@ -439,6 +440,7 @@ public class TCPEngine extends BaseEngine {
 		}
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 			Thread.currentThread().setName(
 					"jWebSocket TCP-Engine (" + mServer.getLocalPort() + ", "
@@ -501,13 +503,16 @@ public class TCPEngine extends BaseEngine {
 
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Client trying to connect on port #"
-								+ lClientSocket.getPort() + "...");
+								+ (lClientSocket != null ? lClientSocket.getPort() : "[no socket]")
+								+ "...");
 					}
 
 					try {
 						WebSocketConnector lConnector = new TCPConnector(mEngine, lClientSocket);
 						// setting the TcpNoDelay property
-						lClientSocket.setTcpNoDelay(mTcpNoDelay);
+						if (lClientSocket != null) {
+							lClientSocket.setTcpNoDelay(mTcpNoDelay);
+						}
 
 						// Check for maximum connections reached strategies
 						if (lReject) {
@@ -518,8 +523,6 @@ public class TCPEngine extends BaseEngine {
 										+ "has been reached.");
 							}
 							lConnector.stopConnector(CloseReason.SERVER_REJECT_CONNECTION);
-
-							continue;
 						} else if (lRedirect) {
 							// TODO: Pending for implementation to discover the redirection
 							// server URL
@@ -530,13 +533,11 @@ public class TCPEngine extends BaseEngine {
 										+ "has been reached.");
 							}
 							lConnector.stopConnector(CloseReason.SERVER_REDIRECT_CONNECTION);
-
-							continue;
 						} else {
 							// initiating connector
 							((TCPConnector) lConnector).init();
 						}
-					} catch (Exception lEx) {
+					} catch (SocketException lEx) {
 						mLog.error(
 								(mServer instanceof SSLServerSocket
 								? "SSL" : "TCP") + " engine: "

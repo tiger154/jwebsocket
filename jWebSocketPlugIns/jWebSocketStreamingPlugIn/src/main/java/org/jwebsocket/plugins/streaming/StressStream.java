@@ -36,7 +36,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class StressStream extends TokenStream {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private Boolean mIsRunning = false;
 	private StressProcess mStressProcess = null;
 	private Thread mStressThread = null;
@@ -58,7 +58,7 @@ public class StressStream extends TokenStream {
 	 * @param aTimeout
 	 */
 	@Override
-	public void startStream(long aTimeout) {
+	public final void startStream(long aTimeout) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Starting stress stream...");
 		}
@@ -83,7 +83,7 @@ public class StressStream extends TokenStream {
 		mIsRunning = false;
 		try {
 			mStressThread.join(aTimeout);
-		} catch (Exception lEx) {
+		} catch (InterruptedException lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 		}
 		if (mLog.isDebugEnabled()) {
@@ -101,6 +101,7 @@ public class StressStream extends TokenStream {
 	private class StressProcess implements Runnable {
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Running stress stream...");

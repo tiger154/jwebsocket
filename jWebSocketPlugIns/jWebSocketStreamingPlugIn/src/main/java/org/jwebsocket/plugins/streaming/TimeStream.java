@@ -38,7 +38,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class TimeStream extends TokenStream {
 
-	private static Logger log = Logging.getLogger();
+	private static final Logger log = Logging.getLogger();
 	private Boolean mIsRunning = false;
 	private TimerProcess mTimeProcess = null;
 	private Thread mTimeThread = null;
@@ -60,7 +60,7 @@ public class TimeStream extends TokenStream {
 	 * @param aTimeout
 	 */
 	@Override
-	public void startStream(long aTimeout) {
+	public final void startStream(long aTimeout) {
 		if (log.isDebugEnabled()) {
 			log.debug("Starting Time stream...");
 		}
@@ -86,7 +86,7 @@ public class TimeStream extends TokenStream {
 		mIsRunning = false;
 		try {
 			mTimeThread.join(aTimeout);
-		} catch (Exception lEx) {
+		} catch (InterruptedException lEx) {
 			log.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 		}
 		if (log.isDebugEnabled()) {
@@ -104,6 +104,7 @@ public class TimeStream extends TokenStream {
 	private class TimerProcess implements Runnable {
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 			if (log.isDebugEnabled()) {
 				log.debug("Running time stream...");

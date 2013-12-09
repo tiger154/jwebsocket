@@ -27,7 +27,7 @@ import java.util.TimerTask;
  */
 public class PurgeCancelledWriterTasks extends TimerTask {
 
-	private Timer mTimer;
+	private final Timer mTimer;
 
 	/**
 	 *

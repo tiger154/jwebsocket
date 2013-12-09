@@ -32,7 +32,7 @@ import org.jwebsocket.server.TokenServer;
  */
 public class StatisticStream extends TokenStream {
 
-	private static Logger mog = Logging.getLogger();
+	private static final Logger mog = Logging.getLogger();
 
 	/**
 	 *
@@ -51,7 +51,7 @@ public class StatisticStream extends TokenStream {
 	 * @param aTimeout
 	 */
 	@Override
-	public void startStream(long aTimeout) {
+	public final void startStream(long aTimeout) {
 		if (mog.isDebugEnabled()) {
 			mog.debug("Starting Statistics stream...");
 		}

@@ -36,7 +36,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class MonitorStream extends TokenStream {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private Boolean mIsRunning = false;
 	private MonitorProcess mMonitorProcess = null;
 	private Thread mMonitorThread = null;
@@ -59,7 +59,7 @@ public class MonitorStream extends TokenStream {
 	 * @param aTimeout
 	 */
 	@Override
-	public void startStream(long aTimeout) {
+	public final void startStream(long aTimeout) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Starting Monitor stream...");
 		}
@@ -85,7 +85,7 @@ public class MonitorStream extends TokenStream {
 		mIsRunning = false;
 		try {
 			mMonitorThread.join(aTimeout);
-		} catch (Exception lEx) {
+		} catch (InterruptedException lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 		}
 		if (mLog.isDebugEnabled()) {
@@ -103,6 +103,7 @@ public class MonitorStream extends TokenStream {
 	private class MonitorProcess implements Runnable {
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Running monitor stream...");
