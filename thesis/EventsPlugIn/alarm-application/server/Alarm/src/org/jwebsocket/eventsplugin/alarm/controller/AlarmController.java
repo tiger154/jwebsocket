@@ -36,7 +36,7 @@ import org.jwebsocket.logging.Logging;
 public class AlarmController extends EventModelPlugIn {
 
 	private AlarmService mService;
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	@Override
 	public void initialize() throws Exception {
