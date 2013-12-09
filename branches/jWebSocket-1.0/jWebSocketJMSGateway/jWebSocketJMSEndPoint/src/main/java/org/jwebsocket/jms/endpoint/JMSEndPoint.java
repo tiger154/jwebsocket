@@ -38,6 +38,8 @@ import org.apache.log4j.Logger;
  */
 public class JMSEndPoint {
 
+	// TODO: Introduce timeout management
+	
 	/**
 	 * 
 	 *
