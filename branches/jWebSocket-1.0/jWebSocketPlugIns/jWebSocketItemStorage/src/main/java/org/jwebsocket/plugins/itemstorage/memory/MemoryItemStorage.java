@@ -43,6 +43,12 @@ public class MemoryItemStorage extends BaseItemStorage {
 	private static FastMap<String, String> mTypes;
 	private FastList<IItem> mData;
 
+	/**
+	 *
+	 * @param aName
+	 * @param aType
+	 * @param aItemFactory
+	 */
 	public MemoryItemStorage(String aName, String aType, IItemFactory aItemFactory) {
 		super(aName, aType, aItemFactory);
 	}
@@ -59,6 +65,10 @@ public class MemoryItemStorage extends BaseItemStorage {
 		getTypes().remove(aStorageName);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static Map<String, FastList> getContainer() {
 		if (null == mContainer) {
 			mContainer = new FastMap<String, FastList>().shared();
@@ -66,6 +76,10 @@ public class MemoryItemStorage extends BaseItemStorage {
 		return mContainer;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static Map<String, String> getTypes() {
 		if (null == mTypes) {
 			mTypes = new FastMap<String, String>().shared();
@@ -283,13 +297,11 @@ public class MemoryItemStorage extends BaseItemStorage {
 
 	@Override
 	public boolean exists(String aPK) {
-		for (Iterator<IItem> lIt = mData.iterator(); lIt.hasNext();) {
-			IItem lItem = lIt.next();
+		for (IItem lItem : mData) {
 			if (lItem.getPK().equals(aPK)) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 }

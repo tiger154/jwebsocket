@@ -51,6 +51,7 @@ public interface IItemStorage extends IInitializable {
 	/**
 	 *
 	 * @return A list containing the item's primary key
+	 * @throws java.lang.Exception
 	 */
 	Set<String> getPKs() throws Exception;
 
@@ -59,6 +60,7 @@ public interface IItemStorage extends IInitializable {
 	 *
 	 * @param aTargetPK
 	 * @param aItem
+	 * @throws java.lang.Exception
 	 */
 	void save(String aTargetPK, IItem aItem) throws Exception;
 
@@ -92,6 +94,7 @@ public interface IItemStorage extends IInitializable {
 	 *
 	 * @param aOffset
 	 * @return
+	 * @throws java.lang.Exception
 	 */
 	List<IItem> list(int aOffset) throws Exception;
 
@@ -101,6 +104,7 @@ public interface IItemStorage extends IInitializable {
 	 * @param aOffset
 	 * @param aLength
 	 * @return
+	 * @throws java.lang.Exception
 	 */
 	List<IItem> list(int aOffset, int aLength) throws Exception;
 
@@ -136,6 +140,8 @@ public interface IItemStorage extends IInitializable {
 	 *
 	 * @param aAttribute
 	 * @param aValue
+	 * @param aOffset
+	 * @param aLength
 	 * @return
 	 * @throws Exception
 	 */
@@ -176,18 +182,24 @@ public interface IItemStorage extends IInitializable {
 	/**
 	 *
 	 * @return The number of stored items
+	 * @throws java.lang.Exception
 	 */
 	Integer size() throws Exception;
 
 	/**
 	 *
+	 * @param aAttribute
+	 * @param aValue
 	 * @return The number of stored items that matches the criteria
+	 * @throws java.lang.Exception
 	 */
 	Integer size(String aAttribute, Object aValue) throws Exception;
 	
 	/**
 	 *
+	 * @param aAttrsValues
 	 * @return The number of stored items that matches the criteria
+	 * @throws java.lang.Exception
 	 */
 	Integer size(Map<String, Object> aAttrsValues) throws Exception;
 
@@ -196,6 +208,7 @@ public interface IItemStorage extends IInitializable {
 	 *
 	 * @param aPK
 	 * @return
+	 * @throws java.lang.Exception
 	 */
 	boolean exists(String aPK) throws Exception;
 }

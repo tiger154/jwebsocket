@@ -7,7 +7,7 @@
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
 //	You may obtain a copy of the License at
-//
+// 
 //	http://www.apache.org/licenses/LICENSE-2.0
 //
 //	Unless required by applicable law or agreed to in writing, software
@@ -37,22 +37,81 @@ public class ItemCollection implements IItemCollection {
 
 	private IItemStorage mStorage;
 	private final Map<String, Object> mData = new FastMap<String, Object>().shared();
+
+	/**
+	 *
+	 */
 	public static final String ATTR_ACCESS_PASSWORD = "accessPassword";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_SECRET_PASSWORD = "secretPassword";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_IS_SYSTEM = "system";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_NAME = "name";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_IS_PRIVATE = "private";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_SUBSCRIBERS = "subscribers";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_PUBLISHERS = "publishers";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_CREATED_AT = "createdAt";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_OWNER = "owner";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_CAPACITY = "capacity";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_CAPPED = "capped";
+
+	/**
+	 *
+	 */
 	public static final String COLLECTION_NAME_REGEXP = "^[a-zA-Z0-9]+([-]([a-zA-Z])+)*";
+
+	/**
+	 *
+	 */
 	public static final Integer MAX_PASSWORD_SIZE = 100;
 	private IClientCollection mSubscribers;
 	private IClientCollection mPublishers;
 
+	/**
+	 *
+	 * @param aCreationTime
+	 * @param aItemStorage
+	 * @param aSubscribers
+	 * @param aPublishers
+	 */
 	public ItemCollection(long aCreationTime, IItemStorage aItemStorage,
 			IClientCollection aSubscribers, IClientCollection aPublishers) {
 		mData.put(ATTR_CREATED_AT, aCreationTime);
@@ -60,6 +119,12 @@ public class ItemCollection implements IItemCollection {
 		init(aItemStorage, aSubscribers, aPublishers);
 	}
 
+	/**
+	 *
+	 * @param aItemStorage
+	 * @param aSubscribers
+	 * @param aPublishers
+	 */
 	public ItemCollection(IItemStorage aItemStorage, IClientCollection aSubscribers, IClientCollection aPublishers) {
 		init(aItemStorage, aSubscribers, aPublishers);
 	}

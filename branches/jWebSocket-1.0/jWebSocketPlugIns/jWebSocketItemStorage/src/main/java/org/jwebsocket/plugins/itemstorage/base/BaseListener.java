@@ -36,9 +36,19 @@ import org.jwebsocket.spring.JWebSocketBeanFactory;
  */
 public class BaseListener implements IItemStorageListener {
 
+	/**
+	 *
+	 */
 	protected IItemCollectionProvider mCollectionProvider;
+
+	/**
+	 *
+	 */
 	protected IItemFactory mItemFactory;
 
+	/**
+	 *
+	 */
 	public BaseListener() {
 		mCollectionProvider = (IItemCollectionProvider) JWebSocketBeanFactory
 				.getInstance(ItemStoragePlugIn.NS_ITEM_STORAGE)

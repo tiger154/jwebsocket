@@ -39,6 +39,13 @@ import org.springframework.util.Assert;
  */
 public class ItemCollectionUtils {
 
+	/**
+	 *
+	 * @param aProvider
+	 * @param aCollection
+	 * @return
+	 * @throws Exception
+	 */
 	public static Set<String> restartCollection(IItemCollectionProvider aProvider, IItemCollection aCollection) throws Exception {
 		Set<String> lAffectedClients = aCollection.restart();
 		ItemStorageEventManager.onCollectionRestarted(aCollection.getName(), lAffectedClients);
@@ -46,36 +53,76 @@ public class ItemCollectionUtils {
 		return lAffectedClients;
 	}
 
+	/**
+	 *
+	 * @param aCollections
+	 * @param aProvider
+	 * @throws Exception
+	 */
 	public void saveCollections(List<IItemCollection> aCollections, IItemCollectionProvider aProvider) throws Exception {
 		for (IItemCollection lCollection : aCollections) {
 			aProvider.saveCollection(lCollection);
 		}
 	}
 
+	/**
+	 *
+	 * @param aProvider
+	 * @param aCollection
+	 * @param aSubscriber
+	 * @throws Exception
+	 */
 	public static void subscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber) throws Exception {
 		aCollection.getSubcribers().add(aSubscriber);
 		ItemStorageEventManager.onSubscription(aCollection.getName(), aSubscriber);
 	}
 
+	/**
+	 *
+	 * @param aProvider
+	 * @param aCollection
+	 * @param aSubscriber
+	 * @param aUser
+	 * @throws Exception
+	 */
 	public static void unsubscribeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aSubscriber, String aUser) throws Exception {
 		aCollection.getSubcribers().remove(aSubscriber);
 		ItemStorageEventManager.onUnsubscription(aCollection.getName(), aSubscriber, aUser);
 	}
 
-	public static void authorizeCollection(IItemCollectionProvider aProvider, IItemCollection aCollection, String aPublisher) throws Exception {
+	/**
+	 *
+	 * @param aProvider
+	 * @param aCollection
+	 * @param aPublisher
+	 * @throws Exception
+	 */
+	public static void authorizeCollection(IItemCollectionProvider aProvider,
+			IItemCollection aCollection, String aPublisher) throws Exception {
 		aCollection.getPublishers().add(aPublisher);
 		ItemStorageEventManager.onAuthorization(aCollection.getName(), aPublisher);
 	}
 
-	public static IItem saveItem(String aUser, IItemCollection aCollection, Map<String, Object> aData) throws Exception {
+	/**
+	 *
+	 * @param aUser
+	 * @param aCollection
+	 * @param aData
+	 * @return
+	 * @throws Exception
+	 */
+	public static IItem saveItem(String aUser, IItemCollection aCollection,
+			Map<String, Object> aData) throws Exception {
 		// getting the item factory
 		IItemFactory lItemFactory = aCollection.getItemStorage().getItemFactory();
 
 		// getting the item definition
-		IItemDefinition lDef = lItemFactory.getDefinition(aCollection.getItemStorage().getItemType());
+		IItemDefinition lDef = lItemFactory.getDefinition(
+				aCollection.getItemStorage().getItemType());
 
 		// required to change the primary key value of an item
-		String lTargetPK = (String) aData.remove(ItemDefinition.ATTR_INTERNAL_TARGET_PK);
+		String lTargetPK = (String) aData.remove(
+				ItemDefinition.ATTR_INTERNAL_TARGET_PK);
 		if (null == lTargetPK) {
 			// target PK is the PK
 			lTargetPK = (String) aData.get(lDef.getPrimaryKeyAttribute());
@@ -130,7 +177,16 @@ public class ItemCollectionUtils {
 		return lItem;
 	}
 
-	public static IItem removeItem(String aUser, IItemCollection aCollection, String aItemPK) throws Exception {
+	/**
+	 *
+	 * @param aUser
+	 * @param aCollection
+	 * @param aItemPK
+	 * @return
+	 * @throws Exception
+	 */
+	public static IItem removeItem(String aUser, IItemCollection aCollection,
+			String aItemPK) throws Exception {
 		IItem lItem = aCollection.getItemStorage().findByPK(aItemPK);
 		Assert.notNull(lItem, "Item not found!");
 

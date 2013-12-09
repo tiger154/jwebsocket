@@ -31,15 +31,45 @@ import org.springframework.util.Assert;
  */
 public class ItemDefinition implements IItemDefinition {
 
+	/**
+	 *
+	 */
 	public static final String ATTR_UNIQUE_ID = "id";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_INTERNAL_TARGET_PK = "_targetPK";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_TYPE = "type";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_PK = "pk_attr";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_ATTR_TYPES = "attr_types";
 	private final Map<String, Object> mData = new FastMap<String, Object>().shared();
+
+	/**
+	 *
+	 */
 	public static final String ITEM_TYPE_REGEXP = "^[a-zA-Z0-9]+([.]([a-zA-Z])+)*";
+
+	/**
+	 *
+	 */
 	public static final String ATTR_NAME_REGEXP = "^[a-zA-Z]+([a-zA-Z0-9]+)*";
 
+	/**
+	 *
+	 */
 	public ItemDefinition() {
 		// setting attribute types map to avoid possible 
 		// null pointer exceptions

@@ -33,7 +33,7 @@ public interface IItemStorageListener {
 	 *
 	 * @param aUser
 	 * @param aItem
-	 * @param aItemStorage
+	 * @param aItemCollection
 	 */
 	void onItemSaved(String aUser, IItem aItem, IItemCollection aItemCollection);
 
@@ -129,6 +129,7 @@ public interface IItemStorageListener {
 	 *
 	 * @param aItem
 	 * @param aItemStorage
+	 * @throws java.lang.Exception
 	 */
 	public void onBeforeSaveItem(IItem aItem, IItemStorage aItemStorage) throws Exception;
 

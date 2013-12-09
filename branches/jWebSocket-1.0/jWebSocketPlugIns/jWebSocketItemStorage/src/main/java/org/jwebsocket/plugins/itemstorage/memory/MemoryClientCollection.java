@@ -28,7 +28,7 @@ import org.jwebsocket.plugins.itemstorage.api.IClientCollection;
  */
 public class MemoryClientCollection implements IClientCollection {
 
-	private List<String> mData = new FastList<String>();
+	private final List<String> mData = new FastList<String>();
 
 	@Override
 	public boolean contains(String aUID) {

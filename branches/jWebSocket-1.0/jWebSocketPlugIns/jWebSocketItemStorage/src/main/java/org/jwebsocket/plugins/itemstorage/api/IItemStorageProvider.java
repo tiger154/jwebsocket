@@ -26,9 +26,25 @@ import org.jwebsocket.api.IInitializable;
  */
 public interface IItemStorageProvider extends IInitializable {
 
+	/**
+	 *
+	 * @return
+	 */
 	IItemFactory getItemFactory();
 
+	/**
+	 *
+	 * @param aName
+	 * @param aType
+	 * @return
+	 * @throws Exception
+	 */
 	IItemStorage getItemStorage(String aName, String aType) throws Exception;
 
+	/**
+	 *
+	 * @param aName
+	 * @throws Exception
+	 */
 	void removeItemStorage(String aName) throws Exception;
 }

@@ -28,25 +28,92 @@ import org.jwebsocket.api.IInitializable;
  */
 public interface ILogsManager extends IInitializable {
 
+	/**
+	 *
+	 * @param aAction
+	 * @throws Exception
+	 */
 	void logAction(Map<String, Object> aAction) throws Exception;
 
+	/**
+	 *
+	 * @throws Exception
+	 */
 	void clearAll() throws Exception;
 
+	/**
+	 *
+	 * @param aTime
+	 * @throws Exception
+	 */
 	void clearUntil(long aTime) throws Exception;
 
+	/**
+	 *
+	 * @param aCollectionName
+	 * @param aItemPK
+	 * @throws Exception
+	 */
 	void clearItemLogs(String aCollectionName, String aItemPK) throws Exception;
 
+	/**
+	 *
+	 * @param aCollectionName
+	 * @throws Exception
+	 */
 	void clearItemLogs(String aCollectionName) throws Exception;
 
+	/**
+	 *
+	 * @param aCollectionName
+	 * @throws Exception
+	 */
 	void clearCollectionLogs(String aCollectionName) throws Exception;
 
+	/**
+	 *
+	 * @param aCollectionName
+	 * @param aItemPK
+	 * @param aOffset
+	 * @param aLength
+	 * @return
+	 * @throws Exception
+	 */
 	List<Map> getItemLogs(String aCollectionName, String aItemPK, int aOffset, int aLength) throws Exception;
 
+	/**
+	 *
+	 * @param aCollectionName
+	 * @param aOffset
+	 * @param aLength
+	 * @return
+	 * @throws Exception
+	 */
 	List<Map> getCollectionLogs(String aCollectionName, int aOffset, int aLength) throws Exception;
 
+	/**
+	 *
+	 * @return
+	 * @throws Exception
+	 */
 	Long size() throws Exception;
 
+	/**
+	 *
+	 * @param aElementType
+	 * @param aActionId
+	 * @return
+	 * @throws Exception
+	 */
 	Long size(String aElementType, String aActionId) throws Exception;
 
+	/**
+	 *
+	 * @param aElementType
+	 * @param aCollection
+	 * @param aActionId
+	 * @return
+	 * @throws Exception
+	 */
 	Long size(String aElementType, String aCollection, String aActionId) throws Exception;
 }
