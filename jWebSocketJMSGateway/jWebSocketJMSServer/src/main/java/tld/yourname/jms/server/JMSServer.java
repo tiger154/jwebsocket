@@ -150,7 +150,7 @@ public class JMSServer {
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Processing 'getUser'...");
 				}
-				Map<String, Object> lAdditionalResults = new FastMap();
+				Map<String, Object> lAdditionalResults = new FastMap<String, Object>();
 				String lAccessToken = aToken.getString("accessToken");
 				String lJSON = lOAuth.getUser(lAccessToken);
 				String lUsername = lOAuth.getUsername();
@@ -174,7 +174,7 @@ public class JMSServer {
 						if (mLog.isInfoEnabled()) {
 							mLog.info("Processing 'demo1 with Payload '" + lPayload + "'");
 						}
-						Map<String, Object> lAdditionalResults = new FastMap();
+						Map<String, Object> lAdditionalResults = new FastMap<String, Object>();
 						lAdditionalResults.putAll(aToken.getMap());
 						// lAdditionalResults.remove("sourceId");
 						lAdditionalResults.remove("payload");
@@ -200,7 +200,7 @@ public class JMSServer {
 						String lPayload = aToken.getString("payload");
 						// parse the JSON payload into a Token (for simpler processing)
 						Token lToken = JSONProcessor.JSONStringToToken(lPayload);
-				// extract the base64 and compressed file contents into Strings 
+						// extract the base64 and compressed file contents into Strings 
 						// (it's a text message)
 						// String lBase64Encoded = lToken.getString("fileAsBase64");
 						String lBase64Zipped = lToken.getString("fileAsZip");

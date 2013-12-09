@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.filesystem;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ThreadFactory;
 import javax.activation.MimetypesFileTypeMap;
@@ -51,6 +52,7 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.MapAppender;
 import org.jwebsocket.util.Tools;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -63,12 +65,12 @@ import org.springframework.context.ApplicationContext;
  */
 public class FileSystemPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 * Namespace for the FSP
 	 */
-	public static final String NS_FILESYSTEM =
-			JWebSocketServerConstants.NS_BASE + ".plugins.filesystem";
+	public static final String NS_FILESYSTEM
+			= JWebSocketServerConstants.NS_BASE + ".plugins.filesystem";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket FileSystemPlugIn";
@@ -110,6 +112,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 * FSP settings instance.
 	 */
 	protected Settings mSettings;
+
+	/**
+	 *
+	 */
 	protected Map<String, List<String>> mConnectorsFiles;
 
 	/**
@@ -136,7 +142,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 					mLog.info("Filesystem plug-in successfully instantiated.");
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (BeansException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx,
 					"instantiating filesystem plug-in"));
 			throw lEx;
@@ -540,7 +546,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			}
 			// setting the file MIME type
 			lResponse.setString("mime", lFileType);
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			lResponse.setInteger("code", -1);
 			lMsg = lEx.getClass().getSimpleName() + " on load: " + lEx.getMessage();
 			lResponse.setString("msg", lMsg);
@@ -631,11 +637,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lAlias = aToken.getString("alias");
 		boolean lRecursive = aToken.getBoolean("recursive", false);
 		boolean lIncludeDirs = aToken.getBoolean("includeDirs", false);
-		List lFilemasks = aToken.getList("filemasks");
+		List<Object> lFilemasks = aToken.getList("filemasks", new FastList<Object>());
 		String lSubPath = aToken.getString("path", null);
-		if (lFilemasks == null) {
-			lFilemasks = new FastList<String>();
-		}
 		Object lObject;
 		String lBaseDir;
 		Token lToken = TokenFactory.createToken();
@@ -679,11 +682,10 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				lDirFilter = FileFilterUtils.directoryFileFilter();
 			}
 			Collection<File> lFiles = FileUtils.listFilesAndDirs(lDir, lFileFilter, lDirFilter);
-			List lFileList = new FastList<Map>();
+			List<Map> lFileList = new FastList<Map>();
 			File lBasePath = new File(lBaseDir);
 			MimetypesFileTypeMap lMimesMap = new MimetypesFileTypeMap();
-			int lSeparator = -1;
-			String lRelativePath = "";
+			String lRelativePath;
 			for (File lFile : lFiles) {
 				if (lFile == lDir
 						// we don't want directories to be returned
@@ -691,12 +693,12 @@ public class FileSystemPlugIn extends TokenPlugIn {
 						|| (!lIncludeDirs && lFile.isDirectory())) {
 					continue;
 				}
-				Map lFileData = new FastMap< String, Object>();
+				Map<String, Object> lFileData = new FastMap<String, Object>();
 				String lFilename = lFile.getAbsolutePath()
 						.replace(lBasePath.getAbsolutePath() + File.separator, "");
 				// we always return the path in unix/url/java format
 				String lUnixPath = FilenameUtils.separatorsToUnix(lFilename);
-				lSeparator = lUnixPath.lastIndexOf("/");
+				int lSeparator = lUnixPath.lastIndexOf("/");
 				if (lSeparator != -1) {
 					lFilename = lUnixPath.substring(lSeparator + 1);
 					lRelativePath = lUnixPath.substring(0, lSeparator + 1);
@@ -754,7 +756,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 					return false;
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 			return false;
 		}
 		return true;
@@ -766,6 +768,13 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		super.connectorStopped(aConnector, aCloseReason);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aFilePath
+	 * @param aDeleting
+	 * @throws Exception
+	 */
 	protected void checkFileInUse(WebSocketConnector aConnector, String aFilePath, boolean aDeleting) throws Exception {
 		if (null != aFilePath) {
 			String lFilePath = aFilePath.toLowerCase();
@@ -813,6 +822,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aFilePath
+	 */
 	protected void removeFileInUse(WebSocketConnector aConnector, String aFilePath) {
 		if (null != aFilePath) {
 			// Add the file in the list for avoiding concurrency over this file
@@ -1047,7 +1061,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			}
 
 			FileAlterationListener lFileSystemListener = getFileSystemListener();
-			Set lAliases = mSettings.getAliases().keySet();
+			Set<String> lAliases = mSettings.getAliases().keySet();
 			for (Object lAlias : lAliases) {
 				if (lAlias.equals(PRIVATE_ALIAS_DIR_KEY)
 						|| lAlias.equals(ALIAS_WEB_ROOT_KEY)) {
@@ -1056,7 +1070,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				// registering file-system listener
 				FileAlterationObserver lObserver = new FileAlterationObserver(
 						JWebSocketConfig.expandEnvAndJWebSocketVars(
-						mSettings.getAliasPath(lAlias.toString())),
+								mSettings.getAliasPath(lAlias.toString())),
 						lFileFilter);
 				lObserver.addListener(lFileSystemListener);
 				mFileSystemMonitor.addObserver(lObserver);

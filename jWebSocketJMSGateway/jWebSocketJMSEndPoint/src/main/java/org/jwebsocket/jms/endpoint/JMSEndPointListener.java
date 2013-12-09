@@ -37,7 +37,8 @@ import javax.jms.TextMessage;
  */
 class JMSEndPointListener implements MessageListener {
 
-	private List<IJMSMessageListener> mMessageListeners = new ArrayList();
+	private final List<IJMSMessageListener> mMessageListeners
+			= new ArrayList<IJMSMessageListener>();
 	private final ExecutorService mExecutor;
 
 	public JMSEndPointListener(int aThreadPoolSize) {
@@ -84,7 +85,6 @@ class JMSEndPointListener implements MessageListener {
 
 		// if only a single threaded message processing is required
 		// processMessage(aMsg);
-		
 		mExecutor.submit(new Runnable() {
 			@Override
 			public void run() {

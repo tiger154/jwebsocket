@@ -50,7 +50,7 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
  */
 public class TomcatWrapper extends MessageInbound {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private TomcatConnector mConnector = null;
 	private static WebSocketEngine mEngine = null;
 	private HttpServletRequest mRequest = null;

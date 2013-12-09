@@ -30,7 +30,7 @@ import org.jwebsocket.logging.Logging;
 public class PurgeCancelledTimeoutsTask extends TimerTask {
 
 	private Timer mTimer;
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 *

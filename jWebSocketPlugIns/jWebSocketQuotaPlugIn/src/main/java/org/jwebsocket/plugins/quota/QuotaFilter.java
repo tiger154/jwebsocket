@@ -28,7 +28,7 @@ import org.jwebsocket.token.Token;
  */
 public class QuotaFilter extends TokenFilter {
 
-    private static Logger mLog = Logging.getLogger();
+    private static final Logger mLog = Logging.getLogger();
     private IQuotaProvider mQuotaProvider;
 
     public QuotaFilter(FilterConfiguration configuration) {

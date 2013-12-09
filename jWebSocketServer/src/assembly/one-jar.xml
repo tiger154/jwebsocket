@@ -21,6 +21,65 @@
 			<includes>
 				<include>${groupId}:${artifactId}</include>
 
+				<!--
+				<include>org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec</include>
+				<include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
+				-->
+				
+				<!-- from org.jwebsocket:jWebSocketCommon -->
+				
+				<include>org.jwebsocket:jWebSocketCommon</include>
+				<include>javolution:javolution</include>
+				<include>org.codehaus.jackson:jackson-core-asl</include>
+				<include>org.codehaus.jackson:jackson-mapper-asl</include>
+				<include>org.netbeans.external:json-2</include>
+				<include>org.springframework:spring-core</include>
+				<include>commons-io:commons-io</include>
+				<include>commons-codec:commons-codec</include>
+				<include>org.apache.commons:commons-compress</include>
+				<include>org.apache.activemq:activemq-all</include>
+
+																								
+				<!-- from org.jwebsocket:jWebSocketServerAPI -->
+				
+				<include>org.jwebsocket:jWebSocketServerAPI</include>
+				<include>${groupId}:${artifactId}</include>
+				
+				<include>org.slf4j:slf4j-api</include>
+				<!-- prevent slf4j double binding issue -->
+				<include>org.slf4j:slf4j-log4j12</include>
+				<!-- <include>org.slf4j:slf4j-simple</include> -->
+				
+				<include>javax.mail:mail</include>
+				<!--
+				<include>javax.activation:activation</include>
+				-->
+				<include>log4j:log4j</include>
+				<include>org.jdom:jdom</include>
+
+				<include>org.springframework:spring-aop</include>
+				<include>org.springframework:spring-asm</include>
+				<include>org.springframework:spring-beans</include>
+				<include>org.springframework:spring-context</include>
+				<include>org.springframework:spring-expression</include>
+				<include>org.springframework:spring-jdbc</include>
+				<include>org.springframework:spring-jms</include>
+				<include>org.springframework.security:spring-security-config</include>
+				<include>org.springframework.security:spring-security-core</include>
+				<include>org.springframework.security:spring-security-crypto</include>
+				<include>org.springframework.ldap:spring-ldap-core</include>
+				<include>org.springframework.security:spring-security-ldap</include>
+				<include>org.springframework.security:spring-security-web</include>
+				<include>org.springframework:spring-tx</include>
+				<include>org.springframework:spring-web</include>
+				<!--
+				<include>org.apache.xbean:xbean-spring-common</include>
+				<include>org.apache.xbean:xbean-spring-v2</include>
+				<include>org.apache.xbean:xbean-spring-v2c</include>
+				-->
+				
+				<!-- from org.jwebsocket:jWebSocketServer -->
+
 				<include>commons-beanutils:commons-beanutils</include>
 				<include>commons-beanutils:commons-beanutils-core</include>
 				<include>commons-collections:commons-collections</include>
@@ -37,49 +96,7 @@
 				<include>org.glassfish:javax.servlet</include>
 				<include>net.sf.ehcache:ehcache-core</include>
 				<include>org.mongodb:mongo-java-driver</include>
-				
-				<include>org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec</include>
-				<include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
-				
-				<!-- from org.jwebsocket:jWebSocketCommon -->
-				<include>org.jwebsocket:jWebSocketCommon</include>
-				<include>javolution:javolution</include>
-				<include>org.codehaus.jackson:jackson-core-asl</include>
-				<include>org.codehaus.jackson:jackson-mapper-asl</include>
-				<include>org.netbeans.external:json-2</include>
-				<include>commons-codec:commons-codec</include>
-				
-				<!-- from org.jwebsocket:jWebSocketServerAPI -->
-				<include>org.jwebsocket:jWebSocketServerAPI</include>
-				<include>${groupId}:${artifactId}</include>
-				
-				<include>org.slf4j:slf4j-api</include>
-				<include>org.slf4j:slf4j-log4j12</include>
-				<include>log4j:log4j</include>
-				<include>org.jdom:jdom</include>
-				<include>commons-io:commons-io</include>
-
-				<include>org.springframework:spring-aop</include>
-				<include>org.springframework:spring-asm</include>
-				<include>org.springframework:spring-beans</include>
-				<include>org.springframework:spring-context</include>
-				<include>org.springframework:spring-core</include>
-				<include>org.springframework:spring-expression</include>
-				<include>org.springframework:spring-jdbc</include>
-				<include>org.springframework:spring-jms</include>
-				<include>org.springframework.security:spring-security-config</include>
-				<include>org.springframework.security:spring-security-core</include>
-				<include>org.springframework.security:spring-security-crypto</include>
-				<include>org.springframework.ldap:spring-ldap-core</include>
-				<include>org.springframework.security:spring-security-ldap</include>
-				<include>org.springframework.security:spring-security-web</include>
-				<include>org.springframework:spring-tx</include>
-				<include>org.springframework:spring-web</include>
-
-				<include>org.apache.xbean:xbean-spring-common</include>
-				<include>org.apache.xbean:xbean-spring-v2</include>
-				<include>org.apache.xbean:xbean-spring-v2c</include>
-				
+												
 				<include>com.j256.ormlite:ormlite-jdbc</include>
 				<include>com.j256.ormlite:ormlite-core</include>
 				<!--

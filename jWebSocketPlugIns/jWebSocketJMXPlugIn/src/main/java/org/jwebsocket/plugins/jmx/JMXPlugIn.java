@@ -41,7 +41,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class JMXPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private static JMXPlugIn mJmxPlugin = null;
 	private HttpAdaptor mHttpAdaptor = null;
 	private HttpAdaptor mHttpSSLAdaptor = null;

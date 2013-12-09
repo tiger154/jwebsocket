@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import org.jwebsocket.storage.ehcache.EhCacheStorage;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -88,7 +90,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 			} else {
 				mLog.error("Database bean could not be loaded properly.");
 			}
-		} catch (Exception lEx) {
+		} catch (BeansException lEx) {
 			mLog.error(lEx.getClass().getSimpleName() + " at JDBC plug-in instantiation: " + lEx.getMessage());
 		}
 	}
@@ -191,8 +193,8 @@ public class JDBCPlugIn extends TokenPlugIn {
 	 * @return
 	 */
 	public NativeAccess getNativeAccess(Token aToken) {
-		//connection's alias
-		String lAlias = aToken.getString("alias");
+		// connection's alias
+		String lAlias = (null == aToken ? null : aToken.getString("alias"));
 
 		if (null == lAlias) {
 			return mSettings.getNativeAccess();
@@ -213,18 +215,9 @@ public class JDBCPlugIn extends TokenPlugIn {
 	/**
 	 * Get the default native data source
 	 *
-	 * @param aToken
 	 * @return
 	 */
-	public DataSource getNativeDataSource() {
-		return mSettings.getNativeAccess().getDataSource();
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public Class getJDBCTools() {
+	public Class<JDBCTools> getJDBCTools() {
 		return JDBCTools.class;
 	}
 
@@ -301,7 +294,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// load SQL script
-		List<String> lScript = aToken.getList("script");
+		List<Object> lScript = aToken.getList("script");
 		// load expiration, default is no cache (expiration = 0)
 		Integer lExpiration = aToken.getInteger("expiration", 0);
 
@@ -312,8 +305,8 @@ public class JDBCPlugIn extends TokenPlugIn {
 		lResToken.setList("resultSets", lResultSets);
 
 		if (lScript != null) {
-			for (String lSQLn : lScript) {
-				lSQLResponse = getNativeAccess(aToken).query(lSQLn);
+			for (Object lSQLn : lScript) {
+				lSQLResponse = getNativeAccess(aToken).query((String) lSQLn);
 				Map<String, Object> lResultSet = new FastMap<String, Object>();
 				lResultSet.put("colcount", lSQLResponse.getInteger("colcount", -1));
 				lResultSet.put("rowcount", lSQLResponse.getInteger("rowcount", -1));
@@ -357,7 +350,7 @@ public class JDBCPlugIn extends TokenPlugIn {
 				String lQuery = Tools.expandVars(getNativeAccess(aToken).getSelectSequenceSQL(), lVars, Tools.EXPAND_CASE_SENSITIVE);
 				Token lPKToken = getNativeAccess(aToken).query(lQuery);
 				if (0 == lPKToken.getInteger("code")) {
-					Number lNextSeqVal = null;
+					Number lNextSeqVal;
 					List lRows = lPKToken.getList("data");
 					if (lRows != null) {
 						List lFields = (List) lRows.get(0);
@@ -407,18 +400,18 @@ public class JDBCPlugIn extends TokenPlugIn {
 		TokenServer lServer = getServer();
 		// load SQL string
 		String lSQL = aToken.getString("sql");
-		List<String> lScript = aToken.getList("script");
+		List<Object> lScript = aToken.getList("script");
 
-		Token lSQLResult = null;
-		List lDetails = new FastList<String>();
-		List lRowsAffected = new FastList<Integer>();
+		Token lSQLResult;
+		List<String> lDetails = new FastList<String>();
+		List<Integer> lRowsAffected = new FastList<Integer>();
 		lResToken.setList("details", lDetails);
 		lResToken.setList("rowsAffected", lRowsAffected);
 
 		// first execute SQL script if such passed
 		if (lScript != null) {
-			for (String lSQLn : lScript) {
-				lSQLResult = getNativeAccess(aToken).update(lSQLn);
+			for (Object lSQLn : lScript) {
+				lSQLResult = getNativeAccess(aToken).update((String) lSQLn);
 				if (lSQLResult.getInteger("code", 0) != 0) {
 					lResToken.setInteger("code", -1);
 					lResToken.setString("msg", "Update error. Please refer to 'details' field.");
@@ -487,15 +480,15 @@ public class JDBCPlugIn extends TokenPlugIn {
 	}
 
 	// field names may be of type string only!
-	private String validateFieldsString(List<String> aFields) {
+	private String validateFieldsString(List<Object> aFields) {
 		if (aFields == null) {
 			return null;
 		}
 		StringBuilder lRes = new StringBuilder();
 		int lCnt = aFields.size();
 		int lIdx = 0;
-		for (String lField : aFields) {
-			lRes.append(lField);
+		for (Object lField : aFields) {
+			lRes.append((String) lField);
 			lIdx++;
 			if (lIdx < lCnt) {
 				lRes.append(",");
@@ -523,15 +516,15 @@ public class JDBCPlugIn extends TokenPlugIn {
 	}
 
 	// table names may be of type string only!
-	private String validateTablesString(List<String> aTables) {
+	private String validateTablesString(List<Object> aTables) {
 		if (aTables == null) {
 			return null;
 		}
 		StringBuilder lRes = new StringBuilder();
 		int lCnt = aTables.size();
 		int lIdx = 0;
-		for (String lTable : aTables) {
-			lRes.append(lTable);
+		for (Object lTable : aTables) {
+			lRes.append((String) lTable);
 			lIdx++;
 			if (lIdx < lCnt) {
 				lRes.append(",");
@@ -540,15 +533,15 @@ public class JDBCPlugIn extends TokenPlugIn {
 		return lRes.toString();
 	}
 
-	private String validateOrdersString(List<String> aOrders) {
+	private String validateOrdersString(List<Object> aOrders) {
 		if (aOrders == null) {
 			return null;
 		}
 		StringBuilder lRes = new StringBuilder();
 		int lCnt = aOrders.size();
 		int lIdx = 0;
-		for (String lOrder : aOrders) {
-			lRes.append(lOrder);
+		for (Object lOrder : aOrders) {
+			lRes.append((String) lOrder);
 			lIdx++;
 			if (lIdx < lCnt) {
 				lRes.append(",");
@@ -577,9 +570,9 @@ public class JDBCPlugIn extends TokenPlugIn {
 		}
 
 		// obtain required parameters for query
-		List lTables = aToken.getList("tables");
-		List lFields = aToken.getList("fields");
-		List lOrders = aToken.getList("orders");
+		List<Object> lTables = aToken.getList("tables");
+		List<Object> lFields = aToken.getList("fields");
+		List<Object> lOrders = aToken.getList("orders");
 
 		if (lTables == null || lTables.size() <= 0) {
 			lServer.sendToken(aConnector,
@@ -819,31 +812,31 @@ public class JDBCPlugIn extends TokenPlugIn {
 		lServer.sendToken(aConnector, lResponse);
 	}
 
-	private Token mQuerySQL(String aSQL, int aExpiration) {
-		String lHash = "hash";
-		Token lResponse = null;
+	/*
+	 private Token mQuerySQL(String aSQL, int aExpiration) {
+	 String lHash = "hash";
+	 Token lResponse = null;
 
-		// check cache before running the query.
-		if (aExpiration > 0) {
-			lHash = Tools.getMD5(aSQL);
-			lResponse = (Token) mCache.get(lHash);
-			if (lResponse != null) {
-				lResponse.setBoolean("isCached", true);
-				return lResponse;
-			}
-		}
+	 // check cache before running the query.
+	 if (aExpiration > 0) {
+	 lHash = Tools.getMD5(aSQL);
+	 lResponse = (Token) mCache.get(lHash);
+	 if (lResponse != null) {
+	 lResponse.setBoolean("isCached", true);
+	 return lResponse;
+	 }
+	 }
 
-		// if to be cached, put it to cache
-		// don't save isCached flag
-		if (aExpiration > 0) {
-			mCache.put(lHash, lResponse);
-		}
+	 // if to be cached, put it to cache
+	 // don't save isCached flag
+	 if (aExpiration > 0) {
+	 mCache.put(lHash, lResponse);
+	 }
+	 lResponse.setBoolean("isCached", false);
 
-		lResponse.setBoolean("isCached", false);
-
-		return lResponse;
-	}
-
+	 return lResponse;
+	 }
+	 */
 	/**
 	 *
 	 * @param aConnector
@@ -1037,12 +1030,12 @@ public class JDBCPlugIn extends TokenPlugIn {
 
 		Token lResponse = createResponse(aToken);
 
-		List lResDrivers = new FastList();
-		Enumeration lDrivers = DriverManager.getDrivers();
+		List<Map<String, Object>> lResDrivers = new FastList<Map<String, Object>>();
+		Enumeration<Driver> lDrivers = DriverManager.getDrivers();
 		Driver lDriver;
 		while (lDrivers.hasMoreElements()) {
-			lDriver = (Driver) lDrivers.nextElement();
-			Map lDriverInfo = new FastMap();
+			lDriver = lDrivers.nextElement();
+			Map<String, Object> lDriverInfo = new FastMap<String, Object>();
 			lDriverInfo.put("majorVersion", lDriver.getMajorVersion());
 			lDriverInfo.put("minorVersion", lDriver.getMinorVersion());
 			lDriverInfo.put("simpleName", lDriver.getClass().getSimpleName());
@@ -1055,16 +1048,16 @@ public class JDBCPlugIn extends TokenPlugIn {
 		Connection lConn = null;
 		try {
 			DataSource lDataSource = getNativeDataSource(aToken);
-			Map lConnInfo = new FastMap();
+			Map<String, Object> lConnInfo = new FastMap<String, Object>();
 
 			lConn = lDataSource.getConnection();
-			DatabaseMetaData meta = lConn.getMetaData();
-			lConnInfo.put("serverName", meta.getDatabaseProductName());
-			lConnInfo.put("serverVersion", meta.getDatabaseProductVersion());
-			lConnInfo.put("driverName", meta.getDriverName());
-			lConnInfo.put("driverVersion", meta.getDriverVersion());
-			lConnInfo.put("majorJdbcVersion", meta.getJDBCMajorVersion());
-			lConnInfo.put("minorJdbcVersion", meta.getJDBCMinorVersion());
+			DatabaseMetaData lMetaData = lConn.getMetaData();
+			lConnInfo.put("serverName", lMetaData.getDatabaseProductName());
+			lConnInfo.put("serverVersion", lMetaData.getDatabaseProductVersion());
+			lConnInfo.put("driverName", lMetaData.getDriverName());
+			lConnInfo.put("driverVersion", lMetaData.getDriverVersion());
+			lConnInfo.put("majorJdbcVersion", lMetaData.getJDBCMajorVersion());
+			lConnInfo.put("minorJdbcVersion", lMetaData.getJDBCMinorVersion());
 			/*
 			 * System.out.println("Server name: " +
 			 * meta.getDatabaseProductName());
@@ -1078,14 +1071,14 @@ public class JDBCPlugIn extends TokenPlugIn {
 			 * minor version: " + meta.getJDBCMinorVersion());
 			 */
 			lResponse.setMap("currentConnection", lConnInfo);
-		} catch (Exception lEx) {
+		} catch (SQLException lEx) {
 		}
 		try {
-			if (lConn == null) {
+			if (lConn != null) {
 				lConn.commit();
 				lConn.close();
 			}
-		} catch (Exception lEx) {
+		} catch (SQLException lEx) {
 		}
 	}
 }

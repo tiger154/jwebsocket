@@ -59,12 +59,12 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	 * @param aNS
 	 * @param aType
 	 * @param aUTID
-	 * @param aForwardId
+	 * @param aOriginId
 	 * @param aArgs
 	 * @param aPayload
 	 */
 	public void sendPayload(String aTargetId, String aNS, String aType,
-			Integer aUTID, String aOriginId, Map aArgs, String aPayload) {
+			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload) {
 		Token lToken = TokenFactory.createToken();
 		lToken.setMap(aArgs);
 		lToken.setNS(aNS);
@@ -87,7 +87,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	 * @param aPayload
 	 */
 	public void sendPayload(String aTargetId, String aNS, String aType,
-			Map aArgs, String aPayload) {
+			Map<String, Object> aArgs, String aPayload) {
 		mUTID++;
 		sendPayload(aTargetId, aNS, aType, mUTID, null, aArgs, aPayload);
 	}
@@ -102,7 +102,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	 * @param aPayload
 	 */
 	public void forwardPayload(String aTargetId, String aNS, String aType,
-			String aOriginId, Map aArgs, String aPayload) {
+			String aOriginId, Map<String, Object> aArgs, String aPayload) {
 		mUTID++;
 		sendPayload(aTargetId, aNS, aType, mUTID, aOriginId, aArgs, aPayload);
 	}
@@ -119,7 +119,8 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	 * @param aPayload
 	 */
 	public void respondPayload(String aTargetId, String aNS, String aReqType,
-			Integer aUTID, int aCode, String aMsg, Map aArgs, String aPayload) {
+			Integer aUTID, int aCode, String aMsg, Map<String, Object> aArgs,
+			String aPayload) {
 
 		Token lResponse = TokenFactory.createToken();
 		// set args map first, since setMap overwrites all other values
@@ -145,8 +146,17 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		sendToken(mEndPoint.getGatewayId(), lEnvelope);
 	}
 
-	public void respondPayload(String aTargetId, Token aRequest, int aCode, String aMsg,
-			Map aArgs, String aPayload) {
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aRequest
+	 * @param aCode
+	 * @param aMsg
+	 * @param aArgs
+	 * @param aPayload
+	 */
+	public void respondPayload(String aTargetId, Token aRequest, int aCode, 
+			String aMsg, Map<String, Object> aArgs, String aPayload) {
 
 		Token lResponse = TokenFactory.createToken();
 		// set args map first, since setMap overwrites all other values
@@ -195,6 +205,10 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		return mEndPoint;
 	}
 
+	/**
+	 *
+	 * @param aTargetId
+	 */
 	public void ping(String aTargetId) {
 		mUTID++;
 		sendPayload(aTargetId,
@@ -204,9 +218,13 @@ public class JWSEndPointSender extends JMSEndPointSender {
 				null, // origin id
 				null, // args
 				null // payload
-				);
+		);
 	}
 
+	/**
+	 *
+	 * @param aTargetId
+	 */
 	public void getIdentification(String aTargetId) {
 		mUTID++;
 		sendPayload(aTargetId,
@@ -216,8 +234,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 				null, // origin id
 				null, // args
 				null // payload
-				);
+		);
 	}
-	
-	
+
 }

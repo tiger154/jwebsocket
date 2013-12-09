@@ -41,7 +41,7 @@ import org.jwebsocket.util.Tools;
  */
 public class TomcatEngine extends BaseEngine {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private boolean mIsRunning = false;
 	private Tomcat mTomcat = null;
 	private String mTomcatVersion = "7+";

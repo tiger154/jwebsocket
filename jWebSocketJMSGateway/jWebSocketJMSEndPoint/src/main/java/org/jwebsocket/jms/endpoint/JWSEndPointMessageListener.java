@@ -294,6 +294,10 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 		return mResponseListeners.containsKey(aNS + "." + aReqType);
 	}
 
+	/**
+	 *
+	 * @param aListener
+	 */
 	public void addMessageListener(IJWSMessageListener aListener) {
 		mMessageListeners.add(aListener);
 	}

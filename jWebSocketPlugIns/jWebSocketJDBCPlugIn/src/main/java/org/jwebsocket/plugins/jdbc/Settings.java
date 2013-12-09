@@ -52,7 +52,6 @@ public class Settings {
 	public NativeAccess getNativeAccess(String aAlias) {
 		if (aAlias == null) {
 			return mConnections.get(DEFAULT);
-
 		} else {
 			if (mConnections.containsKey(aAlias)) {
 				return mConnections.get(aAlias);

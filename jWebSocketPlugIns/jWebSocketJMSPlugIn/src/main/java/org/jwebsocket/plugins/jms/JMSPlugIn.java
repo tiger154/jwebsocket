@@ -63,7 +63,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class JMSPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private static final String NS_JMS =
 			JWebSocketServerConstants.NS_BASE + ".plugins.jms";
 	private final static String VERSION = "1.0.0";

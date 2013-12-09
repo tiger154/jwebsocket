@@ -42,7 +42,7 @@ import org.jwebsocket.util.Tools;
  */
 public class GrizzlyWebSocketApplication extends WebSocketApplication {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private static Map<WebSocket, GrizzlyConnector> mConnectors;
 	private GrizzlyEngine mEngine = null;
 	private HttpRequestPacket mRequest = null;

@@ -67,7 +67,7 @@ public class RPCPlugIn extends TokenPlugIn {
 
 	// keys to buil the rrpc call
 	private static RPCPlugIn sRPCPlugIn = null;
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket RPCPlugIn";

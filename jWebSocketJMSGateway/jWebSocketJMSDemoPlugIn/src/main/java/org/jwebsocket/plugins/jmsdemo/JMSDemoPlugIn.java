@@ -36,7 +36,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class JMSDemoPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	/**
 	 *
 	 */

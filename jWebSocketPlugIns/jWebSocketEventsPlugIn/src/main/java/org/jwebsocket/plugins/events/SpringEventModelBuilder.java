@@ -32,7 +32,7 @@ import org.jwebsocket.util.Tools;
  */
 public class SpringEventModelBuilder implements IEventModelBuilder {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 * Uses Spring IoC Container to build the EventModel instance

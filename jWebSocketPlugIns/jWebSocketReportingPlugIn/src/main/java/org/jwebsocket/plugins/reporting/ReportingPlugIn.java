@@ -190,7 +190,7 @@ public class ReportingPlugIn extends ActionPlugIn {
 		// getting the report paramas
 		Map<String, Object> lReportParams = aToken.getMap("reportParams", new HashMap());
 		// getting the reports fields
-		List<Map<String, Object>> lReportFields = aToken.getList("reportFields", new ArrayList());
+		List<Map<String,Object>> lReportFields = aToken.getList("reportFields", new ArrayList());
 		// checking JDBCplug-in is loaded
 		boolean lUseJDBC = aToken.getBoolean("useJDBCConnection", false);
 		String lConnectionAlias = aToken.getString("connectionAlias", "default");

@@ -39,7 +39,7 @@ import org.jwebsocket.util.Tools;
  */
 public class PerfTestPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	// if namespace changed update client plug-in accordingly!
 	private static final String NS_TEST =
 			JWebSocketServerConstants.NS_BASE + ".plugins.test";

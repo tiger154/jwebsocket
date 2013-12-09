@@ -40,7 +40,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class ClusterAdvisoryListener implements MessageListener {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 *

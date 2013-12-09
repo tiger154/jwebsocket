@@ -49,7 +49,7 @@ public class JMSEndPoint {
 	public static boolean DURABLE = true;
 	static final Logger mLog = Logger.getLogger(JMSEndPoint.class);
 	// the JMS connection factory
-	private ActiveMQConnectionFactory mConnectionFactory;
+	private final ActiveMQConnectionFactory mConnectionFactory;
 	// the JMS connection instance/object
 	private Connection mConnection;
 	// session to create topics, producers and consumers
@@ -121,6 +121,9 @@ public class JMSEndPoint {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public void start() {
 		try {
 			// establish the connection
@@ -177,7 +180,7 @@ public class JMSEndPoint {
 		if (null != mSession) {
 			try {
 				mSession.close();
-			} catch (Exception lEx) {
+			} catch (JMSException lEx) {
 				// TODO: process exceptions properly
 			}
 		}
@@ -185,7 +188,7 @@ public class JMSEndPoint {
 			try {
 				mConnection.stop();
 				mConnection.close();
-			} catch (Exception lEx) {
+			} catch (JMSException lEx) {
 				// TODO: process exceptions properly
 			}
 		}

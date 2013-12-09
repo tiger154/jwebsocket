@@ -35,7 +35,7 @@ public class JMSEndPointMessageListener implements IJMSMessageListener {
 
 	static long utid = 0;
 	private JMSEndPointSender mSender;
-	private JMSEndPoint mJMSEndPoint;
+	private final JMSEndPoint mJMSEndPoint;
 
 	/**
 	 *
