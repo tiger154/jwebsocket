@@ -267,11 +267,11 @@ public abstract class BaseQuota implements IQuota {
     }
 
     @Override
-    public void register(String aInstance, String aNameSpace, String aUuid,
+    public void create(String aInstance, String aNameSpace, String aUuid,
             long aAmount, String aInstanceType, String aQuotaType, String aQuotaIdentifier, String aActions)
             throws Exception {
-
         if (mQuotaStorage.quotaExist(aNameSpace, aQuotaIdentifier, aInstance)) {
+               System.out.println("La quota existe create");
             throw new ExceptionQuotaAlreadyExist(mQuotaStorage.getUuid(aQuotaIdentifier, aNameSpace, aInstance, aInstanceType));
         }
     }

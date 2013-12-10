@@ -109,7 +109,7 @@ public class QuotaDiskSpace extends BaseQuota {
 	}
 
 	@Override
-	public void register(String aInstance, String aNameSpace, String aUuid, long aAmount,
+	public void create(String aInstance, String aNameSpace, String aUuid, long aAmount,
 			String aInstanceType, String aQuotaType, String aQuotaIdentifier, String aActions) throws Exception {
 
 		if (!aNameSpace.equals(PRIVATE_NAMESPACE) && !aNameSpace.equals(PUBLIC_NAMESPACE)) {
@@ -118,7 +118,7 @@ public class QuotaDiskSpace extends BaseQuota {
 					+ "namespace for a quotaDiskSpace");
 		}
 
-		super.register(aInstance, aNameSpace, aUuid, aAmount, aInstanceType, aQuotaType,
+		super.create(aInstance, aNameSpace, aUuid, aAmount, aInstanceType, aQuotaType,
 				aQuotaIdentifier, aActions);
 
 		IQuotaSingleInstance lSingleQuota;

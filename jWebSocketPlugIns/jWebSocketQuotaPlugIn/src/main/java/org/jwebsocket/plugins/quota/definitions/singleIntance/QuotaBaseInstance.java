@@ -79,14 +79,14 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
 
     @Override
     public void writeToToken(Token aToken) {
-        aToken.setString("q_uuid", mUuid);
-        aToken.setString("q_instance", mInstance);
-        aToken.setString("q_namespace", mNamesPace);
-        aToken.setLong("q_value", mValue);
-        aToken.setString("q_type", mQuotaType);
-        aToken.setString("q_instance_type", mInstanceType);
-        aToken.setString("q_identifier", mQuotaIdentifier);
-        aToken.setList("q_childQuotas", getChildQuotaList());
+        aToken.setString("uuid", mUuid);
+        aToken.setString("instance", mInstance);
+        aToken.setString("namespace", mNamesPace);
+        aToken.setLong("value", mValue);
+        aToken.setString("quotaType", mQuotaType);
+        aToken.setString("instance_type", mInstanceType);
+        aToken.setString("identifier", mQuotaIdentifier);
+        aToken.setList("childQuotas", getChildQuotaList());
     }
 
     @Override
