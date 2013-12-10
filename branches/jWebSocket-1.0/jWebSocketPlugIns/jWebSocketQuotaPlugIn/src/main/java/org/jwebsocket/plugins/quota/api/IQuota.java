@@ -164,7 +164,7 @@ public interface IQuota {
 	 * @param aInstanceType
 	 * @param aQuotaIdentifier
 	 */
-	public void register(String aInstance, String aNameSpace, String aUuid,
+	public void create(String aInstance, String aNameSpace, String aUuid,
 			long aAmount, String aInstanceType, String aQuotaType,
 			String aQuotaIdentifier, String aActions) throws Exception;
 

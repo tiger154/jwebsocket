@@ -79,9 +79,9 @@ public class QuotaFilter extends TokenFilter {
                     }
                 }
 
-                long lQValue = lQuotaObj.reduceQuota(lUserName, lNS, "User", lQuotaObj.getDefaultReduceValue());
+                long lQValue = lQSingle.getvalue();
 
-                if (lQValue == -1) {
+                if (lQValue <= 0) {
                     Token lResponse = getServer().createResponse(aToken);
                     lResponse.setCode(-1);
                     lResponse.setString("msg", "Acces not allowed due to quota limmitation exceed");
