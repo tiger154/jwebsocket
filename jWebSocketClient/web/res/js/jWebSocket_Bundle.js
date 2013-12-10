@@ -22,7 +22,7 @@
 // ## :#file:*:jWebSocket.js
 // ## :#d:en:Implements the jWebSocket Web Client.
 
-// Firefox temporarily used MozWebSocket (why??), anyway, consider this here.
+// Firefox temporarily used a "MozWebSocket" class, we consider this here.
 // Since the browserSupportNativeWebSocket method evaluates the existance of
 // the window.WebSocket class, this abstraction needs to be done on the very top.
 // please do not move this lines down.
@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC2 (build 30613)
+	//:const:*:VERSION:String:1.0 RC2 (build 31112)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC2 (build 30613)",
+	VERSION: "1.0.0 RC2 (build 31112)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -210,25 +210,6 @@ var jws = {
 	//:d:en:Root user password is "root" (if not changed on the server).
 	//:d:en:FOR DEMO AND DEBUG PURPOSES ONLY! NEVER SAVE PRODUCTION ROOT CREDENTIALS HERE!
 	DEMO_ROOT_PASSWORD: "root",
-	//:const:*:PACKET_DELIVERY_ACKNOWLEDGE_PREFIX:String:pda
-	//:d:en:Prefix for delivery acknowledge packets
-	PACKET_DELIVERY_ACKNOWLEDGE_PREFIX : "pda",
-	//:const:*:PACKET_ID_DELIMETER:String:,
-	//:d:en:Packet identifier delimeter
-	PACKET_ID_DELIMETER: ",",
-	//:const:*:PACKET_FRAGMENT_PREFIX:String:FRAGMENT
-	//:d:en:Prefix used to sign fragmented packets
-	PACKET_FRAGMENT_PREFIX: "FRAGMENT",
-	//:const:*:PACKET_LAST_FRAGMENT_PREFIX:String:LFRAGMENT
-	//:d:en:Prefix used to sign the last fragment on a packet fragmentation
-	PACKET_LAST_FRAGMENT_PREFIX: "LFRAGMENT",
-	//:const:*:MAX_FRAME_SIZE_FREFIX:String:maxframesize
-	//:d:en:Prefix used on the max frame size handshake 
-	MAX_FRAME_SIZE_FREFIX: "maxframesize",
-	//:const:*:PACKET_TRANSACTION_MAX_BYTES_PREFIXED:Integer:31
-	//:d:en:Maximum number of bytes that can be prefixed during a packet transaction
-	PACKET_TRANSACTION_MAX_BYTES_PREFIXED: 31,
-	
 	
 	//:m:*:$
 	//:d:en:Convenience replacement for [tt]document.getElementById()[/tt]. _
@@ -408,6 +389,20 @@ var jws = {
 			window.Worker !== null && window.Worker !== undefined
 			);
 	})(),
+			
+	getOptions: function( aOptions, aDefaults ) {
+		// check that options are not empty
+		aOptions = ( aOptions ? aOptions : {} );
+		// take over default values if not specified for options
+		if( aDefaults ) {
+			for( var lKey in aDefaults ) {
+				if( !aOptions[ lKey ] ) {
+					aOptions[ lKey ] = aDefaults[ lKey ];
+				}
+			}
+		}
+		return aOptions;
+	},
 
 	//:m:*:loadScript
 	//:d:en:loads a script from a URL dynamically at run-time
@@ -1235,6 +1230,27 @@ jws.tools = {
 		return lRes;
 	},
 	
+	//:m:*:parseQuery
+	//:d:en:Parse the given URL query into a JSON object in key/value pairs. 
+	//:a:en::aURL:String:The URL to parse
+	//:r:*:::Object:JSON object containing query attributes and it values.
+	parseQuery: function(aURL){
+		var lMap = {};
+		
+		var lUrlParts = aURL.split("?");
+		if (lUrlParts.length == 1){
+			return lMap;
+		}
+		
+		var lQueryParts = lUrlParts[1].split(",");
+		for (var lIndex in lQueryParts){
+			var lArray = lQueryParts[lIndex].split("=");
+			lMap[lArray[0]] = lArray[1];
+		}
+		
+		return lMap;
+	},
+	
 	//:m:*:calcMD5
 	//:d:en:Generates an MD5 hash for the given UTF-8 input String
 	//:a:en::aUTF8:String:UTF-8 String to generate the MD5 hash for.
@@ -1460,7 +1476,23 @@ jws.tools = {
 			}
 		}
 		return lConstructor;
-	}
+	}, 
+	
+	createUUID: function() {
+		// please refer to http://www.ietf.org/rfc/rfc4122.txt
+		var lSegments = [];
+		var lHexDigits = "0123456789abcdef";
+		for (var lIdx = 0; lIdx < 36; lIdx++) {
+			lSegments[lIdx] = lHexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+		}
+		lSegments[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+		lSegments[19] = lHexDigits.substr((lSegments[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+		lSegments[8] = lSegments[13] = lSegments[18] = lSegments[23] = "-";
+
+		var lUUID= lSegments.join("");
+		return lUUID;
+	}	
+	
 };
 
 if( !jws.browserSupportsNativeWebSockets ) {
@@ -1728,14 +1760,19 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aURL:String:URL to the jWebSocket Server
 	//:a:en::aOptions:Object:Optional arguments, see below...
 	//:a:en:aOptions:OnOpen:function:Callback when connection was successfully established.
+	//:a:en:aOptions:wsClass:function:Custom implementation for the HTML5 WebSocket class. Optional
 	//:r:*:::void:none
 	open: function( aURL, aOptions ) {
 		if( !aOptions ) {
 			aOptions = {};
 		}
+		
+		// getting the WebSocket class
+		var lWsClass = aOptions['wsClass'] || self.WebSocket;
+		
 		// if browser natively supports WebSockets...
 		// otherwise flash bridge may have embedded WebSocket class
-		if( self.WebSocket ) {
+		if( lWsClass ) {
 
 			if( !this.fConn || this.fConn.readyState > 2 ) {
 				var lThis = this;
@@ -1774,7 +1811,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				}
 
 				// create a new web socket instance
-				this.fConn = new WebSocket( aURL, lSubProt );
+				this.fConn = new lWsClass( aURL, lSubProt );
 				// save URL and sub prot for optional re-connect
 				this.fURL = aURL; 
 				this.fSubProt = lSubProt;
@@ -1802,97 +1839,98 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				};
 
 				this.fConn.onmessage = function( aEvent ) {
-					// utility variable
-					var lPos, lPID;
-					
-					// supporting the max frame size handshake
-					if( undefined === lThis.fMaxFrameSize ) {
-						lPos = aEvent.data.indexOf( jws.MAX_FRAME_SIZE_FREFIX );
-						if( 0 === lPos ) {
-							lThis.fMaxFrameSize = parseInt( aEvent.data.substr( jws.MAX_FRAME_SIZE_FREFIX.length ) );
-							jws.events.stopEvent( aEvent );
-							if( jws.console.isDebugEnabled() ) {
-								jws.console.debug( "Maximum frame size for connection is: " + lThis.fMaxFrameSize );
-							}
-							
-							// The end of the "max frame size" handshake indicates that the connection is finally opened
-							lValue = lThis.processOpened( aEvent );
-							// give application change to handle event
-							if( aOptions.OnOpen ) {
-								aOptions.OnOpen( aEvent, lValue, lThis );
-							}
-							// process outgoing queue
-							lThis.processQueue();
-							
-							return;
+                    // supporting binary frames at this level
+                    if( ( "undefined" !== typeof Blob && 
+							aEvent.data instanceof Blob ) ||
+							( "undefined" !== typeof ArrayBuffer && 
+							aEvent.data instanceof ArrayBuffer )) {
+                        if( aOptions.OnMessage ) {
+							aOptions.OnMessage( aEvent, lValue, lThis );
 						}
-					} else if (aEvent.data.length > this.fMaxFrameSize){
-							jws.events.stopEvent( aEvent );
-						jws.console.warn( "Data packet discarded. The packet size " + 
-							"exceeds the max frame size supported by the client!" );
-						return;
-					}
-					
+                        return; 
+                    }
+                    
+                    // IF NOT BINARY FRAME
+                    
+					// processing control messages
 					var lPacket = aEvent.data;
-					
-					// processing packet delivery acknowledge from the server
-					if ( 0 === lPacket.indexOf(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX) ){
-						if ( lPacket.length <= (10 + jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length) ){
-							lPID = parseInt( lPacket.replace(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, "") );
-							clearTimeout( lThis.fPacketDeliveryTimerTasks[ lPID ] );
+					try {
+						var lMessage = JSON.parse(lPacket);
+						
+						if (lMessage['i$WrappedMsg']){
+							// process control message
+							if ('message' == lMessage.type){
+								var lMsgId = lMessage.msgId;
+								
+								if (lMessage.isAckRequired){
+									// send delivery acknowledge to the server
+									lThis.sendStream(JSON.stringify({
+										'i$WrappedMsg': true,
+										name: 'ack',
+										data: lMsgId,
+										type: 'info'
+									}));
+								}
+								
+								if (lMessage.isFragment){
+									// processing fragmentation
+									if( undefined === lThis.fInFragments[ lMessage.fragmentationId ] ){
+										lThis.fInFragments[ lMessage.fragmentationId ] = lMessage.data;
+									} else {
+										lThis.fInFragments[ lMessage.fragmentationId ] += lMessage.data;
+									}
+									
+									if (lMessage.isLastFragment){
+										// getting the complete packet content
+										lPacket = lThis.fInFragments[ lMessage.fragmentationId ];
+										// removing packet data from the fragments storage 
+										delete lThis.fInFragments[ lMessage.fragmentationId ];
+									} else {
+										return;
+									}
+								} else {
+									// using wrapped message data
+									lPacket = lMessage.data;
+								}
+							} else if ('info' == lMessage.type){
+								if ('ack' == lMessage.name){
+									// processing packet delivery acknowledge from the server
+									clearTimeout( lThis.fPacketDeliveryTimerTasks[ lMessage.data ] );
 							
-							if ( lThis.fPacketDeliveryListeners[ lPID ] ){
-								// cleaning expired data and calling success
-								lThis.fPacketDeliveryListeners[ lPID ].OnSuccess();
-								delete lThis.fPacketDeliveryListeners[ lPID ];
-								delete lThis.fPacketDeliveryTimerTasks[ lPID ];
+									if ( lThis.fPacketDeliveryListeners[ lMessage.data ] ){
+										// cleaning expired data and calling success
+										lThis.fPacketDeliveryListeners[ lMessage.data ].OnSuccess();
+										delete lThis.fPacketDeliveryListeners[ lMessage.data ];
+										delete lThis.fPacketDeliveryTimerTasks[ lMessage.data ];
+									}
+									
+									return;
+								} else if ('maxFrameSize' == lMessage.name){
+									// setting max frame size
+									lThis.fMaxFrameSize = lMessage.data;
+									// stopping event
+									jws.events.stopEvent( aEvent );
+									
+									if( jws.console.isDebugEnabled() ) {
+										jws.console.debug( "Maximum frame size for connection is: " + lThis.fMaxFrameSize );
+									}
+
+									// The end of the "max frame size" handshake indicates that the connection is finally opened
+									lValue = lThis.processOpened( aEvent );
+									// give application change to handle event
+									if( aOptions.OnOpen ) {
+										aOptions.OnOpen( aEvent, lValue, lThis );
+									}
+									
+									// process outgoing queue
+									lThis.processQueue();
+
+									return;
+								}
 							}
 						}
-						
-						return;
-					}
-					
-					// supporting packet delivery acknowledge to the server
-					lPos = aEvent.data.indexOf( jws.PACKET_ID_DELIMETER );
-					if ( lPos >=0 && lPos < 10 && false === isNaN( aEvent.data.substr( 0, lPos ) ) ) {
-						lPID = aEvent.data.substr( 0, lPos );
-						// send packet delivery acknowledge
-						lThis.sendStream( jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPID );
-						if( jws.console.isDebugEnabled() ) {
-							jws.console.debug( "PDA sent for packet with id: " + lPID );
-						}
-						
-						// generating the new packet
-						lPacket = lPacket.substr( lPos + 1 );
-						
-						// supporting fragmentation
-						var lFragmentContent;
-						if ( 0 === lPacket.indexOf( jws.PACKET_FRAGMENT_PREFIX ) ) {
-							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
-							lPID = lPacket.substr( jws.PACKET_FRAGMENT_PREFIX.length, 
-								lPos - jws.PACKET_FRAGMENT_PREFIX.length );
-							lFragmentContent = lPacket.substr( lPos + 1 );
-							// storing the packet fragment
-							if( undefined === lThis.fInFragments[ lPID ] ){
-								lThis.fInFragments[ lPID ] = lFragmentContent;
-							} else {
-								lThis.fInFragments[ lPID ] += lFragmentContent;
-							}
-							
-							// do not process packet fragments
-							return;
-						} else if ( 0 === lPacket.indexOf( jws.PACKET_LAST_FRAGMENT_PREFIX ) ) {
-							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
-							lPID = lPacket.substr( jws.PACKET_LAST_FRAGMENT_PREFIX.length, 
-								lPos - jws.PACKET_LAST_FRAGMENT_PREFIX.length );
-							lFragmentContent = lPacket.substr( lPos + 1 );
-							// storing the packet fragment
-							lThis.fInFragments[ lPID ] += lFragmentContent;
-							// getting the complete packet content
-							lPacket = lThis.fInFragments[ lPID ];
-							// removing packet data from the fragments storage 
-							delete lThis.fInFragments[ lPID ];
-						}
+					} catch (lError){
+						// allowing proprietary implementations
 					}
 					
 					if( jws.console.isDebugEnabled() ) {
@@ -2040,8 +2078,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				// call filter chain
 				if( this.fFilters ) {
 					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-						if ( "function" === typeof this.fFilters[ lIdx ]["filterStreamOut"] ){
-							this.fFilters[ lIdx ]["filterStreamOut"]( aData );
+						if ( "function" === typeof this.fFilters[ lIdx ][ "filterStreamOut" ] ){
+							this.fFilters[ lIdx ][ "filterStreamOut" ]( aData );
 						}
 					}
 				}
@@ -2074,7 +2112,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aFragmentSize:Integer:The size of the packet fragments if fragmentation is required. Default value is connection max frame size value.
 	//:r:*:::void:none
 	sendStreamInTransaction: function ( aData, aListener, aFragmentSize){
-		var lPID = jws.tools.getUniqueInteger();
+		var lMsgId = "" + jws.tools.getUniqueInteger();
 		var lThis = this;
 		
 		try {
@@ -2104,39 +2142,30 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				throw new Error("Missing 'OnFailure' method on argument 'listener'!");
 			}
 			
-			// generating packet prefix
-			var lPacketPrefix = lPID + jws.PACKET_ID_DELIMETER;
-		
 			// processing fragmentation
 			if ( aFragmentSize < this.fMaxFrameSize && aFragmentSize < aData.length ){
 				
 				// first fragment is never the last
 				var lIsLast = false; 
 				// fragmentation id, allows multiplexing
-				var lFragmentationId = jws.tools.getUniqueInteger();
-				// prefix the packet for fragmentation
-				var lFragmentedPacket = jws.PACKET_FRAGMENT_PREFIX 
-				+ lFragmentationId 
-				+ jws.PACKET_ID_DELIMETER 
-				+ aData.substr( 0, aFragmentSize );
+				var lFragmentationId = "" + jws.tools.getUniqueInteger();
+				// getting the fragment content
+				var lFragment = aData.substr( 0, aFragmentSize );
 				
-				if ( lFragmentedPacket.length + lPacketPrefix.length > this.fMaxFrameSize ){
-					throw new Error( "The packet size exceeds the max frame size supported by the client! "
-						+ "Consider that the packet has been prefixed with "
-						+ ( lFragmentedPacket.length + lPacketPrefix.length - aData.length )
-						+ " bytes for fragmented transaction.");
-				}
-				
-				this.sendStreamInTransaction ( lFragmentedPacket, {
-					fOriginPacket: aData,
-					fOriginFragmentSize: aFragmentSize,
-					fOriginListener: aListener,
+				// sending packet
+				this.sendMessage ( {
+					isFragment: true,
+					fragmentationId: lFragmentationId,
+					type: 'message',
+					isLastFragment: lIsLast,
+					data: lFragment,
+					msgId: lMsgId
+				}, {
 					fSentTime: new Date().getTime(),
-					fFragmentationId: lFragmentationId,
 					fBytesSent: 0,
 					
 					getTimeout: function (){
-						var lTimeout = this.fSentTime + this.fOriginListener.getTimeout() - new Date().getTime();
+						var lTimeout = this.fSentTime + aListener.getTimeout() - new Date().getTime();
 						if (lTimeout < 0) {
 							lTimeout = 0;
 						}
@@ -2145,67 +2174,87 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					}, 
 					
 					OnTimeout: function (){
-						this.fOriginListener.OnTimeout();
+						aListener.OnTimeout();
 					},
 					
 					OnSuccess: function (){
 						// updating bytes sent
-						this.fBytesSent += this.fOriginFragmentSize;
-						if ( this.fBytesSent >= this.fOriginPacket.length ) {
+						this.fBytesSent += aFragmentSize;
+						if ( this.fBytesSent >= aData.length ) {
 							// calling success if the packet was transmitted complete
-							this.fOriginListener.OnSuccess();
+							aListener.OnSuccess();
 						} else {
 							// prepare to sent a next fragment
-							var lLength = ( this.fOriginFragmentSize + this.fBytesSent <= this.fOriginPacket.length )
-							? this.fOriginFragmentSize : this.fOriginPacket.length - this.fBytesSent;
+							var lLength = ( aFragmentSize + this.fBytesSent <= aData.length )
+							? aFragmentSize : aData.length - this.fBytesSent;
 
-							var lNextFragment = this.fOriginPacket.substr( this.fBytesSent, lLength );
-							var lIsLast = ( lLength + this.fBytesSent === this.fOriginPacket.length ) ? true : false;
+							var lNextFragment = aData.substr( this.fBytesSent, lLength );
+							var lIsLast = ( lLength + this.fBytesSent === aData.length ) ? true : false;
 					
-							// prefixing next fragment
-							lNextFragment = ( ( lIsLast ) ? jws.PACKET_LAST_FRAGMENT_PREFIX : jws.PACKET_FRAGMENT_PREFIX )
-							+ this.fFragmentationId 
-							+ jws.PACKET_ID_DELIMETER 
-							+ lNextFragment;
-						
 							// send fragment
-							lThis.sendStreamInTransaction(lNextFragment, this);
+							lThis.sendMessage({
+								isFragment: true,
+								fragmentationId: lFragmentationId,
+								type: 'message',
+								isLastFragment: lIsLast,
+								data: lNextFragment,
+								msgId: "" + jws.tools.getUniqueInteger()
+							}, this);
 						}
 					},
 					
 					OnFailure: function ( lEx ){
-						this.fOriginListener.OnFailure( lEx ); 
+						aListener.OnFailure( lEx ); 
 					}
 				});
 				
 				// REQUIRED
 				return;
 			}
-		
-			// prefixing the packet
-			aData = lPacketPrefix + aData;
-			// saving the listener
-			this.fPacketDeliveryListeners[ lPID ] = aListener;
-		
-			// sending the packet
-			this.sendStream( aData );
-		
-			// setting the timer task for OnTimeout support
-			var lTT = setTimeout(function(){
-				if ( lThis.fPacketDeliveryListeners[ lPID ] ){
-					// cleaning expired data and calling timeout
-					lThis.fPacketDeliveryListeners[ lPID ].OnTimeout();
-					delete lThis.fPacketDeliveryListeners[ lPID ];
-					delete lThis.fPacketDeliveryTimerTasks[ lPID ];
-				}
-			}, 
-			aListener.getTimeout());
-			this.fPacketDeliveryTimerTasks[ lPID ] = lTT; 
+			
+			this.sendMessage({
+				type: 'message',
+				data: aData,
+				msgId: lMsgId
+			}, aListener);
+			
 		}catch ( lEx ){
+			aListener.OnFailure ( lEx );
+		}
+	},
+	
+	sendMessage: function(aMessage, aListener){
+		try {
+			var lThis = this;
+			if( null !== aListener ) {
+				aMessage.isAckRequired = true;
+				aMessage[ 'i$WrappedMsg' ] = true;
+
+				var lMsgId = aMessage.msgId;
+
+				// saving the listener
+				this.fPacketDeliveryListeners[ lMsgId ] = aListener;
+
+				// setting the timer task for OnTimeout support
+				var lTT = setTimeout(function(){
+					if ( lThis.fPacketDeliveryListeners[ lMsgId ] ){
+						// cleaning expired data and calling timeout
+						lThis.fPacketDeliveryListeners[ lMsgId ].OnTimeout();
+						delete lThis.fPacketDeliveryListeners[ lMsgId ];
+						delete lThis.fPacketDeliveryTimerTasks[ lMsgId ];
+					}
+				}, 
+				aListener.getTimeout());
+				this.fPacketDeliveryTimerTasks[ lMsgId ] = lTT; 
+			}
+
+			// sending the packet
+			this.sendStream( JSON.stringify(aMessage) );
+		} catch( lEx ) {
 			// cleaning expired data and calling OnFailure
-			delete this.fPacketDeliveryListeners[ lPID ];
-			clearTimeout( this.fPacketDeliveryTimerTasks[ lPID ] );
-			delete this.fPacketDeliveryTimerTasks[ lPID ];
+			delete this.fPacketDeliveryListeners[ lMsgId ];
+			clearTimeout( this.fPacketDeliveryTimerTasks[ lMsgId ] );
+			delete this.fPacketDeliveryTimerTasks[ lMsgId ];
 			aListener.OnFailure ( lEx );
 		}
 	},
@@ -2626,6 +2675,9 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				for( var lAttr in lEnc ) {
 					var lFormat = lEnc[ lAttr ];
 					var lValue = aToken[ lAttr ];
+					if( aToken[ "__binaryData" ] && "data" === lAttr){
+						continue;
+					}
 					if( 0 > self.fEncodingFormats.lastIndexOf( lFormat ) ) {
 						jws.console.error( 
 								"[process decoding]: Invalid encoding format '" 
@@ -2753,7 +2805,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		if( !this.isOpened() ) {
 			lRes.code = -1;
 			lRes.localeKey = "jws.jsc.res.notConnected";
-			lRes.msg = "Not connected.";
+			lRes.msg = "Not connected!";
 		}
 		return lRes;
 	},
@@ -2942,7 +2994,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		// TODO: Remove this temporary hack with final release 1.0
 		// TODO: this was required to ensure upward compatibility from 0.10 to 0.11
 		var lNS = aToken['ns'];
-		if ( undefined != lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
+		if ( undefined !== lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
 			aToken.ns = "org.jwebsocket" + lNS.substring( 15 );
 		} else if( null === lNS ) {
 			aToken.ns = "org.jwebsocket.plugins.system";
@@ -3101,7 +3153,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				// call filter chain
 				if( this.fFilters ) {
 					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-						if ( "function" === typeof this.fFilters[ lIdx ]["filterTokenOut"] ) {
+						if ( "function" === typeof this.fFilters[ lIdx ][ "filterTokenOut" ] ) {
 							this.fFilters[ lIdx ][ "filterTokenOut" ]( aToken );
 						}
 					}
@@ -4315,7 +4367,44 @@ jws.SystemClientPlugIn = {
 			keys: aKeys,
 			connectionStorage: aOptions.connectionStorage || false
 		}, aOptions);
+	},
+			
+	//:m:*:forwardJSON
+	//:d:en:Sends a JSON message to a JMS target
+	//:a:en::aTarget:String:The Endpoint-Id of the target
+	//:a:en::aNS:String:The namespace of the message
+	//:a:en::aType:String:The type of the message
+	//:a:en::aArgs:Object:A map of additional key/value pairs
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	forwardJSON: function(aTarget, aNS, aType, aArgs, aJSON, aOptions ) {
+		var lData = {
+			ns: aNS,
+			type: aType,
+			sourceId: this.fClientId,
+			utid: this.getNextTokenId(),
+			payload: aJSON
+		};
+		if( aArgs ) {
+			for( var lField in aArgs ) {
+				if( undefined === lData[ lField ] ) {
+					lData[ lField ] = aArgs[ lField ];
+				}	
+			}
+		}
+		// put the JSON payload into an envelope to forward to the target
+		var lToken = {
+			ns: "org.jwebsocket.plugins.system",
+			type: "send",
+			sourceId: this.fClientId,
+			targetId: aTarget,
+			action: "forward.json",
+			responseRequested: false, // we expect a response from the target
+			data: JSON.stringify( lData )
+		};
+		this.sendToken( lToken, aOptions );
 	}
+			
 };
 
 // add the JWebSocket SystemClient PlugIn into the BaseClient class
@@ -4340,7 +4429,7 @@ jws.oop.declareClass( "jws", "jWebSocketJSONClient", jws.jWebSocketTokenClient, 
 	//:a:en::aToken:Token:The token (an JavaScript Object) to be converted into an JSON stream.
 	//:r:*:::String:The resulting JSON stream.
 	tokenToStream: function( aToken ) {
-		aToken.utid = jws.CUR_TOKEN_ID;
+		aToken.utid = aToken.utid || jws.CUR_TOKEN_ID;
 		var lJSON = JSON.stringify( aToken );
 		return( lJSON );
 	},
@@ -4575,14 +4664,13 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 // supporting String to ByteArray conversion
 String.prototype.getBytes = function () {
   var lBytes = [];
-  for (var lIndex = 0; lIndex < this.length; ++lIndex) {
-    lBytes.push(this.charCodeAt(lIndex));
+  for( var lIndex = 0; lIndex < this.length; ++lIndex ) {
+    lBytes.push( this.charCodeAt( lIndex ) );
   }
-  
   return lBytes;
 };
 //	---------------------------------------------------------------------------
-//	jWebSocket Comet PlugIn (Community Edition, CE)
+//	jWebSocket XHRWebSocket class (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
@@ -4659,7 +4747,7 @@ String.prototype.getBytes = function () {
 		}
         
 		XHRWebSocket.prototype.close = function(){
-			if (this.readyState == this.readyStateValues.CONNECTING)
+			if (this.readyState == this.readyStateValues.CLOSING)
 				throw "The websocket connection is closing";
 			else if (this.readyState == this.readyStateValues.CLOSED)
 				throw "The websocket connection is already closed";
@@ -5353,6 +5441,38 @@ Cache.prototype.log_ = function(msg) {
 if (typeof module !== "undefined") {
   module.exports = Cache;
 }//	---------------------------------------------------------------------------
+//	jWebSocket WebWorker Support (Community Edition, CE)
+//	(supports multithreading and background processes on browser clients,
+//	 given if they already support the HTML5 WebWorker standard)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+//
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
+
+//:i:en:This method is executed if postmessage is invoked by the caller.
+onmessage = function( aEvent ) {
+	// console.log( "started!" );
+	// here computationally intensive processes can be run as thread.
+	// aEvent.data contains the Object from the caller (application)
+	var lMethod;
+	eval( "lMethod=" + aEvent.data.method );
+
+	// run the method and return the result via postmessage to the application.
+	// in the application the onmessage listener of the worker is invoked
+	postMessage( lMethod( aEvent.data.args ) );
+};
+//	---------------------------------------------------------------------------
 //	jWebSocket API PlugIn (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
@@ -5532,6 +5652,326 @@ jws.APIPlugIn = function() {
 
 jws.APIPlugIn.prototype = jws.APIPlugInClass;
 //	---------------------------------------------------------------------------
+//	jWebSocket Canvas Plug-in (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Alexander Schulze, Germany (NRW)
+//	
+//	Licensed under the Apache License, Version 2.0 (the "License");
+//	you may not use this file except in compliance with the License.
+//	You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+//	Unless required by applicable law or agreed to in writing, software
+//	distributed under the License is distributed on an "AS IS" BASIS,
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//	See the License for the specific language governing permissions and
+//	limitations under the License.
+//	---------------------------------------------------------------------------
+
+jws.CanvasPlugIn = {
+
+	// namespace for shared objects plugin
+	// if namespace is changed update server plug-in accordingly!
+	NS: jws.NS_BASE + ".plugins.canvas",
+
+	processToken: function( aToken ) {
+		// check if namespace matches
+		if( aToken.reqNS == jws.CanvasPlugIn.NS ) {
+			// here you can handle incomimng tokens from the server
+			// directy in the plug-in if desired.
+			if( "clear" == aToken.reqType ) {
+				this.doClear( aToken.id );
+			} else if( "beginPath" == aToken.reqType ) {
+				this.doBeginPath( aToken.id );
+			} else if( "moveTo" == aToken.reqType ) {
+				this.doMoveTo( aToken.id, aToken.x, aToken.y );
+			} else if( "lineTo" == aToken.reqType ) {
+				this.doLineTo( aToken.id, aToken.x, aToken.y );
+			} else if( "line" == aToken.reqType ) {
+				this.doLine( aToken.id, aToken.x1, aToken.y1,
+					aToken.x2, aToken.y2, { color: aToken.color });
+			} else if( "closePath" == aToken.reqType ) {
+				this.doClosePath( aToken.id );
+			}
+		}
+	},
+
+	fCanvas: {},
+
+	canvasOpen: function( aId, aElementId ) {
+		var lElem = jws.$( aElementId );
+		this.fCanvas[ aId ] = {
+			fDOMElem: lElem,
+			ctx: lElem.getContext( "2d" )
+		};
+	},
+
+	canvasClose: function( aId ) {
+		this.fCanvas[ aId ] = null;
+		delete this.fCanvas[ aId ];
+	},
+
+	doClear: function( aId ) {
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			var lW = lCanvas.fDOMElem.getAttribute( "width" );
+			var lH = lCanvas.fDOMElem.getAttribute( "height" );
+			lCanvas.ctx.clearRect( 0, 0, lW, lH );
+			return true;
+		}
+		return false;
+	},
+
+	canvasClear: function( aId ) {
+		if( this.doClear( aId ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "clear",
+				id: aId
+			};
+			this.broadcastToken(lToken);
+		}
+	},
+
+	canvasGetBase64: function( aId, aMimeType ) {
+		var lRes = {
+			code: -1,
+			msg : "Ok"
+		};
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			if( typeof lCanvas.fDOMElem.toDataURL == "function" ) {
+				lRes.code = 0;
+				lRes.encoding = "base64";
+				lRes.data = lCanvas.fDOMElem.toDataURL( aMimeType );
+			} else {
+				lRes.msg = "Retrieving image data from canvas not (yet) supported by browser.";
+			}
+		} else {
+			lRes.msg = "Canvas not found.";
+		}
+		return lRes;
+	},
+
+	doBeginPath: function( aId ) {
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			// console.log( "doBeginPath: " + aId);
+			lCanvas.ctx.beginPath();
+			return true;
+		}
+		return false;
+	},
+
+	canvasBeginPath: function( aId ) {
+		if( this.doBeginPath( aId ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "beginPath",
+				id: aId
+			};
+			this.broadcastToken(lToken);
+		}
+	},
+
+	doMoveTo: function( aId, aX, aY ) {
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			// console.log( "doMoveTo: " + aId + ", x:" + aX + ", y: " + aX );
+			lCanvas.ctx.moveTo( aX, aY );
+			return true;
+		}
+		return false;
+	},
+
+	canvasMoveTo: function( aId, aX, aY ) {
+		if( this.doMoveTo( aId, aX, aY ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "moveTo",
+				id: aId,
+				x: aX,
+				y: aY
+			};
+			this.broadcastToken(lToken);
+		}
+	},
+
+	doLineTo: function( aId, aX, aY ) {
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			// console.log( "doLineTo: " + aId + ", x:" + aX + ", y: " + aX );
+			lCanvas.ctx.lineTo( aX, aY );
+			lCanvas.ctx.stroke();
+			return true;
+		}
+		return false;
+	},
+
+	canvasLineTo: function( aId, aX, aY ) {
+		if( this.doLineTo( aId, aX, aY ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "lineTo",
+				id: aId,
+				x: aX,
+				y: aY
+			};
+			this.broadcastToken(lToken);
+		}
+	},
+
+	doLine: function( aId, aX1, aY1, aX2, aY2, aOptions ) {
+		if( undefined == aOptions ) {
+			aOptions = {};
+		}
+		var lColor = "black";
+		if( aOptions.color ) {
+			lColor = aOptions.color;
+		}
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			lCanvas.ctx.beginPath();
+			lCanvas.ctx.moveTo( aX1, aY1 );
+			lCanvas.ctx.strokeStyle = lColor;
+			lCanvas.ctx.lineTo( aX2, aY2 );
+			lCanvas.ctx.stroke();
+			lCanvas.ctx.closePath();
+			return true;
+		}
+		return false;
+	},
+
+	canvasLine: function( aId, aX1, aY1, aX2, aY2, aOptions ) {
+		if( undefined == aOptions ) {
+			aOptions = {};
+		}
+		var lColor = "black";
+		if( aOptions.color ) {
+			lColor = aOptions.color;
+		}
+		if( this.doLine( aId, aX1, aY1, aX2, aY2, aOptions ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "line",
+				id: aId,
+				x1: aX1,
+				y1: aY1,
+				x2: aX2,
+				y2: aY2,
+				color: lColor
+			};
+			this.broadcastToken(lToken);
+		}
+	},
+
+	doClosePath: function( aId ) {
+		var lCanvas = this.fCanvas[ aId ];
+		if( lCanvas != null ) {
+			// console.log( "doClosePath" );
+			lCanvas.ctx.closePath();
+			return true;
+		}
+		return false;
+	},
+
+	canvasClosePath: function( aId ) {
+		if( this.doClosePath( aId ) ) {
+			var lToken = {
+				reqNS: jws.CanvasPlugIn.NS,
+				reqType: "closePath",
+				id: aId
+			};
+			this.broadcastToken(lToken);
+		}
+	}
+
+}
+
+// add the JWebSocket Canvas PlugIn into the TokenClient class
+jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.CanvasPlugIn );
+
+// optionally include canvas support for IE8
+if( jws.isIE ) {
+
+	//  <JasobNoObfs>
+	//
+	//	-------------------------------------------------------------------------------
+	//	ExplorerCanvas
+	//
+	//	Google Open Source:
+	//		<http://code.google.com>
+	//		<opensource@google.com>
+	//
+	//	Developers:
+	//		Emil A Eklund <emil@eae.net>
+	//		Erik Arvidsson <erik@eae.net>
+	//		Glen Murphy <glen@glenmurphy.com>
+	//
+	//	-------------------------------------------------------------------------------
+	//	DESCRIPTION
+	//
+	//	Firefox, Safari and Opera 9 support the canvas tag to allow 2D command-based
+	//	drawing operations. ExplorerCanvas brings the same functionality to Internet
+	//	Explorer; web developers only need to include a single script tag in their
+	//	existing canvas webpages to enable this support.
+	//
+	//	-------------------------------------------------------------------------------
+	//	INSTALLATION
+	//
+	//	Include the ExplorerCanvas tag in the same directory as your HTML files, and
+	//	add the following code to your page, preferably in the <head> tag.
+	//
+	//	<!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+	//
+	//	If you run into trouble, please look at the included example code to see how
+	//	to best implement this
+	//	
+	//	Copyright 2006 Google Inc.
+	//
+	//	Licensed under the Apache License, Version 2.0 (the "License");
+	//	you may not use this file except in compliance with the License.
+	//	You may obtain a copy of the License at
+	//
+	//	http://www.apache.org/licenses/LICENSE-2.0
+	//
+	//	Unless required by applicable law or agreed to in writing, software
+	//	distributed under the License is distributed on an "AS IS" BASIS,
+	//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	//	See the License for the specific language governing permissions and
+	//	limitations under the License.
+	//
+	//	Fullsource code at: http://excanvas.sourceforge.net/
+	//	and http://code.google.com/p/explorercanvas/
+	//
+	//	</JasobNoObfs>
+
+	document.createElement("canvas").getContext||(function(){var s=Math,j=s.round,F=s.sin,G=s.cos,V=s.abs,W=s.sqrt,k=10,v=k/2;function X(){return this.context_||(this.context_=new H(this))}var L=Array.prototype.slice;function Y(b,a){var c=L.call(arguments,2);return function(){return b.apply(a,c.concat(L.call(arguments)))}}var M={init:function(b){if(/MSIE/.test(navigator.userAgent)&&!window.opera){var a=b||document;a.createElement("canvas");a.attachEvent("onreadystatechange",Y(this.init_,this,a))}},init_:function(b){b.namespaces.g_vml_||
+	b.namespaces.add("g_vml_","urn:schemas-microsoft-com:vml","#default#VML");b.namespaces.g_o_||b.namespaces.add("g_o_","urn:schemas-microsoft-com:office:office","#default#VML");if(!b.styleSheets.ex_canvas_){var a=b.createStyleSheet();a.owningElement.id="ex_canvas_";a.cssText="canvas{display:inline-block;overflow:hidden;text-align:left;width:300px;height:150px}g_vml_\\:*{behavior:url(#default#VML)}g_o_\\:*{behavior:url(#default#VML)}"}var c=b.getElementsByTagName("canvas"),d=0;for(;d<c.length;d++)this.initElement(c[d])},
+	initElement:function(b){if(!b.getContext){b.getContext=X;b.innerHTML="";b.attachEvent("onpropertychange",Z);b.attachEvent("onresize",$);var a=b.attributes;if(a.width&&a.width.specified)b.style.width=a.width.nodeValue+"px";else b.width=b.clientWidth;if(a.height&&a.height.specified)b.style.height=a.height.nodeValue+"px";else b.height=b.clientHeight}return b}};function Z(b){var a=b.srcElement;switch(b.propertyName){case "width":a.style.width=a.attributes.width.nodeValue+"px";a.getContext().clearRect();
+	break;case "height":a.style.height=a.attributes.height.nodeValue+"px";a.getContext().clearRect();break}}function $(b){var a=b.srcElement;if(a.firstChild){a.firstChild.style.width=a.clientWidth+"px";a.firstChild.style.height=a.clientHeight+"px"}}M.init();var N=[],B=0;for(;B<16;B++){var C=0;for(;C<16;C++)N[B*16+C]=B.toString(16)+C.toString(16)}function I(){return[[1,0,0],[0,1,0],[0,0,1]]}function y(b,a){var c=I(),d=0;for(;d<3;d++){var f=0;for(;f<3;f++){var h=0,g=0;for(;g<3;g++)h+=b[d][g]*a[g][f];c[d][f]=
+	h}}return c}function O(b,a){a.fillStyle=b.fillStyle;a.lineCap=b.lineCap;a.lineJoin=b.lineJoin;a.lineWidth=b.lineWidth;a.miterLimit=b.miterLimit;a.shadowBlur=b.shadowBlur;a.shadowColor=b.shadowColor;a.shadowOffsetX=b.shadowOffsetX;a.shadowOffsetY=b.shadowOffsetY;a.strokeStyle=b.strokeStyle;a.globalAlpha=b.globalAlpha;a.arcScaleX_=b.arcScaleX_;a.arcScaleY_=b.arcScaleY_;a.lineScale_=b.lineScale_}function P(b){var a,c=1;b=String(b);if(b.substring(0,3)=="rgb"){var d=b.indexOf("(",3),f=b.indexOf(")",d+
+	1),h=b.substring(d+1,f).split(",");a="#";var g=0;for(;g<3;g++)a+=N[Number(h[g])];if(h.length==4&&b.substr(3,1)=="a")c=h[3]}else a=b;return{color:a,alpha:c}}function aa(b){switch(b){case "butt":return"flat";case "round":return"round";case "square":default:return"square"}}function H(b){this.m_=I();this.mStack_=[];this.aStack_=[];this.currentPath_=[];this.fillStyle=this.strokeStyle="#000";this.lineWidth=1;this.lineJoin="miter";this.lineCap="butt";this.miterLimit=k*1;this.globalAlpha=1;this.canvas=b;
+	var a=b.ownerDocument.createElement("div");a.style.width=b.clientWidth+"px";a.style.height=b.clientHeight+"px";a.style.overflow="hidden";a.style.position="absolute";b.appendChild(a);this.element_=a;this.lineScale_=this.arcScaleY_=this.arcScaleX_=1}var i=H.prototype;i.clearRect=function(){this.element_.innerHTML=""};i.beginPath=function(){this.currentPath_=[]};i.moveTo=function(b,a){var c=this.getCoords_(b,a);this.currentPath_.push({type:"moveTo",x:c.x,y:c.y});this.currentX_=c.x;this.currentY_=c.y};
+	i.lineTo=function(b,a){var c=this.getCoords_(b,a);this.currentPath_.push({type:"lineTo",x:c.x,y:c.y});this.currentX_=c.x;this.currentY_=c.y};i.bezierCurveTo=function(b,a,c,d,f,h){var g=this.getCoords_(f,h),l=this.getCoords_(b,a),e=this.getCoords_(c,d);Q(this,l,e,g)};function Q(b,a,c,d){b.currentPath_.push({type:"bezierCurveTo",cp1x:a.x,cp1y:a.y,cp2x:c.x,cp2y:c.y,x:d.x,y:d.y});b.currentX_=d.x;b.currentY_=d.y}i.quadraticCurveTo=function(b,a,c,d){var f=this.getCoords_(b,a),h=this.getCoords_(c,d),g={x:this.currentX_+
+	0.6666666666666666*(f.x-this.currentX_),y:this.currentY_+0.6666666666666666*(f.y-this.currentY_)};Q(this,g,{x:g.x+(h.x-this.currentX_)/3,y:g.y+(h.y-this.currentY_)/3},h)};i.arc=function(b,a,c,d,f,h){c*=k;var g=h?"at":"wa",l=b+G(d)*c-v,e=a+F(d)*c-v,m=b+G(f)*c-v,r=a+F(f)*c-v;if(l==m&&!h)l+=0.125;var n=this.getCoords_(b,a),o=this.getCoords_(l,e),q=this.getCoords_(m,r);this.currentPath_.push({type:g,x:n.x,y:n.y,radius:c,xStart:o.x,yStart:o.y,xEnd:q.x,yEnd:q.y})};i.rect=function(b,a,c,d){this.moveTo(b,
+	a);this.lineTo(b+c,a);this.lineTo(b+c,a+d);this.lineTo(b,a+d);this.closePath()};i.strokeRect=function(b,a,c,d){var f=this.currentPath_;this.beginPath();this.moveTo(b,a);this.lineTo(b+c,a);this.lineTo(b+c,a+d);this.lineTo(b,a+d);this.closePath();this.stroke();this.currentPath_=f};i.fillRect=function(b,a,c,d){var f=this.currentPath_;this.beginPath();this.moveTo(b,a);this.lineTo(b+c,a);this.lineTo(b+c,a+d);this.lineTo(b,a+d);this.closePath();this.fill();this.currentPath_=f};i.createLinearGradient=function(b,
+	a,c,d){var f=new D("gradient");f.x0_=b;f.y0_=a;f.x1_=c;f.y1_=d;return f};i.createRadialGradient=function(b,a,c,d,f,h){var g=new D("gradientradial");g.x0_=b;g.y0_=a;g.r0_=c;g.x1_=d;g.y1_=f;g.r1_=h;return g};i.drawImage=function(b){var a,c,d,f,h,g,l,e,m=b.runtimeStyle.width,r=b.runtimeStyle.height;b.runtimeStyle.width="auto";b.runtimeStyle.height="auto";var n=b.width,o=b.height;b.runtimeStyle.width=m;b.runtimeStyle.height=r;if(arguments.length==3){a=arguments[1];c=arguments[2];h=g=0;l=d=n;e=f=o}else if(arguments.length==
+	5){a=arguments[1];c=arguments[2];d=arguments[3];f=arguments[4];h=g=0;l=n;e=o}else if(arguments.length==9){h=arguments[1];g=arguments[2];l=arguments[3];e=arguments[4];a=arguments[5];c=arguments[6];d=arguments[7];f=arguments[8]}else throw Error("Invalid number of arguments");var q=this.getCoords_(a,c),t=[];t.push(" <g_vml_:group",' coordsize="',k*10,",",k*10,'"',' coordorigin="0,0"',' style="width:',10,"px;height:",10,"px;position:absolute;");if(this.m_[0][0]!=1||this.m_[0][1]){var E=[];E.push("M11=",
+	this.m_[0][0],",","M12=",this.m_[1][0],",","M21=",this.m_[0][1],",","M22=",this.m_[1][1],",","Dx=",j(q.x/k),",","Dy=",j(q.y/k),"");var p=q,z=this.getCoords_(a+d,c),w=this.getCoords_(a,c+f),x=this.getCoords_(a+d,c+f);p.x=s.max(p.x,z.x,w.x,x.x);p.y=s.max(p.y,z.y,w.y,x.y);t.push("padding:0 ",j(p.x/k),"px ",j(p.y/k),"px 0;filter:progid:DXImageTransform.Microsoft.Matrix(",E.join(""),", sizingmethod='clip');")}else t.push("top:",j(q.y/k),"px;left:",j(q.x/k),"px;");t.push(' ">','<g_vml_:image src="',b.src,
+	'"',' style="width:',k*d,"px;"," height:",k*f,'px;"',' cropleft="',h/n,'"',' croptop="',g/o,'"',' cropright="',(n-h-l)/n,'"',' cropbottom="',(o-g-e)/o,'"'," />","</g_vml_:group>");this.element_.insertAdjacentHTML("BeforeEnd",t.join(""))};i.stroke=function(b){var a=[],c=P(b?this.fillStyle:this.strokeStyle),d=c.color,f=c.alpha*this.globalAlpha;a.push("<g_vml_:shape",' filled="',!!b,'"',' style="position:absolute;width:',10,"px;height:",10,'px;"',' coordorigin="0 0" coordsize="',k*10," ",k*10,'"',' stroked="',
+	!b,'"',' path="');var h={x:null,y:null},g={x:null,y:null},l=0;for(;l<this.currentPath_.length;l++){var e=this.currentPath_[l];switch(e.type){case "moveTo":a.push(" m ",j(e.x),",",j(e.y));break;case "lineTo":a.push(" l ",j(e.x),",",j(e.y));break;case "close":a.push(" x ");e=null;break;case "bezierCurveTo":a.push(" c ",j(e.cp1x),",",j(e.cp1y),",",j(e.cp2x),",",j(e.cp2y),",",j(e.x),",",j(e.y));break;case "at":case "wa":a.push(" ",e.type," ",j(e.x-this.arcScaleX_*e.radius),",",j(e.y-this.arcScaleY_*e.radius),
+	" ",j(e.x+this.arcScaleX_*e.radius),",",j(e.y+this.arcScaleY_*e.radius)," ",j(e.xStart),",",j(e.yStart)," ",j(e.xEnd),",",j(e.yEnd));break}if(e){if(h.x==null||e.x<h.x)h.x=e.x;if(g.x==null||e.x>g.x)g.x=e.x;if(h.y==null||e.y<h.y)h.y=e.y;if(g.y==null||e.y>g.y)g.y=e.y}}a.push(' ">');if(b)if(typeof this.fillStyle=="object"){var m=this.fillStyle,r=0,n={x:0,y:0},o=0,q=1;if(m.type_=="gradient"){var t=m.x1_/this.arcScaleX_,E=m.y1_/this.arcScaleY_,p=this.getCoords_(m.x0_/this.arcScaleX_,m.y0_/this.arcScaleY_),
+	z=this.getCoords_(t,E);r=Math.atan2(z.x-p.x,z.y-p.y)*180/Math.PI;if(r<0)r+=360;if(r<1.0E-6)r=0}else{var p=this.getCoords_(m.x0_,m.y0_),w=g.x-h.x,x=g.y-h.y;n={x:(p.x-h.x)/w,y:(p.y-h.y)/x};w/=this.arcScaleX_*k;x/=this.arcScaleY_*k;var R=s.max(w,x);o=2*m.r0_/R;q=2*m.r1_/R-o}var u=m.colors_;u.sort(function(ba,ca){return ba.offset-ca.offset});var J=u.length,da=u[0].color,ea=u[J-1].color,fa=u[0].alpha*this.globalAlpha,ga=u[J-1].alpha*this.globalAlpha,S=[],l=0;for(;l<J;l++){var T=u[l];S.push(T.offset*q+
+	o+" "+T.color)}a.push('<g_vml_:fill type="',m.type_,'"',' method="none" focus="100%"',' color="',da,'"',' color2="',ea,'"',' colors="',S.join(","),'"',' opacity="',ga,'"',' g_o_:opacity2="',fa,'"',' angle="',r,'"',' focusposition="',n.x,",",n.y,'" />')}else a.push('<g_vml_:fill color="',d,'" opacity="',f,'" />');else{var K=this.lineScale_*this.lineWidth;if(K<1)f*=K;a.push("<g_vml_:stroke",' opacity="',f,'"',' joinstyle="',this.lineJoin,'"',' miterlimit="',this.miterLimit,'"',' endcap="',aa(this.lineCap),
+	'"',' weight="',K,'px"',' color="',d,'" />')}a.push("</g_vml_:shape>");this.element_.insertAdjacentHTML("beforeEnd",a.join(""))};i.fill=function(){this.stroke(true)};i.closePath=function(){this.currentPath_.push({type:"close"})};i.getCoords_=function(b,a){var c=this.m_;return{x:k*(b*c[0][0]+a*c[1][0]+c[2][0])-v,y:k*(b*c[0][1]+a*c[1][1]+c[2][1])-v}};i.save=function(){var b={};O(this,b);this.aStack_.push(b);this.mStack_.push(this.m_);this.m_=y(I(),this.m_)};i.restore=function(){O(this.aStack_.pop(),
+	this);this.m_=this.mStack_.pop()};function ha(b){var a=0;for(;a<3;a++){var c=0;for(;c<2;c++)if(!isFinite(b[a][c])||isNaN(b[a][c]))return false}return true}function A(b,a,c){if(!!ha(a)){b.m_=a;if(c)b.lineScale_=W(V(a[0][0]*a[1][1]-a[0][1]*a[1][0]))}}i.translate=function(b,a){A(this,y([[1,0,0],[0,1,0],[b,a,1]],this.m_),false)};i.rotate=function(b){var a=G(b),c=F(b);A(this,y([[a,c,0],[-c,a,0],[0,0,1]],this.m_),false)};i.scale=function(b,a){this.arcScaleX_*=b;this.arcScaleY_*=a;A(this,y([[b,0,0],[0,a,
+	0],[0,0,1]],this.m_),true)};i.transform=function(b,a,c,d,f,h){A(this,y([[b,a,0],[c,d,0],[f,h,1]],this.m_),true)};i.setTransform=function(b,a,c,d,f,h){A(this,[[b,a,0],[c,d,0],[f,h,1]],true)};i.clip=function(){};i.arcTo=function(){};i.createPattern=function(){return new U};function D(b){this.type_=b;this.r1_=this.y1_=this.x1_=this.r0_=this.y0_=this.x0_=0;this.colors_=[]}D.prototype.addColorStop=function(b,a){a=P(a);this.colors_.push({offset:b,color:a.color,alpha:a.alpha})};function U(){}G_vmlCanvasManager=
+	M;CanvasRenderingContext2D=H;CanvasGradient=D;CanvasPattern=U})();
+
+}//	---------------------------------------------------------------------------
 //	jWebSocket Canvas Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
@@ -6342,326 +6782,6 @@ jws.ChannelPlugIn = {
 // add the ChannelPlugIn into the jWebSocketTokenClient class
 jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.ChannelPlugIn);
 //	---------------------------------------------------------------------------
-//	jWebSocket Canvas Plug-in (Community Edition, CE)
-//	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
-//	Alexander Schulze, Germany (NRW)
-//	
-//	Licensed under the Apache License, Version 2.0 (the "License");
-//	you may not use this file except in compliance with the License.
-//	You may obtain a copy of the License at
-//
-//	http://www.apache.org/licenses/LICENSE-2.0
-//
-//	Unless required by applicable law or agreed to in writing, software
-//	distributed under the License is distributed on an "AS IS" BASIS,
-//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//	See the License for the specific language governing permissions and
-//	limitations under the License.
-//	---------------------------------------------------------------------------
-
-jws.CanvasPlugIn = {
-
-	// namespace for shared objects plugin
-	// if namespace is changed update server plug-in accordingly!
-	NS: jws.NS_BASE + ".plugins.canvas",
-
-	processToken: function( aToken ) {
-		// check if namespace matches
-		if( aToken.reqNS == jws.CanvasPlugIn.NS ) {
-			// here you can handle incomimng tokens from the server
-			// directy in the plug-in if desired.
-			if( "clear" == aToken.reqType ) {
-				this.doClear( aToken.id );
-			} else if( "beginPath" == aToken.reqType ) {
-				this.doBeginPath( aToken.id );
-			} else if( "moveTo" == aToken.reqType ) {
-				this.doMoveTo( aToken.id, aToken.x, aToken.y );
-			} else if( "lineTo" == aToken.reqType ) {
-				this.doLineTo( aToken.id, aToken.x, aToken.y );
-			} else if( "line" == aToken.reqType ) {
-				this.doLine( aToken.id, aToken.x1, aToken.y1,
-					aToken.x2, aToken.y2, { color: aToken.color });
-			} else if( "closePath" == aToken.reqType ) {
-				this.doClosePath( aToken.id );
-			}
-		}
-	},
-
-	fCanvas: {},
-
-	canvasOpen: function( aId, aElementId ) {
-		var lElem = jws.$( aElementId );
-		this.fCanvas[ aId ] = {
-			fDOMElem: lElem,
-			ctx: lElem.getContext( "2d" )
-		};
-	},
-
-	canvasClose: function( aId ) {
-		this.fCanvas[ aId ] = null;
-		delete this.fCanvas[ aId ];
-	},
-
-	doClear: function( aId ) {
-		var lCanvas = this.fCanvas[ aId ];
-		if( lCanvas != null ) {
-			var lW = lCanvas.fDOMElem.getAttribute( "width" );
-			var lH = lCanvas.fDOMElem.getAttribute( "height" );
-			lCanvas.ctx.clearRect( 0, 0, lW, lH );
-			return true;
-		}
-		return false;
-	},
-
-	canvasClear: function( aId ) {
-		if( this.doClear( aId ) ) {
-			var lToken = {
-				reqNS: jws.CanvasPlugIn.NS,
-				reqType: "clear",
-				id: aId
-			};
-			this.broadcastToken(lToken);
-		}
-	},
-
-	canvasGetBase64: function( aId, aMimeType ) {
-		var lRes = {
-			code: -1,
-			msg : "Ok"
-		};
-		var lCanvas = this.fCanvas[ aId ];
-		if( lCanvas != null ) {
-			if( typeof lCanvas.fDOMElem.toDataURL == "function" ) {
-				lRes.code = 0;
-				lRes.encoding = "base64";
-				lRes.data = lCanvas.fDOMElem.toDataURL( aMimeType );
-			} else {
-				lRes.msg = "Retrieving image data from canvas not (yet) supported by browser.";
-			}
-		} else {
-			lRes.msg = "Canvas not found.";
-		}
-		return lRes;
-	},
-
-	doBeginPath: function( aId ) {
-		var lCanvas = this.fCanvas[ aId ];
-		if( lCanvas != null ) {
-			// console.log( "doBeginPath: " + aId);
-			lCanvas.ctx.beginPath();
-			return true;
-		}
-		return false;
-	},
-
-	canvasBeginPath: function( aId ) {
-		if( this.doBeginPath( aId ) ) {
-			var lToken = {
-				reqNS: jws.CanvasPlugIn.NS,
-				reqType: "beginPath",
-				id: aId
-			};
-			this.broadcastToken(lToken);
-		}
-	},
-
-	doMoveTo: function( aId, aX, aY ) {
-		var lCanvas = this.fCanvas[ aId ];
-		if( lCanvas != null ) {
-			// console.log( "doMoveTo: " + aId + ", x:" + aX + ", y: " + aX );
-			lCanvas.ctx.moveTo( aX, aY );
-			return true;
-		}
-		return false;
-	},
-
-	canvasMoveTo: function( aId, aX, aY ) {
-		if( this.doMoveTo( aId, aX, aY ) ) {
-			var lToken = {
-				reqNS: jws.CanvasPlugIn.NS,
-				reqType: "moveTo",
-				id: aId,
-				x: aX,
-				y: aY
-			};
-			this.broadcastToken(lToken);
-		}
-	},
-
-	doLineTo: function( aId, aX, aY ) {
-		var lCanvas = this.fCanvas[ aId ];
-		if( lCanvas != null ) {
-			// console.log( "doLineTo: " + aId + ", x:" + aX + ", y: " + aX );
-			lCanvas.ctx.lineTo( aX, aY );
-			lCanvas.ctx.stroke();
-			return true;
-		}
-		return false;
-	},
-
-	canvasLineTo: function( aId, aX, aY ) {
-		if( this.doLineTo( aId, aX, aY ) ) {
-			var lToken = {
-				reqNS: jws.CanvasPlugIn.NS,
-				reqType: "lineTo",
-				id: aId,
-				x: aX,
-				y: aY
-			};
-			this.broadcastToken(lToken);
-		}
-	},
-
-	doLine: function( aId, aX1, aY1, aX2, aY2, aOptions ) {
-		if( undefined == aOptions ) {
-			aOptions = {};
-		}
-		var lColor = "black";
-		if( aOptions.color ) {
-			lColor = aOptions.color;
-		}
-		var lCanvas = this.fCanvas[ aId ];
-		if( lCanvas != null ) {
-			lCanvas.ctx.beginPath();
-			lCanvas.ctx.moveTo( aX1, aY1 );
-			lCanvas.ctx.strokeStyle = lColor;
-			lCanvas.ctx.lineTo( aX2, aY2 );
-			lCanvas.ctx.stroke();
-			lCanvas.ctx.closePath();
-			return true;
-		}
-		return false;
-	},
-
-	canvasLine: function( aId, aX1, aY1, aX2, aY2, aOptions ) {
-		if( undefined == aOptions ) {
-			aOptions = {};
-		}
-		var lColor = "black";
-		if( aOptions.color ) {
-			lColor = aOptions.color;
-		}
-		if( this.doLine( aId, aX1, aY1, aX2, aY2, aOptions ) ) {
-			var lToken = {
-				reqNS: jws.CanvasPlugIn.NS,
-				reqType: "line",
-				id: aId,
-				x1: aX1,
-				y1: aY1,
-				x2: aX2,
-				y2: aY2,
-				color: lColor
-			};
-			this.broadcastToken(lToken);
-		}
-	},
-
-	doClosePath: function( aId ) {
-		var lCanvas = this.fCanvas[ aId ];
-		if( lCanvas != null ) {
-			// console.log( "doClosePath" );
-			lCanvas.ctx.closePath();
-			return true;
-		}
-		return false;
-	},
-
-	canvasClosePath: function( aId ) {
-		if( this.doClosePath( aId ) ) {
-			var lToken = {
-				reqNS: jws.CanvasPlugIn.NS,
-				reqType: "closePath",
-				id: aId
-			};
-			this.broadcastToken(lToken);
-		}
-	}
-
-}
-
-// add the JWebSocket Canvas PlugIn into the TokenClient class
-jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.CanvasPlugIn );
-
-// optionally include canvas support for IE8
-if( jws.isIE ) {
-
-	//  <JasobNoObfs>
-	//
-	//	-------------------------------------------------------------------------------
-	//	ExplorerCanvas
-	//
-	//	Google Open Source:
-	//		<http://code.google.com>
-	//		<opensource@google.com>
-	//
-	//	Developers:
-	//		Emil A Eklund <emil@eae.net>
-	//		Erik Arvidsson <erik@eae.net>
-	//		Glen Murphy <glen@glenmurphy.com>
-	//
-	//	-------------------------------------------------------------------------------
-	//	DESCRIPTION
-	//
-	//	Firefox, Safari and Opera 9 support the canvas tag to allow 2D command-based
-	//	drawing operations. ExplorerCanvas brings the same functionality to Internet
-	//	Explorer; web developers only need to include a single script tag in their
-	//	existing canvas webpages to enable this support.
-	//
-	//	-------------------------------------------------------------------------------
-	//	INSTALLATION
-	//
-	//	Include the ExplorerCanvas tag in the same directory as your HTML files, and
-	//	add the following code to your page, preferably in the <head> tag.
-	//
-	//	<!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
-	//
-	//	If you run into trouble, please look at the included example code to see how
-	//	to best implement this
-	//	
-	//	Copyright 2006 Google Inc.
-	//
-	//	Licensed under the Apache License, Version 2.0 (the "License");
-	//	you may not use this file except in compliance with the License.
-	//	You may obtain a copy of the License at
-	//
-	//	http://www.apache.org/licenses/LICENSE-2.0
-	//
-	//	Unless required by applicable law or agreed to in writing, software
-	//	distributed under the License is distributed on an "AS IS" BASIS,
-	//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	//	See the License for the specific language governing permissions and
-	//	limitations under the License.
-	//
-	//	Fullsource code at: http://excanvas.sourceforge.net/
-	//	and http://code.google.com/p/explorercanvas/
-	//
-	//	</JasobNoObfs>
-
-	document.createElement("canvas").getContext||(function(){var s=Math,j=s.round,F=s.sin,G=s.cos,V=s.abs,W=s.sqrt,k=10,v=k/2;function X(){return this.context_||(this.context_=new H(this))}var L=Array.prototype.slice;function Y(b,a){var c=L.call(arguments,2);return function(){return b.apply(a,c.concat(L.call(arguments)))}}var M={init:function(b){if(/MSIE/.test(navigator.userAgent)&&!window.opera){var a=b||document;a.createElement("canvas");a.attachEvent("onreadystatechange",Y(this.init_,this,a))}},init_:function(b){b.namespaces.g_vml_||
-	b.namespaces.add("g_vml_","urn:schemas-microsoft-com:vml","#default#VML");b.namespaces.g_o_||b.namespaces.add("g_o_","urn:schemas-microsoft-com:office:office","#default#VML");if(!b.styleSheets.ex_canvas_){var a=b.createStyleSheet();a.owningElement.id="ex_canvas_";a.cssText="canvas{display:inline-block;overflow:hidden;text-align:left;width:300px;height:150px}g_vml_\\:*{behavior:url(#default#VML)}g_o_\\:*{behavior:url(#default#VML)}"}var c=b.getElementsByTagName("canvas"),d=0;for(;d<c.length;d++)this.initElement(c[d])},
-	initElement:function(b){if(!b.getContext){b.getContext=X;b.innerHTML="";b.attachEvent("onpropertychange",Z);b.attachEvent("onresize",$);var a=b.attributes;if(a.width&&a.width.specified)b.style.width=a.width.nodeValue+"px";else b.width=b.clientWidth;if(a.height&&a.height.specified)b.style.height=a.height.nodeValue+"px";else b.height=b.clientHeight}return b}};function Z(b){var a=b.srcElement;switch(b.propertyName){case "width":a.style.width=a.attributes.width.nodeValue+"px";a.getContext().clearRect();
-	break;case "height":a.style.height=a.attributes.height.nodeValue+"px";a.getContext().clearRect();break}}function $(b){var a=b.srcElement;if(a.firstChild){a.firstChild.style.width=a.clientWidth+"px";a.firstChild.style.height=a.clientHeight+"px"}}M.init();var N=[],B=0;for(;B<16;B++){var C=0;for(;C<16;C++)N[B*16+C]=B.toString(16)+C.toString(16)}function I(){return[[1,0,0],[0,1,0],[0,0,1]]}function y(b,a){var c=I(),d=0;for(;d<3;d++){var f=0;for(;f<3;f++){var h=0,g=0;for(;g<3;g++)h+=b[d][g]*a[g][f];c[d][f]=
-	h}}return c}function O(b,a){a.fillStyle=b.fillStyle;a.lineCap=b.lineCap;a.lineJoin=b.lineJoin;a.lineWidth=b.lineWidth;a.miterLimit=b.miterLimit;a.shadowBlur=b.shadowBlur;a.shadowColor=b.shadowColor;a.shadowOffsetX=b.shadowOffsetX;a.shadowOffsetY=b.shadowOffsetY;a.strokeStyle=b.strokeStyle;a.globalAlpha=b.globalAlpha;a.arcScaleX_=b.arcScaleX_;a.arcScaleY_=b.arcScaleY_;a.lineScale_=b.lineScale_}function P(b){var a,c=1;b=String(b);if(b.substring(0,3)=="rgb"){var d=b.indexOf("(",3),f=b.indexOf(")",d+
-	1),h=b.substring(d+1,f).split(",");a="#";var g=0;for(;g<3;g++)a+=N[Number(h[g])];if(h.length==4&&b.substr(3,1)=="a")c=h[3]}else a=b;return{color:a,alpha:c}}function aa(b){switch(b){case "butt":return"flat";case "round":return"round";case "square":default:return"square"}}function H(b){this.m_=I();this.mStack_=[];this.aStack_=[];this.currentPath_=[];this.fillStyle=this.strokeStyle="#000";this.lineWidth=1;this.lineJoin="miter";this.lineCap="butt";this.miterLimit=k*1;this.globalAlpha=1;this.canvas=b;
-	var a=b.ownerDocument.createElement("div");a.style.width=b.clientWidth+"px";a.style.height=b.clientHeight+"px";a.style.overflow="hidden";a.style.position="absolute";b.appendChild(a);this.element_=a;this.lineScale_=this.arcScaleY_=this.arcScaleX_=1}var i=H.prototype;i.clearRect=function(){this.element_.innerHTML=""};i.beginPath=function(){this.currentPath_=[]};i.moveTo=function(b,a){var c=this.getCoords_(b,a);this.currentPath_.push({type:"moveTo",x:c.x,y:c.y});this.currentX_=c.x;this.currentY_=c.y};
-	i.lineTo=function(b,a){var c=this.getCoords_(b,a);this.currentPath_.push({type:"lineTo",x:c.x,y:c.y});this.currentX_=c.x;this.currentY_=c.y};i.bezierCurveTo=function(b,a,c,d,f,h){var g=this.getCoords_(f,h),l=this.getCoords_(b,a),e=this.getCoords_(c,d);Q(this,l,e,g)};function Q(b,a,c,d){b.currentPath_.push({type:"bezierCurveTo",cp1x:a.x,cp1y:a.y,cp2x:c.x,cp2y:c.y,x:d.x,y:d.y});b.currentX_=d.x;b.currentY_=d.y}i.quadraticCurveTo=function(b,a,c,d){var f=this.getCoords_(b,a),h=this.getCoords_(c,d),g={x:this.currentX_+
-	0.6666666666666666*(f.x-this.currentX_),y:this.currentY_+0.6666666666666666*(f.y-this.currentY_)};Q(this,g,{x:g.x+(h.x-this.currentX_)/3,y:g.y+(h.y-this.currentY_)/3},h)};i.arc=function(b,a,c,d,f,h){c*=k;var g=h?"at":"wa",l=b+G(d)*c-v,e=a+F(d)*c-v,m=b+G(f)*c-v,r=a+F(f)*c-v;if(l==m&&!h)l+=0.125;var n=this.getCoords_(b,a),o=this.getCoords_(l,e),q=this.getCoords_(m,r);this.currentPath_.push({type:g,x:n.x,y:n.y,radius:c,xStart:o.x,yStart:o.y,xEnd:q.x,yEnd:q.y})};i.rect=function(b,a,c,d){this.moveTo(b,
-	a);this.lineTo(b+c,a);this.lineTo(b+c,a+d);this.lineTo(b,a+d);this.closePath()};i.strokeRect=function(b,a,c,d){var f=this.currentPath_;this.beginPath();this.moveTo(b,a);this.lineTo(b+c,a);this.lineTo(b+c,a+d);this.lineTo(b,a+d);this.closePath();this.stroke();this.currentPath_=f};i.fillRect=function(b,a,c,d){var f=this.currentPath_;this.beginPath();this.moveTo(b,a);this.lineTo(b+c,a);this.lineTo(b+c,a+d);this.lineTo(b,a+d);this.closePath();this.fill();this.currentPath_=f};i.createLinearGradient=function(b,
-	a,c,d){var f=new D("gradient");f.x0_=b;f.y0_=a;f.x1_=c;f.y1_=d;return f};i.createRadialGradient=function(b,a,c,d,f,h){var g=new D("gradientradial");g.x0_=b;g.y0_=a;g.r0_=c;g.x1_=d;g.y1_=f;g.r1_=h;return g};i.drawImage=function(b){var a,c,d,f,h,g,l,e,m=b.runtimeStyle.width,r=b.runtimeStyle.height;b.runtimeStyle.width="auto";b.runtimeStyle.height="auto";var n=b.width,o=b.height;b.runtimeStyle.width=m;b.runtimeStyle.height=r;if(arguments.length==3){a=arguments[1];c=arguments[2];h=g=0;l=d=n;e=f=o}else if(arguments.length==
-	5){a=arguments[1];c=arguments[2];d=arguments[3];f=arguments[4];h=g=0;l=n;e=o}else if(arguments.length==9){h=arguments[1];g=arguments[2];l=arguments[3];e=arguments[4];a=arguments[5];c=arguments[6];d=arguments[7];f=arguments[8]}else throw Error("Invalid number of arguments");var q=this.getCoords_(a,c),t=[];t.push(" <g_vml_:group",' coordsize="',k*10,",",k*10,'"',' coordorigin="0,0"',' style="width:',10,"px;height:",10,"px;position:absolute;");if(this.m_[0][0]!=1||this.m_[0][1]){var E=[];E.push("M11=",
-	this.m_[0][0],",","M12=",this.m_[1][0],",","M21=",this.m_[0][1],",","M22=",this.m_[1][1],",","Dx=",j(q.x/k),",","Dy=",j(q.y/k),"");var p=q,z=this.getCoords_(a+d,c),w=this.getCoords_(a,c+f),x=this.getCoords_(a+d,c+f);p.x=s.max(p.x,z.x,w.x,x.x);p.y=s.max(p.y,z.y,w.y,x.y);t.push("padding:0 ",j(p.x/k),"px ",j(p.y/k),"px 0;filter:progid:DXImageTransform.Microsoft.Matrix(",E.join(""),", sizingmethod='clip');")}else t.push("top:",j(q.y/k),"px;left:",j(q.x/k),"px;");t.push(' ">','<g_vml_:image src="',b.src,
-	'"',' style="width:',k*d,"px;"," height:",k*f,'px;"',' cropleft="',h/n,'"',' croptop="',g/o,'"',' cropright="',(n-h-l)/n,'"',' cropbottom="',(o-g-e)/o,'"'," />","</g_vml_:group>");this.element_.insertAdjacentHTML("BeforeEnd",t.join(""))};i.stroke=function(b){var a=[],c=P(b?this.fillStyle:this.strokeStyle),d=c.color,f=c.alpha*this.globalAlpha;a.push("<g_vml_:shape",' filled="',!!b,'"',' style="position:absolute;width:',10,"px;height:",10,'px;"',' coordorigin="0 0" coordsize="',k*10," ",k*10,'"',' stroked="',
-	!b,'"',' path="');var h={x:null,y:null},g={x:null,y:null},l=0;for(;l<this.currentPath_.length;l++){var e=this.currentPath_[l];switch(e.type){case "moveTo":a.push(" m ",j(e.x),",",j(e.y));break;case "lineTo":a.push(" l ",j(e.x),",",j(e.y));break;case "close":a.push(" x ");e=null;break;case "bezierCurveTo":a.push(" c ",j(e.cp1x),",",j(e.cp1y),",",j(e.cp2x),",",j(e.cp2y),",",j(e.x),",",j(e.y));break;case "at":case "wa":a.push(" ",e.type," ",j(e.x-this.arcScaleX_*e.radius),",",j(e.y-this.arcScaleY_*e.radius),
-	" ",j(e.x+this.arcScaleX_*e.radius),",",j(e.y+this.arcScaleY_*e.radius)," ",j(e.xStart),",",j(e.yStart)," ",j(e.xEnd),",",j(e.yEnd));break}if(e){if(h.x==null||e.x<h.x)h.x=e.x;if(g.x==null||e.x>g.x)g.x=e.x;if(h.y==null||e.y<h.y)h.y=e.y;if(g.y==null||e.y>g.y)g.y=e.y}}a.push(' ">');if(b)if(typeof this.fillStyle=="object"){var m=this.fillStyle,r=0,n={x:0,y:0},o=0,q=1;if(m.type_=="gradient"){var t=m.x1_/this.arcScaleX_,E=m.y1_/this.arcScaleY_,p=this.getCoords_(m.x0_/this.arcScaleX_,m.y0_/this.arcScaleY_),
-	z=this.getCoords_(t,E);r=Math.atan2(z.x-p.x,z.y-p.y)*180/Math.PI;if(r<0)r+=360;if(r<1.0E-6)r=0}else{var p=this.getCoords_(m.x0_,m.y0_),w=g.x-h.x,x=g.y-h.y;n={x:(p.x-h.x)/w,y:(p.y-h.y)/x};w/=this.arcScaleX_*k;x/=this.arcScaleY_*k;var R=s.max(w,x);o=2*m.r0_/R;q=2*m.r1_/R-o}var u=m.colors_;u.sort(function(ba,ca){return ba.offset-ca.offset});var J=u.length,da=u[0].color,ea=u[J-1].color,fa=u[0].alpha*this.globalAlpha,ga=u[J-1].alpha*this.globalAlpha,S=[],l=0;for(;l<J;l++){var T=u[l];S.push(T.offset*q+
-	o+" "+T.color)}a.push('<g_vml_:fill type="',m.type_,'"',' method="none" focus="100%"',' color="',da,'"',' color2="',ea,'"',' colors="',S.join(","),'"',' opacity="',ga,'"',' g_o_:opacity2="',fa,'"',' angle="',r,'"',' focusposition="',n.x,",",n.y,'" />')}else a.push('<g_vml_:fill color="',d,'" opacity="',f,'" />');else{var K=this.lineScale_*this.lineWidth;if(K<1)f*=K;a.push("<g_vml_:stroke",' opacity="',f,'"',' joinstyle="',this.lineJoin,'"',' miterlimit="',this.miterLimit,'"',' endcap="',aa(this.lineCap),
-	'"',' weight="',K,'px"',' color="',d,'" />')}a.push("</g_vml_:shape>");this.element_.insertAdjacentHTML("beforeEnd",a.join(""))};i.fill=function(){this.stroke(true)};i.closePath=function(){this.currentPath_.push({type:"close"})};i.getCoords_=function(b,a){var c=this.m_;return{x:k*(b*c[0][0]+a*c[1][0]+c[2][0])-v,y:k*(b*c[0][1]+a*c[1][1]+c[2][1])-v}};i.save=function(){var b={};O(this,b);this.aStack_.push(b);this.mStack_.push(this.m_);this.m_=y(I(),this.m_)};i.restore=function(){O(this.aStack_.pop(),
-	this);this.m_=this.mStack_.pop()};function ha(b){var a=0;for(;a<3;a++){var c=0;for(;c<2;c++)if(!isFinite(b[a][c])||isNaN(b[a][c]))return false}return true}function A(b,a,c){if(!!ha(a)){b.m_=a;if(c)b.lineScale_=W(V(a[0][0]*a[1][1]-a[0][1]*a[1][0]))}}i.translate=function(b,a){A(this,y([[1,0,0],[0,1,0],[b,a,1]],this.m_),false)};i.rotate=function(b){var a=G(b),c=F(b);A(this,y([[a,c,0],[-c,a,0],[0,0,1]],this.m_),false)};i.scale=function(b,a){this.arcScaleX_*=b;this.arcScaleY_*=a;A(this,y([[b,0,0],[0,a,
-	0],[0,0,1]],this.m_),true)};i.transform=function(b,a,c,d,f,h){A(this,y([[b,a,0],[c,d,0],[f,h,1]],this.m_),true)};i.setTransform=function(b,a,c,d,f,h){A(this,[[b,a,0],[c,d,0],[f,h,1]],true)};i.clip=function(){};i.arcTo=function(){};i.createPattern=function(){return new U};function D(b){this.type_=b;this.r1_=this.y1_=this.x1_=this.r0_=this.y0_=this.x0_=0;this.colors_=[]}D.prototype.addColorStop=function(b,a){a=P(a);this.colors_.push({offset:b,color:a.color,alpha:a.alpha})};function U(){}G_vmlCanvasManager=
-	M;CanvasRenderingContext2D=H;CanvasGradient=D;CanvasPattern=U})();
-
-}//	---------------------------------------------------------------------------
 //	jWebSocket Chat Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
@@ -7712,6 +7832,12 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ExtProcessPlugIn );
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
+//:package:*:jws
+//:class:*:jws.FileSystemPlugIn
+//:ancestor:*:-
+//:d:en:Implementation of the [tt]jws.FileSystemPlugIn[/tt] class.
+//:d:en:This client-side plug-in provides the API to access the features of the _
+//:d:en:FileSystemPlugIn on the jWebSocket server.
 jws.FileSystemPlugIn = {
 
 	// namespace for filesystem plugin
@@ -7737,7 +7863,7 @@ jws.FileSystemPlugIn = {
 
 	processToken: function( aToken ) {
 		// check if namespace matches
-		if( aToken.ns === jws.FileSystemPlugIn.NS ) {
+		if ( aToken.ns === jws.FileSystemPlugIn.NS ) {
 			// here you can handle incomimng tokens from the server
 			// directy in the plug-in if desired.
 			if( "load" === aToken.reqType ) {
@@ -7783,24 +7909,27 @@ jws.FileSystemPlugIn = {
 	//:a:en::aAlias:String:The alias value. <tt>Example: privateDir</tt>
 	//:a:en::aFilemasks:Array:The filtering filemasks. <tt>Example: ["txt"]</tt>
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
-	//:a:en::aOptions.recursive:Boolean:Recursive file listing flag. Default value is FALSE
+	//:a:en::aOptions.path:String:Restrict file list to target sub-path
+	//:a:en::aOptions.recursive:Boolean:Recursive file listing flag. Default value is <tt>FALSE</tt>.
+	//:a:en::aOptions.recursive:Boolean:Include directory entries in file list. Default value is <tt>FALSE</tt>.
 	//:r:*:::void:none
 	fileGetFilelist: function( aAlias, aFilemasks, aOptions ) {
 		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
-			var lRecursive = false;
-
-			if( aOptions ) {
-				if( aOptions.recursive !== undefined ) {
-					lRecursive = aOptions.recursive;
-				}
-			}
+			aOptions = jws.getOptions( aOptions, {
+				path: null,
+				recursive: false,
+				includeDirs: false
+			});
+			// TODO: convert aFilemasks into an array automatically
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "getFilelist",
 				alias: aAlias,
-				recursive: lRecursive,
-				filemasks: aFilemasks
+				recursive: aOptions.recursive,
+				includeDirs: aOptions.includeDirs,
+				filemasks: aFilemasks,
+				path: aOptions.path
 			};
 			this.sendToken( lToken,	aOptions );
 		}	
@@ -7815,27 +7944,25 @@ jws.FileSystemPlugIn = {
 	//:a:en:aOptions:scope:String:"private" or "public"
 	//:r:*:::void:none
 	fileDelete: function( aFilename, aForce, aOptions ) {
-		var lScope = jws.SCOPE_PRIVATE;
-		var lNotify = false;
-		var lRes = this.checkConnected();
-		if( aOptions ) {
-			if( aOptions.scope !== undefined ) {
-				lScope = aOptions.scope;
-			}
-			if( aOptions.notify !== undefined ) {
-				// notify only is the scope is public
-				lNotify = (jws.SCOPE_PUBLIC === lScope) && aOptions.notify;
-			}
-		}	
+		aOptions = jws.getOptions( aOptions, {
+			scope: jws.SCOPE_PRIVATE,
+			notify: false
+		});
+		
+		var lRes = this.checkConnected( );
+		
 		if( 0 === lRes.code ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "delete",
 				filename: aFilename,
 				force: aForce,
-				notify: lNotify,
-				scope: lScope
+				notify: ( jws.SCOPE_PUBLIC === aOptions.scope ) && aOptions.notify,
+				scope: aOptions.scope
 			};
+			if( "undefined" !== typeof aOptions.alias ) {
+				lToken.alias = aOptions.alias;
+			}
 			this.sendToken( lToken,	aOptions );
 		}	
 		return lRes;
@@ -7868,17 +7995,50 @@ jws.FileSystemPlugIn = {
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:a:en::aOptions.encoding:String:Indicates the encoding format used by the server to encode the file content. Default: base64.
 	//:r:*:::void:none
-	fileLoad: function( aFilename, aAlias, aOptions ) {
-		var lRes = this.createDefaultResult();
-		if( this.isConnected() ) {
+	fileLoad: function(aFilename, aAlias, aOptions) {
+		var lRes = this.createDefaultResult( );
+
+		aOptions = jws.getOptions(aOptions, {
+			encoding: "base64",
+			decode: false
+		});
+
+		if (this.isConnected( )) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "load",
 				alias: aAlias,
 				filename: aFilename,
-				encoding: aOptions['encoding']
+				decode: aOptions.decode,
+				encoding: aOptions.encoding
 			};
-			this.sendToken( lToken,	aOptions );
+
+			var lOnSuccess = aOptions.OnSuccess;
+			aOptions.OnSuccess = function(aToken, aArguments) {
+				if ("function" === typeof lOnSuccess) {
+					if (lToken.decode && aToken.mime !== "text/plain") {
+						switch (lToken.encoding) {
+							case "base64":
+								if (aToken.__binaryData) {
+									aToken.data = decodeURIComponent(escape(atob(aToken.data)));
+								} else {
+									aToken.data = Base64.decode(aToken.data);
+								}
+								break;
+							case "zipBase64":
+								if (aToken.__binaryData) {
+									aToken.data = jws.tools.unzip(decodeURIComponent(escape(atob(aToken.data))));
+								} else {
+									aToken.data = jws.tools.unzip(aToken.data, true);
+								}
+								break;
+						}
+					}
+					lOnSuccess(aToken, aArguments);
+				}
+			};
+
+			this.sendToken(lToken, aOptions);
 		} else {
 			lRes.code = -1;
 			lRes.localeKey = "jws.jsc.res.notConnected";
@@ -7889,55 +8049,44 @@ jws.FileSystemPlugIn = {
 
 	mFileWrite: function( aFilename, aData, aOptions ) {
 		var lRes = this.createDefaultResult();
-		var lEncoding = "base64";
-		var lEncode = true;
-		var lNotify = false;
-		var lScope = jws.SCOPE_PRIVATE;
+		aOptions = jws.getOptions( aOptions, {
+			encoding: "base64",
+			encode: true,
+			notify: false,
+			scope: jws.SCOPE_PRIVATE
+		});
 		var lType = null;
-		if( aOptions ) {
-			if( aOptions.append  ) {
-				lType = "append";
-			} else {
-				lType = "save";
-			}
-			if( aOptions.scope !== undefined ) {
-				lScope = aOptions.scope;
-			}
-			if( aOptions.encode !== undefined ) {
-				lEncode = aOptions.encode;
-			}
-			if( aOptions.encoding !== undefined ) {
-				lEncoding = aOptions.encoding;
-			}
-			if( aOptions.encode !== undefined ) {
-				lEncode = aOptions.encode;
-			}
-			if( aOptions.notify !== undefined ) {
-				// notify only is the scope is public
-				lNotify = (jws.SCOPE_PUBLIC === lScope) && aOptions.notify;
-			}
+		if( aOptions.append  ) {
+			lType = "append";
+		} else {
+			lType = "save";
 		}
+			
 		if( !lType ) {
 			lRes.code = -1;
 			lRes.msg = "No save/append option passed.";
 			return lRes;
 		}
 		var lEnc = {};
-		if( lEncode ) {
-			lEnc.data = lEncoding;
+		if( aOptions.encode ) {
+			lEnc.data = aOptions.encoding;
 		}
 		if( this.isConnected() ) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: lType,
 				enc: lEnc,
-				scope: lScope,
-				encoding: lEncoding,
-				encode: lEncode,
-				notify: lNotify,
+				scope: aOptions.scope,
+				encoding: aOptions.encoding,
+				encode: aOptions.encode,
+				// notify only is the scope is public
+				notify: (jws.SCOPE_PUBLIC === aOptions.scope) && aOptions.notify,
 				data: aData,
 				filename: aFilename
 			};
+			if(aOptions.alias){
+				lToken.alias = aOptions.alias;
+			}
 			this.sendToken( lToken,	aOptions );
 		} else {
 			lRes.code = -1;
@@ -9615,10 +9764,10 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	processToken: function( aToken ) {
 		// check if namespace matches
-		if( aToken.ns == jws.JDBCPlugIn.NS ) {
+		if( aToken.ns === jws.JDBCPlugIn.NS ) {
 			// here you can handle incomimng tokens from the server
 			// directy in the plug-in if desired.
-			if( "selectSQL" == aToken.reqType ) {
+			if( "selectSQL" === aToken.reqType ) {
 				if( this.OnJDBCRowSet ) {
 					this.OnJDBCRowSet( aToken );
 				}
@@ -9634,11 +9783,15 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcQuerySQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "querySQL",
-				sql: aQuery
+				sql: aQuery,
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken, aOptions );
 		}
@@ -9654,11 +9807,15 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcQueryScript: function( aScript, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "querySQL",
-				script: aScript
+				script: aScript,
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken, aOptions );
 		}
@@ -9675,11 +9832,15 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcUpdateSQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "updateSQL",
-				sql: aQuery
+				sql: aQuery,
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -9697,11 +9858,15 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcUpdateScript: function( aScript, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "updateSQL",
-				script: aScript
+				script: aScript,
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -9717,11 +9882,15 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcExecSQL: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "execSQL",
-				sql: aQuery
+				sql: aQuery,
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -9736,7 +9905,7 @@ jws.JDBCPlugIn = {
 	//:r:*:::void:none
 	jdbcSelect: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lTables = aQuery.tables;
 			if( lTables && !lTables.length ) {
 				lTables = [ lTables ];
@@ -9753,6 +9922,9 @@ jws.JDBCPlugIn = {
 			if( lOrders && !lOrders.length ) {
 				lOrders = [ lOrders ];
 			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "select",
@@ -9762,7 +9934,8 @@ jws.JDBCPlugIn = {
 				orders: lOrders,
 				where: aQuery.where,
 				group: aQuery.group,
-				having: aQuery.having
+				having: aQuery.having,
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -9771,14 +9944,18 @@ jws.JDBCPlugIn = {
 
 	jdbcUpdate: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "update",
 				table: aQuery.table,
 				fields: aQuery.fields,
 				values: aQuery.values,
-				where: aQuery.where
+				where: aQuery.where,
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -9787,13 +9964,17 @@ jws.JDBCPlugIn = {
 
 	jdbcInsert: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "insert",
 				table: aQuery.table,
 				fields: aQuery.fields,
-				values: aQuery.values
+				values: aQuery.values,
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -9802,12 +9983,16 @@ jws.JDBCPlugIn = {
 
 	jdbcDelete: function( aQuery, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "delete",
 				table: aQuery.table,
-				where: aQuery.where
+				where: aQuery.where,
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -9816,18 +10001,22 @@ jws.JDBCPlugIn = {
 	
 	jdbcGetPrimaryKeys: function( aSequence, aOptions ) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if( 0 === lRes.code ) {
 			var lCount = 1;
 			if( aOptions ) {
-				if( aOptions.count != undefined ) {
+				if( aOptions.count !== undefined ) {
 					lCount = aOptions.count;
 				}
 			}
+			aOptions = jws.getOptions( aOptions, {
+				alias: null
+			});
 			var lToken = {
 				ns: jws.JDBCPlugIn.NS,
 				type: "getNextSeqVal",
 				sequence: aSequence,
-				count: lCount
+				count: lCount,
+				alias: aOptions.alias
 			};
 			this.sendToken( lToken,	aOptions );
 		}
@@ -9841,12 +10030,9 @@ jws.JDBCPlugIn = {
 		if( aListeners.OnJDBCRowSet !== undefined ) {
 			this.OnJDBCRowSet = aListeners.OnJDBCRowSet;
 		}
-		if( aListeners.OnJDBCResult !== undefined ) {
-			this.OnJDBCResult = aListeners.OnJDBCResult;
-		}
 	}
 
-}
+};
 
 // add the JWebSocket JDBC PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.JDBCPlugIn );
@@ -9883,6 +10069,10 @@ jws.JMSPlugIn = {
 	// :d:en:Namespace for the [tt]ChannelPlugIn[/tt] class.
 	// if namespace changes update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.jms",
+	NS_JMS_GATEWAY: "org.jwebsocket.jms.gateway",
+	NS_JMS_DEMO: "org.jwebsocket.jms.demo",
+	JMS_GATEWAY_ID: "org.jwebsocket.jms.gateway",
+	JMS_GATEWAY_TOPIC: "org.jwebsocket.jms.gateway",
 	SEND_TEXT: "sendJmsText",
 	SEND_TEXT_MESSAGE: "sendJmsTextMessage",
 	SEND_MAP: "sendJmsMap",
@@ -9890,6 +10080,102 @@ jws.JMSPlugIn = {
 	LISTEN: "listenJms",
 	LISTEN_MESSAGE: "listenJmsMessage",
 	UNLISTEN: "unlistenJms",
+	PING: "ping",
+	IDENTIFY: "identify",
+
+	processToken: function(aToken) {
+		// check if namespace matches
+		if( aToken.ns === jws.JMSPlugIn.NS_JMS_GATEWAY ) {
+			if ("response" === aToken.type) {
+				if ("ping" === aToken.reqType) {
+					if (this.OnPing) {
+						this.OnPing(aToken);
+					}
+				} else if ("identify" === aToken.reqType) {
+					if (this.OnIdentify) {
+						this.OnIdentify(aToken);
+					}
+				}
+			} 
+		} else if( aToken.ns === jws.JMSPlugIn.NS ) {
+			// here you can handle incoming tokens from the server
+			// directy in the plug-in if desired.
+			if ("event" === aToken.type) {
+				if ("handleJmsText" === aToken.name) {
+					if (this.OnHandleJmsText) {
+						this.OnHandleJmsText(aToken);
+					}
+				} else if ("handleJmsTextMessage" === aToken.name) {
+					if (this.OnHandleJmsTextMessage) {
+						this.OnHandleJmsTextMessage(aToken);
+					}
+				} else if ("handleJmsMap" === aToken.name) {
+					if (this.OnHandleJmsMap) {
+						this.OnHandleJmsMap(aToken);
+					}
+				} else if ("handleJmsMapMessage" === aToken.name) {
+					if (this.OnHandleJmsMapMessage) {
+						this.OnHandleJmsMapMessage(aToken);
+					}
+				}
+			}
+		}
+	},
+			
+	jmsPing: function( aTargetId, aOptions ) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			this.sendToken({
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.PING,
+				targetId: aTargetId
+			}, aOptions);
+		}
+		return lRes;
+/*		
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			// aTarget, aNS, aType, aArgs, aJSON, aOptions
+			this.forwardJSON(
+				aTargetId,
+				jws.JMSPlugIn.NS_JMS_GATEWAY,
+				jws.JMSPlugIn.PING,
+				{},
+				"",
+				aOptions
+			);
+		}
+		return lRes;
+*/		
+	},
+			
+	jmsIdentify: function( aTargetId, aOptions ) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			this.sendToken({
+				ns: jws.JMSPlugIn.NS,
+				type: jws.JMSPlugIn.IDENTIFY,
+				targetId: aTargetId
+			}, aOptions);
+		}
+		return lRes;
+	},
+			
+	jmsEcho: function( aTargetId, aPayload, aOptions ) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			this.forwardJSON(
+				aTargetId,
+				jws.JMSPlugIn.NS_JMS_DEMO,
+				"echo",
+				{},
+				aPayload,
+				aOptions
+			);	
+		}
+		return lRes;
+	},
+			
 	listenJms: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
@@ -9904,6 +10190,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	listenJmsMessage: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
@@ -9918,6 +10205,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	unlistenJms: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aOptions) {
 		var lRes = this.checkConnected();
@@ -9947,6 +10235,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	sendJmsTextMessage: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aText, aJmsHeaderProperties, aOptions) {
 		var lRes = this.checkConnected();
@@ -9963,6 +10252,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	sendJmsMap: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aMap, aOptions) {
 		var lRes = this.checkConnected();
@@ -9978,6 +10268,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
+			
 	sendJmsMapMessage: function(aConnectionFactoryName, aDestinationName,
 			aPubSubDomain, aMap, aJmsHeaderProperties, aOptions) {
 		var lRes = this.checkConnected();
@@ -9994,32 +10285,7 @@ jws.JMSPlugIn = {
 		}
 		return lRes;
 	},
-	processToken: function(aToken) {
-		// check if namespace matches
-		if (aToken.ns === jws.JMSPlugIn.NS) {
-			// here you can handle incoming tokens from the server
-			// directy in the plug-in if desired.
-			if ("event" === aToken.type) {
-				if ("handleJmsText" === aToken.name) {
-					if (this.OnHandleJmsText) {
-						this.OnHandleJmsText(aToken);
-					}
-				} else if ("handleJmsTextMessage" === aToken.name) {
-					if (this.OnHandleJmsTextMessage) {
-						this.OnHandleJmsTextMessage(aToken);
-					}
-				} else if ("handleJmsMap" === aToken.name) {
-					if (this.OnHandleJmsMap) {
-						this.OnHandleJmsMap(aToken);
-					}
-				} else if ("handleJmsMapMessage" === aToken.name) {
-					if (this.OnHandleJmsMapMessage) {
-						this.OnHandleJmsMapMessage(aToken);
-					}
-				}
-			}
-		}
-	},
+			
 	setJMSCallbacks: function(aListeners) {
 		if (!aListeners) {
 			aListeners = {};
@@ -10035,6 +10301,12 @@ jws.JMSPlugIn = {
 		}
 		if (aListeners.OnHandleJmsMapMessage !== undefined) {
 			this.OnHandleJmsMapMessage = aListeners.OnHandleJmsMapMessage;
+		}
+		if (aListeners.OnPing !== undefined) {
+			this.OnPing = aListeners.OnPing;
+		}
+		if (aListeners.OnIdentify !== undefined) {
+			this.OnIdentify = aListeners.OnIdentify;
 		}
 	}
 
@@ -10969,12 +11241,8 @@ jws.ScriptingPlugIn = {
 	//:d:en:Namespace for the [tt]ScriptingPlugIn[/tt] class.
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + '.plugins.scripting',
-	//:const:*:JWS_NS:String:scripting
-	//:d:en:Namespace within the jWebSocketClient instance.
-	// if namespace changed update the applications accordingly!
-	JWS_NS: 'scripting',
 			
-	//:m:*:callScriptMethod
+	//:m:*:callScriptAppMethod
 	//:d:en:Calls an script application published object method. 
 	//:a:en::aApp:String:The script application name
 	//:a:en::aObjectId:String:The published object identifier
@@ -10982,7 +11250,7 @@ jws.ScriptingPlugIn = {
 	//:a:en::aArgs:Array:The method calling arguments
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
-	callScriptMethod: function(aApp, aObjectId, aMethod, aArgs, aOptions) {
+	callScriptAppMethod: function(aApp, aObjectId, aMethod, aArgs, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
 			var lToken = {
@@ -11001,14 +11269,16 @@ jws.ScriptingPlugIn = {
 	//:m:*:reloadScriptApp
 	//:d:en:Reloads an script application in runtime.
 	//:a:en::aApp:String:The script application name
+	//:a:en::aHotReload:Boolean: If TRUE, the script app is reloaded without to destroy the app context. Default TRUE
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none
-	reloadScriptApp: function(aApp, aOptions) {
+	reloadScriptApp: function(aApp, aHotReload, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code) {
 			var lToken = {
 				ns: jws.ScriptingPlugIn.NS,
 				type: 'reloadApp',
+				hotReload: aHotReload,
 				app: aApp
 			};
 			this.sendToken(lToken, aOptions);
@@ -11039,18 +11309,105 @@ jws.ScriptingPlugIn = {
 	//:a:en::aToken:Object:The token to be sent
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	//:r:*:::void:none		
-	sendScriptToken: function(aApp, aToken, aOptions) {
+	sendScriptAppToken: function(aApp, aToken, aOptions) {
 		var lRes = this.checkConnected();
 		if (0 === lRes.code && aToken) {
-			aToken.app = aApp;
-			aToken.ns = jws.ScriptingPlugIn.NS;
-			aToken.type = 'token';
-
-			this.sendToken(aToken, aOptions);
+			this.sendToken({
+				app: aApp,
+				ns: jws.ScriptingPlugIn.NS,
+				type: 'token',
+				token: aToken
+			}, aOptions);
+		}
+		return lRes;
+	},
+    
+	//:m:*:deployScriptApp
+	//:d:en:Deploys a previous uploaded script application.
+	//:a:en::aAppFile:String:The uploaded application filename. A single ZIP file. 
+	//:a:en::aHotDeploy:Boolean:If TRUE and the application is already deployed, the application context is not destroyed during deployment. Default FALSE.
+	//:a:en::aOptions.deleteAfterDeploy:Boolean:If TRUE, the uploaded application ZIP file is removed after deployment. Default FALSE.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	deployScriptApp: function(aAppFile, aHotDeploy, aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.ScriptingPlugIn.NS,
+				type: 'deploy',
+				hotDeploy: aHotDeploy,
+				appFile: aAppFile,
+				deleteAfterDeploy: (aOptions) ? aOptions.deleteAfterDeploy || false : false
+			};
+            
+			this.sendToken(lToken, aOptions);
+		}
+		return lRes;
+	},
+    
+	//:m:*:listScriptApps
+	//:d:en:List script apps
+	//:a:en::aOptions.userOnly:Boolean:If TRUE, only the active user apps are listed, FALSE will list all apps. Default: FALSE
+	//:a:en::aOptions.namesOnly:Boolean:If TRUE, only the names value is retrieved per app, FALSE will include more app data. Default: TRUE
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	listScriptApps: function(aOptions) {
+		if (!aOptions) aOptions = {};
+		
+		var lUserOnly = aOptions.userOnly || false;
+		var lNamesOnly = aOptions.namesOnly || true;
+		
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.ScriptingPlugIn.NS,
+				type: 'listApps',
+				userOnly: lUserOnly,
+				namesOnly: lNamesOnly
+			};
+            
+			this.sendToken(lToken, aOptions);
+		}
+		return lRes;
+	},
+    
+	//:m:*:undeployScriptApp
+	//:d:en:Undeploy an script app
+	//:a:en::aApp:String:The script application name
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	undeployScriptApp: function(aApp, aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.ScriptingPlugIn.NS,
+				type: 'undeploy',
+				app: aApp
+			};
+            
+			this.sendToken(lToken, aOptions);
+		}
+		return lRes;
+	},
+	
+	//:m:*:getScriptAppManifest
+	//:d:en:Gets a target application manifest content.
+	//:a:en::aApp:String:The script application name
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	getScriptAppManifest: function(aApp, aOptions) {
+		var lRes = this.checkConnected();
+		if (0 === lRes.code) {
+			var lToken = {
+				ns: jws.ScriptingPlugIn.NS,
+				type: 'getManifest',
+				app: aApp
+			};
+            
+			this.sendToken(lToken, aOptions);
 		}
 		return lRes;
 	}
-
 };
 
 // add the JWebSocket Scripting PlugIn into the TokenClient class
@@ -11952,35 +12309,3 @@ jws.XMPPPlugIn = {
 
 // add the JWebSocket XMPP PlugIn into the TokenClient class
 jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.XMPPPlugIn );
-//	---------------------------------------------------------------------------
-//	jWebSocket WebWorker Support (Community Edition, CE)
-//	(supports multithreading and background processes on browser clients,
-//	 given if they already support the HTML5 WebWorker standard)
-//	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
-//
-//	Licensed under the Apache License, Version 2.0 (the "License");
-//	you may not use this file except in compliance with the License.
-//	You may obtain a copy of the License at
-//
-//	http://www.apache.org/licenses/LICENSE-2.0
-//
-//	Unless required by applicable law or agreed to in writing, software
-//	distributed under the License is distributed on an "AS IS" BASIS,
-//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//	See the License for the specific language governing permissions and
-//	limitations under the License.
-//	---------------------------------------------------------------------------
-
-//:i:en:This method is executed if postmessage is invoked by the caller.
-onmessage = function( aEvent ) {
-	// console.log( "started!" );
-	// here computationally intensive processes can be run as thread.
-	// aEvent.data contains the Object from the caller (application)
-	var lMethod;
-	eval( "lMethod=" + aEvent.data.method );
-
-	// run the method and return the result via postmessage to the application.
-	// in the application the onmessage listener of the worker is invoked
-	postMessage( lMethod( aEvent.data.args ) );
-};
