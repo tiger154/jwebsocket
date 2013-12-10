@@ -67,7 +67,7 @@
 	</appender>
 	
 	<!-- send all error logs to my email address -->
-	<appender name="mailLogTemplate" class="org.apache.log4j.net.SMTPAppender">
+	<appender name="mailLog" class="org.apache.log4j.net.SMTPAppender">
 	    <!-- send only errors per email -->
 		<param name="threshold" value="error" />
 		<!-- insert hostname of your mail server -->
@@ -89,30 +89,6 @@
 		</layout>
 	</appender>	
 	
-	<!-- send all error logs to my email address -->
-	<appender name="mailLog" class="org.apache.log4j.net.SMTPAppender">
-	    <!-- send only errors per email -->
-		<param name="threshold" value="debug" />
-		<!-- insert hostname of your mail server -->
-		<param name="SMTPHost" value="mailgw.nvidia.com" />
-		<!-- insert password to send mails via the SMTP server -->
-		<param name="SMTPUsername" value="UnityAdmin@nvidia.com" />
-		<!-- insert password to send mails via the SMTP server -->
-		<param name="SMTPPassword" value="ra8a5@rA" />
-		<!-- insert from address in the mails (sender) -->
-		<param name="from" value="Unity-Implementation@nvidia.com" />
-		<!-- insert to address for the mails (receiver) -->
-		<param name="to" value="aschulze@nvidia.com" />
-		<!-- insert to subject for the mails -->
-		<param name="subject" value="jWebSocket Server Error Notification" />
-	    <!-- if the buffer contains xx mails, the email should be sent -->
-		<param name="bufferSize" value="10" />
-
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="jWebSocket Server Error Notification%n%nTime  : %d{yyyy-MM-dd HH:mm:ss,SSS z}%nLevel : %-5p%nClass : %C%nFile  : %F%nLine  : %L%nMethod: %M%n%n%m%n%n%n" />
-		</layout>
-	</appender>	
-	
 	<!-- special treatment for all logging activities of the spring-framework -->
 	<!--
 	<logger name="org.springframework" additivity="false">
@@ -127,7 +103,6 @@
 		<level value="debug"/>
 		<!--  select one of the above declared appenders -->
 		<appender-ref ref="developmentLog"/>
-		<appender-ref ref="mailLog"/>
 	</logger>
 
 	<root>
@@ -140,7 +115,6 @@
 
 		<!-- during the development -->
 		<appender-ref ref="developmentLog"/>
-		<appender-ref ref="mailLog"/>
 
 		<!-- during debug cycles  -->
 		<!-- <appender-ref ref="debugLog"/> -->
