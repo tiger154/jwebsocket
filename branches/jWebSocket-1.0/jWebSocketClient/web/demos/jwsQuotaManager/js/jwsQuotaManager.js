@@ -1,6 +1,6 @@
 /*
  *
- * @author Osvaldo Aguilar Lauzurique, Alexander Rojas Hernández
+ * @author Osvaldo Aguilar Lauzurique
  */
 Ext.Loader.setConfig({
     enabled: true,
@@ -35,87 +35,108 @@ Ext.define('jws.quotaPlugin.alterWindow', {
         var lQuotaObject = me.initialConfig;
 
 
-        var lQuotaValueFunction = function( aValue ) {
+        var lQuotaValueFunction = function(aValue) {
             Ext.getCmp("get_quota_value").setValue(aValue);
         };
 
         var lSetQuotaFunction = function() {
-            
+
             var lValue = Ext.getCmp("set_quota_field").getValue();
-            
-            if ( !Ext.isNumeric(lValue)){
-                Ext.Msg.alert("Alert", +"("+lValue+") Must be numeric");
+
+            if (!Ext.isNumeric(lValue)) {
+                Ext.Msg.alert("Alert", +"(" + lValue + ") Must be numeric");
                 return;
             }
-                
+
 
             var lArguments = {
-                q_uuid: lQuotaObject.q_uuid,
-                q_type: lQuotaObject.q_type,
-                q_value: lValue 
+                uuid: lQuotaObject.uuid,
+                identifier: lQuotaObject.identifier,
+                value: lValue
             };
 
             Ext.jwsClient.send(NS_QUOTA_PLUGIN, TT_SET_QUOTA, lArguments, {
-                
                 success: function(aResponse) {
                     lQuotaValueFunction(aResponse.value);
                 }
             });
 
         };
-        
+
         var lReduceQuotaFunction = function() {
-                
+
             var lValue = Ext.getCmp("reduce_quota").getValue();
-           
-            if ( !Ext.isNumeric(lValue)){
-                Ext.Msg.alert("Alert", +"("+lValue+") Must be numeric");
+
+            if (!Ext.isNumeric(lValue)) {
+                Ext.Msg.alert("Alert", +"(" + lValue + ") Must be numeric");
                 return;
             }
 
             var lArguments = {
-                q_uuid: lQuotaObject.q_uuid,
-                q_type: lQuotaObject.q_type,
-                q_value: lValue 
+                uuid: lQuotaObject.uuid,
+                identifier: lQuotaObject.identifier,
+                value: lValue
             };
 
             Ext.jwsClient.send(NS_QUOTA_PLUGIN, TT_REDUCE_QUOTA, lArguments, {
                 success: function(aResponse) {
-                   lQuotaValueFunction(aResponse.value);
+                    lQuotaValueFunction(aResponse.value);
                 }
             });
 
         };
-        
+
         var lIncreaseQuotaFunction = function() {
 
             var lValue = Ext.getCmp("increase_quota").getValue();
-            
-            if ( !Ext.isNumeric(lValue)){
-                Ext.Msg.alert("Alert", +"("+lValue+") Must be numeric");
+
+            if (!Ext.isNumeric(lValue)) {
+                Ext.Msg.alert("Alert", +"(" + lValue + ") Must be numeric");
                 return;
             }
 
             var lArguments = {
-                q_uuid: lQuotaObject.q_uuid,
-                q_type: lQuotaObject.q_type,
-                q_value: lValue 
+                uuid: lQuotaObject.uuid,
+                identifier: lQuotaObject.identifier,
+                value: lValue
             };
-            
+
             Ext.jwsClient.send(NS_QUOTA_PLUGIN, TT_INCREASE_QUOTA, lArguments, {
                 success: function(aResponse) {
                     lQuotaValueFunction(aResponse.value);
                 }
             });
         };
-        
+
+        var lGetQuotaFunction = function() {
+
+            var lValue = Ext.getCmp("get_quota_value").getValue();
+
+            if (!Ext.isNumeric(lValue)) {
+                Ext.Msg.alert("Alert", +"(" + lValue + ") Must be numeric");
+                return;
+            }
+
+            var lArguments = {
+                uuid: lQuotaObject.uuid,
+                identifier: lQuotaObject.identifier,
+                value: lValue
+            };
+
+            Ext.jwsClient.send(NS_QUOTA_PLUGIN, TT_GET_QUOTA, lArguments, {
+                success: function(aResponse) {
+                    lQuotaValueFunction(aResponse.value);
+                }
+            });
+        };
+
 
         this.items = [
             {
                 xtype: 'form',
                 bodyPadding: 15,
                 width: 250,
-                id:'alterQuotaForm',
+                id: 'alterQuotaForm',
                 margins: '10 5 10 10',
                 title: 'Alter Form',
                 height: 300,
@@ -137,12 +158,19 @@ Ext.define('jws.quotaPlugin.alterWindow', {
                                 xtype: 'textfield',
                                 readOnly: true,
                                 id: 'get_quota_value',
-                                fieldLabel: 'Quota Value',
-                                value: lQuotaObject.q_value,
+                                fieldLabel: 'Get Quota Value',
+                                value: lQuotaObject.value,
                                 vtype: 'num',
                                 margins: '0 0 0 0',
                                 allowBlank: true,
                                 editable: false
+                            }, {
+                                xtype: 'button',
+                                width: 80,
+                                handler: lGetQuotaFunction,
+                                iconCls: 'icon-accept',
+                                margins: '20 0 0 2',
+                                text: 'Execute'
                             }]},
                     {
                         xtype: 'fieldcontainer',
@@ -244,7 +272,27 @@ Ext.define('jws.quotaPlugin.alterWindow', {
                             {
                                 xtype: 'label',
                                 flex: 1,
-                                text: lQuotaObject.q_uuid,
+                                text: lQuotaObject.uuid,
+                                margins: '0 0 0 0'
+                            }
+                        ]}, {
+                        xtype: 'fieldcontainer',
+                        labelStyle: 'font-weight:bold;padding:0',
+                        layout: 'hbox',
+                        defaultType: 'textfield',
+                        fieldDefaults: {
+                            labelAlign: 'top'
+                        },
+                        items: [{
+                                xtype: 'label',
+                                text: 'Identifier:',
+                                margins: '0 0 0 0',
+                                width: 100
+                            },
+                            {
+                                xtype: 'label',
+                                flex: 1,
+                                text: lQuotaObject.identifier,
                                 margins: '0 0 0 0'
                             }
                         ]}, {
@@ -264,7 +312,7 @@ Ext.define('jws.quotaPlugin.alterWindow', {
                             {
                                 xtype: 'label',
                                 flex: 1,
-                                text: lQuotaObject.q_type,
+                                text: lQuotaObject.quotaType,
                                 margins: '0 0 0 0'
                             }
                         ]},
@@ -285,7 +333,7 @@ Ext.define('jws.quotaPlugin.alterWindow', {
                             {
                                 xtype: 'label',
                                 flex: 1,
-                                text: lQuotaObject.q_namespace,
+                                text: lQuotaObject.namespace,
                                 margins: '0 0 0 0'
                             }
                         ]}, {
@@ -305,7 +353,7 @@ Ext.define('jws.quotaPlugin.alterWindow', {
                             {
                                 xtype: 'label',
                                 flex: 1,
-                                text: lQuotaObject.q_instance,
+                                text: lQuotaObject.instance,
                                 margins: '0 0 0 0'
                             }
                         ]}, {
@@ -325,7 +373,7 @@ Ext.define('jws.quotaPlugin.alterWindow', {
                             {
                                 xtype: 'label',
                                 flex: 1,
-                                text: lQuotaObject.q_instance_type,
+                                text: lQuotaObject.instance_type,
                                 margins: '0 0 0 0'
                             }
                         ]}
@@ -333,21 +381,21 @@ Ext.define('jws.quotaPlugin.alterWindow', {
                 ]
             }
         ];
-        
+
         this.listeners = {
-            destroy: function(){
-                
-                   var lForm = Ext.getCmp('lFilterFormPanelQuota').getForm();
-                   var lStore = Ext.getCmp('gridPanelQuota').getStore();
+            destroy: function() {
 
-                            if (lForm.isValid()) {
+                var lForm = Ext.getCmp('lFilterFormPanelQuota').getForm();
+                var lStore = Ext.getCmp('gridPanelQuota').getStore();
 
-                                var lFilterParams = lForm.getValues();
-                                lStore.load({params: lFilterParams});
-                            }
+                if (lForm.isValid()) {
+
+                    var lFilterParams = lForm.getValues();
+                    lStore.load({params: lFilterParams});
+                }
             }
         };
-        
+
         this.callParent(arguments);
     }
 });
@@ -364,40 +412,39 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
         var me = this;
         var lQuotaObject = me.initialConfig;
 
-
         var lSetRegisterQuota = function() {
-            
-            var lForm = Ext.getCmp("RegisterQuotaForm").getForm();  
-            
-            if (lForm.isValid()){
-                
+
+            var lForm = Ext.getCmp("RegisterQuotaForm").getForm();
+
+            if (lForm.isValid()) {
+
                 var lFilterParams = lForm.getValues();
-                
-                  var lArguments = {
-                      q_uuid: lQuotaObject.q_uuid,
-                      q_type: lQuotaObject.q_type,
-                      q_instance: lFilterParams.req_instance,
-                      q_instance_type: lFilterParams.reg_instance_type
-                  };
 
-                  Ext.jwsClient.send(NS_QUOTA_PLUGIN, TT_REGISTER, lArguments, {
+                var lArguments = {
+                    uuid: lQuotaObject.uuid,
+                    type: lQuotaObject.quotaType,
+                    instance: lFilterParams.req_instance,
+                    instance_type: lFilterParams.reg_instance_type,
+                    identifier: lQuotaObject.identifier
+                };
 
-                      success: function(aResponse) {
-                          lQuotaValueFunction(aResponse.value);
-                      }
-                  });
+                Ext.jwsClient.send(NS_QUOTA_PLUGIN, TT_REGISTER, lArguments, {
+                    success: function(aResponse) {
+                        lQuotaValueFunction(aResponse.value);
+                    }
+                });
             }
 
-      
+
 
         };
-        
+
         this.items = [
             {
                 xtype: 'form',
                 bodyPadding: 15,
                 width: 250,
-                id:'RegisterQuotaForm',
+                id: 'RegisterQuotaForm',
                 margins: '10 5 10 10',
                 title: 'Alter Form',
                 height: 230,
@@ -433,7 +480,7 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
                             labelAlign: 'top'
                         },
                         items: [
-                           {
+                            {
                                 xtype: 'combobox',
                                 width: 150,
                                 id: 'reg_instance_type',
@@ -445,7 +492,7 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
                                 allowBlank: false,
                                 queryMode: 'local',
                                 typeAhead: true
-                        }]
+                            }]
                     }, {
                         xtype: 'fieldcontainer',
                         labelStyle: 'font-weight:bold;padding:0',
@@ -490,7 +537,7 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
                             {
                                 xtype: 'label',
                                 flex: 1,
-                                text: lQuotaObject.q_uuid,
+                                text: lQuotaObject.uuid,
                                 margins: '0 0 0 0'
                             }
                         ]}, {
@@ -510,7 +557,7 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
                             {
                                 xtype: 'label',
                                 flex: 1,
-                                text: lQuotaObject.q_type,
+                                text: lQuotaObject.quotaType,
                                 margins: '0 0 0 0'
                             }
                         ]},
@@ -531,7 +578,7 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
                             {
                                 xtype: 'label',
                                 flex: 1,
-                                text: lQuotaObject.q_namespace,
+                                text: lQuotaObject.namespace,
                                 margins: '0 0 0 0'
                             }
                         ]}, {
@@ -551,7 +598,7 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
                             {
                                 xtype: 'label',
                                 flex: 1,
-                                text: lQuotaObject.q_instance,
+                                text: lQuotaObject.instance,
                                 margins: '0 0 0 0'
                             }
                         ]}, {
@@ -571,7 +618,27 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
                             {
                                 xtype: 'label',
                                 flex: 1,
-                                text: lQuotaObject.q_instance_type,
+                                text: lQuotaObject.instance_type,
+                                margins: '0 0 0 0'
+                            }
+                        ]}, {
+                        xtype: 'fieldcontainer',
+                        labelStyle: 'font-weight:bold;padding:0',
+                        layout: 'hbox',
+                        defaultType: 'textfield',
+                        fieldDefaults: {
+                            labelAlign: 'top'
+                        },
+                        items: [{
+                                xtype: 'label',
+                                text: 'Identifier:',
+                                margins: '0 0 0 0',
+                                width: 100
+                            },
+                            {
+                                xtype: 'label',
+                                flex: 1,
+                                text: lQuotaObject.identifier,
                                 margins: '0 0 0 0'
                             }
                         ]}
@@ -579,33 +646,41 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
                 ]
             }
         ];
-        
+
         this.listeners = {
-            destroy: function(){
-                
-                   var lForm = Ext.getCmp('lFilterFormPanelQuota').getForm();
-                   var lStore = Ext.getCmp('gridPanelQuota').getStore();
+            destroy: function() {
 
-                            if (lForm.isValid()) {
+                var lForm = Ext.getCmp('lFilterFormPanelQuota').getForm();
+                var lStore = Ext.getCmp('gridPanelQuota').getStore();
 
-                                var lFilterParams = lForm.getValues();
-                                lStore.load({params: lFilterParams});
-                            }
+                if (lForm.isValid()) {
+
+                    var lFilterParams = lForm.getValues();
+                    lStore.load({params: lFilterParams});
+                }
             }
         };
-        
+
         this.callParent(arguments);
     }
 });
 
 Ext.define('Quota', {
     extend: 'Ext.data.Model',
-    fields: ['q_uuid', 'q_instance', 'q_namespace', 'q_type', 'q_instance_type',
+    fields: ['uuid', 'instance', 'namespace', 'identifier',
+        'instance_type', 'quotaType',
         {
-            name: 'q_value',
+            name: 'value',
             type: 'int'
         }
-    ]
+    ],
+    hasMany: { model: 'QuotaChild', name: 'childQuotas' }     
+});
+
+Ext.define('QuotaChild', {
+    extend: 'Ext.data.Model',
+    fields: ['instance', 'instance_type', 'uuid', {name:'value',type: 'int'}],
+    belongsTo: 'Quota'
 });
 
 
@@ -615,9 +690,11 @@ NS_QUOTA_PLUGIN = jws.NS_BASE + '.plugins.quota';
 TT_OPEN = 'open';
 TT_CLOSE = 'close';
 TT_REGISTER = 'registerQuota';
+TT_CREATE='createQuota'
 TT_UNREGISTER = 'unregisterQuota';
 TT_QUERY = 'query';
 TT_GET_QUOTA = 'getQuota';
+TT_GET_ACTIVE_QUOTA = 'getActivesQuota';
 TT_SET_QUOTA = 'setQuota';
 TT_REDUCE_QUOTA = 'reduceQuota';
 TT_INCREASE_QUOTA = 'increaseQuota';
@@ -648,9 +725,7 @@ var quota_types = [
 //TODO: Those data will be load from the server
 var quota_instance = [
     {name: 'User'},
-    {name: 'User Group'},
-    {name: 'Application'},
-    {name: 'Module'},
+    {name: 'Group'}
 ];
 
 Ext.regModel('Quota_types', {
@@ -727,7 +802,7 @@ Ext.onReady(function() {
 });
 
 function logMessage(aToken) {
-    
+
     if (aToken.code === -1) {
         console.log("error");
         console.log(aToken);
@@ -750,10 +825,10 @@ function logMessage(aToken) {
 }
 
 function showQuotaPluginMainWindows() {
-    
+
     var lWindowMain = Ext.WindowManager.get("mainWindowsQuotaPlugin");
 
-    if (lWindowMain != undefined){
+    if (lWindowMain != undefined) {
         lWindowMain.show();
         return;
     }
@@ -776,6 +851,22 @@ function showQuotaPluginMainWindows() {
         pageSize: 50,
         model: 'Quota',
         proxy: lJWSProxy
+    });
+    
+    var lJWSProxyQuotaActive = new Ext.jws.data.Proxy({
+        ns: NS_QUOTA_PLUGIN,
+        api: {
+            read: TT_GET_ACTIVE_QUOTA
+        },
+        reader: {
+            root: 'data',
+            totalProperty: 'totalCount'
+        }
+    });
+
+    var lStoreActiveQuota = new Ext.data.Store({
+        model: 'Quota_types',
+        proxy: lJWSProxyQuotaActive
     });
 
     // create Vtype for vtype:'num'
@@ -817,7 +908,7 @@ function showQuotaPluginMainWindows() {
                     {
                         xtype: 'combobox',
                         flex: 1,
-                        name: 'q_type',
+                        name: 'quotaType',
                         fieldLabel: 'Quota Type',
                         displayField: 'name',
                         store: quota_type_store,
@@ -828,14 +919,14 @@ function showQuotaPluginMainWindows() {
                         allowBlank: false
                     }, {
                         xtype: 'textfield',
-                        name: 'q_namespace',
+                        name: 'namespace',
                         margins: '0 0 0 10',
                         flex: 2,
                         fieldLabel: 'Name Space',
                         emptyText: 'example: org.jwebsocket.smsPlugin'
                     }, {
                         xtype: 'textfield',
-                        name: 'q_instance',
+                        name: 'instance',
                         margins: '0 0 0 10',
                         fieldLabel: 'Instance',
                         flex: 1,
@@ -882,19 +973,18 @@ function showQuotaPluginMainWindows() {
                 items: [{
                         xtype: 'combobox',
                         flex: 1,
-                        name: 'q_type',
+                        name: 'identifier',
                         margins: '0 10 0 0',
-                        fieldLabel: 'Select the quota Type',
+                        fieldLabel: 'Select Quota ',
                         displayField: 'name',
-                        store: quota_type_store,
-                        queryMode: 'local',
+                        store: lStoreActiveQuota,
                         typeAhead: true,
                         allowBlank: false
                     }, {
                         flex: 1,
                         xtype: 'textfield',
-                        name: 'q_value',
-                        id: 'q_value',
+                        name: 'value',
+                        id: 'value',
                         fieldLabel: 'Value',
                         vtype: 'num',
                         margins: '0 0 0 10',
@@ -913,15 +1003,15 @@ function showQuotaPluginMainWindows() {
                         xtype: 'textfield',
                         flex: 1,
                         margins: '10 10 0 0',
-                        name: 'q_instance',
-                        id: 'q_instance',
+                        name: 'instance',
+                        id: 'instance',
                         fieldLabel: 'Instance',
                         allowBlank: false,
                         emptyText: 'required...'
                     }, {
                         xtype: 'combobox',
                         flex: 1,
-                        name: 'q_instance_type',
+                        name: 'instance_type',
                         fieldLabel: 'Select the instance Type',
                         displayField: 'name',
                         margins: '10 0 0 10',
@@ -941,11 +1031,29 @@ function showQuotaPluginMainWindows() {
                 items: [
                     {
                         xtype: 'textfield',
-                        name: 'q_namespace',
+                        name: 'namespace',
                         flex: 1,
                         margins: '10 0 0 0',
-                        id: 'q_namespace',
+                        id: 'namespace',
                         fieldLabel: 'Name Space',
+                        emptyText: 'required...'
+                    }]
+            }, {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [
+                    {
+                        xtype: 'textfield',
+                        name: 'actions',
+                        flex: 1,
+                        margins: '10 0 0 0',
+                        id: 'actions',
+                        fieldLabel: 'Actions',
                         emptyText: 'required...'
                     }]
             }
@@ -968,7 +1076,7 @@ function showQuotaPluginMainWindows() {
                     var lForm = this.up('form').getForm();
                     var lAction = {
                         ns: NS_QUOTA_PLUGIN,
-                        tokentype: TT_REGISTER
+                        tokentype: TT_CREATE
                     };
                     if (lForm.isValid())
                         lForm.submit(lAction);
@@ -976,14 +1084,14 @@ function showQuotaPluginMainWindows() {
             }
         ]
     });
-    
-    
+
+
     //=====form============
     var lFormPanelTesting = Ext.create('Ext.form.Panel', {
         bodyPadding: 15,
         width: 630,
         height: 330,
-		id: "formpanelTesting",
+        id: "formpanelTesting",
         frame: true,
         title: "Testing Filter Quota",
         jwsSubmit: true,
@@ -1068,19 +1176,19 @@ function showQuotaPluginMainWindows() {
 
                     var lForm = this.up('form').getForm();
                     var lValues = lForm.getValues();
-                    
+
                     var lAction = {
                         ns: lValues.server_namespace,
                         tokentype: lValues.server_tt
                     };
-                    
+
                     //Ext.apply(lAction);
-                    
-                    if (lForm.isValid()){
-						lForm.submit( lAction );
-						Ext.Msg.alert("Information", "Request sent! Check quota list to see the quota reduction.");
-					}
-                        
+
+                    if (lForm.isValid()) {
+                        lForm.submit(lAction);
+                        Ext.Msg.alert("Information", "Request sent! Check quota list to see the quota reduction.");
+                    }
+
                 }
             }
         ]
@@ -1100,46 +1208,46 @@ function showQuotaPluginMainWindows() {
         },
         iconCls: 'icon-user',
         columns: [{
-                text: 'uuid',
+                text: 'Uuid',
+                width: 170,
+                sortable: true,
+                dataIndex: 'uuid'
+            }, {
+                text: 'Name space',
                 width: 180,
                 sortable: true,
-                dataIndex: 'q_uuid'
+                dataIndex: 'namespace'
             }, {
-                text: 'namespace',
-                width: 180,
+                header: 'Quota Identifier',
+                width: 100,
                 sortable: true,
-                dataIndex: 'q_namespace'
+                dataIndex: 'identifier'
             }, {
-                header: 'quota',
+                text: 'Instance',
+                width: 60,
+                sortable: true,
+                dataIndex: 'instance'
+            }, {
+                text: 'Instance type',
                 width: 80,
                 sortable: true,
-                dataIndex: 'q_type'
+                dataIndex: 'instance_type'
             }, {
-                text: 'instance',
-                width: 70,
-                sortable: true,
-                dataIndex: 'q_instance'
-            }, {
-                text: 'instance type',
-                width: 70,
-                sortable: true,
-                dataIndex: 'q_instance_type'
-            }, {
-                text: 'value',
+                text: 'Value',
                 width: 40,
                 sortable: true,
-                dataIndex: 'q_value'
+                dataIndex: 'value'
             }],
         listeners: {
             select: function(aView, aRecord) {
                 lGridPanel.mLastSelected = aRecord.index;
             },
             selectionchange: function(aSelModel, aSelections) {
-                
+
                 Ext.getCmp('unregisterQuotabtn').setDisabled(aSelections.length === 0);
                 Ext.getCmp('alterQuotabtn').setDisabled(aSelections.length === 0);
                 Ext.getCmp('registerQuotabtn').setDisabled(aSelections.length === 0);
-                
+
             }
         }
     });
@@ -1162,15 +1270,15 @@ function showQuotaPluginMainWindows() {
 
         }
     };
-    
+
     var lRegisterQuotaClick = function() {
-        
+
         var lSelection = lGridPanel.getView().getSelectionModel().getSelection()[0];
 
         var lAlterWin = Ext.create('jws.quotaPlugin.registerQuotaWindow', lSelection.data);
         lAlterWin.show();
     };
-    
+
 
     var lAlterQuotaClick = function() {
         var lSelection = lGridPanel.getView().getSelectionModel().getSelection()[0];
@@ -1183,7 +1291,7 @@ function showQuotaPluginMainWindows() {
 
     var lFilterPanel = Ext.create('Ext.panel.Panel', {
         title: 'Quota Admin',
-		id:"formPanelFilter",
+        id: "formPanelFilter",
         items: [lFilterFormPanel, lGridPanel],
         dockedItems: [{
                 xtype: 'toolbar',
@@ -1199,7 +1307,7 @@ function showQuotaPluginMainWindows() {
                         disabled: true,
                         id: 'unregisterQuotabtn',
                         handler: lUnregisterQuotaClick
-                    },{
+                    }, {
                         iconCls: 'icon-add',
                         text: 'Register Quota',
                         disabled: true,
@@ -1231,7 +1339,6 @@ function showQuotaPluginMainWindows() {
         resizable: false,
         draggable: false,
         closable: false,
-        
         items: [lTabPanel],
         dockedItems: [{
                 xtype: 'toolbar',
@@ -1257,12 +1364,12 @@ function showQuotaPluginMainWindows() {
                 ]
             }]
     }).show();
-	
+
 }
 
 function closeQuotaPluginMainwindows() {
     var lWindowMain = Ext.WindowManager.get("mainWindowsQuotaPlugin");
-	
+
     if (lWindowMain != undefined)
         lWindowMain.hide();
 }
@@ -1313,7 +1420,7 @@ function showQuotaPluginLoginWindows() {
                     alForm.down('textfield[name=password]').getValue());
         }
     }
-	
+
 }
 
 function closeQuotaPluginLoginWindows() {
@@ -1328,6 +1435,8 @@ function initDemo() {
 
     var lPlugIn = {};
     lPlugIn.processToken = function(aToken) {
+        console.log("todos");
+	console.log(aToken);
 
         if (aToken.ns === NS_QUOTA_PLUGIN) {
             if (aToken.reqType === "query")
