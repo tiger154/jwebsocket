@@ -19,6 +19,7 @@
 package org.jwebsocket.server;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -628,5 +629,19 @@ public class BaseServer implements WebSocketServer {
 	public void systemStopped() throws Exception {
 		getFilterChain().systemStopped();
 		getPlugInChain().systemStopped();
+	}
+
+	@Override
+	public Map<String, WebSocketConnector> getSharedSessionConnectors(String aSessionId) {
+		Map<String, WebSocketConnector> lShared = new HashMap<String, WebSocketConnector>();
+
+		Collection<WebSocketConnector> lConnectors = getAllConnectors().values();
+		for (WebSocketConnector lConnector : lConnectors) {
+			if (aSessionId.equals(lConnector.getSession().getSessionId())) {
+				lShared.put(lConnector.getId(), lConnector);
+			}
+		}
+
+		return lShared;
 	}
 }

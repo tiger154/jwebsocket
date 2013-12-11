@@ -91,6 +91,7 @@ public class SystemPlugIn extends TokenPlugIn {
 	private static final String TT_SEND = "send";
 	private static final String TT_RESPOND = "respond";
 	private static final String TT_BROADCAST = "broadcast";
+	private static final String TT_BROADCAST_TO_SHARED_SESSION = "broadcastToSharedSession";
 	private static final String TT_WELCOME = "welcome";
 	private static final String TT_GOODBYE = "goodBye";
 	private static final String TT_HEADER = "header";
@@ -275,6 +276,8 @@ public class SystemPlugIn extends TokenPlugIn {
 				getHeaders(aConnector, aToken);
 			} else if (lType.equals(TT_BROADCAST)) {
 				broadcast(aConnector, aToken);
+			} else if (lType.equals(TT_BROADCAST_TO_SHARED_SESSION)) {
+				broadcastToSharedSession(aConnector, aToken);
 			} else if (lType.equals(TT_LOGIN)) {
 				login(aConnector, aToken);
 			} else if (lType.equals(TT_LOGOUT)) {
@@ -1245,6 +1248,25 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		// Sending the response
 		sendToken(aConnector, aConnector, lResponse);
+	}
+
+	void broadcastToSharedSession(WebSocketConnector aConnector, Token aToken) {
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Broadcasting token to connectors that share the same session...");
+		}
+		aToken.setString("sourceId", aConnector.getId());
+		boolean lSenderIncluded = aToken.getBoolean("senderIncluded", false);
+
+		// getting shared session connectors
+		Collection<WebSocketConnector> lConnectors = getServer().getSharedSessionConnectors(aConnector.getSession()
+				.getSessionId()).values();
+		for (WebSocketConnector lConnector : lConnectors) {
+			if (!lSenderIncluded && aConnector.getId().equals(lConnector.getId())) {
+				continue;
+			}
+
+			sendToken(lConnector, aToken);
+		}
 	}
 
 	void sessionGet(WebSocketConnector aConnector, Token aToken) {

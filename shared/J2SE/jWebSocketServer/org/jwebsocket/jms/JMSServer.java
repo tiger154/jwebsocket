@@ -19,6 +19,7 @@
 package org.jwebsocket.jms;
 
 import java.util.Collection;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.ServerConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -114,5 +115,10 @@ public class JMSServer extends TokenServer {
 	@Override
 	public JMSManager getJMSManager() {
 		return mJMSManager;
+	}
+
+	@Override
+	public Map<String, WebSocketConnector> getSharedSessionConnectors(String aSessionId) {
+		throw new UnsupportedOperationException("Shared sessions not supported on JMS server!");
 	}
 }

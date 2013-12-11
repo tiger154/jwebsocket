@@ -357,4 +357,12 @@ public interface WebSocketServer extends ISystemLifecycle {
 	 * @return
 	 */
 	ServerConfiguration getServerConfiguration();
+
+	/**
+	 * Get the connectors that share the same session id
+	 *
+	 * @param aSessionId The shared session id
+	 * @return
+	 */
+	Map<String, WebSocketConnector> getSharedSessionConnectors(String aSessionId);
 }

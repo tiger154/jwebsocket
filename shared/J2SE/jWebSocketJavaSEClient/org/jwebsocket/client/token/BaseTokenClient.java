@@ -89,11 +89,10 @@ public class BaseTokenClient implements WebSocketTokenClient {
 	private List<String> mEncodingFormats = new FastList<String>();
 	private WebSocketClient mClient;
 
-	
 	public BaseTokenClient(WebSocketClient aClient) {
 		this(JWebSocketCommonConstants.WS_SUBPROT_DEFAULT, JWebSocketCommonConstants.WS_ENCODING_DEFAULT, aClient);
 	}
-	
+
 	public BaseTokenClient() {
 		this(new JWebSocketWSClient());
 	}
@@ -107,10 +106,10 @@ public class BaseTokenClient implements WebSocketTokenClient {
 		setReliabilityOptions(aReliabilityOptions);
 	}
 
-	public BaseTokenClient(String aSubProt, WebSocketEncoding aEncoding){
+	public BaseTokenClient(String aSubProt, WebSocketEncoding aEncoding) {
 		this(aSubProt, aEncoding, new JWebSocketWSClient());
 	}
-	
+
 	/**
 	 *
 	 * @param aSubProt
@@ -119,7 +118,7 @@ public class BaseTokenClient implements WebSocketTokenClient {
 	public BaseTokenClient(String aSubProt, WebSocketEncoding aEncoding, WebSocketClient aClient) {
 		mSubProt = new WebSocketSubProtocol(aSubProt, aEncoding);
 		mClient = aClient;
-		
+
 		addSubProtocol(mSubProt);
 		addListener(new TokenClientListener());
 
@@ -138,7 +137,7 @@ public class BaseTokenClient implements WebSocketTokenClient {
 				for (String lAttr : lEnc.keySet()) {
 					String lFormat = lEnc.get(lAttr);
 					String lValue = aToken.getString(lAttr);
-					if (aToken.getBoolean("__binaryData") && "data".equals(lAttr)){
+					if (aToken.getBoolean("__binaryData") && "data".equals(lAttr)) {
 						continue;
 					}
 					if (!mEncodingFormats.contains(lFormat)) {
@@ -921,6 +920,21 @@ public class BaseTokenClient implements WebSocketTokenClient {
 		lToken.setString("sender", getUsername());
 		lToken.setString("data", aData);
 		sendToken(lToken);
+	}
+
+	@Override
+	public void broadcastToSharedSession(Token aToken) throws WebSocketException {
+		broadcastToSharedSession(aToken, false, null);
+	}
+
+	@Override
+	public void broadcastToSharedSession(Token aToken, boolean aSenderIncluded,
+			WebSocketResponseTokenListener aListener) throws WebSocketException {
+		aToken.setNS(NS_SYSTEM_PLUGIN);
+		aToken.setType("broadcastToSharedSession");
+		aToken.setBoolean("senderIncluded", aSenderIncluded);
+
+		sendToken(aToken, aListener);
 	}
 
 	@Override
