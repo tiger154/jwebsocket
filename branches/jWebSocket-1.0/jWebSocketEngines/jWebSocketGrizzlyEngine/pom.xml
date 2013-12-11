@@ -15,7 +15,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<org.glassfish.grizzly.version>2.3.7</org.glassfish.grizzly.version>
+		<org.glassfish.grizzly.version>2.3.8</org.glassfish.grizzly.version>
 	</properties>
 	<build>
 		<plugins>
