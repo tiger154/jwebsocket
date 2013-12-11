@@ -98,7 +98,6 @@ public class JMSEndPoint {
 			// create a producer for the given gateway topic (JMS destination)
 			Topic lGatewayTopic = mSession.createTopic(aGatewayTopic);
 			mProducer = mSession.createProducer(lGatewayTopic);
-			mSender = new JMSEndPointSender(mSession, mProducer, mEndPointId);
 
 			// create a consumer for the given gateway topic (JMS destination)
 			// use endPointId to listen on a certain target address only
@@ -114,8 +113,8 @@ public class JMSEndPoint {
 			// pass the listener to the JMS consumer object
 			lConsumer.setMessageListener(mListener);
 			
-			// establish the connection
-			// mConnection.start();
+			// creating sender
+			mSender = new JMSEndPointSender(this);
 		} catch (JMSException lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " on connecting JMS client: "

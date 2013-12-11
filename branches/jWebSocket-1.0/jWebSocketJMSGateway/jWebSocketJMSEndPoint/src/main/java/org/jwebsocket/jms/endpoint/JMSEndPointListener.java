@@ -37,8 +37,7 @@ import javax.jms.TextMessage;
  */
 class JMSEndPointListener implements MessageListener {
 
-	private final List<IJMSMessageListener> mMessageListeners
-			= new ArrayList<IJMSMessageListener>();
+	private final List<IJMSMessageListener> mMessageListeners = new ArrayList<IJMSMessageListener>();
 	private final ExecutorService mExecutor;
 
 	public JMSEndPointListener(int aThreadPoolSize) {
