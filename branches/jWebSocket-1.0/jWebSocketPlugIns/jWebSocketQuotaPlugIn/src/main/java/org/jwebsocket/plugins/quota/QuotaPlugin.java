@@ -4,13 +4,10 @@
  */
 package org.jwebsocket.plugins.quota;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
@@ -22,10 +19,8 @@ import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.quota.api.IQuota;
 import org.jwebsocket.plugins.quota.api.IQuotaProvider;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
-import org.jwebsocket.plugins.quota.api.IQuotaStorage;
 import org.jwebsocket.plugins.quota.utils.QuotaHelper;
 import org.jwebsocket.plugins.quota.utils.QuotaProvider;
-import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.JMSManager;
 import org.springframework.context.ApplicationContext;
 
@@ -41,6 +36,7 @@ public class QuotaPlugin extends ActionPlugIn {
     private IQuotaProvider mQuotaProvider;
     private QuotaHelper mQuotaHelper;
     private QuotaServices mQuotaService;
+    private JMSManager mMessageHub;
 
     @Override
     public String getNamespace() {
@@ -60,82 +56,75 @@ public class QuotaPlugin extends ActionPlugIn {
                 + "ider");
 
         mQuotaService = new QuotaServices(getNamespace(), mSpringAppContext);
+        
+    }
 
-
+    @Override
+    public void systemStarted() throws Exception {
+        super.systemStarted();
+        System.out.println(".... Se inicializa el sistema quotaPlugin");
         //listening the sent message
-        /*
-        JMSManager lMessageHub = getServer().getJMSManager();
+        this.mMessageHub = getServer().getJMSManager();
         try {
-
-            lMessageHub.subscribe(new MessageListener() {
+            mMessageHub.subscribe(new MessageListener() {
                 @Override
                 public void onMessage(Message msg) {
                     MapMessage lMessage = (MapMessage) msg;
+                    
+                    //Esto nunca se ejecuta cere
+                    System.out.println("...... Se escucho un paquete .....");
 
                     try {
                         String lUsername = lMessage.getStringProperty("username");
                         String lNS = lMessage.getStringProperty("tokenNS");
                         String lType = lMessage.getStringProperty("tokenType");
-                        
+
 
                         Map<String, IQuota> lQuotas = mQuotaProvider.getActiveQuotas();
 
-                            for (Map.Entry<String, IQuota> entry : lQuotas.entrySet()) {
-                                //The same of lQuotaObj.getIdentifier();
-                                String lIdentifier = entry.getKey();
-                                IQuota lQuotaObj = entry.getValue();
+                        for (Map.Entry<String, IQuota> entry : lQuotas.entrySet()) {
+                            //The same of lQuotaObj.getIdentifier();
+                            String lIdentifier = entry.getKey();
+                            IQuota lQuotaObj = entry.getValue();
 
-                                
-                                 * This method get a quota for this NamesPace as
-                                 * well as exist a quota for this user itself,
-                                 * as if he has a quota as part of a group
-                  
-                                IQuotaSingleInstance lQSingle = lQuotaObj.getQuota(lUsername, lNS, "User");
 
-                                // if lQSingle is null, there is not a quota for this user 
-                                if (lQSingle == null) {
+                            /* This method get a quota for this NamesPace as
+                             * well as exist a quota for this user itself,
+                             * as if he has a quota as part of a group*/
+
+                            IQuotaSingleInstance lQSingle = lQuotaObj.getQuota(lUsername, lNS, "User");
+
+                            // if lQSingle is null, there is not a quota for this user 
+                            if (lQSingle == null) {
+                                continue;
+                            }
+                            String lActions = lQSingle.getActions();
+
+                            //if the actual token or action is not limited by the quota pass to the other quotaType
+                            if (!lActions.equals("*")) {
+                                if (lActions.indexOf(lType) == -1) {
                                     continue;
                                 }
-                                String lActions = lQSingle.getActions();
-
-                                //if the actual token or action is not limited by the quota pass to the other quotaType
-                                if (!lActions.equals("*")) {
-                                    if (lActions.indexOf(lType) == -1) {
-                                        continue;
-                                    }
-                                }
-
-                                long lQValue = lQuotaObj.reduceQuota(lQSingle.getInstance(),
-                                        lQSingle.getNamespace(), lQSingle.getInstanceType(), lQuotaObj.getDefaultReduceValue());
-                                
-
-                                if (lQValue == -1) {
-                                    Token lResponse = getServer().createResponse(aToken);
-                                    lResponse.setCode(-1);
-                                    lResponse.setString("msg", "Acces not allowed due to quota limmitation exceed");
-                                    getServer().sendToken(aConnector, lResponse);
-                                    aResponse.rejectMessage();
-
-                                    if (mLog.isDebugEnabled()) {
-                                        mLog.debug("Quota(" + lQuotaObj.getType() + ") limit exceeded for user: "
-                                                + lUsername + ", on namespace:" + lNS + ". Access not allowed!");
-                                    }
-
-                                }
                             }
-                            // TODO: call your logic here
-                        }catch (Exception lEx) {
-                        // catch here
+
+                            long lQValue = lQuotaObj.reduceQuota(lQSingle.getInstance(),
+                                    lQSingle.getNamespace(), lQSingle.getInstanceType(), lQuotaObj.getDefaultReduceValue());
+
+                            System.out.println("se ejecuto una quota");
+                            System.out.println("El valor es: " + lQValue);
+
+                            System.out.println("---------------------");
                         }
+                    } catch (Exception lEx) {
+                        mLog.error("Error precessing  the quota");
+                    }
                 }
             }, "ns = 'org.jwebsocket.plugins' AND msgType='tokenProcessed'");
 
         } catch (Exception e) {
             mLog.error("Error listening tokenProcessed");
         }
-
-    }*/
-}
+    }
 
     /**
      * {@inheritDoc}
