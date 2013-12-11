@@ -184,4 +184,23 @@ public interface WebSocketTokenClient extends WebSocketClient {
 	 */
 	void sendChunkable(IChunkable aChunkable, WebSocketResponseTokenListener aResponseListener,
 			IChunkableDeliveryListener aDeliveryListener);
+
+	/**
+	 * Broadcast a token to other clients that share the current session id
+	 *
+	 * @param aToken
+	 * @param aSenderIncluded
+	 * @param aListener
+	 * @throws WebSocketException
+	 */
+	void broadcastToSharedSession(Token aToken, boolean aSenderIncluded,
+			WebSocketResponseTokenListener aListener) throws WebSocketException;
+	
+	/**
+	 * Broadcast a token to other clients that share the current session id
+	 * 
+	 * @param aToken
+	 * @throws WebSocketException 
+	 */
+	void broadcastToSharedSession(Token aToken) throws WebSocketException;
 }

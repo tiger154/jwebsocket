@@ -3553,6 +3553,25 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		}
 		return lRes;
 	},
+	
+	//:m:*:broadcastToSharedSession
+	//:d:en:Broadcasts a token to clients that share the same session
+	//:a:en::aToken:Object: The token to be broadcasted
+	//:a:en::aSenderIncluded:Boolean: Indicates if the sender connector require to be included in the broadcast
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	broadcastToSharedSession: function ( aToken, aSenderIncluded, aOptions ){
+		var lRes = this.checkLoggedIn();
+		if( 0 === lRes.code ) {
+			aToken.ns = jws.NS_SYSTEM;
+			aToken.type = "broadcastToSharedSession";
+			aToken.senderIncluded = aSenderIncluded || false
+			
+			this.sendToken(aToken,	aOptions);
+		}
+		
+		return lRes;
+	},
+	
 
 	//:m:*:echo
 	//:d:en:Sends an echo token to the jWebSocket server. The server returns
