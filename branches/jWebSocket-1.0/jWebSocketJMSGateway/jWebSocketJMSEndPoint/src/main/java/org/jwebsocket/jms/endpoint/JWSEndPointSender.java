@@ -70,6 +70,27 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	/**
 	 * Sends a JSON token as text message to the given target endpoint.
 	 *
+	 * Example:
+	 * <code>
+	 * sendToken("some id", aToken, new JWSResponseTokenListener(){
+	 *
+	 * @Override
+	 * public void onSuccess(Token aReponse) {
+	 * super.onSuccess(aReponse);
+	 * }
+	 *
+	 * @Override
+	 * public void onFailure(Token aReponse) {
+	 * super.onFailure(aReponse);
+	 * }
+	 *
+	 * @Override
+	 * public void onTimeout() {
+	 * super.onTimeout();
+	 * }
+	 * }, 5000);
+	 *
+	 * </code>
 	 * @param aTargetId
 	 * @param aToken
 	 * @param aResponseListener
@@ -82,9 +103,9 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		// on the JMS Gateway we per defintion/specification only exchange JSON tokens
 		sendText(aTargetId, String.valueOf(lUTID), JSONProcessor.tokenToPacket(aToken).getUTF8(), aResponseListener, aTimeout);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param aTargetId
 	 * @param aNS
 	 * @param aType
@@ -92,18 +113,18 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	 * @param aOriginId
 	 * @param aArgs
 	 * @param aPayload
-	 * @param aResponseListener 
+	 * @param aResponseListener
 	 */
 	public void sendPayload(String aTargetId, String aNS, String aType,
-			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload, 
-			JWSResponseTokenListener aResponseListener){
+			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload,
+			JWSResponseTokenListener aResponseListener) {
 		sendPayload(aTargetId, aNS, aType, aUTID, aOriginId, aArgs, aPayload, aResponseListener, 1000 * 10);
 	}
-	
+
 	public void sendPayload(String aTargetId, String aNS, String aType,
-			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload, 
-			JWSResponseTokenListener aResponseListener, long aTimeout){
-		
+			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload,
+			JWSResponseTokenListener aResponseListener, long aTimeout) {
+
 		Token lToken = TokenFactory.createToken();
 		lToken.setMap(aArgs);
 		lToken.setNS(aNS);
@@ -117,7 +138,6 @@ public class JWSEndPointSender extends JMSEndPointSender {
 
 		sendToken(aTargetId, lToken, aResponseListener, aTimeout);
 	}
-			
 
 	/**
 	 *
