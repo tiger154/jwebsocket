@@ -62,7 +62,7 @@ public class JMSEndPointMessageListener implements IJMSMessageListener {
 	public void sendToken(String aTargetId, Token aToken) {
 		mSender.sendText(aTargetId, JSONProcessor.tokenToPacket(aToken).getUTF8());
 	}
-	
+
 	/**
 	 *
 	 * @param aTargetId

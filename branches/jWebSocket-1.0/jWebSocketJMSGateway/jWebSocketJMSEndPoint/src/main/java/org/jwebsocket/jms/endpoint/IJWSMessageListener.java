@@ -53,4 +53,22 @@ public interface IJWSMessageListener {
 	 * @param aToken
 	 */
 	void sendToken(String aSourceId, Token aToken);
+
+	/**
+	 *
+	 * @param aSourceId
+	 * @param aToken
+	 * @param aResponseListener
+	 */
+	void sendToken(String aSourceId, Token aToken, JWSResponseTokenListener aResponseListener);
+
+	/**
+	 *
+	 * @param aSourceId
+	 * @param aToken
+	 * @param aResponseListener
+	 * @param aTimeOut
+	 */
+	void sendToken(String aSourceId, Token aToken, JWSResponseTokenListener aResponseListener, long aTimeOut);
+
 }

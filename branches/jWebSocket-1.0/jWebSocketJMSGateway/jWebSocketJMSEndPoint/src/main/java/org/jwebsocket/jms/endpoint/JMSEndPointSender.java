@@ -46,15 +46,13 @@ public class JMSEndPointSender {
 	private final MessageProducer mProducer;
 	private final Session mSession;
 	private final String mEndPointId;
-	private static Map<String, IJMSResponseListener> mResponseListeners =
-			new FastMap<String, IJMSResponseListener>().shared();
+	private static final Map<String, IJMSResponseListener> mResponseListeners
+			= new FastMap<String, IJMSResponseListener>().shared();
 	private final JMSEndPoint mEndPoint;
 
 	/**
 	 *
-	 * @param aSession
-	 * @param aProducer
-	 * @param aEndPointId
+	 * @param aEndPoint
 	 */
 	public JMSEndPointSender(JMSEndPoint aEndPoint) {
 		mEndPoint = aEndPoint;
@@ -126,6 +124,10 @@ public class JMSEndPointSender {
 		});
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public JMSEndPoint getEndPoint() {
 		return mEndPoint;
 	}
@@ -137,7 +139,8 @@ public class JMSEndPointSender {
 	 * @param aText
 	 * @param aListener
 	 */
-	public void sendText(String aTargetId, String aCorrelationID, final String aText, IJMSResponseListener aListener) {
+	public void sendText(String aTargetId, String aCorrelationID,
+			final String aText, IJMSResponseListener aListener) {
 		sendText(aTargetId, aCorrelationID, aText, aListener, 1000 * 10);
 	}
 
@@ -149,8 +152,9 @@ public class JMSEndPointSender {
 	 * @param aResponseListener
 	 * @param aTimeout
 	 */
-	public void sendText(String aTargetId, final String aCorrelationID, final String aText,
-			IJMSResponseListener aResponseListener, long aTimeout) {
+	public void sendText(String aTargetId, final String aCorrelationID,
+			final String aText, IJMSResponseListener aResponseListener,
+			long aTimeout) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Sending text: "
 					+ "[content suppressed, length: " + aText.length() + " bytes]"

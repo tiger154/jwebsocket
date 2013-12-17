@@ -33,39 +33,77 @@ public class AMQClusterPlugIn implements BrokerPlugin {
 	private Mongo mMongo;
 	private String mUsername, mPassword;
 
+	/**
+	 *
+	 * @param broker
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Broker installPlugin(Broker broker) throws Exception {
 		return new AMQClusterFilter(broker, mTargetDestinations, mMongo, mUsername, mPassword);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public List<String> getTargetDestinations() {
 		return mTargetDestinations;
 	}
 
+	/**
+	 *
+	 * @param aTargetDestinations
+	 */
 	public void setTargetDestinations(List<String> aTargetDestinations) {
 		mTargetDestinations = aTargetDestinations;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Mongo getMongo() {
 		return mMongo;
 	}
 
+	/**
+	 *
+	 * @param aMongo
+	 */
 	public void setMongo(Mongo aMongo) {
 		this.mMongo = aMongo;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getUsername() {
 		return mUsername;
 	}
 
+	/**
+	 *
+	 * @param aUsername
+	 */
 	public void setUsername(String aUsername) {
 		this.mUsername = aUsername;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getPassword() {
 		return mPassword;
 	}
 
+	/**
+	 *
+	 * @param aPassword
+	 */
 	public void setPassword(String aPassword) {
 		this.mPassword = aPassword;
 	}

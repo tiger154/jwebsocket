@@ -23,5 +23,5 @@ package org.jwebsocket.jms.endpoint;
  * @author aschulze
  */
 public class JWSResponse {
-	
+
 }

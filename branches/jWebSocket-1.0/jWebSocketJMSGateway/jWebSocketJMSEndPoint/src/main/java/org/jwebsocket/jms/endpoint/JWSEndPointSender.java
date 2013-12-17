@@ -30,7 +30,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class JWSEndPointSender extends JMSEndPointSender {
 
-	private static AtomicInteger mUTID = new AtomicInteger(0);
+	private static final AtomicInteger mUTID = new AtomicInteger(0);
 
 	private int getUTID() {
 		mUTID.compareAndSet(Integer.MAX_VALUE, 0);
@@ -70,25 +70,17 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	/**
 	 * Sends a JSON token as text message to the given target endpoint.
 	 *
-	 * Example:
-	 * <code>
+	 * Example: 	 <code>
 	 * sendToken("some id", aToken, new JWSResponseTokenListener(){
 	 *
-	 * @Override
-	 * public void onSuccess(Token aReponse) {
-	 * super.onSuccess(aReponse);
-	 * }
+	 * @param aTimeout
+	 * @Override public void onSuccess(Token aReponse) {
+	 * super.onSuccess(aReponse); }
 	 *
-	 * @Override
-	 * public void onFailure(Token aReponse) {
-	 * super.onFailure(aReponse);
-	 * }
+	 * @Override public void onFailure(Token aReponse) {
+	 * super.onFailure(aReponse); }
 	 *
-	 * @Override
-	 * public void onTimeout() {
-	 * super.onTimeout();
-	 * }
-	 * }, 5000);
+	 * @Override public void onTimeout() { super.onTimeout(); } }, 5000);
 	 *
 	 * </code>
 	 * @param aTargetId
@@ -121,6 +113,18 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		sendPayload(aTargetId, aNS, aType, aUTID, aOriginId, aArgs, aPayload, aResponseListener, 1000 * 10);
 	}
 
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aNS
+	 * @param aType
+	 * @param aUTID
+	 * @param aOriginId
+	 * @param aArgs
+	 * @param aPayload
+	 * @param aResponseListener
+	 * @param aTimeout
+	 */
 	public void sendPayload(String aTargetId, String aNS, String aType,
 			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload,
 			JWSResponseTokenListener aResponseListener, long aTimeout) {
@@ -152,6 +156,21 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	public void sendPayload(String aTargetId, String aNS, String aType,
 			Integer aUTID, String aOriginId, Map<String, Object> aArgs, String aPayload) {
 		sendPayload(aTargetId, aNS, aType, aUTID, aOriginId, aArgs, aPayload, null);
+	}
+
+	public void sendPayload(String aTargetId, String aNS, String aType,
+			Map<String, Object> aArgs, String aPayload,
+			JWSResponseTokenListener aResponseListener, long aTimeout) {
+
+		Token lToken = TokenFactory.createToken();
+		lToken.setMap(aArgs);
+		lToken.setNS(aNS);
+		lToken.setType(aType);
+		lToken.setString("sourceId", getEndPoint().getEndPointId());
+		Integer lUTID = getUTID();
+		lToken.setInteger("utid", lUTID);
+		lToken.setString("payload", aPayload);
+		sendToken(aTargetId, lToken, aResponseListener, aTimeout);
 	}
 
 	/**
@@ -274,14 +293,6 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	}
 
 	/**
-	 * @return the mEndPoint
-	 */
-	@Override
-	public JMSEndPoint getEndPoint() {
-		return getEndPoint();
-	}
-
-	/**
 	 *
 	 * @param aTargetId
 	 */
@@ -293,7 +304,7 @@ public class JWSEndPointSender extends JMSEndPointSender {
 				null, // origin id
 				null, // args
 				null // payload
-				);
+		);
 	}
 
 	/**
@@ -308,6 +319,6 @@ public class JWSEndPointSender extends JMSEndPointSender {
 				null, // origin id
 				null, // args
 				null // payload
-				);
+		);
 	}
 }

@@ -67,6 +67,7 @@ public class JMSListener implements MessageListener {
 	 * @param aMsg
 	 */
 	@Override
+	@SuppressWarnings({"BroadCatchBlock", "TooBroadCatch", "UseSpecificCatch"})
 	public void onMessage(Message aMsg) {
 		String lJSON = null;
 		String lSourceId = null;

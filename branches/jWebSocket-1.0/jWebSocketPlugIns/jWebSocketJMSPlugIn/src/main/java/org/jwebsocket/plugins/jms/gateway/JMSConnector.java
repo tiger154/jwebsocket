@@ -18,10 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.gateway;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.connectors.BaseConnector;
@@ -57,7 +53,7 @@ public class JMSConnector extends BaseConnector {
 
 		mRemoteHost = aRemoteHost;
 		mTargetId = aTargetId;
-		
+
 		// specify the gateway per connector, 
 		// we might have multiple jWebSocket instances connected to a queue
 		setVar("$gatewayId", mJMSSender.getEndPointId());
@@ -76,7 +72,6 @@ public class JMSConnector extends BaseConnector {
 //			return null;
 //		}
 //	}
-
 	@Override
 	public void sendPacket(final WebSocketPacket aDataPacket) {
 		mJMSSender.sendText(mTargetId, aDataPacket.getUTF8());

@@ -31,7 +31,6 @@ import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
 import org.jwebsocket.jms.endpoint.JWSEndPointSender;
 import org.jwebsocket.jms.endpoint.JWSMessageListener;
 import org.jwebsocket.packetProcessors.JSONProcessor;
-import org.jwebsocket.sso.OAuth;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
@@ -74,8 +73,8 @@ public class JMSServer {
 		String lGatewayId = "org.jwebsocket.jms.gateway"; // endpoint id of JMS Gateway
 		String lEndPointId = UUID.randomUUID().toString();
 
-		String lOAuthHostURL = "https://hqdvpngpoc01.nvidia.com/as/token.oauth2";
-		String lOAuthSecret = "2Federate";
+		// String lOAuthHostURL = "https://<yourhost>.com/as/token.oauth2";
+		// String lOAuthSecret = "<your secret>";
 
 		// tcp://172.20.116.68:61616 org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		// failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
@@ -113,7 +112,7 @@ public class JMSServer {
 		final JWSEndPointSender lSender = new JWSEndPointSender(lJMSEndPoint);
 
 		// integrate OAuth library 
-		final OAuth lOAuth = new OAuth(lOAuthHostURL, lOAuthSecret);
+		// final OAuth lOAuth = new OAuth(lOAuthHostURL, lOAuthSecret);
 
 		// on welcome message from jWebSocket, authenticate against jWebSocket
 		lListener.addRequestListener("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
@@ -150,6 +149,7 @@ public class JMSServer {
 				if (mLog.isInfoEnabled()) {
 					mLog.info("Processing 'getUser'...");
 				}
+				/*
 				Map<String, Object> lAdditionalResults = new FastMap<String, Object>();
 				String lAccessToken = aToken.getString("accessToken");
 				String lJSON = lOAuth.getUser(lAccessToken);
@@ -162,6 +162,7 @@ public class JMSServer {
 						lOAuth.getReturnMsg(), // return message
 						lAdditionalResults, // here you can add additional results beside the payload
 						"{}");
+				*/
 			}
 		});
 
