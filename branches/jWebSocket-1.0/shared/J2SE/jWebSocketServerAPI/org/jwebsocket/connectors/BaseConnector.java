@@ -570,17 +570,17 @@ public class BaseConnector implements WebSocketConnector {
 	// and configured unique node id for clusters (independent from tcp port)
 	@Override
 	public String getUsername() {
-		return getString(BaseConnector.VAR_USERNAME);
+		return (String) getSession().getStorage().get(VAR_USERNAME);
 	}
 
 	@Override
 	public void setUsername(String aUsername) {
-		setString(BaseConnector.VAR_USERNAME, aUsername);
+		getSession().getStorage().put(VAR_USERNAME, aUsername);
 	}
 
 	@Override
 	public void removeUsername() {
-		removeVar(BaseConnector.VAR_USERNAME);
+		getSession().getStorage().remove(VAR_USERNAME);
 	}
 
 	// some convenience methods to easier process subprot (login-status)

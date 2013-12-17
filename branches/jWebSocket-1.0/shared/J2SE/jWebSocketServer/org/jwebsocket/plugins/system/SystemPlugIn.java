@@ -1267,6 +1267,9 @@ public class SystemPlugIn extends TokenPlugIn {
 
 			sendToken(lConnector, aToken);
 		}
+		
+		// sending processing confirmation to calling client
+		sendToken(aConnector, createResponse(aToken));
 	}
 
 	void sessionGet(WebSocketConnector aConnector, Token aToken) {
