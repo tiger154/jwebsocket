@@ -42,12 +42,24 @@ public class JWSResponseTokenListener implements IJMSResponseListener {
 		}
 	}
 
+	/**
+	 *
+	 * @param aReponse
+	 */
 	public void onReponse(Token aReponse) {
 	}
 
+	/**
+	 *
+	 * @param aReponse
+	 */
 	public void onSuccess(Token aReponse) {
 	}
 
+	/**
+	 *
+	 * @param aReponse
+	 */
 	public void onFailure(Token aReponse) {
 	}
 

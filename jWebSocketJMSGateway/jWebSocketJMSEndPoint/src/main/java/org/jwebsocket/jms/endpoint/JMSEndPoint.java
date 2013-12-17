@@ -39,9 +39,8 @@ import org.apache.log4j.Logger;
 public class JMSEndPoint {
 
 	// TODO: Introduce timeout management and support correlations
-	
 	/**
-	 * 
+	 *
 	 *
 	 */
 	public static boolean TEMPORARY = false;
@@ -73,13 +72,13 @@ public class JMSEndPoint {
 	 *
 	 * @param aBrokerURI
 	 * @param aGatewayTopic
-	 * @param aGatewayId 
+	 * @param aGatewayId
 	 * @param aEndPointId
 	 * @param aThreadPoolSize
-	 * @param aDurable  
+	 * @param aDurable
 	 */
 	public JMSEndPoint(String aBrokerURI, String aGatewayTopic,
-			String aGatewayId, String aEndPointId, int aThreadPoolSize, 
+			String aGatewayId, String aEndPointId, int aThreadPoolSize,
 			boolean aDurable) {
 		// instantiate connection factory for ActiveMQ broker
 		mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
@@ -112,7 +111,7 @@ public class JMSEndPoint {
 			mListener = new JMSEndPointListener(aThreadPoolSize);
 			// pass the listener to the JMS consumer object
 			lConsumer.setMessageListener(mListener);
-			
+
 			// creating sender
 			mSender = new JMSEndPointSender(this);
 		} catch (JMSException lEx) {
@@ -135,7 +134,7 @@ public class JMSEndPoint {
 					+ lEx.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Adds a new listener to the JMS Gateway Client.
 	 *

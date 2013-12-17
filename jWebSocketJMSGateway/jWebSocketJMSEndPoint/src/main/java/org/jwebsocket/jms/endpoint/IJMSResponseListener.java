@@ -30,6 +30,7 @@ public interface IJMSResponseListener {
 	 * Called when a response token arrives.
 	 *
 	 * @param aReponse
+	 * @param aMessage
 	 */
 	void onReponse(String aReponse, Message aMessage);
 

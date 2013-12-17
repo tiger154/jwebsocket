@@ -18,7 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms;
 
-import java.util.Iterator;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.activemq.broker.ConnectionContext;
@@ -33,22 +33,35 @@ import org.apache.activemq.security.MessageAuthorizationPolicy;
  */
 public class AMQMessageAuthorizationFilter implements MessageAuthorizationPolicy {
 
-	private List<String> mTargetDestinations = new LinkedList<String>();
+	private final List<String> mTargetDestinations = new LinkedList<String>();
 
+	/**
+	 *
+	 * @return
+	 */
 	public List<String> getTargetDestinations() {
 		return mTargetDestinations;
 	}
 
+	/**
+	 *
+	 * @param aTargetDestination
+	 */
 	public void setTargetDestinations(List<String> aTargetDestination) {
 		mTargetDestinations.addAll(aTargetDestination);
 	}
 
+	/**
+	 *
+	 * @param aContext
+	 * @param aMessage
+	 * @return
+	 */
 	@Override
 	public boolean isAllowedToConsume(ConnectionContext aContext, final Message aMessage) {
 		try {
 			String lMessageDest = aMessage.getDestination().getQualifiedName();
-			for (Iterator<String> lIt = mTargetDestinations.iterator(); lIt.hasNext();) {
-				String lSecureDest = lIt.next();
+			for (String lSecureDest : mTargetDestinations) {
 				if (lSecureDest.matches(lMessageDest)) {
 					if (aContext.isNetworkConnection()) {
 						return true;
@@ -69,7 +82,7 @@ public class AMQMessageAuthorizationFilter implements MessageAuthorizationPolicy
 					return false;
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (IOException lEx) {
 		}
 
 		return true;

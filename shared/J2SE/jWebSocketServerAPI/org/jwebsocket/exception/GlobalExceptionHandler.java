@@ -31,16 +31,54 @@ public class GlobalExceptionHandler implements Thread.UncaughtExceptionHandler {
 
 	@Override
 	public void uncaughtException(Thread aThread, Throwable aThrowable) {
-		handleException(aThrowable);
+		handleException(aThread, aThrowable);
 	}
 
 	/**
 	 *
+	 * @param aThread
 	 * @param aThrowable
 	 */
-	public void handleException(Throwable aThrowable) {
+	public void handleException(Thread aThread, Throwable aThrowable) {
 		try {
-			mLog.error("Uncaught Exception: " + aThrowable.getMessage());
+			StringBuilder lOut = new StringBuilder();
+			int lCount = 0, lDuplicates = 0;
+
+			if (aThrowable != null) {
+				StackTraceElement[] lStackTrace = aThrowable.getStackTrace();
+				String lCurLine, lPrevLine = "";
+				StringBuilder lBuilder = new StringBuilder();
+				for (StackTraceElement lElem : lStackTrace) {
+					lBuilder.setLength(0);
+					lBuilder.append(lElem.getClassName())
+							.append(", ").append(lElem.getFileName())
+							.append(" (").append(lElem.getLineNumber()).append(")")
+							.append(": ").append(lElem.getMethodName()).append("\n");
+					lCurLine = lBuilder.toString();
+					if (lPrevLine.equals(lCurLine)) {
+						lDuplicates++;
+					} else {
+						lOut.append(lCount).append(": ").append(lCurLine);
+						lCount++;
+						lPrevLine = lCurLine;
+					}
+				}
+			}
+
+			mLog.error("Uncaught exception in thread "
+					+ (aThread != null
+					&& aThread.getName() != null
+					&& aThread.getName().length() > 0
+					? "'" + aThread.getName() + "'"
+					: "[no name assigned]")
+					+ ": "
+					+ (aThrowable != null
+					? aThrowable.getMessage()
+					: "[no exception info available]")
+					+ "\n\n--- Stracktrace (" + lCount
+					+ " lines, " + lDuplicates + " duplicates): ---\n"
+					+ (lOut.length() > 0 ? lOut.toString() : "[empty]\n")
+			);
 		} catch (Throwable lThrowable) {
 			// don't let the exception get thrown out, will cause infinite looping!
 		}

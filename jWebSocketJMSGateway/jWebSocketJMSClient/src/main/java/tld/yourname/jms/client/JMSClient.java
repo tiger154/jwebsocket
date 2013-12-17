@@ -35,6 +35,7 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
 import javolution.util.FastMap;
+import org.jwebsocket.jms.endpoint.JWSResponseTokenListener;
 
 /**
  * JMS Gateway Demo Client
@@ -127,7 +128,26 @@ public class JMSClient {
 					lToken.setString("username", "root");
 					lToken.setString("password", "root");
 					// and send it to the gateway (which is was the source of the message)
-					sendToken(aSourceId, lToken);
+					sendToken(aSourceId, lToken, new JWSResponseTokenListener() {
+
+						@Override
+						public void onTimeout() {
+							mLog.info("Login timed out!");
+						}
+
+						@Override
+						public void onFailure(Token aReponse) {
+							mLog.error("Login failure!");
+						}
+
+						@Override
+						public void onSuccess(Token aReponse) {
+							if (mLog.isInfoEnabled()) {
+								mLog.info("Login success.");
+							}
+						}
+
+					}, 300);
 				}
 			}
 		});
@@ -199,8 +219,38 @@ public class JMSClient {
 
 						Map<String, Object> lArgs = new FastMap<String, Object>();
 						lArgs.put("echo", "This is the echo message");
+						lSender.sendPayload(
+								"org.jwebsocket.jms.gateway", // target id
+								"org.jwebsocket.plugins.jmsdemo", // ns
+								"echo", // type
+								lArgs, 
+								"any additional payload if required", 
+								new JWSResponseTokenListener() {
 
-				// lSender.ping("server-aschulze-dt");
+									@Override
+									public void onTimeout() {
+										mLog.info("Echo timed out!");
+									}
+
+									@Override
+									public void onFailure(Token aReponse) {
+										mLog.error("Echo failure!");
+									}
+
+									@Override
+									public void onSuccess(Token aReponse) {
+										if (mLog.isInfoEnabled()) {
+											mLog.info("Echo success.");
+										}
+									}
+
+								}, 1);
+
+						if (true) {
+							return;
+						}
+
+						// lSender.ping("server-aschulze-dt");
 						// lSender.getIdentification("*");
 						lSender.sendPayload(
 								"org.jwebsocket.jms.gateway", // target id
@@ -216,7 +266,7 @@ public class JMSClient {
 							return;
 						}
 
-				// lSender.sendPayload("wcslv01.dev.nvdia.com", "com.ptc.windchill",
+						// lSender.sendPayload("wcslv01.dev.nvdia.com", "com.ptc.windchill",
 						//	"getNewPartRequest", lArgs, "{}"); // getLibraryPart, getManufacturerPart "wcslv01.dev.nvidia.com"
 						mLog.info("Sending getLibraryPart");
 						lSender.sendPayload("hqdvptas134", "com.ptc.windchill",
@@ -243,7 +293,7 @@ public class JMSClient {
 						lArgs.put("username", "anyUsername");
 						lArgs.put("password", "anyPassword");
 						lArgs.put("action", "CREATE");
-				// send the payload to the target (here the JMS demo service)
+						// send the payload to the target (here the JMS demo service)
 						// lSender.forwardPayload("aschulze-dt", "org.jwebsocket.jms.demo",
 						//		"forwardPayload", "4711", lArgs, null);
 						// send the payload to the target (here the JMS demo service)

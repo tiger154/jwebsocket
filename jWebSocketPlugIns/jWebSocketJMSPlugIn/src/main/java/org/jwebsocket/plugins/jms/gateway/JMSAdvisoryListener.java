@@ -44,8 +44,13 @@ public class JMSAdvisoryListener implements MessageListener {
 	private static final Logger mLog = Logging.getLogger();
 	private JMSEngine mEngine = null;
 	private JMSSender mJMSSender = null;
-	private Map<String, String> mEndPoints = new FastMap<String, String>();
+	private final Map<String, String> mEndPoints = new FastMap<String, String>();
 
+	/**
+	 *
+	 * @param aEngine
+	 * @param aJMSSender
+	 */
 	public JMSAdvisoryListener(JMSEngine aEngine, JMSSender aJMSSender) {
 		mEngine = aEngine;
 		mJMSSender = aJMSSender;

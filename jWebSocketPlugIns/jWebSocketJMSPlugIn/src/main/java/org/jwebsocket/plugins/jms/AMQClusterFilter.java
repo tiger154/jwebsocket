@@ -40,12 +40,28 @@ import org.apache.activemq.command.ConsumerInfo;
  */
 public class AMQClusterFilter extends BrokerFilter {
 
-	private List<String> mTargetDestinations;
+	private final List<String> mTargetDestinations;
 	private Mongo mMongo;
-	private String mUsername, mPassword;
+	private final String mUsername, mPassword;
+
+	/**
+	 *
+	 */
 	public final static String COLLECTION_NAME = "consumerinfo_temp_storage";
+
+	/**
+	 *
+	 */
 	public Map<String, DBCollection> mCachedCollections;
 
+	/**
+	 *
+	 * @param aBroker
+	 * @param aTargetDestinations
+	 * @param aMongo
+	 * @param aUsername
+	 * @param aPassword
+	 */
 	public AMQClusterFilter(Broker aBroker, List<String> aTargetDestinations, Mongo aMongo,
 			String aUsername, String aPassword) {
 		super(aBroker);
@@ -60,6 +76,13 @@ public class AMQClusterFilter extends BrokerFilter {
 		mMongo = aMongo;
 	}
 
+	/**
+	 *
+	 * @param aContext
+	 * @param aInfo
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public Subscription addConsumer(ConnectionContext aContext, ConsumerInfo aInfo) throws Exception {
 		String lDest = aInfo.getDestination().getQualifiedName();
@@ -74,7 +97,7 @@ public class AMQClusterFilter extends BrokerFilter {
 			// do not process
 			return super.addConsumer(aContext, aInfo);
 		}
-		
+
 		int lBPos = lSelector.indexOf("'", lAPos + 1);
 
 		// the correlation id identifies a consumer
