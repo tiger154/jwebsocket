@@ -18,6 +18,8 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.dynamicsql.api;
 
+import org.jwebsocket.dynamicsql.query.Ordering;
+
 /**
  *
  * @author markos
@@ -26,5 +28,6 @@ public interface IQuery {
     
     public IQuery and(ICondition aCondition);
     public IQuery or(ICondition aCondition);
+    public IQuery orderBy(String aColumnName, Ordering aDir);
     public String getSQL();
 }
