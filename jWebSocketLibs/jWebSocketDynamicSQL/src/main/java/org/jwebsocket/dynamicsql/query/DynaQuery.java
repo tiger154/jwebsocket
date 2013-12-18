@@ -21,6 +21,7 @@ package org.jwebsocket.dynamicsql.query;
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
 import com.healthmarketscience.sqlbuilder.ComboCondition;
 import com.healthmarketscience.sqlbuilder.CustomSql;
+import com.healthmarketscience.sqlbuilder.OrderObject;
 import org.jwebsocket.dynamicsql.api.ICondition;
 import org.jwebsocket.dynamicsql.api.IQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
@@ -91,6 +92,16 @@ public class DynaQuery implements IQuery {
                     lAttrs.get(Conditions.ATTR_VALUE))));
         }
 
+        return this;
+    }
+    
+    @Override
+    public IQuery orderBy(String aColumnName, Ordering aDir) {
+        OrderObject.Dir lDir = OrderObject.Dir.ASCENDING;
+        if(aDir == Ordering.DESCENDING) {
+            lDir = OrderObject.Dir.DESCENDING;
+        }
+        mQuery.addCustomOrdering(parse(aColumnName), lDir);
         return this;
     }
 

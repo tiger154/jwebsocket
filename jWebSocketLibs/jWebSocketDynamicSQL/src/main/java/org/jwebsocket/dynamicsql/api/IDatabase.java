@@ -73,15 +73,58 @@ public interface IDatabase {
 	 */
     public List<String> getTables();
     
+    /**
+	 * Allows to insert a tuple in the table specified by parameters.
+	 *
+	 * @param aTableName The table name to insert a tuple.
+     * @param aItem The data to insert entered in a map (key/value). The key must 
+     * match the name of the column in each case.
+	 */
     public void insert(String aTableName, Map<String, Object> aItem);
+    
+    /**
+	 * Allows to update a tuple in the table specified by parameters.
+	 *
+	 * @param aTableName The table name to update a tuple.
+     * @param aItem The data to update entered in a map (key/value). The key must 
+     * match the name of the column in each case. The primary key column(s) of table is 
+     * required in the map.
+	 */
     public void update(String aTableName, Map<String, Object> aItem);
+    /**
+	 * Allows to delete a tuple in the table specified by parameters.
+	 *
+	 * @param aTableName The table name to delete a tuple.
+     * @param aItem The data to delete entered in a map (key/value). The key must 
+     * match the name of the column in each case. The primary key column(s) of table is 
+     * required in the map.
+	 */
     public void delete(String aTableName, Map<String, Object> aItem);
+    
     /**
 	 * Return the database options to support a platform specifically.
 	 *
 	 * @return The options to support a platform specifically.
 	 */
     public Map<String, String> getOptions();
+    
+    /**
+	 * Return a list with all DynaBean objects associated with the records returned
+     * by the query, considering the offset and limit of the query.
+	 *
+     * @param aQuery The query to execute.
+     * @param aOffset The offset of the query.
+     * @param aLimit The limit of the query.
+	 * @return list with all the records returned by the query, considering the 
+     * offset and limit of the query.
+	 */
     public List<DynaBean> fetch(IQuery aQuery, Integer aOffset, Integer aLimit);
+    
+    /**
+	 * Return a Iterator allowing iterate for all the records returned by the query.
+	 *
+     * @param aQuery The query to execute.
+	 * @return a Iterator allowing iterate for all the records returned by the query.
+	 */
     public Iterator execute(IQuery aQuery);
 }
