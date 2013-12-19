@@ -27,86 +27,40 @@ import org.apache.commons.beanutils.DynaBean;
  *
  * @author markos
  */
-public interface IDatabase {
+public interface IDAO {
     
     /**
-	 * Return the database name.
+	 * Allows to insert a tuple.
 	 *
-	 * @return the database name.
-	 */
-    public String getName();
-    
-    /**
-	 * Allows to add a table to the database.
-	 *
-	 * @param aTable the table to add.
-	 */
-    public void addTable(ITable aTable);
-    
-    /**
-	 * Find if a table exists in the database with the name specified in the parameters.
-	 *
-	 * @param aTableName the table name to find.
-	 */
-    public Boolean existsTable(String aTableName);
-    
-    /**
-	 * Allows to drop physically a table to the database.
-	 *
-	 * @param aTable the table name to drop.
-	 */
-    public void dropTable(String aTableName);
-    
-    /**
-	 * Allows to create physically in the database all tables added previously.
-	 *
-	 * @param aDropTablesFirst If its value is [true], execute the drop table 
-     * syntax before creating it.
-     * @param aContinueOnError If its value is [true], continuous creating tables 
-     * although errors occur in the process.
-	 */
-    public void createTables(boolean aDropTablesFirst, boolean aContinueOnError);
-    /**
-	 * List all the tables names.
-	 *
-	 * @return list all the tables names.
-	 */
-    public List<String> getTables();
-    
-    /**
-	 * Allows to insert a tuple in the table specified by parameters.
-	 *
-	 * @param aTableName The table name to insert a tuple.
      * @param aItem The data to insert entered in a map (key/value). The key must 
      * match the name of the column in each case.
 	 */
-    public void insert(String aTableName, Map<String, Object> aItem);
+    public void insert(Map<String, Object> aItem);
     
     /**
-	 * Allows to update a tuple in the table specified by parameters.
+	 * Allows to update a tuple.
 	 *
-	 * @param aTableName The table name to update a tuple.
      * @param aItem The data to update entered in a map (key/value). The key must 
      * match the name of the column in each case. The primary key column(s) of table is 
      * required in the map.
 	 */
-    public void update(String aTableName, Map<String, Object> aItem);
+    public void update(Map<String, Object> aItem);
+    
     /**
-	 * Allows to delete a tuple in the table specified by parameters.
+	 * Allows to delete a tuple.
 	 *
-	 * @param aTableName The table name to delete a tuple.
      * @param aItem The data to delete entered in a map (key/value). The key must 
      * match the name of the column in each case. The primary key column(s) of table is 
      * required in the map.
 	 */
-    public void delete(String aTableName, Map<String, Object> aItem);
+    public void delete(Map<String, Object> aItem);
     
     /**
-	 * Return the database options to support a platform specifically.
+	 * Return a basic select query, equal to (SELECT * FROM <tableName>).
 	 *
-	 * @return The options to support a platform specifically.
+	 * @return a basic select query.
 	 */
-    public Map<String, String> getOptions();
+    public IQuery getBasicQuery();
     
     /**
 	 * Return a list with all DynaBean objects associated with the records returned
@@ -136,4 +90,11 @@ public interface IDatabase {
 	 * @return a Iterator allowing iterate for all the records returned by the query.
 	 */
     public Iterator execute(IQuery aQuery);
+    
+    /**
+	 * Return the amount of tuples that contain the table.
+	 *
+	 * @return the amount of tuples that contain the table.
+	 */
+    public Integer count();
 }
