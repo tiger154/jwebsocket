@@ -129,4 +129,9 @@ public class DynaDB implements IDatabase {
     public Iterator execute(IQuery aQuery) {
         return mPlatform.query(mDB, aQuery.getSQL());
     }
+
+    @Override
+    public List<DynaBean> fetch(IQuery aQuery) {
+        return mPlatform.fetch(mDB,aQuery.getSQL());
+    }
 }
