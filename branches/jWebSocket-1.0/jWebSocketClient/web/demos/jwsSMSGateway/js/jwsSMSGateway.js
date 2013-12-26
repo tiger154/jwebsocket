@@ -59,14 +59,38 @@ $.widget("jws.SMSGateway", {
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
 			OnWelcome: function(aEvent) {
-				// Ask for a new captcha image
-				w.SMSGateway.getCaptcha();
 			},
 			OnClose: function(aEvent) {
 				w.SMSGateway.eImg.attr("src", "css/images/blank.png");
+			},
+			OnLogon: function() {
+				// Ask for a new captcha image
+				w.SMSGateway.getCaptcha();
+			},
+			OnMessage: function(aEvent, aToken){
+				// Listening to logon event broadcasting from useradmin plug-in,
+				// if we want to have this global for all the demos we just have 
+				// to add these lines to the OnMessage from the widget 
+				// wAuth.js under ../../res/js/widgets/wAuth.js
+				if (aToken.ns === jws.NS_SYSTEM) {
+					if (aToken.type === "broadcastToSharedSession") {
+						var lData = aToken.data,
+								lreqType = lData.reqType;
+						if (lreqType === "logon") {
+							w.auth.getCallbacks().OnLogon(aToken);
+						}
+
+						if (lreqType === "logoff") {
+							w.auth.getCallbacks().OnLogoff(aToken);
+						}
+					}
+				}
 			}
 		};
+		// To automatically handle all the logon, logoff events for all demos
 		$("#demo_box").auth(lCallbacks);
+		// Opening the connection automatically
+		w.auth.connect();
 	},
 	getCaptcha: function() {
 		mWSC.captchaGenerate("jpg", {
@@ -74,10 +98,13 @@ $.widget("jws.SMSGateway", {
 				log("<b style='color:green;'>Getting a new captcha</b>");
 				w.SMSGateway.eImg.attr("src", "data:image/jpg;base64," + aToken.image);
 				w.SMSGateway.eTextCaptcha.focus();
-			}});
+			},
+			OnFailure: function(aToken) {
+				jwsDialog(aToken.msg, "Error from the server", true, "information");
+			}
+		});
 	},
 	registerEvents: function() {
-
 		w.SMSGateway.eBtnUpdate.click(function() {
 			w.SMSGateway.getCaptcha();
 		});
