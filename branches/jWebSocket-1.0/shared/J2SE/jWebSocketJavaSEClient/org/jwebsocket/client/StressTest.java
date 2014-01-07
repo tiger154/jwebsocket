@@ -26,7 +26,7 @@ public class StressTest {
 	/**
 	 *
 	 */
-	public static int concurrentConnections = 75;
+	public static int concurrentConnections = 1000;
 
 	/**
 	 *
@@ -37,7 +37,7 @@ public class StressTest {
 		try {
 			for (int i = 0; i < concurrentConnections; i++) {
 				final BaseTokenClient lClient = new BaseTokenClient();
-				lClient.setPingInterval(5000);
+				lClient.setPingInterval(1000);
 				lClient.addListener(new WebSocketClientListener() {
 					@Override
 					public void processOpening(WebSocketClientEvent aEvent) {

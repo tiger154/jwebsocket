@@ -83,8 +83,8 @@ public class Util {
 	public static ServerSocketChannel createServerSocketChannel(int aPort, String aHostname) throws IOException {
 		ServerSocketChannel lServer = ServerSocketChannel.open();
 		lServer.configureBlocking(false);
-		
-		if (null == aHostname){
+
+		if (null == aHostname) {
 			lServer.socket().bind(new InetSocketAddress(aPort));
 		} else {
 			lServer.socket().bind(new InetSocketAddress(InetAddress.getByName(aHostname), aPort));

@@ -26,6 +26,7 @@ import org.jwebsocket.config.ConfigHandler;
 
 /**
  * Handler class that reads the <tt>library</tt> configuration
+ *
  * @author aschulze
  */
 public class LibraryConfigHandler implements ConfigHandler {
@@ -37,8 +38,8 @@ public class LibraryConfigHandler implements ConfigHandler {
 
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @param aStreamReader 
+	 *
+	 * @param aStreamReader
 	 */
 	@Override
 	public Config processConfig(XMLStreamReader aStreamReader) throws XMLStreamException {

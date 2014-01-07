@@ -447,7 +447,7 @@ public final class WebSocketHandshake {
 	 * @param aRequest
 	 * @return
 	 */
-	public static byte[] generateS2CResponse(Map<String, Object> aRequest) {
+	public static byte[] generateS2CResponse(Map<String, Object> aRequest, RequestHeader aReqHeader) {
 		String lPolicyFileRequest = (String) aRequest.get("policy-file-request");
 		if (lPolicyFileRequest != null) {
 			byte[] lBA;
@@ -469,9 +469,16 @@ public final class WebSocketHandshake {
 		String lOrigin = (String) aRequest.get(RequestHeader.WS_ORIGIN);
 		String lLocation = (String) aRequest.get(RequestHeader.WS_LOCATION);
 		String lSubProt = (String) aRequest.get(RequestHeader.WS_PROTOCOL);
+
+		// setting the session id value if not present
+		String lSessionCookieName = aReqHeader.getSessionCookieName();
+		if (!aReqHeader.getCookies().containsKey(lSessionCookieName)) {
+			// setting the session cookie value if not present
+			aReqHeader.getCookies().put(lSessionCookieName, Tools.getMD5(UUID.randomUUID().toString()));
+		}
+
 		String lPath = (String) aRequest.get(RequestHeader.WS_PATH);
-		String lRes
-				= // since IETF draft 76 "WebSocket Protocol" not "Web Socket Protocol"
+		String lRes = // since IETF draft 76 "WebSocket Protocol" not "Web Socket Protocol"
 				// change implemented since v0.9.5.0701
 				(lSecKeyAccept == null
 				? "HTTP/1.1 101 Web" + (lIsSecure ? "" : " ") + "Socket Protocol Handshake\r\n" + "Upgrade: WebSocket\r\n" + "Connection: Upgrade\r\n"
@@ -480,7 +487,7 @@ public final class WebSocketHandshake {
 				+ (lSubProt != null ? (lIsSecure ? "Sec-" : "") + "WebSocket-Protocol: " + lSubProt + "\r\n" : "")
 				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Origin: " + lOrigin + "\r\n"
 				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Location: " + lLocation + "\r\n"
-				+ "Set-Cookie: " + JWebSocketCommonConstants.SESSIONID_COOKIE_NAME + "=" + ((Map) aRequest.get(RequestHeader.WS_COOKIES)).get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)
+				+ "Set-Cookie: " + lSessionCookieName + "=" + aReqHeader.getCookies().get(lSessionCookieName)
 				+ "; Path=" + lPath + "; HttpOnly\r\n";
 		lRes += "\r\n";
 
@@ -577,8 +584,7 @@ public final class WebSocketHandshake {
 		}
 		byte[] lHandshakeBytes;
 
-		String lHandshake
-				= "GET " + lPath + " HTTP/1.1\r\n"
+		String lHandshake = "GET " + lPath + " HTTP/1.1\r\n"
 				+ "Host: " + lHost + "\r\n"
 				+ "Upgrade: WebSocket\r\n"
 				+ "Connection: Upgrade\r\n"
@@ -601,16 +607,14 @@ public final class WebSocketHandshake {
 		}
 
 		if (WebSocketProtocolAbstraction.isHixieVersion(mVersion)) {
-			lHandshake
-					+= "Sec-WebSocket-Key1: " + mHixieKey1 + "\r\n"
+			lHandshake += "Sec-WebSocket-Key1: " + mHixieKey1 + "\r\n"
 					+ "Sec-WebSocket-Key2: " + mHixieKey2 + "\r\n"
 					+ "\r\n";
 			lHandshakeBytes = new byte[lHandshake.getBytes().length + 8];
 			System.arraycopy(lHandshake.getBytes(), 0, lHandshakeBytes, 0, lHandshake.getBytes().length);
 			System.arraycopy(mHixieKey3, 0, lHandshakeBytes, lHandshake.getBytes().length, 8);
 		} else {
-			lHandshake
-					+= "Sec-WebSocket-Key: " + mHybiKey + "\r\n";
+			lHandshake += "Sec-WebSocket-Key: " + mHybiKey + "\r\n";
 			// TODO: This needs to be fixed! mVersion never may be null!
 			if (mVersion != null) {
 				lHandshake += "Sec-WebSocket-Version: " + mVersion + "\r\n";

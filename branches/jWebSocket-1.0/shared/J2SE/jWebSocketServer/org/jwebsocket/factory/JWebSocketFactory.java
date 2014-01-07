@@ -228,7 +228,7 @@ public class JWebSocketFactory {
 				mLog.debug("Initializing servers...");
 			}
 			mServers = lInitializer.initializeServers();
-			
+
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Initializing plugins...");
 			}
@@ -506,14 +506,14 @@ public class JWebSocketFactory {
 	 */
 	public static TokenServer getTokenServer() {
 		if (mTokenServer == null) {
-			for (WebSocketServer lServer : mServers){
-				if (lServer instanceof TokenServer){
-					mTokenServer = (TokenServer)lServer;
+			for (WebSocketServer lServer : mServers) {
+				if (lServer instanceof TokenServer) {
+					mTokenServer = (TokenServer) lServer;
 					break;
 				}
 			}
 		}
-		
+
 		return mTokenServer;
 	}
 

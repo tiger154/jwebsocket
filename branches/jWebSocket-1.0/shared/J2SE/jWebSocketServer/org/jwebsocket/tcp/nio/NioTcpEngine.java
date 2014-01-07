@@ -623,15 +623,11 @@ public class NioTcpEngine extends BaseEngine {
 					}
 
 					EngineUtils.parseCookies(lReqMap);
-					//Setting the session identifier cookie if not present previously
-					if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES)).containsKey(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)) {
-						((Map) lReqMap.get(RequestHeader.WS_COOKIES)).put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, Tools.getMD5(UUID.randomUUID().toString()));
-					}
 
 					RequestHeader lReqHeader = EngineUtils.validateC2SRequest(
 							getConfiguration().getDomains(), lReqMap, mLog);
 
-					byte[] lResponse = WebSocketHandshake.generateS2CResponse(lReqMap);
+					byte[] lResponse = WebSocketHandshake.generateS2CResponse(lReqMap, lReqHeader);
 
 					if (lResponse == null || lReqHeader == null) {
 						mLog.error("Client not accepted on port "
@@ -645,7 +641,8 @@ public class NioTcpEngine extends BaseEngine {
 					}
 
 					//Setting the session identifier
-					aConnector.getSession().setSessionId(lReqHeader.getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
+					aConnector.getSession().setSessionId(aConnector.getHeader().
+							getCookies().get(aConnector.getHeader().getSessionCookieName()).toString());
 
 					send(aConnector.getId(), new DataFuture(aConnector, ByteBuffer.wrap(lResponse)));
 

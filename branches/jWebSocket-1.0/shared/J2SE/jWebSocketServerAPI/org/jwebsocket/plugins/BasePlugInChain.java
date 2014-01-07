@@ -29,8 +29,9 @@ import org.jwebsocket.kit.WebSocketSession;
 import org.jwebsocket.logging.Logging;
 
 /**
- * Implements the basic chain of plug-ins which is triggered by a server when data packets are
- * received. Each data packet is pushed through the chain and can be processed by the plug-ins.
+ * Implements the basic chain of plug-ins which is triggered by a server when
+ * data packets are received. Each data packet is pushed through the chain and
+ * can be processed by the plug-ins.
  *
  * @author aschulze
  * @author Marcos Antonio González Huerta (markos0886, UCI)
@@ -296,7 +297,7 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 
 	@Override
 	public void systemStarting() throws Exception {
-		if (mPlugins.isEmpty()){
+		if (mPlugins.isEmpty()) {
 			return;
 		}
 		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
@@ -313,7 +314,7 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 
 	@Override
 	public void systemStarted() throws Exception {
-		if (mPlugins.isEmpty()){
+		if (mPlugins.isEmpty()) {
 			return;
 		}
 		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
@@ -330,7 +331,7 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 
 	@Override
 	public void systemStopping() throws Exception {
-		if (mPlugins.isEmpty()){
+		if (mPlugins.isEmpty()) {
 			return;
 		}
 		for (WebSocketPlugIn lPlugIn : getPlugIns()) {
@@ -347,7 +348,7 @@ public class BasePlugInChain implements WebSocketPlugInChain {
 
 	@Override
 	public void systemStopped() throws Exception {
-		if (mPlugins.isEmpty()){
+		if (mPlugins.isEmpty()) {
 			return;
 		}
 		for (WebSocketPlugIn lPlugIn : getPlugIns()) {

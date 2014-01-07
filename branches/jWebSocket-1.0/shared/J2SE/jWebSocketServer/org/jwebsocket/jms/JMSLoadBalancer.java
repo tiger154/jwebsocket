@@ -291,7 +291,7 @@ public class JMSLoadBalancer implements IInitializable {
 	private void register() throws Exception {
 		Map<String, String> lConsumerData = mNodesManager.getConsumerAdviceTempStorage().getData(mNodeId);
 		// registering node
-		
+
 		mNodesManager.register(lConsumerData.get(Attributes.CONSUMER_ID),
 				mNodeId, mNodesManager.getNodeDescription(),
 				InetAddress.getByName(mHostname).getHostAddress(),

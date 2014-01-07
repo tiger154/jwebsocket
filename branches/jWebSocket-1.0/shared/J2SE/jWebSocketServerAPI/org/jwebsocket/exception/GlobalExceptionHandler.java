@@ -77,8 +77,7 @@ public class GlobalExceptionHandler implements Thread.UncaughtExceptionHandler {
 					: "[no exception info available]")
 					+ "\n\n--- Stracktrace (" + lCount
 					+ " lines, " + lDuplicates + " duplicates): ---\n"
-					+ (lOut.length() > 0 ? lOut.toString() : "[empty]\n")
-			);
+					+ (lOut.length() > 0 ? lOut.toString() : "[empty]\n"));
 		} catch (Throwable lThrowable) {
 			// don't let the exception get thrown out, will cause infinite looping!
 		}

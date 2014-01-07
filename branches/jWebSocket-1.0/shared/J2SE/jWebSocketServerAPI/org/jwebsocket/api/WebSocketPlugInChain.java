@@ -61,8 +61,8 @@ public interface WebSocketPlugInChain extends ISystemLifecycle {
 	/**
 	 * is called by the server when a new connector has been started, i.e. a new
 	 * client has connected. Usually the implementations iterate through the
-	 * chain of plug-ins and call their <tt>connectorStarted</tt>
-	 * method of each plug-in to notify them about the connect event.
+	 * chain of plug-ins and call their <tt>connectorStarted</tt> method of each
+	 * plug-in to notify them about the connect event.
 	 *
 	 * @param aConnector The connector that has just started.
 	 */
@@ -104,8 +104,8 @@ public interface WebSocketPlugInChain extends ISystemLifecycle {
 	/**
 	 * is called by the server when a connector has been stopped, i.e. a client
 	 * has disconnected. Usually the implementations iterate through the chain
-	 * of plug-ins and call the <tt>connectorStopped</tt>
-	 * method of the plug-ins to notify them about the disconnect event.
+	 * of plug-ins and call the <tt>connectorStopped</tt> method of the plug-ins
+	 * to notify them about the disconnect event.
 	 *
 	 * @param aConnector The connector that has just stopped.
 	 * @param aCloseReason Specifies why a connection has closed. Please refer
