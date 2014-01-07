@@ -94,7 +94,7 @@ jws.Tests = {
 			var lResponse = {};
 
 			// open a separate control connection
-			jws.Tests.getAdminConn().logon( jws.getDefaultServerURL(), 
+			jws.Tests.getAdminConn().logon( jws.getDefaultServerURL() + ';sessionCookieName=ROOTSessionCookie', 
 				jws.Tests.ADMIN_USER, 
 				jws.Tests.ADMIN_PWD, {
 				OnToken: function ( aToken ) {
@@ -129,7 +129,7 @@ jws.Tests = {
 			var lResponse = {};
 
 			// open a separate control connection
-			jws.Tests.getAdminConnSSL().logon( jws.getDefaultSSLServerURL(), 
+			jws.Tests.getAdminConnSSL().logon( jws.getDefaultSSLServerURL() + ';sessionCookieName=ROOTSSLSessionCookie', 
 				jws.Tests.ADMIN_USER, 
 				jws.Tests.ADMIN_PWD, {
 				OnToken: function ( aToken ) {
@@ -212,7 +212,7 @@ jws.Tests = {
 			var lResponse = {};
 
 			// open a separate control connection
-			jws.Tests.getGuestConn().logon( jws.getDefaultServerURL(), 
+			jws.Tests.getGuestConn().logon( jws.getDefaultServerURL() + ';sessionCookieName=GUESTSessionCookie', 
 				jws.Tests.GUEST_USER, 
 				jws.Tests.GUEST_PWD, {
 				OnToken: function ( aToken ) {
@@ -247,7 +247,7 @@ jws.Tests = {
 			var lResponse = {};
 
 			// open a separate control connection
-			jws.Tests.getGuestConnSSL().logon( jws.getDefaultSSLServerURL(), 
+			jws.Tests.getGuestConnSSL().logon( jws.getDefaultSSLServerURL() + ';sessionCookieName=GUESTSSLSessionCookie', 
 				jws.Tests.GUEST_USER, 
 				jws.Tests.GUEST_PWD, {
 				OnToken: function ( aToken ) {

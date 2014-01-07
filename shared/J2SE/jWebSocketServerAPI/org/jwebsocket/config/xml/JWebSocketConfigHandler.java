@@ -40,12 +40,14 @@ import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.kit.WebSocketRuntimeException;
 
 /**
- * Handler class that handles the <tt>jWebSocket.xml</tt> configuration. This class starts from the
- * root and delegates the handler to specific config handler, to read the whole config file.
+ * Handler class that handles the <tt>jWebSocket.xml</tt> configuration. This
+ * class starts from the root and delegates the handler to specific config
+ * handler, to read the whole config file.
  *
  * @author puran
  * @author Marcos Antonio González Huerta (markos0886, UCI)
- * @version $Id: JWebSocketConfigHandler.java 596 2010-06-22 17:09:54Z fivefeetfurther $
+ * @version $Id: JWebSocketConfigHandler.java 596 2010-06-22 17:09:54Z
+ * fivefeetfurther $
  */
 @SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class JWebSocketConfigHandler implements ConfigHandler {

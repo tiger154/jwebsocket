@@ -90,10 +90,10 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 * @return
 	 */
 	public static FastMap<String, FastMap> getContainer() {
-		if (null == mContainer){
+		if (null == mContainer) {
 			mContainer = new FastMap<String, FastMap>().shared();
 		}
-		
+
 		return mContainer;
 	}
 

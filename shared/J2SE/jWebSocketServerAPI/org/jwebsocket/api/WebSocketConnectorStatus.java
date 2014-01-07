@@ -19,17 +19,21 @@
 package org.jwebsocket.api;
 
 /**
- * These enumeration specifies the supported data types for data exchange 
+ * These enumeration specifies the supported data types for data exchange
  * between multiple platforms.
+ *
  * @author aschulze
  */
 public enum WebSocketConnectorStatus {
 
-	/** connector is down, data cannot be send or received */
+	/**
+	 * connector is down, data cannot be send or received
+	 */
 	DOWN(0),
-	/** connector is up, data can be send and received */
+	/**
+	 * connector is up, data can be send and received
+	 */
 	UP(1);
-	
 	private int mStatus;
 
 	WebSocketConnectorStatus(int aStatus) {

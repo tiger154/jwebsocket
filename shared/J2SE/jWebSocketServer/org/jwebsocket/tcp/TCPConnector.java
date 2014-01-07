@@ -402,13 +402,6 @@ public class TCPConnector extends BaseConnector {
 		}
 
 		EngineUtils.parseCookies(lReqMap);
-		// Setting the session identifier cookie if not present previously
-		if (!((Map) lReqMap.get(RequestHeader.WS_COOKIES))
-				.containsKey(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)) {
-			((Map) lReqMap.get(RequestHeader.WS_COOKIES))
-					.put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME,
-					Tools.getMD5(UUID.randomUUID().toString()));
-		}
 
 		RequestHeader lHeader = EngineUtils.validateC2SRequest(
 				getEngine().getConfiguration().getDomains(), lReqMap, mLog);
@@ -418,7 +411,7 @@ public class TCPConnector extends BaseConnector {
 
 		// generate the websocket handshake
 		// if policy-file-request is found answer it
-		byte[] lBA = WebSocketHandshake.generateS2CResponse(lReqMap);
+		byte[] lBA = WebSocketHandshake.generateS2CResponse(lReqMap, lHeader);
 		if (lBA == null) {
 			if (mLog.isDebugEnabled()) {
 				mLog.warn(mLogInfo + " connector detected illegal handshake.");
@@ -535,7 +528,7 @@ public class TCPConnector extends BaseConnector {
 
 			//Setting the session identifier in the connector's WebSocketSession instance
 			mConnector.getSession().setSessionId(mConnector.getHeader().
-					getCookies().get(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME).toString());
+					getCookies().get(mConnector.getHeader().getSessionCookieName()).toString());
 
 			// registering connector
 			getEngine().addConnector(mConnector);

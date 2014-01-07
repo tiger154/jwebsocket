@@ -256,8 +256,7 @@ public interface WebSocketPlugIn extends ISystemLifecycle {
 	Map<String, Object> getSettings();
 
 	/**
-	 * Returns TRUE if the given plug-in version is compatible, FALSE
-	 * otherwise.
+	 * Returns TRUE if the given plug-in version is compatible, FALSE otherwise.
 	 *
 	 * @param aVersion
 	 * @return

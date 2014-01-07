@@ -29,7 +29,7 @@ import net.sf.ehcache.event.CacheManagerEventListener;
 public class EhCacheEventListener implements CacheManagerEventListener {
 
 	/**
-	 * 
+	 *
 	 * @throws CacheException
 	 */
 	@Override
@@ -37,7 +37,7 @@ public class EhCacheEventListener implements CacheManagerEventListener {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aCacheName
 	 */
 	@Override
@@ -45,7 +45,7 @@ public class EhCacheEventListener implements CacheManagerEventListener {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param aCacheName
 	 */
 	@Override
@@ -53,7 +53,7 @@ public class EhCacheEventListener implements CacheManagerEventListener {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
@@ -62,7 +62,7 @@ public class EhCacheEventListener implements CacheManagerEventListener {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void dispose() {

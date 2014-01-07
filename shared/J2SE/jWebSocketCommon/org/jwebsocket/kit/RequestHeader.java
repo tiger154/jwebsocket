@@ -85,6 +85,10 @@ public class RequestHeader {
 	/**
 	 *
 	 */
+	public static final String SESSION_COOKIE_NAME = "sessionCookieName";
+	/**
+	 *
+	 */
 	public static final String URL_ARGS = "args";
 	/**
 	 *
@@ -114,6 +118,21 @@ public class RequestHeader {
 	 */
 	public Object get(String aKey) {
 		return mFields.get(aKey);
+	}
+
+	/**
+	 * Returns the connection session cookie name
+	 *
+	 * @return
+	 */
+	public String getSessionCookieName() {
+		// getting the session cookie name (sessionCookieName)
+		String lSessionCookieName = (String) getArgs().get(RequestHeader.SESSION_COOKIE_NAME);
+		if (null == lSessionCookieName) {
+			lSessionCookieName = JWebSocketCommonConstants.SESSIONID_COOKIE_NAME;
+		}
+
+		return lSessionCookieName;
 	}
 
 	/**

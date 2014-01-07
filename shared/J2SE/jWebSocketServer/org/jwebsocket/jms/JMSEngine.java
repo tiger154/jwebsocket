@@ -164,7 +164,7 @@ public class JMSEngine extends BaseEngine {
 			// creating message listener
 			mMessageListener = new JMSMessageListener(this);
 			mMessageListener.initialize();
-			
+
 			// creating the load balancer
 			mNodesManager = (INodesManager) mBeanFactory.getBean("nodesManager");
 

@@ -77,9 +77,9 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 			mLog.debug("Instantiating engine...");
 		}
 		try {
-			Class<WebSocketEngine> lEngineClass = (Class<WebSocketEngine>) Class.forName(aEngineName, true, 
+			Class<WebSocketEngine> lEngineClass = (Class<WebSocketEngine>) Class.forName(aEngineName, true,
 					JWebSocketFactory.getClassLoader().getClassLoader());
-			
+
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Engine '" + aEngineName + "' loaded from classpath.");
 			}
@@ -100,9 +100,9 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 	@SuppressWarnings("unchecked")
 	public Class<WebSocketServer> loadServerFromClasspath(String aServerName) {
 		try {
-			Class<WebSocketServer> lServerClass = (Class<WebSocketServer>) Class.forName(aServerName, true, 
+			Class<WebSocketServer> lServerClass = (Class<WebSocketServer>) Class.forName(aServerName, true,
 					JWebSocketFactory.getClassLoader().getClassLoader());
-			
+
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Server '" + aServerName + "' loaded from classpath.");
 			}
@@ -123,9 +123,9 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 	@SuppressWarnings("unchecked")
 	public Class<WebSocketPlugIn> loadPluginFromClasspath(String aPlugInName) {
 		try {
-			Class<WebSocketPlugIn> lPluginClass = (Class<WebSocketPlugIn>) Class.forName(aPlugInName, true, 
+			Class<WebSocketPlugIn> lPluginClass = (Class<WebSocketPlugIn>) Class.forName(aPlugInName, true,
 					JWebSocketFactory.getClassLoader().getClassLoader());
-			
+
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Plug-in '" + aPlugInName + "' loaded from classpath.");
 			}
@@ -148,9 +148,9 @@ public abstract class AbstractJWebSocketInitializer implements WebSocketInitiali
 	@SuppressWarnings("unchecked")
 	public Class<WebSocketFilter> loadFilterFromClasspath(String aFilterName) {
 		try {
-			Class<WebSocketFilter> lFilterClass = (Class<WebSocketFilter>) Class.forName(aFilterName, true, 
+			Class<WebSocketFilter> lFilterClass = (Class<WebSocketFilter>) Class.forName(aFilterName, true,
 					JWebSocketFactory.getClassLoader().getClassLoader());
-			
+
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Filter '" + aFilterName + "' loaded from classpath.");
 			}

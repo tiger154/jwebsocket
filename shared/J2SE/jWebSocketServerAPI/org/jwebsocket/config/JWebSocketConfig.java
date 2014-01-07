@@ -326,7 +326,7 @@ public class JWebSocketConfig implements Config {
 	 * @param aArgs
 	 */
 	public static void initForConsoleApp(String[] aArgs) {
-		
+
 		if (aArgs != null && aArgs.length > 0) {
 			for (int lIdx = 0; lIdx < aArgs.length; lIdx++) {
 				// is there one more argument beyond the current one?
@@ -371,7 +371,7 @@ public class JWebSocketConfig implements Config {
 		} catch (Exception lEx) {
 			System.out.println(lEx.getClass().getSimpleName() + " configuring logs: " + lEx.getMessage());
 		}
-		
+
 		// register global exception handler
 		org.jwebsocket.exception.GlobalExceptionHandler.registerGlobalExceptionHandler();
 	}

@@ -30,8 +30,8 @@ public interface IClusterSynchronizer extends IInitializable {
 
 	/**
 	 * Returns TRUE if the calling node is allowed to process a message, FALSE
-	 * otherwise. Multiples nodes can request permission to process the same message,
-	 * but only one should gets granted.
+	 * otherwise. Multiples nodes can request permission to process the same
+	 * message, but only one should gets granted.
 	 *
 	 * @param aMessageId A custom message id
 	 * @return

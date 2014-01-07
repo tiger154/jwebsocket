@@ -34,10 +34,12 @@ import org.jwebsocket.config.xml.*;
 import org.jwebsocket.logging.Logging;
 
 /**
- * Initialize the engine, servers and plug-ins based on jWebSocket.xml configuration
+ * Initialize the engine, servers and plug-ins based on jWebSocket.xml
+ * configuration
  *
  * @author puran
- * @version $Id: JWebSocketXmlConfigInitializer.java 424 2010-05-01 19:11:04Z mailtopuran $
+ * @version $Id: JWebSocketXmlConfigInitializer.java 424 2010-05-01 19:11:04Z
+ * mailtopuran $
  */
 public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitializer {
 

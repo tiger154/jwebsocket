@@ -151,8 +151,8 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 			V lValue = get(aKey);
 			mCollection.remove(new BasicDBObject().append("ns", mName).append("k", aKey));
 			return lValue;
-		} 
-		
+		}
+
 		return null;
 	}
 

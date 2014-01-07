@@ -89,7 +89,7 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 						// client sent DISCONNECTION command
 						lReplySelector = aMessage.getStringProperty(Attributes.REPLY_SELECTOR);
 					}
-					
+
 					if (null != lReplySelector && lConnManager.exists(lReplySelector)) {
 						// getting the connector
 						JMSConnector lConnector = lConnManager.get(lReplySelector);
