@@ -565,7 +565,7 @@ public class BaseServer implements WebSocketServer {
 
 	@Override
 	public void setUsername(WebSocketConnector aConnector, String aUsername) {
-		aConnector.setString(BaseConnector.VAR_USERNAME, aUsername);
+		aConnector.setUsername(aUsername);
 	}
 
 	@Override
