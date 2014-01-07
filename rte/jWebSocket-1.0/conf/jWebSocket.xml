@@ -1537,7 +1537,7 @@
 			</settings>
 		</plugin>
 
-		<!-- plug-in for messaging via JMS 
+		<!-- plug-in for messaging via JMS -->
 		<plugin>
 			<name>org.jwebsocket.plugins.jms.JMSPlugIn</name>
 			<id>jws.jms</id>
@@ -1554,7 +1554,6 @@
 				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 			</settings>
 		</plugin>
-		-->
 
 		<!-- jWebSocket Load Balancer plug-in -->
 		<plugin>

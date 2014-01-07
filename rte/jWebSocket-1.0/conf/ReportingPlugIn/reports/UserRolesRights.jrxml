@@ -1,85 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JWebSocketUserList" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="1.1"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JWebSocketUserList" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" >
+	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="USER_NAME" class="java.lang.String"/>
+	<subDataset name="dataset1" >
+		<field name="_THIS" class="java.lang.String"/>
+	</subDataset>
 	<field name="name" class="java.lang.String"/>
-	<field name="description" class="java.lang.String"/>
+	<field name="user_name" class="java.lang.String"/>
+	<field name="list" class="java.util.List"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="75" splitType="Stretch">
+		<band height="87" splitType="Stretch">
 			<image>
-				<reportElement x="0" y="0" width="138" height="58"/>
-				<imageExpression><![CDATA[System.getenv("JWEBSOCKET_HOME") + "//conf//ReportingPlugIn//reports//logo.jpg"]]></imageExpression>
+				<reportElement  x="14" y="5" width="138" height="58"/>
+				<imageExpression><![CDATA[System.getenv("JWEBSOCKET_HOME") + "//conf//ReportingPlugIn//reports//jWebSocket_logo.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="168" y="46" width="201" height="20"/>
+				<reportElement  x="176" y="46" width="201" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="15" isBold="true" isStrikeThrough="false"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<text><![CDATA[User Roles and Rights]]></text>
+				<text><![CDATA[Users Roles and Rights]]></text>
 			</staticText>
+			<textField pattern="HH.mm.ss">
+				<reportElement  x="430" y="41" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yy">
+				<reportElement  x="430" y="24" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
-	<detail>
-		<band height="424" splitType="Stretch">
+	<columnHeader>
+		<band height="30">
+			<rectangle>
+				<reportElement  x="19" y="4" width="510" height="25" backcolor="#6699FF"/>
+			</rectangle>
+			<staticText>
+				<reportElement  x="30" y="7" width="39" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Roles]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  x="196" y="7" width="39" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rights]]></text>
+			</staticText>
 			<line>
-				<reportElement x="0" y="0" width="555" height="1"/>
+				<reportElement  x="187" y="5" width="1" height="23"/>
 			</line>
-			<staticText>
-				<reportElement x="16" y="16" width="100" height="20"/>
-				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[user name]]></text>
-			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="27" splitType="Stretch">
+			<rectangle>
+				<reportElement  stretchType="RelativeToTallestObject" x="19" y="0" width="510" height="27"/>
+			</rectangle>
+			<componentElement>
+				<reportElement  x="184" y="3" width="345" height="24"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dataset1" >
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{list})]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="24" width="345">
+						<textField isBlankWhenNull="false">
+							<reportElement  x="11" y="0" width="330" height="20"/>
+							<textElement verticalAlignment="Middle"/>
+							<textFieldExpression><![CDATA[$F{_THIS}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
 			<textField>
-				<reportElement x="138" y="16" width="396" height="20"/>
-				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
+				<reportElement  stretchType="RelativeToTallestObject" x="30" y="3" width="154" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{USER_NAME}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="16" y="64" width="100" height="20"/>
-				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[rol name]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="138" y="64" width="396" height="20"/>
-				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="16" y="96" width="100" height="20"/>
-				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<text><![CDATA[rol description]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="138" y="96" width="396" height="20"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
-			</textField>
+			<line>
+				<reportElement  stretchType="RelativeToTallestObject" x="187" y="0" width="1" height="27"/>
+			</line>
 		</band>
 	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
 	<pageFooter>
-		<band height="39" splitType="Stretch">
+		<band height="27" splitType="Stretch">
 			<textField>
-				<reportElement x="509" y="9" width="25" height="20"/>
+				<reportElement  x="509" y="4" width="25" height="20"/>
 				<textElement/>
 				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="0" y="1" width="555" height="1"/>
-			</line>
 		</band>
 	</pageFooter>
 </jasperReport>

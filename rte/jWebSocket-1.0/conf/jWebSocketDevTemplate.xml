@@ -6,9 +6,29 @@
 	
 	<libraries>
 		<library>
-			<id>SQLLiteDriver</id>
-			<url>${JWEBSOCKET_HOME}libs/sqlite-jdbc-3.7.2.jar</url>
-			<description>SQLLite JDBC driver to access SQLLite databases from jWebSocket and its plug-ins</description>
+			<id>MySQLJDBCDriver</id>
+			<url>${JWEBSOCKET_HOME}libs/mysql-connector-java-5.1.16.jar</url>
+			<description>MySQL JDBC driver to access MySQL databases from jWebSocket and its plug-ins</description>
+		</library>
+		<library>
+			<id>DerbyDriver</id>
+			<url>${JWEBSOCKET_HOME}libs/derby-10.10.1.1.jar</url>
+			<description>Derby JDBC driver to access Derby databases from jWebSocket and its plug-ins</description>
+		</library>
+		<library>
+			<id>xbean-spring-common</id>
+			<url>${JWEBSOCKET_HOME}libs/xbean-spring-common-2.8.jar</url>
+			<description>xbean-spring-common-2.8.jar</description>
+		</library>
+		<library>
+			<id>xbean-spring-v2</id>
+			<url>${JWEBSOCKET_HOME}libs/xbean-spring-v2-2.8.jar</url>
+			<description>xbean-spring-v2-2.8.jar</description>
+		</library>
+		<library>
+			<id>xbean-spring-v2c</id>
+			<url>${JWEBSOCKET_HOME}libs/xbean-spring-v2c-2.8.jar</url>
+			<description>xbean-spring-v2c-2.8.jar</description>
 		</library>
 	</libraries>
 
@@ -23,22 +43,25 @@
 	<initializerClass>org.jwebsocket.factory.JWebSocketInitializer</initializerClass>
 
 	<engines>
+		<!-- TCP Engine Configuration -->
 		<engine>
-			<name>org.jwebsocket.tcp.nio.NioTcpEngine</name>
-			<id>nio0</id>
-			<jar>jWebSocketNIOEngine-1.0.jar</jar>
+			<name>org.jwebsocket.tcp.TCPEngine</name>
+			<id>tcp0</id>
+			<jar>jWebSocketTCPEngine-1.0.jar</jar>
 			<port>8787</port>
 			<sslport>9797</sslport>
-			<!-- keystore file with in %JWEBSOCKET_HOME%/conf -->
+			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
+			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
 			<!-- CAUTION! -->
 			<!-- not all browsers automatically accept self-signed certificates -->
 			<!-- please follow instructions on the jWebSocket.org website, how
    to trust self-signed certificates for the various browsers or
 		 how to import signed private key/certificate bundles into the keystore -->
-			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
-			<!-- password to access keystore file -->
-			<password>jWebSocket</password>
+
 			<!-- these domains are accepted by the engine listening on the above mentioned port -->
+			<!-- you optionally can add asterisks as wild cards -->
 			<domains>
 				<domain>*</domain>
 				<!-- limit allowed domains here -->
@@ -59,12 +82,23 @@
 				maximum size of the data packet that the engine will read,
 				if the frame size is larger than this the connection will be closed.
 			-->
-			<maxframesize>20480</maxframesize>
+			<maxframesize>1048840</maxframesize>
+			
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
+			
+			<!-- on max connections reached strategy -->
+			<!-- wait, close, reject, redirect --> 
+			<onmaxconnections>reject</onmaxconnections>
 			<settings>
-				<setting key="workers">500</setting>
-			</settings>			
+				<!-- NIO output writer mechanism thread pool size -->
+				<setting key="workers">50</setting>
+				<!-- NIO output writer mechanism writes timeout -->
+				<setting key="writer_timeout">1000</setting>
+				<!-- Set socket TcpNoDelay property value
+				more detalis: http://www.rgagnon.com/javadetails/java-0294.html -->
+				<setting key="tcpNoDelay">false</setting>
+			</settings>		
 		</engine>
 
 	</engines>
@@ -86,15 +120,295 @@
 
 	<!-- jWebSocket global rights -->
 	<rights>
+		<!-- configuration of system plug-in specific rights -->
 		<right>
 			<ns>org.jwebsocket.plugins.system</ns>
 			<id>broadcast</id>
-			<description>Broadcast message to all other clients.</description>
+			<description>Allow to broadcast message to all other clients.</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.system</ns>
 			<id>send</id>
-			<description>Send message to a single target client.</description>
+			<description>Allow to send message to a single target client.</description>
+		</right>
+
+		<!-- configuration of chat plug-in specific rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.chat</ns>
+			<id>broadcast</id>
+			<description>Broadcast message to all other clients.</description>
+		</right>
+
+		<!-- configuration of rpc plug-in specific rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>rpc</id>
+			<description>Allow Remote Procedure Calls (RPC) to server</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>rrpc</id>
+			<description>Allow Reverse Remote Procedure Calls (RRPC) to other clients</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.getMD5</id>
+			<description>A sample RPC demo</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.getRPCObject</id>
+			<description>A RPC demo with custom RPC objects as arguments and return values</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.runIntDemo(int)</id>
+			<description>A demo how to pass integers to unique (i.e. not overloaded) RPC's</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.runStringDemo(string)</id>
+			<description>A demo how to pass strings to unique (i.e. not overloaded) RPC's</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.runListDemo(array)</id>
+			<description>A demo how to pass arrays (lists) to unique (i.e. not overloaded) RPC's</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.runMapDemo(map)</id>
+			<description>A demo how to pass maps to unique (i.e. not overloaded) RPC's</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.runOverloadDemo(int)</id>
+			<description>A demo how to call overloaded methods (here with int argument).</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.runOverloadDemo(string)</id>
+			<description>A demo how to call overloaded methods (here with string argument).</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.runOverloadDemo(array)</id>
+			<description>A demo how to call overloaded methods (here with array argument).</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.runOverloadDemo(map)</id>
+			<description>A demo how to call overloaded methods (here with map argument).</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.Messaging.getMyMessages</id>
+			<description>Return user's messages'</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1()</id>
+			<description>rpcTest</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1(string)</id>
+			<description>rpcTest</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1(int)</id>
+			<description>rpcTest</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest2(array, array)</id>
+			<description>rpcTest</description>
+		</right>
+
+		<right>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<id>org.jwebsocket.rpc.sample.Messaging.getMyMessages</id>
+			<description>Return user's messages'</description>
+		</right>
+
+
+		<!-- configuration of jdbc plug-in specific rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.jdbc</ns>
+			<id>select</id>
+			<description>Allows to select from jdbc resources</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jdbc</ns>
+			<id>insert</id>
+			<description>Allows to insert into jdbc resources</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jdbc</ns>
+			<id>delete</id>
+			<description>Allows to delete from jdbc resources</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jdbc</ns>
+			<id>update</id>
+			<description>Allows to update jdbc resources</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jdbc</ns>
+			<id>querySQL</id>
+			<description>Allows to select from jdbc resources using native SQL</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jdbc</ns>
+			<id>updateSQL</id>
+			<description>Allows to update/insert/delete jdbc resources using native SQL</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jdbc</ns>
+			<id>execSQL</id>
+			<description>Allows to update database meta data using native SQL</description>
+		</right>
+
+		<!-- configuration of jms plug-in specific rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.jms</ns>
+			<id>sendAndListen.queue.testQueue</id>
+			<description>send and listen to queue with name: testQueue</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jms</ns>
+			<id>listen.topic.testTopic</id>
+			<description>listen to topic with name: testTopic</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jms</ns>
+			<id>send.topic.testTopic</id>
+			<description>send messages to topic with name: testTopic
+			</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jms</ns>
+			<id>sendAndListen.topic.stockTopic</id>
+			<description>send and listen to topic with name: stockTopic</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jms</ns>
+			<id>createConnection</id>
+			<description>createConnection</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jms</ns>
+			<id>createSession</id>
+			<description>createSession</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jms</ns>
+			<id>createQueue</id>
+			<description>createQueue</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jms</ns>
+			<id>createConsumer</id>
+			<description>createConsumer</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.jms</ns>
+			<id>rw.test.queue</id>
+			<description>read/write</description>
+		</right>
+		
+		<!-- configuration of filesystem plug-in specific rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>load</id>
+			<description>Allows to load files from file system</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>save</id>
+			<description>Allows to save files on the server's alias based file system</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>append</id>
+			<description>Allows to append files on the server's alias based file system</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>delete</id>
+			<description>Allows to delete files from file system (private area)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>exists</id>
+			<description>Allows to detect if a file exists</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>send</id>
+			<description>Allows to send files from one client to another client</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>getFilelist</id>
+			<description>Allows to retrieve file lists from file system</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<id>observe</id>
+			<description>Allows to monitor changes in files of the file system</description>
+		</right>
+
+		<!-- ItemStorage rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>write_collection</id>
+			<description>Allows to admin item collections (create, remove, clear, changeConfig)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>read_collection</id>
+			<description>Allows to access item collections (list, getInfo, subscribe, authorize)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>write_item</id>
+			<description>Allows to admin collection items (save, remove)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>read_item</id>
+			<description>Allows to access collection items (find, list)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>write_definition</id>
+			<description>Allows to admin item definitions (register, remove)</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>read_definition</id>
+			<description>Allows to access item definitions (list)</description>
+		</right>
+
+		<!-- Caution! Be careful with this right!
+		Unauthorized use could stop your server from
+		providing its services! -->
+		<right>
+			<ns>org.jwebsocket.plugins.admin</ns>
+			<id>shutdown</id>
+			<description>Allows to shutdown the server</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.admin</ns>
+			<id>gc</id>
+			<description>Allows to start the server's garbage collector</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.admin</ns>
+			<id>getConnections</id>
+			<description>Allows to retreive current connections</description>
 		</right>
 
 		<!-- Channel rights -->
@@ -120,8 +434,18 @@
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
-			<id>subscribe</id>
+			<id>unsubscribe</id>
 			<description>Allows to subscribe to and unsubscribe from a channel</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.channels</ns>
+			<id>subscribe</id>
+			<description>Allows to subscribe to and subscribe to a channel</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.channels</ns>
+			<id>authorize</id>
+			<description>Send an authorization request to the server to be allowed to publish in the channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
@@ -136,7 +460,12 @@
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
 			<id>getSubscribers</id>
-			<description>Allows to retrieve the list of scubscribers of a certain channel</description>
+			<description>Allows to retrieve the list of subscribers of a certain channel</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.channels</ns>
+			<id>getPublishers</id>
+			<description>Allows to retrieve the list of publishers from a certain channel</description>
 		</right>
 		<right>
 			<ns>org.jwebsocket.plugins.channels</ns>
@@ -158,6 +487,98 @@
 			<id>manageSystemChannels</id>
 			<description>Allows to manage (create and remove) system channels from clients</description>
 		</right>
+
+		<!-- Scripting rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.scripting</ns>
+			<id>reloadApp.*</id>
+			<description>Allows to reload JavaScript apps</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.scripting</ns>
+			<id>deploy.*</id>
+			<description>Allows to deploy script apps in runtime</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.scripting.simplechat</ns>
+			<id>register</id>
+			<description>Allows to register in the simplechat script app</description>
+		</right>
+	
+		<!-- Load Balancer rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<id>clustersInfo</id>
+			<description>Allows to get clusters information</description>	
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<id>registerServiceEndPoint</id>
+			<description>Allows to register a service endpoints</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<id>deregisterServiceEndPoint</id>
+			<description>Allows to deregister a service endpoints</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.loadbalancer</ns>
+			<id>shutdownEndPoint</id>
+			<description>Allows to shutdown a service endpoint</description>
+		</right>
+		<!-- QuotaPlugin rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.quota</ns>
+			<id>quota_create</id>
+			<description>Allows to root to register a Quota instance</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.quota</ns>
+			<id>quota_remove</id>
+			<description>Allows to root to unregister a Quota instance</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.quota</ns>
+			<id>quota_query</id>
+			<description>Allows to jwebsocket logon users, and admin to consult quotas</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.quota</ns>
+			<id>quota_update</id>
+			<description>Allows to jwebsocket admin users to update quotas</description>
+		</right>
+		<!-- SMS plug-in rights-->
+		<right>
+			<ns>org.jwebsocket.plugins.sms</ns>
+			<id>sendSMS</id>
+			<description>Allows to jwebsocket  users to send SMS messages</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.sms</ns>
+			<id>generateReport</id>
+			<description>Allows to jwebsocket  users to generate their SMS usage report</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.sms</ns>
+			<id>auditReports</id>
+			<description>Allows to jwebsocket admin users to generate user's SMS report</description>
+		</right>
+		<!-- Reporting plug-in rights-->
+		<right>
+			<ns>org.jwebsocket.plugins.reporting</ns>
+			<id>getReports</id>
+			<description>Allows to jwebsocket  users to get the list of existing reports</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.reporting</ns>
+			<id>generateReport</id>
+			<description>Allows to jwebsocket  users to generate reports</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.reporting</ns>
+			<id>uploadTemplate</id>
+			<description>Allows to jwebsocket  users to generate reports</description>
+		</right>
 	</rights>
 
 	<!-- jWebSocket roles -->
@@ -169,19 +590,114 @@
 				<!-- list of rights for "Administrator" role (ns + . + id) -->
 				<right>org.jwebsocket.plugins.system.broadcast</right>
 				<right>org.jwebsocket.plugins.system.send</right>
+				<right>org.jwebsocket.plugins.chat.broadcast</right>
+				<right>org.jwebsocket.plugins.rpc.rpc</right>
+				<right>org.jwebsocket.plugins.rpc.rrpc</right>
+				<!-- rights for RPC's consists of the name space for the RPC plug-in plus the class name plus the method -->
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.Messaging.getMyMessages</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest2(array, array)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1()</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1(string)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1(int)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.getMD5</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.Messaging.getMyMessages</right>
+				
+				<!-- JDBC rights -->
+				<right>org.jwebsocket.plugins.jdbc.select</right>
+				<right>org.jwebsocket.plugins.jdbc.update</right>
+				<right>org.jwebsocket.plugins.jdbc.insert</right>
+				<right>org.jwebsocket.plugins.jdbc.delete</right>
+				<right>org.jwebsocket.plugins.jdbc.querySQL</right>
+				<right>org.jwebsocket.plugins.jdbc.updateSQL</right>
+				<right>org.jwebsocket.plugins.jdbc.execSQL</right>
 
-				<!-- Channel rights -->
+				<!-- JMS rights -->
+				<right>org.jwebsocket.plugins.jms.sendAndListen.queue.testQueue</right>
+				<right>org.jwebsocket.plugins.jms.listen.topic.testTopic</right>
+				<right>org.jwebsocket.plugins.jms.send.topic.testTopic</right>
+				<right>org.jwebsocket.plugins.jms.sendAndListen.topic.stockTopic</right>
+				
+				<right>org.jwebsocket.plugins.jms.createSession</right>
+				<right>org.jwebsocket.plugins.jms.createConnection</right>
+				<right>org.jwebsocket.plugins.jms.createQueue</right>
+				<right>org.jwebsocket.plugins.jms.createConsumer</right>
+				<right>org.jwebsocket.plugins.jms.rw.test.queue</right>
+
+				<!-- filesystem rights -->
+				<right>org.jwebsocket.plugins.filesystem.load</right>
+				<right>org.jwebsocket.plugins.filesystem.save</right>
+				<right>org.jwebsocket.plugins.filesystem.append</right>
+				<right>org.jwebsocket.plugins.filesystem.delete</right>
+				<right>org.jwebsocket.plugins.filesystem.exists</right>
+				<right>org.jwebsocket.plugins.filesystem.send</right>
+				<right>org.jwebsocket.plugins.filesystem.getFilelist</right>
+				<right>org.jwebsocket.plugins.filesystem.observe</right>
+
+				<!-- itemstorage rights -->
+				<right>org.jwebsocket.plugins.itemstorage.write_collection</right>
+				<right>org.jwebsocket.plugins.itemstorage.read_collection</right>
+				<right>org.jwebsocket.plugins.itemstorage.write_item</right>
+				<right>org.jwebsocket.plugins.itemstorage.read_item</right>
+				<right>org.jwebsocket.plugins.itemstorage.write_definition</right>
+				<right>org.jwebsocket.plugins.itemstorage.read_definition</right>
+
+				<!-- Caution! Be careful with this right!
+				Unauthorized use could stop your server from
+				providing its services! -->
+				<right>org.jwebsocket.plugins.admin.shutdown</right>
+				<right>org.jwebsocket.plugins.admin.gc</right>
+				<right>org.jwebsocket.plugins.admin.getConnections</right>
+
+				<!-- channel rights -->
+				<right>org.jwebsocket.plugins.channels.start</right>
+				<right>org.jwebsocket.plugins.channels.stop</right>
+				<right>org.jwebsocket.plugins.channels.suspend</right>
+				<right>org.jwebsocket.plugins.channels.resume</right>
 				<right>org.jwebsocket.plugins.channels.subscribe</right>
-
+				<right>org.jwebsocket.plugins.channels.unsubscribe</right>
+				<right>org.jwebsocket.plugins.channels.authorize</right>
 				<right>org.jwebsocket.plugins.channels.publish</right>
 				<right>org.jwebsocket.plugins.channels.getChannels</right>
 				<right>org.jwebsocket.plugins.channels.getSubscribers</right>
-				<right>org.jwebsocket.plugins.channels.getSubscriptions</right>
-				<right>org.jwebsocket.plugins.channels.getChannels</right>
+				<right>org.jwebsocket.plugins.channels.getSubscriptions	</right>
 				<right>org.jwebsocket.plugins.channels.createChannel</right>
 				<right>org.jwebsocket.plugins.channels.removeChannel</right>
-				<right>org.jwebsocket.plugins.channels.start</right>
-				<right>org.jwebsocket.plugins.channels.stop</right>
+				<right>org.jwebsocket.plugins.channels.manageSystemChannels</right>
+
+				<!-- itemstorage rights -->
+				<right>org.jwebsocket.plugins.itemstorage.write_collection</right>
+				<right>org.jwebsocket.plugins.itemstorage.read_collection</right>
+				<right>org.jwebsocket.plugins.itemstorage.write_item</right>
+				<right>org.jwebsocket.plugins.itemstorage.read_item</right>
+				<right>org.jwebsocket.plugins.itemstorage.write_definition</right>
+				<right>org.jwebsocket.plugins.itemstorage.read_definition</right>
+
+				<!-- scripting rights -->
+				<right>org.jwebsocket.plugins.scripting.reloadApp.*</right>
+				<right>org.jwebsocket.plugins.scripting.deploy.*</right>
+				<right>org.jwebsocket.plugins.scripting.simplechat.register</right>
+				
+				<!-- Load balancer rights -->
+				<right>org.jwebsocket.plugins.loadbalancer.clustersInfo</right>
+				<right>org.jwebsocket.plugins.loadbalancer.registerServiceEndPoint</right>
+				<right>org.jwebsocket.plugins.loadbalancer.deregisterServiceEndPoint</right>
+				<right>org.jwebsocket.plugins.loadbalancer.shutdownEndPoint</right>
+				
+				<!-- Quota rights -->
+				<right>org.jwebsocket.plugins.quota.quota_create</right>
+				<right>org.jwebsocket.plugins.quota.quota_remove</right>
+				<right>org.jwebsocket.plugins.quota.quota_query</right>
+				<right>org.jwebsocket.plugins.quota.quota_update</right>
+				
+				<!-- Reporting rights-->
+				<right>org.jwebsocket.plugins.reporting.getReports</right>
+				<right>org.jwebsocket.plugins.reporting.generateReport</right>
+				<right>org.jwebsocket.plugins.reporting.uploadTemplate</right>
+				
+				<!-- SMS rights-->
+				<right>org.jwebsocket.plugins.sms.sendSMS</right>
+				<right>org.jwebsocket.plugins.sms.generateReport</right>
+				<right>org.jwebsocket.plugins.sms.auditReports</right>
 			</rights>
 		</role>
 		<role>
@@ -191,6 +707,39 @@
 				<!-- list of rights for "User" role (ns + . + id) -->
 				<right>org.jwebsocket.plugins.system.broadcast</right>
 				<right>org.jwebsocket.plugins.system.send</right>
+				<right>org.jwebsocket.plugins.chat.broadcast</right>
+				<right>org.jwebsocket.plugins.rpc.rpc</right>
+				<right>org.jwebsocket.plugins.rpc.rrpc</right>
+				<!-- rights for RPC's consists of the name space for the RPC plug-in plus the class name plus the method -->
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.Messaging.getMyMessages</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest2(array, array)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1()</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1(string)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1(int)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.getMD5</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.Messaging.getMyMessages</right>
+
+				<!-- JDBC rights -->
+				<right>org.jwebsocket.plugins.jdbc.select</right>
+				<right>org.jwebsocket.plugins.jdbc.querySQL</right>
+
+				<!-- filesystem rights -->
+				<right>org.jwebsocket.plugins.filesystem.load</right>
+				<right>org.jwebsocket.plugins.filesystem.save</right>
+				<right>org.jwebsocket.plugins.filesystem.append</right>
+				<right>org.jwebsocket.plugins.filesystem.delete</right>
+				<right>org.jwebsocket.plugins.filesystem.exists</right>
+				<right>org.jwebsocket.plugins.filesystem.send</right>
+				<right>org.jwebsocket.plugins.filesystem.getFilelist</right>
+				<right>org.jwebsocket.plugins.filesystem.observe</right>
+				
+				<!-- Quota rights -->
+				<right>org.jwebsocket.plugins.quota.quota_query</right>
+
+				<!-- scripting rights -->
+				<right>org.jwebsocket.plugins.scripting.reloadApp.*</right>
+				<right>org.jwebsocket.plugins.scripting.deploy.*</right>
+				<right>org.jwebsocket.plugins.scripting.simplechat.register</right>
 			</rights>
 		</role>
 		<role>
@@ -200,23 +749,91 @@
 				<!-- list of rights for "Guest" role (ns + . + id) -->
 				<right>org.jwebsocket.plugins.system.broadcast</right>
 				<right>org.jwebsocket.plugins.system.send</right>
+				<right>org.jwebsocket.plugins.chat.broadcast</right>
+				<right>org.jwebsocket.plugins.rpc.rpc</right>
+				<!-- rights for RPC's consists of the name space for the RPC plug-in plus the class name plus the method -->
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.Messaging.getMyMessages</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest2(array, array)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1()</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1(string)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.rrpcTest1(int)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.getMD5</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.getRPCObject</right>
+				<!-- configure rights for methods with unique identifiers, optionally including args -->
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.runIntDemo(int)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.runStringDemo</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.runListDemo(array)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.runMapDemo</right>
+				<!-- configure individual rights for each overloaded method separately, including args -->
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.runOverloadDemo(int)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.runOverloadDemo(string)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.runOverloadDemo(array)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.SampleRPCLibrary.runOverloadDemo(map)</right>
+				<right>org.jwebsocket.plugins.rpc.org.jwebsocket.rpc.sample.Messaging.getMyMessages</right>
+
+				<!-- JDBC rights -->
+				<right>org.jwebsocket.plugins.jdbc.select</right>
+
+				<!-- JMS rights -->
+				<right>org.jwebsocket.plugins.jms.sendAndListen.queue.testQueue</right>
+				<right>org.jwebsocket.plugins.jms.listen.topic.testTopic</right>
+				<right>org.jwebsocket.plugins.jms.send.topic.testTopic</right>
+				<right>org.jwebsocket.plugins.jms.sendAndListen.topic.stockTopic</right>
+				
+				<right>org.jwebsocket.plugins.jms.createSession</right>
+				<right>org.jwebsocket.plugins.jms.createConnection</right>
+				<right>org.jwebsocket.plugins.jms.createQueue</right>
+				<right>org.jwebsocket.plugins.jms.createConsumer</right>
+				<right>org.jwebsocket.plugins.jms.rw.test.queue</right>
+
+				<!-- filesystem rights -->
+				<right>org.jwebsocket.plugins.filesystem.load</right>
+				<right>org.jwebsocket.plugins.filesystem.send</right>
+				<right>org.jwebsocket.plugins.filesystem.getFilelist</right>
+
+				<!-- Channel rights -->
+				<right>org.jwebsocket.plugins.channels.subscribe</right>
+				<right>org.jwebsocket.plugins.channels.unsubscribe</right>
+
+				<right>org.jwebsocket.plugins.channels.authorize</right>
+				<right>org.jwebsocket.plugins.channels.publish</right>
+				<right>org.jwebsocket.plugins.channels.getChannels</right>
+				<right>org.jwebsocket.plugins.channels.getSubscribers</right>
+				<right>org.jwebsocket.plugins.channels.getPublishers</right>
+				<right>org.jwebsocket.plugins.channels.getSubscriptions</right>
+				<right>org.jwebsocket.plugins.channels.getChannels</right>
+				<right>org.jwebsocket.plugins.channels.createChannel</right>
+				<right>org.jwebsocket.plugins.channels.removeChannel</right>
+
+				<!-- scripting rights -->
+				<right>org.jwebsocket.plugins.scripting.reloadApp.*</right>
+				<right>org.jwebsocket.plugins.scripting.deploy.*</right>
+				<right>org.jwebsocket.plugins.scripting.simplechat.register</right>
 			</rights>
+
 		</role>
+        
 	</roles>
 
+	<!-- jWebSocket users -->
 	<users>
+        
 		<user>
 			<uuid>000-000-001-2011-07-14-11-32-40-223</uuid>
 			<loginname>guest</loginname>
 			<firstname>jWebSocket Guest User</firstname>
 			<lastname>(Guest Role)</lastname>
+			<!-- no password means that the user does not need a password -->
 			<password>guest</password>
 			<description>jWebSocket Guest User</description>
 			<status>1</status>
 			<roles>
+				<!-- should be restricted in your application! open for demo purposes only! -->
 				<role>Guest</role>
+				<role>Administrator</role>	
 			</roles>
 		</user>
+        
 		<user>
 			<uuid>000-000-002-2011-07-14-11-33-20-493</uuid>
 			<loginname>user</loginname>
@@ -224,12 +841,16 @@
 			<lastname>(User Role)</lastname>
 			<password>user</password>
 			<description>jWebSocket Standard User</description>
+			<!-- 0=blocked 1=allowed ... future states pending -->
 			<status>1</status>
 			<roles>
+				<!-- the rights of all roles are merged -->
 				<role>Guest</role>
 				<role>User</role>
+				<role>Administrator</role>
 			</roles>
 		</user>
+        
 		<user>
 			<uuid>000-000-003-2011-07-14-11-34-17-189</uuid>
 			<loginname>root</loginname>
@@ -237,27 +858,51 @@
 			<lastname>(Administrator Role)</lastname>
 			<password>root</password>
 			<description>jWebSocket Root User</description>
+			<!-- 0=blocked 1=allowed ... future states pending -->
 			<status>1</status>
 			<roles>
+				<!-- the rights of all roles are merged -->
 				<role>Guest</role>
 				<role>User</role>
 				<role>Administrator</role>
 			</roles>
 		</user>
+        
+		<user>
+			<uuid>000-000-004-2013-03-11-12-27-34-384</uuid>
+			<loginname>demo</loginname>
+			<firstname>jWebSocket Demo User</firstname>
+			<lastname>(Demo Role)</lastname>
+			<password>demo</password>
+			<description>jWebSocket Demo User</description>
+			<!-- 0=blocked 1=allowed ... future states pending -->
+			<status>1</status>
+			<roles>
+				<!-- the rights of all roles are merged -->
+				<role>Guest</role>
+				<role>User</role>
+				<role>Administrator</role>
+			</roles>
+		</user>
+        
 		<user>
 			<uuid>000-000-004-2011-07-14-11-35-54-871</uuid>
 			<loginname>anonymous</loginname>
 			<firstname>jWebSocket Anonymous User</firstname>
 			<lastname>(Roles to be specified!)</lastname>
+			<!-- empty password -->
 			<password></password>
 			<description>jWebSocket Anonymous User (Specify if anonymous logins should be supported at all in System Plug-in)</description>
+			<!-- 0=blocked 1=allowed ... future states pending -->
 			<status>1</status>
 			<roles>
+				<!-- the rights of all roles are merged -->
 				<role>Guest</role>
 				<role>User</role>
 				<role>Administrator</role>
 			</roles>
 		</user>
+        
 	</users>
 	<plugins>
 		<!-- the system plug-in, do not remove, mandatory for basic WebsScket communication operations -->
@@ -312,7 +957,300 @@
 				<!-- config has been moved to channel.xml spring config -->
 			</settings>
 		</plugin>
+		
+		<!-- jWebSocket Chat PlugIn -->
+		<plugin>
+			<name>org.jwebsocket.plugins.chat.ChatPlugIn</name>
+			<id>jws.chat</id>
+			<ns>org.jwebsocket.plugins.chat</ns>
+			<jar>jWebSocketChatPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
 
+		<!-- plug-in for shared objects -->
+		<plugin>
+			<name>org.jwebsocket.plugins.sharedobjects.SharedObjectsPlugIn</name>
+			<id>jws.sharedObjects</id>
+			<ns>org.jwebsocket.plugins.sharedobjects</ns>
+			<jar>jWebSocketSharedObjectsPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+
+		<!-- Shared Canvas PlugIn Configuration -->
+		<plugin>
+			<name>org.jwebsocket.sharedcanvas.SharedCanvasPlugIn</name>
+			<ns>org.jwebsocket.plugins.sharedcanvas</ns>
+			<id>SharedCanvasPlugIn</id>
+			<jar>jWebSocketSharedCanvasPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		
+		<!-- plug-in to support various independant streams on the server -->
+		<plugin>
+			<name>org.jwebsocket.plugins.streaming.StreamingPlugIn</name>
+			<id>jws.streaming</id>
+			<ns>org.jwebsocket.plugins.streaming</ns>
+			<jar>jWebSocketStreamingPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+		<!-- plug-in to track statistic data about the server usage -->
+		<!-- Attention! This plug-in requires the statistics filter setting -->
+		<plugin>
+			<!-- ensure that this plug-in is loaded after the streaming plug-in! -->
+			<name>org.jwebsocket.plugins.statistics.StatisticsPlugIn</name>
+			<id>jws.statistics</id>
+			<ns>org.jwebsocket.plugins.statistics</ns>
+			<jar>jWebSocketStatisticsPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+
+		<!-- plug-in to access SQL databases via WebSockets -->
+		<plugin>
+			<name>org.jwebsocket.plugins.jdbc.JDBCPlugIn</name>
+			<id>jws.jdbc</id>
+			<ns>org.jwebsocket.plugins.jdbc</ns>
+			<jar>jWebSocketJDBCPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JDBCPlugIn/jdbc.xml</setting>
+			</settings>
+		</plugin>
+
+		<!-- plug-in for messaging via JMS -->
+		<plugin>
+			<name>org.jwebsocket.plugins.jms.JMSPlugIn</name>
+			<id>jws.jms</id>
+			<ns>org.jWebSocket.plugins.jms</ns>
+			<jar>jWebSocketJMSPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/JMSPlugIn/jms.xml</setting>
+				<setting key="connectionFactory:1" type="json">{name:"connectionFactory"}</setting>
+				<setting key="destination:1" type="json">{name:"testQueue",pubSubDomain:false,cfName:"connectionFactory",deliveryPersistent:false}</setting>
+				<setting key="destination:2" type="json">{name:"testTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
+				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
+			</settings>
+		</plugin>
+
+		<!-- jWebSocket Load Balancer plug-in -->
+		<plugin>
+			<name>org.jwebsocket.plugins.loadbalancer.LoadBalancerPlugIn</name>
+			<id>jws.lb</id>
+			<ns>org.jWebSocket.plugins.loadbalancer</ns>
+			<jar>jWebSocketLoadBalancerPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/LoadBalancerPlugIn/loadbalancer.xml</setting>
+			</settings>
+		</plugin>
+		
+		<!-- plug-in to support server side logging for clients -->
+		<!-- THIS PLUG-IN REQUIRES THE JDBC PLUG-IN! -->
+		<!-- LOAD JDBC PLUG-IN BEFORE THE LOGGING-PLUG-IN! -->
+		<plugin>
+			<name>org.jwebsocket.plugins.logging.LoggingPlugIn</name>
+			<id>jws.logging</id>
+			<ns>org.jwebsocket.plugins.logging</ns>
+			<jar>jWebSocketLoggingPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/LoggingPlugIn/logging.xml</setting>
+				<setting key="implementation">Log4J</setting>
+				<setting key="table:name">log</setting>
+				<setting key="field:level">level</setting>
+				<setting key="field:info">info</setting>
+				<setting key="field:message">message</setting>
+			</settings>
+		</plugin>
+
+		<!-- plug-in to send mails via WebSockets -->
+		<plugin>
+			<name>org.jwebsocket.plugins.mail.MailPlugIn</name>
+			<id>jws.mail</id>
+			<ns>org.jwebsocket.plugins.mail</ns>
+			<jar>jWebSocketMailPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/MailPlugIn/mail.xml</setting>
+			</settings>
+		</plugin>
+
+		<!-- plug-in to generate and validate Captchas -->
+		<plugin>
+			<name>org.jwebsocket.plugins.jcaptcha.JCaptchaPlugIn</name>
+			<id>jws.jcaptcha</id>
+			<ns>org.jwebsocket.plugins.jcaptcha</ns>
+			<jar>jWebSocketJCaptchaPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+			</settings>
+		</plugin>
+
+		<!-- plug-in to send mails via WebSockets -->
+		<plugin>
+			<name>org.jwebsocket.plugins.sms.SMSPlugIn</name>
+			<id>jws.sms</id>
+			<ns>org.jwebsocket.plugins.sms</ns>
+			<jar>jWebSocketSMSPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/SMSPlugIn/sms.xml</setting>
+			</settings>
+		</plugin>
+
+		<!-- plug-in to access the streaming twitter API -->
+		<plugin>
+			<name>org.jwebsocket.plugins.twitter.TwitterPlugIn</name>
+			<id>jws.twitter</id>
+			<ns>org.jwebsocket.plugins.twitter</ns>
+			<jar>jWebSocketTwitterPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/TwitterPlugIn/twitter.xml</setting>
+			</settings>
+		</plugin>
+
+		<!-- plug-in for XMPP/Jabber compatible chats -->
+		<plugin>
+			<name>org.jwebsocket.plugins.xmpp.XMPPPlugIn</name>
+			<id>jws.xmpp</id>
+			<ns>org.jwebsocket.plugins.xmpp</ns>
+			<jar>jWebSocketXMPPPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_HOME}conf/XMPPPlugIn/xmpp.xml</setting>
+			</settings>
+		</plugin>
+
+		<!-- filesystem plug-in to access server files via WebSockets -->
+		<plugin>
+			<!-- <name>org.jwebsocket.plugins.filesystem.FileSystemPlugIn</name> -->
+			<!-- to use the enterprise edition of jWebSocketFileSystemPlugIn replace the above line by the following one -->
+			<name>org.jwebsocket.enterprise.plugins.filesystem.FileSystemPlugIn</name>
+			<id>jws.filesystem</id>
+			<ns>org.jwebsocket.plugins.filesystem</ns>
+			<!-- to use the enterprise edition of jWebSocketFileSystemPlugIn add the following line -->
+			<jars>
+				<jar>${JWEBSOCKET_HOME}libs/jWebSocketFileSystemPlugIn-1.0.jar</jar>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketFileSystemPlugInEE-1.0.jar</jar>
+			</jars>
+			<!-- plug-in specific settings -->
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/FileSystemPlugIn/filesystem.xml</setting>
+				<!-- Authorization method 
+				     - spring: Uses the user Spring authentication to check for granted authorities 
+					 - static: Uses the user static (jWebSocket.xml users definition) authentication
+					   to check for granted authorities (rights)
+					   
+					 Default value is "static"
+					   
+					 Required user authorities for the FileSystem plug-in:
+					 - org.jwebsocket.plugins.filesystem.load
+					 - org.jwebsocket.plugins.filesystem.save
+					 - org.jwebsocket.plugins.filesystem.append
+					 - org.jwebsocket.plugins.filesystem.delete
+					 - org.jwebsocket.plugins.filesystem.exists
+					 - org.jwebsocket.plugins.filesystem.send
+					 - org.jwebsocket.plugins.filesystem.getFilelist
+					 - org.jwebsocket.plugins.filesystem.observe
+				-->
+				<!-- <setting key="authentication_method">spring</setting> -->
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+
+		<!-- this is a sample for a user plug-in -->
+		<plugin>
+			<name>org.jwebsocket.plugins.sample.SamplePlugIn</name>
+			<id>jws.sample</id>
+			<ns>org.jwebsocket.plugins.sample</ns>
+			<jar>jWebSocketSamples-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+
+		<!-- The plug-in for remote procedure calls -->
+		<plugin>
+			<name>org.jwebsocket.plugins.rpc.RPCPlugIn</name>
+			<id>jws.rpc</id>
+			<ns>org.jwebsocket.plugins.rpc</ns>
+			<jar>jWebSocketRPCPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
+				<!-- list all jars from %JWEBSOCKET_HOME%/libs or %CLASSPATH% path -->
+				<setting key="class:org.jwebsocket.rpc.sample.SampleRPCLibrary">jWebSocketSamples-1.0.jar</setting>
+				<setting key="class:org.jwebsocket.rpc.sample.Messaging">jWebSocketSamples-1.0.jar</setting>
+			</settings>
+		</plugin>
+
+		<!-- ItemStorage plug-in -->
+		<plugin>
+			<name>org.jwebsocket.enterprise.plugins.itemstorage.ItemStoragePlugIn</name>
+			<id>jws.itemstorage</id>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<jars>
+				<jar>${JWEBSOCKET_HOME}libs/jWebSocketItemStoragePlugIn-1.0.jar</jar>
+				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketItemStoragePlugInEE-1.0.jar</jar>
+			</jars>
+			<!-- plug-in specific settings -->
+			<settings>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/ItemStoragePlugIn/itemstorage.xml</setting>
+				<!-- Authorization method 
+				     - spring: Uses the user Spring authentication to check for granted authorities 
+					 - static: Uses the user static (jWebSocket.xml users definition) authentication
+					   to check for granted authorities (rights)
+					   
+					 Default value is "static"
+					   
+					 Required user authorities for the ItemStorage plug-in:
+					 - org.jwebsocket.plugins.itemstorage.write_collection
+					 - org.jwebsocket.plugins.itemstorage.read_collection
+					 - org.jwebsocket.plugins.itemstorage.write_item
+					 - org.jwebsocket.plugins.itemstorage.read_item
+					 - org.jwebsocket.plugins.itemstorage.write_definition
+					 - org.jwebsocket.plugins.itemstorage.read_definition
+				-->
+				<setting key="authentication_method">static</setting>
+				<!-- The fragment size attribute is used on the fragmentation  of outgoing messages -->
+				<setting key="fragmentSize">2000</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
 	</plugins>
 
 	<filters>
