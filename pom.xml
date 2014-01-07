@@ -54,6 +54,7 @@
 		<module>jWebSocketPlugIns/jWebSocketItemStorage</module>
 		<module>jWebSocketPlugIns/jWebSocketScriptingPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketQuotaPlugIn</module>
+		<module>jWebSocketPlugIns/jWebSocketJCRPlugIn</module>
 		<module>jWebSocketJMSGateway</module>
 		<module>jWebSocketSwingGUI</module>
 		<module>jWebSocketProxy</module>

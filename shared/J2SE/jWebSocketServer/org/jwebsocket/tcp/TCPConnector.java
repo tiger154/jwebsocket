@@ -209,49 +209,52 @@ public class TCPConnector extends BaseConnector {
 
 	@Override
 	public void stopConnector(CloseReason aCloseReason) {
-		// patch to support the client side "close" command
-		String lClientCloseFlag = "connector_was_closed_by_client_demand";
-		if (null != getVar(lClientCloseFlag)) {
-			return;
-		}
-		if (aCloseReason.equals(CloseReason.CLIENT)) {
-			setVar(lClientCloseFlag, true);
-		}
-		// end of patch
-
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Stopping " + mLogInfo
-					+ " connector '"
-					+ getId() + "' (" + aCloseReason.name() + ")...");
-		}
-		mCloseReason = aCloseReason;
-		synchronized (getWriteLock()) {
-			if (!isHixie()) {
-				// Hybi specs demand that client must be notified
-				// with CLOSE control message before disconnect
-
-				// @TODO the close reason has to be notified to the client
-				// following the WebSocket protocol specification for this
-				// @see http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-17#page-45
-				WebSocketPacket lClose;
-				lClose = new RawPacket(WebSocketFrameType.CLOSE, WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name()));
-				WebSocketConnectorStatus lStatus = getStatus();
-				// to ensure that the close packet can be sent at all!
-				setStatus(WebSocketConnectorStatus.UP);
-				sendPacket(lClose);
-				setStatus(lStatus);
+		try {
+			// patch to support the client side "close" command
+			String lClientCloseFlag = "connector_was_closed_by_client_demand";
+			if (null != getVar(lClientCloseFlag)) {
+				return;
 			}
-			stopReader();
-		}
+			if (aCloseReason.equals(CloseReason.CLIENT)) {
+				setVar(lClientCloseFlag, true);
+			}
+			// end of patch
 
-		if (mLog.isInfoEnabled()) {
-			mLog.info("Stopped " + mLogInfo
-					+ " connector '"
-					+ getId() + "' (" + mCloseReason
-					+ ") on port " + mClientSocket.getPort() + ".");
-		}
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Stopping " + mLogInfo
+						+ " connector '"
+						+ getId() + "' (" + aCloseReason.name() + ")...");
+			}
+			mCloseReason = aCloseReason;
+			synchronized (getWriteLock()) {
+				if (!isHixie()) {
+					// Hybi specs demand that client must be notified
+					// with CLOSE control message before disconnect
 
-		super.stopConnector(aCloseReason);
+					// @TODO the close reason has to be notified to the client
+					// following the WebSocket protocol specification for this
+					// @see http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-17#page-45
+					WebSocketPacket lClose;
+					lClose = new RawPacket(WebSocketFrameType.CLOSE, WebSocketProtocolAbstraction.calcCloseData(1000, aCloseReason.name()));
+					WebSocketConnectorStatus lStatus = getStatus();
+					// to ensure that the close packet can be sent at all!
+					setStatus(WebSocketConnectorStatus.UP);
+					sendPacket(lClose);
+					setStatus(lStatus);
+				}
+				stopReader();
+				terminateConnector(aCloseReason);
+			}
+
+			if (mLog.isInfoEnabled()) {
+				mLog.info("Stopped " + mLogInfo
+						+ " connector '"
+						+ getId() + "' (" + mCloseReason
+						+ ") on port " + mClientSocket.getPort() + ".");
+			}
+		} finally {
+			super.stopConnector(aCloseReason);
+		}
 	}
 
 	/**
@@ -404,7 +407,7 @@ public class TCPConnector extends BaseConnector {
 				.containsKey(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME)) {
 			((Map) lReqMap.get(RequestHeader.WS_COOKIES))
 					.put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME,
-							Tools.getMD5(UUID.randomUUID().toString()));
+					Tools.getMD5(UUID.randomUUID().toString()));
 		}
 
 		RequestHeader lHeader = EngineUtils.validateC2SRequest(
@@ -547,10 +550,8 @@ public class TCPConnector extends BaseConnector {
 					processHybi(getVersion(), lEngine);
 				}
 			} finally {
-				terminateConnector(mCloseReason);
+				mConnector.stopConnector(mCloseReason);
 			}
-
-			mConnector.stopConnector(mCloseReason);
 		}
 
 		private void processHixie(WebSocketEngine aEngine) {
