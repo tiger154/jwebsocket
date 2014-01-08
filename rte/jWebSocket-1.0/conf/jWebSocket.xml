@@ -818,6 +818,11 @@
 			<id>read_definition</id>
 			<description>Allows to access item definitions (list)</description>
 		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.itemstorage</ns>
+			<id>clear_database</id>
+			<description>Allows to clear the entire itemstorage database</description>
+		</right>
 
 		<!-- Caution! Be careful with this right!
 				Unauthorized use could stop your server from
@@ -1067,6 +1072,7 @@
 				<right>org.jwebsocket.plugins.itemstorage.read_item</right>
 				<right>org.jwebsocket.plugins.itemstorage.write_definition</right>
 				<right>org.jwebsocket.plugins.itemstorage.read_definition</right>
+				<right>org.jwebsocket.plugins.itemstorage.clear_database</right>
 
 				<!-- Caution! Be careful with this right!
 						Unauthorized use could stop your server from
