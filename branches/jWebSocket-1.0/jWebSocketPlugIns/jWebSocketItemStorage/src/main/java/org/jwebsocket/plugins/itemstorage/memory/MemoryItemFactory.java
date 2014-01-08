@@ -85,7 +85,7 @@ public class MemoryItemFactory implements IItemFactory {
 		int lTotalSize = mDefinitions.size();
 		Assert.notNull(aOffset, "The offset argument cannot be null!");
 		Assert.notNull(aLength, "The length argument cannot be null!");
-		Assert.isTrue(aOffset >= 0 && aOffset < lTotalSize,
+		Assert.isTrue(aOffset >= 0 && aOffset <= lTotalSize,
 				"Index out of bound!");
 		Assert.isTrue(aLength > 0, "Invalid length value. Expected: length > 0!");
 

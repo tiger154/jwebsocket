@@ -5,6 +5,7 @@ Ext.define('IS.view.portal.Left' ,{
 	border: 0,
 	padding: 5,
 	items: [{
+		id: 'contenttabpanel',
 		xtype: 'tabpanel',
 		height: 500,
 		activeTab: 0,
