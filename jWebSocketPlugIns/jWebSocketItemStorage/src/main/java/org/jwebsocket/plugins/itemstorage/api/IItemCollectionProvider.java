@@ -75,7 +75,7 @@ public interface IItemCollectionProvider extends IInitializable {
 	 * @return A list containing the name of all existing collections
 	 * @throws java.lang.Exception
 	 */
-	List<String> collectionNames() throws Exception;;
+	List<String> collectionNames() throws Exception;
 
 	/**
 	 *
@@ -84,7 +84,7 @@ public interface IItemCollectionProvider extends IInitializable {
 	 * @return A list containing the name of all existing public collections
 	 * @throws java.lang.Exception
 	 */
-	List<String> collectionPublicNames(int aOffset, int aLength) throws Exception;;
+	List<String> collectionPublicNames(int aOffset, int aLength) throws Exception;
 
 	/**
 	 *
@@ -94,7 +94,7 @@ public interface IItemCollectionProvider extends IInitializable {
 	 * @return A list containing the name of the given owner collections
 	 * @throws java.lang.Exception
 	 */
-	List<String> collectionNamesByOwner(String aOwner, int aOffset, int aLength) throws Exception;;
+	List<String> collectionNamesByOwner(String aOwner, int aOffset, int aLength) throws Exception;
 
 	/**
 	 *
@@ -102,7 +102,7 @@ public interface IItemCollectionProvider extends IInitializable {
 	 * @return TRUE if the collection exists, FALSE otherwise
 	 * @throws java.lang.Exception
 	 */
-	Boolean collectionExists(String aCollectionName) throws Exception;;
+	Boolean collectionExists(String aCollectionName) throws Exception;
 
 	/**
 	 * Returns TRUE if the given item type is being used by a collection (with
@@ -112,14 +112,14 @@ public interface IItemCollectionProvider extends IInitializable {
 	 * @return
 	 * @throws java.lang.Exception
 	 */
-	boolean isItemTypeInUse(String aItemType) throws Exception;;
+	boolean isItemTypeInUse(String aItemType) throws Exception;
 
 	/**
 	 *
 	 * @return The number of existing collections
 	 * @throws java.lang.Exception
 	 */
-	long size() throws Exception;;
+	long size() throws Exception;
 
 	/**
 	 *
@@ -127,5 +127,5 @@ public interface IItemCollectionProvider extends IInitializable {
 	 * @return The number of existing collections
 	 * @throws java.lang.Exception
 	 */
-	long size(String aOwner) throws Exception;;
+	long size(String aOwner) throws Exception;
 }

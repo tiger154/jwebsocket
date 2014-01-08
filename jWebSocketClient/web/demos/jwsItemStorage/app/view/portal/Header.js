@@ -18,6 +18,37 @@ Ext.define('IS.view.portal.Header' ,{
 		padding: '10 10 0 0'
 	},{
 		xtype: 'button',
+		id: 'cleardb_button',
+		text: 'Clear Database',
+		handler: function() {
+			Ext.Msg.show({
+				title:'Confirm?',
+				msg: 'This operation will remove all data (collections and definitions)! Are you sure to clear the item storage database?',
+				buttons: Ext.Msg.YESNO,
+				icon: Ext.Msg.QUESTION,
+				fn: function ( aButton ){
+					if ('yes' != aButton)
+						return;
+					
+					Ext.jws.send(jws.ItemStoragePlugIn.NS, 'clearDatabase', {}, {
+						success: function (){
+							Ext.Msg.show({
+								title:'Information',
+								msg: 'ItemStorage database has been cleared successfully!',
+								buttons: Ext.Msg.OK,
+								icon: Ext.Msg.INFO,
+								fn: function (){
+									Ext.ComponentQuery.query('#contenttabpanel')[0].setActiveTab('collectionstab');
+									Ext.ComponentQuery.query('#contenttabpanel')[0].setActiveTab('definitionstab');
+								}
+							});
+						}
+					});
+				} 
+			});
+		}
+	},{
+		xtype: 'button',
 		id: 'logoff_button',
 		text: 'Logoff',
 		handler: function() {
