@@ -61,7 +61,7 @@ jws.tests.enterprise.FileSystem = {
 			});
 
 		});
-	},
+	}, 
 	
 	testFileSaveByChunks: function(aFilename, aData, aIsChunk, aScope) {
 		var lSpec = this.NS + ": FileSaveByChunks (admin, " + aFilename + ", " + aScope + ")";
@@ -441,33 +441,33 @@ jws.tests.enterprise.FileSystem = {
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA,
 			false, 
-			jws.ALIAS_PRIVATE);
+			jws.SCOPE_PRIVATE);
 
 		jws.tests.enterprise.FileSystem.testFileSaveByChunks(
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA2,
 			false, 
-			jws.ALIAS_PRIVATE);
+			jws.SCOPE_PRIVATE);
 		
 		jws.tests.enterprise.FileSystem.testFileSaveByChunks(
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA3,
 			true, 
-			jws.ALIAS_PRIVATE);
+			jws.SCOPE_PRIVATE);
 			
 		jws.tests.enterprise.FileSystem.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME, 
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME + 5, 
-			jws.ALIAS_PRIVATE, 
+			jws.FileSystemPlugIn.SCOPE_PRIVATE, 
 			0);
 
 		jws.tests.enterprise.FileSystem.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME + 5, 
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME, 
-			jws.ALIAS_PRIVATE, 
+			jws.FileSystemPlugIn.SCOPE_PRIVATE, 
 			0);
-			
+
 		jws.tests.FileSystem.testFileLoad(
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
-			jws.SCOPE_PRIVATE,
+			jws.FileSystemPlugIn.ALIAS_PRIVATE,
 			this.TEST_FILE_DATA + this.TEST_FILE_DATA2 + this.TEST_FILE_DATA3);
 
 		jws.tests.enterprise.FileSystem.testDirectoryDelete(this.TEST_FOLDER, 0);	

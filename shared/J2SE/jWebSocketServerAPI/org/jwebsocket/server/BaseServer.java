@@ -560,7 +560,7 @@ public class BaseServer implements WebSocketServer {
 
 	@Override
 	public String getUsername(WebSocketConnector aConnector) {
-		return aConnector.getString(BaseConnector.VAR_USERNAME);
+		return aConnector.getUsername();
 	}
 
 	@Override

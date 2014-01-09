@@ -388,6 +388,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				lData = lData.substring(lIdx + 1);
 			}
 			lBA = Tools.base64Decode(lData);
+			lData = null;
 		} else {
 			lBA = lData.getBytes();
 		}
@@ -408,7 +409,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				// force create folder if not yet exists
 				File lDir = new File(FilenameUtils.getFullPath(lFullPath));
 				FileUtils.forceMkdir(lDir);
-				if (lBA != null) {
+				if (lData == null) {
 					FileUtils.writeByteArrayToFile(lFile, lBA, lAppend);
 				} else {
 					FileUtils.writeStringToFile(lFile, lData, "UTF-8", lAppend);
