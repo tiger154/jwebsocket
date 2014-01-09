@@ -441,33 +441,33 @@ jws.tests.enterprise.FileSystem = {
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA,
 			false, 
-			jws.SCOPE_PRIVATE);
+			jws.ALIAS_PRIVATE);
 
 		jws.tests.enterprise.FileSystem.testFileSaveByChunks(
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA2,
 			false, 
-			jws.SCOPE_PRIVATE);
+			jws.ALIAS_PRIVATE);
 		
 		jws.tests.enterprise.FileSystem.testFileSaveByChunks(
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA3,
 			true, 
-			jws.SCOPE_PRIVATE);
+			jws.ALIAS_PRIVATE);
 			
 		jws.tests.enterprise.FileSystem.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME, 
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME + 5, 
-			jws.FileSystemPlugIn.SCOPE_PRIVATE, 
+			jws.ALIAS_PRIVATE, 
 			0);
 
 		jws.tests.enterprise.FileSystem.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME + 5, 
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME, 
-			jws.FileSystemPlugIn.SCOPE_PRIVATE, 
+			jws.ALIAS_PRIVATE, 
 			0);
-
+			
 		jws.tests.FileSystem.testFileLoad(
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
-			jws.FileSystemPlugIn.ALIAS_PRIVATE,
+			jws.SCOPE_PRIVATE,
 			this.TEST_FILE_DATA + this.TEST_FILE_DATA2 + this.TEST_FILE_DATA3);
 
 		jws.tests.enterprise.FileSystem.testDirectoryDelete(this.TEST_FOLDER, 0);	
