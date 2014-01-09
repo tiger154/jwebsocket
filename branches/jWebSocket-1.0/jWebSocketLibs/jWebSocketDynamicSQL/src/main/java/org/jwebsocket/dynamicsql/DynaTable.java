@@ -43,7 +43,7 @@ public class DynaTable implements ITable {
     }
 
     @Override
-    public ITable addColumn(String aName, Integer aTypeCode, Boolean aRequired, Boolean aPK, Integer aSize, String aDefault) {
+    public ITable addColumn(String aName, Integer aTypeCode, Boolean aRequired, Boolean aPK, Integer aSize, Object aDefault) {
         Column lColumn = new Column();
         lColumn.setName(aName);
         lColumn.setTypeCode(aTypeCode);
@@ -53,7 +53,7 @@ public class DynaTable implements ITable {
             lColumn.setSize(aSize.toString());
         }
         if (null != aDefault) {
-            lColumn.setDefaultValue(aDefault);
+            lColumn.setDefaultValue(aDefault.toString());
         }
         mTable.addColumn(lColumn);
 

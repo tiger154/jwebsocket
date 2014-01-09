@@ -18,18 +18,16 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.dynamicsql.api;
 
-import org.apache.ddlutils.model.Table;
+import org.jwebsocket.dynamicsql.query.Ordering;
 
 /**
  *
  * @author markos
  */
-public interface ITable {
+public interface ISelectQuery {
     
-    public String getName();
-    public ITable addColumn(String aName, Integer aTypeCode, Boolean aRequired, 
-            Boolean aPK, Integer aSize, Object aDefault);
-//    public ITable addIndex(String aColumnName);
-    public ITable addUniqueIndex(String aColumnName);
-    public Table getTable();
+    public ISelectQuery and(ICondition aCondition);
+    public ISelectQuery or(ICondition aCondition);
+    public ISelectQuery orderBy(String aColumnName, Ordering aDir);
+    public String getSQL();
 }

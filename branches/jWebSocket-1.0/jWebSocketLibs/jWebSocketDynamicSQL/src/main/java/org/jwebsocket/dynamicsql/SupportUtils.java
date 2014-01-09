@@ -21,6 +21,8 @@ package org.jwebsocket.dynamicsql;
 import java.util.Map;
 import javax.sql.DataSource;
 import javolution.util.FastMap;
+import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.DynaProperty;
 import org.apache.ddlutils.PlatformUtils;
 import org.apache.ddlutils.platform.mssql.MSSqlPlatform;
 import org.apache.ddlutils.platform.mysql.MySql50Platform;
@@ -38,8 +40,8 @@ public class SupportUtils {
     public static String ESCAPE_LIKE_LITERAL = "escapeLikeLiteral";
     
     public static Map<String, String> getOptions(DataSource aDataSource) {
-        PlatformUtils utils = new PlatformUtils();
-        String lPlatform = utils.determineDatabaseType(aDataSource);
+        PlatformUtils lUtils = new PlatformUtils();
+        String lPlatform = lUtils.determineDatabaseType(aDataSource);
         Map<String, String> lOptions = new FastMap<String, String>();
         //Default Values Options
         lOptions.put(ESCAPE_TABLE_LITERAL, "\"\"");
@@ -62,5 +64,15 @@ public class SupportUtils {
          */
         
         return lOptions;
+    }
+    
+    public static Map<String, Object> convertToMap(DynaBean aDynaBean) {
+        Map<String, Object> lMap = new FastMap<String, Object>();
+        
+        for (DynaProperty lDynaProperty : aDynaBean.getDynaClass().getDynaProperties()) {
+            lMap.put(lDynaProperty.getName(), aDynaBean.get(lDynaProperty.getName()));
+        }
+        
+        return lMap;
     }
 }
