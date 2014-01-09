@@ -23,7 +23,7 @@ import com.healthmarketscience.sqlbuilder.ComboCondition;
 import com.healthmarketscience.sqlbuilder.CustomSql;
 import com.healthmarketscience.sqlbuilder.OrderObject;
 import org.jwebsocket.dynamicsql.api.ICondition;
-import org.jwebsocket.dynamicsql.api.IQuery;
+import org.jwebsocket.dynamicsql.api.ISelectQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
 import java.util.Map;
 import org.jwebsocket.dynamicsql.SupportUtils;
@@ -33,12 +33,12 @@ import org.jwebsocket.dynamicsql.api.IDatabase;
  *
  * @author markos
  */
-public class DynaQuery implements IQuery {
+public class DynaSelectQuery implements ISelectQuery {
 
     private SelectQuery mQuery;
     private IDatabase mDB;
 
-    public DynaQuery(IDatabase aDB, String aTableName) {
+    public DynaSelectQuery(IDatabase aDB, String aTableName) {
         this.mDB = aDB;
         mQuery = new SelectQuery()
                 .addAllColumns()
@@ -46,7 +46,7 @@ public class DynaQuery implements IQuery {
     }
 
     @Override
-    public IQuery and(ICondition aCondition) {
+    public ISelectQuery and(ICondition aCondition) {
         Map<String, Object> lAttrs = aCondition.getCondition();
         BinaryCondition.Op lType = (BinaryCondition.Op) lAttrs.get(Conditions.ATTR_TYPE);
         Object lColumnName = parse((String)lAttrs.get(Conditions.ATTR_COLUMN_NAME));
@@ -71,7 +71,7 @@ public class DynaQuery implements IQuery {
     }
 
     @Override
-    public IQuery or(ICondition aCondition) {
+    public ISelectQuery or(ICondition aCondition) {
         Map<String, Object> lAttrs = aCondition.getCondition();
         BinaryCondition.Op lType = (BinaryCondition.Op) lAttrs.get(Conditions.ATTR_TYPE);
         Object lColumnName = parse((String)lAttrs.get(Conditions.ATTR_COLUMN_NAME));
@@ -96,7 +96,7 @@ public class DynaQuery implements IQuery {
     }
     
     @Override
-    public IQuery orderBy(String aColumnName, Ordering aDir) {
+    public ISelectQuery orderBy(String aColumnName, Ordering aDir) {
         OrderObject.Dir lDir = OrderObject.Dir.ASCENDING;
         if(aDir == Ordering.DESCENDING) {
             lDir = OrderObject.Dir.DESCENDING;

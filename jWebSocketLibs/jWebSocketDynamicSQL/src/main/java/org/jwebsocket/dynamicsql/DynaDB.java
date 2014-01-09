@@ -29,8 +29,11 @@ import org.apache.ddlutils.PlatformFactory;
 import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.model.Table;
 import org.jwebsocket.dynamicsql.api.IDatabase;
-import org.jwebsocket.dynamicsql.api.IQuery;
+import org.jwebsocket.dynamicsql.api.IDeleteQuery;
+import org.jwebsocket.dynamicsql.api.ISelectQuery;
 import org.jwebsocket.dynamicsql.api.ITable;
+import org.jwebsocket.dynamicsql.platform.derby.Derby107Platform;
+import org.jwebsocket.dynamicsql.query.DynaDeleteQuery;
 
 /**
  *
@@ -43,6 +46,8 @@ public class DynaDB implements IDatabase {
     private Map<String, String> mOptions;
 
     public DynaDB(String aDatabaseName, DataSource aDataSource) {
+        PlatformFactory.registerPlatform("Derby", Derby107Platform.class);
+        
         mPlatform = PlatformFactory.createNewPlatformInstance(aDataSource);
         mPlatform.setDelimitedIdentifierModeOn(true);
         mDB = mPlatform.readModelFromDatabase(aDatabaseName);
@@ -57,7 +62,10 @@ public class DynaDB implements IDatabase {
     @Override
     public void addTable(ITable aTable) {
         if (mDB.findTable(aTable.getName()) == null) {
-            mDB.addTable(aTable.getTable());
+            Database lDB = new Database();
+            lDB.addTable(aTable.getTable());
+            mPlatform.createTables(lDB, false, true);
+            mDB = mPlatform.readModelFromDatabase(mDB.getName());
         }
     }
 
@@ -70,7 +78,6 @@ public class DynaDB implements IDatabase {
 
     @Override
     public void createTables(boolean aDropTablesFirst, boolean aContinueOnError) {
-        System.out.println(mPlatform.getCreateTablesSql(mDB, aDropTablesFirst, aContinueOnError));
         mPlatform.createTables(mDB, aDropTablesFirst, aContinueOnError);
     }
 
@@ -114,6 +121,16 @@ public class DynaDB implements IDatabase {
         }
         return lDynaBean;
     }
+    
+    @Override
+    public void delete(IDeleteQuery aQuery) {
+        mPlatform.evaluateBatch(aQuery.getSQL(), true);
+    }
+    
+    @Override
+    public void clearTable(String aTableName) {
+        mPlatform.evaluateBatch(new DynaDeleteQuery(this, aTableName).getSQL(), true);
+    }
 
     @Override
     public Map<String, String> getOptions() {
@@ -121,17 +138,17 @@ public class DynaDB implements IDatabase {
     }
 
     @Override
-    public List<DynaBean> fetch(IQuery aQuery, Integer aOffset, Integer aLimit) {
+    public List<DynaBean> fetch(ISelectQuery aQuery, Integer aOffset, Integer aLimit) {
         return mPlatform.fetch(mDB,aQuery.getSQL(), aOffset, aLimit);
     }
 
     @Override
-    public Iterator execute(IQuery aQuery) {
+    public Iterator execute(ISelectQuery aQuery) {
         return mPlatform.query(mDB, aQuery.getSQL());
     }
 
     @Override
-    public List<DynaBean> fetch(IQuery aQuery) {
+    public List<DynaBean> fetch(ISelectQuery aQuery) {
         return mPlatform.fetch(mDB,aQuery.getSQL());
     }
 }

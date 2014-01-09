@@ -55,12 +55,18 @@ public interface IDAO {
 	 */
     public void delete(Map<String, Object> aItem);
     
+    public void delete(IDeleteQuery aQuery);
+    
+    public void clear();
+    
+    public IDeleteQuery getBasicDeleteQuery();
+    
     /**
 	 * Return a basic select query, equal to (SELECT * FROM <tableName>).
 	 *
 	 * @return a basic select query.
 	 */
-    public IQuery getBasicQuery();
+    public ISelectQuery getBasicSelectQuery();
     
     /**
 	 * Return a list with all DynaBean objects associated with the records returned
@@ -72,7 +78,7 @@ public interface IDAO {
 	 * @return list with all the records returned by the query, considering the 
      * offset and limit of the query.
 	 */
-    public List<DynaBean> fetch(IQuery aQuery, Integer aOffset, Integer aLimit);
+    public List<DynaBean> fetch(ISelectQuery aQuery, Integer aOffset, Integer aLimit);
     
     /**
 	 * Return a list with all DynaBean objects associated with the records returned
@@ -81,7 +87,7 @@ public interface IDAO {
      * @param aQuery The query to execute.
 	 * @return list with all the records returned by the query.
 	 */
-    public List<DynaBean> fetch(IQuery aQuery);
+    public List<DynaBean> fetch(ISelectQuery aQuery);
     
     /**
 	 * Return a Iterator allowing iterate for all the records returned by the query.
@@ -89,12 +95,20 @@ public interface IDAO {
      * @param aQuery The query to execute.
 	 * @return a Iterator allowing iterate for all the records returned by the query.
 	 */
-    public Iterator execute(IQuery aQuery);
+    public Iterator execute(ISelectQuery aQuery);
     
     /**
 	 * Return the amount of tuples that contain the table.
 	 *
 	 * @return the amount of tuples that contain the table.
 	 */
-    public Integer count();
+    public Long count();
+    
+    /**
+	 * Return the amount of tuples that contain the result of query.
+	 *
+     * @param aQuery The query to execute.
+	 * @return the amount of tuples that contain the table.
+	 */
+    public Long countResult(ISelectQuery aQuery);
 }

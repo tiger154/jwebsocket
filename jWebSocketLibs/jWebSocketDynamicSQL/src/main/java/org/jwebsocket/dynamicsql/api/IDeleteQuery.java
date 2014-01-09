@@ -18,16 +18,13 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.dynamicsql.api;
 
-import org.jwebsocket.dynamicsql.query.Ordering;
-
 /**
  *
  * @author markos
  */
-public interface IQuery {
+public interface IDeleteQuery {
     
-    public IQuery and(ICondition aCondition);
-    public IQuery or(ICondition aCondition);
-    public IQuery orderBy(String aColumnName, Ordering aDir);
+    public IDeleteQuery and(ICondition aCondition);
+    public IDeleteQuery or(ICondition aCondition);
     public String getSQL();
 }

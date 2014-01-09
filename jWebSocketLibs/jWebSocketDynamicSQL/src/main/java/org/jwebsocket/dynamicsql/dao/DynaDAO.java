@@ -10,8 +10,10 @@ import java.util.Map;
 import org.apache.commons.beanutils.DynaBean;
 import org.jwebsocket.dynamicsql.api.IDAO;
 import org.jwebsocket.dynamicsql.api.IDatabase;
-import org.jwebsocket.dynamicsql.api.IQuery;
-import org.jwebsocket.dynamicsql.query.DynaQuery;
+import org.jwebsocket.dynamicsql.api.IDeleteQuery;
+import org.jwebsocket.dynamicsql.api.ISelectQuery;
+import org.jwebsocket.dynamicsql.query.DynaDeleteQuery;
+import org.jwebsocket.dynamicsql.query.DynaSelectQuery;
 
 /**
  *
@@ -25,6 +27,10 @@ public class DynaDAO implements IDAO {
     public DynaDAO(IDatabase mDB, String mTable) {
         this.mDB = mDB;
         this.mTable = mTable;
+    }
+
+    public IDatabase getDB() {
+        return mDB;
     }
 
     @Override
@@ -43,29 +49,55 @@ public class DynaDAO implements IDAO {
     }
     
     @Override
-    public IQuery getBasicQuery() {
-        return new DynaQuery(mDB, mTable);
+    public void delete(IDeleteQuery aQuery) {
+        mDB.delete(aQuery);
     }
 
     @Override
-    public List<DynaBean> fetch(IQuery aQuery, Integer aOffset, Integer aLimit) {
+    public void clear() {
+        mDB.clearTable(mTable);
+    }
+
+    @Override
+    public IDeleteQuery getBasicDeleteQuery() {
+        return new DynaDeleteQuery(mDB, mTable);
+    }
+    
+    @Override
+    public ISelectQuery getBasicSelectQuery() {
+        return new DynaSelectQuery(mDB, mTable);
+    }
+
+    @Override
+    public List<DynaBean> fetch(ISelectQuery aQuery, Integer aOffset, Integer aLimit) {
         return mDB.fetch(aQuery, aOffset, aLimit);
     }
 
     @Override
-    public List<DynaBean> fetch(IQuery aQuery) {
+    public List<DynaBean> fetch(ISelectQuery aQuery) {
         return mDB.fetch(aQuery);
     }
 
     @Override
-    public Iterator execute(IQuery aQuery) {
+    public Iterator execute(ISelectQuery aQuery) {
         return mDB.execute(aQuery);
     }
 
     @Override
-    public Integer count() {
-        Iterator lIterator = execute(getBasicQuery());
-        Integer lCount = 0;
+    public Long count() {
+        Iterator lIterator = execute(getBasicSelectQuery());
+        Long lCount = new Long(0);
+        while (lIterator.hasNext()) {
+            lIterator.next();
+            lCount++;
+        }
+        return lCount;
+    }
+
+    @Override
+    public Long countResult(ISelectQuery aQuery) {
+        Iterator lIterator = execute(aQuery);
+        Long lCount = new Long(0);
         while (lIterator.hasNext()) {
             lIterator.next();
             lCount++;

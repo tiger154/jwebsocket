@@ -101,6 +101,9 @@ public interface IDatabase {
 	 */
     public void delete(String aTableName, Map<String, Object> aItem);
     
+    public void delete(IDeleteQuery aQuery);
+    public void clearTable(String aTableName);
+    
     /**
 	 * Return the database options to support a platform specifically.
 	 *
@@ -118,7 +121,7 @@ public interface IDatabase {
 	 * @return list with all the records returned by the query, considering the 
      * offset and limit of the query.
 	 */
-    public List<DynaBean> fetch(IQuery aQuery, Integer aOffset, Integer aLimit);
+    public List<DynaBean> fetch(ISelectQuery aQuery, Integer aOffset, Integer aLimit);
     
     /**
 	 * Return a list with all DynaBean objects associated with the records returned
@@ -127,7 +130,7 @@ public interface IDatabase {
      * @param aQuery The query to execute.
 	 * @return list with all the records returned by the query.
 	 */
-    public List<DynaBean> fetch(IQuery aQuery);
+    public List<DynaBean> fetch(ISelectQuery aQuery);
     
     /**
 	 * Return a Iterator allowing iterate for all the records returned by the query.
@@ -135,5 +138,5 @@ public interface IDatabase {
      * @param aQuery The query to execute.
 	 * @return a Iterator allowing iterate for all the records returned by the query.
 	 */
-    public Iterator execute(IQuery aQuery);
+    public Iterator execute(ISelectQuery aQuery);
 }
