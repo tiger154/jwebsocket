@@ -351,13 +351,34 @@
 			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
 			<url>http://repository.springsource.com/maven/bundles/external</url>
 		</repository>
-<!--	blacklisted repo:
+		<!-- for the proton dependency -->
 		<repository>
-			<id>java.net2</id>
-			<name>Repository hosting the jee6 artifacts</name>
-			<url>http://download.java.net/maven/2</url>
-		</repository>		
--->		
+			<id>com.fusesource.m2</id>
+			<url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>com.fusesource.m2.snapshot</id>
+			<url>http://repo.fusesource.com/nexus/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<!--	blacklisted repo:
+				<repository>
+					<id>java.net2</id>
+					<name>Repository hosting the jee6 artifacts</name>
+					<url>http://download.java.net/maven/2</url>
+				</repository>		
+		-->		
 		<!-- Jasper Reports repository -->
 		<repository>
 			<id>Jasper-repo</id>
