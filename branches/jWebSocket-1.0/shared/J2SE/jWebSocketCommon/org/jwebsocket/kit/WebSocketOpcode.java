@@ -44,7 +44,7 @@ public class WebSocketOpcode {
 	/**
 	 *
 	 */
-	public int OPCODE_CLOSE = 0x09;
+	public int OPCODE_CLOSE = 0x08;
 	/**
 	 *
 	 */
