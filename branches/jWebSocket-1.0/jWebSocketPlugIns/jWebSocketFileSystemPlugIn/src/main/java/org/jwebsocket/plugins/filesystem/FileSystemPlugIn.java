@@ -545,7 +545,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			} else {
 				if (lEncoding.equals("base64")) {
 					lResponse.getMap().put("data", Tools.base64Encode(lBA));
-				} else if (lEncoding.equals("zipBase64") {
+				} else if (lEncoding.equals("zipBase64")) {
 					Tools.zip(lBA, Boolean.TRUE);
 				}
 				lResponse.setBoolean("__binaryData", Boolean.TRUE);
@@ -553,6 +553,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			// setting the file MIME type
 			lResponse.setString("mime", lFileType);
 		} catch (IOException lEx) {
+			lResponse.setInteger("code", -1);
+			lMsg = lEx.getClass().getSimpleName() + " on load: " + lEx.getMessage();
+			lResponse.setString("msg", lMsg);
+			mLog.error(lMsg);
+		} catch (Exception lEx) {
 			lResponse.setInteger("code", -1);
 			lMsg = lEx.getClass().getSimpleName() + " on load: " + lEx.getMessage();
 			lResponse.setString("msg", lMsg);
