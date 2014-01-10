@@ -520,6 +520,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		File lFile = new File(lBaseDir + lFilename);
+		String lEncoding = aToken.getString("encoding", "base64");
 
 		byte[] lBA;
 		try {
@@ -542,7 +543,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				lData = new String(lBA);
 				lResponse.setString("data", lData);
 			} else {
-				lResponse.getMap().put("data", lBA);
+				if (lEncoding.equals("base64")) {
+					lResponse.getMap().put("data", Tools.base64Encode(lBA));
+				} else if (lEncoding.equals("zipBase64") {
+					Tools.zip(lBA, Boolean.TRUE);
+				}
 				lResponse.setBoolean("__binaryData", Boolean.TRUE);
 			}
 			// setting the file MIME type
@@ -555,7 +560,6 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		}
 
 		// send response to requester
-		String lEncoding = aToken.getString("encoding", "base64");
 		lResponse.setMap("enc", new MapAppender().append("data", lEncoding).getMap());
 		lResponse.setString("filename", lFilename);
 		lServer.sendToken(aConnector, lResponse);

@@ -17,7 +17,7 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
-if ( undefined == jws.tests.enterprise ){
+if ( undefined === jws.tests.enterprise ){
 	jws.tests.enterprise = {};
 }
 jws.tests.enterprise.FileSystem = {
@@ -469,7 +469,7 @@ jws.tests.enterprise.FileSystem = {
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			jws.FileSystemPlugIn.ALIAS_PRIVATE,
 			this.TEST_FILE_DATA + this.TEST_FILE_DATA2 + this.TEST_FILE_DATA3);
-
+			
 		jws.tests.enterprise.FileSystem.testDirectoryDelete(this.TEST_FOLDER, 0);	
 		jws.tests.enterprise.FileSystem.testDirectoryDelete(this.TEST_FOLDER, -1);	
 
