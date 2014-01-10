@@ -579,6 +579,18 @@ public final class WebSocketHandshake {
 		String lPath = mURI.getPath();
 		String lHost = mURI.getHost();
 		mOrigin = "http://" + lHost;
+
+		String lProtocol = "http";
+		if ("wss".equals(mURI.getScheme())) {
+			lProtocol = "https";
+		}
+		try {
+			URL lURL = new URL(lProtocol, mURI.getHost(), mURI.getPort(), "");
+			mOrigin = lURL.toString();
+		} catch (MalformedURLException e) {
+			// todo: proper excpetion handling
+		}
+
 		if ("".equals(lPath)) {
 			lPath = "/";
 		}
