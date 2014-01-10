@@ -1009,8 +1009,9 @@ public class TokenServer extends BaseServer {
 	 * Gets the global JMSManager
 	 *
 	 * @return
+	 * @throws java.lang.Exception
 	 */
-	public JMSManager getJMSManager() {
+	public JMSManager getJMSManager() throws Exception{
 		return (JMSManager) JWebSocketBeanFactory.getInstance().getBean("jmsManager");
 	}
 }

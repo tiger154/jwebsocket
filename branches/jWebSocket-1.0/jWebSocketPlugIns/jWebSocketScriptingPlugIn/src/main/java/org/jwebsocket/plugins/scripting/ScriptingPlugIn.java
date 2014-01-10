@@ -116,7 +116,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		}
 		// specify default name space for file system plugin
 		this.setNamespace(NS);
-		
+
 		try {
 			mBeanFactory = getConfigBeanFactory(NS);
 			if (null == mBeanFactory) {
@@ -174,48 +174,52 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		}
 
 		notifyToApps(BaseScriptApp.EVENT_SYSTEM_STARTED, new Object[0]);
+		try {
+			// registering on message hub if running on a cluster
+			getServer().getJMSManager().subscribe(new MessageListener() {
 
-		// registering on message hub if running on a cluster
-		getServer().getJMSManager().subscribe(new MessageListener() {
-
-			@Override
-			public void onMessage(Message aMessage) {
-				try {
-					// discard processing if the message comes from the current server node
-					if (JWebSocketConfig.getConfig().getNodeId().equals(aMessage.getStringProperty(Attributes.NODE_ID))) {
-						return;
-					}
-
-					ClusterMessageTypes lType = ClusterMessageTypes.valueOf(aMessage.getStringProperty(Attributes.MESSAGE_TYPE));
-					switch (lType) {
-						case LOAD_APP: {
-							String lAppName = aMessage.getStringProperty("appName");
-							Boolean lHotLoad = aMessage.getBooleanProperty("hotLoad");
-							String lPath = mSettings.getApps().get(lAppName);
-
-							// loading app
-							loadApp(lAppName, lPath, lHotLoad);
-							break;
+				@Override
+				public void onMessage(Message aMessage) {
+					try {
+						// discard processing if the message comes from the current server node
+						if (JWebSocketConfig.getConfig().getNodeId().equals(aMessage.getStringProperty(Attributes.NODE_ID))) {
+							return;
 						}
-						case UNDEPLOY_APP: {
-							String lAppName = aMessage.getStringProperty("appName");
-							// validating
-							BaseScriptApp lScriptApp = mApps.get(lAppName);
 
-							// notifying event before undeploy
-							lScriptApp.notifyEvent(BaseScriptApp.EVENT_UNDEPLOYING, new Object[0]);
+						ClusterMessageTypes lType = ClusterMessageTypes.valueOf(aMessage.getStringProperty(Attributes.MESSAGE_TYPE));
+						switch (lType) {
+							case LOAD_APP: {
+								String lAppName = aMessage.getStringProperty("appName");
+								Boolean lHotLoad = aMessage.getBooleanProperty("hotLoad");
+								String lPath = mSettings.getApps().get(lAppName);
 
-							// deleting app
-							mApps.remove(lAppName);
-							FileUtils.deleteDirectory(new File(lScriptApp.getPath()));
-							break;
+								// loading app
+								loadApp(lAppName, lPath, lHotLoad);
+								break;
+							}
+							case UNDEPLOY_APP: {
+								String lAppName = aMessage.getStringProperty("appName");
+								// validating
+								BaseScriptApp lScriptApp = mApps.get(lAppName);
+
+								// notifying event before undeploy
+								lScriptApp.notifyEvent(BaseScriptApp.EVENT_UNDEPLOYING, new Object[0]);
+
+								// deleting app
+								mApps.remove(lAppName);
+								FileUtils.deleteDirectory(new File(lScriptApp.getPath()));
+								break;
+							}
 						}
+					} catch (Exception lEx) {
+						mLog.error(Logging.getSimpleExceptionMessage(lEx, "processing cluster message: " + aMessage.toString()));
 					}
-				} catch (Exception lEx) {
-					mLog.error(Logging.getSimpleExceptionMessage(lEx, "processing cluster message: " + aMessage.toString()));
 				}
-			}
-		}, "NS = '" + NS + "'");
+			}, "NS = '" + NS + "'");
+		} catch (Exception aException) {
+			mLog.error("Exception catched while getting the JMS Manager instance with the following message: " + aException.getMessage());
+		}
+
 	}
 
 	@Override
@@ -633,16 +637,22 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		loadApp(lAppName, lAppPath, lHotReload);
 
 		// broadcasting event to other ScriptingPlugIn nodes
-		JMSManager lJMSManager = getServer().getJMSManager();
-		// building the message
-		MapMessage lMessage = lJMSManager.buildMessage(NS, ClusterMessageTypes.LOAD_APP.name());
-		lMessage.setStringProperty("appName", lAppName);
-		lMessage.setBooleanProperty("hotLoad", lHotReload);
-		lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
+		JMSManager lJMSManager = null;
+		try {
+			lJMSManager = getServer().getJMSManager();
+		} catch (Exception aException) {
+			mLog.error("Failed to get JMS Manager with the following exception: " + aException.getMessage());
+		}
+		if (lJMSManager != null) {
+			// building the message
+			MapMessage lMessage = lJMSManager.buildMessage(NS, ClusterMessageTypes.LOAD_APP.name());
+			lMessage.setStringProperty("appName", lAppName);
+			lMessage.setBooleanProperty("hotLoad", lHotReload);
+			lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
 
-		// sending the message
-		lJMSManager.send(lMessage);
-
+			// sending the message
+			lJMSManager.send(lMessage);
+		}
 		sendToken(aConnector, createResponse(aToken));
 	}
 
@@ -813,16 +823,22 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		loadApp(lAppName, lAppDir.getAbsolutePath(), lHotDeploy);
 
 		// broadcasting event to other ScriptingPlugIn nodes
-		JMSManager lJMSManager = getServer().getJMSManager();
-		// building the message
-		MapMessage lMessage = lJMSManager.buildMessage(NS, ClusterMessageTypes.LOAD_APP.name());
-		lMessage.setStringProperty("appName", lAppName);
-		lMessage.setBooleanProperty("hotLoad", lHotDeploy);
-		lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
+		JMSManager lJMSManager = null;
+		try {
+			lJMSManager = getServer().getJMSManager();
+		} catch (Exception aException) {
+			mLog.error("Failed to get JMS Manager with the following exception: " + aException.getMessage());
+		}
+		if (lJMSManager != null) {
+			// building the message
+			MapMessage lMessage = lJMSManager.buildMessage(NS, ClusterMessageTypes.LOAD_APP.name());
+			lMessage.setStringProperty("appName", lAppName);
+			lMessage.setBooleanProperty("hotLoad", lHotDeploy);
+			lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
 
-		// sending the message
-		lJMSManager.send(lMessage);
-
+			// sending the message
+			lJMSManager.send(lMessage);
+		}
 		// finally send acknowledge response
 		sendToken(aConnector, createResponse(aToken));
 	}
@@ -892,15 +908,21 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		FileUtils.deleteDirectory(new File(lScriptApp.getPath()));
 
 		// broadcasting event to other ScriptingPlugIn nodes
-		JMSManager lJMSManager = getServer().getJMSManager();
-		// building the message
-		MapMessage lMessage = lJMSManager.buildMessage(NS, ClusterMessageTypes.UNDEPLOY_APP.name());
-		lMessage.setStringProperty("appName", lApp);
-		lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
+		JMSManager lJMSManager = null;
+		try {
+			lJMSManager = getServer().getJMSManager();
+		} catch (Exception aException) {
+			mLog.error("Failed to get JMS Manager with the following exception: " + aException.getMessage());
+		}
+		if (lJMSManager != null) {
+			// building the message
+			MapMessage lMessage = lJMSManager.buildMessage(NS, ClusterMessageTypes.UNDEPLOY_APP.name());
+			lMessage.setStringProperty("appName", lApp);
+			lMessage.setStringProperty(Attributes.NODE_ID, JWebSocketConfig.getConfig().getNodeId());
 
-		// sending the message
-		lJMSManager.send(lMessage);
-
+			// sending the message
+			lJMSManager.send(lMessage);
+		}
 		// acknowledge response for the client
 		sendToken(aConnector, createResponse(aToken));
 	}
