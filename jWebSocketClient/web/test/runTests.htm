@@ -146,7 +146,7 @@
 							<option value="ws">Unsecure (ws)</option>
 							<option value="wss">Secure (wss)</option>
 						</select>
-						
+
 						<p id="tests">
 							<label><input id="openConns" type="checkbox" disabled checked="checked"> Open connections for admin and guest</label>
 							<br>
@@ -181,12 +181,12 @@
 				<tr>
 					<td>
 						<div id="sbtnManualTest" class="button" 
-							 onmouseover="this.className='button onmouseover'" 
-							 onmousedown="this.className='button onmousedown'" 
-							 onmouseup="this.className='button onmouseup'" 
-							 onmouseout="this.className='button onmouseout'" 
-							 onclick="run({action:'runFullTestSuite'});
-								 this.className='button onmouseover';"
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'" 
+							 onclick="run({action: 'runFullTestSuite'});
+									 this.className = 'button onmouseover';"
 							 title="Runs the manual (programmatic) test suite.">
 							<div class="btn_left"></div>
 							<div class="btn_center">Run selected tests!</div>
@@ -194,11 +194,12 @@
 						</div>
 
 						<div id="sbtnBenchmarkTest" class="button onmouseup" 
-							 onmouseover="this.className='button onmouseover'" 
-							 onmousedown="this.className='button onmousedown'" 
-							 onmouseup="this.className='button onmouseup'" 
-							 onmouseout="this.className='button onmouseout'" 
-							 onclick="run({action:'runBenchmarkSuite'});this.className='button onmouseover';"
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'" 
+							 onclick="run({action: 'runBenchmarkSuite'});
+									 this.className = 'button onmouseover';"
 							 title="Runs the benchmark suite.">
 							<div class="btn_left"></div>
 							<div class="btn_center">Run benchmark test!</div>
@@ -210,80 +211,80 @@
 		</div>
 		<script type="text/javascript">
 			var lCheckboxes = $('#tests').find('input[type=checkbox]');
-			$.each(lCheckboxes,  function(aIndex, aItem){
-				if ($(aItem).prop('id').substr(-2) == 'EE'){
+			$.each(lCheckboxes, function(aIndex, aItem) {
+				if ($(aItem).prop('id').substr(-2) == 'EE') {
 					$(aItem).prop('checked', false);
 				}
 			});
-			
+
 			var lComboSpeed = $('#speed');
-			
+
 			var lCombo = $('#test_set');
 			lCombo.bind('change', function(aValue) {
-				$.each(lCheckboxes,  function(aIndex, aItem){
+				$.each(lCheckboxes, function(aIndex, aItem) {
 					var lId = $(aItem).prop('id');
-					if ('openConns' == lId || 'closeConns' == lId){
+					if ('openConns' == lId || 'closeConns' == lId) {
 						return;
 					}
-					
-					if ('ce' == lCombo.val()){
-						if (lId.substr(-2) == 'EE'){
+
+					if ('ce' == lCombo.val()) {
+						if (lId.substr(-2) == 'EE') {
 							$(aItem).prop('checked', false);
 						} else {
-							$(aItem).prop('checked', true);	
+							$(aItem).prop('checked', true);
 						}
-					} else if ('ee' == lCombo.val()){
-						if (lId.substr(-2) == 'EE'){
+					} else if ('ee' == lCombo.val()) {
+						if (lId.substr(-2) == 'EE') {
 							$(aItem).prop('checked', true);
 						} else {
-							$(aItem).prop('checked', false);	
+							$(aItem).prop('checked', false);
 						}
-					} else if ('performance' == lCombo.val()){
-						if (lId == 'load'){
+					} else if ('performance' == lCombo.val()) {
+						if (lId == 'load') {
 							$(aItem).prop('checked', true);
 						} else {
-							$(aItem).prop('checked', false);	
+							$(aItem).prop('checked', false);
 						}
-					} else if ('system' == lCombo.val()){
-						if (lId == 'systemPlugIn'){
+					} else if ('system' == lCombo.val()) {
+						if (lId == 'systemPlugIn') {
 							$(aItem).prop('checked', true);
 						} else {
-							$(aItem).prop('checked', false);	
+							$(aItem).prop('checked', false);
 						}
 					}
-					
+
 				});
 			});
-			
+
 			function getURL() {
 				var lHref = location.href;
-				var lIdx = lHref.indexOf( "?" );
-				if( lIdx > 0 ) {
-					lHref = lHref.substring( 0, lIdx );
+				var lIdx = lHref.indexOf("?");
+				if (lIdx > 0) {
+					lHref = lHref.substring(0, lIdx);
 				}
 				return lHref;
 			}
 
-			function run( aCall ) {
-				if ( "runFullTestSuite" == aCall.action ){
+			function run(aCall) {
+				if ("runFullTestSuite" == aCall.action) {
 					aCall.set = $('#test_set').val();
 					aCall.speed = $('#speed').val();
 					aCall.tls = $('#tls_set').val();
 					aCall.args = {
 						openConns: true,
-						streamingPlugIn: (jws.$("streamingPlugIn").checked)? true : false,
-						channelsPlugIn: (jws.$("channelsPlugIn").checked)? true : false,
-						rpcPlugIn: (jws.$("rpcPlugIn").checked)? true : false,
-						automatedAPIPlugIn: (jws.$("automatedAPIPlugIn").checked)? true : false,
-						filesystemPlugIn: (jws.$("filesystemPlugIn").checked)? true : false,
-						filesystemPlugInEE: (jws.$("filesystemPlugInEE").checked)? true : false,
-						itemstoragePlugIn: (jws.$("itemstoragePlugIn").checked)? true : false,
-						itemstoragePlugInEE: (jws.$("itemstoragePlugInEE").checked)? true : false,
-						systemPlugIn: (jws.$("systemPlugIn").checked)? true : false,
-						load: (jws.$("load").checked)? true : false,
+						streamingPlugIn: (jws.$("streamingPlugIn").checked) ? true : false,
+						channelsPlugIn: (jws.$("channelsPlugIn").checked) ? true : false,
+						rpcPlugIn: (jws.$("rpcPlugIn").checked) ? true : false,
+						automatedAPIPlugIn: (jws.$("automatedAPIPlugIn").checked) ? true : false,
+						filesystemPlugIn: (jws.$("filesystemPlugIn").checked) ? true : false,
+						filesystemPlugInEE: (jws.$("filesystemPlugInEE").checked) ? true : false,
+						itemstoragePlugIn: (jws.$("itemstoragePlugIn").checked) ? true : false,
+						itemstoragePlugInEE: (jws.$("itemstoragePlugInEE").checked) ? true : false,
+						systemPlugIn: (jws.$("systemPlugIn").checked) ? true : false,
+						load: (jws.$("load").checked) ? true : false,
 						closeConns: true,
-						ioc: (jws.$("ioc").checked)? true : false,
-						events: (jws.$("events").checked)? true : false,
+						ioc: (jws.$("ioc").checked) ? true : false,
+						events: (jws.$("events").checked) ? true : false,
 						__speed: $('#speed').val()
 					};
 				}
@@ -292,21 +293,21 @@
 
 			var path = location.search.substr(1);
 			var request = null;
-			if (path){
+			if (path) {
 				request = JSON.parse(path.split("%22").join("\""));
 			}
-			
-			if (request['set']){
+
+			if (request['set']) {
 				lCombo.val(request['set'])
 			}
-			if (request['speed']){
+			if (request['speed']) {
 				lComboSpeed.val(request['speed'])
 			}
-			if (request['tls']){
+			if (request['tls']) {
 				$('#tls_set').val(request['tls'])
 			}
-			if( request && request["action"] ) {
-				if ("runFullTestSuite" == request["action"] && !request["args"]){
+			if (request && request["action"]) {
+				if ("runFullTestSuite" == request["action"] && !request["args"]) {
 					request["args"] = {
 						openConns: true,
 						streamingPlugIn: true,
@@ -322,28 +323,31 @@
 						events: true
 					};
 				}
-			
+
 				//Getting the function
 				request["action"] = eval(request["action"]);
-			
+
 				//Calling the tests
 				request["action"](request["args"]);
-				
+
 				// jws.console.setActive( true );
 				// jws.console.setLevel( jws.console.ALL );
 				jws.TestPlugIn.execTests();
-			
+
 				//Setting up checkboxes state
-				for (var lCheckbox in request["args"]){
-					jws.$(lCheckbox).checked = request["args"][lCheckbox];
+				for (var lCheckbox in request["args"]) {
+					// avoid __speed
+					if (!lCheckbox.indexOf("__") === 0) {
+						jws.$(lCheckbox).checked = request["args"][lCheckbox];
+					}
 				}
 			}
 
-			if( jws.browserSupportsWebSockets() ) {
+			if (jws.browserSupportsWebSockets()) {
 
 			} else {
 				var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-				alert( lMsg );
+				alert(lMsg);
 			}
 		</script>
 	</body>
