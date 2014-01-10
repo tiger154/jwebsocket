@@ -42,7 +42,7 @@ import org.springframework.util.Assert;
 public class JMSEndPointSender {
 
 	// TODO: Introduce timeout management
-	static final Logger mLog = Logger.getLogger(JMSEndPointSender.class);
+	private static final Logger mLog = Logger.getLogger(JMSEndPointSender.class);
 	private final MessageProducer mProducer;
 	private final Session mSession;
 	private final String mEndPointId;
@@ -110,7 +110,7 @@ public class JMSEndPointSender {
 						}
 					}
 
-				} catch (Exception lEx) {
+				} catch (JMSException lEx) {
 				}
 			}
 
@@ -157,7 +157,9 @@ public class JMSEndPointSender {
 			long aTimeout) {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Sending text: "
-					+ "[content suppressed, length: " + aText.length() + " bytes]"
+					+ (JMSLogging.isFullTextLogging()
+					? aText
+					: "[content suppressed, length: " + aText.length() + " bytes]")
 					+ "...");
 		}
 

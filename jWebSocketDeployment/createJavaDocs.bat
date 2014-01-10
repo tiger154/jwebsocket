@@ -250,11 +250,6 @@ echo ------------------------------------------------------------------------
 cd /d ..\jWebSocketSenchaPlugIn
 call mvn generate-sources javadoc:javadoc >> %log%
 echo ------------------------------------------------------------------------
-echo jWebSocketSharedCanvasPlugIn
-echo ------------------------------------------------------------------------
-cd /d ..\jWebSocketSharedCanvasPlugIn
-call mvn generate-sources javadoc:javadoc >> %log%
-echo ------------------------------------------------------------------------
 echo jWebSocketSharedObjectsPlugIn
 echo ------------------------------------------------------------------------
 cd /d ..\jWebSocketSharedObjectsPlugIn

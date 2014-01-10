@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.io.FileUtils;
 import org.jwebsocket.jms.endpoint.JMSEndPoint;
+import org.jwebsocket.jms.endpoint.JMSLogging;
 import org.jwebsocket.jms.endpoint.JWSEndPointMessageListener;
 import org.jwebsocket.jms.endpoint.JWSEndPointSender;
 import org.jwebsocket.jms.endpoint.JWSMessageListener;
@@ -41,7 +42,7 @@ import org.jwebsocket.util.Tools;
  * @author Alexander Schulze
  */
 public class JMSServer {
-
+	
 	static final Logger mLog = Logger.getLogger(JMSServer.class);
 	private JMSEndPoint lJMSEndPoint;
 
@@ -54,8 +55,7 @@ public class JMSServer {
 		// set up log4j logging
 		// later this should be read from a shared log4j properties or xml file!
 		Properties lProps = new Properties();
-		lProps.setProperty("log4j.rootLogger", "DEBUG, console");
-		lProps.setProperty("log4j.logger.org.jwebsocket", "DEBUG");
+		lProps.setProperty("log4j.rootLogger", "INFO, console");
 		lProps.setProperty("log4j.logger.org.apache.activemq", "WARN");
 		lProps.setProperty("log4j.logger.org.springframework", "WARN");
 		lProps.setProperty("log4j.logger.org.apache.xbean", "WARN");
@@ -63,10 +63,17 @@ public class JMSServer {
 		lProps.setProperty("log4j.logger.org.eclipse.jetty", "WARN");
 		lProps.setProperty("log4j.appender.console", "org.apache.log4j.ConsoleAppender");
 		lProps.setProperty("log4j.appender.console.layout", "org.apache.log4j.PatternLayout");
-		lProps.setProperty("log4j.appender.console.layout.ConversionPattern", "%p: %m%n");
+		lProps.setProperty("log4j.appender.console.layout.ConversionPattern",
+				// "%p: %m%n"
+				"%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p - %C{1}: %m%n"
+		);
+		// set here the jWebSocket log level:
+		lProps.setProperty("log4j.logger.org.jwebsocket", "DEBUG");
 		lProps.setProperty("log4j.appender.console.threshold", "DEBUG");
 		PropertyConfigurator.configure(lProps);
-
+		
+		JMSLogging.setFullTextLogging(false);
+		
 		String lBrokerURL = "failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false";
 		// the name of the JMD Gateway topic
 		String lGatewayTopic = "org.jwebsocket.jms.gateway"; // topic name of JMS Gateway
@@ -75,11 +82,10 @@ public class JMSServer {
 
 		// String lOAuthHostURL = "https://<yourhost>.com/as/token.oauth2";
 		// String lOAuthSecret = "<your secret>";
-
 		// tcp://172.20.116.68:61616 org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		// failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		mLog.info("jWebSocket JMS Gateway Server Endpoint");
-
+		
 		if (null != aArgs && aArgs.length >= 3) {
 			lBrokerURL = aArgs[0];
 			lGatewayTopic = aArgs[1];
@@ -89,9 +95,9 @@ public class JMSServer {
 			}
 			mLog.info("Using: "
 					+ lBrokerURL + ", "
-					+ lGatewayTopic + ", "
-					+ lGatewayId + ", "
-					+ lEndPointId);
+					+ "topic: " + lGatewayTopic + ", "
+					+ "gateway-id: " + lGatewayId + ", "
+					+ "endpoint-id: " + lEndPointId);
 		} else {
 			mLog.info("Usage: java -jar jWebSocketJMSServer-<ver>.jar URL gateway-topic gateway-id [node-id]");
 			mLog.info("Example: java -jar jWebSocketJMSServerBundle-1.0.jar tcp://172.20.116.68:61616 " + lGatewayTopic + " " + lGatewayId + " [your node id]");
@@ -107,13 +113,12 @@ public class JMSServer {
 				5, // thread pool size, messages being processed concurrently
 				JMSEndPoint.TEMPORARY // durable (for servers) or temporary (for clients)
 		);
-
+		
 		JWSEndPointMessageListener lListener = new JWSEndPointMessageListener(lJMSEndPoint);
 		final JWSEndPointSender lSender = new JWSEndPointSender(lJMSEndPoint);
 
 		// integrate OAuth library 
 		// final OAuth lOAuth = new OAuth(lOAuthHostURL, lOAuthSecret);
-
 		// on welcome message from jWebSocket, authenticate against jWebSocket
 		lListener.addRequestListener("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
 			@Override
@@ -150,25 +155,25 @@ public class JMSServer {
 					mLog.info("Processing 'getUser'...");
 				}
 				/*
-				Map<String, Object> lAdditionalResults = new FastMap<String, Object>();
-				String lAccessToken = aToken.getString("accessToken");
-				String lJSON = lOAuth.getUser(lAccessToken);
-				String lUsername = lOAuth.getUsername();
-				lAdditionalResults.put("username", lUsername);
-				lSender.respondPayload(
-						aToken.getString("sourceId"),
-						aToken,
-						lOAuth.getReturnCode(), // return code
-						lOAuth.getReturnMsg(), // return message
-						lAdditionalResults, // here you can add additional results beside the payload
-						"{}");
-				*/
+				 Map<String, Object> lAdditionalResults = new FastMap<String, Object>();
+				 String lAccessToken = aToken.getString("accessToken");
+				 String lJSON = lOAuth.getUser(lAccessToken);
+				 String lUsername = lOAuth.getUsername();
+				 lAdditionalResults.put("username", lUsername);
+				 lSender.respondPayload(
+				 aToken.getString("sourceId"),
+				 aToken,
+				 lOAuth.getReturnCode(), // return code
+				 lOAuth.getReturnMsg(), // return message
+				 lAdditionalResults, // here you can add additional results beside the payload
+				 "{}");
+				 */
 			}
 		});
 
 		// on response of the login...
 		lListener.addRequestListener(
-				"org.jwebsocket.jms.demo", "echo", new JWSMessageListener(lSender) {
+				"org.jwebsocket.plugins.jmsdemo", "echo", new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
 						String lPayload = aToken.getString("payload");
@@ -188,7 +193,7 @@ public class JMSServer {
 								aToken.getString("payload"));
 					}
 				});
-
+		
 		lListener.addRequestListener(
 				"tld.yourname.jms", "transferFile", new JWSMessageListener(lSender) {
 					@Override

@@ -20,6 +20,7 @@ package org.jwebsocket.jms.endpoint;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.log4j.Logger;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
@@ -30,6 +31,7 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class JWSEndPointSender extends JMSEndPointSender {
 
+	private static final Logger mLog = Logger.getLogger(JWSEndPointSender.class);
 	private static final AtomicInteger mUTID = new AtomicInteger(0);
 
 	private int getUTID() {
@@ -87,13 +89,21 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	 * @param aToken
 	 * @param aResponseListener
 	 */
-	public void sendToken(String aTargetId, Token aToken, JWSResponseTokenListener aResponseListener,
-			long aTimeout) {
+	public void sendToken(String aTargetId, Token aToken,
+			JWSResponseTokenListener aResponseListener, long aTimeout) {
 		int lUTID = aToken.getInteger("utid", mUTID.getAndIncrement());
 		aToken.setInteger("utid", lUTID);
 
+		if (mLog.isDebugEnabled()) {
+			mLog.debug("Sending token to '" + aTargetId	+ "': "
+					+ (JMSLogging.isFullTextLogging()
+					? aToken.toString()
+					: aToken.getLogString()));
+		}
 		// on the JMS Gateway we per defintion/specification only exchange JSON tokens
-		sendText(aTargetId, String.valueOf(lUTID), JSONProcessor.tokenToPacket(aToken).getUTF8(), aResponseListener, aTimeout);
+		sendText(aTargetId, String.valueOf(lUTID),
+				JSONProcessor.tokenToPacket(aToken).getUTF8(),
+				aResponseListener, aTimeout);
 	}
 
 	/**
@@ -158,6 +168,16 @@ public class JWSEndPointSender extends JMSEndPointSender {
 		sendPayload(aTargetId, aNS, aType, aUTID, aOriginId, aArgs, aPayload, null);
 	}
 
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aNS
+	 * @param aType
+	 * @param aArgs
+	 * @param aPayload
+	 * @param aResponseListener
+	 * @param aTimeout
+	 */
 	public void sendPayload(String aTargetId, String aNS, String aType,
 			Map<String, Object> aArgs, String aPayload,
 			JWSResponseTokenListener aResponseListener, long aTimeout) {
@@ -198,6 +218,41 @@ public class JWSEndPointSender extends JMSEndPointSender {
 	public void forwardPayload(String aTargetId, String aNS, String aType,
 			String aOriginId, Map<String, Object> aArgs, String aPayload) {
 		sendPayload(aTargetId, aNS, aType, getUTID(), aOriginId, aArgs, aPayload);
+	}
+
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aNS
+	 * @param aType
+	 * @param aOriginId The original endpoint of the message to be responded to
+	 * @param aArgs
+	 * @param aPayload
+	 * @param aResponseListener
+	 * @param aTimeout
+	 */
+	public void forwardPayload(String aTargetId, String aNS, String aType,
+			String aOriginId, Map<String, Object> aArgs, String aPayload,
+			JWSResponseTokenListener aResponseListener, long aTimeout) {
+		sendPayload(aTargetId, aNS, aType, getUTID(), aOriginId, aArgs,
+				aPayload, aResponseListener, aTimeout);
+	}
+
+	/**
+	 *
+	 * @param aTargetId
+	 * @param aNS
+	 * @param aType
+	 * @param aOriginId The original endpoint of the message to be responded to
+	 * @param aArgs
+	 * @param aPayload
+	 * @param aResponseListener
+	 */
+	public void forwardPayload(String aTargetId, String aNS, String aType,
+			String aOriginId, Map<String, Object> aArgs, String aPayload,
+			JWSResponseTokenListener aResponseListener) {
+		sendPayload(aTargetId, aNS, aType, getUTID(), aOriginId, aArgs,
+				aPayload, aResponseListener, 1000 * 10);
 	}
 
 	/**

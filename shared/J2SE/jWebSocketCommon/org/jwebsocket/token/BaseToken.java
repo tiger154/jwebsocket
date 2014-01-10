@@ -52,13 +52,14 @@ public abstract class BaseToken implements Token {
 	/**
 	 *
 	 */
-	private static FastMap<String, String> mExclFromLogs;
+	private static final FastMap<String, String> mExclFromLogs;
 
 	/**
 	 *
 	 */
 	static {
 		mExclFromLogs = new FastMap<String, String>();
+		setExclLogField(null);
 	}
 	/**
 	 *
@@ -195,18 +196,20 @@ public abstract class BaseToken implements Token {
 	 * @param aSettings
 	 */
 	public static void setExclLogField(Map<String, Object> aSettings) {
-		String[] lKeys = new String[]{"password", "secretPassword", "accessPassword", "newPassword"};
+		String[] lKeys = new String[]{"password", "secretPassword",
+			"accessPassword", "newPassword", "secret"};
 		String lValue = "*****";
-		if (aSettings.containsKey(SUPRESSED_LOG_FIELDS)) {
-			lKeys = aSettings.get(SUPRESSED_LOG_FIELDS).toString().split(",");
+		if (null != aSettings) {
+			if (aSettings.containsKey(SUPRESSED_LOG_FIELDS)) {
+				lKeys = aSettings.get(SUPRESSED_LOG_FIELDS).toString().split(",");
+			}
+			if (aSettings.containsKey(SUPRESSED_LOG_FIELDS_VALUE)) {
+				lValue = aSettings.get(SUPRESSED_LOG_FIELDS_VALUE).toString();
+			}
 		}
-		if (aSettings.containsKey(SUPRESSED_LOG_FIELDS_VALUE)) {
-			lValue = aSettings.get(SUPRESSED_LOG_FIELDS_VALUE).toString();
-		}
-
-		for (int i = 0; i < lKeys.length; i++) {
+		for (String lKey : lKeys) {
 			try {
-				mExclFromLogs.put(lKeys[i].trim(), lValue);
+				mExclFromLogs.put(lKey.trim(), lValue);
 			} catch (Exception lEx) {
 			}
 		}

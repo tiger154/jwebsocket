@@ -14,6 +14,7 @@
 		<module>jWebSocketServerAPI</module>
 		<module>jWebSocketClientAPI</module>
 		<module>jWebSocketServer</module>
+		<module>jWebSocketLibs</module>
 		<!-- <module>jWebSocketWatchDogClient</module> -->
 		<module>jWebSocketJavaSEClient</module>
 		<module>jWebSocketSamples</module>
@@ -39,7 +40,6 @@
 		<module>jWebSocketPlugIns/jWebSocketXMPPPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketStatisticsPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketSharedObjectsPlugIn</module>
-		<module>jWebSocketPlugIns/jWebSocketSharedCanvasPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketBenchmarkPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketAPIPlugIn</module>
 		<module>jWebSocketPlugIns/jWebSocketProxyPlugIn</module>
@@ -159,12 +159,14 @@
 		</repository>
 		
 		<!-- Java.net repository -->
+		<!-- blacklisted:
 		<repository>
 			<id>java-net-repo</id>
 			<name>Java.net Repository</name>
 			<url>http://download.java.net/maven/2</url>
 		</repository>
-
+		-->
+		
 		<!-- NetBeans repository -->
 		<repository>
 			<id>netbeans</id>
