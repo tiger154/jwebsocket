@@ -1413,7 +1413,7 @@
 				 need special privileges to use any port under 1024, for special 
                  requirements in Linux OS, please refer to our Linux Tips page:
 				 http://jwebsocket.org/documentation/reference-guide/linux-tips. -->
-				<!--<setting key="port">8843</setting>-->
+				<!-- <setting key="port">8843</setting> -->
 			</settings>
 		</plugin>
 
@@ -1439,17 +1439,6 @@
 			</server-assignments>
 		</plugin>
 
-		<!-- Shared Canvas PlugIn Configuration -->
-		<plugin>
-			<name>org.jwebsocket.sharedcanvas.SharedCanvasPlugIn</name>
-			<ns>org.jwebsocket.plugins.sharedcanvas</ns>
-			<id>SharedCanvasPlugIn</id>
-			<jar>jWebSocketSharedCanvasPlugIn-1.0.jar</jar>
-			<server-assignments>
-				<server-assignment>ts0</server-assignment>
-			</server-assignments>
-		</plugin>
-		
 		<!-- plug-in to support various independant streams on the server -->
 		<plugin>
 			<name>org.jwebsocket.plugins.streaming.StreamingPlugIn</name>
@@ -1558,6 +1547,19 @@
 				<setting key="destination:1" type="json">{name:"testQueue",pubSubDomain:false,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 				<setting key="destination:2" type="json">{name:"testTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
 				<setting key="destination:3" type="json">{name:"stockTopic",pubSubDomain:true,cfName:"connectionFactory",deliveryPersistent:false}</setting>
+			</settings>
+		</plugin>
+
+		<!-- plug-in for messaging via JMS -->
+		<plugin>
+			<name>org.jwebsocket.plugins.jmsdemo.JMSDemoPlugIn</name>
+			<id>jws.jmsdemo</id>
+			<ns>org.jWebSocket.plugins.jmsdemo</ns>
+			<jar>jWebSocketJMSDemoPlugIn-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+			<settings>
 			</settings>
 		</plugin>
 

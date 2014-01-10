@@ -41,7 +41,7 @@ import org.jwebsocket.token.TokenFactory;
 public class ChatPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
-	private static FastMap<String, WebSocketConnector> mClients =
+	private static final FastMap<String, WebSocketConnector> mClients =
 			new FastMap<String, WebSocketConnector>().shared();
 	/**
 	 *

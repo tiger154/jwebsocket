@@ -18,28 +18,10 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jmsdemo;
 
-import java.util.Map;
-import javolution.util.FastMap;
-
 /**
  *
  * @author aschulze
  */
 public class Settings {
 
-	private Map<String, String> mAllowedProgs = new FastMap<String, String>();
-
-	/**
-	 * @return the aliases
-	 */
-	public Map<String, String> getAllowedProgs() {
-		return mAllowedProgs;
-	}
-
-	/**
-	 * @param aAllowedProgs the aliases to set
-	 */
-	public void setAllowedProgs(Map aAllowedProgs) {
-		mAllowedProgs = aAllowedProgs;
-	}
 }

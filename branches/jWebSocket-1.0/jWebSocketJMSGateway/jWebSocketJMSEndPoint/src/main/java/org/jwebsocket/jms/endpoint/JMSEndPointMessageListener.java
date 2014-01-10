@@ -23,6 +23,7 @@ import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
+import org.apache.log4j.Logger;
 import org.jwebsocket.packetProcessors.JSONProcessor;
 import org.jwebsocket.token.Token;
 
@@ -33,6 +34,7 @@ import org.jwebsocket.token.Token;
  */
 public class JMSEndPointMessageListener implements IJMSMessageListener {
 
+	static final Logger mLog = Logger.getLogger(JMSEndPointMessageListener.class);
 	static long utid = 0;
 	private JMSEndPointSender mSender;
 	private final JMSEndPoint mJMSEndPoint;

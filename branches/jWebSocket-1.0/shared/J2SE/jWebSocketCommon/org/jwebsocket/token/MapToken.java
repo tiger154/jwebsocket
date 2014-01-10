@@ -34,14 +34,14 @@ import org.jwebsocket.api.ITokenizable;
  */
 public class MapToken extends BaseToken implements Token {
 
-	private Map mData = null;
+	private Map<String, Object> mData = null;
 
 	/**
 	 * Creates a new empty instance of a token. The token does not contain any
 	 * items.
 	 */
 	public MapToken() {
-		mData = new FastMap();
+		mData = new FastMap<String, Object>();
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class MapToken extends BaseToken implements Token {
 	 * @param aType
 	 */
 	public MapToken(String aType) {
-		mData = new FastMap();
+		mData = new FastMap<String, Object>();
 		setType(aType);
 	}
 
@@ -57,7 +57,7 @@ public class MapToken extends BaseToken implements Token {
 	 *
 	 * @param aMap
 	 */
-	public MapToken(FastMap aMap) {
+	public MapToken(FastMap<String, Object> aMap) {
 		mData = aMap;
 	}
 
@@ -67,7 +67,7 @@ public class MapToken extends BaseToken implements Token {
 	 * @param aType
 	 */
 	public MapToken(String aNS, String aType) {
-		mData = new FastMap();
+		mData = new FastMap<String, Object>();
 		setNS(aNS);
 		setType(aType);
 	}
@@ -99,7 +99,7 @@ public class MapToken extends BaseToken implements Token {
 	 * @return
 	 */
 	@Override
-	public Map getMap() {
+	public Map<String, Object> getMap() {
 		return mData;
 	}
 
@@ -300,7 +300,7 @@ public class MapToken extends BaseToken implements Token {
 			if (lResult == null) {
 				lResult = aDefault;
 			}
-		} catch (Exception lEx) {
+		} catch (NumberFormatException lEx) {
 			lResult = aDefault;
 		}
 		return lResult;

@@ -28,10 +28,25 @@ import org.jwebsocket.token.Token;
  */
 public class JWSResponseTokenListener implements IJMSResponseListener {
 
+	public static final String RESP_TIME_FIELD = "$respTimeElapsed";
+	private String mResponseTimeField = null;
+	private Long mRequestTime = null;
+
+	public JWSResponseTokenListener() {
+	}
+
+	public JWSResponseTokenListener(String aResponseTimeField) {
+		mResponseTimeField = aResponseTimeField;
+		mRequestTime = System.currentTimeMillis();
+	}
+
 	@Override
 	public void onReponse(String aReponse, Message aMessage) {
 		Token lResponseToken = JSONProcessor.JSONStringToToken(aReponse);
-
+		if (null != mResponseTimeField && null != lResponseToken) {
+			lResponseToken.setLong(mResponseTimeField,
+					System.currentTimeMillis() - mRequestTime);
+		}
 		// calling token callbacks
 		onReponse(lResponseToken);
 

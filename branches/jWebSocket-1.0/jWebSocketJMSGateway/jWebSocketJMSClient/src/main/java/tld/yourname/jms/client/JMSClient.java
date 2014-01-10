@@ -35,6 +35,7 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.Tools;
 import javolution.util.FastMap;
+import org.jwebsocket.jms.endpoint.JMSLogging;
 import org.jwebsocket.jms.endpoint.JWSResponseTokenListener;
 
 /**
@@ -65,9 +66,15 @@ public class JMSClient {
 		lProps.setProperty("log4j.logger.org.eclipse.jetty", "WARN");
 		lProps.setProperty("log4j.appender.console", "org.apache.log4j.ConsoleAppender");
 		lProps.setProperty("log4j.appender.console.layout", "org.apache.log4j.PatternLayout");
-		lProps.setProperty("log4j.appender.console.layout.ConversionPattern", "%p: %m%n");
-		lProps.setProperty("log4j.appender.console.threshold", "INFO");
+		lProps.setProperty("log4j.appender.console.layout.ConversionPattern",
+				// "%p: %m%n"
+				"%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p - %C{1}: %m%n"
+		);
+		// set here the jWebSocket log level:
+		lProps.setProperty("log4j.logger.org.jwebsocket", "DEBUG");
+		lProps.setProperty("log4j.appender.console.threshold", "DEBUG");
 		PropertyConfigurator.configure(lProps);
+		JMSLogging.setFullTextLogging(false);
 
 		// String lBrokerURL = "failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false";
 		String lBrokerURL = "tcp://hqdvalsap01:61616";
@@ -89,9 +96,9 @@ public class JMSClient {
 			}
 			mLog.info("Using: "
 					+ lBrokerURL + ", "
-					+ lGatewayTopic + ", "
-					+ lGatewayId + ", "
-					+ lEndPointId);
+					+ "topic: " + lGatewayTopic + ", "
+					+ "gateway-id: " + lGatewayId + ", "
+					+ "endpoint-id: " + lEndPointId);
 		} else {
 			mLog.info("Usage: java -jar jWebSocketJMSClientBundle-<ver>.jar URL gateway-topic gateway-id [node-id]");
 			mLog.info("Example: java -jar jWebSocketJMSClientBundle-1.0.jar tcp://hostname:61616 " + lGatewayTopic + " " + lGatewayId + " [your node id]");
@@ -128,26 +135,28 @@ public class JMSClient {
 					lToken.setString("username", "root");
 					lToken.setString("password", "root");
 					// and send it to the gateway (which is was the source of the message)
-					sendToken(aSourceId, lToken, new JWSResponseTokenListener() {
+					sendToken(aSourceId, lToken,
+							new JWSResponseTokenListener(JWSResponseTokenListener.RESP_TIME_FIELD) {
 
-						@Override
-						public void onTimeout() {
-							mLog.info("Login timed out!");
-						}
+								@Override
+								public void onTimeout() {
+									mLog.info("Login timed out!");
+								}
 
-						@Override
-						public void onFailure(Token aReponse) {
-							mLog.error("Login failure!");
-						}
+								@Override
+								public void onFailure(Token aReponse) {
+									mLog.error("Login failure!");
+								}
 
-						@Override
-						public void onSuccess(Token aReponse) {
-							if (mLog.isInfoEnabled()) {
-								mLog.info("Login success.");
-							}
-						}
+								@Override
+								public void onSuccess(Token aReponse) {
+									if (mLog.isInfoEnabled()) {
+										mLog.info("Login success (response received in "
+												+ aReponse.getLong(JWSResponseTokenListener.RESP_TIME_FIELD) + "ms).");
+									}
+								}
 
-					}, 300);
+							}, 1000);
 				}
 			}
 		});
@@ -220,12 +229,13 @@ public class JMSClient {
 						Map<String, Object> lArgs = new FastMap<String, Object>();
 						lArgs.put("echo", "This is the echo message");
 						lSender.sendPayload(
-								"org.jwebsocket.jms.gateway", // target id
+								"jWebSocketJMSService",
+								// "org.jwebsocket.jms.gateway", // target id
 								"org.jwebsocket.plugins.jmsdemo", // ns
 								"echo", // type
-								lArgs, 
-								"any additional payload if required", 
-								new JWSResponseTokenListener() {
+								lArgs,
+								"any additional payload if required",
+								new JWSResponseTokenListener(JWSResponseTokenListener.RESP_TIME_FIELD) {
 
 									@Override
 									public void onTimeout() {
@@ -240,11 +250,12 @@ public class JMSClient {
 									@Override
 									public void onSuccess(Token aReponse) {
 										if (mLog.isInfoEnabled()) {
-											mLog.info("Echo success.");
+											mLog.info("Echo success (response received in "
+													+ aReponse.getLong(JWSResponseTokenListener.RESP_TIME_FIELD) + "ms).");
 										}
 									}
 
-								}, 1);
+								}, 1000);
 
 						if (true) {
 							return;
@@ -307,7 +318,12 @@ public class JMSClient {
 				new JWSMessageListener(lSender) {
 					@Override
 					public void processToken(String aSourceId, Token aToken) {
-						mLog.info("Response to 'echo' received: " + aToken.toString());
+						mLog.info("Response from '" + aSourceId
+								+ "' to 'echo' received: "
+								+ (JMSLogging.isFullTextLogging()
+								? aToken.toString()
+								: aToken.getLogString())
+						);
 					}
 				});
 

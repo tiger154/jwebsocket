@@ -39,7 +39,7 @@ import org.jwebsocket.token.Token;
  */
 public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 
-	static final Logger mLog = Logger.getLogger(JWSEndPointMessageListener.class);
+	private static final Logger mLog = Logger.getLogger(JWSEndPointMessageListener.class);
 	Map<String, IJWSMessageListener> mRequestListeners = new FastMap<String, IJWSMessageListener>();
 	Map<String, IJWSMessageListener> mResponseListeners = new FastMap<String, IJWSMessageListener>();
 	List<IJWSMessageListener> mMessageListeners = new FastList<IJWSMessageListener>();
@@ -60,9 +60,11 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 			byte[] lBA = new byte[lLen];
 			aMessage.readBytes(lBA, lLen);
 			String lText = new String(lBA);
-			if (mLog.isInfoEnabled()) {
-				mLog.info("Received bytes from '" + lSourceId
-						+ "': " + lText);
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Received bytes from '" + lSourceId + "': "
+						+ (JMSLogging.isFullTextLogging()
+						? lText
+						: "[content suppressed, length: " + lText.length() + " bytes]]"));
 			}
 			processText(aMessage, lText);
 		} catch (JMSException lEx) {
@@ -76,9 +78,11 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 		try {
 			String lSourceId = aMessage.getStringProperty("sourceId");
 			String lText = aMessage.getText();
-			if (mLog.isInfoEnabled()) {
-				mLog.info("Received bytes from '" + lSourceId
-						+ "': " + lText);
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Received text from '" + lSourceId + "': "
+						+ (JMSLogging.isFullTextLogging()
+						? lText
+						: "[content suppressed, length: " + lText.length() + " bytes]]"));
 			}
 			processText(aMessage, lText);
 		} catch (JMSException lEx) {
@@ -91,8 +95,10 @@ public class JWSEndPointMessageListener extends JMSEndPointMessageListener {
 		try {
 			String lSourceId = aMessage.getStringProperty("sourceId");
 			if (mLog.isDebugEnabled()) {
-				mLog.debug("Processing text from '" + lSourceId
-						+ "': " + aText);
+				mLog.debug("Processing text from '" + lSourceId + "': "
+						+ (JMSLogging.isFullTextLogging()
+						? aText
+						: "[content suppressed, length: " + aText.length() + " bytes]"));
 			}
 			String lPayload = aText;
 			Token lToken = JSONProcessor.JSONStringToToken(lPayload);

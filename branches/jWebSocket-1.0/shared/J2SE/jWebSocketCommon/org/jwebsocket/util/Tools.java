@@ -38,6 +38,7 @@ import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.security.cert.Certificate;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -134,6 +135,7 @@ public class Tools {
 	 * @param aMsg String the string to calculate the MD5 sum for.
 	 * @return MD5 sum of the given string.
 	 */
+	@SuppressWarnings({"BroadCatchBlock", "TooBroadCatch", "UseSpecificCatch"})
 	public static String getMD5(String aMsg) {
 		MessageDigest md;
 		try {
@@ -145,9 +147,9 @@ public class Tools {
 				formatter.format("%02x", b);
 			}
 			return (formatter.toString());
-		} catch (Exception ex) {
+		} catch (Exception lEx) {
 			// log.error("getMD5: " + ex.getMessage());
-			System.out.println("getMD5: " + ex.getMessage());
+			System.out.println("getMD5: " + lEx.getMessage());
 		}
 		return null;
 	}
@@ -173,6 +175,7 @@ public class Tools {
 	 * @param aByteArray Byte array to calculate the MD5 sum for.
 	 * @return MD5 sum of the given string.
 	 */
+	@SuppressWarnings({"BroadCatchBlock", "TooBroadCatch", "UseSpecificCatch"})
 	public static String getMD5(byte[] aByteArray) {
 		MessageDigest md;
 		try {
@@ -183,9 +186,9 @@ public class Tools {
 				formatter.format("%02x", b);
 			}
 			return (formatter.toString());
-		} catch (Exception ex) {
+		} catch (Exception lEx) {
 			// log.error("getMD5: " + ex.getMessage());
-			System.out.println("getMD5: " + ex.getMessage());
+			System.out.println("getMD5: " + lEx.getMessage());
 		}
 		return null;
 	}
@@ -197,6 +200,7 @@ public class Tools {
 	 * @param aMsg String the string to calculate the MD5 sum for.
 	 * @return MD5 sum of the given string.
 	 */
+	@SuppressWarnings({"BroadCatchBlock", "TooBroadCatch", "UseSpecificCatch"})
 	public static String getSHA1(String aMsg) {
 		MessageDigest md;
 		try {
@@ -208,9 +212,9 @@ public class Tools {
 				formatter.format("%02x", b);
 			}
 			return (formatter.toString());
-		} catch (Exception ex) {
+		} catch (Exception lEx) {
 			// log.error("getMD5: " + ex.getMessage());
-			System.out.println("getSHA: " + ex.getMessage());
+			System.out.println("getSHA: " + lEx.getMessage());
 		}
 		return null;
 	}
@@ -271,7 +275,7 @@ public class Tools {
 		int lRes;
 		try {
 			lRes = Integer.parseInt(aString);
-		} catch (Exception lEx) {
+		} catch (NumberFormatException lEx) {
 			lRes = aDefault;
 		}
 		return lRes;
@@ -290,7 +294,7 @@ public class Tools {
 		long lRes;
 		try {
 			lRes = Long.parseLong(aString);
-		} catch (Exception lEx) {
+		} catch (NumberFormatException lEx) {
 			lRes = aDefault;
 		}
 		return lRes;
@@ -307,7 +311,7 @@ public class Tools {
 			// TimeZone lTimeZone = TimeZone.getTimeZone("GMT");
 			// lSDF.setTimeZone(lTimeZone);
 			return lSDF.parse(aISO8601Date);
-		} catch (Exception lEx) {
+		} catch (ParseException lEx) {
 			return null;
 		}
 	}
@@ -358,9 +362,9 @@ public class Tools {
 		if (aValue == null) {
 			return null;
 		}
-		if (aFromType != null
-				// && aToType != null
-				&& aValue != null) {
+		if (aFromType != null // && aToType != null
+				// && aValue != null // can never be null!
+				) {
 			aFromType = aFromType.toLowerCase();
 			if (aToType != null) {
 				aToType = aToType.toLowerCase();
@@ -716,6 +720,7 @@ public class Tools {
 	 *
 	 * @param aInstance
 	 * @param aMethodName
+	 * @param aClasses
 	 * @param aArgs
 	 * @return
 	 * @throws Exception
@@ -757,7 +762,7 @@ public class Tools {
 
 		return invoke(aInstance, aMethodName, lArgClasses, aArgs);
 	}
-	private static char[] BASE64_CHAR_MAP = new char[64];
+	private static final char[] BASE64_CHAR_MAP = new char[64];
 
 	static {
 		int lIdx = 0;
@@ -1089,7 +1094,7 @@ public class Tools {
 		}
 		ByteArrayInputStream lBAIS = new ByteArrayInputStream(aBA);
 		ZipArchiveInputStream lAIOS = new ZipArchiveInputStream(lBAIS);
-		ZipArchiveEntry lZipEntry = (ZipArchiveEntry) lAIOS.getNextZipEntry();
+		// ZipArchiveEntry lZipEntry = lAIOS.getNextZipEntry();
 
 		ByteArrayOutputStream lBAOS = new ByteArrayOutputStream();
 		IOUtils.copy(lAIOS, lBAOS);
@@ -1107,7 +1112,7 @@ public class Tools {
 	 * @throws IOException
 	 */
 	private static void zip(String[] aFilesPath, ZipOutputStream aOutputZipFile, String lFolder) throws IOException {
-		byte[] buffer = new byte[4096]; 
+		byte[] buffer = new byte[4096];
 		int bytesRead;
 		// output file
 		for (String lFilePath : aFilesPath) {
@@ -1129,7 +1134,7 @@ public class Tools {
 				for (int lIndex = 0; lIndex < lSubFiles.length; lIndex++) {
 					lSubFiles[lIndex] = lFile.getPath() + File.separator + lSubFiles[lIndex];
 				}
-				zip(lSubFiles, aOutputZipFile, (lFolder.isEmpty())? lFile.getName() : lFolder + File.separator + lFile.getName());
+				zip(lSubFiles, aOutputZipFile, (lFolder.isEmpty()) ? lFile.getName() : lFolder + File.separator + lFile.getName());
 			}
 		}
 	}

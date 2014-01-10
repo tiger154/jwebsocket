@@ -174,7 +174,6 @@ xcopy %libs%jWebSocketRPCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketRTCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSenchaPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketScriptingPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
-xcopy %libs%jWebSocketSharedCanvasPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSharedObjectsPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSMSPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSSOPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
