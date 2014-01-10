@@ -5,6 +5,7 @@
 package org.jwebsocket.plugins.quota;
 
 import java.util.Map;
+import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -63,8 +64,10 @@ public class QuotaPlugin extends ActionPlugIn {
 		super.systemStarted();
 
 		//listening the sent message
-		this.mMessageHub = getServer().getJMSManager();
 		try {
+			// The initialization of the messageHub must be in a try because 
+			// getJMSManager throws exception
+			mMessageHub = getServer().getJMSManager();
 			mMessageHub.subscribe(new MessageListener() {
 				@Override
 				public void onMessage(Message msg) {
@@ -86,7 +89,6 @@ public class QuotaPlugin extends ActionPlugIn {
 							/* This method get a quota for this NamesPace as
 							 * well as exist a quota for this user itself,
 							 * as if he has a quota as part of a group*/
-
 							IQuotaSingleInstance lQSingle = lQuotaObj.getQuota(lUsername, lNS, "User");
 
 							// if lQSingle is null, there is not a quota for this user 
@@ -106,7 +108,7 @@ public class QuotaPlugin extends ActionPlugIn {
 									lQSingle.getNamespace(), lQSingle.getInstanceType(),
 									lQuotaObj.getDefaultReduceValue());
 						}
-					} catch (Exception lEx) {
+					} catch (JMSException lEx) {
 						mLog.error(Logging.getSimpleExceptionMessage(lEx,
 								"processing post-execution quota checks"));
 					}
@@ -120,6 +122,7 @@ public class QuotaPlugin extends ActionPlugIn {
 
 	/**
 	 * {@inheritDoc}
+	 * @return Token
 	 */
 	@Override
 	public Token invoke(WebSocketConnector aConnector, Token aToken) {

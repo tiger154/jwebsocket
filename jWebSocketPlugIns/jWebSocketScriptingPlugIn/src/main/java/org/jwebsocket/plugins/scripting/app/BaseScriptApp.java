@@ -787,8 +787,9 @@ abstract public class BaseScriptApp {
 	 * Get a JMS Manager instance using default configuration.
 	 *
 	 * @return
+	 * @throws java.lang.Exception
 	 */
-	public JMSManagerAbstraction getJMSManager() {
+	public JMSManagerAbstraction getJMSManager() throws Exception {
 		JMSManagerAbstraction lAbstraction = new JMSManagerAbstraction(this);
 		lAbstraction.setDefaultDestination(mPlugIn.getServer().getJMSManager().getDefaultDestination());
 
@@ -801,8 +802,9 @@ abstract public class BaseScriptApp {
 	 * @param aUseTransaction If TRUE, JMS session instance will support
 	 * transactions.
 	 * @return
+	 * @throws java.lang.Exception
 	 */
-	public JMSManagerAbstraction getJMSManager(boolean aUseTransaction) {
+	public JMSManagerAbstraction getJMSManager(boolean aUseTransaction) throws Exception {
 		JMSManagerAbstraction lAbstraction = new JMSManagerAbstraction(this, aUseTransaction);
 		lAbstraction.setDefaultDestination(mPlugIn.getServer().getJMSManager().getDefaultDestination());
 
@@ -817,8 +819,9 @@ abstract public class BaseScriptApp {
 	 * transactions.
 	 * @param aConn The JMS connection instance to be used.
 	 * @return
+	 * @throws java.lang.Exception
 	 */
-	public JMSManagerAbstraction getJMSManager(boolean aUseTransaction, Connection aConn) {
+	public JMSManagerAbstraction getJMSManager(boolean aUseTransaction, Connection aConn) throws Exception {
 		JMSManagerAbstraction lAbstraction = new JMSManagerAbstraction(this, aUseTransaction, aConn);
 		lAbstraction.setDefaultDestination(mPlugIn.getServer().getJMSManager().getDefaultDestination());
 
