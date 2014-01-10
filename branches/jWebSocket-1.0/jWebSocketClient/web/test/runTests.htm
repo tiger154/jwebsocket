@@ -337,7 +337,7 @@
 				//Setting up checkboxes state
 				for (var lCheckbox in request["args"]) {
 					// avoid __speed
-					if (!lCheckbox.indexOf("__") === 0) {
+					if (lCheckbox.indexOf("_") !== 0) {
 						jws.$(lCheckbox).checked = request["args"][lCheckbox];
 					}
 				}
