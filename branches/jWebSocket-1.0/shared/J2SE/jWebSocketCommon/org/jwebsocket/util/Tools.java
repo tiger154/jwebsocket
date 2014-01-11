@@ -1095,7 +1095,7 @@ public class Tools {
 		ByteArrayInputStream lBAIS = new ByteArrayInputStream(aBA);
 		ZipArchiveInputStream lAIOS = new ZipArchiveInputStream(lBAIS);
 		// ATTENTION: do not comment next line!!!
-		ZipArchiveEntry lZipEntry = lAIOS.getNextZipEntry();
+		lAIOS.getNextZipEntry();
 
 		ByteArrayOutputStream lBAOS = new ByteArrayOutputStream();
 		IOUtils.copy(lAIOS, lBAOS);
