@@ -145,16 +145,7 @@ $.widget("jws.auth", {
 				if (w.auth.options.OnOpen) {
 					w.auth.options.OnOpen(aEvent, aToken);
 				}
-				if (mLog.isDebugEnabled) {
-					log("<font color='green'>jWebSocket connection established.</font>");
-				}
-
-				w.auth.eConnectButton.hide( );
-				w.auth.eDisConnectButton.show( );
-
-				mIsConnected = true;
-				// Setting the status connected
-				w.auth.eClientStatus.attr("class", "online").text("connected");
+				w.auth.setConnected(aToken);
 			},
 			// OnOpenTimeout callback
 			OnOpenTimeout: function(aEvent) {
@@ -165,7 +156,6 @@ $.widget("jws.auth", {
 				if (w.auth.options.OnOpenTimeout) {
 					w.auth.options.OnOpenTimeout(aEvent);
 				}
-
 			},
 			// OnReconnecting callback
 			OnReconnecting: function(aEvent) {
@@ -179,41 +169,25 @@ $.widget("jws.auth", {
 				}
 				if (mLog.isDebugEnabled) {
 					log("<font color='green'>jWebSocket Welcome received.</font>");
-					if (aToken.sourceId) {
-						w.auth.eClientId.text("Client-ID: " + aToken.sourceId);
-					}
+				}
+				if (aToken.sourceId) {
+					w.auth.eClientId.text("Client-ID: " + aToken.sourceId);
+				}
+				if (aToken.username !== "anonymous") {
+					w.auth.setLoggedOn(aToken);
 				}
 			},
 			OnLogon: function(aToken) {
 				if (w.auth.options.OnLogon) {
 					w.auth.options.OnLogon(aToken);
 				}
-				if (mLog.isDebugEnabled) {
-					log("<font color='green'>Successfully authenticated as: "
-							+ aToken.username + "</font>");
-				}
-				if (w.auth.eLogonArea) {
-					w.auth.eLogonArea.hide( );
-				}
-				w.auth.eLogoffArea.fadeIn(300);
-				w.auth.eUserInfoName.text(aToken.username);
-				w.auth.mUsername = aToken.username;
-				w.auth.eClientStatus.attr("class", "authenticated").text("authenticated");
+				w.auth.setLoggedOn(aToken);
 			},
 			OnLogoff: function(aToken) {
 				if (w.auth.options.OnLogoff) {
 					w.auth.options.OnLogoff(aToken);
 				}
-				w.auth.eLogoffArea.hide( );
-				if (w.auth.eLogonArea) {
-					w.auth.eLogonArea.fadeIn(200);
-				}
-				w.auth.eConnectButton.hide( );
-				w.auth.eDisConnectButton.show( );
-
-				w.auth.mUsername = null;
-				w.auth.eUserInfoName.text("");
-				w.auth.eClientStatus.attr("class", "online").text("online");
+				w.auth.setLoggedOff(aToken);
 			},
 			OnGoodBye: function(aEvent) {
 				if (w.auth.options.OnGoodBye) {
@@ -225,7 +199,7 @@ $.widget("jws.auth", {
 			},
 			// OnMessage callback
 			OnMessage: function(aEvent, aToken) {
-				if (aToken && aToken.code == -1) {
+				if (aToken && aToken.code === -1) {
 					if (mLog.isDebugEnabled) {
 						log("<font color='red'>The following error" +
 								" was returned by the server: " + aToken.msg + "</font>");
@@ -250,26 +224,10 @@ $.widget("jws.auth", {
 			},
 			// OnClose callback
 			OnClose: function(aEvent) {
-				if (mLog.isDebugEnabled) {
-					log("<font color='red'>jWebSocket connection closed.</font>");
-				}
-				w.auth.eLogoffArea.hide( );
-				if (w.auth.eLogonArea) {
-					w.auth.eLogonArea.fadeIn(200);
-				}
-
-				w.auth.eDisConnectButton.hide( );
-				w.auth.eConnectButton.show( );
-
-				w.auth.mUsername = null;
-				w.auth.eUserInfoName.text("");
-				w.auth.eClientId.text("Client-ID: -");
-				w.auth.eClientStatus.attr("class", "offline").text("disconnected");
-				w.auth.eUsername.focus( );
-
 				if (w.auth.options.OnClose) {
 					w.auth.options.OnClose(aEvent);
 				}
+				w.auth.setDisconnected(aEvent);
 			}
 		};
 	},
@@ -441,6 +399,65 @@ $.widget("jws.auth", {
 				}
 			}
 		}
+	},
+	/**
+	 * Automatically shows the logoff button in the top of all demos
+	 * including the authenticated username
+	 */
+	setLoggedOn: function(aToken) {
+		if (mLog.isDebugEnabled) {
+			log("<font color='green'>Successfully authenticated as: "
+					+ aToken.username + "</font>");
+		}
+		if (w.auth.eLogonArea) {
+			w.auth.eLogonArea.hide( );
+		}
+		w.auth.eLogoffArea.fadeIn(300);
+		w.auth.eUserInfoName.text(aToken.username);
+		w.auth.mUsername = aToken.username;
+		w.auth.eClientStatus.attr("class", "authenticated").text("authenticated");
+	},
+	setLoggedOff: function(aToken) {
+		w.auth.eLogoffArea.hide( );
+		if (w.auth.eLogonArea) {
+			w.auth.eLogonArea.fadeIn(200);
+		}
+		w.auth.eConnectButton.hide( );
+		w.auth.eDisConnectButton.show( );
+
+		w.auth.mUsername = null;
+		w.auth.eUserInfoName.text("");
+		w.auth.eClientStatus.attr("class", "online").text("online");
+	},
+	setConnected: function(aToken) {
+		if (mLog.isDebugEnabled) {
+			log("<font color='green'>jWebSocket connection established.</font>");
+		}
+
+		w.auth.eConnectButton.hide( );
+		w.auth.eDisConnectButton.show( );
+
+		mIsConnected = true;
+		// Setting the status connected
+		w.auth.eClientStatus.attr("class", "online").text("connected");
+	},
+	setDisconnected: function(aToken) {
+		if (mLog.isDebugEnabled) {
+			log("<font color='red'>jWebSocket connection closed.</font>");
+		}
+		w.auth.eLogoffArea.hide( );
+		if (w.auth.eLogonArea) {
+			w.auth.eLogonArea.fadeIn(200);
+		}
+
+		w.auth.eDisConnectButton.hide( );
+		w.auth.eConnectButton.show( );
+
+		w.auth.mUsername = null;
+		w.auth.eUserInfoName.text("");
+		w.auth.eClientId.text("Client-ID: -");
+		w.auth.eClientStatus.attr("class", "offline").text("disconnected");
+		w.auth.eUsername.focus( );
 	},
 	// EVENTS FUNCTIONS
 	eUsernameKeypress: function(aEvent) {

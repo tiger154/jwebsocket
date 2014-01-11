@@ -289,3 +289,10 @@
 #resize_channels_area .more{
 	border-left: 1px solid #c8c8c8;
 }
+
+.no_channels{
+	margin: 0;
+	padding-top: 0;
+	background: white;
+	height: 20px;
+}
