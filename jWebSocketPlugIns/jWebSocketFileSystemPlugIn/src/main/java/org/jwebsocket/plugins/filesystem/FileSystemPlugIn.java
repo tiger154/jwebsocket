@@ -1062,7 +1062,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	public void startAliasesMonitor(int aInterval) {
 		if (null == mFileSystemMonitor) {
 			mFileSystemMonitor = new FileAlterationMonitor(aInterval);
-			mFileSystemMonitor.setThreadFactory(new MonitorThreadFactory());
+			mFileSystemMonitor.setThreadFactory(new FileSystemPlugIn.MonitorThreadFactory());
 
 			String lMask = "*";
 			IOFileFilter lFileFilter = new WildcardFileFilter(lMask);
@@ -1118,6 +1118,6 @@ public class FileSystemPlugIn extends TokenPlugIn {
 	 * @return
 	 */
 	public FileAlterationListener getFileSystemListener() {
-		return new ChangeListener();
+		return new FileSystemPlugIn.ChangeListener();
 	}
 }
