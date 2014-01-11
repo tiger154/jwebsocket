@@ -199,7 +199,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	public ItemStoragePlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		setNamespace(NS_ITEM_STORAGE);
-
+		
 		mFragmentSize = Integer.parseInt(aConfiguration.getString("fragmentSize"));
 		mBeanFactory = getConfigBeanFactory(NS_ITEM_STORAGE);
 
