@@ -64,33 +64,17 @@
                     <div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
-                            <div id="logoff_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                 onmousedown="this.className='button onmousedown'" 
-                                 onmouseup="this.className='button onmouseup'" 
-                                 onmouseout="this.className='button onmouseout'" 
-                                 onclick="this.className='button onmouseover'">
-                                <div class="l"></div>
-                                <div class="c">Logout</div>
-                                <div class="r"></div>
-                            </div>
+                            <div id="logoff_button" class="button" >Logout</div>
                         </div>
                     </div>
                     <div id="login_area">
                         <div id="login_form">
                             <label class="first">Username</label>
                             <label class="second">Password</label>
-                            <input type="text" id="user_text" value="guest"/>
-                            <input type="password" id="user_password" value="guest"/>
+                            <input type="text" id="user_text" value="root"/>
+                            <input type="password" id="user_password" value="root"/>
                         </div>
-                        <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Login</div>
-                            <div class="r"></div>
-                        </div>
+                        <div id="login_button" class="button">Login</div>
                     </div>
 
                 </div>
@@ -125,29 +109,9 @@
                             <input type="password" id="user_pass" placeholder="password"
 								   disabled="true"/>
 
-                            <div id="shell_login_btn" class="shell_login_btn">
-								<div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-									 onmousedown="this.className='button onmousedown'" 
-									 onmouseup="this.className='button onmouseup'" 
-									 onmouseout="this.className='button onmouseout'" 
-									 onclick="this.className='button onmouseover'">
-									<div class="l"></div>
-									<div class="c">Login</div>
-									<div class="r"></div>
-								</div>
-                            </div>
+                            <div id="shell_login_btn" class=" button shell_login_btn">Login</div>
                         </div>
-                        <div id="shell_logout_btn">
-                            <div class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                 onmousedown="this.className='button onmousedown'" 
-                                 onmouseup="this.className='button onmouseup'" 
-                                 onmouseout="this.className='button onmouseout'" 
-                                 onclick="this.className='button onmouseover'">
-                                <div class="l"></div>
-                                <div class="c">Disconnect</div>
-                                <div class="r"></div>
-                            </div>
-                        </div>
+                        <div id="shell_logout_btn" class="button">Disconnect</div>
                     </div>
                     <!--    COLOR_SETTINGS_BOX   -->
                     <div id="shell_color_settings" class="box">
@@ -190,19 +154,14 @@
                         <div id="log_box_content" class="log_box_visible"></div>
                     </div>
 
-                </div>
 
-                <!--       DOWNLOAD_BUTTON   -->
-                <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
-                        <div class="r_download"></div>
-                    </div>
+					<!--       DOWNLOAD_BUTTON   -->
+					<div id="demo_box_footer">
+						<div id="jws_download_button" class="button download">
+							<a href="http://jwebsocket.org/downloads/jwebsocket-latest-versions" 
+							   target="blank">Download jWebSocket</a>
+						</div>
+					</div>
                 </div>
             </div>
         </div>
