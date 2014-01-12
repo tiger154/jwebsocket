@@ -140,6 +140,15 @@ div#container{
 	width: 85px !important;
 }
 
+.img-no-user{
+	width: 100px;
+	height: 130px;
+	background: white url(../img/jws-logo-nouser.png) no-repeat;
+	 -webkit-border-radius: 6px 6px;
+    -moz-border-radius: 6px 6px;
+    border-radius: 6px 6px;
+}
+
 #login_button{
     float: left;
     margin-top: 17px;
