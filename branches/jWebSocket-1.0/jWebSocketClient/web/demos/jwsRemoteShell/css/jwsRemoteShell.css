@@ -1,19 +1,3 @@
-/*-------------- DEMO_DESCRIPTION ------------*/
-#demo_box_description{
-    margin-top: 10px;
-    padding: 5px 15px 5px 15px;
-    font-size: 10pt;
-}
-/*-------------- DEMO_DESCRIPTION ------------*/
-
-
-/*---------------- DEMO_SCENARIO -------------*/
-#demo_box_scenario{
-    float: left;
-    margin: 10px; 
-    padding: 5px;
-}
-
 #shell_login,
 #shell_color_settings{
     background: #E4E4E4;
@@ -24,12 +8,13 @@
 }
 
 #shell_login{
-    width: 175px;
-    margin-right: 10px;
+	float:right;
+    width: 150px;
 }
 
 #shell_color_settings{
-    width: 400px;
+    width: 300px;
+	float: left;
 }
 
 #demo_description{
@@ -75,29 +60,11 @@
 }
 
 /*---------------- DEMO_SCENARIO -------------*/
-
-
-.box{
-    float: left;
-}
-
-#log_box{
-    width: 708px;
-}
-
-#scenario_container{
-    margin-left: 12px;
-    margin-right: 12px;
-}
-
-#log_box{
-    margin-top: 20px;
-}
-
-.shell_login_btn,
+#shell_login_btn,
 #shell_logout_btn{
-    float:left;
-    margin-left: 50px;
+	width: 75px;
+	float: none;
+	margin: auto;
     padding-top: 8px;
 }
 
@@ -112,7 +79,7 @@
 /*COLOR SETTINGS*/
 #shell_color_settings{
     float: left;
-    width: 320px;
+    width: 300px;
 }
 
 #backcolor_fields,
@@ -135,7 +102,7 @@
 
 #backcolor_fields div:first-child,
 #fontcolor_fields div:first-child {
-    width: 110px;
+    width: 95px;
     border: none;
     text-align: right;
 }
@@ -191,7 +158,7 @@
 #console textarea{
     background-color: #404040;
     color: white;
-    width: 708px;
+    width: 98.5%;
     height: 300px;
     margin-top: 17px;
 }
