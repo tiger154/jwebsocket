@@ -82,7 +82,7 @@ $.widget( "jws.vplayer", {
 
 			},
 			mouseout: function( aEvent ) {
-				if ( aEvent.relatedTarget == w.vplayer.eBtnFullScreen.get( 0 ) ) {
+				if ( aEvent.relatedTarget === w.vplayer.eBtnFullScreen.get( 0 ) ) {
 					return false;
 				}
 				w.vplayer.eBtnFullScreen.stop( true, true ).fadeTo( 400, 0.4 );
@@ -94,7 +94,7 @@ $.widget( "jws.vplayer", {
 		// leaving the conference room
 		$( window ).bind( {
 			'beforeunload': function() {
-				jws.channelUnsubscribe( w.vplayer.mChannelId );
+				mWSC.channelUnsubscribe( w.vplayer.mChannelId );
 			}
 		} );
 		$( document ).bind( 'webkitfullscreenchange mozfullscreenchange fullscreenchange', function() {
@@ -173,7 +173,6 @@ $.widget( "jws.vplayer", {
 		navigator.webkitGetUserMedia ||
 		navigator.mozGetUserMedia ||
 		navigator.msGetUserMedia;
-		;
 		window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 		navigator.getUserMedia( {
