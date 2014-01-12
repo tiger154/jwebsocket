@@ -52,7 +52,7 @@
         <!--  MAIN JAVASCRIPT FILE   -->
         <script type="text/javascript" src='js/wAuth.js'></script>
         <script type="text/javascript" src='js/init.js'></script>
-        
+
     </head>
     <body>
 		<applet id="JcControllerApplet" codebase="./" code="cu/uci/hab/cardplatform/CardPlugIn.class" archive="../../res/java/JcManager.jar" width="0" height="0"></applet>
@@ -64,15 +64,7 @@
                     <div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
-                            <div id="logoff_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                                 onmousedown="this.className='button onmousedown'" 
-                                 onmouseup="this.className='button onmouseup'" 
-                                 onmouseout="this.className='button onmouseout'" 
-                                 onclick="this.className='button onmouseover'">
-                                <div class="l"></div>
-                                <div class="c">Logout</div>
-                                <div class="r"></div>
-                            </div>
+                            <div id="logoff_button" class="button">Logout</div>
                         </div>
                     </div>
                     <div id="login_area">
@@ -82,16 +74,7 @@
                             <input type="text" id="user_text" value="root"/>
                             <input type="password" id="user_password" value="root"/>
                         </div>
-                        <div id="login_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Login</div>
-                            <div class="r"></div>
-                        </div>
-
+                        <div id="login_button" class="button">Login</div>
                     </div>
 
                 </div>
@@ -116,12 +99,12 @@
                     </div>
                     <div id="content_right">
                         <div id="background_content">
-                        
+
                             <div id="text">
                                 <p>Welcome: <br/>
-                                You are authenticated via SmartCard</p>
+									You are authenticated via SmartCard</p>
                             </div>
-                            <div id="img"></div>
+                            <div id="img" class="img-no-user"></div>
                             <div id="form">
                                 <FORM ACTION="script" METHOD="POST">
                                     <label>First Name</label>
@@ -132,35 +115,31 @@
                                     <textarea rows="4" cols="20" class="address"></textarea>
                                 </FORM>
                             </div>
-                        
-                      
-                    </div>
-                </div>
 
 
-                <!--       LOG BOX           -->
-                <div id="log_box" class="box">
-                    <div id="log_box_header">
-                        <div id="show_hide_log" class="hide">Hide Log</div>
-                        <div id="clear_log">Clear Log</div>
-                    </div>
-                    <div id="log_box_content" class="log_box_visible"></div>
-                </div>
+						</div>
+					</div>
+
+
+					<!--       LOG BOX           -->
+					<div id="log_box" class="box">
+						<div id="log_box_header">
+							<div id="show_hide_log" class="hide">Hide Log</div>
+							<div id="clear_log">Clear Log</div>
+						</div>
+						<div id="log_box_content" class="log_box_visible"></div>
+					</div>
 
 
 
-                <!--       DOWNLOAD_BUTTON   -->
-                <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c">Download jWebSocket</div>
-                        <div class="r_download"></div>
-                    </div>
-                </div>
+					<!--       DOWNLOAD_BUTTON   -->
+					<div id="demo_box_footer">
+						<div id="jws_download_button" class="button download">
+							<a href="http://jwebsocket.org/downloads/jwebsocket-latest-versions" 
+							   target="blank">Download jWebSocket</a>
+						</div>
+					</div>
+				</div>
             </div>
         </div>
     </body>

@@ -43,7 +43,7 @@ $.widget("jws.auth",{
 	},
 	
 	logoff: function(){
-		auth.logoff();
+		w.auth.logoff();
 		lWSC.fUsername = null;
 		w.auth.eUsername.val("");
 		w.auth.ePassword.val("");

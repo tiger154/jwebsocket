@@ -39,11 +39,10 @@
 }
 
 #img{
-    background: no-repeat;
-    width: 101px;
-    height: 144px;
+    /*width: 101px;*/
+    /*height: 144px;*/
     margin-left: 13px;
-    margin-top: -8px;
+    margin-top: 5px;
     float: left;
 }
 
