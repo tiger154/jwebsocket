@@ -38,7 +38,7 @@ public abstract class BaseQuota implements IQuota {
     public long getDefaultIncrease() {
         return mDefaultIncrease;
     }
-    
+
     public void setDefaultReduceValue(long aDefaultReduceValue) {
         this.mDefaultReduceValue = aDefaultReduceValue;
     }
@@ -81,7 +81,6 @@ public abstract class BaseQuota implements IQuota {
             lUuid = "not-found";
         }
 
-        //TODO: Ver dentro de User para user.
         //Asking if the user has as part of a group quota that belong to a group. 
         if (lUuid.equals("not-found") && aInstanceType.equals("User")) {
 
@@ -271,7 +270,7 @@ public abstract class BaseQuota implements IQuota {
             long aAmount, String aInstanceType, String aQuotaType, String aQuotaIdentifier, String aActions)
             throws Exception {
         if (mQuotaStorage.quotaExist(aNameSpace, aQuotaIdentifier, aInstance)) {
-               System.out.println("La quota existe create");
+            System.out.println("La quota existe create");
             throw new ExceptionQuotaAlreadyExist(mQuotaStorage.getUuid(aQuotaIdentifier, aNameSpace, aInstance, aInstanceType));
         }
     }

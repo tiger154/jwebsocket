@@ -14,54 +14,54 @@ import org.jwebsocket.token.Token;
  */
 public interface IQuotaSingleInstance {
 
-	/**
-	 *
-	 * @return the quota value
-	 */
-	public long getvalue();
+    /**
+     *
+     * @return the quota value
+     */
+    public long getvalue();
 
-	/**
-	 * Return the Instance owner of the quota admin, administrator, sms-app, or
-	 * x-module
-	 *
-	 * @return
-	 */
-	public String getInstance();
+    /**
+     * Return the Instance owner of the quota admin, administrator, sms-app, or
+     * x-module
+     *
+     * @return
+     */
+    public String getInstance();
 
-	/**
-	 *
-	 * @return the quota unique ID
-	 */
-	public String getUuid();
+    /**
+     *
+     * @return the quota unique ID
+     */
+    public String getUuid();
 
-	/**
-	 *
-	 * @return the namespace of the feature that the quota is apply to
-	 */
-	public String getNamespace();
+    /**
+     *
+     * @return the namespace of the feature that the quota is apply to
+     */
+    public String getNamespace();
 
-	/**
-	 *
-	 * @return the quota type
-	 */
-	public String getQuotaType();
+    /**
+     *
+     * @return the quota type
+     */
+    public String getQuotaType();
 
-	/**
-	 * The type of the Instance (e.g) user, gruop of users, app or module
-	 *
-	 * @return
-	 */
-	public String getInstanceType();
-        
-        public boolean addChildQuota(QuotaChildSI aChildQuota);
-        
-        public QuotaChildSI getChildQuota(String aInstance);
+    /**
+     * The type of the Instance (e.g) user, gruop of users, app or module
+     *
+     * @return
+     */
+    public String getInstanceType();
 
-	public String getQuotaIdentifier();
+    public boolean addChildQuota(QuotaChildSI aChildQuota);
 
-	public String getActions();
+    public QuotaChildSI getChildQuota(String aInstance);
 
-	public void writeToToken(Token lAuxToken);
+    public String getQuotaIdentifier();
 
-	public FastMap<String, Object> writeToMap();
+    public String getActions();
+
+    public void writeToToken(Token lAuxToken);
+
+    public FastMap<String, Object> writeToMap();
 }

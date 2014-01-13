@@ -33,7 +33,7 @@ public class QuotaCountdown extends BaseQuota {
             String aActions) throws Exception {
         super.create(aInstance, aNameSpace, aUuid, aAmount, aInstanceType,
                 aQuotaType, aQuotaIdentifier, aActions);
-        
+
         IQuotaSingleInstance lSingleQuota;
         lSingleQuota = new QuotaCountdownSI(aAmount, aInstance, aUuid, aNameSpace, aQuotaType,
                 aQuotaIdentifier, aInstanceType, aActions);

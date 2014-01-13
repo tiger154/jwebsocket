@@ -35,7 +35,7 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
     public FastList<QuotaChildSI> getChildQuotaList() {
 
         if (getInstanceType().equals("User")) {
-            
+
             for (Iterator<QuotaChildSI> it = mChildQuotaList.iterator(); it.hasNext();) {
                 QuotaChildSI lQuotaChild = it.next();
 
@@ -105,7 +105,7 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         lMap.put("value", mValue);
         lMap.put("actions", mActions);
         lMap.put("instance", mInstance);
-        lMap.put("instanceType", mInstanceType );
+        lMap.put("instanceType", mInstanceType);
 
         return lMap;
     }

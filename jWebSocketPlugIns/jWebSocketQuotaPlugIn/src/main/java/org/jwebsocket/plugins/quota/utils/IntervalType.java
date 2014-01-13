@@ -10,5 +10,5 @@ package org.jwebsocket.plugins.quota.utils;
  */
 public enum IntervalType {
 
-	Hourly, Daily, Weekly, Monthly, Yearly
+    Hourly, Daily, Weekly, Monthly, Yearly
 }

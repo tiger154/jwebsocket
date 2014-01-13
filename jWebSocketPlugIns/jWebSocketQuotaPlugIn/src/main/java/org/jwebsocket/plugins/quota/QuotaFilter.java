@@ -4,8 +4,6 @@
  */
 package org.jwebsocket.plugins.quota;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.FilterConfiguration;
@@ -37,7 +35,7 @@ public class QuotaFilter extends TokenFilter {
         mQuotaProvider = (QuotaProvider) JWebSocketBeanFactory.getInstance().getBean("quotaProvider");
 
         if (mLog.isInfoEnabled()) {
-            mLog.info("Filter successfully instantiated.");
+            mLog.info("Quota Filter successfully instantiated.");
         }
     }
 
@@ -45,9 +43,18 @@ public class QuotaFilter extends TokenFilter {
     public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
         super.processTokenIn(aResponse, aConnector, aToken); //To change body of generated methods, choose Tools | Templates.
 
+
         String lNS = aToken.getNS();
         String lType = aToken.getType();
+
+        //To test the action with Scripting Demo
+//        if ("org.jwebsocket.plugins.scripting".equals(lNS) && lType.equals("callMethod")) {
+//            lNS = "org.jwebsocket.plugins.sms";
+//            lType = "sendSMS";
+//        }
+
         String lUserName = aConnector.getUsername();
+
 
         //Only proccess when the token not come for the SystemPlugin
         if (!SystemPlugIn.NS_SYSTEM.equals(lNS) || !isIgnoredUser(lUserName)) {
@@ -71,7 +78,7 @@ public class QuotaFilter extends TokenFilter {
                     continue;
                 }
                 String lActions = lQSingle.getActions();
-                
+
                 //if the actual token or action is not limited by the quota pass to the other quotaType
                 if (!lActions.equals("*")) {
                     if (lActions.indexOf(lType) == -1) {
