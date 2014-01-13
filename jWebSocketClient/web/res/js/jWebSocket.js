@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC2 (build 31205)
+	//:const:*:VERSION:String:1.0.0 RC2 (build 40113)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC2 (build 31217)",
+	VERSION: "1.0.0 RC2 (build 401013)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -1247,14 +1247,14 @@ jws.tools = {
 		var lMap = {};
 		
 		var lUrlParts = aURL.split("?");
-		if (lUrlParts.length == 1){
+		if( 1 === lUrlParts.length ){
 			return lMap;
 		}
 		
-		var lQueryParts = lUrlParts[1].split(",");
+		var lQueryParts = lUrlParts[ 1 ].split( "," );
 		for (var lIndex in lQueryParts){
-			var lArray = lQueryParts[lIndex].split("=");
-			lMap[lArray[0]] = lArray[1];
+			var lArray = lQueryParts[ lIndex ].split( "=" );
+			lMap[ lArray[ 0 ] ] = lArray[ 1 ];
 		}
 		
 		return lMap;
@@ -1866,12 +1866,12 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					try {
 						var lMessage = JSON.parse(lPacket);
 						
-						if (lMessage['i$WrappedMsg']){
+						if( lMessage[ "i$WrappedMsg" ] ) {
 							// process control message
-							if ('message' == lMessage.type){
+							if( "message" === lMessage.type ) {
 								var lMsgId = lMessage.msgId;
 								
-								if (lMessage.isAckRequired){
+								if( lMessage.isAckRequired ){
 									// send delivery acknowledge to the server
 									lThis.sendStream(JSON.stringify({
 										'i$WrappedMsg': true,
@@ -1881,7 +1881,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 									}));
 								}
 								
-								if (lMessage.isFragment){
+								if( lMessage.isFragment ){
 									// processing fragmentation
 									if( undefined === lThis.fInFragments[ lMessage.fragmentationId ] ){
 										lThis.fInFragments[ lMessage.fragmentationId ] = lMessage.data;
@@ -1901,8 +1901,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 									// using wrapped message data
 									lPacket = lMessage.data;
 								}
-							} else if ('info' == lMessage.type){
-								if ('ack' == lMessage.name){
+							} else if( "info" === lMessage.type ) {
+								if( "ack" === lMessage.name ) {
 									// processing packet delivery acknowledge from the server
 									clearTimeout( lThis.fPacketDeliveryTimerTasks[ lMessage.data ] );
 							
@@ -1914,7 +1914,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 									}
 									
 									return;
-								} else if ('maxFrameSize' == lMessage.name){
+								} else if( "maxFrameSize" === lMessage.name ) {
 									// setting max frame size
 									lThis.fMaxFrameSize = lMessage.data;
 									// stopping event
@@ -3568,19 +3568,17 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:a:en::aToken:Object: The token to be broadcasted
 	//:a:en::aSenderIncluded:Boolean: Indicates if the sender connector require to be included in the broadcast
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
-	broadcastToSharedSession: function ( aToken, aSenderIncluded, aOptions ){
+	broadcastToSharedSession: function ( aToken, aSenderIncluded, aOptions ) {
 		var lRes = this.checkLoggedIn();
 		if( 0 === lRes.code ) {
 			aToken.ns = jws.NS_SYSTEM;
 			aToken.type = "broadcastToSharedSession";
-			aToken.senderIncluded = aSenderIncluded || false
-			
-			this.sendToken(aToken,	aOptions);
+			aToken.senderIncluded = aSenderIncluded || false;
+
+			this.sendToken( aToken, aOptions );
 		}
-		
 		return lRes;
 	},
-	
 
 	//:m:*:echo
 	//:d:en:Sends an echo token to the jWebSocket server. The server returns

@@ -109,8 +109,8 @@ public class BaseConnector implements WebSocketConnector {
 	/**
 	 * Variables for the packet delivery mechanism
 	 */
-	private static Map<String, IPacketDeliveryListener> mPacketDeliveryListeners =
-			new FastMap<String, IPacketDeliveryListener>().shared();
+	private static final Map<String, IPacketDeliveryListener> mPacketDeliveryListeners
+			= new FastMap<String, IPacketDeliveryListener>().shared();
 
 	/**
 	 *
@@ -368,7 +368,7 @@ public class BaseConnector implements WebSocketConnector {
 										: aDataPacket.size() - mBytesSent;
 
 								byte[] lBytes = Arrays.copyOfRange(aDataPacket.getByteArray(), mBytesSent, mBytesSent + lLength);
-								boolean lIsLast = (lLength + mBytesSent == aDataPacket.size()) ? true : false;
+								boolean lIsLast = (lLength + mBytesSent == aDataPacket.size());
 
 								// send next fragment
 								Token lMessage = MessagingControl.buildFragmentMessage(
@@ -539,7 +539,7 @@ public class BaseConnector implements WebSocketConnector {
 		return null;
 	}
 	private String mUniqueId = null;
-	private static AtomicLong mCounter = new AtomicLong(0);
+	private static final AtomicLong mCounter = new AtomicLong(0);
 
 	@Override
 	public String getId() {
@@ -570,17 +570,26 @@ public class BaseConnector implements WebSocketConnector {
 	// and configured unique node id for clusters (independent from tcp port)
 	@Override
 	public String getUsername() {
-		return (String) getSession().getStorage().get(VAR_USERNAME);
+		Map<String, Object> lStorage = getSession().getStorage();
+		return (null != lStorage
+				? (String) lStorage.get(VAR_USERNAME)
+				: null);
 	}
 
 	@Override
 	public void setUsername(String aUsername) {
-		getSession().getStorage().put(VAR_USERNAME, aUsername);
+		Map<String, Object> lStorage = getSession().getStorage();
+		if (null != lStorage) {
+			lStorage.put(VAR_USERNAME, aUsername);
+		}
 	}
 
 	@Override
 	public void removeUsername() {
-		getSession().getStorage().remove(VAR_USERNAME);
+		Map<String, Object> lStorage = getSession().getStorage();
+		if (null != lStorage) {
+			lStorage.remove(VAR_USERNAME);
+		}
 	}
 
 	// some convenience methods to easier process subprot (login-status)
@@ -591,7 +600,8 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	@Override
-	public void setSubprot(String aSubprot) {
+	public void setSubprot(String aSubprot
+	) {
 		setString(BaseConnector.VAR_SUBPROT, aSubprot);
 	}
 
@@ -601,7 +611,8 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	@Override
-	public void setVersion(int aVersion) {
+	public void setVersion(int aVersion
+	) {
 		mVersion = aVersion;
 	}
 
@@ -627,7 +638,8 @@ public class BaseConnector implements WebSocketConnector {
 	}
 
 	@Override
-	public void setNodeId(String aNodeId) {
+	public void setNodeId(String aNodeId
+	) {
 		setString(BaseConnector.VAR_NODEID, aNodeId);
 	}
 
@@ -664,9 +676,8 @@ public class BaseConnector implements WebSocketConnector {
 			if (lArgMaxFrameSize <= lMaxFrameSize) {
 				return lArgMaxFrameSize;
 			}
-		} catch (Exception lEx) {
+		} catch (NumberFormatException lEx) {
 		}
-
 		return lMaxFrameSize;
 	}
 
@@ -682,12 +693,17 @@ public class BaseConnector implements WebSocketConnector {
 
 	@Override
 	public String getSessionUID() {
-		if (getSession().getStorage().containsKey(SESSION_UID)) {
-			return getSession().getStorage().get(SESSION_UID).toString();
+		Map<String, Object> lStorage = getSession().getStorage();
+		if (null != lStorage) {
+			if (lStorage.containsKey(SESSION_UID)) {
+				return lStorage.get(SESSION_UID).toString();
+			} else {
+				String lUUID = UUID.randomUUID().toString();
+				lStorage.put(SESSION_UID, lUUID);
+				return lUUID;
+			}
 		} else {
-			String lUUID = UUID.randomUUID().toString();
-			getSession().getStorage().put(SESSION_UID, lUUID);
-			return lUUID;
+			return null;
 		}
 	}
 }
