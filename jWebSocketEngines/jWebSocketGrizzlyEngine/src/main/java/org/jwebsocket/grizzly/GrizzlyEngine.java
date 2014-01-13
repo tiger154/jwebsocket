@@ -18,9 +18,14 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.grizzly;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
+import java.util.logging.Level;
+import javax.net.ssl.SSLContext;
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
@@ -38,6 +43,7 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.tcp.nio.Util;
 
 /**
  *
@@ -133,7 +139,7 @@ public class GrizzlyEngine extends BaseEngine {
 					try {
 						String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
 						// create a Grizzly HttpServer to server static resources from 'webapp', on mGrizzlySSLPort.
-						mGrizzlySSLServer = HttpServer.createSimpleServer(lDocumentRoot, mGrizzlySSLPort);
+						mGrizzlySSLServer = HttpServer.createSimpleServer("/", mGrizzlySSLPort);
 
 						// Register the WebSockets add on with the HttpServer
 						mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
@@ -141,7 +147,7 @@ public class GrizzlyEngine extends BaseEngine {
 						mGrizzlySSLServer.getListener("grizzly").setSSLEngineConfig(
 								createSslConfiguration(lKeyStorePath, mKeyStorePassword));
 						mGrizzlySSLServer.getListener("grizzly").setSecure(true);
-					} catch (Exception lEx) {
+					} catch (IOException lEx) {
 						mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SSL engine"));
 					}
 				} else {
@@ -292,21 +298,11 @@ public class GrizzlyEngine extends BaseEngine {
 	 *
 	 * @return server side {@link SSLEngineConfigurator}.
 	 */
-	private static SSLEngineConfigurator createSslConfiguration(String aKeyStorePath,
-			String aKeyStorePassword) {
-		// Initialize SSLContext configuration
-		SSLContextConfigurator sslContextConfig = new SSLContextConfigurator();
-
-		ClassLoader cl = GrizzlyEngine.class.getClassLoader();
-		// Set key store
-		URL keystoreUrl = cl.getResource(aKeyStorePath);
-		if (keystoreUrl != null) {
-			sslContextConfig.setKeyStoreFile(keystoreUrl.getFile());
-			sslContextConfig.setKeyStorePass(aKeyStorePassword);
-		}
+	private SSLEngineConfigurator createSslConfiguration(String aKeyStorePath,
+			String aKeyStorePassword) throws IOException, Exception {
+		SSLContext lSSLContext = Util.createSSLContext(aKeyStorePath, aKeyStorePassword);
 
 		// Create SSLEngine configurator
-		return new SSLEngineConfigurator(sslContextConfig.createSSLContext(),
-				false, false, false);
+		return new SSLEngineConfigurator(lSSLContext, false, false, false);
 	}
 }
