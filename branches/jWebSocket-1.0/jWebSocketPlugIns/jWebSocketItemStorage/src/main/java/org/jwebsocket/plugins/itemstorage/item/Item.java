@@ -171,7 +171,8 @@ public class Item implements IItem {
 	@Override
 	public void validate() {
 		// setting internal unique id if missing
-		if (!mAttrs.containsKey(ATTR_INTERNAL_ID)) {
+		if (!mAttrs.containsKey(ATTR_INTERNAL_ID) && 
+                getDefinition().getPrimaryKeyAttribute().equals(ATTR_INTERNAL_ID)) {
 			mAttrs.put(ATTR_INTERNAL_ID, UUID.randomUUID().toString());
 		}
 

@@ -29,7 +29,7 @@ public interface ITable {
     public String getName();
     public ITable addColumn(String aName, Integer aTypeCode, Boolean aRequired, 
             Boolean aPK, Integer aSize, Object aDefault);
-//    public ITable addIndex(String aColumnName);
+    public ITable addIndex(String aColumnName);
     public ITable addUniqueIndex(String aColumnName);
     public Table getTable();
 }
