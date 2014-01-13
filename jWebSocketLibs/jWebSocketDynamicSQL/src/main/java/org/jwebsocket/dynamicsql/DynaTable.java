@@ -20,6 +20,7 @@ package org.jwebsocket.dynamicsql;
 
 import org.apache.ddlutils.model.Column;
 import org.apache.ddlutils.model.IndexColumn;
+import org.apache.ddlutils.model.NonUniqueIndex;
 import org.apache.ddlutils.model.Table;
 import org.apache.ddlutils.model.UniqueIndex;
 import org.jwebsocket.dynamicsql.api.ITable;
@@ -57,6 +58,20 @@ public class DynaTable implements ITable {
         }
         mTable.addColumn(lColumn);
 
+        return this;
+    }
+    
+    @Override
+    public ITable addIndex(String aColumnName) {
+        Column lColumn = getColumn(aColumnName);
+
+        if (lColumn != null) {
+            IndexColumn lIndex = new IndexColumn(lColumn);
+            NonUniqueIndex lNonUnique = new NonUniqueIndex();
+            lNonUnique.setName(mTable.getName() + "_" + aColumnName + "_uk");
+            lNonUnique.addColumn(lIndex);
+            mTable.addIndex(lNonUnique);
+        }
         return this;
     }
 

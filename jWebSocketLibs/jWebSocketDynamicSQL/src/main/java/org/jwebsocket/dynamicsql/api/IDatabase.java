@@ -101,7 +101,16 @@ public interface IDatabase {
 	 */
     public void delete(String aTableName, Map<String, Object> aItem);
     
+    /**
+     * 
+     * @param aQuery 
+     */
     public void delete(IDeleteQuery aQuery);
+    
+    /**
+     * 
+     * @param aTableName 
+     */
     public void clearTable(String aTableName);
     
     /**
@@ -131,6 +140,13 @@ public interface IDatabase {
 	 * @return list with all the records returned by the query.
 	 */
     public List<DynaBean> fetch(ISelectQuery aQuery);
+    
+    /**
+     * 
+     * @param aQuery
+     * @return 
+     */
+    public DynaBean fetchOne(ISelectQuery aQuery);
     
     /**
 	 * Return a Iterator allowing iterate for all the records returned by the query.

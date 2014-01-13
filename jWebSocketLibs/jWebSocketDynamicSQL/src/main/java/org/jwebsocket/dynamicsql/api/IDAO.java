@@ -89,6 +89,8 @@ public interface IDAO {
 	 */
     public List<DynaBean> fetch(ISelectQuery aQuery);
     
+    //public DynaBean fetchOne(ISelectQuery aQuery);
+    
     /**
 	 * Return a Iterator allowing iterate for all the records returned by the query.
 	 *

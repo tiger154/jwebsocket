@@ -105,6 +105,7 @@ public class DynaDB implements IDatabase {
 
     @Override
     public void update(String aTableName, Map<String, Object> aItem) {
+        System.out.println(mPlatform.getUpdateSql(mDB, createDynaBean(aTableName, aItem)));
         mPlatform.update(mDB, createDynaBean(aTableName, aItem));
     }
 
@@ -140,6 +141,16 @@ public class DynaDB implements IDatabase {
     @Override
     public List<DynaBean> fetch(ISelectQuery aQuery, Integer aOffset, Integer aLimit) {
         return mPlatform.fetch(mDB,aQuery.getSQL(), aOffset, aLimit);
+    }
+    
+    @Override
+    public DynaBean fetchOne(ISelectQuery aQuery) {
+        Iterator lIter = execute(aQuery);
+        
+        if(lIter.hasNext()) {
+            return (DynaBean) lIter.next();
+        }
+        return null;
     }
 
     @Override

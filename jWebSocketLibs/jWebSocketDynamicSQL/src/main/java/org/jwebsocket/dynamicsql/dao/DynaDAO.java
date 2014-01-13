@@ -77,6 +77,12 @@ public class DynaDAO implements IDAO {
     public List<DynaBean> fetch(ISelectQuery aQuery) {
         return mDB.fetch(aQuery);
     }
+    
+    
+//    @Override
+//    public DynaBean fetchOne(ISelectQuery aQuery) {
+//        return mDB.fetchOne(aQuery);
+//    }
 
     @Override
     public Iterator execute(ISelectQuery aQuery) {
