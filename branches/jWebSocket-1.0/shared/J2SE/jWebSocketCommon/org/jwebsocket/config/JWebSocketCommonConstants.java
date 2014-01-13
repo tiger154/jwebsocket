@@ -33,7 +33,7 @@ public class JWebSocketCommonConstants {
 	 * jWebSocket copyright string - NEEDS TO BE KEPT due to Apache License,
 	 * Version 2.0! Please ask for conditions of a commercial license on demand.
 	 */
-	public static final String COPYRIGHT_CE = "(C) Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath";
+	public static final String COPYRIGHT_CE = "(C) Copyright 2010-2014 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath";
 	/**
 	 * jWebSocket copyright string - NEEDS TO BE KEPT!
 	 */
