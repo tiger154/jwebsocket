@@ -145,45 +145,48 @@ jws.FileUploaderPlugIn = {
 		}
 	},
 	onFileSelected: function(aEvt) {
-		
+		this.fireUploaderEvent(this.TT_FILE_SELECTED, aEvt.target.files);
+		for(var lIdx = 0; lIdx< aEvt.target.files.length; lIdx++){
+			this.queue.push(new jws.UploadItem(aEvt.target.files[lIdx]));
+		}
 		//TODO: check if the files are folders, upload nested folders
-		for (var i = 0; i < aEvt.target.files.length; i++) {
-			var lFile = aEvt.target.files[i];
-			var lReader = new FileReader();
-			lReader.file = aEvt.target.files[i];
-
-			var lChunkSize = 250000, lReadChunks = 0;
-			var lComplete = false;
-			lReader.onload = function(aReference) {
-				console.log(this.file.name + " loaded chunk: " + (!lComplete ? (lReadChunks / lChunkSize) : "LAST") + ", loaded: " +
-						aReference.loaded + ", length: " +
-						aReference.target.result.length);
-				lReadChunks += lChunkSize;
-				chunkNext(this.file);
-			};
-
-			var chunkNext = function(aFile) {
-				var lNextChunk = lReadChunks + lChunkSize;
-				var lBlob = null;
-				if (lNextChunk < aFile.size) {
-					if (lReadChunks <= lFile.size) {
-						lBlob = aFile.slice(lReadChunks, lNextChunk);
-						lReader.readAsDataURL(lBlob);
-					}
-				} else {
-					if (!lComplete) {
-						lComplete = true;
-						if (lReadChunks <= lFile.size) {
-							lBlob = aFile.slice(lReadChunks, aFile.size);
-							lReader.readAsDataURL(lBlob);
-						}
-					} else {
-						lReadChunks = 0;
-					}
-				}
-			};
-			var lBlob = lFile.slice(lReadChunks, lChunkSize);
-			lReader.readAsDataURL(lBlob);
+//		for (var i = 0; i < aEvt.target.files.length; i++) {
+//			var lFile = aEvt.target.files[i];
+//			var lReader = new FileReader();
+//			lReader.file = aEvt.target.files[i];
+//
+//			var lChunkSize = 250000, lReadChunks = 0;
+//			var lComplete = false;
+//			lReader.onload = function(aReference) {
+////				console.log(this.file.name + " loaded chunk: " + (!lComplete ? (lReadChunks / lChunkSize) : "LAST") + ", loaded: " +
+////						aReference.loaded + ", length: " +
+////						aReference.target.result.length);
+//				lReadChunks += lChunkSize;
+//				chunkNext(this.file);
+//			};
+//
+//			var chunkNext = function(aFile) {
+//				var lNextChunk = lReadChunks + lChunkSize;
+//				var lBlob = null;
+//				if (lNextChunk < aFile.size) {
+//					if (lReadChunks <= lFile.size) {
+//						lBlob = aFile.slice(lReadChunks, lNextChunk);
+//						lReader.readAsDataURL(lBlob);
+//					}
+//				} else {
+//					if (!lComplete) {
+//						lComplete = true;
+//						if (lReadChunks <= lFile.size) {
+//							lBlob = aFile.slice(lReadChunks, aFile.size);
+//							lReader.readAsDataURL(lBlob);
+//						}
+//					} else {
+//						lReadChunks = 0;
+//					}
+//				}
+//			};
+//			var lBlob = lFile.slice(lReadChunks, lChunkSize);
+//			lReader.readAsDataURL(lBlob);
 
 
 //			lReader.onload = function(aReference) {
@@ -191,7 +194,7 @@ jws.FileUploaderPlugIn = {
 //			};
 //			lReader.readAsDataURL(lFile);
 
-		}
+//		}
 	},
 	uploadFileInChunks: function(aUploadItem, aResume) {
 		if (!aUploadItem) {
