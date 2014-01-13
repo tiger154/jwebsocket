@@ -4,7 +4,7 @@
 
 .description_box{
     float: left;
-    width: 70%;
+    width: 60%;
 }
 
 .description_box p{
@@ -68,7 +68,7 @@
 }
 
 #upload_options{
-	width: 28%;
+	width: 35%;
 	float: right;
 	padding-right: 5px;
 }

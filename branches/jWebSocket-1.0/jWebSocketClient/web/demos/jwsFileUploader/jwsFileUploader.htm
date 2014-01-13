@@ -62,6 +62,8 @@
         <script type="text/javascript" src='js/FileReader/FileReader.js'></script>
 
 		<script type="text/javascript" src="../../res/js/jwsFileUploaderPlugIn.js"></script>
+		<script type="text/javascript" src="../../lib/crypto-js/md5.js"></script>
+		<script type="text/javascript" src="../../lib/crypto-js/sha1.js"></script>
 
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
@@ -134,6 +136,13 @@
 							<div id="scope">Scope:
 								<input type="radio" name="scope" value="private">Private</input>
 								<input type="radio" name="scope" value="public" checked="true">Public</input>
+							</div>
+							<div id="checksum">Verify Checksum:
+								<input type="checkbox" id="checksumEnabled" checked="checked" />
+								<select id="checksumAlgorithm">
+									<option>MD5</option>
+									<option>SHA1</option>
+								</select>
 							</div>
 						</div>
 					</div>

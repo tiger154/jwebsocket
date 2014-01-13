@@ -34,6 +34,8 @@ $.widget("jws.fileUploaderDemo", {
 		this.eAliasInput = this.element.find("#alias input");
 		this.eFileMask = this.element.find("#filemask input");
 		this.eScopeChooser = this.element.find("input[name=scope]");
+		this.eChecksumEnabled = this.element.find("#checksumEnabled");
+		this.eChecksumAlgorithm = this.element.find("#checksumAlgorithm");
 
 		w.fileUploader = this;
 		w.fileUploader.registerEvents( );
@@ -43,7 +45,9 @@ $.widget("jws.fileUploaderDemo", {
 		w.fileUploader.eChunkInput.change(function( ) {
 			mWSC.setChunkSize($(this).val( ));
 		});
-
+		w.fileUploader.eChecksumEnabled.change(function() {
+			w.fileUploader.eChecksumAlgorithm.attr('disabled', $(this).attr("checked")?false:true);
+		});
 		w.fileUploader.eBtnGetFileList.click(function( ) {
 			w.fileUploader.getFileList();
 		});
@@ -57,7 +61,7 @@ $.widget("jws.fileUploaderDemo", {
 		w.fileUploader.eAliasInput.change(function( ) {
 			mWSC.setUploadAlias($(this).val( ));
 		});
-		
+
 		w.fileUploader.eFileMask.change(w.fileUploader.getFileList);
 
 		w.fileUploader.eBtnUpload.click(function( ) {
@@ -77,7 +81,7 @@ $.widget("jws.fileUploaderDemo", {
 
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
-			lURL: "wss://localhost:9797/jWebSocket/jWebSocket",
+//			lURL: "ws://localhost:8787/jWebSocket/jWebSocket",
 			OnMessage: function(aEvent, aToken) {
 				w.fileUploader.processToken(aEvent, aToken);
 			},
@@ -200,15 +204,15 @@ $.widget("jws.fileUploaderDemo", {
 				w.fileUploader.updateStatus(lItem.getName( ), lItem.getStatus( ));
 				jwsDialog(aErrorData.msg + "Do you want to remove this file from the list?",
 						"Error detected", true, 'error', null, [{
-						text: 'yes',
-						aFunction: function( ) {
-							w.fileUploader.removeFileFromTable(lItem.getName( ));
-						}
-					}, {
-						text: 'no',
-						aFunction: function( ) {
-						}
-					}]);
+								text: 'yes',
+								aFunction: function( ) {
+									w.fileUploader.removeFileFromTable(lItem.getName( ));
+								}
+							}, {
+								text: 'no',
+								aFunction: function( ) {
+								}
+							}]);
 			} else if (aErrorData.type === mWSC.TT_ERROR) {
 				jwsDialog(aErrorData.msg, "Error detected", true, 'error', null);
 			} else if (aErrorData.type === mWSC.TT_INFO) {
