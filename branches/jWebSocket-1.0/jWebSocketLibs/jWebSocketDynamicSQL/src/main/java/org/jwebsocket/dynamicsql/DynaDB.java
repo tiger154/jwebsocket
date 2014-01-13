@@ -105,7 +105,6 @@ public class DynaDB implements IDatabase {
 
     @Override
     public void update(String aTableName, Map<String, Object> aItem) {
-        System.out.println(mPlatform.getUpdateSql(mDB, createDynaBean(aTableName, aItem)));
         mPlatform.update(mDB, createDynaBean(aTableName, aItem));
     }
 
