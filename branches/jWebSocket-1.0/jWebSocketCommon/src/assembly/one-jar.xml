@@ -25,6 +25,7 @@
 				<include>commons-codec:commons-codec</include>
 				<include>org.apache.commons:commons-compress</include>
 				<include>org.apache.activemq:activemq-all</include>
+				<include>org.jwebsocket:jWebSocketDynamicSQL</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>
