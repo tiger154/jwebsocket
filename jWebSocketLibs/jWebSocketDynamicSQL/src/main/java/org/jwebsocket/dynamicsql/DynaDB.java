@@ -145,12 +145,12 @@ public class DynaDB implements IDatabase {
     
     @Override
     public DynaBean fetchOne(ISelectQuery aQuery) {
-        Iterator lIter = execute(aQuery);
+        List<DynaBean> lList = fetch(aQuery, 0, 1);
         
-        if(lIter.hasNext()) {
-            return (DynaBean) lIter.next();
+        if(lList.isEmpty()) {
+            return null;
         }
-        return null;
+        return lList.get(0);
     }
 
     @Override
