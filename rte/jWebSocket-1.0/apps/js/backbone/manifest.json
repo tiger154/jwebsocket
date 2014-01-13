@@ -1,7 +1,7 @@
 {
 	"language_ext": "js",
 	"jws_version": "1.0.0",
-	"jws_dependencies": ["jws.system", "jws.useradmin"],
+	"jws_dependencies": ["jws.system"],
 	"permissions": [
 		"permission java.security.AllPermission"
 	],

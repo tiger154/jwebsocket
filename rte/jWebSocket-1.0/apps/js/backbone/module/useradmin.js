@@ -23,27 +23,60 @@ App.setModule('useradmin', {
 	targetNS: 'org.jwebsocket.plugins.useradmin',
 	// called when the module is loaded
 	load: function(aJMSManager) {
+		// listening useradmin events
 		aJMSManager.subscribe({
 			onMessage: function(aMessage) {
 				var lMsgId = aMessage.getStringProperty('msgId');
 				var lTokenType = aMessage.getStringProperty('tokenType');
-
+				var lUsername = aMessage.getStringProperty('username');
 				// required for cluster compatibility
 				if (App.isClusterActive() && !App.getWebSocketServer().getSynchronizer()
-						.getWorkerTurn(lMsgId)) {
+					.getWorkerTurn(lMsgId)) {
 					return;
 				}
 
 				// processing message
 				if ('registerNewUser' == lTokenType) {
-					App.getLogger().debug(aMessage.toString());
+					// App.getLogger().debug(aMessage.toString());
+					var lToken = {
+						type: 'getQuota',
+						identifier:'CountDown',
+						namespace:'org.jwebsocket.plugins.sms', 
+						instance:'defaultUser', 
+						instance_type:'Group'
+					};
+
+
+					var response = App.invokePlugIn('jws.quota', null, lToken);
+
+					if ( -1 != response.getCode() ){
+						
+						lToken = {
+							type: 'registerQuota',
+							uuid: response.getString('uuid'), 
+							identifier:'CountDown', 
+							instance: lUsername, 
+							instance_type:'User'
+						};
+
+						response = App.invokePlugIn('jws.quota', null, lToken );
+
+						if (-1 == response.getCode() ){
+							App.getLogger().error("UserAdmin - Could register quota:"+response.getString('msg'));
+						}
+					}
+
 				}
-			}}, 'ns = \'org.jwebsocket.plugins\' AND '
-				+ 'msgType = \'tokenProcessed\' AND '
-				+ 'code = 0 AND '
-				+ 'tokenNS = \'' + this.targetNS + '\'',
-				true,
-				this.subscriptionId);
+			}
+		}, 'ns = \'org.jwebsocket.plugins\' AND '
+		+ 'msgType = \'tokenProcessed\' AND '
+		+ 'code = 0 AND '
+		+ 'tokenNS = \'' + this.targetNS + '\'',
+		true,
+		this.subscriptionId);
+		
+		// creating required quotas if missing
+		
 	},
 	// called when the module is unloaded
 	unload: function(aJMSManager) {
