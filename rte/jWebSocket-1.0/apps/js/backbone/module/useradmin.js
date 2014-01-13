@@ -41,25 +41,26 @@ App.setModule('useradmin', {
 					// 
 					// QUOTA plug-in integration
 					// *************************
-					var lToken = {
+					
+					// getting the SMS countdown quota
+					var lResponse = App.invokePlugIn('jws.quota', null, {
 						type: 'getQuota',
 						identifier:'CountDown',
 						namespace:'org.jwebsocket.plugins.sms', 
 						instance:'defaultUser', 
 						instance_type:'Group'
-					};
-
-					var lResponse = App.invokePlugIn('jws.quota', null, lToken);
+					});
 					if ( 0 == lResponse.getCode() ){
-						lToken = {
+						
+						// assigning the SMS countdown quota to the new user
+						lResponse = App.invokePlugIn('jws.quota', null, {
 							type: 'registerQuota',
 							uuid: lResponse.getString('uuid'), 
 							identifier:'CountDown', 
 							instance: lUsername, 
 							instance_type:'User'
-						};
-
-						lResponse = App.invokePlugIn('jws.quota', null, lToken );
+						});
+						
 						if (0 != lResponse.getCode() ){
 							App.getLogger().error("UserAdmin - Could not register quota: " +lResponse.getString('msg'));
 						}
