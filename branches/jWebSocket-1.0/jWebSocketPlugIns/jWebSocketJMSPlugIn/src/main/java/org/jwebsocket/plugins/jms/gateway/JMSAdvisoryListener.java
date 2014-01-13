@@ -102,6 +102,7 @@ public class JMSAdvisoryListener implements MessageListener {
 								mLog.debug("Adding connector to engine...");
 							}
 							mEngine.addConnector(lConnector);
+							lConnector.startConnector();
 
 							if (mLog.isInfoEnabled()) {
 								mLog.info("JMS client connected"
