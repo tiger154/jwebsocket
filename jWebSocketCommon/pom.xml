@@ -140,7 +140,12 @@
 			<artifactId>activemq-all</artifactId> 
 			<version>5.8.0</version> 
 		</dependency>
-		
+        <!-- Required for management of relational database systems and ItemStorage PlugIn. -->
+		<dependency>
+			<groupId>org.jwebsocket</groupId>
+			<artifactId>jWebSocketDynamicSQL</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 
 	<!-- define repositories once required -->
