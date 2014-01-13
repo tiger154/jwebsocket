@@ -10,10 +10,9 @@ package org.jwebsocket.plugins.quota.utils.exception;
  */
 public class ExceptionQuotaNotFound extends Exception {
 
-	public static String MMESSAGE = "Quota Not Found";
+    public static String MMESSAGE = "Quota Not Found";
 
-	public ExceptionQuotaNotFound(String aUuid) {
-		super(MMESSAGE + " whit id " + aUuid);
-	}
-
+    public ExceptionQuotaNotFound(String aUuid) {
+        super(MMESSAGE + " whit id " + aUuid);
+    }
 }

@@ -127,8 +127,8 @@ public class StorageQuotaMongo implements IQuotaStorage {
         lWhere = new BasicDBObject();
         lWhere.put("uuidQuota", aUuid);
         mCollectionInstance.remove(lWhere);
-        
-        
+
+
     }
 
     @Override
@@ -137,7 +137,7 @@ public class StorageQuotaMongo implements IQuotaStorage {
         lWhere.put("uuidQuota", aQuotaChild.getUuid());
         lWhere.put("instance", aQuotaChild.getInstance());
         mCollectionInstance.remove(lWhere);
-     
+
     }
 
     @Override
@@ -178,21 +178,6 @@ public class StorageQuotaMongo implements IQuotaStorage {
             lAction = lObj.get("actions").toString();
         }
         return lAction;
-    }
-
-    @Override
-    public List<String> getAllQuotaUuid(String aQuotaType) {
-
-        FastList<String> lResult = new FastList<String>();
-        BasicDBObject lQuery = new BasicDBObject();
-        lQuery.put("quotaType", aQuotaType);
-        DBCursor lCur = mCollection.find(lQuery);
-        while (lCur.hasNext()) {
-            DBObject lObj = lCur.next();
-            String lUuid = lObj.get("uuid").toString();
-            lResult.add(lUuid);
-        }
-        return lResult;
     }
 
     @Override

@@ -27,16 +27,11 @@ public interface IQuotaStorage {
 
     public long update(QuotaChildSI aQuotaChild);
 
-    //to see for change the method's name 
-    public void updateIntervalResetDate(String aUuid, String aResetDate);
-
     public boolean quotaExist(String aUuid);
 
     public boolean quotaExist(String aNameSpace, String aQuotaIdentifier, String aInstance);
 
     public String getActions(String aUuid);
-
-    public List<String> getAllQuotaUuid(String aQuotaType);
 
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType);
 
@@ -57,4 +52,6 @@ public interface IQuotaStorage {
     public IQuotaSingleInstance getQuotaByUuid(String aUuid);
 
     public Map<String, Object> getRawQuota(String aUuid, String aInstance);
+
+    public void updateIntervalResetDate(String aUuid, String aResetDate);
 }
