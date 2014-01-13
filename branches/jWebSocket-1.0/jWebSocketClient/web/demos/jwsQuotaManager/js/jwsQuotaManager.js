@@ -674,12 +674,12 @@ Ext.define('Quota', {
             type: 'int'
         }
     ],
-    hasMany: { model: 'QuotaChild', name: 'childQuotas' }     
+    hasMany: {model: 'QuotaChild', name: 'childQuotas'}
 });
 
 Ext.define('QuotaChild', {
     extend: 'Ext.data.Model',
-    fields: ['instance', 'instance_type', 'uuid', {name:'value',type: 'int'}],
+    fields: ['instance', 'instance_type', 'uuid', {name: 'value', type: 'int'}],
     belongsTo: 'Quota'
 });
 
@@ -690,7 +690,7 @@ NS_QUOTA_PLUGIN = jws.NS_BASE + '.plugins.quota';
 TT_OPEN = 'open';
 TT_CLOSE = 'close';
 TT_REGISTER = 'registerQuota';
-TT_CREATE='createQuota'
+TT_CREATE = 'createQuota'
 TT_UNREGISTER = 'unregisterQuota';
 TT_QUERY = 'query';
 TT_GET_QUOTA = 'getQuota';
@@ -727,14 +727,24 @@ var quota_instance = [
     {name: 'User'},
     {name: 'Group'}
 ];
+var namespace_diskspace = [
+    {name: 'private'},
+    {name: 'public'}
+];
 
 Ext.regModel('Quota_types', {
     fields: [
-        {type: 'string', name: 'name'}
+        {type: 'string', name: 'name'},
+        {type: 'string', name: 'quotaType'}
     ]
 });
 
 Ext.regModel('Quota_instances', {
+    fields: [
+        {type: 'string', name: 'name'}
+    ]
+});
+Ext.regModel('Namespace_diskspace', {
     fields: [
         {type: 'string', name: 'name'}
     ]
@@ -748,6 +758,11 @@ var quota_type_store = Ext.create('Ext.data.Store', {
 var quota_instance_store = Ext.create('Ext.data.Store', {
     model: 'Quota_instances',
     data: quota_instance
+});
+
+var namespace_diskspace_store = Ext.create('Ext.data.Store', {
+    model: 'Namespace_diskspace',
+    data: namespace_diskspace
 });
 
 
@@ -797,6 +812,7 @@ Ext.onReady(function() {
         showQuotaPluginMainWindows();
         closeQuotaPluginLoginWindows();
         Ext.getCmp('user_label').setText(aResponse.username);
+        Ext.getCmp("namespace_diskspace").setVisible(false);
     });
 
 });
@@ -808,18 +824,14 @@ function logMessage(aToken) {
         console.log(aToken);
         Ext.getCmp('msg_label').addCls('error_log');
         Ext.getCmp('msg_label').removeCls('ok_log');
-        if (!aToken.hasOwnProperty("message"))
-            Ext.getCmp('msg_label').setText(aToken.msg);
-        else
+        if (aToken.hasOwnProperty("message"))
             Ext.getCmp('msg_label').setText(aToken.message);
     } else {
         console.log("bien");
         console.log(aToken);
         Ext.getCmp('msg_label').addCls('ok_log');
         Ext.getCmp('msg_label').removeCls('error_log');
-        if (!aToken.hasOwnProperty("message"))
-            Ext.getCmp('msg_label').setText(aToken.msg);
-        else
+        if (aToken.hasOwnProperty("message"))
             Ext.getCmp('msg_label').setText(aToken.message);
     }
 }
@@ -852,7 +864,7 @@ function showQuotaPluginMainWindows() {
         model: 'Quota',
         proxy: lJWSProxy
     });
-    
+
     var lJWSProxyQuotaActive = new Ext.jws.data.Proxy({
         ns: NS_QUOTA_PLUGIN,
         api: {
@@ -977,9 +989,28 @@ function showQuotaPluginMainWindows() {
                         margins: '0 10 0 0',
                         fieldLabel: 'Select Quota ',
                         displayField: 'name',
+                        valueField: 'quotaType',
                         store: lStoreActiveQuota,
                         typeAhead: true,
-                        allowBlank: false
+                        allowBlank: false,
+                        listeners: {
+                            select: function(identifier) {
+                                if (identifier.getValue() === "DiskSpace") {
+                                    Ext.getCmp("namespace").setVisible(false);
+                                    Ext.getCmp("namespace").submitValue=false;
+                                    Ext.getCmp("namespace_diskspace").setVisible(true);
+                                    Ext.getCmp("namespace_diskspace").submitValue=true;
+                                } else {
+                                    Ext.getCmp("namespace").setVisible(true);
+                                    Ext.getCmp("namespace").submitValue=true;
+                                    Ext.getCmp("namespace_diskspace").setVisible(false);
+                                    Ext.getCmp("namespace_diskspace").submitValue=false;
+                                }
+
+                            }
+                        }
+
+
                     }, {
                         flex: 1,
                         xtype: 'textfield',
@@ -988,7 +1019,7 @@ function showQuotaPluginMainWindows() {
                         fieldLabel: 'Value',
                         vtype: 'num',
                         margins: '0 0 0 10',
-                        allowBlank: false
+                        allowBlank: false,
                     }]},
             {
                 xtype: 'fieldcontainer',
@@ -1037,6 +1068,20 @@ function showQuotaPluginMainWindows() {
                         id: 'namespace',
                         fieldLabel: 'Name Space',
                         emptyText: 'required...'
+                    },
+                    {
+                        xtype: 'combobox',
+                        flex: 1,
+                        id: 'namespace_diskspace',
+                        name: 'namespace',
+                        fieldLabel: 'Select the folder type',
+                        displayField: 'name',
+                        margins: '10 0 0 0',
+                        store: namespace_diskspace_store,
+                        allowBlank: false,
+                        queryMode: 'local',
+                        typeAhead: true,
+                        editable: false,
                     }]
             }, {
                 xtype: 'fieldcontainer',
@@ -1436,7 +1481,7 @@ function initDemo() {
     var lPlugIn = {};
     lPlugIn.processToken = function(aToken) {
         console.log("todos");
-	console.log(aToken);
+        console.log(aToken);
 
         if (aToken.ns === NS_QUOTA_PLUGIN) {
             if (aToken.reqType === "query")
@@ -1461,3 +1506,4 @@ function exitDemo() {
     if (lWindowMain != undefined)
         lWindowMain.close();
 }
+
