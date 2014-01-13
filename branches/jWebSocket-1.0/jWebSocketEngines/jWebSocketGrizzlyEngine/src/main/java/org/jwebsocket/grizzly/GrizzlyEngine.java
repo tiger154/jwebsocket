@@ -139,10 +139,10 @@ public class GrizzlyEngine extends BaseEngine {
 					try {
 						String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
 						// create a Grizzly HttpServer to server static resources from 'webapp', on mGrizzlySSLPort.
-						mGrizzlySSLServer = HttpServer.createSimpleServer("/", mGrizzlySSLPort);
+						mGrizzlySSLServer = HttpServer.createSimpleServer(lDocumentRoot, mGrizzlySSLPort);
 
 						// Register the WebSockets add on with the HttpServer
-						mGrizzlySSLServer.getListener("grizzly").registerAddOn(new WebSocketAddOn());
+						mGrizzlySSLServer.getListener("grizzly").registerAddOn(lWebSocketAddon);
 						// Enable SSL on the listener
 						mGrizzlySSLServer.getListener("grizzly").setSSLEngineConfig(
 								createSslConfiguration(lKeyStorePath, mKeyStorePassword));
@@ -160,7 +160,7 @@ public class GrizzlyEngine extends BaseEngine {
 			//outgoing flow, connection, listeners, etc...
 			final WebSocketApplication lGrizzlyApplication = new GrizzlyWebSocketApplication(this);
 			// Registering grizzly jWebSocket Wrapper Application into grizzly WebSocketEngine
-			WebSocketEngine.getEngine().register("/jWebSocket", "/jWebSocket", lGrizzlyApplication);
+			WebSocketEngine.getEngine().register("/jwebsocket", "/jwebsocket", lGrizzlyApplication);
 
 		} catch (Exception lEx) {
 			mLog.error(lEx.getMessage());
