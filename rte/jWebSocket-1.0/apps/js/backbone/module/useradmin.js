@@ -29,6 +29,7 @@ App.setModule('useradmin', {
 				var lMsgId = aMessage.getStringProperty('msgId');
 				var lTokenType = aMessage.getStringProperty('tokenType');
 				var lUsername = aMessage.getStringProperty('username');
+				
 				// required for cluster compatibility
 				if (App.isClusterActive() && !App.getWebSocketServer().getSynchronizer()
 					.getWorkerTurn(lMsgId)) {
@@ -37,7 +38,9 @@ App.setModule('useradmin', {
 
 				// processing message
 				if ('registerNewUser' == lTokenType) {
-					// App.getLogger().debug(aMessage.toString());
+					// 
+					// QUOTA plug-in integration
+					// *************************
 					var lToken = {
 						type: 'getQuota',
 						identifier:'CountDown',
@@ -46,26 +49,23 @@ App.setModule('useradmin', {
 						instance_type:'Group'
 					};
 
-
-					var response = App.invokePlugIn('jws.quota', null, lToken);
-
-					if ( -1 != response.getCode() ){
-						
+					var lResponse = App.invokePlugIn('jws.quota', null, lToken);
+					if ( 0 == lResponse.getCode() ){
 						lToken = {
 							type: 'registerQuota',
-							uuid: response.getString('uuid'), 
+							uuid: lResponse.getString('uuid'), 
 							identifier:'CountDown', 
 							instance: lUsername, 
 							instance_type:'User'
 						};
 
-						response = App.invokePlugIn('jws.quota', null, lToken );
-
-						if (-1 == response.getCode() ){
-							App.getLogger().error("UserAdmin - Could register quota:"+response.getString('msg'));
+						lResponse = App.invokePlugIn('jws.quota', null, lToken );
+						if (0 != lResponse.getCode() ){
+							App.getLogger().error("UserAdmin - Could not register quota: " +lResponse.getString('msg'));
 						}
+					} else {
+						App.getLogger().error("UserAdmin - Could not retrieve quota from QuotaPlugIn: " +lResponse.getString('msg'));
 					}
-
 				}
 			}
 		}, 'ns = \'org.jwebsocket.plugins\' AND '
@@ -75,7 +75,7 @@ App.setModule('useradmin', {
 		true,
 		this.subscriptionId);
 		
-		// creating required quotas if missing
+	// creating required quotas if missing
 		
 	},
 	// called when the module is unloaded

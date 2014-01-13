@@ -33,39 +33,33 @@ App.on('appLoaded', function() {
 	}
 	
 	App.publish('Main', {
-		simulateAction: function(){
-			var lMsg= lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
-			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.useradmin');
-			lMsg.setStringProperty('tokenType', 'registerNewUser');
-			lMsg.setStringProperty('username', 'guest');
-			lMsg.setIntProperty('code', 0);
-			
-			lJMS.send(lMsg);
-		},
-		simulateSendSMS: function(){
-
-			var lMsg= lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
-			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.sms');
-			lMsg.setStringProperty('tokenType', 'sendSMS');
-			lMsg.setStringProperty('username', 'guest');
-			lMsg.setIntProperty('code', 0);
-			
-			lJMS.send(lMsg);
-		},
-
-		simulateSendSMSError: function(){
-
-			var lMsg= lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
-			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.sms');
-			lMsg.setStringProperty('tokenType', 'sendSMS');
-			lMsg.setStringProperty('username', 'guest');
-			lMsg.setIntProperty('code', -1 );
-			
-			lJMS.send(lMsg);
-		}
-
-
-
+//		simulateRegisterUser: function(aUsername){
+//			var lMsg= lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
+//			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.useradmin');
+//			lMsg.setStringProperty('tokenType', 'registerNewUser');
+//			lMsg.setStringProperty('username', aUsername);
+//			lMsg.setIntProperty('code', 0);
+//			
+//			lJMS.send(lMsg);
+//		},
+//		simulateSendSMS: function(){
+//			var lMsg= lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
+//			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.sms');
+//			lMsg.setStringProperty('tokenType', 'sendSMS');
+//			lMsg.setStringProperty('username', 'guest');
+//			lMsg.setIntProperty('code', 0);
+//			
+//			lJMS.send(lMsg);
+//		},
+//		simulateSendSMSError: function(){
+//			var lMsg= lJMS.buildMessage('org.jwebsocket.plugins', 'tokenProcessed');
+//			lMsg.setStringProperty('tokenNS', 'org.jwebsocket.plugins.sms');
+//			lMsg.setStringProperty('tokenType', 'sendSMS');
+//			lMsg.setStringProperty('username', 'guest');
+//			lMsg.setIntProperty('code', -1 );
+//			
+//			lJMS.send(lMsg);
+//		}
 	});
 });
 
