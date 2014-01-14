@@ -268,7 +268,7 @@ $.widget("jws.auth", {
 		if (mWSC) {
 			if (mLog.isDebugEnabled) {
 				log("Logging off " + (w.auth.mUsername != null ? "'" +
-						w.auth.mUsername + "'" : "") + " and disconnecting...");
+						w.auth.mUsername + "'" : ""));
 			}
 			// the timeout below  is optional,
 			// if you use it you'll get a good-bye message.
