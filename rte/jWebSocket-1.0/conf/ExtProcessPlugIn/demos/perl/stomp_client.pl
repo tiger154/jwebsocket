@@ -33,8 +33,8 @@ $flag_exit = 0;
 
 # create STOMP client
 # my $brokerURI = "stomp://172.20.100.125:61613";
-my $brokerURI = "stomp://hqqaalsap02:61613";
 # my $brokerURI = "stomp://hqdvalsap01:61613";
+my $brokerURI = "stomp://localhost:61613";
 printf( "Connecting to %s...\n", $brokerURI );
 $stomp = Net::STOMP::Client->new(uri => $brokerURI);
 
@@ -87,6 +87,7 @@ sub processMesage ($$) {
 
 		$lToBeSent = NULL;
 		$lAnswerProcessed = NULL;
+		
 		# when the JMS client connects to the topic 
 		# the jWebSocket subsystem send a welcome message.
 		# this is used to send the authentication against jWebSocket
@@ -103,8 +104,16 @@ sub processMesage ($$) {
 		# the login answers with a response token
 		# it can be success or failure
 		} elsif( $lReceived->{'ns'} eq "org.jwebsocket.plugins.system" ) {
+			if( $lReceived->{'type'} eq "welcome" ) {
+				printf( "Authenticating against jWebSocket server...\n" );
+				$lToBeSent = {
+					"ns" => "org.jwebsocket.plugins.system",
+					"type" => "login",
+					"username" => "root",
+					"password" => "root",
+				};
 			# check login response
-			if( defined $lReceived->{'reqType'} 
+			} elsif( defined $lReceived->{'reqType'} 
 					&& $lReceived->{'reqType'} eq "login" ) {
 				# check if login was successful
 				if( $lReceived->{'code'} eq 0 ) {
@@ -121,6 +130,11 @@ sub processMesage ($$) {
 					};
 				}
 			}
+		# process responses from the jWebSocket file system
+		} elsif( $lReceived->{'ns'} eq "org.jwebsocket.msgctrl" ) {
+			$lAnswerProcessed = 1;
+			printf( "Incoming message control token '%s' ignored.\n", $lJSON );
+		
 		# process responses from the jWebSocket file system
 		} elsif( $lReceived->{'ns'} eq "org.jwebsocket.plugins.filesystem" ) {
 			# check login response
@@ -144,11 +158,11 @@ sub processMesage ($$) {
 		if( $lToBeSent eq NULL ) {
 			if( $lAnswerProcessed eq NULL ) {
 				printf( "Incoming token '%s' ignored, not yet processed, so quitting...\n", $lJSON );
+				# we can stop the console application here
+				# this is only a little state machine 
+				# in bigger applications this should be processed more intelligent.
+				$flag_exit = 1;
 			}
-			# we can stop the console application here
-			# this is only a little state machine 
-			# in bigger applications this should be processed more intelligent.
-			$flag_exit = 1;
 		} else {
 			$lJSON = to_json( $lToBeSent );
 			printf( "Sending token %s\n", $lJSON );

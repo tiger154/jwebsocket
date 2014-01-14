@@ -672,9 +672,12 @@ public class BaseConnector implements WebSocketConnector {
 	public Integer getMaxFrameSize() {
 		Integer lMaxFrameSize = mEngine.getConfiguration().getMaxFramesize();
 		try {
-			Integer lArgMaxFrameSize = Integer.parseInt((String) mHeader.getArgs().get(MessagingControl.PROPERTY_MAX_FRAME_SIZE));
-			if (lArgMaxFrameSize <= lMaxFrameSize) {
-				return lArgMaxFrameSize;
+			Map lArgs = mHeader.getArgs();
+			if (null != lArgs) {
+				Integer lArgMaxFrameSize = Integer.parseInt((String) mHeader.getArgs().get(MessagingControl.PROPERTY_MAX_FRAME_SIZE));
+				if (lArgMaxFrameSize <= lMaxFrameSize) {
+					return lArgMaxFrameSize;
+				}
 			}
 		} catch (NumberFormatException lEx) {
 		}

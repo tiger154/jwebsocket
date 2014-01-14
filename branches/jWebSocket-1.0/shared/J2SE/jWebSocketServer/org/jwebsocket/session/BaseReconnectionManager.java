@@ -161,7 +161,7 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 
 	@Override
 	public boolean isExpired(String aSessionId) {
-		if (getReconnectionIndex().containsKey(aSessionId)) {
+		if (null != aSessionId && getReconnectionIndex().containsKey(aSessionId)) {
 			return false;
 		}
 

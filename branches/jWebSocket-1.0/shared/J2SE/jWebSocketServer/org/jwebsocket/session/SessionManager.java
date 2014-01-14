@@ -35,7 +35,7 @@ public class SessionManager implements ISessionManager {
 
 	private IStorageProvider mStorageProvider;
 	private ISessionReconnectionManager mReconnectionManager;
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 
 	/**
 	 *
@@ -128,6 +128,7 @@ public class SessionManager implements ISessionManager {
 	/**
 	 *
 	 * {@inheritDoc }
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void initialize() throws Exception {
@@ -136,6 +137,7 @@ public class SessionManager implements ISessionManager {
 	/**
 	 *
 	 * {@inheritDoc }
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void shutdown() throws Exception {
