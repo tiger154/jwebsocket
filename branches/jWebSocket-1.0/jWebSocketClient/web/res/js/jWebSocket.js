@@ -1866,7 +1866,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					try {
 						var lMessage = JSON.parse(lPacket);
 						
-						if( lMessage[ "i$WrappedMsg" ] ) {
+						if( lMessage[ "jwsWrappedMsg" ] ) {
 							// process control message
 							if( "message" === lMessage.type ) {
 								var lMsgId = lMessage.msgId;
@@ -1874,10 +1874,10 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 								if( lMessage.isAckRequired ){
 									// send delivery acknowledge to the server
 									lThis.sendStream(JSON.stringify({
-										'i$WrappedMsg': true,
-										name: 'ack',
+										"jwsWrappedMsg": true,
+										name: "ack",
 										data: lMsgId,
-										type: 'info'
+										type: "info"
 									}));
 								}
 								
@@ -2232,12 +2232,12 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		}
 	},
 	
-	sendMessage: function(aMessage, aListener){
+	sendMessage: function( aMessage, aListener ) {
 		try {
 			var lThis = this;
 			if( null !== aListener ) {
 				aMessage.isAckRequired = true;
-				aMessage[ 'i$WrappedMsg' ] = true;
+				aMessage[ "jwsWrappedMsg" ] = true;
 
 				var lMsgId = aMessage.msgId;
 
