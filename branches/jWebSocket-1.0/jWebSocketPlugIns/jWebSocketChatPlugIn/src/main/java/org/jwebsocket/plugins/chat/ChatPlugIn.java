@@ -41,21 +41,27 @@ import org.jwebsocket.token.TokenFactory;
 public class ChatPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
-	private static final FastMap<String, WebSocketConnector> mClients =
-			new FastMap<String, WebSocketConnector>().shared();
-	/**
-	 *
-	 */
-	public static final String NS_CHAT =
-			JWebSocketServerConstants.NS_BASE + ".plugins.chat";
+	private static final FastMap<String, WebSocketConnector> mClients
+			= new FastMap<String, WebSocketConnector>().shared();
+	public static final String NS_CHAT
+			= JWebSocketServerConstants.NS_BASE + ".plugins.chat";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket ChatPlugIn";
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket ChatPlugIn - Community Edition";
+	private final static String TT_REGISTER = "register";
+	private final static String TT_UNREGISTER = "unregister";
+	private final static String TT_GET_CLIENTS = "getChatClients";
+	private final static String TT_BROADCAST = "broadcast";
+	private final static String TT_MESSAGE_TO = "messageTo";
+	private final static String TT_EVENT = "event";
+	private final static String TT_NEW_CLIENT = "newClientConnected";
 
 	/**
+	 * This PlugIn shows how to easily set up a simple jWebSocket based chat
+	 * system.
 	 *
 	 * @param aConfiguration
 	 */
@@ -71,7 +77,7 @@ public class ChatPlugIn extends TokenPlugIn {
 			mLog.info("Chat plug-in successfully instantiated.");
 		}
 	}
-	
+
 	@Override
 	public String getVersion() {
 		return VERSION;
@@ -110,28 +116,29 @@ public class ChatPlugIn extends TokenPlugIn {
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector,
 			CloseReason aCloseReason) {
-		if (!mClients.isEmpty()) {
-			mClients.remove(aConnector.getId());
-		}
+		unregister(aConnector);
+	}
+
+	@Override
+	public void processLogoff(WebSocketConnector aConnector) {
+		unregister(aConnector);
 	}
 
 	@Override
 	public void processToken(PlugInResponse aResponse,
 			WebSocketConnector aConnector, Token aToken) {
 		if (getNamespace().equals(aToken.getNS())) {
-			if ("register".equals(aToken.getType())) {
+			if (TT_REGISTER.equals(aToken.getType())) {
 				mClients.put(aConnector.getId(), aConnector);
 				getClients(aConnector);
 				notifyNewClientConnected(aConnector);
-			} else if ("unregister".equals(aToken.getType())) {
-				if (mClients.containsKey(aConnector.getId())) {
-					mClients.remove(aConnector.getId());
-				}
-			} else if ("getChatClients".equals(aToken.getType())) {
+			} else if (TT_UNREGISTER.equals(aToken.getType())) {
+				unregister(aConnector);
+			} else if (TT_GET_CLIENTS.equals(aToken.getType())) {
 				getClients(aConnector);
-			} else if ("broadcast".equals(aToken.getType())) {
+			} else if (TT_BROADCAST.equals(aToken.getType())) {
 				broadcast(aConnector, aToken);
-			} else if ("messageTo".equals(aToken.getType())) {
+			} else if (TT_MESSAGE_TO.equals(aToken.getType())) {
 				sendMessage(aConnector, aToken);
 			}
 		}
@@ -142,7 +149,7 @@ public class ChatPlugIn extends TokenPlugIn {
 		String lUsername = aConnector.getUsername() + "@" + aConnector.getId();
 		if (lMessage != null) {
 			if (!lMessage.isEmpty()) {
-				Token lToken = TokenFactory.createToken(getNamespace(), "broadcast");
+				Token lToken = TokenFactory.createToken(getNamespace(), TT_BROADCAST);
 				lToken.setString("msg", lMessage);
 				lToken.setString("sourceId", lUsername);
 
@@ -151,17 +158,16 @@ public class ChatPlugIn extends TokenPlugIn {
 				}
 			} else {
 				getServer().sendErrorToken(aConnector, aToken, -1,
-						"You must specify a message");
+						"No message given. Please check!");
 			}
 		} else {
 			getServer().sendErrorToken(aConnector, aToken, -1,
-					"You must specify a message");
+					"No message given. Please check!");
 		}
 	}
 
 	private void notifyNewClientConnected(WebSocketConnector aConnector) {
-		Token lToken = TokenFactory.createToken(getNamespace(),
-				"newClientConnected");
+		Token lToken = TokenFactory.createToken(getNamespace(), TT_NEW_CLIENT);
 		lToken.setString("sourceId", aConnector.getUsername() + "@"
 				+ aConnector.getId());
 
@@ -182,7 +188,7 @@ public class ChatPlugIn extends TokenPlugIn {
 		WebSocketConnector lTargetConnector = mClients.get(lTargetId);
 
 		if (lTargetConnector != null && lMessage != null) {
-			Token lToken = TokenFactory.createToken(getNamespace(), "messageTo");
+			Token lToken = TokenFactory.createToken(getNamespace(), TT_MESSAGE_TO);
 			lToken.setString("msg", lMessage);
 			lToken.setString("sourceId", aSourceConnector.getUsername() + "@" + aSourceConnector.getId());
 			lToken.setString("targetId", lTargetConnector.getUsername() + "@" + lTargetConnector.getId());
@@ -190,17 +196,16 @@ public class ChatPlugIn extends TokenPlugIn {
 			getServer().sendToken(lTargetConnector, lToken);
 		} else {
 			getServer().sendErrorToken(aSourceConnector, aToken, -1,
-					"The message couldn't be sent, please, check the outgoing data");
+					"The message couldn't be sent, please, check the outgoing data.");
 		}
 	}
 
 	private void getClients(WebSocketConnector aConnector) {
-		Token lToken = TokenFactory.createToken(getNamespace(), "getChatClients");
+		Token lToken = TokenFactory.createToken(getNamespace(), TT_GET_CLIENTS);
 		FastList<String> lClients = new FastList<String>();
 
 		// Setting myself in the top of the list
 //		lClients.add(aConnector.getUsername() + "@" + aConnector.getId());
-
 		for (Map.Entry<String, WebSocketConnector> lEntry : mClients.entrySet()) {
 			WebSocketConnector lConnector = lEntry.getValue();
 			if (!lConnector.getId().equals(aConnector.getId())) {
@@ -211,5 +216,20 @@ public class ChatPlugIn extends TokenPlugIn {
 		lToken.setList("clients", lClients);
 
 		getServer().sendToken(aConnector, lToken);
+	}
+
+	private void unregister(WebSocketConnector aConnector) {
+		if (!mClients.isEmpty() && mClients.containsKey(aConnector.getId())) {
+			mClients.remove(aConnector.getId());
+			if (mClients.size() > 0) {
+				for (Map.Entry<String, WebSocketConnector> lEntry : mClients.entrySet()) {
+					WebSocketConnector lConnector = lEntry.getValue();
+					Token lTk = TokenFactory.createToken(getNamespace(), TT_EVENT);
+					lTk.setString("name", "disconnect");
+					lTk.setString("sourceId", aConnector.getId());
+					getServer().sendToken(lConnector, lTk);
+				}
+			}
+		}
 	}
 }

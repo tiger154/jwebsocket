@@ -106,6 +106,7 @@ $.widget( "jws.chat", {
 		
 		// Messages used in the widget
 		this.MSG_NOT_CONNECTED_USERS= "There are not connected users";
+		this.MSG_NOT_PRIVATE_USERS	= "You must select a user from the public tab to chat with.";
 		this.MSG_USER_OFFLINE		= "The user you are chatting with is offline";
 		this.MSG_COULDNT_SEND_MSG	= "The message could not be sent";
 		this.MSG_TYPE_YOUR_MSG		= "Type your message...";
@@ -283,10 +284,10 @@ $.widget( "jws.chat", {
 	processToken: function( aEvent, aToken ) {
 		if( aToken ) {
 			// is it a response from a previous request of this client?
-			if( aToken.type == "response" ) {
+			if( aToken.type === "response" ) {
 				// figure out of which request
-				if( aToken.reqType == "login" ) {
-					if( aToken.code == 0 ) {
+				if( aToken.reqType === "login" ) {
+					if( aToken.code === 0 ) {
 						// logChatMessage( aID, aString )
 						w.chat.logChatMessage( "SYS", "Welcome '" + 
 							aToken.username + "'" );
@@ -304,21 +305,21 @@ $.widget( "jws.chat", {
 					}
 				}
 			// is it an event w/o a previous request ?
-			} else if( aToken.type == "getChatClients" ) {
+			} else if( aToken.type === "getChatClients" ) {
 				w.chat.setClients( aToken.clients );
-			} else if( aToken.type == "event" ) {
-				if( "logout" == aToken.name || "disconnect" == aToken.name ) {
+			} else if( aToken.type === "event" ) {
+				if( "logout" === aToken.name || "disconnect" === aToken.name ) {
 					if( w.chat.isUserOnline( aToken.sourceId ) ) {
 						log( "The client " + aToken.sourceId + " has left the chat" );
 					}
 					w.chat.removeClient( aToken.sourceId );
 				}
-			} else if( aToken.type == "goodBye" ) {
+			} else if( aToken.type === "goodBye" ) {
 				w.chat.logChatMessage( "SYS", 
 					"Chat PlugIn says good bye ( reason: " + aToken.reason + " )!" );
 				
 			// is it any token from another client
-			} else if( aToken.type == "broadcast" ) {
+			} else if( aToken.type === "broadcast" ) {
 				if( aToken.msg && aToken.sourceId ) {
 					//logChatMessage( aID, aString )
 					log( "New <b>public </b>message received: " + 
@@ -326,10 +327,10 @@ $.widget( "jws.chat", {
 					w.chat.logChatMessage( aToken.sourceId, 
 						w.auth.cleanHTML( aToken.msg ) );
 				}
-			} else if( aToken.type == "newClientConnected" ) {
+			} else if( aToken.type === "newClientConnected" ) {
 				log( aToken.msg + " " + aToken.sourceId );
 				w.chat.addClient( aToken.sourceId );
-			} else if( aToken.type == "messageTo" ) {
+			} else if( aToken.type === "messageTo" ) {
 				log( "<b>New private message received:</b> " + 
 					JSON.stringify( aToken ) );
 				w.chat.onPrivateMessage( aToken );
@@ -694,11 +695,13 @@ $.widget( "jws.chat", {
 		if( w.chat.mOnlineClients ) {
 			w.chat.mOnlineClients = [ ];
 		}
-		var lNotConnected = '<div class="' + w.chat.CSS_NO_USERS_ONLINE + '">'+ 
-		w.chat.MSG_NOT_CONNECTED_USERS +'</div>';
+		var lNotPublicConnected = '<div class="' + w.chat.CSS_NO_USERS_ONLINE + '">' +
+		w.chat.MSG_NOT_CONNECTED_USERS + '</div>',
+		lNotPrivateConnected = '<div class="' + w.chat.CSS_NO_USERS_ONLINE + '">' +
+		w.chat.MSG_NOT_PRIVATE_USERS + '</div>';
 	
-		w.chat.ePublicUsersBox.html( "" ).append( lNotConnected );
-		w.chat.ePrivateUsersBox.html( "" ).append( lNotConnected );
+		w.chat.ePublicUsersBox.html( "" ).append( lNotPublicConnected );
+		w.chat.ePrivateUsersBox.html( "" ).append( lNotPrivateConnected );
 		w.chat.eLogPublic.html( "" );
 		w.chat.eLogPrivate.html( "" );
 	},
