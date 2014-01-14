@@ -28,12 +28,14 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class MessagingControl {
 
+	public static final String NS_MSGCTRL = "org.jwebsocket.msgctrl";
 	public static final String TYPE_INFO = "info";
 	public static final String TYPE_MESSAGE = "message";
 	public static final String NAME_MAX_FRAME_SIZE = "maxFrameSize";
 	public static final String NAME_MESSAGE_DELIVERY_ACKNOWLEDGE = "ack";
 	public static final String PROPERTY_IS_ACK_REQUIRED = "isAckRequired";
 	public static final String PROPERTY_MESSAGE_ID = "msgId";
+	public static final String PROPERTY_NS = "ns";
 	public static final String PROPERTY_TYPE = "type";
 	public static final String PROPERTY_NAME = "name";
 	public static final String PROPERTY_DATA = "data";
@@ -46,6 +48,7 @@ public class MessagingControl {
 
 	public static Token buildAckMessage(String aMessageId) {
 		Token lMessage = TokenFactory.createToken();
+		lMessage.setString(PROPERTY_NS, NS_MSGCTRL);
 		lMessage.setString(PROPERTY_TYPE, TYPE_INFO);
 		lMessage.setString(PROPERTY_NAME, NAME_MESSAGE_DELIVERY_ACKNOWLEDGE);
 		lMessage.setString(PROPERTY_DATA, aMessageId);
@@ -56,6 +59,7 @@ public class MessagingControl {
 
 	public static Token buildMaxFrameSizeMessage(int aMaxFrameSize) {
 		Token lMessage = TokenFactory.createToken();
+		lMessage.setString(PROPERTY_NS, NS_MSGCTRL);
 		lMessage.setString(PROPERTY_TYPE, TYPE_INFO);
 		lMessage.setString(PROPERTY_NAME, NAME_MAX_FRAME_SIZE);
 		lMessage.setInteger(PROPERTY_DATA, aMaxFrameSize);
@@ -78,6 +82,7 @@ public class MessagingControl {
 
 	public static Token buildMessage(String aNodeId, byte[] aData) {
 		Token lMessage = TokenFactory.createToken();
+		lMessage.setString(PROPERTY_NS, NS_MSGCTRL);
 		lMessage.setString(PROPERTY_TYPE, TYPE_MESSAGE);
 		lMessage.setString(PROPERTY_MESSAGE_ID, getUUID(aNodeId));
 		lMessage.setString(PROPERTY_DATA, new String(aData));

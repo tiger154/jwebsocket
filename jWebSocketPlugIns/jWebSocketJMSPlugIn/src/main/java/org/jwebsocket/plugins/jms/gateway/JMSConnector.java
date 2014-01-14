@@ -18,10 +18,15 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.plugins.jms.gateway;
 
+import java.util.Map;
+import java.util.UUID;
+import javolution.util.FastMap;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
+import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.kit.RequestHeader;
+import org.jwebsocket.kit.WebSocketSession;
 
 /**
  * JMS Gateway Connector, the WebSocket Connector Pendant
@@ -47,13 +52,19 @@ public class JMSConnector extends BaseConnector {
 
 		mJMSSender = aJMSSender;
 
+		WebSocketSession lSession = getSession();
+		lSession.setSessionId(UUID.randomUUID().toString());
+		
 		RequestHeader lHeader = new RequestHeader();
 		lHeader.put(RequestHeader.WS_PROTOCOL, "org.jwebsocket.json");
+		Map<String, String> lCookiesMap = new FastMap<String, String>().shared();
+		lCookiesMap.put(JWebSocketCommonConstants.SESSIONID_COOKIE_NAME, lSession.getSessionId());
+		lHeader.put(RequestHeader.WS_COOKIES, lCookiesMap);
 		setHeader(lHeader);
-
+		
 		mRemoteHost = aRemoteHost;
 		mTargetId = aTargetId;
-
+		
 		// specify the gateway per connector, 
 		// we might have multiple jWebSocket instances connected to a queue
 		setVar("$gatewayId", mJMSSender.getEndPointId());
@@ -72,6 +83,7 @@ public class JMSConnector extends BaseConnector {
 //			return null;
 //		}
 //	}
+	
 	@Override
 	public void sendPacket(final WebSocketPacket aDataPacket) {
 		mJMSSender.sendText(mTargetId, aDataPacket.getUTF8());
