@@ -96,7 +96,7 @@ public class ItemCollection implements IItemCollection {
 	/**
 	 *
 	 */
-	public static final String COLLECTION_NAME_REGEXP = "^[a-zA-Z0-9]+([-]([a-zA-Z])+)*";
+	public static final String COLLECTION_NAME_REGEXP = "^[a-zA-Z0-9]+([_]([a-zA-Z])+)*";
 
 	/**
 	 *
