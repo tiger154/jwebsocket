@@ -20,7 +20,7 @@
 	<!-- general SMS plug-in settings -->
 	<bean id="org.jwebsocket.plugins.sms.settings" class="org.jwebsocket.plugins.sms.Settings">
 		<property name="provider" ref="nullProvider"/>
-		<property name="collectionName" value="jws-plugins-sms"/>
+		<property name="collectionName" value="jws_plugin_sms"/>
 		<property name="collectionAccessPassword" value="root"/>
 		<property name="collectionSecretPassword" value="root"/>
 	</bean>
