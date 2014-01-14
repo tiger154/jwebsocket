@@ -199,20 +199,20 @@ jws.FileSystemPlugIn = {
 			};
 
 			var lOnSuccess = aOptions.OnSuccess;
-			aOptions.OnSuccess = function(aToken, aArguments) {
+				aOptions.OnSuccess = function(aToken, aArguments) {
 				if ("function" === typeof lOnSuccess) {
 					if (lToken.decode && aToken.mime !== "text/plain") {
 						switch (lToken.encoding) {
 							case "base64":
 								if (aToken.__binaryData) {
-									aToken.data = decodeURIComponent(escape(atob(aToken.data)));
+									aToken.data = Base64.decode(decodeURIComponent(escape(atob(aToken.data))));
 								} else {
 									aToken.data = Base64.decode(aToken.data);
 								}
 								break;
 							case "zipBase64":
 								if (aToken.__binaryData) {
-									aToken.data = jws.tools.unzip(decodeURIComponent(escape(atob(aToken.data))));
+									aToken.data = jws.tools.unzip(decodeURIComponent(escape(atob(aToken.data))), true);
 								} else {
 									aToken.data = jws.tools.unzip(aToken.data, true);
 								}
