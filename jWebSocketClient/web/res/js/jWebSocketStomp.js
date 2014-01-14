@@ -76,16 +76,15 @@
 			try {
 				// supporting message delivery acknowledge on a LB scenario
 				var lMessage = JSON.parse(aData);
-				if (typeof(lMessage) === "object" && lMessage["i$WrappedMsg"]) {
-					if ("info" === lMessage.type && "ack" === lMessage.name) {
-						self.stomp.send(self.destination, {
+				if ( typeof( lMessage ) === "object" && lMessage[ "jwsWrappedMsg" ] ) {
+					if ( "info" === lMessage.type && "ack" === lMessage.name ) {
+						self.stomp.send( self.destination, {
 							msgType: "ACK",
 							msgId: jws.tools.createUUID(),
-							nodeId: lMessage.data.split("-")[0],
+							nodeId: lMessage.data.split( "-" )[ 0 ],
 							data: aData,
 							replySelector: mReplySelector
 						});
-
 						return;
 					}
 				}

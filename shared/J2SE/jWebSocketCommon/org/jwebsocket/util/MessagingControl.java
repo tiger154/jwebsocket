@@ -41,7 +41,7 @@ public class MessagingControl {
 	public static final String PROPERTY_IS_LAST_FRAGMENT = "isLastFragment";
 	public static final String PROPERTY_FRAGMENTATION_ID = "fragmentationId";
 	public static final String PROPERTY_MAX_FRAME_SIZE = NAME_MAX_FRAME_SIZE;
-	public static final String PROPERTY_IS_WRAPPED_MESSAGE = "i$WrappedMsg";
+	public static final String PROPERTY_IS_WRAPPED_MESSAGE = "jwsWrappedMsg";
 	private static Long mUID = new Long(0);
 
 	public static Token buildAckMessage(String aMessageId) {
