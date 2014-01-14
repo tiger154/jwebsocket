@@ -36,6 +36,7 @@ import org.jwebsocket.plugins.itemstorage.api.IItemDefinition;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -98,18 +99,24 @@ public class SMSPlugIn extends ActionPlugIn {
 
 	@Override
 	public void systemStarted() throws Exception {
-		if (!JWebSocketBeanFactory.getInstance(ItemStoragePlugIn.NS_ITEM_STORAGE)
-				.containsBean("collectionProvider")) {
+		try {
+			if (!JWebSocketBeanFactory.getInstance(ItemStoragePlugIn.NS_ITEM_STORAGE)
+					.containsBean("collectionProvider")) {
+				mLog.error("Missing required Item Storage plug-in core components. "
+						+ "Some features may not be available!");
+				return;
+			}
+
+			// setting the SMS item definition
+			mSettings.setSMSItemDefinition((IItemDefinition) mBeanFactory.getBean("smsDefinition"));
+
+			// getting the SMS collection
+			mSMSCollection = ItemStorageUtils.initialize(mSettings);
+		} catch (Exception aException) {
 			mLog.error("Missing required Item Storage plug-in core components. "
-					+ "Some features may not be available!");
-			return;
+					+ "Some features may not be available! The cause of this "
+					+ "was the following exception: " + aException.getMessage());
 		}
-
-		// setting the SMS item definition
-		mSettings.setSMSItemDefinition((IItemDefinition) mBeanFactory.getBean("smsDefinition"));
-
-		// getting the SMS collection
-		mSMSCollection = ItemStorageUtils.initialize(mSettings);
 	}
 
 	/**
@@ -135,7 +142,7 @@ public class SMSPlugIn extends ActionPlugIn {
 					mLog.info("SMS plug-in successfully instantiated.");
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (BeansException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SMS plug-in"));
 		}
 
