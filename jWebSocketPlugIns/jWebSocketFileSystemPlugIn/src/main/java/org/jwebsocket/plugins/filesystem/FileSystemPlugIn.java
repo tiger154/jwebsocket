@@ -545,7 +545,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				lResponse.setString("data", lData);
 			} else {
 				lResponse.getMap().put("data", lBA);
-				lResponse.setBoolean("__binaryData", Boolean.TRUE);
+				lResponse.setBoolean("isBinary", Boolean.TRUE);
 			}
 			// setting the file MIME type
 			lResponse.setString("mime", lFileType);
