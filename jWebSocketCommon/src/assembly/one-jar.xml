@@ -26,6 +26,10 @@
 				<include>org.apache.commons:commons-compress</include>
 				<include>org.apache.activemq:activemq-all</include>
 				<include>org.jwebsocket:jWebSocketDynamicSQL</include>
+				<!-- from jWebSocketDynamicSQL -->
+				<include>org.apache.ddlutils:ddlutils</include>
+				<include>com.healthmarketscience.common:common-util</include>
+				<include>com.healthmarketscience.sqlbuilder:sqlbuilder</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>

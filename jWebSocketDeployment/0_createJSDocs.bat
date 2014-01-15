@@ -39,6 +39,7 @@ set jsCE=%JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketC
 set jsEE=%JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise\jWebSocketClient\web\res\js\
 echo jsCE=%jsCE%
 echo jsEE=%jsEE%
+
 echo Copying minified/obfuscated enterprise js files to ce version...
 copy %jsEE%jwsItemStoragePlugInEE_min.js %jsCE% /v
 copy %jsEE%jwsFileSystemPlugInEE_min.js %jsCE% /v
