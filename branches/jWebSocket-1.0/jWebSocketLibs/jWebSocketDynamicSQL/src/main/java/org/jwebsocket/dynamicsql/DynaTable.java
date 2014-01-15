@@ -33,18 +33,30 @@ public class DynaTable implements ITable {
 
     private Table mTable;
 
+    /**
+     * Constructor
+     *
+     * @param aName
+     */
     public DynaTable(String aName) {
         mTable = new Table();
         mTable.setName(aName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return mTable.getName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ITable addColumn(String aName, Integer aTypeCode, Boolean aRequired, Boolean aPK, Integer aSize, Object aDefault) {
+    public ITable addColumn(String aName, Integer aTypeCode, Boolean aRequired,
+            Boolean aPK, Integer aSize, Object aDefault) {
         Column lColumn = new Column();
         lColumn.setName(aName);
         lColumn.setTypeCode(aTypeCode);
@@ -60,7 +72,10 @@ public class DynaTable implements ITable {
 
         return this;
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ITable addIndex(String aColumnName) {
         Column lColumn = getColumn(aColumnName);
@@ -75,6 +90,9 @@ public class DynaTable implements ITable {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ITable addUniqueIndex(String aColumnName) {
         Column lColumn = getColumn(aColumnName);
@@ -89,11 +107,19 @@ public class DynaTable implements ITable {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Table getTable() {
         return mTable;
     }
 
+    /**
+     * Returns the column object by the name.
+     * @param aName The name of column.
+     * @return Column object.
+     */
     private Column getColumn(String aName) {
         for (Column lColumn : mTable.getColumns()) {
             if (aName.equals(lColumn.getName())) {

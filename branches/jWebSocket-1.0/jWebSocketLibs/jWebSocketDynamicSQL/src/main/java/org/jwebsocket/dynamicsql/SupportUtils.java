@@ -39,6 +39,11 @@ public class SupportUtils {
     public static String ESCAPE_TABLE_LITERAL = "escapeTablesAndColumnsLiteral";
     public static String ESCAPE_LIKE_LITERAL = "escapeLikeLiteral";
     
+    /**
+     * Returns the options map corresponding to the platform entered in the data source.
+     * @param aDataSource The connection data source.
+     * @return The compatibilities options to the platform entered in the data source.
+     */
     public static Map<String, String> getOptions(DataSource aDataSource) {
         PlatformUtils lUtils = new PlatformUtils();
         String lPlatform = lUtils.determineDatabaseType(aDataSource);
@@ -66,6 +71,12 @@ public class SupportUtils {
         return lOptions;
     }
     
+    /**
+     * Convert a DynaBean object to Map.
+     * 
+     * @param aDynaBean The DynaBean object.
+     * @return The Map<String, Object>
+     */
     public static Map<String, Object> convertToMap(DynaBean aDynaBean) {
         Map<String, Object> lMap = new FastMap<String, Object>();
         

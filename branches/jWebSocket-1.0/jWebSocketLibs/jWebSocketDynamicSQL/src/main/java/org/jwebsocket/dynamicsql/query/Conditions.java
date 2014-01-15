@@ -29,11 +29,21 @@ import org.jwebsocket.dynamicsql.api.ICondition;
  */
 public class Conditions {
     
+    // Key attributes that contains a map condition.
     public static String ATTR_TYPE = "conditionType";
     public static String ATTR_COLUMN_NAME = "conditionColumnName";
     public static String ATTR_VALUE = "conditionValue";
     public static String ATTR_INCLUSIVE = "conditionInclusive";
 
+    /**
+     * Returns a less than condition.
+     * 
+     * @param aColumnName The column name.
+     * @param aValue The value of column.
+     * @param aInclusive If value is <TRUE> the operator of the condition 
+     * would be '<=', otherwise it would be only '<'.
+     * @return a less than condition.
+     */
     public static ICondition lessThan(String aColumnName, Object aValue, Boolean aInclusive) {
         Map<String, Object> lAttrs = new FastMap<String, Object>();
         lAttrs.put(ATTR_TYPE, BinaryCondition.Op.LESS_THAN);
@@ -43,6 +53,15 @@ public class Conditions {
         return new Condition(lAttrs);
     }
 
+    /**
+     * Returns a greater than condition.
+     * 
+     * @param aColumnName The column name.
+     * @param aValue The value of column.
+     * @param aInclusive If value is <TRUE> the operator of the condition 
+     * would be '>=', otherwise it would be only '>'.
+     * @return a greater than condition.
+     */
     public static ICondition greaterThan(String aColumnName, Object aValue, Boolean aInclusive) {
         Map<String, Object> lAttrs = new FastMap<String, Object>();
         lAttrs.put(ATTR_TYPE, BinaryCondition.Op.GREATER_THAN);
@@ -52,6 +71,14 @@ public class Conditions {
         return new Condition(lAttrs);
     }
 
+    /**
+     * Returns a equalTo condition.
+     * 
+     * @param aColumnName The column name.
+     * @param aValue The value of column.
+     * 
+     * @return a equalTo condition.
+     */
     public static ICondition equalTo(String aColumnName, Object aValue) {
         Map<String, Object> lAttrs = new FastMap<String, Object>();
         lAttrs.put(ATTR_TYPE, BinaryCondition.Op.EQUAL_TO);
@@ -60,6 +87,14 @@ public class Conditions {
         return new Condition(lAttrs);
     }
 
+    /**
+     * Returns a not equalTo condition.
+     * 
+     * @param aColumnName The column name.
+     * @param aValue The value of column.
+     * 
+     * @return a not equalTo condition.
+     */
     public static ICondition notEqualTo(String aColumnName, Object aValue) {
         Map<String, Object> lAttrs = new FastMap<String, Object>();
         lAttrs.put(ATTR_TYPE, BinaryCondition.Op.NOT_EQUAL_TO);
@@ -68,6 +103,14 @@ public class Conditions {
         return new Condition(lAttrs);
     }
 
+   /**
+     * Returns a like condition.
+     * 
+     * @param aColumnName The column name.
+     * @param aValue The value of column.
+     * 
+     * @return a like condition.
+     */
     public static ICondition like(String aColumnName, Object aValue) {
         Map<String, Object> lAttrs = new FastMap<String, Object>();
         lAttrs.put(ATTR_TYPE, BinaryCondition.Op.LIKE);
@@ -76,6 +119,14 @@ public class Conditions {
         return new Condition(lAttrs);
     }
 
+    /**
+     * Returns a not like condition.
+     * 
+     * @param aColumnName The column name.
+     * @param aValue The value of column.
+     * 
+     * @return a not like condition.
+     */
     public static ICondition notLike(String aColumnName, Object aValue) {
         Map<String, Object> lAttrs = new FastMap<String, Object>();
         lAttrs.put(ATTR_TYPE, BinaryCondition.Op.NOT_LIKE);
