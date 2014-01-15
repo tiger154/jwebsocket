@@ -539,8 +539,14 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 			// populating the response data field according to the file type
 			String lFileType = new MimetypesFileTypeMap().getContentType(lFile);
-			if (lFileType.contains("text") || lFileType.contains("json")
-					|| lFileType.contains("javascript")) {
+			boolean lIsBinary = false;
+			try{
+				lIsBinary = Tools.isBinaryFile(lFile);
+			}catch(IOException aEx){
+				lIsBinary = lFileType.contains("text") || lFileType.contains("json")
+					|| lFileType.contains("javascript");
+			}
+			if (!lIsBinary) {
 				lData = new String(lBA);
 				lResponse.setString("data", lData);
 			} else {
