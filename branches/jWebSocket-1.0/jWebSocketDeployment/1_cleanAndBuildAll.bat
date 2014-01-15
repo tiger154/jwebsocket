@@ -17,7 +17,7 @@ pause
 
 :dontAsk1
 echo -------------------------------------------------------------------------
-echo Building jWebSocket community edition ..
+echo Building jWebSocket Community Edition (CE)...
 echo -------------------------------------------------------------------------
 rem save current dir
 pushd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%
@@ -26,19 +26,7 @@ del /p /s *.?.nblh~
 call mvn clean install
 
 echo -------------------------------------------------------------------------
-echo Building jWebSocket JMSGateway...
-echo -------------------------------------------------------------------------
-cd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketGateway
-call mvn clean install
-
-echo -------------------------------------------------------------------------
-echo Building jWebSocket Engines...
-echo -------------------------------------------------------------------------
-cd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketEngines
-call mvn clean install
-
-echo -------------------------------------------------------------------------
-echo Building jWebSocket Enterprise Edition...
+echo Building jWebSocket Enterprise Edition (EE)...
 echo -------------------------------------------------------------------------
 cd %JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise
 call mvn clean install
@@ -56,7 +44,7 @@ cd %JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketWebAppD
 call ant
 
 rem restore current dir
-popd 
+popd
 
 rem copy newly created libs to Tomcat's lib folder
 call libs2tomcat.bat %1

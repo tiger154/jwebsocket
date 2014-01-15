@@ -34,6 +34,7 @@ set web=%rte%web\
 
 set homeEE=%JWEBSOCKET_EE_HOME%
 set libsEE=%homeEE%libs\
+set confEE=%homeEE%conf\
 
 set depl=..\jWebSocketDeployment\jWebSocket\
 set down=..\..\..\downloads\jWebSocket-%ver%\
@@ -135,6 +136,7 @@ xcopy %libs%mysql-connector-java-5.1.16.jar %tempdir%libs\ /s /i /y
 xcopy %libs%sqlite-jdbc-3.7.2.jar %tempdir%libs\ /s /i /y
 xcopy %libs%kahadb-5.5.0.jar %tempdir%libs\ /s /i /y
 xcopy %libs%derby-10.10.1.1.jar %tempdir%libs\ /s /i /y
+xcopy %libs%xbean-spring*.jar %tempdir%libs\ /s /i /y
 
 rem jWebSocket engines
 xcopy %libs%jWebSocketJettyEngine-%ver%.jar %tempdir%libs\ /s /i /y
@@ -160,6 +162,7 @@ xcopy %libs%jWebSocketJCaptchaPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJCRPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJDBCPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJMSPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libs%jWebSocketJMSDemoPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJMXPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketItemStoragePlugIn-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketJQueryPlugIn-%ver%.jar %tempdir%libs\ /s /i /y
@@ -190,9 +193,12 @@ xcopy %libs%jWebSocketProxy-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketSamples-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libs%jWebSocketAMQStockTicker-%ver%.jar %tempdir%libs\ /s /i /y
 
-rem enterprise editions
+rem enterprise edition libs
 xcopy %libsEE%jWebSocketFileSystemPlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
 xcopy %libsEE%jWebSocketItemStoragePlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libsEE%jWebSocketUserAdminPlugInEE-%ver%.jar %tempdir%libs\ /s /i /y
+xcopy %libsEE%jWebSocketJavaSEClientEE-%ver%.jar %tempdir%libs\ /s /i /y
+
 
 rem jWebSocket config and keystore files (from v1.0) for SSL
 xcopy %conf%jWebSocket.xml %tempdir%conf\ /s /i /y
@@ -246,6 +252,13 @@ rem xcopy %conf%SSOPlugIn\*.xml %tempdir%conf\SSOPlugIn\ /s /i /y
 xcopy %conf%SystemPlugIn\*.xml %tempdir%conf\SystemPlugIn\ /s /i /y
 xcopy %conf%TwitterPlugIn\*.xml %tempdir%conf\TwitterPlugIn\ /s /i /y
 xcopy %conf%XMPPPlugIn\*.xml %tempdir%conf\XMPPPlugIn\ /s /i /y
+
+rem enterprise edition configs
+xcopy %confEE%FileSystemPlugInEE\*.xml %tempdir%conf\FileSystemPlugInEE\ /s /i /y
+xcopy %confEE%ItemStoragePlugInEE\*.xml %tempdir%conf\ItemStoragePlugInEE\ /s /i /y
+xcopy %confEE%SystemPlugInEE\*.xml %tempdir%conf\SystemPlugInEE\ /s /i /y
+xcopy %confEE%UserAdminPlugInEE\*.xml %tempdir%conf\UserAdminPlugInEE\ /s /i /y
+xcopy %confEE%UserAdminPlugInEE\*.info %tempdir%conf\UserAdminPlugInEE\ /s /i /y
 
 rem copy special conf settings for Tomcat engine (from v1.0)
 xcopy %conf%TomcatEngine\*.xml %tempdir%conf\TomcatEngine\ /s /i /y
