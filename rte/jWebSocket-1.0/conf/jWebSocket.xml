@@ -1681,7 +1681,7 @@
 			</jars>
 			<!-- plug-in specific settings -->
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/FileSystemPlugIn/filesystem.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/FileSystemPlugInEE/filesystem.xml</setting>
 				<!-- Authorization method 
 				     - spring: Uses the user Spring authentication to check for granted authorities 
 					 - static: Uses the user static (jWebSocket.xml users definition) authentication
@@ -1744,7 +1744,7 @@
 			</jars>
 			<!-- plug-in specific settings -->
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/ItemStoragePlugIn/itemstorage.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/ItemStoragePlugInEE/itemstorage.xml</setting>
 				<!-- Authorization method 
 				     - spring: Uses the user Spring authentication to check for granted authorities 
 					 - static: Uses the user static (jWebSocket.xml users definition) authentication
@@ -1778,7 +1778,7 @@
 				<jar>${JWEBSOCKET_EE_HOME}libs/jWebSocketUserAdminPlugInEE-1.0.jar</jar>
 			</jars>
 			<settings>
-				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/UserAdminPlugIn/useradmin.xml</setting>
+				<setting key="spring_config">${JWEBSOCKET_EE_HOME}conf/UserAdminPlugInEE/useradmin.xml</setting>
 				<setting key="authentication_method">spring</setting>
 			</settings>
 			<server-assignments>

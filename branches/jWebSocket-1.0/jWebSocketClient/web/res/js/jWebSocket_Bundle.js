@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC2 (build 31112)
+	//:const:*:VERSION:String:1.0.0 RC2 (build 40115)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC2 (build 31112)",
+	VERSION: "1.0.0 RC2 (build 40115)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -396,7 +396,7 @@ var jws = {
 		// take over default values if not specified for options
 		if( aDefaults ) {
 			for( var lKey in aDefaults ) {
-				if( !aOptions[ lKey ] ) {
+				if( undefined === aOptions[ lKey ] ) {
 					aOptions[ lKey ] = aDefaults[ lKey ];
 				}
 			}
@@ -1169,6 +1169,15 @@ if (!('lastIndexOf' in Array.prototype)) {
     };
 }
 
+// supporting String to ByteArray conversion
+String.prototype.getBytes = function () {
+	var lBytes = [];
+	for( var lIndex = 0; lIndex < this.length; ++lIndex ) {
+		lBytes.push( this.charCodeAt( lIndex ) );
+	}
+	return lBytes;
+};
+
 //:package:*:jws.tools
 //:class:*:jws.tools
 //:ancestor:*:-
@@ -1238,14 +1247,14 @@ jws.tools = {
 		var lMap = {};
 		
 		var lUrlParts = aURL.split("?");
-		if (lUrlParts.length == 1){
+		if( 1 === lUrlParts.length ){
 			return lMap;
 		}
 		
-		var lQueryParts = lUrlParts[1].split(",");
+		var lQueryParts = lUrlParts[ 1 ].split( "," );
 		for (var lIndex in lQueryParts){
-			var lArray = lQueryParts[lIndex].split("=");
-			lMap[lArray[0]] = lArray[1];
+			var lArray = lQueryParts[ lIndex ].split( "=" );
+			lMap[ lArray[ 0 ] ] = lArray[ 1 ];
 		}
 		
 		return lMap;
@@ -1546,7 +1555,7 @@ if( !jws.browserSupportsNativeWebSockets ) {
 			// Reference: http://dev.w3.org/html5/websockets/
 			// Reference: http://tools.ietf.org/html/rfc6455
 			// Full sources codes provided in web_socket.js in folder flash-bridge
-			(function(){if(window.WEB_SOCKET_FORCE_FLASH){}else if(window.WebSocket){return;}else if(window.MozWebSocket){window.WebSocket=MozWebSocket;return;}var logger;if(window.WEB_SOCKET_LOGGER){logger=WEB_SOCKET_LOGGER;}else if(window.console&&window.console.log&&window.console.error){logger=window.console;}else{logger={log:function(){},error:function(){}};}if(swfobject.getFlashPlayerVersion().major<10){logger.error("Flash Player >= 10.0.0 is required.");return;}if(location.protocol=="file:"){logger.error("WARNING: web-socket-js doesn't work in file:///... URL "+"unless you set Flash Security Settings properly. "+"Open the page via Web server i.e. http://...");}window.WebSocket=function(url,protocols,proxyHost,proxyPort,headers){var self=this;self.__id=WebSocket.__nextId++;WebSocket.__instances[self.__id]=self;self.readyState=WebSocket.CONNECTING;self.bufferedAmount=0;self.__events={};if(!protocols){protocols=[];}else if(typeof protocols=="string"){protocols=[protocols];}self.__createTask=setTimeout(function(){WebSocket.__addTask(function(){self.__createTask=null;WebSocket.__flash.create(self.__id,url,protocols,proxyHost||null,proxyPort||0,headers||null);});},0);};WebSocket.prototype.send=function(data){if(this.readyState==WebSocket.CONNECTING){throw "INVALID_STATE_ERR: Web Socket connection has not been established";}var result=WebSocket.__flash.send(this.__id,encodeURIComponent(data));if(result<0){return true;}else{this.bufferedAmount+=result;return false;}};WebSocket.prototype.close=function(){if(this.__createTask){clearTimeout(this.__createTask);this.__createTask=null;this.readyState=WebSocket.CLOSED;return;}if(this.readyState==WebSocket.CLOSED||this.readyState==WebSocket.CLOSING){return;}this.readyState=WebSocket.CLOSING;WebSocket.__flash.close(this.__id);};WebSocket.prototype.addEventListener=function(type,listener,useCapture){if(!(type in this.__events)){this.__events[type]=[];}this.__events[type].push(listener);};WebSocket.prototype.removeEventListener=function(type,listener,useCapture){if(!(type in this.__events))return;var events=this.__events[type];for(var i=events.length-1;i>=0;--i){if(events[i]===listener){events.splice(i,1);break;}}};WebSocket.prototype.dispatchEvent=function(event){var events=this.__events[event.type]||[];for(var i=0;i<events.length;++i){events[i](event);}var handler=this["on"+event.type];if(handler)handler.apply(this,[event]);};WebSocket.prototype.__handleEvent=function(flashEvent){if("readyState"in flashEvent){this.readyState=flashEvent.readyState;}if("protocol"in flashEvent){this.protocol=flashEvent.protocol;}var jsEvent;if(flashEvent.type=="open"||flashEvent.type=="error"){jsEvent=this.__createSimpleEvent(flashEvent.type);}else if(flashEvent.type=="close"){jsEvent=this.__createSimpleEvent("close");jsEvent.wasClean=flashEvent.wasClean?true:false;jsEvent.code=flashEvent.code;jsEvent.reason=flashEvent.reason;}else if(flashEvent.type=="message"){var data=decodeURIComponent(flashEvent.message);jsEvent=this.__createMessageEvent("message",data);}else{throw "unknown event type: "+flashEvent.type;}this.dispatchEvent(jsEvent);};WebSocket.prototype.__createSimpleEvent=function(type){if(document.createEvent&&window.Event){var event=document.createEvent("Event");event.initEvent(type,false,false);return event;}else{return{type:type,bubbles:false,cancelable:false};}};WebSocket.prototype.__createMessageEvent=function(type,data){if(document.createEvent&&window.MessageEvent&& !window.opera){var event=document.createEvent("MessageEvent");event.initMessageEvent("message",false,false,data,null,null,window,null);return event;}else{return{type:type,data:data,bubbles:false,cancelable:false};}};WebSocket.CONNECTING=0;WebSocket.OPEN=1;WebSocket.CLOSING=2;WebSocket.CLOSED=3;WebSocket.__isFlashImplementation=true;WebSocket.__initialized=false;WebSocket.__flash=null;WebSocket.__instances={};WebSocket.__tasks=[];WebSocket.__nextId=0;WebSocket.loadFlashPolicyFile=function(url){WebSocket.__addTask(function(){WebSocket.__flash.loadManualPolicyFile(url);});};WebSocket.__initialize=function(){if(WebSocket.__initialized)return;WebSocket.__initialized=true;if(WebSocket.__swfLocation){window.WEB_SOCKET_SWF_LOCATION=WebSocket.__swfLocation;}if(!window.WEB_SOCKET_SWF_LOCATION){logger.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf");return;}if(!window.WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR&& !WEB_SOCKET_SWF_LOCATION.match(/(^|\/)WebSocketMainInsecure\.swf(\?.*)?$/)&&WEB_SOCKET_SWF_LOCATION.match(/^\w+:\/\/([^\/]+)/)){var swfHost=RegExp.$1;if(location.host!=swfHost){logger.error("[WebSocket] You must host HTML and WebSocketMain.swf in the same host "+"('"+location.host+"' != '"+swfHost+"'). "+"See also 'How to host HTML file and SWF file in different domains' section "+"in README.md. If you use WebSocketMainInsecure.swf, you can suppress this message "+"by WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;");}}var container=document.createElement("div");container.id="webSocketContainer";container.style.position="absolute";if(WebSocket.__isFlashLite()){container.style.left="0px";container.style.top="0px";}else{container.style.left="-100px";container.style.top="-100px";}var holder=document.createElement("div");holder.id="webSocketFlash";container.appendChild(holder);document.body.appendChild(container);swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION,"webSocketFlash","1","1","10.0.0",null,null,{hasPriority:true,swliveconnect:true,allowScriptAccess:"always"},null,function(e){if(!e.success){logger.error("[WebSocket] swfobject.embedSWF failed");}});};WebSocket.__onFlashInitialized=function(){setTimeout(function(){WebSocket.__flash=document.getElementById("webSocketFlash");WebSocket.__flash.setCallerUrl(location.href);WebSocket.__flash.setDebug(! !window.WEB_SOCKET_DEBUG);for(var i=0;i<WebSocket.__tasks.length;++i){WebSocket.__tasks[i]();}WebSocket.__tasks=[];},0);};WebSocket.__onFlashEvent=function(){setTimeout(function(){try{var events=WebSocket.__flash.receiveEvents();for(var i=0;i<events.length;++i){WebSocket.__instances[events[i].webSocketId].__handleEvent(events[i]);}}catch(e){logger.error(e);}},0);return true;};WebSocket.__log=function(message){logger.log(decodeURIComponent(message));};WebSocket.__error=function(message){logger.error(decodeURIComponent(message));};WebSocket.__addTask=function(task){if(WebSocket.__flash){task();}else{WebSocket.__tasks.push(task);}};WebSocket.__isFlashLite=function(){if(!window.navigator|| !window.navigator.mimeTypes){return false;}var mimeType=window.navigator.mimeTypes["application/x-shockwave-flash"];if(!mimeType|| !mimeType.enabledPlugin|| !mimeType.enabledPlugin.filename){return false;}return mimeType.enabledPlugin.filename.match(/flashlite/i)?true:false;};if(!window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION){swfobject.addDomLoadEvent(function(){WebSocket.__initialize();});}})();
+			(function(){if(window.WEB_SOCKET_FORCE_FLASH){}else if(window.WebSocket){return;}else if(window.MozWebSocket){window.WebSocket=MozWebSocket;return;}var logger;if(window.WEB_SOCKET_LOGGER){logger=WEB_SOCKET_LOGGER;}else if(window.console&&window.console.log&&window.console.error){logger=window.console;}else{logger={log:function(){},error:function(){}};}if(swfobject.getFlashPlayerVersion().major<10){logger.error("Flash Player >= 10.0.0 is required.");return;}if(location.protocol=="file:"){logger.error("WARNING: web-socket-js doesn't work in file:///... URL "+"unless you set Flash Security Settings properly. "+"Open the page via Web server i.e. http://...");}window.WebSocket=function(url,protocols,proxyHost,proxyPort,headers){var self=this;self.__id=WebSocket.__nextId++;WebSocket.__instances[self.__id]=self;self.readyState=WebSocket.CONNECTING;self.bufferedAmount=0;self.__events={};if(!protocols){protocols=[];}else if(typeof protocols=="string"){protocols=[protocols];}self.__createTask=setTimeout(function(){WebSocket.__addTask(function(){self.__createTask=null;WebSocket.__flash.create(self.__id,url,protocols,proxyHost||null,proxyPort||0,headers||null);});},0);};WebSocket.prototype.send=function(data){if(this.readyState==WebSocket.CONNECTING){throw "INVALID_STATE_ERR: Web Socket connection has not been established";}var result=WebSocket.__flash.send(this.__id,encodeURIComponent(data));if(result<0){return true;}else{this.bufferedAmount+=result;return false;}};WebSocket.prototype.close=function(){if(this.__createTask){clearTimeout(this.__createTask);this.__createTask=null;this.readyState=WebSocket.CLOSED;return;}if(this.readyState==WebSocket.CLOSED||this.readyState==WebSocket.CLOSING){return;}this.readyState=WebSocket.CLOSING;WebSocket.__flash.close(this.__id);};WebSocket.prototype.addEventListener=function(type,listener,useCapture){if(!(type in this.__events)){this.__events[type]=[];}this.__events[type].push(listener);};WebSocket.prototype.removeEventListener=function(type,listener,useCapture){if(!(type in this.__events))return;var events=this.__events[type];for(var i=events.length-1;i>=0;--i){if(events[i]===listener){events.splice(i,1);break;}}};WebSocket.prototype.dispatchEvent=function(event){var events=this.__events[event.type]||[];for(var i=0;i<events.length;++i){events[i](event);}var handler=this["on"+event.type];if(handler)handler.apply(this,[event]);};WebSocket.prototype.__handleEvent=function(flashEvent){if("readyState"in flashEvent){this.readyState=flashEvent.readyState;}if("protocol"in flashEvent){this.protocol=flashEvent.protocol;}var jsEvent;if(flashEvent.type=="open"||flashEvent.type=="error"){jsEvent=this.__createSimpleEvent(flashEvent.type);}else if(flashEvent.type=="close"){jsEvent=this.__createSimpleEvent("close");jsEvent.wasClean=flashEvent.wasClean?true:false;jsEvent.code=flashEvent.code;jsEvent.reason=flashEvent.reason;}else if(flashEvent.type=="message"){var data=decodeURIComponent(flashEvent.message);jsEvent=this.__createMessageEvent("message",data);}else{throw "unknown event type: "+flashEvent.type;}this.dispatchEvent(jsEvent);};WebSocket.prototype.__createSimpleEvent=function(type){if(document.createEvent&&window.Event){var event=document.createEvent("Event");event.initEvent(type,false,false);return event;}else{return{type:type,bubbles:false,cancelable:false};}};WebSocket.prototype.__createMessageEvent=function(type,data){if(document.createEvent&&window.MessageEvent&& !window.opera){var event=document.createEvent("MessageEvent");if(event.initMessageEvent){event.initMessageEvent("message",false,false,data,null,null,window,null);}else if(event.initEvent){var event=new MessageEvent('message',{'view':window,'bubbles':false,'cancelable':false,'data':data});}return event;}else{return{type:type,data:data,bubbles:false,cancelable:false};}};WebSocket.CONNECTING=0;WebSocket.OPEN=1;WebSocket.CLOSING=2;WebSocket.CLOSED=3;WebSocket.__isFlashImplementation=true;WebSocket.__initialized=false;WebSocket.__flash=null;WebSocket.__instances={};WebSocket.__tasks=[];WebSocket.__nextId=0;WebSocket.loadFlashPolicyFile=function(url){WebSocket.__addTask(function(){WebSocket.__flash.loadManualPolicyFile(url);});};WebSocket.__initialize=function(){if(WebSocket.__initialized)return;WebSocket.__initialized=true;if(WebSocket.__swfLocation){window.WEB_SOCKET_SWF_LOCATION=WebSocket.__swfLocation;}if(!window.WEB_SOCKET_SWF_LOCATION){logger.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf");return;}if(!window.WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR&& !WEB_SOCKET_SWF_LOCATION.match(/(^|\/)WebSocketMainInsecure\.swf(\?.*)?$/)&&WEB_SOCKET_SWF_LOCATION.match(/^\w+:\/\/([^\/]+)/)){var swfHost=RegExp.$1;if(location.host!=swfHost){logger.error("[WebSocket] You must host HTML and WebSocketMain.swf in the same host "+"('"+location.host+"' != '"+swfHost+"'). "+"See also 'How to host HTML file and SWF file in different domains' section "+"in README.md. If you use WebSocketMainInsecure.swf, you can suppress this message "+"by WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;");}}var container=document.createElement("div");container.id="webSocketContainer";container.style.position="absolute";if(WebSocket.__isFlashLite()){container.style.left="0px";container.style.top="0px";}else{container.style.left="-100px";container.style.top="-100px";}var holder=document.createElement("div");holder.id="webSocketFlash";container.appendChild(holder);document.body.appendChild(container);swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION,"webSocketFlash","1","1","10.0.0",null,null,{hasPriority:true,swliveconnect:true,allowScriptAccess:"always"},null,function(e){if(!e.success){logger.error("[WebSocket] swfobject.embedSWF failed");}});};WebSocket.__onFlashInitialized=function(){setTimeout(function(){WebSocket.__flash=document.getElementById("webSocketFlash");WebSocket.__flash.setCallerUrl(location.href);WebSocket.__flash.setDebug(! !window.WEB_SOCKET_DEBUG);for(var i=0;i<WebSocket.__tasks.length;++i){WebSocket.__tasks[i]();}WebSocket.__tasks=[];},0);};WebSocket.__onFlashEvent=function(){setTimeout(function(){try{var events=WebSocket.__flash.receiveEvents();for(var i=0;i<events.length;++i){WebSocket.__instances[events[i].webSocketId].__handleEvent(events[i]);}}catch(e){logger.error(e);}},0);return true;};WebSocket.__log=function(message){logger.log(decodeURIComponent(message));};WebSocket.__error=function(message){logger.error(decodeURIComponent(message));};WebSocket.__addTask=function(task){if(WebSocket.__flash){task();}else{WebSocket.__tasks.push(task);}};WebSocket.__isFlashLite=function(){if(!window.navigator|| !window.navigator.mimeTypes){return false;}var mimeType=window.navigator.mimeTypes["application/x-shockwave-flash"];if(!mimeType|| !mimeType.enabledPlugin|| !mimeType.enabledPlugin.filename){return false;}return mimeType.enabledPlugin.filename.match(/flashlite/i)?true:false;};if(!window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION){swfobject.addDomLoadEvent(function(){WebSocket.__initialize();});}})();
 			//	</JasobNoObfs>
 		}
 		
@@ -1857,22 +1866,22 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					try {
 						var lMessage = JSON.parse(lPacket);
 						
-						if (lMessage['i$WrappedMsg']){
+						if( lMessage[ "jwsWrappedMsg" ] ) {
 							// process control message
-							if ('message' == lMessage.type){
+							if( "message" === lMessage.type ) {
 								var lMsgId = lMessage.msgId;
 								
-								if (lMessage.isAckRequired){
+								if( lMessage.isAckRequired ){
 									// send delivery acknowledge to the server
 									lThis.sendStream(JSON.stringify({
-										'i$WrappedMsg': true,
-										name: 'ack',
+										"jwsWrappedMsg": true,
+										name: "ack",
 										data: lMsgId,
-										type: 'info'
+										type: "info"
 									}));
 								}
 								
-								if (lMessage.isFragment){
+								if( lMessage.isFragment ){
 									// processing fragmentation
 									if( undefined === lThis.fInFragments[ lMessage.fragmentationId ] ){
 										lThis.fInFragments[ lMessage.fragmentationId ] = lMessage.data;
@@ -1892,8 +1901,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 									// using wrapped message data
 									lPacket = lMessage.data;
 								}
-							} else if ('info' == lMessage.type){
-								if ('ack' == lMessage.name){
+							} else if( "info" === lMessage.type ) {
+								if( "ack" === lMessage.name ) {
 									// processing packet delivery acknowledge from the server
 									clearTimeout( lThis.fPacketDeliveryTimerTasks[ lMessage.data ] );
 							
@@ -1905,7 +1914,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 									}
 									
 									return;
-								} else if ('maxFrameSize' == lMessage.name){
+								} else if( "maxFrameSize" === lMessage.name ) {
 									// setting max frame size
 									lThis.fMaxFrameSize = lMessage.data;
 									// stopping event
@@ -2223,12 +2232,12 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		}
 	},
 	
-	sendMessage: function(aMessage, aListener){
+	sendMessage: function( aMessage, aListener ) {
 		try {
 			var lThis = this;
 			if( null !== aListener ) {
 				aMessage.isAckRequired = true;
-				aMessage[ 'i$WrappedMsg' ] = true;
+				aMessage[ "jwsWrappedMsg" ] = true;
 
 				var lMsgId = aMessage.msgId;
 
@@ -2675,9 +2684,11 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				for( var lAttr in lEnc ) {
 					var lFormat = lEnc[ lAttr ];
 					var lValue = aToken[ lAttr ];
-					if( aToken[ "__binaryData" ] && "data" === lAttr){
-						continue;
-					}
+					// TODO: Rolando we need to check why you restrict binary 
+					// data to be decoded, so the user has to decode it manually in his side
+//					if( aToken[ "__binaryData" ] && "data" === lAttr){
+//						continue;
+//					}
 					if( 0 > self.fEncodingFormats.lastIndexOf( lFormat ) ) {
 						jws.console.error( 
 								"[process decoding]: Invalid encoding format '" 
@@ -3550,6 +3561,23 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			},
 			aOptions
 			);
+		}
+		return lRes;
+	},
+	
+	//:m:*:broadcastToSharedSession
+	//:d:en:Broadcasts a token to clients that share the same session
+	//:a:en::aToken:Object: The token to be broadcasted
+	//:a:en::aSenderIncluded:Boolean: Indicates if the sender connector require to be included in the broadcast
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	broadcastToSharedSession: function ( aToken, aSenderIncluded, aOptions ) {
+		var lRes = this.checkLoggedIn();
+		if( 0 === lRes.code ) {
+			aToken.ns = jws.NS_SYSTEM;
+			aToken.type = "broadcastToSharedSession";
+			aToken.senderIncluded = aSenderIncluded || false;
+
+			this.sendToken( aToken, aOptions );
 		}
 		return lRes;
 	},
@@ -4660,15 +4688,6 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 	}
 
 });
-
-// supporting String to ByteArray conversion
-String.prototype.getBytes = function () {
-  var lBytes = [];
-  for( var lIndex = 0; lIndex < this.length; ++lIndex ) {
-    lBytes.push( this.charCodeAt( lIndex ) );
-  }
-  return lBytes;
-};
 //	---------------------------------------------------------------------------
 //	jWebSocket XHRWebSocket class (Community Edition, CE)
 //	---------------------------------------------------------------------------
@@ -7096,26 +7115,27 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ClientGamingPlugIn );
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.EventsCallbacksHandler[/tt] class. _
 //:d:en:This class handle request callbacks on the events plug-in
-jws.oop.declareClass( 'jws', 'EventsCallbacksHandler', null, {
-	OnTimeout: function(aRawRequest, aArgs){
-		if (undefined != aArgs.meta['OnTimeout'] && 'function' == typeof(aArgs.meta['OnTimeout'])){
+jws.oop.declareClass('jws', 'EventsCallbacksHandler', null, {
+	OnTimeout: function(aRawRequest, aArgs) {
+		if (aArgs.meta && "undefined" !== typeof aArgs.meta['OnTimeout'] &&
+				'function' === typeof (aArgs.meta['OnTimeout'])) {
 			aArgs.meta.OnTimeout(aRawRequest);
 		}
 	}
 	,
-	OnResponse: function(aResponseEvent, aArgs){
+	OnResponse: function(aResponseEvent, aArgs) {
 		aResponseEvent.elapsedTime = (new Date().getTime()) - aArgs.sentTime;
 		aResponseEvent.processingTime = aResponseEvent._pt;
 		delete(aResponseEvent._pt);
 
-		if (undefined != aArgs.meta.eventDefinition){
+		if (undefined != aArgs.meta.eventDefinition) {
 			var lIndex = aArgs.filterChain.length - 1;
-			while (lIndex > -1){
+			while (lIndex > -1) {
 				try
 				{
 					aArgs.filterChain[lIndex].afterCall(aArgs.meta, aResponseEvent);
 				}
-				catch(err)
+				catch (err)
 				{
 					switch (err)
 					{
@@ -7130,12 +7150,12 @@ jws.oop.declareClass( 'jws', 'EventsCallbacksHandler', null, {
 				lIndex--;
 			}
 		}
-		
-		if (undefined != aArgs.meta.OnResponse){
+
+		if (undefined != aArgs.meta.OnResponse) {
 			aArgs.meta.OnResponse(aResponseEvent);
 		}
-		
-		if (aResponseEvent.code === 0){
+
+		if (aResponseEvent.code === 0) {
 			if (undefined != aArgs.meta.OnSuccess)
 				aArgs.meta.OnSuccess(aResponseEvent);
 		}
@@ -7154,7 +7174,7 @@ jws.oop.declareClass( 'jws', 'EventsCallbacksHandler', null, {
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.EventsNotifier[/tt] class. _
 //:d:en:This class handle raw events notifications to/from the server side.
-jws.oop.declareClass( 'jws', 'EventsNotifier', null, {
+jws.oop.declareClass('jws', 'EventsNotifier', null, {
 	ID: ''
 	,
 	jwsClient: {}
@@ -7169,13 +7189,13 @@ jws.oop.declareClass( 'jws', 'EventsNotifier', null, {
 	//:d:en:Initialize this component. 
 	//:a:en::::none
 	//:r:*:::void:none
-	initialize : function(){
+	initialize: function() {
 		//Registering the notifier as plug-in of the used connection
 		this.jwsClient.addPlugIn(this);
-		
+
 		//Initializing each filters
-		for (var lIndex = 0, lEnd = this.filterChain.length; lIndex < lEnd; lIndex++){
-			if (this.filterChain[lIndex]['initialize']){
+		for (var lIndex = 0, lEnd = this.filterChain.length; lIndex < lEnd; lIndex++) {
+			if (this.filterChain[lIndex]['initialize']) {
 				this.filterChain[lIndex].initialize(this);
 			}
 		}
@@ -7186,39 +7206,39 @@ jws.oop.declareClass( 'jws', 'EventsNotifier', null, {
 	//:a:en::aEventName:String:The event name.
 	//:a:en::aOptions:Object:Contains the event arguments and the OnResponse, OnSuccess and OnFailure callbacks.
 	//:r:*:::void:none
-	notify: function(aEventName, aOptions){
-		if (this.jwsClient.isConnected()){
+	notify: function(aEventName, aOptions) {
+		if (this.jwsClient.isConnected()) {
 			var lToken = {};
-			if (aOptions.args){
+			if (aOptions.args) {
 				lToken = aOptions.args;
 				delete (aOptions.args);
 			}
-			lToken.ns   = this.NS;
+			lToken.ns = this.NS;
 			lToken.type = aEventName;
-			
+
 			aOptions.UTID = jws.tools.generateSharedUTID(lToken);
-			
+
 			var lRequest;
-			if (!aOptions['OnResponse'] && !aOptions['OnSuccess'] && !aOptions['OnFailure'] && !aOptions['OnTimeout']){
+			if (!aOptions['OnResponse'] && !aOptions['OnSuccess'] && !aOptions['OnFailure'] && !aOptions['OnTimeout']) {
 				lRequest = {};
 			}
-			else{
-				lRequest = new jws.EventsCallbacksHandler();	
+			else {
+				lRequest = new jws.EventsCallbacksHandler();
 			}
-			
+
 			lRequest.args = {
 				meta: aOptions,
 				filterChain: this.filterChain,
 				sentTime: new Date().getTime()
 			};
-			
-			
-			if (undefined != aOptions.eventDefinition){
-				for (var i = 0; i < this.filterChain.length; i++){
+
+
+			if (undefined != aOptions.eventDefinition) {
+				for (var i = 0; i < this.filterChain.length; i++) {
 					try {
 						this.filterChain[i].beforeCall(lToken, lRequest);
 					}
-					catch(err) {
+					catch (err) {
 						switch (err) {
 							case 'stop_filter_chain':
 								return;
@@ -7230,11 +7250,11 @@ jws.oop.declareClass( 'jws', 'EventsNotifier', null, {
 					}
 				}
 			}
-			
+
 			this.jwsClient.sendToken(lToken, lRequest);
 		}
 		else
-			jws.console.error( 'client:not_connected' );
+			jws.console.error('client:not_connected');
 	}
 	,
 	//:m:*:processToken
@@ -7243,27 +7263,27 @@ jws.oop.declareClass( 'jws', 'EventsNotifier', null, {
 	//:d:en:a targered method in a plug-in.
 	//:a:en::aToken:Object:Token to be processed
 	//:r:*:::void:none
-	processToken: function (aToken) {
-		if ((this.NS == aToken.ns && 'auth.logon' == aToken.reqType && 0 == aToken.code)){
+	processToken: function(aToken) {
+		if ((this.NS == aToken.ns && 'auth.logon' == aToken.reqType && 0 == aToken.code)) {
 			this.user.principal = aToken.username;
 			this.user.uuid = aToken.uuid;
 			this.user.roles = aToken.roles;
 		}
-		else if ((this.NS == aToken.ns && 'auth.logoff' == aToken.reqType && 0 == aToken.code)){
+		else if ((this.NS == aToken.ns && 'auth.logoff' == aToken.reqType && 0 == aToken.code)) {
 			this.user.clear();
-		} 
-		else if (this.NS == aToken.ns && 's2c.en' == aToken.type){
+		}
+		else if (this.NS == aToken.ns && 's2c.en' == aToken.type) {
 			var lMethod = aToken._e;
 			var lPlugIn = aToken._p;
 
-			if (undefined != this.plugIns[lPlugIn] && undefined != this.plugIns[lPlugIn][lMethod]){
+			if (undefined != this.plugIns[lPlugIn] && undefined != this.plugIns[lPlugIn][lMethod]) {
 				var lStartTime = new Date().getTime();
 				var lRes = this.plugIns[lPlugIn][lMethod](aToken);
 				var lProcessingTime = (new Date().getTime()) - lStartTime;
 
 				//Sending response back to the server if the event notification
 				//has a callback
-				if (aToken.hc){
+				if (aToken.hc) {
 					this.notify('s2c.r', {
 						args: {
 							_rid: aToken.uid,
@@ -7280,7 +7300,7 @@ jws.oop.declareClass( 'jws', 'EventsNotifier', null, {
 						_rid: aToken.uid
 					}
 				});
-				jws.console.error( 's2c_event_support_not_found for: ' + lMethod );
+				jws.console.error('s2c_event_support_not_found for: ' + lMethod);
 			}
 		}
 	}
@@ -7292,8 +7312,7 @@ jws.oop.declareClass( 'jws', 'EventsNotifier', null, {
 //:d:en:Implementation of the [tt]jws.EventsPlugInGenerator[/tt] class. _
 //:d:en:This class handle the generation of server plug-ins as _
 //:d:en:Javascript objects.
-jws.oop.declareClass( 'jws', 'EventsPlugInGenerator', null, {
-
+jws.oop.declareClass('jws', 'EventsPlugInGenerator', null, {
 	//:m:*:generate
 	//:d:en:Processes an incoming token. Used to support S2C events notifications. _
 	//:a:en::aPlugInId:String:Remote plug-in 'id' to generate in the client.
@@ -7301,7 +7320,7 @@ jws.oop.declareClass( 'jws', 'EventsPlugInGenerator', null, {
 	//:a:en::aCallbacks:Function:This callback is called when the plug-in has been generated successfully.
 	//:a:en::aCallbacks:Object:Contains the OnSuccess and OnFailure callbacks
 	//:r:*:::void:none
-	generate: function(aPlugInId, aNotifier, aCallbacks){
+	generate: function(aPlugInId, aNotifier, aCallbacks) {
 		var lPlugIn = new jws.EventsPlugIn();
 		lPlugIn.notifier = aNotifier;
 
@@ -7314,33 +7333,33 @@ jws.oop.declareClass( 'jws', 'EventsPlugInGenerator', null, {
 			,
 			callbacks: aCallbacks
 			,
-			OnSuccess: function(aResponseEvent){
+			OnSuccess: function(aResponseEvent) {
 				this.plugIn.id = aResponseEvent.id;
 				this.plugIn.plugInAPI = aResponseEvent.api;
 
 				//Generating the plugin methods
-				for (method in aResponseEvent.api){
-					eval('this.plugIn.' + method + '=function(aOptions){if (undefined == aOptions){aOptions = {};};var eventName=this.plugInAPI.'+method+'.type; aOptions.eventDefinition=this.plugInAPI.'+ method + '; aOptions.timeout = this.plugInAPI.'+method+'.timeout; this.notifier.notify(eventName, aOptions);}')
+				for (method in aResponseEvent.api) {
+					eval('this.plugIn.' + method + '=function(aOptions){if (undefined == aOptions){aOptions = {};};var eventName=this.plugInAPI.' + method + '.type; aOptions.eventDefinition=this.plugInAPI.' + method + '; aOptions.timeout = this.plugInAPI.' + method + '.timeout; this.notifier.notify(eventName, aOptions);}')
 				}
 
 				//Registering the plugin in the notifier
 				this.plugIn.notifier.plugIns[this.plugIn.id] = this.plugIn;
 
 				//Plugin is generated successfully
-				if ('function' == typeof(this.callbacks)){
+				if ('function' == typeof (this.callbacks)) {
 					this.callbacks(this.plugIn);
-				} else if ('function' == typeof( this.callbacks['OnSuccess'] )){
+				} else if ('function' == typeof (this.callbacks['OnSuccess'])) {
 					this.callbacks.OnSuccess(this.plugIn);
 				}
 			}
 			,
-			OnFailure: function(aResponseEvent){
-				if ('function' == typeof( this.callbacks['OnFailure'] )){
+			OnFailure: function(aResponseEvent) {
+				if ('function' == typeof (this.callbacks['OnFailure'])) {
 					this.callbacks.OnFailure(this.plugIn);
 				} else {
-					jws.console.error('Failure generating plug-in: ' + aResponseEvent.msg );
+					jws.console.error('Failure generating plug-in: ' + aResponseEvent.msg);
 				}
-			}	
+			}
 		});
 
 		return lPlugIn;
@@ -7353,13 +7372,13 @@ jws.oop.declareClass( 'jws', 'EventsPlugInGenerator', null, {
 //:d:en:Implementation of the [tt]jws.EventsPlugIn[/tt] class. _
 //:d:en:This class represents an abstract client plug-in. The methods are _
 //:d:en:generated in runtime.
-jws.oop.declareClass( 'jws', 'EventsPlugIn', null, {
+jws.oop.declareClass('jws', 'EventsPlugIn', null, {
 	id: ''
 	,
 	notifier: {}
 	,
 	plugInAPI: {}
-	
+
 //Methods are generated in runtime!
 //Custom methods can be added using the OnReady callback
 });
@@ -7368,7 +7387,7 @@ jws.oop.declareClass( 'jws', 'EventsPlugIn', null, {
 //:class:*:jws.AppUser
 //:ancestor:*:-
 //:d:en:Application user instance.
-jws.oop.declareClass( 'jws', 'AppUser', null, {
+jws.oop.declareClass('jws', 'AppUser', null, {
 	principal: ''
 	,
 	uuid: ''
@@ -7378,7 +7397,7 @@ jws.oop.declareClass( 'jws', 'AppUser', null, {
 	//:m:*:clear
 	//:d:en:Clear the user instance
 	//:r:*:::void:none
-	clear: function (){
+	clear: function() {
 		this.principal = '';
 		this.roles = [];
 		this.uuid = '';
@@ -7387,22 +7406,22 @@ jws.oop.declareClass( 'jws', 'AppUser', null, {
 	//:m:*:isAuthenticated
 	//:d:en:Returns TRUE if the user is authenticated, FALSE otherwise
 	//:r:*:::boolean:none
-	isAuthenticated: function(){
-		return (this.principal)? true : false
+	isAuthenticated: function() {
+		return (this.principal) ? true : false
 	}
 	,
 	//:m:*:hasRole
 	//:d:en:TRUE if the user have the given role, FALSE otherwise
 	//:a:en::r:String:A role
 	//:r:*:::boolean:none
-	hasRole: function(aRole){
+	hasRole: function(aRole) {
 		var lEnd = this.roles.length;
-		
-		for (var lIndex = 0; lIndex < lEnd; lIndex++){
+
+		for (var lIndex = 0; lIndex < lEnd; lIndex++) {
 			if (aRole == this.roles[lIndex])
 				return true
 		}
-	
+
 		return false;
 	}
 });
@@ -7413,30 +7432,31 @@ jws.oop.declareClass( 'jws', 'AppUser', null, {
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.EventsBaseFilter[/tt] class. _
 //:d:en:This class represents an abstract client filter.
-jws.oop.declareClass( 'jws', 'EventsBaseFilter', null, {
+jws.oop.declareClass('jws', 'EventsBaseFilter', null, {
 	id: ''
 	,
-	
 	//:m:*:initialize
 	//:d:en:Initialize the filter instance
 	//:a:en::aNotifier:jws.EventsNotifier:The filter notifier
 	//:r:*:::void:none
-	initialize: function(aNotifier){}
+	initialize: function(aNotifier) {
+	}
 	,
-
 	//:m:*:beforeCall
 	//:d:en:This method is called before every C2S event notification.
 	//:a:en::aToken:Object:The token to be filtered.
 	//:a:en::aRequest:Object:The OnResponse callback to be called.
 	//:r:*:::void:none
-	beforeCall: function(aToken, aRequest){}
+	beforeCall: function(aToken, aRequest) {
+	}
 	,
 	//:m:*:afterCall
 	//:d:en:This method is called after every C2S event notification.
 	//:a:en::aRequest:Object:The request to be filtered.
 	//:a:en::aResponseEvent:Object:The response token from the server.
 	//:r:*:::void:none
-	afterCall: function(aRequest, aResponseEvent){}
+	afterCall: function(aRequest, aResponseEvent) {
+	}
 });
 
 //:package:*:jws
@@ -7445,16 +7465,15 @@ jws.oop.declareClass( 'jws', 'EventsBaseFilter', null, {
 //:d:en:Implementation of the [tt]jws.SecurityFilter[/tt] class. _
 //:d:en:This class handle the security for every C2S event notification _
 //:d:en:in the client, using the server side security configuration.
-jws.oop.declareClass( 'jws', 'SecurityFilter', jws.EventsBaseFilter, {
+jws.oop.declareClass('jws', 'SecurityFilter', jws.EventsBaseFilter, {
 	id: 'security'
 	,
 	user: null
 	,
-	initialize: function(aNotifier){
+	initialize: function(aNotifier) {
 		aNotifier.user = new jws.AppUser();
 		this.user = aNotifier.user;
 	},
-	
 	//:m:*:beforeCall
 	//:d:en:This method is called before every C2S event notification. _
 	//:d:en:Checks that the logged in user has the correct roles to notify _
@@ -7462,15 +7481,15 @@ jws.oop.declareClass( 'jws', 'SecurityFilter', jws.EventsBaseFilter, {
 	//:a:en::aToken:Object:The token to be filtered.
 	//:a:en::aRequest:Object:The OnResponse callback to be called.
 	//:r:*:::void:none
-	beforeCall: function(aToken, aRequest){
-		if (aRequest.args.meta.eventDefinition.isSecurityEnabled){
+	beforeCall: function(aToken, aRequest) {
+		if (aRequest.args.meta.eventDefinition.isSecurityEnabled) {
 			var lR, lU;
 			var lRoles, lUsers = null;
 			var lExclusion = false;
 			var lRoleAuthorized = false;
 			var lUserAuthorized = false;
 			var lStop = false;
-			
+
 			//@TODO: Support IP addresses restrictions checks on the JS client
 
 			//Getting users restrictions
@@ -7478,10 +7497,10 @@ jws.oop.declareClass( 'jws', 'SecurityFilter', jws.EventsBaseFilter, {
 
 			//Getting roles restrictions
 			lRoles = aRequest.args.meta.eventDefinition.roles;
-			
+
 			//Avoid unnecessary checks if the user is not authenticated
-			if (lUsers && lRoles && !this.user.isAuthenticated()){
-				if (aRequest.OnResponse){
+			if (lUsers && lRoles && !this.user.isAuthenticated()) {
+				if (aRequest.OnResponse) {
 					aRequest.OnResponse({
 						code: -2,
 						msg: 'User is not authenticated yet. Login first!'
@@ -7492,18 +7511,18 @@ jws.oop.declareClass( 'jws', 'SecurityFilter', jws.EventsBaseFilter, {
 			}
 
 			//Checking if the user have the allowed roles
-			if (lUsers.length > 0){
+			if (lUsers.length > 0) {
 				var lUserMatch = false;
-				for (var k = 0; k < lUsers.length; k++){
+				for (var k = 0; k < lUsers.length; k++) {
 					lU = lUsers[k];
-					
-					if ('all' != lU){
-						lExclusion = (lU.substring(0,1) == '!') ? true : false;
+
+					if ('all' != lU) {
+						lExclusion = (lU.substring(0, 1) == '!') ? true : false;
 						lU = (lExclusion) ? lU.substring(1) : lU;
 
-						if (lU == this.user.principal){
+						if (lU == this.user.principal) {
 							lUserMatch = true;
-							if (!lExclusion){
+							if (!lExclusion) {
 								lUserAuthorized = true;
 							}
 							break;
@@ -7516,29 +7535,29 @@ jws.oop.declareClass( 'jws', 'SecurityFilter', jws.EventsBaseFilter, {
 				}
 
 				//Not Authorized USER
-				if (!lUserAuthorized && lUserMatch || 0 == lRoles.length){
+				if (!lUserAuthorized && lUserMatch || 0 == lRoles.length) {
 					aRequest.OnResponse({
 						code: -2,
 						msg: 'Not autorized to notify this event. USER restrictions: ' + lUsers.toString()
 					}, aRequest.args);
-					
+
 					this.OnNotAuthorized(aToken);
 					throw 'stop_filter_chain';
 				}
 			}
 
 			//Checking if the user have the allowed roles
-			if (lRoles.length > 0){
-				for (var i = 0; i < lRoles.length; i++){
-					for (var j = 0; j < this.user.roles.length; j++){
+			if (lRoles.length > 0) {
+				for (var i = 0; i < lRoles.length; i++) {
+					for (var j = 0; j < this.user.roles.length; j++) {
 						lR = lRoles[i];
-					
-						if ('all' != lR){
-							lExclusion = (lR.substring(0,1) == '!') ? true : false;
+
+						if ('all' != lR) {
+							lExclusion = (lR.substring(0, 1) == '!') ? true : false;
 							lR = (lExclusion) ? lR.substring(1) : lR;
 
-							if (lR == this.user.roles[j]){
-								if (!lExclusion){
+							if (lR == this.user.roles[j]) {
+								if (!lExclusion) {
 									lRoleAuthorized = true;
 								}
 								lStop = true;
@@ -7548,16 +7567,16 @@ jws.oop.declareClass( 'jws', 'SecurityFilter', jws.EventsBaseFilter, {
 							lRoleAuthorized = true;
 							lStop = true;
 							break;
-						}	
+						}
 					}
-					if (lStop){
+					if (lStop) {
 						break;
 					}
 				}
 
 				//Not Authorized ROLE
-				if (!lRoleAuthorized){
-					if (aRequest.OnResponse){
+				if (!lRoleAuthorized) {
+					if (aRequest.OnResponse) {
 						aRequest.OnResponse({
 							code: -2,
 							msg: 'Not autorized to notify this event. ROLE restrictions: ' + lRoles.toString()
@@ -7576,8 +7595,8 @@ jws.oop.declareClass( 'jws', 'SecurityFilter', jws.EventsBaseFilter, {
 	//:d:en:of exception.
 	//:a:en::aToken:Object:The 'not authorized' token to be processed.
 	//:r:*:::void:none
-	OnNotAuthorized: function(aToken){
-		jws.console.error( 'not_authorized' );
+	OnNotAuthorized: function(aToken) {
+		jws.console.error('not_authorized');
 	}
 });
 
@@ -7587,29 +7606,29 @@ jws.oop.declareClass( 'jws', 'SecurityFilter', jws.EventsBaseFilter, {
 //:d:en:Implementation of the [tt]jws.CacheFilter[/tt] class. _
 //:d:en:This class handle the cache for every C2S event notification _
 //:d:en:in the client, using the server side cache configuration.
-jws.oop.declareClass( 'jws', 'CacheFilter', jws.EventsBaseFilter, {
+jws.oop.declareClass('jws', 'CacheFilter', jws.EventsBaseFilter, {
 	id: 'cache'
 	,
-	cache:{}
+	cache: {}
 	,
 	user: null
 	,
-	initialize: function(aNotifier){
+	initialize: function(aNotifier) {
 		// setting the user instance reference
 		this.user = aNotifier.user;
-		
+
 		// notifying to the server that cache is enabled in the client
 		aNotifier.notify('clientcacheaspect.setstatus', {
 			args: {
 				enabled: true
 			}
 		});
-		
+
 		// supporting clean cache entries event from the server
 		var lFilter = this;
 		aNotifier.plugIns['__cache__'] = {
-			cleanEntries: function(event){
-				for (var i = 0, end = event.entries.length; i < end; i++){
+			cleanEntries: function(event) {
+				for (var i = 0, end = event.entries.length; i < end; i++) {
 					lFilter.cache.removeItem_(lFilter.user.principal.toString() + event.suffix + event.entries[i]);
 				}
 			}
@@ -7623,29 +7642,29 @@ jws.oop.declareClass( 'jws', 'CacheFilter', jws.EventsBaseFilter, {
 	//:a:en::aToken:Object:The token to be filtered.
 	//:a:en::aRequest:jws.OnResponseObject:The OnResponse callback to be called.
 	//:r:*:::void:none
-	beforeCall: function(aToken, aRequest){
-		if (aRequest.args.meta.eventDefinition.isCacheEnabled){
+	beforeCall: function(aToken, aRequest) {
+		if (aRequest.args.meta.eventDefinition.isCacheEnabled) {
 			var lKey = aRequest.args.meta.eventDefinition.type + aRequest.args.meta.UTID;
-			
+
 			//Storing in the user private cache storage if required
-			if (aRequest.args.meta.eventDefinition.isCachePrivate && this.user.isAuthenticated()){
+			if (aRequest.args.meta.eventDefinition.isCachePrivate && this.user.isAuthenticated()) {
 				lKey = this.user.uuid + lKey;
 			}
-			
+
 			var lCachedResponseEvent = this.cache.getItem(lKey);
 
-			if (null != lCachedResponseEvent){
+			if (null != lCachedResponseEvent) {
 				//Setting the processing time of the cached response to 0
 				lCachedResponseEvent.processingTime = 0;
-				
+
 				//Updating the elapsed time
 				aRequest.args.meta.elapsedTime = (new Date().getTime()) - aRequest.sentTime;
-				
+
 				//Calling the OnResponse callback
-				if (aRequest.OnResponse){
+				if (aRequest.OnResponse) {
 					aRequest.OnResponse(lCachedResponseEvent, aRequest.args);
 				}
-				
+
 				throw 'stop_filter_chain';
 			}
 		}
@@ -7658,16 +7677,16 @@ jws.oop.declareClass( 'jws', 'CacheFilter', jws.EventsBaseFilter, {
 	//:a:en::aRequest:Object:The request to be filtered.
 	//:a:en::aResponseEvent:Object:The response token from the server.
 	//:r:*:::void:none
-	afterCall: function(aRequest, aResponseEvent){
-		if (aRequest.eventDefinition.isCacheEnabled){
-			var lKey = aRequest.eventDefinition.type 
-			+ aRequest.UTID;
+	afterCall: function(aRequest, aResponseEvent) {
+		if (aRequest.eventDefinition.isCacheEnabled) {
+			var lKey = aRequest.eventDefinition.type
+					+ aRequest.UTID;
 
 			//Storing in the user private cache storage if required
-			if (aRequest.eventDefinition.isCachePrivate){
+			if (aRequest.eventDefinition.isCachePrivate) {
 				lKey = this.user.uuid + lKey;
 			}
-			
+
 			this.cache.setItem(lKey, aResponseEvent, {
 				expirationAbsolute: null,
 				expirationSliding: aRequest.eventDefinition.cacheTime,
@@ -7682,44 +7701,43 @@ jws.oop.declareClass( 'jws', 'CacheFilter', jws.EventsBaseFilter, {
 //:ancestor:*:jws.EventsBaseFilter
 //:d:en:Implementation of the [tt]jws.ValidatorFilter[/tt] class. _
 //:d:en:This class handle the validation for every argument in the request.
-jws.oop.declareClass( 'jws', 'ValidatorFilter', jws.EventsBaseFilter, {
+jws.oop.declareClass('jws', 'ValidatorFilter', jws.EventsBaseFilter, {
 	id: 'validator'
 	,
-	
 	//:m:*:beforeCall
 	//:d:en:This method is called before every C2S event notification. _
 	//:d:en:Checks if the request arguments match with the validation server rules.
 	//:a:en::aToken:Object:The token to be filtered.
 	//:a:en::aRequest:jws.OnResponseObject:The OnResponse callback to be called.
 	//:r:*:::void:none
-	beforeCall: function(aToken, aRequest){
+	beforeCall: function(aToken, aRequest) {
 		var lArguments = aRequest.args.meta.eventDefinition.incomingArgsValidation;
-		
-		for (var i = 0; i < lArguments.length; i++){
-			if (undefined === aToken[lArguments[i].name] && !lArguments[i].optional){
-				if (aRequest.OnResponse){
+
+		for (var i = 0; i < lArguments.length; i++) {
+			if (undefined === aToken[lArguments[i].name] && !lArguments[i].optional) {
+				if (aRequest.OnResponse) {
 					aRequest.OnResponse({
 						code: -4,
-						msg: 'Argument \''+lArguments[i].name+'\' is required!'
+						msg: 'Argument \'' + lArguments[i].name + '\' is required!'
 					}, aRequest.args);
 				}
 				throw 'stop_filter_chain';
-			}else if (aToken.hasOwnProperty(lArguments[i].name)){
+			} else if (aToken.hasOwnProperty(lArguments[i].name)) {
 				var lRequiredType = lArguments[i].type;
 				var lArgumentType = jws.tools.getType(aToken[lArguments[i].name]);
-				
+
 				//Supporting the numberic types domain
-				if ('number' == lRequiredType && ('integer' == lArgumentType || 'double' == lArgumentType)){
+				if ('number' == lRequiredType && ('integer' == lArgumentType || 'double' == lArgumentType)) {
 					return;
 				}
-				if ('double' == lRequiredType && ('integer' == lArgumentType)){
+				if ('double' == lRequiredType && ('integer' == lArgumentType)) {
 					return;
 				}
-				if (lRequiredType != lArgumentType){
-					if (aRequest.OnResponse){
+				if (lRequiredType != lArgumentType) {
+					if (aRequest.OnResponse) {
 						aRequest.OnResponse({
 							code: -4,
-							msg: 'Argument \''+lArguments[i].name+'\' has invalid type. Required type is: \''+lRequiredType+'\'!'
+							msg: 'Argument \'' + lArguments[i].name + '\' has invalid type. Required type is: \'' + lRequiredType + '\'!'
 						}, aRequest.args);
 					}
 					throw 'stop_filter_chain';
@@ -7996,48 +8014,20 @@ jws.FileSystemPlugIn = {
 	//:a:en::aOptions.encoding:String:Indicates the encoding format used by the server to encode the file content. Default: base64.
 	//:r:*:::void:none
 	fileLoad: function(aFilename, aAlias, aOptions) {
-		var lRes = this.createDefaultResult( );
-
+		var lRes = this.createDefaultResult();
 		aOptions = jws.getOptions(aOptions, {
-			encoding: "base64",
-			decode: false
+			encoding: "base64"
 		});
-
-		if (this.isConnected( )) {
+		if (this.isConnected()) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "load",
 				alias: aAlias,
-				filename: aFilename,
-				decode: aOptions.decode,
-				encoding: aOptions.encoding
+				filename: aFilename
 			};
-
-			var lOnSuccess = aOptions.OnSuccess;
-			aOptions.OnSuccess = function(aToken, aArguments) {
-				if ("function" === typeof lOnSuccess) {
-					if (lToken.decode && aToken.mime !== "text/plain") {
-						switch (lToken.encoding) {
-							case "base64":
-								if (aToken.__binaryData) {
-									aToken.data = decodeURIComponent(escape(atob(aToken.data)));
-								} else {
-									aToken.data = Base64.decode(aToken.data);
-								}
-								break;
-							case "zipBase64":
-								if (aToken.__binaryData) {
-									aToken.data = jws.tools.unzip(decodeURIComponent(escape(atob(aToken.data))));
-								} else {
-									aToken.data = jws.tools.unzip(aToken.data, true);
-								}
-								break;
-						}
-					}
-					lOnSuccess(aToken, aArguments);
-				}
-			};
-
+			if (aOptions.encoding) {
+				lToken.encoding = aOptions.encoding;
+			}
 			this.sendToken(lToken, aOptions);
 		} else {
 			lRes.code = -1;
@@ -10711,148 +10701,93 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.MailPlugIn );
 //:ancestor:*:-
 //:d:en:Implementation of the [tt]jws.ReportingPlugIn[/tt] class.
 jws.ReportingPlugIn = {
-
 	//:const:*:NS:String:org.jwebsocket.plugins.reporting (jws.NS_BASE + ".plugins.reporting")
 	//:d:en:Namespace for the [tt]ReportingPlugIn[/tt] class.
 	// if namespace is changed update server plug-in accordingly!
 	NS: jws.NS_BASE + ".plugins.reporting",
-
-	processToken: function( aToken ) {
+	processToken: function(aToken) {
 		// check if namespace matches
-		if( aToken.ns == jws.ReportingPlugIn.NS ) {
+		if (aToken.ns == jws.ReportingPlugIn.NS) {
 			// here you can handle incomimng tokens from the server
 			// directy in the plug-in if desired.
-			if( "createReport" == aToken.reqType ) {
-				if( this.OnReport ) {
-					this.OnReport( aToken );
+			if ("generateReport" == aToken.reqType) {
+				if (this.OnReport) {
+					this.OnReport(aToken);
 				}
-			} else if( "getReports" == aToken.reqType ) {
-				if( this.OnReports ) {
-					this.OnReports( aToken );
+			} else if ("getReports" == aToken.reqType) {
+				if (this.OnReports) {
+					this.OnReports(aToken);
 				}
-			} else if( "getReportParams" == aToken.reqType ) {
-				if( this.OnReportParams ) {
-					this.OnReportParams( aToken );
+			}
+			else if ("uploadTemplate" == aToken.reqType) {
+				if (this.OnUploadTemplate) {
+					this.OnUploadTemplate(aToken);
 				}
 			}
 		}
 	},
-
-	reportingCreateReport: function( aReportId, aParams, aOptions ) {
+	reportingGenerateReport: function(aReportName, aParams, aFields, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
-			var lOutputType = "pdf";
-			if( aOptions ) {
-				if( aOptions.outputType ) {
-					lOutputType = aOptions.outputType;
-				} 
+		if (0 == lRes.code) {
+			if (!aOptions) {
+				aOptions = {};
 			}
+
 			var lToken = {
 				ns: jws.ReportingPlugIn.NS,
-				type: "createReport",
-				reportId: aReportId,
-				outputType: lOutputType,
-				params: aParams
+				type: "generateReport",
+				reportName: aReportName,
+				reportFields: aFields,
+				reportParams: aParams,
+				reportOutputType: aOptions.outputType || "pdf",
+				useJDBCConnection: aOptions.useConection || false,
+				nameJDBCCOnnection:aOptions.nameConnection || ""
 			};
-			this.sendToken( lToken,	aOptions );
+			this.sendToken(lToken, aOptions);
 		}
 		return lRes;
 	},
-	
-	reportingGetReports: function( aOptions ) {
+	reportingGetReports: function(aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			var lToken = {
 				ns: jws.ReportingPlugIn.NS,
 				type: "getReports"
 			};
-			this.sendToken( lToken,	aOptions );
+			this.sendToken(lToken, aOptions);
 		}
 		return lRes;
 	},
-	
-	reportingGetReportParams: function( aReportId, aOptions ) {
+	reportingUploadTemplate: function(aTemplatePath, aOptions) {
 		var lRes = this.checkConnected();
-		if( 0 == lRes.code ) {
+		if (0 == lRes.code) {
 			var lToken = {
 				ns: jws.ReportingPlugIn.NS,
-				type: "getReportParams",
-				reportId: aReportId
+				type: "uploadTemplate",
+				templatePath: aTemplatePath
 			};
-			this.sendToken( lToken,	aOptions );
+			this.sendToken(lToken, aOptions);
 		}
 		return lRes;
 	},
-	
-	setReportingCallbacks: function( aListeners ) {
-		if( !aListeners ) {
+	setReportingCallbacks: function(aListeners) {
+		if (!aListeners) {
 			aListeners = {};
 		}
-		if( aListeners.OnReportAvail !== undefined ) {
-			this.OnReportAvail = aListeners.OnReportAvail;
+		if (aListeners.OnReport !== undefined) {
+			this.OnReport = aListeners.OnReport;
 		}
-		if( aListeners.OnReports !== undefined ) {
+		if (aListeners.OnReports !== undefined) {
 			this.OnReports = aListeners.OnReports;
 		}
-		if( aListeners.OnReportParams !== undefined ) {
-			this.OnReportParams = aListeners.OnReportParams;
-		}
-	},
-	
-	displayPDF: function( aElem, aURL, width, height ) {
-		if( jws.isIExplorer() ) {
-			var lContent =
-				'<object ' +
-					'classid="clsid:CA8A9780-280D-11CF-A24D-444553540000" ' +
-					'width="' + width + '" ' +
-					'height="' + height + '" >' +
-					'<param name="src" value="' + encodeURI( aURL ) + '">' +
-					'<embed src="' + encodeURI( aURL ) + '" ' +
-						'width="' + width + '" ' +
-						'height="' + height + '" >' +
-						'<noembed> Your browser does not support embedded PDF files. </noembed>' +
-					'</embed>' +
-				'</object>';
-			// is there already a pdf for the selected element?
-			if( aElem.pdf ) {
-				aElem.removeChild( aElem.pdf );
-			}
-			// reset pdf to collect garbage
-			aElem.pdf = null;
-			// set the pdf to the element
-			aElem.innerHTML = lContent;
-			// and save the reference to allow overwriting
-			aElem.pdf = aElem.firstChild;
-		} else {
-			var lNeedToCreateNewInstance = true;
-			/*
-			var lNeedToCreateNewInstance = (
-				( aElem.pdf === null ) || ( aElem.pdf === undefined ) ||
-				( jws.isFirefox() && jws.getBrowserVersion() < 3 )
-			);
-			*/
-			var lEmbed = ( lNeedToCreateNewInstance ? document.createElement( "embed" ) : aElem.pdf );
-			lEmbed.setAttribute( "id", aElem.id + ".embPdf" );
-			lEmbed.setAttribute( "style", "position:relative;padding:0px;margin:0px;border:0px;left:0px;top:0px;width:"+width+"px;height:"+height+"px" );
-			lEmbed.setAttribute( "type", "application/pdf" );
-			lEmbed.setAttribute( "width", "\"" + width + "\"" );
-			lEmbed.setAttribute( "height", "\"" + height + "\"" );
-			lEmbed.setAttribute( "src", aURL );
-			if( lNeedToCreateNewInstance ) {
-				if( aElem.pdf ) {
-					aElem.removeChild( aElem.pdf );
-				}
-			}
-			aElem.pdf = lEmbed;
-			aElem.appendChild( aElem.pdf );
+		if (aListeners.OnUploadTemplate !== undefined) {
+			this.OnUploadTemplate = aListeners.OnUploadTemplate;
 		}
 	}
-	
-}
+};
 
 // add the JWebSocket Reporting PlugIn into the TokenClient class
-jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.ReportingPlugIn );
-//	---------------------------------------------------------------------------
+jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.ReportingPlugIn);//	---------------------------------------------------------------------------
 //	jWebSocket Mail RPC/RRPC Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)

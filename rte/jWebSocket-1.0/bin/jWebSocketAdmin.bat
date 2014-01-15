@@ -10,6 +10,9 @@ popd
 
 :start
 
+rem if JWEBSOCKET_EE_HOME not set set it to JWEBSOCKET_HOME
+if "%JWEBSOCKET_EE_HOME%"=="" set JWEBSOCKET_EE_HOME=%JWEBSOCKET_HOME%
+
 java -jar ..\libs\jWebSocketSwingGUI-1.0.jar %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 rem pause
