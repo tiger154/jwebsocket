@@ -2684,9 +2684,11 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				for( var lAttr in lEnc ) {
 					var lFormat = lEnc[ lAttr ];
 					var lValue = aToken[ lAttr ];
-					if( aToken[ "__binaryData" ] && "data" === lAttr){
-						continue;
-					}
+					// TODO: Rolando we need to check why you restrict binary 
+					// data to be decoded, so the user has to decode it manually in his side
+//					if( aToken[ "__binaryData" ] && "data" === lAttr){
+//						continue;
+//					}
 					if( 0 > self.fEncodingFormats.lastIndexOf( lFormat ) ) {
 						jws.console.error( 
 								"[process decoding]: Invalid encoding format '" 

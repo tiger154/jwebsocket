@@ -181,48 +181,20 @@ jws.FileSystemPlugIn = {
 	//:a:en::aOptions.encoding:String:Indicates the encoding format used by the server to encode the file content. Default: base64.
 	//:r:*:::void:none
 	fileLoad: function(aFilename, aAlias, aOptions) {
-		var lRes = this.createDefaultResult( );
-
+		var lRes = this.createDefaultResult();
 		aOptions = jws.getOptions(aOptions, {
-			encoding: "base64",
-			decode: false
+			encoding: "base64"
 		});
-
-		if (this.isConnected( )) {
+		if (this.isConnected()) {
 			var lToken = {
 				ns: jws.FileSystemPlugIn.NS,
 				type: "load",
 				alias: aAlias,
-				filename: aFilename,
-				decode: aOptions.decode,
-				encoding: aOptions.encoding
+				filename: aFilename
 			};
-
-			var lOnSuccess = aOptions.OnSuccess;
-				aOptions.OnSuccess = function(aToken, aArguments) {
-				if ("function" === typeof lOnSuccess) {
-					if (lToken.decode && aToken.mime !== "text/plain") {
-						switch (lToken.encoding) {
-							case "base64":
-								if (aToken.__binaryData) {
-									aToken.data = Base64.decode(decodeURIComponent(escape(atob(aToken.data))));
-								} else {
-									aToken.data = Base64.decode(aToken.data);
-								}
-								break;
-							case "zipBase64":
-								if (aToken.__binaryData) {
-									aToken.data = jws.tools.unzip(decodeURIComponent(escape(atob(aToken.data))), true);
-								} else {
-									aToken.data = jws.tools.unzip(aToken.data, true);
-								}
-								break;
-						}
-					}
-					lOnSuccess(aToken, aArguments);
-				}
-			};
-
+			if (aOptions.encoding) {
+				lToken.encoding = aOptions.encoding;
+			}
 			this.sendToken(lToken, aOptions);
 		} else {
 			lRes.code = -1;
