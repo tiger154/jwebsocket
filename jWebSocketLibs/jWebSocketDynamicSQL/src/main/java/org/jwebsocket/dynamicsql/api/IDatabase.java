@@ -102,14 +102,16 @@ public interface IDatabase {
     public void delete(String aTableName, Map<String, Object> aItem);
     
     /**
+     * Allows to delete one or more tuples through a query.
      * 
-     * @param aQuery 
+     * @param aQuery The query to bring together the tuples to be deleted.
      */
     public void delete(IDeleteQuery aQuery);
     
     /**
+     * Allows to clear the table. Remove all tuples in the table.
      * 
-     * @param aTableName 
+     * @param aTableName The table name to clear.
      */
     public void clearTable(String aTableName);
     
@@ -142,9 +144,11 @@ public interface IDatabase {
     public List<DynaBean> fetch(ISelectQuery aQuery);
     
     /**
+     * Return a first DynaBean object associated with the record returned
+     * by the query.
      * 
-     * @param aQuery
-     * @return 
+     * @param aQuery The select query to execute.
+     * @return DynaBean object with the first record returned by the query.
      */
     public DynaBean fetchOne(ISelectQuery aQuery);
     

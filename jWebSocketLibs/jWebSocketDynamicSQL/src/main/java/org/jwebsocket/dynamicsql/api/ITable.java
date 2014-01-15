@@ -26,10 +26,42 @@ import org.apache.ddlutils.model.Table;
  */
 public interface ITable {
     
+    /**
+     * 
+     * @return 
+     */
     public String getName();
+    
+    /**
+     * 
+     * @param aName
+     * @param aTypeCode
+     * @param aRequired
+     * @param aPK
+     * @param aSize
+     * @param aDefault
+     * @return 
+     */
     public ITable addColumn(String aName, Integer aTypeCode, Boolean aRequired, 
             Boolean aPK, Integer aSize, Object aDefault);
+    
+    /**
+     * 
+     * @param aColumnName
+     * @return 
+     */
     public ITable addIndex(String aColumnName);
+    
+    /**
+     * 
+     * @param aColumnName
+     * @return 
+     */
     public ITable addUniqueIndex(String aColumnName);
+    
+    /**
+     * 
+     * @return 
+     */
     public Table getTable();
 }

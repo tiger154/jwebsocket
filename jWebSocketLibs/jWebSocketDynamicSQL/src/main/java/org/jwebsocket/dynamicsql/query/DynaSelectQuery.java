@@ -38,6 +38,12 @@ public class DynaSelectQuery implements ISelectQuery {
     private SelectQuery mQuery;
     private IDatabase mDB;
 
+    /**
+     * Costructor.
+     * 
+     * @param aDB The database instance.
+     * @param aTableName The table name.
+     */
     public DynaSelectQuery(IDatabase aDB, String aTableName) {
         this.mDB = aDB;
         mQuery = new SelectQuery()
@@ -45,6 +51,9 @@ public class DynaSelectQuery implements ISelectQuery {
                 .addCustomFromTable(parse(aTableName));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ISelectQuery and(ICondition aCondition) {
         Map<String, Object> lAttrs = aCondition.getCondition();
@@ -70,6 +79,9 @@ public class DynaSelectQuery implements ISelectQuery {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ISelectQuery or(ICondition aCondition) {
         Map<String, Object> lAttrs = aCondition.getCondition();
@@ -95,6 +107,9 @@ public class DynaSelectQuery implements ISelectQuery {
         return this;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ISelectQuery orderBy(String aColumnName, Ordering aDir) {
         OrderObject.Dir lDir = OrderObject.Dir.ASCENDING;
@@ -105,19 +120,38 @@ public class DynaSelectQuery implements ISelectQuery {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getSQL() {
         return mQuery.validate().toString().replaceAll("%", getEscLike());
     }
 
+    /**
+     * Allows to parse the names of tables and column in the diferents platform.
+     * 
+     * @param aValue The value (name of table or column)
+     * @return The parse value.
+     */
     private Object parse(String aValue) {
         return new CustomSql(getEscChar().charAt(0) + aValue + getEscChar().charAt(1));
     }
 
+    /**
+     * The escape char to tables and columns name in the diferents platform.
+     * 
+     * @return The escape char.
+     */
     private String getEscChar() {
         return mDB.getOptions().get(SupportUtils.ESCAPE_TABLE_LITERAL);
     }
 
+    /**
+     * The escape char to like condition in the diferents platform.
+     * 
+     * @return The escape char.
+     */
     private String getEscLike() {
         return mDB.getOptions().get(SupportUtils.ESCAPE_LIKE_LITERAL);
     }

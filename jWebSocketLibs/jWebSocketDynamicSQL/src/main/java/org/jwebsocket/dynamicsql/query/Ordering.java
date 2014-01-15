@@ -1,6 +1,7 @@
 package org.jwebsocket.dynamicsql.query;
 
 /**
+ * Enumeration representing the direction of an ordering clause.
  *
  * @author markos
  */

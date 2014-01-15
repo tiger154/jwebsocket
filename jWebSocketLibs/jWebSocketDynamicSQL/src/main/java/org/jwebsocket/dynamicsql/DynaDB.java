@@ -45,6 +45,12 @@ public class DynaDB implements IDatabase {
     private Database mDB;
     private Map<String, String> mOptions;
 
+    /**
+     * Constructor
+     * 
+     * @param aDatabaseName
+     * @param aDataSource 
+     */
     public DynaDB(String aDatabaseName, DataSource aDataSource) {
         PlatformFactory.registerPlatform("Derby", Derby107Platform.class);
         
@@ -54,11 +60,17 @@ public class DynaDB implements IDatabase {
         mOptions = SupportUtils.getOptions(aDataSource);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return mDB.getName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addTable(ITable aTable) {
         if (mDB.findTable(aTable.getName()) == null) {
@@ -69,6 +81,9 @@ public class DynaDB implements IDatabase {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dropTable(String aTableName) {
         if(existsTable(aTableName)) {
@@ -76,11 +91,17 @@ public class DynaDB implements IDatabase {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void createTables(boolean aDropTablesFirst, boolean aContinueOnError) {
         mPlatform.createTables(mDB, aDropTablesFirst, aContinueOnError);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<String> getTables() {
         List<String> lTables = new FastList<String>();
@@ -90,6 +111,9 @@ public class DynaDB implements IDatabase {
         return lTables;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Boolean existsTable(String aTableName) {
         if (mDB.findTable(aTableName) == null) {
@@ -98,50 +122,65 @@ public class DynaDB implements IDatabase {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void insert(String aTableName, Map<String, Object> aItem) {
         mPlatform.insert(mDB, createDynaBean(aTableName, aItem));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void update(String aTableName, Map<String, Object> aItem) {
         mPlatform.update(mDB, createDynaBean(aTableName, aItem));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(String aTableName, Map<String, Object> aItem) {
         mPlatform.delete(mDB, createDynaBean(aTableName, aItem));
     }
     
-    private DynaBean createDynaBean(String aTableName, Map<String, Object> aItem) {
-        DynaBean lDynaBean = mDB.createDynaBeanFor(aTableName, true);
-
-        for (Map.Entry<String, Object> entry : aItem.entrySet()) {
-            lDynaBean.set(entry.getKey(), entry.getValue());
-        }
-        return lDynaBean;
-    }
-    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void delete(IDeleteQuery aQuery) {
         mPlatform.evaluateBatch(aQuery.getSQL(), true);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void clearTable(String aTableName) {
         mPlatform.evaluateBatch(new DynaDeleteQuery(this, aTableName).getSQL(), true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, String> getOptions() {
         return mOptions;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<DynaBean> fetch(ISelectQuery aQuery, Integer aOffset, Integer aLimit) {
         return mPlatform.fetch(mDB,aQuery.getSQL(), aOffset, aLimit);
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DynaBean fetchOne(ISelectQuery aQuery) {
         List<DynaBean> lList = fetch(aQuery, 0, 1);
@@ -152,13 +191,35 @@ public class DynaDB implements IDatabase {
         return lList.get(0);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterator execute(ISelectQuery aQuery) {
         return mPlatform.query(mDB, aQuery.getSQL());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<DynaBean> fetch(ISelectQuery aQuery) {
         return mPlatform.fetch(mDB,aQuery.getSQL());
+    }
+    
+    /**
+     * Convert the item map to DynaBean object of a table.
+     * 
+     * @param aTableName The table name.
+     * @param aItem The values ​​of a tuple in map form.
+     * @return The DynaBean object.
+     */
+    private DynaBean createDynaBean(String aTableName, Map<String, Object> aItem) {
+        DynaBean lDynaBean = mDB.createDynaBeanFor(aTableName, true);
+
+        for (Map.Entry<String, Object> entry : aItem.entrySet()) {
+            lDynaBean.set(entry.getKey(), entry.getValue());
+        }
+        return lDynaBean;
     }
 }

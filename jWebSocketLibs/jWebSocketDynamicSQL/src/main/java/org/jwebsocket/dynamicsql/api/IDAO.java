@@ -55,10 +55,24 @@ public interface IDAO {
 	 */
     public void delete(Map<String, Object> aItem);
     
+    /**
+	 * Allows to delete one or more tuples through a query.
+	 *
+     * @param aQuery The query to bring together the tuples to be deleted.
+	 */
     public void delete(IDeleteQuery aQuery);
     
+    /**
+	 * Allows to clear the table. Remove all tuples in the table.
+	 *
+	 */
     public void clear();
     
+    /**
+	 * Return a basic delete query, equal to (DELETE FROM <tableName>).
+	 *
+	 * @return a basic delete query.
+	 */
     public IDeleteQuery getBasicDeleteQuery();
     
     /**
@@ -89,6 +103,13 @@ public interface IDAO {
 	 */
     public List<DynaBean> fetch(ISelectQuery aQuery);
     
+    /**
+	 * Return a first DynaBean object associated with the record returned
+     * by the query.
+	 *
+     * @param aQuery The select query to execute.
+	 * @return DynaBean object with the first record returned by the query.
+	 */
     public DynaBean fetchOne(ISelectQuery aQuery);
     
     /**
