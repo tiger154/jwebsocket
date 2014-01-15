@@ -162,13 +162,13 @@ public interface IItemStorage extends IInitializable {
 
 	/**
 	 * Find all the items that matches the keys/values search criteria
-	 * 
+	 *
 	 * @param aAttrsValues
 	 * @param aOrderBy
 	 * @param aOffset
 	 * @param aLength
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	List<IItem> find(Map<String, Object> aAttrsValues, Map<String, Boolean> aOrderBy, int aOffset, int aLength) throws Exception;
 
@@ -194,7 +194,7 @@ public interface IItemStorage extends IInitializable {
 	 * @throws java.lang.Exception
 	 */
 	Integer size(String aAttribute, Object aValue) throws Exception;
-	
+
 	/**
 	 *
 	 * @param aAttrsValues

@@ -50,8 +50,7 @@ public interface IClientCollection {
 
 	/**
 	 *
-	 * @return
-	 * @throws java.lang.Exception
+	 * @return @throws java.lang.Exception
 	 */
 	List<String> getAll() throws Exception;
 
@@ -62,9 +61,8 @@ public interface IClientCollection {
 	void clear() throws Exception;
 
 	/**
-	 * 
-	 * @return 
-	 * @throws java.lang.Exception 
+	 *
+	 * @return @throws java.lang.Exception
 	 */
 	int size() throws Exception;
 }

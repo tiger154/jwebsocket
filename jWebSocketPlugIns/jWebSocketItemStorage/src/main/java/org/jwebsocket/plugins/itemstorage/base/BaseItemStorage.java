@@ -110,7 +110,7 @@ abstract public class BaseItemStorage implements IItemStorage {
 	public List<IItem> find(Map<String, Object> aAttrsValues, Map<String, Boolean> aOrderBy, int aOffset, int aLength) throws Exception {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-	
+
 	@Override
 	public IItemFactory getItemFactory() {
 		return mItemFactory;
@@ -120,7 +120,7 @@ abstract public class BaseItemStorage implements IItemStorage {
 	public Integer size(Map<String, Object> aAttrsValues) throws Exception {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-	
+
 	@Override
 	public void initialize() throws Exception {
 		Assert.isTrue(mItemFactory.supportsType(getItemType()), "Item type not supported!");
