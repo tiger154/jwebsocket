@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JWebSocketUserDataList" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" >
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="JWebSocketUserDataList" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" >
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
 	<field name="id" class="java.lang.String"/>
 	<field name="firstname" class="java.lang.String"/>
 	<field name="lastname" class="java.lang.String"/>
 	<field name="email" class="java.lang.String"/>
 	<field name="username" class="java.lang.String"/>
 	<field name="mobile" class="java.lang.String"/>
+	<variable name="USER_COUNT" class="java.lang.Integer" incrementType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$V{USER_COUNT} + 1]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -101,11 +108,6 @@
 				<reportElement  stretchType="RelativeToTallestObject" mode="Transparent" x="45" y="0" width="713" height="28" backcolor="#FFFFFF"/>
 			</rectangle>
 			<textField>
-				<reportElement  x="54" y="3" width="36" height="20"/>
-				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
-			</textField>
-			<textField>
 				<reportElement  x="105" y="3" width="210" height="20"/>
 				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{firstname}.concat(" " + $F{lastname})]]></textFieldExpression>
@@ -137,6 +139,11 @@
 			<line>
 				<reportElement  x="635" y="0" width="1" height="28"/>
 			</line>
+			<textField>
+				<reportElement  x="53" y="6" width="23" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{USER_COUNT}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<pageFooter>
