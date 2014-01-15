@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -809,6 +810,44 @@ public class Tools {
 			op++;
 		}
 		return new String(out);
+	}
+
+	/**
+	 * Guess whether given file is binary. Just checks for anything under 0x09.
+	 * @param aFile
+	 * @return boolean if the file is binary or not
+	 * @throws java.io.FileNotFoundException
+	 */
+	public static boolean isBinaryFile(File aFile) throws FileNotFoundException, IOException {
+		FileInputStream in = new FileInputStream(aFile);
+		int size = in.available();
+		if (size > 1024) {
+			size = 1024;
+		}
+		byte[] data = new byte[size];
+		in.read(data);
+		in.close();
+
+		int lAsci = 0;
+		int lOther = 0;
+
+		for (int i = 0; i < data.length; i++) {
+			byte b = data[i];
+			if (b < 0x09) {
+				return true;
+			}
+
+			if (b == 0x09 || b == 0x0A || b == 0x0C || b == 0x0D) {
+				lAsci++;
+			} else if (b >= 0x20 && b <=  0x7E ) lAsci++;
+			else lOther++;
+		}
+
+		if (lOther == 0) {
+			return false;
+		}
+
+		return (lAsci + lOther) * 100 / lOther > 95;
 	}
 
 	/**
