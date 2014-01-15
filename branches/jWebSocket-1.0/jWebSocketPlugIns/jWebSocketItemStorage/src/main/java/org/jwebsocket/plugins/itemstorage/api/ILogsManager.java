@@ -93,8 +93,7 @@ public interface ILogsManager extends IInitializable {
 
 	/**
 	 *
-	 * @return
-	 * @throws Exception
+	 * @return @throws Exception
 	 */
 	Long size() throws Exception;
 

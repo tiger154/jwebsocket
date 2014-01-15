@@ -19,6 +19,7 @@
 package org.jwebsocket.plugins.reporting;
 
 import java.sql.Connection;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,8 +78,8 @@ public class TestReportingPlugIn extends ActionPlugIn {
 				+ ".plugins.reporting", "generateReport");
 
 		// The report name
-//		String lreportName = "FullUserDataList";		
-		String lreportName = "UserRolesRights";
+		String lreportName = "FullUserDataList";
+//		String lreportName = "UserRolesRights";
 //		String lreportName = "UserList";		
 
 		// The report paramas
@@ -86,6 +87,9 @@ public class TestReportingPlugIn extends ActionPlugIn {
 
 		// The reports fields
 		List<Map<String, Object>> lReportFields = new ArrayList<Map<String, Object>>();
+
+		// A map<String,Object> with the data for the generation of the report
+		Map<String, Object> lUser = new HashMap<String, Object>();
 
 		// Lists to use as rights and subscriptions
 		List<String> lList1 = new ArrayList<String>();
@@ -106,93 +110,91 @@ public class TestReportingPlugIn extends ActionPlugIn {
 		lList3.add("1010101010101010101010101010");
 		lList3.add("1111111111111111111111111111");
 
-		// For UserRolesRights report
-		
-		Map<String, Object> lUser = new HashMap<String, Object>();
-
-		lUser.put("user_name", "jpuentes");
-		lUser.put("name", "Admin");
-		lUser.put("list", lList1);
-		lReportFields.add(lUser);
-
-		lUser = new HashMap<String, Object>();
-
-		lUser.put("user_name", "mcasanova");
-		lUser.put("name", "Guest");
-		lUser.put("list", lList2);
-		lReportFields.add(lUser);
-
-		lUser = new HashMap<String, Object>();
-
-		lUser.put("user_name", "lgonzalez");
-		lUser.put("name", "NotLoggedUser");
-		lUser.put("list", lList3);
-		lReportFields.add(lUser);
-				
-		// For FullUserDataList and UserList report
-		
-//		lUser.put("id", 1);
-//		lUser.put("username", "japuentes");
-//		lUser.put("firstname", "Javier");
-//		lUser.put("lastname", "Puentes");
-//		lUser.put("telephone", "234234234");
-//		lUser.put("mobile", "234234234");
-//		lUser.put("email", "japuentes@mail.org");
-//		lUser.put("fax", "234234234");
-//		lUser.put("securityQuestion", "Mention your favotite football team");
-//		lUser.put("myInterest", "Download bibliography");
-//		lUser.put("subsciptions", "jWebSocket news");
-//		lUser.put("enabled", true);
-//		lUser.put("active", true);
-//		lUser.put("registrationDate", new Long("1384837986066"));
-//		lUser.put("activationDate", new Long("1384837986066"));
-//		lUser.put("lastActivityDate", new Long("1384837986066"));
-//		lUser.put("loginCount", 10);
-//		lUser.put("subscriptions", lList1);
+//		// For UserRolesRights report
+//		// Establish user data as params of the report
+//		lreportParams.put("user_name", "japuentes");
+//		lreportParams.put("full_name", "Javier Alejandro Puentes Serrano");
+//
+//		// Aggregate rol & rights as fields of the report
+//		lUser.put("name", "Admin");
+//		lUser.put("roles", lList1);
 //		lReportFields.add(lUser);
 //
 //		lUser = new HashMap<String, Object>();
-//		lUser.put("id", 2);
-//		lUser.put("username", "mcasanova");
-//		lUser.put("firstname", "Madisleidys");
-//		lUser.put("lastname", "Casanova");
-//		lUser.put("telephone", "234234234");
-//		lUser.put("mobile", "234234234");
-//		lUser.put("email", "mcasanova@mail.org");
-//		lUser.put("fax", "234234234");
-//		lUser.put("securityQuestion", "Mention your favotite ice cream flavor");
-//		lUser.put("myInterest", "Download bibliography");
-//		lUser.put("subsciptions", "jWebSocket news");
-//		lUser.put("enabled", true);
-//		lUser.put("active", true);
-//		lUser.put("registrationDate", new Long("1384837986066"));
-//		lUser.put("activationDate", new Long("1384837986066"));
-//		lUser.put("lastActivityDate", new Long("1384837986066"));
-//		lUser.put("loginCount", 55);
-//		lUser.put("subscriptions", lList2);
+//
+//		lUser.put("name", "User");
+//		lUser.put("roles", lList2);
 //		lReportFields.add(lUser);
-//		
+//
 //		lUser = new HashMap<String, Object>();
-//		lUser.put("id", 3);
-//		lUser.put("username", "aschulze");
-//		lUser.put("firstname", "Alexander");
-//		lUser.put("lastname", "Schulze");
-//		lUser.put("telephone", "234234234");
-//		lUser.put("mobile", "234234234");
-//		lUser.put("email", "aschulze@mail.org");
-//		lUser.put("fax", "234234234");
-//		lUser.put("securityQuestion", "Mention your favotite ice cream flavor");
-//		lUser.put("myInterest", "Download bibliography");
-//		lUser.put("subsciptions", "jWebSocket news");
-//		lUser.put("enabled", true);
-//		lUser.put("active", true);
-//		lUser.put("registrationDate", new Long("1384837986066"));
-//		lUser.put("activationDate", new Long("1384837986066"));
-//		lUser.put("lastActivityDate", new Long("1384837986066"));
-//		lUser.put("loginCount", 65);
-//		lUser.put("subscriptions", lList3);
+//
+//		lUser.put("name", "Guest");
+//		lUser.put("roles", lList3);
 //		lReportFields.add(lUser);
 
+		// For FullUserDataList and UserList report
+		lUser.put("id", 1);
+		lUser.put("username", "japuentes");
+		lUser.put("firstname", "Javier");
+		lUser.put("lastname", "Puentes");
+		lUser.put("telephone", "234234234");
+		lUser.put("mobile", "234234234");
+		lUser.put("email", "japuentes@mail.org");
+		lUser.put("fax", "234234234");
+		lUser.put("securityQuestion", "Mention your favotite football team");
+		lUser.put("myInterest", "Download bibliography");
+		lUser.put("subsciptions", "jWebSocket news");
+		lUser.put("enabled", true);
+		lUser.put("active", true);
+		lUser.put("registrationDate", new Long("1384837986066"));
+		lUser.put("activationDate", new Long("1384837986066"));
+		lUser.put("lastActivityDate", new Long("1384837986066"));
+		lUser.put("loginCount", 10);
+		lUser.put("subscriptions", lList1);
+		lReportFields.add(lUser);
+
+		lUser = new HashMap<String, Object>();
+		lUser.put("id", 2);
+		lUser.put("username", "mcasanova");
+		lUser.put("firstname", "Madisleidys");
+		lUser.put("lastname", "Casanova");
+		lUser.put("telephone", "234234234");
+		lUser.put("mobile", "234234234");
+		lUser.put("email", "mcasanova@mail.org");
+		lUser.put("fax", "234234234");
+		lUser.put("securityQuestion", "Mention your favotite ice cream flavor");
+		lUser.put("myInterest", "Download bibliography");
+		lUser.put("subsciptions", "jWebSocket news");
+		lUser.put("enabled", true);
+		lUser.put("active", true);
+		lUser.put("registrationDate", new Long("1384837986066"));
+		lUser.put("activationDate", new Long("1384837986066"));
+		lUser.put("lastActivityDate", new Long("1384837986066"));
+		lUser.put("loginCount", 55);
+		lUser.put("subscriptions", lList2);
+		lReportFields.add(lUser);
+		
+		lUser = new HashMap<String, Object>();
+		lUser.put("id", 3);
+		lUser.put("username", "aschulze");
+		lUser.put("firstname", "Alexander");
+		lUser.put("lastname", "Schulze");
+		lUser.put("telephone", "234234234");
+		lUser.put("mobile", "234234234");
+		lUser.put("email", "aschulze@mail.org");
+		lUser.put("fax", "234234234");
+		lUser.put("securityQuestion", "Mention your favotite ice cream flavor");
+		lUser.put("myInterest", "Download bibliography");
+		lUser.put("subsciptions", "jWebSocket news");
+		lUser.put("enabled", true);
+		lUser.put("active", true);
+		lUser.put("registrationDate", new Long("1384837986066"));
+		lUser.put("activationDate", new Long("1384837986066"));
+		lUser.put("lastActivityDate", new Long("1384837986066"));
+		lUser.put("loginCount", 65);
+		lUser.put("subscriptions", lList3);
+		lReportFields.add(lUser);
+		
 		// checking JDBCplug-in is loaded
 		boolean lUseJDBC = false;
 		// provide a Connection instance here and set 'lUseJDBC = true'

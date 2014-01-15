@@ -75,7 +75,7 @@ public interface IItemDefinition extends ITokenizable, IMappable {
 	 * @return TRUE if the item contains the given attribute
 	 */
 	Boolean containsAttribute(String aAttributeName);
-	
+
 	/**
 	 * Validates the item definition argument's value before save
 	 *

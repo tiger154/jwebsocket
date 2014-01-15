@@ -28,7 +28,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
 
-        <title>jWebSocket Hello World</title>
+        <title>jWebSocket Reporting Demo</title>
 
         <!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
@@ -47,14 +47,18 @@
 		<script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
 
 
+
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
-
 		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+
+		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
+		<script src="../../res/js/jwsFilesystemPlugIn.js" type="text/javascript"></script>
 
 		<!--  WIDGET TO HANDLE THE DEMO FUNCTIONALITIES   -->
 		<script type="text/javascript" src='js/wReporting.js'></script>
+
 
         <!--  MAIN JAVASCRIPT FILE   -->
         <script type="text/javascript" src='js/init.js'></script>
@@ -67,21 +71,21 @@
                 <div id="demo_box_header_login">
 					<div id="connect_area">
 						<div id="connect_button" class="button onmouseup" 
-							 onmouseover="this.className='button onmouseover'" 
-							 onmousedown="this.className='button onmousedown'" 
-							 onmouseup="this.className='button onmouseup'" 
-							 onmouseout="this.className='button onmouseout'" 
-							 onclick="this.className='button onmouseover'">
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'" 
+							 onclick="this.className = 'button onmouseover'">
 							<div class="l"></div>
 							<div class="c">Connect</div>
 							<div class="r"></div>
 						</div>
 						<div id="disconnect_button" class="button onmouseup" 
-							 onmouseover="this.className='button onmouseover'" 
-							 onmousedown="this.className='button onmousedown'" 
-							 onmouseup="this.className='button onmouseup'" 
-							 onmouseout="this.className='button onmouseout'" 
-							 onclick="this.className='button onmouseover'">
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'" 
+							 onclick="this.className = 'button onmouseover'">
 							<div class="l"></div>
 							<div class="c">Disconnect</div>
 							<div class="r"></div>
@@ -91,11 +95,11 @@
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
                             <div id="logoff_button" class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-                                 onmousedown="this.className='button onmousedown'" 
-                                 onmouseup="this.className='button onmouseup'" 
-                                 onmouseout="this.className='button onmouseout'" 
-                                 onclick="this.className='button onmouseover'">
+								 onmouseover="this.className = 'button onmouseover'" 
+                                 onmousedown="this.className = 'button onmousedown'" 
+                                 onmouseup="this.className = 'button onmouseup'" 
+                                 onmouseout="this.className = 'button onmouseout'" 
+                                 onclick="this.className = 'button onmouseover'">
                                 <div class="l"></div>
                                 <div class="c">Logout</div>
                                 <div class="r"></div>
@@ -110,11 +114,11 @@
                             <input type="password" id="user_password" value="root"/>
                         </div>
                         <div id="login_button" class="button onmouseup" 
-							 onmouseover="this.className='button onmouseover'" 
-                             onmousedown="this.className='button onmousedown'" 
-                             onmouseup="this.className='button onmouseup'" 
-                             onmouseout="this.className='button onmouseout'" 
-                             onclick="this.className='button onmouseover'">
+							 onmouseover="this.className = 'button onmouseover'" 
+                             onmousedown="this.className = 'button onmousedown'" 
+                             onmouseup="this.className = 'button onmouseup'" 
+                             onmouseout="this.className = 'button onmouseout'" 
+                             onclick="this.className = 'button onmouseover'">
                             <div class="l"></div>
                             <div class="c">Login</div>
                             <div class="r"></div>
@@ -139,80 +143,135 @@
 
                 <!--       SCENARIO          -->
                 <div id="scenario_container" class="box">
-					<div id="pdf_area">
-						<div class="pdf_header rounded_top">
-							<div id="get_reports_btn" class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-								 onmousedown="this.className='button onmousedown'" 
-								 onmouseup="this.className='button onmouseup'" 
-								 onmouseout="this.className='button onmouseout'" 
-								 onclick="this.className='button onmouseover'">
-								<div class="l"></div>
-								<div class="c">Get Reports</div>
-								<div class="r"></div>
-							</div>
-							<select id="report_type_cb" class="box">
-								<option>Browser Usage</option>
-								<option>CPU Info</option>
-							</select>
-							<div id="get_params_btn" class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-								 onmousedown="this.className='button onmousedown'" 
-								 onmouseup="this.className='button onmouseup'" 
-								 onmouseout="this.className='button onmouseout'" 
-								 onclick="this.className='button onmouseover'">
-								<div class="l"></div>
-								<div class="c">Get Params</div>
-								<div class="r"></div>
-							</div>
-							<div id="create_report_btn" class="button onmouseup" 
-								 onmouseover="this.className='button onmouseover'" 
-								 onmousedown="this.className='button onmousedown'" 
-								 onmouseup="this.className='button onmouseup'" 
-								 onmouseout="this.className='button onmouseout'" 
-								 onclick="this.className='button onmouseover'">
-								<div class="l"></div>
-								<div class="c">Create Report</div>
-								<div class="r"></div>
+					<div id="jws_reporting_content">
+						<!--       GET REPORTS BOX           -->
+						<div class="jws_get_reports">
+							<div class="get_reports_box_header">Get Reports</div>
+							<div class="get_reports_box_content">
+								<div id="get_reports_btn" class="button onmouseup" 
+									 onmouseover="this.className = 'button onmouseover'" 
+									 onmousedown="this.className = 'button onmousedown'" 
+									 onmouseup="this.className = 'button onmouseup'" 
+									 onmouseout="this.className = 'button onmouseout'"
+									 onclick="this.className = 'button onmouseover'">
+									<div class="btn_left"></div>
+									<div class="btn_center"> Get Reports </div>
+									<div class="btn_right"></div>
+								</div>
+								<select id="report_list_cb" class="select_reports_btn" style="width: 150px;"
+										title="List of availables reports">											
+								</select>
 							</div>
 						</div>
-						<!-- Embed PDF File -->
-						<div class="pdf_object" id="pdf">
-							<p>Sorry, it seems that you don't have a PDF 
-								plugin installed for this browser. Please, 
-								try installing the correct plug-in or 
-								download the pdf document directly from this 
-								url: <a id="pdf_url" href="jwsReportSample.pdf">
-									jwsReportSample.pdf</a>
-							</p>
+						<!--       UPLOAD TEMPLATE BOX           -->
+						<div class="jws_upload_template">
+							<div class="upload_template_box_header">Upload Templates</div>
+							<div class="upload_template_box_content">
+								<div id="upload_template_btn" class="button onmouseup" 
+									 onmouseover="this.className = 'button onmouseover'" 
+									 onmousedown="this.className = 'button onmousedown'" 
+									 onmouseup="this.className = 'button onmouseup'" 
+									 onmouseout="this.className = 'button onmouseout'"
+									 onclick="this.className = 'button onmouseover'">
+									<div class="btn_left"></div>
+									<div class="btn_center"> Upload Template </div>
+									<div class="btn_right"></div>
+								</div>
+								<input type="file" id="jws_upload_template_f" class="upload_template_btn"
+									   title="Choose a *.jrxml file">																					   
+								</input>
+							</div>
+						</div>
+						<!--       CREATE REPORT BOX           -->
+						<div class="jws_create_report">
+							<div class="create_report_box_header">Create Report</div>
+							<div class="create_report_box_content">
+								<div class="jws_formats">
+									<div class="jws_reporting_label">Formats</div>
+									<select id="jws_reporting_formats_cmb" class="jws_create_report_cmb"
+											title="List of availables formats">
+									</select>
+								</div>
+								<div class="jws_connection">
+									<input type="checkbox" id="jws_reporting_connection_chk" class="jws_create_report_chk" 
+										   title="on/off Use JDBConnection PlugIn"/>
+									<div class="jws_connection_label">Use connection?</div>
+									<input type="text" class="jws_connection_txt" title="Valid JDBC conection instance"></input>
+								</div>
+								<div class="jws_fields_params">
+									<div class="jws_fields">
+										<div class="jws_fields_label">Fields</div>
+										<input type="textarea" id="jws_reporting_fields_txa" class="jws_fields_txta"></input>
+									</div>
+									<div class="jws_params">
+										<div class="jws_params_label">Params</div>
+										<input type="textarea" id="jws_reporting_params_txa" class="jws_params_txta"></input>
+									</div>
+								</div>
+								<div id="create_report_btn" class="button onmouseup" 
+									 onmouseover="this.className = 'button onmouseover'" 
+									 onmousedown="this.className = 'button onmousedown'" 
+									 onmouseup="this.className = 'button onmouseup'" 
+									 onmouseout="this.className = 'button onmouseout'"
+									 onclick="this.className = 'button onmouseover'">
+									<div class="btn_left"></div>
+									<div class="btn_center"> Create Report </div>
+									<div class="btn_right"></div>
+								</div>
+							</div>
 						</div>
 					</div>
+					<!--       TEST REPORT BOX           -->
+					<div class="jws_test_create_report">
+						<div class="create_test_report_box_header">Create Report</div>
+						<div class="create_test_report_box_content"</div>						
+						<div id="test_get_reports_btn" class="button onmouseup" 
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'"
+							 onclick="this.className = 'button onmouseover'">
+							<div class="btn_left"></div>
+							<div class="btn_center"> Test Get Reports </div>
+							<div class="btn_right"></div>
+						</div>
+						<div id="test_create_report_btn" class="button onmouseup" 
+							 onmouseover="this.className = 'button onmouseover'" 
+							 onmousedown="this.className = 'button onmousedown'" 
+							 onmouseup="this.className = 'button onmouseup'" 
+							 onmouseout="this.className = 'button onmouseout'"
+							 onclick="this.className = 'button onmouseover'">
+							<div class="btn_left"></div>
+							<div class="btn_center"> Test Create Report </div>
+							<div class="btn_right"></div>
+						</div>
+					</div>
+					<!--       LOG BOX           -->
 
-                    <!--       LOG BOX           -->
-                    <div id="log_box" class="box">
-                        <div id="log_box_header">
-                            <div id="show_hide_log" class="hide">Hide Log</div>
-                            <div id="clear_log">Clear Log</div>
-                        </div>
-                        <div id="log_box_content" class="log_box_visible"></div>
-                    </div>
+					<div id="log_box" class="box">
+						<div id="log_box_header">
+							<div id="show_hide_log" class="hide">Hide Log</div>
+							<div id="clear_log">Clear Log</div>
+						</div>
+						<div id="log_box_content" class="log_box_visible"></div>
+					</div>
 
-                </div>
+				</div>
 
-                <!--       DOWNLOAD_BUTTON   -->
-                <div id="demo_box_footer">
-                    <div id="jws_download_button" class="button onmouseup" onmouseover="this.className='button onmouseover'" 
-                         onmousedown="this.className='button onmousedown'" 
-                         onmouseup="this.className='button onmouseup'" 
-                         onmouseout="this.className='button onmouseout'" 
-                         onclick="this.className='button onmouseover'">
-                        <div class="l"></div>
-                        <div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
-                        <div class="r_download"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+				<!--       DOWNLOAD_BUTTON   -->
+				<div id="demo_box_footer">
+					<div id="jws_download_button" class="button onmouseup" onmouseover="this.className = 'button onmouseover'" 
+						 onmousedown="this.className = 'button onmousedown'" 
+						 onmouseup="this.className = 'button onmouseup'" 
+						 onmouseout="this.className = 'button onmouseout'" 
+						 onclick="this.className = 'button onmouseover'">
+						<div class="l"></div>
+						<div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
+						<div class="r_download"></div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    </body>
+	</body>
 </html>

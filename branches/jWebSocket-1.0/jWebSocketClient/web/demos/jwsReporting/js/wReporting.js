@@ -23,228 +23,220 @@
  * @author vbarzana
  */
 
-$.widget( "jws.reporting", {
-	_init: function( ) {
-		// ------------- VARIABLES -------------
-		this.eBtnGetReports		= this.element.find("#get_reports_btn");
-		this.eBtnGetParams		= this.element.find("#get_params_btn");
-		this.eBtnCreateReport	= this.element.find("#create_report_btn");
-		this.eCbReportType	= this.element.find("#report_type_cb");
-		this.ePdfObject			= this.element.find("#pdf");
-		
+$.widget("jws.reporting", {
+	_init: function() {
+// ------------- VARIABLES -------------
+		this.eBtnGetReports = this.element.find("#get_reports_btn");
+		this.eCbReportList = jws.$("report_list_cb");
+		this.eBtnUpTemplate = this.element.find("#upload_template_btn");
+		this.eFCTemplatePath = jws.$("jws_upload_template_f");
+		this.eCbReportFormats = jws.$("jws_reporting_formats_cmb");
+		this.eChbxUseConnection = jws.$("jws_reporting_connection_chk");
+		this.eBtnCreateReport = this.element.find("#create_report_btn");
+		this.eTxaReportFields = jws.$("jws_reporting_fields_txa");
+		this.eTxaReportParams = jws.$("jws_reporting_params_txa");
+		this.eBtnTestGetReports = this.element.find("#test_get_reports_btn");
+		this.eBtnTestCreateReport = this.element.find("#test_create_report_btn");
+
+//		this.eCbReportType = this.element.find("#report_type_cb");
+//		this.ePdfObject = this.element.find("#pdf");
 		// DEFAULT MESSAGES
 		this.MSG_NOTCONNECTED = "Sorry, you are not connected to the " +
-		"server, try updating your browser or clicking the login button";
-		
+				"server, try updating your browser or clicking the login button";
 		// Keeping a reference of the widget, when a websocket message
 		// comes from the server the scope "this" doesnt exist anymore
 		w.reporting = this;
-		
-		w.reporting.registerEvents( );
+		w.reporting.registerEvents();
 	},
-	
 	/**
 	 * Registers all callbacks, and assigns all buttons and dom elements actions
 	 * also starts up some specific things needed at the begining
 	 **/
-	registerEvents: function( ) {
+	registerEvents: function() {
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
-			OnOpen: function( aEvent ) {
+			OnOpen: function(aEvent) {
 				mWSC.setReportingCallbacks({
-					OnReportAvail: w.reporting.handleReport,
-					OnReports: w.reporting.handleReports
-				//					OnReportParams: handleReportParams
+					OnReports: w.reporting.handleReports,
+					OnReport: w.reporting.handleReport,
+					OnUploadTemplate: w.reporting.handleUpload
 				});
 			},
-			OnWelcome: function( aEvent ) { },
-			OnClose: function( ) { },
-			OnGoodBye: function( aToken ) { },
-			OnMessage: function( aEvent, aToken ) {
-				if( mLog.isDebugEnabled ) {
-					log( "<font style='color:#888'>jWebSocket '" + aToken.type 
-						+ "' token received, full message: '" + aEvent.data + "' " 
-						+ "</font>" );
+			OnWelcome: function(aEvent) {
+			},
+			OnClose: function() {
+			},
+			OnGoodBye: function(aToken) {
+			},
+			OnMessage: function(aEvent, aToken) {
+				if (mLog.isDebugEnabled) {
+					log("<font style='color:#888'>jWebSocket '" + aToken.type
+							+ "' token received, full message: '" + aEvent.data + "' "
+							+ "</font>");
 				}
-				w.reporting.onMessage( aEvent, aToken );
+				w.reporting.onMessage(aEvent, aToken);
+			},
+			OnLogon: function() {
+				// Filling the formats combobox
+				w.reporting.eCbReportFormats.appendChild(new Option("PDF", "pdf"));
+				w.reporting.eCbReportFormats.appendChild(new Option("HTML", "html"));
+			},
+			OnLogoff: function() {
+				while (w.reporting.eCbReportFormats.options.length > 0) {
+					w.reporting.eCbReportFormats.remove('option');
+				}
 			}
 		};
-		$( "#demo_box" ).auth( lCallbacks );
-		
+		$("#demo_box").auth(lCallbacks);
 		// Registering click events of DOM elements
-		w.reporting.eBtnGetReports.click( w.reporting.getReports );
-		w.reporting.eBtnCreateReport.click( w.reporting.createReport );
+		w.reporting.eBtnGetReports.click(w.reporting.getReports);
+		w.reporting.eBtnUpTemplate.click(w.reporting.uploadTemplate);
+		w.reporting.eBtnCreateReport.click(w.reporting.createReport);
+		w.reporting.eBtnTestGetReports.click(w.reporting.testgetReports);
+		w.reporting.eBtnTestCreateReport.click(w.reporting.testcreateReport);
 	},
-	
 	/**
 	 * Executed every time the server sends a message to the client
 	 * @param aEvent
 	 * @param aToken
 	 **/
-	onMessage: function( aEvent, aToken ) {
-		if( aToken ) {
-			// is it a response from a previous request of this client?
-			if( aToken.type == "response" ) {
-				// If the login data is ok
-				if( aToken.reqType == "login" && aToken.code == 0) {
-					var lSuccess = new PDFObject({
-						url: "jwsReportSample.pdf"
-					}).
-					embed( "pdf" );
-				}
-				// If anything went wrong in the server show information error
-				if( aToken.code == -1 ){
-					jwsDialog( aToken.msg, "jWebSocket error", true, null, null, "error" );
-				}
-			}
-		}
+	onMessage: function(aEvent, aToken) {
+//		if (aToken) {
+//			// is it a response from a previous request of this client?
+//			if (aToken.type == "response") {
+//				// If the login data is ok
+//				if (aToken.reqType == "login" && aToken.code == 0) {
+//					var lSuccess = new PDFObject({
+//						url: "jwsReportSample.pdf"
+//					}).
+//							embed("pdf");
+//				}
+//				// If anything went wrong in the server show information error
+//				if (aToken.code == -1) {
+//					jwsDialog(aToken.msg, "jWebSocket error", true, null, null, "error");
+//				}
+//			}
+//		}
 	},
-	
-	getReports: function( ) {
-		log( "Retreiving list of reports via jWebSocket..." );
-		if( mWSC.isConnected( ) ) {
+	getReports: function() {
+		if (mWSC.isConnected()) {
+			log("Retreiving list of reports via jWebSocket...");
 			mWSC.reportingGetReports({
-				OnResponse: function( aToken ) {
-				// log("Reports " + JSON.stringify( aToken ) );
+				OnResponse: function(aToken) {
+					log("Reports " + aToken.data);
 				}
 			});
 		} else {
-			jwsDialog( w.reporting.MSG_NOTCONNECTED, "jWebSocket error", 
-				true, null, null, "error" );
+			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
+					true, null, null, "error");
 		}
 	},
-	
-	getReportParams: function( ) {
-		var lReportId = eReportSel.value;
-		log( "Retreiving parameters for report '" + lReportId + "' via jWebSocket..." );
-		if( mWSC.isConnected( ) ) {
-			mWSC.reportingGetReportParams( lReportId, {
-				OnResponse: function( aToken ) {
-				// log("Reports " + JSON.stringify( aToken ) );
-				}
-			});
-		} else {
-			jwsDialog( w.reporting.MSG_NOTCONNECTED, "jWebSocket error", 
-				true, null, null, "error" );
-		}
-	},
-	
-	createReport: function( ) {
-		if( mWSC.isConnected( ) ) {
-			var lReportId = w.reporting.eCbReportType.val( );
-			log( "Creating Report..." );
-				
-			var lParams = [];
-			/*
-					for(var lIdx = 0, lCnt = gReportParams.length; lIdx < lCnt; lIdx++ ) {
-						var lParam = gReportParams[ lIdx ];
-						lParams.push({
-							name: lParam.name,
-							type: lParam.type,
-							value: lParam.elem.value
-						});
+	uploadTemplate: function() {
+		if (mWSC.isConnected()) {
+			var lFile = w.reporting.eFCTemplatePath.files[0];
+			if (!lFile) {
+				alert('Select a report template first!');
+				return;
+			}
+			if (!confirm('Are you sure to upload the selected template ? If\n\
+						the template already exists it will get replaced!')) {
+				return;
+			}
+			log("Uploading template report to the user home directory...");
+			var lFR = new FileReader();
+			lFR.onload = function(aEvt) {
+				var lFileContent = aEvt.currentTarget.result;
+				mWSC.fileSave(lFile.name, lFileContent, {
+					encode: false,
+					OnSuccess: function() {
+						mWSC.reportingUploadTemplate(
+								lFile.name
+								);
+					},
+					OnFailure: function() {
+						log("An error ocurred trying to upload the required template");
 					}
-					*/
-			lParams.push({
-				name: "aFrom",
-				type: "datetime",
-				value: "2011-05-20T13:04:00Z"
-			});
-			lParams.push({
-				name: "aTo",
-				type: "datetime",
-				value: "2011-05-25T00:00:00Z"
-			});
-			mWSC.reportingCreateReport(lReportId, lParams, {
-				OnResponse: function( aToken ) {
-					console.log(aToken);
-					var lW = jws.$("sdivPdf").scrollWidth;
-					if( isNaN( lW ) || lW <= 10 ) {
-						lW = 400;
-					}
-					if( aToken.code == 0) {
-						jws.ReportingPlugIn.displayPDF( jws.$("sdivPdf"), aToken.url, lW, 300);
-					// window.open( aToken.url, "jWebSocket Report", "" );
-					} else {
-						log("Report creation error: " + aToken.msg );
-					}	
-				}
-			});
-		} else {
-			jwsDialog( w.reporting.MSG_NOTCONNECTED, "jWebSocket error", 
-				true, null, null, "error" );
-		}
-	},
-	
-	handleReport: function( aToken ) {
-		log("Report is available");
-		console.log("Report is available");
-		console.log( aToken );
-	},
-	
-	handleReports: function( aToken ) {
-		// remove all existing reports in drop down box
-		w.reporting.clearReportsCombo( );
-		
-		// add all reports from incoming token
-		for( var lIdx = 0, lCnt = aToken.reports.length; lIdx < lCnt; lIdx++ ) {
-			w.reporting.addReportToCombo( aToken.reports[ lIdx ] );
-		}
-	},
-	
-	handleReportParams: function( aToken ) {
-		// remove all existing reports in drop down box
-				
-		eFilterDiv.innerHTML = "";
-		gReportParams = [];
-		// analyze report params from incoming token
-		var lTable = document.createElement("table");
-		for( var lIdx = 0, lCnt = aToken.params.length; lIdx < lCnt; lIdx++ ) {
-			var lParam = aToken.params[ lIdx ];
-			var lDescr = lParam.description;
-			if( lDescr ) {
-				var lTR = document.createElement("tr");
-				var lTD1 = document.createElement("td");
-				var lTD2 = document.createElement("td");
-				var lLbl = document.createElement("span");
-				var lInp = document.createElement("input");
-				lInp.id = "param." + lParam.name;
-
-				gReportParams.push({
-					name: lParam.name,
-					type: lParam.type,
-					elem: lInp
 				});
-						
-				lTD1.appendChild(lLbl);
-				lTD2.appendChild(lInp);
-				lTR.appendChild(lTD1);
-				lTR.appendChild(lTD2);
-				lTable.appendChild(lTR);
-
-				lLbl.innerHTML = lDescr;
-			}	
+			};
+			lFR.readAsDataURL(lFile);
+		} else {
+			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
+					true, null, null, "error");
 		}
-		eFilterDiv.appendChild(lTable);
 	},
-	
-	clearReportsCombo: function( ) {
-		w.reporting.eCbReportType.children( ).remove( );
+	createReport: function() {
+		if (mWSC.isConnected()) {
+			var lReportId = w.reporting.eCbReportList.value;
+			var lFormat = w.reporting.eCbReportFormats.value;
+			eval("var lParams =" + w.reporting.eTxaReportParams.value);
+			var lFields = eval(w.reporting.eTxaReportFields.value);
+			log("Creating Report...");
+			if (mWSC.isConnected()) {
+				mWSC.reportingGenerateReport(
+						lReportId,
+						lParams,
+						lFields,
+						{
+							useConection: w.reporting.eChbxUseConnection.checked,
+							outputType: lFormat
+						}
+				);
+			} else {
+				jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
+						true, null, null, "error");
+			}
+		} else {
+			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
+					true, null, null, "error");
+		}
 	},
-	
-	addReportToCombo: function( aReport ) {
-		var lOption = $( "<option/>" ).attr( "id", aReport.reportname )
-		.text( aReport.reportname );
-		
-		w.reporting.eCbReportType.append( lOption );
+	testgetReports: function(aToken) {
+		if (mWSC.isConnected()) {
+			log("Retreiving list of reports via jWebSocket...");
+			mWSC.reportingGetReports({
+				OnResponse: function(aToken) {
+					log("Reports " + aToken.data);
+				}
+			});
+		} else {
+			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
+					true, null, null, "error");
+		}
 	},
-	
-	removeReportFromCombo: function( aReportName ) {
-		w.reporting.eCbReportType.children( ).each( function( ) {
-			if( $( this ).attr( "id" ) == aReportName ) {
-				$( this ).remove( );
+	testcreateReport: function(aToken) {
+		if (mWSC.isConnected()) {
+			log("Creating a report...");
+			mWSC.sendToken({
+				ns: "org.jwebsocket.plugins.testreporting",
+				type: "testGenerateReport"
+			});
+		} else {
+			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
+					true, null, null, "error");
+		}
+	},
+	handleReport: function(aToken) {
+		mWSC.fileLoad(aToken.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
+			OnSuccess: function(aToken) {
+				if (w.reporting.eCbReportFormats.value == "pdf")
+					window.open("data:application/pdf;base64," + aToken.data, "_blank");
+				else
+					window.open("data:application/zip;base64," + aToken.data, "_blank");
 			}
 		});
+	},
+	handleReports: function(aToken) {
+		while (w.reporting.eCbReportList.options.length > 0) {
+			w.reporting.eCbReportList.removeChild();
+		}
+		var lReports = aToken.data;
+		for (i = 0; i < lReports.length; i++) {
+			w.reporting.eCbReportList.appendChild(new Option(lReports[i], lReports[i]));
+		}
+	},
+	handleUpload: function(aToken) {
+		jwsDialog("The template was successfully uploaded", "jWebSocket info",
+				true, null, null, "info");
 	}
 });
