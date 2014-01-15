@@ -3569,7 +3569,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:a:en::aSenderIncluded:Boolean: Indicates if the sender connector require to be included in the broadcast
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	broadcastToSharedSession: function ( aToken, aSenderIncluded, aOptions ) {
-		var lRes = this.checkLoggedIn();
+		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
 			aToken.ns = jws.NS_SYSTEM;
 			aToken.type = "broadcastToSharedSession";
