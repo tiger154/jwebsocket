@@ -2052,7 +2052,7 @@
 			</server-assignments>
 		</filter>
         
-		<!--
+		
 		<filter>
 			<name>org.jwebsocket.plugins.quota.QuotaFilter</name>
 			<id>jws.quotaFilter</id>
@@ -2062,7 +2062,7 @@
 				<server-assignment>ts0</server-assignment>
 			</server-assignments>
 		</filter>
-		-->
+
 		
 		<filter>
 			<name>org.jwebsocket.filters.sample.SampleFilter</name>

@@ -3,7 +3,6 @@
 <beans>
 	
 	<bean id="quotaMongoStorage" class="org.jwebsocket.plugins.quota.storage.StorageQuotaMongo">
-		
 		<property name="host">
 			<value>localhost</value>
 		</property>
@@ -23,12 +22,53 @@
 		<property name="password">
 			<value>adminmongo..</value>
 		</property>
-		
 	</bean>
+
+	<bean id="quotaItemStorage" class="org.jwebsocket.plugins.quota.storage.ItemStorageQuota">
+		<property name="collectionQuotaName" value="jws_plugins_quota_quota"/>
+		<property name="collectionQuotaInstanceName" value="jws_plugins_quota_quotaInstance"/>
+		<property name="quotaDefinition" ref="quotaDefinition" />
+		<property name="quotaInstanceDefinition" ref="quotaInstanceDefinition" />
+		<property name="collectionAccessPassword" value="root"/>
+		<property name="collectionSecretPassword" value="root"/>
+	</bean>
+
+
+	<bean id="quotaDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
+		<property name="type" value="org.jwebsocket.plugins.quota.Quota" />
+		<property name="primaryKeyAttribute" value="id" />
+		<property name="attributeTypes">
+			<map>
+				<entry key="uuid" value="string"/>
+				<entry key="ns" value="string"/>
+				<entry key="quotaType" value="string"/>
+				<entry key="quotaIdentifier" value="string"/>
+				<entry key="value" value="long"/>
+				<entry key="actions" value="string"/>
+				<entry key="instance" value="string"/>
+				<entry key="instanceType" value="string"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="quotaInstanceDefinition" class="org.jwebsocket.plugins.itemstorage.item.ItemDefinition">
+		<property name="type" value="org.jwebsocket.plugins.quota.QuotaInstance" />
+		<property name="primaryKeyAttribute" value="id" />
+		<property name="attributeTypes">
+			<map>
+				<entry key="uuidQuota" value="string"/>
+				<entry key="instance" value="string"/>
+				<entry key="instanceType" value="string"/>
+				<entry key="value" value="long"/>
+			</map>
+		</property>
+	</bean>
+
+
 	
-        <!-- all QuotaCountDown here -->
+	<!-- all QuotaCountDown here -->
 	<bean id="quotaCountDown" class="org.jwebsocket.plugins.quota.definitions.QuotaCountdown">
-		<property name="storage" ref="quotaMongoStorage" />
+		<property name="storage" ref="quotaItemStorage" />
 		<property name="quotaType">
 			<value>CountDown</value>
 		</property>
@@ -59,11 +99,11 @@
 			<value>5</value>
 		</property>		
 	</bean>
-        <!-- End definition of QuotaCoundDown -->
+	<!-- End definition of QuotaCoundDown -->
 	
         
-        <!-- QuotaInterval definition here -->
-        <bean id="quotaIntervalDaily" class="org.jwebsocket.plugins.quota.definitions.QuotaInterval">
+	<!-- QuotaInterval definition here -->
+	<bean id="quotaIntervalDaily" class="org.jwebsocket.plugins.quota.definitions.QuotaInterval">
 		<property name="storage" ref="quotaMongoStorage" />
 		<property name="quotaType">
 			<value>Interval</value>
@@ -78,7 +118,7 @@
 		<property name="defaultIncreaseValue"> 
 			<value>1</value>
 		</property>
-                <property name="interval" >
+		<property name="interval" >
 			<bean class="org.jwebsocket.plugins.quota.utils.Interval">
 				<property name="startDate">
 					<value>2</value>
@@ -87,16 +127,16 @@
 					<value>16</value>
 				</property>
 				<property name="strTointervalType">
-                                    <value>Daily</value>
-                                </property>
+					<value>Daily</value>
+				</property>
 			</bean>
 		</property> 
 	</bean>
-        <!-- End definitions for QuotaInterval -->
+	<!-- End definitions for QuotaInterval -->
         
-        <!-- QuotaInterval Diskspace definition -->
+	<!-- QuotaInterval Diskspace definition -->
         
-    <bean id="quotaDiskSpace" class="org.jwebsocket.plugins.quota.definitions.QuotaDiskSpace">
+	<bean id="quotaDiskSpace" class="org.jwebsocket.plugins.quota.definitions.QuotaDiskSpace">
 		<property name="storage" ref="quotaMongoStorage" />
 		<property name="quotaType">
 			<value>DiskSpace</value>
@@ -108,27 +148,27 @@
 			<value>100</value>
 		</property>
 		<property name="defaultIncreaseValue">
-            <!--Increase the Quota value in 500 MB -->
+			<!--Increase the Quota value in 500 MB -->
 			<value>100</value>
 		</property>		
 	</bean>
-        <!-- End definitions for Diskspace  -->
+	<!-- End definitions for Diskspace  -->
         
 	<bean id="quotaProvider" class="org.jwebsocket.plugins.quota.utils.QuotaProvider">	
 		<constructor-arg>
 			<!-- In this place the administrator must especifie all the active Quota  -->
 			<map>
 				<!--The key must be the same value of their quota identifier -->
-                <entry key="CountDown" value-ref="quotaCountDown" />
-		<entry key="CountDownReduce5" value-ref="quotaCountDownReduce5" />
-                <entry key="IntervalDaily" value-ref="quotaIntervalDaily" />
-                <entry key="DiskSpace" value-ref="quotaDiskSpace" />
+				<entry key="CountDown" value-ref="quotaCountDown" />
+				<!--entry key="CountDownReduce5" value-ref="quotaCountDownReduce5" />
+				<entry key="IntervalDaily" value-ref="quotaIntervalDaily" />
+				<entry key="DiskSpace" value-ref="quotaDiskSpace" /-->
 			</map>
 		</constructor-arg>
 		<constructor-arg>
 			<map>
 				<!-- add here every Storage used by any one quota -->
-                <entry key="quotaMongoStorage" value-ref="quotaMongoStorage" />           
+				<entry key="quotaItemStorage" value-ref="quotaItemStorage" />           
 			</map>	
 		</constructor-arg>
 	</bean>
