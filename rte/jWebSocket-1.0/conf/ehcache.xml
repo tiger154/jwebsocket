@@ -3,7 +3,8 @@
 	updateCheck="false"
 	monitoring="autodetect"
 	dynamicConfig="true">
-	<diskStore path="${JWEBSOCKET_HOME}/cache"/>
+	
+	<diskStore path="${JWEBSOCKET_HOME}cache"/>
 	
 	<!-- find a full documentation of options here: http://www.ehcache.org/ehcache.xml -->
 	<defaultCache
