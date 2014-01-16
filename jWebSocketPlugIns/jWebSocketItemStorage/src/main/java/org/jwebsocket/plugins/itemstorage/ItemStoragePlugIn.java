@@ -47,6 +47,7 @@ import org.jwebsocket.plugins.itemstorage.event.ListenersRegistrator;
 import org.jwebsocket.plugins.itemstorage.item.ItemDefinition;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.ConnectionManager;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.util.Assert;
 
@@ -202,6 +203,13 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 		mFragmentSize = Integer.parseInt(aConfiguration.getString("fragmentSize"));
 		mBeanFactory = getConfigBeanFactory(NS_ITEM_STORAGE);
+
+		// check database connection if exists
+		ConnectionManager lConnManager = (ConnectionManager) mBeanFactory.getBean(ConnectionManager.class);
+		if (lConnManager.containsConnection(NS_ITEM_STORAGE)) {
+			Assert.isTrue(lConnManager.isValid(NS_ITEM_STORAGE),
+					"ItemStorage database connection is not valid!");
+		}
 
 		mCollectionProvider = (IItemCollectionProvider) mBeanFactory.getBean("collectionProvider");
 		mLogsManager = new BaseLogsManager();
