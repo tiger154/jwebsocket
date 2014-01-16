@@ -59,13 +59,13 @@ $.widget("jws.SMSGateway", {
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
 			OnWelcome: function(aEvent) {
+				// Ask for a new captcha image
+				w.SMSGateway.getCaptcha();
 			},
 			OnClose: function(aEvent) {
 				w.SMSGateway.eImg.attr("src", "css/images/blank.png");
 			},
 			OnLogon: function() {
-				// Ask for a new captcha image
-				w.SMSGateway.getCaptcha();
 			},
 			OnMessage: function(aEvent, aToken){
 				// Listening to logon event broadcasting from useradmin plug-in,
