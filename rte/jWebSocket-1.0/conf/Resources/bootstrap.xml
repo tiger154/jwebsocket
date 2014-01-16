@@ -1,4 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
+	
+	<!-- MongoDB connection -->
+	<bean id="mongodbConnection0" class="com.mongodb.MongoClient" destroy-method="close">
+		<constructor-arg value="localhost"/>
+	</bean>
+					
+	<!-- JDBC data source for ItemStorage -->
+	<bean id="itemStorageDataSource"
+		  class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
+		<property name="url">
+			<bean class="org.jwebsocket.config.JWebSocketConfig"
+				  factory-method="expandEnvAndJWebSocketVars">
+				<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/itemstorage;create=true" />
+			</bean>
+		</property>
+	</bean>
+	<!--
+	<bean id="itemStorageDataSource"
+		  class="com.j256.ormlite.jdbc.JdbcConnectionSource" init-method="initialize">
+		<property name="url">
+			<bean class="org.jwebsocket.config.JWebSocketConfig"
+				  factory-method="expandEnvAndJWebSocketVars">
+				<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/itemstorage;create=true" />
+			</bean>
+		</property>
+		<property name="username" value="" />
+		<property name="password" value="" />
+		<property name="databaseType">
+			<bean class="com.j256.ormlite.db.DerbyEmbeddedDatabaseType" />
+		</property>
+	</bean>
+	-->
+	
+	<!-- Global connections manager. REQUIRED BEAN -->
+	<bean id="connectionManager" class="org.jwebsocket.util.ConnectionManager">
+		<constructor-arg>
+			<map>
+				<entry key="mongodbConnection0" value-ref="mongodbConnection0" />
+				<entry key="org.jwebsocket.plugins.itemstorage" value-ref="itemStorageDataSource" />
+			</map>
+		</constructor-arg>
+	</bean>
+	
 </beans>

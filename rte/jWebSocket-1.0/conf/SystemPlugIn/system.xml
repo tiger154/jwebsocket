@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-
+	
 	<!-- ####### STATIC authentication ####### -->
 	
 	<bean id="staticAuthProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
@@ -237,11 +237,6 @@
 			</bean>
 		</property>
 	</bean> 
-	
-	<!-- MongoDB Database connection-->
-	<bean id="mongodbConnection0" class="com.mongodb.MongoClient" destroy-method="close">
-		<constructor-arg value="localhost"/>
-	</bean>
 	
 	<!-- MongoDB Storage provider (here for the sessions) -->
 	<bean id="storageProviderMongoDB" class="org.jwebsocket.storage.mongodb.MongoDBStorageProvider"
