@@ -18,6 +18,8 @@ public interface IQuotaStorage {
     public boolean save(IQuotaSingleInstance aQuota);
 
     public boolean save(QuotaChildSI aQuota);
+    
+    public void initialize() throws Exception;
 
     public void remove(String aInstance, String aUuid);
 
@@ -29,7 +31,8 @@ public interface IQuotaStorage {
 
     public boolean quotaExist(String aUuid);
 
-    public boolean quotaExist(String aNameSpace, String aQuotaIdentifier, String aInstance);
+    public boolean quotaExist(String aNameSpace, String aQuotaIdentifier, 
+            String aInstance, String aActions);
 
     public String getActions(String aUuid);
 
@@ -41,9 +44,9 @@ public interface IQuotaStorage {
             String aNameSpace, String aInstanceType);
 
     public List<IQuotaSingleInstance> getQuotas(String aQuotaType, String aNs, String aInstance);
-
+    
     public String getUuid(String aQuotaIdentifier, String aNs, String aInstance,
-            String aInstanceType) throws ExceptionQuotaNotFound;
+            String aInstanceType,String aActions ) throws ExceptionQuotaNotFound;
 
     public List<IQuotaSingleInstance> getQuotasByInstance(String aQuotaType, String aInstance);
 

@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import javolution.util.FastList;
 import javolution.util.FastMap;
+import org.apache.log4j.Logger;
+import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import org.jwebsocket.plugins.quota.api.IQuotaStorage;
 import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaChildSI;
@@ -38,7 +40,8 @@ public class StorageQuotaMongo implements IQuotaStorage {
     Integer mPort;
     DBCollection mCollection;
     DBCollection mCollectionInstance;
-
+    private static final Logger mLog = Logging.getLogger();
+    
     public void setUser(String aUser) {
         this.mUser = aUser;
     }
@@ -64,17 +67,14 @@ public class StorageQuotaMongo implements IQuotaStorage {
     }
 
     public StorageQuotaMongo() throws UnknownHostException {
-
-        /*TODO Aqui le paso los valores en bruto por que tengo que pasarlos
-         * por via constructor de spring y no por setter para que esten dispo
-         * nibles en el constructor
-         * 
-         */
+        
+    }
+    
+    public void initialize() throws Exception {
         mConnection = new MongoClient(mHost);
         mDBconn = this.mConnection.getDB("quotaPlugin");
         mCollection = mDBconn.getCollection("quota");
         mCollectionInstance = mDBconn.getCollection("quotaInstance");
-
     }
 
     @Override
@@ -127,8 +127,6 @@ public class StorageQuotaMongo implements IQuotaStorage {
         lWhere = new BasicDBObject();
         lWhere.put("uuidQuota", aUuid);
         mCollectionInstance.remove(lWhere);
-
-
     }
 
     @Override
@@ -198,7 +196,6 @@ public class StorageQuotaMongo implements IQuotaStorage {
         FastList<IQuotaSingleInstance> lResult;
         BasicDBObject lQuery = new BasicDBObject();
         lQuery.put("quotaIdentifier", aIdentifier);
-        lQuery.put("quotaIdentifier", aIdentifier);
         DBCursor lCur = mCollection.find(lQuery);
         lResult = getListInstance(lCur);
 
@@ -235,16 +232,17 @@ public class StorageQuotaMongo implements IQuotaStorage {
         lResult = getListInstance(lCur);
         return lResult;
     }
-
+    
     @Override
     public String getUuid(String aQuotaIdentifier, String aNameSpace, String aInstance,
-            String aInstanceType) throws ExceptionQuotaNotFound {
+            String aInstanceType, String aActions ) throws ExceptionQuotaNotFound {
 
         BasicDBObject lQuery = new BasicDBObject();
         lQuery.put("quotaIdentifier", aQuotaIdentifier);
         lQuery.put("ns", aNameSpace);
         lQuery.put("instance", aInstance);
         lQuery.put("instanceType", aInstanceType);
+        lQuery.put("instanceType", aActions);
 
         DBObject lResponse = mCollection.findOne(lQuery);
         String lUuid;
@@ -297,7 +295,8 @@ public class StorageQuotaMongo implements IQuotaStorage {
     }
 
     @Override
-    public boolean quotaExist(String aNameSpace, String aQuotaIdentifier, String aInstance) {
+    public boolean quotaExist(String aNameSpace, String aQuotaIdentifier, 
+                                String aInstance, String aActions ) {
         BasicDBObject lQuery = new BasicDBObject();
 
         lQuery.put("ns", aNameSpace);

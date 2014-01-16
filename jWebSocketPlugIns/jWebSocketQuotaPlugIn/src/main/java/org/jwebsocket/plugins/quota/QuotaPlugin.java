@@ -4,6 +4,7 @@
  */
 package org.jwebsocket.plugins.quota;
 
+import java.util.List;
 import java.util.Map;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
@@ -20,6 +21,7 @@ import org.jwebsocket.plugins.quota.api.IQuota;
 import org.jwebsocket.plugins.quota.api.IQuotaProvider;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import org.jwebsocket.plugins.quota.api.IQuotaStorage;
+import org.jwebsocket.plugins.quota.storage.ItemStorageQuota;
 import org.jwebsocket.plugins.quota.utils.QuotaHelper;
 import org.jwebsocket.plugins.quota.utils.QuotaProvider;
 import org.jwebsocket.token.Token;
@@ -96,24 +98,31 @@ public class QuotaPlugin extends ActionPlugIn {
                             /* This method get a quota for this NamesPace as
                              * well as exist a quota for this user itself,
                              * as if he has a quota as part of a group*/
-                            IQuotaSingleInstance lQSingle = lQuotaObj.getQuota(lUsername, lNS, "User");
 
-                            // if lQSingle is null, there is not a quota for this user 
-                            if (lQSingle == null) {
-                                continue;
-                            }
-                            String lActions = lQSingle.getActions();
+                            
+                            List<IQuotaSingleInstance> lQuotaList = lQuotaObj.getQuotas(lUsername, lNS, "User");
 
-                            //if the actual token or action is not limited by the quota pass to the other quotaType
-                            if (!lActions.equals("*")) {
-                                if (lActions.indexOf(lType) == -1) {
+                            for (IQuotaSingleInstance lQSingle : lQuotaList) {
+
+                                // if lQSingle is null, there is not a quota for this user 
+                                if (lQSingle == null) {
                                     continue;
                                 }
+                                String lActions = lQSingle.getActions();
+
+                                //if the actual token or action is not limited by the quota pass to the other quotaType
+                                if (!lActions.equals("*")) {
+                                    if (lActions.indexOf(lType) == -1) {
+                                        continue;
+                                    }
+                                }
+
+                                long lQValue = lQuotaObj.reduceQuota(lQSingle.getInstance(),
+                                        lQSingle.getNamespace(), lQSingle.getInstanceType(),
+                                        lQSingle.getActions(),
+                                        lQuotaObj.getDefaultReduceValue());
                             }
 
-                            long lQValue = lQuotaObj.reduceQuota(lQSingle.getInstance(),
-                                    lQSingle.getNamespace(), lQSingle.getInstanceType(),
-                                    lQuotaObj.getDefaultReduceValue());
                         }
                     } catch (JMSException lEx) {
                         mLog.error(Logging.getSimpleExceptionMessage(lEx,

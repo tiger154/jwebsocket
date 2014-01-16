@@ -83,6 +83,7 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         aToken.setString("instance", mInstance);
         aToken.setString("namespace", mNamesPace);
         aToken.setLong("value", mValue);
+        aToken.setString("actions", mActions);
         aToken.setString("quotaType", mQuotaType);
         aToken.setString("instance_type", mInstanceType);
         aToken.setString("identifier", mQuotaIdentifier);

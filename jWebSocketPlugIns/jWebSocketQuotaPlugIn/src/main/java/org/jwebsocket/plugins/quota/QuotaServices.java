@@ -67,8 +67,8 @@ public class QuotaServices {
             return lResult;
         } catch (Exception aException) {
             mLog.error("Error creating"
-                    + "Quota" + aException.getMessage());
-            return getErrorToken("Error creating the quota: " + aException.getMessage(),
+                    + "Quota");
+            return getErrorToken("Error creating the quota: ",
                     aToken);
         }
     }
@@ -117,7 +117,6 @@ public class QuotaServices {
 
     public Token unregisterQuotaAction(Token aToken) {
         try {
-
             String lUuid = aToken.getString("uuid");
             String lQuotaIdentifier = aToken.getString("identifier");
             String lInstance = aToken.getString("instance").trim();
@@ -225,8 +224,9 @@ public class QuotaServices {
                 String lNS = aToken.getString("namespace");
                 String lInstance = aToken.getString("instance");
                 String lInstanceType = aToken.getString("instance_type");
+                String lActions = aToken.getString("actions");
 
-                lQuotaSingleInstance = lQuota.getQuota(lInstance, lNS, lInstanceType);
+                lQuotaSingleInstance = lQuota.getQuota(lInstance, lNS, lInstanceType, lActions);
 
             } else {
                 lQuotaSingleInstance = lQuota.getQuota(lUuid);
@@ -289,7 +289,9 @@ public class QuotaServices {
                 String lNS = aToken.getString("namespace");
                 String lInstance = aToken.getString("instance");
                 String lInstanceType = aToken.getString("instance_type");
-                lValue = lQuota.reduceQuota(lInstance, lNS, lInstanceType, lReduce);
+                String lActions = aToken.getString("actions");
+                lValue = lQuota.reduceQuota(lInstance, lNS, lInstanceType,
+                        lActions, lReduce);
             } else {
                 lValue = lQuota.reduceQuota(lUuid, lReduce);
             }
@@ -325,7 +327,10 @@ public class QuotaServices {
                 String lNS = aToken.getString("namespace");
                 String lInstance = aToken.getString("instance");
                 String lInstanceType = aToken.getString("instance_type");
-                lValue = lQuota.setQuota(lInstance, lNS, lInstanceType, lReduce);
+                String lActions = aToken.getString("actions");
+                
+                lValue = lQuota.setQuota(lInstance, lNS, lInstanceType,
+                        lActions, lReduce);
 
             } else {
                 lValue = lQuota.setQuota(lUuid, lReduce);
@@ -359,7 +364,10 @@ public class QuotaServices {
                 String lNS = aToken.getString("namespace");
                 String lInstance = aToken.getString("instance");
                 String lInstanceType = aToken.getString("instance_type");
-                lValue = lQuota.increaseQuota(lInstance, lNS, lInstanceType, lReduce);
+                String lActions = aToken.getString("actions");
+                
+                lValue = lQuota.increaseQuota(lInstance, lNS, 
+                        lInstanceType, lActions, lReduce);
             } else {
                 lValue = lQuota.increaseQuota(lUuid, lReduce);
             }

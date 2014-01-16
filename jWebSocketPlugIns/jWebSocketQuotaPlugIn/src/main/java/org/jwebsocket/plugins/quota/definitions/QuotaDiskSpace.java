@@ -37,9 +37,10 @@ public class QuotaDiskSpace extends BaseQuota {
     public static final String PUBLIC_NAMESPACE = "public";
 
     @Override
-    public long reduceQuota(String aInstance, String aNameSpace, String aInstanceType, long aAmount) {
+    public long reduceQuota(String aInstance, String aNameSpace,
+                String aInstanceType,String aActions,  long aAmount) {
 
-        long lQuota = getQuota(aInstance, aNameSpace, aInstanceType).getvalue();
+        long lQuota = getQuota(aInstance, aNameSpace, aInstanceType, aActions).getvalue();
         if (lQuota <= 0) {
             return -1;
         }
@@ -73,7 +74,8 @@ public class QuotaDiskSpace extends BaseQuota {
         IQuotaSingleInstance lQuotaSI = this.mQuotaStorage.getQuotaByUuid(aUuid);
 
         long lAvailableSpace = reduceQuota(lQuotaSI.getInstance(),
-                lQuotaSI.getNamespace(), lQuotaSI.getInstanceType(), aAmount);
+                lQuotaSI.getNamespace(), lQuotaSI.getInstanceType(),
+                lQuotaSI.getActions(), aAmount);
 
         return lAvailableSpace;
     }
