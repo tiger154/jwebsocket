@@ -115,17 +115,11 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 	/**
 	 *
-	 */
-	protected Map<String, List<String>> mConnectorsFiles;
-
-	/**
-	 *
 	 * @param aConfiguration
 	 * @throws Exception
 	 */
 	public FileSystemPlugIn(PluginConfiguration aConfiguration) throws Exception {
 		super(aConfiguration);
-		mConnectorsFiles = new FastMap<String, List<String>>().shared();
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Instantiating FileSystem plug-in...");
 		}
