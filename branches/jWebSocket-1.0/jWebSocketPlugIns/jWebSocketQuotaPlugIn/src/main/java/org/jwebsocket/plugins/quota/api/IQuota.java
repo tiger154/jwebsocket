@@ -38,16 +38,29 @@ public interface IQuota {
      */
     public IQuotaStorage getStorage();
 
-    /**
-     * returns the current value of the quota.
-     *
-     * @param aInstance is the user, group of users, app, module to apply Quota
-     * @param aNameSpace
-     * @param aUuid
-     * @return
-     */
-    public IQuotaSingleInstance getQuota(String aInstance, String aNameSpace, String aInstanceType);
 
+    /**
+     * Return the quota Object
+     * @param aInstance
+     * @param aNameSpace
+     * @param aInstanceType
+     * @param aActions
+     * @return 
+     */
+    public IQuotaSingleInstance getQuota(String aInstance, String aNameSpace, String aInstanceType, String aActions);
+    
+    
+    /**
+     * Return the quota Object
+     * @param aInstance
+     * @param aNameSpace
+     * @param aInstanceType
+     * @param aActions
+     * @return 
+     */
+    public List<IQuotaSingleInstance> getQuotas(String aInstance, String aNameSpace,
+            String aInstanceType );
+    
     /**
      *
      * @return
@@ -74,8 +87,8 @@ public interface IQuota {
      * @param aAmount
      * @return
      */
-    public long reduceQuota(String aInstance, String aNameSpace, String aInstanceType,
-            long aAmount);
+    public long reduceQuota(String aInstance, String aNameSpace,
+            String aInstanceType, String aActions, long aAmount);
 
     /**
      * This tries to reduce the current quota by the default reduce value given
@@ -104,7 +117,7 @@ public interface IQuota {
      * @return
      */
     public long increaseQuota(String aInstance, String aNameSpace,
-            String aInstanceType, long aAmount);
+            String aInstanceType,String aActions, long aAmount);
 
     /**
      *
@@ -125,7 +138,7 @@ public interface IQuota {
      * @return
      */
     public long setQuota(String aInstance, String aNameSpace,
-            String aInstanceType, long aAmount);
+            String aInstanceType,String aActions, long aAmount);
 
     /**
      *
@@ -202,7 +215,7 @@ public interface IQuota {
      * @param aInstanceType
      */
     public void unregister(String aInstance,
-            String aNameSpace, String aInstanceType)
+            String aNameSpace, String aInstanceType, String aActions)
             throws ExceptionQuotaNotFound;
 
     /**
@@ -229,5 +242,5 @@ public interface IQuota {
      * @return
      */
     public String getQuotaUuid(String aQuotaIdentifier, String aNamespace, String aInstance,
-            String aInstanceType);
+            String aInstanceType, String aActions);
 }

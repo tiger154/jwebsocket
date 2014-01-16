@@ -4,6 +4,7 @@
  */
 package org.jwebsocket.plugins.quota;
 
+import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.FilterConfiguration;
@@ -50,14 +51,14 @@ public class QuotaFilter extends TokenFilter {
         //To test the action with Scripting Demo
 //        if ("org.jwebsocket.plugins.scripting".equals(lNS) && lType.equals("callMethod")) {
 //            lNS = "org.jwebsocket.plugins.sms";
-//            lType = "sendSMS";
+//            lType = "create";
 //        }
 
-        String lUserName = aConnector.getUsername();
+        String lUsername = aConnector.getUsername();
 
 
         //Only proccess when the token not come for the SystemPlugin
-        if (!SystemPlugIn.NS_SYSTEM.equals(lNS) || !isIgnoredUser(lUserName)) {
+        if (!SystemPlugIn.NS_SYSTEM.equals(lNS) || !isIgnoredUser(lUsername)) {
             Map<String, IQuota> lQuotas = mQuotaProvider.getActiveQuotas();
 
             for (Map.Entry<String, IQuota> entry : lQuotas.entrySet()) {
@@ -71,35 +72,38 @@ public class QuotaFilter extends TokenFilter {
                  * group
                  *
                  */
-                IQuotaSingleInstance lQSingle = lQuotaObj.getQuota(lUserName, lNS, "User");
+                List<IQuotaSingleInstance> lQuotaList = lQuotaObj.getQuotas(lUsername, lNS, "User");
 
-                // if lQSingle is null, there is not a quota for this user 
-                if (lQSingle == null) {
-                    continue;
-                }
-                String lActions = lQSingle.getActions();
+                for (IQuotaSingleInstance lQSingle : lQuotaList) {
 
-                //if the actual token or action is not limited by the quota pass to the other quotaType
-                if (!lActions.equals("*")) {
-                    if (lActions.indexOf(lType) == -1) {
+                    // if lQSingle is null, there is not a quota for this user 
+                    if (lQSingle == null) {
                         continue;
                     }
-                }
+                    String lActions = lQSingle.getActions();
 
-                long lQValue = lQSingle.getvalue();
-
-                if (lQValue <= 0) {
-                    Token lResponse = getServer().createResponse(aToken);
-                    lResponse.setCode(-1);
-                    lResponse.setString("msg", "Acces not allowed due to quota limmitation exceed");
-                    getServer().sendToken(aConnector, lResponse);
-                    aResponse.rejectMessage();
-
-                    if (mLog.isDebugEnabled()) {
-                        mLog.debug("Quota(" + lQuotaObj.getType() + ") limit exceeded for user: "
-                                + lUserName + ", on namespace:" + lNS + ". Access not allowed!");
+                    //if the actual token or action is not limited by the quota pass to the other quotaType
+                    if (!lActions.equals("*")) {
+                        if (lActions.indexOf(lType) == -1) {
+                            continue;
+                        }
                     }
 
+                    long lQValue = lQSingle.getvalue();
+
+                    if (lQValue <= 0) {
+                        Token lResponse = getServer().createResponse(aToken);
+                        lResponse.setCode(-1);
+                        lResponse.setString("msg", "Acces not allowed due to quota limmitation exceed");
+                        getServer().sendToken(aConnector, lResponse);
+                        aResponse.rejectMessage();
+
+                        if (mLog.isDebugEnabled()) {
+                            mLog.debug("Quota(" + lQuotaObj.getType() + ") limit exceeded for user: "
+                                    + lUsername + ", on namespace:" + lNS + ". Access not allowed!");
+                        }
+
+                    }
                 }
             }
         }
