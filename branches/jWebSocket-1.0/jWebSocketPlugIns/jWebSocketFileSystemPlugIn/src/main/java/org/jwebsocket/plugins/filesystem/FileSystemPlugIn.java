@@ -403,7 +403,6 @@ public class FileSystemPlugIn extends TokenPlugIn {
 			}
 
 			checkForSave(aConnector, lFile, lBA);
-			checkFileInUse(aConnector, lFullPath, false);
 			// prevent two threads at a time writing to the same file
 			synchronized (this) {
 				// force create folder if not yet exists
@@ -415,9 +414,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 					FileUtils.writeStringToFile(lFile, lData, "UTF-8", lAppend);
 				}
 			}
-			removeFileInUse(aConnector, lFullPath);
 		} catch (Exception lEx) {
-			removeFileInUse(aConnector, lFullPath);
 			lResponse.setInteger("code", -1);
 			lMsg = lEx.getClass().getSimpleName() + " while saving file: "
 					+ lFilename + ". " + lEx.getMessage();
@@ -777,77 +774,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector, CloseReason aCloseReason) {
-		mConnectorsFiles.remove(aConnector.getId());
 		super.connectorStopped(aConnector, aCloseReason);
-	}
-
-	/**
-	 *
-	 * @param aConnector
-	 * @param aFilePath
-	 * @param aDeleting
-	 * @throws Exception
-	 */
-	protected void checkFileInUse(WebSocketConnector aConnector, String aFilePath, boolean aDeleting) throws Exception {
-		if (null != aFilePath) {
-			String lFilePath = aFilePath.toLowerCase();
-			if (!aDeleting) {
-				// Add the file in the list for avoiding concurrency over this file
-				List<String> lList = mConnectorsFiles.get(aConnector.getId());
-				if (null == lList) {
-					lList = new FastList<String>();
-				}
-				if (!lList.contains(aFilePath)) {
-					lList.add(aFilePath);
-				}
-				mConnectorsFiles.put(aConnector.getId(), lList);
-			}
-			for (Map.Entry<String, List<String>> lEntry : mConnectorsFiles.entrySet()) {
-				String lConnectorId = lEntry.getKey();
-				List<String> lFileList = lEntry.getValue();
-				boolean lContains = false;
-				Integer lAmount = 0;
-				for (String lPath : lFileList) {
-					if (lPath.toLowerCase().equals(lFilePath)) {
-						lContains = true;
-						lAmount++;
-					}
-				}
-				if (lContains) {
-
-					if (!aDeleting && lConnectorId.equals(aConnector.getId())) {
-						if (lAmount > 1) {
-							throw new Exception("You are trying to upload the same file "
-									+ "twice, please validate the uppercase in the file name.");
-						}
-					}
-					if (!lConnectorId.equals(aConnector.getId())) {
-						List<String> lList = mConnectorsFiles.get(aConnector.getId());
-						if (lList != null) {
-							// always remove the dependency from the list
-							lList.remove(aFilePath);
-						}
-						throw new Exception("This file is already in use by: "
-								+ lConnectorId + "@" + getConnector(lConnectorId).getUsername());
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 *
-	 * @param aConnector
-	 * @param aFilePath
-	 */
-	protected void removeFileInUse(WebSocketConnector aConnector, String aFilePath) {
-		if (null != aFilePath) {
-			// Add the file in the list for avoiding concurrency over this file
-			List<String> lList = mConnectorsFiles.get(aConnector.getId());
-			if (lList != null && lList.contains(aFilePath)) {
-				lList.remove(aFilePath);
-			}
-		}
 	}
 
 	/**
@@ -896,15 +823,8 @@ public class FileSystemPlugIn extends TokenPlugIn {
 
 		String lFilePath = lBaseDir + lFilename;
 		File lFile = new File(lFilePath);
-		// Remove the file from the list in case that it exitsts there
-		// so the users can upload files with the same name and path
-		List<String> lFileList = mConnectorsFiles.get(aConnector.getId());
 
 		try {
-			if (null != lFileList) {
-				checkFileInUse(aConnector, lFilePath, true);
-				lFileList.remove(lFilePath);
-			}
 			if (!isPathInFS(lFile, lBaseDir)) {
 				sendErrorToken(aConnector, aToken, -1, "The file '" + lFilename
 						+ "' is out of the file-system location!");
