@@ -665,10 +665,11 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
     }
 });
 
+//Model difinition
 Ext.define('Quota', {
     extend: 'Ext.data.Model',
     fields: ['uuid', 'instance', 'namespace', 'identifier',
-        'instance_type', 'quotaType',
+        'instance_type', 'actions', 'quotaType',
         {
             name: 'value',
             type: 'int'
@@ -825,9 +826,9 @@ function logMessage(aToken) {
         Ext.getCmp('msg_label').addCls('error_log');
         Ext.getCmp('msg_label').removeCls('ok_log');
         if (aToken.hasOwnProperty("message"))
-            Ext.getCmp('msg_label').setText(aToken.message);
+            Ext.getCmp('msg_label').setText(aToken.msg);
     } else {
-        console.log("bien");
+        console.log("ok");
         console.log(aToken);
         Ext.getCmp('msg_label').addCls('ok_log');
         Ext.getCmp('msg_label').removeCls('error_log');
@@ -989,11 +990,11 @@ function showQuotaPluginMainWindows() {
                         margins: '0 10 0 0',
                         fieldLabel: 'Select Quota ',
                         displayField: 'name',
-                        valueField: 'quotaType',
+                        valueField: 'name',
                         store: lStoreActiveQuota,
                         typeAhead: true,
-                        allowBlank: false,
-                        listeners: {
+                        allowBlank: false
+                        /*listeners: {
                             select: function(identifier) {
                                 if (identifier.getValue() === "DiskSpace") {
                                     Ext.getCmp("namespace").setVisible(false);
@@ -1006,11 +1007,8 @@ function showQuotaPluginMainWindows() {
                                     Ext.getCmp("namespace_diskspace").setVisible(false);
                                     Ext.getCmp("namespace_diskspace").submitValue=false;
                                 }
-
                             }
-                        }
-
-
+                        }*/
                     }, {
                         flex: 1,
                         xtype: 'textfield',
@@ -1019,7 +1017,7 @@ function showQuotaPluginMainWindows() {
                         fieldLabel: 'Value',
                         vtype: 'num',
                         margins: '0 0 0 10',
-                        allowBlank: false,
+                        allowBlank: false
                     }]},
             {
                 xtype: 'fieldcontainer',
@@ -1078,10 +1076,10 @@ function showQuotaPluginMainWindows() {
                         displayField: 'name',
                         margins: '10 0 0 0',
                         store: namespace_diskspace_store,
-                        allowBlank: false,
+                        allowBlank: true,
                         queryMode: 'local',
                         typeAhead: true,
-                        editable: false,
+                        editable: false
                     }]
             }, {
                 xtype: 'fieldcontainer',
@@ -1099,7 +1097,8 @@ function showQuotaPluginMainWindows() {
                         margins: '10 0 0 0',
                         id: 'actions',
                         fieldLabel: 'Actions',
-                        emptyText: 'required...'
+                        emptyText: 'required...',
+                        allowBlank: false
                     }]
             }
         ],
@@ -1117,14 +1116,17 @@ function showQuotaPluginMainWindows() {
                 alignTo: 'br',
                 bodyStyle: 'background-color:#D8E4F2',
                 handler: function() {
-
                     var lForm = this.up('form').getForm();
                     var lAction = {
                         ns: NS_QUOTA_PLUGIN,
                         tokentype: TT_CREATE
                     };
-                    if (lForm.isValid())
+                    if (lForm.isValid()){
                         lForm.submit(lAction);
+                    }else{
+                        logMessage({code:-1, msg: "Invalid Form"})
+                    }
+                        
                 }
             }
         ]
@@ -1272,6 +1274,11 @@ function showQuotaPluginMainWindows() {
                 width: 60,
                 sortable: true,
                 dataIndex: 'instance'
+            }, {
+                text: 'Actions',
+                width: 60,
+                sortable: true,
+                dataIndex: 'actions'
             }, {
                 text: 'Instance type',
                 width: 80,
@@ -1480,14 +1487,13 @@ function initDemo() {
 
     var lPlugIn = {};
     lPlugIn.processToken = function(aToken) {
-        console.log("todos");
-        console.log(aToken);
-
+        
         if (aToken.ns === NS_QUOTA_PLUGIN) {
-            if (aToken.reqType === "query")
-                return;
-
+            
             logMessage(aToken);
+
+            if (aToken.reqType === "query")
+                return;           
         }
 
         if (aToken.type === "welcome") {
