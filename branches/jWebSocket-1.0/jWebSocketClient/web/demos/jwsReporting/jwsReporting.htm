@@ -134,26 +134,18 @@
                     <div id="client_status" class='offline'>disconnected</div><div class="line"></div>
                     <div id='client_id'>Client-ID: - </div><div class="line"></div>
                     <div id='websocket_type'>WebSocket: - </div>
-                </div>
-
-                <!--       DESCRIPTION       -->
-                <div class="box">
-                    <p>This demo shows how to easily create reports using jWebSocket</p>
-                </div>
+                </div>               
 
                 <!--       SCENARIO          -->
                 <div id="scenario_container" class="box">
 					<div id="jws_reporting_content">
 						<!--       GET REPORTS BOX           -->
 						<div class="jws_get_reports">
-							<div class="get_reports_box_header">Get Reports</div>
-							<div class="get_reports_box_content">
+							<div class="box_header">Get Reports</div>
+							<div class="box_content">
 								<div id="get_reports_btn" class="button onmouseup" 
-									 onmouseover="this.className = 'button onmouseover'" 
-									 onmousedown="this.className = 'button onmousedown'" 
-									 onmouseup="this.className = 'button onmouseup'" 
-									 onmouseout="this.className = 'button onmouseout'"
-									 onclick="this.className = 'button onmouseover'">
+									 onmouseover="this.className = 'button onmouseover'"
+									 onmouseout="this.className = 'button onmouseout'">
 									<div class="btn_left"></div>
 									<div class="btn_center"> Get Reports </div>
 									<div class="btn_right"></div>
@@ -165,14 +157,11 @@
 						</div>
 						<!--       UPLOAD TEMPLATE BOX           -->
 						<div class="jws_upload_template">
-							<div class="upload_template_box_header">Upload Templates</div>
-							<div class="upload_template_box_content">
+							<div class="box_header">Upload Templates</div>
+							<div class="box_content">
 								<div id="upload_template_btn" class="button onmouseup" 
 									 onmouseover="this.className = 'button onmouseover'" 
-									 onmousedown="this.className = 'button onmousedown'" 
-									 onmouseup="this.className = 'button onmouseup'" 
-									 onmouseout="this.className = 'button onmouseout'"
-									 onclick="this.className = 'button onmouseover'">
+									 onmouseout="this.className = 'button onmouseout'">
 									<div class="btn_left"></div>
 									<div class="btn_center"> Upload Template </div>
 									<div class="btn_right"></div>
@@ -184,8 +173,8 @@
 						</div>
 						<!--       CREATE REPORT BOX           -->
 						<div class="jws_create_report">
-							<div class="create_report_box_header">Create Report</div>
-							<div class="create_report_box_content">
+							<div class="box_header">Create Report</div>
+							<div class="box_content">
 								<div class="jws_formats">
 									<div class="jws_reporting_label">Formats</div>
 									<select id="jws_reporting_formats_cmb" class="jws_create_report_cmb"
@@ -209,38 +198,36 @@
 									</div>
 								</div>
 								<div id="create_report_btn" class="button onmouseup" 
-									 onmouseover="this.className = 'button onmouseover'" 
-									 onmousedown="this.className = 'button onmousedown'" 
-									 onmouseup="this.className = 'button onmouseup'" 
-									 onmouseout="this.className = 'button onmouseout'"
-									 onclick="this.className = 'button onmouseover'">
+									 onmouseover="this.className = 'button onmouseover'"
+									 onmouseout="this.className = 'button onmouseout'">
 									<div class="btn_left"></div>
 									<div class="btn_center"> Create Report </div>
 									<div class="btn_right"></div>
 								</div>
 							</div>
 						</div>
+						<!--       DESCRIPTION       -->						
+						<div class="description_box">
+							This demo shows how to easily set up a simple jWebSocket report.<br></br>
+							If you are not sure wether your favorite browser supports WebSockets please 
+							refer to our jWebSocket <a target="_top" href="http://jwebsocket.org/documentation/jwebsocket-cross-browser-compatibility">
+								Cross-Browser Compatibility</a> page.
+						</div>
 					</div>
 					<!--       TEST REPORT BOX           -->
 					<div class="jws_test_create_report">
-						<div class="create_test_report_box_header">Create Report</div>
-						<div class="create_test_report_box_content"</div>						
+						<div class="box_header">Test Create Report</div>
+						<div class="box_content"</div>						
 						<div id="test_get_reports_btn" class="button onmouseup" 
-							 onmouseover="this.className = 'button onmouseover'" 
-							 onmousedown="this.className = 'button onmousedown'" 
-							 onmouseup="this.className = 'button onmouseup'" 
-							 onmouseout="this.className = 'button onmouseout'"
-							 onclick="this.className = 'button onmouseover'">
+							 onmouseover="this.className = 'button onmouseover'"
+							 onmouseout="this.className = 'button onmouseout'">
 							<div class="btn_left"></div>
 							<div class="btn_center"> Test Get Reports </div>
 							<div class="btn_right"></div>
 						</div>
 						<div id="test_create_report_btn" class="button onmouseup" 
-							 onmouseover="this.className = 'button onmouseover'" 
-							 onmousedown="this.className = 'button onmousedown'" 
-							 onmouseup="this.className = 'button onmouseup'" 
-							 onmouseout="this.className = 'button onmouseout'"
-							 onclick="this.className = 'button onmouseover'">
+							 onmouseover="this.className = 'button onmouseover'"
+							 onmouseout="this.className = 'button onmouseout'">
 							<div class="btn_left"></div>
 							<div class="btn_center"> Test Create Report </div>
 							<div class="btn_right"></div>
@@ -260,13 +247,10 @@
 
 				<!--       DOWNLOAD_BUTTON   -->
 				<div id="demo_box_footer">
-					<div id="jws_download_button" class="button onmouseup" onmouseover="this.className = 'button onmouseover'" 
-						 onmousedown="this.className = 'button onmousedown'" 
-						 onmouseup="this.className = 'button onmouseup'" 
-						 onmouseout="this.className = 'button onmouseout'" 
-						 onclick="this.className = 'button onmouseover'">
-						<div class="l"></div>
-						<div class="c"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
+					<div id="jws_download_button" class="button onmouseup" onmouseover="this.className = 'button onmouseover'" 						
+						 onmouseout="this.className = 'button onmouseout'">
+						<div class="btn_left"></div>
+						<div class="btn_center"><a href="http://jwebsocket.org" target="blank">Download jWebSocket</a></div>
 						<div class="r_download"></div>
 					</div>
 				</div>

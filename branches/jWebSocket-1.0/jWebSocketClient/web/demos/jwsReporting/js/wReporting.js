@@ -128,15 +128,16 @@ $.widget("jws.reporting", {
 				}
 			});
 		} else {
-			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
-					true, null, null, "error");
+			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket info",
+					true, "alert");
 		}
 	},
 	uploadTemplate: function() {
 		if (mWSC.isConnected()) {
 			var lFile = w.reporting.eFCTemplatePath.files[0];
 			if (!lFile) {
-				alert('Select a report template first!');
+				jwsDialog("Select a report template first!", "jWebSocket info",
+						true, "alert");
 				return;
 			}
 			if (!confirm('Are you sure to upload the selected template ? If\n\
@@ -162,33 +163,44 @@ $.widget("jws.reporting", {
 			lFR.readAsDataURL(lFile);
 		} else {
 			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
-					true, null, null, "error");
+					true, "alert");
 		}
 	},
 	createReport: function() {
 		if (mWSC.isConnected()) {
 			var lReportId = w.reporting.eCbReportList.value;
 			var lFormat = w.reporting.eCbReportFormats.value;
-			eval("var lParams =" + w.reporting.eTxaReportParams.value);
-			var lFields = eval(w.reporting.eTxaReportFields.value);
-			log("Creating Report...");
-			if (mWSC.isConnected()) {
-				mWSC.reportingGenerateReport(
-						lReportId,
-						lParams,
-						lFields,
-						{
-							useConection: w.reporting.eChbxUseConnection.checked,
-							outputType: lFormat
-						}
-				);
-			} else {
-				jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
-						true, null, null, "error");
+
+			if (!w.reporting.eTxaReportFields.value) {
+				jwsDialog("Enter the report fields [{id:'value'},{id:'value'},{id:'value'}]", "jWebSocket info",
+						true, "alert");
+			}
+			else if (!w.reporting.eTxaReportParams.value) {
+				jwsDialog("Enter the report params {id:'value'}", "jWebSocket info",
+						true, "alert");
+			}
+			else {
+				eval("var lParams =" + w.reporting.eTxaReportParams.value);
+				eval("var lFields =" + w.reporting.eTxaReportFields.value);
+				log("Creating Report...");
+				if (mWSC.isConnected()) {
+					mWSC.reportingGenerateReport(
+							lReportId,
+							lParams,
+							lFields,
+							{
+								useConection: w.reporting.eChbxUseConnection.checked,
+								outputType: lFormat
+							}
+					);
+				} else {
+					jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
+							true, "alert");
+				}
 			}
 		} else {
 			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
-					true, null, null, "error");
+					true, "alert");
 		}
 	},
 	testgetReports: function(aToken) {
@@ -201,7 +213,7 @@ $.widget("jws.reporting", {
 			});
 		} else {
 			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
-					true, null, null, "error");
+					true, "alert");
 		}
 	},
 	testcreateReport: function(aToken) {
@@ -213,7 +225,7 @@ $.widget("jws.reporting", {
 			});
 		} else {
 			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
-					true, null, null, "error");
+					true, "alert");
 		}
 	},
 	handleReport: function(aToken) {
@@ -236,7 +248,6 @@ $.widget("jws.reporting", {
 		}
 	},
 	handleUpload: function(aToken) {
-		jwsDialog("The template was successfully uploaded", "jWebSocket info",
-				true, null, null, "info");
+
 	}
 });
