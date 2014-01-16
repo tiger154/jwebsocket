@@ -121,7 +121,7 @@ jws.tests.FileSystem = {
 					lObtainedKeys.push(aItem.filename);
 				});
 					
-				expect( lObtainedKeys.sort() ).toEqual( aExpectedList.sort() );
+				expect( lObtainedKeys.sort().join(",") ).toContain( aExpectedList.sort().join(",") );
 			});
 
 		});

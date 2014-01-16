@@ -153,7 +153,6 @@ jws.tests.System = {
 				
 				openTimeout: aOpenTimeout,
 				OnOpenTimeout: function ( aToken ) {
-					debugger;
 					lStatus = jws.OPEN_TIMED_OUT;
 				},
 				
