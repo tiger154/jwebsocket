@@ -67,6 +67,7 @@ public class EhCacheStorage<K, V> extends BaseStorage<K, V> {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * @return 
 	 */
 	@Override
 	public String getName() {
@@ -76,6 +77,8 @@ public class EhCacheStorage<K, V> extends BaseStorage<K, V> {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * @param aName
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void setName(String aName) throws Exception {
@@ -85,6 +88,7 @@ public class EhCacheStorage<K, V> extends BaseStorage<K, V> {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * @return 
 	 */
 	@Override
 	public Set keySet() {
@@ -96,6 +100,7 @@ public class EhCacheStorage<K, V> extends BaseStorage<K, V> {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * @return 
 	 */
 	@Override
 	public int size() {
@@ -106,6 +111,7 @@ public class EhCacheStorage<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc}
 	 *
 	 * @param aKey
+	 * @return 
 	 */
 	@Override
 	public V get(Object aKey) {
@@ -117,6 +123,7 @@ public class EhCacheStorage<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc}
 	 *
 	 * @param aKey
+	 * @return 
 	 */
 	@Override
 	public V remove(Object aKey) {
@@ -140,6 +147,7 @@ public class EhCacheStorage<K, V> extends BaseStorage<K, V> {
 	 *
 	 * @param aKey
 	 * @param aData
+	 * @return 
 	 */
 	@Override
 	public Object put(Object aKey, Object aData) {
@@ -154,6 +162,7 @@ public class EhCacheStorage<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc }
 	 *
 	 * @param aKey
+	 * @return 
 	 */
 	@Override
 	public boolean containsKey(Object aKey) {

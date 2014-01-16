@@ -28,6 +28,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
 import org.jwebsocket.server.TokenServer;
 import org.jwebsocket.token.Token;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -49,7 +50,7 @@ public class MailPlugIn extends TokenPlugIn {
 	private final static String COPYRIGHT = JWebSocketCommonConstants.COPYRIGHT_CE;
 	private final static String LICENSE = JWebSocketCommonConstants.LICENSE_CE;
 	private final static String DESCRIPTION = "jWebSocket MailPlugIn - Community Edition";
-	private static MailStore mMailStore = null;
+	private static final MailStore mMailStore = null;
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
 	private static MailPlugInService mService;
@@ -80,7 +81,7 @@ public class MailPlugIn extends TokenPlugIn {
 							+ ".");
 				}
 			}
-		} catch (Exception lEx) {
+		} catch (BeansException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating mail plug-in"));
 		}
 	}
