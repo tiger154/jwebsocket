@@ -291,63 +291,64 @@
 				location.href = getURL() + "?" + JSON.stringify(aCall);
 			}
 
-			var path = location.search.substr(1);
-			var request = null;
-			if (path) {
-				request = JSON.parse(path.split("%22").join("\""));
+			var lPath = location.search.substr(1);
+			var lRequest = null;
+			if (lPath) {
+				lRequest = JSON.parse(lPath.split("%22").join("\""));
 			}
-
-			if (request['set']) {
-				lCombo.val(request['set'])
-			}
-			if (request['speed']) {
-				lComboSpeed.val(request['speed'])
-			}
-			if (request['tls']) {
-				$('#tls_set').val(request['tls'])
-			}
-			if (request && request["action"]) {
-				if ("runFullTestSuite" == request["action"] && !request["args"]) {
-					request["args"] = {
-						openConns: true,
-						streamingPlugIn: true,
-						channelsPlugIn: true,
-						rpcPlugIn: true,
-						automatedAPIPlugIn: true,
-						filesystemPlugIn: true,
-						filesystemPlugInEE: true,
-						systemPlugIn: true,
-						load: true,
-						closeConns: true,
-						ioc: true,
-						events: true
-					};
+			if (lRequest) {
+				if (lRequest['set']) {
+					lCombo.val(lRequest['set'])
 				}
+				if (lRequest['speed']) {
+					lComboSpeed.val(lRequest['speed'])
+				}
+				if (lRequest['tls']) {
+					$('#tls_set').val(lRequest['tls'])
+				}
+				if (lRequest["action"]) {
+					if ("runFullTestSuite" == lRequest["action"] && !lRequest["args"]) {
+						lRequest["args"] = {
+							openConns: true,
+							streamingPlugIn: true,
+							channelsPlugIn: true,
+							rpcPlugIn: true,
+							automatedAPIPlugIn: true,
+							filesystemPlugIn: true,
+							filesystemPlugInEE: true,
+							systemPlugIn: true,
+							load: true,
+							closeConns: true,
+							ioc: true,
+							events: true
+						};
+					}
 
-				//Getting the function
-				request["action"] = eval(request["action"]);
+					//Getting the function
+					lRequest["action"] = eval(lRequest["action"]);
 
-				//Calling the tests
-				request["action"](request["args"]);
+					//Calling the tests
+					lRequest["action"](lRequest["args"]);
 
-				// jws.console.setActive( true );
-				// jws.console.setLevel( jws.console.ALL );
-				jws.TestPlugIn.execTests();
+					// jws.console.setActive( true );
+					// jws.console.setLevel( jws.console.ALL );
+					jws.TestPlugIn.execTests();
 
-				//Setting up checkboxes state
-				for (var lCheckbox in request["args"]) {
-					// avoid __speed
-					if (lCheckbox.indexOf("__") !== 0) {
-						jws.$(lCheckbox).checked = request["args"][lCheckbox];
+					//Setting up checkboxes state
+					for (var lCheckbox in lRequest["args"]) {
+						// avoid __speed
+						if (lCheckbox.indexOf("__") !== 0) {
+							jws.$(lCheckbox).checked = lRequest["args"][lCheckbox];
+						}
 					}
 				}
-			}
 
-			if (jws.browserSupportsWebSockets()) {
+				if (jws.browserSupportsWebSockets()) {
 
-			} else {
-				var lMsg = jws.MSG_WS_NOT_SUPPORTED;
-				alert(lMsg);
+				} else {
+					var lMsg = jws.MSG_WS_NOT_SUPPORTED;
+					alert(lMsg);
+				}
 			}
 		</script>
 	</body>
