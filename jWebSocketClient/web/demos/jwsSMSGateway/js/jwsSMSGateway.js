@@ -77,11 +77,11 @@ $.widget("jws.SMSGateway", {
 						var lData = aToken.data,
 								lreqType = lData.reqType;
 						if (lreqType === "logon") {
-							w.auth.getCallbacks().OnLogon(aToken);
+							w.auth.getCallbacks().OnLogon(lData);
 						}
 
 						if (lreqType === "logoff") {
-							w.auth.getCallbacks().OnLogoff(aToken);
+							w.auth.getCallbacks().OnLogoff(lData);
 						}
 					}
 				}
