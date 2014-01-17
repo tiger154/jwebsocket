@@ -25,8 +25,11 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.annotations.Authenticated;
+import org.jwebsocket.plugins.annotations.RequireConnection;
 import org.jwebsocket.plugins.annotations.Role;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
+import org.jwebsocket.util.ConnectionManager;
 
 /**
  *
@@ -57,6 +60,20 @@ public class ActionPlugIn extends TokenPlugIn {
 	}
 
 	/**
+	 * Listener method that is executed before every action execution. If an
+	 * exception is thrown during the method execution, the target action
+	 * execution is canceled.
+	 *
+	 * @param aActionName The target action name
+	 * @param aConnector The calling connector
+	 * @param aToken
+	 */
+	public void beforeExecuteAction(String aActionName, WebSocketConnector aConnector, Token aToken) {
+
+	}
+
+	/**
+	 * Plug-in action's executor
 	 *
 	 * @param aMethodName
 	 * @param aConnector
@@ -68,7 +85,10 @@ public class ActionPlugIn extends TokenPlugIn {
 			// processing annotations
 			Method lMethod = getClass().getMethod(aMethodName, WebSocketConnector.class, Token.class);
 
-			// processing core annotations
+			// calling before execute action method on plug-in
+			beforeExecuteAction(aMethodName, aConnector, aToken);
+
+			// processing action annotations
 			if (lMethod.isAnnotationPresent(Role.class)) {
 				Role lRole = lMethod.getAnnotation(Role.class);
 				if (!hasAuthority(aConnector, lRole.name())) {
@@ -79,6 +99,15 @@ public class ActionPlugIn extends TokenPlugIn {
 				if (null == aConnector.getUsername()) {
 					sendToken(aConnector, createAccessDenied(aToken));
 					return;
+				}
+			} else if (lMethod.isAnnotationPresent(RequireConnection.class)) {
+				RequireConnection lConnection = lMethod.getAnnotation(RequireConnection.class);
+				ConnectionManager lConnManager = JWebSocketBeanFactory.getInstance().getBean(ConnectionManager.class);
+				if (!lConnManager.isValid(lConnection.name())) {
+					Token lResponse = createResponse(aToken);
+					lResponse.setCode(-1);
+					lResponse.setString("msg", "Required '" + lConnection.name()
+							+ "' connection is not valid. Action execution was canceled!");
 				}
 			}
 
