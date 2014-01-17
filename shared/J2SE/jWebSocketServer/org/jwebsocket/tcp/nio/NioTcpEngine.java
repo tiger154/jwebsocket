@@ -37,29 +37,30 @@ import org.jwebsocket.api.EngineConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketPacket;
-import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.tcp.EngineUtils;
 import org.jwebsocket.tcp.nio.ssl.IDelayedSSLPacketNotifier;
 import org.jwebsocket.tcp.nio.ssl.NioSSLHandler;
-import org.jwebsocket.util.Tools;
 
 /**
- * <p> Tcp engine that uses java non-blocking io api to bind to listening port
- * and handle incoming/outgoing packets. There's one 'selector' thread that is
+ * <p>
+ * Tcp engine that uses java non-blocking io api to bind to listening port and
+ * handle incoming/outgoing packets. There's one 'selector' thread that is
  * responsible only for handling socket operations. Therefore, every packet that
  * should be sent will be firstly queued into concurrent queue, which is
  * continuously processed by selector thread. Since the queue is concurrent,
  * there's no blocking and a call to send method will return immediately. </p>
- * <p> All packets that are received from remote clients are processed in
- * separate worker threads. This way it's possible to handle many clients
- * simultaneously with just a few threads. Add more worker threads to handle
- * more clients. </p> <p> Before making any changes to this source, note this:
- * it is highly advisable to read from (or write to) a socket only in selector
- * thread. Ignoring this advice may result in strange consequences (threads
- * locking or spinning, depending on actual scenario). </p>
+ * <p>
+ * All packets that are received from remote clients are processed in separate
+ * worker threads. This way it's possible to handle many clients simultaneously
+ * with just a few threads. Add more worker threads to handle more clients. </p>
+ * <p>
+ * Before making any changes to this source, note this: it is highly advisable
+ * to read from (or write to) a socket only in selector thread. Ignoring this
+ * advice may result in strange consequences (threads locking or spinning,
+ * depending on actual scenario). </p>
  *
  * @author jang
  * @author kyberneees (bug fixes, session identifier cookie support, SSL and
@@ -299,8 +300,7 @@ public class NioTcpEngine extends BaseEngine {
 
 			while (mIsRunning && mSelector.isOpen()) {
 				boolean lWrite = false;
-				for (Iterator<String> lIterator = mPendingWrites.keySet().iterator(); lIterator.hasNext();) {
-					String lConnectorId = lIterator.next();
+				for (String lConnectorId : mPendingWrites.keySet()) {
 					try {
 						SelectionKey lKey = mConnectorToChannelMap.get(lConnectorId).keyFor(mSelector);
 						if (null != lKey && !mPendingWrites.get(lConnectorId).isEmpty()) {
@@ -613,7 +613,7 @@ public class NioTcpEngine extends BaseEngine {
 						mLog.debug("Parsing handshake request: " + new String(aBean.getData()).replace("\r\n", "\\n"));
 					}
 
-					Map lReqMap = WebSocketHandshake.parseC2SRequest(aBean.getData(), false);
+					Map<String, Object> lReqMap = WebSocketHandshake.parseC2SRequest(aBean.getData(), false);
 					if (null == lReqMap) {
 						mLog.error("Client not accepted on port " + aConnector.getRemotePort()
 								+ " due to handshake issues. "
@@ -621,7 +621,6 @@ public class NioTcpEngine extends BaseEngine {
 						// disconnect the client
 						clientDisconnect(aConnector);
 					}
-
 					EngineUtils.parseCookies(lReqMap);
 
 					RequestHeader lReqHeader = EngineUtils.validateC2SRequest(
@@ -726,7 +725,7 @@ public class NioTcpEngine extends BaseEngine {
 						if (aIS.available() > 0) {
 							readHixie(aIS, lConnector);
 						}
-					} catch (Exception lEx) {
+					} catch (IOException lEx) {
 						mLog.error(lEx.getClass().getSimpleName()
 								+ " in processPacket of connector "
 								+ lConnector.getClass().getSimpleName()

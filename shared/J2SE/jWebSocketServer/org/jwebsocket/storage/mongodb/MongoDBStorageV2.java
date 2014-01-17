@@ -58,6 +58,8 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @return
 	 */
 	@Override
 	public String getName() {
@@ -68,6 +70,7 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc
 	 *
 	 * @param aNewName
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void setName(String aNewName) throws Exception {
@@ -81,34 +84,31 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc
 	 *
 	 * @param aKey
+	 * @return
 	 */
 	@Override
 	public boolean containsKey(Object aKey) {
 		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).append("k", (String) aKey));
-		if (lRecord != null) {
-			return true;
-		}
-		return false;
+		return (lRecord != null);
 	}
 
 	/**
 	 * {@inheritDoc
 	 *
 	 * @param aValue
+	 * @return
 	 */
 	@Override
 	public boolean containsValue(Object aValue) {
 		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("ns", mName).append("v", aValue));
-		if (lRecord != null) {
-			return true;
-		}
-		return false;
+		return (lRecord != null);
 	}
 
 	/**
 	 * {@inheritDoc
 	 *
 	 * @param aKey
+	 * @return
 	 */
 	@Override
 	public V get(Object aKey) {
@@ -118,7 +118,6 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 		if (null != lRecord) {
 			return (V) lRecord.get("v");
 		}
-
 		return null;
 	}
 
@@ -144,6 +143,7 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc
 	 *
 	 * @param aKey
+	 * @return
 	 */
 	@Override
 	public V remove(Object aKey) {
@@ -166,6 +166,8 @@ public class MongoDBStorageV2<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @return
 	 */
 	@Override
 	public Set<K> keySet() {

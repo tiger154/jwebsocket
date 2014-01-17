@@ -39,10 +39,18 @@ public class JMSMessageListener implements MessageListener, IInitializable {
 	private final JMSEngine mEngine;
 	private MessageConsumer mConsumer;
 
+	/**
+	 *
+	 * @param aEngine
+	 */
 	public JMSMessageListener(JMSEngine aEngine) {
 		mEngine = aEngine;
 	}
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	@Override
 	public void onMessage(Message aMessage) {
 		try {

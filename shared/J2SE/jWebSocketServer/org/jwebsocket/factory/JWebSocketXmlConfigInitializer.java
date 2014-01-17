@@ -43,7 +43,7 @@ import org.jwebsocket.logging.Logging;
  */
 public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitializer {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 //	private final static JWebSocketJarClassLoader mClassLoader = new JWebSocketJarClassLoader();
 	private static JWebSocketJarClassLoader mClassLoader = new JWebSocketJarClassLoader();
 
@@ -130,6 +130,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -160,8 +162,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 				}
 				// if class found try to create an instance
 				if (lEngineClass != null) {
-					Constructor<WebSocketEngine> lConstructor =
-							lEngineClass.getDeclaredConstructor(EngineConfiguration.class);
+					Constructor<WebSocketEngine> lConstructor
+							= lEngineClass.getDeclaredConstructor(EngineConfiguration.class);
 					WebSocketEngine lEngine;
 					if (lConstructor != null) {
 						lConstructor.setAccessible(true);
@@ -190,6 +192,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -218,8 +222,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 				}
 				// if class found try to create an instance
 				if (lServerClass != null) {
-					Constructor<WebSocketServer> lConstructor =
-							lServerClass.getDeclaredConstructor(ServerConfiguration.class);
+					Constructor<WebSocketServer> lConstructor
+							= lServerClass.getDeclaredConstructor(ServerConfiguration.class);
 					if (lConstructor != null) {
 						lConstructor.setAccessible(true);
 						lServer = lConstructor.newInstance(new Object[]{lServerConfig});
@@ -247,12 +251,14 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, List<WebSocketPlugIn>> initializePlugins() {
-		Map<String, List<WebSocketPlugIn>> lPlugInMap =
-				new FastMap<String, List<WebSocketPlugIn>>();
+		Map<String, List<WebSocketPlugIn>> lPlugInMap
+				= new FastMap<String, List<WebSocketPlugIn>>();
 		// populate the plugin FastMap with server id and empty list
 		for (ServerConfig lServerConfig : jWebSocketConfig.getServers()) {
 			lPlugInMap.put(lServerConfig.getId(), new FastList<WebSocketPlugIn>());
@@ -271,8 +277,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 					}
 				}
 
-				Class<WebSocketPlugIn> lPlugInClass =
-						loadPluginFromClasspath(lPlugInConfig.getName());
+				Class<WebSocketPlugIn> lPlugInClass
+						= loadPluginFromClasspath(lPlugInConfig.getName());
 
 				// if not in classpath..try to load plug-in from given .jar file
 				if (lPlugInClass == null && null != lPlugInConfig.getJar() && lPlugInConfig.getJar().length() > 0) {
@@ -301,8 +307,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 					WebSocketPlugIn lPlugIn;
 
 					Constructor<WebSocketPlugIn> lPlugInConstructor;
-					lPlugInConstructor =
-							lPlugInClass.getConstructor(PluginConfiguration.class);
+					lPlugInConstructor
+							= lPlugInClass.getConstructor(PluginConfiguration.class);
 					if (lPlugInConstructor != null) {
 						lPlugInConstructor.setAccessible(true);
 						lPlugIn = lPlugInConstructor.newInstance(lPlugInConfig);
@@ -321,7 +327,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 							List<WebSocketPlugIn> lPlugIns = lPlugInMap.get(lServerId);
 							if (lPlugIns != null
 									&& lPlugIn.getPluginConfiguration().getServers().contains(lServerId)) {
-								lPlugIns.add((WebSocketPlugIn) lPlugIn);
+								lPlugIns.add(lPlugIn);
 							}
 						}
 					} else {
@@ -343,12 +349,14 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, List<WebSocketFilter>> initializeFilters() {
-		Map<String, List<WebSocketFilter>> lFilterMap =
-				new FastMap<String, List<WebSocketFilter>>();
+		Map<String, List<WebSocketFilter>> lFilterMap
+				= new FastMap<String, List<WebSocketFilter>>();
 
 		// populate the filter FastMap with server id and empty list
 		for (ServerConfig lServerConfig : jWebSocketConfig.getServers()) {
@@ -358,11 +366,11 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 		for (FilterConfig lFilterConfig : jWebSocketConfig.getFilters()) {
 			try {
 				// try to load filter from classpath first, could be located in server bundle
-				Class<WebSocketFilter> lFilterClass =
-						loadFilterFromClasspath(lFilterConfig.getName());
+				Class<WebSocketFilter> lFilterClass
+						= loadFilterFromClasspath(lFilterConfig.getName());
 				if (lFilterClass == null) {
-					String lJarFilePath =
-							JWebSocketConfig.getLibsFolder(lFilterConfig.getJar());
+					String lJarFilePath
+							= JWebSocketConfig.getLibsFolder(lFilterConfig.getJar());
 					// jarFilePath may be null if .jar is included in server bundle
 					if (lJarFilePath != null) {
 						mClassLoader.addFile(lJarFilePath);
@@ -375,8 +383,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 					}
 				}
 				if (lFilterClass != null) {
-					Constructor<WebSocketFilter> lConstr =
-							lFilterClass.getDeclaredConstructor(FilterConfiguration.class);
+					Constructor<WebSocketFilter> lConstr
+							= lFilterClass.getDeclaredConstructor(FilterConfiguration.class);
 					lConstr.setAccessible(true);
 					WebSocketFilter lFilter = lConstr.newInstance(new Object[]{lFilterConfig});
 					if (mLog.isDebugEnabled()) {

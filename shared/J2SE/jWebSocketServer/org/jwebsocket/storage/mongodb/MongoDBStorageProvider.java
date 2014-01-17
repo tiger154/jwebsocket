@@ -37,6 +37,7 @@ public class MongoDBStorageProvider extends MongoDBStorageBuilder implements ISt
 
 	/**
 	 * {@inheritDoc
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public IBasicStorage<String, Object> getStorage(String aName) throws Exception {

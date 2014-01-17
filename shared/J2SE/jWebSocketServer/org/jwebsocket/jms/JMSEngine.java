@@ -63,6 +63,10 @@ public class JMSEngine extends BaseEngine {
 	private JMSLoadBalancer mLB;
 	private INodesManager mNodesManager;
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public JMSEngine(EngineConfiguration aConfiguration) {
 		super(aConfiguration);
 
@@ -79,22 +83,42 @@ public class JMSEngine extends BaseEngine {
 				.get("destination");
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getNodeId() {
 		return mNodeId;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Connection getConnection() {
 		return mConnection;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getDestination() {
 		return mDestination;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Session getSession() {
 		return mSessionForClients;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public INodesManager getNodesManager() {
 		return mNodesManager;
 	}
@@ -134,6 +158,10 @@ public class JMSEngine extends BaseEngine {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public IConnectorsManager getConnectorsManager() {
 		return mConnectorsManager;
 	}
@@ -207,6 +235,10 @@ public class JMSEngine extends BaseEngine {
 		super.engineStopped();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public MessageProducer getReplyProducer() {
 		return mReplyProducer;
 	}

@@ -53,6 +53,8 @@ public class MemcachedStorage<K, V> extends BaseStorage<K, V> {
 	/**
 	 *
 	 * {@inheritDoc }
+	 *
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void initialize() throws Exception {
@@ -78,6 +80,8 @@ public class MemcachedStorage<K, V> extends BaseStorage<K, V> {
 	/**
 	 *
 	 * {@inheritDoc }
+	 *
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -99,6 +103,7 @@ public class MemcachedStorage<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc }
 	 *
 	 * @param lKey
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -114,6 +119,7 @@ public class MemcachedStorage<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc }
 	 *
 	 * @param lKey
+	 * @return
 	 */
 	@Override
 	public V remove(Object lKey) {
@@ -134,6 +140,7 @@ public class MemcachedStorage<K, V> extends BaseStorage<K, V> {
 	 *
 	 * @param aKey
 	 * @param aValue
+	 * @return
 	 */
 	@Override
 	public V put(K aKey, V aValue) {
@@ -168,6 +175,8 @@ public class MemcachedStorage<K, V> extends BaseStorage<K, V> {
 	/**
 	 *
 	 * {@inheritDoc }
+	 *
+	 * @return
 	 */
 	@Override
 	public String getName() {
@@ -177,6 +186,9 @@ public class MemcachedStorage<K, V> extends BaseStorage<K, V> {
 	/**
 	 *
 	 * {@inheritDoc }
+	 *
+	 * @param aName
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void setName(String aName) throws Exception {

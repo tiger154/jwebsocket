@@ -48,8 +48,8 @@ public class InternalClient {
 
 	private Logger mLog = Logging.getLogger();
 	private final InternalConnector mConnector;
-	private static Map<Integer, WebSocketResponseTokenListener> mResponseListenersQueue =
-			new FastMap<Integer, WebSocketResponseTokenListener>().shared();
+	private static Map<Integer, WebSocketResponseTokenListener> mResponseListenersQueue
+			= new FastMap<Integer, WebSocketResponseTokenListener>().shared();
 	static int CURRENT_TOKEN_UID = 0;
 	private final ExecutorService mThreadPool;
 	private final Timer mTimer;
@@ -220,6 +220,7 @@ public class InternalClient {
 	 * Adds a listener to the server client connection instance.
 	 *
 	 * @param aListener
+	 * @return
 	 */
 	public IInternalConnectorListener addListener(IInternalConnectorListener aListener) {
 		mConnector.addListener(aListener);

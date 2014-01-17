@@ -30,7 +30,7 @@ import javolution.util.FastSet;
  */
 public class Roles {
 
-	private Map<String, Role> mRoles = new FastMap<String, Role>();
+	private final Map<String, Role> mRoles = new FastMap<String, Role>();
 
 	/**
 	 *
@@ -44,8 +44,8 @@ public class Roles {
 	 */
 	public Roles(Role... aRoles) {
 		if (aRoles != null) {
-			for (int i = 0; i < aRoles.length; i++) {
-				addRole(aRoles[i]);
+			for (Role aRole : aRoles) {
+				addRole(aRole);
 			}
 		}
 	}
@@ -112,7 +112,7 @@ public class Roles {
 	 * @return
 	 */
 	public Set<Right> getRights() {
-		Set lSet = new FastSet();
+		Set<Right> lSet = new FastSet<Right>();
 		for (Role lRole : mRoles.values()) {
 			for (Right lRight : lRole.getRights()) {
 				lSet.add(lRight);
@@ -127,7 +127,7 @@ public class Roles {
 	 * @return
 	 */
 	public Set<String> getRightIdSet() {
-		Set lSet = new FastSet();
+		Set<String> lSet = new FastSet<String>();
 		for (Role lRole : mRoles.values()) {
 			for (Right lRight : lRole.getRights()) {
 				lSet.add(lRight.getId());

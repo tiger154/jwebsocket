@@ -38,7 +38,7 @@ import org.jwebsocket.storage.BaseStorage;
 public class MongoDBCacheStorageV2<K, V> extends BaseStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	private String mName;
-	private DBCollection mCollection;
+	private final DBCollection mCollection;
 
 	/**
 	 *
@@ -90,6 +90,7 @@ public class MongoDBCacheStorageV2<K, V> extends BaseStorage<K, V> implements IB
 	 * {@inheritDoc
 	 *
 	 * @param aNewName
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void setName(String aNewName) throws Exception {
@@ -120,7 +121,6 @@ public class MongoDBCacheStorageV2<K, V> extends BaseStorage<K, V> implements IB
 		if (lRecord != null && isValid(lRecord)) {
 			return true;
 		}
-
 		return false;
 	}
 
@@ -157,7 +157,6 @@ public class MongoDBCacheStorageV2<K, V> extends BaseStorage<K, V> implements IB
 		if (lRecord != null && isValid(lRecord)) {
 			return true;
 		}
-
 		return false;
 	}
 
@@ -176,7 +175,6 @@ public class MongoDBCacheStorageV2<K, V> extends BaseStorage<K, V> implements IB
 				return (V) lRecord.get("v");
 			}
 		}
-
 		return null;
 	}
 
@@ -214,12 +212,13 @@ public class MongoDBCacheStorageV2<K, V> extends BaseStorage<K, V> implements IB
 				return (V) lRecord.get("v");
 			}
 		}
-
 		return null;
 	}
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void initialize() throws Exception {

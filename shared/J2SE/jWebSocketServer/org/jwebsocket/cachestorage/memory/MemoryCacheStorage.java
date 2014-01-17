@@ -106,6 +106,7 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 	 * {@inheritDoc
 	 *
 	 * @param aNewName
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public synchronized void setName(String aNewName) throws Exception {
@@ -136,6 +137,8 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void initialize() throws Exception {
@@ -148,6 +151,8 @@ public class MemoryCacheStorage<K, V> implements IBasicCacheStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void shutdown() throws Exception {

@@ -41,6 +41,9 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 
 	private DBCollection mConnectors;
 
+	/**
+	 *
+	 */
 	public MongoDBConnectorsManager() {
 	}
 
@@ -104,10 +107,18 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 		mConnectors.remove(new BasicDBObject().append(Attributes.CONSUMER_ID, aConsumerId));
 	}
 
+	/**
+	 *
+	 * @param aCollection
+	 */
 	public void setCollection(DBCollection aCollection) {
 		mConnectors = aCollection;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public DBCollection getCollection() {
 		return mConnectors;
 	}
@@ -118,7 +129,7 @@ public class MongoDBConnectorsManager extends BaseConnectorsManager {
 		mConnectors.update(new BasicDBObject().append(Attributes.REPLY_SELECTOR, aReplySelector),
 				new BasicDBObject()
 				.append("$set", new BasicDBObject()
-				.append(Attributes.STATUS, aStatus)));
+						.append(Attributes.STATUS, aStatus)));
 	}
 
 	@Override

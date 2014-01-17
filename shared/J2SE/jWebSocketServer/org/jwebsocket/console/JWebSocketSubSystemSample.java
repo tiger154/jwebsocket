@@ -68,12 +68,12 @@ public class JWebSocketSubSystemSample {
 		// initialize the logging system
 		LoggingConfig lLoggingConfig = new LoggingConfig(
 				20000, 512 // reload delay, max_log_token_length
-				);
+		);
 		Logging.initLogs(lLoggingConfig);
 		mLog = Logging.getLogger(JWebSocketEmbedded.class);
 
 		// initialize the engine
-		List lDomains = new FastList();
+		List<String> lDomains = new FastList<String>();
 		lDomains.add("http://jwebsocket.org");
 		EngineConfiguration lEngineConfig = new EngineConfig(
 				"tcp0", // id
@@ -91,7 +91,7 @@ public class JWebSocketSubSystemSample {
 				lDomains, // list of accepted domains
 				JWebSocketServerConstants.DEFAULT_MAX_CONNECTIONS, // max connections
 				JWebSocketServerConstants.DEFAULT_ON_MAX_CONNECTIONS_STRATEGY, // on max connections reached strategy
-				new FastMap());
+				new FastMap<String, Object>());
 		mEngine = new TCPEngine(lEngineConfig);
 
 		// if engine could be instantiated properly...
@@ -101,7 +101,7 @@ public class JWebSocketSubSystemSample {
 					"ts0", // id
 					"org.jwebsocket.server.TokenServer", // name
 					"-", // jar, needs to be in classpath, i.e. embedded in .jar'/manifest
-					new FastMap());
+					new FastMap<String, Object>());
 			mServer = new TokenServer(lServerConfig);
 
 			// link server and engine
@@ -122,7 +122,7 @@ public class JWebSocketSubSystemSample {
 					lDomains, // list of accepted domains
 					null, // settings
 					true // enabled
-					);
+			);
 			lPlugInChain.addPlugIn(new SystemPlugIn(lPlugInConfig));
 			// the FlashBrigde plug-in is strongly recommended to also support
 			// non websocket compliant browsers
@@ -150,6 +150,7 @@ public class JWebSocketSubSystemSample {
 	/**
 	 *
 	 */
+	@SuppressWarnings("SleepWhileInLoop")
 	public void run() {
 		// wait until engine has terminated (e.g. by "shutdown" command)
 		// TODO: Use JWebSocketInstance getState here!

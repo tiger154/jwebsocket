@@ -37,6 +37,8 @@ public class MongoDBCacheStorageProvider extends MongoDBCacheStorageBuilder impl
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public IBasicCacheStorage getCacheStorage(String aName) throws Exception {

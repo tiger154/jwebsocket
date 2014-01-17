@@ -35,7 +35,7 @@ import org.jwebsocket.storage.BaseStorage;
  */
 public class MongoDBCacheStorageV1<K, V> extends BaseStorage<K, V> implements IBasicCacheStorage<K, V> {
 
-	private DB mDatabase;
+	private final DB mDatabase;
 	private String mName;
 	private DBCollection mCollection;
 
@@ -90,6 +90,7 @@ public class MongoDBCacheStorageV1<K, V> extends BaseStorage<K, V> implements IB
 	 * {@inheritDoc
 	 *
 	 * @param aNewName
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void setName(String aNewName) throws Exception {
@@ -126,7 +127,6 @@ public class MongoDBCacheStorageV1<K, V> extends BaseStorage<K, V> implements IB
 		if (lRecord != null && isValid(lRecord)) {
 			return true;
 		}
-
 		return false;
 	}
 
@@ -162,7 +162,6 @@ public class MongoDBCacheStorageV1<K, V> extends BaseStorage<K, V> implements IB
 		if (lRecord != null && isValid(lRecord)) {
 			return true;
 		}
-
 		return false;
 	}
 
@@ -180,7 +179,6 @@ public class MongoDBCacheStorageV1<K, V> extends BaseStorage<K, V> implements IB
 				return (V) lRecord.get("v");
 			}
 		}
-
 		return null;
 	}
 
@@ -191,7 +189,7 @@ public class MongoDBCacheStorageV1<K, V> extends BaseStorage<K, V> implements IB
 	public Set<K> keySet() {
 		Set<K> lKeySet = new FastSet<K>();
 		DBCursor lCursor = mCollection.find();
-		DBObject lRecord = null;
+		DBObject lRecord;
 
 		while (lCursor.hasNext()) {
 			lRecord = lCursor.next();
@@ -218,12 +216,13 @@ public class MongoDBCacheStorageV1<K, V> extends BaseStorage<K, V> implements IB
 				return (V) lRecord.get("v");
 			}
 		}
-
 		return null;
 	}
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void initialize() throws Exception {

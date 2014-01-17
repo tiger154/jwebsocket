@@ -36,9 +36,9 @@ import org.jwebsocket.tcp.nio.ssl.SSLHandler;
  */
 public class NioTcpConnector extends BaseConnector {
 
-	private static Logger mLog = Logging.getLogger();
-	private InetAddress mRemoteAddress;
-	private int mRemotePort;
+	private static final Logger mLog = Logging.getLogger();
+	private final InetAddress mRemoteAddress;
+	private final int mRemotePort;
 	private boolean mIsAfterWSHandshake;
 	private int mWorkerId = -1;
 	private boolean mIsAfterSSLHandshake;

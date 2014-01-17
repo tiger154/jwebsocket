@@ -33,10 +33,18 @@ public abstract class BaseConnectorsManager implements IConnectorsManager {
 	private ISessionManager mSessionManager;
 	private JMSEngine mEngine;
 
+	/**
+	 *
+	 * @return
+	 */
 	public JMSEngine getEngine() {
 		return mEngine;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public ISessionManager getSessionManager() {
 		return mSessionManager;
 	}
