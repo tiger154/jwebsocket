@@ -46,8 +46,6 @@
         <script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
 		<script type="text/javascript" src="../../res/js/jwsReportingPlugIn.js"></script>
 
-
-
         <!--  PUBLIC WIDGETS   -->
         <script type="text/javascript" src='../../res/js/widgets/wAuth.js'></script>
         <script type="text/javascript" src='../../res/js/widgets/wLog.js'></script>
@@ -71,38 +69,29 @@
                 <div id="demo_box_header_login">
 					<div id="connect_area">
 						<div id="connect_button" class="button onmouseup" 
-							 onmouseover="this.className = 'button onmouseover'" 
-							 onmousedown="this.className = 'button onmousedown'" 
-							 onmouseup="this.className = 'button onmouseup'" 
-							 onmouseout="this.className = 'button onmouseout'" 
-							 onclick="this.className = 'button onmouseover'">
-							<div class="l"></div>
-							<div class="c">Connect</div>
-							<div class="r"></div>
+							 onmouseover="this.className = 'button onmouseover'"
+							 onmouseout="this.className = 'button onmouseout'">
+							<div class="btn_left"></div>
+							<div class="btn_center"> Connect </div>
+							<div class="btn_right"></div>
 						</div>
-						<div id="disconnect_button" class="button onmouseup" 
-							 onmouseover="this.className = 'button onmouseover'" 
-							 onmousedown="this.className = 'button onmousedown'" 
-							 onmouseup="this.className = 'button onmouseup'" 
-							 onmouseout="this.className = 'button onmouseout'" 
-							 onclick="this.className = 'button onmouseover'">
-							<div class="l"></div>
-							<div class="c">Disconnect</div>
-							<div class="r"></div>
+						<div id="disconnect_button" class="button onmouseup"
+							 onmouseover="this.className = 'button onmouseover'"
+							 onmouseout="this.className = 'button onmouseout'">
+							<div class="btn_left"></div>
+							<div class="btn_center"> Disconnect </div>
+							<div class="btn_right"></div>
 						</div>
 					</div>
 					<div id="logoff_area">
                         <div id="user_info">
                             <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
                             <div id="logoff_button" class="button onmouseup" 
-								 onmouseover="this.className = 'button onmouseover'" 
-                                 onmousedown="this.className = 'button onmousedown'" 
-                                 onmouseup="this.className = 'button onmouseup'" 
-                                 onmouseout="this.className = 'button onmouseout'" 
-                                 onclick="this.className = 'button onmouseover'">
-                                <div class="l"></div>
-                                <div class="c">Logout</div>
-                                <div class="r"></div>
+							 onmouseover="this.className = 'button onmouseover'"
+							 onmouseout="this.className = 'button onmouseout'">
+							<div class="btn_left"></div>
+							<div class="btn_center"> Logout </div>
+							<div class="btn_right"></div>
                             </div>
                         </div>
                     </div>
@@ -114,14 +103,11 @@
                             <input type="password" id="user_password" value="root"/>
                         </div>
                         <div id="login_button" class="button onmouseup" 
-							 onmouseover="this.className = 'button onmouseover'" 
-                             onmousedown="this.className = 'button onmousedown'" 
-                             onmouseup="this.className = 'button onmouseup'" 
-                             onmouseout="this.className = 'button onmouseout'" 
-                             onclick="this.className = 'button onmouseover'">
-                            <div class="l"></div>
-                            <div class="c">Login</div>
-                            <div class="r"></div>
+							 onmouseover="this.className = 'button onmouseover'"
+							 onmouseout="this.className = 'button onmouseout'">
+							<div class="btn_left"></div>
+							<div class="btn_center"> Login </div>
+							<div class="btn_right"></div>
                         </div>
                     </div>
 
@@ -214,28 +200,9 @@
 								Cross-Browser Compatibility</a> page.
 						</div>
 					</div>
-					<!--       TEST REPORT BOX           -->
-					<div class="jws_test_create_report">
-						<div class="box_header">Test Create Report</div>
-						<div class="box_content"</div>						
-						<div id="test_get_reports_btn" class="button onmouseup" 
-							 onmouseover="this.className = 'button onmouseover'"
-							 onmouseout="this.className = 'button onmouseout'">
-							<div class="btn_left"></div>
-							<div class="btn_center"> Test Get Reports </div>
-							<div class="btn_right"></div>
-						</div>
-						<div id="test_create_report_btn" class="button onmouseup" 
-							 onmouseover="this.className = 'button onmouseover'"
-							 onmouseout="this.className = 'button onmouseout'">
-							<div class="btn_left"></div>
-							<div class="btn_center"> Test Create Report </div>
-							<div class="btn_right"></div>
-						</div>
-					</div>
 					<!--       LOG BOX           -->
 
-					<div id="log_box" class="box">
+					<div id="log_box" class="jws_log_box">
 						<div id="log_box_header">
 							<div id="show_hide_log" class="hide">Hide Log</div>
 							<div id="clear_log">Clear Log</div>

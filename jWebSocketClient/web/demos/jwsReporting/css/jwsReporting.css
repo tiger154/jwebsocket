@@ -91,23 +91,6 @@
 	height:160px;
 
 }
-/*test create report*/
-
-.jws_test_create_report{
-	margin-left: 5px;
-	margin-top: 300px;
-	width:310px;
-	height: 25px;
-}
-#test_create_report_btn{
-	margin-left:10px;
-}
-
-
-
-
-
-
 .upload_template_btn{
 	margin-left: 5px;
 	width:210px;
@@ -189,4 +172,7 @@
 }
 #log_box{
 	width:680px;
+}
+.jws_log_box{
+	margin-top:50px !important;
 }
