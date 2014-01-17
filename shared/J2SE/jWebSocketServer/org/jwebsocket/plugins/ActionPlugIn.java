@@ -128,8 +128,8 @@ public class ActionPlugIn extends TokenPlugIn {
 			}
 
 			if (lError) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "calling '" + aMethodName + "' action..."));
-				lEx.printStackTrace(System.out);
+				// let the global exception handler to process this exception
+				throw new RuntimeException(lEx);
 			} else if (mLog.isDebugEnabled()) {
 				// nested expections are debugged only
 				mLog.debug("Exception (" + lExClass + ":" + lExMsg + ") produced calling '"
