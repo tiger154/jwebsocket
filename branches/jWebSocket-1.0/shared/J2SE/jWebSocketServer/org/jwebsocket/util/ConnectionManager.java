@@ -40,6 +40,10 @@ public class ConnectionManager implements IInitializable {
 
 	private final Map<String, Object> mConnections = new FastMap<String, Object>();
 
+	/**
+	 *
+	 * @param aConnections
+	 */
 	@SuppressWarnings("OverridableMethodCallInConstructor")
 	public ConnectionManager(Map<String, Object> aConnections) {
 		for (String lName : aConnections.keySet()) {
@@ -47,10 +51,19 @@ public class ConnectionManager implements IInitializable {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Set<String> getConnectionNames() {
 		return mConnections.keySet();
 	}
 
+	/**
+	 *
+	 * @param aConnectionName
+	 * @return
+	 */
 	public boolean containsConnection(String aConnectionName) {
 		return mConnections.containsKey(aConnectionName);
 	}
@@ -60,6 +73,12 @@ public class ConnectionManager implements IInitializable {
 				+ "org.jwebsocket.connection." + aConnectionName + "\", \"write\""));
 	}
 
+	/**
+	 *
+	 * @param aConnectionName
+	 * @param aConnection
+	 * @throws AccessControlException
+	 */
 	public void putConnection(String aConnectionName, Object aConnection) throws AccessControlException {
 		checkPermission(aConnectionName);
 
@@ -67,12 +86,23 @@ public class ConnectionManager implements IInitializable {
 		mConnections.put(aConnectionName, aConnection);
 	}
 
+	/**
+	 *
+	 * @param aConnectionName
+	 * @return
+	 */
 	public Object removeConnection(String aConnectionName) {
 		checkPermission(aConnectionName);
 
 		return mConnections.remove(aConnectionName);
 	}
 
+	/**
+	 *
+	 * @param aConnectionName
+	 * @return
+	 * @throws AccessControlException
+	 */
 	public Object getConnection(String aConnectionName) throws AccessControlException {
 		checkPermission(aConnectionName);
 
@@ -81,6 +111,11 @@ public class ConnectionManager implements IInitializable {
 		return mConnections.get(aConnectionName);
 	}
 
+	/**
+	 *
+	 * @param aConnection
+	 * @return
+	 */
 	public boolean supportConnection(Object aConnection) {
 		return aConnection instanceof Mongo
 				|| aConnection instanceof Connection
@@ -88,6 +123,11 @@ public class ConnectionManager implements IInitializable {
 				|| aConnection instanceof javax.jms.Connection;
 	}
 
+	/**
+	 *
+	 * @param aConnectionName
+	 * @return
+	 */
 	@SuppressWarnings("UseSpecificCatch")
 	public boolean isValid(String aConnectionName) {
 		try {
@@ -107,6 +147,11 @@ public class ConnectionManager implements IInitializable {
 		}
 	}
 
+	/**
+	 *
+	 * @param aConnection
+	 * @return
+	 */
 	public static boolean isValid(Mongo aConnection) {
 		try {
 			aConnection.getConnector().getDBPortPool(aConnection.getAddress()).get().ensureOpen();
@@ -117,14 +162,31 @@ public class ConnectionManager implements IInitializable {
 		return true;
 	}
 
+	/**
+	 *
+	 * @param aConnection
+	 * @return
+	 * @throws SQLException
+	 */
 	public static boolean isValid(Connection aConnection) throws SQLException {
 		return aConnection.isValid(3000);
 	}
 
+	/**
+	 *
+	 * @param aConnection
+	 * @return
+	 */
 	public static boolean isValid(javax.jms.Connection aConnection) {
 		return true;
 	}
 
+	/**
+	 *
+	 * @param aDS
+	 * @return
+	 * @throws SQLException
+	 */
 	public static boolean isValid(DataSource aDS) throws SQLException {
 		return isValid(aDS.getConnection());
 	}
