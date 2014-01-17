@@ -45,6 +45,10 @@ public class JMSServer extends TokenServer {
 	private JMSManager mJMSManager = null;
 	private IClusterSynchronizer mSynchronizer = null;
 
+	/**
+	 *
+	 * @param aServerConfig
+	 */
 	public JMSServer(ServerConfiguration aServerConfig) {
 		super(aServerConfig);
 	}
@@ -61,6 +65,10 @@ public class JMSServer extends TokenServer {
 		super.engineStarted(aEngine);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public IClusterSynchronizer getSynchronizer() {
 		return mSynchronizer;
 	}

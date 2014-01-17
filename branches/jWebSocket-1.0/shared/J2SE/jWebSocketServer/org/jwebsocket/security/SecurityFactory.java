@@ -59,7 +59,7 @@ public class SecurityFactory {
 	 */
 	public static String USER_LOCKED = "locked";
 	private static boolean mAutoAnonymous = false;
-	private static boolean mUseSpring = true;
+	private static final boolean mUseSpring = true;
 	private static AuthenticationProvider mAuthProv;
 	private static ProviderManager mAuthProvMgr;
 
@@ -203,11 +203,7 @@ public class SecurityFactory {
 	 */
 	public static boolean isValidUser(String aLoginname) {
 		User lUser = mUsers.getUserByLoginName(aLoginname);
-		if (lUser != null) {
-			return true;
-		} else {
-			return false;
-		}
+		return (lUser != null);
 	}
 
 	/**
@@ -348,7 +344,7 @@ public class SecurityFactory {
 		Rights lRights = new Rights();
 		if (aNamespace != null) {
 			for (Right lRight : mRights.getRights()) {
-				if (aNamespace == null || lRight.getId().startsWith(aNamespace)) {
+				if (lRight.getId().startsWith(aNamespace)) {
 					lRights.addRight(lRight);
 				}
 			}

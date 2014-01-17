@@ -48,18 +48,34 @@ public class MongoDBStorageBuilder implements IInitializable {
 	private DBCollection mCollection = null;
 	private DB mDatabase = null;
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getUsername() {
 		return mUsername;
 	}
 
+	/**
+	 *
+	 * @param aUsername
+	 */
 	public void setUsername(String aUsername) {
 		this.mUsername = aUsername;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getPassword() {
 		return mPassword;
 	}
 
+	/**
+	 *
+	 * @param aPassword
+	 */
 	public void setPassword(String aPassword) {
 		mPassword = aPassword;
 	}

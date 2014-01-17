@@ -58,10 +58,18 @@ public class MongoDBConsumerAdviceTempStorage implements IConsumerAdviceTempStor
 		return lRecord.toMap();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public DBCollection getCollection() {
 		return mCollection;
 	}
 
+	/**
+	 *
+	 * @param aCollection
+	 */
 	public void setCollection(DBCollection aCollection) {
 		mCollection = aCollection;
 	}

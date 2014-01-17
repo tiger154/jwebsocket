@@ -55,6 +55,7 @@ public interface INodesManager extends IInitializable {
 	 * @param aNodeId
 	 * @param aStatus 0 = ready, 1 = paused (does not accept new requests), 2 =
 	 * offline
+	 * @throws java.lang.Exception
 	 */
 	void setStatus(String aNodeId, int aStatus) throws Exception;
 
@@ -62,6 +63,7 @@ public interface INodesManager extends IInitializable {
 	 * Gets the optimum jWebSocket server node name.
 	 *
 	 * @return
+	 * @throws java.lang.Exception
 	 */
 	String getOptimumNode() throws Exception;
 
@@ -69,6 +71,7 @@ public interface INodesManager extends IInitializable {
 	 * Increases a jWebSocket server node number of processed requests.
 	 *
 	 * @param aNodeId
+	 * @throws java.lang.Exception
 	 */
 	void increaseRequests(String aNodeId) throws Exception;
 

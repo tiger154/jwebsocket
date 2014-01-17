@@ -29,6 +29,14 @@ import org.springframework.util.Assert;
  */
 public class MongoDBUtils {
 
+	/**
+	 *
+	 * @param aConnection
+	 * @param aDatabaseName
+	 * @param aUsername
+	 * @param aPassword
+	 * @return
+	 */
 	public static DB getDB(Mongo aConnection, String aDatabaseName, String aUsername, String aPassword) {
 		DB lDB = aConnection.getDB(aDatabaseName);
 		if (null != aUsername) {
@@ -39,6 +47,12 @@ public class MongoDBUtils {
 		return lDB;
 	}
 
+	/**
+	 *
+	 * @param aConnection
+	 * @param aDatabaseName
+	 * @return
+	 */
 	public static DB getDB(Mongo aConnection, String aDatabaseName) {
 		return getDB(aConnection, aDatabaseName, null, null);
 	}

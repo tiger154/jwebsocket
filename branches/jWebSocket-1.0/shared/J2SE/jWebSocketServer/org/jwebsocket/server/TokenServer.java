@@ -163,6 +163,8 @@ public class TokenServer extends BaseServer {
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @param aConnector
 	 */
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
@@ -1011,7 +1013,7 @@ public class TokenServer extends BaseServer {
 	 * @return
 	 * @throws java.lang.Exception
 	 */
-	public JMSManager getJMSManager() throws Exception{
+	public JMSManager getJMSManager() throws Exception {
 		return (JMSManager) JWebSocketBeanFactory.getInstance().getBean("jmsManager");
 	}
 }

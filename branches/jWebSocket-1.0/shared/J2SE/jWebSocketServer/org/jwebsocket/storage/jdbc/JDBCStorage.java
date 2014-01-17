@@ -27,9 +27,8 @@ import javolution.util.FastSet;
 import org.jwebsocket.storage.BaseStorage;
 
 /**
- * Implementation of the
- * <code>IBasicStorage</code> interface that stores jWebSocket component data in
- * the database.
+ * Implementation of the <code>IBasicStorage</code> interface that stores
+ * jWebSocket component data in the database.
  *
  * @author puran
  * @version $Id: JDBCStorage.java 1277 2011-01-02 15:09:35Z fivefeetfurther $
@@ -107,33 +106,27 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	protected String appColumnName = "store_app_key";
 	// ------------------------------------------------------------- SQL Variables
 	/**
-	 * Variable to hold the
-	 * <code>getSize()</code> prepared statement.
+	 * Variable to hold the <code>getSize()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedSizeSql = null;
 	/**
-	 * Variable to hold the
-	 * <code>keys()</code> prepared statement.
+	 * Variable to hold the <code>keys()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedKeysSql = null;
 	/**
-	 * Variable to hold the
-	 * <code>save()</code> prepared statement.
+	 * Variable to hold the <code>save()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedSaveSql = null;
 	/**
-	 * Variable to hold the
-	 * <code>clear()</code> prepared statement.
+	 * Variable to hold the <code>clear()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedClearSql = null;
 	/**
-	 * Variable to hold the
-	 * <code>remove()</code> prepared statement.
+	 * Variable to hold the <code>remove()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedRemoveSql = null;
 	/**
-	 * Variable to hold the
-	 * <code>load()</code> prepared statement.
+	 * Variable to hold the <code>load()</code> prepared statement.
 	 */
 	protected PreparedStatement preparedLoadSql = null;
 	/**
@@ -293,6 +286,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return
 	 */
 	@Override
 	public Set keySet() {
@@ -308,8 +303,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 				}
 				try {
 					if (preparedKeysSql == null) {
-						String keysSql =
-								"SELECT " + keyColumnName
+						String keysSql
+								= "SELECT " + keyColumnName
 								+ " FROM " + tableName
 								+ " WHERE " + appColumnName + " = ?";
 						preparedKeysSql = _conn.prepareStatement(keysSql);
@@ -348,6 +343,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return
 	 */
 	@Override
 	public int size() {
@@ -397,6 +394,9 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param key
+	 * @return
 	 */
 	@Override
 	public Object get(Object key) {
@@ -414,8 +414,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 				}
 				try {
 					if (preparedLoadSql == null) {
-						String loadSql =
-								"SELECT " + valueColumnName
+						String loadSql
+								= "SELECT " + valueColumnName
 								+ " FROM " + tableName
 								+ " WHERE " + keyColumnName + " = ?"
 								+ " AND " + appColumnName + " = ?";
@@ -464,6 +464,9 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param key
+	 * @return
 	 */
 	@Override
 	public Object remove(Object key) {
@@ -478,8 +481,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 
 				try {
 					if (preparedRemoveSql == null) {
-						String removeSql =
-								"DELETE FROM " + tableName
+						String removeSql
+								= "DELETE FROM " + tableName
 								+ " WHERE " + keyColumnName + " = ?"
 								+ " AND " + appColumnName + " = ?";
 						preparedRemoveSql = _conn.prepareStatement(removeSql);
@@ -544,6 +547,7 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	 *
 	 * @param aKey
 	 * @param aData
+	 * @return
 	 */
 	@Override
 	public Object put(Object aKey, Object aData) {
@@ -574,8 +578,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 					// in = new BufferedInputStream(bis, size);
 
 					if (preparedSaveSql == null) {
-						String saveSql =
-								"INSERT INTO " + tableName
+						String saveSql
+								= "INSERT INTO " + tableName
 								+ " (" + keyColumnName + ", " + valueColumnName + ", " + appColumnName + ") "
 								+ "VALUES (?, ?, ?)";
 						preparedSaveSql = lConn.prepareStatement(saveSql);
@@ -625,8 +629,8 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 	// --------------------------------------------------------- Protected Methods
 	/**
 	 * Check the connection associated with this store, if it's
-	 * <code>null</code> or closed try to reopen it. Returns
-	 * <code>null</code> if the connection could not be established.
+	 * <code>null</code> or closed try to reopen it. Returns <code>null</code>
+	 * if the connection could not be established.
 	 *
 	 * @return <code>Connection</code> if the connection succeeded
 	 */
@@ -714,41 +718,41 @@ public class JDBCStorage extends BaseStorage<Object, Object> {
 		// Close our prepared statements (if any)
 		try {
 			preparedSizeSql.close();
-		} catch (Throwable f) {
+		} catch (SQLException f) {
 			handleThrowable(f);
 		}
 		this.preparedSizeSql = null;
 
 		try {
 			preparedKeysSql.close();
-		} catch (Throwable f) {
+		} catch (SQLException f) {
 			handleThrowable(f);
 		}
 		this.preparedKeysSql = null;
 
 		try {
 			preparedSaveSql.close();
-		} catch (Throwable f) {
+		} catch (SQLException f) {
 			handleThrowable(f);
 		}
 		this.preparedSaveSql = null;
 
 		try {
 			preparedClearSql.close();
-		} catch (Throwable f) {
+		} catch (SQLException f) {
 			handleThrowable(f);
 		}
 
 		try {
 			preparedRemoveSql.close();
-		} catch (Throwable f) {
+		} catch (SQLException f) {
 			handleThrowable(f);
 		}
 		this.preparedRemoveSql = null;
 
 		try {
 			preparedLoadSql.close();
-		} catch (Throwable f) {
+		} catch (SQLException f) {
 			handleThrowable(f);
 		}
 		this.preparedLoadSql = null;

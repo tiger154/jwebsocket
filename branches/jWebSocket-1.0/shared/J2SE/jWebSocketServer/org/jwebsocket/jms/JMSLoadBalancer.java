@@ -57,6 +57,15 @@ public class JMSLoadBalancer implements IInitializable {
 	private final static Logger mLog = Logging.getLogger();
 	private final String mNodeId;
 
+	/**
+	 *
+	 * @param aNodeId
+	 * @param aDestination
+	 * @param aClientSession
+	 * @param aNodeSession
+	 * @param aNodesManager
+	 * @param aHostname
+	 */
 	public JMSLoadBalancer(String aNodeId, String aDestination, Session aClientSession,
 			Session aNodeSession, INodesManager aNodesManager, String aHostname) {
 		mServerDestination = aDestination;

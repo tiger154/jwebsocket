@@ -35,7 +35,7 @@ import org.jwebsocket.storage.BaseStorage;
 public class HttpSessionStorage extends BaseStorage<String, Object> {
 
 	private String mName = null;
-	private HttpSession mSession;
+	private final HttpSession mSession;
 
 	/**
 	 *
@@ -59,6 +59,8 @@ public class HttpSessionStorage extends BaseStorage<String, Object> {
 	/**
 	 *
 	 * {@inheritDoc }
+	 *
+	 * @return
 	 */
 	@Override
 	public String getName() {
@@ -68,6 +70,9 @@ public class HttpSessionStorage extends BaseStorage<String, Object> {
 	/**
 	 *
 	 * {@inheritDoc }
+	 *
+	 * @param aName
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void setName(String aName) throws Exception {
@@ -76,16 +81,16 @@ public class HttpSessionStorage extends BaseStorage<String, Object> {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return
 	 */
 	@Override
-	public Set keySet() {
-		Set lKeys = new FastSet();
+	public Set<String> keySet() {
+		Set<String> lKeys = new FastSet<String>();
 		Enumeration<String> lSessionKeys = mSession.getAttributeNames();
-
 		while (lSessionKeys.hasMoreElements()) {
 			lKeys.add(lSessionKeys.nextElement());
 		}
-
 		return lKeys;
 	}
 
@@ -93,6 +98,7 @@ public class HttpSessionStorage extends BaseStorage<String, Object> {
 	 * {@inheritDoc}
 	 *
 	 * @param aKey
+	 * @return
 	 */
 	@Override
 	public Object get(Object aKey) {
@@ -103,12 +109,12 @@ public class HttpSessionStorage extends BaseStorage<String, Object> {
 	 * {@inheritDoc}
 	 *
 	 * @param aKey
+	 * @return
 	 */
 	@Override
 	public Object remove(Object aKey) {
 		Object lRes = get(aKey);
 		mSession.removeAttribute(aKey.toString());
-
 		return lRes;
 	}
 
@@ -130,6 +136,7 @@ public class HttpSessionStorage extends BaseStorage<String, Object> {
 	 *
 	 * @param aKey
 	 * @param aData
+	 * @return
 	 */
 	@Override
 	public Object put(String aKey, Object aData) {

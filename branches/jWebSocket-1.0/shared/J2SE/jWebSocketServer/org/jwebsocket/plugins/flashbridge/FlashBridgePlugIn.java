@@ -43,7 +43,7 @@ import org.jwebsocket.plugins.TokenPlugIn;
  */
 public class FlashBridgePlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket FlashBridgePlugIn";
@@ -62,8 +62,8 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 	private Thread mBridgeThread = null;
 	private final static String PATH_TO_CROSSDOMAIN_XML = "crossdomain_xml";
 	private final static String PORT_CONFIGURATION = "port";
-	private static String mCrossDomainXML =
-			"<cross-domain-policy>"
+	private static String mCrossDomainXML
+			= "<cross-domain-policy>"
 			+ "<allow-access-from domain=\"*\" to-ports=\"*\" />"
 			+ "</cross-domain-policy>";
 
@@ -115,7 +115,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 				if (mLog.isInfoEnabled()) {
 					mLog.info("crossdomain config successfully loaded from " + lPathToCrossDomainXML + ".");
 				}
-			} catch (Exception lEx) {
+			} catch (IOException lEx) {
 				mLog.error(lEx.getClass().getSimpleName()
 						+ " reading crossdomain.xml: " + lEx.getMessage());
 			}
@@ -128,7 +128,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 				if (lInPort > 0) {
 					mListenerPort = lInPort;
 				}
-			} catch (Exception e) {
+			} catch (NumberFormatException e) {
 				mLog.error("Port configuration error found while trying to parse "
 						+ lPort + ". Please check your Flashbridge port configuration section");
 			}
@@ -220,8 +220,8 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 							if (mLog.isDebugEnabled()) {
 								mLog.debug("Received " + lLine + "...");
 							}
-							lFoundPolicyFileRequest =
-									lLine.indexOf("policy-file-request") >= 0; // "<policy-file-request/>"
+							lFoundPolicyFileRequest
+									= lLine.indexOf("policy-file-request") >= 0; // "<policy-file-request/>"
 						}
 						if (lFoundPolicyFileRequest) {
 							if (mLog.isDebugEnabled()) {
@@ -233,7 +233,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 						} else {
 							mLog.warn("Received invalid policy-file-request (" + lLine + ")...");
 						}
-					} catch (Exception lEx) {
+					} catch (IOException lEx) {
 						mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
 					}
 
@@ -241,7 +241,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 					if (mLog.isDebugEnabled()) {
 						mLog.debug("Client disconnected...");
 					}
-				} catch (Exception lEx) {
+				} catch (IOException lEx) {
 					if (mIsRunning) {
 						mIsRunning = false;
 						mLog.error(lEx.getClass().getSimpleName() + ": " + lEx.getMessage());
@@ -291,13 +291,13 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Closed FlashBridge server socket.");
 				}
-			} catch (Exception ex) {
+			} catch (IOException ex) {
 				mLog.error("(accept) " + ex.getClass().getSimpleName() + ": " + ex.getMessage());
 			}
 
 			try {
 				mBridgeThread.join(10000);
-			} catch (Exception ex) {
+			} catch (InterruptedException ex) {
 				mLog.error(ex.getClass().getSimpleName() + ": " + ex.getMessage());
 			}
 			if (mLog.isDebugEnabled()) {

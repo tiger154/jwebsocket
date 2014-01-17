@@ -67,6 +67,10 @@ public class JMSConnector extends BaseConnector {
 		mConsumerId = aConsumerId;
 	}
 
+	/**
+	 *
+	 * @param aMap
+	 */
 	public void setCustomVarsContainer(Map<String, Object> aMap) {
 		mCustomVars = aMap;
 	}
@@ -119,6 +123,12 @@ public class JMSConnector extends BaseConnector {
 		return getEngine().getConfiguration().getMaxFramesize();
 	}
 
+	/**
+	 *
+	 * @param aData
+	 * @return
+	 * @throws JMSException
+	 */
 	protected ActiveMQTextMessage buildMessage(String aData) throws JMSException {
 		ActiveMQTextMessage lMessage = new ActiveMQTextMessage();
 		lMessage.setStringProperty(Attributes.CONNECTION_ID, mConnectionId);

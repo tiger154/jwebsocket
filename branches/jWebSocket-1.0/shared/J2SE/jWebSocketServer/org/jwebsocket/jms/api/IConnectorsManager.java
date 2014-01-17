@@ -98,6 +98,8 @@ public interface IConnectorsManager extends IInitializable {
 	 * Sets the connector status. 0 == ONLINE, 1 = OFFLINE
 	 *
 	 * @param aReplySelector
+	 * @param aStatus
+	 * @throws java.lang.Exception
 	 */
 	void setStatus(String aReplySelector, int aStatus) throws Exception;
 }

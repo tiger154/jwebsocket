@@ -63,6 +63,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
@@ -75,7 +76,7 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public class SystemPlugIn extends TokenPlugIn {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	// specify name space for system plug-in
 	/**
 	 *
@@ -136,10 +137,10 @@ public class SystemPlugIn extends TokenPlugIn {
 	private static final String BROADCAST_LOGIN_KEY = "broadcastLoginEvent";
 	private static boolean BROADCAST_LOGOUT = true;
 	private static final String BROADCAST_LOGOUT_KEY = "broadcastLogoutEvent";
-	private static String ALLOW_ANONYMOUS_KEY = "allowAnonymousLogin";
-	private static String ANONYMOUS_USER = "anonymous";
+	private static final String ALLOW_ANONYMOUS_KEY = "allowAnonymousLogin";
+	private static final String ANONYMOUS_USER = "anonymous";
 	private static boolean ALLOW_ANONYMOUS_LOGIN = false;
-	private static String ALLOW_AUTO_ANONYMOUS_KEY = "allowAutoAnonymous";
+	private static final String ALLOW_AUTO_ANONYMOUS_KEY = "allowAutoAnonymous";
 	private static boolean ALLOW_AUTO_ANONYMOUS = false;
 	private ProviderManager mAuthProvMgr;
 	private ISessionManager mSessionManager;
@@ -344,6 +345,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public ISessionManager getSessionManager() {
 		return mSessionManager;
 	}
@@ -782,8 +787,8 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		WebSocketConnector lTargetConnector;
 		String lTargetId = aToken.getString("unid");
-		Boolean lIsResponseRequested =
-				aToken.getBoolean("responseRequested", true);
+		Boolean lIsResponseRequested
+				= aToken.getBoolean("responseRequested", true);
 		String lTargetType;
 		if (lTargetId != null) {
 			lTargetConnector = getNode(lTargetId);
@@ -893,10 +898,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		 */
 		aToken.setString("sourceId", aConnector.getId());
 		// keep senderIncluded beging false as default, apps rely on this!
-		Boolean lIsSenderIncluded =
-				aToken.getBoolean("senderIncluded", false);
-		Boolean lIsResponseRequested =
-				aToken.getBoolean("responseRequested", true);
+		Boolean lIsSenderIncluded
+				= aToken.getBoolean("senderIncluded", false);
+		Boolean lIsResponseRequested
+				= aToken.getBoolean("responseRequested", true);
 
 		// remove further non target related fields
 		aToken.remove("senderIncluded");
@@ -920,10 +925,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		int lTimeout = aToken.getInteger("timeout", 0);
 
 		Boolean lNoGoodBye = aToken.getBoolean("noGoodBye", false);
-		Boolean lNoLogoutBroadcast =
-				aToken.getBoolean("noLogoutBroadcast", false);
-		Boolean lNoDisconnectBroadcast =
-				aToken.getBoolean("noDisconnectBroadcast", false);
+		Boolean lNoLogoutBroadcast
+				= aToken.getBoolean("noLogoutBroadcast", false);
+		Boolean lNoDisconnectBroadcast
+				= aToken.getBoolean("noDisconnectBroadcast", false);
 
 		// only send a good bye message if timeout is > 0 and not to be noed
 		if (lTimeout > 0 && !lNoGoodBye) {
@@ -1010,7 +1015,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			}
 			try {
 				Thread.sleep(lDuration);
-			} catch (Exception lEx) {
+			} catch (InterruptedException lEx) {
 				// ignore potential exception here!
 			}
 			lResponse.setInteger("duration", lDuration);
@@ -1073,10 +1078,10 @@ public class SystemPlugIn extends TokenPlugIn {
 		if (getUsername(aConnector) != null) {
 			String lGroup = aToken.getString("group");
 			Integer lMode = aToken.getInteger("mode", 0);
-			FastMap lFilter = new FastMap();
+			FastMap<String, Object> lFilter = new FastMap<String, Object>();
 			lFilter.put(BaseConnector.VAR_USERNAME, ".*");
 			List<String> listOut = new FastList<String>();
-			for (WebSocketConnector lConnector : (Collection<WebSocketConnector>) getServer()
+			for (WebSocketConnector lConnector : getServer()
 					.selectConnectors(lFilter).values()) {
 				listOut.add(getUsername(lConnector) + "@" + lConnector.getId());
 			}
@@ -1134,7 +1139,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		if (SecurityHelper.isUserAuthenticated(aConnector)) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(
-					aToken, -1, "Is authenticated already, logoff first!"));
+							aToken, -1, "Is authenticated already, logoff first!"));
 			return;
 		}
 
@@ -1149,7 +1154,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		Authentication lAuthResult;
 		try {
 			lAuthResult = getAuthProvMgr().authenticate(lAuthRequest);
-		} catch (Exception ex) {
+		} catch (AuthenticationException ex) {
 			String lMsg = ex.getClass().getSimpleName() + ": " + ex.getMessage();
 			Token lResponse = getServer().createErrorToken(aToken, -1, lMsg);
 			lResponse.setString("username", lUsername);
@@ -1395,7 +1400,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		boolean lExists = lStorage.containsKey(lKey);
 
 		Token lResponse = createResponse(aToken);
-		Map lMap = new HashMap();
+		Map<String, Object> lMap = new FastMap<String, Object>();
 		lMap.put("key", lKey);
 		lMap.put("exists", lExists);
 		lResponse.setMap("data", lMap);
@@ -1446,7 +1451,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		Object lValue = lStorage.remove(lKey);
 
 		Token lResponse = createResponse(aToken);
-		Map lMap = new HashMap();
+		Map<String, Object> lMap = new FastMap<String, Object>();
 		lMap.put("key", lKey);
 		lMap.put("value", lValue);
 		lResponse.setMap("data", lMap);

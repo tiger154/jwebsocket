@@ -52,6 +52,8 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void initialize() throws Exception {
@@ -65,6 +67,8 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @return
 	 */
 	@Override
 	public String getName() {
@@ -75,6 +79,7 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc
 	 *
 	 * @param newName
+	 * @throws java.lang.Exception
 	 */
 	@Override
 	public void setName(String newName) throws Exception {
@@ -95,6 +100,8 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @return
 	 */
 	@Override
 	public int size() {
@@ -103,6 +110,8 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @return
 	 */
 	@Override
 	public boolean isEmpty() {
@@ -113,34 +122,31 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc
 	 *
 	 * @param aKey
+	 * @return
 	 */
 	@Override
 	public boolean containsKey(Object aKey) {
 		DBObject lValue = mCollection.findOne(new BasicDBObject().append("k", (String) aKey));
-		if (lValue != null) {
-			return true;
-		}
-		return false;
+		return (lValue != null);
 	}
 
 	/**
 	 * {@inheritDoc
 	 *
 	 * @param aValue
+	 * @return
 	 */
 	@Override
 	public boolean containsValue(Object aValue) {
 		DBObject lRecord = mCollection.findOne(new BasicDBObject().append("v", aValue));
-		if (lRecord != null) {
-			return true;
-		}
-		return false;
+		return (lRecord != null);
 	}
 
 	/**
 	 * {@inheritDoc
 	 *
 	 * @param aKey
+	 * @return
 	 */
 	@Override
 	public V get(Object aKey) {
@@ -167,6 +173,7 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 	 * {@inheritDoc
 	 *
 	 * @param aKey
+	 * @return
 	 */
 	@Override
 	public V remove(Object aKey) {
@@ -189,6 +196,8 @@ public class MongoDBStorageV1<K, V> extends BaseStorage<K, V> {
 
 	/**
 	 * {@inheritDoc
+	 *
+	 * @return
 	 */
 	@Override
 	public Set<K> keySet() {

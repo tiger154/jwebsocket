@@ -33,10 +33,18 @@ public class MongoDBClusterSynchronizer implements IClusterSynchronizer {
 
 	private DBCollection mCollection;
 
+	/**
+	 *
+	 * @param aCollection
+	 */
 	public void setCollection(DBCollection aCollection) {
 		this.mCollection = aCollection;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public DBCollection getCollection() {
 		return mCollection;
 	}

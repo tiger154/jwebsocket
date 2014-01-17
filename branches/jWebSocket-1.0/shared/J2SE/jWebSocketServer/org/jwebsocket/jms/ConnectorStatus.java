@@ -24,6 +24,13 @@ package org.jwebsocket.jms;
  */
 public class ConnectorStatus {
 
+	/**
+	 *
+	 */
 	public static int UP = 0;
+
+	/**
+	 *
+	 */
 	public static int DOWN = 1;
 }

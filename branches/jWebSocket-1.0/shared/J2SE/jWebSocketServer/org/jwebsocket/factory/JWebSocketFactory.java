@@ -196,8 +196,8 @@ public class JWebSocketFactory {
 
 		// try to load configuration from .xml file
 		try {
-			WebSocketInitializer lInitializer =
-					lLoader.initialize(aConfigPath);
+			WebSocketInitializer lInitializer
+					= lLoader.initialize(aConfigPath);
 
 			if (lInitializer == null) {
 				JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
@@ -232,8 +232,8 @@ public class JWebSocketFactory {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Initializing plugins...");
 			}
-			Map<String, List<WebSocketPlugIn>> lPluginMap =
-					lInitializer.initializePlugins();
+			Map<String, List<WebSocketPlugIn>> lPluginMap
+					= lInitializer.initializePlugins();
 
 			for (WebSocketServer lServer : mServers) {
 				for (WebSocketEngine lEngine : mEngines.values()) {
@@ -249,9 +249,8 @@ public class JWebSocketFactory {
 							+ lServer.getId() + "'.");
 				}
 			}
-			Map<String, List<WebSocketFilter>> lFilterMap =
-					lInitializer.initializeFilters();
-
+			Map<String, List<WebSocketFilter>> lFilterMap
+					= lInitializer.initializeFilters();
 
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Initializing filters...");

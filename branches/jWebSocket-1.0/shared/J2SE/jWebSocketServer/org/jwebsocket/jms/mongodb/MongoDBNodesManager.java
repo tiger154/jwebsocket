@@ -55,14 +55,26 @@ public class MongoDBNodesManager implements INodesManager {
 		return mSynchronizer;
 	}
 
+	/**
+	 *
+	 * @param aSynchronizer
+	 */
 	public void setSynchronizer(IClusterSynchronizer aSynchronizer) {
 		mSynchronizer = aSynchronizer;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public DBCollection getCollection() {
 		return mNodes;
 	}
 
+	/**
+	 *
+	 * @param aCollection
+	 */
 	public void setCollection(DBCollection aCollection) {
 		mNodes = aCollection;
 	}
@@ -74,11 +86,11 @@ public class MongoDBNodesManager implements INodesManager {
 			mNodes.update(new BasicDBObject().append(Attributes.NODE_ID, aNodeId),
 					new BasicDBObject()
 					.append("$set", new BasicDBObject()
-					.append(Attributes.CONSUMER_ID, aConsumerId)
-					.append(Attributes.DESCRIPTION, aDescription)
-					.append(Attributes.IP_ADDRESS, aIpAddress)
-					.append(Attributes.STATUS, NodeStatus.UP)
-					.append(Attributes.CPU, aCpuUsage)));
+							.append(Attributes.CONSUMER_ID, aConsumerId)
+							.append(Attributes.DESCRIPTION, aDescription)
+							.append(Attributes.IP_ADDRESS, aIpAddress)
+							.append(Attributes.STATUS, NodeStatus.UP)
+							.append(Attributes.CPU, aCpuUsage)));
 		} else {
 			mNodes.save(new BasicDBObject()
 					.append(Attributes.NODE_ID, aNodeId)
@@ -101,7 +113,7 @@ public class MongoDBNodesManager implements INodesManager {
 
 		mNodes.update(new BasicDBObject().append(Attributes.NODE_ID, aNodeId), new BasicDBObject()
 				.append("$set", new BasicDBObject()
-				.append(Attributes.CPU, aCpuUsage)));
+						.append(Attributes.CPU, aCpuUsage)));
 	}
 
 	@Override
@@ -110,14 +122,14 @@ public class MongoDBNodesManager implements INodesManager {
 
 		mNodes.update(new BasicDBObject().append(Attributes.NODE_ID, aNodeId), new BasicDBObject()
 				.append("$set", new BasicDBObject()
-				.append(Attributes.STATUS, aStatus)));
+						.append(Attributes.STATUS, aStatus)));
 	}
 
 	@Override
 	public String getOptimumNode() throws Exception {
 		DBCursor lCursor = mNodes.find(new BasicDBObject().append(Attributes.STATUS, NodeStatus.UP))
 				.sort(new BasicDBObject().append(Attributes.CPU, 1)
-				.append(Attributes.REQUESTS, 1)).limit(1);
+						.append(Attributes.REQUESTS, 1)).limit(1);
 
 		String lNodeId = null;
 		if (lCursor.hasNext()) {
@@ -133,7 +145,7 @@ public class MongoDBNodesManager implements INodesManager {
 
 		mNodes.update(new BasicDBObject().append(Attributes.NODE_ID, aNodeId), new BasicDBObject()
 				.append("$inc", new BasicDBObject()
-				.append(Attributes.REQUESTS, 1)));
+						.append(Attributes.REQUESTS, 1)));
 	}
 
 	@Override
