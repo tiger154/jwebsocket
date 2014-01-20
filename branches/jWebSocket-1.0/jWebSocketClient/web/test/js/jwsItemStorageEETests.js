@@ -921,13 +921,13 @@ jws.tests.enterprise.ItemStorage = {
 		this.testFindItems(lCollectionName, "siteURL", "http://jwebsocket.org", 0, 
 			true); 
 		// find items
-		this.testFindItems(lCollectionName, "siteURL", ".*.jwebsocket.org", 0, 
+		this.testFindItems(lCollectionName, "siteURL", "%jwebsocket.org", 0, 
 			true); 
 		// find items
-		this.testFindItems(lCollectionName, "siteURL", "http://jwebsocket..*", 0, 
+		this.testFindItems(lCollectionName, "siteURL", "http://jwebsocket%", 0, 
 			true); 
 		// find items
-		this.testFindItems(lCollectionName, "siteURL", ".*.://jwebsocket..*", 0, 
+		this.testFindItems(lCollectionName, "siteURL", "%://jwebsocket%", 0, 
 			true); 
 		this.testFindItems(lCollectionName, "siteURL", "http://microsoft.com", 0, 
 			false); 

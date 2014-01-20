@@ -28,6 +28,7 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
+import org.jwebsocket.plugins.annotations.RequirePlugIn;
 import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.itemstorage.ItemStoragePlugIn;
 import org.jwebsocket.plugins.itemstorage.api.IItem;
@@ -36,7 +37,7 @@ import org.jwebsocket.plugins.itemstorage.api.IItemDefinition;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.springframework.beans.BeansException;
+import org.jwebsocket.util.ConnectionManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -59,7 +60,7 @@ public class SMSPlugIn extends ActionPlugIn {
 	private final String TT_SEND_SMS = "sendSMS";
 	private static ApplicationContext mBeanFactory;
 	private static Settings mSettings;
-	private ISMSProvider mProvider;
+	private final ISMSProvider mProvider;
 	private IItemCollection mSMSCollection;
 
 	@Override
@@ -131,24 +132,32 @@ public class SMSPlugIn extends ActionPlugIn {
 		}
 		this.setNamespace(NS);
 
-		try {
-			mBeanFactory = getConfigBeanFactory();
-			if (null == mBeanFactory) {
-				mLog.error("No or invalid spring configuration for SMS plug-in, "
-						+ "some features may not be available.");
-			} else {
-				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.sms.settings");
-				if (mLog.isInfoEnabled()) {
-					mLog.info("SMS plug-in successfully instantiated.");
-				}
-			}
-		} catch (BeansException lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "instantiating SMS plug-in"));
+		mBeanFactory = getConfigBeanFactory();
+		mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.sms.settings");
+
+		// check itemstorage database connection
+		ConnectionManager lConnManager = (ConnectionManager) JWebSocketBeanFactory.getInstance()
+				.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
+		if (lConnManager.containsConnection(ItemStoragePlugIn.NS_ITEM_STORAGE)) {
+			Assert.isTrue(lConnManager.isValid(ItemStoragePlugIn.NS_ITEM_STORAGE),
+					"ItemStorage database connection is not valid. ItemStorage plug-in not properly running!");
 		}
 
-		if (null != mSettings) {
-			// just for developers convenience
-			mProvider = mSettings.getProvider();
+		// setting the provider
+		mProvider = mSettings.getProvider();
+
+		if (mLog.isInfoEnabled()) {
+			mLog.info("SMS plug-in successfully instantiated.");
+		}
+	}
+
+	@Override
+	public void beforeExecuteAction(String aActionName, WebSocketConnector aConnector, Token aToken) {
+		ConnectionManager lConnManager = (ConnectionManager) JWebSocketBeanFactory.getInstance()
+				.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
+		if (lConnManager.containsConnection(ItemStoragePlugIn.NS_ITEM_STORAGE)) {
+			Assert.isTrue(lConnManager.isValid(ItemStoragePlugIn.NS_ITEM_STORAGE),
+					"ItemStorage database connection is not valid. ItemStorage plug-in not properly running!");
 		}
 	}
 
@@ -232,6 +241,7 @@ public class SMSPlugIn extends ActionPlugIn {
 	}
 
 	@Role(name = NS + ".generateReport")
+	@RequirePlugIn(id = "jws.reporting")
 	public void generateReportAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lUsername = aConnector.getUsername();
 		// supporting administrative audit
@@ -269,6 +279,7 @@ public class SMSPlugIn extends ActionPlugIn {
 	 * @param aToken the request token object
 	 */
 	@Role(name = NS + ".sendSMS")
+	@RequirePlugIn(id = "jws.jcaptcha")
 	public void sendSMSAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		/**
 		 * VALIDATING CAPTCHA

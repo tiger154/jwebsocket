@@ -39,7 +39,7 @@ public class JMSManagerAbstraction extends JMSManager {
 
 	public JMSManagerAbstraction(BaseScriptApp aScriptApp, boolean aUseTransaction) {
 		this(aScriptApp, aUseTransaction, (Connection) JWebSocketBeanFactory
-				.getInstance().getBean("jmsConnection"));
+				.getInstance().getBean("jmsConnection0"));
 	}
 
 	public JMSManagerAbstraction(BaseScriptApp aScriptApp, boolean aUseTransaction, Connection aConn) {

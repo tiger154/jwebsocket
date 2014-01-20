@@ -34,10 +34,11 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.channels.Channel.ChannelState;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
-import org.springframework.beans.BeansException;
+import org.jwebsocket.util.ConnectionManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -122,12 +123,12 @@ import org.springframework.util.Assert;
 public class ChannelPlugIn extends ActionPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
-	private ChannelManager mChannelManager = null;
+	private final ChannelManager mChannelManager;
 	/**
 	 *
 	 */
-	public static final String NS_CHANNELS =
-			JWebSocketServerConstants.NS_BASE + ".plugins.channels";
+	public static final String NS_CHANNELS
+			= JWebSocketServerConstants.NS_BASE + ".plugins.channels";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket ChannelPlugIn";
@@ -177,17 +178,17 @@ public class ChannelPlugIn extends ActionPlugIn {
 		}
 		// specify default name space
 		this.setNamespace(NS_CHANNELS);
+		mBeanFactory = getConfigBeanFactory(NS_CHANNELS);
+		// check database connection
+		ConnectionManager lConnManager = (ConnectionManager) JWebSocketBeanFactory.getInstance()
+				.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
+		Assert.isTrue(lConnManager.isValid(NS_CHANNELS),
+				"Channels database connection is not valid!");
 
-		try {
-			mBeanFactory = getConfigBeanFactory(NS_CHANNELS);
-			mChannelManager = (ChannelManager) mBeanFactory.getBean("channelManager");
-
-			// give a success message to the administrator
-			if (mLog.isInfoEnabled()) {
-				mLog.info("Channel plug-in successfully instantiated.");
-			}
-		} catch (BeansException lEx) {
-			mLog.error(lEx.getClass().getSimpleName() + " at Channel plug-in instantiation: " + lEx.getMessage());
+		mChannelManager = (ChannelManager) mBeanFactory.getBean("channelManager");
+		// give a success message to the administrator
+		if (mLog.isInfoEnabled()) {
+			mLog.info("Channel plug-in successfully instantiated.");
 		}
 	}
 
@@ -224,6 +225,14 @@ public class ChannelPlugIn extends ActionPlugIn {
 	@Override
 	public String getNamespace() {
 		return NS_CHANNELS;
+	}
+
+	@Override
+	public void beforeExecuteAction(String aActionName, WebSocketConnector aConnector, Token aToken) {
+		ConnectionManager lConnManager = (ConnectionManager) JWebSocketBeanFactory.getInstance()
+				.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
+		Assert.isTrue(lConnManager.isValid(NS_CHANNELS),
+				"The ChannelPlugIn database connection is not valid!");
 	}
 
 	/**
@@ -364,10 +373,10 @@ public class ChannelPlugIn extends ActionPlugIn {
 		// not all clients should be allowed to retreive system channels
 		Token lResponseToken = createResponse(aToken);
 
-		List<Map<String,Object>> lChannels = new FastList<Map<String,Object>>();
+		List<Map<String, Object>> lChannels = new FastList<Map<String, Object>>();
 		Map<String, Channel> lCMChannels = mChannelManager.getChannels();
 		for (Map.Entry<String, Channel> lEntry : lCMChannels.entrySet()) {
-			Map<String,Object> lItem = new FastMap<String,Object>();
+			Map<String, Object> lItem = new FastMap<String, Object>();
 			Channel lChannel = lEntry.getValue();
 			if (!lChannel.isPrivate() || lChannel.getOwner().equals(aConnector.getUsername())) {
 				lItem.put("id", lChannel.getId());
@@ -644,11 +653,9 @@ public class ChannelPlugIn extends ActionPlugIn {
 		// TODO: These two fields will allow to overwrite current user authentication
 		// String lOwner = aToken.getString(OWNER);
 		// String lPassword =
-
 		// check if channel already exists
 		Channel lChannel = mChannelManager.getChannel(lChannelId);
 		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
-
 
 		// check if it is a system channel which definitely cannot be removed
 		// TODO: To remove system channels a special right needs to be assigned according to specification
@@ -662,12 +669,12 @@ public class ChannelPlugIn extends ActionPlugIn {
 		String lChannelAccessKey = lChannel.getAccessKey();
 		String lChannelSecretKey = lChannel.getSecretKey();
 		// check if access key and secret key match
-		boolean lAccessKeyMatch =
-				(lAccessKey == null || lAccessKey.isEmpty())
+		boolean lAccessKeyMatch
+				= (lAccessKey == null || lAccessKey.isEmpty())
 				&& (lChannelAccessKey == null || lChannelAccessKey.isEmpty())
 				|| (lAccessKey != null && lAccessKey.equals(lChannelAccessKey));
-		boolean lSecretKeyMatch =
-				(lSecretKey == null || lSecretKey.isEmpty())
+		boolean lSecretKeyMatch
+				= (lSecretKey == null || lSecretKey.isEmpty())
 				&& (lChannelSecretKey == null || lChannelSecretKey.isEmpty())
 				|| (lSecretKey != null && lSecretKey.equals(lChannelSecretKey));
 
@@ -715,7 +722,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 				"Invalid channel access key for '" + lChannelId + "'");
 
 		List<String> lChannelSubscribers = lChannel.getSubscribers();
-		List<Map<String,Object>> lSubscribers = new FastList<Map<String,Object>>();
+		List<Map<String, Object>> lSubscribers = new FastList<Map<String, Object>>();
 		if (null != lChannelSubscribers) {
 			for (String lSubscriber : lChannelSubscribers) {
 				//TODO: Some subscribers remain in the list after connector disconnected
@@ -757,7 +764,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 				"Invalid channel access key for channel '" + lChannelId + "'!");
 
 		List<String> lChannelPublishers = lChannel.getPublishers();
-		List<Map<String,Object>> lPublishers = new FastList<Map<String,Object>>();
+		List<Map<String, Object>> lPublishers = new FastList<Map<String, Object>>();
 		if (null != lChannelPublishers) {
 			for (String lPublisher : lChannelPublishers) {
 				//TODO: Some subscribers remain in the list after connector disconnected
@@ -787,11 +794,11 @@ public class ChannelPlugIn extends ActionPlugIn {
 	@Role(name = NS_CHANNELS + "." + TT_GET_SUBSCRIPTIONS)
 	public void getSubscriptionsAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		Subscriber lSubscriber = mChannelManager.getSubscriber(aConnector.getId());
-		List<Map<String,Object>> lSubscriptions = new FastList<Map<String,Object>>();
+		List<Map<String, Object>> lSubscriptions = new FastList<Map<String, Object>>();
 
 		if (null != lSubscriber) {
 			for (String lChannelId : lSubscriber.getChannels()) {
-				Map<String,Object> lItem = new FastMap<String,Object>();
+				Map<String, Object> lItem = new FastMap<String, Object>();
 				Channel lChannel = mChannelManager.getChannel(lChannelId);
 				if (lChannel != null) {
 					lItem.put("id", lChannelId);

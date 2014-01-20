@@ -34,6 +34,8 @@ import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.plugins.annotations.RequirePlugIn;
+import org.jwebsocket.plugins.annotations.RequirePlugIns;
 import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.reporting.api.IJasperReportService;
 import org.jwebsocket.token.Token;
@@ -184,13 +186,14 @@ public class ReportingPlugIn extends ActionPlugIn {
 	 * @return
 	 * @throws Exception
 	 */
+	@RequirePlugIns(ids = {"jws.filesystem", "jws.jdbc"})
 	public Token generateReport(WebSocketConnector aConnector, Token aToken) throws Exception {
 		// getting the report name
 		String lReportName = aToken.getString("reportName");
 		// getting the report paramas
 		Map<String, Object> lReportParams = aToken.getMap("reportParams", new HashMap());
 		// getting the reports fields
-		List<Map<String,Object>> lReportFields = aToken.getList("reportFields", new ArrayList());
+		List<Map<String, Object>> lReportFields = aToken.getList("reportFields", new ArrayList());
 		// checking JDBCplug-in is loaded
 		boolean lUseJDBC = aToken.getBoolean("useJDBCConnection", false);
 		String lConnectionAlias = aToken.getString("connectionAlias", "default");
@@ -253,16 +256,13 @@ public class ReportingPlugIn extends ActionPlugIn {
 	 * @return
 	 */
 	String getUserHome(WebSocketConnector aConnector) {
-		TokenPlugIn mFileSystem = (TokenPlugIn) getServer().getPlugInById("jws.filesystem");
-		Assert.notNull(mFileSystem, "The ReportingPlugIn required FileSystenPlugIn  enabled!");
-
 		// creating invoke request for FSP
 		Token lRequest = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE
 				+ ".plugins.filesystem", "getAliasPath");
 		lRequest.setString("alias", "privateDir");
 
 		// getting the method execution result
-		Token lResult = mFileSystem.invoke(aConnector, lRequest);
+		Token lResult = invokePlugIn("jws.filesystem", aConnector, lRequest);
 		Assert.notNull(lResult, "Unable to communicate with the FileSystem plug-in "
 				+ "to retrieve the client private directory!");
 
@@ -300,6 +300,7 @@ public class ReportingPlugIn extends ActionPlugIn {
 	 * @throws Exception
 	 */
 	@Role(name = NS_REPORTING + ".uploadTemplate")
+	@RequirePlugIn(id = "jws.filesystem")
 	public void uploadTemplateAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lTemplatePath = aToken.getString("templatePath");
 		Assert.notNull(lTemplatePath, "The 'templatePath' argument cannot be null!");

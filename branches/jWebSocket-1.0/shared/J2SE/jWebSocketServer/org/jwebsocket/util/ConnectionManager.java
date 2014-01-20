@@ -18,6 +18,7 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.util;
 
+import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.mongodb.Mongo;
 import java.security.AccessControlException;
 import java.security.AccessController;
@@ -32,7 +33,14 @@ import static org.jwebsocket.util.Tools.stringToPermission;
 import org.springframework.util.Assert;
 
 /**
- * jWebSocket server connections manager
+ * jWebSocket server connections manager. The component is designed to store a
+ * reference of all existing server side 'connection' objects to easily allow
+ * connection status checks in action plug-ins.
+ *
+ * <tt>Usage:</tt>
+ * <code>@RequiredConnection(name = "aConnectionName")
+ * public void someAction(WebSocketConnector aConnector, Token aToken)
+ * throws Exception {}</code>
  *
  * @author kyberneees
  */
@@ -52,6 +60,7 @@ public class ConnectionManager implements IInitializable {
 	}
 
 	/**
+	 * Get a collection with existing collection names
 	 *
 	 * @return
 	 */
@@ -60,6 +69,8 @@ public class ConnectionManager implements IInitializable {
 	}
 
 	/**
+	 * Return TRUE if the given connection name matches an existing connection
+	 * name, FALSE otherwise
 	 *
 	 * @param aConnectionName
 	 * @return
@@ -74,6 +85,7 @@ public class ConnectionManager implements IInitializable {
 	}
 
 	/**
+	 * Store a connection reference in the connection manager
 	 *
 	 * @param aConnectionName
 	 * @param aConnection
@@ -87,6 +99,7 @@ public class ConnectionManager implements IInitializable {
 	}
 
 	/**
+	 * Remove a connection given it name
 	 *
 	 * @param aConnectionName
 	 * @return
@@ -98,6 +111,7 @@ public class ConnectionManager implements IInitializable {
 	}
 
 	/**
+	 * Get a connection by it name
 	 *
 	 * @param aConnectionName
 	 * @return
@@ -112,6 +126,8 @@ public class ConnectionManager implements IInitializable {
 	}
 
 	/**
+	 * Return TRUE if the given connection object is supported by the manager,
+	 * FALSE otherwise
 	 *
 	 * @param aConnection
 	 * @return
@@ -120,10 +136,13 @@ public class ConnectionManager implements IInitializable {
 		return aConnection instanceof Mongo
 				|| aConnection instanceof Connection
 				|| aConnection instanceof DataSource
+				|| aConnection instanceof JdbcConnectionSource
 				|| aConnection instanceof javax.jms.Connection;
 	}
 
 	/**
+	 * Return TRUE if the connection that matches the given connection name is
+	 * valid, FALSE otherwise
 	 *
 	 * @param aConnectionName
 	 * @return
@@ -135,6 +154,8 @@ public class ConnectionManager implements IInitializable {
 
 			if (lConnection instanceof Mongo) {
 				return isValid((Mongo) lConnection);
+			} else if (lConnection instanceof JdbcConnectionSource) {
+				return isValid((JdbcConnectionSource) lConnection);
 			} else if (lConnection instanceof Connection) {
 				return isValid((Connection) lConnection);
 			} else if (lConnection instanceof DataSource) {
@@ -148,6 +169,8 @@ public class ConnectionManager implements IInitializable {
 	}
 
 	/**
+	 * Return TRUE of the given mongodb connection object is valid, FALSE
+	 * otherwise
 	 *
 	 * @param aConnection
 	 * @return
@@ -163,6 +186,7 @@ public class ConnectionManager implements IInitializable {
 	}
 
 	/**
+	 * Return TRUE if the given SQL connection object is valid, FALSE otherwise
 	 *
 	 * @param aConnection
 	 * @return
@@ -173,6 +197,7 @@ public class ConnectionManager implements IInitializable {
 	}
 
 	/**
+	 * Return TRUE if the given JMS connection object is valid, FALSE otherwise
 	 *
 	 * @param aConnection
 	 * @return
@@ -182,6 +207,22 @@ public class ConnectionManager implements IInitializable {
 	}
 
 	/**
+	 * Return TRUE if the given JdbcConnectionSource object is valid, FALSE
+	 * otherwise
+	 *
+	 * @param aConnection
+	 * @return
+	 */
+	public static boolean isValid(JdbcConnectionSource aConnection) {
+		try {
+			return !aConnection.getReadWriteConnection().isClosed();
+		} catch (Exception lEx) {
+			return false;
+		}
+	}
+
+	/**
+	 * Return TRUE if the given DataSource object is valid, FALSE otherwise
 	 *
 	 * @param aDS
 	 * @return

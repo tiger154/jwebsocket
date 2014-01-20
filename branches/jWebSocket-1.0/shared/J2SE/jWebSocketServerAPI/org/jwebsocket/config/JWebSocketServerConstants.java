@@ -83,4 +83,11 @@ public final class JWebSocketServerConstants {
 	 * redirect}
 	 */
 	public static final String DEFAULT_ON_MAX_CONNECTIONS_STRATEGY = "reject";
+	/**
+	 * The jWebSocket server side ConnectionManager bean id
+	 *
+	 * @see conf/bootstrap.xml
+	 */
+	public static final String CONNECTION_MANAGER_BEAN_ID = "org.jwebsocket.server.connection_manager";
+	
 }

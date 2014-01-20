@@ -72,7 +72,7 @@ import org.springframework.security.core.GrantedAuthority;
  *
  * @author aschulze
  * @author kybernees {Support for client-side session management and Spring
- * authentication}
+ authentication}
  */
 public class SystemPlugIn extends TokenPlugIn {
 
