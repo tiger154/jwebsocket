@@ -2,28 +2,10 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" " http://www.springframework.org/dtd/spring-beans.dtd"> 
 <beans>
 	
-	<!-- ####### EhCache settings for channel plug-in ####### -->
-	   
 	<!-- ORMLite (JDBC) Storage -->
-	<bean id="databaseUrl" class="org.jwebsocket.util.Tools"
-		  factory-method="expandEnvVarsAndProps">
-		<!--<constructor-arg index="0" value="jdbc:sqlite:${JWEBSOCKET_HOME}database/channels.db" />-->
-		<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/channels;create=true" />
-	</bean>
-
-	<bean id="connectionSource"
-		  class="com.j256.ormlite.jdbc.JdbcConnectionSource" init-method="initialize">
-		<property name="url" ref="databaseUrl" />
-		<property name="username" value="" />
-		<property name="password" value="" />
-		<property name="databaseType">
-			<bean class="com.j256.ormlite.db.DerbyEmbeddedDatabaseType" />
-		</property>
-	</bean>
-
 	<bean id="entriesDao" class="com.j256.ormlite.spring.DaoFactory"
 		  factory-method="createDao">
-		<constructor-arg index="0" ref="connectionSource" />
+		<constructor-arg index="0" ref="channelsDataSource" />
 		<constructor-arg index="1" value="org.jwebsocket.storage.ormlite.EntryEntity" />
 	</bean>
 

@@ -271,27 +271,10 @@
 	</bean>
 	-->
 	
-	<!-- JMS Manager definition with dependencies -->
-	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL">
-			<value>tcp://localhost:61616</value>
-		</property>
-		<!--		
-		<property name="userName">
-			<value>admin</value>
-		</property>
-		<property name="password">
-			<value>admin</value>
-		</property>
-		-->
-	</bean>
-	<bean id="jmsConnection" factory-bean="jmsConnectionFactory" factory-method="createConnection" 
-		  init-method="start">
-		<property name="clientID" value="jws_server_shared_conn_01" />
-	</bean>
+	<!-- JMS Manager -->
 	<bean id="jmsManager" class="org.jwebsocket.util.JMSManager">
 		<constructor-arg index="0" value="false"/>
-		<constructor-arg index="1" ref="jmsConnection"/>
+		<constructor-arg index="1" ref="jmsConnection0"/>
 		<constructor-arg index="2" value="topic://jwebsocket_messagehub"/>
 	</bean>
 </beans>
