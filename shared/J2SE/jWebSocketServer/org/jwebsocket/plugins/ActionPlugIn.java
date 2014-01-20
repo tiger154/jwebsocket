@@ -22,10 +22,14 @@ import java.lang.reflect.Method;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
+import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.annotations.Authenticated;
 import org.jwebsocket.plugins.annotations.RequireConnection;
+import org.jwebsocket.plugins.annotations.RequirePlugIn;
+import org.jwebsocket.plugins.annotations.RequirePlugIns;
 import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
@@ -79,6 +83,7 @@ public class ActionPlugIn extends TokenPlugIn {
 	 * @param aConnector
 	 * @param aToken
 	 */
+	@SuppressWarnings("UseSpecificCatch")
 	protected void callAction(String aMethodName, WebSocketConnector aConnector, Token aToken) {
 		aMethodName += "Action";
 		try {
@@ -90,8 +95,8 @@ public class ActionPlugIn extends TokenPlugIn {
 
 			// processing action annotations
 			if (lMethod.isAnnotationPresent(Role.class)) {
-				Role lRole = lMethod.getAnnotation(Role.class);
-				if (!hasAuthority(aConnector, lRole.name())) {
+				Role lAnnotation = lMethod.getAnnotation(Role.class);
+				if (!hasAuthority(aConnector, lAnnotation.name())) {
 					sendToken(aConnector, createAccessDenied(aToken));
 					return;
 				}
@@ -101,13 +106,38 @@ public class ActionPlugIn extends TokenPlugIn {
 					return;
 				}
 			} else if (lMethod.isAnnotationPresent(RequireConnection.class)) {
-				RequireConnection lConnection = lMethod.getAnnotation(RequireConnection.class);
-				ConnectionManager lConnManager = JWebSocketBeanFactory.getInstance().getBean(ConnectionManager.class);
-				if (!lConnManager.isValid(lConnection.name())) {
+				RequireConnection lAnnotation = lMethod.getAnnotation(RequireConnection.class);
+				ConnectionManager lConnManager = (ConnectionManager) JWebSocketBeanFactory.getInstance()
+						.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
+				if (!lConnManager.isValid(lAnnotation.name())) {
 					Token lResponse = createResponse(aToken);
 					lResponse.setCode(-1);
-					lResponse.setString("msg", "Required '" + lConnection.name()
+					lResponse.setString("msg", "Required '" + lAnnotation.name()
 							+ "' connection is not valid. Action execution was canceled!");
+
+					return;
+				}
+			} else if (lMethod.isAnnotationPresent(RequirePlugIn.class)) {
+				RequirePlugIn lAnnotation = lMethod.getAnnotation(RequirePlugIn.class);
+				if (null == JWebSocketFactory.getTokenServer().getPlugInById(lAnnotation.id())) {
+					Token lResponse = createResponse(aToken);
+					lResponse.setCode(-1);
+					lResponse.setString("msg", "Required '" + lAnnotation.id()
+							+ "' plug-in not found. Action execution was canceled!");
+				}
+
+				return;
+			} else if (lMethod.isAnnotationPresent(RequirePlugIns.class)) {
+				RequirePlugIns lAnnotation = lMethod.getAnnotation(RequirePlugIns.class);
+				for (String lPlugInId : lAnnotation.ids()) {
+					if (null == JWebSocketFactory.getTokenServer().getPlugInById(lPlugInId)) {
+						Token lResponse = createResponse(aToken);
+						lResponse.setCode(-1);
+						lResponse.setString("msg", "Required '" + lPlugInId
+								+ "' plug-in not found. Action execution was canceled!");
+
+						return;
+					}
 				}
 			}
 

@@ -45,6 +45,7 @@ import org.jwebsocket.plugins.itemstorage.collection.ItemCollectionUtils;
 import org.jwebsocket.plugins.itemstorage.event.ItemStorageEventManager;
 import org.jwebsocket.plugins.itemstorage.event.ListenersRegistrator;
 import org.jwebsocket.plugins.itemstorage.item.ItemDefinition;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.ConnectionManager;
@@ -205,7 +206,8 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 		mBeanFactory = getConfigBeanFactory(NS_ITEM_STORAGE);
 
 		// check database connection if exists
-		ConnectionManager lConnManager = (ConnectionManager) mBeanFactory.getBean(ConnectionManager.class);
+		ConnectionManager lConnManager = (ConnectionManager) JWebSocketBeanFactory.getInstance()
+				.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
 		if (lConnManager.containsConnection(NS_ITEM_STORAGE)) {
 			Assert.isTrue(lConnManager.isValid(NS_ITEM_STORAGE),
 					"ItemStorage database connection is not valid!");

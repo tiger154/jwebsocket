@@ -127,7 +127,7 @@ public class ScriptingPlugIn extends ActionPlugIn {
 				// initializing JMS connection at this level if present
 				try {
 					if (mBeanFactory.containsBean("jmsConnection")) {
-						mBeanFactory.getBean("jmsConnection");
+						mBeanFactory.getBean("jmsConnection0");
 					}
 				} catch (Exception lEx) {
 					mLog.error("Unable to load default JMS connection. Resource will not be able on Script Apps!");
