@@ -30,26 +30,26 @@ import org.apache.ddlutils.util.Jdbc3Utils;
  */
 public class Derby107Builder extends DerbyBuilder {
 
-    /**
-     * Creates a new builder instance.
-     *
-     * @param platform The plaftform this builder belongs to
-     */
-    public Derby107Builder(Platform platform) {
-        super(platform);
-    }
+	/**
+	 * Creates a new builder instance.
+	 *
+	 * @param platform The plaftform this builder belongs to
+	 */
+	public Derby107Builder(Platform platform) {
+		super(platform);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected String getNativeDefaultValue(Column column) {
-        if ((column.getTypeCode() == Types.BIT)) {
-            return getDefaultValueHelper().convert(column.getDefaultValue(), column.getTypeCode(), Types.SMALLINT).toString();
-        } else if ((Jdbc3Utils.supportsJava14JdbcTypes() && (column.getTypeCode() == Jdbc3Utils.determineBooleanTypeCode()))) {
-            return column.getDefaultValue();
-        } else {
-            return super.getNativeDefaultValue(column);
-        }
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected String getNativeDefaultValue(Column column) {
+		if ((column.getTypeCode() == Types.BIT)) {
+			return getDefaultValueHelper().convert(column.getDefaultValue(), column.getTypeCode(), Types.SMALLINT).toString();
+		} else if ((Jdbc3Utils.supportsJava14JdbcTypes() && (column.getTypeCode() == Jdbc3Utils.determineBooleanTypeCode()))) {
+			return column.getDefaultValue();
+		} else {
+			return super.getNativeDefaultValue(column);
+		}
+	}
 }

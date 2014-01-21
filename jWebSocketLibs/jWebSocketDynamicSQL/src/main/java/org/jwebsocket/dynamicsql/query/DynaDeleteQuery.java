@@ -34,109 +34,109 @@ import org.jwebsocket.dynamicsql.api.IDeleteQuery;
  */
 public class DynaDeleteQuery implements IDeleteQuery {
 
-    private DeleteQuery mQuery;
-    private IDatabase mDB;
-    
-    /**
-     * Costructor.
-     * 
-     * @param aDB The database instance.
-     * @param aTableName The table name.
-     */
-    public DynaDeleteQuery(IDatabase aDB, String aTableName) {
-        this.mDB = aDB;
-        mQuery = new DeleteQuery(parse(aTableName));
-    }
+	private DeleteQuery mQuery;
+	private IDatabase mDB;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public IDeleteQuery and(ICondition aCondition) {
-        Map<String, Object> lAttrs = aCondition.getCondition();
-        BinaryCondition.Op lType = (BinaryCondition.Op) lAttrs.get(Conditions.ATTR_TYPE);
-        Object lColumnName = parse((String) lAttrs.get(Conditions.ATTR_COLUMN_NAME));
+	/**
+	 * Costructor.
+	 *
+	 * @param aDB The database instance.
+	 * @param aTableName The table name.
+	 */
+	public DynaDeleteQuery(IDatabase aDB, String aTableName) {
+		this.mDB = aDB;
+		mQuery = new DeleteQuery(parse(aTableName));
+	}
 
-        if (lType == BinaryCondition.Op.GREATER_THAN) {
-            mQuery.addCondition(ComboCondition.and(BinaryCondition
-                    .greaterThan(lColumnName,
-                    lAttrs.get(Conditions.ATTR_VALUE),
-                    (Boolean) lAttrs.get(Conditions.ATTR_INCLUSIVE))));
-        } else if (lType == BinaryCondition.Op.LESS_THAN) {
-            mQuery.addCondition(ComboCondition.and(BinaryCondition
-                    .lessThan(lColumnName,
-                    lAttrs.get(Conditions.ATTR_VALUE),
-                    (Boolean) lAttrs.get(Conditions.ATTR_INCLUSIVE))));
-        } else {
-            mQuery.addCondition(ComboCondition.and(new BinaryCondition(lType,
-                    lColumnName,
-                    lAttrs.get(Conditions.ATTR_VALUE))));
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IDeleteQuery and(ICondition aCondition) {
+		Map<String, Object> lAttrs = aCondition.getCondition();
+		BinaryCondition.Op lType = (BinaryCondition.Op) lAttrs.get(Conditions.ATTR_TYPE);
+		Object lColumnName = parse((String) lAttrs.get(Conditions.ATTR_COLUMN_NAME));
 
-        return this;
-    }
+		if (lType == BinaryCondition.Op.GREATER_THAN) {
+			mQuery.addCondition(ComboCondition.and(BinaryCondition
+					.greaterThan(lColumnName,
+					lAttrs.get(Conditions.ATTR_VALUE),
+					(Boolean) lAttrs.get(Conditions.ATTR_INCLUSIVE))));
+		} else if (lType == BinaryCondition.Op.LESS_THAN) {
+			mQuery.addCondition(ComboCondition.and(BinaryCondition
+					.lessThan(lColumnName,
+					lAttrs.get(Conditions.ATTR_VALUE),
+					(Boolean) lAttrs.get(Conditions.ATTR_INCLUSIVE))));
+		} else {
+			mQuery.addCondition(ComboCondition.and(new BinaryCondition(lType,
+					lColumnName,
+					lAttrs.get(Conditions.ATTR_VALUE))));
+		}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public IDeleteQuery or(ICondition aCondition) {
-        Map<String, Object> lAttrs = aCondition.getCondition();
-        BinaryCondition.Op lType = (BinaryCondition.Op) lAttrs.get(Conditions.ATTR_TYPE);
-        Object lColumnName = parse((String) lAttrs.get(Conditions.ATTR_COLUMN_NAME));
+		return this;
+	}
 
-        if (lType == BinaryCondition.Op.GREATER_THAN) {
-            mQuery.addCondition(ComboCondition.or(BinaryCondition
-                    .greaterThan(lColumnName,
-                    lAttrs.get(Conditions.ATTR_VALUE),
-                    (Boolean) lAttrs.get(Conditions.ATTR_INCLUSIVE))));
-        } else if (lType == BinaryCondition.Op.LESS_THAN) {
-            mQuery.addCondition(ComboCondition.or(BinaryCondition
-                    .lessThan(lColumnName,
-                    lAttrs.get(Conditions.ATTR_VALUE),
-                    (Boolean) lAttrs.get(Conditions.ATTR_INCLUSIVE))));
-        } else {
-            mQuery.addCondition(ComboCondition.or(new BinaryCondition(lType,
-                    lColumnName,
-                    lAttrs.get(Conditions.ATTR_VALUE))));
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IDeleteQuery or(ICondition aCondition) {
+		Map<String, Object> lAttrs = aCondition.getCondition();
+		BinaryCondition.Op lType = (BinaryCondition.Op) lAttrs.get(Conditions.ATTR_TYPE);
+		Object lColumnName = parse((String) lAttrs.get(Conditions.ATTR_COLUMN_NAME));
 
-        return this;
-    }
+		if (lType == BinaryCondition.Op.GREATER_THAN) {
+			mQuery.addCondition(ComboCondition.or(BinaryCondition
+					.greaterThan(lColumnName,
+					lAttrs.get(Conditions.ATTR_VALUE),
+					(Boolean) lAttrs.get(Conditions.ATTR_INCLUSIVE))));
+		} else if (lType == BinaryCondition.Op.LESS_THAN) {
+			mQuery.addCondition(ComboCondition.or(BinaryCondition
+					.lessThan(lColumnName,
+					lAttrs.get(Conditions.ATTR_VALUE),
+					(Boolean) lAttrs.get(Conditions.ATTR_INCLUSIVE))));
+		} else {
+			mQuery.addCondition(ComboCondition.or(new BinaryCondition(lType,
+					lColumnName,
+					lAttrs.get(Conditions.ATTR_VALUE))));
+		}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getSQL() {
-        return mQuery.validate().toString().replaceAll("%", getEscLike());
-    }
+		return this;
+	}
 
-    /**
-     * Allows to parse the names of tables and column in the diferents platform.
-     * 
-     * @param aValue The value (name of table or column)
-     * @return The parse value.
-     */
-    private Object parse(String aValue) {
-        return new CustomSql(getEscChar().charAt(0) + aValue + getEscChar().charAt(1));
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getSQL() {
+		return mQuery.validate().toString().replaceAll("%", getEscLike());
+	}
 
-    /**
-     * The escape char to tables and columns name in the diferents platform.
-     * 
-     * @return The escape char.
-     */
-    private String getEscChar() {
-        return mDB.getOptions().get(SupportUtils.ESCAPE_TABLE_LITERAL);
-    }
+	/**
+	 * Allows to parse the names of tables and column in the diferents platform.
+	 *
+	 * @param aValue The value (name of table or column)
+	 * @return The parse value.
+	 */
+	private Object parse(String aValue) {
+		return new CustomSql(getEscChar().charAt(0) + aValue + getEscChar().charAt(1));
+	}
 
-    /**
-     * The escape char to like condition in the diferents platform.
-     * 
-     * @return The escape char.
-     */
-    private String getEscLike() {
-        return mDB.getOptions().get(SupportUtils.ESCAPE_LIKE_LITERAL);
-    }
+	/**
+	 * The escape char to tables and columns name in the diferents platform.
+	 *
+	 * @return The escape char.
+	 */
+	private String getEscChar() {
+		return mDB.getOptions().get(SupportUtils.ESCAPE_TABLE_LITERAL);
+	}
+
+	/**
+	 * The escape char to like condition in the diferents platform.
+	 *
+	 * @return The escape char.
+	 */
+	private String getEscLike() {
+		return mDB.getOptions().get(SupportUtils.ESCAPE_LIKE_LITERAL);
+	}
 }

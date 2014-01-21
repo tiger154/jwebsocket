@@ -23,27 +23,27 @@ package org.jwebsocket.dynamicsql.api;
  * @author markos
  */
 public interface IDeleteQuery {
-    
-    /**
-     * Add a condition of type <AND> to the query.
-     * 
-     * @param aCondition The query condition.
-     * @return The delete query. 
-     */
-    public IDeleteQuery and(ICondition aCondition);
-    
-    /**
-     * Add a condition of type <OR> to the query.
-     * 
-     * @param aCondition The query condition.
-     * @return The delete query. 
-     */
-    public IDeleteQuery or(ICondition aCondition);
-    
-    /**
-     * Returns the SQL delete query.
-     * 
-     * @return The SQL delete query 
-     */
-    public String getSQL();
+
+	/**
+	 * Add a condition of type <AND> to the query.
+	 *
+	 * @param aCondition The query condition.
+	 * @return The delete query.
+	 */
+	public IDeleteQuery and(ICondition aCondition);
+
+	/**
+	 * Add a condition of type <OR> to the query.
+	 *
+	 * @param aCondition The query condition.
+	 * @return The delete query.
+	 */
+	public IDeleteQuery or(ICondition aCondition);
+
+	/**
+	 * Returns the SQL delete query.
+	 *
+	 * @return The SQL delete query
+	 */
+	public String getSQL();
 }

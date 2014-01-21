@@ -26,23 +26,23 @@ import org.jwebsocket.dynamicsql.api.ICondition;
  * @author markos
  */
 public class Condition implements ICondition {
-    
-    private Map<String, Object> mAttrs;
 
-    /**
-     * Constructor.
-     * 
-     * @param aAttrs 
-     */
-    public Condition(Map<String, Object> aAttrs) {
-        this.mAttrs = aAttrs;
-    }
+	private Map<String, Object> mAttrs;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Map<String, Object> getCondition() {
-        return mAttrs;
-    }    
+	/**
+	 * Constructor.
+	 *
+	 * @param aAttrs
+	 */
+	public Condition(Map<String, Object> aAttrs) {
+		this.mAttrs = aAttrs;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Map<String, Object> getCondition() {
+		return mAttrs;
+	}
 }

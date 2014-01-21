@@ -31,101 +31,102 @@ import org.jwebsocket.dynamicsql.api.ITable;
  */
 public class DynaTable implements ITable {
 
-    private Table mTable;
+	private Table mTable;
 
-    /**
-     * Constructor
-     *
-     * @param aName
-     */
-    public DynaTable(String aName) {
-        mTable = new Table();
-        mTable.setName(aName);
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param aName
+	 */
+	public DynaTable(String aName) {
+		mTable = new Table();
+		mTable.setName(aName);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getName() {
-        return mTable.getName();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getName() {
+		return mTable.getName();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ITable addColumn(String aName, Integer aTypeCode, Boolean aRequired,
-            Boolean aPK, Integer aSize, Object aDefault) {
-        Column lColumn = new Column();
-        lColumn.setName(aName);
-        lColumn.setTypeCode(aTypeCode);
-        lColumn.setRequired(aRequired);
-        lColumn.setPrimaryKey(aPK);
-        if (aSize != null) {
-            lColumn.setSize(aSize.toString());
-        }
-        if (null != aDefault) {
-            lColumn.setDefaultValue(aDefault.toString());
-        }
-        mTable.addColumn(lColumn);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ITable addColumn(String aName, Integer aTypeCode, Boolean aRequired,
+			Boolean aPK, Integer aSize, Object aDefault) {
+		Column lColumn = new Column();
+		lColumn.setName(aName);
+		lColumn.setTypeCode(aTypeCode);
+		lColumn.setRequired(aRequired);
+		lColumn.setPrimaryKey(aPK);
+		if (aSize != null) {
+			lColumn.setSize(aSize.toString());
+		}
+		if (null != aDefault) {
+			lColumn.setDefaultValue(aDefault.toString());
+		}
+		mTable.addColumn(lColumn);
 
-        return this;
-    }
+		return this;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ITable addIndex(String aColumnName) {
-        Column lColumn = getColumn(aColumnName);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ITable addIndex(String aColumnName) {
+		Column lColumn = getColumn(aColumnName);
 
-        if (lColumn != null) {
-            IndexColumn lIndex = new IndexColumn(lColumn);
-            NonUniqueIndex lNonUnique = new NonUniqueIndex();
-            lNonUnique.setName(mTable.getName() + "_" + aColumnName + "_uk");
-            lNonUnique.addColumn(lIndex);
-            mTable.addIndex(lNonUnique);
-        }
-        return this;
-    }
+		if (lColumn != null) {
+			IndexColumn lIndex = new IndexColumn(lColumn);
+			NonUniqueIndex lNonUnique = new NonUniqueIndex();
+			lNonUnique.setName(mTable.getName() + "_" + aColumnName + "_uk");
+			lNonUnique.addColumn(lIndex);
+			mTable.addIndex(lNonUnique);
+		}
+		return this;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ITable addUniqueIndex(String aColumnName) {
-        Column lColumn = getColumn(aColumnName);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ITable addUniqueIndex(String aColumnName) {
+		Column lColumn = getColumn(aColumnName);
 
-        if (lColumn != null) {
-            IndexColumn lIndex = new IndexColumn(lColumn);
-            UniqueIndex lUnique = new UniqueIndex();
-            lUnique.setName(mTable.getName() + "_" + aColumnName + "_uk");
-            lUnique.addColumn(lIndex);
-            mTable.addIndex(lUnique);
-        }
-        return this;
-    }
+		if (lColumn != null) {
+			IndexColumn lIndex = new IndexColumn(lColumn);
+			UniqueIndex lUnique = new UniqueIndex();
+			lUnique.setName(mTable.getName() + "_" + aColumnName + "_uk");
+			lUnique.addColumn(lIndex);
+			mTable.addIndex(lUnique);
+		}
+		return this;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Table getTable() {
-        return mTable;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Table getTable() {
+		return mTable;
+	}
 
-    /**
-     * Returns the column object by the name.
-     * @param aName The name of column.
-     * @return Column object.
-     */
-    private Column getColumn(String aName) {
-        for (Column lColumn : mTable.getColumns()) {
-            if (aName.equals(lColumn.getName())) {
-                return lColumn;
-            }
-        }
-        return null;
-    }
+	/**
+	 * Returns the column object by the name.
+	 *
+	 * @param aName The name of column.
+	 * @return Column object.
+	 */
+	private Column getColumn(String aName) {
+		for (Column lColumn : mTable.getColumns()) {
+			if (aName.equals(lColumn.getName())) {
+				return lColumn;
+			}
+		}
+		return null;
+	}
 }

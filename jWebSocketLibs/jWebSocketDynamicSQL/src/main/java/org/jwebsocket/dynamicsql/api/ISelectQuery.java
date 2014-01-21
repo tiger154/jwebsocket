@@ -25,36 +25,36 @@ import org.jwebsocket.dynamicsql.query.Ordering;
  * @author markos
  */
 public interface ISelectQuery {
-    
-    /**
-     * Add a condition of type <AND> to the query.
-     * 
-     * @param aCondition The query condition.
-     * @return The select query. 
-     */
-    public ISelectQuery and(ICondition aCondition);
-    
-    /**
-     * Add a condition of type <OR> to the query.
-     * 
-     * @param aCondition The query condition.
-     * @return The select query. 
-     */
-    public ISelectQuery or(ICondition aCondition);
-    
-    /**
-     * Add a condition of type <AND> to the query.
-     * 
-     * @param aColumnName The column name.
-     * @param aDir The ordering direction.
-     * @return The select query. 
-     */
-    public ISelectQuery orderBy(String aColumnName, Ordering aDir);
-    
-    /**
-     * Returns the SQL select query.
-     * 
-     * @return The SQL select query.
-     */
-    public String getSQL();
+
+	/**
+	 * Add a condition of type <AND> to the query.
+	 *
+	 * @param aCondition The query condition.
+	 * @return The select query.
+	 */
+	public ISelectQuery and(ICondition aCondition);
+
+	/**
+	 * Add a condition of type <OR> to the query.
+	 *
+	 * @param aCondition The query condition.
+	 * @return The select query.
+	 */
+	public ISelectQuery or(ICondition aCondition);
+
+	/**
+	 * Add a condition of type <AND> to the query.
+	 *
+	 * @param aColumnName The column name.
+	 * @param aDir The ordering direction.
+	 * @return The select query.
+	 */
+	public ISelectQuery orderBy(String aColumnName, Ordering aDir);
+
+	/**
+	 * Returns the SQL select query.
+	 *
+	 * @return The SQL select query.
+	 */
+	public String getSQL();
 }
