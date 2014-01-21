@@ -25,10 +25,11 @@ import java.util.Map;
  * @author markos
  */
 public interface ICondition {
-    /**
+
+	/**
 	 * Returns a condition as a map.
 	 *
 	 * @return the condition as a map.
 	 */
-    public Map<String, Object> getCondition();
+	public Map<String, Object> getCondition();
 }

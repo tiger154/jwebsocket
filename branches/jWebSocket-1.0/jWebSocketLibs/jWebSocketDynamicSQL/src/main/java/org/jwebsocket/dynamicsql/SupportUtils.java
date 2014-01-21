@@ -33,57 +33,59 @@ import org.apache.ddlutils.platform.mysql.MySqlPlatform;
  * @author markos
  */
 public class SupportUtils {
-    
-    
-    //Option Types
-    public static String ESCAPE_TABLE_LITERAL = "escapeTablesAndColumnsLiteral";
-    public static String ESCAPE_LIKE_LITERAL = "escapeLikeLiteral";
-    
-    /**
-     * Returns the options map corresponding to the platform entered in the data source.
-     * @param aDataSource The connection data source.
-     * @return The compatibilities options to the platform entered in the data source.
-     */
-    public static Map<String, String> getOptions(DataSource aDataSource) {
-        PlatformUtils lUtils = new PlatformUtils();
-        String lPlatform = lUtils.determineDatabaseType(aDataSource);
-        Map<String, String> lOptions = new FastMap<String, String>();
-        //Default Values Options
-        lOptions.put(ESCAPE_TABLE_LITERAL, "\"\"");
-        lOptions.put(ESCAPE_LIKE_LITERAL, "%");
-        
-        if(lPlatform == null || "".equals(lPlatform)) {
-            return lOptions;
-        } else if(lPlatform.equals(MySqlPlatform.DATABASENAME) 
-                || lPlatform.equals(MySql50Platform.DATABASENAME)) {
-            lOptions.put(ESCAPE_TABLE_LITERAL, "``");
-        } else if(lPlatform.equals(MSSqlPlatform.DATABASENAME)) {
-            lOptions.put(ESCAPE_TABLE_LITERAL, "[]");
-        }
-        //TODO: Check support queries on the following platforms
+
+	//Option Types
+	public static String ESCAPE_TABLE_LITERAL = "escapeTablesAndColumnsLiteral";
+	public static String ESCAPE_LIKE_LITERAL = "escapeLikeLiteral";
+
+	/**
+	 * Returns the options map corresponding to the platform entered in the data
+	 * source.
+	 *
+	 * @param aDataSource The connection data source.
+	 * @return The compatibilities options to the platform entered in the data
+	 * source.
+	 */
+	public static Map<String, String> getOptions(DataSource aDataSource) {
+		PlatformUtils lUtils = new PlatformUtils();
+		String lPlatform = lUtils.determineDatabaseType(aDataSource);
+		Map<String, String> lOptions = new FastMap<String, String>();
+		//Default Values Options
+		lOptions.put(ESCAPE_TABLE_LITERAL, "\"\"");
+		lOptions.put(ESCAPE_LIKE_LITERAL, "%");
+
+		if (lPlatform == null || "".equals(lPlatform)) {
+			return lOptions;
+		} else if (lPlatform.equals(MySqlPlatform.DATABASENAME)
+				|| lPlatform.equals(MySql50Platform.DATABASENAME)) {
+			lOptions.put(ESCAPE_TABLE_LITERAL, "``");
+		} else if (lPlatform.equals(MSSqlPlatform.DATABASENAME)) {
+			lOptions.put(ESCAPE_TABLE_LITERAL, "[]");
+		}
+		//TODO: Check support queries on the following platforms
         /* AxionPlatform
-         * CloudscapePlatform
-         * MaxDbPlatform
-         * MckoiPlatform
-         * SapDbPlatform
-         */
-        
-        return lOptions;
-    }
-    
-    /**
-     * Convert a DynaBean object to Map.
-     * 
-     * @param aDynaBean The DynaBean object.
-     * @return The Map<String, Object>
-     */
-    public static Map<String, Object> convertToMap(DynaBean aDynaBean) {
-        Map<String, Object> lMap = new FastMap<String, Object>();
-        
-        for (DynaProperty lDynaProperty : aDynaBean.getDynaClass().getDynaProperties()) {
-            lMap.put(lDynaProperty.getName(), aDynaBean.get(lDynaProperty.getName()));
-        }
-        
-        return lMap;
-    }
+		 * CloudscapePlatform
+		 * MaxDbPlatform
+		 * MckoiPlatform
+		 * SapDbPlatform
+		 */
+
+		return lOptions;
+	}
+
+	/**
+	 * Convert a DynaBean object to Map.
+	 *
+	 * @param aDynaBean The DynaBean object.
+	 * @return The Map<String, Object>
+	 */
+	public static Map<String, Object> convertToMap(DynaBean aDynaBean) {
+		Map<String, Object> lMap = new FastMap<String, Object>();
+
+		for (DynaProperty lDynaProperty : aDynaBean.getDynaClass().getDynaProperties()) {
+			lMap.put(lDynaProperty.getName(), aDynaBean.get(lDynaProperty.getName()));
+		}
+
+		return lMap;
+	}
 }
