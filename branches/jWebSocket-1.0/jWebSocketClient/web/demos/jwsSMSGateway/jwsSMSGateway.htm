@@ -106,13 +106,21 @@
                 <div id="scenario_container" class="box">
                     <!--  HERE YOU SHOULD START WRITING                  -->
 
-                    <div id="jCaptchaDiv" class="contentDiv">
+                    <div class="container-fluid" style="max-width: 276px;float:left;">
+                    
+                    <div id="jCaptchaDiv" class="contentDiv" style="width:253px;">
                         <div id="imgCaptcha">
                             <img id="img"></img>
                         </div>
                         <div id="update" class="update" 
 							 title="Update the captcha image with a new one!"></div>
                         <input type="text" id="captchaText" class="texts" value="Type the words here..."/>
+                    </div>
+                        
+                    <div class="contentDiv" style="float:left; font-size: 8pt;margin-top: 10px;width:253px;">
+                        <div style="display: inline;">Remaining SMS: <div id="remaining_quota" style="display: inline;">0</div></div>
+                    </div>
+                    
                     </div>
                     <div id="messageDiv" class="contentDiv box">
 						<table width="100%">
@@ -155,6 +163,7 @@
 						<div id="send_button" class="button">Send</div>
 						<div id="report_button" class="button">Activity Report</div>
                     </div>
+                    
 					<!--       LOG BOX           -->
                     <div id="log_box" class="box">
                         <div id="log_box_header">
