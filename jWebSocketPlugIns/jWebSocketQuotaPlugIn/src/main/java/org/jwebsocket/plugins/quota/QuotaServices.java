@@ -214,7 +214,8 @@ public class QuotaServices {
 
     public Token getQuotaAction(Token aToken) {
         try {
-            Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
+            
+            Token lResult = TokenFactory.createToken(aToken.getMap());
             String lQuotaIdentifier = aToken.getString("identifier").trim();
             IQuota lQuota;
             lQuota = quotaByIdentifier(lQuotaIdentifier);
@@ -232,13 +233,18 @@ public class QuotaServices {
                 lQuotaSingleInstance = lQuota.getQuota(lUuid);
             }
             Token lAuxToken = TokenFactory.createToken();
+            
+            if (lQuotaSingleInstance == null){
+                return getErrorToken("There is not a quota whit the identifier "+lQuotaIdentifier+" for the instance that your are requesting"
+                    , aToken);
+            }
+            
             lQuotaSingleInstance.writeToToken(lAuxToken);
 
             lResult.setLong("value", lQuotaSingleInstance.getvalue());
             lResult.setString("uuid", lQuotaSingleInstance.getUuid());
             lResult.setToken("quota", lAuxToken);
 
-            lResult.setBoolean("success", true);
             lResult.setCode(0);
 
             return lResult;
