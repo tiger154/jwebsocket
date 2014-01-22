@@ -293,8 +293,8 @@ public class BaseServer implements WebSocketServer {
 	 */
 	@Override
 	public Map<String, WebSocketConnector> getAllConnectors() {
-		Map<String, WebSocketConnector> lClients =
-				new FastMap<String, WebSocketConnector>().shared();
+		Map<String, WebSocketConnector> lClients
+				= new FastMap<String, WebSocketConnector>().shared();
 		for (WebSocketEngine lEngine : mEngines.values()) {
 			lClients.putAll(lEngine.getConnectors());
 		}
@@ -308,8 +308,8 @@ public class BaseServer implements WebSocketServer {
 	 */
 	@Override
 	public Map<String, WebSocketConnector> selectTokenConnectors() {
-		FastMap<String, WebSocketConnector> lClients =
-				new FastMap<String, WebSocketConnector>().shared();
+		FastMap<String, WebSocketConnector> lClients
+				= new FastMap<String, WebSocketConnector>().shared();
 		// iterate through all engines
 		for (WebSocketEngine lEngine : mEngines.values()) {
 			// and through all connectors of each engine
@@ -337,8 +337,8 @@ public class BaseServer implements WebSocketServer {
 	 */
 	@Override
 	public Map<String, WebSocketConnector> selectConnectors(Map<String, Object> aFilter) {
-		FastMap<String, WebSocketConnector> lClients =
-				new FastMap<String, WebSocketConnector>().shared();
+		FastMap<String, WebSocketConnector> lClients
+				= new FastMap<String, WebSocketConnector>().shared();
 		// iterate through all engines
 		for (WebSocketEngine lEngine : mEngines.values()) {
 			// and through all connectors of each engine
@@ -570,7 +570,7 @@ public class BaseServer implements WebSocketServer {
 
 	@Override
 	public void removeUsername(WebSocketConnector aConnector) {
-		aConnector.removeVar(BaseConnector.VAR_USERNAME);
+		aConnector.removeUsername();
 	}
 
 	@Override

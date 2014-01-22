@@ -72,7 +72,7 @@ import org.springframework.security.core.GrantedAuthority;
  *
  * @author aschulze
  * @author kybernees {Support for client-side session management and Spring
- authentication}
+ * authentication}
  */
 public class SystemPlugIn extends TokenPlugIn {
 
@@ -406,15 +406,15 @@ public class SystemPlugIn extends TokenPlugIn {
 	}
 
 	private String getGroup(WebSocketConnector aConnector) {
-		return aConnector.getString(VAR_GROUP);
+		return (String) aConnector.getSession().getStorage().get(VAR_GROUP);
 	}
 
 	private void setGroup(WebSocketConnector aConnector, String aGroup) {
-		aConnector.setString(VAR_GROUP, aGroup);
+		aConnector.getSession().getStorage().put(VAR_GROUP, aGroup);
 	}
 
 	private void removeGroup(WebSocketConnector aConnector) {
-		aConnector.removeVar(VAR_GROUP);
+		aConnector.getSession().getStorage().remove(VAR_GROUP);
 	}
 
 	private void broadcastEvent(WebSocketConnector aConnector, Token aEvent) {
@@ -758,6 +758,9 @@ public class SystemPlugIn extends TokenPlugIn {
 			removeUsername(aConnector);
 			removeGroup(aConnector);
 
+			// cleaning user session
+			aConnector.getSession().getStorage().clear();
+			
 			// log successful logout operation
 			if (mLog.isInfoEnabled()) {
 				mLog.info("User '" + lUsername
@@ -1222,8 +1225,8 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 
 		//Cleaning the session
-		aConnector.getSession().getStorage().clear();
 		aConnector.removeUsername();
+		aConnector.getSession().getStorage().clear();
 
 		//Sending the response
 		getServer().sendToken(aConnector, createResponse(aToken));
