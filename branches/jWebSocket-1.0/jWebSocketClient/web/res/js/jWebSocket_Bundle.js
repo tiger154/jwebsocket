@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC2 (build 40115)
+	//:const:*:VERSION:String:1.0.0 RC2 (build 40123)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC2 (build 40115)",
+	VERSION: "1.0.0 RC2 (build 40123)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -2684,11 +2684,9 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				for( var lAttr in lEnc ) {
 					var lFormat = lEnc[ lAttr ];
 					var lValue = aToken[ lAttr ];
-					// TODO: Rolando we need to check why you restrict binary 
-					// data to be decoded, so the user has to decode it manually in his side
-//					if( aToken[ "__binaryData" ] && "data" === lAttr){
-//						continue;
-//					}
+					if( aToken[ "isBinary" ] && "data" === lAttr){
+						continue;
+					}
 					if( 0 > self.fEncodingFormats.lastIndexOf( lFormat ) ) {
 						jws.console.error( 
 								"[process decoding]: Invalid encoding format '" 
@@ -3571,7 +3569,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	//:a:en::aSenderIncluded:Boolean: Indicates if the sender connector require to be included in the broadcast
 	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
 	broadcastToSharedSession: function ( aToken, aSenderIncluded, aOptions ) {
-		var lRes = this.checkLoggedIn();
+		var lRes = this.checkConnected();
 		if( 0 === lRes.code ) {
 			aToken.ns = jws.NS_SYSTEM;
 			aToken.type = "broadcastToSharedSession";
