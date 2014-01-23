@@ -79,7 +79,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	private DBCollection mUsePlugInsColl;
 	private static int mConnectedUsers = 0;
 	private static int mTimeCounter = 0;
-	private static final FastList<Integer> mConnectedUsersList 
+	private static final FastList<Integer> mConnectedUsersList
 			= new FastList<Integer>(60);
 	private final static String TT_REGISTER = "register";
 	private final static String TT_UNREGISTER = "unregister";
@@ -240,7 +240,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				getServer().getListeners().add(new ServerRequestListener());
 				mIsActive = true;
 			} catch (Exception lEx) {
-				System.out.println(lEx.getMessage());
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "connector started"));
 			}
 		}
 	}
@@ -354,8 +354,17 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				try {
 					gatherComputerInfo();
 					lPCInfoToken = computerInfoToToken();
+				} catch (UnsatisfiedLinkError lEx) {
+					// thread can be stopped because in case 
+					// of missing underlying JNI libs we can't do nothing
+					mInformationRunning = false;
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "gathering computer info, scan thread stopped, please install Sigar JNI libraries"));
 				} catch (SigarException lEx) {
-					// TODO: process exception properly!
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "gathering computer info"));
+				} catch (InterruptedException lEx) {
+					// thread can be stopped in case of interupted sub query
+					mInformationRunning = false;
+					mLog.error(Logging.getSimpleExceptionMessage(lEx, "gathering computer info, interupted, scan thread stopped"));
 				}
 
 				for (WebSocketConnector lConnector : mClients) {
@@ -570,7 +579,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 							lTotal += (Integer) lDocument.get("h" + i);
 						}
 					}
-					//System.out.println(lCursor);
 					lToken.setInteger(lDay, lTotal);
 					lTotal = 0;
 					lFlag = true;
@@ -646,18 +654,15 @@ public class MonitoringPlugIn extends TokenPlugIn {
 
 	}
 
-	private void gatherComputerInfo() {
-		try {
-			mMemory = gatherMemInfo();
-			mCPUPercent = mSigar.getCpuPercList();
-			mCpu = (float) mSigar.getCpuPerc().getUser();
-			mNetwork = mSigar.getNetStat();
-			mRoots = File.listRoots();
+	private void gatherComputerInfo() throws SigarException,
+			InterruptedException, UnsatisfiedLinkError {
+		mMemory = gatherMemInfo();
+		mCPUPercent = mSigar.getCpuPercList();
+		mCpu = (float) mSigar.getCpuPerc().getUser();
+		mNetwork = mSigar.getNetStat();
+		mRoots = File.listRoots();
 
-			Thread.sleep(1000);
-		} catch (SigarException ex) {
-		} catch (InterruptedException ex) {
-		}
+		Thread.sleep(1000);
 	}
 
 	/**
@@ -690,9 +695,9 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	//To obtain all information about the memories
 	/**
 	 *
-	 * @return @throws SigarException
+	 * @return
 	 */
-	public int[] gatherMemInfo() throws SigarException {
+	public int[] gatherMemInfo() throws SigarException, UnsatisfiedLinkError {
 		int lMem[] = new int[4];
 		Mem lMemo = mSigar.getMem();
 		Swap lExchange = mSigar.getSwap();
@@ -706,7 +711,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		lMem[1] = (int) lUsedMem;
 		lMem[2] = (int) lTotalSwap;
 		lMem[3] = (int) lUsedSwap;
-
 		return lMem;
 	}
 

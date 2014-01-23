@@ -17,7 +17,7 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-if(window.MozWebSocket){window.WebSocket=window.MozWebSocket;}var jws={VERSION:"1.0.0 RC2 (build 40115)",NS_BASE:"org.jwebsocket",
+if(window.MozWebSocket){window.WebSocket=window.MozWebSocket;}var jws={VERSION:"1.0.0 RC2 (build 40123)",NS_BASE:"org.jwebsocket",
 NS_SYSTEM:"org.jwebsocket.plugins.system",MSG_WS_NOT_SUPPORTED:
 "Unfortunately your browser does neither natively support WebSockets\n"+"nor you have the Adobe Flash-PlugIn 10+ installed.\n"+
 "Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer.",CUR_TOKEN_ID:0,JWS_SERVER_SCHEMA:"ws",
@@ -253,8 +253,8 @@ this.addFilter({filterTokenOut:function(aR){var ji=aR.enc;if(!ji){return;}for(va
 self.iR.lastIndexOf(hS)){jws.console.error("[process encoding]: Invalid encoding format '"+hS+" 'received. Token cannot be sent!");
 throw new Error("Invalid encoding format '"+hS+" 'received (not supported). Token cannot be sent!");}else if("zipBase64"===hS){
 aR[hT]=jws.tools.zip(dM,true);}else if("base64"===hS){aR[hT]=Base64.encode(dM);}}},filterTokenIn:function(aR){var ji=aR.enc;if(!ji){
-return;}for(var hT in ji){var hS=ji[hT];var dM=aR[hT];if(0>self.iR.lastIndexOf(hS)){jws.console.error(
-"[process decoding]: Invalid encoding format '"+hS+"' received. Token cannot be processed!");throw new Error(
+return;}for(var hT in ji){var hS=ji[hT];var dM=aR[hT];if(aR["isBinary"]&&"data"===hT){continue;}if(0>self.iR.lastIndexOf(hS)){
+jws.console.error("[process decoding]: Invalid encoding format '"+hS+"' received. Token cannot be processed!");throw new Error(
 "Invalid encoding format '"+hS+" 'received  (not supported). Token cannot be processed!");}else if("zipBase64"===hS){aR[hT]=
 jws.tools.unzip(dM,true);}else if("base64"===hS){aR[hT]=Base64.decode(dM);}}}});},processOpened:function(cz){this.iR=["base64",
 "zipBase64"];this.sendToken({ns:jws.SystemClientPlugIn.NS,type:"header",clientType:"browser",clientName:jws.getBrowserName(),
@@ -327,7 +327,7 @@ this.sendToken({ns:jws.NS_SYSTEM,type:"send",targetId:bb,sourceId:this.ai,sender
 function(aP,aB,ax){var bj=this.checkLoggedIn();var aE=false;var aD=true;if(ax){if(ax.senderIncluded){aE=ax.senderIncluded;}if(
 ax.responseRequested){aD=ax.responseRequested;}}if(0===bj.code){this.sendToken({ns:jws.NS_SYSTEM,type:"broadcast",sourceId:this.ai,
 sender:this.af,pool:aP,data:aB,senderIncluded:aE,responseRequested:aD},ax);}return bj;},broadcastToSharedSession:function(aR,eK,ax){
-var bj=this.checkLoggedIn();if(0===bj.code){aR.ns=jws.NS_SYSTEM;aR.type="broadcastToSharedSession";aR.senderIncluded=eK||false;
+var bj=this.checkConnected();if(0===bj.code){aR.ns=jws.NS_SYSTEM;aR.type="broadcastToSharedSession";aR.senderIncluded=eK||false;
 this.sendToken(aR,ax);}return bj;},echo:function(aw){var bj=this.checkWriteable();if(0===bj.code){this.sendToken({ns:jws.NS_SYSTEM,
 type:"echo",data:aw});}return bj;},open:function(dr,ax){var bj=this.createDefaultResult();try{if(ax&&ax.OnToken&&"function"===
 typeof ax.OnToken){this.eF=ax.OnToken;}if(ax&&ax.OnWelcome&&"function"===typeof ax.OnWelcome){this.cC=ax.OnWelcome;}if(ax&&
