@@ -220,10 +220,11 @@ public class QuotaServices {
             IQuota lQuota;
             lQuota = quotaByIdentifier(lQuotaIdentifier);
             String lUuid = aToken.getString("uuid");
+            String lInstance = "";
             IQuotaSingleInstance lQuotaSingleInstance;
             if (null == lUuid || lUuid.equals("")) {
                 String lNS = aToken.getString("namespace");
-                String lInstance = aToken.getString("instance");
+                lInstance = aToken.getString("instance");
                 String lInstanceType = aToken.getString("instance_type");
                 String lActions = aToken.getString("actions");
 
@@ -235,7 +236,7 @@ public class QuotaServices {
             Token lAuxToken = TokenFactory.createToken();
             
             if (lQuotaSingleInstance == null){
-                return getErrorToken("There is not a quota whit the identifier "+lQuotaIdentifier+" for the instance that your are requesting"
+                return getErrorToken("There is not a quota whit the identifier "+lQuotaIdentifier+" for the instance "+lInstance +" that your are requesting."
                     , aToken);
             }
             
