@@ -42,6 +42,7 @@ $.widget("jws.SMSGateway", {
         this.eCCounter = this.element.find('#character_counter .count');
         this.MAX_COUNT = 160;
         this.mCount = 0;
+        this.mLogonUser = "anonymous";
         this.mTXT_CAPTCHA = "Type the words here...";
         this.mMSG_CAPTCHA_ERROR = "Error found in the Captcha, the server will" +
                 " send you other captcha, please try again!";
@@ -63,7 +64,7 @@ $.widget("jws.SMSGateway", {
             OnWelcome: function(aEvent) {
                 // Ask for a new captcha image
                 w.SMSGateway.getCaptcha();
-                w.SMSGateway.remainingSMS();
+                w.SMSGateway.remainingSMS(mWSC.getUsername());
             },
             OnClose: function(aEvent) {
                 w.SMSGateway.eImg.attr("src", "css/images/blank.png");
@@ -79,12 +80,17 @@ $.widget("jws.SMSGateway", {
                     if (aToken.type === "broadcastToSharedSession") {
                         var lData = aToken.data,
                                 lreqType = lData.reqType;
+                        
                         if (lreqType === "logon") {
                             w.auth.getCallbacks().OnLogon(lData);
+                            w.mLogonUser = lData.username;
+                            w.SMSGateway.remainingSMS(w.mLogonUser);
                         }
 
                         if (lreqType === "logoff") {
                             w.auth.getCallbacks().OnLogoff(lData);
+                            w.mLogonUser = "anonymous"; 
+                            w.SMSGateway.updateReminingSMS(0);
                         }
                     }
                 }
@@ -151,7 +157,7 @@ $.widget("jws.SMSGateway", {
                     //function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
                     jwsDialog(w.SMSGateway.mMSG_SMS_SENT, "SMS sent correctly", 
                              true,"alert",function(){
-                                 w.SMSGateway.remainingSMS();
+                                 w.SMSGateway.remainingSMS(null);
                              });
                     w.SMSGateway.getCaptcha();
                 },
@@ -190,26 +196,35 @@ $.widget("jws.SMSGateway", {
             w.SMSGateway.eCCounterArea.attr("class", "");
         }
     },
-    remainingSMS: function() {
+    remainingSMS: function( aUsername ) {
 
+        var me = this;
+        if ( aUsername === null){
+            aUsername = w.mLogonUser;
+        }
+        
         var lQUOTAToken = {
             ns: NS_QUOTA,
             type: 'getQuota',
             identifier: 'CountDown',
             namespace: 'org.jwebsocket.plugins.sms',
-            instance: mWSC.getUsername(),
+            instance: aUsername,
             actions: 'sendSMS',
             instance_type: 'User'
         };
         log("<b style='color:green;'>Getting remaining SMS</b>");
         var lCallbacks = {
             OnSuccess: function(aToken) {
-                $("#remaining_quota").html(aToken.value);
+                me.updateReminingSMS(aToken.value);
+                //$("#remaining_quota").html(aToken.value);
             },
             OnFailure: function(aToken) {
-                log("error getting remining sms")
+                log("error getting remining sms");
             }
         };
         mWSC.sendToken(lQUOTAToken, lCallbacks);
+    },
+    updateReminingSMS : function( aValue ){
+        $("#remaining_quota").html(aValue);
     }
 });
