@@ -19,8 +19,21 @@ Ext.require([
     'Ext.jws.data.Proxy',
     'Ext.jws.form.action.Load',
     'Ext.jws.form.action.Submit'
-]);
+    ]);
 
+//registerTooltip: function(aItemsId) {
+//		Ext.each(aItemsId, function(aId){
+//			var lField = Ext.getCmp(aId);
+//			Ext.tip.QuickTipManager.register({
+//				target: lField.getId(),
+//				text: lField.tooltip,
+//				title: 'Description:',
+//				mouseOffset: [10,0]
+//			});
+//		});
+//	}
+
+Ext.tip.QuickTipManager.init();
 
 Ext.define('jws.quotaPlugin.alterWindow', {
     extend: 'Ext.window.Window',
@@ -132,254 +145,264 @@ Ext.define('jws.quotaPlugin.alterWindow', {
 
 
         this.items = [
+        {
+            xtype: 'form',
+            bodyPadding: 15,
+            width: 250,
+            id: 'alterQuotaForm',
+            margins: '10 5 10 10',
+            title: 'Alter Form',
+            height: 300,
+            frame: true,
+            jwsSubmit: true,
+            bodyStyle: 'background-color:#D8E4F2',
+            border: false,
+            items: [
             {
-                xtype: 'form',
-                bodyPadding: 15,
-                width: 250,
-                id: 'alterQuotaForm',
-                margins: '10 5 10 10',
-                title: 'Alter Form',
-                height: 300,
-                frame: true,
-                jwsSubmit: true,
-                bodyStyle: 'background-color:#D8E4F2',
-                border: false,
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    width: 120,
+                    xtype: 'textfield',
+                    readOnly: true,
+                    id: 'get_quota_value',
+                    fieldLabel: 'Get Quota Value',
+                    value: lQuotaObject.value,
+                    vtype: 'num',
+                    margins: '0 0 0 0',
+                    allowBlank: true,
+                    editable: false
+                }, {
+                    xtype: 'button',
+                    width: 80,
+                    handler: lGetQuotaFunction,
+                    iconCls: 'icon-accept',
+                    margins: '20 0 0 2',
+                    text: 'Execute'
+                }]
+            },
+
+            {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
                 items: [
-                    {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                width: 120,
-                                xtype: 'textfield',
-                                readOnly: true,
-                                id: 'get_quota_value',
-                                fieldLabel: 'Get Quota Value',
-                                value: lQuotaObject.value,
-                                vtype: 'num',
-                                margins: '0 0 0 0',
-                                allowBlank: true,
-                                editable: false
-                            }, {
-                                xtype: 'button',
-                                width: 80,
-                                handler: lGetQuotaFunction,
-                                iconCls: 'icon-accept',
-                                margins: '20 0 0 2',
-                                text: 'Execute'
-                            }]},
-                    {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [
-                            {
-                                xtype: 'textfield',
-                                width: 120,
-                                vtype: 'num',
-                                margins: '0 0 0 0',
-                                name: 'set_quota_field',
-                                id: 'set_quota_field',
-                                fieldLabel: 'Set Quota value'
-                            }, {
-                                xtype: 'button',
-                                width: 80,
-                                handler: lSetQuotaFunction,
-                                iconCls: 'icon-accept',
-                                margins: '20 0 0 2',
-                                text: 'Execute'
-                            }
-                        ]}, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [
-                            {
-                                xtype: 'textfield',
-                                name: 'increase_quota',
-                                id: 'increase_quota',
-                                width: 120,
-                                margins: '0 0 0 0',
-                                fieldLabel: 'Increase Quota Value'
-                            }, {
-                                xtype: 'button',
-                                width: 80,
-                                handler: lIncreaseQuotaFunction,
-                                iconCls: 'icon-accept',
-                                margins: '20 0 0 2',
-                                text: 'Execute'
-                            }]
-                    }, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [
-                            {
-                                xtype: 'textfield',
-                                name: 'reduce_quota',
-                                id: 'reduce_quota',
-                                width: 120,
-                                margins: '0 0 0 0',
-                                fieldLabel: 'Reduce Quota Value'
-                            }, {
-                                xtype: 'button',
-                                width: 80,
-                                handler: lReduceQuotaFunction,
-                                iconCls: 'icon-accept',
-                                margins: '20 0 0 2',
-                                text: 'Execute'
-                            }]
-                    }
+                {
+                    xtype: 'textfield',
+                    width: 120,
+                    vtype: 'num',
+                    margins: '0 0 0 0',
+                    name: 'set_quota_field',
+                    id: 'set_quota_field',
+                    fieldLabel: 'Set Quota value'
+                }, {
+                    xtype: 'button',
+                    width: 80,
+                    handler: lSetQuotaFunction,
+                    iconCls: 'icon-accept',
+                    margins: '20 0 0 2',
+                    text: 'Execute'
+                }
                 ]
             }, {
-                xtype: 'form',
-                margins: '10 5 10 5',
-                title: "Quota Information",
-                width: 330,
-                frame: true,
-                bodyStyle: 'background-color:#D8E4F2',
-                height: 300,
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [
+                {
+                    xtype: 'textfield',
+                    name: 'increase_quota',
+                    id: 'increase_quota',
+                    width: 120,
+                    margins: '0 0 0 0',
+                    fieldLabel: 'Increase Quota Value'
+                }, {
+                    xtype: 'button',
+                    width: 80,
+                    handler: lIncreaseQuotaFunction,
+                    iconCls: 'icon-accept',
+                    margins: '20 0 0 2',
+                    text: 'Execute'
+                }]
+            }, {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [
+                {
+                    xtype: 'textfield',
+                    name: 'reduce_quota',
+                    id: 'reduce_quota',
+                    width: 120,
+                    margins: '0 0 0 0',
+                    fieldLabel: 'Reduce Quota Value'
+                }, {
+                    xtype: 'button',
+                    width: 80,
+                    handler: lReduceQuotaFunction,
+                    iconCls: 'icon-accept',
+                    margins: '20 0 0 2',
+                    text: 'Execute'
+                }]
+            }
+            ]
+        }, {
+            xtype: 'form',
+            margins: '10 5 10 5',
+            title: "Quota Information",
+            width: 330,
+            frame: true,
+            bodyStyle: 'background-color:#D8E4F2',
+            height: 300,
+            items: [{
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
                 items: [{
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'UUID:',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.uuid,
-                                margins: '0 0 0 0'
-                            }
-                        ]}, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'Identifier:',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.identifier,
-                                margins: '0 0 0 0'
-                            }
-                        ]}, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'Type:',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.quotaType,
-                                margins: '0 0 0 0'
-                            }
-                        ]},
-                    {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'Name Space:',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.namespace,
-                                margins: '0 0 0 0'
-                            }
-                        ]}, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'Instance',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.instance,
-                                margins: '0 0 0 0'
-                            }
-                        ]}, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'Instance Type:',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.instance_type,
-                                margins: '0 0 0 0'
-                            }
-                        ]}
+                    xtype: 'label',
+                    text: 'UUID:',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.uuid,
+                    margins: '0 0 0 0'
+                }
+                ]
+            }, {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    xtype: 'label',
+                    text: 'Identifier:',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.identifier,
+                    margins: '0 0 0 0'
+                }
+                ]
+            }, {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    xtype: 'label',
+                    text: 'Type:',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.quotaType,
+                    margins: '0 0 0 0'
+                }
+                ]
+            },
 
+            {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    xtype: 'label',
+                    text: 'Name Space:',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.namespace,
+                    margins: '0 0 0 0'
+                }
+                ]
+            }, {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    xtype: 'label',
+                    text: 'Instance',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.instance,
+                    margins: '0 0 0 0'
+                }
+                ]
+            }, {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    xtype: 'label',
+                    text: 'Instance Type:',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.instance_type,
+                    margins: '0 0 0 0'
+                }
                 ]
             }
+
+            ]
+        }
         ];
 
         this.listeners = {
@@ -391,7 +414,9 @@ Ext.define('jws.quotaPlugin.alterWindow', {
                 if (lForm.isValid()) {
 
                     var lFilterParams = lForm.getValues();
-                    lStore.load({params: lFilterParams});
+                    lStore.load({
+                        params: lFilterParams
+                    });
                 }
             }
         };
@@ -440,211 +465,197 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
         };
 
         this.items = [
+        {
+            xtype: 'form',
+            bodyPadding: 15,
+            width: 250,
+            id: 'RegisterQuotaForm',
+            margins: '10 5 10 10',
+            title: 'Alter Form',
+            height: 230,
+            frame: true,
+            jwsSubmit: true,
+            bodyStyle: 'background-color:#D8E4F2',
+            border: false,
+            items: [
             {
-                xtype: 'form',
-                bodyPadding: 15,
-                width: 250,
-                id: 'RegisterQuotaForm',
-                margins: '10 5 10 10',
-                title: 'Alter Form',
-                height: 230,
-                frame: true,
-                jwsSubmit: true,
-                bodyStyle: 'background-color:#D8E4F2',
-                border: false,
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
                 items: [
-                    {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [
-                            {
-                                xtype: 'textfield',
-                                width: 150,
-                                allowBlank: false,
-                                margins: '0 0 0 0',
-                                name: 'req_instance',
-                                id: 'reg_instance',
-                                fieldLabel: 'Instance to Register'
-                            }
-                        ]}, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [
-                            {
-                                xtype: 'combobox',
-                                width: 150,
-                                id: 'reg_instance_type',
-                                name: 'reg_instance_type',
-                                fieldLabel: 'Instance Type',
-                                displayField: 'name',
-                                margins: '0 0 0 0',
-                                store: quota_instance_store,
-                                allowBlank: false,
-                                queryMode: 'local',
-                                typeAhead: true
-                            }]
-                    }, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [
-                            {
-                                xtype: 'button',
-                                width: 150,
-                                handler: lSetRegisterQuota,
-                                iconCls: 'icon-add',
-                                margins: '20 0 0 2',
-                                text: 'Register Quota'
-                            }]
-                    }
+                {
+                    xtype: 'textfield',
+                    width: 150,
+                    allowBlank: false,
+                    margins: '0 0 0 0',
+                    name: 'req_instance',
+                    id: 'reg_instance',
+                    fieldLabel: 'Instance to Register'
+                }
                 ]
             }, {
-                xtype: 'form',
-                margins: '10 5 10 5',
-                title: "Quota Information",
-                width: 330,
-                frame: true,
-                bodyStyle: 'background-color:#D8E4F2',
-                height: 230,
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [
+                {
+                    xtype: 'button',
+                    width: 150,
+                    handler: lSetRegisterQuota,
+                    iconCls: 'icon-add',
+                    margins: '20 0 0 2',
+                    text: 'Register Quota'
+                }]
+            }
+            ]
+        }, {
+            xtype: 'form',
+            margins: '10 5 10 5',
+            title: "Quota Information",
+            width: 330,
+            frame: true,
+            bodyStyle: 'background-color:#D8E4F2',
+            height: 230,
+            items: [{
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
                 items: [{
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'UUID:',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.uuid,
-                                margins: '0 0 0 0'
-                            }
-                        ]}, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'Type:',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.quotaType,
-                                margins: '0 0 0 0'
-                            }
-                        ]},
-                    {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'Name Space:',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.namespace,
-                                margins: '0 0 0 0'
-                            }
-                        ]}, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'Instance',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.instance,
-                                margins: '0 0 0 0'
-                            }
-                        ]}, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'Instance Type:',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.instance_type,
-                                margins: '0 0 0 0'
-                            }
-                        ]}, {
-                        xtype: 'fieldcontainer',
-                        labelStyle: 'font-weight:bold;padding:0',
-                        layout: 'hbox',
-                        defaultType: 'textfield',
-                        fieldDefaults: {
-                            labelAlign: 'top'
-                        },
-                        items: [{
-                                xtype: 'label',
-                                text: 'Identifier:',
-                                margins: '0 0 0 0',
-                                width: 100
-                            },
-                            {
-                                xtype: 'label',
-                                flex: 1,
-                                text: lQuotaObject.identifier,
-                                margins: '0 0 0 0'
-                            }
-                        ]}
+                    xtype: 'label',
+                    text: 'UUID:',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.uuid,
+                    margins: '0 0 0 0'
+                }
+                ]
+            }, {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    xtype: 'label',
+                    text: 'Type:',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.quotaType,
+                    margins: '0 0 0 0'
+                }
+                ]
+            },
 
+            {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    xtype: 'label',
+                    text: 'Name Space:',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.namespace,
+                    margins: '0 0 0 0'
+                }
+                ]
+            }, {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    xtype: 'label',
+                    text: 'Instance',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.instance,
+                    margins: '0 0 0 0'
+                }
+                ]
+            }, {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    xtype: 'label',
+                    text: 'Instance Type:',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.instance_type,
+                    margins: '0 0 0 0'
+                }
+                ]
+            }, {
+                xtype: 'fieldcontainer',
+                labelStyle: 'font-weight:bold;padding:0',
+                layout: 'hbox',
+                defaultType: 'textfield',
+                fieldDefaults: {
+                    labelAlign: 'top'
+                },
+                items: [{
+                    xtype: 'label',
+                    text: 'Identifier:',
+                    margins: '0 0 0 0',
+                    width: 100
+                },
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: lQuotaObject.identifier,
+                    margins: '0 0 0 0'
+                }
                 ]
             }
+
+            ]
+        }
         ];
 
         this.listeners = {
@@ -656,7 +667,9 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
                 if (lForm.isValid()) {
 
                     var lFilterParams = lForm.getValues();
-                    lStore.load({params: lFilterParams});
+                    lStore.load({
+                        params: lFilterParams
+                    });
                 }
             }
         };
@@ -669,18 +682,24 @@ Ext.define('jws.quotaPlugin.registerQuotaWindow', {
 Ext.define('Quota', {
     extend: 'Ext.data.Model',
     fields: ['uuid', 'instance', 'namespace', 'identifier',
-        'instance_type', 'actions', 'quotaType',
-        {
-            name: 'value',
-            type: 'int'
-        }
+    'instance_type', 'actions', 'quotaType',
+    {
+        name: 'value',
+        type: 'int'
+    }
     ],
-    hasMany: {model: 'QuotaChild', name: 'childQuotas'}
+    hasMany: {
+        model: 'QuotaChild', 
+        name: 'childQuotas'
+    }
 });
 
 Ext.define('QuotaChild', {
     extend: 'Ext.data.Model',
-    fields: ['instance', 'instance_type', 'uuid', {name: 'value', type: 'int'}],
+    fields: ['instance', 'instance_type', 'uuid', {
+        name: 'value', 
+        type: 'int'
+    }],
     belongsTo: 'Quota'
 });
 
@@ -713,41 +732,76 @@ CLS_OFFLINE = "offline";
 //Define the model for all QuotaTypes
 //TODO: Those data will be load from the server
 var quota_types = [
-    {name: 'CountDown'},
-    {name: 'Interval'},
-    {name: 'DiskSpace'},
-    {name: 'Volume'},
-    {name: 'ConcurrentUsers'},
-    {name: 'AutoRecharge'},
-    {name: 'Time'}
+{
+    name: 'CountDown'
+},
+{
+    name: 'Interval'
+},
+{
+    name: 'DiskSpace'
+},
+{
+    name: 'Volume'
+},
+{
+    name: 'ConcurrentUsers'
+},
+{
+    name: 'AutoRecharge'
+},
+{
+    name: 'Time'
+}
 ];
 
 //Define the model for all Instance type
 //TODO: Those data will be load from the server
 var quota_instance = [
-    {name: 'User'},
-    {name: 'Group'}
+{
+    name: 'User'
+},
+{
+    name: 'Group'
+}
 ];
 var namespace_diskspace = [
-    {name: 'private'},
-    {name: 'public'}
+{
+    name: 'private'
+},
+{
+    name: 'public'
+}
 ];
 
 Ext.regModel('Quota_types', {
     fields: [
-        {type: 'string', name: 'name'},
-        {type: 'string', name: 'quotaType'}
+    {
+        type: 'string', 
+        name: 'name'
+    },
+
+    {
+        type: 'string', 
+        name: 'quotaType'
+    }
     ]
 });
 
 Ext.regModel('Quota_instances', {
     fields: [
-        {type: 'string', name: 'name'}
+    {
+        type: 'string', 
+        name: 'name'
+    }
     ]
 });
 Ext.regModel('Namespace_diskspace', {
     fields: [
-        {type: 'string', name: 'name'}
+    {
+        type: 'string', 
+        name: 'name'
+    }
     ]
 });
 
@@ -768,11 +822,11 @@ var namespace_diskspace_store = Ext.create('Ext.data.Store', {
 
 
 Ext.onReady(function() {
-// DOM elements
+    // DOM elements
     var eDisconnectMessage = Ext.get("not_connected"),
-            eBtnDisconnect = Ext.get("disconnect_button"),
-            eBtnConnect = Ext.get("connect_button"),
-            eClient = document.getElementById("client_status");
+    eBtnDisconnect = Ext.get("disconnect_button"),
+    eBtnConnect = Ext.get("connect_button"),
+    eClient = document.getElementById("client_status");
     eClientId = document.getElementById("client_id");
     eWebSocketType = document.getElementById("websocket_type");
 
@@ -910,59 +964,63 @@ function showQuotaPluginMainWindows() {
             margins: '0 0 0 0'
         },
         items: [{
-                xtype: 'fieldcontainer',
-                labelStyle: 'font-weight:bold;padding:0',
-                layout: 'hbox',
-                defaultType: 'textfield',
-                fieldDefaults: {
-                    labelAlign: 'top'
-                },
-                items: [
-                    {
-                        xtype: 'combobox',
-                        flex: 1,
-                        name: 'quotaType',
-                        fieldLabel: 'Quota Type',
-                        displayField: 'name',
-                        store: quota_type_store,
-                        blankText: 'The Quota type is mandatory to filter',
-                        queryMode: 'local',
-                        typeAhead: true,
-                        emptyText: 'select quota',
-                        allowBlank: false
-                    }, {
-                        xtype: 'textfield',
-                        name: 'namespace',
-                        margins: '0 0 0 10',
-                        flex: 2,
-                        fieldLabel: 'Name Space',
-                        emptyText: 'example: org.jwebsocket.smsPlugin'
-                    }, {
-                        xtype: 'textfield',
-                        name: 'instance',
-                        margins: '0 0 0 10',
-                        fieldLabel: 'Instance',
-                        flex: 1,
-                        emptyText: 'example: myuser2013'
-                    }, {
-                        xtype: 'button',
-                        fieldLabel: 'Pres to filter',
-                        text: 'Filter',
-                        margins: '20 0 0 10',
-                        width: 70,
-                        handler: function() {
+            xtype: 'fieldcontainer',
+            labelStyle: 'font-weight:bold;padding:0',
+            layout: 'hbox',
+            defaultType: 'textfield',
+            fieldDefaults: {
+                labelAlign: 'top'
+            },
+            items: [
+            {
+                xtype: 'combobox',
+                flex: 1,
+                name: 'quotaType',
+                fieldLabel: 'Quota Type',
+                displayField: 'name',
+                store: quota_type_store,
+                blankText: 'The Quota type is mandatory to filter',
+                queryMode: 'local',
+                typeAhead: true,
+                emptyText: 'select quota',
+                allowBlank: false
+            }, {
+                xtype: 'textfield',
+                name: 'namespace',
+                margins: '0 0 0 10',
+                flex: 2,
+                fieldLabel: 'Name Space',
+                emptyText: 'example: org.jwebsocket.smsPlugin'
+            }, {
+                xtype: 'textfield',
+                name: 'instance',
+                margins: '0 0 0 10',
+                fieldLabel: 'Instance',
+                flex: 1,
+                emptyText: 'example: myuser2013'
+            }, {
+                xtype: 'button',
+                fieldLabel: 'Pres to filter',
+                text: 'Filter',
+                margins: '20 0 0 10',
+                width: 70,
+                handler: function() {
 
-                            var lForm = this.up('form').getForm();
+                    var lForm = this.up('form').getForm();
 
-                            if (lForm.isValid()) {
+                    if (lForm.isValid()) {
 
-                                lFilterParams = lForm.getValues();
-                                lStore.load({params: lFilterParams});
-                            }
-                        }
-                    }]
+                        lFilterParams = lForm.getValues();
+                        lStore.load({
+                            params: lFilterParams
+                        });
+                    }
+                }
             }]
+        }]
     });
+    
+     
 
     //=====form============
     var lFormPanel = Ext.create('Ext.form.Panel', {
@@ -975,26 +1033,27 @@ function showQuotaPluginMainWindows() {
         bodyStyle: 'background-color:#D8E4F2',
         border: false,
         items: [
-            {
-                xtype: 'fieldcontainer',
-                labelStyle: 'font-weight:bold;padding:0',
-                layout: 'hbox',
-                defaultType: 'textfield',
-                fieldDefaults: {
-                    labelAlign: 'top'
-                },
-                items: [{
-                        xtype: 'combobox',
-                        flex: 1,
-                        name: 'identifier',
-                        margins: '0 10 0 0',
-                        fieldLabel: 'Select Quota ',
-                        displayField: 'name',
-                        valueField: 'name',
-                        store: lStoreActiveQuota,
-                        typeAhead: true,
-                        allowBlank: false
-                        /*listeners: {
+        {
+            xtype: 'fieldcontainer',
+            labelStyle: 'font-weight:bold;padding:0',
+            layout: 'hbox',
+            defaultType: 'textfield',
+            fieldDefaults: {
+                labelAlign: 'top'
+            },
+            items: [{
+                xtype: 'combobox',
+                flex: 1,
+                id:'identifier',
+                name: 'identifier',
+                margins: '0 10 0 0',
+                fieldLabel: 'Select Quota ',
+                displayField: 'name',
+                valueField: 'name',
+                store: lStoreActiveQuota,
+                typeAhead: true,
+                allowBlank: false                
+            /*listeners: {
                             select: function(identifier) {
                                 if (identifier.getValue() === "DiskSpace") {
                                     Ext.getCmp("namespace").setVisible(false);
@@ -1009,236 +1068,151 @@ function showQuotaPluginMainWindows() {
                                 }
                             }
                         }*/
-                    }, {
-                        flex: 1,
-                        xtype: 'textfield',
-                        name: 'value',
-                        id: 'value',
-                        fieldLabel: 'Value',
-                        vtype: 'num',
-                        margins: '0 0 0 10',
-                        allowBlank: false
-                    }]},
-            {
-                xtype: 'fieldcontainer',
-                labelStyle: 'font-weight:bold;padding:0',
-                layout: 'hbox',
-                defaultType: 'textfield',
-                fieldDefaults: {
-                    labelAlign: 'top'
-                },
-                items: [
-                    {
-                        xtype: 'textfield',
-                        flex: 1,
-                        margins: '10 10 0 0',
-                        name: 'instance',
-                        id: 'instance',
-                        fieldLabel: 'Instance',
-                        allowBlank: false,
-                        emptyText: 'required...'
-                    }, {
-                        xtype: 'combobox',
-                        flex: 1,
-                        name: 'instance_type',
-                        fieldLabel: 'Select the instance Type',
-                        displayField: 'name',
-                        margins: '10 0 0 10',
-                        store: quota_instance_store,
-                        allowBlank: false,
-                        queryMode: 'local',
-                        typeAhead: true
-                    }
-                ]}, {
-                xtype: 'fieldcontainer',
-                labelStyle: 'font-weight:bold;padding:0',
-                layout: 'hbox',
-                defaultType: 'textfield',
-                fieldDefaults: {
-                    labelAlign: 'top'
-                },
-                items: [
-                    {
-                        xtype: 'textfield',
-                        name: 'namespace',
-                        flex: 1,
-                        margins: '10 0 0 0',
-                        id: 'namespace',
-                        fieldLabel: 'Name Space',
-                        emptyText: 'required...'
-                    },
-                    {
-                        xtype: 'combobox',
-                        flex: 1,
-                        id: 'namespace_diskspace',
-                        name: 'namespace',
-                        fieldLabel: 'Select the folder type',
-                        displayField: 'name',
-                        margins: '10 0 0 0',
-                        store: namespace_diskspace_store,
-                        allowBlank: true,
-                        queryMode: 'local',
-                        typeAhead: true,
-                        editable: false
-                    }]
             }, {
-                xtype: 'fieldcontainer',
-                labelStyle: 'font-weight:bold;padding:0',
-                layout: 'hbox',
-                defaultType: 'textfield',
-                fieldDefaults: {
-                    labelAlign: 'top'
-                },
-                items: [
-                    {
-                        xtype: 'textfield',
-                        name: 'actions',
-                        flex: 1,
-                        margins: '10 0 0 0',
-                        id: 'actions',
-                        fieldLabel: 'Actions',
-                        emptyText: 'required...',
-                        allowBlank: false
-                    }]
+                flex: 1,
+                xtype: 'textfield',
+                name: 'value',
+                id: 'value',
+                fieldLabel: 'Value',
+                vtype: 'num',
+                margins: '0 0 0 10',
+                allowBlank: false
+            }]
+        },
+
+        {
+            xtype: 'fieldcontainer',
+            labelStyle: 'font-weight:bold;padding:0',
+            layout: 'hbox',
+            defaultType: 'textfield',
+            fieldDefaults: {
+                labelAlign: 'top'
+            },
+            items: [
+            {
+                xtype: 'textfield',
+                flex: 1,
+                margins: '10 10 0 0',
+                name: 'instance',
+                id: 'instance',
+                fieldLabel: 'Instance',
+                allowBlank: false,
+                emptyText: 'required...'
+            }, {
+                xtype: 'combobox',
+                flex: 1,
+                id: 'instance_type',
+                name: 'instance_type',
+                fieldLabel: 'Select the instance type',
+                displayField: 'name',
+                margins: '10 0 0 10',
+                store: quota_instance_store,
+                allowBlank: false,
+                queryMode: 'local',
+                typeAhead: true
             }
+            ]
+        }, {
+            xtype: 'fieldcontainer',
+            labelStyle: 'font-weight:bold;padding:0',
+            layout: 'hbox',
+            defaultType: 'textfield',
+            fieldDefaults: {
+                labelAlign: 'top'
+            },
+            items: [
+            {
+                xtype: 'textfield',
+                name: 'namespace',
+                flex: 1,
+                margins: '10 0 0 0',
+                id: 'namespace',
+                fieldLabel: 'Name Space',
+                emptyText: 'required...'
+            },
+            {
+                xtype: 'combobox',
+                flex: 1,
+                id: 'namespace_diskspace',
+                name: 'namespace',
+                fieldLabel: 'Select the folder type',
+                displayField: 'name',
+                margins: '10 0 0 0',
+                store: namespace_diskspace_store,
+                allowBlank: true,
+                queryMode: 'local',
+                typeAhead: true,
+                editable: false
+            }]
+        }, {
+            xtype: 'fieldcontainer',
+            labelStyle: 'font-weight:bold;padding:0',
+            layout: 'hbox',
+            defaultType: 'textfield',
+            fieldDefaults: {
+                labelAlign: 'top'
+            },
+            items: [
+            {
+                xtype: 'textfield',
+                name: 'actions',
+                flex: 1,
+                margins: '10 0 0 0',
+                id: 'actions',
+                fieldLabel: 'Actions',
+                emptyText: 'required...',
+                allowBlank: false
+            }]
+        }
         ],
         buttons: [{
-                text: 'Reset',
-                handler: function() {
-                    this.up('form').getForm().reset();
-                }},
-            {
-                xtype: 'button',
-                text: 'Create Quota',
-                id: 'submit_button',
-                width: 200,
-                margins: '5 10 0 0',
-                alignTo: 'br',
-                bodyStyle: 'background-color:#D8E4F2',
-                handler: function() {
-                    var lForm = this.up('form').getForm();
-                    var lAction = {
-                        ns: NS_QUOTA_PLUGIN,
-                        tokentype: TT_CREATE
-                    };
-                    if (lForm.isValid()){
-                        lForm.submit(lAction);
-                    }else{
-                        logMessage({code:-1, msg: "Invalid Form"})
-                    }
-                        
-                }
+            text: 'Reset',
+            handler: function() {
+                this.up('form').getForm().reset();
             }
+        },
+
+        {
+            xtype: 'button',
+            text: 'Create Quota',
+            id: 'submit_button',
+            width: 200,
+            margins: '5 10 0 0',
+            alignTo: 'br',
+            bodyStyle: 'background-color:#D8E4F2',
+            handler: function() {
+                var lForm = this.up('form').getForm();
+                var lAction = {
+                    ns: NS_QUOTA_PLUGIN,
+                    tokentype: TT_CREATE
+                };
+                if (lForm.isValid()){
+                    lForm.submit(lAction);
+                }else{
+                    logMessage({
+                        code:-1, 
+                        msg: "Invalid Form"
+                    })
+                }
+                        
+            }
+        }
         ]
     });
-
+    
+    
 
     //=====form============
     var lFormPanelTesting = Ext.create('Ext.form.Panel', {
-        bodyPadding: 15,
-        width: 630,
-        height: 330,
-        id: "formpanelTesting",
+        width:'100%',
+        height: '450',
+        id: "HelpPanel",
         frame: true,
-        title: "Testing Filter Quota",
+        title: "Help",
         jwsSubmit: true,
         bodyStyle: 'background-color:#D8E4F2',
         border: false,
-        items: [
-            {
-                xtype: 'fieldcontainer',
-                labelStyle: 'font-weight:bold;padding:0',
-                layout: 'hbox',
-                defaultType: 'textfield',
-                fieldDefaults: {
-                    labelAlign: 'top'
-                },
-                items: [{
-                        xtype: 'label',
-                        flex: 1,
-                        margins: '0 10 0 0',
-                        text: 'Invoke whenever jwebsocket feature and test\n\
-                               the jWebSocket Quota Filter'
-                    }]},
-            {
-                xtype: 'fieldcontainer',
-                labelStyle: 'font-weight:bold;padding:0',
-                layout: 'hbox',
-                defaultType: 'textfield',
-                fieldDefaults: {
-                    labelAlign: 'top'
-                },
-                items: [
-                    {
-                        xtype: 'textfield',
-                        flex: 1,
-                        margins: '10 10 0 0',
-                        name: 'server_namespace',
-                        id: 'server_namespace',
-                        fieldLabel: 'Server Feature namespace',
-                        allowBlank: false,
-                        emptyText: 'example: org.jwebsocket.smsPlugin'
-                    }, {
-                        xtype: 'textfield',
-                        flex: 2,
-                        margins: '10 10 0 0',
-                        name: 'server_tt',
-                        id: 'server_tt',
-                        fieldLabel: 'Token type',
-                        allowBlank: false,
-                        emptyText: 'example: sendMessage'
-                    }
-                ]}, {
-                xtype: 'fieldcontainer',
-                labelStyle: 'font-weight:bold;padding:0',
-                layout: 'hbox',
-                defaultType: 'textfield',
-                fieldDefaults: {
-                    labelAlign: 'top'
-                },
-                items: [
-                    {
-                        xtype: 'textfield',
-                        name: 'server_params',
-                        flex: 1,
-                        margins: '10 0 0 0',
-                        id: 'server_params',
-                        fieldLabel: 'Optional params JSON in text format'
-                    }]
-            }
-        ],
-        buttons: [{
-                text: 'Reset',
-                handler: function() {
-                    this.up('form').getForm().reset();
-                }},
-            {
-                xtype: 'button',
-                text: 'Execute',
-                width: 200,
-                margins: '5 10 0 0',
-                alignTo: 'br',
-                bodyStyle: 'background-color:#D8E4F2',
-                handler: function() {
-
-                    var lForm = this.up('form').getForm();
-                    var lValues = lForm.getValues();
-
-                    var lAction = {
-                        ns: lValues.server_namespace,
-                        tokentype: lValues.server_tt
-                    };
-
-                    //Ext.apply(lAction);
-
-                    if (lForm.isValid()) {
-                        lForm.submit(lAction);
-                        Ext.Msg.alert("Information", "Request sent! Check quota list to see the quota reduction.");
-                    }
-
-                }
-            }
-        ]
+        html: "<iframe src='resources/quotaManagerHelp.htm' style='min-width:100%; min-height: 325px;'></iframe>"
     });
 
     //=====gridPanel=======
@@ -1255,41 +1229,41 @@ function showQuotaPluginMainWindows() {
         },
         iconCls: 'icon-user',
         columns: [{
-                text: 'Uuid',
-                width: 170,
-                sortable: true,
-                dataIndex: 'uuid'
-            }, {
-                text: 'Name space',
-                width: 180,
-                sortable: true,
-                dataIndex: 'namespace'
-            }, {
-                header: 'Quota Identifier',
-                width: 100,
-                sortable: true,
-                dataIndex: 'identifier'
-            }, {
-                text: 'Instance',
-                width: 60,
-                sortable: true,
-                dataIndex: 'instance'
-            }, {
-                text: 'Actions',
-                width: 60,
-                sortable: true,
-                dataIndex: 'actions'
-            }, {
-                text: 'Instance type',
-                width: 80,
-                sortable: true,
-                dataIndex: 'instance_type'
-            }, {
-                text: 'Value',
-                width: 40,
-                sortable: true,
-                dataIndex: 'value'
-            }],
+            text: 'Uuid',
+            width: 170,
+            sortable: true,
+            dataIndex: 'uuid'
+        }, {
+            text: 'Name space',
+            width: 180,
+            sortable: true,
+            dataIndex: 'namespace'
+        }, {
+            header: 'Quota Identifier',
+            width: 100,
+            sortable: true,
+            dataIndex: 'identifier'
+        }, {
+            text: 'Instance',
+            width: 60,
+            sortable: true,
+            dataIndex: 'instance'
+        }, {
+            text: 'Actions',
+            width: 60,
+            sortable: true,
+            dataIndex: 'actions'
+        }, {
+            text: 'Instance type',
+            width: 80,
+            sortable: true,
+            dataIndex: 'instance_type'
+        }, {
+            text: 'Value',
+            width: 40,
+            sortable: true,
+            dataIndex: 'value'
+        }],
         listeners: {
             select: function(aView, aRecord) {
                 lGridPanel.mLastSelected = aRecord.index;
@@ -1303,6 +1277,7 @@ function showQuotaPluginMainWindows() {
             }
         }
     });
+    
 
     var lUnregisterQuotaClick = function() {
         var lSelection = lGridPanel.getView().getSelectionModel().getSelection()[0];
@@ -1315,7 +1290,9 @@ function showQuotaPluginMainWindows() {
                     if (lForm.isValid()) {
 
                         var lFilterParams = lForm.getValues();
-                        lStore.load({params: lFilterParams});
+                        lStore.load({
+                            params: lFilterParams
+                        });
                     }
                 }
             });
@@ -1346,27 +1323,27 @@ function showQuotaPluginMainWindows() {
         id: "formPanelFilter",
         items: [lFilterFormPanel, lGridPanel],
         dockedItems: [{
-                xtype: 'toolbar',
-                items: [{
-                        iconCls: 'icon-alter',
-                        text: 'Alter Quota',
-                        id: 'alterQuotabtn',
-                        disabled: true,
-                        handler: lAlterQuotaClick
-                    }, {
-                        iconCls: 'icon-delete',
-                        text: 'Unregister Quota',
-                        disabled: true,
-                        id: 'unregisterQuotabtn',
-                        handler: lUnregisterQuotaClick
-                    }, {
-                        iconCls: 'icon-add',
-                        text: 'Register Quota',
-                        disabled: true,
-                        id: 'registerQuotabtn',
-                        handler: lRegisterQuotaClick
-                    }]
+            xtype: 'toolbar',
+            items: [{
+                iconCls: 'icon-alter',
+                text: 'Alter Quota',
+                id: 'alterQuotabtn',
+                disabled: true,
+                handler: lAlterQuotaClick
+            }, {
+                iconCls: 'icon-delete',
+                text: 'Unregister Quota',
+                disabled: true,
+                id: 'unregisterQuotabtn',
+                handler: lUnregisterQuotaClick
+            }, {
+                iconCls: 'icon-add',
+                text: 'Register Quota',
+                disabled: true,
+                id: 'registerQuotabtn',
+                handler: lRegisterQuotaClick
             }]
+        }]
     });
 
     var lTabPanel = Ext.create('Ext.tab.Panel', {
@@ -1393,29 +1370,106 @@ function showQuotaPluginMainWindows() {
         closable: false,
         items: [lTabPanel],
         dockedItems: [{
-                xtype: 'toolbar',
-                dock: 'bottom',
-                items: [
-                    {xtype: 'label', text: 'Message: '},
-                    {xtype: 'label', text: '', id: 'msg_label',
-                        margins: '5 0 0 0'},
-                    '->',
-                    {xtype: 'tbspacer'},
-                    {xtype: 'label', text: 'user: '},
-                    {xtype: 'button', width: 50, id: 'user_label', iconCls: 'icon-user'},
-                    '|',
-                    {xtype: 'button', componentCls: 'x-btn-default-toolbar-small-noicon x-over x-btn-over x-btn-default-toolbar-small-over', text: 'logout',
-                        listeners: {
-                            'mouseout': function(aButton, aEvent) {
-                                aButton.addCls('x-btn-default-toolbar-small-noicon x-over x-btn-over x-btn-default-toolbar-small-over');
-                            }
-                        },
-                        handler: function() {
-                            Ext.jwsClient.getConnection().logout();
-                        }}
-                ]
-            }]
+            xtype: 'toolbar',
+            dock: 'bottom',
+            items: [
+            {
+                xtype: 'label', 
+                text: 'Message: '
+            },
+
+            {
+                xtype: 'label', 
+                text: '', 
+                id: 'msg_label',
+                margins: '5 0 0 0'
+            },
+            '->',
+            {
+                xtype: 'tbspacer'
+            },
+
+            {
+                xtype: 'label', 
+                text: 'user: '
+            },
+
+            {
+                xtype: 'button', 
+                width: 50, 
+                id: 'user_label', 
+                iconCls: 'icon-user'
+            },
+            '|',
+            {
+                xtype: 'button', 
+                componentCls: 'x-btn-default-toolbar-small-noicon x-over x-btn-over x-btn-default-toolbar-small-over', 
+                text: 'logout',
+                listeners: {
+                    'mouseout': function(aButton, aEvent) {
+                        aButton.addCls('x-btn-default-toolbar-small-noicon x-over x-btn-over x-btn-default-toolbar-small-over');
+                    }
+                },
+                handler: function() {
+                    Ext.jwsClient.getConnection().logout();
+                }
+            }
+            ]
+        }]
     }).show();
+    
+    Ext.tip.QuickTipManager.register({
+        target:'identifier',
+        text: 'Select the Quota Identifier to defined the behavior of your new quota',
+        title: 'Description:',
+        mouseOffset: [10,0],
+        dismissDelay:10000
+    });
+    Ext.tip.QuickTipManager.register({
+        target:'value',
+        text: 'Numeric value that gives to a quota, \n\
+        indicating the number of times that the quota can be executed.',
+        title: 'Description:',
+        mouseOffset: [10,0],
+        dismissDelay:10000
+    });
+     Ext.tip.QuickTipManager.register({
+        target:'instance',
+        text: 'Represented in who will apply the quota',
+        title: 'Description:',
+        mouseOffset: [10,0],
+        dismissDelay:10000
+    });
+    Ext.tip.QuickTipManager.register({
+        target:'instance_type',
+        text: 'Define the instance type of the instance element, so far this element can take two values,\n\
+         "User" when instance is a user and "Group" when instance is a user group.',
+        title: 'Description:',
+        mouseOffset: [10,0],
+        dismissDelay:10000
+    });
+    Ext.tip.QuickTipManager.register({
+        target:'namespace',
+        text: "The plugin's namespace which the quota will be applied. \n\
+        For example: org.jwebsocket.plugins.sms",
+        title: 'Description:',
+        mouseOffset: [10,0],
+        dismissDelay:10000
+    });
+    Ext.tip.QuickTipManager.register({
+        target:'namespace_diskspace',
+        text: 'Choose "private" to execute the new quota in private folders and "public" to execute the quota in public folders.',
+        title: 'Description:',
+        mouseOffset: [10,0],
+        dismissDelay:10000
+    });
+    Ext.tip.QuickTipManager.register({
+        target:'actions',
+        text: 'actions',
+        title: 'Description:',
+        mouseOffset: [10,0],
+        dismissDelay:10000
+    });
 
 }
 
@@ -1433,43 +1487,54 @@ function showQuotaPluginLoginWindows() {
         x: 220,
         id: 'loginWindQuotaPlugin',
         items: [{
-                xtype: 'form',
-                bodyPadding: 10,
-                border: 0,
-                items: [{
-                        xtype: 'textfield',
-                        name: 'username',
-                        fieldLabel: 'Username',
-                        value: 'root',
-                        allowBlank: false
-                    }, {
-                        xtype: 'textfield',
-                        inputType: 'password',
-                        name: 'password',
-                        fieldLabel: 'Password',
-                        value: 'root',
-                        listeners: {
-                            specialkey: function(af, aE) {
-                                if (af.getKey() == aE.ENTER) {
-                                    ldoQuotaPluginLogin(lLoginWin.down('form'));
-                                }
-                            }
+            xtype: 'form',
+            bodyPadding: 10,
+            border: 0,
+            items: [{
+                xtype: 'textfield',
+                id: 'username',
+                name: 'username',
+                fieldLabel: 'Username',
+                value: 'root',
+                allowBlank: false
+                
+            }, {
+                xtype: 'textfield',
+                inputType: 'password',
+                id:'password',
+                name: 'password',
+                fieldLabel: 'Password',
+                value: 'root',
+                listeners: {
+                    specialkey: function(af, aE) {
+                        if (af.getKey() == aE.ENTER) {
+                            ldoQuotaPluginLogin(lLoginWin.down('form'));
                         }
-                    }]
-            }],
-        buttons: [{
-                text: 'Login',
-                handler: function() {
-                    ldoQuotaPluginLogin(lLoginWin.down('form'));
+                    }
                 }
             }]
+        }],
+        buttons: [{
+            text: 'Login',
+            handler: function() {
+                ldoQuotaPluginLogin(lLoginWin.down('form'));
+            }
+        }]
     }).show();
+    
+    Ext.tip.QuickTipManager.register({
+        target:'username',
+        text: 'Esto es la taya asdad',
+        title: 'Description:',
+        mouseOffset: [10,0],
+        dismissDelay:10000
+    });
 
     var ldoQuotaPluginLogin = function(alForm) {
 
         if (alForm.getForm().isValid()) {
             Ext.jwsClient.getConnection().login(alForm.down('textfield[name=username]').getValue(),
-                    alForm.down('textfield[name=password]').getValue());
+                alForm.down('textfield[name=password]').getValue());
         }
     }
 
@@ -1483,7 +1548,7 @@ function closeQuotaPluginLoginWindows() {
 }
 
 function initDemo() {
-    Ext.tip.QuickTipManager.init();
+    
 
     var lPlugIn = {};
     lPlugIn.processToken = function(aToken) {
@@ -1504,6 +1569,8 @@ function initDemo() {
     Ext.jwsClient.addPlugIn(lPlugIn);
 
     showQuotaPluginLoginWindows();
+    
+   
 }
 
 function exitDemo() {
@@ -1513,3 +1580,4 @@ function exitDemo() {
         lWindowMain.close();
 }
 
+ 
