@@ -22,6 +22,7 @@ import com.mongodb.*;
 import java.io.File;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -31,7 +32,6 @@ import org.apache.log4j.Logger;
 import org.hyperic.sigar.*;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.kit.CloseReason;
@@ -42,7 +42,7 @@ import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 
 /**
- * @author Merly, Orlando, vbarzana
+ * @author Merly Lopez Barroso, Orlando Miranda, Victor Antonio Barzana Crespo
  */
 public class MonitoringPlugIn extends TokenPlugIn {
 
@@ -72,10 +72,9 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	private CpuPerc[] mCPUPercent;
 	private File[] mRoots;
 	private NetStat mNetwork;
-	private boolean mIsActive = false;
 	private boolean mUserInfoRunning = false;
 	private final SimpleDateFormat mFormat;
-	private DBCollection mDBColl;
+	private DBCollection mDBExchanges;
 	private DBCollection mUsePlugInsColl;
 	private static int mConnectedUsers = 0;
 	private static int mTimeCounter = 0;
@@ -136,12 +135,12 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		// Getting server exchanges
 		mFormat = new SimpleDateFormat("MM/dd/yyyy");
 
-		mDBColl = null;
+		mDBExchanges = null;
 		try {
 			Mongo lMongo = new MongoClient();
 			DB lDB = lMongo.getDB(DB_NAME);
 			if (null != lDB) {
-				mDBColl = lDB.getCollection(DB_COL_EXCHANGES);
+				mDBExchanges = lDB.getCollection(DB_COL_EXCHANGES);
 				mUsePlugInsColl = lDB.getCollection(DB_COL_PLUGINS_USAGE);
 			} else {
 				mLog.error("Mongo db_charting collection could not be obtained.");
@@ -149,7 +148,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		} catch (UnknownHostException lEx) {
 			mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing MongoDB connection"));
 		}
-		if (null == mDBColl) {
+		if (null == mDBExchanges) {
 			mLog.error("MongoDB collection exchanges_server could not be obtained.");
 		} else if (mLog.isInfoEnabled()) {
 			mLog.info("Monitoring Plug-in successfully instantiated.");
@@ -192,7 +191,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	}
 
 	@Override
-	public void engineStarted(WebSocketEngine aEngine) {
+	public void systemStarted() {
 		//Initializing thread
 		mInformationRunning = true;
 		mInformationThread = new Thread(new getInfo(), "jWebSocket Monitoring Plug-in Information");
@@ -202,10 +201,11 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		mServerExchangeInfoThread.start();
 
 		mUserInfoThread = new Thread(new getUserInfo(), "jWebSocket Monitoring Plug-in UserInformation");
+		mUserInfoThread.start();
 	}
 
 	@Override
-	public void engineStopped(WebSocketEngine aEngine) {
+	public void systemStopped() throws Exception {
 		mInformationRunning = false;
 
 		try {
@@ -225,7 +225,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			mUserInfoThread.stop();
 		} catch (InterruptedException ex) {
 		}
-
 	}
 
 	@Override
@@ -233,15 +232,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		mConnectedUsers++;
 		if (!mUserInfoRunning) {
 			mUserInfoRunning = true;
-			mUserInfoThread.start();
-		}
-		if (!mIsActive) {
-			try {
-				getServer().getListeners().add(new ServerRequestListener());
-				mIsActive = true;
-			} catch (Exception lEx) {
-				mLog.error(Logging.getSimpleExceptionMessage(lEx, "connector started"));
-			}
 		}
 	}
 
@@ -296,7 +286,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 						String lMonth = aToken.getString(MONTH);
 
 						if (lMonth != null) {
-							if (Integer.parseInt(lMonth) != lDate.getMonth() + 1) {
+							if (Integer.parseInt(lMonth) != Calendar.getInstance().get(Calendar.MONTH) + 1) {
 								aConnector.setVar(CURRENT_MONTH, false);
 							} else {
 								aConnector.setVar(MONTH, lMonth);
@@ -376,8 +366,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 						getServer().sendToken(lConnector, lPCInfoToken);
 
 					} else if (TT_PLUGINS_INFO.equals(lInterest)) {
-						//TODO: Get the plugins info
-//                            gatherBrowsersInfo();
+						//TODO: gatherBrowsersInfo();
 						broadcastPluginsInfo(lConnector);
 					}
 				}
@@ -513,7 +502,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		//Getting server exchanges
 		try {
 			String lToday = mFormat.format(new Date());
-			DBObject lRecord = mDBColl.findOne(
+			DBObject lRecord = mDBExchanges.findOne(
 					new BasicDBObject().append(DATE, lToday));
 			lToken.setMap(EXCHANGES, lRecord.toMap());
 
@@ -538,7 +527,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		try {
 			String lToday = aMonth + "/" + aDay + "/" + aYear;
 
-			DBObject lRecord = mDBColl.findOne(
+			DBObject lRecord = mDBExchanges.findOne(
 					new BasicDBObject().append(DATE, lToday));
 
 			token.setMap(EXCHANGES, lRecord.toMap());
@@ -562,25 +551,37 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		//Getting server exchanges
 		try {
 			String lMonth = aMonth;
+			String lCurrentYear = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
 			//DBCursor lCursor = mDBColl.find(
 			//new BasicDBObject().append(DATE, "/^" + lMonth + "/"));
-			DBCursor lCursor = mDBColl.find();
+			DBCursor lCursor = mDBExchanges.find();
 
 			boolean lFlag = false;
-			Integer lTotal = 0;
+			FastMap lMap;
 			while (lCursor.hasNext()) {
 				DBObject lDocument = lCursor.next();
 				String lDate = (String) lDocument.get(DATE);
-				if (lDate.startsWith(lMonth)) {
+				if (lDate.startsWith(lMonth) && lDate.endsWith(lCurrentYear)) {
 
+					long lTotalIn = 0, lTotalOut = 0;
 					String lDay = lDate.substring(3, 5);
+					DBObject lEntry;
 					for (int i = 0; i < 24; i++) {
-						if ((Integer) lDocument.get("h" + i) != null) {
-							lTotal += (Integer) lDocument.get("h" + i);
+						lEntry = (DBObject) lDocument.get("h" + i);
+						if (lEntry != null) {
+							if (lEntry.get("in") != null) {
+								lTotalIn += Long.parseLong(lEntry.get("in").toString());
+							}
+							if (lEntry.get("out") != null) {
+								lTotalOut += Long.parseLong(lEntry.get("out").toString());
+							}
 						}
 					}
-					lToken.setInteger(lDay, lTotal);
-					lTotal = 0;
+					lMap = new FastMap();
+					lMap.put("in", lTotalIn);
+					lMap.put("out", lTotalOut);
+					//System.out.println(lCursor);
+					lToken.setMap(lDay, lMap);
 					lFlag = true;
 				}
 			}
@@ -589,7 +590,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				aConnector.setVar(CURRENT_MONTH, false);
 			}
 
-		} catch (Exception ex) {
+		} catch (NumberFormatException ex) {
 			mLog.error(ex.getMessage());
 		}
 
@@ -611,10 +612,10 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			String lYear = aYear;
 			//DBCursor lCursor = mDBColl.find(
 			//new BasicDBObject().append(DATE, "/^" + lMonth + "/"));
-			DBCursor lCursor = mDBColl.find();
+			DBCursor lCursor = mDBExchanges.find();
 
 			boolean m = false;
-			Integer lTotal = 0;
+			FastMap lMap;
 			while (lCursor.hasNext()) {
 				DBObject lDocument = lCursor.next();
 				String lDate = (String) lDocument.get(DATE);
@@ -627,15 +628,25 @@ public class MonitoringPlugIn extends TokenPlugIn {
 						String lRecordMonth = lDate.substring(0, 2);
 
 						if (lRecordMonth.equals(lComparableMonth)) {
+							DBObject lEntry;
+							long lTotalIn = 0, lTotalOut = 0;
 							for (int i = 0; i < 24; i++) {
-								if ((Integer) lDocument.get("h" + i) != null) {
-									lTotal += (Integer) lDocument.get("h" + i);
+								lEntry = (DBObject) lDocument.get("h" + i);
+								if (lEntry != null) {
+									if (lEntry.get("in") != null) {
+										lTotalIn += Long.parseLong(lEntry.get("in").toString());
+									}
+									if (lEntry.get("out") != null) {
+										lTotalOut += Long.parseLong(lEntry.get("out").toString());
+									}
 								}
 							}
+							lMap = new FastMap();
+							lMap.put("in", lTotalIn);
+							lMap.put("out", lTotalOut);
+							token.setMap(lRecordMonth, lMap);
 						}
-						token.setInteger(lRecordMonth, token.getInteger(
-								lRecordMonth, 0) + lTotal);
-						lTotal = 0;
+
 						m = true;
 					}
 				}
@@ -646,7 +657,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				//throw new Exception("Error");
 			}
 
-		} catch (Exception ex) {
+		} catch (NumberFormatException ex) {
 			mLog.error(ex.getMessage());
 		}
 
@@ -695,7 +706,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	//To obtain all information about the memories
 	/**
 	 *
-	 * @return
+	 * @return @throws org.hyperic.sigar.SigarException
 	 */
 	public int[] gatherMemInfo() throws SigarException, UnsatisfiedLinkError {
 		int lMem[] = new int[4];
