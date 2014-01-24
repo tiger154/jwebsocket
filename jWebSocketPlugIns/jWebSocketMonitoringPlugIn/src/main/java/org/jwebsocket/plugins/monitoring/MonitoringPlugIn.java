@@ -379,6 +379,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	class getUserInfo implements Runnable {
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 			while (mUserInfoRunning) {
 				mConnectedUsersList.add(mTimeCounter, mConnectedUsers);
