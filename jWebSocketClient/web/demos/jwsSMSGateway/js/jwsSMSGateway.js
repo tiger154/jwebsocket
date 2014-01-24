@@ -90,7 +90,7 @@ $.widget("jws.SMSGateway", {
                         if (lreqType === "logoff") {
                             w.auth.getCallbacks().OnLogoff(lData);
                             w.mLogonUser = "anonymous"; 
-                            w.SMSGateway.updateReminingSMS(0);
+                            $("#remining_sms").hide();
                         }
                     }
                 }
@@ -212,14 +212,14 @@ $.widget("jws.SMSGateway", {
             actions: 'sendSMS',
             instance_type: 'User'
         };
-        log("<b style='color:green;'>Getting remaining SMS</b>");
+        
         var lCallbacks = {
             OnSuccess: function(aToken) {
                 me.updateReminingSMS(aToken.value);
-                //$("#remaining_quota").html(aToken.value);
+                $("#remining_sms").show();
             },
             OnFailure: function(aToken) {
-                log("error getting remining sms");
+                $("#remining_sms").hide();
             }
         };
         mWSC.sendToken(lQUOTAToken, lCallbacks);
