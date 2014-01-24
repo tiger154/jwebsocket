@@ -1,11 +1,13 @@
 #demo_box{
 	width: 718px;
+	padding-bottom: 10px;
+	background: #EAF4DC;
 }
 
 #scenario_container{
     width: 100%;
     float: left;
-    height: 530px;
+    height: 540px;
 }
 
 #main_content{
@@ -47,17 +49,33 @@
     border-color: #eaf4dc !important;
 }
 
+.x-tab-bar-strip{
+	display: none;
+	height: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+#main_panel .x-tab-bar-top{
+	height: 22px;
+}
+
+.x-jwebsocket-tab{
+	-moz-border-radius: 6px 6px;
+	-webkit-border-radius: 6px 6px;
+	border-radius: 6px 6px;	
+}
+
 .x-tab-bar {
     background: #eaf4dc !important;
     border-color: #eaf4dc;
 }
 
 .x-panel-default-framed{
-background-color:#e4e4e4;
+	background-color:#e4e4e4;
 }
 
 
 .x-panel-body-default{
-border-color:#c8c8c8 !important;
+	border-color:#c8c8c8 !important;
 }
-
