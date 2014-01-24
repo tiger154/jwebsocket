@@ -72,7 +72,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	private CpuPerc[] mCPUPercent;
 	private File[] mRoots;
 	private NetStat mNetwork;
-	private boolean mUserInfoRunning = false;
+	private boolean mUserInfoRunning = true;
 	private final SimpleDateFormat mFormat;
 	private DBCollection mDBExchanges;
 	private DBCollection mUsePlugInsColl;
@@ -200,6 +200,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		mServerExchangeInfoThread = new Thread(new getServerExchangeInfo(), "jWebSocket Monitoring Plug-in Server Exchange");
 		mServerExchangeInfoThread.start();
 
+		mUserInfoRunning = true;
 		mUserInfoThread = new Thread(new getUserInfo(), "jWebSocket Monitoring Plug-in UserInformation");
 		mUserInfoThread.start();
 	}
@@ -207,7 +208,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	@Override
 	public void systemStopped() throws Exception {
 		mInformationRunning = false;
-
+		mUserInfoRunning = false;
 		try {
 			mInformationThread.join(2000);
 			mInformationThread.stop();
@@ -230,9 +231,6 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	@Override
 	public void connectorStarted(WebSocketConnector aConnector) {
 		mConnectedUsers++;
-		if (!mUserInfoRunning) {
-			mUserInfoRunning = true;
-		}
 	}
 
 	@Override
@@ -381,9 +379,7 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	class getUserInfo implements Runnable {
 
 		@Override
-		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
-
 			while (mUserInfoRunning) {
 				mConnectedUsersList.add(mTimeCounter, mConnectedUsers);
 				Token lToken = getUserInfoToToken();
