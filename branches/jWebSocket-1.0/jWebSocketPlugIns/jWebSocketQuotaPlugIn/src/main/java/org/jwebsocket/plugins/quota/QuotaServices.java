@@ -62,10 +62,12 @@ public class QuotaServices {
             lQuota.create(lInstance, lNS, lUuid, lValue,
                     lInstanceType, lQuotaType, lQuotaIdentifier, lQuotActions);
             lResult.setString("message", "Quota created succesfully");
+            lResult.setString("uuid", lUuid);
             lResult.setCode(0);
 
             return lResult;
         } catch (Exception aException) {
+
             mLog.error("Error creating"
                     + "Quota");
             return getErrorToken("Error creating the quota: ",

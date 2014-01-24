@@ -145,7 +145,9 @@ public class QuotaPlugin extends ActionPlugIn {
     public Token invoke(WebSocketConnector aConnector, Token aToken) {
         String lType = aToken.getType();
 
-        if (lType.equals("registerQuota")) {
+        if (lType.equals("createQuota")) {
+            return mQuotaService.createQuotaAction(aToken);
+        }else if (lType.equals("registerQuota")) {
             return mQuotaService.registerQuotaAction(aToken);
         } else if (lType.equals("unregisterQuota")) {
             return mQuotaService.unregisterQuotaAction(aToken);
