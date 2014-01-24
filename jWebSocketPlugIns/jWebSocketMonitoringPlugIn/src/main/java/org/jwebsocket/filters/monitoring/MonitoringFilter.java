@@ -113,8 +113,8 @@ public class MonitoringFilter extends TokenFilter {
 			if (mLog.isInfoEnabled()) {
 				mLog.info("Instantiated Monitoring Filter with MongoDB version: " + lMongoVersion + "!");
 			}
-		} catch (UnknownHostException ex) {
-			mLog.error(ex.getMessage());
+		} catch (Exception ex) {
+			mLog.error("Error catched while instantiating Monitoring Filter " + ex.getMessage());
 		}
 	}
 
