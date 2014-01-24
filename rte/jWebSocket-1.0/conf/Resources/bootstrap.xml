@@ -8,9 +8,16 @@
 	</bean>
 	
 	<!-- JMS connection -->
-	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+	<bean id="jmsBroker" class="org.apache.activemq.broker.BrokerService" 
+		  init-method="start" destroy-method="stop">
+		<property name="brokerName" value="jWebSocketAMQ" />
+		<property name="persistent" value="false" />
+	</bean>
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" 
+		  depends-on="jmsBroker" >
 		<property name="brokerURL">
-			<value>tcp://localhost:61616</value>
+			<!--<value>tcp://amq_broker_server:61616</value>-->
+			<value>vm://jWebSocketAMQ</value>
 		</property>
 		<!--		
 		<property name="userName">
