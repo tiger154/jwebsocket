@@ -30,6 +30,7 @@ App.setModule('useradmin', {
 				var lTokenType = aMessage.getStringProperty('tokenType');
 				var lUsername = aMessage.getStringProperty('username');
 				
+                                
 				// required for cluster compatibility
 				if (App.isClusterActive() && !App.getWebSocketServer().getSynchronizer()
 					.getWorkerTurn(lMsgId)) {
@@ -38,6 +39,7 @@ App.setModule('useradmin', {
 
 				// processing message
 				if ('registerNewUser' == lTokenType) {
+                                    
 					// 
 					// QUOTA plug-in integration
 					// *************************
@@ -48,7 +50,8 @@ App.setModule('useradmin', {
 						identifier:'CountDown',
 						namespace:'org.jwebsocket.plugins.sms', 
 						instance:'defaultUser', 
-						instance_type:'Group'
+						instance_type:'Group',
+						actions:'sendSMS'
 					});
 					if ( 0 == lResponse.getCode() ){
 						
@@ -65,7 +68,34 @@ App.setModule('useradmin', {
 							App.getLogger().error("UserAdmin - Could not register quota: " +lResponse.getString('msg'));
 						}
 					} else {
-						App.getLogger().error("UserAdmin - Could not retrieve quota from QuotaPlugIn: " +lResponse.getString('msg'));
+						//if there is not a quota for SMSPlugin, create tue quota
+						lResponse = App.invokePlugIn('jws.quota', null, {
+							type: 'createQuota',
+							identifier:'CountDown',
+							namespace:'org.jwebsocket.plugins.sms', 
+							instance:'defaultUser', 
+							instance_type:'Group',
+							actions:'sendSMS',
+							value: '5'
+						});
+
+						if (0 == lResponse.getCode() ){
+
+							lResponse = App.invokePlugIn('jws.quota', null, {
+								type: 'registerQuota',
+								uuid: lResponse.getString('uuid'), 
+								identifier:'CountDown', 
+								instance: lUsername, 
+								instance_type:'User'
+							});
+
+							if (0 != lResponse.getCode() ){
+								App.getLogger().error("UserAdmin - Could not register quota: " +lResponse.getString('msg'));
+							}
+
+						}else{
+							App.getLogger().error("UserAdmin - Could not create the quota: " +lResponse.getString('msg'));
+						}
 					}
 				}
 			}
