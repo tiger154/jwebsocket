@@ -192,6 +192,7 @@ public class MonitoringFilter extends TokenFilter {
 	class UpdatePlugIns implements Runnable {
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 			while (mIsUpdatePlugInsRunning) {
 				try {
@@ -238,6 +239,7 @@ public class MonitoringFilter extends TokenFilter {
 	class MemoryDataToMongoDB implements Runnable {
 
 		@Override
+		@SuppressWarnings("SleepWhileInLoop")
 		public void run() {
 			while (mIsMemoryDataToMongoDBRunning) {
 				try {
