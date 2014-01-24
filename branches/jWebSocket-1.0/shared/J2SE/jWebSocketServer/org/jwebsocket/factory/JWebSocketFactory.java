@@ -176,7 +176,7 @@ public class JWebSocketFactory {
 		}
 		// start the shared utility timer
 		Tools.startUtilityTimer();
-
+		
 		JWebSocketLoader lLoader = new JWebSocketLoader();
 
 		// try to load bean from bootstrap
@@ -189,9 +189,7 @@ public class JWebSocketFactory {
 				mLog.debug("Bootstrap '" + aBootstrapPath + "' successfully loaded.");
 			}
 		} catch (Exception lEx) {
-			if (mLog.isDebugEnabled()) {
-				mLog.debug(Logging.getSimpleExceptionMessage(lEx, "loading bootstrap."));
-			}
+				mLog.error(Logging.getSimpleExceptionMessage(lEx, "loading bootstrap."));
 		}
 
 		// try to load configuration from .xml file

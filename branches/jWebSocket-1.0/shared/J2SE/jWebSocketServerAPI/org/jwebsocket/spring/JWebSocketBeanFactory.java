@@ -41,9 +41,9 @@ import org.springframework.util.Assert;
  */
 public class JWebSocketBeanFactory {
 
-	private static Logger mLog = Logging.getLogger();
+	private static final Logger mLog = Logging.getLogger();
 	private static GenericApplicationContext mGlobalContext = null;
-	private static Map<String, GenericApplicationContext> mContextMap = new FastMap<String, GenericApplicationContext>();
+	private static final Map<String, GenericApplicationContext> mContextMap = new FastMap<String, GenericApplicationContext>();
 
 	/**
 	 *
