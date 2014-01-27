@@ -20,7 +20,6 @@ package org.jwebsocket.plugins.monitoring;
 
 import com.mongodb.*;
 import java.io.File;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -38,8 +37,10 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.ConnectionManager;
 
 /**
  * @author Merly Lopez Barroso, Orlando Miranda, Victor Antonio Barzana Crespo
@@ -136,8 +137,10 @@ public class MonitoringPlugIn extends TokenPlugIn {
 		mFormat = new SimpleDateFormat("MM/dd/yyyy");
 
 		mDBExchanges = null;
-		try {
-			Mongo lMongo = new MongoClient();
+		ConnectionManager lCM = (ConnectionManager) JWebSocketBeanFactory.getInstance()
+				.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
+		if (lCM.isValid(NS_MONITORING)) {
+			Mongo lMongo = (Mongo) lCM.getConnection(NS_MONITORING);
 			DB lDB = lMongo.getDB(DB_NAME);
 			if (null != lDB) {
 				mDBExchanges = lDB.getCollection(DB_COL_EXCHANGES);
@@ -145,13 +148,15 @@ public class MonitoringPlugIn extends TokenPlugIn {
 			} else {
 				mLog.error("Mongo db_charting collection could not be obtained.");
 			}
-		} catch (UnknownHostException lEx) {
-			mLog.error(Logging.getSimpleExceptionMessage(lEx, "initializing MongoDB connection"));
-		}
-		if (null == mDBExchanges) {
-			mLog.error("MongoDB collection exchanges_server could not be obtained.");
-		} else if (mLog.isInfoEnabled()) {
-			mLog.info("Monitoring Plug-in successfully instantiated.");
+
+			if (null == mDBExchanges) {
+				mLog.error("MongoDB collection exchanges_server could not be obtained.");
+			} else if (mLog.isInfoEnabled()) {
+				mLog.info("Monitoring Plug-in successfully instantiated.");
+			}
+		} else {
+			mLog.error("Missing required valid database connection. Monitoring plug-in cannot start!");
+			throw new RuntimeException("Missing required valid database connection for MonitoringPlugIn!");
 		}
 	}
 
@@ -229,13 +234,15 @@ public class MonitoringPlugIn extends TokenPlugIn {
 	}
 
 	@Override
-	public void connectorStarted(WebSocketConnector aConnector) {
+	public void connectorStarted(WebSocketConnector aConnector
+	) {
 		mConnectedUsers++;
 	}
 
 	@Override
 	public void connectorStopped(WebSocketConnector aConnector,
-			CloseReason aCloseReason) {
+			CloseReason aCloseReason
+	) {
 		if (mConnectedUsers > 0) {
 			mConnectedUsers--;
 		}
@@ -247,7 +254,8 @@ public class MonitoringPlugIn extends TokenPlugIn {
 
 	@Override
 	public void processToken(PlugInResponse aResponse,
-			WebSocketConnector aConnector, Token aToken) {
+			WebSocketConnector aConnector, Token aToken
+	) {
 		if (aToken.getNS().equals(getNamespace())) {
 
 			if (aToken.getType().equals(TT_REGISTER)) {

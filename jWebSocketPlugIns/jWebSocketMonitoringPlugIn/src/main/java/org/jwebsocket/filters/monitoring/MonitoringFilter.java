@@ -30,22 +30,24 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
-import com.mongodb.WriteConcern;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.jwebsocket.api.WebSocketPlugIn;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mCurrentHour;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mIsMemoryDataToMongoDBRunning;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mIsUpdatePlugInsRunning;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mPlugInsMemoryStorage;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mThreadMemoryDataToMongoDB;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mThreadUpdatePlugIns;
+import static org.jwebsocket.plugins.monitoring.MonitoringPlugIn.NS_MONITORING;
 import org.jwebsocket.plugins.monitoring.util.PlugInObjectInMemory;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.storage.memory.MemoryStorage;
+import org.jwebsocket.util.ConnectionManager;
 
 /**
  *
@@ -54,7 +56,7 @@ import org.jwebsocket.storage.memory.MemoryStorage;
 public class MonitoringFilter extends TokenFilter {
 
 	private static final Logger mLog = Logging.getLogger();
-	private Mongo mMongoConnection;
+	private Mongo mDBConnection;
 	private static DB mDB;
 	private DBCollection mPluginCollection;
 	private DBCollection mExchangesCollection;
@@ -86,14 +88,15 @@ public class MonitoringFilter extends TokenFilter {
 			mLog.debug("Instantiating Monitoring Filter...");
 		}
 		String lMongoVersion;
-		try {
-			// suppress stack traces from mongo db to console
-			java.util.logging.Logger.getLogger("com.mongodb").setLevel(
-					java.util.logging.Level.OFF);
-
-			mMongoConnection = new Mongo();
-			mMongoConnection.setWriteConcern(WriteConcern.NONE);
-			mDB = mMongoConnection.getDB(DB_NAME);
+		// suppress stack traces from mongo db to console
+		java.util.logging.Logger.getLogger("com.mongodb").setLevel(
+				java.util.logging.Level.OFF);
+		
+		ConnectionManager lCM = (ConnectionManager) JWebSocketBeanFactory.getInstance()
+				.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
+		if (lCM.isValid(NS_MONITORING)) {
+			mDBConnection = (Mongo) lCM.getConnection(NS_MONITORING);
+			mDB = mDBConnection.getDB(DB_NAME);
 			// As we have to count every incoming token for each PlugIn I 
 			// consider much better to create also a memory storage for the PlugIns
 			// so, on each incoming token we count in a map object each PlugIn and 
@@ -101,11 +104,11 @@ public class MonitoringFilter extends TokenFilter {
 			mPlugInsMemoryStorage = new MemoryStorage<String, PlugInObjectInMemory>(DB_COL_PLUGINS_USAGE);
 			mPlugInsMemoryStorage.initialize();
 
-			List<String> lDBNames = mMongoConnection.getDatabaseNames();
+			List<String> lDBNames = mDBConnection.getDatabaseNames();
 			if (mLog.isInfoEnabled()) {
 				mLog.info("Found databases: " + lDBNames.toString() + ".");
 			}
-			lMongoVersion = mMongoConnection.getVersion();
+			lMongoVersion = mDBConnection.getVersion();
 
 			mPluginCollection = mDB.getCollection(DB_COL_PLUGINS_USAGE);
 			mExchangesCollection = mDB.getCollection(DB_COL_EXCHANGES_USAGE);
@@ -113,8 +116,9 @@ public class MonitoringFilter extends TokenFilter {
 			if (mLog.isInfoEnabled()) {
 				mLog.info("Instantiated Monitoring Filter with MongoDB version: " + lMongoVersion + "!");
 			}
-		} catch (Exception ex) {
-			mLog.error("Error catched while instantiating Monitoring Filter " + ex.getMessage());
+		} else {
+			mLog.error("Missing required valid database connection. Monitoring filter cannot start!");
+			throw new RuntimeException("Missing required valid database connection for MonitoringFilter!");
 		}
 	}
 

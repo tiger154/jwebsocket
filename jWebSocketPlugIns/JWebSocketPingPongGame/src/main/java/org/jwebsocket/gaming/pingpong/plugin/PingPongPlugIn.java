@@ -39,8 +39,10 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.PlugInResponse;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.TokenPlugIn;
+import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.ConnectionManager;
 import org.jwebsocket.util.Tools;
 
 /**
@@ -73,35 +75,34 @@ public class PingPongPlugIn extends TokenPlugIn {
 	public PingPongPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		setNamespace(NS_PINGPONG);
-		if (mLog.isInfoEnabled()) {
-			mLog.info("PingPong plug-in successfully instantiated.");
-		}
-		try {
-			String lHost = (String) aConfiguration.getSettings().get("dbHost");
-			String lPort = (String) aConfiguration.getSettings().get("dbPort");
-			int lDay = Integer.parseInt(aConfiguration.getSettings().
-					get("dbDay").toString());
-			int lTime = Integer.parseInt(aConfiguration.getSettings().
-					get("dbTime").toString());
-			int lWidth = Integer.parseInt(aConfiguration.getSettings().
-					get("sWidth").toString());
-			int lHeight = Integer.parseInt(aConfiguration.getSettings().
-					get("sHeight").toString());
+		
+		int lDay = Integer.parseInt(aConfiguration.getSettings().
+				get("dbDay").toString());
+		int lTime = Integer.parseInt(aConfiguration.getSettings().
+				get("dbTime").toString());
+		int lWidth = Integer.parseInt(aConfiguration.getSettings().
+				get("sWidth").toString());
+		int lHeight = Integer.parseInt(aConfiguration.getSettings().
+				get("sHeight").toString());
+
+		// getting the database connection
+		ConnectionManager lCM = (ConnectionManager) JWebSocketBeanFactory.getInstance()
+				.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
+		if (lCM.isValid(NS_PINGPONG)) {
 			mPingpongGame = new PingpongGame(lWidth, lHeight, 2);
-			Mongo lMongo = new Mongo(lHost + ":" + lPort);
+			Mongo lMongo = (Mongo) lCM.getConnection(NS_PINGPONG);
 			DBCollection lCollection = lMongo.getDB("pingpongame").
 					getCollection("user");
 			mUserServiceImpl = new UserServiceImpl(lCollection, lDay);
 			Tools.getTimer().scheduleAtFixedRate(mUserServiceImpl, 0,
 					lTime * 1000 * 60 * 60 * 24);
-			if (mLog.isInfoEnabled()) {
-				mLog.info("PingPong plug-in connected to MongoDB.");
-			}
+		} else {
+			mLog.error("Missing required valid database connection. PingPong plug-in cannot start!");
+			throw new RuntimeException("Missing required valid database connection for PingPong plug-in!");
+		}
 
-		} catch (Exception lEx) {
-			mLog.error("There was an error during the connection: " + lEx.getMessage());
-			mDatabaseError = true;
-			mDatabaseErrorMessage = "There was an error during the connection: " + lEx.getMessage();
+		if (mLog.isInfoEnabled()) {
+			mLog.info("PingPong plug-in successfully instantiated.");
 		}
 	}
 
