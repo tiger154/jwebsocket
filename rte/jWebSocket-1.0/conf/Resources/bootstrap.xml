@@ -83,6 +83,8 @@
 				<entry key="jmsConnection0" value-ref="jmsConnection0" />
 				<entry key="org.jwebsocket.plugins.itemstorage" value-ref="itemStorageDataSource" />
 				<entry key="org.jwebsocket.plugins.channels" value-ref="channelsDataSource" />
+				<entry key="org.jwebsocket.plugins.monitoring" value-ref="mongodbConnection0" />
+				<entry key="org.jwebsocket.plugins.pingpong" value-ref="mongodbConnection0" />
 			</map>
 		</constructor-arg>
 	</bean>
