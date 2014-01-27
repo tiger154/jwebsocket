@@ -83,13 +83,11 @@ $.widget("jws.SMSGateway", {
                         
                         if (lreqType === "logon") {
                             w.auth.getCallbacks().OnLogon(lData);
-                            w.mLogonUser = lData.username;
-                            w.SMSGateway.remainingSMS(w.mLogonUser);
+                            w.SMSGateway.remainingSMS(lData.username);
                         }
 
                         if (lreqType === "logoff") {
                             w.auth.getCallbacks().OnLogoff(lData);
-                            w.mLogonUser = "anonymous"; 
                             $("#remining_sms").hide();
                         }
                     }
@@ -157,7 +155,7 @@ $.widget("jws.SMSGateway", {
                     //function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
                     jwsDialog(w.SMSGateway.mMSG_SMS_SENT, "SMS sent correctly", 
                              true,"alert",function(){
-                                 w.SMSGateway.remainingSMS(null);
+                                 w.SMSGateway.remainingSMS(mWSC.getUsername());
                              });
                     w.SMSGateway.getCaptcha();
                 },
@@ -198,10 +196,9 @@ $.widget("jws.SMSGateway", {
     },
     remainingSMS: function( aUsername ) {
 
+        console.log(aUsername);
+               
         var me = this;
-        if ( aUsername === null){
-            aUsername = w.mLogonUser;
-        }
         
         var lQUOTAToken = {
             ns: NS_QUOTA,
@@ -218,7 +215,7 @@ $.widget("jws.SMSGateway", {
                 me.updateReminingSMS(aToken.value);
                 $("#remining_sms").show();
             },
-            OnFailure: function(aToken) {
+            OnFailure: function( aToken ) {
                 $("#remining_sms").hide();
             }
         };

@@ -20,8 +20,6 @@ import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.plugins.quota.api.IQuota;
 import org.jwebsocket.plugins.quota.api.IQuotaProvider;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
-import org.jwebsocket.plugins.quota.api.IQuotaStorage;
-import org.jwebsocket.plugins.quota.storage.ItemStorageQuota;
 import org.jwebsocket.plugins.quota.utils.QuotaHelper;
 import org.jwebsocket.plugins.quota.utils.QuotaProvider;
 import org.jwebsocket.token.Token;
