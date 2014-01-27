@@ -313,6 +313,11 @@ public abstract class BaseQuota implements IQuota {
         }
         //Creating the child Quota
         IQuotaSingleInstance lSingleInstance = mQuotaStorage.getQuotaByUuid(aUuid);
+        
+        if (lSingleInstance.getInstance().equals(aInstance)){
+            throw new ExceptionQuotaAlreadyExist(aInstance);
+        }
+        
         QuotaChildSI lChildQuota = new QuotaChildSI(aInstance, aUuid, aInstanceType);
 
         //if a register quota occur over a quota with InstanceType user
