@@ -25,7 +25,7 @@ App.on('appLoaded', function(){
 		});
 	};
 
-	// unregister an app client
+	// unregister a client
 	var lUnregister = function(aConnector) {
 		App.getLogger().debug("Processing unregister...");
 
@@ -54,7 +54,7 @@ App.on('appLoaded', function(){
 			data: aData,
 			user: aConnector.getUsername()
 		});
-	}
+	};
 
 	var lGetAppClients = function() {
 		App.getLogger().debug("Processing get app clients...");

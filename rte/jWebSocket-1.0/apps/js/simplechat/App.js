@@ -19,7 +19,7 @@
 
 // making the clients collection persistent across
 // app hot reloads
-if (!App.getStorage().containsKey('clients')){
+if (!App.getStorage().containsKey('clients')) {
 	App.getStorage().put('clients', App.newThreadSafeMap());
 }
 
@@ -28,28 +28,28 @@ var NS = "org.jwebsocket.plugins.scripting.simplechat";
 // getting the clients collection
 var mClients = App.getStorage().get('clients');
 
-App.on('appLoaded', function(){
+App.on('appLoaded', function() {
 	// setting the app description
 	App.setDescription('Basic Chat application with public and private chats');
-	
+
 	App.publish('Chat', {
-		register: function(aConnector){
+		register: function(aConnector) {
 			App.requireAuthority(aConnector, NS + ".register");
-			App.assertTrue(!mClients.containsKey(aConnector.getUsername()), 
-				"The current user is already registered!");
+			App.assertTrue(!mClients.containsKey(aConnector.getUsername()),
+					"The current user is already registered!");
 			mClients.put(aConnector.getUsername(), aConnector);
-			
+
 			App.broadcast(mClients.values(), {
 				type: 'event',
 				name: 'connection',
 				user: aConnector.getUsername()
 			});
 		},
-		broadcast: function(aMessage, aConnector){
+		broadcast: function(aMessage, aConnector) {
 			App.assertTrue('string' == typeof aMessage, 'The "message" argument cannot be null!');
-			App.assertTrue(mClients.containsKey(aConnector.getUsername()), 
-				"Client not registered yet!");
-			
+			App.assertTrue(mClients.containsKey(aConnector.getUsername()),
+					"Client not registered yet!");
+
 			App.broadcast(mClients.values(), {
 				type: 'event',
 				name: 'pubmessage',
@@ -57,15 +57,15 @@ App.on('appLoaded', function(){
 				user: aConnector.getUsername()
 			});
 		},
-		sendPrivate: function(aTarget, aMessage, aConnector){
+		sendPrivate: function(aTarget, aMessage, aConnector) {
 			App.assertTrue('string' == typeof aTarget, 'The "target" argument cannot be null!');
 			App.assertTrue('string' == typeof aMessage, 'The "message" argument cannot be null!');
-			App.assertTrue(mClients.containsKey(aConnector.getUsername()), 
-				"Client not registered yet!");
-			
+			App.assertTrue(mClients.containsKey(aConnector.getUsername()),
+					"Client not registered yet!");
+
 			var lTarget = mClients.get(aTarget);
 			App.assertTrue(null != lTarget, 'The target client does not exists!');
-			
+
 			App.sendToken(lTarget, {
 				type: 'event',
 				name: 'privmessage',
@@ -73,10 +73,16 @@ App.on('appLoaded', function(){
 				user: aConnector.getUsername()
 			});
 		},
-		unregister: function(aConnector){
-			if (mClients.containsKey(aConnector.getUsername())){
-				mClients.remove(aConnector.getUsername());
+		unregister: function(aConnector) {
+			var lUsername = aConnector.getUsername();
+			// excluding not authenticated clients
+			if (null == lUsername) {
+				return;
+			}
 			
+			if (mClients.containsKey(aConnector.getUsername())) {
+				mClients.remove(aConnector.getUsername());
+
 				App.broadcast(mClients.values(), {
 					type: 'event',
 					name: 'disconnection',
@@ -84,12 +90,12 @@ App.on('appLoaded', function(){
 				});
 			}
 		},
-		getUsers: function(){
+		getUsers: function() {
 			return mClients.keySet().toArray();
 		}
 	});
-	
-	App.on(['connectorStopped', 'logoff'], function (aConnector){
+
+	App.on(['connectorStopped', 'logoff'], function(aConnector) {
 		App.getPublished('Chat').unregister(aConnector);
 	});
 });
