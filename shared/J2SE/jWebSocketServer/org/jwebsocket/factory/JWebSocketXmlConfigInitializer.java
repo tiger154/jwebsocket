@@ -337,11 +337,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 				}
 
 			} catch (Exception lEx) {
-				mLog.error("Could not instantiate plug-in "
-						+ (lPlugInLogStr == null
-						? "[no plug-in namespace detected]"
-						: lPlugInLogStr)
-						+ ".", lEx);
+				mLog.error("Could not instantiate '" + lPlugInConfig.getId() + "' plug-in: "
+						+ "[" + lEx.getCause().getClass().getSimpleName() + "]" + lEx.getCause().getMessage());
 			}
 		}
 		return lPlugInMap;
@@ -401,7 +398,8 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 				}
 
 			} catch (Exception lEx) {
-				mLog.error("Error instantiating filters", lEx);
+				mLog.error("Could not instantiate '" + lFilterConfig.getId() + "' filter: "
+						+ "[" + lEx.getCause().getClass().getSimpleName() + "]" + lEx.getCause().getMessage());
 			}
 		}
 		return lFilterMap;

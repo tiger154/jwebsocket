@@ -440,7 +440,7 @@ public class TCPEngine extends BaseEngine {
 		}
 
 		@Override
-		@SuppressWarnings("SleepWhileInLoop")
+		@SuppressWarnings({"SleepWhileInLoop", "UseSpecificCatch"})
 		public void run() {
 			Thread.currentThread().setName(
 					"jWebSocket TCP-Engine (" + mServer.getLocalPort() + ", "
