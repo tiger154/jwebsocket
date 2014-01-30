@@ -42,7 +42,7 @@ $.widget("jws.SMSGateway", {
         this.eCCounter = this.element.find('#character_counter .count');
         this.MAX_COUNT = 160;
         this.mCount = 0;
-        this.mLogonUser = "anonymous";
+        this.mQuotaNoApply = ["anonymous"];
         this.mTXT_CAPTCHA = "Type the words here...";
         this.mMSG_CAPTCHA_ERROR = "Error found in the Captcha, the server will" +
                 " send you other captcha, please try again!";
@@ -196,7 +196,11 @@ $.widget("jws.SMSGateway", {
     },
     remainingSMS: function( aUsername ) {
 
-        console.log(aUsername);
+        //not request for a quota if the user login exist in mQuotaNoApply array
+        if (-1 != w.SMSGateway.mQuotaNoApply.indexOf(aUsername)){
+            $("#remining_sms").hide();
+            return;
+        }
                
         var me = this;
         
