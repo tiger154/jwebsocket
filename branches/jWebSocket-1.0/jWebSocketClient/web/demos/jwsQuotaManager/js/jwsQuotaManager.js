@@ -1509,7 +1509,7 @@ function showQuotaPluginMainWindows() {
     });
     Ext.tip.QuickTipManager.register({
         target: 'instance_type',
-        text: 'Define the instance type of the instance element, so far this element can take two values,\n\
+        text: 'Define the instance type of the instance element, this element can take two values,\n\
          "User" when instance is a user and "Group" when instance is a user group.',
         title: 'Description:',
         mouseOffset: [10, 0],
@@ -1517,7 +1517,7 @@ function showQuotaPluginMainWindows() {
     });
     Ext.tip.QuickTipManager.register({
         target: 'namespace',
-        text: "The plugin's namespace which the quota will be applied. \n\
+        text: "The plugin's namespace to which the quota will be applied. \n\
         For example: org.jwebsocket.plugins.sms",
         title: 'Description:',
         mouseOffset: [10, 0],
@@ -1525,14 +1525,18 @@ function showQuotaPluginMainWindows() {
     });
     Ext.tip.QuickTipManager.register({
         target: 'namespace_diskspace',
-        text: 'Choose "private" to execute the new quota in private folders and "public" to execute the quota in public folders.',
+        text: 'Choose "private" to execute quota in private folders and\n\
+         "public" to execute quota in public folders.',
         title: 'Description:',
         mouseOffset: [10, 0],
         dismissDelay: 10000
     });
     Ext.tip.QuickTipManager.register({
         target: 'actions',
-        text: 'actions',
+        text: 'To restrict all actions in the plugin indicated per Name Space, then this value is set to "*".\n\
+            If you only want to restrict some of the features and not all, you must specify\n\
+             separated by a "," the actions that will be restricted by the quota.\n\
+            For example:create, delete, update',
         title: 'Description:',
         mouseOffset: [10, 0],
         dismissDelay: 10000
@@ -1589,16 +1593,9 @@ function showQuotaPluginLoginWindows() {
             }]
     }).show();
 
-    Ext.tip.QuickTipManager.register({
-        target: 'username',
-        text: 'Esto es la taya asdad',
-        title: 'Description:',
-        mouseOffset: [10, 0],
-        dismissDelay: 10000
-    });
 
     var ldoQuotaPluginLogin = function(alForm) {
-
+           
         if (alForm.getForm().isValid()) {
             Ext.jwsClient.getConnection().login(alForm.down('textfield[name=username]').getValue(),
                     alForm.down('textfield[name=password]').getValue());
