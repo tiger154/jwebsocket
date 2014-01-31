@@ -34,6 +34,10 @@ start /wait "" "%JASOB_HOME%\jasob.exe" /src:"jWebSocket\jWebSocket.jsbp" /log:%
 rem call obfuscator EE
 start /wait "" "%JASOB_HOME%\jasob.exe" /src:"%JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise\jWebSocketDeployment\jWebSocketEE.jsbp" /log:%cd%\jasobEE.log
 
+rem call obfuscator jWS 3rd party libs
+start /wait "" "%JASOB_HOME%\jasob.exe" /src:"jWebSocket\jWebSocket3rdPartyLibs.jsbp" /log:%cd%\jasob3rdP.log
+
+
 rem copy minified/obfuscated EE editions into CE deployment
 set jsCE=%JWEBSOCKET_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%\jWebSocketClient\web\res\js\
 set jsEE=%JWEBSOCKET_EE_HOME%..\..\branches\jWebSocket-%JWEBSOCKET_VER%-Enterprise\jWebSocketClient\web\res\js\
