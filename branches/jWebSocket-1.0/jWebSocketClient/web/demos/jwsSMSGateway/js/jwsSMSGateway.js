@@ -64,7 +64,7 @@ $.widget("jws.SMSGateway", {
             OnWelcome: function(aEvent) {
                 // Ask for a new captcha image
                 w.SMSGateway.getCaptcha();
-                w.SMSGateway.remainingSMS(mWSC.getUsername());
+                w.SMSGateway.remainingSMS(w.auth.mUsername);
             },
             OnClose: function(aEvent) {
                 w.SMSGateway.eImg.attr("src", "css/images/blank.png");
@@ -155,7 +155,7 @@ $.widget("jws.SMSGateway", {
                     //function dialog(aTitle, aMessage, aIsModal, aCloseFunction)
                     jwsDialog(w.SMSGateway.mMSG_SMS_SENT, "SMS sent correctly", 
                              true,"alert",function(){
-                                 w.SMSGateway.remainingSMS(mWSC.getUsername());
+                                 w.SMSGateway.remainingSMS(w.auth.mUsername);
                              });
                     w.SMSGateway.getCaptcha();
                 },
@@ -195,6 +195,10 @@ $.widget("jws.SMSGateway", {
         }
     },
     remainingSMS: function( aUsername ) {
+
+        if (aUsername === null){
+            aUsername = mWSC.getUsername();
+        }
 
         //not request for a quota if the user login exist in mQuotaNoApply array
         if (-1 != w.SMSGateway.mQuotaNoApply.indexOf(aUsername)){
