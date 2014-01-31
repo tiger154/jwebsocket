@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC2 (build 40123)
+	//:const:*:VERSION:String:1.0.0 RC2 (build 40131)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC2 (build 40123)",
+	VERSION: "1.0.0 RC2 (build 40128)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -354,6 +354,9 @@ var jws = {
 	//:a:en::::none
 	//:r:*:::boolean:[tt]true[/tt] if the browser natively support websockets, otherwise [tt]false[/tt].
 	browserSupportsNativeWebSockets: (function() {
+		if( window.WEB_SOCKET_FORCE_FLASH ) {
+			return false;
+		}
 		return(
 			window.WebSocket !== null && window.WebSocket !== undefined
 			);
@@ -1515,8 +1518,6 @@ if( !jws.browserSupportsNativeWebSockets ) {
 	// check if appropriate flash player version is installed
 	if( swfobject.hasFlashPlayerVersion( "10.0.0" ) ) {
 	
-		WEB_SOCKET_DEBUG = true;
-		
 		// init flash bridge
 		// use function to not polute the namespace with identifiers
 		// get all scripts on the page to find jWebSocket.js path
