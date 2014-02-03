@@ -25,6 +25,7 @@ import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.engines.BaseEngine;
+import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketProtocolAbstraction;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.tcp.nio.ssl.SSLHandler;
@@ -58,6 +59,20 @@ public class NioTcpConnector extends BaseConnector {
 		this.mRemotePort = aRemotePort;
 		mIsAfterWSHandshake = false;
 		mWorkerId = -1;
+	}
+
+	@Override
+	public void stopConnector(CloseReason aCloseReason) {
+		// supporting client "close" command
+		String lClientCloseFlag = "connector_was_closed_by_client_demand";
+		if (null != getVar(lClientCloseFlag)) {
+			return;
+		}
+		if (aCloseReason.equals(CloseReason.CLIENT)) {
+			setVar(lClientCloseFlag, true);
+		}
+
+		super.stopConnector(aCloseReason); 
 	}
 
 	/**

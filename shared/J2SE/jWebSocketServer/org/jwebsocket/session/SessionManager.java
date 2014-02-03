@@ -22,7 +22,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.*;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.plugins.system.SystemPlugIn;
 import org.jwebsocket.storage.httpsession.HttpSessionStorage;
 
 /**
@@ -111,23 +110,18 @@ public class SessionManager implements ISessionManager {
 
 			return lStorage;
 		} else {
-			recoverSessionId(aSessionId);
+			// recovered session, require to be removed from the trash
+			mReconnectionManager.getSessionIdsTrash().remove(aSessionId);
 			IBasicStorage<String, Object> lStorage = mStorageProvider.getStorage(aSessionId);
 
 			return lStorage;
 		}
 	}
 
-	private void recoverSessionId(String aSessionId) {
-		// remove the session id from the reconnection index (avoid security holes) 
-		mReconnectionManager.getReconnectionIndex().remove(aSessionId);
-		// recovered session, require to be removed from the trash
-		mReconnectionManager.getSessionIdsTrash().remove(aSessionId);
-	}
-
 	/**
 	 *
 	 * {@inheritDoc }
+	 *
 	 * @throws java.lang.Exception
 	 */
 	@Override
@@ -137,6 +131,7 @@ public class SessionManager implements ISessionManager {
 	/**
 	 *
 	 * {@inheritDoc }
+	 *
 	 * @throws java.lang.Exception
 	 */
 	@Override
@@ -159,41 +154,38 @@ public class SessionManager implements ISessionManager {
 			lStorage = (Map<String, Object>) getSession(aConnector.getSession().getSessionId());
 			aConnector.getSession().setStorage(lStorage);
 		} else {
-			// getting the previous assigned session storage instance
-			lStorage = aConnector.getSession().getStorage();
 			// getting the session id
 			String lSessionId = aConnector.getSession().getSessionId();
 
 			// REQUIRED FOR CLUSTERING SESSION RECOVERY SUPPORT
 			// ------------------------------------------------
-			recoverSessionId(lSessionId);
-		}
-
-		// setting the username
-		if (lStorage.containsKey(SystemPlugIn.USERNAME)) {
-			aConnector.setUsername(lStorage.get(SystemPlugIn.USERNAME).toString());
+			// recovered session, require to be removed from the trash
+			mReconnectionManager.getSessionIdsTrash().remove(lSessionId);
 		}
 	}
 
 	/**
 	 *
 	 * @param aConnector
+	 * @param aIsSessionShared
 	 * @throws Exception
 	 */
 	@Override
-	public void connectorStopped(WebSocketConnector aConnector) throws Exception {
+	public void connectorStopped(WebSocketConnector aConnector, boolean aIsSessionShared) throws Exception {
 		Map<String, Object> lStorage = aConnector.getSession().getStorage();
 
 		// ommiting if running in embedded session mode (HTTP servlet containers)
-		if (lStorage != null && !(lStorage instanceof HttpSessionStorage)) {
-			String lSessionId = aConnector.getSession().getSessionId();
+		if (!aIsSessionShared) {
+			if (lStorage != null && !(lStorage instanceof HttpSessionStorage)) {
+				String lSessionId = aConnector.getSession().getSessionId();
 
-			if (mLog.isDebugEnabled()) {
-				mLog.debug("Putting the session: " + lSessionId
-						+ ", in reconnection mode...");
-			}
-			synchronized (this) {
-				getReconnectionManager().putInReconnectionMode(aConnector.getSession());
+				if (mLog.isDebugEnabled()) {
+					mLog.debug("Putting the session: " + lSessionId
+							+ ", in reconnection mode...");
+				}
+				synchronized (this) {
+					getReconnectionManager().putInReconnectionMode(aConnector.getSession());
+				}
 			}
 		}
 

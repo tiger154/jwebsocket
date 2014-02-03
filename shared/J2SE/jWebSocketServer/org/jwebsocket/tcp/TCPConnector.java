@@ -206,17 +206,16 @@ public class TCPConnector extends BaseConnector {
 
 	@Override
 	public void stopConnector(CloseReason aCloseReason) {
-		try {
-			// patch to support the client side "close" command
-			String lClientCloseFlag = "connector_was_closed_by_client_demand";
-			if (null != getVar(lClientCloseFlag)) {
-				return;
-			}
-			if (aCloseReason.equals(CloseReason.CLIENT)) {
-				setVar(lClientCloseFlag, true);
-			}
-			// end of patch
+		// supporting client "close" command
+		String lClientCloseFlag = "connector_was_closed_by_client_demand";
+		if (null != getVar(lClientCloseFlag)) {
+			return;
+		}
+		if (aCloseReason.equals(CloseReason.CLIENT)) {
+			setVar(lClientCloseFlag, true);
+		}
 
+		try {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Stopping " + mLogInfo
 						+ " connector '"

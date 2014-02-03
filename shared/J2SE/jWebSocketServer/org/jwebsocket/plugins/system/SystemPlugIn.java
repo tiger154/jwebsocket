@@ -393,7 +393,9 @@ public class SystemPlugIn extends TokenPlugIn {
 		// allowing all connectors for a reconnection
 		if (mSessionManager != null) {
 			try {
-				mSessionManager.connectorStopped(aConnector);
+				boolean lSessionShared = !getServer().getSharedSessionConnectors(
+								aConnector.getSession().getSessionId()).isEmpty();
+				mSessionManager.connectorStopped(aConnector, lSessionShared);
 			} catch (Exception lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping connector session"), lEx);
 			}
@@ -682,7 +684,7 @@ public class SystemPlugIn extends TokenPlugIn {
 			}
 
 			// check if user exists and if password matches
-			if (lUser != null && lUser.checkPassword(lPassword, lEncoding)) {
+			if (null != lUser && lUser.checkPassword(lPassword, lEncoding)) {
 				lResponse.setString("username", lUsername);
 				// if previous session id was passed to continue an aborted session
 				// return the session-id to notify client about acceptance
@@ -691,13 +693,11 @@ public class SystemPlugIn extends TokenPlugIn {
 				setUsername(aConnector, lUsername);
 				setGroup(aConnector, lGroup);
 
-				if (lUser != null) {
-					if (lReturnRoles) {
-						lResponse.setList("roles", new FastList(lUser.getRoleIdSet()));
-					}
-					if (lReturnRights) {
-						lResponse.setList("rights", new FastList(lUser.getRightIdSet()));
-					}
+				if (lReturnRoles) {
+					lResponse.setList("roles", new FastList(lUser.getRoleIdSet()));
+				}
+				if (lReturnRights) {
+					lResponse.setList("rights", new FastList(lUser.getRightIdSet()));
 				}
 				if (mLog.isInfoEnabled()) {
 					mLog.info("User '" + lUsername
@@ -760,7 +760,7 @@ public class SystemPlugIn extends TokenPlugIn {
 
 			// cleaning user session
 			aConnector.getSession().getStorage().clear();
-			
+
 			// log successful logout operation
 			if (mLog.isInfoEnabled()) {
 				mLog.info("User '" + lUsername
@@ -942,9 +942,11 @@ public class SystemPlugIn extends TokenPlugIn {
 			// broadcast the logout event.
 			broadcastLogoutEvent(aConnector);
 		}
-		// reset the username, we're no longer logged in
-		removeUsername(aConnector);
 
+		// TODO: Send notification to shared clients?
+		// TODO: Clear the session?
+		// cleaning the client session 
+		// aConnector.getSession().getStorage().clear();
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Closing client "
 					+ (lTimeout > 0
@@ -1165,23 +1167,22 @@ public class SystemPlugIn extends TokenPlugIn {
 			if (mLog.isDebugEnabled()) {
 				mLog.debug(lMsg);
 			}
-			return; // Stop the execution flow
+			return; // stop the execution flow
 		}
 
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Authentication Successfully. Updating the user session...");
 		}
-		// Getting the session
+		// getting the session
 		Map<String, Object> lSession = aConnector.getSession().getStorage();
 
-		// Setting the is_authenticated flag
+		// setting the is_authenticated flag
 		lSession.put(IS_AUTHENTICATED, lAuthResult.isAuthenticated());
 
-		// Setting the username
-		lSession.put(USERNAME, lUsername);
+		// setting the connector username
 		aConnector.setUsername(lUsername);
 
-		// Setting the uuid
+		// setting the uuid
 		String lUUID;
 		Object lDetails = lAuthResult.getDetails();
 		if (null != lDetails && lDetails instanceof IUserUniqueIdentifierContainer) {
@@ -1191,21 +1192,22 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 		lSession.put(UUID, lUUID);
 
-		// Setting the authorities
+		// setting the authorities
 		String lAuthorities = "";
 		for (GrantedAuthority lGA : lAuthResult.getAuthorities()) {
 			lAuthorities = lAuthorities.concat(lGA.getAuthority() + " ");
 		}
-		// Storing the user authorities as a string to avoid serialization problems
+
+		// storing the user authorities as a string to avoid serialization problems
 		lSession.put(AUTHORITIES, lAuthorities);
 
-		// Creating the response
+		// creating the response
 		Token response = createResponse(aToken);
 		response.setString("uuid", lUUID);
 		response.setString("username", lUsername);
 		response.setList("authorities", Tools.parseStringArrayToList(lAuthorities.split(" ")));
 
-		// Sending the response
+		// sending the response
 		sendToken(aConnector, aConnector, response);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logon process finished successfully!");
@@ -1224,17 +1226,16 @@ public class SystemPlugIn extends TokenPlugIn {
 			return;
 		}
 
-		//Cleaning the session
-		aConnector.removeUsername();
+		// cleaning the session
 		aConnector.getSession().getStorage().clear();
 
-		//Sending the response
+		// sending acknowledge response
 		getServer().sendToken(aConnector, createResponse(aToken));
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Logoff process finished successfully!");
 		}
 
-		// and broadcast the logout event
+		// broadcast the logout event
 		broadcastLogoutEvent(aConnector);
 	}
 

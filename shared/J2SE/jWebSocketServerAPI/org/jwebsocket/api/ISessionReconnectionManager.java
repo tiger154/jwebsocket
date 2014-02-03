@@ -35,12 +35,6 @@ public interface ISessionReconnectionManager {
 
 	/**
 	 *
-	 * @return Contains the sessions identifiers to be expired
-	 */
-	IBasicCacheStorage<String, Object> getReconnectionIndex();
-
-	/**
-	 *
 	 * @param aSessionId The session identifier
 	 * @return TRUE if the session has been expired, FALSE otherwise
 	 */
