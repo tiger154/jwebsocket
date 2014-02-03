@@ -65,7 +65,8 @@ public interface ISessionManager extends IInitializable {
 	/**
 	 *
 	 * @param aConnector
+	 * @param aIsSessionShared
 	 * @throws Exception
 	 */
-	void connectorStopped(WebSocketConnector aConnector) throws Exception;
+	void connectorStopped(WebSocketConnector aConnector, boolean aIsSessionShared) throws Exception;
 }

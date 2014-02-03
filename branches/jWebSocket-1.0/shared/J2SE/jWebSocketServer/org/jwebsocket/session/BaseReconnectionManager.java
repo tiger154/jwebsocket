@@ -29,8 +29,6 @@ import org.springframework.util.Assert;
  */
 public abstract class BaseReconnectionManager implements ISessionReconnectionManager, IInitializable {
 
-	private IBasicCacheStorage<String, Object> mReconnectionIndex;
-	private String mCacheStorageName;
 	private Integer mSessionExpirationTime = 60; //One minute by default
 	private IBasicStorage<String, Object> mSessionIdsTrash;
 	private String mTrashStorageName;
@@ -51,35 +49,6 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 	 */
 	public void setCacheStorageProvider(ICacheStorageProvider aCacheStorageProvider) {
 		this.mCacheStorageProvider = aCacheStorageProvider;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public String getCacheStorageName() {
-		return mCacheStorageName;
-	}
-
-	/**
-	 *
-	 * @param aCacheStorageName
-	 */
-	public void setCacheStorageName(String aCacheStorageName) {
-		this.mCacheStorageName = aCacheStorageName;
-	}
-
-	@Override
-	public IBasicCacheStorage<String, Object> getReconnectionIndex() {
-		return mReconnectionIndex;
-	}
-
-	/**
-	 *
-	 * @param aReconnectionIndex
-	 */
-	public void setReconnectionIndex(IBasicCacheStorage<String, Object> aReconnectionIndex) {
-		this.mReconnectionIndex = aReconnectionIndex;
 	}
 
 	@Override
@@ -127,8 +96,6 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 
 	@Override
 	public void putInReconnectionMode(WebSocketSession aSession) {
-		getReconnectionIndex().put(aSession.getSessionId(), true, getSessionExpirationTime());
-
 		// used by a deamon to release expired sessions resources
 		getSessionIdsTrash().put(aSession.getSessionId(), System.currentTimeMillis() + (getSessionExpirationTime() * 1000));
 	}
@@ -148,11 +115,11 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 
 	@Override
 	public void initialize() throws Exception {
-		// The session cleaner will run every minute, 
-		// since 1 minute is the minimum session expiration time allowed value
+		// the session cleaner will run every 6 seconds to balance performance
+		// impactss
 		Tools.getTimer().scheduleAtFixedRate(
 				new CleanExpiredSessionsTask(
-				getSessionIdsTrash(), getStorageProvider()), 0, 1000);
+						getSessionIdsTrash(), getStorageProvider()), 0, 6000);
 	}
 
 	@Override
@@ -161,10 +128,7 @@ public abstract class BaseReconnectionManager implements ISessionReconnectionMan
 
 	@Override
 	public boolean isExpired(String aSessionId) {
-		if (null != aSessionId && getReconnectionIndex().containsKey(aSessionId)) {
-			return false;
-		}
-
-		return true;
+		return (mSessionIdsTrash.containsKey(aSessionId)
+				&& (Long) mSessionIdsTrash.get(aSessionId) < System.currentTimeMillis());
 	}
 }

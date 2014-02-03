@@ -27,16 +27,13 @@ import org.jwebsocket.logging.Logging;
  */
 public class SessionReconnectionManager extends BaseReconnectionManager {
 
-	private static Logger mLog = Logging.getLogger();
+	private final static Logger mLog = Logging.getLogger();
 
 	@Override
 	public void initialize() throws Exception {
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Initializing session reconnection manager...");
 		}
-
-		setReconnectionIndex(getCacheStorageProvider().getCacheStorage(getCacheStorageName()));
-		getReconnectionIndex().initialize();
 
 		setSessionIdsTrash(getStorageProvider().getStorage(getTrashStorageName()));
 		getSessionIdsTrash().initialize();
@@ -46,5 +43,6 @@ public class SessionReconnectionManager extends BaseReconnectionManager {
 
 	@Override
 	public void shutdown() throws Exception {
+		getSessionIdsTrash().shutdown();
 	}
 }

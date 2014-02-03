@@ -333,8 +333,8 @@ $.widget("jws.auth", {
 			}
 			try {
 				var lRes = mWSC.systemLogon(
-						jws.GUEST_USER_LOGINNAME,
-						jws.GUEST_USER_PASSWORD
+						w.auth.eUsername.val( ),
+						w.auth.ePassword.val( )
 						);
 				if (lRes.code == 0) {
 					if (mLog.isDebugEnabled) {

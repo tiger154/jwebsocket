@@ -34,9 +34,9 @@ import org.jwebsocket.util.Tools;
  */
 public class CleanExpiredSessionsTask extends TimerTask {
 
-	private IBasicStorage<String, Object> mSessionIdsTrash;
-	private IStorageProvider mStorageProvider;
-	private static Logger mLog = Logging.getLogger(CleanExpiredSessionsTask.class);
+	private final IBasicStorage<String, Object> mSessionIdsTrash;
+	private final IStorageProvider mStorageProvider;
+	private static final Logger mLog = Logging.getLogger(CleanExpiredSessionsTask.class);
 
 	/**
 	 *
@@ -47,7 +47,7 @@ public class CleanExpiredSessionsTask extends TimerTask {
 		mSessionIdsTrash = aSessionIdsTrash;
 		mStorageProvider = aStorageProvider;
 	}
-
+	
 	@Override
 	public void run() {
 		Iterator<String> lKeys = mSessionIdsTrash.keySet().iterator();
