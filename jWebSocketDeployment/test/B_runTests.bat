@@ -1,4 +1,8 @@
 @echo off
+echo -------------------------------------------------------------------------
+echo jWebSocket JavaScript Automated Test Runner
+echo (C) Copyright 2013-2014 Innotrade GmbH
+echo -------------------------------------------------------------------------
 
 if "%JWEBSOCKET_HOME%"=="" goto error
 if "%JWEBSOCKET_VER%"=="" goto error
@@ -89,7 +93,15 @@ rem RUN SERVER.JAR TEST
 rem -------------------------------------------------
 echo Starting jWebSocket Server via .jar...
 cd /d "%testroot%jWebSocket-%ver%"
+
+echo ----------------------------------------------------------------------------
+echo WAIT FOR SERVER START UP TO START TEST SUITE....
+echo ----------------------------------------------------------------------------
+
 start "Running jWebSocket Server via java -jar ..." java -jar libs/jWebSocketServer-%ver%.jar
+
+pause
+
 cmd.exe /c %scriptroot%C_runSuite.bat Chrome %CHROME_APP% %TEST_URL%
 cmd.exe /c %scriptroot%C_runSuite.bat Firefox %FIREFOX_APP% %TEST_URL%
 cmd.exe /c %scriptroot%C_runSuite.bat Safari %SAFARI_APP% %TEST_URL%

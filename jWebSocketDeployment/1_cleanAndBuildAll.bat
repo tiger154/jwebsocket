@@ -1,4 +1,8 @@
 @echo off
+echo -------------------------------------------------------------------------
+echo jWebSocket Clean and Build Automation
+echo (C) Copyright 2013-2014 Innotrade GmbH
+echo -------------------------------------------------------------------------
 
 if "%JWEBSOCKET_HOME%"=="" goto error
 if "%JWEBSOCKET_EE_HOME%"=="" goto error

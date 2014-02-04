@@ -1,4 +1,8 @@
 @echo off
+echo -------------------------------------------------------------------------
+echo jWebSocket JavaScript Docs Generator and Obfuscator
+echo (C) Copyright 2013-2014 Innotrade GmbH
+echo -------------------------------------------------------------------------
 
 if "%JWEBSOCKET_HOME%"=="" goto error
 if "%JWEBSOCKET_VER%"=="" goto error
