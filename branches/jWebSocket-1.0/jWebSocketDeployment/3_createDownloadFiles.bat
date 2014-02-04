@@ -1,7 +1,7 @@
 @echo off
 echo -------------------------------------------------------------------------
 echo jWebSocket Packager 
-echo (C) Copyright 2013 Innotrade GmbH
+echo (C) Copyright 2013-2014 Innotrade GmbH
 echo -------------------------------------------------------------------------
 
 if "%JWEBSOCKET_HOME%"=="" goto error
@@ -31,6 +31,7 @@ set libs=%rte%libs\
 set logs=%rte%logs\
 set cache=%rte%cache\
 set web=%rte%web\
+set filesystem=%rte%filesystem\
 
 set homeEE=%JWEBSOCKET_EE_HOME%
 set libsEE=%homeEE%libs\
@@ -273,8 +274,8 @@ rem xcopy %database%jWebSocket.db %tempdir%database\ /s /i /y
 xcopy %database%readme.txt %tempdir%database\ /s /i /y
 
 rem copy jWebSocket filesystem (from v1.0)
-xcopy %filesystem%public\ReadMe.txt %tempdir%filesystem\public /s /i /y
-xcopy %filesystem%private\ReadMe.txt %tempdir%filesystem\private /s /i /y
+xcopy %filesystem%public\ReadMe.txt %tempdir%filesystem\public\ReadMe.txt /s /y
+xcopy %filesystem%private\ReadMe.txt %tempdir%filesystem\private\ReadMe.txt /s /y
 
 rem web folder
 xcopy %web%index.htm %tempdir%web\ /s /i /y
