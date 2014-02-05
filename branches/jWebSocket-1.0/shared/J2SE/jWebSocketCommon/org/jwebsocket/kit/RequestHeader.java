@@ -142,16 +142,14 @@ public class RequestHeader {
 	}
 
 	/**
-	 * Returns the connection session cookie value
+	 * Returns the connection session id value
 	 *
 	 * @return
 	 */
 	public String getSessionId() {
-		// getting the session cookie name (sessionCookieName)
-		String lSessionCookieValue = (String) getArgs().get(RequestHeader.SESSION_ID);
-
-		if (null != lSessionCookieValue) {
-			getCookies().put(getSessionCookieName(), lSessionCookieValue);
+		String lSessionId = (String) getArgs().get(RequestHeader.SESSION_ID);
+		if (null != lSessionId) {
+			getCookies().put(getSessionCookieName(), lSessionId);
 		}
 		if (!getCookies().containsKey(getSessionCookieName())) {
 			getCookies().put(getSessionCookieName(), Tools.getMD5(UUID.randomUUID().toString()));
