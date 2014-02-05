@@ -1834,14 +1834,22 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		// if browser natively supports WebSockets...
 		// otherwise flash bridge may have embedded WebSocket class
 		if( lWsClass ) {
+			// supporting Flash session management
 			if ( self.WebSocket.__isFlashImplementation){
-				// override session id with cookies
-				var lSessionId = cookie.get('JWSSESSIONID', jws.tools.createUUID());
-				cookie.set('JWSSESSIONID', lSessionId);
-				
-				// URL argument
-				var lArg = ((-1 == aURL.indexOf(";"))? ";" : ",") + "sessionId=" + lSessionId;
-				aURL += lArg;
+				// override session id with a cookie
+				var lSessionCookieName = "JWSSESSIONID";
+				var lArg = "sessionCookieName=";
+				var lA = aURL.indexOf(lArg);
+				if (lA > -1){
+					var lB = aURL.indexOf(",", lA);
+					if (lB > -1){
+						lSessionCookieName = aURL.substr(lA + lSessionCookieName.length, lB);
+					} else {
+						lSessionCookieName = aURL.substr(lA);
+					}
+				}
+				var lSessionId = cookie.get(lSessionCookieName, jws.tools.createUUID());
+				cookie.set(lSessionCookieName, lSessionId);
 			}
 
 			if( !this.fConn || this.fConn.readyState > 2 ) {
