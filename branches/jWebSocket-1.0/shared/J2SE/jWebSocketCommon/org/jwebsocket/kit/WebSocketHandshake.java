@@ -470,11 +470,14 @@ public final class WebSocketHandshake {
 		String lLocation = (String) aRequest.get(RequestHeader.WS_LOCATION);
 		String lSubProt = (String) aRequest.get(RequestHeader.WS_PROTOCOL);
 
-		// setting the session id value if not present
+		// getting the session cookie name
 		String lSessionCookieName = aReqHeader.getSessionCookieName();
+		// getting the session cookie value
+		String lSessionId = aReqHeader.getSessionId();
+
 		if (!aReqHeader.getCookies().containsKey(lSessionCookieName)) {
 			// setting the session cookie value if not present
-			aReqHeader.getCookies().put(lSessionCookieName, Tools.getMD5(UUID.randomUUID().toString()));
+			aReqHeader.getCookies().put(lSessionCookieName, lSessionId);
 		}
 
 		String lPath = (String) aRequest.get(RequestHeader.WS_PATH);
@@ -487,7 +490,7 @@ public final class WebSocketHandshake {
 				+ (lSubProt != null ? (lIsSecure ? "Sec-" : "") + "WebSocket-Protocol: " + lSubProt + "\r\n" : "")
 				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Origin: " + lOrigin + "\r\n"
 				+ (lIsSecure ? "Sec-" : "") + "WebSocket-Location: " + lLocation + "\r\n"
-				+ "Set-Cookie: " + lSessionCookieName + "=" + aReqHeader.getCookies().get(lSessionCookieName)
+				+ "Set-Cookie: " + lSessionCookieName + "=" + lSessionId
 				+ "; Path=" + lPath + "; HttpOnly\r\n";
 		lRes += "\r\n";
 

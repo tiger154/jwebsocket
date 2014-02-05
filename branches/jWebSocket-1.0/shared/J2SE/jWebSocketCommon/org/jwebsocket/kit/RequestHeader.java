@@ -19,8 +19,10 @@
 package org.jwebsocket.kit;
 
 import java.util.Map;
+import java.util.UUID;
 import javolution.util.FastMap;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.util.Tools;
 
 /**
  * Holds the header of the initial WebSocket request from the client to the
@@ -89,6 +91,10 @@ public class RequestHeader {
 	/**
 	 *
 	 */
+	public static final String SESSION_ID = "sessionId";
+	/**
+	 *
+	 */
 	public static final String URL_ARGS = "args";
 	/**
 	 *
@@ -133,6 +139,25 @@ public class RequestHeader {
 		}
 
 		return lSessionCookieName;
+	}
+
+	/**
+	 * Returns the connection session cookie value
+	 *
+	 * @return
+	 */
+	public String getSessionId() {
+		// getting the session cookie name (sessionCookieName)
+		String lSessionCookieValue = (String) getArgs().get(RequestHeader.SESSION_ID);
+
+		if (null != lSessionCookieValue) {
+			getCookies().put(getSessionCookieName(), lSessionCookieValue);
+		}
+		if (!getCookies().containsKey(getSessionCookieName())) {
+			getCookies().put(getSessionCookieName(), Tools.getMD5(UUID.randomUUID().toString()));
+		}
+
+		return (String) getCookies().get(getSessionCookieName());
 	}
 
 	/**

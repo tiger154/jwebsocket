@@ -49,7 +49,8 @@ var jws = {
 	MSG_WS_NOT_SUPPORTED:
 		"Unfortunately your browser does neither natively support WebSockets\n" +
 		"nor you have the Adobe Flash-PlugIn 10+ installed.\n" +
-		"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer.",
+		"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer, " + 
+		"or use a native WebSocket compliant browser.",
 
 	// some namespace global constants
 	
@@ -1147,6 +1148,32 @@ jws.events = {
 };
 
 //  <JasobNoObfs>
+/**
+ * Copyright (c) 2012 Florian H., https://github.com/js-coder
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ **/
+!function(e,t){var n=function(){return n.get.apply(n,arguments)},r=n.utils={isArray:Array.isArray||function(e){return Object.prototype.toString.call(e)==="[object Array]"},isPlainObject:function(e){return!!e&&Object.prototype.toString.call(e)==="[object Object]"},toArray:function(e){return Array.prototype.slice.call(e)},getKeys:Object.keys||function(e){var t=[],n="";for(n in e)e.hasOwnProperty(n)&&t.push(n);return t},escape:function(e){return String(e).replace(/[,;"\\=\s%]/g,function(e){return encodeURIComponent(e)})},retrieve:function(e,t){return e==null?t:e}};n.defaults={},n.expiresMultiplier=86400,n.set=function(n,i,s){if(r.isPlainObject(n))for(var o in n)n.hasOwnProperty(o)&&this.set(o,n[o],i);else{s=r.isPlainObject(s)?s:{expires:s};var u=s.expires!==t?s.expires:this.defaults.expires||"",a=typeof u;a==="string"&&u!==""?u=new Date(u):a==="number"&&(u=new Date(+(new Date)+1e3*this.expiresMultiplier*u)),u!==""&&"toGMTString"in u&&(u=";expires="+u.toGMTString());var f=s.path||this.defaults.path;f=f?";path="+f:"";var l=s.domain||this.defaults.domain;l=l?";domain="+l:"";var c=s.secure||this.defaults.secure?";secure":"";e.cookie=r.escape(n)+"="+r.escape(i)+u+f+l+c}return this},n.remove=function(e){e=r.isArray(e)?e:r.toArray(arguments);for(var t=0,n=e.length;t<n;t++)this.set(e[t],"",-1);return this},n.empty=function(){return this.remove(r.getKeys(this.all()))},n.get=function(e,n){n=n||t;var i=this.all();if(r.isArray(e)){var s={};for(var o=0,u=e.length;o<u;o++){var a=e[o];s[a]=r.retrieve(i[a],n)}return s}return r.retrieve(i[e],n)},n.all=function(){if(e.cookie==="")return{};var t=e.cookie.split("; "),n={};for(var r=0,i=t.length;r<i;r++){var s=t[r].split("=");n[decodeURIComponent(s[0])]=decodeURIComponent(s[1])}return n},n.enabled=function(){if(navigator.cookieEnabled)return!0;var e=n.set("_","_").get("_")==="_";return n.remove("_"),e},typeof define=="function"&&define.amd?define(function(){return n}):typeof exports!="undefined"?exports.cookie=n:window.cookie=n}(document);
+//  </JasobNoObfs>
+
+//  <JasobNoObfs>
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
@@ -1750,6 +1777,13 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		if( !this.fReliabilityOptions ) {
 			this.fReliabilityOptions = jws.RO_OFF;
 		}
+		
+		// notifying 'not websocket supported' event to the app
+		if ( !jws.browserSupportsWebSockets() ){
+			if ( aOptions.OnWebSocketNotSupported && "function" == typeof aOptions.OnWebSocketNotSupported ){
+				aOptions.OnWebSocketNotSupported();
+			} 
+		}
 	},
 	
 	//:m:*:processOpened
@@ -1800,6 +1834,15 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		// if browser natively supports WebSockets...
 		// otherwise flash bridge may have embedded WebSocket class
 		if( lWsClass ) {
+			if ( self.WebSocket.__isFlashImplementation){
+				// override session id with cookies
+				var lSessionId = cookie.get('JWSSESSIONID', jws.tools.createUUID());
+				cookie.set('JWSSESSIONID', lSessionId);
+				
+				// URL argument
+				var lArg = ((-1 == aURL.indexOf(";"))? ";" : ",") + "sessionId=" + lSessionId;
+				aURL += lArg;
+			}
 
 			if( !this.fConn || this.fConn.readyState > 2 ) {
 				var lThis = this;
@@ -2034,10 +2077,10 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				};
 
 			} else {
-				throw new Error( "Already connected" );
+				throw new Error( "Already connected!" );
 			}
 		} else {
-			throw new Error( "WebSockets not supported by browser" );
+			throw new Error( "WebSockets not supported by web browser!" );
 		}
 	},
 
@@ -4465,7 +4508,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SystemClientPlugIn );
 //:ancestor:*:jws.jWebSocketTokenClient
 //:d:en:Implementation of the [tt]jws.jWebSocketJSONClient[/tt] class.
 jws.oop.declareClass( "jws", "jWebSocketJSONClient", jws.jWebSocketTokenClient, {
-
+	
 	//:m:*:tokenToStream
 	//:d:en:converts a token to a JSON stream. If the browser provides a _
 	//:d:en:native JSON class this is used, otherwise it use the automatically _
