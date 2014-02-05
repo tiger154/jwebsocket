@@ -885,22 +885,22 @@ var jws = {
 			if( jws.fIsNetscape ) {
 				jws.fBrowserType = jws.BT_NETSCAPE;
 			} else {
-				jws.fIsFirefox = "Netscape" === navigator.appName;
-				if( jws.fIsFirefox ) {
-					jws.fBrowserType = jws.BT_FIREFOX;
+				jws.fIsOpera = "Opera" === navigator.appName;
+				if( jws.fIsOpera ) {
+					jws.fBrowserType = jws.BT_OPERA;
 				} else {
-					jws.fIsOpera = "Opera" === navigator.appName;
-					if( jws.fIsOpera ) {
-						jws.fBrowserType = jws.BT_OPERA;
+					jws.fIsPocketIE = "Microsoft Pocket Internet Explorer" === navigator.appName;
+					if( jws.fIsPocketIE ) {
+						ws.fBrowserType = jws.BT_IEXPLORER;
 					} else {
-						jws.fIsIExplorer = "Microsoft Internet Explorer" === navigator.appName;
+						jws.fIsIExplorer = "Microsoft Internet Explorer" === navigator.appName || !!lUA.match(/Trident.*rv[ :]./);
 						if( jws.fIsIExplorer ) {
 							jws.fBrowserType = jws.BT_IEXPLORER;
 						} else {
-							jws.fIsPocketIE = "Microsoft Pocket Internet Explorer" === navigator.appName;
-							if( jws.fIsPocketIE ) {
-								jws.fBrowserType = jws.BT_IEXPLORER;
-							}
+							jws.fIsFirefox = "Netscape" === navigator.appName;
+							if( jws.fIsFirefox ) {
+								jws.fBrowserType = jws.BT_FIREFOX;
+							} 
 						}
 					}
 				}
@@ -916,6 +916,7 @@ var jws = {
 	if( jws.fIsIExplorer ) {
 		//:i:de:Beispiel f&uuml;r userAgent bei IE6:
 		//:i:de:"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"
+		//:i:de:"Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.3; .NET4.0C; .NET4.0E; rv:11.0) like Gecko"
 		jws.fBrowserName = jws.BROWSER_NAMES[ jws.BT_IEXPLORER ];
 		lVersion = lUA.match( /MSIE.*/i );
 		if ( lVersion ) {
@@ -923,6 +924,22 @@ var jws = {
 			p = lStr.indexOf( ";" );
 			jws.fBrowserVerStr = p > 0 ? lStr.substr( 0, p ) : lStr;
 			jws.fBrowserVerNo = parseFloat( jws.fBrowserVerStr );
+		} else {
+			// if is Internet Explorer 11 or higher
+			lVersion = lUA.match(/Trident.*rv[ :]./);
+			if(lVersion){
+				p = lVersion[ 0 ].indexOf( ";" );
+				if(p > 0){
+					jws.fBrowserVerStr = lVersion[ 0 ].substr(0, p);
+				} else {
+					jws.fBrowserVerStr = "Trident";
+				}
+				lVersion = lUA.match(/rv[ :].*/i);
+				if(lVersion){
+					p = lVersion[0].indexOf(")");
+					jws.fBrowserVerNo = parseFloat( p >= 3?lVersion[0].substr(3,p-3): lVersion[0].substr(3, 4));
+				}
+			}
 		}
 	} else if( jws.fIsFirefox ) {
 		jws.fBrowserName = jws.BROWSER_NAMES[ jws.BT_FIREFOX ];
