@@ -23,7 +23,7 @@ $.widget("jws.auth", {
 	_init: function( ) {
 		w.auth = this;
 
-		// Stores the jWebSocketJSONClient
+		// Stores the jWebSocketJSONClient for all the demos
 		mWSC = null;
 		AUTO_USER_AND_PASSWORD = false;
 		this.eLogoffArea = this.element.find("#logoff_area");
@@ -48,6 +48,7 @@ $.widget("jws.auth", {
 		this.checkWebSocketSupport( );
 
 		this.registerEvents( );
+		this.connect();
 	},
 	checkWebSocketSupport: function( ) {
 		if (jws.browserSupportsWebSockets( )) {
@@ -67,24 +68,22 @@ $.widget("jws.auth", {
 		//adding click functions
 		w.auth.eLoginButton.click(function( ) {
 			// If there is not a connect button
-			if (!w.auth.eConnectButton.attr("id")) {
-				// we open the connection and then login
-				w.auth.logon( );
-			} else {
-				// must be connected, otherwise it won't work
-				w.auth.login( );
-			}
+//			if (!w.auth.eConnectButton.attr("id")) {
+//				// we open the connection and then login
+//				w.auth.logon( );
+//			} else {
+			// must be connected, otherwise it won't work
+			w.auth.auth( );
+//			}
 		});
 		w.auth.eLogoffButton.click(
 				function( ) {
+					w.auth.deauth( );
 					// If there is not a connect button
-					if (!w.auth.eConnectButton.attr("id")) {
-						// logout and close the connection
-						w.auth.disconnect( );
-					} else {
-						// just logout
-						w.auth.logoff( );
-					}
+//					if (!w.auth.eConnectButton.attr("id")) {
+//						// logout and close the connection
+//						w.auth.disconnect( );
+//					}
 				}
 		);
 
@@ -112,7 +111,7 @@ $.widget("jws.auth", {
 						lPassword
 						);
 
-				if (lRes.code == 0) {
+				if (lRes.code === 0) {
 					if (mLog.isDebugEnabled) {
 						log("Asychronously waiting for response...");
 					}
@@ -133,7 +132,7 @@ $.widget("jws.auth", {
 		}
 	},
 	getCallbacks: function( ) {
-		return {
+		var lCallbacks = {
 			// use JSON sub protocol
 			subProtocol: (w.auth.options.subProtocol) ? w.auth.options.subProtocol : jws.WS_SUBPROT_JSON,
 			// connection timeout in ms
@@ -174,7 +173,8 @@ $.widget("jws.auth", {
 					w.auth.eClientId.text("Client-ID: " + aToken.sourceId);
 				}
 				if (aToken.username !== "anonymous") {
-					w.auth.setLoggedOn(aToken);
+					lCallbacks.OnLogon(aToken);
+					//w.auth.setLoggedOn(aToken);
 				}
 			},
 			OnLogon: function(aToken) {
@@ -206,6 +206,15 @@ $.widget("jws.auth", {
 					}
 				}
 
+				if (aToken.ns === "org.jwebsocket.plugins.system") {
+					if (aToken.type === "broadcastToSharedSession") {
+						if (aToken.data && aToken.data.reqType === "logon") {
+							this.OnLogon(aToken.data);
+						} else if (aToken.data && aToken.data.reqType === "logoff") {
+							this.OnLogoff(aToken.data);
+						}
+					}
+				}
 				// Debug if the user doesn't have an OnMessage method
 				if (w.auth.options.OnMessage) {
 					w.auth.options.OnMessage(aEvent, aToken);
@@ -230,6 +239,7 @@ $.widget("jws.auth", {
 				w.auth.setDisconnected(aEvent);
 			}
 		};
+		return lCallbacks;
 	},
 	// If there is not connection with the server, opens a connection and then 
 	// tries to log the user in the system
@@ -246,10 +256,10 @@ $.widget("jws.auth", {
 			lPassword = w.auth.ePassword.val( );
 		}
 
-		if (lUsername == "" || lPassword == "") {
+		if (lUsername === "" || lPassword === "") {
 			if (mLog.isDebugEnabled) {
-				log("<font color='red'>User or password can not be empty,\n\
-						please check your login information.</font>")
+				log("<font color='red'>User or password can not be empty," +
+						"please check your login information.</font>");
 			}
 			return;
 		}
@@ -267,7 +277,7 @@ $.widget("jws.auth", {
 	logoff: function( ) {
 		if (mWSC) {
 			if (mLog.isDebugEnabled) {
-				log("Logging off " + (w.auth.mUsername != null ? "'" +
+				log("Logging off " + (w.auth.mUsername !== null ? "'" +
 						w.auth.mUsername + "'" : ""));
 			}
 			// the timeout below  is optional,
@@ -313,7 +323,7 @@ $.widget("jws.auth", {
 					timeout: 3000
 				});
 
-				if (lRes.code != 0) {
+				if (lRes.code !== 0) {
 					if (mLog.isDebugEnabled) {
 						log(lRes.msg);
 					}
@@ -336,7 +346,7 @@ $.widget("jws.auth", {
 						w.auth.eUsername.val( ),
 						w.auth.ePassword.val( )
 						);
-				if (lRes.code == 0) {
+				if (lRes.code === 0) {
 					if (mLog.isDebugEnabled) {
 						log("Asychronously waiting for response...");
 					}
@@ -360,7 +370,7 @@ $.widget("jws.auth", {
 			}
 			try {
 				var lRes = mWSC.systemLogoff( );
-				if (lRes.code == 0) {
+				if (lRes.code === 0) {
 					if (mLog.isDebugEnabled) {
 						log("Asychronously waiting for response...");
 					}
@@ -384,7 +394,7 @@ $.widget("jws.auth", {
 			}
 			try {
 				var lRes = mWSC.systemGetAuthorities( );
-				if (lRes.code == 0) {
+				if (lRes.code === 0) {
 					if (mLog.isDebugEnabled) {
 						log("Asychronously waiting for response...");
 					}
@@ -403,6 +413,7 @@ $.widget("jws.auth", {
 	/**
 	 * Automatically shows the logoff button in the top of all demos
 	 * including the authenticated username
+	 * @param {Token} aToken The token with the authenticated user
 	 */
 	setLoggedOn: function(aToken) {
 		if (mLog.isDebugEnabled) {
@@ -415,7 +426,7 @@ $.widget("jws.auth", {
 		w.auth.eLogoffArea.fadeIn(300);
 		w.auth.eUserInfoName.text(aToken.username);
 		w.auth.mUsername = aToken.username;
-		w.auth.eClientStatus.attr("class", "authenticated").text("authenticated");
+		w.auth.eClientStatus.attr("class", "authenticated").text("authenticated").attr("title", "Authenticated as " + aToken.username);
 	},
 	setLoggedOff: function(aToken) {
 		w.auth.eLogoffArea.hide( );
@@ -427,7 +438,7 @@ $.widget("jws.auth", {
 
 		w.auth.mUsername = null;
 		w.auth.eUserInfoName.text("");
-		w.auth.eClientStatus.attr("class", "online").text("online");
+		w.auth.eClientStatus.attr("class", "online").text("online").attr("title", "");
 	},
 	setConnected: function(aToken) {
 		if (mLog.isDebugEnabled) {
@@ -439,7 +450,7 @@ $.widget("jws.auth", {
 
 		mIsConnected = true;
 		// Setting the status connected
-		w.auth.eClientStatus.attr("class", "online").text("connected");
+		w.auth.eClientStatus.attr("class", "online").text("connected").attr("title", "");
 	},
 	setDisconnected: function(aToken) {
 		if (mLog.isDebugEnabled) {
@@ -453,32 +464,33 @@ $.widget("jws.auth", {
 		w.auth.eDisConnectButton.hide( );
 		w.auth.eConnectButton.show( );
 
+		mIsConnected = false;
 		w.auth.mUsername = null;
 		w.auth.eUserInfoName.text("");
 		w.auth.eClientId.text("Client-ID: -");
-		w.auth.eClientStatus.attr("class", "offline").text("disconnected");
+		w.auth.eClientStatus.attr("class", "offline").text("disconnected").attr("title", "");
 		w.auth.eUsername.focus( );
 	},
 	// EVENTS FUNCTIONS
 	eUsernameKeypress: function(aEvent) {
-		if (aEvent.keyCode == 13 || aEvent.keyChar == 13) {
+		if (aEvent.keyCode === 13 || aEvent.keyChar === 13) {
 			w.auth.ePassword.focus( );
 		}
 	},
 	ePasswordKeypress: function(aEvent) {
-		if (aEvent.keyCode == 13 || aEvent.keyChar == 13) {
-			w.auth.logon( );
+		if (aEvent.keyCode === 13 || aEvent.keyChar === 13) {
+			w.auth.auth( );
 		}
 	},
 	cleanHTML: function(aMsg) {
 		var lResult = "", lEnd = aMsg.length, lChar = '';
 		for (var lIdx = 0; lIdx < lEnd; lIdx++) {
 			lChar = aMsg.charAt(lIdx);
-			if (lChar == '<') {
+			if (lChar === '<') {
 				lResult += '%3c';
-			} else if (lChar == '>') {
+			} else if (lChar === '>') {
 				lResult += '%3e';
-			} else if (lChar == '&') {
+			} else if (lChar === '&') {
 				lResult += '%26';
 			} else {
 				lResult += lChar;

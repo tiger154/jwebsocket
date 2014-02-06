@@ -87,7 +87,7 @@ $.widget( "jws.vplayer", {
 				}
 				w.vplayer.eBtnFullScreen.stop( true, true ).fadeTo( 400, 0.4 );
 			}
-		} )
+		} );
 		$( document ).keydown( w.vplayer.keydown );
 
 		// When closing the window notify the other clients about who is 
@@ -119,11 +119,13 @@ $.widget( "jws.vplayer", {
 					OnChannelSubscription: w.vplayer.onChannelSubscription
 				} );
 				w.vplayer.mClientId = aToken.sourceId;
+				if (aToken.username === "anonymous") {
+					AUTO_USER_AND_PASSWORD = true;
+					w.auth.logon( );
+				}
 			}
 		};
 		w.vplayer.eContainer.auth( lCallbacks );
-		AUTO_USER_AND_PASSWORD = true;
-		w.auth.logon();
 	},
 	onMessage: function( aEvent, aToken ) {
 		if ( aToken.type === "response" && aToken.reqType === "login" ) {
@@ -313,7 +315,7 @@ $.widget( "jws.vplayer", {
 		mWSC.channelPublish( w.vplayer.mChannelId, aType, aData );
 	},
 	isFullScreen: function() {
-		return  (document.fullScreen && document.fullScreen != null) ||
+		return  (document.fullScreen && document.fullScreen !== null) ||
 		(document.mozFullScreen || document.webkitIsFullScreen);
 	},
 	toggleFullScreen: function() {

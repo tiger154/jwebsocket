@@ -3,7 +3,7 @@
  */
 
 function init(  ) {
-	w = typeof(w) == "undefined"? {}:w;
+	w = typeof(w) === "undefined"? {}:w;
 	mLog                = {};
 	mLog.isDebugEnabled = true;
     

@@ -86,12 +86,12 @@ $.widget( "jws.presenter", {
 
 			},
 			mouseout: function( aEvent ) {
-				if ( aEvent.relatedTarget == w.presenter.eBtnFullScreen.get( 0 ) ) {
+				if ( aEvent.relatedTarget === w.presenter.eBtnFullScreen.get( 0 ) ) {
 					return false;
 				}
 				w.presenter.eBtnFullScreen.stop( true, true ).fadeTo( 400, 0.4 );
 			}
-		})
+		});
 		$( document ).bind({
 			"keydown": w.presenter.keydown,
 			'webkitfullscreenchange mozfullscreenchange fullscreenchange': function( ) {
@@ -118,11 +118,14 @@ $.widget( "jws.presenter", {
 					OnChannelSubscription: w.presenter.onChannelSubscription
 				});
 				w.presenter.mClientId = aToken.sourceId;
+				if (aToken.username === "anonymous") {
+					AUTO_USER_AND_PASSWORD = true;
+					w.auth.logon( );
+				}
 			},
 			OnLogon: function( aToken ) {
 				w.presenter.authenticateChannel({
 					OnSuccess: function( ) {
-						console.log("successfully authenticated");
 						mWSC.channelSubscribe( w.presenter.mChannelId,
 							w.presenter.mChannelAccessKey );
 					}
@@ -131,8 +134,6 @@ $.widget( "jws.presenter", {
 			}
 		};
 		w.presenter.eContainer.auth( lCallbacks );
-		AUTO_USER_AND_PASSWORD = true;
-		w.auth.logon( );
 	},
 	onMessage: function( aEvent, aToken ) {
 		if ( aToken.ns === w.presenter.NS_CHANNELS ) {
@@ -188,13 +189,13 @@ $.widget( "jws.presenter", {
 		if ( aSlide <= 1 ) {
 			w.presenter.eBtnPrev.disable( );
 			w.presenter.eBtnFirst.disable( );
-		} else if ( aSlide == w.presenter.mMaxSlides ) {
+		} else if ( aSlide === w.presenter.mMaxSlides ) {
 			w.presenter.eBtnNext.disable( );
 			w.presenter.eBtnLast.disable( );
 		}
 	},
 	updateSlide: function( aSlide ) {
-		if ( aSlide != w.presenter.mCurrSlide ) {
+		if ( aSlide !== w.presenter.mCurrSlide ) {
 			w.presenter.mCurrSlide = aSlide;
 			w.presenter.publish( w.presenter.TT_SLIDE, {
 				slide: aSlide,
@@ -204,11 +205,11 @@ $.widget( "jws.presenter", {
 	},
 	updateData: function( aData ) {
 		aData = aData || { };
-		if( aData.viewers != undefined && aData.viewers != w.presenter.mViewers ) {
+		if( aData.viewers !== undefined && aData.viewers !== w.presenter.mViewers ) {
 			w.presenter.mViewers = aData.viewers;
 			w.presenter.eViewers.text( aData.viewers );
 		}
-		if( aData.presenters != undefined && aData.presenters != w.presenter.mPresenters ) {
+		if( aData.presenters !== undefined && aData.presenters !== w.presenter.mPresenters ) {
 			w.presenter.mPresenters = aData.presenters;
 			w.presenter.ePresenters.text(aData.presenters );
 		}
@@ -240,9 +241,9 @@ $.widget( "jws.presenter", {
 								// connected presenter in order that he be able 
 								// to synchronize his current slide
 								if( lToken.isPublisher ) {
-									if( lPublishers == 1 ) {
+									if( lPublishers === 1 ) {
 										w.presenter.publish( w.presenter.TT_SLIDE, lData );
-									} else if ( lToken.subscriber != w.presenter.mClientId ) {
+									} else if ( lToken.subscriber !== w.presenter.mClientId ) {
 										// Then we send to him an update of the 
 										// slides that we have
 										if( w.presenter.mCurrSlide > 0 ) {
@@ -256,7 +257,7 @@ $.widget( "jws.presenter", {
 									w.presenter.publish( w.presenter.TT_SLIDE, lData );
 								}
 							}
-						})
+						});
 				}
 			});
 	},
@@ -303,7 +304,7 @@ $.widget( "jws.presenter", {
 		mWSC.channelPublish( w.presenter.mChannelId, aType, aData );
 	},
 	isFullScreen: function( ) {
-		return  (document.fullScreen && document.fullScreen != null) ||
+		return  (document.fullScreen && document.fullScreen !== null) ||
 		(document.mozFullScreen || document.webkitIsFullScreen);
 	},
 	toggleFullScreen: function( ) {
