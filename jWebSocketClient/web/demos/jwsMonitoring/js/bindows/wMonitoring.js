@@ -36,6 +36,12 @@ $.widget("jws.monitoring", {
 		// to the public widget ../../res/js/widgets/wAuth.js
 		var lCallbacks = {
 			OnOpen: function() {
+
+			},
+			OnClose: function() {
+				w.monitoring.resetGauges();
+			},
+			OnWelcome: function(aToken) {
 				// Registering to the monitoring stream
 				var lRegisterToken = {
 					ns: w.monitoring.NS,
@@ -45,12 +51,9 @@ $.widget("jws.monitoring", {
 				// Sending the register token
 				mWSC.sendToken(lRegisterToken);
 			},
-			OnClose: function() {
-				w.monitoring.resetGauges();
-			},
 			OnMessage: function(aEvent, aToken) {
-				if (w.monitoring.NS === aToken.ns && 
-					w.monitoring.TT_INFO === aToken.type) {
+				if (w.monitoring.NS === aToken.ns &&
+						w.monitoring.TT_INFO === aToken.type) {
 					w.monitoring.updateGauge(aToken);
 				}
 				var lDate = "";
@@ -58,8 +61,8 @@ $.widget("jws.monitoring", {
 					lDate = jws.tools.ISO2Date(aToken.date_val);
 				}
 				log("<font style='color:#888'>jWebSocket '" + aToken.type +
-					"' token received, full message: '" + aEvent.data + "' " +
-					lDate + "</font>");
+						"' token received, full message: '" + aEvent.data + "' " +
+						lDate + "</font>");
 			}
 		};
 		// this widget will be accessible from the global variable w.auth

@@ -38,172 +38,177 @@ jws.CanvasPlugIn = {
 	TT_IMG_CLEAR: "clearImg",
 	TT_IMG_UNDO: "undoImg",
 	TT_IMG_REDO: "redoImg",
-	mClientsImages: { },
+	mClientsImages: {},
 	mSteps: 0,
-	mHistory: [ ],
+	mHistory: [],
 	/**
 	 * Initializes the plugIn, receives the dom element where the widget 
 	 * Auth will be rendered
 	 * @param {type} aContainer
 	 * @returns {undefined}
 	 */
-	init: function( aContainer ) {
+	init: function(aContainer) {
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
 			/**
 			 * OnMessage Will be fired whenever a new message comes from the server
 			 */
-			OnMessage: function( aEvent, aToken ) {
-				jws.CanvasPlugIn.processToken( aToken );
+			OnMessage: function(aEvent, aToken) {
+				jws.CanvasPlugIn.processToken(aToken);
 			},
 			/**
 			 * The first message from the server, here we register the channel 
 			 * callbacks to be able to know when something happen within the channel
 			 */
-			OnWelcome: function( aToken ) {
+			OnWelcome: function(aToken) {
 				// Registering the callbacks for the channels
-				mWSC.setChannelCallbacks( {
+				mWSC.setChannelCallbacks({
 					// When any subscription arrives from the server
 					OnChannelSubscription: jws.CanvasPlugIn.onChannelSubscription,
 					OnChannelUnsubscription: jws.CanvasPlugIn.onChannelUnsubscription
-				} );
+				});
 				jws.CanvasPlugIn.mClientId = aToken.sourceId;
+				if (aToken.username === "anonymous") {
+					AUTO_USER_AND_PASSWORD = true;
+					w.auth.logon( );
+				}
 			},
 			/**
 			 * If the user is successfully authenticated, then we send a token
 			 * to the server to authenticate or subscribe to the channel
 			 */
-			OnLogon: function( aToken ) {
-				jws.CanvasPlugIn.authenticateChannel( {
+			OnLogon: function(aToken) {
+				setTimeout(function() {
+					w.switcher.eClientStatus.text(aToken.username).attr("title", "Authenticated as " + aToken.username);
+				}, 100);
+				jws.CanvasPlugIn.authenticateChannel({
 					OnSuccess: function( ) {
-						mWSC.channelSubscribe( jws.CanvasPlugIn.mChannelId,
-							jws.CanvasPlugIn.mChannelAccessKey );
+						mWSC.channelSubscribe(jws.CanvasPlugIn.mChannelId,
+								jws.CanvasPlugIn.mChannelAccessKey);
 					}
-				} );
+				});
 			}
 		};
-		aContainer.auth( lCallbacks );
-		AUTO_USER_AND_PASSWORD = true;
-		w.auth.logon( );
+		aContainer.auth(lCallbacks);
 	},
-	onChannelSubscription: function( aToken ) {
-	//		console.log( "subscribed" + aToken.subscriber );
+	onChannelSubscription: function(aToken) {
+		//		console.log( "subscribed" + aToken.subscriber );
 	},
-	onChannelUnsubscription: function( aToken ) {
-	//		console.log( "unsubscribed" + aToken.subscriber );
+	onChannelUnsubscription: function(aToken) {
+		//		console.log( "unsubscribed" + aToken.subscriber );
 	},
-	publish: function( aType, aData ) {
-		if ( typeof aData === "undefined" ) {
-			aData = { };
+	publish: function(aType, aData) {
+		if (typeof aData === "undefined") {
+			aData = {};
 		}
 		// Type of publication, when the user receive this message he will know 
 		// what to do by reading this variable in "aToken.data"
-		mWSC.channelPublish( jws.CanvasPlugIn.mChannelId, aType, aData );
+		mWSC.channelPublish(jws.CanvasPlugIn.mChannelId, aType, aData);
 	},
 	// try to authenticate against the channel to publish data
-	authenticateChannel: function( aOptions ) {
+	authenticateChannel: function(aOptions) {
 		// use access key and secret key for this channel to authenticate
 		// required to publish data only
-		mWSC.channelAuth( jws.CanvasPlugIn.mChannelId,
-			jws.CanvasPlugIn.mChannelAccessKey,
-			jws.CanvasPlugIn.mChannelSecretKey, aOptions );
+		mWSC.channelAuth(jws.CanvasPlugIn.mChannelId,
+				jws.CanvasPlugIn.mChannelAccessKey,
+				jws.CanvasPlugIn.mChannelSecretKey, aOptions);
 	},
-	processToken: function( aToken ) {
-		if ( aToken.ns === jws.CanvasPlugIn.NS_CHANNELS ) {
+	processToken: function(aToken) {
+		if (aToken.ns === jws.CanvasPlugIn.NS_CHANNELS) {
 			// When information is published in the channel you can bind the type 
 			// of information coming within the variable "data" and get the object
 			// returned from the server inside the variable "map"
-			if ( aToken.type === "data" ) {
-				if ( aToken.data ) {
+			if (aToken.type === "data") {
+				if (aToken.data) {
 					// The type of the publish event received
-					switch ( aToken.data ) {
+					switch (aToken.data) {
 						case jws.CanvasPlugIn.TT_BEGIN_PATH:
-							this.doBeginPath( aToken.map.id );
+							this.doBeginPath(aToken.map.id);
 							break;
 						case jws.CanvasPlugIn.TT_CLOSE_PATH:
-							this.doClosePath( aToken.map.id );
+							this.doClosePath(aToken.map.id);
 							break;
 						case jws.CanvasPlugIn.TT_CLEAR:
-							this.doClear( aToken.map.id );
+							this.doClear(aToken.map.id);
 							break;
 						case jws.CanvasPlugIn.TT_MOVE_TO:
-							this.doMoveTo( aToken.map.id, aToken.map.x, aToken.map.y );
+							this.doMoveTo(aToken.map.id, aToken.map.x, aToken.map.y);
 							break;
 						case jws.CanvasPlugIn.TT_LINE_TO:
-							this.doLineTo( aToken.map.id, aToken.map.x, aToken.map.y );
+							this.doLineTo(aToken.map.id, aToken.map.x, aToken.map.y);
 							break;
 						case jws.CanvasPlugIn.TT_LINE:
-							this.doLine( aToken.map.id, aToken.map.x1, aToken.map.y1,
-								aToken.map.x2, aToken.map.y2, {
-									color: aToken.map.color
-								} );
+							this.doLine(aToken.map.id, aToken.map.x1, aToken.map.y1,
+									aToken.map.x2, aToken.map.y2, {
+										color: aToken.map.color
+									});
 							break;
-						// ----------------------------------------------
-						//		LISTENERS FOR THE IMAGE AREA
-						// ----------------------------------------------
+							// ----------------------------------------------
+							//		LISTENERS FOR THE IMAGE AREA
+							// ----------------------------------------------
 						case jws.CanvasPlugIn.TT_IMG_BEGIN_IMAGE:
-							this.doCanvasBeginImage( aToken.map.canvasId, aToken.publisher, aToken.map.x1, aToken.map.y1,
-								aToken.map.width, aToken.map.height, aToken.map.selectedImg );
+							this.doCanvasBeginImage(aToken.map.canvasId, aToken.publisher, aToken.map.x1, aToken.map.y1,
+									aToken.map.width, aToken.map.height, aToken.map.selectedImg);
 							break;
 						case jws.CanvasPlugIn.TT_IMG_MOVE_TO:
-							this.doImageResize( aToken.map.canvasId, aToken.publisher, aToken.map.x2, aToken.map.y2 );
+							this.doImageResize(aToken.map.canvasId, aToken.publisher, aToken.map.x2, aToken.map.y2);
 							break;
 						case jws.CanvasPlugIn.TT_IMG_CLEAR:
-							this.doClearImage( aToken.map.canvasId );
+							this.doClearImage(aToken.map.canvasId);
 							break;
 						case jws.CanvasPlugIn.TT_IMG_UNDO:
-							this.undoImageCreate( aToken.map.canvasId );
+							this.undoImageCreate(aToken.map.canvasId);
 							break;
 						case jws.CanvasPlugIn.TT_IMG_REDO:
-							this.redoImageCreate( aToken.map.canvasId );
+							this.redoImageCreate(aToken.map.canvasId);
 							break;
 					}
 				}
 			}
 		}
 	},
-	fCanvas: { },
-	canvasOpen: function( aId, aElementId ) {
-		var lElem = jws.$( aElementId );
+	fCanvas: {},
+	canvasOpen: function(aId, aElementId) {
+		var lElem = jws.$(aElementId);
 		this.fCanvas[ aId ] = {
 			fDOMElem: lElem,
-			ctx: lElem.getContext( "2d" )
+			ctx: lElem.getContext("2d")
 		};
 	},
-	canvasClose: function( aId ) {
+	canvasClose: function(aId) {
 		this.fCanvas[ aId ] = null;
 		delete this.fCanvas[ aId ];
 	},
-	doClear: function( aId ) {
+	doClear: function(aId) {
 		var lCanvas = this.fCanvas[ aId ];
-		if ( lCanvas != null ) {
-			var lW = lCanvas.fDOMElem.getAttribute( "width" );
-			var lH = lCanvas.fDOMElem.getAttribute( "height" );
-			lCanvas.ctx.clearRect( 0, 0, lW, lH );
+		if (lCanvas !== null) {
+			var lW = lCanvas.fDOMElem.getAttribute("width");
+			var lH = lCanvas.fDOMElem.getAttribute("height");
+			lCanvas.ctx.clearRect(0, 0, lW, lH);
 			return true;
 		}
 		return false;
 	},
-	canvasClear: function( aId ) {
-		if ( this.doClear( aId ) ) {
+	canvasClear: function(aId) {
+		if (this.doClear(aId)) {
 			var lData = {
 				id: aId
 			};
-			this.publish( jws.CanvasPlugIn.TT_CLEAR, lData );
+			this.publish(jws.CanvasPlugIn.TT_CLEAR, lData);
 		}
 	},
-	canvasGetBase64: function( aId, aMimeType ) {
+	canvasGetBase64: function(aId, aMimeType) {
 		var lRes = {
 			code: -1,
 			msg: "Ok"
 		};
 		var lCanvas = this.fCanvas[ aId ];
-		if ( lCanvas != null ) {
-			if ( typeof lCanvas.fDOMElem.toDataURL == "function" ) {
+		if (lCanvas != null) {
+			if (typeof lCanvas.fDOMElem.toDataURL == "function") {
 				lRes.code = 0;
 				lRes.encoding = "base64";
-				lRes.data = lCanvas.fDOMElem.toDataURL( aMimeType );
+				lRes.data = lCanvas.fDOMElem.toDataURL(aMimeType);
 			} else {
 				lRes.msg = "Retrieving image data from canvas not (yet) supported by browser.";
 			}
@@ -212,91 +217,91 @@ jws.CanvasPlugIn = {
 		}
 		return lRes;
 	},
-	doBeginPath: function( aId ) {
+	doBeginPath: function(aId) {
 		var lCanvas = this.fCanvas[ aId ];
-		if ( lCanvas != null ) {
+		if (lCanvas != null) {
 			// console.log( "doBeginPath: " + aId);
 			lCanvas.ctx.beginPath();
 			return true;
 		}
 		return false;
 	},
-	canvasBeginPath: function( aId ) {
-		if ( this.doBeginPath( aId ) ) {
+	canvasBeginPath: function(aId) {
+		if (this.doBeginPath(aId)) {
 			var lData = {
 				id: aId
 			};
-			this.publish( jws.CanvasPlugIn.TT_BEGIN_PATH, lData );
+			this.publish(jws.CanvasPlugIn.TT_BEGIN_PATH, lData);
 		}
 	},
-	doMoveTo: function( aId, aX, aY ) {
+	doMoveTo: function(aId, aX, aY) {
 		var lCanvas = this.fCanvas[ aId ];
-		if ( lCanvas != null ) {
+		if (lCanvas != null) {
 			// console.log( "doMoveTo: " + aId + ", x:" + aX + ", y: " + aX );
-			lCanvas.ctx.moveTo( aX, aY );
+			lCanvas.ctx.moveTo(aX, aY);
 			return true;
 		}
 		return false;
 	},
-	canvasMoveTo: function( aId, aX, aY ) {
-		if ( this.doMoveTo( aId, aX, aY ) ) {
+	canvasMoveTo: function(aId, aX, aY) {
+		if (this.doMoveTo(aId, aX, aY)) {
 			var lData = {
 				id: aId,
 				x: aX,
 				y: aY
 			};
-			this.publish( jws.CanvasPlugIn.TT_MOVE_TO, lData );
+			this.publish(jws.CanvasPlugIn.TT_MOVE_TO, lData);
 		}
 	},
-	doLineTo: function( aId, aX, aY ) {
+	doLineTo: function(aId, aX, aY) {
 		var lCanvas = this.fCanvas[ aId ];
-		if ( lCanvas != null ) {
+		if (lCanvas != null) {
 			// console.log( "doLineTo: " + aId + ", x:" + aX + ", y: " + aX );
-			lCanvas.ctx.lineTo( aX, aY );
+			lCanvas.ctx.lineTo(aX, aY);
 			lCanvas.ctx.stroke();
 			return true;
 		}
 		return false;
 	},
-	canvasLineTo: function( aId, aX, aY ) {
-		if ( this.doLineTo( aId, aX, aY ) ) {
+	canvasLineTo: function(aId, aX, aY) {
+		if (this.doLineTo(aId, aX, aY)) {
 			var lData = {
 				id: aId,
 				x: aX,
 				y: aY
 			};
-			this.publish( jws.CanvasPlugIn.TT_LINE_TO, lData );
+			this.publish(jws.CanvasPlugIn.TT_LINE_TO, lData);
 		}
 	},
-	doLine: function( aId, aX1, aY1, aX2, aY2, aOptions ) {
-		if ( undefined == aOptions ) {
-			aOptions = { };
+	doLine: function(aId, aX1, aY1, aX2, aY2, aOptions) {
+		if (undefined == aOptions) {
+			aOptions = {};
 		}
 		var lColor = "black";
-		if ( aOptions.color ) {
+		if (aOptions.color) {
 			lColor = aOptions.color;
 		}
 		var lCanvas = this.fCanvas[ aId ];
-		if ( lCanvas != null ) {
+		if (lCanvas != null) {
 			lCanvas.ctx.beginPath();
-			lCanvas.ctx.moveTo( aX1, aY1 );
+			lCanvas.ctx.moveTo(aX1, aY1);
 			lCanvas.ctx.strokeStyle = lColor;
-			lCanvas.ctx.lineTo( aX2, aY2 );
+			lCanvas.ctx.lineTo(aX2, aY2);
 			lCanvas.ctx.stroke();
 			lCanvas.ctx.closePath();
 			return true;
 		}
 		return false;
 	},
-	canvasLine: function( aId, aX1, aY1, aX2, aY2, aOptions ) {
-		if ( undefined == aOptions ) {
-			aOptions = { };
+	canvasLine: function(aId, aX1, aY1, aX2, aY2, aOptions) {
+		if (undefined == aOptions) {
+			aOptions = {};
 		}
 		var lColor = "black";
-		if ( aOptions.color ) {
+		if (aOptions.color) {
 			lColor = aOptions.color;
 		}
-		if ( this.doLine( aId, aX1, aY1, aX2, aY2, aOptions ) ) {
+		if (this.doLine(aId, aX1, aY1, aX2, aY2, aOptions)) {
 			var lData = {
 				id: aId,
 				x1: aX1,
@@ -305,27 +310,27 @@ jws.CanvasPlugIn = {
 				y2: aY2,
 				color: lColor
 			};
-			this.publish( jws.CanvasPlugIn.TT_LINE, lData );
+			this.publish(jws.CanvasPlugIn.TT_LINE, lData);
 		}
 	},
-	doClosePath: function( aId ) {
+	doClosePath: function(aId) {
 		var lCanvas = this.fCanvas[ aId ];
-		if ( lCanvas != null ) {
+		if (lCanvas != null) {
 			// console.log( "doClosePath" );
 			lCanvas.ctx.closePath();
 			return true;
 		}
 		return false;
 	},
-	canvasClosePath: function( aId ) {
-		if ( this.doClosePath( aId ) ) {
+	canvasClosePath: function(aId) {
+		if (this.doClosePath(aId)) {
 			var lData = {
 				id: aId
 			};
-			this.publish( jws.CanvasPlugIn.TT_CLOSE_PATH, lData );
+			this.publish(jws.CanvasPlugIn.TT_CLOSE_PATH, lData);
 		}
 	},
-	notifyBeginImage: function( aId, aX1, aY1, aMinWidth, aMinHeight, aSelectedImg ) {
+	notifyBeginImage: function(aId, aX1, aY1, aMinWidth, aMinHeight, aSelectedImg) {
 		var lData = {
 			canvasId: aId,
 			x1: aX1,
@@ -334,97 +339,97 @@ jws.CanvasPlugIn = {
 			height: aMinHeight,
 			selectedImg: aSelectedImg
 		};
-		this.publish( this.TT_IMG_BEGIN_IMAGE, lData );
+		this.publish(this.TT_IMG_BEGIN_IMAGE, lData);
 	},
 	// This section is for the widget Image
-	doCanvasBeginImage: function( aId, aPublisher, aX1, aY1, aWidth, aHeight, aSelectedImg ) {
+	doCanvasBeginImage: function(aId, aPublisher, aX1, aY1, aWidth, aHeight, aSelectedImg) {
 		var lCanvas = this.fCanvas[ aId ];
-		if ( lCanvas != null ) {
+		if (lCanvas != null) {
 			var lSrc = "../../res/img/image" + aSelectedImg + ".jpg",
-			lImage = new Image();
-			lImage.setAttribute( "src", lSrc );
-			if ( typeof this.mClientsImages[aPublisher] === "undefined" ) {
+					lImage = new Image();
+			lImage.setAttribute("src", lSrc);
+			if (typeof this.mClientsImages[aPublisher] === "undefined") {
 				this.mClientsImages[aPublisher] = {
 					selectedImage: -1,
-					images: [ ]
+					images: []
 				};
 			}
 
 			var lSelectedImg = this.mClientsImages[aPublisher].images.length;
 			var lId = lSelectedImg + "_" + aPublisher;
-			var lImageLayer = new ImageLayer( lId, lImage, aX1, aY1, aWidth, aHeight );
+			var lImageLayer = new ImageLayer(lId, lImage, aX1, aY1, aWidth, aHeight);
 			this.mClientsImages[aPublisher].selectedImage = lSelectedImg;
-			this.mClientsImages[aPublisher].images.push( lImageLayer );
+			this.mClientsImages[aPublisher].images.push(lImageLayer);
 			var lHistoryLength = this.mHistory.length;
-			if ( lHistoryLength > this.mSteps ) {
-				for ( var lIdx = lHistoryLength; lIdx >= this.mSteps ; lIdx-- ) {
+			if (lHistoryLength > this.mSteps) {
+				for (var lIdx = lHistoryLength; lIdx >= this.mSteps; lIdx--) {
 					this.mHistory.splice(lIdx, 1);
 				}
 			}
-			this.mHistory.push( lImageLayer );
+			this.mHistory.push(lImageLayer);
 			this.mSteps++;
-			this.redraw( aId );
+			this.redraw(aId);
 			return true;
 		}
 		return false;
 	},
-	notifyResize: function( aCanvasId, aX2, aY2 ) {
+	notifyResize: function(aCanvasId, aX2, aY2) {
 		var lData = {
 			canvasId: aCanvasId,
 			x2: aX2,
 			y2: aY2
 		};
-		jws.CanvasPlugIn.publish( this.TT_IMG_MOVE_TO, lData );
+		jws.CanvasPlugIn.publish(this.TT_IMG_MOVE_TO, lData);
 	},
-	doImageResize: function( aId, aPublisher, aX2, aY2 ) {
+	doImageResize: function(aId, aPublisher, aX2, aY2) {
 		var lCanvas = this.fCanvas[ aId ];
-		if ( lCanvas != null ) {
+		if (lCanvas != null) {
 			var lImage = this.mClientsImages[aPublisher].images[ this.mClientsImages[aPublisher].selectedImage ];
-			lImage.resizeImage( aX2, aY2 );
-			this.redraw( aId );
+			lImage.resizeImage(aX2, aY2);
+			this.redraw(aId);
 			return true;
 		}
 		return false;
 	},
-	notifyClearImage: function( aId ) {
+	notifyClearImage: function(aId) {
 		var lData = {
 			canvasId: aId
 		};
-		jws.CanvasPlugIn.publish( this.TT_IMG_CLEAR, lData );
+		jws.CanvasPlugIn.publish(this.TT_IMG_CLEAR, lData);
 	},
-	doClearImage: function( aId ) {
+	doClearImage: function(aId) {
 		var lCanvas = this.fCanvas[ aId ];
-		if ( lCanvas != null ) {
-			var lW = lCanvas.fDOMElem.getAttribute( "width" );
-			var lH = lCanvas.fDOMElem.getAttribute( "height" );
-			lCanvas.ctx.clearRect( 0, 0, lW, lH );
-			this.mHistory = [ ];
+		if (lCanvas != null) {
+			var lW = lCanvas.fDOMElem.getAttribute("width");
+			var lH = lCanvas.fDOMElem.getAttribute("height");
+			lCanvas.ctx.clearRect(0, 0, lW, lH);
+			this.mHistory = [];
 			this.mSteps = 0;
-			this.mClientsImages = { };
+			this.mClientsImages = {};
 			return true;
 		}
 		return false;
 	},
-	notifyUndo: function( aCanvasId ) {
+	notifyUndo: function(aCanvasId) {
 		var lData = {
 			canvasId: aCanvasId
 		};
-		this.publish( this.TT_IMG_UNDO, lData );
+		this.publish(this.TT_IMG_UNDO, lData);
 	},
-	notifyRedo: function( aCanvasId ) {
+	notifyRedo: function(aCanvasId) {
 		var lData = {
 			canvasId: aCanvasId
 		};
-		this.publish( this.TT_IMG_REDO, lData );
+		this.publish(this.TT_IMG_REDO, lData);
 	},
-	undoImageCreate: function( aCanvasId ) {
-		if ( this.mSteps > 0 ) {
-			this.redraw( aCanvasId, --this.mSteps );
+	undoImageCreate: function(aCanvasId) {
+		if (this.mSteps > 0) {
+			this.redraw(aCanvasId, --this.mSteps);
 		}
 	},
-	redoImageCreate: function( aCanvasId ) {
-		if ( this.mSteps < this.mHistory.length ) {
-			this.redraw( aCanvasId, ++this.mSteps );
+	redoImageCreate: function(aCanvasId) {
+		if (this.mSteps < this.mHistory.length) {
+			this.redraw(aCanvasId, ++this.mSteps);
 		}
 	},
 	/*
@@ -434,44 +439,44 @@ jws.CanvasPlugIn = {
 	 * @param aCanvasId The identifier of the canvas
 	 * @param aPublisher The user who is drawing the image
 	 */
-	redraw: function( aCanvasId, aHistoryStep ) {
+	redraw: function(aCanvasId, aHistoryStep) {
 		var lCanvas = this.fCanvas[ aCanvasId ];
-		if ( lCanvas != null ) {
+		if (lCanvas != null) {
 			var lContext = lCanvas.ctx;
-			lContext.clearRect( 0, 0, lCanvas.fDOMElem.getAttribute( "width" ),
-				lCanvas.fDOMElem.getAttribute( "height" ) );
+			lContext.clearRect(0, 0, lCanvas.fDOMElem.getAttribute("width"),
+					lCanvas.fDOMElem.getAttribute("height"));
 			var lEnd = aHistoryStep >= 0 ? aHistoryStep : this.mHistory.length;
-			for ( var lIdx = 0; lIdx < lEnd; lIdx++ ) {
-				this.doRedraw( this.mHistory[lIdx], lContext );
+			for (var lIdx = 0; lIdx < lEnd; lIdx++) {
+				this.doRedraw(this.mHistory[lIdx], lContext);
 			}
 		}
 	},
-	doRedraw: function( aImage, aContext ) {
-		aContext.drawImage( aImage.getCanvas(), 0, 0 );
+	doRedraw: function(aImage, aContext) {
+		aContext.drawImage(aImage.getCanvas(), 0, 0);
 	}
 }
 
-function ImageLayer( aId, aImg, aX1, aY1, aWidth, aHeight ) {
+function ImageLayer(aId, aImg, aX1, aY1, aWidth, aHeight) {
 	this.mX1 = aX1;
 	this.mY1 = aY1;
 	this.mWidth = aWidth;
 	this.mHeight = aHeight;
 	this.mImage = aImg;
 	this.mId = aId;
-	this.mInnerCanvas = document.createElement( 'canvas' );
-	this.mInnerContext = this.mInnerCanvas.getContext( '2d' );
+	this.mInnerCanvas = document.createElement('canvas');
+	this.mInnerContext = this.mInnerCanvas.getContext('2d');
 	this.mInnerCanvas.width = this.mWidth;
 	this.mInnerCanvas.height = this.mHeight;
-	
+
 	this.getId = function( ) {
 		return this.mId;
 	}
 
 	this.redrawImg = function( ) {
 		this.mInnerContext.save();
-		this.mInnerContext.clearRect( 0, 0, this.mWidth, this.mHeight );
+		this.mInnerContext.clearRect(0, 0, this.mWidth, this.mHeight);
 		this.mInnerContext.translate(this.mX1, this.mY1);
-		this.mInnerContext.drawImage( this.mImage, 0, 0, this.mWidth - this.mX1, this.mHeight - this.mY1 );
+		this.mInnerContext.drawImage(this.mImage, 0, 0, this.mWidth - this.mX1, this.mHeight - this.mY1);
 		this.mInnerContext.restore();
 	}
 
@@ -480,7 +485,7 @@ function ImageLayer( aId, aImg, aX1, aY1, aWidth, aHeight ) {
 		return this.mInnerCanvas;
 	}
 
-	this.resizeImage = function( aWidth, aHeight ) {
+	this.resizeImage = function(aWidth, aHeight) {
 		this.mWidth = aWidth;
 		this.mHeight = aHeight;
 		this.mInnerCanvas.width = aWidth;
@@ -496,10 +501,10 @@ function ImageLayer( aId, aImg, aX1, aY1, aWidth, aHeight ) {
 }
 
 // add the JWebSocket Shared Objects PlugIn into the TokenClient class
-jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.CanvasPlugIn );
+jws.oop.addPlugIn(jws.jWebSocketTokenClient, jws.CanvasPlugIn);
 
 // optionally include canvas support for IE8
-if ( jws.isIE ) {
+if (jws.isIE) {
 
 	//  <JasobNoObfs>
 	//
@@ -553,51 +558,51 @@ if ( jws.isIE ) {
 	//
 	//	</JasobNoObfs>
 
-	document.createElement( "canvas" ).getContext || (function() {
+	document.createElement("canvas").getContext || (function() {
 		var s = Math, j = s.round, F = s.sin, G = s.cos, V = s.abs, W = s.sqrt, k = 10, v = k / 2;
 		function X() {
-			return this.context_ || (this.context_ = new H( this ))
+			return this.context_ || (this.context_ = new H(this))
 		}
 		var L = Array.prototype.slice;
-		function Y( b, a ) {
-			var c = L.call( arguments, 2 );
+		function Y(b, a) {
+			var c = L.call(arguments, 2);
 			return function() {
-				return b.apply( a, c.concat( L.call( arguments ) ) )
+				return b.apply(a, c.concat(L.call(arguments)))
 			}
 		}
 		var M = {
-			init: function( b ) {
-				if ( /MSIE/.test( navigator.userAgent ) && !window.opera ) {
+			init: function(b) {
+				if (/MSIE/.test(navigator.userAgent) && !window.opera) {
 					var a = b || document;
-					a.createElement( "canvas" );
-					a.attachEvent( "onreadystatechange", Y( this.init_, this, a ) )
+					a.createElement("canvas");
+					a.attachEvent("onreadystatechange", Y(this.init_, this, a))
 				}
 			},
-			init_: function( b ) {
+			init_: function(b) {
 				b.namespaces.g_vml_ ||
-				b.namespaces.add( "g_vml_", "urn:schemas-microsoft-com:vml", "#default#VML" );
-				b.namespaces.g_o_ || b.namespaces.add( "g_o_", "urn:schemas-microsoft-com:office:office", "#default#VML" );
-				if ( !b.styleSheets.ex_canvas_ ) {
+						b.namespaces.add("g_vml_", "urn:schemas-microsoft-com:vml", "#default#VML");
+				b.namespaces.g_o_ || b.namespaces.add("g_o_", "urn:schemas-microsoft-com:office:office", "#default#VML");
+				if (!b.styleSheets.ex_canvas_) {
 					var a = b.createStyleSheet();
 					a.owningElement.id = "ex_canvas_";
 					a.cssText = "canvas{display:inline-block;overflow:hidden;text-align:left;width:300px;height:150px}g_vml_\\:*{behavior:url(#default#VML)}g_o_\\:*{behavior:url(#default#VML)}"
 				}
-				var c = b.getElementsByTagName( "canvas" ), d = 0;
-				for ( ; d < c.length; d++ )
-					this.initElement( c[d] )
+				var c = b.getElementsByTagName("canvas"), d = 0;
+				for (; d < c.length; d++)
+					this.initElement(c[d])
 			},
-			initElement: function( b ) {
-				if ( !b.getContext ) {
+			initElement: function(b) {
+				if (!b.getContext) {
 					b.getContext = X;
 					b.innerHTML = "";
-					b.attachEvent( "onpropertychange", Z );
-					b.attachEvent( "onresize", $ );
+					b.attachEvent("onpropertychange", Z);
+					b.attachEvent("onresize", $);
 					var a = b.attributes;
-					if ( a.width && a.width.specified )
+					if (a.width && a.width.specified)
 						b.style.width = a.width.nodeValue + "px";
 					else
 						b.width = b.clientWidth;
-					if ( a.height && a.height.specified )
+					if (a.height && a.height.specified)
 						b.style.height = a.height.nodeValue + "px";
 					else
 						b.height = b.clientHeight
@@ -606,9 +611,9 @@ if ( jws.isIE ) {
 			}
 		};
 
-		function Z( b ) {
+		function Z(b) {
 			var a = b.srcElement;
-			switch ( b.propertyName ) {
+			switch (b.propertyName) {
 				case "width":
 					a.style.width = a.attributes.width.nodeValue + "px";
 					a.getContext().clearRect();
@@ -619,38 +624,38 @@ if ( jws.isIE ) {
 					break
 			}
 		}
-		function $( b ) {
+		function $(b) {
 			var a = b.srcElement;
-			if ( a.firstChild ) {
+			if (a.firstChild) {
 				a.firstChild.style.width = a.clientWidth + "px";
 				a.firstChild.style.height = a.clientHeight + "px"
 			}
 		}
 		M.init();
-		var N = [ ], B = 0;
-		for ( ; B < 16; B++ ) {
+		var N = [], B = 0;
+		for (; B < 16; B++) {
 			var C = 0;
-			for ( ; C < 16; C++ )
-				N[B * 16 + C] = B.toString( 16 ) + C.toString( 16 )
+			for (; C < 16; C++)
+				N[B * 16 + C] = B.toString(16) + C.toString(16)
 		}
 		function I() {
-			return[ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
+			return[[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 		}
-		function y( b, a ) {
+		function y(b, a) {
 			var c = I(), d = 0;
-			for ( ; d < 3; d++ ) {
+			for (; d < 3; d++) {
 				var f = 0;
-				for ( ; f < 3; f++ ) {
+				for (; f < 3; f++) {
 					var h = 0, g = 0;
-					for ( ; g < 3; g++ )
+					for (; g < 3; g++)
 						h += b[d][g] * a[g][f];
 					c[d][f] =
-					h
+							h
 				}
 			}
 			return c
 		}
-		function O( b, a ) {
+		function O(b, a) {
 			a.fillStyle = b.fillStyle;
 			a.lineCap = b.lineCap;
 			a.lineJoin = b.lineJoin;
@@ -666,17 +671,17 @@ if ( jws.isIE ) {
 			a.arcScaleY_ = b.arcScaleY_;
 			a.lineScale_ = b.lineScale_
 		}
-		function P( b ) {
+		function P(b) {
 			var a, c = 1;
-			b = String( b );
-			if ( b.substring( 0, 3 ) == "rgb" ) {
-				var d = b.indexOf( "(", 3 ), f = b.indexOf( ")", d +
-					1 ), h = b.substring( d + 1, f ).split( "," );
+			b = String(b);
+			if (b.substring(0, 3) == "rgb") {
+				var d = b.indexOf("(", 3), f = b.indexOf(")", d +
+						1), h = b.substring(d + 1, f).split(",");
 				a = "#";
 				var g = 0;
-				for ( ; g < 3; g++ )
-					a += N[Number( h[g] )];
-				if ( h.length == 4 && b.substr( 3, 1 ) == "a" )
+				for (; g < 3; g++)
+					a += N[Number(h[g])];
+				if (h.length == 4 && b.substr(3, 1) == "a")
 					c = h[3]
 			} else
 				a = b;
@@ -685,8 +690,8 @@ if ( jws.isIE ) {
 				alpha: c
 			}
 		}
-		function aa( b ) {
-			switch ( b ) {
+		function aa(b) {
+			switch (b) {
 				case "butt":
 					return"flat";
 				case "round":
@@ -696,11 +701,11 @@ if ( jws.isIE ) {
 					return"square"
 			}
 		}
-		function H( b ) {
+		function H(b) {
 			this.m_ = I();
-			this.mStack_ = [ ];
-			this.aStack_ = [ ];
-			this.currentPath_ = [ ];
+			this.mStack_ = [];
+			this.aStack_ = [];
+			this.currentPath_ = [];
 			this.fillStyle = this.strokeStyle = "#000";
 			this.lineWidth = 1;
 			this.lineJoin = "miter";
@@ -708,12 +713,12 @@ if ( jws.isIE ) {
 			this.miterLimit = k * 1;
 			this.globalAlpha = 1;
 			this.canvas = b;
-			var a = b.ownerDocument.createElement( "div" );
+			var a = b.ownerDocument.createElement("div");
 			a.style.width = b.clientWidth + "px";
 			a.style.height = b.clientHeight + "px";
 			a.style.overflow = "hidden";
 			a.style.position = "absolute";
-			b.appendChild( a );
+			b.appendChild(a);
 			this.element_ = a;
 			this.lineScale_ = this.arcScaleY_ = this.arcScaleX_ = 1
 		}
@@ -723,37 +728,37 @@ if ( jws.isIE ) {
 		};
 
 		i.beginPath = function() {
-			this.currentPath_ = [ ]
+			this.currentPath_ = []
 		};
 
-		i.moveTo = function( b, a ) {
-			var c = this.getCoords_( b, a );
-			this.currentPath_.push( {
+		i.moveTo = function(b, a) {
+			var c = this.getCoords_(b, a);
+			this.currentPath_.push({
 				type: "moveTo",
 				x: c.x,
 				y: c.y
-			} );
+			});
 			this.currentX_ = c.x;
 			this.currentY_ = c.y
 		};
-		i.lineTo = function( b, a ) {
-			var c = this.getCoords_( b, a );
-			this.currentPath_.push( {
+		i.lineTo = function(b, a) {
+			var c = this.getCoords_(b, a);
+			this.currentPath_.push({
 				type: "lineTo",
 				x: c.x,
 				y: c.y
-			} );
+			});
 			this.currentX_ = c.x;
 			this.currentY_ = c.y
 		};
 
-		i.bezierCurveTo = function( b, a, c, d, f, h ) {
-			var g = this.getCoords_( f, h ), l = this.getCoords_( b, a ), e = this.getCoords_( c, d );
-			Q( this, l, e, g )
+		i.bezierCurveTo = function(b, a, c, d, f, h) {
+			var g = this.getCoords_(f, h), l = this.getCoords_(b, a), e = this.getCoords_(c, d);
+			Q(this, l, e, g)
 		};
 
-		function Q( b, a, c, d ) {
-			b.currentPath_.push( {
+		function Q(b, a, c, d) {
+			b.currentPath_.push({
 				type: "bezierCurveTo",
 				cp1x: a.x,
 				cp1y: a.y,
@@ -761,30 +766,30 @@ if ( jws.isIE ) {
 				cp2y: c.y,
 				x: d.x,
 				y: d.y
-			} );
+			});
 			b.currentX_ = d.x;
 			b.currentY_ = d.y
 		}
-		i.quadraticCurveTo = function( b, a, c, d ) {
-			var f = this.getCoords_( b, a ), h = this.getCoords_( c, d ), g = {
+		i.quadraticCurveTo = function(b, a, c, d) {
+			var f = this.getCoords_(b, a), h = this.getCoords_(c, d), g = {
 				x: this.currentX_ +
-				0.6666666666666666 * (f.x - this.currentX_),
+						0.6666666666666666 * (f.x - this.currentX_),
 				y: this.currentY_ + 0.6666666666666666 * (f.y - this.currentY_)
 			};
 
-			Q( this, g, {
+			Q(this, g, {
 				x: g.x + (h.x - this.currentX_) / 3,
 				y: g.y + (h.y - this.currentY_) / 3
-			}, h )
+			}, h)
 		};
 
-		i.arc = function( b, a, c, d, f, h ) {
+		i.arc = function(b, a, c, d, f, h) {
 			c *= k;
-			var g = h ? "at" : "wa", l = b + G( d ) * c - v, e = a + F( d ) * c - v, m = b + G( f ) * c - v, r = a + F( f ) * c - v;
-			if ( l == m && !h )
+			var g = h ? "at" : "wa", l = b + G(d) * c - v, e = a + F(d) * c - v, m = b + G(f) * c - v, r = a + F(f) * c - v;
+			if (l == m && !h)
 				l += 0.125;
-			var n = this.getCoords_( b, a ), o = this.getCoords_( l, e ), q = this.getCoords_( m, r );
-			this.currentPath_.push( {
+			var n = this.getCoords_(b, a), o = this.getCoords_(l, e), q = this.getCoords_(m, r);
+			this.currentPath_.push({
 				type: g,
 				x: n.x,
 				y: n.y,
@@ -793,45 +798,45 @@ if ( jws.isIE ) {
 				yStart: o.y,
 				xEnd: q.x,
 				yEnd: q.y
-			} )
+			})
 		};
 
-		i.rect = function( b, a, c, d ) {
-			this.moveTo( b,
-				a );
-			this.lineTo( b + c, a );
-			this.lineTo( b + c, a + d );
-			this.lineTo( b, a + d );
+		i.rect = function(b, a, c, d) {
+			this.moveTo(b,
+					a);
+			this.lineTo(b + c, a);
+			this.lineTo(b + c, a + d);
+			this.lineTo(b, a + d);
 			this.closePath()
 		};
 
-		i.strokeRect = function( b, a, c, d ) {
+		i.strokeRect = function(b, a, c, d) {
 			var f = this.currentPath_;
 			this.beginPath();
-			this.moveTo( b, a );
-			this.lineTo( b + c, a );
-			this.lineTo( b + c, a + d );
-			this.lineTo( b, a + d );
+			this.moveTo(b, a);
+			this.lineTo(b + c, a);
+			this.lineTo(b + c, a + d);
+			this.lineTo(b, a + d);
 			this.closePath();
 			this.stroke();
 			this.currentPath_ = f
 		};
 
-		i.fillRect = function( b, a, c, d ) {
+		i.fillRect = function(b, a, c, d) {
 			var f = this.currentPath_;
 			this.beginPath();
-			this.moveTo( b, a );
-			this.lineTo( b + c, a );
-			this.lineTo( b + c, a + d );
-			this.lineTo( b, a + d );
+			this.moveTo(b, a);
+			this.lineTo(b + c, a);
+			this.lineTo(b + c, a + d);
+			this.lineTo(b, a + d);
 			this.closePath();
 			this.fill();
 			this.currentPath_ = f
 		};
 
-		i.createLinearGradient = function( b,
-			a, c, d ) {
-			var f = new D( "gradient" );
+		i.createLinearGradient = function(b,
+				a, c, d) {
+			var f = new D("gradient");
 			f.x0_ = b;
 			f.y0_ = a;
 			f.x1_ = c;
@@ -839,8 +844,8 @@ if ( jws.isIE ) {
 			return f
 		};
 
-		i.createRadialGradient = function( b, a, c, d, f, h ) {
-			var g = new D( "gradientradial" );
+		i.createRadialGradient = function(b, a, c, d, f, h) {
+			var g = new D("gradientradial");
 			g.x0_ = b;
 			g.y0_ = a;
 			g.r0_ = c;
@@ -850,21 +855,21 @@ if ( jws.isIE ) {
 			return g
 		};
 
-		i.drawImage = function( b ) {
+		i.drawImage = function(b) {
 			var a, c, d, f, h, g, l, e, m = b.runtimeStyle.width, r = b.runtimeStyle.height;
 			b.runtimeStyle.width = "auto";
 			b.runtimeStyle.height = "auto";
 			var n = b.width, o = b.height;
 			b.runtimeStyle.width = m;
 			b.runtimeStyle.height = r;
-			if ( arguments.length == 3 ) {
+			if (arguments.length == 3) {
 				a = arguments[1];
 				c = arguments[2];
 				h = g = 0;
 				l = d = n;
 				e = f = o
-			} else if ( arguments.length ==
-				5 ) {
+			} else if (arguments.length ==
+					5) {
 				a = arguments[1];
 				c = arguments[2];
 				d = arguments[3];
@@ -872,7 +877,7 @@ if ( jws.isIE ) {
 				h = g = 0;
 				l = n;
 				e = o
-			} else if ( arguments.length == 9 ) {
+			} else if (arguments.length == 9) {
 				h = arguments[1];
 				g = arguments[2];
 				l = arguments[3];
@@ -882,28 +887,28 @@ if ( jws.isIE ) {
 				d = arguments[7];
 				f = arguments[8]
 			} else
-				throw Error( "Invalid number of arguments" );
-			var q = this.getCoords_( a, c ), t = [ ];
-			t.push( " <g_vml_:group", ' coordsize="', k * 10, ",", k * 10, '"', ' coordorigin="0,0"', ' style="width:', 10, "px;height:", 10, "px;position:absolute;" );
-			if ( this.m_[0][0] != 1 || this.m_[0][1] ) {
-				var E = [ ];
-				E.push( "M11=",
-					this.m_[0][0], ",", "M12=", this.m_[1][0], ",", "M21=", this.m_[0][1], ",", "M22=", this.m_[1][1], ",", "Dx=", j( q.x / k ), ",", "Dy=", j( q.y / k ), "" );
-				var p = q, z = this.getCoords_( a + d, c ), w = this.getCoords_( a, c + f ), x = this.getCoords_( a + d, c + f );
-				p.x = s.max( p.x, z.x, w.x, x.x );
-				p.y = s.max( p.y, z.y, w.y, x.y );
-				t.push( "padding:0 ", j( p.x / k ), "px ", j( p.y / k ), "px 0;filter:progid:DXImageTransform.Microsoft.Matrix(", E.join( "" ), ", sizingmethod='clip');" )
+				throw Error("Invalid number of arguments");
+			var q = this.getCoords_(a, c), t = [];
+			t.push(" <g_vml_:group", ' coordsize="', k * 10, ",", k * 10, '"', ' coordorigin="0,0"', ' style="width:', 10, "px;height:", 10, "px;position:absolute;");
+			if (this.m_[0][0] != 1 || this.m_[0][1]) {
+				var E = [];
+				E.push("M11=",
+						this.m_[0][0], ",", "M12=", this.m_[1][0], ",", "M21=", this.m_[0][1], ",", "M22=", this.m_[1][1], ",", "Dx=", j(q.x / k), ",", "Dy=", j(q.y / k), "");
+				var p = q, z = this.getCoords_(a + d, c), w = this.getCoords_(a, c + f), x = this.getCoords_(a + d, c + f);
+				p.x = s.max(p.x, z.x, w.x, x.x);
+				p.y = s.max(p.y, z.y, w.y, x.y);
+				t.push("padding:0 ", j(p.x / k), "px ", j(p.y / k), "px 0;filter:progid:DXImageTransform.Microsoft.Matrix(", E.join(""), ", sizingmethod='clip');")
 			} else
-				t.push( "top:", j( q.y / k ), "px;left:", j( q.x / k ), "px;" );
-			t.push( ' ">', '<g_vml_:image src="', b.src,
-				'"', ' style="width:', k * d, "px;", " height:", k * f, 'px;"', ' cropleft="', h / n, '"', ' croptop="', g / o, '"', ' cropright="', (n - h - l) / n, '"', ' cropbottom="', (o - g - e) / o, '"', " />", "</g_vml_:group>" );
-			this.element_.insertAdjacentHTML( "BeforeEnd", t.join( "" ) )
+				t.push("top:", j(q.y / k), "px;left:", j(q.x / k), "px;");
+			t.push(' ">', '<g_vml_:image src="', b.src,
+					'"', ' style="width:', k * d, "px;", " height:", k * f, 'px;"', ' cropleft="', h / n, '"', ' croptop="', g / o, '"', ' cropright="', (n - h - l) / n, '"', ' cropbottom="', (o - g - e) / o, '"', " />", "</g_vml_:group>");
+			this.element_.insertAdjacentHTML("BeforeEnd", t.join(""))
 		};
 
-		i.stroke = function( b ) {
-			var a = [ ], c = P( b ? this.fillStyle : this.strokeStyle ), d = c.color, f = c.alpha * this.globalAlpha;
-			a.push( "<g_vml_:shape", ' filled="', !!b, '"', ' style="position:absolute;width:', 10, "px;height:", 10, 'px;"', ' coordorigin="0 0" coordsize="', k * 10, " ", k * 10, '"', ' stroked="',
-				!b, '"', ' path="' );
+		i.stroke = function(b) {
+			var a = [], c = P(b ? this.fillStyle : this.strokeStyle), d = c.color, f = c.alpha * this.globalAlpha;
+			a.push("<g_vml_:shape", ' filled="', !!b, '"', ' style="position:absolute;width:', 10, "px;height:", 10, 'px;"', ' coordorigin="0 0" coordsize="', k * 10, " ", k * 10, '"', ' stroked="',
+					!b, '"', ' path="');
 			var h = {
 				x: null,
 				y: null
@@ -911,56 +916,56 @@ if ( jws.isIE ) {
 				x: null,
 				y: null
 			}, l = 0;
-			for ( ; l < this.currentPath_.length; l++ ) {
+			for (; l < this.currentPath_.length; l++) {
 				var e = this.currentPath_[l];
-				switch ( e.type ) {
+				switch (e.type) {
 					case "moveTo":
-						a.push( " m ", j( e.x ), ",", j( e.y ) );
+						a.push(" m ", j(e.x), ",", j(e.y));
 						break;
 					case "lineTo":
-						a.push( " l ", j( e.x ), ",", j( e.y ) );
+						a.push(" l ", j(e.x), ",", j(e.y));
 						break;
 					case "close":
-						a.push( " x " );
+						a.push(" x ");
 						e = null;
 						break;
 					case "bezierCurveTo":
-						a.push( " c ", j( e.cp1x ), ",", j( e.cp1y ), ",", j( e.cp2x ), ",", j( e.cp2y ), ",", j( e.x ), ",", j( e.y ) );
+						a.push(" c ", j(e.cp1x), ",", j(e.cp1y), ",", j(e.cp2x), ",", j(e.cp2y), ",", j(e.x), ",", j(e.y));
 						break;
 					case "at":
 					case "wa":
-						a.push( " ", e.type, " ", j( e.x - this.arcScaleX_ * e.radius ), ",", j( e.y - this.arcScaleY_ * e.radius ),
-							" ", j( e.x + this.arcScaleX_ * e.radius ), ",", j( e.y + this.arcScaleY_ * e.radius ), " ", j( e.xStart ), ",", j( e.yStart ), " ", j( e.xEnd ), ",", j( e.yEnd ) );
+						a.push(" ", e.type, " ", j(e.x - this.arcScaleX_ * e.radius), ",", j(e.y - this.arcScaleY_ * e.radius),
+								" ", j(e.x + this.arcScaleX_ * e.radius), ",", j(e.y + this.arcScaleY_ * e.radius), " ", j(e.xStart), ",", j(e.yStart), " ", j(e.xEnd), ",", j(e.yEnd));
 						break
 				}
-				if ( e ) {
-					if ( h.x == null || e.x < h.x )
+				if (e) {
+					if (h.x == null || e.x < h.x)
 						h.x = e.x;
-					if ( g.x == null || e.x > g.x )
+					if (g.x == null || e.x > g.x)
 						g.x = e.x;
-					if ( h.y == null || e.y < h.y )
+					if (h.y == null || e.y < h.y)
 						h.y = e.y;
-					if ( g.y == null || e.y > g.y )
+					if (g.y == null || e.y > g.y)
 						g.y = e.y
 				}
 			}
-			a.push( ' ">' );
-			if ( b )
-				if ( typeof this.fillStyle == "object" ) {
+			a.push(' ">');
+			if (b)
+				if (typeof this.fillStyle == "object") {
 					var m = this.fillStyle, r = 0, n = {
 						x: 0,
 						y: 0
 					}, o = 0, q = 1;
-					if ( m.type_ == "gradient" ) {
-						var t = m.x1_ / this.arcScaleX_, E = m.y1_ / this.arcScaleY_, p = this.getCoords_( m.x0_ / this.arcScaleX_, m.y0_ / this.arcScaleY_ ),
-						z = this.getCoords_( t, E );
-						r = Math.atan2( z.x - p.x, z.y - p.y ) * 180 / Math.PI;
-						if ( r < 0 )
+					if (m.type_ == "gradient") {
+						var t = m.x1_ / this.arcScaleX_, E = m.y1_ / this.arcScaleY_, p = this.getCoords_(m.x0_ / this.arcScaleX_, m.y0_ / this.arcScaleY_),
+								z = this.getCoords_(t, E);
+						r = Math.atan2(z.x - p.x, z.y - p.y) * 180 / Math.PI;
+						if (r < 0)
 							r += 360;
-						if ( r < 1.0E-6 )
+						if (r < 1.0E-6)
 							r = 0
 					} else {
-						var p = this.getCoords_( m.x0_, m.y0_ ), w = g.x - h.x, x = g.y - h.y;
+						var p = this.getCoords_(m.x0_, m.y0_), w = g.x - h.x, x = g.y - h.y;
 						n = {
 							x: (p.x - h.x) / w,
 							y: (p.y - h.y) / x
@@ -968,45 +973,45 @@ if ( jws.isIE ) {
 
 						w /= this.arcScaleX_ * k;
 						x /= this.arcScaleY_ * k;
-						var R = s.max( w, x );
+						var R = s.max(w, x);
 						o = 2 * m.r0_ / R;
 						q = 2 * m.r1_ / R - o
 					}
 					var u = m.colors_;
-					u.sort( function( ba, ca ) {
-						return ba.offset - ca.offset
-					} );
-					var J = u.length, da = u[0].color, ea = u[J - 1].color, fa = u[0].alpha * this.globalAlpha, ga = u[J - 1].alpha * this.globalAlpha, S = [ ], l = 0;
-					for ( ; l < J; l++ ) {
+					u.sort(function(ba, ca) {
+						return ba.offset - ca.offset;
+					});
+					var J = u.length, da = u[0].color, ea = u[J - 1].color, fa = u[0].alpha * this.globalAlpha, ga = u[J - 1].alpha * this.globalAlpha, S = [], l = 0;
+					for (; l < J; l++) {
 						var T = u[l];
-						S.push( T.offset * q +
-							o + " " + T.color )
+						S.push(T.offset * q +
+								o + " " + T.color)
 					}
-					a.push( '<g_vml_:fill type="', m.type_, '"', ' method="none" focus="100%"', ' color="', da, '"', ' color2="', ea, '"', ' colors="', S.join( "," ), '"', ' opacity="', ga, '"', ' g_o_:opacity2="', fa, '"', ' angle="', r, '"', ' focusposition="', n.x, ",", n.y, '" />' )
+					a.push('<g_vml_:fill type="', m.type_, '"', ' method="none" focus="100%"', ' color="', da, '"', ' color2="', ea, '"', ' colors="', S.join(","), '"', ' opacity="', ga, '"', ' g_o_:opacity2="', fa, '"', ' angle="', r, '"', ' focusposition="', n.x, ",", n.y, '" />')
 				} else
-					a.push( '<g_vml_:fill color="', d, '" opacity="', f, '" />' );
+					a.push('<g_vml_:fill color="', d, '" opacity="', f, '" />');
 			else {
 				var K = this.lineScale_ * this.lineWidth;
-				if ( K < 1 )
+				if (K < 1)
 					f *= K;
-				a.push( "<g_vml_:stroke", ' opacity="', f, '"', ' joinstyle="', this.lineJoin, '"', ' miterlimit="', this.miterLimit, '"', ' endcap="', aa( this.lineCap ),
-					'"', ' weight="', K, 'px"', ' color="', d, '" />' )
+				a.push("<g_vml_:stroke", ' opacity="', f, '"', ' joinstyle="', this.lineJoin, '"', ' miterlimit="', this.miterLimit, '"', ' endcap="', aa(this.lineCap),
+						'"', ' weight="', K, 'px"', ' color="', d, '" />')
 			}
-			a.push( "</g_vml_:shape>" );
-			this.element_.insertAdjacentHTML( "beforeEnd", a.join( "" ) )
+			a.push("</g_vml_:shape>");
+			this.element_.insertAdjacentHTML("beforeEnd", a.join(""))
 		};
 
 		i.fill = function() {
-			this.stroke( true )
+			this.stroke(true)
 		};
 
 		i.closePath = function() {
-			this.currentPath_.push( {
+			this.currentPath_.push({
 				type: "close"
-			} )
+			})
 		};
 
-		i.getCoords_ = function( b, a ) {
+		i.getCoords_ = function(b, a) {
 			var c = this.m_;
 			return{
 				x: k * (b * c[0][0] + a * c[1][0] + c[2][0]) - v,
@@ -1015,59 +1020,59 @@ if ( jws.isIE ) {
 		};
 
 		i.save = function() {
-			var b = { };
+			var b = {};
 
-			O( this, b );
-			this.aStack_.push( b );
-			this.mStack_.push( this.m_ );
-			this.m_ = y( I(), this.m_ )
+			O(this, b);
+			this.aStack_.push(b);
+			this.mStack_.push(this.m_);
+			this.m_ = y(I(), this.m_)
 		};
 
 		i.restore = function() {
-			O( this.aStack_.pop(),
-				this );
+			O(this.aStack_.pop(),
+					this);
 			this.m_ = this.mStack_.pop()
 		};
 
-		function ha( b ) {
+		function ha(b) {
 			var a = 0;
-			for ( ; a < 3; a++ ) {
+			for (; a < 3; a++) {
 				var c = 0;
-				for ( ; c < 2; c++ )
-					if ( !isFinite( b[a][c] ) || isNaN( b[a][c] ) )
+				for (; c < 2; c++)
+					if (!isFinite(b[a][c]) || isNaN(b[a][c]))
 						return false
 			}
 			return true
 		}
-		function A( b, a, c ) {
-			if ( !!ha( a ) ) {
+		function A(b, a, c) {
+			if (!!ha(a)) {
 				b.m_ = a;
-				if ( c )
-					b.lineScale_ = W( V( a[0][0] * a[1][1] - a[0][1] * a[1][0] ) )
+				if (c)
+					b.lineScale_ = W(V(a[0][0] * a[1][1] - a[0][1] * a[1][0]))
 			}
 		}
-		i.translate = function( b, a ) {
-			A( this, y( [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ b, a, 1 ] ], this.m_ ), false )
+		i.translate = function(b, a) {
+			A(this, y([[1, 0, 0], [0, 1, 0], [b, a, 1]], this.m_), false)
 		};
 
-		i.rotate = function( b ) {
-			var a = G( b ), c = F( b );
-			A( this, y( [ [ a, c, 0 ], [ -c, a, 0 ], [ 0, 0, 1 ] ], this.m_ ), false )
+		i.rotate = function(b) {
+			var a = G(b), c = F(b);
+			A(this, y([[a, c, 0], [-c, a, 0], [0, 0, 1]], this.m_), false)
 		};
 
-		i.scale = function( b, a ) {
+		i.scale = function(b, a) {
 			this.arcScaleX_ *= b;
 			this.arcScaleY_ *= a;
-			A( this, y( [ [ b, 0, 0 ], [ 0, a,
-				0 ], [ 0, 0, 1 ] ], this.m_ ), true )
+			A(this, y([[b, 0, 0], [0, a,
+					0], [0, 0, 1]], this.m_), true)
 		};
 
-		i.transform = function( b, a, c, d, f, h ) {
-			A( this, y( [ [ b, a, 0 ], [ c, d, 0 ], [ f, h, 1 ] ], this.m_ ), true )
+		i.transform = function(b, a, c, d, f, h) {
+			A(this, y([[b, a, 0], [c, d, 0], [f, h, 1]], this.m_), true)
 		};
 
-		i.setTransform = function( b, a, c, d, f, h ) {
-			A( this, [ [ b, a, 0 ], [ c, d, 0 ], [ f, h, 1 ] ], true )
+		i.setTransform = function(b, a, c, d, f, h) {
+			A(this, [[b, a, 0], [c, d, 0], [f, h, 1]], true)
 		};
 
 		i.clip = function() {
@@ -1080,27 +1085,26 @@ if ( jws.isIE ) {
 			return new U
 		};
 
-		function D( b ) {
+		function D(b) {
 			this.type_ = b;
 			this.r1_ = this.y1_ = this.x1_ = this.r0_ = this.y0_ = this.x0_ = 0;
-			this.colors_ = [ ]
+			this.colors_ = []
 		}
-		D.prototype.addColorStop = function( b, a ) {
-			a = P( a );
-			this.colors_.push( {
+		D.prototype.addColorStop = function(b, a) {
+			a = P(a);
+			this.colors_.push({
 				offset: b,
 				color: a.color,
 				alpha: a.alpha
-			} )
+			})
 		};
 
 		function U() {
 		}
-		G_vmlCanvasManager =
-		M;
+		G_vmlCanvasManager = M;
 		CanvasRenderingContext2D = H;
 		CanvasGradient = D;
-		CanvasPattern = U
+		CanvasPattern = U;
 	})();
 
 }

@@ -34,7 +34,7 @@
 /* STATUSBAR */
 #demo_box_statusbar{
 	right: 0px;
-    width: 97px !important;
+    /*width: 97px !important;*/
     min-width: 97px !important;
     position: absolute !important;
 	margin-top: 76px;

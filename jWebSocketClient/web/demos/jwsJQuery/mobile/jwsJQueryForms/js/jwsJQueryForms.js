@@ -21,9 +21,9 @@
  * @author vbarzana
  */
 
-w = { };
+w = {};
 
-$.widget( "jws.pager", {
+$.widget("jws.pager", {
 	_init: function( ) {
 		// ------------- VARIABLES -------------
 		// Number of elements per page
@@ -32,12 +32,12 @@ $.widget( "jws.pager", {
 		this.mMaxPages = 0;
 
 		// ------------- DOM ELEMENTS -------------
-		this.eBtnNext = this.element.find( "#pager #btn_next" );
-		this.eBtnPrev = this.element.find( "#pager #btn_prev" );
-		this.eBtnFirst = this.element.find( "#pager #btn_first" );
-		this.eBtnLast = this.element.find( "#pager #btn_last" );
-		this.eCurrPage = this.element.find( "#page_counter .current_page" );
-		this.eMaxPages = this.element.find( "#page_counter .max_pages" );
+		this.eBtnNext = this.element.find("#pager #btn_next");
+		this.eBtnPrev = this.element.find("#pager #btn_prev");
+		this.eBtnFirst = this.element.find("#pager #btn_first");
+		this.eBtnLast = this.element.find("#pager #btn_last");
+		this.eCurrPage = this.element.find("#page_counter .current_page");
+		this.eMaxPages = this.element.find("#page_counter .max_pages");
 
 		// Keeping a reference of the widget, when a websocket message
 		// comes from the server the scope "this" doesnt exist anymore
@@ -51,94 +51,93 @@ $.widget( "jws.pager", {
 	 **/
 	registerEvents: function( ) {
 		// Registering click events of DOM elements
-		w.pager.eBtnNext.click( w.pager.nextPage );
-		w.pager.eBtnPrev.click( w.pager.prevPage );
-		w.pager.eBtnFirst.click( w.pager.firstPage );
-		w.pager.eBtnLast.click( w.pager.lastPage );
+		w.pager.eBtnNext.click(w.pager.nextPage);
+		w.pager.eBtnPrev.click(w.pager.prevPage);
+		w.pager.eBtnFirst.click(w.pager.firstPage);
+		w.pager.eBtnLast.click(w.pager.lastPage);
 		// The same events should be registered as Touch events
-		w.pager.eBtnNext.live( "touchend", w.pager.nextPage );
-		w.pager.eBtnPrev.live( "touchend", w.pager.prevPage );
-		w.pager.eBtnFirst.live( "touchend", w.pager.firstPage );
-		w.pager.eBtnLast.live( "touchend", w.pager.lastPage );
+		w.pager.eBtnNext.live("touchend", w.pager.nextPage);
+		w.pager.eBtnPrev.live("touchend", w.pager.prevPage);
+		w.pager.eBtnFirst.live("touchend", w.pager.firstPage);
+		w.pager.eBtnLast.live("touchend", w.pager.lastPage);
 		// This is the standard way to listen all incoming messages from the 
 		// server using jWebSocket jQuery Plug-in
-		$.jws.bind( "all:all", w.pager.onMessage );
+		$.jws.bind("all:all", w.pager.onMessage);
 	},
 	/**
 	 * Executed every time the server sends a message to the client
 	 * @param aEvent
 	 * @param aToken
 	 **/
-	onMessage: function( aEvent, aToken ) {
+	onMessage: function(aEvent, aToken) {
 		//		console.log( "onmessage pager" );
 		//		console.log( aToken );
-		if ( aToken ) {
+		if (aToken) {
 			// is it a response from a previous request of this client?
-			if ( aToken.type == "response" ) {
+			if (aToken.type === "response") {
 
 				// If anything went wrong in the server show information error
-				if ( aToken.code == -1 ) {
-					jwsDialog( aToken.msg, "jWebSocket error", true, null, null, "error" );
+				if (aToken.code === -1) {
+					jwsDialog(aToken.msg, "jWebSocket error", true, null, null, "error");
 				}
 			}
 		}
 	},
-	loadPage: function( pageNumber ) {
+	loadPage: function(pageNumber) {
 		var lArgs = {
 			pagesize: w.pager.mPageSize,
 			page: pageNumber - 1
-		};
-
-		var lCallbacks = {
-			success: function( aToken ) {
+		},
+		lCallbacks = {
+			success: function(aToken) {
 				w.pager.mMaxPages = aToken.maxpages;
-				w.pager.eMaxPages.text( aToken.maxpages );
-				w.pager.eCurrPage.text( aToken.currentpage + 1 );
+				w.pager.eMaxPages.text(aToken.maxpages);
+				w.pager.eCurrPage.text(aToken.currentpage + 1);
 				w.pager.mCurrPage = aToken.currentpage + 1;
-				$( w.pager ).trigger( "pageChange", aToken );
+				$(w.pager).trigger("pageChange", aToken);
 				// sometimes in IE7 the text is not correctly shown and if you 
 				// click in the document or press any key this problem is solved ;)
-				if ( jws.isIE_LE7() ) {
-					$( document ).click();
-					$( document ).click();
+				if (jws.isIE_LE7()) {
+					$(document).click();
+					$(document).click();
 				}
 			}
 		};
 
-		$.jws.send( w.forms.NS, "getpage", lArgs, lCallbacks );
+		$.jws.send(w.forms.NS, "getpage", lArgs, lCallbacks);
 
 	},
 	nextPage: function( ) {
-		if ( w.pager.mCurrPage < w.pager.mMaxPages ) {
-			w.pager.loadPage( ++w.pager.mCurrPage );
+		if (w.pager.mCurrPage < w.pager.mMaxPages) {
+			w.pager.loadPage(++w.pager.mCurrPage);
 		}
 	},
 	prevPage: function( ) {
-		if ( w.pager.mCurrPage > 1 ) {
-			w.pager.loadPage( --w.pager.mCurrPage );
+		if (w.pager.mCurrPage > 1) {
+			w.pager.loadPage(--w.pager.mCurrPage);
 		}
 	},
 	firstPage: function( ) {
-		if ( w.pager.mCurrPage != 1 ) {
+		if (w.pager.mCurrPage !== 1) {
 			w.pager.mCurrPage = 1;
-			w.pager.loadPage( 1 );
+			w.pager.loadPage(1);
 		}
 	},
 	lastPage: function( ) {
-		if ( w.pager.mCurrPage != w.pager.mMaxPages ) {
+		if (w.pager.mCurrPage !== w.pager.mMaxPages) {
 			w.pager.mCurrPage = w.pager.mMaxPages;
-			w.pager.loadPage( w.pager.mMaxPages );
+			w.pager.loadPage(w.pager.mMaxPages);
 		}
 	},
 	destroy: function( ) {
 		w.pager.mMaxPages = 0;
 		w.pager.mCurrPage = 1;
-		w.pager.eMaxPages.text( 0 );
-		w.pager.eCurrPage.text( 0 );
+		w.pager.eMaxPages.text(0);
+		w.pager.eCurrPage.text(0);
 	}
-} );
+});
 
-$.widget( "jws.forms", {
+$.widget("jws.forms", {
 	_init: function( ) {
 		// ------------- VARIABLES -------------
 		this.NS = jws.NS_BASE + ".plugins.jquerydemo";
@@ -146,11 +145,11 @@ $.widget( "jws.forms", {
 		this.mCountNewUsers = 0;
 
 		// ------------- DOM ELEMENTS -------------
-		this.eUsersList = this.element.find( "#users_list #list" );
-		this.eClientStatus = $( ".client_status" );
-		this.eClientId = $( ".client_id" );
-		this.eBtnReset = $( ".reset_default" );
-		this.eNewUsersCounter = this.element.find( "#new_users" );
+		this.eUsersList = this.element.find("#users_list #list");
+		this.eClientStatus = $(".client_status");
+		this.eClientId = $(".client_id");
+		this.eBtnReset = $(".reset_default");
+		this.eNewUsersCounter = this.element.find("#new_users");
 
 		// ----------- DEFAULT MESSAGES ---------
 		this.MSG_NOTCONNECTED = "Sorry, you are not connected to the " +
@@ -170,147 +169,174 @@ $.widget( "jws.forms", {
 	registerEvents: function( ) {
 		// This is the standard way to listen all incoming messages from the 
 		// server using jWebSocket jQuery Plug-in
-		$.jws.bind( {
-			"open": w.forms.login,
-			"close": w.forms.onClose
-		} );
-		w.forms.eBtnReset.click( function() {
-			$.jws.send( w.forms.NS, "reset" );
-		} );
+		$.jws.bind({
+			open: function() {
+				w.forms.eClientStatus.attr("class",
+						"client_status online").text("connected");
+			},
+			close: w.forms.onClose
+		});
+
+		// Open jWebSocket connection using jQueryMobile Plug-in
+		// Every when a new message comes from the server, jQuery plug-in
+		// fires an event with the structure "namespace:tokentype"
+		$.jws.bind("welcome", function(aEvt, aToken) {
+			w.forms.eClientId.text("Client-ID: " + aToken.sourceId);
+			if (aToken.username === "anonymous") {
+				$.jws.getConnection().systemLogon(jws.DEMO_ROOT_LOGINNAME, jws.DEMO_ROOT_PASSWORD);
+			} else {
+				$.jws.trigger(w.forms.NS_SYSTEM + ":logon", aToken);
+			}
+		});
+
+		$.jws.bind(w.forms.NS_SYSTEM + ":broadcastToSharedSession", function(aEvt, aToken) {
+			var lToken = aToken.data;
+			if (lToken) {
+				if (lToken.reqType === "logon") {
+					$.jws.trigger(w.forms.NS_SYSTEM + ":logon", lToken);
+				}
+				else if (lToken.reqType === "logoff") {
+					w.forms.onLoggedOff();
+				}
+			}
+		});
+
+		$.jws.bind(w.forms.NS_SYSTEM + ":logon", function(aEvt, aToken) {
+			w.forms.login(aToken);
+		});
+		$.jws.bind("logon", function(aEvt, aToken) {
+			w.forms.login(aToken);
+		});
+		w.forms.eBtnReset.click(function() {
+			$.jws.send(w.forms.NS, "reset");
+		});
 
 		w.forms.eNewUsersCounter.hide( );
-		w.forms.eNewUsersCounter.click( w.forms.userCounterClick );
-		$.jws.bind( "all:all", w.forms.onMessage );
-		$.jws.bind( w.forms.NS + ":userdeleted", w.forms.userDeleted );
-		$.jws.bind( w.forms.NS + ":usercreated", w.forms.userCreated );
-		$.jws.bind( w.forms.NS + ":resetNotification", w.forms.resetNotification );
-		$( w.pager ).bind( "pageChange", w.forms.usersReceived );
+		w.forms.eNewUsersCounter.click(w.forms.userCounterClick);
+		$.jws.bind("all:all", w.forms.onMessage);
+		$.jws.bind(w.forms.NS + ":userdeleted", w.forms.userDeleted);
+		$.jws.bind(w.forms.NS + ":usercreated", w.forms.userCreated);
+		$.jws.bind(w.forms.NS + ":resetNotification", w.forms.resetNotification);
+		$(w.pager).bind("pageChange", w.forms.usersReceived);
 	},
 	registerToDemo: function( ) {
 		// Sending a register token to register in the broadcasting 
 		// clients list of the demo
-		$.jws.send( w.forms.NS, "register" );
+		$.jws.send(w.forms.NS, "register");
 	},
 	unregisterFromDemo: function( ) {
-		$.jws.send( w.forms.NS, "unregister" );
+		$.jws.send(w.forms.NS, "unregister");
 	},
-	login: function( aToken ) {
-		w.forms.eClientId.text( "Client-ID: " + aToken.sourceId );
-		w.forms.eClientStatus.attr( "class",
-				"client_status online" ).text( "connected" );
-		$.jws.send( w.forms.NS_SYSTEM, "login", {
-			username: jws.GUEST_USER_LOGINNAME,
-			password: jws.GUEST_USER_PASSWORD
-		}, {
-			// Authenticated successfully, handle statusbar information
-			success: function( aToken ) {
-				w.forms.registerToDemo( );
-				w.pager.loadPage( w.pager.mCurrPage );
-				w.forms.eClientId.text( "Client-ID: " + aToken.sourceId );
-				w.forms.eClientStatus.attr( "class",
-						"client_status authenticated" ).text( "authenticated" );
-			}
-		} );
+	login: function(aToken) {
+		w.forms.registerToDemo( );
+		w.pager.loadPage(w.pager.mCurrPage);
+		w.forms.eClientStatus.attr("class",
+				"client_status authenticated").html("authenticated as: <b>" + aToken.username + "</b>");
 	},
 	onClose: function( ) {
-		w.forms.eClientId.text( "Client-ID: - " );
-		w.forms.eClientStatus.attr( "class",
-				"client_status offline" ).text( "disconnected" );
+		w.forms.eClientId.text("Client-ID: - ");
+		w.forms.eClientStatus.attr("class",
+				"client_status offline").text("disconnected");
 		w.forms.destroy( );
+	},
+	onLoggedOff: function( ) {
+		w.forms.eClientStatus.attr("class",
+				"client_status online").text("connected");
 	},
 	/**
 	 * Executed every time the server sends a message to the client
 	 * @param aEvent
 	 * @param aToken
 	 **/
-	onMessage: function( aEvent, aToken ) {
-		if ( aToken ) {
+	onMessage: function(aEvent, aToken) {
+		if (aToken) {
 			// is it a response from a previous request of this client?
-			if ( aToken.type == "response" ) {
+			if (aToken.type === "response") {
 				// When the list comes update the listview
-				if ( aToken.reqType == "getall" ) {
-					w.forms.usersReceived( aToken );
+				if (aToken.reqType === "getall") {
+					w.forms.usersReceived(aToken);
 				}
 			}
 		}
 	},
-	userCreated: function( aEvt, aToken ) {
+	userCreated: function(aEvt, aToken) {
 		w.forms.mCountNewUsers++;
-		w.forms.eNewUsersCounter.show( ).text( "New users: " + w.forms.mCountNewUsers );
+		w.forms.eNewUsersCounter.show( ).text("New users: " + w.forms.mCountNewUsers);
 	},
-	usersReceived: function( aEvt, aToken ) {
+	usersReceived: function(aEvt, aToken) {
 		w.forms.removeNoElementsClass( );
 		w.forms.clearList( );
-		var lUsers = aToken.users;
-		for ( var i = 0; end = lUsers.length, i < end; i++ ) {
-			w.forms.addUserToList( lUsers[ i ] );
+		var lUsers = aToken.users,
+				lEnd = lUsers.length, lIdx;
+		for (lIdx = 0; lIdx < lEnd; lIdx++) {
+			w.forms.addUserToList(lUsers[ lIdx ]);
 		}
-		if ( lUsers.length == 0 ) {
+		if (lUsers.length === 0) {
 			w.forms.addNoElementsClass( );
 		}
-		if ( w.pager.mCurrPage == w.pager.mMaxPages ) {
+		if (w.pager.mCurrPage === w.pager.mMaxPages) {
 			w.forms.mCountNewUsers = 0;
 			w.forms.eNewUsersCounter
-					.text( w.forms.mCountNewUsers ).hide( );
+					.text(w.forms.mCountNewUsers).hide( );
 		}
-		w.forms.eUsersList.listview( 'refresh' );
+		w.forms.eUsersList.listview('refresh');
 	},
-	resetNotification: function( aEvt, aToken ) {
-		w.pager.loadPage( w.pager.mCurrPage );
+	resetNotification: function(aEvt, aToken) {
+		w.pager.loadPage(w.pager.mCurrPage);
 	},
-	addUserToList: function( aUser ) {
-		var lElement = $( "<li/>" ).attr( "id", aUser.username );
-		var lSplitData = $( "<a/>" );
-		lSplitData.append( $( "<h3>" + aUser.username + "</h3>" ) );
-		lSplitData.append( $( "<p>Name: <strong>" + aUser.name + "&nbsp;" + aUser.lastname + "</strong></p>" ) );
-		lSplitData.append( $( "<p class='ui-li-aside'><strong>" + aUser.mail + "</strong></p>" ) );
-		var lDeleteButton = $( "<a data-theme='b' data-icon='delete' title='Delete'/>" );
-		lDeleteButton.click( function( ) {
-			w.forms.deleteUser( aUser.username );
-		} );
-		lDeleteButton.live( "touchend", function( ) {
-			w.forms.deleteUser( aUser.username );
-		} );
+	addUserToList: function(aUser) {
+		var lElement = $("<li/>").attr("id", aUser.username);
+		var lSplitData = $("<a/>");
+		lSplitData.append($("<h3>" + aUser.username + "</h3>"));
+		lSplitData.append($("<p>Name: <strong>" + aUser.name + "&nbsp;" + aUser.lastname + "</strong></p>"));
+		lSplitData.append($("<p class='ui-li-aside'><strong>" + aUser.mail + "</strong></p>"));
+		var lDeleteButton = $("<a data-theme='b' data-icon='delete' title='Delete'/>");
+		lDeleteButton.click(function( ) {
+			w.forms.deleteUser(aUser.username);
+		});
+		lDeleteButton.live("touchend", function( ) {
+			w.forms.deleteUser(aUser.username);
+		});
 
-		lElement.append( lSplitData ).append( lDeleteButton );
-		w.forms.eUsersList.append( lElement );
+		lElement.append(lSplitData).append(lDeleteButton);
+		w.forms.eUsersList.append(lElement);
 	},
-	deleteUser: function( aUsername ) {
+	deleteUser: function(aUsername) {
 		var lArgs = {
 			username: aUsername
 		};
-		$.jws.send( w.forms.NS, "delete", lArgs );
+		$.jws.send(w.forms.NS, "delete", lArgs);
 	},
-	userDeleted: function( aEvent, aToken ) {
+	userDeleted: function(aEvent, aToken) {
 		// better to ask again for the updated page
-		w.pager.loadPage( w.pager.mCurrPage );
+		w.pager.loadPage(w.pager.mCurrPage);
 	},
 	addNoElementsClass: function( ) {
-		if ( w.forms.eUsersList.find( "li" ).length <= 1 ) {
-			w.forms.eUsersList.append( $( "<li class='no_elements'/>" )
-					.text( w.forms.MSG_NO_ITEMS ) );
+		if (w.forms.eUsersList.find("li").length <= 1) {
+			w.forms.eUsersList.append($("<li class='no_elements'/>")
+					.text(w.forms.MSG_NO_ITEMS));
 		}
 	},
 	removeNoElementsClass: function( ) {
-		w.forms.eUsersList.find( "li.no_elements" ).remove();
+		w.forms.eUsersList.find("li.no_elements").remove();
 	},
 	clearList: function( ) {
-		var lItems = w.forms.eUsersList.find( "li" );
-		lItems.each( function( ) {
-			var lItem = $( this );
-			if ( !lItem.hasClass( "ui-li-divider" ) ) {
+		var lItems = w.forms.eUsersList.find("li");
+		lItems.each(function( ) {
+			var lItem = $(this);
+			if (!lItem.hasClass("ui-li-divider")) {
 				lItem.remove( );
 			}
-		} );
+		});
 	},
 	userCounterClick: function( ) {
-		var lUsersCount = w.forms.eUsersList.find( "li" ).length - 1;
+		var lUsersCount = w.forms.eUsersList.find("li").length - 1;
 		// If the number of users in the list is equal of the number of the page
-		if ( lUsersCount <= w.pager.mPageSize &&
-				w.pager.mMaxPages == w.pager.mCurrPage - 1 ) {
-			w.pager.loadPage( w.pager.mMaxPages );
+		if (lUsersCount <= w.pager.mPageSize &&
+				w.pager.mMaxPages === w.pager.mCurrPage - 1) {
+			w.pager.loadPage(w.pager.mMaxPages);
 		} else {
-			w.pager.loadPage( w.pager.mMaxPages + 1 );
+			w.pager.loadPage(w.pager.mMaxPages + 1);
 		}
 	},
 	destroy: function( ) {
@@ -318,20 +344,20 @@ $.widget( "jws.forms", {
 		w.forms.addNoElementsClass( );
 		w.forms.mCountNewUsers = 0;
 		w.forms.eNewUsersCounter
-				.text( w.forms.mCountNewUsers ).hide( );
-		w.forms.eUsersList.listview( 'refresh' );
+				.text(w.forms.mCountNewUsers).hide( );
+		w.forms.eUsersList.listview('refresh');
 		w.pager.destroy( );
 	}
-} );
+});
 
-$.widget( "jws.createUser", {
+$.widget("jws.createUser", {
 	_init: function( ) {
 		// ------------- DOM ELEMENTS -------------
-		this.eTxtName = this.element.find( "#name" );
-		this.eTxtUserName = this.element.find( "#username" );
-		this.eTxtLastName = this.element.find( "#lastname" );
-		this.eTxtMail = this.element.find( "#mail" );
-		this.eBtnSave = this.element.find( "#senduser" );
+		this.eTxtName = this.element.find("#name");
+		this.eTxtUserName = this.element.find("#username");
+		this.eTxtLastName = this.element.find("#lastname");
+		this.eTxtMail = this.element.find("#mail");
+		this.eBtnSave = this.element.find("#senduser");
 
 		// Keeping a reference of the widget, when a websocket message
 		// comes from the server the scope "this" doesnt exist anymore
@@ -344,40 +370,39 @@ $.widget( "jws.createUser", {
 	 * also starts up some specific things needed at the begining
 	 **/
 	registerEvents: function( ) {
-		w.createUser.eBtnSave.click( w.createUser.save );
-		w.createUser.eBtnSave.live( "touchend", w.createUser.save );
+		w.createUser.eBtnSave.click(w.createUser.save);
+		w.createUser.eBtnSave.live("touchend", w.createUser.save);
 	},
 	save: function( ) {
 		var lArgs = {
-			"name": w.createUser.eTxtName.val( ),
-			"lastname": w.createUser.eTxtLastName.val( ),
-			"username": w.createUser.eTxtUserName.val( ),
-			"mail": w.createUser.eTxtMail.val( )
+			name: w.createUser.eTxtName.val( ),
+			lastname: w.createUser.eTxtLastName.val( ),
+			username: w.createUser.eTxtUserName.val( ),
+			mail: w.createUser.eTxtMail.val( )
 		};
 		// if the user is created correctly a Token 
 		// with the new user will be sent to all connectors, 
 		// check the w.forms.userCreated
-		$.jws.send( w.forms.NS, "create", lArgs );
-		$.mobile.changePage( "#mainPage" );
+		$.jws.send(w.forms.NS, "create", lArgs);
+		$.mobile.changePage("#mainPage");
 		// Load the last page where the user was added
 		w.forms.userCounterClick( );
 	}
-} );
+});
 
-$( document ).bind( {
+$(document).bind({
 	// Loaded second
 	"ready": function() {
-		$( "#mainPage" ).pager();
-		$( "body" ).forms();
+		$("#mainPage").pager();
+		$("body").forms();
 	},
 	// Loaded first
 	"mobileinit": function() {
-		// Open jWebSocket connection using jQueryMobile Plug-in
 		$.jws.open();
 
-		$( '#createUserPage' ).live( 'pagecreate', function( aEvent ) {
+		$('#createUserPage').live('pagecreate', function(aEvent) {
 			// Executing the widget
-			$( "#createUserPage" ).createUser( );
-		} );
+			$("#createUserPage").createUser( );
+		});
 	}
-} );
+});

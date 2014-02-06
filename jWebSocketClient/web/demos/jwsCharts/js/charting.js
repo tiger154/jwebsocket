@@ -1033,7 +1033,7 @@ jws.ChartingPlugIn = {
 		else if (aToken.ns === this.NS_SYSTEM) {
 			if (aToken.type === this.TT_WELCOME) {
 				Ext.get("client_id").dom.innerHTML = "Client-ID: " + aToken.sourceId;
-				Ext.get("client_status").dom.innerHTML = "online";
+				Ext.get("client_status").dom.innerHTML = aToken.username || "online";
 				Ext.get("client_status").dom.className = "authenticated";
 			}
 		}

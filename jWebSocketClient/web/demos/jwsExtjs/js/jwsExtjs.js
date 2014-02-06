@@ -35,28 +35,34 @@ Ext.define('User', {
 		}]
 });
 
-NS_EXTJS_DEMO = jws.NS_BASE + '.plugins.sencha';
-// Type of tokens
-TT_OPEN = 'open';
-TT_CLOSE = 'close';
-TT_REGISTER = 'register';
-TT_CREATE = 'create';
-TT_READ = 'read';
-TT_UPDATE = 'update';
-TT_DESTROY = 'destroy';
-TT_RESET = 'reset';
-TT_NOTIFY_CREATE = 'notifyCreate';
-TT_NOTIFY_UPDATE = 'notifyUpdate';
-TT_NOTIFY_DESTROY = 'notifyDestroy';
-TT_NOTIFY_RESET = 'notifyReset';
-// Texts
-TEXT_CONNECTED = "connected";
-TEXT_DISCONNECTED = "disconnected";
-TEXT_WEBSOCKET = "WebSocket: ";
-TEXT_CLIENT_ID = "Client-ID: ";
-CLS_AUTH = "authenticated";
-CLS_OFFLINE = "offline";
-
+jws.ExtJSDemo = {
+	NS_EXTJS_DEMO: jws.NS_BASE + '.plugins.sencha',
+	// Type of tokens
+	TT_OPEN: 'open',
+	TT_CLOSE: 'close',
+	TT_LOGON: 'logon',
+	TT_REGISTER: 'register',
+	TT_WELCOME: 'welcome',
+	TT_CREATE: 'create',
+	TT_READ: 'read',
+	TT_UPDATE: 'update',
+	TT_DESTROY: 'destroy',
+	TT_RESET: 'reset',
+	TT_NOTIFY_CREATE: 'notifyCreate',
+	TT_NOTIFY_UPDATE: 'notifyUpdate',
+	TT_NOTIFY_DESTROY: 'notifyDestroy',
+	TT_NOTIFY_RESET: 'notifyReset',
+	// Texts
+	TEXT_CONNECTED: "connected",
+	TEXT_AUTHENTICATED: "authenticated",
+	TEXT_DISCONNECTED: "disconnected",
+	TEXT_WEBSOCKET: "WebSocket: ",
+	TEXT_CLIENT_ID: "Client-ID: ",
+	// Styles
+	CLS_AUTH: "authenticated",
+	CLS_ONLINE: "online",
+	CLS_OFFLINE: "offline"
+};
 Ext.onReady(function() {
 	// DOM elements
 	var eDisconnectMessage = Ext.get("not_connected"),
@@ -66,14 +72,33 @@ Ext.onReady(function() {
 	eClientId = document.getElementById("client_id");
 	eWebSocketType = document.getElementById("websocket_type");
 
-	Ext.jwsClient.on(TT_OPEN, function() {
+	Ext.jwsClient.on(jws.ExtJSDemo.TT_OPEN, function() {
 		// Registering to the Sencha demo to receive notifications 
 		// from the server when other clients create, update or remove 
 		// users from the server users list
-		Ext.jwsClient.send(NS_EXTJS_DEMO, TT_REGISTER);
+		eClient.innerHTML = jws.ExtJSDemo.TEXT_CONNECTED;
+		eClient.className = jws.ExtJSDemo.CLS_ONLINE;
 
-		eClient.innerHTML = TEXT_CONNECTED;
-		eClient.className = CLS_AUTH;
+		eBtnDisconnect.show();
+		eBtnConnect.hide();
+		eDisconnectMessage.hide();
+	});
+
+	Ext.jwsClient.on(jws.ExtJSDemo.TT_WELCOME, function(aToken) {
+		if (aToken.username !== "anonymous") {
+			Ext.jwsClient.fireEvent(jws.ExtJSDemo.TT_LOGON, aToken, Ext.jwsClient);
+		} else {
+			Ext.jwsClient.getConnection().systemLogon(jws.DEMO_ROOT_LOGINNAME, jws.DEMO_ROOT_PASSWORD);
+		}
+	});
+
+	Ext.jwsClient.on(jws.ExtJSDemo.TT_LOGON, function(aToken) {
+		if(aToken.username){
+			eClient.innerHTML = aToken.username;
+		}
+		Ext.jwsClient.send(jws.ExtJSDemo.NS_EXTJS_DEMO, jws.ExtJSDemo.TT_REGISTER);
+
+		eClient.className = jws.ExtJSDemo.CLS_AUTH;
 
 		eBtnDisconnect.show();
 		eBtnConnect.hide();
@@ -81,15 +106,15 @@ Ext.onReady(function() {
 		initDemo();
 	});
 
-	Ext.jwsClient.on(TT_CLOSE, function() {
-		eClient.innerHTML = TEXT_DISCONNECTED;
-		eClient.className = CLS_OFFLINE;
+	Ext.jwsClient.on(jws.ExtJSDemo.TT_CLOSE, function() {
+		eClient.innerHTML = jws.ExtJSDemo.TEXT_DISCONNECTED;
+		eClient.className = jws.ExtJSDemo.CLS_OFFLINE;
 		eDisconnectMessage.show();
 		eBtnDisconnect.hide();
 		eBtnConnect.show();
 		exitDemo();
-		eWebSocketType.innerHTML = TEXT_WEBSOCKET + "-";
-		eClientId.innerHTML = TEXT_CLIENT_ID + "- ";
+		eWebSocketType.innerHTML = jws.ExtJSDemo.TEXT_WEBSOCKET + "-";
+		eClientId.innerHTML = jws.ExtJSDemo.TEXT_CLIENT_ID + "- ";
 	});
 
 	eBtnDisconnect.hide();
@@ -100,18 +125,19 @@ Ext.onReady(function() {
 	eBtnDisconnect.on("click", function() {
 		Ext.jwsClient.close();
 	});
+	Ext.jwsClient.open();
 });
 
 function initDemo() {
 	Ext.tip.QuickTipManager.init();
 
 	var lProxyCfg = {
-		ns: NS_EXTJS_DEMO,
+		ns: jws.ExtJSDemo.NS_EXTJS_DEMO,
 		api: {
-			create: TT_CREATE,
-			read: TT_READ,
-			update: TT_UPDATE,
-			destroy: TT_DESTROY
+			create: jws.ExtJSDemo.TT_CREATE,
+			read: jws.ExtJSDemo.TT_READ,
+			update: jws.ExtJSDemo.TT_UPDATE,
+			destroy: jws.ExtJSDemo.TT_DESTROY
 		},
 		reader: {
 			root: 'data',
@@ -133,7 +159,7 @@ function initDemo() {
 						lName = Ext.String.capitalize(aOperation.action),
 						lText;
 
-				if (lName == TT_DESTROY) {
+				if (lName == jws.ExtJSDemo.TT_DESTROY) {
 					lRecord = aOperation.records[0];
 					lText = 'Destroyed';
 				} else {
@@ -142,7 +168,7 @@ function initDemo() {
 
 
 				var lForm = lFormPanel.getForm();
-				if (aOperation.action != TT_DESTROY) {
+				if (aOperation.action != jws.ExtJSDemo.TT_DESTROY) {
 					lForm.loadRecord(lRecord);
 
 					Ext.getCmp('submit_button').setText('Update User');
@@ -230,16 +256,16 @@ function initDemo() {
 					var lAction = null;
 					if (lForm.findField('id').getValue() != "") {
 						lAction = {
-							ns: NS_EXTJS_DEMO,
-							tokentype: TT_UPDATE,
+							ns: jws.ExtJSDemo.NS_EXTJS_DEMO,
+							tokentype: jws.ExtJSDemo.TT_UPDATE,
 							params: {
 								updateForm: 'yes'
 							}
 						}
 					} else {
 						lAction = {
-							ns: NS_EXTJS_DEMO,
-							tokentype: TT_CREATE
+							ns: jws.ExtJSDemo.NS_EXTJS_DEMO,
+							tokentype: jws.ExtJSDemo.TT_CREATE
 						}
 					}
 					lAction.failure = function(aForm, aAction) {
@@ -333,12 +359,12 @@ function initDemo() {
 				lGridPanel.mLastSelected = aRecord.index;
 				var lForm = lFormPanel.getForm(),
 						lAction = {
-					ns: NS_EXTJS_DEMO,
-					tokentype: TT_READ,
-					params: {
-						id: lGridPanel.mLastSelected
-					},
-					// Optional
+							ns: jws.ExtJSDemo.NS_EXTJS_DEMO,
+							tokentype: jws.ExtJSDemo.TT_READ,
+							params: {
+								id: lGridPanel.mLastSelected
+							},
+							// Optional
 //					success: function(aForm, aToken) {
 //						console.log("success");
 //						console.log(aToken);
@@ -347,7 +373,7 @@ function initDemo() {
 //						console.log("failure");
 //						console.log(aToken);
 //					}
-				};
+						};
 
 				// This action in this case is not necessary but is a real 
 				// example how the jWebSocket implementation for the load 
@@ -396,7 +422,7 @@ function initDemo() {
 						iconCls: 'icon-reset',
 						disabled: false,
 						handler: function() {
-							Ext.jwsClient.send(NS_EXTJS_DEMO, TT_RESET);
+							Ext.jwsClient.send(jws.ExtJSDemo.NS_EXTJS_DEMO, jws.ExtJSDemo.TT_RESET);
 							var lSelection = lGridPanel.getView().getSelectionModel().getSelection()[0];
 							if (lSelection) {
 								var lId = lSelection.data.id;
@@ -490,13 +516,13 @@ function initDemo() {
 
 	var lPlugIn = {};
 	lPlugIn.processToken = function(aToken) {
-		if (aToken.ns === NS_EXTJS_DEMO) {
-			if (aToken.type == TT_NOTIFY_CREATE || aToken.type == TT_NOTIFY_UPDATE
-					|| aToken.type == TT_NOTIFY_DESTROY
-					|| aToken.type == TT_NOTIFY_RESET) {
+		if (aToken.ns === jws.ExtJSDemo.NS_EXTJS_DEMO) {
+			if (aToken.type == jws.ExtJSDemo.TT_NOTIFY_CREATE || aToken.type == jws.ExtJSDemo.TT_NOTIFY_UPDATE
+					|| aToken.type == jws.ExtJSDemo.TT_NOTIFY_DESTROY
+					|| aToken.type == jws.ExtJSDemo.TT_NOTIFY_RESET) {
 				log(0, aToken.message);
 				var lOptions = {};
-				if (aToken.type == TT_NOTIFY_UPDATE) {
+				if (aToken.type == jws.ExtJSDemo.TT_NOTIFY_UPDATE) {
 					lOptions = {
 						callback: function() {
 							lGridPanel.getSelectionModel().select(lGridPanel.mLastSelected);
@@ -507,8 +533,8 @@ function initDemo() {
 			}
 		}
 		if (aToken.type == "welcome") {
-			eClientId.innerHTML = TEXT_CLIENT_ID + aToken.sourceId;
-			eWebSocketType.innerHTML = TEXT_WEBSOCKET + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)");
+			eClientId.innerHTML = jws.ExtJSDemo.TEXT_CLIENT_ID + aToken.sourceId;
+			eWebSocketType.innerHTML = jws.ExtJSDemo.TEXT_WEBSOCKET + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)");
 		}
 	}
 	Ext.jwsClient.addPlugIn(lPlugIn);
