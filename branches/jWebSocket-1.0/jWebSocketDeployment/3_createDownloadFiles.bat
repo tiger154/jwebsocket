@@ -5,11 +5,12 @@ echo (C) Copyright 2013-2014 Innotrade GmbH
 echo -------------------------------------------------------------------------
 
 if "%JWEBSOCKET_HOME%"=="" goto error
+if "%JWEBSOCKET_EE_HOME%"=="" goto error
 if "%JWEBSOCKET_VER%"=="" goto error
 goto continue
 
 :error
-echo Environment variable(s) JWEBSOCKET_HOME and/or JWEBSOCKET_VER not set!
+echo Environment variable(s) JWEBSOCKET_HOME, JWEBSOCKET_EE_HOME and/or JWEBSOCKET_VER not set!
 pause
 exit
 
@@ -33,14 +34,16 @@ set cache=%rte%cache\
 set web=%rte%web\
 set filesystem=%rte%filesystem\
 
-set homeEE=%JWEBSOCKET_EE_HOME%
-set libsEE=%homeEE%libs\
-set confEE=%homeEE%conf\
+set rteEE=%JWEBSOCKET_EE_HOME%
+set libsEE=%rteEE%libs\
+set confEE=%rteEE%conf\
+set clientEE=%rteEE%..\..\branches\jWebSocket-1.0-Enterprise\jWebSocketClient\
+set webEE=%clientEE%web
 
 set depl=..\jWebSocketDeployment\jWebSocket\
 set down=..\..\..\downloads\jWebSocket-%ver%\
 
-rem goto server
+goto client
 
 
 :cleanup
@@ -369,11 +372,15 @@ set src=..\jWebSocketClient\
 set dest=%down%jWebSocketClient-%ver%.zip
 if exist "%dest%" del "%dest%"
 7z u -mx9 -r -tzip "%dest%" "%src%*.*" -xr!.svn -xr!quickguide -xr!devguide -xr!javadocs -xr!target -xr!jsdoc
+
+7z u -mx9 -r -tzip "%dest%" "%clientEE%\useradmin\*.*" -xr!.svn -xr!quickguide -xr!devguide -xr!javadocs -xr!target -xr!jsdoc
+7z u -mx9 -r -tzip "%dest%" "%clientEE%\res\*.*" -xr!.svn -xr!quickguide -xr!devguide -xr!javadocs -xr!target -xr!jsdoc
+
 pushd ..\jWebSocketClient
 move jWebSocketClient-%ver% web
 popd
 
-rem goto end
+goto end
 
 
 

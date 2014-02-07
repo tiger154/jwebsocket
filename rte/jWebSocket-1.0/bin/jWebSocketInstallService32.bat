@@ -1,6 +1,6 @@
 @echo off
 echo jWebSocket Windows Service Installer (32bit)
-echo (C) Copyright 2010-2013 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
+echo (C) Copyright 2010-2014 Innotrade GmbH (jWebSocket.org), Germany (NRW), Herzogenrath
 echo.
 echo Usage jWebSocketInstallService32.bat [service name]   (default: 'jWebSocket Service')
 echo.
