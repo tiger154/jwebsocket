@@ -205,21 +205,56 @@
 		<property name="reconnectionManager">
 			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
 			init-method="initialize" destroy-method="shutdown">
-				<property name="cacheStorageName" value="__reconnection_index_ns__" />
 				<property name="sessionExpirationTime" value="60" />
 				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
 				<property name="storageProvider" ref="storageProviderEhCache" />
-				<property name="cacheStorageProvider" ref="cacheStorageProviderEhCache" />
 			</bean>
 		</property>
 	</bean>
 	-->
+
+	<!-- JDBC Storage provider -->
+	<bean id="storageProviderJDBC" class="org.jwebsocket.storage.ormlite.OrmLiteStorageProvider" init-method="initialize">
+		<constructor-arg index="0">
+			<bean class="com.j256.ormlite.spring.DaoFactory"
+			  factory-method="createDao">
+				<constructor-arg index="0" >
+					<bean class="com.j256.ormlite.jdbc.JdbcConnectionSource" init-method="initialize">
+						<property name="url">
+							<bean class="org.jwebsocket.config.JWebSocketConfig"
+							  factory-method="expandEnvAndJWebSocketVars">
+								<constructor-arg index="0" value="jdbc:derby:${JWEBSOCKET_HOME}database/sessions;create=true" />
+							</bean>
+						</property>
+						<property name="databaseType">
+							<bean class="com.j256.ormlite.db.DerbyEmbeddedDatabaseType" />
+						</property>
+					</bean>
+				</constructor-arg>
+				<constructor-arg index="1" value="org.jwebsocket.storage.ormlite.EntryEntity" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<!-- JDBC session -->
+	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
+	  init-method="initialize" destroy-method="shutdown">
+		<property name="storageProvider" ref="storageProviderJDBC"/>
+		<property name="reconnectionManager">
+			<bean class="org.jwebsocket.session.SessionReconnectionManager" 
+			  init-method="initialize" destroy-method="shutdown">
+				<property name="sessionExpirationTime" value="60" />
+				<property name="trashStorageName" value="__session_ids_trash_storage_ns__" />
+				<property name="storageProvider" ref="storageProviderJDBC" />
+			</bean>
+		</property>
+	</bean>
 	
 	<!--  Memory Storage provider (here for the sessions) -->
 	<bean id="storageProviderMemory" class="org.jwebsocket.storage.memory.MemoryStorageProvider">
 	</bean>
 
-	<!-- RAM Memory session -->
+	<!-- RAM Memory session
 	<bean id="sessionManager" class="org.jwebsocket.session.SessionManager" 
 		  init-method="initialize" destroy-method="shutdown">
 		<property name="storageProvider" ref="storageProviderMemory"/>
@@ -231,7 +266,8 @@
 				<property name="storageProvider" ref="storageProviderMemory"/>
 			</bean>
 		</property>
-	</bean> 
+	</bean>
+	--> 
 	
 	<!-- MongoDB Storage provider (here for the sessions) -->
 	<bean id="storageProviderMongoDB" class="org.jwebsocket.storage.mongodb.MongoDBStorageProvider"

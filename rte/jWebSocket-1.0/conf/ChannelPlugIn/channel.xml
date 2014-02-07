@@ -3,14 +3,14 @@
 <beans>
 	
 	<!-- ORMLite (JDBC) Storage -->
-	<bean id="entriesDao" class="com.j256.ormlite.spring.DaoFactory"
-		  factory-method="createDao">
-		<constructor-arg index="0" ref="channelsDataSource" />
-		<constructor-arg index="1" value="org.jwebsocket.storage.ormlite.EntryEntity" />
-	</bean>
-
 	<bean id="storageProvider" class="org.jwebsocket.storage.ormlite.OrmLiteStorageProvider" init-method="initialize">
-		<constructor-arg index="0" ref="entriesDao" />
+		<constructor-arg index="0">
+			<bean class="com.j256.ormlite.spring.DaoFactory"
+				  factory-method="createDao">
+				<constructor-arg index="0" ref="channelsDataSource" />
+				<constructor-arg index="1" value="org.jwebsocket.storage.ormlite.EntryEntity" />
+			</bean>
+		</constructor-arg>
 	</bean>
 
 	<bean id="channelManager" class="org.jwebsocket.plugins.channels.ChannelManager" init-method="initialize">
