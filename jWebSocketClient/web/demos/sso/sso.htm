@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -8,7 +8,7 @@
 		//	****************************************************************************
 		//	jWebSocket SSO Demo (Community Edition, CE)
 		//	****************************************************************************
-		//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+		//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 		//  Alexander Schulze, Germany (NRW)
 		//
 		//	Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,135 +34,210 @@
 		<script src="../../res/js/jwsSSOPlugIn.js" type="text/javascript"></script>
 
 		<script type="text/javascript" language="JavaScript">
-			
-			function handleExtProcessMsg( aToken ) {
+
+			function handleExtProcessMsg(aToken) {
 			}
-			
+
 			function authDirect() {
-				log( "Calling direct auth..." );
+				log("Calling direct auth...");
 				// authenticate against OAuth/SSO server directly
-				lWSC.ssoAuthDirect( eUsername.value, ePassword.value, {
+				lWSC.ssoAuthDirect(eUsername.value, ePassword.value, {
 					timeout: 20000, // timeout in milliseconds
-					OnSuccess: function( aToken ) {
-						log("Success: " + JSON.stringify( aToken ) );
+					OnSuccess: function(aToken) {
+						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function( aToken ) {
-						log("Failure: " + JSON.stringify( aToken ) );
+					OnFailure: function(aToken) {
+						log("Failure: " + JSON.stringify(aToken));
 					},
-					OnTimeout: function( aToken ) {
-						log("Timeout: " + JSON.stringify( aToken ) );
+					OnTimeout: function(aToken) {
+						log("Timeout: " + JSON.stringify(aToken));
 					}
+				});
+			}
+
+			function authSession() {
+				log("Calling authentication via SSO Session-ID...");
+
+				if (!lWSC.sso) {
+					lWSC.sso = {};
+				}
+
+				// authenticate against OAuth/SSO server directly
+				lWSC.ssoAuthSession(lWSC.sso.smsession, "nvidia", "secret", {
+					timeout: 20000, // timeout in milliseconds
+					OnSuccess: function(aToken) {
+						log("Success: " + JSON.stringify(aToken));
+					},
+					OnFailure: function(aToken) {
+						log("Failure: " + JSON.stringify(aToken));
+					},
+					OnTimeout: function(aToken) {
+						log("Timeout: " + JSON.stringify(aToken));
+					},
+					// URL: "https://hqdvmbl701:8443/auth/oauth/v2/token"
+					URL: "https://aschulze-dt.nvidia.com/auth/oauth/v2/token"
+					// URL: "https://aschulze-dt/get-smsession"
 				});
 			}
 
 			function getUser() {
 				// validate an access token and get the user name
-				log( "Calling get user..." );
+				log("Calling get user...");
 				lWSC.ssoGetUser({
 					timeout: 20000, // timeout in milliseconds
-					OnSuccess: function( aToken ) {
-						log("Success: " + JSON.stringify( aToken ) );
+					OnSuccess: function(aToken) {
+						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function( aToken ) {
-						log("Failure: " + JSON.stringify( aToken ) );
+					OnFailure: function(aToken) {
+						log("Failure: " + JSON.stringify(aToken));
 					},
-					OnTimeout: function( aToken ) {
-						log("Timeout: " + JSON.stringify( aToken ) );
-					}
+					OnTimeout: function(aToken) {
+						log("Timeout: " + JSON.stringify(aToken));
+					},
+					URL: "https://aschulze-dt/use-token"
 				});
 			}
 
 			function refreshAccessToken() {
 				// refreshing an access token after its expiration
-				log( "Refreshing access token..." );
+				log("Refreshing access token...");
 				lWSC.ssoRefreshAccessToken({
 					timeout: 20000, // timeout in milliseconds
-					OnSuccess: function( aToken ) {
-						log("Success: " + JSON.stringify( aToken ) );
+					OnSuccess: function(aToken) {
+						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function( aToken ) {
-						log("Failure: " + JSON.stringify( aToken ) );
+					OnFailure: function(aToken) {
+						log("Failure: " + JSON.stringify(aToken));
 					},
-					OnTimeout: function( aToken ) {
-						log("Timeout: " + JSON.stringify( aToken ) );
-					}
+					OnTimeout: function(aToken) {
+						log("Timeout: " + JSON.stringify(aToken));
+					},
+					URL: "https://aschulze-dt/auth/oauth/v2/token"
+							// URL: "https://aschulze-dt/refresh-token/"
 				});
 			}
-			
+
 			function loadOAuthData() {
-				log( "Loading OAuth data..." );
+				log("Loading OAuth data...");
 				lWSC.ssoLoadOAuthData({
-					OnSuccess: function( aToken ) {
-						log("Success: " + JSON.stringify( aToken ) );
+					OnSuccess: function(aToken) {
+						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function( aToken ) {
-						log("Failure: " + JSON.stringify( aToken ) );
-					}
-				});
-			}
-			
-			function saveOAuthData() {
-				log( "Saving OAuth data..." );
-				lWSC.ssoSaveOAuthData({
-					OnSuccess: function( aToken ) {
-						log("Success: " + JSON.stringify( aToken ) );
-					},
-					OnFailure: function( aToken ) {
-						log("Failure: " + JSON.stringify( aToken ) );
-					}
-				});
-			}
-			
-			function getSMSessionCookie() {
-				log( "Getting all document cookies (including potential SSO cookies from Web server agent)..." );
-				lWSC.ssoGetSMSessionCookie({
-					OnSuccess: function( aToken ) {
-						log( "Cookie: " + JSON.stringify( aToken ) );
-					},
-					OnFailure: function( aToken ) {
-						log("Failure: " + JSON.stringify( aToken ) );
+					OnFailure: function(aToken) {
+						log("Failure: " + JSON.stringify(aToken));
 					}
 				});
 			}
 
-			function sendJMSRequest() {
-				log( "Sending JMS request..." );
-				lWSC.forwardJSON(
-					// "hqdvptas134", 
-					// "com.ptc.windchill",
-					// "createBOM", 
-					"server-aschulze-dt", // target
-					"org.jwebsocket.svcep.demo", //	aNS, 
-					"sso1", //	aType, 
-					{
-						accessToken: lWSC.ssoGetAccessToken()
-					}, //	aArgs, 
-					"{}",	//	aJSON payload, 
-					{
-					OnSuccess: function( aToken ) {
-						log( "Success: " + JSON.stringify( aToken ) );
+			function saveOAuthData() {
+				log("Saving OAuth data...");
+				lWSC.ssoSaveOAuthData({
+					OnSuccess: function(aToken) {
+						log("Success: " + JSON.stringify(aToken));
 					},
-					OnFailure: function( aToken ) {
-						log("Failure: " + JSON.stringify( aToken ) );
+					OnFailure: function(aToken) {
+						log("Failure: " + JSON.stringify(aToken));
+					}
+				});
+			}
+
+			function getSSOSession() {
+				log("Getting Session Cookie");
+				lWSC.ssoGetSSOSession({
+					OnSuccess: function(aToken) {
+						log("Value: " + JSON.stringify(aToken));
+					},
+					OnFailure: function(aToken) {
+						log("Value: " + JSON.stringify(aToken));
+					},
+					URL: "https://aschulze-dt/get-smsession"
+				});
+			}
+
+			function getSMSessionCookie() {
+				log("Getting all document cookies (including potential SSO cookies from Web server agent)...");
+				lWSC.ssoGetSMSessionCookie({
+					OnSuccess: function(aToken) {
+						log("Cookie: " + JSON.stringify(aToken));
+					},
+					OnFailure: function(aToken) {
+						log("Failure: " + JSON.stringify(aToken));
+					},
+					URL: "https://aschulze-dt/getcookie/getcookie.txt"
+				});
+			}
+
+			function sendJMSRequest() {
+				log("Sending JMS request...");
+				lWSC.forwardJSON(
+						// "hqdvptas134", 
+						// "com.ptc.windchill",
+						// "createBOM", 
+						"server-aschulze-dt", // target
+						"org.jwebsocket.svcep.demo", //	aNS, 
+						"sso1", //	aType, 
+						{
+							accessToken: lWSC.ssoGetAccessToken()
+						}, //	aArgs, 
+				"{}", //	aJSON payload, 
+						{
+							OnSuccess: function(aToken) {
+								log("Success: " + JSON.stringify(aToken));
+							},
+							OnFailure: function(aToken) {
+								log("Failure: " + JSON.stringify(aToken));
+							}
+						});
+			}
+
+			function receiveMessage(aEvent) {
+				// Do we trust the sender of this message?  (might be
+				// different from what we originally opened, for example).
+				log("Event: data=" + aEvent.data + ", origin=" + aEvent.origin);
+/*
+				if (aEvent.origin !== "http://localhost") {
+					return;
+				}	
+*/				
+				var lJSON = JSON.parse( aEvent.data );
+				log("JSON: " + JSON.stringify( lJSON ) );
+
+				log("Loading cookie from Iframe: " + lJSON.cookie + "...");
+				document.cookie = lJSON.cookie;
+				// debugger;
+				lWSC.ssoLoadOAuthData({
+					// pass external cookie
+					cookie: lJSON.cookie,
+					OnSuccess: function(aToken) {
+						log("Success: " + JSON.stringify(aToken) + ", " + lWSC.sso.smsession);
+					},
+					OnFailure: function(aToken) {
+						log("Failure: " + JSON.stringify(aToken) + ", " + lWSC.sso.smsession);
 					}
 				});
 			}
 
 			function initPage() {
-				eArgs = jws.$( "stxfArgs" );
-				
-				jws.console.setActive( true );
-				jws.console.setLevel( jws.console.DEBUG );
+				eArgs = jws.$("stxfArgs");
+
+				jws.console.setActive(true);
+				jws.console.setLevel(jws.console.DEBUG);
 				// lWSC.ssoSetHost( "https://hqdvpngpoc01.nvidia.com/as/token.oauth2" );
 				// lWSC.ssoSetDefaultTimeout(100);
-				lWSC.ssoSetHost( "https://localhost/as/token.oauth2" );
+				lWSC.ssoSetHost("https://aschulze-dt/as/token.oauth2");
 				// lWSC.ssoSetHost( "https://alsius.dev.nvidia.com/as/token.oauth2" );
-				lWSC.ssoSetSecret( "2Federate" );
-				lWSC.ssoSetAppURL( "https://hqdvalsap01.nvidia.com/sso/index.html" );
-				
+				lWSC.ssoSetSecret("2Federate");
+				lWSC.ssoSetAppURL("https://hqdvalsap01.nvidia.com/sso/index.html");
+
 //				lWSC.setExtProcessCallbacks({
 //					OnExtProcessMsg: handleExtProcessMsg
 //				});
+
+				log("Adding event handler...");
+				window.addEventListener("message", receiveMessage, false);
+				
+				var o = document.getElementsByTagName('iframe')[0];
+				o.contentWindow.postMessage( "Trigger from host to iframe", "*");				
 			}
 
 			function exitPage() {
@@ -185,13 +260,22 @@
 			processInitPage();
 		</script>
 
-		
+		<!-- id="ifrConnector" style="position:absolute; left:10px; top:10px; width:150px; height:80px; background-color: #fefefe" -->
+		<!-- <iframe src="https://localhost/jwcDev/demos/sso/sso_connector.htm" > -->
+		<!-- <iframe src="https://localhost/getcookie/index.html" > -->
+		<iframe src="https://alsius.dev.nvidia.com/getcookie/index.html" >
+		</iframe>
+
 		<div class="sdivContainer">
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
 				<tr class="strDlg">
 					<td colspan="2" width="">
+						<input class="sbtnDlg" id="sbtnGetSSOSession" type="button" value="SSO Cookie" onclick="getSSOSession();"
+							   title="Tries to obtain the session cookie.">
+						<input class="sbtnDlg" id="sbtnAuthSession" type="button" value="Auth Session" onclick="authSession();"
+							   title="Authenticates by using the session id.">
 						<input class="sbtnDlg" id="sbtnAuthDirect" type="button" value="Auth directly" onclick="authDirect();"
-							   title="Authenticates directly.">
+							   title="Authenticates directly by typing user credentials.">
 						<input class="sbtnDlg" id="sbtnGetUser" type="button" value="Get User" onclick="getUser();"
 							   title="Gets the users from the access token, if exists already.">
 						<input class="sbtnDlg" id="sbtnRefreshAccessToken" type="button" value="Refresh" onclick="refreshAccessToken();"

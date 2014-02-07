@@ -1,12 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="chrome=1">
-		<!-- If Google's chrome frame installed, use it! -->
-		<!-- Comment needs to be BELOW this meta tag! -->
 		<!--
 		//	****************************************************************************
-		//	jWebSocket API Demo (Community Edition, CE)
+		//	jWebSocket SSO Connector (Community Edition, CE)
 		//	****************************************************************************
 		//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 		//  Alexander Schulze, Germany (NRW)
@@ -24,15 +21,46 @@
 		//	limitations under the License.
 		//	****************************************************************************
 		-->
-		<meta http-equiv="Content-Language" content="en">
 		<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-		<title>jWebSocket API Demo</title>
-		<link rel="stylesheet" type="text/css" href="../../res/css/jwebsocket.css">
+		<title>jWebSocket SSO Connector</title>
+		
 		<script src="../../res/js/jWebSocket.js" type="text/javascript"></script>
-		<script src="../../res/js/jwsDemoPlugIn.js" type="text/javascript"></script>
-		<script type="text/javascript" language="JavaScript">
+		<script src="../../res/js/jwsSSOPlugIn.js" type="text/javascript"></script>
+		
+		<script type="text/javascript">
+
+			var lWSC;
+
+			function receiveMessage(aEvent) {
+				aEvent.source.postMessage(
+						"Answer from iframe to host (request: '" + aEvent.data + "')",
+						aEvent.origin);
+			}
 
 			function initPage() {
+
+				lWSC = new jws.jWebSocketJSONClient();
+				lWSC.ssoGetSMSessionCookie({
+					OnSuccess: function(aToken) {
+						document.write("Success: " + JSON.stringify(aToken));
+					},
+					OnFailure: function(aToken) {
+						document.write("Failure: " + JSON.stringify(aToken));
+					},
+					URL: "https://alsius.dev.nvidia.com/getcookie/index.html"
+					// URL: "https://localhost/getcookie/index.html"
+				});
+				
+				window.addEventListener("message", receiveMessage, false);
+				return;
+				
+				setTimeout(function() {
+					document.write("Sending...");
+					window.parent.postMessage( '{"ns":"org.jwebsocket.docmsg", "type": "sessioncookie"}', "http://aschulze-dt" );
+					// window.parent.postMessage("Message from iframe", "*");
+				}, 500);
+				
+				return;
 			}
 
 			function exitPage() {
@@ -45,13 +73,6 @@
 		onload="initPage();"
 		onunload="exitPage();"
 		>
-		<script type="text/javascript">
-			var lWSC = new jws.jWebSocketJSONClient({
-			});
-			lWSC.buildDemoPage({
-				title: "",
-				header: "jWebSocket API Demo"
-			});
-		</script>
+		<p style="color: black">Connecting...</p>
 	</body>
 </html>

@@ -1,7 +1,7 @@
 //	---------------------------------------------------------------------------
 //	jWebSocket Monitoring Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
-//	Copyright 2010-2013 Innotrade GmbH (jWebSocket.org)
+//	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
 //  Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
@@ -363,22 +363,24 @@ public class MonitoringPlugIn extends TokenPlugIn {
 					mLog.error(Logging.getSimpleExceptionMessage(lEx, "gathering computer info, interupted, scan thread stopped"));
 				}
 
-				for (WebSocketConnector lConnector : mClients) {
+				if (mInformationRunning) {
+					for (WebSocketConnector lConnector : mClients) {
 
-					String lInterest = lConnector.getString(INTEREST);
+						String lInterest = lConnector.getString(INTEREST);
 
-					if (TT_PC_INFO.equals(lInterest)) {
+						if (TT_PC_INFO.equals(lInterest)) {
 
-						getServer().sendToken(lConnector, lPCInfoToken);
+							getServer().sendToken(lConnector, lPCInfoToken);
 
-					} else if (TT_PLUGINS_INFO.equals(lInterest)) {
-						//TODO: gatherBrowsersInfo();
-						broadcastPluginsInfo(lConnector);
+						} else if (TT_PLUGINS_INFO.equals(lInterest)) {
+							//TODO: gatherBrowsersInfo();
+							broadcastPluginsInfo(lConnector);
+						}
 					}
-				}
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ex) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException ex) {
+					}
 				}
 			}
 		}
