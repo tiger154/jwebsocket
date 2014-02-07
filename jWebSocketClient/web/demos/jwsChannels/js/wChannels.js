@@ -524,10 +524,6 @@ $.widget( "jws.channels", {
 				} else if ( aToken.reqType === "unsubscribe" ) {
 					w.channels.onChannelUnsubscription( aToken );
 				}
-				// If anything went wrong in the server show information error
-				if ( aToken.code === -1 ) {
-					jwsDialog( aToken.msg, "jWebSocket error", true, "error" );
-				}
 			}
 		}
 	},

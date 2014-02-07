@@ -71,7 +71,7 @@ jws.CanvasPlugIn = {
 				jws.CanvasPlugIn.mClientId = aToken.sourceId;
 				if (aToken.username === "anonymous") {
 					AUTO_USER_AND_PASSWORD = true;
-					w.auth.logon( );
+					w.auth.auth();
 				}
 			},
 			/**
