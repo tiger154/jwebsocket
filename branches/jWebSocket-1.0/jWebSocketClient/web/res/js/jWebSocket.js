@@ -114,19 +114,21 @@ var jws = {
 	// Reliability Manager off (Default connection)
 	RO_OFF: {
 		autoReconnect : false,
-		reconnectDelay: -1,
-		reconnectTimeout: -1,
+		reconnectDelay: -1
+		/* ,
 		queueItemLimit: -1,
 		queueSizeLimit: -1
+		*/
 	},
 
 	// Reliability Manager on
 	RO_ON: {
 		autoReconnect: true,
-		reconnectDelay: 2000,
-		reconnectTimeout: 30000,
+		reconnectDelay: 3000
+		/* ,
 		queueItemLimit: 1000,
 		queueSizeLimit: 1024 * 1024 * 10 // 10 MByte
+		*/
 	},
 	
 	//:const:*:WS_SUBPROT_JSON:String:org.jwebsocket.json
@@ -1773,6 +1775,9 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	},
 	
 	create: function( aOptions ) {
+		if( aOptions && aOptions.reliabilityOptions ) {
+			this.fReliabilityOptions = aOptions.reliabilityOptions;
+		}
 		// turn off connection reliability by default
 		if( !this.fReliabilityOptions ) {
 			this.fReliabilityOptions = jws.RO_OFF;
@@ -2369,6 +2374,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		}
 	},
 
+/*
 	//:m:*:setQueueItemLimit
 	//:d:en:Specifies the maximum number of allowed queue items. If a zero or _
 	//:d:en:negative number is passed the number of items is not checked. _
@@ -2396,6 +2402,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			this.fReliabilityOptions.queueSizeLimit = 0;
 		}
 	},
+*/
 
 	//:m:*:setReliabilityOptions
 	//:d:en:Specifies how the connection is management (null = no management) is done.
@@ -2403,7 +2410,6 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:r:*:::void:none
 	setReliabilityOptions: function( aOptions ) {
 		this.fReliabilityOptions = aOptions;
-		// if no auto-reconnect is desired, abort a pending re-connect, if such.
 		// if no auto-reconnect is desired, abort a pending re-connect, if such.
 		if( this.fReliabilityOptions ) {
 			if( this.fReliabilityOptions.autoReconnect ) {
@@ -2776,7 +2782,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	},
 	
 	processOpened: function ( aEvent ){
-		this.fEncodingFormats = ["base64", "zipBase64"];
+		this.fEncodingFormats = [ "base64", "zipBase64" ];
 		
 		// sending client headers to the server 
 		this.sendToken({
@@ -2789,9 +2795,9 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			jwsType: "javascript",
 			jwsVersion: jws.VERSION,
 			jwsInfo: 
-			jws.browserSupportsNativeWebSockets 
-			? "native"
-			: "flash " + jws.flashBridgeVer,
+				jws.browserSupportsNativeWebSockets 
+				? "native"
+				: "flash " + jws.flashBridgeVer,
 			encodingFormats: this.fEncodingFormats
 		});
 	},
