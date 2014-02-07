@@ -34,6 +34,7 @@ import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
+import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.packetProcessors.JSONProcessor;

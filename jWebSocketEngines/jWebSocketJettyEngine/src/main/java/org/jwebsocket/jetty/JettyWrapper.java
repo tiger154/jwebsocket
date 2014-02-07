@@ -31,6 +31,7 @@ import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.factory.JWebSocketFactory;
+import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.logging.Logging;
@@ -111,6 +112,12 @@ public class JettyWrapper implements WebSocket,
 	 */
 	@Override
 	public void onOpen(Connection aConnection) {
+		// closing if server is not ready
+		if (JWebSocketInstance.STARTED != JWebSocketInstance.getStatus()) {
+			aConnection.close();
+			return;
+		}
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Connecting Jetty Client...");
 		}
@@ -141,15 +148,12 @@ public class JettyWrapper implements WebSocket,
 	 */
 	@Override
 	public void onClose(int i, String string) {
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Disconnecting Jetty Client...");
-		}
 		if (mConnector != null) {
-			// inherited BaseConnector.stopConnector
-			// calls mEngine connector stopped
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Disconnecting Jetty Client...");
+			}
+
 			mConnector.stopConnector(CloseReason.CLIENT);
-			// TODO: check this
-			// mEngine.removeConnector(mConnector);
 		}
 	}
 

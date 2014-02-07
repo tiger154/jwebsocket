@@ -28,6 +28,7 @@ import org.glassfish.grizzly.http.HttpRequestPacket;
 import org.glassfish.grizzly.websockets.*;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.engines.BaseEngine;
+import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
@@ -122,7 +123,6 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 		// String lContext = mEngine.getConfiguration().getContext();
 		// The jWebSocket servlet from the engine configuration
 		// String lServlet = mEngine.getConfiguration().getServlet();
-
 		// boolean isApp = (lContext + lServlet).equals(aRequest.getRequestURI());
 		boolean isApp = true; // all request URIs must be allowed
 
@@ -166,6 +166,12 @@ public class GrizzlyWebSocketApplication extends WebSocketApplication {
 	 */
 	@Override
 	public void onConnect(WebSocket aWebSocket) {
+		// closing if server is not ready
+		if (JWebSocketInstance.STARTED != JWebSocketInstance.getStatus()) {
+			aWebSocket.close();
+			return;
+		}
+
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Connecting Grizzly Client...");
 		}
