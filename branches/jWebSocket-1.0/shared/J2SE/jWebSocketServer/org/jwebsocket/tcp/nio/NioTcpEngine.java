@@ -38,6 +38,7 @@ import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketConnectorStatus;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.engines.BaseEngine;
+import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.*;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.tcp.EngineUtils;
@@ -390,6 +391,13 @@ public class NioTcpEngine extends BaseEngine {
 
 	private void accept(SelectionKey aKey, Selector aSelector) throws IOException {
 		try {
+			// closing if server is not ready
+			if (JWebSocketInstance.STARTED != JWebSocketInstance.getStatus()) {
+				aKey.channel().close();
+				aKey.cancel();
+				return;
+			}
+
 			if (getConnectors().size() == getConfiguration().getMaxConnections()
 					&& getConfiguration().getOnMaxConnectionStrategy().equals("close")) {
 				aKey.channel().close();

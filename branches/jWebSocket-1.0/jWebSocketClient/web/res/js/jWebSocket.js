@@ -1840,7 +1840,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		// otherwise flash bridge may have embedded WebSocket class
 		if( lWsClass ) {
 			// supporting Flash session management
-			if ( self.WebSocket.__isFlashImplementation){
+			if ( self.WebSocket.__isFlashImplementation ){
 				// override session id with a cookie
 				var lSessionCookieName = "JWSSESSIONID";
 				var lArg = "sessionCookieName=";

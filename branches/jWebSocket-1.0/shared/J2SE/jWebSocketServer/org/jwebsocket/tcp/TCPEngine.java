@@ -35,6 +35,7 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.engines.BaseEngine;
+import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
@@ -440,7 +441,7 @@ public class TCPEngine extends BaseEngine {
 		}
 
 		@Override
-		@SuppressWarnings({"SleepWhileInLoop", "UseSpecificCatch"})
+		@SuppressWarnings({"SleepWhileInLoop", "UseSpecificCatch", "null"})
 		public void run() {
 			Thread.currentThread().setName(
 					"jWebSocket TCP-Engine (" + mServer.getLocalPort() + ", "
@@ -458,11 +459,6 @@ public class TCPEngine extends BaseEngine {
 			while (mIsRunning) {
 
 				try {
-					// accept is blocking so here is no need
-					// to put any sleeps into this loop
-					// if (log.isDebugEnabled()) {
-					//	log.debug("Waiting for client...");
-					// }
 					Socket lClientSocket = null;
 					boolean lReject = false;
 					boolean lRedirect = false;
@@ -508,6 +504,12 @@ public class TCPEngine extends BaseEngine {
 					}
 
 					try {
+						// closing if server is not ready
+						if (JWebSocketInstance.STARTED != JWebSocketInstance.getStatus()) {
+							lClientSocket.close();
+							continue;
+						}
+
 						WebSocketConnector lConnector = new TCPConnector(mEngine, lClientSocket);
 						// setting the TcpNoDelay property
 						if (lClientSocket != null) {

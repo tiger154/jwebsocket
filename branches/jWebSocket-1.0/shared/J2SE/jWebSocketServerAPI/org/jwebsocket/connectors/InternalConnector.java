@@ -44,9 +44,9 @@ import org.jwebsocket.util.Tools;
  */
 public class InternalConnector extends BaseConnector {
 
-	private ExecutorService mThreadPool;
-	private Logger mLog = Logging.getLogger();
-	private Collection<IInternalConnectorListener> mListeners = new FastList<IInternalConnectorListener>().shared();
+	private final ExecutorService mThreadPool;
+	private final Logger mLog = Logging.getLogger();
+	private final Collection<IInternalConnectorListener> mListeners = new FastList<IInternalConnectorListener>().shared();
 	static RequestHeader mHeader = new RequestHeader() {
 		@Override
 		public String getFormat() {

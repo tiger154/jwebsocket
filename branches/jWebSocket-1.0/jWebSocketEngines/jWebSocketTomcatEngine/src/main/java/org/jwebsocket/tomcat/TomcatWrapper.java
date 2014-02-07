@@ -36,6 +36,7 @@ import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.config.JWebSocketCommonConstants;
 import org.jwebsocket.engines.BaseEngine;
+import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.RawPacket;
 import org.jwebsocket.kit.RequestHeader;
@@ -55,8 +56,8 @@ public class TomcatWrapper extends MessageInbound {
 	private static WebSocketEngine mEngine = null;
 	private HttpServletRequest mRequest = null;
 	private HttpSession mSession = null;
-	private RequestHeader mHeader;
-	private InetAddress mRemoteHost;
+	private final RequestHeader mHeader;
+	private final InetAddress mRemoteHost;
 	private int mRemotePort;
 	private boolean mIsSecure;
 
@@ -152,6 +153,15 @@ public class TomcatWrapper extends MessageInbound {
 	 */
 	@Override
 	protected void onOpen(WsOutbound aOutbound) {
+		// closing if server is not ready
+		if (JWebSocketInstance.STARTED != JWebSocketInstance.getStatus()) {
+			try {
+				aOutbound.close(0, null);
+			} catch (IOException lEx) {
+			}
+			return;
+		}
+
 		// super.onOpen(aOutbound);
 		if (mLog.isDebugEnabled()) {
 			mLog.debug("Connecting Tomcat ("
@@ -168,7 +178,7 @@ public class TomcatWrapper extends MessageInbound {
 				}
 				try {
 					aOutbound.close(0, null);
-				} catch (IOException ex) {
+				} catch (IOException lEx) {
 				}
 			} else if (mEngine.getConfiguration().getOnMaxConnectionStrategy().equals("reject")) {
 				if (mLog.isDebugEnabled()) {
@@ -176,7 +186,7 @@ public class TomcatWrapper extends MessageInbound {
 				}
 				try {
 					aOutbound.close(CloseReason.SERVER_REJECT_CONNECTION.getCode(), null);
-				} catch (IOException ex) {
+				} catch (IOException lEx) {
 				}
 			}
 
@@ -201,11 +211,10 @@ public class TomcatWrapper extends MessageInbound {
 	 */
 	@Override
 	protected void onClose(int aStatus) {
-		// super.onClose(status);
-		if (mLog.isDebugEnabled()) {
-			mLog.debug("Disconnecting Tomcat Client...");
-		}
 		if (null != mConnector) {
+			if (mLog.isDebugEnabled()) {
+				mLog.debug("Disconnecting Tomcat Client...");
+			}
 			mConnector.stopConnector(CloseReason.CLIENT);
 		}
 	}
