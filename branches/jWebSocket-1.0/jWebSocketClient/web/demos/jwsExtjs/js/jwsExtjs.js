@@ -88,12 +88,16 @@ Ext.onReady(function() {
 		if (aToken.username !== "anonymous") {
 			Ext.jwsClient.fireEvent(jws.ExtJSDemo.TT_LOGON, aToken, Ext.jwsClient);
 		} else {
-			Ext.jwsClient.getConnection().systemLogon(jws.DEMO_ROOT_LOGINNAME, jws.DEMO_ROOT_PASSWORD);
+			Ext.jwsClient.getConnection().systemLogon(jws.DEMO_ROOT_LOGINNAME, jws.DEMO_ROOT_PASSWORD, {
+				OnSuccess: function(aToken) {
+					Ext.jwsClient.getConnection().broadcastToSharedSession({data: aToken}, false);
+				}
+			});
 		}
 	});
 
 	Ext.jwsClient.on(jws.ExtJSDemo.TT_LOGON, function(aToken) {
-		if(aToken.username){
+		if (aToken.username) {
 			eClient.innerHTML = aToken.username;
 		}
 		Ext.jwsClient.send(jws.ExtJSDemo.NS_EXTJS_DEMO, jws.ExtJSDemo.TT_REGISTER);
@@ -123,7 +127,15 @@ Ext.onReady(function() {
 	});
 
 	eBtnDisconnect.on("click", function() {
-		Ext.jwsClient.close();
+		Ext.jwsClient.getConnection().systemLogoff({
+			OnSuccess: function(aToken) {
+				Ext.jwsClient.getConnection().broadcastToSharedSession({data: aToken}, false);
+				Ext.jwsClient.close();
+			},
+			OnFailure: function() {
+				Ext.jwsClient.close();
+			}
+		});
 	});
 	Ext.jwsClient.open();
 });
@@ -159,7 +171,7 @@ function initDemo() {
 						lName = Ext.String.capitalize(aOperation.action),
 						lText;
 
-				if (lName == jws.ExtJSDemo.TT_DESTROY) {
+				if (lName === jws.ExtJSDemo.TT_DESTROY) {
 					lRecord = aOperation.records[0];
 					lText = 'Destroyed';
 				} else {
@@ -168,7 +180,7 @@ function initDemo() {
 
 
 				var lForm = lFormPanel.getForm();
-				if (aOperation.action != jws.ExtJSDemo.TT_DESTROY) {
+				if (aOperation.action !== jws.ExtJSDemo.TT_DESTROY) {
 					lForm.loadRecord(lRecord);
 
 					Ext.getCmp('submit_button').setText('Update User');
@@ -254,35 +266,35 @@ function initDemo() {
 					var lForm = this.up('form').getForm();
 
 					var lAction = null;
-					if (lForm.findField('id').getValue() != "") {
+					if (lForm.findField('id').getValue() !== "") {
 						lAction = {
 							ns: jws.ExtJSDemo.NS_EXTJS_DEMO,
 							tokentype: jws.ExtJSDemo.TT_UPDATE,
 							params: {
 								updateForm: 'yes'
 							}
-						}
+						};
 					} else {
 						lAction = {
 							ns: jws.ExtJSDemo.NS_EXTJS_DEMO,
 							tokentype: jws.ExtJSDemo.TT_CREATE
-						}
+						};
 					}
 					lAction.failure = function(aForm, aAction) {
-						if (aAction == 'undefined') {
+						if (aAction === 'undefined') {
 							var message = "Please you have errors in the form";
 							log(-1, message);
 						} else {
 							log(-1, aAction.response.message);
 
 						}
-					}
+					};
 
 					lAction.success = function(aForm, aAction) {
 						Ext.getCmp('submit_button').setText('Add User');
 						aForm.reset();
 						log(aAction.response.code, aAction.response.message);
-					}
+					};
 
 					if (lForm.isValid())
 						lForm.submit(lAction);
@@ -363,7 +375,7 @@ function initDemo() {
 							tokentype: jws.ExtJSDemo.TT_READ,
 							params: {
 								id: lGridPanel.mLastSelected
-							},
+							}
 							// Optional
 //					success: function(aForm, aToken) {
 //						console.log("success");
@@ -380,7 +392,6 @@ function initDemo() {
 				// action works, this could simply be changed by a 
 				// lForm.loadRecord(aRecord.index)
 				lForm.load(lAction);
-
 
 				Ext.getCmp('submit_button').setText('Update User');
 			}
@@ -443,16 +454,16 @@ function initDemo() {
 		lGridPanel.down('#delete').setDisabled(aSelections.length === 0);
 	});
 	lGridPanel.getView().on('beforeitemkeydown', function(aView, aRecord, aItem, aIdx, aEvent) {
-		if (aEvent.keyCode == 13)
+		if (aEvent.keyCode === 13)
 			lFormPanel.loadRecord(aRecord);
 
 	});
 	function log(aType, aMsg) {
 		var lBody = Ext.get('console');
-		if (aType == 0) {
+		if (aType === 0) {
 			lBody.update('<i>Last action</i><br> \n\
                 <b style=color:green> Message: </b> ' + aMsg);
-		} else if (aType == -1) {
+		} else if (aType === -1) {
 			lBody.update('<i>Last action</i><br>\n\
                 <b style=color:red> Message: </b> ' + aMsg);
 		}
@@ -514,40 +525,41 @@ function initDemo() {
 		items: [lTabPanel]
 	}).show();
 
-	var lPlugIn = {};
-	lPlugIn.processToken = function(aToken) {
-		if (aToken.ns === jws.ExtJSDemo.NS_EXTJS_DEMO) {
-			if (aToken.type == jws.ExtJSDemo.TT_NOTIFY_CREATE || aToken.type == jws.ExtJSDemo.TT_NOTIFY_UPDATE
-					|| aToken.type == jws.ExtJSDemo.TT_NOTIFY_DESTROY
-					|| aToken.type == jws.ExtJSDemo.TT_NOTIFY_RESET) {
-				log(0, aToken.message);
-				var lOptions = {};
-				if (aToken.type == jws.ExtJSDemo.TT_NOTIFY_UPDATE) {
-					lOptions = {
-						callback: function() {
-							lGridPanel.getSelectionModel().select(lGridPanel.mLastSelected);
+	Ext.jwsClient.addPlugIn({
+		processToken: function(aToken) {
+			if (aToken.ns === jws.ExtJSDemo.NS_EXTJS_DEMO) {
+				if (aToken.type === jws.ExtJSDemo.TT_NOTIFY_CREATE ||
+						aToken.type === jws.ExtJSDemo.TT_NOTIFY_UPDATE ||
+						aToken.type === jws.ExtJSDemo.TT_NOTIFY_DESTROY ||
+						aToken.type === jws.ExtJSDemo.TT_NOTIFY_RESET) {
+					log(0, aToken.message);
+					var lOptions = {};
+					if (aToken.type === jws.ExtJSDemo.TT_NOTIFY_UPDATE) {
+						lOptions = {
+							callback: function() {
+								lGridPanel.getSelectionModel().select(lGridPanel.mLastSelected);
+							}
 						}
 					}
+					lStore.load(lOptions);
 				}
-				lStore.load(lOptions);
+			}
+			if (aToken.type === "welcome") {
+				eClientId.innerHTML = jws.ExtJSDemo.TEXT_CLIENT_ID + aToken.sourceId;
+				eWebSocketType.innerHTML = jws.ExtJSDemo.TEXT_WEBSOCKET + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)");
 			}
 		}
-		if (aToken.type == "welcome") {
-			eClientId.innerHTML = jws.ExtJSDemo.TEXT_CLIENT_ID + aToken.sourceId;
-			eWebSocketType.innerHTML = jws.ExtJSDemo.TEXT_WEBSOCKET + (jws.browserSupportsNativeWebSockets ? "(native)" : "(flashbridge)");
-		}
-	}
-	Ext.jwsClient.addPlugIn(lPlugIn);
+	});
 }
 
 function exitDemo() {
 	var lWindowForm = Ext.WindowManager.get("formDemo");
 	var lWindowGrid = Ext.WindowManager.get("gridDemo");
 	var lWindowConsole = Ext.WindowManager.get("consoleDemo");
-	if (lWindowForm != undefined)
+	if (lWindowForm !== undefined)
 		lWindowForm.close();
-	if (lWindowGrid != undefined)
+	if (lWindowGrid !== undefined)
 		lWindowGrid.close();
-	if (lWindowConsole != undefined)
+	if (lWindowConsole !== undefined)
 		lWindowConsole.close();
 }

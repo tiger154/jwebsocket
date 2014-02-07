@@ -79,6 +79,7 @@ $.widget("jws.auth", {
 		w.auth.eLogoffButton.click(
 				function( ) {
 					w.auth.deauth( );
+					w.auth.logout( );
 					// If there is not a connect button
 //					if (!w.auth.eConnectButton.attr("id")) {
 //						// logout and close the connection
@@ -276,18 +277,25 @@ $.widget("jws.auth", {
 	},
 	logoff: function( ) {
 		if (mWSC) {
-			if (mLog.isDebugEnabled) {
-				log("Logging off " + (w.auth.mUsername !== null ? "'" +
-						w.auth.mUsername + "'" : ""));
-			}
-			// the timeout below  is optional,
-			// if you use it you'll get a good-bye message.
-			var lRes = mWSC.logout({
-				timeout: 3000
-			});
+			if (mWSC.isLoggedIn() !== "anonymous") {
+				if (mLog.isDebugEnabled) {
+					log("Logging off " + (w.auth.mUsername !== null ? "'" +
+							w.auth.mUsername + "'" : ""));
+				}
 
-			if (mLog.isDebugEnabled) {
-				log(mWSC.resultToString(lRes));
+				// the timeout below  is optional,
+				// if you use it you'll get a good-bye message.
+				var lRes = mWSC.logout({
+					timeout: 3000
+				});
+
+				if (mLog.isDebugEnabled) {
+					log(mWSC.resultToString(lRes));
+				}
+			} else {
+				if (mLog.isDebugEnabled) {
+					log("You are not logged in");
+				}
 			}
 		}
 	},
@@ -336,16 +344,35 @@ $.widget("jws.auth", {
 			}
 		}
 	},
-	auth: function( ) {
+	auth: function( aUser, aPassword ) {
 		if (mWSC) {
 			if (mLog.isDebugEnabled) {
 				log("Authenticating...");
 			}
 			try {
+				var lUsername, lPassword;
+				if (AUTO_USER_AND_PASSWORD) {
+					lUsername = aUser || jws.DEMO_ROOT_LOGINNAME;
+					lPassword = aPassword || jws.DEMO_ROOT_PASSWORD;
+				} else {
+					lUsername = w.auth.eUsername.val( );
+					lPassword = w.auth.ePassword.val( );
+				}
+
+				if (lUsername.trim() === "" || lPassword.trim() === "") {
+					if (mLog.isDebugEnabled) {
+						log("<font color='red'>User or password can not be empty," +
+								"please check your login information.</font>");
+					}
+					return;
+				}
+
 				var lRes = mWSC.systemLogon(
-						w.auth.eUsername.val( ),
-						w.auth.ePassword.val( )
-						);
+						lUsername, lPassword, {
+							OnSuccess: function(aToken) {
+								mWSC.broadcastToSharedSession({data: aToken}, false);
+							}
+						});
 				if (lRes.code === 0) {
 					if (mLog.isDebugEnabled) {
 						log("Asychronously waiting for response...");
@@ -369,7 +396,11 @@ $.widget("jws.auth", {
 				log("Deauthenticating...");
 			}
 			try {
-				var lRes = mWSC.systemLogoff( );
+				var lRes = mWSC.systemLogoff({
+					OnSuccess: function(aToken) {
+						mWSC.broadcastToSharedSession({data: aToken}, false);
+					}
+				});
 				if (lRes.code === 0) {
 					if (mLog.isDebugEnabled) {
 						log("Asychronously waiting for response...");

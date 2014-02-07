@@ -883,6 +883,7 @@ Ext.onReady(function() {
 		closeQuotaPluginLoginWindows();
 		Ext.getCmp('user_label').setText(aResponse.username);
 		Ext.getCmp("namespace_diskspace").setVisible(false);
+		Ext.jwsClient.getConnection().broadcastToSharedSession({data: aResponse}, false);
 	});
 	// Auto opening the connection
 	Ext.jwsClient.open();
@@ -1561,8 +1562,9 @@ function showQuotaPluginMainWindows() {
 function closeQuotaPluginMainwindows() {
 	var lWindowMain = Ext.WindowManager.get("mainWindowsQuotaPlugin");
 
-	if (lWindowMain != undefined)
+	if (lWindowMain !== undefined) {
 		lWindowMain.hide();
+	}
 }
 
 function showQuotaPluginLoginWindows() {
@@ -1592,7 +1594,7 @@ function showQuotaPluginLoginWindows() {
 						value: 'root',
 						listeners: {
 							specialkey: function(af, aE) {
-								if (af.getKey() == aE.ENTER) {
+								if (af.getKey() === aE.ENTER) {
 									ldoQuotaPluginLogin(lLoginWin.down('form'));
 								}
 							}
@@ -1611,17 +1613,17 @@ function showQuotaPluginLoginWindows() {
 	var ldoQuotaPluginLogin = function(alForm) {
 
 		if (alForm.getForm().isValid()) {
-			Ext.jwsClient.getConnection().login(alForm.down('textfield[name=username]').getValue(),
+			Ext.jwsClient.getConnection().systemLogon(alForm.down('textfield[name=username]').getValue(),
 					alForm.down('textfield[name=password]').getValue());
 		}
-	}
+	};
 
 }
 
 function closeQuotaPluginLoginWindows() {
 	var lWindowLogin = Ext.WindowManager.get("loginWindQuotaPlugin");
 
-	if (lWindowLogin != undefined)
+	if (lWindowLogin !== undefined)
 		lWindowLogin.close();
 }
 
@@ -1656,10 +1658,10 @@ function initDemo() {
 function exitDemo() {
 	var lWindowMain = Ext.WindowManager.get("mainWindowsQuotaPlugin"),
 			lWindowLogin = Ext.WindowManager.get("loginWindQuotaPlugin");
-	if (lWindowMain !== undefined){
+	if (lWindowMain !== undefined) {
 		lWindowMain.close();
 	}
-	if (lWindowLogin !== undefined){
+	if (lWindowLogin !== undefined) {
 		lWindowLogin.close();
 	}
 }
