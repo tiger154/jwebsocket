@@ -40,6 +40,7 @@ import org.jwebsocket.connectors.BaseConnector;
 import org.jwebsocket.connectors.InternalConnector;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.filters.system.SystemFilter;
+import org.jwebsocket.jms.JMSEngine;
 import org.jwebsocket.jms.JMSServer;
 import org.jwebsocket.kit.BroadcastOptions;
 import org.jwebsocket.kit.CloseReason;
@@ -322,6 +323,33 @@ public class SystemPlugIn extends TokenPlugIn {
 		}
 	}
 
+	@Override
+	public void engineStarted(final WebSocketEngine aEngine) {
+		aEngine.setSystemStoppingNotificationStrategy(new Runnable() {
+
+			@Override
+			public void run() {
+				if (aEngine instanceof JMSEngine) {
+					// don't notify if the jWebSocket server node is part of an active cluster
+					if (((JMSEngine) aEngine).getNodesManager().count() > 1) {
+						return;
+					}
+				}
+
+				Token lToken = TokenFactory.createToken(NS_SYSTEM, "event");
+				lToken.setString("name", "systemStopping");
+
+				Iterator<WebSocketConnector> lIt = aEngine.getConnectors().values().iterator();
+				while (lIt.hasNext()) {
+					WebSocketConnector aConnector = lIt.next();
+					if (aConnector.supportTokens()) {
+						sendToken(aConnector, lToken);
+					}
+				}
+			}
+		});
+	}
+
 	/**
 	 *
 	 * @param aConnector
@@ -394,7 +422,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		if (mSessionManager != null) {
 			try {
 				boolean lSessionShared = !getServer().getSharedSessionConnectors(
-								aConnector.getSession().getSessionId()).isEmpty();
+						aConnector.getSession().getSessionId()).isEmpty();
 				mSessionManager.connectorStopped(aConnector, lSessionShared);
 			} catch (Exception lEx) {
 				mLog.error(Logging.getSimpleExceptionMessage(lEx, "stopping connector session"), lEx);

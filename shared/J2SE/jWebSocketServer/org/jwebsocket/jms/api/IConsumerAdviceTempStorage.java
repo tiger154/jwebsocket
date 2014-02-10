@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * Stores the JMS ConsumerInfo event related data into a distributed database,
- * to be used by the jWebSocket Cluster Load Balancers during the connector
+ * to be used by the jWebSocket Cluster LoadBalancers during the connector
  * starting process.
  *
  * @author kyberneees

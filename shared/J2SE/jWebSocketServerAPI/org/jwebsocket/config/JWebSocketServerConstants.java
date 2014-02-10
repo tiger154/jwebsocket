@@ -79,15 +79,19 @@ public final class JWebSocketServerConstants {
 	 */
 	public static final int DEFAULT_MAX_CONNECTIONS = 10000;
 	/**
-	 * the default "on max connections reached" strategy {wait, close, reject,
+	 * The default "on max connections reached" strategy {wait, close, reject,
 	 * redirect}
 	 */
 	public static final String DEFAULT_ON_MAX_CONNECTIONS_STRATEGY = "reject";
+	/**
+	 * Default 'notifySystemStopping' engine configuration value.
+	 */
+	public static final boolean DEFAULT_NOTIFY_SYSTEM_STOPPING = false;
 	/**
 	 * The jWebSocket server side ConnectionManager bean id
 	 *
 	 * @see conf/bootstrap.xml
 	 */
 	public static final String CONNECTION_MANAGER_BEAN_ID = "org.jwebsocket.server.connection_manager";
-	
+
 }

@@ -265,4 +265,12 @@ public interface WebSocketEngine extends ISystemLifecycle {
 	 * @return The maximun number of connections allowed by this engine
 	 */
 	Integer getMaxConnections();
+
+	/**
+	 * Set the engine system stopping notification strategy. The strategy is
+	 * called only if the 'notifySystemStopping' configuration is set to TRUE.
+	 *
+	 * @param aStrategy
+	 */
+	void setSystemStoppingNotificationStrategy(Runnable aStrategy);
 }

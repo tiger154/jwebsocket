@@ -52,6 +52,7 @@ public class EngineConfigHandler implements ConfigHandler {
 	private static final String TIMEOUT = "timeout";
 	private static final String MAXFRAMESIZE = "maxframesize";
 	private static final String DOMAINS = "domains";
+	private static final String NOTIFY_SYSTEM_STOPPING = "notifySystemStopping";
 	private static final String DOMAIN = "domain";
 	private static final String MAX_CONNECTIONS = "maxconnections";
 	private static final String ON_MAX_CONNECTIONS = "onmaxconnections";
@@ -72,6 +73,7 @@ public class EngineConfigHandler implements ConfigHandler {
 		int lPort = 0, lSSLPort = 0, lTimeout = 0, lFramesize = 0;
 		Integer lMaxConnections = JWebSocketServerConstants.DEFAULT_MAX_CONNECTIONS;
 		Map<String, Object> lSettings = new FastMap();
+		boolean lNotifySystemStopping = JWebSocketServerConstants.DEFAULT_NOTIFY_SYSTEM_STOPPING;
 
 		List<String> lDomains = null;
 		while (aStreamReader.hasNext()) {
@@ -116,6 +118,9 @@ public class EngineConfigHandler implements ConfigHandler {
 				} else if (lElementName.equals(MAXFRAMESIZE)) {
 					aStreamReader.next();
 					lFramesize = Integer.parseInt(aStreamReader.getText());
+				} else if (lElementName.equals(NOTIFY_SYSTEM_STOPPING)) {
+					aStreamReader.next();
+					lNotifySystemStopping = ("true".equals(aStreamReader.getText().toLowerCase()));
 				} else if (lElementName.equals(MAX_CONNECTIONS)) {
 					aStreamReader.next();
 					lMaxConnections = Integer.parseInt(aStreamReader.getText());
@@ -140,7 +145,7 @@ public class EngineConfigHandler implements ConfigHandler {
 				lContext, lServlet,
 				lTimeout, lFramesize, lDomains, lMaxConnections,
 				lOnMaxConnectionsStrategy,
-				lSettings);
+				lNotifySystemStopping, lSettings);
 	}
 
 	/**
