@@ -48,7 +48,8 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	private final List<String> mDomains;
 	private final Integer mMaxConnections;
 	private final String mOnMaxConnectionsStrategy;
-	private Map<String, Object> mSettings;
+	private final Map<String, Object> mSettings;
+	private final boolean mNotifySystemStopping;
 
 	/**
 	 * Constructor for engine
@@ -74,7 +75,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 			Integer aSSLPort, String aHostname, String aKeyStore, String aKeyStorePassword,
 			String aContext, String aServlet, int aTimeout,
 			int aMaxFrameSize, List<String> aDomains, Integer aMaxConnections,
-			String aOnMaxConnectionsStrategy, Map<String, Object> aSettigns) {
+			String aOnMaxConnectionsStrategy, boolean aNotifySystemStopping, Map<String, Object> aSettigns) {
 		this.mId = aId;
 		this.mName = aName;
 		this.mJar = aJar;
@@ -91,6 +92,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 		this.mMaxConnections = aMaxConnections;
 		this.mOnMaxConnectionsStrategy = aOnMaxConnectionsStrategy;
 		this.mSettings = aSettigns;
+		this.mNotifySystemStopping = aNotifySystemStopping;
 
 		validate();
 	}
@@ -210,7 +212,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 		}
 		throw new WebSocketRuntimeException(
 				"Missing one of the engine configuration, "
-				+ "please check your configuration file");
+				+ "please check your configuration file!");
 	}
 
 	/**
@@ -249,4 +251,10 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	public Map<String, Object> getSettings() {
 		return Collections.unmodifiableMap(mSettings);
 	}
+
+	@Override
+	public boolean isNotifySystemStopping() {
+		return mNotifySystemStopping;
+	}
+
 }

@@ -34,12 +34,13 @@ import org.jwebsocket.kit.WebSocketException;
  */
 public abstract class BaseEngine implements WebSocketEngine {
 
-	private final Map<String, WebSocketServer> mServers =
-			new FastMap<String, WebSocketServer>().shared();
-	private final FastMap<String, WebSocketConnector> mConnectors =
-			new FastMap<String, WebSocketConnector>().shared();
+	private final Map<String, WebSocketServer> mServers
+			= new FastMap<String, WebSocketServer>().shared();
+	private final FastMap<String, WebSocketConnector> mConnectors
+			= new FastMap<String, WebSocketConnector>().shared();
 	private int mSessionTimeout = JWebSocketCommonConstants.DEFAULT_TIMEOUT;
 	private EngineConfiguration mConfiguration;
+	private Runnable mSystemStoppingNotificationStragety;
 
 	/**
 	 *
@@ -68,13 +69,12 @@ public abstract class BaseEngine implements WebSocketEngine {
 
 	@Override
 	public void stopEngine(CloseReason aCloseReason) throws WebSocketException {
-		try {
-			// stop all connectors of this engine
-			for (final WebSocketConnector lConnector : mConnectors.values()) {
+		// stop all connectors of this engine
+		for (final WebSocketConnector lConnector : mConnectors.values()) {
+			try {
 				lConnector.stopConnector(aCloseReason);
+			} catch (Exception lEx) {
 			}
-		} catch (Exception ex) {
-			// log.info("Exception on sleep " + ex.getMessage());
 		}
 		// this method will be overridden by engine implementations.
 		// The implementation will notify server that the engine has stopped
@@ -247,16 +247,29 @@ public abstract class BaseEngine implements WebSocketEngine {
 	}
 
 	@Override
+	public void setSystemStoppingNotificationStrategy(Runnable aStrategy) {
+		mSystemStoppingNotificationStragety = aStrategy;
+	}
+
+	@Override
 	public void systemStopping() throws Exception {
-		try {
-			// notify all connectors in engine
-			for (final WebSocketConnector lConnector : mConnectors.values()) {
-				if (lConnector.isInternal()) {
+		if (getConfiguration().isNotifySystemStopping()) {
+			// executing notification strategy
+			if (null != mSystemStoppingNotificationStragety) {
+				mSystemStoppingNotificationStragety.run();
+			}
+		}
+
+		// close all internal connectors in engine
+		for (final WebSocketConnector lConnector : mConnectors.values()) {
+			if (lConnector.isInternal()) {
+				try {
 					lConnector.stopConnector(CloseReason.SERVER);
+				} catch (Exception ex) {
 				}
 			}
-		} catch (Exception ex) {
 		}
+
 	}
 
 	@Override

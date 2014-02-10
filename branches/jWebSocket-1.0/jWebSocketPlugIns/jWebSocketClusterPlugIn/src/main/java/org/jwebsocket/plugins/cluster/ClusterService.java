@@ -23,6 +23,7 @@ import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketServer;
+import org.jwebsocket.config.JWebSocketServerConstants;
 import org.jwebsocket.config.xml.EngineConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.logging.Logging;
@@ -62,7 +63,8 @@ public class ClusterService {
 				65536, // max frame size
 				lDomains, // domains
 				1000, // max connections
-				"-", // max connection stretegy
+				"-", // max connection stretegy,
+				JWebSocketServerConstants.DEFAULT_NOTIFY_SYSTEM_STOPPING, // notify system stopping
 				null // settings
 				);
 		ClusterEngine lEngine = new ClusterEngine(lEngineCfg);

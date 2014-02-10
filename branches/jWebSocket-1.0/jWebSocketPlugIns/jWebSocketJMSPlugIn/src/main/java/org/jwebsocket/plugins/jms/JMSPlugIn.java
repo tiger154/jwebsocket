@@ -122,6 +122,7 @@ public class JMSPlugIn extends TokenPlugIn {
 					lDomains, // domains
 					1000, // max connections
 					"-", // max connection stretegy
+					false, // notify on system stopping
 					null // settings
 					);
 			mJMSEngine = new JMSEngine(lEngineCfg);

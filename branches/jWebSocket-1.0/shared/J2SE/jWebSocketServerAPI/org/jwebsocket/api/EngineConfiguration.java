@@ -135,4 +135,12 @@ public interface EngineConfiguration extends Configuration {
 	 * @return
 	 */
 	String getHostname();
+
+	/**
+	 * Indicates if the engine notifies connected clients during the jWebSocket
+	 * server stopping process.
+	 *
+	 * @return
+	 */
+	boolean isNotifySystemStopping();
 }
