@@ -157,7 +157,13 @@
 				if the frame size is larger than this the connection will be closed.
 			-->
 			<maxframesize>1048840</maxframesize>
-			
+			<!-- 
+				Indicates if the engine requires to notify connected clients 
+				during the jWebSocket stopping process. If the jWebSocket server
+				is part of a cluster (JMSEngine), the engine will only notify if
+				it there are not other active nodes. Default: FALSE
+			-->
+			<notifySystemStopping>false</notifySystemStopping>
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
 			
@@ -221,7 +227,13 @@
 				if the frame size is larger than this the connection will be closed.
 			-->
 			<maxframesize>1048840</maxframesize>
-			
+			<!-- 
+				Indicates if the engine requires to notify connected clients 
+				during the jWebSocket stopping process. If the jWebSocket server
+				is part of a cluster (JMSEngine), the engine will only notify if
+				it there are not other active nodes. Default: FALSE
+			-->
+			<notifySystemStopping>false</notifySystemStopping>
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
 			
@@ -277,6 +289,13 @@
 				if the frame size is larger than this the connection will be closed.
 			-->
 			<maxframesize>20480</maxframesize>
+			<!-- 
+				Indicates if the engine requires to notify connected clients 
+				during the jWebSocket stopping process. If the jWebSocket server
+				is part of a cluster (JMSEngine), the engine will only notify if
+				it there are not other active nodes. Default: FALSE
+			-->
+			<notifySystemStopping>false</notifySystemStopping>
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
 			<settings>
@@ -350,6 +369,13 @@
 				if the frame size is larger than this the connection will be closed.
 			-->
 			<maxframesize>1048840</maxframesize>
+			<!-- 
+				Indicates if the engine requires to notify connected clients 
+				during the jWebSocket stopping process. If the jWebSocket server
+				is part of a cluster (JMSEngine), the engine will only notify if
+				it there are not other active nodes. Default: FALSE
+			-->
+			<notifySystemStopping>false</notifySystemStopping>
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
 		</engine>
@@ -421,6 +447,13 @@
 				if the frame size is larger than this the connection will be closed.
 			-->
 			<maxframesize>1048840</maxframesize>
+			<!-- 
+				Indicates if the engine requires to notify connected clients 
+				during the jWebSocket stopping process. If the jWebSocket server
+				is part of a cluster (JMSEngine), the engine will only notify if
+				it there are not other active nodes. Default: FALSE
+			-->
+			<notifySystemStopping>false</notifySystemStopping>
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
 			<settings>
@@ -502,6 +535,13 @@
 				if the frame size is larger than this the connection will be closed.
 			-->
 			<maxframesize>1048840</maxframesize>
+			<!-- 
+				Indicates if the engine requires to notify connected clients 
+				during the jWebSocket stopping process. If the jWebSocket server
+				is part of a cluster (JMSEngine), the engine will only notify if
+				it there are not other active nodes. Default: FALSE
+			-->
+			<notifySystemStopping>false</notifySystemStopping>
 			<!-- maximun number of connections allowed by this engine -->
 			<maxconnections>10000</maxconnections>
 			<!-- on max connections reached strategy -->
