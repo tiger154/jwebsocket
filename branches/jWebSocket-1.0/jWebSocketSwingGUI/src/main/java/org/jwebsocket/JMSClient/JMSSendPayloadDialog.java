@@ -187,7 +187,7 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 
         jLabel1.setText("Target ID");
 
-        jLabel3.setText("Gateway Topic");
+        jLabel3.setText("Namespace");
 
         jLabel4.setText("Type of message");
 

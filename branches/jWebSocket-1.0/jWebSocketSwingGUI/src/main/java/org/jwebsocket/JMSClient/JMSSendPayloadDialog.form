@@ -126,7 +126,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Gateway Topic"/>
+        <Property name="text" type="java.lang.String" value="Namespace"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
