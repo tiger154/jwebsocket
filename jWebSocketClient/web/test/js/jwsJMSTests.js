@@ -20,6 +20,9 @@
 jws.tests.JMS = {
 
 	NS: "jws.tests.jms", 
+	title: "JMS plug-in",
+	description: "jWebSocket JMS plug-in",
+	category: "Community Edition",
 
 	// this spec tests the listen method of the JMS plug-in
 	testListen: function() {

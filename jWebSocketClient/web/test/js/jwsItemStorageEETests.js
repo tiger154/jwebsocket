@@ -17,12 +17,13 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
-if ( undefined == jws.tests.enterprise ){
-	jws.tests.enterprise = {};
-}
-jws.tests.enterprise.ItemStorage = {
+jws.tests.ItemStorageEE = {
 
 	NS: "jws.tests.enterprise.itemstorage", 
+	title: "ItemStorage EE plug-in",
+	description: "jWebSocket itemstorage (enterprise edition) plug-in. Designed for generic data storage.",
+	category: "Enterprise Edition",
+	priority: 30,
 	
 	testCreateCollection: function(aCollectionName, aItemType, aSecretPwd, aAccessPwd, aIsPrivate, aCapacity, aExpectedCode) {
 		

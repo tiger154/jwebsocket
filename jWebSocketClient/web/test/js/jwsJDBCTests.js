@@ -21,6 +21,10 @@
 jws.tests.JDBC = {
 
 	NS: "jws.tests.jdbc", 
+	title: "JDBC plug-in",
+	description: "jWebSocket JDBC plug-in",
+	category: "Community Edition",
+	enabled: false,
 	
 	TEST_TABLE: "jwebsocket_automated_test",
 	TEST_STRING_1: "This is an automated demo text", 

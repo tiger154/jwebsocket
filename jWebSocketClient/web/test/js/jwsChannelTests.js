@@ -19,6 +19,10 @@
 
 jws.tests.Channels = {
 	NS: "jws.tests.channels",
+	title: "Channel plug-in",
+	description: "jWebSocket channel plug-in. Designed for server centric communications channels.",
+	category: "Community Edition",
+	
 	TEST_MESSAGE: "this is a test message",
 	// this spec tests the subscribe method of the Channels plug-in
 	testSubscribe: function(aChannelName, aAccessKey) {

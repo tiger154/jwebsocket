@@ -20,6 +20,9 @@
 jws.tests.Streaming = {
 
 	NS: "jws.tests.streaming", 
+	title: "Streaming plug-in",
+	description: "jWebSocket streaming plug-in",
+	category: "Community Edition",
 
 	// this spec tests the register method of the streaming plug-in
 	testRegister: function( aStreamId ) {

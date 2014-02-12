@@ -20,6 +20,9 @@
 jws.tests.RPC = {
 
 	NS: "jws.tests.rpc", 
+	title: "RPC plug-in",
+	description: "jWebSocket RPC plug-in",
+	category: "Community Edition",
 	
 	TEST_STRING: "This is a string to be MD5'ed", 
 
