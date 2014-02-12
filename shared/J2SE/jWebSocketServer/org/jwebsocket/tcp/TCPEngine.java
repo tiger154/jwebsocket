@@ -514,6 +514,8 @@ public class TCPEngine extends BaseEngine {
 						// setting the TcpNoDelay property
 						if (lClientSocket != null) {
 							lClientSocket.setTcpNoDelay(mTcpNoDelay);
+							// restricting connection handshake timeout
+							lClientSocket.setSoTimeout(10 * 1000);
 						}
 
 						// Check for maximum connections reached strategies
