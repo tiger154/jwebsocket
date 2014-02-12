@@ -17,115 +17,14 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
-// this is a suite
-function runOpenCloseSuite () {
-
-	describe( "Open/Close Test Suite", function () {
-		testOpenConnections();
-		testCloseConnections();
-	});
-}
-
-function runBenchmarkSuite() {
-
-	describe( "Benchmark Test Suite", function () {
-		
-		// open all connections
-		jws.tests.Benchmarks.testOpenConnections();
-
-		// run the benchmark
-		jws.tests.Benchmarks.testBenchmark();
-
-		// close all connections
-		jws.tests.Benchmarks.testCloseConnections();
-	});
-
-}
-
-function runDefaultAPISuite() {
-
-	describe( "Default API test Suite", function () {
-
-		// open all connections
-		testOpenConnections();
-
-		// get the default specs from the API
-		testGetAPIDefaults();
-
-		// run all the obtained default specs
-		testRunAPIDefaults();
-
-		// close all connections
-		testCloseConnections();
-	});
-
-}
-
-function runEventsSuite() {
-	//run Events tests
-	jws.myConn = new jws.jWebSocketJSONClient();
-	jws.myConn.open(jws.JWS_SERVER_URL, {
-		// jws.myConn.open("wss://localhost:9797/jWebSocket/jWebSocket", {
-		OnWelcome: function (){
-			console.log("Welcome received...");
-			//Initializing events in the client... 
-			//Creating the filter chain
-			var securityFilter = new jws.SecurityFilter();
-			securityFilter.OnNotAuthorized = function(aEvent){
-			//Not Authorized global callback!
-			}
-			
-			var cacheFilter = new jws.CacheFilter();
-			cacheFilter.cache = new Cache();
-			var validatorFiler = new jws.ValidatorFilter();
-			
-			//Creating a event notifier
-			var notifier = new jws.EventsNotifier();
-			notifier.ID = "notifier0";
-			notifier.NS = "test";
-			notifier.jwsClient = jws.myConn;
-			notifier.filterChain = [securityFilter, cacheFilter, validatorFiler];
-			notifier.initialize();
-			  
-			//Creating a plugin generator
-			var generator = new jws.EventsPlugInGenerator();
-
-			//Generating the auth & test plug-ins.
-			auth = generator.generate("auth", notifier, function(){
-				test = generator.generate("test", notifier, function(){
-					/*
-				 * Run the events test suite when generate the last plugin
-				 */
-					jws.tests.Events.runSuite();
-				});
-			});
-		},
-		OnClose: function(){
-			if ( undefined != jwsDialog ) {
-				jwsDialog( "You are not connected to the server!", "jWebSocket Message", true, "alert" );
-			} else {
-				alert( "You are not connected to the server!" );
-			}
-		},
-		OnTimeout: function(){
-			if ( undefined != jwsDialog ) {
-				jwsDialog( "Timeout openning connection!", "jWebSocket Message", true, "alert" );
-			} else {
-				alert( "Timeout openning connection!" );
-			}
-		}
-	});
-}
-
 function runFullTestSuite(aArgs) {
-
 	/*
-	debugger;
-	jasmine.VERBOSE = true;
+	 debugger;
+	 jasmine.VERBOSE = true;
 	 */
 	var lIntv = jasmine.DEFAULT_UPDATE_INTERVAL;
 	jasmine.DEFAULT_UPDATE_INTERVAL = 5;
-	
+
 	var lIncreaseTimeoutFactors = {
 		generic: 3,
 		generic_debug: 5,
@@ -136,85 +35,108 @@ function runFullTestSuite(aArgs) {
 		ultra_fast: 0.3,
 		fastest: 0.08
 	};
-	jasmine.INCREASE_TIMEOUT_FACTOR = lIncreaseTimeoutFactors[aArgs.__speed] || 1;
+	jasmine.INCREASE_TIMEOUT_FACTOR = lIncreaseTimeoutFactors[aArgs.speed] || 1;
 
-   
-	describe( "jWebSocket Test Suite", function () {
-		
-		if (aArgs.openConns){
-			var lTestSSL = $('#tls_set').val() == 'wss';
-			// open connections for admin and guest
-			jws.Tests.testOpenSharedAdminConn();
-			jws.Tests.testOpenSharedGuestConn();
-			if( lTestSSL ) {
-				jws.Tests.testOpenSharedAdminConnSSL();
-				jws.Tests.testOpenSharedGuestConnSSL();
-			}
+
+	describe("jWebSocket Test Suite", function() {
+
+		var lTestSSL = $('#tls_set').val() == 'wss';
+		// open connections for admin and guest
+		jws.Tests.testOpenSharedAdminConn();
+		jws.Tests.testOpenSharedGuestConn();
+		if (lTestSSL) {
+			jws.Tests.testOpenSharedAdminConnSSL();
+			jws.Tests.testOpenSharedGuestConnSSL();
 		}
-		
-		if (aArgs.load){
-			// run load tests
-			jws.tests.Load.runSuite();
+
+		// running selected tests
+		for (var lIndex in aArgs.tests) {
+			jws.tests[aArgs.tests[lIndex]].runSuite();
 		}
-		
-		// run test suites for the various plug-ins
-		if (aArgs.systemPlugIn){
-			jws.tests.System.runSuite();
+
+		// close connections for admin and guest
+		jws.Tests.testCloseSharedAdminConn();
+		jws.Tests.testCloseSharedGuestConn();
+		if (lTestSSL) {
+			jws.Tests.testCloseSharedAdminConnSSL();
+			jws.Tests.testCloseSharedGuestConnSSL();
 		}
-		if (aArgs.filesystemPlugIn){
-			jws.tests.FileSystem.runSuite();
-		}
-		if (aArgs.filesystemPlugInEE){
-			jws.tests.enterprise.FileSystem.runSuite();
-		}
-		if (aArgs.itemstoragePlugIn){
-			jws.tests.ItemStorage.runSuite();
-		}
-		if (aArgs.itemstoragePlugInEE){
-			jws.tests.enterprise.ItemStorage.runSuite();
-		}
-		// jws.tests.Logging.runSuite();
-		if (aArgs.automatedAPIPlugIn){
-			jws.tests.AutomatedAPI.runSuite();
-		}
-		if (aArgs.rpcPlugIn){
-			// run RPC tests
-			jws.tests.RPC.runSuite();
-		}
-		// run JMS tests
-		// jws.tests.JMS.runSuite();
-   
-		if (aArgs.channelsPlugIn){
-			// run Channel tests
-			jws.tests.Channels.runSuite();
-		}
-		
-		if (aArgs.streamingPlugIn){
-			// run Streaming tests
-			jws.tests.Streaming.runSuite();
-		}
-		// run JDBC tests
-		// jws.tests.JDBC.runSuite();
-		
-		if (aArgs.closeConns){
-			// close connections for admin and guest
-			jws.Tests.testCloseSharedAdminConn();
-			jws.Tests.testCloseSharedGuestConn();
-			if( lTestSSL ) {
-				jws.Tests.testCloseSharedAdminConnSSL();
-				jws.Tests.testCloseSharedGuestConnSSL();
-			}
-		}
-		
-		if (aArgs.ioc){
-			//run IOC tests
-			jws.tests.ioc.runSuite();
-		}
-		
-		if (aArgs.events){
-			runEventsSuite();
-		}
-		
-		jasmine.DEFAULT_UPDATE_INTERVAL = lIntv;	
+
+		jasmine.DEFAULT_UPDATE_INTERVAL = lIntv;
 	});
+}
+
+
+var DEFAULT_CATEGORY = "UNCATEGORIZED";
+var DEFAULT_PRIORITY = 100;
+var DEFAULT_ENABLED = true;
+
+
+function initTestsIndex() {
+	var lCategories = [];
+	var lSortedTests = [];
+
+	for (var lTestName in jws.tests) {
+		var lTest = jws.tests[lTestName];
+		// setting test unique identifier
+		lTest.id = lTestName;
+
+		// setting default values for convenience
+		if (undefined == lTest['category'])
+			lTest['category'] = DEFAULT_CATEGORY;
+		if (undefined == lTest['priority'])
+			lTest['priority'] = DEFAULT_PRIORITY;
+		if (undefined == lTest['enabled'])
+			lTest['enabled'] = DEFAULT_ENABLED;
+
+		// getting categories set
+		if (lCategories.indexOf(lTest.category) == -1) {
+			lCategories.push(lTest.category);
+		}
+
+		lSortedTests.push(lTest);
+	}
+
+	// sorting ascending
+	lCategories.sort();
+	lSortedTests.sort(function(t1, t2) {
+		if (t1.priority == t2.priority)
+			return 0;
+		if (t1.priority > t2.priority)
+			return 1;
+
+		return -1;
+	});
+
+	// returns index object
+	return {
+		categories: lCategories,
+		tests: lSortedTests,
+		getTestsByCategory: function(aCategory) {
+			var lTests = [];
+			if ("__ALL__" == aCategory)
+				return this.tests;
+
+			for (var lIndex in this.tests) {
+				if (this.tests[lIndex].category == aCategory) {
+					lTests.push(this.tests[lIndex]);
+				}
+			}
+
+			return lTests;
+		}
+	};
+}
+
+function renderTests(aTests, aDiv) {
+	var lHtml = "";
+	for (var lIndex in aTests) {
+		var lT = aTests[lIndex];
+		lHtml += "<span title='" + lT.description + "'><label><input id='" 
+				+ lT.id + "'" 
+				+ ((lT.enabled) ? " checked='checked' " : " disabled") 
+				+ " type='checkbox'> " + lT.title + "</label></span></br>";
+	}
+
+	aDiv.html(lHtml);
 }

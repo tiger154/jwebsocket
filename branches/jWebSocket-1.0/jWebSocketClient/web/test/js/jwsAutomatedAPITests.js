@@ -20,6 +20,10 @@
 jws.tests.AutomatedAPI = {
 
 	NS: "jws.tests.automated", 
+	title: "Automated API plug-in",
+	description: "jWebSocket AutomatedAPI plug-in. Designed server side plug-in's API exporting.",
+	category: "System",
+	
 	mSpecs: [],
 
 	testGetAPIDefaults: function() {

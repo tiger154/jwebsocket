@@ -23,6 +23,10 @@ if ( undefined == jws.tests ){
 jws.tests.ItemStorage = {
 
 	NS: "jws.tests.itemstorage", 
+	title: "ItemStorage plug-in",
+	description: "jWebSocket itemstorage plug-in. Designed for generic data storage.",
+	category: "Community Edition",
+	priority: 20,
 	
 	testCreateCollection: function(aCollectionName, aItemType, aSecretPwd, aAccessPwd, aIsPrivate, aCapacity, aExpectedCode) {
 		

@@ -22,146 +22,142 @@
  */
 var classes = {};
 jws.tests.ioc = {
-
-	NS: "jws.tests.ioc", 
-
-	testSetAndGetParameter: function() {	
+	NS: "jws.tests.ioc",
+	title: "JavaScript IOC library",
+	description: "jWebSocket IOC library for web clients.",
+	category: "Community Edition",
+	testSetAndGetParameter: function() {
 		var lKey = "name";
-		
+
 		it("SetAndGetParameter(1)", function() {
 			var lValue = "Rolando S M";
 			jws.sc.setParameter(lKey, lValue);
-			
+
 			var lReturnValue = jws.sc.getParameter(lKey);
-			
+
 			expect(lValue).toEqual(lReturnValue);
 		});
-			
+
 		it("SetAndGetParameter(2)", function() {
 			var lValue1 = "Rolando Santamaria Maso";
 			jws.sc.setParameter(lKey, lValue1);
-			
+
 			var lReturnValue = jws.sc.getParameter(lKey);
 			expect(lValue1).toEqual(lReturnValue);
 		});
 	},
-	
-	testSetAndGetService: function() {	
+	testSetAndGetService: function() {
 		var lKey = "serv1";
-		
+
 		it("SetAndGetService: Without to use the ServiceDefinition class", function() {
 			var lValue = {
-				plus: function(x, y){
+				plus: function(x, y) {
 					return x + y;
 				}
 			};
 			jws.sc.setService(lKey, lValue);
-			
+
 			var lReturnValue = jws.sc.getService(lKey);
-			
+
 			expect(lValue).toEqual(lReturnValue);
 		});
 	},
-	
-	testHasAndRemoveParameter: function() {	
+	testHasAndRemoveParameter: function() {
 		var lKey = "version";
 		var lValue = 1.0;
-		
+
 		it("HasParameter", function() {
 			expect(jws.sc.hasParameter(lKey)).toEqual(false);
-			
+
 			jws.sc.setParameter(lKey, lValue);
-			
+
 			expect(jws.sc.hasParameter(lKey)).toEqual(true);
 		});
-		
+
 		it("RemoveParameter", function() {
 			expect(jws.sc.removeParameter(lKey)).toEqual(lValue);
 			expect(jws.sc.hasParameter(lKey)).toEqual(false);
 		});
 	},
-	
-	testHasAndRemoveService: function() {	
+	testHasAndRemoveService: function() {
 		var lKey = "serv2";
 		var lValue = {
-			mult: function(x, y){
+			mult: function(x, y) {
 				return x * y;
 			}
 		};
-		
+
 		it("HasService: Without to use the ServiceDefinition class", function() {
 			expect(jws.sc.hasService(lKey)).toEqual(false);
-			
+
 			jws.sc.setService(lKey, lValue);
-			
+
 			expect(jws.sc.hasService(lKey)).toEqual(true);
 		});
-		
+
 		it("RemoveService: Without to use the ServiceDefinition class", function() {
 			expect(jws.sc.removeService(lKey)).toEqual(lValue);
 			expect(jws.sc.hasService(lKey)).toEqual(false);
 		});
 	},
-	
-	testRegisterAndGetServiceDefinition: function(){
-		jws.tests.ioc.MyClass = function MyClass(){
+	testRegisterAndGetServiceDefinition: function() {
+		jws.tests.ioc.MyClass = function MyClass() {
 			this._name = null;
 			this._service = null;
 			this._pi = null;
-			
+
 			//Use init-method instead of the constructor
-			this.init = function(aArgs){
+			this.init = function(aArgs) {
 				this._name = aArgs.name;
 				this._service = aArgs.service;
 				this._pi = aArgs.pi;
 				this._service2 = aArgs.service2;
 			}
-			
-			this.getService2 = function(){
+
+			this.getService2 = function() {
 				return this._service2;
 			}
-			
+
 			//This method needs to be called before the service construction
-			this.methodToBeCalled = function(){
+			this.methodToBeCalled = function() {
 				//Facade using the referenced service
-				this.plus = function(x, y){
+				this.plus = function(x, y) {
 					return this._service.plus(x, y);
 				}
 			}
-			
-			this.sayHello = function(){
-				return "Hello, " + this._name; 
+
+			this.sayHello = function() {
+				return "Hello, " + this._name;
 			}
-			
-			this.getPi = function(){
+
+			this.getPi = function() {
 				return this._pi;
 			}
 		}
-		
+
 		it("RegisterAndGetServiceDefinition", function() {
 			var lServiceName = "myclass";
 			var lClassName = "jws.tests.ioc.MyClass";
-			
+
 			var lDef = jws.sc.register(lServiceName, lClassName);
 			expect(lDef).toEqual(jws.sc.getServiceDefinition(lServiceName));
 		});
 	},
-	
-	testCreateGetAndRemoveService: function(){
+	testCreateGetAndRemoveService: function() {
 		var lServiceName = "myclass";
 		var lCreated = false;
 		var lRemoved = false;
 		var lDef = null;
-		
+
 		var lPiSource = {
-			getPi: function(){
+			getPi: function() {
 				return 3.141652
 			}
 		};
-		
-		jws.tests.ioc.MyClass2 = function MyClass2(){
+
+		jws.tests.ioc.MyClass2 = function MyClass2() {
 		}
-		
+
 		var lInitialized = false;
 		it("CreateService: Using the service definition class", function() {
 			var lInitMethod = "init";
@@ -169,40 +165,40 @@ jws.tests.ioc = {
 				className: "jws.tests.ioc.MyClass",
 				name: lServiceName,
 				aspects: [{
-					pointcut: lInitMethod,
-					advices: {
-						after: function(){
-							lInitialized = true;
+						pointcut: lInitMethod,
+						advices: {
+							after: function() {
+								lInitialized = true;
+							}
 						}
-					}
-				}]
+					}]
 			});
-			
+
 			lDef.setInitMethod(lInitMethod)
-			.setShared(true)
-			.setInitArguments({
-				name: new jws.ioc.ParameterReference("name"),
-				service: new jws.ioc.ServiceReference("serv1"),
-				pi: new jws.ioc.MethodExecutionReference(lPiSource,	"getPi"),
-				//Testing inner services
-				service2: new jws.ioc.ServiceDefinition({
-					className: "jws.tests.ioc.MyClass2"
-				})
-			})
-			.setOnCreate(function(aService){
-				lCreated = true;
-			})
-			.setOnRemove(function(aService){
-				lRemoved = true;
-			})
-			.addMethodCall("methodToBeCalled");
-			
+					.setShared(true)
+					.setInitArguments({
+						name: new jws.ioc.ParameterReference("name"),
+						service: new jws.ioc.ServiceReference("serv1"),
+						pi: new jws.ioc.MethodExecutionReference(lPiSource, "getPi"),
+						//Testing inner services
+						service2: new jws.ioc.ServiceDefinition({
+							className: "jws.tests.ioc.MyClass2"
+						})
+					})
+					.setOnCreate(function(aService) {
+						lCreated = true;
+					})
+					.setOnRemove(function(aService) {
+						lRemoved = true;
+					})
+					.addMethodCall("methodToBeCalled");
+
 			jws.sc.addServiceDefinition(lDef);
 		});
-		
+
 		it("GetService: Using the service definition class", function() {
 			var lService = jws.sc.getService(lServiceName);
-			
+
 			expect(lService.sayHello()).toEqual("Hello, " + jws.sc.getParameter("name"));
 			expect(lService.plus(5, 5)).toEqual(10);
 			expect(lService.getPi()).toEqual(lPiSource.getPi());
@@ -210,7 +206,7 @@ jws.tests.ioc = {
 			expect(lCreated).toEqual(true);
 			expect(lInitialized).toEqual(true);
 		});
-		
+
 		it("RemoveService: Using the service definition class", function() {
 			expect(jws.sc.getService(lServiceName)).toEqual(jws.sc.removeService(lServiceName));
 			expect(jws.sc.hasService(lServiceName)).toEqual(false);
@@ -218,66 +214,64 @@ jws.tests.ioc = {
 			expect(lRemoved).toEqual(true);
 		});
 	},
-	
-	testFactoryMethod: function(){
+	testFactoryMethod: function() {
 		jws.tests.ioc.MyStaticClass = {
-			getInstance: function(){
+			getInstance: function() {
 				return {
-					method1: function(){
+					method1: function() {
 						return "method1";
 					}
 				}
 			}
 		};
-		
+
 		it("FactoryMethod(1)", function() {
 			var lKey = "mystaticclass";
-			
+
 			jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
-				name: lKey, 
+				name: lKey,
 				className: "jws.tests.ioc.MyStaticClass",
 				factoryMethod: "getInstance"
 			}));
-			
+
 			expect(jws.sc.getService(lKey).method1()).toEqual("method1");
 		});
-		
-		jws.tests.ioc.Circle = function Circle(){
+
+		jws.tests.ioc.Circle = function Circle() {
 			this._radio = 0;
 		}
-		jws.tests.ioc.Circle.prototype.getRadio = function(){
+		jws.tests.ioc.Circle.prototype.getRadio = function() {
 			return this._radio;
 		}
-		jws.tests.ioc.Circle.prototype.init = function(aArguments){
+		jws.tests.ioc.Circle.prototype.init = function(aArguments) {
 			this._radio = aArguments.radio;
 		}
-		
+
 		jws.tests.ioc.CircleFactory = {
-			getInstance: function (aArguments){
+			getInstance: function(aArguments) {
 				var lCircle = new jws.tests.ioc.Circle();
 				lCircle.init(aArguments);
-				
+
 				return lCircle;
 			}
 		}
-	
+
 		it("FactoryMethod(2)", function() {
 			jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
 				className: "jws.tests.ioc.CircleFactory",
 				name: "circle",
 				factoryMethod: {
-					method: "getInstance", 
+					method: "getInstance",
 					arguments: {
 						radio: 5
 					}
 				}
 			}));
-			
+
 			expect(jws.sc.getService("circle").getRadio()).toEqual(5);
 		});
 	},
-	
-	testAnonymousServices: function(){
+	testAnonymousServices: function() {
 		it("AnonymousServices: Creating services without names", function() {
 			jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
 				className: "jws.tests.ioc.MyStaticClass",
@@ -288,14 +282,19 @@ jws.tests.ioc = {
 				factoryMethod: "getInstance"
 			}));
 		});
-		
+
 		jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
 			className: "jws.tests.ioc.MyStaticClass",
 			factoryMethod: "getInstance"
 		}));
 	},
-	
 	runSpecs: function() {
+		// refresh default service container
+		jws.sc = new jws.ioc.ServiceContainerBuilder({
+			id: "jws.sc",
+			container: new jws.ioc.ServiceContainer()
+		});
+
 		this.testSetAndGetParameter();
 		this.testHasAndRemoveParameter();
 		this.testSetAndGetService();
@@ -305,13 +304,12 @@ jws.tests.ioc = {
 		this.testFactoryMethod();
 		this.testAnonymousServices();
 	},
-
 	runSuite: function() {
-		
+
 		// run alls tests as a separate test suite
 		var lThis = this;
-		
-		describe( "Performing test suite: " + this.NS + "...", function () {
+
+		describe("Performing test suite: " + this.NS + "...", function() {
 			lThis.runSpecs();
 		});
 	}

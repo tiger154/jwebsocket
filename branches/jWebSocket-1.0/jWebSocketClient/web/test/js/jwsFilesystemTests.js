@@ -21,6 +21,9 @@
 jws.tests.FileSystem = {
 
 	NS: "jws.tests.filesystem", 
+	title: "FileSystem plug-in",
+	description: "jWebSocket filesystem plug-in. Designed for files management on the server.",
+	category: "Community Edition",
 	
 	TEST_FILE_DATA: "This is a string to be saved into the test file!",
 	TEST_FOLDER: "privFolder",

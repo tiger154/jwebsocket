@@ -20,6 +20,11 @@
 jws.tests.Logging = {
 
 	NS: "jws.tests.logging", 
+	title: "Logging plug-in",
+	description: "jWebSocket logging plug-in",
+	category: "Community Edition",
+	enabled: false,
+	
 	TABLE: "SYSTEM_LOG",
 	PRIMARY_KEY: "ID",
 	SEQUENCE: "SQ_PK_SYSTEM_LOG",

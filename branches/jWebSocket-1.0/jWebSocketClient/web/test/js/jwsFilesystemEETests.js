@@ -17,12 +17,12 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
-if ( undefined === jws.tests.enterprise ){
-	jws.tests.enterprise = {};
-}
-jws.tests.enterprise.FileSystem = {
+jws.tests.FileSystemEE = {
 
 	NS: "jws.tests.enterprise.filesystem", 
+	title: "FileSystem EE plug-in",
+	description: "jWebSocket filesystem (enterprise edition) plug-in. Designed for files management on the server.",
+	category: "Enterprise Edition",
 	
 	TEST_FILE_DATA: "This is a string to be saved into the test file!",
 	TEST_FILE_DATA2: " The enterprise FileSystem plug-in supports ",
@@ -434,33 +434,33 @@ jws.tests.enterprise.FileSystem = {
 	},
 
 	runSpecs: function() {
-		jws.tests.enterprise.FileSystem.testStartObserve(0);
-		jws.tests.enterprise.FileSystem.testStartObserve(-1);
+		jws.tests.FileSystemEE.testStartObserve(0);
+		jws.tests.FileSystemEE.testStartObserve(-1);
 		
-		jws.tests.enterprise.FileSystem.testFileSaveByChunks(
+		jws.tests.FileSystemEE.testFileSaveByChunks(
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA,
 			false, 
 			jws.SCOPE_PRIVATE);
 
-		jws.tests.enterprise.FileSystem.testFileSaveByChunks(
+		jws.tests.FileSystemEE.testFileSaveByChunks(
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA2,
 			false, 
 			jws.SCOPE_PRIVATE);
 		
-		jws.tests.enterprise.FileSystem.testFileSaveByChunks(
+		jws.tests.FileSystemEE.testFileSaveByChunks(
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME,
 			this.TEST_FILE_DATA3,
 			true, 
 			jws.SCOPE_PRIVATE);
 			
-		jws.tests.enterprise.FileSystem.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME, 
+		jws.tests.FileSystemEE.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME, 
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME + 5, 
 			jws.FileSystemPlugIn.SCOPE_PRIVATE, 
 			0);
 
-		jws.tests.enterprise.FileSystem.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME + 5, 
+		jws.tests.FileSystemEE.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME + 5, 
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME, 
 			jws.FileSystemPlugIn.SCOPE_PRIVATE, 
 			0);
@@ -470,8 +470,8 @@ jws.tests.enterprise.FileSystem = {
 			jws.FileSystemPlugIn.ALIAS_PRIVATE,
 			this.TEST_FILE_DATA + this.TEST_FILE_DATA2 + this.TEST_FILE_DATA3);
 			
-		jws.tests.enterprise.FileSystem.testDirectoryDelete(this.TEST_FOLDER, 0);	
-		jws.tests.enterprise.FileSystem.testDirectoryDelete(this.TEST_FOLDER, -1);	
+		jws.tests.FileSystemEE.testDirectoryDelete(this.TEST_FOLDER, 0);	
+		jws.tests.FileSystemEE.testDirectoryDelete(this.TEST_FOLDER, -1);	
 
 		jws.tests.FileSystem.testFileSave(
 			this.TEST_FILE_NAME,
@@ -483,20 +483,20 @@ jws.tests.enterprise.FileSystem = {
 			jws.FileSystemPlugIn.ALIAS_PUBLIC,
 			this.TEST_FILE_DATA);
 			
-		jws.tests.enterprise.FileSystem.testFileLoadByChunks(
+		jws.tests.FileSystemEE.testFileLoadByChunks(
 			this.TEST_FILE_NAME, 
 			jws.FileSystemPlugIn.ALIAS_PUBLIC,
 			-5,
 			4,
 			"file");
-		jws.tests.enterprise.FileSystem.testFileLoadByChunks(
+		jws.tests.FileSystemEE.testFileLoadByChunks(
 			this.TEST_FILE_NAME, 
 			jws.FileSystemPlugIn.ALIAS_PUBLIC,
 			0,
 			4,
 			"This");
 			
-		jws.tests.enterprise.FileSystem.testFileLoadByChunks(
+		jws.tests.FileSystemEE.testFileLoadByChunks(
 			this.TEST_FILE_NAME, 
 			jws.FileSystemPlugIn.ALIAS_PUBLIC,
 			2,
@@ -535,7 +535,7 @@ jws.tests.enterprise.FileSystem = {
 			[this.TEST_FILE_NAME]);
 		
 		jws.tests.FileSystem.testFileSend(this.TEST_FILE_NAME, this.TEST_FILE_DATA);
-		jws.tests.enterprise.FileSystem.testFileSendByChunks(this.TEST_FILE_NAME, 
+		jws.tests.FileSystemEE.testFileSendByChunks(this.TEST_FILE_NAME, 
 			[this.TEST_FILE_DATA, 
 			this.TEST_FILE_DATA2, 
 			this.TEST_FILE_DATA3]);
@@ -543,8 +543,8 @@ jws.tests.enterprise.FileSystem = {
 		jws.tests.FileSystem.testFileDelete(this.TEST_FILE_NAME, true, 0);
 		jws.tests.FileSystem.testFileDelete(this.TEST_FILE_NAME, true, -1);
 		
-		jws.tests.enterprise.FileSystem.testStopObserve(0);
-		jws.tests.enterprise.FileSystem.testStopObserve(-1);
+		jws.tests.FileSystemEE.testStopObserve(0);
+		jws.tests.FileSystemEE.testStopObserve(-1);
 	},
 
 	runSuite: function() {

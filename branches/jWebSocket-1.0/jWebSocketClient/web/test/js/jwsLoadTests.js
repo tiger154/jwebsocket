@@ -20,6 +20,9 @@
 jws.tests.Load = {
 
 	NS: "jws.tests.load", 
+	title: "Load tests",
+	description: "jWebSocket server performance tests.",
+	category: "Server Benchmarks",
 	
 	// this spec tests the speed of a complete client connection to the server
 	testConcurrentConnections: function( aAmount ) {

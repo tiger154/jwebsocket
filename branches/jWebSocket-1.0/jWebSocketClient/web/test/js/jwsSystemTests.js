@@ -19,7 +19,12 @@
 
 jws.tests.System = {
 
-	NS: "jws.tests.system", 
+	NS: "jws.tests.system",
+	title: "System plug-in",
+	description: "jWebSocket server system plug-in. " 
+			+ "Required for properly server execution.",
+	category: "System",
+	priority: 1,
 
 	// this spec tests the login function of the system plug-in
 	testLoginValidCredentials: function() {
