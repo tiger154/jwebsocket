@@ -55,8 +55,7 @@ public class PingPongPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_PINGPONG
-			= JWebSocketServerConstants.NS_BASE + ".plugins.pingpong";
+	public static final String NS_PINGPONG = JWebSocketServerConstants.NS_BASE + ".plugins.pingpong";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket PingPongPlugIn";
@@ -75,7 +74,7 @@ public class PingPongPlugIn extends TokenPlugIn {
 	public PingPongPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		setNamespace(NS_PINGPONG);
-		
+
 		int lDay = Integer.parseInt(aConfiguration.getSettings().
 				get("dbDay").toString());
 		int lTime = Integer.parseInt(aConfiguration.getSettings().
@@ -97,7 +96,11 @@ public class PingPongPlugIn extends TokenPlugIn {
 			Tools.getTimer().scheduleAtFixedRate(mUserServiceImpl, 0,
 					lTime * 1000 * 60 * 60 * 24);
 		} else {
-			mLog.error("Missing required valid database connection. PingPong plug-in cannot start!");
+
+			mLog.error("Invalid MongoDB database connection, please check that the current "
+					+ "connection configuration (conf/Resources/bootstrap.xml) is correct "
+					+ "or consider to install and run MongoDB server. "
+					+ "PingPong plug-in cannot start!");
 			throw new RuntimeException("Missing required valid database connection for PingPong plug-in!");
 		}
 
@@ -391,9 +394,9 @@ public class PingPongPlugIn extends TokenPlugIn {
 		if (lAccepted) {
 			mPingpongGame.addMatch(new PingpongMatch(this,
 					mPingpongGame.getPingpongStage(), new PingpongPlayer(
-							lUserName1, "playLeft", 0, mPingpongGame.getPingpongStage()),
+					lUserName1, "playLeft", 0, mPingpongGame.getPingpongStage()),
 					new PingpongPlayer(lUserName2, "playRight", 0,
-							mPingpongGame.getPingpongStage())));
+					mPingpongGame.getPingpongStage())));
 			PingpongMatch lPingpongMatch = mPingpongGame.getMatch(lUserName1);
 			playerUpdate(lPingpongMatch, "playLeftplayRight");
 			scoreUpdate(lPingpongMatch);
@@ -835,10 +838,10 @@ public class PingPongPlugIn extends TokenPlugIn {
 
 			getServer().sendToken(
 					connectorUser(
-							aPingpongMatch.getPingpongPlayer(0).getPlayerName()), lMessage);
+					aPingpongMatch.getPingpongPlayer(0).getPlayerName()), lMessage);
 			getServer().sendToken(
 					connectorUser(
-							aPingpongMatch.getPingpongPlayer(1).getPlayerName()), lMessage);
+					aPingpongMatch.getPingpongPlayer(1).getPlayerName()), lMessage);
 
 		} catch (Exception ex) {
 			if (mLog.isDebugEnabled()) {
