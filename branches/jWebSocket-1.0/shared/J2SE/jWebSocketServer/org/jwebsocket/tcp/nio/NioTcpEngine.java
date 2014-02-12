@@ -408,6 +408,8 @@ public class NioTcpEngine extends BaseEngine {
 				SocketChannel lSocketChannel = ((ServerSocketChannel) aKey.channel()).accept();
 				lSocketChannel.socket().setTcpNoDelay(mTcpNoDelay);
 				lSocketChannel.configureBlocking(false);
+				// restricting connection handshake timeout
+				lSocketChannel.socket().setSoTimeout(10 * 1000);
 				lSocketChannel.register(aSelector, SelectionKey.OP_READ);
 
 				int lSocketPort = lSocketChannel.socket().getPort();
@@ -657,7 +659,7 @@ public class NioTcpEngine extends BaseEngine {
 						mLog.debug("Flushing handshake response: " + new String(lResponse).replace("\r\n", "\\n"));
 					}
 
-					int lTimeout = lReqHeader.getTimeout(getSessionTimeout());
+					int lTimeout = lReqHeader.getTimeout(getConfiguration().getTimeout());
 					if (lTimeout > 0) {
 						mConnectorToChannelMap.get(aBean.getConnectorId()).socket().setSoTimeout(lTimeout);
 					}
