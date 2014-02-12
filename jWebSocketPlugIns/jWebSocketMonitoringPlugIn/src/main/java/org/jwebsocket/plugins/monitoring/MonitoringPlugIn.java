@@ -155,7 +155,10 @@ public class MonitoringPlugIn extends TokenPlugIn {
 				mLog.info("Monitoring Plug-in successfully instantiated.");
 			}
 		} else {
-			mLog.error("Missing required valid database connection. Monitoring plug-in cannot start!");
+			mLog.error("Invalid MongoDB database connection, please check that the current "
+					+ "connection configuration (conf/Resources/bootstrap.xml) is correct "
+					+ "or consider to install and run MongoDB server. "
+					+ "Monitoring plug-in cannot start!");
 			throw new RuntimeException("Missing required valid database connection for MonitoringPlugIn!");
 		}
 	}
