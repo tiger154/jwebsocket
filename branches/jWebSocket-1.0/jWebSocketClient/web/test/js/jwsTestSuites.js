@@ -132,9 +132,9 @@ function renderTests(aTests, aDiv) {
 	var lHtml = "";
 	for (var lIndex in aTests) {
 		var lT = aTests[lIndex];
-		lHtml += "<span title='" + lT.description + "'><label><input id='" 
-				+ lT.id + "'" 
-				+ ((lT.enabled) ? " checked='checked' " : " disabled") 
+		lHtml += "<span title='" + lT.description + "'><label><input id='"
+				+ lT.id + "'"
+				+ ((lT.enabled) ? " checked='checked' " : " disabled")
 				+ " type='checkbox'> " + lT.title + "</label></span></br>";
 	}
 

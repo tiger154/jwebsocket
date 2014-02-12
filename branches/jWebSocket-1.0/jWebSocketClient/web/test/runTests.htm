@@ -99,27 +99,27 @@
 		<script type="text/javascript" src="js/jwsBenchmarks.js"></script>
 		<!-- the central test suite code contains the various test suites -->
 		<script type="text/javascript" src="js/jwsTestSuites.js"></script>
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	</head>
-	<body>
+	<body onunload="storePageState();">
 		<div id="demo_box">
 			<!--       DEMO_HEADER       -->
             <div id="demo_box_header">
@@ -197,14 +197,14 @@
 			});
 			lCategoriesSelectStr += "</select/>";
 			lCategories.html(lCategoriesSelectStr);
-
 			// rendering category tests
 			var lCombo = $('#test_set');
+			var lState = restorePageState();
 			renderTests(lTests.getTestsByCategory(lCombo.val()), $("#tests"));
+			selectTests(lState.selectedTests);
 			lCombo.bind('change', function(aSelect) {
 				renderTests(lTests.getTestsByCategory($(aSelect.target).val()), $("#tests"));
 			});
-
 			function runBenchmarkTests() {
 				lCombo.val('Server Benchmarks');
 				renderTests(lTests.getTestsByCategory($(lCombo).val()), $("#tests"));
@@ -218,23 +218,59 @@
 				} else {
 					// creating a new jasmine evironment to refresh from previous execution
 					jasmine.currentEnv_ = new jasmine.Env();
-
 					// removing previous jasmine report logs if exists
 					$('.jasmine_reporter').remove();
-
-					var lCheckboxes = $('#tests').find('input[type=checkbox]');
-					var lSelectedTests = [];
-					$.each(lCheckboxes, function(aIndex, aItem) {
-						if ($(aItem).prop('checked'))
-							lSelectedTests.push($(aItem).prop('id'));
-					});
-
+					var lSelectedTests = getSelectedTests();
 					runFullTestSuite({
 						speed: $('#speed').val(),
 						tests: lSelectedTests
 					});
-
 					jws.TestPlugIn.execTests();
+				}
+			}
+
+			function getSelectedTests() {
+				var lCheckboxes = $('#tests').find('input[type=checkbox]');
+				var lSelectedTests = [];
+				$.each(lCheckboxes, function(aIndex, aItem) {
+					if ($(aItem).prop('checked'))
+						lSelectedTests.push($(aItem).prop('id'));
+				});
+				return lSelectedTests;
+			}
+
+			function selectTests(aTests) {
+				var lCheckboxes = $('#tests').find('input[type=checkbox]');
+				$.each(lCheckboxes, function(aIndex, aItem) {
+					if (aTests.indexOf($(aItem).attr('id')) == -1) {
+						$(aItem).attr('checked', false);
+					} else {
+						$(aItem).attr('checked', true);
+					}
+				});
+			}
+
+			function storePageState() {
+				var lPageState = {
+					speed: $('#speed').val(),
+					tls: $('#tls_set').val(),
+					category: $('#test_set').val(),
+					selectedTests: getSelectedTests()
+				};
+				sessionStorage.setItem("page_state", JSON.stringify(lPageState));
+			}
+
+			function restorePageState() {
+				var lJSON = sessionStorage.getItem("page_state");
+				if (null != lJSON) {
+					var lPageState = JSON.parse(lJSON);
+					$('#speed').val(lPageState.speed);
+					$('#tls_set').val(lPageState.tls);
+					$('#test_set').val(lPageState.category);
+					
+					return lPageState;
+				} else {
+					$('#tls_set').val('__ALL__');
 				}
 			}
 		</script>
