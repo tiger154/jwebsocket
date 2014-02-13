@@ -57,7 +57,7 @@
 		</plugins>
 	</build>
 
-    <dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -93,5 +93,5 @@
 			<artifactId>jWebSocketSSO</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-    </dependencies>
+	</dependencies>
 </project>
