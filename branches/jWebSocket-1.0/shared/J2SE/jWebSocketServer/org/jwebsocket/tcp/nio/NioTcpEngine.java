@@ -409,7 +409,7 @@ public class NioTcpEngine extends BaseEngine {
 				lSocketChannel.socket().setTcpNoDelay(mTcpNoDelay);
 				lSocketChannel.configureBlocking(false);
 				// restricting connection handshake timeout
-				// lSocketChannel.socket().setSoTimeout(10 * 1000);
+				lSocketChannel.socket().setSoTimeout(10 * 1000);
 				lSocketChannel.register(aSelector, SelectionKey.OP_READ);
 
 				int lSocketPort = lSocketChannel.socket().getPort();
@@ -660,9 +660,8 @@ public class NioTcpEngine extends BaseEngine {
 					}
 
 					int lTimeout = lReqHeader.getTimeout(getConfiguration().getTimeout());
-					if (lTimeout > 0) {
-						mConnectorToChannelMap.get(aBean.getConnectorId()).socket().setSoTimeout(lTimeout);
-					}
+					mConnectorToChannelMap.get(aBean.getConnectorId()).socket().setSoTimeout(lTimeout);
+					
 					aConnector.wsHandshakeValidated();
 					aConnector.setHeader(lReqHeader);
 					aConnector.setStatus(WebSocketConnectorStatus.UP);
