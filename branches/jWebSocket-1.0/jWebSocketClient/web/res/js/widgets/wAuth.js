@@ -169,6 +169,7 @@ $.widget("jws.auth", {
 				}
 				if (mLog.isDebugEnabled) {
 					log("<font color='green'>jWebSocket Welcome received.</font>");
+					log(JSON.stringify(aToken));
 				}
 				if (aToken.sourceId) {
 					w.auth.eClientId.text("Client-ID: " + aToken.sourceId);

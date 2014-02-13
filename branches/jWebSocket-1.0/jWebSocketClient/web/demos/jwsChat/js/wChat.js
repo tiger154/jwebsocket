@@ -166,7 +166,9 @@ $.widget("jws.chat", {
 		});
 
 		// For more information, check the file ../../res/js/widget/wAuth.js
-		var lCallbacks = {
+		var
+		lCallbacks = {
+			lURL: jws.getAutoServerURL() + (window.name ? ";sessionId=" + jws.tools.calcMD5("SID_" + window.name) : ""),
 			OnOpen: function(aEvent) {
 				// Enabling all elements in the chat window again
 				w.chat.eMessageBoxArea.children( ).each(function( ) {
@@ -212,7 +214,7 @@ $.widget("jws.chat", {
 		window.open(
 				// "http://www.jwebsocket.org/demos/jwsChat/jwsChat.htm"
 				"jwsChat.htm",
-				"chatWindow" + w.chat.mNextWindowId,
+				"chatWindow_" + Math.random(999),
 				"width=720,height=700,left=" +
 				(50 + w.chat.mNextWindowId * 30) + ", top=" +
 				(50 + w.chat.mNextWindowId * 25));
