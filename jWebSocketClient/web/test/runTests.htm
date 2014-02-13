@@ -91,6 +91,8 @@
 		<script type="text/javascript" src="js/jwsStreamingTests.js"></script>
 		<!-- tests for the Load tests -->
 		<script type="text/javascript" src="js/jwsLoadTests.js"></script>
+		<!-- tests for the Reporting plug-in -->
+		<script type="text/javascript" src="js/jwsReportingTests.js"></script>
 		<!-- tests for the AutomatedAPI plug-in -->
 		<script type="text/javascript" src="js/jwsAutomatedAPITests.js"></script>
 		<!-- tests for the Dependency Injection Container -->
@@ -267,7 +269,7 @@
 					$('#speed').val(lPageState.speed);
 					$('#tls_set').val(lPageState.tls);
 					$('#test_set').val(lPageState.category);
-					
+
 					return lPageState;
 				} else {
 					$('#tls_set').val('__ALL__');
