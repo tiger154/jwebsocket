@@ -167,54 +167,54 @@ $.widget("jws.chat", {
 
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var
-		lCallbacks = {
-			lURL: jws.getAutoServerURL() + (window.name ? ";sessionId=" + jws.tools.calcMD5("SID_" + window.name) : ""),
-			OnOpen: function(aEvent) {
-				// Enabling all elements in the chat window again
-				w.chat.eMessageBoxArea.children( ).each(function( ) {
-					$(this).attr("disabled", false);
-				});
-			},
-			OnWelcome: function(aEvent) {
-			},
-			OnLogon: function(aToken) {
-				// is it a response from a previous request of this client?
-				// figure out of which request
-				// logChatMessage( aID, aString )
-				w.chat.logChatMessage("SYS", "Welcome '" +
-						aToken.username + "'");
-				w.chat.mAuthenticatedUser = aToken.username + "@" +
-						aToken.sourceId;
-				// Sending a register token to the server
-				var lRegister = {
-					ns: w.chat.NS,
-					type: "register"
-				};
-				mWSC.sendToken(lRegister);
+				lCallbacks = {
+					lURL: jws.getAutoServerURL() + (window.name ? ";sessionId=" + "SID_" + window.name : ""),
+					OnOpen: function(aEvent) {
+						// Enabling all elements in the chat window again
+						w.chat.eMessageBoxArea.children( ).each(function( ) {
+							$(this).attr("disabled", false);
+						});
+					},
+					OnWelcome: function(aEvent) {
+					},
+					OnLogon: function(aToken) {
+						// is it a response from a previous request of this client?
+						// figure out of which request
+						// logChatMessage( aID, aString )
+						w.chat.logChatMessage("SYS", "Welcome '" +
+								aToken.username + "'");
+						w.chat.mAuthenticatedUser = aToken.username + "@" +
+								aToken.sourceId;
+						// Sending a register token to the server
+						var lRegister = {
+							ns: w.chat.NS,
+							type: "register"
+						};
+						mWSC.sendToken(lRegister);
 
-				// select message field for convenience
-				w.chat.eMessageBox.focus( );
-			},
-			OnGoodBye: function(aEvent) {
-			},
-			OnMessage: function(aEvent, aToken) {
-				w.chat.processToken(aEvent, aToken);
-			},
-			// When closing clear all chat panels and users
-			OnClose: function(aEvent) {
-				w.chat.cleanAll( );
-				w.chat.eMessageBoxArea.children( ).each(function( ) {
-					$(this).attr("disabled", true);
-				});
-			}
-		};
+						// select message field for convenience
+						w.chat.eMessageBox.focus( );
+					},
+					OnGoodBye: function(aEvent) {
+					},
+					OnMessage: function(aEvent, aToken) {
+						w.chat.processToken(aEvent, aToken);
+					},
+					// When closing clear all chat panels and users
+					OnClose: function(aEvent) {
+						w.chat.cleanAll( );
+						w.chat.eMessageBoxArea.children( ).each(function( ) {
+							$(this).attr("disabled", true);
+						});
+					}
+				};
 		$(w.chat.eMainContainer).auth(lCallbacks);
 	},
 	openNewChatWindow: function( ) {
 		window.open(
 				// "http://www.jwebsocket.org/demos/jwsChat/jwsChat.htm"
 				"jwsChat.htm",
-				"chatWindow_" + Math.random(999),
+				"chatWindow_" + w.chat.generateUUID(),
 				"width=720,height=700,left=" +
 				(50 + w.chat.mNextWindowId * 30) + ", top=" +
 				(50 + w.chat.mNextWindowId * 25));
@@ -222,6 +222,15 @@ $.widget("jws.chat", {
 		if (w.chat.mNextWindowId > 10) {
 			w.chat.mNextWindowId = 1;
 		}
+	},
+	generateUUID: function() {
+		var d = new Date().getTime();
+		var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+			var r = (d + Math.random() * 16) % 16 | 0;
+			d = Math.floor(d / 16);
+			return (c === 'x' ? r : (r & 0x7 | 0x8)).toString(16);
+		});
+		return uuid;
 	},
 	sendMessage: function( ) {
 		if (mWSC.isConnected( )) {
