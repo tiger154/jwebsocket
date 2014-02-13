@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0.0 RC2 (build 40207)
+	//:const:*:VERSION:String:1.0.0 RC2 (build 40213)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0.0 RC2 (build 40207)",
+	VERSION: "1.0.0 RC2 (build 40213)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -1540,14 +1540,14 @@ jws.tools = {
 		// please refer to http://www.ietf.org/rfc/rfc4122.txt
 		var lSegments = [];
 		var lHexDigits = "0123456789abcdef";
-		for (var lIdx = 0; lIdx < 36; lIdx++) {
-			lSegments[lIdx] = lHexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+		for( var lIdx = 0; lIdx < 36; lIdx++ ) {
+			lSegments[ lIdx ] = lHexDigits.substr( Math.floor( Math.random() * 0x10 ), 1 );
 		}
-		lSegments[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
-		lSegments[19] = lHexDigits.substr((lSegments[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
-		lSegments[8] = lSegments[13] = lSegments[18] = lSegments[23] = "-";
+		lSegments[ 14 ] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+		lSegments[ 19 ] = lHexDigits.substr( ( lSegments[ 19 ] & 0x3 ) | 0x8, 1 );  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+		lSegments[  8 ] = lSegments[ 13 ] = lSegments[ 18 ] = lSegments[ 23 ] = "-";
 
-		var lUUID= lSegments.join("");
+		var lUUID = lSegments.join( "" );
 		return lUUID;
 	}	
 	
