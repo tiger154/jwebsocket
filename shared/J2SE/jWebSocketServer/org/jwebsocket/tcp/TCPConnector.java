@@ -476,21 +476,20 @@ public class TCPConnector extends BaseConnector {
 				// ensure that all packets are sent immediately w/o delay
 				// to achieve better latency, no waiting and packaging.
 				mClientSocket.setTcpNoDelay(true);
+				mClientSocket.setSoTimeout(10 * 1000);
 
 				RequestHeader lHeader = processHandshake(mClientSocket);
 				if (lHeader != null) {
 					setHeader(lHeader);
-					int lSessionTimeout = lHeader.getTimeout(getEngine().getConfiguration().getTimeout());
-					if (lSessionTimeout > 0) {
-						mClientSocket.setSoTimeout(lSessionTimeout);
-					}
+					int lTimeout = lHeader.getTimeout(getEngine().getConfiguration().getTimeout());
+					mClientSocket.setSoTimeout(lTimeout);
 					setVersion(lHeader.getVersion());
 					setSubprot(lHeader.getSubProtocol());
 					if (mLog.isDebugEnabled()) {
 						mLog.debug(lLogInfo + " client accepted on port "
 								+ mClientSocket.getPort()
 								+ " with timeout "
-								+ (lSessionTimeout > 0 ? lSessionTimeout + "ms" : "infinite")
+								+ (lTimeout > 0 ? lTimeout + "ms" : "infinite")
 								+ " (TCPNoDelay was: " + lTCPNoDelay + ")"
 								+ "...");
 					}
