@@ -19,7 +19,6 @@
 
 jws.tests.RPC = {
 
-	NS: "jws.tests.rpc", 
 	title: "RPC plug-in",
 	description: "jWebSocket RPC plug-in",
 	category: "Community Edition",
@@ -29,7 +28,7 @@ jws.tests.RPC = {
 	// this spec tests the file save method of the fileSystem plug-in
 	testMD5Demo: function() {
 		
-		var lSpec = this.NS + ": MD5 demo (admin)";
+		var lSpec = "MD5 demo (admin)";
 		
 		it( lSpec, function () {
 			
@@ -78,15 +77,5 @@ jws.tests.RPC = {
 	runSpecs: function() {
 		// run alls tests within an outer test suite
 		this.testMD5Demo();
-	},
-
-	runSuite: function() {
-		
-		// run alls tests as a separate test suite
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
-
+	}
 };

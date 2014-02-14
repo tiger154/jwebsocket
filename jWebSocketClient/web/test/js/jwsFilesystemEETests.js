@@ -19,7 +19,6 @@
 
 jws.tests.FileSystemEE = {
 
-	NS: "jws.tests.enterprise.filesystem", 
 	title: "FileSystem EE plug-in",
 	description: "jWebSocket filesystem (enterprise edition) plug-in. Designed for files management on the server.",
 	category: "Enterprise Edition",
@@ -32,7 +31,7 @@ jws.tests.FileSystemEE = {
 	TEST_FILE_NAME: "test.txt",
 
 	testFileSave: function(aFilename, aData, aScope) {
-		var lSpec = this.NS + ": FileSave (admin, " + aFilename + ", " + aScope + ")";
+		var lSpec = "FileSave (admin, " + aFilename + ", " + aScope + ")";
 		var lData = aData;
 		var lFilename = aFilename;
 		
@@ -64,7 +63,7 @@ jws.tests.FileSystemEE = {
 	}, 
 	
 	testFileSaveByChunks: function(aFilename, aData, aIsChunk, aScope) {
-		var lSpec = this.NS + ": FileSaveByChunks (admin, " + aFilename + ", " + aScope + ")";
+		var lSpec = "FileSaveByChunks (admin, " + aFilename + ", " + aScope + ")";
 		var lData = aData;
 		var lFilename = aFilename;
 		var lIsChunk = aIsChunk;
@@ -97,7 +96,7 @@ jws.tests.FileSystemEE = {
 	},
 	
 	testFileRename: function(aFilename, aNewFilename, aScope, aExpectedCode){
-		var lSpec = this.NS + ": FileRename (admin, " + aFilename + ", " + aNewFilename + ",  " + aScope + ")";
+		var lSpec = "FileRename (admin, " + aFilename + ", " + aNewFilename + ",  " + aScope + ")";
 		
 		it( lSpec, function () {
 
@@ -125,7 +124,7 @@ jws.tests.FileSystemEE = {
 	},
 	
 	testFileSend: function(aFilename, aData) {
-		var lSpec = this.NS + ": FileSend (admin, " + aFilename + ")";
+		var lSpec = "FileSend (admin, " + aFilename + ")";
 		
 		it( lSpec, function () {
 
@@ -156,7 +155,7 @@ jws.tests.FileSystemEE = {
 	},
 	
 	testFileSendByChunks: function(aFilename, aDataArray) {
-		var lSpec = this.NS + ": FileSendByChunks (admin, " + aFilename + ")";
+		var lSpec = "FileSendByChunks (admin, " + aFilename + ")";
 		
 		it( lSpec, function () {
 
@@ -195,7 +194,7 @@ jws.tests.FileSystemEE = {
 	},
 
 	testGetFilelist: function(aAlias, aFilemasks, aRecursive, aExpectedList){
-		var lSpec = this.NS + ": GetFilelist (admin, " + aAlias + ", " + 
+		var lSpec = "GetFilelist (admin, " + aAlias + ", " + 
 		JSON.stringify(aFilemasks) + ", " + aRecursive + ")";
 		
 		it( lSpec, function () {
@@ -232,7 +231,7 @@ jws.tests.FileSystemEE = {
 	},
 
 	testFileLoad: function(aFilename, aAlias, aExpectedData) {
-		var lSpec = this.NS + ": FileLoad (admin, " + aFilename + ", " + aAlias + ")";
+		var lSpec = "FileLoad (admin, " + aFilename + ", " + aAlias + ")";
 		var lData = aExpectedData;
 		var lFilename = aFilename;
 		
@@ -262,7 +261,7 @@ jws.tests.FileSystemEE = {
 	},
 	
 	testStartObserve: function(aExpectedCode) {
-		var lSpec = this.NS + ": startObserve (admin)";
+		var lSpec = "startObserve (admin)";
 		
 		it( lSpec, function () {
 
@@ -290,7 +289,7 @@ jws.tests.FileSystemEE = {
 	},
 	
 	testStopObserve: function(aExpectedCode) {
-		var lSpec = this.NS + ": stopObserve (admin)";
+		var lSpec = "stopObserve (admin)";
 		
 		it( lSpec, function () {
 
@@ -318,7 +317,7 @@ jws.tests.FileSystemEE = {
 	},
 	
 	testFileLoadByChunks: function(aFilename, aAlias, aOffset, aLength, aExpectedData) {
-		var lSpec = this.NS + ": FileLoadByChunks (admin, " + aFilename + ", " + aAlias + ")";
+		var lSpec = "FileLoadByChunks (admin, " + aFilename + ", " + aAlias + ")";
 		var lData = aExpectedData;
 		var lFilename = aFilename;
 		
@@ -347,7 +346,7 @@ jws.tests.FileSystemEE = {
 	},
 	
 	testFileDelete: function(aFilename, aForce, aExpectedCode) {
-		var lSpec = this.NS + ": FileDelete (admin, " + aFilename + ", " + aExpectedCode + ")";
+		var lSpec = "FileDelete (admin, " + aFilename + ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
 
@@ -375,7 +374,7 @@ jws.tests.FileSystemEE = {
 	},
 	
 	testDirectoryDelete: function(aDirectory, aExpectedCode) {
-		var lSpec = this.NS + ": DirectoryDelete (admin, " + aDirectory + ", " + aExpectedCode + ")";
+		var lSpec = "DirectoryDelete (admin, " + aDirectory + ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
 
@@ -403,7 +402,7 @@ jws.tests.FileSystemEE = {
 	},
 	
 	testFileExists: function(aAlias, aFilename, aExpectedValue) {
-		var lSpec = this.NS + ": FileExists (admin, " + aAlias + ", " + aFilename + ")";
+		var lSpec = "FileExists (admin, " + aAlias + ", " + aFilename + ")";
 		var lFilename = aFilename;
 		var lAlias = aAlias;
 		
@@ -545,13 +544,5 @@ jws.tests.FileSystemEE = {
 		
 		jws.tests.FileSystemEE.testStopObserve(0);
 		jws.tests.FileSystemEE.testStopObserve(-1);
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
 	}	
-
 };

@@ -22,7 +22,6 @@
  */
 var classes = {};
 jws.tests.ioc = {
-	NS: "jws.tests.ioc",
 	title: "JavaScript IOC library",
 	description: "jWebSocket IOC library for web clients.",
 	category: "Community Edition",
@@ -128,12 +127,12 @@ jws.tests.ioc = {
 
 			this.sayHello = function() {
 				return "Hello, " + this._name;
-			}
+			};
 
 			this.getPi = function() {
 				return this._pi;
-			}
-		}
+			};
+		};
 
 		it("RegisterAndGetServiceDefinition", function() {
 			var lServiceName = "myclass";
@@ -151,12 +150,12 @@ jws.tests.ioc = {
 
 		var lPiSource = {
 			getPi: function() {
-				return 3.141652
+				return 3.141652;
 			}
 		};
 
 		jws.tests.ioc.MyClass2 = function MyClass2() {
-		}
+		};
 
 		var lInitialized = false;
 		it("CreateService: Using the service definition class", function() {
@@ -221,7 +220,7 @@ jws.tests.ioc = {
 					method1: function() {
 						return "method1";
 					}
-				}
+				};
 			}
 		};
 
@@ -239,13 +238,13 @@ jws.tests.ioc = {
 
 		jws.tests.ioc.Circle = function Circle() {
 			this._radio = 0;
-		}
+		};
 		jws.tests.ioc.Circle.prototype.getRadio = function() {
 			return this._radio;
-		}
+		};
 		jws.tests.ioc.Circle.prototype.init = function(aArguments) {
 			this._radio = aArguments.radio;
-		}
+		};
 
 		jws.tests.ioc.CircleFactory = {
 			getInstance: function(aArguments) {
@@ -254,7 +253,7 @@ jws.tests.ioc = {
 
 				return lCircle;
 			}
-		}
+		};
 
 		it("FactoryMethod(2)", function() {
 			jws.sc.addServiceDefinition(new jws.ioc.ServiceDefinition({
@@ -303,14 +302,5 @@ jws.tests.ioc = {
 		this.testCreateGetAndRemoveService();
 		this.testFactoryMethod();
 		this.testAnonymousServices();
-	},
-	runSuite: function() {
-
-		// run alls tests as a separate test suite
-		var lThis = this;
-
-		describe("Performing test suite: " + this.NS + "...", function() {
-			lThis.runSpecs();
-		});
 	}
 };

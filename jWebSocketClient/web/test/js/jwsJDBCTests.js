@@ -20,7 +20,6 @@
 
 jws.tests.JDBC = {
 
-	NS: "jws.tests.jdbc", 
 	title: "JDBC plug-in",
 	description: "jWebSocket JDBC plug-in",
 	category: "Community Edition",
@@ -33,7 +32,7 @@ jws.tests.JDBC = {
 	// this spec tests the jdbc plug-in, creating a temporary table for test purposes
 	testCreateTable: function() {
 		
-		var lSpec = this.NS + ": create table (admin)";
+		var lSpec = "create table (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -69,7 +68,7 @@ jws.tests.JDBC = {
 	// this spec tests the jdbc plug-in, dropping a temporary table for test purposes
 	testDropTable: function() {
 		
-		var lSpec = this.NS + ": drop table (admin)";
+		var lSpec = "drop table (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -105,7 +104,7 @@ jws.tests.JDBC = {
 	// this spec tests the native SQL select function of the JDBC plug-in
 	testSelectSQL: function() {
 		
-		var lSpec = this.NS + ": selectSQL (admin)";
+		var lSpec = "selectSQL (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -141,7 +140,7 @@ jws.tests.JDBC = {
 	// this spec tests the native SQL insert function of the JDBC plug-in
 	testInsertSQL: function() {
 		
-		var lSpec = this.NS + ": insertSQL (admin)";
+		var lSpec = "insertSQL (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -180,7 +179,7 @@ jws.tests.JDBC = {
 	// this spec tests the native SQL update function of the JDBC plug-in
 	testUpdateSQL: function() {
 		
-		var lSpec = this.NS + ": updateSQL (admin)";
+		var lSpec = "updateSQL (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -219,7 +218,7 @@ jws.tests.JDBC = {
 	// this spec tests the native SQL delete function of the JDBC plug-in
 	testDeleteSQL: function() {
 		
-		var lSpec = this.NS + ": deleteSQL (admin)";
+		var lSpec = "deleteSQL (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -258,7 +257,7 @@ jws.tests.JDBC = {
 	// this spec tests the abstract select function of the JDBC plug-in
 	testSelect: function() {
 		
-		var lSpec = this.NS + ": select (admin)";
+		var lSpec = "select (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -298,7 +297,7 @@ jws.tests.JDBC = {
 	// this spec tests the abstract insert function of the JDBC plug-in
 	testInsert: function() {
 		
-		var lSpec = this.NS + ": insert (admin)";
+		var lSpec = "insert (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -337,7 +336,7 @@ jws.tests.JDBC = {
 	// this spec tests the abstract update function of the JDBC plug-in
 	testUpdate: function() {
 		
-		var lSpec = this.NS + ": update (admin)";
+		var lSpec = "update (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -377,7 +376,7 @@ jws.tests.JDBC = {
 	// this spec tests the abstract delete function of the JDBC plug-in
 	testDelete: function() {
 		
-		var lSpec = this.NS + ": delete (admin)";
+		var lSpec = "delete (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -415,7 +414,7 @@ jws.tests.JDBC = {
 	// this spec tests the native SQL select function of the JDBC plug-in
 	testGetPrimaryKeys: function() {
 		
-		var lSpec = this.NS + ": getPrimaryKeys (admin)";
+		var lSpec = "getPrimaryKeys (admin)";
 		it( lSpec, function () {
 			
 			// init response
@@ -472,15 +471,5 @@ jws.tests.JDBC = {
 		
 		// drop the temporary table (test for DDL commands)
 		this.testDropTable();
-	},
-
-	runSuite: function() {
-		
-		// run alls tests as a separate test suite
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
-
+	}
 };

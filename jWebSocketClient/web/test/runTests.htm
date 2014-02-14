@@ -53,6 +53,7 @@
 		<script type="text/javascript" src="../res/js/jwsSharedObjectsPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsStreamingPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsTestPlugIn.js"></script>
+		<script type="text/javascript" src="../res/js/jwsReportingPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsTwitterPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsXMPPPlugIn.js"></script>
 		<script type="text/javascript" src="../res/js/jwsWorker.js"></script>
@@ -131,7 +132,7 @@
 			<table>
 				<tr>
 					<td>
-						<h3>Select test modules to be executed</h3>
+						<h3>Select tests to be executed</h3>
 						&nbsp;Test categories:
 						<div id="categories">
 						</div>
@@ -203,7 +204,9 @@
 			var lCombo = $('#test_set');
 			var lState = restorePageState();
 			renderTests(lTests.getTestsByCategory(lCombo.val()), $("#tests"));
-			selectTests(lState.selectedTests);
+			if (null != lState) {
+				selectTests(lState.selectedTests);
+			}
 			lCombo.bind('change', function(aSelect) {
 				renderTests(lTests.getTestsByCategory($(aSelect.target).val()), $("#tests"));
 			});
@@ -273,6 +276,8 @@
 					return lPageState;
 				} else {
 					$('#tls_set').val('__ALL__');
+
+					return null;
 				}
 			}
 		</script>

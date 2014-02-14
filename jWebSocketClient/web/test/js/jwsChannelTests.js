@@ -18,15 +18,13 @@
 //	---------------------------------------------------------------------------
 
 jws.tests.Channels = {
-	NS: "jws.tests.channels",
 	title: "Channel plug-in",
 	description: "jWebSocket channel plug-in. Designed for server centric communications channels.",
 	category: "Community Edition",
-	
 	TEST_MESSAGE: "this is a test message",
 	// this spec tests the subscribe method of the Channels plug-in
 	testSubscribe: function(aChannelName, aAccessKey) {
-		var lSpec = this.NS + ": subscribe (" + aChannelName + ")";
+		var lSpec = "subscribe (" + aChannelName + ")";
 
 		it(lSpec, function() {
 			var lResponse = {};
@@ -55,7 +53,7 @@ jws.tests.Channels = {
 	},
 	// this spec tests the unsubscribe method of the Channels plug-in
 	testUnsubscribe: function(aChannelName) {
-		var lSpec = this.NS + ": unsubscribe (" + aChannelName + ")";
+		var lSpec = "unsubscribe (" + aChannelName + ")";
 
 		it(lSpec, function() {
 			var lResponse = {};
@@ -85,7 +83,7 @@ jws.tests.Channels = {
 	// this spec tests the create method for a new channel
 	testChannelCreate: function(aChannelId, aChannelName, aAccessKey, aSecretKey,
 			aIsPrivate, aIsSystem, aComment, aExpectedReturnCode) {
-		var lSpec = this.NS + ": channelCreate (id: " + aChannelId + ", name: " + aChannelName + ", " + aComment + ")";
+		var lSpec = "channelCreate (id: " + aChannelId + ", name: " + aChannelName + ", " + aComment + ")";
 
 		it(lSpec, function() {
 
@@ -121,7 +119,7 @@ jws.tests.Channels = {
 	// this spec tests the modify method for an existing channel
 	testChannelModify: function(aChannelId, aSecretKey,
 			aOptions, aComment, aExpectedReturnCode) {
-		var lSpec = this.NS + ": channelModify (id: " + aChannelId + ", name: " + aChannelId + ", " + aComment + ")";
+		var lSpec = "channelModify (id: " + aChannelId + ", name: " + aChannelId + ", " + aComment + ")";
 
 		it(lSpec, function() {
 
@@ -152,7 +150,7 @@ jws.tests.Channels = {
 	// this spec tests the create method for a new channel
 	testChannelAuth: function(aChannelId, aAccessKey, aSecretKey,
 			aComment, aExpectedReturnCode) {
-		var lSpec = this.NS + ": channelAuth (id: " + aChannelId + ", " + aComment + ")";
+		var lSpec = "channelAuth (id: " + aChannelId + ", " + aComment + ")";
 
 		it(lSpec, function() {
 
@@ -185,7 +183,7 @@ jws.tests.Channels = {
 	// this spec tests the create method for a new channel
 	testChannelPublish: function(aChannelId, aData,
 			aComment, aExpectedReturnCode) {
-		var lSpec = this.NS + ": channelPublish (id: " + aChannelId + ", data: " + aData + ", " + aComment + ")";
+		var lSpec = "channelPublish (id: " + aChannelId + ", data: " + aData + ", " + aComment + ")";
 
 		it(lSpec, function() {
 
@@ -231,7 +229,7 @@ jws.tests.Channels = {
 	},
 	// this spec tests the create method for a new channel
 	testChannelSubscriptions: function(aComment, aExpectedIDs, aExpectedCount) {
-		var lSpec = this.NS + ": channelSubscriptions (" + aComment + ")";
+		var lSpec = "channelSubscriptions (" + aComment + ")";
 
 		it(lSpec, function() {
 
@@ -278,7 +276,7 @@ jws.tests.Channels = {
 	},
 	// this spec tests to obtain the ids of the 
 	testChannelGetIds: function(aComment, aExpectedIDs, aExpectedCount) {
-		var lSpec = this.NS + ": channelGetIds (" + aComment + ")";
+		var lSpec = "channelGetIds (" + aComment + ")";
 
 		it(lSpec, function() {
 
@@ -325,7 +323,7 @@ jws.tests.Channels = {
 	},
 	// this spec tests the create method for a new channel
 	testChannelComplexTest: function(aComment) {
-		var lSpec = this.NS + ": complex test (" + aComment + ")";
+		var lSpec = "complex test (" + aComment + ")";
 
 		it(lSpec, function() {
 
@@ -513,7 +511,7 @@ jws.tests.Channels = {
 	// this spec tests the create method for a new channel
 	testChannelRemove: function(aChannelId, aAccessKey, aSecretKey,
 			aComment, aExpectedReturnCode) {
-		var lSpec = this.NS + ": channelRemove (id: " + aChannelId + ", " + aComment + ")";
+		var lSpec = "channelRemove (id: " + aChannelId + ", " + aComment + ")";
 
 		it(lSpec, function() {
 
@@ -559,9 +557,7 @@ jws.tests.Channels = {
 						isPrivate: false,
 						isSystem: true
 					}
-				},
-		1
-				);
+				}, 1);
 
 		// testing unsubscribing from existing, pre-defined channels
 		jws.tests.Channels.testUnsubscribe("systemA", "access");
@@ -656,12 +652,5 @@ jws.tests.Channels = {
 		jws.tests.Channels.testChannelRemove("myPrivUnsec", "", "",
 				"Removing channel that should never have existed (invalid)", -1);
 
-	},
-	runSuite: function() {
-		var lThis = this;
-		describe("Performing test suite: " + this.NS + "...", function() {
-			lThis.runSpecs();
-		});
 	}
-
-}
+};

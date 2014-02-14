@@ -17,27 +17,24 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
-
+// requires web/res/js/jwsReportingPlugIn.js previously loaded
 jws.tests.Reporting = {
-	NS: "jws.tests.reporting",
 	title: "Reporting plug-in",
 	description: "jWebSocket reporting plug-in for application reports generation",
 	category: "Community Edition",
-	// this spec tests the 'get report templates' feature of reporting plug-in
+	// this spec tests the 'get report templates' feature 
 	testGetReports: function() {
 
-		var lSpec = this.NS + ": get report templates(admin)";
+		var lSpec = "get report templates(admin)";
 		it(lSpec, function() {
-
-			// init response
 			var lResponse = null;
 
-			// perform the get report templates...
-			jws.Tests.getAdminTestConn().reportingGetReports(
-					{OnResponse: function(aToken) {
-							lResponse = aToken;
-						}
-					}
+			// perform the get report templates feature on the server
+			jws.Tests.getAdminTestConn().reportingGetReports({
+				OnResponse: function(aToken) {
+					lResponse = aToken;
+				}
+			}
 			);
 
 			// wait for result, consider reasonable timeout
@@ -65,19 +62,17 @@ jws.tests.Reporting = {
 	// this spec tests the generateReport feature
 	testGenerateReport: function(aReportName, aParams, aFields) {
 
-		var lSpec = this.NS + ": generateReport(" + aReportName + "," + aFields + "," + aParams + ")";
+		var lSpec = "generateReport(" + aReportName + "," + aFields + "," + aParams + ")";
 		it(lSpec, function() {
-
-			// init response
 			var lResponse = null;
 
-
-			// perform the generate reports...
+			// perform the generate reports on the server
 			jws.Tests.getAdminTestConn().reportingGenerateReport(
 					aReportName,
 					aFields,
 					aParams,
-					{OnResponse: function(aToken) {
+					{
+						OnResponse: function(aToken) {
 							lResponse = aToken;
 						}
 					}
@@ -86,23 +81,17 @@ jws.tests.Reporting = {
 			// wait for result, consider reasonable timeout
 			waitsFor(
 					function() {
-						// check response
 						return(null != lResponse);
 					},
 					lSpec,
-					1500
+					1000 * 10
 					);
 
 			// check the result 
 			runs(function() {
 				expect(lResponse.code).toEqual(0);
 				expect(lResponse.msg).toEqual("ok");
-				var lCont = 10;
-				var lReportName = "";
-				while (lCont < 20) {
-					lReportName += lResponse.path[lCont++];
-				}
-				expect(lReportName).toEqual("person.pdf");
+				expect(lResponse.path.indexOf("person.pdf") == 0);
 			});
 
 		});
@@ -110,19 +99,10 @@ jws.tests.Reporting = {
 	runSpecs: function() {
 		this.testGetReports();
 
-		// args
+		// generate report calling args
 		var lReportName = "person";
 		var lParams = "{reportTitle: 'My Report'}";
 		var lFields = "[{name: 'Javier', lastName: 'Alejandro Puentes', age: 27, dni: 9898797987}]";
-
 		this.testGenerateReport(lReportName, lParams, lFields);
-	},
-	runSuite: function() {
-		// run alls tests as a separate test suite
-		var lThis = this;
-		describe("Performing test suite: " + this.NS + "...", function() {
-			lThis.runSpecs();
-		});
 	}
-
 };
