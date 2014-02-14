@@ -71,8 +71,8 @@ $.widget("jws.SMSGateway", {
 						// (string | mandatory) the heading of the notification
 						title: 'Welcome to jWebSocket SMS Gateway Demo',
 						// (string | mandatory) the text inside the notification
-						text: 'You must <a href="https://enapso.com/products/userClient#login">login</a> ' +
-								'or <a href="https://enapso.com/products/userClient#register">register</a> ' +
+						text: 'You must <a href="https://enapso.com/products/userClient#login" target="_parent">login</a> ' +
+								'or <a href="https://enapso.com/products/userClient#register" target="_parent">register</a> ' +
 								'first using our Website header buttons to be able to use this demo.',
 						class_name: 'gritter-light gritter-top_align',
 						sticky: true,
