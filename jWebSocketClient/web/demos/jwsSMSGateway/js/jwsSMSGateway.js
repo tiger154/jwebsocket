@@ -67,6 +67,17 @@ $.widget("jws.SMSGateway", {
 					w.SMSGateway.remainingSMS(w.auth.mUsername);
 				} else {
 					w.SMSGateway.disableAll();
+					$.gritter.add({
+						// (string | mandatory) the heading of the notification
+						title: 'Welcome to jWebSocket SMS Gateway Demo',
+						// (string | mandatory) the text inside the notification
+						text: 'You must <a href="https://enapso.com/products/userClient#login">login</a> ' +
+								'or <a href="https://enapso.com/products/userClient#register">register</a> ' +
+								'first using our Website header buttons to be able to use this demo.',
+						class_name: 'gritter-light gritter-top_align',
+						sticky: true,
+						image: '../../res/img/information.png' // you can use warning.png, important.png, alert.png, error.png
+					});
 				}
 			},
 			OnClose: function(aEvent) {
