@@ -78,6 +78,12 @@ $.widget("jws.chat", {
 		// Default namespace for demos org.jwebsocket.plugins.chat
 		this.NS = jws.NS_BASE + ".plugins.chat";
 		this.mNextWindowId = 1;
+		if (window.name) {
+			var lSplit = window.name.split("_");
+			if (lSplit.length > 1) {
+				this.mNextWindowId = parseInt(lSplit[1]) + 1;
+			}
+		}
 
 		// MESSAGEBOX
 		this.eMessageBoxArea = this.element.find("#message_box");
@@ -211,26 +217,20 @@ $.widget("jws.chat", {
 		$(w.chat.eMainContainer).auth(lCallbacks);
 	},
 	openNewChatWindow: function( ) {
+		var lLeft = parseInt(50 + w.chat.mNextWindowId * 30, 10),
+				lTop = parseInt(40 + w.chat.mNextWindowId * 25, 10);
 		window.open(
 				// "http://www.jwebsocket.org/demos/jwsChat/jwsChat.htm"
 				"jwsChat.htm",
-				"chatWindow_" + w.chat.generateUUID(),
+				"chatWindow_" + w.chat.mNextWindowId + "_" + jws.tools.createUUID(),
 				"width=720,height=700,left=" +
-				(50 + w.chat.mNextWindowId * 30) + ", top=" +
-				(50 + w.chat.mNextWindowId * 25));
+				lLeft + ", top=" +
+				lTop);
+
 		w.chat.mNextWindowId++;
 		if (w.chat.mNextWindowId > 10) {
 			w.chat.mNextWindowId = 1;
 		}
-	},
-	generateUUID: function() {
-		var d = new Date().getTime();
-		var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-			var r = (d + Math.random() * 16) % 16 | 0;
-			d = Math.floor(d / 16);
-			return (c === 'x' ? r : (r & 0x7 | 0x8)).toString(16);
-		});
-		return uuid;
 	},
 	sendMessage: function( ) {
 		if (mWSC.isConnected( )) {
