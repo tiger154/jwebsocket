@@ -36,12 +36,14 @@
 		<!-- DEMO STYLES  -->
         <link rel="stylesheet" type="text/css" href="../../res/css/demos.css"/>
         <link rel="stylesheet" type="text/css" href="css/jwsSMSGateway.css"/>
+        <link rel="stylesheet" type="text/css" href="../../lib/jQuery/plugins/gritter/css/jquery.gritter.css"/>
 
 		<!-- JQUERY DEPENDENCIES -->
 		<script type="text/javascript" src='../../lib/jQuery/jquery.js'></script>
 		<script type="text/javascript" src='../../lib/jQuery/jquery-ui/jquery-ui.js'></script>
 		<script type="text/javascript" src='../../res/js/widgets/dialogs.js'></script>
 		<script type="text/javascript" src='../../lib/jQuery/tooltip.js'></script>
+		<script type="text/javascript" src='../../lib/jQuery/plugins/gritter/js/jquery.gritter.min.js'></script>
 
 		<!-- JWEBSOCKET JAVASCRIPT CLIENT LIBRARIES -->
 		<script type="text/javascript" src="../../res/js/jWebSocket.js"></script>
@@ -66,18 +68,18 @@
             <div id="demo_box_header">
                 <h1>jWebSocket SMS Gateway</h1>
                 <div id="demo_box_header_login">
-                    <div id="logoff_area">
+                  <div id="logoff_area">
                         <div id="user_info">
-                            <div><b>Welcome</b>&nbsp;</div><div id="user_info_name"></div>
-                            <!--<div id="logoff_button" class="button" >Logout</div>-->
+                            <div id="user_info_name"></div> <div>&nbsp;|&nbsp;</div>
+                            <div id="logoff_button" class="button">Logout</div>
                         </div>
                     </div>
 <!--                    <div id="login_area">
                         <div id="login_form">
                             <label class="first">Username</label>
                             <label class="second">Password</label>
-                            <input type="text" id="user_text" value="root"/>
-                            <input type="password" id="user_password" value="root"/>
+                            <input type="text" id="user_text" value=""/>
+                            <input type="password" id="user_password" value=""/>
                         </div>
                         <div id="login_button" class="button">Login</div>
                     </div>-->

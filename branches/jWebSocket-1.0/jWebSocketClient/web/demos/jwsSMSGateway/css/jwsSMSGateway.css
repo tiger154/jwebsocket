@@ -212,3 +212,13 @@ label{
 .error{
 	color: #ff0000 !important;
 }
+
+.gritter-top_align a{
+	color: white;
+	font-weight: bold;
+}
+
+.gritter-top_align.gritter-light a{
+	color: black !important;
+	font-weight: bold;
+}
