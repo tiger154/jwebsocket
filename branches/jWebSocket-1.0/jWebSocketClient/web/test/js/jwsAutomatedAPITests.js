@@ -18,90 +18,75 @@
 //	---------------------------------------------------------------------------
 
 jws.tests.AutomatedAPI = {
-
-	NS: "jws.tests.automated", 
 	title: "Automated API plug-in",
 	description: "jWebSocket AutomatedAPI plug-in. Designed server side plug-in's API exporting.",
 	category: "System",
-	
 	mSpecs: [],
-
 	testGetAPIDefaults: function() {
 
-		var lSpec = this.NS + ": Running default API spec";
+		var lSpec = "running default API spec";
 
-		it( lSpec, function () {
+		it(lSpec, function() {
 
 			var lDone = false;
 
 			// start stop watch for this spec
-			jws.StopWatchPlugIn.startWatch( "defAPIspec", lSpec );
+			jws.StopWatchPlugIn.startWatch("defAPIspec", lSpec);
 
 			// we need to "control" the server to broadcast to all connections here
 			var lConn = new jws.jWebSocketJSONClient();
 
 			// open a separate control connection
 			lConn.open(jws.getDefaultServerURL(), {
-
-				OnWelcome: function () {
+				OnWelcome: function() {
 					var lAPIPlugIn = new jws.APIPlugIn();
-					lConn.addPlugIn( lAPIPlugIn );
+					lConn.addPlugIn(lAPIPlugIn);
 					// request the API of the benchmark plug-in
 					lAPIPlugIn.getPlugInAPI(
-						"jws.benchmark", {
-						// if API received successfully run the tests...
-						OnResponse: function( aServerPlugIn ) {
-							jws.tests.AutomatedAPI.mSpecs = 
-								lAPIPlugIn.createSpecFromAPI( lConn, aServerPlugIn );
-							lDone = true;
-						},
-						OnTimeout: function() {
-							lConn.close();
-							lDone = true;
-						}
-					});
+							"jws.benchmark", {
+								// if API received successfully run the tests...
+								OnResponse: function(aServerPlugIn) {
+									jws.tests.AutomatedAPI.mSpecs =
+											lAPIPlugIn.createSpecFromAPI(lConn, aServerPlugIn);
+									lDone = true;
+								},
+								OnTimeout: function() {
+									lConn.close();
+									lDone = true;
+								}
+							});
 				}
 			});
 
 			waitsFor(
-				function() {
-					return lDone == true;
-				},
-				"Running against API...",
-				3000
-			);
+					function() {
+						return lDone == true;
+					},
+					"Running against API...",
+					3000
+					);
 
-			runs( function() {
-				expect( lDone ).toEqual( true );
+			runs(function() {
+				expect(lDone).toEqual(true);
 
 				// stop watch for this spec
-				jws.StopWatchPlugIn.stopWatch( "defAPIspec" );
+				jws.StopWatchPlugIn.stopWatch("defAPIspec");
 			});
 		});
 	},
-
 	testRunAPIDefaults: function() {
-		it( this.NS + ": Running default tests", function() {
-			eval( 
-				"  for( var i = 0; i < jws.tests.AutomatedAPI.mSpecs.length; i++ ) { "
-				+ "  jws.tests.AutomatedAPI.mSpecs[ i ]();"
-				+ "}"
-			);
+		it("running default tests", function() {
+			eval(
+					"  for( var i = 0; i < jws.tests.AutomatedAPI.mSpecs.length; i++ ) { "
+					+ "  jws.tests.AutomatedAPI.mSpecs[ i ]();"
+					+ "}"
+					);
 		});
 	},
-
 	runSpecs: function() {
 		// get the default specs from the API
 		this.testGetAPIDefaults();
 		// run all the obtained default specs
 		// this.testRunAPIDefaults();
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
-
+	}
 };

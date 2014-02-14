@@ -19,14 +19,13 @@
 
 jws.tests.Load = {
 
-	NS: "jws.tests.load", 
 	title: "Load tests",
 	description: "jWebSocket server performance tests.",
 	category: "Server Benchmarks",
 	
 	// this spec tests the speed of a complete client connection to the server
 	testConcurrentConnections: function( aAmount ) {
-		var lSpec = this.NS + ": Trying to establish " + aAmount + " concurrent connections...";
+		var lSpec = "Trying to establish " + aAmount + " concurrent connections...";
 		it( lSpec, function () {
 
 			var lConnected = 0;
@@ -66,7 +65,7 @@ jws.tests.Load = {
 	// this spec tests the send method of the system plug-in by sending
 	// this spec requires an established connection
 	testEcho: function() {
-		var lSpec = this.NS + ": Send and Loopback";
+		var lSpec = "Send and Loopback";
 		it( lSpec, function () {
 
 			// we need to "control" the server to broadcast to all connections here
@@ -114,14 +113,6 @@ jws.tests.Load = {
 		for( var lIdx = 0; lIdx < 10; lIdx++ ) {
 			jws.tests.Load.testConcurrentConnections( 20 );
 		}
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
-
-}
+	}
+};
 

@@ -19,14 +19,13 @@
 
 jws.tests.JMS = {
 
-	NS: "jws.tests.jms", 
 	title: "JMS plug-in",
 	description: "jWebSocket JMS plug-in",
 	category: "Community Edition",
 
 	// this spec tests the listen method of the JMS plug-in
 	testListen: function() {
-		var lSpec = this.NS + ": listen (no Pub/Sub)";
+		var lSpec = "listen (no Pub/Sub)";
 		
 		it( lSpec, function () {
 
@@ -58,7 +57,7 @@ jws.tests.JMS = {
 
 	// this spec tests the listen method of the JMS plug-in
 	testUnlisten: function() {
-		var lSpec = this.NS + ": unlisten (no Pub/Sub)";
+		var lSpec = "unlisten (no Pub/Sub)";
 		
 		it( lSpec, function () {
 
@@ -91,13 +90,5 @@ jws.tests.JMS = {
 	runSpecs: function() {
 		jws.tests.JMS.testListen();
 		jws.tests.JMS.testUnlisten();
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
-
+	}
 };

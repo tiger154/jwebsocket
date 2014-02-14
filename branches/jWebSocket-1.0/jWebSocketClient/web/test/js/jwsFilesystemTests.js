@@ -20,7 +20,6 @@
 
 jws.tests.FileSystem = {
 
-	NS: "jws.tests.filesystem", 
 	title: "FileSystem plug-in",
 	description: "jWebSocket filesystem plug-in. Designed for files management on the server.",
 	category: "Community Edition",
@@ -30,7 +29,7 @@ jws.tests.FileSystem = {
 	TEST_FILE_NAME: "test.txt",
 
 	testFileSave: function(aFilename, aData, aScope) {
-		var lSpec = this.NS + ": FileSave (admin, " + aFilename + ", " + aScope + ")";
+		var lSpec = "FileSave (admin, " + aFilename + ", " + aScope + ")";
 		var lData = aData;
 		var lFilename = aFilename;
 		
@@ -63,7 +62,7 @@ jws.tests.FileSystem = {
 	},
 	
 	testFileSend: function(aFilename, aData) {
-		var lSpec = this.NS + ": FileSend (admin, " + aFilename + ")";
+		var lSpec = "FileSend (admin, " + aFilename + ")";
 		
 		it( lSpec, function () {
 
@@ -94,7 +93,7 @@ jws.tests.FileSystem = {
 	},
 	
 	testGetFilelist: function(aAlias, aFilemasks, aRecursive, aExpectedList){
-		var lSpec = this.NS + ": GetFilelist (admin, " + aAlias + ", " + 
+		var lSpec = "GetFilelist (admin, " + aAlias + ", " + 
 		JSON.stringify(aFilemasks) + ", " + aRecursive + ")";
 		
 		it( lSpec, function () {
@@ -131,7 +130,7 @@ jws.tests.FileSystem = {
 	},
 
 	testFileLoad: function(aFilename, aAlias, aExpectedData) {
-		var lSpec = this.NS + ": FileLoad (admin, " + aFilename + ", " + aAlias + ")";
+		var lSpec = "FileLoad (admin, " + aFilename + ", " + aAlias + ")";
 		var lData = aExpectedData;
 		var lFilename = aFilename;
 		
@@ -163,7 +162,7 @@ jws.tests.FileSystem = {
 	},
 	
 	testFileDelete: function(aFilename, aForce, aExpectedCode) {
-		var lSpec = this.NS + ": FileDelete (admin, " + aFilename + ", " + aExpectedCode + ")";
+		var lSpec = "FileDelete (admin, " + aFilename + ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
 
@@ -191,7 +190,7 @@ jws.tests.FileSystem = {
 	},
 	
 	testFileExists: function(aAlias, aFilename, aExpectedValue) {
-		var lSpec = this.NS + ": FileExists (admin, " + aAlias + ", " + aFilename + ")";
+		var lSpec = "FileExists (admin, " + aAlias + ", " + aFilename + ")";
 		var lFilename = aFilename;
 		var lAlias = aAlias;
 		
@@ -267,12 +266,5 @@ jws.tests.FileSystem = {
 		jws.tests.FileSystem.testFileSend(this.TEST_FILE_NAME, this.TEST_FILE_DATA);
 		jws.tests.FileSystem.testFileDelete(this.TEST_FILE_NAME, true, 0);
 		jws.tests.FileSystem.testFileDelete(this.TEST_FILE_NAME, true, -1);
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
+	}
 };

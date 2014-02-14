@@ -19,14 +19,13 @@
 
 jws.tests.Streaming = {
 
-	NS: "jws.tests.streaming", 
 	title: "Streaming plug-in",
 	description: "jWebSocket streaming plug-in",
 	category: "Community Edition",
 
 	// this spec tests the register method of the streaming plug-in
 	testRegister: function( aStreamId ) {
-		var lSpec = this.NS + ": register (" + aStreamId + ")";
+		var lSpec = "register (" + aStreamId + ")";
 		
 		it( lSpec, function () {
 
@@ -56,7 +55,7 @@ jws.tests.Streaming = {
 
 	// this spec tests the unregister method of the streaming plug-in
 	testUnregister: function( aStreamId ) {
-		var lSpec = this.NS + ": unregister (" + aStreamId + ")";
+		var lSpec = "unregister (" + aStreamId + ")";
 		
 		it( lSpec, function () {
 
@@ -87,14 +86,6 @@ jws.tests.Streaming = {
 	runSpecs: function() {
 		jws.tests.Streaming.testRegister( "timeStream" );
 		jws.tests.Streaming.testUnregister( "timeStream" );
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
-
-}
+	}
+};
 

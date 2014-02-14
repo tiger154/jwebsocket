@@ -30,7 +30,7 @@ jws.tests.ItemStorage = {
 	
 	testCreateCollection: function(aCollectionName, aItemType, aSecretPwd, aAccessPwd, aIsPrivate, aCapacity, aExpectedCode) {
 		
-		var lSpec = this.NS + ": createItemCollection (admin, " + aCollectionName + ", " + aItemType
+		var lSpec = "createItemCollection (admin, " + aCollectionName + ", " + aItemType
 		+ ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
@@ -67,7 +67,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testRemoveCollection: function(aCollectionName,aSecretPwd, aExpectedCode) {
-		var lSpec = this.NS + ": removeItemCollection (admin, " + aCollectionName + ", " + aSecretPwd
+		var lSpec = "removeItemCollection (admin, " + aCollectionName + ", " + aSecretPwd
 		+ ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
@@ -94,7 +94,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testExistsCollection: function(aCollectionName, aExists) {
-		var lSpec = this.NS + ": existsCollection (admin, " + aCollectionName
+		var lSpec = "existsCollection (admin, " + aCollectionName
 		+ ", " + aExists + ")";
 		
 		it( lSpec, function () {
@@ -121,7 +121,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testSubscribeCollection: function(aCollectionName, aAccessPwd, aExpectedCode) {
-		var lSpec = this.NS + ": subscribeCollection (admin, " + aCollectionName + ", " + aAccessPwd
+		var lSpec = "subscribeCollection (admin, " + aCollectionName + ", " + aAccessPwd
 		+ ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
@@ -158,7 +158,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testUnsubscribeCollection: function(aCollectionName, aExpectedCode) {
-		var lSpec = this.NS + ": unsubscribeCollection (admin, " + aCollectionName + ", " + aExpectedCode + ")";
+		var lSpec = "unsubscribeCollection (admin, " + aCollectionName + ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
 
@@ -184,7 +184,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testAuthorizeCollection: function(aCollectionName, aSecretPwd, aExpectedCode) {
-		var lSpec = this.NS + ": authorizeCollection (admin, " + aCollectionName + ", " + aSecretPwd
+		var lSpec = "authorizeCollection (admin, " + aCollectionName + ", " + aSecretPwd
 		+ ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
@@ -221,7 +221,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testClearCollection: function(aCollectionName, aSecretPwd, aExpectedCode) {
-		var lSpec = this.NS + ": clearCollection (admin, " + aCollectionName + ", " + aSecretPwd
+		var lSpec = "clearCollection (admin, " + aCollectionName + ", " + aSecretPwd
 		+ ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
@@ -259,7 +259,7 @@ jws.tests.ItemStorage = {
 	
 	testEditCollection: function(aCollectionName, aSecretPwd, aNewSecretPwd, 
 		aAccessPwd, aIsPrivate, aExpectedCode) {
-		var lSpec = this.NS + ": editCollection (admin, " + aCollectionName + ", " 
+		var lSpec = "editCollection (admin, " + aCollectionName + ", " 
 		+ aSecretPwd + ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
@@ -290,7 +290,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testRestartCollection: function(aCollectionName, aSecretPwd, aExpectedCode) {
-		var lSpec = this.NS + ": restartCollection (admin, " + aCollectionName + ", " 
+		var lSpec = "restartCollection (admin, " + aCollectionName + ", " 
 		+ aSecretPwd + ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
@@ -327,7 +327,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testGetCollectionNames: function( aUserOnly, aExpectedCode, aExpectedSize) {
-		var lSpec = this.NS + ": getCollectionNames (admin, " + aExpectedCode + ", " + aExpectedSize + ")";
+		var lSpec = "getCollectionNames (admin, " + aExpectedCode + ", " + aExpectedSize + ")";
 		
 		it( lSpec, function () {
 
@@ -357,7 +357,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testFindCollection: function( aCollectionName, aFound ) {
-		var lSpec = this.NS + ": findCollection (admin, " + aCollectionName + ", " + aFound + ")";
+		var lSpec = "findCollection (admin, " + aCollectionName + ", " + aFound + ")";
 		
 		it( lSpec, function () {
 
@@ -384,7 +384,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testSaveItem: function( aCollectionName, aItem, aExpectedCode ) {
-		var lSpec = this.NS + ": saveItem (admin, " + aCollectionName + ", " + aExpectedCode + ")";
+		var lSpec = "saveItem (admin, " + aCollectionName + ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
 
@@ -421,7 +421,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testRemoveItem: function( aCollectionName, aPK, aExpectedCode ) {
-		var lSpec = this.NS + ": removeItem (admin, " + aCollectionName + ", " + aPK + ", " + aExpectedCode + ")";
+		var lSpec = "removeItem (admin, " + aCollectionName + ", " + aPK + ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
 
@@ -458,7 +458,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testFindItemByPK: function( aCollectionName, aPK, aExpectedCode, aExists ) {
-		var lSpec = this.NS + ": findItemByPK (admin, " + aCollectionName + ", " + aPK + ", " + aExists + ")";
+		var lSpec = "findItemByPK (admin, " + aCollectionName + ", " + aPK + ", " + aExists + ")";
 		
 		it( lSpec, function () {
 
@@ -487,7 +487,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testExistsItem: function( aCollectionName, aPK, aExists ) {
-		var lSpec = this.NS + ": findItemByPK (admin, " + aCollectionName + ", " + aPK + ", " + aExists + ")";
+		var lSpec = "findItemByPK (admin, " + aCollectionName + ", " + aPK + ", " + aExists + ")";
 		
 		it( lSpec, function () {
 
@@ -513,7 +513,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testFindItemDef: function( aItemType, aExists ) {
-		var lSpec = this.NS + ": findItemDefinition (admin, " + aItemType + ", " 
+		var lSpec = "findItemDefinition (admin, " + aItemType + ", " 
 		+ aExists + ")";
 		
 		it( lSpec, function () {
@@ -540,7 +540,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testExistsItemDef: function( aItemType, aExists ) {
-		var lSpec = this.NS + ": existsItemDefinition (admin, " + aItemType + ", " 
+		var lSpec = "existsItemDefinition (admin, " + aItemType + ", " 
 		+ aExists + ")";
 		
 		it( lSpec, function () {
@@ -567,7 +567,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testListItemDef: function( aExpectedSize ) {
-		var lSpec = this.NS + ": listDefinitions (admin, " + aExpectedSize + ")";
+		var lSpec = "listDefinitions (admin, " + aExpectedSize + ")";
 		
 		it( lSpec, function () {
 
@@ -593,7 +593,7 @@ jws.tests.ItemStorage = {
 	},
 	
 	testListItems: function( aCollectionName, aOffset, aLength, aExpectedCode, aExpectedSize) {
-		var lSpec = this.NS + ": listItems (admin, " + aCollectionName + ", " + aOffset 
+		var lSpec = "listItems (admin, " + aCollectionName + ", " + aOffset 
 		+ ", " + aLength + ", " + aExpectedSize + ", " + aExpectedCode + ")";
 		
 		it( lSpec, function () {
@@ -790,13 +790,5 @@ jws.tests.ItemStorage = {
 		
 		// list definitions
 		this.testListItemDef(1);
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
-
+	}
 };

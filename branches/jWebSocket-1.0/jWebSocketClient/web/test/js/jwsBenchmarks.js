@@ -215,13 +215,5 @@ jws.tests.Benchmarks = {
 
 		// close all connections
 		this.testCloseConnections();
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
-
+	}
 };

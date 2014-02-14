@@ -19,16 +19,15 @@
 
 jws.tests.System = {
 
-	NS: "jws.tests.system",
 	title: "System plug-in",
 	description: "jWebSocket server system plug-in. " 
-			+ "Required for properly server execution.",
+			+ "Required for correct server execution.",
 	category: "System",
 	priority: 1,
 
 	// this spec tests the login function of the system plug-in
 	testLoginValidCredentials: function() {
-		var lSpec = this.NS + ": Logging in with valid credentials";
+		var lSpec = "logging in with valid credentials";
 		it( lSpec, function () {
 
 			// we need to "control" the server to broadcast to all connections here
@@ -63,7 +62,7 @@ jws.tests.System = {
 
 	// this spec tests the login function of the system plug-in
 	testLoginInvalidCredentials: function() {
-		var lSpec = this.NS + ": Logging in with invalid credentials";
+		var lSpec = "logging in with invalid credentials";
 		it( lSpec, function () {
 
 			// we need to "control" the server to broadcast to all connections here
@@ -99,7 +98,7 @@ jws.tests.System = {
 	// this spec tests the send method of the system plug-in by sending
 	// this spec requires an established connection
 	testSendLoopBack: function() {
-		var lSpec = this.NS + ": Send and Loopback";
+		var lSpec = "send and Loopback";
 		it( lSpec, function () {
 
 			// we need to "control" the server to broadcast to all connections here
@@ -144,7 +143,7 @@ jws.tests.System = {
 
 	// this spec tests the connect timeout behaviour of the client
 	testConnectTimeout: function( aURL, aOpenTimeout, aExpectedResult ) {
-		var lSpec = this.NS + ": connect timeout" 
+		var lSpec = "connect timeout" 
 		+ " (timeout: " + aOpenTimeout + "ms)";
 		
 		it( lSpec, function () {
@@ -191,7 +190,7 @@ jws.tests.System = {
 
 	// this spec tests the response timeout behaviour of the client
 	testResponseTimeout: function( aServerDelay, aClientTimeout ) {
-		var lSpec = this.NS + ": response timeout" 
+		var lSpec = "response timeout" 
 		+ " (Server: " + aServerDelay + "ms," 
 		+ " client: " + aClientTimeout + "ms)";
 		
@@ -238,7 +237,7 @@ jws.tests.System = {
 	},
 	
 	testSessionPut: function(aKey, aValue, aPublic){
-		var lSpec = this.NS + ": putting data on the server session of the client";
+		var lSpec = "putting data on the server session of the client";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -246,7 +245,7 @@ jws.tests.System = {
 				function() {
 					return jws.Tests.getAdminTestConn() !== null;
 				},
-				this.NS + ": waiting for admin connection",
+				"waiting for admin connection",
 				1000
 				);
 
@@ -273,7 +272,7 @@ jws.tests.System = {
 	},
 
 	testSessionGet: function(aKey, aPublic, aExpectedValue){
-		var lSpec = this.NS + ": getting data from the server session of a given client";
+		var lSpec = "getting data from the server session of a given client";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -303,7 +302,7 @@ jws.tests.System = {
 	},
 	
 	testSessionHas: function(aKey, aPublic, aExpectedValue){
-		var lSpec = this.NS + ": checking if the server session of a given client has a given entry";
+		var lSpec = "checking if the server session of a given client has a given entry";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -333,7 +332,7 @@ jws.tests.System = {
 	},
 	
 	testSessionKeys: function(aPublic, aExpectedValue){
-		var lSpec = this.NS + ": getting the server session keys of a given client";
+		var lSpec = "getting the server session keys of a given client";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -367,7 +366,7 @@ jws.tests.System = {
 	},
 	
 	testSessionRemove: function(aKey, aPublic, aExpectedCode){
-		var lSpec = this.NS + ": removing server session entry";
+		var lSpec = "removing server session entry";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -398,7 +397,7 @@ jws.tests.System = {
 	},
 	
 	testSessionGetAll: function(aPublic, aExpectedResult){
-		var lSpec = this.NS + ": getting the server session keys of a given client";
+		var lSpec = "getting the server session keys of a given client";
 		it( lSpec, function () {
 			var lResponse = null;
 		
@@ -429,7 +428,7 @@ jws.tests.System = {
 	},
 	
 	testSessionGetMany: function(aKeys, aExpectedResult){
-		var lSpec = this.NS + ": getting multiple public session entries for a given collection of clients";
+		var lSpec = "getting multiple public session entries for a given collection of clients";
 		it( lSpec, function () {
 			var lResponse = null;
 			var lClients = [jws.Tests.getAdminTestConn().getId()];
@@ -505,14 +504,6 @@ jws.tests.System = {
 		});
 		jws.tests.System.testSessionRemove("myVar2", true, 0);
 		
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
-
+	}
 };
 

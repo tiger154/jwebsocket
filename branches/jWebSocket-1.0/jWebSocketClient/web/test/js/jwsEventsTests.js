@@ -19,13 +19,16 @@
 
 jws.tests.Events = {
 
-	NS: "jws.tests.events", 
+	title: "Events plug-in",
+	description: "jWebSocket events plug-in basic tests.",
+	category: "Community Edition",
+	
 	authenticated: false,
 
 	// this spec tests the login operation of the test application
 	testLogon: function() {
 		
-		var lSpec = this.NS + ": logon";
+		var lSpec = "logon";
 		
 		it( lSpec, function () {
 
@@ -62,7 +65,7 @@ jws.tests.Events = {
 	// this spec tests the logoff operation of the test application
 	testLogoff: function() {
 		
-		var lSpec = this.NS + ": logoff";
+		var lSpec = "logoff";
 		
 		it( lSpec, function () {
 			var lResponse = null;
@@ -93,7 +96,7 @@ jws.tests.Events = {
 	// this spec tests the getEventsInfo operation of the test application
 	testGetEventsInfo: function() {
 		
-		var lSpec = this.NS + ": getEventsInfo";
+		var lSpec = "getEventsInfo";
 		
 		it( lSpec, function () {
 			var lResponse = null;
@@ -122,7 +125,7 @@ jws.tests.Events = {
 	// this spec tests the S2C event notification operation of the test application
 	testS2CEventNotification: function() {
 		
-		var lSpec = this.NS + ": S2CEventNotification";
+		var lSpec = "S2CEventNotification";
 		
 		it( lSpec, function () {
 			var lX = 0;
@@ -157,14 +160,6 @@ jws.tests.Events = {
 		jws.tests.Events.testLogoff();
 		jws.tests.Events.testGetEventsInfo();
 		jws.tests.Events.testS2CEventNotification();
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
 	}	
-
 }
 

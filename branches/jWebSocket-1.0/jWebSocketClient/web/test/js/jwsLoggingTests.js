@@ -19,7 +19,6 @@
 
 jws.tests.Logging = {
 
-	NS: "jws.tests.logging", 
 	title: "Logging plug-in",
 	description: "jWebSocket logging plug-in",
 	category: "Community Edition",
@@ -34,7 +33,7 @@ jws.tests.Logging = {
 
 	// this spec tests the file save method of the fileSystem plug-in
 	testLog: function() {
-		var lSpec = this.NS + ": LogEvent";
+		var lSpec = "LogEvent";
 		
 		it( lSpec, function () {
 
@@ -114,7 +113,7 @@ jws.tests.Logging = {
 
 	// this spec tests the file save method of the fileSystem plug-in
 	testGetLog: function() {
-		var lSpec = this.NS + ": GetLog";
+		var lSpec = "GetLog";
 		
 		it( lSpec, function () {
 
@@ -158,13 +157,5 @@ jws.tests.Logging = {
 	runSpecs: function() {
 		this.testLog();
 		this.testGetLog();
-	},
-
-	runSuite: function() {
-		var lThis = this;
-		describe( "Performing test suite: " + this.NS + "...", function () {
-			lThis.runSpecs();
-		});
-	}	
-
+	}
 };
