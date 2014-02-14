@@ -67,17 +67,6 @@ $.widget("jws.SMSGateway", {
 					w.SMSGateway.remainingSMS(w.auth.mUsername);
 				} else {
 					w.SMSGateway.disableAll();
-					$.gritter.add({
-						// (string | mandatory) the heading of the notification
-						title: 'Welcome to jWebSocket SMS Gateway Demo',
-						// (string | mandatory) the text inside the notification
-						text: 'You must <a href="https://enapso.com/products/userClient#login" target="_parent">login</a> ' +
-								'or <a href="https://enapso.com/products/userClient#register" target="_parent">register</a> ' +
-								'first using our Website header buttons to be able to use this demo.',
-						class_name: 'gritter-light gritter-top_align',
-						sticky: true,
-						image: '../../res/img/information.png' // you can use warning.png, important.png, alert.png, error.png
-					});
 				}
 			},
 			OnClose: function(aEvent) {
@@ -85,6 +74,9 @@ $.widget("jws.SMSGateway", {
 			},
 			OnLogon: function() {
 				w.SMSGateway.enableAll();
+			},
+			OnLogoff: function(){
+				w.SMSGateway.disableAll();
 			},
 			OnMessage: function(aEvent, aToken) {
 				// Listening to logon event broadcasting from useradmin plug-in,
@@ -279,11 +271,25 @@ $.widget("jws.SMSGateway", {
 		w.SMSGateway.eBtnUpdate.attr("disabled", true);
 		w.SMSGateway.eBtnUpdate.addClass("disabled");
 		w.SMSGateway.eImg.attr("src", "");
+		w.SMSGateway.gritterDialog = $.gritter.add({
+			// (string | mandatory) the heading of the notification
+			title: 'Welcome to jWebSocket SMS Gateway Demo',
+			// (string | mandatory) the text inside the notification
+			text: 'You must <a href="https://enapso.com/products/userClient#login" target="_parent">login</a> ' +
+					'or <a href="https://enapso.com/products/userClient#register" target="_parent">register</a> ' +
+					'first using our Website header buttons to be able to use this demo.',
+			class_name: 'gritter-light gritter-top_align',
+			sticky: true,
+			image: '../../res/img/information.png' // you can use warning.png, important.png, alert.png, error.png
+		});
 	},
 	enableAll: function() {
 		w.SMSGateway.enableButton(w.SMSGateway.eBtnSend);
 		w.SMSGateway.enableButton(w.SMSGateway.eBtnReport);
 		w.SMSGateway.eBtnUpdate.attr("disabled", false);
 		w.SMSGateway.eBtnUpdate.removeClass("disabled");
+		if(w.SMSGateway.gritterDialog){
+			$.gritter.remove(w.SMSGateway.gritterDialog);
+		}
 	}
 });
