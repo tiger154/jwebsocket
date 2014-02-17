@@ -24,34 +24,34 @@
 				</entry>
 				-->
 				<entry key="channel:privateA">
-					<value>{state:"STARTED",owner:"root",name:"Private A",isPrivate:true ,isSystem:false,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
+					<value>{state:"STARTED",owner:"root",name:"Private A",isPrivate:true ,isSystem:false,access_key:"9df3b01c60df20d13843841ff0d4482c",secret_key:"5ebe2294ecd0e0f08eab7690d2a6ee69",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:privateB">
-					<value>{state:"STARTED",owner:"root",name:"Private B",isPrivate:true ,isSystem:false,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
+					<value>{state:"STARTED",owner:"root",name:"Private B",isPrivate:true ,isSystem:false,access_key:"9df3b01c60df20d13843841ff0d4482c",secret_key:"5ebe2294ecd0e0f08eab7690d2a6ee69",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:publicA">
-					<value>{state:"STARTED",owner:"root",name:"Public A" ,isPrivate:false,isSystem:false,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
+					<value>{state:"STARTED",owner:"root",name:"Public A" ,isPrivate:false,isSystem:false,access_key:"9df3b01c60df20d13843841ff0d4482c",secret_key:"5ebe2294ecd0e0f08eab7690d2a6ee69",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:publicB">
-					<value>{state:"STARTED",owner:"root",name:"Public B" ,isPrivate:false,isSystem:false,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
+					<value>{state:"STARTED",owner:"root",name:"Public B" ,isPrivate:false,isSystem:false,access_key:"9df3b01c60df20d13843841ff0d4482c",secret_key:"5ebe2294ecd0e0f08eab7690d2a6ee69",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:systemA">
-					<value>{state:"STARTED",owner:"root",name:"System A" ,isPrivate:false,isSystem:true ,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
+					<value>{state:"STARTED",owner:"root",name:"System A" ,isPrivate:false,isSystem:true ,access_key:"9df3b01c60df20d13843841ff0d4482c",secret_key:"5ebe2294ecd0e0f08eab7690d2a6ee69",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:systemB">
-					<value>{state:"STARTED",owner:"root",name:"System B" ,isPrivate:false,isSystem:true ,access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
+					<value>{state:"STARTED",owner:"root",name:"System B" ,isPrivate:false,isSystem:true ,access_key:"9df3b01c60df20d13843841ff0d4482c",secret_key:"5ebe2294ecd0e0f08eab7690d2a6ee69",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:jWebSocketSlideShowDemo">
-					<value>{state:"STARTED",owner:"root",name:"SlideShow Demo" ,isPrivate:false,isSystem:true, access_key:"5l1d35h0w",secret_key:"5l1d35h0w53cr3t!",token_server:"ts0"}</value>
+					<value>{state:"STARTED",owner:"root",name:"SlideShow Demo" ,isPrivate:false,isSystem:true, access_key:"366bc8df91836c31e10987be850c9ff1",secret_key:"e9b9b1db28d15d5ea630fb219eb9f501",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:jWebSocketGamingDemo">
-					<value>{state:"STARTED",owner:"root",name:"Gaming Demo" ,isPrivate:false,isSystem:true, access_key:"gaming",secret_key:"64m1n6D3m0!",token_server:"ts0"}</value>
+					<value>{state:"STARTED",owner:"root",name:"Gaming Demo" ,isPrivate:false,isSystem:true, access_key:"967ef2eb34634ba418db94dab610ba6f",secret_key:"09e681c3678418e9420728b8b6a5e93b",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:jWebSocketVideoStreamingDemo">
-					<value>{state:"STARTED",owner:"root",name:"Video Streaming Demo" ,isPrivate:false,isSystem:true, access_key:"stream",secret_key:"5tr34m53cr3t!",token_server:"ts0"}</value>
+					<value>{state:"STARTED",owner:"root",name:"Video Streaming Demo" ,isPrivate:false,isSystem:true, access_key:"f7b44cfafd5c52223d5498196c8a2e7b",secret_key:"6ea9d3504a42de8008ddc959e1048faa",token_server:"ts0"}</value>
 				</entry>
 				<entry key="channel:jWebSocketSharedCanvasDemo">
-					<value>{state:"STARTED",owner:"root",name:"Shared Canvas Demo" ,isPrivate:false,isSystem:true, access_key:"access",secret_key:"secret",token_server:"ts0"}</value>
+					<value>{state:"STARTED",owner:"root",name:"Shared Canvas Demo" ,isPrivate:false,isSystem:true, access_key:"9df3b01c60df20d13843841ff0d4482c",secret_key:"5ebe2294ecd0e0f08eab7690d2a6ee69",token_server:"ts0"}</value>
 				</entry>
 			</map>
 		</constructor-arg>	

@@ -21,8 +21,8 @@
 	<bean id="org.jwebsocket.plugins.sms.settings" class="org.jwebsocket.plugins.sms.Settings">
 		<property name="provider" ref="nullProvider"/>
 		<property name="collectionName" value="jws_plugin_sms"/>
-		<property name="collectionAccessPassword" value="root"/>
-		<property name="collectionSecretPassword" value="root"/>
+		<property name="collectionAccessPassword" value="63a9f0ea7bb98050796b649e85481845"/>
+		<property name="collectionSecretPassword" value="63a9f0ea7bb98050796b649e85481845"/>
 	</bean>
 	
 	<!-- SMS item definition for item storage CE -->
