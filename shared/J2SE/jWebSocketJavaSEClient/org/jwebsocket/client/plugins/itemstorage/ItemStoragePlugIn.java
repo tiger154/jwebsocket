@@ -25,6 +25,7 @@ import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.token.WebSocketResponseTokenListener;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -71,6 +72,13 @@ public class ItemStoragePlugIn extends BaseClientTokenPlugIn {
 
 		lRequest.setString("collectionName", aCollectionName);
 		lRequest.setString("itemType", aItemType);
+
+		if (null != aAccessPwd && !"".equals(aAccessPwd)) {
+			aAccessPwd = Tools.getMD5(aAccessPwd);
+		}
+		if (null != aSecretPwd && !"".equals(aSecretPwd)) {
+			aSecretPwd = Tools.getMD5(aSecretPwd);
+		}
 		lRequest.setString("secretPassword", aSecretPwd);
 		lRequest.setString("accessPassword", aAccessPwd);
 		lRequest.setBoolean("isPrivate", aIsPrivate);
@@ -196,6 +204,10 @@ public class ItemStoragePlugIn extends BaseClientTokenPlugIn {
 		Token lRequest = TokenFactory.createToken(getNS(), "editCollection");
 
 		lRequest.setString("collectionName", aCollectionName);
+
+		if (null != aNewSecretPwd && !"".equals(aNewSecretPwd)) {
+			aNewSecretPwd = Tools.getMD5(aNewSecretPwd);
+		}
 		lRequest.setString("secretPassword", aSecretPwd);
 		lRequest.setString("newSecretPassword", aNewSecretPwd);
 
@@ -218,6 +230,10 @@ public class ItemStoragePlugIn extends BaseClientTokenPlugIn {
 
 		lRequest.setString("collectionName", aCollectionName);
 		lRequest.setString("secretPassword", aSecretPwd);
+
+		if (null != aAccessPwd && !"".equals(aAccessPwd)) {
+			aAccessPwd = Tools.getMD5(aAccessPwd);
+		}
 		lRequest.setString("accessPassword", aAccessPwd);
 		lRequest.setBoolean("isPrivate", aIsPrivate);
 
@@ -242,7 +258,15 @@ public class ItemStoragePlugIn extends BaseClientTokenPlugIn {
 
 		lRequest.setString("collectionName", aCollectionName);
 		lRequest.setString("secretPassword", aSecretPwd);
+
+		if (null != aNewSecretPwd && !"".equals(aNewSecretPwd)) {
+			aNewSecretPwd = Tools.getMD5(aNewSecretPwd);
+		}
 		lRequest.setString("newSecretPassword", aNewSecretPwd);
+
+		if (null != aAccessPwd && !"".equals(aAccessPwd)) {
+			aAccessPwd = Tools.getMD5(aAccessPwd);
+		}
 		lRequest.setString("accessPassword", aAccessPwd);
 		lRequest.setBoolean("isPrivate", aIsPrivate);
 

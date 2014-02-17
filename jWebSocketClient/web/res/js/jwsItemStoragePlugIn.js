@@ -82,6 +82,13 @@ jws.ItemStoragePlugIn = {
 	createCollection: function(aCollectionName, aItemType, aSecretPwd, aAccessPwd, aIsPrivate, aOptions){
 		var lRes = this.checkConnected();
 		if( 0 == lRes.code ) {
+			if ("string" == typeof(aSecretPwd) && "" != aSecretPwd) {
+				aSecretPwd = jws.tools.calcMD5(aSecretPwd);
+			}
+			if ("string" == typeof(aAccessPwd) && "" != aAccessPwd) {
+				aAccessPwd = jws.tools.calcMD5(aAccessPwd);
+			}
+			
 			var lToken = {
 				ns: jws.ItemStoragePlugIn.NS,
 				type: "createCollection",
@@ -237,11 +244,11 @@ jws.ItemStoragePlugIn = {
 				collectionName: aCollectionName,
 				secretPassword: aSecretPwd
 			};
-			if (aOptions.newSecretPassword){
-				lToken.newSecretPassword = aOptions.newSecretPassword;
+			if ("string" == typeof(aOptions.newSecretPassword) && "" != aOptions.newSecretPassword) {
+				lToken.newSecretPassword = jws.tools.calcMD5(aOptions.newSecretPassword);
 			}
-			if (aOptions.accessPassword){
-				lToken.accessPassword = aOptions.accessPassword;
+			if ("string" == typeof(aOptions.accessPassword) && "" != aOptions.accessPassword) {
+				lToken.accessPassword = jws.tools.calcMD5(aOptions.accessPassword);
 			}
 			if (aOptions["private"]){
 				lToken["private"] = aOptions["private"];

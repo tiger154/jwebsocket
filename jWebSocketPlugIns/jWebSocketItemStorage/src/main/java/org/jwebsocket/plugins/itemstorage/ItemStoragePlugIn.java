@@ -49,6 +49,7 @@ import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.ConnectionManager;
+import org.jwebsocket.util.Tools;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.util.Assert;
 
@@ -557,7 +558,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 	@Role(name = NS_ITEM_STORAGE + ".write_collection")
 	public void restartCollectionAction(WebSocketConnector aConnector, Token aToken) throws Exception {
 		String lCollectionName = aToken.getString(ATTR_COLLECTION_NAME);
-		String lSecretPwd = aToken.getString(ATTR_SECRET_PASSWORD);
+		String lSecretPwd = aToken.getString(ATTR_SECRET_PASSWORD, "");
 
 		Assert.isTrue(mCollectionProvider.collectionExists(lCollectionName),
 				"A collection with name '" + lCollectionName + "' does not exists!");
@@ -567,7 +568,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 				"The collection can be removed by owner only!");
 		Assert.isTrue((lCollection.getSecretPassword() == null
 				? "".equals(lSecretPwd)
-				: lCollection.getSecretPassword().equals(lSecretPwd)),
+				: lCollection.getSecretPassword().equals(Tools.getMD5(lSecretPwd))),
 				"The given collection secret password is not correct!");
 
 		Integer lUsers = ItemCollectionUtils.restartCollection(mCollectionProvider, lCollection).size();
@@ -600,7 +601,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 				"The collection can be removed by owner only!");
 		Assert.isTrue((lCollection.getSecretPassword() == null
 				? "".equals(lSecretPwd)
-				: lCollection.getSecretPassword().equals(lSecretPwd)),
+				: lCollection.getSecretPassword().equals(Tools.getMD5(lSecretPwd))),
 				"The given collection secret password is not correct!");
 
 		mCollectionProvider.removeCollection(lCollectionName);
@@ -627,7 +628,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 		Assert.isTrue((lCollection.getSecretPassword() == null
 				? "".equals(lSecretPwd)
-				: lCollection.getSecretPassword().equals(lSecretPwd)),
+				: lCollection.getSecretPassword().equals(Tools.getMD5(lSecretPwd))),
 				"The given collection secret password is not correct!");
 
 		Integer lExistingItems = lCollection.getItemStorage().size();
@@ -681,7 +682,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 		Assert.isTrue((lCollection.getSecretPassword() == null
 				? "".equals(lSecretPwd)
-				: lCollection.getSecretPassword().equals(lSecretPwd)),
+				: lCollection.getSecretPassword().equals(Tools.getMD5(lSecretPwd))),
 				"The given collection secret password is not correct!");
 
 		if (aToken.getMap().containsKey(ATTR_NEW_SECRET_PASSWORD)) {
@@ -805,7 +806,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 		Assert.isTrue((lCollection.getAccessPassword() == null
 				? "".equals(lAccessPassword)
-				: lCollection.getAccessPassword().equals(lAccessPassword)),
+				: lCollection.getAccessPassword().equals(Tools.getMD5(lAccessPassword))),
 				"The given collection access password is not correct!");
 
 		Assert.isTrue(!lCollection.getSubcribers().contains(aConnector.getId()),
@@ -862,7 +863,7 @@ public class ItemStoragePlugIn extends ActionPlugIn {
 
 		Assert.isTrue((lCollection.getSecretPassword() == null
 				? "".equals(lSecretPwd)
-				: lCollection.getSecretPassword().equals(lSecretPwd)),
+				: lCollection.getSecretPassword().equals(Tools.getMD5(lSecretPwd))),
 				"The given collection secret password is not correct!");
 
 		Assert.isTrue(!lCollection.getPublishers().contains(aConnector.getId()),

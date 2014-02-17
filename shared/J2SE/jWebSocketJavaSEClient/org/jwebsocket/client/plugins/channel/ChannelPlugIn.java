@@ -26,6 +26,7 @@ import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.token.WebSocketResponseTokenListener;
+import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -167,7 +168,54 @@ public class ChannelPlugIn extends BaseClientTokenPlugIn {
 		lRequest.setString("name", aName);
 		lRequest.setBoolean("isPrivate", aIsPrivate);
 		lRequest.setBoolean("isSystem", aIsSystem);
+
+		if (null != aAccessKey && !"".equals(aAccessKey)) {
+			aAccessKey = Tools.getMD5(aAccessKey);
+		}
 		lRequest.setString("accessKey", aAccessKey);
+		
+		if (null != aSecretKey && !"".equals(aSecretKey)) {
+			aSecretKey = Tools.getMD5(aSecretKey);
+		}
+		lRequest.setString("secretKey", aSecretKey);
+		lRequest.setString("owner", aOwner);
+
+		getTokenClient().sendToken(lRequest, aListener);
+	}
+	
+	
+	/**
+	 * Modify a channel 
+	 * 
+	 * @param aId
+	 * @param aSecretKey The current secret key value
+	 * @param aNewSecretKey The channel new secret key value
+	 * @param aAccessKey The channel new access key value
+	 * @param aOwner The channel new owner value
+	 * @param aIsSystem The channel new 'isSystem' value
+	 * @param aIsPrivate The channel new 'isPrivate' value
+	 * @param aListener
+	 * @throws WebSocketException 
+	 */
+	public void modify(String aId, String aSecretKey, String aNewSecretKey, String aAccessKey, 
+			String aOwner, boolean aIsSystem, boolean aIsPrivate, WebSocketResponseTokenListener aListener) throws WebSocketException {
+		Token lRequest = TokenFactory.createToken(getNS(), "modifyChannel");
+		lRequest.setString("channel", aId);
+		lRequest.setBoolean("isPrivate", aIsPrivate);
+		lRequest.setBoolean("isSystem", aIsSystem);
+
+		if (null != aNewSecretKey && !"".equals(aNewSecretKey)) {
+			aNewSecretKey = Tools.getMD5(aNewSecretKey);
+		}
+		if (null != aAccessKey && !"".equals(aAccessKey)) {
+			aAccessKey = Tools.getMD5(aAccessKey);
+		}
+		lRequest.setString("accessKey", aAccessKey);
+		lRequest.setString("newSecretKey", aNewSecretKey);
+		
+		if (null != aSecretKey && !"".equals(aSecretKey)) {
+			aSecretKey = Tools.getMD5(aSecretKey);
+		}
 		lRequest.setString("secretKey", aSecretKey);
 		lRequest.setString("owner", aOwner);
 
@@ -175,7 +223,7 @@ public class ChannelPlugIn extends BaseClientTokenPlugIn {
 	}
 
 	/**
-	 * Creates a channel.
+	 * Create a channel.
 	 *
 	 * @param aId
 	 * @param aName
