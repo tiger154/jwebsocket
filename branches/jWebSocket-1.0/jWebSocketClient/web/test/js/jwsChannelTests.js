@@ -509,7 +509,7 @@ jws.tests.Channels = {
 		});
 	},
 	// this spec tests the create method for a new channel
-	testChannelRemove: function(aChannelId, aAccessKey, aSecretKey,
+	testChannelRemove: function(aChannelId, aSecretKey,
 			aComment, aExpectedReturnCode) {
 		var lSpec = "channelRemove (id: " + aChannelId + ", " + aComment + ")";
 
@@ -519,7 +519,6 @@ jws.tests.Channels = {
 			jws.Tests.getAdminTestConn().channelRemove(
 					aChannelId,
 					{
-						accessKey: aAccessKey,
 						secretKey: aSecretKey,
 						OnResponse: function(aToken) {
 							lResponse = aToken;
@@ -582,7 +581,7 @@ jws.tests.Channels = {
 		// creating new private channels
 		jws.tests.Channels.testChannelCreate("myPrivSec", "myPrivateSecure", "myPrivateAccess", "myPrivateSecret", true, false,
 				"Creating private channel with access key and secret key (allowed)", 0);
-		jws.tests.Channels.testChannelCreate("myPrivUnsec", "myUnsecurePrivateChannel", "", "", true, false,
+		jws.tests.Channels.testChannelCreate("myPrivUnsec", "myUnsecurePrivateChannel", null, null, true, false,
 				"Creating private channel w/o access key and secret key (not allowed)", -1);
 
 		// channel authentication prior to publishing
@@ -635,21 +634,21 @@ jws.tests.Channels = {
 		//	"Multiple publishers distributing messages to multiple subscribers.", 0 );
 
 		// removing public channels
-		jws.tests.Channels.testChannelRemove("myPubSec", "myInvalidAccess", "myInvalidSecret",
+		jws.tests.Channels.testChannelRemove("myPubSec", "myInvalidSecret",
 				"Removing secure public channel with incorrect credentials (not allowed)", -1);
-		jws.tests.Channels.testChannelRemove("myPubSec", "myPublicAccess", "myPublicSecret",
+		jws.tests.Channels.testChannelRemove("myPubSec", "myPublicSecret",
 				"Removing secure public channel with correct credentials (allowed)", 0);
-		jws.tests.Channels.testChannelRemove("myPubUnsec", "", "",
+		jws.tests.Channels.testChannelRemove("myPubUnsec", "",
 				"Removing unsecure public channel w/o credentials (allowed)", 0);
 
 		// removing private channels
-		jws.tests.Channels.testChannelRemove("myPrivSec", "myInvalidAccess", "myInvalidSecret",
+		jws.tests.Channels.testChannelRemove("myPrivSec", "myInvalidSecret",
 				"Removing private channel with invalid credentials (invalid)", -1);
-		jws.tests.Channels.testChannelRemove("myPrivSec", "myPrivateAccess", "myPrivateSecret",
+		jws.tests.Channels.testChannelRemove("myPrivSec", "myPrivateSecret",
 				"Removing private channel with correct credentials (allowed)", 0);
-		jws.tests.Channels.testChannelRemove("myPrivSec", "myPrivateAccess", "myPrivateSecret",
+		jws.tests.Channels.testChannelRemove("myPrivSec", "myPrivateSecret",
 				"Removing private channel that should alredy have been removed (invalid)", -1);
-		jws.tests.Channels.testChannelRemove("myPrivUnsec", "", "",
+		jws.tests.Channels.testChannelRemove("myPrivUnsec", "", 
 				"Removing channel that should never have existed (invalid)", -1);
 
 	}

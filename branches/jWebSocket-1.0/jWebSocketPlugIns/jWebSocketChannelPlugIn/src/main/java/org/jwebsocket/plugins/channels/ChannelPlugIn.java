@@ -39,6 +39,7 @@ import org.jwebsocket.token.BaseToken;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
 import org.jwebsocket.util.ConnectionManager;
+import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -60,9 +61,9 @@ import org.springframework.util.Assert;
  *
  * <tt>authorize</tt> event command is used for authorization of client before
  * publishing a data to the channel, publisher client has to authorize itself
- * using <tt>secretKey</tt>,
- * <tt>accessKey</tt> and <tt>login</tt> which is registered in the jWebSocket
- * server system via configuration file or from other jWebSocket components.
+ * using <tt>secretKey</tt>, <tt>accessKey</tt> and <tt>login</tt> which is
+ * registered in the jWebSocket server system via configuration file or from
+ * other jWebSocket components.
  *
  * <tt>Token Request Includes:</tt>
  *
@@ -127,8 +128,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS_CHANNELS
-			= JWebSocketServerConstants.NS_BASE + ".plugins.channels";
+	public static final String NS_CHANNELS = JWebSocketServerConstants.NS_BASE + ".plugins.channels";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket ChannelPlugIn";
@@ -306,7 +306,8 @@ public class ChannelPlugIn extends ActionPlugIn {
 
 		String lChannelAccessKey = lChannel.getAccessKey();
 
-		Assert.isTrue((lChannelAccessKey == null ? lAccessKey == null : lChannelAccessKey.equals(lAccessKey)),
+		Assert.isTrue((lChannelAccessKey == null ? lAccessKey == null
+				: lChannelAccessKey.equals(Tools.getMD5(lAccessKey))),
 				"Invalid given channel access key!");
 
 		Subscriber lSubscriber = mChannelManager.getSubscriber(aConnector.getId());
@@ -417,7 +418,8 @@ public class ChannelPlugIn extends ActionPlugIn {
 
 		Publisher lPublisher = null;
 
-		if (lChannel.getAccessKey().equals(lAccessKey) && lChannel.getSecretKey().equals(lSecretKey)) {
+		if (lChannel.getAccessKey().equals(Tools.getMD5(lAccessKey))
+				&& lChannel.getSecretKey().equals(Tools.getMD5(lSecretKey))) {
 			lPublisher = mChannelManager.getPublisher(aConnector.getId());
 
 			Assert.isTrue(!lPublisher.inChannel(lChannelId), "Already authorized for channel '"
@@ -505,7 +507,7 @@ public class ChannelPlugIn extends ActionPlugIn {
 		String lSecretKey = aToken.getString(SECRETKEY);
 		Assert.notNull(lSecretKey, "The 'secretKey' argument is required!");
 
-		Assert.isTrue(lChannel.getSecretKey().equals(lSecretKey), "The given 'secretKey' argument is invalid!");
+		Assert.isTrue(lChannel.getSecretKey().equals(Tools.getMD5(lSecretKey)), "The given 'secretKey' argument is invalid!");
 
 		// applying changes
 		String lName = aToken.getString("name");
@@ -647,7 +649,6 @@ public class ChannelPlugIn extends ActionPlugIn {
 		String lChannelId = aToken.getString(CHANNEL);
 		Assert.isTrue(lChannelId != null && !EMPTY_STRING.equals(lChannelId), "No or invalid channel id passed!");
 
-		String lAccessKey = aToken.getString(ACCESSKEY);
 		String lSecretKey = aToken.getString(SECRETKEY);
 
 		// TODO: These two fields will allow to overwrite current user authentication
@@ -666,21 +667,15 @@ public class ChannelPlugIn extends ActionPlugIn {
 		Assert.isTrue((lUser == null ? lChannel.getOwner() == null : lUser.equals(lChannel.getOwner())),
 				"Channel '" + lChannelId + "' can be removed by owner only.");
 
-		String lChannelAccessKey = lChannel.getAccessKey();
 		String lChannelSecretKey = lChannel.getSecretKey();
 		// check if access key and secret key match
-		boolean lAccessKeyMatch
-				= (lAccessKey == null || lAccessKey.isEmpty())
-				&& (lChannelAccessKey == null || lChannelAccessKey.isEmpty())
-				|| (lAccessKey != null && lAccessKey.equals(lChannelAccessKey));
-		boolean lSecretKeyMatch
-				= (lSecretKey == null || lSecretKey.isEmpty())
+		boolean lSecretKeyMatch = (lSecretKey == null || lSecretKey.isEmpty())
 				&& (lChannelSecretKey == null || lChannelSecretKey.isEmpty())
-				|| (lSecretKey != null && lSecretKey.equals(lChannelSecretKey));
+				|| (lSecretKey != null && Tools.getMD5(lSecretKey).equals(lChannelSecretKey));
 
 		// check if both access key an secret key match
-		Assert.isTrue(lAccessKeyMatch && lSecretKeyMatch, "Invalid or non-matching "
-				+ "access key or secret key to remove channel '" + lChannelId + "'.");
+		Assert.isTrue(lSecretKeyMatch, "Invalid or non-matching "
+				+ "secret key to remove channel '" + lChannelId + "'.");
 
 		mChannelManager.removeChannel(lChannel);
 
@@ -718,7 +713,8 @@ public class ChannelPlugIn extends ActionPlugIn {
 		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
 
 		String lChannelAccessKey = lChannel.getAccessKey();
-		Assert.isTrue((lChannelAccessKey == null ? lAccessKey == null : lChannelAccessKey.equals(lAccessKey)),
+		Assert.isTrue((lChannelAccessKey == null ? lAccessKey == null
+				: lChannelAccessKey.equals(Tools.getMD5(lAccessKey))),
 				"Invalid channel access key for '" + lChannelId + "'");
 
 		List<String> lChannelSubscribers = lChannel.getSubscribers();
@@ -760,7 +756,8 @@ public class ChannelPlugIn extends ActionPlugIn {
 		Assert.notNull(lChannel, "Channel '" + lChannelId + "' doesn't exist!");
 
 		String lChannelAccessKey = lChannel.getAccessKey();
-		Assert.isTrue((lChannelAccessKey == null ? lAccessKey == null : lChannelAccessKey.equals(lAccessKey)),
+		Assert.isTrue((lChannelAccessKey == null ? lAccessKey == null
+				: lChannelAccessKey.equals(Tools.getMD5(lAccessKey))),
 				"Invalid channel access key for channel '" + lChannelId + "'!");
 
 		List<String> lChannelPublishers = lChannel.getPublishers();

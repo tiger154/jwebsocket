@@ -233,11 +233,11 @@ jws.ChannelPlugIn = {
 			if (aOptions["name"]) {
 				lToken.name = aOptions.name;
 			}
-			if (aOptions["newSecretKey"]) {
-				lToken.newSecretKey = aOptions.newSecretKey;
+			if ("string" == typeof(aOptions.newSecretKey) && "" != aOptions.newSecretKey) {
+				lToken.newSecretKey = jws.tools.calcMD5(aOptions.newSecretKey);
 			}
-			if (aOptions["accessKey"]) {
-				lToken.accessKey = aOptions.accessKey;
+			if ("string" == typeof(aOptions.accessKey) && "" != aOptions.accessKey) {
+				lToken.accessKey = jws.tools.calcMD5(aOptions.accessKey);
 			}
 			if (aOptions["owner"]) {
 				lToken.owner = aOptions.owner;
@@ -270,7 +270,6 @@ jws.ChannelPlugIn = {
 			var lAccessKey = null;
 			var lSecretKey = null;
 			var lOwner = null;
-			var lPassword = null;
 			if (aOptions) {
 				if (aOptions.isPrivate != undefined) {
 					lIsPrivate = aOptions.isPrivate;
@@ -278,17 +277,14 @@ jws.ChannelPlugIn = {
 				if (aOptions.isSystem != undefined) {
 					lIsSystem = aOptions.isSystem;
 				}
-				if (aOptions.accessKey != undefined) {
-					lAccessKey = aOptions.accessKey;
+				if ("string" == typeof(aOptions.accessKey) && "" != aOptions.accessKey) {
+					lAccessKey = jws.tools.calcMD5(aOptions.accessKey);
 				}
-				if (aOptions.secretKey != undefined) {
-					lSecretKey = aOptions.secretKey;
+				if ("string" == typeof(aOptions.secretKey) && "" != aOptions.secretKey) {
+					lSecretKey = jws.tools.calcMD5(aOptions.secretKey);
 				}
 				if (aOptions.owner != undefined) {
 					lOwner = aOptions.owner;
-				}
-				if (aOptions.password != undefined) {
-					lPassword = aOptions.password;
 				}
 			}
 			this.sendToken({
@@ -300,8 +296,7 @@ jws.ChannelPlugIn = {
 				isSystem: lIsSystem,
 				accessKey: lAccessKey,
 				secretKey: lSecretKey,
-				owner: lOwner,
-				password: lPassword
+				owner: lOwner
 			}, aOptions);
 		}
 		return lRes;
@@ -319,19 +314,12 @@ jws.ChannelPlugIn = {
 			var lAccessKey = null;
 			var lSecretKey = null;
 			var lOwner = null;
-			var lPassword = null;
 			if (aOptions) {
-				if (aOptions.accessKey != undefined) {
-					lAccessKey = aOptions.accessKey;
-				}
 				if (aOptions.secretKey != undefined) {
 					lSecretKey = aOptions.secretKey;
 				}
 				if (aOptions.owner != undefined) {
 					lOwner = aOptions.owner;
-				}
-				if (aOptions.password != undefined) {
-					lPassword = aOptions.password;
 				}
 			}
 			this.sendToken({
@@ -340,8 +328,7 @@ jws.ChannelPlugIn = {
 				channel: aId,
 				accessKey: lAccessKey,
 				secretKey: lSecretKey,
-				owner: lOwner,
-				password: lPassword
+				owner: lOwner
 			}, aOptions);
 		}
 		return lRes;

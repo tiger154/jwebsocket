@@ -105,7 +105,6 @@ public final class Channel implements ChannelLifeCycle {
 		 *
 		 */
 		CREATED(3);
-
 		private final int mValue;
 
 		ChannelState(int aValue) {
@@ -447,8 +446,7 @@ public final class Channel implements ChannelLifeCycle {
 	/**
 	 * Sends the data to the given subscriber. Note that this send operation
 	 * will block the current thread until the send operation is complete. for
-	 * asynchronous send operation use
-	 * <tt>sendAsync</tt> method.
+	 * asynchronous send operation use <tt>sendAsync</tt> method.
 	 *
 	 * @param aToken the token data to send
 	 * @param aSubscriber the target subscriber
