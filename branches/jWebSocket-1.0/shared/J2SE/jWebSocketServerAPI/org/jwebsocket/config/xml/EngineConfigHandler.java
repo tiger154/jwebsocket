@@ -70,7 +70,7 @@ public class EngineConfigHandler implements ConfigHandler {
 				lKeyStore = JWebSocketServerConstants.JWEBSOCKET_KEYSTORE,
 				lKeyStorePassword = JWebSocketServerConstants.JWEBSOCKET_KS_DEF_PWD,
 				lOnMaxConnectionsStrategy = JWebSocketServerConstants.DEFAULT_ON_MAX_CONNECTIONS_STRATEGY;
-		int lPort = 0, lSSLPort = 0, lTimeout = 0, lFramesize = 0;
+		int lPort = 0, lSSLPort = 0, lTimeout = 60 * 60, lFramesize = 0;
 		Integer lMaxConnections = JWebSocketServerConstants.DEFAULT_MAX_CONNECTIONS;
 		Map<String, Object> lSettings = new FastMap();
 		boolean lNotifySystemStopping = JWebSocketServerConstants.DEFAULT_NOTIFY_SYSTEM_STOPPING;
