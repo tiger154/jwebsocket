@@ -345,6 +345,35 @@ jws.tests.FileSystemEE = {
 		});
 	},
 	
+	testBigFileLoadByChunks: function(aFilename, aAlias, aOffset, aLength, aExpectedData, aIterations) {
+		var lSpec = "BigBase64FileLoadByChunks (admin, " + aFilename + ", " + aAlias + ")";
+		var lData = aExpectedData;
+		var lFilename = aFilename;
+		
+		it( lSpec, function () {
+
+			var lResponse = null;
+
+			jws.Tests.getAdminTestConn().fileLoadByChunks( lFilename, aAlias, aOffset, aLength ,{
+				OnResponse: function( aToken ) {
+					lResponse = aToken;
+				}
+			});
+
+			waitsFor(
+				function() {
+					return( null != lResponse );
+				},
+				lSpec,
+				3000
+				);
+
+			runs( function() {
+				expect( jws.tests.FileSystem.decodeBigFileData(lData, lResponse.data, aIterations) ).toEqual( lData );
+			});
+		});
+	},
+	
 	testFileDelete: function(aFilename, aForce, aExpectedCode) {
 		var lSpec = "FileDelete (admin, " + aFilename + ", " + aExpectedCode + ")";
 		
@@ -453,6 +482,23 @@ jws.tests.FileSystemEE = {
 			this.TEST_FILE_DATA3,
 			true, 
 			jws.SCOPE_PRIVATE);
+			
+		var lBigData = jws.tests.FileSystem.generateBigFile(jws.tests.FileSystem.TEST_BIG_FILE_DATA, 1000);
+		// testing big base64 data to the server
+		jws.tests.FileSystemEE.testFileSaveByChunks(
+				this.TEST_FOLDER + "/" + jws.tests.FileSystem.TEST_BIG_FILE_NAME,
+				lBigData,
+				true,
+				jws.SCOPE_PUBLIC);
+
+		// Loading big base64 data from the server
+		jws.tests.FileSystemEE.testBigFileLoadByChunks(
+			this.TEST_FOLDER + "/" + jws.tests.FileSystem.TEST_BIG_FILE_NAME, 
+			jws.FileSystemPlugIn.ALIAS_PUBLIC,
+			0,
+			lBigData.length,
+			jws.tests.FileSystem.TEST_BIG_FILE_DATA,
+			1000);
 			
 		jws.tests.FileSystemEE.testFileRename(this.TEST_FOLDER + "/" + this.TEST_FILE_NAME, 
 			this.TEST_FOLDER + "/" + this.TEST_FILE_NAME + 5, 
