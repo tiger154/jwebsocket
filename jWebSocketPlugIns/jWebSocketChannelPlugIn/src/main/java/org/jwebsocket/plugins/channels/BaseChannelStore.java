@@ -124,8 +124,15 @@ public class BaseChannelStore implements ChannelStore {
 			String lChannelName = lJSONObj.getString(NAME);
 			boolean lPrivate = lJSONObj.getBoolean(PRIVATE);
 			boolean lSystem = lJSONObj.getBoolean(SYSTEM);
-			String lSecretKey = lJSONObj.getString(SECRET_KEY);
-			String lAccessKey = lJSONObj.getString(ACCESS_KEY);
+
+			String lSecretKey = null, lAccessKey = null;
+			if (lJSONObj.has(SECRET_KEY)) {
+				lSecretKey = lJSONObj.getString(SECRET_KEY);
+			}
+			if (lJSONObj.has(ACCESS_KEY)) {
+				lAccessKey = lJSONObj.getString(ACCESS_KEY);
+			}
+
 			String lOwner = lJSONObj.getString(OWNER);
 			String lStateValue = lJSONObj.getString(STATE);
 			String lServerId = lJSONObj.getString(SERVER_ID);
