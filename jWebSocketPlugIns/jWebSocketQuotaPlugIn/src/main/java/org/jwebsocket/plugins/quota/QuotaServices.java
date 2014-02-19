@@ -43,19 +43,28 @@ public class QuotaServices {
     }
 
     public Token createQuotaAction(Token aToken) {
+
+        Token lResult = TokenFactory.createToken(aToken.getMap());
         try {
             String lNS = aToken.getString("namespace");
             String lInstance = aToken.getString("instance");
             String lInstanceType = aToken.getString("instance_type");
             String lQuotaIdentifier = aToken.getString("identifier");
             String lQuotActions = aToken.getString("actions");
+            //This parameter is optional
+            String lUuid = null;
+            if (null != aToken.getString("uuid")) {
+                lUuid = aToken.getString("uuid");
+            } else {
+                lUuid = QuotaHelper.generateQuotaUUID();
+            }
+            //= aToken.getString("uuid");
 
-            Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
             IQuota lQuota = quotaByIdentifier(lQuotaIdentifier);
 
             String lQuotaType = lQuota.getType();
 
-            String lUuid = QuotaHelper.generateQuotaUUID();
+
 
             long lValue = Long.parseLong(aToken.getString("value"));
 
@@ -67,11 +76,10 @@ public class QuotaServices {
 
             return lResult;
         } catch (Exception aException) {
-
             mLog.error("Error creating"
                     + "Quota");
             return getErrorToken("Error creating the quota: ",
-                    aToken);
+                    lResult);
         }
     }
 
@@ -82,7 +90,7 @@ public class QuotaServices {
             String lInstanceType = aToken.getString("instance_type");
             String lQuotaIdentifier = aToken.getString("identifier");
 
-            Token lResult = TokenFactory.createToken(getNamespace(), aToken.getType());
+            Token lResult = TokenFactory.createToken(aToken.getMap());
             IQuota lQuota = quotaByIdentifier(lQuotaIdentifier);
 
             lQuota.register(lUuid, lInstance, lInstanceType);
@@ -100,11 +108,10 @@ public class QuotaServices {
 
     private Token getErrorToken(String aMsg, Token aToken) {
 
-        Token lToken = TokenFactory.createToken(getNamespace(), aToken.getType());
-        lToken.setCode(-1);
-        lToken.setString("msg", aMsg);
+        aToken.setCode(-1);
+        aToken.setString("msg", aMsg);
 
-        return lToken;
+        return aToken;
     }
 
     private IQuota quotaByIdentifier(String aIdentifier) {
@@ -218,19 +225,19 @@ public class QuotaServices {
         try {
             Token lResult = TokenFactory.createToken(aToken.getMap());
             String lQuotaIdentifier = aToken.getString("identifier").trim();
-            
+
             String lNS = aToken.getString("namespace");
             String lInstance = aToken.getString("instance");
             String lInstanceType = aToken.getString("instance_type");
             String lActions = aToken.getString("actions");
-            
+
             IQuota lQuota;
             lQuota = quotaByIdentifier(lQuotaIdentifier);
             String lUuid = aToken.getString("uuid");
-            
-            
+
+
             IQuotaSingleInstance lQuotaSingleInstance;
-            
+
             if ((null != lNS || !lUuid.equals("")) && (null != lInstance || !lInstance.equals(""))
                     && (null != lInstanceType || !lInstanceType.equals(""))
                     && (null != lActions || !lActions.equals(""))) {
@@ -243,7 +250,7 @@ public class QuotaServices {
             Token lAuxToken = TokenFactory.createToken();
 
             if (lQuotaSingleInstance == null) {
-                
+
                 lResult.setCode(-1);
                 lResult.setString("msg", "There is not a quota whit the identifier "
                         + lQuotaIdentifier + " for the instance " + lInstance);
@@ -297,7 +304,13 @@ public class QuotaServices {
         try {
             Token lResult = TokenFactory.createToken(aToken.getMap());
             String lQuotaIdentifier = aToken.getString("identifier").trim();
-            long lReduce = Long.parseLong(aToken.getString("value"));
+
+            Integer lReduce = aToken.getInteger("value");
+
+            if (lReduce == null) {
+                lReduce = Integer.parseInt(aToken.getString("value"));
+            }
+
 
             String lNS = aToken.getString("namespace");
             String lInstance = aToken.getString("instance");
@@ -320,7 +333,7 @@ public class QuotaServices {
             }
 
             if (lValue == -1) {
-                return getErrorToken("Acces not allowed due to quota limmitation exceed", aToken);
+                return getErrorToken("Acces not allowed due to quota limitation exceed", aToken);
             }
 
             lResult.setLong("value", lValue);
@@ -340,7 +353,12 @@ public class QuotaServices {
         try {
             Token lResult = TokenFactory.createToken(aToken.getMap());
             String lQuotaIdentifier = aToken.getString("identifier");
-            long lReduce = Long.parseLong(aToken.getString("value"));
+
+            Integer lReduce = aToken.getInteger("value");
+
+            if (lReduce == null) {
+                lReduce = Integer.parseInt(aToken.getString("value"));
+            }
 
             String lNS = aToken.getString("namespace");
             String lInstance = aToken.getString("instance");
@@ -380,7 +398,11 @@ public class QuotaServices {
             Token lResult = TokenFactory.createToken(aToken.getMap());
 
             String lQuotaIdentifier = aToken.getString("identifier").trim();
-            long lReduce = Long.parseLong(aToken.getString("value"));
+            Integer lReduce = aToken.getInteger("value");
+
+            if (lReduce == null) {
+                lReduce = Integer.parseInt(aToken.getString("value"));
+            }
 
             String lNS = aToken.getString("namespace");
             String lInstance = aToken.getString("instance");
