@@ -12,6 +12,7 @@ import javolution.util.FastList;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.jwebsocket.logging.Logging;
+import org.jwebsocket.util.Tools;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import org.jwebsocket.plugins.quota.api.IQuotaStorage;
 import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaChildSI;
@@ -39,13 +40,17 @@ public class ItemStorageQuota implements IQuotaStorage {
     private IItemDefinition mquotaInstanceDefinition;
     private String mCollectionAccessPassword;
     private String mCollectionSecretPassword;
-    private String mRootUser = "root";
+    private String mRootUser;
     private IItemCollection mCollectionQuota = null;
     private IItemCollection mCollectionQuotaInstance = null;
     private static final Logger mLog = Logging.getLogger();
 
     public void setCollectionQuotaName(String mCollectionQuotaName) {
         this.mCollectionQuotaName = mCollectionQuotaName;
+    }
+    
+    public void setRootUser(String mRootUser) {
+        this.mRootUser = mRootUser;
     }
 
     public void setCollectionQuotaInstanceName(String mCollectionQuotaInstanceName) {
@@ -70,12 +75,15 @@ public class ItemStorageQuota implements IQuotaStorage {
 
     @Override
     public void initialize() throws Exception {
+        
         // getting the collection provider
         IItemCollectionProvider lCollectionProvider = (IItemCollectionProvider) JWebSocketBeanFactory
                 .getInstance(ItemStoragePlugIn.NS_ITEM_STORAGE).getBean("collectionProvider");
         // getting the item definitions factory
         IItemFactory lItemFactory = lCollectionProvider.getItemStorageProvider().getItemFactory();
         // checking if quota collection already exists
+        
+        
         if (!lCollectionProvider.collectionExists(mCollectionQuotaName)) {
             // check if definition already exists
             if (!lItemFactory.supportsType(mQuotaDefinition.getType())) {
@@ -85,8 +93,8 @@ public class ItemStorageQuota implements IQuotaStorage {
             // creating the collection
             IItemCollection lQuotaCollection = lCollectionProvider
                     .getCollection(mCollectionQuotaName, mQuotaDefinition.getType());
-            lQuotaCollection.setAccessPassword(mCollectionAccessPassword);
-            lQuotaCollection.setSecretPassword(mCollectionSecretPassword);
+            lQuotaCollection.setAccessPassword(Tools.getMD5(mCollectionAccessPassword));
+            lQuotaCollection.setSecretPassword(Tools.getMD5(mCollectionSecretPassword));
             lQuotaCollection.setOwner(mRootUser);
             // saving changes
             lCollectionProvider.saveCollection(lQuotaCollection);
@@ -104,8 +112,8 @@ public class ItemStorageQuota implements IQuotaStorage {
                     .getCollection(mCollectionQuotaInstanceName,
                     mquotaInstanceDefinition.getType());
 
-            lQuotaInstCollection.setAccessPassword(mCollectionAccessPassword);
-            lQuotaInstCollection.setSecretPassword(mCollectionSecretPassword);
+            lQuotaInstCollection.setAccessPassword(Tools.getMD5(mCollectionAccessPassword));
+            lQuotaInstCollection.setSecretPassword(Tools.getMD5(mCollectionSecretPassword));
             lQuotaInstCollection.setOwner(mRootUser);
             // saving changes
             lCollectionProvider.saveCollection(lQuotaInstCollection);
@@ -113,6 +121,7 @@ public class ItemStorageQuota implements IQuotaStorage {
 
         mCollectionQuota = lCollectionProvider.getCollection(mCollectionQuotaName);
         mCollectionQuotaInstance = lCollectionProvider.getCollection(mCollectionQuotaInstanceName);
+        
     }
 
     @Override
