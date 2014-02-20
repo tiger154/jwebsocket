@@ -123,15 +123,15 @@ jws.tests.UseradminEE = {
 			});
 		});
 	},
-	testUpdateUserSubscriptions: function(aIdUser, aSubscriptions, aExpectedCode) {
-		var lSpec = "UpdateUserSubscriptions (" + aIdUser + ", " + aExpectedCode + ")";
+	testUpdateUserSubscriptions: function(aUser, aSubscriptions, aExpectedCode) {
+		var lSpec = "UpdateUserSubscriptions (" + aUser + ", " + aExpectedCode + ")";
 		it(lSpec, function() {
 
 			var lResponse = null;
 			var lToken = {
 				ns: jws.tests.UseradminEE.NS,
 				type: "updateUserSubscriptions",
-				id: aIdUser,
+				id: aUser.id,
 				subscriptions: aSubscriptions
 			};
 			jws.tests.UseradminEE.getConn().sendToken(lToken, {
@@ -369,12 +369,17 @@ jws.tests.UseradminEE = {
 			});
 		});
 	},
-	testUpdateRightsByRole: function(aIdRole, aListRights, aExpectedCode) {
-		var lSpec = "updateRightsByRole (" + aIdRole + ", " + aListRights + ", " + aExpectedCode + ")";
+	testUpdateRightsByRole: function(aRole, aListRights, aExpectedCode) {
+		var lSpec = "updateRightsByRole (" + aRole + ", " + aListRights + ", " + aExpectedCode + ")";
 		it(lSpec, function() {
 
 			var lResponse = null;
-			var lToken = {id: aIdRole, listRights: aListRights};
+
+			var lListRights = [];
+			for (var i = 0; i < aListRights.length; i++) {
+				lListRights[i] = aListRights[i].id;
+			}
+			var lToken = {id: aRole.id, listRights: lListRights};
 			lToken.ns = jws.tests.UseradminEE.NS;
 			lToken.type = "updateRightsByRole";
 			jws.tests.UseradminEE.getConn().sendToken(lToken, {
@@ -454,15 +459,15 @@ jws.tests.UseradminEE = {
 			});
 		});
 	},
-	testUpdateUserSubscriptionsByAdmin: function(aIdUser, aSubscriptions, aExpectedCode) {
-		var lSpec = "UpdateUserSubscriptionsByAdmin (" + aIdUser + ", " + aExpectedCode + ")";
+	testUpdateUserSubscriptionsByAdmin: function(aUser, aSubscriptions, aExpectedCode) {
+		var lSpec = "UpdateUserSubscriptionsByAdmin (" + aUser + ", " + aExpectedCode + ")";
 		it(lSpec, function() {
 
 			var lResponse = null;
 			var lToken = {
 				ns: jws.tests.UseradminEE.NS,
 				type: "updateUserSubscriptionsByAdmin",
-				id: aIdUser,
+				id: aUser.id,
 				subscriptions: aSubscriptions
 			};
 			jws.tests.UseradminEE.getConn().sendToken(lToken, {
@@ -502,12 +507,12 @@ jws.tests.UseradminEE = {
 			});
 		});
 	},
-	testSetUserEnabled: function(aIdUser, aEnabled, aExpectedCode) {
-		var lSpec = "setUserEnabled (" + aIdUser + ", " + aEnabled + ", " + aExpectedCode + ")";
+	testSetUserEnabled: function(aUser, aEnabled, aExpectedCode) {
+		var lSpec = "setUserEnabled (" + aUser + ", " + aEnabled + ", " + aExpectedCode + ")";
 		it(lSpec, function() {
 
 			var lResponse = null;
-			var lToken = {id: aIdUser, enabled: aEnabled};
+			var lToken = {id: aUser.id, enabled: aEnabled};
 			lToken.ns = jws.tests.UseradminEE.NS;
 			lToken.type = "setUserEnabled";
 			jws.tests.UseradminEE.getConn().sendToken(lToken, {
@@ -523,12 +528,17 @@ jws.tests.UseradminEE = {
 			});
 		});
 	},
-	testUpdateRolesByUser: function(aIdUser, aListRoles, aExpectedCode) {
-		var lSpec = "updateRolesByUser (" + aIdUser + ", " + aListRoles + ", " + aExpectedCode + ")";
+	testUpdateRolesByUser: function(aUser, aListRoles, aExpectedCode) {
+		var lSpec = "updateRolesByUser (" + aUser + ", " + aListRoles + ", " + aExpectedCode + ")";
 		it(lSpec, function() {
 
 			var lResponse = null;
-			var lToken = {id: aIdUser, listRoles: aListRoles};
+
+			var lListRoles = [];
+			for (var i = 0; i < aListRoles.length; i++) {
+				lListRoles[i] = aListRoles[i].id;
+			}
+			var lToken = {id: aUser.id, listRoles: lListRoles};
 			lToken.ns = jws.tests.UseradminEE.NS;
 			lToken.type = "updateRolesByUser";
 			jws.tests.UseradminEE.getConn().sendToken(lToken, {
@@ -603,6 +613,7 @@ jws.tests.UseradminEE = {
 			"myInterest": "interest_02",
 			"subscriptions": [{"subscription": "sub_01", "media": "media_01"}, {"subscription": "sub_02", "media": "media_03"}]
 		};
+		
 		this.testLogon("alexander", "A.schulze0");
 
 		//creates
@@ -614,18 +625,45 @@ jws.tests.UseradminEE = {
 		this.testUsernameExists(this.DATA.User.username, true, 0);
 		this.testUsernameExists("alexander1", false, 0);
 
+		this.testGetUser("username", this.DATA.User.username, 0);
+		this.testSetUserEnabled(this.DATA.User, false, 0);
+		this.testSetUserEnabled(this.DATA.User, true, 0);
+
+		this.testUpdateRightsByRole(this.DATA.Role, [this.DATA.Right1, this.DATA.Right2], 0);
+		this.testUpdateRolesByUser(this.DATA.User, [this.DATA.Role], 0);
+
+		this.testUpdateUserSubscriptionsByAdmin(this.DATA.User, [
+			{"subscription": "sub_01", "media": "media_02"}, 
+			{"subscription": "sub_02", "media": "media_01"}], 0);
+		this.testChangePasswordByAdmin(this.DATA.User.username, "NewPass2014", 0);
+
+		this.testGetRights(0, 10, 0);
+		this.testGetRoles(0, 10, 0);
+		this.testGetUsers(0, 10, 0);
+
 		//updates
-		this.testUpdateRight(this.DATA.Right1, {description: this.DATA.Right2.description}, 0);
+//		this.testUpdateRight(this.DATA.Right1, {description: this.DATA.Right2.description}, 0);
 //		this.testUpdateRole(this.DATA.Role, 0);
 //		this.testUpdateUserByAdmin(this.DATA.User, 0);
 
+		this.testLogout();
+		
+		this.testLogon(this.DATA.User.username, "NewPass2014");
+		
+//		this.testUpdateUser(this.DATA.User, 0);
+		this.testUpdateUserSubscriptions(this.DATA.User, [
+			{"subscription": "sub_01", "media": "media_01"}, 
+			{"subscription": "sub_02", "media": "media_01"}], 0);
+		this.testChangePassword("NewPass2014", this.DATA.User.password, 0);
+		
+		this.testLogout();
+		
+		this.testLogon("alexander", "A.schulze0");
 		//removes
 		this.testRemoveRight(this.DATA.Right1, 0);
 		this.testRemoveRight(this.DATA.Right2, 0);
 		this.testRemoveRole(this.DATA.Role, 0);
 		this.testRemoveUser(this.DATA.User, 0);
-//		this.testUpdateRightsByRole(lRole.id, [lRight1.id, lRight2.id], 0);
-
 		this.testLogout();
 	},
 	runSuite: function() {
