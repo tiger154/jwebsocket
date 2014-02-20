@@ -18,13 +18,6 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.filters.monitoring;
 
-import org.jwebsocket.filter.TokenFilter;
-import org.apache.log4j.Logger;
-import org.jwebsocket.logging.Logging;
-import org.jwebsocket.api.FilterConfiguration;
-import org.jwebsocket.kit.FilterResponse;
-import org.jwebsocket.api.WebSocketConnector;
-import org.jwebsocket.token.Token;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -35,18 +28,25 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
+import org.jwebsocket.api.FilterConfiguration;
+import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.api.WebSocketPlugIn;
 import org.jwebsocket.config.JWebSocketServerConstants;
+import org.jwebsocket.filter.TokenFilter;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mCurrentHour;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mIsMemoryDataToMongoDBRunning;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mIsUpdatePlugInsRunning;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mPlugInsMemoryStorage;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mThreadMemoryDataToMongoDB;
 import static org.jwebsocket.filters.monitoring.MonitoringFilter.mThreadUpdatePlugIns;
+import org.jwebsocket.kit.FilterResponse;
+import org.jwebsocket.logging.Logging;
 import static org.jwebsocket.plugins.monitoring.MonitoringPlugIn.NS_MONITORING;
 import org.jwebsocket.plugins.monitoring.util.PlugInObjectInMemory;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
 import org.jwebsocket.storage.memory.MemoryStorage;
+import org.jwebsocket.token.Token;
 import org.jwebsocket.util.ConnectionManager;
 
 /**
@@ -91,7 +91,7 @@ public class MonitoringFilter extends TokenFilter {
 		// suppress stack traces from mongo db to console
 		java.util.logging.Logger.getLogger("com.mongodb").setLevel(
 				java.util.logging.Level.OFF);
-		
+
 		ConnectionManager lCM = (ConnectionManager) JWebSocketBeanFactory.getInstance()
 				.getBean(JWebSocketServerConstants.CONNECTION_MANAGER_BEAN_ID);
 		if (lCM.isValid(NS_MONITORING)) {
@@ -157,8 +157,10 @@ public class MonitoringFilter extends TokenFilter {
 	 */
 	@Override
 	public void processTokenIn(FilterResponse aResponse, WebSocketConnector aConnector, Token aToken) {
-		// Counting the incoming token
-		incrementIncoming(aToken.getNS());
+		// counting the incoming token
+		if (null != aToken.getNS()) {
+			incrementIncoming(aToken.getNS());
+		}
 	}
 
 	/**
@@ -172,7 +174,9 @@ public class MonitoringFilter extends TokenFilter {
 	public void processTokenOut(FilterResponse aResponse, WebSocketConnector aSource,
 			WebSocketConnector aTarget, Token aToken) {
 		// Counting the outgoing token
-		incrementOutgoing(aToken.getNS());
+		if (null != aToken.getNS()) {
+			incrementOutgoing(aToken.getNS());
+		}
 	}
 
 	private void incrementIncoming(String aNamespace) {

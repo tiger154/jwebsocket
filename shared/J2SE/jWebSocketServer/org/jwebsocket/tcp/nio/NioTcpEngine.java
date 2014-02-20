@@ -649,10 +649,6 @@ public class NioTcpEngine extends BaseEngine {
 						clientDisconnect(aConnector);
 					}
 
-					//Setting the session identifier
-					aConnector.getSession().setSessionId(aConnector.getHeader().
-							getCookies().get(aConnector.getHeader().getSessionCookieName()).toString());
-
 					send(aConnector.getId(), new DataFuture(aConnector, ByteBuffer.wrap(lResponse)));
 
 					if (mLog.isDebugEnabled()) {
@@ -662,9 +658,15 @@ public class NioTcpEngine extends BaseEngine {
 					int lTimeout = lReqHeader.getTimeout(getConfiguration().getTimeout());
 					mConnectorToChannelMap.get(aBean.getConnectorId()).socket().setSoTimeout(lTimeout);
 					
+					// initializing connector
 					aConnector.wsHandshakeValidated();
 					aConnector.setHeader(lReqHeader);
 					aConnector.setStatus(WebSocketConnectorStatus.UP);
+					
+					// setting the session identifier
+					aConnector.getSession().setSessionId(aConnector.getHeader().
+							getCookies().get(aConnector.getHeader().getSessionCookieName()).toString());
+					
 					// registering the connector
 					getConnectors().put(aConnector.getId(), aConnector);
 					// removing from the temporal map

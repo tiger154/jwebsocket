@@ -58,10 +58,26 @@ public class JMSManager {
 		mDefaultDestination = aDefaultDestination;
 	}
 
-	public JMSManager(boolean aUserTransaction, Connection aConn) {
-		this(aUserTransaction, aConn, null);
+	/**
+	 * Create new JMSManager instance
+	 *
+	 * @param aUseTransaction Indicates if the internal JMS session will use
+	 * transactions
+	 * @param aConn The JMS connection to use
+	 */
+	public JMSManager(boolean aUseTransaction, Connection aConn) {
+		this(aUseTransaction, aConn, null);
 	}
 
+	/**
+	 * Create new JMSManager instance
+	 *
+	 * @param aUseTransaction Indicates if the internal JMS session will use
+	 * transactions
+	 * @param aConn The JMS connection to use
+	 * @param aDefaultDestination The default destination to send messages
+	 * (default: "topic://jwebsocket_messagehub")
+	 */
 	public JMSManager(boolean aUseTransaction, Connection aConn, String aDefaultDestination) {
 		try {
 			if (null == aDefaultDestination) {
@@ -84,12 +100,12 @@ public class JMSManager {
 	}
 
 	/**
-	 * Close the JMS session
+	 * Alias for shutdown method
 	 *
 	 * @throws JMSException
 	 */
-	public void close() throws JMSException {
-		mSession.close();
+	public void close() throws Exception {
+		shutdown();
 	}
 
 	/**
