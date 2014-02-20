@@ -1446,7 +1446,7 @@ function showQuotaPluginMainWindows() {
     var lTabPanel = Ext.create('Ext.tab.Panel', {
         activeTab: 0,
         border: false,
-        items: [lFormPanel, lFilterPanel, lFormPanelTesting],
+        items: [lFilterPanel, lFormPanel, lFormPanelTesting],
         listeners: {
             tabchange: function(aTabPanel, aNewCard, aOldCard, aOptions) {
                 Ext.getCmp('msg_label').setText("");
