@@ -50,11 +50,7 @@ jws.tests.Reporting = {
 			// check the result 
 			runs(function() {
 				expect(lResponse.code).toEqual(0);
-				expect(lResponse.msg).toEqual("ok");
-				expect(lResponse.data.length >= 3).toEqual(true);
-				expect(lResponse.data.indexOf("UserList") > -1).toEqual(true);
-				expect(lResponse.data.indexOf("UserSMSReport") > -1).toEqual(true);
-				expect(lResponse.data.indexOf("UserRolesRights") > -1).toEqual(true);
+				expect(lResponse.data.indexOf("person") > -1).toEqual(true);
 			});
 
 		});
@@ -69,8 +65,8 @@ jws.tests.Reporting = {
 			// perform the generate reports on the server
 			jws.Tests.getAdminTestConn().reportingGenerateReport(
 					aReportName,
-					aFields,
 					aParams,
+					aFields,
 					{
 						OnResponse: function(aToken) {
 							lResponse = aToken;
@@ -90,10 +86,14 @@ jws.tests.Reporting = {
 			// check the result 
 			runs(function() {
 				expect(lResponse.code).toEqual(0);
-				expect(lResponse.msg).toEqual("ok");
-				expect(lResponse.path.indexOf("person.pdf") == 0);
+				expect(lResponse.path.indexOf("person.pdf") > -1);
+				
+				jws.Tests.getAdminTestConn().fileLoad(lResponse.path, jws.FileSystemPlugIn.ALIAS_PRIVATE, {
+					OnSuccess: function(aToken) {
+						window.open("data:application/pdf;base64," + aToken.data, "_blank");
+					}
+				});
 			});
-
 		});
 	},
 	runSpecs: function() {
@@ -101,8 +101,13 @@ jws.tests.Reporting = {
 
 		// generate report calling args
 		var lReportName = "person";
-		var lParams = "{reportTitle: 'My Report'}";
-		var lFields = "[{name: 'Javier', lastName: 'Alejandro Puentes', age: 27, dni: 9898797987}]";
+		var lParams = {reportTitle: 'My Report'};
+		var lFields = [
+			{name: 'Alexander', lastName: 'Schulze', age: 37, email: 'a.schulze@jwebsocket.org'},
+			{name: 'Rolando', lastName: 'Santamaria Maso', age: 27, email: 'r.santamaria@jwebsocket.org'},
+			{name: 'Lisdey', lastName: 'Perez', age: 27, email: 'l.perez@jwebsocket.org'},
+			{name: 'Javier Alejandro', lastName: 'Puentes Serrano', age: 27, email: 'j.puentes@jwebsocket.org'}
+		];
 		this.testGenerateReport(lReportName, lParams, lFields);
 	}
 };
