@@ -25,7 +25,6 @@ import java.nio.CharBuffer;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.catalina.websocket.WsOutbound;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.IEmbeddedAuthentication;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.async.IOFuture;
@@ -38,7 +37,7 @@ import org.jwebsocket.logging.Logging;
  *
  * @author aschulze
  */
-public class TomcatConnector extends BaseConnector implements IEmbeddedAuthentication {
+public class TomcatConnector extends BaseConnector {
 
 	private static final Logger mLog = Logging.getLogger();
 	private boolean mIsRunning = false;
@@ -73,7 +72,7 @@ public class TomcatConnector extends BaseConnector implements IEmbeddedAuthentic
 		mIsRunning = true;
 
 		super.startConnector();
-		
+
 		if (mLog.isInfoEnabled()) {
 			mLog.info("Tomcat connector '" + getId() + "' at port " + getRemotePort() + " started.");
 		}
@@ -179,29 +178,5 @@ public class TomcatConnector extends BaseConnector implements IEmbeddedAuthentic
 	 */
 	public void setRemotePort(int mRemotePort) {
 		this.mRemotePort = mRemotePort;
-	}
-
-	@Override
-	public String getAuthenticationType() {
-		return mRequest.getAuthType();
-	}
-
-	@Override
-	public boolean hasAuthority(String aAuthority) {
-		return mRequest.isUserInRole(aAuthority);
-	}
-
-	@Override
-	public boolean isAuthenticated() {
-		return getUsername() != null;
-	}
-
-	@Override
-	public String getUsername() {
-		if (null != super.getUsername()) {
-			return super.getUsername();
-		}
-
-		return mRequest.getRemoteUser();
 	}
 }

@@ -103,11 +103,6 @@ public class TomcatServlet extends WebSocketServlet {
 	protected void service(HttpServletRequest aRequest, HttpServletResponse aResponse) throws ServletException, IOException {
 		mRequestContainer.set(aRequest);
 
-		// setting the session timeout
-		if (ContextListener.isRunningEmbedded()) {
-			aRequest.getSession().setMaxInactiveInterval(mEngine.getConfiguration().getTimeout());
-		}
-
 		super.service(aRequest, aResponse);
 	}
 
