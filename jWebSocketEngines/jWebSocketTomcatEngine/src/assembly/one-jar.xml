@@ -19,6 +19,7 @@
 				<include>org.apache.tomcat.embed:tomcat-embed-logging-juli</include>
 				<include>org.apache.tomcat.embed:tomcat-embed-logging-log4j</include>
 				<include>org.apache.tomcat.embed:tomcat-embed-jasper</include>
+				<include>org.apache.tomcat:tomcat-el-api</include>
 				
 			</includes>
 			<unpack>true</unpack>

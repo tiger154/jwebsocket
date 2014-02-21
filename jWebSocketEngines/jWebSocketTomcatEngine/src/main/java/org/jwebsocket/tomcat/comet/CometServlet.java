@@ -241,8 +241,9 @@ public class CometServlet extends HttpServlet implements CometProcessor {
 	}
 
 	/**
-	 * if the connection message is received for the first time, answer with the open ready state
-	 * else just update the ready state or close the connection.
+	 * if the connection message is received for the first time, answer with the
+	 * open ready state else just update the ready state or close the
+	 * connection.
 	 *
 	 * @param aSubProt
 	 * @param aState
