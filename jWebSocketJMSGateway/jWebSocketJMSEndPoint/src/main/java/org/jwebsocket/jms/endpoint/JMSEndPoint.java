@@ -50,7 +50,7 @@ public class JMSEndPoint {
 	public static boolean DURABLE = true;
 	static final Logger mLog = Logger.getLogger(JMSEndPoint.class);
 	// the JMS connection factory
-	private final ActiveMQConnectionFactory mConnectionFactory;
+	private ActiveMQConnectionFactory mConnectionFactory;
 	// the JMS connection instance/object
 	private Connection mConnection;
 	// session to create topics, producers and consumers
@@ -68,6 +68,47 @@ public class JMSEndPoint {
 	// flag to shutdown a non-self-termintaing console client
 	private boolean mShutDown = false;
 
+	private void init(String aBrokerURI, String aGatewayTopic,
+			String aGatewayId, String aEndPointId, int aThreadPoolSize,
+			boolean aDurable) throws JMSException {
+		// instantiate connection factory for ActiveMQ broker
+		mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
+		// save endpoint id 
+		mEndPointId = aEndPointId;
+		// save gateway id 
+		mGatewayId = aGatewayId;
+		// create the connection object
+		mConnection = mConnectionFactory.createConnection();
+		mConnection.setClientID(aEndPointId);
+		// create a session for this connection
+		mSession = mConnection.createSession(false,
+				Session.AUTO_ACKNOWLEDGE);
+
+		// create a producer for the given gateway topic (JMS destination)
+		Topic lGatewayTopic = mSession.createTopic(aGatewayTopic);
+		mProducer = mSession.createProducer(lGatewayTopic);
+
+		// create a consumer for the given gateway topic (JMS destination)
+		// use endPointId to listen on a certain target address only
+		String lSelector = "targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')";
+		MessageConsumer lConsumer;
+		if (aDurable) {
+			lConsumer = mSession.createDurableSubscriber(lGatewayTopic, lSelector);
+		} else {
+			lConsumer = mSession.createConsumer(lGatewayTopic, lSelector);
+		}
+		// create a listener and pass the sender to easily answer requests
+		mListener = new JMSEndPointListener(aThreadPoolSize);
+		// pass the listener to the JMS consumer object
+		lConsumer.setMessageListener(mListener);
+
+		// creating sender
+		mSender = new JMSEndPointSender(this);
+	}
+
+	public JMSEndPoint() {
+	}
+	
 	/**
 	 *
 	 * @param aBrokerURI
@@ -80,45 +121,25 @@ public class JMSEndPoint {
 	public JMSEndPoint(String aBrokerURI, String aGatewayTopic,
 			String aGatewayId, String aEndPointId, int aThreadPoolSize,
 			boolean aDurable) {
-		// instantiate connection factory for ActiveMQ broker
-		mConnectionFactory = new ActiveMQConnectionFactory(aBrokerURI);
 		try {
-			// save endpoint id 
-			mEndPointId = aEndPointId;
-			// save gateway id 
-			mGatewayId = aGatewayId;
-			// create the connection object
-			mConnection = mConnectionFactory.createConnection();
-			mConnection.setClientID(aEndPointId);
-			// create a session for this connection
-			mSession = mConnection.createSession(false,
-					Session.AUTO_ACKNOWLEDGE);
-
-			// create a producer for the given gateway topic (JMS destination)
-			Topic lGatewayTopic = mSession.createTopic(aGatewayTopic);
-			mProducer = mSession.createProducer(lGatewayTopic);
-
-			// create a consumer for the given gateway topic (JMS destination)
-			// use endPointId to listen on a certain target address only
-			String lSelector = "targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')";
-			MessageConsumer lConsumer;
-			if (aDurable) {
-				lConsumer = mSession.createDurableSubscriber(lGatewayTopic, lSelector);
-			} else {
-				lConsumer = mSession.createConsumer(lGatewayTopic, lSelector);
-			}
-			// create a listener and pass the sender to easily answer requests
-			mListener = new JMSEndPointListener(aThreadPoolSize);
-			// pass the listener to the JMS consumer object
-			lConsumer.setMessageListener(mListener);
-
-			// creating sender
-			mSender = new JMSEndPointSender(this);
+			init(aBrokerURI, aGatewayTopic,
+					aGatewayId, aEndPointId, aThreadPoolSize,
+					aDurable);
 		} catch (JMSException lEx) {
 			mLog.error(lEx.getClass().getSimpleName()
 					+ " on connecting JMS client: "
 					+ lEx.getMessage());
 		}
+	}
+
+	public static JMSEndPoint getInstance(String aBrokerURI, String aGatewayTopic,
+			String aGatewayId, String aEndPointId, int aThreadPoolSize,
+			boolean aDurable) throws JMSException {
+		JMSEndPoint lEP = new JMSEndPoint();
+		lEP.init(aBrokerURI, aGatewayTopic,
+				aGatewayId, aEndPointId, aThreadPoolSize,
+				aDurable);
+		return lEP;
 	}
 
 	/**

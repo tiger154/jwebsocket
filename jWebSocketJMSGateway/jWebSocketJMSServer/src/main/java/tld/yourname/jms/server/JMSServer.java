@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import javax.jms.JMSException;
 import javolution.util.FastMap;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -42,7 +43,7 @@ import org.jwebsocket.util.Tools;
  * @author Alexander Schulze
  */
 public class JMSServer {
-	
+
 	static final Logger mLog = Logger.getLogger(JMSServer.class);
 	private JMSEndPoint lJMSEndPoint;
 
@@ -71,9 +72,9 @@ public class JMSServer {
 		lProps.setProperty("log4j.logger.org.jwebsocket", "DEBUG");
 		lProps.setProperty("log4j.appender.console.threshold", "DEBUG");
 		PropertyConfigurator.configure(lProps);
-		
+
 		JMSLogging.setFullTextLogging(false);
-		
+
 		String lBrokerURL = "failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false";
 		// the name of the JMD Gateway topic
 		String lGatewayTopic = "org.jwebsocket.jms.gateway"; // topic name of JMS Gateway
@@ -85,7 +86,7 @@ public class JMSServer {
 		// tcp://172.20.116.68:61616 org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		// failover:(tcp://0.0.0.0:61616,tcp://127.0.0.1:61616)?initialReconnectDelay=100&randomize=false org.jwebsocket.jws2jms org.jwebsocket.jms2jws aschulze-dt
 		mLog.info("jWebSocket JMS Gateway Server Endpoint");
-		
+
 		if (null != aArgs && aArgs.length >= 3) {
 			lBrokerURL = aArgs[0];
 			lGatewayTopic = aArgs[1];
@@ -105,77 +106,103 @@ public class JMSServer {
 		}
 
 		// instantiate a new jWebSocket JMS Gateway Client
-		lJMSEndPoint = new JMSEndPoint(
-				lBrokerURL,
-				lGatewayTopic, // gateway topic
-				lGatewayId, // gateway endpoint id
-				lEndPointId, // unique node id
-				5, // thread pool size, messages being processed concurrently
-				JMSEndPoint.TEMPORARY // durable (for servers) or temporary (for clients)
-		);
-		
+		/*
+		 lJMSEndPoint = new JMSEndPoint(
+		 lBrokerURL,
+		 lGatewayTopic, // gateway topic
+		 lGatewayId, // gateway endpoint id
+		 lEndPointId, // unique node id
+		 5, // thread pool size, messages being processed concurrently
+		 JMSEndPoint.TEMPORARY // durable (for servers) or temporary (for clients)
+		 );
+		 */
+		// instantiate a new jWebSocket JMS Gateway Client
+		try {
+			lJMSEndPoint = JMSEndPoint.getInstance(
+					lBrokerURL,
+					lGatewayTopic, // gateway topic
+					lGatewayId, // gateway endpoint id
+					lEndPointId, // unique node id
+					5, // thread pool size, messages being processed concurrently
+					JMSEndPoint.TEMPORARY // durable (for servers) or temporary (for clients)
+			);
+		} catch (JMSException lEx) {
+			mLog.fatal("JMSEndpoint could not be instantiated: " + lEx.getMessage());
+			System.exit(0);
+		}
+
 		JWSEndPointMessageListener lListener = new JWSEndPointMessageListener(lJMSEndPoint);
 		final JWSEndPointSender lSender = new JWSEndPointSender(lJMSEndPoint);
 
 		// integrate OAuth library 
 		// final OAuth lOAuth = new OAuth(lOAuthHostURL, lOAuthSecret);
 		// on welcome message from jWebSocket, authenticate against jWebSocket
-		lListener.addRequestListener("org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				mLog.info("Received 'welcome', authenticating against jWebSocket...");
-				Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.system", "login");
-				lToken.setString("username", "root");
-				lToken.setString("password", "root");
-				sendToken(aSourceId, lToken);
-			}
-		});
-
-		// on response of the login...
-		lListener.addResponseListener("org.jwebsocket.plugins.system", "login", new JWSMessageListener(lSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				int lCode = aToken.getInteger("code", -1);
-				if (0 == lCode) {
-					if (mLog.isInfoEnabled()) {
-						mLog.info("Authentication against jWebSocket successful.");
+		lListener.addRequestListener(
+				"org.jwebsocket.jms.gateway", "welcome", new JWSMessageListener(lSender) {
+					@Override
+					public void processToken(String aSourceId, Token aToken
+					) {
+						mLog.info("Received 'welcome', authenticating against jWebSocket...");
+						Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.system", "login");
+						lToken.setString("username", "root");
+						lToken.setString("password", "root");
+						sendToken(aSourceId, lToken);
 					}
-				} else {
-					mLog.error("Authentication against jWebSocket failed!");
 				}
-			}
-		});
+		);
 
 		// on response of the login...
-		lListener.addRequestListener("org.jwebsocket.jms.demo", "getUser", new JWSMessageListener(lSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				String lPayload = aToken.getString("payload");
-				if (mLog.isInfoEnabled()) {
-					mLog.info("Processing 'getUser'...");
+		lListener.addResponseListener(
+				"org.jwebsocket.plugins.system", "login", new JWSMessageListener(lSender) {
+					@Override
+					public void processToken(String aSourceId, Token aToken
+					) {
+						int lCode = aToken.getInteger("code", -1);
+						if (0 == lCode) {
+							if (mLog.isInfoEnabled()) {
+								mLog.info("Authentication against jWebSocket successful.");
+							}
+						} else {
+							mLog.error("Authentication against jWebSocket failed!");
+						}
+					}
 				}
-				/*
-				 Map<String, Object> lAdditionalResults = new FastMap<String, Object>();
-				 String lAccessToken = aToken.getString("accessToken");
-				 String lJSON = lOAuth.getUser(lAccessToken);
-				 String lUsername = lOAuth.getUsername();
-				 lAdditionalResults.put("username", lUsername);
-				 lSender.respondPayload(
-				 aToken.getString("sourceId"),
-				 aToken,
-				 lOAuth.getReturnCode(), // return code
-				 lOAuth.getReturnMsg(), // return message
-				 lAdditionalResults, // here you can add additional results beside the payload
-				 "{}");
-				 */
-			}
-		});
+		);
+
+		// on response of the login...
+		lListener.addRequestListener(
+				"org.jwebsocket.jms.demo", "getUser", new JWSMessageListener(lSender) {
+					@Override
+					public void processToken(String aSourceId, Token aToken
+					) {
+						String lPayload = aToken.getString("payload");
+						if (mLog.isInfoEnabled()) {
+							mLog.info("Processing 'getUser'...");
+						}
+						/*
+						 Map<String, Object> lAdditionalResults = new FastMap<String, Object>();
+						 String lAccessToken = aToken.getString("accessToken");
+						 String lJSON = lOAuth.getUser(lAccessToken);
+						 String lUsername = lOAuth.getUsername();
+						 lAdditionalResults.put("username", lUsername);
+						 lSender.respondPayload(
+						 aToken.getString("sourceId"),
+						 aToken,
+						 lOAuth.getReturnCode(), // return code
+						 lOAuth.getReturnMsg(), // return message
+						 lAdditionalResults, // here you can add additional results beside the payload
+						 "{}");
+						 */
+					}
+				}
+		);
 
 		// on response of the login...
 		lListener.addRequestListener(
 				"org.jwebsocket.plugins.jmsdemo", "echo", new JWSMessageListener(lSender) {
 					@Override
-					public void processToken(String aSourceId, Token aToken) {
+					public void processToken(String aSourceId, Token aToken
+					) {
 						String lPayload = aToken.getString("payload");
 						if (mLog.isInfoEnabled()) {
 							mLog.info("Processing 'demo1 with Payload '" + lPayload + "'");
@@ -192,12 +219,14 @@ public class JMSServer {
 								lAdditionalResults,
 								aToken.getString("payload"));
 					}
-				});
-		
+				}
+		);
+
 		lListener.addRequestListener(
 				"tld.yourname.jms", "transferFile", new JWSMessageListener(lSender) {
 					@Override
-					public void processToken(String aSourceId, Token aToken) {
+					public void processToken(String aSourceId, Token aToken
+					) {
 						// here you can get the additional arguments
 						mLog.info("Received 'transferFile' with additional args"
 								+ " (arg1=" + aToken.getString("arg1")
@@ -222,13 +251,15 @@ public class JMSServer {
 							mLog.error("Demo file " + lFile.getAbsolutePath() + " could not be saved!");
 						}
 					}
-				});
+				}
+		);
 
 		// add a high level listener to listen in coming messages
 		lListener.addRequestListener(
 				"org.jwebsocket.jms.demo", "helloWorld", new JWSMessageListener(lSender) {
 					@Override
-					public void processToken(String aSourceId, Token aToken) {
+					public void processToken(String aSourceId, Token aToken
+					) {
 						mLog.info("Received 'helloWorld'...");
 						lSender.respondPayload(
 								aToken.getString("sourceId"),
@@ -238,7 +269,8 @@ public class JMSServer {
 								null, // here you can add additional results beside the payload
 								"Hello World!");
 					}
-				});
+				}
+		);
 
 		// add a high level listener to listen in coming messages
 		lJMSEndPoint.addListener(lListener);
