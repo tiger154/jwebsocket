@@ -10,11 +10,11 @@
 	<description>Parent Project for jWebSocket</description>
 	<url>http://jwebsocket.org</url>
 	<modules>
+		<module>jWebSocketLibs</module>
 		<module>jWebSocketCommon</module>
 		<module>jWebSocketServerAPI</module>
 		<module>jWebSocketClientAPI</module>
 		<module>jWebSocketServer</module>
-		<module>jWebSocketLibs</module>
 		<!-- <module>jWebSocketWatchDogClient</module> -->
 		<module>jWebSocketJavaSEClient</module>
 		<module>jWebSocketSamples</module>
