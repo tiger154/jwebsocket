@@ -724,8 +724,6 @@ jws.QuotaDemo = {
     TT_INCREASE_QUOTA: 'increaseQuota',
     TT_RESET: 'reset',
 // Texts
-    TEXT_CONNECTED: "connected",
-    TEXT_DISCONNECTED: "disconnected",
     TEXT_WEBSOCKET: "WebSocket: ",
     TEXT_CLIENT_ID: "Client-ID: ",
     TEXT_AUTHENTICATED: "authenticated",
@@ -867,6 +865,13 @@ Ext.onReady(function() {
         Ext.jwsClient.open();
     });
     eBtnDisconnect.on("click", function() {
+
+        var lWindowMain = Ext.WindowManager.get("mainWindowsQuotaPlugin");
+
+        if (lWindowMain !== undefined) {
+
+            lWindowMain.close();
+        }
         Ext.jwsClient.close();
     });
 
@@ -890,19 +895,47 @@ Ext.onReady(function() {
 });
 
 function logMessage(aToken) {
+    
+    console.log(aToken);
+    var lMsgContiner = Ext.getCmp('msg_label');
 
+    lMsgContiner.setText("");
     if (aToken.code === -1) {
-        log("error");
         Ext.getCmp('msg_label').addCls('error_log');
         Ext.getCmp('msg_label').removeCls('ok_log');
-        Ext.getCmp('msg_label').setText(aToken.msg);
+
+        lMsgContiner.setText(aToken.msg);
+
+        new Ext.fx.Anim({
+            target: lMsgContiner,
+            duration: 3000,
+            from: {
+                opacity: 100 //starting width 400
+            },
+            to: {
+                opacity: 0
+            }
+        });
 
     } else {
-        log("ok");
         Ext.getCmp('msg_label').addCls('ok_log');
         Ext.getCmp('msg_label').removeCls('error_log');
-        if (aToken.message !== undefined)
-            Ext.getCmp('msg_label').setText(aToken.message);
+        if (aToken.message !== undefined) {
+
+            lMsgContiner.setText(aToken.message);
+            
+            new Ext.fx.Anim({
+                target: lMsgContiner,
+                duration: 3000,
+                from: {
+                    opacity: 100 //starting width 400
+                },
+                to: {
+                    opacity: 0
+                }
+            });
+        }
+
     }
 }
 
@@ -1208,7 +1241,7 @@ function showQuotaPluginMainWindows() {
                             success: function(aToken) {
                                 logMessage(aToken);
                             },
-                            failure:function(aToken){
+                            failure: function(aToken) {
                                 logMessage(aToken);
                             }
                         });
@@ -1410,7 +1443,6 @@ function showQuotaPluginMainWindows() {
     var lAlterQuotaClick = function() {
         var lSelection = lGridPanel.getView().getSelectionModel().getSelection()[0];
 
-
         var lAlterWin = Ext.create('jws.quotaPlugin.alterWindow', lSelection.data);
         lAlterWin.show();
     };
@@ -1455,13 +1487,14 @@ function showQuotaPluginMainWindows() {
     });
 
     Ext.create('Ext.window.Window', {
-        y: 100,
+        y: 90,
         x: 40,
         id: 'mainWindowsQuotaPlugin',
         bodyStyle: 'float: right;position:relative;padding:4px',
         width: 645,
         height: 400,
         border: false,
+        closeAction: 'hide',
         resizable: false,
         draggable: false,
         closable: false,
@@ -1575,6 +1608,7 @@ function closeQuotaPluginMainwindows() {
     var lWindowMain = Ext.WindowManager.get("mainWindowsQuotaPlugin");
 
     if (lWindowMain !== undefined) {
+
         lWindowMain.hide();
     }
 }
@@ -1648,11 +1682,13 @@ function initDemo() {
 //		log(aToken);
 
         if (aToken.ns === jws.QuotaDemo.NS_QUOTA_PLUGIN) {
-
+            
+            if (aToken.reqType === "query" && aToken.msg === "ok")
+                return;
+            
             logMessage(aToken);
 
-            if (aToken.reqType === "query")
-                return;
+  
         }
 
         if (aToken.type === "welcome") {
