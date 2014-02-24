@@ -137,7 +137,7 @@ public class GrizzlyEngine extends BaseEngine {
 								+ "...");
 					}
 					try {
-						String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
+						String lKeyStorePath = JWebSocketConfig.expandEnvVarsAndProps(mKeyStore);
 						// create a Grizzly HttpServer to server static resources from 'webapp', on mGrizzlySSLPort.
 						mGrizzlySSLServer = HttpServer.createSimpleServer(lDocumentRoot, mGrizzlySSLPort);
 

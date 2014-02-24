@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import javolution.util.FastMap;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.util.Tools;
 import org.springframework.util.Assert;
 
@@ -110,7 +111,7 @@ public class Settings {
 	 * @param aAppsDirectoryPath
 	 */
 	public void setAppsDirectory(String aAppsDirectoryPath) {
-		this.mAppsDirectoryPath = Tools.expandEnvVarsAndProps(aAppsDirectoryPath);
+		this.mAppsDirectoryPath = JWebSocketConfig.expandEnvVarsAndProps(aAppsDirectoryPath);
 	}
 
 	/**
@@ -119,7 +120,7 @@ public class Settings {
 	 * @param aExtensionsDirectoryPath
 	 */
 	public void setExtensionsDirectory(String aExtensionsDirectoryPath) {
-		mExtensionsDirectoryPath = Tools.expandEnvVarsAndProps(aExtensionsDirectoryPath);
+		mExtensionsDirectoryPath = JWebSocketConfig.expandEnvVarsAndProps(aExtensionsDirectoryPath);
 	}
 
 	/**
@@ -249,7 +250,7 @@ public class Settings {
 
 		// processing global permissions
 		for (String lStrPerm : getGlobalSecurityPermissions()) {
-			lPermission = Tools.stringToPermission(Tools.expandEnvVarsAndProps(
+			lPermission = Tools.stringToPermission(JWebSocketConfig.expandEnvVarsAndProps(
 					lStrPerm
 					.replace("${APP_HOME}", aAppPath)
 					.replace("${EXT}", mExtensionsDirectoryPath)));
@@ -262,7 +263,7 @@ public class Settings {
 		// processing app permissions
 		if (getAppsSecurityPermissions().containsKey(aAppName)) {
 			for (String lStrPerm : getAppsSecurityPermissions().get(aAppName)) {
-				lPermission = Tools.stringToPermission(Tools.expandEnvVarsAndProps(
+				lPermission = Tools.stringToPermission(JWebSocketConfig.expandEnvVarsAndProps(
 						lStrPerm
 						.replace("${APP_HOME}", aAppPath)
 						.replace("${EXT}", mExtensionsDirectoryPath)));

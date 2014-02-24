@@ -25,6 +25,7 @@ import java.security.PrivilegedAction;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.jwebsocket.api.WebSocketPlugIn;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.factory.JWebSocketFactory;
 import org.jwebsocket.instance.JWebSocketInstance;
 import org.jwebsocket.util.Tools;
@@ -85,7 +86,7 @@ public class Manifest {
 	public static void checkPermissions(List<String> aPerms, Permissions aGrantedPerms,
 			String aAppDirPath) throws Exception {
 		for (String lPerm : aPerms) {
-			final String lExpandedPerm = Tools.expandEnvVarsAndProps(lPerm.replace("${APP_HOME}", aAppDirPath));
+			final String lExpandedPerm = JWebSocketConfig.expandEnvVarsAndProps(lPerm.replace("${APP_HOME}", aAppDirPath));
 			try {
 				Tools.doPrivileged(aGrantedPerms,
 						new PrivilegedAction<Boolean>() {

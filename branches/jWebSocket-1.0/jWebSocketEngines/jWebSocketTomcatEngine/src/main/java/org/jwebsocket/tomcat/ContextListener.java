@@ -52,16 +52,14 @@ public class ContextListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent aContextEvent) {
 		final ServletContext lContext = aContextEvent.getServletContext();
 
-		// setting the WEB_APP_HOME property
-		System.setProperty(ServletUtils.WEB_APP_HOME_PROP_KEY, lContext.getRealPath("") + "/");
-
 		if (JWebSocketInstance.STOPPED == JWebSocketInstance.getStatus()) {
 			lContext.log("Starting jWebSocket application server...");
 
 			JWebSocketFactory.printCopyrightToConsole();
 
 			// check if home, config or bootstrap path are passed by context params
-			JWebSocketConfig.initForWebApp(ServletUtils.extractStartupArguments(lContext));
+			JWebSocketConfig.initForWebApp(ServletUtils.extractStartupArguments(lContext),
+					lContext.getRealPath("") + "/");
 
 			// getting the tomcat class loader
 			JWebSocketJarClassLoader lLoader = new JWebSocketJarClassLoader();

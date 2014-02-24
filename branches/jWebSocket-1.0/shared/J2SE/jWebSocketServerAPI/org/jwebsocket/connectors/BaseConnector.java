@@ -45,9 +45,9 @@ import org.springframework.util.Assert;
 
 /**
  * Provides the basic implementation of the jWebSocket connectors. The
- * {@code BaseConnector} is supposed to be used as ancestor for the connector
- * implementations like e.g. the {@code TCPConnector} or the {@code TomcatConnector
- * }.
+ * {@literal BaseConnector} is supposed to be used as ancestor for the connector
+ * implementations like e.g. the {@literal TCPConnector} or the {@literal TomcatConnector
+ }.
  *
  * @author aschulze
  * @author kyberneees

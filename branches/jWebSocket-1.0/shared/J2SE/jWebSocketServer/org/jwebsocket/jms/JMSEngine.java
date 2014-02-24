@@ -40,7 +40,6 @@ import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.spring.JWebSocketBeanFactory;
-import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -74,7 +73,7 @@ public class JMSEngine extends BaseEngine {
 		String lSpringConfig = (String) getConfiguration().getSettings().get("spring_config");
 		Assert.notNull(lSpringConfig, "Missing 'spring_config' configuration setting!");
 
-		JWebSocketBeanFactory.load(NS, Tools.expandEnvVarsAndProps(lSpringConfig),
+		JWebSocketBeanFactory.load(NS, JWebSocketConfig.expandEnvVarsAndProps(lSpringConfig),
 				getClass().getClassLoader());
 		mBeanFactory = JWebSocketBeanFactory.getInstance(NS);
 

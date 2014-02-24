@@ -39,7 +39,7 @@ import org.jwebsocket.logging.Logging;
  *
  * @author puran
  * @version $Id: JWebSocketXmlConfigInitializer.java 424 2010-05-01 19:11:04Z
- * mailtopuran $
+ mailtopuran $
  */
 public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitializer {
 
@@ -84,7 +84,7 @@ public class JWebSocketXmlConfigInitializer extends AbstractJWebSocketInitialize
 
 	private void loadLibrary(String aPath) {
 		try {
-			String lPath = JWebSocketConfig.expandEnvAndJWebSocketVars(aPath);
+			String lPath = JWebSocketConfig.expandEnvVarsAndProps(aPath);
 			mClassLoader.addFile(lPath);
 			ClassPathUpdater.add(new File(lPath));
 

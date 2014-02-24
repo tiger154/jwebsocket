@@ -225,7 +225,7 @@ public class TCPEngine extends BaseEngine {
 							+ "...");
 				}
 				try {
-					String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(mKeyStore);
+					String lKeyStorePath = JWebSocketConfig.expandEnvVarsAndProps(mKeyStore);
 					SSLContext lSSLContext = Util.createSSLContext(lKeyStorePath, mKeyStorePassword);
 
 					SSLServerSocketFactory lSSLFactory = lSSLContext.getServerSocketFactory();

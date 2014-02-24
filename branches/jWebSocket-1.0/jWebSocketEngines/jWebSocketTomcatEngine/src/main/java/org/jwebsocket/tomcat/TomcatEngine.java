@@ -32,7 +32,6 @@ import org.jwebsocket.engines.BaseEngine;
 import org.jwebsocket.kit.CloseReason;
 import org.jwebsocket.kit.WebSocketException;
 import org.jwebsocket.logging.Logging;
-import org.jwebsocket.util.Tools;
 
 /**
  *
@@ -79,7 +78,7 @@ public class TomcatEngine extends BaseEngine {
 		if (null != lSettings) {
 			Object lDocRoot = lSettings.get(DOCUMENT_ROOT_CONFIG_KEY);
 			if (null != lDocRoot) {
-				mDocumentRoot = Tools.expandEnvVarsAndProps(lDocRoot.toString());
+				mDocumentRoot = JWebSocketConfig.expandEnvVarsAndProps(lDocRoot.toString());
 			}
 		}
 
@@ -136,7 +135,7 @@ public class TomcatEngine extends BaseEngine {
 			lSSLConnector.setProperty("clientAuth", "false");
 			lSSLConnector.setProperty("sslProtocol", "TLS");
 			lSSLConnector.setProperty("keystoreFile",
-					JWebSocketConfig.expandEnvAndJWebSocketVars(getConfiguration().getKeyStore()));
+					JWebSocketConfig.expandEnvVarsAndProps(getConfiguration().getKeyStore()));
 			lSSLConnector.setProperty("keystorePass", getConfiguration().getKeyStorePassword());
 
 			// registering the SSL connector

@@ -39,6 +39,7 @@ import org.jwebsocket.config.xml.*;
 import org.jwebsocket.kit.WebSocketRuntimeException;
 import org.jwebsocket.logging.Logging;
 import org.jwebsocket.util.Tools;
+import org.springframework.util.Assert;
 
 /**
  * Represents the jWebSocket configuration. This class is immutable and should
@@ -50,6 +51,7 @@ import org.jwebsocket.util.Tools;
 public class JWebSocketConfig implements Config {
 
 	private static Logger mLog = null;
+	private static String mWebAppHome;
 	private final String mNodeId;
 	private final String mProtocol;
 	private final String mLibraryFolder;
@@ -68,7 +70,7 @@ public class JWebSocketConfig implements Config {
 	private static String mBootstrapPath = null;
 	private static String mJWebSocketHome = null;
 	private static boolean mIsWebApp = false;
-	private static Map<String, String> mProperties = new FastMap<String, String>().shared();
+	private static final Map<String, String> mProperties = new FastMap<String, String>().shared();
 
 	/**
 	 *
@@ -128,6 +130,10 @@ public class JWebSocketConfig implements Config {
 	 */
 	public static String getJWebSocketHome() {
 		return mJWebSocketHome;
+	}
+
+	public static String getWebAppHome() {
+		return mWebAppHome;
 	}
 
 	/**
@@ -326,7 +332,6 @@ public class JWebSocketConfig implements Config {
 	 * @param aArgs
 	 */
 	public static void initForConsoleApp(String[] aArgs) {
-
 		if (aArgs != null && aArgs.length > 0) {
 			for (int lIdx = 0; lIdx < aArgs.length; lIdx++) {
 				// is there one more argument beyond the current one?
@@ -381,21 +386,90 @@ public class JWebSocketConfig implements Config {
 	 *
 	 * @param aArgs
 	 */
-	public static void initForWebApp(String[] aArgs) {
+	public static void initForWebApp(String[] aArgs, String lWebAppHome) {
 		mIsWebApp = true;
-		initForConsoleApp(aArgs);
+		mWebAppHome = lWebAppHome;
+
+		if (aArgs != null && aArgs.length > 0) {
+			for (int lIdx = 0; lIdx < aArgs.length; lIdx++) {
+				// is there one more argument beyond the current one?
+				if (lIdx < aArgs.length - 1) {
+					if ("-config".equals(aArgs[lIdx])) {
+						mConfigPath = expandEnvVarsAndProps(aArgs[lIdx + 1]);
+					} else if ("-bootstrap".equals(aArgs[lIdx])) {
+						mBootstrapPath = expandEnvVarsAndProps(aArgs[lIdx + 1]);
+					} else if ("-home".equals(aArgs[lIdx])) {
+						mJWebSocketHome = expandEnvVarsAndProps(aArgs[lIdx + 1]);
+
+						// check trailing backslash
+						adjustJWebSocketHome();
+
+						System.out.println(
+								"Using JWEBSOCKET_HOME argument -home "
+								+ mJWebSocketHome);
+					}
+				}
+			}
+		}
+
+		// if no Java property check environment variable
+		if (null == mJWebSocketHome) {
+			mJWebSocketHome = System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
+		}
+		Assert.notNull(mJWebSocketHome, "Missing required JWEBSOCKET_HOME path. "
+				+ "Please be sure that you are setting "
+				+ "properly the 'jws_home' context param "
+				+ "or you have a JWEBSOCKET_HOME env variable defined!");
+
+		// init path to jWebSocket.xml config file
+		if (null == mConfigPath) {
+			mConfigPath = findConfigPath();
+		}
+		// init path to bootstrap.xml config file
+		if (null == mBootstrapPath) {
+			mBootstrapPath = findBootstrapPath();
+		}
+
+		mLog = Logger.getLogger(JWebSocketConfig.class);
+
+		// register global exception handler
+		org.jwebsocket.exception.GlobalExceptionHandler.registerGlobalExceptionHandler();
 	}
 
 	/**
+	 * Replaces all pattern ${name} in a string by the values of the
+	 * corresponding environment variable or system property. The setting of a
+	 * system property overrides the setting of the environment variable.
+	 *
+	 * @param aString
+	 * @return
+	 * @deprecated Use JWebSocketConfig.expandEnvVarsAndProps
+	 */
+	public static String expandEnvAndJWebSocketVars(String aString) {
+		return expandEnvVarsAndProps(aString);
+	}
+
+	/**
+	 * Replaces all pattern ${name} in a string by the values of the
+	 * corresponding environment variable or system property. The setting of a
+	 * system property overrides the setting of the environment variable.
 	 *
 	 * @param aString
 	 * @return
 	 */
-	public static String expandEnvAndJWebSocketVars(String aString) {
+	public static String expandEnvVarsAndProps(String aString) {
 		Map lVars = new FastMap<String, String>();
 		lVars.putAll(System.getenv());
-		lVars.put(JWebSocketServerConstants.JWEBSOCKET_HOME, getJWebSocketHome());
-		String lRes = Tools.expandVars(aString, lVars, true);
+		String lRes;
+
+		if (isWebApp()) {
+			lVars.put(JWebSocketServerConstants.JWEBSOCKET_HOME, getJWebSocketHome());
+			lVars.put("WEB_APP_HOME", getWebAppHome());
+			lRes = Tools.expandVars(aString, lVars, true);
+		} else {
+			lRes = Tools.expandEnvVarsAndProps(aString);
+		}
+
 		return lRes;
 	}
 
@@ -439,6 +513,7 @@ public class JWebSocketConfig implements Config {
 		mLoggingConfig = aBuilder.mLoggingConfig;
 		mGlobalRights = aBuilder.mGlobalRights;
 		mGlobalRoles = aBuilder.mGlobalRoles;
+
 		// validate the config
 		validate();
 	}

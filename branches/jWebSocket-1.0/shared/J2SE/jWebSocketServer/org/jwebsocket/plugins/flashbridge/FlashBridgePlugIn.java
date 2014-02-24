@@ -102,7 +102,7 @@ public class FlashBridgePlugIn extends TokenPlugIn {
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Trying to load " + lPathToCrossDomainXML + "...");
 				}
-				lPathToCrossDomainXML = JWebSocketConfig.expandEnvAndJWebSocketVars(lPathToCrossDomainXML);
+				lPathToCrossDomainXML = JWebSocketConfig.expandEnvVarsAndProps(lPathToCrossDomainXML);
 				if (mLog.isDebugEnabled()) {
 					mLog.debug("Trying to load expanded " + lPathToCrossDomainXML + "...");
 				}

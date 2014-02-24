@@ -196,7 +196,7 @@ public class Settings {
 	 * @param aMailRoot the mailRoot to set
 	 */
 	public void setMailRoot(String aMailRoot) {
-		mMailRoot = JWebSocketConfig.expandEnvAndJWebSocketVars(aMailRoot);
+		mMailRoot = JWebSocketConfig.expandEnvVarsAndProps(aMailRoot);
 	}
 
 	/**

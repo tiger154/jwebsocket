@@ -58,7 +58,7 @@ public final class JWebSocketLoader {
 			throws WebSocketException {
 		String lConfigPath;
 		if (aConfigPath != null && !"".equals(aConfigPath)) {
-			lConfigPath = Tools.expandEnvVarsAndProps(aConfigPath);
+			lConfigPath = JWebSocketConfig.expandEnvVarsAndProps(aConfigPath);
 			if (mLog.isDebugEnabled()) {
 				mLog.debug("Initializing: Using config file '" + aConfigPath + "'...");
 			}
