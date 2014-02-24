@@ -21,6 +21,7 @@ package org.jwebsocket.appserver;
 import org.jwebsocket.api.PluginConfiguration;
 import org.jwebsocket.api.WebSocketConnector;
 import org.jwebsocket.config.JWebSocketCommonConstants;
+import org.jwebsocket.config.JWebSocketConfig;
 import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.token.Token;
 
@@ -58,7 +59,7 @@ public class SampleWebSocketPlugIn extends ActionPlugIn {
 
 		Token lResponse = createResponse(aRequest);
 		lResponse.setString("data", "Hello '" + lName + "', from a jWebSocket plug-in ;) \n"
-				+ "HOME: " + System.getProperty("JWEBSOCKET_HOME"));
+				+ "HOME: " + JWebSocketConfig.expandEnvVarsAndProps("${WEB_APP_HOME}"));
 
 		sendToken(aConnector, lResponse);
 	}

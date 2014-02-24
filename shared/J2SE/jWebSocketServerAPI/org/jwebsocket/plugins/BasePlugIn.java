@@ -62,7 +62,7 @@ public abstract class BasePlugIn implements WebSocketPlugIn {
 	 */
 	public static final String PLUGIN_CUSTOM_LICENSE = "<return license in getLicense() method of plug-in>";
 	private WebSocketPlugInChain mPlugInChain = null;
-	private Map<String, Object> mSettings = new FastMap<String, Object>();
+	private final Map<String, Object> mSettings = new FastMap<String, Object>();
 	private PluginConfiguration mConfiguration;
 	// authentication methods support
 	private String mAuthenticationMethod = "static";

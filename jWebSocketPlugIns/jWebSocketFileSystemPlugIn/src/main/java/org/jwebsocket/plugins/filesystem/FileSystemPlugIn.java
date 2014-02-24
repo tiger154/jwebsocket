@@ -248,7 +248,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		String lBaseDir = mSettings.getAliasPath(aAlias);
 
 		if (null != lBaseDir && aAlias.equals(PRIVATE_ALIAS_DIR_KEY)) {
-			lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir);
+			lBaseDir = JWebSocketConfig.expandEnvVarsAndProps(lBaseDir);
 			lBaseDir = lBaseDir.replace("{username}", aConnector.getUsername());
 		}
 
@@ -650,7 +650,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 		lObject = mSettings.getAliasPath(lAlias);
 		if (lObject != null) {
 			lBaseDir = (String) lObject;
-			lBaseDir = JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir).
+			lBaseDir = JWebSocketConfig.expandEnvVarsAndProps(lBaseDir).
 					replace("{username}", aUsername);
 
 			File lDir;
@@ -996,7 +996,7 @@ public class FileSystemPlugIn extends TokenPlugIn {
 				}
 				// registering file-system listener
 				FileAlterationObserver lObserver = new FileAlterationObserver(
-						JWebSocketConfig.expandEnvAndJWebSocketVars(
+						JWebSocketConfig.expandEnvVarsAndProps(
 								mSettings.getAliasPath(lAlias.toString())),
 						lFileFilter);
 				lObserver.addListener(lFileSystemListener);

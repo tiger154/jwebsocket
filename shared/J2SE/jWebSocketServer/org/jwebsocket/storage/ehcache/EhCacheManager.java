@@ -58,7 +58,7 @@ public class EhCacheManager {
 			try {
 				String lContent = FileUtils.readFileToString(
 						new File(JWebSocketConfig.getConfigFolder("ehcache.xml", lClassLoader)), "UTF-8");
-				lContent = Tools.expandEnvVarsAndProps(lContent);
+				lContent = JWebSocketConfig.expandEnvVarsAndProps(lContent);
 				mInstance = new CacheManager(new ByteArrayInputStream(lContent.getBytes("UTF-8")));
 				if (mLog.isInfoEnabled()) {
 					mLog.info("EhCache Manager successfully instantiated, "

@@ -261,7 +261,7 @@ public class MailPlugInService {
 		lBaseDir = mSettings.getMailRoot();
 		if (lUsername != null) {
 			lBaseDir = FilenameUtils.getFullPath(
-					JWebSocketConfig.expandEnvAndJWebSocketVars(lBaseDir).replace("{username}", lUsername));
+					JWebSocketConfig.expandEnvVarsAndProps(lBaseDir).replace("{username}", lUsername));
 		}
 
 		// complete the response token

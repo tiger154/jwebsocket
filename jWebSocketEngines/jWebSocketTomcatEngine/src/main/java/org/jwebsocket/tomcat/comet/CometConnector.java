@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javolution.util.FastMap;
 import org.apache.catalina.comet.CometEvent;
 import org.apache.log4j.Logger;
-import org.jwebsocket.api.IEmbeddedAuthentication;
 import org.jwebsocket.api.WebSocketEngine;
 import org.jwebsocket.api.WebSocketPacket;
 import org.jwebsocket.connectors.BaseConnector;
@@ -47,7 +46,7 @@ import org.jwebsocket.token.TokenFactory;
  * @author Osvaldo Aguilar Lauzurique <osvaldo2627@hab.uci.cu>
  * @author kyberneees
  */
-public class CometConnector extends BaseConnector implements IEmbeddedAuthentication {
+public class CometConnector extends BaseConnector {
 
 	private CometEvent mEvent;
 	private int mReadyState = 0;
@@ -305,28 +304,5 @@ public class CometConnector extends BaseConnector implements IEmbeddedAuthentica
 				}
 			}
 		}
-	}
-
-	@Override
-	public String getAuthenticationType() {
-		return mRequest.getAuthType();
-	}
-
-	@Override
-	public boolean hasAuthority(String aAuthority) {
-		return mRequest.isUserInRole(aAuthority);
-	}
-
-	@Override
-	public boolean isAuthenticated() {
-		return getUsername() != null;
-	}
-
-	@Override
-	public String getUsername() {
-		if (null != super.getUsername()) {
-			return super.getUsername();
-		}
-		return mRequest.getRemoteUser();
 	}
 }

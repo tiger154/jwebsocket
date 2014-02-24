@@ -56,7 +56,7 @@ public class Util {
 		TrustManagerFactory lTM = TrustManagerFactory.getInstance("SunX509");
 		lTM.init(lKeyStore);
 
-		String lKeyStorePath = JWebSocketConfig.expandEnvAndJWebSocketVars(aKeyStore);
+		String lKeyStorePath = JWebSocketConfig.expandEnvVarsAndProps(aKeyStore);
 		if (new File(lKeyStorePath).exists()) {
 			char[] lPassword = aKeyStorePassword.toCharArray();
 			URL lURL = JWebSocketConfig.getURLFromPath(lKeyStorePath);

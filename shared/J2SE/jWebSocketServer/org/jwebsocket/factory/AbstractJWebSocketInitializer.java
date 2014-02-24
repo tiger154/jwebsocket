@@ -29,7 +29,7 @@ import org.jwebsocket.logging.Logging;
  *
  * @author puran
  * @version $Id: AbstractJWebSocketInitializer.java 437 2010-05-03 22:10:20Z
- * mailtopuran $
+ mailtopuran $
  */
 public abstract class AbstractJWebSocketInitializer implements WebSocketInitializer {
 

@@ -40,7 +40,7 @@ import org.jwebsocket.tcp.EngineUtils;
 public class TomcatServlet extends WebSocketServlet {
 
 	private static Logger mLog;
-	private ThreadLocal<HttpServletRequest> mRequestContainer = new ThreadLocal<HttpServletRequest>();
+	private final ThreadLocal<HttpServletRequest> mRequestContainer = new ThreadLocal<HttpServletRequest>();
 	private TomcatEngine mEngine;
 
 	/**

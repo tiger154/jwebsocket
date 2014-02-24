@@ -47,7 +47,7 @@ import org.jwebsocket.kit.WebSocketRuntimeException;
  * @author puran
  * @author Marcos Antonio González Huerta (markos0886, UCI)
  * @version $Id: JWebSocketConfigHandler.java 596 2010-06-22 17:09:54Z
- * fivefeetfurther $
+ fivefeetfurther $
  */
 @SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class JWebSocketConfigHandler implements ConfigHandler {

@@ -106,7 +106,7 @@ public class JWebSocketBeanFactory {
 			}
 		}
 
-		String lPath = Tools.expandEnvVarsAndProps(aPath);
+		String lPath = JWebSocketConfig.expandEnvVarsAndProps(aPath);
 
 		XmlBeanDefinitionReader lXmlReader;
 		if (null != aNamespace) {

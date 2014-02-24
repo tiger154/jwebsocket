@@ -1,9 +1,9 @@
-//  <JasobNoObfs>
+//	<JasobNoObfs>
 //	---------------------------------------------------------------------------
 //	jWebSocket JavaScript/Browser Client (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 //	---------------------------------------------------------------------------
-//  </JasobNoObfs>
+//	</JasobNoObfs>
 
 // ## :#file:*:jWebSocket.js
 // ## :#d:en:Implements the jWebSocket Web Client.
 
-// Firefox temporarily used MozWebSocket (why??), anyway, consider this here.
+// Firefox temporarily used a "MozWebSocket" class, we consider this here.
 // Since the browserSupportNativeWebSocket method evaluates the existance of
 // the window.WebSocket class, this abstraction needs to be done on the very top.
 // please do not move this lines down.
@@ -37,9 +37,9 @@ if( window.MozWebSocket ) {
 //:d:en:including various utility methods.
 var jws = {
 
-	//:const:*:VERSION:String:1.0 RC0 (build 30409)
+	//:const:*:VERSION:String:1.0.0 RC2 (build 40213)
 	//:d:en:Version of the jWebSocket JavaScript Client
-	VERSION: "1.0 RC0 (build 30409)",
+	VERSION: "1.0.0 RC2 (build 40213)",
 
 	//:const:*:NS_BASE:String:org.jwebsocket
 	//:d:en:Base namespace
@@ -49,7 +49,8 @@ var jws = {
 	MSG_WS_NOT_SUPPORTED:
 		"Unfortunately your browser does neither natively support WebSockets\n" +
 		"nor you have the Adobe Flash-PlugIn 10+ installed.\n" +
-		"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer.",
+		"Please download the last recent Adobe Flash Player at http://get.adobe.com/flashplayer, " + 
+		"or use a native WebSocket compliant browser.",
 
 	// some namespace global constants
 	
@@ -113,19 +114,21 @@ var jws = {
 	// Reliability Manager off (Default connection)
 	RO_OFF: {
 		autoReconnect : false,
-		reconnectDelay: -1,
-		reconnectTimeout: -1,
+		reconnectDelay: -1
+		/* ,
 		queueItemLimit: -1,
 		queueSizeLimit: -1
+		*/
 	},
 
 	// Reliability Manager on
 	RO_ON: {
 		autoReconnect: true,
-		reconnectDelay: 2000,
-		reconnectTimeout: 30000,
+		reconnectDelay: 3000
+		/* ,
 		queueItemLimit: 1000,
 		queueSizeLimit: 1024 * 1024 * 10 // 10 MByte
+		*/
 	},
 	
 	//:const:*:WS_SUBPROT_JSON:String:org.jwebsocket.json
@@ -210,25 +213,6 @@ var jws = {
 	//:d:en:Root user password is "root" (if not changed on the server).
 	//:d:en:FOR DEMO AND DEBUG PURPOSES ONLY! NEVER SAVE PRODUCTION ROOT CREDENTIALS HERE!
 	DEMO_ROOT_PASSWORD: "root",
-	//:const:*:PACKET_DELIVERY_ACKNOWLEDGE_PREFIX:String:pda
-	//:d:en:Prefix for delivery acknowledge packets
-	PACKET_DELIVERY_ACKNOWLEDGE_PREFIX : "pda",
-	//:const:*:PACKET_ID_DELIMETER:String:,
-	//:d:en:Packet identifier delimeter
-	PACKET_ID_DELIMETER: ",",
-	//:const:*:PACKET_FRAGMENT_PREFIX:String:FRAGMENT
-	//:d:en:Prefix used to sign fragmented packets
-	PACKET_FRAGMENT_PREFIX: "FRAGMENT",
-	//:const:*:PACKET_LAST_FRAGMENT_PREFIX:String:LFRAGMENT
-	//:d:en:Prefix used to sign the last fragment on a packet fragmentation
-	PACKET_LAST_FRAGMENT_PREFIX: "LFRAGMENT",
-	//:const:*:MAX_FRAME_SIZE_FREFIX:String:maxframesize
-	//:d:en:Prefix used on the max frame size handshake 
-	MAX_FRAME_SIZE_FREFIX: "maxframesize",
-	//:const:*:PACKET_TRANSACTION_MAX_BYTES_PREFIXED:Integer:31
-	//:d:en:Maximum number of bytes that can be prefixed during a packet transaction
-	PACKET_TRANSACTION_MAX_BYTES_PREFIXED: 31,
-	
 	
 	//:m:*:$
 	//:d:en:Convenience replacement for [tt]document.getElementById()[/tt]. _
@@ -258,7 +242,13 @@ var jws = {
 		}
 		return lURL;
 	},
-			
+	
+	//:m:*:getWebAppURL
+	//:d:en:Returns the WebSocket server URL for Web Apps (Tomcat, Grizzly, Jetty, etc...)
+	//:a:en::aId:String:id of the HTML element to be returned.
+	//:a:en::aContext:String:Context path of the Web App. The value is optional, default: self.location.pathname
+	//:a:en::aServlet:String:Servlet name of the jWebSocket app. The value is optional, default: jws.JWS_SERVER_SERVLET
+	//:r:*:::String:WebSocket server URL consisting of schema://host:port/context/servlet
 	getWebAppURL: function(aContext, aServlet){
 		var lContext = aContext || self.location.pathname;
 		var lServlet = aServlet || jws.JWS_SERVER_SERVLET;
@@ -367,6 +357,9 @@ var jws = {
 	//:a:en::::none
 	//:r:*:::boolean:[tt]true[/tt] if the browser natively support websockets, otherwise [tt]false[/tt].
 	browserSupportsNativeWebSockets: (function() {
+		if( window.WEB_SOCKET_FORCE_FLASH ) {
+			return false;
+		}
 		return(
 			window.WebSocket !== null && window.WebSocket !== undefined
 			);
@@ -402,6 +395,20 @@ var jws = {
 			window.Worker !== null && window.Worker !== undefined
 			);
 	})(),
+			
+	getOptions: function( aOptions, aDefaults ) {
+		// check that options are not empty
+		aOptions = ( aOptions ? aOptions : {} );
+		// take over default values if not specified for options
+		if( aDefaults ) {
+			for( var lKey in aDefaults ) {
+				if( undefined === aOptions[ lKey ] ) {
+					aOptions[ lKey ] = aDefaults[ lKey ];
+				}
+			}
+		}
+		return aOptions;
+	},
 
 	//:m:*:loadScript
 	//:d:en:loads a script from a URL dynamically at run-time
@@ -881,22 +888,22 @@ var jws = {
 			if( jws.fIsNetscape ) {
 				jws.fBrowserType = jws.BT_NETSCAPE;
 			} else {
-				jws.fIsFirefox = "Netscape" === navigator.appName;
-				if( jws.fIsFirefox ) {
-					jws.fBrowserType = jws.BT_FIREFOX;
+				jws.fIsOpera = "Opera" === navigator.appName;
+				if( jws.fIsOpera ) {
+					jws.fBrowserType = jws.BT_OPERA;
 				} else {
-					jws.fIsOpera = "Opera" === navigator.appName;
-					if( jws.fIsOpera ) {
-						jws.fBrowserType = jws.BT_OPERA;
+					jws.fIsPocketIE = "Microsoft Pocket Internet Explorer" === navigator.appName;
+					if( jws.fIsPocketIE ) {
+						ws.fBrowserType = jws.BT_IEXPLORER;
 					} else {
-						jws.fIsIExplorer = "Microsoft Internet Explorer" === navigator.appName;
+						jws.fIsIExplorer = "Microsoft Internet Explorer" === navigator.appName || !!lUA.match(/Trident.*rv[ :]./);
 						if( jws.fIsIExplorer ) {
 							jws.fBrowserType = jws.BT_IEXPLORER;
 						} else {
-							jws.fIsPocketIE = "Microsoft Pocket Internet Explorer" === navigator.appName;
-							if( jws.fIsPocketIE ) {
-								jws.fBrowserType = jws.BT_IEXPLORER;
-							}
+							jws.fIsFirefox = "Netscape" === navigator.appName;
+							if( jws.fIsFirefox ) {
+								jws.fBrowserType = jws.BT_FIREFOX;
+							} 
 						}
 					}
 				}
@@ -912,6 +919,7 @@ var jws = {
 	if( jws.fIsIExplorer ) {
 		//:i:de:Beispiel f&uuml;r userAgent bei IE6:
 		//:i:de:"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"
+		//:i:de:"Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.3; .NET4.0C; .NET4.0E; rv:11.0) like Gecko"
 		jws.fBrowserName = jws.BROWSER_NAMES[ jws.BT_IEXPLORER ];
 		lVersion = lUA.match( /MSIE.*/i );
 		if ( lVersion ) {
@@ -919,6 +927,22 @@ var jws = {
 			p = lStr.indexOf( ";" );
 			jws.fBrowserVerStr = p > 0 ? lStr.substr( 0, p ) : lStr;
 			jws.fBrowserVerNo = parseFloat( jws.fBrowserVerStr );
+		} else {
+			// if is Internet Explorer 11 or higher
+			lVersion = lUA.match(/Trident.*rv[ :]./);
+			if(lVersion){
+				p = lVersion[ 0 ].indexOf( ";" );
+				if(p > 0){
+					jws.fBrowserVerStr = lVersion[ 0 ].substr(0, p);
+				} else {
+					jws.fBrowserVerStr = "Trident";
+				}
+				lVersion = lUA.match(/rv[ :].*/i);
+				if(lVersion){
+					p = lVersion[0].indexOf(")");
+					jws.fBrowserVerNo = parseFloat( p >= 3?lVersion[0].substr(3,p-3): lVersion[0].substr(3, 4));
+				}
+			}
 		}
 	} else if( jws.fIsFirefox ) {
 		jws.fBrowserName = jws.BROWSER_NAMES[ jws.BT_FIREFOX ];
@@ -1126,6 +1150,32 @@ jws.events = {
 };
 
 //  <JasobNoObfs>
+/**
+ * Copyright (c) 2012 Florian H., https://github.com/js-coder
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ **/
+!function(document,undefined){var cookie=function(){return cookie.get.apply(cookie,arguments);};var utils=cookie.utils={isArray:Array.isArray||function(value){return Object.prototype.toString.call(value)==='[object Array]';},isPlainObject:function(value){return! !value&&Object.prototype.toString.call(value)==='[object Object]';},toArray:function(value){return Array.prototype.slice.call(value);},getKeys:Object.keys||function(obj){var keys=[],key='';for(key in obj){if(obj.hasOwnProperty(key))keys.push(key);}return keys;},escape:function(value){return String(value).replace(/[,;"\\=\s%]/g,function(character){return encodeURIComponent(character);});},retrieve:function(value,fallback){return value==null?fallback:value;}};cookie.defaults={};cookie.expiresMultiplier=60*60*24;cookie.set=function(key,value,options){if(utils.isPlainObject(key)){for(var k in key){if(key.hasOwnProperty(k))this.set(k,key[k],value);}}else{options=utils.isPlainObject(options)?options:{expires:options};var expires=options.expires!==undefined?options.expires:(this.defaults.expires||''),expiresType=typeof(expires);if(expiresType==='string'&&expires!=='')expires=new Date(expires);else if(expiresType==='number')expires=new Date(+new Date+1000*this.expiresMultiplier*expires);if(expires!==''&&'toGMTString'in expires)expires=';expires='+expires.toGMTString();var path=options.path||this.defaults.path;path=path?';path='+path:'';var domain=options.domain||this.defaults.domain;domain=domain?';domain='+domain:'';var secure=options.secure||this.defaults.secure?';secure':'';document.cookie=utils.escape(key)+'='+utils.escape(value)+expires+path+domain+secure;}return this;};cookie.remove=function(keys){keys=utils.isArray(keys)?keys:utils.toArray(arguments);for(var i=0,l=keys.length;i<l;i++){this.set(keys[i],'',-1);}return this;};cookie.empty=function(){return this.remove(utils.getKeys(this.all()));};cookie.get=function(keys,fallback){fallback=fallback||undefined;var cookies=this.all();if(utils.isArray(keys)){var result={};for(var i=0,l=keys.length;i<l;i++){var value=keys[i];result[value]=utils.retrieve(cookies[value],fallback);}return result;}else return utils.retrieve(cookies[keys],fallback);};cookie.all=function(){if(document.cookie==='')return{};var cookies=document.cookie.split('; '),result={};for(var i=0,l=cookies.length;i<l;i++){var item=cookies[i].split('=');result[decodeURIComponent(item[0])]=decodeURIComponent(item[1]);}return result;};cookie.enabled=function(){if(navigator.cookieEnabled)return true;var ret=cookie.set('_','_').get('_')==='_';cookie.remove('_');return ret;};window.cookie=cookie;}(document);
+//  </JasobNoObfs>
+
+//  <JasobNoObfs>
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
@@ -1167,6 +1217,15 @@ if (!('lastIndexOf' in Array.prototype)) {
         return -1;
     };
 }
+
+// supporting String to ByteArray conversion
+String.prototype.getBytes = function () {
+	var lBytes = [];
+	for( var lIndex = 0; lIndex < this.length; ++lIndex ) {
+		lBytes.push( this.charCodeAt( lIndex ) );
+	}
+	return lBytes;
+};
 
 //:package:*:jws.tools
 //:class:*:jws.tools
@@ -1227,6 +1286,27 @@ jws.tools = {
 			}
 		}
 		return lRes;
+	},
+	
+	//:m:*:parseQuery
+	//:d:en:Parse the given URL query into a JSON object in key/value pairs. 
+	//:a:en::aURL:String:The URL to parse
+	//:r:*:::Object:JSON object containing query attributes and it values.
+	parseQuery: function(aURL){
+		var lMap = {};
+		
+		var lUrlParts = aURL.split("?");
+		if( 1 === lUrlParts.length ){
+			return lMap;
+		}
+		
+		var lQueryParts = lUrlParts[ 1 ].split( "," );
+		for (var lIndex in lQueryParts){
+			var lArray = lQueryParts[ lIndex ].split( "=" );
+			lMap[ lArray[ 0 ] ] = lArray[ 1 ];
+		}
+		
+		return lMap;
 	},
 	
 	//:m:*:calcMD5
@@ -1454,7 +1534,23 @@ jws.tools = {
 			}
 		}
 		return lConstructor;
-	}
+	}, 
+	
+	createUUID: function() {
+		// please refer to http://www.ietf.org/rfc/rfc4122.txt
+		var lSegments = [];
+		var lHexDigits = "0123456789abcdef";
+		for( var lIdx = 0; lIdx < 36; lIdx++ ) {
+			lSegments[ lIdx ] = lHexDigits.substr( Math.floor( Math.random() * 0x10 ), 1 );
+		}
+		lSegments[ 14 ] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+		lSegments[ 19 ] = lHexDigits.substr( ( lSegments[ 19 ] & 0x3 ) | 0x8, 1 );  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+		lSegments[  8 ] = lSegments[ 13 ] = lSegments[ 18 ] = lSegments[ 23 ] = "-";
+
+		var lUUID = lSegments.join( "" );
+		return lUUID;
+	}	
+	
 };
 
 if( !jws.browserSupportsNativeWebSockets ) {
@@ -1468,8 +1564,6 @@ if( !jws.browserSupportsNativeWebSockets ) {
 	// check if appropriate flash player version is installed
 	if( swfobject.hasFlashPlayerVersion( "10.0.0" ) ) {
 	
-		WEB_SOCKET_DEBUG = true;
-		
 		// init flash bridge
 		// use function to not polute the namespace with identifiers
 		// get all scripts on the page to find jWebSocket.js path
@@ -1508,7 +1602,7 @@ if( !jws.browserSupportsNativeWebSockets ) {
 			// Reference: http://dev.w3.org/html5/websockets/
 			// Reference: http://tools.ietf.org/html/rfc6455
 			// Full sources codes provided in web_socket.js in folder flash-bridge
-			(function(){if(window.WEB_SOCKET_FORCE_FLASH){}else if(window.WebSocket){return;}else if(window.MozWebSocket){window.WebSocket=MozWebSocket;return;}var logger;if(window.WEB_SOCKET_LOGGER){logger=WEB_SOCKET_LOGGER;}else if(window.console&&window.console.log&&window.console.error){logger=window.console;}else{logger={log:function(){},error:function(){}};}if(swfobject.getFlashPlayerVersion().major<10){logger.error("Flash Player >= 10.0.0 is required.");return;}if(location.protocol=="file:"){logger.error("WARNING: web-socket-js doesn't work in file:///... URL "+"unless you set Flash Security Settings properly. "+"Open the page via Web server i.e. http://...");}window.WebSocket=function(url,protocols,proxyHost,proxyPort,headers){var self=this;self.__id=WebSocket.__nextId++;WebSocket.__instances[self.__id]=self;self.readyState=WebSocket.CONNECTING;self.bufferedAmount=0;self.__events={};if(!protocols){protocols=[];}else if(typeof protocols=="string"){protocols=[protocols];}self.__createTask=setTimeout(function(){WebSocket.__addTask(function(){self.__createTask=null;WebSocket.__flash.create(self.__id,url,protocols,proxyHost||null,proxyPort||0,headers||null);});},0);};WebSocket.prototype.send=function(data){if(this.readyState==WebSocket.CONNECTING){throw "INVALID_STATE_ERR: Web Socket connection has not been established";}var result=WebSocket.__flash.send(this.__id,encodeURIComponent(data));if(result<0){return true;}else{this.bufferedAmount+=result;return false;}};WebSocket.prototype.close=function(){if(this.__createTask){clearTimeout(this.__createTask);this.__createTask=null;this.readyState=WebSocket.CLOSED;return;}if(this.readyState==WebSocket.CLOSED||this.readyState==WebSocket.CLOSING){return;}this.readyState=WebSocket.CLOSING;WebSocket.__flash.close(this.__id);};WebSocket.prototype.addEventListener=function(type,listener,useCapture){if(!(type in this.__events)){this.__events[type]=[];}this.__events[type].push(listener);};WebSocket.prototype.removeEventListener=function(type,listener,useCapture){if(!(type in this.__events))return;var events=this.__events[type];for(var i=events.length-1;i>=0;--i){if(events[i]===listener){events.splice(i,1);break;}}};WebSocket.prototype.dispatchEvent=function(event){var events=this.__events[event.type]||[];for(var i=0;i<events.length;++i){events[i](event);}var handler=this["on"+event.type];if(handler)handler.apply(this,[event]);};WebSocket.prototype.__handleEvent=function(flashEvent){if("readyState"in flashEvent){this.readyState=flashEvent.readyState;}if("protocol"in flashEvent){this.protocol=flashEvent.protocol;}var jsEvent;if(flashEvent.type=="open"||flashEvent.type=="error"){jsEvent=this.__createSimpleEvent(flashEvent.type);}else if(flashEvent.type=="close"){jsEvent=this.__createSimpleEvent("close");jsEvent.wasClean=flashEvent.wasClean?true:false;jsEvent.code=flashEvent.code;jsEvent.reason=flashEvent.reason;}else if(flashEvent.type=="message"){var data=decodeURIComponent(flashEvent.message);jsEvent=this.__createMessageEvent("message",data);}else{throw "unknown event type: "+flashEvent.type;}this.dispatchEvent(jsEvent);};WebSocket.prototype.__createSimpleEvent=function(type){if(document.createEvent&&window.Event){var event=document.createEvent("Event");event.initEvent(type,false,false);return event;}else{return{type:type,bubbles:false,cancelable:false};}};WebSocket.prototype.__createMessageEvent=function(type,data){if(document.createEvent&&window.MessageEvent&& !window.opera){var event=document.createEvent("MessageEvent");event.initMessageEvent("message",false,false,data,null,null,window,null);return event;}else{return{type:type,data:data,bubbles:false,cancelable:false};}};WebSocket.CONNECTING=0;WebSocket.OPEN=1;WebSocket.CLOSING=2;WebSocket.CLOSED=3;WebSocket.__isFlashImplementation=true;WebSocket.__initialized=false;WebSocket.__flash=null;WebSocket.__instances={};WebSocket.__tasks=[];WebSocket.__nextId=0;WebSocket.loadFlashPolicyFile=function(url){WebSocket.__addTask(function(){WebSocket.__flash.loadManualPolicyFile(url);});};WebSocket.__initialize=function(){if(WebSocket.__initialized)return;WebSocket.__initialized=true;if(WebSocket.__swfLocation){window.WEB_SOCKET_SWF_LOCATION=WebSocket.__swfLocation;}if(!window.WEB_SOCKET_SWF_LOCATION){logger.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf");return;}if(!window.WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR&& !WEB_SOCKET_SWF_LOCATION.match(/(^|\/)WebSocketMainInsecure\.swf(\?.*)?$/)&&WEB_SOCKET_SWF_LOCATION.match(/^\w+:\/\/([^\/]+)/)){var swfHost=RegExp.$1;if(location.host!=swfHost){logger.error("[WebSocket] You must host HTML and WebSocketMain.swf in the same host "+"('"+location.host+"' != '"+swfHost+"'). "+"See also 'How to host HTML file and SWF file in different domains' section "+"in README.md. If you use WebSocketMainInsecure.swf, you can suppress this message "+"by WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;");}}var container=document.createElement("div");container.id="webSocketContainer";container.style.position="absolute";if(WebSocket.__isFlashLite()){container.style.left="0px";container.style.top="0px";}else{container.style.left="-100px";container.style.top="-100px";}var holder=document.createElement("div");holder.id="webSocketFlash";container.appendChild(holder);document.body.appendChild(container);swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION,"webSocketFlash","1","1","10.0.0",null,null,{hasPriority:true,swliveconnect:true,allowScriptAccess:"always"},null,function(e){if(!e.success){logger.error("[WebSocket] swfobject.embedSWF failed");}});};WebSocket.__onFlashInitialized=function(){setTimeout(function(){WebSocket.__flash=document.getElementById("webSocketFlash");WebSocket.__flash.setCallerUrl(location.href);WebSocket.__flash.setDebug(! !window.WEB_SOCKET_DEBUG);for(var i=0;i<WebSocket.__tasks.length;++i){WebSocket.__tasks[i]();}WebSocket.__tasks=[];},0);};WebSocket.__onFlashEvent=function(){setTimeout(function(){try{var events=WebSocket.__flash.receiveEvents();for(var i=0;i<events.length;++i){WebSocket.__instances[events[i].webSocketId].__handleEvent(events[i]);}}catch(e){logger.error(e);}},0);return true;};WebSocket.__log=function(message){logger.log(decodeURIComponent(message));};WebSocket.__error=function(message){logger.error(decodeURIComponent(message));};WebSocket.__addTask=function(task){if(WebSocket.__flash){task();}else{WebSocket.__tasks.push(task);}};WebSocket.__isFlashLite=function(){if(!window.navigator|| !window.navigator.mimeTypes){return false;}var mimeType=window.navigator.mimeTypes["application/x-shockwave-flash"];if(!mimeType|| !mimeType.enabledPlugin|| !mimeType.enabledPlugin.filename){return false;}return mimeType.enabledPlugin.filename.match(/flashlite/i)?true:false;};if(!window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION){swfobject.addDomLoadEvent(function(){WebSocket.__initialize();});}})();
+			(function(){if(window.WEB_SOCKET_FORCE_FLASH){}else if(window.WebSocket){return;}else if(window.MozWebSocket){window.WebSocket=MozWebSocket;return;}var logger;if(window.WEB_SOCKET_LOGGER){logger=WEB_SOCKET_LOGGER;}else if(window.console&&window.console.log&&window.console.error){logger=window.console;}else{logger={log:function(){},error:function(){}};}if(swfobject.getFlashPlayerVersion().major<10){logger.error("Flash Player >= 10.0.0 is required.");return;}if(location.protocol=="file:"){logger.error("WARNING: web-socket-js doesn't work in file:///... URL "+"unless you set Flash Security Settings properly. "+"Open the page via Web server i.e. http://...");}window.WebSocket=function(url,protocols,proxyHost,proxyPort,headers){var self=this;self.__id=WebSocket.__nextId++;WebSocket.__instances[self.__id]=self;self.readyState=WebSocket.CONNECTING;self.bufferedAmount=0;self.__events={};if(!protocols){protocols=[];}else if(typeof protocols=="string"){protocols=[protocols];}self.__createTask=setTimeout(function(){WebSocket.__addTask(function(){self.__createTask=null;WebSocket.__flash.create(self.__id,url,protocols,proxyHost||null,proxyPort||0,headers||null);});},0);};WebSocket.prototype.send=function(data){if(this.readyState==WebSocket.CONNECTING){throw "INVALID_STATE_ERR: Web Socket connection has not been established";}var result=WebSocket.__flash.send(this.__id,encodeURIComponent(data));if(result<0){return true;}else{this.bufferedAmount+=result;return false;}};WebSocket.prototype.close=function(){if(this.__createTask){clearTimeout(this.__createTask);this.__createTask=null;this.readyState=WebSocket.CLOSED;return;}if(this.readyState==WebSocket.CLOSED||this.readyState==WebSocket.CLOSING){return;}this.readyState=WebSocket.CLOSING;WebSocket.__flash.close(this.__id);};WebSocket.prototype.addEventListener=function(type,listener,useCapture){if(!(type in this.__events)){this.__events[type]=[];}this.__events[type].push(listener);};WebSocket.prototype.removeEventListener=function(type,listener,useCapture){if(!(type in this.__events))return;var events=this.__events[type];for(var i=events.length-1;i>=0;--i){if(events[i]===listener){events.splice(i,1);break;}}};WebSocket.prototype.dispatchEvent=function(event){var events=this.__events[event.type]||[];for(var i=0;i<events.length;++i){events[i](event);}var handler=this["on"+event.type];if(handler)handler.apply(this,[event]);};WebSocket.prototype.__handleEvent=function(flashEvent){if("readyState"in flashEvent){this.readyState=flashEvent.readyState;}if("protocol"in flashEvent){this.protocol=flashEvent.protocol;}var jsEvent;if(flashEvent.type=="open"||flashEvent.type=="error"){jsEvent=this.__createSimpleEvent(flashEvent.type);}else if(flashEvent.type=="close"){jsEvent=this.__createSimpleEvent("close");jsEvent.wasClean=flashEvent.wasClean?true:false;jsEvent.code=flashEvent.code;jsEvent.reason=flashEvent.reason;}else if(flashEvent.type=="message"){var data=decodeURIComponent(flashEvent.message);jsEvent=this.__createMessageEvent("message",data);}else{throw "unknown event type: "+flashEvent.type;}this.dispatchEvent(jsEvent);};WebSocket.prototype.__createSimpleEvent=function(type){if(document.createEvent&&window.Event){var event=document.createEvent("Event");event.initEvent(type,false,false);return event;}else{return{type:type,bubbles:false,cancelable:false};}};WebSocket.prototype.__createMessageEvent=function(type,data){if(document.createEvent&&window.MessageEvent&& !window.opera){var event=document.createEvent("MessageEvent");if(event.initMessageEvent){event.initMessageEvent("message",false,false,data,null,null,window,null);}else if(event.initEvent){var event=new MessageEvent('message',{'view':window,'bubbles':false,'cancelable':false,'data':data});}return event;}else{return{type:type,data:data,bubbles:false,cancelable:false};}};WebSocket.CONNECTING=0;WebSocket.OPEN=1;WebSocket.CLOSING=2;WebSocket.CLOSED=3;WebSocket.__isFlashImplementation=true;WebSocket.__initialized=false;WebSocket.__flash=null;WebSocket.__instances={};WebSocket.__tasks=[];WebSocket.__nextId=0;WebSocket.loadFlashPolicyFile=function(url){WebSocket.__addTask(function(){WebSocket.__flash.loadManualPolicyFile(url);});};WebSocket.__initialize=function(){if(WebSocket.__initialized)return;WebSocket.__initialized=true;if(WebSocket.__swfLocation){window.WEB_SOCKET_SWF_LOCATION=WebSocket.__swfLocation;}if(!window.WEB_SOCKET_SWF_LOCATION){logger.error("[WebSocket] set WEB_SOCKET_SWF_LOCATION to location of WebSocketMain.swf");return;}if(!window.WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR&& !WEB_SOCKET_SWF_LOCATION.match(/(^|\/)WebSocketMainInsecure\.swf(\?.*)?$/)&&WEB_SOCKET_SWF_LOCATION.match(/^\w+:\/\/([^\/]+)/)){var swfHost=RegExp.$1;if(location.host!=swfHost){logger.error("[WebSocket] You must host HTML and WebSocketMain.swf in the same host "+"('"+location.host+"' != '"+swfHost+"'). "+"See also 'How to host HTML file and SWF file in different domains' section "+"in README.md. If you use WebSocketMainInsecure.swf, you can suppress this message "+"by WEB_SOCKET_SUPPRESS_CROSS_DOMAIN_SWF_ERROR = true;");}}var container=document.createElement("div");container.id="webSocketContainer";container.style.position="absolute";if(WebSocket.__isFlashLite()){container.style.left="0px";container.style.top="0px";}else{container.style.left="-100px";container.style.top="-100px";}var holder=document.createElement("div");holder.id="webSocketFlash";container.appendChild(holder);document.body.appendChild(container);swfobject.embedSWF(WEB_SOCKET_SWF_LOCATION,"webSocketFlash","1","1","10.0.0",null,null,{hasPriority:true,swliveconnect:true,allowScriptAccess:"always"},null,function(e){if(!e.success){logger.error("[WebSocket] swfobject.embedSWF failed");}});};WebSocket.__onFlashInitialized=function(){setTimeout(function(){WebSocket.__flash=document.getElementById("webSocketFlash");WebSocket.__flash.setCallerUrl(location.href);WebSocket.__flash.setDebug(! !window.WEB_SOCKET_DEBUG);for(var i=0;i<WebSocket.__tasks.length;++i){WebSocket.__tasks[i]();}WebSocket.__tasks=[];},0);};WebSocket.__onFlashEvent=function(){setTimeout(function(){try{var events=WebSocket.__flash.receiveEvents();for(var i=0;i<events.length;++i){WebSocket.__instances[events[i].webSocketId].__handleEvent(events[i]);}}catch(e){logger.error(e);}},0);return true;};WebSocket.__log=function(message){logger.log(decodeURIComponent(message));};WebSocket.__error=function(message){logger.error(decodeURIComponent(message));};WebSocket.__addTask=function(task){if(WebSocket.__flash){task();}else{WebSocket.__tasks.push(task);}};WebSocket.__isFlashLite=function(){if(!window.navigator|| !window.navigator.mimeTypes){return false;}var mimeType=window.navigator.mimeTypes["application/x-shockwave-flash"];if(!mimeType|| !mimeType.enabledPlugin|| !mimeType.enabledPlugin.filename){return false;}return mimeType.enabledPlugin.filename.match(/flashlite/i)?true:false;};if(!window.WEB_SOCKET_DISABLE_AUTO_INITIALIZATION){swfobject.addDomLoadEvent(function(){WebSocket.__initialize();});}})();
 			//	</JasobNoObfs>
 		}
 		
@@ -1681,9 +1775,19 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	},
 	
 	create: function( aOptions ) {
+		if( aOptions && aOptions.reliabilityOptions ) {
+			this.fReliabilityOptions = aOptions.reliabilityOptions;
+		}
 		// turn off connection reliability by default
 		if( !this.fReliabilityOptions ) {
 			this.fReliabilityOptions = jws.RO_OFF;
+		}
+		
+		// notifying 'not websocket supported' event to the app
+		if ( !jws.browserSupportsWebSockets() ){
+			if ( aOptions.OnWebSocketNotSupported && "function" == typeof aOptions.OnWebSocketNotSupported ){
+				aOptions.OnWebSocketNotSupported();
+			} 
 		}
 	},
 	
@@ -1722,14 +1826,36 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aURL:String:URL to the jWebSocket Server
 	//:a:en::aOptions:Object:Optional arguments, see below...
 	//:a:en:aOptions:OnOpen:function:Callback when connection was successfully established.
+	//:a:en:aOptions:wsClass:function:Custom implementation for the HTML5 WebSocket class. Optional
 	//:r:*:::void:none
 	open: function( aURL, aOptions ) {
 		if( !aOptions ) {
 			aOptions = {};
 		}
+		
+		// getting the WebSocket class
+		var lWsClass = aOptions['wsClass'] || self.WebSocket;
+		
 		// if browser natively supports WebSockets...
 		// otherwise flash bridge may have embedded WebSocket class
-		if( self.WebSocket ) {
+		if( lWsClass ) {
+			// supporting Flash session management
+			if ( self.WebSocket.__isFlashImplementation ){
+				// override session id with a cookie
+				var lSessionCookieName = "JWSSESSIONID";
+				var lArg = "sessionCookieName=";
+				var lA = aURL.indexOf(lArg);
+				if (lA > -1){
+					var lB = aURL.indexOf(",", lA);
+					if (lB > -1){
+						lSessionCookieName = aURL.substr(lA + lSessionCookieName.length, lB);
+					} else {
+						lSessionCookieName = aURL.substr(lA);
+					}
+				}
+				var lSessionId = cookie.get(lSessionCookieName, jws.tools.createUUID());
+				cookie.set(lSessionCookieName, lSessionId);
+			}
 
 			if( !this.fConn || this.fConn.readyState > 2 ) {
 				var lThis = this;
@@ -1768,7 +1894,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				}
 
 				// create a new web socket instance
-				this.fConn = new WebSocket( aURL, lSubProt );
+				this.fConn = new lWsClass( aURL, lSubProt );
 				// save URL and sub prot for optional re-connect
 				this.fURL = aURL; 
 				this.fSubProt = lSubProt;
@@ -1796,97 +1922,98 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				};
 
 				this.fConn.onmessage = function( aEvent ) {
-					// utility variable
-					var lPos, lPID;
-					
-					// supporting the max frame size handshake
-					if( undefined === lThis.fMaxFrameSize ) {
-						lPos = aEvent.data.indexOf( jws.MAX_FRAME_SIZE_FREFIX );
-						if( 0 === lPos ) {
-							lThis.fMaxFrameSize = parseInt( aEvent.data.substr( jws.MAX_FRAME_SIZE_FREFIX.length ) );
-							jws.events.stopEvent( aEvent );
-							if( jws.console.isDebugEnabled() ) {
-								jws.console.debug( "Maximum frame size for connection is: " + lThis.fMaxFrameSize );
-							}
-							
-							// The end of the "max frame size" handshake indicates that the connection is finally opened
-							lValue = lThis.processOpened( aEvent );
-							// give application change to handle event
-							if( aOptions.OnOpen ) {
-								aOptions.OnOpen( aEvent, lValue, lThis );
-							}
-							// process outgoing queue
-							lThis.processQueue();
-							
-							return;
+                    // supporting binary frames at this level
+                    if( ( "undefined" !== typeof Blob && 
+							aEvent.data instanceof Blob ) ||
+							( "undefined" !== typeof ArrayBuffer && 
+							aEvent.data instanceof ArrayBuffer )) {
+                        if( aOptions.OnMessage ) {
+							aOptions.OnMessage( aEvent, lValue, lThis );
 						}
-					} else if (aEvent.data.length > this.fMaxFrameSize){
-							jws.events.stopEvent( aEvent );
-						jws.console.warn( "Data packet discarded. The packet size " + 
-							"exceeds the max frame size supported by the client!" );
-						return;
-					}
-					
+                        return; 
+                    }
+                    
+                    // IF NOT BINARY FRAME
+                    
+					// processing control messages
 					var lPacket = aEvent.data;
-					
-					// processing packet delivery acknowledge from the server
-					if ( 0 === lPacket.indexOf(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX) ){
-						if ( lPacket.length <= (10 + jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX.length) ){
-							lPID = parseInt( lPacket.replace(jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX, "") );
-							clearTimeout( lThis.fPacketDeliveryTimerTasks[ lPID ] );
+					try {
+						var lMessage = JSON.parse(lPacket);
+						
+						if( lMessage[ "jwsWrappedMsg" ] ) {
+							// process control message
+							if( "message" === lMessage.type ) {
+								var lMsgId = lMessage.msgId;
+								
+								if( lMessage.isAckRequired ){
+									// send delivery acknowledge to the server
+									lThis.sendStream(JSON.stringify({
+										"jwsWrappedMsg": true,
+										name: "ack",
+										data: lMsgId,
+										type: "info"
+									}));
+								}
+								
+								if( lMessage.isFragment ){
+									// processing fragmentation
+									if( undefined === lThis.fInFragments[ lMessage.fragmentationId ] ){
+										lThis.fInFragments[ lMessage.fragmentationId ] = lMessage.data;
+									} else {
+										lThis.fInFragments[ lMessage.fragmentationId ] += lMessage.data;
+									}
+									
+									if (lMessage.isLastFragment){
+										// getting the complete packet content
+										lPacket = lThis.fInFragments[ lMessage.fragmentationId ];
+										// removing packet data from the fragments storage 
+										delete lThis.fInFragments[ lMessage.fragmentationId ];
+									} else {
+										return;
+									}
+								} else {
+									// using wrapped message data
+									lPacket = lMessage.data;
+								}
+							} else if( "info" === lMessage.type ) {
+								if( "ack" === lMessage.name ) {
+									// processing packet delivery acknowledge from the server
+									clearTimeout( lThis.fPacketDeliveryTimerTasks[ lMessage.data ] );
 							
-							if ( lThis.fPacketDeliveryListeners[ lPID ] ){
-								// cleaning expired data and calling success
-								lThis.fPacketDeliveryListeners[ lPID ].OnSuccess();
-								delete lThis.fPacketDeliveryListeners[ lPID ];
-								delete lThis.fPacketDeliveryTimerTasks[ lPID ];
+									if ( lThis.fPacketDeliveryListeners[ lMessage.data ] ){
+										// cleaning expired data and calling success
+										lThis.fPacketDeliveryListeners[ lMessage.data ].OnSuccess();
+										delete lThis.fPacketDeliveryListeners[ lMessage.data ];
+										delete lThis.fPacketDeliveryTimerTasks[ lMessage.data ];
+									}
+									
+									return;
+								} else if( "maxFrameSize" === lMessage.name ) {
+									// setting max frame size
+									lThis.fMaxFrameSize = lMessage.data;
+									// stopping event
+									jws.events.stopEvent( aEvent );
+									
+									if( jws.console.isDebugEnabled() ) {
+										jws.console.debug( "Maximum frame size for connection is: " + lThis.fMaxFrameSize );
+									}
+
+									// The end of the "max frame size" handshake indicates that the connection is finally opened
+									lValue = lThis.processOpened( aEvent );
+									// give application change to handle event
+									if( aOptions.OnOpen ) {
+										aOptions.OnOpen( aEvent, lValue, lThis );
+									}
+									
+									// process outgoing queue
+									lThis.processQueue();
+
+									return;
+								}
 							}
 						}
-						
-						return;
-					}
-					
-					// supporting packet delivery acknowledge to the server
-					lPos = aEvent.data.indexOf( jws.PACKET_ID_DELIMETER );
-					if ( lPos >=0 && lPos < 10 && false === isNaN( aEvent.data.substr( 0, lPos ) ) ) {
-						lPID = aEvent.data.substr( 0, lPos );
-						// send packet delivery acknowledge
-						lThis.sendStream( jws.PACKET_DELIVERY_ACKNOWLEDGE_PREFIX + lPID );
-						if( jws.console.isDebugEnabled() ) {
-							jws.console.debug( "PDA sent for packet with id: " + lPID );
-						}
-						
-						// generating the new packet
-						lPacket = lPacket.substr( lPos + 1 );
-						
-						// supporting fragmentation
-						var lFragmentContent;
-						if ( 0 === lPacket.indexOf( jws.PACKET_FRAGMENT_PREFIX ) ) {
-							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
-							lPID = lPacket.substr( jws.PACKET_FRAGMENT_PREFIX.length, 
-								lPos - jws.PACKET_FRAGMENT_PREFIX.length );
-							lFragmentContent = lPacket.substr( lPos + 1 );
-							// storing the packet fragment
-							if( undefined === lThis.fInFragments[ lPID ] ){
-								lThis.fInFragments[ lPID ] = lFragmentContent;
-							} else {
-								lThis.fInFragments[ lPID ] += lFragmentContent;
-							}
-							
-							// do not process packet fragments
-							return;
-						} else if ( 0 === lPacket.indexOf( jws.PACKET_LAST_FRAGMENT_PREFIX ) ) {
-							lPos = lPacket.indexOf( jws.PACKET_ID_DELIMETER );
-							lPID = lPacket.substr( jws.PACKET_LAST_FRAGMENT_PREFIX.length, 
-								lPos - jws.PACKET_LAST_FRAGMENT_PREFIX.length );
-							lFragmentContent = lPacket.substr( lPos + 1 );
-							// storing the packet fragment
-							lThis.fInFragments[ lPID ] += lFragmentContent;
-							// getting the complete packet content
-							lPacket = lThis.fInFragments[ lPID ];
-							// removing packet data from the fragments storage 
-							delete lThis.fInFragments[ lPID ];
-						}
+					} catch (lError){
+						// allowing proprietary implementations
 					}
 					
 					if( jws.console.isDebugEnabled() ) {
@@ -1963,10 +2090,10 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				};
 
 			} else {
-				throw new Error( "Already connected" );
+				throw new Error( "Already connected!" );
 			}
 		} else {
-			throw new Error( "WebSockets not supported by browser" );
+			throw new Error( "WebSockets not supported by web browser!" );
 		}
 	},
 
@@ -2034,8 +2161,8 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				// call filter chain
 				if( this.fFilters ) {
 					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-						if ( "function" === typeof this.fFilters[ lIdx ]["filterStreamOut"] ){
-							this.fFilters[ lIdx ]["filterStreamOut"]( aData );
+						if ( "function" === typeof this.fFilters[ lIdx ][ "filterStreamOut" ] ){
+							this.fFilters[ lIdx ][ "filterStreamOut" ]( aData );
 						}
 					}
 				}
@@ -2068,7 +2195,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	//:a:en::aFragmentSize:Integer:The size of the packet fragments if fragmentation is required. Default value is connection max frame size value.
 	//:r:*:::void:none
 	sendStreamInTransaction: function ( aData, aListener, aFragmentSize){
-		var lPID = jws.tools.getUniqueInteger();
+		var lMsgId = "" + jws.tools.getUniqueInteger();
 		var lThis = this;
 		
 		try {
@@ -2098,39 +2225,30 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 				throw new Error("Missing 'OnFailure' method on argument 'listener'!");
 			}
 			
-			// generating packet prefix
-			var lPacketPrefix = lPID + jws.PACKET_ID_DELIMETER;
-		
 			// processing fragmentation
 			if ( aFragmentSize < this.fMaxFrameSize && aFragmentSize < aData.length ){
 				
 				// first fragment is never the last
 				var lIsLast = false; 
 				// fragmentation id, allows multiplexing
-				var lFragmentationId = jws.tools.getUniqueInteger();
-				// prefix the packet for fragmentation
-				var lFragmentedPacket = jws.PACKET_FRAGMENT_PREFIX 
-				+ lFragmentationId 
-				+ jws.PACKET_ID_DELIMETER 
-				+ aData.substr( 0, aFragmentSize );
+				var lFragmentationId = "" + jws.tools.getUniqueInteger();
+				// getting the fragment content
+				var lFragment = aData.substr( 0, aFragmentSize );
 				
-				if ( lFragmentedPacket.length + lPacketPrefix.length > this.fMaxFrameSize ){
-					throw new Error( "The packet size exceeds the max frame size supported by the client! "
-						+ "Consider that the packet has been prefixed with "
-						+ ( lFragmentedPacket.length + lPacketPrefix.length - aData.length )
-						+ " bytes for fragmented transaction.");
-				}
-				
-				this.sendStreamInTransaction ( lFragmentedPacket, {
-					fOriginPacket: aData,
-					fOriginFragmentSize: aFragmentSize,
-					fOriginListener: aListener,
+				// sending packet
+				this.sendMessage ( {
+					isFragment: true,
+					fragmentationId: lFragmentationId,
+					type: 'message',
+					isLastFragment: lIsLast,
+					data: lFragment,
+					msgId: lMsgId
+				}, {
 					fSentTime: new Date().getTime(),
-					fFragmentationId: lFragmentationId,
 					fBytesSent: 0,
 					
 					getTimeout: function (){
-						var lTimeout = this.fSentTime + this.fOriginListener.getTimeout() - new Date().getTime();
+						var lTimeout = this.fSentTime + aListener.getTimeout() - new Date().getTime();
 						if (lTimeout < 0) {
 							lTimeout = 0;
 						}
@@ -2139,67 +2257,87 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 					}, 
 					
 					OnTimeout: function (){
-						this.fOriginListener.OnTimeout();
+						aListener.OnTimeout();
 					},
 					
 					OnSuccess: function (){
 						// updating bytes sent
-						this.fBytesSent += this.fOriginFragmentSize;
-						if ( this.fBytesSent >= this.fOriginPacket.length ) {
+						this.fBytesSent += aFragmentSize;
+						if ( this.fBytesSent >= aData.length ) {
 							// calling success if the packet was transmitted complete
-							this.fOriginListener.OnSuccess();
+							aListener.OnSuccess();
 						} else {
 							// prepare to sent a next fragment
-							var lLength = ( this.fOriginFragmentSize + this.fBytesSent <= this.fOriginPacket.length )
-							? this.fOriginFragmentSize : this.fOriginPacket.length - this.fBytesSent;
+							var lLength = ( aFragmentSize + this.fBytesSent <= aData.length )
+							? aFragmentSize : aData.length - this.fBytesSent;
 
-							var lNextFragment = this.fOriginPacket.substr( this.fBytesSent, lLength );
-							var lIsLast = ( lLength + this.fBytesSent === this.fOriginPacket.length ) ? true : false;
+							var lNextFragment = aData.substr( this.fBytesSent, lLength );
+							var lIsLast = ( lLength + this.fBytesSent === aData.length ) ? true : false;
 					
-							// prefixing next fragment
-							lNextFragment = ( ( lIsLast ) ? jws.PACKET_LAST_FRAGMENT_PREFIX : jws.PACKET_FRAGMENT_PREFIX )
-							+ this.fFragmentationId 
-							+ jws.PACKET_ID_DELIMETER 
-							+ lNextFragment;
-						
 							// send fragment
-							lThis.sendStreamInTransaction(lNextFragment, this);
+							lThis.sendMessage({
+								isFragment: true,
+								fragmentationId: lFragmentationId,
+								type: 'message',
+								isLastFragment: lIsLast,
+								data: lNextFragment,
+								msgId: "" + jws.tools.getUniqueInteger()
+							}, this);
 						}
 					},
 					
 					OnFailure: function ( lEx ){
-						this.fOriginListener.OnFailure( lEx ); 
+						aListener.OnFailure( lEx ); 
 					}
 				});
 				
 				// REQUIRED
 				return;
 			}
-		
-			// prefixing the packet
-			aData = lPacketPrefix + aData;
-			// saving the listener
-			this.fPacketDeliveryListeners[ lPID ] = aListener;
-		
-			// sending the packet
-			this.sendStream( aData );
-		
-			// setting the timer task for OnTimeout support
-			var lTT = setTimeout(function(){
-				if ( lThis.fPacketDeliveryListeners[ lPID ] ){
-					// cleaning expired data and calling timeout
-					lThis.fPacketDeliveryListeners[ lPID ].OnTimeout();
-					delete lThis.fPacketDeliveryListeners[ lPID ];
-					delete lThis.fPacketDeliveryTimerTasks[ lPID ];
-				}
-			}, 
-			aListener.getTimeout());
-			this.fPacketDeliveryTimerTasks[ lPID ] = lTT; 
+			
+			this.sendMessage({
+				type: 'message',
+				data: aData,
+				msgId: lMsgId
+			}, aListener);
+			
 		}catch ( lEx ){
+			aListener.OnFailure ( lEx );
+		}
+	},
+	
+	sendMessage: function( aMessage, aListener ) {
+		try {
+			var lThis = this;
+			if( null !== aListener ) {
+				aMessage.isAckRequired = true;
+				aMessage[ "jwsWrappedMsg" ] = true;
+
+				var lMsgId = aMessage.msgId;
+
+				// saving the listener
+				this.fPacketDeliveryListeners[ lMsgId ] = aListener;
+
+				// setting the timer task for OnTimeout support
+				var lTT = setTimeout(function(){
+					if ( lThis.fPacketDeliveryListeners[ lMsgId ] ){
+						// cleaning expired data and calling timeout
+						lThis.fPacketDeliveryListeners[ lMsgId ].OnTimeout();
+						delete lThis.fPacketDeliveryListeners[ lMsgId ];
+						delete lThis.fPacketDeliveryTimerTasks[ lMsgId ];
+					}
+				}, 
+				aListener.getTimeout());
+				this.fPacketDeliveryTimerTasks[ lMsgId ] = lTT; 
+			}
+
+			// sending the packet
+			this.sendStream( JSON.stringify(aMessage) );
+		} catch( lEx ) {
 			// cleaning expired data and calling OnFailure
-			delete this.fPacketDeliveryListeners[ lPID ];
-			clearTimeout( this.fPacketDeliveryTimerTasks[ lPID ] );
-			delete this.fPacketDeliveryTimerTasks[ lPID ];
+			delete this.fPacketDeliveryListeners[ lMsgId ];
+			clearTimeout( this.fPacketDeliveryTimerTasks[ lMsgId ] );
+			delete this.fPacketDeliveryTimerTasks[ lMsgId ];
 			aListener.OnFailure ( lEx );
 		}
 	},
@@ -2236,6 +2374,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 		}
 	},
 
+/*
 	//:m:*:setQueueItemLimit
 	//:d:en:Specifies the maximum number of allowed queue items. If a zero or _
 	//:d:en:negative number is passed the number of items is not checked. _
@@ -2263,6 +2402,7 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 			this.fReliabilityOptions.queueSizeLimit = 0;
 		}
 	},
+*/
 
 	//:m:*:setReliabilityOptions
 	//:d:en:Specifies how the connection is management (null = no management) is done.
@@ -2271,13 +2411,12 @@ jws.oop.declareClass( "jws", "jWebSocketBaseClient", null, {
 	setReliabilityOptions: function( aOptions ) {
 		this.fReliabilityOptions = aOptions;
 		// if no auto-reconnect is desired, abort a pending re-connect, if such.
-		// if no auto-reconnect is desired, abort a pending re-connect, if such.
 		if( this.fReliabilityOptions ) {
 			if( this.fReliabilityOptions.autoReconnect ) {
 			//:todo:en:here we could think about establishing the connection
 			// but this would required to pass all args for open!
 			} else {
-				abortReconnect();
+				this.abortReconnect();
 			}	
 		}
 	},
@@ -2620,6 +2759,9 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				for( var lAttr in lEnc ) {
 					var lFormat = lEnc[ lAttr ];
 					var lValue = aToken[ lAttr ];
+					if( aToken[ "isBinary" ] && "data" === lAttr){
+						continue;
+					}
 					if( 0 > self.fEncodingFormats.lastIndexOf( lFormat ) ) {
 						jws.console.error( 
 								"[process decoding]: Invalid encoding format '" 
@@ -2640,7 +2782,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 	},
 	
 	processOpened: function ( aEvent ){
-		this.fEncodingFormats = ["base64", "zipBase64"];
+		this.fEncodingFormats = [ "base64", "zipBase64" ];
 		
 		// sending client headers to the server 
 		this.sendToken({
@@ -2653,9 +2795,9 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			jwsType: "javascript",
 			jwsVersion: jws.VERSION,
 			jwsInfo: 
-			jws.browserSupportsNativeWebSockets 
-			? "native"
-			: "flash " + jws.flashBridgeVer,
+				jws.browserSupportsNativeWebSockets 
+				? "native"
+				: "flash " + jws.flashBridgeVer,
 			encodingFormats: this.fEncodingFormats
 		});
 	},
@@ -2747,7 +2889,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 		if( !this.isOpened() ) {
 			lRes.code = -1;
 			lRes.localeKey = "jws.jsc.res.notConnected";
-			lRes.msg = "Not connected.";
+			lRes.msg = "Not connected!";
 		}
 		return lRes;
 	},
@@ -2935,8 +3077,8 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 
 		// TODO: Remove this temporary hack with final release 1.0
 		// TODO: this was required to ensure upward compatibility from 0.10 to 0.11
-		var lNS = aToken.ns;
-		if ( null !== lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
+		var lNS = aToken['ns'];
+		if ( undefined !== lNS && 1 === lNS.indexOf( "org.jWebSocket" ) ) {
 			aToken.ns = "org.jwebsocket" + lNS.substring( 15 );
 		} else if( null === lNS ) {
 			aToken.ns = "org.jwebsocket.plugins.system";
@@ -3095,7 +3237,7 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 				// call filter chain
 				if( this.fFilters ) {
 					for( var lIdx = 0, lLen = this.fFilters.length; lIdx < lLen; lIdx++ ) {
-						if ( "function" === typeof this.fFilters[ lIdx ]["filterTokenOut"] ) {
+						if ( "function" === typeof this.fFilters[ lIdx ][ "filterTokenOut" ] ) {
 							this.fFilters[ lIdx ][ "filterTokenOut" ]( aToken );
 						}
 					}
@@ -3492,6 +3634,23 @@ jws.oop.declareClass( "jws", "jWebSocketTokenClient", jws.jWebSocketBaseClient, 
 			},
 			aOptions
 			);
+		}
+		return lRes;
+	},
+	
+	//:m:*:broadcastToSharedSession
+	//:d:en:Broadcasts a token to clients that share the same session
+	//:a:en::aToken:Object: The token to be broadcasted
+	//:a:en::aSenderIncluded:Boolean: Indicates if the sender connector require to be included in the broadcast
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	broadcastToSharedSession: function ( aToken, aSenderIncluded, aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 === lRes.code ) {
+			aToken.ns = jws.NS_SYSTEM;
+			aToken.type = "broadcastToSharedSession";
+			aToken.senderIncluded = aSenderIncluded || false;
+
+			this.sendToken( aToken, aOptions );
 		}
 		return lRes;
 	},
@@ -4309,7 +4468,44 @@ jws.SystemClientPlugIn = {
 			keys: aKeys,
 			connectionStorage: aOptions.connectionStorage || false
 		}, aOptions);
+	},
+			
+	//:m:*:forwardJSON
+	//:d:en:Sends a JSON message to a JMS target
+	//:a:en::aTarget:String:The Endpoint-Id of the target
+	//:a:en::aNS:String:The namespace of the message
+	//:a:en::aType:String:The type of the message
+	//:a:en::aArgs:Object:A map of additional key/value pairs
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	forwardJSON: function(aTarget, aNS, aType, aArgs, aJSON, aOptions ) {
+		var lData = {
+			ns: aNS,
+			type: aType,
+			sourceId: this.fClientId,
+			utid: this.getNextTokenId(),
+			payload: aJSON
+		};
+		if( aArgs ) {
+			for( var lField in aArgs ) {
+				if( undefined === lData[ lField ] ) {
+					lData[ lField ] = aArgs[ lField ];
+				}	
+			}
+		}
+		// put the JSON payload into an envelope to forward to the target
+		var lToken = {
+			ns: "org.jwebsocket.plugins.system",
+			type: "send",
+			sourceId: this.fClientId,
+			targetId: aTarget,
+			action: "forward.json",
+			responseRequested: false, // we expect a response from the target
+			data: JSON.stringify( lData )
+		};
+		this.sendToken( lToken, aOptions );
 	}
+			
 };
 
 // add the JWebSocket SystemClient PlugIn into the BaseClient class
@@ -4326,7 +4522,7 @@ jws.oop.addPlugIn( jws.jWebSocketTokenClient, jws.SystemClientPlugIn );
 //:ancestor:*:jws.jWebSocketTokenClient
 //:d:en:Implementation of the [tt]jws.jWebSocketJSONClient[/tt] class.
 jws.oop.declareClass( "jws", "jWebSocketJSONClient", jws.jWebSocketTokenClient, {
-
+	
 	//:m:*:tokenToStream
 	//:d:en:converts a token to a JSON stream. If the browser provides a _
 	//:d:en:native JSON class this is used, otherwise it use the automatically _
@@ -4334,7 +4530,7 @@ jws.oop.declareClass( "jws", "jWebSocketJSONClient", jws.jWebSocketTokenClient, 
 	//:a:en::aToken:Token:The token (an JavaScript Object) to be converted into an JSON stream.
 	//:r:*:::String:The resulting JSON stream.
 	tokenToStream: function( aToken ) {
-		aToken.utid = jws.CUR_TOKEN_ID;
+		aToken.utid = aToken.utid || jws.CUR_TOKEN_ID;
 		var lJSON = JSON.stringify( aToken );
 		return( lJSON );
 	},
@@ -4565,13 +4761,3 @@ jws.oop.declareClass( "jws", "jWebSocketXMLClient", jws.jWebSocketTokenClient, {
 	}
 
 });
-
-// supporting String to ByteArray conversion
-String.prototype.getBytes = function () {
-  var lBytes = [];
-  for (var lIndex = 0; lIndex < this.length; ++lIndex) {
-    lBytes.push(this.charCodeAt(lIndex));
-  }
-  
-  return lBytes;
-};

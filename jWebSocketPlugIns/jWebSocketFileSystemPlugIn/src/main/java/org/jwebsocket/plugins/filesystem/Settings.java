@@ -58,7 +58,7 @@ public class Settings {
 	 * @return
 	 */
 	public String getAliasPath(String aAliasName) {
-		return JWebSocketConfig.expandEnvAndJWebSocketVars(mAliases.get(aAliasName));
+		return JWebSocketConfig.expandEnvVarsAndProps(mAliases.get(aAliasName));
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class Settings {
 	public String getAliasName(String aPath) {
 		for (Map.Entry<String, String> lEntry : mAliases.entrySet()) {
 			if (aPath.startsWith(lEntry.getValue())
-					|| aPath.startsWith(JWebSocketConfig.expandEnvAndJWebSocketVars(lEntry.getValue()))) {
+					|| aPath.startsWith(JWebSocketConfig.expandEnvVarsAndProps(lEntry.getValue()))) {
 				return lEntry.getKey();
 			}
 		}

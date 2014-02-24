@@ -49,7 +49,7 @@ import org.jwebsocket.storage.httpsession.HttpSessionStorage;
  * @author aschulze
  * @author kyberneees
  */
-public class TomcatWrapper extends MessageInbound {
+public class TomcatWrapper extends MessageInbound  {
 
 	private static final Logger mLog = Logging.getLogger();
 	private TomcatConnector mConnector = null;

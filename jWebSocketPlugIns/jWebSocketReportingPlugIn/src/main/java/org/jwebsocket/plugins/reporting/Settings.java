@@ -44,7 +44,7 @@ public class Settings {
 	 */
 	public void setReportFolder(String aReportFolder) {
 		mReportFolder = aReportFolder;
-		mReportFolder = FilenameUtils.separatorsToUnix(JWebSocketConfig.expandEnvAndJWebSocketVars(mReportFolder));
+		mReportFolder = FilenameUtils.separatorsToUnix(JWebSocketConfig.expandEnvVarsAndProps(mReportFolder));
 		if (!mReportFolder.endsWith("/")) {
 			mReportFolder += "/";
 		}
