@@ -411,8 +411,8 @@ public class JWebSocketConfig implements Config {
 				}
 			}
 		}
-
-		// if no Java property check environment variable
+		
+		// using env var if not '-home' param is provided
 		if (null == mJWebSocketHome) {
 			mJWebSocketHome = System.getenv(JWebSocketServerConstants.JWEBSOCKET_HOME);
 		}
