@@ -190,10 +190,8 @@
 				log("Sending changeAlgorithm command to the server...");
 				if( lWSC.isConnected() ) {
 					var lVal =  parseInt(jws.$( "stxCha" ).value);
-					lWSC.sendToken( {
-						ns: 'org.jwebsocket.plugins.loadbalancer',
-						type: 'changeAlgorithm',
-						algorithm : lVal
+					lWSC.lbChangeAlgorithm({
+						algorithm: lVal
 					});
 				} else {
 					log( "Not connected." );

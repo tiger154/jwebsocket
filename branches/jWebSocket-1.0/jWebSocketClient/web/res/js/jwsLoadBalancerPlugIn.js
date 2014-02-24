@@ -62,6 +62,26 @@ jws.LoadBalancerPlugIn = {
 		return lRes;
 	},
 	
+	//:m:*:lbChangeAlgorithm
+	//:d:en:Changes the type of algorithm used by the load balancer.
+	//:a:en::aOptions:Object:Optional arguments for the raw client sendToken method.
+	//:r:*:::void:none
+	lbChangeAlgorithm: function ( aOptions ) {
+		var lRes = this.checkConnected();
+		if( 0 === lRes.code ) {
+			aOptions = jws.getOptions( aOptions, {
+				algorithm: null
+			});
+			var lToken = {
+				ns: jws.LoadBalancerPlugIn.NS,
+				type: "changeAlgorithm",
+				algorithm: aOptions.algorithm
+			};
+			this.sendToken( lToken,	aOptions );
+		}
+		return lRes;
+	},
+	
 	//:m:*:lbRegisterServiceEndPoint
 	//:d:en:Registers a new service endpoint in specific cluster.
 	//:a:en::aPassword:String:Password to verify privileges.

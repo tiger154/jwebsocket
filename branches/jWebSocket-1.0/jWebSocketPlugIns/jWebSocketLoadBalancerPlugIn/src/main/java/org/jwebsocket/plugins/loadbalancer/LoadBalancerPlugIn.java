@@ -349,6 +349,8 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		// checking arguments.
 		Assert.notNull(lAlgorithm, "The argument 'algorithm' cannot be null!");
+		Assert.isTrue((lAlgorithm == 1 || lAlgorithm == 2 || lAlgorithm == 3),
+				"The argument 'algorithm' only must be (1, 2 or 3)!");
 
 		// set the current algorithm.
 		setBalancerAlgorithm(lAlgorithm);
@@ -538,7 +540,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		while (lCluster.hasNext()) {
 			lRemoved += lCluster.next().removeEndPointsByConnector(aConnector);
 		}
-		
+
 		return lRemoved;
 	}
 
