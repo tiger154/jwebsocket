@@ -326,7 +326,6 @@ public class SystemPlugIn extends TokenPlugIn {
 	@Override
 	public void engineStarted(final WebSocketEngine aEngine) {
 		aEngine.setSystemStoppingNotificationStrategy(new Runnable() {
-
 			@Override
 			public void run() {
 				if (aEngine instanceof JMSEngine) {
@@ -818,8 +817,7 @@ public class SystemPlugIn extends TokenPlugIn {
 
 		WebSocketConnector lTargetConnector;
 		String lTargetId = aToken.getString("unid");
-		Boolean lIsResponseRequested
-				= aToken.getBoolean("responseRequested", true);
+		Boolean lIsResponseRequested = aToken.getBoolean("responseRequested", true);
 		String lTargetType;
 		if (lTargetId != null) {
 			lTargetConnector = getNode(lTargetId);
@@ -929,10 +927,8 @@ public class SystemPlugIn extends TokenPlugIn {
 		 */
 		aToken.setString("sourceId", aConnector.getId());
 		// keep senderIncluded beging false as default, apps rely on this!
-		Boolean lIsSenderIncluded
-				= aToken.getBoolean("senderIncluded", false);
-		Boolean lIsResponseRequested
-				= aToken.getBoolean("responseRequested", true);
+		Boolean lIsSenderIncluded = aToken.getBoolean("senderIncluded", false);
+		Boolean lIsResponseRequested = aToken.getBoolean("responseRequested", true);
 
 		// remove further non target related fields
 		aToken.remove("senderIncluded");
@@ -956,10 +952,8 @@ public class SystemPlugIn extends TokenPlugIn {
 		int lTimeout = aToken.getInteger("timeout", 0);
 
 		Boolean lNoGoodBye = aToken.getBoolean("noGoodBye", false);
-		Boolean lNoLogoutBroadcast
-				= aToken.getBoolean("noLogoutBroadcast", false);
-		Boolean lNoDisconnectBroadcast
-				= aToken.getBoolean("noDisconnectBroadcast", false);
+		Boolean lNoLogoutBroadcast = aToken.getBoolean("noLogoutBroadcast", false);
+		Boolean lNoDisconnectBroadcast = aToken.getBoolean("noDisconnectBroadcast", false);
 
 		// only send a good bye message if timeout is > 0 and not to be noed
 		if (lTimeout > 0 && !lNoGoodBye) {
@@ -1172,7 +1166,7 @@ public class SystemPlugIn extends TokenPlugIn {
 		if (SecurityHelper.isUserAuthenticated(aConnector)) {
 			lServer.sendToken(aConnector,
 					lServer.createErrorToken(
-							aToken, -1, "Is authenticated already, logoff first!"));
+					aToken, -1, "Is authenticated already, logoff first!"));
 			return;
 		}
 

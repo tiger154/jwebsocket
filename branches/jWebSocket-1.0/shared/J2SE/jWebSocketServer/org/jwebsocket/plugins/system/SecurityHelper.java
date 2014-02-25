@@ -56,16 +56,8 @@ public class SecurityHelper {
 		}
 		try {
 			if (aSessionStorage.containsKey(SystemPlugIn.AUTHORITIES)) {
-				String[] lAuthorities = ((String) aSessionStorage.get(SystemPlugIn.AUTHORITIES)).split(" ");
-				int end = lAuthorities.length;
-
-				for (int lIndex = 0; lIndex < end; lIndex++) {
-					if (lAuthorities[lIndex].equals(aAuthority)) {
-						return true;
-					}
-				}
+				return aSessionStorage.get(SystemPlugIn.AUTHORITIES).toString().contains(aAuthority + " ");
 			}
-
 			return false;
 		} catch (Exception ex) {
 			//Not necessary to try this
