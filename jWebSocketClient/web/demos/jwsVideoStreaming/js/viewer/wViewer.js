@@ -121,19 +121,19 @@ $.widget("jws.viewer", {
 					AUTO_USER_AND_PASSWORD = true;
 					w.auth.logon( );
 				}
+			},
+			OnLogon: function(aToken) {
+				mWSC.sessionPut("viewer", aToken.sourceId, true, {
+					OnSuccess: function(aToken) {
+						mWSC.channelSubscribe(w.viewer.mChannelId,
+								w.viewer.mChannelAccessKey);
+					}
+				});
 			}
 		};
 		w.viewer.eContainer.auth(lCallbacks);
 	},
 	onMessage: function(aEvent, aToken) {
-		if (aToken.type === "response" && aToken.reqType === "login") {
-			mWSC.sessionPut("viewer", aToken.sourceId, true, {
-				OnSuccess: function(aToken) {
-					mWSC.channelSubscribe(w.viewer.mChannelId,
-							w.viewer.mChannelAccessKey);
-				}
-			});
-		}
 		if (aToken.ns === w.viewer.NS_CHANNELS) {
 //			if ( mLog.isDebugEnabled ) {
 //				log( " <b>" + w.viewer.TITLE + " new message received: </b>" +
