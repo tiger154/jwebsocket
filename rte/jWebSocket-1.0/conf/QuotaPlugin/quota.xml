@@ -29,6 +29,7 @@
 		<property name="collectionQuotaInstanceName" value="jws_plugins_quota_quotaInstance"/>
 		<property name="quotaDefinition" ref="quotaDefinition" />
 		<property name="quotaInstanceDefinition" ref="quotaInstanceDefinition" />
+		<property name="rootUser" value="root"/>
 		<property name="collectionAccessPassword" value="root"/>
 		<property name="collectionSecretPassword" value="root"/>
 	</bean>
