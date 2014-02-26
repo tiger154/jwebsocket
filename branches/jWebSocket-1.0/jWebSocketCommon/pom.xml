@@ -1,10 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>jWebSocket-Parent</artifactId>
-		<groupId>org.jwebsocket</groupId>
-		<version>1.0</version>
-	</parent>
+	<version>1.0</version>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jwebsocket</groupId>
 	<artifactId>jWebSocketCommon</artifactId>
@@ -148,11 +144,14 @@
 		</dependency>
 	</dependencies>
 
-	<!-- define repositories once required -->
-	<!--
 	<repositories>
+		<!-- NetBeans repository -->
+		<repository>
+			<id>netbeans</id>
+			<name>NetBeans Repository</name>
+			<url>http://bits.netbeans.org/maven2</url>
+		</repository>
 	</repositories>
-	-->
 
 	<distributionManagement>
 		<!-- use the following if you're not using a snapshot version. -->
