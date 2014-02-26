@@ -243,4 +243,14 @@
 	<repositories>
 	</repositories>
 
+
+	<distributionManagement>
+		<!-- use the following if you're not using a snapshot version. -->
+		<repository>
+			<id>jWebSocketLocalRepo</id>
+			<name>jWebSocketLocalRepo</name>
+			<url>file:///${basedir}/../../../repo</url>
+		</repository>
+	</distributionManagement>
+
 </project>

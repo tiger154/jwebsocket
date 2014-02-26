@@ -67,14 +67,14 @@
 								<descriptor>src/assembly/one-jar.xml</descriptor>
 							</descriptors>
 						</configuration>
-						<phase>package</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
-			
+
 		</plugins>
 	</build>
 
@@ -107,4 +107,13 @@
 	<repositories>
 	</repositories>
 
+	<distributionManagement>
+		<!-- use the following if you're not using a snapshot version. -->
+		<repository>
+			<id>jWebSocketLocalRepo</id>
+			<name>jWebSocketLocalRepo</name>
+			<url>file:///${basedir}/../../../../repo</url>
+		</repository>
+	</distributionManagement>
+	
 </project>
