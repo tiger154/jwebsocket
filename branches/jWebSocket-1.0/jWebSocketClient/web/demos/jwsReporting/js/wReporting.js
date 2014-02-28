@@ -25,7 +25,7 @@
 
 $.widget("jws.reporting", {
 	_init: function() {
-// ------------- VARIABLES -------------
+		// ------------- VARIABLES -------------
 		this.eBtnGetReports = this.element.find("#get_reports_btn");
 		this.eCbReportList = jws.$("report_list_cb");
 		this.eBtnUpTemplate = this.element.find("#upload_template_btn");
@@ -39,13 +39,16 @@ $.widget("jws.reporting", {
 		$("#gen_content_box").hide();
 		$("#help_footer").hide();
 		this.eFormIsShow = false;
-		this.eHelpIsShow = false;
+		this.eFormIsShow = false;
+		this.eIsAnonymous = false;
 
-//		this.eCbReportType = this.element.find("#report_type_cb");
-//		this.ePdfObject = this.element.find("#pdf");
+		//		this.eCbReportType = this.element.find("#report_type_cb");
+		//		this.ePdfObject = this.element.find("#pdf");
 		// DEFAULT MESSAGES
 		this.MSG_NOTCONNECTED = "Sorry, you are not connected to the " +
-				"server, try updating your browser or clicking the login button";
+		"server, try updating your browser or clicking the login button";
+		this.MSG_NOTAUTHENTICATED = "Sorry, you are not authenticated,\n\
+				 please click the login button";
 		// Keeping a reference of the widget, when a websocket message
 		// comes from the server the scope "this" doesnt exist anymore
 		w.reporting = this;
@@ -59,12 +62,12 @@ $.widget("jws.reporting", {
 		// Registers all callbacks for jWebSocket basic connection
 		// For more information, check the file ../../res/js/widget/wAuth.js
 		var lCallbacks = {
-			OnOpen: function(aEvent) {
+			OnOpen: function(aEvent) {	
 				mWSC.setReportingCallbacks({
 					OnReports: w.reporting.handleReports,
 					OnReport: w.reporting.handleReport,
 					OnUploadTemplate: w.reporting.handleUpload
-				});
+				});				
 			},
 			OnWelcome: function(aEvent) {
 				
@@ -76,8 +79,8 @@ $.widget("jws.reporting", {
 			OnMessage: function(aEvent, aToken) {
 				if (mLog.isDebugEnabled) {
 					log("<font style='color:#888'>jWebSocket '" + aToken.type
-							+ "' token received, full message: '" + aEvent.data + "' "
-							+ "</font>");
+						+ "' token received, full message: '" + aEvent.data + "' "
+						+ "</font>");
 				}
 				w.reporting.onMessage(aEvent, aToken);
 			},
@@ -120,12 +123,12 @@ $.widget("jws.reporting", {
 		});
 		
 		w.reporting.eTxaReportFields.value = "[{name: 'Alexander', lastName: 'Schulze', age: 40, email: 'a.schulze@jwebsocket.org'},\n\
-			{name: 'Rolando', lastName: 'Santamaria Maso', age: 27, email: 'r.santamaria@jwebsocket.org'},	\n\
-			{name: 'Lisdey', lastName: 'Perez', age: 27, email: 'l.perez@jwebsocket.org'},	\n\
-			{name: 'Marcos', lastName: 'Gonzalez', age: 27, email: 'm.gonzalez@jwebsocket.org'},\n\
-			{name: 'Osvaldo', lastName: 'Aguilar', age: 27, email: 'o.aguilar@jwebsocket.org'},\n\
-			{name: 'Victor', lastName: 'Barzana', age: 27, email: 'v.barzana@jwebsocket.org'},\n\
-			{name: 'Javier Alejandro', lastName: 'Puentes Serrano', age: 27, email: 'j.puentes@jwebsocket.org'}]";
+			{name: 'Rolando', lastName: 'Santamaria Maso', age: 27, email: 'rsantamaria@jwebsocket.org'},	\n\
+			{name: 'Lisdey', lastName: 'Perez', age: 27, email: 'lperez@jwebsocket.org'},	\n\
+			{name: 'Marcos', lastName: 'Gonzalez', age: 27, email: 'mgonzalez@jwebsocket.org'},\n\
+			{name: 'Osvaldo', lastName: 'Aguilar', age: 27, email: 'oaguilar@jwebsocket.org'},\n\
+			{name: 'Victor', lastName: 'Barzana', age: 27, email: 'vbarzana@jwebsocket.org'},\n\
+			{name: 'Javier Alejandro', lastName: 'Puentes Serrano', age: 27, email: 'jpuentes@jwebsocket.org'}]";
 		w.reporting.eTxaReportParams.value = "{reportTitle: 'JWebSocket Contact Report'}";
 		
 		$("#demo_box").auth(lCallbacks);
@@ -136,25 +139,30 @@ $.widget("jws.reporting", {
 	 * @param aToken
 	 **/
 	onMessage: function(aEvent, aToken) {
-//		if (aToken) {
-//			// is it a response from a previous request of this client?
-//			if (aToken.type == "response") {
-//				// If the login data is ok
-//				if (aToken.reqType == "login" && aToken.code == 0) {
-////					var lSuccess = new PDFObject({
-////						url: "jwsReportSample.pdf"
-////					}).
-////							embed("pdf");
-//				}
-//				// If anything went wrong in the server show information error
-//				if (aToken.code == -1) {
-//					jwsDialog(aToken.msg, "jWebSocket error", true, null, null, "error");
-//				}
-//			}
-//		}
+	//		if (aToken) {
+	//			// is it a response from a previous request of this client?
+	//			if (aToken.type == "response") {
+	//				// If the login data is ok
+	//				if (aToken.reqType == "login" && aToken.code == 0) {
+	////					var lSuccess = new PDFObject({
+	////						url: "jwsReportSample.pdf"
+	////					}).
+	////							embed("pdf");
+	//				}
+	//				// If anything went wrong in the server show information error
+	//				if (aToken.code == -1) {
+	//					jwsDialog(aToken.msg, "jWebSocket error", true, null, null, "error");
+	//				}
+	//			}
+	//		}
 	},
 	getReports: function() {
 		if (mWSC.isConnected()) {
+			if("anonymous" == mWSC.getUsername() || null == mWSC.getUsername()){
+				jwsDialog(w.reporting.MSG_NOTAUTHENTICATED, "jWebSocket error",
+					true, "alert");
+				return;
+			}
 			log("Retreiving list of reports via jWebSocket...");
 			mWSC.reportingGetReports({
 				OnResponse: function(aToken) {
@@ -163,15 +171,20 @@ $.widget("jws.reporting", {
 			});
 		} else {
 			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket info",
-					true, "alert");
+				true, "alert");
 		}
 	},
 	uploadTemplate: function() {
 		if (mWSC.isConnected()) {
+			if("anonymous" == mWSC.getUsername() || null == mWSC.getUsername()){
+				jwsDialog(w.reporting.MSG_NOTAUTHENTICATED, "jWebSocket error",
+					true, "alert");
+				return;
+			}
 			var lFile = w.reporting.eFCTemplatePath.files[0];
 			if (!lFile) {
 				jwsDialog("Select a report template first!", "jWebSocket info",
-						true, "alert");
+					true, "alert");
 				return;
 			}
 			if (!confirm('Are you sure to upload the selected template ? If\n\
@@ -186,8 +199,8 @@ $.widget("jws.reporting", {
 					encode: false,
 					OnSuccess: function() {
 						mWSC.reportingUploadTemplate(
-								lFile.name
-								);
+							lFile.name
+							);
 					},
 					OnFailure: function() {
 						log("An error ocurred trying to upload the required template");
@@ -197,72 +210,125 @@ $.widget("jws.reporting", {
 			lFR.readAsDataURL(lFile);
 		} else {
 			jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
-					true, "alert");
+				true, "alert");
 		}
 	},
-	createReport: function() {		
+	createReport: function() {
 		if (!w.reporting.eFormIsShow) {
 			if ((mWSC.isConnected())) {
+				if("anonymous" == mWSC.getUsername() || null == mWSC.getUsername()){
+					jwsDialog(w.reporting.MSG_NOTAUTHENTICATED, "jWebSocket error",
+						true, "alert");
+					return;
+				}
 				var lReportName = "person";
-				var lParams = {reportTitle: 'JWebSocket Contact Report'};
+				var lParams = {
+					reportTitle: 'JWebSocket Contact Report'
+				};
 				var lFields = [
-					{name: 'Alexander', lastName: 'Schulze', age: 40, email: 'a.schulze@jwebsocket.org'},
-					{name: 'Rolando', lastName: 'Santamaria Maso', age: 27, email: 'r.santamaria@jwebsocket.org'},
-					{name: 'Lisdey', lastName: 'Perez', age: 27, email: 'l.perez@jwebsocket.org'},
-					{name: 'Marcos', lastName: 'Gonzalez', age: 27, email: 'm.gonzalez@jwebsocket.org,'},
-					{name: 'Osvaldo', lastName: 'Aguilar', age: 27, email: 'o.aguilar@jwebsocket.org,'},
-					{name: 'Victor', lastName: 'Barzana', age: 27, email: 'v.barzana@jwebsocket.org,'},
-					{name: 'Javier Alejandro', lastName: 'Puentes Serrano', age: 27, email: 'j.puentes@jwebsocket.org'}];
+				{
+					name: 'Alexander', 
+					lastName: 'Schulze', 
+					age: 40, 
+					email: 'a.schulze@jwebsocket.org'
+				},
+
+				{
+					name: 'Rolando', 
+					lastName: 'Santamaria Maso', 
+					age: 27, 
+					email: 'rsantamaria@jwebsocket.org'
+				},
+
+				{
+					name: 'Lisdey', 
+					lastName: 'Perez', 
+					age: 27, 
+					email: 'lperez@jwebsocket.org'
+				},
+
+				{
+					name: 'Marcos', 
+					lastName: 'Gonzalez', 
+					age: 27, 
+					email: 'mgonzalez@jwebsocket.org,'
+				},
+
+				{
+					name: 'Osvaldo', 
+					lastName: 'Aguilar', 
+					age: 27, 
+					email: 'oaguilar@jwebsocket.org,'
+				},
+
+				{
+					name: 'Victor', 
+					lastName: 'Barzana', 
+					age: 27, 
+					email: 'vbarzana@jwebsocket.org,'
+				},
+
+				{
+					name: 'Javier Alejandro', 
+					lastName: 'Puentes Serrano', 
+					age: 27, 
+					email: 'jpuentes@jwebsocket.org'
+				}];
 				log("Creating Report...");
 				mWSC.reportingGenerateReport(
-						lReportName,
-						lParams,
-						lFields,
-						{
-							useConection: false,
-							outputType: "pdf"
-						}
-				);
+					lReportName,
+					lParams,
+					lFields,
+					{
+						useConection: false,
+						outputType: "pdf"
+					}
+					);
 			}
 			else {
 				jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
-						true, "alert");
+					true, "alert");
 			}
 		}
 		else
 		{
 			log("Creating Report...");
 			if (mWSC.isConnected()) {
+				if("anonymous" == mWSC.getUsername() || null == mWSC.getUsername()){
+					jwsDialog(w.reporting.MSG_NOTAUTHENTICATED, "jWebSocket error",
+						true, "alert");
+					return;
+				}
 				var lReportName = w.reporting.eCbReportList.value;
 				var lFormat = w.reporting.eCbReportFormats.value;
 
 				if (!w.reporting.eTxaReportFields.value) {
 					jwsDialog("Enter the report fields [{id:'value'},{id:'value'},{id:'value'}]", "jWebSocket info",
-							true, "alert");
+						true, "alert");
 				}
 				else if (!w.reporting.eTxaReportParams.value) {
 					jwsDialog("Enter the report params {id:'value'}", "jWebSocket info",
-							true, "alert");
+						true, "alert");
 				}
 				else if (!w.reporting.eCbReportList.value) {
 					jwsDialog("Please select an available report from the list", "jWebSocket info",
-							true, "alert");
+						true, "alert");
 				}
 				eval("var lParams =" + w.reporting.eTxaReportParams.value);
 				eval("var lFields =" + w.reporting.eTxaReportFields.value);
 
 				mWSC.reportingGenerateReport(
-						lReportName,
-						lParams,
-						lFields,
-						{
-							useConection: w.reporting.eChbxUseConnection.checked,
-							outputType: lFormat
-						}
-				);
+					lReportName,
+					lParams,
+					lFields,
+					{
+						useConection: w.reporting.eChbxUseConnection.checked,
+						outputType: lFormat
+					}
+					);
 			} else {
 				jwsDialog(w.reporting.MSG_NOTCONNECTED, "jWebSocket error",
-						true, "alert");
+					true, "alert");
 			}
 		}
 
