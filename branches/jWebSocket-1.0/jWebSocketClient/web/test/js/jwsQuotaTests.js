@@ -17,7 +17,6 @@
 //	limitations under the License.
 //	---------------------------------------------------------------------------
 
-
 jws.tests.Quota = {
     title: "Quota plug-in",
     description: "jWebSocket Quota plug-in automated functional tests",
@@ -30,36 +29,26 @@ jws.tests.Quota = {
     QUOTA_INSTANCE: "defaultUser",
     QUOTA_INSTANCE_TYPE: "Group",
     QUOTA_ACTIONS: "*",
-    QUOTA_TEST_UUID: "aa51e83898192632ac11b8e509e4959d",
-    QUOTA_INSTANCE_REG: "oaguilar",
+    QUOTA_INSTANCE_REG: "guest",
+    refObject: {},
     // this spec tests the 'get report templates' feature 
-    testCreateQuota: function(aQuotaType, aValue, aInstance, aInstanceType,
-            aActions, aExpectedCode) {
+    testCreateQuota: function(aIdentifier, aValue, aInstance, aInstanceType,
+            aActions, aExpectedCode, aRefObject) {
 
         var lMe = this;
-
         var lSpec = this.NS + ": create quota (admin)";
         it(lSpec, function() {
             var lResponse = null;
 
-            var lToken = {
-                ns: lMe.NS_PLUGIN,
-                type: "createQuota",
-                namespace: lMe.NS_QUOTA_TEST,
-                instance: aInstance,
-                instance_type: aInstanceType,
-                identifier: aQuotaType,
-                actions: aActions,
-                value: '5',
-                uuid: lMe.QUOTA_TEST_UUID
-            };
-
-            // perform the get report templates feature on the server
-            jws.Tests.getAdminTestConn().sendToken(lToken, {
+            jws.Tests.getAdminTestConn().createQuota(
+                    aIdentifier, lMe.NS_QUOTA_TEST,
+                    aInstance, aInstanceType, aActions, 5, {
                 OnResponse: function(aToken) {
                     lResponse = aToken;
+                    aRefObject.uuid = aToken.uuid;
                 }
-            });
+            }
+            );
 
             // wait for result, consider reasonable timeout
             waitsFor(
@@ -77,27 +66,16 @@ jws.tests.Quota = {
             });
         });
     },
-    testGetQuota: function(aQuotaType, aInstance, aInstanceType,
-            aActions, aExpectedCode) {
+    testGetQuota: function(aIdentifier, aInstance, aInstanceType,
+            aActions, aExpectedCode, aRefObject) {
 
         var lMe = this;
-
         var lSpec = this.NS + ": get quota (admin)";
         it(lSpec, function() {
             var lResponse = null;
 
-            var lToken = {
-                ns: lMe.NS_PLUGIN,
-                type: "getQuota",
-                namespace: lMe.NS_QUOTA_TEST,
-                instance: aInstance,
-                instance_type: aInstanceType,
-                identifier: aQuotaType,
-                actions: aActions
-            };
-
-            // perform the get report templates feature on the server
-            jws.Tests.getAdminTestConn().sendToken(lToken, {
+            jws.Tests.getAdminTestConn().getQuota(aIdentifier, lMe.NS_QUOTA_TEST,
+                    aInstance, aInstanceType, aActions, {
                 OnResponse: function(aToken) {
                     lResponse = aToken;
                 }
@@ -109,8 +87,7 @@ jws.tests.Quota = {
                         // check response
                         return(null != lResponse);
                     },
-                    lSpec,
-                    1500
+                    lSpec, 1500
                     );
 
             // check the result 
@@ -118,44 +95,30 @@ jws.tests.Quota = {
                 expect(aExpectedCode).toEqual(lResponse.code);
                 expect("*").toEqual(lResponse.actions);
                 expect("defaultUser").toEqual(lResponse.instance);
-                expect(lMe.QUOTA_TEST_UUID).toEqual(lResponse.uuid);
+                expect(aRefObject.uuid).toEqual(lResponse.uuid);
             });
         });
     },
-    testUnregisterQuota: function(aQuotaType, aInstance, aUuid, aExpectedCode) {
-
-
-        var lMe = this;
+    testUnregisterQuota: function(aIdentifier, aInstance, aExpectedCode, aRefObject) {
 
         var lSpec = this.NS + ": unregister quota (admin)";
         it(lSpec, function() {
             var lResponse = null;
 
-            var lToken = {
-                ns: lMe.NS_PLUGIN,
-                type: "unregisterQuota",
-                instance: aInstance,
-                identifier: aQuotaType,
-                uuid: aUuid
-            };
-
             // perform the get report templates feature on the server
-            jws.Tests.getAdminTestConn().sendToken(lToken, {
+            jws.Tests.getAdminTestConn().unregisterQuota(aIdentifier, aInstance,
+                    aRefObject.uuid, {
                 OnResponse: function(aToken) {
                     lResponse = aToken;
                 }
             });
-
             // wait for result, consider reasonable timeout
             waitsFor(
                     function() {
                         // check response
                         return(null != lResponse);
-                    },
-                    lSpec,
-                    1500
+                    }, lSpec, 1500
                     );
-
             // check the result 
             runs(function() {
                 expect(aExpectedCode).toEqual(lResponse.code);
@@ -166,37 +129,27 @@ jws.tests.Quota = {
     },
     /**
      * 
-     * @param {type} aQuotaType
+     * @param {type} aIdentifier
      * @param {type} aInstance
      * @param {type} aInstance_type
-     * @param {type} aUuid
      * @param {type} aExpectedCode
      * @returns {undefined}
      */
-    testRegisterQuota: function(aQuotaType, aInstance, aInstance_type, aUuid, aExpectedCode) {
+    testRegisterQuota: function(aIdentifier, aInstance, aInstance_type,
+            aExpectedCode, aRefObject) {
 
         var lMe = this;
-
         var lSpec = this.NS + ": register quota (admin)";
         it(lSpec, function() {
             var lResponse = null;
 
-            var lToken = {
-                ns: lMe.NS_PLUGIN,
-                type: "registerQuota",
-                instance: aInstance,
-                identifier: aQuotaType,
-                instance_type: aInstance_type,
-                uuid: aUuid
-            };
-
-            // perform the get report templates feature on the server
-            jws.Tests.getAdminTestConn().sendToken(lToken, {
+            //retgister the quota on the server
+            jws.Tests.getAdminTestConn().registerQuota(aIdentifier, aInstance,
+                    aRefObject.uuid, {
                 OnResponse: function(aToken) {
                     lResponse = aToken;
                 }
             });
-
             // wait for result, consider reasonable timeout
             waitsFor(
                     function() {
@@ -206,19 +159,18 @@ jws.tests.Quota = {
                     lSpec,
                     1500
                     );
-
             // check the result 
             runs(function() {
                 expect(aExpectedCode).toEqual(lResponse.code);
                 expect(lMe.QUOTA_INSTANCE_REG).toEqual(lResponse.instance);
-                expect(lMe.QUOTA_TEST_UUID).toEqual(lResponse.uuid);
+                expect(aRefObject.uuid).toEqual(lResponse.uuid);
                 //expect(lResponse.).toEqual(lResponse.code);
             });
         });
     },
     /**
      * 
-     * @param {type} aQuotaType
+     * @param {type} aIdentifier
      * @param {type} aInstance
      * @param {type} aInstanceType
      * @param {type} aValue
@@ -226,27 +178,84 @@ jws.tests.Quota = {
      * @param {type} aExpectedCode
      * @returns {undefined}
      */
-    testReduceQuota: function(aQuotaType, aInstance, aInstanceType, aActions,
+    testReduceQuota: function(aIdentifier, aInstance, aInstanceType, aActions,
             aValue, ExpectedValue, aExpectedCode) {
-        var lMe = this;
 
+        var lMe = this;
         var lSpec = this.NS + ": reduce quota (admin)";
         it(lSpec, function() {
             var lResponse = null;
-
-            var lToken = {
-                ns: lMe.NS_PLUGIN,
-                type: "reduceQuota",
-                namespace: lMe.NS_QUOTA_TEST,
-                instance: aInstance,
-                instance_type: aInstanceType,
-                identifier: aQuotaType,
-                actions: aActions,
-                value: aValue
-            };
-
+            
             // perform the get report templates feature on the server
-            jws.Tests.getAdminTestConn().sendToken(lToken, {
+            jws.Tests.getAdminTestConn().reduceQuota(aIdentifier,
+                    lMe.NS_QUOTA_TEST, aInstance ,aInstanceType, aActions, aValue, {
+                OnResponse: function(aToken) {
+                    lResponse = aToken;
+                }
+            });
+            // wait for result, consider reasonable timeout
+            waitsFor(
+                    function() {
+                        // check response
+                        return(null != lResponse);
+                    },
+                    lSpec,
+                    1500
+                    );
+            // check the result 
+            runs(function() {
+                expect(aExpectedCode).toEqual(lResponse.code);
+                expect(ExpectedValue).toEqual(lResponse.value);
+            });
+        });
+    },
+    testReduceQuotaByUuid: function(aIdentifier, aInstance, aValue, ExpectedValue,
+            aExpectedCode, aRefObject) {
+
+        var lSpec = this.NS + ": reduce quota by uuid (admin)";
+        it(lSpec, function() {
+            var lResponse = null;
+
+            //aIdentifier, aInstance, aUuid, aValue
+            // perform the get report templates feature on the server
+            jws.Tests.getAdminTestConn().reduceQuotaByUuid(aIdentifier, aInstance,
+                    aRefObject.uuid,aValue, {
+                        OnResponse: function(aToken) {
+                            lResponse = aToken;
+                        }
+                    });
+
+            // wait for result, consider reasonable timeout
+            waitsFor(
+                    function() {
+                        // check response
+                        return(null != lResponse);
+                    },
+                    lSpec,
+                    1500
+                    );
+
+            // check the result 
+            runs(function() {
+                expect(aExpectedCode).toEqual(lResponse.code);
+                expect(ExpectedValue).toEqual(lResponse.value);
+                //expect(lResponse.).toEqual(lResponse.code);
+            });
+        });
+    },
+    testSetQuota: function(aIdentifier, aInstance, aInstanceType, aActions,
+            aValue, ExpectedValue, aExpectedCode) {
+        var lMe = this;
+
+        var lSpec = this.NS + ": set quota (admin)";
+        it(lSpec, function() {
+
+            var lResponse = null;
+            
+            
+            //aIdentifier, aInstance, aUuid, aValue
+            jws.Tests.getAdminTestConn().setQuota(aIdentifier, lMe.NS_QUOTA_TEST,
+                aInstance, aInstanceType, aActions, aValue,{
                 OnResponse: function(aToken) {
                     lResponse = aToken;
                 }
@@ -270,27 +279,16 @@ jws.tests.Quota = {
             });
         });
     },
-    testSetQuota: function(aQuotaType, aInstance, aInstanceType, aActions,
-            aValue, ExpectedValue, aExpectedCode) {
-        var lMe = this;
+    testSetQuotaByUuid: function(aIdentifier, aInstance, aValue, ExpectedValue,
+            aExpectedCode, aRefObject) {
 
-        var lSpec = this.NS + ": set quota (admin)";
+        var lSpec = this.NS + ": set quota by uuid (admin)";
         it(lSpec, function() {
             var lResponse = null;
 
-            var lToken = {
-                ns: lMe.NS_PLUGIN,
-                type: "setQuota",
-                namespace: lMe.NS_QUOTA_TEST,
-                instance: aInstance,
-                instance_type: aInstanceType,
-                identifier: aQuotaType,
-                actions: aActions,
-                value: aValue
-            };
-
-            // perform the get report templates feature on the server
-            jws.Tests.getAdminTestConn().sendToken(lToken, {
+            
+            jws.Tests.getAdminTestConn().setQuotaByUuid(aIdentifier,aInstance,
+                aRefObject.uuid, aValue,{
                 OnResponse: function(aToken) {
                     lResponse = aToken;
                 }
@@ -313,8 +311,40 @@ jws.tests.Quota = {
                 //expect(lResponse.).toEqual(lResponse.code);
             });
         });
-    }, 
-    testIncreaseQuota: function(aQuotaType, aInstance, aInstanceType, aActions,
+    },
+    testIncreaseQuotaByUuid: function(aIdentifier, aInstance, aValue, ExpectedValue,
+            aExpectedCode, aRefObject) {
+
+        var lSpec = this.NS + ": increase quota by uuid (admin)";
+        it(lSpec, function() {
+            var lResponse = null;
+
+            jws.Tests.getAdminTestConn().increaseQuotaByUuid(aIdentifier, 
+                    aInstance, aRefObject.uuid, aValue,{
+                OnResponse: function(aToken) {
+                    lResponse = aToken;
+                }
+            });
+
+            // wait for result, consider reasonable timeout
+            waitsFor(
+                    function() {
+                        // check response
+                        return(null != lResponse);
+                    },
+                    lSpec,
+                    1500
+                    );
+
+            // check the result 
+            runs(function() {
+                expect(aExpectedCode).toEqual(lResponse.code);
+                expect(ExpectedValue).toEqual(lResponse.value);
+                //expect(lResponse.).toEqual(lResponse.code);
+            });
+        });
+    },
+    testIncreaseQuota: function(aIdentifier, aInstance, aInstanceType, aActions,
             aValue, ExpectedValue, aExpectedCode) {
         var lMe = this;
 
@@ -328,13 +358,13 @@ jws.tests.Quota = {
                 namespace: lMe.NS_QUOTA_TEST,
                 instance: aInstance,
                 instance_type: aInstanceType,
-                identifier: aQuotaType,
+                identifier: aIdentifier,
                 actions: aActions,
                 value: aValue
             };
 
-            // perform the get report templates feature on the server
-            jws.Tests.getAdminTestConn().sendToken(lToken, {
+            jws.Tests.getAdminTestConn().increaseQuota( aIdentifier, lMe.NS_QUOTA_TEST,
+                    aInstance, aInstanceType, aActions, aValue,{
                 OnResponse: function(aToken) {
                     lResponse = aToken;
                 }
@@ -363,28 +393,37 @@ jws.tests.Quota = {
         //run alls tests within an outer test suite
         //create a temporary quota to testing all operations with
         this.testCreateQuota(this.QUOTA_IDENTIFIER, 5, this.QUOTA_INSTANCE,
-                this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, 0);
+                this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, 0, this.refObject);
 
         this.testCreateQuota(this.QUOTA_IDENTIFIER, 5, this.QUOTA_INSTANCE,
-                this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, -1);
+         this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, -1,{} );
+
 
         this.testGetQuota(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE,
-                this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, 0);
+                this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, 0, this.refObject);
 
         this.testRegisterQuota(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE_REG,
-                "User", this.QUOTA_TEST_UUID, 0);
+                "User", 0, this.refObject);
 
         this.testReduceQuota(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE_REG,
                 "User", this.QUOTA_ACTIONS, 2, 3, 0);
 
-        this.testSetQuota(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE_REG,
-                "User", this.QUOTA_ACTIONS, 5, 5, 0);
-                
+        this.testReduceQuotaByUuid(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE_REG,
+                1, 2, 0, this.refObject);
+
+        this.testSetQuota(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE,
+                this.QUOTA_INSTANCE_TYPE, this.QUOTA_ACTIONS, 5, 5, 0);
+        
+        this.testSetQuotaByUuid(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE_REG,
+                10, 10, 0, this.refObject);
+               
         this.testIncreaseQuota(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE_REG,
-                "User", this.QUOTA_ACTIONS, 2, 7, 0);
+                "User", this.QUOTA_ACTIONS, 2, 12, 0);
 
-        this.testUnregisterQuota( this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE, 
-                this.QUOTA_TEST_UUID, 0); 
+        this.testIncreaseQuotaByUuid(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE_REG,
+                3, 15, 0, this.refObject);
 
+        this.testUnregisterQuota(this.QUOTA_IDENTIFIER, this.QUOTA_INSTANCE,
+                0, this.refObject);
     }
 };

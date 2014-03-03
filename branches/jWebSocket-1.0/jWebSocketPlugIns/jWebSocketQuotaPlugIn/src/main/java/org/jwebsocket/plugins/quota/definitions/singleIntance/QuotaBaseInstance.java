@@ -76,7 +76,7 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         }
         return null;
     }
-
+    
     @Override
     public void writeToToken(Token aToken) {
         aToken.setString("uuid", mUuid);
