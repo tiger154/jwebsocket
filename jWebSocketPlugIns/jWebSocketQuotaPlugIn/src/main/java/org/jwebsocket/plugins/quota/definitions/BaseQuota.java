@@ -12,6 +12,7 @@ import org.jwebsocket.logging.Logging;
 import org.jwebsocket.plugins.quota.api.IQuota;
 import org.jwebsocket.plugins.quota.api.IQuotaSingleInstance;
 import org.jwebsocket.plugins.quota.api.IQuotaStorage;
+import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaBaseInstance;
 import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaChildSI;
 import org.jwebsocket.plugins.quota.definitions.singleIntance.QuotaCountdownSI;
 import org.jwebsocket.plugins.quota.utils.QuotaHelper;
@@ -210,6 +211,30 @@ public abstract class BaseQuota implements IQuota {
         IQuotaSingleInstance lQuotaInstance = (IQuotaSingleInstance) mQuotaStorage.getQuotaByUuid(aUuid);
         return lQuotaInstance;
 
+    }
+    
+    @Override
+    public IQuotaSingleInstance getQuota(String aUuid, String aInstance ) {
+
+        IQuotaSingleInstance lQuotaInstance = 
+                (IQuotaSingleInstance) mQuotaStorage.getQuotaByUuid(aUuid);
+        
+        if (lQuotaInstance.getInstance().equals(aInstance) ){
+            return lQuotaInstance;
+        }else{
+            
+            QuotaChildSI lQuotaChild = lQuotaInstance.getChildQuota(aInstance);
+            if (null != lQuotaChild ){
+            
+                IQuotaSingleInstance lSingle = new QuotaBaseInstance(lQuotaChild.getValue(),
+                        aInstance, aUuid, lQuotaInstance.getNamespace(), 
+                        lQuotaInstance.getQuotaType(),lQuotaInstance.getQuotaIdentifier(), 
+                        lQuotaChild.getInstanceType(), lQuotaInstance.getActions());
+                
+                return lSingle;
+            }
+        }
+        return null;
     }
 
     @Override

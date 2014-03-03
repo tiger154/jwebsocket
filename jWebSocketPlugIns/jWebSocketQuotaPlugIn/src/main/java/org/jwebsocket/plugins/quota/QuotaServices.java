@@ -58,15 +58,14 @@ public class QuotaServices {
             } else {
                 lUuid = QuotaHelper.generateQuotaUUID();
             }
-            //= aToken.getString("uuid");
-
+            
             IQuota lQuota = quotaByIdentifier(lQuotaIdentifier);
-
             String lQuotaType = lQuota.getType();
+            Integer lValue = aToken.getInteger("value");
 
-
-
-            long lValue = Long.parseLong(aToken.getString("value"));
+            if (lValue == null) {
+                lValue = Integer.parseInt(aToken.getString("value"));
+            }
 
             lQuota.create(lInstance, lNS, lUuid, lValue,
                     lInstanceType, lQuotaType, lQuotaIdentifier, lQuotActions);
@@ -76,9 +75,8 @@ public class QuotaServices {
 
             return lResult;
         } catch (Exception aException) {
-            mLog.error("Error creating"
-                    + "Quota");
-            return getErrorToken("Error creating the quota: ",
+            mLog.error("Error creating Quota");
+            return getErrorToken("Error creating the quota, ",
                     lResult);
         }
     }
@@ -101,7 +99,7 @@ public class QuotaServices {
         } catch (Exception aException) {
             mLog.error("Error creating"
                     + "Quota" + aException.getMessage());
-            return getErrorToken("Error register the quota: " + aException.getMessage(),
+            return getErrorToken("Error register the quota, " + aException.getMessage(),
                     aToken);
         }
     }
@@ -141,13 +139,13 @@ public class QuotaServices {
                 lResult.setCode(0);
                 return lResult;
             } catch (Exception aException) {
-                return getErrorToken("Error removing the quota: " + aException.getMessage(),
+                return getErrorToken("Error removing the quota, " + aException.getMessage(),
                         aToken);
             }
         } catch (Exception aException) {
             mLog.error("Error unregistering the quota"
                     + aException.getMessage());
-            return getErrorToken("Error removing the quota: " + aException.getMessage(),
+            return getErrorToken("Error removing the quota, " + aException.getMessage(),
                     aToken);
         }
 
@@ -216,7 +214,7 @@ public class QuotaServices {
 
         } catch (Exception aExcep) {
             return getErrorToken("The following "
-                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
+                    + "error was captured in the server, " + aExcep.getMessage(), aToken);
         }
 
     }
@@ -252,7 +250,7 @@ public class QuotaServices {
             if (lQuotaSingleInstance == null) {
 
                 lResult.setCode(-1);
-                lResult.setString("msg", "There is not a quota whit the identifier "
+                lResult.setString("msg", "There is not a quota with the identifier "
                         + lQuotaIdentifier + " for the instance " + lInstance);
 
                 return lResult;
@@ -270,7 +268,7 @@ public class QuotaServices {
 
         } catch (Exception aExcep) {
             return getErrorToken("The following "
-                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
+                    + "error was captured in the server, " + aExcep.getMessage(), aToken);
         }
     }
 
@@ -295,7 +293,7 @@ public class QuotaServices {
 
         } catch (Exception aExcep) {
             return getErrorToken("The following "
-                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
+                    + "error was captured in the server, " + aExcep.getMessage(), aToken);
         }
 
     }
@@ -311,24 +309,38 @@ public class QuotaServices {
                 lReduce = Integer.parseInt(aToken.getString("value"));
             }
 
-
             String lNS = aToken.getString("namespace");
             String lInstance = aToken.getString("instance");
             String lInstanceType = aToken.getString("instance_type");
             String lActions = aToken.getString("actions");
-
+            String lUuid = aToken.getString("uuid", null);
+            
             IQuota lQuota;
             lQuota = quotaByIdentifier(lQuotaIdentifier);
             long lValue;
 
-            String lUuid = aToken.getString("uuid");
-            if ((null != lNS || !lUuid.equals("")) && (null != lInstance || !lInstance.equals(""))
+            //reduce value by uuid and instance
+            if (null != lUuid && null != lInstance) {
+
+                IQuotaSingleInstance lSingleInstance = lQuota.getQuota(lUuid, lInstance);
+
+                lValue = lQuota.reduceQuota(lSingleInstance.getInstance(),
+                        lSingleInstance.getNamespace(),
+                        lSingleInstance.getInstanceType(),
+                        lSingleInstance.getActions(), lReduce);
+
+            //reduce value searching for all quota parameters    
+            } else if ((null != lNS || !lNS.equals("")) && (null != lInstance
+                    || !lInstance.equals(""))
                     && (null != lInstanceType || !lInstanceType.equals(""))
                     && (null != lActions || !lActions.equals(""))) {
 
+
                 lValue = lQuota.reduceQuota(lInstance, lNS, lInstanceType,
                         lActions, lReduce);
+
             } else {
+                //reduce value for the parent quota
                 lValue = lQuota.reduceQuota(lUuid, lReduce);
             }
 
@@ -343,7 +355,7 @@ public class QuotaServices {
 
         } catch (Exception aExcep) {
             return getErrorToken("The following "
-                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
+                    + "error was captured in the server, " + aExcep.getMessage(), aToken);
         }
 
     }
@@ -354,32 +366,45 @@ public class QuotaServices {
             Token lResult = TokenFactory.createToken(aToken.getMap());
             String lQuotaIdentifier = aToken.getString("identifier");
 
-            Integer lReduce = aToken.getInteger("value");
+            Integer lSetValue = aToken.getInteger("value");
 
-            if (lReduce == null) {
-                lReduce = Integer.parseInt(aToken.getString("value"));
+            if (lSetValue == null) {
+                lSetValue = Integer.parseInt(aToken.getString("value"));
             }
 
             String lNS = aToken.getString("namespace");
             String lInstance = aToken.getString("instance");
             String lInstanceType = aToken.getString("instance_type");
             String lActions = aToken.getString("actions");
+            String lUuid = aToken.getString("uuid", null);
 
             IQuota lQuota;
             lQuota = quotaByIdentifier(lQuotaIdentifier);
             long lValue;
-            String lUuid = aToken.getString("uuid");
 
-            if ((null != lNS || !lUuid.equals("")) && (null != lInstance || !lInstance.equals(""))
+            //set value by uuid and instance
+            if (null != lUuid && null != lInstance) {
+
+                IQuotaSingleInstance lSingleInstance = lQuota.getQuota(lUuid, lInstance);
+
+                lValue = lQuota.setQuota(lSingleInstance.getInstance(),
+                        lSingleInstance.getNamespace(),
+                        lSingleInstance.getInstanceType(),
+                        lSingleInstance.getActions(), lSetValue);
+
+                //set value for all quota parameters    
+            } else if ((null != lNS || !lNS.equals("")) && (null != lInstance
+                    || !lInstance.equals(""))
                     && (null != lInstanceType || !lInstanceType.equals(""))
                     && (null != lActions || !lActions.equals(""))) {
 
 
                 lValue = lQuota.setQuota(lInstance, lNS, lInstanceType,
-                        lActions, lReduce);
+                        lActions, lSetValue);
 
             } else {
-                lValue = lQuota.setQuota(lUuid, lReduce);
+                //set value for the parent quota
+                lValue = lQuota.setQuota(lUuid, lSetValue);
             }
             lResult.setLong("value", lValue);
             lResult.setCode(0);
@@ -388,7 +413,7 @@ public class QuotaServices {
 
         } catch (Exception aExcep) {
             return getErrorToken("The following "
-                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
+                    + "error was captured in the server, " + aExcep.getMessage(), aToken);
         }
 
     }
@@ -398,31 +423,45 @@ public class QuotaServices {
             Token lResult = TokenFactory.createToken(aToken.getMap());
 
             String lQuotaIdentifier = aToken.getString("identifier").trim();
-            Integer lReduce = aToken.getInteger("value");
+            Integer lIncrease = aToken.getInteger("value");
 
-            if (lReduce == null) {
-                lReduce = Integer.parseInt(aToken.getString("value"));
+            if (lIncrease == null) {
+                lIncrease = Integer.parseInt(aToken.getString("value"));
             }
 
             String lNS = aToken.getString("namespace");
             String lInstance = aToken.getString("instance");
             String lInstanceType = aToken.getString("instance_type");
             String lActions = aToken.getString("actions");
-
+            String lUuid = aToken.getString("uuid", null );
+            
             IQuota lQuota;
             lQuota = quotaByIdentifier(lQuotaIdentifier);
             long lValue;
 
-            String lUuid = aToken.getString("uuid");
+            //increase value by uuid and instance
+            if (null != lUuid && null != lInstance) {
 
-            if ((null != lNS || !lUuid.equals("")) && (null != lInstance || !lInstance.equals(""))
+                IQuotaSingleInstance lSingleInstance = lQuota.getQuota(lUuid, lInstance);
+
+                lValue = lQuota.increaseQuota(lSingleInstance.getInstance(),
+                        lSingleInstance.getNamespace(),
+                        lSingleInstance.getInstanceType(),
+                        lSingleInstance.getActions(), lIncrease);
+
+            //increase value searching for all quota parameters    
+            } else if ((null != lNS || !lNS.equals("")) && (null != lInstance
+                    || !lInstance.equals(""))
                     && (null != lInstanceType || !lInstanceType.equals(""))
                     && (null != lActions || !lActions.equals(""))) {
 
-                lValue = lQuota.increaseQuota(lInstance, lNS,
-                        lInstanceType, lActions, lReduce);
+
+                lValue = lQuota.increaseQuota(lInstance, lNS, lInstanceType,
+                        lActions, lIncrease);
+
             } else {
-                lValue = lQuota.increaseQuota(lUuid, lReduce);
+                //increase value for the parent quota
+                lValue = lQuota.increaseQuota(lUuid, lIncrease);
             }
             lResult.setLong("value", lValue);
             lResult.setCode(0);
@@ -432,7 +471,7 @@ public class QuotaServices {
         } catch (Exception aExcep) {
 
             return getErrorToken("The following "
-                    + "error was captured in the server: " + aExcep.getMessage(), aToken);
+                    + "error was captured in the server, " + aExcep.getMessage(), aToken);
         }
 
     }

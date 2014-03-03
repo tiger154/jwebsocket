@@ -73,6 +73,16 @@ public interface IQuota {
      * @return
      */
     public IQuotaSingleInstance getQuota(String aUuid);
+    
+    
+    
+    /**
+     * 
+     * @param aUuid
+     * @param aInstance
+     * @return 
+     */
+    public IQuotaSingleInstance getQuota(String aUuid, String aInstance );
 
     /**
      *
