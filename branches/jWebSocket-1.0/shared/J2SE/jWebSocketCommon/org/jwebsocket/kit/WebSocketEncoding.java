@@ -25,13 +25,16 @@ package org.jwebsocket.kit;
 public enum WebSocketEncoding {
 
 	/**
-	 *  */
+	 *
+	 */
 	INVALID(-1),
 	/**
-	 *  */
+	 *
+	 */
 	TEXT(0x00),
 	/**
-	 *  */
+	 *
+	 */
 	BINARY(0x01);
 	private int mEncoding;
 

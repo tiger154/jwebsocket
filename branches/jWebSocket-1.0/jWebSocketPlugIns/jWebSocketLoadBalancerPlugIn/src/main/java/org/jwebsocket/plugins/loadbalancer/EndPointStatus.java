@@ -25,7 +25,18 @@ package org.jwebsocket.plugins.loadbalancer;
  */
 public enum EndPointStatus {
 
+	/**
+	 *
+	 */
 	OFFLINE, // disconnected and unavailable.
+
+	/**
+	 *
+	 */
 	ONLINE, // connected and available.
-	SHUTTING_DOWN // end point to be shutdown, do not accept new clients.
+
+	/**
+	 *
+	 */
+	SHUTTING_DOWN
 }

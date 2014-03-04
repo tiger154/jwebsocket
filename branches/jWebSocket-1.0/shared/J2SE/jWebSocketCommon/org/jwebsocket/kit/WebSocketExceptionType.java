@@ -25,19 +25,24 @@ package org.jwebsocket.kit;
 public enum WebSocketExceptionType {
 
 	/**
-	 *  */
+	 *
+	 */
 	UNDEFINED(-1),
 	/**
-	 *  */
+	 *
+	 */
 	UNKNOWN_HOST(1),
 	/**
-	 *  */
+	 *
+	 */
 	UNABLE_TO_CONNECT(2),
 	/**
-	 *  */
+	 *
+	 */
 	UNABLE_TO_CONNECT_SSL(3),
 	/**
-	 *  */
+	 *
+	 */
 	PROTOCOL_NOT_SUPPORTED(4);
 	private int mExceptionType;
 

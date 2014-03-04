@@ -44,6 +44,7 @@ public class RoleConfigHandler implements ConfigHandler {
 
 	/**
 	 * {@inheritDoc}
+	 * @throws javax.xml.stream.XMLStreamException
 	 */
 	@Override
 	public Config processConfig(XMLStreamReader streamReader)

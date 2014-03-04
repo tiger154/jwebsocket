@@ -46,14 +46,26 @@ public class JMSManager {
 	private Map<String, MessageProducer> mProducers = new FastMap<String, MessageProducer>().shared();
 	private String mDefaultDestination;
 
+	/**
+	 *
+	 * @param aConn
+	 */
 	public JMSManager(Connection aConn) {
 		this(false, aConn);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getDefaultDestination() {
 		return mDefaultDestination;
 	}
 
+	/**
+	 *
+	 * @param aDefaultDestination
+	 */
 	public void setDefaultDestination(String aDefaultDestination) {
 		mDefaultDestination = aDefaultDestination;
 	}
@@ -249,7 +261,7 @@ public class JMSManager {
 	 * @param aCallback
 	 * @param aSelector
 	 * @param aDurableSubscription
-	 * @param aSubcriptionId
+	 * @param aSubscriptionId
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception

@@ -30,9 +30,24 @@ import org.jwebsocket.dynamicsql.api.ICondition;
 public class Conditions {
 
 	// Key attributes that contains a map condition.
+	/**
+	 *
+	 */
 	public static String ATTR_TYPE = "conditionType";
+
+	/**
+	 *
+	 */
 	public static String ATTR_COLUMN_NAME = "conditionColumnName";
+
+	/**
+	 *
+	 */
 	public static String ATTR_VALUE = "conditionValue";
+
+	/**
+	 *
+	 */
 	public static String ATTR_INCLUSIVE = "conditionInclusive";
 
 	/**

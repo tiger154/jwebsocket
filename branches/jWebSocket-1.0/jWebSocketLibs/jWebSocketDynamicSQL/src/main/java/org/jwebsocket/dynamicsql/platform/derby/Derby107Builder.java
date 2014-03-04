@@ -41,6 +41,9 @@ public class Derby107Builder extends DerbyBuilder {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param column
+	 * @return
 	 */
 	@Override
 	protected String getNativeDefaultValue(Column column) {

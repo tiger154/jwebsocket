@@ -35,7 +35,14 @@ import org.apache.ddlutils.platform.mysql.MySqlPlatform;
 public class SupportUtils {
 
 	//Option Types
+	/**
+	 *
+	 */
 	public static String ESCAPE_TABLE_LITERAL = "escapeTablesAndColumnsLiteral";
+
+	/**
+	 *
+	 */
 	public static String ESCAPE_LIKE_LITERAL = "escapeLikeLiteral";
 
 	/**

@@ -28,24 +28,92 @@ import org.jwebsocket.token.TokenFactory;
  */
 public class MessagingControl {
 
+	/**
+	 *
+	 */
 	public static final String NS_MSGCTRL = "org.jwebsocket.msgctrl";
+
+	/**
+	 *
+	 */
 	public static final String TYPE_INFO = "info";
+
+	/**
+	 *
+	 */
 	public static final String TYPE_MESSAGE = "message";
+
+	/**
+	 *
+	 */
 	public static final String NAME_MAX_FRAME_SIZE = "maxFrameSize";
+
+	/**
+	 *
+	 */
 	public static final String NAME_MESSAGE_DELIVERY_ACKNOWLEDGE = "ack";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_IS_ACK_REQUIRED = "isAckRequired";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_MESSAGE_ID = "msgId";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_NS = "ns";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_TYPE = "type";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_NAME = "name";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_DATA = "data";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_IS_FRAGMENT = "isFragment";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_IS_LAST_FRAGMENT = "isLastFragment";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_FRAGMENTATION_ID = "fragmentationId";
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_MAX_FRAME_SIZE = NAME_MAX_FRAME_SIZE;
+
+	/**
+	 *
+	 */
 	public static final String PROPERTY_IS_WRAPPED_MESSAGE = "jwsWrappedMsg";
 	private static Long mUID = new Long(0);
 
+	/**
+	 *
+	 * @param aMessageId
+	 * @return
+	 */
 	public static Token buildAckMessage(String aMessageId) {
 		Token lMessage = TokenFactory.createToken();
 		lMessage.setString(PROPERTY_NS, NS_MSGCTRL);
@@ -57,6 +125,11 @@ public class MessagingControl {
 		return lMessage;
 	}
 
+	/**
+	 *
+	 * @param aMaxFrameSize
+	 * @return
+	 */
 	public static Token buildMaxFrameSizeMessage(int aMaxFrameSize) {
 		Token lMessage = TokenFactory.createToken();
 		lMessage.setString(PROPERTY_NS, NS_MSGCTRL);
@@ -68,6 +141,14 @@ public class MessagingControl {
 		return lMessage;
 	}
 
+	/**
+	 *
+	 * @param aNodeId
+	 * @param aFragmentationId
+	 * @param aIsLastFragment
+	 * @param aData
+	 * @return
+	 */
 	public static Token buildFragmentMessage(String aNodeId, String aFragmentationId,
 			boolean aIsLastFragment, byte[] aData) {
 		Token lMessage = buildMessage(aNodeId, aData);
@@ -80,6 +161,12 @@ public class MessagingControl {
 		return lMessage;
 	}
 
+	/**
+	 *
+	 * @param aNodeId
+	 * @param aData
+	 * @return
+	 */
 	public static Token buildMessage(String aNodeId, byte[] aData) {
 		Token lMessage = TokenFactory.createToken();
 		lMessage.setString(PROPERTY_NS, NS_MSGCTRL);
@@ -105,6 +192,10 @@ public class MessagingControl {
 		return aNodeId + "-" + String.valueOf(++mUID);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static synchronized String getFragmentationID() {
 		if (mUID.equals(Long.MAX_VALUE)) {
 			mUID = new Long(0);

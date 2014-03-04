@@ -24,8 +24,24 @@ package org.jwebsocket.jms;
  */
 public enum MessageType {
 
+	/**
+	 *
+	 */
+	CON,
 	CONNECTION,
+
+	/**
+	 *
+	 */
 	MESSAGE,
+
+	/**
+	 *
+	 */
 	DISCONNECTION,
+
+	/**
+	 *
+	 */
 	ACK
 }

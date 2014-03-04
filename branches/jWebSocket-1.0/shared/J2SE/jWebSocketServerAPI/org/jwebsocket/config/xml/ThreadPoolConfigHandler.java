@@ -41,6 +41,7 @@ public class ThreadPoolConfigHandler implements ConfigHandler {
 
 	/**
 	 * {@inheritDoc}
+	 * @throws javax.xml.stream.XMLStreamException
 	 */
 	@Override
 	public Config processConfig(XMLStreamReader streamReader) throws XMLStreamException {

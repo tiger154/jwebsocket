@@ -44,7 +44,6 @@ public class ListConverter<E> {
 	/**
 	 *
 	 * @return @throws Exception
-	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
 	public List<E> convert() throws Exception {

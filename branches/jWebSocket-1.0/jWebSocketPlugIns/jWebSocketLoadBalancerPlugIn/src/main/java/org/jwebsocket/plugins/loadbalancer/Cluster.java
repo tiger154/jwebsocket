@@ -78,7 +78,7 @@ public class Cluster {
 	}
 
 	/**
-	 * @param mNamespace the name space to set
+	 * @param aNamespace
 	 */
 	public void setNamespace(String aNamespace) {
 		this.mNamespace = aNamespace;
@@ -92,7 +92,7 @@ public class Cluster {
 	}
 
 	/**
-	 * @param mStaticEntries the static entries to set
+	 * @param aStaticEntries
 	 */
 	public void setStaticEntries(int aStaticEntries) {
 		this.mStaticEntries = aStaticEntries;
@@ -343,7 +343,7 @@ public class Cluster {
 				lIDs.add(mEndPoints.get(lPos).getServiceId());
 			}
 		}
-		
+
 		return lIDs;
 	}
 
@@ -356,7 +356,7 @@ public class Cluster {
 		while (lIt.hasNext()) {
 			lRequests += lIt.next().getRequests();
 		}
-		
+
 		return lRequests;
 	}
 }

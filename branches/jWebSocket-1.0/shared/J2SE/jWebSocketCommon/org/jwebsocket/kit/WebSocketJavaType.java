@@ -31,52 +31,68 @@ public enum WebSocketJavaType {
 	 */
 	INVALID(-1),
 	/**
-	 *  */
+	 *
+	 */
 	BTYE(0),
 	/**
-	 *  */
+	 *
+	 */
 	SHORT(1),
 	/**
-	 *  */
+	 *
+	 */
 	INTEGER(2),
 	/**
-	 *  */
+	 *
+	 */
 	FLOAT(3),
 	/**
-	 *  */
+	 *
+	 */
 	DOUBLE(4),
 	/**
-	 *  */
+	 *
+	 */
 	BIGDECIMAL(5),
 	/**
-	 *  */
+	 *
+	 */
 	BOOLEAN(6),
 	/**
-	 *  */
+	 *
+	 */
 	STRING(7),
 	/**
-	 *  */
+	 *
+	 */
 	DATE(8),
 	/**
-	 *  */
+	 *
+	 */
 	TIME(9),
 	/**
-	 *  */
+	 *
+	 */
 	TIMESTAMP(10),
 	/**
-	 *  */
+	 *
+	 */
 	BLOB(11),
 	/**
-	 *  */
+	 *
+	 */
 	CLOB(12),
 	/**
-	 *  */
+	 *
+	 */
 	ARRAY(13),
 	/**
-	 *  */
+	 *
+	 */
 	LIST(14),
 	/**
-	 *  */
+	 *
+	 */
 	MAP(15);
 	private int mJavaType;
 
