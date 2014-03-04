@@ -466,7 +466,11 @@
 		<engine>
 			<name>org.jwebsocket.tomcat.TomcatEngine</name>
 			<id>tomcat0</id>
+			<!-- Use "jWebSocketTomcatEngine-embedded-1.0.jar" for Tomcat embedded mode -->
+			<jar>jWebSocketTomcatEngine-embedded-1.0.jar</jar>
+			<!-- Use "jWebSocketTomcatEngine-1.0.jar" for Tomcat web app mode 
 			<jar>jWebSocketTomcatEngine-1.0.jar</jar>
+			-->
 			<!-- keystore file with in ${JWEBSOCKET_HOME}conf -->
 			<keystore>${JWEBSOCKET_HOME}conf/jWebSocket.ks</keystore>
 			<!-- password to access keystore file -->

@@ -28,7 +28,8 @@
 			</list>
 		</property>
 		<property name="staticEntries" value="2"/>
-		<property name="password" value="admin"/>
+		<!-- Password: admin -->
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
 		<property name="namespace" value="org.jwebsocket.plugins.samplesum"/>
 	</bean>
 	
@@ -41,8 +42,9 @@
 			</list>
 		</property>
 		<property name="staticEntries" value="2"/>
-		<property name="password" value="admin"/>
-		<property name="namespace" value="org.jwebsocket.plugins.samplemul"/>
+		<!-- Password: admin -->
+		<property name="password" value="21232f297a57a5a743894a0e4a801fc3"/>
+		<property name="namespace" value="org.jwebsocket.plugins.samplemult"/>
 	</bean>
 	
 	<!-- Service Cluster alias/instance assignment -->
