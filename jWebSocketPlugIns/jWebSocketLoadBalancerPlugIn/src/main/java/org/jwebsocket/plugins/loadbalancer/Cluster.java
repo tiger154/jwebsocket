@@ -218,7 +218,7 @@ public class Cluster {
 		}
 	}
 
-	/**
+	/**F
 	 * Gets a balanced cluster endpoint using the round robin algorithm.
 	 *
 	 * @return optimum cluster endpoint or <code>null</code> if endpoints list
@@ -229,8 +229,7 @@ public class Cluster {
 			// determine the cluster endpoint position to be returned. 
 			mEndPointPosition = (mEndPointPosition + 1 < mEndPoints.size()
 					? mEndPointPosition + 1 : 0);
-			// if the cluster endpoint position is valid then return it,
-			// but repeat this method.
+			// if the cluster endpoint position is valid then return it
 			return (availableEndPoint(mEndPointPosition)
 					? mEndPoints.get(mEndPointPosition) : getRoundRobinEndPoint());
 		} else {
@@ -248,13 +247,15 @@ public class Cluster {
 		int lEndPointPos = -1;
 		for (int lPos = 0; lPos < mEndPoints.size(); lPos++) {
 			double lTempCpuUsage = mEndPoints.get(lPos).getCpuUsage();
-			Object lJwsType = mEndPoints.get(lPos).getConnector().getVar("jwsType");
+			Object lClientPlatform = mEndPoints.get(lPos).getConnector().getVar("jwsType");
+
 			// discard all javascript client because they can't get your cpu usage.
-			if (!lJwsType.toString().equals("javascript") && lTempCpuUsage < lLeastCpuUsage) {
+			if (!lClientPlatform.toString().equals("javascript") && lTempCpuUsage < lLeastCpuUsage) {
 				lLeastCpuUsage = lTempCpuUsage;
 				lEndPointPos = lPos;
 			}
 		}
+
 		return (lEndPointPos == -1 ? null : mEndPoints.get(lEndPointPos));
 	}
 
@@ -265,13 +266,13 @@ public class Cluster {
 	 * @return optimum cluster endpoint.
 	 */
 	public ClusterEndPoint getOptimumRREndPoint() {
-		ClusterEndPoint lTempClusterEndPoint = getRoundRobinEndPoint();
-		Object lJwsType = lTempClusterEndPoint.getConnector().getVar("jwsType");
+		ClusterEndPoint lEndPoint = getRoundRobinEndPoint();
+		Object lClientPlatform = lEndPoint.getConnector().getVar("jwsType");
 
 		// if 'ClusterEndPoint' is javascript client executes round robin algorithm,
 		// but executes least CPU usage algorithm (with CPU usage).
-		if (lJwsType.toString().equals("javascript")) {
-			return lTempClusterEndPoint;
+		if (lClientPlatform.toString().equals("javascript")) {
+			return lEndPoint;
 		} else {
 			return getOptimumEndPoint();
 		}

@@ -61,7 +61,6 @@ public class ServiceSumPlugIn extends BaseServiceTokenPlugIn {
 			if (lType.equals("sumXY")) {
 				sumXY(aToken);
 			}
-
 		}
 	}
 

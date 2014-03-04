@@ -74,7 +74,7 @@ import tld.yourname.jms.server.JMSServer;
 public class TestDialog extends javax.swing.JFrame implements WebSocketClientTokenListener {
 
 	private static final long serialVersionUID = 1L;
-	private BaseTokenClient mClient = null;
+	private JWebSocketTokenClient mClient = null;
 	private WebSocketStatus mPrevStatus = WebSocketStatus.CLOSED;
 	private ImageIcon mIcoDisconnected = null;
 	private ImageIcon mIcoConnected = null;
