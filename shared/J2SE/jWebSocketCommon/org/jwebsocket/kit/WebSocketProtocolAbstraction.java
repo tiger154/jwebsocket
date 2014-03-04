@@ -29,7 +29,8 @@ import org.jwebsocket.config.JWebSocketCommonConstants;
  * Utility class for packetizing WebSocketPacket into web socket protocol packet
  * or packets (with fragmentation) and vice versa.
  * <p/>
- * <p> Web socket protocol packet specification (see:
+ * <p>
+ * Web socket protocol packet specification (see:
  * http://draft-ietf-hybi-thewebsocketprotocol-13): </p>
  * <pre>
  *  0                   1                   2                   3
@@ -284,7 +285,6 @@ public class WebSocketProtocolAbstraction {
 		}
 
 		// TODO: handle if stream gets closed within this method!
-
 		ByteArrayOutputStream aBuff = new ByteArrayOutputStream();
 
 		// Determine fragmentation

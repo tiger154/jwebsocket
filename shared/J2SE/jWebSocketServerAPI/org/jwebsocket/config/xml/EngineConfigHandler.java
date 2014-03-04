@@ -61,6 +61,7 @@ public class EngineConfigHandler implements ConfigHandler {
 	 * {@inheritDoc}
 	 *
 	 * @param aStreamReader
+	 * @throws javax.xml.stream.XMLStreamException
 	 */
 	@Override
 	public Config processConfig(XMLStreamReader aStreamReader)

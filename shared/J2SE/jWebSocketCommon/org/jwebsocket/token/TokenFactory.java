@@ -40,6 +40,11 @@ public class TokenFactory {
 		return new MapToken();
 	}
 
+	/**
+	 *
+	 * @param aMap
+	 * @return
+	 */
 	public static Token createToken(Map aMap) {
 		Token lToken = createToken();
 		lToken.setMap(aMap);

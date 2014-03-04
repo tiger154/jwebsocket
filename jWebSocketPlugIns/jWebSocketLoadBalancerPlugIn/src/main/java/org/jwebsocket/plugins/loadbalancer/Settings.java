@@ -65,7 +65,7 @@ public class Settings {
 	}
 
 	/**
-	 * @param mMessageTimeout the message timeout to set.
+	 * @param aMessageTimeout
 	 */
 	public void setMessageTimeout(long aMessageTimeout) {
 		this.mMessageTimeout = aMessageTimeout;
@@ -79,7 +79,7 @@ public class Settings {
 	}
 
 	/**
-	 * @param mBalancerAlgorithm the load balancer algorithm to set.
+	 * @param aBalancerAlgorithm
 	 */
 	public void setBalancerAlgorithm(int aBalancerAlgorithm) {
 		this.mBalancerAlgorithm = aBalancerAlgorithm;

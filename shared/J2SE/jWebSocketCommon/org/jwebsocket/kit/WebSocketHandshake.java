@@ -445,6 +445,7 @@ public final class WebSocketHandshake {
 	 * request - irrespective of if it is a Java or Browser Client.
 	 *
 	 * @param aRequest
+	 * @param aReqHeader
 	 * @return
 	 */
 	public static byte[] generateS2CResponse(Map<String, Object> aRequest, RequestHeader aReqHeader) {

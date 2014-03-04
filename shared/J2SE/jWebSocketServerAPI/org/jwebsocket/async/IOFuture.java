@@ -26,7 +26,7 @@ import org.jwebsocket.api.WebSocketConnector;
  * means any I/O calls will return immediately with no guarantee that the
  * requested I/O operation has been completed at the end of the call. Instead,
  * you will be returned with a {@link IOFuture} instance which gives you the
- * information about the result or status of the <tt>jWebSocket<tt> I/O
+ * information about the result or status of the <tt>jWebSocket</tt> I/O
  * operation. <p> A {@link IOFuture} is either <em>uncompleted</em> or
  * <em>completed</em>. When an I/O operation begins, a new future object is
  * created. The new future is uncompleted initially - it is neither succeeded,

@@ -59,6 +59,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	 * @param aJar the jar file name
 	 * @param aPort the port number where engine runs
 	 * @param aSSLPort
+	 * @param aHostname
 	 * @param aTimeout the timeout value
 	 * @param aKeyStorePassword
 	 * @param aKeyStore
@@ -70,6 +71,7 @@ public final class EngineConfig implements Config, EngineConfiguration {
 	 * @param aSettigns
 	 * @param aMaxConnections
 	 * @param aOnMaxConnectionsStrategy
+	 * @param aNotifySystemStopping
 	 */
 	public EngineConfig(String aId, String aName, String aJar, Integer aPort,
 			Integer aSSLPort, String aHostname, String aKeyStore, String aKeyStorePassword,

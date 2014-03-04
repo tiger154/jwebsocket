@@ -814,6 +814,7 @@ public class Tools {
 
 	/**
 	 * Guess whether given file is binary. Just checks for anything under 0x09.
+	 *
 	 * @param aFile
 	 * @return boolean if the file is binary or not
 	 * @throws java.io.FileNotFoundException
@@ -839,8 +840,11 @@ public class Tools {
 
 			if (b == 0x09 || b == 0x0A || b == 0x0C || b == 0x0D) {
 				lAsci++;
-			} else if (b >= 0x20 && b <=  0x7E ) lAsci++;
-			else lOther++;
+			} else if (b >= 0x20 && b <= 0x7E) {
+				lAsci++;
+			} else {
+				lOther++;
+			}
 		}
 
 		if (lOther == 0) {

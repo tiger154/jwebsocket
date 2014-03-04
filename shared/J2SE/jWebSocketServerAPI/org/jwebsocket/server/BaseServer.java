@@ -112,6 +112,7 @@ public class BaseServer implements WebSocketServer {
 
 	/**
 	 * {@inheritDoc }
+	 * @throws org.jwebsocket.kit.WebSocketException
 	 */
 	@Override
 	public void startServer() throws WebSocketException {
@@ -129,6 +130,7 @@ public class BaseServer implements WebSocketServer {
 
 	/**
 	 * {@inheritDoc }
+	 * @throws org.jwebsocket.kit.WebSocketException
 	 */
 	@Override
 	public void stopServer() throws WebSocketException {

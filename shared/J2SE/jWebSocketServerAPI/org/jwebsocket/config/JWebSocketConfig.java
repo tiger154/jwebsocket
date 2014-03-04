@@ -132,6 +132,10 @@ public class JWebSocketConfig implements Config {
 		return mJWebSocketHome;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public static String getWebAppHome() {
 		return mWebAppHome;
 	}
@@ -385,6 +389,7 @@ public class JWebSocketConfig implements Config {
 	 *
 	 *
 	 * @param aArgs
+	 * @param lWebAppHome
 	 */
 	public static void initForWebApp(String[] aArgs, String lWebAppHome) {
 		mIsWebApp = true;

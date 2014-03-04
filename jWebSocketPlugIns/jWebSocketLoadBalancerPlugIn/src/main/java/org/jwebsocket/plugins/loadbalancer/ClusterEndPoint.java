@@ -53,11 +53,18 @@ public class ClusterEndPoint implements ITokenizable {
 	 */
 	private double mCpuUsage = -1.0;
 
+	/**
+	 *
+	 */
 	public ClusterEndPoint() {
 		// creates an unique service id. 
 		mServiceId = UUID.randomUUID().toString();
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 */
 	public ClusterEndPoint(WebSocketConnector aConnector) {
 		this();
 		mConnector = aConnector;

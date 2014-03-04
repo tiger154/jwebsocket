@@ -552,7 +552,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * @param mBalancerAlgorithm the balancer algorithm to set.
+	 * @param aBalancerAlgorithm
 	 */
 	public void setBalancerAlgorithm(int aBalancerAlgorithm) {
 		this.mBalancerAlgorithm = aBalancerAlgorithm;

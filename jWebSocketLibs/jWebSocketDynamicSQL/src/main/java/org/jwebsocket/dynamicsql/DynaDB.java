@@ -83,6 +83,8 @@ public class DynaDB implements IDatabase {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aTableName
 	 */
 	@Override
 	public void dropTable(String aTableName) {
@@ -113,6 +115,8 @@ public class DynaDB implements IDatabase {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return
 	 */
 	@Override
 	public Boolean existsTable(String aTableName) {

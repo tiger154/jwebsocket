@@ -43,8 +43,7 @@ set webEE=%clientEE%web
 set depl=..\jWebSocketDeployment\jWebSocket\
 set down=..\..\..\downloads\jWebSocket-%ver%\
 
-goto client
-
+rem goto client
 
 :cleanup
 echo -------------------------------------------------------------------------
@@ -380,7 +379,7 @@ pushd ..\jWebSocketClient
 move jWebSocketClient-%ver% web
 popd
 
-goto end
+rem goto end
 
 
 
