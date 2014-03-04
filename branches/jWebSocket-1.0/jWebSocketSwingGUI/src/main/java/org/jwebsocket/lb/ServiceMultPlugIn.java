@@ -31,19 +31,19 @@ import org.jwebsocket.token.Token;
  *
  * @author rbetancourt
  */
-public class ServiceMulPlugIn extends BaseServiceTokenPlugIn {
+public class ServiceMultPlugIn extends BaseServiceTokenPlugIn {
 
 	/**
 	 *
 	 */
-	public static final String NS_SERVICEMUL = "org.jwebsocket.plugins.samplemul";
+	public static final String NS_SERVICEMULT = "org.jwebsocket.plugins.samplemult";
 
 	/**
 	 *
 	 * @param aClient
 	 */
-	public ServiceMulPlugIn(BaseTokenClient aClient) {
-		super(aClient, NS_SERVICEMUL);
+	public ServiceMultPlugIn(BaseTokenClient aClient) {
+		super(aClient, NS_SERVICEMULT);
 	}
 
 	@Override
@@ -55,16 +55,16 @@ public class ServiceMulPlugIn extends BaseServiceTokenPlugIn {
 		// each plug-in should have its own unique namespace
 		String lNS = aToken.getNS();
 		// check if token has a type and a matching namespace
-		if (lType != null && lNS != null && lNS.equals(NS_SERVICEMUL)) {
+		if (lType != null && lNS != null && lNS.equals(NS_SERVICEMULT)) {
 			// here you can interpret incoming tokens from the server
 			// according to the name space of the plug-in
-			if (lType.equals("mulXY")) {
-				mulXY(aToken);
+			if (lType.equals("multXY")) {
+				multXY(aToken);
 			}
 		}
 	}
 
-	public void mulXY(Token aToken) {
+	public void multXY(Token aToken) {
 		int lX = aToken.getInteger("x");
 		int lY = aToken.getInteger("y");
 

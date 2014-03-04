@@ -35,6 +35,7 @@ import org.jwebsocket.plugins.ActionPlugIn;
 import org.jwebsocket.plugins.annotations.Role;
 import org.jwebsocket.token.Token;
 import org.jwebsocket.token.TokenFactory;
+import org.jwebsocket.util.Tools;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 
@@ -227,16 +228,22 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		Assert.isTrue(mClusters.containsKey(lClusterAlias), "The target cluster does not exists!");
 
 		Cluster lCluster = getClusterByAlias(lClusterAlias);
-		// checking password.
-		if (null != lCluster.getPassword()) {
-			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
-		}
+		checkPasswords(lCluster, lPassword);
 
 		Token lResponse = createResponse(aToken);
 		ClusterEndPoint lEndPoint = lCluster.registerEndPoint(aConnector);
 		lResponse.setString("endPointId", lEndPoint.getServiceId());
 
 		sendToken(aConnector, lResponse);
+	}
+	
+	void checkPasswords(Cluster aCluster, String aPassword){
+		// checking password
+		if (null != aCluster.getPassword()) {
+			Assert.notNull(aPassword, "The given cluster 'password' cannot be null!");
+			Assert.isTrue(Tools.getMD5(aPassword).equals(aCluster.getPassword()),
+					"The given cluster 'password' is invalid!");
+		}
 	}
 
 	/**
@@ -262,11 +269,9 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 		Assert.isTrue(mClusters.containsKey(lClusterAlias), "The target cluster does not exists!");
 
 		final Cluster lCluster = getClusterByAlias(lClusterAlias);
-		// checking password.
-		if (null != lCluster.getPassword()) {
-			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
-		}
-
+		// checking password
+		checkPasswords(lCluster, lPassword);
+		
 		ClusterEndPoint lClusterEndPoint = lCluster.containsEndPoint(lEndPointId);
 
 		Assert.notNull(lClusterEndPoint, "The target endpoint does not exists!");
@@ -312,10 +317,8 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 
 		final Cluster lCluster = getClusterByAlias(lClusterAlias);
 		// checking password
-		if (null != lCluster.getPassword()) {
-			Assert.isTrue(lCluster.getPassword().equals(lPassword), "Password is invalid!");
-		}
-
+		checkPasswords(lCluster, lPassword);
+		
 		ClusterEndPoint lClusterEndPoint = lCluster.containsEndPoint(lEndPointId);
 
 		Assert.notNull(lClusterEndPoint, "The target endpoint does not exists!");
@@ -552,7 +555,7 @@ public class LoadBalancerPlugIn extends ActionPlugIn {
 	}
 
 	/**
-	 * @param aBalancerAlgorithm
+	 * @param aBalancerAlgorithm the balancer algorithm to set.
 	 */
 	public void setBalancerAlgorithm(int aBalancerAlgorithm) {
 		this.mBalancerAlgorithm = aBalancerAlgorithm;

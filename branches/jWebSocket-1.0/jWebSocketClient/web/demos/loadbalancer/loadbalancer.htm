@@ -41,7 +41,7 @@
 			var mRoutes = new Array();
 			var mPassword = null ;
 			var testSumNS = 'org.jwebsocket.plugins.samplesum';
-			var testMulNS = 'org.jwebsocket.plugins.samplemul';
+			var testMulNS = 'org.jwebsocket.plugins.samplemult';
 			
 			function addConn( aConn ){
 				myConnections[myConnections.length] = aConn;	
@@ -102,7 +102,7 @@
 										lServiceEndPoint.sendToken(lResponse);
 									} 
 								} else if (aToken.ns == testMulNS){
-									if ('mulXY' == aToken.type){
+									if ('multXY' == aToken.type){
 										var lResponse = lServiceEndPoint.lbCreateResponse(aToken);
 										lResponse.data = parseFloat(aToken.x) * parseFloat(aToken.y);
 										
@@ -168,15 +168,15 @@
 				}
 			}
 			
-			function mulXY (){
+			function multXY (){
 				log(" ");
-				log("Sending mulXY command to the server...");
+				log("Sending multXY command to the server...");
 				if( lWSC.isConnected() ) {
 					var lVal1 = jws.$( "stxVal1" ).value;
 					var lVal2 = jws.$( "stxVal2" ).value;
 					lWSC.sendToken( {
 						ns: testMulNS,
-						type: 'mulXY',
+						type: 'multXY',
 						x : lVal1,
 						y : lVal2
 					});
@@ -231,7 +231,7 @@
 					<td class="stdDlg" id="stdDlg" width="5">Cluster Alias:
 					</td>
 					<td class="stdDlg" id="stdSelect">
-						<select name="cluster" id="stxfAlias1" selected="service1">
+						<select name="cluster" id="stxfAlias1">
 							<option value="service1">service1</option>
 							<option value="service2">service2</option>
 						</select>
@@ -321,9 +321,9 @@
 					</td>
 					<td class="stdDlg">
 						<input class="sbtnDlg" id="sbtnSum" type="button" value="Sum X,Y" onclick="sumXY();"
-							   title="Click to sum x,y.">
-						<input class="sbtnDlg" id="sbtnMul" type="button" value="Mul X,Y" onclick="mulXY();"
-							   title="Click to mul x,y.">
+							   title="Click to sum X,Y (Service 1)">
+						<input class="sbtnDlg" id="sbtnMul" type="button" value="Mult X,Y" onclick="multXY();"
+							   title="Click to mult X,Y (Service 2)">
 					</td>
 				</tr>
 			</table>
@@ -333,15 +333,15 @@
 			<table class="stlbDlg" border="0" cellpadding="3" cellspacing="0" >
 				<tr class="strDlg">
 					<td>
-						Select type of algorithm:&nbsp;&nbsp;
+						Select algorithm candidate endpoint selection:&nbsp;&nbsp;
 					   <select name="cluster" id="stxCha">
-							<option value="1">1</option>
-							<option value="2">2</option>
-							<option value="3">3</option>
+							<option value="1">Round Robin EndPoint</option>
+							<option value="2">Least EndPoint CPU usage</option>
+							<option value="3" selected="selected">Round Robin + Least CPU usage</option>
 						</select>
 						&nbsp;&nbsp;
 						<input class="sbtnDlg" id="sbtnCha" type="button" value="Change Algorithm" onclick="changeAlgorithm();"
-							   title="Click to sum x,y.">
+							   title="Click to change optimal EndPoint selection algorithm">
 					</td>
 				</tr>
 			</table>
