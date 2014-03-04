@@ -276,8 +276,8 @@ rem xcopy %database%jWebSocket.db %tempdir%database\ /s /i /y
 xcopy %database%readme.txt %tempdir%database\ /s /i /y
 
 rem copy jWebSocket filesystem (from v1.0)
-xcopy %filesystem%public\ReadMe.txt %tempdir%filesystem\public\ReadMe.txt /s /y
-xcopy %filesystem%private\ReadMe.txt %tempdir%filesystem\private\ReadMe.txt /s /y
+xcopy %filesystem%public\ReadMe.txt %tempdir%filesystem\public\ /s /i /y
+xcopy %filesystem%private\ReadMe.txt %tempdir%filesystem\private\ /s /i /y
 
 rem web folder
 xcopy %web%index.htm %tempdir%web\ /s /i /y
