@@ -322,6 +322,8 @@ public class JWebSocketFactory {
 				JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
 
 				notifyStopped();
+				
+				throw new RuntimeException("None engine was able to start!");
 			}
 		} catch (WebSocketException lEx) {
 			if (mLog.isDebugEnabled()) {
@@ -331,6 +333,7 @@ public class JWebSocketFactory {
 				mLog.info("jWebSocketServer failed to start.");
 			}
 			JWebSocketInstance.setStatus(JWebSocketInstance.SHUTTING_DOWN);
+			throw new RuntimeException(lEx);
 		}
 	}
 
