@@ -69,16 +69,6 @@
 			<description>xbean-spring-common-2.8.jar</description>
 		</library>
 		<library>
-			<id>spring-beans-3.1.1.RELEASE</id>
-			<url>${JWEBSOCKET_HOME}libs/spring-beans-3.1.1.RELEASE.jar</url>
-			<description>spring-beans-3.1.1.RELEASE.jar</description>
-		</library>
-		<library>
-			<id>spring-security-config-3.1.0.RELEASE</id>
-			<url>${JWEBSOCKET_HOME}libs/spring-security-config-3.1.0.RELEASE.jar</url>
-			<description>spring-security-config-3.1.0.RELEASE.jar</description>
-		</library>
-		<library>
 			<id>xbean-spring-v2</id>
 			<url>${JWEBSOCKET_HOME}libs/xbean-spring-v2-2.8.jar</url>
 			<description>xbean-spring-v2-2.8.jar</description>
