@@ -42,6 +42,9 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
 
 	/**
 	 * Creates new form LoadBalancerDialog
+	 *
+	 * @param aClient
+	 * @param aLogPanel
 	 */
 	public LoadBalancerDialog(JWebSocketTokenClient aClient, javax.swing.JTextArea aLogPanel) {
 		initComponents();
@@ -461,6 +464,10 @@ public class LoadBalancerDialog extends javax.swing.JFrame {
 		}
 	}
 
+	/**
+	 *
+	 * @param mRoutes
+	 */
 	public static void loadEndPoints(List<Map<String, String>> mRoutes) {
 		cbEndPointId.removeAllItems();
 		String lKey = cbClusterAlias.getSelectedItem().toString();

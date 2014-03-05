@@ -18,8 +18,15 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.json;
 
+/**
+ *
+ * @author aschulze
+ */
 public class JSONConversionTest {
 
+	/**
+	 *
+	 */
 	public void testJsonToObjectConversion() {
 	}
 }

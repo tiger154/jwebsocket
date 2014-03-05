@@ -37,23 +37,29 @@ del %log%
 rem set log=con
 
 if "%1"=="/y" goto dontAsk1
-echo ========================================================================
-echo Auto Generation of jWebSocket v%JWEBSOCKET_VER% Java Docs, are you sure?
-echo ========================================================================
-echo Basefolder: %base%
-echo Logging to: %log%
+echo This generates the jWebSocket v%JWEBSOCKET_VER% JavaDocs and JavaSource jars, are you sure?
+echo -------------------------------------------------------------------------
+echo Basefolder:
+echo %base%
+echo -------------------------------------------------------------------------
+echo Logging to:
+echo %log%
+echo -------------------------------------------------------------------------
+echo Maven Version:
 call mvn -version
+echo -------------------------------------------------------------------------
+echo Java Version:
 java -version
-echo ========================================================================
+echo -------------------------------------------------------------------------
 
 pause
 :dontAsk1
 
-goto jWebSocketRPCPlugIn
+rem goto others
 
 :jWebSocketDynamicSQL
 echo ------------------------------------------------------------------------
-echo jWebSocketDynamicSQL
+echo jWebSocketLibs/jWebSocketDynamicSQL
 echo ------------------------------------------------------------------------
 cd %libs%jWebSocketDynamicSQL
 if exist %javadocs%jWebSocketDynamicSQL rd %javadocs%jWebSocketDynamicSQL /s/q
@@ -61,27 +67,9 @@ call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%
 
-goto end
-
-echo ------------------------------------------------------------------------
-echo jWebSocketActiveMQStockTicker
-echo ------------------------------------------------------------------------
-cd %base%jWebSocketActiveMQStockTicker
-call mvn generate-sources javadoc:javadoc >> %log%
-echo ------------------------------------------------------------------------
-echo jWebSocketAppSrvDemo
-echo ------------------------------------------------------------------------
-cd %base%jWebSocketAppSrvDemo
-call mvn generate-sources javadoc:javadoc >> %log%
-echo ------------------------------------------------------------------------
-echo jWebSocketClientAPI
-echo ------------------------------------------------------------------------
-cd %base%jWebSocketClientAPI
-call mvn generate-sources javadoc:javadoc >> %log%
-
 :jWebSocketCommon
 echo ------------------------------------------------------------------------
-echo jWebSocketCommon
+echo jWebSocketCore/jWebSocketCommon
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketCommon
 if exist %javadocs%jWebSocketCommon rd %javadocs%jWebSocketCommon /s/q
@@ -89,19 +77,9 @@ call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%
 
-:jWebSocketServer
-echo ------------------------------------------------------------------------
-echo jWebSocketServer
-echo ------------------------------------------------------------------------
-cd %base%jWebSocketServer
-if exist %javadocs%jWebSocketServer rd %javadocs%jWebSocketServer /s/q
-call mvn generate-sources javadoc:javadoc >> %log%
-call mvn generate-sources javadoc:jar >> %log%
-call mvn source:jar >> %log%
-
 :jWebSocketServerAPI
 echo ------------------------------------------------------------------------
-echo jWebSocketServerAPI
+echo jWebSocketCore/jWebSocketServerAPI
 echo ------------------------------------------------------------------------
 cd %base%jWebSocketServerAPI
 if exist %javadocs%jWebSocketServerAPI rd %javadocs%jWebSocketServerAPI /s/q
@@ -109,13 +87,51 @@ call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%
 
-goto plugins
+:jWebSocketServer
+echo ------------------------------------------------------------------------
+echo jWebSocketCore/jWebSocketServer
+echo ------------------------------------------------------------------------
+cd %base%jWebSocketServer
+if exist %javadocs%jWebSocketServer rd %javadocs%jWebSocketServer /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
+
+:jWebSocketClientAPI
+echo ------------------------------------------------------------------------
+echo jWebSocketCore/jWebSocketClientAPI
+echo ------------------------------------------------------------------------
+cd %base%jWebSocketClientAPI
+if exist %javadocs%jWebSocketClientAPI rd %javadocs%jWebSocketClientAPI /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
+
+:jWebSocketJavaSEClient
+echo ------------------------------------------------------------------------
+echo jWebSocketCore/jWebSocketJavaSEClient
+echo ------------------------------------------------------------------------
+cd %base%jWebSocketJavaSEClient
+if exist %javadocs%jWebSocketJavaSEClient rd %javadocs%jWebSocketJavaSEClient /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
+
+:jWebSocketSwingGUI
+echo ------------------------------------------------------------------------
+echo jWebSocketCore/jWebSocketSwingGUI
+echo ------------------------------------------------------------------------
+cd %base%jWebSocketSwingGUI
+if exist %javadocs%jWebSocketSwingGUI rd %javadocs%jWebSocketSwingGUI /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
 
 :engines
 
 :jWebSocketGrizzlyEngine
 echo ------------------------------------------------------------------------
-echo jWebSocketGrizzlyEngine
+echo jWebSocketEngines/jWebSocketGrizzlyEngine
 echo ------------------------------------------------------------------------
 cd %engines%jWebSocketGrizzlyEngine
 if exist %javadocs%jWebSocketGrizzlyEngine rd %javadocs%jWebSocketGrizzlyEngine /s/q
@@ -125,7 +141,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketJettyEngine
 echo ------------------------------------------------------------------------
-echo jWebSocketJettyEngine
+echo jWebSocketEngines/jWebSocketJettyEngine
 echo ------------------------------------------------------------------------
 cd %engines%jWebSocketJettyEngine
 if exist %javadocs%jWebSocketJettyEngine rd %javadocs%jWebSocketJettyEngine /s/q
@@ -135,7 +151,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketNettyEngine
 echo ------------------------------------------------------------------------
-echo jWebSocketNettyEngine
+echo jWebSocketEngines/jWebSocketNettyEngine
 echo ------------------------------------------------------------------------
 cd %engines%jWebSocketNettyEngine
 if exist %javadocs%jWebSocketNettyEngine rd %javadocs%jWebSocketNettyEngine /s/q
@@ -145,7 +161,7 @@ call mvn source:jar >> %log%
 
 :jWebSocketTomcatEngine
 echo ------------------------------------------------------------------------
-echo jWebSocketTomcatEngine
+echo jWebSocketEngines/jWebSocketTomcatEngine
 echo ------------------------------------------------------------------------
 cd %engines%jWebSocketTomcatEngine
 if exist %javadocs%jWebSocketTomcatEngine rd %javadocs%jWebSocketTomcatEngine /s/q
@@ -194,41 +210,6 @@ if exist %javadocs%jWebSocketJMSServer rd %javadocs%jWebSocketJMSServer /s/q
 call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%
-
-goto end
-
-echo ------------------------------------------------------------------------
-echo jWebSocketJavaSEClient
-echo ------------------------------------------------------------------------
-cd /d ..\jWebSocketJavaSEClient
-call mvn generate-sources javadoc:javadoc >> %log%
-
-
-echo ------------------------------------------------------------------------
-echo jWebSocketSamples
-echo ------------------------------------------------------------------------
-cd /d ..\jWebSocketSamples
-call mvn generate-sources javadoc:javadoc >> %log%
-echo ------------------------------------------------------------------------
-echo jWebSocketServer
-echo ------------------------------------------------------------------------
-cd /d ..\jWebSocketServer
-call mvn generate-sources javadoc:javadoc >> %log%
-echo ------------------------------------------------------------------------
-echo jWebSocketServerAPI
-echo ------------------------------------------------------------------------
-cd /d ..\jWebSocketServerAPI
-call mvn generate-sources javadoc:javadoc >> %log%
-echo ------------------------------------------------------------------------
-echo jWebSocketSwingGUI
-echo ------------------------------------------------------------------------
-cd /d ..\jWebSocketSwingGU
-call mvn generate-sources javadoc:javadoc >> %log%
-echo ------------------------------------------------------------------------
-echo jWebSocketWebAppDemo
-echo ------------------------------------------------------------------------
-cd /d ..\jWebSocketWebAppDemo
-call mvn generate-sources javadoc:javadoc >> %log%
 
 :plugins
 
@@ -612,9 +593,53 @@ call mvn generate-sources javadoc:javadoc >> %log%
 call mvn generate-sources javadoc:jar >> %log%
 call mvn source:jar >> %log%
 
-goto end
+:appserver
+
+:jWebSocketAppSrvDemo
+echo ------------------------------------------------------------------------
+echo jWebSocketAppServer/jWebSocketAppSrvDemo
+echo ------------------------------------------------------------------------
+cd %base%jWebSocketAppSrvDemo
+if exist %javadocs%jWebSocketAppSrvDemo rd %javadocs%jWebSocketAppSrvDemo /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
+
+:jWebSocketWebAppDemo
+echo ------------------------------------------------------------------------
+echo jWebSocketAppServer/jWebSocketWebAppDemo
+echo ------------------------------------------------------------------------
+rem ### THE WEBAPP DEMO IS ANT BASED! ###
+cd %base%jWebSocketWebAppDemo
+call ant javadoc >> %log%
+if exist %javadocs%jWebSocketWebAppDemo rd %javadocs%jWebSocketWebAppDemo /s/q
+md %javadocs%jWebSocketWebAppDemo\apidocs
+xcopy %base%jWebSocketWebAppDemo\dist\javadoc\*.* %javadocs%jWebSocketWebAppDemo\apidocs\ /s /i /y >> %log%
+
+:others
+
+:jWebSocketActiveMQStockTicker
+echo ------------------------------------------------------------------------
+echo jWebSocketActiveMQStockTicker
+echo ------------------------------------------------------------------------
+cd %base%jWebSocketActiveMQStockTicker
+if exist %javadocs%jWebSocketActiveMQStockTicker rd %javadocs%jWebSocketActiveMQStockTicker /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
+
+:jWebSocketSamples
+echo ------------------------------------------------------------------------
+echo jWebSocketSamples
+echo ------------------------------------------------------------------------
+cd %base%jWebSocketSamples
+if exist %javadocs%jWebSocketSamples rd %javadocs%jWebSocketSamples /s/q
+call mvn generate-sources javadoc:javadoc >> %log%
+call mvn generate-sources javadoc:jar >> %log%
+call mvn source:jar >> %log%
 
 :end
+
 rem switch back to deployment folder
 cd %base%jWebSocketDeployment
 

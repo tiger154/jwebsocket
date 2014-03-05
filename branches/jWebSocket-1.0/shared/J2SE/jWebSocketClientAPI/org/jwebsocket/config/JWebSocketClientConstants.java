@@ -51,6 +51,9 @@ public final class JWebSocketClientConstants {
 	 * Name space for the scripting plug-in.
 	 */
 	public static final String NS_SCRIPTING = NS_BASE + ".plugins.scripting";
-	
+
+	/**
+	 *
+	 */
 	public static final String NS_REPORTING = NS_BASE + ".plugins.reporting";
 }

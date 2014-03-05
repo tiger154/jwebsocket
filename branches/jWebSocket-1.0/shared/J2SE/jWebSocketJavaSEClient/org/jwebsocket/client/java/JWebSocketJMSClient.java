@@ -66,6 +66,12 @@ public class JWebSocketJMSClient extends BaseClient {
 	private MessageProducer mProducer;
 	private String mReplySelector = UUID.randomUUID().toString();
 
+	/**
+	 *
+	 * @param aClusterName
+	 * @param aUsername
+	 * @param aPassword
+	 */
 	public JWebSocketJMSClient(String aClusterName, String aUsername, String aPassword) {
 		Assert.notNull(aClusterName, "The 'cluster name' argument cannot be null!'");
 
@@ -74,6 +80,10 @@ public class JWebSocketJMSClient extends BaseClient {
 		this.mClusterName = aClusterName;
 	}
 
+	/**
+	 *
+	 * @param aClusterName
+	 */
 	public JWebSocketJMSClient(String aClusterName) {
 		this(aClusterName, null, null);
 	}

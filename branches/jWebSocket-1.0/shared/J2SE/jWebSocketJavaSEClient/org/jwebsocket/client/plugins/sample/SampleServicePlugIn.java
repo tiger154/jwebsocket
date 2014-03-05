@@ -59,7 +59,7 @@ public class SampleServicePlugIn extends BaseServiceTokenPlugIn {
 			// according to the name space of the plug-in
 			if (lType.equals("echo")) {
 				echo(aToken);
-			}else if(lType.equals("shutdown")){
+			} else if (lType.equals("shutdown")) {
 				shutdown();
 			}
 		}

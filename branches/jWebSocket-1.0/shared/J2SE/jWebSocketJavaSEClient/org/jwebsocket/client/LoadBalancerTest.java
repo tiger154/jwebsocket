@@ -42,6 +42,12 @@ public class LoadBalancerTest {
 	private static String mEndpointId = null;
 	private static String mClusterAlias = null;
 
+	/**
+	 *
+	 * @param args
+	 * @throws IsAlreadyConnectedException
+	 * @throws WebSocketException
+	 */
 	public static void main(String[] args) throws IsAlreadyConnectedException, WebSocketException {
 		final List<BaseTokenClient> lServices = new ArrayList();
 		final List<BaseTokenClient> lClients = new ArrayList();
@@ -74,7 +80,6 @@ public class LoadBalancerTest {
 				lServices.add(lClient);
 				Thread.sleep(50);
 			}
-
 
 			//Add connections
 			for (int lPos = 0; lPos < mCurrentConnections; lPos++) {

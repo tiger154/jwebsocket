@@ -35,6 +35,10 @@ import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+/**
+ *
+ * @author aschulze
+ */
 @ContextConfiguration(locations = {"classpath:JMSPlugIn.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DefaultMessageDelegateTest {
@@ -48,6 +52,9 @@ public class DefaultMessageDelegateTest {
 	// @Autowired
 	// DefaultMessageListenerContainer cont;
 	//
+	/**
+	 *
+	 */
 	@Test
 	public void testReceptionOfJmsMessages() {
 		Assert.assertNotNull(mConnectionFactory);

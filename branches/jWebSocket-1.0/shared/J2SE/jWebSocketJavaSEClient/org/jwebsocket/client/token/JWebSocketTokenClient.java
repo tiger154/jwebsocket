@@ -28,22 +28,44 @@ import org.jwebsocket.kit.WebSocketEncoding;
  */
 public class JWebSocketTokenClient extends BaseTokenClient {
 
+	/**
+	 *
+	 * @param aReliabilityOptions
+	 */
 	public JWebSocketTokenClient(ReliabilityOptions aReliabilityOptions) {
 		super(aReliabilityOptions);
 	}
 
+	/**
+	 *
+	 * @param aSubProt
+	 * @param aEncoding
+	 */
 	public JWebSocketTokenClient(String aSubProt, WebSocketEncoding aEncoding) {
 		super(aSubProt, aEncoding);
 	}
 
+	/**
+	 *
+	 * @param aClient
+	 */
 	public JWebSocketTokenClient(WebSocketClient aClient) {
 		super(aClient);
 	}
 
+	/**
+	 *
+	 * @param aSubProt
+	 * @param aEncoding
+	 * @param aClient
+	 */
 	public JWebSocketTokenClient(String aSubProt, WebSocketEncoding aEncoding, WebSocketClient aClient) {
 		super(aSubProt, aEncoding, aClient);
 	}
 
+	/**
+	 *
+	 */
 	public JWebSocketTokenClient() {
 		super();
 	}

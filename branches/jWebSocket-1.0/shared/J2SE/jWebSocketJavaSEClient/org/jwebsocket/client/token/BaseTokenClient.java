@@ -82,17 +82,24 @@ public class BaseTokenClient implements WebSocketTokenClient {
 	// private WebSocketEncoding mEncoding;
 	private String mUsername = null;
 	private String mClientId = null;
-	private final Map<Integer, PendingResponseQueueItem> mPendingResponseQueue =
-			new FastMap<Integer, PendingResponseQueueItem>().shared();
-	private final ScheduledThreadPoolExecutor mResponseQueueExecutor =
-			new ScheduledThreadPoolExecutor(1);
+	private final Map<Integer, PendingResponseQueueItem> mPendingResponseQueue
+			= new FastMap<Integer, PendingResponseQueueItem>().shared();
+	private final ScheduledThreadPoolExecutor mResponseQueueExecutor
+			= new ScheduledThreadPoolExecutor(1);
 	private List<String> mEncodingFormats = new FastList<String>();
 	private WebSocketClient mClient;
 
+	/**
+	 *
+	 * @param aClient
+	 */
 	public BaseTokenClient(WebSocketClient aClient) {
 		this(JWebSocketCommonConstants.WS_SUBPROT_DEFAULT, JWebSocketCommonConstants.WS_ENCODING_DEFAULT, aClient);
 	}
 
+	/**
+	 *
+	 */
 	public BaseTokenClient() {
 		this(new JWebSocketWSClient());
 	}
@@ -106,6 +113,11 @@ public class BaseTokenClient implements WebSocketTokenClient {
 		setReliabilityOptions(aReliabilityOptions);
 	}
 
+	/**
+	 *
+	 * @param aSubProt
+	 * @param aEncoding
+	 */
 	public BaseTokenClient(String aSubProt, WebSocketEncoding aEncoding) {
 		this(aSubProt, aEncoding, new JWebSocketWSClient());
 	}
@@ -114,6 +126,7 @@ public class BaseTokenClient implements WebSocketTokenClient {
 	 *
 	 * @param aSubProt
 	 * @param aEncoding
+	 * @param aClient
 	 */
 	public BaseTokenClient(String aSubProt, WebSocketEncoding aEncoding, WebSocketClient aClient) {
 		mSubProt = new WebSocketSubProtocol(aSubProt, aEncoding);
@@ -428,8 +441,8 @@ public class BaseTokenClient implements WebSocketTokenClient {
 				Integer lCode = lToken.getInteger("code");
 				// is there unique token id available in the response
 				// and is there a matching pending response at all?
-				PendingResponseQueueItem lPRQI =
-						(lUTID != null ? mPendingResponseQueue.get(lUTID) : null);
+				PendingResponseQueueItem lPRQI
+						= (lUTID != null ? mPendingResponseQueue.get(lUTID) : null);
 				if (lPRQI != null) {
 					// if so start analyzing
 					WebSocketResponseTokenListener lWSRTL = lPRQI.getListener();
@@ -564,6 +577,8 @@ public class BaseTokenClient implements WebSocketTokenClient {
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @throws org.jwebsocket.kit.WebSocketException
 	 */
 	@Override
 	public void sendToken(Token aToken) throws WebSocketException {
@@ -594,8 +609,8 @@ public class BaseTokenClient implements WebSocketTokenClient {
 		@Override
 		public void run() {
 			synchronized (mPendingResponseQueue) {
-				PendingResponseQueueItem lPRQI =
-						(mUTID != null ? mPendingResponseQueue.get(mUTID) : null);
+				PendingResponseQueueItem lPRQI
+						= (mUTID != null ? mPendingResponseQueue.get(mUTID) : null);
 				if (lPRQI != null) {
 					// if so start analyzing
 					WebSocketResponseTokenListener lWSRTL = lPRQI.getListener();
@@ -631,6 +646,8 @@ public class BaseTokenClient implements WebSocketTokenClient {
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @throws org.jwebsocket.kit.WebSocketException
 	 */
 	@Override
 	public void sendToken(Token aToken, WebSocketResponseTokenListener aResponseListener) throws WebSocketException {
@@ -642,6 +659,8 @@ public class BaseTokenClient implements WebSocketTokenClient {
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @throws org.jwebsocket.kit.WebSocketException
 	 */
 	@Override
 	public void sendTokenInTransaction(Token aToken, WebSocketResponseTokenListener aResponseListener,
@@ -651,6 +670,8 @@ public class BaseTokenClient implements WebSocketTokenClient {
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @throws org.jwebsocket.kit.WebSocketException
 	 */
 	@Override
 	public void sendTokenInTransaction(Token aToken, int aFragmentSize,
@@ -677,6 +698,8 @@ public class BaseTokenClient implements WebSocketTokenClient {
 
 	/**
 	 * {@inheritDoc }
+	 *
+	 * @throws org.jwebsocket.kit.WebSocketException
 	 */
 	@Override
 	public void sendTokenInTransaction(Token aToken, int aFragmentSize, WebSocketResponseTokenListener aResponseListener,
@@ -879,12 +902,12 @@ public class BaseTokenClient implements WebSocketTokenClient {
 			sendTokenInTransaction(lCurrentChunk, aChunkable.getFragmentSize(),
 					new InChunkingResponseListener(aResponseListener, lSentTime),
 					new ChunkableListener(
-					lCurrentChunk,
-					lChunksIterator,
-					aResponseListener,
-					aDeliveryListener,
-					lSentTime,
-					aChunkable.getFragmentSize()));
+							lCurrentChunk,
+							lChunksIterator,
+							aResponseListener,
+							aDeliveryListener,
+							lSentTime,
+							aChunkable.getFragmentSize()));
 		} catch (Exception lEx) {
 			aDeliveryListener.OnFailure(lEx);
 		}

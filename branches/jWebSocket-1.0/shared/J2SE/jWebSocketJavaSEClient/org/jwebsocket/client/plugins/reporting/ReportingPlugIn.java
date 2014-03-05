@@ -33,13 +33,29 @@ import org.jwebsocket.token.WebSocketResponseTokenListener;
  */
 public class ReportingPlugIn extends BaseClientTokenPlugIn {
 
+	/**
+	 *
+	 */
 	public static final String REPORT_FORMAT_PDF = "pdf";
+
+	/**
+	 *
+	 */
 	public static final String REPORT_FORMAT_HTML = "html";
 
+	/**
+	 *
+	 * @param aClient
+	 */
 	public ReportingPlugIn(WebSocketTokenClient aClient) {
 		super(aClient, JWebSocketClientConstants.NS_REPORTING);
 	}
 
+	/**
+	 *
+	 * @param aClient
+	 * @param aNS
+	 */
 	public ReportingPlugIn(WebSocketTokenClient aClient, String aNS) {
 		super(aClient, aNS);
 	}
@@ -48,6 +64,7 @@ public class ReportingPlugIn extends BaseClientTokenPlugIn {
 	 * Gets a list of available reports
 	 *
 	 * @param aListener
+	 * @throws java.lang.Exception
 	 */
 	public void getReports(WebSocketResponseTokenListener aListener) throws Exception {
 		Token lRequest = TokenFactory.createToken(getNS(), "getReports");
@@ -58,7 +75,9 @@ public class ReportingPlugIn extends BaseClientTokenPlugIn {
 	/**
 	 * Upload a report template
 	 *
+	 * @param aTemplatePath
 	 * @param aListener
+	 * @throws java.lang.Exception
 	 */
 	public void uploadTemplate(String aTemplatePath, WebSocketResponseTokenListener aListener) throws Exception {
 		Token lRequest = TokenFactory.createToken(getNS(), "uploadTemplate");
@@ -76,6 +95,7 @@ public class ReportingPlugIn extends BaseClientTokenPlugIn {
 	 * @param aFormat
 	 * @param aUseJDBCConnection
 	 * @param aListener
+	 * @throws java.lang.Exception
 	 */
 	public void generateReport(String aReportName,
 			Map<String, Object> aParams, List<Map<String, Object>> aFields,
@@ -97,6 +117,7 @@ public class ReportingPlugIn extends BaseClientTokenPlugIn {
 	 * @param aParams
 	 * @param aFields
 	 * @param aListener
+	 * @throws java.lang.Exception
 	 */
 	public void generateReport(String aReportName,
 			Map<String, Object> aParams, List<Map<String, Object>> aFields,
@@ -111,6 +132,7 @@ public class ReportingPlugIn extends BaseClientTokenPlugIn {
 	 * @param aParams
 	 * @param aUseJDBCConnection
 	 * @param aListener
+	 * @throws java.lang.Exception
 	 */
 	public void generateReport(String aReportName,
 			Map<String, Object> aParams, boolean aUseJDBCConnection,

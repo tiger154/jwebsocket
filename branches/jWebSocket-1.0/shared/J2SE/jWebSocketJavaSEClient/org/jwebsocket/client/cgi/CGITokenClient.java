@@ -53,7 +53,7 @@ public class CGITokenClient extends BaseTokenClient {
 	}
 
 	@Override
-	public void open(String aURL) throws WebSocketException{
+	public void open(String aURL) throws WebSocketException {
 		// establish connection to WebSocket Network
 		super.open(aURL);
 

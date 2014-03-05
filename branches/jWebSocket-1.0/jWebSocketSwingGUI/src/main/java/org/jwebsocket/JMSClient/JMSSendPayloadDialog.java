@@ -35,6 +35,12 @@ public class JMSSendPayloadDialog extends javax.swing.JFrame {
 		initComponents();
 	}
 
+	/**
+	 *
+	 * @param aParentDialog
+	 * @param aSender
+	 * @param aListener
+	 */
 	public JMSSendPayloadDialog(JMSClientDialog aParentDialog, JWSEndPointSender aSender, JWSEndPointMessageListener aListener) {
 		initComponents();
 		mSender = aSender;
