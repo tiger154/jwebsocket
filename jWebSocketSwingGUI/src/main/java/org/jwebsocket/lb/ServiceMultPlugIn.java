@@ -64,6 +64,10 @@ public class ServiceMultPlugIn extends BaseServiceTokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 */
 	public void multXY(Token aToken) {
 		int lX = aToken.getInteger("x");
 		int lY = aToken.getInteger("y");

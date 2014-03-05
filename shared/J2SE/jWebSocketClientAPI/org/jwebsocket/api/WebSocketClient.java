@@ -48,13 +48,26 @@ public interface WebSocketClient {
 	 * Opens the jWebSocket connection
 	 *
 	 * @param aURL the websocket connection url
-	 * @throws WebSocketException if the connection is opened and the
-	 * client try to connect again.
+	 * @throws WebSocketException if the connection is opened and the client try
+	 * to connect again.
 	 */
 	void open(String aURL) throws WebSocketException;
-	
+
+	/**
+	 *
+	 * @param aVersion
+	 * @param aURI
+	 * @throws WebSocketException
+	 */
 	void open(int aVersion, String aURI) throws WebSocketException;
-	
+
+	/**
+	 *
+	 * @param aVersion
+	 * @param aURI
+	 * @param aSubProtocols
+	 * @throws WebSocketException
+	 */
 	void open(int aVersion, String aURI, String aSubProtocols) throws WebSocketException;
 
 	/**
@@ -294,27 +307,27 @@ public interface WebSocketClient {
 	void setPingInterval(int aInterval);
 
 	/**
-	 * Gets the ping internal 
+	 * Gets the ping internal
 	 *
 	 * @return
 	 */
 	int getPingInterval();
-	
+
 	/**
-	 * 
+	 *
 	 * @param aKey
 	 * @param aDefault
-	 * @return 
+	 * @return
 	 */
 	Object getParam(String aKey, Object aDefault);
-	
+
 	/**
 	 *
 	 * @param aKey
 	 * @return
 	 */
 	Object getParam(String aKey);
-	
+
 	/**
 	 *
 	 * @param aKey

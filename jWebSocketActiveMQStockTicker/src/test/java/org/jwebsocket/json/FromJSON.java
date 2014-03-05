@@ -18,23 +18,43 @@
 //	---------------------------------------------------------------------------
 package org.jwebsocket.json;
 
+/**
+ *
+ * @author aschulze
+ */
 public class FromJSON {
 
 	private String mName;
 	private int mAge;
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getName() {
 		return mName;
 	}
 
+	/**
+	 *
+	 * @param name
+	 */
 	public void setName(String name) {
 		mName = name;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int getAge() {
 		return mAge;
 	}
 
+	/**
+	 *
+	 * @param age
+	 */
 	public void setAge(int age) {
 		mAge = age;
 	}

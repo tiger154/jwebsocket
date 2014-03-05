@@ -27,10 +27,17 @@ import org.jwebsocket.config.ReliabilityOptions;
  */
 public class JWebSocketWSClient extends BaseWebSocketClient {
 
+	/**
+	 *
+	 */
 	public JWebSocketWSClient() {
 		super();
 	}
 
+	/**
+	 *
+	 * @param aReliabilityOptions
+	 */
 	public JWebSocketWSClient(ReliabilityOptions aReliabilityOptions) {
 		super(aReliabilityOptions);
 	}

@@ -16,6 +16,26 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<!-- directory for the html javadocs -->
+					<reportOutputDirectory>${project.basedir}/../../../javadocs/${project.name}</reportOutputDirectory>
+					<!-- directory for the jar javadocs -->
+					<jarOutputDirectory>${project.basedir}/../../../javadocs</jarOutputDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<configuration>
+					<!-- directory for the source code jar -->
+					<outputDirectory>${project.basedir}/../../../javadocs</outputDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
@@ -92,13 +112,6 @@
 			<artifactId>jWebSocketJMSPlugIn</artifactId>
 			<version>1.0</version>
 		</dependency>
-<!--
-		<dependency> 
-			<groupId>org.apache.activemq</groupId> 
-			<artifactId>activemq-core</artifactId> 
-			<version>5.7.0</version> 
-		</dependency>
--->		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>

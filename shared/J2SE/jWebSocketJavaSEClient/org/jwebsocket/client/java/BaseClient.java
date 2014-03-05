@@ -56,11 +56,22 @@ import org.springframework.util.Assert;
  */
 public abstract class BaseClient implements WebSocketClient {
 
+	/**
+	 *
+	 */
 	public static final int RECEIVER_SHUTDOWN_TIMEOUT = 3000;
+
+	/**
+	 *
+	 */
 	protected volatile WebSocketStatus mStatus = WebSocketStatus.CLOSED;
 	private final ScheduledThreadPoolExecutor mExecutor = new ScheduledThreadPoolExecutor(1);
 	private final ExecutorService mListenersExecutor = Executors.newFixedThreadPool(1);
 	private final Map<String, Object> mParams = new FastMap<String, Object>();
+
+	/**
+	 *
+	 */
 	protected int mVersion = JWebSocketCommonConstants.WS_VERSION_DEFAULT;
 	private ReliabilityOptions mReliabilityOptions = null;
 	private int mPingInterval = 20000;
@@ -86,6 +97,10 @@ public abstract class BaseClient implements WebSocketClient {
 	private Integer mMaxFrameSize;
 	private Map<String, String> mFragments = new LinkedHashMap<String, String>();
 
+	/**
+	 *
+	 * @return
+	 */
 	protected Map<String, IPacketDeliveryListener> getPacketDeliveryListeners() {
 		return mPacketDeliveryListeners;
 	}
@@ -128,18 +143,34 @@ public abstract class BaseClient implements WebSocketClient {
 		return mMaxFrameSize;
 	}
 
+	/**
+	 *
+	 * @param aMaxFrameSize
+	 */
 	protected void setMaxFrameSize(Integer aMaxFrameSize) {
 		this.mMaxFrameSize = aMaxFrameSize;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	protected Map<String, String> getFragments() {
 		return mFragments;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	protected ScheduledThreadPoolExecutor getExecutor() {
 		return mExecutor;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	protected ExecutorService getListenersExecutor() {
 		return mListenersExecutor;
 	}
@@ -251,6 +282,12 @@ public abstract class BaseClient implements WebSocketClient {
 	 */
 	public static String DATA_CLOSE_SHUTDOWN = "shutdown";
 
+	/**
+	 *
+	 * @param aMessage
+	 * @param aListener
+	 * @throws Exception
+	 */
 	protected void sendMessage(Token aMessage, IPacketDeliveryListener aListener) throws Exception {
 		if (null != aListener) {
 			aMessage.setBoolean(MessagingControl.PROPERTY_IS_ACK_REQUIRED, true);
@@ -298,7 +335,6 @@ public abstract class BaseClient implements WebSocketClient {
 	/**
 	 *
 	 * @param aStatus
-	 * @throws Exception
 	 */
 	@Override
 	public void setStatus(WebSocketStatus aStatus) {
@@ -439,6 +475,8 @@ public abstract class BaseClient implements WebSocketClient {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param aDataPacket
 	 */
 	@Override
 	public void notifyPacket(final WebSocketClientEvent aEvent, WebSocketPacket aDataPacket) {
@@ -588,15 +626,18 @@ public abstract class BaseClient implements WebSocketClient {
 			try {
 				open(mURI.toString());
 			} catch (Exception lEx) {
-				WebSocketClientEvent lEvent =
-						new WebSocketBaseClientEvent(mEvent.getClient(), EVENT_CLOSE,
-						lEx.getClass().getSimpleName() + ": "
-						+ lEx.getMessage());
+				WebSocketClientEvent lEvent
+						= new WebSocketBaseClientEvent(mEvent.getClient(), EVENT_CLOSE,
+								lEx.getClass().getSimpleName() + ": "
+								+ lEx.getMessage());
 				notifyClosed(lEvent);
 			}
 		}
 	}
 
+	/**
+	 *
+	 */
 	protected void abortReconnect() {
 		synchronized (mReconnectLock) {
 			// cancel running re-connect task
@@ -611,6 +652,10 @@ public abstract class BaseClient implements WebSocketClient {
 		}
 	}
 
+	/**
+	 *
+	 * @param aEvent
+	 */
 	protected void checkReconnect(WebSocketClientEvent aEvent) {
 		synchronized (mReconnectLock) {
 			// first, purge all potentially old references to other tasks

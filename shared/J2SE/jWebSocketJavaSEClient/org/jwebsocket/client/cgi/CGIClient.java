@@ -47,7 +47,7 @@ public class CGIClient extends BaseWebSocketClient {
 	}
 
 	@Override
-	public void open(String aURL) throws IsAlreadyConnectedException{
+	public void open(String aURL) throws IsAlreadyConnectedException {
 		// establish connection to WebSocket Network
 		super.open(aURL);
 

@@ -7,10 +7,19 @@ import javax.swing.text.BadLocationException;
 /*
  * @author vbarzanacres
  */
+
+/**
+ *
+ * @author aschulze
+ */
 public class OutputStreamConsole extends OutputStream {
 
-	private JTextArea mOutput;
+	private final JTextArea mOutput;
 
+	/**
+	 *
+	 * @param output
+	 */
 	public OutputStreamConsole(JTextArea output) {
 		this.mOutput = output;
 	}
@@ -22,7 +31,7 @@ public class OutputStreamConsole extends OutputStream {
 	public synchronized void write(int aByte) throws IOException {
 		mOutput.append(String.valueOf((char) aByte));
 		try {
-			mOutput.setCaretPosition(mOutput.getLineStartOffset(mOutput.getLineCount()-1));
+			mOutput.setCaretPosition(mOutput.getLineStartOffset(mOutput.getLineCount() - 1));
 		} catch (BadLocationException aException) {
 			mOutput.append(aException.getMessage());
 		}

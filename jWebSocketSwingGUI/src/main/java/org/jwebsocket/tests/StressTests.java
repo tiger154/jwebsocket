@@ -69,6 +69,8 @@ public class StressTests implements WebSocketClientTokenListener {
 	 * Opens all test connections to the server identified by its URL.
 	 *
 	 * @param aURL
+	 * @param aJMSCluster
+	 * @param aClusterName
 	 */
 	public void init(String aURL, boolean aJMSCluster, String aClusterName) {
 		JWebSocketTokenClient lClient;
@@ -111,6 +113,8 @@ public class StressTests implements WebSocketClientTokenListener {
 	/**
 	 *
 	 * @param aURL
+	 * @param aJMSCluster
+	 * @param aClusterName
 	 */
 	public void runStressTest(String aURL, boolean aJMSCluster, String aClusterName) {
 		init(aURL, aJMSCluster, aClusterName);

@@ -1185,7 +1185,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 		 * lToken.setString("method", "getMD5");
 		 * lArgs.add(txfMessage.getText());
 		 */
-
 		// runOverloadDemo
 		/*
 		 * lToken.setString("method", "runOverloadDemo"); // create the
@@ -1195,7 +1194,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 		 * lListArg.add("b");	lListArg.add("c");	lListArg.add("d");
 		 * lArgs.add(lListArg);
 		 */
-
 		// demo for getRPCObject
 		lToken.setString("method", "getRPCObject");
 		// instantiate a new tokenizable object to be used for a RPC
@@ -1313,6 +1311,11 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     private void jcbWrapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbWrapActionPerformed
 		txaLog.setLineWrap(jcbWrap.isSelected());
     }//GEN-LAST:event_jcbWrapActionPerformed
+
+	/**
+	 *
+	 * @param aDefaultFilename
+	 */
 	public void saveLogs(String aDefaultFilename) {
 		if (aDefaultFilename == null || aDefaultFilename.equals("")) {
 			aDefaultFilename = "jWebSocketTests_"
@@ -1364,64 +1367,64 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     }//GEN-LAST:event_formWindowOpened
 
     private void btnUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUploadActionPerformed
-        try {
-            // saves a file in the public area of the jWebSocket server
-            Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.filesystem", "save");
-            lToken.setString("scope", "public");
-            lToken.setBoolean("notify", false);
+		try {
+			// saves a file in the public area of the jWebSocket server
+			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.filesystem", "save");
+			lToken.setString("scope", "public");
+			lToken.setBoolean("notify", false);
 
-            File lFile = new File(txfFilename.getText());
-            byte[] lBA = FileUtils.readFileToByteArray(lFile);
-            String lBase64Enc = Base64.encodeBase64String(lBA);
+			File lFile = new File(txfFilename.getText());
+			byte[] lBA = FileUtils.readFileToByteArray(lFile);
+			String lBase64Enc = Base64.encodeBase64String(lBA);
 
-            // isoloate name from filename to be uploaded, it's just for demo purposes!
-            lToken.setString("filename", FilenameUtils.getName(txfFilename.getText()));
-            lToken.setString("data", lBase64Enc);
-            lToken.setString("encoding", "base64");
-            mClient.sendToken(lToken);
-        } catch (Exception ex) {
-            mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
-        }
+			// isoloate name from filename to be uploaded, it's just for demo purposes!
+			lToken.setString("filename", FilenameUtils.getName(txfFilename.getText()));
+			lToken.setString("data", lBase64Enc);
+			lToken.setString("encoding", "base64");
+			mClient.sendToken(lToken);
+		} catch (Exception ex) {
+			mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
+		}
     }//GEN-LAST:event_btnUploadActionPerformed
 
     private void btnDebugOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDebugOutActionPerformed
-        try {
-            Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.system", "getLostConnectors");
-            mClient.sendToken(lToken);
-        } catch (Exception ex) {
-            // process potential exception
-            mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
-        }
+		try {
+			Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.system", "getLostConnectors");
+			mClient.sendToken(lToken);
+		} catch (Exception ex) {
+			// process potential exception
+			mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
+		}
     }//GEN-LAST:event_btnDebugOutActionPerformed
 
     private void btnTimeoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimeoutActionPerformed
-        Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.test", "delay");
-        lToken.setInteger("delay", 2000);
-        long lTimeout;
-        try {
-            lTimeout = Integer.parseInt(txfTimeout.getText());
-        } catch (Exception ex) {
-            lTimeout = 3000;
-        }
-        WebSocketResponseTokenListener lResponseListener = new MyResponseListener(lTimeout);
-        try {
-            mClient.sendToken(lToken, lResponseListener);
-        } catch (WebSocketException ex) {
-            // process potential exception
-            mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
-        }
+		Token lToken = TokenFactory.createToken("org.jwebsocket.plugins.test", "delay");
+		lToken.setInteger("delay", 2000);
+		long lTimeout;
+		try {
+			lTimeout = Integer.parseInt(txfTimeout.getText());
+		} catch (Exception ex) {
+			lTimeout = 3000;
+		}
+		WebSocketResponseTokenListener lResponseListener = new MyResponseListener(lTimeout);
+		try {
+			mClient.sendToken(lToken, lResponseListener);
+		} catch (WebSocketException ex) {
+			// process potential exception
+			mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
+		}
     }//GEN-LAST:event_btnTimeoutActionPerformed
 
     private void btnGetUserRightsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetUserRightsActionPerformed
-        try {
-            mClient.getUserRights(txfTarget.getText());
-        } catch (WebSocketException ex) {
-            mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
-        }
+		try {
+			mClient.getUserRights(txfTarget.getText());
+		} catch (WebSocketException ex) {
+			mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
+		}
     }//GEN-LAST:event_btnGetUserRightsActionPerformed
 
     private void btnGetSessionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetSessionsActionPerformed
-        try {
+		try {
 			mClient.getConnections();
 		} catch (WebSocketException ex) {
 			mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
@@ -1429,7 +1432,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     }//GEN-LAST:event_btnGetSessionsActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-        try {
+		try {
 			mClient.logout();
 		} catch (WebSocketException ex) {
 			mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
@@ -1437,7 +1440,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShutdownActionPerformed
-        try {
+		try {
 			mClient.shutdown();
 			// Thread.sleep(500);
 			// mClient.close();
@@ -1447,7 +1450,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     }//GEN-LAST:event_btnShutdownActionPerformed
 
     private void btnBroadcastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBroadcastActionPerformed
-        try {
+		try {
 			mClient.broadcastText(txfMessage.getText());
 		} catch (WebSocketException ex) {
 			mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
@@ -1455,7 +1458,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
     }//GEN-LAST:event_btnBroadcastActionPerformed
 
     private void btnDisconnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisconnectActionPerformed
-        mClient.close();
+		mClient.close();
     }//GEN-LAST:event_btnDisconnectActionPerformed
 
 	private void loadPropertyFile() {
@@ -1574,7 +1577,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 			mLog(ex.getMessage());
 		}
 	}
-	
+
 	private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnLoginActionPerformed
 		try {
 			mClient.login(txfUser.getText(), new String(pwfPassword.getPassword()));
@@ -1582,7 +1585,6 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 			mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
 		}
 	}// GEN-LAST:event_btnLoginActionPerformed
-
 
 	private void btnClearLogActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnClearLogActionPerformed
 		txaLog.setText("");
@@ -1604,7 +1606,7 @@ public class TestDialog extends javax.swing.JFrame implements WebSocketClientTok
 			mLog(ex.getClass().getSimpleName() + ":  " + ex.getMessage());
 		}
 	}
-	
+
 	/**
 	 * @param args the command line arguments
 	 */

@@ -32,6 +32,10 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ *
+ * @author aschulze
+ */
 @Service
 public class JMSDataSource implements Runnable {
 
@@ -61,12 +65,19 @@ public class JMSDataSource implements Runnable {
 	// us to always use period as separator)
 	static private DecimalFormat mDisplayFormat = new DecimalFormat("####.00", new DecimalFormatSymbols(Locale.ENGLISH));
 
+	/**
+	 *
+	 * @param aArgs
+	 */
 	public static void main(String[] aArgs) {
 		// ClassPathXmlApplicationContext ctx = new
 		// ClassPathXmlApplicationContext("classpath*:JMSDataSource.xml");
 		new JMSDataSource().run();
 	}
 
+	/**
+	 *
+	 */
 	public JMSDataSource() {
 		this.mJMSTemplate = new JmsTemplate();
 		ActiveMQConnectionFactory lConnectionFactory = new ActiveMQConnectionFactory(
@@ -101,7 +112,6 @@ public class JMSDataSource implements Runnable {
 		float lOldVal = (Float) mSTOCKS[(lStockIndex * STOCK_COLUMN_COUNT) + PRICE_COLUMN_INDEX];
 
 		// calculate the percent change (and round it)
-
 		// the maximum fluctuation is a percentage of the current value...
 		float lMaxFluctuate = FLUCTUATION_PERCENT * lOldVal;
 

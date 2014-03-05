@@ -53,6 +53,10 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		initComponents();
 	}
 
+	/**
+	 *
+	 * @param aField
+	 */
 	public JMSClientDialog(JTextArea aField) {
 		initComponents();
 		mLog = aField;
@@ -97,6 +101,10 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		}
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Properties getProperties() {
 		return this.mProperties;
 	}
@@ -120,7 +128,7 @@ public class JMSClientDialog extends javax.swing.JFrame {
 				mEndPointId, // unique node id
 				5, // thread pool size, messages being processed concurrently
 				JMSEndPoint.TEMPORARY // temporary (for clients)
-				);
+		);
 
 		// instantiate a high level JWSEndPointMessageListener
 		mListener = new JWSEndPointMessageListener(mJMSEndPoint);
@@ -176,16 +184,16 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		// process response of the JMS Gateway login...
 		mListener.addResponseListener(NS_SYSTEM, TT_LOGIN,
 				new JWSMessageListener(mSender) {
-			@Override
-			public void processToken(String aSourceId, Token aToken) {
-				int lCode = aToken.getInteger("code", -1);
-				if (0 == lCode) {
-					log("Authentication against jWebSocket JMS Gateway successful.");
-				} else {
-					log("Authentication against jWebSocket JMS Gateway failed!");
-				}
-			}
-		});
+					@Override
+					public void processToken(String aSourceId, Token aToken) {
+						int lCode = aToken.getInteger("code", -1);
+						if (0 == lCode) {
+							log("Authentication against jWebSocket JMS Gateway successful.");
+						} else {
+							log("Authentication against jWebSocket JMS Gateway failed!");
+						}
+					}
+				});
 
 		// add a high level listener to listen in coming messages
 		mJMSEndPoint.addListener(mListener);
@@ -271,6 +279,10 @@ public class JMSClientDialog extends javax.swing.JFrame {
 		jbSendPayload.setEnabled(false);
 	}
 
+	/**
+	 *
+	 * @param aMessage
+	 */
 	public final void log(String aMessage) {
 		System.out.println(aMessage);
 	}
@@ -501,44 +513,44 @@ public class JMSClientDialog extends javax.swing.JFrame {
     }//GEN-LAST:event_onWindowClosed
 
     private void jbSendPayloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSendPayloadActionPerformed
-        JMSSendPayloadDialog lPayloadDialog = new JMSSendPayloadDialog(this, mSender, mListener);
-        lPayloadDialog.setLocation(this.getLocation().x,
-            this.getLocation().y);
-        lPayloadDialog.setAlwaysOnTop(true);
-        lPayloadDialog.setVisible(true);
-        final JMSClientDialog lMe = this;
-        lMe.setVisible(false);
-        lPayloadDialog.addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-            }
+		JMSSendPayloadDialog lPayloadDialog = new JMSSendPayloadDialog(this, mSender, mListener);
+		lPayloadDialog.setLocation(this.getLocation().x,
+				this.getLocation().y);
+		lPayloadDialog.setAlwaysOnTop(true);
+		lPayloadDialog.setVisible(true);
+		final JMSClientDialog lMe = this;
+		lMe.setVisible(false);
+		lPayloadDialog.addWindowListener(new WindowListener() {
+			@Override
+			public void windowOpened(WindowEvent e) {
+			}
 
-            @Override
-            public void windowClosing(WindowEvent e) {
-            }
+			@Override
+			public void windowClosing(WindowEvent e) {
+			}
 
-            @Override
-            public void windowClosed(WindowEvent e) {
-                lMe.setVisible(true);
-                lMe.setAlwaysOnTop(true);
-            }
+			@Override
+			public void windowClosed(WindowEvent e) {
+				lMe.setVisible(true);
+				lMe.setAlwaysOnTop(true);
+			}
 
-            @Override
-            public void windowIconified(WindowEvent e) {
-            }
+			@Override
+			public void windowIconified(WindowEvent e) {
+			}
 
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-            }
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+			}
 
-            @Override
-            public void windowActivated(WindowEvent e) {
-            }
+			@Override
+			public void windowActivated(WindowEvent e) {
+			}
 
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-            }
-        });
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+			}
+		});
     }//GEN-LAST:event_jbSendPayloadActionPerformed
 
 	/**

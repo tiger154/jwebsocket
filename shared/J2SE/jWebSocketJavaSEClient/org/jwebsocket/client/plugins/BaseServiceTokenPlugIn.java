@@ -39,6 +39,7 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 	/**
 	 *
 	 * @param aClient
+	 * @param aNS
 	 */
 	public BaseServiceTokenPlugIn(WebSocketTokenClient aClient, String aNS) {
 		super(aClient, aNS);
@@ -127,7 +128,7 @@ public class BaseServiceTokenPlugIn extends BaseClientTokenPlugIn {
 					getTokenClient().sendToken(lTokenCpuUsage);
 				} catch (Exception lEx) {
 					Logger.getLogger(BaseServiceTokenPlugIn.class.getName()).log(Level.SEVERE, null,
-						lEx + " while the load balancer CPU usage was update");
+							lEx + " while the load balancer CPU usage was update");
 				}
 			}
 		}, 1500, 1500);

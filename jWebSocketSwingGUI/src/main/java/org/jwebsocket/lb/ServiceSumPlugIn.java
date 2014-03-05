@@ -64,6 +64,10 @@ public class ServiceSumPlugIn extends BaseServiceTokenPlugIn {
 		}
 	}
 
+	/**
+	 *
+	 * @param aToken
+	 */
 	public void sumXY(Token aToken) {
 		int lX = aToken.getInteger("x");
 		int lY = aToken.getInteger("y");
