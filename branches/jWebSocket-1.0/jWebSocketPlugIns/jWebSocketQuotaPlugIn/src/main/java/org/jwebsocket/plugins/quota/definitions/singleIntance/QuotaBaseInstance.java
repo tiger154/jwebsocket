@@ -18,21 +18,64 @@ import org.jwebsocket.token.Token;
  */
 public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
 
-    protected long mValue;
-    protected String mInstance;
-    protected String mUuid;
-    protected String mNamesPace;
-    protected String mActions;
-    protected String mQuotaType;
-    protected String mInstanceType;
-    protected String mQuotaIdentifier;
-    protected FastList<QuotaChildSI> mChildQuotaList;
+	/**
+	 *
+	 */
+	protected long mValue;
 
-    public void setChildQuotaList(FastList<QuotaChildSI> aChildQuotaList) {
+	/**
+	 *
+	 */
+	protected String mInstance;
+
+	/**
+	 *
+	 */
+	protected String mUuid;
+
+	/**
+	 *
+	 */
+	protected String mNamesPace;
+
+	/**
+	 *
+	 */
+	protected String mActions;
+
+	/**
+	 *
+	 */
+	protected String mQuotaType;
+
+	/**
+	 *
+	 */
+	protected String mInstanceType;
+
+	/**
+	 *
+	 */
+	protected String mQuotaIdentifier;
+
+	/**
+	 *
+	 */
+	protected FastList<QuotaChildSI> mChildQuotaList;
+
+	/**
+	 *
+	 * @param aChildQuotaList
+	 */
+	public void setChildQuotaList(FastList<QuotaChildSI> aChildQuotaList) {
         this.mChildQuotaList = aChildQuotaList;
     }
 
-    public FastList<QuotaChildSI> getChildQuotaList() {
+	/**
+	 *
+	 * @return
+	 */
+	public FastList<QuotaChildSI> getChildQuotaList() {
 
         if (getInstanceType().equals("User")) {
 
@@ -45,7 +88,12 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         return mChildQuotaList;
     }
 
-    @Override
+	/**
+	 *
+	 * @param aChildQuota
+	 * @return
+	 */
+	@Override
     public boolean addChildQuota(QuotaChildSI aChildQuota) {
 
         //Looking for the quota child already exist
@@ -56,7 +104,12 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         return false;
     }
 
-    @Override
+	/**
+	 *
+	 * @param aInstance
+	 * @return
+	 */
+	@Override
     public QuotaChildSI getChildQuota(String aInstance) {
 
         for (Iterator<QuotaChildSI> it = mChildQuotaList.iterator(); it.hasNext();) {
@@ -90,12 +143,20 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         aToken.setList("childQuotas", getChildQuotaList());
     }
 
-    @Override
+	/**
+	 *
+	 * @return
+	 */
+	@Override
     public String getActions() {
         return mActions;
     }
 
-    @Override
+	/**
+	 *
+	 * @return
+	 */
+	@Override
     public FastMap<String, Object> writeToMap() {
         FastMap<String, Object> lMap = new FastMap<String, Object>();
 
@@ -155,7 +216,18 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         return true;
     }
 
-    public QuotaBaseInstance(long aValue, String aInstance, String aUuid, String aNamesPace,
+	/**
+	 *
+	 * @param aValue
+	 * @param aInstance
+	 * @param aUuid
+	 * @param aNamesPace
+	 * @param aQuotaType
+	 * @param aQuotaIdentifier
+	 * @param aInstanceType
+	 * @param aActions
+	 */
+	public QuotaBaseInstance(long aValue, String aInstance, String aUuid, String aNamesPace,
             String aQuotaType, String aQuotaIdentifier, String aInstanceType, String aActions) {
         this.mValue = aValue;
         this.mInstance = aInstance;
@@ -168,27 +240,51 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         mChildQuotaList = new FastList<QuotaChildSI>();
     }
 
-    public void setValue(long mValue) {
+	/**
+	 *
+	 * @param mValue
+	 */
+	public void setValue(long mValue) {
         this.mValue = mValue;
     }
 
-    public void setInstance(String mInstance) {
+	/**
+	 *
+	 * @param mInstance
+	 */
+	public void setInstance(String mInstance) {
         this.mInstance = mInstance;
     }
 
-    public void setUuid(String mUuid) {
+	/**
+	 *
+	 * @param mUuid
+	 */
+	public void setUuid(String mUuid) {
         this.mUuid = mUuid;
     }
 
-    public void setNamesPace(String mNamesPace) {
+	/**
+	 *
+	 * @param mNamesPace
+	 */
+	public void setNamesPace(String mNamesPace) {
         this.mNamesPace = mNamesPace;
     }
 
-    public void setQuotaType(String mQuotaType) {
+	/**
+	 *
+	 * @param mQuotaType
+	 */
+	public void setQuotaType(String mQuotaType) {
         this.mQuotaType = mQuotaType;
     }
 
-    public void setInstanceType(String mInstanceType) {
+	/**
+	 *
+	 * @param mInstanceType
+	 */
+	public void setInstanceType(String mInstanceType) {
         this.mInstanceType = mInstanceType;
     }
 
@@ -222,7 +318,11 @@ public class QuotaBaseInstance implements IQuotaSingleInstance, ITokenizable {
         return mInstanceType;
     }
 
-    @Override
+	/**
+	 *
+	 * @return
+	 */
+	@Override
     public String getQuotaIdentifier() {
         return mQuotaIdentifier;
     }

@@ -2,7 +2,7 @@
 //	jWebSocket - PingpongMatch (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -265,7 +265,6 @@ public class PingpongMatch extends Match implements Runnable {
 		mSpeed = 1000;
 		//stop=false; 
 
-
 		try {
 			if (!mThread.isAlive()) {
 				mStop = false;
@@ -289,7 +288,6 @@ public class PingpongMatch extends Match implements Runnable {
 		mBall.setMoveBallX(mBall.getSpeedBall() * mActServ);
 		mBall.setMoveBallY(mActServ);
 		mBall.initBall();
-
 
 		try {
 			mBall.notify(new Score(this), null, true);

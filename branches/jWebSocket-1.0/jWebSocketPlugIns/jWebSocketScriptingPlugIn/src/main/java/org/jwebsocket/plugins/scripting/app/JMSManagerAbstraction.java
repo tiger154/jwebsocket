@@ -2,7 +2,7 @@
 //	jWebSocket - JMSManagerAbstraction for Scripting Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -33,19 +33,41 @@ public class JMSManagerAbstraction extends JMSManager {
 
 	private BaseScriptApp mScriptApp;
 
+	/**
+	 *
+	 * @param aScriptApp
+	 */
 	public JMSManagerAbstraction(BaseScriptApp aScriptApp) {
 		this(aScriptApp, false);
 	}
 
+	/**
+	 *
+	 * @param aScriptApp
+	 * @param aUseTransaction
+	 */
 	public JMSManagerAbstraction(BaseScriptApp aScriptApp, boolean aUseTransaction) {
 		this(aScriptApp, aUseTransaction, (Connection) JWebSocketBeanFactory
 				.getInstance().getBean("jmsConnection0"));
 	}
 
+	/**
+	 *
+	 * @param aScriptApp
+	 * @param aUseTransaction
+	 * @param aConn
+	 */
 	public JMSManagerAbstraction(BaseScriptApp aScriptApp, boolean aUseTransaction, Connection aConn) {
 		this(aScriptApp, aUseTransaction, aConn, null);
 	}
 
+	/**
+	 *
+	 * @param aScriptApp
+	 * @param aUseTransaction
+	 * @param aConn
+	 * @param aDefaultDestination
+	 */
 	public JMSManagerAbstraction(BaseScriptApp aScriptApp, boolean aUseTransaction, Connection aConn,
 			String aDefaultDestination) {
 		super(aUseTransaction, aConn, aDefaultDestination);
@@ -81,6 +103,8 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * Subscribe to default destination
 	 *
 	 * @param aCallback
+	 * @param aDurableSubscription
+	 * @param aSubscriptionId
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception
@@ -95,6 +119,8 @@ public class JMSManagerAbstraction extends JMSManager {
 	 *
 	 * @param aDestination
 	 * @param aCallback
+	 * @param aDurableSubscription
+	 * @param aSubscriptionId
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception
@@ -137,6 +163,8 @@ public class JMSManagerAbstraction extends JMSManager {
 	 *
 	 * @param aCallback
 	 * @param aSelector
+	 * @param aDurableSubscription
+	 * @param aSubscriptionId
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception
@@ -153,6 +181,8 @@ public class JMSManagerAbstraction extends JMSManager {
 	 * @param aDestination
 	 * @param aCallback
 	 * @param aSelector
+	 * @param aDurableSubscription
+	 * @param aSubscriptionId
 	 * @return
 	 * @throws JMSException
 	 * @throws Exception

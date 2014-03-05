@@ -1,8 +1,8 @@
-//  ---------------------------------------------------------------------------
-//  jWebSocket - BaseListenerStore (Community Edition, CE)
+//	---------------------------------------------------------------------------
+//	jWebSocket - BaseListenerStore (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ public class BaseListenerStore implements ListenerStore {
 	/**
 	 * logger object
 	 */
-	private Map<DestinationIdentifier, JmsListenerContainer> mListeners =
-			new ConcurrentHashMap<DestinationIdentifier, JmsListenerContainer>();
+	private final Map<DestinationIdentifier, JmsListenerContainer> mListeners
+			= new ConcurrentHashMap<DestinationIdentifier, JmsListenerContainer>();
 
 	@Override
 	public JmsListenerContainer getListener(DestinationIdentifier aId) {

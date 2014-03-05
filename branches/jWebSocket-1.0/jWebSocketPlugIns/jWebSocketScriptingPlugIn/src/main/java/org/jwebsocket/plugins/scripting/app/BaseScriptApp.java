@@ -2,7 +2,7 @@
 //	jWebSocket - BaseScriptApp for Scripting Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -58,6 +58,9 @@ import org.springframework.util.Assert;
  */
 abstract public class BaseScriptApp {
 
+	/**
+	 *
+	 */
 	protected ScriptingPlugIn mPlugIn;
 	private final String mAppName;
 	private final String mAppPath;
@@ -209,6 +212,7 @@ abstract public class BaseScriptApp {
 	 * @param aAppName The application name (unique value)
 	 * @param aAppPath The application directory path
 	 * @param aScriptApp The scripting engine that runs the application
+	 * @param aClassLoader
 	 */
 	public BaseScriptApp(ScriptingPlugIn aPlugIn, String aAppName, String aAppPath, ScriptEngine aScriptApp, LocalLoader aClassLoader) {
 		mPlugIn = aPlugIn;
@@ -242,6 +246,10 @@ abstract public class BaseScriptApp {
 		return mScriptApp;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Permissions getPermissions() {
 		return mPlugIn.getAppPermissions(mAppName, mAppPath);
 	}
@@ -266,8 +274,9 @@ abstract public class BaseScriptApp {
 	/**
 	 * Load a Jar into the script app class loader
 	 *
-	 * @param aJarFile
+	 * @param aFile
 	 * @return TRUE if the jar has beeen loaded, FALSE otherwise
+	 * @throws java.lang.Exception
 	 */
 	public boolean loadJar(String aFile) throws Exception {
 		aFile = aFile.replace("${APP_HOME}", mAppPath);
@@ -397,7 +406,7 @@ abstract public class BaseScriptApp {
 	/**
 	 * Send a token to a given connector.
 	 *
-	 * @param aConnector The connector id
+	 * @param aConnectorId
 	 * @param aMap The Map representation of the Token
 	 * @param aFragmentSize The fragment size used to fragment the token. If
 	 * value is null, the token is not fragmented.
@@ -434,7 +443,7 @@ abstract public class BaseScriptApp {
 	/**
 	 * Send a token to a given connector with acknowledge callbacks.
 	 *
-	 * @param aConnector The connector id
+	 * @param aConnectorId
 	 * @param aMap The Map representation of the Token
 	 * @param aListener The IPacketDeliveryListener implementation callback.
 	 */
@@ -461,7 +470,7 @@ abstract public class BaseScriptApp {
 	/**
 	 * Send a fragmented token to a given connector with acknowledge callbacks.
 	 *
-	 * @param aConnector The connector id
+	 * @param aConnectorId
 	 * @param aMap The Map representation of the Token
 	 * @param aFragmentSize The fragmentation size
 	 * @param aListener The IPacketDeliveryListener implementation callback.
@@ -473,7 +482,7 @@ abstract public class BaseScriptApp {
 	/**
 	 * Send a token to a given connector.
 	 *
-	 * @param aConnector The connector id
+	 * @param aConnectorId
 	 * @param aMap The Map representation of the Token
 	 */
 	public void sendToken(String aConnectorId, Map aMap) {
@@ -483,7 +492,7 @@ abstract public class BaseScriptApp {
 	/**
 	 * Send a chunkable object to a given connector with acknowledge callbacks.
 	 *
-	 * @param aConnector The connector id
+	 * @param aConnectorId
 	 * @param aChunkable The IChunkable implementation object
 	 */
 	public void sendChunkable(String aConnectorId, Object aChunkable) {
@@ -493,7 +502,7 @@ abstract public class BaseScriptApp {
 	/**
 	 * Send a chunkable object to a given connector with acknowledge callbacks.
 	 *
-	 * @param aConnector The connector id
+	 * @param aConnectorId
 	 * @param aChunkable The IChunkable implementation object
 	 * @param aListener The IChunkableDeliveryListener implementation callback.
 	 */
@@ -658,7 +667,6 @@ abstract public class BaseScriptApp {
 	/**
 	 * Broadcast a Token to a given collection of connectors.
 	 *
-	 * @param aConnectors The collection of connectors
 	 * @param aToken The Token to be broascasted
 	 */
 	public void broadcast(Map aToken) {

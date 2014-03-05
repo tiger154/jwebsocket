@@ -2,7 +2,7 @@
 //	jWebSocket Scripting Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -107,7 +107,6 @@ public class ScriptingPlugIn extends ActionPlugIn {
 	 * Constructor.
 	 *
 	 * @param aConfiguration
-	 * @throws Exception
 	 */
 	public ScriptingPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
@@ -257,10 +256,20 @@ public class ScriptingPlugIn extends ActionPlugIn {
 		return NS;
 	}
 
+	/**
+	 *
+	 * @param aAppName
+	 * @param aAppPath
+	 * @return
+	 */
 	public Permissions getAppPermissions(String aAppName, String aAppPath) {
 		return mSettings.getAppPermissions(aAppName, aAppPath);
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public String getExtensionsDirectoryPath() {
 		return mSettings.getExtensionsDirectory();
 	}

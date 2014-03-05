@@ -2,7 +2,7 @@
 //	jWebSocket SMS Plug-In (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -163,6 +163,8 @@ public class SMSPlugIn extends ActionPlugIn {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @return
 	 */
 	@Override
 	public Token invoke(WebSocketConnector aConnector, Token aToken) {
@@ -240,6 +242,12 @@ public class SMSPlugIn extends ActionPlugIn {
 		return lRes;
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 * @throws Exception
+	 */
 	@Role(name = NS + ".generateReport")
 	@RequirePlugIn(id = "jws.reporting")
 	public void generateReportAction(WebSocketConnector aConnector, Token aToken) throws Exception {
@@ -277,6 +285,7 @@ public class SMSPlugIn extends ActionPlugIn {
 	 *
 	 * @param aConnector the client connector
 	 * @param aToken the request token object
+	 * @throws java.lang.Exception
 	 */
 	@Role(name = NS + ".sendSMS")
 	@RequirePlugIn(id = "jws.jcaptcha")

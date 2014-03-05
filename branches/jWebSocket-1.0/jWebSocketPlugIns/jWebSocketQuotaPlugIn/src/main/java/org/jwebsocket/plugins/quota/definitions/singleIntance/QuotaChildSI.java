@@ -18,42 +18,80 @@ public class QuotaChildSI implements ITokenizable {
     String mUuid;
     String mInstanceType;
 
-    public QuotaChildSI(String mInstance, String mUuid, String mInstanceType) {
+	/**
+	 *
+	 * @param mInstance
+	 * @param mUuid
+	 * @param mInstanceType
+	 */
+	public QuotaChildSI(String mInstance, String mUuid, String mInstanceType) {
         this.mInstance = mInstance;
         this.mUuid = mUuid;
         this.mInstanceType = mInstanceType;
         mValue = 0;
     }
 
-    public long getValue() {
+	/**
+	 *
+	 * @return
+	 */
+	public long getValue() {
         return mValue;
     }
 
-    public String getInstance() {
+	/**
+	 *
+	 * @return
+	 */
+	public String getInstance() {
         return mInstance;
     }
 
-    public String getUuid() {
+	/**
+	 *
+	 * @return
+	 */
+	public String getUuid() {
         return mUuid;
     }
 
-    public String getInstanceType() {
+	/**
+	 *
+	 * @return
+	 */
+	public String getInstanceType() {
         return mInstanceType;
     }
 
-    public void setValue(long aValue) {
+	/**
+	 *
+	 * @param aValue
+	 */
+	public void setValue(long aValue) {
         this.mValue = aValue;
     }
 
-    public void setInstance(String aInstance) {
+	/**
+	 *
+	 * @param aInstance
+	 */
+	public void setInstance(String aInstance) {
         this.mInstance = aInstance;
     }
 
-    public void setUuid(String aUuid) {
+	/**
+	 *
+	 * @param aUuid
+	 */
+	public void setUuid(String aUuid) {
         this.mUuid = aUuid;
     }
 
-    public void setInstanceType(String aInstanceType) {
+	/**
+	 *
+	 * @param aInstanceType
+	 */
+	public void setInstanceType(String aInstanceType) {
         this.mInstanceType = aInstanceType;
     }
 

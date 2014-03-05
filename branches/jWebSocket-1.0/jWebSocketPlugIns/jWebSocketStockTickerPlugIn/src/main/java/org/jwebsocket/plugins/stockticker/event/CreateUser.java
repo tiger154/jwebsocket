@@ -14,29 +14,44 @@ import org.jwebsocket.eventmodel.event.C2SEvent;
  */
 public class CreateUser extends C2SEvent implements IUser {
 
-    private String mUser;
-    private String mPass;
-    
+	private String mUser;
+	private String mPass;
 
-    @Override
-    @ImportFromToken
-    public void setUser(String aUser) {
-        mUser = aUser;
-    }
+	/**
+	 *
+	 * @param aUser
+	 */
+	@Override
+	@ImportFromToken
+	public void setUser(String aUser) {
+		mUser = aUser;
+	}
 
-    @Override
-    @ImportFromToken
-    public void setPass(String aPass) {
-        mPass = aPass;
-    }
+	/**
+	 *
+	 * @param aPass
+	 */
+	@Override
+	@ImportFromToken
+	public void setPass(String aPass) {
+		mPass = aPass;
+	}
 
-    @Override
-    public String getUser() {
-        return mUser;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	@Override
+	public String getUser() {
+		return mUser;
+	}
 
-    @Override
-    public String getPass() {
-        return mPass;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	@Override
+	public String getPass() {
+		return mPass;
+	}
 }

@@ -2,7 +2,7 @@
 //	jWebSocket - jWebSocket SMTP Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ public class MailPlugIn extends TokenPlugIn {
 	/**
 	 *
 	 */
-	public static final String NS =
-			JWebSocketServerConstants.NS_BASE + ".plugins.mail";
+	public static final String NS
+			= JWebSocketServerConstants.NS_BASE + ".plugins.mail";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket MailPlugIn";

@@ -2,7 +2,7 @@
 //	jWebSocket - Manifest (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -39,9 +39,24 @@ import org.springframework.util.Assert;
  */
 public class Manifest {
 
+	/**
+	 *
+	 */
 	public final static String LANGUAGE_EXT = "language_ext";
+
+	/**
+	 *
+	 */
 	public final static String JWEBSOCKET_PLUGINS_DEPENDENCIES = "jws_dependencies";
+
+	/**
+	 *
+	 */
 	public final static String JWEBSOCKET_VERSION = "jws_version";
+
+	/**
+	 *
+	 */
 	public final static String PERMISSIONS = "permissions";
 
 	/**
@@ -81,6 +96,7 @@ public class Manifest {
 	 *
 	 * @param aPerms
 	 * @param aGrantedPerms
+	 * @param aAppDirPath
 	 * @throws Exception
 	 */
 	public static void checkPermissions(List<String> aPerms, Permissions aGrantedPerms,

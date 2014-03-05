@@ -2,7 +2,7 @@
 //	jWebSocket - TestReporting Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -51,6 +51,10 @@ public class TestReportingPlugIn extends ActionPlugIn {
 	private TokenPlugIn mReportingPlugIn;
 	private static final Logger mLog = Logging.getLogger();
 
+	/**
+	 *
+	 * @param aConfiguration
+	 */
 	public TestReportingPlugIn(PluginConfiguration aConfiguration) {
 		super(aConfiguration);
 		setNamespace(NS);
@@ -62,6 +66,11 @@ public class TestReportingPlugIn extends ActionPlugIn {
 		Assert.notNull(mReportingPlugIn, "The TestReportingPlugIn required ReportingPlugIn  enabled!");
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void testGetReportAction(WebSocketConnector aConnector, Token aToken) {
 		Token lRequest = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE
 				+ ".plugins.reporting", "getReports");
@@ -72,6 +81,11 @@ public class TestReportingPlugIn extends ActionPlugIn {
 		sendToken(aConnector, lResponse);
 	}
 
+	/**
+	 *
+	 * @param aConnector
+	 * @param aToken
+	 */
 	public void testGenerateReportAction(WebSocketConnector aConnector, Token aToken) {
 		Token lRequest = TokenFactory.createToken(JWebSocketServerConstants.NS_BASE
 				+ ".plugins.reporting", "generateReport");
@@ -130,7 +144,6 @@ public class TestReportingPlugIn extends ActionPlugIn {
 //		lUser.put("name", "Guest");
 //		lUser.put("roles", lList3);
 //		lReportFields.add(lUser);
-
 		// For FullUserDataList and UserList report
 		lUser.put("id", 1);
 		lUser.put("username", "japuentes");
@@ -172,7 +185,7 @@ public class TestReportingPlugIn extends ActionPlugIn {
 		lUser.put("loginCount", 55);
 		lUser.put("subscriptions", lList2);
 		lReportFields.add(lUser);
-		
+
 		lUser = new HashMap<String, Object>();
 		lUser.put("id", 3);
 		lUser.put("username", "aschulze");
@@ -193,7 +206,7 @@ public class TestReportingPlugIn extends ActionPlugIn {
 		lUser.put("loginCount", 65);
 		lUser.put("subscriptions", lList3);
 		lReportFields.add(lUser);
-		
+
 		// checking JDBCplug-in is loaded
 		boolean lUseJDBC = false;
 		// provide a Connection instance here and set 'lUseJDBC = true'

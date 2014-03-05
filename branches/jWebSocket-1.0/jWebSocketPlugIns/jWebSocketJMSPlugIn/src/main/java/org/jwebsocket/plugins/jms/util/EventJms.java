@@ -2,7 +2,7 @@
 //	jWebSocket - EventJms (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public enum EventJms {
 	 *
 	 */
 	HANDLE_MAP_MESSAGE("handleJmsMapMessage");
-	private String mValue;
+	private final String mValue;
 
 	private EventJms(String value) {
 		this.mValue = value;

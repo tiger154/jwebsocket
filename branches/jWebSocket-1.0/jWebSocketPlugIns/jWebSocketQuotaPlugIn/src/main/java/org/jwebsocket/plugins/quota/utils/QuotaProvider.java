@@ -19,34 +19,64 @@ public class QuotaProvider implements IQuotaProvider {
     Map<String, IQuotaStorage> mAvailableStorage;
     Map<String, IQuota> mUnavailableFilterQuotaList;
 
-    public Map<String, IQuota> getAvailableQuotaList() {
+	/**
+	 *
+	 * @return
+	 */
+	public Map<String, IQuota> getAvailableQuotaList() {
         return mAvailableQuotaList;
     }
 
-    public Map<String, IQuotaStorage> getAvailableStorage() {
+	/**
+	 *
+	 * @return
+	 */
+	public Map<String, IQuotaStorage> getAvailableStorage() {
         return mAvailableStorage;
     }
 
-    public void setavailableQuotaList(Map<String, IQuota> mavailableQuotaList) {
+	/**
+	 *
+	 * @param mavailableQuotaList
+	 */
+	public void setavailableQuotaList(Map<String, IQuota> mavailableQuotaList) {
         this.mAvailableQuotaList = mavailableQuotaList;
     }
 
-    public QuotaProvider() {
+	/**
+	 *
+	 */
+	public QuotaProvider() {
     }
 
-    public QuotaProvider(Map<String, IQuota> aAvailableQuotaList,
+	/**
+	 *
+	 * @param aAvailableQuotaList
+	 * @param aAvailableStorage
+	 */
+	public QuotaProvider(Map<String, IQuota> aAvailableQuotaList,
             Map<String, IQuotaStorage> aAvailableStorage) {
 
         this.mAvailableQuotaList = aAvailableQuotaList;
         this.mAvailableStorage = aAvailableStorage;
     }
 
-    @Override
+	/**
+	 *
+	 * @return
+	 */
+	@Override
     public Map<String, IQuotaStorage> getActiveStorages() {
         return getAvailableStorage();
     }
 
-    @Override
+	/**
+	 *
+	 * @param aIdentifier
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
     public IQuota getQuotaByIdentifier(String aIdentifier) throws Exception {
 
         if (mAvailableQuotaList.containsKey(aIdentifier)) {
@@ -56,12 +86,21 @@ public class QuotaProvider implements IQuotaProvider {
         }
     }
 
-    @Override
+	/**
+	 *
+	 * @return
+	 */
+	@Override
     public Map<String, IQuota> getActiveQuotas() {
         return mAvailableQuotaList;
     }
 
-    @Override
+	/**
+	 *
+	 * @param aPos
+	 * @return
+	 */
+	@Override
     public String getIdentifier(int aPos) {
 
         String[] lValues = (String[]) mAvailableQuotaList.keySet().toArray();

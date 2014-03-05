@@ -2,7 +2,7 @@
 //	jWebSocket Validator Plug-in (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public class ValidatorPlugIn extends TokenPlugIn {
 				mLog.error("No or invalid spring configuration for validator "
 						+ "plug-in, some features may not be available.");
 			} else {
-					mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.validator.settings");
+				mSettings = (Settings) mBeanFactory.getBean("org.jwebsocket.plugins.validator.settings");
 				// replace all alias values with environment variables
 				Map<String, String> lAllowedProgs = mSettings.getAllowedProgs();
 				for (Entry<String, String> lEntry : lAllowedProgs.entrySet()) {

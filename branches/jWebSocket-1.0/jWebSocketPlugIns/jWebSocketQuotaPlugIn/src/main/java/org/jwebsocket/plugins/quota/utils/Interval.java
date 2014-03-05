@@ -17,46 +17,89 @@ public class Interval {
     private Interval mInterval;
     private IntervalType mIntervalType;
 
-    public Interval() {
+	/**
+	 *
+	 */
+	public Interval() {
     }
 
-    public void setStrTointervalType(String aIntervalType) {
+	/**
+	 *
+	 * @param aIntervalType
+	 */
+	public void setStrTointervalType(String aIntervalType) {
         mIntervalType = IntervalType.valueOf(aIntervalType);
     }
 
-    public String getStartDate() {
+	/**
+	 *
+	 * @return
+	 */
+	public String getStartDate() {
         return mStartDate;
     }
 
-    public void setStartDate(String mStartDate) {
+	/**
+	 *
+	 * @param mStartDate
+	 */
+	public void setStartDate(String mStartDate) {
         this.mStartDate = mStartDate;
     }
 
-    public String getEndDate() {
+	/**
+	 *
+	 * @return
+	 */
+	public String getEndDate() {
         return mEndDate;
     }
 
-    public void setEndDate(String mEndDate) {
+	/**
+	 *
+	 * @param mEndDate
+	 */
+	public void setEndDate(String mEndDate) {
         this.mEndDate = mEndDate;
     }
 
-    public Interval getInterval() {
+	/**
+	 *
+	 * @return
+	 */
+	public Interval getInterval() {
         return mInterval;
     }
 
-    public void setInterval(Interval mInterval) {
+	/**
+	 *
+	 * @param mInterval
+	 */
+	public void setInterval(Interval mInterval) {
         this.mInterval = mInterval;
     }
 
-    public IntervalType getIntervalType() {
+	/**
+	 *
+	 * @return
+	 */
+	public IntervalType getIntervalType() {
         return mIntervalType;
     }
 
-    public void setIntervalType(IntervalType mIntervalType) {
+	/**
+	 *
+	 * @param mIntervalType
+	 */
+	public void setIntervalType(IntervalType mIntervalType) {
         this.mIntervalType = mIntervalType;
     }
 
-    public String toResetDate() {
+	/**
+	 *
+	 * @return
+	 */
+	public String toResetDate() {
         Calendar lToday = Calendar.getInstance();
         if (mIntervalType.equals(IntervalType.Yearly)) {
             return mEndDate + "-" + String.valueOf(lToday.get(Calendar.YEAR));

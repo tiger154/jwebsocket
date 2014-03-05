@@ -34,11 +34,19 @@ public class QuotaInterval extends BaseQuota {
         return lMaxValue;
     }
 
-    public Interval getInterval() {
+	/**
+	 *
+	 * @return
+	 */
+	public Interval getInterval() {
         return mInterval;
     }
 
-    public void setInterval(Interval mInterval) {
+	/**
+	 *
+	 * @param mInterval
+	 */
+	public void setInterval(Interval mInterval) {
         this.mInterval = mInterval;
     }
 

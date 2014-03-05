@@ -10,23 +10,63 @@ package org.jwebsocket.plugins.stockticker.api;
  */
 public interface IPurchasing {
 
-    String getUser();
+	/**
+	 *
+	 * @return
+	 */
+	String getUser();
 
-    void setUser(String aUser);
+	/**
+	 *
+	 * @param aUser
+	 */
+	void setUser(String aUser);
 
-    String getName();
+	/**
+	 *
+	 * @return
+	 */
+	String getName();
 
-    void setName(String mName);
+	/**
+	 *
+	 * @param mName
+	 */
+	void setName(String mName);
 
-    Integer getCant();
+	/**
+	 *
+	 * @return
+	 */
+	Integer getCant();
 
-    void setCant(Integer mCant);
+	/**
+	 *
+	 * @param mCant
+	 */
+	void setCant(Integer mCant);
 
-    Double getInversion();
+	/**
+	 *
+	 * @return
+	 */
+	Double getInversion();
 
-    void setInversion(Double mInversion);
+	/**
+	 *
+	 * @param mInversion
+	 */
+	void setInversion(Double mInversion);
 
-    Double getValue();
+	/**
+	 *
+	 * @return
+	 */
+	Double getValue();
 
-    void setValue(Double mValue);
+	/**
+	 *
+	 * @param mValue
+	 */
+	void setValue(Double mValue);
 }

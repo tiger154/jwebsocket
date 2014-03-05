@@ -2,7 +2,7 @@
 //	jWebSocket - Rrpc (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -132,6 +132,7 @@ public class Rrpc extends AbstractRrpc {//implements RpcInterface, RpcInterfaceC
 	/**
 	 * The connectorId you want to send the rrpc
 	 *
+	 * @return
 	 */
 	public Rrpc to(String aConnectorId) {
 		WebSocketConnector lConnector = RPCPlugIn.getConnector("tcp0", aConnectorId);
@@ -143,6 +144,7 @@ public class Rrpc extends AbstractRrpc {//implements RpcInterface, RpcInterfaceC
 	 * The connectorsId you want to send the rrpc
 	 *
 	 * @param aConnectorsId
+	 * @return
 	 */
 	public Rrpc to(List<String> aConnectorsId) {
 		mConnectorsTo = new FastList<WebSocketConnector>();

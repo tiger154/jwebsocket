@@ -2,7 +2,7 @@
 //	jWebSocket - FieldJms (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public enum FieldJms {
 	 *
 	 */
 	JMS_HEADER_REPLY_TO(
-	"JMSReplyTo"),
+			"JMSReplyTo"),
 	/**
 	 *
 	 */
@@ -113,7 +113,7 @@ public enum FieldJms {
 	 *
 	 */
 	DESTINATION_IDENTIFIER("destinationIdentifier");
-	private String mValue;
+	private final String mValue;
 
 	private FieldJms(String aValue) {
 		this.mValue = aValue;

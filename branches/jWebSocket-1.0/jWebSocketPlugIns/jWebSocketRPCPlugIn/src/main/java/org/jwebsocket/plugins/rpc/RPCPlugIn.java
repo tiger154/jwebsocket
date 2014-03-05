@@ -2,7 +2,7 @@
 //	jWebSocket - RPC PlugIn (Community Edition, CE)
 //	---------------------------------------------------------------------------
 //	Copyright 2010-2014 Innotrade GmbH (jWebSocket.org)
-//  Alexander Schulze, Germany (NRW)
+//	Alexander Schulze, Germany (NRW)
 //
 //	Licensed under the Apache License, Version 2.0 (the "License");
 //	you may not use this file except in compliance with the License.
@@ -389,7 +389,6 @@ public class RPCPlugIn extends TokenPlugIn {
 		 * just for testing purposes of multi-threaded rpc's try {
 		 * Thread.sleep(3000); } catch (InterruptedException ex) { }
 		 */
-
 		sendToken(aConnector, aConnector, lResponseToken);
 	}
 

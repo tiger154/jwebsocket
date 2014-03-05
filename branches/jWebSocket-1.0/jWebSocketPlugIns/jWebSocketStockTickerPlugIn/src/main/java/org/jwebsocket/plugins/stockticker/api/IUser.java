@@ -11,13 +11,29 @@ import java.util.List;
  * @author Roy
  */
 public interface IUser {
-    
-    void setUser(String aUser);
-    
-    void setPass(String aPass);
-    
-    String getUser();
-    
-    String getPass();
-        
+
+	/**
+	 *
+	 * @param aUser
+	 */
+	void setUser(String aUser);
+
+	/**
+	 *
+	 * @param aPass
+	 */
+	void setPass(String aPass);
+
+	/**
+	 *
+	 * @return
+	 */
+	String getUser();
+
+	/**
+	 *
+	 * @return
+	 */
+	String getPass();
+
 }
