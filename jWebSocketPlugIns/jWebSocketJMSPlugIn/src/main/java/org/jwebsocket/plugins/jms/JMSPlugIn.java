@@ -65,8 +65,7 @@ import org.springframework.context.ApplicationContext;
 public class JMSPlugIn extends TokenPlugIn {
 
 	private static final Logger mLog = Logging.getLogger();
-	private static final String NS_JMS
-			= JWebSocketServerConstants.NS_BASE + ".plugins.jms";
+	private static final String NS_JMS = JWebSocketServerConstants.NS_BASE + ".plugins.jms";
 	private final static String VERSION = "1.0.0";
 	private final static String VENDOR = JWebSocketCommonConstants.VENDOR_CE;
 	private final static String LABEL = "jWebSocket JMSPlugIn";
@@ -125,15 +124,8 @@ public class JMSPlugIn extends TokenPlugIn {
 					"-", // max connection stretegy
 					false, // notify on system stopping
 					null // settings
-			);
+					);
 			mJMSEngine = new JMSEngine(lEngineCfg);
-
-			JWebSocketFactory.getEngines()
-					.put(lEngineCfg.getId(), mJMSEngine);
-			List<WebSocketServer> lServers = JWebSocketFactory.getServers();
-			for (WebSocketServer lServer : lServers) {
-				lServer.addEngine(mJMSEngine);
-			}
 
 			// Advisory listener
 			// setting up the JMS Gateway
@@ -163,8 +155,8 @@ public class JMSPlugIn extends TokenPlugIn {
 				// of the jWebSocket server instance.
 				mConsumer = // mSession.createDurableSubscriber(
 						mSession.createConsumer(
-								lGatewayTopic,
-								"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
+						lGatewayTopic,
+						"targetId='" + mEndPointId + "' or (targetId='*' and sourceId<>'" + mEndPointId + "')");
 				mListener = new JMSListener(mJMSEngine, mSender);
 				mConsumer.setMessageListener(mListener);
 
@@ -174,6 +166,14 @@ public class JMSPlugIn extends TokenPlugIn {
 				JMSAdvisoryListener lAdvisoryListener = new JMSAdvisoryListener(
 						mJMSEngine, mSender);
 				mAdvisoryConsumer.setMessageListener(lAdvisoryListener);
+
+				// registering JMSEngine once JMS connection is already started
+				JWebSocketFactory.getEngines()
+						.put(lEngineCfg.getId(), mJMSEngine);
+				List<WebSocketServer> lServers = JWebSocketFactory.getServers();
+				for (WebSocketServer lServer : lServers) {
+					lServer.addEngine(mJMSEngine);
+				}
 
 				// give a success message to the administrator
 				if (mLog.isInfoEnabled()) {
@@ -330,13 +330,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		}
 		executeAction(createActionInput(aConnector, aToken,
 				"Successfully unlisten JMS listener"), new ActionCommand() {
-					@Override
-					void execute(ActionInput aInput) throws Exception {
-						if (null != mJmsManager) {
-							mJmsManager.deregisterConnectorFromMessageListener(aInput);
-						}
-					}
-				});
+			@Override
+			void execute(ActionInput aInput) throws Exception {
+				if (null != mJmsManager) {
+					mJmsManager.deregisterConnectorFromMessageListener(aInput);
+				}
+			}
+		});
 	}
 
 	private void listen(WebSocketConnector aConnector, Token aToken) {
@@ -346,13 +346,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"Successfully got JMS listener", RightJms.LISTEN,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-					@Override
-					void execute(ActionInput aInput) throws Exception {
-						if (null != mJmsManager) {
-							mJmsManager.registerConnectorWithListener(aInput, JMSPlugIn.this);
-						}
-					}
-				});
+			@Override
+			void execute(ActionInput aInput) throws Exception {
+				if (null != mJmsManager) {
+					mJmsManager.registerConnectorWithListener(aInput, JMSPlugIn.this);
+				}
+			}
+		});
 	}
 
 	private void listenMessage(WebSocketConnector aConnector, Token aToken) {
@@ -362,13 +362,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"Successfully got JMS message listener", RightJms.LISTEN,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-					@Override
-					void execute(ActionInput aInput) throws Exception {
-						if (null != mJmsManager) {
-							mJmsManager.registerConnectorWithMessageListener(aInput, JMSPlugIn.this);
-						}
-					}
-				});
+			@Override
+			void execute(ActionInput aInput) throws Exception {
+				if (null != mJmsManager) {
+					mJmsManager.registerConnectorWithMessageListener(aInput, JMSPlugIn.this);
+				}
+			}
+		});
 	}
 
 	private void sendText(WebSocketConnector aConnector, Token aToken) {
@@ -394,13 +394,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"JMS text message successfully sent", RightJms.SEND,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-					@Override
-					void execute(ActionInput aInput) throws Exception {
-						if (null != mJmsManager) {
-							mJmsManager.sendTextMessage(aInput);
-						}
-					}
-				});
+			@Override
+			void execute(ActionInput aInput) throws Exception {
+				if (null != mJmsManager) {
+					mJmsManager.sendTextMessage(aInput);
+				}
+			}
+		});
 	}
 
 	private void sendMap(WebSocketConnector aConnector, Token aToken) {
@@ -409,14 +409,14 @@ public class JMSPlugIn extends TokenPlugIn {
 		}
 		executeAction(
 				createActionInput(aConnector, aToken, "Map message successfully sent", RightJms.SEND,
-						RightJms.SEND_AND_LISTEN), new ActionCommand() {
-					@Override
-					void execute(ActionInput aInput) throws Exception {
-						if (null != mJmsManager) {
-							mJmsManager.sendMap(aInput);
-						}
-					}
-				});
+				RightJms.SEND_AND_LISTEN), new ActionCommand() {
+			@Override
+			void execute(ActionInput aInput) throws Exception {
+				if (null != mJmsManager) {
+					mJmsManager.sendMap(aInput);
+				}
+			}
+		});
 	}
 
 	private void sendMapMessage(WebSocketConnector aConnector, Token aToken) {
@@ -426,13 +426,13 @@ public class JMSPlugIn extends TokenPlugIn {
 		executeAction(createActionInput(aConnector, aToken,
 				"JMS map message successfully sent", RightJms.SEND,
 				RightJms.SEND_AND_LISTEN), new ActionCommand() {
-					@Override
-					void execute(ActionInput aInput) throws Exception {
-						if (null != mJmsManager) {
-							mJmsManager.sendMapMessage(aInput);
-						}
-					}
-				});
+			@Override
+			void execute(ActionInput aInput) throws Exception {
+				if (null != mJmsManager) {
+					mJmsManager.sendMapMessage(aInput);
+				}
+			}
+		});
 	}
 
 	private void executeAction(ActionInput aInput, ActionCommand aCommand) {
